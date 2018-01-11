@@ -1,0 +1,96 @@
+---
+name: "Howell2Table5Teams"
+short: "2 Tables Howell, 5 teams"
+description: "2 tables, 5 teams, 20 hands, no relay, one team winner"
+numberTeams: 5
+hands:
+- table: 2
+  round: 1
+  ns: 5
+  ew: 2
+  boards:
+  - 11
+  - 12
+  - 13
+  - 14
+- table: 2
+  round: 2
+  ns: 1
+  ew: 3
+  boards:
+  - 13
+  - 14
+  - 19
+  - 20
+- table: 2
+  round: 3
+  ns: 2
+  ew: 4
+  boards:
+  - 1
+  - 2
+  - 19
+  - 20
+- table: 2
+  round: 4
+  ns: 3
+  ew: 5
+  boards:
+  - 1
+  - 2
+  - 7
+  - 8
+- table: 2
+  round: 5
+  ns: 4
+  ew: 1
+  boards:
+  - 7
+  - 8
+  - 11
+  - 12
+- table: 1
+  round: 1
+  ns: 4
+  ew: 3
+  boards:
+  - 5
+  - 6
+  - 17
+  - 18
+- table: 1
+  round: 2
+  ns: 5
+  ew: 4
+  boards:
+  - 3
+  - 4
+  - 9
+  - 10
+- table: 1
+  round: 3
+  ns: 1
+  ew: 5
+  boards:
+  - 5
+  - 6
+  - 15
+  - 16
+- table: 1
+  round: 4
+  ns: 2
+  ew: 1
+  boards:
+  - 9
+  - 10
+  - 17
+  - 18
+- table: 1
+  round: 5
+  ns: 3
+  ew: 2
+  boards:
+  - 3
+  - 4
+  - 15
+  - 16

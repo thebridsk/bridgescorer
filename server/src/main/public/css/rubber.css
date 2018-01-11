@@ -1,0 +1,117 @@
+@CHARSET "UTF-8";
+
+.rubListPage {
+  font-size: x-large;
+}
+.rubListPage table {
+  border-spacing: 0px;
+  font-size: x-large;
+  white-space: nowrap;
+  border: 1px solid black;
+}
+.rubListPage table tbody tr:nth-child(2n+1) {
+  background-color: #f2f2f2;
+}
+.rubListPage table td:first-child {
+  border: 1px solid black;
+  padding: 4px 8px 4px 4px;
+  text-align: center;
+}
+.rubListPage table td {
+  border: 1px solid black;
+  padding: 4px;
+  text-align: center;
+}
+.rubListPage table th {
+  border: 1px solid black;
+  padding: 4px;
+  text-align: center;
+}
+
+.rubNamesPage {
+  font-size: x-large;
+}
+
+.rubTableNumber {
+  text-align: right !important;
+}
+.rubTableLabel {
+  text-align: right !important;
+}
+.rubTableGameLabel {
+  text-align: left !important;
+}
+
+.rubDivRubberMatch {
+  font-size: x-large;
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+}
+.rubDivRubberMatch > div {
+  flex: 0 0 auto;
+  margin: 5px;
+}
+
+.rubDivRubberMatchView {
+  font-size: x-large;
+}
+.rubDivRubberMatchView table {
+  border-spacing: 0px;
+  font-size: x-large;
+  white-space: nowrap;
+  border: 1px solid black;
+}
+.rubDivRubberMatchView table tbody tr:nth-child(2n+1) {
+  background-color: #f2f2f2;
+}
+.rubDivRubberMatchView table td:first-child {
+  border: 1px solid black;
+  padding: 4px 8px 4px 4px;
+  text-align: center;
+}
+.rubDivRubberMatchView table td {
+  border: 1px solid black;
+  padding: 4px;
+  text-align: center;
+}
+.rubDivRubberMatchView table th {
+  border: 1px solid black;
+  padding: 4px;
+  text-align: center;
+}
+
+.rubDivDetailsView {
+  font-size: x-large;
+}
+.rubDivDetailsView table {
+  border-spacing: 0px;
+  font-size: x-large;
+  white-space: nowrap;
+  border: 1px solid black;
+}
+.rubDivDetailsView table tbody tr:nth-child(2n+1) {
+  background-color: #f2f2f2;
+}
+.rubDivDetailsView table td:first-child {
+  border: 1px solid black;
+  padding: 4px 8px 4px 4px;
+  text-align: center;
+}
+.rubDivDetailsView table td {
+  border: 1px solid black;
+  padding: 4px;
+  text-align: center;
+}
+.rubDivDetailsView table th {
+  border: 1px solid black;
+  padding: 4px;
+  text-align: center;
+}
+
+.rubAboveLine {
+  vertical-align: bottom;
+}
+.rubBelowLine {
+  vertical-align: top;
+}

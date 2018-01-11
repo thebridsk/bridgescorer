@@ -1,0 +1,237 @@
+---
+id: "C3"
+players:
+- "Norman"
+- "Victor"
+- "Irene"
+- "Peter"
+rounds:
+- id: "0"
+  north: "Norman"
+  south: "Victor"
+  east: "Irene"
+  west: "Peter"
+  dealerFirstRound: "E"
+  hands:
+  - id: "0"
+    contractTricks: 4
+    contractSuit: "H"
+    contractDoubled: "D"
+    declarer: "W"
+    nsVul: false
+    ewVul: false
+    madeContract: false
+    tricks: 2
+    created: 0
+    updated: 0
+  - id: "0"
+    contractTricks: 4
+    contractSuit: "S"
+    contractDoubled: "N"
+    declarer: "N"
+    nsVul: true
+    ewVul: false
+    madeContract: false
+    tricks: 1
+    created: 0
+    updated: 0
+  - id: "0"
+    contractTricks: 4
+    contractSuit: "S"
+    contractDoubled: "N"
+    declarer: "N"
+    nsVul: false
+    ewVul: true
+    madeContract: true
+    tricks: 5
+    created: 0
+    updated: 0
+  - id: "0"
+    contractTricks: 2
+    contractSuit: "C"
+    contractDoubled: "N"
+    declarer: "S"
+    nsVul: true
+    ewVul: true
+    madeContract: false
+    tricks: 1
+    created: 0
+    updated: 0
+  - id: "0"
+    contractTricks: 4
+    contractSuit: "H"
+    contractDoubled: "N"
+    declarer: "N"
+    nsVul: false
+    ewVul: false
+    madeContract: true
+    tricks: 5
+    created: 0
+    updated: 0
+  - id: "0"
+    contractTricks: 3
+    contractSuit: "S"
+    contractDoubled: "N"
+    declarer: "E"
+    nsVul: true
+    ewVul: true
+    madeContract: true
+    tricks: 3
+    created: 0
+    updated: 0
+  created: 0
+  updated: 0
+- id: "1"
+  north: "Norman"
+  south: "Irene"
+  east: "Victor"
+  west: "Peter"
+  dealerFirstRound: "S"
+  hands:
+  - id: "0"
+    contractTricks: 4
+    contractSuit: "S"
+    contractDoubled: "N"
+    declarer: "N"
+    nsVul: false
+    ewVul: false
+    madeContract: true
+    tricks: 5
+    created: 0
+    updated: 0
+  - id: "0"
+    contractTricks: 4
+    contractSuit: "H"
+    contractDoubled: "N"
+    declarer: "N"
+    nsVul: false
+    ewVul: true
+    madeContract: false
+    tricks: 1
+    created: 0
+    updated: 0
+  - id: "0"
+    contractTricks: 4
+    contractSuit: "D"
+    contractDoubled: "N"
+    declarer: "N"
+    nsVul: true
+    ewVul: false
+    madeContract: true
+    tricks: 4
+    created: 0
+    updated: 0
+  - id: "0"
+    contractTricks: 5
+    contractSuit: "H"
+    contractDoubled: "N"
+    declarer: "E"
+    nsVul: true
+    ewVul: true
+    madeContract: true
+    tricks: 6
+    created: 0
+    updated: 0
+  - id: "0"
+    contractTricks: 2
+    contractSuit: "S"
+    contractDoubled: "N"
+    declarer: "S"
+    nsVul: false
+    ewVul: false
+    madeContract: true
+    tricks: 2
+    created: 0
+    updated: 0
+  - id: "0"
+    contractTricks: 4
+    contractSuit: "S"
+    contractDoubled: "N"
+    declarer: "W"
+    nsVul: true
+    ewVul: true
+    madeContract: true
+    tricks: 5
+    created: 0
+    updated: 0
+  created: 0
+  updated: 0
+- id: "2"
+  north: "Norman"
+  south: "Peter"
+  east: "Irene"
+  west: "Victor"
+  dealerFirstRound: "E"
+  hands:
+  - id: "0"
+    contractTricks: 4
+    contractSuit: "S"
+    contractDoubled: "N"
+    declarer: "N"
+    nsVul: false
+    ewVul: false
+    madeContract: true
+    tricks: 6
+    created: 0
+    updated: 0
+  - id: "0"
+    contractTricks: 5
+    contractSuit: "C"
+    contractDoubled: "D"
+    declarer: "W"
+    nsVul: true
+    ewVul: false
+    madeContract: false
+    tricks: 2
+    created: 0
+    updated: 0
+  - id: "0"
+    contractTricks: 6
+    contractSuit: "H"
+    contractDoubled: "D"
+    declarer: "E"
+    nsVul: false
+    ewVul: true
+    madeContract: true
+    tricks: 7
+    created: 0
+    updated: 0
+  - id: "0"
+    contractTricks: 4
+    contractSuit: "D"
+    contractDoubled: "N"
+    declarer: "N"
+    nsVul: true
+    ewVul: true
+    madeContract: true
+    tricks: 4
+    created: 0
+    updated: 0
+  - id: "0"
+    contractTricks: 6
+    contractSuit: "N"
+    contractDoubled: "N"
+    declarer: "E"
+    nsVul: false
+    ewVul: false
+    madeContract: true
+    tricks: 7
+    created: 0
+    updated: 0
+  - id: "0"
+    contractTricks: 2
+    contractSuit: "D"
+    contractDoubled: "N"
+    declarer: "S"
+    nsVul: true
+    ewVul: true
+    madeContract: false
+    tricks: 2
+    created: 0
+    updated: 0
+  created: 0
+  updated: 0
+gamesPerRound: 6
+simpleRotation: false
+created: 0
+updated: 0

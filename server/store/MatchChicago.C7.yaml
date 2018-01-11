@@ -1,0 +1,86 @@
+---
+id: "C7"
+players:
+- "Monica"
+- "Beth"
+- "Adam"
+- "Cathy"
+- "Ellen"
+rounds:
+- id: "0"
+  north: "Monica"
+  south: "Beth"
+  east: "Adam"
+  west: "Cathy"
+  dealerFirstRound: "N"
+  hands:
+  - id: "0"
+    contractTricks: 3
+    contractSuit: "N"
+    contractDoubled: "N"
+    declarer: "N"
+    nsVul: false
+    ewVul: false
+    madeContract: true
+    tricks: 3
+    created: 0
+    updated: 0
+  - id: "0"
+    contractTricks: 3
+    contractSuit: "N"
+    contractDoubled: "N"
+    declarer: "N"
+    nsVul: false
+    ewVul: true
+    madeContract: true
+    tricks: 3
+    created: 0
+    updated: 0
+  - id: "0"
+    contractTricks: 3
+    contractSuit: "N"
+    contractDoubled: "N"
+    declarer: "N"
+    nsVul: true
+    ewVul: false
+    madeContract: true
+    tricks: 3
+    created: 0
+    updated: 0
+  - id: "0"
+    contractTricks: 3
+    contractSuit: "N"
+    contractDoubled: "N"
+    declarer: "N"
+    nsVul: true
+    ewVul: true
+    madeContract: true
+    tricks: 3
+    created: 0
+    updated: 0
+  created: 1486263713914
+  updated: 1486263745928
+- id: "1"
+  north: "Beth"
+  south: "Ellen"
+  east: "Cathy"
+  west: "Monica"
+  dealerFirstRound: "N"
+  hands:
+  - id: "0"
+    contractTricks: 3
+    contractSuit: "N"
+    contractDoubled: "N"
+    declarer: "N"
+    nsVul: false
+    ewVul: false
+    madeContract: true
+    tricks: 3
+    created: 0
+    updated: 0
+  created: 1486263938209
+  updated: 1486263945612
+gamesPerRound: 4
+simpleRotation: false
+created: 1486263694830
+updated: 1486263945612

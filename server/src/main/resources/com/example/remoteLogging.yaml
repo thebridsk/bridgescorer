@@ -1,0 +1,88 @@
+---
+configs:
+  ipad:
+    default:
+      loggers:
+        - "[root]=OFF"
+      appenders:
+        - "console=NONE"
+    alerts:
+      loggers:
+        - "[root]=OFF"
+        - "bridge.logger.Alerter=FINE"
+        - "comm.logger.Alerter=FINE"
+      appenders:
+        - "console=NONE"
+    alertsthrow:
+      loggers:
+        - "[root]=OFF"
+        - "bridge.logger.Alerter=FINEST"
+        - "comm.logger.Alerter=FINEST"
+      appenders:
+        - "console=NONE"
+    alertstoserver:
+      loggers:
+        - "[root]=OFF"
+        - "bridge.logger.Alerter=INFO"
+        - "comm.logger.Alerter=INFO"
+      appenders:
+        - "console=NONE"
+        - "server=ALL,bridge"
+    debug:
+      loggers:
+        - "[root]=ALL"
+        - "bridge.logger.Alerter=ALL"
+        - "comm.logger.Alerter=ALL"
+      appenders:
+        - "console=NONE"
+        - "debug=ALL"
+    all:
+      loggers:
+        - "[root]=ALL"
+        - "bridge.logger.Alerter=ALL"
+        - "comm.logger.Alerter=ALL"
+      appenders:
+        - "console=ALL"
+        - "server=ALL,bridge"
+    info:
+      loggers:
+        - "[root]=INFO"
+      appenders:
+        - "console=INFO"
+        - "server=INFO,bridge"
+    noserver:
+      loggers:
+        - "[root]=ALL"
+      appenders:
+        - "console=ALL"
+    none:
+      loggers:
+        - "[root]=OFF"
+      appenders:
+        - "console=NONE"
+  default:
+    default:
+      loggers:
+        - "[root]=ALL"
+      appenders:
+        - "console=ALL"
+        - "server=ALL,bridge"
+    all:
+      loggers:
+        - "[root]=ALL"
+      appenders:
+        - "console=ALL"
+        - "server=ALL,bridge"
+    websocket:
+      loggers:
+        - "[root]=ALL"
+      appenders:
+        - "console=ALL"
+        - "websocket=ALL,bridge"
+    comm:
+      loggers:
+        - "[root]=ALL"
+        - "comm.DuplexPipeForLogging=ALL"
+      appenders:
+        - "console=ALL"
+        - "server=ALL,bridge"

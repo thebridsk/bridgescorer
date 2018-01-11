@@ -1,0 +1,17 @@
+/.idea/
+/project/boot/
+/project/plugins/project
+target/
+lib_managed/
+src_managed/
+test-output/
+*.iml
+.classpath_nb
+/bin/
+/.cache-main
+/.cache-tests
+/.classpath
+/.project
+/.settings/
+/node_modules/
+/unittest.1.log

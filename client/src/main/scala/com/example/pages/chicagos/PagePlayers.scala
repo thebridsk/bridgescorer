@@ -1,0 +1,138 @@
+package com.example.pages.chicagos
+
+import org.scalajs.dom.document
+import org.scalajs.dom.raw.Element
+import org.scalajs.dom.raw.HTMLInputElement
+
+import com.example.bridge.store.ChicagoStore
+import com.example.controller.ChicagoController
+import com.example.data._
+import com.example.data.bridge._
+import utils.logging.Logger
+import com.example.routes.BridgeRouter
+
+import japgolly.scalajs.react._
+import japgolly.scalajs.react.vdom.html_<^._
+import com.example.pages.chicagos.ChicagoRouter.NamesView
+
+
+/**
+ * @author werewolf
+ */
+object PagePlayers {
+  import PagePlayersInternal._
+
+  val logger = Logger("bridge.PagePlayers")
+
+  case class PlayerState( north: String,
+                          south: String,
+                          east: String,
+                          west: String,
+                          dealer: PlayerPosition,
+                          gotNames: Boolean = false,
+                          names: List[String] = Nil,
+                          chicago5: Boolean = false,
+                          quintet: Boolean = false,
+                          simpleRotation: Boolean = false,
+                          extra: Option[String] = None
+                        ) {
+    def isDealerValid() = true
+    def areAllPlayersValid() = playerValid(north) && playerValid(south) && playerValid(east) && playerValid(west)
+
+    def isValid() = areAllPlayersValid()&& isDealerValid()
+
+    def isDealer( p: PlayerPosition ) = dealer == p
+
+    def isDealer(p: String) =
+        p match {
+          case `north` => dealer == North
+          case `south` => dealer == South
+          case `east` =>  dealer == East
+          case `west` =>  dealer == West
+          case _ => false
+        }
+
+    def getDealerName() = dealer match {
+      case North => north
+      case South => south
+      case East => east
+      case West => west
+    }
+  }
+
+  case class State()
+
+  type CallbackOk = (PlayerState)=>Callback
+  type CallbackCancel = Callback
+
+  def apply( page: NamesView, router: BridgeRouter[ChicagoPage] ) = component(MyProps(page,router))
+
+  case class Props(page: NamesView, chicago: MatchChicago, router: BridgeRouter[ChicagoPage])
+
+  case class MyProps(page: NamesView, router: BridgeRouter[ChicagoPage]) {
+    def getProps( chicago: MatchChicago ) = Props(page,chicago,router)
+  }
+}
+
+object PagePlayersInternal {
+  import PagePlayers._
+
+  def playerValid( s: String ) = s.length!=0
+
+  class Backend(scope: BackendScope[MyProps, State]) {
+    def render( props: MyProps, state: State ): VdomElement = {
+      ChicagoStore.getChicago match {
+        case Some(chi) if (chi.id == props.page.chiid) =>
+          val rounds = chi.rounds
+//          <.div(
+            if (rounds.length == 0)
+            {
+              ViewPlayersVeryFirstRound( props.getProps(chi))
+            } else {
+              if (chi.players.size != 4) {
+                if (chi.isQuintet()) {
+                  ViewPlayersQuintet( props.getProps(chi) )
+                } else {
+                  ViewPlayersFive( props.getProps(chi) )
+                }
+              } else {
+                rounds.length%3 match {
+                  case 0 => ViewPlayersFourthRound(props.getProps(chi))
+                  case 1 => ViewPlayersSecondRound(props.getProps(chi))
+                  case 2 => ViewPlayersThirdRound(props.getProps(chi))
+                  case _ => throw new IllegalArgumentException("Internal error, can't happen")
+                }
+              }
+            }
+//          )
+        case _ =>
+          <.div("Loading")
+      }
+
+    }
+
+    val storeCallback = Callback { scope.withEffectsImpure.forceUpdate }
+
+    def didMount() = CallbackTo {
+      logger.info("PagePlayers.didMount")
+      ChicagoStore.addChangeListener(storeCallback)
+    } >> CallbackTo {
+      import scala.concurrent.ExecutionContext.Implicits.global
+      ChicagoController.ensureMatch(scope.withEffectsImpure.props.page.chiid).foreach( m => scope.withEffectsImpure.forceUpdate )
+    }
+
+    def willUnmount() = CallbackTo {
+      logger.info("PagePlayers.willUnmount")
+      ChicagoStore.removeChangeListener(storeCallback)
+    }
+
+  }
+
+  val component = ScalaComponent.builder[MyProps]("PagePlayers")
+                            .initialStateFromProps { props => State() }
+                            .backend(new Backend(_))
+                            .renderBackend
+                            .componentDidMount( scope => scope.backend.didMount())
+                            .componentWillUnmount( scope => scope.backend.willUnmount() )
+                            .build
+}

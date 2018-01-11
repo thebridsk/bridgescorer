@@ -1,0 +1,347 @@
+@CHARSET "UTF-8";
+
+
+.baseAlwaysHide {
+  display: none;
+}
+
+.baseNotVisible {
+  visibility: hidden;
+}
+
+@media screen and (orientation: portrait) {
+  .baseHideInPortrait {
+    display: none;
+  }
+}
+
+.baseFontTextLarge {
+  font-size: x-large;
+}
+
+.baseFontTextNormal {
+  font-size: larger;
+}
+
+
+.baseDefaultButton {
+  border-radius: 20px;
+  background-color: rgb(210,210,210);
+  border-style: outset;
+  border-width: 2px;
+}
+
+.baseAppButton {
+  white-space: nowrap;
+  padding: 3px 6px;
+  min-width: 37px;
+  margin: 2px;
+}
+
+.baseNameButton {
+  border-radius: 25px;
+  background-color: rgb(210,210,210);
+  font-size: x-large;
+  white-space: nowrap;
+  height: 50px;
+  margin: 2px;
+  padding: 3px 8px;
+  min-width: 50px;
+}
+
+.baseFooterButton {
+  white-space: nowrap;
+  padding: 1px 6px;
+  min-width: 5em;
+}
+
+.baseAppButton100 {
+  width: 100%;
+}
+
+.baseButtonSelected {
+  background-color: lightgreen !important;
+  border-style: inset !important;
+}
+
+.baseCheckbox {
+  whiteSpace: nowrap;
+  padding: 1px 6px;
+  font-size: x-large;
+}
+.baseCheckbox input {
+  transform: scale(2);
+}
+
+.baseRadioButton {
+  whiteSpace: nowrap;
+  padding: 1px 6px;
+  font-size: x-large;
+}
+.baseRadioButton input {
+  transform: scale(2);
+}
+
+.baseRequired {
+  background-color: yellow !important;
+}
+
+.baseRequiredName {
+  background-color: yellow !important;
+  padding: 4px !important;
+}
+
+.baseRequiredNotNext {
+  background-color: lightyellow !important;
+}
+
+.baseDivPopupOKCancelBody {
+  flex: 1 1 auto;
+  text-align: center;
+  white-space: normal;
+  padding: 20px 20px
+}
+
+.baseDivPopupOKCancelDiv {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  padding: 10px
+}
+
+/*
+ * to gray out the entire browser page for displaying a popup
+*/
+.baseDivPopupOverlay {
+  position: fixed;
+  left: 0px;
+  top: 0px;
+  width: 100%;
+  height: 100%;
+  background-color: black;
+  opacity: 0.5;
+  z-index: 99999;
+  overflow: hidden;
+  
+}
+
+/**
+ * The div of the popup
+ */
+.baseDivPopup > div {
+  max-width:90%;
+  max-height:90%;
+  background-color: white;
+  border: 2px solid black;
+  padding: 5px;
+  position:absolute;
+  top:50%;
+  left:50%;
+  -ms-transform: translateX(-50%) translateY(-50%);
+  -webkit-transform: translate(-50%,-50%);
+  transform: translate(-50%,-50%);
+}
+
+/**
+ * The div of the popup
+ */
+.baseDivPopup {
+  position: fixed;
+  left: 0px;
+  top: 0px;
+  width: 100%;
+  height: 100%;
+  background-color: transparent;
+  z-index: 100000;
+}
+
+.baseDivFooter {
+  flex: 0 1 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: flexStart;
+  align-content: flexStart;
+  padding-top: 10px;
+  width: 100%;
+}
+
+.baseDivFooterLeft {
+      flex: 1 1 auto;
+      min-width: 25 %;
+      text-align: left;
+}
+
+.baseDivFooterCenter {
+      flex: 1 1 auto;
+      min-width: 25 %;
+      text-align: center;
+}
+
+.baseDivFooterRight {
+      flex: 1 1 auto;
+      min-width: 25 %;
+      text-align: right;
+}
+
+.baseDivFooterText {
+  flex-basis: 100%;
+  font-size: larger;
+}
+
+.baseDivText100 {
+  flex-basis: 100%;
+}
+
+@media print {
+  .baseHideInPrint {
+    display: none;
+  }
+  .baseOnlyInPrint {
+  }
+}
+
+@media screen {
+  .baseHideInPrint {
+  }
+  .baseOnlyInPrint {
+    display: none;
+  }
+}
+
+.baseHideInPrint {
+}
+.baseOnlyInPrint {
+}
+
+.baseTestPage {
+
+}
+
+/*
+ * Root pages
+*/
+
+.rootHomeDiv {
+  display: block;
+}
+
+.rootServerDiv {
+  display: block;
+}
+
+.rootGameDiv {
+  display: block;
+}
+
+.rootPlayButton {
+  margin: 6px;
+}
+
+.rootTestHandsDiv {
+  display: block;
+  margin-top: 10px;
+}
+
+.rootMiscDiv {
+  display: block;
+  margin-top: 10px;
+}
+
+.rootAboutPageDiv {
+  display: block;
+}
+
+.rootThankYouDiv {
+  display: block;
+}
+
+.rootInfoPageDiv {
+  font-size: x-large;
+}
+
+/*
+ The following three styles are for creating a table
+ with a logical width of 7 columns.  Where the column
+ width of the rows are:
+  2 3 2
+  3 1 3
+ */
+.tableCellWidth1Of7 {
+  width: 14%;
+}
+
+.tableCellWidth2Of7 {
+  width: 29%;
+}
+
+.tableCellWidth3Of7 {
+  width: 42%;
+}
+
+.tableFloatLeft {
+  float: left;
+}
+
+.tableFloatRight {
+  float: right;
+}
+
+.tableWidthPage {
+  width: 100%;
+}
+
+[data-title] {
+    border-bottom: 1px dashed rgba(0, 0, 0, 0.2);
+    border-radius:2px;
+    position: relative;
+    white-space: pre;
+    size: auto;
+    text-align: left;
+}
+body.touched [data-title] > * {
+    user-select: none;
+}
+body .titleHover:hover {
+    user-select: auto;
+    background-color: orange;
+}
+body .titleHover:hover > * {
+    user-select: auto;
+    background-color: orange;
+}
+body.touched .titleHover:hover {
+    user-select: auto;
+    background-color: orange;
+}
+body.touched .titleHover:hover > * {
+    user-select: auto;
+    background-color: orange;
+}
+body.touched [data-title]:hover:after {
+    position: absolute;
+    top: 100%;
+    left: -50px; 
+    content: attr(data-title);
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    background-color: white;
+    box-shadow: 1px 1px 3px;
+    padding: 0.3em;
+    z-index: 1;
+    text-align: left;
+}
+body [data-title]:hover:after {
+    position: absolute;
+    top: 100%;
+    left: -50px; 
+    content: attr(data-title);
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    background-color: white;
+    box-shadow: 1px 1px 3px;
+    padding: 0.3em;
+    z-index: 1;
+    text-align: left;
+}

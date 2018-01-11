@@ -1,0 +1,9 @@
+/bin/
+/.settings/
+/.classpath
+/.project
+/.cache-main
+/.cache-test
+/.cache-tests
+/js/
+/jvm/

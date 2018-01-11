@@ -1,0 +1,44 @@
+---
+id: "R1"
+north: "Ellen"
+south: "Beth"
+east: "Adam"
+west: "Cathy"
+dealerFirstHand: "N"
+hands:
+- id: "0"
+  hand:
+    id: "0"
+    contractTricks: 3
+    contractSuit: "N"
+    contractDoubled: "N"
+    declarer: "N"
+    nsVul: false
+    ewVul: false
+    madeContract: true
+    tricks: 3
+    created: 0
+    updated: 1485567130103
+  honors: 0
+  honorsPlayer: ""
+  created: 0
+  updated: 1485567130103
+- id: "1"
+  hand:
+    id: "1"
+    contractTricks: 3
+    contractSuit: "N"
+    contractDoubled: "N"
+    declarer: "N"
+    nsVul: true
+    ewVul: false
+    madeContract: true
+    tricks: 3
+    created: 0
+    updated: 1485567147126
+  honors: 0
+  honorsPlayer: ""
+  created: 0
+  updated: 1485567147126
+created: 1485567101956
+updated: 1485567147126

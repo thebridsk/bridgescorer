@@ -1,0 +1,582 @@
+@CHARSET "UTF-8";
+
+.dupDivSummary {
+	
+}
+
+.dupSpanTopButtons {
+  float: right;
+}
+
+.dupTableSummary {
+  border-spacing: 0px;
+  font-size: x-large;
+  white-space: nowrap;
+  border: 1px solid black;
+}
+.dupTableSummary tbody tr:nth-child(2n+1) {
+  background-color: #f2f2f2;
+}
+.dupTableSummary td:first-child {
+  border: 1px solid black;
+  padding: 4px 8px 4px 4px;
+  text-align: center;
+}
+.dupTableSummary td {
+  border: 1px solid black;
+  text-align: center;
+}
+.dupTableSummary th {
+  border: 1px solid black;
+  text-align: center;
+}
+
+.dupDivPeopleSummary {
+    
+}
+
+.dupTablePeopleSummary {
+  border-spacing: 0px;
+  font-size: x-large;
+  white-space: nowrap;
+  border: 1px solid black;
+  margin: 5px;
+}
+.dupTablePeopleSummary tbody tr:nth-child(2n+1) {
+  background-color: #f2f2f2;
+}
+.dupTablePeopleSummary td {
+  border: 1px solid black;
+  text-align: center;
+}
+.dupTablePeopleSummary th {
+  border: 1px solid black;
+  text-align: center;
+}
+
+.dupDivPlayerFilter {
+  font-size: x-large;
+}
+
+.dupDivPlayerFilter ul {
+    list-style-type: none;
+    counter-reset: section;
+
+    -moz-column-count: 4;
+    -moz-column-gap: 10px;
+    -webkit-column-count: 4;
+    -webkit-column-gap: 10px;
+    column-count: 4;
+    column-gap: 10px;
+
+}
+
+.dupDivPlayerFilter ul li {
+    padding-left: 10px;
+    position: relative;
+    white-space: nowrap;
+}
+
+.dupDivPlayerFilter > div > button {
+  font-size: x-large;
+  width: 150px;
+}
+
+.dupDivPlayerFilter > div {
+  display: flex;
+  flex-direction: row;
+}
+
+.dupDivPairsGrid {
+  font-size: x-large;
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+}
+.dupDivPairsGrid > div {
+  flex: 0 0 auto;
+  padding: 5px;
+}
+.dupDivPairsGrid > div > div {
+  display: flex;
+  flex-direction: column;
+}
+.dupDivPairsGrid li {
+  list-style-type: none;
+}
+
+.dupTablePairsGrid {
+  border-spacing: 0px;
+  font-size: x-large;
+  white-space: nowrap;
+  border: 1px solid black;
+  margin: 5px;
+}
+.dupTablePairsGrid > tfoot > tr > td {
+  font-size: large !important;
+  border: 1px solid black;
+  text-align: center;
+}
+.dupTablePairsGrid > tfoot > tr:first-child > td:last-child {
+  font-size: large !important;
+  border-left: 3px solid black;
+  border-right: 1px solid black;
+  border-top: 1px solid black;
+  border-bottom: 1px solid black;
+  text-align: center;
+}
+
+.dupTablePairsGrid > tbody > tr > td {
+  border: 1px solid black;
+  text-align: center;
+}
+
+.dupTablePairsGrid > tbody > tr > td:last-child {
+  border-left: 3px solid black;
+  border-right: 1px solid black;
+  border-top: 1px solid black;
+  border-bottom: 1px solid black;
+  text-align: center;
+}
+
+.dupTablePairsGrid > tbody > tr > td:first-child {
+  border: 1px solid black;
+  text-align: center;
+  font-weight: bold;
+}
+.dupTablePairsGrid td > div {
+  margin: auto;
+  border: 1px solid black;
+}
+.dupTablePairsGrid th {
+  border: 1px solid black;
+  text-align: center;
+  padding: 5px;
+}
+.dupTablePairsGrid > thead > tr:last-child > th:last-child {
+  border-left: 3px solid black;
+  border-right: 1px solid black;
+  border-top: 1px solid black;
+  border-bottom: 1px solid black;
+  text-align: center;
+  padding: 5px;
+}
+
+.dupDivNewDuplicate {
+    
+}
+
+.dupTableNewDuplicate {
+  border-spacing: 0px;
+  font-size: x-large;
+  white-space: nowrap;
+  border: 1px solid black;
+}
+.dupTableNewDuplicate td:first-child {
+  border: 1px solid black;
+  padding: 4px 8px 4px 4px;
+  text-align: left;
+}
+.dupTableNewDuplicate td {
+  border: 1px solid black;
+  text-align: center;
+}
+.dupTableNewDuplicate th {
+  border: 1px solid black;
+  text-align: center;
+}
+
+.dupDivSelectMatch {
+  font-size: x-large;
+}
+
+.dupDivSelectMatch label {
+  font-size: x-large;
+}
+
+.dupDivSelectMatch input {
+  font-size: x-large;
+}
+
+.dupDivScoreboardPage {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+}
+
+.dupDivViewScoreboard {
+  flex-basis: 100%;
+  margin-right: 5px;
+  padding-right: 5px;
+  padding-bottom: 5px;
+  page-break-inside: avoid !important
+}
+
+.dupTableViewScoreboard {
+  border-spacing: 0px;
+  font-size: x-large;
+  white-space: nowrap;
+  border: 1px solid black;
+}
+.dupTableViewScoreboard tbody tr:nth-child(2n+1) {
+  background-color: #f2f2f2;
+}
+.dupCellScoreboardBoardColumn {
+  width: 43px;
+}
+.dupTableViewScoreboard td {
+  border: 1px solid black;
+  text-align: center;
+}
+.dupTableViewScoreboard th {
+  border: 1px solid black;
+  text-align: center;
+}
+
+.dupDivScoreboardHelp {
+  flex: 1 1 180px;
+  padding-left: 20px;
+}
+
+.dupDivPlayerPosition {
+  flex: 0 0 auto;
+  padding-top: 10px;
+  padding-right: 10px;
+}
+
+.dupTablePlayerPosition {
+  border-spacing: 0px;
+  font-size: x-large;
+  white-space: nowrap;
+  border: 1px solid black;
+}
+.dupTablePlayerPosition tbody tr:nth-child(2n+1) {
+  background-color: #f2f2f2;
+}
+.dupTablePlayerPosition td:nth-child(3) {
+  border: 1px solid black;
+  text-align: left;
+}
+.dupTablePlayerPosition td {
+  border: 1px solid black;
+  text-align: center;
+}
+.dupTablePlayerPosition th {
+  border: 1px solid black;
+  text-align: center;
+}
+
+.dupDivAllTablesPage {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+}
+
+.dupDivTablePage {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+}
+.dupDivTableHelp {
+  flex: 1 1 180px;
+  padding-left: 20px;
+}
+
+.dupDivTableView {
+  flex: 0 0 auto;
+  padding: 10px 2px 2px 2px;
+}
+.dupDivTableView > table {
+  border-spacing: 0px;
+  font-size: x-large;
+  white-space: nowrap;
+  border: 1px solid black;
+}
+.dupDivTableView > table > tbody > tr:nth-child(2n+1) {
+  background-color: #f2f2f2;
+}
+.dupDivTableView > table > tbody > tr > td:first-child {
+  border: 1px solid black;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+.dupDivTableView > table > tbody > tr > td:nth-child(2) {
+  border: 1px solid black;
+  text-align: left;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+.dupDivTableView > table > tbody > tr > td {
+  border: 1px solid black;
+  text-align: center;
+}
+.dupDivTableView > table > thead > tr > th {
+  border: 1px solid black;
+  text-align: center;
+}
+.dupBoardButtonInTable {
+  border-radius: 20px;
+  background-color: rgb(210,210,210);
+  border-style: outset;
+  border-width: 2px;
+  padding: 3px 6px;
+  white-space: nowrap;
+  min-width: 44px;
+  margin-left: 4px;
+  margin-right: 4px;
+}
+.dupDivTableView > table table {
+  border-spacing: 0px;
+  font-size: x-large;
+  white-space: nowrap;
+  border-style: none;
+}
+.dupDivTableView > table table td {
+  border-style: none;
+  padding: 1px 6px 1px 6px;
+  text-align: left;
+}
+
+.dupDivBoardPage {
+}
+
+.dupDivBoardView {
+  font-size: x-large;
+}
+.dupDivBoardView table {
+  border-spacing: 0px;
+  border: 1px solid black;
+}
+.dupDivBoardView tr:first-child th:nth-child(1) {
+  border-left: 1px solid black;
+  border-right-style: none;
+  border-top: 1px solid black;
+  border-bottom: 1px solid black;
+  text-align: left;
+}
+.dupDivBoardView tr:first-child th:nth-child(2) {
+  border-left-style: none;
+  border-right: 1px solid black;
+  border-top: 1px solid black;
+  border-bottom: 1px solid black;
+  text-align: right;
+}
+.dupDivBoardView th {
+  border: 1px solid black;
+  padding-left: 10px;
+  padding-right: 10px;
+  text-align: center;
+}
+.dupDivBoardView td {
+  border: 1px solid black;
+  padding-left: 10px;
+  padding-right: 10px;
+  text-align: center;
+}
+.dupTableCellGray {
+  background-color: lightgrey;
+}
+
+.dupDivAllBoardsPage {
+}
+.dupDivAllBoardsPage > div > div {
+  padding-top: 5px;
+}
+
+.dupDivFinishedScoreboardsPage > div {
+  padding: 5px;
+}
+
+.dupDivFinishedScoreboardsPage {
+  font-size: x-large;
+}
+
+.dupDivBoardSetPage {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+}
+
+.dupDivBoardSetsPage {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: column;
+}
+.dupDivBoardSetsPage > div:first-child table {
+  border-spacing: 0px;
+  font-size: x-large;
+  white-space: nowrap;
+  border: 1px solid black;
+}
+.dupDivBoardSetsPage > div:first-child tbody tr:nth-child(2n+1) {
+  background-color: #f2f2f2;
+}
+.dupDivBoardSetsPage > div:first-child td {
+  border: 1px solid black;
+  text-align: center;
+  padding: 2px 4px 2px 4px;
+}
+.dupDivBoardSetsPage > div:first-child th {
+  border: 1px solid black;
+  text-align: center;
+  padding: 2px 4px 2px 4px;
+}
+
+.dupDivBoardSetView {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  flex: 0 0 auto;
+  padding: 10px 2px 2px 2px;
+}
+.dupDivBoardSetView div {
+  padding: 4px;
+}
+.dupDivBoardSetView table {
+  border-spacing: 0px;
+  font-size: x-large;
+  white-space: nowrap;
+  border: 1px solid black;
+}
+.dupDivBoardSetView tbody tr:nth-child(2n+1) {
+  background-color: #f2f2f2;
+}
+.dupDivBoardSetView td {
+  border: 1px solid black;
+  text-align: center;
+  padding: 2px 4px 2px 4px;
+}
+.dupDivBoardSetView th {
+  border: 1px solid black;
+  text-align: center;
+  padding: 2px 4px 2px 4px;
+}
+
+.dupDivMovementsPage {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+}
+
+.dupDivMovementsPage > div:nth-child(2) > div > div {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  border-style: solid;
+  border-color: transparent;
+  border-width: 5px;
+  vertical-align: top;
+}
+.dupDivMovementsPage > div:nth-child(2) > div > div > div {
+  flex: 0 0 auto;
+  padding: 10px 2px 2px 2px;
+  border-style: solid;
+  border-color: transparent;
+  border-width: 5px;
+  vertical-align: top;
+}
+.dupDivMovementsPage table {
+  border-spacing: 0px;
+  font-size: x-large;
+  white-space: nowrap;
+  border: 1px solid black;
+}
+.dupDivMovementsPage tbody tr:nth-child(2n+1) {
+  background-color: #f2f2f2;
+}
+.dupDivMovementsPage td {
+  border: 1px solid black;
+  text-align: center;
+  padding: 2px 4px 2px 4px;
+}
+.dupDivMovementsPage th {
+  border: 1px solid black;
+  text-align: center;
+  padding: 2px 4px 2px 4px;
+}
+
+.dupDivNamesPage {
+  font-size: x-large;
+}
+
+.dupDivTableNamesPage {
+  font-size: x-large;
+  max-width: 700px;
+}
+
+.dupDivTableNamesPage .dupInputTableNames {
+  padding: 4px;
+  max-width: 350px;
+}
+
+.dupDivDuplicateResultPage > p:last-child {
+  font-size: medium;
+}
+
+.dupDivDuplicateResultPage {
+  font-size: x-large;
+}
+
+.dupDivDuplicateResultEditPage > div > div:nth-child(2) {
+  max-width: 400px;
+}
+
+.dupDivDuplicateResultEditPage tr > td:first-child {
+  text-align: center;
+}
+
+.dupDivDuplicateResultEditPage td > input {
+  max-width: 70px;
+}
+
+.dupDivDuplicateResultEditPage p:last-child {
+  font-size: medium;
+}
+
+.dupDivDuplicateResultEditPage input {
+  font-size: x-large;
+}
+
+.dupDivDuplicateResultEditPage {
+  font-size: x-large;
+}
+
+.dupDivSuggestionPage input {
+  font-size: x-large;
+}
+
+.dupDivSuggestionPage li {
+  list-style-type: none;
+}
+
+.dupDivSuggestionPage > div:nth-child(4) ul li {
+  padding: 5px;
+}
+.dupDivSuggestionPage tbody tr:nth-child(2n+1) {
+  background-color: #f2f2f2;
+}
+.dupDivSuggestionPage td:first-child {
+  border: 1px solid black;
+  text-align: center;
+}
+.dupDivSuggestionPage td {
+  border: 1px solid black;
+  padding: 4px;
+  text-align: center;
+}
+.dupDivSuggestionPage th {
+  border: 1px solid black;
+  text-align: center;
+}
+.dupDivSuggestionPage table {
+  border-spacing: 0px;
+  border: 1px solid black;
+}
+.dupDivSuggestionPage {
+  font-size: x-large;
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  vertical-align: top;
+  
+}

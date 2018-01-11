@@ -1,0 +1,6 @@
+# contains all the predefined sets of boards
+# any non-blank line that does not start with a # is a name of a resource
+# in the same package as this file.
+
+Boardset.ArmonkBoards.yaml
+Boardset.StandardBoards.yaml

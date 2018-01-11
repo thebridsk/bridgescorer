@@ -1,0 +1,224 @@
+@CHARSET "UTF-8";
+
+
+.handFooterButton {
+  white-space: nowrap;
+  padding: 1px 6px;
+  min-width: 37px;
+  margin: 2px;
+  height: 50px;
+}
+
+.handPageHand {
+  font-size: x-large;
+}
+
+.handSectionContract {
+  flex: 0 0 100%;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+}
+.handSectionContract > div:first-child {
+  flex: 0 0 100%;
+  clear: both;
+  text-align: left;
+}
+
+.handViewContractTricks {
+  flex: 0 0 auto;
+  text-align: center;
+  border-left-width: 10px;
+  border-right-width: 10px;
+}
+.handContractTricksButton0 {
+  width: 126px !important;
+}
+.handViewContractTricks button {
+  width: 60px;
+}
+
+.handViewContractSuit {
+  flex: 0 0 auto;
+  text-align: center;
+  border-left-width: 10px;
+  border-right-width: 10px;
+}
+.handSuitInButton {
+  font-size: larger;
+}
+.handViewContractSuit button {
+  width: 189px;
+}
+
+.handViewContractDoubled {
+  flex: 0 0 auto;
+  text-align: center;
+  border-left-width: 10px;
+  border-right-width: 10px;
+}
+.handViewContractDoubled button {
+  width: 180px;
+}
+.handPageHand button {
+  white-space: nowrap;
+  height: 50px;
+  margin: 2px;
+  padding: 1px 6px;
+  border-radius: 20px;
+  background-color: rgb(210,210,210);
+  border-style: outset;
+  border-width: 2px;
+  font-size: x-large;
+}
+
+
+
+.handSectionHeader {
+  flex: 0 0 100%;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+  padding-top: 20px;
+}
+.handViewDealer {
+  flex: 0 0 auto;
+  min-width: 10px;
+  height: 90px;
+  padding-right: 30px;
+}
+
+.handViewDeclarer {
+  flex: 1 0 auto;
+  border-left-width: 20px;
+  border-right-width: 10px;
+  display: flex; 
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-items: center;
+}
+.handViewDeclarer > div {
+  flex: 0 0 auto;
+  display: flex; 
+  flex-direction: row;
+  flex-wrap: nowrap;
+}
+.handViewDeclarer > div > div {
+  flex: 0 0 auto;
+}
+
+.handViewTableBoard {
+  flex: 0 0 auto;
+  border-left-width: 10px;
+  border-right-width: 10px;
+}
+.handVulnerable {
+  background-color: red !important;
+  borderStyle: inset;
+}
+
+.handNotVulnerable {
+  background-color: lightgray;
+  color: gray;
+  text-decoration: line-through;
+  border-style: inset;
+}
+
+
+
+.handSectionResult {
+  flex: 0 0 100%;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  align-items: flex-start;
+  width: 100%;
+  min-height: 135px;
+}
+.handSectionResultInner {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  align-items: flex-start;
+  padding-left: 100px;
+}
+.handSectionResultInner > div:first-child {
+  flex: 0 0 100%;
+  clear: both;
+  text-align: left;
+}
+
+
+.handViewHonors {
+      flex: 0 0 auto;
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      border-left-width: 10px;
+      border-right-width: 10px;
+      font-size: x-large
+}
+.handViewHonors > div:first-child {
+  flex: 0 0 100%;
+  clear: both;
+  text-align: left;
+}
+.handViewHonors > div:nth-child(2) {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+}
+.handViewHonors > div:nth-child(2) button {
+  width: 60px;
+}
+.handViewHonors > div:nth-child(3) {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  padding-left: 20px;
+  justify-content: center;
+}
+.handViewMadeOrDown {
+  flex: 0 0 auto;
+}
+.handViewMadeOrDown button {
+  width: 105px;
+}
+.handViewTricks {
+  flex: 0 0 auto;
+  text-align: left;
+  width: 553px;
+  padding-left: 20px;
+  display: flex;
+}
+.handViewTricks > div {
+  flex: 0 0 auto;
+  text-align: center;
+}
+.handViewTricks button {
+  width: 75px;
+}
+
+.handViewVulnerability {
+  flex: 0 0 auto;
+}
+.handViewVulnerability button {
+  width: 145px;
+}
+
+.handSectionScore {
+  flex: 0 0 100%;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  align-items: center;
+}

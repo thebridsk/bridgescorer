@@ -1,0 +1,95 @@
+---
+id: "R2"
+north: "Norman"
+south: "Sam"
+east: "Ellen"
+west: "Wilma"
+dealerFirstHand: "N"
+hands:
+- id: "0"
+  hand:
+    id: "0"
+    contractTricks: 3
+    contractSuit: "N"
+    contractDoubled: "N"
+    declarer: "N"
+    nsVul: false
+    ewVul: false
+    madeContract: true
+    tricks: 3
+    created: 0
+    updated: 1486228672897
+  honors: 0
+  honorsPlayer: ""
+  created: 0
+  updated: 1486228672897
+- id: "1"
+  hand:
+    id: "1"
+    contractTricks: 1
+    contractSuit: "D"
+    contractDoubled: "N"
+    declarer: "N"
+    nsVul: true
+    ewVul: false
+    madeContract: true
+    tricks: 1
+    created: 0
+    updated: 1486313056503
+  honors: 0
+  honorsPlayer: ""
+  created: 0
+  updated: 1486313056503
+- id: "2"
+  hand:
+    id: "2"
+    contractTricks: 1
+    contractSuit: "D"
+    contractDoubled: "N"
+    declarer: "S"
+    nsVul: true
+    ewVul: false
+    madeContract: true
+    tricks: 1
+    created: 0
+    updated: 1486313067734
+  honors: 0
+  honorsPlayer: ""
+  created: 0
+  updated: 1486313067734
+- id: "3"
+  hand:
+    id: "3"
+    contractTricks: 1
+    contractSuit: "D"
+    contractDoubled: "N"
+    declarer: "E"
+    nsVul: true
+    ewVul: false
+    madeContract: true
+    tricks: 1
+    created: 0
+    updated: 1486313082703
+  honors: 0
+  honorsPlayer: ""
+  created: 0
+  updated: 1486313082703
+- id: "4"
+  hand:
+    id: "4"
+    contractTricks: 1
+    contractSuit: "D"
+    contractDoubled: "N"
+    declarer: "W"
+    nsVul: true
+    ewVul: false
+    madeContract: true
+    tricks: 1
+    created: 0
+    updated: 1486313098438
+  honors: 0
+  honorsPlayer: ""
+  created: 0
+  updated: 1486313098438
+created: 1486180968785
+updated: 1486313098438

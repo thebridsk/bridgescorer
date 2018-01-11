@@ -1,0 +1,105 @@
+---
+name: "Mitchell3Table"
+short: "3 Table Mitchell, 2 winners"
+description: "3 tables, 18 hands, two teams (NS, EW) winner"
+numberTeams: 6
+hands:
+- table: 1
+  round: 1
+  ns: 1
+  ew: 4
+  boards:
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  - 6
+- table: 2
+  round: 1
+  ns: 2
+  ew: 5
+  boards:
+  - 7
+  - 8
+  - 9
+  - 10
+  - 11
+  - 12
+- table: 3
+  round: 1
+  ns: 3
+  ew: 6
+  boards:
+  - 13
+  - 14
+  - 15
+  - 16
+  - 17
+  - 18
+- table: 1
+  round: 2
+  ns: 1
+  ew: 6
+  boards:
+  - 7
+  - 8
+  - 9
+  - 10
+  - 11
+  - 12
+- table: 2
+  round: 2
+  ns: 2
+  ew: 4
+  boards:
+  - 13
+  - 14
+  - 15
+  - 16
+  - 17
+  - 18
+- table: 3
+  round: 2
+  ns: 3
+  ew: 5
+  boards:
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  - 6
+- table: 1
+  round: 3
+  ns: 1
+  ew: 5
+  boards:
+  - 13
+  - 14
+  - 15
+  - 16
+  - 17
+  - 18
+- table: 2
+  round: 3
+  ns: 2
+  ew: 6
+  boards:
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  - 6
+- table: 3
+  round: 3
+  ns: 3
+  ew: 4
+  boards:
+  - 7
+  - 8
+  - 9
+  - 10
+  - 11
+  - 12
