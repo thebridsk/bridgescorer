@@ -14,19 +14,36 @@ import com.example.source.SourcePosition
 
 object ParallelUtilsInternals {
   val log = Logger[ParallelUtils]
+
+  private[util] def toExceptionMsg( msg: String, causes: (ParallelUtils.MyFuture[_],Throwable)* ) = {
+    msg+causes.map { e =>
+      val ex = e._2
+      causeToString(ex)
+    }.mkString("\nSuppressed:\n","\nSuppressed\n","\nDoneSuppressed")
+  }
+
+  private[util] def causeToString( e: Throwable ) = {
+    val sw = new StringWriter
+    val pw = new PrintWriter( sw )
+    e.printStackTrace(pw)
+    pw.flush()
+    e.toString()+"\n"+sw.toString()
+  }
+
 }
 
 class FutureException( msg: String, cause: Throwable ) extends Exception(msg,cause)
 
-class ParallelException( msg: String, causes: (ParallelUtils.MyFuture[_],Throwable)* ) extends Exception(msg) {
+class ParallelException( msg: String, causes: (ParallelUtils.MyFuture[_],Throwable)* ) extends Exception( ParallelUtilsInternals.toExceptionMsg(msg, causes:_*)) {
   causes.foreach(e=>addSuppressed( new FutureException("From "+e._1.pos.fileName+":"+e._1.pos.lineNumber,e._2)))
 
   ParallelUtilsInternals.log.warning("Oops",this)
 
-  override
-  def toString(): String = {
-    super.toString()+getSuppressed().map( e => e.toString() ).mkString(" Suppressed: ",", ","")
-  }
+//  override
+//  def toString(): String = {
+//    import ParallelUtilsInternals._
+//    super.toString()+getSuppressed().map( e => causeToString(e) ).mkString("\nSuppressed:\n","\nSuppressed\n","\nDoneSuppressed")
+//  }
 
 //  override
 //  def printStackTrace( ps: PrintStream ): Unit = {
