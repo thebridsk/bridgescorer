@@ -20,9 +20,9 @@ object TestServer extends App {
       }
     }
 
-  val bindingFuture = Http().bindAndHandle(route, "loopback", 8080)
+  val bindingFuture = Http().bindAndHandle(route, "localhost", 8080)
 
-  println(s"Server online at http://loopback:8080/\nPress RETURN to stop...")
+  println(s"Server online at http://localhost:8080/\nPress RETURN to stop...")
   scala.io.StdIn.readLine()
 
   import system.dispatcher // for the future transformations

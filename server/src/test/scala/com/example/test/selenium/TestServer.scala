@@ -45,7 +45,7 @@ object TestServer {
   val startingServer = useTestServerHost.isEmpty && useTestServerPort.isEmpty && useTestServerURL.isEmpty
 
   val scheme = useTestServerScheme.getOrElse("http")
-  val interface = "loopback"          // the interface to start the server on
+  val interface = "localhost"          // the interface to start the server on
   val hostname = useTestServerHost.getOrElse(interface)   // the hostname for URLs
   val port = useTestServerPort match {
     case None => 8081
