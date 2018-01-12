@@ -12,7 +12,7 @@ class TestSerialize extends FlatSpec with MustMatchers {
 
   it should "SerializeEmpty MatchDuplicate" in {
 
-    val md = MatchDuplicate.create()
+    val md = MatchDuplicate.create().copy( created=0, updated=0)
 
     val s = writeJson(md)
 
@@ -47,8 +47,14 @@ class TestSerialize extends FlatSpec with MustMatchers {
   it should "SerializeTest MatchDuplicate" in {
 
     val md = TestMatchDuplicate.create("M1")
+    val teams = md.teams.map( t => t.copy( created=0, updated=0) )
+    val boards = md.boards.map { b =>
+      val hands = b.hands.map { h => h.copy( created=0, updated=0) }
+      b.copy( hands=hands, created=0, updated=0)
+    }
+    val md2 = md.copy( teams=teams, boards=boards, created=0, updated=0 )
 
-    val s = writeJson(md)
+    val s = writeJson(md2)
 
     println("s is "+s)
 

@@ -380,8 +380,10 @@ case class MatchDuplicateV3 private(
 }
 
 object MatchDuplicateV3 {
-  val time = SystemTime.currentTimeMillis()
-  def create(id: String = "") = new MatchDuplicateV3(id,List(),List(),"","",time,time)
+  def create(id: String = "") = {
+    val time = SystemTime.currentTimeMillis()
+    new MatchDuplicateV3(id,List(),List(),"","",time,time)
+  }
 
   def apply(
     id: Id.MatchDuplicate,
