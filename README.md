@@ -1,5 +1,7 @@
 # Bridge Scorer Project
 
+[![Build Status](https://travis-ci.org/thebridsk/bridgescorer.svg?branch=master)](https://travis-ci.org/thebridsk/bridgescorer)
+
 ## Releasing
 
 To release a new version, the current branch must be `master`, the workspace must be clean.  The `release` branch must not exist.
