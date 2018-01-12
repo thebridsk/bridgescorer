@@ -718,7 +718,7 @@ class TestCacheStore extends AsyncFlatSpec with ScalatestRouteTest with MustMatc
 
         tempDir.list.foreach( p => testlog.fine(s"Found in tempdir: $p") )
 
-        val f = tempDir/"BoardSet.StandardBoards.yaml"
+        val f = tempDir/"Boardset.StandardBoards.yaml"
         val v = FileIO.readFileSafe(f.toString())
         val (goodOnDisk,vt) = fstore.support.fromJSON(v)
         vt mustBe fbs
@@ -753,7 +753,7 @@ class TestCacheStore extends AsyncFlatSpec with ScalatestRouteTest with MustMatc
 
         tempDir.list.foreach( p => testlog.fine(s"Found in tempdir: $p") )
 
-        val f = tempDir/"BoardSet.StandardBoards.yaml"
+        val f = tempDir/"Boardset.StandardBoards.yaml"
         val v = FileIO.readFileSafe(f.toString())
         val (goodOnDisk,vt) = store.support.fromJSON(v)
         vt mustBe fbs
