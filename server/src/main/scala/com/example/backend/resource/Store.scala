@@ -266,13 +266,15 @@ class Store[VId, VType <: VersionedInstance[VType,VType,VId]](
           }
         }
     )
-    rf.map { r =>
-      r match {
-        case Right(v) =>
-        case Left(error) =>
+    rf.transform { tryR =>
+      tryR match {
+        case Success(Right(v)) =>
+        case Success(Left(error)) =>
+          cache.remove(id)
+        case Failure(ex) =>
           cache.remove(id)
       }
-      r
+      tryR
     }.logit(s"Read ${resourceURI}/${id}")
 
   }
