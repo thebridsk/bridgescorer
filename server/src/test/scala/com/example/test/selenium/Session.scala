@@ -33,6 +33,7 @@ import java.io.ByteArrayInputStream
 import java.io.StringWriter
 import java.io.BufferedReader
 import java.io.PrintWriter
+import org.openqa.selenium.WebDriverException
 
 class Session extends WebDriver {
   import Session._
@@ -330,27 +331,28 @@ class Session extends WebDriver {
    */
   def setQuadrant( q: Int ) = {
     import Session._
-    getScreenInfo
-    val originx = origin.get.getX
-    val originy = origin.get.getY
-    val sizex = screenSize.get.getWidth-originx
-    val sizey = screenSize.get.getHeight-originy
-    val halfx = originx/2 + sizex/2
-    val halfy = originy/2 + sizey/2
-    q match {
-      case 1 =>
-        setPosition(originx,originy)
-        setSize(halfx,halfy)
-      case 2 =>
-        setPosition(originx+halfx,originy)
-        setSize(halfx,halfy)
-      case 4 =>
-        setPosition(originx,originy+halfy)
-        setSize(halfx,halfy)
-      case 3 =>
-        setPosition(originx+halfx,originy+halfy)
-        setSize(halfx,halfy)
-      case _ =>
+    if (getScreenInfo) {
+      val originx = origin.get.getX
+      val originy = origin.get.getY
+      val sizex = screenSize.get.getWidth-originx
+      val sizey = screenSize.get.getHeight-originy
+      val halfx = originx/2 + sizex/2
+      val halfy = originy/2 + sizey/2
+      q match {
+        case 1 =>
+          setPosition(originx,originy)
+          setSize(halfx,halfy)
+        case 2 =>
+          setPosition(originx+halfx,originy)
+          setSize(halfx,halfy)
+        case 4 =>
+          setPosition(originx,originy+halfy)
+          setSize(halfx,halfy)
+        case 3 =>
+          setPosition(originx+halfx,originy+halfy)
+          setSize(halfx,halfy)
+        case _ =>
+      }
     }
     this
   }
@@ -363,10 +365,12 @@ class Session extends WebDriver {
    */
   def setPositionRelative( x: Int, y: Int ) = {
     import Session._
-    getScreenInfo
-    val originx = origin.get.getX
-    val originy = origin.get.getY
-    setPosition(originx+x,originy+y)
+    if (getScreenInfo) {
+      val originx = origin.get.getX
+      val originy = origin.get.getY
+      setPosition(originx+x,originy+y)
+    }
+    this
   }
 
   /**
@@ -423,18 +427,33 @@ object Session {
   private var screenSize: Option[Dimension] = None
   private var origin: Option[Point] = None
 
+  private var screenInfoNotSupported = false
+
+  /**
+   * @return false if screenInfo is NOT supported, true if it is supported
+   */
   def getScreenInfo( implicit webDriver: WebDriver ) = {
     if (screenSize.isEmpty || origin.isEmpty) {
-      synchronized {
-        if (screenSize.isEmpty || origin.isEmpty) {
-          val window = webDriver.manage().window()
-          window.maximize()
-          screenSize = Some(window.getSize)
-          origin = Some(window.getPosition)
+      if (!screenInfoNotSupported) {
+        synchronized {
+          if (screenSize.isEmpty || origin.isEmpty) {
+            if (!screenInfoNotSupported) {
+              try {
+                val window = webDriver.manage().window()
+                window.maximize()
+                screenSize = Some(window.getSize)
+                origin = Some(window.getPosition)
+              } catch {
+                case x: WebDriverException =>
+                  // maximize is not supported
+                  screenInfoNotSupported = true
+              }
+            }
+          }
         }
       }
     }
-
+    !screenInfoNotSupported
   }
 
   /**
