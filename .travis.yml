@@ -21,6 +21,9 @@ install: # Install ChromeDriver
 script:
 - sbt distribution:mytest
 
+after_failure:
+- cat server/logs/unittestTcpMonitorTimeWait.csv
+
 before_deploy:
 - sbt distribution:alltests
 
