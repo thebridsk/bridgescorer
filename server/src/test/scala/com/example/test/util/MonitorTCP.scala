@@ -261,7 +261,7 @@ object MonitorTCP extends Logging {
   var currentMonitorUsage = 0
 
   def startMonitoring( tofilename: Option[String] = None) = synchronized {
-    if (!disableMonitorTCP) {
+//    if (!disableMonitorTCP) {
       currentMonitor match {
         case Some(m) =>
           currentMonitorUsage+=1
@@ -272,11 +272,11 @@ object MonitorTCP extends Logging {
                true )
           currentMonitor = Some( startMonitor( pw ) )
       }
-    }
+//    }
   }
 
   def stopMonitoring() = synchronized {
-    if (!disableMonitorTCP) {
+//    if (!disableMonitorTCP) {
       currentMonitorUsage-=1
       if (currentMonitorUsage == 0) {
         currentMonitor match {
@@ -286,16 +286,16 @@ object MonitorTCP extends Logging {
           case None => // do nothing
         }
       }
-    }
+//    }
   }
 
   def nextTest() = {
-    if (!disableMonitorTCP) {
+//    if (!disableMonitorTCP) {
       currentMonitor match {
         case Some(m) => m.nextTest()
         case None =>
       }
-    }
+//    }
   }
 
   def getProp( name: String ) = {
