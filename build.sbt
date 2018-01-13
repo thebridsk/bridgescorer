@@ -559,7 +559,7 @@ lazy val `bridgescorer-server` = project.in(file("server")).
         val assemblyjar = BridgeServer.findFile( targetdir+(assemblyJarName in assembly).value, "-SNAPSHOT.jar" )
         val testjar = BridgeServer.findFile( targetdir+(assemblyJarName in (Test,assembly)).value, "-SNAPSHOT.jar" )
 
-        val cp = assemblyjar+File.pathSeparator+testjar
+        val cp = assemblyjar+java.io.File.pathSeparator+testjar
         log.info( "Classpath is "+cp )
         cp
       }
@@ -592,7 +592,7 @@ lazy val `bridgescorer-server` = project.in(file("server")).
         log.info( "Jars are "+cp )
         cp
       }
-      val cp = assemblyJar+File.pathSeparator+testJar
+      val cp = assemblyJar+java.io.File.pathSeparator+testJar
 
       val server = new BridgeServer(assemblyJar)
       server.runWithServer(log, baseDirectory.value+"/logs/itestServerInTest.%u.log") {
