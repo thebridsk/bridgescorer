@@ -71,8 +71,8 @@ class ChicagoTestPages extends FlatSpec with MustMatchers with BeforeAndAfterAll
 
     try {
       waitForFutures("Starting a browser or server",
-                     Future { Session1.sessionStart().setPositionRelative(0,0).setSize(1100, 800)},
-                     Future { TestServer.start() } )
+                     CodeBlock { Session1.sessionStart().setPositionRelative(0,0).setSize(1100, 800)},
+                     CodeBlock { TestServer.start() } )
     } catch {
       case e: Throwable =>
         afterAll()
@@ -88,8 +88,8 @@ class ChicagoTestPages extends FlatSpec with MustMatchers with BeforeAndAfterAll
     import com.example.test.util.ParallelUtils._
 
     waitForFuturesIgnoreTimeouts("Stopping a browser or server",
-                   Future { Session1.sessionStop() },
-                   Future { TestServer.stop() } )
+                   CodeBlock { Session1.sessionStop() },
+                   CodeBlock { TestServer.stop() } )
 
   }
 

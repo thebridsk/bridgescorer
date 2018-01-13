@@ -83,8 +83,8 @@ class SwaggerTest extends FlatSpec with MustMatchers with BeforeAndAfterAll {
     TestStartLogging.startLogging()
 
     waitForFutures( "Stopping browsers and server",
-                    Future { TestSession.sessionStart().setPositionRelative(0,0).setSize(1100, 900)},
-                    Future { TestServer.start() }
+                    CodeBlock { TestSession.sessionStart().setPositionRelative(0,0).setSize(1100, 900)},
+                    CodeBlock { TestServer.start() }
                   )
   }
 
@@ -94,8 +94,8 @@ class SwaggerTest extends FlatSpec with MustMatchers with BeforeAndAfterAll {
     import ExecutionContext.Implicits.global
 
     waitForFuturesIgnoreTimeouts( "Stopping browsers and server",
-                Future { TestSession.sessionStop() },
-                Future { TestServer.stop() }
+                CodeBlock { TestSession.sessionStop() },
+                CodeBlock { TestServer.stop() }
                )
   }
 

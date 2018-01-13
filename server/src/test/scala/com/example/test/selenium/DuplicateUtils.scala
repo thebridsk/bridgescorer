@@ -31,16 +31,6 @@ trait DuplicateUtils {
 
   val urlprefix = TestServer.getAppPageUrl("duplicate/")
 
-  def runOnTables( table: ()=>Unit* )( implicit timeoutduration: Duration ) = {
-    try {
-      runInParallel(table:_*)
-    } catch {
-      case x: Throwable =>
-        testlog.warning("Error runOnTables: ", x)
-        throw x
-    }
-  }
-
   def findXPath( xpath: String )( implicit webDriver: Session ): Option[WebElement] = {
     val list = webDriver.findElements(By.xpath(xpath))
     if (list.isEmpty()) None

@@ -59,14 +59,16 @@ import com.example.test.util.MonitorTCP
 import com.example.test.util.HttpUtils.ResponseFromHttp
 import com.example.backend.BridgeServiceFileStoreConverters
 import com.example.backend.MatchDuplicateCacheStoreSupport
+import com.example.test.util.ParallelUtils.CodeBlock
 
 /**
  * Test playing duplicate matches.  The duplicates matches to play are in the testdata directory.
  * @author werewolf
  */
-class DuplicateTestFromTestDirectory extends FlatSpec with DuplicateUtils with MustMatchers with BeforeAndAfterAll with EventuallyUtils with ParallelUtils {
+class DuplicateTestFromTestDirectory extends FlatSpec with DuplicateUtils with MustMatchers with BeforeAndAfterAll with EventuallyUtils {
   import Eventually.{ patienceConfig => _, _ }
   import com.example.pages.PageBrowser._
+  import ParallelUtils._
 
   val testlog = Logger[DuplicateTestFromTestDirectory]
 
@@ -164,7 +166,7 @@ class DuplicateTestFromTestDirectory extends FlatSpec with DuplicateUtils with M
     }
 
 
-  def logFuture[T]( t: =>T ): Future[T] = Future { logException("logFuture")( t ) }
+  def logFuture[T]( t: =>T ) = CodeBlock { logException("logFuture")( t ) }
 
   var firstScorekeeper: PlayerPosition = North
 
@@ -185,7 +187,8 @@ class DuplicateTestFromTestDirectory extends FlatSpec with DuplicateUtils with M
     def setup(): Unit = {
       try {
         import Session._
-        waitForFutures( logFuture { sessionDirector.sessionStart(getPropOrEnv("SessionDirector")).setQuadrant(1) },
+        waitForFutures( "setup",
+                        logFuture { sessionDirector.sessionStart(getPropOrEnv("SessionDirector")).setQuadrant(1) },
                         logFuture { TestServer.start() }
                         )
       } catch {
@@ -210,7 +213,8 @@ class DuplicateTestFromTestDirectory extends FlatSpec with DuplicateUtils with M
 
     def tearDown() = {
       try {
-        waitForFutures( logFuture { sessionComplete.sessionStop() }::
+        waitForFutures( "tearDown",
+                        logFuture { sessionComplete.sessionStop() }::
                         logFuture { sessionDirector.sessionStop() }::
                         logFuture { TestServer.stop() }::
                         sessionTables.map { ts => logFuture { ts.sessionStop() } }.toList : _*
@@ -284,6 +288,7 @@ class DuplicateTestFromTestDirectory extends FlatSpec with DuplicateUtils with M
       val restSession = sessions.tail
 
       waitForFutures(
+        "gotoRootPage",
         logFuture { val x = firstSession.sessionStart(envSessionTable).setQuadrant(3) }::
         logFuture { val x = sessionComplete.sessionStart(getPropOrEnv("SessionComplete")).setQuadrant(2) }::
         logFuture {
@@ -360,6 +365,7 @@ class DuplicateTestFromTestDirectory extends FlatSpec with DuplicateUtils with M
 
     def startCompleteAndTables() = {
     waitForFutures(
+        "startCompleteAndTables",
         logFuture {
           import sessionComplete._
           assert( dupid.isDefined && dupid.get.length()>0)
@@ -464,8 +470,9 @@ class DuplicateTestFromTestDirectory extends FlatSpec with DuplicateUtils with M
       tcpSleep(30*numbertables)
       val roundtimeoutduration = Duration( 180, TimeUnit.SECONDS )
       waitForFutures(
+        "playRound",
         sessionTables.map { st => logFuture {playRound(round,st)}}.toList : _*
-      )(roundtimeoutduration, Position.here)
+      )(roundtimeoutduration)
     }
 
     var boardSet: Option[BoardSet] = None

@@ -57,7 +57,6 @@ import com.example.pages.GenericPage
 import com.example.pages.Element
 import com.example.test.util.MonitorTCP
 import com.example.test.util.HttpUtils.ResponseFromHttp
-import com.example.test.util.ParallelUtils.MyFuture
 import com.example.backend.BridgeServiceFileStoreConverters
 import com.example.backend.MatchDuplicateCacheStoreSupport
 
@@ -95,6 +94,7 @@ class DuplicateTestFromTestDirectory2 extends FlatSpec with DuplicateUtils with 
     try {
       import Session._
       waitForFutures(
+          "beforeAll",
           logFuture { TestServer.start() }
       )
     } catch {
@@ -163,9 +163,9 @@ class DuplicateTestFromTestDirectory2 extends FlatSpec with DuplicateUtils with 
     }
 
 
-  def logFuture[T]( t: =>T ): Future[T] = Future { logException("logFuture")( t ) }
+  def logFuture[T]( t: =>T ) = CodeBlock { logException("logFuture")( t ) }
 
-  def logMyFuture[T]( t: =>T ): MyFuture[T] = Future { logException("logFuture")( t ) }
+  def logMyFuture[T]( t: =>T ) = CodeBlock { logException("logFuture")( t ) }
 
   var firstScorekeeper: PlayerPosition = North
 
@@ -269,6 +269,7 @@ class DuplicateTestFromTestDirectory2 extends FlatSpec with DuplicateUtils with 
       val restSession = sessions.tail
 
       waitForFutures(
+        "gotoRootPage",
         logFuture {
           sessionDirector.sessionStartIfNotRunning(getPropOrEnv("SessionDirector")).setQuadrant(1)
           if (!sessionDirectorRunning) {
@@ -344,6 +345,7 @@ class DuplicateTestFromTestDirectory2 extends FlatSpec with DuplicateUtils with 
 
     def startCompleteAndTables() = {
     waitForFutures(
+        "startCompleteAndTables",
         logFuture {
           import sessionComplete._
           assert( dupid.isDefined && dupid.get.length()>0)
@@ -460,8 +462,9 @@ class DuplicateTestFromTestDirectory2 extends FlatSpec with DuplicateUtils with 
       tcpSleep(30*numbertables)
       val roundtimeoutduration = Duration( 180, TimeUnit.SECONDS )
       waitForFutures(
+        "playRound",
         sessionTables.values.map { st => logFuture {playRound(round,st)}}.toList : _*
-      )(roundtimeoutduration, Position.here)
+      )(roundtimeoutduration)
     }
 
     var boardSet: Option[BoardSet] = None
@@ -484,6 +487,7 @@ class DuplicateTestFromTestDirectory2 extends FlatSpec with DuplicateUtils with 
       tcpSleep(30*numbertables)
       val roundtimeoutduration = Duration( 180, TimeUnit.SECONDS )
       waitForFutures(
+        "atEndGotoSummaryPage",
         logFuture {
           import sessionDirector._
           click on id("Game")
@@ -508,7 +512,7 @@ class DuplicateTestFromTestDirectory2 extends FlatSpec with DuplicateUtils with 
             click on id("Home")
           }
         }.toList : _*
-      )(roundtimeoutduration, Position.here)
+      )(roundtimeoutduration)
     }
   }
 

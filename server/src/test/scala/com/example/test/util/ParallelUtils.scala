@@ -11,14 +11,15 @@ import java.io.StringWriter
 import java.io.PrintWriter
 import java.io.PrintStream
 import com.example.source.SourcePosition
+import scala.util.Success
 
 object ParallelUtilsInternals {
   val log = Logger[ParallelUtils]
 
-  private[util] def toExceptionMsg( msg: String, causes: (ParallelUtils.MyFuture[_],Throwable)* ) = {
+  private[util] def toExceptionMsg( msg: String, causes: (Position,Throwable)* ) = {
     msg+causes.map { e =>
       val ex = e._2
-      causeToString(ex)
+      s"""CodeBlock ${e._1.line}: ${causeToString(ex)}"""
     }.mkString("\nSuppressed:\n","\nSuppressed\n","\nDoneSuppressed")
   }
 
@@ -34,162 +35,128 @@ object ParallelUtilsInternals {
 
 class FutureException( msg: String, cause: Throwable ) extends Exception(msg,cause)
 
-class ParallelException( msg: String, causes: (ParallelUtils.MyFuture[_],Throwable)* ) extends Exception( ParallelUtilsInternals.toExceptionMsg(msg, causes:_*)) {
-  causes.foreach(e=>addSuppressed( new FutureException("From "+e._1.pos.fileName+":"+e._1.pos.lineNumber,e._2)))
+class ParallelException( msg: String, causes: (Position,Throwable)* ) extends Exception( ParallelUtilsInternals.toExceptionMsg(msg, causes:_*)) {
+  causes.foreach(e=>addSuppressed( new FutureException(s"From ${e._1.line}", e._2)))
 
   ParallelUtilsInternals.log.warning("Oops",this)
 
-//  override
-//  def toString(): String = {
-//    import ParallelUtilsInternals._
-//    super.toString()+getSuppressed().map( e => causeToString(e) ).mkString("\nSuppressed:\n","\nSuppressed\n","\nDoneSuppressed")
-//  }
-
-//  override
-//  def printStackTrace( ps: PrintStream ): Unit = {
-//    super.printStackTrace(ps)
-//    getSuppressed.foreach( e => {
-//      ps.println()
-//      ps.println("Suppressed Exception:")
-//      e.printStackTrace(ps)
-//    } )
-//  }
-//
-//  override
-//  def printStackTrace( pw: PrintWriter ): Unit = {
-//    super.printStackTrace(pw)
-//    getSuppressed.foreach( e => {
-//      pw.println()
-//      pw.println("Suppressed Exception:")
-//      e.printStackTrace(pw)
-//    } )
-//  }
 }
 
 trait ParallelUtils {
   import ParallelUtilsInternals._
   import ParallelUtils._
 
-  /**
-   *  Run several functions in parallel
-   *
-   *  @param funs the functions
-   *  @param timeoutduration the timeout for waiting for all functions to finish.
-   *         this is an implicit parameter.
-   *  @throws Exception if any of the functions throws an exception, it will be rethrown by this function
-   */
-  def runInParallel( funs: ()=>Unit* )( implicit timeoutduration: Duration ): Unit = {
-    waitForFutures( "<unknown>", funs.map{ff=>functionToMyFuture(ff)}: _* )
-  }
 
-  /**
-   *  Run several functions in parallel
-   *
-   *  @param name an identifying comment for logs
-   *  @param funs the functions
-   *  @param timeoutduration the timeout for waiting for all functions to finish.
-   *         this is an implicit parameter.
-   *  @throws Exception if any of the functions throws an exception, it will be rethrown by this function
-   */
-  def runInParallel( name: String, funs: ()=>Unit* )( implicit timeoutduration: Duration ): Unit = {
-    waitForFutures( name, funs.map{ff=>functionToMyFuture(ff)}: _* )
-  }
+  val useSerial: Boolean
 
-//  /**
-//   *  Wait for several futures to complete
-//   *
-//   *  @param funs the futures
-//   *  @param timeoutduration the timeout for waiting for all functions to finish.
-//   *         this is an implicit parameter.
-//   *  @throws Exception if any of the functions throws an exception, it will be rethrown by this function
-//   */
-//  def waitForFutures( funs: Future[_]* )( implicit timeoutduration: Duration ): Unit = {
-//    waitForFutures( "<unknown>", funs:_* )
-//  }
-
-
-//  /**
-//   *  Wait for several futures to complete
-//   *
-//   *  @param name an identifying comment for logs
-//   *  @param funs the futures
-//   *  @param timeoutduration the timeout for waiting for all functions to finish.
-//   *         this is an implicit parameter.
-//   *  @throws Exception if any of the functions throws an exception, it will be rethrown by this function
-//   */
-//  def waitForFutures( name: String, funs: Future[_]* )( implicit timeoutduration: Duration ): Unit = {
-//    funs.map { f => {
-//      try {
-//        Await.ready(f, timeoutduration)
-//        f.value match {
-//          case None =>
-//            val x = new TimeoutException
-//            log.warning("Timed out waiting for future: "+name, x)
-//            Some(Failure(x))
-//          case x => x
-//        }
-//      } catch {
-//        case x: TimeoutException =>
-//          log.warning("Timed out waiting for future: "+name, x)
-//          Some(Failure(x))
-//      }
-//    }}.find(r => r.map(t => t.isFailure).getOrElse(true)) match {
-//      case Some( Some( Failure(x)) ) => throw x
-//      case _ =>
-//    }
-//  }
-
-  def waitForFutures( funs: Future[_]* )( implicit timeoutduration: Duration, pos: Position ): Unit = {
-    waitForFutures( "<Unknown>", funs.map(new MyFuture(_)):_* )
-  }
-
-  def waitForFutures( funs: ParallelUtils.MyFuture[_]* )( implicit timeoutduration: Duration ): Unit = {
-    waitForFutures( "<Unknown>", funs:_* )
-  }
-
-  def waitForFutures( name: String, funs: ParallelUtils.MyFuture[_]* )( implicit timeoutduration: Duration ): Unit = {
-    val x = funs.map { f => {
-      try {
-        Await.ready(f.f, timeoutduration)
-        f.f.value match {
-          case None =>
-            val x = new TimeoutException
-            log.warning("Timed out waiting for future: "+name+", from "+f.pos.fileName+":"+f.pos.lineNumber, x)
-            (f,Some(Failure(x)))
-          case Some(Failure(x)) =>
-            log.warning("Exception in future: "+name+", from "+f.pos.fileName+":"+f.pos.lineNumber, x)
-            (f,Some(Failure(x)))
-          case x => (f,x)
-        }
-      } catch {
-        case x: TimeoutException =>
-          log.warning("Timed out waiting for future: "+name+", from "+f.pos.fileName+":"+f.pos.lineNumber, x)
-          (f,Some(Failure(x)))
-      }
-    }}.flatMap{ r=>r match {
-      case (fut,Some(Failure(x))) => Seq((fut,x))
-      case _ => Seq[(ParallelUtils.MyFuture[_],Throwable)]()
-    }}
-    if (!x.isEmpty) throw new ParallelException(name+x.map(s=>s._2).mkString("\n  ","\n  ",""), x:_*)
-  }
-
-  def waitForFuturesIgnoreTimeouts( name: String, funs: ParallelUtils.MyFuture[_]* )( implicit timeoutduration: Duration ): Unit = {
+  def waitForFuturesIgnoreTimeouts( name: String, funs: CodeBlock[_]* )( implicit timeoutduration: Duration ): Unit = {
     try {
-      waitForFutures( "<Unknown>", funs:_* )
+      waitForFutures( name, funs:_* )
     } catch {
       case t: Throwable => ignoreTimeoutExceptions(name, t)
     }
   }
+
+  def waitForFutures( name: String, cbs: CodeBlock[_]* )( implicit timeoutduration: Duration ) = {
+    if (useSerial) executeSerial(name, cbs:_*)
+    else waitForFuturesImpl(name, cbs:_*)
+  }
+
+  def waitForFuturesImpl( name: String, cbs: CodeBlock[_]* )( implicit timeoutduration: Duration ) = {
+    val futurefailures = Future.foldLeft(
+                         cbs.map { cb =>
+                           cb.toFuture.transform { t =>
+                             t match {
+                               case Success(v) =>
+                                 Success( cb.pos, None )
+                               case Failure(ex) =>
+                                 log.severe(s"CodeBlock ${cb.pos.line} ended in failure", ex)
+                                 Success( cb.pos, Some(ex) )
+                             }
+                           }
+                         }.toList
+                       )( List[(Position,Throwable)]())( (ac,v) => v._2.map { ex => (v._1,ex)::ac }.getOrElse(ac))
+    val failures = Await.result(futurefailures, timeoutduration)
+    if (!failures.isEmpty) throw new ParallelException(name+failures.map(s=>s._2).mkString("\n  ","\n  ",""), failures:_*)
+  }
+
+  def executeSerial( name: String, cbs: CodeBlock[_]* )( implicit timeoutduration: Duration ) = {
+    cbs.foreach { cb =>
+      try {
+        cb.execute
+      } catch {
+        case x: Exception =>
+          log.severe(s"""Error executing "${name}" code block ${cb.pos.line}""", x)
+          throw x
+      }
+    }
+  }
+
 }
 
 object ParallelUtils extends ParallelUtils {
   import scala.language.implicitConversions
   import ParallelUtilsInternals._
 
-  implicit class MyFuture[T]( val f: Future[T] )(implicit val pos: Position) {
+  /**
+   * Get the specified property as either a java property or an environment variable.
+   * If both are set, the java property wins.
+   * @param name the property name
+   * @return the property value wrapped in a Some object.  None property not set.
+   */
+  def getPropOrEnv( name: String ): Option[String] = sys.props.get(name) match {
+    case v: Some[String] =>
+      log.fine("getPropOrEnv: found system property: "+name+"="+v.get)
+      v
+    case None =>
+      sys.env.get(name) match {
+        case v: Some[String] =>
+          log.fine("getPropOrEnv: found env var: "+name+"="+v.get)
+          v
+        case None =>
+          log.fine("getPropOrEnv: did not find system property or env var: "+name)
+          None
+      }
   }
 
-  implicit def functionToMyFuture( fun: ()=>Unit )(implicit pos: Position) = new MyFuture( Future{fun()} )
+  /**
+   * flag to determine if serial or parallel processing is used.
+   * Configure by setting the System Property ParallelUtils.useSerial or environment variable ParallelUtils.useSerial
+   * to "true" or "false".
+   * If this property is not set, then the os.name system property is used, on windows or unknown parallel, otherwise serial.
+   */
+  val useSerial = {
+    getPropOrEnv("ParallelUtils.useSerial") match {
+      case Some(v) =>
+        v.toBoolean
+      case None =>
+        sys.props.getOrElse("os.name", "oops").toLowerCase() match {
+          case os: String if (os.contains("win")) => false
+          case os: String if (os.contains("mac")) => true
+          case os: String if (os.contains("nix")||os.contains("nux")) => true
+          case os =>
+            log.severe("Unknown operating system: "+os)
+            false
+        }
+    }
+  }
+
+  class CodeBlock[T]( body: => T )(implicit val pos: Position) {
+
+    def execute = body
+
+    def toFuture = {
+      Future {
+        body
+      }
+    }
+  }
+
+  object CodeBlock {
+    def apply[T]( body: => T )(implicit pos: Position) = {
+      new CodeBlock(body)
+    }
+  }
 
   def ignoreTimeoutExceptions( name: String, t: Throwable )( implicit pos: Position ) = {
     t match {
@@ -217,19 +184,44 @@ object ParallelUtils extends ParallelUtils {
 
 object Test {
   import ParallelUtils._
+  import ParallelUtilsInternals.log
+
   implicit val timeoutduration = Duration( 60, TimeUnit.SECONDS )
 
   def main( args: Array[String] ): Unit = {
     waitForFutures( "hello",
-        Future {
-          if (true) throw new Exception
-          0
-          },
-        Future { throw new Exception },
-        ()=>{
-          throw new Exception
-        }
+        CodeBlock {
+          log.warning("parallel 0")
+        },
+        CodeBlock { log.warning("parallel 1") }
         )
+
+    object xx extends ParallelUtils {
+      val useSerial = true
+    }
+    xx.waitForFutures( "hello",
+        CodeBlock {
+          log.warning("serial 0")
+        },
+        CodeBlock { log.warning("serial 1") }
+        )
+
+    waitForFutures( "hello",
+        CodeBlock {
+          if (true) throw new Exception( "parallel 0e" )
+          0
+        },
+        CodeBlock { throw new Exception("parallel 1e" ) }
+        )
+
+    xx.waitForFutures( "hello",
+        CodeBlock {
+          if (true) throw new Exception("serial 0e" )
+          0
+        },
+        CodeBlock { throw new Exception("serial 1e" ) }
+        )
+
 
   }
 }

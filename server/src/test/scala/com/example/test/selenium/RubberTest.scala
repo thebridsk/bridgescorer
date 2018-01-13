@@ -65,8 +65,8 @@ class RubberTest extends FlatSpec with MustMatchers with BeforeAndAfterAll with 
 
     try {
       waitForFutures( "Starting browser and server",
-                      Future { Session1.sessionStart().setPositionRelative(0,0).setSize(1200, 800)},
-                      Future { TestServer.start() }
+                      CodeBlock { Session1.sessionStart().setPositionRelative(0,0).setSize(1200, 800)},
+                      CodeBlock { TestServer.start() }
                     )
     } catch {
       case e: Throwable =>
@@ -83,7 +83,7 @@ class RubberTest extends FlatSpec with MustMatchers with BeforeAndAfterAll with 
     import com.example.test.util.ParallelUtils._
 
     waitForFuturesIgnoreTimeouts( "Stopping browser and server",
-                    Future {
+                    CodeBlock {
                       try {
                         Session1.sessionStop()
                       } catch {
@@ -91,7 +91,7 @@ class RubberTest extends FlatSpec with MustMatchers with BeforeAndAfterAll with 
                           testlog.warning("Timeout closing sessions and server", x )
                       }
                     },
-                    Future { TestServer.stop() }
+                    CodeBlock { TestServer.stop() }
                   )
   }
 

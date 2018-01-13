@@ -256,8 +256,9 @@ object Duplicate5TestPages {
  * to the names view, to the hand view.
  * @author werewolf
  */
-class Duplicate5TestPages extends FlatSpec with DuplicateUtils with MustMatchers with BeforeAndAfterAll with EventuallyUtils with ParallelUtils {
-    import Eventually.{ patienceConfig => _, _ }
+class Duplicate5TestPages extends FlatSpec with DuplicateUtils with MustMatchers with BeforeAndAfterAll with EventuallyUtils {
+  import Eventually.{ patienceConfig => _, _ }
+  import ParallelUtils._
 
   import Duplicate5TestPages._
 
@@ -293,8 +294,8 @@ class Duplicate5TestPages extends FlatSpec with DuplicateUtils with MustMatchers
       import Session._
       // The sessions for the tables and complete is defered to the test that gets the home page url.
       waitForFutures( "Starting browser or server",
-                      Future { SessionDirector.sessionStart(getPropOrEnv("SessionDirector")).setQuadrant(1) },
-                      Future { TestServer.start() }
+                      CodeBlock { SessionDirector.sessionStart(getPropOrEnv("SessionDirector")).setQuadrant(1) },
+                      CodeBlock { TestServer.start() }
                       )
     } catch {
       case e: Throwable =>
@@ -306,11 +307,11 @@ class Duplicate5TestPages extends FlatSpec with DuplicateUtils with MustMatchers
   override
   def afterAll() = {
     waitForFuturesIgnoreTimeouts( "Stopping browsers and server",
-                    Future { SessionTable1.sessionStop() },
-                    Future { SessionTable2.sessionStop() },
-                    Future { SessionComplete.sessionStop() },
-                    Future { SessionDirector.sessionStop() },
-                    Future { TestServer.stop() }
+                    CodeBlock { SessionTable1.sessionStop() },
+                    CodeBlock { SessionTable2.sessionStop() },
+                    CodeBlock { SessionComplete.sessionStop() },
+                    CodeBlock { SessionDirector.sessionStop() },
+                    CodeBlock { TestServer.stop() }
                     )
   }
 
@@ -323,10 +324,10 @@ class Duplicate5TestPages extends FlatSpec with DuplicateUtils with MustMatchers
     import Session._
     waitForFutures(
       "Starting browsers",
-      Future { SessionTable1.sessionStart(getPropOrEnv("SessionTable1")).setQuadrant(4) },
-      Future { SessionTable2.sessionStart(getPropOrEnv("SessionTable2")).setQuadrant(3) },
-      Future { SessionComplete.sessionStart(getPropOrEnv("SessionComplete")).setQuadrant(2) },
-      Future {
+      CodeBlock { SessionTable1.sessionStart(getPropOrEnv("SessionTable1")).setQuadrant(4) },
+      CodeBlock { SessionTable2.sessionStart(getPropOrEnv("SessionTable2")).setQuadrant(3) },
+      CodeBlock { SessionComplete.sessionStart(getPropOrEnv("SessionComplete")).setQuadrant(2) },
+      CodeBlock {
         import SessionDirector._
         HomePage.goto.validate
       }
@@ -385,19 +386,19 @@ class Duplicate5TestPages extends FlatSpec with DuplicateUtils with MustMatchers
 
     waitForFutures(
       "Starting browsers",
-      Future {
+      CodeBlock {
         import SessionDirector._
         ScoreboardPage.current.clickDirectorButton.validate
       },
-      Future {
+      CodeBlock {
         import SessionTable1._
         ScoreboardPage.goto(dupid.get).validate.clickTableButton(1).validate(rounds)
       },
-      Future {
+      CodeBlock {
         import SessionTable2._
         TablePage.goto(dupid.get,"2", EnterNames).validate(rounds)
       },
-      Future {
+      CodeBlock {
         import SessionComplete._
         ScoreboardPage.goto(dupid.get).validate
       }
@@ -408,7 +409,7 @@ class Duplicate5TestPages extends FlatSpec with DuplicateUtils with MustMatchers
     tcpSleep(60)
     waitForFutures(
       "Entering Names",
-      Future {
+      CodeBlock {
         import SessionTable1._
         val (nsTeam,ewTeam) = allHands.getNSEW(1, 1)
         var sk = TablePage.current(EnterNames).validate(rounds).clickRound(1).asInstanceOf[TableEnterScorekeeperPage].validate
@@ -424,7 +425,7 @@ class Duplicate5TestPages extends FlatSpec with DuplicateUtils with MustMatchers
         en.isOKEnabled mustBe true
         val scoreboard = en.clickOK.asInstanceOf[ScoreboardPage].validate( allHands.getBoardsInTableRound(1, 1) )
       },
-      Future {
+      CodeBlock {
         import SessionTable2._
         val (nsTeam,ewTeam) = allHands.getNSEW(2, 1)
         var sk = TablePage.current(EnterNames).validate(rounds).clickRound(1).asInstanceOf[TableEnterScorekeeperPage].validate
@@ -445,15 +446,32 @@ class Duplicate5TestPages extends FlatSpec with DuplicateUtils with MustMatchers
     tcpSleep(60)
     waitForFutures(
       "Playing first round",
-      Future {
+      CodeBlock {
         import SessionTable1._
         val (nsTeam,ewTeam) = allHands.getNSEW(1, 1)
         playRound(ScoreboardPage.current, 1, 1, North, false)
       },
-      Future {
+      CodeBlock {
         import SessionTable2._
         val (nsTeam,ewTeam) = allHands.getNSEW(2, 1)
         playRound(ScoreboardPage.current, 2, 1, North, false)
+      }
+    )
+  }
+
+  it should "validate first round at both tables" in {
+    tcpSleep(60)
+    waitForFutures(
+      "Validating first round",
+      CodeBlock {
+        import SessionTable1._
+        val (nsTeam,ewTeam) = allHands.getNSEW(1, 1)
+        validateRound(ScoreboardPage.current, 1, 1 )
+      },
+      CodeBlock {
+        import SessionTable2._
+        val (nsTeam,ewTeam) = allHands.getNSEW(2, 1)
+        validateRound(ScoreboardPage.current, 2, 1 )
       }
     )
   }
@@ -490,7 +508,7 @@ class Duplicate5TestPages extends FlatSpec with DuplicateUtils with MustMatchers
     tcpSleep(10)
     waitForFutures(
       "Checking scoreboards",
-      Future{
+      CodeBlock{
         import SessionDirector._
 
         val sb = ScoreboardPage.current
@@ -501,7 +519,7 @@ class Duplicate5TestPages extends FlatSpec with DuplicateUtils with MustMatchers
         sb.checkPlaceTable( pes1: _*)
         checkPlayedBoards( sb, false, None, 1 )
       },
-      Future{
+      CodeBlock{
         import SessionComplete._
 
         val sb = ScoreboardPage.current
@@ -512,7 +530,7 @@ class Duplicate5TestPages extends FlatSpec with DuplicateUtils with MustMatchers
         sb.checkPlaceTable( pes1: _*)
         checkPlayedBoards( sb, true, None, 1 )
       },
-      Future{
+      CodeBlock{
         import SessionTable1._
 
         val sb = ScoreboardPage.current
@@ -523,7 +541,7 @@ class Duplicate5TestPages extends FlatSpec with DuplicateUtils with MustMatchers
         sb.checkPlaceTable( pes1: _*)
         checkPlayedBoards( sb, false, Some(1), 1 )
       },
-      Future{
+      CodeBlock{
         import SessionTable2._
 
         val sb = ScoreboardPage.current
@@ -556,11 +574,11 @@ class Duplicate5TestPages extends FlatSpec with DuplicateUtils with MustMatchers
     tcpSleep(10)
     waitForFutures(
       "Selecting players for round 2",
-      Future{
+      CodeBlock{
         import SessionTable1._
         val sb = selectScorekeeper(ScoreboardPage.current,1,2,North,false )
       },
-      Future{
+      CodeBlock{
         import SessionTable2._
         val (ns,ew) = allHands.getNSEW(2, 2)
 
@@ -585,13 +603,28 @@ class Duplicate5TestPages extends FlatSpec with DuplicateUtils with MustMatchers
     tcpSleep(60)
     waitForFutures(
       "Playing second round",
-      Future {
+      CodeBlock {
         import SessionTable1._
         playRound(ScoreboardPage.current, 1, 2, North, false)
       },
-      Future {
+      CodeBlock {
         import SessionTable2._
         playRound(ScoreboardPage.current, 2, 2, North, false)
+      }
+    )
+  }
+
+  it should "validate second round at both tables" in {
+    tcpSleep(60)
+    waitForFutures(
+      "Validating second round",
+      CodeBlock {
+        import SessionTable1._
+        validateRound(ScoreboardPage.current, 1, 2 )
+      },
+      CodeBlock {
+        import SessionTable2._
+        validateRound(ScoreboardPage.current, 2, 2 )
       }
     )
   }
@@ -600,7 +633,7 @@ class Duplicate5TestPages extends FlatSpec with DuplicateUtils with MustMatchers
     tcpSleep(10)
     waitForFutures(
       "Checking scoreboards",
-      Future{
+      CodeBlock{
         import SessionDirector._
 
         val sb = ScoreboardPage.current
@@ -609,7 +642,7 @@ class Duplicate5TestPages extends FlatSpec with DuplicateUtils with MustMatchers
         sb.checkPlaceTable( pes: _*)
         checkPlayedBoards( sb, false, None, 2 )
       },
-      Future{
+      CodeBlock{
         import SessionComplete._
 
         val sb = ScoreboardPage.current
@@ -618,7 +651,7 @@ class Duplicate5TestPages extends FlatSpec with DuplicateUtils with MustMatchers
         sb.checkPlaceTable( pes: _*)
         checkPlayedBoards( sb, true, None, 2 )
       },
-      Future{
+      CodeBlock{
         import SessionTable1._
 
         val sb = ScoreboardPage.current
@@ -627,7 +660,7 @@ class Duplicate5TestPages extends FlatSpec with DuplicateUtils with MustMatchers
         sb.checkPlaceTable( pes: _*)
         checkPlayedBoards( sb, false, Some(1), 2 )
       },
-      Future{
+      CodeBlock{
         import SessionTable2._
 
         val sb = ScoreboardPage.current
@@ -676,7 +709,13 @@ class Duplicate5TestPages extends FlatSpec with DuplicateUtils with MustMatchers
   }
 
   /**
-   * Only plays the round.  The positions of the players must already be selected.
+   * @param currentPage
+   * @param table
+   * @param round
+   * @param scorekeeper
+   * @param mustswap
+   * @param webDriver
+   * @return A ScoreboardPage object that represents the page at the end.
    */
   def playRound(
       currentPage: ScoreboardPage,
@@ -718,28 +757,69 @@ class Duplicate5TestPages extends FlatSpec with DuplicateUtils with MustMatchers
       }
 
       val sbr = currentBoard.clickScoreboard.validate
-      val (ts,pes) = allHands.getScoreToRound(round, HandTableView( table, round, nsTeam.teamid, ewTeam.teamid ))
-      val (ts1,pes1) = fixTables(ts, pes, round)
-      sbr.checkTable( ts1: _*)
-      sbr.checkPlaceTable( pes1: _*)
 
       sbr
     }
+  }
+
+  /**
+   * @param currentPage
+   * @param table
+   * @param round
+   * @param scorekeeper
+   * @param mustswap
+   * @param webDriver
+   * @return A ScoreboardPage object that represents the page at the end.
+   */
+  def validateRound(
+      currentPage: ScoreboardPage,
+      table: Int,
+      round: Int,
+    )( implicit
+         webDriver: WebDriver
+    ) = {
+
+    val (nsTeam,ewTeam) = allHands.getNSEW(table, round)
+
+    val sbr = currentPage.validate
+    val (ts,pes) = allHands.getScoreToRound(round, HandTableView( table, round, nsTeam.teamid, ewTeam.teamid ))
+    val (ts1,pes1) = fixTables(ts, pes, round)
+    sbr.checkTable( ts1: _*)
+    sbr.checkPlaceTable( pes1: _*)
+
+    sbr
   }
 
   it should "allow round 3 to be played at both tables" in {
     tcpSleep(60)
     waitForFutures(
       "Playing round 3",
-      Future {
+      CodeBlock {
         import SessionTable1._
         val sb = selectScorekeeper(ScoreboardPage.current,1,3,North,false)
         playRound(sb,1,3,North,false )
       },
-      Future {
+      CodeBlock {
         import SessionTable2._
         val sb = selectScorekeeper(ScoreboardPage.current,2,3,North,false )
         playRound(sb,2,3,North,false )
+      }
+    )
+  }
+
+  it should "validate round 3 at both tables" in {
+    tcpSleep(60)
+    waitForFutures(
+      "Validating round 3",
+      CodeBlock {
+        import SessionTable1._
+        val sb = ScoreboardPage.current
+        validateRound(sb,1,3 )
+      },
+      CodeBlock {
+        import SessionTable2._
+        val sb = ScoreboardPage.current
+        validateRound(sb,2,3 )
       }
     )
   }
@@ -748,7 +828,7 @@ class Duplicate5TestPages extends FlatSpec with DuplicateUtils with MustMatchers
     tcpSleep(60)
     waitForFutures(
       "Checking all boards",
-      Future {
+      CodeBlock {
         import SessionDirector._
         withClue( """On session Director""" ) {
           val page = ScoreboardPage.current.clickAllBoards.validate
@@ -763,7 +843,7 @@ class Duplicate5TestPages extends FlatSpec with DuplicateUtils with MustMatchers
           page.clickScoreboard
         }
       },
-      Future {
+      CodeBlock {
         import SessionComplete._
         withClue( """On session Complete""" ) {
           val page = ScoreboardPage.current.clickAllBoards.validate
@@ -778,7 +858,7 @@ class Duplicate5TestPages extends FlatSpec with DuplicateUtils with MustMatchers
           page.clickScoreboard
         }
       },
-      Future {
+      CodeBlock {
         import SessionTable1._
         withClue( """On session Table 1""" ) {
           val page = ScoreboardPage.current.clickAllBoards.validate
@@ -793,7 +873,7 @@ class Duplicate5TestPages extends FlatSpec with DuplicateUtils with MustMatchers
           page.clickScoreboard
         }
       },
-      Future {
+      CodeBlock {
         import SessionTable2._
         withClue( """On session Table 2""" ) {
           val page = ScoreboardPage.current.clickAllBoards.validate
@@ -815,13 +895,13 @@ class Duplicate5TestPages extends FlatSpec with DuplicateUtils with MustMatchers
     tcpSleep(60)
     waitForFutures(
       "Playing round 4",
-      Future {
+      CodeBlock {
         import SessionTable1._
         val sb = BoardPage.current.clickScoreboard.validate
         val sb1 = selectScorekeeper(sb,1,4,North,false)
         playRound(sb1,1,4,North,false )
       },
-      Future {
+      CodeBlock {
         import SessionTable2._
         val sb = BoardPage.current.clickScoreboard.validate
         val sb1 = selectScorekeeper(sb,2,4,North,false)
@@ -830,21 +910,55 @@ class Duplicate5TestPages extends FlatSpec with DuplicateUtils with MustMatchers
     )
   }
 
+  it should "validate round 4 at both tables" in {
+    tcpSleep(60)
+    waitForFutures(
+      "Validating round 4",
+      CodeBlock {
+        import SessionTable1._
+        val sb1 = ScoreboardPage.current
+        validateRound(sb1,1,4 )
+      },
+      CodeBlock {
+        import SessionTable2._
+        val sb1 = ScoreboardPage.current
+        validateRound(sb1,2,4 )
+      }
+    )
+  }
+
   it should "allow round 5 to be played at both tables" in {
     tcpSleep(60)
     waitForFutures(
       "Playing round 5",
-      Future {
+      CodeBlock {
         import SessionTable1._
         val sb = BoardPage.current.clickScoreboard.validate
         val sb1 = selectScorekeeper(sb,1,5,North,false)
         playRound(sb1,1,5,North,false)
       },
-      Future {
+      CodeBlock {
         import SessionTable2._
         val sb = BoardPage.current.clickScoreboard.validate
         val sb1 = selectScorekeeper(sb,2,5,North,false)
         playRound(sb1,2,5,North,false )
+      }
+    )
+  }
+
+  it should "validate round 5 at both tables" in {
+    tcpSleep(60)
+    waitForFutures(
+      "Validating round 5",
+      CodeBlock {
+        import SessionTable1._
+        val sb1 = ScoreboardPage.current
+        validateRound(sb1,1,5 )
+      },
+      CodeBlock {
+        import SessionTable2._
+        val sb1 = ScoreboardPage.current
+        validateRound(sb1,2,5 )
       }
     )
   }

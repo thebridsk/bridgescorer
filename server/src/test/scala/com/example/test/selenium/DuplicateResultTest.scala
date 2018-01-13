@@ -114,8 +114,9 @@ object DuplicateResultTest {
  * to the names view, to the hand view.
  * @author werewolf
  */
-class DuplicateResultTest extends FlatSpec with DuplicateUtils with MustMatchers with BeforeAndAfterAll with EventuallyUtils with ParallelUtils {
+class DuplicateResultTest extends FlatSpec with DuplicateUtils with MustMatchers with BeforeAndAfterAll with EventuallyUtils {
   import Eventually.{ patienceConfig => _, _ }
+  import ParallelUtils._
 
   TestStartLogging.startLogging()
 
@@ -149,8 +150,8 @@ class DuplicateResultTest extends FlatSpec with DuplicateUtils with MustMatchers
       import Session._
       // The sessions for the tables and complete is defered to the test that gets the home page url.
       waitForFutures( "Starting browser or server",
-                      Future { SessionDirector.sessionStart(getPropOrEnv("SessionDirector")).setQuadrant(1) },
-                      Future { TestServer.start() }
+                      CodeBlock { SessionDirector.sessionStart(getPropOrEnv("SessionDirector")).setQuadrant(1) },
+                      CodeBlock { TestServer.start() }
                       )
     } catch {
       case e: Throwable =>
@@ -162,8 +163,8 @@ class DuplicateResultTest extends FlatSpec with DuplicateUtils with MustMatchers
   override
   def afterAll() = {
     waitForFuturesIgnoreTimeouts( "Stopping browsers and server",
-                    Future { SessionDirector.sessionStop() },
-                    Future { TestServer.stop() }
+                    CodeBlock { SessionDirector.sessionStop() },
+                    CodeBlock { TestServer.stop() }
                     )
   }
 
