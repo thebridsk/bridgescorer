@@ -19,10 +19,12 @@ install: # Install ChromeDriver
   - sudo ln -s /usr/local/share/chromedriver /usr/local/bin/chromedriver
 
 script:
+# - export ParallelUtilsUseSerial=false
 - sbt distribution:mytest
 
 after_failure:
 - cat server/logs/unittestTcpMonitorTimeWait.csv
+# - cat server/logs/unittest.1.log
 
 before_deploy:
 - sbt distribution:alltests

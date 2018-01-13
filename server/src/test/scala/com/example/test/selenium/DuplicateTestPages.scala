@@ -189,7 +189,12 @@ object DuplicateTestPages {
  * to the names view, to the hand view.
  * @author werewolf
  */
-class DuplicateTestPages extends FlatSpec with DuplicateUtils with MustMatchers with BeforeAndAfterAll with EventuallyUtils {
+class DuplicateTestPages extends FlatSpec
+    with DuplicateUtils
+    with MustMatchers
+    with BeforeAndAfterAll
+    with EventuallyUtils
+    with CancelAfterFailure {
   import Eventually.{ patienceConfig => _, _ }
   import ParallelUtils._
 
@@ -205,7 +210,7 @@ class DuplicateTestPages extends FlatSpec with DuplicateUtils with MustMatchers 
 //  val Session1 = new Session
 
   val timeoutMillis = 15000
-  val intervalMillis = 500
+  val intervalMillis = 1000
 
   val backend = TestServer.backend
 
