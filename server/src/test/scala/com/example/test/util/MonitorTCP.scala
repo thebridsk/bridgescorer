@@ -21,10 +21,10 @@ object MonitorTCP extends Logging {
   val monitorFileDefault = "logs/unittestTcpMonitorTimeWait.csv"
 
   /**
-   * flag to determine if serial or parallel processing is used.
-   * Configure by setting the System Property ParallelUtils.useSerial or environment variable ParallelUtils.useSerial
+   * flag to determine if TCP Time Wait monitoring and waiting for connections is used.
+   * Configure by setting the System Property DisableMonitorTCP or environment variable DisableMonitorTCP
    * to "true" or "false".
-   * If this property is not set, then the os.name system property is used, on windows or unknown parallel, otherwise serial.
+   * If this property is not set, then the os.name system property is used, on linux disable, otherwise enabled.
    */
   val disableMonitorTCP = {
     ParallelUtils.getPropOrEnv("DisableMonitorTCP") match {
@@ -42,7 +42,9 @@ object MonitorTCP extends Logging {
     }
   }
 
-  log.fine( s"""disableMonitorTCP=${disableMonitorTCP}""")
+  if (disableMonitorTCP) {
+    log.warning( s"""disableMonitorTCP=${disableMonitorTCP}""")
+  }
 
   def getNumberTimeWaitConnections() = {
 
