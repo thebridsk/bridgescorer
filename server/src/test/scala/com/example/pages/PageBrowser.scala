@@ -78,10 +78,13 @@ abstract class QueryBy(implicit webDriver: WebDriver) {
 }
 
 class GoTo(implicit createdpos: SourcePosition) {
+  import PageBrowser.log
   def to( url: String )(implicit webDriver: WebDriver, pos: Position) = {
+    log.fine( s"Going to ${url} from ${pos.line}" )
     webDriver.get(url)
   }
   def to( url: URL )(implicit webDriver: WebDriver, pos: Position) = {
+    log.fine( s"Going to ${url} from ${pos.line}" )
     webDriver.get(url.toString())
   }
 }
@@ -424,7 +427,7 @@ trait PageBrowser {
 
 object PageBrowser extends PageBrowser {
 
-  private[PageBrowser] val log = Logger[PageBrowser]
+  private[pages] val log = Logger[PageBrowser]
 
   private[PageBrowser] def getConstructor[T <: Element](implicit classtag: ClassTag[T]) =
     classtag.runtimeClass.getDeclaredConstructor(classOf[WebElement],classOf[Position]).asInstanceOf[Constructor[T]]

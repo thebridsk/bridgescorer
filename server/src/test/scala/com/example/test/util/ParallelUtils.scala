@@ -126,7 +126,7 @@ object ParallelUtils extends ParallelUtils {
    * If this property is not set, then the os.name system property is used, on windows or unknown parallel, otherwise serial.
    */
   val useSerial = {
-    getPropOrEnv("ParallelUtils.useSerial") match {
+    getPropOrEnv("ParallelUtilsUseSerial") match {
       case Some(v) =>
         v.toBoolean
       case None =>
