@@ -15,8 +15,34 @@ import java.util.concurrent.TimeoutException
 
 object MonitorTCP extends Logging {
 
+  val log = Logger[MonitorTCP]
+
   val toMonitorFile = "ToMonitorFile"
   val monitorFileDefault = "logs/unittestTcpMonitorTimeWait.csv"
+
+  /**
+   * flag to determine if serial or parallel processing is used.
+   * Configure by setting the System Property ParallelUtils.useSerial or environment variable ParallelUtils.useSerial
+   * to "true" or "false".
+   * If this property is not set, then the os.name system property is used, on windows or unknown parallel, otherwise serial.
+   */
+  val disableMonitorTCP = {
+    ParallelUtils.getPropOrEnv("DisableMonitorTCP") match {
+      case Some(v) =>
+        v.toBoolean
+      case None =>
+        sys.props.getOrElse("os.name", "oops").toLowerCase() match {
+          case os: String if (os.contains("win")) => false
+          case os: String if (os.contains("mac")) => false
+          case os: String if (os.contains("nix")||os.contains("nux")) => true
+          case os =>
+            log.severe("Unknown operating system: "+os)
+            false
+        }
+    }
+  }
+
+  log.fine( s"""disableMonitorTCP=${disableMonitorTCP}""")
 
   def getNumberTimeWaitConnections() = {
 
@@ -205,18 +231,22 @@ object MonitorTCP extends Logging {
    *         false - number above threshold
    */
   def waitForConnections( maxWait: Duration ): Boolean = {
-    val start = System.currentTimeMillis()
-    val stop = start + maxWait.toMillis
-    val rc = lock.waitUntil(stop) match {
-      case Some(rc) => rc
-      case None => false
+    if (!disableMonitorTCP) {
+      val start = System.currentTimeMillis()
+      val stop = start + maxWait.toMillis
+      val rc = lock.waitUntil(stop) match {
+        case Some(rc) => rc
+        case None => false
+      }
+
+      val end = System.currentTimeMillis()
+      val waited = (end-start).milliseconds
+
+      logger.info("waitForConnections waited for "+waited+", maxWait "+maxWait+", returning "+rc)
+      rc
+    } else {
+      true
     }
-
-    val end = System.currentTimeMillis()
-    val waited = (end-start).milliseconds
-
-    logger.info("waitForConnections waited for "+waited+", maxWait "+maxWait+", returning "+rc)
-    rc
   }
 
   def startMonitor( pw: PrintWriter, period: Duration = 5 seconds ): MonitorTCP = {
@@ -229,34 +259,40 @@ object MonitorTCP extends Logging {
   var currentMonitorUsage = 0
 
   def startMonitoring( tofilename: Option[String] = None) = synchronized {
-    currentMonitor match {
-      case Some(m) =>
-        currentMonitorUsage+=1
-      case None =>
-        currentMonitorUsage=1
-        val fn = tofilename.getOrElse( getProp(toMonitorFile).getOrElse(monitorFileDefault) )
-        val pw = new PrintWriter( new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fn),"UTF8")),
-             true )
-        currentMonitor = Some( startMonitor( pw ) )
+    if (!disableMonitorTCP) {
+      currentMonitor match {
+        case Some(m) =>
+          currentMonitorUsage+=1
+        case None =>
+          currentMonitorUsage=1
+          val fn = tofilename.getOrElse( getProp(toMonitorFile).getOrElse(monitorFileDefault) )
+          val pw = new PrintWriter( new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fn),"UTF8")),
+               true )
+          currentMonitor = Some( startMonitor( pw ) )
+      }
     }
   }
 
   def stopMonitoring() = synchronized {
-    currentMonitorUsage-=1
-    if (currentMonitorUsage == 0) {
-      currentMonitor match {
-        case Some(m) =>
-          currentMonitor = None
-          m.stopMonitor()
-        case None => // do nothing
+    if (!disableMonitorTCP) {
+      currentMonitorUsage-=1
+      if (currentMonitorUsage == 0) {
+        currentMonitor match {
+          case Some(m) =>
+            currentMonitor = None
+            m.stopMonitor()
+          case None => // do nothing
+        }
       }
     }
   }
 
   def nextTest() = {
-    currentMonitor match {
-      case Some(m) => m.nextTest()
-      case None =>
+    if (!disableMonitorTCP) {
+      currentMonitor match {
+        case Some(m) => m.nextTest()
+        case None =>
+      }
     }
   }
 
