@@ -16,6 +16,7 @@ before_install:
 
 install: # Install ChromeDriver
   - wget -N https://chromedriver.storage.googleapis.com/2.35/chromedriver_linux64.zip -P ~/
+  - "echo 67fad24c4a85e3f33f51c97924a98b619722db15ce92dcd27484fb748af93e8e *chromedriver_linux64.zip | sha256sum -c"
   - unzip ~/chromedriver_linux64.zip -d ~/
   - rm ~/chromedriver_linux64.zip
   - sudo mv -f ~/chromedriver /usr/local/share/
@@ -24,6 +25,7 @@ install: # Install ChromeDriver
 
 script:
 # - export ParallelUtilsUseSerial=false
+- export UseBrowser=chromeheadless
 - sbt clean distribution:travis
 
 after_failure:

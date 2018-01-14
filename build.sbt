@@ -2,6 +2,10 @@
 // To only build the debug version of the client code,
 // define the environment variable "OnlyBuildDebug"
 //
+// To specify the browser to use for tests, define the
+// environment variable "UseBrowser" to the browser to use.  Default: chrome
+// supported browsers: chrome, chromeheadless, safari, firefox, edge, ie
+//
 // To check for updates, npm and maven
 //   checkForUpdates
 // To build just the bundle.js and copy them to `bridgescorer-server` project
@@ -33,6 +37,10 @@ import scala.language.postfixOps
 
 enablePlugins(GitVersioning, GitBranchPrompt)
 EclipseKeys.skipParents in ThisBuild := false
+
+val useBrowser = sys.props.get("UseBrowser").
+                       orElse(sys.env.get("UseBrowser")).
+                       getOrElse("chrome")
 
 val onlyBuildDebug = sys.props.get("OnlyBuildDebug").
                        orElse(sys.env.get("OnlyBuildDebug")).
@@ -462,11 +470,11 @@ lazy val `bridgescorer-server` = project.in(file("server")).
     },
     fork in Test := true,
     javaOptions in Test ++= Seq(
-      "-DDefaultWebDriver=chrome",
-      "-DSessionComplete=chrome",
-      "-DSessionDirector=chrome",
-      "-DSessionTable1=chrome",
-      "-DSessionTable2=chrome"
+      "-DDefaultWebDriver="+useBrowser,
+      "-DSessionComplete="+useBrowser,
+      "-DSessionDirector="+useBrowser,
+      "-DSessionTable1="+useBrowser,
+      "-DSessionTable2="+useBrowser
     ),
 
     libraryDependencies ++= bridgeScorerDeps.value,
@@ -644,7 +652,7 @@ lazy val `bridgescorer-server` = project.in(file("server")).
                                    "-DToMonitorFile=logs/itestTcpMonitorTimeWait.csv"::
                                    "-DUseLogFilePrefix=logs/itest"::
                                    "-DTestDataDirectory="+testdataDir::
-                                   "-DMatchToTest=7,8,9,10,11"::
+                                   "-DMatchToTest=8,9,10,11"::
                                    "-cp"::cp::
                                    "org.scalatest.tools.Runner"::
                                    "-o"::
