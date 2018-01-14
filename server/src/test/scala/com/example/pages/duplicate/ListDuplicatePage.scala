@@ -173,10 +173,12 @@ class ListDuplicatePage( implicit webDriver: WebDriver, pageCreated: SourcePosit
     }
   }
 
-  def checkResults( id: String, results: String* ) = {
+  def checkResults( id: String, results: String* )(implicit patienceConfig: PatienceConfig, pos: Position) = {
     val res = getResults(id)
-    results.foreach( r => res must contain (r))
-    this
+    withClueAndScreenShot(screenshotDir, "checkResults", s"""working on results from match ${id}, ${pos.line}, looking for ${results.mkString("[", "],[", "]")}""") {
+      results.foreach( r => res must contain (r))
+      this
+    }
   }
 
 }

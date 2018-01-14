@@ -141,6 +141,8 @@ object ParallelUtils extends ParallelUtils {
     }
   }
 
+  log.fine( s"""useSerial=${useSerial}""")
+
   class CodeBlock[T]( body: => T )(implicit val pos: Position) {
 
     def execute = body
