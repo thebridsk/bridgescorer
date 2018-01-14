@@ -24,8 +24,7 @@ install: # Install ChromeDriver
 
 script:
 # - export ParallelUtilsUseSerial=false
-#- sbt distribution:mytest
-- sbt distribution:alltests
+- sbt clean distribution:travis
 
 after_failure:
 - cat server/logs/unittestTcpMonitorTimeWait.csv

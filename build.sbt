@@ -54,6 +54,7 @@ val testToRun = "com.example.test.AllSuites"
 //val testToRun = "com.example.test.MyServiceSpec"
 
 val moretestToRun = "com.example.test.selenium.IntegrationTests"
+val travisMoretestToRun = "com.example.test.selenium.TravisIntegrationTests"
 val testdataDir = "../testdata"
 
 // resolvers += Resolver.mavenLocal
@@ -85,7 +86,11 @@ val integrationtests = taskKey[Unit]("Runs integration tests on the assembly.jar
 
 val moretests = taskKey[Unit]("Runs more tests on the assembly.jar file.") in Distribution
 
+val travismoretests = taskKey[Unit]("Runs travis more tests on the assembly.jar file.") in Distribution
+
 val alltests = taskKey[Unit]("Runs all tests in JS and JVM projects.") in Distribution
+
+val travis = taskKey[Unit]("The build that is run in Travis CI.") in Distribution
 
 val disttests = taskKey[Unit]("Runs unit tests and more tests on the assembly.jar file.") in Distribution
 
@@ -104,6 +109,8 @@ val mydist = taskKey[Unit]("Make a build for distribution") in Distribution
 val fvt = taskKey[Unit]("Run test cases using assembled jars, does not build jars") in Distribution
 
 val svt = taskKey[Unit]("Run test cases using assembled jars, does not build jars") in Distribution
+
+val travissvt = taskKey[Unit]("Run test cases that Travis CI uses using assembled jars, does not build jars") in Distribution
 
 val standalonetests = taskKey[Unit]("Run test cases using assembled jars, does not build jars") in Distribution
 
@@ -614,6 +621,43 @@ lazy val `bridgescorer-server` = project.in(file("server")).
       }
     },
 
+    travismoretests := Def.sequential( prereqintegrationtests in Distribution, travissvt in Distribution).value,
+
+    travissvt := {
+      val log = streams.value.log
+      val (assemblyJar, testJar) = {
+        val targetdir = (classDirectory in Compile).value+"/../"
+
+        val assemblyjar = BridgeServer.findFile( targetdir+(assemblyJarName in assembly).value, "-SNAPSHOT.jar" )
+        val testjar = BridgeServer.findFile( targetdir+(assemblyJarName in (Test,assembly)).value, "-SNAPSHOT.jar" )
+
+        val cp = (assemblyjar, testjar)
+        log.info( "Jars are "+cp )
+        cp
+      }
+      val cp = assemblyJar+java.io.File.pathSeparator+testJar
+
+      val server = new BridgeServer(assemblyJar)
+      server.runWithServer(log, baseDirectory.value+"/logs/itestServerInTest.%u.log") {
+        val jvmargs = server.getTestDefine():::
+                                   "-DUseProductionPage=1"::
+                                   "-DToMonitorFile=logs/itestTcpMonitorTimeWait.csv"::
+                                   "-DUseLogFilePrefix=logs/itest"::
+                                   "-DTestDataDirectory="+testdataDir::
+                                   "-DMatchToTest=7,8,9,10,11"::
+                                   "-cp"::cp::
+                                   "org.scalatest.tools.Runner"::
+                                   "-o"::
+                                   "-s"::
+                                   travisMoretestToRun::
+                                   Nil
+        val inDir = baseDirectory.value
+        log.info( s"""Running in directory ${inDir}: java ${jvmargs.mkString(" ")}""" )
+        BridgeServer.runjava( log, jvmargs, 
+                              Some(baseDirectory.value) )
+      }
+    },
+
     standalonetests := Def.sequential( fvt in Distribution, svt in Distribution ).value,
 
     disttests := Def.sequential(integrationtests in Distribution, moretests in Distribution).value,
@@ -716,6 +760,19 @@ alltests := Def.sequential(
                        test in Test in `bridgescorer-client`,
                        test in Test in `bridgescorer-server`,
                        disttests in Distribution in `bridgescorer-server`
+                      ).value
+
+travis := Def.sequential(
+                       travis in Distribution in utilities,
+                       fastOptJS in Compile in `bridgescorer-client`,
+                       fullOptJS in Compile in `bridgescorer-client`,
+                       fastOptJS in Test in `bridgescorer-client`,
+//                       packageJSDependencies in Compile in `bridgescorer-client`,
+                       test in Test in rotationJVM,
+                       test in Test in rotationJS,
+                       test in Test in `bridgescorer-client`,
+                       test in Test in `bridgescorer-server`,
+                       travismoretests in Distribution in `bridgescorer-server`
                       ).value
 
 mydist := Def.sequential(
