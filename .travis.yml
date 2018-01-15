@@ -16,11 +16,12 @@ before_install:
 - sh -e /etc/init.d/xvfb start
 
 install: # Install ChromeDriver
-  - wget -N https://chromedriver.storage.googleapis.com/2.35/chromedriver_linux64.zip -P ~/
-  - echo "67fad24c4a85e3f33f51c97924a98b619722db15ce92dcd27484fb748af93e8e *chromedriver_linux64.zip" | sha256sum -c
-  - unzip ~/chromedriver_linux64.zip -d ~/
-  - rm ~/chromedriver_linux64.zip
-  - sudo mv -f ~/chromedriver /usr/local/share/
+  - mkdir -p target/drivers
+  - wget -N https://chromedriver.storage.googleapis.com/2.35/chromedriver_linux64.zip -P target/drivers/
+  - echo "67fad24c4a85e3f33f51c97924a98b619722db15ce92dcd27484fb748af93e8e *target/drivers/chromedriver_linux64.zip" | sha256sum -c
+  - unzip target/drivers/chromedriver_linux64.zip -d target/drivers/
+  - rm target/drivers/chromedriver_linux64.zip
+  - sudo mv -f target/drivers/chromedriver /usr/local/share/
   - sudo chmod +x /usr/local/share/chromedriver
   - sudo ln -s /usr/local/share/chromedriver /usr/local/bin/chromedriver
 
