@@ -2,6 +2,10 @@
 // To only build the debug version of the client code,
 // define the environment variable "OnlyBuildDebug"
 //
+// To specify the browser to use for tests, define the
+// environment variable "UseBrowser" to the browser to use.  Default: chrome
+// supported browsers: chrome, chromeheadless, safari, firefox, edge, ie
+//
 // To check for updates, npm and maven
 //   checkForUpdates
 // To build just the bundle.js and copy them to `bridgescorer-server` project
@@ -34,6 +38,10 @@ import scala.language.postfixOps
 enablePlugins(GitVersioning, GitBranchPrompt)
 EclipseKeys.skipParents in ThisBuild := false
 
+val useBrowser = sys.props.get("UseBrowser").
+                       orElse(sys.env.get("UseBrowser")).
+                       getOrElse("chrome")
+
 val onlyBuildDebug = sys.props.get("OnlyBuildDebug").
                        orElse(sys.env.get("OnlyBuildDebug")).
                        map( s => s.toBoolean ).
@@ -49,11 +57,25 @@ val onlyBuildDebug = sys.props.get("OnlyBuildDebug").
 //    session save
 //    reload return
 
+val inTravis = sys.props.get("TRAVIS_BUILD_NUMBER").
+                     orElse(sys.env.get("TRAVIS_BUILD_NUMBER")).
+                     isDefined
 
-val testToRun = "com.example.test.AllSuites"
+val testToRunNotTravis = "com.example.test.AllSuites"
+val testToRunInTravis = "com.example.test.TravisAllSuites"
+
+val testToRun = if (inTravis) {
+  println( s"Running in Travis CI, tests to run: ${testToRunInTravis}" )
+  testToRunInTravis
+} else {
+  println( s"Not running in Travis CI, tests to run: ${testToRunNotTravis}" )
+  testToRunNotTravis
+}
+
 //val testToRun = "com.example.test.MyServiceSpec"
 
 val moretestToRun = "com.example.test.selenium.IntegrationTests"
+val travisMoretestToRun = "com.example.test.selenium.TravisIntegrationTests"
 val testdataDir = "../testdata"
 
 // resolvers += Resolver.mavenLocal
@@ -66,6 +88,7 @@ lazy val commonSettings = versionSetting ++ Seq(
   crossScalaVersions := verCrossScalaVersions,
   scalacOptions := Seq("-unchecked", "-deprecation", "-encoding", "utf8", "-feature" /* , "-Xlog-implicits" */),
   EclipseKeys.withSource := true,
+  testOptions in Test += Tests.Argument(TestFrameworks.ScalaTest, "-oD"),
   EclipseKeys.useProjectId := true
 )
 
@@ -85,7 +108,11 @@ val integrationtests = taskKey[Unit]("Runs integration tests on the assembly.jar
 
 val moretests = taskKey[Unit]("Runs more tests on the assembly.jar file.") in Distribution
 
+val travismoretests = taskKey[Unit]("Runs travis more tests on the assembly.jar file.") in Distribution
+
 val alltests = taskKey[Unit]("Runs all tests in JS and JVM projects.") in Distribution
+
+val travis = taskKey[Unit]("The build that is run in Travis CI.") in Distribution
 
 val disttests = taskKey[Unit]("Runs unit tests and more tests on the assembly.jar file.") in Distribution
 
@@ -104,6 +131,8 @@ val mydist = taskKey[Unit]("Make a build for distribution") in Distribution
 val fvt = taskKey[Unit]("Run test cases using assembled jars, does not build jars") in Distribution
 
 val svt = taskKey[Unit]("Run test cases using assembled jars, does not build jars") in Distribution
+
+val travissvt = taskKey[Unit]("Run test cases that Travis CI uses using assembled jars, does not build jars") in Distribution
 
 val standalonetests = taskKey[Unit]("Run test cases using assembled jars, does not build jars") in Distribution
 
@@ -437,7 +466,7 @@ lazy val `bridgescorer-server` = project.in(file("server")).
     EclipseKeys.createSrc := EclipseCreateSrc.Default + EclipseCreateSrc.ManagedClasses,
 
 //    testOptions in Test += Tests.Argument(TestFrameworks.ScalaTest, "-oG"),
-//    testOptions in Test += Tests.Filter(s => { println("TestOption: "+s); s.endsWith("AllSuites") }),
+
     testOptions in Test += Tests.Filter(s => { 
       if (s == testToRun) {
         println("Using Test:    "+s) 
@@ -455,11 +484,11 @@ lazy val `bridgescorer-server` = project.in(file("server")).
     },
     fork in Test := true,
     javaOptions in Test ++= Seq(
-      "-DDefaultWebDriver=chrome",
-      "-DSessionComplete=chrome",
-      "-DSessionDirector=chrome",
-      "-DSessionTable1=chrome",
-      "-DSessionTable2=chrome"
+      "-DDefaultWebDriver="+useBrowser,
+      "-DSessionComplete="+useBrowser,
+      "-DSessionDirector="+useBrowser,
+      "-DSessionTable1="+useBrowser,
+      "-DSessionTable2="+useBrowser
     ),
 
     libraryDependencies ++= bridgeScorerDeps.value,
@@ -559,16 +588,17 @@ lazy val `bridgescorer-server` = project.in(file("server")).
         val assemblyjar = BridgeServer.findFile( targetdir+(assemblyJarName in assembly).value, "-SNAPSHOT.jar" )
         val testjar = BridgeServer.findFile( targetdir+(assemblyJarName in (Test,assembly)).value, "-SNAPSHOT.jar" )
 
-        val cp = assemblyjar+";"+testjar
+        val cp = assemblyjar+java.io.File.pathSeparator+testjar
         log.info( "Classpath is "+cp )
         cp
       }
       val args = "-DUseProductionPage=1"::
                  "-DToMonitorFile=logs/atestTcpMonitorTimeWait.csv"::
                  "-DUseLogFilePrefix=logs/atest"::
+                 "-DDefaultWebDriver="+useBrowser::
                  "-cp"::getclasspath()::
                  "org.scalatest.tools.Runner"::
-                 "-o"::
+                 "-oD"::
                  "-s"::
                  testToRun::
                  Nil
@@ -592,7 +622,7 @@ lazy val `bridgescorer-server` = project.in(file("server")).
         log.info( "Jars are "+cp )
         cp
       }
-      val cp = assemblyJar+";"+testJar
+      val cp = assemblyJar+java.io.File.pathSeparator+testJar
 
       val server = new BridgeServer(assemblyJar)
       server.runWithServer(log, baseDirectory.value+"/logs/itestServerInTest.%u.log") {
@@ -601,11 +631,50 @@ lazy val `bridgescorer-server` = project.in(file("server")).
                                    "-DToMonitorFile=logs/itestTcpMonitorTimeWait.csv"::
                                    "-DUseLogFilePrefix=logs/itest"::
                                    "-DTestDataDirectory="+testdataDir::
+                                   "-DDefaultWebDriver="+useBrowser::
                                    "-cp"::cp::
                                    "org.scalatest.tools.Runner"::
-                                   "-o"::
+                                   "-oD"::
                                    "-s"::
                                    moretestToRun::
+                                   Nil
+        val inDir = baseDirectory.value
+        log.info( s"""Running in directory ${inDir}: java ${jvmargs.mkString(" ")}""" )
+        BridgeServer.runjava( log, jvmargs, 
+                              Some(baseDirectory.value) )
+      }
+    },
+
+    travismoretests := Def.sequential( prereqintegrationtests in Distribution, travissvt in Distribution).value,
+
+    travissvt := {
+      val log = streams.value.log
+      val (assemblyJar, testJar) = {
+        val targetdir = (classDirectory in Compile).value+"/../"
+
+        val assemblyjar = BridgeServer.findFile( targetdir+(assemblyJarName in assembly).value, "-SNAPSHOT.jar" )
+        val testjar = BridgeServer.findFile( targetdir+(assemblyJarName in (Test,assembly)).value, "-SNAPSHOT.jar" )
+
+        val cp = (assemblyjar, testjar)
+        log.info( "Jars are "+cp )
+        cp
+      }
+      val cp = assemblyJar+java.io.File.pathSeparator+testJar
+
+      val server = new BridgeServer(assemblyJar)
+      server.runWithServer(log, baseDirectory.value+"/logs/itestServerInTest.%u.log") {
+        val jvmargs = server.getTestDefine():::
+                                   "-DUseProductionPage=1"::
+                                   "-DToMonitorFile=logs/itestTcpMonitorTimeWait.csv"::
+                                   "-DUseLogFilePrefix=logs/itest"::
+                                   "-DTestDataDirectory="+testdataDir::
+                                   "-DMatchToTest=10"::
+                                   "-DDefaultWebDriver="+useBrowser::
+                                   "-cp"::cp::
+                                   "org.scalatest.tools.Runner"::
+                                   "-oD"::
+                                   "-s"::
+                                   travisMoretestToRun::
                                    Nil
         val inDir = baseDirectory.value
         log.info( s"""Running in directory ${inDir}: java ${jvmargs.mkString(" ")}""" )
@@ -718,6 +787,19 @@ alltests := Def.sequential(
                        disttests in Distribution in `bridgescorer-server`
                       ).value
 
+travis := Def.sequential(
+                       travis in Distribution in utilities,
+                       fastOptJS in Compile in `bridgescorer-client`,
+                       fullOptJS in Compile in `bridgescorer-client`,
+                       fastOptJS in Test in `bridgescorer-client`,
+//                       packageJSDependencies in Compile in `bridgescorer-client`,
+                       test in Test in rotationJVM,
+                       test in Test in rotationJS,
+                       test in Test in `bridgescorer-client`,
+                       test in Test in `bridgescorer-server`,
+                       travismoretests in Distribution in `bridgescorer-server`
+                      ).value
+
 mydist := Def.sequential(
                        clean.all(bridgescorerAllProjects),
                        mydist in Distribution in utilities,
@@ -793,8 +875,8 @@ releaseProcess := Seq[ReleaseStep](
   recalculateVersion,                     // : ReleaseStep
   publishRelease,                         // : ReleaseStep, custom
   setNextVersion,                         // : ReleaseStep
-  commitNextVersion,                      // : ReleaseStep
-  gitMergeReleaseMaster,
-  recalculateVersion,                     // : ReleaseStep
-  pushChanges                             // : ReleaseStep, also checks that an upstream branch is properly configured
+  commitNextVersion                       // : ReleaseStep
+//  gitMergeReleaseMaster,
+//  recalculateVersion,                     // : ReleaseStep
+//  pushChanges                             // : ReleaseStep, also checks that an upstream branch is properly configured
 )

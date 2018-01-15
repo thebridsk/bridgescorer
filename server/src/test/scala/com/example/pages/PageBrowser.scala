@@ -129,6 +129,7 @@ trait PageBrowser {
   def pressKeys(value: String)(implicit webDriver: WebDriver, pos: Position) = {
     val ae: WebElement = webDriver.switchTo.activeElement
     ae.sendKeys(value)
+    Thread.sleep( 100L )
     this
   }
 

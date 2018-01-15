@@ -51,6 +51,9 @@ object MyReleaseVersion {
 
   //releaseUseGlobalVersion := false
 
+  private val releaseBranch = "release"
+
+
   private val globalVersionString = "git.baseVersion in ThisBuild := \"%s\""
   private val versionString = "git.baseVersion := \"%s\""
   private def setVersion(selectVersion: Versions => String): ReleaseStep =  { st: State =>
@@ -82,7 +85,7 @@ object MyReleaseVersion {
         val v = version.value
         val v1 = if (v contains gitHeadCommit.value.getOrElse("Unknown")) v
                  else v+"-"+gitHeadCommit.value.getOrElse("Unknown")+(if (gitUncommittedChanges.value) "-SNAPSHOT" else "")
-        val v2 = if (v1.endsWith(gitCurrentBranch.value) || gitCurrentBranch.value == "release") v1
+        val v2 = if (v1.endsWith(gitCurrentBranch.value) || gitCurrentBranch.value == releaseBranch) v1
                  else v1+ "-"+gitCurrentBranch.value
 //        println("Version is "+version.value)
         val js = if (isScalaJSProject.value) " JS" else ""
@@ -159,7 +162,7 @@ object MyReleaseVersion {
     // action
     { st: State =>
       val gitcmd = vcs(st)
-      gitcmd.cmd("checkout","-B","release").lineStream.foreach( line => st.log.info(s"""gitMakeReleaseBranch: ${line}""") )
+      gitcmd.cmd("checkout","-B",releaseBranch).lineStream.foreach( line => st.log.info(s"""gitMakeReleaseBranch: ${line}""") )
       recalculateVersion.action(st)
     },
     // check
@@ -176,9 +179,22 @@ object MyReleaseVersion {
     { st: State =>
       val gitcmd = vcs(st)
       gitcmd.cmd("checkout","master").lineStream.foreach( line => st.log.info(s"""gitMergeReleaseMaster checkout master: ${line}""") )
-      gitcmd.cmd("merge","release").lineStream.foreach( line => st.log.info(s"""gitMergeReleaseMaster merge release: ${line}""") )
-      gitcmd.cmd("branch","--delete", "--force", "release").lineStream.foreach( line => st.log.info(s"""gitMergeReleaseMaster branch -d release: ${line}""") )
+      gitcmd.cmd("merge",releaseBranch).lineStream.foreach( line => st.log.info(s"""gitMergeReleaseMaster merge ${releaseBranch}: ${line}""") )
+      gitcmd.cmd("branch","--delete", "--force", releaseBranch).lineStream.foreach( line => st.log.info(s"""gitMergeReleaseMaster branch -d ${releaseBranch}: ${line}""") )
       recalculateVersion.action(st)
+    },
+    // check
+    { st: State =>
+      st
+    }
+  )
+
+  def gitPushReleaseBranch: ReleaseStep = ReleaseStep(
+    // action
+    { st: State =>
+      val gitcmd = vcs(st)
+      gitcmd.cmd("push", "-u", "origin", releaseBranch).lineStream.foreach( line => st.log.info(s"""gitMergeReleaseMaster push -u origin ${releaseBranch}: ${line}""") )
+      st
     },
     // check
     { st: State =>

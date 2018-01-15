@@ -164,19 +164,25 @@ class ListDuplicatePage( implicit webDriver: WebDriver, pageCreated: SourcePosit
   def getResults( id: String )(implicit patienceConfig: PatienceConfig, pos: Position) = {
 
     withClueAndScreenShot(screenshotDir, "getResults", s"""working on results from match ${id}, ${pos.line}""") {
-      val row = getElemsByXPath(s"""//div/table/tbody/tr[td/button[@id='${matchIdToButtonId(id)}' or @id='${resultIdToButtonId(id)}']]/td""")
-      val names = getNames
+      eventually {
+        val row = getElemsByXPath(s"""//div/table/tbody/tr[td/button[@id='${matchIdToButtonId(id)}' or @id='${resultIdToButtonId(id)}']]/td""")
+        val names = getNames
 
-      row.size mustBe names.size+4
+        row.size mustBe names.size+4
 
-      (names zip row.drop(3).map(e=>e.text)).map { case (name,result) => s"""${name}\n${result}""" }
+        (names zip row.drop(3).map(e=>e.text)).map { case (name,result) => s"""${name}\n${result}""" }
+      }
     }
   }
 
-  def checkResults( id: String, results: String* ) = {
-    val res = getResults(id)
-    results.foreach( r => res must contain (r))
-    this
+  def checkResults( id: String, results: String* )(implicit patienceConfig: PatienceConfig, pos: Position) = {
+    withClueAndScreenShot(screenshotDir, "checkResults", s"""working on results from match ${id}, ${pos.line}, looking for ${results.mkString("[", "],[", "]")}""") {
+      eventually {
+        val res = getResults(id)
+        results.foreach( r => res must contain (r))
+        this
+      }
+    }
   }
 
 }

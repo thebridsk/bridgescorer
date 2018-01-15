@@ -6,7 +6,7 @@ import org.scalatest.Sequential
 /**
  * @author werewolf
  */
-class AllSeleniumSuites extends Sequential(
+class TravisSeleniumSuites extends Sequential(
   new ChicagoTest,
   new Chicago5Test,
   new Chicago5SimpleTest,
@@ -18,7 +18,7 @@ class AllSeleniumSuites extends Sequential(
   new RubberTest,
   new DuplicateResultTest,
   new SwaggerTest,
-  new SwaggerTest2
+//  new SwaggerTest2
 ) with BeforeAndAfterAll {
   override
   def beforeAll() = {

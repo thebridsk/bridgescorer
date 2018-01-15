@@ -8,35 +8,38 @@ addons:
 
 branches:
   only: 
-    - master
-    
-before_install:
-- export DISPLAY=:99.0
-- sh -e /etc/init.d/xvfb start
+  - master
+  - /^v\d+\.\d+(\.\d+)?(-\S*)?$/
+
+#before_install:
+#- export DISPLAY=:99.0
+#- sh -e /etc/init.d/xvfb start
 
 install: # Install ChromeDriver
-  - wget -N https://chromedriver.storage.googleapis.com/2.35/chromedriver_linux64.zip -P ~/
-  - unzip ~/chromedriver_linux64.zip -d ~/
-  - rm ~/chromedriver_linux64.zip
-  - sudo mv -f ~/chromedriver /usr/local/share/
+  - mkdir -p target/drivers
+  - wget -N https://chromedriver.storage.googleapis.com/2.35/chromedriver_linux64.zip -P target/drivers/
+  - echo "67fad24c4a85e3f33f51c97924a98b619722db15ce92dcd27484fb748af93e8e *target/drivers/chromedriver_linux64.zip" | sha256sum -c
+  - unzip target/drivers/chromedriver_linux64.zip -d target/drivers/
+  - rm target/drivers/chromedriver_linux64.zip
+  - sudo mv -f target/drivers/chromedriver /usr/local/share/
   - sudo chmod +x /usr/local/share/chromedriver
   - sudo ln -s /usr/local/share/chromedriver /usr/local/bin/chromedriver
 
 script:
 # - export ParallelUtilsUseSerial=false
-- sbt distribution:mytest
+- export UseBrowser=chromeheadless
+- sbt clean distribution:travis
 
 after_failure:
 - cat server/logs/unittestTcpMonitorTimeWait.csv
 # - cat server/logs/unittest.1.log
 
-before_deploy:
-- sbt distribution:alltests
-
 deploy:
   provider: releases
+  skip_cleanup: true
   api_key:
     secure: KZFkOMFKXuabrzdsh7O5B5Sq9m2Ymf4M7YLSFFFClWK2s0EhMabAbsKJqylXCqYB+Hhi1nZDv6IHH0QZvuVd2HhlPUJt6/eAsI8/9FvmDKFZQlybEFeg66ogd7N1OAr8IbFAh/bXW1k9t7YwhTQOL6VoOSrm37jrQPshrVfwgw8bgdoWiMO0oTPcpsSN5qNqlLooz0fwpA2gk49KC1ZnLrq2S4F8KOIAAnkMWYdb9hTJRBlkQqIV/r6O65IZT9ZvVxqJNYBnpPUsL558D57AcWiya0QFWPGvz2cO1GcekzYyG7T110HjyiSnJSHciSOlXjro7AS+C9iwo/T9FHmtULB0WIgnyEZrBEc/GyqIZX7PAiBeXXcPhe/ac1IHbnwiomiVcTgOqr8Fc2b3YVNqX+hQKIdWa4+LYeVoVibeusUnqM91Eun6U26ljNLucJ8e1pVuAg5kZw3DWbpX37qDeSL85Epk1JgikijvjWpBt+P+STldsvb/zadPzAfmyEJW5auHgQ4YMniaGIwUd58aQa/wH5ZLPW1wt1ONgTgs/B21Os5FSXRxpf7ZAbX9hvFEdQhHos7/4TeKw1+0z/4F8nKtFocxcg3VRjQ9OGgTCM6LhF1DhQYQcMq+Y7rMcMqpegfGrCbE2v1eYpJWJGMuL0Gxhi0RFUrhPMUtFmU5lak=
+  file_glob: true
   file: server/target/scala-2.12/bridgescorer-server-assembly-*.jar
   on:
     repo: thebridsk/bridgescorer
