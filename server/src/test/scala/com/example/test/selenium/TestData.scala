@@ -17,6 +17,11 @@ object TestData {
 
   val log = Logger( TestData.getClass.getName )
 
+  /**
+   * The matches to replay.  The value is obtained from the system property or environment variable MatchToTest.
+   * If None, then all games are replayed,
+   * if Some(List(id,...)) where id is just the digits of the MatchDuplicate ID
+   */
   val matchToTest = TestServer.getProp("MatchToTest").map{ ms =>
       ms.split("[ ,]+").flatMap(s => if (s==null || s.length() == 0) Nil else s::Nil ).toList
     }

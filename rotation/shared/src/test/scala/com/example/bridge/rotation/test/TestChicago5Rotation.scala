@@ -7,8 +7,58 @@ import com.example.bridge.rotation.Table._
 import com.example.bridge.rotation.Chicago5Rotation
 import org.scalatest.exceptions.TestFailedException
 
+object TestChicago5Rotation {
+
+  /**
+   * Get the specified property as either a java property or an environment variable.
+   * If both are set, the java property wins.
+   * @param name the property name
+   * @return the property value wrapped in a Some object.  None property not set.
+   */
+  def getPropOrEnv( name: String ): Option[String] = sys.props.get(name) match {
+    case v: Some[String] =>
+//      log.fine("getPropOrEnv: found system property: "+name+"="+v.get)
+      v
+    case None =>
+      sys.env.get(name) match {
+        case v: Some[String] =>
+//          log.fine("getPropOrEnv: found env var: "+name+"="+v.get)
+          v
+        case None =>
+//          log.fine("getPropOrEnv: did not find system property or env var: "+name)
+          None
+      }
+  }
+
+  /**
+   * flag to determine if println is enabled in test cases
+   * Configure by setting the System Property ParallelUtils.useSerial or environment variable ParallelUtils.useSerial
+   * to "true" or "false".
+   * If this property is not set, then the os.name system property is used, on windows or unknown parallel, otherwise serial.
+   */
+  val enablePrintln = {
+    getPropOrEnv("TestChicago5RotationPrintln") match {
+      case Some(v) =>
+        v.toBoolean
+      case None =>
+        sys.props.getOrElse("os.name", "oops").toLowerCase() match {
+          case os: String if (os.contains("win")) => false
+          case os: String if (os.contains("mac")) => false
+          case os: String if (os.contains("nix")||os.contains("nux")) => false
+          case os =>
+//            log.severe("Unknown operating system: "+os)
+            false
+        }
+    }
+  }
+
+}
+
 class TestChicago5Rotation extends FlatSpec with MustMatchers {
 
+  def println( s: String = "" ) = {
+    if (TestChicago5Rotation.enablePrintln) Predef.println(s)
+  }
 
   behavior of "Table class in bridgescorer-rotation"
 
