@@ -106,9 +106,9 @@ class Session extends WebDriver {
 
   private var chromeDriverService: Option[ChromeDriverService] = None
 
-  private def chrome = chromeCurrent
+  private def chrome( headless: Boolean ) = chromeCurrent(headless)
 
-  private def chromeExperiment: RemoteWebDriver = {
+  private def chromeExperiment( headless: Boolean ): RemoteWebDriver = {
     val logfile = new File(s"chromedriver.${Session.sessionCounter.incrementAndGet()}.log")
 
     val options = new ChromeOptions
@@ -118,13 +118,14 @@ class Session extends WebDriver {
     else options.addArguments(s"""--log-path=${logfile.toString}""", "--verbose", "--silent")
 //    options.addArguments("--enable-automation=false")
     options.addArguments("--disable-infobars")
+    if (headless) options.addArguments("--headless")
 //    val capabilities = DesiredCapabilities.chrome();
 //    capabilities.setCapability(ChromeOptions.CAPABILITY, options);
     val driver = new ChromeDriver(options);
     driver
   }
 
-  private def chromeCurrent = {
+  private def chromeCurrent( headless: Boolean ) = {
     // does not work
 //    val options = new ChromeOptions()
 //    options.addArguments("--verbose", "--log-path=C:\\temp\\chrome_test.log")
@@ -150,6 +151,7 @@ class Session extends WebDriver {
       service.start()
       val options = new ChromeOptions
       options.addArguments("--disable-infobars")
+      if (headless) options.addArguments("--headless")
       val capabilities = DesiredCapabilities.chrome();
       capabilities.setCapability(ChromeOptions.CAPABILITY, options);
       new RemoteWebDriver(service.getUrl(), capabilities)
@@ -198,7 +200,7 @@ class Session extends WebDriver {
   /**
    * The default browser when a specific browser has not been specified.
    */
-  def defaultBrowser = chrome
+  def defaultBrowser = chrome(false)
 
   /**
    * Start a browser webdriver
@@ -243,7 +245,10 @@ class Session extends WebDriver {
         wd.toLowerCase() match {
           case "chrome" =>
             testlog.fine( "Using chrome" )
-            chrome // Chrome.webDriver
+            chrome(false) // Chrome.webDriver
+          case "chromeheadless" =>
+            testlog.fine( "Using chrome headless" )
+            chrome(true) // Chrome.webDriver
           case "safari" =>
             testlog.fine( "Using safari" )
             safari // Safari.webDriver
