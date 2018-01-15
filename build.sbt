@@ -88,6 +88,7 @@ lazy val commonSettings = versionSetting ++ Seq(
   crossScalaVersions := verCrossScalaVersions,
   scalacOptions := Seq("-unchecked", "-deprecation", "-encoding", "utf8", "-feature" /* , "-Xlog-implicits" */),
   EclipseKeys.withSource := true,
+  testOptions in Test += Tests.Argument(TestFrameworks.ScalaTest, "-oD"),
   EclipseKeys.useProjectId := true
 )
 
@@ -597,7 +598,7 @@ lazy val `bridgescorer-server` = project.in(file("server")).
                  "-DDefaultWebDriver="+useBrowser::
                  "-cp"::getclasspath()::
                  "org.scalatest.tools.Runner"::
-                 "-o"::
+                 "-oD"::
                  "-s"::
                  testToRun::
                  Nil
@@ -633,7 +634,7 @@ lazy val `bridgescorer-server` = project.in(file("server")).
                                    "-DDefaultWebDriver="+useBrowser::
                                    "-cp"::cp::
                                    "org.scalatest.tools.Runner"::
-                                   "-o"::
+                                   "-oD"::
                                    "-s"::
                                    moretestToRun::
                                    Nil
@@ -667,11 +668,11 @@ lazy val `bridgescorer-server` = project.in(file("server")).
                                    "-DToMonitorFile=logs/itestTcpMonitorTimeWait.csv"::
                                    "-DUseLogFilePrefix=logs/itest"::
                                    "-DTestDataDirectory="+testdataDir::
-                                   "-DMatchToTest=8,9,10,11"::
+                                   "-DMatchToTest=10"::
                                    "-DDefaultWebDriver="+useBrowser::
                                    "-cp"::cp::
                                    "org.scalatest.tools.Runner"::
-                                   "-o"::
+                                   "-oD"::
                                    "-s"::
                                    travisMoretestToRun::
                                    Nil
