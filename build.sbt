@@ -594,6 +594,7 @@ lazy val `bridgescorer-server` = project.in(file("server")).
       val args = "-DUseProductionPage=1"::
                  "-DToMonitorFile=logs/atestTcpMonitorTimeWait.csv"::
                  "-DUseLogFilePrefix=logs/atest"::
+                 "-DDefaultWebDriver="+useBrowser::
                  "-cp"::getclasspath()::
                  "org.scalatest.tools.Runner"::
                  "-o"::
@@ -629,6 +630,7 @@ lazy val `bridgescorer-server` = project.in(file("server")).
                                    "-DToMonitorFile=logs/itestTcpMonitorTimeWait.csv"::
                                    "-DUseLogFilePrefix=logs/itest"::
                                    "-DTestDataDirectory="+testdataDir::
+                                   "-DDefaultWebDriver="+useBrowser::
                                    "-cp"::cp::
                                    "org.scalatest.tools.Runner"::
                                    "-o"::
@@ -666,6 +668,7 @@ lazy val `bridgescorer-server` = project.in(file("server")).
                                    "-DUseLogFilePrefix=logs/itest"::
                                    "-DTestDataDirectory="+testdataDir::
                                    "-DMatchToTest=8,9,10,11"::
+                                   "-DDefaultWebDriver="+useBrowser::
                                    "-cp"::cp::
                                    "org.scalatest.tools.Runner"::
                                    "-o"::
