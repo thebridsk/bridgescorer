@@ -57,8 +57,21 @@ val onlyBuildDebug = sys.props.get("OnlyBuildDebug").
 //    session save
 //    reload return
 
+val inTravis = sys.props.get("TRAVIS_BUILD_NUMBER").
+                     orElse(sys.env.get("TRAVIS_BUILD_NUMBER")).
+                     isDefined
 
-val testToRun = "com.example.test.AllSuites"
+val testToRunNotTravis = "com.example.test.AllSuites"
+val testToRunInTravis = "com.example.test.TravisAllSuites"
+
+val testToRun = if (inTravis) {
+  println( s"Running in Travis CI, tests to run: ${testToRunInTravis}" )
+  testToRunInTravis
+} else {
+  println( s"Not running in Travis CI, tests to run: ${testToRunNotTravis}" )
+  testToRunNotTravis
+}
+
 //val testToRun = "com.example.test.MyServiceSpec"
 
 val moretestToRun = "com.example.test.selenium.IntegrationTests"
@@ -452,7 +465,7 @@ lazy val `bridgescorer-server` = project.in(file("server")).
     EclipseKeys.createSrc := EclipseCreateSrc.Default + EclipseCreateSrc.ManagedClasses,
 
 //    testOptions in Test += Tests.Argument(TestFrameworks.ScalaTest, "-oG"),
-//    testOptions in Test += Tests.Filter(s => { println("TestOption: "+s); s.endsWith("AllSuites") }),
+
     testOptions in Test += Tests.Filter(s => { 
       if (s == testToRun) {
         println("Using Test:    "+s) 

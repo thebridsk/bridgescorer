@@ -47,7 +47,7 @@ import com.example.pages.PageBrowser
 /**
  * @author werewolf
  */
-class SwaggerTest extends FlatSpec with MustMatchers with BeforeAndAfterAll {
+class SwaggerTest2 extends FlatSpec with MustMatchers with BeforeAndAfterAll {
   import com.example.pages.PageBrowser._
   import ParallelUtils._
 
@@ -106,43 +106,10 @@ class SwaggerTest extends FlatSpec with MustMatchers with BeforeAndAfterAll {
 
   behavior of "Swagger test of Bridge Server"
 
-  it should "get the swagger json" in {
-    tcpSleep(15)
+  it should "display the swagger docs going to /public/apidocs.html.gz" in {
     implicit val webDriver = TestSession.webDriver
 
-    val ResponseFromHttp(status,headerloc,contentEncoding,resp) = getHttp( TestServer.getUrl("/v1/api-docs/swagger.json") )
-    resp must include regex """Scorekeeper for a 2 table duplicate bridge match\."""
-  }
-
-  it should "try to get swagger docs page" in {
-    implicit val webDriver = TestSession.webDriver
-
-    val ResponseFromHttp(status,headerloc,contentEncoding,resp) = getHttp( TestServer.getUrl("/v1/docs/") )
-    status mustBe 308
-    headerloc mustBe Some("/public/swagger-ui-dist/index.html.gz?url=/v1/api-docs/swagger.json&validatorUrl=")
-//    resp must include regex """\<html\>"""
-  }
-
-  it should "get the swagger docs page" in {
-    implicit val webDriver = TestSession.webDriver
-
-    val ResponseFromHttp(status,headerloc,contentEncoding,resp) = getHttpAll( TestServer.getUrl("/public/swagger-ui-dist/index.html") )
-    status mustBe 200
-    resp must include regex """<html[ >]"""
-  }
-
-  it should "get the swagger apidocs page" in {
-    implicit val webDriver = TestSession.webDriver
-
-    val ResponseFromHttp(status,headerloc,contentEncoding,resp) = getHttpAll( TestServer.getUrl("/public/apidocs.html") )
-    status mustBe 200
-    resp must include regex """<html[ >]"""
-  }
-
-  it should "display the swagger docs going to /v1/docs/" in {
-    implicit val webDriver = TestSession.webDriver
-
-    go to TestServer.getDocs()
+    go to TestServer.getUrl("/public/apidocs.html.gz")
     eventually {
       val we = find(xpath("//h2[contains(concat(' ', normalize-space(@class), ' '), ' title ')]"))
       val text = we.text
@@ -150,24 +117,39 @@ class SwaggerTest extends FlatSpec with MustMatchers with BeforeAndAfterAll {
     }
   }
 
-  it should "display the swagger docs going to /public/swagger-ui-dist/index.html.gz" in {
-    implicit val webDriver = TestSession.webDriver
-
-    go to TestServer.getUrl("/public/swagger-ui-dist/index.html.gz?url=/v1/api-docs/swagger.json&validatorUrl=")
-    eventually {
-      val we = find(xpath("//h2[contains(concat(' ', normalize-space(@class), ' '), ' title ')]"))
-      val text = we.text
-      text mustBe "Duplicate Bridge Scorekeeper\n v1 "
-    }
-  }
-
-  it should "show the bridge REST API in the page" in {
+  it should "show the bridge REST API in the page from apidocs.html" in {
     implicit val webDriver = TestSession.webDriver
 
     eventually{ find(xpath("//h4[contains(concat(' ', normalize-space(@class), ' '), ' opblock-tag ')]/a/span[contains(text(), 'Duplicate')]")) }
   }
 
-  it should "allow \"get /v1/rest/boardsets\" to be tried" in {
+// <div class="opblock-tag-section">
+//   <h4 class="opblock-tag">
+//     <span>Duplicate</span>
+//     <small>Duplicate bridge operations</small>
+//     <button class="expand-operation" title="Expand operation">
+//       <svg class="arrow" width="20" height="20">
+//         <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#large-arrow"></use>
+//       </svg>
+//     </button>
+//   </h4>
+//   <noscript></noscript>
+// </div>
+
+  it should "allow \"duplicate\" to be selected" in {
+    implicit val webDriver = TestSession.webDriver
+
+    eventually{
+      val l = find( xpath("""//h4[contains(concat(' ', @class, ' '), 'opblock-tag')]/a/span[.='Duplicate']""") )
+      l.isEnabled mustBe true
+      l.isDisplayed mustBe true
+      PageBrowser.scrollToElement(l)
+      l.click
+    }
+    val li = eventually{ find( id( "operations-Duplicate-getBoardsets" )) }
+  }
+
+  it should "allow \"get /v1/rest/boardsets\" to be tried from apidocs.html" in {
     implicit val webDriver = TestSession.webDriver
 
     val x = eventually { find(id("operations-Duplicate-getBoardsets")) }
