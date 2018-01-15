@@ -38,7 +38,10 @@ class Element( val underlying: WebElement )(implicit pos: Position ) {
       if (txt != null) txt else ""
     }
 
-    def click = underlying.click()
+    def click = {
+      underlying.click()
+      Thread.sleep( 100L )
+    }
 
     override def equals(other: Any): Boolean = underlying == other
 
