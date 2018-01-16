@@ -5,6 +5,7 @@ import sbt.Keys._
 
 import scalajsbundler.Npm
 import scalajsbundler.sbtplugin.ScalaJSBundlerPlugin.autoImport._
+import java.lang.RuntimeException
 
 object MyNpm {
 
@@ -18,7 +19,16 @@ object MyNpm {
       val log = streams.value.log
       log.debug("npmDirectory is "+npmDirectory)
 
-      Npm.run( "outdated" )(npmDirectory, log)
+      try {
+        Npm.run( "outdated" )(npmDirectory, log)
+      } catch {
+        case x: RuntimeException =>
+          // hack alert
+          // eat RuntimeExceptions that say Non-zero exit code.
+          if (!x.getMessage.startsWith("Non-zero exit code: ")) {
+            throw x
+          }
+      }
     }
   )
 }
