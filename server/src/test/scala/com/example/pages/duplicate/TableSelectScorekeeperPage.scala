@@ -171,9 +171,18 @@ class TableSelectScorekeeperPage( dupid: String,
     getButton(buttonOK).isEnabled
   }
 
+  /**
+   * @param north
+   * @param south
+   * @param east
+   * @param west
+   * @param scorekeeper
+   * @param screenShotDir tuple2, first is directory, second is filename
+   */
   def verifyAndSelectScorekeeper(
                          north: String, south: String, east: String, west: String,
-                         scorekeeper: PlayerPosition
+                         scorekeeper: PlayerPosition,
+                         screenShotDir: Option[(String,String)] = None
                        )( implicit
                            webDriver: WebDriver
                        ) = {
@@ -187,6 +196,9 @@ class TableSelectScorekeeperPage( dupid: String,
     findPosButtons must contain allOf ( scorekeeper, scorekeeper.partner)
     val ss1 = clickPos(scorekeeper)
     eventually { ss1.findSelectedPos mustBe Some(scorekeeper) }
+    screenShotDir.foreach { e =>
+      ss1.takeScreenshot(e._1, e._2)
+    }
     ss1.clickOK.validate
   }
 
