@@ -79,6 +79,7 @@ object DuplicateTestPages {
   val testlog = Logger[DuplicateTestPages]
 
   val screenshotDir = "target/DuplicateTestPages"
+  val docsScreenshotDir = "target/docs/DuplicateTestPages"
 
   TestStartLogging.startLogging()
 
@@ -232,7 +233,7 @@ class DuplicateTestPages extends FlatSpec
       import Session._
       // The sessions for the tables and complete is defered to the test that gets the home page url.
       waitForFutures( "Starting browser or server",
-                      CodeBlock { SessionDirector.sessionStart(getPropOrEnv("SessionDirector")).setQuadrant(1) },
+                      CodeBlock { SessionDirector.sessionStart(getPropOrEnv("SessionDirector")).setQuadrant(1,1024,768) },
                       CodeBlock { TestServer.start() }
                       )
     } catch {
@@ -263,12 +264,12 @@ class DuplicateTestPages extends FlatSpec
     import Session._
     waitForFutures(
       "Starting browsers",
-      CodeBlock { SessionTable1.sessionStart(getPropOrEnv("SessionTable1")).setQuadrant(4) },
-      CodeBlock { SessionTable2.sessionStart(getPropOrEnv("SessionTable2")).setQuadrant(3) },
-      CodeBlock { SessionComplete.sessionStart(getPropOrEnv("SessionComplete")).setQuadrant(2) },
+      CodeBlock { SessionTable1.sessionStart(getPropOrEnv("SessionTable1")).setQuadrant(4,1024,768) },
+      CodeBlock { SessionTable2.sessionStart(getPropOrEnv("SessionTable2")).setQuadrant(3,1024,768) },
+      CodeBlock { SessionComplete.sessionStart(getPropOrEnv("SessionComplete")).setQuadrant(2,1024,768) },
       CodeBlock {
         import SessionDirector._
-        HomePage.goto.validate
+        HomePage.goto.validate.takeScreenshot(docsScreenshotDir, "HomePage")
       }
     )
 
@@ -295,7 +296,7 @@ class DuplicateTestPages extends FlatSpec
   it should "allow creating a new duplicate match" in {
     import SessionDirector._
 
-    ListDuplicatePage.current.clickNewDuplicateButton.validate
+    ListDuplicatePage.current.clickNewDuplicateButton.validate.takeScreenshot(docsScreenshotDir, "NewDuplicate")
   }
 
   it should "create a new duplicate match" in {
@@ -330,7 +331,12 @@ class DuplicateTestPages extends FlatSpec
       },
       CodeBlock {
         import SessionTable1._
-        ScoreboardPage.goto(dupid.get).validate.clickTableButton(1).validate(rounds)
+        ScoreboardPage.goto(dupid.get).
+                       takeScreenshot(docsScreenshotDir, "ScoreboardFromTable").
+                       validate.
+                       clickTableButton(1).
+                       validate(rounds).
+                       takeScreenshot(docsScreenshotDir, "TableRound1")
       },
       CodeBlock {
         import SessionTable2._
@@ -353,11 +359,13 @@ class DuplicateTestPages extends FlatSpec
         import SessionTable1._
         var sk = TablePage.current(EnterNames).validate(rounds).clickBoard(1,1).asInstanceOf[TableEnterScorekeeperPage].validate
         sk.isOKEnabled mustBe false
+        sk.takeScreenshot(docsScreenshotDir, "TableEnterNamesSK")
         sk = sk.enterScorekeeper(team1.one).esc.clickPos(North)
         sk.isOKEnabled mustBe true
         sk.findSelectedPos mustBe Some(North)
         var en = sk.clickOK.validate
         en.isOKEnabled mustBe false
+        en.takeScreenshot(docsScreenshotDir, "TableEnterNamesOthers")
         en = en.enterPlayer(South, team1.two).enterPlayer(East, team2.one)
         en.isOKEnabled mustBe false
         en = en.enterPlayer(West, team2.two).esc
@@ -391,6 +399,9 @@ class DuplicateTestPages extends FlatSpec
         hand.getScore mustBe ( "Missing required information", "", "Enter contract tricks" )
         hand.isOkEnabled mustBe false
         hand.getInputStyle mustBe Some("Yellow")
+        hand.enterContract(3, Hearts, Doubled, West, Made, 4, None, None)
+        hand.takeScreenshot(docsScreenshotDir, "DuplicateHand")
+        hand.clickClear
         val board = hand.enterHand( 1, 1, 1, allHands, team1, team2)
         board.checkBoardButtons(1, true, 1).checkBoardButtons(1, false, 2, 3).checkBoardButtonSelected(1)
         val hand2 = board.clickUnplayedBoard(2).validate
@@ -509,7 +520,8 @@ class DuplicateTestPages extends FlatSpec
                          table: Int, round: Int,
                          ns: Team, ew: Team,
                          scorekeeper: PlayerPosition,
-                         mustswap: Boolean
+                         mustswap: Boolean,
+                         takeScreenshot: Boolean = false
                        )( implicit
                            webDriver: WebDriver
                        ) = {
@@ -517,7 +529,9 @@ class DuplicateTestPages extends FlatSpec
     val tp = currentPage.clickTableButton(table).validate.setTarget(SelectNames)
     val ss = tp.clickRound(round).asInstanceOf[TableSelectScorekeeperPage].validate
 
-    val sn = ss.verifyAndSelectScorekeeper(ns.one, ns.two, ew.one, ew.two, scorekeeper)
+    val screenShotDir = if (takeScreenshot) Some((docsScreenshotDir,"SelectSK")) else None
+    val sn = ss.verifyAndSelectScorekeeper(ns.one, ns.two, ew.one, ew.two, scorekeeper, screenShotDir )
+    if (takeScreenshot) sn.takeScreenshot(docsScreenshotDir, "SelectNames")
     sn.verifyNamesAndSelect(ns.teamid, ew.teamid, ns.one, ns.two, ew.one, ew.two, scorekeeper, mustswap).asInstanceOf[ScoreboardPage]
   }
 
@@ -527,7 +541,7 @@ class DuplicateTestPages extends FlatSpec
       "Selecting players for round 2",
       CodeBlock{
         import SessionTable1._
-        val sb = selectScorekeeper(ScoreboardPage.current,1,2, team1, team2, East, false )
+        val sb = selectScorekeeper(ScoreboardPage.current,1,2, team1, team2, East, false, true )
       },
       CodeBlock{
         import SessionTable2._
@@ -547,6 +561,7 @@ class DuplicateTestPages extends FlatSpec
         hand.setInputStyle("Prompt")
         val board = hand.enterHand( 1, 2, 4, allHands, team1, team2)
         board.checkBoardButtons(4, true,4).checkBoardButtons(4, false, 5, 6).checkBoardButtonSelected(4)
+        board.takeScreenshot(docsScreenshotDir, "BoardFromTable")
         val hand2 = board.clickUnplayedBoard(5).validate
         val board2 = hand2.enterHand( 1, 2, 5, allHands, team1, team2)
         board2.checkBoardButtons(5, true,4,5).checkBoardButtons(5, false, 6).checkBoardButtonSelected(5)
@@ -723,7 +738,8 @@ class DuplicateTestPages extends FlatSpec
       "validating round 3",
       CodeBlock {
         import SessionTable1._
-        validateRound(ScoreboardPage.current,1,3,team3.swap,team1 )
+        val sb = validateRound(ScoreboardPage.current,1,3,team3.swap,team1 )
+        sb.takeScreenshot(docsScreenshotDir, "ScoreboardFromTable")
       },
       CodeBlock {
         import SessionTable2._
@@ -906,7 +922,8 @@ class DuplicateTestPages extends FlatSpec
 
     dupid match {
       case Some(id) =>
-        val page = ScoreboardPage.current.clickSummary.validate( id )
+        val page = ScoreboardPage.current.takeScreenshot(docsScreenshotDir, "FinalScoreboard").clickSummary.validate( id )
+        page.takeScreenshot(docsScreenshotDir, "ListDuplicate")
         page.checkResults(id, listDuplicateResult:_*)
       case None =>
         ScoreboardPage.current.clickSummary.validate
@@ -918,7 +935,7 @@ class DuplicateTestPages extends FlatSpec
 
     val sb = ListDuplicatePage.current
     val ids = sb.getMatchIds
-    val peoplePage = sb.clickPairs.validate.clickPeopleDetails
+    val peoplePage = sb.clickPairs.validate.takeScreenshot(docsScreenshotDir, "Pairs").clickPeopleDetails
 
     if (ids.size == 1) {
       peoplePage.checkPeople( peopleResult:_*)

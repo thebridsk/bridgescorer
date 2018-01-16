@@ -330,7 +330,6 @@ class Session extends WebDriver {
 
   /**
    * Set the quadrant for the window.
-   * This assumes a 1920x1080 screen.
    * @param q the quadrant, values are 1,2,3,4.
    *          quadrant 1 is top left, goes around clockwise.
    */
@@ -356,6 +355,41 @@ class Session extends WebDriver {
         case 3 =>
           setPosition(originx+halfx,originy+halfy)
           setSize(halfx,halfy)
+        case _ =>
+      }
+    }
+    this
+  }
+
+  /**
+   * Set the quadrant for the window.  The size is set to the specified width and height
+   * @param q the quadrant, values are 1,2,3,4.
+   *          quadrant 1 is top left, goes around clockwise.
+   * @param width
+   * @param height
+   */
+  def setQuadrant( q: Int, width: Int, height: Int ) = {
+    import Session._
+    if (getScreenInfo) {
+      val originx = origin.get.getX
+      val originy = origin.get.getY
+      val sizex = screenSize.get.getWidth-originx
+      val sizey = screenSize.get.getHeight-originy
+      val halfx = originx/2 + sizex/2
+      val halfy = originy/2 + sizey/2
+      q match {
+        case 1 =>
+          setPosition(originx,originy)
+          setSize(width,height)
+        case 2 =>
+          setPosition(originx+halfx,originy)
+          setSize(width,height)
+        case 4 =>
+          setPosition(originx,originy+halfy)
+          setSize(width,height)
+        case 3 =>
+          setPosition(originx+halfx,originy+halfy)
+          setSize(width,height)
         case _ =>
       }
     }
