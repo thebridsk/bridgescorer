@@ -57,6 +57,8 @@ import com.example.version.VersionServer
 import com.example.version.VersionShared
 import java.net.URLClassLoader
 import com.example.datastore.DataStoreCommands
+import scala.annotation.tailrec
+import java.util.logging.ConsoleHandler
 
 /**
  * This is the main program for the REST server for our application.
@@ -144,6 +146,30 @@ To get help on subcommands, use the command:
   def execute(): Int = {
     logger.severe("Unknown options specified")
     1
+  }
+
+  lazy val isConsoleLoggingToInfo = {
+
+    import java.util.logging.{ Logger => JLogger }
+    @tailrec
+    def findConsoleHandler( log: JLogger ): Boolean = {
+      val handlers = log.getHandlers.filter( h => h.isInstanceOf[ConsoleHandler] )
+      if (handlers.length != 0) {
+        val infohandler = handlers.find( h=> h.getLevel.intValue() <= Level.INFO.intValue() )
+        infohandler.isDefined
+      } else {
+        val parent = log.getParent
+        if (parent != null) findConsoleHandler(parent)
+        else false
+      }
+    }
+
+    findConsoleHandler(logger.logger)
+  }
+
+  def output( s: String ) = {
+    logger.info(s)
+    if (!isConsoleLoggingToInfo) println(s)
   }
 
 }
