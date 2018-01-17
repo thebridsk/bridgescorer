@@ -25,6 +25,9 @@ import java.nio.file.{Path => JPath}
 import java.nio.file.StandardCopyOption
 import utils.classpath.ClassPath
 import java.nio.file.Paths
+import com.example.util.GitHub
+import com.example.version.VersionServer
+import com.example.util.Version
 
 /**
  * This is the update subcommand.
@@ -51,7 +54,36 @@ The old server must NOT be running.
 """)
 
   def executeSubcommand(): Int = {
-    0
+    val github = new GitHub( "thebridsk/bridgescorer" )
+    val r =
+    github.getLatestVersion().map { githubv =>
+      val myversion = Version.create( VersionServer.version )
+
+      logger.info( s"Latest version is ${githubv}, running version is ${myversion}" )
+      myversion < githubv
+    }.flatMap { needToUpdate =>
+      if (needToUpdate) {
+        logger.info( s"Need to update to latest version" )
+        Right( needToUpdate )
+      } else {
+        Left( "No need to update" )
+      }
+    }.flatMap { needToUpdate =>
+      github.downloadLatestAsset(".", "bridgescorer-server-assembly") match {
+        case Right((file,sha)) =>
+          logger.info(s"Downloaded new version: ${file} ${github.shaAlgorithm} ${sha}")
+          Right(file)
+        case Left(error) =>
+          Left(error)
+      }
+    }
+    r match {
+      case Right(v) =>
+        0
+      case Left(error) =>
+        logger.warning(s"Update not performed: ${error}")
+        1
+    }
   }
 
 }
