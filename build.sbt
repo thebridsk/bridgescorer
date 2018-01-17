@@ -461,6 +461,23 @@ lazy val `bridgescorer-server` = project.in(file("server")).
     
     assemblyJarName in (assembly) := s"${name.value}-assembly-${version.value}.jar",
     assemblyJarName in (Test, assembly) := s"${name.value}-test-${version.value}.jar",
+    
+    assembly := {
+      val log = streams.value.log
+      val x = (assembly).value
+      val sha = Sha256.generate( x )
+      log.info( s"SHA-256: ${sha}" )
+      x
+    },
+    
+    assembly in Test := {
+      val log = streams.value.log
+      val x = (assembly in Test).value
+      val sha = Sha256.generate( x )
+      log.info( s"SHA-256: ${sha}" )
+      x
+    },
+    
     mainClass in Test := Some("org.scalatest.tools.Runner"),
 
     EclipseKeys.createSrc := EclipseCreateSrc.Default + EclipseCreateSrc.ManagedClasses,

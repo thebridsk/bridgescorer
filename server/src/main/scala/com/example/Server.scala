@@ -127,7 +127,7 @@ Options:""")
 
   addSubcommand( StartServer )
   addSubcommand( ShutdownServer )
-//  addSubcommand( UpdateInstall )
+  addSubcommand( UpdateInstall )
   addSubcommand( Install )
 //  addSubcommand( InstallCleanup )
   addSubcommand( CollectLogs )
