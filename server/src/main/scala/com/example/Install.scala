@@ -53,35 +53,38 @@ Options:""")
 The old server must NOT be running.
 """)
 
+  import Server.output
+
   def executeSubcommand(): Int = {
+//    setConsoleLoggerToInfo()
     val github = new GitHub( "thebridsk/bridgescorer" )
     val r =
-    github.getLatestVersion().map { githubv =>
+    github.getLatestReleaseObject().filterOrElse( { release =>
+      output( release.forTrace() )
+      val githubv = release.getVersion()
       val myversion = Version.create( VersionServer.version )
 
-      logger.info( s"Latest version is ${githubv}, running version is ${myversion}" )
+      output( s"Latest version is ${githubv}, running version is ${myversion}" )
       myversion < githubv
-    }.flatMap { needToUpdate =>
-      if (needToUpdate) {
-        logger.info( s"Need to update to latest version" )
-        Right( needToUpdate )
-      } else {
-        Left( "No need to update" )
-      }
-    }.flatMap { needToUpdate =>
-      github.downloadLatestAsset(".", "bridgescorer-server-assembly") match {
-        case Right((file,sha)) =>
-          logger.info(s"Downloaded new version: ${file} ${github.shaAlgorithm} ${sha}")
-          Right(file)
-        case Left(error) =>
-          Left(error)
+    }, "No need to update" ).flatMap { release =>
+      release.assets.find( a => a.name.endsWith(".jar")) match {
+        case Some(asset) =>
+          github.downloadFileAndCheckSHA( asset.browser_download_url, ".") match {
+            case Right((file,sha)) =>
+              output(s"Downloaded new version: ${file} ${github.shaAlgorithm} ${sha}")
+              Right(file)
+            case Left(error) =>
+              Left(error)
+          }
+        case None =>
+          Left("Did not find jar asset in release")
       }
     }
     r match {
       case Right(v) =>
         0
       case Left(error) =>
-        logger.warning(s"Update not performed: ${error}")
+        output(s"Update not performed: ${error}")
         1
     }
   }

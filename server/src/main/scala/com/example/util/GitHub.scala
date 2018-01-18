@@ -3,6 +3,13 @@ package com.example.util
 import utils.logging.Logger
 import java.net.URL
 import java.io.File
+import play.api.libs.json._
+import java.util.Date
+import java.text.SimpleDateFormat
+import java.util.TimeZone
+import java.text.ParseException
+import java.io.OutputStreamWriter
+import java.io.FileOutputStream
 
 /**
  * @constructor
@@ -14,6 +21,32 @@ class GitHub( val project: String,
   import GitHub._
 
   val host = "https://github.com"
+
+//  https://api.github.com/repos/thebridsk/bridgescorer/releases/latest
+
+  val apiHost = "https://api.github.com"
+
+  def getLatestReleaseObject(): Either[String, Release] = {
+    val url = s"${apiHost}/repos/${project}/releases/latest"
+    val latest = HttpUtils.getHttpAsString( new URL(url), followRedirects=true )
+    if (latest.status == 200) {
+      latest.data match {
+        case Some(d) =>
+          log.fine( s"Response from ${url} is ${d}" )
+          val jsvalue: JsValue = Json.parse(d)
+          Json.fromJson[Release](jsvalue) match {
+            case JsSuccess(value,path) =>
+              Right(value)
+            case e: JsError =>
+              Left(s"Error converting response from ${url}: ${JsError.toJson(e)}")
+          }
+        case None =>
+          Left( s"Did not get any data from ${url}" )
+      }
+    } else {
+      Left( s"Got bad status, ${latest.status}, code from ${url}" )
+    }
+  }
 
   /**
    * Returns the HTML page for the latest release.
@@ -79,9 +112,9 @@ class GitHub( val project: String,
    * Return the SHA of one of the files.
    * @param filename the URL of the file to download
    * @return an Either.  Left( error ) indicates an error, where error is a message.
-   * Right(sha) returns the sha
+   * Right(sha) returns the tuple2 (sha, shafilecontent)
    */
-  def getShaForFile( url: URL ): Either[String,String] = {
+  def getShaForFile( url: URL ): Either[String,(String,String)] = {
 
     val name = new File( url.getPath ).getName
     getShaFile(url) match {
@@ -92,7 +125,7 @@ class GitHub( val project: String,
           else Nil
         }.toList
 
-        if (r.length == 1) Right(r(0))
+        if (r.length == 1) Right((r(0),shas))
         else Left( s"Did not find the SHA for file ${url}" )
       case Left(error) =>
         Left(error)
@@ -105,9 +138,9 @@ class GitHub( val project: String,
    * @param shas the SHAs of files in the format of sha256sum
    * @param filename the name of the file to get the sha for.
    * @return an Either.  Left( error ) indicates an error, where error is a message.
-   * Right(sha) returns the sha
+   * Right(sha) returns the tuple2 (sha, shafilecontent)
    */
-  def getShaForFile( shas: String, filename: String ): Either[String,String] = {
+  def getShaForFile( shas: String, filename: String ): Either[String,(String,String)] = {
 
     val r =
     shaPattern.findAllMatchIn(shas).flatMap { m =>
@@ -116,7 +149,7 @@ class GitHub( val project: String,
       else Nil
     }.toList
 
-    if (r.length == 1) Right(r(0))
+    if (r.length == 1) Right((r(0),shas))
     else Left( s"Did not find the SHA for file ${filename}" )
 
   }
@@ -177,6 +210,35 @@ class GitHub( val project: String,
     }
   }
 
+  /**
+   * Download the file from the URL, and check the SHA of the file from file <url>.sha256
+   * @param url the URL of the file to download
+   * @param the directory of where to save it
+   * @return an Either.  Left( error ) indicates an error, where error is a message.
+   * Right(sha) returns the filename where it was stored and the sha of the contents
+   */
+  def downloadFileAndCheckSHA( url: URL, directory: String ): Either[String,(File,String)] = {
+    getShaForFile(url).flatMap { value =>
+      val (sha, shafilecontent) = value
+      log.fine( s"""SHA is ${sha} of ${url}""" )
+      downloadFile( url, directory ).flatMap { e =>
+        val (f,dsha) = e
+        if (dsha == sha) {
+          val shafile = new File( f.toString()+extSha )
+          import resource._
+          for ( shaf <- managed( new OutputStreamWriter( new FileOutputStream(shafile), "UTF8" ) ) ) {
+            shaf.write(shafilecontent)
+            shaf.flush()
+          }
+          Right((f,dsha))
+        } else {
+          log.fine( s"""Sha of downloaded file doesn't match: ${dsha} expecting ${sha}, deleting ${f}""" )
+          f.delete()
+          Left( s"""Sha of downloaded file doesn't match: ${dsha} expecting ${sha}""" )
+        }
+      }
+    }
+  }
 
   /**
    * @param url the URL of the file to download
@@ -187,7 +249,7 @@ class GitHub( val project: String,
   def downloadLatestAsset( directory: String, asset: String ): Either[String,(File,String)] = {
     getLatestRelease().
        flatMap { page => findAssetJarLink(page, asset) }.
-       flatMap { jarurl => getShaForFile(jarurl).flatMap(sha => Right((jarurl,sha)) ) }.
+       flatMap { jarurl => getShaForFile(jarurl).flatMap(sha => Right((jarurl,sha._1)) ) }.
        flatMap { e =>
          val (jarurl, sha) = e
          log.fine( s"""SHA is ${sha} of ${jarurl}""" )
@@ -210,4 +272,212 @@ object GitHub {
   val log = Logger[GitHub]
 
   val shaPattern = """([0-9a-zA-Z]+) ([* ])([^\n\r]*)""".r
+
+  def formatDate( date: Date ) = {
+    val dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss zzz")
+
+    dateFormat.format(date)
+  }
+
+  case class Asset(
+                    name: String,
+                    created_at: Date,
+                    updated_at: Date,
+                    browser_download_url: URL
+                  ) {
+    def forTrace() = {
+      s"""$name updated ${formatDate(updated_at)} ${browser_download_url}"""
+    }
+  }
+
+  case class Person(
+                     login: String,
+                     url: URL
+                   ) {
+    def forTrace() = {
+      s"""$login ${url}"""
+    }
+  }
+
+  case class Release(
+                      tag_name: String,
+                      created_at: Date,
+                      published_at: Date,
+                      author: Person,
+                      assets: List[Asset],
+                      zipball_url: URL,
+                      tarball_url: URL,
+                      body: Option[String]
+                    ) {
+    def getVersion() = {
+      Version( if (tag_name.startsWith("v")) tag_name.substring(1) else tag_name )
+    }
+    def forTrace() = {
+      s"""Release ${tag_name} published ${formatDate(published_at)} by ${author.forTrace()}""" +
+        body.map( b => s"\n${b}").getOrElse("")+
+        assets.zipWithIndex.map { e => s"  ${e._2}: ${e._1.forTrace()}" }.mkString("\n  ","\n  ","")
+    }
+  }
+
+  import play.api.libs.json.Reads._
+  import play.api.libs.functional.syntax._
+
+  implicit object dateReads extends Reads[Date] {
+
+    // "2018-01-17T00:47:37Z"
+    val dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
+    dateFormat.setTimeZone( TimeZone.getTimeZone("UTC"))
+
+    def reads(json: JsValue): JsResult[Date] = {
+      json match {
+        case JsString(date) =>
+          try {
+            JsSuccess( dateFormat.parse(date) )
+          } catch {
+            case x: ParseException =>
+              JsError(s"Expecting date value to be in 2018-01-17T00:47:37Z format, got ${json}")
+          }
+        case _ =>
+          JsError(s"Unexpected value, expecting a Date in a JSON string, got ${json}")
+      }
+    }
+  }
+
+  implicit object urlReads extends Reads[URL] {
+    def reads(json: JsValue): JsResult[URL] = {
+      json match {
+        case JsString(url) => JsSuccess( new URL(url) )
+        case _ => JsError(s"Unexpected value, expecting a URL in a JSON string, got ${json}")
+      }
+    }
+  }
+
+  implicit val assetReads: Reads[Asset] = (
+    (JsPath \ "name").read[String] and
+    (JsPath \ "created_at").read[Date] and
+    (JsPath \ "updated_at").read[Date] and
+    (JsPath \ "browser_download_url").read[URL]
+  )(Asset.apply _)
+
+  implicit val personReads: Reads[Person] = (
+    (JsPath \ "login").read[String] and
+    (JsPath \ "url").read[URL]
+  )(Person.apply _)
+
+  implicit val releaseReads: Reads[Release] = (
+    (JsPath \ "tag_name").read[String] and
+    (JsPath \ "created_at").read[Date] and
+    (JsPath \ "published_at").read[Date] and
+    (JsPath \ "author").read[Person] and
+    (JsPath \ "assets").read[List[Asset]] and
+    (JsPath \ "zipball_url").read[URL] and
+    (JsPath \ "tarball_url").read[URL] and
+    (JsPath \ "body").readNullable[String]
+  )(Release.apply _)
+
+
+// https://api.github.com/repos/thebridsk/bridgescorer/releases/latest
+//{
+//  "url": "https://api.github.com/repos/thebridsk/bridgescorer/releases/9273387",
+//  "assets_url": "https://api.github.com/repos/thebridsk/bridgescorer/releases/9273387/assets",
+//  "upload_url": "https://uploads.github.com/repos/thebridsk/bridgescorer/releases/9273387/assets{?name,label}",
+//  "html_url": "https://github.com/thebridsk/bridgescorer/releases/tag/v1.0.2",
+//  "id": 9273387,
+//  "tag_name": "v1.0.2",
+//  "target_commitish": "master",
+//  "name": null,
+//  "draft": false,
+//  "author": {
+//    "login": "thebridsk",
+//    "id": 35344976,
+//    "avatar_url": "https://avatars0.githubusercontent.com/u/35344976?v=4",
+//    "gravatar_id": "",
+//    "url": "https://api.github.com/users/thebridsk",
+//    "html_url": "https://github.com/thebridsk",
+//    "followers_url": "https://api.github.com/users/thebridsk/followers",
+//    "following_url": "https://api.github.com/users/thebridsk/following{/other_user}",
+//    "gists_url": "https://api.github.com/users/thebridsk/gists{/gist_id}",
+//    "starred_url": "https://api.github.com/users/thebridsk/starred{/owner}{/repo}",
+//    "subscriptions_url": "https://api.github.com/users/thebridsk/subscriptions",
+//    "organizations_url": "https://api.github.com/users/thebridsk/orgs",
+//    "repos_url": "https://api.github.com/users/thebridsk/repos",
+//    "events_url": "https://api.github.com/users/thebridsk/events{/privacy}",
+//    "received_events_url": "https://api.github.com/users/thebridsk/received_events",
+//    "type": "User",
+//    "site_admin": false
+//  },
+//  "prerelease": false,
+//  "created_at": "2018-01-17T00:47:37Z",
+//  "published_at": "2018-01-17T16:58:06Z",
+//  "assets": [
+//    {
+//      "url": "https://api.github.com/repos/thebridsk/bridgescorer/releases/assets/5902255",
+//      "id": 5902255,
+//      "name": "bridgescorer-server-assembly-1.0.2-dd1a645aa063474956561c7140fcfdf20f7d2b34.jar",
+//      "label": "",
+//      "uploader": {
+//        "login": "thebridsk",
+//        "id": 35344976,
+//        "avatar_url": "https://avatars0.githubusercontent.com/u/35344976?v=4",
+//        "gravatar_id": "",
+//        "url": "https://api.github.com/users/thebridsk",
+//        "html_url": "https://github.com/thebridsk",
+//        "followers_url": "https://api.github.com/users/thebridsk/followers",
+//        "following_url": "https://api.github.com/users/thebridsk/following{/other_user}",
+//        "gists_url": "https://api.github.com/users/thebridsk/gists{/gist_id}",
+//        "starred_url": "https://api.github.com/users/thebridsk/starred{/owner}{/repo}",
+//        "subscriptions_url": "https://api.github.com/users/thebridsk/subscriptions",
+//        "organizations_url": "https://api.github.com/users/thebridsk/orgs",
+//        "repos_url": "https://api.github.com/users/thebridsk/repos",
+//        "events_url": "https://api.github.com/users/thebridsk/events{/privacy}",
+//        "received_events_url": "https://api.github.com/users/thebridsk/received_events",
+//        "type": "User",
+//        "site_admin": false
+//      },
+//      "content_type": "application/java-archive",
+//      "state": "uploaded",
+//      "size": 65791747,
+//      "download_count": 2,
+//      "created_at": "2018-01-17T16:57:37Z",
+//      "updated_at": "2018-01-17T16:58:04Z",
+//      "browser_download_url": "https://github.com/thebridsk/bridgescorer/releases/download/v1.0.2/bridgescorer-server-assembly-1.0.2-dd1a645aa063474956561c7140fcfdf20f7d2b34.jar"
+//    },
+//    {
+//      "url": "https://api.github.com/repos/thebridsk/bridgescorer/releases/assets/5902256",
+//      "id": 5902256,
+//      "name": "bridgescorer-server-assembly-1.0.2-dd1a645aa063474956561c7140fcfdf20f7d2b34.jar.sha256",
+//      "label": "",
+//      "uploader": {
+//        "login": "thebridsk",
+//        "id": 35344976,
+//        "avatar_url": "https://avatars0.githubusercontent.com/u/35344976?v=4",
+//        "gravatar_id": "",
+//        "url": "https://api.github.com/users/thebridsk",
+//        "html_url": "https://github.com/thebridsk",
+//        "followers_url": "https://api.github.com/users/thebridsk/followers",
+//        "following_url": "https://api.github.com/users/thebridsk/following{/other_user}",
+//        "gists_url": "https://api.github.com/users/thebridsk/gists{/gist_id}",
+//        "starred_url": "https://api.github.com/users/thebridsk/starred{/owner}{/repo}",
+//        "subscriptions_url": "https://api.github.com/users/thebridsk/subscriptions",
+//        "organizations_url": "https://api.github.com/users/thebridsk/orgs",
+//        "repos_url": "https://api.github.com/users/thebridsk/repos",
+//        "events_url": "https://api.github.com/users/thebridsk/events{/privacy}",
+//        "received_events_url": "https://api.github.com/users/thebridsk/received_events",
+//        "type": "User",
+//        "site_admin": false
+//      },
+//      "content_type": "application/octet-stream",
+//      "state": "uploaded",
+//      "size": 146,
+//      "download_count": 1,
+//      "created_at": "2018-01-17T16:58:05Z",
+//      "updated_at": "2018-01-17T16:58:05Z",
+//      "browser_download_url": "https://github.com/thebridsk/bridgescorer/releases/download/v1.0.2/bridgescorer-server-assembly-1.0.2-dd1a645aa063474956561c7140fcfdf20f7d2b34.jar.sha256"
+//    }
+//  ],
+//  "tarball_url": "https://api.github.com/repos/thebridsk/bridgescorer/tarball/v1.0.2",
+//  "zipball_url": "https://api.github.com/repos/thebridsk/bridgescorer/zipball/v1.0.2",
+//  "body": null
+//}
+
 }
