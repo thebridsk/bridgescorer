@@ -8,7 +8,7 @@ echo   servercertpw - the password for the private key
 echo   truststorepw - the password for the trust store
 echo.
 echo Obtained from:
-echo   http://typesafehub.github.io/ssl-config/CertificateGeneration.html
+echo   https://lightbend.github.io/ssl-config/CertificateGeneration.html
 goto :eof
 
 :process
