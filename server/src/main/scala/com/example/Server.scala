@@ -131,7 +131,6 @@ Options:""")
   addSubcommand( ShutdownServer )
   addSubcommand( UpdateInstall )
   addSubcommand( Install )
-//  addSubcommand( InstallCleanup )
   addSubcommand( CollectLogs )
 
   addSubcommand( DataStoreCommands )

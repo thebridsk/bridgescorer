@@ -1,0 +1,58 @@
+#!/bin/bash
+
+SCRIPTDIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+
+helpme()
+{
+  cat <<HELPMEHELPME
+Syntax: $0 [-h|--help]
+
+Starts the bridge scorer server.  Java 8 must be on the path.
+  
+HELPMEHELPME
+}
+
+if [[ "$1" == "-h" || "$1" == "--help" ]] ; then
+  helpme
+  exit 1
+fi
+
+cd $SCRIPTDIR
+
+jarcount=`ls -1f | grep "bridgescorer-server-assembly-.*\.jar" | wc -l`
+if [[ $jarcount != 1 ]] ; then 
+  echo Found more than one bridgescorer jar file in directory
+  ls bridgescorer-server-assembly-*.jar
+  exit 1
+fi
+
+oldjar=`echo bridgescorer-server-assembly-*.jar`
+
+java -jar $oldjar update
+if [[ $? != 0 ]] ; then
+  echo Update not done
+  exit 1
+fi
+
+jarcount2=`ls -1f bridgescorer-server-assembly-*.jar | wc -l`
+if [[ $jarcount2 != 2 ]] ; then 
+  echo jar count is $jarcount2
+  echo Should find both old and new bridgescorer jar file in directory
+  ls bridgescorer-server-assembly-*.jar
+  exit 1
+fi
+
+files=(`ls -f bridgescorer-server-assembly-*.jar`)
+
+if [[ "${files[0]}" == "$oldjar" ]] ; then
+  newjar=${files[1]}
+else
+  newjar=${files[0]}
+fi
+
+echo New bridgescorer jar file is $newjar
+
+java -jar $newjar install
+
+mkdir save 2>/dev/null
+mv $oldjar save/

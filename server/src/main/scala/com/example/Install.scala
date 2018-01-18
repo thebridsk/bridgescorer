@@ -40,18 +40,17 @@ object UpdateInstall extends Subcommand("update") {
 
   implicit def dateConverter: ValueConverter[Duration] = singleArgConverter[Duration](Duration(_))
 
-  descr("Not implemented")
+  descr("Downloads the latest version of the server, if necessary")
 
-  banner(s"""
-Updates the installed server code
+  banner(s"""Downloads the latest version of the server, if necessary from
+https://github.com/thebridsk/bridgescorer/releases/latest
 
 Syntax:
-  scala ${Server.getClass.getName} update options
+  ${Server.cmdName} update options
 Options:""")
 
-  footer(s"""
-The old server must NOT be running.
-""")
+//  footer(s"""
+//""")
 
   import Server.output
 
@@ -100,8 +99,8 @@ object Install extends Subcommand("install") {
 
   val logger = Logger( Install.getClass.getName )
 
-  val filesForWindows = "server.bat"::"collectlogs.bat"::Nil
-  val filesForLinux = "server"::"collectlogs"::Nil
+  val filesForWindows = "server.bat"::"collectlogs.bat"::"update.bat"::Nil
+  val filesForLinux = "server"::"collectlogs"::"update"::Nil
 
   implicit def dateConverter: ValueConverter[Duration] = singleArgConverter[Duration](Duration(_))
 
@@ -121,26 +120,30 @@ Copy the server jar file to the installation directory.  Then run the following 
   java -jar jarfile install
 """)
 
+  import Server.output
+
   def executeSubcommand(): Int = {
     val target = Directory(Path(".").toCanonical)
 
-    if (target.isDirectory) {
-      logger.info(s"""Installing to ${target}""")
-    } else {
+    if (!target.isDirectory) {
       logger.severe(s"Target must be a directory: ${target}")
-    }
+      1
+    } else {
 
-    if (isWindows()) {
-      filesForWindows.foreach { fw =>
-        writeFile(target, fw)
+      if (isWindows()) {
+        output(s"""Installing to ${target} for Windows""")
+        filesForWindows.foreach { fw =>
+          writeFile(target, fw)
+        }
+      } else if (isMac() || isLinux()) {
+        output(s"""Installing to ${target} for MacOS or Linux""")
+        filesForLinux.foreach { fl =>
+          writeFile(target, fl)
+          (target/fl).toFile.setExecutable(true, true)
+        }
       }
-    } else if (isMac() || isLinux()) {
-      filesForLinux.foreach { fl =>
-        writeFile(target, fl)
-        (target/fl).toFile.setExecutable(true, true)
-      }
+      0
     }
-    0
   }
 
   def getOsName() = {
@@ -178,34 +181,4 @@ Copy the server jar file to the installation directory.  Then run the following 
         logger.warning(s"Did not find ${fileToCopy}")
     }
   }
-}
-
-/**
- * This is the Cleanup subcommand.
- *
- * Cleans up after an install.
- */
-object InstallCleanup extends Subcommand("clean") {
-
-  val logger = Logger( InstallCleanup.getClass.getName )
-
-  implicit def dateConverter: ValueConverter[Duration] = singleArgConverter[Duration](Duration(_))
-
-  descr("Cleanup after an install")
-
-  banner(s"""
-Cleanup after an install
-
-Syntax:
-  scala ${Server.getClass.getName} cleanup options
-Options:""")
-
-  footer(s"""
-The server running the install command must terminate shortly after starting this command.
-""")
-
-  def executeSubcommand(): Int = {
-    0
-  }
-
 }
