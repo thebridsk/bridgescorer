@@ -19,7 +19,7 @@ fi
 
 cd $SCRIPTDIR
 
-jarcount=`ls -1f | grep "bridgescorer-server-assembly-.*\.jar" | wc -l`
+jarcount=`ls -1f bridgescorer-server-assembly-*.jar | wc -l`
 if [[ $jarcount != 1 ]] ; then 
   echo Found more than one bridgescorer jar file in directory
   ls bridgescorer-server-assembly-*.jar
