@@ -198,7 +198,7 @@ object MyProjectEclipseTransformers {
     override def createTransformer(ref: ProjectRef, state: State) = (new scala.xml.transform.RewriteRule {
       override def transform(n: scala.xml.Node) = n match {
         case e: Elem if e.label == "classpath"  => e.copy(child =
-          <classpathentry including="*.scala" kind="src" path=""/> +: e.child
+          <classpathentry including="*.scala|com/**/*.scala" kind="src" path=""/> +: e.child
         )
         case e => e
       }

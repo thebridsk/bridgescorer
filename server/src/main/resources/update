@@ -20,7 +20,7 @@ fi
 cd $SCRIPTDIR
 
 jarcount=`ls -1f bridgescorer-server-assembly-*.jar | wc -l`
-if [[ $jarcount != 1 ]] ; then 
+if [[ $jarcount -ne "1" ]] ; then 
   echo Found more than one bridgescorer jar file in directory
   ls bridgescorer-server-assembly-*.jar
   exit 1
@@ -29,13 +29,13 @@ fi
 oldjar=`echo bridgescorer-server-assembly-*.jar`
 
 java -jar $oldjar update
-if [[ $? != 0 ]] ; then
+if [[ $? -ne 0 ]] ; then
   echo Update not done
   exit 1
 fi
 
 jarcount2=`ls -1f bridgescorer-server-assembly-*.jar | wc -l`
-if [[ $jarcount2 != 2 ]] ; then 
+if [[ $jarcount2 -ne "2" ]] ; then 
   echo jar count is $jarcount2
   echo Should find both old and new bridgescorer jar file in directory
   ls bridgescorer-server-assembly-*.jar
