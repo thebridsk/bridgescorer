@@ -410,7 +410,7 @@ object AjaxCall extends IAjaxCall {
           } catch {
             case x: IllegalArgumentException =>
               RestMessage("")
-            case x: JsonException =>
+            case x: Exception =>
               throw new JsonException( s"Exception on request: ${method} ${url}, response ${resp}", x )
           }
           try {
