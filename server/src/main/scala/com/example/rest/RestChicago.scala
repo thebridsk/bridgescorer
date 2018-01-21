@@ -47,12 +47,6 @@ trait RestChicago extends HasActorSystem {
 
   import UtilsPlayJson._
 
-  def sort( a: Array[MatchChicago] ) = {
-
-    Sorting.quickSort(a)
-    a
-  }
-
   /**
    * spray route for all the methods on this resource
    */
