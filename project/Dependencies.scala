@@ -41,7 +41,7 @@ object Dependencies {
   lazy val vSwaggerScalaModule="1.0.4" // http://mvnrepository.com/artifact/io.swagger/swagger-scala-module_2.11
   lazy val vSwagger="1.5.17"           // http://mvnrepository.com/artifact/io.swagger/swagger-core
 
-  lazy val vSwaggerUI = "3.9.1"        // https://www.npmjs.com/package/swagger-ui-dist
+  lazy val vSwaggerUI = "3.9.2"        // https://www.npmjs.com/package/swagger-ui-dist
   lazy val vScalajsdom = "0.9.4"       // http://mvnrepository.com/artifact/org.scala-js/scalajs-dom_sjs0.6_2.11
   lazy val vScalaJsReact = "1.1.1"     // http://mvnrepository.com/artifact/com.github.japgolly.scalajs-react/core_sjs0.6_2.11
   lazy val vScalaCss = "0.5.3"         // http://mvnrepository.com/artifact/com.github.japgolly.scalacss/core_sjs0.6_2.11
@@ -59,7 +59,7 @@ object Dependencies {
 
   lazy val vJqueryFacade = "1.2"     // https://mvnrepository.com/artifact/org.querki/jquery-facade
 
-  lazy val vJQuery = "3.2.1"         // https://www.npmjs.com/package/jquery
+  lazy val vJQuery = "3.3.1"         // https://www.npmjs.com/package/jquery
 
   lazy val vScalactic = "3.0.4"      // https://mvnrepository.com/artifact/org.scalactic/scalactic_2.12
   lazy val vScalatest = "3.0.4"      // http://mvnrepository.com/artifact/org.scalatest/scalatest_2.11
@@ -76,15 +76,18 @@ object Dependencies {
   lazy val vGuavaJre = "23.6-jre"    // https://github.com/google/guava
 
   lazy val vWebPack = "3.10.0"          // https://www.npmjs.com/package/webpack
-  // scalajs-bundler requires v0.9 requires v9
+  // scalajs-bundler v0.9 requires v9
   lazy val vJsDom = "9.12.0"           // https://www.npmjs.com/package/jsdom
   lazy val vExposeLoader = "0.7.3"     // https://www.npmjs.com/package/expose-loader
 
   // version 0.2.1 is hardcoded in sbt-scalajs-bundler
   lazy val vSourceMapLoader = "0.2.3"   // https://www.npmjs.com/package/source-map-loader
-  lazy val vWebpackDevServer = "2.10.0" // https://www.npmjs.com/package/webpack-dev-server
+  lazy val vWebpackDevServer = "2.11.1" // https://www.npmjs.com/package/webpack-dev-server
 
   lazy val vFastClick = "1.0.6"       // https://www.npmjs.com/package/fastclick
+
+  lazy val vSangria = "1.3.3"           // https://github.com/sangria-graphql/sangria
+  lazy val vSangriaPlayJson = "1.0.4"   // https://github.com/sangria-graphql/sangria-playground
 
   // libraries
 
@@ -144,6 +147,9 @@ object Dependencies {
 
 //      ("io.swagger"          %%  "swagger-scala-module" % vSwaggerScalaModule withSources()).exclude("com.google.code.findbugs","jsr305"),
       "com.github.swagger-akka-http" %% "swagger-akka-http" % vSwaggerAkkaHttp withSources(),
+
+      "org.sangria-graphql" %% "sangria" % vSangria withSources(),
+      "org.sangria-graphql" %% "sangria-play-json" % vSangriaPlayJson withSources(),
 
       "io.swagger" % "swagger-core" % vSwagger withSources(),
       "io.swagger" % "swagger-annotations" % vSwagger withSources(),
