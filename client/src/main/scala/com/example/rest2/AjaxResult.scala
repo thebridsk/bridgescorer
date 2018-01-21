@@ -24,6 +24,7 @@ import com.example.logger.Alerter
 import com.example.source.SourcePosition
 import com.example.logger.CommAlerter
 import scala.util.Failure
+import com.example.data.rest.JsonException
 
 class AjaxFailure( val msg: RestMessage, val result: AjaxResult )(implicit val pos: Position) extends Exception(msg.msg) {
   override
@@ -409,6 +410,8 @@ object AjaxCall extends IAjaxCall {
           } catch {
             case x: IllegalArgumentException =>
               RestMessage("")
+            case x: JsonException =>
+              throw new JsonException( s"Exception on request: ${method} ${url}, response ${resp}", x )
           }
           try {
             promise.failure(new AjaxFailure(msg,result))
