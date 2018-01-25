@@ -292,7 +292,7 @@ private class StartServer {
             return 1
           }
         }
-        Some( new BridgeServiceFileStore( d ) )
+        Some( new BridgeServiceFileStore( d, id=Some("root") ) )
       case None => None
     }
 
@@ -434,7 +434,7 @@ private class StartServer {
       /**
        * The backend service object for our service.
        */
-      lazy val restService: BridgeService = bridge.getOrElse( new BridgeServiceInMemory )
+      lazy val restService: BridgeService = bridge.getOrElse( new BridgeServiceInMemory("root") )
       lazy val actorSystem: ActorSystem = system
       lazy val materializer: ActorMaterializer = myMaterializer
 

@@ -84,7 +84,7 @@ class TestDuplicateWebsocket extends FlatSpec with ScalatestRouteTest with MustM
 
   TestStartLogging.startLogging()
 
-  val restService = new BridgeServiceInMemory
+  val restService = new BridgeServiceInMemory("test")
 
   val httpport = 8080
   override

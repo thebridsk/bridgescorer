@@ -68,11 +68,12 @@ object BridgeServiceFileStore {
 class BridgeServiceFileStore( val dir: Directory,
                               useIdFromValue: Boolean = false,
                               dontUpdateTime: Boolean = false,
-                              useYaml: Boolean = true
+                              useYaml: Boolean = true,
+                              id: Option[String] = None
                             )(
                               implicit
                                 execute: ExecutionContext
-                            ) extends BridgeServiceWithLogging {
+                            ) extends BridgeServiceWithLogging( id.getOrElse( dir.toString() ) ) {
   self =>
 
   import BridgeServiceFileStore._

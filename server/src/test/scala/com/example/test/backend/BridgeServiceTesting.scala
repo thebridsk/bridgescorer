@@ -53,7 +53,7 @@ object BridgeServiceTesting {
  * resources to facilitate testing.
  * @author werewolf
  */
-class BridgeServiceTesting extends BridgeServiceInMemory {
+class BridgeServiceTesting extends BridgeServiceInMemory("test") {
 
   val storeduplicates = duplicates.syncStore
 

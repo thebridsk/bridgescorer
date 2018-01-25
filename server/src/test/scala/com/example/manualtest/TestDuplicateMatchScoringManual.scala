@@ -33,7 +33,7 @@ object TestDuplicateMatchScoringManual extends Main {
     checkComplete(m)
 
     println("")
-    Await.result( new BridgeServiceInMemory().fillBoards(MatchDuplicate.create("M2")), 30.seconds) match {
+    Await.result( new BridgeServiceInMemory("test").fillBoards(MatchDuplicate.create("M2")), 30.seconds) match {
       case Right(md) =>
         check(md, "T1", "T2" )
         showTables(md)

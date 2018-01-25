@@ -35,6 +35,8 @@ import com.example.backend.resource.ZipFileForStore
 import com.example.backend.resource.ZipStore
 import com.example.backend.resource.JavaResourcePersistentSupport
 import com.example.backend.resource.ZipPersistentSupport
+import com.example.backend.resource.Result
+import scala.concurrent.Future
 
 object BridgeServiceZipStore {
 
@@ -48,12 +50,14 @@ object BridgeServiceZipStore {
  * resources to facilitate testing.
  * @author werewolf
  */
-class BridgeServiceZipStore( val zipfilename: File,
+class BridgeServiceZipStore(
+                             id: String,
+                             val zipfilename: File,
                              useYaml: Boolean = true
                            )(
                              implicit
                                execute: ExecutionContext
-                           ) extends BridgeServiceWithLogging {
+                           ) extends BridgeServiceWithLogging( id ) {
   self =>
 
   import BridgeServiceZipStore._
@@ -91,9 +95,11 @@ class BridgeServiceZipStore( val zipfilename: File,
    * closes and deletes the zip file.  Do not call other methods after calling this method.
    * @return  <code>true</code> if zip file is successfully deleted; <code>false</code> otherwise
    */
-  def delete() = {
+  override
+  def delete() = Future {
     zipfile.close()
     zipfilename.delete()
+    Result( zipfilename.name )
   }
 
   override

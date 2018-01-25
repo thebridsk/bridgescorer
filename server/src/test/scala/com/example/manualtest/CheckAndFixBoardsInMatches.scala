@@ -44,7 +44,7 @@ object CheckAndFixBoardsInMatches extends Main {
         return 2
     }
 
-    val bridgeServer = new BridgeServiceInMemory()
+    val bridgeServer = new BridgeServiceInMemory("test")
     logger.info("Keys are "+matchkeys.mkString(", "))
     Await.result( bridgeServer.fillBoards(MatchDuplicate.create("xx")), 30.seconds) match {
       case Right(correct) =>

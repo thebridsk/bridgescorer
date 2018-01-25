@@ -149,6 +149,7 @@ object Dependencies {
       "com.github.swagger-akka-http" %% "swagger-akka-http" % vSwaggerAkkaHttp withSources(),
 
       "org.sangria-graphql" %% "sangria" % vSangria withSources(),
+      "org.sangria-graphql" %% "sangria-relay" % vSangria withSources(),
       "org.sangria-graphql" %% "sangria-play-json" % vSangriaPlayJson withSources(),
 
       "io.swagger" % "swagger-core" % vSwagger withSources(),

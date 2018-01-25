@@ -23,7 +23,7 @@ import com.example.backend.BridgeNestedResources
 
 class TestResourceStore extends AsyncFlatSpec with MustMatchers {
 
-  val bridgeService = new BridgeServiceInMemory
+  val bridgeService = new BridgeServiceInMemory("test")
   val store = bridgeService.duplicates
 
   val matchdup = BridgeServiceTesting.testingMatch

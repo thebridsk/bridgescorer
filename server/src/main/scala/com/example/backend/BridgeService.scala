@@ -39,13 +39,14 @@ import scala.concurrent.Promise
 import scala.concurrent.Future
 import com.example.backend.resource.InMemoryStore
 import com.example.backend.resource.Implicits
+import com.example.data.RestMessage
 
 /**
  * The backend trait for our service.
  * Implementation of this trait should persistently store all
  * the objects that make up the API.
  */
-trait BridgeService {
+abstract class BridgeService( val id: String ) {
 
   def loggerConfig( ip: String, iPad: Boolean ): LoggerConfig
 
@@ -58,6 +59,11 @@ trait BridgeService {
 
   val boardSets: Store[String,BoardSet]
   val movements: Store[String,Movement]
+
+  /**
+   * The import store.  Some some of the implementations support this, and will override this value.
+   */
+  val importStore: Option[ImportStore] = None
 
   val defaultBoards = "ArmonkBoards"
   val defaultMovement = "Armonk2Tables"
@@ -208,6 +214,13 @@ trait BridgeService {
       }
     }
   }
+
+  /**
+   * Delete this BridgeService.
+   */
+  def delete(): Future[Result[String]] = {
+    Result.future(StatusCodes.BadRequest,RestMessage("Delete not supported"))
+  }
 }
 
 object BridgeServiceWithLogging {
@@ -219,7 +232,7 @@ object BridgeServiceWithLogging {
 }
 
 
-abstract class BridgeServiceWithLogging extends BridgeService {
+abstract class BridgeServiceWithLogging( id: String ) extends BridgeService(id) {
   import BridgeServiceWithLogging._
 
   import scala.collection.mutable.Map
@@ -272,7 +285,7 @@ abstract class BridgeServiceWithLogging extends BridgeService {
  * resources to facilitate testing.
  * @author werewolf
  */
-class BridgeServiceInMemory( useIdFromValue: Boolean = false, useYaml: Boolean = true ) extends BridgeServiceWithLogging {
+class BridgeServiceInMemory( id: String, useIdFromValue: Boolean = false, useYaml: Boolean = true ) extends BridgeServiceWithLogging(id) {
 
   self =>
 

@@ -65,6 +65,10 @@ class MyCache[K,V](
     }
   }
 
+  def read( key: K, genValue: => V ): Future[V] = synchronized {
+    lfuCache.get(key, ()=>genValue)
+  }
+
   /**
    * Refresh the value in the cache
    * @param key
@@ -121,6 +125,7 @@ class MyCache[K,V](
    * Delete a value
    * @param key the key of the entry to delete
    * @param currentValue the current value to return as the old value.  If none, then the value in the cache is used.
+   * @param deleteFun a function that deletes the value from the persistent store.  The return becomes the return of this function.
    * @param futureReq a function that gets the old value and returns the value that should be returned for future requests
    * @return a future the old value
    */
@@ -143,6 +148,17 @@ class MyCache[K,V](
   def create( key: K, block: ()=>Future[V] ): Future[V] = {
     synchronized {
       lfuCache.apply(key, block)
+    }
+  }
+
+  def createOnlyIfNotExist( key: K, block: ()=>Future[V], existreturn: =>Future[V] ): Future[V] = {
+    synchronized {
+      lfuCache.get(key) match {
+        case Some(v) =>
+          existreturn
+        case None =>
+          lfuCache.apply(key, block)
+      }
     }
   }
 }

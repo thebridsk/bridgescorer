@@ -27,7 +27,7 @@ object TestServer {
   def loggingConfig(l: List[String]) = LoggerConfig( "[root]=ALL"::Nil, "console=INFO"::l)
 
   val backend = {
-    val bs = new BridgeServiceInMemory
+    val bs = new BridgeServiceInMemory("root")
     bs.setDefaultLoggerConfig( useWebsocketLogging match {
         case Some(v) =>
           testlog.info(s"useWebsocketLogging: ${v}")

@@ -75,7 +75,7 @@ class TestDuplicateRestSpec extends FlatSpecLike with ScalatestRouteTest with Mu
 
   TestStartLogging.startLogging()
 
-  val restService = new BridgeServiceInMemory
+  val restService = new BridgeServiceInMemory("test")
 
   val httpport = 8080
   override
@@ -349,7 +349,7 @@ class TestDuplicateRestSpec extends FlatSpecLike with ScalatestRouteTest with Mu
         isWebSocketUpgrade mustBe true
         wsClient.inProbe.within(10 seconds) {
           testJoin(wsClient)
-          val cleanmd = new BridgeServiceInMemory().fillBoards(MatchDuplicate.create("M1"))
+          val cleanmd = new BridgeServiceInMemory("test").fillBoards(MatchDuplicate.create("M1"))
 //          testUpdate(wsClient,cleanmd)
         }
         wsClient.send(StartMonitor("M1"))
