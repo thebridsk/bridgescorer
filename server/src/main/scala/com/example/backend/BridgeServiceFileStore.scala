@@ -95,5 +95,11 @@ class BridgeServiceFileStore( val dir: Directory,
   val movements = MultiStore.createFileAndResource[String,Movement](dir, "/com/example/backend/", "Movements.txt", self.getClass.getClassLoader)
 
   override
+  val importStore = {
+    val importdir = (dir / "import").toDirectory
+    Some( new FileImportStore( importdir ))
+  }
+
+  override
   def toString() = "BridgeServiceFileStore"
 }

@@ -98,8 +98,8 @@ class GenericIdFromInstanceCacheStoreSupport[VId,VType <: VersionedInstance[VTyp
    * @return a future to the result with the value
    */
   override
-  def createInPersistent( v: VType, persistent: PersistentSupport[VId,VType] ): Future[Result[VType]] = {
-    persistent.createInPersistent(Some(v.id), v)
+  def createInPersistent( v: VType, persistent: PersistentSupport[VId,VType], dontUpdateTimes: Boolean = false ): Future[Result[VType]] = {
+    persistent.createInPersistent(Some(v.id), v, dontUpdateTimes)
   }
 
   /**

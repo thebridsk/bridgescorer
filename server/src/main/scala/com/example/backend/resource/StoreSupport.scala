@@ -27,8 +27,8 @@ class StoreSupport[VId, VType <: VersionedInstance[VType,VType,VId]](
    * @param persistent the persistent store
    * @return a future to the result with the value
    */
-  def createInPersistent( v: VType, persistent: PersistentSupport[VId,VType] ): Future[Result[VType]] = {
-    persistent.createInPersistent(None, v)
+  def createInPersistent( v: VType, persistent: PersistentSupport[VId,VType], dontUpdateTimes: Boolean = false ): Future[Result[VType]] = {
+    persistent.createInPersistent(None, v, dontUpdateTimes)
   }
 
   /**

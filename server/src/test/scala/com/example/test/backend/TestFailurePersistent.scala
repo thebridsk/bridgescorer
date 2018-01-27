@@ -62,7 +62,8 @@ class TestFailurePersistent[VId,VType <: VersionedInstance[VType,VType,VId]](
   override
   def createInPersistent(
                           useId: Option[VId],
-                          v: VType
+                          v: VType,
+                          dontUpdateTimes: Boolean = false
                         ): Future[Result[VType]] = {
     log.fine(s"""createInPersistent failWrite=${failWrite}, failResultWrite=${failResultWrite}, useId=${useId}, v=${v}""")
     if (failWrite) {
@@ -72,7 +73,7 @@ class TestFailurePersistent[VId,VType <: VersionedInstance[VType,VType,VId]](
     } else if (failResultWrite.isDefined) {
       failResultWrite.get.toFuture
     } else {
-      super.createInPersistent(useId, v)
+      super.createInPersistent(useId, v, dontUpdateTimes)
     }
   }
 

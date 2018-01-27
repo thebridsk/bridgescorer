@@ -14,13 +14,26 @@ import scala.util.Success
 import scala.util.Failure
 import com.example.data.rest.JsonException
 import scala.util.Try
-import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.ExecutionContext
+import com.example.source.SourcePosition
 
-class GraphQLRequest( val url: String ) {
+class GraphQLRequest(
+                      val url: String
+                    )(
+                      implicit
+                        executor: ExecutionContext
+                    ) {
   import GraphQLRequest._
   import scala.language.implicitConversions
 
-  implicit def ajaxToRestResult[T : Reads : Writes : ClassTag]( ajaxResult: AjaxResult )(implicit pos: Position) = new RestResult[T](ajaxResult)
+  implicit def ajaxToRestResult[T](
+                                    ajaxResult: AjaxResult
+                                  )( implicit
+                                       reader: Reads[T],
+                                       classtag: ClassTag[T]
+                                  ) = {
+    RestResult.ajaxToRestResult(ajaxResult)
+  }
 
   def request[T]( query: String,
                   variables: Option[Map[String,JsValue]]= None,
@@ -31,21 +44,60 @@ class GraphQLRequest( val url: String ) {
                             writer: Writes[T],
                             classtag: ClassTag[T],
                             xpos: Position
-                ): Future[T] = {  // should return a Result[T]
+                ): Result[T] = {
     val data = writeJson( queryToJson( query, variables, operation ) )
     val rr: RestResult[JsObject] = AjaxResult.post(url, data, timeout, headers )
     rr.transform { tjson: Try[JsObject] =>
       tjson match {
         case Success(json) =>
           json \ "data" match {
-            case JsDefined( data ) =>
+            case JsDefined( data ) if data != JsNull =>
               val x: JsResult[T] = Json.fromJson(data)(reader)
               x match {
                 case JsSuccess(t,path) => Success(t)
-                case JsError(error) => Failure( new JsonException( "Data not valid" ) )
+                case JsError(errors) =>
+                  val err = errors.map { entry =>
+                    val (path,errs) = entry
+                    s"""${path}: ${errs.map(e=>e.message).mkString("\n    ","\n    ","")}"""
+                  }.mkString(" Parsing errors:\n","\n","")
+                  Failure( new JsonException( s"${xpos.line}:${err}\nOn data: ${data}" ) )
               }
-            case x: JsUndefined =>
-              Failure( new JsonException( "Data not valid" ) )
+            case _ =>
+              // data is null or undefined
+//              {
+//                "data":null,
+//                "errors": [
+//                  {
+//                    "message":"Variable '$mdid' of type 'TeamId!' used in position expecting type 'DuplicateId!'. (line 2, column 22):\n         query Error($mdid: TeamId!) {\n                     ^\n (line 3, column 26):\n           duplicate(id: $mdid) {\n                         ^",
+//                    "locations": [
+//                      { "line":2,"column":22 },
+//                      { "line":3,"column":26}
+//                    ]
+//                  }
+//                ]
+//              }
+
+              json \ "errors" match {
+                case JsDefined( JsArray( errors ) ) =>
+                  val err = errors.map{ error =>
+                    error \ "message" match {
+                      case JsDefined( JsString(msg) ) =>
+                        msg
+                      case _ =>
+                        s"""Unknown format for error: ${error}"""
+                    }
+                  }.mkString("\n","\n","")
+                  Failure( new JsonException(s"""${xpos.line}: Error from server:${err}""") )
+                case _ =>
+                  json \ "error" match {
+                    case JsDefined( JsString( error ) ) =>
+                      val err = error
+                      Failure( new JsonException(s"""${xpos.line}: Error from server:${err}""") )
+                    case _ =>
+                      Failure( new JsonException( s"${xpos.line}: Data not valid: ${json}" ) )
+                  }
+              }
+
           }
         case Failure(error) =>
           Failure(error)
@@ -75,7 +127,7 @@ object GraphQLRequest {
       case _: JsObject =>
         resp \ "error" match {
           case JsDefined( JsArray( messages ) ) =>
-            println( messages.map { v => v.toString() }.mkString("Errors:\n","\n","") )
+            log.warning( messages.map { v => v.toString() }.mkString("Errors:\n","\n","") )
           case JsDefined( _ ) =>
             log.warning(s"Expecting a messages, got ${resp}")
           case _: JsUndefined =>

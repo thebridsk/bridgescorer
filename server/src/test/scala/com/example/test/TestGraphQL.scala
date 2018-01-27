@@ -67,9 +67,14 @@ object TestGraphQL {
   def processError( resp: JsValue ) = {
     resp match {
       case _: JsObject =>
-        resp \ "error" match {
+        resp \ "errors" match {
           case JsDefined( JsArray( messages ) ) =>
-            println( messages.map { v => v.toString() }.mkString("Errors:\n","\n","") )
+            println( messages.map { v =>
+                       (v \ "message") match {
+                         case JsDefined(JsString(msg)) => msg
+                         case x => x.toString()
+                       }
+                     }.mkString("Errors:\n","\n","") )
           case JsDefined( _ ) =>
             testlog.warning(s"Expecting a messages, got ${resp}")
           case _: JsUndefined =>

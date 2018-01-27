@@ -20,8 +20,13 @@ import org.parboiled2.Position
 import sangria.ast.ScalarValue
 import sangria.ast
 import com.example.data.SystemTime.Timestamp
+import com.example.data.DuplicateSummary
+import com.example.data.DuplicateSummaryEntry
+import utils.logging.Logger
 
 object SchemaDefinition {
+
+  val log = Logger( SchemaDefinition.getClass.getName )
 
   def getPos( v: ast.Value ): Option[Position] = v match {
     case ast.IntValue(value, comments, position) => position
@@ -253,6 +258,66 @@ object SchemaDefinition {
                           BoardIdType,
                           description = "The Id of the board." )
 
+  val DuplicateSummaryTeam = ObjectType(
+      "DuplicateSummaryTeam",
+      "A team result in a DuplicateSummary",
+      fields[Unit,DuplicateSummaryEntry](
+          Field("id", TeamIdType,
+              Some("The id of the duplicate match"),
+              resolve = _.value.team.id
+          ),
+          Field("team", DuplicateTeamType,
+              Some("The team"),
+              resolve = _.value.team
+          ),
+          Field("result", FloatType,
+              Some("The points the team scored"),
+              resolve = _.value.result
+          ),
+          Field("place", IntType,
+              Some("The place the team finished in"),
+              resolve = _.value.place
+          )
+      )
+  )
+
+  val DuplicateSummaryType = ObjectType(
+      "DuplicateSummary",
+      "A duplicate match",
+      fields[Unit,DuplicateSummary](
+          Field("id", DuplicateIdType,
+              Some("The id of the duplicate match"),
+              resolve = _.value.id
+          ),
+          Field("teams",
+              ListType( DuplicateSummaryTeam ),
+              Some("The teams that played"),
+              resolve = _.value.teams
+          ),
+          Field("boards",
+              IntType,
+              Some("The number boards that were played"),
+              resolve = _.value.boards
+          ),
+          Field("tables", IntType,
+              Some("The number of tables that was used"),
+              resolve = _.value.tables
+          ),
+          Field("onlyresult", BooleanType,
+              Some("true if this only contains the results"),
+              resolve = _.value.onlyresult
+          ),
+          Field("created", DateTimeType,
+              Some("The time the team was last updated"),
+              resolve = _.value.updated
+          ),
+          Field("updated", DateTimeType,
+              Some("The time the team was last updated"),
+              resolve = _.value.updated
+          )
+      )
+  )
+
   val MatchDuplicateType = ObjectType(
       "MatchDuplicate",
       "A duplicate match",
@@ -278,6 +343,10 @@ object SchemaDefinition {
           Field("movement", StringType,
               Some("The movement that was used"),
               resolve = _.value.movement
+          ),
+          Field("summary", DuplicateSummaryType,
+              Some("The summary of the match"),
+              resolve = ctx => DuplicateSummary.create(ctx.value)
           ),
           Field("created", DateTimeType,
               Some("The time the team was last updated"),
@@ -331,7 +400,36 @@ object SchemaDefinition {
       )
   )
 
-  val Query = ObjectType(
+  trait Sort
+  case object SortCreated extends Sort
+  case object SortCreatedDescending extends Sort
+  case object SortId extends Sort
+
+
+  val SortEnum = EnumType[Sort](
+    "Sort",
+    Some("how the result should be sorted"),
+    List(
+      EnumValue("created",
+        value = SortCreated,
+        description = Some("Sort by created field, ascending.")
+      ),
+      EnumValue("reversecreated",
+        value = SortCreatedDescending,
+        description = Some("Sort by created field, descending.")
+      ),
+      EnumValue("id",
+        value = SortId,
+        description = Some("Sort by Id")
+      )
+    )
+  )
+
+  val ArgSort = Argument("sort",
+                          OptionInputType( SortEnum ),
+                          description = "If specified, identifies the sort order of the values in list." )
+
+  val QueryType = ObjectType(
       "Query",
       fields[BridgeService,Unit](
           Field("importIds",
@@ -365,9 +463,12 @@ object SchemaDefinition {
           ),
           Field("duplicates",
                 ListType( MatchDuplicateType ),
-                resolve = _.ctx.duplicates.readAll().map { rmap => rmap match {
+                arguments = ArgSort::Nil,
+                resolve = ctx => ctx.ctx.duplicates.readAll().map { rmap => rmap match {
                             case Right(map) =>
-                              map.values.toList
+                              val list = map.values.toList
+                              val argsort = ctx.arg( ArgSort )
+                              Action.sort(list,argsort)
                             case Left((statusCode,msg)) =>
                               throw new Exception(s"Error getting duplicates: ${statusCode} ${msg.msg}")
                           }
@@ -377,12 +478,41 @@ object SchemaDefinition {
                 MatchDuplicateType,
                 arguments = ArgDuplicateId::Nil,
                 resolve = Action.getDuplicateFromRoot
+          ),
+          Field("duplicatesummaries",
+                ListType( DuplicateSummaryType ),
+                arguments = ArgSort::Nil,
+                resolve = ctx => ctx.ctx.getDuplicateSummaries().map { rmap => rmap match {
+                            case Right(list) =>
+                              val argsort = ctx.arg( ArgSort )
+                              Action.sortSummary( list, argsort )
+                            case Left((statusCode,msg)) =>
+                              throw new Exception(s"Error getting duplicate summaries: ${statusCode} ${msg.msg}")
+                          }
+                }
           )
 
       )
   )
 
-  val BridgeScorerSchema = Schema( Query )
+
+  val ArgMutationDuplicateId = Argument("dupid",
+                             DuplicateIdType,
+                             description = "The Id of the duplicate match" )
+
+  val ArgMutationImportId = Argument("importid",
+                          ImportIdType,
+                          description = "The Id of the import" )
+
+  val MutationType = ObjectType("Mutation", fields[BridgeService,Unit](
+    Field("duplicate",
+          MatchDuplicateType,
+          arguments = ArgMutationImportId::ArgMutationDuplicateId::Nil,
+          resolve = Action.importDuplicate
+    )
+  ))
+
+  val BridgeScorerSchema = Schema( QueryType, Some(MutationType) )
 }
 
 object Action {
@@ -423,5 +553,59 @@ object Action {
       case None =>
         throw new Exception(s"Did not find the import store ${id}")
     }
+  }
+
+  def importDuplicate( ctx: Context[BridgeService,Unit]): Future[MatchDuplicate] = {
+    val importId = ctx arg ArgMutationImportId
+    val dupId = ctx arg ArgMutationDuplicateId
+    ctx.ctx.importStore match {
+      case Some(is) =>
+        is.get(importId).flatMap( rbs => rbs match {
+          case Right(bs) =>
+            bs.duplicates.read(dupId).flatMap { rdup => rdup match {
+              case Right(dup) =>
+                ctx.ctx.duplicates.importChild(dup).map { rc => rc match {
+                  case Right(cdup) =>
+                    cdup
+                  case Left((statusCode,msg)) =>
+                    throw new Exception(s"Error importing into store: ${dupId} from import store ${importId}: ${statusCode} ${msg.msg}")
+                }}
+              case Left((statusCode,msg)) =>
+                throw new Exception(s"Error getting ${dupId} from import store ${importId}: ${statusCode} ${msg.msg}")
+            }}
+          case Left((statusCode,msg)) =>
+            throw new Exception(s"Error getting import store ${importId}: ${statusCode} ${msg.msg}")
+        })
+      case None =>
+        throw new Exception(s"Did not find the import store ${importId}")
+    }
+  }
+
+  def sort( list: List[MatchDuplicate], sort: Option[Sort] ) = {
+    val l = sort.map { s =>
+      s match {
+        case SortCreated =>
+          list.sortWith((l,r)=>l.created<r.created)
+        case SortCreatedDescending =>
+          list.sortWith((l,r)=>l.created>r.created)
+        case SortId =>
+          list.sortWith((l,r)=>Id.idComparer(l.id, r.id) < 0)
+      }
+    }.getOrElse(list)
+    log.info( s"""Returning list sorted with ${sort}: ${l.map( md=> s"(${md.id},${md.created})").mkString(",")}""" )
+    l
+  }
+
+  def sortSummary( list: List[DuplicateSummary], sort: Option[Sort] ) = {
+    val l = sort.map { s => s match {
+        case SortCreated =>
+          list.sortWith((l,r)=>l.created<r.created)
+        case SortCreatedDescending =>
+          list.sortWith((l,r)=>l.created>r.created)
+        case SortId =>
+          list.sortWith((l,r)=>Id.idComparer(l.id, r.id) < 0)
+      }
+    }.getOrElse(list)
+    l
   }
 }

@@ -14,11 +14,25 @@ import com.example.rest2.AjaxResult
 import com.example.rest2.Result
 import scala.concurrent.ExecutionContext
 import com.example.rest2.ResultObject
+import com.example.rest2.RestResult
+import org.scalactic.source.Position
+import scala.concurrent.Future
 
 object RubberController {
   val logger = Logger("bridge.RubberController")
 
-  class CreateResultMatchRubber( result: Result[MatchRubber])(implicit executor: ExecutionContext) extends CreateResult[MatchRubber](result) {
+  class CreateResultMatchRubber(
+                                ajaxResult: AjaxResult,
+                                future: Future[MatchRubber]
+                               )(
+                                 implicit
+                                   pos: Position,
+                                   executor: ExecutionContext
+                               ) extends CreateResult[MatchRubber](ajaxResult,future) {
+
+    def this( result: RestResult[MatchRubber])(implicit executor: ExecutionContext) = {
+      this(result.ajaxResult, result.future )
+    }
 
     def updateStore( mc: MatchRubber ): MatchRubber = {
       showMatch(mc)

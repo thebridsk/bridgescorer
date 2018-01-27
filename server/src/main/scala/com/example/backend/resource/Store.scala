@@ -134,9 +134,49 @@ class Store[VId, VType <: VersionedInstance[VType,VType,VId]](
                    implicit
                      pos: SourcePosition
                  ): Future[Result[VType]] = {
-    log.fine(s"Creating child: ${newvalue} called from ${pos.line}")
+    createChildImpl(newvalue,false,changeContext)
+  }
 
-    support.createInPersistent(newvalue, persistent).flatMap { r =>
+  /**
+   * Import a value into the collection.  The times on the value will NOT be updated.
+   * @param newvalue the value for the created resource.
+   *                 The 'id' field may be ignored, the [[StoreSupport]] object will determine
+   *                 whether the id field is used, or one is generated.
+   * @param context the change context for this operation
+   * @param pos a [[SourcePosition]] object to identify the caller.
+   * @return a future to the new value with updated 'id' field
+   */
+  def importChild(
+                   newvalue: VType,
+                   changeContext: ChangeContext = ChangeContext()
+                 )(
+                   implicit
+                     pos: SourcePosition
+                 ): Future[Result[VType]] = {
+    createChildImpl(newvalue,true,changeContext)
+  }
+
+  /**
+   * Import a value into the collection.  The times on the value will NOT be updated.
+   * @param newvalue the value for the created resource.
+   *                 The 'id' field may be ignored, the [[StoreSupport]] object will determine
+   *                 whether the id field is used, or one is generated.
+   * @param dontUpdateTimes true and the created, updated times on the value will not be updated.
+   * @param context the change context for this operation
+   * @param pos a [[SourcePosition]] object to identify the caller.
+   * @return a future to the new value with updated 'id' field
+   */
+  private def createChildImpl(
+                   newvalue: VType,
+                   dontUpdateTimes: Boolean = false,
+                   changeContext: ChangeContext = ChangeContext()
+                 )(
+                   implicit
+                     pos: SourcePosition
+                 ): Future[Result[VType]] = {
+    log.fine(s"Creating child ${resourceURI}: ${newvalue}, dontUpdateTimes=${dontUpdateTimes} called from ${pos.line}")
+
+    support.createInPersistent(newvalue, persistent, dontUpdateTimes).flatMap { r =>
       r match {
         case Right(v) =>
           val f = cache.create(v.id, ()=>Result.future(v))

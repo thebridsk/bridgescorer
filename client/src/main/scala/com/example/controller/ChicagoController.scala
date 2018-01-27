@@ -17,11 +17,24 @@ import scala.concurrent.CanAwait
 import scala.util.Try
 import scala.concurrent.Future
 import com.example.rest2.ResultObject
+import com.example.rest2.AjaxResult
+import org.scalactic.source.Position
 
 object ChicagoController {
   val logger = Logger("bridge.ChicagoController")
 
-  class CreateResultMatchChicago( result: Result[MatchChicago])(implicit executor: ExecutionContext) extends CreateResult[MatchChicago](result) {
+  class CreateResultMatchChicago(
+                                  ajaxResult: AjaxResult,
+                                  future: Future[MatchChicago]
+                                )(
+                                  implicit
+                                    pos: Position,
+                                    executor: ExecutionContext
+                                ) extends CreateResult[MatchChicago](ajaxResult,future) {
+
+    def this( result: RestResult[MatchChicago])(implicit executor: ExecutionContext) = {
+      this(result.ajaxResult, result.future )
+    }
 
     def updateStore( mc: MatchChicago ): MatchChicago = {
       showMatch(mc)

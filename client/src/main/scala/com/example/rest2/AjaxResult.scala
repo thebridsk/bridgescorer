@@ -81,18 +81,21 @@ object ResultRecorder extends ResultRecorder {
 
 }
 
-trait CancellableFuture[T] extends Future[T] {
+trait Cancellable[T] {
   /**
    * calls Promise.failure( RequestCancelled ) if successfully cancelled
    * returns true if cancelled, false otherwise
    */
   def cancel(): Boolean
+
+  def onComplete[U]( f: Try[T] => U)(implicit executor: ExecutionContext): Unit
+
 }
 
 class ResultHolder[T] {
-  private var result: Option[CancellableFuture[T]] = None
+  private var result: Option[Cancellable[T]] = None
 
-  def set( r: CancellableFuture[T] )(implicit executor: ExecutionContext) = {
+  def set( r: Cancellable[T] )(implicit executor: ExecutionContext) = {
     result=Some(r)
     r.onComplete(t => result=None)
   }
@@ -237,7 +240,7 @@ class WrapperXMLHttpRequestImpl( val req: XMLHttpRequest ) extends WrapperXMLHtt
   def getResponseHeader(header: String): String = req.getResponseHeader(header)
 }
 
-class AjaxResult( val req: WrapperXMLHttpRequest, val url: String, val reqbody: InputData, future: Future[WrapperXMLHttpRequest], promise: Promise[WrapperXMLHttpRequest], val pos: Position ) extends CancellableFuture[WrapperXMLHttpRequest] {
+class AjaxResult( val req: WrapperXMLHttpRequest, val url: String, val reqbody: InputData, future: Future[WrapperXMLHttpRequest], promise: Promise[WrapperXMLHttpRequest], val pos: Position ) extends Future[WrapperXMLHttpRequest] with Cancellable[WrapperXMLHttpRequest] {
   /**
    * calls Promise.failure( RequestCancelled ) if successfully cancelled
    * returns true if cancelled, false otherwise
@@ -381,6 +384,44 @@ object AjaxCall extends IAjaxCall {
     s+s"(${readyState})"
   }
 
+  import play.api.libs.json._
+  def processError( statusCode: Int, resp: JsValue ) = {
+    resp match {
+      case _: JsObject =>
+        resp \ "errors" match {
+          case JsDefined( JsArray( messages ) ) =>
+            val e = messages.map { v =>
+                       (v \ "message") match {
+                         case JsDefined(JsString(msg)) => msg
+                         case x => x.toString()
+                       }
+                     }.mkString("Errors:\n","\n","")
+            log.warning(e)
+            RestMessage(e)
+          case JsDefined( _ ) =>
+            log.warning(s"Expecting a messages, got ${resp}")
+            RestMessage(s"Expecting a messages, got ${resp}")
+          case x: JsUndefined =>
+            resp \ "error" match {
+              case JsDefined( JsString( msg ) ) =>
+                val e = s"Error:\n${msg}"
+                log.warning(e)
+                RestMessage(e)
+              case JsDefined( _ ) =>
+                log.warning(s"Expecting a message, got ${resp}")
+                RestMessage(s"Expecting a message, got ${resp}")
+              case x: JsUndefined =>
+                // no error
+                RestMessage(s"Got statusCode ${statusCode} but no error or errors field: ${x}.  Response is ${resp}")
+            }
+        }
+
+      case _ =>
+        log.warning(s"Expecting a JsObject, got ${resp}")
+        RestMessage(s"Expecting a JsObject, got ${resp}")
+    }
+  }
+
   def send(method: String, url: String, data: InputData, timeout: Duration,
       headers: Map[String, String], withCredentials: Boolean,
       responseType: String)( implicit pos: SourcePosition): AjaxResult = {
@@ -402,22 +443,44 @@ object AjaxCall extends IAjaxCall {
           }
         } else {
           log.warning(s"${method} ${url}, status ${req.status} called from ${pos.line}")
+
           val resp = req.responseText
-          import play.api.libs.json._
+
           import com.example.data.rest.JsonSupport._
-          val msg = try {
-            readJson[RestMessage](resp)
-          } catch {
-            case x: IllegalArgumentException =>
-              RestMessage("")
-            case x: Exception =>
-              throw new JsonException( s"Exception on request: ${method} ${url}, response ${resp}", x )
-          }
-          try {
-            promise.failure(new AjaxFailure(msg,result))
-          } catch {
-            case x: IllegalStateException =>
-              // ignore this, means that promise is already complete
+
+          if (url == "/graphql") {
+            val msg = try {
+              val json = readJson[JsValue](resp)
+              processError(req.status, json)
+            } catch {
+              case x: IllegalArgumentException =>
+                RestMessage("")
+              case x: Exception =>
+                log.warning(s"Exception on request: ${method} ${url}, response ${resp}: ${x}", x )
+                RestMessage( s"Exception on request: ${method} ${url}, response ${resp}: ${x}" )
+            }
+            try {
+              promise.failure(new AjaxFailure(msg,result))
+            } catch {
+              case x: IllegalStateException =>
+                // ignore this, means that promise is already complete
+            }
+          } else {
+            val msg = try {
+              readJson[RestMessage](resp)
+            } catch {
+              case x: IllegalArgumentException =>
+                RestMessage("")
+              case x: Exception =>
+                log.warning(s"Exception on request: ${method} ${url}, response ${resp}: ${x}", x )
+                RestMessage( s"Exception on request: ${method} ${url}, response ${resp}: ${x}" )
+            }
+            try {
+              promise.failure(new AjaxFailure(msg,result))
+            } catch {
+              case x: IllegalStateException =>
+                // ignore this, means that promise is already complete
+            }
           }
         }
       }

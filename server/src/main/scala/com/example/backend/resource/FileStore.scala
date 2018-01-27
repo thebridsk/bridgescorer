@@ -71,7 +71,8 @@ class FilePersistentSupport[VId,VType <: VersionedInstance[VType,VType,VId]](
    */
   def createInPersistent(
                           useId: Option[VId],
-                          v: VType
+                          v: VType,
+                          dontUpdateTimes: Boolean = false
                         ): Future[Result[VType]] = {
     Future {
       synchronized {
@@ -81,7 +82,7 @@ class FilePersistentSupport[VId,VType <: VersionedInstance[VType,VType,VId]](
             generateNextId(v)
         }) match {
           case Right(id) =>
-            val nv = v.setId(id, true, false)
+            val nv = v.setId(id, true, dontUpdateTimes)
             write(id, nv)
           case Left(error) =>
             Result(error)

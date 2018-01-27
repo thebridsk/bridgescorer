@@ -8,6 +8,7 @@ import java.net.URI
 import org.scalactic.source.Position
 import play.api.libs.json._
 import com.example.data.rest.JsonSupport._
+import scala.concurrent.ExecutionContext
 
 /**
  * @tparam R the resource class
@@ -24,7 +25,9 @@ class RestClient[R]( val resourceURIfragment: String,
                      parentInstance: Option[String]=None
                    )( implicit reader: Reads[R],
                                writer: Writes[R],
-                               classtag: ClassTag[R] ) {
+                               classtag: ClassTag[R],
+                               executor: ExecutionContext
+                   ) {
 
   def getURI( id: String ): String = {
     resourceURI+"/"+id
@@ -42,9 +45,17 @@ class RestClient[R]( val resourceURIfragment: String,
   @inline
   implicit def StringToR( data: String ) = readJson[R](data)
 
-  implicit def ajaxToRestResult[T : Reads : Writes : ClassTag]( ajaxResult: AjaxResult )(implicit pos: Position) = new RestResult[T](ajaxResult)
+  implicit def ajaxToRestResult( ajaxResult: AjaxResult ) = {
+    RestResult.ajaxToRestResult(ajaxResult)
+  }
 
-  implicit def ajaxToRestResultArray( ajaxResult: AjaxResult ) = new RestResultArray[R](ajaxResult)
+  implicit def ajaxToRestResultUnit( ajaxResult: AjaxResult ): RestResult[Unit] = {
+    RestResult.ajaxToRestResult(ajaxResult)
+  }
+
+  implicit def ajaxToRestResultArray( ajaxResult: AjaxResult ) = {
+    RestResult.ajaxToRestResultArray(ajaxResult)
+  }
 
   val headersForPost=Map("Content-Type" -> "application/json; charset=UTF-8",
                          "Accept" -> "application/json")
@@ -111,7 +122,7 @@ class RestClient[R]( val resourceURIfragment: String,
               headers: Map[String, String] = headersForGet,
               timeout: Duration = AjaxResult.defaultTimeout
             )( implicit pos: Position): RestResult[Unit] = {
-    new RestResult[Unit]( AjaxResult.delete(getURL(id,query), timeout=timeout, headers=headers) )
+    AjaxResult.delete(getURL(id,query), timeout=timeout, headers=headers)
   }
 
 }

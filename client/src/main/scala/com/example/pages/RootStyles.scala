@@ -89,6 +89,8 @@ class RootStyles {
 
   val miscDiv = cls("rootMiscDiv")
 
+  val graphqlPageDiv = cls("rootGraphQLPageDiv baseFontTextLarge")
+
   val aboutPageDiv = cls("rootAboutPageDiv baseFontTextLarge")
 
   val thankYouDiv = cls("rootThankYouDiv baseFontTextLarge")

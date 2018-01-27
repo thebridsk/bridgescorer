@@ -269,6 +269,12 @@ object HomePage {
                                    ^.disabled:=isWorking
                     )
                   }
+                ),
+                <.td( ^.width:="25%",
+                  AppButton( "GraphQL", "GraphQL",
+                             rootStyles.playButton,
+                             ^.disabled:=isWorking,
+                             ^.onClick --> callbackPage(GraphQLAppPage))
                 )
               )
             )
