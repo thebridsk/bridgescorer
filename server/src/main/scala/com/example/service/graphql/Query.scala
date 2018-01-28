@@ -15,6 +15,7 @@ import sangria.execution.ErrorWithResolver
 import scala.concurrent.Future
 import akka.http.scaladsl.model.StatusCode
 import utils.logging.Logger
+import sangria.parser.SyntaxError
 
 object Query {
 
@@ -38,24 +39,40 @@ class Query {
       case _ => JsObject.empty
     }
 
-    QueryParser.parse(query) match {
+    try {
+      QueryParser.parse(query) match {
 
-      case Success(queryAst) =>
-        Executor.execute(SchemaDefinition.BridgeScorerSchema,
-                                 queryAst,
-                                 store,
-                                 variables = vars,
-                                 operationName = operation
-                                )
-          .map(StatusCodes.OK -> _)
-          .recover {
-            case error: QueryAnalysisError => StatusCodes.BadRequest -> error.resolveError
-            case error: ErrorWithResolver => StatusCodes.InternalServerError -> error.resolveError
+        case Success(queryAst) =>
+          Executor.execute(SchemaDefinition.BridgeScorerSchema,
+                                   queryAst,
+                                   store,
+                                   variables = vars,
+                                   operationName = operation
+                                  )
+            .map(StatusCodes.OK -> _)
+            .recover {
+              case error: QueryAnalysisError =>
+                log.info( s"Error executing GraphQL query", error )
+                StatusCodes.BadRequest -> error.resolveError
+              case error: ErrorWithResolver =>
+                log.info( s"Error executing GraphQL query", error )
+                StatusCodes.InternalServerError -> error.resolveError
+            }
+
+        case Failure(error) =>
+          error match {
+            case error: SyntaxError =>
+              log.info( s"Syntax error parsing GraphQL query", error )
+              Future.successful( StatusCodes.BadRequest -> JsObject( Seq(("error", JsString(error.getMessage)))) )
+            case error: Exception =>
+              log.info( s"Syntax error parsing GraphQL query ${error.getClass.getName}", error )
+              Future.successful( StatusCodes.InternalServerError -> JsObject( Seq(("error", JsString("Unknown error")))) )
           }
-
-      case Failure(error) =>
-        log.info( s"Error parsing GraphQL query", error )
-        Future.successful( StatusCodes.BadRequest -> JsObject( Seq(("error", JsString(error.getMessage)))) )
+      }
+    } catch {
+      case error: Exception =>
+        log.info( s"Error parsing GraphQL query ${error.getClass.getName}", error )
+        Future.successful( StatusCodes.InternalServerError -> JsObject( Seq(("error", JsString("Unknown error")))) )
     }
   }
 }
