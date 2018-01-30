@@ -27,5 +27,6 @@ class AllUnitTests extends Sequential(
   new TestCacheStoreWithRoute,
   new TestVersionedInstance,
   new TestDuplicateWebsocket,
+  new TestGraphQL,
   new TestRemoteLoggingConfig
 )

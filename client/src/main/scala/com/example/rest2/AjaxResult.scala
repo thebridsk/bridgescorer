@@ -1,85 +1,27 @@
 package com.example.rest2
 
-import scala.concurrent._
-import scala.language.implicitConversions
-import scala.scalajs.js
-import scala.scalajs.js.typedarray._
-import scala.scalajs.js.typedarray.TypedArrayBufferOps._
-import org.scalajs.dom
-import org.scalajs.dom.{html, raw}
-import org.scalajs.dom.raw.Blob
-import java.nio.ByteBuffer
-import org.scalajs.dom.ext.AjaxException
-import scala.scalajs.js.annotation.ScalaJSDefined
+import scala.util.Try
+import scala.concurrent.ExecutionContext
+import org.scalajs.dom.ext.Ajax.InputData
+import scala.concurrent.Future
+import scala.concurrent.Promise
+import org.scalactic.source.Position
 import org.scalajs.dom.raw.XMLHttpRequest
 import com.example.data.RestMessage
-import scala.concurrent.duration.Duration
 import scala.concurrent.CanAwait
-import scala.util.Try
-import org.scalactic.source.Position
-import utils.logging.Logger
-import org.scalajs.dom.ext.Ajax.InputData
-import scala.util.Success
-import com.example.logger.Alerter
-import com.example.source.SourcePosition
-import com.example.logger.CommAlerter
+import scala.concurrent.duration.Duration
 import scala.util.Failure
+import com.example.logger.CommAlerter
+import com.example.logger.Alerter
+import utils.logging.Logger
+import scala.reflect.ClassTag
+import scala.util.Success
+import play.api.libs.json.Reads
+import play.api.libs.json.Json
+import play.api.libs.json.JsSuccess
+import play.api.libs.json.JsError
 import com.example.data.rest.JsonException
-
-class AjaxFailure( val msg: RestMessage, val result: AjaxResult )(implicit val pos: Position) extends Exception(msg.msg) {
-  override
-  def toString() = {
-    getClass.getName+" "+msg.msg
-  }
-}
-
-class RequestCancelled( msg: RestMessage, result: AjaxResult )(implicit pos: Position) extends AjaxFailure(msg,result)
-
-class AjaxDisabled( msg: RestMessage, result: AjaxResult )(implicit pos: Position) extends AjaxFailure(msg,result)
-
-trait ResultRecorder {
-  def record( ex: Throwable )( implicit pos: Position ): Unit
-}
-
-object ResultRecorder extends ResultRecorder {
-  val log = Logger("bridge.ResultRecorder")
-
-  import com.example.source._
-
-  def logException( x: Exception, url: Option[String] = None, reqbody: Option[InputData] = None ) = {
-    x match {
-      case ex: AjaxDisabled =>
-        log.info(s"ResultRecorder.logException: Ajax is disabled, called from ${ex.pos.line}")
-      case ex: AjaxFailure =>
-        val req = ex.result.req
-        log.warning("ResultRecorder.logException: "+req.status+"  "+req.responseText+", readyState="+req.readyState+", statusText="+req.statusText+", called from "+ex.pos.line)
-        log.warning("ResultRecorder.logException: for "+url.getOrElse("<unknown>")+" "+reqbody.getOrElse("<none>"))
-        log.warning("ResultRecorder.logException: responseType="+req.responseType+" responseText="+req.responseText)
-      case ex: AjaxException =>
-        val req = ex.xhr
-        log.warning("ResultRecorder.logException: "+req.status+"  "+req.responseText+", readyState="+req.readyState+", statusText="+req.statusText)
-        log.warning("ResultRecorder.logException: for "+url.getOrElse("<unknown>")+" "+reqbody.getOrElse("<none>"))
-        log.warning("ResultRecorder.logException: responseType="+req.responseType+" responseText="+req.responseText)
-    }
-  }
-
-  def record( ex: Throwable )( implicit pos: Position ): Unit = {
-    ex match {
-      case ex: AjaxDisabled =>
-        // ignore it
-      case x: RequestCancelled =>
-        log.info(s"ResultRecorder.record: Request from ${x.result.pos.fileName}:${x.result.pos.lineNumber} was cancelled, failure recorded from ${pos.fileName}:${pos.lineNumber}", x)
-        logException(x, Some( x.result.url ), Some( x.result.reqbody ) )
-      case x: AjaxFailure =>
-        log.info(s"ResultRecorder.record: Request from ${x.result.pos.fileName}:${x.result.pos.lineNumber} failed ${x}, failure recorded from ${pos.fileName}:${pos.lineNumber}")
-        logException(x, Some( x.result.url ), Some( x.result.reqbody ) )
-      case x: AjaxException =>
-        log.info(s"ResultRecorder.record: Request failed ${x}, failure recorded from ${pos.fileName}:${pos.lineNumber}")
-        logException(x)
-    }
-  }
-
-}
+import play.api.libs.json.JsValue
 
 trait Cancellable[T] {
   /**
@@ -92,155 +34,26 @@ trait Cancellable[T] {
 
 }
 
-class ResultHolder[T] {
-  private var result: Option[Cancellable[T]] = None
+/**
+ * Wraps the result of an Ajax call.
+ *
+ * @param T the type of the successful return
+ *
+ * @constructor
+ * @param req
+ * @param url
+ * @param reqbody
+ * @param future
+ * @param promise
+ * @param pos
+ */
+class AjaxResult[T]( val req: WrapperXMLHttpRequest, val url: String, val reqbody: InputData, future: Future[T], promise: Promise[WrapperXMLHttpRequest], val pos: Position ) extends Future[T] with Cancellable[T] {
 
-  def set( r: Cancellable[T] )(implicit executor: ExecutionContext) = {
-    result=Some(r)
-    r.onComplete(t => result=None)
-  }
+  import scala.language.implicitConversions
 
-  def isRunning = result.isDefined
+  implicit
+  private def withFuture[U]( newfuture: Future[U] ) = new AjaxResult(req,url,reqbody,newfuture,promise,pos)
 
-  def cancel() = result match {
-    case Some(r) =>
-      result = None
-      r.cancel()
-    case None =>
-      false
-  }
-}
-
-object ResultHolder {
-  def apply[T]() = new ResultHolder[T]()
-}
-
-trait WrapperXMLHttpRequest {
-
-  /**
-   * The status of the response to the request. This is the HTTP result code (for example,
-   * status is 200 for a successful request).
-   *
-   * MDN
-   */
-  def status: Int
-
-  /**
-   * The state of the request: Value State Description 0 UNSENT open()has not been
-   * called yet. 1 OPENED send()has not been called yet. 2 HEADERS_RECEIVED send() has
-   * been called, and headers and status are available. 3 LOADING Downloading;
-   * responseText holds partial data. 4 DONE The operation is complete.
-   *
-   * MDN
-   */
-  def readyState: Int
-
-  /**
-   * The response to the request as text, or null if the request was unsuccessful or has
-   * not yet been sent.
-   *
-   * MDN
-   */
-  def responseText: String
-
-  /**
-   * Returns the serialized URL of the response or the empty string if the URL is null. If
-   * the URL is returned, URL fragment if present in the URL will be stripped away. The
-   * value of responseURL will be the final URL obtained after any redirects.
-   *
-   * This property should be a String, but it isn't implemented by IE, even as new as IE11,
-   * hence it must be UndefOr.
-   *
-   * MDN
-   */
-  def responseURL: js.UndefOr[String]
-
-  /**
-   * The response string returned by the HTTP server. Unlike status, this includes the
-   * entire text of the response message ("200 OK", for example).
-   *
-   * MDN
-   */
-  def statusText: String
-
-  /**
-   * Aborts the request if it has already been sent.
-   *
-   * MDN
-   */
-  def abort(): Unit
-
-  def responseType: String
-
-  def getAllResponseHeaders(): String
-
-  def getResponseHeader(header: String): String
-
-}
-
-class WrapperXMLHttpRequestImpl( val req: XMLHttpRequest ) extends WrapperXMLHttpRequest {
-
-  /**
-   * The status of the response to the request. This is the HTTP result code (for example,
-   * status is 200 for a successful request).
-   *
-   * MDN
-   */
-  def status: Int = req.status
-
-  /**
-   * The state of the request: Value State Description 0 UNSENT open()has not been
-   * called yet. 1 OPENED send()has not been called yet. 2 HEADERS_RECEIVED send() has
-   * been called, and headers and status are available. 3 LOADING Downloading;
-   * responseText holds partial data. 4 DONE The operation is complete.
-   *
-   * MDN
-   */
-  def readyState: Int = req.readyState
-
-  /**
-   * The response to the request as text, or null if the request was unsuccessful or has
-   * not yet been sent.
-   *
-   * MDN
-   */
-  def responseText: String = req.responseText
-
-  /**
-   * Returns the serialized URL of the response or the empty string if the URL is null. If
-   * the URL is returned, URL fragment if present in the URL will be stripped away. The
-   * value of responseURL will be the final URL obtained after any redirects.
-   *
-   * This property should be a String, but it isn't implemented by IE, even as new as IE11,
-   * hence it must be UndefOr.
-   *
-   * MDN
-   */
-  def responseURL: js.UndefOr[String] = req.responseURL
-
-  /**
-   * The response string returned by the HTTP server. Unlike status, this includes the
-   * entire text of the response message ("200 OK", for example).
-   *
-   * MDN
-   */
-  def statusText: String = req.statusText
-
-  /**
-   * Aborts the request if it has already been sent.
-   *
-   * MDN
-   */
-  def abort(): Unit = req.abort
-
-  def responseType: String = req.responseType
-
-  def getAllResponseHeaders(): String = req.getAllResponseHeaders()
-
-  def getResponseHeader(header: String): String = req.getResponseHeader(header)
-}
-
-class AjaxResult( val req: WrapperXMLHttpRequest, val url: String, val reqbody: InputData, future: Future[WrapperXMLHttpRequest], promise: Promise[WrapperXMLHttpRequest], val pos: Position ) extends Future[WrapperXMLHttpRequest] with Cancellable[WrapperXMLHttpRequest] {
   /**
    * calls Promise.failure( RequestCancelled ) if successfully cancelled
    * returns true if cancelled, false otherwise
@@ -261,24 +74,111 @@ class AjaxResult( val req: WrapperXMLHttpRequest, val url: String, val reqbody: 
   }
 
   // Members declared in scala.concurrent.Awaitable
-  def ready(atMost: Duration)(implicit permit: CanAwait) = {
+  def ready(atMost: Duration)(implicit permit: CanAwait): this.type = {
     future.ready(atMost)
     this
   }
-  def result(atMost: Duration)(implicit permit: CanAwait): WrapperXMLHttpRequest = future.result(atMost)
 
-  def defaultTry[T]( msg: String ): Try[T] = Failure( new Exception(msg) )
-  def defaultFuture[T]( msg: String ): Future[T] = Future.failed(new Exception(msg))
+  def result(atMost: Duration)(implicit permit: CanAwait): T = future.result(atMost)
 
   // Members declared in scala.concurrent.Future
   def isCompleted: Boolean = future.isCompleted
-  def onComplete[U](f: Try[WrapperXMLHttpRequest] => U)(implicit executor: ExecutionContext): Unit = future.onComplete(CommAlerter.tryitfunr(null.asInstanceOf[U])(f))
-  def transform[S](f: Try[WrapperXMLHttpRequest] => Try[S])(implicit executor: ExecutionContext): Future[S] = future.transform( CommAlerter.tryitfunr[Try[WrapperXMLHttpRequest],Try[S]](defaultTry("transform"))(f))
-  def transformWith[S](f: Try[WrapperXMLHttpRequest] => Future[S])(implicit executor: ExecutionContext): Future[S] = future.transformWith(CommAlerter.tryitfunr[Try[WrapperXMLHttpRequest],Future[S]](defaultFuture("transformWith"))(f))
-  def value: Option[Try[WrapperXMLHttpRequest]] = future.value
+  def onComplete[U](f: Try[T] => U)(implicit executor: ExecutionContext): Unit = {
+    future.onComplete(CommAlerter.tryitfunr(null.asInstanceOf[U])(f))
+  }
+
+  override
+  def transform[S](s: T => S, f: Throwable => Throwable)(implicit executor: ExecutionContext): AjaxResult[S] = {
+    future.transform( CommAlerter.tryit(s), CommAlerter.tryit(f))
+  }
+
+  def transform[S](f: Try[T] => Try[S])(implicit executor: ExecutionContext): AjaxResult[S] = {
+    future.transform( CommAlerter.tryit(f))
+  }
+  def transformWith[S](f: Try[T] => Future[S])(implicit executor: ExecutionContext): AjaxResult[S] = {
+    future.transformWith(CommAlerter.tryit(f))
+  }
+  def value: Option[Try[T]] = future.value
+
+  override
+  def failed: AjaxResult[Throwable] = future.failed
+
+  override
+  def foreach[U](f: T => U)(implicit executor: ExecutionContext): Unit = future.foreach(CommAlerter.tryit(f))
+
+  override
+  def map[S](f: T => S)(implicit executor: ExecutionContext): AjaxResult[S] = future.map(CommAlerter.tryit(f))
+
+  override
+  def flatMap[S](f: T => Future[S])(implicit executor: ExecutionContext): AjaxResult[S] = future.flatMap(CommAlerter.tryit(f))
+
+  override
+  def flatten[S](implicit ev: T <:< Future[S]): AjaxResult[S] = future.flatten(ev)
+
+  override
+  def filter( p: T => Boolean)(implicit executor: ExecutionContext): AjaxResult[T] = future.filter(CommAlerter.tryit(p))
+
+  override
+  def collect[S](pf: PartialFunction[T, S])(implicit executor: ExecutionContext): AjaxResult[S] = future.collect(pf)
+
+  override
+  def recover[U >: T](pf: PartialFunction[Throwable, U])(implicit executor: ExecutionContext): AjaxResult[U] = future.recover(pf)
+
+  override
+  def recoverWith[U >: T](pf: PartialFunction[Throwable, Future[U]])(implicit executor: ExecutionContext): AjaxResult[U] = future.recoverWith(pf)
+
+  override
+  def zip[U](that: Future[U]): AjaxResult[(T, U)] = future.zip(that)
+
+  override
+  def zipWith[U, R](that: Future[U])(f: (T, U) => R)(implicit executor: ExecutionContext): AjaxResult[R] = future.zipWith(that)(f)
+
+  override
+  def fallbackTo[U >: T](that: Future[U]): AjaxResult[U] = future.fallbackTo(that)
+
+  override
+  def mapTo[S](implicit tag: ClassTag[S]): AjaxResult[S] = future.mapTo(tag)
+
+  override
+  def andThen[U](pf: PartialFunction[Try[T], U])(implicit executor: ExecutionContext): AjaxResult[T] = future.andThen(pf)
+
+  /**
+   * returns a future to an instance of U which was unmarshalled from the body of the HTTP error response.
+   * @param U the class of the return type.  Must have an implicit Reads in scope.
+   * @param executor an executor
+   * @param reader A Reads object to unmarshall a U
+   * @return if this future failed with an AjaxErrorReturn exception, then a Future to the U object is returned.
+   * If the body in the AjaxErrorReturn could not be unmarshalled, then a JsonException will fail the returned future.
+   * If this future fails with an exception other than AjaxErrorReturn, then the returned future is failed with the exception
+   * If this future succeeds then the returned future will never complete.
+   */
+  def mapErrorReturn[U](implicit executor: ExecutionContext, reader: Reads[U], classtag: ClassTag[U]): AjaxResult[U] = {
+    future.onlyExceptions.
+           map { t =>
+             if (!t.isInstanceOf[AjaxErrorReturn]) throw t
+             val error = t.asInstanceOf[AjaxErrorReturn]
+             AjaxResult.fromJson[U](error.body, url, t)
+           }
+  }
+
+  /**
+   * returns a future to an exception.
+   * @param executor an executor
+   * @return a future to the exception.  If this future does not fail with an exception then the returned future never completes.
+   */
+  def onlyExceptions(implicit executor: ExecutionContext): AjaxResult[Throwable] = {
+    val p = Promise[Throwable]()
+    onComplete { tr =>
+      tr match {
+        case Success(t) =>
+        case Failure(error) => p.success(error)
+      }
+    }
+    p.future
+  }
 
   def recordFailure( rec: ResultRecorder = ResultRecorder )(implicit executor: ExecutionContext, pos: Position) = {
-    failed.foreach( Alerter.tryit { rec.record(_) })
+    future.failed.foreach( Alerter.tryit { rec.record(_) })
     this
   }
 
@@ -352,196 +252,27 @@ object AjaxResult {
 
   def apply(method: String, url: String, data: InputData, timeout: Duration,
       headers: Map[String, String], withCredentials: Boolean,
-      responseType: String)( implicit pos: Position): AjaxResult = {
+      responseType: String)( implicit pos: Position): AjaxResult[WrapperXMLHttpRequest] = {
     ajaxCall.send(method, url, data, timeout, headers, withCredentials, responseType)
   }
-}
 
-trait IAjaxCall {
-  def send(method: String, url: String, data: InputData, timeout: Duration,
-      headers: Map[String, String], withCredentials: Boolean,
-      responseType: String)( implicit pos: SourcePosition): AjaxResult
-}
-
-object AjaxCall extends IAjaxCall {
-  val log = Logger("comm.AjaxCall")
-
-  val Done = dom.raw.XMLHttpRequest.DONE
-  val Loading = dom.raw.XMLHttpRequest.LOADING
-  val Unsent = dom.raw.XMLHttpRequest.UNSENT
-  val Opened = dom.raw.XMLHttpRequest.OPENED
-  val HeadersReceived = dom.raw.XMLHttpRequest.HEADERS_RECEIVED
-
-  def readyStateToString( readyState: Int ) = {
-    val s = readyState match {
-      case Done => "done"
-      case Loading => "loading"
-      case Unsent => "unsent"
-      case Opened => "opened"
-      case HeadersReceived => "headersReceived"
-      case _ => "unknown"
-    }
-    s+s"(${readyState})"
+  def fromJson[U]( s: String, url: String, cause: Throwable = null )(implicit reader: Reads[U], classtag: ClassTag[U]): U = {
+    val json = Json.parse(s)
+    fromJsonValue[U](json,url)
   }
 
-  import play.api.libs.json._
-  def processError( statusCode: Int, resp: JsValue ) = {
-    resp match {
-      case _: JsObject =>
-        resp \ "errors" match {
-          case JsDefined( JsArray( messages ) ) =>
-            val e = messages.map { v =>
-                       (v \ "message") match {
-                         case JsDefined(JsString(msg)) => msg
-                         case x => x.toString()
-                       }
-                     }.mkString("Errors:\n","\n","")
-            log.warning(e)
-            RestMessage(e)
-          case JsDefined( _ ) =>
-            log.warning(s"Expecting a messages, got ${resp}")
-            RestMessage(s"Expecting a messages, got ${resp}")
-          case x: JsUndefined =>
-            resp \ "error" match {
-              case JsDefined( JsString( msg ) ) =>
-                val e = s"Error:\n${msg}"
-                log.warning(e)
-                RestMessage(e)
-              case JsDefined( _ ) =>
-                log.warning(s"Expecting a message, got ${resp}")
-                RestMessage(s"Expecting a message, got ${resp}")
-              case x: JsUndefined =>
-                // no error
-                RestMessage(s"Got statusCode ${statusCode} but no error or errors field: ${x}.  Response is ${resp}")
-            }
+  def fromJsonValue[U]( json: JsValue, url: String, cause: Throwable = null )(implicit reader: Reads[U], classtag: ClassTag[U]): U = {
+    Json.fromJson[U](json) match {
+      case JsSuccess(t,path) =>
+        t
+      case JsError(errors) =>
+        val clsname = classtag.runtimeClass.getName
+        val s = errors.map { entry =>
+          val (path, verrs) = entry
+          s"""\n  ${path}: ${verrs.map(e=>e.message).mkString("\n    ","\n    ","")}"""
         }
-
-      case _ =>
-        log.warning(s"Expecting a JsObject, got ${resp}")
-        RestMessage(s"Expecting a JsObject, got ${resp}")
+        throw new JsonException(s"""Error unmarshalling a ${clsname} from request ${url}: ${s}""", cause)
     }
   }
 
-  def send(method: String, url: String, data: InputData, timeout: Duration,
-      headers: Map[String, String], withCredentials: Boolean,
-      responseType: String)( implicit pos: SourcePosition): AjaxResult = {
-    val req = new dom.XMLHttpRequest()
-    val wreq = new WrapperXMLHttpRequestImpl(req)
-    val promise = Promise[WrapperXMLHttpRequest]()
-    val result = new AjaxResult( wreq, url, data, promise.future, promise, pos.pos )
-
-    req.onreadystatechange = CommAlerter.tryitfun { (e: dom.Event) =>
-      log.fine(s"${method} ${url}, readyState ${readyStateToString(req.readyState)}, status ${req.status}, called from ${pos.line}")
-      if (req.readyState == Done) {
-        if ((req.status >= 200 && req.status < 300) || req.status == 304) {
-          log.fine(s"${method} ${url}, status ${req.status} called from ${pos.line}")
-          try {
-            promise.success(wreq)
-          } catch {
-            case x: IllegalStateException =>
-              // ignore this, means that promise is already complete
-          }
-        } else {
-          log.warning(s"${method} ${url}, status ${req.status} called from ${pos.line}")
-
-          val resp = req.responseText
-
-          import com.example.data.rest.JsonSupport._
-
-          if (url == "/graphql") {
-            val msg = try {
-              val json = readJson[JsValue](resp)
-              processError(req.status, json)
-            } catch {
-              case x: IllegalArgumentException =>
-                RestMessage("")
-              case x: Exception =>
-                log.warning(s"Exception on request: ${method} ${url}, response ${resp}: ${x}", x )
-                RestMessage( s"Exception on request: ${method} ${url}, response ${resp}: ${x}" )
-            }
-            try {
-              promise.failure(new AjaxFailure(msg,result))
-            } catch {
-              case x: IllegalStateException =>
-                // ignore this, means that promise is already complete
-            }
-          } else {
-            val msg = try {
-              readJson[RestMessage](resp)
-            } catch {
-              case x: IllegalArgumentException =>
-                RestMessage("")
-              case x: Exception =>
-                log.warning(s"Exception on request: ${method} ${url}, response ${resp}: ${x}", x )
-                RestMessage( s"Exception on request: ${method} ${url}, response ${resp}: ${x}" )
-            }
-            try {
-              promise.failure(new AjaxFailure(msg,result))
-            } catch {
-              case x: IllegalStateException =>
-                // ignore this, means that promise is already complete
-            }
-          }
-        }
-      }
-    }
-    req.ontimeout = CommAlerter.tryitfun { (e: dom.Event) =>
-      log.warning(s"${method} ${url}, timeout status ${req.status} called from ${pos.line}")
-      try {
-        promise.failure(new AjaxFailure(RestMessage("timed out"),result))
-      } catch {
-        case x: IllegalStateException =>
-          // ignore this, means that promise is already complete
-      }
-    }
-    req.open(method, url, true)
-    req.responseType = "text" // responseType
-    req.timeout = timeout.toMillis
-    req.withCredentials = withCredentials
-    headers.foreach(x => req.setRequestHeader(x._1, x._2))
-    if (data == null)
-      req.send()
-    else
-      req.send(data)
-
-    log.fine(s"${method} ${url}, sent, called from ${pos.line}")
-
-    result
-  }
-
-}
-class DisabledXMLHttpRequest extends WrapperXMLHttpRequest {
-  def status: Int = 0
-  def readyState: Int = 0
-  def responseText: String = null
-  def responseURL: js.UndefOr[String] = js.undefined
-  def statusText: String = null
-  def abort(): Unit = {}
-  def responseType: String = null
-  def getAllResponseHeaders(): String = null
-  def getResponseHeader(header: String): String = null
-}
-
-object AjaxCallDisabled extends IAjaxCall {
-  def send(method: String, url: String, data: InputData, timeout: Duration,
-      headers: Map[String, String], withCredentials: Boolean,
-      responseType: String)( implicit pos: SourcePosition): AjaxResult = {
-
-      sendImpl(method, url, data, timeout, headers, withCredentials, responseType, pos.pos)
-  }
-
-  // need this to log location of warning as this file, not from caller (pos)
-  private def sendImpl(method: String, url: String, data: InputData, timeout: Duration,
-      headers: Map[String, String], withCredentials: Boolean,
-      responseType: String, pos: Position): AjaxResult = {
-    val wreq = new DisabledXMLHttpRequest
-    val promise = Promise[WrapperXMLHttpRequest]()
-    val result = new AjaxResult( wreq, url, data, promise.future, promise, pos )
-
-    AjaxResult.log.warning(s"Ajax is disabled, ${method} ${url}, called from ${pos.line}")
-
-    promise.failure( new AjaxDisabled( RestMessage(s""" """), result ) )
-
-    result
-  }
 }

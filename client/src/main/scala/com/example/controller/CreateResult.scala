@@ -11,9 +11,10 @@ import com.example.rest2.ResultRecorder
 import org.scalactic.source.Position
 import com.example.rest2.RestResult
 import com.example.rest2.AjaxResult
+import com.example.rest2.WrapperXMLHttpRequest
 
 abstract class CreateResult[T](
-                                ajaxResult: AjaxResult,
+                                ajaxResult: AjaxResult[WrapperXMLHttpRequest],
                                 future: Future[T]
                               )(
                                 implicit

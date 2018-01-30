@@ -24,6 +24,7 @@ import play.api.libs.json.Json
 import scala.util.Success
 import scala.util.Failure
 import com.example.rest2.AjaxFailure
+import com.example.graphql.GraphQLResponse
 
 /**
  * A skeleton component.
@@ -93,20 +94,30 @@ object GraphQLPageInternal {
     def clearResponse() = scope.modState( s => s.copy(response=None))
 
     def execute() = scope.state >>= { state => Callback {
+      import GraphQLRequest._
       state.query match {
         case Some(q) =>
           val g = new GraphQLRequest("/graphql")
-          val y = g.request[JsValue](q) /* .recordFailure() */ .onComplete { tr =>
-            tr match {
-              case Success(json) =>
-                val r = Json.prettyPrint(json)
-                scope.withEffectsImpure.modState( s => s.copy( response=Some(r) ) )
-              case Failure(error) =>
-                error match {
+          val x =
+          g.request(q) // .recordFailure()
+          x.map { resp =>
+            val r = Json.prettyPrint(resp.data.get)
+            scope.withEffectsImpure.modState( s => s.copy( response=Some(r) ) )
+          }
+          .mapErrorReturn[GraphQLResponse]
+          .map { error =>
+            scope.withEffectsImpure.modState( s => s.withError( error.getError() ) )
+          }
+          .onlyExceptions
+          .onComplete { tryT =>
+            tryT match {
+              case Success(t) =>
+              case Failure(tr) =>
+                tr match {
                   case x: AjaxFailure =>
                     scope.withEffectsImpure.modState( s => s.withError( x.msg.msg ) )
                   case x: Throwable =>
-                    scope.withEffectsImpure.modState( s => s.withError( error.getMessage) )
+                    scope.withEffectsImpure.modState( s => s.withError( x.getMessage) )
                 }
             }
           }

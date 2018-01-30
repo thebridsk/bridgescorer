@@ -27,6 +27,7 @@ import com.example.rest2.RestClientDuplicateResult
 import scala.concurrent.Future
 import com.example.rest2.AjaxResult
 import org.scalactic.source.Position
+import com.example.rest2.WrapperXMLHttpRequest
 
 object Controller {
   val logger = Logger("bridge.Controller")
@@ -52,7 +53,7 @@ object Controller {
   }
 
   class CreateResultMatchDuplicate(
-                                    ajaxResult: AjaxResult,
+                                    ajaxResult: AjaxResult[WrapperXMLHttpRequest],
                                     future: Future[MatchDuplicate]
                                   )(
                                     implicit

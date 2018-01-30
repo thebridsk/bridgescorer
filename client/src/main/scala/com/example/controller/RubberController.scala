@@ -17,12 +17,13 @@ import com.example.rest2.ResultObject
 import com.example.rest2.RestResult
 import org.scalactic.source.Position
 import scala.concurrent.Future
+import com.example.rest2.WrapperXMLHttpRequest
 
 object RubberController {
   val logger = Logger("bridge.RubberController")
 
   class CreateResultMatchRubber(
-                                ajaxResult: AjaxResult,
+                                ajaxResult: AjaxResult[WrapperXMLHttpRequest],
                                 future: Future[MatchRubber]
                                )(
                                  implicit

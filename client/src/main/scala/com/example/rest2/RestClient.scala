@@ -45,15 +45,15 @@ class RestClient[R]( val resourceURIfragment: String,
   @inline
   implicit def StringToR( data: String ) = readJson[R](data)
 
-  implicit def ajaxToRestResult( ajaxResult: AjaxResult ) = {
+  implicit def ajaxToRestResult( ajaxResult: AjaxResult[WrapperXMLHttpRequest] ) = {
     RestResult.ajaxToRestResult(ajaxResult)
   }
 
-  implicit def ajaxToRestResultUnit( ajaxResult: AjaxResult ): RestResult[Unit] = {
+  implicit def ajaxToRestResultUnit( ajaxResult: AjaxResult[WrapperXMLHttpRequest] ): RestResult[Unit] = {
     RestResult.ajaxToRestResult(ajaxResult)
   }
 
-  implicit def ajaxToRestResultArray( ajaxResult: AjaxResult ) = {
+  implicit def ajaxToRestResultArray( ajaxResult: AjaxResult[WrapperXMLHttpRequest] ) = {
     RestResult.ajaxToRestResultArray(ajaxResult)
   }
 

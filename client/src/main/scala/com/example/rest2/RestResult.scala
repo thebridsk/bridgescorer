@@ -70,7 +70,7 @@ object RestResult {
   }
 
   def ajaxToRestResult[T](
-                           ajaxResult: AjaxResult
+                           ajaxResult: AjaxResult[WrapperXMLHttpRequest]
                          )(
                            implicit
                              pos: Position,
@@ -95,7 +95,7 @@ object RestResult {
   }
 
   implicit def ajaxToRestResultArray[T](
-                                         ajaxResult: AjaxResult
+                                         ajaxResult: AjaxResult[WrapperXMLHttpRequest]
                                        )(
                                          implicit
                                            pos: Position,
@@ -176,7 +176,7 @@ class ResultObject[T]( future: Future[T] ) extends Result[T] {
   }
 }
 
-class RestResult[T]( val ajaxResult: AjaxResult, val future: Future[T] )(implicit pos: Position ) extends Result[T] {
+class RestResult[T]( val ajaxResult: AjaxResult[WrapperXMLHttpRequest], val future: Future[T] )(implicit pos: Position ) extends Result[T] {
   /**
    * calls Promise.failure( RequestCancelled ) if successfully cancelled
    * returns true if cancelled, false otherwise
@@ -221,7 +221,7 @@ class RestResult[T]( val ajaxResult: AjaxResult, val future: Future[T] )(implici
   }
 }
 
-class RestResultArray[T]( ajaxResult: AjaxResult, result: Future[Array[T]] )(implicit pos: Position) extends Result[Array[T]] {
+class RestResultArray[T]( ajaxResult: AjaxResult[WrapperXMLHttpRequest], result: Future[Array[T]] )(implicit pos: Position) extends Result[Array[T]] {
   /**
    * calls Promise.failure( RequestCancelled ) if successfully cancelled
    * returns true if cancelled, false otherwise

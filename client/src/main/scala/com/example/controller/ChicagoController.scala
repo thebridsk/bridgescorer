@@ -19,12 +19,13 @@ import scala.concurrent.Future
 import com.example.rest2.ResultObject
 import com.example.rest2.AjaxResult
 import org.scalactic.source.Position
+import com.example.rest2.WrapperXMLHttpRequest
 
 object ChicagoController {
   val logger = Logger("bridge.ChicagoController")
 
   class CreateResultMatchChicago(
-                                  ajaxResult: AjaxResult,
+                                  ajaxResult: AjaxResult[WrapperXMLHttpRequest],
                                   future: Future[MatchChicago]
                                 )(
                                   implicit
