@@ -38,6 +38,11 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import com.example.service.graphql.GraphQLRoute
 import com.example.data.rest.JsonSupport._
 import com.example.rest.UtilsPlayJson._
+import com.example.test.backend.ImportStoreTesting
+import java.io.FileOutputStream
+import scala.concurrent.Await
+import scala.concurrent.duration._
+import scala.language.postfixOps
 
 object TestGraphQL {
 
@@ -45,10 +50,14 @@ object TestGraphQL {
 
   val graphQL = new Query
 
+  val dirTemp = Directory.makeTemp()
+  val dirImport = dirTemp / "store"
+
   val store = new BridgeServiceTesting {
 
     override
-    val importStore = Some(new FileImportStore( Directory("""/tmp/store/import""" )))
+    val importStore = Some(new FileImportStore( dirImport.toDirectory ))
+
   }
 
   val route = new GraphQLRoute {
@@ -210,6 +219,31 @@ class TestGraphQL extends AsyncFlatSpec with ScalatestRouteTest with MustMatcher
 
   }
 
+  it should "export and import the store" in {
+    import _root_.resource._
+
+    val importfile = (dirTemp / "import.zip")
+    val r = managed( new FileOutputStream( importfile.toString() ) ) acquireAndGet { file =>
+      val fut = store.export(file)
+      Await.result(fut, 60 seconds)
+    }
+
+    r mustBe Right( List( "M1" ) )
+
+    importfile.isFile mustBe true
+
+    store.importStore.map { is =>
+      is.create("import.zip", importfile.toFile).map { rbs =>
+        rbs match {
+          case Right(bs) =>
+            (dirImport / "import.zip").isFile mustBe true
+          case Left((statusCode,msg)) =>
+            fail(s"Error importing store: ${statusCode} ${msg.msg}" )
+        }
+      }
+    }.getOrElse( fail("Did not find import store" ))
+  }
+
   it should "return all the ids of import stores" in {
 
     val request = queryToJson(
@@ -263,7 +297,7 @@ class TestGraphQL extends AsyncFlatSpec with ScalatestRouteTest with MustMatcher
       processError(respjson)
       testlog.warning( s"Response was ${statusCode} ${respjson}" )
       statusCode mustBe StatusCodes.OK
-      respjson \ "data" \ "import" \ "duplicate" \ "teams" \ 0 \ "player1" mustBe JsDefined(JsString("Bill"))
+      respjson \ "data" \ "import" \ "duplicate" \ "teams" \ 0 \ "player1" mustBe JsDefined(JsString("Nancy"))
     }
 
   }
@@ -295,7 +329,7 @@ class TestGraphQL extends AsyncFlatSpec with ScalatestRouteTest with MustMatcher
     Post("/graphql", request) ~> addHeader(remoteAddress) ~> route.graphQLRoute ~> check {
       status mustBe OK
       val respjson = responseAs[JsObject]
-      respjson \ "data" \ "import" \ "duplicate" \ "teams" \ 0 \ "player1" mustBe JsDefined(JsString("Bill"))
+      respjson \ "data" \ "import" \ "duplicate" \ "teams" \ 0 \ "player1" mustBe JsDefined(JsString("Nancy"))
     }
   }
 

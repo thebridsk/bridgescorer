@@ -29,7 +29,7 @@ abstract class ImportStore()(
              ) {
 
   /**
-   * Returns all the IDs of imported stores.  The ID is the the filename of the zip store, or the name of the directory for a file store.
+   * Returns all the IDs of imported stores.  The ID is the the filename of the zip store, or the name of the dir for a file store.
    * @return a future that returns the list of IDs
    */
   def getAllIds(): Future[Result[List[String]]]
@@ -61,6 +61,11 @@ class FileImportStore(
 
   private val cache = new MyCache[String,Result[BridgeService]]( cacheInitialCapacity, cacheMaxCapacity, cacheTimeToLive, cacheTimeToIdle )
 
+  lazy val dir = {
+    directory.createDirectory(true, false)
+    directory
+  }
+
   /**
    * Returns all the IDs of imported stores.  The ID is the the filename of the zip store, or the name of the directory for a file store.
    * @return a future that returns the list of IDs
@@ -68,15 +73,15 @@ class FileImportStore(
   def getAllIds(): Future[Result[List[String]]] = {
     Future {
       Result(
-          directory.dirs.map( dir => dir.name ).toList :::
-          directory.files.filter( file => file.extension == "zip" ).map( file => file.name ).toList
+          dir.dirs.map( dir => dir.name ).toList :::
+          dir.files.filter( file => file.extension == "zip" ).map( file => file.name ).toList
       )
-    }
+    }.logit(s"getAllIds /imports")
   }
 
   def get( id: String ): Future[Result[BridgeService]] = {
     cache.read(id, {
-      val path = directory / id
+      val path = dir / id
       if (path.isDirectory) {
         Result( new BridgeServiceFileStore( path.toDirectory, false, true ) )
       } else if (path.extension == "zip") {
@@ -122,7 +127,7 @@ class FileImportStore(
     cache.createOnlyIfNotExist(
                           id,
                           ()=> Future {
-                            val importzipfile = directory / id
+                            val importzipfile = dir / id
                             var source: Path = null
                             var target: Path = null
                             try {

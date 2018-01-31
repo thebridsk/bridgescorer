@@ -19,7 +19,7 @@ class StoreSupport[VId, VType <: VersionedInstance[VType,VType,VId]](
                      val dontUpdateTime: Boolean = false
                    )(
                      implicit
-                       instanceJson: VersionedInstanceJson[VId,VType]
+                       val instanceJson: VersionedInstanceJson[VId,VType]
                    ) {
 
   /**

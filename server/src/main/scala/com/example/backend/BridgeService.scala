@@ -40,6 +40,14 @@ import scala.concurrent.Future
 import com.example.backend.resource.InMemoryStore
 import com.example.backend.resource.Implicits
 import com.example.data.RestMessage
+import java.io.OutputStream
+import java.util.zip.ZipOutputStream
+import java.nio.charset.StandardCharsets
+import com.example.backend.resource.VersionedInstanceJson
+import com.example.data.VersionedInstance
+import java.util.zip.ZipEntry
+import java.io.OutputStreamWriter
+import java.io.BufferedOutputStream
 
 /**
  * The backend trait for our service.
@@ -64,6 +72,91 @@ abstract class BridgeService( val id: String ) {
    * The import store.  Some some of the implementations support this, and will override this value.
    */
   val importStore: Option[ImportStore] = None
+
+  /**
+   * Writes the store contents in export format to the output stream.
+   * The output stream is NOT closed.
+   *
+   * @param out the output stream
+   * @return a future to a result that has a list of all the Ids of entities that are exported.
+   *
+   * To use:
+   *
+   *     val byteSource: Source[ByteString, Unit] = StreamConverters.asOutputStream()
+   *                       .mapMaterializedValue { os =>
+   *                         bs.export(os).
+   *                       }
+   *     HttpResponse(entity = HttpEntity(
+   *                             MediaTypes.`application/zip`,
+   *                             byteSource))
+   */
+  def export(
+              out: OutputStream,
+              filter: Option[List[String]] = None
+            ): Future[Result[List[String]]] = {
+    val converters = new BridgeServiceFileStoreConverters(true)
+    import converters._
+
+    val buf = new BufferedOutputStream(out)
+    val zip = new ZipOutputStream( buf, StandardCharsets.UTF_8 )
+
+    exportStore( zip, duplicates, filter ).
+      flatMap { rd =>
+        exportStore( zip, duplicateresults, filter ).flatMap { re =>
+          exportStore( zip, chicagos, filter ).flatMap { rc =>
+            exportStore( zip, rubbers, filter ).map { rr =>
+              val ld = rd.toOption.getOrElse(List())
+              val le = re.toOption.getOrElse(List())
+              val lc = rc.toOption.getOrElse(List())
+              val lr = rr.toOption.getOrElse(List())
+              val l = ld:::le:::lc:::lr
+              if (l.isEmpty) {
+                if (rd.isLeft) rd
+                else if (re.isLeft) re
+                else if (rc.isLeft) rc
+                else if (rr.isLeft) rr
+                else Result( StatusCodes.NotFound, "Nothing to export" )
+              } else {
+                Result( ld:::le:::lc:::lr )
+              }
+            }
+          }
+        }
+      }.
+      map { r => zip.finish(); buf.flush(); r }
+
+  }
+
+  def exportStore[TId, T <: VersionedInstance[T,T, TId]](
+                        zip: ZipOutputStream,
+                        store: Store[TId,T],
+                        filter: Option[List[String]]
+                      ): Future[Result[List[String]]] = {
+    store.readAll().map { rmap =>
+      rmap match {
+        case Right(map) =>
+          Result(
+            map.filter { entry =>
+              val (id,v) = entry
+              filter.map { f =>
+                f.contains(id.toString())
+              }.getOrElse(true)
+            }.map { entry =>
+              val (id,v) = entry
+              val name = s"${store.support.resourceName}.${id}${store.support.getWriteExtension()}"
+              val content = store.support.toJSON(v)
+              zip.putNextEntry( new ZipEntry(name))
+              val out = new OutputStreamWriter( zip, "UTF8" )
+              out.write(content)
+              out.flush
+              id.toString()
+            }.toList
+          )
+        case Left((statusCode,msg)) =>
+          Result( statusCode, msg )
+      }
+    }
+  }
 
   val defaultBoards = "ArmonkBoards"
   val defaultMovement = "Armonk2Tables"
