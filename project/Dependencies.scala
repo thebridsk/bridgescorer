@@ -52,7 +52,7 @@ object Dependencies {
   lazy val vWebJarsFlux = "3.1.3"      // http://mvnrepository.com/artifact/org.webjars/flux
   lazy val vGlobalize = "1.3.0"        // https://www.npmjs.com/package/globalize
   lazy val vCldr = "4.7.0"             // https://www.npmjs.com/package/cldr
-  lazy val vReactWidgetsMoment = "4.0.4"  // http://mvnrepository.com/artifact/org.webjars.npm/react-widgets-moment
+  lazy val vReactWidgetsMoment = "4.0.5"  // http://mvnrepository.com/artifact/org.webjars.npm/react-widgets-moment
   lazy val vMoment = "2.20.1"          // https://www.npmjs.com/package/moment
 
   lazy val vScalajsJquery = "0.9.2"  // http://mvnrepository.com/artifact/be.doeraene/scalajs-jquery_sjs0.6_2.11
