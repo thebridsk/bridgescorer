@@ -290,7 +290,13 @@ lazy val `bridgescorer-rotation` = crossProject.in(file("rotation")).
     //   [info]   org.eclipse.jetty:jetty-server:phantom-js-jetty    : 8.1.16.v20140903 -> 8.1.19.v20160209 -> 9.4.0.M0
     //   [info]   org.eclipse.jetty:jetty-websocket:phantom-js-jetty : 8.1.16.v20140903 -> 8.1.19.v20160209
 //    dependencyUpdatesExclusions := moduleFilter(organization = "org.eclipse.jetty")
-    dependencyUpdatesFilter -= moduleFilter(organization = "org.eclipse.jetty")
+    dependencyUpdatesFilter -= moduleFilter(organization = "org.eclipse.jetty"),
+    
+    testOptions in Test += {
+      if (inTravis) println("Not running JS tests in bridgescorer-rotation")
+      Tests.Filter(s => !inTravis)
+    }
+    
   )
 
 lazy val rotationJS: Project = `bridgescorer-rotation`.js
@@ -341,7 +347,7 @@ lazy val `bridgescorer-client` = project.in(file("client")).
     //   https://github.com/scalacenter/scalajs-bundler/issues/83
 //    testOptions in Test += Tests.Filter(s => { println("TestOption: "+s); false}),
     testOptions in Test += Tests.Filter(s => { 
-      if (s != "") {
+      if (s == "com.example.test.AllUnitTests") {
         println("Using Test:    "+s) 
         true
       } else {
