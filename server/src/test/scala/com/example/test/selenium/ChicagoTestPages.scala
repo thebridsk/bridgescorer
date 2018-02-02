@@ -358,6 +358,9 @@ class ChicagoTestPages extends FlatSpec with MustMatchers with BeforeAndAfterAll
   it should "start playing another game using the saved game using next hand with 6 hands in round" in {
     val chiid = postChicago( savedChicago.get )
 
+    SummaryPage.current.validate.clickQuit.validate
+    tcpSleep(1)
+
     val sp = SummaryPage.goto(chiid)
     sp.refresh.validate
     tcpSleep(30)
@@ -390,6 +393,9 @@ class ChicagoTestPages extends FlatSpec with MustMatchers with BeforeAndAfterAll
 
   it should "start playing another game using the saved game using next hand with 8 hands in round" in {
     val chiid = postChicago( savedChicago.get )
+
+    SummaryPage.current.validate.clickQuit.validate
+    tcpSleep(1)
 
     val sps = SummaryPage.goto(chiid)
     sps.refresh.validate
@@ -439,6 +445,9 @@ class ChicagoTestPages extends FlatSpec with MustMatchers with BeforeAndAfterAll
   it should "start playing another game using the saved game with 6 hands in round" in {
     val chiid = postChicago( savedChicago.get )
 
+    SummaryPage.current.validate.clickQuit.validate
+    tcpSleep(1)
+
     val sp = SummaryPage.goto(chiid)
     sp.refresh.validate
     tcpSleep(30)
@@ -472,6 +481,9 @@ class ChicagoTestPages extends FlatSpec with MustMatchers with BeforeAndAfterAll
 
   it should "start playing another game using the saved game with 8 hands in round" in {
     val chiid = postChicago( savedChicago.get )
+
+    SummaryPage.current.validate.clickQuit.validate
+    tcpSleep(1)
 
     val sps = SummaryPage.goto(chiid)
     sps.refresh.validate
