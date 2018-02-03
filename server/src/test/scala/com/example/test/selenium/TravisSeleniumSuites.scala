@@ -7,11 +7,11 @@ import org.scalatest.Sequential
  * @author werewolf
  */
 class TravisSeleniumSuites extends Sequential(
-  new ChicagoTestPages,
   new ChicagoTest,
   new Chicago5Test,
   new Chicago5SimpleTest,
   new Chicago5FairTest,
+  new ChicagoTestPages,
   new DuplicateTestPages,
   new DuplicateTestPages2,
   new Duplicate5TestPages,
