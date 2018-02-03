@@ -12,6 +12,7 @@ class AllSeleniumSuites extends Sequential(
   new Chicago5Test,
   new Chicago5SimpleTest,
   new Chicago5FairTest,
+  new DuplicateTestPages,
   new DuplicateTestPages2,
   new Duplicate5TestPages,
   new RubberTest,
