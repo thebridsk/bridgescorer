@@ -39,19 +39,20 @@ class MultiPersistentSupport[VId,VType <: VersionedInstance[VType,VType,VId]](
    */
   def createInPersistent(
                           useId: Option[VId],
-                          v: VType
+                          v: VType,
+                          dontUpdateTimes: Boolean = false
                         ): Future[Result[VType]] = {
     persistentStores.headOption.map { ps =>
       useId match {
         case Some(id) =>
           val found = self.synchronized { getAllIdsFromPersistent().find( p=> p==id ) }
           if (found.isEmpty) {
-            persistentStores.head.createInPersistent(useId, v)
+            persistentStores.head.createInPersistent(useId, v, dontUpdateTimes)
           } else {
             alreadyExists(id)
           }
         case None =>
-          persistentStores.head.createInPersistent(useId, v)
+          persistentStores.head.createInPersistent(useId, v, dontUpdateTimes)
       }
     }.getOrElse{
       log.warning(s"No persistent stores defined for $resourceURI/$useId, trying to create $v")

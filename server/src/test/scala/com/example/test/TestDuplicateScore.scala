@@ -194,7 +194,7 @@ class TestDuplicateScore extends FlatSpec with MustMatchers {
   behavior of "creating a new match"
 
   it should "not throw any exceptions" in {
-    Await.result( new BridgeServiceInMemory().fillBoards(MatchDuplicate.create("M3")), 30.seconds) match {
+    Await.result( new BridgeServiceInMemory("test").fillBoards(MatchDuplicate.create("M3")), 30.seconds) match {
       case Right(m) =>
         val s = MatchDuplicateScore(m, PerspectiveDirector )
         s.tables.size mustBe 2

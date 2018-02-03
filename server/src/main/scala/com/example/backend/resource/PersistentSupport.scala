@@ -85,7 +85,8 @@ class PersistentSupport[VId,VType <: VersionedInstance[VType,VType,VId]](
    */
   def createInPersistent(
                           useId: Option[VId],
-                          v: VType
+                          v: VType,
+                          dontUpdateTimes: Boolean = false
                         ): Future[Result[VType]]
 
   /**

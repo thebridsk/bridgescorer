@@ -96,7 +96,7 @@ object TestCacheStoreWithRoute {
    * resources to facilitate testing.
    * @author werewolf
    */
-  class BridgeServiceTestFailure extends BridgeServiceInMemory {
+  class BridgeServiceTestFailure extends BridgeServiceInMemory("test") {
 
     val persistent = TestFailurePersistent[Id.MatchDuplicate,MatchDuplicate]()
     override

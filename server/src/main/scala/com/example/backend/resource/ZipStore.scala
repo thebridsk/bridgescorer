@@ -8,17 +8,19 @@ import scala.reflect.io.Directory
 import utils.logging.Logger
 import scala.annotation.tailrec
 import java.io.IOException
-
-import FileStore.log
+import scala.collection.JavaConverters._
+import ZipStore.log
 import scala.concurrent.ExecutionContext
 import scala.concurrent.Future
 import com.example.data.Id
+import java.util.zip.ZipFile
+import Implicits._
 
-object FileStore {
-  val log = Logger[FileStore[_,_]]
+object ZipStore {
+  val log = Logger[ZipStore[_,_]]
 
   def apply[VId,VType <: VersionedInstance[VType,VType,VId]](
-                            directory: Directory,
+                            zipfile: ZipFileForStore,
                             cacheInitialCapacity: Int = 5,
                             cacheMaxCapacity: Int = 100,
                             cacheTimeToLive: Duration = 10.minutes,
@@ -27,13 +29,13 @@ object FileStore {
                             implicit
                               cachesupport: StoreSupport[VId,VType],
                               execute: ExecutionContext
-                          ): FileStore[VId,VType] = {
-    new FileStore(directory,cacheInitialCapacity, cacheMaxCapacity, cacheTimeToLive, cacheTimeToIdle )
+                          ): ZipStore[VId,VType] = {
+    new ZipStore(zipfile,cacheInitialCapacity, cacheMaxCapacity, cacheTimeToLive, cacheTimeToIdle )
   }
 }
 
-class FilePersistentSupport[VId,VType <: VersionedInstance[VType,VType,VId]](
-          val directory: Directory
+class ZipPersistentSupport[VId,VType <: VersionedInstance[VType,VType,VId]](
+          val zipfile: ZipFileForStore
         )(
           implicit
             support: StoreSupport[VId, VType],
@@ -50,9 +52,9 @@ class FilePersistentSupport[VId,VType <: VersionedInstance[VType,VType,VId]](
   def getAllIdsFromPersistent(cacheKeys: ()=>Set[VId]): Set[VId] = {
     val pattern = (resourceName+"\\.([^.]+)\\..*").r
 
-    val keys = directory.files.map { path => {
-      path.name
-    }}.flatMap {
+    val keys = zipfile.entries().map { zipentry =>
+      zipentry.getName
+    }.flatMap {
       case pattern(sid) =>
         support.stringToId(sid)
       case _ =>
@@ -74,21 +76,7 @@ class FilePersistentSupport[VId,VType <: VersionedInstance[VType,VType,VId]](
                           v: VType,
                           dontUpdateTimes: Boolean = false
                         ): Future[Result[VType]] = {
-    Future {
-      synchronized {
-        (useId match {
-          case Some(i) => Result(i)
-          case None =>
-            generateNextId(v)
-        }) match {
-          case Right(id) =>
-            val nv = v.setId(id, true, dontUpdateTimes)
-            write(id, nv)
-          case Left(error) =>
-            Result(error)
-        }
-      }
-    }
+    storeIsReadOnly.logit("ZipPersistentSupport.createInPersistent")
   }
 
   /**
@@ -116,17 +104,13 @@ class FilePersistentSupport[VId,VType <: VersionedInstance[VType,VType,VId]](
         val f = list.head
 
         val ovt = try {
-                    val v = FileIO.readFileSafe(f)
-                    val (goodOnDisk,vt) = support.fromJSON(v)
-                    if (!goodOnDisk) {
-                      val nf = writeFilename(id)
-                      log.warning(s"Writing current version to disk for file=${f} -> ${nf}")
-                      write(id,vt)
-                      if ( nf != f) {  // did the extension change?
-                        FileIO.deleteFileSafe(f)       // delete old file if extension changed
-                      }
+                    zipfile.readFileSafe(f) match {
+                      case Some(v) =>
+                        val (goodOnDisk,vt) = support.fromJSON(v)
+                        Option(vt)
+                      case None =>
+                        None
                     }
-                    Option(vt)
                   } catch {
                     case x: Exception =>
                       log.info(s"Unable to read ${f}: ${x}")
@@ -152,19 +136,8 @@ class FilePersistentSupport[VId,VType <: VersionedInstance[VType,VType,VId]](
   def putToPersistent(
                        id: VId,
                        v: VType
-                     ): Future[Result[VType]] = Future( self.synchronized {
-       write(id,v)
-    })
-
-  private def write( id: VId, v: VType ) = {
-    try {
-      FileIO.writeFileSafe(writeFilename(id), support.toJSON(v))
-      Result(v)
-    } catch {
-      case e: IOException =>
-        log.severe("Error writing ${id} to disk",e)
-        internalError
-    }
+                     ): Future[Result[VType]] = {
+    storeIsReadOnly.logit("ZipPersistentSupport.putToPersistent")
   }
 
   /**
@@ -177,43 +150,31 @@ class FilePersistentSupport[VId,VType <: VersionedInstance[VType,VType,VId]](
                        id: VId,
                        cacheValue: Option[VType]
                      ): Future[Result[VType]] =  {
-    Future {
-      val r = cacheValue.map( v => Result(v)).getOrElse( read(id) )
-      r.foreach { v =>  // we have an existing value
-        FileIO.deleteFileSafe(writeFilename(id))
-      }
-      r
-    }
+    storeIsReadOnly.logit("ZipPersistentSupport.deleteFromPersistent")
   }
 
   def readFilenames( id: VId ) = {
     support.getReadExtensions().map{ e =>
-      (directory / (resourceName+"."+id+e)).toString()
+      resourceName+"."+id+e
     }
   }
 
-  def writeFilename( id: VId ) = {
-    (directory / (resourceName+"."+id+support.getWriteExtension())).toString()
-  }
-
-  private def newfilename( filename: String ) = FileIO.newfilename(filename)
-
 }
 
-object FilePersistentSupport {
+object ZipPersistentSupport {
   def apply[VId,VType <: VersionedInstance[VType,VType,VId]](
-          directory: Directory
+          zipfile: ZipFileForStore
         )(
           implicit
             support: StoreSupport[VId, VType],
             execute: ExecutionContext
-        ): FilePersistentSupport[VId, VType] = {
-    new FilePersistentSupport(directory)
+        ): ZipPersistentSupport[VId, VType] = {
+    new ZipPersistentSupport(zipfile)
   }
 }
 
-class FileStore[VId,VType <: VersionedInstance[VType,VType,VId]](
-                            val directory: Directory,
+class ZipStore[VId,VType <: VersionedInstance[VType,VType,VId]](
+                            val zipfile: ZipFileForStore,
                             cacheInitialCapacity: Int = 5,
                             cacheMaxCapacity: Int = 100,
                             cacheTimeToLive: Duration = 10.minutes,
@@ -222,7 +183,7 @@ class FileStore[VId,VType <: VersionedInstance[VType,VType,VId]](
                             implicit
                               cachesupport: StoreSupport[VId,VType],
                               execute: ExecutionContext
-                          ) extends Store[VId,VType]( new FilePersistentSupport[VId,VType](directory),
+                          ) extends Store[VId,VType]( new ZipPersistentSupport[VId,VType](zipfile),
                                                            cacheInitialCapacity,
                                                            cacheMaxCapacity,
                                                            cacheTimeToLive,

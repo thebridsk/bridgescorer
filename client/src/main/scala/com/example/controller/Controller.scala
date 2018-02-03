@@ -24,6 +24,10 @@ import com.example.rest2.RestClientDuplicateSummary
 import com.example.logger.Alerter
 import com.example.bridge.store.DuplicateResultStore
 import com.example.rest2.RestClientDuplicateResult
+import scala.concurrent.Future
+import com.example.rest2.AjaxResult
+import org.scalactic.source.Position
+import com.example.rest2.WrapperXMLHttpRequest
 
 object Controller {
   val logger = Logger("bridge.Controller")
@@ -48,8 +52,18 @@ object Controller {
     }
   }
 
-  class CreateResultMatchDuplicate( result: Result[MatchDuplicate])(implicit executor: ExecutionContext)
-        extends CreateResult[MatchDuplicate](result) {
+  class CreateResultMatchDuplicate(
+                                    ajaxResult: AjaxResult[WrapperXMLHttpRequest],
+                                    future: Future[MatchDuplicate]
+                                  )(
+                                    implicit
+                                      pos: Position,
+                                      executor: ExecutionContext
+                                  ) extends CreateResult[MatchDuplicate](ajaxResult,future) {
+
+    def this( result: RestResult[MatchDuplicate])(implicit executor: ExecutionContext) = {
+      this(result.ajaxResult, result.future )
+    }
 
     def updateStore( mc: MatchDuplicate ): MatchDuplicate = {
       monitorMatchDuplicate(mc.id)

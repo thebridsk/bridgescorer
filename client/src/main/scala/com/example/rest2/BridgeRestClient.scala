@@ -59,6 +59,7 @@ object Implicits {
 
 import Implicits._
 import com.example.data.duplicate.suggestion.DuplicateSuggestions
+import scala.concurrent.ExecutionContext.Implicits.global
 
 object RestClientLogEntryV2 extends RestClient[LogEntryV2]("/v1/logger")
 

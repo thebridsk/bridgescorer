@@ -13,6 +13,8 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import com.example.data.duplicate.suggestion.DuplicateSuggestionsCalculation
 import com.example.data.DuplicateSummary
 import com.example.data.duplicate.suggestion.DuplicateSuggestions
+import java.text.SimpleDateFormat
+import java.util.Date
 
 trait ShowCommand
 
@@ -36,6 +38,7 @@ Options:""")
   addSubcommand(ShowNamesCommand)
   addSubcommand(ShowBoardsetsAndMovementsCommand)
   addSubcommand(ShowSuggestionCommand)
+  addSubcommand(ShowPartnersOfCommand)
 
 //  footer(s""" """)
 
@@ -205,6 +208,74 @@ Options:""")
       case Left((status,msg)) =>
         log.warning(s"Error getting movements: ${msg}")
     }
+
+    0
+  }
+}
+
+object ShowPartnersOfCommand extends Subcommand("partnersof") {
+  import DataStoreCommands.optionStore
+  import ShowCommand.log
+
+  implicit def dateConverter: ValueConverter[Duration] = singleArgConverter[Duration](Duration(_))
+
+  import utils.main.Converters._
+
+  descr("show partners of a player")
+
+  banner(s"""
+Show partners of a player
+
+Syntax:
+  ${DataStoreCommands.cmdName} show partnersof
+Options:""")
+
+  val player = trailArg[String](
+                                "player",
+                                descr = "player",
+                                required = true,
+                                default = None,
+                                hidden = false)
+
+//  footer(s""" """)
+
+  def await[T]( fut: Future[T] ) = Await.result(fut, 30.seconds)
+
+  val sdf = new SimpleDateFormat( "MM/dd/YYYY" )
+
+  def executeSubcommand(): Int = {
+    val storedir = optionStore().toDirectory
+    log.info(s"Using datastore ${storedir}")
+    val datastore = new BridgeServiceFileStore( storedir )
+
+    val p = player()
+
+    log.info(s"Partners of ${p}")
+
+    val fut = datastore.getDuplicateSummaries().map { rl =>
+      rl match {
+        case Right(summaries) =>
+          summaries.
+            sortWith( (l,r) => l.created > r.created).
+            foreach { summary =>
+              val date = sdf.format(new Date(summary.created.toLong))
+              if (summary.containsPlayer(p)) {
+                val partner = summary.teams.find( dse => dse.team.player1==p || dse.team.player2==p ).
+                                            map { dse =>
+                                              if (dse.team.player1 == p) dse.team.player2
+                                              else dse.team.player1
+                                            }.get
+                log.info( f"""${summary.id}%4s ${date} ${partner}""")
+              } else {
+                log.info( f"""${summary.id}%4s ${date} -""")
+              }
+            }
+        case Left((status,msg)) =>
+          log.warning(s"Error getting movements: ${msg}")
+      }
+    }
+
+    await(fut)
 
     0
   }

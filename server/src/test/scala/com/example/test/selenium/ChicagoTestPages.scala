@@ -18,6 +18,7 @@ import com.example.test.TestStartLogging
 import com.example.data.MatchChicago
 import com.example.test.util.HttpUtils
 import com.example.pages.chicago.SummaryPage
+import org.scalatest.CancelAfterFailure
 
 object ChicagoTestPages {
 
@@ -32,7 +33,7 @@ object ChicagoTestPages {
 
 }
 
-class ChicagoTestPages extends FlatSpec with MustMatchers with BeforeAndAfterAll {
+class ChicagoTestPages extends FlatSpec with MustMatchers with BeforeAndAfterAll with CancelAfterFailure {
   import com.example.pages.PageBrowser._
   import com.example.test.util.EventuallyUtils._
   import Eventually.{ patienceConfig => _, _ }
@@ -358,8 +359,17 @@ class ChicagoTestPages extends FlatSpec with MustMatchers with BeforeAndAfterAll
   it should "start playing another game using the saved game using next hand with 6 hands in round" in {
     val chiid = postChicago( savedChicago.get )
 
-    val sp = SummaryPage.goto(chiid)
-    sp.refresh.validate
+    val gp = SummaryPage.current.validate.clickQuit.validate
+    tcpSleep(1)
+    gp.clickButton(s"Chicago${chiid}")
+
+//    val sp = SummaryPage.goto(chiid)
+//    sp.refresh.validate
+
+    val sp = SummaryPage.current.validate
+
+    sp.chiid mustBe chiid
+
     tcpSleep(30)
     val buttons = sp.getAllButtons
 
@@ -391,8 +401,17 @@ class ChicagoTestPages extends FlatSpec with MustMatchers with BeforeAndAfterAll
   it should "start playing another game using the saved game using next hand with 8 hands in round" in {
     val chiid = postChicago( savedChicago.get )
 
-    val sps = SummaryPage.goto(chiid)
-    sps.refresh.validate
+    val gp = SummaryPage.current.validate.clickQuit.validate
+    tcpSleep(1)
+    gp.clickButton(s"Chicago${chiid}")
+
+//    val sp = SummaryPage.goto(chiid)
+//    sp.refresh.validate
+
+    val sps = SummaryPage.current.validate
+
+    sps.chiid mustBe chiid
+
     tcpSleep(30)
     val buttons = sps.getAllButtons
 
@@ -439,8 +458,17 @@ class ChicagoTestPages extends FlatSpec with MustMatchers with BeforeAndAfterAll
   it should "start playing another game using the saved game with 6 hands in round" in {
     val chiid = postChicago( savedChicago.get )
 
-    val sp = SummaryPage.goto(chiid)
-    sp.refresh.validate
+    val gp = SummaryPage.current.validate.clickQuit.validate
+    tcpSleep(1)
+    gp.clickButton(s"Chicago${chiid}")
+
+//    val sp = SummaryPage.goto(chiid)
+//    sp.refresh.validate
+
+    val sp = SummaryPage.current.validate
+
+    sp.chiid mustBe chiid
+
     tcpSleep(30)
     val buttons = sp.getAllButtons
 
@@ -473,8 +501,17 @@ class ChicagoTestPages extends FlatSpec with MustMatchers with BeforeAndAfterAll
   it should "start playing another game using the saved game with 8 hands in round" in {
     val chiid = postChicago( savedChicago.get )
 
-    val sps = SummaryPage.goto(chiid)
-    sps.refresh.validate
+    val gp = SummaryPage.current.validate.clickQuit.validate
+    tcpSleep(1)
+    gp.clickButton(s"Chicago${chiid}")
+
+//    val sp = SummaryPage.goto(chiid)
+//    sp.refresh.validate
+
+    val sps = SummaryPage.current.validate
+
+    sps.chiid mustBe chiid
+
     tcpSleep(30)
     val buttons = sps.getAllButtons
 

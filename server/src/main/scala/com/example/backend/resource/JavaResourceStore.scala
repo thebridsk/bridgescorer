@@ -149,7 +149,8 @@ class JavaResourcePersistentSupport[VId,VType <: VersionedInstance[VType,VType,V
    */
   def createInPersistent(
                           useId: Option[VId],
-                          v: VType
+                          v: VType,
+                          dontUpdateTimes: Boolean = false
                         ): Future[Result[VType]] = {
     storeIsReadOnly.logit("JavaResourcePersistentSupport.createInPersistent")
   }

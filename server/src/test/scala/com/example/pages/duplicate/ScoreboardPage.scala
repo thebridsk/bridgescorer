@@ -186,6 +186,12 @@ class ScoreboardPage(
     new ScoreboardPage( dupid, DirectorViewType )
   }
 
+  def clickCompleteGameButton(implicit pos: Position) = {
+    if (!view.isInstanceOf[TableViewType]) fail("Must be in Table view to hit complete game button")
+    clickButton("Game")
+    new ScoreboardPage( dupid, CompletedViewType )
+  }
+
   def clickAllBoards(implicit pos: Position) = {
     clickButton("AllBoards")
     new BoardsPage

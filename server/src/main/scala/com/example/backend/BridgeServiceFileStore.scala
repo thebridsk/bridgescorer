@@ -68,11 +68,12 @@ object BridgeServiceFileStore {
 class BridgeServiceFileStore( val dir: Directory,
                               useIdFromValue: Boolean = false,
                               dontUpdateTime: Boolean = false,
-                              useYaml: Boolean = true
+                              useYaml: Boolean = true,
+                              id: Option[String] = None
                             )(
                               implicit
                                 execute: ExecutionContext
-                            ) extends BridgeServiceWithLogging {
+                            ) extends BridgeServiceWithLogging( id.getOrElse( dir.toString() ) ) {
   self =>
 
   import BridgeServiceFileStore._
@@ -92,6 +93,12 @@ class BridgeServiceFileStore( val dir: Directory,
   val boardSets = MultiStore.createFileAndResource[String,BoardSet](dir, "/com/example/backend/", "Boardsets.txt", self.getClass.getClassLoader)
 
   val movements = MultiStore.createFileAndResource[String,Movement](dir, "/com/example/backend/", "Movements.txt", self.getClass.getClassLoader)
+
+  override
+  val importStore = {
+    val importdir = (dir / "import").toDirectory
+    Some( new FileImportStore( importdir ))
+  }
 
   override
   def toString() = "BridgeServiceFileStore"

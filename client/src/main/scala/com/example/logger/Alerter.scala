@@ -61,6 +61,10 @@ trait Alerter {
     tryitWithDefault[R](defaultValue) { f(a) }
   }
 
+  def tryit[A,R]( f: A=>R )( implicit pos: Position ) = (a:A)=> {
+    tryit[R] { f(a) }
+  }
+
   def tryAlert( msg: String )( implicit pos: Position ) = {
     if (isAlertToConsoleEnabled) alert( s"Alerter(${pos.line}): msg" )
   }

@@ -11,7 +11,7 @@ name := "project-bridgescorer"
 val vLog4j = "1.7.25"               // https://mvnrepository.com/artifact/org.slf4j/slf4j-simple
 val vJGit = "4.10.0.201712302008-r" // https://mvnrepository.com/artifact/org.eclipse.jgit/org.eclipse.jgit.pgm
 
-val vScalaJSDefault = "0.6.21"     // http://www.scala-js.org/
+val vScalaJSDefault = "0.6.22"     // http://www.scala-js.org/
 val vSbtAssembly = "0.14.6"        // https://github.com/sbt/sbt-assembly
 val vSbtGit = "0.9.3"              // https://github.com/sbt/sbt-git
 val vSbtSCoverage = "1.5.1"        // https://github.com/scoverage/sbt-scoverage
@@ -19,12 +19,12 @@ val vSbtBuildInfo = "0.7.0"        // https://github.com/sbt/sbt-buildinfo
 val vSbtRelease = "1.0.7"          // https://github.com/sbt/sbt-release
 val vSbtEclipse = "5.2.4"          // https://github.com/typesafehub/sbteclipse
 val vSbtDependencyGraph = "0.9.0"  // https://github.com/jrudolph/sbt-dependency-graph
-val vSbtUpdates = "0.3.3"          // https://github.com/rtimush/sbt-updates
+val vSbtUpdates = "0.3.4"          // https://github.com/rtimush/sbt-updates
 
 val scalaJSVersion = Option(System.getenv("SCALAJS_VERSION")).getOrElse(vScalaJSDefault)
 
 val vSbtGzip = "1.0.2"             // https://github.com/sbt/sbt-gzip
-val vSbtScalaJsBundler = "0.9.0"   // https://github.com/scalacenter/scalajs-bundler    not for sbt 1.0 yet
+val vSbtScalaJsBundler = "0.10.0"  // https://github.com/scalacenter/scalajs-bundler
 
 // not used:
 

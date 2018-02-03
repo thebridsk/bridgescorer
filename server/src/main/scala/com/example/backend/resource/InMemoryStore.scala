@@ -60,14 +60,15 @@ class InMemoryPersistent[VId,VType <: VersionedInstance[VType,VType,VId]](
   override
   def createInPersistent(
                           useId: Option[VId],
-                          v: VType
+                          v: VType,
+                          dontUpdateTimes: Boolean = false
                         ): Future[Result[VType]] = {
     log.fine(s"""createInPersistent useId=${useId}, v=${v}""")
     Future {
       self.synchronized {
         useId match {
           case Some(id) =>
-            val nv = v.setId(id, true, false)
+            val nv = v.setId(id, true, dontUpdateTimes)
             add(nv)
             Result(nv)
           case None =>

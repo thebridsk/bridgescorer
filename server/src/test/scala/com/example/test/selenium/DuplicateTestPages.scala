@@ -1008,7 +1008,9 @@ class DuplicateTestPages extends FlatSpec
 
   it should "allow creating a new duplicate match from the home page" in {
     import SessionDirector._
-    HomePage.goto.validate.clickNewDuplicateButton.validate
+
+    ScoreboardPage.current.clickSummary.validate.clickNewDuplicateButton.validate
+//    HomePage.goto.validate.clickNewDuplicateButton.validate
   }
 
   it should "create another new duplicate match" in {
@@ -1058,13 +1060,16 @@ class DuplicateTestPages extends FlatSpec
       val sugN = en.getPlayerSuggestions(North)
       sugN.size mustBe 1
       sugN.head.text mustBe "No names matched"
+
+      en.clickCancel.validate.clickCompletedScoreboard.validate
     }
   }
 
   it should "go to second game and delete it" in {
     import SessionDirector._
 
-    val sb = ScoreboardPage.goto(dupid2.get).validate
+//    val sb = ScoreboardPage.goto(dupid2.get).validate
+    val sb = ScoreboardPage.current
     val dsb = sb.clickDirectorButton.validate
 
     dsb.isPopupDisplayed mustBe false

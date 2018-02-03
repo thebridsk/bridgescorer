@@ -32,13 +32,14 @@ import com.example.webjar.WebJar
 import io.swagger.models.Scheme
 import com.example.rest.ServerPort
 import io.swagger.models.Tag
+import com.example.service.graphql.GraphQLRoute
 
 /**
  * The service trait.
  * This trait defines our service behavior independently from the service actor,
  * this allows us to test this class without spinning up a server.
  */
-trait MyService extends Service with JsService with WebJar with LoggingService with ServerService with HasActorSystem {
+trait MyService extends Service with JsService with WebJar with LoggingService with ServerService with GraphQLRoute with HasActorSystem {
   hasActorSystem: HasActorSystem =>
 
 // This is commented out because the baseURL in swagger.json is /v1/rest
@@ -121,6 +122,7 @@ trait MyService extends Service with JsService with WebJar with LoggingService w
   def myRoute = handleRejections(totallyMissingHandler) {
       encodeResponse {
         logRequest("myRoute", Logging.DebugLevel) { logResult("myRoute", Logging.DebugLevel) {
+          graphQLRoute ~
           routeRest  ~        // for REST API of the service
           webjars ~
           swaggerRoute ~      // for the Swagger-UI documentation pages

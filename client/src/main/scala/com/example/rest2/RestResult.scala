@@ -17,6 +17,7 @@ import com.example.logger.Alerter
 import play.api.libs.json._
 import com.example.data.rest.JsonSupport._
 import com.example.logger.CommAlerter
+import scala.language.implicitConversions
 
 object RestResult {
 
@@ -44,22 +45,99 @@ object RestResult {
         Failure(x)
     }
   }
+
+  private implicit def transformToT[T]( t: Try[WrapperXMLHttpRequest])( implicit classtag: ClassTag[T], reader: Reads[T]): Try[T] = t match {
+    case Success(req) =>
+      if (classtag.runtimeClass == RestResult.classtagUnit) {
+        Success( RestResult.returnUnit.asInstanceOf[T] )
+      } else {
+        def readJson[T]( s: String )( implicit reader: Reads[T] ): T = {
+          val json = Alerter.tryit( Json.parse(s) )(Position.here)
+          Alerter.tryit( convertJson[T](json) )(Position.here)
+        }
+
+        val j = req.responseText
+        val t = RestResult.tryit( "RestResult.transformToT", j ) {
+          Success( readJson[T](j) )
+        }
+        t
+      }
+    case Failure(fail) =>
+      if (!fail.isInstanceOf[AjaxDisabled]) {
+        RestResult.log.info(s"RestResult.transformToT: failure ${fail.getClass.getName} ${fail}", fail)
+      }
+      Failure(fail)
+  }
+
+  def ajaxToRestResult[T](
+                           ajaxResult: AjaxResult[WrapperXMLHttpRequest]
+                         )(
+                           implicit
+                             pos: Position,
+                             classtag: ClassTag[T],
+                             reader: Reads[T],
+                             executor: ExecutionContext
+                         ) = {
+    new RestResult[T](ajaxResult, ajaxResult.transform( t => transformToT(t) ) )
+  }
+
+  private def transformToArrayT[T]( t: Try[WrapperXMLHttpRequest])( implicit classtag: ClassTag[T], reader: Reads[T]): Try[Array[T]] = t match {
+    case Success(req) =>
+      val j = req.responseText
+      RestResult.tryit( "RestResultArray.transformToT", j ) {
+        Success( readJson[Array[T]](j) )
+      }
+    case Failure(fail) =>
+      if (!fail.isInstanceOf[AjaxDisabled]) {
+        RestResult.log.info(s"RestResultArray.transformToT: failure ${fail.getClass.getName} ${fail}",fail)
+      }
+      Failure(fail)
+  }
+
+  implicit def ajaxToRestResultArray[T](
+                                         ajaxResult: AjaxResult[WrapperXMLHttpRequest]
+                                       )(
+                                         implicit
+                                           pos: Position,
+                                           classtag: ClassTag[T],
+                                           reader: Reads[T],
+                                           executor: ExecutionContext
+                                       ) = {
+    new RestResultArray[T](ajaxResult, ajaxResult.transform( t => transformToArrayT(t)) )
+  }
+
 }
 
-trait Result[T] extends CancellableFuture[T] {
-  /**
-   * calls Promise.failure( RequestCancelled ) if successfully cancelled
-   * returns true if cancelled, false otherwise
-   */
-  def cancel(): Boolean
+trait Result[T] extends Cancellable[T] with Awaitable[T] {
 
   def recordFailure( rec: ResultRecorder = ResultRecorder )(implicit executor: ExecutionContext, pos: Position): Result[T]
 
+  // Members declared in scala.concurrent.Future
+  def isCompleted: Boolean
+
+  def onComplete[U](f: Try[T] => U)(implicit executor: ExecutionContext): Unit
+
+  def transform[S](f: Try[T] => Try[S])(implicit executor: ExecutionContext): Result[S]
+
+  def transformWith[S](f: Try[T] ⇒ Future[S])(implicit executor: ExecutionContext): Result[S]
+
+  def value: Option[Try[T]]
+
+  def foreach[U](f: T => U)(implicit executor: ExecutionContext): Unit = onComplete { _ foreach f }
+
+  def failed: Result[Throwable]
+
+  def result(atMost: Duration)(implicit permit: CanAwait): T
+
+  def ready(atMost: Duration)(implicit permit: CanAwait): this.type
+
+  def map[S](f: T => S)(implicit executor: ExecutionContext): Result[S] = transform(_ map f)
+
 }
 
-class ResultObject[T]( t: T ) extends Result[T] {
+class ResultObject[T]( future: Future[T] ) extends Result[T] {
 
-  val future = Promise[T].success(t).future
+  def this( t: T ) = this( Promise[T].success(t).future )
 
   /**
    * calls Promise.failure( RequestCancelled ) if successfully cancelled
@@ -76,11 +154,18 @@ class ResultObject[T]( t: T ) extends Result[T] {
     future.result(atMost)
   }
 
+  implicit
+  def wrap[S]( r: Future[S] )(implicit pos: Position ): ResultObject[S] = {
+    new ResultObject( r )
+  }
+
+  def failed: ResultObject[Throwable] = future.failed
+
   // Members declared in scala.concurrent.Future
   def isCompleted: Boolean = future.isCompleted
   def onComplete[U](f: Try[T] => U)(implicit executor: ExecutionContext): Unit = future.onComplete( t => f(t) )
-  def transform[S](f: Try[T] => Try[S])(implicit executor: ExecutionContext): Future[S] = future.transform( t => f(t) )
-  def transformWith[S](f: Try[T] ⇒ Future[S])(implicit executor: ExecutionContext): Future[S] = future.transformWith( t => f(t) )
+  def transform[S](f: Try[T] => Try[S])(implicit executor: ExecutionContext): ResultObject[S] = future.transform( t => f(t) )
+  def transformWith[S](f: Try[T] ⇒ Future[S])(implicit executor: ExecutionContext): ResultObject[S] = future.transformWith( t => f(t) )
   def value: Option[Try[T]] = future.value match {
     case None => None
     case Some( t ) => Some(t)
@@ -91,64 +176,41 @@ class ResultObject[T]( t: T ) extends Result[T] {
   }
 }
 
-class RestResult[T]( ajaxResult: AjaxResult )(implicit reader: Reads[T], classtag: ClassTag[T], pos: Position ) extends Result[T] {
+class RestResult[T]( val ajaxResult: AjaxResult[WrapperXMLHttpRequest], val future: Future[T] )(implicit pos: Position ) extends Result[T] {
   /**
    * calls Promise.failure( RequestCancelled ) if successfully cancelled
    * returns true if cancelled, false otherwise
    */
   def cancel(): Boolean = ajaxResult.cancel()
 
-  private var cacheResult: Option[Try[T]] = None
-
-  import scala.language.implicitConversions
-  private implicit def transformToT( t: Try[WrapperXMLHttpRequest]): Try[T] = t match {
-    case Success(req) =>
-      if (classtag.runtimeClass == RestResult.classtagUnit) {
-        Success( RestResult.returnUnit.asInstanceOf[T] )
-      } else {
-        def readJson[T]( s: String )( implicit reader: Reads[T] ): T = {
-          val json = Alerter.tryit( Json.parse(s) )(Position.here)
-          Alerter.tryit( convertJson[T](json) )(Position.here)
-        }
-
-        cacheResult.getOrElse {
-          val j = req.responseText
-          val t = RestResult.tryit( "RestResult.transformToT", j ) {
-            Success( readJson[T](j) )
-          }
-          cacheResult = Some(t)
-          t
-        }
-      }
-    case Failure(fail) =>
-      if (!fail.isInstanceOf[AjaxDisabled]) {
-        RestResult.log.info(s"RestResult.transformToT: failure ${fail.getClass.getName} ${fail}", fail)
-      }
-      Failure(fail)
-  }
-
   // Members declared in scala.concurrent.Awaitable
   def ready(atMost: Duration)(implicit permit: CanAwait) = {
-    ajaxResult.ready(atMost)
+    future.ready(atMost)
     this
   }
   def result(atMost: Duration)(implicit permit: CanAwait): T = {
-    val r = ajaxResult.result(atMost)
-    readJson[T](r.responseText)
+    future.result(atMost)
   }
 
+  implicit
+  def wrap[S]( r: Future[S] )(implicit pos: Position ): RestResult[S] = {
+    new RestResult( ajaxResult, r )
+  }
+
+  def failed: RestResult[Throwable] = future.failed
+
   // Members declared in scala.concurrent.Future
-  def isCompleted: Boolean = ajaxResult.isCompleted
+  def isCompleted: Boolean = future.isCompleted
   def onComplete[U](f: Try[T] => U)(implicit executor: ExecutionContext): Unit = {
-    ajaxResult.onComplete( t => Alerter.tryit( f(t) ) )
+    future.onComplete( t => Alerter.tryit( f(t) ) )
   }
-  def transform[S](f: Try[T] => Try[S])(implicit executor: ExecutionContext): Future[S] = {
-    ajaxResult.transform( t => Alerter.tryit( f(t) ) )
+  def transform[S](f: Try[T] => Try[S])(implicit executor: ExecutionContext): Result[S] = {
+    future.transform( t => Alerter.tryit( f(t) ) )
   }
-  def transformWith[S](f: Try[T] ⇒ Future[S])(implicit executor: ExecutionContext): Future[S] = {
-    ajaxResult.transformWith( t => Alerter.tryit( f(t) ) )
+  def transformWith[S](f: Try[T] ⇒ Future[S])(implicit executor: ExecutionContext): Result[S] = {
+    future.transformWith( t => Alerter.tryit( f(t) ) )
   }
-  def value: Option[Try[T]] = Alerter.tryit( ajaxResult.value match {
+  def value: Option[Try[T]] = Alerter.tryit( future.value match {
     case None => None
     case Some( t ) => Some(t)
   } )
@@ -157,53 +219,43 @@ class RestResult[T]( ajaxResult: AjaxResult )(implicit reader: Reads[T], classta
     ajaxResult.recordFailure(rec)
     this
   }
-
 }
 
-class RestResultArray[T]( ajaxResult: AjaxResult )(implicit reader: Reads[T], classtag: ClassTag[T]) extends Future[Array[T]] {
+class RestResultArray[T]( ajaxResult: AjaxResult[WrapperXMLHttpRequest], result: Future[Array[T]] )(implicit pos: Position) extends Result[Array[T]] {
   /**
    * calls Promise.failure( RequestCancelled ) if successfully cancelled
    * returns true if cancelled, false otherwise
    */
   def cancel(): Boolean = ajaxResult.cancel()
 
-
-  import scala.language.implicitConversions
-  private implicit def transformToT( t: Try[WrapperXMLHttpRequest]): Try[Array[T]] = t match {
-    case Success(req) =>
-      val j = req.responseText
-      RestResult.tryit( "RestResultArray.transformToT", j ) {
-        Success( readJson[Array[T]](j) )
-      }
-    case Failure(fail) =>
-      if (!fail.isInstanceOf[AjaxDisabled]) {
-        RestResult.log.info(s"RestResultArray.transformToT: failure ${fail.getClass.getName} ${fail}",fail)
-      }
-      Failure(fail)
+  implicit
+  def wrap[S]( r: Future[S] )(implicit pos: Position ): RestResult[S] = {
+    new RestResult( ajaxResult, r )
   }
+
+  def failed: RestResult[Throwable] = result.failed
 
   // Members declared in scala.concurrent.Awaitable
   def ready(atMost: Duration)(implicit permit: CanAwait) = {
-    ajaxResult.ready(atMost)
+    result.ready(atMost)
     this
   }
   def result(atMost: Duration)(implicit permit: CanAwait): Array[T] = {
-    val r = ajaxResult.result(atMost)
-    readJson[Array[T]](r.responseText)
+    result.result(atMost)
   }
 
   // Members declared in scala.concurrent.Future
-  def isCompleted: Boolean = ajaxResult.isCompleted
+  def isCompleted: Boolean = result.isCompleted
   def onComplete[U](f: Try[Array[T]] => U)(implicit executor: ExecutionContext): Unit = {
-    ajaxResult.onComplete( t => Alerter.tryit( f(t) ) )
+    result.onComplete( t => Alerter.tryit( f(t) ) )
   }
-  def transform[S](f: Try[Array[T]] => Try[S])(implicit executor: ExecutionContext): Future[S] = {
-    ajaxResult.transform( t => Alerter.tryit( f(t) ) )
+  def transform[S](f: Try[Array[T]] => Try[S])(implicit executor: ExecutionContext): RestResult[S] = {
+    result.transform( t => Alerter.tryit( f(t) ) )
   }
-  def transformWith[S](f: Try[Array[T]] ⇒ Future[S])(implicit executor: ExecutionContext): Future[S] = {
-    ajaxResult.transformWith( t => Alerter.tryit( f(t) ) )
+  def transformWith[S](f: Try[Array[T]] ⇒ Future[S])(implicit executor: ExecutionContext): RestResult[S] = {
+    result.transformWith( t => Alerter.tryit( f(t) ) )
   }
-  def value: Option[Try[Array[T]]] = Alerter.tryit( ajaxResult.value match {
+  def value: Option[Try[Array[T]]] = Alerter.tryit( result.value match {
     case None => None
     case Some( t ) => Some(t)
   } )
