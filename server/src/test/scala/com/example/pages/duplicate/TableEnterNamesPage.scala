@@ -152,7 +152,8 @@ class TableEnterNamesPage( dupid: String,
 
   def clickCancel(implicit patienceConfig: PatienceConfig, pos: Position) = {
     clickButton(buttonCancel)
-    new ScoreboardPage(Some(dupid), TableViewType(tableid,roundid))
+    new TablePage(dupid,tableid, TablePage.MissingNames)
+//    new ScoreboardPage(Some(dupid), TableViewType(tableid,roundid))
   }
 
   def isOKEnabled(implicit patienceConfig: PatienceConfig, pos: Position) = {
