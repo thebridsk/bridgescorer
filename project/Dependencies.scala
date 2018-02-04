@@ -71,6 +71,7 @@ object Dependencies {
   lazy val vScallop = "3.1.1"        // http://mvnrepository.com/artifact/org.rogach/scallop_2.11
   lazy val vSlf4j = "1.7.25"         // https://mvnrepository.com/artifact/org.slf4j/slf4j-jdk14
   lazy val vPlayJson = "2.6.8"       // https://mvnrepository.com/artifact/com.typesafe.play/play-json_2.12
+  lazy val vJackson = "2.9.4"        // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core
 
   // Selenium needs to be update to update to v23.0
   lazy val vGuavaJre = "23.6-jre"    // https://github.com/google/guava
@@ -133,7 +134,21 @@ object Dependencies {
 
       ))
 
-  val bridgeScorerServerDeps = Def.setting(Seq(
+  val jacksons = Seq(
+    "com.fasterxml.jackson.core" % "jackson-core",
+    "com.fasterxml.jackson.core" % "jackson-annotations",
+    "com.fasterxml.jackson.core" % "jackson-databind",
+    "com.fasterxml.jackson.datatype" % "jackson-datatype-jdk8",
+    "com.fasterxml.jackson.datatype" % "jackson-datatype-jsr310"
+ ).map( _ % vJackson withSources())
+
+ val morejacksons = Seq(
+    "com.fasterxml.jackson.dataformat" % "jackson-dataformat-yaml",
+    "com.fasterxml.jackson.module" %% "jackson-module-scala",
+    "com.fasterxml.jackson.module" % "jackson-module-paranamer"
+  ).map(_ % vJackson withSources())
+
+  val bridgeScorerServerDeps = Def.setting(morejacksons ++ jacksons ++ Seq(
 
       "com.typesafe.akka"   %%  "akka-actor"    % vAkka withSources(),
       "com.typesafe.akka"   %%  "akka-contrib"  % vAkka % "runtime" withSources(),
@@ -187,6 +202,9 @@ object Dependencies {
       "io.swagger" % "swagger-annotations" % vSwagger withSources(),
       "org.scalactic" %%% "scalactic" % vScalactic withSources()
       ))
+
+
+  val bridgeScorerSharedJVMDeps = Def.setting( jacksons )
 
   val bridgeScorerClientDeps = Def.setting(Seq(
 

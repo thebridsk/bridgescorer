@@ -78,17 +78,8 @@ abstract class BridgeService( val id: String ) {
    * The output stream is NOT closed.
    *
    * @param out the output stream
+   * @param filter the filter, None means everything
    * @return a future to a result that has a list of all the Ids of entities that are exported.
-   *
-   * To use:
-   *
-   *     val byteSource: Source[ByteString, Unit] = StreamConverters.asOutputStream()
-   *                       .mapMaterializedValue { os =>
-   *                         bs.export(os).
-   *                       }
-   *     HttpResponse(entity = HttpEntity(
-   *                             MediaTypes.`application/zip`,
-   *                             byteSource))
    */
   def export(
               out: OutputStream,
@@ -99,6 +90,25 @@ abstract class BridgeService( val id: String ) {
 
     val buf = new BufferedOutputStream(out)
     val zip = new ZipOutputStream( buf, StandardCharsets.UTF_8 )
+
+    exportToZip(zip,filter).map { r => zip.finish(); buf.flush(); r }
+
+  }
+
+  /**
+   * Writes the store contents in export format to the output stream.
+   * The zip output stream is NOT finished.
+   *
+   * @param zip the zip output stream
+   * @param filter the filter, None means everything
+   * @return a future to a result that has a list of all the Ids of entities that are exported.
+   */
+  def exportToZip(
+              zip: ZipOutputStream,
+              filter: Option[List[String]] = None
+            ): Future[Result[List[String]]] = {
+    val converters = new BridgeServiceFileStoreConverters(true)
+    import converters._
 
     exportStore( zip, duplicates, filter ).
       flatMap { rd =>
@@ -122,9 +132,7 @@ abstract class BridgeService( val id: String ) {
             }
           }
         }
-      }.
-      map { r => zip.finish(); buf.flush(); r }
-
+      }
   }
 
   def exportStore[TId, T <: VersionedInstance[T,T, TId]](
@@ -143,7 +151,7 @@ abstract class BridgeService( val id: String ) {
               }.getOrElse(true)
             }.map { entry =>
               val (id,v) = entry
-              val name = s"${store.support.resourceName}.${id}${store.support.getWriteExtension()}"
+              val name = s"store/${store.support.resourceName}.${id}${store.support.getWriteExtension()}"
               val content = store.support.toJSON(v)
               zip.putNextEntry( new ZipEntry(name))
               val out = new OutputStreamWriter( zip, "UTF8" )

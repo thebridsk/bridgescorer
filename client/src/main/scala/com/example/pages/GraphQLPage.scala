@@ -25,6 +25,7 @@ import scala.util.Success
 import scala.util.Failure
 import com.example.rest2.AjaxFailure
 import com.example.graphql.GraphQLResponse
+import com.example.graphql.GraphQLClient
 
 /**
  * A skeleton component.
@@ -97,9 +98,8 @@ object GraphQLPageInternal {
       import GraphQLRequest._
       state.query match {
         case Some(q) =>
-          val g = new GraphQLRequest("/graphql")
           val x =
-          g.request(q) // .recordFailure()
+            GraphQLClient.request(q) // .recordFailure()
           x.map { resp =>
             val r = Json.prettyPrint(resp.data.get)
             scope.withEffectsImpure.modState( s => s.copy( response=Some(r) ) )
@@ -145,16 +145,16 @@ object GraphQLPageInternal {
           <.div(
             baseStyles.divFooterLeft,
             AppButton( "Execute", "Execute",
-                       rootStyles.playButton,
+                       baseStyles.appButton,
                        ^.disabled := state.query.isEmpty,
                        ^.onClick --> execute
             ),
             AppButton( "ClearQ", "Clear Query",
-                       rootStyles.playButton,
+                       baseStyles.appButton,
                        ^.onClick --> clearQuery
             ),
             AppButton( "ClearR", "Clear Response",
-                       rootStyles.playButton,
+                       baseStyles.appButton,
                        ^.onClick --> clearResponse
             )
           )

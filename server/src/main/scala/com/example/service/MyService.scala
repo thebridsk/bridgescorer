@@ -175,7 +175,7 @@ trait MyService extends Service with JsService with WebJar with LoggingService w
 
   val x = classOf[LoggingService]
 
-  val serverRestTypes = ( restTypes.toList:::
+  val serverRestTypes = ( classOf[GraphQLRoute]::restTypes.toList:::
                           (if (addLoggingAndServerToSwagger) {
                             List(
                                   classOf[LoggingService],
