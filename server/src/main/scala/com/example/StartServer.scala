@@ -126,6 +126,9 @@ Options:""")
                                                descr="The remote logging profile to use for browsers, default: default",
                                                argName="profile",
                                                default=Some("default"))
+
+  val optionDiagnosticDir = opt[Path]("diagnostics", noshort=true, descr="The directory that contains the log files, default is none.  All .log files in directory may be collected for diagnostic purposes.", argName="dir", default=None)
+
   footer(s"""
 To have the server listen for HTTPS, you must use one or both of the following options:
   --https
@@ -192,10 +195,11 @@ If both https and http is started, then http will be redirected to https
              cache: Option[Duration] = None,
              optRemoteLogger: Option[Path] = None,
              optBrowserRemoteLogging: Option[String] = None,
-             optIPadRemoteLogging: Option[String] = None
+             optIPadRemoteLogging: Option[String] = None,
+             diagnosticDir: Option[Directory] = None
            ): Future[MyService] = {
     getServer(true,true).start(interface, httpPort, httpsPort, bridge, connectionContext, cache,
-                               optRemoteLogger, optBrowserRemoteLogging, optIPadRemoteLogging )
+                               optRemoteLogger, optBrowserRemoteLogging, optIPadRemoteLogging, diagnosticDir )
   }
 
   /**
@@ -328,8 +332,9 @@ private class StartServer {
                              cache = optionCache.toOption,
                              optRemoteLogger = optionRemoteLogger.toOption,
                              optBrowserRemoteLogging = optionBrowserRemoteLogging.toOption,
-                             optIPadRemoteLogging = optionIPadRemoteLogging.toOption
+                             optIPadRemoteLogging = optionIPadRemoteLogging.toOption,
                     //         optBrowserLogger = optionBrowserLogger.toOption,
+                             optDiagnosticDir = optionDiagnosticDir.toOption.map(p => p.toDirectory)
                            )
 
     MyService.shutdownHook = Some( StartServer )
@@ -428,13 +433,16 @@ private class StartServer {
              cache: Option[Duration] = None,
              optRemoteLogger: Option[Path] = None,
              optBrowserRemoteLogging: Option[String] = None,
-             optIPadRemoteLogging: Option[String] = None
+             optIPadRemoteLogging: Option[String] = None,
+             optDiagnosticDir: Option[Directory] = None,
            ): Future[MyService] = {
     val myService = new MyService {
       /**
        * The backend service object for our service.
        */
       lazy val restService: BridgeService = bridge.getOrElse( new BridgeServiceInMemory("root") )
+      override
+      val diagnosticDir: Option[Directory] = optDiagnosticDir
       lazy val actorSystem: ActorSystem = system
       lazy val materializer: ActorMaterializer = myMaterializer
 

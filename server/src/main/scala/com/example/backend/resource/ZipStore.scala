@@ -50,7 +50,7 @@ class ZipPersistentSupport[VId,VType <: VersionedInstance[VType,VType,VId]](
    * Get all the IDs from persistent storage
    */
   def getAllIdsFromPersistent(cacheKeys: ()=>Set[VId]): Set[VId] = {
-    val pattern = (resourceName+"\\.([^.]+)\\..*").r
+    val pattern = (s"""store/${resourceName}\\.([^.]+)\\..*""" ).r
 
     val keys = zipfile.entries().map { zipentry =>
       zipentry.getName
@@ -155,7 +155,7 @@ class ZipPersistentSupport[VId,VType <: VersionedInstance[VType,VType,VId]](
 
   def readFilenames( id: VId ) = {
     support.getReadExtensions().map{ e =>
-      resourceName+"."+id+e
+      "store/"+resourceName+"."+id+e
     }
   }
 

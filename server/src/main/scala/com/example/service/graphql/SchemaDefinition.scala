@@ -368,38 +368,6 @@ object SchemaDefinition {
                           ImportIdType,
                           description = "The Id of the import" )
 
-  val BridgeServiceType = ObjectType(
-      "BridgeService",
-      fields[Unit,BridgeService](
-          Field("id", ImportIdType,
-              Some("The id of the bridge service"),
-              resolve = _.value.id),
-          Field("duplicate",
-                MatchDuplicateType,
-                arguments = ArgDuplicateId::Nil,
-                resolve = Action.getDuplicate
-          ),
-          Field("duplicates",
-              ListType( MatchDuplicateType ),
-              resolve = _.value.duplicates.readAll().map{ rall =>
-                rall match {
-                  case Right(all) => all.values.toList
-                  case Left((statusCode,msg)) => throw new Exception( s"Error getting MatchDuplicates: ${statusCode} ${msg.msg}" )
-                }
-              }
-          ),
-          Field("duplicateIds",
-              ListType( StringType ),
-              resolve = _.value.duplicates.readAll().map{ rall =>
-                rall match {
-                  case Right(all) => all.keys.toList
-                  case Left((statusCode,msg)) => throw new Exception( s"Error getting MatchDuplicates: ${statusCode} ${msg.msg}" )
-                }
-              }
-          )
-      )
-  )
-
   trait Sort
   case object SortCreated extends Sort
   case object SortCreatedDescending extends Sort
@@ -429,6 +397,50 @@ object SchemaDefinition {
                           OptionInputType( SortEnum ),
                           description = "If specified, identifies the sort order of the values in list." )
 
+  val BridgeServiceType = ObjectType(
+      "BridgeService",
+      fields[Unit,BridgeService](
+          Field("id", ImportIdType,
+              Some("The id of the bridge service"),
+              resolve = _.value.id),
+          Field("duplicate",
+                MatchDuplicateType,
+                arguments = ArgDuplicateId::Nil,
+                resolve = Action.getDuplicate
+          ),
+          Field("duplicates",
+              ListType( MatchDuplicateType ),
+              resolve = _.value.duplicates.readAll().map{ rall =>
+                rall match {
+                  case Right(all) => all.values.toList
+                  case Left((statusCode,msg)) => throw new Exception( s"Error getting MatchDuplicates: ${statusCode} ${msg.msg}" )
+                }
+              }
+          ),
+          Field("duplicatesummaries",
+                ListType( DuplicateSummaryType ),
+                arguments = ArgSort::Nil,
+                resolve = ctx => ctx.value.getDuplicateSummaries().map { rmap => rmap match {
+                            case Right(list) =>
+                              val argsort = ctx.arg( ArgSort )
+                              Action.sortSummary( list, argsort )
+                            case Left((statusCode,msg)) =>
+                              throw new Exception(s"Error getting duplicate summaries: ${statusCode} ${msg.msg}")
+                          }
+                }
+          ),
+          Field("duplicateIds",
+              ListType( StringType ),
+              resolve = _.value.duplicates.readAll().map{ rall =>
+                rall match {
+                  case Right(all) => all.keys.toList
+                  case Left((statusCode,msg)) => throw new Exception( s"Error getting MatchDuplicates: ${statusCode} ${msg.msg}" )
+                }
+              }
+          )
+      )
+  )
+
   val QueryType = ObjectType(
       "Query",
       fields[BridgeService,Unit](
@@ -445,6 +457,10 @@ object SchemaDefinition {
                             case None =>
                               throw new Exception("Did not find the import store")
                           }
+          ),
+          Field("imports",
+                ListType( BridgeServiceType ),
+                resolve = Action.getAllImportFromRoot
           ),
           Field("import",
                 BridgeServiceType,
@@ -495,20 +511,27 @@ object SchemaDefinition {
       )
   )
 
-
-  val ArgMutationDuplicateId = Argument("dupid",
-                             DuplicateIdType,
-                             description = "The Id of the duplicate match" )
-
-  val ArgMutationImportId = Argument("importid",
-                          ImportIdType,
-                          description = "The Id of the import" )
+  val MutationImportType = ObjectType(
+      "MutationImport",
+      fields[BridgeService,BridgeService](
+          Field("id", ImportIdType,
+              Some("The id of the import store"),
+              resolve = _.value.id),
+          Field("importduplicate",
+                MatchDuplicateType,
+                description = Some("Import a duplicate match."),
+                arguments = ArgDuplicateId::Nil,
+                resolve = Action.importDuplicate
+          )
+      )
+  )
 
   val MutationType = ObjectType("Mutation", fields[BridgeService,Unit](
-    Field("duplicate",
-          MatchDuplicateType,
-          arguments = ArgMutationImportId::ArgMutationDuplicateId::Nil,
-          resolve = Action.importDuplicate
+    Field("import",
+          MutationImportType,
+          description = Some("Selecting the import store from which imports are done."),
+          arguments = ArgImportId::Nil,
+          resolve = Action.getImportFromRoot
     )
   ))
 
@@ -540,6 +563,30 @@ object Action {
     }
   }
 
+  def getAllImportFromRoot( ctx: Context[BridgeService,Unit]): Future[List[BridgeService]] = {
+    ctx.ctx.importStore match {
+      case Some(is) =>
+        is.getAllIds().flatMap { rlids =>
+          rlids match {
+            case Right(lids) =>
+              val fbss = lids.map { id =>
+                is.get(id)
+              }
+              Future.foldLeft(fbss)(List[BridgeService]()) { (ac,v) =>
+                v match {
+                  case Right(bs) => bs::ac
+                  case Left(err) => ac
+                }
+              }
+            case Left((statusCode,msg)) =>
+              throw new Exception(s"Error getting all import IDs: ${statusCode} ${msg.msg}")
+          }
+        }
+      case None =>
+        throw new Exception(s"Did not find the import store")
+    }
+  }
+
   def getImportFromRoot( ctx: Context[BridgeService,Unit]): Future[BridgeService] = {
     val id = ctx arg ArgImportId
     ctx.ctx.importStore match {
@@ -555,30 +602,20 @@ object Action {
     }
   }
 
-  def importDuplicate( ctx: Context[BridgeService,Unit]): Future[MatchDuplicate] = {
-    val importId = ctx arg ArgMutationImportId
-    val dupId = ctx arg ArgMutationDuplicateId
-    ctx.ctx.importStore match {
-      case Some(is) =>
-        is.get(importId).flatMap( rbs => rbs match {
-          case Right(bs) =>
-            bs.duplicates.read(dupId).flatMap { rdup => rdup match {
-              case Right(dup) =>
-                ctx.ctx.duplicates.importChild(dup).map { rc => rc match {
-                  case Right(cdup) =>
-                    cdup
-                  case Left((statusCode,msg)) =>
-                    throw new Exception(s"Error importing into store: ${dupId} from import store ${importId}: ${statusCode} ${msg.msg}")
-                }}
-              case Left((statusCode,msg)) =>
-                throw new Exception(s"Error getting ${dupId} from import store ${importId}: ${statusCode} ${msg.msg}")
-            }}
+  def importDuplicate( ctx: Context[BridgeService,BridgeService]): Future[MatchDuplicate] = {
+    val dupId = ctx arg ArgDuplicateId
+    val bs = ctx.value
+    bs.duplicates.read(dupId).flatMap { rdup => rdup match {
+      case Right(dup) =>
+        ctx.ctx.duplicates.importChild(dup).map { rc => rc match {
+          case Right(cdup) =>
+            cdup
           case Left((statusCode,msg)) =>
-            throw new Exception(s"Error getting import store ${importId}: ${statusCode} ${msg.msg}")
-        })
-      case None =>
-        throw new Exception(s"Did not find the import store ${importId}")
-    }
+            throw new Exception(s"Error importing into store: ${dupId} from import store ${bs.id}: ${statusCode} ${msg.msg}")
+        }}
+      case Left((statusCode,msg)) =>
+        throw new Exception(s"Error getting ${dupId} from import store ${bs.id}: ${statusCode} ${msg.msg}")
+    }}
   }
 
   def sort( list: List[MatchDuplicate], sort: Option[Sort] ) = {

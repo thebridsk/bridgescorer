@@ -231,7 +231,7 @@ lazy val `bridgescorer-shared` = crossProject.in(file("shared")).
 
   ).
   jvmSettings(
-
+    libraryDependencies ++= bridgeScorerSharedJVMDeps.value
   ).
   jsSettings(
 

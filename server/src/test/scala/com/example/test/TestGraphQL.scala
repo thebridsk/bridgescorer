@@ -73,7 +73,7 @@ object TestGraphQL {
 
   }
 
-  def processError( resp: JsValue ) = {
+  def processError( resp: JsValue, comment: String = "Errors" ) = {
     resp match {
       case _: JsObject =>
         resp \ "errors" match {
@@ -83,7 +83,7 @@ object TestGraphQL {
                          case JsDefined(JsString(msg)) => msg
                          case x => x.toString()
                        }
-                     }.mkString("Errors:\n","\n","") )
+                     }.mkString(s"${comment}:\n","\n","") )
           case JsDefined( _ ) =>
             testlog.warning(s"Expecting a messages, got ${resp}")
           case _: JsUndefined =>
@@ -204,7 +204,7 @@ class TestGraphQL extends AsyncFlatSpec with ScalatestRouteTest with MustMatcher
 
     response.map { resp =>
       val (statusCode, respjson) = resp
-      processError(respjson)
+      processError(respjson, "Error response, this is not a test failure, this is expected")
       testlog.warning( s"Response was ${statusCode} ${respjson}" )
       statusCode mustBe StatusCodes.BadRequest
       respjson \ "errors" \ 0 \ "message" match {
@@ -326,7 +326,7 @@ class TestGraphQL extends AsyncFlatSpec with ScalatestRouteTest with MustMatcher
 //       Some("SecondQuery")
     )
 
-    Post("/graphql", request) ~> addHeader(remoteAddress) ~> route.graphQLRoute ~> check {
+    Post("/v1/graphql", request) ~> addHeader(remoteAddress) ~> route.graphQLRoute ~> check {
       status mustBe OK
       val respjson = responseAs[JsObject]
       respjson \ "data" \ "import" \ "duplicate" \ "teams" \ 0 \ "player1" mustBe JsDefined(JsString("Nancy"))

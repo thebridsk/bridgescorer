@@ -129,6 +129,25 @@ object HomePage {
                 <.td(
                   AppButton( "NewRubber", "New Rubber Bridge", rootStyles.playButton, ^.disabled:=isWorking, ^.onClick --> newRubber())
                 )
+              ),
+              <.tr(
+                <.td(
+                  AppButton( "Import", "Import", rootStyles.playButton, ^.disabled:=isWorking, ^.onClick --> callbackPage(Import))
+                ),
+                <.td(
+                  AppButton( "Export", "Export", rootStyles.playButton, ^.disabled:=isWorking, ^.onClick --> callbackPage(Export))
+                ),
+                <.td(
+                  {
+                    val location = document.defaultView.location
+                    val origin = location.origin.get
+                    val path = s"""${origin}/v1/diagnostics"""
+                    AppButtonLink( "Diagnostics", "Diagnostics", path,
+                                   rootStyles.playButton,
+                                   ^.disabled:=isWorking
+                    )
+                  }
+                )
               )
             )
           )

@@ -34,7 +34,7 @@ import com.example.data.RestMessage
 //import akka.event.LoggingAdapter
 
 
-trait Service {
+trait Service extends ImportExport {
   hasActorSystem: HasActorSystem =>
 
   def ports: ServerPort
@@ -69,7 +69,8 @@ trait Service {
                       classOf[RestNames],
                       classOf[RestBoardSet],
                       classOf[RestMovement],
-                      classOf[MonitorWebservice]
+                      classOf[MonitorWebservice],
+                      classOf[ImportExport]
                      )
 
   implicit val restService: BridgeService
@@ -187,7 +188,8 @@ trait Service {
           handleRejections(totallyMissingResourceHandler) {
             monitor.route
           }
-        }
+        } ~
+        importExportRoute
       }
     }
 }

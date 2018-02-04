@@ -17,6 +17,7 @@ import java.io.IOException
 import utils.logging.Logger
 import ImportStore.log
 import java.nio.file.Path
+import java.io.FileNotFoundException
 
 object ImportStore {
 
@@ -85,7 +86,12 @@ class FileImportStore(
       if (path.isDirectory) {
         Result( new BridgeServiceFileStore( path.toDirectory, false, true ) )
       } else if (path.extension == "zip") {
-        Result( new BridgeServiceZipStore( path.name, path.toFile ) )
+        try {
+          Result( new BridgeServiceZipStore( path.name, path.toFile ) )
+        } catch {
+          case x: FileNotFoundException =>
+            Result( StatusCodes.NotFound, "Not found" )
+        }
       } else {
         Result( StatusCodes.NotFound, "Not found" )
       }
@@ -124,24 +130,33 @@ class FileImportStore(
    */
   def create( id: String, zipfile: File ): Future[Result[BridgeService]] = {
     if (!id.endsWith(".zip")) Result( StatusCodes.BadRequest, s"Not a valid Id: ${id}").toFuture
-    cache.createOnlyIfNotExist(
-                          id,
-                          ()=> Future {
-                            val importzipfile = dir / id
-                            var source: Path = null
-                            var target: Path = null
-                            try {
-                              source = FileIO.getPath(zipfile.toString())
-                              target = FileIO.getPath(importzipfile.toString())
-                              FileIO.copyFile(source, target)
-                              Result( new BridgeServiceZipStore( importzipfile.name, importzipfile.toFile ) )
-                            } catch {
-                              case x: IOException =>
-                                log.warning(s"""Error during importing, copy zipfile ${source} to ${target} failed""", x)
-                                Result( StatusCodes.InternalServerError, s"Oops" )
-                            }
-                          },
-                          Result( StatusCodes.BadRequest, s"Id /imports/$id already exists" ).toFuture
-                        ).logit(s"create /imports/${id} zipfile ${zipfile}")
+    else {
+      get(id).flatMap { rold =>
+        rold match {
+          case Right(old) =>
+            Result( StatusCodes.BadRequest, s"Id /imports/$id already exists" ).toFuture
+          case Left((statusCode,msg)) =>
+            cache.update(
+                id,
+                oldv => Future {
+                                    val importzipfile = dir / id
+                                    var source: Path = null
+                                    var target: Path = null
+                                    try {
+                                      source = FileIO.getPath(zipfile.toString())
+                                      target = FileIO.getPath(importzipfile.toString())
+                                      FileIO.copyFile(source, target)
+                                      Result( new BridgeServiceZipStore( importzipfile.name, importzipfile.toFile ) )
+                                    } catch {
+                                      case x: IOException =>
+                                        log.warning(s"""Error during importing, copy zipfile ${source} to ${target} failed""", x)
+                                        Result( StatusCodes.InternalServerError, s"Oops" )
+                                    }
+                                  },
+                Some( ()=> Future( rold ))
+            )
+        }
+      }.logit(s"create /imports/${id} zipfile ${zipfile}")
+    }
   }
 }
