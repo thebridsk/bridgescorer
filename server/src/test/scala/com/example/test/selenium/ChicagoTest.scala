@@ -23,6 +23,7 @@ import com.example.data.MatchChicago
 import com.example.test.util.MonitorTCP
 import com.example.backend.BridgeServiceFileStoreConverters
 import com.example.backend.MatchChicagoCacheStoreSupport
+import com.example.pages.PageBrowser
 
 /**
  * @author werewolf
@@ -498,6 +499,7 @@ class ChicagoTest extends FlatSpec with MustMatchers with BeforeAndAfterAll with
       listitems.get(0)
     }
     val text = first.getText
+    PageBrowser.scrollToElement(first)
     first.click()
     eventually (textField("North").value mustBe text)
 
