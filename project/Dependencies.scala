@@ -47,12 +47,11 @@ object Dependencies {
   lazy val vScalaCss = "0.5.3"         // http://mvnrepository.com/artifact/com.github.japgolly.scalacss/core_sjs0.6_2.11
 
   lazy val vWebJarsReact = "16.2.0"    // http://mvnrepository.com/artifact/org.webjars/react
-  lazy val vReactWidgets = "4.1.2"     // http://mvnrepository.com/artifact/org.webjars.npm/react-widgets
-  lazy val vReactWidgetsGlobalize = "4.0.5"  // http://mvnrepository.com/artifact/org.webjars.npm/react-widgets-globalize
+  lazy val vReactWidgets = "4.1.3"     // http://mvnrepository.com/artifact/org.webjars.npm/react-widgets
   lazy val vWebJarsFlux = "3.1.3"      // http://mvnrepository.com/artifact/org.webjars/flux
   lazy val vGlobalize = "1.3.0"        // https://www.npmjs.com/package/globalize
   lazy val vCldr = "4.7.0"             // https://www.npmjs.com/package/cldr
-  lazy val vReactWidgetsMoment = "4.0.5"  // http://mvnrepository.com/artifact/org.webjars.npm/react-widgets-moment
+  lazy val vReactWidgetsMoment = "4.0.6"  // http://mvnrepository.com/artifact/org.webjars.npm/react-widgets-moment
   lazy val vMoment = "2.20.1"          // https://www.npmjs.com/package/moment
 
   lazy val vScalajsJquery = "0.9.2"  // http://mvnrepository.com/artifact/be.doeraene/scalajs-jquery_sjs0.6_2.11
@@ -74,7 +73,7 @@ object Dependencies {
   lazy val vJackson = "2.9.4"        // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core
 
   // Selenium needs to be update to update to v23.0
-  lazy val vGuavaJre = "23.6-jre"    // https://github.com/google/guava
+  lazy val vGuavaJre = "24.0-jre"    // https://github.com/google/guava
 
   lazy val vWebPack = "3.10.0"          // https://www.npmjs.com/package/webpack
   // scalajs-bundler v0.9 requires v9
@@ -228,9 +227,6 @@ object Dependencies {
       "react-dom" -> vWebJarsReact,
       "flux" -> vWebJarsFlux,
       "react-widgets" -> vReactWidgets,
-//      "react-widgets-globalize" -> vReactWidgetsGlobalize,
-//      "globalize" -> vGlobalize,
-//      "cldr" -> vCldr,
       "react-widgets-moment" -> vReactWidgetsMoment,
       "moment" -> vMoment,
       "swagger-ui-dist" -> vSwaggerUI,
