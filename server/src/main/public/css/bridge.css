@@ -324,6 +324,50 @@
   font-size: larger;
 }
 
+.rootImportsListPageDiv {
+  font-size: larger;
+}
+.rootImportsListPageDiv table {
+  font-size: larger;
+  border: 1px solid black;
+  margin: 5px;
+}
+.rootImportsListPageDiv td {
+  font-size: larger;
+  border: 1px solid black;
+}
+.rootImportsListPageDiv label {
+  font-size: larger;
+  border-radius: 20px;
+  background-color: rgb(210,210,210);
+  border-style: outset;
+  border-width: 2px;
+  white-space: nowrap;
+  padding: 3px 6px;
+  min-width: 37px;
+  margin: 2px;
+}
+.rootImportsListPageDiv input {
+  font-size: larger;
+  border-radius: 20px;
+  background-color: rgb(210,210,210);
+  border-style: outset;
+  border-width: 2px;
+  white-space: nowrap;
+  padding: 3px 6px;
+  min-width: 37px;
+  margin: 2px;
+}
+
+.rootImportsListPageDiv input[type="file"] {
+    width: 0.1px;
+    height: 0.1px;
+    opacity: 0;
+    overflow: hidden;
+    position: absolute;
+    z-index: -1;
+}
+
 [data-title] {
     border-bottom: 1px dashed rgba(0, 0, 0, 0.2);
     border-radius:2px;

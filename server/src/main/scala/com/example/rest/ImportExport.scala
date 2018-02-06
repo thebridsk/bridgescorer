@@ -33,6 +33,7 @@ import java.io.FileInputStream
 import java.nio.file.Files
 import java.io.InputStream
 import java.io.OutputStream
+import scala.concurrent.Future
 
 object ImportExport {
   val log = Logger[ImportExport]
@@ -161,7 +162,7 @@ trait ImportExport {
 <body>
 <h1>Error importing ${filename}</h1>
 <p>${error}</p>
-<p><a href="${url}">Home</a></p>
+<p><a href="${url}">Return</a></p>
 </body>
 </html>
 """
@@ -212,16 +213,19 @@ trait ImportExport {
         parameter( 'url.? ) { (opturl) =>
           extractScheme { scheme =>
             headerValue(Service.extractHostPort) { host =>
-              storeUploadedFile("zip", tempDestination) {
-                case (metadata, file) =>
-                  // do something with the file and file metadata ...
+              storeUploadedFiles("zip", tempDestination) { files =>
+                val futures = files.map { entry =>
+
+                  val (metadata, file) = entry
 
                   val is = restService.importStore.get
                   val f = File( file.toString() )
                   val url = opturl.getOrElse("/")
 
+                  val r =
                   if (metadata.fileName.endsWith(".zip")) {
-                    complete( is.create(metadata.fileName, f).transform { tr =>
+                    val rr =
+                    is.create(metadata.fileName, f).transform { tr =>
                       tr match {
                         case Success(Right(_)) =>
                           file.delete()
@@ -237,10 +241,18 @@ trait ImportExport {
                           log.warning(s"Failure importing bridge store ${metadata.fileName}", ex)
                           Success(failurehtml( url, metadata.fileName, s"An error occurred: ${ex.getMessage}", StatusCodes.InternalServerError))
                       }
-                    } )
+                    }
+                    rr
                   } else {
-                    complete( StatusCodes.BadRequest, "Only zip files are accepted" )
+                    Future.successful( failurehtml( url, metadata.fileName, "Only zip files are accepted", StatusCodes.BadRequest ))
                   }
+                  r
+                }
+                val ret = Future.foldLeft(futures)(HttpResponse(StatusCodes.OK)) { (ac, v) =>
+                  if (ac.status == StatusCodes.OK) v
+                  else ac
+                }
+                complete(ret)
               }
             }
           }

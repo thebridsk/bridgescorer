@@ -75,8 +75,8 @@ object TestGraphQL {
 
   def processError( resp: JsValue, comment: String = "Errors" ) = {
     resp match {
-      case _: JsObject =>
-        resp \ "errors" match {
+      case obj: JsObject =>
+        obj \ "errors" match {
           case JsDefined( JsArray( messages ) ) =>
             println( messages.map { v =>
                        (v \ "message") match {
