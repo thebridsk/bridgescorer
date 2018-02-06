@@ -26,6 +26,12 @@ import play.api.libs.json.JsObject
 import play.api.libs.json.JsNull
 import play.api.libs.json.JsTrue
 import com.example.react.PopupOkCancel
+import com.example.data.SystemTime.Timestamp
+import play.api.libs.json.Reads
+import play.api.libs.json.Json
+import play.api.libs.json.JsSuccess
+import play.api.libs.json.JsError
+import com.example.react.DateUtils
 
 /**
  * A skeleton component.
@@ -47,7 +53,7 @@ object ImportsListPage {
 
 }
 
-object DeleteImport {
+object ImportMethods {
   import ImportsListPageInternal._
 //  {
 //    "import" : {
@@ -96,10 +102,54 @@ object DeleteImport {
     }
 
   }
+
+  case class ImportStore( id: String, date: Timestamp )
+  case class ImportsList( imports: List[ImportStore] )
+
+  implicit val readsImportStore = Json.reads[ImportStore]
+  implicit val readsImportsList = Json.reads[ImportsList]
+
+  def list() = {
+
+
+    val vars = None
+    val query =
+       """
+         |{
+         |  imports {
+         |    id
+         |    date
+         |  }
+         |}
+         |""".stripMargin
+    val operation = None
+
+    GraphQLClient.request(query, vars, operation ).map { resp =>
+      resp.data match {
+        case Some( d: JsObject ) =>
+          Json.fromJson[ImportsList](d) match {
+            case JsSuccess( t, path ) =>
+              Right(t)
+            case err: JsError =>
+              logger.warning( s"Error processing return data from Imports list: ${JsError.toJson(err)}" )
+              Left("Error processing returned data")
+          }
+        case _ =>
+          logger.warning( s"Error on Imports list: ${resp}")
+          Left("Internal error")
+      }
+    }.recover {
+      case x: Exception =>
+        logger.warning( s"Error on Imports list", x)
+        Left("Internal error")
+    }
+
+  }
 }
 
 object ImportsListPageInternal {
   import ImportsListPage._
+  import ImportMethods.ImportsList
 
   val logger = Logger("bridge.ImportsListPage")
 
@@ -111,7 +161,7 @@ object ImportsListPageInternal {
    *
    */
   case class State(
-      ids: Option[List[String]] = None,
+      stores: Option[ImportsList] = None,
       selectedForImport: Option[String] = None,
       error: Option[TagMod] = None
   ) {
@@ -137,25 +187,12 @@ object ImportsListPageInternal {
     }
 
     def refresh() = {
-      GraphQLClient.request("""{ importIds }""").foreach { resp =>
-        resp.data match {
-          case Some(json) =>
-            json \ "importIds" match {
-              case JsDefined( JsArray( array ) ) =>
-                val list = array.map { jv =>
-                  jv match {
-                    case JsString(s) => s
-                    case x => x.toString()
-                  }
-                }.toList
-                scope.withEffectsImpure.modState { s => s.copy(ids = Some(list)) }
-              case JsDefined( _ ) =>
-                scope.withEffectsImpure.modState { s => s.copy(ids = Some(List())) }
-              case x: JsUndefined =>
-                scope.withEffectsImpure.modState { s => s.copy(ids = Some(List())) }
-            }
-          case None =>
-            scope.withEffectsImpure.modState { s => s.copy(ids = Some(List())) }
+      ImportMethods.list().foreach { rlist =>
+        rlist match {
+          case Right(list) =>
+            scope.withEffectsImpure.modState { s => s.copy(stores = Some(list)) }
+          case Left(err) =>
+            scope.withEffectsImpure.modState { s => s.withError(err) }
         }
       }
     }
@@ -183,7 +220,7 @@ object ImportsListPageInternal {
     }
 
     def delete( id: String ) = scope.modState { s =>
-      DeleteImport.delete(id).foreach { result =>
+      ImportMethods.delete(id).foreach { result =>
         scope.withEffectsImpure.modState { state =>
           result match {
             case Right(r) =>
@@ -232,14 +269,14 @@ object ImportsListPageInternal {
                 ),
               )
             ),
-            if (state.ids.isEmpty) {
+            if (state.stores.isEmpty) {
               <.tr(
                 <.td( "Working" )
               )
             } else {
-              state.ids.get.zipWithIndex.map { entry =>
-                val (id,i) = entry
-                SummaryRow.withKey( s"Import${i}" )((props,state,this,i,id))
+              state.stores.get.imports.zipWithIndex.map { entry =>
+                val (store,i) = entry
+                SummaryRow.withKey( s"Import${i}" )((props,state,this,i,store))
               }.toTagMod
             }
           )
@@ -253,15 +290,15 @@ object ImportsListPageInternal {
     }
   }
 
-  val SummaryRow = ScalaComponent.builder[(Props,State,Backend,Int,String)]("SuggestionRow")
+  val SummaryRow = ScalaComponent.builder[(Props,State,Backend,Int,ImportMethods.ImportStore)]("SuggestionRow")
                       .render_P( args => {
                         // row is zero based
-                        val (props,state,backend,row,id) = args
+                        val (props,state,backend,row,store) = args
 
                         <.tr(
-                          <.td( id ),
+                          <.td( store.id, "  ", DateUtils.formatDate(store.date) ),
                           <.td(
-                            AppButton( "Delete${id}", "Delete", ^.onClick --> backend.delete(id) )
+                            AppButton( "Delete${id}", "Delete", ^.onClick --> backend.delete(store.id) )
                           )
                         )
                       }).build

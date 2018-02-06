@@ -48,6 +48,7 @@ import com.example.data.VersionedInstance
 import java.util.zip.ZipEntry
 import java.io.OutputStreamWriter
 import java.io.BufferedOutputStream
+import com.example.data.SystemTime.Timestamp
 
 /**
  * The backend trait for our service.
@@ -55,6 +56,8 @@ import java.io.BufferedOutputStream
  * the objects that make up the API.
  */
 abstract class BridgeService( val id: String ) {
+
+  def getDate: Timestamp = SystemTime.currentTimeMillis()
 
   def loggerConfig( ip: String, iPad: Boolean ): LoggerConfig
 
