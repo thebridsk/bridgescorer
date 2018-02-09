@@ -289,6 +289,10 @@ object SchemaDefinition {
               Some("The id of the duplicate match"),
               resolve = _.value.id
           ),
+          Field("finished", BooleanType,
+              Some("true if the match is finished"),
+              resolve = _.value.finished
+          ),
           Field("teams",
               ListType( DuplicateSummaryTeam ),
               Some("The teams that played"),

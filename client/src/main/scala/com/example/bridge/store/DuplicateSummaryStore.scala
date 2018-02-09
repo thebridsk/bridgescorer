@@ -24,19 +24,22 @@ object DuplicateSummaryStore extends ChangeListenable {
   private var dispatchToken: Option[DispatchToken] = Some(BridgeDispatcher.register(dispatch _))
 
   def dispatch( msg: Any ) = Alerter.tryitWithUnit { msg match {
-    case ActionUpdateDuplicateSummary(summary) =>
-      updateBoardSets(summary)
+    case ActionUpdateDuplicateSummary(importId,summary) =>
+      updateDuplicateSummary(importId,summary)
     case x =>
       // There are multiple stores, all the actions get sent to all stores
 //      logger.warning("BoardSetStore: Unknown msg dispatched, "+x)
   }}
 
   private var fSummary: Option[List[DuplicateSummary]] = None
+  private var fImportId: Option[String] = None
 
   def getDuplicateSummary() = fSummary
+  def getImportId = fImportId
 
-  def updateBoardSets( summary: List[DuplicateSummary] ) = {
+  def updateDuplicateSummary( importId: Option[String], summary: List[DuplicateSummary] ) = {
     fSummary = Option( summary )
+    fImportId = importId
     notifyChange()
   }
 

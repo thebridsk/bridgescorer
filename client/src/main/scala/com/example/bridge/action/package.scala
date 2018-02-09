@@ -22,7 +22,11 @@ package object action {
 
   sealed trait DuplicateBridgeAction extends BridgeAction
 
-  case class ActionUpdateDuplicateSummary( summary: List[DuplicateSummary] ) extends BridgeAction
+  /**
+   * @param importId the import Id.  If None, then this is the main store.
+   * @param summary
+   */
+  case class ActionUpdateDuplicateSummary( importId: Option[String], summary: List[DuplicateSummary] ) extends BridgeAction
 
   case class ActionUpdateDuplicateResult( dr: MatchDuplicateResult ) extends BridgeAction
 

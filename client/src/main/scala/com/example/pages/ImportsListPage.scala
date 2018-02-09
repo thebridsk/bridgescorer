@@ -32,6 +32,8 @@ import play.api.libs.json.Json
 import play.api.libs.json.JsSuccess
 import play.api.libs.json.JsError
 import com.example.react.DateUtils
+import com.example.pages.duplicate.DuplicateRouter.ImportSummaryView
+import com.example.pages.duplicate.DuplicateModule.PlayDuplicate
 
 /**
  * A skeleton component.
@@ -298,6 +300,7 @@ object ImportsListPageInternal {
                         <.tr(
                           <.td( store.id, "  ", DateUtils.formatDate(store.date) ),
                           <.td(
+                            AppButton( "Duplicate${id}", "Duplicate", props.router.setOnClick(PlayDuplicate(ImportSummaryView(store.id))) ),
                             AppButton( "Delete${id}", "Delete", ^.onClick --> backend.delete(store.id) )
                           )
                         )

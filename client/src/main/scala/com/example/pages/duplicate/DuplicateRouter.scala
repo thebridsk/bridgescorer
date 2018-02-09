@@ -32,7 +32,10 @@ object DuplicateModule extends Module {
 
   def verifyPages(): List[AppPage] = DuplicateRouter.verifyPages.map( p => PlayDuplicate(p).asInstanceOf[AppPage]).toList
 
-  def routes(): Rule[AppPage] = DuplicateRouter.routes.prefixPath_/("#duplicate").pmap[AppPage](PlayDuplicate){ case PlayDuplicate(m) => m }
+  def routes(): Rule[AppPage] = {
+    DuplicateRouter.routes.prefixPath_/("#duplicate").pmap[AppPage](PlayDuplicate){ case PlayDuplicate(m) => m } |
+    DuplicateRouter.importRoutes.prefixPath_/("#import").pmap[AppPage](PlayDuplicate){ case PlayDuplicate(m) => m }
+  }
 
   override
   def canRender(selectedPage: Resolution[AppPage]): Boolean = selectedPage.page.isInstanceOf[DuplicateModule.PlayDuplicate]
@@ -119,7 +122,15 @@ object DuplicateRouter {
     def getPerspective(): Option[DuplicateViewPerspective]
   }
 
-  case object SummaryView extends DuplicatePage
+  trait SummaryViewBase extends DuplicatePage {
+    def getScoreboardPage(dupid: String): BaseScoreboardViewWithPerspective
+    def getDuplicateResultPage(dupid: String): DuplicateResultViewBase
+  }
+  case object SummaryView extends SummaryViewBase {
+    def getScoreboardPage(dupid: String): BaseScoreboardViewWithPerspective = CompleteScoreboardView(dupid)
+    def getDuplicateResultPage(dupid: String): DuplicateResultViewBase = DuplicateResultView(dupid)
+  }
+
   case object PairsView extends DuplicatePage
   case object NewDuplicateView extends DuplicatePage
   case object SelectMatchView extends DuplicatePage
@@ -153,7 +164,11 @@ object DuplicateRouter {
     def getPerspective(): DuplicateViewPerspective = PerspectiveComplete
   }
 
-  case class DuplicateResultView( dupid: String ) extends DuplicatePage
+  trait DuplicateResultViewBase extends DuplicatePage {
+    val dupid: String
+  }
+  case class DuplicateResultView( dupid: String ) extends DuplicateResultViewBase
+
   case class DuplicateResultEditView( dupid: String ) extends DuplicatePage
 
   case class CompleteAllBoardView( dupid: String ) extends BaseAllBoardsViewWithPerspective {
@@ -294,6 +309,11 @@ object DuplicateRouter {
 
   case class MovementView( display: String ) extends DuplicatePage
 
+  case class ImportSummaryView( importId: String ) extends SummaryViewBase {
+    def getScoreboardPage(dupid: String): BaseScoreboardViewWithPerspective = CompleteScoreboardView(dupid)
+    def getDuplicateResultPage(dupid: String): DuplicateResultViewBase = DuplicateResultView(dupid)
+  }
+
   val verifyPages = SummaryView::
                     PairsView::
                     NewDuplicateView::
@@ -328,6 +348,7 @@ object DuplicateRouter {
                     BoardSetView("ArmonkBoards")::
                     MovementSummaryView::
                     MovementView("Armonk2Tables")::
+                    ImportSummaryView("import.zip")::
                     Nil
 
   val routes = RouterConfigDsl[DuplicatePage].buildRule { dsl =>
@@ -406,7 +427,16 @@ object DuplicateRouter {
         ~> renderR( routerCtl => PageSelectMatch(routerCtl,SelectMatchView) )
 
       | staticRoute( root, SummaryView )
-        ~> renderR( routerCtl => PageSummary(routerCtl) )
+        ~> renderR( routerCtl => PageSummary(routerCtl, SummaryView) )
+      )
+  }
+
+  val importRoutes = RouterConfigDsl[DuplicatePage].buildRule { dsl =>
+    import dsl._
+
+    (emptyRule
+      | dynamicRouteCT( (string(".+") / "duplicates" ).caseClass[ImportSummaryView])
+        ~> dynRenderR( (p,routerCtl) => PageSummary(routerCtl,p) )
       )
   }
 

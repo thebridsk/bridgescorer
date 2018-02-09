@@ -33,7 +33,7 @@ object BridgeDispatcher {
 
   def stop() = dispatcher.dispatch( ActionStop() )
 
-  def updateDuplicateSummary( summary: List[DuplicateSummary] ) = dispatcher.dispatch( ActionUpdateDuplicateSummary(summary))
+  def updateDuplicateSummary( importId: Option[String], summary: List[DuplicateSummary] ) = dispatcher.dispatch( ActionUpdateDuplicateSummary(importId,summary))
 
   def updateDuplicateResult( dr: MatchDuplicateResult ) = dispatcher.dispatch(ActionUpdateDuplicateResult(dr))
 
