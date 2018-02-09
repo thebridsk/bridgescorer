@@ -83,7 +83,7 @@ class PairsPage( implicit webDriver: WebDriver, pageCreated: SourcePosition ) ex
 
   def clickSummary(implicit patienceConfig: PatienceConfig, pos: Position) = {
     clickButton("Summary")
-    new ListDuplicatePage()(webDriver, pos)
+    new ListDuplicatePage(None)(webDriver, pos)
   }
 
   def clickBoardSets(implicit patienceConfig: PatienceConfig, pos: Position) = {

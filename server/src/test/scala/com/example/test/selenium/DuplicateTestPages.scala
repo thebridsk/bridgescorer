@@ -1078,8 +1078,8 @@ class DuplicateTestPages extends FlatSpec
     Thread.sleep(2000L)
     val dsb2 = pop.clickDeleteCancel.validatePopup(false)
 
-    dsb2.clickDelete.validatePopup().clickDeleteOK.validate
-
+    val listpage = dsb2.clickDelete.validatePopup().clickDeleteOK.validate
+    listpage.getMatchIds must not contain dupid2.get
   }
 
   it should "go to first game when it is selected on summary page" in {
@@ -1093,5 +1093,7 @@ class DuplicateTestPages extends FlatSpec
 
     val sb = ld.clickDuplicate(dupid.get).validate
 
+    val listpage = sb.clickSummary.validate
   }
+
 }

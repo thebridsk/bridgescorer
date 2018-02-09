@@ -97,7 +97,7 @@ class MovementsPage(
 
   def clickOK(implicit patienceConfig: PatienceConfig, pos: Position) = {
     clickButton("OK")
-    new ListDuplicatePage
+    new ListDuplicatePage(None)
   }
 
 }

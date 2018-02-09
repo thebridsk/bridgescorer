@@ -23,7 +23,7 @@ class HomePage( implicit webDriver: WebDriver, pageCreated: SourcePosition ) ext
 
   def clickListDuplicateButton(implicit patienceConfig: PatienceConfig, pos: Position) = {
     clickButton("Duplicate")
-    new ListDuplicatePage()(webDriver, pos)
+    new ListDuplicatePage(None)(webDriver, pos)
   }
 
   def clickNewDuplicateButton(implicit patienceConfig: PatienceConfig, pos: Position) = {
