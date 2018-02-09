@@ -28,6 +28,16 @@ import scala.concurrent.Future
 import com.example.rest2.AjaxResult
 import org.scalactic.source.Position
 import com.example.rest2.WrapperXMLHttpRequest
+import com.example.graphql.GraphQLClient
+import play.api.libs.json.JsObject
+import play.api.libs.json.JsString
+import play.api.libs.json.JsDefined
+import play.api.libs.json.JsError
+import play.api.libs.json.JsUndefined
+import play.api.libs.json.Json
+import com.example.data.DuplicateSummary
+import com.example.data.rest.JsonSupport
+import play.api.libs.json.JsSuccess
 
 object Controller {
   val logger = Logger("bridge.Controller")
@@ -204,8 +214,66 @@ object Controller {
     setTimeout(1) { // note the absence of () =>
       RestClientDuplicateSummary.list().recordFailure().foreach { list => Alerter.tryitWithUnit {
         logger.finer(s"DuplicateSummary got ${list.size} entries")
-        BridgeDispatcher.updateDuplicateSummary(list.toList)
+        BridgeDispatcher.updateDuplicateSummary(None,list.toList)
       }}
+    }
+  }
+
+  def getImportSummary( importId: String ): Unit = {
+    logger.finer(s"Sending import duplicatesummaries ${importId} list request to server")
+    import scala.scalajs.js.timers._
+    setTimeout(1) { // note the absence of () =>
+      GraphQLClient.request(
+          """query importDuplicates( $importId: ImportId! ) {
+             |  import( id: $importId ) {
+             |  duplicatesummaries {
+             |    id
+             |    finished
+             |    teams {
+             |      id
+             |      team {
+             |        id
+             |        player1
+             |        player2
+             |        created
+             |        updated
+             |      }
+             |      result
+             |      place
+             |    }
+             |    boards
+             |    tables
+             |    onlyresult
+             |    created
+             |    updated
+             |  }
+             |  }
+             |}
+             |""".stripMargin,
+          Some(JsObject( Seq( "importId" -> JsString(importId) ) )),
+          Some("importDuplicates") ).map { r =>
+            r.data match {
+              case Some(data) =>
+                data \ "import" \ "duplicatesummaries" match {
+                  case JsDefined( jds ) =>
+                    import JsonSupport._
+                    Json.fromJson[List[DuplicateSummary]](jds) match {
+                      case JsSuccess(ds,path) =>
+                        logger.finer(s"Import(${importId})/DuplicateSummary got ${ds.size} entries")
+                        BridgeDispatcher.updateDuplicateSummary(Some(importId),ds)
+                      case JsError(err) =>
+                        logger.warning(s"Import(${importId})/DuplicateSummary, JSON error: ${JsError.toJson(err)}")
+                    }
+                  case _: JsUndefined =>
+                    logger.warning(s"error import duplicatesummaries ${importId}, did not find import/duplicatesummaries field")
+                }
+              case None =>
+                logger.warning(s"error import duplicatesummaries ${importId}, ${r.getError()}")
+            }
+          }.recover {
+            case x: Exception =>
+                logger.warning(s"exception import duplicatesummaries ${importId}", x)
+          }.foreach { x => }
     }
   }
 

@@ -37,6 +37,7 @@ import com.example.backend.resource.JavaResourcePersistentSupport
 import com.example.backend.resource.ZipPersistentSupport
 import com.example.backend.resource.Result
 import scala.concurrent.Future
+import com.example.data.SystemTime.Timestamp
 
 object BridgeServiceZipStore {
 
@@ -63,6 +64,11 @@ class BridgeServiceZipStore(
   import BridgeServiceZipStore._
 
   import scala.collection.mutable.Map
+
+  override
+  def getDate: Timestamp = {
+    zipfilename.lastModified
+  }
 
   val bridgeResources = BridgeResources(useYaml,true,false,true)
   import bridgeResources._

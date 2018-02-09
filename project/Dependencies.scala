@@ -64,7 +64,7 @@ object Dependencies {
   lazy val vScalatest = "3.0.4"      // http://mvnrepository.com/artifact/org.scalatest/scalatest_2.11
   lazy val vJunit = "4.12"           // http://mvnrepository.com/artifact/junit/junit
 
-  lazy val vSelenium = "3.8.1"       // http://mvnrepository.com/artifact/org.seleniumhq.selenium/selenium-java
+  lazy val vSelenium = "3.9.0"       // http://mvnrepository.com/artifact/org.seleniumhq.selenium/selenium-java
   lazy val vLog4js = "1.4.15"        // http://mvnrepository.com/artifact/org.webjars/log4javascript
   lazy val vScalaArm = "2.0"         // http://mvnrepository.com/artifact/com.jsuereth/scala-arm_2.11
   lazy val vScallop = "3.1.1"        // http://mvnrepository.com/artifact/org.rogach/scallop_2.11

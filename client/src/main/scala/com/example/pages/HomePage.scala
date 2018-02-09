@@ -132,7 +132,7 @@ object HomePage {
               ),
               <.tr(
                 <.td(
-                  AppButton( "Import", "Import", rootStyles.playButton, ^.disabled:=isWorking, ^.onClick --> callbackPage(Import))
+                  AppButton( "Import", "Import", rootStyles.playButton, ^.disabled:=isWorking, ^.onClick --> callbackPage(ImportsList))
                 ),
                 <.td(
                   AppButton( "Export", "Export", rootStyles.playButton, ^.disabled:=isWorking, ^.onClick --> callbackPage(Export))

@@ -35,6 +35,16 @@ import com.example.pages.duplicate.DuplicateRouter.DuplicateResultView
 import com.example.pages.duplicate.DuplicateRouter.SuggestionView
 import com.example.react.RadioButton
 import com.example.pages.duplicate.DuplicateRouter.PairsView
+import com.example.pages.duplicate.DuplicateRouter.ImportSummaryView
+import com.example.pages.duplicate.DuplicateRouter.DuplicateResultViewBase
+import com.example.pages.duplicate.DuplicateRouter.SummaryViewBase
+import com.example.pages.duplicate.DuplicateRouter.SummaryView
+import play.api.libs.json.JsString
+import play.api.libs.json.JsObject
+import com.example.graphql.GraphQLClient
+import play.api.libs.json.JsDefined
+import play.api.libs.json.JsUndefined
+import com.example.graphql.GraphQLResponse
 
 /**
  * Shows a summary page of all duplicate matches from the database.
@@ -54,9 +64,9 @@ import com.example.pages.duplicate.DuplicateRouter.PairsView
 object PageSummary {
   import PageSummaryInternal._
 
-  case class Props( routerCtl: BridgeRouter[DuplicatePage], defaultRows: Int = 10 )
+  case class Props( routerCtl: BridgeRouter[DuplicatePage], page: SummaryViewBase, defaultRows: Int = 10 )
 
-  def apply( routerCtl: BridgeRouter[DuplicatePage], defaultRows: Int = 10 ) = component(Props(routerCtl, defaultRows))
+  def apply( routerCtl: BridgeRouter[DuplicatePage], page: SummaryViewBase, defaultRows: Int = 10 ) = component(Props(routerCtl, page, defaultRows))
 
 }
 
@@ -66,9 +76,10 @@ object PageSummaryInternal {
 
   val logger = Logger("bridge.PageSummary")
 
-  val SummaryHeader = ScalaComponent.builder[(SummaryPeople,Props,State,Backend)]("SummaryRow")
+  val SummaryHeader = ScalaComponent.builder[(SummaryPeople,Props,State,Backend,Option[String])]("SummaryRow")
                         .render_P( props => {
-                          val (tp,pr,state,backend) = props
+                          val (tp,pr,state,backend,importId) = props
+                          val isImportStore = pr.page.isInstanceOf[ImportSummaryView]
                           <.thead(
                             <.tr(
                               <.th(
@@ -80,6 +91,9 @@ object PageSummaryInternal {
                             ),
                             <.tr(
                               <.th( "Id"),
+                              importId.map { id =>
+                                <.th("Import from")
+                              }.whenDefined,
                               state.forPrint ?= <.th( "Print" ),
                               <.th( "Finished"),
                               <.th( "Created", <.br(), "Last Updated"),
@@ -88,12 +102,18 @@ object PageSummaryInternal {
                             ),
                             <.tr(
                               <.th( ""),
+                              importId.map { id =>
+                                <.th( id)
+                              }.whenDefined,
                               state.forPrint ?= <.th( "" ),
                               <.th( ""),
-                              <.th( AppButton( "DuplicateCreate", "New",
-                                               pr.routerCtl.setOnClick(NewDuplicateView)
-//                                              ^.onClick --> backend.newDuplicate()
-                                    )
+                              <.th( if (isImportStore) {
+                                      TagMod()
+                                    } else {
+                                      AppButton( "DuplicateCreate", "New",
+                                                 pr.routerCtl.setOnClick(NewDuplicateView)
+                                          )
+                                    }
                               ),
                               tp.allPlayers.filter(p => p!="").map { p =>
                                 <.th(
@@ -111,18 +131,36 @@ object PageSummaryInternal {
                           )
                         }).build
 
-  val SummaryRow = ScalaComponent.builder[(SummaryPeople,DuplicateSummary,Props,State,Backend)]("SummaryRow")
+  val SummaryRow = ScalaComponent.builder[(SummaryPeople,DuplicateSummary,Props,State,Backend,Option[String])]("SummaryRow")
                       .render_P( props => {
-                        val (tp,ds,pr,st,back) = props
+                        val (tp,ds,pr,st,back,importId) = props
                           <.tr(
-                            <.td( AppButton( (if (ds.onlyresult) "Result_" else "Duplicate_")+ds.id, ds.id,
+                            <.td(
+                                if (importId.isDefined) {
+                                  ds.id
+                                } else {
+                                  AppButton( (if (ds.onlyresult) "Result_" else "Duplicate_")+ds.id, ds.id,
                                              baseStyles.appButton100,
                                              if (ds.onlyresult) {
-                                               pr.routerCtl.setOnClick(DuplicateResultView(ds.idAsDuplicateResultId) )
+                                               pr.routerCtl.setOnClick(pr.page.getDuplicateResultPage(ds.idAsDuplicateResultId) )
                                              } else {
-                                               pr.routerCtl.setOnClick(CompleteScoreboardView(ds.id) )
+                                               pr.routerCtl.setOnClick(pr.page.getScoreboardPage(ds.id) )
                                              }
-                                            )),
+                                           )
+                                }
+                            ),
+                            importId.map { id =>
+                              <.td(
+                                AppButton( (if (ds.onlyresult) "ImportResult_" else "ImportDuplicate_")+ds.id, "Import",
+                                           baseStyles.appButton100,
+                                           if (ds.onlyresult) {
+                                             ^.onClick --> back.importDuplicateResult(id,ds.id)
+                                           } else {
+                                             ^.onClick --> back.importDuplicateMatch(id,ds.id)
+                                           }
+                                         )
+                              )
+                            }.whenDefined,
                             st.forPrint ?= <.td(
                                                  <.input.checkbox(
                                                    ^.checked := st.selected.contains(ds.id),
@@ -170,7 +208,10 @@ object PageSummaryInternal {
    */
   case class State( workingOnNew: Option[String], forPrint: Boolean, selected: List[Id.MatchDuplicate],
                     showRows: Option[Int], alwaysShowAll: Boolean,
-                    showEntries: ShowEntries = ShowBoth )
+                    showEntries: ShowEntries = ShowBoth ) {
+    def withError( err: String ) = copy( workingOnNew = Some(err) )
+    def clearError() = copy( workingOnNew = None )
+  }
 
   /**
    * Internal state for rendering the component.
@@ -182,16 +223,23 @@ object PageSummaryInternal {
   class Backend(scope: BackendScope[Props, State]) {
 
     val resultDuplicate = ResultHolder[MatchDuplicate]()
+    val resultGraphQL = ResultHolder[GraphQLResponse]()
 
     def show( what: ShowEntries ) = scope.modState( s => s.copy( showEntries = what ) )
 
     def cancel() = Callback {
       resultDuplicate.cancel()
-    } >> scope.modState( s => s.copy(workingOnNew=None))
+      resultGraphQL.cancel()
+    } >> scope.modState( s => s.clearError())
+
+    def setMessage( msg: String ) = scope.withEffectsImpure.modState( s => s.withError(msg) )
+
+    def setMessageCB( msg: String ) = scope.modState( s => s.withError(msg) )
 
     def newDuplicate( fortest: Boolean = false ) =
       scope.modState( s => s.copy(workingOnNew=Some("Working on creating a new duplicate match")), Callback {
         val result = Controller.createMatchDuplicate(test=fortest).recordFailure()
+        resultDuplicate.set(result)
         result.foreach { created=>
           logger.info("Got new duplicate match ${created.id}.  HomePage.mounted=${mounted}")
           if (mounted) scope.withEffectsImpure.props.routerCtl.set(CompleteScoreboardView(created.id)).runNow()
@@ -232,8 +280,55 @@ object PageSummaryInternal {
       s.copy( showRows=n)
     }
 
+    def importDuplicateResult( importId: String, id: String ) = Callback {
+
+    } >> setMessageCB(s"Importing Duplicate Result ${id} from import ${importId}")
+
+    def importDuplicateMatch( importId: String, id: String ) =
+      scope.modState( s => s.copy(workingOnNew=Some(s"Importing Duplicate Match ${id} from import ${importId}")), Callback {
+        val query = """mutation importDuplicate( $importId: ImportId!, $dupId: DuplicateId! ) {
+                      |  import( id: $importId ) {
+                      |    importduplicate( id: $dupId ) {
+                      |      id
+                      |    }
+                      |  }
+                      |}
+                      |""".stripMargin
+        val vars = JsObject( Seq( "importId" -> JsString(importId), "dupId" -> JsString(id) ) )
+        val op = Some("importDuplicate")
+        val result = GraphQLClient.request(query, Some(vars), op)
+        resultGraphQL.set(result)
+        result.map { gr =>
+          gr.data match {
+            case Some(data) =>
+              data \ "import" \ "importduplicate" \ "id" match {
+                case JsDefined( JsString( newid ) ) =>
+                  setMessage(s"import duplicate ${id} from ${importId}, new ID ${newid}" )
+                case JsDefined( x ) =>
+                  setMessage(s"expecting string on import duplicate ${id} from ${importId}, got ${x}")
+                case _: JsUndefined =>
+                  setMessage(s"error import duplicate ${id} from ${importId}, did not find import/importduplicate/id field")
+              }
+            case None =>
+              setMessage(s"error import duplicate ${id} from ${importId}, ${gr.getError()}")
+          }
+        }.recover {
+          case x: Exception =>
+              logger.warning(s"exception import duplicate ${id} from ${importId}", x)
+              setMessage(s"exception import duplicate ${id} from ${importId}")
+        }.foreach { x => }
+      })
+
     def render( props: Props, state: State ) = {
-      val summaries = DuplicateSummaryStore.getDuplicateSummary()
+      val importId = DuplicateSummaryStore.getImportId
+      val summaries = props.page match {
+        case ImportSummaryView(id) =>
+          if (importId.isDefined && id == importId.get) DuplicateSummaryStore.getDuplicateSummary()
+          else None
+        case SummaryView =>
+          if (importId.isEmpty) DuplicateSummaryStore.getDuplicateSummary()
+          else None
+      }
       val tp = SummaryPeople(summaries)
       val takerows = if (state.alwaysShowAll)
       {
@@ -251,7 +346,7 @@ object PageSummaryInternal {
       def showMatches() = {
         <.table(
             dupStyles.tableSummary,
-            SummaryHeader((tp,props,state,this)),
+            SummaryHeader((tp,props,state,this,importId)),
             <.tbody(
                 summaries.get.sortWith((one,two)=>one.created>two.created).
                               filter { ds =>
@@ -266,7 +361,7 @@ object PageSummaryInternal {
                               }.
                               take(takerows).
                               map { ds =>
-                                    SummaryRow.withKey( ds.id )((tp,ds,props,state,this))
+                                    SummaryRow.withKey( ds.id )((tp,ds,props,state,this,importId))
                                   }.toTagMod,
                 (!state.alwaysShowAll && state.showRows.isDefined) ?=
                   <.tr(
@@ -289,7 +384,7 @@ object PageSummaryInternal {
       def showWorkingMatches() = {
         <.table(
             dupStyles.tableSummary,
-            SummaryHeader((tp,props,state,this)),
+            SummaryHeader((tp,props,state,this,importId)),
             <.tbody(
               <.tr(
                 <.td( "Working" ),
@@ -362,7 +457,12 @@ object PageSummaryInternal {
       logger.info("PageSummary.didMount")
       DuplicateSummaryStore.addChangeListener(storeCallback)
     } >> scope.props >>= { (p) => Callback(
-      Controller.getSummary()
+      p.page match {
+        case ImportSummaryView(importId) =>
+          Controller.getImportSummary(importId)
+        case SummaryView =>
+          Controller.getSummary()
+      }
     )}
 
     def willUnmount() = Callback {

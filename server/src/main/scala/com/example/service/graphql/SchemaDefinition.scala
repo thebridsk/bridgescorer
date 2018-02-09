@@ -289,6 +289,10 @@ object SchemaDefinition {
               Some("The id of the duplicate match"),
               resolve = _.value.id
           ),
+          Field("finished", BooleanType,
+              Some("true if the match is finished"),
+              resolve = _.value.finished
+          ),
           Field("teams",
               ListType( DuplicateSummaryTeam ),
               Some("The teams that played"),
@@ -403,8 +407,11 @@ object SchemaDefinition {
           Field("id", ImportIdType,
               Some("The id of the bridge service"),
               resolve = _.value.id),
+          Field("date", DateTimeType,
+              Some("The date for the store."),
+              resolve = _.value.getDate),
           Field("duplicate",
-                MatchDuplicateType,
+                OptionType(MatchDuplicateType),
                 arguments = ArgDuplicateId::Nil,
                 resolve = Action.getDuplicate
           ),
@@ -463,7 +470,7 @@ object SchemaDefinition {
                 resolve = Action.getAllImportFromRoot
           ),
           Field("import",
-                BridgeServiceType,
+                OptionType(BridgeServiceType),
                 arguments = ArgImportId::Nil,
                 resolve = Action.getImportFromRoot
           ),
@@ -491,7 +498,7 @@ object SchemaDefinition {
                 }
           ),
           Field("duplicate",
-                MatchDuplicateType,
+                OptionType(MatchDuplicateType),
                 arguments = ArgDuplicateId::Nil,
                 resolve = Action.getDuplicateFromRoot
           ),
@@ -522,14 +529,19 @@ object SchemaDefinition {
                 description = Some("Import a duplicate match."),
                 arguments = ArgDuplicateId::Nil,
                 resolve = Action.importDuplicate
+          ),
+          Field("delete",
+                BooleanType,
+                description = Some("Delete the import store"),
+                resolve = Action.deleteImportStore
           )
       )
   )
 
   val MutationType = ObjectType("Mutation", fields[BridgeService,Unit](
     Field("import",
-          MutationImportType,
-          description = Some("Selecting the import store from which imports are done."),
+          OptionType(MutationImportType),
+          description = Some("Selecting the import store from which imports are done.  returns null if not found."),
           arguments = ArgImportId::Nil,
           resolve = Action.getImportFromRoot
     )
@@ -595,7 +607,9 @@ object Action {
           case Right(bs) =>
             bs
           case Left((statusCode,msg)) =>
-            throw new Exception(s"Error getting import store ${id}: ${statusCode} ${msg.msg}")
+            log.fine(s"Error getting import store ${id}: ${statusCode} ${msg.msg}")
+//            throw new Exception(s"Error getting import store ${id}: ${statusCode} ${msg.msg}")
+            null
         })
       case None =>
         throw new Exception(s"Did not find the import store ${id}")
@@ -616,6 +630,30 @@ object Action {
       case Left((statusCode,msg)) =>
         throw new Exception(s"Error getting ${dupId} from import store ${bs.id}: ${statusCode} ${msg.msg}")
     }}
+  }
+
+  def deleteImportStore( ctx: Context[BridgeService,BridgeService]): Future[Boolean] = {
+    val todelete = ctx.value
+    ctx.ctx.importStore match {
+      case Some(is) =>
+        is.delete(todelete.id).map { rd =>
+          rd match {
+            case Right(x) =>
+              log.warning(s"Deleted import store ${todelete.id}")
+              true
+            case Left(error) =>
+              log.warning(s"Error deleting import store ${todelete.id}: ${error}")
+              false
+          }
+        }.recover {
+          case x: Exception =>
+            log.warning(s"Error deleting import store ${todelete.id}", x)
+            false
+        }
+      case None =>
+        log.fine("Did not find import store")
+        Future.successful(false)
+    }
   }
 
   def sort( list: List[MatchDuplicate], sort: Option[Sort] ) = {
