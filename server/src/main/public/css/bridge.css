@@ -299,40 +299,20 @@
   font-family: monospace;
 }
 
-.rootImportPageDiv {
-  font-size: larger;
-}
-.rootImportPageDiv label {
-  font-size: larger;
-}
-.rootImportPageDiv input {
-  font-size: larger;
-  border-radius: 20px;
-  background-color: rgb(210,210,210);
-  border-style: outset;
-  border-width: 2px;
-  white-space: nowrap;
-  padding: 3px 6px;
-  min-width: 37px;
-  margin: 2px;
-}
-
-.rootImportPageDiv input[type="file"] {
-}
-
-.rootExportPageDiv {
-  font-size: larger;
-}
-
 .rootImportsListPageDiv {
   font-size: larger;
 }
 .rootImportsListPageDiv table {
+  border-spacing: 0px;
   font-size: larger;
   border: 1px solid black;
   margin: 5px;
 }
 .rootImportsListPageDiv td {
+  font-size: larger;
+  border: 1px solid black;
+}
+.rootImportsListPageDiv th {
   font-size: larger;
   border: 1px solid black;
 }

@@ -34,7 +34,7 @@ import com.example.test.util.NoResultYet
 import com.example.test.util.EventuallyUtils
 import com.example.test.util.ParallelUtils
 import org.scalatest.concurrent.Eventually
-import com.example.pages.HomePage
+import com.example.pages.bridge.HomePage
 import com.example.pages.duplicate.ListDuplicatePage
 import com.example.pages.duplicate.NewDuplicatePage
 import com.example.pages.duplicate.MovementsPage
@@ -83,7 +83,7 @@ class SeleniumPerformanceTesting extends FlatSpec with MustMatchers with BeforeA
   override
   def beforeAll() = {
     import Session._
-    
+
     MonitorTCP.nextTest()
 
     TestStartLogging.startLogging()

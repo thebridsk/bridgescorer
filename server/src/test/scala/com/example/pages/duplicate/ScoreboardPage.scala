@@ -223,7 +223,7 @@ class ScoreboardPage(
 
   def clickSummary(implicit pos: Position) = {
     clickButton("AllGames")
-    new ListDuplicatePage
+    new ListDuplicatePage(None)
   }
 
   /**

@@ -22,7 +22,6 @@ object AppRouter {
 
   case object Home extends AppPage
   case object About extends AppPage
-  case object Import extends AppPage
   case object ImportsList extends AppPage
   case object Export extends AppPage
   case object Info extends AppPage
@@ -57,7 +56,6 @@ import com.example.testpage.TestPage
 import com.example.logger.Alerter
 import org.scalactic.source.Position
 import com.example.pages.GraphQLPage
-import com.example.pages.ImportPage
 import com.example.pages.ExportPage
 import com.example.pages.ImportsListPage
 
@@ -112,7 +110,6 @@ class AppRouter( modules: Module* ) {
               Home::
               ThankYou::
               About::
-              Import::
               ImportsList::
               Export::
               Info::
@@ -183,7 +180,6 @@ class AppRouter( modules: Module* ) {
                                                                                        allowPassedOut=false,
                                                                                        callbackWithHonors=Some(scoringViewWithHonorsCallbackOk(routerCtl))))) // ScoringView(defaultContract))
       | staticRoute("#about", About) ~> renderR( (routerCtl) => logit(AboutPage(routerCtl)) )
-      | staticRoute("#import", Import) ~> renderR( (routerCtl) => logit(ImportPage(routerCtl)) )
       | staticRoute("#imports", ImportsList) ~> renderR( (routerCtl) => logit(ImportsListPage(routerCtl,ImportsList)) )
       | staticRoute("#export", Export) ~> renderR( (routerCtl) => logit(ExportPage(routerCtl)) )
       | staticRoute("#info", Info) ~> renderR( (routerCtl) => logit(InfoPage(homeCallbackShowPage(routerCtl))) )

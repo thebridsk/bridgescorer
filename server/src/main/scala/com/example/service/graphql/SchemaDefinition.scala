@@ -475,12 +475,32 @@ object SchemaDefinition {
                 resolve = Action.getImportFromRoot
           ),
           Field("duplicateIds",
-                ListType( StringType ),
+                ListType( DuplicateIdType ),
                 resolve = _.ctx.duplicates.readAll().map { rmap => rmap match {
                             case Right(map) =>
                               map.keys.toList
                             case Left((statusCode,msg)) =>
                               throw new Exception(s"Error getting duplicate ids: ${statusCode} ${msg.msg}")
+                          }
+                }
+          ),
+          Field("chicagoIds",
+                ListType( ChicagoIdType ),
+                resolve = _.ctx.chicagos.readAll().map { rmap => rmap match {
+                            case Right(map) =>
+                              map.keys.toList
+                            case Left((statusCode,msg)) =>
+                              throw new Exception(s"Error getting chicago ids: ${statusCode} ${msg.msg}")
+                          }
+                }
+          ),
+          Field("rubberIds",
+                ListType( RubberIdType ),
+                resolve = _.ctx.rubbers.readAll().map { rmap => rmap match {
+                            case Right(map) =>
+                              map.keys.toList
+                            case Left((statusCode,msg)) =>
+                              throw new Exception(s"Error getting rubber ids: ${statusCode} ${msg.msg}")
                           }
                 }
           ),

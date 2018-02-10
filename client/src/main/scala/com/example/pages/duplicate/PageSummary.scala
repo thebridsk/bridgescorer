@@ -136,18 +136,15 @@ object PageSummaryInternal {
                         val (tp,ds,pr,st,back,importId) = props
                           <.tr(
                             <.td(
-                                if (importId.isDefined) {
-                                  ds.id
-                                } else {
-                                  AppButton( (if (ds.onlyresult) "Result_" else "Duplicate_")+ds.id, ds.id,
-                                             baseStyles.appButton100,
-                                             if (ds.onlyresult) {
-                                               pr.routerCtl.setOnClick(pr.page.getDuplicateResultPage(ds.idAsDuplicateResultId) )
-                                             } else {
-                                               pr.routerCtl.setOnClick(pr.page.getScoreboardPage(ds.id) )
-                                             }
-                                           )
-                                }
+                              AppButton( (if (ds.onlyresult) "Result_" else "Duplicate_")+ds.id, ds.id,
+                                         baseStyles.appButton100,
+                                         if (ds.onlyresult) {
+                                           pr.routerCtl.setOnClick(pr.page.getDuplicateResultPage(ds.idAsDuplicateResultId) )
+                                         } else {
+                                           pr.routerCtl.setOnClick(pr.page.getScoreboardPage(ds.id) )
+                                         },
+                                         importId.map { id => ^.disabled := true }.whenDefined
+                                       )
                             ),
                             importId.map { id =>
                               <.td(

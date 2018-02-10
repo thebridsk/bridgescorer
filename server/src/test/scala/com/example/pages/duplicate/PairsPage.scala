@@ -9,7 +9,7 @@ import org.scalatest.concurrent.Eventually._
 import org.scalatest.MustMatchers._
 import com.example.pages.PageBrowser._
 import com.example.test.selenium.TestServer
-import com.example.pages.HomePage
+import com.example.pages.bridge.HomePage
 import org.openqa.selenium.NoSuchElementException
 import javax.validation.constraints.AssertFalse
 
@@ -83,7 +83,7 @@ class PairsPage( implicit webDriver: WebDriver, pageCreated: SourcePosition ) ex
 
   def clickSummary(implicit patienceConfig: PatienceConfig, pos: Position) = {
     clickButton("Summary")
-    new ListDuplicatePage()(webDriver, pos)
+    new ListDuplicatePage(None)(webDriver, pos)
   }
 
   def clickBoardSets(implicit patienceConfig: PatienceConfig, pos: Position) = {

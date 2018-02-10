@@ -102,6 +102,9 @@ class Element( val underlying: WebElement )(implicit pos: Position ) {
     this
   }
 
+  def sendKeys( keys: String ) = {
+    underlying.sendKeys(keys)
+  }
 }
 
 object Element {

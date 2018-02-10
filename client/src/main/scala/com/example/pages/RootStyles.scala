@@ -93,8 +93,6 @@ class RootStyles {
 
   val aboutPageDiv = cls("rootAboutPageDiv baseFontTextLarge")
 
-  val importPageDiv = cls("rootImportPageDiv")
-
   val importsListPageDiv = cls("rootImportsListPageDiv")
 
   val exportPageDiv = cls("rootExportPageDiv")

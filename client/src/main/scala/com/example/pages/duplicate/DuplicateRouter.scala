@@ -435,7 +435,7 @@ object DuplicateRouter {
     import dsl._
 
     (emptyRule
-      | dynamicRouteCT( (string(".+") / "duplicates" ).caseClass[ImportSummaryView])
+      | dynamicRouteCT( (string(".+") / "duplicate" ).caseClass[ImportSummaryView])
         ~> dynRenderR( (p,routerCtl) => PageSummary(routerCtl,p) )
       )
   }
