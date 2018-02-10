@@ -1,6 +1,7 @@
 # Bridge Scorer Project
 
 [![Build Status](https://travis-ci.org/thebridsk/bridgescorer.svg?branch=master)](https://travis-ci.org/thebridsk/bridgescorer)
+[![GitHub release](https://img.shields.io/github/release/thebridsk/bridgescorer.svg)]()
 
 ## Contributing
 
