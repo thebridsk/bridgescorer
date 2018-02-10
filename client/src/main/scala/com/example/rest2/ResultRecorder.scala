@@ -18,7 +18,7 @@ object ResultRecorder extends ResultRecorder {
     x match {
       case ex: AjaxDisabled =>
         log.info(s"ResultRecorder.logException: Ajax is disabled, called from ${ex.pos.line}")
-      case ex: AjaxFailure =>
+      case ex: AjaxFailureException =>
         val req = ex.result.req
         log.warning("ResultRecorder.logException: "+req.status+"  "+req.responseText+", readyState="+req.readyState+", statusText="+req.statusText+", called from "+ex.pos.line)
         log.warning("ResultRecorder.logException: for "+url.getOrElse("<unknown>")+" "+reqbody.getOrElse("<none>"))
@@ -28,6 +28,8 @@ object ResultRecorder extends ResultRecorder {
         log.warning("ResultRecorder.logException: "+req.status+"  "+req.responseText+", readyState="+req.readyState+", statusText="+req.statusText)
         log.warning("ResultRecorder.logException: for "+url.getOrElse("<unknown>")+" "+reqbody.getOrElse("<none>"))
         log.warning("ResultRecorder.logException: responseType="+req.responseType+" responseText="+req.responseText)
+      case x: Exception =>
+        log.warning("ResultRecorder.record: Unknown exception", x)
     }
   }
 
@@ -38,12 +40,14 @@ object ResultRecorder extends ResultRecorder {
       case x: RequestCancelled =>
         log.info(s"ResultRecorder.record: Request from ${x.result.pos.fileName}:${x.result.pos.lineNumber} was cancelled, failure recorded from ${pos.fileName}:${pos.lineNumber}", x)
         logException(x, Some( x.result.url ), Some( x.result.reqbody ) )
-      case x: AjaxFailure =>
-        log.info(s"ResultRecorder.record: Request from ${x.result.pos.fileName}:${x.result.pos.lineNumber} failed ${x}, failure recorded from ${pos.fileName}:${pos.lineNumber}")
+      case x: AjaxFailureException =>
+        log.info(s"ResultRecorder.record: Request from ${x.result.pos.fileName}:${x.result.pos.lineNumber} failed ${x}, failure recorded from ${pos.fileName}:${pos.lineNumber}", x)
         logException(x, Some( x.result.url ), Some( x.result.reqbody ) )
       case x: AjaxException =>
-        log.info(s"ResultRecorder.record: Request failed ${x}, failure recorded from ${pos.fileName}:${pos.lineNumber}")
+        log.info(s"ResultRecorder.record: Request failed ${x}, failure recorded from ${pos.fileName}:${pos.lineNumber}", x)
         logException(x)
+      case x: Exception =>
+        log.warning(s"ResultRecorder.record: Unknown exception, failure recorded from ${pos.fileName}:${pos.lineNumber}", x)
     }
   }
 
