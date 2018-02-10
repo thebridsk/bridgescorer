@@ -34,7 +34,6 @@ import com.example.test.util.NoResultYet
 import com.example.test.util.EventuallyUtils
 import com.example.test.util.ParallelUtils
 import org.scalatest.concurrent.Eventually
-import com.example.pages.HomePage
 import com.example.pages.duplicate.ListDuplicatePage
 import com.example.pages.duplicate.NewDuplicatePage
 import com.example.pages.duplicate.MovementsPage
@@ -73,6 +72,9 @@ import com.example.data.BoardSet
 import com.example.test.util.MonitorTCP
 import com.example.backend.BridgeServiceFileStoreConverters
 import com.example.backend.MatchDuplicateCacheStoreSupport
+import com.example.pages.bridge.HomePage
+import java.util.zip.ZipFile
+import scala.reflect.io.File
 
 object DuplicateTestPages {
 
@@ -1093,7 +1095,63 @@ class DuplicateTestPages extends FlatSpec
 
     val sb = ld.clickDuplicate(dupid.get).validate
 
-    val listpage = sb.clickSummary.validate
+    val listpage = sb.clickSummary.validate.clickHome
   }
 
+  var importZipFile: Option[File] = None
+  it should "export zip" in {
+    import SessionDirector._
+
+    val hp = HomePage.current.validate
+
+    val ep = hp.clickExport.validate
+
+    val f = ep.export
+
+    importZipFile = Some(f)
+
+    testlog.info( s"Downloaded export zip: ${f}" )
+
+    import collection.JavaConverters._
+    import resource._
+    for (zip <- managed( new ZipFile(f.jfile) ) ) {
+      zip.entries().asScala.map { ze => ze.getName }.toList must contain( s"store/MatchDuplicate.${dupid.get}.yaml" )
+    }
+
+    ep.clickHome
+  }
+
+  it should "import zip" in {
+    import SessionDirector._
+
+    val hp = HomePage.current.validate
+
+    val ip = hp.clickImport.validate
+
+    ip.getImportedIds.length mustBe 0
+
+    ip.checkSelectedFile(None)
+
+    val rp = ip.selectFile(importZipFile.get).checkSelectedFile(importZipFile).clickImport.validate
+    rp.isSuccessful mustBe true
+
+    val ip2 = rp.clickLink.validate
+
+    val imports = ip2.getImportedIds
+    imports.length mustBe 1
+
+    val (importId,row) = imports.head
+
+    importId must startWith( importZipFile.get.name )
+
+    val ldp = ip2.importDuplicate(importZipFile.get.name, row).validate
+
+    ldp.checkResults(dupid.get, listDuplicateResult:_*)
+
+    val ldpr = ldp.clickImportDuplicate( dupid.get )
+
+    val newId = ldpr.checkSuccessfulImport( dupid.get )
+
+    val main = ldpr.clickPopUpCancel.validate.clickHome.validate.clickListDuplicateButton.validate( newId )
+  }
 }

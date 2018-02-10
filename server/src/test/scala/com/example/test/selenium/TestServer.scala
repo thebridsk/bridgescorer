@@ -12,6 +12,8 @@ import com.example.test.util.MonitorTCP
 import com.example.StartServer
 import java.net.URL
 import com.example.service.MyService
+import scala.reflect.io.Directory
+import com.example.backend.FileImportStore
 
 object TestServer {
 
@@ -27,7 +29,16 @@ object TestServer {
   def loggingConfig(l: List[String]) = LoggerConfig( "[root]=ALL"::Nil, "console=INFO"::l)
 
   val backend = {
-    val bs = new BridgeServiceInMemory("root")
+    val bs = new BridgeServiceInMemory("root") {
+
+      override
+      val importStore = {
+        val importdir = Directory.makeTemp("importStore", ".dir")
+        import scala.concurrent.ExecutionContext.Implicits.global
+        Some( new FileImportStore( importdir ))
+      }
+
+    }
     bs.setDefaultLoggerConfig( useWebsocketLogging match {
         case Some(v) =>
           testlog.info(s"useWebsocketLogging: ${v}")

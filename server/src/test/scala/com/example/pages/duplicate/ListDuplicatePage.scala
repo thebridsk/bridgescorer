@@ -12,6 +12,7 @@ import com.example.data.Id
 import org.openqa.selenium.NoSuchElementException
 import utils.logging.Logger
 import com.example.pages.GenericPage
+import com.example.pages.bridge.HomePage
 
 object ListDuplicatePage {
 
@@ -51,13 +52,16 @@ object ListDuplicatePage {
           "Home2"::
           "BoardSets2"::
           "Movements2"::
-          "DuplicateCreate"::
           "Home"::
           "ForPrint"::
           "DuplicateCreateTest"::
           "BoardSets"::
           "Movements"::
           "Pairs"::
+          Nil
+
+  val mainButtons =
+          "DuplicateCreate"::
           Nil
 
   val patternMatchButton = """Duplicate_(M\d+)""".r
@@ -85,6 +89,9 @@ object ListDuplicatePage {
   }
 
   def resultIdToButtonId( id: String ) = s"""Result_${id}"""
+
+  val importSuccessPattern = """import duplicate (M\d+) from ([^,]+), new ID (M\d+)""".r
+
 }
 
 class ListDuplicatePage( importId: Option[String] )( implicit webDriver: WebDriver, pageCreated: SourcePosition ) extends Page[ListDuplicatePage] {
@@ -93,9 +100,10 @@ class ListDuplicatePage( importId: Option[String] )( implicit webDriver: WebDriv
   val importColumns = importId.map( id => 1 ).getOrElse(0)
 
   def validate(implicit patienceConfig: PatienceConfig, pos: Position): ListDuplicatePage = logMethod(s"${pos.line} ${getClass.getSimpleName}.validate ${patienceConfig}") {
+    val b = importId.map( id => buttons ).getOrElse( buttons:::mainButtons)
     eventually{
       withClue(s"ListDuplicate.validate from ${pos.line}") {
-        findButtons(buttons:_*)
+        findButtons(b:_*)
         currentUrl mustBe urlFor(importId)
         assert( !isWorking )
       }
@@ -104,7 +112,8 @@ class ListDuplicatePage( importId: Option[String] )( implicit webDriver: WebDriv
   }
 
   def validate( matchIds: String* )(implicit patienceConfig: PatienceConfig, pos: Position): ListDuplicatePage = {
-    val allbuttons = (matchIds.map{ m => if (m.startsWith("M")) matchIdToButtonId(m) else resultIdToButtonId(m) }.toList:::buttons).toSet
+    val b = importId.map( id => buttons ).getOrElse( buttons:::mainButtons)
+    val allbuttons = (matchIds.map{ m => if (m.startsWith("M")) matchIdToButtonId(m) else resultIdToButtonId(m) }.toList:::b).toSet
     eventually{
       withClue(s"ListDuplicate.validate from ${pos.line}") {
         findAllButtons.keySet must contain allElementsOf (allbuttons)
@@ -130,6 +139,11 @@ class ListDuplicatePage( importId: Option[String] )( implicit webDriver: WebDriv
 
   def isForPrintActive( implicit pos: Position ) = {
     findAll(id("ForPrint")).isEmpty
+  }
+
+  def clickHome(implicit patienceConfig: PatienceConfig, pos: Position) = {
+    clickButton("Home")
+    new HomePage()(webDriver, pos)
   }
 
   def clickNewDuplicateButton(implicit patienceConfig: PatienceConfig, pos: Position) = {
@@ -212,6 +226,55 @@ class ListDuplicatePage( importId: Option[String] )( implicit webDriver: WebDriv
         results.foreach( r => res must contain (r))
         this
       }
+    }
+  }
+
+  def isPopupDisplayed(implicit pos: Position) = {
+    try {
+      find( id("popup") ).isDisplayed
+    } catch {
+      case x: NoSuchElementException => false
+    }
+  }
+
+  def validatePopup( visible: Boolean = true )(implicit patienceConfig: PatienceConfig, pos: Position) = {
+    eventually {
+      isPopupDisplayed mustBe visible
+    }
+    this
+  }
+
+  def clickPopUpCancel( implicit pos: Position ) = {
+    clickButton("PopUpCancel")
+    this
+  }
+
+  def getPopUpText(implicit patienceConfig: PatienceConfig, pos: Position) = {
+    find( className("baseDivPopupOKCancelBody")).text
+  }
+
+
+  def clickImportDuplicate( id: String )(implicit patienceConfig: PatienceConfig, pos: Position) = {
+    if (importId.isEmpty) fail( s"Not on import list duplicate page: ${currentUrl}" )
+    clickButton( s"ImportDuplicate_${id}" )
+  }
+
+  /**
+   * @param id the match being imported.  The Id of the match from the import store.
+   * @return the Id of the imported match in the main store.
+   * The call fails if the import was not successful
+   */
+  def checkSuccessfulImport( id: String )(implicit patienceConfig: PatienceConfig, pos: Position) = {
+    if (importId.isEmpty) fail( s"Not on import list duplicate page: ${currentUrl}" )
+    isPopupDisplayed mustBe true
+    val t = getPopUpText
+    t match {
+      case importSuccessPattern( oldId, importedId, newId ) =>
+        oldId mustBe id
+        importedId mustBe importId.get
+        newId
+      case _ =>
+        fail(s"import failed: ${t}")
     }
   }
 

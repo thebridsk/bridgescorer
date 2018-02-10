@@ -12,6 +12,9 @@ import java.util.zip.GZIPInputStream
 import play.api.libs.json.Reads
 import java.io.OutputStreamWriter
 import play.api.libs.json.Format
+import java.io.OutputStream
+import scala.reflect.io.File
+import java.io.FileOutputStream
 
 object HttpUtilsInternal {
 
@@ -77,11 +80,10 @@ trait HttpUtils {
 
   }
 
-  private def readAllBytesAndCloseInputStream( contentEncoding: Option[String], is: InputStream ) = {
+  private def readAllBytesAndCloseInputStream( contentEncoding: Option[String], is: InputStream, outs: OutputStream ) = {
     try {
       var len = 0
       val buf = new Array[Byte](1024)
-      val bytesout = new ByteArrayOutputStream()
 
       var rlen = 0
 
@@ -93,10 +95,11 @@ trait HttpUtils {
       }
 
       while ( { rlen = in.read(buf); rlen > 0 }) {
-        bytesout.write(buf, 0, rlen)
+        outs.write(buf, 0, rlen)
+        len += rlen
       }
-      bytesout.toByteArray()
 
+      len
     } finally {
       is.close()
     }
@@ -165,7 +168,37 @@ trait HttpUtils {
       }
       val loc = Option(conn.getHeaderField("Location"))
       val ce = Option(conn.getHeaderField("Content-Encoding"))
-      ResponseFromHttp(status,loc,ce,readAllBytesAndCloseInputStream(ce,conn.getInputStream))
+      val bytesout = new ByteArrayOutputStream()
+      readAllBytesAndCloseInputStream(ce,conn.getInputStream,bytesout)
+      ResponseFromHttp(status,loc,ce,bytesout.toByteArray())
+    } catch {
+      case x: IOException =>
+        logger.info("Exception trying to get data from "+url, x)
+        throw x
+    } finally {
+      conn.disconnect()
+    }
+
+  }
+
+  def getHttpAllBytesToFile( url: URL ): ResponseFromHttp[File] = {
+    var conn: HttpURLConnection = null
+    try {
+      conn = url.openConnection().asInstanceOf[HttpURLConnection]
+      conn.setInstanceFollowRedirects(false)
+      conn.setRequestProperty("Accept-Encoding","gzip, deflate")
+      val status = conn.getResponseCode
+      if (status < 200 || status >= 300) {
+        logger.warning("Error getting "+url+", status code is "+status)
+      }
+      val loc = Option(conn.getHeaderField("Location"))
+      val ce = Option(conn.getHeaderField("Content-Encoding"))
+      val outf = File.makeTemp("export", ".zip")
+      import resource._
+      for (bytesout <- managed( new FileOutputStream( outf.jfile ) ) ) {
+        readAllBytesAndCloseInputStream(ce,conn.getInputStream,bytesout)
+      }
+      ResponseFromHttp(status,loc,ce,outf)
     } catch {
       case x: IOException =>
         logger.info("Exception trying to get data from "+url, x)

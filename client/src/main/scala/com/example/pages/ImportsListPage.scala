@@ -246,9 +246,10 @@ object ImportsListPageInternal {
 
         <.h1("Import Bridge Store"),
         <.table(
-          <.tbody(
+          <.thead(
             <.tr(
-              <.td(
+              <.th(
+                ^.colSpan := 2,
                 <.form(
                   ^.action:=s"/v1/import?url=${returnUrl}",
                   ^.method:="post",
@@ -269,8 +270,11 @@ object ImportsListPageInternal {
                     ^.value := "Import"
                   )
                 ),
-              )
-            ),
+              ),
+              <.th( "Actions" )
+            )
+          ),
+          <.tbody(
             if (state.stores.isEmpty) {
               <.tr(
                 <.td( "Working" )
@@ -298,10 +302,11 @@ object ImportsListPageInternal {
                         val (props,state,backend,row,store) = args
 
                         <.tr(
-                          <.td( store.id, "  ", DateUtils.formatDate(store.date) ),
+                          <.td( store.id ),
+                          <.td( DateUtils.formatDate(store.date) ),
                           <.td(
-                            AppButton( "Duplicate${id}", "Duplicate", props.router.setOnClick(PlayDuplicate(ImportSummaryView(store.id))) ),
-                            AppButton( "Delete${id}", "Delete", ^.onClick --> backend.delete(store.id) )
+                            AppButton( s"Duplicate${row}", "Duplicate", props.router.setOnClick(PlayDuplicate(ImportSummaryView(store.id))) ),
+                            AppButton( s"Delete${row}", "Delete", ^.onClick --> backend.delete(store.id) )
                           )
                         )
                       }).build
