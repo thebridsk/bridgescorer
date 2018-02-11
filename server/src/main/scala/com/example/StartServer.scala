@@ -63,6 +63,7 @@ import java.net.NetworkInterface
 import java.net.Inet4Address
 import com.example.logging.RemoteLoggingConfig
 import com.example.backend.BridgeServiceWithLogging
+import com.example.backend.BridgeServiceZipStore
 
 /**
  * This is the main program for the REST server for our application.
@@ -290,13 +291,18 @@ private class StartServer {
     val bs = optionStore.toOption match {
       case Some(p) =>
         val d = p.toDirectory
-        if (!d.isDirectory) {
+        if (p.isFile && p.extension == "zip") {
+          Some( new BridgeServiceZipStore( "root", p.toFile ) )
+        } else if (!d.isDirectory) {
           if (!d.createDirectory().isDirectory) {
             logger.severe("Unable to create directory for FileStore: "+d)
             return 1
           }
+          Some( new BridgeServiceFileStore( d, id=Some("root") ) )
+        } else {
+          Some( new BridgeServiceFileStore( d, id=Some("root") ) )
         }
-        Some( new BridgeServiceFileStore( d, id=Some("root") ) )
+
       case None => None
     }
 
