@@ -27,6 +27,9 @@ import com.example.data.BestMatch
 import com.example.data.BestMatch
 import com.example.data.Difference
 import com.example.data.DifferenceWrappers
+import com.example.data.MatchDuplicateResult
+import com.example.data.BoardResults
+import com.example.data.BoardTeamResults
 
 object SchemaDefinition {
 
@@ -64,6 +67,7 @@ object SchemaDefinition {
   val TeamIdType = idScalarTypeFromString[Id.Team]("TeamId")
   val BoardIdType = idScalarTypeFromString[Id.DuplicateBoard]("BoardId")
   val DuplicateIdType = idScalarTypeFromString[Id.MatchDuplicate]("DuplicateId")
+  val DuplicateResultIdType = idScalarTypeFromString[Id.MatchDuplicateResult]("DuplicateResultId")
   val ChicagoIdType = idScalarTypeFromString[Id.MatchChicago]("ChicagoId")
   val RubberIdType = idScalarTypeFromString[String]("RubberId")
   val ImportIdType = idScalarTypeFromString[String]("ImportId")
@@ -262,7 +266,7 @@ object SchemaDefinition {
                           BoardIdType,
                           description = "The Id of the board." )
 
-  val DuplicateSummaryTeam = ObjectType(
+  val DuplicateSummaryTeamType = ObjectType(
       "DuplicateSummaryTeam",
       "A team result in a DuplicateSummary",
       fields[BridgeService,DuplicateSummaryEntry](
@@ -313,7 +317,7 @@ object SchemaDefinition {
               resolve = _.value._2.finished
           ),
           Field("teams",
-              ListType( DuplicateSummaryTeam ),
+              ListType( DuplicateSummaryTeamType ),
               Some("The teams that played"),
               resolve = _.value._2.teams
           ),
@@ -387,9 +391,88 @@ object SchemaDefinition {
       )
   )
 
+  val BoardTeamResultsType = ObjectType(
+      "BoardTeamResults",
+      "The results on a board in a match",
+      fields[BridgeService,(Option[String],BoardTeamResults)](
+          Field("team", TeamIdType,
+              Some(""),
+              resolve = _.value._2.team
+          ),
+          Field("points", FloatType,
+              Some(""),
+              resolve = _.value._2.points
+          )
+      )
+  )
+
+  val BoardResultsType = ObjectType(
+      "BoardResults",
+      "The results on a board in a match",
+      fields[BridgeService,(Option[String],BoardResults)](
+          Field("board", IntType,
+              Some(""),
+              resolve = _.value._2.board
+          ),
+          Field("points", ListType(BoardTeamResultsType),
+              Some(""),
+              resolve = ctx => ctx.value._2.points.map( r => (ctx.value._1,r))
+          )
+      )
+  )
+
+  val MatchDuplicateResultType = ObjectType(
+      "MatchDuplicateResult",
+      "A duplicate match",
+      fields[BridgeService,(Option[String],MatchDuplicateResult)](
+          Field("id", DuplicateResultIdType,
+              Some("The id of the duplicate match"),
+              resolve = _.value._2.id
+          ),
+          Field("results",
+              ListType( ListType( DuplicateSummaryTeamType ) ),
+              Some("The teams that played, and the results"),
+              resolve = _.value._2.results
+          ),
+          Field("boardresults",
+              OptionType( ListType( BoardResultsType )),
+              Some("The boards that were played"),
+              resolve = ctx => ctx.value._2.boardresults.map(r => r.map( rr=> (ctx.value._1,rr)))
+          ),
+          Field("comment", OptionType(StringType),
+              Some("The comment"),
+              resolve = _.value._2.comment
+          ),
+          Field("notfinished", OptionType(BooleanType),
+              Some("whether the match was finished"),
+              resolve = _.value._2.notfinished
+          ),
+          Field("summary", DuplicateSummaryType,
+              Some("The summary of the match"),
+              resolve = ctx => (ctx.value._1,DuplicateSummary.create(ctx.value._2))
+          ),
+          Field("played", DateTimeType,
+              Some("The time match was played"),
+              resolve = _.value._2.played
+          ),
+          Field("created", DateTimeType,
+              Some("The time the team was last updated"),
+              resolve = _.value._2.updated
+          ),
+          Field("updated", DateTimeType,
+              Some("The time the team was last updated"),
+              resolve = _.value._2.updated
+          )
+      )
+  )
+
 
   val ArgDuplicateId = Argument("id",
                              DuplicateIdType,
+                             description = "The Id of the duplicate match" )
+
+  val ArgDuplicateResultId = Argument("id",
+                             DuplicateResultIdType,
                              description = "The Id of the duplicate match" )
 
   val ArgImportId = Argument("id",
@@ -574,6 +657,12 @@ object SchemaDefinition {
                 arguments = ArgDuplicateId::Nil,
                 resolve = ctx => Action.importDuplicate(ctx).map { md => (None,md) }
           ),
+          Field("importduplicateresult",
+                MatchDuplicateResultType,
+                description = Some("Import a duplicate result."),
+                arguments = ArgDuplicateResultId::Nil,
+                resolve = ctx => Action.importDuplicateResult(ctx).map { md => (None,md) }
+          ),
           Field("delete",
                 BooleanType,
                 description = Some("Delete the import store"),
@@ -618,44 +707,87 @@ object Action {
                           case Left(error) => None
                         }
                       }
-    val sourcemd = sourcestore.flatMap { ostore =>
-      ostore match {
-        case Some(store) =>
-          store.duplicates.read(ds.id).map { rmd =>
-            rmd match {
-              case Right(md) =>
-                Some(md)
-              case Left(err) =>
-                None
+    if (ds.onlyresult) {
+      val sourcemd = sourcestore.flatMap { ostore =>
+        ostore match {
+          case Some(store) =>
+            store.duplicateresults.read(ds.id).map { rmd =>
+              rmd match {
+                case Right(md) =>
+                  Some(md)
+                case Left(err) =>
+                  None
+              }
             }
-          }
-        case None =>
-          Future.successful(None)
+          case None =>
+            Future.successful(None)
+        }
       }
-    }
-    sourcemd.flatMap { omd =>
-      omd match {
-        case Some(md) =>
-          mainStore.duplicates.readAll().map { rlmd =>
-            rlmd match {
-              case Right(lmd) =>
-                val x =
-                lmd.values.map { mmd =>
-                  import DifferenceWrappers._
-                  val diff = md.difference("", mmd)
-                  log.fine(s"Diff main(${mmd.id}) import(${importId},${md.id}): ${diff}")
-                  BestMatch( diff.percentSame, mmd.id )
-                }.foldLeft(BestMatch(-1,"")) { (ac,v) =>
-                  if (ac.sameness < v.sameness) v
-                  else ac
-                }
-                Some((importId,x))
-              case Left(err) =>
-                None
+      sourcemd.flatMap { omd =>
+        omd match {
+          case Some(md) =>
+            mainStore.duplicateresults.readAll().map { rlmd =>
+              rlmd match {
+                case Right(lmd) =>
+                  val x =
+                  lmd.values.map { mmd =>
+                    import DifferenceWrappers._
+                    val diff = md.difference("", mmd)
+                    log.fine(s"Diff main(${mmd.id}) import(${importId},${md.id}): ${diff}")
+                    BestMatch( diff.percentSame, mmd.id )
+                  }.foldLeft(BestMatch(-1,"")) { (ac,v) =>
+                    if (ac.sameness < v.sameness) v
+                    else ac
+                  }
+                  Some((importId,x))
+                case Left(err) =>
+                  None
+              }
             }
-          }
-        case None =>
-          Future.successful(None)
+          case None =>
+            Future.successful(None)
+        }
+      }
+    } else {
+      val sourcemd = sourcestore.flatMap { ostore =>
+        ostore match {
+          case Some(store) =>
+            store.duplicates.read(ds.id).map { rmd =>
+              rmd match {
+                case Right(md) =>
+                  Some(md)
+                case Left(err) =>
+                  None
+              }
+            }
+          case None =>
+            Future.successful(None)
+        }
+      }
+      sourcemd.flatMap { omd =>
+        omd match {
+          case Some(md) =>
+            mainStore.duplicates.readAll().map { rlmd =>
+              rlmd match {
+                case Right(lmd) =>
+                  val x =
+                  lmd.values.map { mmd =>
+                    import DifferenceWrappers._
+                    val diff = md.difference("", mmd)
+                    log.fine(s"Diff main(${mmd.id}) import(${importId},${md.id}): ${diff}")
+                    BestMatch( diff.percentSame, mmd.id )
+                  }.foldLeft(BestMatch(-1,"")) { (ac,v) =>
+                    if (ac.sameness < v.sameness) v
+                    else ac
+                  }
+                  Some((importId,x))
+                case Left(err) =>
+                  None
+              }
+            }
+          case None =>
+            Future.successful(None)
+        }
       }
     }
   }
@@ -718,6 +850,22 @@ object Action {
     bs.duplicates.read(dupId).flatMap { rdup => rdup match {
       case Right(dup) =>
         ctx.ctx.duplicates.importChild(dup).map { rc => rc match {
+          case Right(cdup) =>
+            cdup
+          case Left((statusCode,msg)) =>
+            throw new Exception(s"Error importing into store: ${dupId} from import store ${bs.id}: ${statusCode} ${msg.msg}")
+        }}
+      case Left((statusCode,msg)) =>
+        throw new Exception(s"Error getting ${dupId} from import store ${bs.id}: ${statusCode} ${msg.msg}")
+    }}
+  }
+
+  def importDuplicateResult( ctx: Context[BridgeService,BridgeService]): Future[MatchDuplicateResult] = {
+    val dupId = ctx arg ArgDuplicateId
+    val bs = ctx.value
+    bs.duplicateresults.read(dupId).flatMap { rdup => rdup match {
+      case Right(dup) =>
+        ctx.ctx.duplicateresults.importChild(dup).map { rc => rc match {
           case Right(cdup) =>
             cdup
           case Left((statusCode,msg)) =>
