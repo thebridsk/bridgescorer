@@ -104,7 +104,6 @@ object Difference {
 
     compare( sortedMe, sortedOther, Difference() )
   }
-
 }
 
 object DifferenceWrappers {
@@ -218,4 +217,46 @@ object DifferenceWrappers {
     }
 
   }
+
+  implicit class WrapDuplicateSummaryEntry( val me: DuplicateSummaryEntry ) extends AnyVal with DifferenceComparable[Id.Team, DuplicateSummaryEntry, WrapDuplicateSummaryEntry] {
+
+    def id = me.id
+
+    def differenceW( prefix: String, other: WrapDuplicateSummaryEntry ) =
+      difference( prefix, other.me )
+
+    def difference( prefix: String, other: DuplicateSummaryEntry ): Difference = {
+      fold(
+        compare( me.id, other.id, prefix+".id" ),
+        me.team.difference( prefix+".team", other.team ),
+        compare( me.result, other.result, prefix+".result" ),
+        compare( me.place, other.place, prefix+".place" ),
+      )
+    }
+
+  }
+
+  implicit class WrapMatchDuplicateDuplicateResult( val me: MatchDuplicateResult ) extends AnyVal with DifferenceComparable[Id.MatchDuplicate, MatchDuplicateResult, WrapMatchDuplicateDuplicateResult] {
+
+    def id = me.id
+
+    def differenceW( prefix: String, other: WrapMatchDuplicateDuplicateResult ) =
+      difference( prefix, other.me )
+
+    def difference( prefix: String, other: MatchDuplicateResult ): Difference = {
+      fold(
+        compare( me.id, other.id, prefix+".id" ),
+        me.results.zip(other.results).map { entry =>
+          val (mer,or) = entry
+          compareList[Id.Team, DuplicateSummaryEntry, WrapDuplicateSummaryEntry](mer.map(h=>WrapDuplicateSummaryEntry(h)), or.map(h=>WrapDuplicateSummaryEntry(h)), prefix+".results" )
+        }.foldLeft( Difference() )( (ac,v) => ac.add(v) ),
+        compare( me.comment, other.comment, prefix+".comment" ),
+        compare( me.notfinished, other.notfinished, prefix+".notfinished" ),
+        compare( me.created, other.created, prefix+".created" ),
+        compare( me.updated, other.updated, prefix+".updated" ),
+      )
+    }
+
+  }
+
 }

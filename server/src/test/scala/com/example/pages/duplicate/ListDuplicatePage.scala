@@ -50,18 +50,18 @@ object ListDuplicatePage {
   val buttons =
           "PopUpCancel"::
           "Home2"::
+          "Home"::
+          Nil
+
+  val mainButtons =
+          "DuplicateCreate"::
           "BoardSets2"::
           "Movements2"::
-          "Home"::
           "ForPrint"::
           "DuplicateCreateTest"::
           "BoardSets"::
           "Movements"::
           "Pairs"::
-          Nil
-
-  val mainButtons =
-          "DuplicateCreate"::
           Nil
 
   val patternMatchButton = """Duplicate_(M\d+)""".r
@@ -138,7 +138,7 @@ class ListDuplicatePage( importId: Option[String] )( implicit webDriver: WebDriv
   }
 
   def isForPrintActive( implicit pos: Position ) = {
-    findAll(id("ForPrint")).isEmpty
+    importId.isEmpty && findAll(id("ForPrint")).isEmpty
   }
 
   def clickHome(implicit patienceConfig: PatienceConfig, pos: Position) = {

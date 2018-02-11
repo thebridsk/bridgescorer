@@ -83,7 +83,7 @@ object PageSummaryInternal {
                           <.thead(
                             <.tr(
                               <.th(
-                                ^.colSpan:=tp.allPlayers.length+4,
+                                ^.colSpan:=tp.allPlayers.length+4+importId.map(id=>2).getOrElse(0)+(if (state.forPrint) 1 else 0),
                                 RadioButton("ShowBoth", "Show All", state.showEntries==ShowBoth, backend.show(ShowBoth) ),
                                 RadioButton("ShowMD", "Show Matches", state.showEntries==ShowMD, backend.show(ShowMD) ),
                                 RadioButton("ShowMDR", "Show Results Only", state.showEntries==ShowMDR, backend.show(ShowMDR) )
@@ -291,9 +291,40 @@ object PageSummaryInternal {
       s.copy( showRows=n)
     }
 
-    def importDuplicateResult( importId: String, id: String ) = Callback {
-
-    } >> setMessageCB(s"Importing Duplicate Result ${id} from import ${importId}")
+    def importDuplicateResult( importId: String, id: String ) =
+      scope.modState( s => s.copy(workingOnNew=Some(s"Importing Duplicate Result ${id} from import ${importId}")), Callback {
+        val query = """mutation importDuplicate( $importId: ImportId!, $dupId: DuplicateResultId! ) {
+                      |  import( id: $importId ) {
+                      |    importduplicateresult( id: $dupId ) {
+                      |      id
+                      |    }
+                      |  }
+                      |}
+                      |""".stripMargin
+        val vars = JsObject( Seq( "importId" -> JsString(importId), "dupId" -> JsString(id) ) )
+        val op = Some("importDuplicate")
+        val result = GraphQLClient.request(query, Some(vars), op)
+        resultGraphQL.set(result)
+        result.map { gr =>
+          gr.data match {
+            case Some(data) =>
+              data \ "import" \ "importduplicateresult" \ "id" match {
+                case JsDefined( JsString( newid ) ) =>
+                  setMessage(s"import duplicate result ${id} from ${importId}, new ID ${newid}" )
+                case JsDefined( x ) =>
+                  setMessage(s"expecting string on import duplicate result ${id} from ${importId}, got ${x}")
+                case _: JsUndefined =>
+                  setMessage(s"error import duplicate result ${id} from ${importId}, did not find import/importduplicateresult/id field")
+              }
+            case None =>
+              setMessage(s"error import duplicate result ${id} from ${importId}, ${gr.getError()}")
+          }
+        }.recover {
+          case x: Exception =>
+              logger.warning(s"exception import duplicate result ${id} from ${importId}", x)
+              setMessage(s"exception import duplicate result ${id} from ${importId}")
+        }.foreach { x => }
+      })
 
     def importDuplicateMatch( importId: String, id: String ) =
       scope.modState( s => s.copy(workingOnNew=Some(s"Importing Duplicate Match ${id} from import ${importId}")), Callback {
@@ -377,7 +408,7 @@ object PageSummaryInternal {
                 (!state.alwaysShowAll && state.showRows.isDefined) ?=
                   <.tr(
                     <.td(
-                          ^.colSpan:=3,
+                          ^.colSpan:=3+importId.map(id=>2).getOrElse(0)+(if (state.forPrint) 1 else 0),
                           AppButton( "ShowRows2",
                                      state.showRows.map( n => "Show All" ).getOrElse(s"Show ${props.defaultRows}"),
                                      ^.onClick --> toggleRows()
@@ -399,15 +430,26 @@ object PageSummaryInternal {
             <.tbody(
               <.tr(
                 <.td( "Working" ),
+                importId.map { id =>
+                  TagMod(
+                    <.th(""),
+                    <.th("")
+                  )
+                }.whenDefined,
                 state.forPrint ?= <.td( "Working" ),
                 <.td( ""),
                 <.td( ""),
                 tp.allPlayers.filter(p => p!="").map { p =>
                   <.td( "")
-                }.toTagMod
+                }.toTagMod,
+                <.td( "")
               )
             )
         )
+      }
+
+      def whenUndefined( op: Option[_] )( f: => TagMod ) = {
+        op.fold( f )( a => TagMod() )
       }
 
       <.div(
@@ -417,13 +459,17 @@ object PageSummaryInternal {
           dupStyles.spanTopButtons,
           !state.alwaysShowAll ?= AppButton( "ShowRows", state.showRows.map( n => "Show All" ).getOrElse(s"Show ${props.defaultRows}"), ^.onClick --> toggleRows() ),
           " ",
-          AppButton( "Suggest", "Suggest Pairs", props.routerCtl.setOnClick(SuggestionView) ),
-          " ",
           AppButton( "Home2", "Home", props.routerCtl.home ),
-          " ",
-          AppButton( "BoardSets2", "BoardSets", props.routerCtl.setOnClick(BoardSetSummaryView) ),
-          " ",
-          AppButton( "Movements2", "Movements", props.routerCtl.setOnClick(MovementSummaryView) )
+          whenUndefined(importId)(
+            TagMod(
+              " ",
+              AppButton( "Suggest", "Suggest Pairs", props.routerCtl.setOnClick(SuggestionView) ),
+              " ",
+              AppButton( "BoardSets2", "BoardSets", props.routerCtl.setOnClick(BoardSetSummaryView) ),
+              " ",
+              AppButton( "Movements2", "Movements", props.routerCtl.setOnClick(MovementSummaryView) )
+            )
+          )( a => TagMod() ),
         ),
         <.h1("Summary"),
 //        <.div(
@@ -435,25 +481,33 @@ object PageSummaryInternal {
               <.div(
                 baseStyles.divFooterLeft,
                 AppButton( "Home", "Home", props.routerCtl.home ),
-                " ",
-                if (!state.forPrint) AppButton("ForPrint", "Select For Print", ^.onClick --> forPrint(true))
-                else Seq[TagMod](
-                       AppButton("Cancel Print", "Cancel Print", ^.onClick --> forPrintCancel),
-                       " ",
-                       AppButton("Print", "Print", ^.onClick --> forPrintOk)
-                       ).toTagMod
+                whenUndefined(importId)(
+                  TagMod(
+                    " ",
+                    if (!state.forPrint) AppButton("ForPrint", "Select For Print", ^.onClick --> forPrint(true))
+                    else Seq[TagMod](
+                           AppButton("Cancel Print", "Cancel Print", ^.onClick --> forPrintCancel),
+                           " ",
+                           AppButton("Print", "Print", ^.onClick --> forPrintOk)
+                           ).toTagMod
+                  )
+                )
               ),
-              <.div(
-                baseStyles.divFooterCenter,
-                AppButton( "BoardSets", "BoardSets", props.routerCtl.setOnClick(BoardSetSummaryView) ),
-                " ",
-                AppButton( "Movements", "Movements", props.routerCtl.setOnClick(MovementSummaryView) )
-              ),
-              <.div(
-                baseStyles.divFooterRight,
-                AppButton( "DuplicateCreateTest", "Test", ^.onClick --> newDuplicate(true) ),
-                " ",
-                AppButton("Pairs", "Pairs", props.routerCtl.setOnClick(PairsView))
+              whenUndefined(importId)(
+                TagMod(
+                  <.div(
+                    baseStyles.divFooterCenter,
+                    AppButton( "BoardSets", "BoardSets", props.routerCtl.setOnClick(BoardSetSummaryView) ),
+                    " ",
+                    AppButton( "Movements", "Movements", props.routerCtl.setOnClick(MovementSummaryView) )
+                  ),
+                  <.div(
+                    baseStyles.divFooterRight,
+                    AppButton( "DuplicateCreateTest", "Test", ^.onClick --> newDuplicate(true) ),
+                    " ",
+                    AppButton("Pairs", "Pairs", props.routerCtl.setOnClick(PairsView))
+                  )
+                )
               )
             )
 //        )

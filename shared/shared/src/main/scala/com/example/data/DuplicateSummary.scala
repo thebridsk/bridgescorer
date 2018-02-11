@@ -15,7 +15,9 @@ case class DuplicateSummaryEntry(
     result: Double,
     @(ApiModelProperty @field)(value="The place the team finished in", required=true)
     place: Int
-    )
+    ) {
+  def id = team.id
+}
 
 @ApiModel(description = "The best match in the main store")
 case class BestMatch(
