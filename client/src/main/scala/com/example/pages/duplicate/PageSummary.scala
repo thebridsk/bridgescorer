@@ -92,7 +92,10 @@ object PageSummaryInternal {
                             <.tr(
                               <.th( "Id"),
                               importId.map { id =>
-                                <.th("Import from")
+                                TagMod(
+                                  <.th("Import from"),
+                                  <.th("Best Match")
+                                )
                               }.whenDefined,
                               state.forPrint ?= <.th( "Print" ),
                               <.th( "Finished"),
@@ -103,7 +106,10 @@ object PageSummaryInternal {
                             <.tr(
                               <.th( ""),
                               importId.map { id =>
-                                <.th( id)
+                                TagMod(
+                                  <.th( id),
+                                  <.th()
+                                )
                               }.whenDefined,
                               state.forPrint ?= <.th( "" ),
                               <.th( ""),
@@ -147,15 +153,23 @@ object PageSummaryInternal {
                                        )
                             ),
                             importId.map { id =>
-                              <.td(
-                                AppButton( (if (ds.onlyresult) "ImportResult_" else "ImportDuplicate_")+ds.id, "Import",
-                                           baseStyles.appButton100,
-                                           if (ds.onlyresult) {
-                                             ^.onClick --> back.importDuplicateResult(id,ds.id)
-                                           } else {
-                                             ^.onClick --> back.importDuplicateMatch(id,ds.id)
-                                           }
-                                         )
+                              TagMod(
+                                <.td(
+                                  AppButton( (if (ds.onlyresult) "ImportResult_" else "ImportDuplicate_")+ds.id, "Import",
+                                             baseStyles.appButton100,
+                                             if (ds.onlyresult) {
+                                               ^.onClick --> back.importDuplicateResult(id,ds.id)
+                                             } else {
+                                               ^.onClick --> back.importDuplicateMatch(id,ds.id)
+                                             }
+                                           )
+                                ),
+                                <.td(
+                                  ds.bestMatch.map { bm =>
+                                    if (bm.sameness > 90) f"""${bm.id} ${bm.sameness}%.2f%%"""
+                                    else ""
+                                  }.whenDefined
+                                )
                               )
                             }.whenDefined,
                             st.forPrint ?= <.td(

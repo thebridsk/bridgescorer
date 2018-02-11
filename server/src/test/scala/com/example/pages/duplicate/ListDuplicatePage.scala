@@ -97,7 +97,7 @@ object ListDuplicatePage {
 class ListDuplicatePage( importId: Option[String] )( implicit webDriver: WebDriver, pageCreated: SourcePosition ) extends Page[ListDuplicatePage] {
   import ListDuplicatePage._
 
-  val importColumns = importId.map( id => 1 ).getOrElse(0)
+  val importColumns = importId.map( id => 2 ).getOrElse(0)
 
   def validate(implicit patienceConfig: PatienceConfig, pos: Position): ListDuplicatePage = logMethod(s"${pos.line} ${getClass.getSimpleName}.validate ${patienceConfig}") {
     val b = importId.map( id => buttons ).getOrElse( buttons:::mainButtons)
