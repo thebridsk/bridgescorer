@@ -6,6 +6,7 @@ import com.example.backend.BridgeServiceFileStore
 import utils.logging.Logger
 import com.example.data.RestMessage
 import scala.concurrent.ExecutionContext.Implicits.global
+import com.example.data.DifferenceWrappers
 
 object LoadBridgeStore extends Main {
 
@@ -23,6 +24,19 @@ object LoadBridgeStore extends Main {
         logger.info("Got "+map.size+" entries")
 
         map.find{ p => true }.foreach(md => logger.warning("Got an entry "+md))
+
+        val list = map.values.toList
+        val len = list.length
+        for (i <- 0 until len;
+             j <- i until len
+            ) {
+          val l = list(i)
+          val r = list(j)
+
+          import DifferenceWrappers._
+          val diff = l.difference("", r)
+          logger.info( f"""difference between ${l.id} and ${r.id}: same=${diff.percentSame}%.1f%% diff=${diff}""" )
+        }
 
       case Left((statusCode,restMessage)) =>
         logger.severe("Got error: "+statusCode+": "+restMessage)

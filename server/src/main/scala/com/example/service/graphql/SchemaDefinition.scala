@@ -23,6 +23,10 @@ import com.example.data.SystemTime.Timestamp
 import com.example.data.DuplicateSummary
 import com.example.data.DuplicateSummaryEntry
 import utils.logging.Logger
+import com.example.data.BestMatch
+import com.example.data.BestMatch
+import com.example.data.Difference
+import com.example.data.DifferenceWrappers
 
 object SchemaDefinition {
 
@@ -74,7 +78,7 @@ object SchemaDefinition {
   val DuplicateTeamType = ObjectType(
       "DuplicateTeam",
       "A duplicate team",
-      fields[Unit,Team](
+      fields[BridgeService,Team](
           Field("id", TeamIdType,
               Some("The id of the team"),
               resolve = _.value.id
@@ -101,7 +105,7 @@ object SchemaDefinition {
   val HandType = ObjectType(
       "Hand",
       "Result of a bridge hand",
-      fields[Unit,Hand](
+      fields[BridgeService,Hand](
           Field("id", StringType,
               Some("The id of the hand"),
               resolve = _.value.id
@@ -152,7 +156,7 @@ object SchemaDefinition {
   val DuplicateHandType = ObjectType(
       "DuplicateHand",
       "A duplicate hand",
-      fields[Unit,DuplicateHand](
+      fields[BridgeService,DuplicateHand](
           Field("id", TeamIdType,
               Some("The id of the NS team"),
               resolve = _.value.id
@@ -208,7 +212,7 @@ object SchemaDefinition {
   val DuplicateBoardType = ObjectType(
       "DuplicateBoard",
       "A duplicate board",
-      fields[Unit,Board](
+      fields[BridgeService,Board](
           Field("id", DuplicateIdType,
               Some("The id of the board"),
               resolve = _.value.id
@@ -261,7 +265,7 @@ object SchemaDefinition {
   val DuplicateSummaryTeam = ObjectType(
       "DuplicateSummaryTeam",
       "A team result in a DuplicateSummary",
-      fields[Unit,DuplicateSummaryEntry](
+      fields[BridgeService,DuplicateSummaryEntry](
           Field("id", TeamIdType,
               Some("The id of the duplicate match"),
               resolve = _.value.team.id
@@ -281,43 +285,63 @@ object SchemaDefinition {
       )
   )
 
+  val BestMatchType = ObjectType(
+      "BestMatch",
+      "Identifies the best match",
+      fields[BridgeService,(Option[String],BestMatch)](
+          Field("id", DuplicateIdType,
+              Some("The id of the best duplicate match from the main store"),
+              resolve = _.value._2.id
+          ),
+          Field("sameness", FloatType,
+              Some("A percentage of similarity."),
+              resolve = _.value._2.sameness
+          )
+      )
+  )
+
   val DuplicateSummaryType = ObjectType(
       "DuplicateSummary",
       "A duplicate match",
-      fields[Unit,DuplicateSummary](
+      fields[BridgeService,(Option[String],DuplicateSummary)](
           Field("id", DuplicateIdType,
               Some("The id of the duplicate match"),
-              resolve = _.value.id
+              resolve = _.value._2.id
           ),
           Field("finished", BooleanType,
               Some("true if the match is finished"),
-              resolve = _.value.finished
+              resolve = _.value._2.finished
           ),
           Field("teams",
               ListType( DuplicateSummaryTeam ),
               Some("The teams that played"),
-              resolve = _.value.teams
+              resolve = _.value._2.teams
           ),
           Field("boards",
               IntType,
               Some("The number boards that were played"),
-              resolve = _.value.boards
+              resolve = _.value._2.boards
           ),
           Field("tables", IntType,
               Some("The number of tables that was used"),
-              resolve = _.value.tables
+              resolve = _.value._2.tables
           ),
           Field("onlyresult", BooleanType,
               Some("true if this only contains the results"),
-              resolve = _.value.onlyresult
+              resolve = _.value._2.onlyresult
           ),
           Field("created", DateTimeType,
               Some("The time the team was last updated"),
-              resolve = _.value.updated
+              resolve = _.value._2.updated
           ),
           Field("updated", DateTimeType,
               Some("The time the team was last updated"),
-              resolve = _.value.updated
+              resolve = _.value._2.updated
+          ),
+          Field("bestMatch",
+              OptionType(BestMatchType),
+              Some("The best match in the main store for this match"),
+              resolve = ctx => Action.getDuplicateBestMatch(ctx)
           )
       )
   )
@@ -325,40 +349,40 @@ object SchemaDefinition {
   val MatchDuplicateType = ObjectType(
       "MatchDuplicate",
       "A duplicate match",
-      fields[Unit,MatchDuplicate](
+      fields[BridgeService,(Option[String],MatchDuplicate)](
           Field("id", DuplicateIdType,
               Some("The id of the duplicate match"),
-              resolve = _.value.id
+              resolve = _.value._2.id
           ),
           Field("teams",
               ListType( DuplicateTeamType ),
               Some("The teams that played"),
-              resolve = _.value.teams
+              resolve = _.value._2.teams
           ),
           Field("boards",
               ListType( DuplicateBoardType ),
               Some("The boards that were played"),
-              resolve = _.value.boards
+              resolve = _.value._2.boards
           ),
           Field("boardset", StringType,
               Some("The boardset that was used"),
-              resolve = _.value.boardset
+              resolve = _.value._2.boardset
           ),
           Field("movement", StringType,
               Some("The movement that was used"),
-              resolve = _.value.movement
+              resolve = _.value._2.movement
           ),
           Field("summary", DuplicateSummaryType,
               Some("The summary of the match"),
-              resolve = ctx => DuplicateSummary.create(ctx.value)
+              resolve = ctx => (ctx.value._1,DuplicateSummary.create(ctx.value._2))
           ),
           Field("created", DateTimeType,
               Some("The time the team was last updated"),
-              resolve = _.value.updated
+              resolve = _.value._2.updated
           ),
           Field("updated", DateTimeType,
               Some("The time the team was last updated"),
-              resolve = _.value.updated
+              resolve = _.value._2.updated
           )
       )
   )
@@ -403,7 +427,7 @@ object SchemaDefinition {
 
   val BridgeServiceType = ObjectType(
       "BridgeService",
-      fields[Unit,BridgeService](
+      fields[BridgeService,BridgeService](
           Field("id", ImportIdType,
               Some("The id of the bridge service"),
               resolve = _.value.id),
@@ -417,9 +441,9 @@ object SchemaDefinition {
           ),
           Field("duplicates",
               ListType( MatchDuplicateType ),
-              resolve = _.value.duplicates.readAll().map{ rall =>
+              resolve = ctx => ctx.value.duplicates.readAll().map{ rall =>
                 rall match {
-                  case Right(all) => all.values.toList
+                  case Right(all) => all.values.toList.map { md => (if (ctx.ctx.id==ctx.value.id) None else Some(ctx.value.id),md) }
                   case Left((statusCode,msg)) => throw new Exception( s"Error getting MatchDuplicates: ${statusCode} ${msg.msg}" )
                 }
               }
@@ -430,7 +454,7 @@ object SchemaDefinition {
                 resolve = ctx => ctx.value.getDuplicateSummaries().map { rmap => rmap match {
                             case Right(list) =>
                               val argsort = ctx.arg( ArgSort )
-                              Action.sortSummary( list, argsort )
+                              Action.sortSummary( list, argsort ).map { md => (if (ctx.ctx.id==ctx.value.id) None else Some(ctx.value.id),md) }
                             case Left((statusCode,msg)) =>
                               throw new Exception(s"Error getting duplicate summaries: ${statusCode} ${msg.msg}")
                           }
@@ -511,7 +535,7 @@ object SchemaDefinition {
                             case Right(map) =>
                               val list = map.values.toList
                               val argsort = ctx.arg( ArgSort )
-                              Action.sort(list,argsort)
+                              Action.sort(list,argsort).map { md => (None,md) }
                             case Left((statusCode,msg)) =>
                               throw new Exception(s"Error getting duplicates: ${statusCode} ${msg.msg}")
                           }
@@ -520,7 +544,7 @@ object SchemaDefinition {
           Field("duplicate",
                 OptionType(MatchDuplicateType),
                 arguments = ArgDuplicateId::Nil,
-                resolve = Action.getDuplicateFromRoot
+                resolve = ctx => Action.getDuplicateFromRoot(ctx).map { md => (None,md) }
           ),
           Field("duplicatesummaries",
                 ListType( DuplicateSummaryType ),
@@ -528,7 +552,7 @@ object SchemaDefinition {
                 resolve = ctx => ctx.ctx.getDuplicateSummaries().map { rmap => rmap match {
                             case Right(list) =>
                               val argsort = ctx.arg( ArgSort )
-                              Action.sortSummary( list, argsort )
+                              Action.sortSummary( list, argsort ).map { md => (None,md) }
                             case Left((statusCode,msg)) =>
                               throw new Exception(s"Error getting duplicate summaries: ${statusCode} ${msg.msg}")
                           }
@@ -548,7 +572,7 @@ object SchemaDefinition {
                 MatchDuplicateType,
                 description = Some("Import a duplicate match."),
                 arguments = ArgDuplicateId::Nil,
-                resolve = Action.importDuplicate
+                resolve = ctx => Action.importDuplicate(ctx).map { md => (None,md) }
           ),
           Field("delete",
                 BooleanType,
@@ -573,13 +597,65 @@ object SchemaDefinition {
 object Action {
   import SchemaDefinition._
 
-  def getDuplicate( ctx: Context[Unit,BridgeService]): Future[MatchDuplicate] = {
+  def getDuplicate( ctx: Context[BridgeService,BridgeService]): Future[(Option[String],MatchDuplicate)] = {
     val id = ctx arg ArgDuplicateId
     ctx.value.duplicates.read(id).map { rmd =>
       rmd match {
-        case Right(md) => md
+        case Right(md) => (if (ctx.ctx.id==ctx.value.id) None else Some(ctx.value.id),md)
         case Left((statusCode,msg)) =>
           throw new Exception(s"Error getting match duplicate ${id}: ${statusCode} ${msg.msg}")
+      }
+    }
+  }
+
+  def getDuplicateBestMatch( ctx: Context[BridgeService,(Option[String],DuplicateSummary)]): Future[Option[(Option[String],BestMatch)]] = {
+    val mainStore = ctx.ctx
+    val (importId,ds) = ctx.value
+    val sourcestore = if (importId.isEmpty) Future.successful(Some(mainStore))
+                      else mainStore.importStore.get.get(importId.get).map { rbs =>
+                        rbs match {
+                          case Right(bs) => Some(bs)
+                          case Left(error) => None
+                        }
+                      }
+    val sourcemd = sourcestore.flatMap { ostore =>
+      ostore match {
+        case Some(store) =>
+          store.duplicates.read(ds.id).map { rmd =>
+            rmd match {
+              case Right(md) =>
+                Some(md)
+              case Left(err) =>
+                None
+            }
+          }
+        case None =>
+          Future.successful(None)
+      }
+    }
+    sourcemd.flatMap { omd =>
+      omd match {
+        case Some(md) =>
+          mainStore.duplicates.readAll().map { rlmd =>
+            rlmd match {
+              case Right(lmd) =>
+                val x =
+                lmd.values.map { mmd =>
+                  import DifferenceWrappers._
+                  val diff = md.difference("", mmd)
+                  log.fine(s"Diff main(${mmd.id}) import(${importId},${md.id}): ${diff}")
+                  BestMatch( diff.percentSame, mmd.id )
+                }.foldLeft(BestMatch(-1,"")) { (ac,v) =>
+                  if (ac.sameness < v.sameness) v
+                  else ac
+                }
+                Some((importId,x))
+              case Left(err) =>
+                None
+            }
+          }
+        case None =>
+          Future.successful(None)
       }
     }
   }

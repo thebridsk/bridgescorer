@@ -17,6 +17,14 @@ case class DuplicateSummaryEntry(
     place: Int
     )
 
+@ApiModel(description = "The best match in the main store")
+case class BestMatch(
+    @(ApiModelProperty @field)(value="How similar the matches are", required=true)
+    sameness: Double,
+    @(ApiModelProperty @field)(value="The ID of the MatchDuplicate in the main store that is the best match", required=true)
+    id: Id.MatchDuplicate
+)
+
 @ApiModel(description = "The summary of duplicate matches")
 case class DuplicateSummary(
     @(ApiModelProperty @field)(value="The ID of the MatchDuplicate being summarized", required=true)
@@ -34,7 +42,10 @@ case class DuplicateSummary(
     @(ApiModelProperty @field)(value="when the duplicate hand was created", required=true)
     created: Timestamp,
     @(ApiModelProperty @field)(value="when the duplicate hand was last updated", required=true)
-    updated: Timestamp ) {
+    updated: Timestamp,
+    @(ApiModelProperty @field)(value="the best match in the main store", required=false)
+    bestMatch: Option[BestMatch] = None
+    ) {
 
   def players() = teams.flatMap { t => Seq(t.team.player1, t.team.player2) }.toList
   def playerPlaces() = teams.flatMap{ t => Seq( (t.team.player1->t.place), (t.team.player2->t.place) ) }.toMap

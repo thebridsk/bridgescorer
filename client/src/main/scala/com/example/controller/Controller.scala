@@ -226,27 +226,31 @@ object Controller {
       GraphQLClient.request(
           """query importDuplicates( $importId: ImportId! ) {
              |  import( id: $importId ) {
-             |  duplicatesummaries {
-             |    id
-             |    finished
-             |    teams {
+             |    duplicatesummaries {
              |      id
-             |      team {
+             |      finished
+             |      teams {
              |        id
-             |        player1
-             |        player2
-             |        created
-             |        updated
+             |        team {
+             |          id
+             |          player1
+             |          player2
+             |          created
+             |          updated
+             |        }
+             |        result
+             |        place
              |      }
-             |      result
-             |      place
+             |      boards
+             |      tables
+             |      onlyresult
+             |      created
+             |      updated
+             |      bestMatch {
+             |        id
+             |        sameness
+             |      }
              |    }
-             |    boards
-             |    tables
-             |    onlyresult
-             |    created
-             |    updated
-             |  }
              |  }
              |}
              |""".stripMargin,
