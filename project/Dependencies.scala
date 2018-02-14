@@ -150,11 +150,11 @@ object Dependencies {
   val bridgeScorerServerDeps = Def.setting(morejacksons ++ jacksons ++ Seq(
 
       "com.typesafe.akka"   %%  "akka-actor"    % vAkka withSources(),
-      "com.typesafe.akka"   %%  "akka-contrib"  % vAkka % "runtime" withSources(),
+      "com.typesafe.akka"   %%  "akka-contrib"  % vAkka % "runtime" withSources(),   // needed for logging
 
       "com.typesafe.akka"   %% "akka-stream"             % vAkka withSources(),
 
-      "com.typesafe.akka"   %% "akka-http-core"          % vAkkaHttp withSources(),
+//      "com.typesafe.akka"   %% "akka-http-core"          % vAkkaHttp withSources(),
       "com.typesafe.akka"   %% "akka-http"               % vAkkaHttp withSources(),
       "com.typesafe.akka"   %% "akka-http-caching"       % vAkkaHttp withSources(),
       "de.heikoseeberger"   %% "akka-http-play-json"     % vAkkaHttpPlayJson withSources(),
