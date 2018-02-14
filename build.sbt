@@ -38,11 +38,11 @@ import scala.language.postfixOps
 enablePlugins(GitVersioning, GitBranchPrompt)
 EclipseKeys.skipParents in ThisBuild := false
 
-val useBrowser = sys.props.get("UseBrowser").
+lazy val useBrowser = sys.props.get("UseBrowser").
                        orElse(sys.env.get("UseBrowser")).
                        getOrElse("chrome")
 
-val onlyBuildDebug = sys.props.get("OnlyBuildDebug").
+lazy val onlyBuildDebug = sys.props.get("OnlyBuildDebug").
                        orElse(sys.env.get("OnlyBuildDebug")).
                        map( s => s.toBoolean ).
                        getOrElse(false)
@@ -57,14 +57,14 @@ val onlyBuildDebug = sys.props.get("OnlyBuildDebug").
 //    session save
 //    reload return
 
-val inTravis = sys.props.get("TRAVIS_BUILD_NUMBER").
+lazy val inTravis = sys.props.get("TRAVIS_BUILD_NUMBER").
                      orElse(sys.env.get("TRAVIS_BUILD_NUMBER")).
                      isDefined
 
 val testToRunNotTravis = "com.example.test.AllSuites"
 val testToRunInTravis = "com.example.test.TravisAllSuites"
 
-val testToRun = if (inTravis) {
+lazy val testToRun = if (inTravis) {
   println( s"Running in Travis CI, tests to run: ${testToRunInTravis}" )
   testToRunInTravis
 } else {
