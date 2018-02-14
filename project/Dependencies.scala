@@ -37,8 +37,8 @@ object Dependencies {
 
   lazy val vAkkaHttpPlayJson="1.19.0"  // https://github.com/hseeberger/akka-http-json
 
-  lazy val vSwaggerAkkaHttp = "0.12.0" // http://mvnrepository.com/artifact/com.github.swagger-akka-http/swagger-akka-http_2.12
-  lazy val vSwaggerScalaModule="1.0.4" // http://mvnrepository.com/artifact/io.swagger/swagger-scala-module_2.11
+  lazy val vSwaggerAkkaHttp = "0.13.0" // http://mvnrepository.com/artifact/com.github.swagger-akka-http/swagger-akka-http_2.12
+//  lazy val vSwaggerScalaModule="1.0.4" // http://mvnrepository.com/artifact/io.swagger/swagger-scala-module_2.11
   lazy val vSwagger="1.5.18"           // http://mvnrepository.com/artifact/io.swagger/swagger-core
 
   lazy val vSwaggerUI = "3.10.0"       // https://www.npmjs.com/package/swagger-ui-dist
@@ -60,8 +60,8 @@ object Dependencies {
 
   lazy val vJQuery = "3.3.1"         // https://www.npmjs.com/package/jquery
 
-  lazy val vScalactic = "3.0.4"      // https://mvnrepository.com/artifact/org.scalactic/scalactic_2.12
-  lazy val vScalatest = "3.0.4"      // http://mvnrepository.com/artifact/org.scalatest/scalatest_2.11
+  lazy val vScalactic = "3.0.5"      // https://mvnrepository.com/artifact/org.scalactic/scalactic_2.12
+  lazy val vScalatest = "3.0.5"      // http://mvnrepository.com/artifact/org.scalatest/scalatest_2.11
   lazy val vJunit = "4.12"           // http://mvnrepository.com/artifact/junit/junit
 
   lazy val vSelenium = "3.9.1"       // http://mvnrepository.com/artifact/org.seleniumhq.selenium/selenium-java
