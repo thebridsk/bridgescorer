@@ -22,6 +22,10 @@ import play.api.libs.json.JsUndefined
 import scala.concurrent.ExecutionContext.Implicits.global
 import play.api.libs.json.JsArray
 import com.example.react.AppButtonLink
+import com.example.react.CheckBox
+import play.api.libs.json.JsValue
+import play.api.libs.json.JsString
+import com.example.data.Id
 
 /**
  * A skeleton component.
@@ -59,7 +63,25 @@ object ExportPageInternal {
                     chiids: Option[List[String]] = None,
                     rubids: Option[List[String]] = None,
                     selectedIds: Option[List[String]] = None
-                  )
+                  ) {
+    def isExportingAll() = {
+      selectedIds match {
+        case Some(selected) =>
+          dupids.map( l => l.forall( id => selected contains id )).getOrElse(true) &&
+          chiids.map( l => l.forall( id => selected contains id )).getOrElse(true) &&
+          rubids.map( l => l.forall( id => selected contains id )).getOrElse(true)
+        case None =>
+          dupids.isDefined && chiids.isDefined && rubids.isDefined
+      }
+    }
+  }
+
+  def jsValueToString( jsV: JsValue ) = {
+    jsV match {
+      case JsString(s) => s
+      case _ => jsV.toString()
+    }
+  }
 
   /**
    * Internal state for rendering the component.
@@ -76,8 +98,9 @@ object ExportPageInternal {
           case Some(json) =>
             json \ "duplicateIds" match {
               case JsDefined( JsArray( array ) ) =>
-                val list = array.map( s => s.toString() ).toList
-                scope.withEffectsImpure.modState { s => s.copy(dupids = Some(list)) }
+                val list = array.map( s => jsValueToString(s) ).toList
+                val slist = list.sortWith( (l,r) => Id.idComparer(l, r)<0)
+                scope.withEffectsImpure.modState { s => s.copy(dupids = Some(slist)) }
               case JsDefined( _ ) =>
                 scope.withEffectsImpure.modState { s => s.copy(dupids = Some(List())) }
               case x: JsUndefined =>
@@ -85,8 +108,9 @@ object ExportPageInternal {
             }
             json \ "chicagoIds" match {
               case JsDefined( JsArray( array ) ) =>
-                val list = array.map( s => s.toString() ).toList
-                scope.withEffectsImpure.modState { s => s.copy(chiids = Some(list)) }
+                val list = array.map( s => jsValueToString(s) ).toList
+                val slist = list.sortWith( (l,r) => Id.idComparer(l, r)<0)
+                scope.withEffectsImpure.modState { s => s.copy(chiids = Some(slist)) }
               case JsDefined( _ ) =>
                 scope.withEffectsImpure.modState { s => s.copy(chiids = Some(List())) }
               case x: JsUndefined =>
@@ -94,8 +118,9 @@ object ExportPageInternal {
             }
             json \ "rubberIds" match {
               case JsDefined( JsArray( array ) ) =>
-                val list = array.map( s => s.toString() ).toList
-                scope.withEffectsImpure.modState { s => s.copy(rubids = Some(list)) }
+                val list = array.map( s => jsValueToString(s) ).toList
+                val slist = list.sortWith( (l,r) => Id.idComparer(l, r)<0)
+                scope.withEffectsImpure.modState { s => s.copy(rubids = Some(slist)) }
               case JsDefined( _ ) =>
                 scope.withEffectsImpure.modState { s => s.copy(rubids = Some(List())) }
               case x: JsUndefined =>
@@ -107,29 +132,115 @@ object ExportPageInternal {
       }
     }
 
+    def toggleSelectedId( id: String ) = scope.modState { s =>
+      val current = s.selectedIds.getOrElse(List())
+      val trydelete = current.filter( i => i!=id )
+      val add = if (current.size == trydelete.size) id::trydelete
+                else trydelete
+      val next = if (add.isEmpty) None else Some(add)
+      s.copy(selectedIds=next)
+    }
+
+    def selectAll() = scope.modState { s =>
+      val sel = s.dupids.getOrElse(List()):::s.chiids.getOrElse(List()):::s.rubids.getOrElse(List())
+      s.copy(selectedIds = Some(sel))
+    }
+
+    def selectClearAll() = scope.modState { s =>
+      s.copy(selectedIds = None)
+    }
+
+    def selectAll( list: Option[List[String]] ) = scope.modState { s =>
+      list.map { l =>
+        l.foldLeft(s){(ac,v) =>
+          ac.selectedIds match {
+            case Some(selected) =>
+              if (selected.contains(v)) ac
+              else s.copy( selectedIds = Some(v::selected))
+            case None =>
+              ac.copy( selectedIds = Some(v::Nil))
+          }
+        }
+      }.getOrElse(s)
+    }
+
+    def selectClearAll( list: Option[List[String]] ) = scope.modState { s =>
+      list.map { l =>
+        s.selectedIds match {
+          case Some(selected) =>
+            val newsel = selected.filter( id => !l.contains(id))
+            s.copy( selectedIds = Some(newsel))
+          case None =>
+            s
+        }
+      }.getOrElse(s)
+    }
+
     val indent = <.span( ^.dangerouslySetInnerHtml := "&nbsp;&nbsp;&nbsp;" )
 
     def render( props: Props, state: State ) = {
       import BaseStyles._
+
+      def showList( tid: String, header: String, list: Option[List[String]] ) = {
+        <.div(
+          <.h2(
+            header,
+            list.filter( l => l.size > 2 ).map { l =>
+              TagMod(
+                indent,
+                AppButton( tid+"SelectAll", "Select All", ^.onClick --> selectAll(list)),
+                AppButton( tid+"ClearAll", "Clear All", ^.onClick --> selectClearAll(list))
+              )
+            }.whenDefined
+          ),
+          list match {
+            case Some(l) =>
+              <.ul(
+                l.map { id =>
+                  val selected = state.selectedIds.map( ids => ids.contains(id) ).getOrElse(false)
+                  <.li(
+                    CheckBox( tid+id, id, selected, toggleSelectedId(id) )
+                  )
+                }.toTagMod
+              )
+            case None =>
+              <.p( "Working" )
+          }
+        )
+      }
+
       <.div(
         rootStyles.exportPageDiv,
 
         <.h1("Export Bridge Store"),
         <.div(
+          showList( "Duplicate", "Duplicate", state.dupids ),
+          showList( "Chicago", "Chicago", state.chiids ),
+          showList( "Rubber", "Rubber", state.rubids ),
+          <.p( if (state.isExportingAll()) "Exporting all" else "Exporting some" )
         ),
 
         <.div(
-          AppButton( "Home", "Home",
-                     props.router.setOnClick(Home)),
-          {
-            val filter = state.selectedIds.map(list => list.mkString("?filter=", ",", "")).getOrElse("")
-            val location = document.defaultView.location
-            val origin = location.origin.get
-            val path = s"""${origin}/v1/export${filter}"""
-            AppButtonLink( "Export", "Export", path,
-                           baseStyles.appButton
-            )
-          }
+          baseStyles.divFooter,
+          <.div(
+            baseStyles.divFooterLeft,
+            AppButton( "Home", "Home",
+                       props.router.setOnClick(Home)),
+            {
+              val filter = state.selectedIds.map(list => list.mkString("?filter=", ",", "")).getOrElse("")
+              val location = document.defaultView.location
+              val origin = location.origin.get
+              val path = s"""${origin}/v1/export${filter}"""
+              AppButtonLink( "Export", "Export", path,
+                             baseStyles.appButton
+              )
+            }
+          ),
+          <.div(
+            baseStyles.divFooterCenter,
+            AppButton( "SelectAll", "Select All", ^.onClick --> selectAll()),
+            AppButton( "ClearAll", "Clear All", ^.onClick --> selectClearAll())
+          )
         )
       )
     }

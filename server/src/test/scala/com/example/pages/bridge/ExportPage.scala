@@ -64,6 +64,14 @@ class ExportPage( implicit webDriver: WebDriver, pageCreated: SourcePosition ) e
   def export( implicit pos: Position ): File = {
     val r = HttpUtils.getHttpAllBytesToFile( TestServer.getUrl("/v1/export") )
     if (r.status == 200) {
+      r.contentdisposition match {
+        case Some(cd) =>
+          if (!cd.contains("attachment") || !cd.contains("BridgeScorerExport.zip") ) {
+            fail( s"Expecting content-disposition to contain attachment and BridgeScorerExport.zip, got ${cd}" )
+          }
+        case None =>
+          fail( "Expecting a content-disposition header in response" )
+      }
       r.data
     } else {
       fail(s"Error downloading export.zip: ${r}" )

@@ -348,6 +348,23 @@
     z-index: -1;
 }
 
+.rootExportPageDiv {
+    
+}
+
+.rootExportPageDiv > div {
+  font-size: x-large;
+}
+
+.rootExportPageDiv > div > div {
+  width: 1024px;
+}
+
+.rootExportPageDiv > div > div > ul {
+  columns: 7;
+  list-style-type: none;
+}
+
 [data-title] {
     border-bottom: 1px dashed rgba(0, 0, 0, 0.2);
     border-radius:2px;

@@ -36,7 +36,7 @@ object MovementsPage {
 
   def getMovement( movement: String ): Option[Movement] = {
     import com.example.rest.UtilsPlayJson._
-    val ResponseFromHttp(status,loc,ce,mov) = HttpUtils.getHttpObject[Movement](restUrlFor(movement))
+    val ResponseFromHttp(status,loc,ce,mov,cd) = HttpUtils.getHttpObject[Movement](restUrlFor(movement))
     mov
   }
 

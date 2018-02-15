@@ -51,7 +51,7 @@ trait HttpUtils {
     }
   }
 
-  case class ResponseFromHttp[T]( val status: Int, location: Option[String], contentencoding: Option[String], data: T )
+  case class ResponseFromHttp[T]( val status: Int, location: Option[String], contentencoding: Option[String], data: T, contentdisposition: Option[String] = None )
 
   /**
    * Get the first 500 bytes of the response data
@@ -193,12 +193,13 @@ trait HttpUtils {
       }
       val loc = Option(conn.getHeaderField("Location"))
       val ce = Option(conn.getHeaderField("Content-Encoding"))
+      val cd = Option(conn.getHeaderField("Content-Disposition"))
       val outf = File.makeTemp("export", ".zip")
       import resource._
       for (bytesout <- managed( new FileOutputStream( outf.jfile ) ) ) {
         readAllBytesAndCloseInputStream(ce,conn.getInputStream,bytesout)
       }
-      ResponseFromHttp(status,loc,ce,outf)
+      ResponseFromHttp(status,loc,ce,outf,cd)
     } catch {
       case x: IOException =>
         logger.info("Exception trying to get data from "+url, x)
@@ -212,7 +213,7 @@ trait HttpUtils {
   def getHttpObject[T :Reads]( url: URL ): ResponseFromHttp[Option[T]] = {
     import com.example.rest.UtilsPlayJson._
 
-    val ResponseFromHttp(status,loc,ce,resp) = getHttpAll(url)
+    val ResponseFromHttp(status,loc,ce,resp,cd) = getHttpAll(url)
     if (status >=200 && status <300) {
       ResponseFromHttp(status,loc,ce,Some( readJson[T](resp)))
     } else {
@@ -251,7 +252,7 @@ trait HttpUtils {
   def postHttpObject[T :Format]( url: URL, data: T ): ResponseFromHttp[Option[T]] = {
     import com.example.rest.UtilsPlayJson._
 
-    val ResponseFromHttp(status,loc,ce,resp) = postHttp(url, writeJson(data), "UTF8")
+    val ResponseFromHttp(status,loc,ce,resp,cd) = postHttp(url, writeJson(data), "UTF8")
     if (status >=200 && status <300) {
       ResponseFromHttp(status,loc,ce,Some( readJson[T](resp)))
     } else {
