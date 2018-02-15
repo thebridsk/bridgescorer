@@ -45,6 +45,10 @@ import com.example.graphql.GraphQLClient
 import play.api.libs.json.JsDefined
 import play.api.libs.json.JsUndefined
 import com.example.graphql.GraphQLResponse
+import play.api.libs.json.Json
+import play.api.libs.json.JsResult
+import play.api.libs.json.JsSuccess
+import play.api.libs.json.JsError
 
 /**
  * Shows a summary page of all duplicate matches from the database.
@@ -97,7 +101,7 @@ object PageSummaryInternal {
                                   <.th("Best Match")
                                 )
                               }.whenDefined,
-                              state.forPrint ?= <.th( "Print" ),
+                              state.forPrint ?= <.th( importId.map( id => "Import" ).getOrElse( "Print" ).toString ),
                               <.th( "Finished"),
                               <.th( "Created", <.br(), "Last Updated"),
                               tp.allPlayers.length>0?=(<.th( ^.colSpan:=tp.allPlayers.length, "Results")),
@@ -223,6 +227,10 @@ object PageSummaryInternal {
     def withError( err: String ) = copy( workingOnNew = Some(err) )
     def clearError() = copy( workingOnNew = None )
   }
+
+  case class ImportReturn( id: String )
+
+  implicit val importReturnReader = Json.reads[ImportReturn]
 
   /**
    * Internal state for rendering the component.
@@ -361,6 +369,58 @@ object PageSummaryInternal {
         }.foreach { x => }
       })
 
+    def importSelected( importId: String ) = scope.modState( { s =>
+        val ids = s.selected.map( id => id.toString )
+        s.copy(workingOnNew=Some(s"Importing Duplicate Match ${ids.mkString(", ")} from import ${importId}"))
+      },
+      Callback {
+        val s = scope.withEffectsImpure.state
+        val fragment = s.selected.map { id =>
+          if (id.toString().startsWith("E")) {  // Hack
+            s"""${id}: importduplicateresult( id: "${id}") { id }"""
+          } else {
+            s"""${id}: importduplicate( id: "${id}") { id }"""
+          }
+        }
+        val query = s"""mutation importDuplicate( $$importId: ImportId! ) {
+                       |  import( id: $$importId ) {
+                       |    ${fragment.mkString("\n    ", "\n    ", "")}
+                       |  }
+                       |}
+                       |""".stripMargin
+        val vars = JsObject( Seq( "importId" -> JsString(importId) ) )
+        val op = Some("importDuplicate")
+        val result = GraphQLClient.request(query, Some(vars), op)
+        resultGraphQL.set(result)
+        result.map { gr =>
+          gr.data match {
+            case Some(data) =>
+              data \ "import" match {
+                case JsDefined( map: JsObject ) =>
+                  Json.fromJson[Map[String,ImportReturn]](map) match {
+                    case JsSuccess( m, path ) =>
+                      val v = m.map( e => s"${e._1}->${e._2.id}" )
+                      setMessage(s"import selected from ${importId}, old IDs -> new IDs: ${v.mkString(", ")}" )
+                    case JsError(err) =>
+                      setMessage(s"expecting map on import selected from ${importId}, got error ${err}")
+                  }
+
+                case JsDefined( x ) =>
+                  setMessage(s"expecting string on import selected from ${importId}, got ${x}")
+                case _: JsUndefined =>
+                  setMessage(s"error import selected from ${importId}, did not find import/importduplicate/id field")
+              }
+            case None =>
+              setMessage(s"error import selected from ${importId}, ${gr.getError()}")
+          }
+        }.recover {
+          case x: Exception =>
+              logger.warning(s"exception import selected from ${importId}", x)
+              setMessage(s"exception import selected from ${importId}")
+        }.foreach { x => }
+      }
+    )
+
     def render( props: Props, state: State ) = {
       val importId = DuplicateSummaryStore.getImportId
       val summaries = props.page match {
@@ -491,7 +551,18 @@ object PageSummaryInternal {
                            AppButton("Print", "Print", ^.onClick --> forPrintOk)
                            ).toTagMod
                   )
-                )
+                ),
+                importId.whenDefined { importid =>
+                  TagMod(
+                    " ",
+                    if (!state.forPrint) AppButton("ForImport", "Select For Import", ^.onClick --> forPrint(true))
+                    else Seq[TagMod](
+                           AppButton("Cancel Import", "Cancel Import", ^.onClick --> forPrintCancel),
+                           " ",
+                           AppButton("Import", "Import Selected", ^.onClick --> importSelected(importid))
+                           ).toTagMod
+                  )
+                }
               ),
               whenUndefined(importId)(
                 TagMod(
