@@ -110,14 +110,14 @@ class SwaggerTest extends FlatSpec with MustMatchers with BeforeAndAfterAll {
     tcpSleep(15)
     implicit val webDriver = TestSession.webDriver
 
-    val ResponseFromHttp(status,headerloc,contentEncoding,resp) = getHttp( TestServer.getUrl("/v1/api-docs/swagger.json") )
+    val ResponseFromHttp(status,headerloc,contentEncoding,resp,cd) = getHttp( TestServer.getUrl("/v1/api-docs/swagger.json") )
     resp must include regex """Scorekeeper for a 2 table duplicate bridge match\."""
   }
 
   it should "try to get swagger docs page" in {
     implicit val webDriver = TestSession.webDriver
 
-    val ResponseFromHttp(status,headerloc,contentEncoding,resp) = getHttp( TestServer.getUrl("/v1/docs/") )
+    val ResponseFromHttp(status,headerloc,contentEncoding,resp,cd) = getHttp( TestServer.getUrl("/v1/docs/") )
     status mustBe 308
     headerloc mustBe Some("/public/swagger-ui-dist/index.html.gz?url=/v1/api-docs/swagger.json&validatorUrl=")
 //    resp must include regex """\<html\>"""
@@ -126,7 +126,7 @@ class SwaggerTest extends FlatSpec with MustMatchers with BeforeAndAfterAll {
   it should "get the swagger docs page" in {
     implicit val webDriver = TestSession.webDriver
 
-    val ResponseFromHttp(status,headerloc,contentEncoding,resp) = getHttpAll( TestServer.getUrl("/public/swagger-ui-dist/index.html") )
+    val ResponseFromHttp(status,headerloc,contentEncoding,resp,cd) = getHttpAll( TestServer.getUrl("/public/swagger-ui-dist/index.html") )
     status mustBe 200
     resp must include regex """<html[ >]"""
   }
@@ -134,7 +134,7 @@ class SwaggerTest extends FlatSpec with MustMatchers with BeforeAndAfterAll {
   it should "get the swagger apidocs page" in {
     implicit val webDriver = TestSession.webDriver
 
-    val ResponseFromHttp(status,headerloc,contentEncoding,resp) = getHttpAll( TestServer.getUrl("/public/apidocs.html") )
+    val ResponseFromHttp(status,headerloc,contentEncoding,resp,cd) = getHttpAll( TestServer.getUrl("/public/apidocs.html") )
     status mustBe 200
     resp must include regex """<html[ >]"""
   }

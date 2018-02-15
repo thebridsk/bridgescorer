@@ -481,7 +481,7 @@ class DuplicateTestFromTestDirectory extends FlatSpec with DuplicateUtils with M
       val boardsetName = templateScore.getBoardSet()
 
       import com.example.rest.UtilsPlayJson._
-      val ResponseFromHttp(status,loc,ce,bs) = HttpUtils.getHttpObject[BoardSet](TestServer.getUrl("/v1/rest/boardsets/"+boardsetName))
+      val ResponseFromHttp(status,loc,ce,bs,cd) = HttpUtils.getHttpObject[BoardSet](TestServer.getUrl("/v1/rest/boardsets/"+boardsetName))
       boardSet = bs
 
       val rounds = templateScore.tables.values.toList.head.length

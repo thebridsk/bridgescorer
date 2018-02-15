@@ -25,6 +25,7 @@ import java.io.{ File => JFile }
 import scala.reflect.io.Directory
 import scala.reflect.io.File
 import akka.http.scaladsl.model.headers.Location
+import akka.http.scaladsl.model.headers.`Content-Disposition`
 import java.io.BufferedOutputStream
 import java.util.zip.ZipOutputStream
 import java.nio.charset.StandardCharsets
@@ -34,6 +35,7 @@ import java.nio.file.Files
 import java.io.InputStream
 import java.io.OutputStream
 import scala.concurrent.Future
+import akka.http.scaladsl.model.headers.ContentDispositionTypes
 
 object ImportExport {
   val log = Logger[ImportExport]
@@ -116,7 +118,10 @@ trait ImportExport {
         complete(
             HttpResponse(entity = HttpEntity(
                                     MediaTypes.`application/zip`,
-                                    byteSource))
+                                    byteSource),
+                         headers = `Content-Disposition`( ContentDispositionTypes.attachment,
+                                                          Map( "filename" -> "BridgeScorerExport.zip") )::Nil
+                        )
         )
       }
     }
@@ -328,7 +333,10 @@ trait ImportExport {
       complete(
           HttpResponse(entity = HttpEntity(
                                   MediaTypes.`application/zip`,
-                                  byteSource))
+                                  byteSource),
+                       headers = `Content-Disposition`( ContentDispositionTypes.attachment,
+                                                        Map( "filename" -> "BridgeScorerDiagnostics.zip") )::Nil
+                      )
       )
     }
   }

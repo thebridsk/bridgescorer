@@ -36,7 +36,7 @@ object BoardSetsPage {
 
   def getBoardSet( boardset: String ): Option[BoardSet] = {
     import com.example.rest.UtilsPlayJson._
-    val ResponseFromHttp(status,loc,ce,bs) = HttpUtils.getHttpObject[BoardSet](restUrlFor(boardset))
+    val ResponseFromHttp(status,loc,ce,bs,cd) = HttpUtils.getHttpObject[BoardSet](restUrlFor(boardset))
     bs
   }
 

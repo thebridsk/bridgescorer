@@ -7,6 +7,7 @@ import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.TagMod
 import com.example.pages.BaseStyles
+import japgolly.scalajs.react.vdom.HtmlStyles
 
 /**
  * A skeleton component.
@@ -38,6 +39,7 @@ object CheckBoxInternal {
                             .render_P( props => {
                               import BaseStyles._
                               <.label(
+                                HtmlStyles.whiteSpace.nowrap,
                                 ^.id := "Label"+props.id,
                                 baseStyles.checkbox,
                                 <.input(

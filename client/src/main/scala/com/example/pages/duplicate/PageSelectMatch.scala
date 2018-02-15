@@ -63,7 +63,7 @@ object PageSelectMatchInternal {
    * will cause State to leak.
    *
    */
-  case class State( selection: Option[String] = None ) {
+  case class State( selection: Option[String] = None, error: Option[String] = None ) {
 
     def clear = copy( selection = None )
 
@@ -71,6 +71,8 @@ object PageSelectMatchInternal {
 
     def isValid = selection.filter( s => s!="" ).map( s => true ).getOrElse(false)
   }
+
+  val patternValidInput = """ ?(\d+) ?""".r
 
   /**
    * Internal state for rendering the component.
@@ -96,14 +98,24 @@ object PageSelectMatchInternal {
     }
 
     def inputCB( data: ReactEventFromInput): Callback = data.inputText { text =>
-      scope.modState( s => s.setSelection(text) )
+      scope.modState { s =>
+        text match {
+          case patternValidInput(i) =>
+            s.setSelection(i)
+          case _ =>
+            s.copy(error = Some(s"""Expecting only numbers in the input, string "${text}" is not valid"""))
+        }
+      }
     }
+
+    def popupOk() = scope.modState { s => s.copy(error = None) }
 
     def render( props: Props, state: State ) = {
       import DuplicateStyles._
 
       <.div(
         dupStyles.divSelectMatch,
+        PopupOkCancel( state.error.map( s => <.p(s) ), Some(popupOk()), None ),
         <.div(
           <.label(
             "Please enter just the number for the match: ",
