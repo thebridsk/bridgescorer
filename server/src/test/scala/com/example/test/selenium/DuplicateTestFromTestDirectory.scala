@@ -294,7 +294,7 @@ class DuplicateTestFromTestDirectory extends FlatSpec with DuplicateUtils with M
         logFuture {
           import sessionDirector._
           go to (TestServer.getAppPage)
-          eventually{ () => pageTitle mustBe "The Bridge Score Keeper" }
+          eventually{ pageTitle mustBe "The Bridge Score Keeper" }
           val x = eventually{ find( id("Duplicate") ).text mustBe "Duplicate List" }
         }::
         restSession.map { ts => logFuture { val x = ts.sessionStart(envSessionTable).setQuadrant(4) } }.toList : _*
@@ -370,16 +370,20 @@ class DuplicateTestFromTestDirectory extends FlatSpec with DuplicateUtils with M
           import sessionComplete._
           assert( dupid.isDefined && dupid.get.length()>0)
           go to (TestServer.getAppPageUrl("duplicate/"+dupid.get))
-          eventuallyTrue{ checkUrl(TestServer.getAppPageUrl("duplicate/"+dupid.get)) }
-          find( id("Table_1")).text mustBe "Table 1"
+          eventually {
+            checkUrl(TestServer.getAppPageUrl("duplicate/"+dupid.get))
+            find( id("Table_1")).text mustBe "Table 1"
+          }
         } ::
         sessionTables.map { st => {
           logFuture {
             import st._
             assert( dupid.isDefined && dupid.get.length()>0)
             go to (TestServer.getAppPageUrl("duplicate/"+dupid.get))
-            eventuallyTrue{ checkUrl(TestServer.getAppPageUrl("duplicate/"+dupid.get)) }
-            click on id("Table_"+st.number)
+            eventually {
+              checkUrl(TestServer.getAppPageUrl("duplicate/"+dupid.get))
+              click on id("Table_"+st.number)
+            }
           }
         } }.toList : _*
       )

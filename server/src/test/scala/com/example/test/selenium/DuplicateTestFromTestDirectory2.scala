@@ -272,12 +272,12 @@ class DuplicateTestFromTestDirectory2 extends FlatSpec with DuplicateUtils with 
         "gotoRootPage",
         logFuture {
           sessionDirector.sessionStartIfNotRunning(getPropOrEnv("SessionDirector")).setQuadrant(1)
+          import sessionDirector._
           if (!sessionDirectorRunning) {
-            import sessionDirector._
             go to (TestServer.getAppPage)
-            eventually{ () => pageTitle mustBe "The Bridge Score Keeper" }
-            eventually{ find( id("Duplicate") ).text mustBe "Duplicate List" }
           }
+          eventually{ pageTitle mustBe "The Bridge Score Keeper" }
+          eventually{ find( id("Duplicate") ).text mustBe "Duplicate List" }
         }::
         logFuture { sessionComplete.sessionStartIfNotRunning(getPropOrEnv("SessionComplete")).setQuadrant(2) }::
         logFuture { firstSession.sessionStartIfNotRunning(envSessionTable).setQuadrant(3) }::
@@ -356,8 +356,10 @@ class DuplicateTestFromTestDirectory2 extends FlatSpec with DuplicateUtils with 
           click on id("Duplicate")
           eventually { find( id( "Duplicate_"+dupid.get )) }
           click on id("Duplicate_"+dupid.get)
-          eventuallyTrue{ checkUrl(TestServer.getAppPageUrl("duplicate/"+dupid.get)) }
-          find( id("Table_1")).text mustBe "Table 1"
+          eventually {
+            checkUrl(TestServer.getAppPageUrl("duplicate/"+dupid.get))
+            find( id("Table_1")).text mustBe "Table 1"
+          }
         } ::
         sessionTables.values.map { st => {
           logFuture {
@@ -370,8 +372,10 @@ class DuplicateTestFromTestDirectory2 extends FlatSpec with DuplicateUtils with 
             click on id("Duplicate")
             eventually { find( id( "Duplicate_"+dupid.get )) }
             click on id("Duplicate_"+dupid.get)
-            eventuallyTrue{ checkUrl(TestServer.getAppPageUrl("duplicate/"+dupid.get)) }
-            click on id("Table_"+st.number)
+            eventually {
+              checkUrl(TestServer.getAppPageUrl("duplicate/"+dupid.get))
+              click on id("Table_"+st.number)
+            }
           }
         } }.toList : _*
       )
