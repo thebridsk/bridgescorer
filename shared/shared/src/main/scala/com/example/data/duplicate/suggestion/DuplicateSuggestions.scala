@@ -326,6 +326,19 @@ class DuplicateSuggestionsCalculation(
 
     val rsug = sug1.sortWith( sortFun )
 
+    log.fine(s"Suggestions:")
+    log.info("The numbers in parentheses are ( lasttime played together, number of times played together)")
+    log.info("The numbers at the end are the weights (higher means more likely) => total - minlastplayed maxlastplayed timesplayed avelastplayed avetimesplayed lastall minlastall")
+    rsug.zipWithIndex.foreach { e =>
+      val (sg,i) = e
+      val s = sg.players.sortWith { (l,r) =>
+                            if (l.lastPlayed==r.lastPlayed) l.timesPlayed<r.timesPlayed
+                            else l.lastPlayed<r.lastPlayed
+                          }.map( p => f"${p.player1}%8s-${p.player2}%-8s (${p.lastPlayed}%2d,${p.timesPlayed}%2d)").mkString(", ")
+      val wts = sg.weights.map( w => f"${w}%6.4f" ).mkString(" ")
+      log.info(f"  ${i+1}%3d: ${s}%s ${sg.weight}%6.4f - ${wts}")
+    }
+
     ( rsug, maps.toMap )
   }
 

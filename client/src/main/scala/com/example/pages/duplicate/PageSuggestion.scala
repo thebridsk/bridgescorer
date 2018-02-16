@@ -68,7 +68,8 @@ object PageSuggestionInternal {
                     suggestion: Option[DuplicateSuggestions] = None,
                     error: Option[String] = None,
                     showNeverPair: Boolean = false,
-                    neverPair: List[(String,String)] = List()
+                    neverPair: List[(String,String)] = List(),
+                    showDetails: Boolean = false
                   ) {
     def isValid = {
       val nkp = knownPlayersSelected.length
@@ -124,6 +125,8 @@ object PageSuggestionInternal {
     def cancelNeverPair() = scope.modState { s => s.copy( showNeverPair = false, neverPair=List() ) }
 
     def clearNeverPair() = scope.modState { s => s.copy( neverPair=List() ) }
+
+    def toggleDetails() = scope.modState { s => s.copy( showDetails = !s.showDetails ) }
 
     def toggleKnownPlayer( p: String ) = scope.modState { s =>
       val kps = if (s.knownPlayersSelected.contains(p)) s.knownPlayersSelected.filter(pp => pp!=p)
@@ -222,6 +225,8 @@ object PageSuggestionInternal {
 
       val sortedPlayers = state.knownPlayersSelected.sorted
 
+      val showDetails = state.suggestion.flatMap( s => s.suggestions ).isDefined
+
       <.div( dupStyles.divSuggestionPage,
         PopupOkCancel( state.error.map(s => TagMod(s)), None, Some(clearError()) ),
         <.div(
@@ -293,7 +298,8 @@ object PageSuggestionInternal {
                     <.tfoot(
                       <.tr(
                         <.td(),
-                        <.td( ^.colSpan:=sugs.head.players.length, "Note: (games since last played, games played together)" )
+                        <.td( ^.colSpan:=sugs.head.players.length, "Note: (games since last played, games played together)" ),
+                        if (state.showDetails) <.td( ^.colSpan:=8, ^.rowSpan:=2, "The higher the weight the better the pairing is" ) else TagMod()
                       ),
                       <.tr(
                         <.td( ^.colSpan:=sugs.head.players.length+1, suggestion.calcTimeMillis.whenDefined( calcTime => f"Calculation time: ${calcTime}%.0f milliseconds" ) )
@@ -315,7 +321,13 @@ object PageSuggestionInternal {
             AppButton( "Clear", "Clear", state.showNeverPair ?= baseStyles.alwaysHide, ^.onClick --> clear ),
             AppButton( "NeverPair", "Never Pair", state.showNeverPair || !state.isValid ?= baseStyles.alwaysHide, ^.onClick --> toggleNeverPair ),
             AppButton( "ClearNeverPair", "Clear Never Pair", !state.showNeverPair ?= baseStyles.alwaysHide, ^.onClick --> clearNeverPair ),
-            AppButton( "CancelNeverPair", "Cancel Never Pair", !state.showNeverPair ?= baseStyles.alwaysHide, ^.onClick --> cancelNeverPair )
+            AppButton( "CancelNeverPair", "Cancel Never Pair", !state.showNeverPair ?= baseStyles.alwaysHide, ^.onClick --> cancelNeverPair ),
+            AppButton(
+                "ToggleDetails",
+                if (state.showDetails) "Hide Details" else "Show Details",
+                !showDetails ?= baseStyles.alwaysHide,
+                ^.onClick --> toggleDetails
+            ),
           ),
           <.div(
             baseStyles.divFooterRight,
@@ -368,7 +380,21 @@ object PageSuggestionInternal {
                                       e1.players.zipWithIndex.map { e =>
                                         val (p,i) = e
                                         <.th( s"Pair ${i+1}")
-                                      }.toTagMod
+                                      }.toTagMod,
+                                      if (state.showDetails) {
+                                        TagMod(
+                                          <.th("Weight"),
+                                          <.th("MinLastPlayed"),
+                                          <.th("MaxLastPlayed"),
+                                          <.th("TimesPlayed"),
+                                          <.th("AveLastPlayed"),
+                                          <.th("AveTimesPlayed"),
+                                          <.th("LastAll"),
+                                          <.th("MinLastAll")
+                                        )
+                                      } else {
+                                        TagMod()
+                                      }
                                     )
                                   )
                               }
@@ -388,7 +414,15 @@ object PageSuggestionInternal {
                             else l.lastPlayed<r.lastPlayed
                           }.map { p =>
                             <.td( s"${p.player1}-${p.player2} (${p.lastPlayed},${p.timesPlayed})")
-                          }.toTagMod
+                          }.toTagMod,
+                          if (state.showDetails) {
+                            TagMod(
+                              <.td(f"${sug.weight}%6.4f"),
+                              sug.weights.map( w => <.td(f"${w}%6.4f") ).toTagMod
+                            )
+                          } else {
+                            TagMod()
+                          }
                         )
                       }).build
 

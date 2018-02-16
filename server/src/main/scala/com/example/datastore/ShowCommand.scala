@@ -144,11 +144,22 @@ Options:""")
         val input = DuplicateSuggestions( players.map(sc => sc()), neverPair = neverPair )
         val sug = DuplicateSuggestionsCalculation.calculate(input, summary)
         log.info(s"Took ${sug.calcTimeMillis} milliseconds to calculate")
+//        sug.suggestions.foreach { list =>
+//          list.zipWithIndex.foreach { e =>
+//            val (suggestion,i) = e
+//            val pairs = suggestion.players.map { p => p.toString() }
+//            log.info( s"""${i+1}: ${pairs.mkString(", ")}""")
+//          }
+//        }
+        log.info("The numbers in parentheses are ( lasttime played together, number of times played together)")
         sug.suggestions.foreach { list =>
           list.zipWithIndex.foreach { e =>
-            val (suggestion,i) = e
-            val pairs = suggestion.players.map { p => p.toString() }
-            log.info( s"""${i+1}: ${pairs.mkString(", ")}""")
+            val (sg,i) = e
+            val s = sg.players.sortWith { (l,r) =>
+                                  if (l.lastPlayed==r.lastPlayed) l.timesPlayed<r.timesPlayed
+                                  else l.lastPlayed<r.lastPlayed
+                                }.map( p => f"${p.player1}%8s-${p.player2}%-8s (${p.lastPlayed}%2d,${p.timesPlayed}%2d)").mkString(", ")
+            log.info(f"  ${i+1}%3d: ${s}%s")
           }
         }
         0
