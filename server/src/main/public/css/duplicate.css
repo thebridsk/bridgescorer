@@ -564,6 +564,12 @@
   padding: 4px;
   text-align: center;
 }
+.dupDivSuggestionPage > div:nth-child(6) td:nth-child(n+6) {
+  font-size: large
+}
+.dupDivSuggestionPage > div:nth-child(6) th:nth-child(n+6) {
+  font-size: large
+}
 .dupDivSuggestionPage th {
   border: 1px solid black;
   text-align: center;
