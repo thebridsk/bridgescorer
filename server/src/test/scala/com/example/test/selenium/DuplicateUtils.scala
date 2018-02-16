@@ -527,12 +527,7 @@ trait DuplicateUtils {
   }
 
   def checkUrl( url: String )(implicit webDriver: WebDriver) = {
-    currentUrl == url
-  }
-
-  def checkUrlThrowsNoResultYet( url: String)(implicit webDriver: WebDriver) = {
-    if (!checkUrl(url)) throw new NoResultYet
-    true
+    currentUrl mustBe url
   }
 
   def clickButton( id: String, map: Map[String,Element] )(implicit webDriver: WebDriver ): Unit = {

@@ -60,6 +60,7 @@ object ExportPageInternal {
    *
    */
   case class State( dupids: Option[List[String]] = None,
+                    duprids: Option[List[String]] = None,
                     chiids: Option[List[String]] = None,
                     rubids: Option[List[String]] = None,
                     selectedIds: Option[List[String]] = None
@@ -68,10 +69,11 @@ object ExportPageInternal {
       selectedIds match {
         case Some(selected) =>
           dupids.map( l => l.forall( id => selected contains id )).getOrElse(true) &&
+          duprids.map( l => l.forall( id => selected contains id )).getOrElse(true) &&
           chiids.map( l => l.forall( id => selected contains id )).getOrElse(true) &&
           rubids.map( l => l.forall( id => selected contains id )).getOrElse(true)
         case None =>
-          dupids.isDefined && chiids.isDefined && rubids.isDefined
+          dupids.isDefined && duprids.isDefined && chiids.isDefined && rubids.isDefined
       }
     }
   }
@@ -93,7 +95,7 @@ object ExportPageInternal {
   class Backend(scope: BackendScope[Props, State]) {
 
     def didMount() = Callback {
-      GraphQLClient.request("""{ duplicateIds, chicagoIds, rubberIds }""").foreach { resp =>
+      GraphQLClient.request("""{ duplicateIds, duplicateResultIds, chicagoIds, rubberIds }""").foreach { resp =>
         resp.data match {
           case Some(json) =>
             json \ "duplicateIds" match {
@@ -105,6 +107,16 @@ object ExportPageInternal {
                 scope.withEffectsImpure.modState { s => s.copy(dupids = Some(List())) }
               case x: JsUndefined =>
                 scope.withEffectsImpure.modState { s => s.copy(dupids = Some(List())) }
+            }
+            json \ "duplicateResultIds" match {
+              case JsDefined( JsArray( array ) ) =>
+                val list = array.map( s => jsValueToString(s) ).toList
+                val slist = list.sortWith( (l,r) => Id.idComparer(l, r)<0)
+                scope.withEffectsImpure.modState { s => s.copy(duprids = Some(slist)) }
+              case JsDefined( _ ) =>
+                scope.withEffectsImpure.modState { s => s.copy(duprids = Some(List())) }
+              case x: JsUndefined =>
+                scope.withEffectsImpure.modState { s => s.copy(duprids = Some(List())) }
             }
             json \ "chicagoIds" match {
               case JsDefined( JsArray( array ) ) =>
@@ -195,18 +207,28 @@ object ExportPageInternal {
           ),
           list match {
             case Some(l) =>
-              <.ul(
-                l.map { id =>
-                  val selected = state.selectedIds.map( ids => ids.contains(id) ).getOrElse(false)
-                  <.li(
-                    CheckBox( tid+id, id, selected, toggleSelectedId(id) )
-                  )
-                }.toTagMod
-              )
+              if (l.isEmpty) {
+                <.p("None found")
+              } else {
+                <.ul(
+                  l.map { id =>
+                    val selected = state.selectedIds.map( ids => ids.contains(id) ).getOrElse(false)
+                    <.li(
+                      CheckBox( tid+id, id, selected, toggleSelectedId(id) )
+                    )
+                  }.toTagMod
+                )
+              }
             case None =>
               <.p( "Working" )
           }
         )
+      }
+
+      val dupids = if (state.dupids.isEmpty || state.duprids.isEmpty) {
+        None
+      } else {
+        Some(state.dupids.getOrElse(List()):::state.duprids.getOrElse(List()))
       }
 
       <.div(
@@ -214,7 +236,7 @@ object ExportPageInternal {
 
         <.h1("Export Bridge Store"),
         <.div(
-          showList( "Duplicate", "Duplicate", state.dupids ),
+          showList( "Duplicate", "Duplicate", dupids ),
           showList( "Chicago", "Chicago", state.chiids ),
           showList( "Rubber", "Rubber", state.rubids ),
           <.p( if (state.isExportingAll()) "Exporting all" else "Exporting some" )

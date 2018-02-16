@@ -53,6 +53,10 @@ object ListDuplicatePage {
           "Home"::
           Nil
 
+  val importButtons =
+          "ForImport"::
+          Nil
+
   val mainButtons =
           "DuplicateCreate"::
           "BoardSets2"::
@@ -100,7 +104,7 @@ class ListDuplicatePage( importId: Option[String] )( implicit webDriver: WebDriv
   val importColumns = importId.map( id => 2 ).getOrElse(0)
 
   def validate(implicit patienceConfig: PatienceConfig, pos: Position): ListDuplicatePage = logMethod(s"${pos.line} ${getClass.getSimpleName}.validate ${patienceConfig}") {
-    val b = importId.map( id => buttons ).getOrElse( buttons:::mainButtons)
+    val b = importId.map( id => buttons:::importButtons ).getOrElse( buttons:::mainButtons)
     eventually{
       withClue(s"ListDuplicate.validate from ${pos.line}") {
         findButtons(b:_*)
@@ -112,7 +116,7 @@ class ListDuplicatePage( importId: Option[String] )( implicit webDriver: WebDriv
   }
 
   def validate( matchIds: String* )(implicit patienceConfig: PatienceConfig, pos: Position): ListDuplicatePage = {
-    val b = importId.map( id => buttons ).getOrElse( buttons:::mainButtons)
+    val b = importId.map( id => buttons:::importButtons ).getOrElse( buttons:::mainButtons)
     val allbuttons = (matchIds.map{ m => if (m.startsWith("M")) matchIdToButtonId(m) else resultIdToButtonId(m) }.toList:::b).toSet
     eventually{
       withClue(s"ListDuplicate.validate from ${pos.line}") {

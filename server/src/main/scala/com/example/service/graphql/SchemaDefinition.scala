@@ -591,6 +591,16 @@ object SchemaDefinition {
                           }
                 }
           ),
+          Field("duplicateResultIds",
+                ListType( DuplicateResultIdType ),
+                resolve = _.ctx.duplicateresults.readAll().map { rmap => rmap match {
+                            case Right(map) =>
+                              map.keys.toList
+                            case Left((statusCode,msg)) =>
+                              throw new Exception(s"Error getting duplicate ids: ${statusCode} ${msg.msg}")
+                          }
+                }
+          ),
           Field("chicagoIds",
                 ListType( ChicagoIdType ),
                 resolve = _.ctx.chicagos.readAll().map { rmap => rmap match {
