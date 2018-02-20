@@ -424,7 +424,8 @@ object PageSummaryInternal {
     def render( props: Props, state: State ) = {
       val importId = DuplicateSummaryStore.getImportId
       val summaries = props.page match {
-        case ImportSummaryView(id) =>
+        case isv: ImportSummaryView =>
+          val id = isv.getDecodedId
           if (importId.isDefined && id == importId.get) DuplicateSummaryStore.getDuplicateSummary()
           else None
         case SummaryView =>
@@ -594,7 +595,8 @@ object PageSummaryInternal {
       DuplicateSummaryStore.addChangeListener(storeCallback)
     } >> scope.props >>= { (p) => Callback(
       p.page match {
-        case ImportSummaryView(importId) =>
+        case isv: ImportSummaryView =>
+          val importId = isv.getDecodedId
           Controller.getImportSummary(importId)
         case SummaryView =>
           Controller.getSummary()

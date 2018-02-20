@@ -26,6 +26,7 @@ import com.example.routes.BridgeRouter
 import com.example.skeleton.react.BeepComponent
 import japgolly.scalajs.react.vdom.TagMod
 import com.example.pages.duplicate.DuplicateRouter.BaseScoreboardView
+import scala.scalajs.js.URIUtils
 
 object DuplicateModule extends Module {
   case class PlayDuplicate(m: DuplicatePage ) extends AppPage
@@ -312,6 +313,7 @@ object DuplicateRouter {
   case class ImportSummaryView( importId: String ) extends SummaryViewBase {
     def getScoreboardPage(dupid: String): BaseScoreboardViewWithPerspective = CompleteScoreboardView(dupid)
     def getDuplicateResultPage(dupid: String): DuplicateResultViewBase = DuplicateResultView(dupid)
+    def getDecodedId = URIUtils.decodeURI(importId)
   }
 
   val verifyPages = SummaryView::
