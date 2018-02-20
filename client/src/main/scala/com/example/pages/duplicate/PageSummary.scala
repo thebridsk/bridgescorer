@@ -278,6 +278,16 @@ object PageSummaryInternal {
       s.copy(selected = sel)
     })
 
+    def clearAllSelected() = scope.modState( s => s.copy(selected=List()) )
+
+    def selectedAll() = scope.modState { s =>
+      val (importid,summaries) = getDuplicateSummaries(scope.withEffectsImpure.props)
+      val allIds = summaries.map { list =>
+        list.map( sum => sum.id )
+      }.getOrElse(List())
+      s.copy(selected=allIds)
+    }
+
     def forPrint(flagForPrint: Boolean) = scope.modState(s => s.copy(forPrint = flagForPrint))
 
     def forPrintOk() = CallbackTo {
@@ -375,7 +385,20 @@ object PageSummaryInternal {
       },
       Callback {
         val s = scope.withEffectsImpure.state
-        val fragment = s.selected.map { id =>
+        val props = scope.withEffectsImpure.props
+        val (importid,summaries) = getDuplicateSummaries(props)
+
+//        val sortByDate = if (s.selected.isEmpty) {
+//          s.selected
+//        } else {
+//          summaries.map { summs =>
+//            val sorted = summs.sortWith((l,r) => l.created < r.created).map( sum => sum.id )
+//            sorted.filter(id=> s.selected.contains(id))
+//          }.getOrElse( s.selected )
+//        }
+        val sortByDate = s.selected
+
+        val fragment = sortByDate.map { id =>
           if (id.toString().startsWith("E")) {  // Hack
             s"""${id}: importduplicateresult( id: "${id}") { id }"""
           } else {
@@ -421,7 +444,7 @@ object PageSummaryInternal {
       }
     )
 
-    def render( props: Props, state: State ) = {
+    def getDuplicateSummaries( props: Props ): (Option[String], Option[List[DuplicateSummary]]) = {
       val importId = DuplicateSummaryStore.getImportId
       val summaries = props.page match {
         case isv: ImportSummaryView =>
@@ -432,6 +455,12 @@ object PageSummaryInternal {
           if (importId.isEmpty) DuplicateSummaryStore.getDuplicateSummary()
           else None
       }
+      (importId,summaries)
+    }
+
+    def render( props: Props, state: State ) = {
+      val (importId,summaries) = getDuplicateSummaries( props )
+
       val tp = SummaryPeople(summaries)
       val takerows = if (state.alwaysShowAll)
       {
@@ -549,7 +578,11 @@ object PageSummaryInternal {
                     else Seq[TagMod](
                            AppButton("Cancel Print", "Cancel Print", ^.onClick --> forPrintCancel),
                            " ",
-                           AppButton("Print", "Print", ^.onClick --> forPrintOk)
+                           AppButton("Print", "Print", ^.onClick --> forPrintOk),
+                           " ",
+                           AppButton("PrintSelectAll", "Select All", ^.onClick --> selectedAll() ),
+                           " ",
+                           AppButton("PrintClearAll", "Clear Selected", ^.onClick --> clearAllSelected() )
                            ).toTagMod
                   )
                 ),
@@ -560,7 +593,11 @@ object PageSummaryInternal {
                     else Seq[TagMod](
                            AppButton("Cancel Import", "Cancel Import", ^.onClick --> forPrintCancel),
                            " ",
-                           AppButton("Import", "Import Selected", ^.onClick --> importSelected(importid))
+                           AppButton("Import", "Import Selected", ^.onClick --> importSelected(importid), ^.disabled:=state.selected.isEmpty),
+                           " ",
+                           AppButton("ImportSelectAll", "Select All", ^.onClick --> selectedAll() ),
+                           " ",
+                           AppButton("ImportClearAll", "Clear Selected", ^.onClick --> clearAllSelected() )
                            ).toTagMod
                   )
                 }
