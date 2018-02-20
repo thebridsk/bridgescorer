@@ -75,7 +75,7 @@ object Dependencies {
   // Selenium needs to be update to update to v23.0
   lazy val vGuavaJre = "24.0-jre"    // https://github.com/google/guava
 
-  lazy val vWebPack = "3.10.0"          // https://www.npmjs.com/package/webpack
+  lazy val vWebPack = "3.11.0"          // https://www.npmjs.com/package/webpack
   // scalajs-bundler v0.9 requires v9
   lazy val vJsDom = "11.6.2"           // https://www.npmjs.com/package/jsdom
   lazy val vExposeLoader = "0.7.3"     // https://www.npmjs.com/package/expose-loader
@@ -240,7 +240,8 @@ object Dependencies {
 
   val bridgeScorerTestNpmDeps = Seq(
       "jsdom" -> vJsDom,
-      "jquery" -> vJQuery
+      "jquery" -> vJQuery,
+      "webpack" -> vWebPack,
   )
 
   val bridgeScorerDevNpmDeps = Seq(
