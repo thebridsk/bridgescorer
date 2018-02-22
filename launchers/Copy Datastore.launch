@@ -7,11 +7,8 @@
 <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
 <listEntry value="1"/>
 </listAttribute>
-<mapAttribute key="org.eclipse.debug.core.preferred_launchers">
-<mapEntry key="[debug]" value="scala.application.new"/>
-</mapAttribute>
 <booleanAttribute key="org.eclipse.jdt.launching.ATTR_USE_START_ON_FIRST_THREAD" value="true"/>
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="com.example.Server"/>
-<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="--logfile logs/server.%u.log start --store ./store --cache 0s --diagnostics ./logs"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="datastore --store ${resource_loc:/bridgescorer/server/store} copy ${resource_loc:/bridgescorer/server/temp}"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="bridgescorer-server"/>
 </launchConfiguration>

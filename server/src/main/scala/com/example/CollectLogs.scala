@@ -28,6 +28,8 @@ import java.util.zip.ZipEntry
 import scala.reflect.io.File
 import java.nio.file.Paths
 import com.example.version.VersionServer
+import com.example.version.VersionShared
+import com.example.utilities.version.VersionUtilities
 
 /**
  * This is the update subcommand.
@@ -45,7 +47,7 @@ object CollectLogs extends Subcommand("collectlogs") {
   val defaultZip = Path("logs.zip")
   val defaultStore = Path("./store")
 
-  descr("Not implemented")
+  descr("Collects the logs and other diagnostic information")
 
   banner(s"""
 Collects the logs and other diagnostic information.
@@ -55,29 +57,27 @@ Syntax:
 Options:""")
 
   footer(s"""
-The server should NOT be running.  The logs should be in the current directory.
+The server should NOT be running.
 """)
 
   val optionZip = opt[Path]("zip", short='z', descr=s"the name of the output zipfile.  If it exists, it will be overwritten.  Default: ${defaultZip}", argName="zipfilename", default=Some(defaultZip))
   val optionStore = opt[Path]("store", short='s', descr=s"The store directory, default=${defaultStore}", argName="dir", default=Some(defaultStore))
+
+  val optionDiagnosticDir = opt[Path]("diagnostics", short='d', required=true, descr="The directory that contains the log files.  All .log files in directory may be collected for diagnostic purposes.", argName="dir", default=None)
 
   def executeSubcommand(): Int = {
 
     val zipfile = optionZip.toOption.getOrElse(defaultZip)
     val store = optionStore.toOption.getOrElse(defaultStore)
 
-    val currentDir = Directory(".")
-    val logfiles = currentDir.files.filter( f => f.extension == "log")
+    val diagDir = optionDiagnosticDir.toOption.map( p => p.toDirectory ).getOrElse( Directory(".") )
+    val logfiles = diagDir.files.filter( f => f.extension == "log")
 
     val storefiles = Directory(store).files
 
     zip(zipfile,logfiles,storefiles)
 
     0
-  }
-
-  def version = {
-    VersionServer.toString.getBytes("UTF8")
   }
 
   private def zip(out: Path, logfiles: Iterator[File], storefiles: Iterator[File] ) = {
@@ -89,12 +89,13 @@ The server should NOT be running.  The logs should be in the current directory.
         val ze = new ZipEntry(nameInZip)
         println(s"Adding version info => ${ze.getName}")
         zip.putNextEntry(ze)
-        zip.write(version)
+        val v = s"""${VersionServer.toString}\n${VersionShared.toString}\n${VersionUtilities.toString}"""
+        zip.write(v.getBytes("UTF8"))
         zip.closeEntry()
       }
       logfiles.foreach { file =>
         val nameInZip = file.name.toString
-        val ze = new ZipEntry(nameInZip)
+        val ze = new ZipEntry("logs/"+nameInZip)
         println(s"Adding ${file} => ${ze.getName}")
         zip.putNextEntry(ze)
         Files.copy(Paths.get(file.toString), zip)
