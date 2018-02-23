@@ -40,6 +40,8 @@ Options:""")
   addSubcommand(ShowSuggestionCommand)
   addSubcommand(ShowPartnersOfCommand)
 
+  shortSubcommandsHelp(true)
+
 //  footer(s""" """)
 
   def executeSubcommand(): Int = {

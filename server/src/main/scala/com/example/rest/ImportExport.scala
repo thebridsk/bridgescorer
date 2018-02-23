@@ -36,6 +36,9 @@ import java.io.InputStream
 import java.io.OutputStream
 import scala.concurrent.Future
 import akka.http.scaladsl.model.headers.ContentDispositionTypes
+import com.example.version.VersionServer
+import com.example.version.VersionShared
+import com.example.utilities.version.VersionUtilities
 
 object ImportExport {
   val log = Logger[ImportExport]
@@ -298,6 +301,16 @@ trait ImportExport {
 
                           val buf = new BufferedOutputStream(os)
                           val zip = new ZipOutputStream( buf, StandardCharsets.UTF_8 )
+
+                          {
+                            val nameInZip = "version.txt"
+                            val ze = new ZipEntry(nameInZip)
+                            println(s"Adding version info => ${ze.getName}")
+                            zip.putNextEntry(ze)
+                            val v = s"""${VersionServer.toString}\n${VersionShared.toString}\n${VersionUtilities.toString}"""
+                            zip.write(v.getBytes("UTF8"))
+                            zip.closeEntry()
+                          }
 
                           restService.exportToZip(zip,None).onComplete { tr =>
                             tr match {

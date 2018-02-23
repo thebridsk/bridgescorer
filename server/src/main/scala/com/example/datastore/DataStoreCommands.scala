@@ -40,6 +40,8 @@ object DataStoreCommands extends Subcommand("datastore") {
 
   val cmdName = "${Server.cmdName} datastore"
 
+  descr("Various commands act on the datastore")
+
   banner(s"""
 Commands on datastore
 
@@ -59,6 +61,7 @@ Options:""")
   addSubcommand(SetNamesCommand)
   addSubcommand(ConvertToCommand)
   addSubcommand(ConvertBoardSetsAndMovementsCommand)
+  addSubcommand(Copy)
 
   def executeSubcommand(): Int = {
     log.severe("Unknown options specified")
