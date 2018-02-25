@@ -16,7 +16,6 @@ import com.example.backend.BridgeService
 import scala.concurrent.ExecutionContext.Implicits.global
 import com.example.data.Id
 import sangria.validation.ValueCoercionViolation
-import org.parboiled2.Position
 import sangria.ast.ScalarValue
 import sangria.ast
 import com.example.data.SystemTime.Timestamp
@@ -30,12 +29,13 @@ import com.example.data.DifferenceWrappers
 import com.example.data.MatchDuplicateResult
 import com.example.data.BoardResults
 import com.example.data.BoardTeamResults
+import sangria.ast.AstLocation
 
 object SchemaDefinition {
 
   val log = Logger( SchemaDefinition.getClass.getName )
 
-  def getPos( v: ast.Value ): Option[Position] = v match {
+  def getPos( v: ast.Value ): Option[AstLocation] = v match {
     case ast.IntValue(value, comments, position) => position
     case ast.BigIntValue(value, comments, position ) => position
     case ast.FloatValue(value, comments, position ) => position
@@ -61,7 +61,7 @@ object SchemaDefinition {
     },
     coerceInput = {
       case ast.StringValue(s, _, _, _, _) => Right( s.asInstanceOf[T] )
-      case x => Left(IdCoercionViolation( typename, getPos(x).map( p => s"at line ${p.line} column ${p.column}" ) ))
+      case x => Left(IdCoercionViolation( typename, getPos(x).map( p => s"at line ${p.line} column ${p.column}, sourceId ${p.sourceId} index ${p.index}" ) ))
     })
 
   val TeamIdType = idScalarTypeFromString[Id.Team]("TeamId")
