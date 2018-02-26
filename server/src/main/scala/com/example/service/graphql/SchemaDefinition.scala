@@ -293,14 +293,18 @@ object SchemaDefinition {
       "BestMatch",
       "Identifies the best match",
       fields[BridgeService,(Option[String],BestMatch)](
-          Field("id", DuplicateIdType,
+          Field("id", OptionType(DuplicateIdType),
               Some("The id of the best duplicate match from the main store"),
               resolve = _.value._2.id
           ),
           Field("sameness", FloatType,
               Some("A percentage of similarity."),
               resolve = _.value._2.sameness
-          )
+          ),
+          Field("differences", OptionType(ListType(StringType)),
+              Some("The fields that are different"),
+              resolve = _.value._2.differences
+          ),
       )
   )
 
@@ -744,8 +748,8 @@ object Action {
                     import DifferenceWrappers._
                     val diff = md.difference("", mmd)
                     log.fine(s"Diff main(${mmd.id}) import(${importId},${md.id}): ${diff}")
-                    BestMatch( diff.percentSame, mmd.id )
-                  }.foldLeft(BestMatch(-1,"")) { (ac,v) =>
+                    BestMatch( mmd.id, diff )
+                  }.foldLeft(BestMatch.noMatch) { (ac,v) =>
                     if (ac.sameness < v.sameness) v
                     else ac
                   }
@@ -785,8 +789,8 @@ object Action {
                     import DifferenceWrappers._
                     val diff = md.difference("", mmd)
                     log.fine(s"Diff main(${mmd.id}) import(${importId},${md.id}): ${diff}")
-                    BestMatch( diff.percentSame, mmd.id )
-                  }.foldLeft(BestMatch(-1,"")) { (ac,v) =>
+                    BestMatch( mmd.id, diff )
+                  }.foldLeft(BestMatch.noMatch) { (ac,v) =>
                     if (ac.sameness < v.sameness) v
                     else ac
                   }

@@ -6,6 +6,7 @@ import com.example.data.websocket.DuplexProtocol.LogEntryV2
 import com.example.data.duplicate.suggestion.Suggestion
 import com.example.data.duplicate.suggestion.DuplicateSuggestions
 import com.example.data.duplicate.suggestion.Pairing
+import com.example.data.duplicate.suggestion.NeverPair
 
 //import com.example.data.websocket.DuplexProtocol.{ LogEntry => DpLogEntry, _ }
 //import com.example.data.websocket.Protocol._
@@ -68,6 +69,7 @@ trait JsonSupport {
 
   implicit val pairingFormat = Json.format[Pairing]
   implicit val suggestionFormat = Json.format[Suggestion]
+  implicit val duplicateNeverPairFormat = Json.format[NeverPair]
   implicit val duplicateSuggestionsFormat = Json.format[DuplicateSuggestions]
 
   implicit val unitFormat = new UnitFormat

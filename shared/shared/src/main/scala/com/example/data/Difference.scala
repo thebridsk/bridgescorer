@@ -31,6 +31,8 @@ class Difference(
   def incChange( diff: String ) = copy( changes = changes+1, differences=diff::differences )
   def incSame = copy( same = same+1 )
 
+  def withChanges( change: Int ) = copy( changes = change )
+
   override
   def toString() = {
     s"""Difference(same=$same,changes=$changes,%=${percentSame},differences=${differences.mkString("[", ",", "]")}"""
@@ -38,7 +40,7 @@ class Difference(
 }
 
 object SameDifference extends Difference(1,0)
-class ChangeDifference( diff: String) extends Difference(0,1,List(diff))
+class ChangeDifference( diff: String) extends Difference(0,1,List(if (diff.startsWith(".")) diff.substring(1) else diff))
 
 object Difference {
 
@@ -84,11 +86,11 @@ object Difference {
       if (m.isEmpty) {
         val ol = o.length
         if (ol == 0) diff
-        else diff.add( Difference(0,ol,List(prefix+o.map( w => w.id).mkString("(", ",", ")"))) )
+        else diff.add( new ChangeDifference(prefix+o.map( w => w.id).mkString("(", ",", ")")).withChanges(ol))
       } else if (o.isEmpty) {
         val ml = m.length
         if (ml == 0) diff
-        else diff.add( Difference(0,ml,List(prefix+m.map( w => w.id).mkString("(", ",", ")"))) )
+        else diff.add( new ChangeDifference(prefix+m.map( w => w.id).mkString("(", ",", ")")).withChanges(ml))
       } else {
         val mh = m.head
         val oh = o.head

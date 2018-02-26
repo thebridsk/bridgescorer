@@ -38,12 +38,14 @@ case class Suggestion( players: List[Pairing],
                        random: Int,
                        key: String )
 
+case class NeverPair( player1: String, player2: String )
+
 case class DuplicateSuggestions( players: List[String],
                                  numberSuggestion: Int,
                                  suggestions: Option[List[Suggestion]],
                                  calcTimeMillis: Option[Double],
                                  history: Option[Int],
-                                 neverPair: Option[List[(String,String)]]
+                                 neverPair: Option[List[NeverPair]]
                                ) {
 }
 
@@ -53,7 +55,7 @@ object DuplicateSuggestions {
              suggestions: Option[List[Suggestion]] = None,
              calcTimeMillis: Option[Double] = None,
              history: Option[Int] = None,
-             neverPair: Option[List[(String,String)]] = None
+             neverPair: Option[List[NeverPair]] = None
            ) = {
     new DuplicateSuggestions(players,numberSuggestion,suggestions,calcTimeMillis,history,neverPair)
   }
@@ -116,11 +118,13 @@ class Stats {
 class DuplicateSuggestionsCalculation(
                            pastgames: List[DuplicateSummary],
                            players: List[String],
-                           neverPair: Option[List[(String,String)]] = None
+                           neverPair: Option[List[NeverPair]] = None
                          ) {
 
   def isNeverPair( p1: String, p2: String ) = {
-    neverPair.map( np => np.contains((p1,p2))||np.contains((p2,p1)) ).getOrElse(false)
+    val np1 = NeverPair(p1,p2)
+    val np2 = NeverPair(p2,p1)
+    neverPair.map( np => np.contains(np1)||np.contains(np2) ).getOrElse(false)
   }
 
   if (players.length != 8) throw new IllegalArgumentException("Must specify exactly 8 players")

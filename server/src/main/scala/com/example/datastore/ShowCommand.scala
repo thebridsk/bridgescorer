@@ -15,6 +15,7 @@ import com.example.data.DuplicateSummary
 import com.example.data.duplicate.suggestion.DuplicateSuggestions
 import java.text.SimpleDateFormat
 import java.util.Date
+import com.example.data.duplicate.suggestion.NeverPair
 
 trait ShowCommand
 
@@ -137,7 +138,7 @@ Options:""")
         val neverPair = optionNeverPair.toOption.map( lnp => lnp.flatMap { pair =>
           pair match {
             case patternPair(p1,p2) =>
-              (p1,p2)::Nil
+              NeverPair(p1,p2)::Nil
             case _ =>
               log.severe(s"""Never pair option not valid, ignoring: ${pair}""")
               Nil
