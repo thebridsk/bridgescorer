@@ -26,6 +26,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import org.scalactic.source.Position
 import com.example.rest2.RequestCancelled
 import com.example.react.Utils._
+import com.example.data.duplicate.suggestion.NeverPair
 
 /**
  * A skeleton component.
@@ -68,7 +69,7 @@ object PageSuggestionInternal {
                     suggestion: Option[DuplicateSuggestions] = None,
                     error: Option[String] = None,
                     showNeverPair: Boolean = false,
-                    neverPair: List[(String,String)] = List(),
+                    neverPair: List[NeverPair] = List(),
                     showDetails: Boolean = false
                   ) {
     def isValid = {
@@ -85,8 +86,8 @@ object PageSuggestionInternal {
     }
 
     def neverPairKey( p1: String, p2: String ) = {
-      if (p1 < p2) (p1,p2)
-      else (p2,p1)
+      if (p1 < p2) NeverPair(p1,p2)
+      else NeverPair(p2,p1)
     }
 
     def isNeverPair( p1: String, p2: String ) = {

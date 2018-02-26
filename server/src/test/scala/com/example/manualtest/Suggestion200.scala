@@ -15,6 +15,7 @@ import scala.concurrent.duration._
 import java.net.URLClassLoader
 import java.io.File
 import com.example.data.duplicate.suggestion.DuplicateSuggestions
+import com.example.data.duplicate.suggestion.NeverPair
 
 object Suggestion200 extends Main {
 
@@ -95,7 +96,7 @@ Options:""")
     val neverPair = optionNeverPair.toOption.map( lnp => lnp.flatMap { pair =>
       pair match {
         case patternPair(p1,p2) =>
-          (p1,p2)::Nil
+          NeverPair(p1,p2)::Nil
         case _ =>
           log.severe(s"""Never pair option not valid, ignoring: ${pair}""")
           Nil
@@ -152,7 +153,7 @@ Options:""")
     x.mkString("",", ",f"  lastPlayedAllTeams=${s.lastPlayedAllTeams} minLastPlayed=${s.minLastPlayed}, maxLastPlayed=${s.maxLastPlayed}, maxTimesPlayed=${s.maxTimesPlayed}, avgLastPlayed=${s.avgLastPlayed}, avgTimesPlayed=${s.avgTimesPlayed}, lastPlayedAllTeams=${s.lastPlayedAllTeams}, weight=${s.weight}%.5f, weights=${wghts}, random=${s.random}")
   }
 
-  def nextSuggestion( i: Int, players: List[String], neverPair: Option[List[(String,String)]] ) = {
+  def nextSuggestion( i: Int, players: List[String], neverPair: Option[List[NeverPair]] ) = {
     log.info( s"Calculating $i with ${playedMatches.length} games" )
 
     val input = DuplicateSuggestions(players, numberSuggestion=105, neverPair=neverPair)

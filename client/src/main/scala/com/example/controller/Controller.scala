@@ -249,6 +249,7 @@ object Controller {
              |      bestMatch {
              |        id
              |        sameness
+             |        differences
              |      }
              |    }
              |  }

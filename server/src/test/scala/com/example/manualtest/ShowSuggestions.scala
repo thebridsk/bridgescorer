@@ -11,6 +11,7 @@ import com.example.data.duplicate.suggestion.PairData
 import scala.concurrent.Await
 import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext.Implicits.global
+import com.example.data.duplicate.suggestion.NeverPair
 
 object ShowSuggestions extends Main {
 
@@ -63,7 +64,7 @@ Options:""")
         val neverPair = optionNeverPair.toOption.map( lnp => lnp.flatMap { pair =>
           pair match {
             case patternPair(p1,p2) =>
-              (p1,p2)::Nil
+              NeverPair(p1,p2)::Nil
             case _ =>
               log.severe(s"""Never pair option not valid, ignoring: ${pair}""")
               Nil
@@ -114,7 +115,7 @@ Options:""")
     }
   }
 
-  def showSuggestions( summaries: List[DuplicateSummary], n: List[String], neverPair: Option[List[(String,String)]] ) = {
+  def showSuggestions( summaries: List[DuplicateSummary], n: List[String], neverPair: Option[List[NeverPair]] ) = {
     val ds = new DuplicateSuggestionsCalculation( summaries, n, neverPair )
     log.info(s"Suggestions:")
     ds.suggest.zipWithIndex.foreach { e =>

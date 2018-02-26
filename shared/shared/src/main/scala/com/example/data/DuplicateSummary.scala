@@ -23,9 +23,20 @@ case class DuplicateSummaryEntry(
 case class BestMatch(
     @(ApiModelProperty @field)(value="How similar the matches are", required=true)
     sameness: Double,
-    @(ApiModelProperty @field)(value="The ID of the MatchDuplicate in the main store that is the best match", required=true)
-    id: Id.MatchDuplicate
+    @(ApiModelProperty @field)(value="The ID of the MatchDuplicate in the main store that is the best match, none if no match", required=true)
+    id: Option[Id.MatchDuplicate],
+    @(ApiModelProperty @field)(value="The fields that are different", required=true)
+    differences: Option[List[String]]
 )
+
+object BestMatch {
+
+  def noMatch = new BestMatch( -1, None, None )
+
+  def apply( id: Id.MatchDuplicate, diff: Difference ) = {
+    new BestMatch( diff.percentSame, Some(id), Some(diff.differences) )
+  }
+}
 
 @ApiModel(description = "The summary of duplicate matches")
 case class DuplicateSummary(
