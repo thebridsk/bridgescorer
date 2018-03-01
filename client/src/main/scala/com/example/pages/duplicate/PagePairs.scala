@@ -64,7 +64,9 @@ object PagePairsInternal {
   case class State(
                     filter: ViewPlayerFilter.Filter = ViewPlayerFilter.Filter(),
                     showPeopleTable: Boolean = false,
-                    showPairs: Boolean = false
+                    showPairs: Boolean = false,
+                    showPeopleTableDetail: Boolean = false,
+                    showPairsDetail: Boolean = false
                   )
 
   /**
@@ -81,6 +83,10 @@ object PagePairsInternal {
     def toggleShowPeopleTable() = scope.modState( s => s.copy( showPeopleTable = !s.showPeopleTable) )
 
     def toggleShowPairs() = scope.modState( s => s.copy( showPairs = !s.showPairs) )
+
+    def toggleShowPeopleTableDetail() = scope.modState( s => s.copy( showPeopleTableDetail = !s.showPeopleTableDetail) )
+
+    def toggleShowPairsDetail() = scope.modState( s => s.copy( showPairsDetail = !s.showPairsDetail) )
 
     def render( props: Props, state: State ) = {
       <.div(
@@ -109,20 +115,32 @@ object PagePairsInternal {
           baseStyles.divFooter,
           <.div(
             baseStyles.divFooterLeft,
-            AppButton( "ShowPeopleDetails",
-                       "Show People Details",
+            AppButton( "ShowPeopleResults",
+                       "Show People Results",
                        state.showPeopleTable ?= baseStyles.buttonSelected,
                        ^.onClick-->toggleShowPeopleTable()
                      ),
-            AppButton( "ShowPairsDetails",
-                       "Show Pairs Details",
+            AppButton( "ShowPairsResults",
+                       "Show Pairs Results",
                        state.showPairs ?= baseStyles.buttonSelected,
                        ^.onClick-->toggleShowPairs()
+                     ),
+            AppButton( "ShowPeopleDetails",
+                       "Show People Details",
+                       state.showPeopleTableDetail ?= baseStyles.buttonSelected,
+                       ^.onClick-->toggleShowPeopleTableDetail()
+                     ),
+            AppButton( "ShowPairsDetails",
+                       "Show Pairs Details",
+                       state.showPairsDetail ?= baseStyles.buttonSelected,
+                       ^.onClick-->toggleShowPairsDetail()
                      )
           )
         ),
         state.showPeopleTable ?= ViewPeopleTable( state.filter ),
         state.showPairs ?= ViewPairs(state.filter ),
+        state.showPeopleTableDetail ?= ViewPeopleTableDetails( state.filter ),
+        state.showPairsDetail ?= ViewPairsDetails(state.filter ),
         <.div(
           baseStyles.divFooter,
           <.div(

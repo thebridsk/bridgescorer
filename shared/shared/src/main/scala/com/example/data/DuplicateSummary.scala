@@ -7,6 +7,51 @@ import com.example.data.bridge.PerspectiveComplete
 import io.swagger.annotations._
 import scala.annotation.meta._
 
+@ApiModel(description = "Details about a team in a match")
+case class DuplicateSummaryDetails(
+    @(ApiModelProperty @field)(value="The team", required=true)
+    team: Id.Team,
+    @(ApiModelProperty @field)(value="The number of times the team was declarer", required=true)
+    declarer: Int = 0,
+    @(ApiModelProperty @field)(value="The number of times the team made the contract as declarer", required=true)
+    made: Int = 0,
+    @(ApiModelProperty @field)(value="The number of times the team went down as declarer", required=true)
+    down: Int = 0,
+    @(ApiModelProperty @field)(value="The number of times the team defended the contract", required=true)
+    defended: Int = 0,
+    @(ApiModelProperty @field)(value="The number of times the team took down the contract as defenders", required=true)
+    tookDown: Int = 0,
+    @(ApiModelProperty @field)(value="The number of times the team allowed the contract to be made as defenders", required=true)
+    allowedMade: Int = 0,
+    @(ApiModelProperty @field)(value="The number of times the team passed out a game", required=true)
+    passed: Int = 0
+  ) {
+
+  def add( v: DuplicateSummaryDetails ) = {
+    copy( declarer=declarer+v.declarer, made=made+v.made, down=down+v.down, defended=defended+v.defended, tookDown=tookDown+v.tookDown, allowedMade=allowedMade+v.allowedMade, passed=passed+v.passed)
+  }
+
+  def percentMade = made*100.0/declarer
+  def percentDown = down*100.0/declarer
+  def percentAllowedMade = allowedMade*100.0/defended
+  def percentTookDown = tookDown*100.0/defended
+
+  def percentDeclared = declarer*100.0/(declarer+defended+passed)
+  def percentDefended = defended*100.0/(declarer+defended+passed)
+  def percentPassed = passed*100.0/(declarer+defended+passed)
+
+  def total = declarer+defended+passed
+}
+
+object DuplicateSummaryDetails {
+  def zero( team: Id.Team ) = new DuplicateSummaryDetails( team )
+  def passed( team: Id.Team ) = new DuplicateSummaryDetails( team, passed = 1 )
+  def made( team: Id.Team ) = new DuplicateSummaryDetails( team, declarer = 1, made = 1 )
+  def down( team: Id.Team ) = new DuplicateSummaryDetails( team, declarer = 1, down = 1 )
+  def allowedMade( team: Id.Team ) = new DuplicateSummaryDetails( team, defended = 1, allowedMade = 1 )
+  def tookDown( team: Id.Team ) = new DuplicateSummaryDetails( team, defended = 1, tookDown = 1 )
+}
+
 @ApiModel(description = "The summary of a duplicate match")
 case class DuplicateSummaryEntry(
     @(ApiModelProperty @field)(value="The team", required=true)
@@ -14,7 +59,9 @@ case class DuplicateSummaryEntry(
     @(ApiModelProperty @field)(value="The points the team scored", required=true)
     result: Double,
     @(ApiModelProperty @field)(value="The place the team finished in", required=true)
-    place: Int
+    place: Int,
+    @(ApiModelProperty @field)(value="Details about the team", required=false)
+    details: Option[DuplicateSummaryDetails] = None,
     ) {
   def id = team.id
 }
@@ -111,7 +158,8 @@ object DuplicateSummary {
   def create( md: MatchDuplicate ): DuplicateSummary = {
     val score = MatchDuplicateScore(md, PerspectiveComplete)
     val places = score.places.flatMap { p => p.teams.map { t => (t.id->p.place) }.toList }.toMap
-    val t = md.teams.map{ team => DuplicateSummaryEntry( team, score.teamScores( team.id ), places( team.id ) ) }.toList
+    val details = score.getDetails().map { d => d.team -> d }.toMap
+    val t = md.teams.map{ team => DuplicateSummaryEntry( team, score.teamScores( team.id ), places( team.id ), details.get(team.id) ) }.toList
     DuplicateSummary( md.id, score.alldone,
                       t,
                       md.boards.size, md.teams.size/2, false,

@@ -44,6 +44,7 @@ class DuplicateStyles {
   val cellScoreboardBoardColumn = cls("dupCellScoreboardBoardColumn")
 
   val divScoreboardHelp = cls("dupDivScoreboardHelp")
+  val divScoreboardDetails = cls("dupDivScoreboardDetails")
   val divPlayerPosition = cls("dupDivPlayerPosition")
   val tablePlayerPosition = cls("dupTablePlayerPosition")
 

@@ -67,7 +67,7 @@ object PageScoreboardInternal {
    * will cause State to leak.
    *
    */
-  case class State( deletePopup: Boolean )
+  case class State( deletePopup: Boolean = false, showdetails: Boolean = false )
 
   /**
    * Internal state for rendering the component.
@@ -96,12 +96,16 @@ object PageScoreboardInternal {
             ),
             ViewScoreboard( props.routerCtl, props.game, score ),
             winnersets.map(ws => ViewPlayerMatchResult( score.placeByWinnerSet(ws) )).toTagMod,
-            ViewScoreboardHelp( props.game, score ),
+            if (state.showdetails) {
+              ViewScoreboardDetails( props.game, score )
+            } else {
+              ViewScoreboardHelp( props.game, score )
+            },
             <.div(
               baseStyles.divFooter,
               props.game.getPerspective() match {
                 case PerspectiveComplete =>
-                  Seq(
+                  TagMod(
                     <.div(
                       baseStyles.divFooterLeft,
                       score.tables.keys.toList.sortWith((t1,t2)=>t1<t2).map { table =>
@@ -121,7 +125,15 @@ object PageScoreboardInternal {
                       " ",
                       AppButton( "Tables", "All Tables", props.routerCtl.setOnClick(AllTableView(props.game.dupid)) ),
                       " ",
-                      AppButton( "Boardset", "BoardSet", props.routerCtl.setOnClick(DuplicateBoardSetView(props.game.dupid)) )
+                      AppButton( "Boardset", "BoardSet", props.routerCtl.setOnClick(DuplicateBoardSetView(props.game.dupid)) ),
+                      if (score.alldone) {
+                        TagMod(
+                          " ",
+                          AppButton( "Details", "Details", ^.onClick --> toggleShowDetails )
+                        )
+                      } else {
+                        TagMod()
+                      }
                     ),
                     <.div(
                       baseStyles.divFooterRight,
@@ -129,7 +141,7 @@ object PageScoreboardInternal {
                       " ",
                       AppButton( "ForPrint", "For Print", props.routerCtl.setOnClick(FinishedScoreboardsView(props.game.dupid)) )
                     )
-                  ).toTagMod
+                  )
                 case PerspectiveDirector =>
                   Seq(
                     <.div(
@@ -211,6 +223,8 @@ object PageScoreboardInternal {
 
     def actionDeleteCancel = scope.modState(s => s.copy(deletePopup=false) )
 
+    def toggleShowDetails = scope.modState( s => s.copy( showdetails = !s.showdetails) )
+
     val storeCallback = Callback { scope.withEffectsImpure.forceUpdate }
 
     def didMount() = CallbackTo {
@@ -226,7 +240,7 @@ object PageScoreboardInternal {
   }
 
   val component = ScalaComponent.builder[Props]("PageScoreboard")
-                            .initialStateFromProps { props => State(false) }
+                            .initialStateFromProps { props => State() }
                             .backend(new Backend(_))
                             .renderBackend
                             .componentDidMount( scope => scope.backend.didMount())

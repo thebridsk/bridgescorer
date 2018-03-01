@@ -214,7 +214,7 @@ object ViewPairsGridInternal {
                                                       sortedPlayers,
                                                       summary.colorStat,
                                                       summary.playedStat,
-                                                      summary.playerTotals.get(rowplayer).getOrElse(PairData(rowplayer,"",0,0,0,0,0,0)),
+                                                      summary.playerTotals.get(rowplayer).getOrElse(PairData(rowplayer,"",0,0,0,0,0,0,None)),
                                                       summary.playedStatPlayerTotals,
                                                       summary.colorStatPlayerTotals
                                                    ))

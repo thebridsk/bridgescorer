@@ -43,6 +43,7 @@ trait JsonSupport {
   implicit val duplicateV1Format = Json.format[MatchDuplicateV1]
   implicit val duplicateV2Format = Json.format[MatchDuplicateV2]
   implicit val duplicateV3Format = Json.format[MatchDuplicateV3]
+  implicit val duplicateSummaryDetailsFormat = Json.format[DuplicateSummaryDetails]
   implicit val duplicateSummaryEntryFormat = Json.format[DuplicateSummaryEntry]
   implicit val bestMatchFormat = Json.format[BestMatch]
   implicit val duplicateSummaryFormat = Json.format[DuplicateSummary]
