@@ -16,6 +16,7 @@ import com.example.data.duplicate.suggestion.DuplicateSuggestions
 import java.text.SimpleDateFormat
 import java.util.Date
 import com.example.data.duplicate.suggestion.NeverPair
+import com.example.data.Id
 
 trait ShowCommand
 
@@ -40,6 +41,7 @@ Options:""")
   addSubcommand(ShowBoardsetsAndMovementsCommand)
   addSubcommand(ShowSuggestionCommand)
   addSubcommand(ShowPartnersOfCommand)
+  addSubcommand(ShowTeamDeclarerCommand)
 
   shortSubcommandsHelp(true)
 
@@ -283,6 +285,70 @@ Options:""")
               } else {
                 log.info( f"""${summary.id}%4s ${date} -""")
               }
+            }
+        case Left((status,msg)) =>
+          log.warning(s"Error getting summaries: ${msg}")
+      }
+    }
+
+    await(fut)
+
+    0
+  }
+}
+
+object ShowTeamDeclarerCommand extends Subcommand("declarer") {
+  import DataStoreCommands.optionStore
+  import ShowCommand.log
+
+  import utils.main.Converters._
+
+  descr("show the number of times team was declarer in match")
+
+  banner(s"""
+show the number of times team was declarer in match
+
+Syntax:
+  ${DataStoreCommands.cmdName} show declarer
+Options:""")
+
+//  footer(s""" """)
+
+  def await[T]( fut: Future[T] ) = Await.result(fut, 30.seconds)
+
+  val sdf = new SimpleDateFormat( "MM/dd/YYYY" )
+
+  def executeSubcommand(): Int = {
+    val storedir = optionStore().toDirectory
+    log.info(s"Using datastore ${storedir}")
+    val datastore = new BridgeServiceFileStore( storedir )
+
+    val fut = datastore.duplicates.readAll().map { rl =>
+      rl match {
+        case Right(dups) =>
+          dups.values.toList.
+            sortWith( (l,r) => l.created > r.created).
+            foreach { dup =>
+              val counts = dup.boards.flatMap { b =>
+                b.hands.flatMap { dh =>
+                  dh.played.map { h =>
+                    h.declarer match {
+                      case "N" | "S" =>
+                        dh.nsTeam
+                      case "E" | "W" =>
+                        dh.ewTeam
+                    }
+                  }
+                }
+              }.foldLeft(Map[Id.Team,Int]()) { (ac,v) =>
+                val c = ac.get(v).getOrElse(0)
+                ac + ( v -> (c+1) )
+              }.toList.sortBy { e => e._2 }.map { e =>
+                val (k,v) = e
+                f"${k}=${v}%2s"
+              }
+              val d = sdf.format(new Date(dup.created.toLong))
+              log.info(f"""${dup.id}%-4s ${d} ${counts.mkString("  ")}""")
             }
         case Left((status,msg)) =>
           log.warning(s"Error getting movements: ${msg}")

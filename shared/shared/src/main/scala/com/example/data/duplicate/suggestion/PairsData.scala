@@ -1,6 +1,7 @@
 package com.example.data.duplicate.suggestion
 
 import com.example.data.DuplicateSummary
+import com.example.data.DuplicateSummaryDetails
 import utils.logging.Logger
 import scala.collection.mutable.ListBuffer
 
@@ -13,7 +14,7 @@ import scala.collection.mutable.ListBuffer
  * @param points the number of points scored by this pair
  * @param totalPoints the total number of points the team could have won.
  */
-case class PairData( player1: String, player2: String, played: Int, won: Int, wonPts: Double, points: Double, totalPoints: Double, incompleteGames: Int ) {
+case class PairData( player1: String, player2: String, played: Int, won: Int, wonPts: Double, points: Double, totalPoints: Double, incompleteGames: Int, details: Option[DuplicateSummaryDetails] ) {
   import PairsData._
 
   def normalize = {
@@ -25,8 +26,12 @@ case class PairData( player1: String, player2: String, played: Int, won: Int, wo
 
   def isNormalized = (player1,player2) == key(player1,player2)
 
-  def add( win: Boolean, winPts: Double, pts: Double, totpts: Double ) =
-    copy( played=played+1, won=won+(if (win) 1 else 0), wonPts=wonPts+winPts, points=points+pts, totalPoints=totalPoints+totpts)
+  def add( win: Boolean, winPts: Double, pts: Double, totpts: Double, det: Option[DuplicateSummaryDetails] ) = {
+    val ds = det.map { d =>
+      Some(details.map { cd => cd.add(d) }.getOrElse(d))
+    }.getOrElse(details)
+    copy( played=played+1, won=won+(if (win) 1 else 0), wonPts=wonPts+winPts, points=points+pts, totalPoints=totalPoints+totpts, details=ds)
+  }
 
   def addIncomplete = copy( incompleteGames=incompleteGames+1)
 
@@ -47,13 +52,17 @@ case class PairData( player1: String, player2: String, played: Int, won: Int, wo
     if (!pd.contains(player1)) throw new IllegalArgumentException("Player 1 must be one of the players in pd")
     val pdOtherPlayer = if (player1 == pd.player1) pd.player2 else pd.player1
     val p2 = if (player2=="") pdOtherPlayer else player2+","+pdOtherPlayer
+    val ds = pd.details.map { d =>
+      Some(details.map { cd => cd.add(d) }.getOrElse(d))
+    }.getOrElse(details)
     PairData( player1, p2,
               played = played+pd.played,
               won = won+pd.won,
               wonPts = wonPts+pd.wonPts,
               points = points+pd.points,
               totalPoints = totalPoints+pd.totalPoints,
-              incompleteGames = incompleteGames+pd.incompleteGames)
+              incompleteGames = incompleteGames+pd.incompleteGames,
+              details = ds )
   }
 }
 
@@ -85,15 +94,15 @@ class PairsData( pastgames: List[DuplicateSummary] ) {
       if (!list.contains(p)) list += p
     }
 
-    def add( player1: String, player2: String, win: Boolean, winPts: Double, pts: Double, totpts: Double, incomplete: Boolean ): Unit = {
+    def add( player1: String, player2: String, win: Boolean, winPts: Double, pts: Double, totpts: Double, incomplete: Boolean, details: Option[DuplicateSummaryDetails] ): Unit = {
       addPerson(player1)
       addPerson(player2)
       val pp = key(player1,player2)
-      val newpd = tdata.get(pp).getOrElse( PairData(pp._1,pp._2,0,0,0,0,0,0).normalize )
+      val newpd = tdata.get(pp).getOrElse( PairData(pp._1,pp._2,0,0,0,0,0,0,None).normalize )
       val reallynewpd = if (incomplete) {
         newpd.addIncomplete
       } else {
-        newpd.add(win, winPts, pts, totpts)
+        newpd.add(win, winPts, pts, totpts, details)
       }
       tdata += newpd.getkey -> reallynewpd
     }
@@ -110,7 +119,8 @@ class PairsData( pastgames: List[DuplicateSummary] ) {
         } else {
           0.0
         }
-        add(dse.team.player1,dse.team.player2,won,wonPts,pts,total,incomplete)
+        val details = dse.details
+        add(dse.team.player1,dse.team.player2,won,wonPts,pts,total,incomplete,details)
       }
     }
 
@@ -135,7 +145,7 @@ class PairsData( pastgames: List[DuplicateSummary] ) {
     val pds = data.values.filter { pd =>
       pd.contains(player) && playerFilter.map( f => f.contains(pd.player1) && f.contains(pd.player2)).getOrElse(true)
     }
-    pds.foldLeft(PairData(player,"",0,0,0,0,0,0)) { (ac,v) =>
+    pds.foldLeft(PairData(player,"",0,0,0,0,0,0, None)) { (ac,v) =>
       ac.addPairData(v)
     }
   }
@@ -237,6 +247,9 @@ object Stat {
 }
 
 import PairsData.log
+import com.example.data.DuplicateSummaryDetails
+import com.example.data.DuplicateSummaryDetails
+import com.example.data.DuplicateSummaryDetails
 
 /**
  * @param pds

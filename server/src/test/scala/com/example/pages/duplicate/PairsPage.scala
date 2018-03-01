@@ -96,6 +96,16 @@ class PairsPage( implicit webDriver: WebDriver, pageCreated: SourcePosition ) ex
     new MovementsPage()(webDriver, pos)
   }
 
+  def clickPeopleResults(implicit patienceConfig: PatienceConfig, pos: Position) = {
+    clickButton("ShowPeopleResults")
+    this
+  }
+
+  def clickPairsResults(implicit patienceConfig: PatienceConfig, pos: Position) = {
+    clickButton("ShowPairsResults")
+    this
+  }
+
   def clickPeopleDetails(implicit patienceConfig: PatienceConfig, pos: Position) = {
     clickButton("ShowPeopleDetails")
     this

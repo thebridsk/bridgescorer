@@ -4,6 +4,7 @@ import com.example.data.MatchDuplicate
 import com.example.data.Id
 import com.example.data.Team
 import com.example.data.DuplicateHand
+import com.example.data.DuplicateSummaryDetails
 
 case class DuplicateException(message: String) extends Exception(message)
 
@@ -166,6 +167,33 @@ class MatchDuplicateScore private ( duplicate: MatchDuplicate, val perspective: 
         List(duplicate.teams.map(t=>t.id).toList.sortWith(sorter))
       }
     }
+  }
+
+  def getDetails() = {
+    duplicate.boards.flatMap { b =>
+      b.hands.flatMap { dh =>
+        dh.played.flatMap { h =>
+          val (declarer,defender) = h.declarer match {
+            case "N" | "S" =>
+              (dh.nsTeam, dh.ewTeam)
+            case "E" | "W" =>
+              (dh.ewTeam, dh.nsTeam)
+          }
+          if (h.contractTricks == 0) {
+            DuplicateSummaryDetails.passed(declarer)::DuplicateSummaryDetails.passed(defender)::Nil
+          } else {
+            if (h.madeContract) {
+              DuplicateSummaryDetails.made(declarer)::DuplicateSummaryDetails.allowedMade(defender)::Nil
+            } else {
+              DuplicateSummaryDetails.down(declarer)::DuplicateSummaryDetails.tookDown(defender)::Nil
+            }
+          }
+        }
+      }
+    }.foldLeft(Map[Id.Team,DuplicateSummaryDetails]()) { (ac,v) =>
+      val c = ac.get(v.team).getOrElse( DuplicateSummaryDetails.zero(v.team))
+      ac + ( v.team -> (c.add(v)) )
+    }.toList.sortBy { e => e._1 }.map { e => e._2 }
   }
 }
 

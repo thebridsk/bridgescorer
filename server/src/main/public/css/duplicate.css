@@ -238,6 +238,26 @@
   padding-left: 20px;
 }
 
+.dupDivScoreboardDetails {
+  flex: 1 1 180px;
+  padding-left: 20px;
+  padding-top: 10px;
+  font-size: x-large;
+}
+
+.dupDivScoreboardDetails table {
+  border: 1px solid black;
+  border-spacing: 0px;
+}
+.dupDivScoreboardDetails td {
+  border: 1px solid black;
+  text-align: center;
+}
+.dupDivScoreboardDetails th {
+  border: 1px solid black;
+  text-align: center;
+}
+
 .dupDivPlayerPosition {
   flex: 0 0 auto;
   padding-top: 10px;
