@@ -20,6 +20,7 @@ import com.example.data.duplicate.suggestion.PairsDataSummary
 import com.example.data.duplicate.suggestion.ColorByWonPct
 import com.example.data.duplicate.suggestion.PairData
 import scala.annotation.tailrec
+import com.example.data.DuplicateSummaryDetails
 
 /**
  * Shows a summary page of all duplicate matches from the database.
@@ -140,17 +141,27 @@ object ViewPeopleTableDetailsInternal {
 
           val sorted = pds.sortWith( state.sortBy.sort _ )
 
-          <.table(
-            ^.id:="Players",
-            dupStyles.tablePeopleSummary,
-            SummaryHeader((props,state,this)),
-            <.tbody(
-              sorted.zipWithIndex.map { e =>
-                val (pd,i) = e
-                SummaryRow.withKey( i )((props,pd.player1,pd))
-              }.toTagMod
+          if (sorted.isEmpty) {
+            <.div()
+          } else {
+            val tpd = sorted.map( pd => pd.details ).foldLeft( DuplicateSummaryDetails.zero("Totals")) { (ac,v) =>
+              v.map( vv => ac.add(vv) ).getOrElse(ac)
+            }
+            val totalpd = sorted.head.copy( player1="Totals", player2="", details = Some(tpd) )
+
+            <.table(
+              ^.id:="Players",
+              dupStyles.tablePeopleSummary,
+              SummaryHeader((props,state,this)),
+              <.tbody(
+                sorted.zipWithIndex.map { e =>
+                  val (pd,i) = e
+                  SummaryRow.withKey( i )((props,pd.player1,pd))
+                }.toTagMod,
+                SummaryRow((props,"Totals", totalpd ))
+              )
             )
-          )
+          }
 
         case None =>
           <.div(
