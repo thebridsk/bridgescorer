@@ -151,7 +151,7 @@ object ViewPeopleTableDetailsInternal {
 
             <.table(
               ^.id:="Players",
-              dupStyles.tablePeopleSummary,
+              dupStyles.tablePeopleDetailSummary,
               SummaryHeader((props,state,this)),
               <.tbody(
                 sorted.zipWithIndex.map { e =>

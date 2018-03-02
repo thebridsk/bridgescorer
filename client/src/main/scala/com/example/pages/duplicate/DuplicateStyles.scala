@@ -26,6 +26,8 @@ class DuplicateStyles {
 
   val tablePeopleSummary = cls("dupTablePeopleSummary")
 
+  val tablePeopleDetailSummary = cls("dupTablePeopleDetailSummary")
+
   val divPlayerFilter = cls("dupDivPlayerFilter")
 
   val divPairsGrid = cls("dupDivPairsGrid")
