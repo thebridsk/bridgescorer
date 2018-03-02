@@ -109,7 +109,7 @@ class Session extends WebDriver {
   private def chrome( headless: Boolean ) = chromeCurrent(headless)
 
   private def chromeExperiment( headless: Boolean ): RemoteWebDriver = {
-    val logfile = new File(s"chromedriver.${Session.sessionCounter.incrementAndGet()}.log")
+    val logfile = new File("logs", s"chromedriver.${Session.sessionCounter.incrementAndGet()}.log")
 
     val options = new ChromeOptions
     // http://peter.sh/experiments/chromium-command-line-switches/
@@ -130,9 +130,10 @@ class Session extends WebDriver {
 //    val options = new ChromeOptions()
 //    options.addArguments("--verbose", "--log-path=C:\\temp\\chrome_test.log")
 
-    val logfile = new File(s"chromedriver.${Session.sessionCounter.incrementAndGet()}.log")
+    val logfile = new File("logs", s"chromedriver.${Session.sessionCounter.incrementAndGet()}.log")
 
     val service = if (debug) {
+      testlog.info( s"Logfile for chromedriver is ${logfile}" )
       new ChromeDriverService.Builder()
                       .usingAnyFreePort()
                       .withSilent(false)
