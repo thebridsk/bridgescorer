@@ -154,9 +154,13 @@ class Session extends WebDriver {
       if (headless) options.addArguments("--headless")
       val capabilities = DesiredCapabilities.chrome();
       capabilities.setCapability(ChromeOptions.CAPABILITY, options);
-      new RemoteWebDriver(service.getUrl(), capabilities)
+      testlog.fine("Starting remote driver for chrome")
+      val dr = new RemoteWebDriver(service.getUrl(), capabilities)
+      testlog.fine("Started remote driver for chrome")
+      dr
     } catch {
       case x: Throwable =>
+        testlog.warning("Exception starting remote driver for chrome", x)
         service.stop()
         chromeDriverService = None
         throw x
@@ -408,6 +412,8 @@ class Session extends WebDriver {
       val originx = origin.get.getX
       val originy = origin.get.getY
       setPosition(originx+x,originy+y)
+    } else {
+      testlog.fine("Screen info not support in setPositionRelative")
     }
     this
   }
@@ -418,7 +424,13 @@ class Session extends WebDriver {
    * @param y
    */
   def setPosition( x: Int, y: Int ) = {
-    webDriver.manage().window().setPosition(new Point(x,y))
+    if (getScreenInfo) {
+      testlog.fine(s"Setting position to ${x},${y}")
+      webDriver.manage().window().setPosition(new Point(x,y))
+      testlog.fine(s"Set position to ${x},${y}")
+    } else {
+      testlog.fine("Screen info not support in setPosition")
+    }
     this
   }
 
@@ -428,7 +440,13 @@ class Session extends WebDriver {
    * @param height
    */
   def setSize( width: Int, height: Int ) = {
-    webDriver.manage().window().setSize(new Dimension(width,height))
+    if (getScreenInfo) {
+      testlog.fine(s"Setting size to ${width},${height}")
+      webDriver.manage().window().setSize(new Dimension(width,height))
+      testlog.fine(s"Set size to ${width},${height}")
+    } else {
+      testlog.fine("Screen info not support in setSize")
+    }
     this
   }
 
@@ -490,6 +508,11 @@ object Session {
             }
           }
         }
+      }
+      if (screenInfoNotSupported) {
+        testlog.fine("Screen info not supported")
+      } else {
+        testlog.fine(s"Screen info size ${screenSize} origin ${origin}")
       }
     }
     !screenInfoNotSupported

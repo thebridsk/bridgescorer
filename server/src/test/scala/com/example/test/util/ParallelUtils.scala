@@ -149,7 +149,13 @@ object ParallelUtils extends ParallelUtils {
 
     def toFuture = {
       Future {
-        body
+        try {
+          body
+        } catch {
+          case x: Throwable =>
+            log.fine("Uncaught exception in CodeBlock", x )
+            throw x
+        }
       }
     }
   }
