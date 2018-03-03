@@ -54,6 +54,28 @@
   text-align: center;
 }
 
+.dupTablePeopleDetailSummary {
+  border-spacing: 0px;
+  font-size: x-large;
+  white-space: nowrap;
+  border: 1px solid black;
+  margin: 5px;
+}
+.dupTablePeopleDetailSummary tbody tr:nth-child(2n+1) {
+  background-color: #f2f2f2;
+}
+.dupTablePeopleDetailSummary td {
+  border: 1px solid black;
+  text-align: center;
+}
+.dupTablePeopleDetailSummary tr:last-child td {
+  border-top: 3px solid black;
+}
+.dupTablePeopleDetailSummary th {
+  border: 1px solid black;
+  text-align: center;
+}
+
 .dupDivPlayerFilter {
   font-size: x-large;
 }
