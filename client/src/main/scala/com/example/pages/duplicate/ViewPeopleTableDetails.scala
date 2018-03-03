@@ -154,7 +154,7 @@ object ViewPeopleTableDetailsInternal {
               dupStyles.tablePeopleDetailSummary,
               SummaryHeader((props,state,this)),
               <.tbody(
-                sorted.zipWithIndex.map { e =>
+                sorted.filter( pd => pd.details.isDefined ).zipWithIndex.map { e =>
                   val (pd,i) = e
                   SummaryRow.withKey( i )((props,pd.player1,pd))
                 }.toTagMod,

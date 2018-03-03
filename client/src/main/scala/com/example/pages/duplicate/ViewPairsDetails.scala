@@ -256,10 +256,10 @@ object ViewPairsDetailsInternal {
           val sorted = state.sortBy.getPairData(lpd)
           <.table(
             ^.id:="Pairs",
-            dupStyles.tablePeopleSummary,
+            dupStyles.tablePairsDetailsSummary,
             SummaryHeader((props,state,this)),
             <.tbody(
-              sorted.zipWithIndex.map { e =>
+              sorted.filter( pd => pd.details.isDefined ).zipWithIndex.map { e =>
                 val (pd,i) = e
                 SummaryRow.withKey( s"PD${i}" )((props,pd))
               }.toTagMod

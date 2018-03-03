@@ -196,7 +196,7 @@ object ViewPairsInternal {
           val sorted = state.sortBy.getPairData(lpd)
           <.table(
             ^.id:="Pairs",
-            dupStyles.tablePeopleSummary,
+            dupStyles.tablePairsSummary,
             SummaryHeader((props,state,this)),
             <.tbody(
               sorted.zipWithIndex.map { e =>
