@@ -72,6 +72,8 @@ class BaseStyles {
   val testPage = cls("baseTestPage")
 
   val hover = cls("titleHover")
+
+  val piechart = cls("piechart")
 }
 
 class RootStyles {

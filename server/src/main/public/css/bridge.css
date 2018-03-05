@@ -416,3 +416,8 @@ body [data-title]:hover:after {
     z-index: 1;
     text-align: left;
 }
+
+.piechart {
+  transform: rotate(-0.25turn);
+  display: block;
+}
