@@ -26,6 +26,8 @@ import com.example.test.TestStartLogging
 import com.example.source.SourcePosition
 import com.example.backend.BridgeServiceFileStoreConverters
 import com.example.backend.MatchRubberCacheStoreSupport
+import com.example.pages.Page
+import com.example.pages.PageBrowser
 
 /**
  * @author werewolf
@@ -153,25 +155,23 @@ class RubberTest extends FlatSpec with MustMatchers with BeforeAndAfterAll with 
     eventually( find(xpath("//h1[2]")).text mustBe "Enter players and identify first dealer" )
   }
 
+  val screenshotDir = "target/screenshots/RubberTest"
+
   it should "allow player names to be entered with suggestions when playing rubber match" in {
 
-    eventually( find(id("ResetNames")) mustBe 'Enabled )
-    find(id("Ok")) must not be 'Enabled
+    withClueAndScreenShot(screenshotDir, "AllowNamesWithSug", "Enter names with suggestions") {
+      eventually( find(id("ResetNames")) mustBe 'Enabled )
+      find(id("Ok")) must not be 'Enabled
 
-    textField("North").value = "Nancy"
-    textField("South").value = "Sam"
-    textField("East").value = "asfdfs"
-    eventually {
-      try {
+      textField("North").value = "Nancy"
+      textField("South").value = "Sam"
+      textField("East").value = "asfdfs"
+      eventually {
         val visibleDivs = findAll(xpath("""//input[@name='East']/parent::div/following-sibling::div/div"""))
         withClue("Must have one visible div") { visibleDivs.size mustBe 1}
         val listitems = findAll(xpath("""//input[@name='East']/parent::div/following-sibling::div/div/div/ul/li"""))
         withClue("Must have one li in visible div, found "+listitems.mkString(",")+": ") { listitems.size mustBe 1 }
         withClue("One li in visible div must show no names, found "+listitems.head.text+": ") { listitems.head.text must fullyMatch regex ( """No suggested names|No names matched""" ) }
-      } catch {
-        case x: Exception =>
-          saveDom("debugDomSuggestion.html")
-          throw x
       }
     }
 
@@ -179,15 +179,17 @@ class RubberTest extends FlatSpec with MustMatchers with BeforeAndAfterAll with 
 
   it should "allow player names to be reset when playing rubber match" in {
 
-    find(id("ResetNames")) mustBe 'Enabled
-    findButtonAndClick("ResetNames")
+    withClueAndScreenShot(screenshotDir, "AllowNamesReset", "Names reset with suggestions") {
+      PageBrowser.esc
+      find(id("ResetNames")) mustBe 'Enabled
+      findButtonAndClick("ResetNames")
 
-    val fields = eventuallyFindAllInput("text", "North", "South", "East", "West")
-    fields("North").value mustBe ""
-    fields("South").value mustBe ""
-    fields("East").value mustBe ""
-    fields("West").value mustBe ""
-
+      val fields = eventuallyFindAllInput("text", "North", "South", "East", "West")
+      fields("North").value mustBe ""
+      fields("South").value mustBe ""
+      fields("East").value mustBe ""
+      fields("West").value mustBe ""
+    }
   }
 
   it should "allow player names to be entered when playing rubber match and select first dealer" in {
