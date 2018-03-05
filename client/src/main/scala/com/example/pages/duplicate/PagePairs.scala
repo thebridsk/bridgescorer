@@ -111,6 +111,7 @@ object PagePairsInternal {
         ),
         ViewPlayerFilter(state.filter, onChange _),
         ViewPairsGrid( state.filter ),
+        ViewPairsDetailsGrid( state.filter ),
         <.div(
           baseStyles.divFooter,
           <.div(

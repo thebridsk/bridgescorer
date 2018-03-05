@@ -20,6 +20,7 @@ import com.example.data.duplicate.suggestion.PairsDataSummary
 import com.example.data.duplicate.suggestion.ColorByWonPct
 import com.example.data.duplicate.suggestion.PairData
 import scala.annotation.tailrec
+import com.example.data.duplicate.suggestion.ColorByPlayed
 
 /**
  * Shows a summary page of all duplicate matches from the database.
@@ -172,7 +173,7 @@ object ViewPeopleTableInternal {
     def render( props: Props, state: State ) = {
       props.filter.pairsData match {
         case Some(pd) =>
-          val summary = new PairsDataSummary(pd, ColorByWonPct, props.filter.selected)
+          val summary = new PairsDataSummary(pd, ColorByWonPct, props.filter.selected, ColorByPlayed)
           val pds = summary.playerTotals.values.toList
 
           val sorted = pds.sortWith( state.sortBy.isLessThen _ )

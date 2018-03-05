@@ -222,6 +222,81 @@
   padding: 5px;
 }
 
+.dupDivPairsDetaisGrid {
+  font-size: x-large;
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+}
+.dupDivPairsDetaisGrid > div {
+  flex: 0 0 auto;
+  padding: 5px;
+}
+.dupDivPairsDetaisGrid > div > div {
+  display: flex;
+  flex-direction: column;
+}
+.dupDivPairsDetaisGrid li {
+  list-style-type: none;
+}
+
+.dupTablePairsDetailsGrid {
+  border-spacing: 0px;
+  font-size: x-large;
+  white-space: nowrap;
+  border: 1px solid black;
+  margin: 5px;
+}
+.dupTablePairsDetailsGrid > tfoot > tr > td {
+  font-size: large !important;
+  border: 1px solid black;
+  text-align: center;
+}
+.dupTablePairsDetailsGrid > tfoot > tr:first-child > td:last-child {
+  font-size: large !important;
+  border-left: 3px solid black;
+  border-right: 1px solid black;
+  border-top: 1px solid black;
+  border-bottom: 1px solid black;
+  text-align: center;
+}
+
+.dupTablePairsDetailsGrid > tbody > tr > td {
+  border: 1px solid black;
+  text-align: center;
+}
+
+.dupTablePairsDetailsGrid > tbody > tr > td:last-child {
+  border-left: 3px solid black;
+  border-right: 1px solid black;
+  border-top: 1px solid black;
+  border-bottom: 1px solid black;
+  text-align: center;
+}
+
+.dupTablePairsDetailsGrid > tbody > tr > td:first-child {
+  border: 1px solid black;
+  text-align: center;
+  font-weight: bold;
+}
+.dupTablePairsDetailsGrid td > div {
+  margin: auto;
+  border: 1px solid black;
+}
+.dupTablePairsDetailsGrid th {
+  border: 1px solid black;
+  text-align: center;
+  padding: 5px;
+}
+.dupTablePairsDetailsGrid > thead > tr:last-child > th:last-child {
+  border-left: 3px solid black;
+  border-right: 1px solid black;
+  border-top: 1px solid black;
+  border-bottom: 1px solid black;
+  text-align: center;
+  padding: 5px;
+}
+
 .dupDivNewDuplicate {
     
 }

@@ -28,6 +28,7 @@ import com.example.data.duplicate.suggestion.ColorByWon
 import com.example.data.duplicate.suggestion.ColorByWonPts
 import com.example.data.duplicate.suggestion.ColorByWonPtsPct
 import com.example.data.duplicate.suggestion.ColorByPointsPct
+import com.example.data.duplicate.suggestion.ColorByPlayed
 
 /**
  * Shows a pairs summary page.
@@ -194,7 +195,7 @@ object ViewPairsGridInternal {
 
       props.filter.pairsData match {
         case Some(pds) if !pds.players.isEmpty =>
-          val summary = new PairsDataSummary( pds, state.colorBy, props.filter.selected )
+          val summary = new PairsDataSummary( pds, state.colorBy, props.filter.selected, ColorByPlayed )
           val allPlayers = summary.players.sorted
           val sortedPlayers = summary.playerFilter.sorted
 
@@ -213,9 +214,9 @@ object ViewPairsGridInternal {
                                                       rowplayer,
                                                       sortedPlayers,
                                                       summary.colorStat,
-                                                      summary.playedStat,
+                                                      summary.extraStats.head,
                                                       summary.playerTotals.get(rowplayer).getOrElse(PairData(rowplayer,"",0,0,0,0,0,0,None)),
-                                                      summary.playedStatPlayerTotals,
+                                                      summary.extraStatsPlayer.head,
                                                       summary.colorStatPlayerTotals
                                                    ))
                   }.toTagMod

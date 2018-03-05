@@ -256,7 +256,7 @@ import com.example.data.DuplicateSummaryDetails
  * @param colorBy
  * @param filter if specified will only show result with these players.
  */
-class PairsDataSummary( pds: PairsData, colorBy: ColorBy, filter: Option[List[String]] ) {
+class PairsDataSummary( pds: PairsData, colorBy: ColorBy, filter: Option[List[String]], extraColorBy: ColorBy* ) {
 
   val players = pds.players
   val playerFilter = filter.getOrElse(players)
@@ -278,18 +278,20 @@ class PairsDataSummary( pds: PairsData, colorBy: ColorBy, filter: Option[List[St
     }
   }
 
-  val playedStatPlayerTotals = new Stat(ColorByPlayed)
+  val extraStatsPlayer = extraColorBy.map( e => new Stat(e) ).toList
   val colorStatPlayerTotals = new Stat(colorBy)
 
-  Stat.addPairsPlayer1(playerTotals.values, filter, playedStatPlayerTotals, colorStatPlayerTotals)
 
-  val playedStat = new Stat(ColorByPlayed)
+
+  Stat.addPairsPlayer1(playerTotals.values, filter, colorStatPlayerTotals::extraStatsPlayer :_*)
+
+  val extraStats = extraColorBy.map( e => new Stat(e) ).toList
   val colorStat = new Stat(colorBy)
-  Stat.add(pds, filter, playedStat, colorStat)
+  Stat.add(pds, filter, colorStat::extraStats :_*)
 
-  log.fine( f"total played min=${playedStatPlayerTotals.min}%.0f max=${playedStatPlayerTotals.max}%.0f ave=${playedStatPlayerTotals.ave}%.2f" )
-  log.fine( f"total ${colorBy.name} min=${colorStatPlayerTotals.min}%.0f max=${colorStatPlayerTotals.max}%.0f ave=${colorStatPlayerTotals.ave}%.2f" )
+  log.fine( f"player ${extraColorBy.map(e => f"${e.name}").mkString(",")} min=${extraStatsPlayer.map(e => f"${e.min}%.0f").mkString(",")} max=${extraStatsPlayer.map(e => f"${e.max}%.0f").mkString(",")} ave=${extraStatsPlayer.map(e => f"${e.ave}%.0f").mkString(",")}" )
+  log.fine( f"player ${colorBy.name} min=${colorStatPlayerTotals.min}%.0f max=${colorStatPlayerTotals.max}%.0f ave=${colorStatPlayerTotals.ave}%.2f" )
 
-  log.fine( f"played min=${playedStat.min}%.0f max=${playedStat.max}%.0f ave=${playedStat.ave}%.2f" )
-  log.fine( f"${colorBy.name} min=${colorStat.min}%.2f max=${colorStat.max}%.2f ave=${colorStat.ave}%.2f" )
+  log.fine( f"total ${extraColorBy.map(e => f"${e.name}").mkString(",")} min=${extraStats.map(e => f"${e.min}%.0f").mkString(",")} max=${extraStats.map(e => f"${e.max}%.0f").mkString(",")} ave=${extraStats.map(e => f"${e.ave}%.0f").mkString(",")}" )
+  log.fine( f"total ${colorBy.name} min=${colorStat.min}%.2f max=${colorStat.max}%.2f ave=${colorStat.ave}%.2f" )
 }

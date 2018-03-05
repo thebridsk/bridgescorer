@@ -38,6 +38,10 @@ class DuplicateStyles {
 
   val tablePairsGrid = cls("dupTablePairsGrid")
 
+  val divPairsDetailsGrid = cls("dupDivPairsDetailsGrid")
+
+  val tablePairsDetailsGrid = cls("dupTablePairsDetailsGrid")
+
   val divNewDuplicate = cls("dupDivNewDuplicate")
 
   val divSelectMatch = cls("dupDivSelectMatch")
