@@ -252,18 +252,20 @@
   border: 1px solid black;
   text-align: center;
 }
-.dupTablePairsDetailsGrid > tfoot > tr:first-child > td:last-child {
-  font-size: large !important;
-  border-left: 3px solid black;
-  border-right: 1px solid black;
-  border-top: 1px solid black;
-  border-bottom: 1px solid black;
-  text-align: center;
-}
 
 .dupTablePairsDetailsGrid > tbody > tr > td {
   border: 1px solid black;
   text-align: center;
+}
+.dupTablePairsDetailsGrid > tbody > tr > td > div {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: center;
+  align-items: center;
+  align-content: center;
+}
+.dupTablePairsDetailsGrid > tbody > tr > td > div > svg {
+  display: block;
 }
 
 .dupTablePairsDetailsGrid > tbody > tr > td:last-child {
@@ -280,8 +282,7 @@
   font-weight: bold;
 }
 .dupTablePairsDetailsGrid td > div {
-  margin: auto;
-  border: 1px solid black;
+  border: 0px solid black;
 }
 .dupTablePairsDetailsGrid th {
   border: 1px solid black;

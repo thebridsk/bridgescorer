@@ -419,4 +419,5 @@ body [data-title]:hover:after {
 
 .piechart {
   transform: rotate(-0.25turn);
+  display: block;
 }

@@ -76,7 +76,8 @@ object PieChart {
       .noBackend
       .render_P { props =>
         val chartTitle = props.sliceTitles.flatMap( l => None ).getOrElse( props.chartTitle )
-        if (props.slices.length == 1) {
+        val slices = props.slices.zip( props.colors ).filter( e => e._1 != 0 )
+        if (slices.length == 1) {
           <.svg(
             chartTitle.whenDefined( t => <.title(t) ),
             ^.width := f"${props.size}%.2f",
@@ -85,12 +86,13 @@ object PieChart {
             BaseStyles.baseStyles.piechart,
             <.circle(
               props.sliceTitles.flatMap { list =>
-                list.headOption.map( t => Some(<.title(t)) ).getOrElse(None)
+                props.slices.zip( list ).find( e => e._1 != 0 ).
+                  map( t => Some(<.title(t._2)) ).getOrElse(None)
               }.whenDefined,
               ^.cx := 0,
               ^.cy := 0,
               ^.r := 1,
-              ^.fill := props.colors.head.toHex
+              ^.fill := slices.head._2.toHex
             )
           )
         } else {
@@ -105,23 +107,26 @@ object PieChart {
             ^.height := f"${props.size}%.2f",
             ^.viewBox := "-1.1 -1.1 2.2 2.2",
             BaseStyles.baseStyles.piechart,
-            props.slices.zip( props.colors ).zipWithIndex.map { case ( (slice, color), i ) =>
-              val sweep = slice/sum
-              val largeArcFlag = if (sweep >= 0.5) 1 else 0
-              sofar = sofar + slice/sum
-              val sourcex = lastx
-              val sourcey = lasty
-              val (targetx,targety) = getCoordinatesForPercent(sofar)
-              lastx = targetx
-              lasty = targety
-              val title = props.sliceTitles.flatMap( l => if (l.isDefinedAt(i)) Some(l(i)) else None )
-              <.path(
-                title.whenDefined( t => <.title(t) ),
-                ^.d := f"M ${sourcex}%.2f ${sourcey}%.2f" +
-                       f" A 1 1 0 ${largeArcFlag} 1 ${targetx}%.2f ${targety}%.2f" +
-                        " L 0 0",
-                ^.fill := color.toHex,
-              )
+            props.slices.zip( props.colors ).zipWithIndex.flatMap { case ( (slice, color), i ) =>
+              if (slice == 0) None
+              else {
+                val sweep = slice/sum
+                val largeArcFlag = if (sweep >= 0.5) 1 else 0
+                sofar = sofar + slice/sum
+                val sourcex = lastx
+                val sourcey = lasty
+                val (targetx,targety) = getCoordinatesForPercent(sofar)
+                lastx = targetx
+                lasty = targety
+                val title = props.sliceTitles.flatMap( l => if (l.isDefinedAt(i)) Some(l(i)) else None )
+                Some( <.path(
+                  title.whenDefined( t => <.title(t) ),
+                  ^.d := f"M ${sourcex}%.2f ${sourcey}%.2f" +
+                         f" A 1 1 0 ${largeArcFlag} 1 ${targetx}%.2f ${targety}%.2f" +
+                          " L 0 0",
+                  ^.fill := color.toHex,
+                ))
+              }
             }.toTagMod
           )
         }

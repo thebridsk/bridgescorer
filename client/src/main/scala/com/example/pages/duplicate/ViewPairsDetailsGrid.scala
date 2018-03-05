@@ -117,14 +117,14 @@ object ViewPairsDetailsGridInternal {
                               val size = sizeSt.size(pd, state.minSize, state.maxSize)
                               val oneOverTot = 100.0/(det.declarer+det.defended+det.passed)
                               val title = f"Declarer ${det.declarer} (${det.declarer*oneOverTot}%.2f%%)%nDefended ${det.defended} (${det.defended*oneOverTot}%.2f%%)%nPassed ${det.passed} (${det.passed*oneOverTot}%.2f%%)"
-                              <.td(
+                              <.td( <.div(
                                 titleAttr := title,
                                 baseStyles.hover,
                                 PieChart( size,
                                           det.declarer.toDouble::det.defended.toDouble::det.passed.toDouble::Nil,
                                           Color.Green::Color.Red::Color.Blue::Nil,
                                           None )    // Some(title)
-                              )
+                              ))
                             case _ =>
                               <.td()
                           }
@@ -136,14 +136,14 @@ object ViewPairsDetailsGridInternal {
                               val size = sizeSt.size(pd, state.minSize, state.maxSize)
                               val oneOverTot = 100.0/(det.declarer+det.defended+det.passed)
                               val title = f"Declarer ${det.declarer} (${det.declarer*oneOverTot}%.2f%%)%nDefended ${det.defended} (${det.defended*oneOverTot}%.2f%%)%nPassed ${det.passed} (${det.passed*oneOverTot}%.2f%%)"
-                              <.td(
+                              <.td( <.div(
                                 titleAttr := title,
                                 baseStyles.hover,
                                 PieChart( size,
                                           det.declarer.toDouble::det.defended.toDouble::det.passed.toDouble::Nil,
                                           Color.Green::Color.Red::Color.Blue::Nil,
                                           None )    // Some(title)
-                              )
+                              ))
                             case _ =>
                               <.td()
                           }
@@ -175,7 +175,7 @@ object ViewPairsDetailsGridInternal {
                               val titleDec = f"Declarer ${det.declarer} (${det.declarer*oneOverTotal}%.2f%%)\n  Made ${det.made} (${det.made*oneOverDec}%.2f%%)%n  Down ${det.down} (${det.down*oneOverDec}%.2f%%)"
                               val titleDef = f"Defended ${det.defended} (${det.defended*oneOverTotal}%.2f%%)\n  Took Down ${det.tookDown} (${det.tookDown*oneOverDef}%.2f%%)%n  Allowed Made ${det.allowedMade} (${det.allowedMade*oneOverDef}%.2f%%)"
                               val titlePas = f"Passed ${det.passed} (${det.passed*oneOverTotal}%.2f%%)"
-                              <.td(
+                              <.td( <.div(
                                 titleAttr := titleDec+"\n"+titleDef+"\n"+titlePas,
                                 baseStyles.hover,
                                 PieChartOrSquareForZero(
@@ -194,9 +194,9 @@ object ViewPairsDetailsGridInternal {
                                     if (det.passed == 0) -sizePas else sizePas,
                                     Color.Black,
                                     det.passed.toDouble::Nil,
-                                    Color.Cyan::Nil,
-                                    None ), // Some(titlePas) )
-                              )
+                                    Color.Blue::Nil,
+                                    None ) // Some(titlePas) )
+                              ))
                             case _ =>
                               <.td()
                           }
@@ -215,7 +215,7 @@ object ViewPairsDetailsGridInternal {
                               val titleDec = f"Declarer ${det.declarer} (${det.declarer*oneOverTotal}%.2f%%)\n  Made ${det.made} (${det.made*oneOverDec}%.2f%%)%n  Down ${det.down} (${det.down*oneOverDec}%.2f%%)"
                               val titleDef = f"Defended ${det.defended} (${det.defended*oneOverTotal}%.2f%%)\n  Took Down ${det.tookDown} (${det.tookDown*oneOverDef}%.2f%%)%n  Allowed Made ${det.allowedMade} (${det.allowedMade*oneOverDef}%.2f%%)"
                               val titlePas = f"Passed ${det.passed} (${det.passed*oneOverTotal}%.2f%%)"
-                              <.td(
+                              <.td( <.div(
                                 titleAttr := titleDec+"\n"+titleDef+"\n"+titlePas,
                                 baseStyles.hover,
                                 PieChartOrSquareForZero(
@@ -223,20 +223,20 @@ object ViewPairsDetailsGridInternal {
                                     Color.Black,
                                     det.made.toDouble::det.down.toDouble::Nil,
                                     Color.Green::Color.Red::Nil,
-                                    Some(titleDec) ),
+                                    None ), // Some(titleDec) ),
                                 PieChartOrSquareForZero(
                                     if (det.defended == 0) -sizeDef else sizeDef,
                                     Color.Black,
                                     det.tookDown.toDouble::det.allowedMade.toDouble::Nil,
                                     Color.Green::Color.Red::Nil,
-                                    Some(titleDef) ),
+                                    None ), // Some(titleDef) ),
                                 PieChartOrSquareForZero(
                                     if (det.passed == 0) -sizePas else sizePas,
                                     Color.Black,
                                     det.passed.toDouble::Nil,
-                                    Color.Cyan::Nil,
-                                    Some(titlePas) )
-                              )
+                                    Color.Blue::Nil,
+                                    None ) // Some(titlePas) )
+                              ))
                             case _ =>
                               <.td()
                           }
