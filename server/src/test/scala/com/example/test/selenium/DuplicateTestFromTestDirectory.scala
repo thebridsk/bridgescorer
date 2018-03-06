@@ -75,7 +75,7 @@ class DuplicateTestFromTestDirectory extends FlatSpec with DuplicateUtils with M
   import scala.concurrent.duration._
 
   val timeoutMillis = 20000
-  val intervalMillis = 750
+  val intervalMillis = 1000
 
   implicit val timeoutduration = Duration( 60, TimeUnit.SECONDS )
 
@@ -320,13 +320,11 @@ class DuplicateTestFromTestDirectory extends FlatSpec with DuplicateUtils with M
       val boardset = template.boardset
       val movement = template.movement
 
-      eventually {
-        currentUrl mustBe TestServer.getAppPageUrl("duplicate/#new")
-      }
       tcpSleep(2)
       eventually {
         val b = find( id(s"New_${movement}_${boardset}"))
         b mustBe 'Enabled
+        currentUrl mustBe TestServer.getAppPageUrl("duplicate/#new")
         b.click
       }
 
