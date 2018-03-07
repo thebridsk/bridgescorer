@@ -1,5 +1,10 @@
 @CHARSET "UTF-8";
 
+#ForButtonFonts {
+  border-radius: 20px;
+  font-size: x-large;
+  font-family: arial;
+}
 
 .baseAlwaysHide {
   display: none;

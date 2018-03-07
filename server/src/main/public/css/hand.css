@@ -108,6 +108,7 @@
 }
 .handViewDeclarer > div > div {
   flex: 0 0 auto;
+  padding: 0px 5px;
 }
 
 .handViewTableBoard {

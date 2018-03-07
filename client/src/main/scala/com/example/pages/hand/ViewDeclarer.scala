@@ -14,6 +14,7 @@ import utils.logging.Logger
 import com.example.data.maneuvers.TableManeuvers
 import com.example.react.Utils._
 import japgolly.scalajs.react.extra.Reusability
+import com.example.pages.Pixels
 
 /**
  * A skeleton component.
@@ -108,9 +109,9 @@ object ViewDeclarerInternal {
         }
       }
 
-      val maxPlayerLen = (if (playingDuplicate) 6 else 2)+
-                         (props.north::props.south::props.east::props.west::Nil).map(p => p.length()).foldLeft(2){ case (m, l) => math.max(m, l)}
-      val bwidth = maxPlayerLen.toString()+"em"
+//      val maxPlayerLen = (if (playingDuplicate) 6 else 2)+
+//                         (props.north::props.south::props.east::props.west::Nil).map(p => p.length()).foldLeft(2){ case (m, l) => math.max(m, l)}
+//      val bwidth = maxPlayerLen.toString()+"em"
 
       def isSelected( d: PlayerPosition ) = props.current.isDefined && props.current.get == d
       def getTeam( team: Option[Id.Team] ) = {
@@ -118,6 +119,28 @@ object ViewDeclarerInternal {
           case Some(t) => <.span( " (", Id.teamIdToTeamNumber(t), ")")
           case None => EmptyVdom
         }
+      }
+      def getButtonText(text: String, pos: PlayerPosition, name: String, isvul: Boolean, teamId: Option[Id.Team] ) = {
+        List(
+          name,
+          teamId.map( t => s" (${Id.teamIdToTeamNumber(t)})" ).getOrElse("") ,
+          " ",
+          if (isvul) "Vul"
+          else "vul",
+        )::: ( if (playingDuplicate) List(" "+pos.name) else List() )
+      }
+      val maxPlayerLen = {
+        val texts =
+          getButtonText("North", North, props.north, props.nsVul, props.teamNS)::
+          getButtonText("South", South, props.south, props.nsVul, props.teamNS)::
+          getButtonText("East", East, props.east, props.ewVul, props.teamEW)::
+          getButtonText("West", West, props.west, props.ewVul, props.teamEW)::
+          Nil
+        val borderRadius = Pixels.defaultHandButtonBorderRadius
+        Math.max( 5, Pixels.maxLength( texts.map(_.mkString("")): _*) ) + 10 /* padding on Vul */ + borderRadius + borderRadius/2
+      }
+      val bwidth = {
+        s"${maxPlayerLen}px"
       }
       def getButtonPos(text: String, pos: PlayerPosition, name: String, isvul: Boolean, teamId: Option[Id.Team] ) =
         <.button(
@@ -141,10 +164,10 @@ object ViewDeclarerInternal {
                 )
 
       val header = "Declarer"
-      val maxLen = Math.max(header.length(), maxPlayerLen/2)
-      val twidth: TagMod = ^.width := (maxLen).toString()+"em"
-      val t2width: TagMod = ^.width := (maxLen*2).toString()+"em"
-      val tablewidth: TagMod = ^.width := (maxLen*4).toString()+"em"
+      val maxLen = Math.max(Pixels.maxLength(header), maxPlayerLen/2)
+      val twidth: TagMod = ^.width := (maxLen).toString()+"px"
+      val t2width: TagMod = ^.width := (maxLen*2).toString()+"px"
+      val tablewidth: TagMod = ^.width := (maxLen*4).toString()+"px"
 
       def getButton( loc: PlayerPosition ) = {
         loc match {
