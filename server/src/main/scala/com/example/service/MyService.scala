@@ -175,16 +175,18 @@ trait MyService extends Service with JsService with WebJar with LoggingService w
 
   val x = classOf[LoggingService]
 
-  val serverRestTypes = ( classOf[GraphQLRoute]::restTypes.toList:::
-                          (if (addLoggingAndServerToSwagger) {
-                            List(
-                                  classOf[LoggingService],
-                                  classOf[ServerService]
-                                )
-                          } else {
-                            Nil
-                          })
-                        ).toSet
+  val serverRestTypes = {
+      ( classOf[GraphQLRoute]::restTypes.toList:::
+        (if (addLoggingAndServerToSwagger) {
+          List(
+                classOf[LoggingService],
+                classOf[ServerService]
+              )
+        } else {
+          Nil
+        })
+      ).toSet
+  }
 
   /**
    * The Swagger-UI HttpService
@@ -204,11 +206,11 @@ trait MyService extends Service with JsService with WebJar with LoggingService w
     override val basePath: String = s"/${apiVersionURISegment}"
 //    override def docsPath = "api-docs"     // URI will be /v1/api-docs
 //    override def actorRefFactory = myActorRefFactory
-    override val info = Info("Scorekeeper for a 2 table duplicate bridge match.",
+    override val info = Info("Scorekeeper for a Duplicate bridge, Chicago bridge, and Rubber bridge.",
                                             "v1",
                                             "Duplicate Bridge Scorekeeper",
                                             "/public/termsOfService.html",
-                                            Some(Contact("Wolfgang Segmuller","","<werewolves@example.net>")),
+                                            Some(Contact("The Bridge Scorekeeper","https://github.com/thebridsk/bridgescorer","")),
                                             Some(License("Free","/public/license.html")))
 
     //authorizations, not used

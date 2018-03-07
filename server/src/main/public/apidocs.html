@@ -81,8 +81,9 @@ window.onload = function() {
   const ui = SwaggerUIBundle({
     url: "/v1/api-docs/swagger.json",
     dom_id: '#swagger-ui',
+    deepLinking: true,
     validatorUrl: null,
-    apisSorter: "alpha",
+    tagsSorter: "alpha",
     operationsSorter: "alpha",
     docExpansion: "none",
     showRequestHeaders: true,

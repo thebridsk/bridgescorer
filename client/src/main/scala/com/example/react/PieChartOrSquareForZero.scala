@@ -66,14 +66,16 @@ object PieChartOrSquareForZero {
             chartTitle.whenDefined( t => <.title(t) ),
             ^.width := f"${-props.piechartProps.size}%.2f",
             ^.height := f"${-props.piechartProps.size}%.2f",
-            ^.viewBox := "-1.1 -1.1 2.2 2.2",
+            ^.viewBox := "-10.1 -10.1 20.2 20.2",
             BaseStyles.baseStyles.piechart,
             <.rect(
-              ^.x := -1,
-              ^.y := -1,
-              ^.width := 2,
-              ^.height := 2,
-              ^.fill := props.squareColor.toHex
+              ^.x := -10,
+              ^.y := -10,
+              ^.width := 20,
+              ^.height := 20,
+              ^.stroke := props.squareColor.toHex,
+              ^.strokeWidth := 5,
+              ^.fill := "transparent"
             )
           )
         } else {

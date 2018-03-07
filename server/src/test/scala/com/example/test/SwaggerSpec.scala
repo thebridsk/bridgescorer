@@ -175,7 +175,7 @@ class SwaggerSpec extends FlatSpec with ScalatestRouteTest with MustMatchers wit
     Get("/v1/api-docs/swagger.json") ~> addHeader(`Accept-Encoding`(HttpEncodings.gzip)) ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
       status mustBe OK
       val swagger = httpResponseAs[String](decodeResponse(response))
-      swagger must include regex "(?s)Scorekeeper for a 2 table duplicate bridge match\\."
+      swagger must include regex "(?s)Scorekeeper for a Duplicate bridge, Chicago bridge, and Rubber bridge\\."
     } )._1)
   }
 
@@ -184,7 +184,7 @@ class SwaggerSpec extends FlatSpec with ScalatestRouteTest with MustMatchers wit
     Get("/v1/api-docs/swagger.json") ~> addHeader(`Accept-Encoding`(HttpEncodings.gzip)) ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
       status mustBe OK
       val swagger = httpResponseAs[String](decodeResponse(response))
-      swagger must include regex "(?s)Scorekeeper for a 2 table duplicate bridge match\\."
+      swagger must include regex "(?s)Scorekeeper for a Duplicate bridge, Chicago bridge, and Rubber bridge\\."
       withClue("""Found Function1[RequestContextFutureRouteResult],
                  |most likely because an @ApiOperation annotation is missing response attribute
                  |Start server, goto swagger docs, and search logs for 'Function1'
