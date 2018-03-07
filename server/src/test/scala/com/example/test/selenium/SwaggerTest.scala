@@ -111,7 +111,7 @@ class SwaggerTest extends FlatSpec with MustMatchers with BeforeAndAfterAll {
     implicit val webDriver = TestSession.webDriver
 
     val ResponseFromHttp(status,headerloc,contentEncoding,resp,cd) = getHttp( TestServer.getUrl("/v1/api-docs/swagger.json") )
-    resp must include regex """Scorekeeper for a 2 table duplicate bridge match\."""
+    resp must include regex """Scorekeeper for a Duplicate bridge, Chicago bridge, and Rubber bridge\."""
   }
 
   it should "try to get swagger docs page" in {
