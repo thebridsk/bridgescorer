@@ -40,6 +40,8 @@ import com.example.data.bridge._
 import scala.scalajs.js.JSConverters._
 import com.example.react.Button
 import com.example.pages.hand.PageHand
+import com.example.pages.hand.Properties
+import com.example.pages.Pixels
 
 /**
  * Shows the team x board table and has a totals column that shows the number of points the team has.
@@ -660,8 +662,10 @@ object PageTableTeamsInternal {
     }
 
     def renderSelectScorekeeper( props: Props, state: State ): TagMod = {
-      val maxPlayerLen = state.players.players().map( p => p.length ).foldLeft(2){ case (m, l) => math.max(m, l)}
-      val bwidth: TagMod = ^.width := maxPlayerLen.toString()+"em"
+      val extraWidth = Properties.defaultHandButtonBorderRadius+
+                       Properties.defaultHandButtonPaddingBorder
+      val width = s"${Pixels.maxLength( state.players.players(): _* )+extraWidth}px"
+      val bwidth: TagMod = ^.width := width
       <.div(
         <.h1( "Enter scorekeeper:" ),
         state.players.sortedPlayers().map( p => {

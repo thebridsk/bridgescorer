@@ -17,6 +17,7 @@ import com.example.data.maneuvers.TableManeuvers
 import com.example.react.AppButton
 import com.example.react.Utils._
 import com.example.react.Button
+import com.example.pages.Pixels
 
 /**
  * A skeleton component.
@@ -343,8 +344,11 @@ object PageHandInternal {
 
     def renderChangeScorekeeper(props: Props,state: State) = {
       val maneuvers = TableManeuvers( props.contract.north, props.contract.south, props.contract.east, props.contract.west )
-      val len = maneuvers.players().foldLeft(2)((l, p) => Math.max(l, p.length()))
-      val width = len.toString()+"em"
+
+      val extraWidth = Properties.defaultHandButtonBorderRadius+
+                       Properties.defaultHandButtonPaddingBorder
+      val width = s"${Pixels.maxLength( maneuvers.players(): _* )+extraWidth}px"
+
       <.div(
           <.h1( "Select scorekeeper" ),
           maneuvers.sortedPlayers().map(p => {

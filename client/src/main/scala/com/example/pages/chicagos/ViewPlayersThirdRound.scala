@@ -11,6 +11,7 @@ import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.html_<^._
 import com.example.react.AppButton
 import com.example.react.Utils._
+import com.example.pages.Pixels
 
 object ViewPlayersThirdRound {
   import PagePlayers._
@@ -109,11 +110,15 @@ object ViewPlayersThirdRound {
                         <.br,
                         if (state.changingScoreKeeper) {
                           var i = 0
+                          val extraWidth = Properties.defaultChicagoNameButtonPaddingAndBorder +
+                                           Properties.defaultChicagoNameButtonBorderRadius
+                          val maxPlayerLen = s"${Pixels.maxLength( allFromLastRound: _* )+extraWidth}px"
                           <.span(
                               allFromLastRound.map { p =>
                                 i=i+1
                                 AppButton("ChangeScoreKeeper"+i, p,
                                           baseStyles.nameButton,
+                                          ^.width:=maxPlayerLen,
                                           p==state.north ?= baseStyles.buttonSelected,
                                           ^.onClick ==> setNorth(p) _ )
                               }.toTagMod
