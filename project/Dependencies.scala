@@ -33,11 +33,11 @@ object Dependencies {
 
 
   lazy val vAkka = "2.5.11"           // http://mvnrepository.com/artifact/com.typesafe.akka/akka-actor_2.11
-  lazy val vAkkaHttp = "10.0.11"     // http://mvnrepository.com/artifact/com.typesafe.akka/akka-http_2.11
+  lazy val vAkkaHttp = "10.1.0"       // http://mvnrepository.com/artifact/com.typesafe.akka/akka-http_2.11
 
-  lazy val vAkkaHttpPlayJson="1.19.0"  // https://github.com/hseeberger/akka-http-json
+  lazy val vAkkaHttpPlayJson="1.20.0"  // https://github.com/hseeberger/akka-http-json
 
-  lazy val vSwaggerAkkaHttp = "0.13.0" // http://mvnrepository.com/artifact/com.github.swagger-akka-http/swagger-akka-http_2.12
+  lazy val vSwaggerAkkaHttp = "0.14.0" // http://mvnrepository.com/artifact/com.github.swagger-akka-http/swagger-akka-http_2.12
 //  lazy val vSwaggerScalaModule="1.0.4" // http://mvnrepository.com/artifact/io.swagger/swagger-scala-module_2.11
   lazy val vSwagger="1.5.18"           // http://mvnrepository.com/artifact/io.swagger/swagger-core
 
@@ -157,6 +157,7 @@ object Dependencies {
 //      "com.typesafe.akka"   %% "akka-http-core"          % vAkkaHttp withSources(),
       "com.typesafe.akka"   %% "akka-http"               % vAkkaHttp withSources(),
       "com.typesafe.akka"   %% "akka-http-caching"       % vAkkaHttp withSources(),
+//      "com.typesafe.akka"   %% "akka-http2-support"      % vAkkaHttp % "test" withSources(),
       "de.heikoseeberger"   %% "akka-http-play-json"     % vAkkaHttpPlayJson withSources(),
 
 //      ("io.swagger"          %%  "swagger-scala-module" % vSwaggerScalaModule withSources()).exclude("com.google.code.findbugs","jsr305"),

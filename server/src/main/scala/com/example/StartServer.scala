@@ -64,6 +64,8 @@ import java.net.Inet4Address
 import com.example.logging.RemoteLoggingConfig
 import com.example.backend.BridgeServiceWithLogging
 import com.example.backend.BridgeServiceZipStore
+import akka.http.scaladsl.settings.ServerSettings
+import akka.http.scaladsl.server.Route
 
 /**
  * This is the main program for the REST server for our application.
@@ -107,6 +109,9 @@ Options:""")
   val optionLoopback = toggle("loopback", default=Some(false), noshort=true,
                               descrYes="Use loopback as host name when starting browser",
                               descrNo="Use localhost as host name when starting browser" )
+  val optionHttp2 = toggle("http2", default=Some(false), noshort=true,
+                              descrYes="Enable http2 support",
+                              descrNo="Disable http2 support" )
   val optionCache = opt[Duration]("cache",
                                   descr=s"time to set in cache-control header of responses.  0s for no-cache. default ${defaultCacheFor}",
                                   argName="dur",
@@ -324,6 +329,8 @@ private class StartServer {
         }
     }
 
+    val http2Support = optionHttp2()
+
     val context: Option[ConnectionContext] = if (httpsPort.isDefined) {
       Some(serverContext)
     } else {
@@ -340,7 +347,8 @@ private class StartServer {
                              optBrowserRemoteLogging = optionBrowserRemoteLogging.toOption,
                              optIPadRemoteLogging = optionIPadRemoteLogging.toOption,
                     //         optBrowserLogger = optionBrowserLogger.toOption,
-                             optDiagnosticDir = optionDiagnosticDir.toOption.map(p => p.toDirectory)
+                             optDiagnosticDir = optionDiagnosticDir.toOption.map(p => p.toDirectory),
+                             http2Support = http2Support
                            )
 
     MyService.shutdownHook = Some( StartServer )
@@ -441,6 +449,7 @@ private class StartServer {
              optBrowserRemoteLogging: Option[String] = None,
              optIPadRemoteLogging: Option[String] = None,
              optDiagnosticDir: Option[Directory] = None,
+             http2Support: Boolean = false
            ): Future[MyService] = {
     val myService = new MyService {
       /**
@@ -497,18 +506,26 @@ private class StartServer {
       case Some(port) =>
       case None =>
     }
+    val settings = ServerSettings(system)
+    val httpSettings = settings.withPreviewServerSettings( settings.previewServerSettings.withEnableHttp2(false))
+    val httpsSettings = settings.withPreviewServerSettings( settings.previewServerSettings.withEnableHttp2(http2Support))
     bindingHttps = if (httpsPort.isDefined) {
-      Some(Http().bindAndHandle(myService.myRouteWithLogging, interface, httpsPort.get, connectionContext=connectionContext.get))
+      Some(Http().bindAndHandleAsync( Route.asyncHandler(myService.myRouteWithLogging),
+                                      interface,
+                                      httpsPort.get,
+                                      connectionContext=connectionContext.get,
+                                      settings = httpsSettings
+                                    ))
     } else {
       None
     }
     bindingHttp = if (httpPort.isDefined) {
       if (httpsPort.isDefined) {
         // both http and https defined, redirect http to https
-        Some(Http().bindAndHandle(redirectRoute("https",httpsPort.get), interface, httpPort.get))
+        Some(Http().bindAndHandleAsync(Route.asyncHandler(redirectRoute("https",httpsPort.get)), interface, httpPort.get, settings=httpSettings))
       } else {
         // only http defined
-        Some(Http().bindAndHandle(myService.myRouteWithLogging, interface, httpPort.get))
+        Some(Http().bindAndHandleAsync(Route.asyncHandler(myService.myRouteWithLogging), interface, httpPort.get, settings=httpSettings))
       }
     } else {
       if (httpsPort.isDefined) {
@@ -516,7 +533,7 @@ private class StartServer {
         None
       } else {
         // no http or https port defined.  Use port 8080 for http
-        Some(Http().bindAndHandle(myService.myRouteWithLogging, interface, 8080))
+        Some(Http().bindAndHandleAsync(Route.asyncHandler(myService.myRouteWithLogging), interface, 8080, settings=httpSettings))
       }
     }
     bindingHttp.foreach { f =>

@@ -61,6 +61,6 @@ call cygwin openssl pkcs12 -nocerts -nodes -passout env:PW -passin env:PW -in ex
 rem # Create a JKS keystore that trusts the example CA, with the default password.
 keytool -import -v -alias exampleca -file exampleca.crt -keypass:env PW -storepass %tpw% -keystore exampletrust.jks < yes
 
-# List out the details of the store password.
+rem # List out the details of the store password.
 keytool -list -v -keystore exampletrust.jks -storepass %tpw%
 
