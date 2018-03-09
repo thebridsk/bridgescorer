@@ -11,6 +11,7 @@ import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.html_<^._
 import com.example.react.AppButton
 import com.example.react.Utils._
+import com.example.pages.Pixels
 
 object ViewPlayersSecondRound {
   import PagePlayers._
@@ -140,7 +141,9 @@ object ViewPlayersSecondRound {
 
       val allassignedplayers = state.allPlayers
 
-      val maxPlayerLen = allFromLastRound.map( _.length() ).reduce(Math.max)+"em"
+      val extraWidth = Properties.defaultChicagoNameButtonPaddingAndBorder +
+                       Properties.defaultChicagoNameButtonBorderRadius
+      val maxPlayerLen = s"${Pixels.maxLength( allFromLastRound: _* )+extraWidth}px"
 
       def getButton( id: String, p: String, current: String, action: ReactEventFromInput=>Callback, missingRequired: Boolean ): TagMod = {
         AppButton(id, p,

@@ -9,9 +9,13 @@ object Pixels {
 
   val log = Logger("bridge.Pixels")
 
-  lazy val defaultHandButtonFont = getFont("DefaultHandButton")
+  lazy val defaultFont = Pixels.getFont("DefaultHandButton")
 
-  lazy val defaultHandButtonBorderRadius = getBorderRadius("DefaultHandButton")
+  def getComputedProperties( id: String ) = {
+    val elem = Bridge.getElement(id)
+    val window = document.defaultView
+    window.getComputedStyle(elem)
+  }
 
   /**
    * Returns the computed font for the element with the specified Id.
@@ -19,32 +23,43 @@ object Pixels {
    * @return the font-size and font-family
    */
   def getFont( id: String ) = {
-    val elem = Bridge.getElement(id)
-    val window = document.defaultView
-    val computed = window.getComputedStyle(elem)
-    computed.fontSize+" "+computed.fontFamily
+    val computed = getComputedProperties(id)
+    val r = computed.fontSize+" "+computed.fontFamily
+    log.fine( s"""On element with id ${id} found font of ${r}""" )
+    r
   }
 
   val patternRadius = """(\d+)px""".r
-  def getBorderRadius( id: String ) = {
-    val elem = Bridge.getElement(id)
-    val window = document.defaultView
-    val computed = window.getComputedStyle(elem)
-    computed.borderRadius match {
+  def getPixels( name: String, value: String, id: String, default: Int = 0 ) = {
+    value match {
       case patternRadius( r ) =>
-        log.fine( s"""On element with id ${id} found radius of ${r}px""" )
+        log.fine( s"""On element with id ${id} found ${name} of ${r}px""" )
         r.toInt
       case x =>
-        log.fine( s"""On element with id ${id} found border-radius of ${x}, using 0""" )
-        0
+        log.fine( s"""On element with id ${id} found ${name} of ${x}, using 0""" )
+        default
     }
   }
 
+  def getBorderRadius( id: String ) = {
+    val computed = getComputedProperties(id)
+    getPixels( "borderRadius", computed.borderRadius, id )
+  }
+
+  def getPaddingBorder( id: String ) = {
+    val computed = getComputedProperties(id)
+    val pl = getPixels( "paddingLeft", computed.paddingLeft, id )
+    val pr = getPixels( "paddingRight", computed.paddingRight, id )
+    val ml = getPixels( "borderLeft", computed.borderLeft, id )
+    val mr = getPixels( "borderRight", computed.borderRight, id )
+    pl+pr+ml+mr
+  }
+
   /**
-   * Max length, in pixels, of the names.  Uses the default hand button font.
+   * Max length, in pixels, of the names.  Uses the default font.
    */
   def maxLength( names: String* ): Int = {
-    val font = defaultHandButtonFont
+    val font = defaultFont
     names.map(n => length(n, font)).reduce((l,r) => Math.max(l,r))
   }
 

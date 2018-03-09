@@ -109,10 +109,6 @@ object ViewDeclarerInternal {
         }
       }
 
-//      val maxPlayerLen = (if (playingDuplicate) 6 else 2)+
-//                         (props.north::props.south::props.east::props.west::Nil).map(p => p.length()).foldLeft(2){ case (m, l) => math.max(m, l)}
-//      val bwidth = maxPlayerLen.toString()+"em"
-
       def isSelected( d: PlayerPosition ) = props.current.isDefined && props.current.get == d
       def getTeam( team: Option[Id.Team] ) = {
         team match {
@@ -136,8 +132,9 @@ object ViewDeclarerInternal {
           getButtonText("East", East, props.east, props.ewVul, props.teamEW)::
           getButtonText("West", West, props.west, props.ewVul, props.teamEW)::
           Nil
-        val borderRadius = Pixels.defaultHandButtonBorderRadius
-        Math.max( 5, Pixels.maxLength( texts.map(_.mkString("")): _*) ) + 10 /* padding on Vul */ + borderRadius + borderRadius/2
+        val borderRadius = Properties.defaultHandButtonBorderRadius
+        val vulpadding = Properties.defaultHandVulPaddingBorder
+        Math.max( 5, Pixels.maxLength( texts.map(_.mkString("")): _*) ) + vulpadding + borderRadius + borderRadius
       }
       val bwidth = {
         s"${maxPlayerLen}px"
@@ -157,8 +154,8 @@ object ViewDeclarerInternal {
                     name,
                     getTeam(teamId),
                     " ",
-                    if (isvul) <.span( handStyles.vulnerable, ^.padding := "1px 5px", "Vul" )
-                    else <.span( handStyles.notVulnerable,^.padding := "1px 5px", "vul" ),
+                    if (isvul) <.span( handStyles.vulnerable, "Vul" )
+                    else <.span( handStyles.notVulnerable, "vul" ),
                     playingDuplicate ?= <.span( " ", pos.name )
                   )
                 )

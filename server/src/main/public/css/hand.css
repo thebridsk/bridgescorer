@@ -11,6 +11,7 @@
 
 .handPageHand {
   font-size: x-large;
+  max-width: 1024px;
 }
 
 .handSectionContract {
@@ -119,6 +120,7 @@
 .handVulnerable {
   background-color: red !important;
   borderStyle: inset;
+  padding: 1px 5px;
 }
 
 .handNotVulnerable {
@@ -126,6 +128,7 @@
   color: gray;
   text-decoration: line-through;
   border-style: inset;
+  padding: 1px 5px;
 }
 
 
