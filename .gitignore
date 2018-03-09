@@ -15,3 +15,4 @@ test-output/
 /.settings/
 /node_modules/
 /unittest.1.log
+/keys/

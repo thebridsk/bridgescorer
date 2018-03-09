@@ -157,6 +157,7 @@ object Dependencies {
 //      "com.typesafe.akka"   %% "akka-http-core"          % vAkkaHttp withSources(),
       "com.typesafe.akka"   %% "akka-http"               % vAkkaHttp withSources(),
       "com.typesafe.akka"   %% "akka-http-caching"       % vAkkaHttp withSources(),
+//      "com.typesafe.akka"   %% "akka-http2-support"      % vAkkaHttp % "test" withSources(),
       "de.heikoseeberger"   %% "akka-http-play-json"     % vAkkaHttpPlayJson withSources(),
 
 //      ("io.swagger"          %%  "swagger-scala-module" % vSwaggerScalaModule withSources()).exclude("com.google.code.findbugs","jsr305"),
