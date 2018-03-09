@@ -76,6 +76,13 @@ object HomePage {
       }
     } >> scope.forceUpdate
 
+    def toggleDebug() = scope.modState { s =>
+      val newstate = s.copy(debugging = !s.debugging)
+      debugging = newstate.debugging
+
+      newstate.copy(debugging = false, working=Some("Debugging not enabled"))
+    }
+
     def render( props: Props, state: State ) = {
       import BaseStyles._
       def callbackPage(page: AppPage) = props.callback(page)
@@ -252,8 +259,8 @@ object HomePage {
                 <.td( ^.width:="25%",
                   AppButton( "Debug", "Debug",
                              rootStyles.playButton,
-                             ^.disabled:=isWorking,
-//                               ^.onClick --> debugCallback,
+                             ^.disabled:=true,   // isWorking,
+                             ^.onClick --> toggleDebug(),
                              debugging ?= baseStyles.buttonSelected)
                 ),
                 <.td( ^.width:="25%",
