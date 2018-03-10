@@ -53,13 +53,20 @@ trait ParallelUtils {
     try {
       waitForFutures( name, funs:_* )
     } catch {
-      case t: Throwable => ignoreTimeoutExceptions(name, t)
+      case t: Throwable =>
+        ignoreTimeoutExceptions(name, t)
     }
   }
 
   def waitForFutures( name: String, cbs: CodeBlock[_]* )( implicit timeoutduration: Duration ) = {
-    if (useSerial) executeSerial(name, cbs:_*)
-    else waitForFuturesImpl(name, cbs:_*)
+    try {
+      if (useSerial) executeSerial(name, cbs:_*)
+      else waitForFuturesImpl(name, cbs:_*)
+    } catch {
+      case e: Throwable =>
+        log.warning(s"waitForFutures: Exception on ${name}", e )
+        throw e
+    }
   }
 
   def waitForFuturesImpl( name: String, cbs: CodeBlock[_]* )( implicit timeoutduration: Duration ) = {
@@ -80,16 +87,18 @@ trait ParallelUtils {
     if (!failures.isEmpty) throw new ParallelException(name+failures.map(s=>s._2).mkString("\n  ","\n  ",""), failures:_*)
   }
 
-  def executeSerial( name: String, cbs: CodeBlock[_]* )( implicit timeoutduration: Duration ) = {
-    cbs.foreach { cb =>
+  def executeSerial( name: String, cbs: CodeBlock[_]* )( implicit timeoutduration: Duration ): Unit = {
+    val failures = cbs.flatMap { cb =>
       try {
         cb.execute
+        Nil
       } catch {
         case x: Exception =>
           log.severe(s"""Error executing "${name}" code block ${cb.pos.line}""", x)
-          throw x
+          (cb.pos,x)::Nil
       }
     }
+    if (!failures.isEmpty) throw new ParallelException(name+failures.map(s=>s._2).mkString("\n  ","\n  ",""), failures:_*)
   }
 
 }
@@ -179,12 +188,14 @@ object ParallelUtils extends ParallelUtils {
               }
             }.isDefined
         ) {
+          log.warning(s"Exception, ${name} called from ${pos.line}", t )
           throw t
         }
         log.warning(s"Ignoring timeout, ${name} called from ${pos.line}", t )
       case x: TimeoutException =>
         log.warning(s"Ignoring timeout, ${name} called from ${pos.line}", t )
       case _ =>
+        log.warning(s"Exception, ${name} called from ${pos.line}", t )
         throw t
     }
   }
