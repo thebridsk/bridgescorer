@@ -72,7 +72,14 @@ class RubberTest extends FlatSpec with MustMatchers with BeforeAndAfterAll with 
                     )
     } catch {
       case e: Throwable =>
-        afterAll()
+        testlog.warning("Exception starting sessions and server, stopping all", e )
+        try {
+          afterAll()
+        } catch {
+          case x: Exception =>
+            e.addSuppressed(x)
+            testlog.warning("Exception stopping sessions and server after trying to start", x )
+        }
         throw e
     }
 
@@ -90,7 +97,7 @@ class RubberTest extends FlatSpec with MustMatchers with BeforeAndAfterAll with 
                         Session1.sessionStop()
                       } catch {
                         case x: TimeoutException =>
-                          testlog.warning("Timeout closing sessions and server", x )
+                          testlog.warning("Timeout closing sessions and server, ignoring", x )
                       }
                     },
                     CodeBlock { TestServer.stop() }

@@ -9,7 +9,7 @@ name := "project-bridgescorer"
 // scalaVersion := "2.10.7"
 
 val vLog4j = "1.7.25"               // https://mvnrepository.com/artifact/org.slf4j/slf4j-simple
-val vJGit = "4.10.0.201712302008-r" // https://mvnrepository.com/artifact/org.eclipse.jgit/org.eclipse.jgit.pgm
+val vJGit = "4.11.0.201803080745-r" // https://mvnrepository.com/artifact/org.eclipse.jgit/org.eclipse.jgit.pgm
 
 val vScalaJSDefault = "0.6.22"     // http://www.scala-js.org/
 val vSbtAssembly = "0.14.6"        // https://github.com/sbt/sbt-assembly
