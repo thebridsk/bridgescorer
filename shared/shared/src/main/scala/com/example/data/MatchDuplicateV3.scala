@@ -4,6 +4,7 @@ import com.example.data.SystemTime.Timestamp
 
 import io.swagger.annotations._
 import scala.annotation.meta._
+import scala.collection.Iterator
 
 @ApiModel(value="MatchDuplicate", description = "A duplicate match")
 case class MatchDuplicateV3 private(
@@ -134,6 +135,13 @@ case class MatchDuplicateV3 private(
 
   def getHandsInRound( tableid: Id.Table, round: Int ) = {
     boards.map { b => b.hands.filter { h => h.table==tableid&&h.round==round } }.flatten.toList
+  }
+
+  def allPlayedHands: Iterator[DuplicateHand] = {
+    import scala.collection.breakOut
+    boards.flatMap { b =>
+      b.hands.filter( dh => dh.wasPlayed )
+    }(breakOut)
   }
 
   /**

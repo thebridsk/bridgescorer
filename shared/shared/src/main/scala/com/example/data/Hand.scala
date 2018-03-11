@@ -61,6 +61,18 @@ case class Hand(
     copy( id=id, created=time, updated=time )
   }
 
+  def contract = {
+    if (contractTricks == 0) {
+      "PassedOut"
+    } else {
+      val d = contractDoubled match {
+        case "N" => ""
+        case "D" => "*"
+        case "R" => "**"
+      }
+      s"${contractTricks}${contractSuit}${d}"
+    }
+  }
 }
 
 object Hand {
