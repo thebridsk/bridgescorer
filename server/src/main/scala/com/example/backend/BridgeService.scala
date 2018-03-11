@@ -49,6 +49,9 @@ import java.util.zip.ZipEntry
 import java.io.OutputStreamWriter
 import java.io.BufferedOutputStream
 import com.example.data.SystemTime.Timestamp
+import scala.reflect.io.Directory
+import scala.reflect.io.Path
+import scala.concurrent.ExecutionContext
 
 /**
  * The backend trait for our service.
@@ -324,6 +327,39 @@ abstract class BridgeService( val id: String ) {
    */
   def delete(): Future[Result[String]] = {
     Result.future(StatusCodes.BadRequest,RestMessage("Delete not supported"))
+  }
+}
+
+object BridgeService {
+  /**
+   * Create a persistent BridgeService that stores data on disk at the specified path.
+   * @param path a zip file or a directory.  If a zip file is specified it must exist.
+   *             if path does not exist, then a directory will be created.
+   * @param useIdFromValue
+   * @param dontUpdateTime
+   * @param useYaml
+   * @param id the id of the store.
+   * @param execute
+   * @throw IllegalArgumentException if path is not a zip file or directory
+   */
+  def apply( path: Path,
+             useIdFromValue: Boolean = false,
+             dontUpdateTime: Boolean = false,
+             useYaml: Boolean = true,
+             id: Option[String] = None
+           )(
+             implicit
+               execute: ExecutionContext
+           ) = {
+    if (path.isFile) {
+      if (path.extension == "zip") {
+        new BridgeServiceZipStore( id.getOrElse(path.name), path.toFile, useYaml )(execute)
+      } else {
+        throw new IllegalArgumentException("path parameter must be a zipfile or a directory")
+      }
+    } else {
+      new BridgeServiceFileStore(path.toDirectory,useIdFromValue,dontUpdateTime,useYaml,id)(execute)
+    }
   }
 }
 

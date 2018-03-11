@@ -17,6 +17,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import com.example.data.duplicate.suggestion.NeverPair
 import com.example.data.Id
+import com.example.datastore.stats.DuplicateStatsCommand
 
 trait ShowCommand
 
@@ -42,6 +43,7 @@ Options:""")
   addSubcommand(ShowSuggestionCommand)
   addSubcommand(ShowPartnersOfCommand)
   addSubcommand(ShowTeamDeclarerCommand)
+  addSubcommand(DuplicateStatsCommand)
 
   shortSubcommandsHelp(true)
 

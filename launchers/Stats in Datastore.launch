@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<launchConfiguration type="scala.application">
+<listAttribute key="StepOutExcludePkgsOrClasses"/>
+<listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
+<listEntry value="/bridgescorer-server/src/main/scala/com/example/Server.scala"/>
+</listAttribute>
+<listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
+<listEntry value="1"/>
+</listAttribute>
+<booleanAttribute key="org.eclipse.jdt.launching.ATTR_USE_START_ON_FIRST_THREAD" value="true"/>
+<stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="com.example.Server"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="datastore --store ${resource_loc:/bridgescorer/server/store} show stats --out ${resource_loc:/bridgescorer/logs}/PlayerStats.csv"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="bridgescorer-server"/>
+</launchConfiguration>
