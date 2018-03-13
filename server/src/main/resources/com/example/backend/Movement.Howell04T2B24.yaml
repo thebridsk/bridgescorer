@@ -1,0 +1,114 @@
+---
+name: "Howell04T2B24"
+short: "Howell 4 teams 2 tables 24 boards"
+description: "Howell movements, 4 teams, 2 tables, 24 boards"
+numberTeams: 4
+hands:
+- table: 1
+  round: 1
+  ns: 4
+  ew: 1
+  boards:
+  - 1
+  - 2
+  - 3
+  - 4
+- table: 1
+  round: 2
+  ns: 4
+  ew: 1
+  boards:
+  - 5
+  - 6
+  - 7
+  - 8
+- table: 1
+  round: 3
+  ns: 4
+  ew: 2
+  boards:
+  - 9
+  - 10
+  - 11
+  - 12
+- table: 1
+  round: 4
+  ns: 4
+  ew: 2
+  boards:
+  - 13
+  - 14
+  - 15
+  - 16
+- table: 1
+  round: 5
+  ns: 4
+  ew: 3
+  boards:
+  - 17
+  - 18
+  - 19
+  - 20
+- table: 1
+  round: 6
+  ns: 4
+  ew: 3
+  boards:
+  - 21
+  - 22
+  - 23
+  - 24
+- table: 2
+  round: 1
+  ns: 2
+  ew: 3
+  boards:
+  - 5
+  - 6
+  - 7
+  - 8
+- table: 2
+  round: 2
+  ns: 3
+  ew: 2
+  boards:
+  - 1
+  - 2
+  - 3
+  - 4
+- table: 2
+  round: 3
+  ns: 3
+  ew: 1
+  boards:
+  - 13
+  - 14
+  - 15
+  - 16
+- table: 2
+  round: 4
+  ns: 1
+  ew: 3
+  boards:
+  - 9
+  - 10
+  - 11
+  - 12
+- table: 2
+  round: 5
+  ns: 1
+  ew: 2
+  boards:
+  - 21
+  - 22
+  - 23
+  - 24
+- table: 2
+  round: 6
+  ns: 2
+  ew: 1
+  boards:
+  - 17
+  - 18
+  - 19
+  - 20

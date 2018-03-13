@@ -1,0 +1,258 @@
+---
+name: "Howell09T4B18"
+short: "Howell 9 teams 4 tables 18 boards"
+description: "Howell movements, 9 teams, 4 tables, 18 boards, use 5 tables without table 3"
+numberTeams: 9
+hands:
+- table: 1
+  round: 1
+  ns: 7
+  ew: 3
+  boards:
+  - 1
+  - 2
+- table: 1
+  round: 2
+  ns: 8
+  ew: 4
+  boards:
+  - 3
+  - 4
+- table: 1
+  round: 3
+  ns: 9
+  ew: 5
+  boards:
+  - 5
+  - 6
+- table: 1
+  round: 4
+  ns: 1
+  ew: 6
+  boards:
+  - 7
+  - 8
+- table: 1
+  round: 5
+  ns: 2
+  ew: 7
+  boards:
+  - 9
+  - 10
+- table: 1
+  round: 6
+  ns: 3
+  ew: 8
+  boards:
+  - 11
+  - 12
+- table: 1
+  round: 7
+  ns: 4
+  ew: 9
+  boards:
+  - 13
+  - 14
+- table: 1
+  round: 8
+  ns: 5
+  ew: 1
+  boards:
+  - 15
+  - 16
+- table: 1
+  round: 9
+  ns: 6
+  ew: 2
+  boards:
+  - 17
+  - 18
+- table: 2
+  round: 1
+  ns: 5
+  ew: 2
+  boards:
+  - 3
+  - 4
+- table: 2
+  round: 2
+  ns: 6
+  ew: 3
+  boards:
+  - 5
+  - 6
+- table: 2
+  round: 3
+  ns: 7
+  ew: 4
+  boards:
+  - 7
+  - 8
+- table: 2
+  round: 4
+  ns: 8
+  ew: 5
+  boards:
+  - 9
+  - 10
+- table: 2
+  round: 5
+  ns: 9
+  ew: 6
+  boards:
+  - 11
+  - 12
+- table: 2
+  round: 6
+  ns: 1
+  ew: 7
+  boards:
+  - 13
+  - 14
+- table: 2
+  round: 7
+  ns: 2
+  ew: 8
+  boards:
+  - 15
+  - 16
+- table: 2
+  round: 8
+  ns: 3
+  ew: 9
+  boards:
+  - 17
+  - 18
+- table: 2
+  round: 9
+  ns: 4
+  ew: 1
+  boards:
+  - 1
+  - 2
+- table: 4
+  round: 1
+  ns: 9
+  ew: 8
+  boards:
+  - 7
+  - 8
+- table: 4
+  round: 2
+  ns: 1
+  ew: 9
+  boards:
+  - 9
+  - 10
+- table: 4
+  round: 3
+  ns: 2
+  ew: 1
+  boards:
+  - 11
+  - 12
+- table: 4
+  round: 4
+  ns: 3
+  ew: 2
+  boards:
+  - 13
+  - 14
+- table: 4
+  round: 5
+  ns: 4
+  ew: 3
+  boards:
+  - 15
+  - 16
+- table: 4
+  round: 6
+  ns: 5
+  ew: 4
+  boards:
+  - 17
+  - 18
+- table: 4
+  round: 7
+  ns: 6
+  ew: 5
+  boards:
+  - 1
+  - 2
+- table: 4
+  round: 8
+  ns: 7
+  ew: 6
+  boards:
+  - 3
+  - 4
+- table: 4
+  round: 9
+  ns: 8
+  ew: 7
+  boards:
+  - 5
+  - 6
+- table: 5
+  round: 1
+  ns: 4
+  ew: 6
+  boards:
+  - 9
+  - 10
+- table: 5
+  round: 2
+  ns: 5
+  ew: 7
+  boards:
+  - 11
+  - 12
+- table: 5
+  round: 3
+  ns: 6
+  ew: 8
+  boards:
+  - 13
+  - 14
+- table: 5
+  round: 4
+  ns: 7
+  ew: 9
+  boards:
+  - 15
+  - 16
+- table: 5
+  round: 5
+  ns: 8
+  ew: 1
+  boards:
+  - 17
+  - 18
+- table: 5
+  round: 6
+  ns: 9
+  ew: 2
+  boards:
+  - 1
+  - 2
+- table: 5
+  round: 7
+  ns: 1
+  ew: 3
+  boards:
+  - 3
+  - 4
+- table: 5
+  round: 8
+  ns: 2
+  ew: 4
+  boards:
+  - 5
+  - 6
+- table: 5
+  round: 9
+  ns: 3
+  ew: 5
+  boards:
+  - 7
+  - 8

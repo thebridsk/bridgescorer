@@ -1,7 +1,7 @@
 ---
 name: "Howell3TableNoRelay"
 short: "3 Tables Howell, no relay"
-description: "3 tables, 20 hands, no relay, one team winner"
+description: "3 tables, 20 hands, no relay, one team winner, local"
 numberTeams: 6
 hands:
 - table: 3

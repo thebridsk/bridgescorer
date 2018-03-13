@@ -107,6 +107,46 @@ class MatchDuplicateScore private ( duplicate: MatchDuplicate, val perspective: 
     }
   }
 
+  def getRoundForAllTables( round: Int ) = {
+    tables.flatMap { entry =>
+      val (table, rounds) = entry
+      rounds.find { r => r.round == round }
+    }.toList
+  }
+
+  def allRounds = {
+    tables.flatMap { entry =>
+      val (table, rounds) = entry
+      rounds.map( r => r.round )
+    }.toList.distinct
+  }
+
+  def matchHasRelay = {
+    allRounds.find { ir =>
+      val all = getRoundForAllTables(ir).flatMap( r => r.boards.map( bs => bs.board.id ) )
+      val distinct = all.distinct
+      all.length != distinct.length
+    }.isDefined
+  }
+
+  /**
+   * @returns table IDs
+   */
+  def tableRoundRelay( itable: String, iround: Int ) = {
+    val allRounds = getRoundForAllTables(iround)
+    val otherRounds = allRounds.filter( r => r.table != itable )
+    val otherBoards = otherRounds.flatMap( r => r.boards.map( bs => bs.board.id ) )
+    allRounds.find( r => r.table == itable ).map { table =>
+      val relays = table.boards.flatMap { bs =>
+        val bid = bs.board.id
+        otherRounds.flatMap { r =>
+          r.boards.find( bs => bs.board.id == bid ).map( bs => r.table )
+        }
+      }.distinct.sortWith( (l,r) => Id.idComparer(l, r)<0)
+      relays
+    }.getOrElse(Nil)
+  }
+
   /**
    * Get all the table Ids in sort order.
    */
