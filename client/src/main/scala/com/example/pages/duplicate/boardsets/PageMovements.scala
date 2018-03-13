@@ -78,39 +78,48 @@ object PageMovementsInternal {
                       )
                     }).build
 
-  val BoardHeader = ScalaComponent.builder[(State,Int)]("PageMovements.BoardHeader")
+  val BoardHeader = ScalaComponent.builder[(State,Int,Boolean)]("PageMovements.BoardHeader")
                     .render_P( props => {
-                      val (state,table) = props
+                      val (state,table,relay) = props
                       <.thead(
                         <.tr(
-                          <.th( ^.colSpan:=4, "Table "+table )
+                          <.th( ^.colSpan:=(if (relay) 5 else 4), "Table "+table )
                         ),
                         <.tr(
                           <.th( "Round" ),
                           <.th( "NS" ),
                           <.th( "EW" ),
-                          <.th( "Boards" )
+                          <.th( "Boards" ),
+                          if (relay) <.th( "Relay" )
+                          else TagMod()
                         )
                       )
                     }).build
 
-  val BoardRow = ScalaComponent.builder[(State,HandInTable)]("PageMovements.BoardRow")
+  val BoardRow = ScalaComponent.builder[(State,Movement,HandInTable,Boolean)]("PageMovements.BoardRow")
                     .render_P( props => {
-                      val (state,hit) = props
+                      val (state,movement,hit,relay) = props
                       <.tr(
                         <.td( hit.round),
                         <.td( hit.ns),
                         <.td( hit.ew),
-                        <.td( hit.boards.mkString(", "))
+                        <.td( hit.boards.mkString(", ")),
+                        if (relay) {
+                          val relaytables = movement.tableRoundRelay(hit.table, hit.round)
+                          <.td( relaytables.mkString(", ") )
+                        } else {
+                          TagMod()
+                        }
                       )
                     }).build
 
   val MovementTable = ScalaComponent.builder[(State,Movement,Int)]("PageMovements.MovementTable")
                         .render_P( props => {
                           val (state,htp,table) = props
+                          val relay = htp.matchHasRelay
                           <.div(
                             <.table(
-                              BoardHeader((state,table)),
+                              BoardHeader((state,table,relay)),
                               <.tbody(
                                 htp.hands.filter( h => h.table == table).sortWith( (h1,h2)=> {
                                     val t1 = h1.table
@@ -121,7 +130,7 @@ object PageMovementsInternal {
                                       t1<t2
                                     }
                                   } ).map { h =>
-                                  BoardRow.withKey( h.table+"-"+h.round )((state,h))
+                                  BoardRow.withKey( h.table+"-"+h.round )((state,htp,h,relay))
                                 }.toTagMod
                               )
                             )

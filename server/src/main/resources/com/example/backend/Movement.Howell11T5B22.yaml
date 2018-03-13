@@ -1,0 +1,391 @@
+---
+name: "Howell11T5B22"
+short: "Howell 11 teams 5 tables 22 boards"
+description: "Howell movements, 11 teams, 5 tables, 22 boards, use 6 tables without table 1"
+numberTeams: 11
+hands:
+- table: 2
+  round: 1
+  ns: 6
+  ew: 7
+  boards:
+  - 7
+  - 8
+- table: 2
+  round: 2
+  ns: 7
+  ew: 8
+  boards:
+  - 9
+  - 10
+- table: 2
+  round: 3
+  ns: 8
+  ew: 9
+  boards:
+  - 11
+  - 12
+- table: 2
+  round: 4
+  ns: 9
+  ew: 10
+  boards:
+  - 13
+  - 14
+- table: 2
+  round: 5
+  ns: 10
+  ew: 11
+  boards:
+  - 15
+  - 16
+- table: 2
+  round: 6
+  ns: 11
+  ew: 1
+  boards:
+  - 17
+  - 18
+- table: 2
+  round: 7
+  ns: 1
+  ew: 2
+  boards:
+  - 19
+  - 20
+- table: 2
+  round: 8
+  ns: 2
+  ew: 3
+  boards:
+  - 21
+  - 22
+- table: 2
+  round: 9
+  ns: 3
+  ew: 4
+  boards:
+  - 1
+  - 2
+- table: 2
+  round: 10
+  ns: 4
+  ew: 5
+  boards:
+  - 3
+  - 4
+- table: 2
+  round: 11
+  ns: 5
+  ew: 6
+  boards:
+  - 5
+  - 6
+- table: 3
+  round: 1
+  ns: 11
+  ew: 4
+  boards:
+  - 11
+  - 12
+- table: 3
+  round: 2
+  ns: 1
+  ew: 5
+  boards:
+  - 13
+  - 14
+- table: 3
+  round: 3
+  ns: 2
+  ew: 6
+  boards:
+  - 15
+  - 16
+- table: 3
+  round: 4
+  ns: 3
+  ew: 7
+  boards:
+  - 17
+  - 18
+- table: 3
+  round: 5
+  ns: 4
+  ew: 8
+  boards:
+  - 19
+  - 20
+- table: 3
+  round: 6
+  ns: 5
+  ew: 9
+  boards:
+  - 21
+  - 22
+- table: 3
+  round: 7
+  ns: 6
+  ew: 10
+  boards:
+  - 1
+  - 2
+- table: 3
+  round: 8
+  ns: 7
+  ew: 11
+  boards:
+  - 3
+  - 4
+- table: 3
+  round: 9
+  ns: 8
+  ew: 1
+  boards:
+  - 5
+  - 6
+- table: 3
+  round: 10
+  ns: 9
+  ew: 2
+  boards:
+  - 7
+  - 8
+- table: 3
+  round: 11
+  ns: 10
+  ew: 3
+  boards:
+  - 9
+  - 10
+- table: 4
+  round: 1
+  ns: 3
+  ew: 9
+  boards:
+  - 15
+  - 16
+- table: 4
+  round: 2
+  ns: 4
+  ew: 10
+  boards:
+  - 17
+  - 18
+- table: 4
+  round: 3
+  ns: 5
+  ew: 11
+  boards:
+  - 19
+  - 20
+- table: 4
+  round: 4
+  ns: 6
+  ew: 1
+  boards:
+  - 21
+  - 22
+- table: 4
+  round: 5
+  ns: 7
+  ew: 2
+  boards:
+  - 1
+  - 2
+- table: 4
+  round: 6
+  ns: 8
+  ew: 3
+  boards:
+  - 3
+  - 4
+- table: 4
+  round: 7
+  ns: 9
+  ew: 4
+  boards:
+  - 5
+  - 6
+- table: 4
+  round: 8
+  ns: 10
+  ew: 5
+  boards:
+  - 7
+  - 8
+- table: 4
+  round: 9
+  ns: 11
+  ew: 6
+  boards:
+  - 9
+  - 10
+- table: 4
+  round: 10
+  ns: 1
+  ew: 7
+  boards:
+  - 11
+  - 12
+- table: 4
+  round: 11
+  ns: 2
+  ew: 8
+  boards:
+  - 13
+  - 14
+- table: 5
+  round: 1
+  ns: 2
+  ew: 5
+  boards:
+  - 17
+  - 18
+- table: 5
+  round: 2
+  ns: 3
+  ew: 6
+  boards:
+  - 19
+  - 20
+- table: 5
+  round: 3
+  ns: 4
+  ew: 7
+  boards:
+  - 21
+  - 22
+- table: 5
+  round: 4
+  ns: 5
+  ew: 8
+  boards:
+  - 1
+  - 2
+- table: 5
+  round: 5
+  ns: 6
+  ew: 9
+  boards:
+  - 3
+  - 4
+- table: 5
+  round: 6
+  ns: 7
+  ew: 10
+  boards:
+  - 5
+  - 6
+- table: 5
+  round: 7
+  ns: 8
+  ew: 11
+  boards:
+  - 7
+  - 8
+- table: 5
+  round: 8
+  ns: 9
+  ew: 1
+  boards:
+  - 9
+  - 10
+- table: 5
+  round: 9
+  ns: 10
+  ew: 2
+  boards:
+  - 11
+  - 12
+- table: 5
+  round: 10
+  ns: 11
+  ew: 3
+  boards:
+  - 13
+  - 14
+- table: 5
+  round: 11
+  ns: 1
+  ew: 4
+  boards:
+  - 15
+  - 16
+- table: 6
+  round: 1
+  ns: 10
+  ew: 8
+  boards:
+  - 21
+  - 22
+- table: 6
+  round: 2
+  ns: 11
+  ew: 9
+  boards:
+  - 1
+  - 2
+- table: 6
+  round: 3
+  ns: 1
+  ew: 10
+  boards:
+  - 3
+  - 4
+- table: 6
+  round: 4
+  ns: 2
+  ew: 11
+  boards:
+  - 5
+  - 6
+- table: 6
+  round: 5
+  ns: 3
+  ew: 1
+  boards:
+  - 7
+  - 8
+- table: 6
+  round: 6
+  ns: 4
+  ew: 2
+  boards:
+  - 9
+  - 10
+- table: 6
+  round: 7
+  ns: 5
+  ew: 3
+  boards:
+  - 11
+  - 12
+- table: 6
+  round: 8
+  ns: 6
+  ew: 4
+  boards:
+  - 13
+  - 14
+- table: 6
+  round: 9
+  ns: 7
+  ew: 5
+  boards:
+  - 15
+  - 16
+- table: 6
+  round: 10
+  ns: 8
+  ew: 6
+  boards:
+  - 17
+  - 18
+- table: 6
+  round: 11
+  ns: 9
+  ew: 7
+  boards:
+  - 19
+  - 20

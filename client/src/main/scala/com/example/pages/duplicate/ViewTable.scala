@@ -60,12 +60,13 @@ object ViewTableInternal {
    */
   case class State()
 
-  val Header = ScalaComponent.builder[Props]("ComponentBoard.Header")
-                      .render_P( props => {
+  val Header = ScalaComponent.builder[(Props,Boolean)]("ComponentBoard.Header")
+                      .render_P { args =>
+                        val (props, relay) = args
                         <.thead(
                           <.tr(
                             <.th(
-                              ^.colSpan:=4,
+                              ^.colSpan:=(if (relay) 5 else 4),
                               if (props.showTableButton) {
                                 val table = Id.tableIdToTableNumber(props.page.tableid)
                                 AppButton( "Table_"+table, "Table "+table, props.routerCtl.setOnClick(props.page) )
@@ -78,15 +79,16 @@ object ViewTableInternal {
                             <.th( "Round" ),
                             <.th( "NS" ),
                             <.th( "EW" ),
-                            <.th( "Boards" )
+                            <.th( "Boards" ),
+                            relay ?= <.th( "Relay" )
                           )
                         )
 
-                      }).build
+                      }.build
 
-  val RoundRow = ScalaComponent.builder[(Round,MatchDuplicateScore,Props,Int)]("ComponentBoard.TeamRow")
+  val RoundRow = ScalaComponent.builder[(Round,MatchDuplicateScore,Props,Int,Boolean)]("ComponentBoard.TeamRow")
                       .render_P( cprops => {
-                        val (round,score,props,currentRound) = cprops
+                        val (round,score,props,currentRound,relay) = cprops
                         val allUnplayed = round.allUnplayedOnTable
 
                         def showTeamOld( teamId: String, p1: String, p2: String ) = {
@@ -135,9 +137,18 @@ object ViewTableInternal {
                                              }
                                            })
                               )
+
                             }.toTagMod,
                             <.span( ^.dangerouslySetInnerHtml:="&nbsp;&nbsp;")
-                          )
+                          ),
+                          if (relay) {
+                            val rrelay = score.tableRoundRelay(round.table, round.round)
+                            <.td(
+                              rrelay.map( id => Id.tableIdToTableNumber(id)).mkString(", ")
+                            )
+                          } else {
+                            TagMod()
+                          }
                         )
                       }).build
 
@@ -153,18 +164,19 @@ object ViewTableInternal {
     def render( props: Props, state: State ) = {
       DuplicateStore.getCompleteView() match {
         case Some(score) =>
+          val relay = score.matchHasRelay
           score.tables.get(props.page.tableid) match {
             case Some(rounds) =>
               <.div(
                 dupStyles.divTableView,
                 <.table(
-                  Header(props),
+                  Header((props,relay)),
                   <.tbody(
                       {
                         var lastRoundAllPlay = 0
                         rounds.sortWith((r1,r2)=>r1.round<r2.round).map { round =>
                           if (round.complete) lastRoundAllPlay = round.round
-                          RoundRow.withKey( "Round_"+round.round )((round,score,props,lastRoundAllPlay+1))
+                          RoundRow.withKey( "Round_"+round.round )((round,score,props,lastRoundAllPlay+1,relay))
                         }.toTagMod
                       }
                   )

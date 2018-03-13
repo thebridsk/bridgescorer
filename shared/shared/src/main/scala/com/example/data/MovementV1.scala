@@ -44,6 +44,47 @@ case class MovementV1( name: String, short: String, description: String, numberT
   def getBoards = {
     hands.flatMap( h => h.boards ).distinct.sorted
   }
+
+
+  @ApiModelProperty(hidden = true)
+  def getRoundForAllTables( round: Int ) = {
+    hands.filter { r =>
+      r.round == round
+    }.toList
+  }
+
+  @ApiModelProperty(hidden = true)
+  def allRounds = {
+    hands.map( r => r.round ).distinct
+  }
+
+  @ApiModelProperty(hidden = true)
+  def matchHasRelay = {
+    allRounds.find { ir =>
+      val all = getRoundForAllTables(ir).flatMap( r => r.boards )
+      val distinct = all.distinct
+      all.length != distinct.length
+    }.isDefined
+  }
+
+  /**
+   * @returns table IDs
+   */
+  @ApiModelProperty(hidden = true)
+  def tableRoundRelay( itable: Int, iround: Int ) = {
+    val allRounds = getRoundForAllTables(iround)
+    val otherRounds = allRounds.filter( r => r.table != itable )
+    val otherBoards = otherRounds.flatMap( r => r.boards )
+    allRounds.find( r => r.table == itable ).map { table =>
+      val relays = table.boards.flatMap { bid =>
+        otherRounds.flatMap { r =>
+          r.boards.find( bs => bs == bid ).map( bs => r.table )
+        }
+      }.distinct.sorted
+      relays
+    }.getOrElse(Nil)
+  }
+
 }
 
 case class BoardPlayed( board: Int, table: Int, round: Int, ns: Int, ew: Int )

@@ -1,0 +1,171 @@
+---
+name: "Howell06T3B30Relay"
+short: "Howell 6 teams 3 tables 30 boards relay"
+description: "Howell movements, 6 teams, 3 tables, 30 boards, relay"
+numberTeams: 6
+hands:
+- table: 1
+  round: 1
+  ns: 6
+  ew: 1
+  boards:
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  - 6
+- table: 1
+  round: 2
+  ns: 6
+  ew: 2
+  boards:
+  - 7
+  - 8
+  - 9
+  - 10
+  - 11
+  - 12
+- table: 1
+  round: 3
+  ns: 6
+  ew: 3
+  boards:
+  - 13
+  - 14
+  - 15
+  - 16
+  - 17
+  - 18
+- table: 1
+  round: 4
+  ns: 6
+  ew: 4
+  boards:
+  - 19
+  - 20
+  - 21
+  - 22
+  - 23
+  - 24
+- table: 1
+  round: 5
+  ns: 6
+  ew: 5
+  boards:
+  - 25
+  - 26
+  - 27
+  - 28
+  - 29
+  - 30
+- table: 2
+  round: 1
+  ns: 4
+  ew: 3
+  boards:
+  - 7
+  - 8
+  - 9
+  - 10
+  - 11
+  - 12
+- table: 2
+  round: 2
+  ns: 5
+  ew: 4
+  boards:
+  - 13
+  - 14
+  - 15
+  - 16
+  - 17
+  - 18
+- table: 2
+  round: 3
+  ns: 1
+  ew: 5
+  boards:
+  - 7
+  - 8
+  - 9
+  - 10
+  - 11
+  - 12
+- table: 2
+  round: 4
+  ns: 2
+  ew: 1
+  boards:
+  - 13
+  - 14
+  - 15
+  - 16
+  - 17
+  - 18
+- table: 2
+  round: 5
+  ns: 3
+  ew: 2
+  boards:
+  - 25
+  - 26
+  - 27
+  - 28
+  - 29
+  - 30
+- table: 3
+  round: 1
+  ns: 2
+  ew: 5
+  boards:
+  - 19
+  - 20
+  - 21
+  - 22
+  - 23
+  - 24
+- table: 3
+  round: 2
+  ns: 3
+  ew: 1
+  boards:
+  - 19
+  - 20
+  - 21
+  - 22
+  - 23
+  - 24
+- table: 3
+  round: 3
+  ns: 4
+  ew: 2
+  boards:
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  - 6
+- table: 3
+  round: 4
+  ns: 5
+  ew: 3
+  boards:
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  - 6
+- table: 3
+  round: 5
+  ns: 1
+  ew: 4
+  boards:
+  - 25
+  - 26
+  - 27
+  - 28
+  - 29
+  - 30
