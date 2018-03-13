@@ -17,7 +17,7 @@ case class ContractForScore( contract: String, declarer: String, made: Option[St
  * @param score the score if played
  * @param points the duplicate points scored
  */
-case class TeamBoardScore( teamId: Id.Team, isNS: Boolean, played: Boolean, hidden: Boolean, score: Int, points: Double, contract: Option[ContractForScore], opponent: Option[Id.Team] ) {
+case class TeamBoardScore( teamId: Id.Team, isNS: Boolean, played: Boolean, hidden: Boolean, score: Int, points: Double, contract: Option[ContractForScore], opponent: Option[Id.Team], imps: Double ) {
   def showScore = if (played) {
     if (hidden) "?"
     else score.toString
@@ -31,9 +31,24 @@ case class TeamBoardScore( teamId: Id.Team, isNS: Boolean, played: Boolean, hidd
   } else {
     ""
   }
+
+  def showImps = if (played) {
+    if (hidden) "?"
+    else f"${imps}%.1f"
+  } else {
+    ""
+  }
+
   def getPoints: Either[String,Double] = if (played) {
     if (hidden) Left("?")
     else Right(points)
+  } else {
+    Left("")
+  }
+
+  def getImps: Either[String,Double] = if (played) {
+    if (hidden) Left("?")
+    else Right(imps)
   } else {
     Left("")
   }
@@ -77,9 +92,9 @@ case class TeamBoardScore( teamId: Id.Team, isNS: Boolean, played: Boolean, hidd
 }
 
 object TeamBoardScore {
-  def apply( teamId: Id.Team, played: Boolean, hidden: Boolean, score: Int, points: Double ) = new TeamBoardScore(teamId, false, played, hidden, score, points, None, None)
-  def apply( teamId: Id.Team, played: Boolean, hidden: Boolean, score: Int, points: Double, opponent: Id.Team ) = new TeamBoardScore(teamId, true, played, hidden, score, points, None, Some(opponent))
-  def apply( teamId: Id.Team, played: Boolean, hidden: Boolean, score: Int, points: Double, opponent: Id.Team, contract: ContractForScore ) = new TeamBoardScore(teamId, true, played, hidden, score, points, Some(contract), Some(opponent))
+  def apply( teamId: Id.Team, played: Boolean, hidden: Boolean, score: Int, points: Double ) = new TeamBoardScore(teamId, false, played, hidden, score, points, None, None, 0)
+  def apply( teamId: Id.Team, played: Boolean, hidden: Boolean, score: Int, points: Double, opponent: Id.Team ) = new TeamBoardScore(teamId, true, played, hidden, score, points, None, Some(opponent), 0)
+  def apply( teamId: Id.Team, played: Boolean, hidden: Boolean, score: Int, points: Double, opponent: Id.Team, contract: ContractForScore ) = new TeamBoardScore(teamId, true, played, hidden, score, points, Some(contract), Some(opponent), 0)
 }
 
 /**
@@ -177,8 +192,18 @@ class BoardScore( val board: Board, perspective: DuplicateViewPerspective ) {
     scores.map( s => {
       if (s.played) {
         var p = 0.0
-        scores.filter { t => s!=t && t.played }.foreach { t => p+= (if (t.score == s.score) 0.5; else if (t.score < s.score) 1; else 0) }
-        s.copy( points = p )
+        var imps = 0.0
+        var nteams = 0
+        scores.filter { t => s!=t && t.played }.foreach { t =>
+          p+= (if (t.score == s.score) 0.5; else if (t.score < s.score) 1; else 0)
+          val diff = s.score-t.score
+          val i = if (diff < 0) -BoardScore.getIMPs(-diff)
+                  else BoardScore.getIMPs(diff)
+          imps +=i
+          nteams+=1
+        }
+        val ii = if (nteams == 0) 0.0 else imps/nteams
+        s.copy( points = p, imps = ii )
       } else {
         s
       }
@@ -204,4 +229,73 @@ object BoardScore {
   def apply( board: Board, perspective: DuplicateViewPerspective ) = new BoardScore(board, perspective)
 
   val log = Logger("bridge.BoardScore")
+
+//  https://www.bridgehands.com/I/IMP.htm
+//
+//    Difference
+//  in points    IMPs
+//  20-40        1
+//  50-80        2
+//  90-120       3
+//  130-160      4
+//  170-210      5
+//  220-260      6
+//  270-310      7
+//  320-360      8
+//  370-420      9
+//  430-490     10
+//  500-590     11
+//  600-740     12
+//  750-890     13
+//  900-1090    14
+//  1100-1290   15
+//  1300-1490   16
+//  1500-1740   17
+//  1750-1990   18
+//  2000-2240   19
+//  2250-2490   20
+//  2500-2990   21
+//  3000-3490   22
+//  3500-3990   23
+//  4000+       24
+
+  case class IMPEntry( min: Int, max: Int, IMP: Int )
+
+  val IMPTable = List(
+    IMPEntry( 0, 10, 0),
+    IMPEntry( 20, 40, 1 ),
+    IMPEntry( 50, 80, 2 ),
+    IMPEntry( 90, 120, 3 ),
+    IMPEntry( 130, 160, 4 ),
+    IMPEntry( 170, 210, 5 ),
+    IMPEntry( 220, 260, 6 ),
+    IMPEntry( 270, 310, 7 ),
+    IMPEntry( 320, 360, 8 ),
+    IMPEntry( 370, 420, 9 ),
+    IMPEntry( 430, 490, 10 ),
+    IMPEntry( 500, 590, 11 ),
+    IMPEntry( 600, 740, 12 ),
+    IMPEntry( 750, 890, 13 ),
+    IMPEntry( 900, 1090, 14 ),
+    IMPEntry( 1100, 1290, 15 ),
+    IMPEntry( 1300, 1490, 16 ),
+    IMPEntry( 1500, 1740, 17 ),
+    IMPEntry( 1750, 1990, 18 ),
+    IMPEntry( 2000, 2240, 19 ),
+    IMPEntry( 2250, 2490, 20 ),
+    IMPEntry( 2500, 2990, 21 ),
+    IMPEntry( 3000, 3490, 22 ),
+    IMPEntry( 3500, 3990, 23 ),
+    IMPEntry( 4000, 100000, 24)
+  )
+
+  def getIMPs( points: Int ) = {
+    IMPTable.find { entry =>
+      entry.min <= points && entry.max >= points
+    }.map { entry =>
+      entry.IMP
+    }.getOrElse(0)
+
+  }
+
 }

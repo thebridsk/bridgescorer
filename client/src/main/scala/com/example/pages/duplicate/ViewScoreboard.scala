@@ -43,10 +43,10 @@ import com.example.react.Utils._
 object ViewScoreboard {
   import ViewScoreboardInternal._
 
-  case class Props( routerCtl: RouterCtl[DuplicatePage], page: BaseScoreboardViewWithPerspective, score: MatchDuplicateScore, attr: TagMod* )
+  case class Props( routerCtl: RouterCtl[DuplicatePage], page: BaseScoreboardViewWithPerspective, score: MatchDuplicateScore, useIMP: Boolean = false )
 
-  def apply( routerCtl: RouterCtl[DuplicatePage], page: BaseScoreboardViewWithPerspective, score: MatchDuplicateScore, attr: TagMod* ) =
-    component(Props(routerCtl,page,score,attr:_*))
+  def apply( routerCtl: RouterCtl[DuplicatePage], page: BaseScoreboardViewWithPerspective, score: MatchDuplicateScore, useIMP: Boolean = false ) =
+    component(Props(routerCtl,page,score,useIMP))
 
 }
 
@@ -150,7 +150,7 @@ object ViewScoreboardInternal {
                             <.th( ^.rowSpan:=2, "Team"),
                             <.th( ^.rowSpan:=2, "Players"),
                             <.th( ^.rowSpan:=2, "Total"),
-                            <.th( ^.colSpan:=props.score.sortedBoards.size, "Boards")
+                            <.th( ^.colSpan:=props.score.sortedBoards.size, "Boards", props.useIMP?=" (IMPs)")
                           ),
                           <.tr(
                             props.score.sortedBoards.map { b =>
@@ -172,7 +172,7 @@ object ViewScoreboardInternal {
                         <.tr(
                           <.td( Id.teamIdToTeamNumber(team.id) ),
                           <.td( team.player1, <.br(), team.player2),
-                          <.td( Utils.toPointsString(md.teamScores(team.id))),
+                          <.td( if (p.useIMP) f"${md.teamImps(team.id)}%.1f" else Utils.toPointsString(md.teamScores(team.id))),
                           md.sortedBoards.map { b =>
                             val score = b.scores().get(team.id) match {
                               case Some(ts) =>
@@ -180,7 +180,11 @@ object ViewScoreboardInternal {
                                   if (ts.hidden) {
                                     <.span( Strings.checkmark )       // check mark
                                   } else {
-                                    <.span(Utils.toPointsString(ts.points))
+                                    if (p.useIMP) {
+                                      <.span(ts.showImps)
+                                    } else {
+                                      <.span(Utils.toPointsString(ts.points))
+                                    }
                                   }
                                 } else {
                                   <.span("")
@@ -229,7 +233,6 @@ object ViewScoreboardInternal {
             }.toTagMod
           )
         ),
-        props.attr.toTagMod
       )
     }
 

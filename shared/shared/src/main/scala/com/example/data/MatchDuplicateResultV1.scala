@@ -232,7 +232,7 @@ object MatchDuplicateResultV1 {
     val places = score.places.flatMap { p => p.teams.map { t => (t.id->p.place) }.toList }.toMap
     val r = wss.map { ws =>
       ws.map { tid => score.getTeam(tid).get }.map { team =>
-        DuplicateSummaryEntry( team, score.teamScores( team.id ), places( team.id ) )
+        DuplicateSummaryEntry( team, score.teamScores( team.id ), places( team.id ))
       }
     }
 

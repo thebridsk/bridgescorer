@@ -170,7 +170,7 @@ object PageBoardInternal {
             <.div(
               dupStyles.divBoardPage,
               title(),
-              ViewBoard( props.routerCtl, props.page, score, props.page.boardid ),
+              ViewBoard( props.routerCtl, props.page, score, props.page.boardid, PageScoreboard.useIMPs ),
               <.p,
               <.div(
                 baseStyles.fontTextNormal,

@@ -53,6 +53,8 @@ object PageScoreboard {
 
   def apply( routerCtl: RouterCtl[DuplicatePage], game: BaseScoreboardViewWithPerspective ) = component(Props(routerCtl,game))
 
+  var useIMPs: Boolean = false
+
 }
 
 object PageScoreboardInternal {
@@ -94,8 +96,8 @@ object PageScoreboardInternal {
               Some(actionDeleteOk),
               Some(actionDeleteCancel)
             ),
-            ViewScoreboard( props.routerCtl, props.game, score ),
-            winnersets.map(ws => ViewPlayerMatchResult( score.placeByWinnerSet(ws) )).toTagMod,
+            ViewScoreboard( props.routerCtl, props.game, score, useIMPs ),
+            winnersets.map(ws => ViewPlayerMatchResult( (if (useIMPs) score.placeImpByWinnerSet(ws) else score.placeByWinnerSet(ws)), useIMPs )).toTagMod,
             if (state.showdetails) {
               ViewScoreboardDetails( props.game, score )
             } else {
@@ -126,10 +128,12 @@ object PageScoreboardInternal {
                       AppButton( "Tables", "All Tables", props.routerCtl.setOnClick(AllTableView(props.game.dupid)) ),
                       " ",
                       AppButton( "Boardset", "BoardSet", props.routerCtl.setOnClick(DuplicateBoardSetView(props.game.dupid)) ),
+                      " ",
+                      AppButton( "IMP", "IMP", ^.onClick --> toggleIMPs, useIMPs?=baseStyles.buttonSelected ),
                       if (score.alldone) {
                         TagMod(
                           " ",
-                          AppButton( "Details", "Details", ^.onClick --> toggleShowDetails )
+                          AppButton( "Details", "Details", ^.onClick --> toggleShowDetails, state.showdetails?=baseStyles.buttonSelected  )
                         )
                       } else {
                         TagMod()
@@ -224,6 +228,11 @@ object PageScoreboardInternal {
     def actionDeleteCancel = scope.modState(s => s.copy(deletePopup=false) )
 
     def toggleShowDetails = scope.modState( s => s.copy( showdetails = !s.showdetails) )
+
+    def toggleIMPs = scope.modState { s =>
+      useIMPs = !useIMPs
+      s.copy()
+    }
 
     val storeCallback = Callback { scope.withEffectsImpure.forceUpdate }
 
