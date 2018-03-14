@@ -71,6 +71,8 @@ case class DuplicateSummaryEntry(
 
   def getResultImp = resultImp.getOrElse(0.0)
   def getPlaceImp = placeImp.getOrElse(1)
+
+  def hasImp = resultImp.isDefined&&placeImp.isDefined
 }
 
 @ApiModel(description = "The best match in the main store")

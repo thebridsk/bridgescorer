@@ -236,16 +236,20 @@ object PageSummaryInternal {
                             <.td( DateUtils.formatDate(ds.created), <.br(), DateUtils.formatDate(ds.updated)),
                             tp.allPlayers.filter(p => p!="").map { p =>
                               if (PageScoreboard.useIMPs) {
-                                <.td(
-                                  ds.playerPlacesImp().get(p) match {
-                                    case Some(place) => <.span(place.toString)
-                                    case None => <.span()
-                                  },
-                                  ds.playerScoresImp().get(p) match {
-                                    case Some(place) => <.span(<.br, f"${place}%.1f" )
-                                    case None => <.span()
-                                  }
-                                )
+                                if (ds.hasImpScores) {
+                                  <.td(
+                                    ds.playerPlacesImp().get(p) match {
+                                      case Some(place) => <.span(place.toString)
+                                      case None => <.span()
+                                    },
+                                    ds.playerScoresImp().get(p) match {
+                                      case Some(place) => <.span(<.br, f"${place}%.1f" )
+                                      case None => <.span()
+                                    }
+                                  )
+                                } else {
+                                  <.td()
+                                }
                               } else {
                                 <.td(
                                   ds.playerPlaces().get(p) match {

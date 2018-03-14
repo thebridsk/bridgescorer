@@ -65,14 +65,24 @@ object ViewPeopleTableInternal {
                           }
                           <.thead(
                             <.tr(
+                              ^.colSpan:=12,
+                              AppButton( "IgnoreResultsOnly", "Ignore ResultsOnly",
+                                         ^.onClick --> backend.toggleIgnoreResultsOnly,
+                                         state.ignoreResultsOnly ?= baseStyles.buttonSelected
+                                       )
+                            ),
+                            <.tr(
                               <.th( button( "Player", "Player", SortByName) ),
                               <.th( button( "WonPct", "% Won", SortByWonPct) ),
                               <.th( button( "WonPts", "% WonPoints", SortByWonPts) ),
                               <.th( button( "ScorePct", "% Points", SortByScorePct) ),
                               <.th( "Won"),
                               <.th( "WonPoints"),
+                              <.th( "WonImp"),
+                              <.th( "WonImpPoints"),
                               <.th( "Played"),
                               <.th( "Incomplete"),
+                              <.th( "IMP"),
                               <.th( "Points"),
                               <.th( "Total")
                             )
@@ -90,8 +100,11 @@ object ViewPeopleTableInternal {
                           <.td( f"${pd.pointsPercent}%.2f" ),
                           <.td( s"${pd.won}" ),
                           <.td( f"${pd.wonPts}%.2f" ),
+                          <.td( s"${pd.wonImp}" ),
+                          <.td( f"${pd.wonImpPts}%.2f" ),
                           <.td( s"${pd.played}" ),
                           <.td( s"${pd.incompleteGames}" ),
+                          <.td( f"${pd.imp/pd.played}%.1f" ),
                           <.td( Utils.toPointsString(pd.points) ),
                           <.td( pd.totalPoints )
                         )
@@ -157,7 +170,7 @@ object ViewPeopleTableInternal {
    * will cause State to leak.
    *
    */
-  case class State( sortBy: SortBy = SortByWonPct)
+  case class State( sortBy: SortBy = SortByWonPct, ignoreResultsOnly: Boolean = false )
 
   /**
    * Internal state for rendering the component.
@@ -170,9 +183,17 @@ object ViewPeopleTableInternal {
 
     def setSortBy( sortBy: SortBy ) = scope.modState { s => s.copy(sortBy=sortBy) }
 
+    def toggleIgnoreResultsOnly = scope.modState { s => s.copy( ignoreResultsOnly = !s.ignoreResultsOnly ) }
+
     def render( props: Props, state: State ) = {
       props.filter.pairsData match {
-        case Some(pd) =>
+        case Some(fpd) =>
+          val pd = if (state.ignoreResultsOnly) {
+            val lds = fpd.pastgames.filter( ds => !ds.onlyresult)
+            PairsData(lds)
+          } else {
+            fpd
+          }
           val summary = new PairsDataSummary(pd, ColorByWonPct, props.filter.selected, ColorByPlayed)
           val pds = summary.playerTotals.values.toList
 
