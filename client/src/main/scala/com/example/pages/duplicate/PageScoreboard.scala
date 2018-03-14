@@ -160,7 +160,9 @@ object PageScoreboardInternal {
                       " ",
                       AppButton( "Tables", "All Tables", props.routerCtl.setOnClick(AllTableView(props.game.dupid)) ),
                       " ",
-                      AppButton( "Boardset", "BoardSet", props.routerCtl.setOnClick(DuplicateBoardSetView(props.game.dupid)) )
+                      AppButton( "Boardset", "BoardSet", props.routerCtl.setOnClick(DuplicateBoardSetView(props.game.dupid)) ),
+                      " ",
+                      AppButton( "IMP", "IMP", ^.onClick --> toggleIMPs, useIMPs?=baseStyles.buttonSelected ),
                     ),
                     <.div(
                       baseStyles.divFooterRight,
@@ -188,7 +190,9 @@ object PageScoreboardInternal {
                           baseStyles.divFooterCenter,
                           AppButton( "Game", "Completed Games Scoreboard",
                                      allplayedInRound ?= baseStyles.requiredNotNext,
-                                     props.routerCtl.setOnClick(CompleteScoreboardView(props.game.dupid)) )
+                                     props.routerCtl.setOnClick(CompleteScoreboardView(props.game.dupid)) ),
+                          " ",
+                          AppButton( "IMP", "IMP", ^.onClick --> toggleIMPs, useIMPs?=baseStyles.buttonSelected ),
                         ),
                         <.div(
                           baseStyles.divFooterRight,

@@ -193,6 +193,7 @@ case class EnterHand(
       nsMP: Double,
       ewTeam: Int,
       ewMP: Double,
+      nsIMP: Double,
       contractTricks: Int,
       contractSuit: ContractSuit,
       contractDoubled: ContractDoubled,
@@ -204,6 +205,8 @@ case class EnterHand(
   def ewScore = -nsScore
 
   def didTeamPlay( team: Int ) = team==nsTeam||team==ewTeam
+
+  def ewIMP = if (nsIMP == 0.0) 0.0 else -nsIMP    // I don't want -0.0
 }
 
 sealed trait HandViewType
@@ -212,7 +215,7 @@ case object HandCompletedView extends HandViewType
 case class HandTableView( table: Int, round: Int, team1: Int, team2: Int ) extends HandViewType
 
 sealed trait OtherHand
-case class OtherHandPlayed( table: Int, round: Int, board: Int, nsMP: Double, ewMP: Double ) extends OtherHand
+case class OtherHandPlayed( table: Int, round: Int, board: Int, nsMP: Double, ewMP: Double, nsIMP: Double, ewIMP: Double ) extends OtherHand
 case class OtherHandNotPlayed( table: Int, round: Int, board: Int ) extends OtherHand
 case class TeamNotPlayingHand( board: Int, team: Team ) extends OtherHand
 
@@ -247,7 +250,7 @@ case class HandsOnBoard( table: Int, round: Int, board: Int, hand: EnterHand, ot
   /**
    * Get the team score assuming this is the latest hand played
    */
-  def getTeamScore( team: Int, viewtype: HandViewType, allHands: AllHandsInMatch ): (Double,String) = {
+  def getTeamScore( team: Int, viewtype: HandViewType, allHands: AllHandsInMatch, imp: Boolean = false ): (Double,String) = {
     val boardCompleted = other.find { oh => oh.isInstanceOf[OtherHandNotPlayed] }.isEmpty
     val showScores = boardCompleted || (viewtype match {
       case HandDirectorView => true
@@ -260,14 +263,14 @@ case class HandsOnBoard( table: Int, round: Int, board: Int, hand: EnterHand, ot
     })
 
     def points( p: Double ) = {
-      if (showScores) (p,BoardPage.toPointsString(p))
+      if (showScores) (p, (if (imp) f"$p%.1f" else BoardPage.toPointsString(p)))
       else (0.0,Strings.checkmark)
     }
 
     if (team == hand.nsTeam) {
-      points(hand.nsMP)
+      points(if (imp) hand.nsIMP else hand.nsMP)
     } else if (team == hand.ewTeam) {
-      points(hand.ewMP)
+      points(if (imp) hand.ewIMP else hand.ewMP)
     } else {
       HandPage.log.fine( s"""Board ${board} checking team ${team} viewtype ${viewtype} this ${this}""" )
       other.find( oh => oh match {
@@ -283,8 +286,8 @@ case class HandsOnBoard( table: Int, round: Int, board: Int, hand: EnterHand, ot
           val teamOHPs = other.flatMap(oh => oh match {
             case ohp: OtherHandPlayed =>
               val h = allHands.getBoard(ohp.table, ohp.round, ohp.board).hand
-              if (team == h.nsTeam) points(ohp.nsMP)::Nil
-              else if (team == h.ewTeam) points(ohp.ewMP)::Nil
+              if (team == h.nsTeam) points(if (imp) ohp.nsIMP else ohp.nsMP)::Nil
+              else if (team == h.ewTeam) points(if (imp) ohp.ewIMP else ohp.ewMP)::Nil
               else Nil
             case _ => Nil
           })
@@ -311,6 +314,22 @@ case class HandsOnBoard( table: Int, round: Int, board: Int, hand: EnterHand, ot
     hands.filterNot(h => h.table==table && h.round==round && h.board==board).foldLeft((0.0,0.0)) { (ac, h) =>
       ( ac._1 + pts( h.hand.nsScore, hand.nsScore ), ac._2 + pts( h.hand.ewScore, hand.ewScore ) )
     }
+  }
+
+  /**
+   * @param hands all the hands that have been played.
+   * @return Tuple2( ns, ew )  The international match points for the NS and EW team that played this hand.
+   */
+  def getInternationalMatchPoints( hands: List[HandsOnBoard] ): (Double, Double) = {
+    def pts( other: Int, me: Int ) = {
+      if (other <= me) BoardScore.getIMPs(me-other)
+      else -BoardScore.getIMPs(other-me)
+    }
+    val (ns,ew) = hands.filterNot(h => h.table==table && h.round==round && h.board==board).foldLeft((0.0,0.0)) { (ac, h) =>
+      ( ac._1 + pts( h.hand.nsScore, hand.nsScore ), ac._2 + pts( h.hand.ewScore, hand.ewScore ) )
+    }
+    val n = hands.length -1
+    (ns/n,ew/n)
   }
 
 }
@@ -362,12 +381,12 @@ class AllHandsInMatch( val hands: List[HandsOnBoard],
     }
   }
 
-  def getTeamScoreToRound( team: Team, toRound: Int, viewtype: HandViewType ) = {
+  def getTeamScoreToRound( team: Team, toRound: Int, viewtype: HandViewType, imp: Boolean = false ) = {
     var total = 0.0
     val bs = boards.map{b =>
       getBoardToRound(toRound, b) match {
         case Some(hob) =>
-          val (mp,s) = hob.getTeamScore(team.teamid, viewtype, this)
+          val (mp,s) = hob.getTeamScore(team.teamid, viewtype, this, imp)
           total+=mp
           s
         case None =>
@@ -381,11 +400,11 @@ class AllHandsInMatch( val hands: List[HandsOnBoard],
           }
       }
     }
-    TeamScoreboard(team,total,BoardPage.toPointsString(total),bs)
+    TeamScoreboard(team,total,if (imp) f"$total%.1f" else BoardPage.toPointsString(total),bs)
   }
 
-  def getScoreToRound( toRound: Int, viewtype: HandViewType ): (List[TeamScoreboard],List[PlaceEntry]) = {
-    val ts = teams.map(t => getTeamScoreToRound(t, toRound, viewtype))
+  def getScoreToRound( toRound: Int, viewtype: HandViewType, imp: Boolean = false ): (List[TeamScoreboard],List[PlaceEntry]) = {
+    val ts = teams.map(t => getTeamScoreToRound(t, toRound, viewtype, imp))
     val scores = ts.sortWith( (l,r) => l.points>r.points ).map(t => t.total ).distinct
     HandPage.log.fine("Scores are "+scores)
     val pes = scores.map {sc => (sc, ts.filter(t=>t.total==sc).map(t=>t.team)) }.foldLeft((1,List[PlaceEntry]())){(p,v) =>
@@ -457,7 +476,8 @@ class AllHandsInMatch( val hands: List[HandsOnBoard],
 
       val otherplayed = played.map { oh =>
         val (ohnsmp, ohewmp) = oh.getMatchPoints(allplayed)
-        OtherHandPlayed(oh.table,oh.round,oh.board,ohnsmp,ohewmp)
+        val (ohnsimp, ohewimp) = oh.getInternationalMatchPoints(allplayed)
+        OtherHandPlayed(oh.table,oh.round,oh.board,ohnsmp,ohewmp,ohnsimp, ohewimp)
       }
       val othernotplayed = notplayed.map { oh =>
         OtherHandNotPlayed(oh.table,oh.round,oh.board)

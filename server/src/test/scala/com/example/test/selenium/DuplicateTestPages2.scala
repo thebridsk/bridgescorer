@@ -273,7 +273,7 @@ class DuplicateTestPages2 extends FlatSpec with DuplicateUtils with MustMatchers
     val board = hand.onlyEnterHand( 1, 2, 4, allHands, team1, team2)
     board.checkBoardButtons(4,true,4).checkBoardButtons(4,false, 5, 6)
     val hand2 = board.clickUnplayedBoard(5).validate
-    val board2 = hand2.onlyEnterHand( EnterHand( 1, 650,0,   2,0,   5,Spades,NotDoubled,North,Made,5,Vul) )
+    val board2 = hand2.onlyEnterHand( EnterHand( 1, 650,0,   2,0,  0,  5,Spades,NotDoubled,North,Made,5,Vul) )
     board2.checkBoardButtons(5,true,4,5).checkBoardButtons(5,false, 6)
     val hand3 = board2.clickUnplayedBoard(6).validate
     val board3 = hand3.onlyEnterHand( 1, 2, 6, allHands, team1, team2)

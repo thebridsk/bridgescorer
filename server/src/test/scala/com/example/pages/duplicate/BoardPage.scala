@@ -474,7 +474,7 @@ class BoardPage( implicit webDriver: WebDriver, pageCreated: SourcePosition ) ex
         case OtherHandNotPlayed(tableid,roundid,boardid) =>
           val ob = allhands.getBoard(tableid, roundid, boardid)
           checkTeamNotPlayed(ob.hand.nsTeam, ob.hand.ewTeam)
-        case OtherHandPlayed(tableid,roundid,boardid,nsMP,ewMP) =>
+        case OtherHandPlayed(tableid,roundid,boardid,nsMP,ewMP,nsIMP,ewIMP) =>
           val ob = allhands.getBoard(tableid, roundid, boardid)
           val eh = ob.hand.copy( nsMP=nsMP, ewMP=ewMP)
           if (!allplayed && checkmarks) {
@@ -520,7 +520,7 @@ class BoardPage( implicit webDriver: WebDriver, pageCreated: SourcePosition ) ex
               b.other.foreach( oh => oh match {
                 case OtherHandNotPlayed( table, round, board) =>
                   checkNotPlayed(table,round,board)
-                case OtherHandPlayed(table, round, board, nsMP, ewMP) =>
+                case OtherHandPlayed(table, round, board, nsMP, ewMP,nsIMP,ewIMP) =>
                   checkNotPlayed(table,round,board)
                 case TeamNotPlayingHand(board,team) =>
                   checkTeamNeverPlays(team.teamid)

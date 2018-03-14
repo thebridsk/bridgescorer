@@ -162,7 +162,7 @@ class FilePersistentSupport[VId,VType <: VersionedInstance[VType,VType,VId]](
       Result(v)
     } catch {
       case e: IOException =>
-        log.severe("Error writing ${id} to disk",e)
+        log.severe(s"Error writing ${id} to disk",e)
         internalError
     }
   }

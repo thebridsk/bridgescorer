@@ -132,103 +132,103 @@ object Duplicate5TestPages {
       MovementsPage.getMovement(movement).get,
 
       // board 1    NS      EW
-      EnterHand( 2, 110,0,  4,0,   1,Spades,NotDoubled,North,Made,2,NotVul)::
-      EnterHand( 3,  80,0,  5,2,   1,Spades,NotDoubled,North,Made,1,NotVul)::
+      EnterHand( 2, 110,0,  4,0,  0,  1,Spades,NotDoubled,North,Made,2,NotVul)::
+      EnterHand( 3,  80,0,  5,2, -1,  1,Spades,NotDoubled,North,Made,1,NotVul)::
       Nil,
 
       // board 2    NS      EW
-      EnterHand( 2, 110,0,  4,0,   2,Spades,NotDoubled,North,Made,2,Vul)::
-      EnterHand( 3, 140,2,  5,0,   2,Spades,NotDoubled,North,Made,3,Vul)::
+      EnterHand( 2, 110,0,  4,0,  0,  2,Spades,NotDoubled,North,Made,2,Vul)::
+      EnterHand( 3, 140,2,  5,0,  1,  2,Spades,NotDoubled,North,Made,3,Vul)::
       Nil,
 
       // board 3    NS      EW
-      EnterHand( 5, 140,0,  4,0,   3,Spades,NotDoubled,North,Made,3,NotVul)::
-      EnterHand( 3, 140,1,  2,1,   3,Spades,NotDoubled,North,Made,3,NotVul)::
+      EnterHand( 5, 140,0,  4,0,  0,  3,Spades,NotDoubled,North,Made,3,NotVul)::
+      EnterHand( 3, 140,1,  2,1,  0,  3,Spades,NotDoubled,North,Made,3,NotVul)::
       Nil,
 
       // board 4    NS      EW
-      EnterHand( 5, 620,0,  4,0,   4,Spades,NotDoubled,North,Made,4,Vul)::
-      EnterHand( 3, 620,1,  2,1,   4,Spades,NotDoubled,North,Made,4,Vul)::
+      EnterHand( 5, 620,0,  4,0,  0,  4,Spades,NotDoubled,North,Made,4,Vul)::
+      EnterHand( 3, 620,1,  2,1,  0,  4,Spades,NotDoubled,North,Made,4,Vul)::
       Nil,
 
       // board 5    NS      EW
-      EnterHand( 4, 650,0,   3,0,   5,Spades,NotDoubled,North,Made,5,Vul)::
-      EnterHand( 1,   0,0,   5,2,   0,Spades,NotDoubled,North,Made,5,Vul)::
+      EnterHand( 4, 650,0,   3,0,  0,  5,Spades,NotDoubled,North,Made,5,Vul)::
+      EnterHand( 1,   0,0,   5,2, -12,  0,Spades,NotDoubled,North,Made,5,Vul)::
       Nil,
 
       // board 6    NS      EW
-      EnterHand( 4,1010,0,   3,0,   6,Spades,NotDoubled,North,Made,7,NotVul)::
-      EnterHand( 1, 980,0,   5,2,   6,Spades,NotDoubled,North,Made,6,NotVul)::
+      EnterHand( 4,1010,0,   3,0,  0,  6,Spades,NotDoubled,North,Made,7,NotVul)::
+      EnterHand( 1, 980,0,   5,2,  -1,  6,Spades,NotDoubled,North,Made,6,NotVul)::
       Nil,
 
       // board 7    NS      EW
-      EnterHand( 3,720,0,  5,0,   1,Hearts,Redoubled,North,Made,1,Vul)::
-      EnterHand( 4,720,1,  1,1,   1,Hearts,Redoubled,North,Made,1,Vul)::
+      EnterHand( 3,720,0,  5,0,  0,  1,Hearts,Redoubled,North,Made,1,Vul)::
+      EnterHand( 4,720,1,  1,1,  0,  1,Hearts,Redoubled,North,Made,1,Vul)::
       Nil,
 
       // board 8    NS      EW
-      EnterHand( 3,470,0,  5,0,   2,Hearts,Doubled,North,Made,2,NotVul)::
-      EnterHand( 4,470,1,  1,1,   2,Hearts,Doubled,North,Made,2,NotVul)::
+      EnterHand( 3,470,0,  5,0,  0,  2,Hearts,Doubled,North,Made,2,NotVul)::
+      EnterHand( 4,470,1,  1,1,  0,  2,Hearts,Doubled,North,Made,2,NotVul)::
       Nil,
 
       // board 9    NS      EW
-      EnterHand( 5,140,0,  4,0,   3,Hearts,NotDoubled,North,Made,3,NotVul)::
-      EnterHand( 2,140,1,  1,1,   3,Hearts,NotDoubled,North,Made,3,NotVul)::
+      EnterHand( 5,140,0,  4,0,  0,  3,Hearts,NotDoubled,North,Made,3,NotVul)::
+      EnterHand( 2,140,1,  1,1,  0,  3,Hearts,NotDoubled,North,Made,3,NotVul)::
       Nil,
 
       // board 10   NS      EW
-      EnterHand( 5,630,0,    4,0,   4,NoTrump,NotDoubled,North,Made,4,Vul)::
-      EnterHand( 2,660,2,    1,0,   4,NoTrump,NotDoubled,North,Made,5,Vul)::
+      EnterHand( 5,630,0,    4,0,  0,  4,NoTrump,NotDoubled,North,Made,4,Vul)::
+      EnterHand( 2,660,2,    1,0,  1,  4,NoTrump,NotDoubled,North,Made,5,Vul)::
       Nil,
 
       // board 11   NS      EW
-      EnterHand( 5,460,0,  2,0,   5,NoTrump,NotDoubled,North,Made,5,NotVul)::
-      EnterHand( 4,460,1,  1,1,   5,NoTrump,NotDoubled,North,Made,5,NotVul)::
+      EnterHand( 5,460,0,  2,0,  0,  5,NoTrump,NotDoubled,North,Made,5,NotVul)::
+      EnterHand( 4,460,1,  1,1,  0,  5,NoTrump,NotDoubled,North,Made,5,NotVul)::
       Nil,
 
       // board 12   NS      EW
-      EnterHand( 5,2220,0,  2,0,   7,NoTrump,NotDoubled,North,Made,7,Vul)::
-      EnterHand( 4,2220,1,  1,1,   7,NoTrump,NotDoubled,North,Made,7,Vul)::
+      EnterHand( 5,2220,0,  2,0,  0,  7,NoTrump,NotDoubled,North,Made,7,Vul)::
+      EnterHand( 4,2220,1,  1,1,  0,  7,NoTrump,NotDoubled,North,Made,7,Vul)::
       Nil,
 
       // board 13   NS      EW
-      EnterHand( 5, 70,0,  2,0,   1,Diamonds,NotDoubled,North,Made,1,Vul)::
-      EnterHand( 1, 70,1,  3,1,   1,Diamonds,NotDoubled,North,Made,1,Vul)::
+      EnterHand( 5, 70,0,  2,0,  0,  1,Diamonds,NotDoubled,North,Made,1,Vul)::
+      EnterHand( 1, 70,1,  3,1,  0,  1,Diamonds,NotDoubled,North,Made,1,Vul)::
       Nil,
 
       // board 14   NS      EW
-      EnterHand( 5, 90,0,  2,0,   2,Diamonds,NotDoubled,North,Made,2,NotVul)::
-      EnterHand( 1, 90,1,  3,1,   2,Diamonds,NotDoubled,North,Made,2,NotVul)::
+      EnterHand( 5, 90,0,  2,0,  0,  2,Diamonds,NotDoubled,North,Made,2,NotVul)::
+      EnterHand( 1, 90,1,  3,1,  0,  2,Diamonds,NotDoubled,North,Made,2,NotVul)::
       Nil,
 
       // board 15   NS      EW
-      EnterHand( 1,110,0,   5,0,   3,Diamonds,NotDoubled,North,Made,3,Vul)::
-      EnterHand( 3,110,1,   2,1,   3,Diamonds,NotDoubled,North,Made,3,Vul)::
+      EnterHand( 1,110,0,   5,0,  0,  3,Diamonds,NotDoubled,North,Made,3,Vul)::
+      EnterHand( 3,110,1,   2,1,  0,  3,Diamonds,NotDoubled,North,Made,3,Vul)::
       Nil,
 
       // board 16   NS      EW
-      EnterHand( 1,-100,0,  5,0,   4,Clubs,NotDoubled,North,Down,2,NotVul)::
-      EnterHand( 3, -50,2,  2,0,   4,Clubs,NotDoubled,North,Down,1,NotVul)::
+      EnterHand( 1,-100,0,  5,0,  0,  4,Clubs,NotDoubled,North,Down,2,NotVul)::
+      EnterHand( 3, -50,2,  2,0,  2,  4,Clubs,NotDoubled,North,Down,1,NotVul)::
       Nil,
 
       // board 17   NS      EW
-      EnterHand( 4,-150,0,  3,0,   5,Clubs,NotDoubled,North,Down,3,NotVul)::
-      EnterHand( 2,-150,1,  1,1,   5,Clubs,NotDoubled,North,Down,3,NotVul)::
+      EnterHand( 4,-150,0,  3,0,  0,  5,Clubs,NotDoubled,North,Down,3,NotVul)::
+      EnterHand( 2,-150,1,  1,1,  0,  5,Clubs,NotDoubled,North,Down,3,NotVul)::
       Nil,
 
       // board 18   NS      EW
-      EnterHand( 4,-100,0,  3,0,   6,Clubs,NotDoubled,North,Down,1,Vul)::
-      EnterHand( 2,-100,1,  1,1,   6,Clubs,NotDoubled,North,Down,1,Vul)::
+      EnterHand( 4,-100,0,  3,0,  0,  6,Clubs,NotDoubled,North,Down,1,Vul)::
+      EnterHand( 2,-100,1,  1,1,  0,  6,Clubs,NotDoubled,North,Down,1,Vul)::
       Nil,
 
       // board 19   NS      EW
-      EnterHand( 1,-150,0,  3,0,   5,Clubs,NotDoubled,North,Down,3,NotVul)::
-      EnterHand( 2,-150,1,  4,1,   5,Clubs,NotDoubled,North,Down,3,NotVul)::
+      EnterHand( 1,-150,0,  3,0,  0,  5,Clubs,NotDoubled,North,Down,3,NotVul)::
+      EnterHand( 2,-150,1,  4,1,  0,  5,Clubs,NotDoubled,North,Down,3,NotVul)::
       Nil,
 
       // board 20   NS      EW
-      EnterHand( 1,-100,0,  3,0,   6,Clubs,NotDoubled,North,Down,1,Vul)::
-      EnterHand( 2,-100,1,  4,1,   6,Clubs,NotDoubled,North,Down,1,Vul)::
+      EnterHand( 1,-100,0,  3,0,  0,  6,Clubs,NotDoubled,North,Down,1,Vul)::
+      EnterHand( 2,-100,1,  4,1,  0,  6,Clubs,NotDoubled,North,Down,1,Vul)::
       Nil
   )
 
@@ -774,6 +774,7 @@ class Duplicate5TestPages extends FlatSpec with DuplicateUtils with MustMatchers
       currentPage: ScoreboardPage,
       table: Int,
       round: Int,
+      imp: Boolean = false
     )( implicit
          webDriver: WebDriver
     ) = {
@@ -781,7 +782,7 @@ class Duplicate5TestPages extends FlatSpec with DuplicateUtils with MustMatchers
     val (nsTeam,ewTeam) = allHands.getNSEW(table, round)
 
     val sbr = currentPage.validate
-    val (ts,pes) = allHands.getScoreToRound(round, HandTableView( table, round, nsTeam.teamid, ewTeam.teamid ))
+    val (ts,pes) = allHands.getScoreToRound(round, HandTableView( table, round, nsTeam.teamid, ewTeam.teamid ), imp)
     val (ts1,pes1) = fixTables(ts, pes, round)
     sbr.checkTable( ts1: _*)
     sbr.checkPlaceTable( pes1: _*)
@@ -956,8 +957,9 @@ class Duplicate5TestPages extends FlatSpec with DuplicateUtils with MustMatchers
       },
       CodeBlock {
         import SessionTable2._
-        val sb1 = ScoreboardPage.current
-        validateRound(sb1,2,5 )
+        val sb1 = ScoreboardPage.current.clickIMP.validate
+        Thread.sleep(500L)
+        validateRound(sb1,2,5, true )
       }
     )
   }

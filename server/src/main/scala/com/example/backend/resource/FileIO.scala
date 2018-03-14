@@ -94,8 +94,13 @@ object FileIO {
     log.finest("Moving file "+source+" to "+dest)
     try Files.move(source,dest,StandardCopyOption.REPLACE_EXISTING) catch {
       case e: IOException =>
-        log.severe("Unable to move file "+source+" to "+dest, e)
-        throw e
+        log.severe(s"Unable to move file $source to $dest, trying again", e)
+        Thread.sleep(1000L)
+        try Files.move(source,dest,StandardCopyOption.REPLACE_EXISTING) catch {
+          case e: IOException =>
+            log.severe(s"Unable to move file $source to $dest", e)
+            throw e
+        }
     }
   }
 
