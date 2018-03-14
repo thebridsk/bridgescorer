@@ -103,46 +103,46 @@ object DuplicateTestPages {
 
   lazy val allHands = new AllHandsInMatch( List(
       HandsOnBoard( 1, 1, 1, EnterHand( 1,110,0,  2,0,   1,Spades,NotDoubled,North,Made,2,NotVul), OtherHandNotPlayed(2,2,1)),
-      HandsOnBoard( 2, 2, 1, EnterHand( 3, 80,0,  4,1,   1,Spades,NotDoubled,North,Made,1,NotVul), OtherHandPlayed(1,1,1, 1, 0)),
+      HandsOnBoard( 2, 2, 1, EnterHand( 3, 80,0,  4,2,   1,Spades,NotDoubled,North,Made,1,NotVul), OtherHandPlayed(1,1,1, 2, 0)),
       HandsOnBoard( 1, 1, 2, EnterHand( 1,110,0,  2,0,   2,Spades,NotDoubled,North,Made,2,Vul), OtherHandNotPlayed(2,2,2)),
-      HandsOnBoard( 2, 2, 2, EnterHand( 3,140,1,  4,0,   2,Spades,NotDoubled,North,Made,3,Vul), OtherHandPlayed(1,1,2, 0, 1)),
+      HandsOnBoard( 2, 2, 2, EnterHand( 3,140,2,  4,0,   2,Spades,NotDoubled,North,Made,3,Vul), OtherHandPlayed(1,1,2, 0, 2)),
       HandsOnBoard( 1, 1, 3, EnterHand( 1,140,0,  2,0,   3,Spades,NotDoubled,North,Made,3,Vul), OtherHandNotPlayed(2,2,3)),
-      HandsOnBoard( 2, 2, 3, EnterHand( 3,140,0.5,4,0.5, 3,Spades,NotDoubled,North,Made,3,Vul), OtherHandPlayed(1,1,3, 0.5, 0.5)),
+      HandsOnBoard( 2, 2, 3, EnterHand( 3,140,1,  4,1,   3,Spades,NotDoubled,North,Made,3,Vul), OtherHandPlayed(1,1,3, 1, 1)),
 
-      HandsOnBoard( 1, 2, 4, EnterHand( 1, 420,0.5, 2,0.5, 4,Spades,NotDoubled,North,Made,4,NotVul), OtherHandPlayed(2,1,4, 0.5, 0.5)),
+      HandsOnBoard( 1, 2, 4, EnterHand( 1, 420,1,   2,1,   4,Spades,NotDoubled,North,Made,4,NotVul), OtherHandPlayed(2,1,4, 1, 1)),
       HandsOnBoard( 2, 1, 4, EnterHand( 4, 420,0,   3,0,   4,Spades,NotDoubled,North,Made,4,NotVul), OtherHandNotPlayed(1,2,4)),
-      HandsOnBoard( 1, 2, 5, EnterHand( 1,   0,0,   2,1,   0,Spades,NotDoubled,North,Made,5,Vul),    OtherHandPlayed(2,1,5, 1, 0)),
+      HandsOnBoard( 1, 2, 5, EnterHand( 1,   0,0,   2,2,   0,Spades,NotDoubled,North,Made,5,Vul),    OtherHandPlayed(2,1,5, 2, 0)),
       HandsOnBoard( 2, 1, 5, EnterHand( 4, 650,0,   3,0,   5,Spades,NotDoubled,North,Made,5,Vul),    OtherHandNotPlayed(1,2,5)),
-      HandsOnBoard( 1, 2, 6, EnterHand( 1,1010,1,   2,0,   6,Spades,NotDoubled,North,Made,7,NotVul), OtherHandPlayed(2,1,6, 0, 1)),
+      HandsOnBoard( 1, 2, 6, EnterHand( 1,1010,2,   2,0,   6,Spades,NotDoubled,North,Made,7,NotVul), OtherHandPlayed(2,1,6, 0, 2)),
       HandsOnBoard( 2, 1, 6, EnterHand( 4, 980,0,   3,0,   6,Spades,NotDoubled,North,Made,6,NotVul), OtherHandNotPlayed(1,2,6)),
 
       HandsOnBoard( 1, 3, 7, EnterHand( 3,720,0,    1,0,   1,Hearts,Redoubled,North,Made,1,Vul), OtherHandNotPlayed(2,4,7)),
-      HandsOnBoard( 2, 4, 7, EnterHand( 2,720,0.5,  4,0.5, 1,Hearts,Redoubled,North,Made,1,Vul), OtherHandPlayed(1,3,7, 0.5, 0.5)),
+      HandsOnBoard( 2, 4, 7, EnterHand( 2,720,1,    4,1,   1,Hearts,Redoubled,North,Made,1,Vul), OtherHandPlayed(1,3,7, 1, 1)),
       HandsOnBoard( 1, 3, 8, EnterHand( 3,470,0,    1,0,   2,Hearts,Doubled,North,Made,2,NotVul), OtherHandNotPlayed(2,4,8)),
-      HandsOnBoard( 2, 4, 8, EnterHand( 2,470,0.5,  4,0.5, 2,Hearts,Doubled,North,Made,2,NotVul), OtherHandPlayed(1,3,8, 0.5, 0.5)),
+      HandsOnBoard( 2, 4, 8, EnterHand( 2,470,1,    4,1,   2,Hearts,Doubled,North,Made,2,NotVul), OtherHandPlayed(1,3,8, 1, 1)),
       HandsOnBoard( 1, 3, 9, EnterHand( 3,140,0,    1,0,   3,Hearts,NotDoubled,North,Made,3,NotVul), OtherHandNotPlayed(2,4,9)),
-      HandsOnBoard( 2, 4, 9, EnterHand( 2,140,0.5,  4,0.5, 3,Hearts,NotDoubled,North,Made,3,NotVul), OtherHandPlayed(1,3,9, 0.5, 0.5)),
+      HandsOnBoard( 2, 4, 9, EnterHand( 2,140,1,    4,1,   3,Hearts,NotDoubled,North,Made,3,NotVul), OtherHandPlayed(1,3,9, 1, 1)),
 
-      HandsOnBoard( 1, 4, 10, EnterHand( 3,630,0,    1,1,   4,NoTrump,NotDoubled,North,Made,4,Vul), OtherHandPlayed(2,3,10, 1, 0)),
+      HandsOnBoard( 1, 4, 10, EnterHand( 3,630,0,    1,2,   4,NoTrump,NotDoubled,North,Made,4,Vul), OtherHandPlayed(2,3,10, 2, 0)),
       HandsOnBoard( 2, 3, 10, EnterHand( 4,660,0,    2,0,   4,NoTrump,NotDoubled,North,Made,5,Vul), OtherHandNotPlayed(1,4,10)),
-      HandsOnBoard( 1, 4, 11, EnterHand( 3,460,0.5,  1,0.5, 5,NoTrump,NotDoubled,North,Made,5,NotVul), OtherHandPlayed(2,3,11,0.5,0.5)),
+      HandsOnBoard( 1, 4, 11, EnterHand( 3,460,1,    1,1,   5,NoTrump,NotDoubled,North,Made,5,NotVul), OtherHandPlayed(2,3,11,1,1)),
       HandsOnBoard( 2, 3, 11, EnterHand( 4,460,0,    2,0,   5,NoTrump,NotDoubled,North,Made,5,NotVul), OtherHandNotPlayed(1,4,11)),
-      HandsOnBoard( 1, 4, 12, EnterHand( 3,2220,0.5, 1,0.5, 7,NoTrump,NotDoubled,North,Made,7,Vul), OtherHandPlayed(2,3,12, 0.5, 0.5)),
+      HandsOnBoard( 1, 4, 12, EnterHand( 3,2220,1,   1,1,   7,NoTrump,NotDoubled,North,Made,7,Vul), OtherHandPlayed(2,3,12, 1, 1)),
       HandsOnBoard( 2, 3, 12, EnterHand( 4,2220,0,   2,0,   7,NoTrump,NotDoubled,North,Made,7,Vul), OtherHandNotPlayed(1,4,12)),
 
       HandsOnBoard( 1, 5, 13, EnterHand( 2, 70,0,   3,0,   1,Diamonds,NotDoubled,North,Made,1,Vul), OtherHandNotPlayed(2,6,13)),
-      HandsOnBoard( 2, 6, 13, EnterHand( 1, 70,0.5, 4,0.5, 1,Diamonds,NotDoubled,North,Made,1,Vul), OtherHandPlayed(1,5,13, 0.5, 0.5)),
+      HandsOnBoard( 2, 6, 13, EnterHand( 1, 70,1,   4,1,   1,Diamonds,NotDoubled,North,Made,1,Vul), OtherHandPlayed(1,5,13, 1, 1)),
       HandsOnBoard( 1, 5, 14, EnterHand( 2, 90,0,   3,0,   2,Diamonds,NotDoubled,North,Made,2,NotVul), OtherHandNotPlayed(2,6,14)),
-      HandsOnBoard( 2, 6, 14, EnterHand( 1, 90,0.5, 4,0.5, 2,Diamonds,NotDoubled,North,Made,2,NotVul), OtherHandPlayed(1,5,14, 0.5, 0.5)),
+      HandsOnBoard( 2, 6, 14, EnterHand( 1, 90,1,   4,1,   2,Diamonds,NotDoubled,North,Made,2,NotVul), OtherHandPlayed(1,5,14, 1, 1)),
       HandsOnBoard( 1, 5, 15, EnterHand( 2,110,0,   3,0,   3,Diamonds,NotDoubled,North,Made,3,Vul), OtherHandNotPlayed(2,6,15)),
-      HandsOnBoard( 2, 6, 15, EnterHand( 1,110,0.5, 4,0.5, 3,Diamonds,NotDoubled,North,Made,3,Vul), OtherHandPlayed(1,5,15, 0.5, 0.5)),
+      HandsOnBoard( 2, 6, 15, EnterHand( 1,110,1,   4,1,   3,Diamonds,NotDoubled,North,Made,3,Vul), OtherHandPlayed(1,5,15, 1, 1)),
 
-      HandsOnBoard( 1, 6, 16, EnterHand( 2,-100,0,    3,1,   4,Clubs,NotDoubled,North,Down,2,NotVul), OtherHandPlayed(2,5,16, 1, 0)),
+      HandsOnBoard( 1, 6, 16, EnterHand( 2,-100,0,    3,2,   4,Clubs,NotDoubled,North,Down,2,NotVul), OtherHandPlayed(2,5,16, 2, 0)),
       HandsOnBoard( 2, 5, 16, EnterHand( 4, -50,0,    1,0,   4,Clubs,NotDoubled,North,Down,1,NotVul), OtherHandNotPlayed(1,6,16)),
-      HandsOnBoard( 1, 6, 17, EnterHand( 2,-150,0.5,  3,0.5, 5,Clubs,NotDoubled,North,Down,3,NotVul), OtherHandPlayed(2,5,17, 0.5, 0.5)),
+      HandsOnBoard( 1, 6, 17, EnterHand( 2,-150,1,    3,1,   5,Clubs,NotDoubled,North,Down,3,NotVul), OtherHandPlayed(2,5,17, 1, 1)),
       HandsOnBoard( 2, 5, 17, EnterHand( 4,-150,0,    1,0,   5,Clubs,NotDoubled,North,Down,3,NotVul), OtherHandNotPlayed(1,6,17)),
-      HandsOnBoard( 1, 6, 18, EnterHand( 2,-100,0.5, 3,0.5, 6,Clubs,NotDoubled,North,Down,1,Vul), OtherHandPlayed(2,5,18, 0.5, 0.5)),
-      HandsOnBoard( 2, 5, 18, EnterHand( 4,-100,0,   1,0,   6,Clubs,NotDoubled,North,Down,1,Vul), OtherHandNotPlayed(1,6,18))
+      HandsOnBoard( 1, 6, 18, EnterHand( 2,-100,1,    3,1,   6,Clubs,NotDoubled,North,Down,1,Vul), OtherHandPlayed(2,5,18, 1, 1)),
+      HandsOnBoard( 2, 5, 18, EnterHand( 4,-100,0,    1,0,   6,Clubs,NotDoubled,North,Down,1,Vul), OtherHandNotPlayed(1,6,18))
     ),
     List(team1,team2,team3,team4),
     BoardSetsPage.getBoardSet(boardset),
@@ -150,26 +150,27 @@ object DuplicateTestPages {
   ).checkFixHands
 
   val listDuplicateResult = List(
-        team4.one+"\n1\n10",
-        team4.two+"\n1\n10",
-        team1.one+"\n2\n9",
-        team1.two+"\n2\n9",
-        team3.one+"\n2\n9",
-        team3.two+"\n2\n9",
-        team2.one+"\n4\n8",
-        team2.two+"\n4\n8"
+        team4.one+"\n1\n20",
+        team4.two+"\n1\n20",
+        team1.one+"\n2\n18",
+        team1.two+"\n2\n18",
+        team3.one+"\n2\n18",
+        team3.two+"\n2\n18",
+        team2.one+"\n4\n16",
+        team2.two+"\n4\n16"
       )
 
   val peopleResult = List(
-        PeopleRow(team4.one,"100.00","100.00","55.56","1","1.00","1","0","10","18"),
-        PeopleRow(team4.two,"100.00","100.00","55.56","1","1.00","1","0","10","18"),
-        PeopleRow(team1.one,"0.00","0.00","50.00","0","0.00","1","0","9","18"),
-        PeopleRow(team1.two,"0.00","0.00","50.00","0","0.00","1","0","9","18"),
-        PeopleRow(team3.one,"0.00","0.00","50.00","0","0.00","1","0","9","18"),
-        PeopleRow(team3.two,"0.00","0.00","50.00","0","0.00","1","0","9","18"),
-        PeopleRow(team2.one,"0.00","0.00","44.44","0","0.00","1","0","8","18"),
-        PeopleRow(team2.two,"0.00","0.00","44.44","0","0.00","1","0","8","18")
+        PeopleRow(team4.one,"100.00","100.00","55.56","1","1.00","1","1.00","1","0","14.0","20","36"),
+        PeopleRow(team4.two,"100.00","100.00","55.56","1","1.00","1","1.00","1","0","14.0","20","36"),
+        PeopleRow(team1.one,"0.00","0.00","50.00","0","0.00","0","0.00","1","0","-12.0","18","36"),
+        PeopleRow(team1.two,"0.00","0.00","50.00","0","0.00","0","0.00","1","0","-12.0","18","36"),
+        PeopleRow(team3.one,"0.00","0.00","50.00","0","0.00","0","0.00","1","0","-10.0","18","36"),
+        PeopleRow(team3.two,"0.00","0.00","50.00","0","0.00","0","0.00","1","0","-10.0","18","36"),
+        PeopleRow(team2.one,"0.00","0.00","44.44","0","0.00","0","0.00","1","0","8.0","16","36"),
+        PeopleRow(team2.two,"0.00","0.00","44.44","0","0.00","0","0.00","1","0","8.0","16","36")
       )
+
 
   // this is here to validate the AllHandsInMatch.getScoreToRound call
   val resultAfterOneRoundCheckMark = List(

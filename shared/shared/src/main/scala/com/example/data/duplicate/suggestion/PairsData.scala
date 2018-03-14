@@ -126,8 +126,9 @@ class PairsData( val pastgames: List[DuplicateSummary] ) {
         val hasImp = dse.hasImp
         val imp = if (hasImp) dse.getResultImp else 0.0
         val wonImp = if (hasImp) dse.getPlaceImp == 1 else false
-        val wonImpPts = if (wonImp && numberWinners != 0) {
-                          1.0/numberWinners
+        val numberWinnersImp = if (hasImp) ds.teams.filter { dse => dse.getPlaceImp==1 }.length else 0
+        val wonImpPts = if (wonImp && numberWinnersImp != 0) {
+                          1.0/numberWinnersImp
                         } else {
                           0.0
                         }

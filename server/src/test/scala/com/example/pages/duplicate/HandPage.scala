@@ -304,8 +304,8 @@ case class HandsOnBoard( table: Int, round: Int, board: Int, hand: EnterHand, ot
    */
   def getMatchPoints( hands: List[HandsOnBoard] ): (Double, Double) = {
     def pts( other: Int, me: Int ) = {
-      if (other < me) 1.0
-      else if (other == me) 0.5
+      if (other < me) 2
+      else if (other == me) 1
       else 0.0
     }
     hands.filterNot(h => h.table==table && h.round==round && h.board==board).foldLeft((0.0,0.0)) { (ac, h) =>
@@ -451,8 +451,8 @@ class AllHandsInMatch( val hands: List[HandsOnBoard],
       val (hobnsmp, hobewmp) = hob.getMatchPoints(allplayed)
       if ( hob.hand.nsMP != hobnsmp || hob.hand.ewMP != hobewmp ) {
         // error
-        HandPage.log.severe( s"""Match Points for ${hob} don't match what should be for played hands ${allplayed} """)
-        fail( s"""Match Points for ${hob} don't match what should be for played hands ${allplayed} """)
+        HandPage.log.severe( s"""nsMP=${hob.hand.nsMP} expect ${hobnsmp} ewMP=${hob.hand.ewMP} expect ${hobewmp} Match Points for ${hob} don't match what should be for played hands ${allplayed} """)
+        fail( s"""nsMP=${hob.hand.nsMP} expect ${hobnsmp} ewMP=${hob.hand.ewMP} expect ${hobewmp} Match Points for ${hob} don't match what should be for played hands ${allplayed} """)
       }
 
       val otherplayed = played.map { oh =>

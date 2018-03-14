@@ -451,6 +451,10 @@ class Session extends WebDriver {
     this
   }
 
+  def maximize() = {
+    Session.maximize
+  }
+
   def saveDom( tofile: String ): Unit = {
     import com.example.pages.PageBrowser._
     try {
@@ -517,6 +521,22 @@ object Session {
       }
     }
     !screenInfoNotSupported
+  }
+
+  /**
+   * Maximize the browser window
+   */
+  def maximize( implicit webDriver: WebDriver ) = {
+    try {
+      val window = webDriver.manage().window()
+      window.maximize()
+      screenSize = Some(window.getSize)
+      origin = Some(window.getPosition)
+    } catch {
+      case x: WebDriverException =>
+        // maximize is not supported
+        screenInfoNotSupported = true
+    }
   }
 
   /**

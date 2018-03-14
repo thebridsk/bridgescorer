@@ -1,7 +1,5 @@
 package com.example.test
 
-import com.example.data.MatchDuplicate
-import com.example.data.test.TestMatchDuplicate
 import com.example.data.Id
 import com.example.data.DuplicateHand
 import com.example.data.Hand

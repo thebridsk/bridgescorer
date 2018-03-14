@@ -195,7 +195,7 @@ class BoardScore( val board: Board, perspective: DuplicateViewPerspective ) {
         var imps = 0.0
         var nteams = 0
         scores.filter { t => s!=t && t.played }.foreach { t =>
-          p+= (if (t.score == s.score) 0.5; else if (t.score < s.score) 1; else 0)
+          p+= (if (t.score == s.score) 1; else if (t.score < s.score) 2; else 0)
           val diff = s.score-t.score
           val i = if (diff < 0) -BoardScore.getIMPs(-diff)
                   else BoardScore.getIMPs(diff)
