@@ -12,6 +12,7 @@ import japgolly.scalajs.react.vdom.html_<^._
 import com.example.react.AppButton
 import com.example.react.Utils._
 import com.example.pages.Pixels
+import com.example.pages.BaseStyles
 
 object ViewPlayersThirdRound {
   import PagePlayers._
@@ -63,7 +64,7 @@ object ViewPlayersThirdRound {
           AppButton("Player"+position.pos+"FirstDealer", "Dealer",
                     baseStyles.nameButton,
                     ^.onClick --> setFirstDealer(position),
-                    state.isDealer(position) ?= baseStyles.buttonSelected,
+                    BaseStyles.highlight(selected = state.isDealer(position) ),
                     ^.tabIndex:=tabindex
                   )
 
@@ -119,7 +120,7 @@ object ViewPlayersThirdRound {
                                 AppButton("ChangeScoreKeeper"+i, p,
                                           baseStyles.nameButton,
                                           ^.width:=maxPlayerLen,
-                                          p==state.north ?= baseStyles.buttonSelected,
+                                          BaseStyles.highlight(selected = p==state.north),
                                           ^.onClick ==> setNorth(p) _ )
                               }.toTagMod
                           )
@@ -140,7 +141,7 @@ object ViewPlayersThirdRound {
             baseStyles.divFooter,
             <.div(
               baseStyles.divFooterLeft,
-              AppButton( "Ok", "OK" , ^.disabled := !valid, valid?=baseStyles.requiredNotNext, baseStyles.appButton, ^.onClick --> ok() )
+              AppButton( "Ok", "OK" , ^.disabled := !valid, BaseStyles.highlight(requiredNotNext=valid ), baseStyles.appButton, ^.onClick --> ok() )
             ),
             <.div(
               baseStyles.divFooterCenter,

@@ -65,7 +65,7 @@ object DuplicateResultEditPage {
   }
 
 
-  val patternName = """P(\d+)_(T\d+)_(.)""".r
+  val patternName = """P(\d+)T(T\d+)P(.)""".r
   /**
    * @param name the name attribute of an input field.
    * @return determine the winner set and team id and whether it is player 1 or 2 or the points.
@@ -85,7 +85,7 @@ object DuplicateResultEditPage {
    * @param what "1","2", "P" for player 1, 2, or points
    */
   def getInputName( ws: Int, teamid: Int, what: String ): String = {
-    s"""P${ws}_T${teamid}_${what}"""
+    s"""P${ws}TT${teamid}P${what}"""
   }
 }
 

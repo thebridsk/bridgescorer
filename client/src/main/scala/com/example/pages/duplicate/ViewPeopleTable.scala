@@ -21,6 +21,7 @@ import com.example.data.duplicate.suggestion.ColorByWonPct
 import com.example.data.duplicate.suggestion.PairData
 import scala.annotation.tailrec
 import com.example.data.duplicate.suggestion.ColorByPlayed
+import com.example.pages.BaseStyles
 
 /**
  * Shows a summary page of all duplicate matches from the database.
@@ -60,7 +61,7 @@ object ViewPeopleTableInternal {
                           def button( id: String, name: String, sort: SortBy ) = {
                             AppButton( id, name,
                                        ^.onClick --> backend.setSortBy(sort),
-                                       sortBy==sort ?= baseStyles.buttonSelected
+                                       BaseStyles.highlight(selected = sortBy==sort)
                                      )
                           }
                           <.thead(
@@ -68,7 +69,7 @@ object ViewPeopleTableInternal {
                               ^.colSpan:=12,
                               AppButton( "IgnoreResultsOnly", "Ignore ResultsOnly",
                                          ^.onClick --> backend.toggleIgnoreResultsOnly,
-                                         state.ignoreResultsOnly ?= baseStyles.buttonSelected
+                                         BaseStyles.highlight(selected = state.ignoreResultsOnly)
                                        )
                             ),
                             <.tr(

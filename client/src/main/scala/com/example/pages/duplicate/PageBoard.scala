@@ -23,6 +23,7 @@ import com.example.data.bridge.BoardScore
 import com.example.pages.duplicate.DuplicateRouter.BaseBoardViewWithPerspective
 import com.example.pages.duplicate.DuplicateRouter.TableBoardView
 import com.example.react.AppButton
+import com.example.pages.BaseStyles
 
 /**
  * Shows the team x board table and has a totals column that shows the number of points the team has.
@@ -89,8 +90,10 @@ object PageBoardInternal {
             Seq[TagMod](
               <.span(" "),
               AppButton( "Board_"+board.id, "Board "+Id.boardIdToBoardNumber(board.id),
-                         selected ?= baseStyles.buttonSelected,
-                         !played && !selected ?= baseStyles.requiredNotNext,
+                         BaseStyles.highlight(
+                             selected=selected,
+                             requiredNotNext = !played && !selected
+                         ),
                          if (played) {
                            props.routerCtl.setOnClick(props.page.toBoardView(board.id))
                          } else {
@@ -220,9 +223,11 @@ object PageBoardInternal {
                           val me = props.page.boardid
                           <.td(
                             AppButton( "Board_"+id, "Board "+Id.boardIdToBoardNumber(id),
-                                       me == id ?= baseStyles.buttonSelected,
-                                       me != id && bs.allplayed ?= baseStyles.required,
-                                       me != id && bs.anyplayed ?= baseStyles.requiredNotNext,
+                                       BaseStyles.highlight(
+                                           selected = me == id,
+                                           required = me != id && bs.allplayed,
+                                           requiredNotNext = me != id && bs.anyplayed
+                                       ),
                                        baseStyles.appButton100,
                                        props.routerCtl.setOnClick(props.page.toScoreboardView().toBoardView(id))
                             )

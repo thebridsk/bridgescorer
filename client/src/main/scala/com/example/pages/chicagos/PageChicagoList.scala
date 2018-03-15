@@ -134,26 +134,7 @@ object PageChicagoListInternal {
                   <.th( "")
               )),
               <.tbody(
-                  <.tr(
-                      <.td( "" ),
-                      <.td(
-                        state.workingOnNew match {
-                          case Some(msg) =>
-                            <.span(
-                              msg,
-                              " ",
-                              AppButton(
-                                "PopupCancel", "Cancel",
-                                ^.onClick --> cancel()
-                              )
-                            )
-                          case None =>
-                            AppButton( "New", "New", ^.onClick --> newChicago())
-                        }
-                      ),
-                      <.td( ^.colSpan:=maxplayers,"" ),
-                      <.td( "")
-                      ),
+                  ChicagoRowFirst.withKey("New")((this,props,state,maxplayers)),
                   (0 until chicagos.length).map { i =>
                     val key="Game"+i
                     val chicago = ChicagoScoring(chicagos(i))
@@ -190,6 +171,32 @@ object PageChicagoListInternal {
     }
 
   }
+
+  val ChicagoRowFirst = ScalaComponent.builder[(Backend, Props, State, Int)]("ChicagoRowFirst")
+    .stateless
+    .render_P { args =>
+      val (backend, props, state, maxplayers) = args
+      <.tr(
+          <.td( "" ),
+          <.td(
+            state.workingOnNew match {
+              case Some(msg) =>
+                <.span(
+                  msg,
+                  " ",
+                  AppButton(
+                    "PopupCancel", "Cancel",
+                    ^.onClick --> backend.cancel()
+                  )
+                )
+              case None =>
+                AppButton( "New", "New", ^.onClick --> backend.newChicago())
+            }
+          ),
+          <.td( ^.colSpan:=maxplayers,"" ),
+          <.td( "")
+          )
+    }.build
 
   val ChicagoRow = ScalaComponent.builder[(Backend, Props, State, Int, Int, ChicagoScoring)]("ChicagoRow")
     .stateless

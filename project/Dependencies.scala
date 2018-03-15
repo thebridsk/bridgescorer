@@ -43,7 +43,7 @@ object Dependencies {
 
   lazy val vSwaggerUI = "3.12.1"       // https://www.npmjs.com/package/swagger-ui-dist
   lazy val vScalajsdom = "0.9.4"       // http://mvnrepository.com/artifact/org.scala-js/scalajs-dom_sjs0.6_2.11
-  lazy val vScalaJsReact = "1.1.1"     // http://mvnrepository.com/artifact/com.github.japgolly.scalajs-react/core_sjs0.6_2.11
+  lazy val vScalaJsReact = "1.2.0"     // http://mvnrepository.com/artifact/com.github.japgolly.scalajs-react/core_sjs0.6_2.11
   lazy val vScalaCss = "0.5.3"         // http://mvnrepository.com/artifact/com.github.japgolly.scalacss/core_sjs0.6_2.11
 
   lazy val vWebJarsReact = "16.2.0"    // http://mvnrepository.com/artifact/org.webjars/react

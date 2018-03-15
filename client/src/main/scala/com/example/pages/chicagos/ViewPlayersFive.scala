@@ -18,6 +18,7 @@ import utils.logging.Logger
 import com.example.data.util.Strings
 import com.example.react.AppButton
 import com.example.react.Utils._
+import com.example.pages.BaseStyles
 
 /**
  * A skeleton component.
@@ -146,8 +147,10 @@ object ViewPlayersFiveInternal {
                   AppButton.withKey(p)( "Player_"+p, p,
                                         baseStyles.appButton100,
                                         ^.onClick --> setPlayerSittingOut(p),
-                                        selected ?= baseStyles.buttonSelected,
-                                        state.sittingOut.isEmpty ?= baseStyles.required
+                                        BaseStyles.highlight(
+                                            selected=selected,
+                                            required=state.sittingOut.isEmpty
+                                        )
                                       )
                 )
               )
@@ -180,8 +183,10 @@ object ViewPlayersFiveInternal {
               <.div(
                 AppButton( "Fixture"+i, "Select",
                            ^.onClick --> setFixture(f),
-                           selected ?= baseStyles.buttonSelected,
-                           state.fixture.isEmpty ?= baseStyles.required
+                           BaseStyles.highlight(
+                               selected=selected,
+                               required=state.fixture.isEmpty
+                           )
                          ),
                 <.p( f.north +"-" + f.south ),
                 <.p( f.east +"-" + f.west )
@@ -254,15 +259,16 @@ object ViewPlayersFiveInternal {
             AppButton( "Dealer"+pos.pos,
                        "Dealer",
                        ^.onClick --> setDealer(pos),
-                       selected ?= baseStyles.buttonSelected,
-                       state.dealer.isEmpty ?= baseStyles.required
-                       ),
+                       BaseStyles.highlight(
+                           selected=selected,
+                           required=state.dealer.isEmpty
+                       )
+            ),
             AppButton( "Swap"+pos.pos, arrow, ^.onClick --> swap(), baseStyles.requiredNotNext )
         )
       }
       <.div(
         chiStyles.divPageSelectPos,
-        !valid ?= baseStyles.notVisible,
         //
         //      swap NS, swap EW, rotate clockwise, rotate counterclockwise, see Strings class for unicode values
         //      select first dealer
@@ -301,8 +307,9 @@ object ViewPlayersFiveInternal {
               )
             )
           )
-        )
+        ),
 
+        !valid ?= baseStyles.notVisible
 
       )
     }
@@ -320,7 +327,7 @@ object ViewPlayersFiveInternal {
           baseStyles.divFooter,
           <.div(
             baseStyles.divFooterLeft,
-            AppButton("OK","OK", ^.disabled:= !valid, valid?=baseStyles.requiredNotNext, ^.onClick --> ok )
+            AppButton("OK","OK", ^.disabled:= !valid, BaseStyles.highlight( requiredNotNext=valid ), ^.onClick --> ok )
           ),
           <.div(
             baseStyles.divFooterCenter,

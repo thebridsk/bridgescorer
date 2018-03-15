@@ -12,6 +12,7 @@ import japgolly.scalajs.react.vdom.html_<^._
 import com.example.react.AppButton
 import com.example.react.Utils._
 import com.example.pages.Pixels
+import com.example.pages.BaseStyles
 
 object ViewPlayersSecondRound {
   import PagePlayers._
@@ -149,8 +150,10 @@ object ViewPlayersSecondRound {
         AppButton(id, p,
                   baseStyles.nameButton,
                   ^.width:=maxPlayerLen,
-                  p==current ?= baseStyles.buttonSelected,
-                  missingRequired ?= baseStyles.required,
+                  BaseStyles.highlight(
+                      selected = p==current,
+                      required = missingRequired
+                  ),
                   ^.disabled:=p!=current && allassignedplayers.contains(p),
                   ^.onClick ==> action )
       }
@@ -172,7 +175,7 @@ object ViewPlayersSecondRound {
                     "Dealer",
                     baseStyles.nameButton,
                     ^.onClick --> setFirstDealer(position),
-                    state.isDealer(position) ?= baseStyles.buttonSelected,
+                    BaseStyles.highlight( selected=state.isDealer(position) ),
                     ^.tabIndex:=tabindex
                   )
 
@@ -222,7 +225,7 @@ object ViewPlayersSecondRound {
                         i=i+1
                         AppButton("ChangeScoreKeeper"+i, p,
                                   baseStyles.nameButton,
-                                  p==state.north ?= baseStyles.buttonSelected,
+                                  BaseStyles.highlight(selected = p==state.north ),
                                   ^.onClick ==> setNorth(p) _ )
                       }.toTagMod
                   )
@@ -244,7 +247,7 @@ object ViewPlayersSecondRound {
           baseStyles.divFooter,
           <.div(
             baseStyles.divFooterLeft,
-            AppButton( "Ok", "OK" , ^.disabled := !valid, valid?=baseStyles.requiredNotNext, baseStyles.appButton, ^.onClick --> ok() )
+            AppButton( "Ok", "OK" , ^.disabled := !valid, BaseStyles.highlight( requiredNotNext = valid ), baseStyles.appButton, ^.onClick --> ok() )
           ),
           <.div(
             baseStyles.divFooterCenter,

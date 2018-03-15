@@ -49,6 +49,7 @@ import play.api.libs.json.Json
 import play.api.libs.json.JsResult
 import play.api.libs.json.JsSuccess
 import play.api.libs.json.JsError
+import com.example.pages.BaseStyles
 
 /**
  * Shows a summary page of all duplicate matches from the database.
@@ -657,7 +658,7 @@ object PageSummaryInternal {
               <.div(
                 baseStyles.divFooterLeft,
                 AppButton( "Home", "Home", props.routerCtl.home ),
-                AppButton( "IMP", "IMP", ^.onClick --> toggleIMPs, useIMPs?=baseStyles.buttonSelected ),
+                AppButton( "IMP", "IMP", ^.onClick --> toggleIMPs, BaseStyles.highlight(selected = useIMPs) ),
                 whenUndefined(importId)(
                   TagMod(
                     " ",

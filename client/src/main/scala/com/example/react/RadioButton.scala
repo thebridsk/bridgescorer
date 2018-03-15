@@ -24,6 +24,13 @@ object RadioButton {
 
   case class Props( id: String, text: String, value: Boolean, toggle: Callback, attrs: TagMod* )
 
+  /**
+   * @param id
+   * @param text
+   * @param value
+   * @param toggle
+   * @param attrs attributes that are applied to the enclosing label element.
+   */
   def apply( id: String, text: String, value: Boolean, toggle: Callback, attrs: TagMod* ) = component(Props(id,text,value,toggle,attrs:_*))
 
   def withKey( key: String )( id: String, text: String, value: Boolean, onclick: Callback, attrs: TagMod* ) = component.withKey(key)(Props(id,text,value,onclick,attrs:_*))
@@ -48,9 +55,9 @@ object RadioButtonInternal {
                                   ^.value:=props.id,
                                   ^.checked:=props.value,
                                   ^.onChange --> props.toggle,
-                                  props.attrs.toTagMod
                                 ),
-                                " "+props.text
+                                " "+props.text,
+                                props.attrs.toTagMod
                               )
                             })
                             .build

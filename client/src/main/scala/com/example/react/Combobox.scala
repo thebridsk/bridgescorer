@@ -43,6 +43,10 @@ trait ComboboxComponentProperty extends js.Object {
   val name: js.UndefOr[String] = js.native
   val caseSensitive: js.UndefOr[Boolean] = js.native
   val messages: js.UndefOr[ComboboxComponentMessagesProperty] = js.native
+  val autoFocus: js.UndefOr[Boolean] = js.native
+  val busy: js.UndefOr[Boolean] = js.native
+  val delay: js.UndefOr[Double] = js.native
+  val dropUp: js.UndefOr[Boolean] = js.native
 }
 
 object ComboboxComponentProperty {
@@ -55,7 +59,8 @@ object ComboboxComponentProperty {
             caseSensitive: Option[Boolean] = None,
             messages: Option[ComboboxComponentMessagesProperty] = None,
             busy: Option[Boolean] = None,
-            value: Option[String] = None ): ComboboxComponentProperty = {
+            value: Option[String] = None,
+            id: Option[String] = None ): ComboboxComponentProperty = {
     val p = js.Dynamic.literal()
 
     defaultValue.foreach(p.updateDynamic("defaultValue")(_))
@@ -68,6 +73,7 @@ object ComboboxComponentProperty {
     messages.foreach(p.updateDynamic("messages")(_))
     busy.foreach(p.updateDynamic("busy")(_))
     value.foreach(p.updateDynamic("value")(_))
+    id.foreach(p.updateDynamic("id")(_))
 
     p.asInstanceOf[ComboboxComponentProperty]
   }
@@ -96,7 +102,8 @@ object Combobox {
             msgEmptyList: Option[String] = None,
             msgEmptyFilter: Option[String] = None,
             busy: Option[Boolean] = None,
-            value: Option[String] = None ) = {
+            value: Option[String] = None,
+            id: Option[String] = None ) = {
 
 //    logger.info("Combobox: msgEmptyList="+msgEmptyList+", msgEmptyFilter="+msgEmptyFilter)
 
@@ -105,7 +112,7 @@ object Combobox {
     } else {
       None
     }
-    val props = ComboboxComponentProperty(defaultValue,onChange,data,filter,tabIndex,name,caseSensitive,messages,busy,value)
+    val props = ComboboxComponentProperty(defaultValue,onChange,data,filter,tabIndex,name,caseSensitive,messages,busy,value,id)
 
     component(props)
   }

@@ -19,6 +19,7 @@ import com.example.react.AppButton
 import com.example.pages.duplicate.DuplicateRouter.MovementSummaryView
 import com.example.pages.duplicate.DuplicateRouter.MovementView
 import com.example.pages.duplicate.DuplicateStyles
+import com.example.pages.BaseStyles
 
 /**
  * A skeleton component.
@@ -72,7 +73,7 @@ object PageMovementsInternal {
                       val sel = selected.map( s => s==current ).getOrElse(false)
                       <.tr(
                         <.td(
-                          AppButton( bs.name, bs.short, sel ?= baseStyles.buttonSelected, ^.onClick-->toggle )
+                          AppButton( bs.name, bs.short, BaseStyles.highlight(selected = sel), ^.onClick-->toggle )
                         ),
                         <.td( bs.description)
                       )

@@ -55,9 +55,11 @@ object ViewMadeOrDown {
                                 def getButton(text: String, madeOrDown: MadeOrDown) =
                                     <.button( ^.`type` := "button",
                                               ^.onClick --> props.callback(madeOrDown),
-                                              isSelected(madeOrDown) ?= handStyles.buttonSelected,
-                                              missingRequired ?= handStyles.required,
-                                              missingNotNext ?= handStyles.requiredNotNext,
+                                              HandStyles.highlight(
+                                                  selected = isSelected(madeOrDown),
+                                                  required = missingRequired,
+                                                  requiredNotNext = missingNotNext
+                                              ),
                                               ^.id:=madeOrDown.forScore,
                                               text
                                             )

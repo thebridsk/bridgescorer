@@ -18,6 +18,7 @@ import com.example.react.Utils._
 import com.example.data.duplicate.suggestion.PairsData
 import com.example.data.duplicate.suggestion.PairData
 import com.example.data.duplicate.suggestion.PairsDataSummary
+import com.example.pages.BaseStyles
 
 /**
  * Shows a pairs summary page.
@@ -174,7 +175,7 @@ object ViewPairsDetailsInternal {
                           def button( id: String, name: String, sort: SortBy ) = {
                             AppButton( id, name,
                                        ^.onClick --> backend.setSortBy(sort),
-                                       sortBy==sort ?= baseStyles.buttonSelected
+                                       BaseStyles.highlight(selected = sortBy==sort)
                                      )
                           }
                           <.thead(
