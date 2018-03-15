@@ -235,27 +235,57 @@ object PageSummaryInternal {
                             <.td( (if (ds.finished) "done"; else "")),
                             <.td( DateUtils.formatDate(ds.created), <.br(), DateUtils.formatDate(ds.updated)),
                             tp.allPlayers.filter(p => p!="").map { p =>
-                              <.td(
-                                ds.playerPlaces().get(p) match {
-                                  case Some(place) => <.span(place.toString)
-                                  case None => <.span()
-                                },
-                                ds.playerScores().get(p) match {
-                                  case Some(place) => <.span(<.br,Utils.toPointsString(place))
-                                  case None => <.span()
+                              if (PageScoreboard.useIMPs) {
+                                if (ds.hasImpScores) {
+                                  <.td(
+                                    ds.playerPlacesImp().get(p) match {
+                                      case Some(place) => <.span(place.toString)
+                                      case None => <.span()
+                                    },
+                                    ds.playerScoresImp().get(p) match {
+                                      case Some(place) => <.span(<.br, f"${place}%.1f" )
+                                      case None => <.span()
+                                    }
+                                  )
+                                } else {
+                                  <.td()
                                 }
-                              )
-                            }.toTagMod,
-                            <.td(
-                              Utils.toPointsString(
-                                tp.allPlayers.filter(p => p!="").flatMap { p =>
+                              } else {
+                                <.td(
+                                  ds.playerPlaces().get(p) match {
+                                    case Some(place) => <.span(place.toString)
+                                    case None => <.span()
+                                  },
                                   ds.playerScores().get(p) match {
-                                    case Some(place) => place::Nil
-                                    case None => Nil
+                                    case Some(place) => <.span(<.br,Utils.toPointsString(place))
+                                    case None => <.span()
                                   }
-                                }.foldLeft(0.0)((ac,v)=>ac+v)
+                                )
+                              }
+                            }.toTagMod,
+                            if (PageScoreboard.useIMPs) {
+                              <.td(
+                                Utils.toPointsString(
+                                  tp.allPlayers.filter(p => p!="").flatMap { p =>
+                                    ds.playerScoresImp().get(p) match {
+                                      case Some(place) => place::Nil
+                                      case None => Nil
+                                    }
+                                  }.foldLeft(0.0)((ac,v)=>ac+v)
+                                )
                               )
-                            )
+                            } else {
+                              <.td(
+                                Utils.toPointsString(
+                                  tp.allPlayers.filter(p => p!="").flatMap { p =>
+                                    ds.playerScores().get(p) match {
+                                      case Some(place) => place::Nil
+                                      case None => Nil
+                                    }
+                                  }.foldLeft(0.0)((ac,v)=>ac+v)
+                                )
+                              )
+                            }
                           )
                       }).build
 
@@ -508,6 +538,12 @@ object PageSummaryInternal {
       (importId,summaries)
     }
 
+    import PageScoreboard.useIMPs
+    def toggleIMPs = scope.modState { s =>
+      useIMPs = !useIMPs
+      s.copy()
+    }
+
     def render( props: Props, state: State ) = {
       val (importId,summaries) = getDuplicateSummaries( props )
 
@@ -621,6 +657,7 @@ object PageSummaryInternal {
               <.div(
                 baseStyles.divFooterLeft,
                 AppButton( "Home", "Home", props.routerCtl.home ),
+                AppButton( "IMP", "IMP", ^.onClick --> toggleIMPs, useIMPs?=baseStyles.buttonSelected ),
                 whenUndefined(importId)(
                   TagMod(
                     " ",

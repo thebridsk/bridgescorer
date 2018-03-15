@@ -40,9 +40,9 @@ import com.example.react.Utils._
 object ViewBoard {
   import ViewBoardInternal._
 
-  case class Props( routerCtl: RouterCtl[DuplicatePage], page: BaseBoardView, score: MatchDuplicateScore, board: Id.DuplicateBoard )
+  case class Props( routerCtl: RouterCtl[DuplicatePage], page: BaseBoardView, score: MatchDuplicateScore, board: Id.DuplicateBoard, useIMPs: Boolean = false )
 
-  def apply( routerCtl: RouterCtl[DuplicatePage], page: BaseBoardView, score: MatchDuplicateScore, board: Id.DuplicateBoard ) = component(Props(routerCtl, page, score, board))
+  def apply( routerCtl: RouterCtl[DuplicatePage], page: BaseBoardView, score: MatchDuplicateScore, board: Id.DuplicateBoard, useIMPs: Boolean = true ) = component(Props(routerCtl, page, score, board, useIMPs))
 
 }
 
@@ -77,7 +77,7 @@ object ViewBoardInternal {
                             <.th( ^.rowSpan:=2, "Down"),
                             <.th( ^.rowSpan:=1, ^.colSpan:=2, "Score"),
                             <.th( ^.rowSpan:=2, "EW pair"),
-                            <.th( ^.rowSpan:=2, "Match Points")
+                            <.th( ^.rowSpan:=2, (if (props.useIMPs) "IMPs" else "Match Points") )
                           ),
                           <.tr(
                             <.th( ^.rowSpan:=1, "NS"),
@@ -151,7 +151,7 @@ object ViewBoardInternal {
                                       case Some(t) => Id.teamIdToTeamNumber(t)
                                       case None => "?"
                                     } ),
-                                    <.td( showPoints(tbs.getPoints))
+                                    <.td( (if (p.useIMPs) show(tbs.showImps) else  showPoints(tbs.getPoints) ))
                                   )
                                 } else {
                                   <.tr(
@@ -163,7 +163,7 @@ object ViewBoardInternal {
                                     <.td( dupStyles.tableCellGray, ^.textAlign := "center", ""),
                                     <.td( show(tbs.showScore)),
                                     <.td( dupStyles.tableCellGray, ^.textAlign := "center", ""),
-                                    <.td( showPoints(tbs.getPoints))
+                                    <.td( (if (p.useIMPs) show(tbs.showImps) else  showPoints(tbs.getPoints) ))
                                   )
                                 }
                               case None =>

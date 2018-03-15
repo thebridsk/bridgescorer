@@ -43,6 +43,17 @@ class MatchDuplicateScore private ( duplicate: MatchDuplicate, val perspective: 
     points
   }) ).toMap
 
+  val teamImps = duplicate.teams.map( team => (team.id->{
+    var points: Double = 0
+    boards.values.foreach { b => { points += {
+      b.scores().get(team.id) match {
+        case Some(tbs) => tbs.imps
+        case None => 0
+      }
+    } } }
+    points
+  }) ).toMap
+
   val places = {
     val m = teamScores.groupBy(e => e._2).map { e =>
       val (points, teams) = e
@@ -58,8 +69,31 @@ class MatchDuplicateScore private ( duplicate: MatchDuplicate, val perspective: 
     } )
   }
 
+  val placesImps = {
+    val m = teamImps.groupBy(e => e._2).map { e =>
+      val (points, teams) = e
+      points->teams.keys.map( tid => getTeam(tid).get ).toList
+    }
+    val sorted = m.toList.sortWith((e1,e2)=> e1._1>e2._1)
+    var place = 1
+    sorted.map(e=>{
+      val (points, ts) = e
+      val p = place
+      place += ts.size
+      Place(p,points,ts)
+    } )
+  }
+
   def placeByWinnerSet( winnerset: List[Id.Team] ) = {
     places.flatMap( p => {
+      val pteam = p.teams.filter( t => winnerset.contains(t.id))
+      if (pteam.isEmpty) Nil
+      else p.copy(teams=pteam)::Nil
+    })
+  }
+
+  def placeImpByWinnerSet( winnerset: List[Id.Team] ) = {
+    placesImps.flatMap( p => {
       val pteam = p.teams.filter( t => winnerset.contains(t.id))
       if (pteam.isEmpty) Nil
       else p.copy(teams=pteam)::Nil

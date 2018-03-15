@@ -69,6 +69,7 @@ object ViewPairsDetailsGridInternal {
   sealed trait DisplayType
   object DisplayAll extends DisplayType
   object DisplayHand extends DisplayType
+  object DisplayBoth extends DisplayType
 
   val SummaryHeader = ScalaComponent.builder[(Props,State,Backend,List[String])]("ViewPairsDetailsGrid.Header")
                         .render_P( args => {
@@ -86,7 +87,8 @@ object ViewPairsDetailsGridInternal {
                               <.th(
                                 ^.colSpan:=players.length+2,
                                 getButton( DisplayAll, "DisplayAll", "All" ),
-                                getButton( DisplayHand, "DisplayHand", "Hand" )
+                                getButton( DisplayHand, "DisplayHand", "Hand" ),
+                                getButton( DisplayBoth, "DisplayBoth", "Both" )
                               )
                             ),
                             <.tr(
@@ -103,6 +105,9 @@ object ViewPairsDetailsGridInternal {
     if (vmax == vmin) sizemax
     else ((v.toDouble-vmin)*(sizemax-sizemin)/(vmax-vmin) + sizemin).toInt
   }
+
+  val DarkRed = Color( 164, 0, 0)
+  val DarkGreen = Color( 0, 164, 0)
 
   val SummaryRow = ScalaComponent.builder[(Props,State,String,List[String],Stat,Stat,Stat,PairData,Stat,Stat,Stat)]("ViewPairsDetailsGrid.Row")
                       .render_P( args => {
@@ -162,6 +167,11 @@ object ViewPairsDetailsGridInternal {
                           }
                         }
 
+                        /*
+                         * @param pd
+                         * @param vmin min of times played as defended, declared, or passed
+                         * @param vmax max of times played as defended, declared, or passed
+                         */
                         def rectangleTotalHand( pd: PairData, vmin: Int, vmax: Int ): TagMod = {
                           pd.details match {
                             case Some(det) if det.declarer+det.defended+det.passed != 0 =>
@@ -202,6 +212,42 @@ object ViewPairsDetailsGridInternal {
                           }
                         }
 
+                        /*
+                         * @param pd
+                         * @param vmin min of total times played
+                         * @param vmax max of total times played
+                         */
+                        def rectangleTotalBoth( pd: PairData, vmin: Int, vmax: Int ): TagMod = {
+                          pd.details match {
+                            case Some(det) if det.declarer+det.defended+det.passed != 0 =>
+                              val sizeAll = size(det.total, vmin, vmax, state.minSize, state.maxSize)
+                              val oneOverDec = 100.0/det.declarer
+                              val oneOverDef = 100.0/det.defended
+                              val oneOverPas = 100.0/det.passed
+                              val oneOverTotal = 100.0/(det.declarer+det.defended+det.passed)
+                              val titleDec = f"Declarer ${det.declarer} (${det.declarer*oneOverTotal}%.2f%%)\n  Made ${det.made} (${det.made*oneOverDec}%.2f%%)%n  Down ${det.down} (${det.down*oneOverDec}%.2f%%)"
+                              val titleDef = f"Defended ${det.defended} (${det.defended*oneOverTotal}%.2f%%)\n  Took Down ${det.tookDown} (${det.tookDown*oneOverDef}%.2f%%)%n  Allowed Made ${det.allowedMade} (${det.allowedMade*oneOverDef}%.2f%%)"
+                              val titlePas = f"Passed ${det.passed} (${det.passed*oneOverTotal}%.2f%%)"
+                              <.td( <.div(
+                                titleAttr := titleDec+"\n"+titleDef+"\n"+titlePas,
+                                baseStyles.hover,
+                                PieChartOrSquareForZero(
+                                    if (det.total == 0) -sizeAll else sizeAll,
+                                    Color.Black,
+                                    det.made.toDouble::det.down.toDouble::det.allowedMade.toDouble::det.tookDown.toDouble::det.passed.toDouble::Nil,
+                                    Color.Green::Color.Red::DarkRed::DarkGreen::Color.Blue::Nil,
+                                    None ), // Some(titleDec) ),
+                              ))
+                            case _ =>
+                              <.td()
+                          }
+                        }
+
+                        /*
+                         * @param pd
+                         * @param vmin min of times played as defended, declared, or passed
+                         * @param vmax max of times played as defended, declared, or passed
+                         */
                         def rectangleHand( pd: PairData, vmin: Int, vmax: Int ): TagMod = {
                           pd.details match {
                             case Some(det) if det.declarer+det.defended+det.passed != 0 =>
@@ -242,6 +288,37 @@ object ViewPairsDetailsGridInternal {
                           }
                         }
 
+                        /*
+                         * @param pd
+                         * @param vmin min of total times played
+                         * @param vmax max of total times played
+                         */
+                        def rectangleBoth( pd: PairData, vmin: Int, vmax: Int ): TagMod = {
+                          pd.details match {
+                            case Some(det) if det.declarer+det.defended+det.passed != 0 =>
+                              val sizeAll = size(det.total, vmin, vmax, state.minSize, state.maxSize)
+                              val oneOverDec = 100.0/det.declarer
+                              val oneOverDef = 100.0/det.defended
+                              val oneOverPas = 100.0/det.passed
+                              val oneOverTotal = 100.0/(det.declarer+det.defended+det.passed)
+                              val titleDec = f"Declarer ${det.declarer} (${det.declarer*oneOverTotal}%.2f%%)\n  Made ${det.made} (${det.made*oneOverDec}%.2f%%)%n  Down ${det.down} (${det.down*oneOverDec}%.2f%%)"
+                              val titleDef = f"Defended ${det.defended} (${det.defended*oneOverTotal}%.2f%%)\n  Took Down ${det.tookDown} (${det.tookDown*oneOverDef}%.2f%%)%n  Allowed Made ${det.allowedMade} (${det.allowedMade*oneOverDef}%.2f%%)"
+                              val titlePas = f"Passed ${det.passed} (${det.passed*oneOverTotal}%.2f%%)"
+                              <.td( <.div(
+                                titleAttr := titleDec+"\n"+titleDef+"\n"+titlePas,
+                                baseStyles.hover,
+                                PieChartOrSquareForZero(
+                                    if (det.total == 0) -sizeAll else sizeAll,
+                                    Color.Black,
+                                    det.made.toDouble::det.down.toDouble::det.allowedMade.toDouble::det.tookDown.toDouble::det.passed.toDouble::Nil,
+                                    Color.Green::Color.Red::DarkRed::DarkGreen::Color.Blue::Nil,
+                                    None ), // Some(titleDec) ),
+                              ))
+                            case _ =>
+                              <.td()
+                          }
+                        }
+
                         def squareHand(colPlayer: String, vmin: Int, vmax: Int ) = {
                           if (rowplayer == colPlayer) {
                             <.td("x")
@@ -249,6 +326,19 @@ object ViewPairsDetailsGridInternal {
                             pds.get(rowplayer, colPlayer) match {
                               case Some(pd) =>
                                 rectangleHand(pd,vmin,vmax)
+                              case None =>
+                                <.td()
+                            }
+                          }
+                        }
+
+                        def squareBoth(colPlayer: String, vmin: Int, vmax: Int ) = {
+                          if (rowplayer == colPlayer) {
+                            <.td("x")
+                          } else {
+                            pds.get(rowplayer, colPlayer) match {
+                              case Some(pd) =>
+                                rectangleBoth(pd,vmin,vmax)
                               case None =>
                                 <.td()
                             }
@@ -272,6 +362,16 @@ object ViewPairsDetailsGridInternal {
                               players.filter( e => props.filter.isPlayerShown(e) ).map( p => squareHand(p,vmin,vmax) ).toTagMod,
                               rectangleTotalHand(playerTotal, vminplayer, vmaxplayer)
                             )
+                          case DisplayBoth =>
+                            val vmin = Math.min( passedStat.min, Math.min( sizeStat.min, colorStat.min )).toInt
+                            val vmax = Math.max( passedStat.max, Math.max( sizeStat.max, colorStat.max )).toInt
+                            val vminplayer = playedStatPlayerTotals.min.toInt
+                            val vmaxplayer = playedStatPlayerTotals.max.toInt
+                            <.tr(
+                              <.td( rowplayer ),
+                              players.filter( e => props.filter.isPlayerShown(e) ).map( p => squareBoth(p,vmin,vmax) ).toTagMod,
+                              rectangleTotalBoth(playerTotal, vminplayer, vmaxplayer)
+                            )
                         }
                       }).build
 
@@ -283,7 +383,7 @@ object ViewPairsDetailsGridInternal {
    *
    */
   case class State( displayType: DisplayType = DisplayAll,
-                    maxSize: Int = 60,
+                    maxSize: Int = 100,
                     minSize: Int = 5
                   )
 
@@ -335,7 +435,7 @@ object ViewPairsDetailsGridInternal {
 
       props.filter.pairsData match {
         case Some(pds) if !pds.players.isEmpty =>
-          val summary = new PairsDataSummary( pds, ColorByDeclarerResults, props.filter.selected, if (state.displayType==DisplayAll) ColorByPlayedResults else ColorByDefendedResults, ColorByPassedResults )
+          val summary = new PairsDataSummary( pds, ColorByDeclarerResults, props.filter.selected, if (state.displayType==DisplayHand) ColorByDefendedResults else ColorByPlayedResults, ColorByPassedResults )
           val allPlayers = summary.playerTotals.filter { e =>
             e._2.details.map( d => d.declarer+d.defended+d.passed>0 ).getOrElse(false)
           }.map( e => e._1 ).toList.sorted
@@ -358,7 +458,7 @@ object ViewPairsDetailsGridInternal {
                                                       summary.colorStat,
                                                       summary.extraStats.head,
                                                       summary.extraStats.tail.head,
-                                                      summary.playerTotals.get(rowplayer).getOrElse(PairData(rowplayer,"",0,0,0,0,0,0,None)),
+                                                      summary.playerTotals.get(rowplayer).getOrElse(PairData(rowplayer,"",0,0,0,0,0,0,None,0,0,0)),
                                                       summary.colorStatPlayerTotals,
                                                       summary.extraStatsPlayer.head,
                                                       summary.extraStatsPlayer.tail.head
@@ -389,7 +489,17 @@ object ViewPairsDetailsGridInternal {
                             <.br,
                             "The second circle is the results of hands were the team was defending.  green is took down, red is allowed made.",
                             <.br,
-                            "The third circle, cyan, is the results of hands were passed out.",
+                            "The third circle, blue, is the results of hands were passed out.",
+                          )
+                        case DisplayBoth =>
+                          TagMod(
+                            "The size of the circle is proportional to the number of hands played by the pair/player. ",
+                            <.br,
+                            "Green is contract made as declarer, red is down as declarer.",
+                            <.br,
+                            "Dark green is took down as defender, dark red is allowed made as defender.",
+                            <.br,
+                            "Blue is passed out hands.",
                           )
                       }
                     )

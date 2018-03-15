@@ -58,6 +58,7 @@ object ScoreboardPage {
                  ("Table", s"Table ${n}") ::
                  ("Game", "Completed Games Scoreboard") ::
                  ("AllBoards", "All Boards") ::
+                 ("IMP", "IMP") ::
                  Nil
 
   def buttonIds( view: ViewType ) = view match {
@@ -184,6 +185,11 @@ class ScoreboardPage(
     if (view != CompletedViewType) fail("Must be in Completed view to hit director button")
     clickButton("Director")
     new ScoreboardPage( dupid, DirectorViewType )
+  }
+
+  def clickIMP(implicit pos: Position) = {
+    clickButton("IMP")
+    this
   }
 
   def clickCompleteGameButton(implicit pos: Position) = {

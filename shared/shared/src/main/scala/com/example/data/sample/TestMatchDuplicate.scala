@@ -69,7 +69,7 @@ object TestMatchDuplicate {
     hands.reverse
   }
 
-  def getTeamScore() = Map( "T1"->1.5,"T2"->0.5,"T3"->0.5,"T4"->1.5 )
+  def getTeamScore() = Map( "T1"->3,"T2"->1,"T3"->1,"T4"->3 )
 
   def getPlayedMatch( dupid: Id.MatchDuplicate) = {
     var md = TestMatchDuplicate.create(dupid)

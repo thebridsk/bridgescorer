@@ -14,7 +14,7 @@ import scala.collection.mutable.ListBuffer
  * @param points the number of points scored by this pair
  * @param totalPoints the total number of points the team could have won.
  */
-case class PairData( player1: String, player2: String, played: Int, won: Int, wonPts: Double, points: Double, totalPoints: Double, incompleteGames: Int, details: Option[DuplicateSummaryDetails] ) {
+case class PairData( player1: String, player2: String, played: Int, won: Int, wonPts: Double, points: Double, totalPoints: Double, incompleteGames: Int, details: Option[DuplicateSummaryDetails], wonImp: Int, wonImpPts: Double, imp: Double ) {
   import PairsData._
 
   def normalize = {
@@ -26,11 +26,11 @@ case class PairData( player1: String, player2: String, played: Int, won: Int, wo
 
   def isNormalized = (player1,player2) == key(player1,player2)
 
-  def add( win: Boolean, winPts: Double, pts: Double, totpts: Double, det: Option[DuplicateSummaryDetails] ) = {
+  def add( win: Boolean, winPts: Double, pts: Double, totpts: Double, det: Option[DuplicateSummaryDetails], winImp: Boolean, winImpPts: Double, aimp: Double ) = {
     val ds = det.map { d =>
       Some(details.map { cd => cd.add(d) }.getOrElse(d))
     }.getOrElse(details)
-    copy( played=played+1, won=won+(if (win) 1 else 0), wonPts=wonPts+winPts, points=points+pts, totalPoints=totalPoints+totpts, details=ds)
+    copy( played=played+1, won=won+(if (win) 1 else 0), wonPts=wonPts+winPts, points=points+pts, totalPoints=totalPoints+totpts, details=ds, wonImp=wonImp+(if (winImp) 1 else 0), wonImpPts=wonImpPts+winImpPts, imp=imp+aimp)
   }
 
   def addIncomplete = copy( incompleteGames=incompleteGames+1)
@@ -59,7 +59,10 @@ case class PairData( player1: String, player2: String, played: Int, won: Int, wo
               played = played+pd.played,
               won = won+pd.won,
               wonPts = wonPts+pd.wonPts,
+              wonImp = wonImp+pd.wonImp,
+              wonImpPts = wonImpPts+pd.wonImpPts,
               points = points+pd.points,
+              imp = imp+pd.imp,
               totalPoints = totalPoints+pd.totalPoints,
               incompleteGames = incompleteGames+pd.incompleteGames,
               details = ds )
@@ -77,7 +80,7 @@ object PairsData {
 /**
  * @param pastgames all the past games, will be sorted by created field
  */
-class PairsData( pastgames: List[DuplicateSummary] ) {
+class PairsData( val pastgames: List[DuplicateSummary] ) {
 
   import PairsData._
 
@@ -94,15 +97,15 @@ class PairsData( pastgames: List[DuplicateSummary] ) {
       if (!list.contains(p)) list += p
     }
 
-    def add( player1: String, player2: String, win: Boolean, winPts: Double, pts: Double, totpts: Double, incomplete: Boolean, details: Option[DuplicateSummaryDetails] ): Unit = {
+    def add( player1: String, player2: String, win: Boolean, winPts: Double, pts: Double, totpts: Double, incomplete: Boolean, details: Option[DuplicateSummaryDetails], winImp: Boolean, winImpPts: Double, imp: Double ): Unit = {
       addPerson(player1)
       addPerson(player2)
       val pp = key(player1,player2)
-      val newpd = tdata.get(pp).getOrElse( PairData(pp._1,pp._2,0,0,0,0,0,0,None).normalize )
+      val newpd = tdata.get(pp).getOrElse( PairData(pp._1,pp._2,0,0,0,0,0,0,None,0,0,0).normalize )
       val reallynewpd = if (incomplete) {
         newpd.addIncomplete
       } else {
-        newpd.add(win, winPts, pts, totpts, details)
+        newpd.add(win, winPts, pts, totpts, details, winImp, winImpPts, imp)
       }
       tdata += newpd.getkey -> reallynewpd
     }
@@ -119,8 +122,18 @@ class PairsData( pastgames: List[DuplicateSummary] ) {
         } else {
           0.0
         }
+
+        val hasImp = dse.hasImp
+        val imp = if (hasImp) dse.getResultImp else 0.0
+        val wonImp = if (hasImp) dse.getPlaceImp == 1 else false
+        val numberWinnersImp = if (hasImp) ds.teams.filter { dse => dse.getPlaceImp==1 }.length else 0
+        val wonImpPts = if (wonImp && numberWinnersImp != 0) {
+                          1.0/numberWinnersImp
+                        } else {
+                          0.0
+                        }
         val details = dse.details
-        add(dse.team.player1,dse.team.player2,won,wonPts,pts,total,incomplete,details)
+        add(dse.team.player1,dse.team.player2,won,wonPts,pts,total,incomplete,details,wonImp,wonImpPts,imp)
       }
     }
 
@@ -145,7 +158,7 @@ class PairsData( pastgames: List[DuplicateSummary] ) {
     val pds = data.values.filter { pd =>
       pd.contains(player) && playerFilter.map( f => f.contains(pd.player1) && f.contains(pd.player2)).getOrElse(true)
     }
-    pds.foldLeft(PairData(player,"",0,0,0,0,0,0, None)) { (ac,v) =>
+    pds.foldLeft(PairData(player,"",0,0,0,0,0,0, None,0,0,0)) { (ac,v) =>
       ac.addPairData(v)
     }
   }

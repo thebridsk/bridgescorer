@@ -62,8 +62,17 @@ case class DuplicateSummaryEntry(
     place: Int,
     @(ApiModelProperty @field)(value="Details about the team", required=false)
     details: Option[DuplicateSummaryDetails] = None,
+    @(ApiModelProperty @field)(value="The IMPs the team scored", required=false)
+    resultImp: Option[Double] = None,
+    @(ApiModelProperty @field)(value="The place using IMPs the team finished in", required=false)
+    placeImp: Option[Int] = None
     ) {
   def id = team.id
+
+  def getResultImp = resultImp.getOrElse(0.0)
+  def getPlaceImp = placeImp.getOrElse(1)
+
+  def hasImp = resultImp.isDefined&&placeImp.isDefined
 }
 
 @ApiModel(description = "The best match in the main store")
@@ -110,6 +119,10 @@ case class DuplicateSummary(
   def players() = teams.flatMap { t => Seq(t.team.player1, t.team.player2) }.toList
   def playerPlaces() = teams.flatMap{ t => Seq( (t.team.player1->t.place), (t.team.player2->t.place) ) }.toMap
   def playerScores() = teams.flatMap{ t => Seq( (t.team.player1->t.result), (t.team.player2->t.result) ) }.toMap
+  def playerPlacesImp() = teams.flatMap{ t => Seq( (t.team.player1->t.getPlaceImp), (t.team.player2->t.getPlaceImp) ) }.toMap
+  def playerScoresImp() = teams.flatMap{ t => Seq( (t.team.player1->t.getResultImp), (t.team.player2->t.getResultImp) ) }.toMap
+
+  def hasImpScores = teams.headOption.map( t => t.placeImp.isDefined&&t.resultImp.isDefined ).getOrElse(false)
 
   def idAsDuplicateResultId = id.asInstanceOf[Id.MatchDuplicateResult]
 
@@ -158,8 +171,9 @@ object DuplicateSummary {
   def create( md: MatchDuplicate ): DuplicateSummary = {
     val score = MatchDuplicateScore(md, PerspectiveComplete)
     val places = score.places.flatMap { p => p.teams.map { t => (t.id->p.place) }.toList }.toMap
+    val placesImps = score.placesImps.flatMap { p => p.teams.map { t => (t.id->p.place) }.toList }.toMap
     val details = score.getDetails().map { d => d.team -> d }.toMap
-    val t = md.teams.map{ team => DuplicateSummaryEntry( team, score.teamScores( team.id ), places( team.id ), details.get(team.id) ) }.toList
+    val t = md.teams.map{ team => DuplicateSummaryEntry( team, score.teamScores( team.id ), places( team.id ), details.get(team.id), score.teamImps.get( team.id ), placesImps.get( team.id ) ) }.toList
     DuplicateSummary( md.id, score.alldone,
                       t,
                       md.boards.size, md.teams.size/2, false,

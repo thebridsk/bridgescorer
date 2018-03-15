@@ -25,13 +25,16 @@ import com.example.react.DateUtils
  * @author werewolf
  */
 object ViewPlayerMatchResult {
-  case class Props( score: List[MatchDuplicateScore.Place], mdr: Option[MatchDuplicateResult], iws: Int, nws: Int  )
+  case class Props( score: List[MatchDuplicateScore.Place], mdr: Option[MatchDuplicateResult], iws: Int, nws: Int, useIMPs: Boolean = false )
 
   def apply( score: List[MatchDuplicateScore.Place] ) =
-    ViewPlayerMatchResultInternal.component(Props(score,None,0,0))
+    ViewPlayerMatchResultInternal.component(Props(score,None,0,0,false))
 
-  def apply( score: List[MatchDuplicateScore.Place], mdr: MatchDuplicateResult, iws: Int, nws: Int ) =
-    ViewPlayerMatchResultInternal.component(Props(score,Some(mdr),iws,nws))
+  def apply( score: List[MatchDuplicateScore.Place], useIMPs: Boolean ) =
+    ViewPlayerMatchResultInternal.component(Props(score,None,0,0,useIMPs))
+
+  def apply( score: List[MatchDuplicateScore.Place], mdr: MatchDuplicateResult, iws: Int, nws: Int, useIMPs: Boolean = false ) =
+    ViewPlayerMatchResultInternal.component(Props(score,Some(mdr),iws,nws,useIMPs))
 
 }
 
@@ -102,7 +105,7 @@ object ViewPlayerMatchResultInternal {
             places.map { place =>
               <.tr(
                 <.td( place.place.toString ),
-                <.td( Utils.toPointsString(place.score) ),
+                <.td( (if (props.useIMPs) f"${place.score}%.1f" else Utils.toPointsString(place.score) ) ),
                 <.td( teamColumn(place.teams) )
               )
             }.toTagMod

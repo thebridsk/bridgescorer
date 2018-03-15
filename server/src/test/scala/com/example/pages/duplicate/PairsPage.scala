@@ -43,8 +43,11 @@ case class PeopleRow( name: String,
                       percentPoints: String,
                       won: String,
                       wonPoints: String,
+                      WonImp: String,
+                      WonImpPoints: String,
                       played: String,
                       incomplete: String,
+                      imps: String,
                       points: String,
                       total: String
                     )
@@ -117,8 +120,8 @@ class PairsPage( implicit webDriver: WebDriver, pageCreated: SourcePosition ) ex
   }
 
   def getPlayerTable(implicit patienceConfig: PatienceConfig, pos: Position) = {
-    getElemsByXPath("""//table[@id = 'Players']/tbody/tr/td""").map(e=>e.text).grouped(10).map{ list =>
-      PeopleRow(list(0),list(1),list(2),list(3),list(4),list(5),list(6),list(7),list(8),list(9))
+    getElemsByXPath("""//table[@id = 'Players']/tbody/tr/td""").map(e=>e.text).grouped(13).map{ list =>
+      PeopleRow(list(0),list(1),list(2),list(3),list(4),list(5),list(6),list(7),list(8),list(9),list(10),list(11),list(12))
     }.toList
   }
 

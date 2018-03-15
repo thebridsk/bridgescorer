@@ -94,30 +94,29 @@ object Duplicate5TestPages {
   val team5 = Team( 5, "Alice", "Andy" )
 
   val peopleResult = List(
-                        PeopleRow(team4.one,"100.00","100.00","47.50","1","1.00","1","0","9"+half,"20"),
-                        PeopleRow(team4.two,"100.00","100.00","47.50","1","1.00","1","0","9"+half,"20"),
-                        PeopleRow(team5.one,"0.00","0.00","45.00","0","0.00","1","0","9","20"),
-                        PeopleRow(team5.two,"0.00","0.00","45.00","0","0.00","1","0","9","20"),
-                        PeopleRow(team2.one,"0.00","0.00","40.00","0","0.00","1","0","8","20"),
-                        PeopleRow(team2.two,"0.00","0.00","40.00","0","0.00","1","0","8","20"),
-                        PeopleRow(team3.one,"0.00","0.00","37.50","0","0.00","1","0","7"+half,"20"),
-                        PeopleRow(team3.two,"0.00","0.00","37.50","0","0.00","1","0","7"+half,"20"),
-                        PeopleRow(team1.one,"0.00","0.00","30.00","0","0.00","1","0","6","20"),
-                        PeopleRow(team1.two,"0.00","0.00","30.00","0","0.00","1","0","6","20")
+                        PeopleRow(team4.one,"100.00","100.00","47.50","1","1.00","1","0.50","1","0","14.0","19","40"),
+                        PeopleRow(team4.two,"100.00","100.00","47.50","1","1.00","1","0.50","1","0","14.0","19","40"),
+                        PeopleRow(team5.one,"0.00","0.00","45.00","0","0.00","1","0.50","1","0","14.0","18","40"),
+                        PeopleRow(team5.two,"0.00","0.00","45.00","0","0.00","1","0.50","1","0","14.0","18","40"),
+                        PeopleRow(team2.one,"0.00","0.00","40.00","0","0.00","0","0.00","1","0","-1.0","16","40"),
+                        PeopleRow(team2.two,"0.00","0.00","40.00","0","0.00","0","0.00","1","0","-1.0","16","40"),
+                        PeopleRow(team3.one,"0.00","0.00","37.50","0","0.00","0","0.00","1","0","-11.0","15","40"),
+                        PeopleRow(team3.two,"0.00","0.00","37.50","0","0.00","0","0.00","1","0","-11.0","15","40"),
+                        PeopleRow(team1.one,"0.00","0.00","30.00","0","0.00","0","0.00","1","0","-16.0","12","40"),
+                        PeopleRow(team1.two,"0.00","0.00","30.00","0","0.00","0","0.00","1","0","-16.0","12","40")
       )
 
-
   val listDuplicateResult = List(
-        team4.one+"\n1\n9"+half,
-        team4.two+"\n1\n9"+half,
-        team5.one+"\n2\n9",
-        team5.two+"\n2\n9",
-        team2.one+"\n3\n8",
-        team2.two+"\n3\n8",
-        team3.one+"\n4\n7"+half,
-        team3.two+"\n4\n7"+half,
-        team1.one+"\n5\n6",
-        team1.two+"\n5\n6",
+        team4.one+"\n1\n19",
+        team4.two+"\n1\n19",
+        team5.one+"\n2\n18",
+        team5.two+"\n2\n18",
+        team2.one+"\n3\n16",
+        team2.two+"\n3\n16",
+        team3.one+"\n4\n15",
+        team3.two+"\n4\n15",
+        team1.one+"\n5\n12",
+        team1.two+"\n5\n12",
       )
 
   val prefixThatMatchesSomeNames = "e"
@@ -133,103 +132,103 @@ object Duplicate5TestPages {
       MovementsPage.getMovement(movement).get,
 
       // board 1    NS      EW
-      EnterHand( 2, 110,0,  4,0,   1,Spades,NotDoubled,North,Made,2,NotVul)::
-      EnterHand( 3,  80,0,  5,1,   1,Spades,NotDoubled,North,Made,1,NotVul)::
+      EnterHand( 2, 110,0,  4,0,  0,  1,Spades,NotDoubled,North,Made,2,NotVul)::
+      EnterHand( 3,  80,0,  5,2, -1,  1,Spades,NotDoubled,North,Made,1,NotVul)::
       Nil,
 
       // board 2    NS      EW
-      EnterHand( 2, 110,0,  4,0,   2,Spades,NotDoubled,North,Made,2,Vul)::
-      EnterHand( 3, 140,1,  5,0,   2,Spades,NotDoubled,North,Made,3,Vul)::
+      EnterHand( 2, 110,0,  4,0,  0,  2,Spades,NotDoubled,North,Made,2,Vul)::
+      EnterHand( 3, 140,2,  5,0,  1,  2,Spades,NotDoubled,North,Made,3,Vul)::
       Nil,
 
       // board 3    NS      EW
-      EnterHand( 5, 140,0,   4,0,   3,Spades,NotDoubled,North,Made,3,NotVul)::
-      EnterHand( 3, 140,0.5, 2,0.5, 3,Spades,NotDoubled,North,Made,3,NotVul)::
+      EnterHand( 5, 140,0,  4,0,  0,  3,Spades,NotDoubled,North,Made,3,NotVul)::
+      EnterHand( 3, 140,1,  2,1,  0,  3,Spades,NotDoubled,North,Made,3,NotVul)::
       Nil,
 
       // board 4    NS      EW
-      EnterHand( 5, 620,0,   4,0,   4,Spades,NotDoubled,North,Made,4,Vul)::
-      EnterHand( 3, 620,0.5, 2,0.5, 4,Spades,NotDoubled,North,Made,4,Vul)::
+      EnterHand( 5, 620,0,  4,0,  0,  4,Spades,NotDoubled,North,Made,4,Vul)::
+      EnterHand( 3, 620,1,  2,1,  0,  4,Spades,NotDoubled,North,Made,4,Vul)::
       Nil,
 
       // board 5    NS      EW
-      EnterHand( 4, 650,0,   3,0,   5,Spades,NotDoubled,North,Made,5,Vul)::
-      EnterHand( 1,   0,0,   5,1,   0,Spades,NotDoubled,North,Made,5,Vul)::
+      EnterHand( 4, 650,0,   3,0,  0,  5,Spades,NotDoubled,North,Made,5,Vul)::
+      EnterHand( 1,   0,0,   5,2, -12,  0,Spades,NotDoubled,North,Made,5,Vul)::
       Nil,
 
       // board 6    NS      EW
-      EnterHand( 4,1010,0,   3,0,   6,Spades,NotDoubled,North,Made,7,NotVul)::
-      EnterHand( 1, 980,0,   5,1,   6,Spades,NotDoubled,North,Made,6,NotVul)::
+      EnterHand( 4,1010,0,   3,0,  0,  6,Spades,NotDoubled,North,Made,7,NotVul)::
+      EnterHand( 1, 980,0,   5,2,  -1,  6,Spades,NotDoubled,North,Made,6,NotVul)::
       Nil,
 
       // board 7    NS      EW
-      EnterHand( 3,720,0,    5,0,   1,Hearts,Redoubled,North,Made,1,Vul)::
-      EnterHand( 4,720,0.5,  1,0.5, 1,Hearts,Redoubled,North,Made,1,Vul)::
+      EnterHand( 3,720,0,  5,0,  0,  1,Hearts,Redoubled,North,Made,1,Vul)::
+      EnterHand( 4,720,1,  1,1,  0,  1,Hearts,Redoubled,North,Made,1,Vul)::
       Nil,
 
       // board 8    NS      EW
-      EnterHand( 3,470,0,    5,0,   2,Hearts,Doubled,North,Made,2,NotVul)::
-      EnterHand( 4,470,0.5,  1,0.5, 2,Hearts,Doubled,North,Made,2,NotVul)::
+      EnterHand( 3,470,0,  5,0,  0,  2,Hearts,Doubled,North,Made,2,NotVul)::
+      EnterHand( 4,470,1,  1,1,  0,  2,Hearts,Doubled,North,Made,2,NotVul)::
       Nil,
 
       // board 9    NS      EW
-      EnterHand( 5,140,0,    4,0,   3,Hearts,NotDoubled,North,Made,3,NotVul)::
-      EnterHand( 2,140,0.5,  1,0.5, 3,Hearts,NotDoubled,North,Made,3,NotVul)::
+      EnterHand( 5,140,0,  4,0,  0,  3,Hearts,NotDoubled,North,Made,3,NotVul)::
+      EnterHand( 2,140,1,  1,1,  0,  3,Hearts,NotDoubled,North,Made,3,NotVul)::
       Nil,
 
       // board 10   NS      EW
-      EnterHand( 5,630,0,    4,0,   4,NoTrump,NotDoubled,North,Made,4,Vul)::
-      EnterHand( 2,660,1,    1,0,   4,NoTrump,NotDoubled,North,Made,5,Vul)::
+      EnterHand( 5,630,0,    4,0,  0,  4,NoTrump,NotDoubled,North,Made,4,Vul)::
+      EnterHand( 2,660,2,    1,0,  1,  4,NoTrump,NotDoubled,North,Made,5,Vul)::
       Nil,
 
       // board 11   NS      EW
-      EnterHand( 5,460,0,    2,0,   5,NoTrump,NotDoubled,North,Made,5,NotVul)::
-      EnterHand( 4,460,0.5,  1,0.5, 5,NoTrump,NotDoubled,North,Made,5,NotVul)::
+      EnterHand( 5,460,0,  2,0,  0,  5,NoTrump,NotDoubled,North,Made,5,NotVul)::
+      EnterHand( 4,460,1,  1,1,  0,  5,NoTrump,NotDoubled,North,Made,5,NotVul)::
       Nil,
 
       // board 12   NS      EW
-      EnterHand( 5,2220,0,   2,0,   7,NoTrump,NotDoubled,North,Made,7,Vul)::
-      EnterHand( 4,2220,0.5, 1,0.5, 7,NoTrump,NotDoubled,North,Made,7,Vul)::
+      EnterHand( 5,2220,0,  2,0,  0,  7,NoTrump,NotDoubled,North,Made,7,Vul)::
+      EnterHand( 4,2220,1,  1,1,  0,  7,NoTrump,NotDoubled,North,Made,7,Vul)::
       Nil,
 
       // board 13   NS      EW
-      EnterHand( 5, 70,0,   2,0,   1,Diamonds,NotDoubled,North,Made,1,Vul)::
-      EnterHand( 1, 70,0.5, 3,0.5, 1,Diamonds,NotDoubled,North,Made,1,Vul)::
+      EnterHand( 5, 70,0,  2,0,  0,  1,Diamonds,NotDoubled,North,Made,1,Vul)::
+      EnterHand( 1, 70,1,  3,1,  0,  1,Diamonds,NotDoubled,North,Made,1,Vul)::
       Nil,
 
       // board 14   NS      EW
-      EnterHand( 5, 90,0,   2,0,   2,Diamonds,NotDoubled,North,Made,2,NotVul)::
-      EnterHand( 1, 90,0.5, 3,0.5, 2,Diamonds,NotDoubled,North,Made,2,NotVul)::
+      EnterHand( 5, 90,0,  2,0,  0,  2,Diamonds,NotDoubled,North,Made,2,NotVul)::
+      EnterHand( 1, 90,1,  3,1,  0,  2,Diamonds,NotDoubled,North,Made,2,NotVul)::
       Nil,
 
       // board 15   NS      EW
-      EnterHand( 1,110,0,   5,0,   3,Diamonds,NotDoubled,North,Made,3,Vul)::
-      EnterHand( 3,110,0.5, 2,0.5, 3,Diamonds,NotDoubled,North,Made,3,Vul)::
+      EnterHand( 1,110,0,   5,0,  0,  3,Diamonds,NotDoubled,North,Made,3,Vul)::
+      EnterHand( 3,110,1,   2,1,  0,  3,Diamonds,NotDoubled,North,Made,3,Vul)::
       Nil,
 
       // board 16   NS      EW
-      EnterHand( 1,-100,0,  5,0,   4,Clubs,NotDoubled,North,Down,2,NotVul)::
-      EnterHand( 3, -50,1,  2,0,   4,Clubs,NotDoubled,North,Down,1,NotVul)::
+      EnterHand( 1,-100,0,  5,0,  0,  4,Clubs,NotDoubled,North,Down,2,NotVul)::
+      EnterHand( 3, -50,2,  2,0,  2,  4,Clubs,NotDoubled,North,Down,1,NotVul)::
       Nil,
 
       // board 17   NS      EW
-      EnterHand( 4,-150,0,   3,0,   5,Clubs,NotDoubled,North,Down,3,NotVul)::
-      EnterHand( 2,-150,0.5, 1,0.5, 5,Clubs,NotDoubled,North,Down,3,NotVul)::
+      EnterHand( 4,-150,0,  3,0,  0,  5,Clubs,NotDoubled,North,Down,3,NotVul)::
+      EnterHand( 2,-150,1,  1,1,  0,  5,Clubs,NotDoubled,North,Down,3,NotVul)::
       Nil,
 
       // board 18   NS      EW
-      EnterHand( 4,-100,0,    3,0,   6,Clubs,NotDoubled,North,Down,1,Vul)::
-      EnterHand( 2,-100,0.5,  1,0.5, 6,Clubs,NotDoubled,North,Down,1,Vul)::
+      EnterHand( 4,-100,0,  3,0,  0,  6,Clubs,NotDoubled,North,Down,1,Vul)::
+      EnterHand( 2,-100,1,  1,1,  0,  6,Clubs,NotDoubled,North,Down,1,Vul)::
       Nil,
 
       // board 19   NS      EW
-      EnterHand( 1,-150,0,    3,0,   5,Clubs,NotDoubled,North,Down,3,NotVul)::
-      EnterHand( 2,-150,0.5,  4,0.5, 5,Clubs,NotDoubled,North,Down,3,NotVul)::
+      EnterHand( 1,-150,0,  3,0,  0,  5,Clubs,NotDoubled,North,Down,3,NotVul)::
+      EnterHand( 2,-150,1,  4,1,  0,  5,Clubs,NotDoubled,North,Down,3,NotVul)::
       Nil,
 
       // board 20   NS      EW
-      EnterHand( 1,-100,0,    3,0,   6,Clubs,NotDoubled,North,Down,1,Vul)::
-      EnterHand( 2,-100,0.5,  4,0.5, 6,Clubs,NotDoubled,North,Down,1,Vul)::
+      EnterHand( 1,-100,0,  3,0,  0,  6,Clubs,NotDoubled,North,Down,1,Vul)::
+      EnterHand( 2,-100,1,  4,1,  0,  6,Clubs,NotDoubled,North,Down,1,Vul)::
       Nil
   )
 
@@ -775,6 +774,7 @@ class Duplicate5TestPages extends FlatSpec with DuplicateUtils with MustMatchers
       currentPage: ScoreboardPage,
       table: Int,
       round: Int,
+      imp: Boolean = false
     )( implicit
          webDriver: WebDriver
     ) = {
@@ -782,7 +782,7 @@ class Duplicate5TestPages extends FlatSpec with DuplicateUtils with MustMatchers
     val (nsTeam,ewTeam) = allHands.getNSEW(table, round)
 
     val sbr = currentPage.validate
-    val (ts,pes) = allHands.getScoreToRound(round, HandTableView( table, round, nsTeam.teamid, ewTeam.teamid ))
+    val (ts,pes) = allHands.getScoreToRound(round, HandTableView( table, round, nsTeam.teamid, ewTeam.teamid ), imp)
     val (ts1,pes1) = fixTables(ts, pes, round)
     sbr.checkTable( ts1: _*)
     sbr.checkPlaceTable( pes1: _*)
@@ -957,8 +957,9 @@ class Duplicate5TestPages extends FlatSpec with DuplicateUtils with MustMatchers
       },
       CodeBlock {
         import SessionTable2._
-        val sb1 = ScoreboardPage.current
-        validateRound(sb1,2,5 )
+        val sb1 = ScoreboardPage.current.clickIMP.validate
+        Thread.sleep(500L)
+        validateRound(sb1,2,5, true )
       }
     )
   }
@@ -980,14 +981,17 @@ class Duplicate5TestPages extends FlatSpec with DuplicateUtils with MustMatchers
 
     val sb = ListDuplicatePage.current
     val ids = sb.getMatchIds
-    val peoplePage = sb.clickPairs.validate.clickPeopleDetails
+    val peoplePage = sb.clickPairs.validate.clickPeopleResults
 
-    if (ids.size == 1) {
-      peoplePage.checkPeople( peopleResult:_*)
-    } else {
-      testlog.info(s"Not testing the people page with results, number of matchs played is ${ids.size}")
+    maximize
+
+    peoplePage.withClueAndScreenShot(screenshotDir, "ShowPeoplePage", "Checking people") {
+      if (ids.size == 1) {
+        peoplePage.checkPeople( peopleResult:_*)
+      } else {
+        testlog.info(s"Not testing the people page with results, number of matchs played is ${ids.size}")
+      }
     }
-
   }
 
 }

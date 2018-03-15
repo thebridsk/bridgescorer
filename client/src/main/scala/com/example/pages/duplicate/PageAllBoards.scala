@@ -99,7 +99,7 @@ object PageAllBoardsInternal {
                 AppButton( "Game", "Scoreboard", props.routerCtl.setOnClick(props.page.toScoreboardView()) )
               ),
               score.sortedBoards.map { b =>
-                ViewBoard( props.routerCtl, props.page.toBoardView(b.id), score, b.id )
+                ViewBoard( props.routerCtl, props.page.toBoardView(b.id), score, b.id, PageScoreboard.useIMPs )
               }.toTagMod,
               <.div(
                 AppButton( "Game2", "Scoreboard", props.routerCtl.setOnClick(props.page.toScoreboardView()) )

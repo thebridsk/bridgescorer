@@ -2,7 +2,7 @@ package com.example.manualtest
 
 import utils.main.Main
 import com.example.data.Id
-import com.example.data.test.TestMatchDuplicate
+import com.example.data.sample.TestMatchDuplicate
 import com.example.data.MatchDuplicate
 import com.example.data.bridge.MatchDuplicateScore
 import com.example.data.bridge.BoardScore
