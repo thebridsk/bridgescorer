@@ -23,7 +23,8 @@ object ComboboxOrInput {
             msgOpen: String = null,
             msgEmptyList: String = null,
             msgEmptyFilter: String = null,
-            busy: Boolean = false
+            busy: Boolean = false,
+            id: String = null,
            ): TagMod = {
 
     def comboboxCB( data: js.Any ): Unit = callback(data.toString()).runNow()
@@ -57,14 +58,15 @@ object ComboboxOrInput {
                Some(comboboxCB _),
                jv(data),
                v(filter),
-               v(tabIndex),
+               if (tabIndex== -1) None else v(tabIndex),
                v(name),
                v(caseSensitive),
                v(msgOpen),
                v(msgEmptyList),
                v(msgEmptyFilter),
                v(busy),
-               v(defaultvalue))
+               v(defaultvalue),
+               v(id))
     }
     else {
       <.input.text(

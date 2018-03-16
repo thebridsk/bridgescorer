@@ -220,7 +220,7 @@ object HomePage {
                       "FastclickTest", "Fast Click Test",
                       rootStyles.playButton,
                       ^.disabled:=isWorking,
-                      state.fastclickTest ?= baseStyles.buttonSelected,
+                      BaseStyles.highlight(selected = state.fastclickTest),
                       ^.onClick --> toggleFastclickTest()
                     )
                   }
@@ -229,7 +229,7 @@ object HomePage {
                   AppButton(
                     "ToggleFastclick", "Fast Click",
                     rootStyles.playButton,
-                    isFastclickOn ?= baseStyles.buttonSelected,
+                    BaseStyles.highlight( selected = isFastclickOn ),
                     ^.disabled:=isWorking,
                     ^.onClick --> toggleFastclick()
                   )
@@ -261,7 +261,8 @@ object HomePage {
                              rootStyles.playButton,
                              ^.disabled:=true,   // isWorking,
                              ^.onClick --> toggleDebug(),
-                             debugging ?= baseStyles.buttonSelected)
+                             BaseStyles.highlight(selected = debugging )
+                  )
                 ),
                 <.td( ^.width:="25%",
                   AppButton( "TestPage", "Test Page",

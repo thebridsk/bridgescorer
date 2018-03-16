@@ -2,7 +2,17 @@ package com.example.pages
 
 import japgolly.scalajs.react.vdom.html_<^._
 
+object BaseStylesImplicits {
+
+  implicit class BooleanWrapper( val b: Boolean ) extends AnyVal {
+    def toOption[T]( t: =>T ) = if (b) Some(t) else None
+    def toList[T]( t: =>T ) = toOption(t).toList
+  }
+
+}
+
 object BaseStyles {
+  import BaseStylesImplicits._
 
   val baseStyles = new BaseStyles
   val rootStyles = new RootStyles
@@ -10,6 +20,30 @@ object BaseStyles {
 
   def cls( clsname: String ) = ^.className:=clsname
 
+  /**
+   * Returns a TagMod with the selected classnames in the classname attribute.  If none are selected, then
+   * normal classname is returned.
+   * @param selected
+   * @param requiredName
+   * @param required
+   * @param requiredNotNext
+   */
+  def highlight(
+      selected: Boolean = false,
+      requiredName: Boolean = false,
+      required: Boolean = false,
+      requiredNotNext: Boolean = false
+  ) = {
+    val styles =
+      selected.toList(baseStyles.buttonSelected):::
+      requiredName.toList(baseStyles.requiredName):::
+      required.toList(baseStyles.required):::
+      requiredNotNext.toList(baseStyles.requiredNotNext):::
+      Nil
+
+    if (styles.isEmpty) baseStyles.normal
+    else styles.toTagMod
+  }
 }
 
 class BaseStyles {
@@ -30,6 +64,8 @@ class BaseStyles {
 
   val checkbox = cls("baseCheckbox")
   val radioButton = cls("baseRadioButton")
+
+  val normal = cls("baseNormal")
 
   val required = cls("baseRequired")
 

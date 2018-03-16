@@ -23,6 +23,7 @@ import com.example.rest2.RestClientDuplicateSummary
 import com.example.bridge.store.DuplicateSummaryStore
 import com.example.data.duplicate.suggestion.PairsData
 import com.example.react.Utils._
+import com.example.pages.BaseStyles
 
 /**
  * Shows a summary page of all duplicate matches from the database.
@@ -118,22 +119,22 @@ object PagePairsInternal {
             baseStyles.divFooterLeft,
             AppButton( "ShowPeopleResults",
                        "Show People Results",
-                       state.showPeopleTable ?= baseStyles.buttonSelected,
+                       BaseStyles.highlight(selected = state.showPeopleTable ),
                        ^.onClick-->toggleShowPeopleTable()
                      ),
             AppButton( "ShowPairsResults",
                        "Show Pairs Results",
-                       state.showPairs ?= baseStyles.buttonSelected,
+                       BaseStyles.highlight(selected = state.showPairs ),
                        ^.onClick-->toggleShowPairs()
                      ),
             AppButton( "ShowPeopleDetails",
                        "Show People Details",
-                       state.showPeopleTableDetail ?= baseStyles.buttonSelected,
+                       BaseStyles.highlight(selected = state.showPeopleTableDetail ),
                        ^.onClick-->toggleShowPeopleTableDetail()
                      ),
             AppButton( "ShowPairsDetails",
                        "Show Pairs Details",
-                       state.showPairsDetail ?= baseStyles.buttonSelected,
+                       BaseStyles.highlight(selected = state.showPairsDetail ),
                        ^.onClick-->toggleShowPairsDetail()
                      )
           )

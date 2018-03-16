@@ -27,6 +27,7 @@ import com.example.pages.rubber.RubberRouter.RubberMatchNamesView
 import com.example.react.AppButton
 import com.example.react.Utils._
 import com.example.pages.rubber.RubberRouter.ListView
+import com.example.pages.BaseStyles
 
 object PageRubberNames {
   import PageRubberNamesInternal._
@@ -109,8 +110,10 @@ object PageRubberNamesInternal {
           AppButton("Player"+position.pos+"FirstDealer",
                     "Dealer",
                     ^.onClick --> setFirstDealer(position),
-                    state.isDealer(position) ?= baseStyles.buttonSelected,
-                    state.dealer.isEmpty ?= baseStyles.required,
+                    BaseStyles.highlight(
+                        selected = state.isDealer(position),
+                        required = state.dealer.isEmpty
+                    ),
                     ^.tabIndex:=tabindex
                   )
       import scala.scalajs.js.JSConverters._
@@ -123,15 +126,16 @@ object PageRubberNamesInternal {
         <.table(
           <.tbody(
             <.tr(
-              <.td( <.span( !playerValid(name) ?= baseStyles.required, playerPos)),
+              <.td( <.span( BaseStyles.highlight(required = !playerValid(name)), playerPos)),
               <.td( getButton(playerPosition,name,tabDealer)),
               <.td( scorekeeper ?= "Scorekeeper" )
             ),
             <.tr(
-              <.td( !playerValid(name) ?= baseStyles.requiredName,
+              <.td(
                   ^.colSpan := 3,
-                    ComboboxOrInput( cb, noNull(name), names, "startsWith", tabInput, playerPos,
-                                     msgEmptyList="No suggested names", msgEmptyFilter="No names matched", busy=busy)
+                  ComboboxOrInput( cb, noNull(name), names, "startsWith", tabInput, playerPos,
+                                   msgEmptyList="No suggested names", msgEmptyFilter="No names matched", busy=busy),
+                  !playerValid(name) ?= baseStyles.requiredName
               )
             )
           )

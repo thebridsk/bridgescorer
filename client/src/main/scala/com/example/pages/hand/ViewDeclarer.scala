@@ -145,9 +145,11 @@ object ViewDeclarerInternal {
                   ^.`type` := "button",
                   ^.width := bwidth,
                   ^.onClick --> props.callback(pos),
-                  isSelected(pos) ?= handStyles.buttonSelected,
-                  missingRequired ?= handStyles.required,
-                  missingNotNext ?= handStyles.requiredNotNext,
+                  HandStyles.highlight(
+                      selected = isSelected(pos),
+                      required = missingRequired,
+                      requiredNotNext = missingNotNext
+                  ),
                   ^.id:="Dec"+pos.pos,
                   <.span(
                     ^.id:=text,

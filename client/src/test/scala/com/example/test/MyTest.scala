@@ -56,7 +56,7 @@ class MyTest extends FlatSpec with MustMatchers {
     }
 
     val component = ReactTestUtils renderIntoDocument HomePage(pagecallback)
-    val y = component.getDOMNode
+    val y = component.getDOMNode.asElement
     log.info("TestJQuery: ReactDOM.findDOMNode(component) is "+y)
     val jq = jQuery
     log.info("TestJQuery: jquery is "+jQuery)
@@ -75,7 +75,7 @@ class MyTest extends FlatSpec with MustMatchers {
     }
 
     ReactTestUtils.withRenderedIntoDocument(HomePage( view.pagecallback ) ) { m =>
-      val e = m.getDOMNode
+      val e = m.getDOMNode.asElement
 
       val jv = new ReactForJQuery(e)
 
@@ -102,7 +102,7 @@ class MyTest extends FlatSpec with MustMatchers {
     }
 
     ReactTestUtils.withRenderedIntoDocument( ViewVulnerability( view.nsVul, view.ewVul, Some(view.setNS), Some(view.setEW) ) ) { m =>
-      val jv = new ReactForJQuery(m.getDOMNode)
+      val jv = new ReactForJQuery(m.getDOMNode.asElement)
 
       jv.show() // view.jqueryComponent.context)
 

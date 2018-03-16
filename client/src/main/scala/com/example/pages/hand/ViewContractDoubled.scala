@@ -56,9 +56,11 @@ object ViewContractDoubled {
                                     <.button( ^.`type` := "button",
                                               ^.id:="Doubled"+contractDoubled.doubled,
                                               ^.onClick --> props.callback(contractDoubled),
-                                              isSelected(contractDoubled) ?= handStyles.buttonSelected,
-                                              missingRequired ?= handStyles.required,
-                                              missingNotNext ?= handStyles.requiredNotNext,
+                                              HandStyles.highlight(
+                                                  selected = isSelected(contractDoubled),
+                                                  required = missingRequired,
+                                                  requiredNotNext = missingNotNext
+                                              ),
                                               text
                                             )
                                 <.div( handStyles.viewContractDoubled, !props.visible ?= handStyles.notVisible,

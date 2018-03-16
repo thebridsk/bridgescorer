@@ -61,9 +61,11 @@ object ViewContractTricks {
                                 <.button( i==0?=handStyles.contractTricksButton0,
                                           ^.`type` := "button",
                                           ^.onClick --> props.callback(i),
-                                          isSelected(i) ?= baseStyles.buttonSelected,
-                                          missingRequired ?= baseStyles.required,
-                                          missingNotNext ?= baseStyles.requiredNotNext,
+                                          HandStyles.highlight(
+                                              selected = isSelected(i),
+                                              required = missingRequired,
+                                              requiredNotNext = missingNotNext
+                                          ),
                                           ^.id:="CT"+text,
                                           text
                                         )

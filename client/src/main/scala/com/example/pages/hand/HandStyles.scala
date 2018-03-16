@@ -2,13 +2,37 @@ package com.example.pages.hand
 
 import japgolly.scalajs.react.vdom.html_<^._
 import com.example.pages.BaseStyles
+import com.example.pages.BaseStylesImplicits
 
 object HandStyles {
+  import BaseStylesImplicits._
 
   def baseStyles = BaseStyles.baseStyles
   def rootStyles = BaseStyles.rootStyles
 
   val handStyles = new HandStyles
+
+  /**
+   * Returns a TagMod with the selected classnames in the classname attribute.  If none are selected, then
+   * normal classname is returned.
+   * @param selected
+   * @param required
+   * @param requiredNotNext
+   */
+  def highlight(
+      selected: Boolean = false,
+      required: Boolean = false,
+      requiredNotNext: Boolean = false
+  ) = {
+    val styles =
+      selected.toList(handStyles.buttonSelected):::
+      required.toList(handStyles.required):::
+      requiredNotNext.toList(handStyles.requiredNotNext):::
+      Nil
+
+    if (styles.isEmpty) baseStyles.normal
+    else styles.toTagMod
+  }
 
 }
 

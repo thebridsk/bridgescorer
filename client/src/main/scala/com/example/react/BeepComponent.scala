@@ -12,6 +12,7 @@ import com.example.react.Utils._
 import com.example.react.AppButton
 import utils.logging.Logger
 import com.example.pages.BaseStyles.baseStyles
+import com.example.pages.BaseStyles
 
 /**
  * A skeleton component.
@@ -98,7 +99,7 @@ object BeepComponentInternal {
     def render( props: Props, state: State ) = {
       <.div(
         (props.alwaysShow()||state.displayButtons) ?= <.span(
-          AppButton("enableBeep","Enable Beeps", ^.onClick --> enablePlay, isPlayEnabled?=baseStyles.buttonSelected),
+          AppButton("enableBeep","Enable Beeps", ^.onClick --> enablePlay, BaseStyles.highlight(selected = isPlayEnabled ) ),
           AppButton("disableBeep","Disable Beeps", ^.onClick --> hideButtons)
         )
       )

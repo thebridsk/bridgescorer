@@ -23,6 +23,7 @@ import com.example.react.AppButton
 import com.example.react.CheckBox
 import com.example.react.RadioButton
 import com.example.react.Utils._
+import com.example.pages.BaseStyles
 
 object ViewPlayersVeryFirstRound {
   import PagePlayers._
@@ -59,7 +60,7 @@ object ViewPlayersVeryFirstRound {
                   "Dealer",
                   baseStyles.nameButton,
                   ^.onClick --> setFirstDealer(position),
-                  state.isDealer(position) ?= baseStyles.buttonSelected,
+                  BaseStyles.highlight( selected=state.isDealer(position) ),
                   ^.tabIndex:=tabindex
                  )
       import scala.scalajs.js.JSConverters._
@@ -69,21 +70,13 @@ object ViewPlayersVeryFirstRound {
 
         //              "South", South, state.south, false, setSouth, 2, 6
       def putName( playerPos: String, playerPosition: PlayerPosition, name: String, scorekeeper: Boolean, cb: String=>Callback, tabInput: Int, tabDealer: Int ) = {
-        <.table(
-          <.tbody(
-            <.tr(
-//              <.td( tableStyles.cellWidth30, <.span( !playerValid(name) ?= appStyles.required, playerPos)),
-              <.td( getButton(playerPosition,name,tabDealer)),
-              <.td(),
-              <.td( scorekeeper ?= "Scorekeeper" )
-            ),
-            <.tr(
-              <.td( !playerValid(name) ?= baseStyles.requiredName,
-                ^.colSpan := 3,
-                ComboboxOrInput( cb, noNull(name), names, "startsWith", tabInput, playerPos,
-                                 msgEmptyList="No suggested names", msgEmptyFilter="No names matched")
-              )
-            )
+        <.div(
+          getButton(playerPosition,name,tabDealer),
+          <.div(
+            ComboboxOrInput( cb, noNull(name), names, "startsWith", tabInput, playerPos,
+                             msgEmptyList="No suggested names", msgEmptyFilter="No names matched",
+                             id=s"Combo_${playerPos}" ),
+            BaseStyles.highlight( requiredName = !playerValid(name) )
           )
         )
       }
@@ -102,7 +95,7 @@ object ViewPlayersVeryFirstRound {
               !state.chicago5 ?= baseStyles.notVisible,
               <.td( ^.colSpan := 2, tableStyles.tableCellWidth2Of7),
               <.td( ^.colSpan := 3, tableStyles.tableCellWidth3Of7),
-              <.td( ^.colSpan := 2, tableStyles.tableCellWidth2Of7, !isExtraValid() ?= baseStyles.required,
+              <.td( ^.colSpan := 2, tableStyles.tableCellWidth2Of7,
                 "Sitting out",
                 <.br,
                 ComboboxOrInput( setExtra, noNull(state.extra.getOrElse("")), names, "startsWith", 9, "Extra",
@@ -118,7 +111,8 @@ object ViewPlayersVeryFirstRound {
                   ).toTagMod
                 } else {
                   EmptyVdom
-                }
+                },
+                BaseStyles.highlight( required = !isExtraValid() )
               )
             ),
             <.tr(
@@ -142,7 +136,7 @@ object ViewPlayersVeryFirstRound {
           baseStyles.divFooter,
           <.div(
             baseStyles.divFooterLeft,
-            AppButton( "Ok", "OK", ^.disabled := !valid, valid ?= baseStyles.requiredNotNext, ^.onClick-->ok() ),
+            AppButton( "Ok", "OK", ^.disabled := !valid, BaseStyles.highlight( requiredNotNext=valid ), ^.onClick-->ok() ),
             AppButton(
               "ToggleFive",
               if (state.chicago5) "Four" else "Five",

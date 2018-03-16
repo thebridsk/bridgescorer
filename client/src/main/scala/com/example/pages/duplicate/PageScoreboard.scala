@@ -32,6 +32,7 @@ import com.example.pages.duplicate.DuplicateRouter.CompleteScoreboardView
 import com.example.pages.duplicate.DuplicateRouter.TableRoundScoreboardView
 import com.example.react.AppButton
 import com.example.react.PopupOkCancel
+import com.example.pages.BaseStyles
 
 /**
  * Shows the team x board table and has a totals column that shows the number of points the team has.
@@ -129,11 +130,11 @@ object PageScoreboardInternal {
                       " ",
                       AppButton( "Boardset", "BoardSet", props.routerCtl.setOnClick(DuplicateBoardSetView(props.game.dupid)) ),
                       " ",
-                      AppButton( "IMP", "IMP", ^.onClick --> toggleIMPs, useIMPs?=baseStyles.buttonSelected ),
+                      AppButton( "IMP", "IMP", ^.onClick --> toggleIMPs, BaseStyles.highlight(selected = useIMPs) ),
                       if (score.alldone) {
                         TagMod(
                           " ",
-                          AppButton( "Details", "Details", ^.onClick --> toggleShowDetails, state.showdetails?=baseStyles.buttonSelected  )
+                          AppButton( "Details", "Details", ^.onClick --> toggleShowDetails, BaseStyles.highlight(selected = state.showdetails )  )
                         )
                       } else {
                         TagMod()
@@ -162,7 +163,7 @@ object PageScoreboardInternal {
                       " ",
                       AppButton( "Boardset", "BoardSet", props.routerCtl.setOnClick(DuplicateBoardSetView(props.game.dupid)) ),
                       " ",
-                      AppButton( "IMP", "IMP", ^.onClick --> toggleIMPs, useIMPs?=baseStyles.buttonSelected ),
+                      AppButton( "IMP", "IMP", ^.onClick --> toggleIMPs, BaseStyles.highlight(selected = useIMPs) ),
                     ),
                     <.div(
                       baseStyles.divFooterRight,
@@ -192,7 +193,7 @@ object PageScoreboardInternal {
                                      allplayedInRound ?= baseStyles.requiredNotNext,
                                      props.routerCtl.setOnClick(CompleteScoreboardView(props.game.dupid)) ),
                           " ",
-                          AppButton( "IMP", "IMP", ^.onClick --> toggleIMPs, useIMPs?=baseStyles.buttonSelected ),
+                          AppButton( "IMP", "IMP", ^.onClick --> toggleIMPs, BaseStyles.highlight(selected = useIMPs) ),
                         ),
                         <.div(
                           baseStyles.divFooterRight,

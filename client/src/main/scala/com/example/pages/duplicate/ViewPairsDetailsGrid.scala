@@ -31,6 +31,7 @@ import com.example.data.duplicate.suggestion.ColorByPointsPct
 import org.scalajs.dom.svg
 import com.example.react.PieChart
 import com.example.react.PieChartOrSquareForZero
+import com.example.pages.BaseStyles
 
 /**
  * Shows a pairs summary page.
@@ -78,7 +79,7 @@ object ViewPairsDetailsGridInternal {
                             AppButton( id,
                                        text,
                                        ^.onClick-->backend.setDisplayType(displayType),
-                                       displayType==state.displayType ?= baseStyles.buttonSelected
+                                       BaseStyles.highlight(selected = displayType==state.displayType)
                                        )
 
                           }

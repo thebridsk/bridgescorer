@@ -31,6 +31,7 @@ import scala.scalajs.js.Date
 import com.example.react.reactwidgets.globalize.Moment
 import com.example.react.reactwidgets.globalize.ReactWidgetsMoment
 import com.example.react.CheckBox
+import com.example.pages.BaseStyles
 
 /**
  * A skeleton component.
@@ -235,12 +236,14 @@ object PageDuplicateResultEditInternal {
 
     def render( props: Props, state: State ) = {
 
-      def getWinnerSet( iws: Int, ws: List[DSE] ) = {
+      def getWinnerSet( iws: Int, ws: List[DSE], tabstart: Int ) = {
         <.table(
           Header(props),
           <.tbody(
-            ws.map{ dse =>
-              TeamRow.withKey(dse.team.id)((iws,dse.team.id, dse.team.player1, dse.team.player2, dse.result, dse.isValid, this, props, state))
+            ws.zipWithIndex.map{ entry =>
+              val (dse,i) = entry
+              val t = tabstart + i*3
+              TeamRow.withKey(dse.team.id)((iws,dse.team.id, dse.team.player1, dse.team.player2, dse.result, dse.isValid, this, props, state,t))
             }.toTagMod,
             TotalRow((ws,this,props,state))
           )
@@ -282,7 +285,8 @@ object PageDuplicateResultEditInternal {
                   ),
                   state.teams.zipWithIndex.map{ e =>
                     val (ws,i) = e
-                    getWinnerSet(i,ws)
+                    val t = i*ws.length*3
+                    getWinnerSet(i,ws,t)
                   }.toTagMod,
                   !state.isValid() ?= <.p("Data not valid"),
                   <.p( "Created: ", DateUtils.formatDate(dre.created), ", updated ", DateUtils.formatDate(dre.updated) )
@@ -353,28 +357,33 @@ object PageDuplicateResultEditInternal {
 
   private def noNull( s: String ) = if (s == null) ""; else s
 
-  val TeamRow = ScalaComponent.builder[(Int,Id.Team,String,String,String,Boolean,Backend,Props,State)]("PageDuplicateResultEdit.TeamRow")
+  val TeamRow = ScalaComponent.builder[(Int,Id.Team,String,String,String,Boolean,Backend,Props,State,Int)]("PageDuplicateResultEdit.TeamRow")
                       .render_P( args => {
-                        val (iws,id,player1, player2, points, valid, backend, props, state) = args
+                        val (iws,id,player1, player2, points, valid, backend, props, state, tabstart) = args
                         val busy = state.gettingNames
                         val names = state.getSuggestions
                         <.tr(
-                          !valid ?= baseStyles.required,
                           <.td( Id.teamIdToTeamNumber(id) ),
                           <.td(
-                            ComboboxOrInput( backend.setPlayer(iws, id, 1), noNull(player1), names, "startsWith", -1, s"P${iws}_${id}_1",
-                                             msgEmptyList="No suggested names", msgEmptyFilter="No names matched")
+                            <.div(
+                              ComboboxOrInput( backend.setPlayer(iws, id, 1), noNull(player1), names, "startsWith", -1, s"P${iws}T${id}P1",
+                                               msgEmptyList="No suggested names", msgEmptyFilter="No names matched", id=s"P${iws}T${id}P1")
+                            )
                           ),
                           <.td(
-                            ComboboxOrInput( backend.setPlayer(iws, id, 2), noNull(player2), names, "startsWith", -1, s"P${iws}_${id}_2",
-                                             msgEmptyList="No suggested names", msgEmptyFilter="No names matched")
+                            <.div(
+                              ComboboxOrInput( backend.setPlayer(iws, id, 2), noNull(player2), names, "startsWith", -1, s"P${iws}T${id}P2",
+                                               msgEmptyList="No suggested names", msgEmptyFilter="No names matched", id=s"P${iws}T${id}P2")
+                            )
                           ),
                           <.td(
                             <.input( ^.`type`:="number",
-                                     ^.name:=s"P${iws}_${id}_P",
+                                     ^.name:=s"P${iws}T${id}PP",
                                      ^.onChange ==> backend.setPoints(iws,id),
-                                     ^.value := points.toString())
-                          )
+                                     ^.value := points.toString()
+                            )
+                          ),
+                          BaseStyles.highlight(required = !valid)
                         )
                       }).build
 
@@ -388,14 +397,14 @@ object PageDuplicateResultEditInternal {
                             case _ : Exception => 0
                           }
                         }.foldLeft(0.0)((ac,v)=>ac+v)
-                        
+
                         <.tr(
                           <.td(),
                           <.td(),
                           <.td("Total"),
                           <.td(total)
                         )
-                        
+
                       }).build
 
 

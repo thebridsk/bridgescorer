@@ -87,6 +87,9 @@
   transform: scale(2);
 }
 
+.baseNormal {
+}
+
 .baseRequired {
   background-color: yellow !important;
 }

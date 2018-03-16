@@ -72,9 +72,11 @@ object ViewContractSuit {
                                     <.button( ^.`type` := "button",
                                               ^.onClick --> props.callback(contractSuit),
                                               ^.id:="CS"+contractSuit.suit,
-                                              isSelected(contractSuit) ?= baseStyles.buttonSelected,
-                                              missingRequired ?= baseStyles.required,
-                                              missingNotNext ?= baseStyles.requiredNotNext,
+                                              HandStyles.highlight(
+                                                  selected = isSelected(contractSuit),
+                                                  required = missingRequired,
+                                                  requiredNotNext = missingNotNext
+                                              ),
                                               getIcon(icon,color),
                                               text
                                             )

@@ -42,6 +42,7 @@ import com.example.react.Button
 import com.example.pages.hand.PageHand
 import com.example.pages.hand.Properties
 import com.example.pages.Pixels
+import com.example.pages.BaseStyles
 
 /**
  * Shows the team x board table and has a totals column that shows the number of points the team has.
@@ -392,9 +393,9 @@ object PageTableTeamsInternal {
                           } else {
                             <.div(
                               dupStyles.inputTableNames,
-                              !playerValid(playername) ?= baseStyles.required,
                               ComboboxOrInput( setPlayer, noNull(playername), names, "startsWith", tabindex, "I_"+nsew.pos,
-                                               msgEmptyList="No suggested names", msgEmptyFilter="No names matched", busy=busy )
+                                               msgEmptyList="No suggested names", msgEmptyFilter="No names matched", busy=busy ),
+                              BaseStyles.highlight(required = !playerValid(playername))
                             )
                           }
                         )
@@ -574,7 +575,7 @@ object PageTableTeamsInternal {
                           "OK",
                           ^.onClick --> okCB,
                           ^.disabled := !valid,
-                          valid ?= baseStyles.required
+                          BaseStyles.highlight(required = valid)
                         )
               ),
               <.div(
@@ -639,10 +640,10 @@ object PageTableTeamsInternal {
       <.div(
         <.h1( "Enter scorekeeper:" ),
         <.div(
-          state.scorekeeperName.isEmpty ?= baseStyles.required,
           dupStyles.inputTableNames,
           ComboboxOrInput( setScorekeeperName, np, names, "startsWith", 1, "Scorekeeper",
-                           msgEmptyList="No suggested names", msgEmptyFilter="No names matched", busy=busy )
+                           msgEmptyList="No suggested names", msgEmptyFilter="No names matched", busy=busy ),
+          BaseStyles.highlight(required = state.scorekeeperName.isEmpty)
         ),
         <.h1( "Enter scorekeeper's position:" ),
         (North::South::East::West::Nil).map( pos => {
@@ -654,8 +655,10 @@ object PageTableTeamsInternal {
                   "SK_"+pos.pos,
                   pos.name,
                   ^.onClick --> setScorekeeperPosition(pos),
-                  selected ?= baseStyles.buttonSelected,
-                  state.scorekeeperPosition.isEmpty ?= baseStyles.required
+                  BaseStyles.highlight(
+                      selected = selected,
+                      required = state.scorekeeperPosition.isEmpty
+                  )
                 )
         }).toTagMod
       )
@@ -677,8 +680,10 @@ object PageTableTeamsInternal {
                      p,
                      bwidth,
                      ^.onClick --> setScorekeeperName(p),
-                     selected ?= baseStyles.buttonSelected,
-                     state.scorekeeperName.isEmpty ?= baseStyles.required
+                     BaseStyles.highlight(
+                         selected = selected,
+                         required = state.scorekeeperName.isEmpty
+                     )
                    )
         }).toTagMod,
         <.h1( "Enter scorekeeper's position:" ),
@@ -695,8 +700,10 @@ object PageTableTeamsInternal {
                       "SK_"+pos.pos,
                       pos.name,
                       ^.onClick --> setScorekeeperPosition(pos),
-                      selected ?= baseStyles.buttonSelected,
-                      state.scorekeeperPosition.isEmpty ?= baseStyles.required
+                      BaseStyles.highlight(
+                          selected = selected,
+                          required = state.scorekeeperPosition.isEmpty
+                      )
                     )
             }).toTagMod
           case None =>

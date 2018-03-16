@@ -19,6 +19,7 @@ import com.example.data.util.Strings
 import com.example.react.AppButton
 import com.example.bridge.rotation.Table
 import com.example.react.Utils._
+import com.example.pages.BaseStyles
 
 /**
  * A skeleton component.
@@ -249,8 +250,10 @@ object ViewPlayersQuintetInternal {
                       AppButton.withKey(p)( "Player_"+p, p,
                                             baseStyles.appButton100,
                                             ^.onClick --> setPlayerSittingOut(p),
-                                            selected ?= baseStyles.buttonSelected,
-                                            state.sittingOut.isEmpty ?= baseStyles.required
+                                            BaseStyles.highlight(
+                                                selected=selected,
+                                                required=state.sittingOut.isEmpty
+                                            )
                                           )
                     )
                   )
@@ -363,7 +366,7 @@ object ViewPlayersQuintetInternal {
           baseStyles.divFooter,
           <.div(
             baseStyles.divFooterLeft,
-            AppButton("OK","OK", ^.disabled:= !valid, valid?=baseStyles.requiredNotNext, ^.onClick --> ok )
+            AppButton("OK","OK", ^.disabled:= !valid, BaseStyles.highlight(requiredNotNext=valid), ^.onClick --> ok )
           ),
           !state.isSimple() ?=
             <.div(

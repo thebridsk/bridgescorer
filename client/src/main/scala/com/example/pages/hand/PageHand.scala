@@ -358,7 +358,7 @@ object PageHandInternal {
             }
             <.p(
               AppButton( posname, p, ^.width := width, ^.onClick --> setScorekeeper(pos),
-                         scorekeeper==pos ?= handStyles.buttonSelected )
+                         HandStyles.highlight(selected = scorekeeper==pos ))
             )
           }).toTagMod
       )
@@ -459,8 +459,8 @@ object PageHandInternal {
             <.div(
               baseStyles.divFooterLeft,
               Button( handStyles.footerButton, "Ok", "OK", ^.disabled := !valid,
-                        valid ?= handStyles.required,
-                        ^.onClick --> ok())
+                      HandStyles.highlight(required = valid),
+                      ^.onClick --> ok())
             ),
             <.div(
               baseStyles.divFooterCenter,

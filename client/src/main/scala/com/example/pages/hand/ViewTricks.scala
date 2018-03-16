@@ -72,9 +72,11 @@ object ViewTricks {
                                 def getButton(tricks: Int) =
                                     <.button( ^.`type` := "button",
                                               ^.onClick --> props.callback(tricks),
-                                              isSelected(tricks) ?= handStyles.buttonSelected,
-                                              missingRequired ?= handStyles.required,
-                                              missingNotNext ?= handStyles.requiredNotNext,
+                                              HandStyles.highlight(
+                                                  selected = isSelected(tricks),
+                                                  required = missingRequired,
+                                                  requiredNotNext = missingNotNext
+                                              ),
                                               ^.id:="T"+tricks,
                                               tricks.toString
                                             )

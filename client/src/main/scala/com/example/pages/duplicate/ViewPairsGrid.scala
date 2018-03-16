@@ -29,6 +29,7 @@ import com.example.data.duplicate.suggestion.ColorByWonPts
 import com.example.data.duplicate.suggestion.ColorByWonPtsPct
 import com.example.data.duplicate.suggestion.ColorByPointsPct
 import com.example.data.duplicate.suggestion.ColorByPlayed
+import com.example.pages.BaseStyles
 
 /**
  * Shows a pairs summary page.
@@ -71,7 +72,7 @@ object ViewPairsGridInternal {
                             AppButton( id,
                                        text,
                                        ^.onClick-->backend.setColorBy(colorBy),
-                                       colorBy==state.colorBy ?= baseStyles.buttonSelected
+                                       BaseStyles.highlight(selected = colorBy==state.colorBy)
                                        )
 
                           }

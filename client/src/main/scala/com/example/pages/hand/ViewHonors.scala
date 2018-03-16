@@ -103,26 +103,22 @@ object ViewHonors {
                                     <.button( ^.`type` := "button",
                                               ^.id:="Honors"+honors,
                                               ^.onClick --> props.callback(honors),
-                                              isSelected(honors) ?= handStyles.buttonSelected,
-                                              hMissingRequired ?= handStyles.required,
-                                              hMissingNotNext ?= handStyles.requiredNotNext,
+                                              HandStyles.highlight(
+                                                  selected = isSelected(honors),
+                                                  required = hMissingRequired,
+                                                  requiredNotNext = hMissingNotNext
+                                              ),
                                               honors.toString()
                                             )
                                 def getPlayerButton(honors: PlayerPosition, name: String) =
-//                                    <.button( handStyles.contractTricksButton, ^.`type` := "button",
-//                                              ^.id:="HonPlay"+honors.pos,
-//                                              ^.onClick --> props.callbackPlayer(Some(honors)),
-//                                              isPlayerSelected(honors) ?= handStyles.buttonSelected,
-//                                              hpMissingRequired ?= handStyles.required,
-//                                              hpMissingNotNext ?= handStyles.requiredNotNext,
-//                                              honors.pos
-//                                            )
                                     RadioButton( "HonPlay"+honors.pos, name,
                                                  isPlayerSelected(honors),
                                                  props.callbackPlayer(Some(honors)),
-                                                 isPlayerSelected(honors) ?= handStyles.buttonSelected,
-                                                 hpMissingRequired ?= handStyles.required,
-                                                 hpMissingNotNext ?= handStyles.requiredNotNext
+                                                 HandStyles.highlight(
+                                                     selected = isPlayerSelected(honors),
+                                                     required = hpMissingRequired,
+                                                     requiredNotNext = hpMissingNotNext
+                                                 )
                                                )
 
                                 val notrump = props.currentSuit.isDefined && props.currentSuit.get == NoTrump
