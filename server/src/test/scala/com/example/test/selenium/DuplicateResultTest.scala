@@ -98,9 +98,9 @@ object DuplicateResultTest {
 
   val teams = team1::team2::team3::team4::Nil
 
-  val places = PlaceEntry( 1, 11.5, team1::Nil ) ::
-               PlaceEntry( 2, 8.5, team2::team4::Nil ) ::
-               PlaceEntry( 4, 7.5, team3::Nil ) ::
+  val places = PlaceEntry( 1, 23, team1::Nil ) ::
+               PlaceEntry( 2, 17, team2::team4::Nil ) ::
+               PlaceEntry( 4, 15, team3::Nil ) ::
                Nil
 
   val allnames = teams.flatMap(t => t.one::t.two::Nil).map( n => n.trim() )
@@ -234,7 +234,6 @@ class DuplicateResultTest extends FlatSpec with DuplicateUtils with MustMatchers
       val x = page.findPlayed.value
       if (x == null || x == "") {
         testlog.severe(s"Played is blank")
-        Thread.sleep(60000)
         fail( "Played is blank.  It should have the current date")
       }
 
@@ -257,6 +256,8 @@ class DuplicateResultTest extends FlatSpec with DuplicateUtils with MustMatchers
   it should "find a place table and validate it" in {
     import SessionDirector._
     val page = DuplicateResultPage.current
+
+    page.findElemById("scoreboardplayers")
 
     page.checkPlaceTable(places:_*)
   }

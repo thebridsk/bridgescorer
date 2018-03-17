@@ -7,26 +7,12 @@ import scala.annotation.meta._
 import com.example.data.bridge.MatchDuplicateScore
 import com.example.data.bridge.PerspectiveComplete
 
-@ApiModel(description = "The result for a team playing on a board")
-case class BoardTeamResults(
-    @(ApiModelProperty @field)(value="The id of the team", required=true)
-    team: Id.Team,
-    @(ApiModelProperty @field)(value="The number of points the team got playing the board", required=true)
-    points: Double )
-
-@ApiModel(description = "The results of a board")
-case class BoardResults(
-    @(ApiModelProperty @field)(value="The board", required=true)
-    board: Int,
-    @(ApiModelProperty @field)(value="The results per team.  A list of BoardTeamResults objects", required=true)
-    points: List[BoardTeamResults] )
-
 @ApiModel(value="MatchDuplicateResult",
           description = "A hand from a duplicate match."
                         +"  On input, the place field in DuplicateSummaryEntry is ignored."
                         +"  If boardresults is specified, then the result field in DuplicateSummaryEntry is also ignored on input."
          )
-case class MatchDuplicateResultV1 private(
+case class MatchDuplicateResultV2 private(
     @(ApiModelProperty @field)(value="The ID of the MatchDuplicate", required=true)
     id: Id.MatchDuplicateResult,
     @(ApiModelProperty @field)(value="The results of the match, a list of winnersets."
@@ -44,25 +30,28 @@ case class MatchDuplicateResultV1 private(
     @(ApiModelProperty @field)(value="when the duplicate match was created", required=true)
     created: Timestamp,
     @(ApiModelProperty @field)(value="when the duplicate match was last updated", required=true)
-    updated: Timestamp
-  ) extends VersionedInstance[MatchDuplicateResult,  MatchDuplicateResultV1,String] {
+    updated: Timestamp,
+    @(ApiModelProperty @field)(value="the scoring method used", allowableValues="MP, IMP",  required=true)
+    scoringmethod: String
 
-  def equalsIgnoreModifyTime( other: MatchDuplicateResultV1, throwit: Boolean = false ) = id==other.id &&
+  ) extends VersionedInstance[MatchDuplicateResult,  MatchDuplicateResultV2,String] {
+
+  def equalsIgnoreModifyTime( other: MatchDuplicateResultV2, throwit: Boolean = false ) = id==other.id &&
                                                equalsInResults(other,throwit)
 
-  def equalsInResults( other: MatchDuplicateResultV1, throwit: Boolean = false ) = {
+  def equalsInResults( other: MatchDuplicateResultV2, throwit: Boolean = false ) = {
     if (results.length == other.results.length) {
       results.zip(other.results).map { e =>
         val(left,right) = e
         left.find { t1 =>
           // this function must return true if t1 is NOT in other.team
           val rc = !right.contains(t1)
-          if (rc&&throwit) throw new Exception("MatchDuplicateResultV1 other did not have result equal to: "+t1)
+          if (rc&&throwit) throw new Exception("MatchDuplicateResultV2 other did not have result equal to: "+t1)
           rc
         }.isEmpty
       }.foldLeft(true)((ac,x)=> ac&&x)
     } else {
-      if (throwit) throw new Exception("MatchDuplicateResultV1 results don't winner sets: "+results+" "+other.results)
+      if (throwit) throw new Exception("MatchDuplicateResultV2 results don't winner sets: "+results+" "+other.results)
       false
     }
   }
@@ -178,22 +167,15 @@ case class MatchDuplicateResultV1 private(
     }
   }
 
-  def convertToCurrentVersion() = {
-    val r = results.map { list =>
-      list.map { dse =>
-        dse.copy( result = dse.result*2 )
-      }
-    }
-    val br = boardresults.map { list =>
-      list.map { b =>
-        b.copy( points = b.points.map( t => t.copy( points = t.points*2) ) )
-      }
-    }
-    MatchDuplicateResultV2(id,r,br,comment,notfinished,played,created,updated,MatchDuplicateResultV2.MatchPoints)
-  }
+  def convertToCurrentVersion() =
+    this
+
 }
 
-object MatchDuplicateResultV1 {
+object MatchDuplicateResultV2 {
+
+  val MatchPoints = "MP"
+  val InternationalMatchPoints = "IMP"
 
   def apply(
     id: Id.MatchDuplicateResult,
@@ -201,11 +183,12 @@ object MatchDuplicateResultV1 {
     boardresults: Option[List[BoardResults]],
     comment: Option[String],
     notfinished: Boolean,
+    scoringmethod: String,
     played: Timestamp,
     created: Timestamp,
     updated: Timestamp
   ) = {
-      new MatchDuplicateResultV1(id,results,boardresults,comment,Some(notfinished),played,created,updated).fixup()
+      new MatchDuplicateResultV2(id,results,boardresults,comment,Some(notfinished),played,created,updated,scoringmethod).fixup()
   }
 
   def apply(
@@ -214,26 +197,28 @@ object MatchDuplicateResultV1 {
     boardresults: List[BoardResults],
     comment: Option[String],
     notfinished: Boolean,
+    scoringmethod: String,
     played: Timestamp,
     created: Timestamp,
     updated: Timestamp
   ) = {
-      new MatchDuplicateResultV1(id,results,Option(boardresults),comment,Some(notfinished),played,created,updated).fixup()
+      new MatchDuplicateResultV2(id,results,Option(boardresults),comment,Some(notfinished),played,created,updated,scoringmethod).fixup()
   }
 
   def apply(
     id: Id.MatchDuplicateResult,
     results: List[List[DuplicateSummaryEntry]],
+    scoringmethod: String,
     played: Timestamp,
     created: Timestamp,
     updated: Timestamp
   ) = {
-      new MatchDuplicateResultV1(id,results,None,None,None,played,created,updated).fixup()
+      new MatchDuplicateResultV2(id,results,None,None,None,played,created,updated,scoringmethod).fixup()
   }
 
-  def create( id: Id.MatchDuplicateResult = "" ) = {
+  def create( id: Id.MatchDuplicateResult = "", scoringmethod: String = "MP" ) = {
     val time = SystemTime.currentTimeMillis()
-    new MatchDuplicateResultV1(id,List(),None,None,None,time,time,time).fixup()
+    new MatchDuplicateResultV2(id,List(),None,None,None,time,time,time, scoringmethod).fixup()
   }
 
   def createFrom( md: MatchDuplicate, mdr: Option[MatchDuplicateResult] = None ) = {
@@ -253,7 +238,7 @@ object MatchDuplicateResultV1 {
         val played = if (md.created == 0) time else md.created
         (played,md.created,md.updated)
     }
-    new MatchDuplicateResultV1("",r,None,None,None,pl,cr,up).fixup()
+    new MatchDuplicateResultV2("",r,None,None,None,pl,cr,up,"MP").fixup()
 
   }
 }
