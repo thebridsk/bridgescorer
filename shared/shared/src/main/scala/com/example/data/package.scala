@@ -5,8 +5,8 @@ package object data {
   type MatchChicago = MatchChicagoV3
   val MatchChicago = MatchChicagoV3
 
-  type MatchDuplicateResult = MatchDuplicateResultV1
-  val MatchDuplicateResult = MatchDuplicateResultV1
+  type MatchDuplicateResult = MatchDuplicateResultV2
+  val MatchDuplicateResult = MatchDuplicateResultV2
 
   type MatchDuplicate = MatchDuplicateV3
   val MatchDuplicate = MatchDuplicateV3

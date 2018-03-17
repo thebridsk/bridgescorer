@@ -1,0 +1,39 @@
+---
+id: "E1"
+results:
+- - team:
+      id: "T1"
+      player1: "Adam"
+      player2: "Alice"
+      created: 1521246819601
+      updated: 1521246829477
+    result: 24
+    place: 1
+  - team:
+      id: "T3"
+      player1: "Bob"
+      player2: "Brian"
+      created: 1521246819601
+      updated: 1521246872756
+    result: 18
+    place: 2
+  - team:
+      id: "T4"
+      player1: "Dave"
+      player2: "Diane"
+      created: 1521246819601
+      updated: 1521246880604
+    result: 18
+    place: 2
+  - team:
+      id: "T2"
+      player1: "April"
+      player2: "Beth"
+      created: 1521246819601
+      updated: 1521246846277
+    result: 12
+    place: 4
+played: 1521246819549
+created: 1521246819549
+updated: 1521246886820
+scoringmethod: "MP"

@@ -30,6 +30,7 @@ import play.api.libs.json._
 import com.example.yaml.YamlSupport._
 import com.example.data.Id
 import scala.concurrent.ExecutionContext
+import com.example.data.MatchDuplicateResultV1
 
 class BridgeServiceFileStoreConverters( yaml: Boolean ) {
 
@@ -43,7 +44,7 @@ class BridgeServiceFileStoreConverters( yaml: Boolean ) {
 
   implicit val matchDuplicateJson = VersionedInstanceJson[String,MatchDuplicate].add[MatchDuplicateV2].add[MatchDuplicateV1]
 
-  implicit val matchDuplicateResultJson = VersionedInstanceJson[String,MatchDuplicateResult]
+  implicit val matchDuplicateResultJson = VersionedInstanceJson[String,MatchDuplicateResult].add[MatchDuplicateResultV1]
 
   implicit val matchRubberJson = VersionedInstanceJson[String,MatchRubber]
 
