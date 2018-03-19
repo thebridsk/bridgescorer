@@ -278,13 +278,21 @@ object SchemaDefinition {
               Some("The team"),
               resolve = _.value.team
           ),
-          Field("result", FloatType,
+          Field("result", OptionType(FloatType),
               Some("The points the team scored"),
               resolve = _.value.result
           ),
-          Field("place", IntType,
+          Field("place", OptionType(IntType),
               Some("The place the team finished in"),
               resolve = _.value.place
+          ),
+          Field("resultIMP", OptionType(FloatType),
+              Some("The IMPs the team scored"),
+              resolve = _.value.resultImp
+          ),
+          Field("placeIMP", OptionType(IntType),
+              Some("The place the team finished in using IMPs"),
+              resolve = _.value.placeImp
           )
       )
   )

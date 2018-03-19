@@ -56,10 +56,10 @@ object DuplicateSummaryDetails {
 case class DuplicateSummaryEntry(
     @(ApiModelProperty @field)(value="The team", required=true)
     team: Team,
-    @(ApiModelProperty @field)(value="The points the team scored", required=true)
-    result: Double,
-    @(ApiModelProperty @field)(value="The place the team finished in", required=true)
-    place: Int,
+    @(ApiModelProperty @field)(value="The points the team scored", required=false)
+    result: Option[Double],
+    @(ApiModelProperty @field)(value="The place the team finished in", required=false)
+    place: Option[Int],
     @(ApiModelProperty @field)(value="Details about the team", required=false)
     details: Option[DuplicateSummaryDetails] = None,
     @(ApiModelProperty @field)(value="The IMPs the team scored", required=false)
@@ -69,10 +69,14 @@ case class DuplicateSummaryEntry(
     ) {
   def id = team.id
 
+  def getResultMp = result.getOrElse(0.0)
+  def getPlaceMp = place.getOrElse(1)
+
   def getResultImp = resultImp.getOrElse(0.0)
   def getPlaceImp = placeImp.getOrElse(1)
 
   def hasImp = resultImp.isDefined&&placeImp.isDefined
+  def hasMp = result.isDefined&&place.isDefined
 }
 
 @ApiModel(description = "The best match in the main store")
@@ -113,15 +117,18 @@ case class DuplicateSummary(
     @(ApiModelProperty @field)(value="when the duplicate hand was last updated", required=true)
     updated: Timestamp,
     @(ApiModelProperty @field)(value="the best match in the main store", required=false)
-    bestMatch: Option[BestMatch] = None
+    bestMatch: Option[BestMatch] = None,
+    @(ApiModelProperty @field)(value="the scoring method used, default is MP", allowableValues="MP, IMP",  required=false)
+    scoringmethod: Option[String] = None
     ) {
 
   def players() = teams.flatMap { t => Seq(t.team.player1, t.team.player2) }.toList
-  def playerPlaces() = teams.flatMap{ t => Seq( (t.team.player1->t.place), (t.team.player2->t.place) ) }.toMap
-  def playerScores() = teams.flatMap{ t => Seq( (t.team.player1->t.result), (t.team.player2->t.result) ) }.toMap
+  def playerPlaces() = teams.flatMap{ t => Seq( (t.team.player1->t.getPlaceMp), (t.team.player2->t.getPlaceMp) ) }.toMap
+  def playerScores() = teams.flatMap{ t => Seq( (t.team.player1->t.getResultMp), (t.team.player2->t.getResultMp) ) }.toMap
   def playerPlacesImp() = teams.flatMap{ t => Seq( (t.team.player1->t.getPlaceImp), (t.team.player2->t.getPlaceImp) ) }.toMap
   def playerScoresImp() = teams.flatMap{ t => Seq( (t.team.player1->t.getResultImp), (t.team.player2->t.getResultImp) ) }.toMap
 
+  def hasMpScores = teams.headOption.map( t => t.place.isDefined&&t.result.isDefined ).getOrElse(false)
   def hasImpScores = teams.headOption.map( t => t.placeImp.isDefined&&t.resultImp.isDefined ).getOrElse(false)
 
   def idAsDuplicateResultId = id.asInstanceOf[Id.MatchDuplicateResult]
@@ -165,6 +172,11 @@ case class DuplicateSummary(
       None
     }
   }
+
+  import MatchDuplicateV3._
+  def isMP = scoringmethod.map { sm => sm == MatchPoints }.getOrElse(true)
+  def isIMP = scoringmethod.map { sm => sm == InternationalMatchPoints }.getOrElse(false)
+
 }
 
 object DuplicateSummary {
@@ -173,19 +185,33 @@ object DuplicateSummary {
     val places = score.places.flatMap { p => p.teams.map { t => (t.id->p.place) }.toList }.toMap
     val placesImps = score.placesImps.flatMap { p => p.teams.map { t => (t.id->p.place) }.toList }.toMap
     val details = score.getDetails().map { d => d.team -> d }.toMap
-    val t = md.teams.map{ team => DuplicateSummaryEntry( team, score.teamScores( team.id ), places( team.id ), details.get(team.id), score.teamImps.get( team.id ), placesImps.get( team.id ) ) }.toList
+    val t = md.teams.map{ team => DuplicateSummaryEntry(
+                                     team,
+                                     Some(score.teamScores( team.id )),
+                                     Some(places( team.id )),
+                                     details.get(team.id),
+                                     score.teamImps.get( team.id ),
+                                     placesImps.get( team.id )
+                                   ) }.toList
     DuplicateSummary( md.id, score.alldone,
                       t,
                       md.boards.size, md.teams.size/2, false,
-                      md.created, md.updated )
+                      md.created, md.updated, None, md.scoringmethod )
   }
 
   def create( md: MatchDuplicateResult ): DuplicateSummary = {
     val mdr = md.fixPlaces()
     val boards = mdr.getBoards()
     val tables = mdr.getTables()
-    DuplicateSummary( mdr.id, !mdr.notfinished.getOrElse(false), mdr.results.flatten,
-                      boards, tables, true,
-                      mdr.played, mdr.played )
+    DuplicateSummary( mdr.id,
+                      !mdr.notfinished.getOrElse(false),
+                      mdr.results.flatten,
+                      boards,
+                      tables,
+                      true,
+                      mdr.played,
+                      mdr.played,
+                      None,
+                      Some(md.scoringmethod) )
   }
 }

@@ -21,7 +21,10 @@ case class MatchDuplicateV3 private(
     @(ApiModelProperty @field)(value="when the duplicate hand was created", required=true)
     created: Timestamp,
     @(ApiModelProperty @field)(value="when the duplicate hand was last updated", required=true)
-    updated: Timestamp ) extends VersionedInstance[MatchDuplicate,MatchDuplicateV3,String] {
+    updated: Timestamp,
+    @(ApiModelProperty @field)(value="the scoring method used, default is MP", allowableValues="MP, IMP",  required=false)
+    scoringmethod: Option[String] = None
+  ) extends VersionedInstance[MatchDuplicate,MatchDuplicateV3,String] {
 
   def equalsIgnoreModifyTime( other: MatchDuplicateV3, throwit: Boolean = false ) = equalsInId(other,throwit) &&
                                                equalsInTeams(other,throwit) &&
@@ -251,6 +254,10 @@ case class MatchDuplicateV3 private(
       case None => throw new IllegalArgumentException("Did not find any hands for table "+tableid+" in round "+round )
     }
 
+  import MatchDuplicateV3._
+  def isMP = scoringmethod.map { sm => sm == MatchPoints }.getOrElse(true)
+  def isIMP = scoringmethod.map { sm => sm == InternationalMatchPoints }.getOrElse(false)
+
   /**
    * Correct the vulnerability in the boards and hands of this object.
    * @param correctVulnerability the correct vulnerabilities on the boards
@@ -333,6 +340,9 @@ case class MatchDuplicateV3 private(
 //    copy( teams = useteams.sortWith(MatchDuplicateV3.sort), boards=filledB.values.filter( e => !e.hands.isEmpty ).toList.sortWith(MatchDuplicateV3.sort), boardset=bs.name, movement=mov.name, updated=SystemTime.currentTimeMillis() )
   }
 
+  @ApiModelProperty(hidden = true)
+  def getScoringMethod = scoringmethod.getOrElse(MatchDuplicateV3.MatchPoints)
+
   /**
    * Get all the table Ids in sort order.
    */
@@ -392,6 +402,9 @@ object MatchDuplicateV3 {
     val time = SystemTime.currentTimeMillis()
     new MatchDuplicateV3(id,List(),List(),"","",time,time)
   }
+
+  val MatchPoints = "MP"
+  val InternationalMatchPoints = "IMP"
 
   def apply(
     id: Id.MatchDuplicate,

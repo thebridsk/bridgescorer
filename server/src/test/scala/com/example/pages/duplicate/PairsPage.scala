@@ -40,17 +40,41 @@ object PairsPage {
 case class PeopleRow( name: String,
                       percentWon: String,
                       percentWonPoints: String,
-                      percentPoints: String,
-                      won: String,
-                      wonPoints: String,
+                      percentMP: String,
+                      wonMP: String,
+                      wonMPPoints: String,
                       WonImp: String,
                       WonImpPoints: String,
                       played: String,
+                      playedMP: String,
+                      playedIMP: String,
                       incomplete: String,
                       imps: String,
-                      points: String,
+                      MP: String,
                       total: String
                     )
+
+case class PeopleRowMP( name: String,
+                        percentWon: String,
+                        percentWonPoints: String,
+                        percentMP: String,
+                        wonMP: String,
+                        wonMPPoints: String,
+                        played: String,
+                        incomplete: String,
+                        MP: String,
+                        total: String
+                      )
+
+case class PeopleRowIMP( name: String,
+                         percentWon: String,
+                         percentWonPoints: String,
+                         WonImp: String,
+                         WonImpPoints: String,
+                         played: String,
+                         incomplete: String,
+                         imps: String
+                       )
 
 class PairsPage( implicit webDriver: WebDriver, pageCreated: SourcePosition ) extends Page[PairsPage] {
 
@@ -119,14 +143,62 @@ class PairsPage( implicit webDriver: WebDriver, pageCreated: SourcePosition ) ex
     this
   }
 
-  def getPlayerTable(implicit patienceConfig: PatienceConfig, pos: Position) = {
-    getElemsByXPath("""//table[@id = 'Players']/tbody/tr/td""").map(e=>e.text).grouped(13).map{ list =>
-      PeopleRow(list(0),list(1),list(2),list(3),list(4),list(5),list(6),list(7),list(8),list(9),list(10),list(11),list(12))
+  def getPlayerTableScoringStyle(implicit patienceConfig: PatienceConfig, pos: Position) = {
+    val button = getElemByXPath("""//div[contains(concat(' ', @class, ' '), ' dupViewPeopleTable ')]//button[contains(concat(' ', @class, ' '), ' baseButtonSelected ')]""")
+    button.id
+  }
+
+  def clickPlayerTableScoringStyle( scoringMethod: String)(implicit patienceConfig: PatienceConfig, pos: Position) = {
+    val button = getElemByXPath(s"""//div[contains(concat(' ', @class, ' '), ' dupViewPeopleTable ')]//button[@id='${scoringMethod}']""")
+    button.click
+    this
+  }
+
+  def getPlayerTablePlayed(implicit patienceConfig: PatienceConfig, pos: Position) = {
+    getPlayerTableScoringStyle mustBe Some("CalcPlayed")
+    getElemsByXPath("""//div[contains(concat(' ', @class, ' '), ' dupViewPeopleTable ')]/table/tbody/tr/td""").map(e=>e.text).grouped(15).map{ list =>
+      PeopleRow(list(0),list(1),list(2),list(3),list(4),list(5),list(6),list(7),list(8),list(9),list(10),list(11),list(12),list(13),list(14))
+    }.toList
+  }
+
+  def getPlayerTableMP(implicit patienceConfig: PatienceConfig, pos: Position) = {
+    getPlayerTableScoringStyle mustBe Some("CalcMP")
+    getElemsByXPath("""//div[contains(concat(' ', @class, ' '), ' dupViewPeopleTable ')]/table/tbody/tr/td""").map(e=>e.text).grouped(10).map{ list =>
+      PeopleRowMP(list(0),list(1),list(2),list(3),list(4),list(5),list(6),list(7),list(8),list(9))
+    }.toList
+  }
+
+  def getPlayerTableIMP(implicit patienceConfig: PatienceConfig, pos: Position) = {
+    getPlayerTableScoringStyle mustBe Some("CalcIMP")
+    getElemsByXPath("""//div[contains(concat(' ', @class, ' '), ' dupViewPeopleTable ')]/table/tbody/tr/td""").map(e=>e.text).grouped(8).map{ list =>
+      PeopleRowIMP(list(0),list(1),list(2),list(3),list(4),list(5),list(6),list(7))
     }.toList
   }
 
   def checkPeople( players: PeopleRow* )(implicit patienceConfig: PatienceConfig, pos: Position) = {
-    val res = getPlayerTable
+    val res = getPlayerTablePlayed
+    log.fine( "Found the following on the people page:" )
+    res.foreach( r => log.fine(s"""  ${r}"""))
+    players.foreach( p =>
+      withClue( s"""${pos.line} PairsPage: looking for ${p}""" ) {
+        res must contain (p)
+      }
+    )
+  }
+
+  def checkPeopleMP( players: PeopleRowMP* )(implicit patienceConfig: PatienceConfig, pos: Position) = {
+    val res = getPlayerTableMP
+    log.fine( "Found the following on the people page:" )
+    res.foreach( r => log.fine(s"""  ${r}"""))
+    players.foreach( p =>
+      withClue( s"""${pos.line} PairsPage: looking for ${p}""" ) {
+        res must contain (p)
+      }
+    )
+  }
+
+  def checkPeopleIMP( players: PeopleRowIMP* )(implicit patienceConfig: PatienceConfig, pos: Position) = {
+    val res = getPlayerTableIMP
     log.fine( "Found the following on the people page:" )
     res.foreach( r => log.fine(s"""  ${r}"""))
     players.foreach( p =>

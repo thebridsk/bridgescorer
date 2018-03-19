@@ -32,6 +32,7 @@ import com.example.react.reactwidgets.globalize.Moment
 import com.example.react.reactwidgets.globalize.ReactWidgetsMoment
 import com.example.react.CheckBox
 import com.example.pages.BaseStyles
+import com.example.data.MatchDuplicate
 
 /**
  * A skeleton component.
@@ -72,13 +73,19 @@ object PageDuplicateResultEditInternal {
       }
     }
 
-    def toDuplicateSummaryEntry() = {
-      DuplicateSummaryEntry( team, result.toDouble, 0 )
+    def toDuplicateSummaryEntry(useIMP: Boolean) = {
+      if (useIMP) {
+        DuplicateSummaryEntry( team, None, None, None, Some(result.toDouble), Some(0) )
+      } else {
+        DuplicateSummaryEntry( team, Some(result.toDouble), Some(0) )
+      }
     }
   }
 
-  def toDSE( dupS: DuplicateSummaryEntry ) = {
-    DSE(dupS.team, dupS.result.toString() )
+  def toDSE( dupS: DuplicateSummaryEntry, imp: Boolean ) = {
+    val v = if (imp) dupS.resultImp.getOrElse(0.0).toString()
+            else dupS.result.getOrElse(0.0).toString()
+    DSE(dupS.team, v )
   }
 
   def toTeams( teams: List[List[DSE]] ) = {
@@ -99,7 +106,8 @@ object PageDuplicateResultEditInternal {
                     played: SystemTime.Timestamp = SystemTime.currentTimeMillis(),
                     comment: Option[String] = None,
                     notfinished: Boolean = false,
-                    nameSuggestions: Option[List[String]] = None         // known names from server
+                    nameSuggestions: Option[List[String]] = None,         // known names from server
+                    useIMP: Boolean = false
                   ) {
     import scala.scalajs.js.JSConverters._
     def getSuggestions = nameSuggestions.getOrElse(List()).toJSArray
@@ -110,13 +118,14 @@ object PageDuplicateResultEditInternal {
     def getMDR(): MatchDuplicateResult = {
 
       val time = SystemTime.currentTimeMillis()
-      val t = teams.map(l => l.map( e => e.toDuplicateSummaryEntry() ))
+      val t = teams.map(l => l.map( e => e.toDuplicateSummaryEntry(useIMP) ))
       val c = comment match {
         case Some(c) if (c.length()>0) => comment
         case _ => None
       }
       val nf = if (notfinished) Some(true) else None
-      original.get.copy( results=t, boardresults=boardresults, comment=c, notfinished=nf, played=played, updated=time ).fixup()
+      val sm = if (useIMP) MatchDuplicate.InternationalMatchPoints else MatchDuplicate.MatchPoints
+      original.get.copy( results=t, boardresults=boardresults, comment=c, notfinished=nf, played=played, updated=time, scoringmethod=sm ).fixup()
     }
 
     def setPlayer( iwinnerset: Int, teamid: Id.Team, iplayer: Int )( name: String ) = {
@@ -165,12 +174,13 @@ object PageDuplicateResultEditInternal {
     }
 
     def updateOriginal( mdr: Option[MatchDuplicateResult] ) = {
-      val t = mdr.map( m => m.results.map( l => l.map( e => toDSE(e)) ) ).getOrElse(List())
+      val imp = mdr.map( m => m.isIMP ).getOrElse(false)
+      val t = mdr.map( m => m.results.map( l => l.map( e => toDSE(e,imp)) ) ).getOrElse(List())
       val b = mdr.map( m => m.boardresults ).getOrElse(None)
       val p = mdr.map( m => m.played ).filter( x => x!=0 ).getOrElse(SystemTime.doubleToTimestamp(0))
       val c = mdr.map( m => m.comment ).getOrElse(None)
       val f = mdr.map( m => m.notfinished ).getOrElse(Some(false)).getOrElse(false)
-      copy( original=mdr, teams=t, boardresults=b, comment=c, notfinished=f, played=p )
+      copy( original=mdr, teams=t, boardresults=b, comment=c, notfinished=f, played=p, useIMP=imp )
     }
 
     def isValid() = {
@@ -230,6 +240,8 @@ object PageDuplicateResultEditInternal {
 
     def toggleComplete = scope.modState( s=>s.copy( notfinished = !s.notfinished ))
 
+    def toggleIMP = scope.modState( s=>s.copy( useIMP = !s.useIMP ))
+
     def setComment( e: ReactEventFromInput ) =  e.inputText { comment =>
       scope.modState( s=>s.copy( comment = if (comment == null || comment == "") None else Some(comment) ))
     }
@@ -272,6 +284,7 @@ object PageDuplicateResultEditInternal {
                                    disabled = false
                                   ),
                     CheckBox("Complete","Match complete",finished,toggleComplete),
+                    CheckBox("IMP","Use IMP",state.useIMP,toggleIMP),
                     <.br,
                     <.label(
                       "Comment: ",

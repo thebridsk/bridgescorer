@@ -429,3 +429,31 @@ body [data-title]:hover:after {
   transform: rotate(-0.25turn);
   display: block;
 }
+
+.tableStats {
+  border-spacing: 0px;
+  font-size: large;
+  white-space: nowrap;
+  border: 1px solid black;
+}
+.tableStats button {
+  font-size: large;
+  font-weight: bold;
+}
+.tableStats tbody tr:nth-child(2n+1) {
+  background-color: #f2f2f2;
+}
+.tableStats td {
+  border: 1px solid black;
+  text-align: center;
+  padding: 2px 4px 2px 4px;
+}
+.tableStats th {
+  border: 1px solid black;
+  text-align: center;
+  padding: 2px 4px 2px 4px;
+}
+
+.tableStatsFirstTotalRow td {
+  border-top: 3px solid black;
+}

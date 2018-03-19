@@ -22,7 +22,11 @@ import com.example.pages.BaseStyles
 object AppButton {
   import AppButtonInternal._
 
-  case class Props( id: String, text: String, style: Option[TagMod], attrs: TagMod* )
+  case class Props( id: String, text: TagMod, style: Option[TagMod], attrs: TagMod* )
+
+  def apply( id: String, text: TagMod, attrs: TagMod* ) = component(Props(id,text,None,attrs:_*))
+
+  def withKeyTagMod( key: String )( id: String, text: TagMod, attrs: TagMod* ) = component.withKey(key)(Props(id,text,None,attrs:_*))
 
   def apply( id: String, text: String, attrs: TagMod* ) = component(Props(id,text,None,attrs:_*))
 

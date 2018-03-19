@@ -75,6 +75,7 @@ import com.example.backend.MatchDuplicateCacheStoreSupport
 import com.example.pages.bridge.HomePage
 import java.util.zip.ZipFile
 import scala.reflect.io.File
+import com.example.pages.duplicate.PeopleRowMP
 
 object DuplicateTestPages {
 
@@ -162,16 +163,15 @@ object DuplicateTestPages {
       )
 
   val peopleResult = List(
-        PeopleRow(team4.one,"100.00","100.00","55.56","1","1.00","1","1.00","1","0","14.0","20","36"),
-        PeopleRow(team4.two,"100.00","100.00","55.56","1","1.00","1","1.00","1","0","14.0","20","36"),
-        PeopleRow(team1.one,"0.00","0.00","50.00","0","0.00","0","0.00","1","0","-12.0","18","36"),
-        PeopleRow(team1.two,"0.00","0.00","50.00","0","0.00","0","0.00","1","0","-12.0","18","36"),
-        PeopleRow(team3.one,"0.00","0.00","50.00","0","0.00","0","0.00","1","0","-10.0","18","36"),
-        PeopleRow(team3.two,"0.00","0.00","50.00","0","0.00","0","0.00","1","0","-10.0","18","36"),
-        PeopleRow(team2.one,"0.00","0.00","44.44","0","0.00","0","0.00","1","0","8.0","16","36"),
-        PeopleRow(team2.two,"0.00","0.00","44.44","0","0.00","0","0.00","1","0","8.0","16","36")
+        PeopleRowMP(team4.one,"100.00%","100.00%","55.56%","1","1.00","1","0","20","36"),
+        PeopleRowMP(team4.two,"100.00%","100.00%","55.56%","1","1.00","1","0","20","36"),
+        PeopleRowMP(team1.one,"0.00%","0.00%","50.00%","0","0.00","1","0","18","36"),
+        PeopleRowMP(team1.two,"0.00%","0.00%","50.00%","0","0.00","1","0","18","36"),
+        PeopleRowMP(team3.one,"0.00%","0.00%","50.00%","0","0.00","1","0","18","36"),
+        PeopleRowMP(team3.two,"0.00%","0.00%","50.00%","0","0.00","1","0","18","36"),
+        PeopleRowMP(team2.one,"0.00%","0.00%","44.44%","0","0.00","1","0","16","36"),
+        PeopleRowMP(team2.two,"0.00%","0.00%","44.44%","0","0.00","1","0","16","36")
       )
-
 
   // this is here to validate the AllHandsInMatch.getScoreToRound call
   val resultAfterOneRoundCheckMark = List(
@@ -917,7 +917,7 @@ class DuplicateTestPages extends FlatSpec
       },
       CodeBlock {
         import SessionTable2._
-        val sb = ScoreboardPage.current.clickIMP.validate
+        val sb = ScoreboardPage.current.setScoreStyle(ScoreboardPage.ScoreStyleIMP).validate
         Thread.sleep(500L)
         validateRound(sb,2,6,team1,team4, true )
       }
@@ -945,7 +945,7 @@ class DuplicateTestPages extends FlatSpec
     val peoplePage = sb.clickPairs.validate.takeScreenshot(docsScreenshotDir, "Pairs").clickPeopleResults
 
     if (ids.size == 1) {
-      peoplePage.checkPeople( peopleResult:_*)
+      peoplePage.checkPeopleMP( peopleResult:_*)
     } else {
       testlog.info(s"Not testing the people page with results, number of matchs played is ${ids.size}")
     }

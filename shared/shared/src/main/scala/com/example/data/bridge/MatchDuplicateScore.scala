@@ -269,6 +269,10 @@ class MatchDuplicateScore private ( duplicate: MatchDuplicate, val perspective: 
       ac + ( v.team -> (c.add(v)) )
     }.toList.sortBy { e => e._1 }.map { e => e._2 }
   }
+
+  def isMP = duplicate.isMP
+  def isIMP = duplicate.isIMP
+
 }
 
 object MatchDuplicateScore {

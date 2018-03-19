@@ -110,6 +110,10 @@ class BaseStyles {
   val hover = cls("titleHover")
 
   val piechart = cls("piechart")
+
+  val tableStats = cls("tableStats")
+
+  val tableStatsFirstTotalRow = cls("tableStatsFirstTotalRow")
 }
 
 class RootStyles {

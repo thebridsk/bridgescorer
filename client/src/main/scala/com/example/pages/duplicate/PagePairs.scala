@@ -139,10 +139,10 @@ object PagePairsInternal {
                      )
           )
         ),
-        state.showPeopleTable ?= ViewPeopleTable( state.filter ),
-        state.showPairs ?= ViewPairs(state.filter ),
-        state.showPeopleTableDetail ?= ViewPeopleTableDetails( state.filter ),
-        state.showPairsDetail ?= ViewPairsDetails(state.filter ),
+        state.showPeopleTable ?= ViewPairsTable( state.filter, false ),
+        state.showPairs ?= ViewPairsTable(state.filter, true ),
+        state.showPeopleTableDetail ?= ViewPairsDetailsTable( state.filter, false ),
+        state.showPairsDetail ?= ViewPairsDetailsTable(state.filter, true ),
         <.div(
           baseStyles.divFooter,
           <.div(

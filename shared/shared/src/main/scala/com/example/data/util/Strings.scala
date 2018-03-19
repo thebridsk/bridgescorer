@@ -26,4 +26,6 @@ object Strings {
   val antiClockwiseCircleArrow = "\u21ba"
   val clockwiseCircleArrow = "\u21bb"
 
+  val upArrowHead = "\u2303"
+  val downArrowHead = "\u2304"
 }

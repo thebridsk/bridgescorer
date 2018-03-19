@@ -86,12 +86,12 @@ case class MatchDuplicateResultV2 private(
 
   @ApiModelProperty(hidden = true)
   def getTotalPoints(): Int = {
-    results.flatten.map{ r => r.result }.foldLeft(0.0)((ac,v)=>ac+v).toInt
+    results.flatten.map{ r => r.result.getOrElse(0.0) }.foldLeft(0.0)((ac,v)=>ac+v).toInt
   }
 
   def fixPlaces() = {
     val places = results.map { winnerset =>
-      val m = winnerset.groupBy(e => e.result).map { e =>
+      val m = winnerset.groupBy(e => e.result.getOrElse(0.0)).map { e =>
         val (points, teams) = e
         points->teams
       }
@@ -99,7 +99,25 @@ case class MatchDuplicateResultV2 private(
       var place = 1
       sorted.flatMap{ e=>
         val (points, ts) = e
-        val fixed = ts.map( e => e.copy(place=place))
+        val fixed = ts.map( e => e.copy(place=Some(place)))
+        place += ts.size
+        fixed
+      }
+    }
+    copy(results=places)
+  }
+
+  def fixPlacesImp() = {
+    val places = results.map { winnerset =>
+      val m = winnerset.groupBy(e => e.resultImp.getOrElse(0.0)).map { e =>
+        val (points, teams) = e
+        points->teams
+      }
+      val sorted = m.toList.sortWith((e1,e2)=> e1._1>e2._1)
+      var place = 1
+      sorted.flatMap{ e=>
+        val (points, ts) = e
+        val fixed = ts.map( e => e.copy(placeImp=Some(place)))
         place += ts.size
         fixed
       }
@@ -119,7 +137,7 @@ case class MatchDuplicateResultV2 private(
 
   @ApiModelProperty(hidden = true)
   def fixup() = {
-    fixupSummary().fixPlaces()
+    fixupSummary().fixPlaces().fixPlacesImp()
   }
 
   @ApiModelProperty(hidden = true)
@@ -131,9 +149,24 @@ case class MatchDuplicateResultV2 private(
   def placeByWinnerSet(winnerset: List[Id.Team]): List[MatchDuplicateScore.Place] = {
     results.find( ws => ws.find( e => !winnerset.contains(e.team.id)).isEmpty) match {
       case Some(rws) =>
-        rws.groupBy(e => e.place).map { arg =>
+        rws.groupBy(e => e.place.getOrElse(1)).map { arg =>
           val (place, list) = arg
-          val pts = list.head.result
+          val pts = list.head.result.getOrElse(0.0)
+          val teams = list.map(dse => dse.team)
+          MatchDuplicateScore.Place(place,pts,teams)
+        }.toList
+      case None =>
+        throw new Exception(s"could not find winner set ${winnerset} in ${results}")
+    }
+  }
+
+  @ApiModelProperty(hidden = true)
+  def placeByWinnerSetIMP(winnerset: List[Id.Team]): List[MatchDuplicateScore.Place] = {
+    results.find( ws => ws.find( e => !winnerset.contains(e.team.id)).isEmpty) match {
+      case Some(rws) =>
+        rws.groupBy(e => e.placeImp.getOrElse(1)).map { arg =>
+          val (place, list) = arg
+          val pts = list.head.resultImp.getOrElse(0.0)
           val teams = list.map(dse => dse.team)
           MatchDuplicateScore.Place(place,pts,teams)
         }.toList
@@ -167,15 +200,16 @@ case class MatchDuplicateResultV2 private(
     }
   }
 
+  import MatchDuplicateV3._
+  def isMP = scoringmethod == MatchPoints
+  def isIMP = scoringmethod == InternationalMatchPoints
+
   def convertToCurrentVersion() =
     this
 
 }
 
 object MatchDuplicateResultV2 {
-
-  val MatchPoints = "MP"
-  val InternationalMatchPoints = "IMP"
 
   def apply(
     id: Id.MatchDuplicateResult,
@@ -227,7 +261,7 @@ object MatchDuplicateResultV2 {
     val places = score.places.flatMap { p => p.teams.map { t => (t.id->p.place) }.toList }.toMap
     val r = wss.map { ws =>
       ws.map { tid => score.getTeam(tid).get }.map { team =>
-        DuplicateSummaryEntry( team, score.teamScores( team.id ), places( team.id ))
+        DuplicateSummaryEntry( team, score.teamScores.get( team.id ), places.get( team.id ))
       }
     }
 

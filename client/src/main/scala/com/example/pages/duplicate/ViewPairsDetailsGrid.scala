@@ -459,7 +459,7 @@ object ViewPairsDetailsGridInternal {
                                                       summary.colorStat,
                                                       summary.extraStats.head,
                                                       summary.extraStats.tail.head,
-                                                      summary.playerTotals.get(rowplayer).getOrElse(PairData(rowplayer,"",0,0,0,0,0,0,None,0,0,0)),
+                                                      summary.playerTotals.get(rowplayer).getOrElse(PairData(rowplayer,"",0,0,0,0,0,0,None,0,0,0,0,0)),
                                                       summary.colorStatPlayerTotals,
                                                       summary.extraStatsPlayer.head,
                                                       summary.extraStatsPlayer.tail.head
@@ -510,12 +510,12 @@ object ViewPairsDetailsGridInternal {
           )
         case Some(pds) =>
           <.div(
-            dupStyles.divPairsGrid,
+            dupStyles.divPairsDetailsGrid,
             props.showNoDataMsg ?= "No past duplicate matches were found"
           )
         case None =>
           <.div(
-            dupStyles.divPairsGrid,
+            dupStyles.divPairsDetailsGrid,
             props.showNoDataMsg ?= "Waiting for data"
           )
       }
