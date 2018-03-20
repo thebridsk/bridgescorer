@@ -225,7 +225,7 @@ object ViewPairsTableInternal {
         def getValue( pd: PairData ) = pd.incompleteGames
       },
       new IMPColumn( "IMP", "IMP" ) {
-        def getValue( pd: PairData ) = pd.imp/pd.played
+        def getValue( pd: PairData ) = pd.avgIMP
         override
         val showIn: List[CalculationType] = CalculationAsPlayed::CalculationIMP::Nil
       },

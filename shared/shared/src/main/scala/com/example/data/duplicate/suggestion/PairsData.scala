@@ -52,6 +52,7 @@ case class PairData( player1: String, player2: String, played: Int, won: Int, wo
   def pointsPercent = if (totalPoints == 0) 0.0 else points/totalPoints*100.0
   def winPercent = if (played == 0) 0.0 else (won.toDouble+wonImp)/played*100.0
   def winPtsPercent = if (played == 0) 0.0 else (wonPts.toDouble+wonImpPts)/played*100.0
+  def avgIMP = if (played == 0) 0.0 else imp/played
 
   def contains( player: String ) = player1==player || player2==player
 
