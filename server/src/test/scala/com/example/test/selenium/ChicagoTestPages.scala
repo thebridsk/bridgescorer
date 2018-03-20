@@ -333,8 +333,8 @@ class ChicagoTestPages extends FlatSpec with MustMatchers with BeforeAndAfterAll
     o.data match {
       case Some(r) => r
       case None =>
-        log.warning(s"Unable to get MatchDuplicate from rest API for ${chiid}: ${o}")
-        fail(s"Unable to get MatchDuplicate from rest API for ${chiid}")
+        log.warning(s"Unable to get MatchChicago from rest API for ${chiid}: ${o}")
+        fail(s"Unable to get MatchChicago from rest API for ${chiid}")
     }
   }
 
@@ -345,8 +345,8 @@ class ChicagoTestPages extends FlatSpec with MustMatchers with BeforeAndAfterAll
     o.data match {
       case Some(r) => r.id
       case None =>
-        log.warning(s"Unable to post MatchDuplicate to rest API for ${chi.id}: ${o}")
-        fail(s"Unable to post MatchDuplicate to rest API for ${chi.id}")
+        log.warning(s"Unable to post MatchChicago to rest API for ${chi.id}: ${o}")
+        fail(s"Unable to post MatchChicago to rest API for ${chi.id}")
     }
   }
 

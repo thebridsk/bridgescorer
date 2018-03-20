@@ -30,12 +30,15 @@ object StatsTable {
 
   /**
    * @param columns the columns in order that should be used to sort the rows.
-   * Each column has two values that is specified in a Tuple2.  The first value is
-   * the ID of the column, and the second is an override Ordering object.  If no override is specified, then the ordering
+   * Each column has two values that is specified in a Tuple3.
+   * The first value is the ID of the column,
+   * and the second is an override Ordering object.
+   * The third is a boolean that indicates whether the sort should be reversed.
+   * If no override is specified, then the ordering
    * defined in that column is used.
    */
   class MultiColumnSorter[T](
-      columns: (String, Option[Ordering[_]])*
+      columns: (String, Option[Ordering[_]], Boolean)*
     )(
       implicit
       ordering: Ordering[T]
@@ -43,10 +46,10 @@ object StatsTable {
 
     override
     def compare( cols: List[Column[Any]], row1: Row, row2: Row, index: Int ) = {
-      val cs = columns.toList.asInstanceOf[List[(String,Option[Ordering[Any]])]]
+      val cs = columns.toList.asInstanceOf[List[(String,Option[Ordering[Any]], Boolean)]]
 
       @tailrec
-      def comp( orderlist: List[(String,Option[Ordering[Any]])] ): Int = {
+      def comp( orderlist: List[(String, Option[Ordering[Any]], Boolean)] ): Int = {
         if (orderlist.isEmpty) 0
         else {
           val cur = orderlist.head
@@ -57,7 +60,7 @@ object StatsTable {
               val ordering = cur._2.getOrElse( nextcol.sorter.ordering )
               val eq = ordering.compare( row1(i), row2(i) )
               if (eq == 0) comp(orderlist.tail)
-              else eq
+              else if (cur._3) -eq else eq
             case None =>
               comp(orderlist.tail)
           }
@@ -71,7 +74,21 @@ object StatsTable {
 
   }
 
-  class MultiColumnSort[T]( cols: String* )( implicit ordering: Ordering[T] ) extends MultiColumnSorter( cols.map( i => (i,None) ): _* )(ordering)
+  class MultiColumnSort[T](
+      cols: (String,Boolean)*
+  )(
+    implicit ordering: Ordering[T]
+  ) extends MultiColumnSorter( cols.map( i => (i._1,None,i._2) ): _* )(ordering) {
+
+  }
+
+  object MultiColumnSort {
+
+    def apply[T](cols: (String,Boolean)* )(implicit ordering: Ordering[T]) = new MultiColumnSort(cols:_*)(ordering)
+    def create[T](cols: String* )(implicit ordering: Ordering[T]) =
+      new MultiColumnSort(cols.map(c=>(c,false)):_*)(ordering)
+
+  }
 
   object Sorter {
     implicit object StringSorter extends Sorter[String]
@@ -90,7 +107,8 @@ object StatsTable {
       val name: String,
       val formatter: T=>String,
       val initialSortOnSelectAscending: Boolean = false,
-      val useAdditionalDataWhenSorting: Boolean = false
+      val useAdditionalDataWhenSorting: Boolean = false,
+      val hidden: Boolean = false
     )(
       implicit
       val sorter: Sorter[T]
@@ -106,7 +124,10 @@ object StatsTable {
       footer: Option[TagMod] = None,
       additionalRows: Option[()=>List[Row]] = None,
       totalRows: Option[()=>List[Row]] = None
-    )
+    ) {
+
+    def shownColumns = columns.filter(c => !c.hidden )
+  }
 
   /**
    * Shows a table with sort buttons has the headers of the columns.
@@ -182,8 +203,7 @@ object StatsTableInternal {
                             <.thead(
                               props.header.whenDefined,
                               <.tr(
-                                props.columns.zipWithIndex.map { entry =>
-                                  val (c,i) = entry
+                                props.shownColumns.map { c =>
                                   val selected = Some(c.id)==state.currentSort
                                   <.td(
                                     AppButton(
@@ -216,7 +236,7 @@ object StatsTableInternal {
                         .render_P { args =>
                           val (props,state,backend,row, attrs) = args
                           <.tr(
-                            row.zip( props.columns ).map { entry =>
+                            row.zip( props.columns ).filter( e => !e._2.hidden ).map { entry =>
                               val (r, col) = entry
                               <.td(
                                 col.formatter(r)

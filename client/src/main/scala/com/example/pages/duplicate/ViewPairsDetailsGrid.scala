@@ -394,6 +394,7 @@ object ViewPairsDetailsGridInternal {
       val x = pd.details.map { d => d.declarer+d.defended+d.passed }.getOrElse(0)
       x
     }
+    def n( pd: PairData ): Int = pd.details.map { d => d.declarer+d.defended+d.passed }.getOrElse(0)
   }
 
   object ColorByDeclarerResults extends ColorBy {
@@ -402,6 +403,7 @@ object ViewPairsDetailsGridInternal {
       val x = pd.details.map { d => d.declarer }.getOrElse(0)
       x
     }
+    def n( pd: PairData ): Int = pd.details.map { d => d.declarer+d.defended+d.passed }.getOrElse(0)
   }
 
   object ColorByDefendedResults extends ColorBy {
@@ -410,6 +412,7 @@ object ViewPairsDetailsGridInternal {
       val x = pd.details.map { d => d.defended }.getOrElse(0)
       x
     }
+    def n( pd: PairData ): Int = pd.details.map { d => d.declarer+d.defended+d.passed }.getOrElse(0)
   }
 
   object ColorByPassedResults extends ColorBy {
@@ -418,6 +421,7 @@ object ViewPairsDetailsGridInternal {
       val x = pd.details.map { d => d.passed }.getOrElse(0)
       x
     }
+    def n( pd: PairData ): Int = pd.details.map { d => d.declarer+d.defended+d.passed }.getOrElse(0)
   }
 
 

@@ -40,6 +40,9 @@ case class DuplicateSummaryDetails(
   def percentDefended = if (total==0) 0.0 else defended*100.0/total
   def percentPassed = if (total==0) 0.0 else passed*100.0/total
 
+  /**
+   * Returns the total number of hands played by the team.
+   */
   def total = declarer+defended+passed
 }
 
