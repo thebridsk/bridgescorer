@@ -56,7 +56,24 @@ object PageAllBoardsInternal {
    * will cause State to leak.
    *
    */
-  case class State()
+  case class State( useIMP: Option[Boolean] = None ) {
+
+    def isMP = useIMP.getOrElse(true)
+    def isIMP = useIMP.getOrElse(false)
+
+    def toggleIMP = {
+      copy( useIMP = Some(!isIMP) )
+    }
+
+    def nextIMPs = {
+      val n = useIMP match {
+        case None => Some(false)
+        case Some(false) => Some(true)
+        case Some(true) => None
+      }
+      copy(useIMP=n)
+    }
+  }
 
   /**
    * Internal state for rendering the component.
@@ -66,6 +83,9 @@ object PageAllBoardsInternal {
    *
    */
   class Backend(scope: BackendScope[Props, State]) {
+
+    def nextIMPs = scope.modState { s => s.nextIMPs }
+
     def render( props: Props, state: State ) = {
       import DuplicateStyles._
       logger.info("Rendering board "+props.page)
@@ -99,10 +119,11 @@ object PageAllBoardsInternal {
                 AppButton( "Game", "Scoreboard", props.routerCtl.setOnClick(props.page.toScoreboardView()) )
               ),
               score.sortedBoards.map { b =>
-                ViewBoard( props.routerCtl, props.page.toBoardView(b.id), score, b.id, PageScoreboard.useIMPs )
+                ViewBoard( props.routerCtl, props.page.toBoardView(b.id), score, b.id, state.isIMP )
               }.toTagMod,
               <.div(
-                AppButton( "Game2", "Scoreboard", props.routerCtl.setOnClick(props.page.toScoreboardView()) )
+                AppButton( "Game2", "Scoreboard", props.routerCtl.setOnClick(props.page.toScoreboardView()) ),
+                PageScoreboardInternal.scoringMethodButton( state.useIMP, Some( score.isIMP), false, nextIMPs )
               )
             )
           case None =>
@@ -111,7 +132,9 @@ object PageAllBoardsInternal {
       )
     }
 
-    val storeCallback = Callback { scope.withEffectsImpure.forceUpdate }
+    val storeCallback = scope.modStateOption { s =>
+      DuplicateStore.getMatch().map( md => s.copy( useIMP = Some(md.isIMP) ) )
+    }
 
     def didMount() = CallbackTo {
       logger.info("PageAllBoards.didMount")

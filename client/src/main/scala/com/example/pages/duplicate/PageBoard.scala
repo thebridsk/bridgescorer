@@ -63,7 +63,24 @@ object PageBoardInternal {
    * will cause State to leak.
    *
    */
-  case class State()
+  case class State( useIMP: Option[Boolean] = None ) {
+
+    def isMP = useIMP.getOrElse(true)
+    def isIMP = useIMP.getOrElse(false)
+
+    def toggleIMP = {
+      copy( useIMP = Some(!isIMP) )
+    }
+
+    def nextIMPs = {
+      val n = useIMP match {
+        case None => Some(false)
+        case Some(false) => Some(true)
+        case Some(true) => None
+      }
+      copy(useIMP=n)
+    }
+  }
 
   /**
    * Internal state for rendering the component.
@@ -73,6 +90,9 @@ object PageBoardInternal {
    *
    */
   class Backend(scope: BackendScope[Props, State]) {
+
+    def nextIMPs = scope.modState { s => s.nextIMPs }
+
     def render( props: Props, state: State ) = {
       logger.info("Rendering board "+props.page)
       val perspective = props.page.getPerspective()
@@ -173,13 +193,15 @@ object PageBoardInternal {
             <.div(
               dupStyles.divBoardPage,
               title(),
-              ViewBoard( props.routerCtl, props.page, score, props.page.boardid, PageScoreboard.useIMPs ),
+              ViewBoard( props.routerCtl, props.page, score, props.page.boardid, state.isIMP ),
               <.p,
               <.div(
                 baseStyles.fontTextNormal,
                 AppButton( "Game", "Scoreboard",
                            allplayedInRound ?= baseStyles.requiredNotNext,
                            props.routerCtl.setOnClick(props.page.toScoreboardView()) ),
+                " ",
+                PageScoreboardInternal.scoringMethodButton( state.useIMP, Some( score.isIMP), false, nextIMPs ),
                 " ",
                 tableBoardView.isDefined?= AppButton( "Table", "Table "+Id.tableIdToTableNumber(currentTable),
                                                       allplayedInRound ?= baseStyles.requiredNotNext,
@@ -194,7 +216,9 @@ object PageBoardInternal {
       )
     }
 
-    val storeCallback = Callback { scope.withEffectsImpure.forceUpdate }
+    val storeCallback = scope.modStateOption { s =>
+      DuplicateStore.getMatch().map( md => s.copy( useIMP = Some(md.isIMP) ) )
+    }
 
     def didMount() = CallbackTo {
       logger.info("PageBoard.didMount")

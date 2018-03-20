@@ -85,10 +85,13 @@ object PageSummaryInternal {
                         .render_P( props => {
                           val (tp,pr,state,backend,importId) = props
                           val isImportStore = pr.page.isInstanceOf[ImportSummaryView]
+
+                          val result = state.useIMP.map( useIMP => if (useIMP) " (International Match Points)" else " (Match Points)").getOrElse("")
+
                           <.thead(
                             <.tr(
                               <.th(
-                                ^.colSpan:=tp.allPlayers.length+4+importId.map(id=>2).getOrElse(0)+(if (state.forPrint) 1 else 0),
+                                ^.colSpan:=tp.allPlayers.length+4+importId.map(id=>2).getOrElse(0)+(if (state.forPrint) 2 else 1),
                                 RadioButton("ShowBoth", "Show All", state.showEntries==ShowBoth, backend.show(ShowBoth) ),
                                 RadioButton("ShowMD", "Show Matches", state.showEntries==ShowMD, backend.show(ShowMD) ),
                                 RadioButton("ShowMDR", "Show Results Only", state.showEntries==ShowMDR, backend.show(ShowMDR) )
@@ -105,7 +108,8 @@ object PageSummaryInternal {
                               state.forPrint ?= <.th( importId.map( id => "Import" ).getOrElse( "Print" ).toString ),
                               <.th( "Finished"),
                               <.th( "Created", <.br(), "Last Updated"),
-                              tp.allPlayers.length>0?=(<.th( ^.colSpan:=tp.allPlayers.length, "Results")),
+                              <.th( "Scoring", <.br,  "Method", ^.rowSpan:=2 ),
+                              tp.allPlayers.length>0?=(<.th( ^.colSpan:=tp.allPlayers.length, "Results"+result)),
                               <.th( "Totals", ^.rowSpan:=2 )
                             ),
                             <.tr(
@@ -235,8 +239,9 @@ object PageSummaryInternal {
                                                ),
                             <.td( (if (ds.finished) "done"; else "")),
                             <.td( DateUtils.formatDate(ds.created), <.br(), DateUtils.formatDate(ds.updated)),
+                            <.td( ds.scoringmethod.getOrElse("MP").toString() ),
                             tp.allPlayers.filter(p => p!="").map { p =>
-                              if (PageScoreboard.useIMPs) {
+                              if (st.useIMP.getOrElse(ds.isIMP)) {
                                 if (ds.hasImpScores) {
                                   <.td(
                                     ds.playerPlacesImp().get(p) match {
@@ -249,22 +254,26 @@ object PageSummaryInternal {
                                     }
                                   )
                                 } else {
-                                  <.td()
+                                  <.td("NA")
                                 }
                               } else {
-                                <.td(
-                                  ds.playerPlaces().get(p) match {
-                                    case Some(place) => <.span(place.toString)
-                                    case None => <.span()
-                                  },
-                                  ds.playerScores().get(p) match {
-                                    case Some(place) => <.span(<.br,Utils.toPointsString(place))
-                                    case None => <.span()
-                                  }
-                                )
+                                if (ds.hasMpScores) {
+                                  <.td(
+                                    ds.playerPlaces().get(p) match {
+                                      case Some(place) => <.span(place.toString)
+                                      case None => <.span()
+                                    },
+                                    ds.playerScores().get(p) match {
+                                      case Some(place) => <.span(<.br,Utils.toPointsString(place))
+                                      case None => <.span()
+                                    }
+                                  )
+                                } else {
+                                  <.td("NA")
+                                }
                               }
                             }.toTagMod,
-                            if (PageScoreboard.useIMPs) {
+                            if (st.useIMP.getOrElse(ds.isIMP)) {
                               <.td(
                                 Utils.toPointsString(
                                   tp.allPlayers.filter(p => p!="").flatMap { p =>
@@ -304,9 +313,28 @@ object PageSummaryInternal {
    */
   case class State( workingOnNew: Option[String], forPrint: Boolean, selected: List[Id.MatchDuplicate],
                     showRows: Option[Int], alwaysShowAll: Boolean,
-                    showEntries: ShowEntries = ShowBoth ) {
+                    showEntries: ShowEntries = ShowBoth,
+                    useIMP: Option[Boolean] = None
+  ) {
     def withError( err: String ) = copy( workingOnNew = Some(err) )
     def clearError() = copy( workingOnNew = None )
+
+    def isMP = useIMP.getOrElse(true)
+    def isIMP = useIMP.getOrElse(false)
+
+    def toggleIMP = {
+      copy( useIMP = Some(!isIMP) )
+    }
+
+    def nextIMPs = {
+      val n = useIMP match {
+        case None => Some(false)
+        case Some(false) => Some(true)
+        case Some(true) => None
+      }
+      copy(useIMP=n)
+    }
+
   }
 
   case class ImportReturn( id: String )
@@ -539,11 +567,7 @@ object PageSummaryInternal {
       (importId,summaries)
     }
 
-    import PageScoreboard.useIMPs
-    def toggleIMPs = scope.modState { s =>
-      useIMPs = !useIMPs
-      s.copy()
-    }
+    def nextIMPs = scope.modState { s => s.nextIMPs }
 
     def render( props: Props, state: State ) = {
       val (importId,summaries) = getDuplicateSummaries( props )
@@ -564,7 +588,6 @@ object PageSummaryInternal {
        */
       def showMatches() = {
         <.table(
-            dupStyles.tableSummary,
             SummaryHeader((tp,props,state,this,importId)),
             <.tbody(
                 summaries.get.sortWith((one,two)=>one.created>two.created).
@@ -585,7 +608,7 @@ object PageSummaryInternal {
                 (!state.alwaysShowAll && state.showRows.isDefined) ?=
                   <.tr(
                     <.td(
-                          ^.colSpan:=3+importId.map(id=>2).getOrElse(0)+(if (state.forPrint) 1 else 0),
+                          ^.colSpan:=3+importId.map(id=>2).getOrElse(0)+(if (state.forPrint) 2 else 1),
                           AppButton( "ShowRows2",
                                      state.showRows.map( n => "Show All" ).getOrElse(s"Show ${props.defaultRows}"),
                                      ^.onClick --> toggleRows()
@@ -602,7 +625,6 @@ object PageSummaryInternal {
        */
       def showWorkingMatches() = {
         <.table(
-            dupStyles.tableSummary,
             SummaryHeader((tp,props,state,this,importId)),
             <.tbody(
               <.tr(
@@ -633,7 +655,6 @@ object PageSummaryInternal {
         dupStyles.divSummary,
         PopupOkCancel( state.workingOnNew.map( s=>s), None, Some(cancel()) ),
         <.span(
-          dupStyles.spanTopButtons,
           !state.alwaysShowAll ?= AppButton( "ShowRows", state.showRows.map( n => "Show All" ).getOrElse(s"Show ${props.defaultRows}"), ^.onClick --> toggleRows() ),
           " ",
           AppButton( "Home2", "Home", props.routerCtl.home ),
@@ -658,7 +679,7 @@ object PageSummaryInternal {
               <.div(
                 baseStyles.divFooterLeft,
                 AppButton( "Home", "Home", props.routerCtl.home ),
-                AppButton( "IMP", "IMP", ^.onClick --> toggleIMPs, BaseStyles.highlight(selected = useIMPs) ),
+                PageScoreboardInternal.scoringMethodButton( state.useIMP, None, false, nextIMPs ),
                 whenUndefined(importId)(
                   TagMod(
                     " ",

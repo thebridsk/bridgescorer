@@ -117,7 +117,8 @@ object PageDuplicateResultInternal {
 //              ),
               wss.zipWithIndex.map { arg =>
                 val (ws,i) = arg
-                ViewPlayerMatchResult( dre.placeByWinnerSet(ws), dre, i+1, wss.length )
+                val pbws = if (dre.isIMP) dre.placeByWinnerSetIMP(ws) else dre.placeByWinnerSet(ws)
+                ViewPlayerMatchResult( pbws, dre, i+1, wss.length, dre.isIMP )
               }.toTagMod,
               <.p( "Created: ", DateUtils.formatDate(dre.created), ", updated ", DateUtils.formatDate(dre.updated) )
             ),

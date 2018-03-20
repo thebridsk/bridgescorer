@@ -97,12 +97,12 @@ case class MatchDuplicateResultV1 private(
 
   @ApiModelProperty(hidden = true)
   def getTotalPoints(): Int = {
-    results.flatten.map{ r => r.result }.foldLeft(0.0)((ac,v)=>ac+v).toInt
+    results.flatten.map{ r => r.result.getOrElse(0.0) }.foldLeft(0.0)((ac,v)=>ac+v).toInt
   }
 
   def fixPlaces() = {
     val places = results.map { winnerset =>
-      val m = winnerset.groupBy(e => e.result).map { e =>
+      val m = winnerset.groupBy(e => e.result.getOrElse(0.0)).map { e =>
         val (points, teams) = e
         points->teams
       }
@@ -110,7 +110,7 @@ case class MatchDuplicateResultV1 private(
       var place = 1
       sorted.flatMap{ e=>
         val (points, ts) = e
-        val fixed = ts.map( e => e.copy(place=place))
+        val fixed = ts.map( e => e.copy(place=Some(place)))
         place += ts.size
         fixed
       }
@@ -142,9 +142,9 @@ case class MatchDuplicateResultV1 private(
   def placeByWinnerSet(winnerset: List[Id.Team]): List[MatchDuplicateScore.Place] = {
     results.find( ws => ws.find( e => !winnerset.contains(e.team.id)).isEmpty) match {
       case Some(rws) =>
-        rws.groupBy(e => e.place).map { arg =>
+        rws.groupBy(e => e.place.getOrElse(0)).map { arg =>
           val (place, list) = arg
-          val pts = list.head.result
+          val pts = list.head.result.getOrElse(0.0)
           val teams = list.map(dse => dse.team)
           MatchDuplicateScore.Place(place,pts,teams)
         }.toList
@@ -181,7 +181,7 @@ case class MatchDuplicateResultV1 private(
   def convertToCurrentVersion() = {
     val r = results.map { list =>
       list.map { dse =>
-        dse.copy( result = dse.result*2 )
+        dse.copy( result = dse.result.map( v => v*2 ) )
       }
     }
     val br = boardresults.map { list =>
@@ -189,7 +189,7 @@ case class MatchDuplicateResultV1 private(
         b.copy( points = b.points.map( t => t.copy( points = t.points*2) ) )
       }
     }
-    MatchDuplicateResultV2(id,r,br,comment,notfinished,played,created,updated,MatchDuplicateResultV2.MatchPoints)
+    MatchDuplicateResultV2(id,r,br,comment,notfinished,played,created,updated,MatchDuplicate.MatchPoints)
   }
 }
 
@@ -242,7 +242,7 @@ object MatchDuplicateResultV1 {
     val places = score.places.flatMap { p => p.teams.map { t => (t.id->p.place) }.toList }.toMap
     val r = wss.map { ws =>
       ws.map { tid => score.getTeam(tid).get }.map { team =>
-        DuplicateSummaryEntry( team, score.teamScores( team.id ), places( team.id ))
+        DuplicateSummaryEntry( team, score.teamScores.get( team.id ), places.get( team.id ))
       }
     }
 

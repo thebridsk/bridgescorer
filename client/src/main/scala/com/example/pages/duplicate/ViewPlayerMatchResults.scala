@@ -97,7 +97,7 @@ object ViewPlayerMatchResultInternal {
             },
             <.tr(
               <.th( "Place" ),
-              <.th( "Point" ),
+              <.th( if (props.useIMPs) "IMP" else "Point" ),
               <.th( "Players" )
             )
           ),

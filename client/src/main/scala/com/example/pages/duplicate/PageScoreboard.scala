@@ -54,8 +54,6 @@ object PageScoreboard {
 
   def apply( routerCtl: RouterCtl[DuplicatePage], game: BaseScoreboardViewWithPerspective ) = component(Props(routerCtl,game))
 
-  var useIMPs: Boolean = false
-
 }
 
 object PageScoreboardInternal {
@@ -70,7 +68,42 @@ object PageScoreboardInternal {
    * will cause State to leak.
    *
    */
-  case class State( deletePopup: Boolean = false, showdetails: Boolean = false )
+  case class State( deletePopup: Boolean = false, showdetails: Boolean = false, useIMP: Option[Boolean] = None ) {
+
+    def isMP = useIMP.getOrElse(true)
+    def isIMP = useIMP.getOrElse(false)
+
+    def toggleIMP = {
+      copy( useIMP = Some(!isIMP) )
+    }
+
+    def nextIMPs = {
+      val n = useIMP match {
+        case None => Some(false)
+        case Some(false) => Some(true)
+        case Some(true) => None
+      }
+      copy(useIMP=n)
+    }
+
+  }
+
+  def scoringMethodButton( useIMP: Option[Boolean], default: Option[Boolean], unknown: Boolean, cb: Callback ) = {
+    AppButton(
+      "ScoreStyle",
+      useIMP match {
+        case None =>
+          val sm = (default match {
+            case Some(true) => Some("IMP")
+            case Some(false) => Some("MP")
+            case None => if (unknown) Some("Unknown") else None
+          }).map( s => TagMod( s"Played Scoring Method: $s" ) ).getOrElse(TagMod("Played Scoring Method"))
+          sm
+        case Some(true) => TagMod("International Match Points")
+        case Some(false) => TagMod("Match Points")
+      },
+      ^.onClick --> cb )
+  }
 
   /**
    * Internal state for rendering the component.
@@ -85,6 +118,9 @@ object PageScoreboardInternal {
       DuplicateStore.getView( props.game.getPerspective() ) match {
         case Some(score) =>
           val winnersets = score.getWinnerSets()
+
+          def getScoringMethodButton() = scoringMethodButton( state.useIMP, Some( score.isIMP), false, nextIMPs )
+
           logger.fine( "WinnerSets: "+winnersets )
           <.div(
             dupStyles.divScoreboardPage,
@@ -97,8 +133,8 @@ object PageScoreboardInternal {
               Some(actionDeleteOk),
               Some(actionDeleteCancel)
             ),
-            ViewScoreboard( props.routerCtl, props.game, score, useIMPs ),
-            winnersets.map(ws => ViewPlayerMatchResult( (if (useIMPs) score.placeImpByWinnerSet(ws) else score.placeByWinnerSet(ws)), useIMPs )).toTagMod,
+            ViewScoreboard( props.routerCtl, props.game, score, state.isIMP ),
+            winnersets.map(ws => ViewPlayerMatchResult( (if (state.isIMP) score.placeImpByWinnerSet(ws) else score.placeByWinnerSet(ws)), state.isIMP )).toTagMod,
             if (state.showdetails) {
               ViewScoreboardDetails( props.game, score )
             } else {
@@ -130,7 +166,7 @@ object PageScoreboardInternal {
                       " ",
                       AppButton( "Boardset", "BoardSet", props.routerCtl.setOnClick(DuplicateBoardSetView(props.game.dupid)) ),
                       " ",
-                      AppButton( "IMP", "IMP", ^.onClick --> toggleIMPs, BaseStyles.highlight(selected = useIMPs) ),
+                      getScoringMethodButton(),
                       if (score.alldone) {
                         TagMod(
                           " ",
@@ -163,7 +199,7 @@ object PageScoreboardInternal {
                       " ",
                       AppButton( "Boardset", "BoardSet", props.routerCtl.setOnClick(DuplicateBoardSetView(props.game.dupid)) ),
                       " ",
-                      AppButton( "IMP", "IMP", ^.onClick --> toggleIMPs, BaseStyles.highlight(selected = useIMPs) ),
+                      getScoringMethodButton(),
                     ),
                     <.div(
                       baseStyles.divFooterRight,
@@ -193,7 +229,7 @@ object PageScoreboardInternal {
                                      allplayedInRound ?= baseStyles.requiredNotNext,
                                      props.routerCtl.setOnClick(CompleteScoreboardView(props.game.dupid)) ),
                           " ",
-                          AppButton( "IMP", "IMP", ^.onClick --> toggleIMPs, BaseStyles.highlight(selected = useIMPs) ),
+                          getScoringMethodButton(),
                         ),
                         <.div(
                           baseStyles.divFooterRight,
@@ -234,12 +270,11 @@ object PageScoreboardInternal {
 
     def toggleShowDetails = scope.modState( s => s.copy( showdetails = !s.showdetails) )
 
-    def toggleIMPs = scope.modState { s =>
-      useIMPs = !useIMPs
-      s.copy()
-    }
+    def nextIMPs = scope.modState { s => s.nextIMPs }
 
-    val storeCallback = Callback { scope.withEffectsImpure.forceUpdate }
+    val storeCallback = scope.modStateOption { s =>
+      DuplicateStore.getMatch().map( md => s.copy( useIMP = Some(md.isIMP) ) )
+    }
 
     def didMount() = CallbackTo {
       logger.info("PageScoreboard.didMount")

@@ -50,3 +50,20 @@ object Id {
   }
 }
 
+object IdOrdering {
+
+  trait IdOrderingBase[T] extends Ordering[T] {
+
+    def compare(x: T, y: T): Int = {
+      Id.idComparer(x.toString(), y.toString())
+    }
+
+  }
+
+  implicit object IDMatchDuplicateOrdering extends IdOrderingBase[Id.MatchDuplicate]
+
+  implicit object IDMatchDuplicateResultOrdering extends IdOrderingBase[Id.MatchDuplicateResult]
+
+  implicit object IDMatchChicagoOrdering extends IdOrderingBase[Id.MatchChicago]
+
+}

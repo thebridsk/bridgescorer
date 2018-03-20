@@ -4,29 +4,29 @@
 	
 }
 
-.dupSpanTopButtons {
+.dupDivSummary > span {
   float: right;
 }
 
-.dupTableSummary {
+.dupDivSummary > table {
   border-spacing: 0px;
   font-size: x-large;
   white-space: nowrap;
   border: 1px solid black;
 }
-.dupTableSummary tbody tr:nth-child(2n+1) {
+.dupDivSummary > table tbody tr:nth-child(2n+1) {
   background-color: #f2f2f2;
 }
-.dupTableSummary td:first-child {
+.dupDivSummary > table td:first-child {
   border: 1px solid black;
   padding: 4px 8px 4px 4px;
   text-align: center;
 }
-.dupTableSummary td {
+.dupDivSummary > table td {
   border: 1px solid black;
   text-align: center;
 }
-.dupTableSummary th {
+.dupDivSummary > table th {
   border: 1px solid black;
   text-align: center;
 }
@@ -220,6 +220,22 @@
   border-bottom: 1px solid black;
   text-align: center;
   padding: 5px;
+}
+
+.dupViewPairsDetailsTable {
+  padding: 4px;
+}
+
+.dupViewPeopleDetailsTable {
+  padding: 4px;
+}
+
+.dupViewPairsTable {
+  padding: 4px;
+}
+
+.dupViewPeopleTable {
+  padding: 4px;
 }
 
 .dupDivPairsDetaisGrid {
