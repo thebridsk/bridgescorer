@@ -31,14 +31,14 @@ case class DuplicateSummaryDetails(
     copy( declarer=declarer+v.declarer, made=made+v.made, down=down+v.down, defended=defended+v.defended, tookDown=tookDown+v.tookDown, allowedMade=allowedMade+v.allowedMade, passed=passed+v.passed)
   }
 
-  def percentMade = made*100.0/declarer
-  def percentDown = down*100.0/declarer
-  def percentAllowedMade = allowedMade*100.0/defended
-  def percentTookDown = tookDown*100.0/defended
+  def percentMade = if (declarer==0) 0.0 else made*100.0/declarer
+  def percentDown = if (declarer==0) 0.0 else down*100.0/declarer
+  def percentAllowedMade = if (defended==0) 0.0 else allowedMade*100.0/defended
+  def percentTookDown = if (defended==0) 0.0 else tookDown*100.0/defended
 
-  def percentDeclared = declarer*100.0/(declarer+defended+passed)
-  def percentDefended = defended*100.0/(declarer+defended+passed)
-  def percentPassed = passed*100.0/(declarer+defended+passed)
+  def percentDeclared = if (total==0) 0.0 else declarer*100.0/total
+  def percentDefended = if (total==0) 0.0 else defended*100.0/total
+  def percentPassed = if (total==0) 0.0 else passed*100.0/total
 
   def total = declarer+defended+passed
 }
