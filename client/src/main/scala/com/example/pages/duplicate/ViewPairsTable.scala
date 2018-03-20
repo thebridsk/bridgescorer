@@ -34,6 +34,8 @@ import com.example.data.duplicate.suggestion.CalculationMP
 import com.example.data.duplicate.suggestion.CalculationIMP
 import com.example.react.StatsTable.MultiColumnSorter
 import com.example.react.StatsTable.MultiColumnSort
+import com.example.data.duplicate.suggestion.ColorBy
+import com.example.data.duplicate.suggestion.Stat
 
 /**
  * Shows a summary page of all duplicate matches from the database.
@@ -74,16 +76,21 @@ object ViewPairsTableInternal {
    * will cause State to leak.
    *
    */
-  case class State( ignoreResultsOnly: Boolean = false, calc: CalculationType = CalculationAsPlayed, initialCalc: CalculationType = CalculationAsPlayed )
+  case class State(
+      ignoreResultsOnly: Boolean = false,
+      calc: CalculationType = CalculationAsPlayed,
+      initialCalc: CalculationType = CalculationAsPlayed,
+      showHidden: Boolean = false )
 
   abstract class StatColumn[T](
       id: String,
       name: String,
-      formatter: T=>String
+      formatter: T=>String,
+      hidden: Boolean = false
     )(
       implicit
       sorter: Sorter[T]
-    ) extends Column( id, name, formatter )(sorter) {
+    ) extends Column( id, name, formatter, hidden = hidden )(sorter) {
 
     val showIn: List[CalculationType] = CalculationAsPlayed::CalculationMP::CalculationIMP::Nil
 
@@ -126,11 +133,12 @@ object ViewPairsTableInternal {
 
   abstract class Float2Column(
       id: String,
-      name: String
+      name: String,
+      hidden: Boolean = false
     )(
       implicit
       sorter: Sorter[Double]
-    ) extends StatColumn( id, name, (v: Double) => f"$v%.2f" )(sorter) {
+    ) extends StatColumn( id, name, (v: Double) => f"$v%.2f", hidden=hidden )(sorter) {
 
   }
 
@@ -161,7 +169,7 @@ object ViewPairsTableInternal {
 
   val ostring = Ordering[String]
 
-  class PlayerSorter( cols: String* ) extends MultiColumnSort( cols: _* )(ostring)
+  class PlayerSorter( cols: String* ) extends MultiColumnSort( cols.map(c=>(c,false)): _* )(ostring)
 
   val pairColumns = List[StatColumn[Any]](
     new StringColumn( "Player1", "Player 1" )(new PlayerSorter("Player1","Player2")) {
@@ -181,12 +189,17 @@ object ViewPairsTableInternal {
   )
 
   val columns = List[StatColumn[Any]](
-      new PercentColumn( "WonPct", "% Won" )(new MultiColumnSort("WonPct","ScorePct","WonPts")) { def getValue( pd: PairData ) = pd.winPercent },
-      new PercentColumn( "WonPts", "% WonPoints" )(new MultiColumnSort("WonPts","ScorePct","WonPct")) { def getValue( pd: PairData ) = pd.winPtsPercent },
-      new PercentColumn( "ScorePct", "% MP" )(new MultiColumnSort("ScorePct","WonPct")) {
+      new PercentColumn( "WonPct", "% Won" )(MultiColumnSort(("WonPct",false),("Hidden1",false),("WonPts",false),("Player",true),("Player1",true),("Player2",true))) { def getValue( pd: PairData ) = pd.winPercent },
+      new PercentColumn( "WonPts", "% WonPoints" )(MultiColumnSort(("WonPts",false),("Hidden1",false),("WonPct",false),("Player",true),("Player1",true),("Player2",true))) { def getValue( pd: PairData ) = pd.winPtsPercent },
+      new PercentColumn( "ScorePct", "% MP" )(MultiColumnSort.create("ScorePct","WonPct")) {
         def getValue( pd: PairData ) = pd.pointsPercent
         override
         val showIn: List[CalculationType] = CalculationAsPlayed::CalculationMP::Nil
+      },
+      new IMPColumn( "IMP", "IMP" )(MultiColumnSort.create("IMP","WonPct")) {
+        def getValue( pd: PairData ) = pd.avgIMP
+        override
+        val showIn: List[CalculationType] = CalculationAsPlayed::CalculationIMP::Nil
       },
       new IntColumn( "Won", "WonMP" ) {
         def getValue( pd: PairData ) = pd.won
@@ -224,11 +237,6 @@ object ViewPairsTableInternal {
       new IntColumn( "Incomplete", "Incomplete" ) {
         def getValue( pd: PairData ) = pd.incompleteGames
       },
-      new IMPColumn( "IMP", "IMP" ) {
-        def getValue( pd: PairData ) = pd.avgIMP
-        override
-        val showIn: List[CalculationType] = CalculationAsPlayed::CalculationIMP::Nil
-      },
       new MPColumn( "Points", "MP" ) {
         def getValue( pd: PairData ) = pd.points
         override
@@ -247,6 +255,18 @@ object ViewPairsTableInternal {
     }
   }
 
+  object ColorByPtsPer extends ColorBy {
+    val name = "Pts%";
+    def value( pd: PairData ): Double = pd.pointsPercent
+    def n( pd: PairData): Int = pd.playedMP
+  }
+  object ColorByIMP extends ColorBy {
+    val name = "avgIMP";
+    def value( pd: PairData ): Double = pd.avgIMP
+    def n( pd: PairData): Int = pd.playedIMP
+  }
+
+
   /**
    * Internal state for rendering the component.
    *
@@ -256,12 +276,42 @@ object ViewPairsTableInternal {
    */
   class Backend(scope: BackendScope[Props, State]) {
 
+    def toggleShowHidden = scope.modState { s => s.copy( showHidden = !s.showHidden ) }
+
     def setCalc( calc: CalculationType ) = scope.modState { s => s.copy( calc = calc ) }
 
     def render( props: Props, state: State ) = {
       props.filter.pairsData match {
         case Some(fpd) =>
-          val allColumns = (if (props.showPairs) pairColumns else peopleColumns):::columns
+
+          val statPts = new Stat(ColorByPtsPer)
+          val statIMP = new Stat(ColorByIMP)
+
+          Stat.addPairs(fpd.data.values, None, statPts, statIMP)
+
+          val minMP = statPts.min
+          val maxMP = statPts.max
+          val minIMP = statIMP.min
+          val maxIMP = statIMP.max
+
+          val diffMP = maxMP - minMP
+          val diffIMP = maxIMP - minIMP
+
+          val hiddenColumn = new StatColumn( "Hidden1", "Normalize(Point%,IMP)", (v: Double) => f"$v%.2f", !state.showHidden ) {
+            def getValue( pd: PairData ) = {
+              val mpV = (pd.pointsPercent-minMP)/diffMP
+              val mpW = pd.playedMP
+              val impV = (pd.avgIMP-minIMP)/diffIMP
+              val impW = pd.playedIMP
+              (mpV*mpW+impV*impW)/(mpW+impW)
+            }
+          }
+
+          val hiddenColumns: List[StatColumn[Any]] = hiddenColumn::Nil
+
+          val allColumns: List[StatColumn[Any]] = (if (props.showPairs) pairColumns else peopleColumns):::
+                                                  columns :::
+                                                  hiddenColumns
 
           val pd =
             if (fpd.calc == state.calc) fpd
@@ -308,6 +358,12 @@ object ViewPairsTableInternal {
                         BaseStyles.highlight(selected = state.calc == CalculationIMP),
                         ^.onClick --> setCalc( CalculationIMP )
                     ),
+                    AppButton(
+                        "Hidden",
+                        "Hidden",
+                        BaseStyles.highlight(selected = state.showHidden),
+                        ^.onClick --> toggleShowHidden
+                    )
                   ))
                 ),
                 additionalRows = Some(additionalRows _)

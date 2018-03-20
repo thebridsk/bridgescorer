@@ -41,6 +41,7 @@ case class PeopleRow( name: String,
                       percentWon: String,
                       percentWonPoints: String,
                       percentMP: String,
+                      imps: String,
                       wonMP: String,
                       wonMPPoints: String,
                       WonImp: String,
@@ -49,7 +50,6 @@ case class PeopleRow( name: String,
                       playedMP: String,
                       playedIMP: String,
                       incomplete: String,
-                      imps: String,
                       MP: String,
                       total: String
                     )
@@ -69,11 +69,11 @@ case class PeopleRowMP( name: String,
 case class PeopleRowIMP( name: String,
                          percentWon: String,
                          percentWonPoints: String,
+                         imps: String,
                          WonImp: String,
                          WonImpPoints: String,
                          played: String,
                          incomplete: String,
-                         imps: String
                        )
 
 class PairsPage( implicit webDriver: WebDriver, pageCreated: SourcePosition ) extends Page[PairsPage] {

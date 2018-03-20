@@ -158,7 +158,7 @@ object ViewPairsDetailsTableInternal {
 
   val ostring = Ordering[String]
 
-  class PlayerSorter( cols: String* ) extends MultiColumnSort( cols: _* )(ostring)
+  class PlayerSorter( cols: String* ) extends MultiColumnSort( cols.map(c=>(c,false)): _* )(ostring)
 
   val pairColumns = List[StatColumn[Any]](
     new StringColumn( "Player1", "Player 1" )(new PlayerSorter("Player1","Player2")) {

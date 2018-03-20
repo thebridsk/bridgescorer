@@ -52,7 +52,7 @@ case class PairData( player1: String, player2: String, played: Int, won: Int, wo
   def pointsPercent = if (totalPoints == 0) 0.0 else points/totalPoints*100.0
   def winPercent = if (played == 0) 0.0 else (won.toDouble+wonImp)/played*100.0
   def winPtsPercent = if (played == 0) 0.0 else (wonPts.toDouble+wonImpPts)/played*100.0
-  def avgIMP = if (played == 0) 0.0 else imp/played
+  def avgIMP = if (playedIMP == 0) 0.0 else imp/playedIMP
 
   def contains( player: String ) = player1==player || player2==player
 
@@ -181,6 +181,11 @@ class PairsData( val pastgames: List[DuplicateSummary], val calc: CalculationTyp
         } else {
           0.0
         }
+        val totalMP = if (showMp) {
+          dse.details.map { det => det.total*2.0 }.getOrElse(total)
+        }  else {
+          0.0
+        }
 
         val imp = if (showImp) dse.getResultImp else 0.0
         val wonImp = if (showImp) dse.getPlaceImp == 1 else false
@@ -190,7 +195,7 @@ class PairsData( val pastgames: List[DuplicateSummary], val calc: CalculationTyp
                           0.0
                         }
         val details = dse.details
-        add(dse.team.player1,dse.team.player2,won,wonPts,pts,total,incomplete,details,wonImp,wonImpPts,imp, playMP)
+        add(dse.team.player1,dse.team.player2,won,wonPts,pts,totalMP,incomplete,details,wonImp,wonImpPts,imp, playMP)
       }
     }
 
@@ -224,14 +229,39 @@ class PairsData( val pastgames: List[DuplicateSummary], val calc: CalculationTyp
 trait ColorBy {
   val name: String
   def value( pd: PairData ): Double
+  def n( pd: PairData ): Int
 }
-object ColorByWon extends ColorBy { val name = "Won"; def value( pd: PairData ): Double = pd.won }
-object ColorByWonPct extends ColorBy { val name = "Won Percent"; def value( pd: PairData ): Double = pd.winPercent }
-object ColorByWonPts extends ColorBy { val name = "Won Points"; def value( pd: PairData ): Double = pd.wonPts }
-object ColorByWonPtsPct extends ColorBy { val name = "Won Points Percent"; def value( pd: PairData ): Double = pd.winPtsPercent }
-object ColorByPointsPct extends ColorBy { val name = "Points Percent"; def value( pd: PairData ): Double = pd.pointsPercent }
+object ColorByWon extends ColorBy {
+  val name = "Won";
+  def value( pd: PairData ): Double = pd.won
+  def n( pd: PairData): Int = pd.played
+}
+object ColorByWonPct extends ColorBy {
+  val name = "Won Percent";
+  def value( pd: PairData ): Double = pd.winPercent
+  def n( pd: PairData): Int = pd.played
+}
+object ColorByWonPts extends ColorBy {
+  val name = "Won Points";
+  def value( pd: PairData ): Double = pd.wonPts
+  def n( pd: PairData): Int = pd.played
+}
+object ColorByWonPtsPct extends ColorBy {
+  val name = "Won Points Percent";
+  def value( pd: PairData ): Double = pd.winPtsPercent
+  def n( pd: PairData): Int = pd.played
+}
+object ColorByPointsPct extends ColorBy {
+  val name = "Points Percent";
+  def value( pd: PairData ): Double = pd.pointsPercent
+  def n( pd: PairData): Int = pd.playedMP
+}
 
-object ColorByPlayed extends ColorBy { val name = "Played"; def value( pd: PairData ): Double = pd.played }
+object ColorByPlayed extends ColorBy {
+  val name = "Played";
+  def value( pd: PairData ): Double = pd.played
+  def n( pd: PairData): Int = pd.played
+}
 
 class Stat( val colorBy: ColorBy ) {
   private var number: Int = 0
@@ -250,10 +280,12 @@ class Stat( val colorBy: ColorBy ) {
   }
 
   def add( v: Double, n: Int ): Unit = {
-    number += n
-    total += v*n
-    vmax = Math.max( vmax, v )
-    vmin = Math.min( vmin, v )
+    if (n != 0) {
+      number += n
+      total += v*n
+      vmax = Math.max( vmax, v )
+      vmin = Math.min( vmin, v )
+    }
   }
 
   def max = vmax
@@ -298,7 +330,7 @@ object Stat {
     pds.foreach { pd =>
       if (filter.map( f => f.contains(pd.player1) && f.contains(pd.player2)).getOrElse(true) ) {
         stats.foreach { s =>
-          s.add(s.colorBy.value(pd), pd.played)
+          s.add(s.colorBy.value(pd), s.colorBy.n(pd))
         }
       }
     }
