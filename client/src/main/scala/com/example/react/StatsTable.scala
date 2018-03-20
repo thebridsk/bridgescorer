@@ -286,6 +286,9 @@ object StatsTableInternal {
       <.table(
         baseStyles.tableStats,
         StatsTableHeader((props,state,this)),
+        props.footer.map { tm =>
+          <.tfoot( tm )
+        }.whenDefined,
         <.tbody(
           rows.zipWithIndex.map { entry =>
             val (row,i) = entry
@@ -301,9 +304,6 @@ object StatsTableInternal {
               x
             }.toTagMod
           }.whenDefined,
-          props.footer.map { tm =>
-            <.tfoot( tm )
-          }.whenDefined
         )
       )
     }

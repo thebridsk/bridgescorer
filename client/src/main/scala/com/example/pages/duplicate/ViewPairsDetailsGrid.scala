@@ -452,24 +452,6 @@ object ViewPairsDetailsGridInternal {
                 ^.id:="PairsGrid",
                 dupStyles.tablePairsDetailsGrid,
                 SummaryHeader((props,state,this,sortedPlayers)),
-                <.tbody(
-                  sortedPlayers.zipWithIndex.filter( e => props.filter.isPlayerShown(e._1) ).map { e =>
-                    val (rowplayer,i) = e
-                    //      SummaryRow args:        (props,state,rowplayer, players, colorStat, sizeStat)
-                    SummaryRow.withKey( s"PDD${i}" )(( props,
-                                                      state,
-                                                      rowplayer,
-                                                      sortedPlayers,
-                                                      summary.colorStat,
-                                                      summary.extraStats.head,
-                                                      summary.extraStats.tail.head,
-                                                      summary.playerTotals.get(rowplayer).getOrElse(PairData(rowplayer,"",0,0,0,0,0,0,None,0,0,0,0,0)),
-                                                      summary.colorStatPlayerTotals,
-                                                      summary.extraStatsPlayer.head,
-                                                      summary.extraStatsPlayer.tail.head
-                                                   ))
-                  }.toTagMod
-                ),
                 <.tfoot(
                   <.tr(
                     <.td(
@@ -509,6 +491,24 @@ object ViewPairsDetailsGridInternal {
                       }
                     )
                   )
+                ),
+                <.tbody(
+                  sortedPlayers.zipWithIndex.filter( e => props.filter.isPlayerShown(e._1) ).map { e =>
+                    val (rowplayer,i) = e
+                    //      SummaryRow args:        (props,state,rowplayer, players, colorStat, sizeStat)
+                    SummaryRow.withKey( s"PDD${i}" )(( props,
+                                                      state,
+                                                      rowplayer,
+                                                      sortedPlayers,
+                                                      summary.colorStat,
+                                                      summary.extraStats.head,
+                                                      summary.extraStats.tail.head,
+                                                      summary.playerTotals.get(rowplayer).getOrElse(PairData(rowplayer,"",0,0,0,0,0,0,None,0,0,0,0,0)),
+                                                      summary.colorStatPlayerTotals,
+                                                      summary.extraStatsPlayer.head,
+                                                      summary.extraStatsPlayer.tail.head
+                                                   ))
+                  }.toTagMod
                 )
             )
           )

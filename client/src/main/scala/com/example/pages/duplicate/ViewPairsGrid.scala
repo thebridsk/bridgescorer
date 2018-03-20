@@ -206,22 +206,6 @@ object ViewPairsGridInternal {
                 ^.id:="PairsGrid",
                 dupStyles.tablePairsGrid,
                 SummaryHeader((props,state,this,sortedPlayers)),
-                <.tbody(
-                  sortedPlayers.zipWithIndex.filter( e => props.filter.isPlayerShown(e._1) ).map { e =>
-                    val (rowplayer,i) = e
-                    //      SummaryRow args:        (props,state,rowplayer, players, colorStat, sizeStat)
-                    SummaryRow.withKey( s"PD${i}" )(( props,
-                                                      state,
-                                                      rowplayer,
-                                                      sortedPlayers,
-                                                      summary.colorStat,
-                                                      summary.extraStats.head,
-                                                      summary.playerTotals.get(rowplayer).getOrElse(PairData(rowplayer,"",0,0,0,0,0,0,None,0,0,0,0,0)),
-                                                      summary.extraStatsPlayer.head,
-                                                      summary.colorStatPlayerTotals
-                                                   ))
-                  }.toTagMod
-                ),
                 <.tfoot(
                   <.tr(
                     <.td(
@@ -246,6 +230,22 @@ object ViewPairsGridInternal {
                       "blue is above average and yellow is below average."
                     )
                   )
+                ),
+                <.tbody(
+                  sortedPlayers.zipWithIndex.filter( e => props.filter.isPlayerShown(e._1) ).map { e =>
+                    val (rowplayer,i) = e
+                    //      SummaryRow args:        (props,state,rowplayer, players, colorStat, sizeStat)
+                    SummaryRow.withKey( s"PD${i}" )(( props,
+                                                      state,
+                                                      rowplayer,
+                                                      sortedPlayers,
+                                                      summary.colorStat,
+                                                      summary.extraStats.head,
+                                                      summary.playerTotals.get(rowplayer).getOrElse(PairData(rowplayer,"",0,0,0,0,0,0,None,0,0,0,0,0)),
+                                                      summary.extraStatsPlayer.head,
+                                                      summary.colorStatPlayerTotals
+                                                   ))
+                  }.toTagMod
                 )
             )
           )
