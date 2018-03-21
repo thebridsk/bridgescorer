@@ -336,10 +336,17 @@ object ViewPairsTableInternal {
             StatsTable(
                 cols,
                 rows,
-                Some("WonPct"),
-                Some(       // additional header above column header row
-                  <.tr( <.td(
-                    ^.colSpan := cols.length,
+                initialSort = Some("WonPct"),
+//                header = Some(       // additional header above column header row
+//                  <.tr( <.td(
+//                    ^.colSpan := cols.length,
+//                  ))
+//                ),
+                additionalRows = Some(additionalRows _),
+                caption = Some(
+                  TagMod(
+                    if (props.showPairs) "Pairs Results" else "People Results",
+                    " ",
                     AppButton(
                         "CalcPlayed",
                         "As Played",
@@ -364,9 +371,8 @@ object ViewPairsTableInternal {
                         BaseStyles.highlight(selected = state.showHidden),
                         ^.onClick --> toggleShowHidden
                     )
-                  ))
-                ),
-                additionalRows = Some(additionalRows _)
+                  )
+                )
             )
           )
         case None =>

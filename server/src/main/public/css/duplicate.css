@@ -12,7 +12,8 @@
   border-spacing: 0px;
   font-size: x-large;
   white-space: nowrap;
-  border: 2px solid black;
+  border: 1px solid black;
+  border-collapse: collapse;
 }
 .dupDivSummary > table tbody tr:nth-child(2n+1) {
   background-color: #f2f2f2;
@@ -90,8 +91,14 @@
   border-spacing: 0px;
   font-size: x-large;
   white-space: nowrap;
-  border: 2px solid black;
+  border: 1px solid black;
+  border-collapse: collapse;
   margin: 5px;
+}
+.dupTablePairsGrid caption {
+  border: 1px solid black;
+  font-size: x-large;
+  font-weight: bold;
 }
 .dupTablePairsGrid > tfoot > tr > td {
   font-size: large !important;
@@ -163,8 +170,14 @@
   border-spacing: 0px;
   font-size: x-large;
   white-space: nowrap;
-  border: 2px solid black;
+  border: 1px solid black;
   margin: 5px;
+  border-collapse: collapse;
+}
+.dupTablePairsDetailsGrid caption {
+  border: 1px solid black;
+  font-weight: bold;
+  font-size: x-large;
 }
 .dupTablePairsDetailsGrid > tfoot > tr > td {
   font-size: large !important;
@@ -225,7 +238,8 @@
   border-spacing: 0px;
   font-size: x-large;
   white-space: nowrap;
-  border: 2px solid black;
+  border: 1px solid black;
+  border-collapse: collapse;
 }
 .dupTableNewDuplicate td:first-child {
   border: 1px solid black;
@@ -271,7 +285,8 @@
   border-spacing: 0px;
   font-size: x-large;
   white-space: nowrap;
-  border: 2px solid black;
+  border: 1px solid black;
+  border-collapse: collapse;
 }
 .dupTableViewScoreboard tbody tr:nth-child(2n+1) {
   background-color: #f2f2f2;
@@ -301,8 +316,9 @@
 }
 
 .dupDivScoreboardDetails table {
-  border: 2px solid black;
+  border: 1px solid black;
   border-spacing: 0px;
+  border-collapse: collapse;
 }
 .dupDivScoreboardDetails td {
   border: 1px solid black;
@@ -323,7 +339,8 @@
   border-spacing: 0px;
   font-size: x-large;
   white-space: nowrap;
-  border: 2px solid black;
+  border: 1px solid black;
+  border-collapse: collapse;
 }
 .dupTablePlayerPosition tbody tr:nth-child(2n+1) {
   background-color: #f2f2f2;
@@ -365,7 +382,8 @@
   border-spacing: 0px;
   font-size: x-large;
   white-space: nowrap;
-  border: 2px solid black;
+  border: 1px solid black;
+  border-collapse: collapse;
 }
 .dupDivTableView > table > tbody > tr:nth-child(2n+1) {
   background-color: #f2f2f2;
@@ -420,7 +438,8 @@
 }
 .dupDivBoardView table {
   border-spacing: 0px;
-  border: 2px solid black;
+  border: 1px solid black;
+  border-collapse: collapse;
 }
 .dupDivBoardView tr:first-child th:nth-child(1) {
   border-left: 1px solid black;
@@ -481,7 +500,8 @@
   border-spacing: 0px;
   font-size: x-large;
   white-space: nowrap;
-  border: 2px solid black;
+  border: 1px solid black;
+  border-collapse: collapse;
 }
 .dupDivBoardSetsPage > div:first-child tbody tr:nth-child(2n+1) {
   background-color: #f2f2f2;
@@ -511,7 +531,8 @@
   border-spacing: 0px;
   font-size: x-large;
   white-space: nowrap;
-  border: 2px solid black;
+  border: 1px solid black;
+  border-collapse: collapse;
 }
 .dupDivBoardSetView tbody tr:nth-child(2n+1) {
   background-color: #f2f2f2;
@@ -554,7 +575,8 @@
   border-spacing: 0px;
   font-size: x-large;
   white-space: nowrap;
-  border: 2px solid black;
+  border: 1px solid black;
+  border-collapse: collapse;
 }
 .dupDivMovementsPage tbody tr:nth-child(2n+1) {
   background-color: #f2f2f2;
@@ -651,7 +673,8 @@
 }
 .dupDivSuggestionPage table {
   border-spacing: 0px;
-  border: 2px solid black;
+  border: 1px solid black;
+  border-collapse: collapse;
 }
 .dupDivSuggestionPage {
   font-size: x-large;

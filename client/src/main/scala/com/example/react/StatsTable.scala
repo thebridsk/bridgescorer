@@ -123,7 +123,8 @@ object StatsTable {
       header: Option[TagMod] = None,
       footer: Option[TagMod] = None,
       additionalRows: Option[()=>List[Row]] = None,
-      totalRows: Option[()=>List[Row]] = None
+      totalRows: Option[()=>List[Row]] = None,
+      caption: Option[TagMod] = None
     ) {
 
     def shownColumns = columns.filter(c => !c.hidden )
@@ -149,8 +150,9 @@ object StatsTable {
       header: Option[TagMod] = None,
       footer: Option[TagMod] = None,
       additionalRows: Option[()=>List[Row]] = None,
-      totalRows: Option[()=>List[Row]] = None
-    ) = component( Props(columns,rows,initialSort,header,footer,additionalRows,totalRows))
+      totalRows: Option[()=>List[Row]] = None,
+      caption: Option[TagMod] = None
+    ) = component( Props(columns,rows,initialSort,header,footer,additionalRows,totalRows,caption))
 
 }
 
@@ -284,6 +286,7 @@ object StatsTableInternal {
                  }.getOrElse( props.rows )
       <.table(
         baseStyles.tableStats,
+        props.caption.whenDefined { c => <.caption(c) },
         StatsTableHeader((props,state,this)),
         props.footer.map { tm =>
           <.tfoot( tm )

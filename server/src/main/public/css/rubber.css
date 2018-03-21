@@ -7,7 +7,8 @@
   border-spacing: 0px;
   font-size: x-large;
   white-space: nowrap;
-  border: 2px solid black;
+  border: 1px solid black;
+  border-collapse: collapse;
 }
 .rubListPage table tbody tr:nth-child(2n+1) {
   background-color: #f2f2f2;
@@ -60,7 +61,8 @@
   border-spacing: 0px;
   font-size: x-large;
   white-space: nowrap;
-  border: 2px solid black;
+  border: 1px solid black;
+  border-collapse: collapse;
 }
 .rubDivRubberMatchView table tbody tr:nth-child(2n+1) {
   background-color: #f2f2f2;
@@ -91,7 +93,8 @@
   border-spacing: 0px;
   font-size: x-large;
   white-space: nowrap;
-  border: 2px solid black;
+  border: 1px solid black;
+  border-collapse: collapse;
 }
 .rubDivDetailsView table tbody tr:nth-child(2n+1) {
   background-color: #f2f2f2;

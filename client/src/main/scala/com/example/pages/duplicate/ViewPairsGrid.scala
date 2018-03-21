@@ -68,25 +68,7 @@ object ViewPairsGridInternal {
   val SummaryHeader = ScalaComponent.builder[(Props,State,Backend,List[String])]("PairsHeader")
                         .render_P( args => {
                           val (props,state,backend,players) = args
-                          def getButton( colorBy: ColorBy, id: String, text: String ) = {
-                            AppButton( id,
-                                       text,
-                                       ^.onClick-->backend.setColorBy(colorBy),
-                                       BaseStyles.highlight(selected = colorBy==state.colorBy)
-                                       )
-
-                          }
                           <.thead(
-                            <.tr(
-                              <.th(
-                                ^.colSpan:=players.length+2,
-                                getButton( ColorByWon, "ColorByWon", "Color by won" ),
-                                getButton( ColorByWonPct, "ColorByWonPct", "Color by Won%" ),
-                                getButton( ColorByWonPts, "ColorByWonPts", "Color by WonPoints" ),
-                                getButton( ColorByWonPtsPct, "ColorByWonPtsPct", "Color by WonPoints%" ),
-                                getButton( ColorByPointsPct, "ColorByPointsPct", "Color by Points%" )
-                              )
-                            ),
                             <.tr(
                               <.th("Players"),
                               players.filter( e => props.filter.isPlayerShown(e) ).map( p => <.th( p ) ).toTagMod,
@@ -200,11 +182,28 @@ object ViewPairsGridInternal {
           val allPlayers = summary.players.sorted
           val sortedPlayers = summary.playerFilter.sorted
 
+          def getButton( colorBy: ColorBy, id: String, text: String ) = {
+            AppButton(
+              id,
+              text,
+              ^.onClick-->setColorBy(colorBy),
+              BaseStyles.highlight(selected = colorBy==state.colorBy)
+            )
+          }
+
           <.div(
             dupStyles.divPairsGrid,
             <.table(
                 ^.id:="PairsGrid",
                 dupStyles.tablePairsGrid,
+                <.caption(
+                  "Results ",
+//                  getButton( ColorByWon, "ColorByWon", "By won" ),
+                  getButton( ColorByWonPct, "ColorByWonPct", "By Won %" ),
+//                  getButton( ColorByWonPts, "ColorByWonPts", "By WonPoints" ),
+                  getButton( ColorByWonPtsPct, "ColorByWonPtsPct", "By WonPoints %" ),
+                  getButton( ColorByPointsPct, "ColorByPointsPct", "By Points %" )
+                ),
                 SummaryHeader((props,state,this,sortedPlayers)),
                 <.tfoot(
                   <.tr(
