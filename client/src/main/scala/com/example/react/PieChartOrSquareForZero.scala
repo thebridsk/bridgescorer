@@ -43,9 +43,10 @@ object PieChartOrSquareForZero {
       slices: List[Double],
       colors: List[Color],
       chartTitle: Option[String] = None,
-      sliceTitles: Option[List[String]] = None
+      sliceTitles: Option[List[String]] = None,
+      attrs: Option[TagMod] = None
   ) = {
-    component(SquareProps( squareColor, Props(size,slices,colors,chartTitle,sliceTitles)))
+    component(SquareProps( squareColor, Props(size,slices,colors,chartTitle,sliceTitles,attrs)))
   }
 
   private def getCoordinatesForPercent( fraction: Double ) = {
@@ -76,7 +77,8 @@ object PieChartOrSquareForZero {
               ^.stroke := props.squareColor.toHex,
               ^.strokeWidth := 5,
               ^.fill := "transparent"
-            )
+            ),
+            props.piechartProps.attrs.whenDefined
           )
         } else {
           PieChart( props.piechartProps )

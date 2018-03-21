@@ -36,7 +36,8 @@ object PieChart {
       slices: List[Double],
       colors: List[Color],
       chartTitle: Option[String] = None,
-      sliceTitles: Option[List[String]] = None
+      sliceTitles: Option[List[String]] = None,
+      attrs: Option[TagMod] = None
   )
 
 
@@ -56,9 +57,10 @@ object PieChart {
       slices: List[Double],
       colors: List[Color],
       chartTitle: Option[String] = None,
-      sliceTitles: Option[List[String]] = None
+      sliceTitles: Option[List[String]] = None,
+      attrs: Option[TagMod] = None
   ) = {
-    component(Props(size,slices,colors,chartTitle,sliceTitles))
+    component(Props(size,slices,colors,chartTitle,sliceTitles,attrs))
   }
 
   def apply( props: Props ) = component(props)
@@ -93,7 +95,8 @@ object PieChart {
               ^.cy := 0,
               ^.r := 1,
               ^.fill := slices.head._2.toHex
-            )
+            ),
+            props.attrs.whenDefined
           )
         } else {
           val sum = props.slices.foldLeft(0.0)( _ + _ )
@@ -127,7 +130,8 @@ object PieChart {
                   ^.fill := color.toHex,
                 ))
               }
-            }.toTagMod
+            }.toTagMod,
+            props.attrs.whenDefined
           )
         }
       }.build
