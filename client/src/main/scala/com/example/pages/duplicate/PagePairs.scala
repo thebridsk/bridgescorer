@@ -128,12 +128,12 @@ object PagePairsInternal {
                        ^.onClick-->toggleShowPairs()
                      ),
             AppButton( "ShowPeopleDetails",
-                       "Show People Details",
+                       "Show People Hand Results",
                        BaseStyles.highlight(selected = state.showPeopleTableDetail ),
                        ^.onClick-->toggleShowPeopleTableDetail()
                      ),
             AppButton( "ShowPairsDetails",
-                       "Show Pairs Details",
+                       "Show Pairs Hand Results",
                        BaseStyles.highlight(selected = state.showPairsDetail ),
                        ^.onClick-->toggleShowPairsDetail()
                      )

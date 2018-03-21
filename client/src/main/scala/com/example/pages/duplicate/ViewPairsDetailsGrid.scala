@@ -68,30 +68,14 @@ object ViewPairsDetailsGridInternal {
   val logger = Logger("bridge.ViewPairsDetailsGrid")
 
   sealed trait DisplayType
+  object DisplayDecDef extends DisplayType
+  object DisplayMadeDown extends DisplayType
   object DisplayAll extends DisplayType
-  object DisplayHand extends DisplayType
-  object DisplayBoth extends DisplayType
 
   val SummaryHeader = ScalaComponent.builder[(Props,State,Backend,List[String])]("ViewPairsDetailsGrid.Header")
                         .render_P( args => {
                           val (props,state,backend,players) = args
-                          def getButton( displayType: DisplayType, id: String, text: String ) = {
-                            AppButton( id,
-                                       text,
-                                       ^.onClick-->backend.setDisplayType(displayType),
-                                       BaseStyles.highlight(selected = displayType==state.displayType)
-                                       )
-
-                          }
                           <.thead(
-                            <.tr(
-                              <.th(
-                                ^.colSpan:=players.length+2,
-                                getButton( DisplayAll, "DisplayAll", "All" ),
-                                getButton( DisplayHand, "DisplayHand", "Hand" ),
-                                getButton( DisplayBoth, "DisplayBoth", "Both" )
-                              )
-                            ),
                             <.tr(
                               <.th("Players"),
                               players.filter( e => props.filter.isPlayerShown(e) ).map( p => <.th( p ) ).toTagMod,
@@ -347,13 +331,13 @@ object ViewPairsDetailsGridInternal {
                         }
 
                         displayType match {
-                          case DisplayAll =>
+                          case DisplayDecDef =>
                             <.tr(
                               <.td( rowplayer ),
                               players.filter( e => props.filter.isPlayerShown(e) ).map( p => square(p,sizeStat) ).toTagMod,
                               rectangleTotal(playerTotal, playedStatPlayerTotals)
                             )
-                          case DisplayHand =>
+                          case DisplayMadeDown =>
                             val vmin = Math.min( passedStat.min, Math.min( sizeStat.min, colorStat.min )).toInt
                             val vmax = Math.max( passedStat.max, Math.max( sizeStat.max, colorStat.max )).toInt
                             val vminplayer = Math.min( passedStatPlayer.min, Math.min( playedStatPlayerTotals.min, colorStatPlayerTotals.min )).toInt
@@ -363,7 +347,7 @@ object ViewPairsDetailsGridInternal {
                               players.filter( e => props.filter.isPlayerShown(e) ).map( p => squareHand(p,vmin,vmax) ).toTagMod,
                               rectangleTotalHand(playerTotal, vminplayer, vmaxplayer)
                             )
-                          case DisplayBoth =>
+                          case DisplayAll =>
                             val vmin = Math.min( passedStat.min, Math.min( sizeStat.min, colorStat.min )).toInt
                             val vmax = Math.max( passedStat.max, Math.max( sizeStat.max, colorStat.max )).toInt
                             val vminplayer = playedStatPlayerTotals.min.toInt
@@ -383,7 +367,7 @@ object ViewPairsDetailsGridInternal {
    * will cause State to leak.
    *
    */
-  case class State( displayType: DisplayType = DisplayAll,
+  case class State( displayType: DisplayType = DisplayDecDef,
                     maxSize: Int = 100,
                     minSize: Int = 5
                   )
@@ -440,24 +424,39 @@ object ViewPairsDetailsGridInternal {
 
       props.filter.pairsData match {
         case Some(pds) if !pds.players.isEmpty =>
-          val summary = new PairsDataSummary( pds, ColorByDeclarerResults, props.filter.selected, if (state.displayType==DisplayHand) ColorByDefendedResults else ColorByPlayedResults, ColorByPassedResults )
+          val summary = new PairsDataSummary( pds, ColorByDeclarerResults, props.filter.selected, if (state.displayType==DisplayMadeDown) ColorByDefendedResults else ColorByPlayedResults, ColorByPassedResults )
           val allPlayers = summary.playerTotals.filter { e =>
             e._2.details.map( d => d.declarer+d.defended+d.passed>0 ).getOrElse(false)
           }.map( e => e._1 ).toList.sorted
           val sortedPlayers = props.filter.selected.map( l => l ).getOrElse(allPlayers)
+
+          def getButton( displayType: DisplayType, id: String, text: String ) = {
+            AppButton(
+              id,
+              text,
+              ^.onClick-->setDisplayType(displayType),
+              BaseStyles.highlight(selected = displayType==state.displayType)
+            )
+          }
 
           <.div(
             dupStyles.divPairsDetailsGrid,
             <.table(
                 ^.id:="PairsGrid",
                 dupStyles.tablePairsDetailsGrid,
+                <.caption(
+                  "Hand Results ",
+                  getButton( DisplayDecDef, "DisplayDecDef", "Declared/Defended" ),
+                  getButton( DisplayMadeDown, "DisplayMadeDown", "Made Down" ),
+                  getButton( DisplayAll, "DisplayAll", "All" )
+                ),
                 SummaryHeader((props,state,this,sortedPlayers)),
                 <.tfoot(
                   <.tr(
                     <.td(
                       ^.colSpan:=sortedPlayers.length+2,
                       state.displayType match {
-                        case DisplayAll =>
+                        case DisplayDecDef =>
                           TagMod(
                             "The size of the circle is proportional to the number of hands played by the pair/player. ",
                             <.br,
@@ -467,7 +466,7 @@ object ViewPairsDetailsGridInternal {
                             <.br,
                             "Blue indicates passed out hands"
                           )
-                        case DisplayHand =>
+                        case DisplayMadeDown =>
                           TagMod(
                             "The size of the circle is proportional to the number of hands played by the pair/player. ",
                             "A black square indicates 0",
@@ -478,7 +477,7 @@ object ViewPairsDetailsGridInternal {
                             <.br,
                             "The third circle, blue, is the results of hands were passed out.",
                           )
-                        case DisplayBoth =>
+                        case DisplayAll =>
                           TagMod(
                             "The size of the circle is proportional to the number of hands played by the pair/player. ",
                             <.br,
