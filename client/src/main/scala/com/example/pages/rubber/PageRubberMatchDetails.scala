@@ -186,10 +186,12 @@ object PageRubberMatchDetailsInternal {
                     <.th( rub.east, " ", rub.west )
                   )
                 ),
-                <.tbody(
-                    showGames(),
+                <.tfoot(
                     showRow("Bonus", score.nsBonus.toString(), score.ewBonus.toString()),
                     showRow("Total", score.nsTotal.toString(), score.ewTotal.toString())
+                ),
+                <.tbody(
+                    showGames(),
                 )
               )
             ),

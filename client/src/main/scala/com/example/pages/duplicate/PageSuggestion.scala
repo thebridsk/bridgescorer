@@ -290,12 +290,6 @@ object PageSuggestionInternal {
                 case Some(sugs) =>
                   <.table(
                     SummaryHeader(props,state,this),
-                    <.tbody(
-                      sugs.zipWithIndex.map { e =>
-                        val (su,i) = e
-                        SummaryRow.withKey( s"Suggestion${i}" )((props,state,this,i,su))
-                      }.toTagMod
-                    ),
                     <.tfoot(
                       <.tr(
                         <.td(),
@@ -305,6 +299,12 @@ object PageSuggestionInternal {
                       <.tr(
                         <.td( ^.colSpan:=sugs.head.players.length+1, suggestion.calcTimeMillis.whenDefined( calcTime => f"Calculation time: ${calcTime}%.0f milliseconds" ) )
                       )
+                    ),
+                    <.tbody(
+                      sugs.zipWithIndex.map { e =>
+                        val (su,i) = e
+                        SummaryRow.withKey( s"Suggestion${i}" )((props,state,this,i,su))
+                      }.toTagMod
                     )
                   )
               }

@@ -589,6 +589,19 @@ object PageSummaryInternal {
       def showMatches() = {
         <.table(
             SummaryHeader((tp,props,state,this,importId)),
+            (!state.alwaysShowAll && state.showRows.isDefined) ?=
+              <.tfoot(
+                <.tr(
+                  <.td(
+                        ^.colSpan:=3+importId.map(id=>2).getOrElse(0)+(if (state.forPrint) 2 else 1),
+                        AppButton( "ShowRows2",
+                                   state.showRows.map( n => "Show All" ).getOrElse(s"Show ${props.defaultRows}"),
+                                   ^.onClick --> toggleRows()
+                                 )
+                  ),
+                  <.td( ^.colSpan:=tp.allPlayers.length+1 )
+                )
+              ),
             <.tbody(
                 summaries.get.sortWith((one,two)=>one.created>two.created).
                               filter { ds =>
@@ -605,17 +618,6 @@ object PageSummaryInternal {
                               map { ds =>
                                     SummaryRow.withKey( ds.id )((tp,ds,props,state,this,importId))
                                   }.toTagMod,
-                (!state.alwaysShowAll && state.showRows.isDefined) ?=
-                  <.tr(
-                    <.td(
-                          ^.colSpan:=3+importId.map(id=>2).getOrElse(0)+(if (state.forPrint) 2 else 1),
-                          AppButton( "ShowRows2",
-                                     state.showRows.map( n => "Show All" ).getOrElse(s"Show ${props.defaultRows}"),
-                                     ^.onClick --> toggleRows()
-                                   )
-                    ),
-                    <.td( ^.colSpan:=tp.allPlayers.length+1 )
-                  )
             )
         )
       }
@@ -641,6 +643,7 @@ object PageSummaryInternal {
                 tp.allPlayers.filter(p => p!="").map { p =>
                   <.td( "")
                 }.toTagMod,
+                <.td( ""),
                 <.td( "")
               )
             )

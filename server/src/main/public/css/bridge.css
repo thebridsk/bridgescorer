@@ -313,7 +313,7 @@
 .rootImportsListPageDiv table {
   border-spacing: 0px;
   font-size: larger;
-  border: 1px solid black;
+  border: 2px solid black;
   margin: 5px;
 }
 .rootImportsListPageDiv td {
@@ -434,7 +434,7 @@ body [data-title]:hover:after {
   border-spacing: 0px;
   font-size: large;
   white-space: nowrap;
-  border: 1px solid black;
+  border: 2px solid black;
 }
 .tableStats button {
   font-size: large;
@@ -454,6 +454,6 @@ body [data-title]:hover:after {
   padding: 2px 4px 2px 4px;
 }
 
-.tableStatsFirstTotalRow td {
+.tableStats tfoot > tr:first-child td {
   border-top: 3px solid black;
 }

@@ -549,7 +549,7 @@ class RubberTest extends FlatSpec with MustMatchers with BeforeAndAfterAll with 
     withClue("North/South is "+north+" "+south) { header(0).text mustBe north+" "+south }
     withClue("East/West is "+east+" "+west) { header(1).text mustBe east+" "+west }
 
-    val totals = findAll( xpath("(//"+getDivByClass("rubDivRubberMatchView")+"/table/tbody/tr)[last()]/td")).toList
+    val totals = findAll( xpath("(//"+getDivByClass("rubDivRubberMatchView")+"/table/tfoot/tr)[last()]/td")).toList
     totals.size mustBe 3
 
     withClue("NS gets "+nsScore) { totals(1).text mustBe nsScore.toString() }
@@ -566,7 +566,7 @@ class RubberTest extends FlatSpec with MustMatchers with BeforeAndAfterAll with 
     withClue("North/South is "+north+" "+south) { header(0).text mustBe north+" "+south }
     withClue("East/West is "+east+" "+west) { header(1).text mustBe east+" "+west }
 
-    val totals = findAll( xpath("(//"+getDivByClass("rubDivDetailsView")+"/div/table/tbody/tr)[last()]/td")).toList
+    val totals = findAll( xpath("(//"+getDivByClass("rubDivDetailsView")+"/div/table/tfoot/tr)[last()]/td")).toList
     totals.size mustBe 3
 
     withClue("NS gets "+nsScore) { totals(1).text mustBe nsScore.toString() }

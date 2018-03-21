@@ -106,13 +106,7 @@ object ViewTotalsTableInternal {
               }.toTagMod
             )
           ),
-          <.tbody(
-              (0 until byRounds.length).map { i =>
-                val key="Round"+i
-                val v = byRounds(i)
-                summaryRoundRow.withKey(key)((props,i,v,order))
-              }.toTagMod,
-              <.tr( <.td( ^.colSpan := (scoring.players.size+1), " ")),
+          <.tfoot(
               <.tr(
                 <.td( "Totals"),
                 (0 until players.length).map { j =>
@@ -122,6 +116,13 @@ object ViewTotalsTableInternal {
                   playerScore.withKey(player)((p,player))
                 }.toTagMod
               )
+          ),
+          <.tbody(
+              (0 until byRounds.length).map { i =>
+                val key="Round"+i
+                val v = byRounds(i)
+                summaryRoundRow.withKey(key)((props,i,v,order))
+              }.toTagMod,
           )
       )
     }

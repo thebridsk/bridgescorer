@@ -232,17 +232,16 @@ object StatsTableInternal {
                             )
                           }.build
 
-  val StatsTableRow = ScalaComponent.builder[(Props,State,Backend, Row, TagMod)]("StatsTableRow")
+  val StatsTableRow = ScalaComponent.builder[(Props,State,Backend, Row)]("StatsTableRow")
                         .render_P { args =>
-                          val (props,state,backend,row, attrs) = args
+                          val (props,state,backend,row) = args
                           <.tr(
                             row.zip( props.columns ).filter( e => !e._2.hidden ).map { entry =>
                               val (r, col) = entry
                               <.td(
                                 col.formatter(r)
                               )
-                            }.toTagMod,
-                            attrs,
+                            }.toTagMod
                           )
                         }.build
 
@@ -286,24 +285,25 @@ object StatsTableInternal {
       <.table(
         baseStyles.tableStats,
         StatsTableHeader((props,state,this)),
+        props.footer.map { tm =>
+          <.tfoot( tm )
+        }.whenDefined,
+        props.totalRows.map { f =>
+          val tpds = f()
+          <.tfoot(
+            tpds.zipWithIndex.map { entry =>
+              val (row,i) = entry
+              val x = StatsTableRow.withKey(s"T$i")((props,state,this,row))
+              x
+            }.toTagMod
+          )
+        }.whenDefined,
         <.tbody(
           rows.zipWithIndex.map { entry =>
             val (row,i) = entry
-            val x = StatsTableRow.withKey(i)((props,state,this,row,TagMod()))
+            val x = StatsTableRow.withKey(i)((props,state,this,row))
             x
-          }.toTagMod,
-          props.totalRows.map { f =>
-            val tpds = f()
-            tpds.zipWithIndex.map { entry =>
-              val (row,i) = entry
-              val attr = if (i==0) baseStyles.tableStatsFirstTotalRow else TagMod()
-              val x = StatsTableRow.withKey(s"T$i")((props,state,this,row,attr))
-              x
-            }.toTagMod
-          }.whenDefined,
-          props.footer.map { tm =>
-            <.tfoot( tm )
-          }.whenDefined
+          }.toTagMod
         )
       )
     }

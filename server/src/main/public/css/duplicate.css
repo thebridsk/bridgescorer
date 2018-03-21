@@ -12,7 +12,7 @@
   border-spacing: 0px;
   font-size: x-large;
   white-space: nowrap;
-  border: 1px solid black;
+  border: 2px solid black;
 }
 .dupDivSummary > table tbody tr:nth-child(2n+1) {
   background-color: #f2f2f2;
@@ -33,85 +33,6 @@
 
 .dupDivPeopleSummary {
     
-}
-
-.dupTablePairsSummary {
-  border-spacing: 0px;
-  font-size: x-large;
-  white-space: nowrap;
-  border: 1px solid black;
-  margin: 5px;
-}
-.dupTablePairsSummary tbody tr:nth-child(2n+1) {
-  background-color: #f2f2f2;
-}
-.dupTablePairsSummary td {
-  border: 1px solid black;
-  text-align: center;
-}
-.dupTablePairsSummary th {
-  border: 1px solid black;
-  text-align: center;
-}
-
-.dupTablePairsDetailsSummary {
-  border-spacing: 0px;
-  font-size: x-large;
-  white-space: nowrap;
-  border: 1px solid black;
-  margin: 5px;
-}
-.dupTablePairsDetailsSummary tbody tr:nth-child(2n+1) {
-  background-color: #f2f2f2;
-}
-.dupTablePairsDetailsSummary td {
-  border: 1px solid black;
-  text-align: center;
-}
-.dupTablePairsDetailsSummary th {
-  border: 1px solid black;
-  text-align: center;
-}
-
-.dupTablePeopleSummary {
-  border-spacing: 0px;
-  font-size: x-large;
-  white-space: nowrap;
-  border: 1px solid black;
-  margin: 5px;
-}
-.dupTablePeopleSummary tbody tr:nth-child(2n+1) {
-  background-color: #f2f2f2;
-}
-.dupTablePeopleSummary td {
-  border: 1px solid black;
-  text-align: center;
-}
-.dupTablePeopleSummary th {
-  border: 1px solid black;
-  text-align: center;
-}
-
-.dupTablePeopleDetailSummary {
-  border-spacing: 0px;
-  font-size: x-large;
-  white-space: nowrap;
-  border: 1px solid black;
-  margin: 5px;
-}
-.dupTablePeopleDetailSummary tbody tr:nth-child(2n+1) {
-  background-color: #f2f2f2;
-}
-.dupTablePeopleDetailSummary td {
-  border: 1px solid black;
-  text-align: center;
-}
-.dupTablePeopleDetailSummary tr:last-child td {
-  border-top: 3px solid black;
-}
-.dupTablePeopleDetailSummary th {
-  border: 1px solid black;
-  text-align: center;
 }
 
 .dupDivPlayerFilter {
@@ -169,7 +90,7 @@
   border-spacing: 0px;
   font-size: x-large;
   white-space: nowrap;
-  border: 1px solid black;
+  border: 2px solid black;
   margin: 5px;
 }
 .dupTablePairsGrid > tfoot > tr > td {
@@ -238,29 +159,11 @@
   padding: 4px;
 }
 
-.dupDivPairsDetaisGrid {
-  font-size: x-large;
-  display: flex;
-  flex-wrap: wrap;
-  flex-direction: row;
-}
-.dupDivPairsDetaisGrid > div {
-  flex: 0 0 auto;
-  padding: 5px;
-}
-.dupDivPairsDetaisGrid > div > div {
-  display: flex;
-  flex-direction: column;
-}
-.dupDivPairsDetaisGrid li {
-  list-style-type: none;
-}
-
 .dupTablePairsDetailsGrid {
   border-spacing: 0px;
   font-size: x-large;
   white-space: nowrap;
-  border: 1px solid black;
+  border: 2px solid black;
   margin: 5px;
 }
 .dupTablePairsDetailsGrid > tfoot > tr > td {
@@ -322,7 +225,7 @@
   border-spacing: 0px;
   font-size: x-large;
   white-space: nowrap;
-  border: 1px solid black;
+  border: 2px solid black;
 }
 .dupTableNewDuplicate td:first-child {
   border: 1px solid black;
@@ -368,7 +271,7 @@
   border-spacing: 0px;
   font-size: x-large;
   white-space: nowrap;
-  border: 1px solid black;
+  border: 2px solid black;
 }
 .dupTableViewScoreboard tbody tr:nth-child(2n+1) {
   background-color: #f2f2f2;
@@ -398,7 +301,7 @@
 }
 
 .dupDivScoreboardDetails table {
-  border: 1px solid black;
+  border: 2px solid black;
   border-spacing: 0px;
 }
 .dupDivScoreboardDetails td {
@@ -420,7 +323,7 @@
   border-spacing: 0px;
   font-size: x-large;
   white-space: nowrap;
-  border: 1px solid black;
+  border: 2px solid black;
 }
 .dupTablePlayerPosition tbody tr:nth-child(2n+1) {
   background-color: #f2f2f2;
@@ -462,7 +365,7 @@
   border-spacing: 0px;
   font-size: x-large;
   white-space: nowrap;
-  border: 1px solid black;
+  border: 2px solid black;
 }
 .dupDivTableView > table > tbody > tr:nth-child(2n+1) {
   background-color: #f2f2f2;
@@ -517,7 +420,7 @@
 }
 .dupDivBoardView table {
   border-spacing: 0px;
-  border: 1px solid black;
+  border: 2px solid black;
 }
 .dupDivBoardView tr:first-child th:nth-child(1) {
   border-left: 1px solid black;
@@ -578,7 +481,7 @@
   border-spacing: 0px;
   font-size: x-large;
   white-space: nowrap;
-  border: 1px solid black;
+  border: 2px solid black;
 }
 .dupDivBoardSetsPage > div:first-child tbody tr:nth-child(2n+1) {
   background-color: #f2f2f2;
@@ -608,7 +511,7 @@
   border-spacing: 0px;
   font-size: x-large;
   white-space: nowrap;
-  border: 1px solid black;
+  border: 2px solid black;
 }
 .dupDivBoardSetView tbody tr:nth-child(2n+1) {
   background-color: #f2f2f2;
@@ -651,7 +554,7 @@
   border-spacing: 0px;
   font-size: x-large;
   white-space: nowrap;
-  border: 1px solid black;
+  border: 2px solid black;
 }
 .dupDivMovementsPage tbody tr:nth-child(2n+1) {
   background-color: #f2f2f2;
@@ -748,7 +651,7 @@
 }
 .dupDivSuggestionPage table {
   border-spacing: 0px;
-  border: 1px solid black;
+  border: 2px solid black;
 }
 .dupDivSuggestionPage {
   font-size: x-large;
