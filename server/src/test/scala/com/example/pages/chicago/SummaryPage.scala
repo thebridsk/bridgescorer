@@ -334,10 +334,10 @@ class SummaryPage(
     withClueEx("getTotalsTable") {
       val names = getElemsByXPath("""//div[contains(concat(' ', @class, ' '), ' chiChicagoSummaryPage ')]/div[1]/table/thead/tr[2]/th""").drop(1).map(e => e.text)
       val rows = getElemsByXPath("""//div[contains(concat(' ', @class, ' '), ' chiChicagoSummaryPage ')]/div[1]/table/tbody/tr""")
-      val scores = rows.take(rows.length-2).map { r =>
+      val scores = rows.map { r =>
         r.findAll(xpath("""./td""")).drop(1).map(e=>e.text)
       }
-      val totals = rows.last.findAll(xpath("""./td""")).drop(1).map(e=>e.text)
+      val totals = getElemsByXPath("""//div[contains(concat(' ', @class, ' '), ' chiChicagoSummaryPage ')]/div[1]/table/tfoot/tr/td""").drop(1).map(e=>e.text)
 
       TotalsTable(names,scores,totals)
     }
@@ -377,10 +377,9 @@ class SummaryPage(
       }
       val team1 = getNamesFromHeader(header(1))
       val team2 = getNamesFromHeader(header(2))
-      val raw = div.findAll(xpath("./table/tbody/tr"))
-      val rawrounds = raw.take( raw.length-2)
+      val rawrounds = div.findAll(xpath("./table/tbody/tr"))
       val rounds = rawrounds.map(r => getRoundTableRow(r))
-      val rawtotal = raw.last.findAll(xpath("./td")).drop(1).map(e=>e.text)
+      val rawtotal = div.findAll(xpath("./table/tfoot/tr/td")).drop(1).map(e=>e.text)
       val total1 = rawtotal(0)
       val total2 = rawtotal(1)
       RoundTable(round,List(team1,team2),rounds,List(total1,total2))

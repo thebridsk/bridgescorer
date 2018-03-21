@@ -159,12 +159,13 @@ object PageRubberMatchInternal {
                               <.th( rub.east, " ", rub.west )
                               )
                           ),
+                      <.tfoot(
+                          showRow("Bonus", score.nsBonus.toString(), score.ewBonus.toString()),
+                          showRow("Total", score.nsTotal.toString(), score.ewTotal.toString())
+                      ),
                       <.tbody(
                           aboveTheLine(),
                           showGames(),
-                          showRow("","",""),
-                          showRow("Bonus", score.nsBonus.toString(), score.ewBonus.toString()),
-                          showRow("Total", score.nsTotal.toString(), score.ewTotal.toString())
                           )
                       )
                   ),

@@ -7,7 +7,7 @@
   border-spacing: 0px;
   font-size: x-large;
   white-space: nowrap;
-  border: 1px solid black;
+  border: 2px solid black;
 }
 .rubListPage table tbody tr:nth-child(2n+1) {
   background-color: #f2f2f2;
@@ -60,7 +60,7 @@
   border-spacing: 0px;
   font-size: x-large;
   white-space: nowrap;
-  border: 1px solid black;
+  border: 2px solid black;
 }
 .rubDivRubberMatchView table tbody tr:nth-child(2n+1) {
   background-color: #f2f2f2;
@@ -80,6 +80,9 @@
   padding: 4px;
   text-align: center;
 }
+.rubDivRubberMatchView table > tfoot > tr:first-child td {
+  border-top: 3px solid black;
+}
 
 .rubDivDetailsView {
   font-size: x-large;
@@ -88,7 +91,7 @@
   border-spacing: 0px;
   font-size: x-large;
   white-space: nowrap;
-  border: 1px solid black;
+  border: 2px solid black;
 }
 .rubDivDetailsView table tbody tr:nth-child(2n+1) {
   background-color: #f2f2f2;
@@ -107,6 +110,9 @@
   border: 1px solid black;
   padding: 4px;
   text-align: center;
+}
+.rubDivDetailsView table > tfoot > tr:first-child > td {
+  border-top: 3px solid black;
 }
 
 .rubAboveLine {

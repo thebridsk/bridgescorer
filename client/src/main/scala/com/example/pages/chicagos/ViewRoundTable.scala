@@ -81,6 +81,13 @@ object ViewRoundTableInternal {
               <.th( "Dealer")
             )
           ),
+          <.tfoot(
+              <.tr(
+                <.td( "Totals", ^.colSpan := 6),
+                <.td( ^.textAlign := "right", totals(0).toString),
+                <.td( ^.textAlign := "right", totals(2).toString)
+              )
+          ),
           <.tbody(
               (0 until byHands.length).map { i =>
                 val key="Round"+roundNumber+"Hand"+i
@@ -93,12 +100,6 @@ object ViewRoundTableInternal {
                 val dealer = scoring.dealerForHand(i+1)
                 summaryHandRow.withKey(key)((roundNumber,i,None,dealer,props))
               }.toTagMod,
-              <.tr( <.td( ^.colSpan := 8, " ")),
-              <.tr(
-                <.td( "Totals", ^.colSpan := 6),
-                <.td( ^.textAlign := "right", totals(0).toString),
-                <.td( ^.textAlign := "right", totals(2).toString)
-              )
           )
       )
     }

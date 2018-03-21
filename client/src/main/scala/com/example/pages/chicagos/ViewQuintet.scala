@@ -165,15 +165,9 @@ object ViewQuintetInternal {
               }.toTagMod
             )
           ),
-          <.tbody(
-              (0 until byRounds.length).map { i =>
-                val key="Round"+i
-                val v = byRounds(i)
-                summaryRoundRow.withKey(key)((props,i,v,order))
-              }.toTagMod,
-              <.tr( <.td( ^.colSpan := (scoring.players.size+6), " ")),
+          <.tfoot(
               <.tr(
-                <.th( ^.colSpan := 5 ),
+                <.td( ^.colSpan := 5 ),
                 <.td( "Totals"),
                 (0 until players.length).map { j =>
                   val i = order(j)
@@ -182,6 +176,13 @@ object ViewQuintetInternal {
                   playerScore.withKey(player)((p,player))
                 }.toTagMod
               )
+          ),
+          <.tbody(
+              (0 until byRounds.length).map { i =>
+                val key="Round"+i
+                val v = byRounds(i)
+                summaryRoundRow.withKey(key)((props,i,v,order))
+              }.toTagMod,
           )
       )
     }

@@ -643,6 +643,7 @@ object PageSummaryInternal {
                 tp.allPlayers.filter(p => p!="").map { p =>
                   <.td( "")
                 }.toTagMod,
+                <.td( ""),
                 <.td( "")
               )
             )
