@@ -318,6 +318,27 @@ class Stat( val colorBy: ColorBy ) {
     }
 
   }
+
+  /**
+   * determines the distance from ave.
+   * @param pd
+   * @param sizemin must be greater than 0
+   * @param sizemax must be greater than sizemin
+   * @return tuple2.  the first entry is a boolean, true indicates above average.
+   * The second is the distance from average (smin - smax).  zero indicates average.
+   */
+  def sizeAveAsFraction( pd: PairData ): (Boolean,Double) = {
+    val v = colorBy.value(pd)
+
+    if (min == max) (true,0)
+    else if (v == ave) (true,0)
+    else if (v < ave) {
+      (false,((v-min)/(ave-min)))
+    } else {
+      (true,(1-(v-ave)/(max-ave)))
+    }
+
+  }
 }
 
 object Stat {

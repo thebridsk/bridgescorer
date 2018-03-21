@@ -30,6 +30,8 @@ import com.example.data.duplicate.suggestion.ColorByWonPtsPct
 import com.example.data.duplicate.suggestion.ColorByPointsPct
 import com.example.data.duplicate.suggestion.ColorByPlayed
 import com.example.pages.BaseStyles
+import com.example.react.HSLColor
+import com.example.react.ColorBar
 
 /**
  * Shows a pairs summary page.
@@ -86,19 +88,24 @@ object ViewPairsGridInternal {
                         val pds = props.filter.pairsData.get
                         val colorBy = state.colorBy
 
+                        // Hue 0 - red, yellow - 60, 120 - green, 240 - blue
+                        // Saturation 0 - gray, 1 - full color
+                        // lightness 0 - black, 1 - white
+
                         def rectangleTotal( pd: PairData, sizeSt: Stat, colorSt: Stat ) = {
                           if (pd.played == 0) EmptyVdom
                           else {
-                            val (bcolor, intense) = colorSt.sizeAve(pd, 0, 255)
+                            val (bcolor, light) = colorSt.sizeAveAsFraction(pd)
+                            val lightness = light*0.75+0.25
                             val size = sizeSt.size(pd, state.minSize*2, state.maxSize*2)
-                            val color = if (bcolor) {
+                            val (color,scolor) = if (bcolor) {
                               // above average, blue
-                              Color( 255-intense, 255-intense, 255 )    // r, g, b
+                              (HSLColor( 240, 1, lightness ), f"hsl(240,1,${lightness}%.2f)" )
                             } else {
                               // below average, red
-                              Color( 255, 255, intense )    // r, g, b
+                              (HSLColor( 60, 1, lightness ), f"hsl(60,1,${lightness}%.2f)" )
                             }
-                            val title = f"""Played ${pd.played},\nWon ${pd.won} (${pd.winPercent}%.2f%%),\nWonPoints ${pd.wonPts}%.2f (${pd.winPtsPercent}%.2f%%),\nPoints ${pd.points}%.1f (${pd.pointsPercent}%.2f%%)"""
+                            val title = f"""Played ${pd.played},\nWon ${pd.won} (${pd.winPercent}%.2f%%),\nWonPoints ${pd.wonPts}%.2f (${pd.winPtsPercent}%.2f%%),\nPoints ${pd.points}%.1f (${pd.pointsPercent}%.2f%%)""" // \n${scolor}"""
                             TagMod(
                               <.div( ^.backgroundColor:=color.toHex,
                                      ^.width:=size.px,
@@ -111,16 +118,17 @@ object ViewPairsGridInternal {
                         }
 
                         def rectangle( pd: PairData, sizeSt: Stat, colorSt: Stat ) = {
-                          val (bcolor, intense) = colorSt.sizeAve(pd, 0, 255)
+                          val (bcolor, light) = colorSt.sizeAveAsFraction(pd)
+                          val lightness = light*0.75+0.25
                           val size = sizeSt.size(pd, state.minSize, state.maxSize)
-                          val color = if (bcolor) {
+                          val (color,scolor) = if (bcolor) {
                             // above average, green
-                            Color( 255-intense, 255, 255-intense )    // r, g, b
+                            (HSLColor( 120, 1, lightness ), f"hsl(120,1,${lightness}%.2f)" )
                           } else {
                             // below average, red
-                            Color( 255, intense, intense )    // r, g, b
+                            (HSLColor( 0, 1, lightness ), f"hsl(0,1,${lightness}%.2f)" )
                           }
-                          val title = f"""Played ${pd.played},\nWon ${pd.won} (${pd.winPercent}%.2f%%),\nWonPoints ${pd.wonPts}%.2f (${pd.winPtsPercent}%.2f%%),\nPoints ${pd.points}%.1f (${pd.pointsPercent}%.2f%%)"""
+                          val title = f"""Played ${pd.played},\nWon ${pd.won} (${pd.winPercent}%.2f%%),\nWonPoints ${pd.wonPts}%.2f (${pd.winPtsPercent}%.2f%%),\nPoints ${pd.points}%.1f (${pd.pointsPercent}%.2f%%)""" /// \n${scolor}"""
                           TagMod(
                             <.div( ^.backgroundColor:=color.toHex,
                                    ^.width:=size.px,
@@ -222,11 +230,11 @@ object ViewPairsGridInternal {
                       <.br,
                       "white is average, ",
                       "light red is below average, dark red is well below average",
-                      <.br,
-                      <.br,
+                      ColorBar( 0, 0.25, 120, 0.25, 11 ),
                       "For Totals, the width is relative to the number of times the player has played",
                       <.br,
-                      "blue is above average and yellow is below average."
+                      "blue is above average and yellow is below average.",
+                      ColorBar( 60, 0.25, 240, 0.25, 11 )
                     )
                   )
                 ),
