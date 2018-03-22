@@ -460,32 +460,56 @@ object ViewPairsDetailsGridInternal {
                           TagMod(
                             "The size of the circle is proportional to the number of hands played by the pair/player. ",
                             <.br,
-                            "Green indicates the number of times the team was declarer ",
+                            "Green, ",
+                            PieChart( 15, 1.0::Nil, Color.Green::Nil, attrs=Some(^.display := "inline-block") ),
+                            ", indicates the number of times the team was declarer ",
                             <.br,
-                            "Red indicates the number of times the team defended",
+                            "Red, ",
+                            PieChart( 15, 1.0::Nil, Color.Red::Nil, attrs=Some(^.display := "inline-block") ),
+                            ", indicates the number of times the team defended",
                             <.br,
-                            "Blue indicates passed out hands"
+                            "Blue, ",
+                            PieChart( 15, 1.0::Nil, Color.Blue::Nil, attrs=Some(^.display := "inline-block") ),
+                            ", indicates passed out hands"
                           )
                         case DisplayMadeDown =>
                           TagMod(
                             "The size of the circle is proportional to the number of hands played by the pair/player. ",
-                            "A black square indicates 0",
+                            "A black square, ",
+                            PieChartOrSquareForZero( -5, Color.Black, 1.0::Nil, Color.Green::Nil, attrs=Some(^.display := "inline-block") ),
+                            ", indicates 0",
                             <.br,
-                            "The first circle is the results of hands were the team was declarer.  green is made, red is down.",
+                            "The first circle is the results of hands were the team was declarer.  green, ",
+                            PieChart( 15, 1.0::Nil, Color.Green::Nil, attrs=Some(^.display := "inline-block") ),
+                            ", is made, red, ",
+                            PieChart( 15, 1.0::Nil, Color.Red::Nil, attrs=Some(^.display := "inline-block") ),
+                            ", is down.",
                             <.br,
                             "The second circle is the results of hands were the team was defending.  green is took down, red is allowed made.",
                             <.br,
-                            "The third circle, blue, is the results of hands were passed out.",
+                            "The third circle, blue, ",
+                            PieChart( 15, 1.0::Nil, Color.Blue::Nil, attrs=Some(^.display := "inline-block") ),
+                            ", is the results of hands were passed out.",
                           )
                         case DisplayAll =>
                           TagMod(
                             "The size of the circle is proportional to the number of hands played by the pair/player. ",
                             <.br,
-                            "Green is contract made as declarer, red is down as declarer.",
+                            "Green, ",
+                            PieChart( 15, 1.0::Nil, Color.Green::Nil, attrs=Some(^.display := "inline-block") ),
+                            ", is contract made as declarer, red, ",
+                            PieChart( 15, 1.0::Nil, Color.Red::Nil, attrs=Some(^.display := "inline-block") ),
+                            ", is down as declarer.",
                             <.br,
-                            "Dark green is took down as defender, dark red is allowed made as defender.",
+                            "Dark green, ",
+                            PieChart( 15, 1.0::Nil, DarkGreen::Nil, attrs=Some(^.display := "inline-block") ),
+                            ", is took down as defender, dark red, ",
+                            PieChart( 15, 1.0::Nil, DarkRed::Nil, attrs=Some(^.display := "inline-block") ),
+                            ", is allowed made as defender.",
                             <.br,
-                            "Blue is passed out hands.",
+                            "Blue, ",
+                            PieChart( 15, 1.0::Nil, Color.Blue::Nil, attrs=Some(^.display := "inline-block") ),
+                            ", is passed out hands."
                           )
                       }
                     )
