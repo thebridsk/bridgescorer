@@ -684,3 +684,11 @@
   vertical-align: top;
   
 }
+
+.dupDivPageStats {
+    
+}
+.dupDivPageStats > div {
+  padding: 3px;
+}
+

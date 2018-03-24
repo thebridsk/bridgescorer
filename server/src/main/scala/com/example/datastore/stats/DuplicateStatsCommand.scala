@@ -14,6 +14,8 @@ import scala.reflect.io.Path
 import java.io.PrintStream
 import com.example.data.Id
 import com.example.data.MatchDuplicate
+import com.example.data.duplicate.stats.PlayerStats
+import com.example.data.duplicate.stats.ContractStats
 
 object DuplicateStatsCommand extends Subcommand("stats") {
   import DataStoreCommands.optionStore

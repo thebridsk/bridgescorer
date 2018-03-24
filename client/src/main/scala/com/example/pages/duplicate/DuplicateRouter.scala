@@ -133,6 +133,7 @@ object DuplicateRouter {
   }
 
   case object PairsView extends DuplicatePage
+  case object StatsView extends DuplicatePage
   case object NewDuplicateView extends DuplicatePage
   case object SelectMatchView extends DuplicatePage
   case object SuggestionView extends DuplicatePage
@@ -318,6 +319,7 @@ object DuplicateRouter {
 
   val verifyPages = SummaryView::
                     PairsView::
+                    StatsView::
                     NewDuplicateView::
                     SelectMatchView::
                     SuggestionView::
@@ -359,6 +361,8 @@ object DuplicateRouter {
     (emptyRule
       | staticRoute( "pairs", PairsView )
         ~> renderR( routerCtl => PagePairs(routerCtl) )
+      | staticRoute( "stats", StatsView )
+        ~> renderR( routerCtl => PageStats(routerCtl) )
       | staticRoute( "suggestion", SuggestionView )
         ~> renderR( routerCtl => PageSuggestion(routerCtl) )
       | staticRoute( "boardsets", BoardSetSummaryView )

@@ -30,6 +30,11 @@ import com.example.data.MatchDuplicateResult
 import com.example.data.BoardResults
 import com.example.data.BoardTeamResults
 import sangria.ast.AstLocation
+import com.example.data.duplicate.stats.PlayerStat
+import com.example.data.duplicate.stats.CounterStat
+import com.example.data.duplicate.stats.ContractStat
+import com.example.data.duplicate.stats.PlayerStats
+import com.example.data.duplicate.stats.ContractStats
 
 object SchemaDefinition {
 
@@ -478,6 +483,148 @@ object SchemaDefinition {
       )
   )
 
+  val CounterStatType = ObjectType(
+      "CounterStat",
+      "a counter",
+      fields[BridgeService,CounterStat](
+          Field("id", IntType,
+              Some("The id, number of tricks"),
+              resolve = _.value.tricks
+          ),
+          Field("tricks", IntType,
+              Some("The number of tricks"),
+              resolve = _.value.tricks
+          ),
+          Field("counter", IntType,
+              Some("The counter"),
+              resolve = _.value.counter
+          )
+      )
+  )
+
+  val DuplicatePlayerStatType = ObjectType(
+      "DuplicatePlayerStat",
+      "A duplicate player stat",
+      fields[BridgeService, PlayerStat](
+          Field("id",
+              StringType,
+              Some("The id, player name, of the playerstat"),
+              resolve = _.value.player
+          ),
+          Field("player",
+              StringType,
+              Some("The player name"),
+              resolve = _.value.player
+          ),
+          Field("declarer",
+              BooleanType,
+              Some("true indicates these stats are for player on declaring team"),
+              resolve = _.value.declarer
+          ),
+          Field("contractType",
+              StringType,
+              Some("the contract type, partial, game, slam, grand slam"),
+              resolve = _.value.contractType
+          ),
+          Field("handsPlayed",
+              IntType,
+              Some("The number of hands played by player"),
+              resolve = ctx => ctx.value.handsPlayed
+          ),
+          Field("histogram",
+              ListType(CounterStatType),
+              Some("The comment"),
+              resolve = ctx => ctx.value.histogram
+          )
+      )
+  )
+
+  val DuplicateContractStatType = ObjectType(
+      "DuplicateContractStat",
+      "A duplicate contract stat",
+      fields[BridgeService, ContractStat](
+          Field("id",
+              StringType,
+              Some("The id, contract, of the playerstat"),
+              resolve = _.value.contract
+          ),
+          Field("contract",
+              StringType,
+              Some("The contract"),
+              resolve = _.value.contract
+          ),
+          Field("handsPlayed",
+              IntType,
+              Some("The number of hands played by player"),
+              resolve = ctx => ctx.value.handsPlayed
+          ),
+          Field("histogram",
+              ListType(CounterStatType),
+              Some("The comment"),
+              resolve = ctx => ctx.value.histogram
+          )
+      )
+  )
+
+  val DuplicatePlayerStatsType = ObjectType(
+      "DuplicatePlayerStats",
+      "A duplicate player stats",
+      fields[BridgeService, PlayerStats](
+          Field("id",
+              StringType,
+              Some("The id of the duplicate match"),
+              resolve = ctx => "playerStats"
+          ),
+          Field("declarer",
+              ListType( DuplicatePlayerStatType ),
+              Some("The stats for declarer"),
+              resolve = _.value.declarer
+          ),
+          Field("defender",
+              ListType( DuplicatePlayerStatType ),
+              Some("The stats for defender"),
+              resolve = _.value.defender
+          ),
+          Field("min",
+              IntType,
+              Some("The minimum number of tricks made"),
+              resolve = ctx => ctx.value.min
+          ),
+          Field("max",
+              IntType,
+              Some("The maximum number of tricks made"),
+              resolve = ctx => ctx.value.max
+          )
+      )
+  )
+
+  val DuplicateContractStatsType = ObjectType(
+      "DuplicateContractStats",
+      "A duplicate contract stats",
+      fields[BridgeService, ContractStats](
+          Field("id",
+              StringType,
+              Some("The id of the duplicate match"),
+              resolve = ctx => "contractStats"
+          ),
+          Field("data",
+              ListType( DuplicateContractStatType ),
+              Some("The stats"),
+              resolve = _.value.data
+          ),
+          Field("min",
+              IntType,
+              Some("The minimum number of tricks made"),
+              resolve = ctx => ctx.value.min
+          ),
+          Field("max",
+              IntType,
+              Some("The maximum number of tricks made"),
+              resolve = ctx => ctx.value.max
+          )
+      )
+  )
+
 
   val ArgDuplicateId = Argument("id",
                              DuplicateIdType,
@@ -562,6 +709,35 @@ object SchemaDefinition {
                   case Right(all) => all.keys.toList
                   case Left((statusCode,msg)) => throw new Exception( s"Error getting MatchDuplicates: ${statusCode} ${msg.msg}" )
                 }
+              }
+          )
+      )
+  )
+
+  val DuplicateStatsType = ObjectType(
+      "DuplicateStatsType",
+      "stats about duplicate matches",
+      fields[BridgeService,BridgeService](
+          Field(
+              "playerStats",
+              DuplicatePlayerStatsType,
+              resolve = ctx => ctx.ctx.duplicates.readAll().map { rmap => rmap match {
+                          case Right(map) =>
+                            PlayerStats.stats(map)
+                          case Left((statusCode,msg)) =>
+                            throw new Exception(s"Error getting duplicates: ${statusCode} ${msg.msg}")
+                        }
+              }
+          ),
+          Field(
+              "contractStats",
+              DuplicateContractStatsType,
+              resolve = ctx => ctx.ctx.duplicates.readAll().map { rmap => rmap match {
+                          case Right(map) =>
+                            ContractStats.stats(map, false)
+                          case Left((statusCode,msg)) =>
+                            throw new Exception(s"Error getting duplicates: ${statusCode} ${msg.msg}")
+                        }
               }
           )
       )
@@ -662,6 +838,11 @@ object SchemaDefinition {
                               throw new Exception(s"Error getting duplicate summaries: ${statusCode} ${msg.msg}")
                           }
                 }
+          ),
+          Field(
+              "duplicatestats",
+              DuplicateStatsType,
+              resolve = ctx => ctx.ctx
           )
 
       )

@@ -7,6 +7,12 @@ import com.example.data.duplicate.suggestion.Suggestion
 import com.example.data.duplicate.suggestion.DuplicateSuggestions
 import com.example.data.duplicate.suggestion.Pairing
 import com.example.data.duplicate.suggestion.NeverPair
+import com.example.data.duplicate.stats.CounterStat
+import com.example.data.duplicate.stats.ContractStat
+import com.example.data.duplicate.stats.ContractStats
+import com.example.data.duplicate.stats.PlayerStat
+import com.example.data.duplicate.stats.PlayerStats
+import com.example.data.duplicate.stats.DuplicateStats
 
 //import com.example.data.websocket.DuplexProtocol.{ LogEntry => DpLogEntry, _ }
 //import com.example.data.websocket.Protocol._
@@ -73,6 +79,13 @@ trait JsonSupport {
   implicit val suggestionFormat = Json.format[Suggestion]
   implicit val duplicateNeverPairFormat = Json.format[NeverPair]
   implicit val duplicateSuggestionsFormat = Json.format[DuplicateSuggestions]
+
+  implicit val CounterStatFormat = Json.format[CounterStat]
+  implicit val ContractStatFormat = Json.format[ContractStat]
+  implicit val ContractStatsFormat = Json.format[ContractStats]
+  implicit val PlayerStatFormat = Json.format[PlayerStat]
+  implicit val PlayerStatsFormat = Json.format[PlayerStats]
+  implicit val DuplicateStatsFormat = Json.format[DuplicateStats]
 
   implicit val unitFormat = new UnitFormat
 

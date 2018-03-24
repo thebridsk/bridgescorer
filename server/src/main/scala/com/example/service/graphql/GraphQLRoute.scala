@@ -70,15 +70,17 @@ trait GraphQLRoute {
   ))
   def graphQLRoute: Route =
     pathPrefix("v1") {
-      (post & path("graphql")) {
-        entity(as[JsObject]) { requestJson ⇒
-          val f = query.query(requestJson, restService)
-          onComplete(f) {
-            case Success((statusCode,obj)) =>
-              complete(statusCode, obj)
-            case Failure(ex) =>
-              log.warning( "Internal server error", ex )
-              complete((InternalServerError, JsObject( Seq(("error", JsString(s"An error occurred: ${ex.getMessage}")))) ))
+      logRequestResult("GraphQLRoute") {
+        (post & path("graphql")) {
+          entity(as[JsObject]) { requestJson ⇒
+            val f = query.query(requestJson, restService)
+            onComplete(f) {
+              case Success((statusCode,obj)) =>
+                complete(statusCode, obj)
+              case Failure(ex) =>
+                log.warning( "Internal server error", ex )
+                complete((InternalServerError, JsObject( Seq(("error", JsString(s"An error occurred: ${ex.getMessage}")))) ))
+            }
           }
         }
       }
