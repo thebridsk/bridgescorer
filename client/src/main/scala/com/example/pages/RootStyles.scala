@@ -113,7 +113,7 @@ class BaseStyles {
 
   val tableStats = cls("tableStats")
 
-  val tableStatsFirstTotalRow = cls("tableStatsFirstTotalRow")
+  val tablePieChart = cls("tablePieChart")
 }
 
 class RootStyles {

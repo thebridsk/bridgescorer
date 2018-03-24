@@ -142,6 +142,9 @@ object StatsTable {
    * @param initialSort the index of the columns that should be used as the initial sort
    * @param header One or more tr elements that will be inserted at the top of the thead element.
    * @param footer One or more tr elements that will be inserted into a tfoot element.
+   * @param additionalRows additional rows to add when certain columns are selected for sorting
+   * @param totalRows rows added at the bottom of the table, not affected with sorting
+   * @param caption the caption for the table
    */
   def apply(
       columns: List[Column[Any]],
@@ -158,6 +161,7 @@ object StatsTable {
 
 object StatsTableInternal {
   import StatsTable._
+  import Utils._
 
   val log = Logger("bridge.StatsTable")
 
@@ -288,19 +292,17 @@ object StatsTableInternal {
         baseStyles.tableStats,
         props.caption.whenDefined { c => <.caption(c) },
         StatsTableHeader((props,state,this)),
-        props.footer.map { tm =>
-          <.tfoot( tm )
-        }.whenDefined,
-        props.totalRows.map { f =>
-          val tpds = f()
-          <.tfoot(
+        (props.footer.isDefined||props.totalRows.isDefined) ?= <.tfoot(
+          props.totalRows.map { f =>
+            val tpds = f()
             tpds.zipWithIndex.map { entry =>
               val (row,i) = entry
               val x = StatsTableRow.withKey(s"T$i")((props,state,this,row))
               x
             }.toTagMod
-          )
-        }.whenDefined,
+          }.whenDefined,
+          props.footer.whenDefined
+        ),
         <.tbody(
           rows.zipWithIndex.map { entry =>
             val (row,i) = entry

@@ -441,6 +441,7 @@ body [data-title]:hover:after {
   white-space: nowrap;
   border: 1px solid black;
   border-collapse: collapse;
+  table-layout: fixed;
 }
 .tableStats caption {
   border: 1px solid black;
@@ -469,4 +470,54 @@ body [data-title]:hover:after {
 }
 .tableStats tfoot > tr:first-child td {
   border-top: 3px solid black;
+}
+
+.tablePieChart {
+  border-spacing: 0px;
+  font-size: large;
+  white-space: nowrap;
+  border: 1px solid black;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+.tablePieChart caption {
+  border: 1px solid black;
+  font-weight: bold;
+  font-size: x-large;
+}
+.tablePieChart button#Hidden {
+  float: right;
+}
+.tablePieChart button {
+  font-size: large;
+  font-weight: bold;
+}
+.tablePieChart tbody tr:nth-child(2n+1) {
+  background-color: #f2f2f2;
+}
+.tablePieChart td {
+  border: 1px solid black;
+  text-align: center;
+  padding: 2px 4px 2px 4px;
+}
+.tablePieChart td > div {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: center;
+  align-items: center;
+  align-content: center;
+}
+.tablePieChart th {
+  border: 1px solid black;
+  text-align: center;
+  padding: 2px 4px 2px 4px;
+}
+.tablePieChart tfoot > tr:first-child td {
+  border-top: 3px solid black;
+}
+.tablePieChart tfoot td {
+  border: 1px solid black;
+  text-align: center;
+  padding: 2px 4px 2px 4px;
+  white-space: normal;
 }
