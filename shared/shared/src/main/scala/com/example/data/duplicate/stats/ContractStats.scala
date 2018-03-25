@@ -6,12 +6,14 @@ import com.example.data.MatchDuplicate
 
 
 /**
- * @param player
+ * @param contract
+ * @param contractType the value field of a ContractType object.
  * @param histogram map of tricks to counter.  tricks is the number of tricks from contract.  0 is made exactly contract.  >0 made contract with that many extra tricks.  <0 contract is down.
- * @param
+ * @param handsPlayed
  */
 case class ContractStat(
     contract: String,
+    contractType: String,
     histogram: List[CounterStat] = List(),
     handsPlayed: Int = 0
 ) {
@@ -31,7 +33,7 @@ case class ContractStat(
       else if (i==0) "Made"
       else s"Made +${i}"
     }
-    s"""Contract,handsPlayed,${r.mkString(",")}"""
+    s"""Contract,type,handsPlayed,${r.mkString(",")}"""
   }
 
   def toCsv(min: Int = -13, max: Int = 6, percent: Boolean = false) = {
@@ -42,7 +44,7 @@ case class ContractStat(
       else c.toString()
     }
 
-    s""""${contract},${handsPlayed},${r.mkString(",")}"""
+    s""""${contract},${contractType},${handsPlayed},${r.mkString(",")}"""
   }
 
   def toCsvPercent(min: Int = -13, max: Int = 6) = {
@@ -64,9 +66,14 @@ case class ContractStats(
 
 object ContractStats {
 
-  case class GameStat( contract: String, result: Int )
+  /**
+   * @param contract
+   * @param contractType the value field of a ContractType object.
+   * @param result
+   */
+  case class GameStat( contract: String, contractType: String, result: Int )
 
-  def csvHeader( min: Int = -13, max: Int = 6) = ContractStat("").csvHeader(min,max)
+  def csvHeader( min: Int = -13, max: Int = 6) = ContractStat("",ContractTypePassed.value).csvHeader(min,max)
 
   case class Contract( total: String, tricks: String, suit: String, doubled: String ) {
 
@@ -127,13 +134,23 @@ object ContractStats {
     val results = dups.values.flatMap { dup =>
       dup.allPlayedHands.flatMap { dh =>
         if (dh.played.head.contractTricks == 0) {
-          GameStat( "PassedOut", 0 )::Nil
+          GameStat( "PassedOut", ContractTypePassed.value, 0 )::Nil
         } else {
+          val hand = dh.played.head
+          val ct: ContractType = {
+            if (hand.contractTricks == 0) ContractTypePassed
+            else if (hand.contractTricks == 7) ContractTypeGrandSlam
+            else if (hand.contractTricks == 6) ContractTypeSlam
+            else if (hand.contractTricks == 5) ContractTypeGame
+            else if (hand.contractTricks == 4 && hand.contractSuit != "C" && hand.contractSuit != "D" ) ContractTypeGame
+            else if (hand.contractTricks == 3 && hand.contractSuit == "N" ) ContractTypeGame
+            else ContractTypePartial
+          }
           val r = if (dh.played.head.madeContract) dh.played.head.tricks-dh.played.head.contractTricks
                   else -dh.played.head.tricks
-          val ss = GameStat( dh.played.head.contract, r )::Nil
+          val ss = GameStat( dh.played.head.contract, ct.value, r )::Nil
           if (aggregateDouble) {
-            GameStat( s"T${dh.played.head.contractTricks}${dh.played.head.contractSuit}", r )::ss
+            GameStat( s"T${dh.played.head.contractTricks}${dh.played.head.contractSuit}", ct.value, r )::ss
           } else {
             ss
           }
@@ -142,10 +159,11 @@ object ContractStats {
     }
     val d = results.groupBy( gs => gs.contract).map { entry =>
       val (contract, value) = entry
+      val ct = value.headOption.map( gs => gs.contractType ).getOrElse(ContractTypePassed.value)
       val stat = value.groupBy(gs => gs.result).map { entry =>
         val (result, played) = entry
-        ContractStat( contract, List( CounterStat( result, played.size )), played.size )
-      }.foldLeft(ContractStat(contract)) { (ac,v) =>
+        ContractStat( contract, ct, List( CounterStat( result, played.size )), played.size )
+      }.foldLeft(ContractStat(contract, ct)) { (ac,v) =>
         ac.add(v)
       }
       stat.copy( histogram = stat.histogram.sortBy(s=>s.tricks))

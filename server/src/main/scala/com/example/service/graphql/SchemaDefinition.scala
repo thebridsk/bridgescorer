@@ -553,6 +553,11 @@ object SchemaDefinition {
               Some("The contract"),
               resolve = _.value.contract
           ),
+          Field("contractType",
+              StringType,
+              Some("the contract type, partial, game, slam, grand slam"),
+              resolve = _.value.contractType
+          ),
           Field("handsPlayed",
               IntType,
               Some("The number of hands played by player"),
