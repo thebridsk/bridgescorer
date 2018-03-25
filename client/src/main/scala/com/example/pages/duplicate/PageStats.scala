@@ -121,15 +121,16 @@ object PageStatsInternal {
            |      max
            |    }
            |    contractStats {
-           |       data {
-           |         contract
-           |         histogram {
-           |           tricks, counter
-           |         }
-           |         handsPlayed
-           |       }
-           |       min
-           |       max
+           |      data {
+           |        contract
+           |        contractType
+           |        histogram {
+           |          tricks, counter
+           |        }
+           |        handsPlayed
+           |      }
+           |      min
+           |      max
            |    }
            |  }
            |}
@@ -303,19 +304,21 @@ object PageStatsInternal {
             }
           }
 
+        val passedout = defender.find( ps => ps.contractType == ContractTypePassed.value).getOrElse( PlayerStat("Passed",false,ContractTypePassed.value) )
+
         def byType( list: List[PlayerStat], playedAs: String ) = {
           val or: List[ContractType] = ContractTypePartial::ContractTypeGame::ContractTypeSlam::ContractTypeGrandSlam::Nil
           val dd = or.zipWithIndex.map { entry =>
             val (ct,i) = entry
             ( ct, list.find( ps => ps.contractType==ct.value ).map( ps => ps.handsPlayed ).getOrElse(0).toDouble, i+11 )
           }
-          val sum = dd.foldLeft(0.0)((ac,v) => ac+v._2)
+          val sum = dd.foldLeft(0.0)((ac,v) => ac+v._2) + passedout.handsPlayed
           val (cts,values,cols) = dd.unzip3
           val title = s"Types of hands as ${playedAs}"+dd.map { entry =>
             val (ct,value, col) = entry
-            f"${ct.toString()}: ${value} (${100*value/sum}%.2f%%)"
-          }.mkString("\n  ","\n  ","")
-          List(Data[Int]( calcSize( sum.toInt, maxHandsPlayedTotal ), cols, values, Some(title) ))
+            f"${ct.toString()}: ${value} (${100.0*value/sum}%.2f%%)"
+          }.mkString("\n  ","\n  ","\n  ")+f"${ContractTypePassed.toString()}: ${passedout.handsPlayed} (${100.0*passedout.handsPlayed/sum}%.2f%%)"
+          List(Data[Int]( calcSize( sum.toInt, maxHandsPlayedTotal ), cols:::(15::Nil), values:::(passedout.handsPlayed.toDouble::Nil), Some(title) ))
         }
 
         Row( p, byType(declarer,"Declarer")::byType(defender,"Defender")::(data.drop(1)) )   // drop passed declarer
@@ -354,7 +357,7 @@ object PageStatsInternal {
     }
 
 
-    def displayTotals( stats: PlayerStats ) = {
+    def displayTotals( stats: ContractStats ) = {
 
       val numberDown = Math.max( 0, -stats.min )
       val numberMade = Math.max( 0, stats.max+1 )
@@ -374,22 +377,22 @@ object PageStatsInternal {
         }
       }
 
-      val order: List[ContractType] = ContractTypePartial::ContractTypeGame::ContractTypeSlam::ContractTypeGrandSlam::ContractTypePassed::ContractTypeTotal::Nil
+      val order: List[ContractType] = ContractTypePassed::ContractTypePartial::ContractTypeGame::ContractTypeSlam::ContractTypeGrandSlam::ContractTypeTotal::Nil
 
       val columns = Column("Type")::order.map( ct => Column( ct.toString() ) )
 
       val (totalStats, maxHandsPlayed, maxHandsPlayedTotal) = {
 
-        def fix2( h: PlayerStat ) = {
-          h.copy("Total", h.declarer, ContractTypeTotal.value, h.histogram, h.handsPlayed)
+        def fix2( h: ContractStat ) = {
+          h.copy(ContractTypeTotal.toString, ContractTypeTotal.value, h.histogram, h.handsPlayed)
         }
 
-        def fix( h: PlayerStat ) = {
-          h.copy("Total", h.declarer, h.contractType, h.histogram, h.handsPlayed)
+        def fix( h: ContractStat ) = {
+          h.copy(h.contractType.toString(), h.contractType, h.histogram, h.handsPlayed)
         }
 
         @tailrec
-        def add( sum: PlayerStat, l: List[PlayerStat], fixer: PlayerStat => PlayerStat ): PlayerStat = {
+        def add( sum: ContractStat, l: List[ContractStat], fixer: ContractStat => ContractStat ): ContractStat = {
           if (l.isEmpty) sum
           else {
             val h = l.head
@@ -397,9 +400,9 @@ object PageStatsInternal {
           }
         }
 
-        val extraStats = order.take(order.length-1).map( ct => PlayerStat("Total", false, ct.value) )
+        val extraStats = order.take(order.length-1).map( ct => ContractStat(ct.toString(), ct.value) )
 
-        val almostAll = (extraStats:::stats.defender).groupBy( ps => ps.contractType ).map { entry =>
+        val almostAll = (extraStats:::stats.data).groupBy( ps => ps.contractType ).map { entry =>
           val (ct, allStats) = entry
 
           val h = allStats.head
@@ -411,14 +414,14 @@ object PageStatsInternal {
           il < ir
         }.map { ps =>
           // need to divide all counters by 2 since there are two players on all teams.
-          val handsPlayed = ps.handsPlayed/2
-          val m = ps.histogram.map( cs => cs.copy( counter = cs.counter/2))
-          ps.copy(histogram = m, handsPlayed = handsPlayed)
+          val handsPlayed = ps.handsPlayed
+          val m = ps.histogram
+          ps.copy(histogram = m, handsPlayed = handsPlayed).normalize
         }
 
         val max = almostAll.map( ps => ps.handsPlayed ).foldLeft(0)(Math.max _)
 
-        val t = add( fix2(almostAll.head), almostAll.tail, fix2 _ )
+        val t = add( fix2(almostAll.head), almostAll.tail, fix2 _ ).normalize
 
         (almostAll ::: (t::Nil), max, t.handsPlayed )
       }
@@ -428,7 +431,7 @@ object PageStatsInternal {
         (handsPlayed.toDouble/max*75).toInt + 5
       }
 
-      def byType( list: List[PlayerStat] ) = {
+      def byType( list: List[ContractStat] ) = {
         val or: List[ContractType] = ContractTypePartial::ContractTypeGame::ContractTypeSlam::ContractTypeGrandSlam::ContractTypePassed::Nil
         val dd = or.zipWithIndex.map { entry =>
           val (ct,i) = entry
@@ -538,7 +541,7 @@ object PageStatsInternal {
             // passed out
             // dataBySuit should only have one entry
             val pd = dataBySuit.head
-            val title = s"Passed Out: ${pd.handsPlayed}"
+            val title = f"Passed Out: ${pd.handsPlayed} (${100.0*pd.handsPlayed/totalHandsPlayed}%.2f%%)"
             val dd = Data[Int]( calcSize( pd.handsPlayed), 10::Nil, 1.0::Nil, Some(title) )
             ( suit, List( List(dd), zeroList, zeroList, zeroList, zeroList, zeroList, zeroList ) )
           } else {
@@ -676,7 +679,7 @@ object PageStatsInternal {
           case Some(stats) =>
             TagMod(
               <.div( displayPlayer( stats.playerStats) ),
-              <.div( displayTotals( stats.playerStats) ),
+              <.div( displayTotals( stats.contractStats) ),
               <.div( displayContract( stats.contractStats, state.aggregateDouble ) )
             )
           case None =>
