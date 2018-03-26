@@ -11,7 +11,7 @@ import org.scalajs.sbtplugin.ScalaJSPlugin.autoImport._
 object Dependencies {
   // version numbers
 
-  lazy val verScalaVersion = "2.12.4"
+  lazy val verScalaVersion = "2.12.5"
   lazy val verScalaMajorMinor = {
     val i = verScalaVersion.indexOf('.')
     val i2 = verScalaVersion.indexOf('.', i+1)

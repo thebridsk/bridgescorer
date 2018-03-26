@@ -13,6 +13,7 @@ import org.openqa.selenium.NoSuchElementException
 import utils.logging.Logger
 import com.example.pages.GenericPage
 import com.example.pages.bridge.HomePage
+import com.example.pages.bridge.Popup
 
 object ListDuplicatePage {
 
@@ -98,7 +99,7 @@ object ListDuplicatePage {
 
 }
 
-class ListDuplicatePage( importId: Option[String] )( implicit webDriver: WebDriver, pageCreated: SourcePosition ) extends Page[ListDuplicatePage] {
+class ListDuplicatePage( importId: Option[String] )( implicit val webDriver: WebDriver, pageCreated: SourcePosition ) extends Page[ListDuplicatePage] with Popup[ListDuplicatePage] {
   import ListDuplicatePage._
 
   val importColumns = importId.map( id => 2 ).getOrElse(0)
@@ -236,31 +237,6 @@ class ListDuplicatePage( importId: Option[String] )( implicit webDriver: WebDriv
     }
   }
 
-  def isPopupDisplayed(implicit pos: Position) = {
-    try {
-      find( id("popup") ).isDisplayed
-    } catch {
-      case x: NoSuchElementException => false
-    }
-  }
-
-  def validatePopup( visible: Boolean = true )(implicit patienceConfig: PatienceConfig, pos: Position) = {
-    eventually {
-      isPopupDisplayed mustBe visible
-    }
-    this
-  }
-
-  def clickPopUpCancel( implicit pos: Position ) = {
-    clickButton("PopUpCancel")
-    this
-  }
-
-  def getPopUpText(implicit patienceConfig: PatienceConfig, pos: Position) = {
-    find( className("baseDivPopupOKCancelBody")).text
-  }
-
-
   def clickImportDuplicate( id: String )(implicit patienceConfig: PatienceConfig, pos: Position) = {
     if (importId.isEmpty) fail( s"Not on import list duplicate page: ${currentUrl}" )
     clickButton( s"ImportDuplicate_${id}" )
@@ -273,7 +249,7 @@ class ListDuplicatePage( importId: Option[String] )( implicit webDriver: WebDriv
    */
   def checkSuccessfulImport( id: String )(implicit patienceConfig: PatienceConfig, pos: Position) = {
     if (importId.isEmpty) fail( s"Not on import list duplicate page: ${currentUrl}" )
-    isPopupDisplayed mustBe true
+    validatePopup(true)
     val t = getPopUpText
     t match {
       case importSuccessPattern( oldId, importedId, newId ) =>

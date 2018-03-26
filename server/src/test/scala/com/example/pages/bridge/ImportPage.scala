@@ -31,7 +31,7 @@ object ImportPage {
 
 }
 
-class ImportPage( implicit webDriver: WebDriver, pageCreated: SourcePosition ) extends Page[ImportPage] {
+class ImportPage( implicit val webDriver: WebDriver, pageCreated: SourcePosition ) extends Page[ImportPage] with Popup[ImportPage] {
   import ImportPage._
 
   def validate(implicit patienceConfig: PatienceConfig, pos: Position) = logMethod(s"${pos.line} ${getClass.getSimpleName}.validate") { eventually {
@@ -70,26 +70,6 @@ class ImportPage( implicit webDriver: WebDriver, pageCreated: SourcePosition ) e
 
   def isWorking(implicit pos: Position) = {
     findElemByXPath("//table/tbody/tr[1]/td[1]").text == "Working"
-  }
-
-  def isPopupDisplayed(implicit pos: Position) = {
-    try {
-      find( id("popup") ).isDisplayed
-    } catch {
-      case x: NoSuchElementException => false
-    }
-  }
-
-  def validatePopup( visible: Boolean = true )(implicit patienceConfig: PatienceConfig, pos: Position) = {
-    eventually {
-      isPopupDisplayed mustBe visible
-    }
-    this
-  }
-
-  def clickPopUpCancel( implicit pos: Position ) = {
-    clickButton("PopUpCancel")
-    this
   }
 
   /**

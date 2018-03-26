@@ -93,6 +93,7 @@ class ClickOn(implicit createdpos: SourcePosition) {
   def on( e: WebBrowser.Element )(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position): Unit = on(e.underlying)
   def on( e: Element )(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position): Unit = on(e.underlying)
   def on( e: WebElement )(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position): Unit = eventually {
+    PageBrowser.log.fine( s"Clicking on ${e}: patienceConfig=${patienceConfig}, pos=${pos.line}" )
 //    moveToElement(e)
     scrollToElement(e)
     e.click()

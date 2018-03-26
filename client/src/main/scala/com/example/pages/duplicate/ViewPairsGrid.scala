@@ -172,6 +172,30 @@ object ViewPairsGridInternal {
                   )
 
   /**
+   * @param stat
+   * @param n the number of steps
+   * @return Tuple3( titlesBelow, titleMiddle, titlesAbove )
+   */
+  def stepTitles( stat: Stat, n: Int ) = {
+    val min = stat.min
+    val ave = stat.ave
+    val max = stat.max
+
+    val stepB = (ave-min)/n
+    val below = (0 until n).map { i =>
+      f"${min+stepB*i}%.2f%%"
+    }.toList
+
+    val middle = f"${ave}%.2f%%"
+
+    val stepA = (max-ave)/n
+    val above = (1 to n).map { i =>
+      f"${ave+stepA*i}%.2f%%"
+    }.toList
+    (below,middle,above)
+  }
+
+  /**
    * Internal state for rendering the component.
    *
    * I'd like this class to be private, but the instantiation of component
@@ -198,6 +222,10 @@ object ViewPairsGridInternal {
               BaseStyles.highlight(selected = colorBy==state.colorBy)
             )
           }
+
+          val n = 10
+          val (titlesBelow, titleWhite, titlesAbove) = stepTitles( summary.colorStat, n )
+          val (titlesTBelow, titleTWhite, titlesTAbove) = stepTitles( summary.colorStatPlayerTotals, n )
 
           <.div(
             dupStyles.divPairsGrid,
@@ -230,11 +258,11 @@ object ViewPairsGridInternal {
                       <.br,
                       "white is average, ",
                       "light red is below average, dark red is well below average",
-                      ColorBar( 0, 0.25, 120, 0.25, 11 ),
+                      ColorBar( 0, 0.25, 120, 0.25, n, titlesBelow, titlesAbove, titleWhite ),
                       "For Totals, the width is relative to the number of times the player has played",
                       <.br,
                       "blue is above average and yellow is below average.",
-                      ColorBar( 60, 0.25, 240, 0.25, 11 )
+                      ColorBar( 60, 0.25, 240, 0.25, n, titlesTBelow, titlesTAbove, titleTWhite )
                     )
                   )
                 ),

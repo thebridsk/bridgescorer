@@ -53,6 +53,7 @@ import com.example.data.duplicate.stats.ContractTypeTotal
 import com.example.data.duplicate.stats.CounterStat
 import com.example.data.bridge.ContractTricks
 import com.example.react.HSLColor
+import com.example.react.FixedColorBar
 
 /**
  * Shows a summary page of all duplicate matches from the database.
@@ -182,6 +183,7 @@ object PageStatsInternal {
   val cyan = Color.Cyan
 
   val ctColors = yellow::orange::purple::cyan::Color.Blue::Nil
+  val typeOrder: List[ContractType] = ContractTypePartial::ContractTypeGame::ContractTypeSlam::ContractTypeGrandSlam::ContractTypePassed::Nil
 
   /**
    * Internal state for rendering the component.
@@ -198,6 +200,13 @@ object PageStatsInternal {
 
       val numberDown = Math.max( 0, -stats.min )
       val numberMade = Math.max( 0, stats.max+1 )
+
+      val titleDown = if (numberDown > 0) {
+        (-numberDown until 0).map( i => s"Down ${-i}" ).toList
+      } else {
+        List()
+      }
+      val titleMade = (0 until numberMade).map( i => if (i==0) "Made" else s"Made ${i}" ).toList
 
       val downColors = ColorBar.colors( 0, 0.25, numberDown ).reverse
       val madeColors = ColorBar.colors( 120, 0.25, numberMade )
@@ -347,7 +356,9 @@ object PageStatsInternal {
                 "Red indicates a down, green a made contract.",
                 <.br,
                 "Dark green indicates a contract made with no overtricks",
-                ColorBar( 0, 0.25, numberDown, true, 120, 0.25, numberMade, true, false )
+                ColorBar( 0, 0.25, numberDown, true, 120, 0.25, numberMade, true, false, Some(titleDown), Some(titleMade), None ),
+                "For the Type columns the colors are:",
+                FixedColorBar( ctColors, Some(typeOrder.map( ct => ct.toString() )) )
               )
             )
         ),
@@ -361,6 +372,13 @@ object PageStatsInternal {
 
       val numberDown = Math.max( 0, -stats.min )
       val numberMade = Math.max( 0, stats.max+1 )
+
+      val titleDown = if (numberDown > 0) {
+        (-numberDown until 0).map( i => s"Down ${-i}" ).toList
+      } else {
+        List()
+      }
+      val titleMade = (0 until numberMade).map( i => if (i==0) "Made" else s"Made ${i}" ).toList
 
       val downColors = ColorBar.colors( 0, 0.25, numberDown ).reverse
       val madeColors = ColorBar.colors( 120, 0.25, numberMade )
@@ -492,7 +510,9 @@ object PageStatsInternal {
                 "Red indicates a down, green a made contract.",
                 <.br,
                 "Dark green indicates a contract made with no overtricks",
-                ColorBar( 0, 0.25, numberDown, true, 120, 0.25, numberMade, true, false )
+                ColorBar( 0, 0.25, numberDown, true, 120, 0.25, numberMade, true, false, Some(titleDown), Some(titleMade), None ),
+                "For the Type columns the colors are:",
+                FixedColorBar( ctColors, Some(typeOrder.map( ct => ct.toString() )) )
               )
             )
         ),
@@ -507,6 +527,13 @@ object PageStatsInternal {
 
       val numberDown = Math.max( 0, -stats.min )
       val numberMade = Math.max( 0, stats.max+1 )
+
+      val titleDown = if (numberDown > 0) {
+        (-numberDown until 0).map( i => s"Down ${-i}" ).toList
+      } else {
+        List()
+      }
+      val titleMade = (0 until numberMade).map( i => if (i==0) "Made" else s"Made ${i}" ).toList
 
       val downColors = ColorBar.colors( 0, 0.25, numberDown ).reverse
       val madeColors = ColorBar.colors( 120, 0.25, numberMade )
@@ -651,7 +678,7 @@ object PageStatsInternal {
                 "Red indicates a down, green a made contract.",
                 <.br,
                 "Dark green indicates a contract made with no overtricks",
-                ColorBar( 0, 0.25, numberDown, true, 120, 0.25, numberMade, true, false )
+                ColorBar( 0, 0.25, numberDown, true, 120, 0.25, numberMade, true, false, Some(titleDown), Some(titleMade), None )
               )
             )
         ),

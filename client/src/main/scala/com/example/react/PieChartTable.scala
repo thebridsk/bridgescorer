@@ -148,6 +148,8 @@ object PieChartTableInternal {
                             )
                           }.build
 
+  val titleAttr    = VdomAttr("data-title")
+
   val PieChartTableRow = ScalaComponent.builder[(Props,State,Backend, Row[Any])]("PieChartTableRow")
                         .render_P { args =>
                           val (props,state,backend,row) = args
@@ -160,12 +162,20 @@ object PieChartTableInternal {
                               <.td(
                                 <.div(
                                   cell.map { r =>
-                                    PieChartOrSquareForZero(
-                                      size = r.size,
-                                      Color.Black,
-                                      slices = r.value,
-                                      colors = r.color.map( v => props.colorMap(v) ),
-                                      chartTitle = r.title,
+                                    <.div(
+                                      r.title.whenDefined { title =>
+                                        TagMod(
+                                          titleAttr:=title,
+                                          baseStyles.hover
+                                        )
+                                      },
+                                      PieChartOrSquareForZero(
+                                        size = r.size,
+                                        Color.Black,
+                                        slices = r.value,
+                                        colors = r.color.map( v => props.colorMap(v) ),
+                                        chartTitle = None,
+                                      )
                                     )
                                   }.toTagMod
                                 )
