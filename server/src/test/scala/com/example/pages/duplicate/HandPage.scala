@@ -40,7 +40,7 @@ class HandPage( implicit webDriver: WebDriver, pageCreated: SourcePosition ) ext
   import HandPage._
 
   override
-  def validate(implicit patienceConfig: PatienceConfig, pos: Position) = logMethod(s"${pos.line} ${getClass.getSimpleName}.validate") {
+  def validate(implicit patienceConfig: PatienceConfig, pos: Position) = logMethod(s"${pos.line} ${getClass.getSimpleName}.validate, patienceConfig=${patienceConfig}") {
     eventually {
       findIds
     }

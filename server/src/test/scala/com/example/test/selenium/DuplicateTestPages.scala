@@ -231,6 +231,8 @@ class DuplicateTestPages extends FlatSpec
   override
   def beforeAll() = {
 
+    testlog.fine( s"DuplicateTestPages patienceConfig=${patienceConfig}" )
+
     MonitorTCP.nextTest()
     TestStartLogging.startLogging()
     try {
