@@ -64,14 +64,15 @@ object BaseHandPage {
    * @param style the input style, valid values are Yellow, Prompt, Original
    * @return Some(style) if successful, otherwise returns current input style
    */
-  def setInputStyle( style: String )( implicit webDriver: WebDriver, pos: Position ): Option[String] = {
-    if (!validInputStyles.contains(style)) fail(s"""Specified style, ${style} is not valid, must be one of ${validInputStyles}""")
-    val stop = Some(style)
+  def setInputStyle( want: String )( implicit webDriver: WebDriver, pos: Position ): Option[String] = {
+    if (!validInputStyles.contains(want)) fail(s"""Specified style, ${want} is not valid, must be one of ${validInputStyles}""")
+    val stop = Some(want)
     var last: Option[String] = None
     for ( i <- 1 to 3 ) {
       last = getInputStyle
       if (last == stop) return stop
       click on id("InputStyle")
+      Thread.sleep(100L)
     }
     last
   }

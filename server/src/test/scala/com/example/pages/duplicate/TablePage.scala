@@ -17,6 +17,7 @@ import com.example.pages.duplicate.ScoreboardPage.CompletedViewType
 import com.example.pages.duplicate.ScoreboardPage.TableViewType
 import com.example.pages.GenericPage
 import com.example.pages.Page.AnyPage
+import com.example.pages.BaseHandPage
 
 object TablePage {
 
@@ -130,6 +131,24 @@ class TablePage( dupid: String,
   def clickInputStyle(implicit patienceConfig: PatienceConfig, pos: Position) = {
     clickButton("InputStyle")
     this
+  }
+
+  def getInputStyle(
+      implicit webDriver: WebDriver,
+      patienceConfig: PatienceConfig,
+      pos: Position
+  ): Option[String] = {
+    BaseHandPage.getInputStyle
+  }
+
+  def setInputStyle(
+      want: String
+  )(
+      implicit
+      webDriver: WebDriver,
+      pos: Position
+  ): Option[String] = {
+    BaseHandPage.setInputStyle(want)
   }
 
 }

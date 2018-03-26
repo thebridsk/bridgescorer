@@ -171,14 +171,15 @@ import ScoreboardPage._
 import com.example.pages.duplicate.TablePage.EnterNames
 import com.example.pages.GenericPage
 import org.openqa.selenium.NoSuchElementException
+import com.example.pages.bridge.Popup
 
 class ScoreboardPage(
                       val dupid: Option[String] = None,
                       val view: ScoreboardPage.ViewType = ScoreboardPage.CompletedViewType
                     )( implicit
-                        webDriver: WebDriver,
+                        val webDriver: WebDriver,
                         pageCreated: SourcePosition
-                    ) extends Page[ScoreboardPage] {
+                    ) extends Page[ScoreboardPage] with Popup[ScoreboardPage] {
 
   private def validateInternal(implicit patienceConfig: PatienceConfig, pos: Position) = logMethod(s"${pos.line} ${getClass.getSimpleName}.validate") { eventually {
     val (did,viewFromUrl) = findDuplicateId
@@ -332,21 +333,6 @@ class ScoreboardPage(
     }
   }
 
-  def isPopupDisplayed(implicit pos: Position) = {
-    try {
-      find( id("popup") ).isDisplayed
-    } catch {
-      case x: NoSuchElementException => false
-    }
-  }
-
-  def validatePopup( visible: Boolean = true )(implicit patienceConfig: PatienceConfig, pos: Position) = {
-    eventually {
-      isPopupDisplayed mustBe visible
-    }
-    this
-  }
-
   def clickDelete(implicit patienceConfig: PatienceConfig, pos: Position) = {
     eventually {
       clickButton("Delete")
@@ -354,20 +340,11 @@ class ScoreboardPage(
     this
   }
 
-  def clickDeleteOK(implicit patienceConfig: PatienceConfig, pos: Position) = {
-    eventually {
-      isPopupDisplayed mustBe true
-      clickButton("PopUpOk")
-      ListDuplicatePage.current
-    }
-  }
 
-  def clickDeleteCancel(implicit patienceConfig: PatienceConfig, pos: Position) = {
-    eventually {
-      isPopupDisplayed mustBe true
-      clickButton("PopUpCancel")
-      this
-    }
+  def clickDeleteOk(implicit patienceConfig: PatienceConfig, pos: Position) = {
+    clickPopUpOk
+    Thread.sleep(200L)
+    ListDuplicatePage.current
   }
 
   /**

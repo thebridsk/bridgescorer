@@ -1083,9 +1083,9 @@ class DuplicateTestPages extends FlatSpec
 
     val pop = dsb.clickDelete.validatePopup()
     Thread.sleep(2000L)
-    val dsb2 = pop.clickDeleteCancel.validatePopup(false)
+    val dsb2 = pop.clickPopUpCancel.validatePopup(false)
 
-    val listpage = dsb2.clickDelete.validatePopup().clickDeleteOK.validate
+    val listpage = dsb2.clickDelete.validatePopup().clickDeleteOk.validate
     listpage.getMatchIds must not contain dupid2.get
   }
 

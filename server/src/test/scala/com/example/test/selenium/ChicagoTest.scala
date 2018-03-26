@@ -24,6 +24,7 @@ import com.example.test.util.MonitorTCP
 import com.example.backend.BridgeServiceFileStoreConverters
 import com.example.backend.MatchChicagoCacheStoreSupport
 import com.example.pages.PageBrowser
+import com.example.test.TestStartLogging
 
 /**
  * @author werewolf
@@ -52,6 +53,8 @@ class ChicagoTest extends FlatSpec with MustMatchers with BeforeAndAfterAll with
   val chicagoToListId: Option[String] = Some("Quit")
 
   implicit val timeoutduration = Duration( 60, TimeUnit.SECONDS )
+
+  TestStartLogging.startLogging()
 
   override
   def beforeAll() = {
