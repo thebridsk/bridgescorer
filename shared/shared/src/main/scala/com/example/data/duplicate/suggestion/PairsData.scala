@@ -291,6 +291,7 @@ class Stat( val colorBy: ColorBy ) {
   def max = vmax
   def min = vmin
   def ave = if (number == 0) 0.0 else total/number
+  def n = number
 
   def size( pd: PairData, sizemin: Int, sizemax: Int ): Int = {
     val v = colorBy.value(pd)
@@ -325,7 +326,7 @@ class Stat( val colorBy: ColorBy ) {
    * @param sizemin must be greater than 0
    * @param sizemax must be greater than sizemin
    * @return tuple2.  the first entry is a boolean, true indicates above average.
-   * The second is the distance from average (smin - smax).  zero indicates average.
+   * The second is the distance from average, 0-1.  zero indicates average. a 1 indicates min or max
    */
   def sizeAveAsFraction( pd: PairData ): (Boolean,Double) = {
     val v = colorBy.value(pd)

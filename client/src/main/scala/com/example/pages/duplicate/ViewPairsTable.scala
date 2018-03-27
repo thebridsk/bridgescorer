@@ -196,6 +196,12 @@ object ViewPairsTableInternal {
         override
         val showIn: List[CalculationType] = CalculationAsPlayed::CalculationMP::Nil
       },
+      // This entry will get replaced in the render method.
+      new StatColumn( "NormalizedIMP", "Normalized IMP", (v: Double) => f"$v%.2f" ) {
+        def getValue( pd: PairData ) = pd.avgIMP
+        override
+        val showIn: List[CalculationType] = CalculationAsPlayed::CalculationIMP::Nil
+      },
       new IMPColumn( "IMP", "IMP" )(MultiColumnSort.create("IMP","WonPct")) {
         def getValue( pd: PairData ) = pd.avgIMP
         override
@@ -284,35 +290,6 @@ object ViewPairsTableInternal {
       props.filter.pairsData match {
         case Some(fpd) =>
 
-          val statPts = new Stat(ColorByPtsPer)
-          val statIMP = new Stat(ColorByIMP)
-
-          Stat.addPairs(fpd.data.values, None, statPts, statIMP)
-
-          val minMP = statPts.min
-          val maxMP = statPts.max
-          val minIMP = statIMP.min
-          val maxIMP = statIMP.max
-
-          val diffMP = maxMP - minMP
-          val diffIMP = maxIMP - minIMP
-
-          val hiddenColumn = new StatColumn( "Hidden1", "Normalize(Point%,IMP)", (v: Double) => f"$v%.2f", !state.showHidden ) {
-            def getValue( pd: PairData ) = {
-              val mpV = (pd.pointsPercent-minMP)/diffMP
-              val mpW = pd.playedMP
-              val impV = (pd.avgIMP-minIMP)/diffIMP
-              val impW = pd.playedIMP
-              (mpV*mpW+impV*impW)/(mpW+impW)
-            }
-          }
-
-          val hiddenColumns: List[StatColumn[Any]] = hiddenColumn::Nil
-
-          val allColumns: List[StatColumn[Any]] = (if (props.showPairs) pairColumns else peopleColumns):::
-                                                  columns :::
-                                                  hiddenColumns
-
           val pd =
             if (fpd.calc == state.calc) fpd
             else PairsData( fpd.pastgames, state.calc )
@@ -324,6 +301,56 @@ object ViewPairsTableInternal {
             val summary = new PairsDataSummary(pd, ColorByWonPct, props.filter.selected, ColorByPlayed)
             summary.playerTotals.values.toList
           }
+
+          val statPts = new Stat(ColorByPtsPer)
+          val statIMP = new Stat(ColorByIMP)
+
+          Stat.addPairs(pds, None, statPts, statIMP)
+
+          val minMP = statPts.min
+          val maxMP = statPts.max
+          val minIMP = statIMP.min
+          val maxIMP = statIMP.max
+
+          val diffMP = {
+            if (statPts.n == 0) 0.0
+            else maxMP - minMP
+          }
+          val diffIMP = {
+            if (statIMP.n == 0) 0.0
+            else maxIMP - minIMP
+          }
+
+          val hiddenColumn = new StatColumn( "Hidden1", "Normalize(Point%,IMP)", (v: Double) => f"$v%.2f", !state.showHidden ) {
+            def getValue( pd: PairData ) = {
+              val mpV = if (diffMP == 0.0) 0.0 else (pd.pointsPercent-minMP)/diffMP
+              val mpW = pd.playedMP
+              val impV = if (diffIMP == 0.0) 0.0 else (pd.avgIMP-minIMP)/diffIMP
+              val impW = pd.playedIMP
+              if (mpW+impW == 0) 0.0 else (mpV*mpW+impV*impW)/(mpW+impW)
+            }
+          }
+
+          val normalizedIMPColumn: StatColumn[Any] = new StatColumn( "NormalizedIMP", "Normalized IMP", (v: Double) => f"$v%.2f" ) {
+            def getValue( pd: PairData ) = {
+              val r =
+              if (diffIMP == 0.0) 0.0
+              else 100.0*(pd.avgIMP-minIMP)/diffIMP
+
+//              logger.fine( f"NormalizedIMPColumn ${pd.player1} ${r}%.2f, min=${minIMP}%.2f, max=${maxIMP}%.2f, avgIMP=${pd.avgIMP}%.2f" )
+              r
+            }
+            override
+            val showIn: List[CalculationType] = CalculationAsPlayed::CalculationIMP::Nil
+          }
+
+          val iCols = columns.map( c => if (c.id == normalizedIMPColumn.id) normalizedIMPColumn else c )
+
+          val hiddenColumns: List[StatColumn[Any]] = hiddenColumn::Nil
+
+          val allColumns: List[StatColumn[Any]] = (if (props.showPairs) pairColumns else peopleColumns):::
+                                                  iCols :::
+                                                  hiddenColumns
 
           val cols = allColumns.filter( c => c.isUsed(state.calc) )
 
