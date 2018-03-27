@@ -45,12 +45,12 @@ import play.api.libs.json.JsObject
 import com.example.graphql.GraphQLClient
 import play.api.libs.json.JsDefined
 import play.api.libs.json.JsUndefined
-import com.example.graphql.GraphQLResponse
 import play.api.libs.json.Json
 import play.api.libs.json.JsResult
 import play.api.libs.json.JsSuccess
 import play.api.libs.json.JsError
 import com.example.pages.BaseStyles
+import com.example.data.graphql.GraphQLProtocol.GraphQLResponse
 
 /**
  * Shows a summary page of all duplicate matches from the database.

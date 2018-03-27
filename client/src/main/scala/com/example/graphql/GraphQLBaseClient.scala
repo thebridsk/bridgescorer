@@ -16,50 +16,18 @@ import scala.concurrent.ExecutionContext
 import com.example.source.SourcePosition
 import org.scalajs.dom.ext.AjaxException
 import com.example.rest2.AjaxErrorReturn
-
-// Errors from graphql api:
-// {"data":null,"errors":[
-//  { "message":"Cannot query field 'xxx' on type 'Query'. (line 1, column 3):\n{ xxx }\n  ^",
-//    "locations":[{"line":1,"column":3}]
-//  }]}
-// {"error":"Syntax error while parsing GraphQL query. Invalid input 'x', expected OperationDefinition, FragmentDefinition or TypeSystemDefinition (line 1, column 1):\nxxx\n^"}
-
-case class ErrorLocation( line: Option[Int], column: Option[Int] ) {
-  override
-  def toString() = s"""${line.getOrElse("unknown")}:${column.map(i=>i.toString()).getOrElse("unknown")}"""
-}
-
-case class ErrorMessage( message: Option[String], locations: Option[List[ErrorLocation]] ) {
-  override
-  def toString() = s"""${message.getOrElse("")} from location ${locations.map(l=>l.mkString(", ")).getOrElse("")}"""
-}
-
-case class GraphQLResponse( data: Option[JsValue], error: Option[String], errors: Option[List[ErrorMessage]], extensions: Option[JsValue] ) {
-
-  def getError() = {
-    val er = error.toList:::errors.map(l=>l.map(e=>e.toString())).getOrElse(Nil)
-    er.mkString("\n")
-  }
-
-  def getResponse[T]( url: String)( implicit reads: Reads[T], classtag: ClassTag[T], xpos: Position ): Option[T] = {
-    data.map { j =>
-      AjaxResult.fromJsonValue[T]( j, url )
-    }
-  }
-
-  def hasData = data.isDefined
-}
+import com.example.data.graphql.GraphQLProtocol._
 
 class Query[Variables](
                         query: String,
-                        client: GraphQLRequest
+                        client: GraphQLBaseClient
                       )(
                         implicit
                           writer: Writes[Variables],
                           xpos: Position
                       ) {
 
-  import GraphQLRequest._
+  import GraphQLBaseClient._
 
   def execute( variables: Option[Variables],
                operation: Option[String] = None,
@@ -73,9 +41,9 @@ class Query[Variables](
 
 class GraphQLException( val error: GraphQLResponse, cause: Throwable = null ) extends Exception( error.getError(), cause )
 
-object GraphQLRequest {
+object GraphQLBaseClient {
 
-  val log = Logger("bridge.GraphQLRequest")
+  val log = Logger("bridge.GraphQLBaseClient")
 
   val headersForPost=Map("Content-Type" -> "application/json; charset=UTF-8",
                          "Accept" -> "application/json")
@@ -89,18 +57,15 @@ object GraphQLRequest {
 
   }
 
-  implicit val errorLocationFormat = Json.format[ErrorLocation]
-  implicit val ErrorMessageFormat = Json.format[ErrorMessage]
-  implicit val graphQLResponseFormat = Json.format[GraphQLResponse]
 }
 
-class GraphQLRequest(
+class GraphQLBaseClient(
                       val url: String
                     )(
                       implicit
                         executor: ExecutionContext
                     ) {
-  import GraphQLRequest._
+  import GraphQLBaseClient._
   import scala.language.implicitConversions
 
   def toGraphQLResponse( json: JsValue ) = {
