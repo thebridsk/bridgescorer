@@ -252,15 +252,30 @@ object ColorByWonPtsPct extends ColorBy {
   def n( pd: PairData): Int = pd.played
 }
 object ColorByPointsPct extends ColorBy {
-  val name = "Points Percent";
+  val name = "Pts%";
   def value( pd: PairData ): Double = pd.pointsPercent
   def n( pd: PairData): Int = pd.playedMP
+}
+object ColorByIMP extends ColorBy {
+  val name = "avgIMP";
+  def value( pd: PairData ): Double = pd.avgIMP
+  def n( pd: PairData): Int = pd.playedIMP
 }
 
 object ColorByPlayed extends ColorBy {
   val name = "Played";
   def value( pd: PairData ): Double = pd.played
   def n( pd: PairData): Int = pd.played
+}
+object ColorByPlayedMP extends ColorBy {
+  val name = "PlayedMP";
+  def value( pd: PairData ): Double = pd.playedMP
+  def n( pd: PairData): Int = pd.playedMP
+}
+object ColorByPlayedIMP extends ColorBy {
+  val name = "PlayedIMP";
+  def value( pd: PairData ): Double = pd.playedIMP
+  def n( pd: PairData): Int = pd.playedIMP
 }
 
 class Stat( val colorBy: ColorBy ) {
@@ -291,6 +306,7 @@ class Stat( val colorBy: ColorBy ) {
   def max = vmax
   def min = vmin
   def ave = if (number == 0) 0.0 else total/number
+  def n = number
 
   def size( pd: PairData, sizemin: Int, sizemax: Int ): Int = {
     val v = colorBy.value(pd)
@@ -325,7 +341,7 @@ class Stat( val colorBy: ColorBy ) {
    * @param sizemin must be greater than 0
    * @param sizemax must be greater than sizemin
    * @return tuple2.  the first entry is a boolean, true indicates above average.
-   * The second is the distance from average (smin - smax).  zero indicates average.
+   * The second is the distance from average, 0-1.  zero indicates average. a 1 indicates min or max
    */
   def sizeAveAsFraction( pd: PairData ): (Boolean,Double) = {
     val v = colorBy.value(pd)
@@ -401,18 +417,18 @@ class PairsDataSummary( pds: PairsData, colorBy: ColorBy, filter: Option[List[St
     }
   }
 
-  val extraStatsPlayer = extraColorBy.map( e => new Stat(e) ).toList
+  val extraStatsPlayerTotals = extraColorBy.map( e => new Stat(e) ).toList
   val colorStatPlayerTotals = new Stat(colorBy)
 
 
 
-  Stat.addPairsPlayer1(playerTotals.values, filter, colorStatPlayerTotals::extraStatsPlayer :_*)
+  Stat.addPairsPlayer1(playerTotals.values, filter, colorStatPlayerTotals::extraStatsPlayerTotals :_*)
 
   val extraStats = extraColorBy.map( e => new Stat(e) ).toList
   val colorStat = new Stat(colorBy)
   Stat.add(pds, filter, colorStat::extraStats :_*)
 
-  log.fine( f"player ${extraColorBy.map(e => f"${e.name}").mkString(",")} min=${extraStatsPlayer.map(e => f"${e.min}%.0f").mkString(",")} max=${extraStatsPlayer.map(e => f"${e.max}%.0f").mkString(",")} ave=${extraStatsPlayer.map(e => f"${e.ave}%.0f").mkString(",")}" )
+  log.fine( f"player ${extraColorBy.map(e => f"${e.name}").mkString(",")} min=${extraStatsPlayerTotals.map(e => f"${e.min}%.0f").mkString(",")} max=${extraStatsPlayerTotals.map(e => f"${e.max}%.0f").mkString(",")} ave=${extraStatsPlayerTotals.map(e => f"${e.ave}%.0f").mkString(",")}" )
   log.fine( f"player ${colorBy.name} min=${colorStatPlayerTotals.min}%.0f max=${colorStatPlayerTotals.max}%.0f ave=${colorStatPlayerTotals.ave}%.2f" )
 
   log.fine( f"total ${extraColorBy.map(e => f"${e.name}").mkString(",")} min=${extraStats.map(e => f"${e.min}%.0f").mkString(",")} max=${extraStats.map(e => f"${e.max}%.0f").mkString(",")} ave=${extraStats.map(e => f"${e.ave}%.0f").mkString(",")}" )

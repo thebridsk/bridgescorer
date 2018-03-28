@@ -378,9 +378,21 @@
   list-style-type: none;
 }
 
+/*
+This underlines the element with a data-title when displaying it.
+*/
+/*
 [data-title] {
     border-bottom: 1px dashed rgba(0, 0, 0, 0.2);
     border-radius:2px;
+    position: relative;
+    white-space: pre;
+    size: auto;
+    text-align: left;
+}
+*/
+
+[data-title] {
     position: relative;
     white-space: pre;
     size: auto;
@@ -433,6 +445,14 @@ body [data-title]:hover:after {
 .piechart {
   transform: rotate(-0.25turn);
   display: block;
+}
+
+.svgrect {
+  display: block;
+}
+
+.colorbar > div {
+  border: 1px solid black;
 }
 
 .tableStats {

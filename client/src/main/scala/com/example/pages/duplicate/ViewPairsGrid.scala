@@ -32,6 +32,17 @@ import com.example.data.duplicate.suggestion.ColorByPlayed
 import com.example.pages.BaseStyles
 import com.example.react.HSLColor
 import com.example.react.ColorBar
+import com.example.data.duplicate.suggestion.CalculationType
+import com.example.data.duplicate.suggestion.CalculationAsPlayed
+import com.example.data.duplicate.suggestion.ColorByIMP
+import com.example.data.duplicate.suggestion.CalculationMP
+import com.example.data.duplicate.suggestion.CalculationIMP
+import com.example.react.StatsTable
+import com.example.react.PieChartTable
+import com.example.react.PieChartTable.Column
+import com.example.react.PieChartTable.Row
+import com.example.react.PieChartTable.Data
+import com.example.react.PieChartTable.Cell
 
 /**
  * Shows a pairs summary page.
@@ -67,98 +78,6 @@ object ViewPairsGridInternal {
 
   val logger = Logger("bridge.ViewPairsGrid")
 
-  val SummaryHeader = ScalaComponent.builder[(Props,State,Backend,List[String])]("PairsHeader")
-                        .render_P( args => {
-                          val (props,state,backend,players) = args
-                          <.thead(
-                            <.tr(
-                              <.th("Players"),
-                              players.filter( e => props.filter.isPlayerShown(e) ).map( p => <.th( p ) ).toTagMod,
-                              <.th("Totals")
-                            )
-                          )
-                        }).build
-
-  val titleAttr    = VdomAttr("data-title")
-
-  val SummaryRow = ScalaComponent.builder[(Props,State,String,List[String],Stat,Stat,PairData,Stat,Stat)]("PairsRow")
-                      .render_P( args => {
-                        val (props,state,rowplayer, players, colorStat, sizeStat,
-                             playerTotal,playedStatPlayerTotals,colorStatPlayerTotals) = args
-                        val pds = props.filter.pairsData.get
-                        val colorBy = state.colorBy
-
-                        // Hue 0 - red, yellow - 60, 120 - green, 240 - blue
-                        // Saturation 0 - gray, 1 - full color
-                        // lightness 0 - black, 1 - white
-
-                        def rectangleTotal( pd: PairData, sizeSt: Stat, colorSt: Stat ) = {
-                          if (pd.played == 0) EmptyVdom
-                          else {
-                            val (bcolor, light) = colorSt.sizeAveAsFraction(pd)
-                            val lightness = light*0.75+0.25
-                            val size = sizeSt.size(pd, state.minSize*2, state.maxSize*2)
-                            val (color,scolor) = if (bcolor) {
-                              // above average, blue
-                              (HSLColor( 240, 1, lightness ), f"hsl(240,1,${lightness}%.2f)" )
-                            } else {
-                              // below average, red
-                              (HSLColor( 60, 1, lightness ), f"hsl(60,1,${lightness}%.2f)" )
-                            }
-                            val title = f"""Played ${pd.played},\nWon ${pd.won} (${pd.winPercent}%.2f%%),\nWonPoints ${pd.wonPts}%.2f (${pd.winPtsPercent}%.2f%%),\nPoints ${pd.points}%.1f (${pd.pointsPercent}%.2f%%)""" // \n${scolor}"""
-                            TagMod(
-                              <.div( ^.backgroundColor:=color.toHex,
-                                     ^.width:=size.px,
-                                     ^.height:=20.px
-                                   ),
-                              titleAttr:=title,
-                              baseStyles.hover
-                            )
-                          }
-                        }
-
-                        def rectangle( pd: PairData, sizeSt: Stat, colorSt: Stat ) = {
-                          val (bcolor, light) = colorSt.sizeAveAsFraction(pd)
-                          val lightness = light*0.75+0.25
-                          val size = sizeSt.size(pd, state.minSize, state.maxSize)
-                          val (color,scolor) = if (bcolor) {
-                            // above average, green
-                            (HSLColor( 120, 1, lightness ), f"hsl(120,1,${lightness}%.2f)" )
-                          } else {
-                            // below average, red
-                            (HSLColor( 0, 1, lightness ), f"hsl(0,1,${lightness}%.2f)" )
-                          }
-                          val title = f"""Played ${pd.played},\nWon ${pd.won} (${pd.winPercent}%.2f%%),\nWonPoints ${pd.wonPts}%.2f (${pd.winPtsPercent}%.2f%%),\nPoints ${pd.points}%.1f (${pd.pointsPercent}%.2f%%)""" /// \n${scolor}"""
-                          TagMod(
-                            <.div( ^.backgroundColor:=color.toHex,
-                                   ^.width:=size.px,
-                                   ^.height:=20.px
-                                 ),
-                            titleAttr:=title,
-                            baseStyles.hover
-                          )
-                        }
-
-                        def square(colPlayer: String ) = {
-                          if (rowplayer == colPlayer) {
-                            TagMod("x")
-                          } else {
-                            pds.get(rowplayer, colPlayer) match {
-                              case Some(pd) =>
-                                rectangle(pd,sizeStat,colorStat)
-                              case None =>
-                                EmptyVdom
-                            }
-                          }
-                        }
-
-                        <.tr(
-                          <.td( rowplayer ),
-                          players.filter( e => props.filter.isPlayerShown(e) ).map( p => <.td( square(p) ) ).toTagMod,
-                          <.td( rectangleTotal(playerTotal, playedStatPlayerTotals, colorStatPlayerTotals) )
-                        )
-                      }).build
-
   /**
    * Internal state for rendering the component.
    *
@@ -166,9 +85,12 @@ object ViewPairsGridInternal {
    * will cause State to leak.
    *
    */
-  case class State( colorBy: ColorBy = ColorByWonPct,
+  case class State(
+                    calc: CalculationType,
+                    initialCalc: CalculationType,
+                    colorBy: ColorBy = ColorByWonPct,
                     maxSize: Int = 60,
-                    minSize: Int = 2
+                    minSize: Int = 5
                   )
 
   /**
@@ -195,6 +117,58 @@ object ViewPairsGridInternal {
     (below,middle,above)
   }
 
+//  case class Data[+TColor](
+//    size: Int,
+//    color: List[TColor],
+//    value: List[Double],
+//    title: Option[String] = None,
+//    size2: Int = 0,
+//    showX: Boolean = false
+//  )
+
+
+  /**
+   * @param pd
+   * @param sizeSt the stat for determining size of bar
+   * @param colorSt the stat for determining the color of the bar
+   * @param colorAbove the hue of the color to use if pd is above average
+   * @param colorBelow the hue of the color to use if pd is below average
+   * @param state
+   * @param sizeMultiplier multiply the size to make the bar bigger. (1 - player,player, 2 - total column)
+   * @return a tuple2, the data and the title.
+   */
+  def getData( pd: PairData, sizeSt: Stat, colorSt: Stat, colorAbove: Double, colorBelow: Double, state: State, sizeMultiplier: Int ): (Data,String) = {
+    val (bcolor, light) = colorSt.sizeAveAsFraction(pd)
+    val lightness = light*0.75+0.25
+    val size = sizeSt.size(pd, state.minSize*sizeMultiplier, state.maxSize*sizeMultiplier)
+    val (color,scolor) = if (bcolor) {
+      // above average, green
+      (HSLColor( colorAbove, 1, lightness ), f"hsl(${colorAbove},1,${lightness}%.2f)" )
+    } else {
+      // below average, red
+      (HSLColor( colorBelow, 1, lightness ), f"hsl(${colorBelow},1,${lightness}%.2f)" )
+    }
+    val title = f"""Played ${pd.played},
+                   |Won ${pd.won+pd.wonImp} (${pd.winPercent}%.2f%%),
+                   |WonPoints ${pd.wonPts+pd.wonImpPts}%.2f (${pd.winPtsPercent}%.2f%%)""".stripMargin
+    val titleMP = if (state.calc != CalculationIMP) {
+                    f""",
+                       |Points ${pd.points}%.0f (${pd.pointsPercent}%.2f%%)""".stripMargin
+    } else {
+      ""
+    }
+    val titleIMP = if (state.calc != CalculationMP) {
+                    f""",
+                       |IMP ${pd.avgIMP}%.2f""".stripMargin
+    } else {
+      ""
+    }
+
+    (Data( size, List( color ), List(1.0), None, 20 ), title+titleMP+titleIMP)
+  }
+
+  def color( c: Color ) = c
+
   /**
    * Internal state for rendering the component.
    *
@@ -206,10 +180,28 @@ object ViewPairsGridInternal {
 
     def setColorBy( colorBy: ColorBy ) = scope.modState { s => s.copy(colorBy=colorBy) }
 
+    def setCalc( calc: CalculationType ) = scope.modState { s =>
+      val colorBy = calc match {
+        case CalculationAsPlayed =>
+          s.colorBy
+        case CalculationMP =>
+          if (s.colorBy == ColorByIMP) ColorByPointsPct
+          else s.colorBy
+        case CalculationIMP =>
+          if (s.colorBy == ColorByPointsPct) ColorByIMP
+          else s.colorBy
+      }
+      s.copy(colorBy=colorBy, calc=calc)
+    }
+
     def render( props: Props, state: State ) = {
 
       props.filter.pairsData match {
-        case Some(pds) if !pds.players.isEmpty =>
+        case Some(rawpds) if !rawpds.players.isEmpty =>
+          val pds = {
+            if (rawpds.calc == state.calc) rawpds
+            else PairsData( rawpds.pastgames, state.calc )
+          }
           val summary = new PairsDataSummary( pds, state.colorBy, props.filter.selected, ColorByPlayed )
           val allPlayers = summary.players.sorted
           val sortedPlayers = summary.playerFilter.sorted
@@ -223,25 +215,54 @@ object ViewPairsGridInternal {
             )
           }
 
+          val statColor = summary.colorStat
+          val statSize = summary.extraStats.head
+
+          val statTotalColor = summary.colorStatPlayerTotals
+          val statTotalSize = summary.extraStatsPlayerTotals.head
+
           val n = 10
-          val (titlesBelow, titleWhite, titlesAbove) = stepTitles( summary.colorStat, n )
-          val (titlesTBelow, titleTWhite, titlesTAbove) = stepTitles( summary.colorStatPlayerTotals, n )
+          val (titlesBelow, titleWhite, titlesAbove) = stepTitles( statColor, n )
+          val (titlesTBelow, titleTWhite, titlesTAbove) = stepTitles( statTotalColor, n )
+
+          val shownSortedPlayers = sortedPlayers.filter( p => props.filter.isPlayerShown(p) )
+
+          val columns = sortedPlayers.map( p => Column(p) ):::List( Column( "Totals" ) )
+
+          val cellX = Cell(List(), showX = true)
+          val rows = shownSortedPlayers.map { rowplayer =>
+            val data: List[Cell] = shownSortedPlayers.map { colPlayer =>
+              val d = if (rowplayer == colPlayer) {
+                cellX
+              } else {
+                pds.get(rowplayer, colPlayer) match {
+                  case Some(pd) =>
+                    val (data,title) = getData(pd, statSize, statColor, 120, 0, state, 1)
+                    Cell(List( data ), Some(title))
+                  case None =>
+                    Cell(List())
+                }
+              }
+              d
+            }
+            val playerTotals = summary.playerTotals.get(rowplayer).getOrElse(PairData(rowplayer,"",0,0,0,0,0,0,None,0,0,0,0,0))
+
+            val (totalData, totalTitle) = getData(playerTotals, statTotalSize, statTotalColor, 240, 60, state, 2)
+
+            val totalDataList = List(Cell(List(totalData), Some(totalTitle)))
+
+            Row( rowplayer, data:::totalDataList)
+          }
 
           <.div(
             dupStyles.divPairsGrid,
-            <.table(
-                ^.id:="PairsGrid",
-                dupStyles.tablePairsGrid,
-                <.caption(
-                  "Results ",
-//                  getButton( ColorByWon, "ColorByWon", "By won" ),
-                  getButton( ColorByWonPct, "ColorByWonPct", "By Won %" ),
-//                  getButton( ColorByWonPts, "ColorByWonPts", "By WonPoints" ),
-                  getButton( ColorByWonPtsPct, "ColorByWonPtsPct", "By WonPoints %" ),
-                  getButton( ColorByPointsPct, "ColorByPointsPct", "By Points %" )
-                ),
-                SummaryHeader((props,state,this,sortedPlayers)),
-                <.tfoot(
+            PieChartTable(
+              firstColumn = Column("Player"),
+              columns = columns,
+              rows = rows,
+              header = None,
+              footer = Some(
+                TagMod(
                   <.tr(
                     <.td(
                       ^.colSpan:=sortedPlayers.length+1,
@@ -265,23 +286,41 @@ object ViewPairsGridInternal {
                       ColorBar( 60, 0.25, 240, 0.25, n, titlesTBelow, titlesTAbove, titleTWhite )
                     )
                   )
-                ),
-                <.tbody(
-                  sortedPlayers.zipWithIndex.filter( e => props.filter.isPlayerShown(e._1) ).map { e =>
-                    val (rowplayer,i) = e
-                    //      SummaryRow args:        (props,state,rowplayer, players, colorStat, sizeStat)
-                    SummaryRow.withKey( s"PD${i}" )(( props,
-                                                      state,
-                                                      rowplayer,
-                                                      sortedPlayers,
-                                                      summary.colorStat,
-                                                      summary.extraStats.head,
-                                                      summary.playerTotals.get(rowplayer).getOrElse(PairData(rowplayer,"",0,0,0,0,0,0,None,0,0,0,0,0)),
-                                                      summary.extraStatsPlayer.head,
-                                                      summary.colorStatPlayerTotals
-                                                   ))
-                  }.toTagMod
                 )
+              ),
+              totalRows = None,
+              caption = Some(
+                TagMod(
+                  "Results ",
+                  AppButton(
+                      "CalcPlayed",
+                      "as played",
+                      BaseStyles.highlight(selected = state.calc == CalculationAsPlayed),
+                      ^.onClick --> setCalc( CalculationAsPlayed )
+                  ),
+                  AppButton(
+                      "CalcMP",
+                      "by MP",
+                      BaseStyles.highlight(selected = state.calc == CalculationMP),
+                      ^.onClick --> setCalc( CalculationMP )
+                  ),
+                  AppButton(
+                      "CalcIMP",
+                      "by IMP",
+                      BaseStyles.highlight(selected = state.calc == CalculationIMP),
+                      ^.onClick --> setCalc( CalculationIMP )
+                  ),
+                  " color by ",
+                  getButton( ColorByWonPct, "ColorByWonPct", "Won %" ),
+                  getButton( ColorByWonPtsPct, "ColorByWonPtsPct", "WonPoints %" ),
+                  if (state.calc != CalculationIMP) getButton( ColorByPointsPct, "ColorByPointsPct", "Points %" )
+                  else TagMod(),
+                  if (state.calc != CalculationMP) getButton( ColorByIMP, "ColorByIMP", "IMP" )
+                  else TagMod()
+                )
+              ),
+              x = TagMod( "X" ),
+              usePieCharts = false
             )
           )
         case Some(pds) =>
@@ -299,7 +338,21 @@ object ViewPairsGridInternal {
   }
 
   val component = ScalaComponent.builder[Props]("ViewPairsGrid")
-                            .initialStateFromProps { props => State() }
+                            .initialStateFromProps { props =>
+                              props.filter.pairsData match {
+                                case Some(pd) =>
+                                  val anyMP = pd.pastgames.find( ds => ds.isMP ).isDefined
+                                  val anyIMP = pd.pastgames.find( ds => ds.isIMP ).isDefined
+                                  val calc: CalculationType =
+                                    if (anyMP == anyIMP) CalculationAsPlayed
+                                    else if (anyMP) CalculationMP
+                                    else CalculationIMP
+                                  State( calc = calc, initialCalc = calc )
+                                case None =>
+                                  val calc: CalculationType = CalculationMP
+                                  State( calc = calc, initialCalc = calc )
+                              }
+                            }
                             .backend(new Backend(_))
                             .renderBackend
                             .build

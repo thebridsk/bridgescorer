@@ -931,9 +931,12 @@ class DuplicateTestPages extends FlatSpec
 
     dupid match {
       case Some(id) =>
-        val page = ScoreboardPage.current.takeScreenshot(docsScreenshotDir, "FinalScoreboard").clickSummary.validate( id )
-        page.takeScreenshot(docsScreenshotDir, "ListDuplicate")
-        page.checkResults(id, listDuplicateResult:_*)
+        val page = ScoreboardPage.current
+        Thread.sleep(100)
+        page.takeScreenshot(docsScreenshotDir, "FinalScoreboard")
+        val lp = page.clickSummary.validate( id )
+        lp.takeScreenshot(docsScreenshotDir, "ListDuplicate")
+        lp.checkResults(id, listDuplicateResult:_*)
       case None =>
         ScoreboardPage.current.clickSummary.validate
     }

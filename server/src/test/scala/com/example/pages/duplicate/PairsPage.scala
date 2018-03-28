@@ -41,6 +41,7 @@ case class PeopleRow( name: String,
                       percentWon: String,
                       percentWonPoints: String,
                       percentMP: String,
+                      normalizedIMP: String,
                       imps: String,
                       wonMP: String,
                       wonMPPoints: String,
@@ -69,6 +70,7 @@ case class PeopleRowMP( name: String,
 case class PeopleRowIMP( name: String,
                          percentWon: String,
                          percentWonPoints: String,
+                         normalizedIMP: String,
                          imps: String,
                          WonImp: String,
                          WonImpPoints: String,
@@ -156,8 +158,8 @@ class PairsPage( implicit webDriver: WebDriver, pageCreated: SourcePosition ) ex
 
   def getPlayerTablePlayed(implicit patienceConfig: PatienceConfig, pos: Position) = {
     getPlayerTableScoringStyle mustBe Some("CalcPlayed")
-    getElemsByXPath("""//div[contains(concat(' ', @class, ' '), ' dupViewPeopleTable ')]/table/tbody/tr/td""").map(e=>e.text).grouped(15).map{ list =>
-      PeopleRow(list(0),list(1),list(2),list(3),list(4),list(5),list(6),list(7),list(8),list(9),list(10),list(11),list(12),list(13),list(14))
+    getElemsByXPath("""//div[contains(concat(' ', @class, ' '), ' dupViewPeopleTable ')]/table/tbody/tr/td""").map(e=>e.text).grouped(16).map{ list =>
+      PeopleRow(list(0),list(1),list(2),list(3),list(4),list(5),list(6),list(7),list(8),list(9),list(10),list(11),list(12),list(13),list(14),list(15))
     }.toList
   }
 
@@ -170,8 +172,8 @@ class PairsPage( implicit webDriver: WebDriver, pageCreated: SourcePosition ) ex
 
   def getPlayerTableIMP(implicit patienceConfig: PatienceConfig, pos: Position) = {
     getPlayerTableScoringStyle mustBe Some("CalcIMP")
-    getElemsByXPath("""//div[contains(concat(' ', @class, ' '), ' dupViewPeopleTable ')]/table/tbody/tr/td""").map(e=>e.text).grouped(8).map{ list =>
-      PeopleRowIMP(list(0),list(1),list(2),list(3),list(4),list(5),list(6),list(7))
+    getElemsByXPath("""//div[contains(concat(' ', @class, ' '), ' dupViewPeopleTable ')]/table/tbody/tr/td""").map(e=>e.text).grouped(9).map{ list =>
+      PeopleRowIMP(list(0),list(1),list(2),list(3),list(4),list(5),list(6),list(7),list(8))
     }.toList
   }
 

@@ -176,6 +176,7 @@ abstract class Page[ +T <: Page[T] ]()( implicit webDriver: WebDriver, pageCreat
     eventually {
       val we = findElemById(bid)
       PageBrowser.scrollToElement(we.underlying)
+      if (!we.underlying.isDisplayed()) Thread.sleep(100)
       we.click
     }
     self

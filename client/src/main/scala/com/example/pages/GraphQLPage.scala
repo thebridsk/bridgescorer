@@ -17,15 +17,14 @@ import com.example.version.VersionShared
 import com.example.react.AppButton
 import com.example.routes.AppRouter.Home
 import com.example.react.PopupOkCancel
-import com.example.graphql.GraphQLRequest
 import scala.concurrent.ExecutionContext.Implicits.global
 import play.api.libs.json.JsValue
 import play.api.libs.json.Json
 import scala.util.Success
 import scala.util.Failure
 import com.example.rest2.AjaxFailure
-import com.example.graphql.GraphQLResponse
 import com.example.graphql.GraphQLClient
+import com.example.data.graphql.GraphQLProtocol.GraphQLResponse
 
 /**
  * A skeleton component.
@@ -95,7 +94,6 @@ object GraphQLPageInternal {
     def clearResponse() = scope.modState( s => s.copy(response=None))
 
     def execute() = scope.state >>= { state => Callback {
-      import GraphQLRequest._
       state.query match {
         case Some(q) =>
           val x =
