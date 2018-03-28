@@ -292,7 +292,7 @@ object PageStatsInternal {
                     val (cols,vals) = s.histogram.map(cs => (colorMap(cs.tricks), cs.counter.toDouble)).unzip
                     if (ct == ContractTypePassed) {
                       val title = s"${s.player} in ${ct}\nPassed: ${s.handsPlayed}"
-                      Cell(List(Data( calcSize(s.handsPlayed, maxHandsPlayed) , colorTypePassed::Nil, s.handsPlayed.toDouble::Nil, Some(title) )))
+                      Cell(List(Data( calcSize(s.handsPlayed, maxHandsPlayed) , colorTypePassed::Nil, s.handsPlayed.toDouble::Nil )), Some(title))
                     } else {
                       val pre = s"${s.player} in ${ct} as ${if (s.declarer) "Declarer" else "Defender"}"
                       val title = s"${pre}\nTotal: ${s.handsPlayed}"+s.histogram.sortBy(cs=>cs.tricks).map { cs =>
@@ -302,7 +302,7 @@ object PageStatsInternal {
                         else if (cs.tricks == 10) f"  Passed : ${cs.counter} (${percent}%.2f%%)"
                         else f"  Made +${cs.tricks}: ${cs.counter} (${percent}%.2f%%)"
                       }.mkString("\n","\n","")
-                      Cell(List(Data( calcSize(s.handsPlayed, if (ct==ContractTypeTotal) maxHandsPlayedTotal else maxHandsPlayed) , cols, vals, Some(title) )))
+                      Cell(List(Data( calcSize(s.handsPlayed, if (ct==ContractTypeTotal) maxHandsPlayedTotal else maxHandsPlayed) , cols, vals )), Some(title))
                     }
 
                   }
@@ -326,7 +326,7 @@ object PageStatsInternal {
             val (ct,value, col) = entry
             f"${ct.toString()}: ${value} (${100.0*value/sum}%.2f%%)"
           }.mkString("\n  ","\n  ","\n  ")+f"${ContractTypePassed.toString()}: ${passedout.handsPlayed} (${100.0*passedout.handsPlayed/sum}%.2f%%)"
-          Cell(List(Data( calcSize( sum.toInt, maxHandsPlayedTotal ), cols:::(colorTypePassed::Nil), values:::(passedout.handsPlayed.toDouble::Nil), Some(title) )))
+          Cell(List(Data( calcSize( sum.toInt, maxHandsPlayedTotal ), cols:::(colorTypePassed::Nil), values:::(passedout.handsPlayed.toDouble::Nil) )), Some(title))
         }
 
         Row( p, byType(declarer,"Declarer")::byType(defender,"Defender")::(data.drop(1)) )   // drop passed declarer
@@ -455,7 +455,7 @@ object PageStatsInternal {
           val (ct,value, col) = entry
           f"${ct.toString()}: ${value} (${100*value/sum}%.2f%%)"
         }.mkString("\n  ","\n  ","")
-        Cell(List(Data( calcSize( sum.toInt, maxHandsPlayedTotal ), cols, values, Some(title) )))
+        Cell(List(Data( calcSize( sum.toInt, maxHandsPlayedTotal ), cols, values )), Some(title))
       }
 
       val first = byType( totalStats.take(totalStats.length-1))
@@ -479,7 +479,7 @@ object PageStatsInternal {
                 else if (cs.tricks == 10) f"  Passed : ${cs.counter} (${percent}%.2f%%)"
                 else f"  Made +${cs.tricks}: ${cs.counter} (${percent}%.2f%%)"
               }.mkString("\n","\n","")
-              Cell(List(Data( calcSize(s.handsPlayed, if (ct==ContractTypeTotal) maxHandsPlayedTotal else maxHandsPlayed) , cols, vals, Some(title) )))
+              Cell(List(Data( calcSize(s.handsPlayed, if (ct==ContractTypeTotal) maxHandsPlayedTotal else maxHandsPlayed) , cols, vals )), Some(title))
             }
 
           }
@@ -591,7 +591,7 @@ object PageStatsInternal {
                     else if (cs.tricks == 0) f"  Made   : ${cs.counter} (${percent}%.2f%%)"
                     else f"  Made +${cs.tricks}: ${cs.counter} (${percent}%.2f%%)"
                   }.mkString("\n","\n","")
-                  Cell(List( Data( calcSize(s.handsPlayed) , cols, vals, Some(title) ) ))
+                  Cell(List( Data( calcSize(s.handsPlayed) , cols, vals ) ), Some(title))
                 } else {
                   val celllist =
                     List( "", "*", "**" ).map { doubled =>

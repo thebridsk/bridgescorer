@@ -178,8 +178,13 @@ object PieChartTableInternal {
                             row.data.zip( props.columns ).map { entry =>
                               val (cell, col) = entry
                               <.td(
+                                cell.title.whenDefined( t =>
+                                  TagMod(
+                                    titleAttr:=t,
+                                    baseStyles.hover
+                                  )
+                                ),
                                 <.div(
-                                  cell.title.whenDefined( t => titleAttr:=t ),
                                   if (cell.showX) {
                                     props.x
                                   } else {

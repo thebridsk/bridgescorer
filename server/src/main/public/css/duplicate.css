@@ -74,9 +74,33 @@
   display: flex;
   flex-wrap: wrap;
   flex-direction: row;
+  padding: 3px;
 }
 .dupDivPairsGrid > table > tbody > tr > td:first-child {
   font-weight: bold;
+}
+.dupDivPairsGrid > table > tbody > tr > td:last-child {
+  border-left: 3px solid black
+}
+.dupDivPairsGrid > table > thead > tr > th:last-child {
+  border-left: 3px solid black
+}
+
+.dupDivPairsDetailsGrid {
+  font-size: x-large;
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  padding: 3px;
+}
+.dupDivPairsDetailsGrid > table > tbody > tr > td:first-child {
+  font-weight: bold;
+}
+.dupDivPairsDetailsGrid > table > tbody > tr > td:last-child {
+  border-left: 3px solid black
+}
+.dupDivPairsDetailsGrid > table > thead > tr > th:last-child {
+  border-left: 3px solid black
 }
 
 .dupViewPairsDetailsTable {
@@ -93,70 +117,6 @@
 
 .dupViewPeopleTable {
   padding: 4px;
-}
-
-.dupTablePairsDetailsGrid {
-  border-spacing: 0px;
-  font-size: x-large;
-  white-space: nowrap;
-  border: 1px solid black;
-  margin: 5px;
-  border-collapse: collapse;
-}
-.dupTablePairsDetailsGrid caption {
-  border: 1px solid black;
-  font-weight: bold;
-  font-size: x-large;
-}
-.dupTablePairsDetailsGrid > tfoot > tr > td {
-  font-size: large !important;
-  border: 1px solid black;
-  text-align: center;
-}
-
-.dupTablePairsDetailsGrid > tbody > tr > td {
-  border: 1px solid black;
-  text-align: center;
-}
-.dupTablePairsDetailsGrid > tbody > tr > td > div {
-  display: flex;
-  flex-flow: row nowrap;
-  justify-content: center;
-  align-items: center;
-  align-content: center;
-}
-.dupTablePairsDetailsGrid > tbody > tr > td > div > svg {
-  display: block;
-}
-
-.dupTablePairsDetailsGrid > tbody > tr > td:last-child {
-  border-left: 3px solid black;
-  border-right: 1px solid black;
-  border-top: 1px solid black;
-  border-bottom: 1px solid black;
-  text-align: center;
-}
-
-.dupTablePairsDetailsGrid > tbody > tr > td:first-child {
-  border: 1px solid black;
-  text-align: center;
-  font-weight: bold;
-}
-.dupTablePairsDetailsGrid td > div {
-  border: 0px solid black;
-}
-.dupTablePairsDetailsGrid th {
-  border: 1px solid black;
-  text-align: center;
-  padding: 5px;
-}
-.dupTablePairsDetailsGrid > thead > tr:last-child > th:last-child {
-  border-left: 3px solid black;
-  border-right: 1px solid black;
-  border-top: 1px solid black;
-  border-bottom: 1px solid black;
-  text-align: center;
-  padding: 5px;
 }
 
 .dupDivNewDuplicate {

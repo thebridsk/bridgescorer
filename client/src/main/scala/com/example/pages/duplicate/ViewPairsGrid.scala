@@ -135,8 +135,9 @@ object ViewPairsGridInternal {
    * @param colorBelow the hue of the color to use if pd is below average
    * @param state
    * @param sizeMultiplier multiply the size to make the bar bigger. (1 - player,player, 2 - total column)
+   * @return a tuple2, the data and the title.
    */
-  def getData( pd: PairData, sizeSt: Stat, colorSt: Stat, colorAbove: Double, colorBelow: Double, state: State, sizeMultiplier: Int ) = {
+  def getData( pd: PairData, sizeSt: Stat, colorSt: Stat, colorAbove: Double, colorBelow: Double, state: State, sizeMultiplier: Int ): (Data,String) = {
     val (bcolor, light) = colorSt.sizeAveAsFraction(pd)
     val lightness = light*0.75+0.25
     val size = sizeSt.size(pd, state.minSize*sizeMultiplier, state.maxSize*sizeMultiplier)
@@ -163,7 +164,7 @@ object ViewPairsGridInternal {
       ""
     }
 
-    Data( size, List( color ), List(1.0), Some(title+titleMP+titleIMP), 20 )
+    (Data( size, List( color ), List(1.0), None, 20 ), title+titleMP+titleIMP)
   }
 
   def color( c: Color ) = c
@@ -236,7 +237,8 @@ object ViewPairsGridInternal {
               } else {
                 pds.get(rowplayer, colPlayer) match {
                   case Some(pd) =>
-                    Cell(List( getData(pd, statSize, statColor, 120, 0, state, 1) ))
+                    val (data,title) = getData(pd, statSize, statColor, 120, 0, state, 1)
+                    Cell(List( data ), Some(title))
                   case None =>
                     Cell(List())
                 }
@@ -245,9 +247,9 @@ object ViewPairsGridInternal {
             }
             val playerTotals = summary.playerTotals.get(rowplayer).getOrElse(PairData(rowplayer,"",0,0,0,0,0,0,None,0,0,0,0,0))
 
-            val totalData = getData(playerTotals, statTotalSize, statTotalColor, 240, 60, state, 2)
+            val (totalData, totalTitle) = getData(playerTotals, statTotalSize, statTotalColor, 240, 60, state, 2)
 
-            val totalDataList = List(Cell(List(totalData)))
+            val totalDataList = List(Cell(List(totalData), Some(totalTitle)))
 
             Row( rowplayer, data:::totalDataList)
           }
