@@ -34,8 +34,6 @@ class DuplicateStyles {
 
   val viewPeopleTable = cls("dupViewPeopleTable")
 
-  val tablePairsGrid = cls("dupTablePairsGrid")
-
   val divPairsDetailsGrid = cls("dupDivPairsDetailsGrid")
 
   val tablePairsDetailsGrid = cls("dupTablePairsDetailsGrid")

@@ -36,6 +36,8 @@ import com.example.react.StatsTable.MultiColumnSorter
 import com.example.react.StatsTable.MultiColumnSort
 import com.example.data.duplicate.suggestion.ColorBy
 import com.example.data.duplicate.suggestion.Stat
+import com.example.data.duplicate.suggestion.ColorByPointsPct
+import com.example.data.duplicate.suggestion.ColorByIMP
 
 /**
  * Shows a summary page of all duplicate matches from the database.
@@ -261,18 +263,6 @@ object ViewPairsTableInternal {
     }
   }
 
-  object ColorByPtsPer extends ColorBy {
-    val name = "Pts%";
-    def value( pd: PairData ): Double = pd.pointsPercent
-    def n( pd: PairData): Int = pd.playedMP
-  }
-  object ColorByIMP extends ColorBy {
-    val name = "avgIMP";
-    def value( pd: PairData ): Double = pd.avgIMP
-    def n( pd: PairData): Int = pd.playedIMP
-  }
-
-
   /**
    * Internal state for rendering the component.
    *
@@ -302,7 +292,7 @@ object ViewPairsTableInternal {
             summary.playerTotals.values.toList
           }
 
-          val statPts = new Stat(ColorByPtsPer)
+          val statPts = new Stat(ColorByPointsPct)
           val statIMP = new Stat(ColorByIMP)
 
           Stat.addPairs(pds, None, statPts, statIMP)

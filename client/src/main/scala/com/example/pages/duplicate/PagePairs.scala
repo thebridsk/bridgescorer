@@ -110,9 +110,17 @@ object PagePairsInternal {
             AppButton( "Movements", "Movements", props.routerCtl.setOnClick(MovementSummaryView) )
           )
         ),
-        ViewPlayerFilter(state.filter, onChange _),
-        ViewPairsGrid( state.filter ),
-        ViewPairsDetailsGrid( state.filter ),
+        if (state.filter.pairsData.isDefined) {
+          TagMod(
+            ViewPlayerFilter(state.filter, onChange _),
+            ViewPairsGrid( state.filter ),
+            ViewPairsDetailsGrid( state.filter )
+          )
+        } else {
+          <.div(
+            "Working"
+          )
+        },
         <.div(
           baseStyles.divFooter,
           <.div(

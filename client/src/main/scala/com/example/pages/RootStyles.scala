@@ -111,6 +111,10 @@ class BaseStyles {
 
   val piechart = cls("piechart")
 
+  val svgrect = cls("svgrect")
+
+  val colorbar = cls("colorbar")
+
   val tableStats = cls("tableStats")
 
   val tablePieChart = cls("tablePieChart")

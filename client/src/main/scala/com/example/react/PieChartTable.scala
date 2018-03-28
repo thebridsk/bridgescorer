@@ -30,16 +30,31 @@ object PieChartTable {
     name: TagMod,
   )
 
+  /**
+   * @param size the diameter of the piechart, or width of the rectangle
+   * @param color the color of the slices
+   * @param value the relative sizes of the slices
+   * @param title the title for the flyover text
+   * @param size2 the height of the rectangle.  Not used for piecharts.
+   * @param showX if true an X is shown instead of the data.
+   */
   case class Data[+TColor](
     size: Int,
     color: List[TColor],
     value: List[Double],
-    title: Option[String] = None
+    title: Option[String] = None,
+    size2: Int = 0,
+    showX: Boolean = false
+  )
+
+  case class Cell[+TColor](
+      data: List[Data[TColor]],
+      title: Option[String] = None
   )
 
   case class Row[+TColor](
       name: String,
-      data: List[List[Data[TColor]]]
+      data: List[Cell[TColor]]
   )
 
   case class Props private[PieChartTable](
@@ -50,7 +65,9 @@ object PieChartTable {
       header: Option[TagMod] = None,
       footer: Option[TagMod] = None,
       totalRows: Option[()=>List[Row[Any]]] = None,
-      caption: Option[TagMod] = None
+      caption: Option[TagMod] = None,
+      usePieCharts: Boolean = true,
+      x: TagMod = TagMod()
     ) {
 
   }
@@ -70,7 +87,7 @@ object PieChartTable {
    * @param additionalRows additional rows to add when certain columns are selected for sorting
    * @param totalRows rows added at the bottom of the table, not affected with sorting
    * @param caption the caption for the table
-   * @param showZero true, show a size of zero with a black square
+   * @param usePieCharts true - piecharts will be drawn.  false - rectangles will be drawn.
    */
   def apply[TColor](
       firstColumn: Column,
@@ -80,8 +97,10 @@ object PieChartTable {
       header: Option[TagMod] = None,
       footer: Option[TagMod] = None,
       totalRows: Option[()=>List[Row[TColor]]] = None,
-      caption: Option[TagMod] = None
-    ) = component( Props(firstColumn, columns,rows,colorMap.asInstanceOf[Any=>Color],header,footer,totalRows,caption))
+      caption: Option[TagMod] = None,
+      usePieCharts: Boolean = true,
+      x: TagMod = TagMod()
+    ) = component( Props(firstColumn, columns,rows,colorMap.asInstanceOf[Any=>Color],header,footer,totalRows,caption, usePieCharts,x))
 
   /**
    * Shows a table with sort buttons has the headers of the columns.
@@ -100,7 +119,7 @@ object PieChartTable {
    * @param additionalRows additional rows to add when certain columns are selected for sorting
    * @param totalRows rows added at the bottom of the table, not affected with sorting
    * @param caption the caption for the table
-   * @param showZero true, show a size of zero with a black square
+   * @param usePieCharts true - piecharts will be drawn.  false - rectangles will be drawn.
    */
   def props[TColor](
       firstColumn: Column,
@@ -110,8 +129,10 @@ object PieChartTable {
       header: Option[TagMod] = None,
       footer: Option[TagMod] = None,
       totalRows: Option[()=>List[Row[TColor]]] = None,
-      caption: Option[TagMod] = None
-    ) = Props(firstColumn, columns,rows,colorMap.asInstanceOf[Any=>Color],header,footer,totalRows,caption)
+      caption: Option[TagMod] = None,
+      usePieCharts: Boolean = true,
+      x: TagMod = TagMod()
+    ) = Props(firstColumn, columns,rows,colorMap.asInstanceOf[Any=>Color],header,footer,totalRows,caption,usePieCharts,x)
 
 }
 
@@ -136,11 +157,11 @@ object PieChartTableInternal {
                             <.thead(
                               props.header.whenDefined,
                               <.tr(
-                                <.td(
+                                <.th(
                                   props.firstColumn.name
                                 ),
                                 props.columns.map { c =>
-                                  <.td(
+                                  <.th(
                                     c.name
                                   )
                                 }.toTagMod
@@ -161,7 +182,8 @@ object PieChartTableInternal {
                               val (cell, col) = entry
                               <.td(
                                 <.div(
-                                  cell.map { r =>
+                                  cell.title.whenDefined( t => titleAttr:=t ),
+                                  cell.data.map { r =>
                                     <.div(
                                       r.title.whenDefined { title =>
                                         TagMod(
@@ -169,13 +191,26 @@ object PieChartTableInternal {
                                           baseStyles.hover
                                         )
                                       },
-                                      PieChartOrSquareForZero(
-                                        size = r.size,
-                                        Color.Black,
-                                        slices = r.value,
-                                        colors = r.color.map( v => props.colorMap(v) ),
-                                        chartTitle = None,
-                                      )
+                                      if (r.showX) {
+                                        props.x
+                                      } else if (props.usePieCharts) {
+                                        PieChartOrSquareForZero(
+                                          size = r.size,
+                                          squareColor = Color.Black,
+                                          slices = r.value,
+                                          colors = r.color.map( v => props.colorMap(v) ),
+                                          chartTitle = None
+                                        )
+                                      } else {
+                                        SvgRect(
+                                          width = r.size,
+                                          height = if (r.size2 == 0) 20 else r.size2,
+                                          borderColor = Color.Black,
+                                          slices = r.value,
+                                          colors = r.color.map( v => props.colorMap(v) ),
+                                          chartTitle = None
+                                        )
+                                      }
                                     )
                                   }.toTagMod
                                 )

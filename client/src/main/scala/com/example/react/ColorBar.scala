@@ -167,6 +167,7 @@ object ColorBarInternal {
                             .render_P( props => {
 
                               <.div(
+                                baseStyles.colorbar,
                                 ^.display := "flex",
                                 ^.flexDirection := "row",
                                 ^.flexWrap := "nowrap",

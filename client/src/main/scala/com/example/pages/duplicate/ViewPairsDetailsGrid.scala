@@ -528,8 +528,8 @@ object ViewPairsDetailsGridInternal {
                                                       summary.extraStats.tail.head,
                                                       summary.playerTotals.get(rowplayer).getOrElse(PairData(rowplayer,"",0,0,0,0,0,0,None,0,0,0,0,0)),
                                                       summary.colorStatPlayerTotals,
-                                                      summary.extraStatsPlayer.head,
-                                                      summary.extraStatsPlayer.tail.head
+                                                      summary.extraStatsPlayerTotals.head,
+                                                      summary.extraStatsPlayerTotals.tail.head
                                                    ))
                   }.toTagMod
                 )
