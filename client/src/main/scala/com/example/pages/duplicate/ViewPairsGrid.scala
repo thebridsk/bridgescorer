@@ -163,7 +163,7 @@ object ViewPairsGridInternal {
       ""
     }
 
-    Data( size, List( color ), List(1.0), Some(title+titleMP+titleIMP), 20, false )
+    Data( size, List( color ), List(1.0), Some(title+titleMP+titleIMP), 20 )
   }
 
   def color( c: Color ) = c
@@ -228,11 +228,11 @@ object ViewPairsGridInternal {
 
           val columns = sortedPlayers.map( p => Column(p) ):::List( Column( "Totals" ) )
 
-          val dataX = Data[Color](0,List(),List(),showX = true)
+          val cellX = Cell(List(), showX = true)
           val rows = shownSortedPlayers.map { rowplayer =>
-            val data: List[Cell[Color]] = shownSortedPlayers.map { colPlayer =>
+            val data: List[Cell] = shownSortedPlayers.map { colPlayer =>
               val d = if (rowplayer == colPlayer) {
-                Cell(List(dataX))
+                cellX
               } else {
                 pds.get(rowplayer, colPlayer) match {
                   case Some(pd) =>
@@ -258,7 +258,6 @@ object ViewPairsGridInternal {
               firstColumn = Column("Player"),
               columns = columns,
               rows = rows,
-              colorMap = color,
               header = None,
               footer = Some(
                 TagMod(

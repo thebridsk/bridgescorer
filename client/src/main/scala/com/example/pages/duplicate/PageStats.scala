@@ -171,21 +171,24 @@ object PageStatsInternal {
    */
   case class State( stats: Option[DuplicateStats] = None, msg: Option[TagMod] = None, aggregateDouble: Boolean = false )
 
-  val zeroData = Data[Int](-5,Nil,Nil,None)
+  val zeroData = Data(-5,Nil,Nil,None)
   val zeroDataList = List(zeroData)
   val zeroData3List = List(zeroData,zeroData,zeroData)
-  val zeroList = List[Data[Int]]()
+  val zeroList = List[Data]()
   val zeroCell = Cell( zeroList )
 
   val suitSortOrder = "PNZSHDC"
 
-  val yellow = HSLColor( 60, 1, .5 )
-  val orange = HSLColor( 30, 1, .5 )
-  val purple = HSLColor( 300, 1, .5 )
-  val cyan = Color.Cyan
+  val colorTypePartial = HSLColor( 60, 1, .5 )  // yellow
+  val colorTypeGame = HSLColor( 30, 1, .5 )  // orange
+  val colorTypeSlam = HSLColor( 300, 1, .5 ) // purple
+  val colorTypeGrandSlam = Color.Cyan
+  val colorTypePassed = Color.Blue
 
-  val ctColors = yellow::orange::purple::cyan::Color.Blue::Nil
+  val ctColors = colorTypePartial::colorTypeGame::colorTypeSlam::colorTypeGrandSlam::colorTypePassed::Nil
   val typeOrder: List[ContractType] = ContractTypePartial::ContractTypeGame::ContractTypeSlam::ContractTypeGrandSlam::ContractTypePassed::Nil
+
+  val colorsMapForType = typeOrder.zip(ctColors).toMap
 
   /**
    * Internal state for rendering the component.
@@ -214,15 +217,9 @@ object PageStatsInternal {
       val madeColors = ColorBar.colors( 120, 0.25, numberMade )
 
       def colorMap( i: Int ) = {
-        // 10 tricks indicates passed out hand
-
-        if (i < 0) downColors( -i-1 )
-        else if (i == 10) Color.Blue
-        else if (i > 10) {
-          ctColors(i-11)
-        } else {
-          madeColors( i )
-        }
+        if (i == 10) Color.Blue
+        else if (i < 0) downColors( -i-1 )
+        else madeColors( i )
       }
 
       val maxHandsPlayed = (stats.declarer.map( ps => ps.handsPlayed ):::stats.defender.map( ps => ps.handsPlayed )).foldLeft(0)(Math.max _)
@@ -292,10 +289,10 @@ object PageStatsInternal {
                   if (s.handsPlayed == 0) {
                     Cell(zeroList)
                   } else {
-                    val (cols,vals) = s.histogram.map(cs => (cs.tricks, cs.counter.toDouble)).unzip
+                    val (cols,vals) = s.histogram.map(cs => (colorMap(cs.tricks), cs.counter.toDouble)).unzip
                     if (ct == ContractTypePassed) {
                       val title = s"${s.player} in ${ct}\nPassed: ${s.handsPlayed}"
-                      Cell(List(Data[Int]( calcSize(s.handsPlayed, maxHandsPlayed) , 10::Nil, s.handsPlayed.toDouble::Nil, Some(title) )))
+                      Cell(List(Data( calcSize(s.handsPlayed, maxHandsPlayed) , colorTypePassed::Nil, s.handsPlayed.toDouble::Nil, Some(title) )))
                     } else {
                       val pre = s"${s.player} in ${ct} as ${if (s.declarer) "Declarer" else "Defender"}"
                       val title = s"${pre}\nTotal: ${s.handsPlayed}"+s.histogram.sortBy(cs=>cs.tricks).map { cs =>
@@ -305,7 +302,7 @@ object PageStatsInternal {
                         else if (cs.tricks == 10) f"  Passed : ${cs.counter} (${percent}%.2f%%)"
                         else f"  Made +${cs.tricks}: ${cs.counter} (${percent}%.2f%%)"
                       }.mkString("\n","\n","")
-                      Cell(List(Data[Int]( calcSize(s.handsPlayed, if (ct==ContractTypeTotal) maxHandsPlayedTotal else maxHandsPlayed) , cols, vals, Some(title) )))
+                      Cell(List(Data( calcSize(s.handsPlayed, if (ct==ContractTypeTotal) maxHandsPlayedTotal else maxHandsPlayed) , cols, vals, Some(title) )))
                     }
 
                   }
@@ -321,7 +318,7 @@ object PageStatsInternal {
           val or: List[ContractType] = ContractTypePartial::ContractTypeGame::ContractTypeSlam::ContractTypeGrandSlam::Nil
           val dd = or.zipWithIndex.map { entry =>
             val (ct,i) = entry
-            ( ct, list.find( ps => ps.contractType==ct.value ).map( ps => ps.handsPlayed ).getOrElse(0).toDouble, i+11 )
+            ( ct, list.find( ps => ps.contractType==ct.value ).map( ps => ps.handsPlayed ).getOrElse(0).toDouble, colorsMapForType(ct) )
           }
           val sum = dd.foldLeft(0.0)((ac,v) => ac+v._2) + passedout.handsPlayed
           val (cts,values,cols) = dd.unzip3
@@ -329,7 +326,7 @@ object PageStatsInternal {
             val (ct,value, col) = entry
             f"${ct.toString()}: ${value} (${100.0*value/sum}%.2f%%)"
           }.mkString("\n  ","\n  ","\n  ")+f"${ContractTypePassed.toString()}: ${passedout.handsPlayed} (${100.0*passedout.handsPlayed/sum}%.2f%%)"
-          Cell(List(Data[Int]( calcSize( sum.toInt, maxHandsPlayedTotal ), cols:::(15::Nil), values:::(passedout.handsPlayed.toDouble::Nil), Some(title) )))
+          Cell(List(Data( calcSize( sum.toInt, maxHandsPlayedTotal ), cols:::(colorTypePassed::Nil), values:::(passedout.handsPlayed.toDouble::Nil), Some(title) )))
         }
 
         Row( p, byType(declarer,"Declarer")::byType(defender,"Defender")::(data.drop(1)) )   // drop passed declarer
@@ -344,7 +341,6 @@ object PageStatsInternal {
         firstColumn = Column("Player"),
         columns = columns,
         rows = rows,
-        colorMap = colorMap,
         header = None,
         footer = Some(
             <.tr(
@@ -390,11 +386,7 @@ object PageStatsInternal {
 
         if (i < 0) downColors( -i-1 )
         else if (i == 10) Color.Blue
-        else if (i > 10) {
-          ctColors(i-11)
-        } else {
-          madeColors( i )
-        }
+        else madeColors( i )
       }
 
       val order: List[ContractType] = ContractTypePassed::ContractTypePartial::ContractTypeGame::ContractTypeSlam::ContractTypeGrandSlam::ContractTypeTotal::Nil
@@ -455,7 +447,7 @@ object PageStatsInternal {
         val or: List[ContractType] = ContractTypePartial::ContractTypeGame::ContractTypeSlam::ContractTypeGrandSlam::ContractTypePassed::Nil
         val dd = or.zipWithIndex.map { entry =>
           val (ct,i) = entry
-          ( ct, list.find( ps => ps.contractType==ct.value ).map( ps => ps.handsPlayed ).getOrElse(0).toDouble, i+11 )
+          ( ct, list.find( ps => ps.contractType==ct.value ).map( ps => ps.handsPlayed ).getOrElse(0).toDouble, colorsMapForType(ct) )
         }
         val sum = dd.foldLeft(0.0)((ac,v) => ac+v._2)
         val (cts,values,cols) = dd.unzip3
@@ -463,7 +455,7 @@ object PageStatsInternal {
           val (ct,value, col) = entry
           f"${ct.toString()}: ${value} (${100*value/sum}%.2f%%)"
         }.mkString("\n  ","\n  ","")
-        Cell(List(Data[Int]( calcSize( sum.toInt, maxHandsPlayedTotal ), cols, values, Some(title) )))
+        Cell(List(Data( calcSize( sum.toInt, maxHandsPlayedTotal ), cols, values, Some(title) )))
       }
 
       val first = byType( totalStats.take(totalStats.length-1))
@@ -474,10 +466,10 @@ object PageStatsInternal {
           if (s.handsPlayed == 0) {
             Cell(zeroList)
           } else {
-            val (cols,vals) = s.histogram.map(cs => (cs.tricks, cs.counter.toDouble)).unzip
+            val (cols,vals) = s.histogram.map(cs => (colorMap(cs.tricks), cs.counter.toDouble)).unzip
             if (s.contractType == ContractTypePassed.value) {
               val title = f"Passed: ${s.handsPlayed} ${100.0*s.handsPlayed/maxHandsPlayedTotal}%.2f%%"
-              Cell(List(Data[Int]( calcSize(s.handsPlayed, maxHandsPlayed) , 10::Nil, s.handsPlayed.toDouble::Nil, Some(title) )))
+              Cell(List(Data( calcSize(s.handsPlayed, maxHandsPlayed) , colorTypePassed::Nil, s.handsPlayed.toDouble::Nil, Some(title) )))
             } else {
               val pre = f"${ct} ${100.0*s.handsPlayed/maxHandsPlayedTotal}%.2f%%"
               val title = s"${pre}\nTotal: ${s.handsPlayed}"+s.histogram.sortBy(cs=>cs.tricks).map { cs =>
@@ -487,7 +479,7 @@ object PageStatsInternal {
                 else if (cs.tricks == 10) f"  Passed : ${cs.counter} (${percent}%.2f%%)"
                 else f"  Made +${cs.tricks}: ${cs.counter} (${percent}%.2f%%)"
               }.mkString("\n","\n","")
-              Cell(List(Data[Int]( calcSize(s.handsPlayed, if (ct==ContractTypeTotal) maxHandsPlayedTotal else maxHandsPlayed) , cols, vals, Some(title) )))
+              Cell(List(Data( calcSize(s.handsPlayed, if (ct==ContractTypeTotal) maxHandsPlayedTotal else maxHandsPlayed) , cols, vals, Some(title) )))
             }
 
           }
@@ -499,7 +491,6 @@ object PageStatsInternal {
         firstColumn = Column("All Hands"),
         columns = columns,
         rows = List(row),
-        colorMap = colorMap,
         header = None,
         footer = Some(
             <.tr(
@@ -571,7 +562,7 @@ object PageStatsInternal {
             // dataBySuit should only have one entry
             val pd = dataBySuit.head
             val title = f"Passed Out: ${pd.handsPlayed} (${100.0*pd.handsPlayed/totalHandsPlayed}%.2f%%)"
-            val dd = Data[Int]( calcSize( pd.handsPlayed), 10::Nil, 1.0::Nil, Some(title) )
+            val dd = Data( calcSize( pd.handsPlayed), colorTypePassed::Nil, 1.0::Nil, Some(title) )
             ( suit, List( Cell(List(dd)), zeroCell, zeroCell, zeroCell, zeroCell, zeroCell, zeroCell ) )
           } else {
             val trickdata = (1 to 7).map { ntricks =>
@@ -591,7 +582,7 @@ object PageStatsInternal {
                   }
                   val s = add( tcss.head, tcss.tail )
                   // s.doubled is not valid after this.
-                  val (cols,vals) = s.histogram.map(cs => (cs.tricks, cs.counter.toDouble)).unzip
+                  val (cols,vals) = s.histogram.map(cs => (colorMap(cs.tricks), cs.counter.toDouble)).unzip
                   val con = s.parseContract
                   val suit = if (con.suit == "Z") "N" else con.suit
                   val title = f"${con.tricks}${suit} (${100.0*s.handsPlayed/totalHandsPlayed}%.2f%%)\nTotal: ${s.handsPlayed}"+s.histogram.sortBy(cs=>cs.tricks).map { cs =>
@@ -600,21 +591,21 @@ object PageStatsInternal {
                     else if (cs.tricks == 0) f"  Made   : ${cs.counter} (${percent}%.2f%%)"
                     else f"  Made +${cs.tricks}: ${cs.counter} (${percent}%.2f%%)"
                   }.mkString("\n","\n","")
-                  Cell(List( Data[Int]( calcSize(s.handsPlayed) , cols, vals, Some(title) ) ))
+                  Cell(List( Data( calcSize(s.handsPlayed) , cols, vals, Some(title) ) ))
                 } else {
                   val celllist =
                     List( "", "*", "**" ).map { doubled =>
                       tcss.find( cs => cs.parseContract.doubled == doubled ).map { s =>
                         val con = s.parseContract
                         val suit = if (con.suit == "Z") "N" else con.suit
-                        val (cols,vals) = s.histogram.map(cs => (cs.tricks, cs.counter.toDouble)).unzip
+                        val (cols,vals) = s.histogram.map(cs => (colorMap(cs.tricks), cs.counter.toDouble)).unzip
                         val title = f"${con.tricks}${suit}${con.doubled} (${100.0*s.handsPlayed/totalHandsPlayed}%.2f%%)\nTotal: ${s.handsPlayed}"+s.histogram.sortBy(cs=>cs.tricks).map { cs =>
                           val percent = 100.0*cs.counter/s.handsPlayed
                           if (cs.tricks < 0) f"  Down ${-cs.tricks}: ${cs.counter} (${percent}%.2f%%)"
                           else if (cs.tricks == 0) f"  Made   : ${cs.counter} (${percent}%.2f%%)"
                           else f"  Made +${cs.tricks}: ${cs.counter} (${percent}%.2f%%)"
                         }.mkString("\n","\n","")
-                        Data[Int]( calcSize(s.handsPlayed) , cols, vals, Some(title) )
+                        Data( calcSize(s.handsPlayed) , cols, vals, Some(title) )
                       }.getOrElse( zeroData )
                     }
                   Cell( celllist )
@@ -667,7 +658,6 @@ object PageStatsInternal {
         firstColumn = Column("Player"),
         columns = columns,
         rows = rows,
-        colorMap = colorMap,
         header = None,
         footer = Some(
             <.tr(
