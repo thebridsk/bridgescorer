@@ -43,7 +43,9 @@ object Pixels {
 
   def getBorderRadius( id: String ) = {
     val computed = getComputedProperties(id)
-    getPixels( "borderRadius", computed.borderRadius, id )
+    val r = getPixels( "borderRadius", computed.borderRadius, id, -1 )
+    if (r == -1) getPixels( "borderRadius", computed.borderTopLeftRadius, id )   // firefox doesn't return borderRadius property
+    else r
   }
 
   def getPaddingBorder( id: String ) = {

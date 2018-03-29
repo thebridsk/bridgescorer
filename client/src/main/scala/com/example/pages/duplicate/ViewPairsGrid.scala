@@ -43,6 +43,8 @@ import com.example.react.PieChartTable.Column
 import com.example.react.PieChartTable.Row
 import com.example.react.PieChartTable.Data
 import com.example.react.PieChartTable.Cell
+import com.example.react.PieChartTable.DataBar
+import com.example.react.PieChartTable.DataTagMod
 
 /**
  * Shows a pairs summary page.
@@ -164,10 +166,12 @@ object ViewPairsGridInternal {
       ""
     }
 
-    (Data( size, List( color ), List(1.0), None, 20 ), title+titleMP+titleIMP)
+    (DataBar( size, List( color ), List(1.0), None, 20 ), title+titleMP+titleIMP)
   }
 
   def color( c: Color ) = c
+
+  val cellX = Cell( List( DataTagMod( "X" )) )
 
   /**
    * Internal state for rendering the component.
@@ -229,7 +233,6 @@ object ViewPairsGridInternal {
 
           val columns = sortedPlayers.map( p => Column(p) ):::List( Column( "Totals" ) )
 
-          val cellX = Cell(List(), showX = true)
           val rows = shownSortedPlayers.map { rowplayer =>
             val data: List[Cell] = shownSortedPlayers.map { colPlayer =>
               val d = if (rowplayer == colPlayer) {
@@ -318,9 +321,7 @@ object ViewPairsGridInternal {
                   if (state.calc != CalculationMP) getButton( ColorByIMP, "ColorByIMP", "IMP" )
                   else TagMod()
                 )
-              ),
-              x = TagMod( "X" ),
-              usePieCharts = false
+              )
             )
           )
         case Some(pds) =>

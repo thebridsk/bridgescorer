@@ -195,7 +195,6 @@ object DuplicateTestPages {
  * @author werewolf
  */
 class DuplicateTestPages extends FlatSpec
-    with DuplicateUtils
     with MustMatchers
     with BeforeAndAfterAll
     with EventuallyUtils

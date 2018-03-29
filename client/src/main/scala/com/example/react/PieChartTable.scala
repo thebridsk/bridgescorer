@@ -30,26 +30,46 @@ object PieChartTable {
     name: TagMod,
   )
 
+  sealed trait Data {
+    val title: Option[String]
+  }
+
   /**
-   * @param size the diameter of the piechart, or width of the rectangle
+   * @param size the diameter of the piechart
    * @param color the color of the slices
    * @param value the relative sizes of the slices
    * @param title the title for the flyover text
-   * @param size2 the height of the rectangle.  Not used for piecharts.
-   * @param showX if true an X is shown instead of the data.
    */
-  case class Data(
+  case class DataPieChart(
     size: Int,
     color: List[Color],
     value: List[Double],
     title: Option[String] = None,
-    size2: Int = 0,
-  )
+  ) extends Data
+
+  /**
+   * @param width the width of the rectangle
+   * @param color the color of the slices
+   * @param value the relative sizes of the slices
+   * @param title the title for the flyover text
+   * @param height the height of the rectangle
+   */
+  case class DataBar(
+    width: Int,
+    color: List[Color],
+    value: List[Double],
+    title: Option[String] = None,
+    height: Int = 0,
+  ) extends Data
+
+  case class DataTagMod(
+    data: TagMod,
+    title: Option[String] = None,
+  ) extends Data
 
   case class Cell(
       data: List[Data],
-      title: Option[String] = None,
-      showX: Boolean = false
+      title: Option[String] = None
   )
 
   case class Row(
@@ -64,9 +84,7 @@ object PieChartTable {
       header: Option[TagMod] = None,
       footer: Option[TagMod] = None,
       totalRows: Option[()=>List[Row]] = None,
-      caption: Option[TagMod] = None,
-      usePieCharts: Boolean = true,
-      x: TagMod = TagMod()
+      caption: Option[TagMod] = None
     ) {
 
   }
@@ -96,9 +114,7 @@ object PieChartTable {
       footer: Option[TagMod] = None,
       totalRows: Option[()=>List[Row]] = None,
       caption: Option[TagMod] = None,
-      usePieCharts: Boolean = true,
-      x: TagMod = TagMod()
-    ) = component( Props(firstColumn, columns,rows,header,footer,totalRows,caption, usePieCharts,x))
+    ) = component( Props(firstColumn, columns,rows,header,footer,totalRows,caption ))
 
   /**
    * Shows a table with sort buttons has the headers of the columns.
@@ -127,9 +143,7 @@ object PieChartTable {
       footer: Option[TagMod] = None,
       totalRows: Option[()=>List[Row]] = None,
       caption: Option[TagMod] = None,
-      usePieCharts: Boolean = true,
-      x: TagMod = TagMod()
-    ) = Props(firstColumn, columns,rows,header,footer,totalRows,caption,usePieCharts,x)
+    ) = Props(firstColumn, columns,rows,header,footer,totalRows,caption)
 
 }
 
@@ -185,18 +199,16 @@ object PieChartTableInternal {
                                   )
                                 ),
                                 <.div(
-                                  if (cell.showX) {
-                                    props.x
-                                  } else {
-                                    cell.data.map { r =>
-                                      <.div(
-                                        r.title.whenDefined { title =>
-                                          TagMod(
-                                            titleAttr:=title,
-                                            baseStyles.hover
-                                          )
-                                        },
-                                        if (props.usePieCharts) {
+                                  cell.data.map { item =>
+                                    <.div(
+                                      item.title.whenDefined { title =>
+                                        TagMod(
+                                          titleAttr:=title,
+                                          baseStyles.hover
+                                        )
+                                      },
+                                      item match {
+                                        case r: DataPieChart =>
                                           PieChartOrSquareForZero(
                                             size = r.size,
                                             squareColor = Color.Black,
@@ -204,19 +216,20 @@ object PieChartTableInternal {
                                             colors = r.color,
                                             chartTitle = None
                                           )
-                                        } else {
+                                        case r: DataBar =>
                                           SvgRect(
-                                            width = r.size,
-                                            height = if (r.size2 == 0) 20 else r.size2,
+                                            width = r.width,
+                                            height = if (r.height == 0) 20 else r.height,
                                             borderColor = Color.Black,
                                             slices = r.value,
                                             colors = r.color,
                                             chartTitle = None
                                           )
-                                        }
-                                      )
-                                    }.toTagMod
-                                  }
+                                        case r: DataTagMod =>
+                                            r.data
+                                      }
+                                    )
+                                  }.toTagMod
                                 )
                               )
                             }.toTagMod

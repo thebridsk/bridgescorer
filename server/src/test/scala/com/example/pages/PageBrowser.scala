@@ -113,7 +113,7 @@ class ClickOn(implicit createdpos: SourcePosition) {
 trait PageBrowser {
 
   def esc(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position): this.type = {
-    pressKeys(Keys.chord(Keys.ESCAPE))
+    pressKeys(Keys.ESCAPE)
     this
   }
 
@@ -123,11 +123,11 @@ trait PageBrowser {
   }
 
   def enter(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position): this.type = {
-    pressKeys(Keys.chord(Keys.ENTER))
+    pressKeys(Keys.ENTER)
     this
   }
 
-  def pressKeys(value: String)(implicit webDriver: WebDriver, pos: Position) = {
+  def pressKeys(value: CharSequence )(implicit webDriver: WebDriver, pos: Position) = {
     val ae: WebElement = webDriver.switchTo.activeElement
     ae.sendKeys(value)
     Thread.sleep( 100L )

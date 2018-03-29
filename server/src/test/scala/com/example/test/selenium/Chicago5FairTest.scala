@@ -141,7 +141,7 @@ class Chicago5FairTest extends FlatSpec with MustMatchers with BeforeAndAfterAll
     textField("West").value = "Wayne"
     textField("North").value = "Nancy"
     tcpSleep(1)
-    pressKeys(Keys.chord(Keys.ESCAPE))
+    pressKeys(Keys.ESCAPE)
 
     eventually { click on id("LabelQuintet") }
 

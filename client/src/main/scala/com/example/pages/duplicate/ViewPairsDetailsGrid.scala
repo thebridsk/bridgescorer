@@ -37,6 +37,8 @@ import com.example.react.PieChartTable.Data
 import com.example.react.PieChartTable.Column
 import com.example.react.PieChartTable
 import com.example.react.PieChartTable.Row
+import com.example.react.PieChartTable.DataPieChart
+import com.example.react.PieChartTable.DataTagMod
 
 /**
  * Shows a pairs summary page.
@@ -133,7 +135,7 @@ object ViewPairsDetailsGridInternal {
     def n( pd: PairData ): Int = pd.details.map { d => d.declarer+d.defended+d.passed }.getOrElse(0)
   }
 
-  val cellX = Cell( List(), showX=true )
+  val cellX = Cell( List( DataTagMod( "X" )) )
   val cellEmpty = Cell( List() )
 
   /**
@@ -181,7 +183,7 @@ object ViewPairsDetailsGridInternal {
                 val title = f"Declarer ${det.declarer} (${det.declarer*oneOverTot}%.2f%%)%nDefended ${det.defended} (${det.defended*oneOverTot}%.2f%%)%nPassed ${det.passed} (${det.passed*oneOverTot}%.2f%%)"
                 Cell(
                   data = List(
-                    Data(
+                    DataPieChart(
                       size = size(det.total, vmin, vmax, state.minSize, state.maxSize),
                       color = Color.Green::Color.Red::Color.Blue::Nil,
                       value = det.declarer.toDouble::det.defended.toDouble::det.passed.toDouble::Nil,
@@ -210,17 +212,17 @@ object ViewPairsDetailsGridInternal {
                 val titlePas = f"Passed ${det.passed} (${det.passed*oneOverTotal}%.2f%%)"
                 Cell(
                   data = List(
-                    Data(
+                    DataPieChart(
                       size = if (det.declarer == 0) -sizeDec else sizeDec,
                       color = Color.Green::Color.Red::Nil,
                       value = det.made.toDouble::det.down.toDouble::Nil,
                     ),
-                    Data(
+                    DataPieChart(
                       size = if (det.defended == 0) -sizeDef else sizeDef,
                       color = Color.Green::Color.Red::Nil,
                       value = det.tookDown.toDouble::det.allowedMade.toDouble::Nil,
                     ),
-                    Data(
+                    DataPieChart(
                       size = if (det.passed == 0) -sizePas else sizePas,
                       color = Color.Blue::Nil,
                       value = det.passed.toDouble::Nil,
@@ -247,7 +249,7 @@ object ViewPairsDetailsGridInternal {
                 val titlePas = f"Passed ${det.passed} (${det.passed*oneOverTotal}%.2f%%)"
                 Cell(
                   data = List(
-                    Data(
+                    DataPieChart(
                       size = if (det.total == 0) -sizeAll else sizeAll,
                       color = Color.Green::Color.Red::DarkRed::DarkGreen::Color.Blue::Nil,
                       value = det.made.toDouble::det.down.toDouble::det.allowedMade.toDouble::det.tookDown.toDouble::det.passed.toDouble::Nil,
@@ -379,9 +381,7 @@ object ViewPairsDetailsGridInternal {
                     }
                   )
                 )
-              )),
-              usePieCharts = true,
-              x = "X"
+              ))
             )
           )
 

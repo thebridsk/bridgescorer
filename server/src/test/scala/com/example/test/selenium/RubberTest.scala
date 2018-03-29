@@ -208,7 +208,7 @@ class RubberTest extends FlatSpec with MustMatchers with BeforeAndAfterAll with 
     textField("East").value = "Ellen"
     textField("West").value = "Wayne"
     tcpSleep(1)
-    pressKeys(Keys.chord(Keys.ENTER))
+    pressKeys(Keys.ENTER)
     tcpSleep(1)
 
     eventually( find(id("Ok")) must not be 'Enabled )
@@ -386,7 +386,7 @@ class RubberTest extends FlatSpec with MustMatchers with BeforeAndAfterAll with 
     textField("East").value = " Ellen "
     textField("West").value = "Wayne"
     tcpSleep(1)
-    pressKeys(Keys.chord(Keys.ENTER))
+    pressKeys(Keys.ENTER)
     tcpSleep(1)
 
     eventuallyFindAndClickButton("PlayerNFirstDealer")

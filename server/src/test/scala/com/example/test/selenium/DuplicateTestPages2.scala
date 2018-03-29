@@ -101,7 +101,7 @@ object DuplicateTestPages2 {
  * to the names view, to the hand view.
  * @author werewolf
  */
-class DuplicateTestPages2 extends FlatSpec with DuplicateUtils with MustMatchers with BeforeAndAfterAll with EventuallyUtils {
+class DuplicateTestPages2 extends FlatSpec with MustMatchers with BeforeAndAfterAll with EventuallyUtils {
   import Eventually.{ patienceConfig => _, _ }
   import ParallelUtils._
 
