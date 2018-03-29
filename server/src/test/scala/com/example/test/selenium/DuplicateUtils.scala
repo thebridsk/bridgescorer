@@ -378,7 +378,7 @@ trait DuplicateUtils {
       }
     }}
 
-//    pressKeys(Keys.chord(Keys.ENTER))
+//    pressKeys(Keys.ENTER)
     tcpSleep(2)
 
     testNames(nsPlayer1, nsPlayer2, ewPlayer1, ewPlayer2,scorekeeper)
@@ -434,7 +434,7 @@ trait DuplicateUtils {
       tcpSleep(2)
       click on id("Swap_left")
     }
-//    pressKeys(Keys.chord(Keys.ENTER))
+//    pressKeys(Keys.ENTER)
     tcpSleep(2)
 
     testNamesNoInput(nsPlayer1, nsPlayer2, ewPlayer1, ewPlayer2)

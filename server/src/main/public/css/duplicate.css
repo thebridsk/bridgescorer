@@ -581,3 +581,10 @@
   padding: 3px;
 }
 
+.dupDivPageStats > div:nth-child(4) {
+  display: flex;
+  flex-direction: row;
+}
+.dupDivPageStats > div:nth-child(4) > div {
+  padding: 3px;
+}

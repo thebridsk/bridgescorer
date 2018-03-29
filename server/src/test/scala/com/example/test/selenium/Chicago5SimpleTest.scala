@@ -135,7 +135,7 @@ class Chicago5SimpleTest extends FlatSpec with MustMatchers with BeforeAndAfterA
     textField("East").value = " Ellen "
     textField("West").value = "Wayne"
     tcpSleep(1)
-    pressKeys(Keys.chord(Keys.ENTER))
+    pressKeys(Keys.ENTER)
     tcpSleep(1)
 
     click on id("LabelQuintet")

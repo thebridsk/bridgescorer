@@ -55,6 +55,8 @@ import com.example.data.bridge.ContractTricks
 import com.example.react.HSLColor
 import com.example.react.FixedColorBar
 import com.example.react.PieChartTable.Cell
+import com.example.react.PieChartTable.DataPieChart
+import com.example.react.PieChartTable.DataTagMod
 
 /**
  * Shows a summary page of all duplicate matches from the database.
@@ -171,11 +173,12 @@ object PageStatsInternal {
    */
   case class State( stats: Option[DuplicateStats] = None, msg: Option[TagMod] = None, aggregateDouble: Boolean = false )
 
-  val zeroData = Data(-5,Nil,Nil,None)
-  val zeroDataList = List(zeroData)
-  val zeroData3List = List(zeroData,zeroData,zeroData)
+  /**
+   * zero data, shows as a small black square.
+   */
+  val zeroData = DataPieChart(-5,Nil,Nil,None)
   val zeroList = List[Data]()
-  val zeroCell = Cell( zeroList )
+  val emptyCell = Cell( zeroList )
 
   val suitSortOrder = "PNZSHDC"
 
@@ -292,7 +295,7 @@ object PageStatsInternal {
                     val (cols,vals) = s.histogram.map(cs => (colorMap(cs.tricks), cs.counter.toDouble)).unzip
                     if (ct == ContractTypePassed) {
                       val title = s"${s.player} in ${ct}\nPassed: ${s.handsPlayed}"
-                      Cell(List(Data( calcSize(s.handsPlayed, maxHandsPlayed) , colorTypePassed::Nil, s.handsPlayed.toDouble::Nil )), Some(title))
+                      Cell(List(DataPieChart( calcSize(s.handsPlayed, maxHandsPlayed) , colorTypePassed::Nil, s.handsPlayed.toDouble::Nil )), Some(title))
                     } else {
                       val pre = s"${s.player} in ${ct} as ${if (s.declarer) "Declarer" else "Defender"}"
                       val title = s"${pre}\nTotal: ${s.handsPlayed}"+s.histogram.sortBy(cs=>cs.tricks).map { cs =>
@@ -302,7 +305,7 @@ object PageStatsInternal {
                         else if (cs.tricks == 10) f"  Passed : ${cs.counter} (${percent}%.2f%%)"
                         else f"  Made +${cs.tricks}: ${cs.counter} (${percent}%.2f%%)"
                       }.mkString("\n","\n","")
-                      Cell(List(Data( calcSize(s.handsPlayed, if (ct==ContractTypeTotal) maxHandsPlayedTotal else maxHandsPlayed) , cols, vals )), Some(title))
+                      Cell(List(DataPieChart( calcSize(s.handsPlayed, if (ct==ContractTypeTotal) maxHandsPlayedTotal else maxHandsPlayed) , cols, vals )), Some(title))
                     }
 
                   }
@@ -326,7 +329,7 @@ object PageStatsInternal {
             val (ct,value, col) = entry
             f"${ct.toString()}: ${value} (${100.0*value/sum}%.2f%%)"
           }.mkString("\n  ","\n  ","\n  ")+f"${ContractTypePassed.toString()}: ${passedout.handsPlayed} (${100.0*passedout.handsPlayed/sum}%.2f%%)"
-          Cell(List(Data( calcSize( sum.toInt, maxHandsPlayedTotal ), cols:::(colorTypePassed::Nil), values:::(passedout.handsPlayed.toDouble::Nil) )), Some(title))
+          Cell(List(DataPieChart( calcSize( sum.toInt, maxHandsPlayedTotal ), cols:::(colorTypePassed::Nil), values:::(passedout.handsPlayed.toDouble::Nil) )), Some(title))
         }
 
         Row( p, byType(declarer,"Declarer")::byType(defender,"Defender")::(data.drop(1)) )   // drop passed declarer
@@ -455,7 +458,7 @@ object PageStatsInternal {
           val (ct,value, col) = entry
           f"${ct.toString()}: ${value} (${100*value/sum}%.2f%%)"
         }.mkString("\n  ","\n  ","")
-        Cell(List(Data( calcSize( sum.toInt, maxHandsPlayedTotal ), cols, values )), Some(title))
+        Cell(List(DataPieChart( calcSize( sum.toInt, maxHandsPlayedTotal ), cols, values )), Some(title))
       }
 
       val first = byType( totalStats.take(totalStats.length-1))
@@ -469,7 +472,7 @@ object PageStatsInternal {
             val (cols,vals) = s.histogram.map(cs => (colorMap(cs.tricks), cs.counter.toDouble)).unzip
             if (s.contractType == ContractTypePassed.value) {
               val title = f"Passed: ${s.handsPlayed} ${100.0*s.handsPlayed/maxHandsPlayedTotal}%.2f%%"
-              Cell(List(Data( calcSize(s.handsPlayed, maxHandsPlayed) , colorTypePassed::Nil, s.handsPlayed.toDouble::Nil, Some(title) )))
+              Cell(List(DataPieChart( calcSize(s.handsPlayed, maxHandsPlayed) , colorTypePassed::Nil, s.handsPlayed.toDouble::Nil, Some(title) )))
             } else {
               val pre = f"${ct} ${100.0*s.handsPlayed/maxHandsPlayedTotal}%.2f%%"
               val title = s"${pre}\nTotal: ${s.handsPlayed}"+s.histogram.sortBy(cs=>cs.tricks).map { cs =>
@@ -479,7 +482,7 @@ object PageStatsInternal {
                 else if (cs.tricks == 10) f"  Passed : ${cs.counter} (${percent}%.2f%%)"
                 else f"  Made +${cs.tricks}: ${cs.counter} (${percent}%.2f%%)"
               }.mkString("\n","\n","")
-              Cell(List(Data( calcSize(s.handsPlayed, if (ct==ContractTypeTotal) maxHandsPlayedTotal else maxHandsPlayed) , cols, vals )), Some(title))
+              Cell(List(DataPieChart( calcSize(s.handsPlayed, if (ct==ContractTypeTotal) maxHandsPlayedTotal else maxHandsPlayed) , cols, vals )), Some(title))
             }
 
           }
@@ -542,11 +545,21 @@ object PageStatsInternal {
         else madeColors( i )
       }
 
-      val ( totalHandsPlayed, maxHandsPlayed) = stats.data.map( ps => ps.handsPlayed ).foldLeft((0,0))( (ac,v) => ( ac._1+v, Math.max(ac._2,v)) )
+      val statsDataAll = stats.data
 
-      def calcSize( handsPlayed: Int ) = {
+      val statsDataDoubled = stats.data.filter( cs => cs.contract.contains("*") || cs.contract == "PassedOut" )
+
+      val ( totalHandsPlayed, maxHandsPlayed) = statsDataAll.map( ps => ps.handsPlayed ).foldLeft((0,0))( (ac,v) => ( ac._1+v, Math.max(ac._2,v)) )
+      val ( totalDoubledHandsPlayed, maxDoubledHandsPlayed) = statsDataDoubled.map( ps => ps.handsPlayed ).foldLeft((0,0))( (ac,v) => ( ac._1+v, Math.max(ac._2,v)) )
+
+      def calcSizeAll( handsPlayed: Int ) = {
         if (handsPlayed == 0) -5
         else (handsPlayed.toDouble/maxHandsPlayed*75).toInt + 5
+      }
+
+      def calcSizeDoubled( handsPlayed: Int ) = {
+        if (handsPlayed == 0) -5
+        else (handsPlayed.toDouble/maxDoubledHandsPlayed*75).toInt + 5
       }
 
       /* *
@@ -554,23 +567,28 @@ object PageStatsInternal {
        * @return a List[List[List[ContractStat]]].  The outermost list is suit, the middle is contract tricks, inner is doubled.
        * Passed shows up as a suit.
        */
-      def sortContractStat( data: List[ContractStat] ) = {
-        data.groupBy(cs=> cs.parseContract.suit).map { entryBySuit =>
-          val (suit, dataBySuit) = entryBySuit
+      def sortContractStat( data: List[ContractStat], calcSize: Int => Int ) = {
+        val bySuit = data.groupBy(cs=> cs.parseContract.suit)
+        List("P","Z","S","H","D","C").map { suit =>
+          val dataBySuit = bySuit.get(suit).getOrElse(List())
           if (suit == "P") {
             // passed out
             // dataBySuit should only have one entry
-            val pd = dataBySuit.head
-            val title = f"Passed Out: ${pd.handsPlayed} (${100.0*pd.handsPlayed/totalHandsPlayed}%.2f%%)"
-            val dd = Data( calcSize( pd.handsPlayed), colorTypePassed::Nil, 1.0::Nil, Some(title) )
-            ( suit, List( Cell(List(dd)), zeroCell, zeroCell, zeroCell, zeroCell, zeroCell, zeroCell ) )
+            val dd = if (dataBySuit.isEmpty) {
+              emptyCell
+            } else {
+              val pd = dataBySuit.head
+              val title = f"Passed Out: ${pd.handsPlayed} (${100.0*pd.handsPlayed/totalHandsPlayed}%.2f%%)"
+              Cell(List(DataPieChart( calcSize( pd.handsPlayed), colorTypePassed::Nil, 1.0::Nil, Some(title) ) ) )
+            }
+            ( suit, List( dd, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell ) )
           } else {
             val trickdata = (1 to 7).map { ntricks =>
               val tricks = ntricks.toString()
 
               val tcss = dataBySuit.filter( cs => cs.parseContract.tricks == tricks )
 
-              if (tcss.isEmpty) zeroCell
+              if (tcss.isEmpty) emptyCell
               else {
                 if (aggregateDouble) {
                   @tailrec
@@ -591,7 +609,7 @@ object PageStatsInternal {
                     else if (cs.tricks == 0) f"  Made   : ${cs.counter} (${percent}%.2f%%)"
                     else f"  Made +${cs.tricks}: ${cs.counter} (${percent}%.2f%%)"
                   }.mkString("\n","\n","")
-                  Cell(List( Data( calcSize(s.handsPlayed) , cols, vals ) ), Some(title))
+                  Cell(List( DataPieChart( calcSize(s.handsPlayed) , cols, vals ) ), Some(title))
                 } else {
                   val celllist =
                     List( "", "*", "**" ).map { doubled =>
@@ -605,7 +623,7 @@ object PageStatsInternal {
                           else if (cs.tricks == 0) f"  Made   : ${cs.counter} (${percent}%.2f%%)"
                           else f"  Made +${cs.tricks}: ${cs.counter} (${percent}%.2f%%)"
                         }.mkString("\n","\n","")
-                        Data( calcSize(s.handsPlayed) , cols, vals, Some(title) )
+                        DataPieChart( calcSize(s.handsPlayed) , cols, vals, Some(title) )
                       }.getOrElse( zeroData )
                     }
                   Cell( celllist )
@@ -614,10 +632,10 @@ object PageStatsInternal {
             }
             ( suit, trickdata.toList )
           }
-        }.toList.sortWith{ (l,r) =>
-          val il = suitSortOrder.indexOf(l._1)
-          val ir = suitSortOrder.indexOf(r._1)
-          il < ir
+//        }.toList.sortWith{ (l,r) =>
+//          val il = suitSortOrder.indexOf(l._1)
+//          val ir = suitSortOrder.indexOf(r._1)
+//          il < ir
         }.map { entry =>
           val (suit, data) = entry
           val s = suit match {
@@ -633,9 +651,18 @@ object PageStatsInternal {
         }
       }
 
-      val rows = sortContractStat( stats.data )
+      val rowsAll = sortContractStat( statsDataAll, calcSizeAll )
+      val rowsDoubled = sortContractStat( statsDataDoubled, calcSizeDoubled )
 
-      val columns = (1 to 7).map( t => Column( t.toString ) ).toList
+      val rows = rowsAll.zip(rowsDoubled).map { entry =>
+        val (rall, rdoubled) = entry
+        val m = Cell( List( DataTagMod( rdoubled.name ) ) )
+        Row( rall.name, rall.data:::(m::rdoubled.data) )
+      }
+
+      val columnTricks = (1 to 7).map( t => Column( t.toString ) ).toList
+
+      val columns = columnTricks:::( Column("Doubled")::columnTricks )
 
       val atitle =
         if (aggregateDouble) {
@@ -655,10 +682,21 @@ object PageStatsInternal {
         }
 
       PieChartTable(
-        firstColumn = Column("Player"),
+        firstColumn = Column("Trump Suit"),
         columns = columns,
         rows = rows,
-        header = None,
+        header = Some(
+          <.tr(
+            <.th(
+              ^.colSpan := 8,
+              "All Contracts"
+            ),
+            <.th(
+              ^.colSpan := 8,
+              "Doubled Contracts"
+            )
+          )
+        ),
         footer = Some(
             <.tr(
               <.td(
