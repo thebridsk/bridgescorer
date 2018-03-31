@@ -580,11 +580,10 @@
 .dupDivPageStats > div {
   padding: 3px;
 }
-
-.dupDivPageStats > div:nth-child(4) {
+.dupDivPageStats > div:nth-child(4) .tablePieChart td > div {
   display: flex;
-  flex-direction: row;
-}
-.dupDivPageStats > div:nth-child(4) > div {
-  padding: 3px;
+  flex-flow: row nowrap;
+  justify-content: center;
+  align-items: center;
+  align-content: center;
 }

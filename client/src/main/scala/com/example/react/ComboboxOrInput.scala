@@ -36,24 +36,6 @@ object ComboboxOrInput {
     def jv[T]( value: js.UndefOr[T] ): Option[T] = if (js.isUndefined(value)) None else Some(value.get)
 
     if (!noCombobox) {
-//      Combobox(v(defaultvalue),
-//               Some(comboboxCB _),
-//               jv(data),
-//               v(filter),
-//               v(tabIndex),
-//               v(name),
-//               v(caseSensitive),
-//               v(msgOpen),
-//               v(msgEmptyList),
-//               v(msgEmptyFilter),
-//               v(busy))
-
-      // this sets the "value" field.  This causes the following warning from react:
-      //
-      //   Warning: You are manually calling a React.PropTypes validation function for the `value` prop on `ComboBox`.
-      //   This is deprecated and will not work in production with the next major version.
-      //   You may be seeing this warning due to a third-party PropTypes library.
-      //   See https://fb.me/react-warning-dont-call-proptypes for details.
       Combobox(None,
                Some(comboboxCB _),
                jv(data),

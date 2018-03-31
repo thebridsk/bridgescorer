@@ -107,8 +107,6 @@ class BaseStyles {
 
   val testPage = cls("baseTestPage")
 
-  val hover = cls("titleHover")
-
   val piechart = cls("piechart")
 
   val svgrect = cls("svgrect")
@@ -118,6 +116,9 @@ class BaseStyles {
   val tableStats = cls("tableStats")
 
   val tablePieChart = cls("tablePieChart")
+
+  val withTooltipBox = cls("withTooltipBox")
+  val tooltipContent = cls("tooltipContent")
 }
 
 class RootStyles {

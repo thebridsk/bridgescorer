@@ -166,7 +166,7 @@ object ViewPairsGridInternal {
       ""
     }
 
-    (DataBar( size, List( color ), List(1.0), None, 20 ), title+titleMP+titleIMP)
+    (DataBar( size, List( color ), List(1.0), None, None, 20 ), title+titleMP+titleIMP)
   }
 
   def color( c: Color ) = c
@@ -241,7 +241,7 @@ object ViewPairsGridInternal {
                 pds.get(rowplayer, colPlayer) match {
                   case Some(pd) =>
                     val (data,title) = getData(pd, statSize, statColor, 120, 0, state, 1)
-                    Cell(List( data ), Some(title))
+                    Cell(List( data ), Some(<.div(title)))
                   case None =>
                     Cell(List())
                 }
