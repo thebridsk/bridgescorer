@@ -12,6 +12,7 @@ import com.example.pages.BaseStyles.baseStyles
 import com.example.data.util.Strings
 import utils.logging.Logger
 import org.scalajs.dom.ext.Color
+import scala.language.postfixOps
 
 /**
  * Shows a table with sort buttons has the headers of the columns.
@@ -31,26 +32,74 @@ object PieChartTable {
   )
 
   sealed trait Data {
-    val title: Option[String]
+    val attrs: Option[TagMod]
+    val title: Option[TagMod]
   }
 
   /**
    * @param size the diameter of the piechart
    * @param color the color of the slices
    * @param value the relative sizes of the slices
+   * @param attrs attributes to apply to the data element
    * @param title the title for the flyover text
    */
   case class DataPieChart(
     size: Int,
     color: List[Color],
     value: List[Double],
-    title: Option[String] = None,
-  ) extends Data
+    title: Option[TagMod] = None,
+    attrs: Option[TagMod] = None,
+  ) extends Data {
+    def withSize( s: Int ) = copy( size = s )
+    def withTitle( t: Option[TagMod] ) = copy( title = t )
+    def withAttrs( a: Option[TagMod] ) = copy( attrs = a )
+
+    /**
+     * Adds a tooltip with a larger version of the piechart.
+     * @param title tooltip without the chart
+     * @param pieChartSize the size of the piechart in the tooltip
+     * @param minHeight the min-height style applied to the element that contains the data.
+     */
+    def chartWithTitle( title: TagMod, pieChartSize: Int, minHeight: Int ) = {
+        withAttrs( Some( ^.minHeight := (minHeight px)) ).
+        withTitle(
+          Some(
+            TagMod(
+              PieChartTable.item(withSize(pieChartSize)),
+              <.div( title )
+            )
+          )
+        )
+    }
+
+    /**
+     * Returns a Cell with this chart.  A tooltip with a larger version of the piechart is added to cell.
+     * @param title tooltip without the chart
+     * @param pieChartSize the size of the piechart in the tooltip
+     * @param minHeight the min-height style applied to the element that contains the data.
+     */
+    def toCellWithOneChartAndTitle( title: TagMod, pieChartSize: Int, minHeight: Int ) = {
+      Cell(
+          List(
+            this
+          ),
+          Some(
+            TagMod(
+              PieChartTable.item(withSize(pieChartSize)),
+              <.div(title)
+            )
+          ),
+          Some( ^.minHeight := (minHeight px) )
+      )
+    }
+
+  }
 
   /**
    * @param width the width of the rectangle
    * @param color the color of the slices
    * @param value the relative sizes of the slices
+   * @param attrs attributes to apply to the data element
    * @param title the title for the flyover text
    * @param height the height of the rectangle
    */
@@ -58,18 +107,31 @@ object PieChartTable {
     width: Int,
     color: List[Color],
     value: List[Double],
-    title: Option[String] = None,
-    height: Int = 0,
+    title: Option[TagMod] = None,
+    attrs: Option[TagMod] = None,
+    height: Int = 0
   ) extends Data
 
+  /**
+   * @param data the data
+   * @param attrs attributes to apply to the data element
+   * @param title the title for the flyover text
+   */
   case class DataTagMod(
     data: TagMod,
-    title: Option[String] = None,
+    title: Option[TagMod] = None,
+    attrs: Option[TagMod] = None
   ) extends Data
 
+  /**
+   * @param data the data items to put in the cell
+   * @param attrs attributes to apply to the data element
+   * @param title the title for the flyover text
+   */
   case class Cell(
-      data: List[Data],
-      title: Option[String] = None
+    data: List[Data],
+    title: Option[TagMod] = None,
+    attrs: Option[TagMod] = None,
   )
 
   case class Row(
@@ -145,6 +207,7 @@ object PieChartTable {
       caption: Option[TagMod] = None,
     ) = Props(firstColumn, columns,rows,header,footer,totalRows,caption)
 
+  def item( data: Data ) = itemComponent(data)
 }
 
 object PieChartTableInternal {
@@ -152,6 +215,49 @@ object PieChartTableInternal {
   import Utils._
 
   val log = Logger("bridge.PieChartTable")
+
+  def tooltip( data: TagMod, tooltip: Option[TagMod] ): VdomNode = {
+    tooltip match {
+      case Some(tt) =>
+        Tooltip(data,tt)
+      case None =>
+        <.div( data )
+    }
+  }
+
+  val itemComponent = ScalaComponent.builder[Data]("PieChartTableItem")
+                            .stateless
+                            .noBackend
+                            .render_P { item =>
+                              tooltip(
+                                TagMod(
+                                  item match {
+                                    case r: DataPieChart =>
+                                      PieChartOrSquareForZero(
+                                        size = r.size,
+                                        squareColor = Color.Black,
+                                        slices = r.value,
+                                        colors = r.color,
+                                        chartTitle = None
+                                      )
+                                    case r: DataBar =>
+                                      SvgRect(
+                                        width = r.width,
+                                        height = if (r.height == 0) 20 else r.height,
+                                        borderColor = Color.Black,
+                                        slices = r.value,
+                                        colors = r.color,
+                                        chartTitle = None
+                                      )
+                                    case r: DataTagMod =>
+                                        r.data
+                                  },
+                                  item.attrs.whenDefined
+                                ),
+                                item.title
+                              )
+                            }
+                            .build
 
   /**
    * Internal state for rendering the component.
@@ -180,8 +286,6 @@ object PieChartTableInternal {
                             )
                           }.build
 
-  val titleAttr    = VdomAttr("data-title")
-
   val PieChartTableRow = ScalaComponent.builder[(Props,State,Backend, Row)]("PieChartTableRow")
                         .render_P { args =>
                           val (props,state,backend,row) = args
@@ -192,44 +296,14 @@ object PieChartTableInternal {
                             row.data.zip( props.columns ).map { entry =>
                               val (cell, col) = entry
                               <.td(
-                                cell.title.whenDefined( t =>
+                                tooltip(
                                   TagMod(
-                                    titleAttr:=t,
-                                    baseStyles.hover
-                                  )
-                                ),
-                                <.div(
-                                  cell.data.map { item =>
-                                    <.div(
-                                      item.title.whenDefined { title =>
-                                        TagMod(
-                                          titleAttr:=title,
-                                          baseStyles.hover
-                                        )
-                                      },
-                                      item match {
-                                        case r: DataPieChart =>
-                                          PieChartOrSquareForZero(
-                                            size = r.size,
-                                            squareColor = Color.Black,
-                                            slices = r.value,
-                                            colors = r.color,
-                                            chartTitle = None
-                                          )
-                                        case r: DataBar =>
-                                          SvgRect(
-                                            width = r.width,
-                                            height = if (r.height == 0) 20 else r.height,
-                                            borderColor = Color.Black,
-                                            slices = r.value,
-                                            colors = r.color,
-                                            chartTitle = None
-                                          )
-                                        case r: DataTagMod =>
-                                            r.data
-                                      }
-                                    )
-                                  }.toTagMod
+                                    cell.data.map { item =>
+                                      itemComponent(item)
+                                    }.toTagMod,
+                                    cell.attrs.whenDefined
+                                  ),
+                                  cell.title
                                 )
                               )
                             }.toTagMod

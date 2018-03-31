@@ -181,16 +181,11 @@ object ViewPairsDetailsGridInternal {
               case Some(det) =>
                 val oneOverTot = 100.0/(det.declarer+det.defended+det.passed)
                 val title = f"Declarer ${det.declarer} (${det.declarer*oneOverTot}%.2f%%)%nDefended ${det.defended} (${det.defended*oneOverTot}%.2f%%)%nPassed ${det.passed} (${det.passed*oneOverTot}%.2f%%)"
-                Cell(
-                  data = List(
-                    DataPieChart(
-                      size = size(det.total, vmin, vmax, state.minSize, state.maxSize),
-                      color = Color.Green::Color.Red::Color.Blue::Nil,
-                      value = det.declarer.toDouble::det.defended.toDouble::det.passed.toDouble::Nil,
-                    )
-                  ),
-                  title = Some(title)
-                )
+                DataPieChart(
+                  size = size(det.total, vmin, vmax, state.minSize, state.maxSize),
+                  color = Color.Green::Color.Red::Color.Blue::Nil,
+                  value = det.declarer.toDouble::det.defended.toDouble::det.passed.toDouble::Nil,
+                ).toCellWithOneChartAndTitle(title, state.maxSize, state.maxSize)
               case None =>
                 cellEmpty
             }
@@ -228,7 +223,7 @@ object ViewPairsDetailsGridInternal {
                       value = det.passed.toDouble::Nil,
                     )
                   ),
-                  title = Some(titleDec+"\n"+titleDef+"\n"+titlePas)
+                  title = Some(<.div( titleDec+"\n"+titleDef+"\n"+titlePas ))
                 )
               case None =>
                 cellEmpty
@@ -247,16 +242,11 @@ object ViewPairsDetailsGridInternal {
                 val titleDec = f"Declarer ${det.declarer} (${det.declarer*oneOverTotal}%.2f%%)\n  Made ${det.made} (${det.made*oneOverDec}%.2f%%)%n  Down ${det.down} (${det.down*oneOverDec}%.2f%%)"
                 val titleDef = f"Defended ${det.defended} (${det.defended*oneOverTotal}%.2f%%)\n  Took Down ${det.tookDown} (${det.tookDown*oneOverDef}%.2f%%)%n  Allowed Made ${det.allowedMade} (${det.allowedMade*oneOverDef}%.2f%%)"
                 val titlePas = f"Passed ${det.passed} (${det.passed*oneOverTotal}%.2f%%)"
-                Cell(
-                  data = List(
-                    DataPieChart(
-                      size = if (det.total == 0) -sizeAll else sizeAll,
-                      color = Color.Green::Color.Red::DarkRed::DarkGreen::Color.Blue::Nil,
-                      value = det.made.toDouble::det.down.toDouble::det.allowedMade.toDouble::det.tookDown.toDouble::det.passed.toDouble::Nil,
-                    )
-                  ),
-                  title = Some(titleDec+"\n"+titleDef+"\n"+titlePas)
-                )
+                DataPieChart(
+                  size = if (det.total == 0) -sizeAll else sizeAll,
+                  color = Color.Green::Color.Red::DarkRed::DarkGreen::Color.Blue::Nil,
+                  value = det.made.toDouble::det.down.toDouble::det.allowedMade.toDouble::det.tookDown.toDouble::det.passed.toDouble::Nil,
+                ).toCellWithOneChartAndTitle(titleDec+"\n"+titleDef+"\n"+titlePas, state.maxSize, state.maxSize)
               case None =>
                 cellEmpty
             }

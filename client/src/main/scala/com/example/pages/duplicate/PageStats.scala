@@ -53,10 +53,10 @@ import com.example.data.duplicate.stats.ContractTypeTotal
 import com.example.data.duplicate.stats.CounterStat
 import com.example.data.bridge.ContractTricks
 import com.example.react.HSLColor
-import com.example.react.FixedColorBar
 import com.example.react.PieChartTable.Cell
 import com.example.react.PieChartTable.DataPieChart
 import com.example.react.PieChartTable.DataTagMod
+import scala.language.postfixOps
 
 /**
  * Shows a summary page of all duplicate matches from the database.
@@ -227,8 +227,11 @@ object PageStatsInternal {
 
       val maxHandsPlayed = (stats.declarer.map( ps => ps.handsPlayed ):::stats.defender.map( ps => ps.handsPlayed )).foldLeft(0)(Math.max _)
 
+      val pieChartMaxSize = 100
+      val pieChartMaxSizePlusPadding = 105
+
       def calcSize( handsPlayed: Int, max: Int ) = {
-        (handsPlayed.toDouble/max*75).toInt + 5
+        (handsPlayed.toDouble/max*(pieChartMaxSize-5)).toInt + 5
       }
 
       val players = (stats.declarer.map( ps => ps.player ):::stats.defender.map( ps => ps.player )).distinct.sorted
@@ -295,7 +298,11 @@ object PageStatsInternal {
                     val (cols,vals) = s.histogram.map(cs => (colorMap(cs.tricks), cs.counter.toDouble)).unzip
                     if (ct == ContractTypePassed) {
                       val title = s"${s.player} in ${ct}\nPassed: ${s.handsPlayed}"
-                      Cell(List(DataPieChart( calcSize(s.handsPlayed, maxHandsPlayed) , colorTypePassed::Nil, s.handsPlayed.toDouble::Nil )), Some(title))
+                      DataPieChart(
+                        calcSize(s.handsPlayed, maxHandsPlayed),
+                        colorTypePassed::Nil,
+                        s.handsPlayed.toDouble::Nil
+                      ).toCellWithOneChartAndTitle(title, pieChartMaxSize, pieChartMaxSizePlusPadding)
                     } else {
                       val pre = s"${s.player} in ${ct} as ${if (s.declarer) "Declarer" else "Defender"}"
                       val title = s"${pre}\nTotal: ${s.handsPlayed}"+s.histogram.sortBy(cs=>cs.tricks).map { cs =>
@@ -305,7 +312,11 @@ object PageStatsInternal {
                         else if (cs.tricks == 10) f"  Passed : ${cs.counter} (${percent}%.2f%%)"
                         else f"  Made +${cs.tricks}: ${cs.counter} (${percent}%.2f%%)"
                       }.mkString("\n","\n","")
-                      Cell(List(DataPieChart( calcSize(s.handsPlayed, if (ct==ContractTypeTotal) maxHandsPlayedTotal else maxHandsPlayed) , cols, vals )), Some(title))
+                      DataPieChart(
+                        calcSize(s.handsPlayed, if (ct==ContractTypeTotal) maxHandsPlayedTotal else maxHandsPlayed),
+                        cols,
+                        vals
+                      ).toCellWithOneChartAndTitle(title, pieChartMaxSize, pieChartMaxSizePlusPadding )
                     }
 
                   }
@@ -329,7 +340,11 @@ object PageStatsInternal {
             val (ct,value, col) = entry
             f"${ct.toString()}: ${value} (${100.0*value/sum}%.2f%%)"
           }.mkString("\n  ","\n  ","\n  ")+f"${ContractTypePassed.toString()}: ${passedout.handsPlayed} (${100.0*passedout.handsPlayed/sum}%.2f%%)"
-          Cell(List(DataPieChart( calcSize( sum.toInt, maxHandsPlayedTotal ), cols:::(colorTypePassed::Nil), values:::(passedout.handsPlayed.toDouble::Nil) )), Some(title))
+          DataPieChart(
+              calcSize( sum.toInt, maxHandsPlayedTotal ),
+              cols:::(colorTypePassed::Nil),
+              values:::(passedout.handsPlayed.toDouble::Nil)
+          ).toCellWithOneChartAndTitle(title, pieChartMaxSize, pieChartMaxSizePlusPadding )
         }
 
         Row( p, byType(declarer,"Declarer")::byType(defender,"Defender")::(data.drop(1)) )   // drop passed declarer
@@ -357,9 +372,9 @@ object PageStatsInternal {
                 "Red indicates a down, green a made contract.",
                 <.br,
                 "Dark green indicates a contract made with no overtricks",
-                ColorBar( 0, 0.25, numberDown, true, 120, 0.25, numberMade, true, false, Some(titleDown), Some(titleMade), None ),
+                ColorBar.create(downColors, madeColors, None, Some(titleDown), Some(titleMade), None),
                 "For the Type columns the colors are:",
-                FixedColorBar( ctColors, Some(typeOrder.map( ct => ct.toString() )) )
+                ColorBar.simple( ctColors, Some(typeOrder.map( ct => ct.toString() )) )
               )
             )
         ),
@@ -441,9 +456,11 @@ object PageStatsInternal {
         (almostAll ::: (t::Nil), max, t.handsPlayed )
       }
 
+      val pieChartMaxSize = 100
+      val pieChartMaxSizePlusPadding = 105
 
       def calcSize( handsPlayed: Int, max: Int ) = {
-        (handsPlayed.toDouble/max*75).toInt + 5
+        (handsPlayed.toDouble/max*(pieChartMaxSize-5)).toInt + 5
       }
 
       def byType( list: List[ContractStat] ) = {
@@ -458,7 +475,11 @@ object PageStatsInternal {
           val (ct,value, col) = entry
           f"${ct.toString()}: ${value} (${100*value/sum}%.2f%%)"
         }.mkString("\n  ","\n  ","")
-        Cell(List(DataPieChart( calcSize( sum.toInt, maxHandsPlayedTotal ), cols, values )), Some(title))
+        DataPieChart(
+          calcSize( sum.toInt, maxHandsPlayedTotal ),
+          cols,
+          values
+        ).toCellWithOneChartAndTitle(title, pieChartMaxSize, pieChartMaxSizePlusPadding )
       }
 
       val first = byType( totalStats.take(totalStats.length-1))
@@ -472,7 +493,11 @@ object PageStatsInternal {
             val (cols,vals) = s.histogram.map(cs => (colorMap(cs.tricks), cs.counter.toDouble)).unzip
             if (s.contractType == ContractTypePassed.value) {
               val title = f"Passed: ${s.handsPlayed} ${100.0*s.handsPlayed/maxHandsPlayedTotal}%.2f%%"
-              Cell(List(DataPieChart( calcSize(s.handsPlayed, maxHandsPlayed) , colorTypePassed::Nil, s.handsPlayed.toDouble::Nil, Some(title) )))
+              DataPieChart(
+                calcSize(s.handsPlayed, maxHandsPlayed),
+                colorTypePassed::Nil,
+                s.handsPlayed.toDouble::Nil
+              ).toCellWithOneChartAndTitle(title, pieChartMaxSize, pieChartMaxSizePlusPadding )
             } else {
               val pre = f"${ct} ${100.0*s.handsPlayed/maxHandsPlayedTotal}%.2f%%"
               val title = s"${pre}\nTotal: ${s.handsPlayed}"+s.histogram.sortBy(cs=>cs.tricks).map { cs =>
@@ -482,7 +507,11 @@ object PageStatsInternal {
                 else if (cs.tricks == 10) f"  Passed : ${cs.counter} (${percent}%.2f%%)"
                 else f"  Made +${cs.tricks}: ${cs.counter} (${percent}%.2f%%)"
               }.mkString("\n","\n","")
-              Cell(List(DataPieChart( calcSize(s.handsPlayed, if (ct==ContractTypeTotal) maxHandsPlayedTotal else maxHandsPlayed) , cols, vals )), Some(title))
+              DataPieChart(
+                calcSize(s.handsPlayed, if (ct==ContractTypeTotal) maxHandsPlayedTotal else maxHandsPlayed),
+                cols,
+                vals
+              ).toCellWithOneChartAndTitle(title, pieChartMaxSize, pieChartMaxSizePlusPadding )
             }
 
           }
@@ -506,9 +535,9 @@ object PageStatsInternal {
                 "Red indicates a down, green a made contract.",
                 <.br,
                 "Dark green indicates a contract made with no overtricks",
-                ColorBar( 0, 0.25, numberDown, true, 120, 0.25, numberMade, true, false, Some(titleDown), Some(titleMade), None ),
+                ColorBar.create(downColors, madeColors, None, Some(titleDown), Some(titleMade), None),
                 "For the Type columns the colors are:",
-                FixedColorBar( ctColors, Some(typeOrder.map( ct => ct.toString() )) )
+                ColorBar.simple( ctColors, Some(typeOrder.map( ct => ct.toString() )) )
               )
             )
         ),
@@ -552,14 +581,17 @@ object PageStatsInternal {
       val ( totalHandsPlayed, maxHandsPlayed) = statsDataAll.map( ps => ps.handsPlayed ).foldLeft((0,0))( (ac,v) => ( ac._1+v, Math.max(ac._2,v)) )
       val ( totalDoubledHandsPlayed, maxDoubledHandsPlayed) = statsDataDoubled.map( ps => ps.handsPlayed ).foldLeft((0,0))( (ac,v) => ( ac._1+v, Math.max(ac._2,v)) )
 
+      val pieChartMaxSize = 100
+      val pieChartMaxSizePlusPadding = 105
+
       def calcSizeAll( handsPlayed: Int ) = {
         if (handsPlayed == 0) -5
-        else (handsPlayed.toDouble/maxHandsPlayed*75).toInt + 5
+        else (handsPlayed.toDouble/maxHandsPlayed*(pieChartMaxSize-5)).toInt + 5
       }
 
       def calcSizeDoubled( handsPlayed: Int ) = {
         if (handsPlayed == 0) -5
-        else (handsPlayed.toDouble/maxDoubledHandsPlayed*75).toInt + 5
+        else (handsPlayed.toDouble/maxDoubledHandsPlayed*(pieChartMaxSize-5)).toInt + 5
       }
 
       /* *
@@ -579,7 +611,11 @@ object PageStatsInternal {
             } else {
               val pd = dataBySuit.head
               val title = f"Passed Out: ${pd.handsPlayed} (${100.0*pd.handsPlayed/totalHandsPlayed}%.2f%%)"
-              Cell(List(DataPieChart( calcSize( pd.handsPlayed), colorTypePassed::Nil, 1.0::Nil, Some(title) ) ) )
+              DataPieChart(
+                calcSize( pd.handsPlayed),
+                colorTypePassed::Nil,
+                1.0::Nil
+              ).toCellWithOneChartAndTitle(title, pieChartMaxSize, pieChartMaxSizePlusPadding )
             }
             ( suit, List( dd, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell ) )
           } else {
@@ -609,7 +645,11 @@ object PageStatsInternal {
                     else if (cs.tricks == 0) f"  Made   : ${cs.counter} (${percent}%.2f%%)"
                     else f"  Made +${cs.tricks}: ${cs.counter} (${percent}%.2f%%)"
                   }.mkString("\n","\n","")
-                  Cell(List( DataPieChart( calcSize(s.handsPlayed) , cols, vals ) ), Some(title))
+                  DataPieChart(
+                    calcSize(s.handsPlayed),
+                    cols,
+                    vals
+                  ).toCellWithOneChartAndTitle(title, pieChartMaxSize, pieChartMaxSizePlusPadding )
                 } else {
                   val celllist =
                     List( "", "*", "**" ).map { doubled =>
@@ -623,7 +663,11 @@ object PageStatsInternal {
                           else if (cs.tricks == 0) f"  Made   : ${cs.counter} (${percent}%.2f%%)"
                           else f"  Made +${cs.tricks}: ${cs.counter} (${percent}%.2f%%)"
                         }.mkString("\n","\n","")
-                        DataPieChart( calcSize(s.handsPlayed) , cols, vals, Some(title) )
+                        DataPieChart(
+                            calcSize(s.handsPlayed),
+                            cols,
+                            vals
+                        ).chartWithTitle(title, pieChartMaxSize, pieChartMaxSizePlusPadding )
                       }.getOrElse( zeroData )
                     }
                   Cell( celllist )
@@ -710,7 +754,7 @@ object PageStatsInternal {
                 "Red indicates a down, green a made contract.",
                 <.br,
                 "Dark green indicates a contract made with no overtricks",
-                ColorBar( 0, 0.25, numberDown, true, 120, 0.25, numberMade, true, false, Some(titleDown), Some(titleMade), None )
+                ColorBar.create(downColors, madeColors, None, Some(titleDown), Some(titleMade), None)
               )
             )
         ),

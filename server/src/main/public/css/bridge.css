@@ -378,70 +378,6 @@
   list-style-type: none;
 }
 
-/*
-This underlines the element with a data-title when displaying it.
-*/
-/*
-[data-title] {
-    border-bottom: 1px dashed rgba(0, 0, 0, 0.2);
-    border-radius:2px;
-    position: relative;
-    white-space: pre;
-    size: auto;
-    text-align: left;
-}
-*/
-
-[data-title] {
-    position: relative;
-    white-space: pre;
-    size: auto;
-    text-align: left;
-}
-body.touched [data-title] > * {
-    user-select: none;
-}
-body .titleHover:hover {
-    user-select: auto;
-    background-color: orange;
-}
-body .titleHover:hover > * {
-    user-select: auto;
-    background-color: orange;
-}
-body.touched .titleHover:hover {
-    user-select: auto;
-    background-color: orange;
-}
-body.touched .titleHover:hover > * {
-    user-select: auto;
-    background-color: orange;
-}
-body.touched [data-title]:hover:after {
-    position: absolute;
-    top: 100%;
-    left: -50px; 
-    content: attr(data-title);
-    border: 1px solid rgba(0, 0, 0, 0.2);
-    background-color: white;
-    box-shadow: 1px 1px 3px;
-    padding: 0.3em;
-    z-index: 1;
-    text-align: left;
-}
-body [data-title]:hover:after {
-    position: absolute;
-    top: 100%;
-    left: -50px; 
-    content: attr(data-title);
-    border: 1px solid rgba(0, 0, 0, 0.2);
-    background-color: white;
-    box-shadow: 1px 1px 3px;
-    padding: 0.3em;
-    z-index: 1;
-    text-align: left;
-}
-
 .piechart {
   transform: rotate(-0.25turn);
   display: block;
@@ -520,13 +456,6 @@ body [data-title]:hover:after {
   text-align: center;
   padding: 2px 4px 2px 4px;
 }
-.tablePieChart td > div {
-  display: flex;
-  flex-flow: row nowrap;
-  justify-content: center;
-  align-items: center;
-  align-content: center;
-}
 .tablePieChart th {
   border: 1px solid black;
   text-align: center;
@@ -540,4 +469,69 @@ body [data-title]:hover:after {
   text-align: center;
   padding: 2px 4px 2px 4px;
   white-space: normal;
+}
+
+/***********
+ *  Tooltip stuff
+ */
+
+.withTooltipBox {
+    position: relative;
+}
+.withTooltipBox > .tooltipContent {
+    visibility: hidden;
+    color: black;
+    background-color: white;
+    padding: 5px;
+    border-radius: 6px;
+    border: 1px solid black;
+
+    /* Position the tooltip text - see examples below! */
+    position: absolute;
+    z-index: 1;
+    top: 90%;
+    left: 10%;
+}
+/* Show the tooltip text when you mouse over the tooltip container */
+.withTooltipBox:hover > .tooltipContent {
+    visibility: visible;
+}
+body.touched .withTooltipBox:hover > .tooltipContent {
+    visibility: visible;
+}
+
+.withTooltipBox:hover {
+    user-select: auto;
+    background-color: orange;
+}
+
+body.touched .withTooltipBox:hover {
+    user-select: auto;
+    background-color: orange;
+}
+
+/*****
+ *  App Stuff
+ */
+.withTooltipBox {
+  display: flex; 
+  flex-flow: row nowrap; 
+  justify-content: center; 
+  align-items: center; 
+  align-content: center;
+}
+
+.tooltipContent {
+  display: flex; 
+  flex-flow: row nowrap; 
+  justify-content: center; 
+  align-items: center; 
+  align-content: center;
+  white-space: pre;
+}
+
+.tooltipContent > div {
+  white-space: pre;
+  text-align: left;
+  padding-left: 5px;
 }

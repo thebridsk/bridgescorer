@@ -51,6 +51,7 @@ import play.api.libs.json.JsSuccess
 import play.api.libs.json.JsError
 import com.example.pages.BaseStyles
 import com.example.data.graphql.GraphQLProtocol.GraphQLResponse
+import com.example.react.Tooltip
 
 /**
  * Shows a summary page of all duplicate matches from the database.
@@ -188,8 +189,6 @@ object PageSummaryInternal {
     list
   }
 
-  val titleAttr    = VdomAttr("data-title")
-
   val SummaryRow = ScalaComponent.builder[(SummaryPeople,DuplicateSummary,Props,State,Backend,Option[String])]("SummaryRow")
                       .render_P( props => {
                         val (tp,ds,pr,st,back,importId) = props
@@ -220,11 +219,11 @@ object PageSummaryInternal {
                                 <.td(
                                   ds.bestMatch.map { bm =>
                                     if (bm.id.isDefined && bm.sameness > 90) {
-                                      <.span(
+                                      val title = bm.differences.map{ l => determineDifferences(l).mkString("Differences:\n","\n","") }.getOrElse("")
+                                      TagMod(Tooltip(
                                         f"""${bm.id.get} ${bm.sameness}%.2f%%""",
-                                        titleAttr:=bm.differences.map{ l => determineDifferences(l).mkString("Differences:\n","\n","") }.getOrElse(""),
-                                        baseStyles.hover
-                                      )
+                                        <.div( title )
+                                      ))
                                     } else {
                                       TagMod()
                                     }
