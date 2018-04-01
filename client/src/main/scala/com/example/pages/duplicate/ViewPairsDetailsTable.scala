@@ -239,7 +239,7 @@ object ViewPairsDetailsTableInternal {
               v.map( vv => ac.add(vv) ).getOrElse(ac)
             }
             val totalpd = pds.head.copy( player1="Totals", player2="", details = Some(tpd) )
-            Some(()=>List(totalpd).map( pd => getRow(pd,cols) ) )
+            Some(List(totalpd).map( pd => getRow(pd,cols) ) )
           }
 
           val rows = pds.map( pd => getRow(pd,cols) )

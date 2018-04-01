@@ -127,12 +127,17 @@ object PieChartTable {
    * @param data the data items to put in the cell
    * @param attrs attributes to apply to the data element
    * @param title the title for the flyover text
+   * @param colspan the number of columns this cell spans.  Default is 1.
    */
   case class Cell(
     data: List[Data],
     title: Option[TagMod] = None,
     attrs: Option[TagMod] = None,
-  )
+    colspan: Int = 1
+  ) {
+
+    def withColSpan( i: Int ) = copy( colspan = i )
+  }
 
   case class Row(
       name: String,
@@ -145,7 +150,7 @@ object PieChartTable {
       rows: List[ Row ],
       header: Option[TagMod] = None,
       footer: Option[TagMod] = None,
-      totalRows: Option[()=>List[Row]] = None,
+      totalRows: Option[List[Row]] = None,
       caption: Option[TagMod] = None
     ) {
 
@@ -174,7 +179,7 @@ object PieChartTable {
       rows: List[ Row ],
       header: Option[TagMod] = None,
       footer: Option[TagMod] = None,
-      totalRows: Option[()=>List[Row]] = None,
+      totalRows: Option[List[Row]] = None,
       caption: Option[TagMod] = None,
     ) = component( Props(firstColumn, columns,rows,header,footer,totalRows,caption ))
 
@@ -203,7 +208,7 @@ object PieChartTable {
       rows: List[ Row ],
       header: Option[TagMod] = None,
       footer: Option[TagMod] = None,
-      totalRows: Option[()=>List[Row]] = None,
+      totalRows: Option[List[Row]] = None,
       caption: Option[TagMod] = None,
     ) = Props(firstColumn, columns,rows,header,footer,totalRows,caption)
 
@@ -293,8 +298,7 @@ object PieChartTableInternal {
                             <.td(
                               row.name
                             ),
-                            row.data.zip( props.columns ).map { entry =>
-                              val (cell, col) = entry
+                            row.data.map { cell =>
                               <.td(
                                 tooltip(
                                   TagMod(
@@ -304,7 +308,9 @@ object PieChartTableInternal {
                                     cell.attrs.whenDefined
                                   ),
                                   cell.title
-                                )
+                                ),
+                                if (cell.colspan > 1) ^.colSpan := cell.colspan
+                                else TagMod()
                               )
                             }.toTagMod
                           )
@@ -326,8 +332,7 @@ object PieChartTableInternal {
         props.caption.whenDefined { c => <.caption(c) },
         PieChartTableHeader((props,state,this)),
         (props.footer.isDefined||props.totalRows.isDefined) ?= <.tfoot(
-          props.totalRows.map { f =>
-            val tpds = f()
+          props.totalRows.map { tpds =>
             tpds.zipWithIndex.map { entry =>
               val (row,i) = entry
               val x = PieChartTableRow.withKey(s"T$i")((props,state,this,row))

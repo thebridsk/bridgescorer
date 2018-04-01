@@ -204,7 +204,7 @@ object PageStatsInternal {
 
     def cancel = scope.modState( s => s.copy(msg = None) )
 
-    def displayPlayer( stats: PlayerStats ) = {
+    def displayPlayer( stats: PlayerStats, contractStats: ContractStats ) = {
 
       val numberDown = Math.max( 0, -stats.min )
       val numberMade = Math.max( 0, stats.max+1 )
@@ -230,34 +230,35 @@ object PageStatsInternal {
       val pieChartMaxSize = 100
       val pieChartMaxSizePlusPadding = 105
 
-      def calcSize( handsPlayed: Int, max: Int ) = {
+      def calcSize(max: Int)( handsPlayed: Int ) = {
         (handsPlayed.toDouble/max*(pieChartMaxSize-5)).toInt + 5
       }
 
       val players = (stats.declarer.map( ps => ps.player ):::stats.defender.map( ps => ps.player )).distinct.sorted
 
       def getCT( ct: ContractType, list: List[PlayerStat] ) = {
+
+        // ignore passed hands in total
+        def fix( h: PlayerStat ) = {
+          val (hp,hist) = if (h.contractType == ContractTypePassed.value) {
+            (h.handsPlayed,List(CounterStat(10,h.handsPlayed)))
+          } else {
+            (h.handsPlayed,h.histogram)
+          }
+          h.copy(h.player, h.declarer, ct.value, hist, hp)
+        }
+
+        @tailrec
+        def add( sum: PlayerStat, l: List[PlayerStat] ): PlayerStat = {
+          if (l.isEmpty) sum
+          else {
+            val h = l.head
+            add( sum.add(fix(h)), l.tail )
+          }
+        }
+
         if (list.isEmpty) None
         else if (ct == ContractTypeTotal) {
-
-          // ignore passed hands in total
-          def fix( h: PlayerStat ) = {
-            val (hp,hist) = if (h.contractType == ContractTypePassed) {
-              (0,List())
-            } else {
-              (h.handsPlayed,h.histogram)
-            }
-            h.copy(h.player, h.declarer, ContractTypeTotal.value, hist, hp)
-          }
-
-          @tailrec
-          def add( sum: PlayerStat, l: List[PlayerStat] ): PlayerStat = {
-            if (l.isEmpty) sum
-            else {
-              val h = l.head
-              add( sum.add(fix(h)), l.tail )
-            }
-          }
 
           val h = list.head
           val cc = add( fix(h), list.tail ).normalize
@@ -265,13 +266,14 @@ object PageStatsInternal {
           Some(cc)
 
         } else {
-          list.find( ps => ps.contractType == ct.value ).map { ct =>
-            if (ct.contractType == ContractTypePassed) {
-              // 10 tricks indicates passed out hand
-              ct.copy( histogram=List(CounterStat(10,ct.handsPlayed)), handsPlayed=ct.handsPlayed)
-            } else {
-              ct
-            }
+
+          val l = list.filter( ps => ps.contractType == ct.value )
+          if (l.isEmpty) None
+          else {
+            val h = l.head
+            val cc = add( fix(h), l.tail ).normalize
+
+            Some(cc)
           }
         }
       }
@@ -283,72 +285,129 @@ object PageStatsInternal {
 
       val order: List[ContractType] = ContractTypePassed::ContractTypePartial::ContractTypeGame::ContractTypeSlam::ContractTypeGrandSlam::ContractTypeTotal::Nil
 
-      val rows = players.map { p =>
-        val (declarer, defender) = stats.stats(p)
+      def byType( list: List[PlayerStat], playedAs: String, passedout: PlayerStat, colspan: Int = 1 ) = {
+        val or: List[ContractType] = ContractTypePartial::ContractTypeGame::ContractTypeSlam::ContractTypeGrandSlam::Nil
+        val dd = or.zipWithIndex.map { entry =>
+          val (ct,i) = entry
+          ( ct, list.find( ps => ps.contractType==ct.value ).map( ps => ps.handsPlayed ).getOrElse(0).toDouble, colorsMapForType(ct) )
+        }
+        val sum = dd.foldLeft(0.0)((ac,v) => ac+v._2) + passedout.handsPlayed
+        val (cts,values,cols) = dd.unzip3
+        val title = s"Types of hands as ${playedAs}"+dd.map { entry =>
+          val (ct,value, col) = entry
+          f"${ct.toString()}: ${value} (${100.0*value/sum}%.2f%%)"
+        }.mkString("\n  ","\n  ","\n  ")+f"${ContractTypePassed.toString()}: ${passedout.handsPlayed} (${100.0*passedout.handsPlayed/sum}%.2f%%)"
+        DataPieChart(
+            calcSize(maxHandsPlayedTotal)( sum.toInt ),
+            cols:::(colorTypePassed::Nil),
+            values:::(passedout.handsPlayed.toDouble::Nil)
+        ).toCellWithOneChartAndTitle(title, pieChartMaxSize, pieChartMaxSizePlusPadding ).
+           withColSpan( colspan )
+      }
 
-        val data =
-          order.flatMap { ct =>
-            ((getCT(ct,declarer),true)::(getCT(ct,defender),false)::Nil).map { entry =>
-              val (stat, decl) = entry
-              stat match {
-                case Some(s) =>
-                  if (s.handsPlayed == 0) {
-                    Cell(zeroList)
-                  } else {
-                    val (cols,vals) = s.histogram.map(cs => (colorMap(cs.tricks), cs.counter.toDouble)).unzip
-                    if (ct == ContractTypePassed) {
-                      val title = s"${s.player} in ${ct}\nPassed: ${s.handsPlayed}"
-                      DataPieChart(
-                        calcSize(s.handsPlayed, maxHandsPlayed),
-                        colorTypePassed::Nil,
-                        s.handsPlayed.toDouble::Nil
-                      ).toCellWithOneChartAndTitle(title, pieChartMaxSize, pieChartMaxSizePlusPadding)
-                    } else {
-                      val pre = s"${s.player} in ${ct} as ${if (s.declarer) "Declarer" else "Defender"}"
-                      val title = s"${pre}\nTotal: ${s.handsPlayed}"+s.histogram.sortBy(cs=>cs.tricks).map { cs =>
-                        val percent = 100.0*cs.counter/s.handsPlayed
-                        if (cs.tricks < 0) f"  Down ${-cs.tricks}: ${cs.counter} (${percent}%.2f%%)"
-                        else if (cs.tricks == 0) f"  Made   : ${cs.counter} (${percent}%.2f%%)"
-                        else if (cs.tricks == 10) f"  Passed : ${cs.counter} (${percent}%.2f%%)"
-                        else f"  Made +${cs.tricks}: ${cs.counter} (${percent}%.2f%%)"
-                      }.mkString("\n","\n","")
-                      DataPieChart(
-                        calcSize(s.handsPlayed, if (ct==ContractTypeTotal) maxHandsPlayedTotal else maxHandsPlayed),
-                        cols,
-                        vals
-                      ).toCellWithOneChartAndTitle(title, pieChartMaxSize, pieChartMaxSizePlusPadding )
-                    }
+      def genData(
+          declarer: Option[List[PlayerStat]],
+          defender: Option[List[PlayerStat]],
+          total: Option[List[PlayerStat]],
+          calcSizeCT: Int=>Int,
+          calcSizeTotal: Int=>Int
+      ) = {
 
-                  }
-                case None =>
-                  Cell(zeroList)
-              }
-            }
-          }
+        def asPlaying( b: Option[Boolean] ) = b.map( dec => if (dec) "Declarer" else "Defender" ).getOrElse("Total")
 
-        val passedout = defender.find( ps => ps.contractType == ContractTypePassed.value).getOrElse( PlayerStat("Passed",false,ContractTypePassed.value) )
-
-        def byType( list: List[PlayerStat], playedAs: String ) = {
-          val or: List[ContractType] = ContractTypePartial::ContractTypeGame::ContractTypeSlam::ContractTypeGrandSlam::Nil
-          val dd = or.zipWithIndex.map { entry =>
-            val (ct,i) = entry
-            ( ct, list.find( ps => ps.contractType==ct.value ).map( ps => ps.handsPlayed ).getOrElse(0).toDouble, colorsMapForType(ct) )
-          }
-          val sum = dd.foldLeft(0.0)((ac,v) => ac+v._2) + passedout.handsPlayed
-          val (cts,values,cols) = dd.unzip3
-          val title = s"Types of hands as ${playedAs}"+dd.map { entry =>
-            val (ct,value, col) = entry
-            f"${ct.toString()}: ${value} (${100.0*value/sum}%.2f%%)"
-          }.mkString("\n  ","\n  ","\n  ")+f"${ContractTypePassed.toString()}: ${passedout.handsPlayed} (${100.0*passedout.handsPlayed/sum}%.2f%%)"
-          DataPieChart(
-              calcSize( sum.toInt, maxHandsPlayedTotal ),
-              cols:::(colorTypePassed::Nil),
-              values:::(passedout.handsPlayed.toDouble::Nil)
-          ).toCellWithOneChartAndTitle(title, pieChartMaxSize, pieChartMaxSizePlusPadding )
+        /* *
+         * @param d
+         * @param b if None - totals, true - declarer, false defender
+         * @return list of tuple3( List[PlayerStat], decdeftot, colspan )
+         */
+        def getInfo( ct: ContractType, d: Option[List[PlayerStat]], b: Option[Boolean] ) = {
+          d.map { list =>
+            (getCT( ct,list ), asPlaying(b), if (ct == ContractTypePassed) 1 else b.map( _ =>1 ).getOrElse(2))
+          }.toList
         }
 
-        Row( p, byType(declarer,"Declarer")::byType(defender,"Defender")::(data.drop(1)) )   // drop passed declarer
+        order.flatMap { ct =>
+          ( getInfo(ct,declarer,Some(true)):::
+            getInfo(ct,defender,Some(false)):::
+            getInfo(ct,total,None)
+          ).map { entry =>
+            val (stat, decl,colspan) = entry
+            stat match {
+              case Some(ps) =>
+                logger.fine( s"""Stat for ${decl}: ${stat}""" )
+                if (ps.handsPlayed == 0) {
+                  Cell(zeroList).withColSpan(colspan)
+                } else {
+                  val histogram = ps.histogram.filter(cs => cs.counter!=0 ).sortBy(cs=>cs.tricks)
+                  val (cols,vals) = histogram.map(cs => (colorMap(cs.tricks), cs.counter.toDouble)).unzip
+                  if (ct == ContractTypePassed) {
+                    val title = s"${ps.player} in ${ct}\nPassed: ${ps.handsPlayed}"
+                    DataPieChart(
+                      calcSizeCT(ps.handsPlayed ),
+                      colorTypePassed::Nil,
+                      ps.handsPlayed.toDouble::Nil
+                    ).toCellWithOneChartAndTitle(title, pieChartMaxSize, pieChartMaxSizePlusPadding).withColSpan(colspan)
+                  } else {
+                    val pre = s"${ps.player} in ${ct} as ${decl}"
+                    val (made,down,passed,smade,sdown) = histogram.foldLeft((0,0,0,"","")) { (ac,v) =>
+                      val percent: Double = 100.0 * v.counter / ps.handsPlayed
+                      val s = if (v.tricks < 0)        f"\n  Down ${-v.tricks}: ${v.counter} (${percent}%.2f%%)"
+                              else if (v.tricks == 0)  f"\n  Made   : ${v.counter} (${percent}%.2f%%)"
+                              else if (v.tricks == 10) ""
+                              else                     f"\n  Made +${v.tricks}: ${v.counter} (${percent}%.2f%%)"
+                      if (v.tricks == 10)    (ac._1,          ac._2,           ac._3+v.counter, ac._4,   ac._5 )
+                      else if (v.tricks < 0) (ac._1,          ac._2+v.counter, ac._3,           ac._4,   s+ac._5 )
+                      else                   (ac._1+v.counter,ac._2,           ac._3,           ac._4+s, ac._5 )
+                    }
+                    val pretitle = s"${pre}\nTotal: ${ps.handsPlayed}"
+                    val tmade = if (made > 0) {
+                      f"\nMade ${made} (${100.0*made/ps.handsPlayed}%.2f%%)"+smade
+                    } else {
+                      ""
+                    }
+                    val tdown = if (down > 0) {
+                      f"\nDown ${down} (${100.0*down/ps.handsPlayed}%.2f%%)"+sdown
+                    } else {
+                      ""
+                    }
+                    val tpass = if (passed > 0) {
+                      f"\nPassed ${passed} (${100.0*passed/ps.handsPlayed}%.2f%%)"
+                    } else {
+                      ""
+                    }
+                    val title = pretitle+tmade+tdown+tpass
+
+                    DataPieChart(
+                      if (ct == ContractTypeTotal) calcSizeTotal(ps.handsPlayed) else calcSizeCT(ps.handsPlayed),
+                      cols,
+                      vals
+                    ).toCellWithOneChartAndTitle(title, pieChartMaxSize, pieChartMaxSizePlusPadding ).
+                        withColSpan( colspan )
+                  }
+
+                }
+              case None =>
+                Cell(zeroList).withColSpan(colspan)
+            }
+          }
+        }
       }
+
+      val rows = players.map { p =>
+        val (declarerNoPass, defender) = stats.stats(p)
+
+        val passedout = defender.find( ps => ps.contractType == ContractTypePassed.value).getOrElse( PlayerStat(p,false,ContractTypePassed.value) )
+
+        val declarer = passedout.copy(declarer = true):: declarerNoPass
+
+        logger.fine( s"""PlayerStats for ${p} = ${defender} ${declarer}""" )
+
+        val data = genData(Some(declarer),Some(defender),None, calcSize(maxHandsPlayed), calcSize(maxHandsPlayedTotal) )
+
+        Row( p, byType(declarer,"Declarer",passedout)::byType(defender,"Defender",passedout)::(data.drop(1)) )   // drop passed declarer
+      }
+
+      val totalsRow = Row( "Totals", dataTotals(contractStats) )
 
       val columns = Column(TagMod("Type by",<.br,"Declarer"))::Column(TagMod("Type by",<.br,"Defender"))::Column("Passed"):: order.filter(p => p!=ContractTypePassed).flatMap { ct =>
         val c = ct.toString()
@@ -372,17 +431,177 @@ object PageStatsInternal {
                 "Red indicates a down, green a made contract.",
                 <.br,
                 "Dark green indicates a contract made with no overtricks",
-                ColorBar.create(downColors, madeColors, None, Some(titleDown), Some(titleMade), None),
+                ColorBar.create(downColors.reverse, madeColors, None, Some(titleDown), Some(titleMade), None),
                 "For the Type columns the colors are:",
                 ColorBar.simple( ctColors, Some(typeOrder.map( ct => ct.toString() )) )
               )
             )
         ),
-        totalRows = None,
+        totalRows = Some(List(totalsRow)),
         caption = Some( "Player Stats" )
       )
     }
 
+
+    def dataTotals( stats: ContractStats ) = {
+
+      val numberDown = Math.max( 0, -stats.min )
+      val numberMade = Math.max( 0, stats.max+1 )
+
+      val titleDown = if (numberDown > 0) {
+        (-numberDown until 0).map( i => s"Down ${-i}" ).toList
+      } else {
+        List()
+      }
+      val titleMade = (0 until numberMade).map( i => if (i==0) "Made" else s"Made ${i}" ).toList
+
+      val downColors = ColorBar.colors( 0, 0.25, numberDown ).reverse
+      val madeColors = ColorBar.colors( 120, 0.25, numberMade )
+
+      def colorMap( i: Int ) = {
+        // 10 tricks indicates passed out hand
+
+        if (i < 0) downColors( -i-1 )
+        else if (i == 10) Color.Blue
+        else madeColors( i )
+      }
+
+      val order: List[ContractType] = ContractTypePassed::ContractTypePartial::ContractTypeGame::ContractTypeSlam::ContractTypeGrandSlam::ContractTypeTotal::Nil
+
+      val columns = Column("Type")::order.map( ct => Column( ct.toString() ) )
+
+      val (totalStats, maxHandsPlayed, maxHandsPlayedTotal) = {
+
+        def fix2( h: ContractStat ) = {
+          if (h.contractType == ContractTypePassed.value) {
+            val hist = List( CounterStat( 10, h.handsPlayed ) )
+            h.copy(ContractTypeTotal.toString, ContractTypeTotal.value, hist, h.handsPlayed)
+          } else {
+            h.copy(ContractTypeTotal.toString, ContractTypeTotal.value, h.histogram, h.handsPlayed)
+          }
+        }
+
+        def fix( h: ContractStat ) = {
+          h.copy(h.contractType.toString(), h.contractType, h.histogram, h.handsPlayed)
+        }
+
+        @tailrec
+        def add( sum: ContractStat, l: List[ContractStat], fixer: ContractStat => ContractStat ): ContractStat = {
+          if (l.isEmpty) sum
+          else {
+            val h = l.head
+            add( sum.add(fixer(h)), l.tail, fixer )
+          }
+        }
+
+        val extraStats = order.take(order.length-1).map( ct => ContractStat(ct.toString(), ct.value) )
+
+        val almostAll = (extraStats:::stats.data).groupBy( ps => ps.contractType ).map { entry =>
+          val (ct, allStats) = entry
+
+          val h = allStats.head
+          add( fix(h), allStats.tail, fix _ ).normalize
+
+        }.toList.sortWith { (l,r) =>
+          val il = order.indexWhere( ct => ct.value == l.contractType)
+          val ir = order.indexWhere( ct => ct.value == r.contractType)
+          il < ir
+        }
+
+        val max = almostAll.map( ps => ps.handsPlayed ).foldLeft(0)(Math.max _)
+
+        val t = add( fix2(almostAll.head), almostAll.tail, fix2 _ ).normalize
+
+        logger.fine(s"""TotalStats is ${almostAll}, totals is ${t}""")
+
+        (almostAll ::: (t::Nil), max, t.handsPlayed )
+      }
+
+      val pieChartMaxSize = 100
+      val pieChartMaxSizePlusPadding = 105
+
+      def calcSize( handsPlayed: Int, max: Int ) = {
+        (handsPlayed.toDouble/max*(pieChartMaxSize-5)).toInt + 5
+      }
+
+      def byType( list: List[ContractStat] ) = {
+        val or: List[ContractType] = ContractTypePartial::ContractTypeGame::ContractTypeSlam::ContractTypeGrandSlam::ContractTypePassed::Nil
+        val dd = or.zipWithIndex.map { entry =>
+          val (ct,i) = entry
+          ( ct, list.find( ps => ps.contractType==ct.value ).map( ps => ps.handsPlayed ).getOrElse(0), colorsMapForType(ct) )
+        }
+        val sum = dd.foldLeft(0.0)((ac,v) => ac+v._2)
+        val (cts,values,cols) = dd.unzip3
+        val title = s"Types of hands\nTotal $sum"+dd.map { entry =>
+          val (ct,value, col) = entry
+          f"${ct.toString()}: ${value} (${100*value/sum}%.2f%%)"
+        }.mkString("\n  ","\n  ","")
+        DataPieChart(
+          calcSize( sum.toInt, maxHandsPlayedTotal ),
+          cols,
+          values.map( i => i.toDouble )
+        ).toCellWithOneChartAndTitle(title, pieChartMaxSize, pieChartMaxSizePlusPadding ).withColSpan(2)
+      }
+
+      val first = byType( totalStats.take(totalStats.length-1))
+
+      val cells = first::
+        totalStats.zip(order).map { entry =>
+          val (ps,ct) = entry
+          val colspan = if (ct == ContractTypePassed) 1 else 2
+          if (ps.handsPlayed == 0) {
+            Cell(zeroList).withColSpan(colspan)
+          } else {
+            val (cols,vals) = ps.histogram.map(cs => (colorMap(cs.tricks), cs.counter.toDouble)).unzip
+            if (ps.contractType == ContractTypePassed.value) {
+              val title = f"Passed: ${ps.handsPlayed} ${100.0*ps.handsPlayed/maxHandsPlayedTotal}%.2f%%"
+              DataPieChart(
+                calcSize(ps.handsPlayed, maxHandsPlayed),
+                colorTypePassed::Nil,
+                ps.handsPlayed.toDouble::Nil
+              ).toCellWithOneChartAndTitle(title, pieChartMaxSize, pieChartMaxSizePlusPadding ).withColSpan(colspan)
+            } else {
+              val pre = f"${ct} ${100.0*ps.handsPlayed/maxHandsPlayedTotal}%.2f%%"
+              val (made,down,passed,smade,sdown) = ps.histogram.foldLeft((0,0,0,"","")) { (ac,v) =>
+                val percent: Double = 100.0 * v.counter / ps.handsPlayed
+                val s = if (v.tricks < 0)        f"\n  Down ${-v.tricks}: ${v.counter} (${percent}%.2f%%)"
+                        else if (v.tricks == 0)  f"\n  Made   : ${v.counter} (${percent}%.2f%%)"
+                        else if (v.tricks == 10) ""
+                        else                     f"\n  Made +${v.tricks}: ${v.counter} (${percent}%.2f%%)"
+                if (v.tricks == 10)    (ac._1,          ac._2,           ac._3+v.counter, ac._4,   ac._5 )
+                else if (v.tricks < 0) (ac._1,          ac._2+v.counter, ac._3,           ac._4,   s+ac._5 )
+                else                   (ac._1+v.counter,ac._2,           ac._3,           ac._4+s, ac._5 )
+              }
+              val pretitle = s"${pre}\nTotal: ${ps.handsPlayed}"
+              val tmade = if (made > 0) {
+                f"\nMade ${made} (${100.0*made/ps.handsPlayed}%.2f%%)"+smade
+              } else {
+                ""
+              }
+              val tdown = if (down > 0) {
+                f"\nDown ${down} (${100.0*down/ps.handsPlayed}%.2f%%)"+sdown
+              } else {
+                ""
+              }
+              val tpass = if (passed > 0) {
+                f"\nPassed ${passed} (${100.0*passed/ps.handsPlayed}%.2f%%)"
+              } else {
+                ""
+              }
+              val title = pretitle+tmade+tdown+tpass
+              logger.fine(s"""Working with ${ct} histogram is ${ps.histogram}""")
+              DataPieChart(
+                calcSize(ps.handsPlayed, if (ct==ContractTypeTotal) maxHandsPlayedTotal else maxHandsPlayed),
+                cols,
+                vals
+              ).toCellWithOneChartAndTitle(title, pieChartMaxSize, pieChartMaxSizePlusPadding ).withColSpan(colspan)
+            }
+
+          }
+        }
+
+      cells
+    }
 
     def displayTotals( stats: ContractStats ) = {
 
@@ -500,13 +719,34 @@ object PageStatsInternal {
               ).toCellWithOneChartAndTitle(title, pieChartMaxSize, pieChartMaxSizePlusPadding )
             } else {
               val pre = f"${ct} ${100.0*s.handsPlayed/maxHandsPlayedTotal}%.2f%%"
-              val title = s"${pre}\nTotal: ${s.handsPlayed}"+s.histogram.sortBy(cs=>cs.tricks).map { cs =>
-                val percent = 100.0*cs.counter/s.handsPlayed
-                if (cs.tricks < 0) f"  Down ${-cs.tricks}: ${cs.counter} (${percent}%.2f%%)"
-                else if (cs.tricks == 0) f"  Made   : ${cs.counter} (${percent}%.2f%%)"
-                else if (cs.tricks == 10) f"  Passed : ${cs.counter} (${percent}%.2f%%)"
-                else f"  Made +${cs.tricks}: ${cs.counter} (${percent}%.2f%%)"
-              }.mkString("\n","\n","")
+              val (made,down,passed,smade,sdown) = s.histogram.foldLeft((0,0,0,"","")) { (ac,v) =>
+                val percent: Double = 100.0 * v.counter / s.handsPlayed
+                val ss = if (v.tricks < 0)        f"\n  Down ${-v.tricks}: ${v.counter} (${percent}%.2f%%)"
+                         else if (v.tricks == 0)  f"\n  Made   : ${v.counter} (${percent}%.2f%%)"
+                         else if (v.tricks == 10) ""
+                         else                     f"\n  Made +${v.tricks}: ${v.counter} (${percent}%.2f%%)"
+                if (v.tricks == 10)    (ac._1,          ac._2,           ac._3+v.counter, ac._4,   ac._5 )
+                else if (v.tricks < 0) (ac._1,          ac._2+v.counter, ac._3,           ac._4,   ss+ac._5 )
+                else                   (ac._1+v.counter,ac._2,           ac._3,           ac._4+ss, ac._5 )
+              }
+              val pretitle = s"${pre}\nTotal: ${s.handsPlayed}"
+              val tmade = if (made > 0) {
+                f"\nMade ${made} (${100.0*made/s.handsPlayed}%.2f%%)"+smade
+              } else {
+                ""
+              }
+              val tdown = if (down > 0) {
+                f"\nDown ${down} (${100.0*down/s.handsPlayed}%.2f%%)"+sdown
+              } else {
+                ""
+              }
+              val tpass = if (passed > 0) {
+                f"\nPassed ${passed} (${100.0*passed/s.handsPlayed}%.2f%%)"
+              } else {
+                ""
+              }
+              val title = pretitle+tmade+tdown+tpass
+
               DataPieChart(
                 calcSize(s.handsPlayed, if (ct==ContractTypeTotal) maxHandsPlayedTotal else maxHandsPlayed),
                 cols,
@@ -594,6 +834,37 @@ object PageStatsInternal {
         else (handsPlayed.toDouble/maxDoubledHandsPlayed*(pieChartMaxSize-5)).toInt + 5
       }
 
+      def getTitle( contract: String, cs: ContractStat, totalHands: Int ) = {
+        val pre = f"${contract} ${100.0*cs.handsPlayed/totalHands}%.2f%%"
+        val (made,down,passed,smade,sdown) = cs.histogram.foldLeft((0,0,0,"","")) { (ac,v) =>
+          val percent: Double = 100.0 * v.counter / cs.handsPlayed
+          val ss = if (v.tricks < 0)        f"\n  Down ${-v.tricks}: ${v.counter} (${percent}%.2f%%)"
+                   else if (v.tricks == 0)  f"\n  Made   : ${v.counter} (${percent}%.2f%%)"
+                   else if (v.tricks == 10) ""
+                   else                     f"\n  Made +${v.tricks}: ${v.counter} (${percent}%.2f%%)"
+          if (v.tricks == 10)    (ac._1,          ac._2,           ac._3+v.counter, ac._4,   ac._5 )
+          else if (v.tricks < 0) (ac._1,          ac._2+v.counter, ac._3,           ac._4,   ss+ac._5 )
+          else                   (ac._1+v.counter,ac._2,           ac._3,           ac._4+ss, ac._5 )
+        }
+        val tmade = if (made > 0) {
+          f"\nMade ${made} (${100.0*made/cs.handsPlayed}%.2f%%)"+smade
+        } else {
+          ""
+        }
+        val tdown = if (down > 0) {
+          f"\nDown ${down} (${100.0*down/cs.handsPlayed}%.2f%%)"+sdown
+        } else {
+          ""
+        }
+        val tpass = if (passed > 0) {
+          f"\nPassed ${passed} (${100.0*passed/cs.handsPlayed}%.2f%%)"
+        } else {
+          ""
+        }
+        val title = pre+tmade+tdown+tpass
+        title
+      }
+
       /* *
        * @param data
        * @return a List[List[List[ContractStat]]].  The outermost list is suit, the middle is contract tricks, inner is doubled.
@@ -639,12 +910,7 @@ object PageStatsInternal {
                   val (cols,vals) = s.histogram.map(cs => (colorMap(cs.tricks), cs.counter.toDouble)).unzip
                   val con = s.parseContract
                   val suit = if (con.suit == "Z") "N" else con.suit
-                  val title = f"${con.tricks}${suit} (${100.0*s.handsPlayed/totalHandsPlayed}%.2f%%)\nTotal: ${s.handsPlayed}"+s.histogram.sortBy(cs=>cs.tricks).map { cs =>
-                    val percent = 100.0*cs.counter/s.handsPlayed
-                    if (cs.tricks < 0) f"  Down ${-cs.tricks}: ${cs.counter} (${percent}%.2f%%)"
-                    else if (cs.tricks == 0) f"  Made   : ${cs.counter} (${percent}%.2f%%)"
-                    else f"  Made +${cs.tricks}: ${cs.counter} (${percent}%.2f%%)"
-                  }.mkString("\n","\n","")
+                  val title = getTitle(s"${con.tricks}${suit}", s, totalHandsPlayed)
                   DataPieChart(
                     calcSize(s.handsPlayed),
                     cols,
@@ -657,12 +923,7 @@ object PageStatsInternal {
                         val con = s.parseContract
                         val suit = if (con.suit == "Z") "N" else con.suit
                         val (cols,vals) = s.histogram.map(cs => (colorMap(cs.tricks), cs.counter.toDouble)).unzip
-                        val title = f"${con.tricks}${suit}${con.doubled} (${100.0*s.handsPlayed/totalHandsPlayed}%.2f%%)\nTotal: ${s.handsPlayed}"+s.histogram.sortBy(cs=>cs.tricks).map { cs =>
-                          val percent = 100.0*cs.counter/s.handsPlayed
-                          if (cs.tricks < 0) f"  Down ${-cs.tricks}: ${cs.counter} (${percent}%.2f%%)"
-                          else if (cs.tricks == 0) f"  Made   : ${cs.counter} (${percent}%.2f%%)"
-                          else f"  Made +${cs.tricks}: ${cs.counter} (${percent}%.2f%%)"
-                        }.mkString("\n","\n","")
+                        val title = getTitle(s"${con.tricks}${suit}${con.doubled}", s, totalHandsPlayed)
                         DataPieChart(
                             calcSize(s.handsPlayed),
                             cols,
@@ -676,10 +937,6 @@ object PageStatsInternal {
             }
             ( suit, trickdata.toList )
           }
-//        }.toList.sortWith{ (l,r) =>
-//          val il = suitSortOrder.indexOf(l._1)
-//          val ir = suitSortOrder.indexOf(r._1)
-//          il < ir
         }.map { entry =>
           val (suit, data) = entry
           val s = suit match {
@@ -754,7 +1011,7 @@ object PageStatsInternal {
                 "Red indicates a down, green a made contract.",
                 <.br,
                 "Dark green indicates a contract made with no overtricks",
-                ColorBar.create(downColors, madeColors, None, Some(titleDown), Some(titleMade), None)
+                ColorBar.create(downColors.reverse, madeColors, None, Some(titleDown), Some(titleMade), None)
               )
             )
         ),
@@ -781,8 +1038,8 @@ object PageStatsInternal {
         state.stats match {
           case Some(stats) =>
             TagMod(
-              <.div( displayPlayer( stats.playerStats) ),
-              <.div( displayTotals( stats.contractStats) ),
+              <.div( displayPlayer( stats.playerStats, stats.contractStats) ),
+//              <.div( displayTotals( stats.contractStats) ),
               <.div( displayContract( stats.contractStats, state.aggregateDouble ) )
             )
           case None =>
