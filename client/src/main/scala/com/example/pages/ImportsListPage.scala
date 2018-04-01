@@ -300,13 +300,13 @@ object ImportsListPageInternal {
                       .render_P( args => {
                         // row is zero based
                         val (props,state,backend,row,store) = args
-
+                        val storeid = store.id
                         <.tr(
                           <.td( store.id ),
                           <.td( DateUtils.formatDate(store.date) ),
                           <.td(
-                            AppButton( s"Duplicate${row}", "Duplicate", props.router.setOnClick(PlayDuplicate(ImportSummaryView(store.id))) ),
-                            AppButton( s"Delete${row}", "Delete", ^.onClick --> backend.delete(store.id) )
+                            AppButton( s"Duplicate${row}", "Duplicate", props.router.setOnClick(PlayDuplicate(ImportSummaryView(storeid))) ),
+                            AppButton( s"Delete${row}", "Delete", ^.onClick --> backend.delete(storeid) )
                           )
                         )
                       }).build

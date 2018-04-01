@@ -106,18 +106,19 @@ object PageBoardInternal {
         <.span(
           !bbs.isEmpty ?= <.b(label),
           !bbs.isEmpty ?= bbs.map { board =>
-            val selected = board.id == props.page.boardid
+            val id = board.id
+            val selected = id == props.page.boardid
             Seq[TagMod](
               <.span(" "),
-              AppButton( "Board_"+board.id, "Board "+Id.boardIdToBoardNumber(board.id),
+              AppButton( "Board_"+board.id, "Board "+Id.boardIdToBoardNumber(id),
                          BaseStyles.highlight(
                              selected=selected,
                              requiredNotNext = !played && !selected
                          ),
                          if (played) {
-                           props.routerCtl.setOnClick(props.page.toBoardView(board.id))
+                           props.routerCtl.setOnClick(props.page.toBoardView(id))
                          } else {
-                           props.routerCtl.setOnClick(props.page.toBoardView(board.id).toHandView(ns))
+                           props.routerCtl.setOnClick(props.page.toBoardView(id).toHandView(ns))
                          }
               )
             ).toTagMod

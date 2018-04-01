@@ -115,11 +115,12 @@ object ViewBoardInternal {
                                   case PerspectiveDirector => true
                                 }
                               }
+                            val tbsteamId = tbs.teamId
                             if (enabled) {
-                              AppButton( "Hand_"+tbs.teamId, Id.teamIdToTeamNumber(tbs.teamId),
-                                         p.routerCtl.setOnClick(p.page.toHandView(tbs.teamId)) )
+                              AppButton( "Hand_"+tbs.teamId, Id.teamIdToTeamNumber(tbsteamId),
+                                         p.routerCtl.setOnClick(p.page.toHandView(tbsteamId)) )
                             } else {
-                              <.span(Id.teamIdToTeamNumber(tbs.teamId))
+                              <.span(Id.teamIdToTeamNumber(tbsteamId))
                             }
                           }
                         }
