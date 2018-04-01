@@ -580,10 +580,66 @@
 .dupDivPageStats > div {
   padding: 3px;
 }
-.dupDivPageStats > div:nth-child(4) .tablePieChart td > div {
+.dupDivPageStats > div:nth-child(3) .tablePieChart td > div {
   display: flex;
   flex-flow: row nowrap;
   justify-content: center;
   align-items: center;
   align-content: center;
+}
+
+.dupDivPageStats > div:nth-child(3) table > thead > tr:first-child > th:first-child {
+  border-right: 3px solid black
+}
+
+.dupDivPageStats > div:nth-child(3) table > thead > tr:nth-child(2) > th:nth-child(9) {
+  border-left: 3px solid black
+}
+
+.dupDivPageStats > div:nth-child(3) table > tbody > tr > td:nth-child(9) {
+  font-weight: bold;
+  border-left: 3px solid black
+}
+
+.dupDivPageStats > div:nth-child(3) table > tbody > tr > td:first-child {
+  font-weight: bold;
+}
+
+.dupDivPageStats > div:nth-child(2) table > thead > tr > th:first-child {
+  font-weight: bold;
+  border-right: 3px solid black
+}
+
+.dupDivPageStats > div:nth-child(2) table > tbody > tr > td:first-child {
+  font-weight: bold;
+  border-right: 3px solid black
+}
+
+.dupDivPageStats > div:nth-child(2) table > tfoot > tr:first-child > td:first-child {
+  font-weight: bold;
+  border-right: 3px solid black
+}
+
+.dupDivPageStats > div:nth-child(2) table > thead > tr > th:nth-last-child(2) {
+  border-left: 3px solid black
+}
+
+.dupDivPageStats > div:nth-child(2) table > tbody > tr > td:nth-last-child(2) {
+  border-left: 3px solid black
+}
+
+.dupDivPageStats > div:nth-child(2) table > tfoot > tr:first-child > td:last-child {
+  border-left: 3px solid black
+}
+
+.dupDivPageStats > div:nth-child(2) table > thead > tr > th:nth-child(3) {
+  border-right: 3px solid black
+}
+
+.dupDivPageStats > div:nth-child(2) table > tbody > tr > td:nth-child(3) {
+  border-right: 3px solid black
+}
+
+.dupDivPageStats > div:nth-child(2) table > tfoot > tr:first-child > td:nth-child(2) {
+  border-right: 3px solid black
 }
