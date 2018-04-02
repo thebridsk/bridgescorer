@@ -192,111 +192,113 @@ object PageSummaryInternal {
   val SummaryRow = ScalaComponent.builder[(SummaryPeople,DuplicateSummary,Props,State,Backend,Option[String])]("SummaryRow")
                       .render_P( props => {
                         val (tp,ds,pr,st,back,importId) = props
-                          <.tr(
-                            <.td(
-                              AppButton( (if (ds.onlyresult) "Result_" else "Duplicate_")+ds.id, ds.id,
-                                         baseStyles.appButton100,
-                                         if (ds.onlyresult) {
-                                           pr.routerCtl.setOnClick(pr.page.getDuplicateResultPage(ds.idAsDuplicateResultId) )
-                                         } else {
-                                           pr.routerCtl.setOnClick(pr.page.getScoreboardPage(ds.id) )
-                                         },
-                                         importId.map { id => ^.disabled := true }.whenDefined
-                                       )
-                            ),
-                            importId.map { id =>
-                              TagMod(
-                                <.td(
-                                  AppButton( (if (ds.onlyresult) "ImportResult_" else "ImportDuplicate_")+ds.id, "Import",
-                                             baseStyles.appButton100,
-                                             if (ds.onlyresult) {
-                                               ^.onClick --> back.importDuplicateResult(id,ds.id)
-                                             } else {
-                                               ^.onClick --> back.importDuplicateMatch(id,ds.id)
-                                             }
-                                           )
-                                ),
-                                <.td(
-                                  ds.bestMatch.map { bm =>
-                                    if (bm.id.isDefined && bm.sameness > 90) {
-                                      val title = bm.differences.map{ l => determineDifferences(l).mkString("Differences:\n","\n","") }.getOrElse("")
-                                      TagMod(Tooltip(
-                                        f"""${bm.id.get} ${bm.sameness}%.2f%%""",
-                                        <.div( title )
-                                      ))
-                                    } else {
-                                      TagMod()
-                                    }
-                                  }.whenDefined
-                                )
+                        <.tr(
+                          <.td(
+                            AppButton( (if (ds.onlyresult) "Result_" else "Duplicate_")+ds.id, ds.id,
+                                       baseStyles.appButton100,
+                                       if (ds.onlyresult) {
+                                         val dsidAsDuplicateResultId = ds.idAsDuplicateResultId
+                                         pr.routerCtl.setOnClick(pr.page.getDuplicateResultPage(dsidAsDuplicateResultId) )
+                                       } else {
+                                         val dsid = ds.id
+                                         pr.routerCtl.setOnClick(pr.page.getScoreboardPage(dsid) )
+                                       },
+                                       importId.map { id => ^.disabled := true }.whenDefined
+                                     )
+                          ),
+                          importId.map { id =>
+                            TagMod(
+                              <.td(
+                                AppButton( (if (ds.onlyresult) "ImportResult_" else "ImportDuplicate_")+ds.id, "Import",
+                                           baseStyles.appButton100,
+                                           if (ds.onlyresult) {
+                                             ^.onClick --> back.importDuplicateResult(id,ds.id)
+                                           } else {
+                                             ^.onClick --> back.importDuplicateMatch(id,ds.id)
+                                           }
+                                         )
+                              ),
+                              <.td(
+                                ds.bestMatch.map { bm =>
+                                  if (bm.id.isDefined && bm.sameness > 90) {
+                                    val title = bm.differences.map{ l => determineDifferences(l).mkString("Differences:\n","\n","") }.getOrElse("")
+                                    TagMod(Tooltip(
+                                      f"""${bm.id.get} ${bm.sameness}%.2f%%""",
+                                      <.div( title )
+                                    ))
+                                  } else {
+                                    TagMod()
+                                  }
+                                }.whenDefined
                               )
-                            }.whenDefined,
-                            st.forPrint ?= <.td(
-                                                 <.input.checkbox(
-                                                   ^.checked := st.selected.contains(ds.id),
-                                                   ^.onClick --> back.toggleSelect(ds.id)
-                                                 )
-                                               ),
-                            <.td( (if (ds.finished) "done"; else "")),
-                            <.td( DateUtils.formatDate(ds.created), <.br(), DateUtils.formatDate(ds.updated)),
-                            <.td( ds.scoringmethod.getOrElse("MP").toString() ),
-                            tp.allPlayers.filter(p => p!="").map { p =>
-                              if (st.useIMP.getOrElse(ds.isIMP)) {
-                                if (ds.hasImpScores) {
-                                  <.td(
-                                    ds.playerPlacesImp().get(p) match {
-                                      case Some(place) => <.span(place.toString)
-                                      case None => <.span()
-                                    },
-                                    ds.playerScoresImp().get(p) match {
-                                      case Some(place) => <.span(<.br, f"${place}%.1f" )
-                                      case None => <.span()
-                                    }
-                                  )
-                                } else {
-                                  <.td("NA")
-                                }
-                              } else {
-                                if (ds.hasMpScores) {
-                                  <.td(
-                                    ds.playerPlaces().get(p) match {
-                                      case Some(place) => <.span(place.toString)
-                                      case None => <.span()
-                                    },
-                                    ds.playerScores().get(p) match {
-                                      case Some(place) => <.span(<.br,Utils.toPointsString(place))
-                                      case None => <.span()
-                                    }
-                                  )
-                                } else {
-                                  <.td("NA")
-                                }
-                              }
-                            }.toTagMod,
+                            )
+                          }.whenDefined,
+                          st.forPrint ?= <.td(
+                                               <.input.checkbox(
+                                                 ^.checked := st.selected.contains(ds.id),
+                                                 ^.onClick --> back.toggleSelect(ds.id)
+                                               )
+                                             ),
+                          <.td( (if (ds.finished) "done"; else "")),
+                          <.td( DateUtils.formatDate(ds.created), <.br(), DateUtils.formatDate(ds.updated)),
+                          <.td( ds.scoringmethod.getOrElse("MP").toString() ),
+                          tp.allPlayers.filter(p => p!="").map { p =>
                             if (st.useIMP.getOrElse(ds.isIMP)) {
-                              <.td(
-                                Utils.toPointsString(
-                                  tp.allPlayers.filter(p => p!="").flatMap { p =>
-                                    ds.playerScoresImp().get(p) match {
-                                      case Some(place) => place::Nil
-                                      case None => Nil
-                                    }
-                                  }.foldLeft(0.0)((ac,v)=>ac+v)
+                              if (ds.hasImpScores) {
+                                <.td(
+                                  ds.playerPlacesImp().get(p) match {
+                                    case Some(place) => <.span(place.toString)
+                                    case None => <.span()
+                                  },
+                                  ds.playerScoresImp().get(p) match {
+                                    case Some(place) => <.span(<.br, f"${place}%.1f" )
+                                    case None => <.span()
+                                  }
                                 )
-                              )
+                              } else {
+                                <.td("NA")
+                              }
                             } else {
-                              <.td(
-                                Utils.toPointsString(
-                                  tp.allPlayers.filter(p => p!="").flatMap { p =>
-                                    ds.playerScores().get(p) match {
-                                      case Some(place) => place::Nil
-                                      case None => Nil
-                                    }
-                                  }.foldLeft(0.0)((ac,v)=>ac+v)
+                              if (ds.hasMpScores) {
+                                <.td(
+                                  ds.playerPlaces().get(p) match {
+                                    case Some(place) => <.span(place.toString)
+                                    case None => <.span()
+                                  },
+                                  ds.playerScores().get(p) match {
+                                    case Some(place) => <.span(<.br,Utils.toPointsString(place))
+                                    case None => <.span()
+                                  }
                                 )
-                              )
+                              } else {
+                                <.td("NA")
+                              }
                             }
-                          )
+                          }.toTagMod,
+                          if (st.useIMP.getOrElse(ds.isIMP)) {
+                            <.td(
+                              Utils.toPointsString(
+                                tp.allPlayers.filter(p => p!="").flatMap { p =>
+                                  ds.playerScoresImp().get(p) match {
+                                    case Some(place) => place::Nil
+                                    case None => Nil
+                                  }
+                                }.foldLeft(0.0)((ac,v)=>ac+v)
+                              )
+                            )
+                          } else {
+                            <.td(
+                              Utils.toPointsString(
+                                tp.allPlayers.filter(p => p!="").flatMap { p =>
+                                  ds.playerScores().get(p) match {
+                                    case Some(place) => place::Nil
+                                    case None => Nil
+                                  }
+                                }.foldLeft(0.0)((ac,v)=>ac+v)
+                              )
+                            )
+                          }
+                        )
                       }).build
 
   sealed trait ShowEntries
