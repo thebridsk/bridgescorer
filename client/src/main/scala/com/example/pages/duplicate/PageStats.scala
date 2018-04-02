@@ -57,6 +57,7 @@ import com.example.react.PieChartTable.Cell
 import com.example.react.PieChartTable.DataPieChart
 import com.example.react.PieChartTable.DataTagMod
 import scala.language.postfixOps
+import com.example.react.PieChart
 
 /**
  * Shows a summary page of all duplicate matches from the database.
@@ -193,6 +194,80 @@ object PageStatsInternal {
 
   val colorsMapForType = typeOrder.zip(ctColors).toMap
 
+  def trickTitle( title: String, colors: Color* ) = {
+    <.li(
+      PieChart( 15, colors.map(c=>1.0).toList, colors.toList ),
+      " ",
+      title
+    )
+  }
+
+  /**
+   * @param pre prefix that identifies what is being displayed
+   * @param histogram the histogram that is being displayed
+   * @param handsPlayed the number of hands that were played that are counted in the histogram
+   * @param totalHandsPlayed the total number of hands played, including hands not in histogram.
+   * @param colorMap mapping tricks to a color
+   */
+  def getTitle(
+      pre: String,
+      histogram: List[CounterStat],
+      handsPlayed: Int,
+      totalHandsPlayed: Option[Int],
+      colorMap: Int=>Color,
+      madeColors: List[Color],
+      downColors: List[Color],
+      passedColor: Color
+  ) = {
+    val (made,down,passed,smade,sdown) = histogram.foldLeft((0,0,0,List[TagMod](),List[TagMod]())) { (ac,v) =>
+      val percent: Double = 100.0 * v.counter / handsPlayed
+      val s = if (v.tricks < 0)        trickTitle( f"Down ${-v.tricks}: ${v.counter} (${percent}%.2f%%)", colorMap(v.tricks) )
+              else if (v.tricks == 0)  trickTitle( f"Made   : ${v.counter} (${percent}%.2f%%)", colorMap(v.tricks) )
+              else if (v.tricks == 10) TagMod()
+              else                     trickTitle( f"Made +${v.tricks}: ${v.counter} (${percent}%.2f%%)", colorMap(v.tricks) )
+      if (v.tricks == 10)    (ac._1,          ac._2,           ac._3+v.counter, ac._4,          ac._5 )
+      else if (v.tricks < 0) (ac._1,          ac._2+v.counter, ac._3,           ac._4,          s::ac._5 )
+      else                   (ac._1+v.counter,ac._2,           ac._3,           ac._4:::s::Nil, ac._5 )
+    }
+
+    <.ul(
+      <.li( pre ),
+      <.li(
+        f"Total: ${handsPlayed}",
+        totalHandsPlayed.filter(t=>t!=0).map( t => TagMod( f" (${100.0*handsPlayed/t}%.2f%%)" )).getOrElse(TagMod(""))
+      ),
+      if (made > 0) {
+        TagMod(
+          trickTitle( f"Made ${made} (${100.0*made/handsPlayed}%.2f%%)", madeColors:_* ),
+          <.ul(
+            smade.toTagMod
+          )
+        )
+      } else {
+        TagMod()
+      },
+      if (down > 0) {
+        TagMod(
+          trickTitle( f"Down ${down} (${100.0*down/handsPlayed}%.2f%%)", downColors:_* ),
+          <.ul(
+            sdown.toTagMod
+          )
+        )
+      } else {
+        TagMod()
+      },
+      if (passed > 0) {
+        f"Passed ${passed} (${100.0*passed/handsPlayed}%.2f%%)"
+        TagMod(
+          trickTitle( f"Passed ${passed} (${100.0*passed/handsPlayed}%.2f%%)", passedColor ),
+        )
+      } else {
+        TagMod()
+      }
+    )
+  }
+
+
   /**
    * Internal state for rendering the component.
    *
@@ -293,10 +368,20 @@ object PageStatsInternal {
         }
         val sum = dd.foldLeft(0.0)((ac,v) => ac+v._2) + passedout.handsPlayed
         val (cts,values,cols) = dd.unzip3
-        val title = s"Types of hands as ${playedAs}"+dd.map { entry =>
-          val (ct,value, col) = entry
-          f"${ct.toString()}: ${value} (${100.0*value/sum}%.2f%%)"
-        }.mkString("\n  ","\n  ","\n  ")+f"${ContractTypePassed.toString()}: ${passedout.handsPlayed} (${100.0*passedout.handsPlayed/sum}%.2f%%)"
+//        val title = s"Types of hands as ${playedAs}"+dd.map { entry =>
+//          val (ct,value, col) = entry
+//          f"${ct.toString()}: ${value} (${100.0*value/sum}%.2f%%)"
+//        }.mkString("\n  ","\n  ","\n  ")+f"${ContractTypePassed.toString()}: ${passedout.handsPlayed} (${100.0*passedout.handsPlayed/sum}%.2f%%)"
+        val title = <.ul(
+          <.li(s"Types of hands as ${playedAs}"),
+          dd.flatMap { entry =>
+            val (ct,value, col) = entry
+            if (value == 0) Nil
+            else trickTitle( f"${ct.toString()}: ${value} (${100.0*value/sum}%.2f%%)", col )::Nil
+          }.toTagMod,
+          if (passedout.handsPlayed == 0) TagMod()
+          else trickTitle( f"${ContractTypePassed.toString()}: ${passedout.handsPlayed} (${100.0*passedout.handsPlayed/sum}%.2f%%)", Color.Blue )
+        )
         DataPieChart(
             calcSize(maxHandsPlayedTotal)( sum.toInt ),
             cols:::(colorTypePassed::Nil),
@@ -349,33 +434,7 @@ object PageStatsInternal {
                     ).toCellWithOneChartAndTitle(title, pieChartMaxSize, pieChartMaxSizePlusPadding).withColSpan(colspan)
                   } else {
                     val pre = s"${ps.player} in ${ct} as ${decl}"
-                    val (made,down,passed,smade,sdown) = histogram.foldLeft((0,0,0,"","")) { (ac,v) =>
-                      val percent: Double = 100.0 * v.counter / ps.handsPlayed
-                      val s = if (v.tricks < 0)        f"\n  Down ${-v.tricks}: ${v.counter} (${percent}%.2f%%)"
-                              else if (v.tricks == 0)  f"\n  Made   : ${v.counter} (${percent}%.2f%%)"
-                              else if (v.tricks == 10) ""
-                              else                     f"\n  Made +${v.tricks}: ${v.counter} (${percent}%.2f%%)"
-                      if (v.tricks == 10)    (ac._1,          ac._2,           ac._3+v.counter, ac._4,   ac._5 )
-                      else if (v.tricks < 0) (ac._1,          ac._2+v.counter, ac._3,           ac._4,   s+ac._5 )
-                      else                   (ac._1+v.counter,ac._2,           ac._3,           ac._4+s, ac._5 )
-                    }
-                    val pretitle = s"${pre}\nTotal: ${ps.handsPlayed}"
-                    val tmade = if (made > 0) {
-                      f"\nMade ${made} (${100.0*made/ps.handsPlayed}%.2f%%)"+smade
-                    } else {
-                      ""
-                    }
-                    val tdown = if (down > 0) {
-                      f"\nDown ${down} (${100.0*down/ps.handsPlayed}%.2f%%)"+sdown
-                    } else {
-                      ""
-                    }
-                    val tpass = if (passed > 0) {
-                      f"\nPassed ${passed} (${100.0*passed/ps.handsPlayed}%.2f%%)"
-                    } else {
-                      ""
-                    }
-                    val title = pretitle+tmade+tdown+tpass
+                    val title = getTitle(pre, histogram, ps.handsPlayed, None, colorMap, madeColors.toList, downColors.toList, Color.Blue)
 
                     DataPieChart(
                       if (ct == ContractTypeTotal) calcSizeTotal(ps.handsPlayed) else calcSizeCT(ps.handsPlayed),
@@ -532,10 +591,19 @@ object PageStatsInternal {
         }
         val sum = dd.foldLeft(0.0)((ac,v) => ac+v._2)
         val (cts,values,cols) = dd.unzip3
-        val title = s"Types of hands\nTotal $sum"+dd.map { entry =>
-          val (ct,value, col) = entry
-          f"${ct.toString()}: ${value} (${100*value/sum}%.2f%%)"
-        }.mkString("\n  ","\n  ","")
+//        val title = s"Types of hands\nTotal $sum"+dd.map { entry =>
+//          val (ct,value, col) = entry
+//          f"${ct.toString()}: ${value} (${100*value/sum}%.2f%%)"
+//        }.mkString("\n  ","\n  ","")
+        val title = <.ul(
+          <.li(s"Types of hands"),
+          <.li(s"Total $sum"),
+          dd.flatMap { entry =>
+            val (ct,value, col) = entry
+            if (value == 0) Nil
+            else trickTitle( f"${ct.toString()}: ${value} (${100.0*value/sum}%.2f%%)", col )::Nil
+          }.toTagMod
+        )
         DataPieChart(
           calcSize( sum.toInt, maxHandsPlayedTotal ),
           cols,
@@ -561,34 +629,35 @@ object PageStatsInternal {
                 ps.handsPlayed.toDouble::Nil
               ).toCellWithOneChartAndTitle(title, pieChartMaxSize, pieChartMaxSizePlusPadding ).withColSpan(colspan)
             } else {
-              val pre = f"${ct} ${100.0*ps.handsPlayed/maxHandsPlayedTotal}%.2f%%"
-              val (made,down,passed,smade,sdown) = ps.histogram.foldLeft((0,0,0,"","")) { (ac,v) =>
-                val percent: Double = 100.0 * v.counter / ps.handsPlayed
-                val s = if (v.tricks < 0)        f"\n  Down ${-v.tricks}: ${v.counter} (${percent}%.2f%%)"
-                        else if (v.tricks == 0)  f"\n  Made   : ${v.counter} (${percent}%.2f%%)"
-                        else if (v.tricks == 10) ""
-                        else                     f"\n  Made +${v.tricks}: ${v.counter} (${percent}%.2f%%)"
-                if (v.tricks == 10)    (ac._1,          ac._2,           ac._3+v.counter, ac._4,   ac._5 )
-                else if (v.tricks < 0) (ac._1,          ac._2+v.counter, ac._3,           ac._4,   s+ac._5 )
-                else                   (ac._1+v.counter,ac._2,           ac._3,           ac._4+s, ac._5 )
-              }
-              val pretitle = s"${pre}\nTotal: ${ps.handsPlayed}"
-              val tmade = if (made > 0) {
-                f"\nMade ${made} (${100.0*made/ps.handsPlayed}%.2f%%)"+smade
-              } else {
-                ""
-              }
-              val tdown = if (down > 0) {
-                f"\nDown ${down} (${100.0*down/ps.handsPlayed}%.2f%%)"+sdown
-              } else {
-                ""
-              }
-              val tpass = if (passed > 0) {
-                f"\nPassed ${passed} (${100.0*passed/ps.handsPlayed}%.2f%%)"
-              } else {
-                ""
-              }
-              val title = pretitle+tmade+tdown+tpass
+              val title = getTitle( ct.toString(), ps.histogram, ps.handsPlayed, Some(maxHandsPlayedTotal), colorMap, madeColors.toList, downColors.toList, Color.Blue )
+//              val pre = f"${ct} ${100.0*ps.handsPlayed/maxHandsPlayedTotal}%.2f%%"
+//              val (made,down,passed,smade,sdown) = ps.histogram.foldLeft((0,0,0,"","")) { (ac,v) =>
+//                val percent: Double = 100.0 * v.counter / ps.handsPlayed
+//                val s = if (v.tricks < 0)        f"\n  Down ${-v.tricks}: ${v.counter} (${percent}%.2f%%)"
+//                        else if (v.tricks == 0)  f"\n  Made   : ${v.counter} (${percent}%.2f%%)"
+//                        else if (v.tricks == 10) ""
+//                        else                     f"\n  Made +${v.tricks}: ${v.counter} (${percent}%.2f%%)"
+//                if (v.tricks == 10)    (ac._1,          ac._2,           ac._3+v.counter, ac._4,   ac._5 )
+//                else if (v.tricks < 0) (ac._1,          ac._2+v.counter, ac._3,           ac._4,   s+ac._5 )
+//                else                   (ac._1+v.counter,ac._2,           ac._3,           ac._4+s, ac._5 )
+//              }
+//              val pretitle = s"${pre}\nTotal: ${ps.handsPlayed}"
+//              val tmade = if (made > 0) {
+//                f"\nMade ${made} (${100.0*made/ps.handsPlayed}%.2f%%)"+smade
+//              } else {
+//                ""
+//              }
+//              val tdown = if (down > 0) {
+//                f"\nDown ${down} (${100.0*down/ps.handsPlayed}%.2f%%)"+sdown
+//              } else {
+//                ""
+//              }
+//              val tpass = if (passed > 0) {
+//                f"\nPassed ${passed} (${100.0*passed/ps.handsPlayed}%.2f%%)"
+//              } else {
+//                ""
+//              }
+//              val title = pretitle+tmade+tdown+tpass
               logger.fine(s"""Working with ${ct} histogram is ${ps.histogram}""")
               DataPieChart(
                 calcSize(ps.handsPlayed, if (ct==ContractTypeTotal) maxHandsPlayedTotal else maxHandsPlayed),
@@ -835,34 +904,7 @@ object PageStatsInternal {
       }
 
       def getTitle( contract: String, cs: ContractStat, totalHands: Int ) = {
-        val pre = f"${contract} ${100.0*cs.handsPlayed/totalHands}%.2f%%"
-        val (made,down,passed,smade,sdown) = cs.histogram.foldLeft((0,0,0,"","")) { (ac,v) =>
-          val percent: Double = 100.0 * v.counter / cs.handsPlayed
-          val ss = if (v.tricks < 0)        f"\n  Down ${-v.tricks}: ${v.counter} (${percent}%.2f%%)"
-                   else if (v.tricks == 0)  f"\n  Made   : ${v.counter} (${percent}%.2f%%)"
-                   else if (v.tricks == 10) ""
-                   else                     f"\n  Made +${v.tricks}: ${v.counter} (${percent}%.2f%%)"
-          if (v.tricks == 10)    (ac._1,          ac._2,           ac._3+v.counter, ac._4,   ac._5 )
-          else if (v.tricks < 0) (ac._1,          ac._2+v.counter, ac._3,           ac._4,   ss+ac._5 )
-          else                   (ac._1+v.counter,ac._2,           ac._3,           ac._4+ss, ac._5 )
-        }
-        val tmade = if (made > 0) {
-          f"\nMade ${made} (${100.0*made/cs.handsPlayed}%.2f%%)"+smade
-        } else {
-          ""
-        }
-        val tdown = if (down > 0) {
-          f"\nDown ${down} (${100.0*down/cs.handsPlayed}%.2f%%)"+sdown
-        } else {
-          ""
-        }
-        val tpass = if (passed > 0) {
-          f"\nPassed ${passed} (${100.0*passed/cs.handsPlayed}%.2f%%)"
-        } else {
-          ""
-        }
-        val title = pre+tmade+tdown+tpass
-        title
+        PageStatsInternal.getTitle(contract, cs.histogram, cs.handsPlayed, Some(totalHands), colorMap, madeColors.toList, downColors.toList, Color.Blue)
       }
 
       /* *

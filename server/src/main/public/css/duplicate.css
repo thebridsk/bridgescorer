@@ -580,6 +580,14 @@
 .dupDivPageStats > div {
   padding: 3px;
 }
+
+.dupDivPageStats table .tooltipContent li .piechart {
+  display: inline
+}
+
+.dupDivPageStats table .tooltipContent ul {
+  list-style-type: none
+}
 .dupDivPageStats > div:nth-child(3) .tablePieChart td > div {
   display: flex;
   flex-flow: row nowrap;
