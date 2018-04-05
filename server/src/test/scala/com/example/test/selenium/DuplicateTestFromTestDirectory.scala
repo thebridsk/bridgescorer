@@ -60,6 +60,7 @@ import com.example.test.util.HttpUtils.ResponseFromHttp
 import com.example.backend.BridgeServiceFileStoreConverters
 import com.example.backend.MatchDuplicateCacheStoreSupport
 import com.example.test.util.ParallelUtils.CodeBlock
+import com.example.pages.PageBrowser
 
 /**
  * Test playing duplicate matches.  The duplicates matches to play are in the testdata directory.
@@ -71,6 +72,8 @@ class DuplicateTestFromTestDirectory extends FlatSpec with DuplicateUtils with M
   import ParallelUtils._
 
   val testlog = Logger[DuplicateTestFromTestDirectory]
+
+  val screenshotDir = "target/DuplicateTestFromTestDirectory"
 
   import scala.concurrent.duration._
 
@@ -431,33 +434,35 @@ class DuplicateTestFromTestDirectory extends FlatSpec with DuplicateUtils with M
     def playRound( round: Int, sessionTable: TableSession ): Unit = try {
       import sessionTable._
 
-      templateScore.tables.get(sessionTable.table) match {
-        case Some(rounds) =>
-          rounds.find { r => r.round == round } match {
-            case Some(r) =>
-              val hands = r.boards.map { bs => bs.board.hands.find { h => h.table==sessionTable.table && h.round==round } }.
-                                   map { x => x match {
-                                     case Some(h) => h
-                                     case None =>
-                                       fail("Did not find all hands for table "+sessionTable.table+" round "+round)
-                                   }}
-              InputStyleHelper.hitInputStyleButton( "Yellow" )
-              hitRound(round)
-              val (north,south,east,west) = getPlayers(hands.head)
-              var scorekeeper = firstScorekeeper
-              (1 to (sessionTable.number.toInt+round)).foreach { i => scorekeeper = scorekeeper.nextDealer }
-              playEnterNames(north, south, east, west, scorekeeper)
-              for (hand <- hands) {
-                tcpSleep(5)
-                doPlayHand(sessionTable,hand)
-              }
-              click on id("Game")
-              click on id("Table")
-            case None =>
-              fail("Did not find round "+round+" for table "+sessionTable.table)
-          }
-        case None =>
-          fail("Did not find rounds for table "+sessionTable.table)
+      PageBrowser.withClueAndScreenShot(screenshotDir, s"Round${round}Table${sessionTable.table}", s"Round ${round} Table ${sessionTable.table}") {
+        templateScore.tables.get(sessionTable.table) match {
+          case Some(rounds) =>
+            rounds.find { r => r.round == round } match {
+              case Some(r) =>
+                val hands = r.boards.map { bs => bs.board.hands.find { h => h.table==sessionTable.table && h.round==round } }.
+                                     map { x => x match {
+                                       case Some(h) => h
+                                       case None =>
+                                         fail("Did not find all hands for table "+sessionTable.table+" round "+round)
+                                     }}
+                InputStyleHelper.hitInputStyleButton( "Yellow" )
+                hitRound(round)
+                val (north,south,east,west) = getPlayers(hands.head)
+                var scorekeeper = firstScorekeeper
+                (1 to (sessionTable.number.toInt+round)).foreach { i => scorekeeper = scorekeeper.nextDealer }
+                playEnterNames(north, south, east, west, scorekeeper)
+                for (hand <- hands) {
+                  tcpSleep(5)
+                  doPlayHand(sessionTable,hand)
+                }
+                click on id("Game")
+                click on id("Table")
+              case None =>
+                fail("Did not find round "+round+" for table "+sessionTable.table)
+            }
+          case None =>
+            fail("Did not find rounds for table "+sessionTable.table)
+        }
       }
     } catch {
       case ex: Exception =>

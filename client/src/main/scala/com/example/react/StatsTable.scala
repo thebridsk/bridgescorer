@@ -211,7 +211,7 @@ object StatsTableInternal {
                               <.tr(
                                 props.shownColumns.map { c =>
                                   val selected = Some(c.id)==state.currentSort
-                                  <.td(
+                                  <.th(
                                     AppButton(
                                         c.id,
                                         c.name,
