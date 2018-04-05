@@ -46,7 +46,7 @@ object Dependencies {
   lazy val vScalaJsReact = "1.2.0"     // http://mvnrepository.com/artifact/com.github.japgolly.scalajs-react/core_sjs0.6_2.11
   lazy val vScalaCss = "0.5.3"         // http://mvnrepository.com/artifact/com.github.japgolly.scalacss/core_sjs0.6_2.11
 
-  lazy val vWebJarsReact = "16.3.0"    // http://mvnrepository.com/artifact/org.webjars/react
+  lazy val vWebJarsReact = "16.3.1"    // http://mvnrepository.com/artifact/org.webjars/react
   lazy val vReactWidgets = "4.2.6"     // http://mvnrepository.com/artifact/org.webjars.npm/react-widgets
   lazy val vWebJarsFlux = "3.1.3"      // http://mvnrepository.com/artifact/org.webjars/flux
   lazy val vGlobalize = "1.3.0"        // https://www.npmjs.com/package/globalize
