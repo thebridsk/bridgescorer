@@ -71,6 +71,7 @@ object PageAllTablesInternal {
       import DuplicateStyles._
       DuplicateStore.getCompleteView() match {
         case Some(score) =>
+          val clickPage = CompleteScoreboardView(props.page.dupid)
           <.div(
             dupStyles.divAllTablesPage,
             score.tables.keys.toList.sortWith((t1,t2)=>t1<t2).map { table =>
@@ -80,7 +81,7 @@ object PageAllTablesInternal {
               baseStyles.divFooter,
               <.div(
                 baseStyles.divFooterLeft,
-                AppButton( "Game", "Completed Games Scoreboard", props.routerCtl.setOnClick(CompleteScoreboardView(props.page.dupid))
+                AppButton( "Game", "Completed Games Scoreboard", props.routerCtl.setOnClick(clickPage)
                 )
               ),
               <.div(

@@ -115,9 +115,10 @@ object ViewScoreboardInternal {
                         def boardButton( b: BoardScore ) = {
                           val id = b.id
                           val (played,ns) = wasPlayed(b)
+                          val clickPage = if (played) props.page.toBoardView(id) else props.page.toBoardView(id).toHandView(ns)
                           AppButton( "Board_"+id, Id.boardIdToBoardNumber(id),
                                      !played ?= baseStyles.requiredNotNext,
-                                     props.routerCtl.setOnClick(if (played) props.page.toBoardView(id) else props.page.toBoardView(id).toHandView(ns)) )
+                                     props.routerCtl.setOnClick(clickPage) )
                         }
                         val showidbutton = props.page.isInstanceOf[FinishedScoreboardView]
                         <.thead(

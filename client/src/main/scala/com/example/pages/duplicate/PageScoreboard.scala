@@ -148,10 +148,11 @@ object PageScoreboardInternal {
                     <.div(
                       baseStyles.divFooterLeft,
                       score.tables.keys.toList.sortWith((t1,t2)=>t1<t2).map { table =>
+                        val clickToTableView = TableView(props.game.dupid,table)
                         List[TagMod](
                           AppButton( "Table_"+table, "Table "+table,
                                      baseStyles.requiredNotNext,
-                                     props.routerCtl.setOnClick(TableView(props.game.dupid,table)) ),
+                                     props.routerCtl.setOnClick(clickToTableView) ),
                           <.span(" ")
                           ).toTagMod
                       }.toTagMod

@@ -34,11 +34,18 @@ import java.io.StringWriter
 import java.io.BufferedReader
 import java.io.PrintWriter
 import org.openqa.selenium.WebDriverException
+import org.openqa.selenium.support.events.EventFiringWebDriver
+import org.openqa.selenium.support.events.WebDriverEventListener
+import org.openqa.selenium.support.events.AbstractWebDriverEventListener
+import org.openqa.selenium.UnhandledAlertException
+import com.example.pages.PageBrowser
 
-class Session extends WebDriver {
+class Session( name: String = "default" ) extends WebDriver {
   import Session._
 
-  implicit var webDriver: WebDriver = null
+  implicit var webDriver: EventFiringWebDriver = null
+
+  private var eventListener: WebDriverEventListener = null
 
   val debug = {
     val f = getPropOrEnv("WebDriverDebug").getOrElse("")
@@ -241,8 +248,52 @@ class Session extends WebDriver {
     }
   }
 
+  private def findUnhandledAlertException( ex: Throwable ): Option[UnhandledAlertException] = {
+
+    @tailrec
+    def findInCause( ex: Throwable ): Option[UnhandledAlertException] = {
+      ex match {
+        case x: UnhandledAlertException => Some(x)
+        case x: Throwable =>
+          val cause = x.getCause
+          if (cause == null) None
+          else findInCause(cause)
+      }
+    }
+
+    val f = findInCause(ex)
+    f
+  }
+
+  private def logAlert(): Unit = {
+
+    val alert = webDriver.switchTo().alert()
+
+    val text = alert.getText
+
+    testlog.warning(s"UnhandledAlertException on session ${name}: ${text}")
+  }
+
+  private def wrapWebDriver( webDriver: WebDriver ) = {
+    val wd = new EventFiringWebDriver( webDriver )
+
+    eventListener = new AbstractWebDriverEventListener {
+      override
+      def onException( ex: Throwable, webDriver: WebDriver ): Unit = {
+        findUnhandledAlertException(ex) match {
+          case Some(unhandled) =>
+            testlog.warning(s"UnhandledAlertException on session ${name}",unhandled)
+            logAlert()
+          case None =>
+        }
+      }
+    }
+    wd.register(eventListener)
+    wd
+  }
+
   private def createSession( browser: Option[String] = None): Session = synchronized {
-    webDriver = browser.orElse(getPropOrEnv("DefaultWebDriver")) match {
+    webDriver = wrapWebDriver( browser.orElse(getPropOrEnv("DefaultWebDriver")) match {
       case None =>
         testlog.fine( "DefaultWebDriver is not set in system properties or environment, using default" )
         defaultBrowser // default
@@ -270,7 +321,7 @@ class Session extends WebDriver {
             testlog.fine( "Unknown browser specified, using default: "+wd )
             defaultBrowser // default
         }
-    }
+    })
     sessionImplicitlyWait(2, TimeUnit.SECONDS)
     this
   }
@@ -319,6 +370,11 @@ class Session extends WebDriver {
    */
   def sessionStop(): Unit = synchronized {
     if (webDriver != null) {
+      if (eventListener != null) {
+        val el = eventListener
+        eventListener = null
+        webDriver.unregister(el)
+      }
       webDriver.close()
       try {
         webDriver.quit()
@@ -563,8 +619,8 @@ object Session {
   val sessionCounter = new AtomicLong()
 }
 
-class DirectorSession extends Session
-class CompleteSession extends Session
-class TableSession( val table: String ) extends Session {
+class DirectorSession extends Session( "Director")
+class CompleteSession extends Session( "Complete")
+class TableSession( val table: String ) extends Session( s"Table ${table}" ) {
   val number = Id.tableIdToTableNumber(table)
 }

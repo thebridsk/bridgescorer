@@ -117,8 +117,9 @@ object ViewBoardInternal {
                               }
                             val tbsteamId = tbs.teamId
                             if (enabled) {
+                              val clickPage = p.page.toHandView(tbsteamId)
                               AppButton( "Hand_"+tbs.teamId, Id.teamIdToTeamNumber(tbsteamId),
-                                         p.routerCtl.setOnClick(p.page.toHandView(tbsteamId)) )
+                                         p.routerCtl.setOnClick(clickPage) )
                             } else {
                               <.span(Id.teamIdToTeamNumber(tbsteamId))
                             }

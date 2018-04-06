@@ -105,37 +105,44 @@ object ViewTableInternal {
                           )
                         }
 
+                        val clickFromRound = if (allUnplayed) {
+                                               props.page.toTableTeamView(round.round)
+                                             } else {
+                                               props.page.toRoundView(round.round)
+                                             }
+
                         <.tr( ^.textAlign:="center",
                           <.td(
                             AppButton( "Round_"+round.round.toString, round.round.toString,
                                        dupStyles.boardButtonInTable,
                                        ^.disabled:=round.round>currentRound,
                                        round.round==currentRound ?= baseStyles.requiredNotNext,
-                                       if (allUnplayed) {
-                                         props.routerCtl.setOnClick(props.page.toTableTeamView(round.round))
-                                       } else {
-                                         props.routerCtl.setOnClick(props.page.toRoundView(round.round))
-                                       })
+                                       props.routerCtl.setOnClick(clickFromRound)
+                                     )
                           ),
                           <.td( showTeam(round.ns.id, round.ns.player1, round.ns.player2 ) ),
                           <.td( showTeam(round.ew.id, round.ew.player1, round.ew.player2 ) ),
                           <.td(
                             round.boards.sortWith((b1,b2)=>Id.idComparer(b1.id, b2.id)<0).map { board =>
+                              val clickFromBoard =
+                                if (allUnplayed) {
+                                  props.page.toTableTeamView(round.round,board.id)
+                                } else {
+                                  if (board.hasTeamPlayed(round.ns.id)) {
+                                    props.page.toBoardView(round.round,board.id)
+                                  } else {
+                                    props.page.toBoardView(round.round,board.id).toHandView(round.ns.id)
+                                  }
+                                }
+
                               <.span(
                                 <.span( ^.dangerouslySetInnerHtml:="&nbsp;&nbsp;"),
                                 AppButton( "Board_"+board.id, Id.boardIdToBoardNumber(board.id),
                                            dupStyles.boardButtonInTable,
                                            ^.disabled:=round.round>currentRound,
                                            (round.round==currentRound && !board.hasTeamPlayed(round.ns.id)) ?= baseStyles.requiredNotNext,
-                                           if (allUnplayed) {
-                                             props.routerCtl.setOnClick(props.page.toTableTeamView(round.round,board.id))
-                                           } else {
-                                             if (board.hasTeamPlayed(round.ns.id)) {
-                                               props.routerCtl.setOnClick(props.page.toBoardView(round.round,board.id))
-                                             } else {
-                                               props.routerCtl.setOnClick(props.page.toBoardView(round.round,board.id).toHandView(round.ns.id))
-                                             }
-                                           })
+                                           props.routerCtl.setOnClick(clickFromBoard)
+                                         )
                               )
 
                             }.toTagMod,
