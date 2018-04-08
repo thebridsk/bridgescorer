@@ -283,7 +283,7 @@ class ScoreboardPage(
    * The columns are: teamNumber, players, totals, board1, ...
    */
   def getTable(implicit pos: Position) = {
-    val boards = getElemsByXPath("""//table[@id='scoreboard']/thead/tr[3]/th""").size
+    val boards = getElemsByXPath("""//table[@id='scoreboard']/thead/tr[2]/th""").size
     getElemsByXPath("""//table[@id='scoreboard']/tbody/tr/td""").map(c=>c.text).grouped(boards+3).toList
   }
 

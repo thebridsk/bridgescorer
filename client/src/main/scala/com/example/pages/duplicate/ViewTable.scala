@@ -65,17 +65,6 @@ object ViewTableInternal {
                         val (props, relay) = args
                         <.thead(
                           <.tr(
-                            <.th(
-                              ^.colSpan:=(if (relay) 5 else 4),
-                              if (props.showTableButton) {
-                                val table = Id.tableIdToTableNumber(props.page.tableid)
-                                AppButton( "Table_"+table, "Table "+table, props.routerCtl.setOnClick(props.page) )
-                              } else {
-                                "Table "+Id.tableIdToTableNumber(props.page.tableid)
-                              }
-                            )
-                          ),
-                          <.tr(
                             <.th( "Round" ),
                             <.th( "NS" ),
                             <.th( "EW" ),
@@ -177,6 +166,14 @@ object ViewTableInternal {
               <.div(
                 dupStyles.divTableView,
                 <.table(
+                  <.caption(
+                    if (props.showTableButton) {
+                      val table = Id.tableIdToTableNumber(props.page.tableid)
+                      AppButton( "Table_"+table, "Table "+table, props.routerCtl.setOnClick(props.page) )
+                    } else {
+                      "Table "+Id.tableIdToTableNumber(props.page.tableid)
+                    }
+                  ),
                   Header((props,relay)),
                   <.tbody(
                       {

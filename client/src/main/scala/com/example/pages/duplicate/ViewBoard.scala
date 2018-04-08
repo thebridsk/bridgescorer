@@ -57,19 +57,6 @@ object ViewBoardInternal {
                         val (props,board) = cprops
                         <.thead(
                           <.tr(
-                            <.th(
-                              ^.colSpan:=4,
-                              "Board "+Id.boardIdToBoardNumber(props.board)
-                            ),
-                            <.th(
-                              ^.colSpan:=5,
-                              board match {
-                                case Some(b) => b.showVul
-                                case None => ""
-                              }
-                            )
-                          ),
-                          <.tr(
                             <.th( ^.rowSpan:=2, "NS pair"),
                             <.th( ^.rowSpan:=2, "Contract"),
                             <.th( ^.rowSpan:=2, "By"),
@@ -210,6 +197,19 @@ object ViewBoardInternal {
         dupStyles.divBoardView,
         <.table(
           ^.id:="Board_"+props.board,
+          <.caption(
+            <.span(
+              ^.float:="left",
+              "Board "+Id.boardIdToBoardNumber(props.board)
+            ),
+            <.span(
+              ^.float:="right",
+              board match {
+                case Some(b) => b.showVul
+                case None => ""
+              }
+            )
+          ),
           Header((props,board)),
           <.tbody(
             props.score.teams.toList.sortWith( (t1,t2)=>Id.idComparer(t1.id,t2.id)<0).map { team =>

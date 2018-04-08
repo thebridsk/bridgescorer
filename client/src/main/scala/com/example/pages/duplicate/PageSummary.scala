@@ -92,14 +92,6 @@ object PageSummaryInternal {
 
                           <.thead(
                             <.tr(
-                              <.th(
-                                ^.colSpan:=tp.allPlayers.length+4+importId.map(id=>2).getOrElse(0)+(if (state.forPrint) 2 else 1),
-                                RadioButton("ShowBoth", "Show All", state.showEntries==ShowBoth, backend.show(ShowBoth) ),
-                                RadioButton("ShowMD", "Show Matches", state.showEntries==ShowMD, backend.show(ShowMD) ),
-                                RadioButton("ShowMDR", "Show Results Only", state.showEntries==ShowMDR, backend.show(ShowMDR) )
-                              )
-                            ),
-                            <.tr(
                               <.th( "Id"),
                               importId.map { id =>
                                 TagMod(
@@ -590,6 +582,11 @@ object PageSummaryInternal {
        */
       def showMatches() = {
         <.table(
+            <.caption(
+              RadioButton("ShowBoth", "Show All", state.showEntries==ShowBoth, show(ShowBoth) ),
+              RadioButton("ShowMD", "Show Matches", state.showEntries==ShowMD, show(ShowMD) ),
+              RadioButton("ShowMDR", "Show Results Only", state.showEntries==ShowMDR, show(ShowMDR) )
+            ),
             SummaryHeader((tp,props,state,this,importId)),
             (!state.alwaysShowAll && state.showRows.isDefined) ?=
               <.tfoot(

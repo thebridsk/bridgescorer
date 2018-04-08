@@ -319,7 +319,6 @@
   font-size: larger;
   border: 1px solid black;
   margin: 5px;
-  border-collapse: collapse;
 }
 .rootImportsListPageDiv td {
   font-size: larger;
@@ -396,11 +395,13 @@
   font-size: large;
   white-space: nowrap;
   border: 1px solid black;
-  border-collapse: collapse;
+  /*
   table-layout: fixed;
+  */
 }
 .tableStats caption {
-  border: 1px solid black;
+  border: 2px solid black;
+  border-bottom: 0px solid black;
   font-weight: bold;
   font-size: x-large;
 }
@@ -433,11 +434,10 @@
   font-size: large;
   white-space: nowrap;
   border: 1px solid black;
-  border-collapse: collapse;
-  table-layout: fixed;
 }
 .tablePieChart caption {
-  border: 1px solid black;
+  border: 2px solid black;
+  border-bottom: 0px solid black;
   font-weight: bold;
   font-size: x-large;
 }

@@ -120,33 +120,8 @@ object ViewScoreboardInternal {
                                      !played ?= baseStyles.requiredNotNext,
                                      props.routerCtl.setOnClick(clickPage) )
                         }
-                        val showidbutton = props.page.isInstanceOf[FinishedScoreboardView]
+
                         <.thead(
-                          <.tr(
-                            <.th( ^.colSpan:=props.score.sortedBoards.size+1,
-                              props.page match {
-                                case FinishedScoreboardView(dupid) => "Scoreboard, "+DateUtils.formatDay(props.score.created)
-                                case _ =>
-                                  props.page.getPerspective() match {
-                                    case PerspectiveDirector => "Scoreboard from Director's view"
-                                    case PerspectiveComplete => "Scoreboard with completed boards only"
-                                    case PerspectiveTable(t1, t2) =>
-                                      val (team1,team2) = if (Id.idComparer(t1,t2)<0) (t1,t2) else (t2,t1)
-                                      "Scoreboard from table "+currentTable+" round "+currentRound+" for teams "+Id.teamIdToTeamNumber(team1)+" and "+Id.teamIdToTeamNumber(team2)
-                                  }
-                              }
-                            ),
-                            <.th(
-                              ^.colSpan:=2,
-                              <.span( showidbutton ?= baseStyles.onlyInPrint, props.score.id ),
-                              showidbutton ?= <.span(
-                                baseStyles.hideInPrint,
-                                AppButton( "Duplicate_"+props.score.id, props.score.id,
-                                           props.routerCtl.setOnClick( CompleteScoreboardView(props.score.id) )
-                                )
-                              )
-                            )
-                          ),
                           <.tr(
                             <.th( ^.rowSpan:=2, "Team"),
                             <.th( ^.rowSpan:=2, "Players"),
@@ -223,10 +198,50 @@ object ViewScoreboardInternal {
           <.span( count!=1 ?= <.br(), Id.teamIdToTeamNumber(team.id)+" "+team.player1+" "+team.player2 )
         }
       }
+      val showidbutton = props.page.isInstanceOf[FinishedScoreboardView]
       <.div(
         dupStyles.divViewScoreboard,
         <.table( ^.id := "scoreboard",
           dupStyles.tableViewScoreboard,
+          <.caption(
+            props.page match {
+              case FinishedScoreboardView(dupid) => "Scoreboard"
+              case _ =>
+                props.page.getPerspective() match {
+                  case PerspectiveDirector => "Scoreboard from Director's view"
+                  case PerspectiveComplete => "Scoreboard with completed boards only"
+                  case PerspectiveTable(t1, t2) =>
+                    val (currentRound,currentTable) = props.page match {
+                      case TableRoundScoreboardView( dupid, tableid, roundid ) => (roundid,tableid)
+                      case _ => (-1,"")
+                    }
+                    val (team1,team2) = if (Id.idComparer(t1,t2)<0) (t1,t2) else (t2,t1)
+                    "Scoreboard from table "+currentTable+" round "+currentRound+" for teams "+Id.teamIdToTeamNumber(team1)+" and "+Id.teamIdToTeamNumber(team2)
+                }
+            },
+            ", ",
+            DateUtils.formatDay(props.score.created),
+            <.span(
+              ^.float:="right",
+              <.span( showidbutton ?= baseStyles.onlyInPrint, props.score.id ),
+              showidbutton ?= <.span(
+                baseStyles.hideInPrint,
+                AppButton( "Duplicate_"+props.score.id, props.score.id,
+                           props.routerCtl.setOnClick( CompleteScoreboardView(props.score.id) )
+                )
+              )
+            ),
+            <.span(
+              ^.float:="left",
+              <.span( showidbutton ?= baseStyles.onlyInPrint, props.score.id ),
+              showidbutton ?= <.span(
+                baseStyles.hideInPrint,
+                AppButton( "Duplicate_"+props.score.id, props.score.id,
+                           props.routerCtl.setOnClick( CompleteScoreboardView(props.score.id) )
+                )
+              )
+            )
+          ),
           Header(props),
           <.tbody(
             props.score.teams.toList.sortWith( (t1,t2)=>Id.idComparer(t1.id,t2.id)<0).map { team =>
