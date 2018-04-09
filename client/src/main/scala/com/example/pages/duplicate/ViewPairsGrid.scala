@@ -252,7 +252,7 @@ object ViewPairsGridInternal {
 
             val (totalData, totalTitle) = getData(playerTotals, statTotalSize, statTotalColor, 240, 60, state, 2)
 
-            val totalDataList = List(Cell(List(totalData), Some(totalTitle)))
+            val totalDataList = List(Cell(List(totalData), Some(<.div(totalTitle))))
 
             Row( rowplayer, data:::totalDataList)
           }

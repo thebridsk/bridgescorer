@@ -54,6 +54,12 @@ class HandPage( implicit webDriver: WebDriver, pageCreated: SourcePosition ) ext
     new BoardPage
   }
 
+  override
+  def clickCancel(implicit patienceConfig: PatienceConfig, pos: Position) = {
+    super.clickCancel
+    new BoardPage
+  }
+
   def findIds(implicit patienceConfig: PatienceConfig, pos: Position) = {
     val prefix = TestServer.getAppPageUrl("duplicate/")
     val cur = currentUrl
@@ -84,13 +90,21 @@ class HandPage( implicit webDriver: WebDriver, pageCreated: SourcePosition ) ext
       declarer: PlayerPosition,
       madeOrDown: MadeOrDown,
       tricks: Int,
-      vul: Vulnerability
+      vul: Vulnerability,
+      validate: Boolean = true
     )(implicit
         patienceConfig: PatienceConfig,
         pos: Position
     ): BoardPage = {
-    val board = onlyEnterHand(nsTeam, nsScore, nsMP, ewTeam, ewMP, contractTricks, contractSuit, contractDoubled, declarer, madeOrDown, tricks, vul)
-    board.checkTeamScores(nsTeam, nsScore, nsMP, ewTeam, ewMP, contractTricks, contractSuit, contractDoubled, declarer, madeOrDown, tricks, vul)
+    if (validate) {
+      getTeamNumber(North) mustBe nsTeam.toString()
+      getTeamNumber(South) mustBe nsTeam.toString()
+      getTeamNumber(East) mustBe ewTeam.toString()
+      getTeamNumber(West) mustBe ewTeam.toString()
+    }
+    val board = onlyEnterHand( contractTricks, contractSuit, contractDoubled, declarer, madeOrDown, tricks )
+    if (validate) board.checkTeamScores(nsTeam, nsScore, nsMP, ewTeam, ewMP, contractTricks, contractSuit, contractDoubled, declarer, madeOrDown, tricks, vul)
+    else board
   }
 
   def enterHand( eh: EnterHand )(implicit patienceConfig: PatienceConfig, pos: Position): BoardPage = {
@@ -106,31 +120,26 @@ class HandPage( implicit webDriver: WebDriver, pageCreated: SourcePosition ) ext
   }
 
   def onlyEnterHand(
-      nsTeam: Int,
-      nsScore: Int,
-      nsMP: Double,
-      ewTeam: Int,
-      ewMP: Double,
       contractTricks: Int,
       contractSuit: ContractSuit,
       contractDoubled: ContractDoubled,
       declarer: PlayerPosition,
       madeOrDown: MadeOrDown,
       tricks: Int,
-      vul: Vulnerability
+      validate: Boolean = true
     )(implicit
         patienceConfig: PatienceConfig,
         pos: Position
     ): BoardPage = {
     enterContract(contractTricks,contractSuit,contractDoubled,declarer,madeOrDown,tricks)
-    validateContract(Some(contractTricks),Some(contractSuit),Some(contractDoubled),Some(declarer),Some(madeOrDown),Some(tricks))
+    if (validate) validateContract(Some(contractTricks),Some(contractSuit),Some(contractDoubled),Some(declarer),Some(madeOrDown),Some(tricks))
     isOkEnabled mustBe true
     clickOk.validate
   }
 
   def onlyEnterHand( eh: EnterHand )(implicit patienceConfig: PatienceConfig, pos: Position): BoardPage = {
     import eh._
-    onlyEnterHand(nsTeam, nsScore, nsMP, ewTeam, ewMP, contractTricks, contractSuit, contractDoubled, declarer, madeOrDown, tricks, vul)
+    onlyEnterHand( contractTricks, contractSuit, contractDoubled, declarer, madeOrDown, tricks)
   }
 
   def onlyEnterHand(  table: Int, round: Int, board: Int, allhands: AllHandsInMatch, nsTeam: Team, ewTeam: Team )(implicit patienceConfig: PatienceConfig, pos: Position): BoardPage = {
@@ -185,6 +194,34 @@ class HandPage( implicit webDriver: WebDriver, pageCreated: SourcePosition ) ext
     }
 
   }
+
+  def findTeamNumberElement(
+                    loc: PlayerPosition
+                  )(implicit
+                     patienceConfig: PatienceConfig,
+                     pos: Position
+                  ) = {
+    val e = find(xpath(s"""//span[@id = '${loc.name}']/span"""))
+    e
+  }
+
+  val patternTeamNumber = """ \((\d+)\)""".r
+
+  def getTeamNumber(
+                    loc: PlayerPosition
+                  )(implicit
+                     patienceConfig: PatienceConfig,
+                     pos: Position
+                  ) = {
+    eventually {
+      findTeamNumberElement(loc).text match {
+        case patternTeamNumber( team ) => team
+        case x =>
+          fail( s"Did not find a team number in declarer button for ${loc.name}: ${x}" )
+      }
+    }
+  }
+
 }
 
 case class EnterHand(

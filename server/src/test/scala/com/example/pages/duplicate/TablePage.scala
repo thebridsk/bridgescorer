@@ -60,6 +60,7 @@ object TablePage {
   object MissingNames extends Target
   object EnterNames extends Target
   object SelectNames extends Target
+  object EnterOrSelectNames extends Target
   object Hands extends Target
   object Boards extends Target
   val Results = Hands
@@ -104,6 +105,8 @@ class TablePage( dupid: String,
         new TableSelectScorekeeperPage( dupid, tableid, round.toString(), None )
       case Hands | Boards =>
         new ScoreboardPage( Some(dupid), TableViewType(tableid,round.toString()) )
+      case EnterOrSelectNames =>
+        new TableEnterOrSelectNamesPage( dupid, tableid, round.toString(), None )
     }
   }
 
@@ -116,6 +119,8 @@ class TablePage( dupid: String,
         new TableEnterScorekeeperPage( dupid, tableid, round.toString(), Some(board.toString()) )
       case SelectNames =>
         new TableSelectScorekeeperPage( dupid, tableid, round.toString(), Some(board.toString()) )
+      case EnterOrSelectNames =>
+        new TableEnterOrSelectNamesPage( dupid, tableid, round.toString(), Some(board.toString()) )
       case Hands =>
         new HandPage
       case Boards =>

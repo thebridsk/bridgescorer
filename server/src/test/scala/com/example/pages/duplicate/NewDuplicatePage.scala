@@ -45,6 +45,12 @@ class NewDuplicatePage( implicit webDriver: WebDriver, pageCreated: SourcePositi
     this
   }}
 
+  def getNewButton( boardset: String, movement: String )(implicit patienceConfig: PatienceConfig, pos: Position) = {
+    if (!BoardSetsPage.boardsets.contains(boardset)) log.warning(s"Unknown boardset $boardset")
+    if (!MovementsPage.movements.contains(movement)) log.warning(s"Unknown movement $movement")
+    findElemById(s"New_${movement}_${boardset}")
+  }
+
   def click( boardset: String, movement: String )(implicit patienceConfig: PatienceConfig, pos: Position) = {
     if (!BoardSetsPage.boardsets.contains(boardset)) log.warning(s"Unknown boardset $boardset")
     if (!MovementsPage.movements.contains(movement)) log.warning(s"Unknown movement $movement")

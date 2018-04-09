@@ -443,13 +443,42 @@ abstract class BaseHandPage( implicit webDriver: WebDriver, pageCreated: SourceP
     this
   }
 
+  def enterContractAndOk(
+      contractTricks: Int,
+      contractSuit: ContractSuit,
+      contractDoubled: ContractDoubled,
+      declarer: PlayerPosition,
+      madeOrDown: MadeOrDown,
+      tricks: Int,
+      vul: Vulnerability,
+      validate: Boolean = true
+    )(implicit
+        patienceConfig: PatienceConfig,
+        pos: Position
+    ): Page.AnyPage = {
+    enterContract(contractTricks,contractSuit,contractDoubled,declarer,madeOrDown,tricks)
+    if (validate) validateContract(Some(contractTricks),Some(contractSuit),Some(contractDoubled),Some(declarer),Some(madeOrDown),Some(tricks))
+    isOkEnabled mustBe true
+    clickOk
+  }
+
+  def findVulnerableElement(
+                    loc: PlayerPosition
+                  )(implicit
+                     patienceConfig: PatienceConfig,
+                     pos: Position
+                  ) = {
+    val e = find(xpath(s"""//span[@id = '${loc.name}']/span[translate(text(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz')]"""))
+    e
+  }
+
   def isVulnerable(
                     loc: PlayerPosition
                   )(implicit
                      patienceConfig: PatienceConfig,
                      pos: Position
                   ) = {
-    val e = find(xpath(s"""//span[@id = '${loc.name}']/span"""))
+    val e = findVulnerableElement(loc)
     e.containsClass("handVulnerable")
   }
 
@@ -460,7 +489,7 @@ abstract class BaseHandPage( implicit webDriver: WebDriver, pageCreated: SourceP
                      pos: Position
                   ) = {
     eventually {
-      val e = getElemByXPath( s"""//span[@id = '${loc.name}']/span""")
+      val e = findVulnerableElement(loc)
       e.containsClass("handVulnerable")
     }
   }

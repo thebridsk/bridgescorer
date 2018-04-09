@@ -270,7 +270,7 @@ object MonitorTCP extends Logging {
       logger.info("waitForConnections waited for "+waited+", maxWait "+maxWait+", returning "+rc)
       rc
     } else {
-      val waitfor = Math.min( maxWait.toMillis, 1000 )
+      val waitfor = Math.min( maxWait.toMillis, 500 )
       Thread.sleep(waitfor)
       true
     }

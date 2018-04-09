@@ -454,6 +454,9 @@
 .tablePieChart td {
   border: 1px solid black;
   text-align: center;
+}
+.tablePieChart td > div {
+  text-align: center;
   padding: 2px 4px 2px 4px;
 }
 .tablePieChart th {
