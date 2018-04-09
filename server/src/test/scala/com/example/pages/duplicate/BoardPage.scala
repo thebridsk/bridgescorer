@@ -94,7 +94,12 @@ object BoardPage {
 
 }
 
-class BoardPage( implicit webDriver: WebDriver, pageCreated: SourcePosition ) extends Page[BoardPage] {
+trait PageWithBoardButtons {
+
+  def clickBoardButton( board: Int )(implicit patienceConfig: PatienceConfig, pos: Position): HandPage
+}
+
+class BoardPage( implicit webDriver: WebDriver, pageCreated: SourcePosition ) extends Page[BoardPage] with PageWithBoardButtons {
   import BoardPage._
 
   def getTableId(implicit patienceConfig: PatienceConfig, pos: Position) = eventually {
@@ -537,6 +542,9 @@ class BoardPage( implicit webDriver: WebDriver, pageCreated: SourcePosition ) ex
     click on id(s"""Hand_T${hand}""")
     new HandPage
   }
+
+  def clickBoardButton( board: Int )(implicit patienceConfig: PatienceConfig, pos: Position): HandPage =
+    clickUnplayedBoard(board)
 
   def clickPlayedBoard( board: Int )(implicit patienceConfig: PatienceConfig, pos: Position) = eventually {
     click on id(s"""Board_B${board}""")

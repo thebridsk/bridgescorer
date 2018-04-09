@@ -61,6 +61,15 @@ import com.example.backend.BridgeServiceFileStoreConverters
 import com.example.backend.MatchDuplicateCacheStoreSupport
 import com.example.test.util.ParallelUtils.CodeBlock
 import com.example.pages.PageBrowser
+import com.example.pages.bridge.HomePage
+import com.example.pages.duplicate.ListDuplicatePage
+import com.example.pages.duplicate.ScoreboardPage
+import com.example.pages.duplicate.PageWithBoardButtons
+import com.example.pages.duplicate.TablePage.EnterOrSelectNames
+import com.example.pages.duplicate.TablePage
+import com.example.pages.duplicate.TableEnterOrSelectNamesPage
+import com.example.data.DuplicateHandV2
+import com.example.pages.duplicate.BoardPage
 
 /**
  * Test playing duplicate matches.  The duplicates matches to play are in the testdata directory.
@@ -296,9 +305,7 @@ class DuplicateTestFromTestDirectory extends FlatSpec with DuplicateUtils with M
         logFuture { val x = sessionComplete.sessionStart(getPropOrEnv("SessionComplete")).setQuadrant(2) }::
         logFuture {
           import sessionDirector._
-          go to (TestServer.getAppPage)
-          eventually{ pageTitle mustBe "The Bridge Score Keeper" }
-          val x = eventually{ find( id("Duplicate") ).text mustBe "Duplicate List" }
+          val hp = HomePage.goto.validate
         }::
         restSession.map { ts => logFuture { val x = ts.sessionStart(envSessionTable).setQuadrant(4) } }.toList : _*
       )
@@ -306,32 +313,32 @@ class DuplicateTestFromTestDirectory extends FlatSpec with DuplicateUtils with M
 
     def gotoSummaryPage() = {
       import sessionDirector._
-      click on id("Duplicate")
-      eventually {
-        val b = find( id("DuplicateCreate") )
-        b.text mustBe "New"
-        b mustBe 'Enabled
-      }
-      currentUrl mustBe TestServer.getAppPageUrl("duplicate")
+
+      val hp = HomePage.current
+
+      val sum = hp.clickListDuplicateButton.validate
+
+      val dc = hp.getButton("DuplicateCreate",Some("New")) mustBe 'Enabled
     }
 
     def newDuplicate() = {
       import sessionDirector._
-      tcpSleep(2)
-      click on id("DuplicateCreate")
+
+      val ldp = ListDuplicatePage.current
+
+      val newd = ldp.clickNewDuplicateButton.validate
 
       val boardset = template.boardset
       val movement = template.movement
 
-      tcpSleep(2)
-      eventually {
-        val b = find( id(s"New_${movement}_${boardset}"))
-        b mustBe 'Enabled
-        currentUrl mustBe TestServer.getAppPageUrl("duplicate/#new")
-        b.click
-      }
+      newd.getNewButton(boardset, movement) mustBe 'Enabled
 
-      dupid = Some(eventuallySome{ checkForDuplicate() })
+      tcpSleep(2)
+
+      val dup = newd.click(boardset, movement).validate
+
+      dupid = dup.dupid
+
       assert( dupid.isDefined && dupid.get.length()>0)
 
     }
@@ -339,28 +346,11 @@ class DuplicateTestFromTestDirectory extends FlatSpec with DuplicateUtils with M
     def gotoDirectorsPage() = {
       import sessionDirector._
 
-      val buttonIds = ("Table_1", "Table 1") ::
-                       ("Table_2", "Table 2") ::
-                       ("Director", "Director's Scoreboard") ::
-                       ("AllGames", "Summary") ::
-                       ("AllBoards", "All Boards") ::
-                       (for (i <- 1 to 18) yield {
-                         ("Board_B"+i, i.toString() )
-                       }).toList
+      val sbp = ScoreboardPage.current
 
-      val buttons = eventually {
-        buttonIds.map { arg =>
-          val (bid,text) = arg
-          val e = find( id(bid) )
-          e.text mustBe text
-          (bid, e)
-        }.toMap
-      }
-      eventually { buttons( "Director" ) mustBe 'Enabled }
-      buttons.get("Director") match {
-        case Some(e) => click on e
-        case None => fail("Did not find 'Director' button")
-      }
+      sbp.validate( (1 to 18).toList )
+
+      val dsbp = sbp.clickDirectorButton
 
     }
 
@@ -370,21 +360,15 @@ class DuplicateTestFromTestDirectory extends FlatSpec with DuplicateUtils with M
         logFuture {
           import sessionComplete._
           assert( dupid.isDefined && dupid.get.length()>0)
-          go to (TestServer.getAppPageUrl("duplicate/"+dupid.get))
-          eventually {
-            checkUrl(TestServer.getAppPageUrl("duplicate/"+dupid.get))
-            find( id("Table_1")).text mustBe "Table 1"
-          }
+          ScoreboardPage.goto(dupid.get).validate.checkTableButton("1")
         } ::
         sessionTables.map { st => {
           logFuture {
             import st._
             assert( dupid.isDefined && dupid.get.length()>0)
-            go to (TestServer.getAppPageUrl("duplicate/"+dupid.get))
-            eventually {
-              checkUrl(TestServer.getAppPageUrl("duplicate/"+dupid.get))
-              click on id("Table_"+st.number)
-            }
+            val sbp = ScoreboardPage.goto(dupid.get).validate
+            sbp.checkTableButton(st.number)
+            sbp.clickTableButton(number.toInt).validate
           }
         } }.toList : _*
       )
@@ -396,9 +380,19 @@ class DuplicateTestFromTestDirectory extends FlatSpec with DuplicateUtils with M
     }
 
     /**
-     * Assumes on a by Table page with a Board_n buttons for the round being played.
+     * @param id the board id, starts with "Board_B"
      */
-    def doPlayHand( sessionTable: TableSession, hand: DuplicateHand ): Unit = try {
+    def boardIdToNumber( id: String ) = {
+      if (id.startsWith("B")) {
+        id.drop(1).toInt
+      }
+      else 0
+    }
+
+    /**
+     * Assumes on a by Scoreboard or BoardPage page with a Board_n buttons for the round being played.
+     */
+    def doPlayHand( sessionTable: TableSession, hand: DuplicateHand, page: PageWithBoardButtons ) = try {
       import sessionTable._
       val boardButton = "Board_"+hand.board
       val (north,south,east,west) = getPlayers(hand)
@@ -406,20 +400,27 @@ class DuplicateTestFromTestDirectory extends FlatSpec with DuplicateUtils with M
       hand.hand match {
         case Some(h) =>
           val bh = BridgeHand(h)
-          val play = PlayedHand( bh.contractTricks,
-                                 bh.contractSuit,
-                                 bh.contractDoubled,
-                                 bh.declarer,
-                                 bh.madeOrDown,
-                                 bh.tricks )
           val bid = boardIdToNumber(hand.board)
           val board = boardSet.get.boards.find( b => b.id == bid).get
           val nsvul = board.nsVul
           val ewvul = board.ewVul
           val nsteam = Id.teamIdToTeamNumber(hand.nsTeam)
           val ewteam = Id.teamIdToTeamNumber(hand.ewTeam)
-          playHand(boardButton, north, south, east, west, nsteam, ewteam, nsvul,ewvul, play, boardSet.get)
+
+          val hp = page.clickBoardButton(board.id)
+
+          val r = hp.onlyEnterHand( bh.contractTricks,
+                                    bh.contractSuit,
+                                    bh.contractDoubled,
+                                    bh.declarer,
+                                    bh.madeOrDown,
+                                    bh.tricks,
+                                    false
+                                  )
+
+          r
         case None =>
+          page
       }
 
     } catch {
@@ -435,6 +436,9 @@ class DuplicateTestFromTestDirectory extends FlatSpec with DuplicateUtils with M
       import sessionTable._
 
       PageBrowser.withClueAndScreenShot(screenshotDir, s"Round${round}Table${sessionTable.table}", s"Round ${round} Table ${sessionTable.table}") {
+
+        val tp = TablePage.current(EnterOrSelectNames)
+
         templateScore.tables.get(sessionTable.table) match {
           case Some(rounds) =>
             rounds.find { r => r.round == round } match {
@@ -445,18 +449,21 @@ class DuplicateTestFromTestDirectory extends FlatSpec with DuplicateUtils with M
                                        case None =>
                                          fail("Did not find all hands for table "+sessionTable.table+" round "+round)
                                      }}
-                InputStyleHelper.hitInputStyleButton( "Yellow" )
-                hitRound(round)
+                tp.setInputStyle("Yellow")
+                val eos = tp.clickRound(round).asInstanceOf[TableEnterOrSelectNamesPage]
+
                 val (north,south,east,west) = getPlayers(hands.head)
                 var scorekeeper = firstScorekeeper
                 (1 to (sessionTable.number.toInt+round)).foreach { i => scorekeeper = scorekeeper.nextDealer }
-                playEnterNames(north, south, east, west, scorekeeper)
-                for (hand <- hands) {
-                  tcpSleep(5)
-                  doPlayHand(sessionTable,hand)
+                val page: PageWithBoardButtons = eos.playEnterNames(north, south, east, west, scorekeeper).asInstanceOf[ScoreboardPage]
+
+                def folder(pg: PageWithBoardButtons,hand: DuplicateHandV2): PageWithBoardButtons = {
+                  val np = doPlayHand(sessionTable,hand,pg)
+                  np
                 }
-                click on id("Game")
-                click on id("Table")
+
+                val bp = hands.foldLeft(page)(folder).asInstanceOf[BoardPage]
+                bp.clickTableButton(table.toInt).validate
               case None =>
                 fail("Did not find round "+round+" for table "+sessionTable.table)
             }

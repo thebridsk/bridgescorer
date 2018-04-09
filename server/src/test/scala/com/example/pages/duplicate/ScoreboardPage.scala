@@ -179,7 +179,7 @@ class ScoreboardPage(
                     )( implicit
                         val webDriver: WebDriver,
                         pageCreated: SourcePosition
-                    ) extends Page[ScoreboardPage] with Popup[ScoreboardPage] {
+                    ) extends Page[ScoreboardPage] with Popup[ScoreboardPage] with PageWithBoardButtons {
 
   private def validateInternal(implicit patienceConfig: PatienceConfig, pos: Position) = logMethod(s"${pos.line} ${getClass.getSimpleName}.validate") { eventually {
     val (did,viewFromUrl) = findDuplicateId
@@ -262,6 +262,20 @@ class ScoreboardPage(
         new TablePage( dupid.get, table.toString(), EnterNames )
     }
   }
+
+  def checkTableButton( table: String )(implicit pos: Position) = {
+    view match {
+      case DirectorViewType =>
+        fail("Must be in Completed view to hit table button")
+      case CompletedViewType =>
+        getButton(s"Table_${table}", Some(s"Table ${table}") ) mustBe 'Enabled
+      case TableViewType(tid,rid) =>
+        getButton("Table", Some(s"Table ${table}")) mustBe 'Enabled
+    }
+  }
+
+  def clickBoardButton( board: Int )(implicit patienceConfig: PatienceConfig, pos: Position): HandPage =
+    clickBoardToHand(board)
 
   def clickBoardToHand( board: Int )(implicit pos: Position) = {
     clickButton(s"Board_B${board}")
