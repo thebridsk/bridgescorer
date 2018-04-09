@@ -468,7 +468,7 @@ abstract class BaseHandPage( implicit webDriver: WebDriver, pageCreated: SourceP
                      patienceConfig: PatienceConfig,
                      pos: Position
                   ) = {
-    val e = find(xpath(s"""//span[@id = '${loc.name}']/span[lower-case(text())='vul']"""))
+    val e = find(xpath(s"""//span[@id = '${loc.name}']/span[translate(text(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz')]"""))
     e
   }
 
