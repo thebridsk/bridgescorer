@@ -15,15 +15,15 @@ import org.scalatest.concurrent.Eventually.PatienceConfig
 import com.example.data.BoardSet
 import com.example.data.Id
 import org.openqa.selenium.Keys
-import com.example.pages.Combobox
-import com.example.pages.TextField
-import com.example.pages.Element
+import com.example.test.pages.Combobox
+import com.example.test.pages.TextField
+import com.example.test.pages.Element
 
 trait DuplicateUtils {
   import org.scalatest.MustMatchers._
   import com.example.test.util.EventuallyUtils._
   import com.example.test.util.ParallelUtils._
-  import com.example.pages.PageBrowser._
+  import com.example.test.pages.PageBrowser._
 
   import scala.language.postfixOps
 

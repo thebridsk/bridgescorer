@@ -25,6 +25,7 @@ import com.example.data.util.Strings
 import com.example.pages.duplicate.DuplicateRouter.BaseBoardView
 import com.example.react.AppButton
 import com.example.react.Utils._
+import com.example.routes.BridgeRouter
 
 /**
  * Shows the board results
@@ -40,9 +41,9 @@ import com.example.react.Utils._
 object ViewBoard {
   import ViewBoardInternal._
 
-  case class Props( routerCtl: RouterCtl[DuplicatePage], page: BaseBoardView, score: MatchDuplicateScore, board: Id.DuplicateBoard, useIMPs: Boolean = false )
+  case class Props( routerCtl: BridgeRouter[DuplicatePage], page: BaseBoardView, score: MatchDuplicateScore, board: Id.DuplicateBoard, useIMPs: Boolean = false )
 
-  def apply( routerCtl: RouterCtl[DuplicatePage], page: BaseBoardView, score: MatchDuplicateScore, board: Id.DuplicateBoard, useIMPs: Boolean = true ) = component(Props(routerCtl, page, score, board, useIMPs))
+  def apply( routerCtl: BridgeRouter[DuplicatePage], page: BaseBoardView, score: MatchDuplicateScore, board: Id.DuplicateBoard, useIMPs: Boolean = true ) = component(Props(routerCtl, page, score, board, useIMPs))
 
 }
 

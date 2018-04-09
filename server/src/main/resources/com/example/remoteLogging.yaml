@@ -67,6 +67,14 @@ configs:
       appenders:
         - "console=ALL"
         - "server=ALL,bridge"
+    nocomm:
+      loggers:
+        - "[root]=OFF"
+        - "bridge=ALL"
+        - "comm=OFF"
+      appenders:
+        - "console=ALL"
+        - "server=ALL,bridge"
     all:
       loggers:
         - "[root]=ALL"

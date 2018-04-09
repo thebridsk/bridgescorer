@@ -53,23 +53,23 @@ import com.example.test.TestStartLogging
 import com.example.data.MatchPlayerPosition
 import org.scalatest.exceptions.TestFailedException
 import com.example.source.SourcePosition
-import com.example.pages.GenericPage
-import com.example.pages.Element
+import com.example.test.pages.GenericPage
+import com.example.test.pages.Element
 import com.example.test.util.MonitorTCP
 import com.example.test.util.HttpUtils.ResponseFromHttp
 import com.example.backend.BridgeServiceFileStoreConverters
 import com.example.backend.MatchDuplicateCacheStoreSupport
-import com.example.pages.bridge.HomePage
-import com.example.pages.duplicate.ListDuplicatePage
-import com.example.pages.duplicate.ScoreboardPage
-import com.example.pages.duplicate.TablePage
-import com.example.pages.duplicate.TablePage.EnterOrSelectNames
-import com.example.pages.duplicate.TableEnterOrSelectNamesPage
-import com.example.pages.duplicate.BoardPage
-import com.example.pages.Page
+import com.example.test.pages.bridge.HomePage
+import com.example.test.pages.duplicate.ListDuplicatePage
+import com.example.test.pages.duplicate.ScoreboardPage
+import com.example.test.pages.duplicate.TablePage
+import com.example.test.pages.duplicate.TablePage.EnterOrSelectNames
+import com.example.test.pages.duplicate.TableEnterOrSelectNamesPage
+import com.example.test.pages.duplicate.BoardPage
+import com.example.test.pages.Page
 import com.example.data.DuplicateHandV2
-import com.example.pages.duplicate.PageWithBoardButtons
-import com.example.pages.duplicate.PageWithBoardButtons
+import com.example.test.pages.duplicate.PageWithBoardButtons
+import com.example.test.pages.duplicate.PageWithBoardButtons
 
 /**
  * Test playing duplicate matches.  The duplicates matches to play are in the testdata directory.
@@ -77,7 +77,7 @@ import com.example.pages.duplicate.PageWithBoardButtons
  */
 class DuplicateTestFromTestDirectory2 extends FlatSpec with MustMatchers with BeforeAndAfterAll with EventuallyUtils {
   import Eventually.{ patienceConfig => _, _ }
-  import com.example.pages.PageBrowser._
+  import com.example.test.pages.PageBrowser._
   import ParallelUtils._
 
   val testlog = Logger[DuplicateTestFromTestDirectory]

@@ -10,14 +10,14 @@ import org.scalatest.time.Span
 import java.util.concurrent.TimeUnit
 import com.example.test.util.MonitorTCP
 import com.example.test.util.NoResultYet
-import com.example.pages.chicago.EnterNamesPage
+import com.example.test.pages.chicago.EnterNamesPage
 import com.example.data.bridge._
-import com.example.pages.chicago.HandPage
+import com.example.test.pages.chicago.HandPage
 import org.scalactic.source.Position
 import com.example.test.TestStartLogging
 import com.example.data.MatchChicago
 import com.example.test.util.HttpUtils
-import com.example.pages.chicago.SummaryPage
+import com.example.test.pages.chicago.SummaryPage
 import org.scalatest.CancelAfterFailure
 
 object ChicagoTestPages {
@@ -34,7 +34,7 @@ object ChicagoTestPages {
 }
 
 class ChicagoTestPages extends FlatSpec with MustMatchers with BeforeAndAfterAll with CancelAfterFailure {
-  import com.example.pages.PageBrowser._
+  import com.example.test.pages.PageBrowser._
   import com.example.test.util.EventuallyUtils._
   import Eventually.{ patienceConfig => _, _ }
   import ChicagoTestPages._

@@ -24,6 +24,7 @@ import com.example.pages.duplicate.DuplicateRouter.BaseBoardViewWithPerspective
 import com.example.pages.duplicate.DuplicateRouter.TableBoardView
 import com.example.react.AppButton
 import com.example.pages.BaseStyles
+import com.example.routes.BridgeRouter
 
 /**
  * Shows the team x board table and has a totals column that shows the number of points the team has.
@@ -41,9 +42,9 @@ import com.example.pages.BaseStyles
 object PageBoard {
   import PageBoardInternal._
 
-  case class Props( routerCtl: RouterCtl[DuplicatePage], page: BaseBoardViewWithPerspective )
+  case class Props( routerCtl: BridgeRouter[DuplicatePage], page: BaseBoardViewWithPerspective )
 
-  def apply( routerCtl: RouterCtl[DuplicatePage], page: BaseBoardViewWithPerspective ) = {
+  def apply( routerCtl: BridgeRouter[DuplicatePage], page: BaseBoardViewWithPerspective ) = {
     logger.info(s"PageBoard with page = ${page}")
     component(Props(routerCtl,page))
   }
@@ -94,7 +95,7 @@ object PageBoardInternal {
     def nextIMPs = scope.modState { s => s.nextIMPs }
 
     def render( props: Props, state: State ) = {
-      logger.info("Rendering board "+props.page)
+      logger.info(s"Rendering board ${props.page} routectl=${props.routerCtl.getClass.getName}")
       val perspective = props.page.getPerspective()
       val tableperspective = perspective match {
         case tp: PerspectiveTable => Some(tp)
@@ -250,6 +251,7 @@ object PageBoardInternal {
                           val (id,props,bs) = args
                           val me = props.page.boardid
                           val clickToBoard = props.page.toScoreboardView().toBoardView(id)
+                          logger.fine(s"Target for setOnClick is ${clickToBoard}")
                           <.td(
                             AppButton( "Board_"+id, "Board "+Id.boardIdToBoardNumber(id),
                                        BaseStyles.highlight(

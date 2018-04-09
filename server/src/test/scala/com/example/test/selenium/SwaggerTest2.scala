@@ -39,16 +39,16 @@ import java.net.HttpURLConnection
 import com.example.test.TestStartLogging
 import com.example.data.BoardSet
 import akka.http.scaladsl.coding.GzipDecompressor
-import com.example.pages.Element
+import com.example.test.pages.Element
 import com.example.test.util.MonitorTCP
 import com.example.test.util.ParallelUtils
-import com.example.pages.PageBrowser
+import com.example.test.pages.PageBrowser
 
 /**
  * @author werewolf
  */
 class SwaggerTest2 extends FlatSpec with MustMatchers with BeforeAndAfterAll {
-  import com.example.pages.PageBrowser._
+  import com.example.test.pages.PageBrowser._
   import ParallelUtils._
 
   val logger = Logger[SwaggerTest]

@@ -26,14 +26,14 @@ import com.example.test.TestStartLogging
 import com.example.source.SourcePosition
 import com.example.backend.BridgeServiceFileStoreConverters
 import com.example.backend.MatchRubberCacheStoreSupport
-import com.example.pages.Page
-import com.example.pages.PageBrowser
+import com.example.test.pages.Page
+import com.example.test.pages.PageBrowser
 
 /**
  * @author werewolf
  */
 class RubberTest extends FlatSpec with MustMatchers with BeforeAndAfterAll with EventuallyUtils with SeleniumUtils {
-  import com.example.pages.PageBrowser._
+  import com.example.test.pages.PageBrowser._
   import Eventually.{ patienceConfig => _, _ }
 
   import scala.language.postfixOps

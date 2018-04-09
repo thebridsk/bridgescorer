@@ -74,7 +74,7 @@ object PageDuplicateHandInternal {
             case Some(board) =>
               board.getHand(props.page.handid) match {
                 case Some(hand) =>
-                  logger.fine("PageDuplicate.Backend.render: Showing "+hand)
+                  logger.fine("PageDuplicateHand.State.create: "+hand)
                   val (res, newhand) = hand.hand match {
                     case Some(h) => (h,false)
                     case None => (Hand.create(hand.id,
@@ -106,6 +106,7 @@ object PageDuplicateHandInternal {
    */
   class Backend(scope: BackendScope[Props, State]) {
     def render( props: Props, state: State ) = {
+      logger.fine(s"""PageDuplicateHand.render( ${props.page} )""")
       <.div(
         state.errormsg match {
           case Some(msg) => <.p(msg)

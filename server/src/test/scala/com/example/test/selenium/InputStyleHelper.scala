@@ -15,14 +15,14 @@ import utils.logging.Logger
 import java.util.logging.Level
 import com.example.test.util.NoResultYet
 import com.example.test.util.MonitorTCP
-import com.example.pages.Element
+import com.example.test.pages.Element
 import org.scalatest.time.Millis
 import org.scalatest.time.Span
 
 
 class InputStyleHelper extends MustMatchers {
     import InputStyleHelper._
-    import com.example.pages.PageBrowser._
+    import com.example.test.pages.PageBrowser._
     import com.example.test.util.EventuallyUtils._
 
   def getButton( id: String )(implicit webDriver: WebDriver, patienceConfig: PatienceConfig) = {

@@ -38,7 +38,7 @@ import org.openqa.selenium.support.events.EventFiringWebDriver
 import org.openqa.selenium.support.events.WebDriverEventListener
 import org.openqa.selenium.support.events.AbstractWebDriverEventListener
 import org.openqa.selenium.UnhandledAlertException
-import com.example.pages.PageBrowser
+import com.example.test.pages.PageBrowser
 
 class Session( name: String = "default" ) extends WebDriver {
   import Session._
@@ -512,7 +512,7 @@ class Session( name: String = "default" ) extends WebDriver {
   }
 
   def saveDom( tofile: String ): Unit = {
-    import com.example.pages.PageBrowser._
+    import com.example.test.pages.PageBrowser._
     try {
       scala.tools.nsc.io.File(tofile).writeAll( executeScript("return document.documentElement.outerHTML")(webDriver).toString() )
     } catch {
