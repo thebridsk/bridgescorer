@@ -305,6 +305,8 @@ object PageStatsInternal {
       val pieChartMaxSize = 100
       val pieChartMaxSizePlusPadding = 105
 
+      val tooltipPieChartSize = 150
+
       def calcSize(max: Int)( handsPlayed: Int ) = {
         (handsPlayed.toDouble/max*(pieChartMaxSize-5)).toInt + 5
       }
@@ -386,7 +388,7 @@ object PageStatsInternal {
             calcSize(maxHandsPlayedTotal)( sum.toInt ),
             cols:::(colorTypePassed::Nil),
             values:::(passedout.handsPlayed.toDouble::Nil)
-        ).toCellWithOneChartAndTitle(title, pieChartMaxSize, pieChartMaxSizePlusPadding ).
+        ).toCellWithOneChartAndTitle(title, tooltipPieChartSize, pieChartMaxSizePlusPadding ).
            withColSpan( colspan )
       }
 
@@ -431,7 +433,7 @@ object PageStatsInternal {
                       calcSizeCT(ps.handsPlayed ),
                       colorTypePassed::Nil,
                       ps.handsPlayed.toDouble::Nil
-                    ).toCellWithOneChartAndTitle(title, pieChartMaxSize, pieChartMaxSizePlusPadding).withColSpan(colspan)
+                    ).toCellWithOneChartAndTitle(title, tooltipPieChartSize, pieChartMaxSizePlusPadding).withColSpan(colspan)
                   } else {
                     val pre = s"${ps.player} in ${ct} as ${decl}"
                     val title = getTitle(pre, histogram, ps.handsPlayed, None, colorMap, madeColors.toList, downColors.toList, Color.Blue)
@@ -440,7 +442,7 @@ object PageStatsInternal {
                       if (ct == ContractTypeTotal) calcSizeTotal(ps.handsPlayed) else calcSizeCT(ps.handsPlayed),
                       cols,
                       vals
-                    ).toCellWithOneChartAndTitle(title, pieChartMaxSize, pieChartMaxSizePlusPadding ).
+                    ).toCellWithOneChartAndTitle(title, tooltipPieChartSize, pieChartMaxSizePlusPadding ).
                         withColSpan( colspan )
                   }
 
@@ -579,6 +581,8 @@ object PageStatsInternal {
       val pieChartMaxSize = 100
       val pieChartMaxSizePlusPadding = 105
 
+      val tooltipPieChartSize = 150
+
       def calcSize( handsPlayed: Int, max: Int ) = {
         (handsPlayed.toDouble/max*(pieChartMaxSize-5)).toInt + 5
       }
@@ -608,7 +612,7 @@ object PageStatsInternal {
           calcSize( sum.toInt, maxHandsPlayedTotal ),
           cols,
           values.map( i => i.toDouble )
-        ).toCellWithOneChartAndTitle(title, pieChartMaxSize, pieChartMaxSizePlusPadding ).withColSpan(2)
+        ).toCellWithOneChartAndTitle(title, tooltipPieChartSize, pieChartMaxSizePlusPadding ).withColSpan(2)
       }
 
       val first = byType( totalStats.take(totalStats.length-1))
@@ -627,7 +631,7 @@ object PageStatsInternal {
                 calcSize(ps.handsPlayed, maxHandsPlayed),
                 colorTypePassed::Nil,
                 ps.handsPlayed.toDouble::Nil
-              ).toCellWithOneChartAndTitle(title, pieChartMaxSize, pieChartMaxSizePlusPadding ).withColSpan(colspan)
+              ).toCellWithOneChartAndTitle(title, tooltipPieChartSize, pieChartMaxSizePlusPadding ).withColSpan(colspan)
             } else {
               val title = getTitle( ct.toString(), ps.histogram, ps.handsPlayed, Some(maxHandsPlayedTotal), colorMap, madeColors.toList, downColors.toList, Color.Blue )
 //              val pre = f"${ct} ${100.0*ps.handsPlayed/maxHandsPlayedTotal}%.2f%%"
@@ -663,7 +667,7 @@ object PageStatsInternal {
                 calcSize(ps.handsPlayed, if (ct==ContractTypeTotal) maxHandsPlayedTotal else maxHandsPlayed),
                 cols,
                 vals
-              ).toCellWithOneChartAndTitle(title, pieChartMaxSize, pieChartMaxSizePlusPadding ).withColSpan(colspan)
+              ).toCellWithOneChartAndTitle(title, tooltipPieChartSize, pieChartMaxSizePlusPadding ).withColSpan(colspan)
             }
 
           }
@@ -747,6 +751,8 @@ object PageStatsInternal {
       val pieChartMaxSize = 100
       val pieChartMaxSizePlusPadding = 105
 
+      val tooltipPieChartSize = 150
+
       def calcSize( handsPlayed: Int, max: Int ) = {
         (handsPlayed.toDouble/max*(pieChartMaxSize-5)).toInt + 5
       }
@@ -767,7 +773,7 @@ object PageStatsInternal {
           calcSize( sum.toInt, maxHandsPlayedTotal ),
           cols,
           values
-        ).toCellWithOneChartAndTitle(title, pieChartMaxSize, pieChartMaxSizePlusPadding )
+        ).toCellWithOneChartAndTitle(title, tooltipPieChartSize, pieChartMaxSizePlusPadding )
       }
 
       val first = byType( totalStats.take(totalStats.length-1))
@@ -785,7 +791,7 @@ object PageStatsInternal {
                 calcSize(s.handsPlayed, maxHandsPlayed),
                 colorTypePassed::Nil,
                 s.handsPlayed.toDouble::Nil
-              ).toCellWithOneChartAndTitle(title, pieChartMaxSize, pieChartMaxSizePlusPadding )
+              ).toCellWithOneChartAndTitle(title, tooltipPieChartSize, pieChartMaxSizePlusPadding )
             } else {
               val pre = f"${ct} ${100.0*s.handsPlayed/maxHandsPlayedTotal}%.2f%%"
               val (made,down,passed,smade,sdown) = s.histogram.foldLeft((0,0,0,"","")) { (ac,v) =>
@@ -820,7 +826,7 @@ object PageStatsInternal {
                 calcSize(s.handsPlayed, if (ct==ContractTypeTotal) maxHandsPlayedTotal else maxHandsPlayed),
                 cols,
                 vals
-              ).toCellWithOneChartAndTitle(title, pieChartMaxSize, pieChartMaxSizePlusPadding )
+              ).toCellWithOneChartAndTitle(title, tooltipPieChartSize, pieChartMaxSizePlusPadding )
             }
 
           }
@@ -893,6 +899,8 @@ object PageStatsInternal {
       val pieChartMaxSize = 100
       val pieChartMaxSizePlusPadding = 105
 
+      val tooltipPieChartSize = 150
+
       def calcSizeAll( handsPlayed: Int ) = {
         if (handsPlayed == 0) -5
         else (handsPlayed.toDouble/maxHandsPlayed*(pieChartMaxSize-5)).toInt + 5
@@ -928,7 +936,7 @@ object PageStatsInternal {
                 calcSize( pd.handsPlayed),
                 colorTypePassed::Nil,
                 1.0::Nil
-              ).toCellWithOneChartAndTitle(title, pieChartMaxSize, pieChartMaxSizePlusPadding )
+              ).toCellWithOneChartAndTitle(title, tooltipPieChartSize, pieChartMaxSizePlusPadding )
             }
             ( suit, List( dd, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell, emptyCell ) )
           } else {
@@ -957,7 +965,7 @@ object PageStatsInternal {
                     calcSize(s.handsPlayed),
                     cols,
                     vals
-                  ).toCellWithOneChartAndTitle(title, pieChartMaxSize, pieChartMaxSizePlusPadding )
+                  ).toCellWithOneChartAndTitle(title, tooltipPieChartSize, pieChartMaxSizePlusPadding )
                 } else {
                   val celllist =
                     List( "", "*", "**" ).map { doubled =>
@@ -970,7 +978,7 @@ object PageStatsInternal {
                             calcSize(s.handsPlayed),
                             cols,
                             vals
-                        ).chartWithTitle(title, pieChartMaxSize, pieChartMaxSizePlusPadding )
+                        ).chartWithTitle(title, tooltipPieChartSize, pieChartMaxSizePlusPadding )
                       }.getOrElse( zeroData )
                     }
                   Cell( celllist )

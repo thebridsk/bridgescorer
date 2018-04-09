@@ -95,6 +95,7 @@ object ViewPairsDetailsGridInternal {
    *
    */
   case class State( displayType: DisplayType = DisplayDecDef,
+                    tooltipChartSize: Int = 150,
                     maxSize: Int = 100,
                     minSize: Int = 5
                   )
@@ -185,7 +186,7 @@ object ViewPairsDetailsGridInternal {
                   size = size(det.total, vmin, vmax, state.minSize, state.maxSize),
                   color = Color.Green::Color.Red::Color.Blue::Nil,
                   value = det.declarer.toDouble::det.defended.toDouble::det.passed.toDouble::Nil,
-                ).toCellWithOneChartAndTitle(title, state.maxSize, state.maxSize)
+                ).toCellWithOneChartAndTitle(title, state.tooltipChartSize, state.maxSize)
               case None =>
                 cellEmpty
             }
@@ -246,7 +247,7 @@ object ViewPairsDetailsGridInternal {
                   size = if (det.total == 0) -sizeAll else sizeAll,
                   color = Color.Green::Color.Red::DarkRed::DarkGreen::Color.Blue::Nil,
                   value = det.made.toDouble::det.down.toDouble::det.allowedMade.toDouble::det.tookDown.toDouble::det.passed.toDouble::Nil,
-                ).toCellWithOneChartAndTitle(titleDec+"\n"+titleDef+"\n"+titlePas, state.maxSize, state.maxSize)
+                ).toCellWithOneChartAndTitle(titleDec+"\n"+titleDef+"\n"+titlePas, state.tooltipChartSize, state.maxSize)
               case None =>
                 cellEmpty
             }
