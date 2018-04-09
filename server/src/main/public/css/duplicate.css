@@ -13,7 +13,13 @@
   font-size: x-large;
   white-space: nowrap;
   border: 1px solid black;
-  border-collapse: collapse;
+}
+
+.dupDivSummary > table > caption {
+  font-size: x-large;
+  white-space: nowrap;
+  border: 2px solid black;
+  border-bottom: 0px solid black;
 }
 .dupDivSummary > table tbody tr:nth-child(2n+1) {
   background-color: #f2f2f2;
@@ -30,11 +36,43 @@
 .dupDivSummary > table th {
   border: 1px solid black;
   text-align: center;
+  padding: 0px 3px;
 }
 
 .dupDivPeopleSummary {
     
 }
+
+.dupDivPeopleSummary table.tableStats > tbody > tr > td:first-child {
+  font-weight: bold;
+  position: sticky;
+  left: 0;
+  z-index: 10;
+  background-color: rgb(250,250,250);
+}
+.dupDivPeopleSummary table.tableStats > tfoot > tr:nth-child(1) > td:first-child {
+  font-weight: bold;
+  position: sticky;
+  left: 0;
+  z-index: 10;
+  background-color: rgb(250,250,250);
+}
+.dupDivPeopleSummary table.tableStats > thead > tr > th {
+  position: sticky;
+  top: 0;
+  z-index: 11;
+  background-color: rgb(250,250,250);
+}
+.dupDivPeopleSummary table.tableStats > thead > tr > th:first-child {
+  position: sticky;
+  top: 0;
+  left: 0;
+  z-index: 12;
+  background-color: rgb(250,250,250);
+}
+
+
+
 
 .dupDivPlayerFilter {
   font-size: x-large;
@@ -78,6 +116,23 @@
 }
 .dupDivPairsGrid > table > tbody > tr > td:first-child {
   font-weight: bold;
+  position: sticky;
+  left: 0;
+  z-index: 10;
+  background-color: rgb(250,250,250);
+}
+.dupDivPairsGrid > table > thead > tr > th {
+  position: sticky;
+  top: 0;
+  z-index: 11;
+  background-color: rgb(250,250,250);
+}
+.dupDivPairsGrid > table > thead > tr > th:first-child {
+  position: sticky;
+  top: 0;
+  left: 0;
+  z-index: 12;
+  background-color: rgb(250,250,250);
 }
 .dupDivPairsGrid > table > tbody > tr > td:last-child {
   border-left: 3px solid black
@@ -95,6 +150,23 @@
 }
 .dupDivPairsDetailsGrid > table > tbody > tr > td:first-child {
   font-weight: bold;
+  position: sticky;
+  left: 0;
+  z-index: 10;
+  background-color: rgb(250,250,250);
+}
+.dupDivPairsDetailsGrid > table > thead > tr > th {
+  position: sticky;
+  top: 0;
+  z-index: 11;
+  background-color: rgb(250,250,250);
+}
+.dupDivPairsDetailsGrid > table > thead > tr > th:first-child {
+  position: sticky;
+  top: 0;
+  left: 0;
+  z-index: 12;
+  background-color: rgb(250,250,250);
 }
 .dupDivPairsDetailsGrid > table > tbody > tr > td:last-child {
   border-left: 3px solid black
@@ -128,7 +200,6 @@
   font-size: x-large;
   white-space: nowrap;
   border: 1px solid black;
-  border-collapse: collapse;
 }
 .dupTableNewDuplicate td:first-child {
   border: 1px solid black;
@@ -175,7 +246,13 @@
   font-size: x-large;
   white-space: nowrap;
   border: 1px solid black;
-  border-collapse: collapse;
+}
+.dupTableViewScoreboard > caption {
+  font-size: x-large;
+  white-space: nowrap;
+  border: 2px solid black;
+  border-bottom: 0px solid black;
+  padding: 0px 3px;
 }
 .dupTableViewScoreboard tbody tr:nth-child(2n+1) {
   background-color: #f2f2f2;
@@ -207,7 +284,6 @@
 .dupDivScoreboardDetails table {
   border: 1px solid black;
   border-spacing: 0px;
-  border-collapse: collapse;
 }
 .dupDivScoreboardDetails td {
   border: 1px solid black;
@@ -216,6 +292,7 @@
 .dupDivScoreboardDetails th {
   border: 1px solid black;
   text-align: center;
+  padding: 0px 3px;
 }
 
 .dupDivPlayerPosition {
@@ -229,7 +306,6 @@
   font-size: x-large;
   white-space: nowrap;
   border: 1px solid black;
-  border-collapse: collapse;
 }
 .dupTablePlayerPosition tbody tr:nth-child(2n+1) {
   background-color: #f2f2f2;
@@ -241,10 +317,12 @@
 .dupTablePlayerPosition td {
   border: 1px solid black;
   text-align: center;
+  padding: 0px 3px;
 }
 .dupTablePlayerPosition th {
   border: 1px solid black;
   text-align: center;
+  padding: 0px 3px;
 }
 
 .dupDivAllTablesPage {
@@ -272,7 +350,12 @@
   font-size: x-large;
   white-space: nowrap;
   border: 1px solid black;
-  border-collapse: collapse;
+}
+.dupDivTableView > table > caption {
+  font-size: x-large;
+  white-space: nowrap;
+  border: 2px solid black;
+  border-bottom: 0px solid black;
 }
 .dupDivTableView > table > tbody > tr:nth-child(2n+1) {
   background-color: #f2f2f2;
@@ -328,7 +411,11 @@
 .dupDivBoardView table {
   border-spacing: 0px;
   border: 1px solid black;
-  border-collapse: collapse;
+}
+.dupDivBoardView table > caption {
+  border: 2px solid black;
+  border-bottom: 0px solid black;
+  padding: 0px 3px;
 }
 .dupDivBoardView tr:first-child th:nth-child(1) {
   border-left: 1px solid black;
@@ -390,7 +477,6 @@
   font-size: x-large;
   white-space: nowrap;
   border: 1px solid black;
-  border-collapse: collapse;
 }
 .dupDivBoardSetsPage > div:first-child tbody tr:nth-child(2n+1) {
   background-color: #f2f2f2;
@@ -421,7 +507,6 @@
   font-size: x-large;
   white-space: nowrap;
   border: 1px solid black;
-  border-collapse: collapse;
 }
 .dupDivBoardSetView tbody tr:nth-child(2n+1) {
   background-color: #f2f2f2;
@@ -465,7 +550,6 @@
   font-size: x-large;
   white-space: nowrap;
   border: 1px solid black;
-  border-collapse: collapse;
 }
 .dupDivMovementsPage tbody tr:nth-child(2n+1) {
   background-color: #f2f2f2;
@@ -563,7 +647,6 @@
 .dupDivSuggestionPage table {
   border-spacing: 0px;
   border: 1px solid black;
-  border-collapse: collapse;
 }
 .dupDivSuggestionPage {
   font-size: x-large;
@@ -588,6 +671,55 @@
 .dupDivPageStats table .tooltipContent ul {
   list-style-type: none
 }
+
+.dupDivPageStats > div:nth-child(2) table > tbody > tr > td:first-child {
+  font-weight: bold;
+  position: sticky;
+  left: 0;
+  z-index: 10;
+  background-color: rgb(250,250,250);
+}
+.dupDivPageStats > div:nth-child(2) table > tfoot > tr:nth-child(1) > td:first-child {
+  font-weight: bold;
+  position: sticky;
+  left: 0;
+  z-index: 10;
+  background-color: rgb(250,250,250);
+}
+.dupDivPageStats > div:nth-child(2) table > thead > tr > th {
+  position: sticky;
+  top: 0;
+  z-index: 11;
+  background-color: rgb(250,250,250);
+}
+.dupDivPageStats > div:nth-child(2) table > thead > tr > th:first-child {
+  position: sticky;
+  top: 0;
+  left: 0;
+  z-index: 12;
+  background-color: rgb(250,250,250);
+}
+
+.dupDivPageStats > div:nth-child(3) table > tbody > tr > td:first-child {
+  font-weight: bold;
+  position: sticky;
+  left: 0;
+  z-index: 10;
+  background-color: rgb(250,250,250);
+}
+.dupDivPageStats > div:nth-child(3) table > thead > tr:nth-child(1) > th {
+  position: sticky;
+  top: 0;
+  z-index: 11;
+  background-color: rgb(250,250,250);
+}
+.dupDivPageStats > div:nth-child(3) table > thead > tr:nth-child(2) > th {
+  position: sticky;
+  top: 25px;
+  z-index: 11;
+  background-color: rgb(250,250,250);
+}
+
 .dupDivPageStats > div:nth-child(3) .tablePieChart td > div {
   display: flex;
   flex-flow: row nowrap;

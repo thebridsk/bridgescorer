@@ -569,8 +569,14 @@ abstract class Page[ +T <: Page[T] ]()( implicit webDriver: WebDriver, pageCreat
       fun
     } catch {
       case x: Throwable =>
-        PageBrowser.takeScreenshot(directory, filename)
-        throw x
+        try {
+          PageBrowser.takeScreenshot(directory, filename)
+          throw x
+        } catch {
+          case x2: Exception =>
+            x.addSuppressed(x2)
+            throw x
+        }
     }
   }
 

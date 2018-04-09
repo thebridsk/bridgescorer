@@ -8,7 +8,6 @@
   font-size: x-large;
   white-space: nowrap;
   border: 1px solid black;
-  border-collapse: collapse;
 }
 .chiChicagoListPage table tbody tr:nth-child(2n+1) {
   background-color: #f2f2f2;
@@ -43,7 +42,6 @@
   font-size: x-large;
   white-space: nowrap;
   border: 1px solid black;
-  border-collapse: collapse;
 }
 .chiChicagoSummaryPage table tbody tr:nth-child(2n+1) {
   background-color: #f2f2f2;

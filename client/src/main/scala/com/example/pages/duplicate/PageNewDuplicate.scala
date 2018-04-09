@@ -193,8 +193,9 @@ object PageNewDuplicateInternal {
           } else {
             movementNames.map { movname => {
               val movement = state.movements(movname)
+              val clickToMovement = MovementView(movname)
               AppButton( "ShowM_"+movname, movement.short,
-                         props.routerCtl.setOnClick( MovementView(movname) )
+                         props.routerCtl.setOnClick( clickToMovement )
               )
             }}.toTagMod
           }
@@ -206,8 +207,9 @@ object PageNewDuplicateInternal {
           } else {
             boardsetNames.map { bsname => {
               val boardset = state.boardsets(bsname)
+              val clickToBoardset = BoardSetView(bsname)
               AppButton( "ShowB_"+bsname, boardset.short,
-                         props.routerCtl.setOnClick( BoardSetView(bsname) )
+                         props.routerCtl.setOnClick( clickToBoardset )
               )
             }}.toTagMod
           }

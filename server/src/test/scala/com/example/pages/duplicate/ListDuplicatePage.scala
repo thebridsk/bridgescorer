@@ -207,7 +207,7 @@ class ListDuplicatePage( importId: Option[String] )( implicit val webDriver: Web
     // 3 = Id, Created, Finished
     // Note the scoring method header does not show up in this row.
     val dr = 3+importColumns+(if (forPrintActive) 1 else 0)
-    getElemsByXPath("""//div/table/thead/tr[3]/th""").drop(dr).map(e => e.text)
+    getElemsByXPath("""//div/table/thead/tr[2]/th""").drop(dr).map(e => e.text)
   }
 
   def getResults( id: String )(implicit patienceConfig: PatienceConfig, pos: Position) = {

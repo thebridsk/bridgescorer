@@ -108,6 +108,11 @@ object PageBoardInternal {
           !bbs.isEmpty ?= bbs.map { board =>
             val id = board.id
             val selected = id == props.page.boardid
+            val clickPage = if (played) {
+              props.page.toBoardView(id)
+            } else {
+              props.page.toBoardView(id).toHandView(ns)
+            }
             Seq[TagMod](
               <.span(" "),
               AppButton( "Board_"+board.id, "Board "+Id.boardIdToBoardNumber(id),
@@ -115,11 +120,7 @@ object PageBoardInternal {
                              selected=selected,
                              requiredNotNext = !played && !selected
                          ),
-                         if (played) {
-                           props.routerCtl.setOnClick(props.page.toBoardView(id))
-                         } else {
-                           props.routerCtl.setOnClick(props.page.toBoardView(id).toHandView(ns))
-                         }
+                         props.routerCtl.setOnClick(clickPage)
               )
             ).toTagMod
           }.toTagMod
@@ -191,6 +192,8 @@ object PageBoardInternal {
               case Some(r) => r.complete
               case _ => false
             }
+            val clickToScoreboard = props.page.toScoreboardView()
+            val clickToTableView = tableBoardView.map( tbv => tbv.toTableView() )
             <.div(
               dupStyles.divBoardPage,
               title(),
@@ -200,13 +203,13 @@ object PageBoardInternal {
                 baseStyles.fontTextNormal,
                 AppButton( "Game", "Scoreboard",
                            allplayedInRound ?= baseStyles.requiredNotNext,
-                           props.routerCtl.setOnClick(props.page.toScoreboardView()) ),
+                           props.routerCtl.setOnClick(clickToScoreboard) ),
                 " ",
                 PageScoreboardInternal.scoringMethodButton( state.useIMP, Some( score.isIMP), false, nextIMPs ),
                 " ",
-                tableBoardView.isDefined?= AppButton( "Table", "Table "+Id.tableIdToTableNumber(currentTable),
-                                                      allplayedInRound ?= baseStyles.requiredNotNext,
-                                                      props.routerCtl.setOnClick(tableBoardView.get.toTableView()) ),
+                clickToTableView.isDefined?= AppButton( "Table", "Table "+Id.tableIdToTableNumber(currentTable),
+                                                        allplayedInRound ?= baseStyles.requiredNotNext,
+                                                        props.routerCtl.setOnClick(clickToTableView.get) ),
                 if (tableperspective.isDefined) boardsFromTable(score)
                 else boards(score)
               )
@@ -246,6 +249,7 @@ object PageBoardInternal {
                         .render_P( args => {
                           val (id,props,bs) = args
                           val me = props.page.boardid
+                          val clickToBoard = props.page.toScoreboardView().toBoardView(id)
                           <.td(
                             AppButton( "Board_"+id, "Board "+Id.boardIdToBoardNumber(id),
                                        BaseStyles.highlight(
@@ -254,7 +258,7 @@ object PageBoardInternal {
                                            requiredNotNext = me != id && bs.anyplayed
                                        ),
                                        baseStyles.appButton100,
-                                       props.routerCtl.setOnClick(props.page.toScoreboardView().toBoardView(id))
+                                       props.routerCtl.setOnClick(clickToBoard)
                             )
                           )
                         }).build
