@@ -75,7 +75,7 @@ import com.example.pages.duplicate.BoardPage
  * Test playing duplicate matches.  The duplicates matches to play are in the testdata directory.
  * @author werewolf
  */
-class DuplicateTestFromTestDirectory extends FlatSpec with DuplicateUtils with MustMatchers with BeforeAndAfterAll with EventuallyUtils {
+class DuplicateTestFromTestDirectory extends FlatSpec with MustMatchers with BeforeAndAfterAll with EventuallyUtils {
   import Eventually.{ patienceConfig => _, _ }
   import com.example.pages.PageBrowser._
   import ParallelUtils._
