@@ -75,7 +75,7 @@ class TestFileStore extends AsyncFlatSpec with MustMatchers with BeforeAndAfterA
     FileIO.exists(path(team2.id)) mustBe false
     FileIO.exists(path(team2.id)+".new") mustBe true
 
-    teamStore = FileStore( tempDir)
+    teamStore = FileStore( "test", tempDir)
 
     teamStore.select(team.id).read() flatMap { fromStore =>
 
@@ -215,7 +215,7 @@ class TestFileStore extends AsyncFlatSpec with MustMatchers with BeforeAndAfterA
     FileIO.exists(pathMD(md.id)) mustBe true
     FileIO.exists(pathMD(md.id)+".new") mustBe false
 
-    duplicateStore = FileStore( tempDir )
+    duplicateStore = FileStore( "test", tempDir )
 
     duplicateStore.select(md.id).read().map { result =>
       result match {
@@ -245,7 +245,7 @@ class TestFileStore extends AsyncFlatSpec with MustMatchers with BeforeAndAfterA
     FileIO.exists(pathMD(md.id)) mustBe true
     FileIO.exists(pathMD(md.id)+".new") mustBe false
 
-    duplicateStore = FileStore(tempDir )
+    duplicateStore = FileStore("test", tempDir )
 
     duplicateStore.select(md.id).read().map { result =>
       result match {

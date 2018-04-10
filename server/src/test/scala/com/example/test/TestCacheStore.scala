@@ -55,25 +55,25 @@ object TestCacheStore {
   import bridgeResources._
 
   def getStore: Store[Id.MatchDuplicate,MatchDuplicate] =
-    InMemoryStore()
+    InMemoryStore("test")
 
   def getMatchDuplicateFileStore( dir: Directory ): Store[Id.MatchDuplicate,MatchDuplicate] =
-    FileStore(dir)
+    FileStore("test",dir)
 
   def getBoardSetStore: Store[String,BoardSet] = {
-    JavaResourceStore("/com/example/backend/", "Boardsets.txt", getClass.getClassLoader)
+    JavaResourceStore("test","/com/example/backend/", "Boardsets.txt", getClass.getClassLoader)
   }
 
   def getMovementStore: Store[String,Movement] = {
-    JavaResourceStore("/com/example/backend/", "Movements.txt", getClass.getClassLoader)
+    JavaResourceStore("test","/com/example/backend/", "Movements.txt", getClass.getClassLoader)
   }
 
   def getBoardSetFileStore( dir: Directory ): Store[String,BoardSet] = {
-    FileStore(dir)
+    FileStore("test",dir)
   }
 
   def getBoardSetMultiStore( dir: Directory ): Store[String,BoardSet] = {
-    MultiStore.createFileAndResource(dir, "/com/example/backend/", "Boardsets.txt", getClass.getClassLoader)
+    MultiStore.createFileAndResource("test",dir, "/com/example/backend/", "Boardsets.txt", getClass.getClassLoader)
   }
 
   import ExecutionContext.Implicits.global

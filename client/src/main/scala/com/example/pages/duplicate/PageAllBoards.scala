@@ -21,6 +21,7 @@ import com.example.data.bridge.PerspectiveTable
 import com.example.pages.duplicate.DuplicateRouter.BaseAllBoardsViewWithPerspective
 import com.example.pages.duplicate.DuplicateRouter.TableRoundAllBoardView
 import com.example.react.AppButton
+import com.example.routes.BridgeRouter
 
 /**
  * Shows the team x board table and has a totals column that shows the number of points the team has.
@@ -38,9 +39,9 @@ import com.example.react.AppButton
 object PageAllBoards {
   import PageAllBoardsInternal._
 
-  case class Props( routerCtl: RouterCtl[DuplicatePage], page: BaseAllBoardsViewWithPerspective )
+  case class Props( routerCtl: BridgeRouter[DuplicatePage], page: BaseAllBoardsViewWithPerspective )
 
-  def apply( routerCtl: RouterCtl[DuplicatePage], page: BaseAllBoardsViewWithPerspective ) = component(Props(routerCtl,page))
+  def apply( routerCtl: BridgeRouter[DuplicatePage], page: BaseAllBoardsViewWithPerspective ) = component(Props(routerCtl,page))
 
 }
 

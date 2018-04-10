@@ -42,6 +42,38 @@ class BridgeRouterBase[Page]( ctl: RouterCtl[Page] ) extends BridgeRouter[Page] 
   def home = ^.onClick-->CallbackTo {}
 }
 
+object BridgeRouterBaseWithLogging {
+  val logger = Logger("bridge.BridgeRouterBaseWithLogging")
+}
+
+class BridgeRouterBaseWithLogging[Page]( ctl: RouterCtl[Page] ) extends BridgeRouter[Page] {
+  import BridgeRouterBaseWithLogging._
+  def log( msg: =>String ) = Callback {
+    logger.fine(msg)
+  }
+  def baseUrl: BaseUrl = ctl.baseUrl
+  def refresh: Callback = ctl.refresh
+  def pathFor(target: Page): Path = ctl.pathFor(target)
+  def urlFor(page: Page): AbsUrl = ctl.urlFor(page)
+  def set( page: Page ): Callback = {
+    logger.fine(s"""Setting up callback BridgeRouter.set(${page})""")
+    log(s"""Callback BridgeRouter.set(${page})""") >> ctl.set(page)
+  }
+
+  final def setEH(target: Page): ReactEvent => Callback = {
+    logger.fine(s"""Setting up callback BridgeRouter.setEH(${target})""")
+    e => CallbackOption.asEventDefault(e, set(target))
+  }
+
+  final def setOnClick(target: Page): TagMod = {
+    logger.fine(s"""Setting up callback BridgeRouter.setOnClick(${target})""")
+    ^.onClick ==> setEH(target)
+  }
+
+  def setOnLinkClick( page: Page ): TagMod = ctl.setOnLinkClick(page)
+  def home = ^.onClick-->CallbackTo {}
+}
+
 /**
  * A BridgeRouter for testing
  * @param base the base url, example: http://localhost:8080/html/index-fastopt.html

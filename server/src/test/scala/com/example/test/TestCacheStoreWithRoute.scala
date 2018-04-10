@@ -81,11 +81,11 @@ object TestCacheStoreWithRoute {
   import bridgeResources._
 
   def getBoardSetStore: Store[String,BoardSet] = {
-    JavaResourceStore("/com/example/backend/", "Boardsets.txt", getClass.getClassLoader)
+    JavaResourceStore("test","/com/example/backend/", "Boardsets.txt", getClass.getClassLoader)
   }
 
   def getMovementStore: Store[String,Movement] = {
-    JavaResourceStore("/com/example/backend/", "Movements.txt", getClass.getClassLoader)
+    JavaResourceStore("test","/com/example/backend/", "Movements.txt", getClass.getClassLoader)
   }
 
   import ExecutionContext.Implicits.global
@@ -100,7 +100,7 @@ object TestCacheStoreWithRoute {
 
     val persistent = TestFailurePersistent[Id.MatchDuplicate,MatchDuplicate]()
     override
-    val duplicates = TestFailureStore(persistent)
+    val duplicates = TestFailureStore("test",persistent)
 
     val syncDuplicates = duplicates.syncStore
 

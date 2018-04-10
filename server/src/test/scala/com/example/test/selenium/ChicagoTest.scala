@@ -23,14 +23,14 @@ import com.example.data.MatchChicago
 import com.example.test.util.MonitorTCP
 import com.example.backend.BridgeServiceFileStoreConverters
 import com.example.backend.MatchChicagoCacheStoreSupport
-import com.example.pages.PageBrowser
+import com.example.test.pages.PageBrowser
 import com.example.test.TestStartLogging
 
 /**
  * @author werewolf
  */
 class ChicagoTest extends FlatSpec with MustMatchers with BeforeAndAfterAll with EventuallyUtils {
-  import com.example.pages.PageBrowser._
+  import com.example.test.pages.PageBrowser._
   import Eventually.{ patienceConfig => _, _ }
 
   import scala.concurrent.duration._

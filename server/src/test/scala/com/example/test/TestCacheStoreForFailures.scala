@@ -81,7 +81,7 @@ object TestCacheStoreForFailures {
 
   def getStore: (Store[Id.MatchDuplicate,MatchDuplicate],
                  TestFailurePersistent[Id.MatchDuplicate,MatchDuplicate]) = {
-    val s = TestFailureStore[Id.MatchDuplicate,MatchDuplicate]( null, 5, 100, Duration.Inf, Duration.Inf )
+    val s = TestFailureStore[Id.MatchDuplicate,MatchDuplicate]( "test", null, 5, 100, Duration.Inf, Duration.Inf )
     (s,s.testFailurePersistent)
   }
 

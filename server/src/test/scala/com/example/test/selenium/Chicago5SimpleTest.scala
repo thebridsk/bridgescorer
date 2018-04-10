@@ -30,7 +30,7 @@ import com.example.backend.MatchChicagoCacheStoreSupport
  * @author werewolf
  */
 class Chicago5SimpleTest extends FlatSpec with MustMatchers with BeforeAndAfterAll with EventuallyUtils {
-  import com.example.pages.PageBrowser._
+  import com.example.test.pages.PageBrowser._
   import Eventually.{ patienceConfig => _, _ }
 
   import scala.concurrent.duration._

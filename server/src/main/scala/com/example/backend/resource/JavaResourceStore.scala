@@ -18,6 +18,7 @@ object JavaResourceStore {
   val log = Logger[JavaResourceStore[_,_]]
 
   def apply[VId,VType <: VersionedInstance[VType,VType,VId]](
+                            name: String,
                             resourcedirectory: String,
                             masterfile: String,
                             loader: ClassLoader,
@@ -30,7 +31,7 @@ object JavaResourceStore {
                               cachesupport: StoreSupport[VId,VType],
                               execute: ExecutionContext
                           ): JavaResourceStore[VId,VType] = {
-    new JavaResourceStore(resourcedirectory,masterfile,loader,cacheInitialCapacity, cacheMaxCapacity, cacheTimeToLive, cacheTimeToIdle )
+    new JavaResourceStore(name,resourcedirectory,masterfile,loader,cacheInitialCapacity, cacheMaxCapacity, cacheTimeToLive, cacheTimeToIdle )
   }
 }
 
@@ -254,6 +255,7 @@ object JavaResourcePersistentSupport {
  * @param cacheTimeToIdle this value must be less than cacheTimeToLive
  */
 class JavaResourceStore[VId,VType <: VersionedInstance[VType,VType,VId]](
+                                    name: String,
                                     val resourcedirectory: String,
                                     val masterfile: String,
                                     val loader: ClassLoader,
@@ -265,7 +267,8 @@ class JavaResourceStore[VId,VType <: VersionedInstance[VType,VType,VId]](
                                     implicit
                                       cachesupport: StoreSupport[VId,VType],
                                       execute: ExecutionContext
-                                  ) extends Store[VId,VType]( new JavaResourcePersistentSupport[VId,VType](resourcedirectory,masterfile,loader),
+                                  ) extends Store[VId,VType]( name,
+                                                              new JavaResourcePersistentSupport[VId,VType](resourcedirectory,masterfile,loader),
                                                                    cacheInitialCapacity,
                                                                    cacheMaxCapacity,
                                                                    cacheTimeToLive,

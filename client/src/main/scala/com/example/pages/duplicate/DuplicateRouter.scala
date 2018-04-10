@@ -27,6 +27,7 @@ import com.example.skeleton.react.BeepComponent
 import japgolly.scalajs.react.vdom.TagMod
 import com.example.pages.duplicate.DuplicateRouter.BaseScoreboardView
 import scala.scalajs.js.URIUtils
+import com.example.routes.BridgeRouterBaseWithLogging
 
 object DuplicateModule extends Module {
   case class PlayDuplicate(m: DuplicatePage ) extends AppPage
@@ -75,12 +76,14 @@ object DuplicateRouter {
     }
   }
 
+  class DuplicateRouterWithLogging( ctl: RouterCtl[DuplicatePage] ) extends BridgeRouterBaseWithLogging[DuplicatePage](ctl) {
+    override
+    def home: TagMod = DuplicateModule.gotoAppHome()
+  }
+
   import scala.language.implicitConversions
   implicit def routerCtlToBridgeRouter( ctl: RouterCtl[DuplicatePage] ): BridgeRouter[DuplicatePage] =
-    new BridgeRouterBase[DuplicatePage](ctl) {
-        override
-        def home: TagMod = DuplicateModule.gotoAppHome()
-    }
+    new DuplicateRouterWithLogging(ctl)
 
   trait BaseBoardView extends DuplicatePage {
     val dupid: String

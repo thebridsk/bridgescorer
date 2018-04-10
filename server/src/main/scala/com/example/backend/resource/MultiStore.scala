@@ -220,6 +220,7 @@ object MultiPersistentSupport {
 }
 
 class MultiStore[VId,VType <: VersionedInstance[VType,VType,VId]](
+                             name: String,
                              val persistentStores: MultiPersistentSupport[VId,VType],
                              cacheInitialCapacity: Int = 5,
                              cacheMaxCapacity: Int = 100,
@@ -229,12 +230,13 @@ class MultiStore[VId,VType <: VersionedInstance[VType,VType,VId]](
                              implicit
                                cachesupport: StoreSupport[VId,VType],
                                execute: ExecutionContext
-                           ) extends Store[VId,VType]( persistentStores,
-                                                            cacheInitialCapacity,
-                                                            cacheMaxCapacity,
-                                                            cacheTimeToLive,
-                                                            cacheTimeToIdle
-                                                          ) {
+                           ) extends Store[VId,VType]( name,
+                                                       persistentStores,
+                                                       cacheInitialCapacity,
+                                                       cacheMaxCapacity,
+                                                       cacheTimeToLive,
+                                                       cacheTimeToIdle
+                                                     ) {
 
 }
 
@@ -248,6 +250,7 @@ object MultiStore {
    * @param masterfile the master file for the java resource persistent suppport.
    */
   def createFileAndResource[VId,VType <: VersionedInstance[VType,VType,VId]] (
+         name: String,
          directory: Directory,
          resourcedirectory: String,
          masterfile: String,
@@ -262,7 +265,7 @@ object MultiStore {
            execute: ExecutionContext
        ): MultiStore[VId, VType] = {
     val p = MultiPersistentSupport.createFileAndResource(directory,resourcedirectory,masterfile,loader)
-    new MultiStore[VId,VType]( p, cacheInitialCapacity, cacheMaxCapacity, cacheTimeToLive, cacheTimeToIdle )
+    new MultiStore[VId,VType]( name, p, cacheInitialCapacity, cacheMaxCapacity, cacheTimeToLive, cacheTimeToIdle )
   }
 
   /**
@@ -273,6 +276,7 @@ object MultiStore {
    * @param masterfile the master file for the java resource persistent suppport.
    */
   def createInMemoryAndResource[VId,VType <: VersionedInstance[VType,VType,VId]] (
+         name: String,
          resourcedirectory: String,
          masterfile: String,
          loader: ClassLoader,
@@ -286,10 +290,11 @@ object MultiStore {
            execute: ExecutionContext
        ): MultiStore[VId, VType] = {
     val p = MultiPersistentSupport.createInMemoryAndResource(resourcedirectory,masterfile,loader)
-    new MultiStore[VId,VType]( p, cacheInitialCapacity, cacheMaxCapacity, cacheTimeToLive, cacheTimeToIdle )
+    new MultiStore[VId,VType]( name, p, cacheInitialCapacity, cacheMaxCapacity, cacheTimeToLive, cacheTimeToIdle )
   }
 
   def apply[VId,VType <: VersionedInstance[VType,VType,VId]] (
+         name: String,
          persistents: List[PersistentSupport[VId,VType]],
          cacheInitialCapacity: Int = 5,
          cacheMaxCapacity: Int = 100,
@@ -301,7 +306,7 @@ object MultiStore {
            execute: ExecutionContext
        ): MultiStore[VId, VType] = {
     val p = MultiPersistentSupport(persistents: _*)
-    new MultiStore[VId,VType]( p, cacheInitialCapacity, cacheMaxCapacity, cacheTimeToLive, cacheTimeToIdle )
+    new MultiStore[VId,VType]( name, p, cacheInitialCapacity, cacheMaxCapacity, cacheTimeToLive, cacheTimeToIdle )
   }
 
 }
