@@ -672,7 +672,7 @@ class DuplicateTestPages extends FlatSpec
          webDriver: WebDriver
     ) = {
 
-    PageBrowser.withClueAndScreenShot(screenshotDir, s"Round${round}Table${table}EnterHand", "Enter Hand R${round}T${table}") {
+    PageBrowser.withClueAndScreenShot(screenshotDir, s"Round${round}Table${table}EnterHand", s"Enter Hand R${round}T${table}") {
       val sb = selectScorekeeper(currentPage,table,round, nsTeam, ewTeam, scorekeeper, mustswap )
 
       val board = withClue( s"""board ${boards.head}""" ) {

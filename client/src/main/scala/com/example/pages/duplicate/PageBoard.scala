@@ -135,7 +135,6 @@ object PageBoardInternal {
               case Some(round) =>
                 val (played,unplayed) = round.playedAndUnplayedBoards()
                 <.span(
-                  <.span(^.dangerouslySetInnerHtml:="&nbsp;&nbsp;"),
                   buttons("Played: ", played, round.ns.id, true),
                   <.span(^.dangerouslySetInnerHtml:="&nbsp;&nbsp;"),
                   buttons("Unplayed: ", unplayed, round.ns.id, false)
@@ -202,17 +201,25 @@ object PageBoardInternal {
               <.p,
               <.div(
                 baseStyles.fontTextNormal,
+                if (tableperspective.isDefined) {
+                  TagMod(
+                    boardsFromTable(score),
+                    <.p
+                  )
+                } else {
+                  TagMod()
+                },
                 AppButton( "Game", "Scoreboard",
                            allplayedInRound ?= baseStyles.requiredNotNext,
                            props.routerCtl.setOnClick(clickToScoreboard) ),
                 " ",
-                PageScoreboardInternal.scoringMethodButton( state.useIMP, Some( score.isIMP), false, nextIMPs ),
-                " ",
                 clickToTableView.isDefined?= AppButton( "Table", "Table "+Id.tableIdToTableNumber(currentTable),
                                                         allplayedInRound ?= baseStyles.requiredNotNext,
                                                         props.routerCtl.setOnClick(clickToTableView.get) ),
-                if (tableperspective.isDefined) boardsFromTable(score)
-                else boards(score)
+                " ",
+                PageScoreboardInternal.scoringMethodButton( state.useIMP, Some( score.isIMP), false, nextIMPs ),
+                if (tableperspective.isEmpty) boards(score)
+                else TagMod()
               )
             )
           case None =>
