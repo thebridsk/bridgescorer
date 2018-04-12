@@ -31,6 +31,7 @@ object AppRouter {
   case object ShowRubberHand extends AppPage      // for debugging
   case object PageTest extends AppPage  // for debugging
   case object GraphQLAppPage extends AppPage
+  case object ColorView extends AppPage
 
   private var instance: Option[AppRouter] = None
 
@@ -58,6 +59,7 @@ import org.scalactic.source.Position
 import com.example.pages.GraphQLPage
 import com.example.pages.ExportPage
 import com.example.pages.ImportsListPage
+import com.example.pages.ColorPage
 
 trait ModuleRenderer {
 
@@ -118,6 +120,7 @@ class AppRouter( modules: Module* ) {
               ShowRubberHand::
               PageTest::
               GraphQLAppPage::
+              ColorView::
               Nil
 
     root:::modulepages
@@ -186,6 +189,7 @@ class AppRouter( modules: Module* ) {
       | staticRoute("#thankyou", ThankYou) ~> renderR( (routerCtl) => logit(ThankYouPage()) )
       | staticRoute("#testpage", PageTest) ~> renderR( (routerCtl) => logit(TestPage(Home,routerCtl)) )
       | staticRoute("#graphql", GraphQLAppPage) ~> renderR( (routerCtl) => logit(GraphQLPage(routerCtl)) )
+      | staticRoute("#color", ColorView) ~> renderR( (routerCtl) => logit(ColorPage()) )
       | moduleRoutes()
       ).notFound( p => logit {
         document.defaultView.alert("Could not find path "+p)

@@ -24,13 +24,62 @@ import org.scalajs.dom.ext.Color
 object ColorBar {
   import ColorBarInternal._
 
-  case class Props( hue1: Double, minLightness1: Double, n1: Int, darkToLight1: Boolean,
-                    hue2: Double, minLightness2: Double, n2: Int, darkToLight2: Boolean,
-                    middle: Option[Color],
-                    titles1: Option[List[String]] = None,
-                    titles2: Option[List[String]] = None,
-                    whiteTitle: Option[String] = None
-                    )
+  /**
+   * Props for ColorBar
+   * @constructor
+   * @param leftColors list of colors for left, may be empty list
+   * @param rightColors list of colors for right, may be empty list
+   * @param middle the optional middle color
+   * @param leftTitles the titles of the left boxes, if specified, must have leftColors.length titles.  None means no titles.
+   * @param rightTitles the titles of the right boxes, if specified, must have rightColors.length titles.  None means no titles.
+   * @param whiteTitle the title of the white box.  None means no title.
+   */
+  case class Props(
+      leftColors: Seq[Color],
+      rightColors: Seq[Color],
+      middle: Option[Color],
+      leftTitles: Option[List[String]] = None,
+      rightTitles: Option[List[String]] = None,
+      whiteTitle: Option[String] = None
+  ) {
+  }
+
+  object Props {
+    /**
+     * Create a Props object.
+     * The first four parameters are for the left color boxes,
+     * the second four are for the right color boxes.
+     * @param hue1
+     * @param minLightness1
+     * @param n1 the number of boxes for hue1
+     * @param darkToLight1 left boxes should be dark to light if true.
+     * @param hue2
+     * @param minLightness2
+     * @param n2 the number of boxes for hue2
+     * @param darkToLight2 right boxes should be dark to light if true.
+     * @param middle the optional middle color
+     * @param titles1 the titles of the left boxes, if specified, must have leftColors.length titles.  None means no titles.
+     * @param titles2 the titles of the right boxes, if specified, must have rightColors.length titles.  None means no titles.
+     * @param whiteTitle the title of the white box.  None means no title.
+     */
+    def create(
+        hue1: Double, minLightness1: Double, n1: Int, darkToLight1: Boolean,
+        hue2: Double, minLightness2: Double, n2: Int, darkToLight2: Boolean,
+        middle: Option[Color],
+        titles1: Option[List[String]] = None,
+        titles2: Option[List[String]] = None,
+        whiteTitle: Option[String] = None
+    ) = {
+      new Props(
+          colors(hue1,minLightness1,n1,darkToLight1),
+          colors(hue2,minLightness2,n2,darkToLight2),
+          middle,
+          titles1,
+          titles2,
+          whiteTitle
+      )
+    }
+  }
 
   /**
    * ColorBar with white in the middle, and hue1 on left and hue2 on right, with dark on the outside.
@@ -42,7 +91,7 @@ object ColorBar {
    * @param n the number of boxes for hue1 and hue2
    */
   def apply( hue1: Double, minLightness1: Double, hue2: Double, minLightness2: Double, n: Int ) = {
-    component(Props(hue1,minLightness1,n,true,hue2,minLightness2,n,false,Some(Color.White), None, None, None))
+    component(Props.create(hue1,minLightness1,n,true,hue2,minLightness2,n,false,Some(Color.White), None, None, None))
   }
 
   /**
@@ -60,7 +109,7 @@ object ColorBar {
              titles1: List[String],
              titles2: List[String]
   ) = {
-    component(Props(hue1,minLightness1,n,true,hue2,minLightness2,n,false,Some(Color.White), Option(titles1), Option(titles2), None))
+    component(Props.create(hue1,minLightness1,n,true,hue2,minLightness2,n,false,Some(Color.White), Option(titles1), Option(titles2), None))
   }
 
   /**
@@ -80,7 +129,7 @@ object ColorBar {
              titles2: List[String],
              whiteTitle: String
   ) = {
-    component(Props(hue1,minLightness1,n,true,hue2,minLightness2,n,false,Some(Color.White), Option(titles1), Option(titles2), Option(whiteTitle)))
+    component(Props.create(hue1,minLightness1,n,true,hue2,minLightness2,n,false,Some(Color.White), Option(titles1), Option(titles2), Option(whiteTitle)))
   }
 
   /**
@@ -106,31 +155,52 @@ object ColorBar {
              titles2: Option[List[String]] = None,
              whiteTitle: Option[String] = None
   ) = {
-    component( Props(hue1,minLightness1,n1,darkToLight1,hue2,minLightness2,n2,darkToLight2,middle, titles1, titles2, whiteTitle ) )
+    component( Props.create(hue1,minLightness1,n1,darkToLight1,hue2,minLightness2,n2,darkToLight2,middle, titles1, titles2, whiteTitle ) )
   }
 
   /**
-   * returns the colors from dark to light.  never returns white.
+   * returns the colors
+   * @param hue
+   * @param minLightness
+   * @param n the number of boxes for hue
+   * @param darkToLight left boxes should be dark to light if true.  Default is true.
+   * @param maxLightness
+   * @return the colors.
    */
-  def colors( hue: Double, minLightness: Double, n: Int ) = {
+  def colors( hue: Double, minLightness: Double, n: Int, darkToLight1: Boolean = true, maxLightness: Double = 1.0 ) = {
     if (n == 0) Nil
     else if (n == 1) HSLColor( hue, 1.0, 0.5 )::Nil
     else {
-      val step = (1.0 - minLightness)/(n)
-      (minLightness until 1.0 by step).map { l =>
+      val step = (maxLightness - minLightness)/(n)
+      val cols = (minLightness until maxLightness by step).map { l =>
          HSLColor( hue, 1.0, l )
       }
+      if (darkToLight1) cols
+      else cols.reverse
     }
   }
 
-  case class PropsColors(
-      leftColors: Seq[Color],
-      rightColors: Seq[Color],
-      middle: Option[Color],
-      leftTitles: Option[List[String]] = None,
-      rightTitles: Option[List[String]] = None,
-      whiteTitle: Option[String] = None
-  )
+  /**
+   * returns the colors
+   * @param hue
+   * @param minLightness
+   * @param n the number of boxes for hue
+   * @param darkToLight left boxes should be dark to light if true.  Default is true.
+   * @param maxLightness
+   * @return the colors.
+   */
+  def colorsInclusive( hue: Double, minLightness: Double, n: Int, darkToLight1: Boolean = true, maxLightness: Double = 1.0 ) = {
+    if (n == 0) Nil
+    else if (n == 1) HSLColor( hue, 1.0, 0.5 )::Nil
+    else {
+      val step = (maxLightness - minLightness)/(n-1)
+      val cols = (minLightness to maxLightness by step).map { l =>
+         HSLColor( hue, 1.0, l )
+      }
+      if (darkToLight1) cols
+      else cols.reverse
+    }
+  }
 
   /**
    * ColorBar with hue1 on the left, optional white in the middle, and hue2 on the right.
@@ -150,7 +220,7 @@ object ColorBar {
       rightTitles: Option[List[String]] = None,
       whiteTitle: Option[String] = None
   ) = {
-    componentColors( PropsColors( leftColors, rightColors, middle, leftTitles, rightTitles, whiteTitle ) )
+    component( Props( leftColors, rightColors, middle, leftTitles, rightTitles, whiteTitle ) )
   }
 
   /**
@@ -159,10 +229,10 @@ object ColorBar {
    * @param titles
    */
   def simple(
-      colors: List[Color],
+      colors: Seq[Color],
       titles: Option[List[String]] = None
   ) = {
-    componentColors(PropsColors(colors, Nil, None, titles, None, None))
+    component(Props(colors, Nil, None, titles, None, None))
   }
 
 }
@@ -205,40 +275,21 @@ object ColorBarInternal {
   }
 
   val component = ScalaComponent.builder[Props]("ColorBar")
-                            .stateless
-                            .noBackend
-                            .render_P( props => {
+                    .stateless
+                    .noBackend
+                    .render_P( props => {
 
-                              <.div(
-                                baseStyles.colorbar,
-                                ^.display := "flex",
-                                ^.flexDirection := "row",
-                                ^.flexWrap := "nowrap",
-                                ^.justifyContent := "center",
-                                ^.border := "none",
-                                bar( props.hue1, props.minLightness1, props.n1, props.darkToLight1, props.titles1 ),
-                                props.middle.whenDefined( c => box( c, props.whiteTitle )),
-                                bar( props.hue2, props.minLightness2, props.n2, props.darkToLight2, props.titles2 )
-                              )
-                            })
-                            .build
-
-  val componentColors = ScalaComponent.builder[PropsColors]("ColorBarColors")
-                            .stateless
-                            .noBackend
-                            .render_P( props => {
-
-                              <.div(
-                                baseStyles.colorbar,
-                                ^.display := "flex",
-                                ^.flexDirection := "row",
-                                ^.flexWrap := "nowrap",
-                                ^.justifyContent := "center",
-                                ^.border := "none",
-                                bar( props.leftColors, props.leftTitles ),
-                                props.middle.whenDefined( c => box( c, props.whiteTitle )),
-                                bar( props.rightColors, props.rightTitles )
-                              )
-                            })
-                            .build
+                      <.div(
+                        baseStyles.colorbar,
+                        ^.display := "flex",
+                        ^.flexDirection := "row",
+                        ^.flexWrap := "nowrap",
+                        ^.justifyContent := "center",
+                        ^.border := "none",
+                        bar( props.leftColors, props.leftTitles ),
+                        props.middle.whenDefined( c => box( c, props.whiteTitle )),
+                        bar( props.rightColors, props.rightTitles )
+                      )
+                    })
+                    .build
 }

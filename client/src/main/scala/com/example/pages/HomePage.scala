@@ -302,6 +302,12 @@ object HomePage {
                              rootStyles.playButton,
                              ^.disabled:=isWorking,
                              ^.onClick --> callbackPage(GraphQLAppPage))
+                ),
+                <.td( ^.width:="25%",
+                  AppButton( "Color", "Color",
+                             rootStyles.playButton,
+                             ^.disabled:=isWorking,
+                             ^.onClick --> callbackPage(ColorView))
                 )
               )
             )
