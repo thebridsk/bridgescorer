@@ -58,7 +58,7 @@ object ViewPlayersQuintetInternal {
                     south: String,
                     east: String,
                     west: String,
-                    dealer: PlayerPosition,
+                    dealer: Option[PlayerPosition],
                     nextSittingOut: Option[String],    // for fair rotation selecting next person out
                     swapping: List[(String,String)]
                   ) {
@@ -105,6 +105,8 @@ object ViewPlayersQuintetInternal {
       t
     }
 
+    def getDealer = dealer.map( d => d.pos.toString ).getOrElse("")
+
     def getLastDealer() = {
       scoring.rounds.last.dealerFirstRound
     }
@@ -150,7 +152,7 @@ object ViewPlayersQuintetInternal {
         case West => (north,south,east,extra,west, (west,extra))
       }
 
-      val state = new State(score, ex, n, s, e, w, nextdealer,None,Nil)
+      val state = new State(score, ex, n, s, e, w, Some(nextdealer),None,Nil)
 
       if (state.isSimple()) {
         state.copy(swapping=swap::Nil)
@@ -196,14 +198,14 @@ object ViewPlayersQuintetInternal {
                state.south,
                state.east,
                state.west,
-               state.dealer.pos.toString(),
+               state.getDealer,
                Nil )
         } else {
           props.chicago.rounds(props.page.round).copy(north=state.north,
                                                       south=state.south,
                                                       east=state.east,
                                                       west=state.west,
-                                                      dealerFirstRound=state.dealer.pos.toString())
+                                                      dealerFirstRound=state.getDealer)
         }
         ChicagoController.updateChicagoRound(props.chicago.id, r)
         props
@@ -212,7 +214,7 @@ object ViewPlayersQuintetInternal {
       }
 
 
-    def setDealer( pos: PlayerPosition ) = scope.modState(s => s.copy(dealer = pos))
+    def setDealer( pos: PlayerPosition ) = scope.modState(s => s.copy(dealer = Some(pos)))
 
     def setPlayerSittingOut( p: String ) = scope.modState(s => s.fairRotation(p))
 
@@ -345,7 +347,8 @@ object ViewPlayersQuintetInternal {
       }
 
       val lasthand = state.getTable()
-      val lastdealer = PlayerPosition.prevDealer( state.dealer )
+      val dealer = state.dealer.getOrElse(North)
+      val lastdealer = PlayerPosition.prevDealer( dealer )
 
       <.div(
         <.div(
@@ -359,7 +362,7 @@ object ViewPlayersQuintetInternal {
           ^.alignItems:="center",
           showNewPositions( true, "Prior hand", lastdealer, lasthand.north, lasthand.south, lasthand.east, lasthand.west, lasthand.sittingOut ),
           selectNextSittingOut(),
-          showNewPositions( state.isSimple() || state.nextSittingOut.isDefined, "Next hand", state.dealer, state.north, state.south, state.east, state.west, state.sittingOut ),
+          showNewPositions( state.isSimple() || state.nextSittingOut.isDefined, "Next hand", dealer, state.north, state.south, state.east, state.west, state.sittingOut ),
           showDescription()
         ),
         <.div(

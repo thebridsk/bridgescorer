@@ -28,7 +28,7 @@ object PagePlayers {
                           south: String,
                           east: String,
                           west: String,
-                          dealer: PlayerPosition,
+                          dealer: Option[PlayerPosition],
                           gotNames: Boolean = false,
                           names: List[String] = Nil,
                           chicago5: Boolean = false,
@@ -36,28 +36,30 @@ object PagePlayers {
                           simpleRotation: Boolean = false,
                           extra: Option[String] = None
                         ) {
-    def isDealerValid() = true
+    def isDealerValid() = dealer.isDefined
     def areAllPlayersValid() = playerValid(north) && playerValid(south) && playerValid(east) && playerValid(west)
 
     def isValid() = areAllPlayersValid()&& isDealerValid()
 
-    def isDealer( p: PlayerPosition ) = dealer == p
+    def isDealer( p: PlayerPosition ): Boolean = dealer.map( d => d == p ).getOrElse(false)
 
-    def isDealer(p: String) =
+    def isDealer(p: String): Boolean =
         p match {
-          case `north` => dealer == North
-          case `south` => dealer == South
-          case `east` =>  dealer == East
-          case `west` =>  dealer == West
+          case `north` => isDealer(North)
+          case `south` => isDealer(South)
+          case `east` =>  isDealer(East)
+          case `west` =>  isDealer(West)
           case _ => false
         }
 
-    def getDealerName() = dealer match {
+    def getDealer = dealer.map( d => d.pos.toString ).getOrElse("")
+    
+    def getDealerName() = dealer.map( d => d match {
       case North => north
       case South => south
       case East => east
       case West => west
-    }
+    }).getOrElse("")
   }
 
   case class State()

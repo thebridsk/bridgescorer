@@ -148,6 +148,8 @@ class Chicago5FairTest extends FlatSpec with MustMatchers with BeforeAndAfterAll
     eventually(find(id("Fair")))
     click on id("Fair")
 
+    click on id("PlayerNFirstDealer")
+
     eventually( find(id("Ok")) mustBe 'Enabled )
 
     click on id("Ok")

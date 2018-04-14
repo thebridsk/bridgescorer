@@ -24,22 +24,22 @@ object ViewPlayersSecondRound {
                     val south: String,
                     val east: String,
                     val west: String,
-                    val dealer: PlayerPosition,
+                    val dealer: Option[PlayerPosition],
                     val changingScoreKeeper: Boolean
                   ) {
-    def isDealerValid() = true
+    def isDealerValid() = dealer.isDefined
     def areAllPlayersValid() = playerValid(north) && playerValid(south) && playerValid(east) && playerValid(west)
 
     def isValid() = areAllPlayersValid()&& isDealerValid()
 
-    def isDealer(p: PlayerPosition) = p == dealer
+    def isDealer(p: PlayerPosition): Boolean = dealer.map( d => d == p ).getOrElse(false)
 
-    def isDealer(p: String) =
+    def isDealer(p: String): Boolean =
         p match {
-          case `north` => dealer == North
-          case `south` => dealer == South
-          case `east` =>  dealer == East
-          case `west` =>  dealer == West
+          case `north` => isDealer(North)
+          case `south` => isDealer(South)
+          case `east` =>  isDealer(East)
+          case `west` =>  isDealer(West)
           case _ => false
         }
 
@@ -56,6 +56,8 @@ object ViewPlayersSecondRound {
       val w = Some(west).filter { x => p!=x }.getOrElse("")
       copy( north=n, south=s, east=e, west=w )
     }
+
+    def getDealer() = dealer.map( d => d.pos.toString() ).getOrElse("")
   }
 
   class Backend(scope: BackendScope[Props, State]) {
@@ -67,7 +69,7 @@ object ViewPlayersSecondRound {
     def setEast(p: String)( e: ReactEventFromInput ) = scope.modState( ps => {show("setEast",complete(ps.removePlayer(p).copy(east=p)))})
     def setWest(p: String)( e: ReactEventFromInput ) = scope.modState( ps => {show("setWest",complete(ps.removePlayer(p).copy(west=p)))})
 
-    def setFirstDealer( p: PlayerPosition ) = scope.modState(ps => ps.copy(dealer=p))
+    def setFirstDealer( p: PlayerPosition ) = scope.modState(ps => ps.copy(dealer=Some(p)))
 
     def changeScoreKeeper() = scope.modState(s => s.copy(changingScoreKeeper = true))
 
@@ -270,10 +272,10 @@ object ViewPlayersSecondRound {
              state.south,
              state.east,
              state.west,
-             state.dealer.pos.toString(),
+             state.getDealer,
              Nil )
       } else {
-        props.chicago.rounds(props.page.round).copy(north=state.north, south=state.south, east=state.east, west=state.west, dealerFirstRound=state.dealer.pos.toString())
+        props.chicago.rounds(props.page.round).copy(north=state.north, south=state.south, east=state.east, west=state.west, dealerFirstRound=state.getDealer)
       }
       ChicagoController.updateChicagoRound(props.chicago.id, r)
       props
@@ -285,7 +287,7 @@ object ViewPlayersSecondRound {
   val component = ScalaComponent.builder[Props]("ViewPlayersSecondRound")
                             .initialStateFromProps { props => {
                               val lr = props.chicago.rounds( props.chicago.rounds.size-1 )
-                              State(lr.north,"","","",North,false)
+                              State(lr.north,"","","",None,false)
                             } }
                             .backend(new Backend(_))
                             .renderBackend

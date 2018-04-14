@@ -29,7 +29,7 @@ object ViewPlayersFourthRound {
     def setEast(p: String)( e: ReactEventFromInput ) = scope.modState( ps => {show("setEast",complete(ps.removePlayer(p).copy(east=p)))})
     def setWest(p: String)( e: ReactEventFromInput ) = scope.modState( ps => {show("setWest",complete(ps.removePlayer(p).copy(west=p)))})
 
-    def setFirstDealer( p: PlayerPosition ) = scope.modState(ps => ps.copy(dealer=p))
+    def setFirstDealer( p: PlayerPosition ) = scope.modState(ps => ps.copy(dealer=Some(p)))
 
     def changeScoreKeeper() = scope.modState(s => s.copy(changingScoreKeeper = true))
 
@@ -238,10 +238,10 @@ object ViewPlayersFourthRound {
              state.south,
              state.east,
              state.west,
-             state.dealer.pos.toString(),
+             state.getDealer,
              Nil )
       } else {
-        props.chicago.rounds(props.page.round).copy(north=state.north, south=state.south, east=state.east, west=state.west, dealerFirstRound=state.dealer.pos.toString())
+        props.chicago.rounds(props.page.round).copy(north=state.north, south=state.south, east=state.east, west=state.west, dealerFirstRound=state.getDealer)
       }
       ChicagoController.updateChicagoRound(props.chicago.id, r)
       props
@@ -254,7 +254,7 @@ object ViewPlayersFourthRound {
   val component = ScalaComponent.builder[Props]("ViewPlayersFourthRound")
                             .initialStateFromProps { props => {
                               val lr = props.chicago.rounds( props.chicago.rounds.size-1 )
-                              ViewPlayersSecondRound.State(lr.north,"","","",North,false)
+                              ViewPlayersSecondRound.State(lr.north,"","","",None,false)
                             } }
                             .backend(new Backend(_))
                             .renderBackend

@@ -46,9 +46,9 @@ object ViewPlayersVeryFirstRound {
       state
     }
 
-    def reset = scope.modState( ps => PlayerState("","","","",North, gotNames = ps.gotNames, names=ps.names))
+    def reset = scope.modState( ps => PlayerState("","","","",None, gotNames = ps.gotNames, names=ps.names))
 
-    def setFirstDealer( p: PlayerPosition ) = scope.modState(ps => ps.copy(dealer=p))
+    def setFirstDealer( p: PlayerPosition ) = scope.modState(ps => ps.copy(dealer=Some(p)))
 
     private def noNull( s: String ) = if (s == null) ""; else s
 
@@ -185,10 +185,10 @@ object ViewPlayersVeryFirstRound {
              south,
              east,
              west,
-             state.dealer.pos.toString(),
+             state.getDealer,
              Nil )
       } else {
-        props.chicago.rounds(0).copy(north=north, south=south, east=east, west=west, dealerFirstRound=state.dealer.pos.toString())
+        props.chicago.rounds(0).copy(north=north, south=south, east=east, west=west, dealerFirstRound=state.getDealer)
       }
       ChicagoController.updateChicagoRound(props.chicago.id, r)
       props
@@ -222,7 +222,7 @@ object ViewPlayersVeryFirstRound {
                                   val r = chi.rounds(0)
                                   (r.north,r.south,r.east,r.west)
                                 }
-                              PlayerState(n,s,e,w,North, quintet=chi.isQuintet())
+                              PlayerState(n,s,e,w,None, quintet=chi.isQuintet())
                             }}
                             .backend(new Backend(_))
                             .renderBackend

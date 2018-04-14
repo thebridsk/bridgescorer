@@ -145,6 +145,8 @@ class Chicago5SimpleTest extends FlatSpec with MustMatchers with BeforeAndAfterA
     click on id("Simple")
     tcpSleep(1)
 
+    click on id("PlayerNFirstDealer")
+
     eventually( find(id("Ok")) mustBe 'Enabled )
 
     click on id("Ok")

@@ -40,7 +40,7 @@ object ViewPlayersThirdRound {
           s.copy(north=s.north, south=s.south, east=s.west, west=s.east, changingScoreKeeper = false)
           )
 
-    def setFirstDealer( p: PlayerPosition ) = scope.modState(ps => ps.copy(dealer=p))
+    def setFirstDealer( p: PlayerPosition ) = scope.modState(ps => ps.copy(dealer=Some(p)))
 
     def changeScoreKeeper() = scope.modState(s => s.copy(changingScoreKeeper = true))
 
@@ -164,10 +164,10 @@ object ViewPlayersThirdRound {
              state.south,
              state.east,
              state.west,
-             state.dealer.pos.toString(),
+             state.getDealer,
              Nil )
       } else {
-        props.chicago.rounds(props.page.round).copy(north=state.north, south=state.south, east=state.east, west=state.west, dealerFirstRound=state.dealer.pos.toString())
+        props.chicago.rounds(props.page.round).copy(north=state.north, south=state.south, east=state.east, west=state.west, dealerFirstRound=state.getDealer)
       }
       ChicagoController.updateChicagoRound(props.chicago.id, r)
       props
@@ -187,7 +187,7 @@ object ViewPlayersThirdRound {
                               val p3 = lastRound.partnerOf(p1)         // can't be player 2, already partnered with 1
                               val p4 = secondToLastRound.partnerOf(p1) // can't be player 2, already partnered with 1
                               val p2 = lastRound.partnerOf(p4)
-                              ViewPlayersSecondRound.State(p1,p2,p3,p4,North,false)
+                              ViewPlayersSecondRound.State(p1,p2,p3,p4,None,false)
                             }}
                             .backend(new Backend(_))
                             .renderBackend
