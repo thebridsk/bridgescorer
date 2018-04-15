@@ -187,11 +187,9 @@ object ViewPlayersQuintetInternal {
    */
   class Backend(scope: BackendScope[Props, State]) {
 
-    def reset() = scope.props >>= { props => scope.modState( s => State(props) ) }
+    val reset = scope.props >>= { props => scope.modState( s => State(props) ) }
 
-    def ok() = CallbackTo {
-        val state = scope.withEffectsImpure.state
-        val props = scope.withEffectsImpure.props
+    val ok = scope.stateProps { (state,props) =>
         val r = if (props.chicago.rounds.size <= props.page.round) {
           Round.create(props.page.round.toString(),
                state.north,
@@ -208,9 +206,8 @@ object ViewPlayersQuintetInternal {
                                                       dealerFirstRound=state.getDealer)
         }
         ChicagoController.updateChicagoRound(props.chicago.id, r)
-        props
-      } >>= {
-        props => props.router.set(props.page.toHandView(0))
+
+        props.router.set(props.page.toHandView(0))
       }
 
 
@@ -374,7 +371,7 @@ object ViewPlayersQuintetInternal {
           !state.isSimple() ?=
             <.div(
               baseStyles.divFooterCenter,
-              AppButton("Reset", "Reset", ^.onClick --> reset() )
+              AppButton("Reset", "Reset", ^.onClick --> reset )
             ),
           <.div(
             baseStyles.divFooterRight,

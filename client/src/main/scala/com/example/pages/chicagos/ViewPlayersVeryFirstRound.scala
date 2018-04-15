@@ -163,9 +163,7 @@ object ViewPlayersVeryFirstRound {
 
     def doChicagoFive() = scope.modState({ ps => ps.copy(chicago5 = !ps.chicago5) } )
 
-    def ok() = CallbackTo {
-      val state = scope.withEffectsImpure.state
-      val props = scope.withEffectsImpure.props
+    def ok() = scope.stateProps { (state,props) =>
       val e = if (state.chicago5 && state.extra.isDefined) {
         val ex = state.extra.get
         if (ex == "") None
@@ -191,9 +189,8 @@ object ViewPlayersVeryFirstRound {
         props.chicago.rounds(0).copy(north=north, south=south, east=east, west=west, dealerFirstRound=state.getDealer)
       }
       ChicagoController.updateChicagoRound(props.chicago.id, r)
-      props
-    } >>= {
-      props => props.router.set(props.page.toHandView(0))
+
+      props.router.set(props.page.toHandView(0))
     }
 
     val namesCallback = scope.modState(s => {

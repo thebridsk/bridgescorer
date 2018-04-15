@@ -486,9 +486,7 @@ object PageSummaryInternal {
         val ids = s.selected.map( id => id.toString )
         s.copy(workingOnNew=Some(s"Importing Duplicate Match ${ids.mkString(", ")} from import ${importId}"))
       },
-      Callback {
-        val s = scope.withEffectsImpure.state
-        val props = scope.withEffectsImpure.props
+      scope.stateProps { (s,props) => Callback {
         val (importid,summaries) = getDuplicateSummaries(props)
 
 //        val sortByDate = if (s.selected.isEmpty) {
@@ -544,7 +542,7 @@ object PageSummaryInternal {
               logger.warning(s"exception import selected from ${importId}", x)
               setMessage(s"exception import selected from ${importId}")
         }.foreach { x => }
-      }
+      }}
     )
 
     def getDuplicateSummaries( props: Props ): (Option[String], Option[List[DuplicateSummary]]) = {

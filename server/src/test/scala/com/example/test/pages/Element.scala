@@ -10,6 +10,7 @@ import utils.logging.Logger
 import org.openqa.selenium.OutputType
 import com.example.backend.resource.FileIO
 import com.example.source.SourcePosition
+import org.openqa.selenium.Keys
 
 class Element( val underlying: WebElement )(implicit pos: Position ) {
 
@@ -128,7 +129,8 @@ class TextField( underlying: WebElement )(implicit pos: Position ) extends Input
   def value: String = underlying.getAttribute("value")
 
   def value_=(value: String): Unit = {
-    underlying.clear()
+//    underlying.clear()
+    underlying.sendKeys(Keys.chord(Keys.CONTROL, "a"))
     underlying.sendKeys(value)
   }
 
@@ -168,6 +170,10 @@ class Combobox( underlying: WebElement )(implicit pos: Position ) extends TextFi
 
   def isSuggestionVisible = {
     underlying.findElement(By.xpath( """./parent::div/following-sibling::div/div""" ) ).isDisplayed()
+  }
+
+  def esc = {
+    underlying.sendKeys(Keys.ESCAPE)
   }
 }
 

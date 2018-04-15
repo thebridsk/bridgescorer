@@ -1114,20 +1114,22 @@ object PageStatsInternal {
 
     private var mounted: Boolean = false
 
-    def didMount() = Callback {
+    val didMount = Callback {
       mounted = true;
       logger.info("PageSummary.didMount")
       GraphQLMethods.duplicateStats().map { result =>
-        result match {
-          case Right(stats) =>
-            scope.withEffectsImpure.modState { s => s.copy(stats = Some(stats.duplicatestats)) }
-          case Left(error) =>
-            scope.withEffectsImpure.modState { s => s.copy(msg = Some(TagMod("Error getting stats"))) }
+        scope.withEffectsImpure.modState { s =>
+          result match {
+            case Right(stats) =>
+              s.copy(stats = Some(stats.duplicatestats))
+            case Left(error) =>
+              s.copy(msg = Some(TagMod("Error getting stats")))
+          }
         }
       }
     }
 
-    def willUnmount() = Callback {
+    val willUnmount = Callback {
       mounted = false;
       logger.finer("PageSummary.willUnmount")
     }
@@ -1137,8 +1139,8 @@ object PageStatsInternal {
                             .initialStateFromProps { props => State() }
                             .backend(new Backend(_))
                             .renderBackend
-                            .componentDidMount( scope => scope.backend.didMount())
-                            .componentWillUnmount(scope => scope.backend.willUnmount())
+                            .componentDidMount( scope => scope.backend.didMount)
+                            .componentWillUnmount(scope => scope.backend.willUnmount)
                             .build
 }
 

@@ -111,11 +111,12 @@ class EnterNamesPage( val chiid: String,
    * @param loc the location on the screen.
    * @param name
    */
-  def enterPlayer( loc: PlayerPosition, name: String )(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def enterPlayer( loc: PlayerPosition, name: String, hitEscapeAfter: Boolean = false )(implicit patienceConfig: PatienceConfig, pos: Position) = {
     val text = eventually {
       getCombobox(toInputName(loc))
     }
     text.value = name
+    if (hitEscapeAfter) text.esc
     this
   }
 
@@ -123,11 +124,12 @@ class EnterNamesPage( val chiid: String,
    * Enter sitting out player's name.
    * @param name
    */
-  def enterSittingOutPlayer( name: String )(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def enterSittingOutPlayer( name: String, hitEscapeAfter: Boolean = false )(implicit patienceConfig: PatienceConfig, pos: Position) = {
     val text = eventually {
       getCombobox(sittingOutInputName)
     }
     text.value = name
+    if (hitEscapeAfter) text.esc
     this
   }
 
@@ -208,6 +210,11 @@ class EnterNamesPage( val chiid: String,
 
   def isOKEnabled(implicit patienceConfig: PatienceConfig, pos: Position) = {
     getButton(buttonOK).isEnabled
+  }
+
+  def clickFive(implicit patienceConfig: PatienceConfig, pos: Position) = {
+    clickButton(buttonToggleFive)
+    this
   }
 
   def isFive(implicit pos: Position) = {

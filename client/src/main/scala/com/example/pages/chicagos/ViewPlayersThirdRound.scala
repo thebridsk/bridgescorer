@@ -155,9 +155,7 @@ object ViewPlayersThirdRound {
       )
     }
 
-    def ok() = CallbackTo {
-      val state = scope.withEffectsImpure.state
-      val props = scope.withEffectsImpure.props
+    def ok() = scope.stateProps { (state,props) =>
       val r = if (props.chicago.rounds.size <= props.page.round) {
         Round.create(props.page.round.toString(),
              state.north,
@@ -170,9 +168,7 @@ object ViewPlayersThirdRound {
         props.chicago.rounds(props.page.round).copy(north=state.north, south=state.south, east=state.east, west=state.west, dealerFirstRound=state.getDealer)
       }
       ChicagoController.updateChicagoRound(props.chicago.id, r)
-      props
-    } >>= {
-      props => props.router.set(props.page.toHandView(0))
+      props.router.set(props.page.toHandView(0))
     }
 
   }

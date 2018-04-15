@@ -29,6 +29,8 @@ object ChicagoTestPages {
   val player3 = "Ellen"
   val player4 = "Wayne"
 
+  val playerOut = "Oscar"
+
   val players = player1::player2::player3::player4::Nil
 
 }
@@ -176,20 +178,50 @@ class ChicagoTestPages extends FlatSpec with MustMatchers with BeforeAndAfterAll
 
   }
 
+  it should "not allow duplicate names" in {
+    val p = EnterNamesPage.current
+
+    withClue("OK must be disabled") {
+      p.isOKEnabled mustBe false
+    }
+    p.enterPlayer(North, player1, true).
+      enterPlayer(South, player1, true).
+      enterPlayer(East, player3, true).
+      enterPlayer(West, player4, true)
+
+    p.setDealer(North)
+
+    eventually( p.isOKEnabled mustBe false )
+
+    p.enterPlayer(South, player2, true)
+
+    eventually( p.isOKEnabled mustBe true )
+
+    p.clickFive
+
+    eventually( p.isOKEnabled mustBe false )
+
+    p.enterSittingOutPlayer(player1, true)
+
+    eventually( p.isOKEnabled mustBe false )
+
+    p.enterSittingOutPlayer(playerOut, true)
+
+    eventually( p.isOKEnabled mustBe true )
+
+    p.clickReset.validate
+  }
+
   it should "allow player names to be entered when playing Chicago" in {
     val p = EnterNamesPage.current
 
     withClue("OK must be disabled") {
       p.isOKEnabled mustBe false
     }
-    p.enterPlayer(North, player1).
-      enterPlayer(South, player2).
-      enterPlayer(East, player3).
-      enterPlayer(West, player4)
-
-    tcpSleep(5)
-    p.enter
-    tcpSleep(15)
+    p.enterPlayer(North, player1, true).
+      enterPlayer(South, player2, true).
+      enterPlayer(East, player3, true).
+      enterPlayer(West, player4, true)
 
     p.isDealer(South) mustBe false
     p.setDealer(South)

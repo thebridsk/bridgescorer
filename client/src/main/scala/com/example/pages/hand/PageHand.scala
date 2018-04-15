@@ -288,6 +288,7 @@ object PageHandInternal {
           InputResultMadeOrDown, InputResultTricks, InputAll = Value
 
   }
+
   /**
    * Internal backend object for rendering the component.
    *
@@ -314,8 +315,7 @@ object PageHandInternal {
 
     def kickRefresh() = scope.forceUpdate
 
-    def ok() = scope.state >>= { state =>
-      val props = scope.withEffectsImpure.props
+    val ok = scope.stateProps { (state, props) =>
       props.callbackWithHonors match {
         case Some(cb) =>
           cb( state.currentcontract, state.honors.getOrElse(0), state.honorsPlayer.getOrElse(North) )
@@ -460,7 +460,7 @@ object PageHandInternal {
               baseStyles.divFooterLeft,
               Button( handStyles.footerButton, "Ok", "OK", ^.disabled := !valid,
                       HandStyles.highlight(required = valid),
-                      ^.onClick --> ok())
+                      ^.onClick --> ok)
             ),
             <.div(
               baseStyles.divFooterCenter,

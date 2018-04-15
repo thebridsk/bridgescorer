@@ -37,9 +37,21 @@ object PagePlayers {
                           extra: Option[String] = None
                         ) {
     def isDealerValid() = dealer.isDefined
-    def areAllPlayersValid() = playerValid(north) && playerValid(south) && playerValid(east) && playerValid(west)
+    def areAllPlayersValid() = playerValid(north) && playerValid(south) && playerValid(east) && playerValid(west) &&
+                               (if (chicago5 || quintet) {
+                                 extra.map( p => playerValid(p) ).getOrElse(false)
+                               } else {
+                                 true
+                               })
 
-    def isValid() = areAllPlayersValid()&& isDealerValid()
+    def areAllPlayersUnique() = {
+      val p = north::south::east::west::(if (chicago5 || quintet) extra.toList else Nil)
+      val before = p.length
+      val after = p.distinct.length
+      before == after
+    }
+
+    def isValid() = areAllPlayersValid()&& isDealerValid() && areAllPlayersUnique()
 
     def isDealer( p: PlayerPosition ): Boolean = dealer.map( d => d == p ).getOrElse(false)
 
@@ -53,7 +65,7 @@ object PagePlayers {
         }
 
     def getDealer = dealer.map( d => d.pos.toString ).getOrElse("")
-    
+
     def getDealerName() = dealer.map( d => d match {
       case North => north
       case South => south
@@ -113,17 +125,19 @@ object PagePlayersInternal {
 
     }
 
-    val storeCallback = Callback { scope.withEffectsImpure.forceUpdate }
+    val storeCallback = scope.forceUpdate
 
-    def didMount() = CallbackTo {
-      logger.info("PagePlayers.didMount")
-      ChicagoStore.addChangeListener(storeCallback)
-    } >> CallbackTo {
-      import scala.concurrent.ExecutionContext.Implicits.global
-      ChicagoController.ensureMatch(scope.withEffectsImpure.props.page.chiid).foreach( m => scope.withEffectsImpure.forceUpdate )
+    def didMount() = scope.props >>= { props =>
+      Callback {
+        logger.info("PagePlayers.didMount")
+        ChicagoStore.addChangeListener(storeCallback)
+
+        import scala.concurrent.ExecutionContext.Implicits.global
+        ChicagoController.ensureMatch(props.page.chiid).foreach( m => scope.withEffectsImpure.forceUpdate )
+      }
     }
 
-    def willUnmount() = CallbackTo {
+    def willUnmount() = Callback {
       logger.info("PagePlayers.willUnmount")
       ChicagoStore.removeChangeListener(storeCallback)
     }

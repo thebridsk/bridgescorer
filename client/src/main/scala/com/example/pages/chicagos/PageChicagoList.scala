@@ -113,7 +113,7 @@ object PageChicagoListInternal {
 
     def showChicago( chi: MatchChicago ) = Callback {
       ChicagoController.showMatch( chi )
-    } >> scope.withEffectsImpure.props.routerCtl.set(SummaryView(chi.id))
+    } >> scope.props >>= { props => props.routerCtl.set(SummaryView(chi.id)) }
 
 
     def render(props: Props, state:State) = {
@@ -154,7 +154,7 @@ object PageChicagoListInternal {
 
     private var mounted = false
 
-    def didMount() = CallbackTo {
+    def didMount() = Callback {
       mounted = true
 
       // make AJAX rest call here
@@ -166,7 +166,7 @@ object PageChicagoListInternal {
 
     }
 
-    def willUnmount() = CallbackTo {
+    def willUnmount() = Callback {
       mounted = false
     }
 
