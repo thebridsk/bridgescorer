@@ -383,8 +383,8 @@ object PageSummaryInternal {
 
     def clearAllSelected() = scope.modState( s => s.copy(selected=List()) )
 
-    def selectedAll() = scope.modState { s =>
-      val (importid,summaries) = getDuplicateSummaries(scope.withEffectsImpure.props)
+    def selectedAll() = scope.modState { (s,props) =>
+      val (importid,summaries) = getDuplicateSummaries(props)
       val allIds = summaries.map { list =>
         list.map( sum => sum.id )
       }.getOrElse(List())
@@ -404,10 +404,10 @@ object PageSummaryInternal {
 
     def forPrintCancel() = forPrint(false)
 
-    def toggleRows() = scope.modState{ s =>
+    def toggleRows() = scope.modState{ (s,props) =>
       val n = s.showRows match {
         case Some(r) => None
-        case None => Some( scope.withEffectsImpure.props.defaultRows )
+        case None => Some( props.defaultRows )
       }
       s.copy( showRows=n)
     }
@@ -738,7 +738,7 @@ object PageSummaryInternal {
 
     private var mounted = false
 
-    val storeCallback = Callback { scope.withEffectsImpure.forceUpdate }
+    val storeCallback = scope.forceUpdate
 
     def didMount() = Callback {
       logger.info("PageSummary.didMount")

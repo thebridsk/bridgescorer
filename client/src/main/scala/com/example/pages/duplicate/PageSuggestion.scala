@@ -345,7 +345,7 @@ object PageSuggestionInternal {
       s.copy( knownPlayers=Some(sug))
     })
 
-    val storeCallback = Callback { scope.withEffectsImpure.forceUpdate }
+    val storeCallback = scope.forceUpdate
 
     def didMount() = Callback {
       mounted = true

@@ -145,8 +145,7 @@ object PageNamesInternal {
         }
       }))
 
-    def doUpdate() = Callback {
-      val state = scope.withEffectsImpure.state
+    def doUpdate() = scope.modStateOption { state =>
       DuplicateStore.getMatch() match {
         case Some(md) =>
           state.teams.values.foreach { team => {
@@ -159,6 +158,7 @@ object PageNamesInternal {
           }}
         case None =>
       }
+      None
     }
 
     def okCallback = doUpdate >> scope.props >>= { props => props.routerCtl.set(props.returnPage) }
@@ -167,16 +167,16 @@ object PageNamesInternal {
       scope.modState(s => State.create(props))
     }
 
-    val storeCallback = Callback {
-      scope.withEffectsImpure.modState(s => State.create(scope.withEffectsImpure.props))
+    val storeCallback = scope.modState { (s,p) =>
+      State.create(p)
     }
 
     def didMount() = Callback {
       logger.info("PageNames.didMount")
       DuplicateStore.addChangeListener(storeCallback)
-    } >> Callback {
-      Controller.monitorMatchDuplicate(scope.withEffectsImpure.props.page.dupid)
-    }
+    } >> scope.props >>= { props => Callback {
+      Controller.monitorMatchDuplicate(props.page.dupid)
+    }}
 
     def willUnmount() = Callback {
       logger.info("PageNames.willUnmount")

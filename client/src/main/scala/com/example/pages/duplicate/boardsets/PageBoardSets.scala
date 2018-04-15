@@ -133,10 +133,10 @@ object PageBoardSetsInternal {
       )
     }
 
-    val storeCallback = Callback {
+    val storeCallback = scope.modState { s =>
       val boardsets = BoardSetStore.getBoardSets()
       logger.info("Got all boardsets, n="+boardsets.size )
-      scope.withEffectsImpure.modState(s => s.copy( boardSets=boardsets))
+      s.copy( boardSets=boardsets)
     }
 
     def didMount() = CallbackTo {

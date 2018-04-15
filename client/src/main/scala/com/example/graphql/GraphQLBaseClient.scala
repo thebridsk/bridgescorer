@@ -89,9 +89,11 @@ class GraphQLBaseClient(
                  xpos: Position
              ): AjaxResult[GraphQLResponse] = {
     val data = writeJson( queryToJson( query, variables, operation ) )
+    log.fine( s"GraphQLBaseClient.request(${xpos.line}): sending ${data}" )
     val rr = AjaxResult.post(url, data, timeout, headers )
     rr.map { wrapper =>
       val body = wrapper.responseText
+      log.fine( s"GraphQLBaseClient.request(${xpos.line}): received ${body}" )
       val r = AjaxResult.fromJson[GraphQLResponse](body, url)
       if (r.data.isEmpty || r.data.get == JsNull) throw new AjaxErrorReturn( wrapper.status, wrapper.responseText, rr )
       r

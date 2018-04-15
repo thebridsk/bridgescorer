@@ -24,6 +24,10 @@ import com.example.rest2.AjaxResult
 import com.example.test.utils.StartLogging
 import _root_.utils.logging.Logger
 import com.example.source.SourcePosition
+import japgolly.scalajs.react.extra.router.BaseUrl
+import com.example.routes.TestBridgeRouter
+import japgolly.scalajs.react.extra.router.Path
+import com.example.routes.AppRouter.Home
 
 object MyTest {
   val log = Logger("bridge.MyTest")
@@ -48,14 +52,46 @@ class MyTest extends FlatSpec with MustMatchers {
     AjaxResult.isEnabled mustBe Some(false)
   }
 
-  it should "work with jQuery" in {
-    var selectedPage: Option[AppPage] = None
+  /**
+   * A BridgeRouter for testing
+   * @param base the base url, example: http://localhost:8080/html/index-fastopt.html
+   */
+  class TestPageBridgeRouter( base: BaseUrl ) extends TestBridgeRouter[AppPage](base) {
 
-    def pagecallback(selected: AppPage) = CallbackTo {
-      selectedPage = Some(selected)
+    private var callRefresh: Boolean = false
+    private var callSet: Option[AppPage] = None
+
+    def isRefreshCalled = callRefresh
+    def getSetPage = callSet
+
+    def resetRouter = {
+      callRefresh = false
+      callSet = None
     }
 
-    val component = ReactTestUtils renderIntoDocument HomePage(pagecallback)
+    def home: TagMod = setOnClick(Home)
+
+    def refresh: Callback = Callback {
+      callRefresh = true
+    }
+    def set( page: AppPage ): Callback = Callback {
+      callSet = Some(page)
+    }
+
+    def pathFor(target: AppPage): Path = target match {
+      case Home => Path("")
+      // TODO implement other pages
+      case _ => ???
+    }
+  }
+
+  it should "work with jQuery" in {
+
+    val router = new TestPageBridgeRouter( BaseUrl("http://test.example.com/index.html") )
+
+    def selectedPage = router.getSetPage
+
+    val component = ReactTestUtils renderIntoDocument HomePage(router)
     val y = component.getDOMNode.asElement
     log.info("TestJQuery: ReactDOM.findDOMNode(component) is "+y)
     val jq = jQuery
@@ -64,17 +100,12 @@ class MyTest extends FlatSpec with MustMatchers {
   }
 
   it should "work with HomePage" in {
-    object view {
 
-      var selectedPage: Option[AppPage] = None
+    val router = new TestPageBridgeRouter( BaseUrl("http://test.example.com/index.html") )
 
-      def pagecallback(selected: AppPage) = Callback {
-        selectedPage = Some(selected)
-      }
+    def selectedPage = router.getSetPage
 
-    }
-
-    ReactTestUtils.withRenderedIntoDocument(HomePage( view.pagecallback ) ) { m =>
+    ReactTestUtils.withRenderedIntoDocument(HomePage( router ) ) { m =>
       val e = m.getDOMNode.asElement
 
       val jv = new ReactForJQuery(e)
@@ -87,7 +118,7 @@ class MyTest extends FlatSpec with MustMatchers {
       val b = buttons(0)
       Simulation.click run b
 
-      myassert( view.selectedPage.get, PlayChicago2(ListView), "Chicago button was not hit")
+      myassert( selectedPage.get, PlayChicago2(ListView), "Chicago button was not hit")
 
     }
   }

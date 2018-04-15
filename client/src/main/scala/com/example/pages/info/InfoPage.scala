@@ -8,6 +8,8 @@ import com.example.routes.AppRouter._
 import com.example.react.AppButton
 import utils.logging.Logger
 import com.example.pages.BaseStyles
+import japgolly.scalajs.react.extra.router.RouterCtl
+import com.example.routes.BridgeRouter
 
 /**
  * @author werewolf
@@ -17,11 +19,11 @@ object InfoPage {
 
   private val log = Logger("bridge.InfoPage")
 
-  case class Props( doneCB: (AppPage)=>Callback )
+  case class Props( routeCtl: BridgeRouter[AppPage] )
 
   class Backend( scope: BackendScope[Props, Unit] ) {
     def render( props: Props ) = {
-          val callbackPage = props.doneCB
+          val gotoPage = props.routeCtl.set _
           <.div(
             rootStyles.infoPageDiv,
             <.table( ^.width := "100%",
@@ -34,7 +36,7 @@ object InfoPage {
                 )
             ),
             <.p(
-              AppButton( "Cancel", "Cancel", ^.onClick --> callbackPage(Home)),
+              AppButton( "Cancel", "Cancel", ^.onClick --> gotoPage(Home)),
               " ",
               AppButton( "Refresh", "Refresh", ^.onClick --> scope.forceUpdate )
             )
@@ -96,7 +98,7 @@ object InfoPage {
         .renderBackend[Backend]
         .build
 
-  def apply( callbackPage: (AppPage)=>Callback ) = component(Props(callbackPage))
+  def apply( routeCtl: BridgeRouter[AppPage] ) = component(Props(routeCtl))
 
   /**
    * window.orientation: (from http://www.williammalone.com/articles/html5-javascript-ios-orientation/)

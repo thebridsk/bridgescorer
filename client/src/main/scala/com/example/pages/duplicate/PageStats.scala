@@ -202,6 +202,21 @@ object PageStatsInternal {
     )
   }
 
+  def stats( prefix: String, n: Int, detail: List[TagMod], colors: List[Color], handsPlayed: Int ) = {
+    if (n == 1) {
+      detail.toTagMod
+    } else if (n > 0) {
+      TagMod(
+        trickTitle( f"${prefix}: ${n} (${100.0*n/handsPlayed}%.2f%%)", colors:_* ),
+        <.ul(
+          detail.toTagMod
+        )
+      )
+    } else {
+      TagMod()
+    }
+  }
+
   /**
    * @param pre prefix that identifies what is being displayed
    * @param histogram the histogram that is being displayed
@@ -219,6 +234,7 @@ object PageStatsInternal {
       downColors: List[Color],
       passedColor: Color
   ) = {
+
     val (made,down,passed,smade,sdown) = histogram.foldLeft((0,0,0,List[TagMod](),List[TagMod]())) { (ac,v) =>
       val percent: Double = 100.0 * v.counter / handsPlayed
       val s = if (v.tricks < 0)        trickTitle( f"Down ${-v.tricks}: ${v.counter} (${percent}%.2f%%)", colorMap(v.tricks) )
@@ -236,30 +252,11 @@ object PageStatsInternal {
         f"Total: ${handsPlayed}",
         totalHandsPlayed.filter(t=>t!=0).map( t => TagMod( f" (${100.0*handsPlayed/t}%.2f%%)" )).getOrElse(TagMod(""))
       ),
-      if (made > 0) {
-        TagMod(
-          trickTitle( f"Made ${made} (${100.0*made/handsPlayed}%.2f%%)", madeColors:_* ),
-          <.ul(
-            smade.toTagMod
-          )
-        )
-      } else {
-        TagMod()
-      },
-      if (down > 0) {
-        TagMod(
-          trickTitle( f"Down ${down} (${100.0*down/handsPlayed}%.2f%%)", downColors:_* ),
-          <.ul(
-            sdown.toTagMod
-          )
-        )
-      } else {
-        TagMod()
-      },
+      stats( "Made", made, smade, madeColors, handsPlayed ),
+      stats( "Down", down, sdown, downColors, handsPlayed ),
       if (passed > 0) {
-        f"Passed ${passed} (${100.0*passed/handsPlayed}%.2f%%)"
         TagMod(
-          trickTitle( f"Passed ${passed} (${100.0*passed/handsPlayed}%.2f%%)", passedColor ),
+          trickTitle( f"Passed Out: ${passed} (${100.0*passed/handsPlayed}%.2f%%)", passedColor ),
         )
       } else {
         TagMod()

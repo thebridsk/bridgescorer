@@ -142,10 +142,6 @@ class AppRouter( modules: Module* ) {
     routerCtl.set(Home)  // show the Info page.
   }
 
-  def homeCallbackShowPage( routerCtl: RouterCtl[AppPage] )( page: AppPage ) = {
-    routerCtl.set(page)
-  }
-
   def logToServer: RouterConfig.Logger =
     s => Callback { logger.fine(s"AppRouter: "+s) }
 
@@ -166,7 +162,7 @@ class AppRouter( modules: Module* ) {
 
     (emptyRule // trimSlashes
 //      | rewritePathR("^\\?(.*)$".r, m => redirectToPath(m group 1)(Redirect.Replace))     // to get past iPad quirks
-      | staticRoute(root, Home) ~> renderR( (routerCtl) => logit(HomePage(homeCallbackShowPage(routerCtl))) )
+      | staticRoute(root, Home) ~> renderR( (routerCtl) => logit(HomePage(routerCtl)) )
       | staticRoute("#handduplicate", ShowDuplicateHand) ~> renderR( (routerCtl) => logit(PageHand(defaultHand(TestDuplicate),
                                                                                     scoringViewCallbackOk(routerCtl),
                                                                                     scoringViewCallbackCancel(routerCtl),
@@ -185,7 +181,7 @@ class AppRouter( modules: Module* ) {
       | staticRoute("#about", About) ~> renderR( (routerCtl) => logit(AboutPage(routerCtl)) )
       | staticRoute("#imports", ImportsList) ~> renderR( (routerCtl) => logit(ImportsListPage(routerCtl,ImportsList)) )
       | staticRoute("#export", Export) ~> renderR( (routerCtl) => logit(ExportPage(routerCtl)) )
-      | staticRoute("#info", Info) ~> renderR( (routerCtl) => logit(InfoPage(homeCallbackShowPage(routerCtl))) )
+      | staticRoute("#info", Info) ~> renderR( (routerCtl) => logit(InfoPage(routerCtl)) )
       | staticRoute("#thankyou", ThankYou) ~> renderR( (routerCtl) => logit(ThankYouPage()) )
       | staticRoute("#testpage", PageTest) ~> renderR( (routerCtl) => logit(TestPage(Home,routerCtl)) )
       | staticRoute("#graphql", GraphQLAppPage) ~> renderR( (routerCtl) => logit(GraphQLPage(routerCtl)) )
