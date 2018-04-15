@@ -133,6 +133,8 @@ class Chicago5Test extends FlatSpec with MustMatchers with BeforeAndAfterAll wit
     pressKeys(Keys.ENTER)
     tcpSleep(1)
 
+    click on id("PlayerNFirstDealer")
+
     eventually( find(id("Ok")) mustBe 'Enabled )
 
     click on id("Ok")

@@ -14,7 +14,7 @@ import com.example.backend.resource.JsonYamlConverter
 import com.example.backend.resource.JsonConverter
 import com.example.backend.resource.YamlConverter
 import com.example.data.rest.JsonException
-import com.example.backend.resource.BaseConverter
+import com.example.backend.resource.Converter
 
 object TestParseChicago extends Main {
 
@@ -40,10 +40,10 @@ object TestParseChicago extends Main {
                            0,0
                          )
 
-  val jsonConverter = new JsonConverter
-  val yamlConverter = new YamlConverter
-  val converterJsonYaml = new JsonYamlConverter( jsonConverter, yamlConverter )
-  val converterYamlJson = new JsonYamlConverter( yamlConverter, jsonConverter )
+  val jsonConverter = JsonConverter
+  val yamlConverter = YamlConverter
+  val converterJsonYaml = Converter.getConverter(false)
+  val converterYamlJson = Converter.getConverter(true)
 
   val matchChicagoInstanceJson = {
     implicit val converter = converterJsonYaml
@@ -67,7 +67,7 @@ object TestParseChicago extends Main {
 
   def test[T]( v: T,
                instanceConverter: VersionedInstanceJson[String,MatchChicago],
-               converter: JsonYamlConverter
+               converter: Converter
              )(implicit format: Format[T]) = {
     println("Testing "+v)
     val j = converter.write(v)

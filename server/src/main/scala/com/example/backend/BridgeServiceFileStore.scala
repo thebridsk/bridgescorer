@@ -31,14 +31,11 @@ import com.example.yaml.YamlSupport._
 import com.example.data.Id
 import scala.concurrent.ExecutionContext
 import com.example.data.MatchDuplicateResultV1
+import com.example.backend.resource.Converter
 
 class BridgeServiceFileStoreConverters( yaml: Boolean ) {
 
-  implicit val converter =  if (yaml) {
-    new JsonYamlConverter( new YamlConverter, new JsonConverter )
-  } else {
-    new JsonYamlConverter( new JsonConverter, new YamlConverter )
-  }
+  implicit val converter =  Converter.getConverter(yaml)
 
   implicit val matchChicagoJson = VersionedInstanceJson[String,MatchChicago].add[MatchChicagoV2].add[MatchChicagoV1]
 

@@ -197,10 +197,10 @@ object PageMovementsInternal {
       )
     }
 
-    val storeCallback = Callback {
+    val storeCallback = scope.modState { s =>
       val boardsets = BoardSetStore.getMovement()
       logger.info("Got all boardsets, n="+boardsets.size )
-      scope.withEffectsImpure.modState(s => s.copy( movements=boardsets))
+      s.copy( movements=boardsets)
     }
 
     def didMount() = CallbackTo {

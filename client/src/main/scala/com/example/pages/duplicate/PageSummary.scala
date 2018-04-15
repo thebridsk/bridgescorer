@@ -383,8 +383,8 @@ object PageSummaryInternal {
 
     def clearAllSelected() = scope.modState( s => s.copy(selected=List()) )
 
-    def selectedAll() = scope.modState { s =>
-      val (importid,summaries) = getDuplicateSummaries(scope.withEffectsImpure.props)
+    def selectedAll() = scope.modState { (s,props) =>
+      val (importid,summaries) = getDuplicateSummaries(props)
       val allIds = summaries.map { list =>
         list.map( sum => sum.id )
       }.getOrElse(List())
@@ -404,10 +404,10 @@ object PageSummaryInternal {
 
     def forPrintCancel() = forPrint(false)
 
-    def toggleRows() = scope.modState{ s =>
+    def toggleRows() = scope.modState{ (s,props) =>
       val n = s.showRows match {
         case Some(r) => None
-        case None => Some( scope.withEffectsImpure.props.defaultRows )
+        case None => Some( props.defaultRows )
       }
       s.copy( showRows=n)
     }
@@ -486,9 +486,7 @@ object PageSummaryInternal {
         val ids = s.selected.map( id => id.toString )
         s.copy(workingOnNew=Some(s"Importing Duplicate Match ${ids.mkString(", ")} from import ${importId}"))
       },
-      Callback {
-        val s = scope.withEffectsImpure.state
-        val props = scope.withEffectsImpure.props
+      scope.stateProps { (s,props) => Callback {
         val (importid,summaries) = getDuplicateSummaries(props)
 
 //        val sortByDate = if (s.selected.isEmpty) {
@@ -544,7 +542,7 @@ object PageSummaryInternal {
               logger.warning(s"exception import selected from ${importId}", x)
               setMessage(s"exception import selected from ${importId}")
         }.foreach { x => }
-      }
+      }}
     )
 
     def getDuplicateSummaries( props: Props ): (Option[String], Option[List[DuplicateSummary]]) = {
@@ -738,7 +736,7 @@ object PageSummaryInternal {
 
     private var mounted = false
 
-    val storeCallback = Callback { scope.withEffectsImpure.forceUpdate }
+    val storeCallback = scope.forceUpdate
 
     def didMount() = Callback {
       logger.info("PageSummary.didMount")

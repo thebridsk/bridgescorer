@@ -471,8 +471,7 @@ object PageTableTeamsInternal {
 
     def ok =
       // update the team players if they were entered, and/or update position of players.
-      CallbackTo {
-        val s = scope.withEffectsImpure.state
+      scope.stateProps { (s,props) =>
         s.scorekeeperPosition match {
           case Some(sk) => PageHand.scorekeeper = sk
           case None =>
@@ -500,9 +499,7 @@ object PageTableTeamsInternal {
           case None =>
             ""
         }
-        (nsid,scope.withEffectsImpure.props)
-      } >>= { case (nsid,p) =>
-        p.routerCtl.set(p.page.toNextView() match {
+        props.routerCtl.set(props.page.toNextView() match {
           case p: BaseBoardView =>
             if (nsid.length()>0) p.toHandView(nsid)
             else p
@@ -518,7 +515,7 @@ object PageTableTeamsInternal {
       Controller.updateTeam(dup, newteam)
     }
 
-    def reset = scope.modState(s=> State.create(scope.withEffectsImpure.props).copy( nameSuggestions = s.nameSuggestions).logState("PageTableTeams.Backend.reset"))
+    def reset = scope.modState((s,props)=> State.create(props).copy( nameSuggestions = s.nameSuggestions).logState("PageTableTeams.Backend.reset"))
 
     def render( props: Props, state: State ) = {
       logger.fine("PageTableTeams.Backend.render state="+state )
@@ -793,31 +790,30 @@ object PageTableTeamsInternal {
       ( ok, allvalid, div)
     }
 
-    val storeCallback = Callback {
-      scope.withEffectsImpure.modState( s => {
-        val newState = State.create(scope.withEffectsImpure.props)
+    val storeCallback =
+      scope.modState( (s, props) => {
+        val newState = State.create(props)
         if (newState.originalNames == s.originalNames) {
           s
         } else {
           newState
         }
       })
-    }
 
     val namesCallback = scope.modState(s => {
       val sug = NamesStore.getNames
       s.copy( nameSuggestions=Some(sug))
     })
 
-    def didMount() = CallbackTo {
+    val didMount = Callback {
       logger.info("PageTableTeams.didMount")
       NamesStore.ensureNamesAreCached(Some(namesCallback))
       DuplicateStore.addChangeListener(storeCallback)
-    } >> scope.props >>= { (p) => CallbackTo(
+    } >> scope.props >>= { (p) => Callback(
       Controller.monitorMatchDuplicate(p.page.dupid)
     )}
 
-    def willUnmount() = CallbackTo {
+    val willUnmount = Callback {
       logger.info("PageTableTeams.willUnmount")
       DuplicateStore.removeChangeListener(storeCallback)
     }
@@ -827,8 +823,8 @@ object PageTableTeamsInternal {
                             .initialStateFromProps { props => State.create(props) }
                             .backend(new Backend(_))
                             .renderBackend
-                            .componentDidMount( scope => scope.backend.didMount())
-                            .componentWillUnmount( scope => scope.backend.willUnmount() )
+                            .componentDidMount( scope => scope.backend.didMount)
+                            .componentWillUnmount( scope => scope.backend.willUnmount )
                             .build
 }
 

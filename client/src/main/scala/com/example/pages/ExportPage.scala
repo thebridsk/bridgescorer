@@ -96,50 +96,53 @@ object ExportPageInternal {
 
     def didMount() = Callback {
       GraphQLClient.request("""{ duplicateIds, duplicateResultIds, chicagoIds, rubberIds }""").foreach { resp =>
-        resp.data match {
-          case Some(json) =>
-            json \ "duplicateIds" match {
-              case JsDefined( JsArray( array ) ) =>
-                val list = array.map( s => jsValueToString(s) ).toList
-                val slist = list.sortWith( (l,r) => Id.idComparer(l, r)<0)
-                scope.withEffectsImpure.modState { s => s.copy(dupids = Some(slist)) }
-              case JsDefined( _ ) =>
-                scope.withEffectsImpure.modState { s => s.copy(dupids = Some(List())) }
-              case x: JsUndefined =>
-                scope.withEffectsImpure.modState { s => s.copy(dupids = Some(List())) }
-            }
-            json \ "duplicateResultIds" match {
-              case JsDefined( JsArray( array ) ) =>
-                val list = array.map( s => jsValueToString(s) ).toList
-                val slist = list.sortWith( (l,r) => Id.idComparer(l, r)<0)
-                scope.withEffectsImpure.modState { s => s.copy(duprids = Some(slist)) }
-              case JsDefined( _ ) =>
-                scope.withEffectsImpure.modState { s => s.copy(duprids = Some(List())) }
-              case x: JsUndefined =>
-                scope.withEffectsImpure.modState { s => s.copy(duprids = Some(List())) }
-            }
-            json \ "chicagoIds" match {
-              case JsDefined( JsArray( array ) ) =>
-                val list = array.map( s => jsValueToString(s) ).toList
-                val slist = list.sortWith( (l,r) => Id.idComparer(l, r)<0)
-                scope.withEffectsImpure.modState { s => s.copy(chiids = Some(slist)) }
-              case JsDefined( _ ) =>
-                scope.withEffectsImpure.modState { s => s.copy(chiids = Some(List())) }
-              case x: JsUndefined =>
-                scope.withEffectsImpure.modState { s => s.copy(chiids = Some(List())) }
-            }
-            json \ "rubberIds" match {
-              case JsDefined( JsArray( array ) ) =>
-                val list = array.map( s => jsValueToString(s) ).toList
-                val slist = list.sortWith( (l,r) => Id.idComparer(l, r)<0)
-                scope.withEffectsImpure.modState { s => s.copy(rubids = Some(slist)) }
-              case JsDefined( _ ) =>
-                scope.withEffectsImpure.modState { s => s.copy(rubids = Some(List())) }
-              case x: JsUndefined =>
-                scope.withEffectsImpure.modState { s => s.copy(rubids = Some(List())) }
-            }
-          case None =>
-            scope.withEffectsImpure.modState { s => s.copy(dupids = Some(List()), chiids = Some(List()), rubids = Some(List())) }
+        scope.withEffectsImpure.modState { s0 =>
+          resp.data match {
+            case Some(json) =>
+              val s1 = json \ "duplicateIds" match {
+                case JsDefined( JsArray( array ) ) =>
+                  val list = array.map( s => jsValueToString(s) ).toList
+                  val slist = list.sortWith( (l,r) => Id.idComparer(l, r)<0)
+                  s0.copy(dupids = Some(slist))
+                case JsDefined( _ ) =>
+                  s0.copy(dupids = Some(List()))
+                case x: JsUndefined =>
+                  s0.copy(dupids = Some(List()))
+              }
+              val s2 = json \ "duplicateResultIds" match {
+                case JsDefined( JsArray( array ) ) =>
+                  val list = array.map( s => jsValueToString(s) ).toList
+                  val slist = list.sortWith( (l,r) => Id.idComparer(l, r)<0)
+                  s1.copy(duprids = Some(slist))
+                case JsDefined( _ ) =>
+                  s1.copy(duprids = Some(List()))
+                case x: JsUndefined =>
+                  s1.copy(duprids = Some(List()))
+              }
+              val s3 = json \ "chicagoIds" match {
+                case JsDefined( JsArray( array ) ) =>
+                  val list = array.map( s => jsValueToString(s) ).toList
+                  val slist = list.sortWith( (l,r) => Id.idComparer(l, r)<0)
+                  s2.copy(chiids = Some(slist))
+                case JsDefined( _ ) =>
+                  s2.copy(chiids = Some(List()))
+                case x: JsUndefined =>
+                  s2.copy(chiids = Some(List()))
+              }
+              val s4 = json \ "rubberIds" match {
+                case JsDefined( JsArray( array ) ) =>
+                  val list = array.map( s => jsValueToString(s) ).toList
+                  val slist = list.sortWith( (l,r) => Id.idComparer(l, r)<0)
+                  s3.copy(rubids = Some(slist))
+                case JsDefined( _ ) =>
+                  s3.copy(rubids = Some(List()))
+                case x: JsUndefined =>
+                  s3.copy(rubids = Some(List()))
+              }
+              s4
+            case None =>
+              s0.copy(dupids = Some(List()), chiids = Some(List()), rubids = Some(List()))
+          }
         }
       }
     }

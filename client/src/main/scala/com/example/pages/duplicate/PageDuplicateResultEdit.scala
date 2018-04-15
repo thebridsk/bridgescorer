@@ -199,9 +199,7 @@ object PageDuplicateResultEditInternal {
    */
   class Backend(scope: BackendScope[Props, State]) {
 
-    def ok() = scope.state >>= { state => Callback {
-      val props = scope.withEffectsImpure.props
-
+    def ok() = scope.modStateOption { (state, props) =>
       state.original match {
         case Some(mdr) =>
           val newmdr = state.getMDR()
@@ -215,7 +213,8 @@ object PageDuplicateResultEditInternal {
 
       if (mounted) props.routerCtl.set(DuplicateResultView(props.page.dupid)).runNow()
 
-    }}
+      None
+    }
 
     def cancel() = scope.props >>= { props => Callback {
 
@@ -234,8 +233,10 @@ object PageDuplicateResultEditInternal {
     )
 
     def setPlayed( value: Date ) = {
-      val t = if (value == null) 0 else value.getTime()
-      scope.withEffectsImpure.modState(s => s.copy( played=t) )
+      scope.modState { s =>
+        val t = if (value == null) 0 else value.getTime()
+        s.copy( played=t)
+      }
     }
 
     def toggleComplete = scope.modState( s=>s.copy( notfinished = !s.notfinished ))
@@ -328,9 +329,9 @@ object PageDuplicateResultEditInternal {
     }
 
     var mounted = false
-    val storeCallback = Callback {
+    val storeCallback = scope.modState { s =>
       val mdr = DuplicateResultStore.getDuplicateResult()
-      scope.withEffectsImpure.modState( s => s.updateOriginal(mdr) )
+      s.updateOriginal(mdr)
     }
 
     val namesCallback = scope.modState(s => {

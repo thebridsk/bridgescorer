@@ -149,7 +149,7 @@ object PageDuplicateResultInternal {
       }
     }
 
-    val storeCallback = Callback { scope.withEffectsImpure.forceUpdate }
+    val storeCallback = scope.forceUpdate
 
     def didMount() = Callback {
       logger.info("PageDuplicateResult.didMount")

@@ -219,28 +219,25 @@ object ViewPlayersFiveInternal {
 
     def swapNS() = scope.modState(s => s.copy(north=s.south, south=s.north))
 
-    def ok() = CallbackTo {
-        val state = scope.withEffectsImpure.state
-        val props = scope.withEffectsImpure.props
-        val r = if (props.chicago.rounds.size <= props.page.round) {
-          Round.create(props.page.round.toString(),
-               state.north.get,
-               state.south.get,
-               state.east.get,
-               state.west.get,
-               state.dealer.get.pos.toString(),
-               Nil )
-        } else {
-          props.chicago.rounds(props.page.round).copy(north=state.north.get,
-                                                      south=state.south.get,
-                                                      east=state.east.get,
-                                                      west=state.west.get,
-                                                      dealerFirstRound=state.dealer.get.pos.toString())
-        }
-        ChicagoController.updateChicagoRound(props.chicago.id, r)
-        props
-    } >>= { props =>
-        props.router.set(props.page.toHandView(0))
+    def ok() = scope.stateProps { (state,props) =>
+      val r = if (props.chicago.rounds.size <= props.page.round) {
+        Round.create(props.page.round.toString(),
+             state.north.get,
+             state.south.get,
+             state.east.get,
+             state.west.get,
+             state.dealer.get.pos.toString(),
+             Nil )
+      } else {
+        props.chicago.rounds(props.page.round).copy(north=state.north.get,
+                                                    south=state.south.get,
+                                                    east=state.east.get,
+                                                    west=state.west.get,
+                                                    dealerFirstRound=state.dealer.get.pos.toString())
+      }
+      ChicagoController.updateChicagoRound(props.chicago.id, r)
+
+      props.router.set(props.page.toHandView(0))
     }
 
     def setDealer( pos: PlayerPosition ) = scope.modState(s => s.copy(dealer = Some(pos)))

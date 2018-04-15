@@ -24,7 +24,7 @@ object VersionedInstanceJson {
  * @param writer a Writes object to convert an object to JSON/YAML representation.
  * @param classtag ClassTag object of the type of the latest version.
  */
-  def apply[TId, T <: VersionedInstance[T,T, TId]]( implicit converter: JsonYamlConverter,
+  def apply[TId, T <: VersionedInstance[T,T, TId]]( implicit converter: Converter,
                                                         reader: Reads[T],
                                                         writer: Writes[T],
                                                         classtag: ClassTag[T] ) = new VersionedInstanceJson[TId, T]
@@ -46,7 +46,7 @@ object VersionedInstanceJson {
 private class ReaderAndConvert[TId,
                                T <: VersionedInstance[T,T, TId],
                                R <: VersionedInstance[T,R,TId]]
-                              ( implicit converter: JsonYamlConverter,
+                              ( implicit converter: Converter,
                                          reader: Reads[R],
                                          writer: Writes[R],
                                          classtag: ClassTag[R],
@@ -88,7 +88,7 @@ private class ReaderAndConvert[TId,
  */
 class VersionedInstanceJson[TId, T <: VersionedInstance[T,T, TId]](
                     implicit
-                      converter: JsonYamlConverter,
+                      converter: Converter,
                       reader: Reads[T],
                       writer: Writes[T],
                       classtagCurrent: ClassTag[T]

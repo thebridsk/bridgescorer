@@ -18,8 +18,8 @@ import com.example.backend.resource.JsonYamlConverter
 import play.api.libs.json._
 import com.example.yaml.YamlSupport._
 import com.example.data.rest.JsonException
-import com.example.backend.resource.BaseConverter
 import com.example.backend.BridgeServiceFileStoreConverters
+import com.example.backend.resource.Converter
 
 class TestVersionedInstance extends FlatSpec with MustMatchers {
 
@@ -45,9 +45,9 @@ class TestVersionedInstance extends FlatSpec with MustMatchers {
                            0,0
                          )
 
-  val jsonConverter = new JsonConverter
-  val yamlConverter = new YamlConverter
-  implicit val converterJsonYaml = new JsonYamlConverter( yamlConverter, jsonConverter )
+  val jsonConverter = JsonConverter
+  val yamlConverter = YamlConverter
+  implicit val converterYamlJson = Converter.getConverter(true)
 
   val converters = new BridgeServiceFileStoreConverters(true)
   import converters.matchChicagoJson
@@ -58,7 +58,7 @@ class TestVersionedInstance extends FlatSpec with MustMatchers {
       v: T,
       good: Boolean,
       converter: VersionedInstanceJson[String,C],
-      writeConverter: BaseConverter
+      writeConverter: Converter
   )(implicit writer: Writes[T]) = {
     val j = writeConverter.write(v)
     val vc = converter.parse( j )

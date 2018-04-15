@@ -46,6 +46,8 @@ import com.example.react.AppButtonLink
 import com.example.fastclick.FastClick
 import com.example.react.PopupOkCancel
 import com.example.pages.duplicate.DuplicateRouter.SelectMatchView
+import japgolly.scalajs.react.extra.router.RouterCtl
+import com.example.routes.BridgeRouter
 
 /**
  * @author werewolf
@@ -54,7 +56,7 @@ object HomePage {
 
   var debugging = false
 
-  case class Props( callback: (AppPage)=>Callback)
+  case class Props( routeCtl: BridgeRouter[AppPage])
 
   case class State( debugging: Boolean, serverUrl: ServerURL, working: Option[String], fastclickTest: Boolean )
 
@@ -85,7 +87,7 @@ object HomePage {
 
     def render( props: Props, state: State ) = {
       import BaseStyles._
-      def callbackPage(page: AppPage) = props.callback(page)
+      def callbackPage(page: AppPage) = props.routeCtl.set(page)
       val doingWork = state.working.getOrElse("")
       val isWorking = state.working.isDefined
       <.div(
@@ -302,6 +304,12 @@ object HomePage {
                              rootStyles.playButton,
                              ^.disabled:=isWorking,
                              ^.onClick --> callbackPage(GraphQLAppPage))
+                ),
+                <.td( ^.width:="25%",
+                  AppButton( "Color", "Color",
+                             rootStyles.playButton,
+                             ^.disabled:=isWorking,
+                             ^.onClick --> callbackPage(ColorView))
                 )
               )
             )
@@ -309,6 +317,14 @@ object HomePage {
         )
       )
     }
+
+    def gotoPage( page: AppPage ) = scope.withEffectsImpure.props.routeCtl.set(page).runNow()
+
+    /**
+     * Sets the text in the working field.  only call when not doing another modState.
+     * @param text string to show as an error
+     */
+    def setPopupText( text: String, cb: Callback = Callback.empty ) = scope.withEffectsImpure.modState( s => s.copy( working = Some(text) ), cb )
 
     def doShutdown() = scope.modState( s => s.copy(working = Some("Sending shutdown command to server")), Callback {
 
@@ -321,11 +337,11 @@ object HomePage {
       res.onComplete( _ match {
         case Success(req) =>
           if (req.status == 204) {
-            scope.withEffectsImpure.props.callback(ThankYou).runNow()
+            gotoPage(ThankYou)
           } else {
             val resp = req.toRestMessage
             logger.severe(s"Error from server on shutdown action: ${resp}")
-            scope.withEffectsImpure.modState( s => s.copy(working = Some(s"Error from server: ${resp}")) )
+            setPopupText(s"Error from server: ${resp}")
           }
         case Failure(f) =>
           f match {
@@ -333,7 +349,7 @@ object HomePage {
               // ignore this
             case _ =>
               logger.severe("Error trying to shutdown server: ",f)
-              scope.withEffectsImpure.modState( s => s.copy(working = Some(s"Error sending shutdown to server ${f}")) )
+              setPopupText(s"Error sending shutdown to server ${f}")
           }
       })
     })
@@ -360,13 +376,13 @@ object HomePage {
         resultChicago.set(result)
         result.foreach { created =>
           logger.info(s"Got new chicago ${created.id}.  HomePage.mounted=${mounted}")
-          if (mounted) scope.withEffectsImpure.props.callback(PlayChicago2(NamesView(created.id,0))).runNow()
+          if (mounted) gotoPage(PlayChicago2(NamesView(created.id,0)))
         }
         result.failed.foreach( t => {
           t match {
             case x: RequestCancelled =>
             case _ =>
-              scope.withEffectsImpure.modState( s => s.copy(working=Some("Failed to create a new Chicago match")))
+              setPopupText("Failed to create a new Chicago match")
           }
         })
       })
@@ -377,29 +393,29 @@ object HomePage {
         val result = RubberController.createMatch()
         result.foreach { created =>
           logger.info(s"Got new rubber ${created.id}.  HomePage.mounted=${mounted}")
-          if (mounted) scope.withEffectsImpure.props.callback(PlayRubber(RubberMatchNamesView(created.id))).runNow()
+          if (mounted) gotoPage(PlayRubber(RubberMatchNamesView(created.id)))
         }
         result.failed.foreach( t => {
           t match {
             case x: RequestCancelled =>
             case _ =>
-              scope.withEffectsImpure.modState( s => s.copy(working=Some("Failed to create a new Chicago match")))
+              setPopupText("Failed to create a new Chicago match")
           }
         })
       })
 
     def newDuplicate() =
-      scope.modState( s => s.copy(working=Some("Working on creating a new duplicate match")), Callback {
+      setPopupText("Working on creating a new duplicate match", Callback {
         val result = Controller.createMatchDuplicate().recordFailure()
         result.foreach { created=>
           logger.info("Got new duplicate match ${created.id}.  HomePage.mounted=${mounted}")
-          if (mounted) scope.withEffectsImpure.props.callback(PlayDuplicate(CompleteScoreboardView(created.id))).runNow()
+          if (mounted) gotoPage(PlayDuplicate(CompleteScoreboardView(created.id)))
         }
         result.failed.foreach( t => {
           t match {
             case x: RequestCancelled =>
             case _ =>
-              scope.withEffectsImpure.modState( s => s.copy(working=Some("Failed to create a new duplicate match")))
+              setPopupText("Failed to create a new duplicate match")
           }
         })
       })
@@ -443,6 +459,6 @@ object HomePage {
         .componentWillUnmount( scope => scope.backend.willUnmount() )
         .build
 
-  def apply( callbackPage: (AppPage)=>Callback ) = component(Props(callbackPage))
+  def apply( routeCtl: BridgeRouter[AppPage] ) = component(Props(routeCtl))
 
 }

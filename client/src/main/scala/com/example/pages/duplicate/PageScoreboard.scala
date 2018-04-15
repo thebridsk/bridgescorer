@@ -259,13 +259,12 @@ object PageScoreboardInternal {
 
     def actionDelete = scope.modState(s => s.copy(deletePopup=true) )
 
-    def actionDeleteOk = Callback {
-      val props = scope.withEffectsImpure.props
+    def actionDeleteOk = scope.props >>= { props => Callback {
       Controller.deleteMatchDuplicate(props.game.dupid).foreach( msg => {
         logger.info("Deleted duplicate match, going to summary view")
         props.routerCtl.set(SummaryView).runNow()
       })
-    }
+    }}
 
     def actionDeleteCancel = scope.modState(s => s.copy(deletePopup=false) )
 

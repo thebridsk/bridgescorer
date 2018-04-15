@@ -85,16 +85,16 @@ object PageSelectMatchInternal {
 
     private var mounted = false
 
-    def ok() = scope.state >>= { state =>
+    def ok() = scope.modStateOption { ( state, props) =>
       state.selection match {
         case Some(s) =>
           val id = s"M${s}"
-          val props = scope.withEffectsImpure.props
           props.routerCtl.set( CompleteScoreboardView(id) )
         case None =>
           logger.severe("No selection for PageSelectMatch")
           Callback {}
       }
+      None
     }
 
     def inputCB( data: ReactEventFromInput): Callback = data.inputText { text =>

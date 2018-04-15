@@ -95,7 +95,7 @@ object PageAllTablesInternal {
       }
     }
 
-    val storeCallback = Callback { scope.withEffectsImpure.forceUpdate }
+    val storeCallback = scope.forceUpdate
 
     def didMount() = CallbackTo {
       logger.info("PageAllTables.didMount")

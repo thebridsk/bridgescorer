@@ -92,7 +92,7 @@ object DebugLoggerComponentInternal {
       )
     }
 
-    val storeCallback = Callback { scope.withEffectsImpure.forceUpdate }
+    val storeCallback = scope.forceUpdate
 
     def didMount() = Callback {
       LoggerStore.addChangeListener(storeCallback)

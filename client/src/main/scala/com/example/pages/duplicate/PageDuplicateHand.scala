@@ -173,26 +173,26 @@ object PageDuplicateHandInternal {
       p.routerCtl.set(p.page.toBoardView())
     }
 
-    val storeCallback = Callback { scope.withEffectsImpure.modState(s => {
-      val newstate = State.create(scope.withEffectsImpure.props)
+    val storeCallback = scope.modStateOption { ( s, p ) =>
+      val newstate = State.create(p)
       if (newstate.vals.isDefined == s.vals.isDefined) {
         newstate.vals match {
           case Some((nmd,nboard,nhand,nres)) =>
             s.vals match {
               case Some((md,board,hand,res)) =>
-                if (nres.equalsIgnoreModifyTime(res)) s
-                else newstate
+                if (nres.equalsIgnoreModifyTime(res)) None
+                else Some(newstate)
               case None =>
-                newstate
+                Some(newstate)
             }
-            newstate
+            Some(newstate)
           case None =>
-            newstate
+            Some(newstate)
         }
       } else {
-        newstate
+        Some(newstate)
       }
-    }) }
+   }
 
     def didMount() = CallbackTo {
       logger.info("PageDuplicateHand.didMount")
