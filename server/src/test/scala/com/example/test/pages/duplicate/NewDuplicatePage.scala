@@ -38,7 +38,11 @@ class NewDuplicatePage( implicit webDriver: WebDriver, pageCreated: SourcePositi
     currentUrl mustBe urlFor
 
     val buttons = MovementsPage.movements.flatMap { m =>
-                    s"ShowM_${m}"::BoardSetsPage.boardsets.map(b => s"New_${m}_${b}")
+                    s"ShowM_${m}"::
+                    BoardSetsPage.boardsets.flatMap { b =>
+                      if (m == "Howell3TableNoRelay" && b == "ArmonkBoards") Nil
+                      else s"New_${m}_${b}"::Nil
+                    }
                   } ::: BoardSetsPage.boardsets.map(b => s"ShowB_${b}")
 
     findButtons( buttons: _* )
