@@ -257,32 +257,33 @@ object PageScoreboardInternal {
 
     import scala.concurrent.ExecutionContext.Implicits.global
 
-    def actionDelete = scope.modState(s => s.copy(deletePopup=true) )
+    val actionDelete = scope.modState(s => s.copy(deletePopup=true) )
 
-    def actionDeleteOk = scope.props >>= { props => Callback {
+    val actionDeleteOk = scope.props >>= { props => Callback {
       Controller.deleteMatchDuplicate(props.game.dupid).foreach( msg => {
         logger.info("Deleted duplicate match, going to summary view")
         props.routerCtl.set(SummaryView).runNow()
       })
     }}
 
-    def actionDeleteCancel = scope.modState(s => s.copy(deletePopup=false) )
+    val actionDeleteCancel = scope.modState(s => s.copy(deletePopup=false) )
 
-    def toggleShowDetails = scope.modState( s => s.copy( showdetails = !s.showdetails) )
+    val toggleShowDetails = scope.modState( s => s.copy( showdetails = !s.showdetails) )
 
-    def nextIMPs = scope.modState { s => s.nextIMPs }
+    val nextIMPs = scope.modState { s => s.nextIMPs }
 
     val storeCallback = scope.modStateOption { s =>
       DuplicateStore.getMatch().map( md => s.copy( useIMP = Some(md.isIMP) ) )
     }
 
-    def didMount() = CallbackTo {
+    val didMount = scope.props >>= { (p) => Callback {
       logger.info("PageScoreboard.didMount")
       DuplicateStore.addChangeListener(storeCallback)
-    } >> scope.props >>= { (p) => CallbackTo(
-      Controller.monitorMatchDuplicate(p.game.dupid)) }
 
-    def willUnmount() = CallbackTo {
+      Controller.monitorMatchDuplicate(p.game.dupid)
+    }}
+
+    val willUnmount = CallbackTo {
       logger.info("PageScoreboard.willUnmount")
       DuplicateStore.removeChangeListener(storeCallback)
     }
@@ -292,8 +293,8 @@ object PageScoreboardInternal {
                             .initialStateFromProps { props => State() }
                             .backend(new Backend(_))
                             .renderBackend
-                            .componentDidMount( scope => scope.backend.didMount())
-                            .componentWillUnmount( scope => scope.backend.willUnmount() )
+                            .componentDidMount( scope => scope.backend.didMount)
+                            .componentWillUnmount( scope => scope.backend.willUnmount )
                             .build
 }
 

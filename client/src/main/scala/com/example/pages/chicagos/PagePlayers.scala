@@ -127,7 +127,7 @@ object PagePlayersInternal {
 
     val storeCallback = scope.forceUpdate
 
-    def didMount() = scope.props >>= { props =>
+    val didMount = scope.props >>= { props =>
       Callback {
         logger.info("PagePlayers.didMount")
         ChicagoStore.addChangeListener(storeCallback)
@@ -137,7 +137,7 @@ object PagePlayersInternal {
       }
     }
 
-    def willUnmount() = Callback {
+    val willUnmount = Callback {
       logger.info("PagePlayers.willUnmount")
       ChicagoStore.removeChangeListener(storeCallback)
     }
@@ -148,7 +148,7 @@ object PagePlayersInternal {
                             .initialStateFromProps { props => State() }
                             .backend(new Backend(_))
                             .renderBackend
-                            .componentDidMount( scope => scope.backend.didMount())
-                            .componentWillUnmount( scope => scope.backend.willUnmount() )
+                            .componentDidMount( scope => scope.backend.didMount)
+                            .componentWillUnmount( scope => scope.backend.willUnmount )
                             .build
 }

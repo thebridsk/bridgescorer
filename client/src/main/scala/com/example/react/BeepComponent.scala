@@ -86,12 +86,12 @@ object BeepComponentInternal {
    */
   class Backend(scope: BackendScope[Props, State]) {
 
-    def enablePlay() = scope.modState(s => {
+    val enablePlay = scope.modState(s => {
       enableBeep()
       s.copy(displayButtons = false)
     })
 
-    def hideButtons() = scope.modState(s => {
+    val hideButtons = scope.modState(s => {
       disableBeep()
       s.copy(displayButtons = false)
     })

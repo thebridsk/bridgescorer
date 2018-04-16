@@ -130,7 +130,7 @@ object ViewPlayerFilterInternal {
       props.onChange( props.filter.showFilter(b) )
     }
 
-    def clearFilter() = scope.props >>= { props =>
+    val clearFilter = scope.props >>= { props =>
       props.onChange( props.filter.clearSelected )
     }
 
@@ -159,7 +159,7 @@ object ViewPlayerFilterInternal {
               if (props.filter.showFilter) {
                 TagMod(
                   AppButton( "HideFilter", "Hide Filter", ^.onClick-->showFilter(false) ),
-                  AppButton( "ClearFilter", "Clear Filter", ^.onClick-->clearFilter() ),
+                  AppButton( "ClearFilter", "Clear Filter", ^.onClick-->clearFilter ),
                   AppButton( "SelectAllFilter", "Select All", ^.onClick-->selectAllFilter(allPlayers) )
                 )
               } else {

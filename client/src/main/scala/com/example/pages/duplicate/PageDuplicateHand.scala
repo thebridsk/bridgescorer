@@ -169,7 +169,7 @@ object PageDuplicateHandInternal {
       p.routerCtl.set(p.page.toBoardView())
     }
 
-    def viewHandCallbackCancel() = scope.props >>= { p =>
+    val viewHandCallbackCancel = scope.props >>= { p =>
       p.routerCtl.set(p.page.toBoardView())
     }
 
@@ -194,14 +194,14 @@ object PageDuplicateHandInternal {
       }
    }
 
-    def didMount() = CallbackTo {
+    val didMount = scope.props >>= { (p) => Callback {
       logger.info("PageDuplicateHand.didMount")
       DuplicateStore.addChangeListener(storeCallback)
-    } >> scope.props >>= { (p) => CallbackTo(
-      Controller.monitorMatchDuplicate(p.page.dupid)
-    )}
 
-    def willUnmount() = CallbackTo {
+      Controller.monitorMatchDuplicate(p.page.dupid)
+    }}
+
+    val willUnmount = CallbackTo {
       logger.info("PageDuplicateHand.willUnmount")
       DuplicateStore.removeChangeListener(storeCallback)
     }
@@ -211,8 +211,8 @@ object PageDuplicateHandInternal {
                             .initialStateFromProps { props => State.create(props) }
                             .backend(new Backend(_))
                             .renderBackend
-                            .componentDidMount( scope => scope.backend.didMount())
-                            .componentWillUnmount( scope => scope.backend.willUnmount() )
+                            .componentDidMount( scope => scope.backend.didMount)
+                            .componentWillUnmount( scope => scope.backend.willUnmount )
                             .build
 }
 

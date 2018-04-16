@@ -46,7 +46,7 @@ object ViewPlayersVeryFirstRound {
       state
     }
 
-    def reset = scope.modState( ps => PlayerState("","","","",None, gotNames = ps.gotNames, names=ps.names))
+    val reset = scope.modState( ps => PlayerState("","","","",None, gotNames = ps.gotNames, names=ps.names))
 
     def setFirstDealer( p: PlayerPosition ) = scope.modState(ps => ps.copy(dealer=Some(p)))
 
@@ -101,7 +101,7 @@ object ViewPlayersVeryFirstRound {
                 ComboboxOrInput( setExtra, noNull(state.extra.getOrElse("")), names, "startsWith", 9, "Extra",
                                              msgEmptyList="No suggested names", msgEmptyFilter="No names matched"),
                 <.br,
-                CheckBox( "Quintet", "Fast Rotation", state.quintet, toggleQuintet() ),
+                CheckBox( "Quintet", "Fast Rotation", state.quintet, toggleQuintet ),
                 if (state.quintet) {
                   Seq[TagMod](
                     <.br,
@@ -136,11 +136,11 @@ object ViewPlayersVeryFirstRound {
           baseStyles.divFooter,
           <.div(
             baseStyles.divFooterLeft,
-            AppButton( "Ok", "OK", ^.disabled := !valid, BaseStyles.highlight( requiredNotNext=valid ), ^.onClick-->ok() ),
+            AppButton( "Ok", "OK", ^.disabled := !valid, BaseStyles.highlight( requiredNotNext=valid ), ^.onClick-->ok ),
             AppButton(
               "ToggleFive",
               if (state.chicago5) "Four" else "Five",
-              ^.onClick-->doChicagoFive()
+              ^.onClick-->doChicagoFive
             )
           ),
           <.div(
@@ -155,15 +155,15 @@ object ViewPlayersVeryFirstRound {
       )
     }
 
-    def toggleQuintet() = scope.modState( s=> s.copy( quintet = !s.quintet))
+    val toggleQuintet = scope.modState( s=> s.copy( quintet = !s.quintet))
 
-    def toggleSimpleRotation() = scope.modState( s=> s.copy( simpleRotation = !s.simpleRotation))
+    val toggleSimpleRotation = scope.modState( s=> s.copy( simpleRotation = !s.simpleRotation))
 
     def setSimpleRotation( simple: Boolean ) = scope.modState( s=> s.copy( simpleRotation = simple))
 
-    def doChicagoFive() = scope.modState({ ps => ps.copy(chicago5 = !ps.chicago5) } )
+    val doChicagoFive = scope.modState({ ps => ps.copy(chicago5 = !ps.chicago5) } )
 
-    def ok() = scope.stateProps { (state,props) =>
+    val ok = scope.stateProps { (state,props) =>
       val e = if (state.chicago5 && state.extra.isDefined) {
         val ex = state.extra.get
         if (ex == "") None
@@ -198,12 +198,12 @@ object ViewPlayersVeryFirstRound {
       s.copy(gotNames=true, names=names)
     })
 
-    def didMount() = CallbackTo {
+    val didMount = CallbackTo {
       logger.info("ViewPlayersVeryFirstRound.didMount")
       NamesStore.ensureNamesAreCached(Some(namesCallback))
     }
 
-    def willUnmount() = CallbackTo {
+    val willUnmount = CallbackTo {
       logger.info("ViewPlayersVeryFirstRound.willUnmount")
     }
 
@@ -223,7 +223,7 @@ object ViewPlayersVeryFirstRound {
                             }}
                             .backend(new Backend(_))
                             .renderBackend
-                            .componentDidMount( scope => scope.backend.didMount())
-                            .componentWillUnmount( scope => scope.backend.willUnmount() )
+                            .componentDidMount( scope => scope.backend.didMount)
+                            .componentWillUnmount( scope => scope.backend.willUnmount )
                             .build
 }

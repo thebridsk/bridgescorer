@@ -7,7 +7,12 @@ class ResultHolder[T] {
 
   def set( r: Cancellable[T] )(implicit executor: ExecutionContext) = {
     result=Some(r)
-    r.onComplete(t => result=None)
+    r.onComplete { t =>
+      result match {
+        case Some(rr) if r eq rr => result=None
+        case _ =>
+      }
+    }
   }
 
   def isRunning = result.isDefined

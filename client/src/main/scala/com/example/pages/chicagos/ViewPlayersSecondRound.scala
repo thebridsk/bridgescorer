@@ -71,9 +71,9 @@ object ViewPlayersSecondRound {
 
     def setFirstDealer( p: PlayerPosition ) = scope.modState(ps => ps.copy(dealer=Some(p)))
 
-    def changeScoreKeeper() = scope.modState(s => s.copy(changingScoreKeeper = true))
+    val changeScoreKeeper = scope.modState(s => s.copy(changingScoreKeeper = true))
 
-    def reset() = scope.modState(s=> s.copy(north=s.north, south="", east="", west="", changingScoreKeeper = false) )
+    val reset = scope.modState(s=> s.copy(north=s.north, south="", east="", west="", changingScoreKeeper = false) )
 
     /**
      * Only call from within a scope.modState()
@@ -249,7 +249,7 @@ object ViewPlayersSecondRound {
           baseStyles.divFooter,
           <.div(
             baseStyles.divFooterLeft,
-            AppButton( "Ok", "OK" , ^.disabled := !valid, BaseStyles.highlight( requiredNotNext = valid ), baseStyles.appButton, ^.onClick --> ok() )
+            AppButton( "Ok", "OK" , ^.disabled := !valid, BaseStyles.highlight( requiredNotNext = valid ), baseStyles.appButton, ^.onClick --> ok )
           ),
           <.div(
             baseStyles.divFooterCenter,
@@ -263,7 +263,7 @@ object ViewPlayersSecondRound {
       )
     }
 
-    def ok() = scope.stateProps { (state,props) =>
+    val ok = scope.stateProps { (state,props) =>
       val r = if (props.chicago.rounds.size <= props.page.round) {
         Round.create(props.page.round.toString(),
              state.north,

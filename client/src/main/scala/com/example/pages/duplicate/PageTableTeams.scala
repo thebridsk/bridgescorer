@@ -427,13 +427,13 @@ object PageTableTeamsInternal {
 
     def swapWithPartner( pos: PlayerPosition ) = scope.modState { s => s.swapWithPartner(pos) }
 
-    def setMissingNames = scope.modState{ s => s.setMissingNames }
+    val setMissingNames = scope.modState{ s => s.setMissingNames }
 
     def setScorekeeperPosition( pos: PlayerPosition ) = scope.modState{ s => s.setScorekeeperPosition(pos) }
 
     def setScorekeeperName( name: String ) = scope.modState{ s => s.setScorekeeperName(name) }
 
-    def setScorekeeper = scope.modState{ s => s.okScorekeeper }
+    val setScorekeeper = scope.modState{ s => s.okScorekeeper }
 
     def getHand( page: TableTeamView ) =
       DuplicateStore.getMatch() match {
@@ -469,7 +469,7 @@ object PageTableTeamsInternal {
         case None => List()
       }
 
-    def ok =
+    val ok =
       // update the team players if they were entered, and/or update position of players.
       scope.stateProps { (s,props) =>
         s.scorekeeperPosition match {
@@ -515,7 +515,7 @@ object PageTableTeamsInternal {
       Controller.updateTeam(dup, newteam)
     }
 
-    def reset = scope.modState((s,props)=> State.create(props).copy( nameSuggestions = s.nameSuggestions).logState("PageTableTeams.Backend.reset"))
+    val reset = scope.modState((s,props)=> State.create(props).copy( nameSuggestions = s.nameSuggestions).logState("PageTableTeams.Backend.reset"))
 
     def render( props: Props, state: State ) = {
       logger.fine("PageTableTeams.Backend.render state="+state )
@@ -805,13 +805,12 @@ object PageTableTeamsInternal {
       s.copy( nameSuggestions=Some(sug))
     })
 
-    val didMount = Callback {
+    val didMount = scope.props >>= { (p) => Callback {
       logger.info("PageTableTeams.didMount")
       NamesStore.ensureNamesAreCached(Some(namesCallback))
       DuplicateStore.addChangeListener(storeCallback)
-    } >> scope.props >>= { (p) => Callback(
       Controller.monitorMatchDuplicate(p.page.dupid)
-    )}
+    }}
 
     val willUnmount = Callback {
       logger.info("PageTableTeams.willUnmount")

@@ -272,7 +272,7 @@ object ViewPairsTableInternal {
    */
   class Backend(scope: BackendScope[Props, State]) {
 
-    def toggleShowHidden = scope.modState { s => s.copy( showHidden = !s.showHidden ) }
+    val toggleShowHidden = scope.modState { s => s.copy( showHidden = !s.showHidden ) }
 
     def setCalc( calc: CalculationType ) = scope.modState { s => s.copy( calc = calc ) }
 

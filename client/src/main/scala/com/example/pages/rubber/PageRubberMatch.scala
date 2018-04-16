@@ -173,17 +173,17 @@ object PageRubberMatchInternal {
               <.div( baseStyles.divFooter,
                   <.div(
                       baseStyles.divFooterLeft,
-                      !score.done ?= AppButton( "NextHand", "Next Hand", baseStyles.requiredNotNext, ^.onClick-->nextHand() )
+                      !score.done ?= AppButton( "NextHand", "Next Hand", baseStyles.requiredNotNext, ^.onClick-->nextHand )
                       ),
                   <.div(
                       baseStyles.divFooterLeft,
-                      AppButton( "EditNames", "Edit Names", ^.onClick-->tonames() )
+                      AppButton( "EditNames", "Edit Names", ^.onClick-->tonames )
 //                      false ?= AppButton( "Details", "Details", ^.onClick-->toDetails() )
                       ),
                   <.div(
                       baseStyles.divFooterRight,
                       ComponentInputStyleButton( CallbackTo{} ),
-                      AppButton( "Quit", "Quit", score.done ?= baseStyles.requiredNotNext, ^.onClick-->quit() )
+                      AppButton( "Quit", "Quit", score.done ?= baseStyles.requiredNotNext, ^.onClick-->quit )
                       )
                   )
               )
@@ -196,13 +196,13 @@ object PageRubberMatchInternal {
       }
     }
 
-    def toDetails() = scope.props >>= { props => props.routerCtl.set(props.page.toDetails()) }
+    val toDetails = scope.props >>= { props => props.routerCtl.set(props.page.toDetails()) }
 
-    def tonames() = scope.props >>= { props => props.routerCtl.set(props.page.toNames()) }
+    val tonames = scope.props >>= { props => props.routerCtl.set(props.page.toNames()) }
 
-    def quit() = scope.props >>= { props => props.routerCtl.set(ListView) }
+    val quit = scope.props >>= { props => props.routerCtl.set(ListView) }
 
-    def nextHand() = {
+    val nextHand = {
       RubberStore.getRubber match {
         case Some(rub) =>
           val handid = "new"
@@ -214,14 +214,14 @@ object PageRubberMatchInternal {
 
     val storeCallback = Callback { scope.withEffectsImpure.forceUpdate }
 
-    def didMount() = Callback {
+    val didMount = Callback {
       logger.info("PageRubberNames.didMount")
       RubberStore.addChangeListener(storeCallback)
     } >> scope.props >>= { (p) => Callback(
       RubberController.ensureMatch(p.page.rid)
     )}
 
-    def willUnmount() = Callback {
+    val willUnmount = Callback {
       logger.info("PageRubberNames.willUnmount")
       RubberStore.removeChangeListener(storeCallback)
     }
@@ -231,8 +231,8 @@ object PageRubberMatchInternal {
                             .initialStateFromProps { props => State() }
                             .backend(new Backend(_))
                             .renderBackend
-                            .componentDidMount( scope => scope.backend.didMount())
-                            .componentWillUnmount( scope => scope.backend.willUnmount() )
+                            .componentDidMount( scope => scope.backend.didMount)
+                            .componentWillUnmount( scope => scope.backend.willUnmount )
                             .build
 }
 

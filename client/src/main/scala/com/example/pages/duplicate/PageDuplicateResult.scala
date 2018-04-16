@@ -69,11 +69,11 @@ object PageDuplicateResultInternal {
     // ignore changes to DateTimePicker
     def setPlayedIgnore( value: Date ) = Callback {}
 
-    def delete = scope.modState( s => s.copy(deletePopup=true) )
+    val delete = scope.modState( s => s.copy(deletePopup=true) )
 
-    def actionDeleteCancel = scope.modState( s => s.copy(deletePopup=false) )
+    val actionDeleteCancel = scope.modState( s => s.copy(deletePopup=false) )
 
-    def actionDeleteOk = scope.props >>= { props => Callback {
+    val actionDeleteOk = scope.props >>= { props => Callback {
       import scala.concurrent.ExecutionContext.Implicits.global
       RestClientDuplicateResult.delete( props.page.dupid ).recordFailure().foreach { f =>
         logger.info(s"Deleted Match duplicate result ${props.page.dupid}")
@@ -151,14 +151,14 @@ object PageDuplicateResultInternal {
 
     val storeCallback = scope.forceUpdate
 
-    def didMount() = Callback {
+    val didMount = scope.props >>= { (p) => Callback {
       logger.info("PageDuplicateResult.didMount")
       DuplicateResultStore.addChangeListener(storeCallback)
-    } >> scope.props >>= { (p) => Callback(
-      Controller.monitorDuplicateResult(p.page.dupid))
-    }
 
-    def willUnmount() = Callback {
+      Controller.monitorDuplicateResult(p.page.dupid)
+    }}
+
+    val willUnmount = Callback {
       logger.info("PageDuplicateResult.willUnmount")
       DuplicateResultStore.removeChangeListener(storeCallback)
       Controller.stopMonitoringDuplicateResult()
@@ -170,8 +170,8 @@ object PageDuplicateResultInternal {
                             .initialStateFromProps { props => State() }
                             .backend(new Backend(_))
                             .renderBackend
-                            .componentDidMount( scope => scope.backend.didMount())
-                            .componentWillUnmount( scope => scope.backend.willUnmount() )
+                            .componentDidMount( scope => scope.backend.didMount)
+                            .componentWillUnmount( scope => scope.backend.willUnmount )
                             .build
 }
 

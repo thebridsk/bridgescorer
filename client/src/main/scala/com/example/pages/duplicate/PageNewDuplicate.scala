@@ -123,7 +123,7 @@ object PageNewDuplicateInternal {
 
     val resultDuplicate = ResultHolder[MatchDuplicate]()
 
-    def cancel() = Callback {
+    val cancel = Callback {
       resultDuplicate.cancel()
     } >> scope.modState( s => s.copy(workingOnNew=None))
 
@@ -166,7 +166,7 @@ object PageNewDuplicateInternal {
         s.copy(workingOnNew=Some("Working on creating a new duplicate match"))
       }
 
-    def resultsOnlyToggle() = scope.modState( s => s.copy( resultsOnly = !s.resultsOnly ) )
+    val resultsOnlyToggle = scope.modState( s => s.copy( resultsOnly = !s.resultsOnly ) )
 
     def render( props: Props, state: State ) = {
       import DuplicateStyles._
@@ -174,7 +174,7 @@ object PageNewDuplicateInternal {
       val boardsetNames = state.boardsetNames()
       <.div(
         dupStyles.divNewDuplicate,
-        PopupOkCancel( state.workingOnNew, None, Some(cancel()) ),
+        PopupOkCancel( state.workingOnNew, None, Some(cancel) ),
         <.h1("New Duplicate Match"),
         CheckBox("resultsOnly", "Create Results Only", state.resultsOnly, resultsOnlyToggle ),
         <.table(
@@ -224,17 +224,17 @@ object PageNewDuplicateInternal {
       scope.withEffectsImpure.modState(s => s.copy( boardsets=boardsets, movements=movements))
     }
 
-    def didMount() = Callback {
+    val didMount = Callback {
       mounted = true
       logger.info("PageNewDuplicate.didMount")
       BoardSetStore.addChangeListener(storeCallback)
-    } >> Callback {
-      BoardSetController.getBoardSets()
-      BoardSetController.getMovement()
-//      BoardSetController.getBoardsetsAndMovements()
+
+//      BoardSetController.getBoardSets()
+//      BoardSetController.getMovement()
+      BoardSetController.getBoardsetsAndMovements()
     }
 
-    def willUnmount() = Callback {
+    val willUnmount = Callback {
       mounted = false
       logger.info("PageNewDuplicate.willUnmount")
       BoardSetStore.removeChangeListener(storeCallback)
@@ -245,8 +245,8 @@ object PageNewDuplicateInternal {
                             .initialStateFromProps { props => State(Map(),Map(), None) }
                             .backend(new Backend(_))
                             .renderBackend
-                            .componentDidMount( scope => scope.backend.didMount())
-                            .componentWillUnmount( scope => scope.backend.willUnmount() )
+                            .componentDidMount( scope => scope.backend.didMount)
+                            .componentWillUnmount( scope => scope.backend.willUnmount )
                             .build
 }
 

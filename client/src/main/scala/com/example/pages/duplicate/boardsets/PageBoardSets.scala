@@ -86,7 +86,7 @@ object PageBoardSetsInternal {
    */
   class Backend(scope: BackendScope[Props, State]) {
 
-    def okCallback = scope.forceUpdate >> scope.props >>= { props => props.routerCtl.set(props.backpage) }
+    val okCallback = scope.forceUpdate >> scope.props >>= { props => props.routerCtl.set(props.backpage) }
 
     def toggleBoardSet( name: String ) = scope.props >>= { props =>
       props.initialDisplay match {
@@ -139,14 +139,14 @@ object PageBoardSetsInternal {
       s.copy( boardSets=boardsets)
     }
 
-    def didMount() = CallbackTo {
+    val didMount = CallbackTo {
       logger.info("PageBoardSets.didMount")
       BoardSetStore.addChangeListener(storeCallback)
     } >> scope.props >>= { (p) => CallbackTo(
       BoardSetController.getBoardSets()
     )}
 
-    def willUnmount() = CallbackTo {
+    val willUnmount = CallbackTo {
       logger.info("PageBoardSets.willUnmount")
       BoardSetStore.removeChangeListener(storeCallback)
     }
@@ -159,8 +159,8 @@ object PageBoardSetsInternal {
                             }}
                             .backend(new Backend(_))
                             .renderBackend
-                            .componentDidMount( scope => scope.backend.didMount())
-                            .componentWillUnmount( scope => scope.backend.willUnmount() )
+                            .componentDidMount( scope => scope.backend.didMount)
+                            .componentWillUnmount( scope => scope.backend.willUnmount )
                             .build
 }
 

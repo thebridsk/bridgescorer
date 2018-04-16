@@ -349,7 +349,7 @@ object PageSummaryInternal {
 
     def show( what: ShowEntries ) = scope.modState( s => s.copy( showEntries = what ) )
 
-    def cancel() = Callback {
+    val cancel = Callback {
       resultDuplicate.cancel()
       resultGraphQL.cancel()
     } >> scope.modState( s => s.clearError())
@@ -358,12 +358,12 @@ object PageSummaryInternal {
 
     def setMessageCB( msg: String ) = scope.modState( s => s.withError(msg) )
 
-    def newDuplicate( fortest: Boolean = false ) =
+    val newDuplicateTest =
       scope.modState( s => s.copy(workingOnNew=Some("Working on creating a new duplicate match")), Callback {
-        val result = Controller.createMatchDuplicate(test=fortest).recordFailure()
+        val result = Controller.createMatchDuplicate(test=true).recordFailure()
         resultDuplicate.set(result)
         result.foreach { created=>
-          logger.info("Got new duplicate match ${created.id}.  HomePage.mounted=${mounted}")
+          logger.info(s"Got new duplicate match ${created.id}.  HomePage.mounted=${mounted}")
           if (mounted) scope.withEffectsImpure.props.routerCtl.set(CompleteScoreboardView(created.id)).runNow()
         }
         result.failed.foreach( t => {
@@ -381,9 +381,9 @@ object PageSummaryInternal {
       s.copy(selected = sel)
     })
 
-    def clearAllSelected() = scope.modState( s => s.copy(selected=List()) )
+    val clearAllSelected = scope.modState( s => s.copy(selected=List()) )
 
-    def selectedAll() = scope.modState { (s,props) =>
+    val selectedAll = scope.modState { (s,props) =>
       val (importid,summaries) = getDuplicateSummaries(props)
       val allIds = summaries.map { list =>
         list.map( sum => sum.id )
@@ -393,7 +393,7 @@ object PageSummaryInternal {
 
     def forPrint(flagForPrint: Boolean) = scope.modState(s => s.copy(forPrint = flagForPrint))
 
-    def forPrintOk() = CallbackTo {
+    val forPrintOk = CallbackTo {
       val s = scope.withEffectsImpure.state
       val mds = s.selected.reverse.map{ id => id.toString() }.mkString(",")
       forPrint(false).runNow()
@@ -402,9 +402,9 @@ object PageSummaryInternal {
       p.routerCtl.set(FinishedScoreboardsView(mds))
     }
 
-    def forPrintCancel() = forPrint(false)
+    val forPrintCancel = forPrint(false)
 
-    def toggleRows() = scope.modState{ (s,props) =>
+    val toggleRows = scope.modState{ (s,props) =>
       val n = s.showRows match {
         case Some(r) => None
         case None => Some( props.defaultRows )
@@ -559,7 +559,7 @@ object PageSummaryInternal {
       (importId,summaries)
     }
 
-    def nextIMPs = scope.modState { s => s.nextIMPs }
+    val nextIMPs = scope.modState { s => s.nextIMPs }
 
     def render( props: Props, state: State ) = {
       val (importId,summaries) = getDuplicateSummaries( props )
@@ -593,7 +593,7 @@ object PageSummaryInternal {
                         ^.colSpan:=3+importId.map(id=>2).getOrElse(0)+(if (state.forPrint) 2 else 1),
                         AppButton( "ShowRows2",
                                    state.showRows.map( n => "Show All" ).getOrElse(s"Show ${props.defaultRows}"),
-                                   ^.onClick --> toggleRows()
+                                   ^.onClick --> toggleRows
                                  )
                   ),
                   <.td( ^.colSpan:=tp.allPlayers.length+1 )
@@ -653,9 +653,9 @@ object PageSummaryInternal {
 
       <.div(
         dupStyles.divSummary,
-        PopupOkCancel( state.workingOnNew.map( s=>s), None, Some(cancel()) ),
+        PopupOkCancel( state.workingOnNew.map( s=>s), None, Some(cancel) ),
         <.span(
-          !state.alwaysShowAll ?= AppButton( "ShowRows", state.showRows.map( n => "Show All" ).getOrElse(s"Show ${props.defaultRows}"), ^.onClick --> toggleRows() ),
+          !state.alwaysShowAll ?= AppButton( "ShowRows", state.showRows.map( n => "Show All" ).getOrElse(s"Show ${props.defaultRows}"), ^.onClick --> toggleRows ),
           " ",
           AppButton( "Home2", "Home", props.routerCtl.home ),
           whenUndefined(importId)(
@@ -689,9 +689,9 @@ object PageSummaryInternal {
                            " ",
                            AppButton("Print", "Print", ^.onClick --> forPrintOk),
                            " ",
-                           AppButton("PrintSelectAll", "Select All", ^.onClick --> selectedAll() ),
+                           AppButton("PrintSelectAll", "Select All", ^.onClick --> selectedAll ),
                            " ",
-                           AppButton("PrintClearAll", "Clear Selected", ^.onClick --> clearAllSelected() )
+                           AppButton("PrintClearAll", "Clear Selected", ^.onClick --> clearAllSelected )
                            ).toTagMod
                   )
                 ),
@@ -704,9 +704,9 @@ object PageSummaryInternal {
                            " ",
                            AppButton("Import", "Import Selected", ^.onClick --> importSelected(importid), ^.disabled:=state.selected.isEmpty),
                            " ",
-                           AppButton("ImportSelectAll", "Select All", ^.onClick --> selectedAll() ),
+                           AppButton("ImportSelectAll", "Select All", ^.onClick --> selectedAll ),
                            " ",
-                           AppButton("ImportClearAll", "Clear Selected", ^.onClick --> clearAllSelected() )
+                           AppButton("ImportClearAll", "Clear Selected", ^.onClick --> clearAllSelected)
                            ).toTagMod
                   )
                 }
@@ -721,7 +721,7 @@ object PageSummaryInternal {
                   ),
                   <.div(
                     baseStyles.divFooterRight,
-                    AppButton( "DuplicateCreateTest", "Test", ^.onClick --> newDuplicate(true) ),
+                    AppButton( "DuplicateCreateTest", "Test", ^.onClick --> newDuplicateTest ),
                     " ",
                     AppButton("Pairs", "Pairs", props.routerCtl.setOnClick(PairsView)),
                     " ",
@@ -738,10 +738,10 @@ object PageSummaryInternal {
 
     val storeCallback = scope.forceUpdate
 
-    def didMount() = Callback {
+    val didMount = scope.props >>= { (p) => Callback {
       logger.info("PageSummary.didMount")
+      mounted = true
       DuplicateSummaryStore.addChangeListener(storeCallback)
-    } >> scope.props >>= { (p) => Callback(
       p.page match {
         case isv: ImportSummaryView =>
           val importId = isv.getDecodedId
@@ -749,10 +749,11 @@ object PageSummaryInternal {
         case SummaryView =>
           Controller.getSummary()
       }
-    )}
+    }}
 
-    def willUnmount() = Callback {
+    val willUnmount = Callback {
       logger.finer("PageSummary.willUnmount")
+      mounted = false
       DuplicateSummaryStore.removeChangeListener(storeCallback)
     }
 
@@ -764,8 +765,8 @@ object PageSummaryInternal {
                                                                     false ) }
                             .backend(new Backend(_))
                             .renderBackend
-                            .componentDidMount( scope => scope.backend.didMount())
-                            .componentWillUnmount(scope => scope.backend.willUnmount())
+                            .componentDidMount( scope => scope.backend.didMount)
+                            .componentWillUnmount(scope => scope.backend.willUnmount)
                             .build
 }
 

@@ -60,7 +60,7 @@ object AboutPageInternal {
    */
   class Backend(scope: BackendScope[Props, State]) {
 
-    def didMount() = Callback {
+    val didMount = Callback {
       import scala.concurrent.ExecutionContext.Implicits.global
       // make AJAX rest call here
       logger.finer("HomePage: Sending serverurl request to server")
@@ -117,7 +117,7 @@ object AboutPageInternal {
                             .initialStateFromProps { props => State(ServerURL(Nil), List(ServerVersion("?","?","?"))) }
                             .backend(new Backend(_))
                             .renderBackend
-                            .componentDidMount( scope => scope.backend.didMount())
+                            .componentDidMount( scope => scope.backend.didMount)
                             .build
 }
 

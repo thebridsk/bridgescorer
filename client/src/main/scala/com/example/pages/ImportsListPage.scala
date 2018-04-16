@@ -184,10 +184,13 @@ object ImportsListPageInternal {
    */
   class Backend(scope: BackendScope[Props, State]) {
 
-    def didMount() = Callback {
+    val didMount = Callback {
       refresh()
     }
 
+    /**
+     * called from threads
+     */
     def refresh() = {
       ImportMethods.list().foreach { rlist =>
         rlist match {
@@ -201,7 +204,7 @@ object ImportsListPageInternal {
 
     def error( err: String ) = scope.modState( s => s.withError(err) )
 
-    def clearError() = scope.modState( s => s.clearError() )
+    val clearError = scope.modState( s => s.clearError() )
 
     def setSelected( data: ReactEventFromInput) = data.extract(_.target.files){ files =>
       scope.modState { s =>
@@ -242,7 +245,7 @@ object ImportsListPageInternal {
       val returnUrl = props.router.urlFor( props.page ).value.replace("#", "%23")
       <.div(
         rootStyles.importsListPageDiv,
-        PopupOkCancel( state.error, None, Some(clearError()) ),
+        PopupOkCancel( state.error, None, Some(clearError) ),
 
         <.h1("Import Bridge Store"),
         <.table(
@@ -315,7 +318,7 @@ object ImportsListPageInternal {
                             .initialStateFromProps { props => State() }
                             .backend(new Backend(_))
                             .renderBackend
-                            .componentDidMount( scope => scope.backend.didMount())
+                            .componentDidMount( scope => scope.backend.didMount)
                             .build
 }
 
