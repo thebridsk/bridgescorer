@@ -36,13 +36,13 @@ object ViewPlayersThirdRound {
         }
       })
 
-    def swapEW() = scope.modState(s =>
+    val swapEW = scope.modState(s =>
           s.copy(north=s.north, south=s.south, east=s.west, west=s.east, changingScoreKeeper = false)
           )
 
     def setFirstDealer( p: PlayerPosition ) = scope.modState(ps => ps.copy(dealer=Some(p)))
 
-    def changeScoreKeeper() = scope.modState(s => s.copy(changingScoreKeeper = true))
+    val changeScoreKeeper = scope.modState(s => s.copy(changingScoreKeeper = true))
 
     def render( props: Props, state: ViewPlayersSecondRound.State ) = {
       import ChicagoStyles._
@@ -141,7 +141,7 @@ object ViewPlayersThirdRound {
             baseStyles.divFooter,
             <.div(
               baseStyles.divFooterLeft,
-              AppButton( "Ok", "OK" , ^.disabled := !valid, BaseStyles.highlight(requiredNotNext=valid ), baseStyles.appButton, ^.onClick --> ok() )
+              AppButton( "Ok", "OK" , ^.disabled := !valid, BaseStyles.highlight(requiredNotNext=valid ), baseStyles.appButton, ^.onClick --> ok )
             ),
             <.div(
               baseStyles.divFooterCenter,
@@ -155,7 +155,7 @@ object ViewPlayersThirdRound {
       )
     }
 
-    def ok() = scope.stateProps { (state,props) =>
+    val ok = scope.stateProps { (state,props) =>
       val r = if (props.chicago.rounds.size <= props.page.round) {
         Round.create(props.page.round.toString(),
              state.north,

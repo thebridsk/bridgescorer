@@ -64,11 +64,11 @@ object HomePage {
 
   class Backend( scope: BackendScope[Props, State]) {
 
-    def toggleFastclickTest() = scope.modState( s => s.copy( fastclickTest = !s.fastclickTest) )
+    val toggleFastclickTest = scope.modState( s => s.copy( fastclickTest = !s.fastclickTest) )
 
     def isFastclickOn = fastclick.isDefined
 
-    def toggleFastclick() = Callback {
+    val toggleFastclick = Callback {
       fastclick match {
         case Some(fc) =>
           fc.destroy()
@@ -78,7 +78,7 @@ object HomePage {
       }
     } >> scope.forceUpdate
 
-    def toggleDebug() = scope.modState { s =>
+    val toggleDebug = scope.modState { s =>
       val newstate = s.copy(debugging = !s.debugging)
       debugging = newstate.debugging
 
@@ -92,7 +92,7 @@ object HomePage {
       val isWorking = state.working.isDefined
       <.div(
         rootStyles.homeDiv,
-        PopupOkCancel( if (isWorking) Some(doingWork) else None, None, Some(cancel()) ),
+        PopupOkCancel( if (isWorking) Some(doingWork) else None, None, Some(cancel) ),
         <.div(
           rootStyles.serverDiv,
           ^.id:="url",
@@ -115,7 +115,7 @@ object HomePage {
                   AppButton( "ChicagoList2", "Chicago List", rootStyles.playButton, ^.disabled:=isWorking, ^.onClick --> callbackPage(PlayChicago2(ListView)))
                 ),
                 <.td( ^.width:="33%",
-                  AppButton( "Chicago2", "New Chicago", rootStyles.playButton, ^.disabled:=isWorking, ^.onClick -->newChicago() )
+                  AppButton( "Chicago2", "New Chicago", rootStyles.playButton, ^.disabled:=isWorking, ^.onClick -->newChicago )
                 ),
                 <.td( ^.width:="33%"
                 )
@@ -136,7 +136,7 @@ object HomePage {
                   AppButton( "Rubber", "Rubber Bridge List", rootStyles.playButton, ^.disabled:=isWorking, ^.onClick --> callbackPage(PlayRubber(RubberListView)))
                 ),
                 <.td(
-                  AppButton( "NewRubber", "New Rubber Bridge", rootStyles.playButton, ^.disabled:=isWorking, ^.onClick --> newRubber())
+                  AppButton( "NewRubber", "New Rubber Bridge", rootStyles.playButton, ^.disabled:=isWorking, ^.onClick --> newRubber)
                 )
               ),
               <.tr(
@@ -223,7 +223,7 @@ object HomePage {
                       rootStyles.playButton,
                       ^.disabled:=isWorking,
                       BaseStyles.highlight(selected = state.fastclickTest),
-                      ^.onClick --> toggleFastclickTest()
+                      ^.onClick --> toggleFastclickTest
                     )
                   }
                 ),
@@ -233,7 +233,7 @@ object HomePage {
                     rootStyles.playButton,
                     BaseStyles.highlight( selected = isFastclickOn ),
                     ^.disabled:=isWorking,
-                    ^.onClick --> toggleFastclick()
+                    ^.onClick --> toggleFastclick
                   )
                 ),
                 <.td( ^.width:="25%",
@@ -241,7 +241,7 @@ object HomePage {
                     "Shutdown", "Shutdown Server",
                     rootStyles.playButton,
                     ^.disabled:=isWorking,
-                    ^.onClick --> doShutdown()
+                    ^.onClick --> doShutdown
                   )
                 )
               ),
@@ -262,7 +262,7 @@ object HomePage {
                   AppButton( "Debug", "Debug",
                              rootStyles.playButton,
                              ^.disabled:=true,   // isWorking,
-                             ^.onClick --> toggleDebug(),
+                             ^.onClick --> toggleDebug,
                              BaseStyles.highlight(selected = debugging )
                   )
                 ),
@@ -326,7 +326,7 @@ object HomePage {
      */
     def setPopupText( text: String, cb: Callback = Callback.empty ) = scope.withEffectsImpure.modState( s => s.copy( working = Some(text) ), cb )
 
-    def doShutdown() = scope.modState( s => s.copy(working = Some("Sending shutdown command to server")), Callback {
+    val doShutdown = scope.modState( s => s.copy(working = Some("Sending shutdown command to server")), Callback {
 
       import com.example.rest2.RestClient._
 
@@ -363,14 +363,14 @@ object HomePage {
 
 //  import org.scalajs.dom.document
 //  document.defaultView.location.reload(true)
-    def cancel() = Callback {
+    val cancel = Callback {
       resultChicago.cancel()
       resultShutdown.cancel()
     } >> scope.modState( s => s.copy(working=None))
 
     import scala.concurrent.ExecutionContext.Implicits.global
 
-    def newChicago() = {
+    val newChicago = {
       scope.modState( s => s.copy(working=Some("Working on creating a new Chicago match")), Callback {
         val result = ChicagoController.createMatch()
         resultChicago.set(result)
@@ -388,7 +388,7 @@ object HomePage {
       })
     }
 
-    def newRubber() =
+    val newRubber =
       scope.modState( s => s.copy(working=Some("Working on creating a new rubber match")), Callback {
         val result = RubberController.createMatch()
         result.foreach { created =>
@@ -404,7 +404,7 @@ object HomePage {
         })
       })
 
-    def newDuplicate() =
+    val newDuplicate =
       setPopupText("Working on creating a new duplicate match", Callback {
         val result = Controller.createMatchDuplicate().recordFailure()
         result.foreach { created=>
@@ -422,7 +422,7 @@ object HomePage {
 
     private var mounted = false
 
-    def didMount() = Callback {
+    val didMount = Callback {
       mounted = true
       // make AJAX rest call here
       logger.info("HomePage.didMount: Sending serverurl request to server")
@@ -434,7 +434,7 @@ object HomePage {
 
     }
 
-    def willUnmount() = Callback {
+    val willUnmount = Callback {
       mounted = false
       logger.finer("HomePage.willUnmount")
     }
@@ -455,8 +455,8 @@ object HomePage {
         .initialStateFromProps(props => State(debugging,ServerURL(Nil), None, false ))
         .backend( backendScope => new Backend(backendScope))
         .renderBackend
-        .componentDidMount( scope => scope.backend.didMount())
-        .componentWillUnmount( scope => scope.backend.willUnmount() )
+        .componentDidMount( scope => scope.backend.didMount)
+        .componentWillUnmount( scope => scope.backend.willUnmount )
         .build
 
   def apply( routeCtl: BridgeRouter[AppPage] ) = component(Props(routeCtl))

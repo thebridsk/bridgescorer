@@ -95,13 +95,13 @@ object PageBoardSetInternal {
 
     val storeCallback = scope.forceUpdate
 
-    def didMount() = scope.props >>= { (p) =>
+    val didMount = scope.props >>= { (p) =>
       logger.info("PageBoardSet.didMount")
       DuplicateStore.addChangeListener(storeCallback)
       CallbackTo( Controller.monitorMatchDuplicate(p.page.dupid) )
     }
 
-    def willUnmount() = CallbackTo {
+    val willUnmount = CallbackTo {
       logger.info("PageBoardSet.willUnmount")
       DuplicateStore.removeChangeListener(storeCallback)
     }
@@ -111,8 +111,8 @@ object PageBoardSetInternal {
                             .initialStateFromProps { props => State() }
                             .backend(new Backend(_))
                             .renderBackend
-                            .componentDidMount( scope => scope.backend.didMount())
-                            .componentWillUnmount( scope => scope.backend.willUnmount() )
+                            .componentDidMount( scope => scope.backend.didMount)
+                            .componentWillUnmount( scope => scope.backend.willUnmount )
                             .build
 }
 

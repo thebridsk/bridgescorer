@@ -92,7 +92,7 @@ object PageBoardInternal {
    */
   class Backend(scope: BackendScope[Props, State]) {
 
-    def nextIMPs = scope.modState { s => s.nextIMPs }
+    val nextIMPs = scope.modState { s => s.nextIMPs }
 
     def render( props: Props, state: State ) = {
       logger.info(s"Rendering board ${props.page} routectl=${props.routerCtl.getClass.getName}")
@@ -232,14 +232,14 @@ object PageBoardInternal {
       DuplicateStore.getMatch().map( md => s.copy( useIMP = Some(md.isIMP) ) )
     }
 
-    def didMount() = CallbackTo {
+    val didMount = scope.props >>= { (p) => Callback {
       logger.info("PageBoard.didMount")
       DuplicateStore.addChangeListener(storeCallback)
-    } >> scope.props >>= { (p) => CallbackTo(
-      Controller.monitorMatchDuplicate(p.page.dupid)
-    )}
 
-    def willUnmount() = CallbackTo {
+      Controller.monitorMatchDuplicate(p.page.dupid)
+    }}
+
+    val willUnmount = Callback {
       logger.info("PageBoard.willUnmount")
       DuplicateStore.removeChangeListener(storeCallback)
     }
@@ -276,8 +276,8 @@ object PageBoardInternal {
                             .initialStateFromProps { props => State() }
                             .backend(new Backend(_))
                             .renderBackend
-                            .componentDidMount( scope => scope.backend.didMount())
-                            .componentWillUnmount( scope => scope.backend.willUnmount() )
+                            .componentDidMount( scope => scope.backend.didMount)
+                            .componentWillUnmount( scope => scope.backend.willUnmount )
                             .build
 }
 

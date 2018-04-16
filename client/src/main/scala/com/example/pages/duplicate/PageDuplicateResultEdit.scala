@@ -199,7 +199,7 @@ object PageDuplicateResultEditInternal {
    */
   class Backend(scope: BackendScope[Props, State]) {
 
-    def ok() = scope.modStateOption { (state, props) =>
+    val ok = scope.modStateOption { (state, props) =>
       state.original match {
         case Some(mdr) =>
           val newmdr = state.getMDR()
@@ -216,7 +216,7 @@ object PageDuplicateResultEditInternal {
       None
     }
 
-    def cancel() = scope.props >>= { props => Callback {
+    val cancel = scope.props >>= { props => Callback {
 
       if (mounted) props.routerCtl.set(DuplicateResultView(props.page.dupid)).runNow()
 
@@ -239,9 +239,9 @@ object PageDuplicateResultEditInternal {
       }
     }
 
-    def toggleComplete = scope.modState( s=>s.copy( notfinished = !s.notfinished ))
+    val toggleComplete = scope.modState( s=>s.copy( notfinished = !s.notfinished ))
 
-    def toggleIMP = scope.modState( s=>s.copy( useIMP = !s.useIMP ))
+    val toggleIMP = scope.modState( s=>s.copy( useIMP = !s.useIMP ))
 
     def setComment( e: ReactEventFromInput ) =  e.inputText { comment =>
       scope.modState( s=>s.copy( comment = if (comment == null || comment == "") None else Some(comment) ))
@@ -313,13 +313,13 @@ object PageDuplicateResultEditInternal {
                 baseStyles.divFooterLeft,
                 AppButton( "OK", "OK",
                            ^.disabled := !state.isValid(),
-                           ^.onClick --> ok()
+                           ^.onClick --> ok
                 )
               ),
               <.div(
                 baseStyles.divFooterCenter,
                 AppButton( "Cancel", "Cancel",
-                           ^.onClick --> cancel() )
+                           ^.onClick --> cancel )
               )
             )
           )
@@ -339,16 +339,16 @@ object PageDuplicateResultEditInternal {
       s.copy( nameSuggestions=Some(sug))
     })
 
-    def didMount() = Callback {
+    val didMount = scope.props >>= { (p) => Callback {
       mounted = true
       logger.info("PageDuplicateResultEdit.didMount")
       NamesStore.ensureNamesAreCached(Some(namesCallback))
       DuplicateResultStore.addChangeListener(storeCallback)
-    } >> scope.props >>= { (p) => Callback(
-      Controller.monitorDuplicateResult(p.page.dupid))
-    }
 
-    def willUnmount() = Callback {
+      Controller.monitorDuplicateResult(p.page.dupid)
+    }}
+
+    val willUnmount = Callback {
       mounted = false
       logger.info("PageDuplicateResultEdit.willUnmount")
       DuplicateResultStore.removeChangeListener(storeCallback)
@@ -426,8 +426,8 @@ object PageDuplicateResultEditInternal {
                             .initialStateFromProps { props => State() }
                             .backend(new Backend(_))
                             .renderBackend
-                            .componentDidMount( scope => scope.backend.didMount())
-                            .componentWillUnmount( scope => scope.backend.willUnmount() )
+                            .componentDidMount( scope => scope.backend.didMount)
+                            .componentWillUnmount( scope => scope.backend.willUnmount )
                             .build
 }
 

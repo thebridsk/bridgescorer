@@ -121,13 +121,13 @@ object PageSuggestionInternal {
       else s.addNeverPair(p1, p2)
     }
 
-    def toggleNeverPair() = scope.modState { s => s.copy( showNeverPair = !s.showNeverPair ) }
+    val toggleNeverPair = scope.modState { s => s.copy( showNeverPair = !s.showNeverPair ) }
 
-    def cancelNeverPair() = scope.modState { s => s.copy( showNeverPair = false, neverPair=List() ) }
+    val cancelNeverPair = scope.modState { s => s.copy( showNeverPair = false, neverPair=List() ) }
 
-    def clearNeverPair() = scope.modState { s => s.copy( neverPair=List() ) }
+    val clearNeverPair = scope.modState { s => s.copy( neverPair=List() ) }
 
-    def toggleDetails() = scope.modState { s => s.copy( showDetails = !s.showDetails ) }
+    val toggleDetails = scope.modState { s => s.copy( showDetails = !s.showDetails ) }
 
     def toggleKnownPlayer( p: String ) = scope.modState { s =>
       val kps = if (s.knownPlayersSelected.contains(p)) s.knownPlayersSelected.filter(pp => pp!=p)
@@ -168,11 +168,11 @@ object PageSuggestionInternal {
       }
     }
 
-    def clear() = scope.modState { s => s.copy( knownPlayersSelected=List(), newPlayers=List(), suggestion=None ) }
+    val clear = scope.modState { s => s.copy( knownPlayersSelected=List(), newPlayers=List(), suggestion=None ) }
 
-    def clearError() = scope.modState( s => s.copy(error=None))
+    val clearError = scope.modState( s => s.copy(error=None))
 
-    def calculateLocal() = scope.modState { s =>
+    val calculateLocal = scope.modState { s =>
       setTimeout(0) { Alerter.tryitWithUnit {
         val summary = DuplicateSummaryStore.getDuplicateSummary().getOrElse(List())
 
@@ -193,7 +193,7 @@ object PageSuggestionInternal {
       s.copy(error=Some(s"Calculating best pairing for ${s.getSelected.mkString(", ")}"))
     }
 
-    def calculateServer() = scope.modState { s =>
+    val calculateServer = scope.modState { s =>
       val input = DuplicateSuggestions(s.knownPlayersSelected:::s.newPlayers, 10, neverPair = Some(s.neverPair) )
       val result = RestClientDuplicateSuggestions.create(input).recordFailure()
       result.foreach { suggestion =>
@@ -229,7 +229,7 @@ object PageSuggestionInternal {
       val showDetails = state.suggestion.flatMap( s => s.suggestions ).isDefined
 
       <.div( dupStyles.divSuggestionPage,
-        PopupOkCancel( state.error.map(s => TagMod(s)), None, Some(clearError()) ),
+        PopupOkCancel( state.error.map(s => TagMod(s)), None, Some(clearError) ),
         <.div(
           baseStyles.divText100,
           "Number of players: ",
@@ -347,7 +347,7 @@ object PageSuggestionInternal {
 
     val storeCallback = scope.forceUpdate
 
-    def didMount() = Callback {
+    val didMount = Callback {
       mounted = true
       logger.info("PageSummary.didMount")
       DuplicateSummaryStore.addChangeListener(storeCallback)
@@ -355,7 +355,7 @@ object PageSuggestionInternal {
       Controller.getSummary()
     }
 
-    def willUnmount() = Callback {
+    val willUnmount = Callback {
       mounted = false
       logger.finer("PageSummary.willUnmount")
       DuplicateSummaryStore.removeChangeListener(storeCallback)
@@ -460,8 +460,8 @@ object PageSuggestionInternal {
                             .initialStateFromProps { props => State() }
                             .backend(new Backend(_))
                             .renderBackend
-                            .componentDidMount( scope => scope.backend.didMount())
-                            .componentWillUnmount( scope => scope.backend.willUnmount() )
+                            .componentDidMount( scope => scope.backend.didMount)
+                            .componentWillUnmount( scope => scope.backend.willUnmount )
                             .build
 }
 

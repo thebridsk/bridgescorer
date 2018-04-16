@@ -81,13 +81,13 @@ object PagePairsInternal {
 
     def onChange( filter: ViewPlayerFilter.Filter ) = scope.modState( s => s.copy( filter = filter ) )
 
-    def toggleShowPeopleTable() = scope.modState( s => s.copy( showPeopleTable = !s.showPeopleTable) )
+    val toggleShowPeopleTable = scope.modState( s => s.copy( showPeopleTable = !s.showPeopleTable) )
 
-    def toggleShowPairs() = scope.modState( s => s.copy( showPairs = !s.showPairs) )
+    val toggleShowPairs = scope.modState( s => s.copy( showPairs = !s.showPairs) )
 
-    def toggleShowPeopleTableDetail() = scope.modState( s => s.copy( showPeopleTableDetail = !s.showPeopleTableDetail) )
+    val toggleShowPeopleTableDetail = scope.modState( s => s.copy( showPeopleTableDetail = !s.showPeopleTableDetail) )
 
-    def toggleShowPairsDetail() = scope.modState( s => s.copy( showPairsDetail = !s.showPairsDetail) )
+    val toggleShowPairsDetail = scope.modState( s => s.copy( showPairsDetail = !s.showPairsDetail) )
 
     def render( props: Props, state: State ) = {
       <.div(
@@ -128,22 +128,22 @@ object PagePairsInternal {
             AppButton( "ShowPeopleResults",
                        "Show People Results",
                        BaseStyles.highlight(selected = state.showPeopleTable ),
-                       ^.onClick-->toggleShowPeopleTable()
+                       ^.onClick-->toggleShowPeopleTable
                      ),
             AppButton( "ShowPairsResults",
                        "Show Pairs Results",
                        BaseStyles.highlight(selected = state.showPairs ),
-                       ^.onClick-->toggleShowPairs()
+                       ^.onClick-->toggleShowPairs
                      ),
             AppButton( "ShowPeopleDetails",
                        "Show People Hand Results",
                        BaseStyles.highlight(selected = state.showPeopleTableDetail ),
-                       ^.onClick-->toggleShowPeopleTableDetail()
+                       ^.onClick-->toggleShowPeopleTableDetail
                      ),
             AppButton( "ShowPairsDetails",
                        "Show Pairs Hand Results",
                        BaseStyles.highlight(selected = state.showPairsDetail ),
-                       ^.onClick-->toggleShowPairsDetail()
+                       ^.onClick-->toggleShowPairsDetail
                      )
           )
         ),
@@ -179,14 +179,13 @@ object PagePairsInternal {
       s.copy( filter = s.filter.copy( pairsData=pd ) )
     }
 
-    def didMount() = Callback {
+    val didMount = Callback {
       logger.info("PageSummary.didMount")
       DuplicateSummaryStore.addChangeListener(storeCallback)
-    } >> scope.props >>= { (p) => Callback(
       Controller.getSummary()
-    )}
+    }
 
-    def willUnmount() = Callback {
+    val willUnmount = Callback {
       logger.finer("PageSummary.willUnmount")
       DuplicateSummaryStore.removeChangeListener(storeCallback)
     }
@@ -196,8 +195,8 @@ object PagePairsInternal {
                             .initialStateFromProps { props => State() }
                             .backend(new Backend(_))
                             .renderBackend
-                            .componentDidMount( scope => scope.backend.didMount())
-                            .componentWillUnmount(scope => scope.backend.willUnmount())
+                            .componentDidMount( scope => scope.backend.didMount)
+                            .componentWillUnmount(scope => scope.backend.willUnmount)
                             .build
 }
 

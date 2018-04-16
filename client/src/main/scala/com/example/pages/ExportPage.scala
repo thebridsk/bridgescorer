@@ -94,7 +94,7 @@ object ExportPageInternal {
    */
   class Backend(scope: BackendScope[Props, State]) {
 
-    def didMount() = Callback {
+    val didMount = Callback {
       GraphQLClient.request("""{ duplicateIds, duplicateResultIds, chicagoIds, rubberIds }""").foreach { resp =>
         scope.withEffectsImpure.modState { s0 =>
           resp.data match {
@@ -156,12 +156,12 @@ object ExportPageInternal {
       s.copy(selectedIds=next)
     }
 
-    def selectAll() = scope.modState { s =>
+    val selectAll = scope.modState { s =>
       val sel = s.dupids.getOrElse(List()):::s.chiids.getOrElse(List()):::s.rubids.getOrElse(List())
       s.copy(selectedIds = Some(sel))
     }
 
-    def selectClearAll() = scope.modState { s =>
+    val selectClearAll = scope.modState { s =>
       s.copy(selectedIds = None)
     }
 
@@ -263,8 +263,8 @@ object ExportPageInternal {
           ),
           <.div(
             baseStyles.divFooterCenter,
-            AppButton( "SelectAll", "Select All", ^.onClick --> selectAll()),
-            AppButton( "ClearAll", "Clear All", ^.onClick --> selectClearAll())
+            AppButton( "SelectAll", "Select All", ^.onClick --> selectAll),
+            AppButton( "ClearAll", "Clear All", ^.onClick --> selectClearAll)
           )
         )
       )
@@ -275,7 +275,7 @@ object ExportPageInternal {
                             .initialStateFromProps { props => State() }
                             .backend(new Backend(_))
                             .renderBackend
-                            .componentDidMount( scope => scope.backend.didMount())
+                            .componentDidMount( scope => scope.backend.didMount)
                             .build
 }
 

@@ -85,7 +85,7 @@ object PageAllBoardsInternal {
    */
   class Backend(scope: BackendScope[Props, State]) {
 
-    def nextIMPs = scope.modState { s => s.nextIMPs }
+    val nextIMPs = scope.modState { s => s.nextIMPs }
 
     def render( props: Props, state: State ) = {
       import DuplicateStyles._
@@ -137,14 +137,13 @@ object PageAllBoardsInternal {
       DuplicateStore.getMatch().map( md => s.copy( useIMP = Some(md.isIMP) ) )
     }
 
-    def didMount() = CallbackTo {
+    val didMount = scope.props >>= { (p) => CallbackTo {
       logger.info("PageAllBoards.didMount")
       DuplicateStore.addChangeListener(storeCallback)
-    } >> scope.props >>= { (p) => CallbackTo(
       Controller.monitorMatchDuplicate(p.page.dupid)
-    )}
+    }}
 
-    def willUnmount() = CallbackTo {
+    val willUnmount = CallbackTo {
       logger.info("PageAllBoards.willUnmount")
       DuplicateStore.removeChangeListener(storeCallback)
     }
@@ -154,8 +153,8 @@ object PageAllBoardsInternal {
                             .initialStateFromProps { props => State() }
                             .backend(new Backend(_))
                             .renderBackend
-                            .componentDidMount( scope => scope.backend.didMount())
-                            .componentWillUnmount( scope => scope.backend.willUnmount() )
+                            .componentDidMount( scope => scope.backend.didMount)
+                            .componentWillUnmount( scope => scope.backend.willUnmount )
                             .build
 }
 

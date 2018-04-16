@@ -66,7 +66,7 @@ object PageChicagoListInternal {
 
     def delete( id: String ) = scope.modState(s => s.copy( askingToDelete = Some(id)))
 
-    def deleteOK() = scope.modState{ s =>
+    val deleteOK = scope.modState{ s =>
         s.askingToDelete.map{ id =>
           val ns = s.copy(chicagos= s.chicagos.filter(c=>c.id!=id), askingToDelete = None)
           RestClientChicago.delete(id).recordFailure()
@@ -74,15 +74,15 @@ object PageChicagoListInternal {
         }.getOrElse(s)
       }
 
-    def deleteCancel() = scope.modState(s => s.copy( askingToDelete = None))
+    val deleteCancel = scope.modState(s => s.copy( askingToDelete = None))
 
     val resultChicago = ResultHolder[MatchChicago]()
 
-    def cancel() = Callback {
+    val cancel = Callback {
       resultChicago.cancel()
     } >> scope.modState( s => s.copy(workingOnNew=None))
 
-    def newChicago() = {
+    val newChicago = {
       import scala.concurrent.ExecutionContext.Implicits.global
       scope.modState( s => s.copy(workingOnNew=Some("Creating a new Chicago match...")), Callback {
         logger.info(s"Creating new chicago.  HomePage.mounted=${mounted}")
@@ -122,8 +122,8 @@ object PageChicagoListInternal {
       <.div( chiStyles.chicagoListPage,
           PopupOkCancel(
             state.askingToDelete.map(id => s"Are you sure you want to delete Chicago match ${id}"),
-            Some(deleteOK()),
-            Some(deleteCancel())
+            Some(deleteOK),
+            Some(deleteCancel)
           ),
           <.table(
               <.thead(
@@ -154,7 +154,7 @@ object PageChicagoListInternal {
 
     private var mounted = false
 
-    def didMount() = Callback {
+    val didMount = Callback {
       mounted = true
 
       // make AJAX rest call here
@@ -166,7 +166,7 @@ object PageChicagoListInternal {
 
     }
 
-    def willUnmount() = Callback {
+    val willUnmount = Callback {
       mounted = false
     }
 
@@ -186,11 +186,11 @@ object PageChicagoListInternal {
                   " ",
                   AppButton(
                     "PopupCancel", "Cancel",
-                    ^.onClick --> backend.cancel()
+                    ^.onClick --> backend.cancel
                   )
                 )
               case None =>
-                AppButton( "New", "New", ^.onClick --> backend.newChicago())
+                AppButton( "New", "New", ^.onClick --> backend.newChicago)
             }
           ),
           <.td( ^.colSpan:=maxplayers,"" ),
@@ -232,8 +232,8 @@ object PageChicagoListInternal {
                             .backend(new Backend(_))
                             .renderBackend
                             .configure(LogLifecycleToServer.verbose)     // logs lifecycle events
-                            .componentDidMount( scope => scope.backend.didMount())
-                            .componentWillUnmount( scope => scope.backend.willUnmount() )
+                            .componentDidMount( scope => scope.backend.didMount)
+                            .componentWillUnmount( scope => scope.backend.willUnmount )
                             .build
 }
 

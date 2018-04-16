@@ -311,9 +311,9 @@ object PageHandInternal {
     def setHonors( honors: Int ) = modState(s => s.setHonors(honors))
     def setHonorsPlayer( honorsPlayer: Option[PlayerPosition] ) = modState(s => s.setHonorsPlayer(honorsPlayer) )
 
-    def clear() = modState( s => s.clear() )
+    val clear = modState( s => s.clear() )
 
-    def kickRefresh() = scope.forceUpdate
+    val kickRefresh = scope.forceUpdate
 
     val ok = scope.stateProps { (state, props) =>
       props.callbackWithHonors match {
@@ -334,11 +334,11 @@ object PageHandInternal {
       s.copy(changeScorekeeper=false)
     })
 
-    def cancelSetScorekeeper() = scope.modState(s => {
+    val cancelSetScorekeeper = scope.modState(s => {
       s.copy(changeScorekeeper=false)
     })
 
-    def changeScorekeeper() = scope.modState(s => {
+    val changeScorekeeper = scope.modState(s => {
       s.copy(changeScorekeeper=true)
     })
 
@@ -465,12 +465,12 @@ object PageHandInternal {
             <.div(
               baseStyles.divFooterCenter,
               Button( handStyles.footerButton, "Cancel", "Cancel", ^.onClick --> props.callbackCancel),
-              Button( handStyles.footerButton, "ChangeSK", "Change Scorekeeper", ^.onClick --> changeScorekeeper())
+              Button( handStyles.footerButton, "ChangeSK", "Change Scorekeeper", ^.onClick --> changeScorekeeper)
             ),
             <.div(
               baseStyles.divFooterRight,
               ComponentInputStyleButton(kickRefresh,true),
-              Button( handStyles.footerButton, "Clear", "Clear", ^.onClick --> this.clear())
+              Button( handStyles.footerButton, "Clear", "Clear", ^.onClick --> this.clear)
             )
           )
       )

@@ -85,7 +85,7 @@ object PageSelectMatchInternal {
 
     private var mounted = false
 
-    def ok() = scope.modStateOption { ( state, props) =>
+    val ok = scope.modStateOption { ( state, props) =>
       state.selection match {
         case Some(s) =>
           val id = s"M${s}"
@@ -108,14 +108,14 @@ object PageSelectMatchInternal {
       }
     }
 
-    def popupOk() = scope.modState { s => s.copy(error = None) }
+    val popupOk = scope.modState { s => s.copy(error = None) }
 
     def render( props: Props, state: State ) = {
       import DuplicateStyles._
 
       <.div(
         dupStyles.divSelectMatch,
-        PopupOkCancel( state.error.map( s => <.p(s) ), Some(popupOk()), None ),
+        PopupOkCancel( state.error.map( s => <.p(s) ), Some(popupOk), None ),
         <.div(
           <.label(
             "Please enter just the number for the match: ",
@@ -129,7 +129,7 @@ object PageSelectMatchInternal {
           baseStyles.divFooter,
           <.div(
             baseStyles.divFooterLeft,
-            AppButton( "OK", "OK", ^.onClick-->ok() )
+            AppButton( "OK", "OK", ^.onClick-->ok )
           ),
           <.div(
             baseStyles.divFooterCenter,
@@ -142,13 +142,12 @@ object PageSelectMatchInternal {
       )
     }
 
-    def didMount() = Callback {
+    val didMount = Callback {
       mounted = true
       logger.info("PageSelectMatch.didMount")
-    } >> Callback {
     }
 
-    def willUnmount() = Callback {
+    val willUnmount = Callback {
       mounted = false
       logger.info("PageSelectMatch.willUnmount")
     }
@@ -158,8 +157,8 @@ object PageSelectMatchInternal {
                             .initialStateFromProps { props => State() }
                             .backend(new Backend(_))
                             .renderBackend
-                            .componentDidMount( scope => scope.backend.didMount())
-                            .componentWillUnmount( scope => scope.backend.willUnmount() )
+                            .componentDidMount( scope => scope.backend.didMount)
+                            .componentWillUnmount( scope => scope.backend.willUnmount )
                             .build
 }
 

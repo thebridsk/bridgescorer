@@ -274,7 +274,7 @@ object PageStatsInternal {
    */
   class Backend( scope: BackendScope[Props, State]) {
 
-    def cancel = scope.modState( s => s.copy(msg = None) )
+    val cancel = scope.modState( s => s.copy(msg = None) )
 
     def displayPlayer( stats: PlayerStats, contractStats: ContractStats ) = {
 
@@ -1075,7 +1075,7 @@ object PageStatsInternal {
       )
     }
 
-    def toggleAggregateDouble = scope.modState( s => s.copy( aggregateDouble = !s.aggregateDouble ) )
+    val toggleAggregateDouble = scope.modState( s => s.copy( aggregateDouble = !s.aggregateDouble ) )
 
     def render( props: Props, state: State ) = {
       <.div(

@@ -109,7 +109,7 @@ object ViewPlayersFiveInternal {
    */
   class Backend(scope: BackendScope[Props, State]) {
 
-    def reset() = scope.props >>= { props => scope.modState( s => State(props) ) }
+    val reset = scope.props >>= { props => scope.modState( s => State(props) ) }
 
     def setPlayerSittingOut( p: String ) = scope.modState( s => {
       val fix = s.possibleNext.get(p)
@@ -211,15 +211,15 @@ object ViewPlayersFiveInternal {
       }
     }
 
-    def rotateClockwise() = scope.modState(s => s.copy(north=s.west, south=s.east, east=s.north, west=s.south))
+    val rotateClockwise = scope.modState(s => s.copy(north=s.west, south=s.east, east=s.north, west=s.south))
 
-    def rotateCounterClockwise() = scope.modState(s => s.copy(north=s.east, south=s.west, east=s.south, west=s.north))
+    val rotateCounterClockwise = scope.modState(s => s.copy(north=s.east, south=s.west, east=s.south, west=s.north))
 
-    def swapEW() = scope.modState(s => s.copy(east=s.west, west=s.east))
+    val swapEW = scope.modState(s => s.copy(east=s.west, west=s.east))
 
-    def swapNS() = scope.modState(s => s.copy(north=s.south, south=s.north))
+    val swapNS = scope.modState(s => s.copy(north=s.south, south=s.north))
 
-    def ok() = scope.stateProps { (state,props) =>
+    val ok = scope.stateProps { (state,props) =>
       val r = if (props.chicago.rounds.size <= props.page.round) {
         Round.create(props.page.round.toString(),
              state.north.get,
@@ -290,9 +290,9 @@ object ViewPlayersFiveInternal {
             <.tr(
               pos(state.east.getOrElse("east"), eastArrow, East, swapEW _ ),
               <.td(
-                AppButton( "clockwise", clockwiseCircleArrow, ^.onClick --> rotateClockwise(), baseStyles.requiredNotNext ),
+                AppButton( "clockwise", clockwiseCircleArrow, ^.onClick --> rotateClockwise, baseStyles.requiredNotNext ),
                 <.br,
-                AppButton( "anticlockwise", antiClockwiseCircleArrow, ^.onClick --> rotateCounterClockwise(), baseStyles.requiredNotNext )
+                AppButton( "anticlockwise", antiClockwiseCircleArrow, ^.onClick --> rotateCounterClockwise, baseStyles.requiredNotNext )
               ),
               pos(state.west.getOrElse("west"), westArrow, West, swapEW _ )
             ),
@@ -328,7 +328,7 @@ object ViewPlayersFiveInternal {
           ),
           <.div(
             baseStyles.divFooterCenter,
-            AppButton("Reset", "Reset", ^.onClick --> reset() )
+            AppButton("Reset", "Reset", ^.onClick --> reset )
           ),
           <.div(
             baseStyles.divFooterRight,

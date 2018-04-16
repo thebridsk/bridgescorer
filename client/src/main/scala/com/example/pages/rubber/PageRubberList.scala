@@ -71,7 +71,7 @@ object PageRubberListInternal {
 
     def delete( id: String ) = scope.modState(s => s.copy( askingToDelete = Some(id)))
 
-    def deleteOK() = scope.modState{ s =>
+    val deleteOK = scope.modState{ s =>
         s.askingToDelete.map{ id =>
           val ns = s.copy(rubbers= s.rubbers.filter(c=>c.id!=id), askingToDelete = None)
           RestClientRubber.delete(id).recordFailure()
@@ -79,9 +79,9 @@ object PageRubberListInternal {
         }.getOrElse(s)
       }
 
-    def deleteCancel() = scope.modState(s => s.copy( askingToDelete = None))
+    val deleteCancel = scope.modState(s => s.copy( askingToDelete = None))
 
-    def newChicago() =
+    val newRubber =
       scope.modState( s => s.copy(s.rubbers, true), Callback {
         RubberController.createMatch().foreach( created => {
           logger.info("Got new rubber match "+created.id)
@@ -101,8 +101,8 @@ object PageRubberListInternal {
           rubStyles.listPage,
           PopupOkCancel(
             state.askingToDelete.map(id => s"Are you sure you want to delete Rubber match ${id}"),
-            Some(deleteOK()),
-            Some(deleteCancel())
+            Some(deleteOK),
+            Some(deleteCancel)
           ),
           <.table(
               <.thead(
@@ -123,7 +123,7 @@ object PageRubberListInternal {
                         if (state.workingOnNew) {
                           <.span("Creating new...")
                         } else {
-                          AppButton( "New", "New", ^.onClick --> newChicago())
+                          AppButton( "New", "New", ^.onClick --> newRubber)
                         }
                       ),
                       <.td( ""),
@@ -168,7 +168,7 @@ object PageRubberListInternal {
           )
     }
 
-    def didMount() = Callback {
+    val didMount = Callback {
       // make AJAX rest call here
       logger.finer("PageChicagoList: Sending chicagos list request to server")
       RestClientRubber.list().recordFailure().foreach( list => {
@@ -185,7 +185,7 @@ object PageRubberListInternal {
                             .backend(new Backend(_))
                             .renderBackend
                             .configure(LogLifecycleToServer.verbose)     // logs lifecycle events
-                            .componentDidMount( scope => scope.backend.didMount())
+                            .componentDidMount( scope => scope.backend.didMount)
                             .build
 }
 
