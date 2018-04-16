@@ -127,7 +127,8 @@ trait RestDuplicate extends HasActorSystem {
                             complete(code,msg)
                         }
                       case Failure(ex) =>
-                        complete( StatusCodes.InternalServerError, "Exception ${ex}" )
+                        RestLoggerConfig.log.info("Exception posting duplicate: ", ex)
+                        complete( StatusCodes.InternalServerError, "Internal server error" )
                     }
                   case None =>
                     resourceCreated( resName, store.createChild(dup) )

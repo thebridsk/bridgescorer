@@ -28,6 +28,8 @@ import japgolly.scalajs.react.extra.router.BaseUrl
 import com.example.routes.TestBridgeRouter
 import japgolly.scalajs.react.extra.router.Path
 import com.example.routes.AppRouter.Home
+import com.example.pages.duplicate.PageNewDuplicate
+import com.example.pages.duplicate.PageNewDuplicateInternal
 
 object MyTest {
   val log = Logger("bridge.MyTest")
@@ -221,5 +223,16 @@ class MyTest extends FlatSpec with MustMatchers {
 //        throw ae
 //      case x: Throwable => throw x
 //    }
+  }
+
+  it should "convert a list of int to a string with ranges" in {
+    val list = 2::3::4::Nil
+    PageNewDuplicateInternal.intToString(list) mustBe "2-4"
+  }
+
+  it should "convert another list of int to a string with ranges" in {
+    val list2 = 1::2::3::4::7::9::10::12::14::16::17::19::20::Nil
+    PageNewDuplicateInternal.intToString(list2) mustBe "1-4, 7, 9-10, 12, 14, 16-17, 19-20"
+
   }
 }

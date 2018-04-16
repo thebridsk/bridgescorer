@@ -27,6 +27,7 @@ import com.example.rest2.RestClientDuplicateResult
 import com.example.data.MatchDuplicateResult
 import com.example.pages.duplicate.DuplicateRouter.DuplicateResultEditView
 import com.example.react.CheckBox
+import scala.annotation.tailrec
 
 /**
  * PageNewDuplicate.
@@ -70,6 +71,60 @@ object PageNewDuplicateInternal {
     def movementNames() = movements.keySet.toList.sorted
   }
 
+  def canPlay( movement: Movement, boardset: BoardSet ) = {
+    val movboards = movement.getBoards
+    val boards = boardset.boards.map(b => b.id)
+    movboards.find( b => !boards.contains(b) ).isEmpty
+  }
+
+  def missingBoards( movement: Movement, boardset: BoardSet ) = {
+    val movboards = movement.getBoards
+    val boards = boardset.boards.map(b => b.id)
+    movboards.filter( b => !boards.contains(b) )
+  }
+
+  def intToString( list: List[Int] ) = {
+
+    def appendNext( s: String, n: Int ) = {
+      if (s.isEmpty()) s"$n"
+      else s"${s}, ${n}"
+    }
+
+    /* *
+     * @param s the string collected so far
+     * @param openRange true if the last item in s is the start of the range (no "-"), last could close the range
+     * @param last the last number, it is not in s
+     * @param l the remaining numbers
+     */
+    @tailrec
+    def next( s: String, openRange: Boolean, last: Int, l: List[Int] ): String = {
+      if (l.isEmpty) {
+        if (openRange) {
+          s"${s}-${last}"
+        } else {
+          appendNext(s,last)
+        }
+      } else {
+        val n = l.head
+        if (openRange) {
+          if (last+1 == n) {
+            next(s,true,n,l.tail)
+          } else {
+            next(s"${s}-${last}",false,n,l.tail)
+          }
+        } else {
+          if (last+1 == n) {
+            next(appendNext(s,last),true,n,l.tail)
+          } else {
+            next(appendNext(s,last),false,n,l.tail)
+          }
+        }
+      }
+    }
+
+    if (list.isEmpty) ""
+    else next( "",false,list.head,list.tail)
+  }
 
   val Header = ScalaComponent.builder[(Props,State,Backend)]("PageNewDuplicate.Header")
                         .render_P( args => {
@@ -100,11 +155,20 @@ object PageNewDuplicateInternal {
                             <.td( movement.short ),
                             state.boardsetNames().map { bsname => {
                               val boardset = state.boardsets(bsname)
+                              val missing = missingBoards(movement, boardset)
                               <.td(
-                                AppButton( "New_"+movement.name+"_"+bsname, boardset.short,
-                                          ^.onClick --> backend.newDuplicate( boards=Some(bsname),
-                                                                              movement=Some(movementid))
-                                )
+                                if (missing.isEmpty) {
+                                  AppButton( "New_"+movement.name+"_"+bsname, boardset.short,
+                                            ^.onClick --> backend.newDuplicate( boards=Some(bsname),
+                                                                                movement=Some(movementid))
+                                  )
+                                } else {
+                                  TagMod(
+                                    "Missing boards",
+                                    <.br,
+                                    intToString(missing.sorted)
+                                  )
+                                }
                               )
                             }}.toTagMod
                           )
