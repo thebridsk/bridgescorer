@@ -190,7 +190,7 @@ class SwaggerTest2 extends FlatSpec with MustMatchers with BeforeAndAfterAll {
     execute.click
 
     eventually {
-      val l = method.find(xpath("//div[ h5[text() = 'Response body']]/pre" ))
+      val l = method.find(xpath("//div[ h5[text() = 'Response body']]/div/pre" ))
       val text = l.text
       text must startWith("[")
 

@@ -32,7 +32,7 @@ object Dependencies {
 //  lazy val vScalaJsLibrary = "0.6.13" // http://mvnrepository.com/artifact/org.scala-js/scalajs-library_2.11
 
 
-  lazy val vAkka = "2.5.11"           // http://mvnrepository.com/artifact/com.typesafe.akka/akka-actor_2.11
+  lazy val vAkka = "2.5.12"           // http://mvnrepository.com/artifact/com.typesafe.akka/akka-actor_2.11
   lazy val vAkkaHttp = "10.1.1"       // http://mvnrepository.com/artifact/com.typesafe.akka/akka-http_2.11
 
   lazy val vAkkaHttpPlayJson="1.20.1"  // https://github.com/hseeberger/akka-http-json
@@ -41,7 +41,7 @@ object Dependencies {
 //  lazy val vSwaggerScalaModule="1.0.4" // http://mvnrepository.com/artifact/io.swagger/swagger-scala-module_2.11
   lazy val vSwagger="1.5.18"           // http://mvnrepository.com/artifact/io.swagger/swagger-core
 
-  lazy val vSwaggerUI = "3.13.2"       // https://www.npmjs.com/package/swagger-ui-dist
+  lazy val vSwaggerUI = "3.13.4"       // https://www.npmjs.com/package/swagger-ui-dist
   lazy val vScalajsdom = "0.9.5"       // http://mvnrepository.com/artifact/org.scala-js/scalajs-dom_sjs0.6_2.11
   lazy val vScalaJsReact = "1.2.0"     // http://mvnrepository.com/artifact/com.github.japgolly.scalajs-react/core_sjs0.6_2.11
   lazy val vScalaCss = "0.5.3"         // http://mvnrepository.com/artifact/com.github.japgolly.scalacss/core_sjs0.6_2.11
@@ -52,7 +52,7 @@ object Dependencies {
   lazy val vGlobalize = "1.3.0"        // https://www.npmjs.com/package/globalize
   lazy val vCldr = "4.7.0"             // https://www.npmjs.com/package/cldr
   lazy val vReactWidgetsMoment = "4.0.12"  // http://mvnrepository.com/artifact/org.webjars.npm/react-widgets-moment
-  lazy val vMoment = "2.22.0"          // https://www.npmjs.com/package/moment
+  lazy val vMoment = "2.22.1"          // https://www.npmjs.com/package/moment
 
   lazy val vScalajsJquery = "0.9.2"  // http://mvnrepository.com/artifact/be.doeraene/scalajs-jquery_sjs0.6_2.11
 
