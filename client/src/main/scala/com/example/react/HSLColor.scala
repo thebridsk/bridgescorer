@@ -48,9 +48,9 @@ case class HSLColor( hue: Double, saturation: Double, lightness: Double ) {
   }
 
   override
-  def toString() = s"""HSLColor(h=${hue}%.0f,s=${saturation}%.1f,l=${lightness}%.1f)"""
+  def toString() = f"""HSLColor(h=${hue}%.0f,s=${saturation}%.1f,l=${lightness}%.1f)"""
 
-  def toHsl = s"""hsl(${hue}%.0f,${saturation}%.1f%%,${lightness}%.1f%%)"""
+  def toHsl = f"""hsl(${hue}%.0f,${saturation}%.1f%%,${lightness}%.1f%%)"""
 
   def attrColor = attr(^.color)
 
