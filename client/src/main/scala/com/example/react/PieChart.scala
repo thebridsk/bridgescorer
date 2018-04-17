@@ -7,6 +7,7 @@ import japgolly.scalajs.react.vdom.svg_<^._
 import japgolly.scalajs.react._
 import org.scalajs.dom.ext.Color
 import com.example.pages.BaseStyles
+import Utils._
 
 /**
  * A skeleton component.
@@ -127,7 +128,7 @@ object PieChart {
                   ^.d := f"M ${sourcex}%.2f ${sourcey}%.2f" +
                          f" A 1 1 0 ${largeArcFlag} 1 ${targetx}%.2f ${targety}%.2f" +
                           " L 0 0",
-                  ^.fill := color.toHex,
+                  ^.fill := color,
                 ))
               }
             }.toTagMod,

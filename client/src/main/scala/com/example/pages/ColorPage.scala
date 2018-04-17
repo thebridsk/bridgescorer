@@ -46,9 +46,10 @@ object ColorPageInternal {
    * @param minLightness the minimum l from hsl, 0 to 1
    * @param maxLightness the maximum l from hsl, 0 to 1
    */
-  case class State( n: String = "10", minLightness: String = "0.0", maxLightness: String = "1.0") {
+  case class State( n: String = "10", minLightness: String = "0.0", maxLightness: String = "100.0", huestep: String = "30") {
 
     def withN( v: String ) = copy(n=v)
+    def withHueStep( v: String ) = copy(huestep=v)
     def withMinLightness( v: String ) = copy(minLightness=v)
     def withMaxLightness( v: String ) = copy(maxLightness=v)
   }
@@ -80,6 +81,10 @@ object ColorPageInternal {
    */
   class Backend(scope: BackendScope[Props, State]) {
 
+    def setHueStep( e: ReactEventFromInput ) = e.inputText { s =>
+      scope.modState { state => state.withHueStep(s) }
+    }
+
     def setN( e: ReactEventFromInput ) = e.inputText { s =>
       scope.modState { state => state.withN(s) }
     }
@@ -95,6 +100,16 @@ object ColorPageInternal {
     def render( props: Props, state: State ) = {
       <.div(
           <.ul(
+            <.li(
+              <.label(
+                "Hue step",
+                <.input( ^.`type`:="number",
+                         ^.name:="Hue",
+                         ^.onChange ==> setHueStep,
+                         ^.value := state.huestep
+                )
+              )
+            ),
             <.li(
               <.label(
                 "N",
@@ -135,18 +150,21 @@ object ColorPageInternal {
                 )
               ),
               <.tbody(
-                (0 to 360 by 30).map { hue =>
+                (0 to 360 by parseInt(state.huestep,30)).map { hue =>
+                  val colors = ColorBar.colorsInclusive(
+                                                          hue,
+                                                          parseDouble(state.minLightness,0.0),
+                                                          parseInt(state.n,10),
+                                                          false,
+                                                          parseDouble(state.maxLightness,100.0)
+                                                      )
+
                   <.tr(
                     <.td(hue.toString()),
                     <.td(
                       ColorBar.simple(
-                          ColorBar.colorsInclusive(
-                              hue,
-                              parseDouble(state.minLightness,0.0),
-                              parseInt(state.n,10),
-                              false,
-                              parseDouble(state.maxLightness,1.0)
-                          )
+                          colors,
+                          Some( colors.map( c => s"${c}" ).toList )
                       )
                     )
                   )

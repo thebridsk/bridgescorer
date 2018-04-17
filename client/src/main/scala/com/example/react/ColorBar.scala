@@ -9,6 +9,7 @@ import japgolly.scalajs.react.vdom.TagMod
 import com.example.pages.BaseStyles
 import japgolly.scalajs.react.vdom.HtmlStyles
 import org.scalajs.dom.ext.Color
+import Utils._
 
 /**
  * A skeleton component.
@@ -50,11 +51,11 @@ object ColorBar {
      * The first four parameters are for the left color boxes,
      * the second four are for the right color boxes.
      * @param hue1
-     * @param minLightness1
+     * @param minLightness1 the minimum lightness [0 - 100]
      * @param n1 the number of boxes for hue1
      * @param darkToLight1 left boxes should be dark to light if true.
      * @param hue2
-     * @param minLightness2
+     * @param minLightness2 the minimum lightness [0 - 100]
      * @param n2 the number of boxes for hue2
      * @param darkToLight2 right boxes should be dark to light if true.
      * @param middle the optional middle color
@@ -85,9 +86,9 @@ object ColorBar {
    * ColorBar with white in the middle, and hue1 on left and hue2 on right, with dark on the outside.
    * No flyover text on the color bar.
    * @param hue1
-   * @param minLightness1
+   * @param minLightness1 the minimum lightness [0 - 100]
    * @param hue2
-   * @param minLightness2
+   * @param minLightness2 the minimum lightness [0 - 100]
    * @param n the number of boxes for hue1 and hue2
    */
   def apply( hue1: Double, minLightness1: Double, hue2: Double, minLightness2: Double, n: Int ) = {
@@ -98,9 +99,9 @@ object ColorBar {
    * ColorBar with white in the middle, and hue1 on left and hue2 on right, with dark on the outside.
    * Titles will show as flyover text.  No title for the middle white box.
    * @param hue1
-   * @param minLightness1
+   * @param minLightness1 the minimum lightness [0 - 100]
    * @param hue2
-   * @param minLightness2
+   * @param minLightness2 the minimum lightness [0 - 100]
    * @param n the number of boxes for hue1 and hue2
    * @param titles1 the titles of the left boxes, must have n titles.
    * @param titles2 the titles of the right boxes, must have n titles.
@@ -116,9 +117,9 @@ object ColorBar {
    * ColorBar with white in the middle, and hue1 on left and hue2 on right, with dark on the outside.
    * Titles will show as flyover text.
    * @param hue1
-   * @param minLightness1
+   * @param minLightness1 the minimum lightness [0 - 100]
    * @param hue2
-   * @param minLightness2
+   * @param minLightness2 the minimum lightness [0 - 100]
    * @param n the number of boxes for hue1 and hue2
    * @param titles1 the titles of the left boxes, must have n titles.
    * @param titles2 the titles of the right boxes, must have n titles.
@@ -136,11 +137,11 @@ object ColorBar {
    * ColorBar with hue1 on the left, optional white in the middle, and hue2 on the right.
    * Optional titles can be specified, and will show as flyover text.
    * @param hue1
-   * @param minLightness1
+   * @param minLightness1 the minimum lightness [0 - 100]
    * @param n1 the number of boxes for hue1
    * @param darkToLight1 left boxes should be dark to light if true.
    * @param hue2
-   * @param minLightness2
+   * @param minLightness2 the minimum lightness [0 - 100]
    * @param n2 the number of boxes for hue2
    * @param darkToLight2 right boxes should be dark to light if true.
    * @param middle the optional middle color
@@ -159,21 +160,21 @@ object ColorBar {
   }
 
   /**
-   * returns the colors
-   * @param hue
-   * @param minLightness
+   * returns the colors.  minLightness will be used, maxLightness will not.
+   * @param hue the hue [0 - 360]
+   * @param minLightness the minimum lightness [0 - 100]
    * @param n the number of boxes for hue
-   * @param darkToLight left boxes should be dark to light if true.  Default is true.
-   * @param maxLightness
+   * @param darkToLight left boxes should be dark to light on right if true.  Default is true.
+   * @param maxLightness the maximum lightness [0 - 100]
    * @return the colors.
    */
-  def colors( hue: Double, minLightness: Double, n: Int, darkToLight1: Boolean = true, maxLightness: Double = 1.0 ) = {
+  def colors( hue: Double, minLightness: Double, n: Int, darkToLight1: Boolean = true, maxLightness: Double = 100.0 ) = {
     if (n == 0) Nil
-    else if (n == 1) HSLColor( hue, 1.0, 0.5 )::Nil
+    else if (n == 1) HSLColor( hue, 100.0, 50.0 )::Nil
     else {
       val step = (maxLightness - minLightness)/(n)
-      val cols = (minLightness until maxLightness by step).map { l =>
-         HSLColor( hue, 1.0, l )
+      val cols = (minLightness until (maxLightness-0.0001) by step).map { l =>
+         HSLColor( hue, 100.0, l )
       }
       if (darkToLight1) cols
       else cols.reverse
@@ -182,20 +183,20 @@ object ColorBar {
 
   /**
    * returns the colors
-   * @param hue
-   * @param minLightness
+   * @param hue the hue
+   * @param minLightness the minimum lightness [0 - 100]
    * @param n the number of boxes for hue
-   * @param darkToLight left boxes should be dark to light if true.  Default is true.
-   * @param maxLightness
+   * @param darkToLight left boxes should be dark to light on right if true.  Default is true.
+   * @param maxLightness the maximum lightness [0 - 100]
    * @return the colors.
    */
-  def colorsInclusive( hue: Double, minLightness: Double, n: Int, darkToLight1: Boolean = true, maxLightness: Double = 1.0 ) = {
+  def colorsInclusive( hue: Double, minLightness: Double, n: Int, darkToLight1: Boolean = true, maxLightness: Double = 100.0 ) = {
     if (n == 0) Nil
-    else if (n == 1) HSLColor( hue, 1.0, 0.5 )::Nil
+    else if (n == 1) HSLColor( hue, 100.0, 50.0 )::Nil
     else {
       val step = (maxLightness - minLightness)/(n-1)
-      val cols = (minLightness to maxLightness by step).map { l =>
-         HSLColor( hue, 1.0, l )
+      val cols = (minLightness to (maxLightness+0.0001) by step).map { l =>
+         HSLColor( hue, 100.0, l )
       }
       if (darkToLight1) cols
       else cols.reverse
@@ -243,12 +244,12 @@ object ColorBarInternal {
 
   import BaseStyles._
 
-  def box( color: Color, title: Option[String] ): VdomNode = {
+  private def box( color: Color, title: Option[String] ): VdomNode = {
     val d: VdomNode = <.div(
       ^.flex := "0 0 auto",
       ^.width := "20px",
       ^.height := "20px",
-      ^.background := s"${color.toHex}"
+      ^.backgroundColor := color   //.toHex
     )
     title.map { t =>
       val tt: VdomNode = Tooltip( d, t )
@@ -256,17 +257,13 @@ object ColorBarInternal {
     }.getOrElse(d)
   }
 
-  def box( hue: Double, sat: Double, lightness: Double, title: Option[String] ): TagMod = {
-    box( HSLColor( hue, sat, lightness ), title )
-  }
-
-  def bar( hue: Double, minLightness: Double, n: Int, darkToLight: Boolean, titles: Option[List[String]] ): TagMod = {
+  private def bar( hue: Double, minLightness: Double, n: Int, darkToLight: Boolean, titles: Option[List[String]] ): TagMod = {
     val cols = colors(hue,minLightness,n)
     val c = if (darkToLight) cols else cols.reverse
     bar(c, titles)
   }
 
-  def bar( cols: Seq[Color], titles: Option[List[String]] ): TagMod = {
+  private def bar( cols: Seq[Color], titles: Option[List[String]] ): TagMod = {
     val ts = titles.map( t => t.map( ti => Some(ti) ) ).getOrElse( cols.map( cols => None ) )
     cols.zip( ts ).map { entry =>
       val (cc,t) = entry

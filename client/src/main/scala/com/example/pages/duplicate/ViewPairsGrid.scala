@@ -141,14 +141,14 @@ object ViewPairsGridInternal {
    */
   def getData( pd: PairData, sizeSt: Stat, colorSt: Stat, colorAbove: Double, colorBelow: Double, state: State, sizeMultiplier: Int ): (Data,String) = {
     val (bcolor, light) = colorSt.sizeAveAsFraction(pd)
-    val lightness = light*0.75+0.25
+    val lightness = light*75.0+25.0
     val size = sizeSt.size(pd, state.minSize*sizeMultiplier, state.maxSize*sizeMultiplier)
     val (color,scolor) = if (bcolor) {
       // above average, green
-      (HSLColor( colorAbove, 1, lightness ), f"hsl(${colorAbove},1,${lightness}%.2f)" )
+      (HSLColor( colorAbove, 100, lightness ), f"hsl(${colorAbove},100,${lightness}%.2f)" )
     } else {
       // below average, red
-      (HSLColor( colorBelow, 1, lightness ), f"hsl(${colorBelow},1,${lightness}%.2f)" )
+      (HSLColor( colorBelow, 100, lightness ), f"hsl(${colorBelow},100,${lightness}%.2f)" )
     }
     val title = f"""Played ${pd.played},
                    |Won ${pd.won+pd.wonImp} (${pd.winPercent}%.2f%%),
@@ -168,8 +168,6 @@ object ViewPairsGridInternal {
 
     (DataBar( size, List( color ), List(1.0), None, None, 20 ), title+titleMP+titleIMP)
   }
-
-  def color( c: Color ) = c
 
   val cellX = Cell( List( DataTagMod( "X" )) )
 
@@ -282,11 +280,11 @@ object ViewPairsGridInternal {
                       <.br,
                       "white is average, ",
                       "light red is below average, dark red is well below average",
-                      ColorBar( 0, 0.25, 120, 0.25, n, titlesBelow, titlesAbove, titleWhite ),
+                      ColorBar( 0, 25.0, 120, 25.0, n, titlesBelow, titlesAbove, titleWhite ),
                       "For Totals, the width is relative to the number of times the player has played",
                       <.br,
                       "blue is above average and yellow is below average.",
-                      ColorBar( 60, 0.25, 240, 0.25, n, titlesTBelow, titlesTAbove, titleTWhite )
+                      ColorBar( 60, 25.0, 240, 25.0, n, titlesTBelow, titlesTAbove, titleTWhite )
                     )
                   )
                 )
