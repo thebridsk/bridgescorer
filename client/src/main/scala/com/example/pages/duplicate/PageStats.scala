@@ -183,9 +183,9 @@ object PageStatsInternal {
 
   val suitSortOrder = "PNZSHDC"
 
-  val colorTypePartial = HSLColor( 60, 1, .5 )  // yellow
-  val colorTypeGame = HSLColor( 30, 1, .5 )  // orange
-  val colorTypeSlam = HSLColor( 300, 1, .5 ) // purple
+  val colorTypePartial: Color = HSLColor( 60, 100, 50.0 )  // yellow
+  val colorTypeGame: Color = HSLColor( 30, 100, 50.0 )  // orange
+  val colorTypeSlam: Color = HSLColor( 300, 100, 50.0 ) // purple
   val colorTypeGrandSlam = Color.Cyan
   val colorTypePassed = Color.Blue
 
@@ -193,6 +193,20 @@ object PageStatsInternal {
   val typeOrder: List[ContractType] = ContractTypePartial::ContractTypeGame::ContractTypeSlam::ContractTypeGrandSlam::ContractTypePassed::Nil
 
   val colorsMapForType = typeOrder.zip(ctColors).toMap
+
+  val allMadeColors = for (
+                         hue <- 120::150::180::Nil;
+                         lightness <- 75::50::25::Nil
+                      ) yield {
+                        HSLColor(hue,100,lightness)
+                      }
+
+  val allDownColors = for (
+                         hue <- 0::330::30::300::60::Nil;
+                         lightness <- 25::50::75::Nil
+                      ) yield {
+                        HSLColor(hue,100,lightness)
+                      }
 
   def trickTitle( title: String, colors: Color* ) = {
     <.li(
@@ -288,8 +302,8 @@ object PageStatsInternal {
       }
       val titleMade = (0 until numberMade).map( i => if (i==0) "Made" else s"Made ${i}" ).toList
 
-      val downColors = ColorBar.colors( 0, 0.25, numberDown ).reverse
-      val madeColors = ColorBar.colors( 120, 0.25, numberMade )
+      val downColors: Seq[Color] = allDownColors.take(numberDown) // ColorBar.colors( 0, 25.0, numberDown, false )
+      val madeColors: Seq[Color] = allMadeColors.take(numberMade) // ColorBar.colors( 120, 25.0, numberMade, false )
 
       def colorMap( i: Int ) = {
         if (i == 10) Color.Blue
@@ -513,8 +527,8 @@ object PageStatsInternal {
       }
       val titleMade = (0 until numberMade).map( i => if (i==0) "Made" else s"Made ${i}" ).toList
 
-      val downColors = ColorBar.colors( 0, 0.25, numberDown ).reverse
-      val madeColors = ColorBar.colors( 120, 0.25, numberMade )
+      val downColors: Seq[Color] = allDownColors.take(numberDown) // ColorBar.colors( 0, 25.0, numberDown, false )
+      val madeColors: Seq[Color] = allMadeColors.take(numberMade) // ColorBar.colors( 120, 25.0, numberMade, false )
 
       def colorMap( i: Int ) = {
         // 10 tricks indicates passed out hand
@@ -685,8 +699,8 @@ object PageStatsInternal {
       }
       val titleMade = (0 until numberMade).map( i => if (i==0) "Made" else s"Made ${i}" ).toList
 
-      val downColors = ColorBar.colors( 0, 0.25, numberDown ).reverse
-      val madeColors = ColorBar.colors( 120, 0.25, numberMade )
+      val downColors: Seq[Color] = allDownColors.take(numberDown) // ColorBar.colors( 0, 25.0, numberDown, false )
+      val madeColors: Seq[Color] = allMadeColors.take(numberMade) // ColorBar.colors( 120, 25.0, numberMade, false )
 
       def colorMap( i: Int ) = {
         // 10 tricks indicates passed out hand
@@ -872,8 +886,8 @@ object PageStatsInternal {
       }
       val titleMade = (0 until numberMade).map( i => if (i==0) "Made" else s"Made ${i}" ).toList
 
-      val downColors = ColorBar.colors( 0, 0.25, numberDown ).reverse
-      val madeColors = ColorBar.colors( 120, 0.25, numberMade )
+      val downColors: Seq[Color] = allDownColors.take(numberDown) // ColorBar.colors( 0, 25.0, numberDown, false )
+      val madeColors: Seq[Color] = allMadeColors.take(numberMade) // ColorBar.colors( 120, 25.0, numberMade, false )
 
       /* *
        * @param i - the number of overtricks, +, or undertricks, -, or 0 if exactly made

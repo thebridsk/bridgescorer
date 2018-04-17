@@ -7,6 +7,7 @@ import japgolly.scalajs.react.vdom.svg_<^._
 import japgolly.scalajs.react._
 import org.scalajs.dom.ext.Color
 import com.example.pages.BaseStyles
+import Utils._
 
 /**
  * A skeleton component.
@@ -106,9 +107,9 @@ object SvgRect {
                 ^.width := s"${(targetx-sourcex)*props.width}",
                 ^.y := s"0",
                 ^.height := s"${props.height}",
-                ^.stroke := props.borderColor.toHex,
+                ^.stroke := props.borderColor,
                 ^.strokeWidth := 0.5,
-                ^.fill := color.toHex,
+                ^.fill := color,
               ))
             }
           }.toTagMod,
