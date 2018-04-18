@@ -17,7 +17,7 @@ import com.example.react.AppButton
 import com.example.react.Utils._
 import com.example.data.duplicate.suggestion.PairsData
 import com.example.data.duplicate.suggestion.PairData
-import org.scalajs.dom.ext.Color
+import com.example.color.Color
 import com.example.react.CheckBox
 import com.example.data.duplicate.suggestion.ColorBy
 import com.example.data.duplicate.suggestion.ColorByWonPct

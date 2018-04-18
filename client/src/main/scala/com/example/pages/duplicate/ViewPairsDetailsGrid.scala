@@ -17,7 +17,7 @@ import com.example.react.AppButton
 import com.example.react.Utils._
 import com.example.data.duplicate.suggestion.PairsData
 import com.example.data.duplicate.suggestion.PairData
-import org.scalajs.dom.ext.Color
+import com.example.color.Color
 import com.example.react.CheckBox
 import com.example.data.duplicate.suggestion.ColorBy
 import com.example.data.duplicate.suggestion.ColorByWonPct
@@ -84,8 +84,12 @@ object ViewPairsDetailsGridInternal {
     else ((v.toDouble-vmin)*(sizemax-sizemin)/(vmax-vmin) + sizemin).toInt
   }
 
-  val DarkRed = Color( 164, 0, 0)
-  val DarkGreen = Color( 0, 164, 0)
+  val DarkRed = Color.rgb( 164, 0, 0)
+  val DarkGreen = Color.rgb( 0, 164, 0)
+  val Red = Color.rgb( 255, 0, 0 )
+  val Green = Color.rgb( 0, 255, 0 )
+  val Blue = Color.rgb( 0, 0, 255 )
+  val Black = Color.rgb( 0, 0, 0 )
 
   /**
    * Internal state for rendering the component.
@@ -184,7 +188,7 @@ object ViewPairsDetailsGridInternal {
                 val title = f"Declarer ${det.declarer} (${det.declarer*oneOverTot}%.2f%%)%nDefended ${det.defended} (${det.defended*oneOverTot}%.2f%%)%nPassed ${det.passed} (${det.passed*oneOverTot}%.2f%%)"
                 DataPieChart(
                   size = size(det.total, vmin, vmax, state.minSize, state.maxSize),
-                  color = Color.Green::Color.Red::Color.Blue::Nil,
+                  color = Green::Red::Blue::Nil,
                   value = det.declarer.toDouble::det.defended.toDouble::det.passed.toDouble::Nil,
                 ).toCellWithOneChartAndTitle(title, state.tooltipChartSize, state.maxSize)
               case None =>
@@ -210,17 +214,17 @@ object ViewPairsDetailsGridInternal {
                   data = List(
                     DataPieChart(
                       size = if (det.declarer == 0) -sizeDec else sizeDec,
-                      color = Color.Green::Color.Red::Nil,
+                      color = Green::Red::Nil,
                       value = det.made.toDouble::det.down.toDouble::Nil,
                     ),
                     DataPieChart(
                       size = if (det.defended == 0) -sizeDef else sizeDef,
-                      color = Color.Green::Color.Red::Nil,
+                      color = Green::Red::Nil,
                       value = det.tookDown.toDouble::det.allowedMade.toDouble::Nil,
                     ),
                     DataPieChart(
                       size = if (det.passed == 0) -sizePas else sizePas,
-                      color = Color.Blue::Nil,
+                      color = Blue::Nil,
                       value = det.passed.toDouble::Nil,
                     )
                   ),
@@ -245,7 +249,7 @@ object ViewPairsDetailsGridInternal {
                 val titlePas = f"Passed ${det.passed} (${det.passed*oneOverTotal}%.2f%%)"
                 DataPieChart(
                   size = if (det.total == 0) -sizeAll else sizeAll,
-                  color = Color.Green::Color.Red::DarkRed::DarkGreen::Color.Blue::Nil,
+                  color = Green::Red::DarkRed::DarkGreen::Blue::Nil,
                   value = det.made.toDouble::det.down.toDouble::det.allowedMade.toDouble::det.tookDown.toDouble::det.passed.toDouble::Nil,
                 ).toCellWithOneChartAndTitle(titleDec+"\n"+titleDef+"\n"+titlePas, state.tooltipChartSize, state.maxSize)
               case None =>
@@ -319,34 +323,34 @@ object ViewPairsDetailsGridInternal {
                           "The size of the circle is proportional to the number of hands played by the pair/player. ",
                           <.br,
                           "Green, ",
-                          PieChart( 15, 1.0::Nil, Color.Green::Nil, attrs=Some(^.display := "inline-block") ),
+                          PieChart( 15, 1.0::Nil, Green::Nil, attrs=Some(^.display := "inline-block") ),
                           ", indicates the number of times the team was declarer ",
                           <.br,
                           "Red, ",
-                          PieChart( 15, 1.0::Nil, Color.Red::Nil, attrs=Some(^.display := "inline-block") ),
+                          PieChart( 15, 1.0::Nil, Red::Nil, attrs=Some(^.display := "inline-block") ),
                           ", indicates the number of times the team defended",
                           <.br,
                           "Blue, ",
-                          PieChart( 15, 1.0::Nil, Color.Blue::Nil, attrs=Some(^.display := "inline-block") ),
+                          PieChart( 15, 1.0::Nil, Blue::Nil, attrs=Some(^.display := "inline-block") ),
                           ", indicates passed out hands"
                         )
                       case DisplayMadeDown =>
                         TagMod(
                           "The size of the circle is proportional to the number of hands played by the pair/player. ",
                           "A black square, ",
-                          PieChartOrSquareForZero( -5, Color.Black, 1.0::Nil, Color.Green::Nil, attrs=Some(^.display := "inline-block") ),
+                          PieChartOrSquareForZero( -5, Black, 1.0::Nil, Green::Nil, attrs=Some(^.display := "inline-block") ),
                           ", indicates 0",
                           <.br,
                           "The first circle is the results of hands where the team was declarer.  green, ",
-                          PieChart( 15, 1.0::Nil, Color.Green::Nil, attrs=Some(^.display := "inline-block") ),
+                          PieChart( 15, 1.0::Nil, Green::Nil, attrs=Some(^.display := "inline-block") ),
                           ", is made, red, ",
-                          PieChart( 15, 1.0::Nil, Color.Red::Nil, attrs=Some(^.display := "inline-block") ),
+                          PieChart( 15, 1.0::Nil, Red::Nil, attrs=Some(^.display := "inline-block") ),
                           ", is down.",
                           <.br,
                           "The second circle is the results of hands where the team was defending.  green is took down, red is allowed made.",
                           <.br,
                           "The third circle, blue, ",
-                          PieChart( 15, 1.0::Nil, Color.Blue::Nil, attrs=Some(^.display := "inline-block") ),
+                          PieChart( 15, 1.0::Nil, Blue::Nil, attrs=Some(^.display := "inline-block") ),
                           ", is the results of hands were passed out.",
                         )
                       case DisplayAll =>
@@ -354,9 +358,9 @@ object ViewPairsDetailsGridInternal {
                           "The size of the circle is proportional to the number of hands played by the pair/player. ",
                           <.br,
                           "Green, ",
-                          PieChart( 15, 1.0::Nil, Color.Green::Nil, attrs=Some(^.display := "inline-block") ),
+                          PieChart( 15, 1.0::Nil, Green::Nil, attrs=Some(^.display := "inline-block") ),
                           ", is contract made as declarer, red, ",
-                          PieChart( 15, 1.0::Nil, Color.Red::Nil, attrs=Some(^.display := "inline-block") ),
+                          PieChart( 15, 1.0::Nil, Red::Nil, attrs=Some(^.display := "inline-block") ),
                           ", is down as declarer.",
                           <.br,
                           "Dark green, ",
@@ -366,7 +370,7 @@ object ViewPairsDetailsGridInternal {
                           ", is allowed made as defender.",
                           <.br,
                           "Blue, ",
-                          PieChart( 15, 1.0::Nil, Color.Blue::Nil, attrs=Some(^.display := "inline-block") ),
+                          PieChart( 15, 1.0::Nil, Blue::Nil, attrs=Some(^.display := "inline-block") ),
                           ", is passed out hands."
                         )
                     }

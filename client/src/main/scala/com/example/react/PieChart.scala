@@ -5,7 +5,7 @@ import org.scalajs.dom.document
 import org.scalajs.dom.Element
 import japgolly.scalajs.react.vdom.svg_<^._
 import japgolly.scalajs.react._
-import org.scalajs.dom.ext.Color
+import com.example.color.Color
 import com.example.pages.BaseStyles
 import Utils._
 
@@ -95,7 +95,7 @@ object PieChart {
               ^.cx := 0,
               ^.cy := 0,
               ^.r := 1,
-              ^.fill := slices.head._2.toHex
+              ^.fill := slices.head._2
             ),
             props.attrs.whenDefined
           )

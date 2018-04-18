@@ -17,7 +17,7 @@ import com.example.react.AppButton
 import com.example.react.Utils._
 import com.example.data.duplicate.suggestion.PairsData
 import com.example.data.duplicate.suggestion.PairData
-import org.scalajs.dom.ext.Color
+import com.example.color.Color
 import com.example.react.CheckBox
 import com.example.data.duplicate.suggestion.ColorBy
 import com.example.data.duplicate.suggestion.ColorByWonPct
@@ -30,7 +30,6 @@ import com.example.data.duplicate.suggestion.ColorByWonPtsPct
 import com.example.data.duplicate.suggestion.ColorByPointsPct
 import com.example.data.duplicate.suggestion.ColorByPlayed
 import com.example.pages.BaseStyles
-import com.example.react.HSLColor
 import com.example.react.ColorBar
 import com.example.data.duplicate.suggestion.CalculationType
 import com.example.data.duplicate.suggestion.CalculationAsPlayed
@@ -145,10 +144,10 @@ object ViewPairsGridInternal {
     val size = sizeSt.size(pd, state.minSize*sizeMultiplier, state.maxSize*sizeMultiplier)
     val (color,scolor) = if (bcolor) {
       // above average, green
-      (HSLColor( colorAbove, 100, lightness ), f"hsl(${colorAbove},100,${lightness}%.2f)" )
+      (Color.hsl( colorAbove, 100, lightness ), f"hsl(${colorAbove},100,${lightness}%.2f)" )
     } else {
       // below average, red
-      (HSLColor( colorBelow, 100, lightness ), f"hsl(${colorBelow},100,${lightness}%.2f)" )
+      (Color.hsl( colorBelow, 100, lightness ), f"hsl(${colorBelow},100,${lightness}%.2f)" )
     }
     val title = f"""Played ${pd.played},
                    |Won ${pd.won+pd.wonImp} (${pd.winPercent}%.2f%%),

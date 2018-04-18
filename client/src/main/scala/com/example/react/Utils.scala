@@ -4,7 +4,7 @@ import org.scalajs.dom
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.TagMod
 import japgolly.scalajs.react.vdom.html_<^._
-import org.scalajs.dom.ext.Color
+import com.example.color.Color
 import japgolly.scalajs.react.vdom.Attr
 import japgolly.scalajs.react.vdom.Attr.ValueType
 
@@ -29,11 +29,5 @@ object Utils {
       }
     }
   }
-
-  implicit val vdomAttrColor: ValueType[Color, String] =
-    ValueType((b, a) => b(a.toString))
-
-  implicit val vdomAttrHSLColor: ValueType[HSLColor, String] =
-    ValueType((b, a) => b(a.toHsl))
 
 }

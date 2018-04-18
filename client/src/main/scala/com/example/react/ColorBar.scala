@@ -8,7 +8,7 @@ import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.TagMod
 import com.example.pages.BaseStyles
 import japgolly.scalajs.react.vdom.HtmlStyles
-import org.scalajs.dom.ext.Color
+import com.example.color.Color
 import Utils._
 
 /**
@@ -170,11 +170,11 @@ object ColorBar {
    */
   def colors( hue: Double, minLightness: Double, n: Int, darkToLight1: Boolean = true, maxLightness: Double = 100.0 ) = {
     if (n == 0) Nil
-    else if (n == 1) HSLColor( hue, 100.0, 50.0 )::Nil
+    else if (n == 1) Color.hsl( hue, 100.0, 50.0 )::Nil
     else {
       val step = (maxLightness - minLightness)/(n)
       val cols = (minLightness until (maxLightness-0.0001) by step).map { l =>
-         HSLColor( hue, 100.0, l )
+         Color.hsl( hue, 100.0, l )
       }
       if (darkToLight1) cols
       else cols.reverse
@@ -192,11 +192,11 @@ object ColorBar {
    */
   def colorsInclusive( hue: Double, minLightness: Double, n: Int, darkToLight1: Boolean = true, maxLightness: Double = 100.0 ) = {
     if (n == 0) Nil
-    else if (n == 1) HSLColor( hue, 100.0, 50.0 )::Nil
+    else if (n == 1) Color.hsl( hue, 100.0, 50.0 )::Nil
     else {
       val step = (maxLightness - minLightness)/(n-1)
       val cols = (minLightness to (maxLightness+0.0001) by step).map { l =>
-         HSLColor( hue, 100.0, l )
+         Color.hsl( hue, 100.0, l )
       }
       if (darkToLight1) cols
       else cols.reverse
