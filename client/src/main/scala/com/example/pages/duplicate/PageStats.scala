@@ -34,7 +34,7 @@ import play.api.libs.json.JsError
 import com.example.react.PopupOkCancel
 import com.example.react.PieChartTable
 import com.example.react.PieChartTable.Column
-import org.scalajs.dom.ext.Color
+import com.example.color.Color
 import com.example.react.PieChartTable.Row
 import com.example.data.duplicate.stats.PlayerStats
 import com.example.react.ColorBar
@@ -52,7 +52,6 @@ import com.example.data.duplicate.stats.PlayerStat
 import com.example.data.duplicate.stats.ContractTypeTotal
 import com.example.data.duplicate.stats.CounterStat
 import com.example.data.bridge.ContractTricks
-import com.example.react.HSLColor
 import com.example.react.PieChartTable.Cell
 import com.example.react.PieChartTable.DataPieChart
 import com.example.react.PieChartTable.DataTagMod
@@ -183,9 +182,9 @@ object PageStatsInternal {
 
   val suitSortOrder = "PNZSHDC"
 
-  val colorTypePartial: Color = HSLColor( 60, 100, 50.0 )  // yellow
-  val colorTypeGame: Color = HSLColor( 30, 100, 50.0 )  // orange
-  val colorTypeSlam: Color = HSLColor( 300, 100, 50.0 ) // purple
+  val colorTypePartial: Color = Color.hsl( 60, 100, 50.0 )  // yellow
+  val colorTypeGame: Color = Color.hsl( 30, 100, 50.0 )  // orange
+  val colorTypeSlam: Color = Color.hsl( 300, 100, 50.0 ) // purple
   val colorTypeGrandSlam = Color.Cyan
   val colorTypePassed = Color.Blue
 
@@ -198,14 +197,14 @@ object PageStatsInternal {
                          hue <- 120::150::180::Nil;
                          lightness <- 75::50::25::Nil
                       ) yield {
-                        HSLColor(hue,100,lightness)
+                        Color.hsl(hue,100,lightness)
                       }
 
   val allDownColors = for (
                          hue <- 0::330::30::300::60::Nil;
                          lightness <- 25::50::75::Nil
                       ) yield {
-                        HSLColor(hue,100,lightness)
+                        Color.hsl(hue,100,lightness)
                       }
 
   def trickTitle( title: String, colors: Color* ) = {
@@ -306,7 +305,7 @@ object PageStatsInternal {
       val madeColors: Seq[Color] = allMadeColors.take(numberMade) // ColorBar.colors( 120, 25.0, numberMade, false )
 
       def colorMap( i: Int ) = {
-        if (i == 10) Color.Blue
+        if (i == 10) colorTypePassed
         else if (i < 0) downColors( -i-1 )
         else madeColors( i )
       }
@@ -393,7 +392,7 @@ object PageStatsInternal {
             else trickTitle( f"${ct.toString()}: ${value} (${100.0*value/sum}%.2f%%)", col )::Nil
           }.toTagMod,
           if (passedout.handsPlayed == 0) TagMod()
-          else trickTitle( f"${ContractTypePassed.toString()}: ${passedout.handsPlayed} (${100.0*passedout.handsPlayed/sum}%.2f%%)", Color.Blue )
+          else trickTitle( f"${ContractTypePassed.toString()}: ${passedout.handsPlayed} (${100.0*passedout.handsPlayed/sum}%.2f%%)", colorTypePassed )
         )
         DataPieChart(
             calcSize(maxHandsPlayedTotal)( sum.toInt ),
@@ -447,7 +446,7 @@ object PageStatsInternal {
                     ).toCellWithOneChartAndTitle(title, tooltipPieChartSize, pieChartMaxSizePlusPadding).withColSpan(colspan)
                   } else {
                     val pre = s"${ps.player} in ${ct} as ${decl}"
-                    val title = getTitle(pre, histogram, ps.handsPlayed, None, colorMap, madeColors.toList, downColors.toList, Color.Blue)
+                    val title = getTitle(pre, histogram, ps.handsPlayed, None, colorMap, madeColors.toList, downColors.toList, colorTypePassed)
 
                     DataPieChart(
                       if (ct == ContractTypeTotal) calcSizeTotal(ps.handsPlayed) else calcSizeCT(ps.handsPlayed),
@@ -534,7 +533,7 @@ object PageStatsInternal {
         // 10 tricks indicates passed out hand
 
         if (i < 0) downColors( -i-1 )
-        else if (i == 10) Color.Blue
+        else if (i == 10) colorTypePassed
         else madeColors( i )
       }
 
@@ -644,7 +643,7 @@ object PageStatsInternal {
                 ps.handsPlayed.toDouble::Nil
               ).toCellWithOneChartAndTitle(title, tooltipPieChartSize, pieChartMaxSizePlusPadding ).withColSpan(colspan)
             } else {
-              val title = getTitle( ct.toString(), ps.histogram, ps.handsPlayed, Some(maxHandsPlayedTotal), colorMap, madeColors.toList, downColors.toList, Color.Blue )
+              val title = getTitle( ct.toString(), ps.histogram, ps.handsPlayed, Some(maxHandsPlayedTotal), colorMap, madeColors.toList, downColors.toList, colorTypePassed )
 //              val pre = f"${ct} ${100.0*ps.handsPlayed/maxHandsPlayedTotal}%.2f%%"
 //              val (made,down,passed,smade,sdown) = ps.histogram.foldLeft((0,0,0,"","")) { (ac,v) =>
 //                val percent: Double = 100.0 * v.counter / ps.handsPlayed
@@ -706,7 +705,7 @@ object PageStatsInternal {
         // 10 tricks indicates passed out hand
 
         if (i < 0) downColors( -i-1 )
-        else if (i == 10) Color.Blue
+        else if (i == 10) colorTypePassed
         else madeColors( i )
       }
 
@@ -895,7 +894,7 @@ object PageStatsInternal {
        * @return the color
        */
       def colorMap( i: Int ) = {
-        if (i == 10) Color.Blue
+        if (i == 10) colorTypePassed
         else if (i < 0) downColors( -i-1 )
         else madeColors( i )
       }
@@ -923,7 +922,7 @@ object PageStatsInternal {
       }
 
       def getTitle( contract: String, cs: ContractStat, totalHands: Int ) = {
-        PageStatsInternal.getTitle(contract, cs.histogram, cs.handsPlayed, Some(totalHands), colorMap, madeColors.toList, downColors.toList, Color.Blue)
+        PageStatsInternal.getTitle(contract, cs.histogram, cs.handsPlayed, Some(totalHands), colorMap, madeColors.toList, downColors.toList, colorTypePassed)
       }
 
       /* *

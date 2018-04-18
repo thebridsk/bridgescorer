@@ -11,7 +11,7 @@ import com.example.pages.BaseStyles
 import com.example.pages.BaseStyles.baseStyles
 import com.example.data.util.Strings
 import utils.logging.Logger
-import org.scalajs.dom.ext.Color
+import com.example.color.Color
 import scala.language.postfixOps
 
 /**
