@@ -78,9 +78,8 @@ object Bridge {   // need to figure out how to use new way to call main
    * @throws IllegalStateException if the element was not found.
    */
   def getElement( id: String = "BridgeApp" ) = {
-    import org.scalajs.dom
 
-    val div = dom.document.getElementById(id)
+    val div = document.getElementById(id)
     if (div == null) {
       logger.warning("Did not find element with id "+id)
       throw new IllegalStateException("Did not find a element with id "+id)

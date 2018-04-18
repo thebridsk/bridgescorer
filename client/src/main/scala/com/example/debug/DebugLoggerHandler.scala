@@ -7,7 +7,6 @@ import utils.logging.Handler
 import utils.logging.Logger
 import utils.logging.TraceMsg
 import com.example.rest2.AjaxFailure
-import org.scalajs.dom.ext.AjaxException
 import com.example.logger.ServerHandler
 import com.example.bridge.action.BridgeDispatcher
 

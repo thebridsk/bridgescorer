@@ -2,8 +2,6 @@ package com.example.pages.duplicate
 
 
 import scala.scalajs.js
-import org.scalajs.dom.document
-import org.scalajs.dom.Element
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.extra.router.RouterCtl
@@ -28,7 +26,6 @@ import com.example.data.duplicate.suggestion.ColorByWon
 import com.example.data.duplicate.suggestion.ColorByWonPts
 import com.example.data.duplicate.suggestion.ColorByWonPtsPct
 import com.example.data.duplicate.suggestion.ColorByPointsPct
-import org.scalajs.dom.svg
 import com.example.react.PieChart
 import com.example.react.PieChartOrSquareForZero
 import com.example.pages.BaseStyles

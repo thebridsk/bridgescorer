@@ -2,7 +2,6 @@ package com.example.react
 
 import scala.scalajs.js
 import scala.scalajs.js.annotation.JSName
-import org.scalajs.dom.raw.HTMLElement
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react.vdom.TagMod

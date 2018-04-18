@@ -1,7 +1,5 @@
 package com.example.pages.rubber
 
-import org.scalajs.dom.document
-
 import utils.logging.Logger
 //import com.example.pages.rubber.PageMatch
 //import com.example.pages.rubber.PageDetails

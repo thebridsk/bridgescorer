@@ -1,9 +1,5 @@
 package com.example.pages.chicagos
 
-import org.scalajs.dom.document
-import org.scalajs.dom.raw.Element
-import org.scalajs.dom.raw.HTMLInputElement
-
 import com.example.bridge.store.ChicagoStore
 import com.example.controller.ChicagoController
 import com.example.data._

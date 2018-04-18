@@ -14,7 +14,6 @@ import com.example.data.rest.JsonException
 import scala.util.Try
 import scala.concurrent.ExecutionContext
 import com.example.source.SourcePosition
-import org.scalajs.dom.ext.AjaxException
 import com.example.rest2.AjaxErrorReturn
 import com.example.data.graphql.GraphQLProtocol._
 

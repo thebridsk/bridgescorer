@@ -2,7 +2,6 @@ package com.example.logger
 
 import scala.collection.mutable.Queue
 
-import org.scalajs.dom.document
 import org.scalajs.dom.raw.WebSocket
 
 import com.example.data.SystemTime
