@@ -1,8 +1,6 @@
 package com.example.react
 
 import scala.scalajs.js
-import org.scalajs.dom.document
-import org.scalajs.dom.Element
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
 import scala.math.Ordering

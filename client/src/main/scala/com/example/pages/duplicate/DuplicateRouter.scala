@@ -2,7 +2,6 @@ package com.example.pages.duplicate
 
 import japgolly.scalajs.react.extra.router.{Resolution, RouterConfigDsl, RouterCtl, Router, _}
 import japgolly.scalajs.react.vdom.html_<^._
-import org.scalajs.dom.document
 import com.example.data.bridge._
 import com.example.pages.info.InfoPage
 import com.example.pages.HomePage
@@ -12,7 +11,6 @@ import com.example.data.Id
 import com.example.bridge.store.DuplicateStore
 import com.example.routes.AppRouter.AppPage
 import japgolly.scalajs.react.CallbackTo
-import org.scalajs.dom.html
 import japgolly.scalajs.react._
 import com.example.pages.duplicate.boardsets.PageBoardSets
 import com.example.pages.duplicate.boardsets.PageMovements

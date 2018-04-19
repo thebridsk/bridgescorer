@@ -15,7 +15,6 @@ import com.example.version.VersionClient
 import com.example.version.VersionShared
 import scala.util.Success
 import scala.util.Failure
-import org.scalajs.dom.ext.AjaxException
 import com.example.react.AppButton
 import com.example.routes.AppRouter.About
 import com.example.pages.chicagos.ChicagoModule.PlayChicago2

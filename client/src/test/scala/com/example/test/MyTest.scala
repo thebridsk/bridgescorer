@@ -9,8 +9,6 @@ import com.example.data.bridge.Vul
 //import org.scalajs.jquery.{ jQuery => _, _ }
 import com.example.test.utils.jQuery
 import com.example.data.Round
-import org.scalajs.dom.raw.HTMLInputElement
-import org.scalajs.dom.raw.HTMLButtonElement
 import japgolly.scalajs.react._
 import com.example.data.bridge._
 import com.example.routes.AppRouter.AppPage

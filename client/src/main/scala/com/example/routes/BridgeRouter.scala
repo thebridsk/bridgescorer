@@ -2,7 +2,6 @@ package com.example.routes
 
 import japgolly.scalajs.react.extra.router.{Resolution, RouterConfigDsl, RouterCtl, Router, _}
 import japgolly.scalajs.react.vdom.html_<^._
-import org.scalajs.dom.document
 import com.example.data.bridge._
 import com.example.pages.info.InfoPage
 import com.example.pages.HomePage

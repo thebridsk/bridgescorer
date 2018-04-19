@@ -3,8 +3,6 @@ package com.example.pages.chicagos
 import scala.scalajs.js
 import scala.scalajs.js.UndefOr.any2undefOrA
 
-import org.scalajs.dom.raw.Element
-
 import com.example.bridge.store.NamesStore
 import com.example.controller.ChicagoController
 import com.example.data.Round

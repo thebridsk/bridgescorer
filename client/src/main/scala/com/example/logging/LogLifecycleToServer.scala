@@ -2,11 +2,8 @@ package com.example.logging
 
 import scala.scalajs.js
 import japgolly.scalajs.react._
-import org.scalajs.dom.ext.Ajax
-import org.scalajs.dom.ext.AjaxException
 import scala.util.Success
 import scala.util.Failure
-import org.scalajs.dom.console
 import scala.scalajs.js.Date
 import utils.logging.Logger
 import utils.logging.Level
