@@ -525,16 +525,37 @@ body.touched .withTooltipBox:hover {
 }
 
 .tooltipContent {
+}
+
+.tooltipContent > div.tooltipBody > div {
+  white-space: pre;
+  text-align: left;
+  padding-left: 5px;
+}
+
+.tooltipContent > div.tooltipBody {
   display: flex; 
   flex-flow: row nowrap; 
-  justify-content: center; 
+  justify-content: left; 
   align-items: center; 
   align-content: center;
   white-space: pre;
 }
 
-.tooltipContent > div {
+.tooltipContent > div.tooltipTitle {
   white-space: pre;
   text-align: left;
   padding-left: 5px;
+  width: 100%;
+}
+
+.colorbar {
+  display: flex; 
+  flex-flow: row nowrap; 
+  justify-content: center;
+  border: none;
+}
+
+.colorbar .tooltipContent {
+  white-space: pre
 }

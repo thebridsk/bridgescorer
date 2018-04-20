@@ -151,4 +151,26 @@ class TestColor extends FlatSpec with MustMatchers  {
     }
   }
 
+  it should "Categorize all the color names" in {
+    val allNamedColors = NamedColor.namedColors.map { case (name,hex) =>
+      val color = Color(hex).toHSLColor
+      val c = color.hue
+      (name,color,c)
+    }.toList
+    val grouped = allNamedColors.groupBy { case (name,color,c) =>
+      val c1 = if (c < 0) c+360 else c
+      val x = Math.round(c1)/1
+      x*1
+      c1
+    }.toList.sortWith( (l,r) => l._1 < r._1)
+
+    println( s"There are ${allNamedColors.length} color names, with ${grouped.size} colors" )
+
+    val s = grouped.map { case (c, list) =>
+      val colors = list.sortBy(e => (e._2.saturation,e._2.lightness)).map { case (name,color,hue) => f"${name}(${color.saturation}%.2f%%,${color.lightness}%.2f%%)" }
+      f"${c}%.2fdeg: ${colors.mkString("\n    ","\n    ","")}"
+    }.mkString("\n", "\n", "")
+
+    println( s"Colors are:${s}" )
+  }
 }

@@ -8,6 +8,9 @@ import com.example.pages.BaseStyles
 import japgolly.scalajs.react.vdom.HtmlStyles
 import com.example.color.Color
 import Utils._
+import com.example.color.RGBColor
+import com.example.color.HSLColor
+import com.example.color.RGBPercentColor
 
 /**
  * A skeleton component.
@@ -22,6 +25,7 @@ import Utils._
  */
 object ColorBar {
   import ColorBarInternal._
+  import com.example.color.Colors._
 
   /**
    * Props for ColorBar
@@ -37,9 +41,9 @@ object ColorBar {
       leftColors: Seq[Color],
       rightColors: Seq[Color],
       middle: Option[Color],
-      leftTitles: Option[List[String]] = None,
-      rightTitles: Option[List[String]] = None,
-      whiteTitle: Option[String] = None
+      leftTitles: Option[List[TagMod]] = None,
+      rightTitles: Option[List[TagMod]] = None,
+      whiteTitle: Option[TagMod] = None
   ) {
   }
 
@@ -65,13 +69,13 @@ object ColorBar {
         hue1: Double, minLightness1: Double, n1: Int, darkToLight1: Boolean,
         hue2: Double, minLightness2: Double, n2: Int, darkToLight2: Boolean,
         middle: Option[Color],
-        titles1: Option[List[String]] = None,
-        titles2: Option[List[String]] = None,
-        whiteTitle: Option[String] = None
+        titles1: Option[List[TagMod]] = None,
+        titles2: Option[List[TagMod]] = None,
+        whiteTitle: Option[TagMod] = None
     ) = {
       new Props(
-          colors(hue1,minLightness1,n1,darkToLight1),
-          colors(hue2,minLightness2,n2,darkToLight2),
+          colorsExcludeEnd(hue1,minLightness1,n1,darkToLight1),
+          colorsExcludeEnd(hue2,minLightness2,n2,darkToLight2),
           middle,
           titles1,
           titles2,
@@ -105,8 +109,8 @@ object ColorBar {
    * @param titles2 the titles of the right boxes, must have n titles.
    */
   def apply( hue1: Double, minLightness1: Double, hue2: Double, minLightness2: Double, n: Int,
-             titles1: List[String],
-             titles2: List[String]
+             titles1: List[TagMod],
+             titles2: List[TagMod]
   ) = {
     component(Props.create(hue1,minLightness1,n,true,hue2,minLightness2,n,false,Some(Color.White), Option(titles1), Option(titles2), None))
   }
@@ -124,9 +128,9 @@ object ColorBar {
    * @param whiteTitle
    */
   def apply( hue1: Double, minLightness1: Double, hue2: Double, minLightness2: Double, n: Int,
-             titles1: List[String],
-             titles2: List[String],
-             whiteTitle: String
+             titles1: List[TagMod],
+             titles2: List[TagMod],
+             whiteTitle: TagMod
   ) = {
     component(Props.create(hue1,minLightness1,n,true,hue2,minLightness2,n,false,Some(Color.White), Option(titles1), Option(titles2), Option(whiteTitle)))
   }
@@ -150,55 +154,11 @@ object ColorBar {
   def apply( hue1: Double, minLightness1: Double, n1: Int, darkToLight1: Boolean,
              hue2: Double, minLightness2: Double, n2: Int, darkToLight2: Boolean,
              middle: Option[Color],
-             titles1: Option[List[String]] = None,
-             titles2: Option[List[String]] = None,
-             whiteTitle: Option[String] = None
+             titles1: Option[List[TagMod]] = None,
+             titles2: Option[List[TagMod]] = None,
+             whiteTitle: Option[TagMod] = None
   ) = {
     component( Props.create(hue1,minLightness1,n1,darkToLight1,hue2,minLightness2,n2,darkToLight2,middle, titles1, titles2, whiteTitle ) )
-  }
-
-  /**
-   * returns the colors.  minLightness will be used, maxLightness will not.
-   * @param hue the hue [0 - 360]
-   * @param minLightness the minimum lightness [0 - 100]
-   * @param n the number of boxes for hue
-   * @param darkToLight left boxes should be dark to light on right if true.  Default is true.
-   * @param maxLightness the maximum lightness [0 - 100]
-   * @return the colors.
-   */
-  def colors( hue: Double, minLightness: Double, n: Int, darkToLight1: Boolean = true, maxLightness: Double = 100.0 ) = {
-    if (n == 0) Nil
-    else if (n == 1) Color.hsl( hue, 100.0, 50.0 )::Nil
-    else {
-      val step = (maxLightness - minLightness)/(n)
-      val cols = (minLightness until (maxLightness-0.0001) by step).map { l =>
-         Color.hsl( hue, 100.0, l )
-      }
-      if (darkToLight1) cols
-      else cols.reverse
-    }
-  }
-
-  /**
-   * returns the colors
-   * @param hue the hue
-   * @param minLightness the minimum lightness [0 - 100]
-   * @param n the number of boxes for hue
-   * @param darkToLight left boxes should be dark to light on right if true.  Default is true.
-   * @param maxLightness the maximum lightness [0 - 100]
-   * @return the colors.
-   */
-  def colorsInclusive( hue: Double, minLightness: Double, n: Int, darkToLight1: Boolean = true, maxLightness: Double = 100.0 ) = {
-    if (n == 0) Nil
-    else if (n == 1) Color.hsl( hue, 100.0, 50.0 )::Nil
-    else {
-      val step = (maxLightness - minLightness)/(n-1)
-      val cols = (minLightness to (maxLightness+0.0001) by step).map { l =>
-         Color.hsl( hue, 100.0, l )
-      }
-      if (darkToLight1) cols
-      else cols.reverse
-    }
   }
 
   /**
@@ -215,9 +175,9 @@ object ColorBar {
       leftColors: Seq[Color],
       rightColors: Seq[Color],
       middle: Option[Color],
-      leftTitles: Option[List[String]] = None,
-      rightTitles: Option[List[String]] = None,
-      whiteTitle: Option[String] = None
+      leftTitles: Option[List[TagMod]] = None,
+      rightTitles: Option[List[TagMod]] = None,
+      whiteTitle: Option[TagMod] = None
   ) = {
     component( Props( leftColors, rightColors, middle, leftTitles, rightTitles, whiteTitle ) )
   }
@@ -229,7 +189,7 @@ object ColorBar {
    */
   def simple(
       colors: Seq[Color],
-      titles: Option[List[String]] = None
+      titles: Option[List[TagMod]] = None
   ) = {
     component(Props(colors, Nil, None, titles, None, None))
   }
@@ -241,8 +201,9 @@ object ColorBarInternal {
   import Utils._
 
   import BaseStyles._
+  import com.example.color.Colors._
 
-  private def box( color: Color, title: Option[String] ): VdomNode = {
+  private def box( color: Color, title: Option[TagMod] ): VdomNode = {
     val d: VdomNode = <.div(
       ^.flex := "0 0 auto",
       ^.width := "20px",
@@ -255,13 +216,13 @@ object ColorBarInternal {
     }.getOrElse(d)
   }
 
-  private def bar( hue: Double, minLightness: Double, n: Int, darkToLight: Boolean, titles: Option[List[String]] ): TagMod = {
-    val cols = colors(hue,minLightness,n)
+  private def bar( hue: Double, minLightness: Double, n: Int, darkToLight: Boolean, titles: Option[List[TagMod]] ): TagMod = {
+    val cols = colorsExcludeEnd(hue,minLightness,n)
     val c = if (darkToLight) cols else cols.reverse
     bar(c, titles)
   }
 
-  private def bar( cols: Seq[Color], titles: Option[List[String]] ): TagMod = {
+  private def bar( cols: Seq[Color], titles: Option[List[TagMod]] ): TagMod = {
     val ts = titles.map( t => t.map( ti => Some(ti) ) ).getOrElse( cols.map( cols => None ) )
     cols.zip( ts ).map { entry =>
       val (cc,t) = entry

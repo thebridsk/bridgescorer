@@ -119,6 +119,8 @@ class BaseStyles {
 
   val withTooltipBox = cls("withTooltipBox")
   val tooltipContent = cls("tooltipContent")
+  val tooltipTitle = cls("tooltipTitle")
+  val tooltipBody = cls("tooltipBody")
 }
 
 class RootStyles {

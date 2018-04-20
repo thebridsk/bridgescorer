@@ -107,7 +107,7 @@ object Color {
    * @return the appropriate Color object.
    * @throws IllegalArgumentException if unable to parse v
    */
-  def apply( v: String ) = {
+  def apply( v: String ): Color = {
     v match {
       case patternRGB(r,g,b,a,p) => rgb(r.toInt,g.toInt,b.toInt,processA(a,p))
       case patternRGBs(r,g,b,a,p) => rgb(r.toInt,g.toInt,b.toInt,processA(a,p))
@@ -219,6 +219,10 @@ object Color {
       Grey
       )
 
+  /**
+   * @return all the known named colors.
+   */
+  def allNamedColors: Iterable[String] = NamedColor.namedColors.keys
 
   /**
    * This implicit value allows the direct assignment to an attribute.
@@ -574,12 +578,15 @@ object HSLColor {
     } else {
       0.0
     }
-    val h = 60*hp
+    val hpre = 60*hp
+    val h = if (hpre<0) hpre+360 else hpre
 
     val l = (max+min)/2
 
-    val s = if (l == 1) 0
+    val spre = if (l == 1) 0
     else c/( 1 - Math.abs(2*l-1) )
+
+    val s = if (spre.isNaN()) 0 else spre
 
     new HSLColor(h,s*100,l*100,a)
   }

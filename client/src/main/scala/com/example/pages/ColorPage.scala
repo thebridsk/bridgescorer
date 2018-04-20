@@ -6,6 +6,9 @@ import japgolly.scalajs.react._
 import com.example.react.ColorBar
 import com.example.react.Utils._
 import utils.logging.Logger
+import com.example.color.NamedColor
+import com.example.color.Color
+import com.example.color.Colors
 
 /**
  * A skeleton component.
@@ -32,6 +35,9 @@ object ColorPageInternal {
 
   val log = Logger("bridge.ColorPage")
 
+  val defaultColor1 = "rgb(255,0,0,100%)"
+  val defaultColor2 = "hsl(240,100%,50%,100%)"
+
   /*
    * Internal state for rendering the component.
    *
@@ -41,15 +47,32 @@ object ColorPageInternal {
    */
   /**
    * @param n the number of boxes
-   * @param minLightness the minimum l from hsl, 0 to 1
-   * @param maxLightness the maximum l from hsl, 0 to 1
+   * @param minLightness the minimum l from hsl, 0 to 100
+   * @param maxLightness the maximum l from hsl, 0 to 100
+   * @param huestep the steps to take to get all the hue values.  0 to 360 by huestep
+   * @param saturation the saturation, 0 to 100
    */
-  case class State( n: String = "10", minLightness: String = "0.0", maxLightness: String = "100.0", huestep: String = "30") {
+  case class State(
+      n: String = "11",
+      minLightness: String = "0.0",
+      maxLightness: String = "100.0",
+      huestep: String = "30",
+      saturation: String = "100.0",
+
+      color1: String = defaultColor1,
+      color2: String = defaultColor2,
+      n2: String = "11"
+  ) {
 
     def withN( v: String ) = copy(n=v)
     def withHueStep( v: String ) = copy(huestep=v)
     def withMinLightness( v: String ) = copy(minLightness=v)
     def withMaxLightness( v: String ) = copy(maxLightness=v)
+    def withSaturation( v: String ) = copy(saturation=v)
+
+    def withColor1( v: String ) = copy(color1=v)
+    def withColor2( v: String ) = copy(color2=v)
+    def withN2( v: String ) = copy(n2=v)
   }
 
   def parseInt( s: String, default: Int ) = {
@@ -70,6 +93,15 @@ object ColorPageInternal {
     }
   }
 
+  def parseColor( s: String, default: String ) = {
+    try {
+      Color(s)
+    } catch {
+      case x: IllegalArgumentException =>
+        Color(default)
+    }
+  }
+
   /**
    * Internal state for rendering the component.
    *
@@ -79,12 +111,28 @@ object ColorPageInternal {
    */
   class Backend(scope: BackendScope[Props, State]) {
 
+    def setSaturation( e: ReactEventFromInput ) = e.inputText { s =>
+      scope.modState { state => state.withSaturation(s) }
+    }
+
     def setHueStep( e: ReactEventFromInput ) = e.inputText { s =>
       scope.modState { state => state.withHueStep(s) }
     }
 
     def setN( e: ReactEventFromInput ) = e.inputText { s =>
       scope.modState { state => state.withN(s) }
+    }
+
+    def setN2( e: ReactEventFromInput ) = e.inputText { s =>
+      scope.modState { state => state.withN2(s) }
+    }
+
+    def setColor1( e: ReactEventFromInput ) = e.inputText { s =>
+      scope.modState { state => state.withColor1(s) }
+    }
+
+    def setColor2( e: ReactEventFromInput ) = e.inputText { s =>
+      scope.modState { state => state.withColor2(s) }
     }
 
     def setMinLightness( e: ReactEventFromInput ) = e.inputText { s =>
@@ -97,6 +145,7 @@ object ColorPageInternal {
 
     def render( props: Props, state: State ) = {
       <.div(
+        <.div(
           <.ul(
             <.li(
               <.label(
@@ -115,6 +164,16 @@ object ColorPageInternal {
                          ^.name:="N",
                          ^.onChange ==> setN,
                          ^.value := state.n
+                )
+              )
+            ),
+            <.li(
+              <.label(
+                "Saturation",
+                <.input( ^.`type`:="number",
+                         ^.name:="Saturation",
+                         ^.onChange ==> setSaturation,
+                         ^.value := state.saturation
                 )
               )
             ),
@@ -149,27 +208,170 @@ object ColorPageInternal {
               ),
               <.tbody(
                 (0 to 360 by parseInt(state.huestep,30)).map { hue =>
-                  val colors = ColorBar.colorsInclusive(
-                                                          hue,
-                                                          parseDouble(state.minLightness,0.0),
-                                                          parseInt(state.n,10),
-                                                          false,
-                                                          parseDouble(state.maxLightness,100.0)
-                                                      )
+                  val colors = Colors.colors(
+                                              hue,
+                                              parseDouble(state.minLightness,0.0),
+                                              parseInt(state.n,11),
+                                              false,
+                                              parseDouble(state.maxLightness,100.0),
+                                              parseDouble(state.saturation,100)
+                                            )
 
                   <.tr(
                     <.td(hue.toString()),
                     <.td(
                       ColorBar.simple(
                           colors,
-                          Some( colors.map( c => s"${c}" ).toList )
+                          Some( colors.map( c => TagMod( s"${c}" ) ).toList )
                       )
                     )
                   )
                 }.toTagMod
               )
             )
+          ),
+        ),
+        <.div(
+          <.ul(
+            <.li(
+              <.label(
+                "N",
+                <.input( ^.`type`:="number",
+                         ^.name:="N2",
+                         ^.onChange ==> setN2,
+                         ^.value := state.n2
+                )
+              )
+            ),
+            <.li(
+              <.label(
+                "Color1",
+                <.input( ^.`type`:="text",
+                         ^.name:="Color1",
+                         ^.onChange ==> setColor1,
+                         ^.value := state.color1
+                )
+              )
+            ),
+            <.li(
+              <.label(
+                "Color2",
+                <.input( ^.`type`:="text",
+                         ^.name:="Color2",
+                         ^.onChange ==> setColor2,
+                         ^.value := state.color2
+                )
+              )
+            )
+          ),
+          <.div(
+            {
+              val color1 = parseColor(state.color1, defaultColor1)
+              val color2 = parseColor(state.color2, defaultColor2)
+              val colorsRGB = Colors.colorsRGB( color1.toRGBPercentColor, color2.toRGBPercentColor, parseInt(state.n2,11) )
+              val colorsHSL = Colors.colorsHSL( color1.toHSLColor, color2.toHSLColor, parseInt(state.n2,11) )
+              TagMod(
+                <.table(
+                  <.thead(
+                    <.tr(
+                      <.th("By"),
+                      <.th("Color bar")
+                    )
+                  ),
+                  <.tbody(
+                    <.tr(
+                      <.td("RGB"),
+                      <.td(
+                        {
+                          ColorBar.simple(
+                            colorsRGB,
+                            Some( colorsRGB.map( c => TagMod( s"${c.toAttrValue}", <.br, s"${c.toHSLColor.toAttrValue}" ) ).toList )
+                          )
+                        }
+                      )
+                    ),
+                    <.tr(
+                      <.td("HSL"),
+                      <.td(
+                        {
+                          ColorBar.simple(
+                            colorsHSL,
+                            Some( colorsHSL.map( c => TagMod( s"${c.toRGBPercentColor.toAttrValue}", <.br, s"${c.toAttrValue}" ) ).toList )
+                          )
+                        }
+                      )
+                    )
+                  )
+                ),
+                <.table(
+                  <.thead(
+                    <.tr(
+                      <.th( ^.rowSpan := 2, "N" ),
+                      <.th( ^.colSpan := 2, "RGB" ),
+                      <.th( ^.colSpan := 2, "HSL" ),
+                    ),
+                    <.tr(
+                      <.th( "RGB ColorBar" ),
+                      <.th( "HSL ColorBar" ),
+                      <.th( "RGB ColorBar" ),
+                      <.th( "HSL ColorBar" ),
+                    )
+                  ),
+                  <.tbody(
+                    colorsRGB.zip( colorsHSL ).zipWithIndex.map { case ((rgb,hsl),n) =>
+                      <.tr(
+                        <.td( s"${n+1}" ),
+                        <.td(rgb.toAttrValue),
+                        <.td(hsl.toRGBPercentColor.toAttrValue),
+                        <.td(rgb.toHSLColor.toAttrValue),
+                        <.td(hsl.toAttrValue),
+                      )
+                    }.toTagMod
+                  )
+                )
+              )
+            }
+          ),
+        ),
+        <.div(
+          <.table(
+            <.tbody(
+              NamedColor.namedColors.toList.map { case (name,hex) =>
+                val rgb = Color(hex).toRGBColor
+                val hsl = rgb.toHSLColor
+                (name, rgb, hsl)
+              }.groupBy { case (name, rgb, hsl) =>
+                if (hsl.hue<0) hsl.hue+360
+                else hsl.hue
+              }.map { case (hue, list) =>
+                val bySat = list.groupBy { case (name, rgb, hsl) =>
+                  hsl.saturation
+                }.map { case (sat, satlist) =>
+                  (sat, satlist.sortWith((l,r)=>l._3.lightness>r._3.lightness))
+                }.toList.sortBy( e => e._1 )
+                (hue,bySat)
+              }.toList.sortBy( e => e._1 ).map { case (hue, satmap) =>
+                TagMod(
+                  <.tr(
+                    <.td( f"$hue%.2fdeg" )
+                  ),
+                  satmap.map { case (sat, list) =>
+                    <.tr(
+                      <.td(),
+                      <.td(f"$sat%.2f%%"),
+                      list.map { case (name,rgb,hsl) =>
+                        <.td(
+                          f"${name} ${hsl.lightness}%.2f%%",
+                          ColorBar.simple(Color.named(name)::rgb::hsl::Nil)
+                        )
+                      }.toTagMod
+                    )
+                  }.toTagMod
+                )
+              }.toTagMod
+            )
           )
+        )
       )
     }
   }
