@@ -104,14 +104,14 @@ object ViewPairsGridInternal {
 
     val stepB = (ave-min)/n
     val below = (0 until n).map { i =>
-      f"${min+stepB*i}%.2f%%"
+      TagMod( f"${min+stepB*i}%.2f%%" )
     }.toList
 
-    val middle = f"${ave}%.2f%%"
+    val middle = TagMod( f"${ave}%.2f%%" )
 
     val stepA = (max-ave)/n
     val above = (1 to n).map { i =>
-      f"${ave+stepA*i}%.2f%%"
+      TagMod( f"${ave+stepA*i}%.2f%%" )
     }.toList
     (below,middle,above)
   }
@@ -236,7 +236,10 @@ object ViewPairsGridInternal {
                 pds.get(rowplayer, colPlayer) match {
                   case Some(pd) =>
                     val (data,title) = getData(pd, statSize, statColor, 120, 0, state, 1)
-                    Cell(List( data ), Some(<.div(title)))
+                    Cell(
+                      List( data ),
+                      title = Some( <.div( baseStyles.tooltipBody, title ) )
+                    )
                   case None =>
                     Cell(List())
                 }
@@ -247,7 +250,7 @@ object ViewPairsGridInternal {
 
             val (totalData, totalTitle) = getData(playerTotals, statTotalSize, statTotalColor, 240, 60, state, 2)
 
-            val totalDataList = List(Cell(List(totalData), Some(<.div(totalTitle))))
+            val totalDataList = List(Cell(List(totalData), Some(<.div( baseStyles.tooltipBody, totalTitle))))
 
             Row( rowplayer, data:::totalDataList)
           }

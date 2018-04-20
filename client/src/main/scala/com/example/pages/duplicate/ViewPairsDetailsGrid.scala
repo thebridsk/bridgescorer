@@ -182,12 +182,13 @@ object ViewPairsDetailsGridInternal {
             pd.details match {
               case Some(det) =>
                 val oneOverTot = 100.0/(det.declarer+det.defended+det.passed)
-                val title = f"Declarer ${det.declarer} (${det.declarer*oneOverTot}%.2f%%)%nDefended ${det.defended} (${det.defended*oneOverTot}%.2f%%)%nPassed ${det.passed} (${det.passed*oneOverTot}%.2f%%)"
+                val title = TagMod( s"${pd.player1} - ${pd.player2}" )
+                val legend = f"Declarer ${det.declarer} (${det.declarer*oneOverTot}%.2f%%)%nDefended ${det.defended} (${det.defended*oneOverTot}%.2f%%)%nPassed ${det.passed} (${det.passed*oneOverTot}%.2f%%)"
                 DataPieChart(
                   size = size(det.total, vmin, vmax, state.minSize, state.maxSize),
                   color = Green::Red::Blue::Nil,
                   value = det.declarer.toDouble::det.defended.toDouble::det.passed.toDouble::Nil,
-                ).toCellWithOneChartAndTitle(title, state.tooltipChartSize, state.maxSize)
+                ).toCellWithOneChartAndTitle(legend, state.tooltipChartSize, state.maxSize, Some(title))
               case None =>
                 cellEmpty
             }
@@ -207,25 +208,36 @@ object ViewPairsDetailsGridInternal {
                 val titleDec = f"Declarer ${det.declarer} (${det.declarer*oneOverTotal}%.2f%%)\n  Made ${det.made} (${det.made*oneOverDec}%.2f%%)%n  Down ${det.down} (${det.down*oneOverDec}%.2f%%)"
                 val titleDef = f"Defended ${det.defended} (${det.defended*oneOverTotal}%.2f%%)\n  Took Down ${det.tookDown} (${det.tookDown*oneOverDef}%.2f%%)%n  Allowed Made ${det.allowedMade} (${det.allowedMade*oneOverDef}%.2f%%)"
                 val titlePas = f"Passed ${det.passed} (${det.passed*oneOverTotal}%.2f%%)"
+                val title = TagMod( s"${pd.player1} - ${pd.player2}" )
+                val data = List(
+                              DataPieChart(
+                                size = if (det.declarer == 0) -sizeDec else sizeDec,
+                                color = Green::Red::Nil,
+                                value = det.made.toDouble::det.down.toDouble::Nil,
+                              ),
+                              DataPieChart(
+                                size = if (det.defended == 0) -sizeDef else sizeDef,
+                                color = Green::Red::Nil,
+                                value = det.tookDown.toDouble::det.allowedMade.toDouble::Nil,
+                              ),
+                              DataPieChart(
+                                size = if (det.passed == 0) -sizePas else sizePas,
+                                color = Blue::Nil,
+                                value = det.passed.toDouble::Nil,
+                              )
+                            )
                 Cell(
-                  data = List(
-                    DataPieChart(
-                      size = if (det.declarer == 0) -sizeDec else sizeDec,
-                      color = Green::Red::Nil,
-                      value = det.made.toDouble::det.down.toDouble::Nil,
-                    ),
-                    DataPieChart(
-                      size = if (det.defended == 0) -sizeDef else sizeDef,
-                      color = Green::Red::Nil,
-                      value = det.tookDown.toDouble::det.allowedMade.toDouble::Nil,
-                    ),
-                    DataPieChart(
-                      size = if (det.passed == 0) -sizePas else sizePas,
-                      color = Blue::Nil,
-                      value = det.passed.toDouble::Nil,
-                    )
-                  ),
-                  title = Some(<.div( titleDec+"\n"+titleDef+"\n"+titlePas ))
+                  data = data,
+                  title = Some(
+                      TagMod(
+                        <.div( baseStyles.tooltipTitle, title ),
+                        <.div(
+                          baseStyles.tooltipBody,
+                          data.map( d => PieChartTable.item(if (d.size <= 0) d else d.withSize(state.maxSize)) ).toTagMod,
+                          <.div( baseStyles.tooltipBody, titleDec+"\n"+titleDef+"\n"+titlePas )
+                        )
+                      )
+                  )
                 )
               case None =>
                 cellEmpty
@@ -244,11 +256,12 @@ object ViewPairsDetailsGridInternal {
                 val titleDec = f"Declarer ${det.declarer} (${det.declarer*oneOverTotal}%.2f%%)\n  Made ${det.made} (${det.made*oneOverDec}%.2f%%)%n  Down ${det.down} (${det.down*oneOverDec}%.2f%%)"
                 val titleDef = f"Defended ${det.defended} (${det.defended*oneOverTotal}%.2f%%)\n  Took Down ${det.tookDown} (${det.tookDown*oneOverDef}%.2f%%)%n  Allowed Made ${det.allowedMade} (${det.allowedMade*oneOverDef}%.2f%%)"
                 val titlePas = f"Passed ${det.passed} (${det.passed*oneOverTotal}%.2f%%)"
+                val title = TagMod( s"${pd.player1} - ${pd.player2}" )
                 DataPieChart(
                   size = if (det.total == 0) -sizeAll else sizeAll,
                   color = Green::Red::DarkRed::DarkGreen::Blue::Nil,
                   value = det.made.toDouble::det.down.toDouble::det.allowedMade.toDouble::det.tookDown.toDouble::det.passed.toDouble::Nil,
-                ).toCellWithOneChartAndTitle(titleDec+"\n"+titleDef+"\n"+titlePas, state.tooltipChartSize, state.maxSize)
+                ).toCellWithOneChartAndTitle(titleDec+"\n"+titleDef+"\n"+titlePas, state.tooltipChartSize, state.maxSize, Some(title))
               case None =>
                 cellEmpty
             }

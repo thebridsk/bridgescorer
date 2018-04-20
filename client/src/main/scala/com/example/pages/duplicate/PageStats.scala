@@ -236,7 +236,7 @@ object PageStatsInternal {
    * @param colorMap mapping tricks to a color
    */
   def getTitle(
-      pre: String,
+      pre: Option[String],
       histogram: List[CounterStat],
       handsPlayed: Int,
       totalHandsPlayed: Option[Int],
@@ -258,7 +258,7 @@ object PageStatsInternal {
     }
 
     <.ul(
-      <.li( pre ),
+      pre.whenDefined( p => <.li( p )),
       <.li(
         f"Total: ${handsPlayed}",
         totalHandsPlayed.filter(t=>t!=0).map( t => TagMod( f" (${100.0*handsPlayed/t}%.2f%%)" )).getOrElse(TagMod(""))
@@ -293,11 +293,11 @@ object PageStatsInternal {
       val numberMade = Math.max( 0, stats.max+1 )
 
       val titleDown = if (numberDown > 0) {
-        (-numberDown until 0).map( i => s"Down ${-i}" ).toList
+        (-numberDown until 0).map( i => TagMod( s"Down ${-i}" ) ).toList
       } else {
         List()
       }
-      val titleMade = (0 until numberMade).map( i => if (i==0) "Made" else s"Made ${i}" ).toList
+      val titleMade = (0 until numberMade).map( i => TagMod( if (i==0) "Made" else s"Made ${i}" ) ).toList
 
       val downColors: Seq[Color] = allDownColors.take(numberDown) // ColorBar.colors( 0, 25.0, numberDown, false )
       val madeColors: Seq[Color] = allMadeColors.take(numberMade) // ColorBar.colors( 120, 25.0, numberMade, false )
@@ -443,14 +443,14 @@ object PageStatsInternal {
                       ps.handsPlayed.toDouble::Nil
                     ).toCellWithOneChartAndTitle(title, tooltipPieChartSize, pieChartMaxSizePlusPadding).withColSpan(colspan)
                   } else {
-                    val pre = s"${ps.player} in ${ct} as ${decl}"
-                    val title = getTitle(pre, histogram, ps.handsPlayed, None, colorMap, madeColors.toList, downColors.toList, colorTypePassed)
+                    val title = s"${ps.player} in ${ct} as ${decl}"
+                    val legend = getTitle(None, histogram, ps.handsPlayed, None, colorMap, madeColors.toList, downColors.toList, colorTypePassed)
 
                     DataPieChart(
                       if (ct == ContractTypeTotal) calcSizeTotal(ps.handsPlayed) else calcSizeCT(ps.handsPlayed),
                       cols,
                       vals
-                    ).toCellWithOneChartAndTitle(title, tooltipPieChartSize, pieChartMaxSizePlusPadding ).
+                    ).toCellWithOneChartAndTitle(legend, tooltipPieChartSize, pieChartMaxSizePlusPadding, Some(title) ).
                         withColSpan( colspan )
                   }
 
@@ -502,7 +502,7 @@ object PageStatsInternal {
                 "Dark green indicates a contract made with no overtricks",
                 ColorBar.create(downColors.reverse, madeColors, None, Some(titleDown), Some(titleMade), None),
                 "For the Type columns the colors are:",
-                ColorBar.simple( ctColors, Some(typeOrder.map( ct => ct.toString() )) )
+                ColorBar.simple( ctColors, Some(typeOrder.map( ct => TagMod( ct.toString() ) )) )
               )
             )
         ),
@@ -641,7 +641,8 @@ object PageStatsInternal {
                 ps.handsPlayed.toDouble::Nil
               ).toCellWithOneChartAndTitle(title, tooltipPieChartSize, pieChartMaxSizePlusPadding ).withColSpan(colspan)
             } else {
-              val title = getTitle( ct.toString(), ps.histogram, ps.handsPlayed, Some(maxHandsPlayedTotal), colorMap, madeColors.toList, downColors.toList, colorTypePassed )
+              val title = ct.toString()
+              val legend = getTitle( None, ps.histogram, ps.handsPlayed, Some(maxHandsPlayedTotal), colorMap, madeColors.toList, downColors.toList, colorTypePassed )
 //              val pre = f"${ct} ${100.0*ps.handsPlayed/maxHandsPlayedTotal}%.2f%%"
 //              val (made,down,passed,smade,sdown) = ps.histogram.foldLeft((0,0,0,"","")) { (ac,v) =>
 //                val percent: Double = 100.0 * v.counter / ps.handsPlayed
@@ -675,7 +676,7 @@ object PageStatsInternal {
                 calcSize(ps.handsPlayed, if (ct==ContractTypeTotal) maxHandsPlayedTotal else maxHandsPlayed),
                 cols,
                 vals
-              ).toCellWithOneChartAndTitle(title, tooltipPieChartSize, pieChartMaxSizePlusPadding ).withColSpan(colspan)
+              ).toCellWithOneChartAndTitle(legend, tooltipPieChartSize, pieChartMaxSizePlusPadding, Some(title) ).withColSpan(colspan)
             }
 
           }
@@ -690,11 +691,11 @@ object PageStatsInternal {
       val numberMade = Math.max( 0, stats.max+1 )
 
       val titleDown = if (numberDown > 0) {
-        (-numberDown until 0).map( i => s"Down ${-i}" ).toList
+        (-numberDown until 0).map( i => TagMod( s"Down ${-i}" ) ).toList
       } else {
         List()
       }
-      val titleMade = (0 until numberMade).map( i => if (i==0) "Made" else s"Made ${i}" ).toList
+      val titleMade = (0 until numberMade).map( i => TagMod( if (i==0) "Made" else s"Made ${i}" ) ).toList
 
       val downColors: Seq[Color] = allDownColors.take(numberDown) // ColorBar.colors( 0, 25.0, numberDown, false )
       val madeColors: Seq[Color] = allMadeColors.take(numberMade) // ColorBar.colors( 120, 25.0, numberMade, false )
@@ -860,7 +861,7 @@ object PageStatsInternal {
                 "Dark green indicates a contract made with no overtricks",
                 ColorBar.create(downColors, madeColors, None, Some(titleDown), Some(titleMade), None),
                 "For the Type columns the colors are:",
-                ColorBar.simple( ctColors, Some(typeOrder.map( ct => ct.toString() )) )
+                ColorBar.simple( ctColors, Some(typeOrder.map( ct => TagMod(ct.toString()) )) )
               )
             )
         ),
@@ -877,11 +878,11 @@ object PageStatsInternal {
       val numberMade = Math.max( 0, stats.max+1 )
 
       val titleDown = if (numberDown > 0) {
-        (-numberDown until 0).map( i => s"Down ${-i}" ).toList
+        (-numberDown until 0).map( i => TagMod(s"Down ${-i}") ).toList
       } else {
         List()
       }
-      val titleMade = (0 until numberMade).map( i => if (i==0) "Made" else s"Made ${i}" ).toList
+      val titleMade = (0 until numberMade).map( i => TagMod( if (i==0) "Made" else s"Made ${i}" ) ).toList
 
       val downColors: Seq[Color] = allDownColors.take(numberDown) // ColorBar.colors( 0, 25.0, numberDown, false )
       val madeColors: Seq[Color] = allMadeColors.take(numberMade) // ColorBar.colors( 120, 25.0, numberMade, false )
@@ -919,8 +920,8 @@ object PageStatsInternal {
         else (handsPlayed.toDouble/maxDoubledHandsPlayed*(pieChartMaxSize-5)).toInt + 5
       }
 
-      def getTitle( contract: String, cs: ContractStat, totalHands: Int ) = {
-        PageStatsInternal.getTitle(contract, cs.histogram, cs.handsPlayed, Some(totalHands), colorMap, madeColors.toList, downColors.toList, colorTypePassed)
+      def getTitle( cs: ContractStat, totalHands: Int ) = {
+        PageStatsInternal.getTitle(None, cs.histogram, cs.handsPlayed, Some(totalHands), colorMap, madeColors.toList, downColors.toList, colorTypePassed)
       }
 
       /* *
@@ -968,12 +969,13 @@ object PageStatsInternal {
                   val (cols,vals) = s.histogram.map(cs => (colorMap(cs.tricks), cs.counter.toDouble)).unzip
                   val con = s.parseContract
                   val suit = if (con.suit == "Z") "N" else con.suit
-                  val title = getTitle(s"${con.tricks}${suit}", s, totalHandsPlayed)
+                  val title = s"${con.tricks}${suit}"
+                  val legend = getTitle( s, totalHandsPlayed)
                   DataPieChart(
                     calcSize(s.handsPlayed),
                     cols,
                     vals
-                  ).toCellWithOneChartAndTitle(title, tooltipPieChartSize, pieChartMaxSizePlusPadding )
+                  ).toCellWithOneChartAndTitle(legend, tooltipPieChartSize, pieChartMaxSizePlusPadding, Some(title) )
                 } else {
                   val celllist =
                     List( "", "*", "**" ).map { doubled =>
@@ -981,12 +983,13 @@ object PageStatsInternal {
                         val con = s.parseContract
                         val suit = if (con.suit == "Z") "N" else con.suit
                         val (cols,vals) = s.histogram.map(cs => (colorMap(cs.tricks), cs.counter.toDouble)).unzip
-                        val title = getTitle(s"${con.tricks}${suit}${con.doubled}", s, totalHandsPlayed)
+                        val title = s"${con.tricks}${suit}${con.doubled}"
+                        val legend = getTitle( s, totalHandsPlayed)
                         DataPieChart(
                             calcSize(s.handsPlayed),
                             cols,
                             vals
-                        ).chartWithTitle(title, tooltipPieChartSize, pieChartMaxSizePlusPadding )
+                        ).chartWithTitle(legend, tooltipPieChartSize, pieChartMaxSizePlusPadding, Some(title) )
                       }.getOrElse( zeroData )
                     }
                   Cell( celllist )

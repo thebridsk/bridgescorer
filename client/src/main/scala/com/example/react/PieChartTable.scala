@@ -54,17 +54,22 @@ object PieChartTable {
 
     /**
      * Adds a tooltip with a larger version of the piechart.
-     * @param title tooltip without the chart
+     * @param legend the legend for the chart
      * @param pieChartSize the size of the piechart in the tooltip
      * @param minHeight the min-height style applied to the element that contains the data.
+     * @param title the title for the tooltip
      */
-    def chartWithTitle( title: TagMod, pieChartSize: Int, minHeight: Int ) = {
+    def chartWithTitle( legend: TagMod, pieChartSize: Int, minHeight: Int, title: Option[TagMod] = None ) = {
         withAttrs( Some( ^.minHeight := (minHeight px)) ).
         withTitle(
           Some(
             TagMod(
-              PieChartTable.item(withSize(pieChartSize)),
-              <.div( title )
+              title.whenDefined( t => <.div( baseStyles.tooltipTitle, t ) ),
+              <.div(
+                baseStyles.tooltipBody,
+                PieChartTable.item(withSize(pieChartSize)),
+                <.div( legend )
+              )
             )
           )
         )
@@ -72,19 +77,24 @@ object PieChartTable {
 
     /**
      * Returns a Cell with this chart.  A tooltip with a larger version of the piechart is added to cell.
-     * @param title tooltip without the chart
+     * @param legend the legend for the chart
      * @param pieChartSize the size of the piechart in the tooltip
      * @param minHeight the min-height style applied to the element that contains the data.
+     * @param title the title for the tooltip
      */
-    def toCellWithOneChartAndTitle( title: TagMod, pieChartSize: Int, minHeight: Int ) = {
+    def toCellWithOneChartAndTitle( legend: TagMod, pieChartSize: Int, minHeight: Int, title: Option[TagMod] = None ) = {
       Cell(
           List(
             this
           ),
           Some(
             TagMod(
-              PieChartTable.item(withSize(pieChartSize)),
-              <.div(title)
+              title.whenDefined( t => <.div( baseStyles.tooltipTitle, t ) ),
+              <.div(
+                baseStyles.tooltipBody,
+                PieChartTable.item(withSize(pieChartSize)),
+                <.div(legend)
+              )
             )
           ),
           Some( ^.minHeight := (minHeight px) )
