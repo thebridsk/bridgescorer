@@ -201,9 +201,10 @@ object ViewPairsGridInternal {
             if (rawpds.calc == state.calc) rawpds
             else PairsData( rawpds.pastgames, state.calc )
           }
-          val summary = new PairsDataSummary( pds, state.colorBy, props.filter.selected, ColorByPlayed )
+          val filteredNames = props.filter.selected
+          val summary = new PairsDataSummary( pds, state.colorBy, filteredNames, props.filter.filterDisplayOnly, ColorByPlayed )
           val allPlayers = summary.players.sorted
-          val sortedPlayers = summary.playerFilter.sorted
+          val sortedPlayers = props.filter.selected.getOrElse( summary.playerFilter ).sorted
 
           def getButton( colorBy: ColorBy, id: String, text: String ) = {
             AppButton(

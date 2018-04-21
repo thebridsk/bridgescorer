@@ -155,7 +155,7 @@ object ViewPairsDetailsGridInternal {
 
       props.filter.pairsData match {
         case Some(pds) if !pds.players.isEmpty =>
-          val summary = new PairsDataSummary( pds, ColorByDeclarerResults, props.filter.selected, ColorByDefendedResults, ColorByPlayedResults, ColorByPassedResults )
+          val summary = new PairsDataSummary( pds, ColorByDeclarerResults, props.filter.selected, props.filter.filterDisplayOnly, ColorByDefendedResults, ColorByPlayedResults, ColorByPassedResults )
 
           val statDec = summary.colorStat
           val statDef = summary.extraStats.head

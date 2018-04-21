@@ -74,13 +74,6 @@ object PageAllBoardsInternal {
     }
   }
 
-  /**
-   * Internal state for rendering the component.
-   *
-   * I'd like this class to be private, but the instantiation of component
-   * will cause Backend to leak.
-   *
-   */
   class Backend(scope: BackendScope[Props, State]) {
 
     val nextIMPs = scope.modState { s => s.nextIMPs }
