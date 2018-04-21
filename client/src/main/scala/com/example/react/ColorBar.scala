@@ -204,16 +204,15 @@ object ColorBarInternal {
   import com.example.color.Colors._
 
   private def box( color: Color, title: Option[TagMod] ): VdomNode = {
-    val d: VdomNode = <.div(
-      ^.flex := "0 0 auto",
-      ^.width := "20px",
-      ^.height := "20px",
-      ^.backgroundColor := color   //.toHex
+    Tooltip(
+      <.div(
+        ^.flex := "0 0 auto",
+        ^.width := "20px",
+        ^.height := "20px",
+        ^.backgroundColor := color   //.toHex
+      ),
+      title
     )
-    title.map { t =>
-      val tt: VdomNode = Tooltip( d, t )
-      tt
-    }.getOrElse(d)
   }
 
   private def bar( hue: Double, minLightness: Double, n: Int, darkToLight: Boolean, titles: Option[List[TagMod]] ): TagMod = {

@@ -20,22 +20,20 @@ import com.example.data.duplicate.suggestion.PairData
 import scala.annotation.tailrec
 import com.example.data.duplicate.suggestion.ColorByPlayed
 import com.example.pages.BaseStyles
-import com.example.react.StatsTable
-import com.example.react.StatsTable.Column
-import com.example.react.StatsTable.Sorter
-import com.example.react.StatsTable.Row
-import com.example.react.StatsTable.Column
 import com.example.data.duplicate.suggestion.CalculationType
 import com.example.data.duplicate.suggestion.CalculationAsPlayed
 import com.example.data.duplicate.suggestion.CalculationAsPlayed
 import com.example.data.duplicate.suggestion.CalculationMP
 import com.example.data.duplicate.suggestion.CalculationIMP
-import com.example.react.StatsTable.MultiColumnSorter
-import com.example.react.StatsTable.MultiColumnSort
 import com.example.data.duplicate.suggestion.ColorBy
 import com.example.data.duplicate.suggestion.Stat
 import com.example.data.duplicate.suggestion.ColorByPointsPct
 import com.example.data.duplicate.suggestion.ColorByIMP
+import com.example.react.Table
+import com.example.react.Table.Sorter
+import com.example.react.Table.SortableColumn
+import com.example.react.Table.MultiColumnSort
+import com.example.react.Table.Row
 
 /**
  * Shows a summary page of all duplicate matches from the database.
@@ -65,7 +63,7 @@ object ViewPairsTable {
 object ViewPairsTableInternal {
   import ViewPairsTable._
   import DuplicateStyles._
-  import StatsTable.Sorter._
+  import Table.Sorter._
 
   val logger = Logger("bridge.ViewPairsTable")
 
@@ -85,12 +83,12 @@ object ViewPairsTableInternal {
   abstract class StatColumn[T](
       id: String,
       name: String,
-      formatter: T=>String,
+      formatter: T=>TagMod,
       hidden: Boolean = false
     )(
       implicit
       sorter: Sorter[T]
-    ) extends Column( id, name, formatter, hidden = hidden )(sorter) {
+    ) extends SortableColumn( id, name, formatter, hidden = hidden )(sorter) {
 
     val showIn: List[CalculationType] = CalculationAsPlayed::CalculationMP::CalculationIMP::Nil
 
@@ -169,7 +167,7 @@ object ViewPairsTableInternal {
 
   val ostring = Ordering[String]
 
-  class PlayerSorter( cols: String* ) extends MultiColumnSort( cols.map(c=>(c,false)): _* )(ostring)
+  class PlayerSorter( cols: String* ) extends MultiColumnSort( cols.map(c=>(c,None,false)): _* )(ostring)
 
   val pairColumns = List[StatColumn[Any]](
     new StringColumn( "Player1", "Player 1" )(new PlayerSorter("Player1","Player2")) {
@@ -189,8 +187,8 @@ object ViewPairsTableInternal {
   )
 
   val columns = List[StatColumn[Any]](
-      new PercentColumn( "WonPct", "% Won" )(MultiColumnSort(("WonPct",false),("Hidden1",false),("WonPts",false),("Player",true),("Player1",true),("Player2",true))) { def getValue( pd: PairData ) = pd.winPercent },
-      new PercentColumn( "WonPts", "% WonPoints" )(MultiColumnSort(("WonPts",false),("Hidden1",false),("WonPct",false),("Player",true),("Player1",true),("Player2",true))) { def getValue( pd: PairData ) = pd.winPtsPercent },
+      new PercentColumn( "WonPct", "% Won" )(MultiColumnSort.create2(("WonPct",false),("Hidden1",false),("WonPts",false),("Player",true),("Player1",true),("Player2",true))) { def getValue( pd: PairData ) = pd.winPercent },
+      new PercentColumn( "WonPts", "% WonPoints" )(MultiColumnSort.create2(("WonPts",false),("Hidden1",false),("WonPct",false),("Player",true),("Player1",true),("Player2",true))) { def getValue( pd: PairData ) = pd.winPtsPercent },
       new PercentColumn( "ScorePct", "% MP" )(MultiColumnSort.create("ScorePct","WonPct")) {
         def getValue( pd: PairData ) = pd.pointsPercent
         override
@@ -348,7 +346,7 @@ object ViewPairsTableInternal {
 
           <.div(
             if (props.showPairs) dupStyles.viewPairsTable else dupStyles.viewPeopleTable,
-            StatsTable(
+            Table(
                 cols,
                 rows,
                 initialSort = Some("WonPct"),

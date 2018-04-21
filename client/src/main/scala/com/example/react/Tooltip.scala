@@ -101,7 +101,6 @@ import org.scalajs.dom.raw.Event
  * @author werewolf
  */
 object Tooltip {
-  import TooltipInternal._
 
   case class Props(
       data: TagMod,
@@ -110,8 +109,9 @@ object Tooltip {
   )
 
   /**
+   * Returns a tooltip component with tooltipbody for the data.  No tooltip title.
    * @param data the data to display.
-   * @param tooltip the tooltip for the data when the mouse flies over.
+   * @param tooltipbody the tooltip for the data when the mouse flies over.
    */
   def apply(
       data: TagMod,
@@ -119,8 +119,10 @@ object Tooltip {
   ) = component( Props(data,Some(tooltipbody),None) )
 
   /**
+   * Returns a tooltip component with tooltiptitle and tooltipbody as the tooltip for the data.
    * @param data the data to display.
-   * @param tooltip the tooltip for the data when the mouse flies over.
+   * @param tooltipbody the tooltip body for the data when the mouse flies over.
+   * @param tooltiptitle the title for the tooltip
    */
   def apply(
       data: TagMod,
@@ -130,7 +132,8 @@ object Tooltip {
 
   /**
    * @param data the data to display.
-   * @param tooltip the tooltip for the data when the mouse flies over.
+   * @param tooltipbody the tooltip body for the data when the mouse flies over.
+   * @param tooltiptitle the optional title for the tooltip
    */
   def apply(
       data: TagMod,
@@ -140,7 +143,8 @@ object Tooltip {
 
   /**
    * @param data the data to display.
-   * @param tooltip the optional tooltip for the data when the mouse flies over.
+   * @param tooltipbody the optional tooltip body for the data when the mouse flies over.
+   * @param tooltiptitle the optional title for the tooltip
    */
   def apply(
       data: TagMod,
@@ -161,19 +165,16 @@ object Tooltip {
       initialized = true
     }
   }
-}
 
-object TooltipInternal {
-  import Tooltip._
-
+  private
   val component = ScalaComponent.builder[Props]("Tooltip")
       .stateless
       .noBackend
       .render_P { props =>
-        <.div(
-          baseStyles.withTooltipBox,
-          props.data,
-          props.tooltipbody.whenDefined { body =>
+        if (props.tooltipbody.isDefined || props.tooltipTitle.isDefined) {
+          <.div(
+            baseStyles.withTooltipBox,
+            props.data,
             <.div(
               baseStyles.tooltipContent,
               props.tooltipTitle.whenDefined { title =>
@@ -182,13 +183,20 @@ object TooltipInternal {
                   title
                 )
               },
-              <.div(
-                baseStyles.tooltipBody,
-                body
-              )
+              props.tooltipbody.whenDefined { body =>
+                <.div(
+                  baseStyles.tooltipBody,
+                  body
+                )
+              }
             )
-          }
-        )
+          )
+        } else {
+          <.div(
+            props.data
+          )
+        }
       }.build
+
 }
 

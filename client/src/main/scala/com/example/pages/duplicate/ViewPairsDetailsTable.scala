@@ -20,19 +20,17 @@ import com.example.data.duplicate.suggestion.PairData
 import scala.annotation.tailrec
 import com.example.data.duplicate.suggestion.ColorByPlayed
 import com.example.pages.BaseStyles
-import com.example.react.StatsTable
-import com.example.react.StatsTable.Column
-import com.example.react.StatsTable.Sorter
-import com.example.react.StatsTable.Row
-import com.example.react.StatsTable.Column
 import com.example.data.duplicate.suggestion.CalculationType
 import com.example.data.duplicate.suggestion.CalculationAsPlayed
 import com.example.data.duplicate.suggestion.CalculationAsPlayed
 import com.example.data.duplicate.suggestion.CalculationMP
 import com.example.data.duplicate.suggestion.CalculationIMP
-import com.example.react.StatsTable.MultiColumnSorter
-import com.example.react.StatsTable.MultiColumnSort
 import com.example.data.DuplicateSummaryDetails
+import com.example.react.Table
+import com.example.react.Table.Sorter
+import com.example.react.Table.SortableColumn
+import com.example.react.Table.MultiColumnSort
+import com.example.react.Table.Row
 
 /**
  * Shows a summary page of all duplicate matches from the database.
@@ -62,7 +60,7 @@ object ViewPairsDetailsTable {
 object ViewPairsDetailsTableInternal {
   import ViewPairsDetailsTable._
   import DuplicateStyles._
-  import StatsTable.Sorter._
+  import Table.Sorter._
 
   val logger = Logger("bridge.ViewPairsDetailsTable")
 
@@ -78,11 +76,11 @@ object ViewPairsDetailsTableInternal {
   abstract class StatColumn[T](
       id: String,
       name: String,
-      formatter: T=>String
+      formatter: T=>TagMod
     )(
       implicit
       sorter: Sorter[T]
-    ) extends Column( id, name, formatter )(sorter) {
+    ) extends SortableColumn( id, name, formatter )(sorter) {
 
     def getValue( pd: PairData ): T
   }
@@ -156,7 +154,7 @@ object ViewPairsDetailsTableInternal {
 
   val ostring = Ordering[String]
 
-  class PlayerSorter( cols: String* ) extends MultiColumnSort( cols.map(c=>(c,false)): _* )(ostring)
+  class PlayerSorter( cols: String* ) extends MultiColumnSort( cols.map(c=>(c,None,false)): _* )(ostring)
 
   val pairColumns = List[StatColumn[Any]](
     new StringColumn( "Player1", "Player 1" )(new PlayerSorter("Player1","Player2")) {
@@ -246,7 +244,7 @@ object ViewPairsDetailsTableInternal {
 
           <.div(
             if (props.showPairs) dupStyles.viewPairsDetailsTable else dupStyles.viewPeopleDetailsTable,
-            StatsTable(
+            Table(
                 cols,
                 rows,
                 Some("DeclarerPct"),
