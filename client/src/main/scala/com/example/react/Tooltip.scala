@@ -105,7 +105,8 @@ object Tooltip {
 
   case class Props(
       data: TagMod,
-      tooltip: TagMod
+      tooltipbody: Option[TagMod],
+      tooltipTitle: Option[TagMod],
   )
 
   /**
@@ -114,8 +115,38 @@ object Tooltip {
    */
   def apply(
       data: TagMod,
-      tooltip: TagMod
-  ) = component( Props(data,tooltip) )
+      tooltipbody: TagMod
+  ) = component( Props(data,Some(tooltipbody),None) )
+
+  /**
+   * @param data the data to display.
+   * @param tooltip the tooltip for the data when the mouse flies over.
+   */
+  def apply(
+      data: TagMod,
+      tooltipbody: TagMod,
+      tooltiptitle: TagMod
+  ) = component( Props(data,Some(tooltipbody),Some(tooltiptitle) ))
+
+  /**
+   * @param data the data to display.
+   * @param tooltip the tooltip for the data when the mouse flies over.
+   */
+  def apply(
+      data: TagMod,
+      tooltipbody: TagMod,
+      tooltiptitle: Option[TagMod]
+  ) = component( Props(data,Some(tooltipbody),tooltiptitle ))
+
+  /**
+   * @param data the data to display.
+   * @param tooltip the optional tooltip for the data when the mouse flies over.
+   */
+  def apply(
+      data: TagMod,
+      tooltipbody: Option[TagMod] = None,
+      tooltiptitle: Option[TagMod] = None
+  ) = component( Props(data,tooltipbody,tooltiptitle) )
 
   private var initialized: Boolean = false
 
@@ -142,10 +173,21 @@ object TooltipInternal {
         <.div(
           baseStyles.withTooltipBox,
           props.data,
-          <.div(
-            baseStyles.tooltipContent,
-            props.tooltip
-          )
+          props.tooltipbody.whenDefined { body =>
+            <.div(
+              baseStyles.tooltipContent,
+              props.tooltipTitle.whenDefined { title =>
+                <.div(
+                  baseStyles.tooltipTitle,
+                  title
+                )
+              },
+              <.div(
+                baseStyles.tooltipBody,
+                body
+              )
+            )
+          }
         )
       }.build
 }
