@@ -286,7 +286,7 @@ object ViewPairsTableInternal {
             val filter = props.filter.selectedPlayers
             pd.data.values.filter( pd => filter.contains(pd.player1) && filter.contains(pd.player2) ).toList
           } else {
-            val summary = new PairsDataSummary(pd, ColorByWonPct, props.filter.selected, ColorByPlayed)
+            val summary = new PairsDataSummary(pd, ColorByWonPct, props.filter.selected, props.filter.filterDisplayOnly, ColorByPlayed)
             summary.playerTotals.values.toList
           }
 

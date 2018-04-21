@@ -217,12 +217,12 @@ class PairsData( val pastgames: List[DuplicateSummary], val calc: CalculationTyp
    * @param player
    */
   def get( player: String, playerFilter: Option[List[String]] ) = {
-    val pds = data.values.filter { pd =>
+    val (r,p) = data.values.filter { pd =>
       pd.contains(player) && playerFilter.map( f => f.contains(pd.player1) && f.contains(pd.player2)).getOrElse(true)
+    }.foldLeft((PairData(player,"",0,0,0,0,0,0, None,0,0,0,0,0),List[String]())) { (ac,v) =>
+      (ac._1.addPairData(v), (if (v.player1==player) v.player2 else v.player1)::ac._2)
     }
-    pds.foldLeft(PairData(player,"",0,0,0,0,0,0, None,0,0,0,0,0)) { (ac,v) =>
-      ac.addPairData(v)
-    }
+    r.copy(player2=p.sorted.mkString(","))
   }
 }
 
@@ -394,14 +394,16 @@ import com.example.data.DuplicateSummaryDetails
  * @param pds
  * @param colorBy
  * @param filter if specified will only show result with these players.
+ * @param displayOnly if true, all stats are used, players only only filtered when stats is displayed,
+ *                    if false, only filtered players stats are used.
  */
-class PairsDataSummary( pds: PairsData, colorBy: ColorBy, filter: Option[List[String]], extraColorBy: ColorBy* ) {
+class PairsDataSummary( pds: PairsData, colorBy: ColorBy, filter: Option[List[String]], displayOnly: Boolean, extraColorBy: ColorBy* ) {
 
   val players = pds.players
   val playerFilter = filter.getOrElse(players)
 
   val playerTotals = playerFilter.map { player =>
-                                        player -> pds.get(player,filter)
+                                        player -> pds.get(player,if (displayOnly) None else filter)
                                       }.toMap
 
   /**
