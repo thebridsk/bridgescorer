@@ -181,6 +181,14 @@
   border-left: 3px solid black
 }
 
+.dupDivPairsDetailsGrid .tooltipContent .piechart {
+  display: inline;
+}
+
+.dupDivPairsDetailsGrid .tooltipContent ul {
+  list-style-type: none;
+}
+
 .dupViewPairsDetailsTable {
   padding: 4px;
 }
@@ -678,55 +686,27 @@
   list-style-type: none
 }
 
-.dupDivPageStats > div:nth-child(2) table > tbody > tr > td:first-child {
+.dupViewContractResults table > tbody > tr > td:first-child {
   font-weight: bold;
   position: sticky;
   left: 0;
   z-index: 10;
   background-color: rgb(250,250,250);
 }
-.dupDivPageStats > div:nth-child(2) table > tfoot > tr:nth-child(1) > td:first-child {
-  font-weight: bold;
-  position: sticky;
-  left: 0;
-  z-index: 10;
-  background-color: rgb(250,250,250);
-}
-.dupDivPageStats > div:nth-child(2) table > thead > tr > th {
+.dupViewContractResults table > thead > tr:nth-child(1) > th {
   position: sticky;
   top: 0;
   z-index: 11;
   background-color: rgb(250,250,250);
 }
-.dupDivPageStats > div:nth-child(2) table > thead > tr > th:first-child {
-  position: sticky;
-  top: 0;
-  left: 0;
-  z-index: 12;
-  background-color: rgb(250,250,250);
-}
-
-.dupDivPageStats > div:nth-child(3) table > tbody > tr > td:first-child {
-  font-weight: bold;
-  position: sticky;
-  left: 0;
-  z-index: 10;
-  background-color: rgb(250,250,250);
-}
-.dupDivPageStats > div:nth-child(3) table > thead > tr:nth-child(1) > th {
-  position: sticky;
-  top: 0;
-  z-index: 11;
-  background-color: rgb(250,250,250);
-}
-.dupDivPageStats > div:nth-child(3) table > thead > tr:nth-child(2) > th {
+.dupViewContractResults table > thead > tr:nth-child(2) > th {
   position: sticky;
   top: 25px;
   z-index: 11;
   background-color: rgb(250,250,250);
 }
 
-.dupDivPageStats > div:nth-child(3) .tablePieChart td > div {
+.dupViewContractResults table > tbody > tr > td > div {
   display: flex;
   flex-flow: row nowrap;
   justify-content: center;
@@ -734,58 +714,90 @@
   align-content: center;
 }
 
-.dupDivPageStats > div:nth-child(3) table > thead > tr:first-child > th:nth-child(2) {
+.dupViewContractResults table > tbody > tr > td > div > div {
+  padding: 2px;
+}
+
+.dupViewContractResults table > tbody > tr > td > div > svg {
+  padding: 2px;
+}
+
+.dupViewContractResults table > thead > tr:first-child > th:nth-child(2) {
   border-left: 3px solid black
 }
 
-.dupDivPageStats > div:nth-child(3) table > thead > tr:nth-child(2) > th:nth-child(9) {
+.dupViewContractResults table > thead > tr:nth-child(2) > th:nth-child(9) {
   border-left: 3px solid black
 }
 
-.dupDivPageStats > div:nth-child(3) table > tbody > tr > td:nth-child(9) {
+.dupViewContractResults table > tbody > tr > td:nth-child(9) {
   font-weight: bold;
   border-left: 3px solid black
 }
 
-.dupDivPageStats > div:nth-child(3) table > tbody > tr > td:first-child {
+.dupViewContractResults table > tbody > tr > td:first-child {
   font-weight: bold;
 }
 
-.dupDivPageStats > div:nth-child(2) table > thead > tr > th:first-child {
+.dupViewContractResults .tooltipContent .piechart {
+  display: inline;
+}
+
+.dupViewPlayerContractResults table > tbody > tr > td:first-child {
+  font-weight: bold;
+  position: sticky;
+  left: 0;
+  z-index: 10;
+  background-color: rgb(250,250,250);
+}
+.dupViewPlayerContractResults table > thead > tr > th {
+  position: sticky;
+  top: 0;
+  z-index: 11;
+  background-color: rgb(250,250,250);
+}
+.dupViewPlayerContractResults table > thead > tr > th:first-child {
+  position: sticky;
+  top: 0;
+  left: 0;
+  z-index: 12;
+  background-color: rgb(250,250,250);
+}
+
+.dupViewPlayerContractResults table > thead > tr > th:first-child {
   font-weight: bold;
   border-right: 3px solid black
 }
 
-.dupDivPageStats > div:nth-child(2) table > tbody > tr > td:first-child {
+.dupViewPlayerContractResults table > tbody > tr > td:first-child {
   font-weight: bold;
   border-right: 3px solid black
 }
 
-.dupDivPageStats > div:nth-child(2) table > tfoot > tr:first-child > td:first-child {
-  font-weight: bold;
-  border-right: 3px solid black
-}
-
-.dupDivPageStats > div:nth-child(2) table > thead > tr > th:nth-last-child(2) {
+.dupViewPlayerContractResults table > thead > tr > th:nth-child(6) {
   border-left: 3px solid black
 }
 
-.dupDivPageStats > div:nth-child(2) table > tbody > tr > td:nth-last-child(2) {
+.dupViewPlayerContractResults table > tbody > tr > td:nth-child(6) {
   border-left: 3px solid black
 }
 
-.dupDivPageStats > div:nth-child(2) table > tfoot > tr:first-child > td:last-child {
+.dupViewPlayerContractResults table > tfoot > tr:first-child > td:nth-child(4) {
   border-left: 3px solid black
 }
 
-.dupDivPageStats > div:nth-child(2) table > thead > tr > th:nth-child(3) {
+.dupViewPlayerContractResults table > thead > tr > th:nth-child(3) {
   border-right: 3px solid black
 }
 
-.dupDivPageStats > div:nth-child(2) table > tbody > tr > td:nth-child(3) {
+.dupViewPlayerContractResults table > tbody > tr > td:nth-child(3) {
   border-right: 3px solid black
 }
 
-.dupDivPageStats > div:nth-child(2) table > tfoot > tr:first-child > td:nth-child(2) {
+.dupViewPlayerContractResults table > tfoot > tr:first-child > td:nth-child(2) {
   border-right: 3px solid black
+}
+
+.dupViewPlayerContractResults .tooltipContent .piechart {
+  display: inline;
 }

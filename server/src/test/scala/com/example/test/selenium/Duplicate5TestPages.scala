@@ -77,7 +77,7 @@ import com.example.test.util.MonitorTCP
 import com.example.test.pages.duplicate.PeopleRowMP
 import com.example.test.pages.duplicate.PeopleRowIMP
 import com.example.test.util.HttpUtils
-import com.example.test.pages.duplicate.PairsPage
+import com.example.test.pages.duplicate.StatisticsPage
 import com.example.data.Id
 
 object Duplicate5TestPages {
@@ -1050,7 +1050,7 @@ class Duplicate5TestPages extends FlatSpec with MustMatchers with BeforeAndAfter
 
     val sb = ListDuplicatePage.current
     val ids = sb.getMatchIds
-    val peoplePage = sb.clickPairs.validate.clickPeopleResults
+    val peoplePage = sb.clickStatistics.validate.clickPeopleResults
 
     maximize
 
@@ -1126,7 +1126,7 @@ class Duplicate5TestPages extends FlatSpec with MustMatchers with BeforeAndAfter
 
     val newid = postDuplicate(ndup)
 
-    PairsPage.current.clickSummary.validate( dupid.get, newid )
+    StatisticsPage.current.clickSummary.validate( dupid.get, newid )
   }
 
   it should "show the people page 2" in {
@@ -1134,7 +1134,7 @@ class Duplicate5TestPages extends FlatSpec with MustMatchers with BeforeAndAfter
 
     val sb = ListDuplicatePage.current
     val ids = sb.getMatchIds
-    val peoplePage = sb.clickPairs.validate.clickPeopleResults
+    val peoplePage = sb.clickStatistics.validate.clickPeopleResults
 
     peoplePage.withClueAndScreenShot(screenshotDir, "ShowPeoplePage", "Checking people") {
       if (ids.size == 2) {

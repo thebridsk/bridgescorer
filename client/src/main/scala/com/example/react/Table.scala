@@ -92,7 +92,7 @@ object Table {
    * defines a column.  The name field will be used as the text for the last thead row.
    */
   trait ColumnBase {
-    val name: String
+    val name: TagMod
     val hidden: Boolean
 
     def getData( value: Any ): TagMod
@@ -108,7 +108,7 @@ object Table {
    * @param hidden true if the column is not displayed
    */
   class Column(
-      val name: String,
+      val name: TagMod,
       val hidden: Boolean = false
     ) extends ColumnBase {
 
@@ -116,6 +116,12 @@ object Table {
 
   }
 
+  object Column {
+    def apply(
+        name: TagMod,
+        hidden: Boolean = false
+    ) = new Column(name,hidden)
+  }
 
   /**
    * A sortable column definitions.
@@ -134,7 +140,7 @@ object Table {
    */
   class SortableColumn[T](
       val id: String,
-      val name: String,
+      val name: TagMod,
       val formatter: T=>TagMod,
       val initialSortOnSelectAscending: Boolean = false,
       val useAdditionalDataWhenSorting: Boolean = false,
@@ -254,19 +260,16 @@ object TableInternal {
                                       <.th(
                                         AppButton(
                                             c.id,
-                                            s"""${c.name}${
-                                              if (selected) {
-                                                " "+(
-                                                  if (state.ascending) {
-                                                    Strings.upArrowHead
-                                                  } else {
-                                                    Strings.downArrowHead
-                                                  }
-                                                )
-                                              } else {
-                                                ""
-                                              }
-                                            }""",
+                                            TagMod(
+                                              c.name,
+                                              selected ?= s""" ${
+                                                    if (state.ascending) {
+                                                      Strings.upArrowHead
+                                                    } else {
+                                                      Strings.downArrowHead
+                                                    }
+                                              }"""
+                                            ),
                                             BaseStyles.highlight( selected = selected ),
                                             ^.onClick --> backend.setOrToggleSort(c)
                                         )

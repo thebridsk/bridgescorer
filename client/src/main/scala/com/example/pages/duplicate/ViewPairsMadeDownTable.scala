@@ -42,13 +42,13 @@ import com.example.react.Table.Row
  * To use, just code the following:
  *
  * <pre><code>
- * ViewPairsDetailsTable( routerCtl: RouterCtl[DuplicatePage] )
+ * ViewPairsMadeDownTable( routerCtl: RouterCtl[DuplicatePage] )
  * </code></pre>
  *
  * @author werewolf
  */
-object ViewPairsDetailsTable {
-  import ViewPairsDetailsTableInternal._
+object ViewPairsMadeDownTable {
+  import ViewPairsMadeDownTableInternal._
 
   case class Props( filter: ViewPlayerFilter.Filter, showPairs: Boolean = false, showNoDataMsg: Boolean = false)
 
@@ -57,12 +57,12 @@ object ViewPairsDetailsTable {
 
 }
 
-object ViewPairsDetailsTableInternal {
-  import ViewPairsDetailsTable._
+object ViewPairsMadeDownTableInternal {
+  import ViewPairsMadeDownTable._
   import DuplicateStyles._
   import Table.Sorter._
 
-  val logger = Logger("bridge.ViewPairsDetailsTable")
+  val logger = Logger("bridge.ViewPairsMadeDownTable")
 
   /**
    * Internal state for rendering the component.
@@ -262,7 +262,7 @@ object ViewPairsDetailsTableInternal {
     }
   }
 
-  val component = ScalaComponent.builder[Props]("ViewPairsDetailsTable")
+  val component = ScalaComponent.builder[Props]("ViewPairsMadeDownTable")
                             .initialStateFromProps { props =>
                               props.filter.pairsData match {
                                 case Some(pd) =>
