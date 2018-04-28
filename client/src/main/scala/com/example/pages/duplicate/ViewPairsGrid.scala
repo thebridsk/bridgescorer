@@ -34,14 +34,10 @@ import com.example.data.duplicate.suggestion.CalculationAsPlayed
 import com.example.data.duplicate.suggestion.ColorByIMP
 import com.example.data.duplicate.suggestion.CalculationMP
 import com.example.data.duplicate.suggestion.CalculationIMP
-import com.example.react.StatsTable
-import com.example.react.PieChartTable
-import com.example.react.PieChartTable.Column
-import com.example.react.PieChartTable.Row
-import com.example.react.PieChartTable.Data
-import com.example.react.PieChartTable.Cell
-import com.example.react.PieChartTable.DataBar
-import com.example.react.PieChartTable.DataTagMod
+import com.example.react.Table
+import com.example.react.SvgRect
+import com.example.react.Tooltip
+import com.example.react.Table.Column
 
 /**
  * Shows a pairs summary page.
@@ -136,7 +132,7 @@ object ViewPairsGridInternal {
    * @param sizeMultiplier multiply the size to make the bar bigger. (1 - player,player, 2 - total column)
    * @return a tuple2, the data and the title.
    */
-  def getData( pd: PairData, sizeSt: Stat, colorSt: Stat, colorAbove: Double, colorBelow: Double, state: State, sizeMultiplier: Int ): (Data,String) = {
+  def getData( pd: PairData, sizeSt: Stat, colorSt: Stat, colorAbove: Double, colorBelow: Double, state: State, sizeMultiplier: Int ): (TagMod,String) = {
     val (bcolor, light) = colorSt.sizeAveAsFraction(pd)
     val lightness = light*75.0+25.0
     val size = sizeSt.size(pd, state.minSize*sizeMultiplier, state.maxSize*sizeMultiplier)
@@ -163,10 +159,60 @@ object ViewPairsGridInternal {
       ""
     }
 
-    (DataBar( size, List( color ), List(1.0), None, None, 20 ), title+titleMP+titleIMP)
+//    (DataBar( size, List( color ), List(1.0), None, None, 20 ), title+titleMP+titleIMP)
+    (
+      SvgRect(
+               width = size,
+               height = 20,
+               borderColor = Color.Black,
+               slices = List(1.0),
+               colors = List(color),
+               chartTitle = None
+             ),
+      title+titleMP+titleIMP
+    )
+
   }
 
-  val cellX = Cell( List( DataTagMod( "X" )) )
+  val cellX = TagMod( "X" )
+
+  def getRows( players: List[String], pds: PairsData, summary: PairsDataSummary, statColor: Stat, statSize: Stat, statTotalColor: Stat, statTotalSize: Stat, state: State ) = {
+    players.map { rowplayer =>
+      val data = players.map { colPlayer =>
+        val d = if (rowplayer == colPlayer) {
+          cellX
+        } else {
+          pds.get(rowplayer, colPlayer) match {
+            case Some(pd) =>
+              val (bar,title) = getData(pd, statSize, statColor, 120, 0, state, 1)
+              TagMod(
+                Tooltip(
+                  data = bar,
+                  tooltipbody = <.div( title ),
+                  tooltiptitle = None
+                )
+              )
+            case None =>
+              TagMod()
+          }
+        }
+        d
+      }
+      val playerTotals = summary.playerTotals.get(rowplayer).getOrElse(PairData(rowplayer,"",0,0,0,0,0,0,None,0,0,0,0,0))
+
+      val (totalData, totalTitle) = getData(playerTotals, statTotalSize, statTotalColor, 240, 60, state, 2)
+
+      val totalDataList = List( TagMod(
+                                Tooltip(
+                                  data = totalData,
+                                  tooltipbody = <.div( totalTitle ),
+                                  tooltiptitle = None
+                                )
+                              ))
+
+      TagMod(rowplayer)::data:::totalDataList
+    }
+  }
 
   /**
    * Internal state for rendering the component.
@@ -227,39 +273,13 @@ object ViewPairsGridInternal {
 
           val shownSortedPlayers = sortedPlayers.filter( p => props.filter.isPlayerShown(p) )
 
-          val columns = sortedPlayers.map( p => Column(p) ):::List( Column( "Totals" ) )
+          val columns = Column("Player")::sortedPlayers.map( p => Column(p) ):::List( Column( "Totals" ) )
 
-          val rows = shownSortedPlayers.map { rowplayer =>
-            val data: List[Cell] = shownSortedPlayers.map { colPlayer =>
-              val d = if (rowplayer == colPlayer) {
-                cellX
-              } else {
-                pds.get(rowplayer, colPlayer) match {
-                  case Some(pd) =>
-                    val (data,title) = getData(pd, statSize, statColor, 120, 0, state, 1)
-                    Cell(
-                      List( data ),
-                      title = Some( <.div( baseStyles.tooltipBody, title ) )
-                    )
-                  case None =>
-                    Cell(List())
-                }
-              }
-              d
-            }
-            val playerTotals = summary.playerTotals.get(rowplayer).getOrElse(PairData(rowplayer,"",0,0,0,0,0,0,None,0,0,0,0,0))
-
-            val (totalData, totalTitle) = getData(playerTotals, statTotalSize, statTotalColor, 240, 60, state, 2)
-
-            val totalDataList = List(Cell(List(totalData), Some(<.div( baseStyles.tooltipBody, totalTitle))))
-
-            Row( rowplayer, data:::totalDataList)
-          }
+          val rows = getRows( shownSortedPlayers, pds, summary, statColor, statSize, statTotalColor, statTotalSize, state )
 
           <.div(
             dupStyles.divPairsGrid,
-            PieChartTable(
-              firstColumn = Column("Player"),
+            Table(
               columns = columns,
               rows = rows,
               header = None,
