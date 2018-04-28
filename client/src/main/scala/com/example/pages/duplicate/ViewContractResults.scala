@@ -91,7 +91,8 @@ object ViewContractResultsInternal {
       calculateSize: Int => Int,
       totalHands: Int,
       aggregateDouble: Boolean,
-      passPercent: Boolean
+      passPercent: Boolean,
+      onlyDoubledContracts: Boolean
   ): List[List[TagMod]] = {
     val bySuit = data.groupBy(cs=> cs.parseContract.suit)
     val r =
@@ -154,7 +155,7 @@ object ViewContractResultsInternal {
               r
             } else {
               val celllist =
-                List( "", "*", "**" ).map { doubled =>
+                (if (onlyDoubledContracts) List( "*", "**" ) else List("", "*", "**" )).map { doubled =>
                   tcss.find( cs => cs.parseContract.doubled == doubled ).map { s =>
                     val con = s.parseContract
                     val suit = if (con.suit == "Z") "N" else con.suit
@@ -215,8 +216,8 @@ object ViewContractResultsInternal {
 
       val totalDoubledHandsPlayed = totalDoubledHandsPlayedWithPassed - passedout.map( ps => ps.handsPlayed ).getOrElse(0)
 
-      val rowsAll = sortContractStat( statsDataAll, calcSize(maxHandsPlayed), totalHandsPlayed, state.aggregateDouble, true )
-      val rowsDoubled = sortContractStat( statsDataDoubled, calcSize(maxDoubledHandsPlayed), totalDoubledHandsPlayed, state.aggregateDouble, false )
+      val rowsAll = sortContractStat( statsDataAll, calcSize(maxHandsPlayed), totalHandsPlayed, state.aggregateDouble, true, false )
+      val rowsDoubled = sortContractStat( statsDataDoubled, calcSize(maxDoubledHandsPlayed), totalDoubledHandsPlayed, state.aggregateDouble, false, true )
 
       val rows = rowsAll.zip(rowsDoubled).map { entry =>
         val (rall, rdoubled) = entry
