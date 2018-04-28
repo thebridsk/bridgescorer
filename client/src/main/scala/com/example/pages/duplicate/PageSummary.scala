@@ -32,7 +32,6 @@ import com.example.bridge.store.DuplicateSummaryStore
 import com.example.pages.duplicate.DuplicateRouter.DuplicateResultView
 import com.example.pages.duplicate.DuplicateRouter.SuggestionView
 import com.example.react.RadioButton
-import com.example.pages.duplicate.DuplicateRouter.PairsView
 import com.example.pages.duplicate.DuplicateRouter.StatsView
 import com.example.pages.duplicate.DuplicateRouter.ImportSummaryView
 import com.example.pages.duplicate.DuplicateRouter.DuplicateResultViewBase
@@ -721,9 +720,7 @@ object PageSummaryInternal {
                     baseStyles.divFooterRight,
                     AppButton( "DuplicateCreateTest", "Test", ^.onClick --> newDuplicateTest ),
                     " ",
-                    AppButton("Pairs", "Pairs", props.routerCtl.setOnClick(PairsView)),
-                    " ",
-                    AppButton("Stats", "Stats", props.routerCtl.setOnClick(StatsView))
+                    AppButton("Statistics", "Statistics", props.routerCtl.setOnClick(StatsView))
                   )
                 )
               )

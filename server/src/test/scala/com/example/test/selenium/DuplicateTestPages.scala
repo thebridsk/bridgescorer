@@ -956,7 +956,7 @@ class DuplicateTestPages extends FlatSpec
 
     val sb = ListDuplicatePage.current
     val ids = sb.getMatchIds
-    val peoplePage = sb.clickPairs.validate.takeScreenshot(docsScreenshotDir, "Pairs").clickPeopleResults
+    val peoplePage = sb.clickStatistics.validate.takeScreenshot(docsScreenshotDir, "Pairs").clickPeopleResults
 
     if (ids.size == 1) {
       peoplePage.checkPeopleMP( peopleResult:_*)

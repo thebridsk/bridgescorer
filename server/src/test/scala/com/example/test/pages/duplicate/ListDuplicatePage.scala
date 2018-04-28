@@ -66,7 +66,7 @@ object ListDuplicatePage {
           "DuplicateCreateTest"::
           "BoardSets"::
           "Movements"::
-          "Pairs"::
+          "Statistics"::
           Nil
 
   val patternMatchButton = """Duplicate_(M\d+)""".r
@@ -166,9 +166,9 @@ class ListDuplicatePage( importId: Option[String] )( implicit val webDriver: Web
     new MovementsPage()(webDriver, pos)
   }
 
-  def clickPairs(implicit patienceConfig: PatienceConfig, pos: Position) = {
-    clickButton("Pairs")
-    new PairsPage()(webDriver, pos)
+  def clickStatistics(implicit patienceConfig: PatienceConfig, pos: Position) = {
+    clickButton("Statistics")
+    new StatisticsPage()(webDriver, pos)
   }
 
   def clickForPrint(implicit patienceConfig: PatienceConfig, pos: Position) = {

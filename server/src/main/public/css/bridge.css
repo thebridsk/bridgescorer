@@ -429,6 +429,45 @@
   border-top: 3px solid black;
 }
 
+.tableComponent {
+  border-spacing: 0px;
+  font-size: large;
+  white-space: nowrap;
+  border: 1px solid black;
+  /*
+  table-layout: fixed;
+  */
+}
+.tableComponent caption {
+  border: 2px solid black;
+  border-bottom: 0px solid black;
+  font-weight: bold;
+  font-size: x-large;
+}
+.tableComponent button#Hidden {
+  float: right;
+}
+.tableComponent button {
+  font-size: large;
+  font-weight: bold;
+}
+.tableComponent tbody tr:nth-child(2n+1) {
+  background-color: #f2f2f2;
+}
+.tableComponent td {
+  border: 1px solid black;
+  text-align: center;
+  padding: 2px 4px 2px 4px;
+}
+.tableComponent th {
+  border: 1px solid black;
+  text-align: center;
+  padding: 2px 4px 2px 4px;
+}
+.tableComponent tfoot > tr:first-child td {
+  border-top: 3px solid black;
+}
+
 .tablePieChart {
   border-spacing: 0px;
   font-size: large;

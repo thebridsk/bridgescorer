@@ -13,19 +13,19 @@ import com.example.test.pages.bridge.HomePage
 import org.openqa.selenium.NoSuchElementException
 import javax.validation.constraints.AssertFalse
 
-object PairsPage {
-  val log = Logger[PairsPage]
+object StatisticsPage {
+  val log = Logger[StatisticsPage]
 
   def current(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
-    new PairsPage
+    new StatisticsPage
   }
 
   def goto(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
     go to urlFor
-    new PairsPage
+    new StatisticsPage
   }
 
-  def urlFor = TestServer.getAppPageUrl("duplicate/pairs")
+  def urlFor = TestServer.getAppPageUrl("duplicate/stats")
 
   val buttons = "Home"::
                 "Summary"::
@@ -78,11 +78,11 @@ case class PeopleRowIMP( name: String,
                          incomplete: String,
                        )
 
-class PairsPage( implicit webDriver: WebDriver, pageCreated: SourcePosition ) extends Page[PairsPage] {
+class StatisticsPage( implicit webDriver: WebDriver, pageCreated: SourcePosition ) extends Page[StatisticsPage] {
 
-  import PairsPage._
+  import StatisticsPage._
 
-  def validate(implicit patienceConfig: PatienceConfig, pos: Position): PairsPage = logMethod(s"${pos.line} ${getClass.getSimpleName}.validate ${patienceConfig}") {
+  def validate(implicit patienceConfig: PatienceConfig, pos: Position): StatisticsPage = logMethod(s"${pos.line} ${getClass.getSimpleName}.validate ${patienceConfig}") {
     eventually{
       withClue(s"ListDuplicate.validate from ${pos.line}") {
         findButtons(buttons:_*)
@@ -182,7 +182,7 @@ class PairsPage( implicit webDriver: WebDriver, pageCreated: SourcePosition ) ex
     log.fine( "Found the following on the people page:" )
     res.foreach( r => log.fine(s"""  ${r}"""))
     players.foreach( p =>
-      withClue( s"""${pos.line} PairsPage: looking for ${p}""" ) {
+      withClue( s"""${pos.line} StatisticsPage: looking for ${p}""" ) {
         res must contain (p)
       }
     )
@@ -193,7 +193,7 @@ class PairsPage( implicit webDriver: WebDriver, pageCreated: SourcePosition ) ex
     log.fine( "Found the following on the people page:" )
     res.foreach( r => log.fine(s"""  ${r}"""))
     players.foreach( p =>
-      withClue( s"""${pos.line} PairsPage: looking for ${p}""" ) {
+      withClue( s"""${pos.line} StatisticsPage: looking for ${p}""" ) {
         res must contain (p)
       }
     )
@@ -204,7 +204,7 @@ class PairsPage( implicit webDriver: WebDriver, pageCreated: SourcePosition ) ex
     log.fine( "Found the following on the people page:" )
     res.foreach( r => log.fine(s"""  ${r}"""))
     players.foreach( p =>
-      withClue( s"""${pos.line} PairsPage: looking for ${p}""" ) {
+      withClue( s"""${pos.line} StatisticsPage: looking for ${p}""" ) {
         res must contain (p)
       }
     )

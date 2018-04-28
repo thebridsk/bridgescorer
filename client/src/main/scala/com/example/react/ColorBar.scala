@@ -41,8 +41,8 @@ object ColorBar {
       leftColors: Seq[Color],
       rightColors: Seq[Color],
       middle: Option[Color],
-      leftTitles: Option[List[TagMod]] = None,
-      rightTitles: Option[List[TagMod]] = None,
+      leftTitles: Option[Seq[TagMod]] = None,
+      rightTitles: Option[Seq[TagMod]] = None,
       whiteTitle: Option[TagMod] = None
   ) {
   }
@@ -69,8 +69,8 @@ object ColorBar {
         hue1: Double, minLightness1: Double, n1: Int, darkToLight1: Boolean,
         hue2: Double, minLightness2: Double, n2: Int, darkToLight2: Boolean,
         middle: Option[Color],
-        titles1: Option[List[TagMod]] = None,
-        titles2: Option[List[TagMod]] = None,
+        titles1: Option[Seq[TagMod]] = None,
+        titles2: Option[Seq[TagMod]] = None,
         whiteTitle: Option[TagMod] = None
     ) = {
       new Props(
@@ -109,8 +109,8 @@ object ColorBar {
    * @param titles2 the titles of the right boxes, must have n titles.
    */
   def apply( hue1: Double, minLightness1: Double, hue2: Double, minLightness2: Double, n: Int,
-             titles1: List[TagMod],
-             titles2: List[TagMod]
+             titles1: Seq[TagMod],
+             titles2: Seq[TagMod]
   ) = {
     component(Props.create(hue1,minLightness1,n,true,hue2,minLightness2,n,false,Some(Color.White), Option(titles1), Option(titles2), None))
   }
@@ -128,8 +128,8 @@ object ColorBar {
    * @param whiteTitle
    */
   def apply( hue1: Double, minLightness1: Double, hue2: Double, minLightness2: Double, n: Int,
-             titles1: List[TagMod],
-             titles2: List[TagMod],
+             titles1: Seq[TagMod],
+             titles2: Seq[TagMod],
              whiteTitle: TagMod
   ) = {
     component(Props.create(hue1,minLightness1,n,true,hue2,minLightness2,n,false,Some(Color.White), Option(titles1), Option(titles2), Option(whiteTitle)))
@@ -154,8 +154,8 @@ object ColorBar {
   def apply( hue1: Double, minLightness1: Double, n1: Int, darkToLight1: Boolean,
              hue2: Double, minLightness2: Double, n2: Int, darkToLight2: Boolean,
              middle: Option[Color],
-             titles1: Option[List[TagMod]] = None,
-             titles2: Option[List[TagMod]] = None,
+             titles1: Option[Seq[TagMod]] = None,
+             titles2: Option[Seq[TagMod]] = None,
              whiteTitle: Option[TagMod] = None
   ) = {
     component( Props.create(hue1,minLightness1,n1,darkToLight1,hue2,minLightness2,n2,darkToLight2,middle, titles1, titles2, whiteTitle ) )
@@ -175,8 +175,8 @@ object ColorBar {
       leftColors: Seq[Color],
       rightColors: Seq[Color],
       middle: Option[Color],
-      leftTitles: Option[List[TagMod]] = None,
-      rightTitles: Option[List[TagMod]] = None,
+      leftTitles: Option[Seq[TagMod]] = None,
+      rightTitles: Option[Seq[TagMod]] = None,
       whiteTitle: Option[TagMod] = None
   ) = {
     component( Props( leftColors, rightColors, middle, leftTitles, rightTitles, whiteTitle ) )
@@ -189,7 +189,7 @@ object ColorBar {
    */
   def simple(
       colors: Seq[Color],
-      titles: Option[List[TagMod]] = None
+      titles: Option[Seq[TagMod]] = None
   ) = {
     component(Props(colors, Nil, None, titles, None, None))
   }
@@ -204,16 +204,15 @@ object ColorBarInternal {
   import com.example.color.Colors._
 
   private def box( color: Color, title: Option[TagMod] ): VdomNode = {
-    val d: VdomNode = <.div(
-      ^.flex := "0 0 auto",
-      ^.width := "20px",
-      ^.height := "20px",
-      ^.backgroundColor := color   //.toHex
+    Tooltip(
+      <.div(
+        ^.flex := "0 0 auto",
+        ^.width := "20px",
+        ^.height := "20px",
+        ^.backgroundColor := color   //.toHex
+      ),
+      title
     )
-    title.map { t =>
-      val tt: VdomNode = Tooltip( d, t )
-      tt
-    }.getOrElse(d)
   }
 
   private def bar( hue: Double, minLightness: Double, n: Int, darkToLight: Boolean, titles: Option[List[TagMod]] ): TagMod = {
@@ -222,7 +221,7 @@ object ColorBarInternal {
     bar(c, titles)
   }
 
-  private def bar( cols: Seq[Color], titles: Option[List[TagMod]] ): TagMod = {
+  private def bar( cols: Seq[Color], titles: Option[Seq[TagMod]] ): TagMod = {
     val ts = titles.map( t => t.map( ti => Some(ti) ) ).getOrElse( cols.map( cols => None ) )
     cols.zip( ts ).map { entry =>
       val (cc,t) = entry

@@ -133,7 +133,6 @@ object DuplicateRouter {
     def getDuplicateResultPage(dupid: String): DuplicateResultViewBase = DuplicateResultView(dupid)
   }
 
-  case object PairsView extends DuplicatePage
   case object StatsView extends DuplicatePage
   case object NewDuplicateView extends DuplicatePage
   case object SelectMatchView extends DuplicatePage
@@ -319,7 +318,6 @@ object DuplicateRouter {
   }
 
   val verifyPages = SummaryView::
-                    PairsView::
                     StatsView::
                     NewDuplicateView::
                     SelectMatchView::
@@ -360,8 +358,6 @@ object DuplicateRouter {
     import dsl._
 
     (emptyRule
-      | staticRoute( "pairs", PairsView )
-        ~> renderR( routerCtl => PagePairs(routerCtl) )
       | staticRoute( "stats", StatsView )
         ~> renderR( routerCtl => PageStats(routerCtl) )
       | staticRoute( "suggestion", SuggestionView )

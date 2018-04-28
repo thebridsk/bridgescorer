@@ -101,21 +101,56 @@ import org.scalajs.dom.raw.Event
  * @author werewolf
  */
 object Tooltip {
-  import TooltipInternal._
 
   case class Props(
       data: TagMod,
-      tooltip: TagMod
+      tooltipbody: Option[TagMod],
+      tooltipTitle: Option[TagMod],
   )
 
   /**
+   * Returns a tooltip component with tooltipbody for the data.  No tooltip title.
    * @param data the data to display.
-   * @param tooltip the tooltip for the data when the mouse flies over.
+   * @param tooltipbody the tooltip for the data when the mouse flies over.
    */
   def apply(
       data: TagMod,
-      tooltip: TagMod
-  ) = component( Props(data,tooltip) )
+      tooltipbody: TagMod
+  ) = component( Props(data,Some(tooltipbody),None) )
+
+  /**
+   * Returns a tooltip component with tooltiptitle and tooltipbody as the tooltip for the data.
+   * @param data the data to display.
+   * @param tooltipbody the tooltip body for the data when the mouse flies over.
+   * @param tooltiptitle the title for the tooltip
+   */
+  def apply(
+      data: TagMod,
+      tooltipbody: TagMod,
+      tooltiptitle: TagMod
+  ) = component( Props(data,Some(tooltipbody),Some(tooltiptitle) ))
+
+  /**
+   * @param data the data to display.
+   * @param tooltipbody the tooltip body for the data when the mouse flies over.
+   * @param tooltiptitle the optional title for the tooltip
+   */
+  def apply(
+      data: TagMod,
+      tooltipbody: TagMod,
+      tooltiptitle: Option[TagMod]
+  ) = component( Props(data,Some(tooltipbody),tooltiptitle ))
+
+  /**
+   * @param data the data to display.
+   * @param tooltipbody the optional tooltip body for the data when the mouse flies over.
+   * @param tooltiptitle the optional title for the tooltip
+   */
+  def apply(
+      data: TagMod,
+      tooltipbody: Option[TagMod] = None,
+      tooltiptitle: Option[TagMod] = None
+  ) = component( Props(data,tooltipbody,tooltiptitle) )
 
   private var initialized: Boolean = false
 
@@ -130,23 +165,38 @@ object Tooltip {
       initialized = true
     }
   }
-}
 
-object TooltipInternal {
-  import Tooltip._
-
+  private
   val component = ScalaComponent.builder[Props]("Tooltip")
       .stateless
       .noBackend
       .render_P { props =>
-        <.div(
-          baseStyles.withTooltipBox,
-          props.data,
+        if (props.tooltipbody.isDefined || props.tooltipTitle.isDefined) {
           <.div(
-            baseStyles.tooltipContent,
-            props.tooltip
+            baseStyles.withTooltipBox,
+            props.data,
+            <.div(
+              baseStyles.tooltipContent,
+              props.tooltipTitle.whenDefined { title =>
+                <.div(
+                  baseStyles.tooltipTitle,
+                  title
+                )
+              },
+              props.tooltipbody.whenDefined { body =>
+                <.div(
+                  baseStyles.tooltipBody,
+                  body
+                )
+              }
+            )
           )
-        )
+        } else {
+          <.div(
+            props.data
+          )
+        }
       }.build
+
 }
 

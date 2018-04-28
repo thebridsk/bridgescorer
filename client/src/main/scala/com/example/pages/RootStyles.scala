@@ -113,6 +113,8 @@ class BaseStyles {
 
   val colorbar = cls("colorbar")
 
+  val tableComponent = cls("tableComponent")
+
   val tableStats = cls("tableStats")
 
   val tablePieChart = cls("tablePieChart")
