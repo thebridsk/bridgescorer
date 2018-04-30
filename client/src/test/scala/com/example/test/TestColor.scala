@@ -173,4 +173,15 @@ class TestColor extends FlatSpec with MustMatchers  {
 
     println( s"Colors are:${s}" )
   }
+
+  it should "Show ghostwhite and blue in hsl" in {
+    val ghostwhite = Color("ghostwhite").toHSLColor
+    val blue = Color("blue").toHSLColor
+
+    println( s"ghostwhite hue=${ghostwhite.hue}, blue hue=${blue.hue}" )
+    println( s"ghostwhite saturation=${ghostwhite.saturation}, blue saturation=${blue.saturation}" )
+
+    ghostwhite.hue mustBe blue.hue
+    f"${ghostwhite.saturation}%.2f" mustBe f"${blue.saturation}%.2f"
+  }
 }

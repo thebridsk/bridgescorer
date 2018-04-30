@@ -145,6 +145,7 @@ object ColorPageInternal {
 
     def render( props: Props, state: State ) = {
       <.div(
+        BaseStyles.baseStyles.divColorPage,
         <.div(
           <.ul(
             <.li(
@@ -335,6 +336,13 @@ object ColorPageInternal {
         ),
         <.div(
           <.table(
+            <.thead(
+              <.tr(
+                <.th( "hue (deg)" ),
+                <.th( "saturation (%)" ),
+                <.th( ^.colSpan:=5, "lightness (%)" )
+              )
+            ),
             <.tbody(
               NamedColor.namedColors.toList.map { case (name,hex) =>
                 val rgb = Color(hex).toRGBColor
@@ -345,10 +353,10 @@ object ColorPageInternal {
                 else hsl.hue
               }.map { case (hue, list) =>
                 val bySat = list.groupBy { case (name, rgb, hsl) =>
-                  hsl.saturation
+                  f"${hsl.saturation}%.2f"
                 }.map { case (sat, satlist) =>
                   (sat, satlist.sortWith((l,r)=>l._3.lightness>r._3.lightness))
-                }.toList.sortBy( e => e._1 )
+                }.toList.sortBy( e => e._2.head._3.saturation )
                 (hue,bySat)
               }.toList.sortBy( e => e._1 ).map { case (hue, satmap) =>
                 TagMod(
@@ -358,11 +366,13 @@ object ColorPageInternal {
                   satmap.map { case (sat, list) =>
                     <.tr(
                       <.td(),
-                      <.td(f"$sat%.2f%%"),
+                      <.td(sat+"%"),
                       list.map { case (name,rgb,hsl) =>
+                        val colors = Color.named(name)::rgb::hsl::Nil
+                        val titles = colors.map( c => TagMod( c.toAttrValue ) )
                         <.td(
                           f"${name} ${hsl.lightness}%.2f%%",
-                          ColorBar.simple(Color.named(name)::rgb::hsl::Nil)
+                          ColorBar.simple(colors,Some(titles))
                         )
                       }.toTagMod
                     )

@@ -514,3 +514,36 @@ body.touched .withTooltipBox:hover {
 .colorbar .tooltipContent {
   white-space: pre
 }
+
+.divColorPage {
+
+}
+
+.divColorPage > div {
+  padding-top: 5px;
+}
+
+.divColorPage div:nth-child(2) td, .divColorPage div:nth-child(2) th {
+  white-space: nowrap;
+  border: 1px solid black;
+}
+
+.divColorPage div:nth-child(2) table {
+  border-spacing: 0px;
+  font-size: large;
+  white-space: nowrap;
+  border: 1px solid black;
+}
+
+.divColorPage div:nth-child(3) td, .divColorPage div:nth-child(3) th {
+  white-space: nowrap;
+  border: 1px solid black;
+}
+
+.divColorPage div:nth-child(3) table {
+  border-spacing: 0px;
+  font-size: large;
+  white-space: nowrap;
+  border: 1px solid black;
+}
+
