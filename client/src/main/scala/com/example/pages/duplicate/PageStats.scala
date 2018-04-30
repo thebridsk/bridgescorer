@@ -131,7 +131,7 @@ object PageStatsInternal {
 
     def render( props: Props, state: State ) = {
       <.div(
-        dupStyles.divPeopleSummary,
+        dupStyles.divPageStats,
         PopupOkCancel( state.msg, None, Some(cancel) ),
         <.h1("Statistics"),
         <.div(

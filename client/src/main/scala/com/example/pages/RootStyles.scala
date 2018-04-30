@@ -115,10 +115,6 @@ class BaseStyles {
 
   val tableComponent = cls("tableComponent")
 
-  val tableStats = cls("tableStats")
-
-  val tablePieChart = cls("tablePieChart")
-
   val withTooltipBox = cls("withTooltipBox")
   val tooltipContent = cls("tooltipContent")
   val tooltipTitle = cls("tooltipTitle")

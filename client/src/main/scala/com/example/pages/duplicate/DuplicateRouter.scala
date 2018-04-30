@@ -89,6 +89,7 @@ object DuplicateRouter {
     def toScoreboardView(): BaseScoreboardView
     def toHandView( handid: String ): BaseHandView
     def toBoardView( bid: String ): BaseBoardView
+    def toAllBoardsView(): BaseAllBoardsView
   }
 
   trait BaseBoardViewWithPerspective extends BaseBoardView {
@@ -184,6 +185,7 @@ object DuplicateRouter {
     def getPerspective(): DuplicateViewPerspective = PerspectiveComplete
     def toHandView( handid: String ) = CompleteHandView(dupid,boardid,handid)
     def toBoardView( bid: String ) = CompleteBoardView(dupid,bid)
+    def toAllBoardsView() = CompleteAllBoardView(dupid)
   }
   case class CompleteHandView( dupid: String, boardid: String, handid: String ) extends BaseHandView {
     def toBoardView() = CompleteBoardView(dupid,boardid)
@@ -207,6 +209,7 @@ object DuplicateRouter {
     def getPerspective(): DuplicateViewPerspective = PerspectiveDirector
     def toHandView( handid: String ) = DirectorHandView(dupid,boardid,handid)
     def toBoardView( bid: String ) = DirectorBoardView(dupid,bid)
+    def toAllBoardsView() = DirectorAllBoardView(dupid)
   }
   case class DirectorHandView( dupid: String, boardid: String, handid: String ) extends BaseHandView {
     def toBoardView() = DirectorBoardView(dupid,boardid)
@@ -293,6 +296,7 @@ object DuplicateRouter {
     def toScoreboardView() = TableRoundScoreboardView(dupid,tableid,round)
     def toHandView( handid: String ) = TableHandView(dupid,tableid,round,boardid,handid)
     def toBoardView( bid: String ) = TableBoardView(dupid,tableid,round,bid)
+    def toAllBoardsView() = TableRoundAllBoardView(dupid,tableid,round)
     def getPerspective(): DuplicateViewPerspective = DuplicateStore.getTablePerspectiveFromRound(tableid, round) match {
       case Some(p) => p
       case None => PerspectiveComplete

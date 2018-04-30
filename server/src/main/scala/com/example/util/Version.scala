@@ -2,11 +2,20 @@ package com.example.util
 
 import scala.annotation.tailrec
 
-class Version( version: String ) extends Ordered[Version] {
+class Version( val version: String ) extends Ordered[Version] {
 
   val components = version.split("\\.").toList
 
+  override
+  def equals( other: Any ) = {
+    other match {
+      case v: Version => v.version == version
+      case _ => false
+    }
+  }
 
+  override
+  def hashCode() = version.hashCode()
 
   /** Result of comparing `this` with operand `that`.
    *

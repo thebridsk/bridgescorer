@@ -215,6 +215,10 @@ object PageBoardInternal {
                                                         allplayedInRound ?= baseStyles.requiredNotNext,
                                                         props.routerCtl.setOnClick(clickToTableView.get) ),
                 " ",
+                AppButton( "AllBoards", "All Boards",
+                           props.routerCtl.setOnClick(props.page.toAllBoardsView())
+                         ),
+                " ",
                 PageScoreboardInternal.scoringMethodButton( state.useIMP, Some( score.isIMP), false, nextIMPs ),
                 if (tableperspective.isEmpty) boards(score)
                 else TagMod()
