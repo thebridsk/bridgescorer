@@ -23,9 +23,13 @@ object Colors {
     if (n == 0) Nil
     else if (n == 1) Color.hsl( hue, saturation, 50.0 )::Nil
     else {
-      val step = (maxLightness - minLightness)/(n)
-      val cols = (minLightness until (maxLightness-0.0001) by step).map { l =>
-         Color.hsl( hue, saturation, l )
+//      val step = (maxLightness - minLightness)/(n)
+      val max = BigDecimal(maxLightness)
+      val min = BigDecimal(minLightness)
+      val step = (max - min)/n
+//      val delta = BigDecimal( 0.0001 )
+      val cols = (min until max by step).map { l =>
+         Color.hsl( hue, saturation, l.toDouble )
       }
       if (darkToLight1) cols
       else cols.reverse
@@ -138,9 +142,12 @@ object Colors {
     if (n == 0) Nil
     else if (n == 1) Color.hsl( hue, saturation, 50.0 )::Nil
     else {
-      val step = (maxLightness - minLightness)/(n-1)
-      val cols = (minLightness to (maxLightness+0.0001) by step).map { l =>
-         Color.hsl( hue, saturation, l )
+//      val step = (maxLightness - minLightness)/(n-1)
+      val max = BigDecimal(maxLightness)
+      val min = BigDecimal(minLightness)
+      val step = (max - min)/n
+      val cols = (min to max by step).map { l =>
+         Color.hsl( hue, saturation, l.toDouble )
       }
       if (darkToLight1) cols
       else cols.reverse
