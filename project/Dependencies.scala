@@ -11,7 +11,7 @@ import org.scalajs.sbtplugin.ScalaJSPlugin.autoImport._
 object Dependencies {
   // version numbers
 
-  lazy val verScalaVersion = "2.12.5"
+  lazy val verScalaVersion = "2.12.6"
   lazy val verScalaMajorMinor = {
     val i = verScalaVersion.indexOf('.')
     val i2 = verScalaVersion.indexOf('.', i+1)
@@ -41,7 +41,7 @@ object Dependencies {
 //  lazy val vSwaggerScalaModule="1.0.4" // http://mvnrepository.com/artifact/io.swagger/swagger-scala-module_2.11
   lazy val vSwagger="1.5.19"           // http://mvnrepository.com/artifact/io.swagger/swagger-core
 
-  lazy val vSwaggerUI = "3.13.4"       // https://www.npmjs.com/package/swagger-ui-dist
+  lazy val vSwaggerUI = "3.14.0"       // https://www.npmjs.com/package/swagger-ui-dist
   lazy val vScalajsdom = "0.9.5"       // http://mvnrepository.com/artifact/org.scala-js/scalajs-dom_sjs0.6_2.11
   lazy val vScalaJsReact = "1.2.0"     // http://mvnrepository.com/artifact/com.github.japgolly.scalajs-react/core_sjs0.6_2.11
   lazy val vScalaCss = "0.5.3"         // http://mvnrepository.com/artifact/com.github.japgolly.scalacss/core_sjs0.6_2.11
@@ -73,7 +73,7 @@ object Dependencies {
   lazy val vJackson = "2.9.5"        // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core
 
   // Selenium needs to be update to update to v23.0
-  lazy val vGuavaJre = "24.1-jre"    // https://github.com/google/guava
+  lazy val vGuavaJre = "25.0-jre"    // https://github.com/google/guava
 
   lazy val vWebPack = "3.11.0"          // https://www.npmjs.com/package/webpack
 
