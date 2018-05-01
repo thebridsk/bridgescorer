@@ -77,7 +77,7 @@ object Dependencies {
 
   lazy val vWebPack = "3.11.0"          // https://www.npmjs.com/package/webpack
 
-  lazy val vJsDom = "11.8.0"           // https://www.npmjs.com/package/jsdom
+  lazy val vJsDom = "11.10.0"           // https://www.npmjs.com/package/jsdom
 //  lazy val vExposeLoader = "0.7.3"     // https://www.npmjs.com/package/expose-loader
 
   // version 0.2.1 is hardcoded in sbt-scalajs-bundler
