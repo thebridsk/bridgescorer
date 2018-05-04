@@ -223,7 +223,7 @@ object ColorPageInternal {
                     <.td(
                       ColorBar.simple(
                           colors,
-                          Some( colors.map( c => TagMod( s"${c}" ) ).toList )
+                          Some( colors.map( c => TagMod( s"${c.toAttrValue}" ) ).toList )
                       )
                     )
                   )
