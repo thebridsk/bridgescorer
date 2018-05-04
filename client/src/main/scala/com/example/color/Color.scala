@@ -65,7 +65,31 @@ object ColorInternal {
    */
   def aToString( a: Double ) = {
     if (a == 100.0) ""
+    else f",$a%.2f%%"
+  }
+
+  /**
+   * returns a string that represents the alpha value in rgb and hsl functions.
+   * @param a the alpha value as a percent
+   */
+  def aToStringForSpace( a: Double ) = {
+    if (a == 100.0) ""
     else f"/$a%.2f%%"
+  }
+
+  /**
+   * returns a string that represents the alpha value in rgb and hsl functions.
+   * @param a the alpha value as a percent
+   */
+  def aToHex( a: Double ) = {
+    if (a == 100.0) ""
+    else {
+      val b = Math.round( a/100*255 )
+      val c = if (b < 0) 0
+      else if (b>255) 255
+      else b
+      f"${c}%2X"
+    }
   }
 }
 
@@ -243,6 +267,7 @@ object Color {
  * @param name
  */
 case class NamedColor( name: String ) extends Color {
+
   def toAttrValue = name
 
   def toRGBColor = NamedColor.toRGB(name)
@@ -457,7 +482,9 @@ object NamedColor {
  * @param a  The alpha as a percent.  0 - transparent and 100 full opacity
  */
 case class RGBColor( r: Int, g: Int, b: Int, a: Double = 100 ) extends Color {
-  def toAttrValue = f"""rgb($r $g $b${ColorInternal.aToString(a)})"""
+  def toAttrValue = f"""rgb($r,$g,$b${ColorInternal.aToString(a)})"""
+
+  def toAttrValueHex = f"""#$r%02X$g%02X$b%02X${ColorInternal.aToHex(a)}"""
 
   def toRGBColor = this
 
@@ -487,7 +514,7 @@ case class RGBColor( r: Int, g: Int, b: Int, a: Double = 100 ) extends Color {
  * @param a  The alpha as a percent.  0 - transparent and 100 full opacity
  */
 case class RGBPercentColor( r: Double, g: Double, b: Double, a: Double = 100 ) extends Color {
-  def toAttrValue = f"""rgb($r%.2f%% $g%.2f%% $b%.2f%%${ColorInternal.aToString(a)})"""
+  def toAttrValue = f"""rgb($r%.2f%%,$g%.2f%%,$b%.2f%%${ColorInternal.aToString(a)})"""
 
   def toRGBPercentColor = this
 
@@ -526,7 +553,7 @@ case class HSLColor( hue: Double, saturation: Double, lightness: Double, a: Doub
 
   import HSLColor._
 
-  def toAttrValue = f"""hsl($hue%.2f $saturation%.2f%% $lightness%.2f%%${ColorInternal.aToString(a)})"""
+  def toAttrValue = f"""hsl($hue%.2f,$saturation%.2f%%,$lightness%.2f%%${ColorInternal.aToString(a)})"""
 
   def toRGBPercentColor = {
     val (r,g,b) = toRGB(hue,saturation,lightness)

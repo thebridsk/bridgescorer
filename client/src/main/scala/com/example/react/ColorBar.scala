@@ -209,7 +209,7 @@ object ColorBarInternal {
         ^.flex := "0 0 auto",
         ^.width := "20px",
         ^.height := "20px",
-        ^.backgroundColor := color   //.toHex
+        ^.backgroundColor := color
       ),
       title
     )
