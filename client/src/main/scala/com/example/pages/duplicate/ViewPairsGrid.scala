@@ -134,7 +134,7 @@ object ViewPairsGridInternal {
    */
   def getData( pd: PairData, sizeSt: Stat, colorSt: Stat, colorAbove: Double, colorBelow: Double, state: State, sizeMultiplier: Int ): (TagMod,String) = {
     val (bcolor, light) = colorSt.sizeAveAsFraction(pd)
-    val lightness = light*75.0+25.0
+    val lightness = (1-light)*75.0+25.0
     val size = sizeSt.size(pd, state.minSize*sizeMultiplier, state.maxSize*sizeMultiplier)
     val (color,scolor) = if (bcolor) {
       // above average, green
@@ -143,6 +143,14 @@ object ViewPairsGridInternal {
       // below average, red
       (Color.hsl( colorBelow, 100, lightness ), f"hsl(${colorBelow},100,${lightness}%.2f)" )
     }
+
+//    val debug = f"""
+//                   |Debug: bcolor=${bcolor}, light=${light}%.2f, lightness=${lightness}%.2f, scolor=${scolor}
+//                   |pd=${pd}
+//                   |sizeSt=${sizeSt}
+//                   |colorSt=${colorSt}
+//                   |""".stripMargin
+
     val title = f"""Played ${pd.played},
                    |Won ${pd.won+pd.wonImp} (${pd.winPercent}%.2f%%),
                    |WonPoints ${pd.wonPts+pd.wonImpPts}%.2f (${pd.winPtsPercent}%.2f%%)""".stripMargin
@@ -169,7 +177,7 @@ object ViewPairsGridInternal {
                colors = List(color),
                chartTitle = None
              ),
-      title+titleMP+titleIMP
+      title+titleMP+titleIMP  // +debug
     )
 
   }
