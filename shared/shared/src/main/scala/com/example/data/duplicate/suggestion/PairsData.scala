@@ -284,6 +284,11 @@ class Stat( val colorBy: ColorBy ) {
   private var vmax: Double = Double.MinValue
   private var vmin: Double = Double.MaxValue
 
+  override
+  def toString() = {
+    f"""Stat(${total}%.2f/${number}, ave=${ave}%.2f, min=${vmin}%.2f, max=${vmax}%.2f)"""
+  }
+
   def add( pds: PairsData ): Stat = {
     add(pds.data.values)
     this
@@ -349,9 +354,9 @@ class Stat( val colorBy: ColorBy ) {
     if (min == max) (true,0)
     else if (v == ave) (true,0)
     else if (v < ave) {
-      (false,((v-min)/(ave-min)))
+      (false,((ave-v)/(ave-min)))
     } else {
-      (true,(1-(v-ave)/(max-ave)))
+      (true,((v-ave)/(max-ave)))
     }
 
   }
