@@ -35,6 +35,7 @@ import com.example.data.duplicate.stats.CounterStat
 import com.example.data.duplicate.stats.ContractStat
 import com.example.data.duplicate.stats.PlayerStats
 import com.example.data.duplicate.stats.ContractStats
+import com.example.data.duplicate.stats.PlayerDoubledStats
 
 object SchemaDefinition {
 
@@ -740,6 +741,17 @@ object SchemaDefinition {
               resolve = ctx => ctx.ctx.duplicates.readAll().map { rmap => rmap match {
                           case Right(map) =>
                             ContractStats.stats(map, false)
+                          case Left((statusCode,msg)) =>
+                            throw new Exception(s"Error getting duplicates: ${statusCode} ${msg.msg}")
+                        }
+              }
+          ),
+          Field(
+              "playerDoubledStats",
+              DuplicatePlayerStatsType,
+              resolve = ctx => ctx.ctx.duplicates.readAll().map { rmap => rmap match {
+                          case Right(map) =>
+                            PlayerDoubledStats.stats(map)
                           case Left((statusCode,msg)) =>
                             throw new Exception(s"Error getting duplicates: ${statusCode} ${msg.msg}")
                         }

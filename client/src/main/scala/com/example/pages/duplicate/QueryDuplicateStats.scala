@@ -59,6 +59,28 @@ object QueryDuplicateStats {
          |      min
          |      max
          |    }
+         |    playerDoubledStats {
+         |      declarer {
+         |        player
+         |        declarer
+         |        contractType
+         |        handsPlayed
+         |        histogram {
+         |          tricks, counter
+         |        }
+         |      }
+         |      defender {
+         |        player
+         |        declarer
+         |        contractType
+         |        handsPlayed
+         |        histogram {
+         |          tricks, counter
+         |        }
+         |      }
+         |      min
+         |      max
+         |    }
          |  }
          |}
          |""".stripMargin

@@ -75,6 +75,7 @@ object PageStatsInternal {
                     showPairsGrid: Boolean = true,
                     showMadeDownGrid: Boolean = false,
                     showPlayerContractResults: Boolean = false,
+                    showPlayerDoubledContractResults: Boolean = false,
                     showContractResults: Boolean = false,
 
                     msg: Option[TagMod] = None
@@ -106,6 +107,8 @@ object PageStatsInternal {
     val toggleShowMadeDownGrid = scope.modState( s => s.copy( showMadeDownGrid = !s.showMadeDownGrid) )
 
     val toggleShowPlayerContractResults = scope.modState( s => getDuplicateStats( s.copy( showPlayerContractResults = !s.showPlayerContractResults) ))
+
+    val toggleShowPlayerDoubledContractResults = scope.modState( s => getDuplicateStats( s.copy( showPlayerDoubledContractResults = !s.showPlayerDoubledContractResults) ))
 
     val toggleShowContractResults = scope.modState( s => getDuplicateStats( s.copy( showContractResults = !s.showContractResults) ))
 
@@ -166,6 +169,11 @@ object PageStatsInternal {
                        BaseStyles.highlight(selected = state.showPlayerContractResults ),
                        ^.onClick-->toggleShowPlayerContractResults
                      ),
+            AppButton( "ShowPlayerDoubledContractResults",
+                       "Show Player Doubled Contracts",
+                       BaseStyles.highlight(selected = state.showPlayerDoubledContractResults ),
+                       ^.onClick-->toggleShowPlayerDoubledContractResults
+                     ),
             AppButton( "ShowContractResults",
                        "Show Contracts",
                        BaseStyles.highlight(selected = state.showContractResults ),
@@ -210,10 +218,11 @@ object PageStatsInternal {
             "Working"
           )
         },
-        if (state.showContractResults || state.showPlayerContractResults) {
+        if (state.showContractResults || state.showPlayerContractResults || state.showPlayerDoubledContractResults) {
           state.stats.map { cs =>
             TagMod(
               state.showPlayerContractResults ?= ViewPlayerContractResults( cs.playerStats, cs.contractStats ),
+              state.showPlayerDoubledContractResults ?= ViewPlayerDoubledContractResults( cs.playerDoubledStats, cs.contractStats ),
               state.showContractResults ?= ViewContractResults( cs.contractStats )
             )
           }.getOrElse(

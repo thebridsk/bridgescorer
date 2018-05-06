@@ -49,6 +49,11 @@ case object ContractTypeGame extends ContractType {
   override
   def toString() = "Game"
 }
+case object ContractTypeDoubledToGame extends ContractType {
+  val value = "D"
+  override
+  def toString() = "Doubled To Game"
+}
 case object ContractTypePartial extends ContractType {
   val value = "P"
   override

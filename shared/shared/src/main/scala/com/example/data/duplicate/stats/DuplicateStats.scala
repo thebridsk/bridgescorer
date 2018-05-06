@@ -2,7 +2,8 @@ package com.example.data.duplicate.stats
 
 case class DuplicateStats(
     playerStats: PlayerStats,
-    contractStats: ContractStats
+    contractStats: ContractStats,
+    playerDoubledStats: PlayerStats
 ) {
 
 }
