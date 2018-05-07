@@ -21,6 +21,7 @@ import com.example.react.Table.Column
 import com.example.react.Table
 import com.example.data.duplicate.stats.ContractStat
 import DuplicateStyles._
+import com.example.data.duplicate.stats.ContractTypeDoubledToGame
 
 /**
  * A skeleton component.
@@ -28,13 +29,13 @@ import DuplicateStyles._
  * To use, just code the following:
  *
  * <pre><code>
- * ViewPlayerContractResults( ViewPlayerContractResults.Props( ... ) )
+ * ViewPlayerDoubledContractResults( ViewPlayerDoubledContractResults.Props( ... ) )
  * </code></pre>
  *
  * @author werewolf
  */
-object ViewPlayerContractResults {
-  import ViewPlayerContractResultsInternal._
+object ViewPlayerDoubledContractResults {
+  import ViewPlayerDoubledContractResultsInternal._
 
   case class Props( playerStats: PlayerStats, contractStats: ContractStats )
 
@@ -43,10 +44,10 @@ object ViewPlayerContractResults {
 
 }
 
-object ViewPlayerContractResultsInternal {
-  import ViewPlayerContractResults._
+object ViewPlayerDoubledContractResultsInternal {
+  import ViewPlayerDoubledContractResults._
 
-  val logger = Logger("bridge.ViewPlayerContractResults")
+  val logger = Logger("bridge.ViewPlayerDoubledContractResults")
 
   /**
    * Internal state for rendering the component.
@@ -106,11 +107,10 @@ object ViewPlayerContractResultsInternal {
     }
   }
 
-  val contractTypeOrderWithPlayerStats: List[ContractType] = ContractTypePartial::ContractTypeGame::ContractTypeSlam::ContractTypeGrandSlam::Nil
+  val contractTypeOrderWithPlayerStats: List[ContractType] = ContractTypePartial::ContractTypeDoubledToGame::ContractTypeGame::ContractTypeSlam::ContractTypeGrandSlam::Nil
   def pieChartByTypeWithPlayerStats(
       list: List[PlayerStat],
       playedAs: String,
-      passedout: PlayerStat,
       funCalcSize: Int => Int,
       player: Option[String],
       colspan: Int = 1
@@ -119,8 +119,8 @@ object ViewPlayerContractResultsInternal {
       list.find( ps => ps.contractType==ct.value ).map( ps => ps.handsPlayed ).getOrElse(0)
     }
     dd match {
-      case List(rpartial,rgame,rslam,rgrandslam) =>
-        val sum = dd.foldLeft(0)((ac,v) => ac+v) + passedout.handsPlayed
+      case List(rpartial,rdgame,rgame,rslam,rgrandslam) =>
+        val sum = dd.foldLeft(0)((ac,v) => ac+v)
         val by = player.map( p => s" by ${p}" ).getOrElse("")
         TagMod(
           ^.colSpan := colspan,
@@ -129,12 +129,13 @@ object ViewPlayerContractResultsInternal {
             game = rgame,
             slam = rslam,
             grandslam = rgrandslam,
-            passed = passedout.handsPlayed,
+            passed = 0,
             title = Some(s"Types of hands as ${playedAs}${by}"),
             legendtitle = Left(true),
             size = funCalcSize( sum ),
             sizeInLegend = tooltipPieChartSize,
-            minSize = pieChartMaxSize
+            minSize = pieChartMaxSize,
+            doubledToGame = rdgame
           )
         )
       case _ =>
@@ -142,7 +143,7 @@ object ViewPlayerContractResultsInternal {
     }
   }
 
-  val contractTypeOrderWithContractStats: List[ContractType] = ContractTypePartial::ContractTypeGame::ContractTypeSlam::ContractTypeGrandSlam::ContractTypePassed::Nil
+  val contractTypeOrderWithContractStats: List[ContractType] = ContractTypePartial::ContractTypeDoubledToGame::ContractTypeGame::ContractTypeSlam::ContractTypeGrandSlam::Nil
   def pieChartByTypeWithContractStats(
       list: List[ContractStat],
       funCalcSize: Int => Int,
@@ -152,7 +153,7 @@ object ViewPlayerContractResultsInternal {
       list.find( ps => ps.contractType==ct.value ).map( ps => ps.handsPlayed ).getOrElse(0)
     }
     dd match {
-      case List(rpartial,rgame,rslam,rgrandslam,rpassedout) =>
+      case List(rpartial,rdgame,rgame,rslam,rgrandslam) =>
         val sum = dd.foldLeft(0)((ac,v) => ac+v)
         TagMod(
           ^.colSpan := colspan,
@@ -161,12 +162,13 @@ object ViewPlayerContractResultsInternal {
             game = rgame,
             slam = rslam,
             grandslam = rgrandslam,
-            passed = rpassedout,
+            passed = 0,
             title = Some(s"Types of hands"),
             legendtitle = Left(true),
             size = funCalcSize( sum ),
             sizeInLegend = tooltipPieChartSize,
-            minSize = pieChartMaxSize
+            minSize = pieChartMaxSize,
+            doubledToGame = rdgame
           )
         )
       case _ =>
@@ -174,7 +176,7 @@ object ViewPlayerContractResultsInternal {
     }
   }
 
-  val order: List[ContractType] = ContractTypeTotal::ContractTypePassed::ContractTypePartial::ContractTypeGame::ContractTypeSlam::ContractTypeGrandSlam::Nil
+  val order: List[ContractType] = ContractTypeTotal::ContractTypePartial::ContractTypeDoubledToGame::ContractTypeGame::ContractTypeSlam::ContractTypeGrandSlam::Nil
   def genData(
       declarer: Option[List[PlayerStat]],
       defender: Option[List[PlayerStat]],
@@ -192,7 +194,7 @@ object ViewPlayerContractResultsInternal {
      */
     def getInfo( ct: ContractType, d: Option[List[PlayerStat]], b: Option[Boolean] ) = {
       d.map { list =>
-        val skip = b.getOrElse(false) && ct == ContractTypePassed    // always skip declarer passed, same as defender passed
+        val skip = ct == ContractTypePassed    // always skip declarer passed, same as defender passed
         (skip,getPlayerStatByContractType( ct,list ), asPlaying(b), if (ct == ContractTypePassed) 1 else b.map( _ =>1 ).getOrElse(2))
       }.toList
     }
@@ -234,6 +236,28 @@ object ViewPlayerContractResultsInternal {
     }
   }
 
+  val toGame = "2N"::"2H"::"2S"::"3H"::"3S"::"3C"::"3D"::"4C"::"4D"::Nil
+
+  def addDoubledToGame( stats: List[ContractStat] ) = {
+    stats.flatMap { s =>
+      if (s.contractType == ContractTypePassed.value) Nil
+      else if (s.contract.contains("*")) {
+        if (s.contractType == ContractTypePartial.value) {
+          toGame.find( c => s.contract.startsWith(c)) match {
+            case Some(ns) =>
+              s.copy(contractType = ContractTypeDoubledToGame.value )::Nil
+            case None =>
+              s::Nil
+          }
+        } else {
+          s::Nil
+        }
+      } else {
+        Nil
+      }
+    }
+  }
+
   /**
    * @return Tuple3(totalStats, maxHandsPlayed, maxHandsPlayedTotal)
    */
@@ -263,7 +287,7 @@ object ViewPlayerContractResultsInternal {
 
     val extraStats = order.filter(ct => ct != ContractTypeTotal).map( ct => ContractStat(ct.toString(), ct.value) )
 
-    val almostAll = (extraStats:::stats.data).groupBy( ps => ps.contractType ).map { entry =>
+    val almostAll = (extraStats:::addDoubledToGame(stats.data)).groupBy( ps => ps.contractType ).map { entry =>
       val (ct, allStats) = entry
 
       val h = allStats.head
@@ -353,22 +377,22 @@ object ViewPlayerContractResultsInternal {
         getPlayerStatByContractType(ContractTypeTotal,declarer).toList:::getPlayerStatByContractType(ContractTypeTotal,defender).toList
       }.map( ps => ps.handsPlayed ).foldLeft(0)(Math.max _)
 
-      def byType( list: List[PlayerStat], playedAs: String, passedout: PlayerStat, player: Option[String], colspan: Int = 1 ) =
-        pieChartByTypeWithPlayerStats( list, playedAs, passedout, calcSize(maxHandsPlayedTotal), player, colspan )
+      def byType( list: List[PlayerStat], playedAs: String, player: Option[String], colspan: Int = 1 ) =
+        pieChartByTypeWithPlayerStats( list, playedAs, calcSize(maxHandsPlayedTotal), player, colspan )
 
 
       val rows = players.map { p =>
-        val (declarerNoPass, defender) = props.playerStats.stats(p)
+        val (declarerNoPass, defenderWithPass) = props.playerStats.stats(p)
 
-        val passedout = defender.find( ps => ps.contractType == ContractTypePassed.value).getOrElse( PlayerStat(p,false,ContractTypePassed.value) )
+        val defender = defenderWithPass.filter( p => p.contractType != ContractTypePassed.value)
 
-        val declarer = passedout.copy(declarer = true):: declarerNoPass
+        val declarer = declarerNoPass
 
         logger.finest( s"""PlayerStats for ${p} = ${defender} ${declarer}""" )
 
         val data = genData(Some(declarer),Some(defender),None, calcSize(maxHandsPlayed), calcSize(maxHandsPlayedTotal) )
 
-        TagMod(p)::byType(declarer,"Declarer",passedout,Some(p))::byType(defender,"Defender",passedout,Some(p))::data
+        TagMod(p)::byType(declarer,"Declarer",Some(p))::byType(defender,"Defender",Some(p))::data
       }
 
       val totRow = TagMod("Totals")::totalsRow(props.contractStats)
@@ -398,13 +422,13 @@ object ViewPlayerContractResultsInternal {
                   <.br,
                   TrickPieChart.description(maxDown, maxMade, false),
                   "For the Type columns the colors are:",
-                  ContractTypePieChart.description()
+                  ContractTypePieChart.description(true)
                 )
               )
           ),
           additionalRows = None,
           totalRows = Some(List(totRow)),
-          caption = Some("Player Stats")
+          caption = Some("Player Doubled Stats")
         )
       )
 
@@ -412,7 +436,7 @@ object ViewPlayerContractResultsInternal {
 
   }
 
-  val component = ScalaComponent.builder[Props]("ViewPlayerContractResults")
+  val component = ScalaComponent.builder[Props]("ViewPlayerDoubledContractResults")
                             .initialStateFromProps { props => State() }
                             .backend(new Backend(_))
                             .renderBackend
