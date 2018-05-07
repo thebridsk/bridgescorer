@@ -1,1 +1,1 @@
-git.baseVersion := "1.1.16-SNAPSHOT"
+git.baseVersion := "1.1.17-SNAPSHOT"
