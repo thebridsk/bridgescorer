@@ -81,6 +81,18 @@ object QueryDuplicateStats {
          |      min
          |      max
          |    }
+         |    comparisonStats {
+         |      data {
+         |        player
+         |        sameside
+         |        aggressivegood
+         |        aggressivebad
+         |        aggressiveneutral
+         |        passivegood
+         |        passivebad
+         |        passiveneutral
+         |      }
+         |    }
          |  }
          |}
          |""".stripMargin

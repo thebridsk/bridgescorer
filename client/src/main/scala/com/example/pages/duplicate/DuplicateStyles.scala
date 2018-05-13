@@ -36,6 +36,8 @@ class DuplicateStyles {
 
   val tablePairsDetailsGrid = cls("dupTablePairsDetailsGrid")
 
+  val viewPlayerAggressiveness = cls("dupViewPlayerAggressiveness")
+
   val viewPlayerContractResults = cls("dupViewPlayerContractResults")
 
   val viewContractResults = cls("dupViewContractResults")

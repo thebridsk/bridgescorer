@@ -761,3 +761,40 @@
 .dupViewPlayerContractResults .tooltipContent .piechart {
   display: inline;
 }
+
+.dupViewPlayerAggressiveness {
+    
+}
+
+.dupViewPlayerAggressiveness > table > tfoot > tr:nth-child(2) > td {
+  text-align: left;
+}
+
+.dupViewPlayerAggressiveness > table > thead > tr:last-child > th {
+  white-space: normal;
+}
+
+.dupViewPlayerAggressiveness .tooltipContent .piechart {
+  display: inline
+}
+
+.dupViewPlayerAggressiveness table > tbody > tr > td:first-child {
+  font-weight: bold;
+  position: sticky;
+  left: 0;
+  z-index: 10;
+  background-color: rgb(250,250,250);
+}
+.dupViewPlayerAggressiveness table > thead > tr:last-child > th {
+  position: sticky;
+  top: 0;
+  z-index: 11;
+  background-color: rgb(250,250,250);
+}
+.dupViewPlayerAggressiveness table > thead > tr:last-child > th:first-child {
+  position: sticky;
+  top: 0;
+  left: 0;
+  z-index: 12;
+  background-color: rgb(250,250,250);
+}

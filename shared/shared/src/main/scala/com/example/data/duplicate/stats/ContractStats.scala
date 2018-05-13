@@ -3,6 +3,7 @@ package com.example.data.duplicate.stats
 import java.io.PrintStream
 import com.example.data.Id
 import com.example.data.MatchDuplicate
+import com.example.data.Hand
 
 
 /**
@@ -137,15 +138,7 @@ object ContractStats {
           GameStat( "PassedOut", ContractTypePassed.value, 0 )::Nil
         } else {
           val hand = dh.played.head
-          val ct: ContractType = {
-            if (hand.contractTricks == 0) ContractTypePassed
-            else if (hand.contractTricks == 7) ContractTypeGrandSlam
-            else if (hand.contractTricks == 6) ContractTypeSlam
-            else if (hand.contractTricks == 5) ContractTypeGame
-            else if (hand.contractTricks == 4 && hand.contractSuit != "C" && hand.contractSuit != "D" ) ContractTypeGame
-            else if (hand.contractTricks == 3 && hand.contractSuit == "N" ) ContractTypeGame
-            else ContractTypePartial
-          }
+          val ct = ContractType(hand)
           val r = if (dh.played.head.madeContract) dh.played.head.tricks-dh.played.head.contractTricks
                   else -dh.played.head.tricks
           val ss = GameStat( dh.played.head.contract, ct.value, r )::Nil
