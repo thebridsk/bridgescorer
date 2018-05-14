@@ -36,6 +36,8 @@ import com.example.data.duplicate.stats.ContractStat
 import com.example.data.duplicate.stats.PlayerStats
 import com.example.data.duplicate.stats.ContractStats
 import com.example.data.duplicate.stats.PlayerDoubledStats
+import com.example.data.duplicate.stats.PlayerComparisonStats
+import com.example.data.duplicate.stats.PlayerComparisonStat
 
 object SchemaDefinition {
 
@@ -604,6 +606,75 @@ object SchemaDefinition {
       )
   )
 
+  val PlayerComparisonStatType = ObjectType(
+      "PlayerComparisonStat",
+      "A duplicate player stats",
+      fields[BridgeService, PlayerComparisonStat](
+          Field("id",
+              StringType,
+              Some("The id of the duplicate match"),
+              resolve = ctx => ctx.value.player+"_"+ctx.value.sameside
+          ),
+          Field("player",
+              StringType,
+              Some("The player"),
+              resolve = _.value.player
+          ),
+          Field("sameside",
+              BooleanType,
+              Some("Contract was played on the same side"),
+              resolve = _.value.sameside
+          ),
+          Field("aggressivegood",
+              IntType,
+              Some("The number of good results the aggressive player got"),
+              resolve = _.value.aggressivegood
+          ),
+          Field("aggressivebad",
+              IntType,
+              Some("The number of bad results the aggressive player got"),
+              resolve = _.value.aggressivebad
+          ),
+          Field("aggressiveneutral",
+              IntType,
+              Some("The number of aggressive neutral results the player got"),
+              resolve = _.value.aggressiveneutral
+          ),
+          Field("passivegood",
+              IntType,
+              Some("The number of good results the passive player got"),
+              resolve = _.value.passivegood
+          ),
+          Field("passivebad",
+              IntType,
+              Some("The number of bad results the passive player got"),
+              resolve = _.value.passivebad
+          ),
+          Field("passiveneutral",
+              IntType,
+              Some("The number of passive neutral results the player got"),
+              resolve = _.value.passiveneutral
+          )
+      )
+  )
+
+  val PlayerComparisonStatsType = ObjectType(
+      "PlayerComparisonStats",
+      "A duplicate player stats",
+      fields[BridgeService, PlayerComparisonStats](
+          Field("id",
+              StringType,
+              Some("The id of the duplicate match"),
+              resolve = ctx => "playerComparisonStats"
+          ),
+          Field("data",
+              ListType( PlayerComparisonStatType ),
+              Some("The stats for comparison"),
+              resolve = _.value.data
+          ),
+      )
+  )
+
   val DuplicateContractStatsType = ObjectType(
       "DuplicateContractStats",
       "A duplicate contract stats",
@@ -752,6 +823,17 @@ object SchemaDefinition {
               resolve = ctx => ctx.ctx.duplicates.readAll().map { rmap => rmap match {
                           case Right(map) =>
                             PlayerDoubledStats.stats(map)
+                          case Left((statusCode,msg)) =>
+                            throw new Exception(s"Error getting duplicates: ${statusCode} ${msg.msg}")
+                        }
+              }
+          ),
+          Field(
+              "comparisonStats",
+              PlayerComparisonStatsType,
+              resolve = ctx => ctx.ctx.duplicates.readAll().map { rmap => rmap match {
+                          case Right(map) =>
+                            PlayerComparisonStats.stats(map)
                           case Left((statusCode,msg)) =>
                             throw new Exception(s"Error getting duplicates: ${statusCode} ${msg.msg}")
                         }

@@ -179,7 +179,7 @@ object Table {
    * If a header and/or footer is defined, then it MUST have the the
    * same number of elements (th, td) as there are columns in each tr element.
    *
-   * @param columns the column headers in the stats table.
+   * @param columns the column headers in the stats table, this becomes the last tr in the thead section.
    * @param rows the rows in the stats table.  The data type of rows[i] must match the type in column[i].
    * all rows must be the same length os the columns parameter.
    * @param initialSort the index of the columns that should be used as the initial sort

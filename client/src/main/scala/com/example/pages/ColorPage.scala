@@ -9,6 +9,8 @@ import utils.logging.Logger
 import com.example.color.NamedColor
 import com.example.color.Color
 import com.example.color.Colors
+import com.example.color.Gray
+import com.example.color.RGBPercentColor
 
 /**
  * A skeleton component.
@@ -61,7 +63,8 @@ object ColorPageInternal {
 
       color1: String = defaultColor1,
       color2: String = defaultColor2,
-      n2: String = "11"
+      n2: String = "11",
+      ng: String = "11"
   ) {
 
     def withN( v: String ) = copy(n=v)
@@ -73,11 +76,13 @@ object ColorPageInternal {
     def withColor1( v: String ) = copy(color1=v)
     def withColor2( v: String ) = copy(color2=v)
     def withN2( v: String ) = copy(n2=v)
+    def withNG( v: String ) = copy(ng=v)
   }
 
-  def parseInt( s: String, default: Int ) = {
+  def parseInt( s: String, default: Int, min: Int = 0 ) = {
     try {
-      s.toInt
+      val v = s.toInt
+      Math.max(v,min)
     } catch {
       case x: Exception =>
         default
@@ -125,6 +130,10 @@ object ColorPageInternal {
 
     def setN2( e: ReactEventFromInput ) = e.inputText { s =>
       scope.modState { state => state.withN2(s) }
+    }
+
+    def setNG( e: ReactEventFromInput ) = e.inputText { s =>
+      scope.modState { state => state.withNG(s) }
     }
 
     def setColor1( e: ReactEventFromInput ) = e.inputText { s =>
@@ -333,6 +342,36 @@ object ColorPageInternal {
               )
             }
           ),
+        ),
+        <.div(
+          <.ul(
+            <.li(
+              <.label(
+                "N",
+                <.input( ^.`type`:="number",
+                         ^.name:="NG",
+                         ^.onChange ==> setNG,
+                         ^.value := state.ng
+                )
+              )
+            )
+          ),
+          <.div(
+            {
+              val colors = (0 to 100 by 100/(parseInt(state.ng,11,2)-1)).map { v =>
+                Gray(v)
+              }
+              val titles = colors.map { g => TagMod(f"${g.gray}%.2f") }
+              val colors2 = (0 to 100 by 100/(parseInt(state.ng,11,2)-1)).map { v =>
+                Color.grayscale(v)
+              }
+              val titles2 = colors2.map { g => TagMod(f"${g.r}%.2f") }
+              TagMod(
+                ColorBar.simple(colors, Some(titles)),
+                ColorBar.simple(colors2, Some(titles2))
+              )
+            }
+          )
         ),
         <.div(
           <.table(

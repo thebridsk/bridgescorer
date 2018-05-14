@@ -123,12 +123,10 @@ object PieChartWithTooltip {
             case Left(true) => <.li( s"Total: ${formatValue(total)}" )
             case Right(t) => <.li(t)
           },
-          <.li(
-            histogram.map { entry =>
-              val (sectionTitle, list) = entry
-              legendSection(sectionTitle, total, list)
-            }.toTagMod
-          )
+          histogram.map { entry =>
+            val (sectionTitle, list) = entry
+            legendSection(sectionTitle, total, list)
+          }.toTagMod
         )
       }
     }

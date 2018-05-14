@@ -28,10 +28,39 @@ object CounterStat {
 
 }
 
-sealed trait ContractType {
+sealed trait ContractType extends Ordered[ContractType] {
   val value: String
 
   def toString(): String
+
+  def compare( other: ContractType ): Int = {
+    ContractType.getRank(this).compare( ContractType.getRank(other) )
+  }
+}
+
+object ContractType {
+
+  def apply( hand: Hand ): ContractType = {
+    if (hand.contractTricks == 0) ContractTypePassed
+    else if (hand.contractTricks == 7) ContractTypeGrandSlam
+    else if (hand.contractTricks == 6) ContractTypeSlam
+    else if (hand.contractTricks == 5) ContractTypeGame
+    else if (hand.contractTricks == 4 && hand.contractSuit != "C" && hand.contractSuit != "D" ) ContractTypeGame
+    else if (hand.contractTricks == 3 && hand.contractSuit == "N" ) ContractTypeGame
+    else ContractTypePartial
+  }
+
+  def getRank( ct: ContractType ) = {
+    ct match {
+      case ContractTypePassed => 0
+      case ContractTypePartial => 1
+      case ContractTypeDoubledToGame => 1
+      case ContractTypeGame => 2
+      case ContractTypeSlam => 3
+      case ContractTypeGrandSlam => 4
+      case _ => -1
+    }
+  }
 }
 
 case object ContractTypeGrandSlam extends ContractType {
@@ -167,23 +196,6 @@ object PlayerStats {
     statsToCsv(stats, true)
   }
 
-  def getContractType( hand: Hand ): ContractType = {
-    if (hand.contractTricks == 7) ContractTypeGrandSlam
-    else if (hand.contractTricks == 6) ContractTypeSlam
-    else {
-      hand.contractSuit match {
-        case "N" =>
-          if (hand.contractTricks>=3) ContractTypeGame else ContractTypePartial
-        case "S" | "H" =>
-          if (hand.contractTricks>=4) ContractTypeGame else ContractTypePartial
-        case "D" | "C" =>
-          if (hand.contractTricks>=5) ContractTypeGame else ContractTypePartial
-        case _ =>
-          ContractTypePartial
-      }
-    }
-  }
-
   def stats( dups: Map[Id.MatchDuplicate,MatchDuplicate] ) = {
     val results = dups.values.flatMap { dup =>
       dup.allPlayedHands.flatMap { dh =>
@@ -200,7 +212,7 @@ object PlayerStats {
           GameStat( defender.player2, false, ContractTypePassed, 0 )::
           Nil
         } else {
-          val ct = getContractType( dh.played.head )
+          val ct = ContractType( dh.played.head )
           val r = if (dh.played.head.madeContract) dh.played.head.tricks-dh.played.head.contractTricks
                   else -dh.played.head.tricks
           GameStat( declarer.player1, true, ct, r )::

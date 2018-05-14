@@ -77,6 +77,7 @@ object PageStatsInternal {
                     showPlayerContractResults: Boolean = false,
                     showPlayerDoubledContractResults: Boolean = false,
                     showContractResults: Boolean = false,
+                    showPlayerAggressiveness: Boolean = false,
 
                     msg: Option[TagMod] = None
                   )
@@ -111,6 +112,8 @@ object PageStatsInternal {
     val toggleShowPlayerDoubledContractResults = scope.modState( s => getDuplicateStats( s.copy( showPlayerDoubledContractResults = !s.showPlayerDoubledContractResults) ))
 
     val toggleShowContractResults = scope.modState( s => getDuplicateStats( s.copy( showContractResults = !s.showContractResults) ))
+
+    val toggleShowPlayerAggressiveness = scope.modState( s => getDuplicateStats( s.copy( showPlayerAggressiveness = !s.showPlayerAggressiveness) ))
 
     def getDuplicateStats( s: State ) = {
       if (s.stats.isEmpty && !s.gotStats) {
@@ -178,6 +181,11 @@ object PageStatsInternal {
                        "Show Contracts",
                        BaseStyles.highlight(selected = state.showContractResults ),
                        ^.onClick-->toggleShowContractResults
+                     ),
+            AppButton( "ShowPlayerComparison",
+                       "Player Comparison",
+                       BaseStyles.highlight(selected = state.showPlayerAggressiveness ),
+                       ^.onClick-->toggleShowPlayerAggressiveness
                      )
           )
         ),
@@ -218,12 +226,17 @@ object PageStatsInternal {
             "Working"
           )
         },
-        if (state.showContractResults || state.showPlayerContractResults || state.showPlayerDoubledContractResults) {
+        if (state.showContractResults ||
+            state.showPlayerContractResults ||
+            state.showPlayerDoubledContractResults ||
+            state.showPlayerAggressiveness
+        ) {
           state.stats.map { cs =>
             TagMod(
               state.showPlayerContractResults ?= ViewPlayerContractResults( cs.playerStats, cs.contractStats ),
               state.showPlayerDoubledContractResults ?= ViewPlayerDoubledContractResults( cs.playerDoubledStats, cs.contractStats ),
-              state.showContractResults ?= ViewContractResults( cs.contractStats )
+              state.showContractResults ?= ViewContractResults( cs.contractStats ),
+              state.showPlayerAggressiveness ?= ViewPlayerAggressiveness( cs.comparisonStats )
             )
           }.getOrElse(
             <.div(

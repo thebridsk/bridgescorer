@@ -196,6 +196,12 @@ object Color {
  */
   def named( s: String ) = NamedColor(s)
 
+  /**
+   * @param gray 0 is black, 100 is white
+   * @param alpha the alpha channel value as a percent, 0 is transparent, 100 is opaque
+   */
+  def grayscale( v: Double, a: Double = 100 ) = rgbPercent( v, v, v, a )
+
   val CurrentColor = NamedColor("currentColor")
   val Transparent = NamedColor("transparent")
 

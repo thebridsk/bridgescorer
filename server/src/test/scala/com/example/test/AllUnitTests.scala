@@ -28,5 +28,6 @@ class AllUnitTests extends Sequential(
   new TestVersionedInstance,
   new TestDuplicateWebsocket,
   new TestGraphQL,
-  new TestRemoteLoggingConfig
+  new TestRemoteLoggingConfig,
+  new TestPlayerComparisonStats
 )
