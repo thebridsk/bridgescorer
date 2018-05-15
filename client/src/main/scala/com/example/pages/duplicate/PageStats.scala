@@ -107,21 +107,54 @@ object PageStatsInternal {
 
     val toggleShowMadeDownGrid = scope.modState( s => s.copy( showMadeDownGrid = !s.showMadeDownGrid) )
 
-    val toggleShowPlayerContractResults = scope.modState( s => getDuplicateStats( s.copy( showPlayerContractResults = !s.showPlayerContractResults) ))
+    val toggleShowPlayerContractResults = scope.modState { s =>
+      getDuplicateStats(
+          s.copy( showPlayerContractResults = !s.showPlayerContractResults),
+          playerStats = s.stats.map( cs => cs.playerStats.isEmpty ).getOrElse(true),
+          contractStats = s.stats.map( cs => cs.contractStats.isEmpty ).getOrElse(true)
+      )
+    }
 
-    val toggleShowPlayerDoubledContractResults = scope.modState( s => getDuplicateStats( s.copy( showPlayerDoubledContractResults = !s.showPlayerDoubledContractResults) ))
+    val toggleShowPlayerDoubledContractResults = scope.modState { s =>
+      getDuplicateStats(
+          s.copy( showPlayerDoubledContractResults = !s.showPlayerDoubledContractResults),
+          playerDoubledStats = s.stats.map( cs => cs.playerDoubledStats.isEmpty ).getOrElse(true),
+          contractStats = s.stats.map( cs => cs.contractStats.isEmpty ).getOrElse(true)
+      )
+    }
 
-    val toggleShowContractResults = scope.modState( s => getDuplicateStats( s.copy( showContractResults = !s.showContractResults) ))
+    val toggleShowContractResults = scope.modState { s =>
+      getDuplicateStats(
+          s.copy( showContractResults = !s.showContractResults),
+          contractStats = s.stats.map( cs => cs.contractStats.isEmpty ).getOrElse(true)
+      )
+    }
 
-    val toggleShowPlayerAggressiveness = scope.modState( s => getDuplicateStats( s.copy( showPlayerAggressiveness = !s.showPlayerAggressiveness) ))
+    val toggleShowPlayerAggressiveness = scope.modState { s =>
+      getDuplicateStats(
+          s.copy( showPlayerAggressiveness = !s.showPlayerAggressiveness),
+          comparisonStats = s.stats.map( cs => cs.comparisonStats.isEmpty ).getOrElse(true),
+      )
+    }
 
-    def getDuplicateStats( s: State ) = {
-      if (s.stats.isEmpty && !s.gotStats) {
-        QueryDuplicateStats.duplicateStats().map { result =>
+    def getDuplicateStats(
+        s: State,
+        playerStats: Boolean = false,
+        contractStats: Boolean = false,
+        playerDoubledStats: Boolean = false,
+        comparisonStats: Boolean = false
+    ) = {
+      if ( s.stats.isEmpty ||
+           (playerStats && s.stats.get.playerStats.isEmpty) ||
+           (contractStats && s.stats.get.contractStats.isEmpty) ||
+           (playerDoubledStats && s.stats.get.playerDoubledStats.isEmpty) ||
+           (comparisonStats && s.stats.get.comparisonStats.isEmpty)
+      ) {
+        QueryDuplicateStats.getDuplicateStats(playerStats,contractStats,playerDoubledStats,comparisonStats).map { result =>
           scope.withEffectsImpure.modState { s =>
             result match {
               case Right(stats) =>
-                s.copy(stats = Some(stats.duplicatestats))
+                s.copy(stats = s.stats.map( s => s.update(stats.duplicatestats) ).orElse(Option(stats.duplicatestats)))
               case Left(error) =>
                 s.copy(msg = Some(TagMod("Error getting stats")))
             }
@@ -134,6 +167,20 @@ object PageStatsInternal {
     }
 
     val cancel = scope.modState( s => s.copy(msg = None) )
+
+    val working = <.div( "Working on getting data" )
+
+    def optionalView( show: Boolean, view: => TagMod, data: Option[_]* ) = {
+      if (show) {
+        if (data.find( d => d.isEmpty ).isEmpty) {
+          view
+        } else {
+          working
+        }
+      } else {
+        TagMod()
+      }
+    }
 
     def render( props: Props, state: State ) = {
       <.div(
@@ -182,8 +229,8 @@ object PageStatsInternal {
                        BaseStyles.highlight(selected = state.showContractResults ),
                        ^.onClick-->toggleShowContractResults
                      ),
-            AppButton( "ShowPlayerComparison",
-                       "Player Comparison",
+            AppButton( "AggressiveStats",
+                       "Aggressive Stats",
                        BaseStyles.highlight(selected = state.showPlayerAggressiveness ),
                        ^.onClick-->toggleShowPlayerAggressiveness
                      )
@@ -233,10 +280,24 @@ object PageStatsInternal {
         ) {
           state.stats.map { cs =>
             TagMod(
-              state.showPlayerContractResults ?= ViewPlayerContractResults( cs.playerStats, cs.contractStats ),
-              state.showPlayerDoubledContractResults ?= ViewPlayerDoubledContractResults( cs.playerDoubledStats, cs.contractStats ),
-              state.showContractResults ?= ViewContractResults( cs.contractStats ),
-              state.showPlayerAggressiveness ?= ViewPlayerAggressiveness( cs.comparisonStats )
+              optionalView(
+                  state.showPlayerContractResults,
+                  ViewPlayerContractResults( cs.playerStats.get, cs.contractStats.get ),
+                  cs.playerStats,
+                  cs.contractStats),
+              optionalView(
+                  state.showPlayerDoubledContractResults,
+                  ViewPlayerDoubledContractResults( cs.playerDoubledStats.get, cs.contractStats.get ),
+                  cs.playerDoubledStats,
+                  cs.contractStats ),
+              optionalView(
+                  state.showContractResults,
+                  ViewContractResults( cs.contractStats.get ),
+                  cs.contractStats ),
+              optionalView(
+                  state.showPlayerAggressiveness,
+                  ViewPlayerAggressiveness( cs.comparisonStats.get ),
+                  cs.comparisonStats )
             )
           }.getOrElse(
             <.div(

@@ -39,6 +39,8 @@ class Query {
       case _ => JsObject.empty
     }
 
+    log.fine( s"GraphQL query: ${query}" )
+
     try {
       QueryParser.parse(query) match {
 
@@ -49,7 +51,10 @@ class Query {
                                    variables = vars,
                                    operationName = operation
                                   )
-            .map(StatusCodes.OK -> _)
+            .map { r =>
+              log.fine( s"GraphQL result: ${r}" )
+              StatusCodes.OK -> r
+            }
             .recover {
               case error: QueryAnalysisError =>
                 log.info( s"Error executing GraphQL query", error )
