@@ -797,7 +797,7 @@ object SchemaDefinition {
       fields[BridgeService,BridgeService](
           Field(
               "playerStats",
-              DuplicatePlayerStatsType,
+              OptionType(DuplicatePlayerStatsType),
               resolve = ctx => ctx.ctx.duplicates.readAll().map { rmap => rmap match {
                           case Right(map) =>
                             PlayerStats.stats(map)
@@ -808,7 +808,7 @@ object SchemaDefinition {
           ),
           Field(
               "contractStats",
-              DuplicateContractStatsType,
+              OptionType(DuplicateContractStatsType),
               resolve = ctx => ctx.ctx.duplicates.readAll().map { rmap => rmap match {
                           case Right(map) =>
                             ContractStats.stats(map, false)
@@ -819,7 +819,7 @@ object SchemaDefinition {
           ),
           Field(
               "playerDoubledStats",
-              DuplicatePlayerStatsType,
+              OptionType(DuplicatePlayerStatsType),
               resolve = ctx => ctx.ctx.duplicates.readAll().map { rmap => rmap match {
                           case Right(map) =>
                             PlayerDoubledStats.stats(map)
@@ -830,7 +830,7 @@ object SchemaDefinition {
           ),
           Field(
               "comparisonStats",
-              PlayerComparisonStatsType,
+              OptionType(PlayerComparisonStatsType),
               resolve = ctx => ctx.ctx.duplicates.readAll().map { rmap => rmap match {
                           case Right(map) =>
                             PlayerComparisonStats.stats(map)

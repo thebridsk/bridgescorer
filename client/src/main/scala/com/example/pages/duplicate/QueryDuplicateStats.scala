@@ -19,83 +19,118 @@ object QueryDuplicateStats {
 
   implicit val StatResultReads = Json.reads[StatResult]
 
-  def duplicateStats() = {
+  val fragComparisonStats = """
+    |fragment comparisonFields on PlayerComparisonStats {
+    |  data {
+    |    player
+    |    sameside
+    |    aggressivegood
+    |    aggressivebad
+    |    aggressiveneutral
+    |    passivegood
+    |    passivebad
+    |    passiveneutral
+    |  }
+    |}
+    """.stripMargin
 
-    val vars = None
+  val fragContractStats = """
+    |fragment contractFields on DuplicateContractStats {
+    |  data {
+    |    contract
+    |    contractType
+    |    histogram {
+    |      tricks, counter
+    |    }
+    |    handsPlayed
+    |  }
+    |  min
+    |  max
+    |}
+    """.stripMargin
+
+  val fragPlayerStats = """
+    |fragment playerFields on DuplicatePlayerStats {
+    |  declarer {
+    |    player
+    |    declarer
+    |    contractType
+    |    handsPlayed
+    |    histogram {
+    |      tricks, counter
+    |    }
+    |  }
+    |  defender {
+    |    player
+    |    declarer
+    |    contractType
+    |    handsPlayed
+    |    histogram {
+    |      tricks, counter
+    |    }
+    |  }
+    |  min
+    |  max
+    |}
+    """.stripMargin
+
+  private val queryPlayerStats =
+       """
+         |    playerStats {
+         |      ...playerFields
+         |    }
+         |""".stripMargin
+
+  private val queryContractStats =
+       """
+         |    contractStats {
+         |      ...contractFields
+         |    }
+         |""".stripMargin
+
+  private val queryPlayerDoubledStats =
+       """
+         |    playerDoubledStats {
+         |      ...playerFields
+         |    }
+         |""".stripMargin
+
+  private val queryComparisonStats =
+       """
+         |    comparisonStats {
+         |      ...comparisonFields
+         |    }
+         |""".stripMargin
+
+  def getDuplicateStats(
+      playerStats: Boolean = false,
+      contractStats: Boolean = false,
+      playerDoubledStats: Boolean = false,
+      comparisonStats: Boolean = false
+  ) = {
     val query =
        """{
          |  duplicatestats {
-         |    playerStats {
-         |      declarer {
-         |        player
-         |        declarer
-         |        contractType
-         |        handsPlayed
-         |        histogram {
-         |          tricks, counter
-         |        }
-         |      }
-         |      defender {
-         |        player
-         |        declarer
-         |        contractType
-         |        handsPlayed
-         |        histogram {
-         |          tricks, counter
-         |        }
-         |      }
-         |      min
-         |      max
-         |    }
-         |    contractStats {
-         |      data {
-         |        contract
-         |        contractType
-         |        histogram {
-         |          tricks, counter
-         |        }
-         |        handsPlayed
-         |      }
-         |      min
-         |      max
-         |    }
-         |    playerDoubledStats {
-         |      declarer {
-         |        player
-         |        declarer
-         |        contractType
-         |        handsPlayed
-         |        histogram {
-         |          tricks, counter
-         |        }
-         |      }
-         |      defender {
-         |        player
-         |        declarer
-         |        contractType
-         |        handsPlayed
-         |        histogram {
-         |          tricks, counter
-         |        }
-         |      }
-         |      min
-         |      max
-         |    }
-         |    comparisonStats {
-         |      data {
-         |        player
-         |        sameside
-         |        aggressivegood
-         |        aggressivebad
-         |        aggressiveneutral
-         |        passivegood
-         |        passivebad
-         |        passiveneutral
-         |      }
-         |    }
+         |""".stripMargin +
+         (if (playerStats) queryPlayerStats else "") +
+         (if (contractStats) queryContractStats else "") +
+         (if (playerDoubledStats) queryPlayerDoubledStats else "") +
+         (if (comparisonStats) queryComparisonStats else "") +
+       """
          |  }
          |}
-         |""".stripMargin
+         |""".stripMargin +
+         (if (comparisonStats) fragComparisonStats else "")+
+         (if (contractStats) fragContractStats else "")+
+         (if (playerStats || playerDoubledStats) fragPlayerStats else "")
+    makeQuery(query)
+  }
+
+  def duplicateStats() = getDuplicateStats(true,true,true,true)
+
+  def makeQuery( query: String ) = {
+
+    val vars = None
     val operation = None
 
     GraphQLClient.request(query, vars, operation ).map { resp =>
@@ -119,4 +154,5 @@ object QueryDuplicateStats {
     }
 
   }
+
 }
