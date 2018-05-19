@@ -35,6 +35,7 @@ import com.example.data.BoardV2
 import com.example.data.DuplicateHandV2
 import com.example.data.Hand
 import com.example.data.duplicate.stats.PlayerComparisonStats
+import com.example.data.duplicate.stats.PlayerComparisonStat
 
 object TestPlayerComparisonStats {
 
@@ -111,9 +112,9 @@ class TestPlayerComparisonStats extends FlatSpec with ScalatestRouteTest with Mu
                     updated = 0
                   )
 
-  def testStat( stats: PlayerComparisonStats, player: String, sameside: Boolean, good: Int, bad: Int, neutral: Int ) = {
+  def testStat( stats: PlayerComparisonStats, player: String, stattype: PlayerComparisonStat.StatType, good: Int, bad: Int, neutral: Int ) = {
     stats.data.find( s => s.player == player ).map { s =>
-      s.sameside mustBe sameside
+      s.stattype mustBe stattype
       s.aggressivegood mustBe good
       s.passivebad mustBe bad
       s.passiveneutral mustBe neutral
@@ -125,14 +126,16 @@ class TestPlayerComparisonStats extends FlatSpec with ScalatestRouteTest with Mu
   it should "Stats for game" in {
     val stats = PlayerComparisonStats.stats( Map( "M1" -> defaultMD ) )
 
-    testStat(stats, "Alice", true, 0, 1, 0 )
-    testStat(stats, "Alan", true, 0, 1, 0 )
-    testStat(stats, "Cathy", true, 1, 0, 0 )
-    testStat(stats, "Carl", true, 1, 0, 0 )
-//    testStat(stats, "Betty", true, 0, 0, 0 )
-//    testStat(stats, "Bob", true, 0, 0, 0 )
-//    testStat(stats, "Diana", true, 0, 0, 0 )
-//    testStat(stats, "Dave", true, 0, 0, 0 )
+    import PlayerComparisonStat._
+
+    testStat(stats, "Alice", SameSide, 0, 1, 0 )
+    testStat(stats, "Alan", SameSide, 0, 1, 0 )
+    testStat(stats, "Cathy", SameSide, 1, 0, 0 )
+    testStat(stats, "Carl", SameSide, 1, 0, 0 )
+//    testStat(stats, "Betty", SameSide, 0, 0, 0 )
+//    testStat(stats, "Bob", SameSide, 0, 0, 0 )
+//    testStat(stats, "Diana", SameSide, 0, 0, 0 )
+//    testStat(stats, "Dave", SameSide, 0, 0, 0 )
 
   }
 }

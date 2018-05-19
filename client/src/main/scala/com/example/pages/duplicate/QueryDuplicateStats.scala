@@ -23,7 +23,7 @@ object QueryDuplicateStats {
     |fragment comparisonFields on PlayerComparisonStats {
     |  data {
     |    player
-    |    sameside
+    |    stattype
     |    aggressivegood
     |    aggressivebad
     |    aggressiveneutral

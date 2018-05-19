@@ -613,17 +613,17 @@ object SchemaDefinition {
           Field("id",
               StringType,
               Some("The id of the duplicate match"),
-              resolve = ctx => ctx.value.player+"_"+ctx.value.sameside
+              resolve = ctx => ctx.value.player+"_"+ctx.value.stattype
           ),
           Field("player",
               StringType,
               Some("The player"),
               resolve = _.value.player
           ),
-          Field("sameside",
-              BooleanType,
-              Some("Contract was played on the same side"),
-              resolve = _.value.sameside
+          Field("stattype",
+              IntType,
+              Some("The type of the auction"),
+              resolve = _.value.stattype
           ),
           Field("aggressivegood",
               IntType,

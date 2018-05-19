@@ -29,6 +29,9 @@
 //
 
 import Dependencies._
+
+import sbtcrossproject.{crossProject, CrossType}
+
 import sbtassembly.AssemblyPlugin.defaultShellScript
 
 import MyEclipseTransformers._
@@ -199,7 +202,7 @@ checkForUpdates := Def.sequential (
   dependencyUpdates
 ).value
 
-lazy val `bridgescorer-shared` = crossProject.in(file("shared")).
+lazy val `bridgescorer-shared` = crossProject(JSPlatform, JVMPlatform).in(file("shared")).
   enablePlugins(BuildInfoPlugin).
   settings(commonSettings: _*).
   settings(
@@ -250,7 +253,7 @@ lazy val sharedJS: Project = `bridgescorer-shared`.js.
 lazy val sharedJVM = `bridgescorer-shared`.jvm.
   dependsOn( ProjectRef( uri("utilities"), "utilities-jvm" ))
 
-lazy val `bridgescorer-rotation` = crossProject.in(file("rotation")).
+lazy val `bridgescorer-rotation` = crossProject(JSPlatform, JVMPlatform).in(file("rotation")).
   enablePlugins(BuildInfoPlugin).
   settings(commonSettings: _*).
   settings(
