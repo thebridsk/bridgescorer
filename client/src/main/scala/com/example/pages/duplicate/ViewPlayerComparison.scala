@@ -24,6 +24,8 @@ import DuplicateStyles._
 import com.example.data.duplicate.stats.ContractTypeDoubledToGame
 import com.example.data.duplicate.stats.PlayerComparisonStats
 import com.example.data.duplicate.stats.PlayerComparisonStat
+import PlayerComparisonStat.{SameSide, Competitive, PassedOut}
+import com.example.data.duplicate.stats.PlayerComparisonStat.StatType
 
 /**
  * A skeleton component.
@@ -75,14 +77,21 @@ object ViewPlayerAggressivenessInternal {
    * Returns totals from the list of comparisons.
    * @return ( maxsizesame, maxsizeComp, statsSame, statsComp)
    */
-  def totals( list: List[PlayerComparisonStat] ): (Int, Int, PlayerComparisonStat, PlayerComparisonStat) = {
-    val max = list.foldLeft((0, 0, PlayerComparisonStat.zero("Totals", true), PlayerComparisonStat.zero("Totals", false))) { (ac,v) =>
+  def totals( list: List[PlayerComparisonStat] ): (Int, Int, Int, PlayerComparisonStat, PlayerComparisonStat, PlayerComparisonStat) = {
+    val max = list.foldLeft(
+                      (0, 0, 0,
+                          PlayerComparisonStat.zero("Totals", SameSide),
+                          PlayerComparisonStat.zero("Totals", Competitive),
+                          PlayerComparisonStat.zero("Totals", PassedOut)
+                      )) { (ac,v) =>
       val t = maxOf( v.aggressivebad+v.aggressivegood+v.aggressiveneutral, v.passivebad+v.passivegood+v.passiveneutral )
       (
-        Math.max(ac._1, if (v.sameside) t else 0),
-        Math.max(ac._2, if (v.sameside) 0 else t),
-        if (v.sameside) ac._3.add(v.forTotals) else ac._3,
-        if (!v.sameside) ac._4.add(v.forTotals) else ac._4,
+        Math.max(ac._1, if (v.stattype == SameSide) t else 0),
+        Math.max(ac._2, if (v.stattype == Competitive) t else 0),
+        Math.max(ac._3, if (v.stattype == PassedOut) t else 0),
+        if (v.stattype == SameSide) ac._4.add(v.forTotals) else ac._4,
+        if (v.stattype == Competitive) ac._5.add(v.forTotals) else ac._5,
+        if (v.stattype == PassedOut) ac._6.add(v.forTotals) else ac._6,
       )
     }
     max
@@ -101,40 +110,45 @@ object ViewPlayerAggressivenessInternal {
       val columns = Column("Player")::
                     Column("Aggressive")::Column("Passive")::
                     Column("Competitive Aggressive")::Column("Competitive Passive")::
+                    Column("Passed Out Aggressive")::Column("Passed Out Passive")::
                     Nil
 
-      val ( maxsizesame, maxsizeopp, totalsSame, totalsComp) =
+      val ( maxsizesame, maxsizeopp, maxsizepass, totalsSame, totalsComp, totalsPass) =
             totals(props.stats.data)
 
       def sizeCalcSame( total: Int ) = calcSize(maxsizesame)(total)
       def sizeCalcOpp( total: Int ) = calcSize(maxsizeopp)(total)
+      def sizeCalcPass( total: Int ) = calcSize(maxsizepass)(total)
 
-      def sizeCalc( total: Int, sameside: Boolean ) = {
-        if (sameside) sizeCalcSame(total)
-        else sizeCalcOpp(total)
+      def sizeCalc( total: Int, stattype: StatType ) = {
+        stattype match {
+          case SameSide => sizeCalcSame(total)
+          case Competitive => sizeCalcOpp(total)
+          case PassedOut => sizeCalcPass(total)
+        }
       }
 
       val players = props.stats.data.map( pcs => pcs.player ).distinct.sorted
 
-      def findStat( player: String, sameside: Boolean ) = {
+      def findStat( player: String, stattype: StatType ) = {
         props.stats.data.find { pcs =>
-          pcs.player == player && pcs.sameside == sameside
+          pcs.player == player && pcs.stattype == stattype
         }
       }
 
       /**
        * Returns three piecharts, aggressive, passive, neutral
        */
-      def getPiecharts( player: String, sameside: Boolean, sizeCalculation: (Int,Boolean)=>Int ): List[TagMod] = {
-        findStat(player, sameside) match {
+      def getPiecharts( player: String, stattype: StatType, sizeCalculation: (Int,StatType)=>Int ): List[TagMod] = {
+        findStat(player, stattype) match {
           case Some(pcs) =>
-            getPiechartsFromStats(pcs,sameside,sizeCalculation)
+            getPiechartsFromStats(pcs,stattype,sizeCalculation)
           case None =>
             List( TagMod(), TagMod() )
         }
       }
 
-      def getPiechartsFromStats( pcs: PlayerComparisonStat, sameside: Boolean, sizeCalculation: (Int,Boolean)=>Int ): List[TagMod] = {
+      def getPiechartsFromStats( pcs: PlayerComparisonStat, stattype: StatType, sizeCalculation: (Int,StatType)=>Int ): List[TagMod] = {
         val totalagg = pcs.aggressivebad+pcs.aggressivegood+pcs.aggressiveneutral
         val totalpas = pcs.passivebad+pcs.passivegood+pcs.passiveneutral
         List(
@@ -146,9 +160,13 @@ object ViewPlayerAggressivenessInternal {
                   good = pcs.aggressivegood,
                   bad = pcs.aggressivebad,
                   neutral = pcs.aggressiveneutral,
-                  title = Some( TagMod( pcs.player, " ", if (sameside) "Aggressive" else "Competitive Aggressive" ) ),
+                  title = Some( TagMod( pcs.player, " ", stattype match {
+                    case SameSide => "Aggressive"
+                    case Competitive => "Competitive Aggressive"
+                    case PassedOut => "Passed Out Aggressive"
+                  })),
                   legendtitle = Left(true),
-                  size = sizeCalculation(totalagg,sameside),
+                  size = sizeCalculation(totalagg,stattype),
                   sizeInLegend = tooltipPieChartSize,
                   minSize = pieChartMaxSize
               )
@@ -162,9 +180,13 @@ object ViewPlayerAggressivenessInternal {
                   good = pcs.passivegood,
                   bad = pcs.passivebad,
                   neutral = pcs.passiveneutral,
-                  title = Some( TagMod( pcs.player, " ", if (sameside) "Passive" else "Competitive Passive" ) ),
+                  title = Some( TagMod( pcs.player, " ", stattype match {
+                    case SameSide => "Passive"
+                    case Competitive => "Competitive Passive"
+                    case PassedOut => "Passed Out Passive"
+                  }) ),
                   legendtitle = Left(true),
-                  size = sizeCalculation(totalpas,sameside),
+                  size = sizeCalculation(totalpas,stattype),
                   sizeInLegend = tooltipPieChartSize,
                   minSize = pieChartMaxSize
               )
@@ -174,26 +196,33 @@ object ViewPlayerAggressivenessInternal {
       }
 
       val rows = players.map { player =>
-        val playedSame = getPiecharts( player, true, sizeCalc )
-        val playedOpp = getPiecharts( player, false, sizeCalc )
-        TagMod(player)::playedSame:::playedOpp
+        val playedSame = getPiecharts( player, SameSide, sizeCalc )
+        val playedOpp = getPiecharts( player, Competitive, sizeCalc )
+        val playedPass = getPiecharts( player, PassedOut, sizeCalc )
+        TagMod(player)::playedSame:::playedOpp:::playedPass
       }
 
       val totMaxSame = maxOf( totalsSame.aggressivebad+totalsSame.aggressivegood+totalsSame.aggressiveneutral, totalsSame.passivebad+totalsSame.passivegood+totalsSame.passiveneutral )
       val totMaxComp = maxOf( totalsComp.aggressivebad+totalsComp.aggressivegood+totalsComp.aggressiveneutral, totalsComp.passivebad+totalsComp.passivegood+totalsComp.passiveneutral )
+      val totMaxPass = maxOf( totalsPass.aggressivebad+totalsPass.aggressivegood+totalsPass.aggressiveneutral, totalsPass.passivebad+totalsPass.passivegood+totalsPass.passiveneutral )
 
       def sizeCalcTotalSame( total: Int ) = calcSize(totMaxSame)(total)
       def sizeCalcTotalOpp( total: Int ) = calcSize(totMaxComp)(total)
+      def sizeCalcTotalPass( total: Int ) = calcSize(totMaxPass)(total)
 
-      def sizeCalcTotal( total: Int, sameside: Boolean ) = {
-        if (sameside) sizeCalcTotalSame(total)
-        else sizeCalcTotalOpp(total)
+      def sizeCalcTotal( total: Int, stattype: StatType ) = {
+        stattype match {
+          case SameSide => sizeCalcTotalSame(total)
+          case Competitive => sizeCalcTotalOpp(total)
+          case PassedOut => sizeCalcTotalPass(total)
+        }
       }
 
       val totrows = List(
         TagMod( "Total" )::
-        getPiechartsFromStats(totalsSame, true, sizeCalcTotal):::
-        getPiechartsFromStats(totalsComp, false, sizeCalcTotal)
+        getPiechartsFromStats(totalsSame, SameSide, sizeCalcTotal):::
+        getPiechartsFromStats(totalsComp, Competitive, sizeCalcTotal):::
+        getPiechartsFromStats(totalsPass, PassedOut, sizeCalcTotal)
       )
 
       <.div(

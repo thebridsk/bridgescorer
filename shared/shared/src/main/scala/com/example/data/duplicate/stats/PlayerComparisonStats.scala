@@ -45,9 +45,29 @@ import com.example.data.Team
  *
  */
 
+
+object PlayerComparisonStat {
+  type StatType = Int
+
+  val SameSide: StatType = 1
+  val Competitive: StatType = 2
+  val PassedOut: StatType = 3
+
+  def zero( player: String, stattype: StatType ) = PlayerComparisonStat(player,stattype)
+  def aggressivegood( player: String, stattype: StatType ) = PlayerComparisonStat(player,stattype, aggressivegood=1)
+  def aggressivebad( player: String, stattype: StatType ) = PlayerComparisonStat(player,stattype, aggressivebad=1)
+  def aggressiveneutral( player: String, stattype: StatType ) = PlayerComparisonStat(player,stattype, aggressiveneutral=1)
+  def passivegood( player: String, stattype: StatType ) = PlayerComparisonStat(player,stattype, passivegood=1)
+  def passivebad( player: String, stattype: StatType ) = PlayerComparisonStat(player,stattype, passivebad=1)
+  def passiveneutral( player: String, stattype: StatType ) = PlayerComparisonStat(player,stattype, passiveneutral=1)
+
+}
+
+import PlayerComparisonStat._
+
 case class PlayerComparisonStat(
     player: String,
-    sameside: Boolean,
+    stattype: StatType,
     aggressivegood: Int = 0,
     aggressivebad: Int = 0,
     aggressiveneutral: Int = 0,
@@ -57,7 +77,7 @@ case class PlayerComparisonStat(
 ) {
 
   def add( stat: PlayerComparisonStat ) = {
-    if (player != stat.player || sameside != stat.sameside) throw new IllegalArgumentException("Player and/or sameside not the same")
+    if (player != stat.player || stattype != stat.stattype) throw new IllegalArgumentException("Player and/or sameside not the same")
     copy(
         aggressivegood = aggressivegood+stat.aggressivegood,
         aggressivebad = aggressivebad+stat.aggressivebad,
@@ -69,18 +89,6 @@ case class PlayerComparisonStat(
   }
 
   def forTotals = copy( player = "Totals" )
-}
-
-object PlayerComparisonStat {
-
-  def zero( player: String, sameSide: Boolean ) = PlayerComparisonStat(player,sameSide)
-  def aggressivegood( player: String, sameSide: Boolean ) = PlayerComparisonStat(player,sameSide, aggressivegood=1)
-  def aggressivebad( player: String, sameSide: Boolean ) = PlayerComparisonStat(player,sameSide, aggressivebad=1)
-  def aggressiveneutral( player: String, sameSide: Boolean ) = PlayerComparisonStat(player,sameSide, aggressiveneutral=1)
-  def passivegood( player: String, sameSide: Boolean ) = PlayerComparisonStat(player,sameSide, passivegood=1)
-  def passivebad( player: String, sameSide: Boolean ) = PlayerComparisonStat(player,sameSide, passivebad=1)
-  def passiveneutral( player: String, sameSide: Boolean ) = PlayerComparisonStat(player,sameSide, passiveneutral=1)
-
 }
 
 case class PlayerComparisonStats( data: List[PlayerComparisonStat] )
@@ -120,24 +128,24 @@ object PlayerComparisonStats {
   ) = {
     if (aggressiveHand.madeContract) {
       // 2 good, 1 bad
-      PlayerComparisonStat.passivebad(passiveTeam.player1, true)::
-      PlayerComparisonStat.passivebad(passiveTeam.player2, true)::
-      PlayerComparisonStat.aggressivegood(aggressiveTeam.player1, true)::
-      PlayerComparisonStat.aggressivegood(aggressiveTeam.player2, true)::
+      PlayerComparisonStat.passivebad(passiveTeam.player1, SameSide)::
+      PlayerComparisonStat.passivebad(passiveTeam.player2, SameSide)::
+      PlayerComparisonStat.aggressivegood(aggressiveTeam.player1, SameSide)::
+      PlayerComparisonStat.aggressivegood(aggressiveTeam.player2, SameSide)::
       Nil
     } else if (passiveHand.madeContract) {
       // 1 good, 2 bad
-      PlayerComparisonStat.passivegood(passiveTeam.player1, true)::
-      PlayerComparisonStat.passivegood(passiveTeam.player2, true)::
-      PlayerComparisonStat.aggressivebad(aggressiveTeam.player1, true)::
-      PlayerComparisonStat.aggressivebad(aggressiveTeam.player2, true)::
+      PlayerComparisonStat.passivegood(passiveTeam.player1, SameSide)::
+      PlayerComparisonStat.passivegood(passiveTeam.player2, SameSide)::
+      PlayerComparisonStat.aggressivebad(aggressiveTeam.player1, SameSide)::
+      PlayerComparisonStat.aggressivebad(aggressiveTeam.player2, SameSide)::
       Nil
     } else {
       // neutral
-      PlayerComparisonStat.passiveneutral(passiveTeam.player1, true)::
-      PlayerComparisonStat.passiveneutral(passiveTeam.player2, true)::
-      PlayerComparisonStat.aggressiveneutral(aggressiveTeam.player1, true)::
-      PlayerComparisonStat.aggressiveneutral(aggressiveTeam.player2, true)::
+      PlayerComparisonStat.passiveneutral(passiveTeam.player1, SameSide)::
+      PlayerComparisonStat.passiveneutral(passiveTeam.player2, SameSide)::
+      PlayerComparisonStat.aggressiveneutral(aggressiveTeam.player1, SameSide)::
+      PlayerComparisonStat.aggressiveneutral(aggressiveTeam.player2, SameSide)::
       Nil
     }
   }
@@ -152,17 +160,17 @@ object PlayerComparisonStats {
     // 1 is lower contract, 2 is higher
     if (aggressiveHand.madeContract) {
       // 2 good, 1 bad
-      PlayerComparisonStat.passivebad(passiveDefender.player1, false)::
-      PlayerComparisonStat.passivebad(passiveDefender.player2, false)::
-      PlayerComparisonStat.aggressivegood(aggressiveDeclarer.player1, false)::
-      PlayerComparisonStat.aggressivegood(aggressiveDeclarer.player2, false)::
+      PlayerComparisonStat.passivebad(passiveDefender.player1, Competitive)::
+      PlayerComparisonStat.passivebad(passiveDefender.player2, Competitive)::
+      PlayerComparisonStat.aggressivegood(aggressiveDeclarer.player1, Competitive)::
+      PlayerComparisonStat.aggressivegood(aggressiveDeclarer.player2, Competitive)::
       Nil
     } else if (!passiveHand.madeContract) {
         // 1 good, 2 bad
-        PlayerComparisonStat.passivegood(passiveDefender.player1, false)::
-        PlayerComparisonStat.passivegood(passiveDefender.player2, false)::
-        PlayerComparisonStat.aggressivebad(aggressiveDeclarer.player1, false)::
-        PlayerComparisonStat.aggressivebad(aggressiveDeclarer.player2, false)::
+        PlayerComparisonStat.passivegood(passiveDefender.player1, Competitive)::
+        PlayerComparisonStat.passivegood(passiveDefender.player2, Competitive)::
+        PlayerComparisonStat.aggressivebad(aggressiveDeclarer.player1, Competitive)::
+        PlayerComparisonStat.aggressivebad(aggressiveDeclarer.player2, Competitive)::
         Nil
     } else {
       // h2 down, h1 made
@@ -173,27 +181,63 @@ object PlayerComparisonStats {
       }
       if (scoreAggressive>scorePassive) {
         // 2 good, 1 bad
-        PlayerComparisonStat.passivebad(passiveDefender.player1, false)::
-        PlayerComparisonStat.passivebad(passiveDefender.player2, false)::
-        PlayerComparisonStat.aggressivegood(aggressiveDeclarer.player1, false)::
-        PlayerComparisonStat.aggressivegood(aggressiveDeclarer.player2, false)::
+        PlayerComparisonStat.passivebad(passiveDefender.player1, Competitive)::
+        PlayerComparisonStat.passivebad(passiveDefender.player2, Competitive)::
+        PlayerComparisonStat.aggressivegood(aggressiveDeclarer.player1, Competitive)::
+        PlayerComparisonStat.aggressivegood(aggressiveDeclarer.player2, Competitive)::
         Nil
       } else if (scoreAggressive < scorePassive) {
         // 1 good, 2 bad
-        PlayerComparisonStat.passivegood(passiveDefender.player1, false)::
-        PlayerComparisonStat.passivegood(passiveDefender.player2, false)::
-        PlayerComparisonStat.aggressivebad(aggressiveDeclarer.player1, false)::
-        PlayerComparisonStat.aggressivebad(aggressiveDeclarer.player2, false)::
+        PlayerComparisonStat.passivegood(passiveDefender.player1, Competitive)::
+        PlayerComparisonStat.passivegood(passiveDefender.player2, Competitive)::
+        PlayerComparisonStat.aggressivebad(aggressiveDeclarer.player1, Competitive)::
+        PlayerComparisonStat.aggressivebad(aggressiveDeclarer.player2, Competitive)::
         Nil
       } else {
         // neutral
-        PlayerComparisonStat.passiveneutral(passiveDefender.player1, false)::
-        PlayerComparisonStat.passiveneutral(passiveDefender.player2, false)::
-        PlayerComparisonStat.aggressiveneutral(aggressiveDeclarer.player1, false)::
-        PlayerComparisonStat.aggressiveneutral(aggressiveDeclarer.player2, false)::
+        PlayerComparisonStat.passiveneutral(passiveDefender.player1, Competitive)::
+        PlayerComparisonStat.passiveneutral(passiveDefender.player2, Competitive)::
+        PlayerComparisonStat.aggressiveneutral(aggressiveDeclarer.player1, Competitive)::
+        PlayerComparisonStat.aggressiveneutral(aggressiveDeclarer.player2, Competitive)::
         Nil
       }
     }
+  }
+
+  /**
+   * @param aggressiveDealer
+   * @param aggressiveHand
+   * @param aggressiveDeclarer
+   * @param passiveTeam The team at the passive table that is sitting in the same sets as the aggressive declarer
+   *
+   * Note: the passive hand is the passed out hand
+   */
+  def auctionWithPassedOut(
+      aggressiveDealer: String,     // "NS" or "EW"
+      aggressiveHand: Hand,
+      aggressiveDeclarer: Team,
+      passiveTeam: Team
+  ) = {
+    val scoreAggressive = if (aggressiveDealer=="NS") {
+      ScoreHand(aggressiveHand).score.ns
+    } else {
+      ScoreHand(aggressiveHand).score.ew
+    }
+
+    if (scoreAggressive < 0) {
+      PlayerComparisonStat.passivegood(passiveTeam.player1, PassedOut)::
+      PlayerComparisonStat.passivegood(passiveTeam.player2, PassedOut)::
+      PlayerComparisonStat.aggressivebad(aggressiveDeclarer.player1, PassedOut)::
+      PlayerComparisonStat.aggressivebad(aggressiveDeclarer.player2, PassedOut)::
+      Nil
+    } else {
+      PlayerComparisonStat.passivebad(passiveTeam.player1, PassedOut)::
+      PlayerComparisonStat.passivebad(passiveTeam.player2, PassedOut)::
+      PlayerComparisonStat.aggressivegood(aggressiveDeclarer.player1, PassedOut)::
+      PlayerComparisonStat.aggressivegood(aggressiveDeclarer.player2, PassedOut)::
+      Nil
+    }
+
   }
 
   def stats( dups: Map[Id.MatchDuplicate,MatchDuplicate] ) = {
@@ -218,7 +262,23 @@ object PlayerComparisonStats {
             val ct1 = ContractType(h1)
             val ct2 = ContractType(h2)
             val c = ct1.compare(ct2)
-            if (d1 == d2) {
+            if (h1.contractTricks == 0 || h2.contractTricks == 0) {
+              if (h1.contractTricks == 0) {
+                val (t1,t2) = if (d2 == "NS") {
+                  (dup.getTeam(dh1.nsTeam).get,dup.getTeam(dh2.nsTeam).get)
+                } else {
+                  (dup.getTeam(dh1.ewTeam).get,dup.getTeam(dh2.ewTeam).get)
+                }
+                auctionWithPassedOut(d2, h2, t2, t1)
+              } else {
+                val (t1,t2) = if (d1 == "NS") {
+                  (dup.getTeam(dh1.nsTeam).get,dup.getTeam(dh2.nsTeam).get)
+                } else {
+                  (dup.getTeam(dh1.ewTeam).get,dup.getTeam(dh2.ewTeam).get)
+                }
+                auctionWithPassedOut(d1, h1, t1, t2)
+              }
+            } else if (d1 == d2) {
               // contract was played by same side
               val (t1,t2) = if (d1 == "NS") {
                 (dup.getTeam(dh1.nsTeam).get,dup.getTeam(dh2.nsTeam).get)
@@ -261,9 +321,9 @@ object PlayerComparisonStats {
       }
     }
     val r =
-    result.groupBy(pcs => (pcs.player,pcs.sameside)).map { entry =>
-      val ((player,sameside), list ) = entry
-      list.foldLeft(PlayerComparisonStat.zero(player,sameside)) { (ac,v) =>
+    result.groupBy(pcs => (pcs.player,pcs.stattype)).map { entry =>
+      val ((player,stattype), list ) = entry
+      list.foldLeft(PlayerComparisonStat.zero(player,stattype)) { (ac,v) =>
         ac.add(v)
       }
     }.toList
