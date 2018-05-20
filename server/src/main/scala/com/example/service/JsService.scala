@@ -81,9 +81,9 @@ trait JsService /* extends HttpService */ {
     import java.lang.StringBuilder
     @tailrec def rec(p: Uri.Path, result: StringBuilder = new StringBuilder(base)): String =
       p match {
-        case Uri.Path.Empty       ⇒ result.toString
-        case Uri.Path.Slash(tail) ⇒ rec(tail, result.append(separator))
-        case Uri.Path.Segment(head, tail) ⇒
+        case Uri.Path.Empty       => result.toString
+        case Uri.Path.Slash(tail) => rec(tail, result.append(separator))
+        case Uri.Path.Segment(head, tail) =>
           if (head.indexOf('/') >= 0 || head.indexOf('\\') >= 0 || head == "..") {
             logger.warning(s"File-system path for base [${base}] and Uri.Path [${path}] contains suspicious path segment [${head}], " +
               "GET access was disallowed")
@@ -113,7 +113,23 @@ trait JsService /* extends HttpService */ {
             case resourceName =>
               val resname = resourceName+".gz"
               logger.info(s"Looking for gzipped file as a resource "+resname)
-              getFromResource(resname)
+              getFromResource(resname) // ~
+//              {
+//                if (resourceName.startsWith(htmlResources.baseName+"/help")) {
+//                  if (resourceName.endsWith("/")) {
+//                    safeJoinPaths(resourceName, Uri.Path("index.html"), separator = '/') match {
+//                      case ""           => reject
+//                      case resourceName2 =>
+//                        logger.info(s"Looking for resource "+resourceName2)
+//                        getFromResource(resourceName2)
+//                    }
+//                  } else {
+//                    redirect( s"/public${path}/", StatusCodes.PermanentRedirect)
+//                  }
+//                } else {
+//                  reject
+//                }
+//              }
           }
         }
       }

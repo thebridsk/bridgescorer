@@ -407,15 +407,18 @@ class DuplicateTestPages extends FlatSpec
           hand.getScore mustBe ( "Missing required information", "", "Enter contract tricks" )
           hand.isOkEnabled mustBe false
           hand.getInputStyle mustBe Some("Yellow")
-          hand.enterContract(3, Hearts, Doubled, West, Made, 4, None, None)
-          hand.takeScreenshot(docsScreenshotDir, "DuplicateHand")
-          hand.clickClear
+//          hand.enterContract(3, Hearts, Doubled, West, Made, 4, None, None)
+//          hand.takeScreenshot(docsScreenshotDir, "DuplicateHand")
+//          hand.clickClear
           val board = hand.enterHand( 1, 1, 1, allHands, team1, team2)
           board.checkBoardButtons(1, true, 1).checkBoardButtons(1, false, 2, 3).checkBoardButtonSelected(1)
           val hand2 = board.clickUnplayedBoard(2).validate
           val board2 = hand2.enterHand( 1, 1, 2, allHands, team1, team2)
           board2.checkBoardButtons(2, true,1,2).checkBoardButtons(2, false, 3).checkBoardButtonSelected(2)
           val hand3 = board2.clickUnplayedBoard(3).validate
+          hand.enterContract(3, Hearts, Doubled, West, Made, -1, None, None)
+          hand.takeScreenshot(docsScreenshotDir, "EnterHand")
+          hand.clickClear
           val board3 = hand3.enterHand( 1, 1, 3, allHands, team1, team2)
           board3.checkBoardButtons(3, true,1,2,3).checkBoardButtons(3, false).checkBoardButtonSelected(3)
         }
@@ -445,7 +448,9 @@ class DuplicateTestPages extends FlatSpec
         checkmarks: Boolean,
         table: Option[Int],
         round: Int,
-        allplayed: Boolean
+        allplayed: Boolean,
+        screenshot: Option[Int] = None,
+        screenshotName: Option[String] = None
       )( implicit
          webDriver: WebDriver
       ): ScoreboardPage = {
@@ -456,8 +461,14 @@ class DuplicateTestPages extends FlatSpec
 
     val pr = boards.foldLeft( None: Option[BoardPage] ) { (progress,board) =>
       val bb = progress match {
-        case Some(bp) => bp.clickPlayedBoard(board).validate
-        case None => sb.clickBoardToBoard(board).validate
+        case Some(bp) =>
+          val bp1 = bp.clickPlayedBoard(board).validate
+          testlog.fine(s"trying to take screen shot of board ${screenshot}, current board is ${board}, all boards are ${boards}")
+          screenshot.filter(b=>b==board).map { b =>
+            bp1.takeScreenshot(docsScreenshotDir, screenshotName.get)
+          }.getOrElse(bp1)
+        case None =>
+          sb.clickBoardToBoard(board).validate
       }
 
       val bb1 = if (table.isDefined) {
@@ -511,7 +522,7 @@ class DuplicateTestPages extends FlatSpec
         val (ts,pes) = allHands.getScoreToRound(1, HandTableView( 1, 1, team1.teamid, team2.teamid ))
         sb.checkTable( ts: _*)
         sb.checkPlaceTable( pes: _*)
-        checkPlayedBoards( sb, false, Some(1), 1, false )
+        checkPlayedBoards( sb, false, Some(1), 1, false)
       },
       CodeBlock{
         import SessionTable2._
@@ -552,6 +563,7 @@ class DuplicateTestPages extends FlatSpec
       "Selecting players for round 2",
       CodeBlock{
         import SessionTable1._
+        val sbc = ScoreboardPage.current.clickTableButton(1).validate.takeScreenshot(docsScreenshotDir, "TableRound2").clickCompletedScoreboard.validate
         val sb = selectScorekeeper(ScoreboardPage.current,1,2, team1, team2, East, false, true )
       },
       CodeBlock{
@@ -594,6 +606,8 @@ class DuplicateTestPages extends FlatSpec
           val board2 = hand2.enterHand( 2, 2, 2, allHands, team3, team4)
           board2.checkBoardButtons(2, true,1,2).checkBoardButtons(2, false, 3).checkBoardButtonSelected(2)
           val hand3 = board2.clickUnplayedBoard(3).validate
+          hand3.setInputStyle("Yellow")
+          hand.takeScreenshot(docsScreenshotDir, "EnterHandBefore")
           val board3 = hand3.enterHand( 2, 2, 3, allHands, team3, team4)
           board3.checkBoardButtons(3, true,1,2,3).checkBoardButtons(3, false).checkBoardButtonSelected(3)
         }
@@ -621,7 +635,7 @@ class DuplicateTestPages extends FlatSpec
         val (ts,pes) = allHands.getScoreToRound(2, HandCompletedView)
         sb.checkTable( ts: _*)
         sb.checkPlaceTable( pes: _*)
-        checkPlayedBoards( sb, true, None, 2, true )
+        checkPlayedBoards( sb, true, None, 2, true, Some(5), Some("BoardPage5") )
       },
       CodeBlock{
         import SessionTable1._
@@ -753,6 +767,12 @@ class DuplicateTestPages extends FlatSpec
     tcpSleep(60)
     waitForFutures(
       "validating round 3",
+      CodeBlock {
+        import SessionComplete._
+        val sb = ScoreboardPage.current
+        sb.takeScreenshot(docsScreenshotDir, "Scoreboard")
+        checkPlayedBoards( sb, true, None, 3, false, Some(8), Some("BoardPage8") )
+      },
       CodeBlock {
         import SessionTable1._
         val sb = validateRound(ScoreboardPage.current,1,3,team3.swap,team1 )
