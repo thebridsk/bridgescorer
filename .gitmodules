@@ -1,3 +1,6 @@
 [submodule "utilities"]
 	path = utilities
 	url = https://github.com/thebridsk/utilities.git
+[submodule "help"]
+	path = help
+	url = https://github.com/thebridsk/bridgescorerdocs.git
