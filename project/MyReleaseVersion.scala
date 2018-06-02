@@ -53,6 +53,7 @@ object MyReleaseVersion {
 
   private val releaseBranch = "release"
 
+  private val releaseFromBranch = sys.props.get("RELEASEFROMBRANCH").getOrElse( sys.env.get("RELEASEFROMBRANCH").getOrElse("master"))
 
   private val globalVersionString = "git.baseVersion in ThisBuild := \"%s\""
   private val versionString = "git.baseVersion := \"%s\""
@@ -169,7 +170,7 @@ object MyReleaseVersion {
     { st: State =>
       val extracted = Project.extract(st)
       val currentBranch = extracted.get(gitCurrentBranch)
-      if (currentBranch != "master") sys.error(s"""Must be on master branch to release, currently on ${currentBranch}""")
+      if (currentBranch != releaseFromBranch) sys.error(s"""Must be on ${releaseFromBranch} branch to release, currently on ${currentBranch}, use RELEASEFROMBRANCH env var""")
       st
     }
   )

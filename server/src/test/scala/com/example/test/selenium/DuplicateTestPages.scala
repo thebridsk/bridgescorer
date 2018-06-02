@@ -996,6 +996,10 @@ class DuplicateTestPages extends FlatSpec
         Thread.sleep(100)
         page.takeScreenshot(docsScreenshotDir, "FinalScoreboard")
         val lp = page.clickSummary.validate( id )
+        eventually {
+          val names = lp.getNames(false)
+          names must contain ( team1.one )
+        }
         lp.takeScreenshot(docsScreenshotDir, "ListDuplicate")
         lp.checkResults(id, listDuplicateResult:_*)
       case None =>

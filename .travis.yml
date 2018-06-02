@@ -24,6 +24,12 @@ install: # Install ChromeDriver
   - sudo mv -f target/drivers/chromedriver /usr/local/share/
   - sudo chmod +x /usr/local/share/chromedriver
   - sudo ln -s /usr/local/share/chromedriver /usr/local/bin/chromedriver
+  - wget -N https://github.com/gohugoio/hugo/releases/download/v0.40.3/hugo_0.40.3_Linux-64bit.tar.gz -P target/drivers/
+  - echo "a3913a5aca407b8badaba30dec764c2615fc59dd0e73129ddaf5cca0e75a475f *target/drivers/hugo_0.40.3_Linux-64bit.tar.gz" | sha256sum -c
+  - tar zxvf target/drivers/hugo_0.40.3_Linux-64bit.tar.gz
+  - sudo mv -f target/drivers/hugo /usr/local/share/
+  - sudo chmod +x /usr/local/share/hugo
+  - sudo ln -s /usr/local/share/hugo /usr/local/bin/hugo
 
 script:
 # - export ParallelUtilsUseSerial=false

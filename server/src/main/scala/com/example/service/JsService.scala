@@ -70,6 +70,14 @@ trait JsService /* extends HttpService */ {
 
   val htmlResources = ResourceFinder.htmlResources
 
+  val helpResources = try {
+    Some(ResourceFinder.helpResources)
+  } catch {
+    case x: Exception =>
+      logger.warning( "Unable to find help resources, ignoring help." )
+      None
+  }
+
   {
     val res = htmlResources.baseName+"/bridgescorer-client-fastopt.js"
     val url = getClass.getClassLoader.getResource(res)
@@ -113,26 +121,27 @@ trait JsService /* extends HttpService */ {
             case resourceName =>
               val resname = resourceName+".gz"
               logger.info(s"Looking for gzipped file as a resource "+resname)
-              getFromResource(resname) // ~
-//              {
-//                if (resourceName.startsWith(htmlResources.baseName+"/help")) {
-//                  if (resourceName.endsWith("/")) {
-//                    safeJoinPaths(resourceName, Uri.Path("index.html"), separator = '/') match {
-//                      case ""           => reject
-//                      case resourceName2 =>
-//                        logger.info(s"Looking for resource "+resourceName2)
-//                        getFromResource(resourceName2)
-//                    }
-//                  } else {
-//                    redirect( s"/public${path}/", StatusCodes.PermanentRedirect)
-//                  }
-//                } else {
-//                  reject
-//                }
-//              }
+              getFromResource(resname)
           }
         }
       }
+    } ~
+    pathPrefix("help") {
+      helpResources.map { helpres =>
+        extractUnmatchedPath { path =>
+          val p = Uri.Path("help"+path.toString())
+          logger.info(s"Looking for help file "+p)
+          val pa = if (p.toString.endsWith("/")) p+"index.html" else p
+          safeJoinPaths(helpres.baseName+"/", pa, separator = '/') match {
+            case ""           => reject
+            case resourceName =>
+              val resname = resourceName+".gz"
+              logger.info(s"Looking for gzipped file as a resource "+resname)
+              getFromResource(resname) ~
+              getFromResource(resourceName)
+          }
+        }
+      }.getOrElse( reject )
     }
   }
 
