@@ -89,6 +89,8 @@ val itestdataDir = "./testdata"
 
 import com.typesafe.sbt.SbtGit.GitKeys._
 
+import MyReleaseVersion._
+
 lazy val commonSettings = versionSetting ++ Seq(
   organization  := "com.example",
   scalaVersion  := verScalaVersion,
@@ -158,6 +160,7 @@ val helptask = taskKey[Seq[(java.io.File, String)]]("Identifies help resources")
 lazy val bridgescorer: Project = project.in(file(".")).
   aggregate(sharedJVM, sharedJS, rotationJS, `bridgescorer-client`, `bridgescorer-server`, rotationJVM).
   dependsOn( `bridgescorer-server` % "test->test;compile->compile" ).
+  enablePlugins(BuildInfoPlugin).
   enablePlugins(WebScalaJSBundlerPlugin).
   settings(commonSettings: _*).
   settings(
@@ -168,6 +171,13 @@ lazy val bridgescorer: Project = project.in(file(".")).
     publish := {},
     publishLocal := {},
     resolvers += Resolver.bintrayRepo("scalaz", "releases"),
+
+    buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion),
+    buildInfoPackage := "com.example.version",
+    buildInfoObject := "Version2",
+    buildInfoUsePackageAsPath := true,
+    buildInfoOptions += BuildInfoOption.BuildTime,
+    buildInfoOptions += BuildInfoOption.ToJson,
 
     aggregate in assembly := false,
     aggregate in disttests in Distribution := false,
@@ -1250,7 +1260,7 @@ releaseTagComment := s"Releasing ${git.baseVersion.value}"
 
 releaseCommitMessage := s"Setting version to ${git.baseVersion.value}"
 
-import MyReleaseVersion._
+// import MyReleaseVersion._
 
 releaseProcess := Seq[ReleaseStep](
   checkSnapshotDependencies,              // : ReleaseStep
