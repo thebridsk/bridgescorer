@@ -156,6 +156,19 @@ object HomePage {
                     )
                   }
                 )
+              ),
+              <.tr(
+                <.td(
+                      {
+                        val location = document.defaultView.location
+                        val origin = location.origin.get
+                        val path = s"""${origin}/help/introduction/"""
+                        AppButtonLink( "Help", "Help", path,
+                                       rootStyles.playButton,
+                                       ^.disabled:=isWorking
+                                     )
+                      }
+                )
               )
             )
           )

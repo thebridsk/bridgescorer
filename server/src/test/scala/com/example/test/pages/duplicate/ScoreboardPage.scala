@@ -249,6 +249,11 @@ class ScoreboardPage(
     new BoardsPage
   }
 
+  def clickEditNames(implicit pos: Position) = {
+    clickButton("EditNames")
+    new EditNamesPage( dupid.get )
+  }
+
   def clickTableButton(table: Int)(implicit pos: Position) = {
     view match {
       case DirectorViewType => fail("Must be in Completed view to hit table button")

@@ -173,7 +173,7 @@ abstract class BaseHandPage( implicit webDriver: WebDriver, pageCreated: SourceP
       honors.foreach( h => clickHonors(h) )
       honorsPlayer.foreach( p => clickHonorsPlayer(p))
       clickMadeOrDown(madeOrDown)
-      clickTricks(tricks)
+      if (tricks > 0) clickTricks(tricks)
     }
     this
   }

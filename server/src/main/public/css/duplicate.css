@@ -408,20 +408,6 @@
   border-bottom: 0px solid black;
   padding: 0px 3px;
 }
-.dupDivBoardView tr:first-child th:nth-child(1) {
-  border-left: 1px solid black;
-  border-right-style: none;
-  border-top: 1px solid black;
-  border-bottom: 1px solid black;
-  text-align: left;
-}
-.dupDivBoardView tr:first-child th:nth-child(2) {
-  border-left-style: none;
-  border-right: 1px solid black;
-  border-top: 1px solid black;
-  border-bottom: 1px solid black;
-  text-align: right;
-}
 .dupDivBoardView th {
   border: 1px solid black;
   padding-left: 10px;

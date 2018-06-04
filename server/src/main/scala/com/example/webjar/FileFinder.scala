@@ -12,7 +12,7 @@ object FileFinder {
  * @param groupid the group ID for the webjar
  * @param artifactid the artifact ID for the webjar
  */
-class FileFinder( groupid: String, artifactid: String, versionoverride: Option[String] = None ) {
+class FileFinder( groupid: String, artifactid: String, versionoverride: Option[String] = None, suffix: Option[String] = None ) {
 
   val loader = classOf[FileFinder].getClassLoader
   val version = versionoverride match {
@@ -26,7 +26,7 @@ class FileFinder( groupid: String, artifactid: String, versionoverride: Option[S
     case Some(v) => v
   }
 
-  FileFinder.log.info("Version of group "+groupid+" artifact "+artifactid+" is "+version)
+  FileFinder.log.info("Version of group "+groupid+" artifact "+artifactid+" is "+version+" suffix "+suffix)
 
   /**
    * determine if this is the artifact ID of the webjar
@@ -34,7 +34,8 @@ class FileFinder( groupid: String, artifactid: String, versionoverride: Option[S
    */
   def isArtifact( art: String ) = artifactid==art
 
-  val baseName = "META-INF/resources/webjars/"+ artifactid+"/"+version
+  val baseName1 = "META-INF/resources/webjars/"+ artifactid+"/"+version
+  val baseName = suffix.map( s => baseName1+"/"+s ).getOrElse(baseName1)
 
   def resourceName( res: String ) = baseName+(if (res.startsWith("/")) res; else "/"+res)
 
