@@ -16,3 +16,4 @@ test-output/
 /node_modules/
 /unittest.1.log
 /keys/
+/debug.log

@@ -23,6 +23,7 @@ Then push the release branch and make a pull request.  Once the [Travis CI](http
       src/
         main/
           scala/      the source for the browser application
+    help/             the help project from https://github.com/thebridsk/bridgescorerdocs
     rotation/
       shared/
         src/
@@ -71,13 +72,13 @@ This only shows how to make a server that supports HTTPS.
 
 ## Development Environment
 
+This project uses nested submodules.  The easiest way to clone is to use `clone --recurse-submodules`.
+
     mkdir BridgeScorer
     cd BridgeScorer
     mkdir git
     cd git
-    git clone https://github.com/thebridsk/bridgescorer
-    git submodule init
-    git submodule update
+    git clone --recurse-submodules https://github.com/thebridsk/bridgescorer
 
 The resulting directory structure is:
 
@@ -91,10 +92,11 @@ The `ws` directory is the eclipse workspace.
 ## Prereqs
 
 - Java 1.8
-- [Scala 2.12.4](http://www.scala-lang.org/)
-- [SBT 1.0.4](http://www.scala-sbt.org/)
+- [Scala 2.12.6](http://www.scala-lang.org/)
+- [SBT 1.1.5](http://www.scala-sbt.org/)
 - [Chrome](https://www.google.com/chrome/)
-- [ChromeDriver 2.29](https://sites.google.com/a/chromium.org/chromedriver/)
+- [ChromeDriver](https://sites.google.com/a/chromium.org/chromedriver/), be sure to match the version of Chrome.
+- [Hugo](https://gohugo.io/), at least version 0.40.3
 
 Optional:
 - [Eclipse Oxygen](https://eclipse.org/)
