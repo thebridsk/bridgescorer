@@ -27,6 +27,9 @@
 //   bridgescorer-server/distribution:fvt
 //   bridgescorer-server/distribution:svt
 //
+// When testing help screens, this will only run the test case that generates images for help
+//   set BUILDFORHELPONLY=true
+//   sbt webassembly
 
 import Dependencies._
 
@@ -63,8 +66,13 @@ lazy val onlyBuildDebug = sys.props.get("OnlyBuildDebug").
 lazy val inTravis = sys.props.get("TRAVIS_BUILD_NUMBER").
                      orElse(sys.env.get("TRAVIS_BUILD_NUMBER")).
                      isDefined
+                     
+val buildForHelpOnly = sys.props.get("BUILDFORHELPONLY").
+                         orElse(sys.env.get("BUILDFORHELPONLY")).
+                           isDefined
 
-val testToRunNotTravis = "com.example.test.AllSuites" // "com.example.test.selenium.DuplicateTestPages" // 
+val testToRunNotTravis = "com.example.test.AllSuites"
+val testToRunBuildForHelpOnly = "com.example.test.selenium.DuplicateTestPages" 
 val testToRunInTravis = "com.example.test.TravisAllSuites"
 
 lazy val testToRun = if (inTravis) {
@@ -72,10 +80,12 @@ lazy val testToRun = if (inTravis) {
   testToRunInTravis
 } else {
   println( s"Not running in Travis CI, tests to run: ${testToRunNotTravis}" )
-  testToRunNotTravis
+  if (buildForHelpOnly) {
+    testToRunBuildForHelpOnly
+  } else {
+    testToRunNotTravis
+  }
 }
-
-//val testToRun = "com.example.test.MyServiceSpec"
 
 val moretestToRun = "com.example.test.selenium.IntegrationTests"
 val travisMoretestToRun = "com.example.test.selenium.TravisIntegrationTests"
