@@ -61,6 +61,11 @@ class HomePage( implicit webDriver: WebDriver, pageCreated: SourcePosition ) ext
     new ExportPage
   }
 
+  def clickHelp( implicit pos: Position ) = {
+    clickButton("Help")
+    new GenericPage
+  }
+
   def checkServers( urls: String* )(implicit patienceConfig: PatienceConfig, pos: Position) = {
     val urlsOnPage = getElemsByXPath("""//div[@id='url'/ul/li""").map( elem => elem.text )
     urlsOnPage.sorted mustBe urls.sorted

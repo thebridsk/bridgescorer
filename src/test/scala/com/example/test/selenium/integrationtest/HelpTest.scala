@@ -45,6 +45,8 @@ import com.example.test.util.ParallelUtils
 import com.example.test.pages.PageBrowser
 import com.example.test.selenium.Session
 import com.example.test.selenium.TestServer
+import com.example.test.pages.bridge.HomePage
+import com.example.test.pages.HelpPage
 
 /**
  * @author werewolf
@@ -107,7 +109,7 @@ class HelpTest extends FlatSpec with MustMatchers with BeforeAndAfterAll {
   it should "display the help page" in {
     implicit val webDriver = TestSession.webDriver
 
-    go to TestServer.getUrl("/")
+    val homepage = HomePage.goto.validate
     val help = eventually {
       val we = findElem[Element]( id("Help") )
       val text = we.text
@@ -115,26 +117,56 @@ class HelpTest extends FlatSpec with MustMatchers with BeforeAndAfterAll {
       we
     }
 
-    click on help
+    val gp = homepage.clickHelp
 
-    val hrefvals=List( "/introduction/", "/home/", "/duplicate/", "/chicago/" )
-    val hosturl = TestServer.hosturl
-    val hrefurls=hrefvals.map( v => hosturl+"help"+v )
+    val helppage = eventually {
+      HelpPage.current.checkPage("introduction/")
+    }
+    helppage.validate.checkMainMenu
 
-    eventually {
-      val links = findAll( xpath("""//ul[contains(concat(' ', @class, ' '), ' topics ')]/li/a"""))
-      val href = links.flatMap( e => e.attribute("href") )
-      href must contain theSameElementsAs hrefurls
+    val hp = helppage.clickPlay.validate
+
+    val help2 = eventually {
+      val we = findElem[Element]( id("Help") )
+      val text = we.text
+      text mustBe "Help"
+      we
+    }
+  }
+
+  it should "display the duplicate summary page" in {
+    implicit val webDriver = TestSession.webDriver
+
+    val homepage = HomePage.goto.validate
+    val help = eventually {
+      val we = findElem[Element]( id("Help") )
+      val text = we.text
+      text mustBe "Help"
+      we
     }
 
-    val play = find( xpath("""//section[@id='shortcuts']/ul/li[2]/a""") )
-    play.text mustBe "Play"
-    click on play
+    val gp = homepage.clickHelp
 
-    val url = TestServer.pageprod
-    eventually {
-      currentUrl mustBe url
+    val helppage = eventually {
+      HelpPage.current.checkPage("introduction/")
     }
+    helppage.validate.checkMainMenu
+
+    val duplicate = helppage.clickDuplicate.validate
+
+    val summary = duplicate.clickMenu("duplicate/summary/").validate
+
+    summary.checkImage(TestServer.getHelpPage("images/gen/ListDuplicate.png") )
+
+    val hp = summary.clickPlay.validate
+
+    val help2 = eventually {
+      val we = findElem[Element]( id("Help") )
+      val text = we.text
+      text mustBe "Help"
+      we
+    }
+
   }
 
 }

@@ -574,7 +574,7 @@ abstract class Page[ +T <: Page[T] ]()( implicit webDriver: WebDriver, pageCreat
           throw x
         } catch {
           case x2: Exception =>
-            x.addSuppressed(x2)
+            if (x != x2) x.addSuppressed(x2)
             throw x
         }
     }
