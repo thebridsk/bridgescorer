@@ -162,7 +162,7 @@ object HomePage {
                       {
                         val location = document.defaultView.location
                         val origin = location.origin.get
-                        val path = s"""${origin}/help/introduction/"""
+                        val path = s"""${origin}/help/introduction.html"""
                         AppButtonLink( "Help", "Help", path,
                                        rootStyles.playButton,
                                        ^.disabled:=isWorking

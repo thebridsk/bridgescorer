@@ -55,7 +55,7 @@ object HelpPage {
     "../"+helppage
   }
 
-  val hrefvals=List( "introduction/", "home/", "duplicate/", "chicago/" )
+  val hrefvals=List( "introduction.html", "home.html", "duplicate.html", "chicago.html" )
   val hrefurls=hrefvals.map( v => getPageUrl(v) )
 
 
@@ -111,7 +111,7 @@ class HelpPage(
   }
 
   def clickDuplicate(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
-    clickMenu( "duplicate/" )
+    clickMenu( "duplicate.html" )
   }
 
   /**

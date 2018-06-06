@@ -120,7 +120,7 @@ class HelpTest extends FlatSpec with MustMatchers with BeforeAndAfterAll {
     val gp = homepage.clickHelp
 
     val helppage = eventually {
-      HelpPage.current.checkPage("introduction/")
+      HelpPage.current.checkPage("introduction.html")
     }
     helppage.validate.checkMainMenu
 
@@ -148,15 +148,19 @@ class HelpTest extends FlatSpec with MustMatchers with BeforeAndAfterAll {
     val gp = homepage.clickHelp
 
     val helppage = eventually {
-      HelpPage.current.checkPage("introduction/")
+      HelpPage.current.checkPage("introduction.html")
     }
     helppage.validate.checkMainMenu
 
     val duplicate = helppage.clickDuplicate.validate
 
-    val summary = duplicate.clickMenu("duplicate/summary/").validate
+    val summary = duplicate.clickMenu("duplicate/summary.html").validate
 
-    summary.checkImage(TestServer.getHelpPage("images/gen/ListDuplicate.png") )
+    val imageurl = TestServer.getHelpPage("images/gen/ListDuplicate.png")
+
+    summary.checkImage( imageurl )
+
+    summary.findElemByXPath("//img").attribute("src") mustBe Some(imageurl)
 
     val hp = summary.clickPlay.validate
 
