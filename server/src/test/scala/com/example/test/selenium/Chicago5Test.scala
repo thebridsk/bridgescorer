@@ -36,6 +36,8 @@ class Chicago5Test extends FlatSpec with MustMatchers with BeforeAndAfterAll wit
 
   val log = Logger[Chicago5Test]
 
+  val docsScreenshotDir = "target/docs/ChicagoTests"
+
   val Session1 = new Session
 
   val timeoutMillis = 15000
@@ -188,6 +190,9 @@ class Chicago5Test extends FlatSpec with MustMatchers with BeforeAndAfterAll wit
     eventually{ find(id("OK")) }
     click on id("Player_Ellen")
     eventuallyFindAndClickButton("Fixture1")
+
+    takeScreenshot(docsScreenshotDir, "SelectNames5")
+
     eventuallyFindAndClickButton("SwapS")
 
     eventuallyFindAndClickButton("DealerN")

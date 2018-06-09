@@ -757,29 +757,24 @@ lazy val help = project.in(file("help")).
     },
     
     hugosetup := {
-//      val servertest = ( test in Test in `bridgescorer-server` ).value
-      val testgen = new File( baseDirectory.value+"/../server/target/docs/DuplicateTestPages" )
-      val gen = new File( baseDirectory.value, "docs/static/images/gen" )
-      println( s"Copy ${testgen} to ${gen}" )
-      MyFileUtils.copyDirectory( testgen, gen, "png" )
+      {
+        val testgen = new File( baseDirectory.value+"/../server/target/docs/DuplicateTestPages" )
+        val gen = new File( baseDirectory.value, "docs/static/images/gen/Duplicate" )
+        println( s"Copy ${testgen} to ${gen}" )
+        MyFileUtils.copyDirectory( testgen, gen, "png" )
+      }
+      {
+        val testgen = new File( baseDirectory.value+"/../server/target/docs/ChicagoTests" )
+        val gen = new File( baseDirectory.value, "docs/static/images/gen/Chicago" )
+        println( s"Copy ${testgen} to ${gen}" )
+        MyFileUtils.copyDirectory( testgen, gen, "png" )
+      }
     },
     
-    hugoWithTest := {
-      val setup = hugosetupWithTest.value
-      val log = streams.value.log
-      val bd = new File(baseDirectory.value, "docs" )
-      val targ = new File(target.value, "help" )
-      Hugo.run(log, bd, targ)
-    },
-    
-    hugosetupWithTest := {
-      val servertest = ( test in Test in `bridgescorer-server` ).value
-      val testgen = new File( baseDirectory.value+"/../server/target/docs/DuplicateTestPages" )
-      val gen = new File( baseDirectory.value, "docs/static/images/gen" )
-      println( s"Copy ${testgen} to ${gen}" )
-      MyFileUtils.copyDirectory( testgen, gen, "png" )
-    },
-    
+    hugoWithTest := Def.sequential( hugosetupWithTest, hugo ).value,
+
+    hugosetupWithTest := Def.sequential( test in Test in `bridgescorer-server`, hugosetup ).value,
+
     clean := {
       val targ = target.value.toPath
       MyFileUtils.deleteDirectory( targ, None )

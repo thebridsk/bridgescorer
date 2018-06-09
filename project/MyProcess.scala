@@ -202,6 +202,11 @@ object MyFileUtils {
 
   }
 
+  /**
+   * Recursivily deletes all files
+   * @param directory the base directory
+   * @param ext an optional extension of files to delete.  MUST NOT start with ".".
+   */
   def deleteDirectory( directory: Path, ext: Option[String] ) = {
     val extension = ext.map( e => "."+e )
     if (directory.toFile().exists()) {

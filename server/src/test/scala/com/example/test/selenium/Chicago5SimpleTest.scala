@@ -39,6 +39,8 @@ class Chicago5SimpleTest extends FlatSpec with MustMatchers with BeforeAndAfterA
 
   val log = Logger[Chicago5SimpleTest]
 
+  val docsScreenshotDir = "target/docs/ChicagoTests"
+
   val Session1 = new Session
 
   val timeoutMillis = 15000
@@ -228,6 +230,8 @@ class Chicago5SimpleTest extends FlatSpec with MustMatchers with BeforeAndAfterA
   it should "show the partnerships and dealer for second round" in {
     tcpSleep(30)
     eventually{ find(id("OK")) }
+
+    takeScreenshot(docsScreenshotDir, "SelectNamesSimple")
 
     checkPositions( "Prior hand", North, "Nancy", "Sam", "Ellen", "Wayne", "Brian" )
     checkPositions( "Next hand", East,  "Brian", "Sam", "Ellen", "Wayne", "Nancy" )

@@ -156,7 +156,7 @@ class HelpTest extends FlatSpec with MustMatchers with BeforeAndAfterAll {
 
     val summary = duplicate.clickMenu("duplicate/summary.html").validate
 
-    val imageurl = TestServer.getHelpPage("images/gen/ListDuplicate.png")
+    val imageurl = TestServer.getHelpPage("images/gen/Duplicate/ListDuplicate.png")
 
     summary.checkImage( imageurl )
 
