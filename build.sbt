@@ -769,6 +769,12 @@ lazy val help = project.in(file("help")).
         println( s"Copy ${testgen} to ${gen}" )
         MyFileUtils.copyDirectory( testgen, gen, "png" )
       }
+      {
+        val testgen = new File( baseDirectory.value+"/../server/target/docs/RubberTests" )
+        val gen = new File( baseDirectory.value, "docs/static/images/gen/Rubber" )
+        println( s"Copy ${testgen} to ${gen}" )
+        MyFileUtils.copyDirectory( testgen, gen, "png" )
+      }
     },
     
     hugoWithTest := Def.sequential( hugosetupWithTest, hugo ).value,

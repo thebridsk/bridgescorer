@@ -55,7 +55,7 @@ object HelpPage {
     "../"+helppage
   }
 
-  val hrefvals=List( "introduction.html", "home.html", "duplicate.html", "chicago.html" )
+  val hrefvals=List( "introduction.html", "home.html", "duplicate.html", "chicago.html", "rubber.html" )
   val hrefurls=hrefvals.map( v => getPageUrl(v) )
 
   def gethrefs( implicit webDriver: WebDriver, pos: Position ) = {
