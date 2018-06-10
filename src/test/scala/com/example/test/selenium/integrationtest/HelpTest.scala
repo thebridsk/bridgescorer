@@ -47,6 +47,8 @@ import com.example.test.selenium.Session
 import com.example.test.selenium.TestServer
 import com.example.test.pages.bridge.HomePage
 import com.example.test.pages.HelpPage
+import scala.annotation.tailrec
+import akka.http.scaladsl.model.StatusCodes
 
 /**
  * @author werewolf
@@ -158,7 +160,7 @@ class HelpTest extends FlatSpec with MustMatchers with BeforeAndAfterAll {
 
     val imageurl = TestServer.getHelpPage("images/gen/Duplicate/ListDuplicate.png")
 
-    summary.checkImage( imageurl )
+    HelpPage.checkImage( imageurl )
 
     summary.findElemByXPath("//img").attribute("src") mustBe Some(imageurl)
 
@@ -171,6 +173,94 @@ class HelpTest extends FlatSpec with MustMatchers with BeforeAndAfterAll {
       we
     }
 
+  }
+
+  it should "validate all anchor references and collect all image URLs" in {
+    implicit val webDriver = TestSession.webDriver
+
+    val helppage = eventually {
+      HelpPage.goto("introduction.html").checkPage("introduction.html")
+    }
+
+    val helpUrl = TestServer.getHelpPage()
+
+    def followLink( url: String ) = {
+      !( url.endsWith(".png") || url.endsWith("#") )
+    }
+
+    /*
+     * @param queue the queue of pages to check, tuple2( page, target )
+     * @param visited the pages that have been processed already
+     * @return list of tuple2( pageurl, imageurl )
+     */
+    @tailrec
+    def visitPages(
+        queue: List[(String,String)],
+        visited: List[String],
+        images: List[(String,String)]
+    ): List[(String,String)] = {
+      logger.finer( s"""visitPages:
+                       |  queue: ${queue}
+                       |  visited: ${visited}
+                       |  images: ${images}""".stripMargin )
+      if (!queue.isEmpty) {
+        val (page,target) = queue.head
+        if (visited.contains(target) || !target.startsWith(helpUrl) || target.endsWith(".png")) {
+          logger.fine( s"Ignoring ${target} from page ${page}, already visited or not on site or image" )
+          visitPages( queue.tail, visited, images )
+        } else {
+          logger.fine( s"Going to ${target} from page ${page}" )
+          go to target
+          withClue(s"From page ${page} unable to get to ${target}") {
+            eventually {
+              currentUrl mustBe target
+              val body = findElem[Element]( xpath("//body") )
+              body.attribute("data-url") mustBe 'defined
+            }
+          }
+          val hrefs = HelpPage.gethrefs.filter( t => followLink(t) ).map( t => (target,t) )
+          val imagesOnPage = HelpPage.getImages.map( i => (target,i) )
+          val ihrefs = hrefs.filter { href => !visited.contains(href._2) }
+
+          visitPages( queue.tail:::ihrefs, target::visited, imagesOnPage:::images )
+        }
+      } else {
+        images
+      }
+    }
+
+    val curUrl = currentUrl
+    val visited = TestServer.hosturl+"play.html"::TestServer.hosturl+"help/play.html"::TestServer.hosturl+"help/"::Nil
+
+    val images = visitPages( (curUrl,curUrl)::Nil, visited, Nil )
+
+    /*
+     * @param queue the queue of pages to check, tuple2( page, target )
+     * @param visited the pages that have been processed already
+     * @return list of tuple2( pageurl, imageurl )
+     */
+    @tailrec
+    def visitImages(
+        queue: List[(String,String)],
+        visited: List[String]
+    ): Unit = {
+      if (!queue.isEmpty) {
+        val (page,target) = queue.head
+        if (visited.contains(target)) {
+          visitImages( queue.tail, visited )
+        } else {
+          withClue(s"From page ${page} unable to get image ${target}") {
+            eventually {
+              HelpPage.checkImage( target )
+            }
+          }
+
+          visitImages( queue.tail, target::visited )
+        }
+      }
+    }
+
+    visitImages( images, Nil )
   }
 
 }

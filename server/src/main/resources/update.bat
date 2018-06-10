@@ -63,5 +63,6 @@ if ".%xxxnewjar%" == "." (
 
 md save
 move %xxxoldjar% save\
+move %xxxoldjar%.sha256 save\
 
 call :docmd java.exe -jar %xxxnewjar% install

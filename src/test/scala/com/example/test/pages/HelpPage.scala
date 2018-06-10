@@ -24,9 +24,9 @@ object HelpPage {
     new HelpPage( cp )
   }
 
-  def urlFor( helppage: String ) = TestServer.getHelpPage(helppage)
+  def urlFor( helppage: String = "" ) = TestServer.getHelpPage(helppage)
 
-  def goto( helppage: String )(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
+  def goto( helppage: String = "" )(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
     go to urlFor(helppage)
     new HelpPage(helppage)
   }
@@ -58,6 +58,18 @@ object HelpPage {
   val hrefvals=List( "introduction.html", "home.html", "duplicate.html", "chicago.html" )
   val hrefurls=hrefvals.map( v => getPageUrl(v) )
 
+  def gethrefs( implicit webDriver: WebDriver, pos: Position ) = {
+    findAllElems[Element]( xpath("//a") ).flatMap( e => e.attribute("href") )
+  }
+
+  def getImages( implicit webDriver: WebDriver, pos: Position ) = {
+    findAllElems[Element]( xpath("//img") ).flatMap( e => e.attribute("src"))
+  }
+
+  def checkImage( url: String ) = {
+    val resp = HttpUtils.getHttpAllBytes( new URL(url) )
+    resp.status mustBe 200
+  }
 
 }
 
@@ -133,8 +145,4 @@ class HelpPage(
     this
   }
 
-  def checkImage( url: String ) = {
-    val resp = HttpUtils.getHttpAllBytes( new URL(url) )
-    resp.status mustBe 200
-  }
 }
