@@ -127,21 +127,23 @@ trait JsService /* extends HttpService */ {
       }
     } ~
     pathPrefix("help") {
-      helpResources.map { helpres =>
-        extractUnmatchedPath { path =>
-          val p = Uri.Path("help"+path.toString())
-          logger.info(s"Looking for help file "+p)
-          val pa = if (p.toString.endsWith("/")) p+"index.html" else p
-          safeJoinPaths(helpres.baseName+"/", pa, separator = '/') match {
-            case ""           => reject
-            case resourceName =>
-              val resname = resourceName+".gz"
-              logger.info(s"Looking for gzipped file as a resource "+resname)
-              getFromResource(resname) ~
-              getFromResource(resourceName)
+      respondWithHeaders(cacheHeaders:_*) {
+        helpResources.map { helpres =>
+          extractUnmatchedPath { path =>
+            val p = Uri.Path("help"+path.toString())
+            logger.info(s"Looking for help file "+p)
+            val pa = if (p.toString.endsWith("/")) p+"index.html" else p
+            safeJoinPaths(helpres.baseName+"/", pa, separator = '/') match {
+              case ""           => reject
+              case resourceName =>
+                val resname = resourceName+".gz"
+                logger.info(s"Looking for gzipped file as a resource "+resname)
+                getFromResource(resname) ~
+                getFromResource(resourceName)
+            }
           }
-        }
-      }.getOrElse( reject )
+        }.getOrElse( reject )
+      }
     }
   }
 

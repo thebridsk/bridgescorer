@@ -41,6 +41,8 @@ class RubberTest extends FlatSpec with MustMatchers with BeforeAndAfterAll with 
 
   val testlog = Logger[RubberTest]
 
+  val docsScreenshotDir = "target/docs/RubberTests"
+
   val Session1 = new Session
 
   val timeoutMillis = 10000
@@ -67,7 +69,7 @@ class RubberTest extends FlatSpec with MustMatchers with BeforeAndAfterAll with 
 
     try {
       waitForFutures( "Starting browser and server",
-                      CodeBlock { Session1.sessionStart().setPositionRelative(0,0).setSize(1200, 800)},
+                      CodeBlock { Session1.sessionStart().setPositionRelative(0,0).setSize(1300, 800)},
                       CodeBlock { TestServer.start() }
                     )
     } catch {
@@ -165,6 +167,8 @@ class RubberTest extends FlatSpec with MustMatchers with BeforeAndAfterAll with 
   val screenshotDir = "target/screenshots/RubberTest"
 
   it should "allow player names to be entered with suggestions when playing rubber match" in {
+
+    takeScreenshot(docsScreenshotDir, "EnterNames")
 
     withClueAndScreenShot(screenshotDir, "AllowNamesWithSug", "Enter names with suggestions") {
       eventually( find(id("ResetNames")) mustBe 'Enabled )
@@ -277,7 +281,9 @@ class RubberTest extends FlatSpec with MustMatchers with BeforeAndAfterAll with 
 
     findButtonAndClick("NextHand")
     verifyVul(false, false)
-    enterHand(1,NoTrump,NotDoubled,North,150,North,Made,4, dealer=Some("Wayne"))  // NS score 130 + 150 honors
+    takeScreenshot(docsScreenshotDir, "HandBefore")
+
+    enterHand(1,NoTrump,NotDoubled,North,150,North,Made,4, dealer=Some("Wayne"), screenshot=Some("Hand"))  // NS score 130 + 150 honors
     assertScore( 760, 140 )                                 // NS game bonus 300
     assertRowDetails(5, "40 (90) H150", "")
     checkRubberTable( ("Game 1", 40::30::30::Nil, 20::Nil), ("Above", 240::30::90::Nil, 100::20::Nil) )
@@ -312,6 +318,8 @@ class RubberTest extends FlatSpec with MustMatchers with BeforeAndAfterAll with 
     assertScore( 500, 390 )                                // no bonus
     assertRowDetails(9, "", "70 (60)")
     checkRubberTable( ("Game 2", 20::Nil, 70::30::Nil), ("Above", 20::240::30::90::Nil, 60::90::100::20::Nil), ("Game 1", 40::30::30::Nil, 20::Nil) )
+
+    takeScreenshot(docsScreenshotDir, "SummaryPage")
 
     tcpSleep(30)
   }
@@ -530,6 +538,9 @@ class RubberTest extends FlatSpec with MustMatchers with BeforeAndAfterAll with 
     val button3text = buttons3(0).text
 
     buttontext must not be button3text
+
+    takeScreenshot(docsScreenshotDir, "ListPage")
+
   }
 
   def getDivByClass( clss: String ) = "div[contains(concat(' ', @class, ' '), ' "+clss+" ')]"
@@ -648,7 +659,8 @@ class RubberTest extends FlatSpec with MustMatchers with BeforeAndAfterAll with 
                  madeOrDown: MadeOrDown,
                  tricks: Int,
                  testHonorsButtons: Boolean = true,
-                 dealer: Option[String] = None
+                 dealer: Option[String] = None,
+                 screenshot: Option[String] = None
                ) = {
     eventually {find(id("VerifySectionHeader")).text mustBe "Bridge Scorer:" }
 
@@ -673,6 +685,7 @@ class RubberTest extends FlatSpec with MustMatchers with BeforeAndAfterAll with 
         findButtonAndClick(madeOrDown.forScore)
         findButtonAndClick("T"+tricks)
     }
+    screenshot.foreach( f => takeScreenshot(docsScreenshotDir, f) )
     findButtonAndClick("Ok")
   }
 

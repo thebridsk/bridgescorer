@@ -27,6 +27,9 @@
 //   bridgescorer-server/distribution:fvt
 //   bridgescorer-server/distribution:svt
 //
+// When testing help screens, this will only run the test case that generates images for help
+//   set BUILDFORHELPONLY=true
+//   sbt webassembly
 
 import Dependencies._
 
@@ -63,8 +66,13 @@ lazy val onlyBuildDebug = sys.props.get("OnlyBuildDebug").
 lazy val inTravis = sys.props.get("TRAVIS_BUILD_NUMBER").
                      orElse(sys.env.get("TRAVIS_BUILD_NUMBER")).
                      isDefined
+                     
+val buildForHelpOnly = sys.props.get("BUILDFORHELPONLY").
+                         orElse(sys.env.get("BUILDFORHELPONLY")).
+                           isDefined
 
-val testToRunNotTravis = "com.example.test.AllSuites" // "com.example.test.selenium.DuplicateTestPages" // 
+val testToRunNotTravis = "com.example.test.AllSuites"
+val testToRunBuildForHelpOnly = "com.example.test.selenium.DuplicateTestPages" 
 val testToRunInTravis = "com.example.test.TravisAllSuites"
 
 lazy val testToRun = if (inTravis) {
@@ -72,10 +80,12 @@ lazy val testToRun = if (inTravis) {
   testToRunInTravis
 } else {
   println( s"Not running in Travis CI, tests to run: ${testToRunNotTravis}" )
-  testToRunNotTravis
+  if (buildForHelpOnly) {
+    testToRunBuildForHelpOnly
+  } else {
+    testToRunNotTravis
+  }
 }
-
-//val testToRun = "com.example.test.MyServiceSpec"
 
 val moretestToRun = "com.example.test.selenium.IntegrationTests"
 val travisMoretestToRun = "com.example.test.selenium.TravisIntegrationTests"
@@ -747,29 +757,30 @@ lazy val help = project.in(file("help")).
     },
     
     hugosetup := {
-//      val servertest = ( test in Test in `bridgescorer-server` ).value
-      val testgen = new File( baseDirectory.value+"/../server/target/docs/DuplicateTestPages" )
-      val gen = new File( baseDirectory.value, "docs/static/images/gen" )
-      println( s"Copy ${testgen} to ${gen}" )
-      MyFileUtils.copyDirectory( testgen, gen, "png" )
+      {
+        val testgen = new File( baseDirectory.value+"/../server/target/docs/DuplicateTestPages" )
+        val gen = new File( baseDirectory.value, "docs/static/images/gen/Duplicate" )
+        println( s"Copy ${testgen} to ${gen}" )
+        MyFileUtils.copyDirectory( testgen, gen, "png" )
+      }
+      {
+        val testgen = new File( baseDirectory.value+"/../server/target/docs/ChicagoTests" )
+        val gen = new File( baseDirectory.value, "docs/static/images/gen/Chicago" )
+        println( s"Copy ${testgen} to ${gen}" )
+        MyFileUtils.copyDirectory( testgen, gen, "png" )
+      }
+      {
+        val testgen = new File( baseDirectory.value+"/../server/target/docs/RubberTests" )
+        val gen = new File( baseDirectory.value, "docs/static/images/gen/Rubber" )
+        println( s"Copy ${testgen} to ${gen}" )
+        MyFileUtils.copyDirectory( testgen, gen, "png" )
+      }
     },
     
-    hugoWithTest := {
-      val setup = hugosetupWithTest.value
-      val log = streams.value.log
-      val bd = new File(baseDirectory.value, "docs" )
-      val targ = new File(target.value, "help" )
-      Hugo.run(log, bd, targ)
-    },
-    
-    hugosetupWithTest := {
-      val servertest = ( test in Test in `bridgescorer-server` ).value
-      val testgen = new File( baseDirectory.value+"/../server/target/docs/DuplicateTestPages" )
-      val gen = new File( baseDirectory.value, "docs/static/images/gen" )
-      println( s"Copy ${testgen} to ${gen}" )
-      MyFileUtils.copyDirectory( testgen, gen, "png" )
-    },
-    
+    hugoWithTest := Def.sequential( hugosetupWithTest, hugo ).value,
+
+    hugosetupWithTest := Def.sequential( test in Test in `bridgescorer-server`, hugosetup ).value,
+
     clean := {
       val targ = target.value.toPath
       MyFileUtils.deleteDirectory( targ, None )

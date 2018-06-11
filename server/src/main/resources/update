@@ -56,3 +56,4 @@ java -jar $newjar install
 
 mkdir save 2>/dev/null
 mv $oldjar save/
+mv ${oldjar}.sha256 save/

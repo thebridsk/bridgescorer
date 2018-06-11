@@ -39,6 +39,8 @@ class ChicagoTest extends FlatSpec with MustMatchers with BeforeAndAfterAll with
 
   val log = Logger[ChicagoTest]
 
+  val docsScreenshotDir = "target/docs/ChicagoTests"
+
   val Session1 = new Session
 
   val timeoutMillis = 15000
@@ -229,6 +231,9 @@ class ChicagoTest extends FlatSpec with MustMatchers with BeforeAndAfterAll with
   it should "allow setting the partner and dealer for second round" in {
     tcpSleep(30)
     eventually { find(id("Ok")) }
+
+    takeScreenshot(docsScreenshotDir, "SelectNames4")
+
     click on id("West2")
 
     eventually{ find(id("West2")).attribute("class").get must include ("baseButtonSelected") }

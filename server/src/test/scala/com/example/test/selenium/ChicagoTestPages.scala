@@ -46,6 +46,7 @@ class ChicagoTestPages extends FlatSpec with MustMatchers with BeforeAndAfterAll
   import ChicagoUtils._
 
   val screenshotDir = "target/screenshots/ChicagoTestPages"
+  val docsScreenshotDir = "target/docs/ChicagoTests"
 
   TestStartLogging.startLogging()
 
@@ -133,6 +134,7 @@ class ChicagoTestPages extends FlatSpec with MustMatchers with BeforeAndAfterAll
 
   it should "allow player names to be entered" in {
     eventually( find(xpath("//h1[2]")).text mustBe "Enter players and identify first dealer" )
+    takeScreenshot(docsScreenshotDir, "EnterNames4")
   }
 
   it should "allow player names to be entered with suggestions when playing Chicago" in {
@@ -270,7 +272,7 @@ class ChicagoTestPages extends FlatSpec with MustMatchers with BeforeAndAfterAll
       eventually( testPlayers(players:_*) mustBe true )
     }
 
-    InputStyleHelper.hitInputStyleButton( "Original" )
+    InputStyleHelper.hitInputStyleButton( "Yellow" )
   }
 
 
@@ -334,11 +336,18 @@ class ChicagoTestPages extends FlatSpec with MustMatchers with BeforeAndAfterAll
     tcpSleep(30)
     val h = HandPage.current
 
+    takeScreenshot(docsScreenshotDir, "EnterHandBefore")
+    h.enterContract(3, Hearts, Doubled, West, Made, -1, None, None)
+    h.takeScreenshot(docsScreenshotDir, "EnterHand")
+    h.clickClear
+
     // N player1   S player2   E player3   W player4
 
     val sp = enterHand(h,4,Spades,NotDoubled,North,Made,4, NotVul, NotVul,
                        s"420 ${player1}-${player2}", player1, 0, 0,
                        List(420,420,0,0), List(420,420,0,0), List(420,420,0,0) )
+
+    takeScreenshot(docsScreenshotDir, "SummaryPage")
 
     val sp2 = enterHand(sp.clickNextHand,4,Hearts,NotDoubled,East,Made,4, NotVul, Vul,
                         s"620 ${player3}-${player4}", player3, 0, 1,
@@ -355,6 +364,8 @@ class ChicagoTestPages extends FlatSpec with MustMatchers with BeforeAndAfterAll
     val sp4 = enterHand(sp3.clickNextHand,5,Clubs,NotDoubled,West,Down,1, Vul, Vul,
                         s"100 ${player1}-${player2}", player4, 0, 3,
                         List(100,100,0,0), List(1120,1120,620,620), List(1120,1120,620,620) )
+
+    takeScreenshot(docsScreenshotDir, "SummaryPage4")
 
   }
 
@@ -491,6 +502,7 @@ class ChicagoTestPages extends FlatSpec with MustMatchers with BeforeAndAfterAll
     val chiid = postChicago( savedChicago.get )
 
     val gp = SummaryPage.current.validate.clickQuit.validate
+    takeScreenshot(docsScreenshotDir, "ListPage")
     tcpSleep(1)
     gp.clickButton(s"Chicago${chiid}")
 
@@ -527,6 +539,8 @@ class ChicagoTestPages extends FlatSpec with MustMatchers with BeforeAndAfterAll
                      List(SummaryPage.buttonNewRound),
                      List(SummaryPage.button6HandRound,SummaryPage.button8HandRound,SummaryPage.buttonNextHand)
                     )
+
+    takeScreenshot(docsScreenshotDir, "SummaryPage6")
 
   }
 
@@ -584,6 +598,7 @@ class ChicagoTestPages extends FlatSpec with MustMatchers with BeforeAndAfterAll
     sp4.checkButtons(List(SummaryPage.buttonNewRound),
                      List(SummaryPage.buttonNextHand,SummaryPage.button6HandRound,SummaryPage.button8HandRound)
                     )
+
 
   }
 
