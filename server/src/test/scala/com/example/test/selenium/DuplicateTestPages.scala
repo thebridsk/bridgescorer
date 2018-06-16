@@ -84,7 +84,7 @@ object DuplicateTestPages {
   val testlog = Logger[DuplicateTestPages]
 
   val screenshotDir = "target/DuplicateTestPages"
-  val docsScreenshotDir = "target/docs/DuplicateTestPages"
+  val docsScreenshotDir = "target/docs/Duplicate"
 
   TestStartLogging.startLogging()
 

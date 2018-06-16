@@ -46,7 +46,7 @@ class ChicagoTestPages extends FlatSpec with MustMatchers with BeforeAndAfterAll
   import ChicagoUtils._
 
   val screenshotDir = "target/screenshots/ChicagoTestPages"
-  val docsScreenshotDir = "target/docs/ChicagoTests"
+  val docsScreenshotDir = "target/docs/Chicago"
 
   TestStartLogging.startLogging()
 

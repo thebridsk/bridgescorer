@@ -94,7 +94,7 @@ object MyProcess {
 
 }
 
-class CopyFileVisitor( destDir: Path, onlyExt: String ) extends FileVisitor[Path] {
+class CopyFileVisitor( destDir: Path, srcDir: Path, onlyExt: String ) extends FileVisitor[Path] {
 
     Files.createDirectories(destDir)
 
@@ -136,8 +136,10 @@ class CopyFileVisitor( destDir: Path, onlyExt: String ) extends FileVisitor[Path
      */
     def visitFile( file: Path, attrs: BasicFileAttributes ): FileVisitResult = {
       if (attrs.isRegularFile()) {
-        if (file.toString().toLowerCase().endsWith(ext))
-          Files.copy(file, destDir.resolve(file.getFileName()), StandardCopyOption.REPLACE_EXISTING)
+        if (file.toString().toLowerCase().endsWith(ext)) {
+          val tar = destDir.resolve(srcDir.relativize(file))
+          Files.copy(file, destDir.resolve(tar), StandardCopyOption.REPLACE_EXISTING)
+        }
       }
       FileVisitResult.CONTINUE
     }
@@ -191,14 +193,16 @@ object MyFileUtils {
    * @param src the source directory
    * @param dest the destination directory
    * @param onlyExt only files with this extension
+   * @param maxDepth max directory depth, default is 1, copy only files in src
+   *
    */
-  def copyDirectory( src: File, dest: File, onlyExt: String ) = {
+  def copyDirectory( src: File, dest: File, onlyExt: String, maxDepth: Int = 1 ) = {
     val srcPath = src.toPath()
     val destPath = dest.toPath()
 
-    val visitor = new CopyFileVisitor(destPath, onlyExt)
+    val visitor = new CopyFileVisitor(destPath, srcPath, onlyExt)
     val options = EnumSet.noneOf(classOf[FileVisitOption])
-    Files.walkFileTree(srcPath, options, 1, visitor)
+    Files.walkFileTree(srcPath, options, maxDepth, visitor)
 
   }
 
