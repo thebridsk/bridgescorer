@@ -11,7 +11,7 @@ scalaVersion := "2.12.6"
 val vLog4j = "1.7.25"               // https://mvnrepository.com/artifact/org.slf4j/slf4j-simple
 val vJGit = "4.11.0.201803080745-r" // https://mvnrepository.com/artifact/org.eclipse.jgit/org.eclipse.jgit.pgm
 
-val vCrossProject = "0.4.0"        // https://github.com/portable-scala/sbt-crossproject
+val vCrossProject = "0.5.0"        // https://github.com/portable-scala/sbt-crossproject
 val vScalaJSDefault = "0.6.23"     // http://www.scala-js.org/
 val vSbtAssembly = "0.14.6"        // https://github.com/sbt/sbt-assembly
 val vSbtGit = "1.0.0"              // https://github.com/sbt/sbt-git
@@ -25,7 +25,7 @@ val vSbtUpdates = "0.3.4"          // https://github.com/rtimush/sbt-updates
 val scalaJSVersion = Option(System.getenv("SCALAJS_VERSION")).getOrElse(vScalaJSDefault)
 
 val vSbtGzip = "1.0.2"             // https://github.com/sbt/sbt-gzip
-val vSbtScalaJsBundler = "0.11.0"  // https://github.com/scalacenter/scalajs-bundler
+val vSbtScalaJsBundler = "0.12.0"  // https://github.com/scalacenter/scalajs-bundler
 
 // not used:
 

@@ -41,7 +41,7 @@ class RubberTest extends FlatSpec with MustMatchers with BeforeAndAfterAll with 
 
   val testlog = Logger[RubberTest]
 
-  val docsScreenshotDir = "target/docs/RubberTests"
+  val docsScreenshotDir = "target/docs/Rubber"
 
   val Session1 = new Session
 

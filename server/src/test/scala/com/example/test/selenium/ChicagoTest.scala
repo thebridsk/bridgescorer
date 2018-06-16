@@ -39,7 +39,7 @@ class ChicagoTest extends FlatSpec with MustMatchers with BeforeAndAfterAll with
 
   val log = Logger[ChicagoTest]
 
-  val docsScreenshotDir = "target/docs/ChicagoTests"
+  val docsScreenshotDir = "target/docs/Chicago"
 
   val Session1 = new Session
 

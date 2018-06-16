@@ -250,14 +250,16 @@ class ListDuplicatePage( importId: Option[String] )( implicit val webDriver: Web
   def checkSuccessfulImport( id: String )(implicit patienceConfig: PatienceConfig, pos: Position) = {
     if (importId.isEmpty) fail( s"Not on import list duplicate page: ${currentUrl}" )
     validatePopup(true)
+    eventually {
     val t = getPopUpText
-    t match {
-      case importSuccessPattern( oldId, importedId, newId ) =>
-        oldId mustBe id
-        importedId mustBe importId.get
-        newId
-      case _ =>
-        fail(s"import failed: ${t}")
+      t match {
+        case importSuccessPattern( oldId, importedId, newId ) =>
+          oldId mustBe id
+          importedId mustBe importId.get
+          newId
+        case _ =>
+          fail(s"import failed: ${t}")
+      }
     }
   }
 

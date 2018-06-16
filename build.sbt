@@ -190,7 +190,17 @@ lazy val bridgescorer: Project = project.in(file(".")).
     buildInfoOptions += BuildInfoOption.ToJson,
 
     aggregate in assembly := false,
+    aggregate in integrationtests in Distribution := false,
+    aggregate in prereqintegrationtests in Distribution := false,
     aggregate in disttests in Distribution := false,
+    aggregate in fvt in Distribution := false,
+    aggregate in svt in Distribution := false,
+    aggregate in moretests in Distribution := false,
+    aggregate in travissvt in Distribution := false,
+    aggregate in travismoretests in Distribution := false,
+    aggregate in integrationtests in Distribution := false,
+    aggregate in mypublish in Distribution := false,
+    aggregate in mypublishcopy in Distribution := false,
 
     EclipseKeys.classpathTransformerFactories ++= Seq(
       addDependentRunClassFolder("target/web/classes/main"),
@@ -202,16 +212,10 @@ lazy val bridgescorer: Project = project.in(file(".")).
 
     testOptions in Test := Seq(),
 
-//    assembly := {
-//      val x = (compile in (rotationJVM,Compile)).value
-//      (assembly in `bridgescorer-server`).value 
-//    },
-//    assembly in Test := { (assembly in (`bridgescorer-server`,Test)).value },
-
-    test in assembly := {},
+    test in assembly := {}, // test in (`bridgescorer-server`, Test),
     test in (Test,assembly) := {}, // { val x = assembly.value },
     
-    assemblyJarName in (assembly) := s"${name.value}-server-assembly-${version.value}.jar",
+    assemblyJarName in (assembly) := s"${name.value}-server-assembly-${version.value}.jar",  // s"${name.value}-server-assembly-${version.value}.jar",
     assemblyJarName in (Test, assembly) := s"${name.value}-test-${version.value}.jar",
     
     assembly := {
@@ -221,7 +225,7 @@ lazy val bridgescorer: Project = project.in(file(".")).
       log.info( s"SHA-256: ${sha}" )
       x
     },
-    
+
     assembly in Test := {
       val log = streams.value.log
       val x = (assembly in Test).value
@@ -638,6 +642,8 @@ lazy val `bridgescorer-client` = project.in(file("client")).
     ),
 
     version in webpack := vWebPack,
+    webpackCliVersion := vWebPackCli,
+    version in startWebpackDevServer := vWebpackDevServer,
     version in installJsdom := vJsDom,
     
     scalaJSUseMainModuleInitializer := true,
@@ -712,7 +718,7 @@ lazy val `bridgescorer-client` = project.in(file("client")).
     // Use a custom config file to export the JS dependencies to the global namespace,
     // as expected by the scalajs-react facade
 //    webpackConfigFile := Some(baseDirectory.value / "webpack.config.js"),
-    webpackConfigFile in fullOptJS := Some(baseDirectory.value / "webpack.prod.config.js"),
+//    webpackConfigFile in fullOptJS := Some(baseDirectory.value / "webpack.prod.config.js"),
     webpackBundlingMode := BundlingMode.LibraryOnly("bridgeLib"),
 
     // React.JS itself
@@ -758,22 +764,10 @@ lazy val help = project.in(file("help")).
     
     hugosetup := {
       {
-        val testgen = new File( baseDirectory.value+"/../server/target/docs/DuplicateTestPages" )
-        val gen = new File( baseDirectory.value, "docs/static/images/gen/Duplicate" )
+        val testgen = new File( baseDirectory.value+"/../server/target/docs" )
+        val gen = new File( baseDirectory.value, "docs/static/images/gen" )
         println( s"Copy ${testgen} to ${gen}" )
-        MyFileUtils.copyDirectory( testgen, gen, "png" )
-      }
-      {
-        val testgen = new File( baseDirectory.value+"/../server/target/docs/ChicagoTests" )
-        val gen = new File( baseDirectory.value, "docs/static/images/gen/Chicago" )
-        println( s"Copy ${testgen} to ${gen}" )
-        MyFileUtils.copyDirectory( testgen, gen, "png" )
-      }
-      {
-        val testgen = new File( baseDirectory.value+"/../server/target/docs/RubberTests" )
-        val gen = new File( baseDirectory.value, "docs/static/images/gen/Rubber" )
-        println( s"Copy ${testgen} to ${gen}" )
-        MyFileUtils.copyDirectory( testgen, gen, "png" )
+        MyFileUtils.copyDirectory( testgen, gen, "png", 2 )
       }
     },
     
@@ -845,7 +839,7 @@ lazy val `bridgescorer-server`: Project = project.in(file("server")).
       log.info( s"SHA-256: ${sha}" )
       x
     },
-    
+
     mainClass in Test := Some("org.scalatest.tools.Runner"),
 
     EclipseKeys.createSrc := EclipseCreateSrc.Default + EclipseCreateSrc.ManagedClasses,
