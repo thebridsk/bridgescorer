@@ -197,10 +197,12 @@ object PageDuplicateResultEditInternal {
    */
   class Backend(scope: BackendScope[Props, State]) {
 
-    val ok = scope.modStateOption { (state, props) =>
+    val ok = scope.state >>= { state => Callback {
+      val props = scope.withEffectsImpure.props
       state.original match {
         case Some(mdr) =>
           val newmdr = state.getMDR()
+          logger.fine(s"""Updating, state.played=${state.played} MDR: ${newmdr}""")
           BridgeDispatcher.updateDuplicateResult(newmdr)
           import scala.concurrent.ExecutionContext.Implicits.global
           RestClientDuplicateResult.update(newmdr.id, newmdr).recordFailure().foreach { e =>
@@ -211,8 +213,7 @@ object PageDuplicateResultEditInternal {
 
       if (mounted) props.routerCtl.set(DuplicateResultView(props.page.dupid)).runNow()
 
-      None
-    }
+    }}
 
     val cancel = scope.props >>= { props => Callback {
 
@@ -231,10 +232,13 @@ object PageDuplicateResultEditInternal {
     )
 
     def setPlayed( value: Date ) = {
+      logger.fine(s"""Setting date to ${value}: ${value.getTime()}""")
       scope.modState { s =>
         val t = if (value == null) 0 else value.getTime()
-        s.copy( played=t)
-      }
+        val ns = s.copy( played=t)
+        logger.fine(s"""New date in state is ${ns.played}""")
+        ns
+      }.runNow()
     }
 
     val toggleComplete = scope.modState( s=>s.copy( notfinished = !s.notfinished ))
