@@ -190,6 +190,7 @@ lazy val bridgescorer: Project = project.in(file(".")).
     buildInfoOptions += BuildInfoOption.ToJson,
 
     aggregate in assembly := false,
+    aggregate in webassembly := false,
     aggregate in integrationtests in Distribution := false,
     aggregate in prereqintegrationtests in Distribution := false,
     aggregate in disttests in Distribution := false,
@@ -823,6 +824,9 @@ lazy val `bridgescorer-server`: Project = project.in(file("server")).
     
     assemblyJarName in (assembly) := s"${name.value}-assembly-${version.value}.jar",
     assemblyJarName in (Test, assembly) := s"${name.value}-test-${version.value}.jar",
+    
+    webassembly := { val x = (assembledMappings in assembly).value },
+    
     
     assembly := {
       val log = streams.value.log
