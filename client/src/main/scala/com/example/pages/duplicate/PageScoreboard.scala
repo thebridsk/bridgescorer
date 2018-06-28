@@ -31,6 +31,7 @@ import com.example.pages.duplicate.DuplicateRouter.TableRoundScoreboardView
 import com.example.react.AppButton
 import com.example.react.PopupOkCancel
 import com.example.pages.BaseStyles
+import com.example.react.HelpButton
 
 /**
  * Shows the team x board table and has a totals column that shows the number of points the team has.
@@ -179,7 +180,9 @@ object PageScoreboardInternal {
                       baseStyles.divFooterRight,
                       AppButton( "Director", "Director's Scoreboard", props.routerCtl.setOnClick(DirectorScoreboardView(props.game.dupid)) ),
                       " ",
-                      AppButton( "ForPrint", "For Print", props.routerCtl.setOnClick(FinishedScoreboardsView(props.game.dupid)) )
+                      AppButton( "ForPrint", "For Print", props.routerCtl.setOnClick(FinishedScoreboardsView(props.game.dupid)) ),
+                      " ",
+                      HelpButton("/help/duplicate/scoreboardcomplete.html"),
                     )
                   )
                 case PerspectiveDirector =>
@@ -232,7 +235,9 @@ object PageScoreboardInternal {
                         ),
                         <.div(
                           baseStyles.divFooterRight,
-                          AppButton( "AllBoards", "All Boards", props.routerCtl.setOnClick(props.game.toAllBoardsView())  )
+                          AppButton( "AllBoards", "All Boards", props.routerCtl.setOnClick(props.game.toAllBoardsView())  ),
+                          " ",
+                          HelpButton("/help/duplicate/scoreboardfromtable.html"),
                         )
                       ).toTagMod
                     case _ =>

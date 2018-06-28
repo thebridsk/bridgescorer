@@ -49,6 +49,7 @@ import play.api.libs.json.JsError
 import com.example.pages.BaseStyles
 import com.example.data.graphql.GraphQLProtocol.GraphQLResponse
 import com.example.react.Tooltip
+import com.example.react.HelpButton
 
 /**
  * Shows a summary page of all duplicate matches from the database.
@@ -662,7 +663,9 @@ object PageSummaryInternal {
               " ",
               AppButton( "BoardSets2", "BoardSets", props.routerCtl.setOnClick(BoardSetSummaryView) ),
               " ",
-              AppButton( "Movements2", "Movements", props.routerCtl.setOnClick(MovementSummaryView) )
+              AppButton( "Movements2", "Movements", props.routerCtl.setOnClick(MovementSummaryView) ),
+              " ",
+              HelpButton( "/help/duplicate/summary.html" )
             )
           )( a => TagMod() ),
         ),

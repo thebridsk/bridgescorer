@@ -20,6 +20,7 @@ import com.example.pages.hand.ComponentInputStyleButton
 import com.example.pages.duplicate.DuplicateRouter.TableView
 import com.example.pages.duplicate.DuplicateRouter.CompleteScoreboardView
 import com.example.react.AppButton
+import com.example.react.HelpButton
 
 /**
  * Shows the team x board table and has a totals column that shows the number of points the team has.
@@ -96,6 +97,10 @@ object PageTableInternal {
                   <.div(
                     baseStyles.divFooterCenter,
                     ComponentInputStyleButton( Callback{} )
+                  ),
+                  <.div(
+                    baseStyles.divFooterRight,
+                    HelpButton("/help/duplicate/table.html"),
                   )
                 )
               )

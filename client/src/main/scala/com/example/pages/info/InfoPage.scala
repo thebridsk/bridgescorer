@@ -73,6 +73,7 @@ object InfoPage {
       ("typeOf(StyleMedia)", js.typeOf(window.styleMedia)),
       ("StyleMedia.type", (if (styleMediaDefined) styleMedia.`type`; else "???")),
       ("isTouchEnabled", isTouchEnabled),
+      ("closed", window.asInstanceOf[js.Dynamic].closed)
 //      ("", "")
     ).map{ case (key,value) =>
       val v=value.toString()

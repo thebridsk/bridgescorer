@@ -23,6 +23,7 @@ import com.example.pages.duplicate.DuplicateRouter.TableBoardView
 import com.example.react.AppButton
 import com.example.pages.BaseStyles
 import com.example.routes.BridgeRouter
+import com.example.react.HelpButton
 
 /**
  * Shows the team x board table and has a totals column that shows the number of points the team has.
@@ -221,7 +222,9 @@ object PageBoardInternal {
                 " ",
                 PageScoreboardInternal.scoringMethodButton( state.useIMP, Some( score.isIMP), false, nextIMPs ),
                 if (tableperspective.isEmpty) boards(score)
-                else TagMod()
+                else TagMod(),
+                " ",
+                HelpButton("/help/duplicate/boardcomplete.html"),
               )
             )
           case None =>

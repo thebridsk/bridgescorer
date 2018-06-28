@@ -41,6 +41,7 @@ import com.example.pages.hand.PageHand
 import com.example.pages.hand.Properties
 import com.example.pages.Pixels
 import com.example.pages.BaseStyles
+import com.example.react.HelpButton
 
 /**
  * Shows the team x board table and has a totals column that shows the number of points the team has.
@@ -531,7 +532,8 @@ object PageTableTeamsInternal {
                     <.p("Round "+props.page.round+" not found on Table "+props.page.tableid),
                     <.p(
                       Button( baseStyles.footerButton, "Game", "Scoreboard", props.routerCtl.setOnClick(CompleteScoreboardView(props.page.dupid)) )
-                    ) )
+                    )
+                  )
               }
             case None =>
               <.div(
@@ -551,7 +553,7 @@ object PageTableTeamsInternal {
     }
 
     def renderInput( props: Props, state: State, score: MatchDuplicateScore, round: MatchDuplicateScore.Round ) = {
-      val ( okCB, valid, div ) = {
+      val ( okCB, valid, div, helppage ) = {
         if (state.isEnteringMissingNames) renderEnterMissing(props, state)
         else if (state.isSelectingScorekeeper) renderScorekeeper(props, state)
         else renderNames(props, state, score, round)
@@ -579,14 +581,15 @@ object PageTableTeamsInternal {
               ),
               <.div(
                   baseStyles.divFooterRight,
-                  Button( baseStyles.footerButton, "Cancel", "Cancel", props.routerCtl.setOnClick( props.page.toTableView() ) )
+                  Button( baseStyles.footerButton, "Cancel", "Cancel", props.routerCtl.setOnClick( props.page.toTableView() ) ),
+                  helppage.whenDefined( p => HelpButton(p) )
               )
           )
       )
 
     }
 
-    def renderEnterMissing( props: Props, state: State ): (Callback, Boolean, TagMod) = {
+    def renderEnterMissing( props: Props, state: State ): (Callback, Boolean, TagMod, Option[String]) = {
       val ( ns, ew ) = (
                          (North,South,state.names.ns1,state.names.ns2,state.nsTeam),
                          (East,West,state.names.ew1,state.names.ew2,state.ewTeam)
@@ -614,100 +617,105 @@ object PageTableTeamsInternal {
                   s"Playing against team ${Id.teamIdToTeamNumber(vteamid)}, ${vname1} ${vname2}"
               )
           )
-      ( setMissingNames, valid, div)
+      ( setMissingNames, valid, div, None)
     }
 
-    def renderScorekeeper( props: Props, state: State ): (Callback, Boolean, TagMod) = {
+    def renderScorekeeper( props: Props, state: State ): (Callback, Boolean, TagMod, Option[String]) = {
       val valid = state.scorekeeperName.isDefined && state.scorekeeperPosition.isDefined
-      val div = {
+      val (div, helppage) = {
         if (state.names.isAllValid) renderSelectScorekeeper(props, state)
         else renderEnterScorekeeper(props, state)
       }
 
-      ( setScorekeeper, valid, div)
+      ( setScorekeeper, valid, div, helppage)
     }
 
-    def renderEnterScorekeeper( props: Props, state: State ): TagMod = {
+    def renderEnterScorekeeper( props: Props, state: State ): (TagMod, Option[String]) = {
       val names = state.getSuggestions
       val busy = state.gettingNames
       val playername = state.scorekeeperName.getOrElse("")
       val np = noNull(playername)
-      <.div(
-        <.h1( "Enter scorekeeper:" ),
-        <.div(
-          dupStyles.inputTableNames,
-          ComboboxOrInput( setScorekeeperName, np, names, "startsWith", 1, "Scorekeeper",
-                           msgEmptyList="No suggested names", msgEmptyFilter="No names matched", busy=busy ),
-          BaseStyles.highlight(required = state.scorekeeperName.isEmpty)
-        ),
-        <.h1( "Enter scorekeeper's position:" ),
-        (North::South::East::West::Nil).map( pos => {
-          val selected = state.scorekeeperPosition match {
-            case Some(sk ) => sk == pos
-            case None => false
-          }
-          Button( baseStyles.footerButton,
-                  "SK_"+pos.pos,
-                  pos.name,
-                  ^.onClick --> setScorekeeperPosition(pos),
-                  BaseStyles.highlight(
-                      selected = selected,
-                      required = state.scorekeeperPosition.isEmpty
+      ( <.div(
+          <.h1( "Enter scorekeeper:" ),
+          <.div(
+            dupStyles.inputTableNames,
+            ComboboxOrInput( setScorekeeperName, np, names, "startsWith", 1, "Scorekeeper",
+                             msgEmptyList="No suggested names", msgEmptyFilter="No names matched", busy=busy ),
+            BaseStyles.highlight(required = state.scorekeeperName.isEmpty)
+          ),
+          <.h1( "Enter scorekeeper's position:" ),
+          (North::South::East::West::Nil).map( pos => {
+            val selected = state.scorekeeperPosition match {
+              case Some(sk ) => sk == pos
+              case None => false
+            }
+            Button( baseStyles.footerButton,
+                    "SK_"+pos.pos,
+                    pos.name,
+                    ^.onClick --> setScorekeeperPosition(pos),
+                    BaseStyles.highlight(
+                        selected = selected,
+                        required = state.scorekeeperPosition.isEmpty
+                    )
                   )
-                )
-        }).toTagMod
+          }).toTagMod
+        ),
+        Some("/help/duplicate/enterscorekeepername.html")
       )
+
     }
 
-    def renderSelectScorekeeper( props: Props, state: State ): TagMod = {
+    def renderSelectScorekeeper( props: Props, state: State ): (TagMod, Option[String]) = {
       val extraWidth = Properties.defaultHandButtonBorderRadius+
                        Properties.defaultHandButtonPaddingBorder
       val width = s"${Pixels.maxLength( state.players.players(): _* )+extraWidth}px"
       val bwidth: TagMod = ^.width := width
-      <.div(
-        <.h1( "Enter scorekeeper:" ),
-        state.players.sortedPlayers().map( p => {
-          val selected = state.scorekeeperName match {
-            case Some(sk ) => sk == p
-            case None => false
-          }
-          AppButton( "P_"+p,
-                     p,
-                     bwidth,
-                     ^.onClick --> setScorekeeperName(p),
-                     BaseStyles.highlight(
-                         selected = selected,
-                         required = state.scorekeeperName.isEmpty
+      ( <.div(
+          <.h1( "Enter scorekeeper:" ),
+          state.players.sortedPlayers().map( p => {
+            val selected = state.scorekeeperName match {
+              case Some(sk ) => sk == p
+              case None => false
+            }
+            AppButton( "P_"+p,
+                       p,
+                       bwidth,
+                       ^.onClick --> setScorekeeperName(p),
+                       BaseStyles.highlight(
+                           selected = selected,
+                           required = state.scorekeeperName.isEmpty
+                       )
                      )
-                   )
-        }).toTagMod,
-        <.h1( "Enter scorekeeper's position:" ),
-        state.scorekeeperName match {
-          case Some(sk) =>
-            val skpos = state.players.find(sk).get
-            val partner = state.players.partnerOfPosition(skpos)
-            (skpos::partner::Nil).map( pos => {
-              val selected = state.scorekeeperPosition match {
-                case Some(sk ) => sk == pos
-                case None => false
-              }
-              Button( baseStyles.footerButton,
-                      "SK_"+pos.pos,
-                      pos.name,
-                      ^.onClick --> setScorekeeperPosition(pos),
-                      BaseStyles.highlight(
-                          selected = selected,
-                          required = state.scorekeeperPosition.isEmpty
+          }).toTagMod,
+          <.h1( "Enter scorekeeper's position:" ),
+          state.scorekeeperName match {
+            case Some(sk) =>
+              val skpos = state.players.find(sk).get
+              val partner = state.players.partnerOfPosition(skpos)
+              (skpos::partner::Nil).map( pos => {
+                val selected = state.scorekeeperPosition match {
+                  case Some(sk ) => sk == pos
+                  case None => false
+                }
+                Button( baseStyles.footerButton,
+                        "SK_"+pos.pos,
+                        pos.name,
+                        ^.onClick --> setScorekeeperPosition(pos),
+                        BaseStyles.highlight(
+                            selected = selected,
+                            required = state.scorekeeperPosition.isEmpty
+                        )
                       )
-                    )
-            }).toTagMod
-          case None =>
-            EmptyVdom
-        }
+              }).toTagMod
+            case None =>
+              EmptyVdom
+          }
+        ),
+        Some("/help/duplicate/selectscorekeepername.html")
       )
     }
 
-    def renderNames( props: Props, state: State, score: MatchDuplicateScore, round: MatchDuplicateScore.Round ): (Callback, Boolean, TagMod) = {
+    def renderNames( props: Props, state: State, score: MatchDuplicateScore, round: MatchDuplicateScore.Round ): (Callback, Boolean, TagMod, Option[String]) = {
       val scorekeeper = state.scorekeeperPosition.getOrElse(North)
       val partner = state.players.partnerOfPosition(scorekeeper)
       val left = state.players.leftOfPosition(scorekeeper)
@@ -785,7 +793,13 @@ object PageTableTeamsInternal {
             )
           )
 
-      ( ok, allvalid, div)
+      (
+        ok,
+        allvalid,
+        div,
+        if (readonly) Some("/help/duplicate/selectothernames.html")
+        else Some("/help/duplicate/enterothernames.html")
+      )
     }
 
     val storeCallback =
