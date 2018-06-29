@@ -106,13 +106,6 @@ class HelpPage(
     this
   }
 
-  def clickPlay(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
-    val play = find( xpath("""//section[@id='shortcuts']/ul/li[2]/a""") )
-    play.text mustBe "Play"
-    click on play
-    new HomePage
-  }
-
   /**
    * @param item the URI without "help/".  Example: for duplicate page use "duplicate/"
    */
