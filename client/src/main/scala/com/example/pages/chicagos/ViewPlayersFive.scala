@@ -17,6 +17,7 @@ import com.example.data.util.Strings
 import com.example.react.AppButton
 import com.example.react.Utils._
 import com.example.pages.BaseStyles
+import com.example.react.HelpButton
 
 /**
  * A skeleton component.
@@ -330,7 +331,8 @@ object ViewPlayersFiveInternal {
           ),
           <.div(
             baseStyles.divFooterRight,
-            AppButton("Cancel", "Cancel", props.router.setOnClick(props.page.toSummaryView()) )
+            AppButton("Cancel", "Cancel", props.router.setOnClick(props.page.toSummaryView()) ),
+            HelpButton("/help/chicago/five/selectnames5.html")
           )
         )
       )

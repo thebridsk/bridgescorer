@@ -23,6 +23,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import com.example.data.Id
 import com.example.react.PopupOkCancel
 import com.example.logger.Alerter
+import com.example.react.HelpButton
 
 /**
  * @author werewolf
@@ -147,6 +148,10 @@ object PageChicagoListInternal {
             <.div(
               baseStyles.divFooterLeft,
               AppButton( "Home", "Home", props.routerCtl.home )
+            ),
+            <.div(
+              baseStyles.divFooterLeft,
+              HelpButton("/help/chicago/list.html")
             )
           )
       )

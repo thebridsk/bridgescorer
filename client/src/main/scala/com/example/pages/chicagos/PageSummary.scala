@@ -13,6 +13,7 @@ import com.example.pages.chicagos.ChicagoRouter.SummaryView
 import com.example.pages.chicagos.ChicagoRouter.ListView
 import com.example.react.AppButton
 import com.example.react.Utils._
+import com.example.react.HelpButton
 
 /**
  * A skeleton component.
@@ -160,7 +161,8 @@ object PageSummaryInternal {
                   ),
                   <.div(
                     baseStyles.divFooterRight,
-                    ComponentInputStyleButton( scope.forceUpdate )
+                    ComponentInputStyleButton( scope.forceUpdate ),
+                    HelpButton( if (scoring.chicago.isQuintet()) "/help/chicago/summaryquintet.html" else "/help/chicago/summary.html")
                   )
                 )
             )

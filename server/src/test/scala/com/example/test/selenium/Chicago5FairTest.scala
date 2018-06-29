@@ -26,6 +26,7 @@ import com.example.test.TestStartLogging
 import com.example.test.util.MonitorTCP
 import com.example.backend.BridgeServiceFileStoreConverters
 import com.example.backend.MatchChicagoCacheStoreSupport
+import com.example.test.pages.PageBrowser
 
 /**
  * @author werewolf
@@ -324,6 +325,8 @@ class Chicago5FairTest extends FlatSpec with MustMatchers with BeforeAndAfterAll
     assertScore( 420, 870, 0, 850, 400 )
 
     InputStyleHelper.hitInputStyleButton( "Original" )
+
+    PageBrowser.takeScreenshot(docsScreenshotDir, "SummaryQuintetPage")
 
     click on id("NewRound")
   }

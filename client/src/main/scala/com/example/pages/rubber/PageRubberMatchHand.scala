@@ -136,7 +136,8 @@ object PageRubberMatchHandInternal {
                 PageHand( contract , viewHandCallbackOk(""), viewHandCallbackCancel, newhand=true, allowPassedOut=false,
                           callbackWithHonors = Some(viewHandCallbackWithHonors("") _),
                           honors = None,
-                          honorsPlayer = None )
+                          honorsPlayer = None,
+                          helppage = Some("/help/rubber/hand.html"))
             }
           )
         case _ =>

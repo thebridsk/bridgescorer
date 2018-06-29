@@ -21,6 +21,7 @@ import com.example.pages.rubber.RubberRouter.RubberMatchView
 import utils.logging.Level
 import com.example.data.Id
 import com.example.react.PopupOkCancel
+import com.example.react.HelpButton
 
 /**
  * A skeleton component.
@@ -140,6 +141,10 @@ object PageRubberListInternal {
           <.div( baseStyles.divFooter,
             <.div( baseStyles.divFooterLeft,
               AppButton( "Home", "Home", props.routerCtl.home, ^.disabled:=state.workingOnNew )
+            ),
+            <.div(
+              baseStyles.divFooterLeft,
+              HelpButton("/help/rubber/list.html")
             )
           )
       )
