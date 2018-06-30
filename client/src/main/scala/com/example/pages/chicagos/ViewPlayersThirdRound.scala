@@ -13,6 +13,7 @@ import com.example.react.AppButton
 import com.example.react.Utils._
 import com.example.pages.Pixels
 import com.example.pages.BaseStyles
+import com.example.react.HelpButton
 
 object ViewPlayersThirdRound {
   import PagePlayers._
@@ -149,6 +150,7 @@ object ViewPlayersThirdRound {
             ),
             <.div(
               baseStyles.divFooterRight,
+              HelpButton("/help/chicago/four/selectnames4.html")
             )
           )
         )

@@ -14,6 +14,7 @@ import com.example.react.AppButton
 import com.example.react.Utils._
 import com.example.pages.Pixels
 import com.example.pages.BaseStyles
+import com.example.react.HelpButton
 
 object ViewPlayersFourthRound {
   import PagePlayers._
@@ -223,7 +224,8 @@ object ViewPlayersFourthRound {
           ),
           <.div(
             baseStyles.divFooterRight,
-            AppButton( "Reset", "Reset", baseStyles.appButton, ^.onClick --> reset)
+            AppButton( "Reset", "Reset", baseStyles.appButton, ^.onClick --> reset),
+            HelpButton("/help/chicago/four/selectnames4.html")
           )
         )
       )

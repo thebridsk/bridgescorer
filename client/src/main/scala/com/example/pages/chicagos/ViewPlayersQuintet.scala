@@ -18,6 +18,7 @@ import com.example.react.AppButton
 import com.example.bridge.rotation.Table
 import com.example.react.Utils._
 import com.example.pages.BaseStyles
+import com.example.react.HelpButton
 
 /**
  * A skeleton component.
@@ -373,7 +374,8 @@ object ViewPlayersQuintetInternal {
             ),
           <.div(
             baseStyles.divFooterRight,
-            AppButton("Cancel", "Cancel", props.router.setOnClick(props.page.toSummaryView()) )
+            AppButton("Cancel", "Cancel", props.router.setOnClick(props.page.toSummaryView()) ),
+            HelpButton( if (state.isSimple()) "/help/chicago/fastsimple/selectnamessimple.html" else "/help/chicago/fastfair/selectnamesfair.html")
           )
         )
       )

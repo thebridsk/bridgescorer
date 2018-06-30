@@ -16,6 +16,7 @@ import com.example.react.AppButton
 import com.example.react.Utils._
 import com.example.react.Button
 import com.example.pages.Pixels
+import com.example.react.HelpButton
 
 /**
  * A skeleton component.
@@ -57,9 +58,10 @@ object PageHand {
              allowPassedOut: Boolean = true,
              callbackWithHonors: Option[CallbackWithHonors] = None,
              honors: Option[Int] = None,
-             honorsPlayer: Option[PlayerPosition] = None ) =
+             honorsPlayer: Option[PlayerPosition] = None,
+             helppage: Option[String] = None ) =
         component(Props(contract.withScoring(),callbackOk,callbackCancel,
-                        teamNS,teamEW,newhand,allowPassedOut,callbackWithHonors,honors,honorsPlayer))
+                        teamNS,teamEW,newhand,allowPassedOut,callbackWithHonors,honors,honorsPlayer,helppage))
 
 
   /**
@@ -98,7 +100,8 @@ object PageHand {
              allowPassedOut: Boolean = true,
              callbackWithHonors: Option[CallbackWithHonors] = None,
              honors: Option[Int] = None,
-             honorsPlayer: Option[PlayerPosition] = None ) =
+             honorsPlayer: Option[PlayerPosition] = None,
+             helppage: Option[String] = None ) =
                                         apply( Contract( h.id,
                                                          h.contractTricks,
                                                          h.contractSuit,
@@ -120,7 +123,7 @@ object PageHand {
                                                          west,
                                                          dealer
                                                ), callbackOk, callbackCancel, teamNS, teamEW, newhand=newhand, allowPassedOut=allowPassedOut, callbackWithHonors=callbackWithHonors,
-                                               honors=honors, honorsPlayer=honorsPlayer)
+                                               honors=honors, honorsPlayer=honorsPlayer, helppage=helppage)
 
   var scorekeeper: PlayerPosition = North
 
@@ -147,7 +150,8 @@ object PageHandInternal {
                     allowPassedOut: Boolean,
                     callbackWithHonors: Option[CallbackWithHonors] = None,
                     honors: Option[Int] = None,
-                    honorsPlayer: Option[PlayerPosition] = None)
+                    honorsPlayer: Option[PlayerPosition] = None,
+                    helppage: Option[String] = None)
 
   /**
    * Internal state for rendering the component.
@@ -468,7 +472,8 @@ object PageHandInternal {
             <.div(
               baseStyles.divFooterRight,
               ComponentInputStyleButton(kickRefresh,true),
-              Button( handStyles.footerButton, "Clear", "Clear", ^.onClick --> this.clear)
+              Button( handStyles.footerButton, "Clear", "Clear", ^.onClick --> this.clear),
+              props.helppage.whenDefined( p => HelpButton(p) )
             )
           )
       )

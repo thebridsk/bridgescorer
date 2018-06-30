@@ -89,8 +89,8 @@ class HelpPage(
       val base = getPageUrl(helpuri)
       val url = currentUrl
       url mustBe base
-      checkPlay
     }
+    this
   }
 
   def checkMainMenu(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
@@ -104,13 +104,6 @@ class HelpPage(
       }
     }
     this
-  }
-
-  def clickPlay(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
-    val play = find( xpath("""//section[@id='shortcuts']/ul/li[2]/a""") )
-    play.text mustBe "Play"
-    click on play
-    new HomePage
   }
 
   /**
@@ -134,14 +127,6 @@ class HelpPage(
     val curl = currentUrl
     log.fine( s"""Current URL ${curl}, looking for ${url}""" )
     curl mustBe url
-    this
-  }
-
-  def checkPlay(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
-    val play = find( xpath("""//section[@id='shortcuts']/ul/li[2]/a""") )
-    scrollToElement(play)
-    log.fine(s"""checkPlay href=${play.attribute("href")}""" )
-    play.text mustBe "Play"
     this
   }
 

@@ -22,6 +22,7 @@ import com.example.react.CheckBox
 import com.example.react.RadioButton
 import com.example.react.Utils._
 import com.example.pages.BaseStyles
+import com.example.react.HelpButton
 
 object ViewPlayersVeryFirstRound {
   import PagePlayers._
@@ -147,7 +148,8 @@ object ViewPlayersVeryFirstRound {
           ),
           <.div(
             baseStyles.divFooterRight,
-            AppButton( "Cancel", "Cancel", props.router.setOnClick(props.page.toSummaryView()) )
+            AppButton( "Cancel", "Cancel", props.router.setOnClick(props.page.toSummaryView()) ),
+            HelpButton( if (state.chicago5) "/help/chicago/five/names5.html" else "/help/chicago/four/names4.html")
           )
         )
       )

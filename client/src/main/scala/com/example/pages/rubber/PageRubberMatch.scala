@@ -18,6 +18,7 @@ import com.example.pages.rubber.RubberRouter.RubberMatchNamesView
 import com.example.pages.rubber.RubberRouter.ListView
 import com.example.react.AppButton
 import com.example.react.Utils._
+import com.example.react.HelpButton
 
 /**
  * A skeleton component.
@@ -174,18 +175,19 @@ object PageRubberMatchInternal {
                   <.div(
                       baseStyles.divFooterLeft,
                       !score.done ?= AppButton( "NextHand", "Next Hand", baseStyles.requiredNotNext, ^.onClick-->nextHand )
-                      ),
+                    ),
                   <.div(
                       baseStyles.divFooterLeft,
                       AppButton( "EditNames", "Edit Names", ^.onClick-->tonames )
 //                      false ?= AppButton( "Details", "Details", ^.onClick-->toDetails() )
-                      ),
+                    ),
                   <.div(
                       baseStyles.divFooterRight,
                       ComponentInputStyleButton( CallbackTo{} ),
-                      AppButton( "Quit", "Quit", score.done ?= baseStyles.requiredNotNext, ^.onClick-->quit )
-                      )
+                      AppButton( "Quit", "Quit", score.done ?= baseStyles.requiredNotNext, ^.onClick-->quit ),
+                      HelpButton("/help/rubber/summary.html")
                   )
+                )
               )
         case Some(rub) if (rub.id == props.page.rid && !rub.gotAllPlayers()) =>
           <.div(

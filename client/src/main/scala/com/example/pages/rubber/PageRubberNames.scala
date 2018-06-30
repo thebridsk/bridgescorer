@@ -26,6 +26,7 @@ import com.example.react.AppButton
 import com.example.react.Utils._
 import com.example.pages.rubber.RubberRouter.ListView
 import com.example.pages.BaseStyles
+import com.example.react.HelpButton
 
 object PageRubberNames {
   import PageRubberNamesInternal._
@@ -175,7 +176,8 @@ object PageRubberNamesInternal {
           ),
           <.div(
             baseStyles.divFooterRight,
-            AppButton( "Cancel", "Cancel", props.router.setOnClick( ListView /*props.page.toRubber()*/) )
+            AppButton( "Cancel", "Cancel", props.router.setOnClick( ListView /*props.page.toRubber()*/) ),
+            HelpButton("/help/rubber/names.html")
           )
         )
       )

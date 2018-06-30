@@ -47,6 +47,8 @@ import com.example.react.PopupOkCancel
 import com.example.pages.duplicate.DuplicateRouter.SelectMatchView
 import japgolly.scalajs.react.extra.router.RouterCtl
 import com.example.routes.BridgeRouter
+import com.example.react.AppButtonLinkNewWindow
+import com.example.react.HelpButton
 
 /**
  * @author werewolf
@@ -163,10 +165,9 @@ object HomePage {
                         val location = document.defaultView.location
                         val origin = location.origin.get
                         val path = s"""${origin}/help/introduction.html"""
-                        AppButtonLink( "Help", "Help", path,
-                                       rootStyles.playButton,
-                                       ^.disabled:=isWorking
-                                     )
+                        HelpButton( path,
+                                    style = Some(rootStyles.playButton)
+                                  )
                       }
                 )
               )

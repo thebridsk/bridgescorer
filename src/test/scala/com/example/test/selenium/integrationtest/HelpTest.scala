@@ -122,18 +122,19 @@ class HelpTest extends FlatSpec with MustMatchers with BeforeAndAfterAll {
     val gp = homepage.clickHelp
 
     val helppage = eventually {
-      HelpPage.current.checkPage("introduction.html")
+      val hh = webDriver.getWindowHandles.flatMap { h =>
+        try {
+          webDriver.switchTo().window(h)
+          Some( HelpPage.current.checkPage("introduction.html") )
+        } catch {
+          case x: Exception =>
+            None
+        }
+      }
+      hh.size mustBe 1
+      hh.head
     }
     helppage.validate.checkMainMenu
-
-    val hp = helppage.clickPlay.validate
-
-    val help2 = eventually {
-      val we = findElem[Element]( id("Help") )
-      val text = we.text
-      text mustBe "Help"
-      we
-    }
   }
 
   it should "display the duplicate summary page" in {
@@ -150,7 +151,17 @@ class HelpTest extends FlatSpec with MustMatchers with BeforeAndAfterAll {
     val gp = homepage.clickHelp
 
     val helppage = eventually {
-      HelpPage.current.checkPage("introduction.html")
+      val hh = webDriver.getWindowHandles.flatMap { h =>
+        try {
+          webDriver.switchTo().window(h)
+          Some( HelpPage.current.checkPage("introduction.html") )
+        } catch {
+          case x: Exception =>
+            None
+        }
+      }
+      hh.size mustBe 1
+      hh.head
     }
     helppage.validate.checkMainMenu
 
@@ -163,15 +174,6 @@ class HelpTest extends FlatSpec with MustMatchers with BeforeAndAfterAll {
     HelpPage.checkImage( imageurl )
 
     summary.findElemByXPath("//img").attribute("src") mustBe Some(imageurl)
-
-    val hp = summary.clickPlay.validate
-
-    val help2 = eventually {
-      val we = findElem[Element]( id("Help") )
-      val text = we.text
-      text mustBe "Help"
-      we
-    }
 
   }
 

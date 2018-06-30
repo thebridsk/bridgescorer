@@ -26,6 +26,7 @@ import com.example.data.MatchDuplicateResult
 import com.example.pages.duplicate.DuplicateRouter.DuplicateResultEditView
 import com.example.react.CheckBox
 import scala.annotation.tailrec
+import com.example.react.HelpButton
 
 /**
  * PageNewDuplicate.
@@ -238,6 +239,7 @@ object PageNewDuplicateInternal {
         dupStyles.divNewDuplicate,
         PopupOkCancel( state.workingOnNew, None, Some(cancel) ),
         <.h1("New Duplicate Match"),
+        HelpButton("/help/duplicate/new.html"),
         CheckBox("resultsOnly", "Create Results Only", state.resultsOnly, resultsOnlyToggle ),
         <.table(
           dupStyles.tableNewDuplicate,
