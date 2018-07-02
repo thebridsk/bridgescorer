@@ -9,15 +9,15 @@ name := "project-bridgescorer"
 scalaVersion := "2.12.6"
 
 val vLog4j = "1.7.25"               // https://mvnrepository.com/artifact/org.slf4j/slf4j-simple
-val vJGit = "4.11.0.201803080745-r" // https://mvnrepository.com/artifact/org.eclipse.jgit/org.eclipse.jgit.pgm
+val vJGit = "5.0.1.201806211838-r" // https://mvnrepository.com/artifact/org.eclipse.jgit/org.eclipse.jgit.pgm
 
 val vCrossProject = "0.5.0"        // https://github.com/portable-scala/sbt-crossproject
-val vScalaJSDefault = "0.6.23"     // http://www.scala-js.org/
-val vSbtAssembly = "0.14.6"        // https://github.com/sbt/sbt-assembly
+val vScalaJSDefault = "0.6.24"     // http://www.scala-js.org/
+val vSbtAssembly = "0.14.7"        // https://github.com/sbt/sbt-assembly
 val vSbtGit = "1.0.0"              // https://github.com/sbt/sbt-git
 val vSbtSCoverage = "1.5.1"        // https://github.com/scoverage/sbt-scoverage
 val vSbtBuildInfo = "0.9.0"        // https://github.com/sbt/sbt-buildinfo
-val vSbtRelease = "1.0.8"          // https://github.com/sbt/sbt-release
+val vSbtRelease = "1.0.9"          // https://github.com/sbt/sbt-release
 val vSbtEclipse = "5.2.4"          // https://github.com/typesafehub/sbteclipse
 val vSbtDependencyGraph = "0.9.0"  // https://github.com/jrudolph/sbt-dependency-graph
 val vSbtUpdates = "0.3.4"          // https://github.com/rtimush/sbt-updates

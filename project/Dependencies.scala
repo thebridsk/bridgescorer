@@ -38,13 +38,13 @@ object Dependencies {
 
   lazy val vAkkaHttpPlayJson="1.21.0"  // https://github.com/hseeberger/akka-http-json
 
-  lazy val vSwaggerAkkaHttp = "0.14.0" // http://mvnrepository.com/artifact/com.github.swagger-akka-http/swagger-akka-http_2.12
+  lazy val vSwaggerAkkaHttp = "0.14.1" // http://mvnrepository.com/artifact/com.github.swagger-akka-http/swagger-akka-http_2.12
 //  lazy val vSwaggerScalaModule="1.0.4" // http://mvnrepository.com/artifact/io.swagger/swagger-scala-module_2.11
   lazy val vSwagger="1.5.20"           // http://mvnrepository.com/artifact/io.swagger/swagger-core
 
-  lazy val vSwaggerUI = "3.17.1"       // https://www.npmjs.com/package/swagger-ui-dist
+  lazy val vSwaggerUI = "3.17.2"       // https://www.npmjs.com/package/swagger-ui-dist
   lazy val vScalajsdom = "0.9.6"       // http://mvnrepository.com/artifact/org.scala-js/scalajs-dom_sjs0.6_2.11
-  lazy val vScalaJsReact = "1.2.0"     // http://mvnrepository.com/artifact/com.github.japgolly.scalajs-react/core_sjs0.6_2.11
+  lazy val vScalaJsReact = "1.2.1"     // http://mvnrepository.com/artifact/com.github.japgolly.scalajs-react/core_sjs0.6_2.11
   lazy val vScalaCss = "0.5.3"         // http://mvnrepository.com/artifact/com.github.japgolly.scalacss/core_sjs0.6_2.11
 
   lazy val vWebJarsReact = "16.4.1"    // http://mvnrepository.com/artifact/org.webjars/react
@@ -65,7 +65,7 @@ object Dependencies {
   lazy val vScalatest = "3.0.5"      // http://mvnrepository.com/artifact/org.scalatest/scalatest_2.11
   lazy val vJunit = "4.12"           // http://mvnrepository.com/artifact/junit/junit
 
-  lazy val vSelenium = "3.12.0"      // http://mvnrepository.com/artifact/org.seleniumhq.selenium/selenium-java
+  lazy val vSelenium = "3.13.0"      // http://mvnrepository.com/artifact/org.seleniumhq.selenium/selenium-java
   lazy val vLog4js = "1.4.15"        // http://mvnrepository.com/artifact/org.webjars/log4javascript
   lazy val vScalaArm = "2.0"         // http://mvnrepository.com/artifact/com.jsuereth/scala-arm_2.11
   lazy val vScallop = "3.1.2"        // http://mvnrepository.com/artifact/org.rogach/scallop_2.11
@@ -74,12 +74,12 @@ object Dependencies {
 
   // jackson-module-scala usually updates a few days after the others are updated,
   // don't update until jackson-module-scala is updated
-  lazy val vJackson = "2.9.5"        // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core
+  lazy val vJackson = "2.9.6"        // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core
 
   // Selenium needs to be update to update to v23.0
   lazy val vGuavaJre = "25.1-jre"    // https://github.com/google/guava
 
-  lazy val vWebPack = "4.12.0"          // https://www.npmjs.com/package/webpack
+  lazy val vWebPack = "4.14.0"          // https://www.npmjs.com/package/webpack
 
   lazy val vJsDom = "11.11.0"           // https://www.npmjs.com/package/jsdom
 //  lazy val vExposeLoader = "0.7.3"     // https://www.npmjs.com/package/expose-loader
