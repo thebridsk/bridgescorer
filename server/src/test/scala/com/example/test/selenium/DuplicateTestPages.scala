@@ -78,6 +78,7 @@ import scala.reflect.io.File
 import com.example.test.pages.duplicate.PeopleRowMP
 import com.example.test.pages.Page
 import com.example.test.pages.PageBrowser
+import com.example.test.pages.duplicate.SuggestionPage
 
 object DuplicateTestPages {
 
@@ -501,7 +502,7 @@ class DuplicateTestPages extends FlatSpec
     }
     (ts,pes)
   }
-  
+
   it should "show the director's scoreboard and complete scoreboard shows checkmarks for the played games" in {
     tcpSleep(10)
     waitForFutures(
@@ -585,7 +586,7 @@ class DuplicateTestPages extends FlatSpec
     en.setName(1, 1, team1.one)
 
     en.getNames mustBe playersAfter
-    
+
     en.clickOK.validate.clickDirectorButton.validate
   }
 
@@ -1228,4 +1229,89 @@ class DuplicateTestPages extends FlatSpec
 
     val main = ldpr.clickPopUpCancel.validate.clickHome.validate.clickListDuplicateButton.validate( newId )
   }
+
+
+  it should "go to the pair suggestion page" in {
+    import SessionDirector._
+
+    ListDuplicatePage.current.clickSuggestion.validate
+  }
+
+  it should "show calculate button with 8 known names selected" in {
+    import SessionDirector._
+
+    val sug = SuggestionPage.current
+    sug.getNumberNameFields mustBe 8
+
+    sug.isCalculateEnabled mustBe false
+
+    val ss = (0 until 8).foldLeft(sug) { (s,n) =>
+      sug.toggleKnownName(n)
+    }
+
+    ss.getNumberNameFields mustBe 0
+
+    ss.isCalculateEnabled mustBe true
+  }
+
+  it should "show calculate button with 7 known names selected and one entered name" in {
+    import SessionDirector._
+
+    val sug = SuggestionPage.current
+    val ss = sug.toggleKnownName(0)
+
+    eventually {
+      ss.getNumberKnownNames must be >= 8
+      ss.getNumberChecked mustBe 7
+      ss.getNumberNameFields mustBe 1
+    }
+
+    ss.isCalculateEnabled mustBe false
+
+    val se = ss.setNameField(0, "Iqbal")
+
+    eventually {
+      se.isCalculateEnabled mustBe true
+    }
+
+  }
+
+  it should "show never pair table" in {
+    import SessionDirector._
+
+    val sug = SuggestionPage.current
+    sug.clickNeverPair
+    val neverPairNames = eventually {
+      val ns = sug.getNeverPairTableNames
+      ns.length mustBe 8
+      ns
+    }
+
+    val checkNames = sug.getKnownNames.drop(1).take(7)
+    val players = "Iqbal"::checkNames
+
+    players must contain theSameElementsAs neverPairNames
+  }
+
+  it should "calculate a pairing" in {
+    import SessionDirector._
+
+    val sug = SuggestionPage.current
+    val ss = sug.clickCalculate.validate
+
+    eventually {
+      ss.findButton("ToggleDetails") mustBe 'displayed
+    }
+
+    val se = SuggestionPage.current
+    se.pageType mustBe SuggestionPage.ResultWithNeverPair
+
+  }
+
+  it should "go to duplicate list page from suggestion page" in {
+    import SessionDirector._
+
+    SuggestionPage.current.clickCancel.validate
+  }
+
 }
