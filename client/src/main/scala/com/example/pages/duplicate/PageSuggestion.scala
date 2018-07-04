@@ -258,7 +258,7 @@ object PageSuggestionInternal {
               <.li(
                 <.input(
                   ^.`type` := "text",
-                  ^.name := "NP${i}",
+                  ^.name := s"NP${i}",
                   ^.value := (if (i < state.newPlayers.length) state.newPlayers(i) else ""),
                   ^.onChange ==> setNewPlayers(i)
                 )
