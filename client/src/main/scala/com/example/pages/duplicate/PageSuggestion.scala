@@ -222,7 +222,7 @@ object PageSuggestionInternal {
                       }.getOrElse( s"Calculated with an unknown number of matches" )
                     }.getOrElse( s"Have a history of ${DuplicateSummaryStore.getDuplicateSummary().map(l => l.length).getOrElse(0)} matches" )
 
-      val sortedPlayers = state.knownPlayersSelected.sorted
+      val sortedPlayers = (state.knownPlayersSelected:::state.newPlayers).sorted
 
       val showDetails = state.suggestion.flatMap( s => s.suggestions ).isDefined
 
@@ -258,7 +258,7 @@ object PageSuggestionInternal {
               <.li(
                 <.input(
                   ^.`type` := "text",
-                  ^.name := "NP${i}",
+                  ^.name := s"NP${i}",
                   ^.value := (if (i < state.newPlayers.length) state.newPlayers(i) else ""),
                   ^.onChange ==> setNewPlayers(i)
                 )

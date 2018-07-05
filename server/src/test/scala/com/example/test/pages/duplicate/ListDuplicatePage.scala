@@ -171,6 +171,11 @@ class ListDuplicatePage( importId: Option[String] )( implicit val webDriver: Web
     new StatisticsPage()(webDriver, pos)
   }
 
+  def clickSuggestion(implicit patienceConfig: PatienceConfig, pos: Position) = {
+    clickButton("Suggest")
+    new SuggestionPage()(webDriver, pos)
+  }
+
   def clickForPrint(implicit patienceConfig: PatienceConfig, pos: Position) = {
     clickButton("ForPrint")
     new ListDuplicatePage(importId)( webDriver, pos )
