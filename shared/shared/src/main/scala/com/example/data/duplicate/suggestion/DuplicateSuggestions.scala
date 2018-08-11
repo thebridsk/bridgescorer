@@ -111,6 +111,33 @@ class Stats {
 }
 
 /**
+ * Stats are normalized in the following way:
+ *
+ * - wMinLastPlayed - LastPlayed min becomes 1, max becomes 0.
+ * - wMaxLastPlayed - LastPlayed min becomes 0, max becomes 1.
+ * - wMaxTimesPlayed - TimesPlayed min becomes 1, max becomes 0.
+ * - wAve            - LastPlayed min becomes 0, max becomes 1.
+ * - wAvePlayed      - TimesPlayed min becomes 1, max becomes 0.
+ * - wLastAll        - Last time all played min becomes 0, max becomes 1.
+ * - wLastAll10      - minimum last time same teams played can repeat, in games.
+ */
+trait Weights {
+
+  val minLastAll = 40
+
+  val wMinLastPlayed = 5       // weight for maximizing min last played of the four teams
+  val wMaxLastPlayed = 4       // weight for maximizing max last played of the four teams
+  val wMaxTimesPlayed = 6      // weight for minimizing max time played of the four teams
+  val wAve = 2                 // weight for maximizing ave last played of the four teams
+  val wAvePlayed = 3           // weight for minimizing ave times played of the four teams
+  val wLastAll = 0             // weight for maximizing last time same teams played
+  val wLastAll10 = 40          // minimum last time same teams played that it can repeat
+
+  def weightTotal = wMinLastPlayed+wMaxLastPlayed+wMaxTimesPlayed+wAve+wAvePlayed+wLastAll+wLastAll10
+
+}
+
+/**
  * Constructor
  * @param pastgames all the past games, will be sorted by created field
  * @param players the players, must be exactly 8 players
@@ -118,8 +145,11 @@ class Stats {
 class DuplicateSuggestionsCalculation(
                            pastgames: List[DuplicateSummary],
                            players: List[String],
-                           neverPair: Option[List[NeverPair]] = None
+                           neverPair: Option[List[NeverPair]] = None,
+                           weights: Weights = new Weights() {}
                          ) {
+
+  val wTotal = weights.weightTotal;
 
   def isNeverPair( p1: String, p2: String ) = {
     val np1 = NeverPair(p1,p2)
@@ -199,8 +229,6 @@ class DuplicateSuggestionsCalculation(
     val statAveLastPlayed = new Stats
     val statAveTimesPlayed = new Stats
 
-    val minLastAll = 40
-
     val sug = {
       val y = sortedPlayers.permutations.map { perm =>
         perm.grouped(2).map { pp => getPairing(pp(0),pp(1)) }.toList.sortWith((l,r) => l.player1<r.player1)
@@ -224,7 +252,7 @@ class DuplicateSuggestionsCalculation(
             !g.containsPair(p.player1, p.player2)
           }.isEmpty
         }.map( e => e._2)
-        val lastAll = listLastAll.headOption.getOrElse(Math.max(sortedgames.length,minLastAll))
+        val lastAll = listLastAll.headOption.getOrElse(Math.max(sortedgames.length,weights.minLastAll))
         statLastAll.add(lastAll)
         val countAllPlayed = listLastAll.length
         statCountAllPayed.add(countAllPlayed)
@@ -242,16 +270,6 @@ class DuplicateSuggestionsCalculation(
       scala.util.Random.shuffle(x).zipWithIndex.map { e => e._1.copy( random = e._2 ) }
     }
 
-    val wMinLastPlayed = 5       // weight for maximizing min last played of the four teams
-    val wMaxLastPlayed = 1       // weight for maximizing max last played of the four teams
-    val wMaxTimesPlayed = 5      // weight for minimizing max time played of the four teams
-    val wAve = 2                 // weight for maximizing ave last played of the four teams
-    val wAvePlayed = 3           // weight for minimizing ave times played of the four teams
-    val wLastAll = 0             // weight for maximizing last time same teams played
-    val wLastAll10 = 40          // minimum last time same teams played that it can repeat
-
-    val wTotal = wMinLastPlayed+wMaxLastPlayed+wMaxTimesPlayed+wAve+wAvePlayed+wLastAll+wLastAll10
-
     val sug1 = sug.map { s =>
       // Weight, higher values means a good choice
       // want:
@@ -261,23 +279,23 @@ class DuplicateSuggestionsCalculation(
       //   avgLastPlayed max
       //   avgTimesPlayed min
       //   lastPlayedAllTeams max
-      val weights = List( statTeamLastPlayed.normalizeForMax(s.minLastPlayed)*wMinLastPlayed/wTotal,
-                          statTeamLastPlayed.normalizeForMax(s.maxLastPlayed)*wMaxLastPlayed/wTotal,
-                          statTeamTimesPlayed.normalizeForMin(s.maxTimesPlayed)*wMaxTimesPlayed/wTotal,
-                          statAveLastPlayed.normalizeForMax(s.avgLastPlayed)*wAve/wTotal,
-                          statAveTimesPlayed.normalizeForMin(s.avgTimesPlayed)*wAvePlayed/wTotal,
-                          statLastAll.normalizeForMax(s.lastPlayedAllTeams)*wLastAll/wTotal,
-                          (if (s.lastPlayedAllTeams < minLastAll && pastgames.length > minLastAll ) 0.0 else statLastAll.normalizeForMax(s.lastPlayedAllTeams))*wLastAll/wTotal )
-      val raw = weights.foldLeft(0.0)((ac,v)=>ac+v)
+      val weightsL = List( statTeamLastPlayed.normalizeForMax(s.minLastPlayed)*weights.wMinLastPlayed/wTotal,
+                          statTeamLastPlayed.normalizeForMax(s.maxLastPlayed)*weights.wMaxLastPlayed/wTotal,
+                          statTeamTimesPlayed.normalizeForMin(s.maxTimesPlayed)*weights.wMaxTimesPlayed/wTotal,
+                          statAveLastPlayed.normalizeForMax(s.avgLastPlayed)*weights.wAve/wTotal,
+                          statAveTimesPlayed.normalizeForMin(s.avgTimesPlayed)*weights.wAvePlayed/wTotal,
+                          statLastAll.normalizeForMax(s.lastPlayedAllTeams)*weights.wLastAll/wTotal,
+                          (if (s.lastPlayedAllTeams < weights.minLastAll && pastgames.length > weights.minLastAll ) 0.0 else statLastAll.normalizeForMax(s.lastPlayedAllTeams))*weights.wLastAll/wTotal )
+      val raw = weightsL.foldLeft(0.0)((ac,v)=>ac+v)
       val weight = Some(raw).map { w =>
-        if (s.lastPlayedAllTeams < minLastAll) w/10 else w
+        if (s.lastPlayedAllTeams < weights.minLastAll) w/10 else w
       }.map { w =>
         // if played last time or time before, then reduce weight
         if (s.minLastPlayed < 2) raw/8 else w
       }.map { w =>
         if (s.countAllPlayed <= statCountAllPayed.min+1) w else w-0.5
       }.get
-      s.copy(weight=weight, weights=weights)
+      s.copy(weight=weight, weights=weightsL)
     }
 
     def normalizeLastPlayed( lp: Int ) = statTeamLastPlayed.normalizeForMax(lp)
