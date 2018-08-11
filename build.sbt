@@ -254,6 +254,18 @@ lazy val bridgescorer: Project = project.in(file(".")).
     assemblyMergeStrategy in assembly := {
       case PathList("META-INF", "maven", xs @ _*) if (!xs.isEmpty && (xs.last endsWith ".properties"))  => MergeStrategy.first
       case PathList("JS_DEPENDENCIES") => MergeStrategy.rename
+      case PathList("module-info.class") => MergeStrategy.rename
+//      case PathList("akka", "http", xs @ _*) => MergeStrategy.first
+      case PathList("META-INF", "resources", "webjars", "bridgescorer", version, "lib", "bridgescorer-server", rest @ _*) => MergeStrategy.discard
+      case x =>
+        val oldStrategy = (assemblyMergeStrategy in assembly).value
+        oldStrategy(x)
+    },
+
+    assemblyMergeStrategy in (Test, assembly) := {
+      case PathList("META-INF", "maven", xs @ _*) if (!xs.isEmpty && (xs.last endsWith ".properties"))  => MergeStrategy.first
+      case PathList("JS_DEPENDENCIES") => MergeStrategy.rename
+      case PathList("module-info.class") => MergeStrategy.rename
 //      case PathList("akka", "http", xs @ _*) => MergeStrategy.first
       case PathList("META-INF", "resources", "webjars", "bridgescorer", version, "lib", "bridgescorer-server", rest @ _*) => MergeStrategy.discard
       case x =>
@@ -326,7 +338,7 @@ lazy val bridgescorer: Project = project.in(file(".")).
       val inDir = baseDirectory.value
       log.info( s"""Running in directory ${inDir}: java ${args.mkString(" ")}""" )
       val rc = Fork.java( ForkOptions().withWorkingDirectory( Some(inDir) ), args )
-      if (rc != 0) sys.error("integration tests failed")
+      if (rc != 0) throw new RuntimeException("integration tests failed")
     },
 
     moretests := Def.sequential( prereqintegrationtests in Distribution, svt in Distribution).value,
@@ -433,19 +445,19 @@ lazy val bridgescorer: Project = project.in(file(".")).
                 log.info( "Publishing to "+f )
                 Some(f)
               } else {
-                sys.error( "DistributionDirectory directory does not exist: "+f )
+                throw new RuntimeException( "DistributionDirectory directory does not exist: "+f )
                 None
              }
             } else {
-              sys.error( "DistributionDirectory property does not exist in file ~/bridgescorer/config.properties" )
+              throw new RuntimeException( "DistributionDirectory property does not exist in file ~/bridgescorer/config.properties" )
               None
             }
           } else {
-            sys.error( "file ~/bridgescorer/config.properties does not exist" )
+            throw new RuntimeException( "file ~/bridgescorer/config.properties does not exist" )
             None
           }
         case _ =>
-          sys.error("Home directory not set")
+          throw new RuntimeException("Home directory not set")
           None
       }
     },
@@ -484,7 +496,7 @@ lazy val bridgescorer: Project = project.in(file(".")).
 
           log.info( "Published to "+distdir )
         case None =>
-          sys.error("DistributionDirectory is not set")
+          throw new RuntimeException("DistributionDirectory is not set")
       }
 
     },
@@ -1009,7 +1021,7 @@ lazy val `bridgescorer-server`: Project = project.in(file("server")).
       val inDir = baseDirectory.value
       log.info( s"""Running in directory ${inDir}: java ${args.mkString(" ")}""" )
       val rc = Fork.java( ForkOptions().withWorkingDirectory( Some(inDir) ), args )
-      if (rc != 0) sys.error("integration tests failed")
+      if (rc != 0) throw new RuntimeException("integration tests failed")
     },
 
     moretests := Def.sequential( prereqintegrationtests in Distribution, svt in Distribution).value,
@@ -1116,19 +1128,19 @@ lazy val `bridgescorer-server`: Project = project.in(file("server")).
                 log.info( "Publishing to "+f )
                 Some(f)
               } else {
-                sys.error( "DistributionDirectory directory does not exist: "+f )
+                throw new RuntimeException( "DistributionDirectory directory does not exist: "+f )
               	None
              }
             } else {
-              sys.error( "DistributionDirectory property does not exist in file ~/bridgescorer/config.properties" )
+              throw new RuntimeException( "DistributionDirectory property does not exist in file ~/bridgescorer/config.properties" )
               None
             }
           } else {
-            sys.error( "file ~/bridgescorer/config.properties does not exist" )
+            throw new RuntimeException( "file ~/bridgescorer/config.properties does not exist" )
             None
           }
         case _ =>
-          sys.error("Home directory not set")
+          throw new RuntimeException("Home directory not set")
           None
       }
     },
@@ -1167,7 +1179,7 @@ lazy val `bridgescorer-server`: Project = project.in(file("server")).
 
           log.info( "Published to "+distdir )
         case None =>
-          sys.error("DistributionDirectory is not set")
+          throw new RuntimeException("DistributionDirectory is not set")
       }
 
     },
@@ -1239,13 +1251,13 @@ mytest := Def.sequential(
 lazy val releaseCheck = { st: State =>
   Project.extract(st).runTask(publishdir in `bridgescorer`, st) match {
     case (newst,Some(dir)) =>
-      if (!dir.isDirectory()) sys.error("failed check for release, DistributionDirectory does not exist: "+dir)
+      if (!dir.isDirectory()) throw new RuntimeException("failed check for release, DistributionDirectory does not exist: "+dir)
       newst
     case (newst, None) =>
-      sys.error("failed check for release, DistributionDirectory not defined")
+      throw new RuntimeException("failed check for release, DistributionDirectory not defined")
       newst
     case _ =>
-      sys.error("failed check for release, unknown error")
+      throw new RuntimeException("failed check for release, unknown error")
       st
   }
 }

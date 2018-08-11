@@ -8,7 +8,6 @@ import java.util.concurrent.TimeUnit
 import org.openqa.selenium.firefox.FirefoxProfile
 import org.openqa.selenium.Point
 import org.openqa.selenium.Dimension
-import org.openqa.selenium.firefox.internal.ProfilesIni
 import org.openqa.selenium.chrome.ChromeOptions
 import org.openqa.selenium.edge.EdgeDriver
 import org.scalatest.selenium.Firefox
@@ -39,6 +38,7 @@ import org.openqa.selenium.support.events.WebDriverEventListener
 import org.openqa.selenium.support.events.AbstractWebDriverEventListener
 import org.openqa.selenium.UnhandledAlertException
 import com.example.test.pages.PageBrowser
+import org.openqa.selenium.firefox.internal.ProfilesIni
 
 class Session( name: String = "default" ) extends WebDriver {
   import Session._
