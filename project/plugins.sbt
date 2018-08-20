@@ -11,7 +11,7 @@ scalaVersion := "2.12.6"
 val vLog4j = "1.7.25"               // https://mvnrepository.com/artifact/org.slf4j/slf4j-simple
 val vJGit = "5.0.2.201807311906-r" // https://mvnrepository.com/artifact/org.eclipse.jgit/org.eclipse.jgit.pgm
 
-val vCrossProject = "0.5.0"        // https://github.com/portable-scala/sbt-crossproject
+val vCrossProject = "0.6.0"        // https://github.com/portable-scala/sbt-crossproject
 val vScalaJSDefault = "0.6.24"     // http://www.scala-js.org/
 val vSbtAssembly = "0.14.7"        // https://github.com/sbt/sbt-assembly
 val vSbtGit = "1.0.0"              // https://github.com/sbt/sbt-git

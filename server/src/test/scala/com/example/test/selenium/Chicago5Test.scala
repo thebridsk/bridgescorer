@@ -132,7 +132,7 @@ class Chicago5Test extends FlatSpec with MustMatchers with BeforeAndAfterAll wit
     textField("West").value = "Wayne"
     textField("Extra").value = "Brian"
     tcpSleep(1)
-    pressKeys(Keys.ENTER)
+    pressKeys(Keys.ESCAPE)
     tcpSleep(1)
 
     click on id("PlayerNFirstDealer")
