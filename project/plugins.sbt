@@ -25,7 +25,7 @@ val vSbtUpdates = "0.3.4"          // https://github.com/rtimush/sbt-updates
 val scalaJSVersion = Option(System.getenv("SCALAJS_VERSION")).getOrElse(vScalaJSDefault)
 
 val vSbtGzip = "1.0.2"             // https://github.com/sbt/sbt-gzip
-val vSbtScalaJsBundler = "0.12.0"  // https://github.com/scalacenter/scalajs-bundler
+val vSbtScalaJsBundler = "0.13.1"  // https://github.com/scalacenter/scalajs-bundler
 
 // not used:
 

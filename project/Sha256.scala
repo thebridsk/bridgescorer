@@ -51,4 +51,12 @@ object Sha256 {
     hash.map( b => f"${b}%02x" ).mkString
   }
 
+  def main(args: Array[String]): Unit = {
+    if (args.isEmpty) return
+    val start = System.currentTimeMillis()
+    generate( new File(args(0)))
+    val end = System.currentTimeMillis()
+    System.out.println(s"Generating SHA256 took ${end-start} ms" )
+  }
+
 }

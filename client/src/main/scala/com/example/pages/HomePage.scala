@@ -444,7 +444,6 @@ object HomePage {
           scope.withEffectsImpure.modState( s => s.copy(serverUrl=serverUrl(0)))
         }
       })
-
     }
 
     val willUnmount = Callback {
@@ -465,7 +464,10 @@ object HomePage {
   val logger = Logger("bridge.HomePage")
 
   private val component = ScalaComponent.builder[Props]("HomePage")
-        .initialStateFromProps(props => State(debugging,ServerURL(Nil), None, false ))
+        .initialStateFromProps { props =>
+          logger.info("HomePage.initialStateFromProps")
+          State(debugging,ServerURL(Nil), None, false )
+        }
         .backend( backendScope => new Backend(backendScope))
         .renderBackend
         .componentDidMount( scope => scope.backend.didMount)

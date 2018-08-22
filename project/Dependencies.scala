@@ -34,7 +34,7 @@ object Dependencies {
 
 
   lazy val vAkka = "2.5.14"           // http://mvnrepository.com/artifact/com.typesafe.akka/akka-actor_2.11
-  lazy val vAkkaHttp = "10.1.3"       // http://mvnrepository.com/artifact/com.typesafe.akka/akka-http_2.11
+  lazy val vAkkaHttp = "10.1.4"       // http://mvnrepository.com/artifact/com.typesafe.akka/akka-http_2.11
 
   lazy val vAkkaHttpPlayJson="1.21.0"  // https://github.com/hseeberger/akka-http-json
 
@@ -70,7 +70,7 @@ object Dependencies {
   lazy val vScalaArm = "2.0"         // http://mvnrepository.com/artifact/com.jsuereth/scala-arm_2.11
   lazy val vScallop = "3.1.3"        // http://mvnrepository.com/artifact/org.rogach/scallop_2.11
   lazy val vSlf4j = "1.7.25"         // https://mvnrepository.com/artifact/org.slf4j/slf4j-jdk14
-  lazy val vPlayJson = "2.6.9"       // https://mvnrepository.com/artifact/com.typesafe.play/play-json_2.12
+  lazy val vPlayJson = "2.6.10"      // https://mvnrepository.com/artifact/com.typesafe.play/play-json_2.12
 
   // jackson-module-scala usually updates a few days after the others are updated,
   // don't update until jackson-module-scala is updated
@@ -79,7 +79,7 @@ object Dependencies {
   // Selenium needs to be update to update to v23.0
   lazy val vGuavaJre = "26.0-jre"    // https://github.com/google/guava
 
-  lazy val vWebPack = "4.16.5"          // https://www.npmjs.com/package/webpack
+  lazy val vWebPack = "4.17.0"          // https://www.npmjs.com/package/webpack
 
   lazy val vJsDom = "11.12.0"           // https://www.npmjs.com/package/jsdom
 //  lazy val vExposeLoader = "0.7.3"     // https://www.npmjs.com/package/expose-loader
@@ -91,7 +91,7 @@ object Dependencies {
 
   lazy val vFastClick = "1.0.6"       // https://www.npmjs.com/package/fastclick
 
-  lazy val vSangria = "1.4.1"           // https://github.com/sangria-graphql/sangria
+  lazy val vSangria = "1.4.2"           // https://github.com/sangria-graphql/sangria
   lazy val vSangriaPlayJson = "1.0.4"   // https://github.com/sangria-graphql/sangria-playground
 
   // libraries
