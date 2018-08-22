@@ -91,7 +91,9 @@ class MyTest extends FlatSpec with MustMatchers {
 
     def selectedPage = router.getSetPage
 
+    log.warning("Rendering homepage into document")
     val component = ReactTestUtils renderIntoDocument HomePage(router)
+    log.warning("Done rendering homepage into document")
     val y = component.getDOMNode.asElement
     log.info("TestJQuery: ReactDOM.findDOMNode(component) is "+y)
     val jq = jQuery

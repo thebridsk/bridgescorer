@@ -1244,7 +1244,8 @@ mytest := Def.sequential(
                        allassembly,
 //                       packageJSDependencies in Compile in `bridgescorer-client`,
                        test in Test in `bridgescorer-client`,
-                       test in Test in `bridgescorer-server`
+                       test in Test in `bridgescorer-server`,
+                       test in Test in bridgescorer
                       ).value
 
 
