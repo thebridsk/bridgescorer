@@ -166,6 +166,7 @@ object InMemoryPersistent {
 }
 
 class InMemoryStore[VId,VType <: VersionedInstance[VType,VType,VId]](
+                    name: String,
                     cacheInitialCapacity: Int = 5,
                     cacheMaxCapacity: Int = 100,
                     cacheTimeToLive: Duration = 10.minutes,
@@ -174,7 +175,8 @@ class InMemoryStore[VId,VType <: VersionedInstance[VType,VType,VId]](
                     implicit
                       cachesupport: StoreSupport[VId,VType],
                       execute: ExecutionContext
-                  ) extends Store[VId,VType]( new InMemoryPersistent[VId,VType],
+                  ) extends Store[VId,VType]( name,
+                                              new InMemoryPersistent[VId,VType],
                                                    cacheInitialCapacity,
                                                    cacheMaxCapacity,
                                                    cacheTimeToLive,
@@ -187,6 +189,7 @@ object InMemoryStore {
   val log = Logger[InMemoryStore[_,_]]
 
   def apply[VId,VType <: VersionedInstance[VType,VType,VId]](
+                            name: String,
                             cacheInitialCapacity: Int = 5,
                             cacheMaxCapacity: Int = 100,
                             cacheTimeToLive: Duration = 10.minutes,
@@ -196,6 +199,6 @@ object InMemoryStore {
                               cachesupport: StoreSupport[VId,VType],
                               execute: ExecutionContext
                           ): InMemoryStore[VId,VType] = {
-    new InMemoryStore( cacheInitialCapacity, cacheMaxCapacity, cacheTimeToLive, cacheTimeToIdle )
+    new InMemoryStore( name, cacheInitialCapacity, cacheMaxCapacity, cacheTimeToLive, cacheTimeToIdle )
   }
 }

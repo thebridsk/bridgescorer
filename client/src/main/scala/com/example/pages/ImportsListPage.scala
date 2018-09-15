@@ -1,8 +1,6 @@
 package com.example.pages
 
 import scala.scalajs.js
-import org.scalajs.dom.document
-import org.scalajs.dom.Element
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.extra.router.RouterCtl
@@ -184,10 +182,13 @@ object ImportsListPageInternal {
    */
   class Backend(scope: BackendScope[Props, State]) {
 
-    def didMount() = Callback {
+    val didMount = Callback {
       refresh()
     }
 
+    /**
+     * called from threads
+     */
     def refresh() = {
       ImportMethods.list().foreach { rlist =>
         rlist match {
@@ -201,7 +202,7 @@ object ImportsListPageInternal {
 
     def error( err: String ) = scope.modState( s => s.withError(err) )
 
-    def clearError() = scope.modState( s => s.clearError() )
+    val clearError = scope.modState( s => s.clearError() )
 
     def setSelected( data: ReactEventFromInput) = data.extract(_.target.files){ files =>
       scope.modState { s =>
@@ -242,7 +243,7 @@ object ImportsListPageInternal {
       val returnUrl = props.router.urlFor( props.page ).value.replace("#", "%23")
       <.div(
         rootStyles.importsListPageDiv,
-        PopupOkCancel( state.error, None, Some(clearError()) ),
+        PopupOkCancel( state.error, None, Some(clearError) ),
 
         <.h1("Import Bridge Store"),
         <.table(
@@ -300,13 +301,13 @@ object ImportsListPageInternal {
                       .render_P( args => {
                         // row is zero based
                         val (props,state,backend,row,store) = args
-
+                        val storeid = store.id
                         <.tr(
                           <.td( store.id ),
                           <.td( DateUtils.formatDate(store.date) ),
                           <.td(
-                            AppButton( s"Duplicate${row}", "Duplicate", props.router.setOnClick(PlayDuplicate(ImportSummaryView(store.id))) ),
-                            AppButton( s"Delete${row}", "Delete", ^.onClick --> backend.delete(store.id) )
+                            AppButton( s"Duplicate${row}", "Duplicate", props.router.setOnClick(PlayDuplicate(ImportSummaryView(storeid))) ),
+                            AppButton( s"Delete${row}", "Delete", ^.onClick --> backend.delete(storeid) )
                           )
                         )
                       }).build
@@ -315,7 +316,7 @@ object ImportsListPageInternal {
                             .initialStateFromProps { props => State() }
                             .backend(new Backend(_))
                             .renderBackend
-                            .componentDidMount( scope => scope.backend.didMount())
+                            .componentDidMount( scope => scope.backend.didMount)
                             .build
 }
 

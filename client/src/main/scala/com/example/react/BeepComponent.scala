@@ -1,8 +1,6 @@
 package com.example.skeleton.react
 
 import scala.scalajs.js
-import org.scalajs.dom.document
-import org.scalajs.dom.Element
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
 import com.example.Bridge
@@ -86,12 +84,12 @@ object BeepComponentInternal {
    */
   class Backend(scope: BackendScope[Props, State]) {
 
-    def enablePlay() = scope.modState(s => {
+    val enablePlay = scope.modState(s => {
       enableBeep()
       s.copy(displayButtons = false)
     })
 
-    def hideButtons() = scope.modState(s => {
+    val hideButtons = scope.modState(s => {
       disableBeep()
       s.copy(displayButtons = false)
     })

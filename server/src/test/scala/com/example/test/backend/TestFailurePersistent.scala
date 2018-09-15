@@ -159,6 +159,7 @@ class TestFailurePersistent[VId,VType <: VersionedInstance[VType,VType,VId]](
 }
 
 class TestFailureStore[VId,VType <: VersionedInstance[VType,VType,VId]] private (
+                    name: String,
                     val testFailurePersistent: TestFailurePersistent[VId,VType],
                     cacheInitialCapacity: Int = 5,
                     cacheMaxCapacity: Int = 100,
@@ -168,7 +169,8 @@ class TestFailureStore[VId,VType <: VersionedInstance[VType,VType,VId]] private 
                     implicit
                       cachesupport: StoreSupport[VId,VType],
                       execute: ExecutionContext
-                  ) extends Store[VId,VType]( testFailurePersistent,
+                  ) extends Store[VId,VType]( name,
+                                              testFailurePersistent,
                                               cacheInitialCapacity,
                                               cacheMaxCapacity,
                                               cacheTimeToLive,
@@ -178,6 +180,7 @@ class TestFailureStore[VId,VType <: VersionedInstance[VType,VType,VId]] private 
 
 object TestFailureStore {
   def apply[VId,VType <: VersionedInstance[VType,VType,VId]](
+                    name: String,
                     testFailurePersistent: TestFailurePersistent[VId,VType] = null,
                     cacheInitialCapacity: Int = 5,
                     cacheMaxCapacity: Int = 100,
@@ -188,6 +191,6 @@ object TestFailureStore {
                       cachesupport: StoreSupport[VId,VType],
                       execute: ExecutionContext
                   ) = {
-    new TestFailureStore(Option(testFailurePersistent).getOrElse( TestFailurePersistent[VId,VType]()), cacheInitialCapacity, cacheMaxCapacity, cacheTimeToLive, cacheTimeToIdle )
+    new TestFailureStore(name, Option(testFailurePersistent).getOrElse( TestFailurePersistent[VId,VType]()), cacheInitialCapacity, cacheMaxCapacity, cacheTimeToLive, cacheTimeToIdle )
   }
 }

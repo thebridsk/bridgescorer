@@ -1,8 +1,6 @@
 package com.example.testpage
 
 import scala.scalajs.js
-import org.scalajs.dom.document
-import org.scalajs.dom.Element
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
 import com.example.routes.AppRouter.AppPage
@@ -70,7 +68,7 @@ object TestPageInternal {
    */
   class Backend(scope: BackendScope[Props, State]) {
 
-    def popupOk() = scope.modState{ s=> s.copy( errormsg = None ) }
+    val popupOk = scope.modState{ s=> s.copy( errormsg = None ) }
 
     def showError( msg: String ) = scope.modState{ s=> s.copy( errormsg = Some(msg) ) }
 
@@ -119,9 +117,9 @@ object TestPageInternal {
       )
     }
 
-    def clear() = scope.modState( s => s.clear )
+    val clear = scope.modState( s => s.clear )
 
-    def clickSummaryJson() = Callback {
+    val clickSummaryJson = Callback {
       val url = RestClientDuplicateSummary.getURL()
 
       AjaxResult.get(url).recordFailure().foreach{ summary =>
@@ -135,7 +133,7 @@ object TestPageInternal {
       }
     }
 
-    def clickConvert() = scope.modState { s =>
+    val clickConvert = scope.modState { s =>
       import JsonSupport._
 
       if (s.summaryJsonString.isDefined) {
@@ -175,14 +173,14 @@ object TestPageInternal {
     private var mounted: Boolean = false
 
     import scala.concurrent.ExecutionContext.Implicits.global
-    def didMount() = CallbackTo {
+    val didMount = CallbackTo {
       mounted = true
       log.finer("TestPage.didMount")
       // make AJAX rest call here
 
     }
 
-    def willUnmount() = CallbackTo {
+    val willUnmount = CallbackTo {
       mounted = false
       log.finer("TestPage.willUnmount")
     }
@@ -193,8 +191,8 @@ object TestPageInternal {
                             .initialStateFromProps { props => State() }
                             .backend(new Backend(_))
                             .renderBackend
-                            .componentDidMount( scope => scope.backend.didMount())
-                            .componentWillUnmount(scope => scope.backend.willUnmount())
+                            .componentDidMount( scope => scope.backend.didMount)
+                            .componentWillUnmount(scope => scope.backend.willUnmount)
                             .build
 }
 

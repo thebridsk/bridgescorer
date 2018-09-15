@@ -2,8 +2,6 @@ package com.example.pages.duplicate
 
 
 import scala.scalajs.js
-import org.scalajs.dom.document
-import org.scalajs.dom.Element
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.extra.router.RouterCtl
@@ -24,6 +22,8 @@ import com.example.pages.duplicate.DuplicateRouter.BaseBoardViewWithPerspective
 import com.example.pages.duplicate.DuplicateRouter.TableBoardView
 import com.example.react.AppButton
 import com.example.pages.BaseStyles
+import com.example.routes.BridgeRouter
+import com.example.react.HelpButton
 
 /**
  * Shows the team x board table and has a totals column that shows the number of points the team has.
@@ -41,9 +41,9 @@ import com.example.pages.BaseStyles
 object PageBoard {
   import PageBoardInternal._
 
-  case class Props( routerCtl: RouterCtl[DuplicatePage], page: BaseBoardViewWithPerspective )
+  case class Props( routerCtl: BridgeRouter[DuplicatePage], page: BaseBoardViewWithPerspective )
 
-  def apply( routerCtl: RouterCtl[DuplicatePage], page: BaseBoardViewWithPerspective ) = {
+  def apply( routerCtl: BridgeRouter[DuplicatePage], page: BaseBoardViewWithPerspective ) = {
     logger.info(s"PageBoard with page = ${page}")
     component(Props(routerCtl,page))
   }
@@ -91,10 +91,10 @@ object PageBoardInternal {
    */
   class Backend(scope: BackendScope[Props, State]) {
 
-    def nextIMPs = scope.modState { s => s.nextIMPs }
+    val nextIMPs = scope.modState { s => s.nextIMPs }
 
     def render( props: Props, state: State ) = {
-      logger.info("Rendering board "+props.page)
+      logger.info(s"Rendering board ${props.page} routectl=${props.routerCtl.getClass.getName}")
       val perspective = props.page.getPerspective()
       val tableperspective = perspective match {
         case tp: PerspectiveTable => Some(tp)
@@ -106,19 +106,21 @@ object PageBoardInternal {
         <.span(
           !bbs.isEmpty ?= <.b(label),
           !bbs.isEmpty ?= bbs.map { board =>
-            val selected = board.id == props.page.boardid
+            val id = board.id
+            val selected = id == props.page.boardid
+            val clickPage = if (played) {
+              props.page.toBoardView(id)
+            } else {
+              props.page.toBoardView(id).toHandView(ns)
+            }
             Seq[TagMod](
               <.span(" "),
-              AppButton( "Board_"+board.id, "Board "+Id.boardIdToBoardNumber(board.id),
+              AppButton( "Board_"+board.id, "Board "+Id.boardIdToBoardNumber(id),
                          BaseStyles.highlight(
                              selected=selected,
                              requiredNotNext = !played && !selected
                          ),
-                         if (played) {
-                           props.routerCtl.setOnClick(props.page.toBoardView(board.id))
-                         } else {
-                           props.routerCtl.setOnClick(props.page.toBoardView(board.id).toHandView(ns))
-                         }
+                         props.routerCtl.setOnClick(clickPage)
               )
             ).toTagMod
           }.toTagMod
@@ -132,7 +134,6 @@ object PageBoardInternal {
               case Some(round) =>
                 val (played,unplayed) = round.playedAndUnplayedBoards()
                 <.span(
-                  <.span(^.dangerouslySetInnerHtml:="&nbsp;&nbsp;"),
                   buttons("Played: ", played, round.ns.id, true),
                   <.span(^.dangerouslySetInnerHtml:="&nbsp;&nbsp;"),
                   buttons("Unplayed: ", unplayed, round.ns.id, false)
@@ -190,6 +191,8 @@ object PageBoardInternal {
               case Some(r) => r.complete
               case _ => false
             }
+            val clickToScoreboard = props.page.toScoreboardView()
+            val clickToTableView = tableBoardView.map( tbv => tbv.toTableView() )
             <.div(
               dupStyles.divBoardPage,
               title(),
@@ -197,17 +200,31 @@ object PageBoardInternal {
               <.p,
               <.div(
                 baseStyles.fontTextNormal,
+                if (tableperspective.isDefined) {
+                  TagMod(
+                    boardsFromTable(score),
+                    <.p
+                  )
+                } else {
+                  TagMod()
+                },
                 AppButton( "Game", "Scoreboard",
                            allplayedInRound ?= baseStyles.requiredNotNext,
-                           props.routerCtl.setOnClick(props.page.toScoreboardView()) ),
+                           props.routerCtl.setOnClick(clickToScoreboard) ),
+                " ",
+                clickToTableView.isDefined?= AppButton( "Table", "Table "+Id.tableIdToTableNumber(currentTable),
+                                                        allplayedInRound ?= baseStyles.requiredNotNext,
+                                                        props.routerCtl.setOnClick(clickToTableView.get) ),
+                " ",
+                AppButton( "AllBoards", "All Boards",
+                           props.routerCtl.setOnClick(props.page.toAllBoardsView())
+                         ),
                 " ",
                 PageScoreboardInternal.scoringMethodButton( state.useIMP, Some( score.isIMP), false, nextIMPs ),
+                if (tableperspective.isEmpty) boards(score)
+                else TagMod(),
                 " ",
-                tableBoardView.isDefined?= AppButton( "Table", "Table "+Id.tableIdToTableNumber(currentTable),
-                                                      allplayedInRound ?= baseStyles.requiredNotNext,
-                                                      props.routerCtl.setOnClick(tableBoardView.get.toTableView()) ),
-                if (tableperspective.isDefined) boardsFromTable(score)
-                else boards(score)
+                HelpButton("/help/duplicate/boardcomplete.html"),
               )
             )
           case None =>
@@ -220,14 +237,14 @@ object PageBoardInternal {
       DuplicateStore.getMatch().map( md => s.copy( useIMP = Some(md.isIMP) ) )
     }
 
-    def didMount() = CallbackTo {
+    val didMount = scope.props >>= { (p) => Callback {
       logger.info("PageBoard.didMount")
       DuplicateStore.addChangeListener(storeCallback)
-    } >> scope.props >>= { (p) => CallbackTo(
-      Controller.monitorMatchDuplicate(p.page.dupid)
-    )}
 
-    def willUnmount() = CallbackTo {
+      Controller.monitorMatchDuplicate(p.page.dupid)
+    }}
+
+    val willUnmount = Callback {
       logger.info("PageBoard.willUnmount")
       DuplicateStore.removeChangeListener(storeCallback)
     }
@@ -245,6 +262,8 @@ object PageBoardInternal {
                         .render_P( args => {
                           val (id,props,bs) = args
                           val me = props.page.boardid
+                          val clickToBoard = props.page.toScoreboardView().toBoardView(id)
+                          logger.fine(s"Target for setOnClick is ${clickToBoard}")
                           <.td(
                             AppButton( "Board_"+id, "Board "+Id.boardIdToBoardNumber(id),
                                        BaseStyles.highlight(
@@ -253,7 +272,7 @@ object PageBoardInternal {
                                            requiredNotNext = me != id && bs.anyplayed
                                        ),
                                        baseStyles.appButton100,
-                                       props.routerCtl.setOnClick(props.page.toScoreboardView().toBoardView(id))
+                                       props.routerCtl.setOnClick(clickToBoard)
                             )
                           )
                         }).build
@@ -262,8 +281,8 @@ object PageBoardInternal {
                             .initialStateFromProps { props => State() }
                             .backend(new Backend(_))
                             .renderBackend
-                            .componentDidMount( scope => scope.backend.didMount())
-                            .componentWillUnmount( scope => scope.backend.willUnmount() )
+                            .componentDidMount( scope => scope.backend.didMount)
+                            .componentWillUnmount( scope => scope.backend.willUnmount )
                             .build
 }
 

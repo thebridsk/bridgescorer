@@ -75,6 +75,7 @@ trait ParallelUtils {
                            cb.toFuture.transform { t =>
                              t match {
                                case Success(v) =>
+                                 log.fine(s"CodeBlock ${cb.pos.line} ended in success")
                                  Success( cb.pos, None )
                                case Failure(ex) =>
                                  log.severe(s"CodeBlock ${cb.pos.line} ended in failure", ex)
@@ -159,11 +160,14 @@ object ParallelUtils extends ParallelUtils {
     def toFuture = {
       Future {
         try {
+          log.fine(s"CodeBlock ${pos.line} starting")
           body
         } catch {
           case x: Throwable =>
             log.fine("Uncaught exception in CodeBlock", x )
             throw x
+        } finally {
+          log.fine(s"CodeBlock ${pos.line} finished")
         }
       }
     }

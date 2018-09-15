@@ -2,8 +2,6 @@ package com.example.pages.duplicate
 
 
 import scala.scalajs.js
-import org.scalajs.dom.document
-import org.scalajs.dom.Element
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.extra.router.RouterCtl
@@ -21,6 +19,7 @@ import com.example.data.bridge.PerspectiveTable
 import com.example.pages.duplicate.DuplicateRouter.BaseAllBoardsViewWithPerspective
 import com.example.pages.duplicate.DuplicateRouter.TableRoundAllBoardView
 import com.example.react.AppButton
+import com.example.routes.BridgeRouter
 
 /**
  * Shows the team x board table and has a totals column that shows the number of points the team has.
@@ -38,9 +37,9 @@ import com.example.react.AppButton
 object PageAllBoards {
   import PageAllBoardsInternal._
 
-  case class Props( routerCtl: RouterCtl[DuplicatePage], page: BaseAllBoardsViewWithPerspective )
+  case class Props( routerCtl: BridgeRouter[DuplicatePage], page: BaseAllBoardsViewWithPerspective )
 
-  def apply( routerCtl: RouterCtl[DuplicatePage], page: BaseAllBoardsViewWithPerspective ) = component(Props(routerCtl,page))
+  def apply( routerCtl: BridgeRouter[DuplicatePage], page: BaseAllBoardsViewWithPerspective ) = component(Props(routerCtl,page))
 
 }
 
@@ -75,16 +74,9 @@ object PageAllBoardsInternal {
     }
   }
 
-  /**
-   * Internal state for rendering the component.
-   *
-   * I'd like this class to be private, but the instantiation of component
-   * will cause Backend to leak.
-   *
-   */
   class Backend(scope: BackendScope[Props, State]) {
 
-    def nextIMPs = scope.modState { s => s.nextIMPs }
+    val nextIMPs = scope.modState { s => s.nextIMPs }
 
     def render( props: Props, state: State ) = {
       import DuplicateStyles._
@@ -136,14 +128,13 @@ object PageAllBoardsInternal {
       DuplicateStore.getMatch().map( md => s.copy( useIMP = Some(md.isIMP) ) )
     }
 
-    def didMount() = CallbackTo {
+    val didMount = scope.props >>= { (p) => CallbackTo {
       logger.info("PageAllBoards.didMount")
       DuplicateStore.addChangeListener(storeCallback)
-    } >> scope.props >>= { (p) => CallbackTo(
       Controller.monitorMatchDuplicate(p.page.dupid)
-    )}
+    }}
 
-    def willUnmount() = CallbackTo {
+    val willUnmount = CallbackTo {
       logger.info("PageAllBoards.willUnmount")
       DuplicateStore.removeChangeListener(storeCallback)
     }
@@ -153,8 +144,8 @@ object PageAllBoardsInternal {
                             .initialStateFromProps { props => State() }
                             .backend(new Backend(_))
                             .renderBackend
-                            .componentDidMount( scope => scope.backend.didMount())
-                            .componentWillUnmount( scope => scope.backend.willUnmount() )
+                            .componentDidMount( scope => scope.backend.didMount)
+                            .componentWillUnmount( scope => scope.backend.willUnmount )
                             .build
 }
 

@@ -4,6 +4,7 @@ import java.security.DigestInputStream
 import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.io.OutputStreamWriter
+import java.io.BufferedInputStream
 
 
 object Sha256 {
@@ -20,7 +21,7 @@ object Sha256 {
 
     val md = MessageDigest.getInstance("SHA-256")
 
-    val in = new DigestInputStream( new FileInputStream(f), md )
+    val in = new DigestInputStream( new BufferedInputStream( new FileInputStream(f), 1024*1024), md )
     try {
       val b = new Array[Byte]( 1024*1024 )
 
@@ -48,6 +49,14 @@ object Sha256 {
 
   def toHexString( hash: Array[Byte] ) = {
     hash.map( b => f"${b}%02x" ).mkString
+  }
+
+  def main(args: Array[String]): Unit = {
+    if (args.isEmpty) return
+    val start = System.currentTimeMillis()
+    generate( new File(args(0)))
+    val end = System.currentTimeMillis()
+    System.out.println(s"Generating SHA256 took ${end-start} ms" )
   }
 
 }

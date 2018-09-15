@@ -56,6 +56,8 @@ case class BoardV2 private(
       copy(id=newId, created=if (forCreate) time; else created, updated=time)
     }
 
+  def playedHands() = hands.filter(dh => dh.wasPlayed)
+
   def timesPlayed() = hands.filter(dh => dh.wasPlayed).size
 
   def handPlayedByTeam( team: Id.Team ) = hands.collectFirst { case hand: DuplicateHandV2 if hand.isTeam(team) => hand}

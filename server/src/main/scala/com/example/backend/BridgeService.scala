@@ -432,17 +432,17 @@ class BridgeServiceInMemory( id: String, useIdFromValue: Boolean = false, useYam
   val bridgeResources = BridgeResources(useYaml)
   import bridgeResources._
 
-  val chicagos: Store[Id.MatchChicago,MatchChicago] = InMemoryStore[Id.MatchChicago,MatchChicago]()
+  val chicagos: Store[Id.MatchChicago,MatchChicago] = InMemoryStore[Id.MatchChicago,MatchChicago](id)
 
-  val duplicates: Store[Id.MatchDuplicate,MatchDuplicate] = InMemoryStore[Id.MatchDuplicate,MatchDuplicate]()
+  val duplicates: Store[Id.MatchDuplicate,MatchDuplicate] = InMemoryStore[Id.MatchDuplicate,MatchDuplicate](id)
 
-  val duplicateresults: Store[Id.MatchDuplicateResult,MatchDuplicateResult] = InMemoryStore[Id.MatchDuplicateResult,MatchDuplicateResult]()
+  val duplicateresults: Store[Id.MatchDuplicateResult,MatchDuplicateResult] = InMemoryStore[Id.MatchDuplicateResult,MatchDuplicateResult](id)
 
-  val rubbers: Store[String,MatchRubber] = InMemoryStore[String,MatchRubber]()
+  val rubbers: Store[String,MatchRubber] = InMemoryStore[String,MatchRubber](id)
 
-  val boardSets: Store[String,BoardSet] = MultiStore.createInMemoryAndResource[String,BoardSet]("/com/example/backend/", "Boardsets.txt", self.getClass.getClassLoader)
+  val boardSets: Store[String,BoardSet] = MultiStore.createInMemoryAndResource[String,BoardSet](id,"/com/example/backend/", "Boardsets.txt", self.getClass.getClassLoader)
 
-  val movements: Store[String,Movement] = MultiStore.createInMemoryAndResource[String,Movement]("/com/example/backend/", "Movements.txt", self.getClass.getClassLoader)
+  val movements: Store[String,Movement] = MultiStore.createInMemoryAndResource[String,Movement](id,"/com/example/backend/", "Movements.txt", self.getClass.getClassLoader)
 
   override
   def toString() = "BridgeServiceInMemory"

@@ -1,8 +1,6 @@
 package com.example.websocket
 
-import org.scalajs.dom.raw._
 import scala.scalajs.js
-import org.scalajs.dom
 import com.example.data.websocket.Protocol
 import scala.scalajs.js.Array
 import utils.logging.Logger

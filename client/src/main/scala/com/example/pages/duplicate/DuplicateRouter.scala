@@ -2,7 +2,6 @@ package com.example.pages.duplicate
 
 import japgolly.scalajs.react.extra.router.{Resolution, RouterConfigDsl, RouterCtl, Router, _}
 import japgolly.scalajs.react.vdom.html_<^._
-import org.scalajs.dom.document
 import com.example.data.bridge._
 import com.example.pages.info.InfoPage
 import com.example.pages.HomePage
@@ -12,7 +11,6 @@ import com.example.data.Id
 import com.example.bridge.store.DuplicateStore
 import com.example.routes.AppRouter.AppPage
 import japgolly.scalajs.react.CallbackTo
-import org.scalajs.dom.html
 import japgolly.scalajs.react._
 import com.example.pages.duplicate.boardsets.PageBoardSets
 import com.example.pages.duplicate.boardsets.PageMovements
@@ -27,6 +25,7 @@ import com.example.skeleton.react.BeepComponent
 import japgolly.scalajs.react.vdom.TagMod
 import com.example.pages.duplicate.DuplicateRouter.BaseScoreboardView
 import scala.scalajs.js.URIUtils
+import com.example.routes.BridgeRouterBaseWithLogging
 
 object DuplicateModule extends Module {
   case class PlayDuplicate(m: DuplicatePage ) extends AppPage
@@ -75,12 +74,14 @@ object DuplicateRouter {
     }
   }
 
+  class DuplicateRouterWithLogging( ctl: RouterCtl[DuplicatePage] ) extends BridgeRouterBaseWithLogging[DuplicatePage](ctl) {
+    override
+    def home: TagMod = DuplicateModule.gotoAppHome()
+  }
+
   import scala.language.implicitConversions
   implicit def routerCtlToBridgeRouter( ctl: RouterCtl[DuplicatePage] ): BridgeRouter[DuplicatePage] =
-    new BridgeRouterBase[DuplicatePage](ctl) {
-        override
-        def home: TagMod = DuplicateModule.gotoAppHome()
-    }
+    new DuplicateRouterWithLogging(ctl)
 
   trait BaseBoardView extends DuplicatePage {
     val dupid: String
@@ -88,6 +89,7 @@ object DuplicateRouter {
     def toScoreboardView(): BaseScoreboardView
     def toHandView( handid: String ): BaseHandView
     def toBoardView( bid: String ): BaseBoardView
+    def toAllBoardsView(): BaseAllBoardsView
   }
 
   trait BaseBoardViewWithPerspective extends BaseBoardView {
@@ -132,7 +134,7 @@ object DuplicateRouter {
     def getDuplicateResultPage(dupid: String): DuplicateResultViewBase = DuplicateResultView(dupid)
   }
 
-  case object PairsView extends DuplicatePage
+  case object StatsView extends DuplicatePage
   case object NewDuplicateView extends DuplicatePage
   case object SelectMatchView extends DuplicatePage
   case object SuggestionView extends DuplicatePage
@@ -183,6 +185,7 @@ object DuplicateRouter {
     def getPerspective(): DuplicateViewPerspective = PerspectiveComplete
     def toHandView( handid: String ) = CompleteHandView(dupid,boardid,handid)
     def toBoardView( bid: String ) = CompleteBoardView(dupid,bid)
+    def toAllBoardsView() = CompleteAllBoardView(dupid)
   }
   case class CompleteHandView( dupid: String, boardid: String, handid: String ) extends BaseHandView {
     def toBoardView() = CompleteBoardView(dupid,boardid)
@@ -206,6 +209,7 @@ object DuplicateRouter {
     def getPerspective(): DuplicateViewPerspective = PerspectiveDirector
     def toHandView( handid: String ) = DirectorHandView(dupid,boardid,handid)
     def toBoardView( bid: String ) = DirectorBoardView(dupid,bid)
+    def toAllBoardsView() = DirectorAllBoardView(dupid)
   }
   case class DirectorHandView( dupid: String, boardid: String, handid: String ) extends BaseHandView {
     def toBoardView() = DirectorBoardView(dupid,boardid)
@@ -292,6 +296,7 @@ object DuplicateRouter {
     def toScoreboardView() = TableRoundScoreboardView(dupid,tableid,round)
     def toHandView( handid: String ) = TableHandView(dupid,tableid,round,boardid,handid)
     def toBoardView( bid: String ) = TableBoardView(dupid,tableid,round,bid)
+    def toAllBoardsView() = TableRoundAllBoardView(dupid,tableid,round)
     def getPerspective(): DuplicateViewPerspective = DuplicateStore.getTablePerspectiveFromRound(tableid, round) match {
       case Some(p) => p
       case None => PerspectiveComplete
@@ -317,7 +322,7 @@ object DuplicateRouter {
   }
 
   val verifyPages = SummaryView::
-                    PairsView::
+                    StatsView::
                     NewDuplicateView::
                     SelectMatchView::
                     SuggestionView::
@@ -357,8 +362,8 @@ object DuplicateRouter {
     import dsl._
 
     (emptyRule
-      | staticRoute( "pairs", PairsView )
-        ~> renderR( routerCtl => PagePairs(routerCtl) )
+      | staticRoute( "stats", StatsView )
+        ~> renderR( routerCtl => PageStats(routerCtl) )
       | staticRoute( "suggestion", SuggestionView )
         ~> renderR( routerCtl => PageSuggestion(routerCtl) )
       | staticRoute( "boardsets", BoardSetSummaryView )

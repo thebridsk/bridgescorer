@@ -319,7 +319,6 @@
   font-size: larger;
   border: 1px solid black;
   margin: 5px;
-  border-collapse: collapse;
 }
 .rootImportsListPageDiv td {
   font-size: larger;
@@ -378,95 +377,173 @@
   list-style-type: none;
 }
 
-[data-title] {
-    border-bottom: 1px dashed rgba(0, 0, 0, 0.2);
-    border-radius:2px;
-    position: relative;
-    white-space: pre;
-    size: auto;
-    text-align: left;
-}
-body.touched [data-title] > * {
-    user-select: none;
-}
-body .titleHover:hover {
-    user-select: auto;
-    background-color: orange;
-}
-body .titleHover:hover > * {
-    user-select: auto;
-    background-color: orange;
-}
-body.touched .titleHover:hover {
-    user-select: auto;
-    background-color: orange;
-}
-body.touched .titleHover:hover > * {
-    user-select: auto;
-    background-color: orange;
-}
-body.touched [data-title]:hover:after {
-    position: absolute;
-    top: 100%;
-    left: -50px; 
-    content: attr(data-title);
-    border: 1px solid rgba(0, 0, 0, 0.2);
-    background-color: white;
-    box-shadow: 1px 1px 3px;
-    padding: 0.3em;
-    z-index: 1;
-    text-align: left;
-}
-body [data-title]:hover:after {
-    position: absolute;
-    top: 100%;
-    left: -50px; 
-    content: attr(data-title);
-    border: 1px solid rgba(0, 0, 0, 0.2);
-    background-color: white;
-    box-shadow: 1px 1px 3px;
-    padding: 0.3em;
-    z-index: 1;
-    text-align: left;
-}
-
 .piechart {
   transform: rotate(-0.25turn);
   display: block;
 }
 
-.tableStats {
+.svgrect {
+  display: block;
+}
+
+.colorbar > div {
+  border: 1px solid black;
+}
+
+.tableComponent {
   border-spacing: 0px;
   font-size: large;
   white-space: nowrap;
   border: 1px solid black;
-  border-collapse: collapse;
+  /*
+  table-layout: fixed;
+  */
 }
-.tableStats caption {
-  border: 1px solid black;
+.tableComponent caption {
+  border: 2px solid black;
+  border-bottom: 0px solid black;
   font-weight: bold;
   font-size: x-large;
 }
-.tableStats button#Hidden {
+.tableComponent button#Hidden {
   float: right;
 }
-.tableStats button {
+.tableComponent button {
   font-size: large;
   font-weight: bold;
 }
-.tableStats tbody tr:nth-child(2n+1) {
+.tableComponent tbody tr:nth-child(2n+1) {
   background-color: #f2f2f2;
 }
-.tableStats td {
+.tableComponent td {
   border: 1px solid black;
   text-align: center;
   padding: 2px 4px 2px 4px;
 }
-.tableStats th {
+.tableComponent th {
   border: 1px solid black;
   text-align: center;
   padding: 2px 4px 2px 4px;
 }
-.tableStats tfoot > tr:first-child td {
+.tableComponent tfoot > tr:first-child td {
   border-top: 3px solid black;
 }
+
+/***********
+ *  Tooltip stuff
+ */
+
+.withTooltipBox {
+    position: relative;
+}
+.withTooltipBox > .tooltipContent {
+    visibility: hidden;
+    color: black;
+    background-color: white;
+    padding: 5px;
+    border-radius: 6px;
+    border: 1px solid black;
+
+    /* Position the tooltip text - see examples below! */
+    position: absolute;
+    z-index: 20;
+    top: 90%;
+    left: 20%;
+}
+/* Show the tooltip text when you mouse over the tooltip container */
+.withTooltipBox:hover > .tooltipContent {
+    visibility: visible;
+}
+body.touched .withTooltipBox:hover > .tooltipContent {
+    visibility: visible;
+}
+
+.withTooltipBox:hover {
+    user-select: auto;
+    background-color: orange;
+}
+
+body.touched .withTooltipBox:hover {
+    user-select: auto;
+    background-color: orange;
+}
+
+/*****
+ *  App Stuff
+ */
+.withTooltipBox {
+  display: flex; 
+  flex-flow: row nowrap; 
+  justify-content: center; 
+  align-items: center; 
+  align-content: center;
+}
+
+.tooltipContent {
+}
+
+.tooltipContent > div.tooltipBody > div {
+  white-space: pre;
+  text-align: left;
+  padding-left: 5px;
+}
+
+.tooltipContent > div.tooltipBody {
+  display: flex; 
+  flex-flow: row nowrap; 
+  justify-content: left; 
+  align-items: center; 
+  align-content: center;
+  white-space: pre;
+}
+
+.tooltipContent > div.tooltipTitle {
+  white-space: pre;
+  text-align: left;
+  padding-left: 5px;
+  width: 100%;
+}
+
+.colorbar {
+  display: flex; 
+  flex-flow: row nowrap; 
+  justify-content: center;
+  border: none;
+}
+
+.colorbar .tooltipContent {
+  white-space: pre
+}
+
+.divColorPage {
+
+}
+
+.divColorPage > div {
+  padding-top: 5px;
+}
+
+.divColorPage div:nth-child(2) td, .divColorPage div:nth-child(2) th {
+  white-space: nowrap;
+  border: 1px solid black;
+}
+
+.divColorPage div:nth-child(2) table {
+  border-spacing: 0px;
+  font-size: large;
+  white-space: nowrap;
+  border: 1px solid black;
+}
+
+.divColorPage div:nth-child(3) td, .divColorPage div:nth-child(3) th {
+  white-space: nowrap;
+  border: 1px solid black;
+}
+
+.divColorPage div:nth-child(3) table {
+  border-spacing: 0px;
+  font-size: large;
+  white-space: nowrap;
+  border: 1px solid black;
+}
+

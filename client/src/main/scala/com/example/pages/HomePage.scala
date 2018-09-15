@@ -15,7 +15,6 @@ import com.example.version.VersionClient
 import com.example.version.VersionShared
 import scala.util.Success
 import scala.util.Failure
-import org.scalajs.dom.ext.AjaxException
 import com.example.react.AppButton
 import com.example.routes.AppRouter.About
 import com.example.pages.chicagos.ChicagoModule.PlayChicago2
@@ -46,6 +45,10 @@ import com.example.react.AppButtonLink
 import com.example.fastclick.FastClick
 import com.example.react.PopupOkCancel
 import com.example.pages.duplicate.DuplicateRouter.SelectMatchView
+import japgolly.scalajs.react.extra.router.RouterCtl
+import com.example.routes.BridgeRouter
+import com.example.react.AppButtonLinkNewWindow
+import com.example.react.HelpButton
 
 /**
  * @author werewolf
@@ -54,7 +57,7 @@ object HomePage {
 
   var debugging = false
 
-  case class Props( callback: (AppPage)=>Callback)
+  case class Props( routeCtl: BridgeRouter[AppPage])
 
   case class State( debugging: Boolean, serverUrl: ServerURL, working: Option[String], fastclickTest: Boolean )
 
@@ -62,11 +65,11 @@ object HomePage {
 
   class Backend( scope: BackendScope[Props, State]) {
 
-    def toggleFastclickTest() = scope.modState( s => s.copy( fastclickTest = !s.fastclickTest) )
+    val toggleFastclickTest = scope.modState( s => s.copy( fastclickTest = !s.fastclickTest) )
 
     def isFastclickOn = fastclick.isDefined
 
-    def toggleFastclick() = Callback {
+    val toggleFastclick = Callback {
       fastclick match {
         case Some(fc) =>
           fc.destroy()
@@ -76,7 +79,7 @@ object HomePage {
       }
     } >> scope.forceUpdate
 
-    def toggleDebug() = scope.modState { s =>
+    val toggleDebug = scope.modState { s =>
       val newstate = s.copy(debugging = !s.debugging)
       debugging = newstate.debugging
 
@@ -85,12 +88,12 @@ object HomePage {
 
     def render( props: Props, state: State ) = {
       import BaseStyles._
-      def callbackPage(page: AppPage) = props.callback(page)
+      def callbackPage(page: AppPage) = props.routeCtl.set(page)
       val doingWork = state.working.getOrElse("")
       val isWorking = state.working.isDefined
       <.div(
         rootStyles.homeDiv,
-        PopupOkCancel( if (isWorking) Some(doingWork) else None, None, Some(cancel()) ),
+        PopupOkCancel( if (isWorking) Some(doingWork) else None, None, Some(cancel) ),
         <.div(
           rootStyles.serverDiv,
           ^.id:="url",
@@ -113,7 +116,7 @@ object HomePage {
                   AppButton( "ChicagoList2", "Chicago List", rootStyles.playButton, ^.disabled:=isWorking, ^.onClick --> callbackPage(PlayChicago2(ListView)))
                 ),
                 <.td( ^.width:="33%",
-                  AppButton( "Chicago2", "New Chicago", rootStyles.playButton, ^.disabled:=isWorking, ^.onClick -->newChicago() )
+                  AppButton( "Chicago2", "New Chicago", rootStyles.playButton, ^.disabled:=isWorking, ^.onClick -->newChicago )
                 ),
                 <.td( ^.width:="33%"
                 )
@@ -134,7 +137,7 @@ object HomePage {
                   AppButton( "Rubber", "Rubber Bridge List", rootStyles.playButton, ^.disabled:=isWorking, ^.onClick --> callbackPage(PlayRubber(RubberListView)))
                 ),
                 <.td(
-                  AppButton( "NewRubber", "New Rubber Bridge", rootStyles.playButton, ^.disabled:=isWorking, ^.onClick --> newRubber())
+                  AppButton( "NewRubber", "New Rubber Bridge", rootStyles.playButton, ^.disabled:=isWorking, ^.onClick --> newRubber)
                 )
               ),
               <.tr(
@@ -154,6 +157,18 @@ object HomePage {
                                    ^.disabled:=isWorking
                     )
                   }
+                )
+              ),
+              <.tr(
+                <.td(
+                      {
+                        val location = document.defaultView.location
+                        val origin = location.origin.get
+                        val path = s"""${origin}/help/introduction.html"""
+                        HelpButton( path,
+                                    style = Some(rootStyles.playButton)
+                                  )
+                      }
                 )
               )
             )
@@ -221,7 +236,7 @@ object HomePage {
                       rootStyles.playButton,
                       ^.disabled:=isWorking,
                       BaseStyles.highlight(selected = state.fastclickTest),
-                      ^.onClick --> toggleFastclickTest()
+                      ^.onClick --> toggleFastclickTest
                     )
                   }
                 ),
@@ -231,7 +246,7 @@ object HomePage {
                     rootStyles.playButton,
                     BaseStyles.highlight( selected = isFastclickOn ),
                     ^.disabled:=isWorking,
-                    ^.onClick --> toggleFastclick()
+                    ^.onClick --> toggleFastclick
                   )
                 ),
                 <.td( ^.width:="25%",
@@ -239,7 +254,7 @@ object HomePage {
                     "Shutdown", "Shutdown Server",
                     rootStyles.playButton,
                     ^.disabled:=isWorking,
-                    ^.onClick --> doShutdown()
+                    ^.onClick --> doShutdown
                   )
                 )
               ),
@@ -260,7 +275,7 @@ object HomePage {
                   AppButton( "Debug", "Debug",
                              rootStyles.playButton,
                              ^.disabled:=true,   // isWorking,
-                             ^.onClick --> toggleDebug(),
+                             ^.onClick --> toggleDebug,
                              BaseStyles.highlight(selected = debugging )
                   )
                 ),
@@ -302,6 +317,12 @@ object HomePage {
                              rootStyles.playButton,
                              ^.disabled:=isWorking,
                              ^.onClick --> callbackPage(GraphQLAppPage))
+                ),
+                <.td( ^.width:="25%",
+                  AppButton( "Color", "Color",
+                             rootStyles.playButton,
+                             ^.disabled:=isWorking,
+                             ^.onClick --> callbackPage(ColorView))
                 )
               )
             )
@@ -310,7 +331,15 @@ object HomePage {
       )
     }
 
-    def doShutdown() = scope.modState( s => s.copy(working = Some("Sending shutdown command to server")), Callback {
+    def gotoPage( page: AppPage ) = scope.withEffectsImpure.props.routeCtl.set(page).runNow()
+
+    /**
+     * Sets the text in the working field.  only call when not doing another modState.
+     * @param text string to show as an error
+     */
+    def setPopupText( text: String, cb: Callback = Callback.empty ) = scope.withEffectsImpure.modState( s => s.copy( working = Some(text) ), cb )
+
+    val doShutdown = scope.modState( s => s.copy(working = Some("Sending shutdown command to server")), Callback {
 
       import com.example.rest2.RestClient._
 
@@ -321,11 +350,11 @@ object HomePage {
       res.onComplete( _ match {
         case Success(req) =>
           if (req.status == 204) {
-            scope.withEffectsImpure.props.callback(ThankYou).runNow()
+            gotoPage(ThankYou)
           } else {
             val resp = req.toRestMessage
             logger.severe(s"Error from server on shutdown action: ${resp}")
-            scope.withEffectsImpure.modState( s => s.copy(working = Some(s"Error from server: ${resp}")) )
+            setPopupText(s"Error from server: ${resp}")
           }
         case Failure(f) =>
           f match {
@@ -333,7 +362,7 @@ object HomePage {
               // ignore this
             case _ =>
               logger.severe("Error trying to shutdown server: ",f)
-              scope.withEffectsImpure.modState( s => s.copy(working = Some(s"Error sending shutdown to server ${f}")) )
+              setPopupText(s"Error sending shutdown to server ${f}")
           }
       })
     })
@@ -347,66 +376,66 @@ object HomePage {
 
 //  import org.scalajs.dom.document
 //  document.defaultView.location.reload(true)
-    def cancel() = Callback {
+    val cancel = Callback {
       resultChicago.cancel()
       resultShutdown.cancel()
     } >> scope.modState( s => s.copy(working=None))
 
     import scala.concurrent.ExecutionContext.Implicits.global
 
-    def newChicago() = {
+    val newChicago = {
       scope.modState( s => s.copy(working=Some("Working on creating a new Chicago match")), Callback {
         val result = ChicagoController.createMatch()
         resultChicago.set(result)
         result.foreach { created =>
           logger.info(s"Got new chicago ${created.id}.  HomePage.mounted=${mounted}")
-          if (mounted) scope.withEffectsImpure.props.callback(PlayChicago2(NamesView(created.id,0))).runNow()
+          if (mounted) gotoPage(PlayChicago2(NamesView(created.id,0)))
         }
         result.failed.foreach( t => {
           t match {
             case x: RequestCancelled =>
             case _ =>
-              scope.withEffectsImpure.modState( s => s.copy(working=Some("Failed to create a new Chicago match")))
+              setPopupText("Failed to create a new Chicago match")
           }
         })
       })
     }
 
-    def newRubber() =
+    val newRubber =
       scope.modState( s => s.copy(working=Some("Working on creating a new rubber match")), Callback {
         val result = RubberController.createMatch()
         result.foreach { created =>
           logger.info(s"Got new rubber ${created.id}.  HomePage.mounted=${mounted}")
-          if (mounted) scope.withEffectsImpure.props.callback(PlayRubber(RubberMatchNamesView(created.id))).runNow()
+          if (mounted) gotoPage(PlayRubber(RubberMatchNamesView(created.id)))
         }
         result.failed.foreach( t => {
           t match {
             case x: RequestCancelled =>
             case _ =>
-              scope.withEffectsImpure.modState( s => s.copy(working=Some("Failed to create a new Chicago match")))
+              setPopupText("Failed to create a new Chicago match")
           }
         })
       })
 
-    def newDuplicate() =
-      scope.modState( s => s.copy(working=Some("Working on creating a new duplicate match")), Callback {
+    val newDuplicate =
+      setPopupText("Working on creating a new duplicate match", Callback {
         val result = Controller.createMatchDuplicate().recordFailure()
         result.foreach { created=>
           logger.info("Got new duplicate match ${created.id}.  HomePage.mounted=${mounted}")
-          if (mounted) scope.withEffectsImpure.props.callback(PlayDuplicate(CompleteScoreboardView(created.id))).runNow()
+          if (mounted) gotoPage(PlayDuplicate(CompleteScoreboardView(created.id)))
         }
         result.failed.foreach( t => {
           t match {
             case x: RequestCancelled =>
             case _ =>
-              scope.withEffectsImpure.modState( s => s.copy(working=Some("Failed to create a new duplicate match")))
+              setPopupText("Failed to create a new duplicate match")
           }
         })
       })
 
     private var mounted = false
 
-    def didMount() = Callback {
+    val didMount = Callback {
       mounted = true
       // make AJAX rest call here
       logger.info("HomePage.didMount: Sending serverurl request to server")
@@ -415,10 +444,9 @@ object HomePage {
           scope.withEffectsImpure.modState( s => s.copy(serverUrl=serverUrl(0)))
         }
       })
-
     }
 
-    def willUnmount() = Callback {
+    val willUnmount = Callback {
       mounted = false
       logger.finer("HomePage.willUnmount")
     }
@@ -436,13 +464,16 @@ object HomePage {
   val logger = Logger("bridge.HomePage")
 
   private val component = ScalaComponent.builder[Props]("HomePage")
-        .initialStateFromProps(props => State(debugging,ServerURL(Nil), None, false ))
+        .initialStateFromProps { props =>
+          logger.info("HomePage.initialStateFromProps")
+          State(debugging,ServerURL(Nil), None, false )
+        }
         .backend( backendScope => new Backend(backendScope))
         .renderBackend
-        .componentDidMount( scope => scope.backend.didMount())
-        .componentWillUnmount( scope => scope.backend.willUnmount() )
+        .componentDidMount( scope => scope.backend.didMount)
+        .componentWillUnmount( scope => scope.backend.willUnmount )
         .build
 
-  def apply( callbackPage: (AppPage)=>Callback ) = component(Props(callbackPage))
+  def apply( routeCtl: BridgeRouter[AppPage] ) = component(Props(routeCtl))
 
 }

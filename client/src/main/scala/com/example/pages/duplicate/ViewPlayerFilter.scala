@@ -2,8 +2,6 @@ package com.example.pages.duplicate
 
 
 import scala.scalajs.js
-import org.scalajs.dom.document
-import org.scalajs.dom.Element
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.extra.router.RouterCtl
@@ -17,7 +15,7 @@ import com.example.react.AppButton
 import com.example.react.Utils._
 import com.example.data.duplicate.suggestion.PairsData
 import com.example.data.duplicate.suggestion.PairData
-import org.scalajs.dom.ext.Color
+import com.example.color.Color
 import com.example.react.CheckBox
 import com.example.data.duplicate.suggestion.ColorBy
 import com.example.data.duplicate.suggestion.ColorByWonPct
@@ -28,6 +26,7 @@ import com.example.data.duplicate.suggestion.ColorByWon
 import com.example.data.duplicate.suggestion.ColorByWonPts
 import com.example.data.duplicate.suggestion.ColorByWonPtsPct
 import com.example.data.duplicate.suggestion.ColorByPointsPct
+import com.example.pages.BaseStyles
 
 /**
  * Shows a pairs summary page.
@@ -52,7 +51,8 @@ object ViewPlayerFilter {
   case class Filter(
                     pairsData: Option[PairsData] = None,
                     selected: Option[List[String]] = None,
-                    showFilter: Boolean = false
+                    showFilter: Boolean = false,
+                    filterDisplayOnly: Boolean = true
                   ) {
 
     def toggleSelected( p: String ) = {
@@ -66,6 +66,10 @@ object ViewPlayerFilter {
           Some(List(p))
       }
       copy(selected=ns)
+    }
+
+    def setFilterDisplayOnly( b: Boolean ) = {
+      copy(filterDisplayOnly=b)
     }
 
     def isPlayerSelected( p: String ) = {
@@ -130,7 +134,11 @@ object ViewPlayerFilterInternal {
       props.onChange( props.filter.showFilter(b) )
     }
 
-    def clearFilter() = scope.props >>= { props =>
+    def setFilterDisplayOnly( b: Boolean ) = scope.props >>= { props =>
+      props.onChange( props.filter.setFilterDisplayOnly(b) )
+    }
+
+    val clearFilter = scope.props >>= { props =>
       props.onChange( props.filter.clearSelected )
     }
 
@@ -159,8 +167,9 @@ object ViewPlayerFilterInternal {
               if (props.filter.showFilter) {
                 TagMod(
                   AppButton( "HideFilter", "Hide Filter", ^.onClick-->showFilter(false) ),
-                  AppButton( "ClearFilter", "Clear Filter", ^.onClick-->clearFilter() ),
-                  AppButton( "SelectAllFilter", "Select All", ^.onClick-->selectAllFilter(allPlayers) )
+                  AppButton( "ClearFilter", "Clear Filter", ^.onClick-->clearFilter ),
+                  AppButton( "SelectAllFilter", "Select All", ^.onClick-->selectAllFilter(allPlayers) ),
+                  CheckBox( "DisplayOnly", "Filter Display Only", props.filter.filterDisplayOnly, setFilterDisplayOnly(!props.filter.filterDisplayOnly) )
                 )
               } else {
                 AppButton( "ShowFilter", "Show Filter", ^.onClick-->showFilter(true) ),

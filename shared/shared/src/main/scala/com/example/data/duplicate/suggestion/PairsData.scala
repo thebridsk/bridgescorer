@@ -217,12 +217,12 @@ class PairsData( val pastgames: List[DuplicateSummary], val calc: CalculationTyp
    * @param player
    */
   def get( player: String, playerFilter: Option[List[String]] ) = {
-    val pds = data.values.filter { pd =>
+    val (r,p) = data.values.filter { pd =>
       pd.contains(player) && playerFilter.map( f => f.contains(pd.player1) && f.contains(pd.player2)).getOrElse(true)
+    }.foldLeft((PairData(player,"",0,0,0,0,0,0, None,0,0,0,0,0),List[String]())) { (ac,v) =>
+      (ac._1.addPairData(v), (if (v.player1==player) v.player2 else v.player1)::ac._2)
     }
-    pds.foldLeft(PairData(player,"",0,0,0,0,0,0, None,0,0,0,0,0)) { (ac,v) =>
-      ac.addPairData(v)
-    }
+    r.copy(player2=p.sorted.mkString(","))
   }
 }
 
@@ -252,9 +252,14 @@ object ColorByWonPtsPct extends ColorBy {
   def n( pd: PairData): Int = pd.played
 }
 object ColorByPointsPct extends ColorBy {
-  val name = "Points Percent";
+  val name = "Pts%";
   def value( pd: PairData ): Double = pd.pointsPercent
   def n( pd: PairData): Int = pd.playedMP
+}
+object ColorByIMP extends ColorBy {
+  val name = "avgIMP";
+  def value( pd: PairData ): Double = pd.avgIMP
+  def n( pd: PairData): Int = pd.playedIMP
 }
 
 object ColorByPlayed extends ColorBy {
@@ -262,12 +267,27 @@ object ColorByPlayed extends ColorBy {
   def value( pd: PairData ): Double = pd.played
   def n( pd: PairData): Int = pd.played
 }
+object ColorByPlayedMP extends ColorBy {
+  val name = "PlayedMP";
+  def value( pd: PairData ): Double = pd.playedMP
+  def n( pd: PairData): Int = pd.playedMP
+}
+object ColorByPlayedIMP extends ColorBy {
+  val name = "PlayedIMP";
+  def value( pd: PairData ): Double = pd.playedIMP
+  def n( pd: PairData): Int = pd.playedIMP
+}
 
 class Stat( val colorBy: ColorBy ) {
   private var number: Int = 0
   private var total: Double = 0
   private var vmax: Double = Double.MinValue
   private var vmin: Double = Double.MaxValue
+
+  override
+  def toString() = {
+    f"""Stat(${total}%.2f/${number}, ave=${ave}%.2f, min=${vmin}%.2f, max=${vmax}%.2f)"""
+  }
 
   def add( pds: PairsData ): Stat = {
     add(pds.data.values)
@@ -291,6 +311,7 @@ class Stat( val colorBy: ColorBy ) {
   def max = vmax
   def min = vmin
   def ave = if (number == 0) 0.0 else total/number
+  def n = number
 
   def size( pd: PairData, sizemin: Int, sizemax: Int ): Int = {
     val v = colorBy.value(pd)
@@ -325,7 +346,7 @@ class Stat( val colorBy: ColorBy ) {
    * @param sizemin must be greater than 0
    * @param sizemax must be greater than sizemin
    * @return tuple2.  the first entry is a boolean, true indicates above average.
-   * The second is the distance from average (smin - smax).  zero indicates average.
+   * The second is the distance from average, 0-1.  zero indicates average. a 1 indicates min or max
    */
   def sizeAveAsFraction( pd: PairData ): (Boolean,Double) = {
     val v = colorBy.value(pd)
@@ -333,9 +354,9 @@ class Stat( val colorBy: ColorBy ) {
     if (min == max) (true,0)
     else if (v == ave) (true,0)
     else if (v < ave) {
-      (false,((v-min)/(ave-min)))
+      (false,((ave-v)/(ave-min)))
     } else {
-      (true,(1-(v-ave)/(max-ave)))
+      (true,((v-ave)/(max-ave)))
     }
 
   }
@@ -378,14 +399,16 @@ import com.example.data.DuplicateSummaryDetails
  * @param pds
  * @param colorBy
  * @param filter if specified will only show result with these players.
+ * @param displayOnly if true, all stats are used, players only only filtered when stats is displayed,
+ *                    if false, only filtered players stats are used.
  */
-class PairsDataSummary( pds: PairsData, colorBy: ColorBy, filter: Option[List[String]], extraColorBy: ColorBy* ) {
+class PairsDataSummary( pds: PairsData, colorBy: ColorBy, filter: Option[List[String]], displayOnly: Boolean, extraColorBy: ColorBy* ) {
 
   val players = pds.players
   val playerFilter = filter.getOrElse(players)
 
   val playerTotals = playerFilter.map { player =>
-                                        player -> pds.get(player,filter)
+                                        player -> pds.get(player,if (displayOnly) None else filter)
                                       }.toMap
 
   /**
@@ -401,18 +424,18 @@ class PairsDataSummary( pds: PairsData, colorBy: ColorBy, filter: Option[List[St
     }
   }
 
-  val extraStatsPlayer = extraColorBy.map( e => new Stat(e) ).toList
+  val extraStatsPlayerTotals = extraColorBy.map( e => new Stat(e) ).toList
   val colorStatPlayerTotals = new Stat(colorBy)
 
 
 
-  Stat.addPairsPlayer1(playerTotals.values, filter, colorStatPlayerTotals::extraStatsPlayer :_*)
+  Stat.addPairsPlayer1(playerTotals.values, filter, colorStatPlayerTotals::extraStatsPlayerTotals :_*)
 
   val extraStats = extraColorBy.map( e => new Stat(e) ).toList
   val colorStat = new Stat(colorBy)
   Stat.add(pds, filter, colorStat::extraStats :_*)
 
-  log.fine( f"player ${extraColorBy.map(e => f"${e.name}").mkString(",")} min=${extraStatsPlayer.map(e => f"${e.min}%.0f").mkString(",")} max=${extraStatsPlayer.map(e => f"${e.max}%.0f").mkString(",")} ave=${extraStatsPlayer.map(e => f"${e.ave}%.0f").mkString(",")}" )
+  log.fine( f"player ${extraColorBy.map(e => f"${e.name}").mkString(",")} min=${extraStatsPlayerTotals.map(e => f"${e.min}%.0f").mkString(",")} max=${extraStatsPlayerTotals.map(e => f"${e.max}%.0f").mkString(",")} ave=${extraStatsPlayerTotals.map(e => f"${e.ave}%.0f").mkString(",")}" )
   log.fine( f"player ${colorBy.name} min=${colorStatPlayerTotals.min}%.0f max=${colorStatPlayerTotals.max}%.0f ave=${colorStatPlayerTotals.ave}%.2f" )
 
   log.fine( f"total ${extraColorBy.map(e => f"${e.name}").mkString(",")} min=${extraStats.map(e => f"${e.min}%.0f").mkString(",")} max=${extraStats.map(e => f"${e.max}%.0f").mkString(",")} ave=${extraStats.map(e => f"${e.ave}%.0f").mkString(",")}" )

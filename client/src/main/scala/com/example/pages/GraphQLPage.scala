@@ -1,8 +1,6 @@
 package com.example.pages
 
 import scala.scalajs.js
-import org.scalajs.dom.document
-import org.scalajs.dom.Element
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.extra.router.RouterCtl
@@ -17,15 +15,14 @@ import com.example.version.VersionShared
 import com.example.react.AppButton
 import com.example.routes.AppRouter.Home
 import com.example.react.PopupOkCancel
-import com.example.graphql.GraphQLRequest
 import scala.concurrent.ExecutionContext.Implicits.global
 import play.api.libs.json.JsValue
 import play.api.libs.json.Json
 import scala.util.Success
 import scala.util.Failure
 import com.example.rest2.AjaxFailure
-import com.example.graphql.GraphQLResponse
 import com.example.graphql.GraphQLClient
+import com.example.data.graphql.GraphQLProtocol.GraphQLResponse
 
 /**
  * A skeleton component.
@@ -81,7 +78,7 @@ object GraphQLPageInternal {
    */
   class Backend(scope: BackendScope[Props, State]) {
 
-    def didMount() = Callback {
+    val didMount = Callback {
     }
 
     import com.example.react.Utils._
@@ -89,13 +86,12 @@ object GraphQLPageInternal {
       scope.modState( s => s.copy(query = Some(q)))
     )
 
-    def cancelError() = scope.modState( s => s.copy(error=None))
+    val cancelError = scope.modState( s => s.copy(error=None))
 
-    def clearQuery() = scope.modState( s => s.copy(query=None))
-    def clearResponse() = scope.modState( s => s.copy(response=None))
+    val clearQuery = scope.modState( s => s.copy(query=None))
+    val clearResponse = scope.modState( s => s.copy(response=None))
 
-    def execute() = scope.state >>= { state => Callback {
-      import GraphQLRequest._
+    val execute = scope.state >>= { state => Callback {
       state.query match {
         case Some(q) =>
           val x =
@@ -132,7 +128,7 @@ object GraphQLPageInternal {
       import BaseStyles._
       <.div(
         rootStyles.graphqlPageDiv,
-        PopupOkCancel( state.error, None, Some(cancelError()) ),
+        PopupOkCancel( state.error, None, Some(cancelError) ),
         <.textarea(
           ^.cols := 80,
           ^.rows := 40,
@@ -172,7 +168,7 @@ object GraphQLPageInternal {
                             .initialStateFromProps { props => State() }
                             .backend(new Backend(_))
                             .renderBackend
-                            .componentDidMount( scope => scope.backend.didMount())
+                            .componentDidMount( scope => scope.backend.didMount)
                             .build
 }
 

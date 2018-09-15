@@ -15,15 +15,15 @@ import org.scalatest.concurrent.Eventually.PatienceConfig
 import com.example.data.BoardSet
 import com.example.data.Id
 import org.openqa.selenium.Keys
-import com.example.pages.Combobox
-import com.example.pages.TextField
-import com.example.pages.Element
+import com.example.test.pages.Combobox
+import com.example.test.pages.TextField
+import com.example.test.pages.Element
 
 trait DuplicateUtils {
   import org.scalatest.MustMatchers._
   import com.example.test.util.EventuallyUtils._
   import com.example.test.util.ParallelUtils._
-  import com.example.pages.PageBrowser._
+  import com.example.test.pages.PageBrowser._
 
   import scala.language.postfixOps
 
@@ -378,7 +378,7 @@ trait DuplicateUtils {
       }
     }}
 
-//    pressKeys(Keys.chord(Keys.ENTER))
+//    pressKeys(Keys.ENTER)
     tcpSleep(2)
 
     testNames(nsPlayer1, nsPlayer2, ewPlayer1, ewPlayer2,scorekeeper)
@@ -434,7 +434,7 @@ trait DuplicateUtils {
       tcpSleep(2)
       click on id("Swap_left")
     }
-//    pressKeys(Keys.chord(Keys.ENTER))
+//    pressKeys(Keys.ENTER)
     tcpSleep(2)
 
     testNamesNoInput(nsPlayer1, nsPlayer2, ewPlayer1, ewPlayer2)

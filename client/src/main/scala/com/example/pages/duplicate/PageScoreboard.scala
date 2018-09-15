@@ -2,8 +2,6 @@ package com.example.pages.duplicate
 
 
 import scala.scalajs.js
-import org.scalajs.dom.document
-import org.scalajs.dom.Element
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.extra.router.RouterCtl
@@ -33,6 +31,7 @@ import com.example.pages.duplicate.DuplicateRouter.TableRoundScoreboardView
 import com.example.react.AppButton
 import com.example.react.PopupOkCancel
 import com.example.pages.BaseStyles
+import com.example.react.HelpButton
 
 /**
  * Shows the team x board table and has a totals column that shows the number of points the team has.
@@ -148,10 +147,11 @@ object PageScoreboardInternal {
                     <.div(
                       baseStyles.divFooterLeft,
                       score.tables.keys.toList.sortWith((t1,t2)=>t1<t2).map { table =>
+                        val clickToTableView = TableView(props.game.dupid,table)
                         List[TagMod](
                           AppButton( "Table_"+table, "Table "+table,
                                      baseStyles.requiredNotNext,
-                                     props.routerCtl.setOnClick(TableView(props.game.dupid,table)) ),
+                                     props.routerCtl.setOnClick(clickToTableView) ),
                           <.span(" ")
                           ).toTagMod
                       }.toTagMod
@@ -180,7 +180,9 @@ object PageScoreboardInternal {
                       baseStyles.divFooterRight,
                       AppButton( "Director", "Director's Scoreboard", props.routerCtl.setOnClick(DirectorScoreboardView(props.game.dupid)) ),
                       " ",
-                      AppButton( "ForPrint", "For Print", props.routerCtl.setOnClick(FinishedScoreboardsView(props.game.dupid)) )
+                      AppButton( "ForPrint", "For Print", props.routerCtl.setOnClick(FinishedScoreboardsView(props.game.dupid)) ),
+                      " ",
+                      HelpButton("/help/duplicate/scoreboardcomplete.html"),
                     )
                   )
                 case PerspectiveDirector =>
@@ -233,7 +235,9 @@ object PageScoreboardInternal {
                         ),
                         <.div(
                           baseStyles.divFooterRight,
-                          AppButton( "AllBoards", "All Boards", props.routerCtl.setOnClick(props.game.toAllBoardsView())  )
+                          AppButton( "AllBoards", "All Boards", props.routerCtl.setOnClick(props.game.toAllBoardsView())  ),
+                          " ",
+                          HelpButton("/help/duplicate/scoreboardfromtable.html"),
                         )
                       ).toTagMod
                     case _ =>
@@ -256,33 +260,33 @@ object PageScoreboardInternal {
 
     import scala.concurrent.ExecutionContext.Implicits.global
 
-    def actionDelete = scope.modState(s => s.copy(deletePopup=true) )
+    val actionDelete = scope.modState(s => s.copy(deletePopup=true) )
 
-    def actionDeleteOk = Callback {
-      val props = scope.withEffectsImpure.props
+    val actionDeleteOk = scope.props >>= { props => Callback {
       Controller.deleteMatchDuplicate(props.game.dupid).foreach( msg => {
         logger.info("Deleted duplicate match, going to summary view")
         props.routerCtl.set(SummaryView).runNow()
       })
-    }
+    }}
 
-    def actionDeleteCancel = scope.modState(s => s.copy(deletePopup=false) )
+    val actionDeleteCancel = scope.modState(s => s.copy(deletePopup=false) )
 
-    def toggleShowDetails = scope.modState( s => s.copy( showdetails = !s.showdetails) )
+    val toggleShowDetails = scope.modState( s => s.copy( showdetails = !s.showdetails) )
 
-    def nextIMPs = scope.modState { s => s.nextIMPs }
+    val nextIMPs = scope.modState { s => s.nextIMPs }
 
     val storeCallback = scope.modStateOption { s =>
       DuplicateStore.getMatch().map( md => s.copy( useIMP = Some(md.isIMP) ) )
     }
 
-    def didMount() = CallbackTo {
+    val didMount = scope.props >>= { (p) => Callback {
       logger.info("PageScoreboard.didMount")
       DuplicateStore.addChangeListener(storeCallback)
-    } >> scope.props >>= { (p) => CallbackTo(
-      Controller.monitorMatchDuplicate(p.game.dupid)) }
 
-    def willUnmount() = CallbackTo {
+      Controller.monitorMatchDuplicate(p.game.dupid)
+    }}
+
+    val willUnmount = CallbackTo {
       logger.info("PageScoreboard.willUnmount")
       DuplicateStore.removeChangeListener(storeCallback)
     }
@@ -292,8 +296,8 @@ object PageScoreboardInternal {
                             .initialStateFromProps { props => State() }
                             .backend(new Backend(_))
                             .renderBackend
-                            .componentDidMount( scope => scope.backend.didMount())
-                            .componentWillUnmount( scope => scope.backend.willUnmount() )
+                            .componentDidMount( scope => scope.backend.didMount)
+                            .componentWillUnmount( scope => scope.backend.willUnmount )
                             .build
 }
 

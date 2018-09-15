@@ -164,7 +164,7 @@ class BoardScore( val board: Board, perspective: DuplicateViewPerspective ) {
     case PerspectiveDirector => false
     case PerspectiveTable(team1, team2) =>
       val rc = (ignoreTableSize && board.hands.size==2) || !hasTeamPlayed(team1) || !hasTeamPlayed(team2)
-      BoardScore.log.fine( s"BoardScore.isHidden rc=${rc} PerspectiveTable(${team1},${team2}) board.hand.size=${board.hands.size} ignore=${ignoreTableSize}" )
+//      BoardScore.log.finest( s"BoardScore.isHidden rc=${rc} PerspectiveTable(${team1},${team2}) board.hand.size=${board.hands.size} ignore=${ignoreTableSize}" )
       rc
   })
 

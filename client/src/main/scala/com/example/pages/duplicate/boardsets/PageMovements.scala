@@ -1,8 +1,6 @@
 package com.example.pages.duplicate.boardsets
 
 import scala.scalajs.js
-import org.scalajs.dom.document
-import org.scalajs.dom.Element
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
 import com.example.bridge.store.BoardSetStore
@@ -146,7 +144,7 @@ object PageMovementsInternal {
    */
   class Backend(scope: BackendScope[Props, State]) {
 
-    def okCallback = scope.forceUpdate >> scope.props >>= { props => props.routerCtl.set(props.backpage) }
+    val okCallback = scope.forceUpdate >> scope.props >>= { props => props.routerCtl.set(props.backpage) }
 
     def toggleBoardSet( name: String ) = scope.props >>= { props =>
       props.initialDisplay match {
@@ -197,20 +195,20 @@ object PageMovementsInternal {
       )
     }
 
-    val storeCallback = Callback {
+    val storeCallback = scope.modState { s =>
       val boardsets = BoardSetStore.getMovement()
       logger.info("Got all boardsets, n="+boardsets.size )
-      scope.withEffectsImpure.modState(s => s.copy( movements=boardsets))
+      s.copy( movements=boardsets)
     }
 
-    def didMount() = CallbackTo {
+    val didMount = CallbackTo {
       logger.info("PageMovements.didMount")
       BoardSetStore.addChangeListener(storeCallback)
     } >> scope.props >>= { (p) => CallbackTo(
       BoardSetController.getMovement()
     )}
 
-    def willUnmount() = CallbackTo {
+    val willUnmount = CallbackTo {
       logger.info("PageMovements.willUnmount")
       BoardSetStore.removeChangeListener(storeCallback)
     }
@@ -223,8 +221,8 @@ object PageMovementsInternal {
                             }}
                             .backend(new Backend(_))
                             .renderBackend
-                            .componentDidMount( scope => scope.backend.didMount())
-                            .componentWillUnmount( scope => scope.backend.willUnmount() )
+                            .componentDidMount( scope => scope.backend.didMount)
+                            .componentWillUnmount( scope => scope.backend.willUnmount )
                             .build
 }
 

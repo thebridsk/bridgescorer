@@ -1,8 +1,6 @@
 package com.example.pages.duplicate
 
 import scala.scalajs.js
-import org.scalajs.dom.document
-import org.scalajs.dom.Element
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.extra.router.RouterCtl
@@ -27,6 +25,8 @@ import com.example.rest2.RestClientDuplicateResult
 import com.example.data.MatchDuplicateResult
 import com.example.pages.duplicate.DuplicateRouter.DuplicateResultEditView
 import com.example.react.CheckBox
+import scala.annotation.tailrec
+import com.example.react.HelpButton
 
 /**
  * PageNewDuplicate.
@@ -70,6 +70,60 @@ object PageNewDuplicateInternal {
     def movementNames() = movements.keySet.toList.sorted
   }
 
+  def canPlay( movement: Movement, boardset: BoardSet ) = {
+    val movboards = movement.getBoards
+    val boards = boardset.boards.map(b => b.id)
+    movboards.find( b => !boards.contains(b) ).isEmpty
+  }
+
+  def missingBoards( movement: Movement, boardset: BoardSet ) = {
+    val movboards = movement.getBoards
+    val boards = boardset.boards.map(b => b.id)
+    movboards.filter( b => !boards.contains(b) )
+  }
+
+  def intToString( list: List[Int] ) = {
+
+    def appendNext( s: String, n: Int ) = {
+      if (s.isEmpty()) s"$n"
+      else s"${s}, ${n}"
+    }
+
+    /* *
+     * @param s the string collected so far
+     * @param openRange true if the last item in s is the start of the range (no "-"), last could close the range
+     * @param last the last number, it is not in s
+     * @param l the remaining numbers
+     */
+    @tailrec
+    def next( s: String, openRange: Boolean, last: Int, l: List[Int] ): String = {
+      if (l.isEmpty) {
+        if (openRange) {
+          s"${s}-${last}"
+        } else {
+          appendNext(s,last)
+        }
+      } else {
+        val n = l.head
+        if (openRange) {
+          if (last+1 == n) {
+            next(s,true,n,l.tail)
+          } else {
+            next(s"${s}-${last}",false,n,l.tail)
+          }
+        } else {
+          if (last+1 == n) {
+            next(appendNext(s,last),true,n,l.tail)
+          } else {
+            next(appendNext(s,last),false,n,l.tail)
+          }
+        }
+      }
+    }
+
+    if (list.isEmpty) ""
+    else next( "",false,list.head,list.tail)
+  }
 
   val Header = ScalaComponent.builder[(Props,State,Backend)]("PageNewDuplicate.Header")
                         .render_P( args => {
@@ -100,11 +154,20 @@ object PageNewDuplicateInternal {
                             <.td( movement.short ),
                             state.boardsetNames().map { bsname => {
                               val boardset = state.boardsets(bsname)
+                              val missing = missingBoards(movement, boardset)
                               <.td(
-                                AppButton( "New_"+movement.name+"_"+bsname, boardset.short,
-                                          ^.onClick --> backend.newDuplicate( boards=Some(bsname),
-                                                                              movement=Some(movementid))
-                                )
+                                if (missing.isEmpty) {
+                                  AppButton( "New_"+movement.name+"_"+bsname, boardset.short,
+                                            ^.onClick --> backend.newDuplicate( boards=Some(bsname),
+                                                                                movement=Some(movementid))
+                                  )
+                                } else {
+                                  TagMod(
+                                    "Missing boards",
+                                    <.br,
+                                    intToString(missing.sorted)
+                                  )
+                                }
                               )
                             }}.toTagMod
                           )
@@ -123,7 +186,7 @@ object PageNewDuplicateInternal {
 
     val resultDuplicate = ResultHolder[MatchDuplicate]()
 
-    def cancel() = Callback {
+    val cancel = Callback {
       resultDuplicate.cancel()
     } >> scope.modState( s => s.copy(workingOnNew=None))
 
@@ -166,7 +229,7 @@ object PageNewDuplicateInternal {
         s.copy(workingOnNew=Some("Working on creating a new duplicate match"))
       }
 
-    def resultsOnlyToggle() = scope.modState( s => s.copy( resultsOnly = !s.resultsOnly ) )
+    val resultsOnlyToggle = scope.modState( s => s.copy( resultsOnly = !s.resultsOnly ) )
 
     def render( props: Props, state: State ) = {
       import DuplicateStyles._
@@ -174,8 +237,9 @@ object PageNewDuplicateInternal {
       val boardsetNames = state.boardsetNames()
       <.div(
         dupStyles.divNewDuplicate,
-        PopupOkCancel( state.workingOnNew, None, Some(cancel()) ),
+        PopupOkCancel( state.workingOnNew, None, Some(cancel) ),
         <.h1("New Duplicate Match"),
+        HelpButton("/help/duplicate/new.html"),
         CheckBox("resultsOnly", "Create Results Only", state.resultsOnly, resultsOnlyToggle ),
         <.table(
           dupStyles.tableNewDuplicate,
@@ -193,8 +257,9 @@ object PageNewDuplicateInternal {
           } else {
             movementNames.map { movname => {
               val movement = state.movements(movname)
+              val clickToMovement = MovementView(movname)
               AppButton( "ShowM_"+movname, movement.short,
-                         props.routerCtl.setOnClick( MovementView(movname) )
+                         props.routerCtl.setOnClick( clickToMovement )
               )
             }}.toTagMod
           }
@@ -206,8 +271,9 @@ object PageNewDuplicateInternal {
           } else {
             boardsetNames.map { bsname => {
               val boardset = state.boardsets(bsname)
+              val clickToBoardset = BoardSetView(bsname)
               AppButton( "ShowB_"+bsname, boardset.short,
-                         props.routerCtl.setOnClick( BoardSetView(bsname) )
+                         props.routerCtl.setOnClick( clickToBoardset )
               )
             }}.toTagMod
           }
@@ -222,17 +288,17 @@ object PageNewDuplicateInternal {
       scope.withEffectsImpure.modState(s => s.copy( boardsets=boardsets, movements=movements))
     }
 
-    def didMount() = Callback {
+    val didMount = Callback {
       mounted = true
       logger.info("PageNewDuplicate.didMount")
       BoardSetStore.addChangeListener(storeCallback)
-    } >> Callback {
-      BoardSetController.getBoardSets()
-      BoardSetController.getMovement()
-//      BoardSetController.getBoardsetsAndMovements()
+
+//      BoardSetController.getBoardSets()
+//      BoardSetController.getMovement()
+      BoardSetController.getBoardsetsAndMovements()
     }
 
-    def willUnmount() = Callback {
+    val willUnmount = Callback {
       mounted = false
       logger.info("PageNewDuplicate.willUnmount")
       BoardSetStore.removeChangeListener(storeCallback)
@@ -243,8 +309,8 @@ object PageNewDuplicateInternal {
                             .initialStateFromProps { props => State(Map(),Map(), None) }
                             .backend(new Backend(_))
                             .renderBackend
-                            .componentDidMount( scope => scope.backend.didMount())
-                            .componentWillUnmount( scope => scope.backend.willUnmount() )
+                            .componentDidMount( scope => scope.backend.didMount)
+                            .componentWillUnmount( scope => scope.backend.willUnmount )
                             .build
 }
 

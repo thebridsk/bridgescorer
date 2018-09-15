@@ -21,29 +21,52 @@ object MonitorTCP extends Logging {
   val monitorFileDefault = "logs/unittestTcpMonitorTimeWait.csv"
 
   /**
-   * flag to determine if TCP Time Wait monitoring and waiting for connections is used.
+   * flag to determine if waiting for connections is used.
    * Configure by setting the System Property DisableMonitorTCP or environment variable DisableMonitorTCP
    * to "true" or "false".
-   * If this property is not set, then the os.name system property is used, on linux disable, otherwise enabled.
+   * If this property is not set, then the os.name system property is used, disabled on all systems.
+   * Setting this to false implies disableMonitorTCP is false.
    */
-  val disableMonitorTCP = {
+  val disableTCPSleep = {
+    ParallelUtils.getPropOrEnv("DisableTCPSleep") match {
+      case Some(v) =>
+        v.toBoolean
+      case None =>
+        sys.props.getOrElse("os.name", "oops").toLowerCase() match {
+          case os: String if (os.contains("win")) => true
+          case os: String if (os.contains("mac")) => true
+          case os: String if (os.contains("nix")||os.contains("nux")) => true
+          case os =>
+            log.severe("Unknown operating system: "+os)
+            true
+        }
+    }
+  }
+
+  /**
+   * flag to determine if TCP Time Wait monitoring is used.
+   * Configure by setting the System Property DisableMonitorTCP or environment variable DisableMonitorTCP
+   * to "true" or "false".
+   * If this property is not set, then the os.name system property is used, disabled on all systems.
+   */
+  val disableMonitorTCP = disableTCPSleep && {
     ParallelUtils.getPropOrEnv("DisableMonitorTCP") match {
       case Some(v) =>
         v.toBoolean
       case None =>
         sys.props.getOrElse("os.name", "oops").toLowerCase() match {
-          case os: String if (os.contains("win")) => false
-          case os: String if (os.contains("mac")) => false
+          case os: String if (os.contains("win")) => true
+          case os: String if (os.contains("mac")) => true
           case os: String if (os.contains("nix")||os.contains("nux")) => true
           case os =>
             log.severe("Unknown operating system: "+os)
-            false
+            true
         }
     }
   }
 
   if (disableMonitorTCP) {
-    log.warning( s"""disableMonitorTCP=${disableMonitorTCP}""")
+    log.warning( s"""disableTCPSleep=${disableTCPSleep} disableMonitorTCP=${disableMonitorTCP}""")
   }
 
   def getNumberTimeWaitConnections() = {
@@ -233,7 +256,7 @@ object MonitorTCP extends Logging {
    *         false - number above threshold
    */
   def waitForConnections( maxWait: Duration ): Boolean = {
-    if (!disableMonitorTCP) {
+    if (!disableTCPSleep) {
       val start = System.currentTimeMillis()
       val stop = start + maxWait.toMillis
       val rc = lock.waitUntil(stop) match {
@@ -247,7 +270,7 @@ object MonitorTCP extends Logging {
       logger.info("waitForConnections waited for "+waited+", maxWait "+maxWait+", returning "+rc)
       rc
     } else {
-      val waitfor = Math.min( maxWait.toMillis, 1000 )
+      val waitfor = Math.min( maxWait.toMillis, 500 )
       Thread.sleep(waitfor)
       true
     }
@@ -263,7 +286,7 @@ object MonitorTCP extends Logging {
   var currentMonitorUsage = 0
 
   def startMonitoring( tofilename: Option[String] = None) = synchronized {
-//    if (!disableMonitorTCP) {
+    if (!disableMonitorTCP) {
       currentMonitor match {
         case Some(m) =>
           currentMonitorUsage+=1
@@ -274,11 +297,11 @@ object MonitorTCP extends Logging {
                true )
           currentMonitor = Some( startMonitor( pw ) )
       }
-//    }
+    }
   }
 
   def stopMonitoring() = synchronized {
-//    if (!disableMonitorTCP) {
+    if (!disableMonitorTCP) {
       currentMonitorUsage-=1
       if (currentMonitorUsage == 0) {
         currentMonitor match {
@@ -288,16 +311,16 @@ object MonitorTCP extends Logging {
           case None => // do nothing
         }
       }
-//    }
+    }
   }
 
   def nextTest() = {
-//    if (!disableMonitorTCP) {
+    if (!disableMonitorTCP) {
       currentMonitor match {
         case Some(m) => m.nextTest()
         case None =>
       }
-//    }
+    }
   }
 
   def getProp( name: String ) = {

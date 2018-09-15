@@ -34,44 +34,44 @@ import com.example.test.util.NoResultYet
 import com.example.test.util.EventuallyUtils
 import com.example.test.util.ParallelUtils
 import org.scalatest.concurrent.Eventually
-import com.example.pages.bridge.HomePage
-import com.example.pages.duplicate.ListDuplicatePage
-import com.example.pages.duplicate.NewDuplicatePage
-import com.example.pages.duplicate.MovementsPage
-import com.example.pages.duplicate.BoardSetsPage
-import com.example.pages.duplicate.ScoreboardPage
-import com.example.pages.duplicate.TablePage
-import com.example.pages.duplicate.TablePage.EnterNames
-import com.example.pages.duplicate.TableEnterScorekeeperPage
-import com.example.pages.GenericPage
-import com.example.pages.duplicate.HandPage
+import com.example.test.pages.bridge.HomePage
+import com.example.test.pages.duplicate.ListDuplicatePage
+import com.example.test.pages.duplicate.NewDuplicatePage
+import com.example.test.pages.duplicate.MovementsPage
+import com.example.test.pages.duplicate.BoardSetsPage
+import com.example.test.pages.duplicate.ScoreboardPage
+import com.example.test.pages.duplicate.TablePage
+import com.example.test.pages.duplicate.TablePage.EnterNames
+import com.example.test.pages.duplicate.TableEnterScorekeeperPage
+import com.example.test.pages.GenericPage
+import com.example.test.pages.duplicate.HandPage
 import com.example.test.TestStartLogging
-import com.example.pages.duplicate.BoardPage
-import com.example.pages.duplicate.TablePage.SelectNames
-import com.example.pages.duplicate.TablePage.Hands
-import com.example.pages.duplicate.TableSelectScorekeeperPage
-import com.example.pages.duplicate.Team
-import com.example.pages.Page.AnyPage
-import com.example.pages.duplicate.EnterHand
-import com.example.pages.duplicate.AllHandsInMatch
-import com.example.pages.duplicate.HandsOnBoard
-import com.example.pages.duplicate.OtherHandNotPlayed
-import com.example.pages.duplicate.OtherHandPlayed
-import com.example.pages.duplicate.TeamScoreboard
-import com.example.pages.duplicate.HandDirectorView
-import com.example.pages.duplicate.HandCompletedView
-import com.example.pages.duplicate.HandTableView
-import com.example.pages.duplicate.ScoreboardPage.PlaceEntry
-import com.example.pages.duplicate.ScoreboardPage.PlaceEntry
+import com.example.test.pages.duplicate.BoardPage
+import com.example.test.pages.duplicate.TablePage.SelectNames
+import com.example.test.pages.duplicate.TablePage.Hands
+import com.example.test.pages.duplicate.TableSelectScorekeeperPage
+import com.example.test.pages.duplicate.Team
+import com.example.test.pages.Page.AnyPage
+import com.example.test.pages.duplicate.EnterHand
+import com.example.test.pages.duplicate.AllHandsInMatch
+import com.example.test.pages.duplicate.HandsOnBoard
+import com.example.test.pages.duplicate.OtherHandNotPlayed
+import com.example.test.pages.duplicate.OtherHandPlayed
+import com.example.test.pages.duplicate.TeamScoreboard
+import com.example.test.pages.duplicate.HandDirectorView
+import com.example.test.pages.duplicate.HandCompletedView
+import com.example.test.pages.duplicate.HandTableView
+import com.example.test.pages.duplicate.ScoreboardPage.PlaceEntry
+import com.example.test.pages.duplicate.ScoreboardPage.PlaceEntry
 import java.net.URL
 import com.example.data.MatchDuplicate
 import scala.io.Source
 import scala.io.Codec
 import com.example.backend.resource.FileIO
-import com.example.pages.duplicate.PeopleRow
+import com.example.test.pages.duplicate.PeopleRow
 import com.example.data.BoardSet
-import com.example.pages.duplicate.TablePage.MissingNames
-import com.example.pages.duplicate.TableEnterMissingNamesPage
+import com.example.test.pages.duplicate.TablePage.MissingNames
+import com.example.test.pages.duplicate.TableEnterMissingNamesPage
 import com.example.test.util.MonitorTCP
 import com.example.test.util.HttpUtils
 import com.example.test.util.HttpUtils.ResponseFromHttp
@@ -101,7 +101,7 @@ object DuplicateTestPages2 {
  * to the names view, to the hand view.
  * @author werewolf
  */
-class DuplicateTestPages2 extends FlatSpec with DuplicateUtils with MustMatchers with BeforeAndAfterAll with EventuallyUtils {
+class DuplicateTestPages2 extends FlatSpec with MustMatchers with BeforeAndAfterAll with EventuallyUtils {
   import Eventually.{ patienceConfig => _, _ }
   import ParallelUtils._
 

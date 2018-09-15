@@ -3,8 +3,6 @@ package com.example.pages.chicagos
 import scala.scalajs.js
 import scala.scalajs.js.UndefOr.any2undefOrA
 
-import org.scalajs.dom.raw.Element
-
 import com.example.bridge.store.NamesStore
 import com.example.controller.ChicagoController
 import com.example.data.Round
@@ -24,6 +22,7 @@ import com.example.react.CheckBox
 import com.example.react.RadioButton
 import com.example.react.Utils._
 import com.example.pages.BaseStyles
+import com.example.react.HelpButton
 
 object ViewPlayersVeryFirstRound {
   import PagePlayers._
@@ -46,9 +45,9 @@ object ViewPlayersVeryFirstRound {
       state
     }
 
-    def reset = scope.modState( ps => PlayerState("","","","",North, gotNames = ps.gotNames, names=ps.names))
+    val reset = scope.modState( ps => PlayerState("","","","",None, gotNames = ps.gotNames, names=ps.names))
 
-    def setFirstDealer( p: PlayerPosition ) = scope.modState(ps => ps.copy(dealer=p))
+    def setFirstDealer( p: PlayerPosition ) = scope.modState(ps => ps.copy(dealer=Some(p)))
 
     private def noNull( s: String ) = if (s == null) ""; else s
 
@@ -101,7 +100,7 @@ object ViewPlayersVeryFirstRound {
                 ComboboxOrInput( setExtra, noNull(state.extra.getOrElse("")), names, "startsWith", 9, "Extra",
                                              msgEmptyList="No suggested names", msgEmptyFilter="No names matched"),
                 <.br,
-                CheckBox( "Quintet", "Fast Rotation", state.quintet, toggleQuintet() ),
+                CheckBox( "Quintet", "Fast Rotation", state.quintet, toggleQuintet ),
                 if (state.quintet) {
                   Seq[TagMod](
                     <.br,
@@ -136,11 +135,11 @@ object ViewPlayersVeryFirstRound {
           baseStyles.divFooter,
           <.div(
             baseStyles.divFooterLeft,
-            AppButton( "Ok", "OK", ^.disabled := !valid, BaseStyles.highlight( requiredNotNext=valid ), ^.onClick-->ok() ),
+            AppButton( "Ok", "OK", ^.disabled := !valid, BaseStyles.highlight( requiredNotNext=valid ), ^.onClick-->ok ),
             AppButton(
               "ToggleFive",
               if (state.chicago5) "Four" else "Five",
-              ^.onClick-->doChicagoFive()
+              ^.onClick-->doChicagoFive
             )
           ),
           <.div(
@@ -149,23 +148,22 @@ object ViewPlayersVeryFirstRound {
           ),
           <.div(
             baseStyles.divFooterRight,
-            AppButton( "Cancel", "Cancel", props.router.setOnClick(props.page.toSummaryView()) )
+            AppButton( "Cancel", "Cancel", props.router.setOnClick(props.page.toSummaryView()) ),
+            HelpButton( if (state.chicago5) "/help/chicago/five/names5.html" else "/help/chicago/four/names4.html")
           )
         )
       )
     }
 
-    def toggleQuintet() = scope.modState( s=> s.copy( quintet = !s.quintet))
+    val toggleQuintet = scope.modState( s=> s.copy( quintet = !s.quintet))
 
-    def toggleSimpleRotation() = scope.modState( s=> s.copy( simpleRotation = !s.simpleRotation))
+    val toggleSimpleRotation = scope.modState( s=> s.copy( simpleRotation = !s.simpleRotation))
 
     def setSimpleRotation( simple: Boolean ) = scope.modState( s=> s.copy( simpleRotation = simple))
 
-    def doChicagoFive() = scope.modState({ ps => ps.copy(chicago5 = !ps.chicago5) } )
+    val doChicagoFive = scope.modState({ ps => ps.copy(chicago5 = !ps.chicago5) } )
 
-    def ok() = CallbackTo {
-      val state = scope.withEffectsImpure.state
-      val props = scope.withEffectsImpure.props
+    val ok = scope.stateProps { (state,props) =>
       val e = if (state.chicago5 && state.extra.isDefined) {
         val ex = state.extra.get
         if (ex == "") None
@@ -185,15 +183,14 @@ object ViewPlayersVeryFirstRound {
              south,
              east,
              west,
-             state.dealer.pos.toString(),
+             state.getDealer,
              Nil )
       } else {
-        props.chicago.rounds(0).copy(north=north, south=south, east=east, west=west, dealerFirstRound=state.dealer.pos.toString())
+        props.chicago.rounds(0).copy(north=north, south=south, east=east, west=west, dealerFirstRound=state.getDealer)
       }
       ChicagoController.updateChicagoRound(props.chicago.id, r)
-      props
-    } >>= {
-      props => props.router.set(props.page.toHandView(0))
+
+      props.router.set(props.page.toHandView(0))
     }
 
     val namesCallback = scope.modState(s => {
@@ -201,12 +198,12 @@ object ViewPlayersVeryFirstRound {
       s.copy(gotNames=true, names=names)
     })
 
-    def didMount() = CallbackTo {
+    val didMount = CallbackTo {
       logger.info("ViewPlayersVeryFirstRound.didMount")
       NamesStore.ensureNamesAreCached(Some(namesCallback))
     }
 
-    def willUnmount() = CallbackTo {
+    val willUnmount = CallbackTo {
       logger.info("ViewPlayersVeryFirstRound.willUnmount")
     }
 
@@ -222,11 +219,11 @@ object ViewPlayersVeryFirstRound {
                                   val r = chi.rounds(0)
                                   (r.north,r.south,r.east,r.west)
                                 }
-                              PlayerState(n,s,e,w,North, quintet=chi.isQuintet())
+                              PlayerState(n,s,e,w,None, quintet=chi.isQuintet())
                             }}
                             .backend(new Backend(_))
                             .renderBackend
-                            .componentDidMount( scope => scope.backend.didMount())
-                            .componentWillUnmount( scope => scope.backend.willUnmount() )
+                            .componentDidMount( scope => scope.backend.didMount)
+                            .componentWillUnmount( scope => scope.backend.willUnmount )
                             .build
 }

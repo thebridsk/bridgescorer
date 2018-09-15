@@ -2,8 +2,6 @@ package com.example.pages.duplicate
 
 
 import scala.scalajs.js
-import org.scalajs.dom.document
-import org.scalajs.dom.Element
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.extra.router.RouterCtl
@@ -15,6 +13,8 @@ import com.example.bridge.store.DuplicateStore
 import com.example.data.Team
 import com.example.pages.duplicate.DuplicateRouter.NamesView
 import com.example.react.AppButton
+import com.example.react.ComboboxOrInput
+import com.example.bridge.store.NamesStore
 
 /**
  * Shows the team x board table and has a totals column that shows the number of points the team has.
@@ -50,16 +50,19 @@ object PageNamesInternal {
    * will cause State to leak.
    *
    */
-  case class State( teams: Map[Id.Team, Team] )
+  case class State( teams: Map[Id.Team, Team]=Map(), nameSuggestions: Option[List[String]] = None ) {
+    import scala.scalajs.js.JSConverters._
 
-  object State {
-    def create( props: Props ) =
+    def reset() =
       DuplicateStore.getMatch() match {
-        case Some(md) => State(md.teams.map(t=> t.id->t).toMap)
-        case None => State(Map())
+        case Some(md) => copy(teams=md.teams.map(t=> t.id->t).toMap)
+        case None => copy(teams=Map())
       }
-  }
 
+    def getSuggestions = nameSuggestions.getOrElse(List()).toJSArray
+    def gettingNames = nameSuggestions.isEmpty
+
+  }
 
   val Header = ScalaComponent.builder[Props]("PageNames.Header")
                       .render_P( props => {
@@ -76,16 +79,23 @@ object PageNamesInternal {
   private def noNull( s: String ) = if (s == null) ""; else s
   private def playerValid( s: String ) = s!=null && s.length!=0
 
-  val TeamRow = ScalaComponent.builder[(Team,Backend,Props)]("PageNames.TeamRow")
-                      .render_P( props => {
-                        val (team, backend, p) = props
+  val TeamRow = ScalaComponent.builder[(Team,Backend,State,Props)]("PageNames.TeamRow")
+                      .render_P( args => {
+                        val (team, backend, st, p) = args
+                        val busy = st.gettingNames
+                        val names = st.getSuggestions
+                        logger.fine( s"""busy=${busy}, names=${names}""")
                         <.tr(
                           <.td( Id.teamIdToTeamNumber(team.id)),
                           <.td(
-                              <.input( ^.`type`:="text", ^.name:="I_"+team.id+"_1", ^.onChange ==> backend.setPlayer(team.id, 1), ^.value := noNull(team.player1))
+                              ComboboxOrInput( p => backend.setPlayer(team.id, 1)(p), noNull(team.player1), names, "startsWith", -1, "I_"+team.id+"_1",
+                                               msgEmptyList="No suggested names", msgEmptyFilter="No names matched", id="I_"+team.id+"_1",
+                                               busy=busy )
                           ),
                           <.td(
-                              <.input( ^.`type`:="text", ^.name:="I_"+team.id+"_2", ^.onChange ==> backend.setPlayer(team.id, 2), ^.value := noNull(team.player2))
+                              ComboboxOrInput( p => backend.setPlayer(team.id, 2)(p), noNull(team.player2), names, "startsWith", -1, "I_"+team.id+"_2",
+                                               msgEmptyList="No suggested names", msgEmptyFilter="No names matched", id="I_"+team.id+"_2",
+                                               busy=busy )
                           )
                         )
                       }).build
@@ -99,9 +109,10 @@ object PageNamesInternal {
    *
    */
   class Backend(scope: BackendScope[Props, State]) {
+
     def render( props: Props, state: State ) = {
       import DuplicateStyles._
-      logger.info("Rendering board "+props.page)
+      logger.info("Rendering "+props.page+" suggestions="+state.nameSuggestions)
       <.div(
         dupStyles.divNamesPage,
         DuplicateStore.getMatch() match {
@@ -115,7 +126,7 @@ object PageNamesInternal {
                 Header(props),
                 <.tbody(
                   state.teams.values.toList.sortWith( (t1,t2)=>Id.idComparer(t1.id,t2.id)<0).map { team =>
-                    TeamRow.withKey( team.id )((team,this,props))
+                    TeamRow.withKey( team.id )((team,this,state,props))
                   }.toTagMod
                 )
               ),
@@ -132,64 +143,78 @@ object PageNamesInternal {
     }
 
     import com.example.react.Utils._
-    def setPlayer(teamid: Id.Team, player: Int)( e: ReactEventFromInput ) = e.inputText( name =>
+    def setPlayer(teamid: Id.Team, player: Int)( name: String ) =
       scope.modState( ps => {
         ps.teams.get(teamid) match {
           case Some(team) =>
             val newteam = team.setPlayers( if (player==1) name else team.player1,
                                            if (player==2) name else team.player2
                                          )
-            ps.copy( teams=ps.teams+(team.id->newteam) )
+            val s = ps.copy( teams=ps.teams+(team.id->newteam) )
+            logger.fine( s"""Updating name ${teamid} ${player} to ${name}: ${s}""" )
+            s
           case None =>
+            logger.fine( s"""Did not find team ${teamid}""" )
             ps
         }
-      }))
+      })
 
-    def doUpdate() = Callback {
-      val state = scope.withEffectsImpure.state
+    val doUpdate = scope.state >>= { state => Callback {
       DuplicateStore.getMatch() match {
         case Some(md) =>
           state.teams.values.foreach { team => {
             val t = team.copy( player1 = team.player1.trim, player2 = team.player2.trim )
-            md.getTeam(t.id) match {
-              case Some(original) => !t.equalsIgnoreModifyTime(original)
-              case None => true
+            val changed = md.getTeam(t.id) match {
+              case Some(original) =>
+                val changed = !t.equalsIgnoreModifyTime(original)
+                if (changed) {
+                  logger.fine( s"""Updating team ${t}: was ${original}""" )
+                  Controller.updateTeam(md, t)
+                } else {
+                  logger.fine( s"""Updating team ${t}: was ${original}""" )
+                }
+              case None =>
+                logger.fine( s"""Updating team ${t}: did not find old team""" )
             }
-            Controller.updateTeam(md, t)
           }}
         case None =>
       }
-    }
+    }}
 
     def okCallback = doUpdate >> scope.props >>= { props => props.routerCtl.set(props.returnPage) }
 
-    def resetCallback = scope.props >>= { props =>
-      scope.modState(s => State.create(props))
+    val resetCallback = scope.props >>= { props =>
+      scope.modState(s => s.reset())
     }
 
-    val storeCallback = Callback {
-      scope.withEffectsImpure.modState(s => State.create(scope.withEffectsImpure.props))
+    val storeCallback = scope.modState { s => s.reset() }
+
+    val namesCallback = scope.modState { s =>
+      val sug = NamesStore.getNames
+      logger.fine( s"""Got names ${sug}""" )
+      s.copy( nameSuggestions=Some(sug))
     }
 
-    def didMount() = Callback {
+    val didMount =scope.props >>= { props =>  Callback {
       logger.info("PageNames.didMount")
+      NamesStore.ensureNamesAreCached(Some(namesCallback))
       DuplicateStore.addChangeListener(storeCallback)
-    } >> Callback {
-      Controller.monitorMatchDuplicate(scope.withEffectsImpure.props.page.dupid)
-    }
 
-    def willUnmount() = Callback {
+      Controller.monitorMatchDuplicate(props.page.dupid)
+    }}
+
+    val willUnmount = Callback {
       logger.info("PageNames.willUnmount")
       DuplicateStore.removeChangeListener(storeCallback)
     }
   }
 
   val component = ScalaComponent.builder[Props]("PageNames")
-                            .initialStateFromProps { props => State.create( props) }
+                            .initialStateFromProps { props => State().reset }
                             .backend(new Backend(_))
                             .renderBackend
-                            .componentDidMount( scope => scope.backend.didMount())
-                            .componentWillUnmount( scope => scope.backend.willUnmount() )
+                            .componentDidMount( scope => scope.backend.didMount)
+                            .componentWillUnmount( scope => scope.backend.willUnmount )
                             .build
 }
 

@@ -1,8 +1,6 @@
 package com.example.pages.chicagos
 
 import scala.scalajs.js
-import org.scalajs.dom.document
-import org.scalajs.dom.Element
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
 import com.example.data.MatchChicago
@@ -19,6 +17,7 @@ import com.example.data.util.Strings
 import com.example.react.AppButton
 import com.example.react.Utils._
 import com.example.pages.BaseStyles
+import com.example.react.HelpButton
 
 /**
  * A skeleton component.
@@ -109,7 +108,7 @@ object ViewPlayersFiveInternal {
    */
   class Backend(scope: BackendScope[Props, State]) {
 
-    def reset() = scope.props >>= { props => scope.modState( s => State(props) ) }
+    val reset = scope.props >>= { props => scope.modState( s => State(props) ) }
 
     def setPlayerSittingOut( p: String ) = scope.modState( s => {
       val fix = s.possibleNext.get(p)
@@ -211,36 +210,33 @@ object ViewPlayersFiveInternal {
       }
     }
 
-    def rotateClockwise() = scope.modState(s => s.copy(north=s.west, south=s.east, east=s.north, west=s.south))
+    val rotateClockwise = scope.modState(s => s.copy(north=s.west, south=s.east, east=s.north, west=s.south))
 
-    def rotateCounterClockwise() = scope.modState(s => s.copy(north=s.east, south=s.west, east=s.south, west=s.north))
+    val rotateCounterClockwise = scope.modState(s => s.copy(north=s.east, south=s.west, east=s.south, west=s.north))
 
-    def swapEW() = scope.modState(s => s.copy(east=s.west, west=s.east))
+    val swapEW = scope.modState(s => s.copy(east=s.west, west=s.east))
 
-    def swapNS() = scope.modState(s => s.copy(north=s.south, south=s.north))
+    val swapNS = scope.modState(s => s.copy(north=s.south, south=s.north))
 
-    def ok() = CallbackTo {
-        val state = scope.withEffectsImpure.state
-        val props = scope.withEffectsImpure.props
-        val r = if (props.chicago.rounds.size <= props.page.round) {
-          Round.create(props.page.round.toString(),
-               state.north.get,
-               state.south.get,
-               state.east.get,
-               state.west.get,
-               state.dealer.get.pos.toString(),
-               Nil )
-        } else {
-          props.chicago.rounds(props.page.round).copy(north=state.north.get,
-                                                      south=state.south.get,
-                                                      east=state.east.get,
-                                                      west=state.west.get,
-                                                      dealerFirstRound=state.dealer.get.pos.toString())
-        }
-        ChicagoController.updateChicagoRound(props.chicago.id, r)
-        props
-    } >>= { props =>
-        props.router.set(props.page.toHandView(0))
+    val ok = scope.stateProps { (state,props) =>
+      val r = if (props.chicago.rounds.size <= props.page.round) {
+        Round.create(props.page.round.toString(),
+             state.north.get,
+             state.south.get,
+             state.east.get,
+             state.west.get,
+             state.dealer.get.pos.toString(),
+             Nil )
+      } else {
+        props.chicago.rounds(props.page.round).copy(north=state.north.get,
+                                                    south=state.south.get,
+                                                    east=state.east.get,
+                                                    west=state.west.get,
+                                                    dealerFirstRound=state.dealer.get.pos.toString())
+      }
+      ChicagoController.updateChicagoRound(props.chicago.id, r)
+
+      props.router.set(props.page.toHandView(0))
     }
 
     def setDealer( pos: PlayerPosition ) = scope.modState(s => s.copy(dealer = Some(pos)))
@@ -293,9 +289,9 @@ object ViewPlayersFiveInternal {
             <.tr(
               pos(state.east.getOrElse("east"), eastArrow, East, swapEW _ ),
               <.td(
-                AppButton( "clockwise", clockwiseCircleArrow, ^.onClick --> rotateClockwise(), baseStyles.requiredNotNext ),
+                AppButton( "clockwise", clockwiseCircleArrow, ^.onClick --> rotateClockwise, baseStyles.requiredNotNext ),
                 <.br,
-                AppButton( "anticlockwise", antiClockwiseCircleArrow, ^.onClick --> rotateCounterClockwise(), baseStyles.requiredNotNext )
+                AppButton( "anticlockwise", antiClockwiseCircleArrow, ^.onClick --> rotateCounterClockwise, baseStyles.requiredNotNext )
               ),
               pos(state.west.getOrElse("west"), westArrow, West, swapEW _ )
             ),
@@ -331,11 +327,12 @@ object ViewPlayersFiveInternal {
           ),
           <.div(
             baseStyles.divFooterCenter,
-            AppButton("Reset", "Reset", ^.onClick --> reset() )
+            AppButton("Reset", "Reset", ^.onClick --> reset )
           ),
           <.div(
             baseStyles.divFooterRight,
-            AppButton("Cancel", "Cancel", props.router.setOnClick(props.page.toSummaryView()) )
+            AppButton("Cancel", "Cancel", props.router.setOnClick(props.page.toSummaryView()) ),
+            HelpButton("/help/chicago/five/selectnames5.html")
           )
         )
       )

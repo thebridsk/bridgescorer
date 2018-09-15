@@ -3,8 +3,6 @@ package com.example.pages.rubber
 import scala.scalajs.js
 import scala.scalajs.js.UndefOr.any2undefOrA
 
-import org.scalajs.dom.raw.Element
-
 import com.example.bridge.store.NamesStore
 import com.example.controller.RubberController
 import com.example.data.Round
@@ -28,6 +26,7 @@ import com.example.react.AppButton
 import com.example.react.Utils._
 import com.example.pages.rubber.RubberRouter.ListView
 import com.example.pages.BaseStyles
+import com.example.react.HelpButton
 
 object PageRubberNames {
   import PageRubberNamesInternal._
@@ -97,7 +96,7 @@ object PageRubberNamesInternal {
     def setEast( text: String ): Callback =  scope.modState( ps => {traceSetname("East",ps.copy(east=text))})
     def setWest( text: String ): Callback =  scope.modState( ps => {traceSetname("West",ps.copy(west=text))})
 
-    def reset = scope.modState( ps => PlayerState("","","","",None, gotNames = ps.gotNames, names=ps.names))
+    val reset = scope.modState( ps => PlayerState("","","","",None, gotNames = ps.gotNames, names=ps.names))
 
     def setFirstDealer( p: PlayerPosition ) = scope.modState(ps => ps.copy(dealer=Some(p)))
 
@@ -169,7 +168,7 @@ object PageRubberNamesInternal {
           baseStyles.divFooter,
           <.div(
             baseStyles.divFooterLeft,
-            AppButton( "Ok", "OK", ^.disabled := !valid, valid ?= baseStyles.requiredNotNext, ^.onClick-->ok() )
+            AppButton( "Ok", "OK", ^.disabled := !valid, valid ?= baseStyles.requiredNotNext, ^.onClick-->ok)
           ),
           <.div(
             baseStyles.divFooterCenter,
@@ -177,13 +176,14 @@ object PageRubberNamesInternal {
           ),
           <.div(
             baseStyles.divFooterRight,
-            AppButton( "Cancel", "Cancel", props.router.setOnClick( ListView /*props.page.toRubber()*/) )
+            AppButton( "Cancel", "Cancel", props.router.setOnClick( ListView /*props.page.toRubber()*/) ),
+            HelpButton("/help/rubber/names.html")
           )
         )
       )
     }
 
-    def ok() = CallbackTo {
+    val ok = CallbackTo {
       val state = scope.withEffectsImpure.state
       val props = scope.withEffectsImpure.props
       RubberController.updateRubberNames(props.page.rid, state.north.trim, state.south.trim, state.east.trim, state.west.trim, state.dealer.get)
@@ -203,7 +203,7 @@ object PageRubberNamesInternal {
       s.copy(gotNames=true, names=names)
     })
 
-    def didMount() = CallbackTo {
+    val didMount = CallbackTo {
       logger.info("PageRubberNames.didMount")
       NamesStore.ensureNamesAreCached(Some(namesCallback))
       RubberStore.addChangeListener(storeCallback)
@@ -211,7 +211,7 @@ object PageRubberNamesInternal {
       RubberController.ensureMatch(p.page.rid))
     }
 
-    def willUnmount() = CallbackTo {
+    val willUnmount = CallbackTo {
       logger.info("PageRubberNames.willUnmount")
       RubberStore.removeChangeListener(storeCallback)
     }
@@ -239,7 +239,7 @@ object PageRubberNamesInternal {
                             }}
                             .backend(new Backend(_))
                             .renderBackend
-                            .componentDidMount( scope => scope.backend.didMount())
-                            .componentWillUnmount( scope => scope.backend.willUnmount() )
+                            .componentDidMount( scope => scope.backend.didMount)
+                            .componentWillUnmount( scope => scope.backend.willUnmount )
                             .build
 }

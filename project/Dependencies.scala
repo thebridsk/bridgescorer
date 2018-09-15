@@ -1,6 +1,7 @@
 
 import sbt._
 import scalajsbundler.sbtplugin.WebScalaJSBundlerPlugin.autoImport._
+import org.portablescala.sbtplatformdeps.PlatformDepsPlugin.autoImport._
 
 // Scala.js additions, see http://www.scala-js.org/doc/project/
 import org.scalajs.sbtplugin.ScalaJSPlugin
@@ -11,7 +12,7 @@ import org.scalajs.sbtplugin.ScalaJSPlugin.autoImport._
 object Dependencies {
   // version numbers
 
-  lazy val verScalaVersion = "2.12.4"
+  lazy val verScalaVersion = "2.12.6"
   lazy val verScalaMajorMinor = {
     val i = verScalaVersion.indexOf('.')
     val i2 = verScalaVersion.indexOf('.', i+1)
@@ -32,27 +33,27 @@ object Dependencies {
 //  lazy val vScalaJsLibrary = "0.6.13" // http://mvnrepository.com/artifact/org.scala-js/scalajs-library_2.11
 
 
-  lazy val vAkka = "2.5.11"           // http://mvnrepository.com/artifact/com.typesafe.akka/akka-actor_2.11
-  lazy val vAkkaHttp = "10.1.0"       // http://mvnrepository.com/artifact/com.typesafe.akka/akka-http_2.11
+  lazy val vAkka = "2.5.14"           // http://mvnrepository.com/artifact/com.typesafe.akka/akka-actor_2.11
+  lazy val vAkkaHttp = "10.1.4"       // http://mvnrepository.com/artifact/com.typesafe.akka/akka-http_2.11
 
-  lazy val vAkkaHttpPlayJson="1.20.0"  // https://github.com/hseeberger/akka-http-json
+  lazy val vAkkaHttpPlayJson="1.21.0"  // https://github.com/hseeberger/akka-http-json
 
-  lazy val vSwaggerAkkaHttp = "0.14.0" // http://mvnrepository.com/artifact/com.github.swagger-akka-http/swagger-akka-http_2.12
+  lazy val vSwaggerAkkaHttp = "1.0.0" // http://mvnrepository.com/artifact/com.github.swagger-akka-http/swagger-akka-http_2.12
 //  lazy val vSwaggerScalaModule="1.0.4" // http://mvnrepository.com/artifact/io.swagger/swagger-scala-module_2.11
-  lazy val vSwagger="1.5.18"           // http://mvnrepository.com/artifact/io.swagger/swagger-core
+  lazy val vSwagger="1.5.21"           // http://mvnrepository.com/artifact/io.swagger/swagger-core
 
-  lazy val vSwaggerUI = "3.12.1"       // https://www.npmjs.com/package/swagger-ui-dist
-  lazy val vScalajsdom = "0.9.5"       // http://mvnrepository.com/artifact/org.scala-js/scalajs-dom_sjs0.6_2.11
-  lazy val vScalaJsReact = "1.2.0"     // http://mvnrepository.com/artifact/com.github.japgolly.scalajs-react/core_sjs0.6_2.11
+  lazy val vSwaggerUI = "3.18.1"       // https://www.npmjs.com/package/swagger-ui-dist
+  lazy val vScalajsdom = "0.9.6"       // http://mvnrepository.com/artifact/org.scala-js/scalajs-dom_sjs0.6_2.11
+  lazy val vScalaJsReact = "1.2.3"     // http://mvnrepository.com/artifact/com.github.japgolly.scalajs-react/core_sjs0.6_2.11
   lazy val vScalaCss = "0.5.3"         // http://mvnrepository.com/artifact/com.github.japgolly.scalacss/core_sjs0.6_2.11
 
-  lazy val vWebJarsReact = "16.2.0"    // http://mvnrepository.com/artifact/org.webjars/react
-  lazy val vReactWidgets = "4.2.2"     // http://mvnrepository.com/artifact/org.webjars.npm/react-widgets
+  lazy val vWebJarsReact = "16.4.2"    // http://mvnrepository.com/artifact/org.webjars/react
+  lazy val vReactWidgets = "4.4.4"     // http://mvnrepository.com/artifact/org.webjars.npm/react-widgets
   lazy val vWebJarsFlux = "3.1.3"      // http://mvnrepository.com/artifact/org.webjars/flux
   lazy val vGlobalize = "1.3.0"        // https://www.npmjs.com/package/globalize
   lazy val vCldr = "4.7.0"             // https://www.npmjs.com/package/cldr
-  lazy val vReactWidgetsMoment = "4.0.9"  // http://mvnrepository.com/artifact/org.webjars.npm/react-widgets-moment
-  lazy val vMoment = "2.21.0"          // https://www.npmjs.com/package/moment
+  lazy val vReactWidgetsMoment = "4.0.20"  // http://mvnrepository.com/artifact/org.webjars.npm/react-widgets-moment
+  lazy val vMoment = "2.22.2"          // https://www.npmjs.com/package/moment
 
   lazy val vScalajsJquery = "0.9.2"  // http://mvnrepository.com/artifact/be.doeraene/scalajs-jquery_sjs0.6_2.11
 
@@ -64,29 +65,33 @@ object Dependencies {
   lazy val vScalatest = "3.0.5"      // http://mvnrepository.com/artifact/org.scalatest/scalatest_2.11
   lazy val vJunit = "4.12"           // http://mvnrepository.com/artifact/junit/junit
 
-  lazy val vSelenium = "3.11.0"      // http://mvnrepository.com/artifact/org.seleniumhq.selenium/selenium-java
+  lazy val vSelenium = "3.14.0"      // http://mvnrepository.com/artifact/org.seleniumhq.selenium/selenium-java
   lazy val vLog4js = "1.4.15"        // http://mvnrepository.com/artifact/org.webjars/log4javascript
   lazy val vScalaArm = "2.0"         // http://mvnrepository.com/artifact/com.jsuereth/scala-arm_2.11
-  lazy val vScallop = "3.1.2"        // http://mvnrepository.com/artifact/org.rogach/scallop_2.11
+  lazy val vScallop = "3.1.3"        // http://mvnrepository.com/artifact/org.rogach/scallop_2.11
   lazy val vSlf4j = "1.7.25"         // https://mvnrepository.com/artifact/org.slf4j/slf4j-jdk14
-  lazy val vPlayJson = "2.6.9"       // https://mvnrepository.com/artifact/com.typesafe.play/play-json_2.12
-  lazy val vJackson = "2.9.4"        // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core
+  lazy val vPlayJson = "2.6.10"      // https://mvnrepository.com/artifact/com.typesafe.play/play-json_2.12
+
+  // jackson-module-scala usually updates a few days after the others are updated,
+  // don't update until jackson-module-scala is updated
+  lazy val vJackson = "2.9.6"        // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core
 
   // Selenium needs to be update to update to v23.0
-  lazy val vGuavaJre = "24.1-jre"    // https://github.com/google/guava
+  lazy val vGuavaJre = "26.0-jre"    // https://github.com/google/guava
 
-  lazy val vWebPack = "3.11.0"          // https://www.npmjs.com/package/webpack
+  lazy val vWebPack = "4.17.0"          // https://www.npmjs.com/package/webpack
 
-  lazy val vJsDom = "11.6.2"           // https://www.npmjs.com/package/jsdom
+  lazy val vJsDom = "11.12.0"           // https://www.npmjs.com/package/jsdom
 //  lazy val vExposeLoader = "0.7.3"     // https://www.npmjs.com/package/expose-loader
 
   // version 0.2.1 is hardcoded in sbt-scalajs-bundler
 //  lazy val vSourceMapLoader = "0.2.3"   // https://www.npmjs.com/package/source-map-loader
-//  lazy val vWebpackDevServer = "2.11.1" // https://www.npmjs.com/package/webpack-dev-server
+  lazy val vWebpackDevServer = "3.1.5"   // https://www.npmjs.com/package/webpack-dev-server
+  lazy val vWebPackCli = "3.1.0"         // https://www.npmjs.com/package/webpack-cli
 
   lazy val vFastClick = "1.0.6"       // https://www.npmjs.com/package/fastclick
 
-  lazy val vSangria = "1.4.0"           // https://github.com/sangria-graphql/sangria
+  lazy val vSangria = "1.4.2"           // https://github.com/sangria-graphql/sangria
   lazy val vSangriaPlayJson = "1.0.4"   // https://github.com/sangria-graphql/sangria-playground
 
   // libraries
@@ -150,7 +155,7 @@ object Dependencies {
   val bridgeScorerServerDeps = Def.setting(morejacksons ++ jacksons ++ Seq(
 
       "com.typesafe.akka"   %%  "akka-actor"    % vAkka withSources(),
-      "com.typesafe.akka"   %%  "akka-contrib"  % vAkka % "runtime" withSources(),   // needed for logging
+      "com.typesafe.akka"   %%  "akka-contrib"  % vAkka withSources(),   // needed for logging
 
       "com.typesafe.akka"   %% "akka-stream"             % vAkka withSources(),
 
@@ -242,10 +247,10 @@ object Dependencies {
   val bridgeScorerTestNpmDeps = Seq(
       "jsdom" -> vJsDom,
       "jquery" -> vJQuery,
-      "webpack" -> vWebPack,
   )
 
   val bridgeScorerDevNpmDeps = Seq(
+      "webpack" -> vWebPack,
 //      "source-map-loader" -> vSourceMapLoader,
 //      "expose-loader" -> vExposeLoader
   )

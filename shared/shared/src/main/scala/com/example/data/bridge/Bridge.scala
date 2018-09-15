@@ -22,6 +22,19 @@ object ContractSuit {
     case "C" => Clubs
     case _ => throw new IllegalArgumentException("Unknown value for a contract suit: "+suit)
   }
+
+  def getRank( suit: String) = suit match {
+    case "N" => 5
+    case "S" => 4
+    case "H" => 3
+    case "D" => 2
+    case "C" => 1
+    case _ => throw new IllegalArgumentException("Unknown value for a contract suit: "+suit)
+  }
+
+  def compare( suit1: String, suit2: String ): Int = {
+    getRank(suit1).compare(getRank(suit2))
+  }
 }
 
 /**

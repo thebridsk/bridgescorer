@@ -1,8 +1,6 @@
 package com.example.pages.duplicate
 
 import scala.scalajs.js
-import org.scalajs.dom.document
-import org.scalajs.dom.Element
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
 import com.example.routes.BridgeRouter
@@ -199,12 +197,12 @@ object PageDuplicateResultEditInternal {
    */
   class Backend(scope: BackendScope[Props, State]) {
 
-    def ok() = scope.state >>= { state => Callback {
+    val ok = scope.state >>= { state => Callback {
       val props = scope.withEffectsImpure.props
-
       state.original match {
         case Some(mdr) =>
           val newmdr = state.getMDR()
+          logger.fine(s"""Updating, state.played=${state.played} MDR: ${newmdr}""")
           BridgeDispatcher.updateDuplicateResult(newmdr)
           import scala.concurrent.ExecutionContext.Implicits.global
           RestClientDuplicateResult.update(newmdr.id, newmdr).recordFailure().foreach { e =>
@@ -217,7 +215,7 @@ object PageDuplicateResultEditInternal {
 
     }}
 
-    def cancel() = scope.props >>= { props => Callback {
+    val cancel = scope.props >>= { props => Callback {
 
       if (mounted) props.routerCtl.set(DuplicateResultView(props.page.dupid)).runNow()
 
@@ -234,13 +232,18 @@ object PageDuplicateResultEditInternal {
     )
 
     def setPlayed( value: Date ) = {
-      val t = if (value == null) 0 else value.getTime()
-      scope.withEffectsImpure.modState(s => s.copy( played=t) )
+      logger.fine(s"""Setting date to ${value}: ${value.getTime()}""")
+      scope.modState { s =>
+        val t = if (value == null) 0 else value.getTime()
+        val ns = s.copy( played=t)
+        logger.fine(s"""New date in state is ${ns.played}""")
+        ns
+      }.runNow()
     }
 
-    def toggleComplete = scope.modState( s=>s.copy( notfinished = !s.notfinished ))
+    val toggleComplete = scope.modState( s=>s.copy( notfinished = !s.notfinished ))
 
-    def toggleIMP = scope.modState( s=>s.copy( useIMP = !s.useIMP ))
+    val toggleIMP = scope.modState( s=>s.copy( useIMP = !s.useIMP ))
 
     def setComment( e: ReactEventFromInput ) =  e.inputText { comment =>
       scope.modState( s=>s.copy( comment = if (comment == null || comment == "") None else Some(comment) ))
@@ -312,13 +315,13 @@ object PageDuplicateResultEditInternal {
                 baseStyles.divFooterLeft,
                 AppButton( "OK", "OK",
                            ^.disabled := !state.isValid(),
-                           ^.onClick --> ok()
+                           ^.onClick --> ok
                 )
               ),
               <.div(
                 baseStyles.divFooterCenter,
                 AppButton( "Cancel", "Cancel",
-                           ^.onClick --> cancel() )
+                           ^.onClick --> cancel )
               )
             )
           )
@@ -328,9 +331,9 @@ object PageDuplicateResultEditInternal {
     }
 
     var mounted = false
-    val storeCallback = Callback {
+    val storeCallback = scope.modState { s =>
       val mdr = DuplicateResultStore.getDuplicateResult()
-      scope.withEffectsImpure.modState( s => s.updateOriginal(mdr) )
+      s.updateOriginal(mdr)
     }
 
     val namesCallback = scope.modState(s => {
@@ -338,16 +341,16 @@ object PageDuplicateResultEditInternal {
       s.copy( nameSuggestions=Some(sug))
     })
 
-    def didMount() = Callback {
+    val didMount = scope.props >>= { (p) => Callback {
       mounted = true
       logger.info("PageDuplicateResultEdit.didMount")
       NamesStore.ensureNamesAreCached(Some(namesCallback))
       DuplicateResultStore.addChangeListener(storeCallback)
-    } >> scope.props >>= { (p) => Callback(
-      Controller.monitorDuplicateResult(p.page.dupid))
-    }
 
-    def willUnmount() = Callback {
+      Controller.monitorDuplicateResult(p.page.dupid)
+    }}
+
+    val willUnmount = Callback {
       mounted = false
       logger.info("PageDuplicateResultEdit.willUnmount")
       DuplicateResultStore.removeChangeListener(storeCallback)
@@ -425,8 +428,8 @@ object PageDuplicateResultEditInternal {
                             .initialStateFromProps { props => State() }
                             .backend(new Backend(_))
                             .renderBackend
-                            .componentDidMount( scope => scope.backend.didMount())
-                            .componentWillUnmount( scope => scope.backend.willUnmount() )
+                            .componentDidMount( scope => scope.backend.didMount)
+                            .componentWillUnmount( scope => scope.backend.willUnmount )
                             .build
 }
 

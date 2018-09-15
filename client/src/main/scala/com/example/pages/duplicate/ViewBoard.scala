@@ -2,8 +2,6 @@ package com.example.pages.duplicate
 
 
 import scala.scalajs.js
-import org.scalajs.dom.document
-import org.scalajs.dom.Element
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.extra.router.RouterCtl
@@ -25,6 +23,7 @@ import com.example.data.util.Strings
 import com.example.pages.duplicate.DuplicateRouter.BaseBoardView
 import com.example.react.AppButton
 import com.example.react.Utils._
+import com.example.routes.BridgeRouter
 
 /**
  * Shows the board results
@@ -40,9 +39,9 @@ import com.example.react.Utils._
 object ViewBoard {
   import ViewBoardInternal._
 
-  case class Props( routerCtl: RouterCtl[DuplicatePage], page: BaseBoardView, score: MatchDuplicateScore, board: Id.DuplicateBoard, useIMPs: Boolean = false )
+  case class Props( routerCtl: BridgeRouter[DuplicatePage], page: BaseBoardView, score: MatchDuplicateScore, board: Id.DuplicateBoard, useIMPs: Boolean = false )
 
-  def apply( routerCtl: RouterCtl[DuplicatePage], page: BaseBoardView, score: MatchDuplicateScore, board: Id.DuplicateBoard, useIMPs: Boolean = true ) = component(Props(routerCtl, page, score, board, useIMPs))
+  def apply( routerCtl: BridgeRouter[DuplicatePage], page: BaseBoardView, score: MatchDuplicateScore, board: Id.DuplicateBoard, useIMPs: Boolean = true ) = component(Props(routerCtl, page, score, board, useIMPs))
 
 }
 
@@ -56,19 +55,6 @@ object ViewBoardInternal {
                       .render_P( cprops => {
                         val (props,board) = cprops
                         <.thead(
-                          <.tr(
-                            <.th(
-                              ^.colSpan:=4,
-                              "Board "+Id.boardIdToBoardNumber(props.board)
-                            ),
-                            <.th(
-                              ^.colSpan:=5,
-                              board match {
-                                case Some(b) => b.showVul
-                                case None => ""
-                              }
-                            )
-                          ),
                           <.tr(
                             <.th( ^.rowSpan:=2, "NS pair"),
                             <.th( ^.rowSpan:=2, "Contract"),
@@ -115,11 +101,13 @@ object ViewBoardInternal {
                                   case PerspectiveDirector => true
                                 }
                               }
+                            val tbsteamId = tbs.teamId
                             if (enabled) {
-                              AppButton( "Hand_"+tbs.teamId, Id.teamIdToTeamNumber(tbs.teamId),
-                                         p.routerCtl.setOnClick(p.page.toHandView(tbs.teamId)) )
+                              val clickPage = p.page.toHandView(tbsteamId)
+                              AppButton( "Hand_"+tbs.teamId, Id.teamIdToTeamNumber(tbsteamId),
+                                         p.routerCtl.setOnClick(clickPage) )
                             } else {
-                              <.span(Id.teamIdToTeamNumber(tbs.teamId))
+                              <.span(Id.teamIdToTeamNumber(tbsteamId))
                             }
                           }
                         }
@@ -208,6 +196,19 @@ object ViewBoardInternal {
         dupStyles.divBoardView,
         <.table(
           ^.id:="Board_"+props.board,
+          <.caption(
+            <.span(
+              ^.float:="left",
+              "Board "+Id.boardIdToBoardNumber(props.board)
+            ),
+            <.span(
+              ^.float:="right",
+              board match {
+                case Some(b) => b.showVul
+                case None => ""
+              }
+            )
+          ),
           Header((props,board)),
           <.tbody(
             props.score.teams.toList.sortWith( (t1,t2)=>Id.idComparer(t1.id,t2.id)<0).map { team =>

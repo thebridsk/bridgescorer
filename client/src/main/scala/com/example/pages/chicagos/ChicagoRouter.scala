@@ -1,10 +1,6 @@
 package com.example.pages.chicagos
 
-import org.scalajs.dom.document
-
 import utils.logging.Logger
-
-
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.Callback
 import japgolly.scalajs.react.CallbackTo

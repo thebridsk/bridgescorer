@@ -2,7 +2,6 @@ package com.example.react
 
 import scala.scalajs.js
 import scala.scalajs.js.annotation.JSName
-import org.scalajs.dom.raw.HTMLElement
 import japgolly.scalajs.react._
 import scala.scalajs.js.UndefOr
 import utils.logging.Logger

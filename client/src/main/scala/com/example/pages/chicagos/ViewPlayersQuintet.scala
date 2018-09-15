@@ -1,8 +1,6 @@
 package com.example.pages.chicagos
 
 import scala.scalajs.js
-import org.scalajs.dom.document
-import org.scalajs.dom.Element
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
 import com.example.data.MatchChicago
@@ -20,6 +18,7 @@ import com.example.react.AppButton
 import com.example.bridge.rotation.Table
 import com.example.react.Utils._
 import com.example.pages.BaseStyles
+import com.example.react.HelpButton
 
 /**
  * A skeleton component.
@@ -58,7 +57,7 @@ object ViewPlayersQuintetInternal {
                     south: String,
                     east: String,
                     west: String,
-                    dealer: PlayerPosition,
+                    dealer: Option[PlayerPosition],
                     nextSittingOut: Option[String],    // for fair rotation selecting next person out
                     swapping: List[(String,String)]
                   ) {
@@ -105,6 +104,8 @@ object ViewPlayersQuintetInternal {
       t
     }
 
+    def getDealer = dealer.map( d => d.pos.toString ).getOrElse("")
+
     def getLastDealer() = {
       scoring.rounds.last.dealerFirstRound
     }
@@ -150,7 +151,7 @@ object ViewPlayersQuintetInternal {
         case West => (north,south,east,extra,west, (west,extra))
       }
 
-      val state = new State(score, ex, n, s, e, w, nextdealer,None,Nil)
+      val state = new State(score, ex, n, s, e, w, Some(nextdealer),None,Nil)
 
       if (state.isSimple()) {
         state.copy(swapping=swap::Nil)
@@ -185,34 +186,31 @@ object ViewPlayersQuintetInternal {
    */
   class Backend(scope: BackendScope[Props, State]) {
 
-    def reset() = scope.props >>= { props => scope.modState( s => State(props) ) }
+    val reset = scope.props >>= { props => scope.modState( s => State(props) ) }
 
-    def ok() = CallbackTo {
-        val state = scope.withEffectsImpure.state
-        val props = scope.withEffectsImpure.props
+    val ok = scope.stateProps { (state,props) =>
         val r = if (props.chicago.rounds.size <= props.page.round) {
           Round.create(props.page.round.toString(),
                state.north,
                state.south,
                state.east,
                state.west,
-               state.dealer.pos.toString(),
+               state.getDealer,
                Nil )
         } else {
           props.chicago.rounds(props.page.round).copy(north=state.north,
                                                       south=state.south,
                                                       east=state.east,
                                                       west=state.west,
-                                                      dealerFirstRound=state.dealer.pos.toString())
+                                                      dealerFirstRound=state.getDealer)
         }
         ChicagoController.updateChicagoRound(props.chicago.id, r)
-        props
-      } >>= {
-        props => props.router.set(props.page.toHandView(0))
+
+        props.router.set(props.page.toHandView(0))
       }
 
 
-    def setDealer( pos: PlayerPosition ) = scope.modState(s => s.copy(dealer = pos))
+    def setDealer( pos: PlayerPosition ) = scope.modState(s => s.copy(dealer = Some(pos)))
 
     def setPlayerSittingOut( p: String ) = scope.modState(s => s.fairRotation(p))
 
@@ -345,7 +343,8 @@ object ViewPlayersQuintetInternal {
       }
 
       val lasthand = state.getTable()
-      val lastdealer = PlayerPosition.prevDealer( state.dealer )
+      val dealer = state.dealer.getOrElse(North)
+      val lastdealer = PlayerPosition.prevDealer( dealer )
 
       <.div(
         <.div(
@@ -359,7 +358,7 @@ object ViewPlayersQuintetInternal {
           ^.alignItems:="center",
           showNewPositions( true, "Prior hand", lastdealer, lasthand.north, lasthand.south, lasthand.east, lasthand.west, lasthand.sittingOut ),
           selectNextSittingOut(),
-          showNewPositions( state.isSimple() || state.nextSittingOut.isDefined, "Next hand", state.dealer, state.north, state.south, state.east, state.west, state.sittingOut ),
+          showNewPositions( state.isSimple() || state.nextSittingOut.isDefined, "Next hand", dealer, state.north, state.south, state.east, state.west, state.sittingOut ),
           showDescription()
         ),
         <.div(
@@ -371,11 +370,12 @@ object ViewPlayersQuintetInternal {
           !state.isSimple() ?=
             <.div(
               baseStyles.divFooterCenter,
-              AppButton("Reset", "Reset", ^.onClick --> reset() )
+              AppButton("Reset", "Reset", ^.onClick --> reset )
             ),
           <.div(
             baseStyles.divFooterRight,
-            AppButton("Cancel", "Cancel", props.router.setOnClick(props.page.toSummaryView()) )
+            AppButton("Cancel", "Cancel", props.router.setOnClick(props.page.toSummaryView()) ),
+            HelpButton( if (state.isSimple()) "/help/chicago/fastsimple/selectnamessimple.html" else "/help/chicago/fastfair/selectnamesfair.html")
           )
         )
       )

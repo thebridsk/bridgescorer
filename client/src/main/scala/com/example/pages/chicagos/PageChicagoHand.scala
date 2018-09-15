@@ -130,7 +130,8 @@ object PageChicagoHandInternal {
                         viewHandCallbackOk(iround,ihand,mc.isQuintet()),
                         viewHandCallbackCancel(mc.isQuintet()),
                         newhand=true,
-                        allowPassedOut=false )
+                        allowPassedOut=false,
+                        helppage = Some("/help/chicago/hand.html"))
             }
           )
         case _ =>

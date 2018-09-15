@@ -141,6 +141,8 @@ object TestServer {
   def getDocs() = docs
   def getDocs( fragment: String ) = if (fragment.length()==0) docs else docs+"#!"+fragment
 
+  def getHelpPage( page: String = "" ) = hosturl+"help/"+page
+
   /**
    * Returns the URL for the given URI.
    * @param uri the URI.  Must start with a '/'

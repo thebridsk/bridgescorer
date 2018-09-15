@@ -107,13 +107,20 @@ class BaseStyles {
 
   val testPage = cls("baseTestPage")
 
-  val hover = cls("titleHover")
-
   val piechart = cls("piechart")
 
-  val tableStats = cls("tableStats")
+  val svgrect = cls("svgrect")
 
-  val tableStatsFirstTotalRow = cls("tableStatsFirstTotalRow")
+  val colorbar = cls("colorbar")
+
+  val tableComponent = cls("tableComponent")
+
+  val withTooltipBox = cls("withTooltipBox")
+  val tooltipContent = cls("tooltipContent")
+  val tooltipTitle = cls("tooltipTitle")
+  val tooltipBody = cls("tooltipBody")
+
+  val divColorPage = cls("divColorPage")
 }
 
 class RootStyles {

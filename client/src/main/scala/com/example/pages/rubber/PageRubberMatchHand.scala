@@ -84,7 +84,7 @@ object PageRubberMatchHandInternal {
         props.routerCtl.set(props.page.toRubber())
       }}
 
-    def viewHandCallbackCancel() = scope.props >>= { props => props.routerCtl.set(props.page.toRubber()) }
+    val viewHandCallbackCancel = scope.props >>= { props => props.routerCtl.set(props.page.toRubber()) }
 
     def getPlayerPosition( pos: String ) = try {
       Some(PlayerPosition(pos))
@@ -136,7 +136,8 @@ object PageRubberMatchHandInternal {
                 PageHand( contract , viewHandCallbackOk(""), viewHandCallbackCancel, newhand=true, allowPassedOut=false,
                           callbackWithHonors = Some(viewHandCallbackWithHonors("") _),
                           honors = None,
-                          honorsPlayer = None )
+                          honorsPlayer = None,
+                          helppage = Some("/help/rubber/hand.html"))
             }
           )
         case _ =>
@@ -147,14 +148,14 @@ object PageRubberMatchHandInternal {
 
     val storeCallback = Callback { scope.withEffectsImpure.forceUpdate }
 
-    def didMount() = CallbackTo {
+    val didMount = CallbackTo {
       logger.info("PageRubberNames.didMount")
       RubberStore.addChangeListener(storeCallback)
     } >> scope.props >>= { (p) => Callback(
       RubberController.ensureMatch(p.page.rid))
     }
 
-    def willUnmount() = CallbackTo {
+    val willUnmount = CallbackTo {
       logger.info("PageRubberNames.willUnmount")
       RubberStore.removeChangeListener(storeCallback)
     }
@@ -165,8 +166,8 @@ object PageRubberMatchHandInternal {
                             .initialStateFromProps { props => State() }
                             .backend(new Backend(_))
                             .renderBackend
-                            .componentDidMount( scope => scope.backend.didMount())
-                            .componentWillUnmount( scope => scope.backend.willUnmount() )
+                            .componentDidMount( scope => scope.backend.didMount)
+                            .componentWillUnmount( scope => scope.backend.willUnmount )
                             .build
 }
 

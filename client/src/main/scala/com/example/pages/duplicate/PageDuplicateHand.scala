@@ -2,8 +2,6 @@ package com.example.pages.duplicate
 
 
 import scala.scalajs.js
-import org.scalajs.dom.document
-import org.scalajs.dom.Element
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.extra.router.RouterCtl
@@ -74,7 +72,7 @@ object PageDuplicateHandInternal {
             case Some(board) =>
               board.getHand(props.page.handid) match {
                 case Some(hand) =>
-                  logger.fine("PageDuplicate.Backend.render: Showing "+hand)
+                  logger.fine("PageDuplicateHand.State.create: "+hand)
                   val (res, newhand) = hand.hand match {
                     case Some(h) => (h,false)
                     case None => (Hand.create(hand.id,
@@ -106,6 +104,7 @@ object PageDuplicateHandInternal {
    */
   class Backend(scope: BackendScope[Props, State]) {
     def render( props: Props, state: State ) = {
+      logger.fine(s"""PageDuplicateHand.render( ${props.page} )""")
       <.div(
         state.errormsg match {
           case Some(msg) => <.p(msg)
@@ -155,7 +154,8 @@ object PageDuplicateHandInternal {
                      Some(hand.nsTeam),
                      Some(hand.ewTeam),
                      newhand=newhand,
-                     allowPassedOut=board.timesPlayed()>0)
+                     allowPassedOut=board.timesPlayed()>0,
+                     helppage=Some("/help/duplicate/enterhand.html"))
         }
       )
     }
@@ -168,39 +168,39 @@ object PageDuplicateHandInternal {
       p.routerCtl.set(p.page.toBoardView())
     }
 
-    def viewHandCallbackCancel() = scope.props >>= { p =>
+    val viewHandCallbackCancel = scope.props >>= { p =>
       p.routerCtl.set(p.page.toBoardView())
     }
 
-    val storeCallback = Callback { scope.withEffectsImpure.modState(s => {
-      val newstate = State.create(scope.withEffectsImpure.props)
+    val storeCallback = scope.modStateOption { ( s, p ) =>
+      val newstate = State.create(p)
       if (newstate.vals.isDefined == s.vals.isDefined) {
         newstate.vals match {
           case Some((nmd,nboard,nhand,nres)) =>
             s.vals match {
               case Some((md,board,hand,res)) =>
-                if (nres.equalsIgnoreModifyTime(res)) s
-                else newstate
+                if (nres.equalsIgnoreModifyTime(res)) None
+                else Some(newstate)
               case None =>
-                newstate
+                Some(newstate)
             }
-            newstate
+            Some(newstate)
           case None =>
-            newstate
+            Some(newstate)
         }
       } else {
-        newstate
+        Some(newstate)
       }
-    }) }
+   }
 
-    def didMount() = CallbackTo {
+    val didMount = scope.props >>= { (p) => Callback {
       logger.info("PageDuplicateHand.didMount")
       DuplicateStore.addChangeListener(storeCallback)
-    } >> scope.props >>= { (p) => CallbackTo(
-      Controller.monitorMatchDuplicate(p.page.dupid)
-    )}
 
-    def willUnmount() = CallbackTo {
+      Controller.monitorMatchDuplicate(p.page.dupid)
+    }}
+
+    val willUnmount = CallbackTo {
       logger.info("PageDuplicateHand.willUnmount")
       DuplicateStore.removeChangeListener(storeCallback)
     }
@@ -210,8 +210,8 @@ object PageDuplicateHandInternal {
                             .initialStateFromProps { props => State.create(props) }
                             .backend(new Backend(_))
                             .renderBackend
-                            .componentDidMount( scope => scope.backend.didMount())
-                            .componentWillUnmount( scope => scope.backend.willUnmount() )
+                            .componentDidMount( scope => scope.backend.didMount)
+                            .componentWillUnmount( scope => scope.backend.willUnmount )
                             .build
 }
 

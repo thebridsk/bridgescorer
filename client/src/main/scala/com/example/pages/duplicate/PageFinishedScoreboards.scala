@@ -2,8 +2,6 @@ package com.example.pages.duplicate
 
 
 import scala.scalajs.js
-import org.scalajs.dom.document
-import org.scalajs.dom.Element
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.extra.router.RouterCtl
@@ -169,11 +167,10 @@ object PageFinishedScoreboardsInternal {
 
     var mounted = false
 
-    def didMount() = Callback {
+    val didMount = Callback {
       mounted = true
       logger.finest("PageFinishedScoreboards.didMount")
-    } >> Callback {
-      val s = scope.withEffectsImpure.state
+    } >> scope.state >>= { s => Callback {
       s.ids.foreach { id => {
         if (id.toString().charAt(0) == 'E') {
           logger.finest("PageFinishedScoreboards.didMount: getting MatchDuplicateResult "+id)
@@ -187,9 +184,9 @@ object PageFinishedScoreboardsInternal {
       RestClientDuplicateSummary.list().recordFailure().foreach(list=>
         scope.withEffectsImpure.modState( s => s.copy(summaries=list.map(ds => ds.id).toList))
       )
-    }
+    }}
 
-    def willUnmount() = Callback {
+    val willUnmount = Callback {
       mounted = false
       logger.info("PageFinishedScoreboards.willUnmount")
     }
@@ -199,8 +196,8 @@ object PageFinishedScoreboardsInternal {
                             .initialStateFromProps { props => State(Map(), Map(), props.game.getIds().toList, List() ) }
                             .backend(new Backend(_))
                             .renderBackend
-                            .componentDidMount( scope => scope.backend.didMount())
-                            .componentWillUnmount( scope => scope.backend.willUnmount() )
+                            .componentDidMount( scope => scope.backend.didMount)
+                            .componentWillUnmount( scope => scope.backend.willUnmount )
                             .build
 }
 

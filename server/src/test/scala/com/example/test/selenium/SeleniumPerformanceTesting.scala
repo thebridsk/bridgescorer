@@ -34,17 +34,17 @@ import com.example.test.util.NoResultYet
 import com.example.test.util.EventuallyUtils
 import com.example.test.util.ParallelUtils
 import org.scalatest.concurrent.Eventually
-import com.example.pages.bridge.HomePage
-import com.example.pages.duplicate.ListDuplicatePage
-import com.example.pages.duplicate.NewDuplicatePage
-import com.example.pages.duplicate.MovementsPage
-import com.example.pages.duplicate.BoardSetsPage
-import com.example.pages.duplicate.ScoreboardPage
-import com.example.pages.duplicate.TablePage
-import com.example.pages.duplicate.TablePage.EnterNames
-import com.example.pages.duplicate.TableEnterScorekeeperPage
-import com.example.pages.GenericPage
-import com.example.pages.duplicate.HandPage
+import com.example.test.pages.bridge.HomePage
+import com.example.test.pages.duplicate.ListDuplicatePage
+import com.example.test.pages.duplicate.NewDuplicatePage
+import com.example.test.pages.duplicate.MovementsPage
+import com.example.test.pages.duplicate.BoardSetsPage
+import com.example.test.pages.duplicate.ScoreboardPage
+import com.example.test.pages.duplicate.TablePage
+import com.example.test.pages.duplicate.TablePage.EnterNames
+import com.example.test.pages.duplicate.TableEnterScorekeeperPage
+import com.example.test.pages.GenericPage
+import com.example.test.pages.duplicate.HandPage
 import com.example.test.TestStartLogging
 import com.example.source.SourcePosition
 import com.example.test.util.MonitorTCP
@@ -56,7 +56,7 @@ import com.example.test.util.MonitorTCP
  */
 class SeleniumPerformanceTesting extends FlatSpec with MustMatchers with BeforeAndAfterAll with EventuallyUtils {
     import Eventually.{ patienceConfig => _, _ }
-    import com.example.pages.PageBrowser._
+    import com.example.test.pages.PageBrowser._
 
   val log = Logger[SeleniumPerformanceTesting]
 

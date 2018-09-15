@@ -26,12 +26,13 @@ import com.example.test.TestStartLogging
 import com.example.test.util.MonitorTCP
 import com.example.backend.BridgeServiceFileStoreConverters
 import com.example.backend.MatchChicagoCacheStoreSupport
+import com.example.test.pages.PageBrowser
 
 /**
  * @author werewolf
  */
 class Chicago5FairTest extends FlatSpec with MustMatchers with BeforeAndAfterAll with EventuallyUtils {
-  import com.example.pages.PageBrowser._
+  import com.example.test.pages.PageBrowser._
   import Eventually.{ patienceConfig => _, _ }
 
   import scala.concurrent.duration._
@@ -39,6 +40,8 @@ class Chicago5FairTest extends FlatSpec with MustMatchers with BeforeAndAfterAll
   import ChicagoUtils._
 
   val log = Logger[Chicago5FairTest]
+
+  val docsScreenshotDir = "target/docs/Chicago"
 
   val Session1 = new Session
 
@@ -141,12 +144,17 @@ class Chicago5FairTest extends FlatSpec with MustMatchers with BeforeAndAfterAll
     textField("West").value = "Wayne"
     textField("North").value = "Nancy"
     tcpSleep(1)
-    pressKeys(Keys.chord(Keys.ESCAPE))
+    pressKeys(Keys.ESCAPE)
 
     eventually { click on id("LabelQuintet") }
 
     eventually(find(id("Fair")))
+
+    takeScreenshot(docsScreenshotDir, "EnterNames5")
+
     click on id("Fair")
+
+    click on id("PlayerNFirstDealer")
 
     eventually( find(id("Ok")) mustBe 'Enabled )
 
@@ -248,6 +256,8 @@ class Chicago5FairTest extends FlatSpec with MustMatchers with BeforeAndAfterAll
 
     checkPositions( "Next hand", East,  "Brian", "Wayne", "Ellen", "Sam", "Nancy" )
 
+    takeScreenshot(docsScreenshotDir, "SelectNamesFair")
+
     eventuallyFindAndClickButton("OK")
   }
 
@@ -315,6 +325,8 @@ class Chicago5FairTest extends FlatSpec with MustMatchers with BeforeAndAfterAll
     assertScore( 420, 870, 0, 850, 400 )
 
     InputStyleHelper.hitInputStyleButton( "Original" )
+
+    PageBrowser.takeScreenshot(docsScreenshotDir, "SummaryQuintetPage")
 
     click on id("NewRound")
   }

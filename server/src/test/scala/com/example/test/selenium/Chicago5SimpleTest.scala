@@ -30,7 +30,7 @@ import com.example.backend.MatchChicagoCacheStoreSupport
  * @author werewolf
  */
 class Chicago5SimpleTest extends FlatSpec with MustMatchers with BeforeAndAfterAll with EventuallyUtils {
-  import com.example.pages.PageBrowser._
+  import com.example.test.pages.PageBrowser._
   import Eventually.{ patienceConfig => _, _ }
 
   import scala.concurrent.duration._
@@ -38,6 +38,8 @@ class Chicago5SimpleTest extends FlatSpec with MustMatchers with BeforeAndAfterA
   import ChicagoUtils._
 
   val log = Logger[Chicago5SimpleTest]
+
+  val docsScreenshotDir = "target/docs/Chicago"
 
   val Session1 = new Session
 
@@ -135,7 +137,7 @@ class Chicago5SimpleTest extends FlatSpec with MustMatchers with BeforeAndAfterA
     textField("East").value = " Ellen "
     textField("West").value = "Wayne"
     tcpSleep(1)
-    pressKeys(Keys.chord(Keys.ENTER))
+    pressKeys(Keys.ESCAPE)
     tcpSleep(1)
 
     click on id("LabelQuintet")
@@ -144,6 +146,8 @@ class Chicago5SimpleTest extends FlatSpec with MustMatchers with BeforeAndAfterA
     eventually(find(id("Simple")))
     click on id("Simple")
     tcpSleep(1)
+
+    click on id("PlayerNFirstDealer")
 
     eventually( find(id("Ok")) mustBe 'Enabled )
 
@@ -226,6 +230,8 @@ class Chicago5SimpleTest extends FlatSpec with MustMatchers with BeforeAndAfterA
   it should "show the partnerships and dealer for second round" in {
     tcpSleep(30)
     eventually{ find(id("OK")) }
+
+    takeScreenshot(docsScreenshotDir, "SelectNamesSimple")
 
     checkPositions( "Prior hand", North, "Nancy", "Sam", "Ellen", "Wayne", "Brian" )
     checkPositions( "Next hand", East,  "Brian", "Sam", "Ellen", "Wayne", "Nancy" )

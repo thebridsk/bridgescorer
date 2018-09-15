@@ -2,8 +2,6 @@ package com.example.pages.duplicate
 
 
 import scala.scalajs.js
-import org.scalajs.dom.document
-import org.scalajs.dom.Element
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.extra.router.RouterCtl
@@ -65,17 +63,6 @@ object ViewTableInternal {
                         val (props, relay) = args
                         <.thead(
                           <.tr(
-                            <.th(
-                              ^.colSpan:=(if (relay) 5 else 4),
-                              if (props.showTableButton) {
-                                val table = Id.tableIdToTableNumber(props.page.tableid)
-                                AppButton( "Table_"+table, "Table "+table, props.routerCtl.setOnClick(props.page) )
-                              } else {
-                                "Table "+Id.tableIdToTableNumber(props.page.tableid)
-                              }
-                            )
-                          ),
-                          <.tr(
                             <.th( "Round" ),
                             <.th( "NS" ),
                             <.th( "EW" ),
@@ -105,37 +92,44 @@ object ViewTableInternal {
                           )
                         }
 
+                        val clickFromRound = if (allUnplayed) {
+                                               props.page.toTableTeamView(round.round)
+                                             } else {
+                                               props.page.toRoundView(round.round)
+                                             }
+
                         <.tr( ^.textAlign:="center",
                           <.td(
                             AppButton( "Round_"+round.round.toString, round.round.toString,
                                        dupStyles.boardButtonInTable,
                                        ^.disabled:=round.round>currentRound,
                                        round.round==currentRound ?= baseStyles.requiredNotNext,
-                                       if (allUnplayed) {
-                                         props.routerCtl.setOnClick(props.page.toTableTeamView(round.round))
-                                       } else {
-                                         props.routerCtl.setOnClick(props.page.toRoundView(round.round))
-                                       })
+                                       props.routerCtl.setOnClick(clickFromRound)
+                                     )
                           ),
                           <.td( showTeam(round.ns.id, round.ns.player1, round.ns.player2 ) ),
                           <.td( showTeam(round.ew.id, round.ew.player1, round.ew.player2 ) ),
                           <.td(
                             round.boards.sortWith((b1,b2)=>Id.idComparer(b1.id, b2.id)<0).map { board =>
+                              val clickFromBoard =
+                                if (allUnplayed) {
+                                  props.page.toTableTeamView(round.round,board.id)
+                                } else {
+                                  if (board.hasTeamPlayed(round.ns.id)) {
+                                    props.page.toBoardView(round.round,board.id)
+                                  } else {
+                                    props.page.toBoardView(round.round,board.id).toHandView(round.ns.id)
+                                  }
+                                }
+
                               <.span(
                                 <.span( ^.dangerouslySetInnerHtml:="&nbsp;&nbsp;"),
                                 AppButton( "Board_"+board.id, Id.boardIdToBoardNumber(board.id),
                                            dupStyles.boardButtonInTable,
                                            ^.disabled:=round.round>currentRound,
                                            (round.round==currentRound && !board.hasTeamPlayed(round.ns.id)) ?= baseStyles.requiredNotNext,
-                                           if (allUnplayed) {
-                                             props.routerCtl.setOnClick(props.page.toTableTeamView(round.round,board.id))
-                                           } else {
-                                             if (board.hasTeamPlayed(round.ns.id)) {
-                                               props.routerCtl.setOnClick(props.page.toBoardView(round.round,board.id))
-                                             } else {
-                                               props.routerCtl.setOnClick(props.page.toBoardView(round.round,board.id).toHandView(round.ns.id))
-                                             }
-                                           })
+                                           props.routerCtl.setOnClick(clickFromBoard)
+                                         )
                               )
 
                             }.toTagMod,
@@ -170,6 +164,14 @@ object ViewTableInternal {
               <.div(
                 dupStyles.divTableView,
                 <.table(
+                  <.caption(
+                    if (props.showTableButton) {
+                      val table = Id.tableIdToTableNumber(props.page.tableid)
+                      AppButton( "Table_"+table, "Table "+table, props.routerCtl.setOnClick(props.page) )
+                    } else {
+                      "Table "+Id.tableIdToTableNumber(props.page.tableid)
+                    }
+                  ),
                   Header((props,relay)),
                   <.tbody(
                       {
@@ -190,16 +192,15 @@ object ViewTableInternal {
       }
     }
 
-    val storeCallback = Callback { scope.withEffectsImpure.forceUpdate }
+    val storeCallback = scope.forceUpdate
 
-    def didMount() = CallbackTo {
+    val didMount = scope.props >>= { (p) => Callback {
       logger.info("ViewTable.didMount")
       DuplicateStore.addChangeListener(storeCallback)
-    } >> scope.props >>= { (p) => CallbackTo(
       Controller.monitorMatchDuplicate(p.page.dupid)
-    )}
+    }}
 
-    def willUnmount() = CallbackTo {
+    val willUnmount = Callback {
       logger.info("ViewTable.willUnmount")
       DuplicateStore.removeChangeListener(storeCallback)
     }
@@ -209,8 +210,8 @@ object ViewTableInternal {
                             .initialStateFromProps { props => State() }
                             .backend(new Backend(_))
                             .renderBackend
-                            .componentDidMount( scope => scope.backend.didMount())
-                            .componentWillUnmount( scope => scope.backend.willUnmount() )
+                            .componentDidMount( scope => scope.backend.didMount)
+                            .componentWillUnmount( scope => scope.backend.willUnmount )
                             .build
 }
 

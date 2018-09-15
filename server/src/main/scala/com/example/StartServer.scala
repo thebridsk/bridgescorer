@@ -303,9 +303,9 @@ private class StartServer {
             logger.severe("Unable to create directory for FileStore: "+d)
             return 1
           }
-          Some( new BridgeServiceFileStore( d, id=Some("root") ) )
+          Some( new BridgeServiceFileStore( d, oid=Some("root") ) )
         } else {
-          Some( new BridgeServiceFileStore( d, id=Some("root") ) )
+          Some( new BridgeServiceFileStore( d, oid=Some("root") ) )
         }
 
       case None => None

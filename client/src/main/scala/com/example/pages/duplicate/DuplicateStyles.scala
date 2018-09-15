@@ -18,7 +18,7 @@ class DuplicateStyles {
 
   val divSummary = cls("dupDivSummary")
 
-  val divPeopleSummary = cls("dupDivPeopleSummary")
+  val divPageStats = cls("dupDivPageStats" )
 
   val divPlayerFilter = cls("dupDivPlayerFilter")
 
@@ -32,11 +32,15 @@ class DuplicateStyles {
 
   val viewPeopleTable = cls("dupViewPeopleTable")
 
-  val tablePairsGrid = cls("dupTablePairsGrid")
-
   val divPairsDetailsGrid = cls("dupDivPairsDetailsGrid")
 
   val tablePairsDetailsGrid = cls("dupTablePairsDetailsGrid")
+
+  val viewPlayerAggressiveness = cls("dupViewPlayerAggressiveness")
+
+  val viewPlayerContractResults = cls("dupViewPlayerContractResults")
+
+  val viewContractResults = cls("dupViewContractResults")
 
   val divNewDuplicate = cls("dupDivNewDuplicate")
 
@@ -67,7 +71,6 @@ class DuplicateStyles {
 
   val divFinishedScoreboardsPage = cls("dupDivFinishedScoreboardsPage")
 
-  val divBoardSetPage = cls("dupDivBoardSetPage")
   val divBoardSetsPage = cls("dupDivBoardSetsPage")
   val divBoardSetView = cls("dupDivBoardSetView")
 

@@ -27,7 +27,7 @@ import com.example.backend.MatchChicagoCacheStoreSupport
  * @author werewolf
  */
 class Chicago5Test extends FlatSpec with MustMatchers with BeforeAndAfterAll with EventuallyUtils {
-  import com.example.pages.PageBrowser._
+  import com.example.test.pages.PageBrowser._
   import Eventually.{ patienceConfig => _, _ }
 
   import scala.concurrent.duration._
@@ -35,6 +35,8 @@ class Chicago5Test extends FlatSpec with MustMatchers with BeforeAndAfterAll wit
   import ChicagoUtils._
 
   val log = Logger[Chicago5Test]
+
+  val docsScreenshotDir = "target/docs/Chicago"
 
   val Session1 = new Session
 
@@ -130,8 +132,10 @@ class Chicago5Test extends FlatSpec with MustMatchers with BeforeAndAfterAll wit
     textField("West").value = "Wayne"
     textField("Extra").value = "Brian"
     tcpSleep(1)
-    pressKeys(Keys.chord(Keys.ENTER))
+    pressKeys(Keys.ESCAPE)
     tcpSleep(1)
+
+    click on id("PlayerNFirstDealer")
 
     eventually( find(id("Ok")) mustBe 'Enabled )
 
@@ -186,6 +190,9 @@ class Chicago5Test extends FlatSpec with MustMatchers with BeforeAndAfterAll wit
     eventually{ find(id("OK")) }
     click on id("Player_Ellen")
     eventuallyFindAndClickButton("Fixture1")
+
+    takeScreenshot(docsScreenshotDir, "SelectNames5")
+
     eventuallyFindAndClickButton("SwapS")
 
     eventuallyFindAndClickButton("DealerN")

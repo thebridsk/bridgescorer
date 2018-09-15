@@ -15,31 +15,18 @@ import utils.logging.Logger
 import java.util.logging.Level
 import com.example.test.util.NoResultYet
 import com.example.test.util.MonitorTCP
-import com.example.pages.Element
+import com.example.test.pages.Element
+import org.scalatest.time.Millis
+import org.scalatest.time.Span
+
 
 class InputStyleHelper extends MustMatchers {
     import InputStyleHelper._
-    import com.example.pages.PageBrowser._
-
-  def eventuallyTrueInternal(fun: => Boolean) = {
-    if (!fun) throw new NoResultYet
-  }
-  def eventuallyTrue(fun: => Boolean)(implicit config: PatienceConfig, pos: Position): Unit = {
-    eventually( eventuallyTrueInternal(fun) )(config, pos)
-  }
-
-  def eventuallySomeInternal[T](fun: => Option[T]) = {
-    fun match {
-      case Some(t) => Some(t)
-      case None => throw new NoResultYet
-    }
-  }
-  def eventuallySome[T](fun: => Option[T])(implicit config: PatienceConfig, pos: Position): Option[T] = {
-    eventually(eventuallySomeInternal(fun))(config, pos)
-  }
+    import com.example.test.pages.PageBrowser._
+    import com.example.test.util.EventuallyUtils._
 
   def getButton( id: String )(implicit webDriver: WebDriver, patienceConfig: PatienceConfig) = {
-    (eventuallySome{ findButton(id) }).get
+     eventuallySome{ findButton(id) }
   }
 
   def isButton( button: String, text: String ) = {
@@ -49,34 +36,34 @@ class InputStyleHelper extends MustMatchers {
   /**
    * Hit the "InputStyle" button until <i>wantInputStyleText</i> appears in the button text
    */
-  def hitInputStyleButton( wantInputStyleText: String )(implicit webDriver: WebDriver, patienceConfig: PatienceConfig): Unit = {
+  def hitInputStyleButton( wantInputStyleText: String )( implicit webDriver: WebDriver, patienceConfig: PatienceConfig ): Unit = {
     val rid = "InputStyle"
 
     var found = false
     var i = 2     // ComponentInputStyleButton.InputMethod.values.size
-    while (i > 0) {
+    while (!found && i > 0) {
       i=i-1
       val button = getButton(rid)
       val buttontext = button.text
+      testlog.fine(s"HitInputStyleButton ${i}: Want ${wantInputStyleText}, have ${buttontext}")
       if (isButton(buttontext, wantInputStyleText)) {
-        i=0
         found = true
       } else {
 
         click on button
 
-        tcpSleep(1)
-
-        val nextbutton = eventuallySome {
+        eventuallyTrue {
           findButton(rid) match {
-            case Some(el) if (el.text != buttontext) => Some(el)
-            case None => None
+            case Some(b) =>
+              val t = b.text
+              if (t != buttontext) {
+                found = isButton(t,wantInputStyleText)
+                true
+              }
+              else false
+            case None =>
+              false
           }
-        }.get
-
-        if (isButton(nextbutton.text, wantInputStyleText)) {
-          i=0
-          found = true
         }
       }
     }
@@ -144,13 +131,6 @@ class InputStyleHelper extends MustMatchers {
 
   def findButton( eid: String, text: String )(implicit webDriver: WebDriver): Option[Element] = {
     findButton(eid, Some(text))
-  }
-
-  def tcpSleep( sec: Int = 30 ) = {
-    import scala.concurrent.duration._
-    import scala.language.postfixOps
-    MonitorTCP.waitForConnections( sec seconds)
-//    Thread.tcpSleep(sec*1000L)
   }
 
 }

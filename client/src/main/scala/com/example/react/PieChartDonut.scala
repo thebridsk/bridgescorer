@@ -1,11 +1,10 @@
 package com.example.react
 
 import scala.scalajs.js
-import org.scalajs.dom.document
-import org.scalajs.dom.Element
 import japgolly.scalajs.react.vdom.svg_<^._
 import japgolly.scalajs.react._
-import org.scalajs.dom.ext.Color
+import com.example.color.Color
+import Utils._
 
 /**
  * A skeleton component.
@@ -93,7 +92,7 @@ object PieChartDonut {
               ^.cy := "25",
               ^.r := "15.915494309189533576888376337251",
               ^.fill := "transparent",
-              ^.stroke := color.toHex,
+              ^.stroke := color,
               ^.strokeWidth := "15",
               ^.strokeDasharray := f"${stroke}%.2f ${100-stroke}%.2f",
               ^.strokeDashoffset := f"${offset}%.2f"

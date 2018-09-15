@@ -6,17 +6,18 @@
 
 name := "project-bridgescorer"
 
-// scalaVersion := "2.10.7"
+scalaVersion := "2.12.6"
 
 val vLog4j = "1.7.25"               // https://mvnrepository.com/artifact/org.slf4j/slf4j-simple
-val vJGit = "4.11.0.201803080745-r" // https://mvnrepository.com/artifact/org.eclipse.jgit/org.eclipse.jgit.pgm
+val vJGit = "5.0.2.201807311906-r" // https://mvnrepository.com/artifact/org.eclipse.jgit/org.eclipse.jgit.pgm
 
-val vScalaJSDefault = "0.6.22"     // http://www.scala-js.org/
-val vSbtAssembly = "0.14.6"        // https://github.com/sbt/sbt-assembly
-val vSbtGit = "0.9.3"              // https://github.com/sbt/sbt-git
+val vCrossProject = "0.6.0"        // https://github.com/portable-scala/sbt-crossproject
+val vScalaJSDefault = "0.6.24"     // http://www.scala-js.org/
+val vSbtAssembly = "0.14.7"        // https://github.com/sbt/sbt-assembly
+val vSbtGit = "1.0.0"              // https://github.com/sbt/sbt-git
 val vSbtSCoverage = "1.5.1"        // https://github.com/scoverage/sbt-scoverage
-val vSbtBuildInfo = "0.8.0"        // https://github.com/sbt/sbt-buildinfo
-val vSbtRelease = "1.0.8"          // https://github.com/sbt/sbt-release
+val vSbtBuildInfo = "0.9.0"        // https://github.com/sbt/sbt-buildinfo
+val vSbtRelease = "1.0.9"          // https://github.com/sbt/sbt-release
 val vSbtEclipse = "5.2.4"          // https://github.com/typesafehub/sbteclipse
 val vSbtDependencyGraph = "0.9.0"  // https://github.com/jrudolph/sbt-dependency-graph
 val vSbtUpdates = "0.3.4"          // https://github.com/rtimush/sbt-updates
@@ -24,7 +25,7 @@ val vSbtUpdates = "0.3.4"          // https://github.com/rtimush/sbt-updates
 val scalaJSVersion = Option(System.getenv("SCALAJS_VERSION")).getOrElse(vScalaJSDefault)
 
 val vSbtGzip = "1.0.2"             // https://github.com/sbt/sbt-gzip
-val vSbtScalaJsBundler = "0.11.0"  // https://github.com/scalacenter/scalajs-bundler
+val vSbtScalaJsBundler = "0.13.1"  // https://github.com/scalacenter/scalajs-bundler
 
 // not used:
 
@@ -52,6 +53,7 @@ libraryDependencies ++= Seq(
 resolvers += 
   "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
 
+addSbtPlugin("org.portable-scala" % "sbt-scalajs-crossproject" % vCrossProject)
 addSbtPlugin("org.scala-js" % "sbt-scalajs" % scalaJSVersion)
 
 // addSbtPlugin("io.spray" % "sbt-revolver" % vSbtRevolver)

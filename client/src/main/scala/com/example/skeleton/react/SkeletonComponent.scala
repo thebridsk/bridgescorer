@@ -1,8 +1,6 @@
 package com.example.skeleton.react
 
 import scala.scalajs.js
-import org.scalajs.dom.document
-import org.scalajs.dom.Element
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
 
@@ -20,11 +18,9 @@ import japgolly.scalajs.react._
 object SkeletonComponent {
   import SkeletonComponentInternal._
 
-  type Callback = ()=>Unit
+  case class Props( )
 
-  case class Props( callback: Callback )
-
-  def apply( props: Props ) = component(props)
+  def apply( ) = component(Props())
 
 }
 
@@ -50,12 +46,26 @@ object SkeletonComponentInternal {
     def render( props: Props, state: State ) = {
       <.div()
     }
+
+    private var mounted = false
+
+    val didMount = Callback {
+      mounted = true
+
+    }
+
+    val willUnmount = Callback {
+      mounted = false
+
+    }
   }
 
   val component = ScalaComponent.builder[Props]("SkeletonComponent")
                             .initialStateFromProps { props => State() }
                             .backend(new Backend(_))
                             .renderBackend
+                            .componentDidMount( scope => scope.backend.didMount)
+                            .componentWillUnmount( scope => scope.backend.willUnmount )
                             .build
 }
 

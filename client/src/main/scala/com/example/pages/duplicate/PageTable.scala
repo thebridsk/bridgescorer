@@ -2,8 +2,6 @@ package com.example.pages.duplicate
 
 
 import scala.scalajs.js
-import org.scalajs.dom.document
-import org.scalajs.dom.Element
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.extra.router.RouterCtl
@@ -22,6 +20,7 @@ import com.example.pages.hand.ComponentInputStyleButton
 import com.example.pages.duplicate.DuplicateRouter.TableView
 import com.example.pages.duplicate.DuplicateRouter.CompleteScoreboardView
 import com.example.react.AppButton
+import com.example.react.HelpButton
 
 /**
  * Shows the team x board table and has a totals column that shows the number of points the team has.
@@ -98,6 +97,10 @@ object PageTableInternal {
                   <.div(
                     baseStyles.divFooterCenter,
                     ComponentInputStyleButton( Callback{} )
+                  ),
+                  <.div(
+                    baseStyles.divFooterRight,
+                    HelpButton("/help/duplicate/table.html"),
                   )
                 )
               )
@@ -111,16 +114,16 @@ object PageTableInternal {
       }
     }
 
-    val storeCallback = Callback { scope.withEffectsImpure.forceUpdate }
+    val storeCallback = scope.forceUpdate
 
-    def didMount() = CallbackTo {
+    val didMount = scope.props >>= { (p) => Callback {
       logger.info("PageTable.didMount")
       DuplicateStore.addChangeListener(storeCallback)
-    } >> scope.props >>= { (p) => CallbackTo(
-      Controller.monitorMatchDuplicate(p.page.dupid)
-    )}
 
-    def willUnmount() = CallbackTo {
+      Controller.monitorMatchDuplicate(p.page.dupid)
+    }}
+
+    val willUnmount = Callback {
       logger.info("PageTable.willUnmount")
       DuplicateStore.removeChangeListener(storeCallback)
     }
@@ -130,8 +133,8 @@ object PageTableInternal {
                             .initialStateFromProps { props => State() }
                             .backend(new Backend(_))
                             .renderBackend
-                            .componentDidMount( scope => scope.backend.didMount())
-                            .componentWillUnmount( scope => scope.backend.willUnmount() )
+                            .componentDidMount( scope => scope.backend.didMount)
+                            .componentWillUnmount( scope => scope.backend.willUnmount )
                             .build
 }
 

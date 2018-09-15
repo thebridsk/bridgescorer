@@ -1,9 +1,5 @@
 package com.example.pages.chicagos
 
-import org.scalajs.dom.document
-import org.scalajs.dom.raw.Element
-import org.scalajs.dom.raw.HTMLInputElement
-
 import com.example.bridge.store.ChicagoStore
 import com.example.controller.ChicagoController
 import com.example.data._
@@ -28,7 +24,7 @@ object PagePlayers {
                           south: String,
                           east: String,
                           west: String,
-                          dealer: PlayerPosition,
+                          dealer: Option[PlayerPosition],
                           gotNames: Boolean = false,
                           names: List[String] = Nil,
                           chicago5: Boolean = false,
@@ -36,28 +32,42 @@ object PagePlayers {
                           simpleRotation: Boolean = false,
                           extra: Option[String] = None
                         ) {
-    def isDealerValid() = true
-    def areAllPlayersValid() = playerValid(north) && playerValid(south) && playerValid(east) && playerValid(west)
+    def isDealerValid() = dealer.isDefined
+    def areAllPlayersValid() = playerValid(north) && playerValid(south) && playerValid(east) && playerValid(west) &&
+                               (if (chicago5 || quintet) {
+                                 extra.map( p => playerValid(p) ).getOrElse(false)
+                               } else {
+                                 true
+                               })
 
-    def isValid() = areAllPlayersValid()&& isDealerValid()
+    def areAllPlayersUnique() = {
+      val p = north::south::east::west::(if (chicago5 || quintet) extra.toList else Nil)
+      val before = p.length
+      val after = p.distinct.length
+      before == after
+    }
 
-    def isDealer( p: PlayerPosition ) = dealer == p
+    def isValid() = areAllPlayersValid()&& isDealerValid() && areAllPlayersUnique()
 
-    def isDealer(p: String) =
+    def isDealer( p: PlayerPosition ): Boolean = dealer.map( d => d == p ).getOrElse(false)
+
+    def isDealer(p: String): Boolean =
         p match {
-          case `north` => dealer == North
-          case `south` => dealer == South
-          case `east` =>  dealer == East
-          case `west` =>  dealer == West
+          case `north` => isDealer(North)
+          case `south` => isDealer(South)
+          case `east` =>  isDealer(East)
+          case `west` =>  isDealer(West)
           case _ => false
         }
 
-    def getDealerName() = dealer match {
+    def getDealer = dealer.map( d => d.pos.toString ).getOrElse("")
+
+    def getDealerName() = dealer.map( d => d match {
       case North => north
       case South => south
       case East => east
       case West => west
-    }
+    }).getOrElse("")
   }
 
   case class State()
@@ -111,17 +121,19 @@ object PagePlayersInternal {
 
     }
 
-    val storeCallback = Callback { scope.withEffectsImpure.forceUpdate }
+    val storeCallback = scope.forceUpdate
 
-    def didMount() = CallbackTo {
-      logger.info("PagePlayers.didMount")
-      ChicagoStore.addChangeListener(storeCallback)
-    } >> CallbackTo {
-      import scala.concurrent.ExecutionContext.Implicits.global
-      ChicagoController.ensureMatch(scope.withEffectsImpure.props.page.chiid).foreach( m => scope.withEffectsImpure.forceUpdate )
+    val didMount = scope.props >>= { props =>
+      Callback {
+        logger.info("PagePlayers.didMount")
+        ChicagoStore.addChangeListener(storeCallback)
+
+        import scala.concurrent.ExecutionContext.Implicits.global
+        ChicagoController.ensureMatch(props.page.chiid).foreach( m => scope.withEffectsImpure.forceUpdate )
+      }
     }
 
-    def willUnmount() = CallbackTo {
+    val willUnmount = Callback {
       logger.info("PagePlayers.willUnmount")
       ChicagoStore.removeChangeListener(storeCallback)
     }
@@ -132,7 +144,7 @@ object PagePlayersInternal {
                             .initialStateFromProps { props => State() }
                             .backend(new Backend(_))
                             .renderBackend
-                            .componentDidMount( scope => scope.backend.didMount())
-                            .componentWillUnmount( scope => scope.backend.willUnmount() )
+                            .componentDidMount( scope => scope.backend.didMount)
+                            .componentWillUnmount( scope => scope.backend.willUnmount )
                             .build
 }

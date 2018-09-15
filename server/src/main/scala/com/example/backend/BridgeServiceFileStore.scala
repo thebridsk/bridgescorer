@@ -31,14 +31,11 @@ import com.example.yaml.YamlSupport._
 import com.example.data.Id
 import scala.concurrent.ExecutionContext
 import com.example.data.MatchDuplicateResultV1
+import com.example.backend.resource.Converter
 
 class BridgeServiceFileStoreConverters( yaml: Boolean ) {
 
-  implicit val converter =  if (yaml) {
-    new JsonYamlConverter( new YamlConverter, new JsonConverter )
-  } else {
-    new JsonYamlConverter( new JsonConverter, new YamlConverter )
-  }
+  implicit val converter =  Converter.getConverter(yaml)
 
   implicit val matchChicagoJson = VersionedInstanceJson[String,MatchChicago].add[MatchChicagoV2].add[MatchChicagoV1]
 
@@ -70,11 +67,11 @@ class BridgeServiceFileStore( val dir: Directory,
                               useIdFromValue: Boolean = false,
                               dontUpdateTime: Boolean = false,
                               useYaml: Boolean = true,
-                              id: Option[String] = None
+                              oid: Option[String] = None
                             )(
                               implicit
                                 execute: ExecutionContext
-                            ) extends BridgeServiceWithLogging( id.getOrElse( dir.toString() ) ) {
+                            ) extends BridgeServiceWithLogging( oid.getOrElse( dir.toString() ) ) {
   self =>
 
   import BridgeServiceFileStore._
@@ -86,14 +83,14 @@ class BridgeServiceFileStore( val dir: Directory,
 
   dir.createDirectory(true, false)
 
-  val chicagos = FileStore[Id.MatchDuplicate,MatchChicago](dir)
-  val duplicates = FileStore[Id.MatchDuplicate,MatchDuplicate](dir)
-  val duplicateresults = FileStore[Id.MatchDuplicateResult,MatchDuplicateResult](dir)
-  val rubbers = FileStore[String,MatchRubber](dir)
+  val chicagos = FileStore[Id.MatchDuplicate,MatchChicago](id,dir)
+  val duplicates = FileStore[Id.MatchDuplicate,MatchDuplicate](id,dir)
+  val duplicateresults = FileStore[Id.MatchDuplicateResult,MatchDuplicateResult](id,dir)
+  val rubbers = FileStore[String,MatchRubber](id,dir)
 
-  val boardSets = MultiStore.createFileAndResource[String,BoardSet](dir, "/com/example/backend/", "Boardsets.txt", self.getClass.getClassLoader)
+  val boardSets = MultiStore.createFileAndResource[String,BoardSet](id,dir, "/com/example/backend/", "Boardsets.txt", self.getClass.getClassLoader)
 
-  val movements = MultiStore.createFileAndResource[String,Movement](dir, "/com/example/backend/", "Movements.txt", self.getClass.getClassLoader)
+  val movements = MultiStore.createFileAndResource[String,Movement](id,dir, "/com/example/backend/", "Movements.txt", self.getClass.getClassLoader)
 
   override
   val importStore = {

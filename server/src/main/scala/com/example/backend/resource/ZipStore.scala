@@ -20,6 +20,7 @@ object ZipStore {
   val log = Logger[ZipStore[_,_]]
 
   def apply[VId,VType <: VersionedInstance[VType,VType,VId]](
+                            name: String,
                             zipfile: ZipFileForStore,
                             cacheInitialCapacity: Int = 5,
                             cacheMaxCapacity: Int = 100,
@@ -30,7 +31,7 @@ object ZipStore {
                               cachesupport: StoreSupport[VId,VType],
                               execute: ExecutionContext
                           ): ZipStore[VId,VType] = {
-    new ZipStore(zipfile,cacheInitialCapacity, cacheMaxCapacity, cacheTimeToLive, cacheTimeToIdle )
+    new ZipStore(name,zipfile,cacheInitialCapacity, cacheMaxCapacity, cacheTimeToLive, cacheTimeToIdle )
   }
 }
 
@@ -174,6 +175,7 @@ object ZipPersistentSupport {
 }
 
 class ZipStore[VId,VType <: VersionedInstance[VType,VType,VId]](
+                            name: String,
                             val zipfile: ZipFileForStore,
                             cacheInitialCapacity: Int = 5,
                             cacheMaxCapacity: Int = 100,
@@ -183,7 +185,8 @@ class ZipStore[VId,VType <: VersionedInstance[VType,VType,VId]](
                             implicit
                               cachesupport: StoreSupport[VId,VType],
                               execute: ExecutionContext
-                          ) extends Store[VId,VType]( new ZipPersistentSupport[VId,VType](zipfile),
+                          ) extends Store[VId,VType]( name,
+                                                      new ZipPersistentSupport[VId,VType](zipfile),
                                                            cacheInitialCapacity,
                                                            cacheMaxCapacity,
                                                            cacheTimeToLive,

@@ -18,6 +18,7 @@ object FileStore {
   val log = Logger[FileStore[_,_]]
 
   def apply[VId,VType <: VersionedInstance[VType,VType,VId]](
+                            name: String,
                             directory: Directory,
                             cacheInitialCapacity: Int = 5,
                             cacheMaxCapacity: Int = 100,
@@ -28,7 +29,7 @@ object FileStore {
                               cachesupport: StoreSupport[VId,VType],
                               execute: ExecutionContext
                           ): FileStore[VId,VType] = {
-    new FileStore(directory,cacheInitialCapacity, cacheMaxCapacity, cacheTimeToLive, cacheTimeToIdle )
+    new FileStore(name,directory,cacheInitialCapacity, cacheMaxCapacity, cacheTimeToLive, cacheTimeToIdle )
   }
 }
 
@@ -213,6 +214,7 @@ object FilePersistentSupport {
 }
 
 class FileStore[VId,VType <: VersionedInstance[VType,VType,VId]](
+                            name: String,
                             val directory: Directory,
                             cacheInitialCapacity: Int = 5,
                             cacheMaxCapacity: Int = 100,
@@ -222,7 +224,8 @@ class FileStore[VId,VType <: VersionedInstance[VType,VType,VId]](
                             implicit
                               cachesupport: StoreSupport[VId,VType],
                               execute: ExecutionContext
-                          ) extends Store[VId,VType]( new FilePersistentSupport[VId,VType](directory),
+                          ) extends Store[VId,VType]( name,
+                                                      new FilePersistentSupport[VId,VType](directory),
                                                            cacheInitialCapacity,
                                                            cacheMaxCapacity,
                                                            cacheTimeToLive,

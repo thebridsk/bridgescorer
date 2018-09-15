@@ -70,6 +70,14 @@ trait JsService /* extends HttpService */ {
 
   val htmlResources = ResourceFinder.htmlResources
 
+  val helpResources = try {
+    Some(ResourceFinder.helpResources)
+  } catch {
+    case x: Exception =>
+      logger.warning( "Unable to find help resources, ignoring help." )
+      None
+  }
+
   {
     val res = htmlResources.baseName+"/bridgescorer-client-fastopt.js"
     val url = getClass.getClassLoader.getResource(res)
@@ -81,9 +89,9 @@ trait JsService /* extends HttpService */ {
     import java.lang.StringBuilder
     @tailrec def rec(p: Uri.Path, result: StringBuilder = new StringBuilder(base)): String =
       p match {
-        case Uri.Path.Empty       ⇒ result.toString
-        case Uri.Path.Slash(tail) ⇒ rec(tail, result.append(separator))
-        case Uri.Path.Segment(head, tail) ⇒
+        case Uri.Path.Empty       => result.toString
+        case Uri.Path.Slash(tail) => rec(tail, result.append(separator))
+        case Uri.Path.Segment(head, tail) =>
           if (head.indexOf('/') >= 0 || head.indexOf('\\') >= 0 || head == "..") {
             logger.warning(s"File-system path for base [${base}] and Uri.Path [${path}] contains suspicious path segment [${head}], " +
               "GET access was disallowed")
@@ -116,6 +124,25 @@ trait JsService /* extends HttpService */ {
               getFromResource(resname)
           }
         }
+      }
+    } ~
+    pathPrefix("help") {
+      respondWithHeaders(cacheHeaders:_*) {
+        helpResources.map { helpres =>
+          extractUnmatchedPath { path =>
+            val p = Uri.Path("help"+path.toString())
+            logger.info(s"Looking for help file "+p)
+            val pa = if (p.toString.endsWith("/")) p+"index.html" else p
+            safeJoinPaths(helpres.baseName+"/", pa, separator = '/') match {
+              case ""           => reject
+              case resourceName =>
+                val resname = resourceName+".gz"
+                logger.info(s"Looking for gzipped file as a resource "+resname)
+                getFromResource(resname) ~
+                getFromResource(resourceName)
+            }
+          }
+        }.getOrElse( reject )
       }
     }
   }

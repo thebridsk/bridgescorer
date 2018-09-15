@@ -23,13 +23,14 @@ import com.example.data.MatchChicago
 import com.example.test.util.MonitorTCP
 import com.example.backend.BridgeServiceFileStoreConverters
 import com.example.backend.MatchChicagoCacheStoreSupport
-import com.example.pages.PageBrowser
+import com.example.test.pages.PageBrowser
+import com.example.test.TestStartLogging
 
 /**
  * @author werewolf
  */
 class ChicagoTest extends FlatSpec with MustMatchers with BeforeAndAfterAll with EventuallyUtils {
-  import com.example.pages.PageBrowser._
+  import com.example.test.pages.PageBrowser._
   import Eventually.{ patienceConfig => _, _ }
 
   import scala.concurrent.duration._
@@ -37,6 +38,8 @@ class ChicagoTest extends FlatSpec with MustMatchers with BeforeAndAfterAll with
   import ChicagoUtils._
 
   val log = Logger[ChicagoTest]
+
+  val docsScreenshotDir = "target/docs/Chicago"
 
   val Session1 = new Session
 
@@ -52,6 +55,8 @@ class ChicagoTest extends FlatSpec with MustMatchers with BeforeAndAfterAll with
   val chicagoToListId: Option[String] = Some("Quit")
 
   implicit val timeoutduration = Duration( 60, TimeUnit.SECONDS )
+
+  TestStartLogging.startLogging()
 
   override
   def beforeAll() = {
@@ -167,8 +172,10 @@ class ChicagoTest extends FlatSpec with MustMatchers with BeforeAndAfterAll with
     textField("East").value = "Ellen"
     textField("West").value = "Wayne"
     tcpSleep(1)
-    pressKeys(Keys.chord(Keys.ENTER))
+    pressKeys(Keys.ESCAPE)
     tcpSleep(1)
+
+    click on id("PlayerNFirstDealer")
 
     eventually( find(id("Ok")).isEnabled mustBe true )
 
@@ -224,6 +231,9 @@ class ChicagoTest extends FlatSpec with MustMatchers with BeforeAndAfterAll with
   it should "allow setting the partner and dealer for second round" in {
     tcpSleep(30)
     eventually { find(id("Ok")) }
+
+    takeScreenshot(docsScreenshotDir, "SelectNames4")
+
     click on id("West2")
 
     eventually{ find(id("West2")).attribute("class").get must include ("baseButtonSelected") }

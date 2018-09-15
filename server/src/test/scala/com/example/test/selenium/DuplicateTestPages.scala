@@ -34,61 +34,66 @@ import com.example.test.util.NoResultYet
 import com.example.test.util.EventuallyUtils
 import com.example.test.util.ParallelUtils
 import org.scalatest.concurrent.Eventually
-import com.example.pages.duplicate.ListDuplicatePage
-import com.example.pages.duplicate.NewDuplicatePage
-import com.example.pages.duplicate.MovementsPage
-import com.example.pages.duplicate.BoardSetsPage
-import com.example.pages.duplicate.ScoreboardPage
-import com.example.pages.duplicate.TablePage
-import com.example.pages.duplicate.TablePage.EnterNames
-import com.example.pages.duplicate.TableEnterScorekeeperPage
-import com.example.pages.GenericPage
-import com.example.pages.duplicate.HandPage
+import com.example.test.pages.duplicate.ListDuplicatePage
+import com.example.test.pages.duplicate.NewDuplicatePage
+import com.example.test.pages.duplicate.MovementsPage
+import com.example.test.pages.duplicate.BoardSetsPage
+import com.example.test.pages.duplicate.ScoreboardPage
+import com.example.test.pages.duplicate.TablePage
+import com.example.test.pages.duplicate.TablePage.EnterNames
+import com.example.test.pages.duplicate.TableEnterScorekeeperPage
+import com.example.test.pages.GenericPage
+import com.example.test.pages.duplicate.HandPage
 import com.example.test.TestStartLogging
-import com.example.pages.duplicate.BoardPage
-import com.example.pages.duplicate.TablePage.SelectNames
-import com.example.pages.duplicate.TablePage.Hands
-import com.example.pages.duplicate.TableSelectScorekeeperPage
-import com.example.pages.duplicate.Team
-import com.example.pages.Page.AnyPage
-import com.example.pages.duplicate.EnterHand
-import com.example.pages.duplicate.AllHandsInMatch
-import com.example.pages.duplicate.HandsOnBoard
-import com.example.pages.duplicate.OtherHandNotPlayed
-import com.example.pages.duplicate.OtherHandPlayed
-import com.example.pages.duplicate.TeamScoreboard
-import com.example.pages.duplicate.HandDirectorView
-import com.example.pages.duplicate.HandCompletedView
-import com.example.pages.duplicate.HandTableView
-import com.example.pages.duplicate.ScoreboardPage.PlaceEntry
-import com.example.pages.duplicate.ScoreboardPage.PlaceEntry
+import com.example.test.pages.duplicate.BoardPage
+import com.example.test.pages.duplicate.TablePage.SelectNames
+import com.example.test.pages.duplicate.TablePage.Hands
+import com.example.test.pages.duplicate.TableSelectScorekeeperPage
+import com.example.test.pages.duplicate.Team
+import com.example.test.pages.Page.AnyPage
+import com.example.test.pages.duplicate.EnterHand
+import com.example.test.pages.duplicate.AllHandsInMatch
+import com.example.test.pages.duplicate.HandsOnBoard
+import com.example.test.pages.duplicate.OtherHandNotPlayed
+import com.example.test.pages.duplicate.OtherHandPlayed
+import com.example.test.pages.duplicate.TeamScoreboard
+import com.example.test.pages.duplicate.HandDirectorView
+import com.example.test.pages.duplicate.HandCompletedView
+import com.example.test.pages.duplicate.HandTableView
+import com.example.test.pages.duplicate.ScoreboardPage.PlaceEntry
+import com.example.test.pages.duplicate.ScoreboardPage.PlaceEntry
 import java.net.URL
 import com.example.data.MatchDuplicate
 import scala.io.Source
 import scala.io.Codec
 import com.example.backend.resource.FileIO
-import com.example.pages.duplicate.PeopleRow
+import com.example.test.pages.duplicate.PeopleRow
 import com.example.data.BoardSet
 import com.example.test.util.MonitorTCP
 import com.example.backend.BridgeServiceFileStoreConverters
 import com.example.backend.MatchDuplicateCacheStoreSupport
-import com.example.pages.bridge.HomePage
+import com.example.test.pages.bridge.HomePage
 import java.util.zip.ZipFile
 import scala.reflect.io.File
-import com.example.pages.duplicate.PeopleRowMP
+import com.example.test.pages.duplicate.PeopleRowMP
+import com.example.test.pages.Page
+import com.example.test.pages.PageBrowser
+import com.example.test.pages.duplicate.SuggestionPage
 
 object DuplicateTestPages {
 
   val testlog = Logger[DuplicateTestPages]
 
   val screenshotDir = "target/DuplicateTestPages"
-  val docsScreenshotDir = "target/docs/DuplicateTestPages"
+  val docsScreenshotDir = "target/docs/Duplicate"
 
   TestStartLogging.startLogging()
 
   val cm = Strings.checkmark
   val bl = ""
   val zr = "0"
+
+  val team1original = Team( 1, "Fred", "Sam")
 
   val team1 = Team( 1, "Nick", "Sam")
   val team2 = Team( 2, "Ethan", "Wayne")
@@ -175,14 +180,14 @@ object DuplicateTestPages {
 
   // this is here to validate the AllHandsInMatch.getScoreToRound call
   val resultAfterOneRoundCheckMark = List(
-        TeamScoreboard(team1, 0, "0", List(cm,cm,cm,bl,bl,bl,bl,bl,bl,bl,bl,bl,bl,bl,bl,bl,bl,bl)),
+        TeamScoreboard(team1original, 0, "0", List(cm,cm,cm,bl,bl,bl,bl,bl,bl,bl,bl,bl,bl,bl,bl,bl,bl,bl)),
         TeamScoreboard(team2, 0, "0", List(cm,cm,cm,bl,bl,bl,bl,bl,bl,bl,bl,bl,bl,bl,bl,bl,bl,bl)),
         TeamScoreboard(team3, 0, "0", List(bl,bl,bl,cm,cm,cm,bl,bl,bl,bl,bl,bl,bl,bl,bl,bl,bl,bl)),
         TeamScoreboard(team4, 0, "0", List(bl,bl,bl,cm,cm,cm,bl,bl,bl,bl,bl,bl,bl,bl,bl,bl,bl,bl))
       )
 
   val resultAfterOneRoundZero = List(
-        TeamScoreboard(team1, 0, "0", List(zr,zr,zr,bl,bl,bl,bl,bl,bl,bl,bl,bl,bl,bl,bl,bl,bl,bl)),
+        TeamScoreboard(team1original, 0, "0", List(zr,zr,zr,bl,bl,bl,bl,bl,bl,bl,bl,bl,bl,bl,bl,bl,bl,bl)),
         TeamScoreboard(team2, 0, "0", List(zr,zr,zr,bl,bl,bl,bl,bl,bl,bl,bl,bl,bl,bl,bl,bl,bl,bl)),
         TeamScoreboard(team3, 0, "0", List(bl,bl,bl,zr,zr,zr,bl,bl,bl,bl,bl,bl,bl,bl,bl,bl,bl,bl)),
         TeamScoreboard(team4, 0, "0", List(bl,bl,bl,zr,zr,zr,bl,bl,bl,bl,bl,bl,bl,bl,bl,bl,bl,bl))
@@ -195,7 +200,6 @@ object DuplicateTestPages {
  * @author werewolf
  */
 class DuplicateTestPages extends FlatSpec
-    with DuplicateUtils
     with MustMatchers
     with BeforeAndAfterAll
     with EventuallyUtils
@@ -230,6 +234,8 @@ class DuplicateTestPages extends FlatSpec
 
   override
   def beforeAll() = {
+
+    testlog.fine( s"DuplicateTestPages patienceConfig=${patienceConfig}" )
 
     MonitorTCP.nextTest()
     TestStartLogging.startLogging()
@@ -364,13 +370,13 @@ class DuplicateTestPages extends FlatSpec
         var sk = TablePage.current(EnterNames).validate(rounds).clickBoard(1,1).asInstanceOf[TableEnterScorekeeperPage].validate
         sk.isOKEnabled mustBe false
         sk.takeScreenshot(docsScreenshotDir, "TableEnterNamesSK")
-        sk = sk.enterScorekeeper(team1.one).esc.clickPos(North)
+        sk = sk.enterScorekeeper(team1original.one).esc.clickPos(North)
         sk.isOKEnabled mustBe true
         sk.findSelectedPos mustBe Some(North)
         var en = sk.clickOK.validate
         en.isOKEnabled mustBe false
         en.takeScreenshot(docsScreenshotDir, "TableEnterNamesOthers")
-        en = en.enterPlayer(South, team1.two).enterPlayer(East, team2.one)
+        en = en.enterPlayer(South, team1original.two).enterPlayer(East, team2.one)
         en.isOKEnabled mustBe false
         en = en.enterPlayer(West, team2.two).esc
         en.isOKEnabled mustBe true
@@ -399,36 +405,43 @@ class DuplicateTestPages extends FlatSpec
       "Playing first round",
       CodeBlock {
         import SessionTable1._
-        val hand = HandPage.current
-        hand.getScore mustBe ( "Missing required information", "", "Enter contract tricks" )
-        hand.isOkEnabled mustBe false
-        hand.getInputStyle mustBe Some("Yellow")
-        hand.enterContract(3, Hearts, Doubled, West, Made, 4, None, None)
-        hand.takeScreenshot(docsScreenshotDir, "DuplicateHand")
-        hand.clickClear
-        val board = hand.enterHand( 1, 1, 1, allHands, team1, team2)
-        board.checkBoardButtons(1, true, 1).checkBoardButtons(1, false, 2, 3).checkBoardButtonSelected(1)
-        val hand2 = board.clickUnplayedBoard(2).validate
-        val board2 = hand2.enterHand( 1, 1, 2, allHands, team1, team2)
-        board2.checkBoardButtons(2, true,1,2).checkBoardButtons(2, false, 3).checkBoardButtonSelected(2)
-        val hand3 = board2.clickUnplayedBoard(3).validate
-        val board3 = hand3.enterHand( 1, 1, 3, allHands, team1, team2)
-        board3.checkBoardButtons(3, true,1,2,3).checkBoardButtons(3, false).checkBoardButtonSelected(3)
+        PageBrowser.withClueAndScreenShot(screenshotDir, "Round1Table1EnterHand", "Entering hands R1T1") {
+          val hand = HandPage.current
+          hand.getScore mustBe ( "Missing required information", "", "Enter contract tricks" )
+          hand.isOkEnabled mustBe false
+          hand.getInputStyle mustBe Some("Yellow")
+//          hand.enterContract(3, Hearts, Doubled, West, Made, 4, None, None)
+//          hand.takeScreenshot(docsScreenshotDir, "DuplicateHand")
+//          hand.clickClear
+          val board = hand.enterHand( 1, 1, 1, allHands, team1original, team2)
+          board.checkBoardButtons(1, true, 1).checkBoardButtons(1, false, 2, 3).checkBoardButtonSelected(1)
+          val hand2 = board.clickUnplayedBoard(2).validate
+          val board2 = hand2.enterHand( 1, 1, 2, allHands, team1original, team2)
+          board2.checkBoardButtons(2, true,1,2).checkBoardButtons(2, false, 3).checkBoardButtonSelected(2)
+          val hand3 = board2.clickUnplayedBoard(3).validate
+          hand.enterContract(3, Hearts, Doubled, West, Made, -1, None, None)
+          hand.takeScreenshot(docsScreenshotDir, "EnterHand")
+          hand.clickClear
+          val board3 = hand3.enterHand( 1, 1, 3, allHands, team1original, team2)
+          board3.checkBoardButtons(3, true,1,2,3).checkBoardButtons(3, false).checkBoardButtonSelected(3)
+        }
       },
       CodeBlock {
         import SessionTable2._
-        val hand = HandPage.current
-        hand.getScore mustBe ( "Missing required information", "", "Enter contract tricks" )
-        hand.isOkEnabled mustBe false
-        hand.getInputStyle mustBe Some("Yellow")
-        val board = hand.enterHand( 2, 1, 4, allHands, team4, team3)
-        board.checkBoardButtons(4, true,4).checkBoardButtons(4, false, 5, 6).checkBoardButtonSelected(4)
-        val hand2 = board.clickUnplayedBoard(5).validate
-        val board2 = hand2.enterHand( 2, 1, 5, allHands, team4, team3)
-        board2.checkBoardButtons(5, true,4,5).checkBoardButtons(5, false, 6).checkBoardButtonSelected(5)
-        val hand3 = board2.clickUnplayedBoard(6).validate
-        val board3 = hand3.enterHand( 2, 1, 6, allHands, team4, team3)
-        board3.checkBoardButtons(6, true,4,5,6).checkBoardButtons(6, false).checkBoardButtonSelected(6)
+        PageBrowser.withClueAndScreenShot(screenshotDir, "Round1Table2EnterHand", "Entering hands R1T2") {
+          val hand = HandPage.current
+          hand.getScore mustBe ( "Missing required information", "", "Enter contract tricks" )
+          hand.isOkEnabled mustBe false
+          hand.getInputStyle mustBe Some("Yellow")
+          val board = hand.enterHand( 2, 1, 4, allHands, team4, team3)
+          board.checkBoardButtons(4, true,4).checkBoardButtons(4, false, 5, 6).checkBoardButtonSelected(4)
+          val hand2 = board.clickUnplayedBoard(5).validate
+          val board2 = hand2.enterHand( 2, 1, 5, allHands, team4, team3)
+          board2.checkBoardButtons(5, true,4,5).checkBoardButtons(5, false, 6).checkBoardButtonSelected(5)
+          val hand3 = board2.clickUnplayedBoard(6).validate
+          val board3 = hand3.enterHand( 2, 1, 6, allHands, team4, team3)
+          board3.checkBoardButtons(6, true,4,5,6).checkBoardButtons(6, false).checkBoardButtonSelected(6)
+        }
       }
     )
   }
@@ -438,7 +451,9 @@ class DuplicateTestPages extends FlatSpec
         checkmarks: Boolean,
         table: Option[Int],
         round: Int,
-        allplayed: Boolean
+        allplayed: Boolean,
+        screenshot: Option[Int] = None,
+        screenshotName: Option[String] = None
       )( implicit
          webDriver: WebDriver
       ): ScoreboardPage = {
@@ -449,8 +464,14 @@ class DuplicateTestPages extends FlatSpec
 
     val pr = boards.foldLeft( None: Option[BoardPage] ) { (progress,board) =>
       val bb = progress match {
-        case Some(bp) => bp.clickPlayedBoard(board).validate
-        case None => sb.clickBoardToBoard(board).validate
+        case Some(bp) =>
+          val bp1 = bp.clickPlayedBoard(board).validate
+          testlog.fine(s"trying to take screen shot of board ${screenshot}, current board is ${board}, all boards are ${boards}")
+          screenshot.filter(b=>b==board).map { b =>
+            bp1.takeScreenshot(docsScreenshotDir, screenshotName.get)
+          }.getOrElse(bp1)
+        case None =>
+          sb.clickBoardToBoard(board).validate
       }
 
       val bb1 = if (table.isDefined) {
@@ -470,6 +491,18 @@ class DuplicateTestPages extends FlatSpec
     pr.map(bp=>bp.clickScoreboard).getOrElse(sb)
   }
 
+  def toOriginal( data: (List[TeamScoreboard], List[PlaceEntry]) ) = {
+    val (tsf,pesf) = data
+    val ts = tsf.map { t =>
+      if (t.team == team1) t.copy(team=team1original)
+      else t
+    }
+    val pes = pesf.map { pe =>
+      pe.copy( teams = pe.teams.map( t => if (t == team1) team1original else t ) )
+    }
+    (ts,pes)
+  }
+
   it should "show the director's scoreboard and complete scoreboard shows checkmarks for the played games" in {
     tcpSleep(10)
     waitForFutures(
@@ -479,7 +512,7 @@ class DuplicateTestPages extends FlatSpec
 
         val sb = ScoreboardPage.current
         sb.checkTable(resultAfterOneRoundZero:_*)
-        val (ts,pes) = allHands.getScoreToRound(1, HandDirectorView)
+        val (ts,pes) = toOriginal(allHands.getScoreToRound(1, HandDirectorView))
         sb.checkTable( ts: _*)
         sb.checkPlaceTable( pes: _*)
         checkPlayedBoards( sb, false, None, 1, false )
@@ -489,7 +522,7 @@ class DuplicateTestPages extends FlatSpec
 
         val sb = ScoreboardPage.current
         sb.checkTable(resultAfterOneRoundCheckMark:_*)
-        val (ts,pes) = allHands.getScoreToRound(1, HandCompletedView)
+        val (ts,pes) = toOriginal(allHands.getScoreToRound(1, HandCompletedView))
         sb.checkTable( ts: _*)
         sb.checkPlaceTable( pes: _*)
         checkPlayedBoards( sb, true, None, 1, false )
@@ -501,10 +534,10 @@ class DuplicateTestPages extends FlatSpec
         val tp = bp.clickTableButton(1).validate.setTarget(Hands)
         val sb = tp.clickRound(1).asInstanceOf[ScoreboardPage].validate
         sb.checkTable(resultAfterOneRoundCheckMark:_*)
-        val (ts,pes) = allHands.getScoreToRound(1, HandTableView( 1, 1, team1.teamid, team2.teamid ))
+        val (ts,pes) = toOriginal(allHands.getScoreToRound(1, HandTableView( 1, 1, team1.teamid, team2.teamid )))
         sb.checkTable( ts: _*)
         sb.checkPlaceTable( pes: _*)
-        checkPlayedBoards( sb, false, Some(1), 1, false )
+        checkPlayedBoards( sb, false, Some(1), 1, false)
       },
       CodeBlock{
         import SessionTable2._
@@ -512,7 +545,7 @@ class DuplicateTestPages extends FlatSpec
         val bp = BoardPage.current
         val sb = bp.clickScoreboard.validate
         sb.checkTable(resultAfterOneRoundCheckMark:_*)
-        val (ts,pes) = allHands.getScoreToRound(1, HandTableView( 2, 1, team4.teamid, team3.teamid ))
+        val (ts,pes) = toOriginal(allHands.getScoreToRound(1, HandTableView( 2, 1, team4.teamid, team3.teamid )))
         sb.checkTable( ts: _*)
         sb.checkPlaceTable( pes: _*)
         checkPlayedBoards( sb, false, Some(2), 1, false )
@@ -539,12 +572,31 @@ class DuplicateTestPages extends FlatSpec
     sn.verifyNamesAndSelect(ns.teamid, ew.teamid, ns.one, ns.two, ew.one, ew.two, scorekeeper, mustswap).asInstanceOf[ScoreboardPage]
   }
 
+  it should "allow player 1 on team 1 name to be changed" in {
+    import SessionDirector._
+
+    val sb = ScoreboardPage.current.validate
+    val en = sb.clickEditNames
+
+    val playersBefore = (team1original::team2::team3::team4::Nil).flatMap( t => t.one::t.two::Nil ).grouped(2).toList
+    val playersAfter = (team1::team2::team3::team4::Nil).flatMap( t => t.one::t.two::Nil ).grouped(2).toList
+
+    en.getNames mustBe playersBefore
+
+    en.setName(1, 1, team1.one)
+
+    en.getNames mustBe playersAfter
+
+    en.clickOK.validate.clickDirectorButton.validate
+  }
+
   it should "allow selecting players for round 2" in {
     tcpSleep(10)
     waitForFutures(
       "Selecting players for round 2",
       CodeBlock{
         import SessionTable1._
+        val sbc = ScoreboardPage.current.clickTableButton(1).validate.takeScreenshot(docsScreenshotDir, "TableRound2").clickCompletedScoreboard.validate
         val sb = selectScorekeeper(ScoreboardPage.current,1,2, team1, team2, East, false, true )
       },
       CodeBlock{
@@ -560,32 +612,38 @@ class DuplicateTestPages extends FlatSpec
       "Playing second round",
       CodeBlock {
         import SessionTable1._
-        val sb = ScoreboardPage.current
-        val hand = sb.clickBoardToHand(4).validate
-        hand.setInputStyle("Prompt")
-        val board = hand.enterHand( 1, 2, 4, allHands, team1, team2)
-        board.checkBoardButtons(4, true,4).checkBoardButtons(4, false, 5, 6).checkBoardButtonSelected(4)
-        board.takeScreenshot(docsScreenshotDir, "BoardFromTable")
-        val hand2 = board.clickUnplayedBoard(5).validate
-        val board2 = hand2.enterHand( 1, 2, 5, allHands, team1, team2)
-        board2.checkBoardButtons(5, true,4,5).checkBoardButtons(5, false, 6).checkBoardButtonSelected(5)
-        val hand3 = board2.clickUnplayedBoard(6).validate
-        val board3 = hand3.enterHand( 1, 2, 6, allHands, team1, team2)
-        board3.checkBoardButtons(6, true,4,5,6).checkBoardButtons(6, false).checkBoardButtonSelected(6)
+        PageBrowser.withClueAndScreenShot(screenshotDir, "Round2Table1EnterHand", "Entering hands R2T1") {
+          val sb = ScoreboardPage.current
+          val hand = sb.clickBoardToHand(4).validate
+          hand.setInputStyle("Prompt")
+          val board = hand.enterHand( 1, 2, 4, allHands, team1, team2)
+          board.checkBoardButtons(4, true,4).checkBoardButtons(4, false, 5, 6).checkBoardButtonSelected(4)
+          board.takeScreenshot(docsScreenshotDir, "BoardFromTable")
+          val hand2 = board.clickUnplayedBoard(5).validate
+          val board2 = hand2.enterHand( 1, 2, 5, allHands, team1, team2)
+          board2.checkBoardButtons(5, true,4,5).checkBoardButtons(5, false, 6).checkBoardButtonSelected(5)
+          val hand3 = board2.clickUnplayedBoard(6).validate
+          val board3 = hand3.enterHand( 1, 2, 6, allHands, team1, team2)
+          board3.checkBoardButtons(6, true,4,5,6).checkBoardButtons(6, false).checkBoardButtonSelected(6)
+        }
       },
       CodeBlock {
         import SessionTable2._
-        val sb = ScoreboardPage.current
-        val hand = sb.clickBoardToHand(1).validate
-        hand.setInputStyle("Original")
-        val board = hand.enterHand( 2, 2, 1, allHands, team3, team4)
-        board.checkBoardButtons(1, true,1).checkBoardButtons(1, false, 2, 3).checkBoardButtonSelected(1)
-        val hand2 = board.clickUnplayedBoard(2).validate
-        val board2 = hand2.enterHand( 2, 2, 2, allHands, team3, team4)
-        board2.checkBoardButtons(2, true,1,2).checkBoardButtons(2, false, 3).checkBoardButtonSelected(2)
-        val hand3 = board2.clickUnplayedBoard(3).validate
-        val board3 = hand3.enterHand( 2, 2, 3, allHands, team3, team4)
-        board3.checkBoardButtons(3, true,1,2,3).checkBoardButtons(3, false).checkBoardButtonSelected(3)
+        PageBrowser.withClueAndScreenShot(screenshotDir, "Round2Table2EnterHand", "Entering hands R2T2") {
+          val sb = ScoreboardPage.current
+          val hand = sb.clickBoardToHand(1).validate
+          hand.setInputStyle("Original")
+          val board = hand.enterHand( 2, 2, 1, allHands, team3, team4)
+          board.checkBoardButtons(1, true,1).checkBoardButtons(1, false, 2, 3).checkBoardButtonSelected(1)
+          val hand2 = board.clickUnplayedBoard(2).validate
+          val board2 = hand2.enterHand( 2, 2, 2, allHands, team3, team4)
+          board2.checkBoardButtons(2, true,1,2).checkBoardButtons(2, false, 3).checkBoardButtonSelected(2)
+          val hand3 = board2.clickUnplayedBoard(3).validate
+          hand3.setInputStyle("Yellow")
+          hand.takeScreenshot(docsScreenshotDir, "EnterHandBefore")
+          val board3 = hand3.enterHand( 2, 2, 3, allHands, team3, team4)
+          board3.checkBoardButtons(3, true,1,2,3).checkBoardButtons(3, false).checkBoardButtonSelected(3)
+        }
       }
     )
   }
@@ -610,7 +668,7 @@ class DuplicateTestPages extends FlatSpec
         val (ts,pes) = allHands.getScoreToRound(2, HandCompletedView)
         sb.checkTable( ts: _*)
         sb.checkPlaceTable( pes: _*)
-        checkPlayedBoards( sb, true, None, 2, true )
+        checkPlayedBoards( sb, true, None, 2, true, Some(5), Some("BoardPage5") )
       },
       CodeBlock{
         import SessionTable1._
@@ -661,7 +719,7 @@ class DuplicateTestPages extends FlatSpec
          webDriver: WebDriver
     ) = {
 
-    withClue(s"On table ${table} round ${round}") {
+    PageBrowser.withClueAndScreenShot(screenshotDir, s"Round${round}Table${table}EnterHand", s"Enter Hand R${round}T${table}") {
       val sb = selectScorekeeper(currentPage,table,round, nsTeam, ewTeam, scorekeeper, mustswap )
 
       val board = withClue( s"""board ${boards.head}""" ) {
@@ -712,7 +770,7 @@ class DuplicateTestPages extends FlatSpec
          webDriver: WebDriver
     ) = {
 
-    withClue(s"On table ${table} round ${round}") {
+    PageBrowser.withClueAndScreenShot(screenshotDir, s"Round${round}Table${table}Validate", "Validate R${round}T${table}") {
 
       val sbr = currentPage.validate
       val (ts,pes) = allHands.getScoreToRound(round, HandTableView( table, round, nsTeam.teamid, ewTeam.teamid ), imp)
@@ -742,6 +800,12 @@ class DuplicateTestPages extends FlatSpec
     tcpSleep(60)
     waitForFutures(
       "validating round 3",
+      CodeBlock {
+        import SessionComplete._
+        val sb = ScoreboardPage.current
+        sb.takeScreenshot(docsScreenshotDir, "Scoreboard")
+        checkPlayedBoards( sb, true, None, 3, false, Some(8), Some("BoardPage8") )
+      },
       CodeBlock {
         import SessionTable1._
         val sb = validateRound(ScoreboardPage.current,1,3,team3.swap,team1 )
@@ -929,9 +993,16 @@ class DuplicateTestPages extends FlatSpec
 
     dupid match {
       case Some(id) =>
-        val page = ScoreboardPage.current.takeScreenshot(docsScreenshotDir, "FinalScoreboard").clickSummary.validate( id )
-        page.takeScreenshot(docsScreenshotDir, "ListDuplicate")
-        page.checkResults(id, listDuplicateResult:_*)
+        val page = ScoreboardPage.current
+        Thread.sleep(100)
+        page.takeScreenshot(docsScreenshotDir, "FinalScoreboard")
+        val lp = page.clickSummary.validate( id )
+        eventually {
+          val names = lp.getNames(false)
+          names must contain ( team1.one )
+        }
+        lp.takeScreenshot(docsScreenshotDir, "ListDuplicate")
+        lp.checkResults(id, listDuplicateResult:_*)
       case None =>
         ScoreboardPage.current.clickSummary.validate
     }
@@ -942,7 +1013,7 @@ class DuplicateTestPages extends FlatSpec
 
     val sb = ListDuplicatePage.current
     val ids = sb.getMatchIds
-    val peoplePage = sb.clickPairs.validate.takeScreenshot(docsScreenshotDir, "Pairs").clickPeopleResults
+    val peoplePage = sb.clickStatistics.validate.takeScreenshot(docsScreenshotDir, "Pairs").clickPeopleResults
 
     if (ids.size == 1) {
       peoplePage.checkPeopleMP( peopleResult:_*)
@@ -1040,9 +1111,8 @@ class DuplicateTestPages extends FlatSpec
   it should "go to table 1 page and go to round 1 and test suggestions" in {
     import SessionDirector._
 
-    val table = ScoreboardPage.current.clickTableButton(1).validate
-
-    table.withClueAndScreenShot(screenshotDir, "TestSuggestion", "testing name suggestions") {
+    PageBrowser.withClueAndScreenShot(screenshotDir, "TestSuggestion", "testing name suggestions") {
+      val table = ScoreboardPage.current.clickTableButton(1).validate
 
       val es = table.clickRound(1).asInstanceOf[TableEnterScorekeeperPage].validate
       es.enterScorekeeper(prefixThatMatchesSomeNames)
@@ -1083,9 +1153,9 @@ class DuplicateTestPages extends FlatSpec
 
     val pop = dsb.clickDelete.validatePopup()
     Thread.sleep(2000L)
-    val dsb2 = pop.clickDeleteCancel.validatePopup(false)
+    val dsb2 = pop.clickPopUpCancel.validatePopup(false)
 
-    val listpage = dsb2.clickDelete.validatePopup().clickDeleteOK.validate
+    val listpage = dsb2.clickDelete.validatePopup().clickDeleteOk.validate
     listpage.getMatchIds must not contain dupid2.get
   }
 
@@ -1159,4 +1229,89 @@ class DuplicateTestPages extends FlatSpec
 
     val main = ldpr.clickPopUpCancel.validate.clickHome.validate.clickListDuplicateButton.validate( newId )
   }
+
+
+  it should "go to the pair suggestion page" in {
+    import SessionDirector._
+
+    ListDuplicatePage.current.clickSuggestion.validate
+  }
+
+  it should "show calculate button with 8 known names selected" in {
+    import SessionDirector._
+
+    val sug = SuggestionPage.current
+    sug.getNumberNameFields mustBe 8
+
+    sug.isCalculateEnabled mustBe false
+
+    val ss = (0 until 8).foldLeft(sug) { (s,n) =>
+      sug.toggleKnownName(n)
+    }
+
+    ss.getNumberNameFields mustBe 0
+
+    ss.isCalculateEnabled mustBe true
+  }
+
+  it should "show calculate button with 7 known names selected and one entered name" in {
+    import SessionDirector._
+
+    val sug = SuggestionPage.current
+    val ss = sug.toggleKnownName(0)
+
+    eventually {
+      ss.getNumberKnownNames must be >= 8
+      ss.getNumberChecked mustBe 7
+      ss.getNumberNameFields mustBe 1
+    }
+
+    ss.isCalculateEnabled mustBe false
+
+    val se = ss.setNameField(0, "Iqbal")
+
+    eventually {
+      se.isCalculateEnabled mustBe true
+    }
+
+  }
+
+  it should "show never pair table" in {
+    import SessionDirector._
+
+    val sug = SuggestionPage.current
+    sug.clickNeverPair
+    val neverPairNames = eventually {
+      val ns = sug.getNeverPairTableNames
+      ns.length mustBe 8
+      ns
+    }
+
+    val checkNames = sug.getKnownNames.drop(1).take(7)
+    val players = "Iqbal"::checkNames
+
+    players must contain theSameElementsAs neverPairNames
+  }
+
+  it should "calculate a pairing" in {
+    import SessionDirector._
+
+    val sug = SuggestionPage.current
+    val ss = sug.clickCalculate.validate
+
+    eventually {
+      ss.findButton("ToggleDetails") mustBe 'displayed
+    }
+
+    val se = SuggestionPage.current
+    se.pageType mustBe SuggestionPage.ResultWithNeverPair
+
+  }
+
+  it should "go to duplicate list page from suggestion page" in {
+    import SessionDirector._
+
+    SuggestionPage.current.clickCancel.validate
+  }
+
 }

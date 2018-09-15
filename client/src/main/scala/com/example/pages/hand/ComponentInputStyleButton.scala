@@ -106,10 +106,10 @@ object ComponentInputStyleButton {
       Button( if (props.useHandStyle) handStyles.footerButton else baseStyles.appButton,
               "InputStyle",
               "Input Style: "+inputMethodAsString,
-              ^.onClick --> nextInputStyle())
+              ^.onClick --> nextInputStyle)
     }
 
-    def nextInputStyle() = Callback {
+    val nextInputStyle = Callback {
       pInputMethod = InputMethod.next(pInputMethod)
       logger.fine("InputMethod is "+pInputMethod)
     } >> scope.forceUpdate >> scope.props >>= { props => props.callback }

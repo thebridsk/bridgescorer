@@ -2,8 +2,6 @@ package com.example.pages.duplicate
 
 
 import scala.scalajs.js
-import org.scalajs.dom.document
-import org.scalajs.dom.Element
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.extra.router.RouterCtl
@@ -34,7 +32,7 @@ import com.example.bridge.store.DuplicateSummaryStore
 import com.example.pages.duplicate.DuplicateRouter.DuplicateResultView
 import com.example.pages.duplicate.DuplicateRouter.SuggestionView
 import com.example.react.RadioButton
-import com.example.pages.duplicate.DuplicateRouter.PairsView
+import com.example.pages.duplicate.DuplicateRouter.StatsView
 import com.example.pages.duplicate.DuplicateRouter.ImportSummaryView
 import com.example.pages.duplicate.DuplicateRouter.DuplicateResultViewBase
 import com.example.pages.duplicate.DuplicateRouter.SummaryViewBase
@@ -44,12 +42,14 @@ import play.api.libs.json.JsObject
 import com.example.graphql.GraphQLClient
 import play.api.libs.json.JsDefined
 import play.api.libs.json.JsUndefined
-import com.example.graphql.GraphQLResponse
 import play.api.libs.json.Json
 import play.api.libs.json.JsResult
 import play.api.libs.json.JsSuccess
 import play.api.libs.json.JsError
 import com.example.pages.BaseStyles
+import com.example.data.graphql.GraphQLProtocol.GraphQLResponse
+import com.example.react.Tooltip
+import com.example.react.HelpButton
 
 /**
  * Shows a summary page of all duplicate matches from the database.
@@ -89,14 +89,6 @@ object PageSummaryInternal {
                           val result = state.useIMP.map( useIMP => if (useIMP) " (International Match Points)" else " (Match Points)").getOrElse("")
 
                           <.thead(
-                            <.tr(
-                              <.th(
-                                ^.colSpan:=tp.allPlayers.length+4+importId.map(id=>2).getOrElse(0)+(if (state.forPrint) 2 else 1),
-                                RadioButton("ShowBoth", "Show All", state.showEntries==ShowBoth, backend.show(ShowBoth) ),
-                                RadioButton("ShowMD", "Show Matches", state.showEntries==ShowMD, backend.show(ShowMD) ),
-                                RadioButton("ShowMDR", "Show Results Only", state.showEntries==ShowMDR, backend.show(ShowMDR) )
-                              )
-                            ),
                             <.tr(
                               <.th( "Id"),
                               importId.map { id =>
@@ -187,116 +179,116 @@ object PageSummaryInternal {
     list
   }
 
-  val titleAttr    = VdomAttr("data-title")
-
   val SummaryRow = ScalaComponent.builder[(SummaryPeople,DuplicateSummary,Props,State,Backend,Option[String])]("SummaryRow")
                       .render_P( props => {
                         val (tp,ds,pr,st,back,importId) = props
-                          <.tr(
-                            <.td(
-                              AppButton( (if (ds.onlyresult) "Result_" else "Duplicate_")+ds.id, ds.id,
-                                         baseStyles.appButton100,
-                                         if (ds.onlyresult) {
-                                           pr.routerCtl.setOnClick(pr.page.getDuplicateResultPage(ds.idAsDuplicateResultId) )
-                                         } else {
-                                           pr.routerCtl.setOnClick(pr.page.getScoreboardPage(ds.id) )
-                                         },
-                                         importId.map { id => ^.disabled := true }.whenDefined
-                                       )
-                            ),
-                            importId.map { id =>
-                              TagMod(
-                                <.td(
-                                  AppButton( (if (ds.onlyresult) "ImportResult_" else "ImportDuplicate_")+ds.id, "Import",
-                                             baseStyles.appButton100,
-                                             if (ds.onlyresult) {
-                                               ^.onClick --> back.importDuplicateResult(id,ds.id)
-                                             } else {
-                                               ^.onClick --> back.importDuplicateMatch(id,ds.id)
-                                             }
-                                           )
-                                ),
-                                <.td(
-                                  ds.bestMatch.map { bm =>
-                                    if (bm.id.isDefined && bm.sameness > 90) {
-                                      <.span(
-                                        f"""${bm.id.get} ${bm.sameness}%.2f%%""",
-                                        titleAttr:=bm.differences.map{ l => determineDifferences(l).mkString("Differences:\n","\n","") }.getOrElse(""),
-                                        baseStyles.hover
-                                      )
-                                    } else {
-                                      TagMod()
-                                    }
-                                  }.whenDefined
-                                )
+                        <.tr(
+                          <.td(
+                            AppButton( (if (ds.onlyresult) "Result_" else "Duplicate_")+ds.id, ds.id,
+                                       baseStyles.appButton100,
+                                       if (ds.onlyresult) {
+                                         val dsidAsDuplicateResultId = ds.idAsDuplicateResultId
+                                         pr.routerCtl.setOnClick(pr.page.getDuplicateResultPage(dsidAsDuplicateResultId) )
+                                       } else {
+                                         val dsid = ds.id
+                                         pr.routerCtl.setOnClick(pr.page.getScoreboardPage(dsid) )
+                                       },
+                                       importId.map { id => ^.disabled := true }.whenDefined
+                                     )
+                          ),
+                          importId.map { id =>
+                            TagMod(
+                              <.td(
+                                AppButton( (if (ds.onlyresult) "ImportResult_" else "ImportDuplicate_")+ds.id, "Import",
+                                           baseStyles.appButton100,
+                                           if (ds.onlyresult) {
+                                             ^.onClick --> back.importDuplicateResult(id,ds.id)
+                                           } else {
+                                             ^.onClick --> back.importDuplicateMatch(id,ds.id)
+                                           }
+                                         )
+                              ),
+                              <.td(
+                                ds.bestMatch.map { bm =>
+                                  if (bm.id.isDefined && bm.sameness > 90) {
+                                    val title = bm.differences.map{ l => determineDifferences(l).mkString("Differences:\n","\n","") }.getOrElse("")
+                                    TagMod(Tooltip(
+                                      f"""${bm.id.get} ${bm.sameness}%.2f%%""",
+                                      <.div( title )
+                                    ))
+                                  } else {
+                                    TagMod()
+                                  }
+                                }.whenDefined
                               )
-                            }.whenDefined,
-                            st.forPrint ?= <.td(
-                                                 <.input.checkbox(
-                                                   ^.checked := st.selected.contains(ds.id),
-                                                   ^.onClick --> back.toggleSelect(ds.id)
-                                                 )
-                                               ),
-                            <.td( (if (ds.finished) "done"; else "")),
-                            <.td( DateUtils.formatDate(ds.created), <.br(), DateUtils.formatDate(ds.updated)),
-                            <.td( ds.scoringmethod.getOrElse("MP").toString() ),
-                            tp.allPlayers.filter(p => p!="").map { p =>
-                              if (st.useIMP.getOrElse(ds.isIMP)) {
-                                if (ds.hasImpScores) {
-                                  <.td(
-                                    ds.playerPlacesImp().get(p) match {
-                                      case Some(place) => <.span(place.toString)
-                                      case None => <.span()
-                                    },
-                                    ds.playerScoresImp().get(p) match {
-                                      case Some(place) => <.span(<.br, f"${place}%.1f" )
-                                      case None => <.span()
-                                    }
-                                  )
-                                } else {
-                                  <.td("NA")
-                                }
-                              } else {
-                                if (ds.hasMpScores) {
-                                  <.td(
-                                    ds.playerPlaces().get(p) match {
-                                      case Some(place) => <.span(place.toString)
-                                      case None => <.span()
-                                    },
-                                    ds.playerScores().get(p) match {
-                                      case Some(place) => <.span(<.br,Utils.toPointsString(place))
-                                      case None => <.span()
-                                    }
-                                  )
-                                } else {
-                                  <.td("NA")
-                                }
-                              }
-                            }.toTagMod,
+                            )
+                          }.whenDefined,
+                          st.forPrint ?= <.td(
+                                               <.input.checkbox(
+                                                 ^.checked := st.selected.contains(ds.id),
+                                                 ^.onClick --> back.toggleSelect(ds.id)
+                                               )
+                                             ),
+                          <.td( (if (ds.finished) "done"; else "")),
+                          <.td( DateUtils.formatDate(ds.created), <.br(), DateUtils.formatDate(ds.updated)),
+                          <.td( ds.scoringmethod.getOrElse("MP").toString() ),
+                          tp.allPlayers.filter(p => p!="").map { p =>
                             if (st.useIMP.getOrElse(ds.isIMP)) {
-                              <.td(
-                                Utils.toPointsString(
-                                  tp.allPlayers.filter(p => p!="").flatMap { p =>
-                                    ds.playerScoresImp().get(p) match {
-                                      case Some(place) => place::Nil
-                                      case None => Nil
-                                    }
-                                  }.foldLeft(0.0)((ac,v)=>ac+v)
+                              if (ds.hasImpScores) {
+                                <.td(
+                                  ds.playerPlacesImp().get(p) match {
+                                    case Some(place) => <.span(place.toString)
+                                    case None => <.span()
+                                  },
+                                  ds.playerScoresImp().get(p) match {
+                                    case Some(place) => <.span(<.br, f"${place}%.1f" )
+                                    case None => <.span()
+                                  }
                                 )
-                              )
+                              } else {
+                                <.td("NA")
+                              }
                             } else {
-                              <.td(
-                                Utils.toPointsString(
-                                  tp.allPlayers.filter(p => p!="").flatMap { p =>
-                                    ds.playerScores().get(p) match {
-                                      case Some(place) => place::Nil
-                                      case None => Nil
-                                    }
-                                  }.foldLeft(0.0)((ac,v)=>ac+v)
+                              if (ds.hasMpScores) {
+                                <.td(
+                                  ds.playerPlaces().get(p) match {
+                                    case Some(place) => <.span(place.toString)
+                                    case None => <.span()
+                                  },
+                                  ds.playerScores().get(p) match {
+                                    case Some(place) => <.span(<.br,Utils.toPointsString(place))
+                                    case None => <.span()
+                                  }
                                 )
-                              )
+                              } else {
+                                <.td("NA")
+                              }
                             }
-                          )
+                          }.toTagMod,
+                          if (st.useIMP.getOrElse(ds.isIMP)) {
+                            <.td(
+                              Utils.toPointsString(
+                                tp.allPlayers.filter(p => p!="").flatMap { p =>
+                                  ds.playerScoresImp().get(p) match {
+                                    case Some(place) => place::Nil
+                                    case None => Nil
+                                  }
+                                }.foldLeft(0.0)((ac,v)=>ac+v)
+                              )
+                            )
+                          } else {
+                            <.td(
+                              Utils.toPointsString(
+                                tp.allPlayers.filter(p => p!="").flatMap { p =>
+                                  ds.playerScores().get(p) match {
+                                    case Some(place) => place::Nil
+                                    case None => Nil
+                                  }
+                                }.foldLeft(0.0)((ac,v)=>ac+v)
+                              )
+                            )
+                          }
+                        )
                       }).build
 
   sealed trait ShowEntries
@@ -355,7 +347,7 @@ object PageSummaryInternal {
 
     def show( what: ShowEntries ) = scope.modState( s => s.copy( showEntries = what ) )
 
-    def cancel() = Callback {
+    val cancel = Callback {
       resultDuplicate.cancel()
       resultGraphQL.cancel()
     } >> scope.modState( s => s.clearError())
@@ -364,12 +356,12 @@ object PageSummaryInternal {
 
     def setMessageCB( msg: String ) = scope.modState( s => s.withError(msg) )
 
-    def newDuplicate( fortest: Boolean = false ) =
+    val newDuplicateTest =
       scope.modState( s => s.copy(workingOnNew=Some("Working on creating a new duplicate match")), Callback {
-        val result = Controller.createMatchDuplicate(test=fortest).recordFailure()
+        val result = Controller.createMatchDuplicate(test=true).recordFailure()
         resultDuplicate.set(result)
         result.foreach { created=>
-          logger.info("Got new duplicate match ${created.id}.  HomePage.mounted=${mounted}")
+          logger.info(s"Got new duplicate match ${created.id}.  HomePage.mounted=${mounted}")
           if (mounted) scope.withEffectsImpure.props.routerCtl.set(CompleteScoreboardView(created.id)).runNow()
         }
         result.failed.foreach( t => {
@@ -387,10 +379,10 @@ object PageSummaryInternal {
       s.copy(selected = sel)
     })
 
-    def clearAllSelected() = scope.modState( s => s.copy(selected=List()) )
+    val clearAllSelected = scope.modState( s => s.copy(selected=List()) )
 
-    def selectedAll() = scope.modState { s =>
-      val (importid,summaries) = getDuplicateSummaries(scope.withEffectsImpure.props)
+    val selectedAll = scope.modState { (s,props) =>
+      val (importid,summaries) = getDuplicateSummaries(props)
       val allIds = summaries.map { list =>
         list.map( sum => sum.id )
       }.getOrElse(List())
@@ -399,7 +391,7 @@ object PageSummaryInternal {
 
     def forPrint(flagForPrint: Boolean) = scope.modState(s => s.copy(forPrint = flagForPrint))
 
-    def forPrintOk() = CallbackTo {
+    val forPrintOk = CallbackTo {
       val s = scope.withEffectsImpure.state
       val mds = s.selected.reverse.map{ id => id.toString() }.mkString(",")
       forPrint(false).runNow()
@@ -408,12 +400,12 @@ object PageSummaryInternal {
       p.routerCtl.set(FinishedScoreboardsView(mds))
     }
 
-    def forPrintCancel() = forPrint(false)
+    val forPrintCancel = forPrint(false)
 
-    def toggleRows() = scope.modState{ s =>
+    val toggleRows = scope.modState{ (s,props) =>
       val n = s.showRows match {
         case Some(r) => None
-        case None => Some( scope.withEffectsImpure.props.defaultRows )
+        case None => Some( props.defaultRows )
       }
       s.copy( showRows=n)
     }
@@ -492,9 +484,7 @@ object PageSummaryInternal {
         val ids = s.selected.map( id => id.toString )
         s.copy(workingOnNew=Some(s"Importing Duplicate Match ${ids.mkString(", ")} from import ${importId}"))
       },
-      Callback {
-        val s = scope.withEffectsImpure.state
-        val props = scope.withEffectsImpure.props
+      scope.stateProps { (s,props) => Callback {
         val (importid,summaries) = getDuplicateSummaries(props)
 
 //        val sortByDate = if (s.selected.isEmpty) {
@@ -550,7 +540,7 @@ object PageSummaryInternal {
               logger.warning(s"exception import selected from ${importId}", x)
               setMessage(s"exception import selected from ${importId}")
         }.foreach { x => }
-      }
+      }}
     )
 
     def getDuplicateSummaries( props: Props ): (Option[String], Option[List[DuplicateSummary]]) = {
@@ -567,7 +557,7 @@ object PageSummaryInternal {
       (importId,summaries)
     }
 
-    def nextIMPs = scope.modState { s => s.nextIMPs }
+    val nextIMPs = scope.modState { s => s.nextIMPs }
 
     def render( props: Props, state: State ) = {
       val (importId,summaries) = getDuplicateSummaries( props )
@@ -588,6 +578,11 @@ object PageSummaryInternal {
        */
       def showMatches() = {
         <.table(
+            <.caption(
+              RadioButton("ShowBoth", "Show All", state.showEntries==ShowBoth, show(ShowBoth) ),
+              RadioButton("ShowMD", "Show Matches", state.showEntries==ShowMD, show(ShowMD) ),
+              RadioButton("ShowMDR", "Show Results Only", state.showEntries==ShowMDR, show(ShowMDR) )
+            ),
             SummaryHeader((tp,props,state,this,importId)),
             (!state.alwaysShowAll && state.showRows.isDefined) ?=
               <.tfoot(
@@ -596,7 +591,7 @@ object PageSummaryInternal {
                         ^.colSpan:=3+importId.map(id=>2).getOrElse(0)+(if (state.forPrint) 2 else 1),
                         AppButton( "ShowRows2",
                                    state.showRows.map( n => "Show All" ).getOrElse(s"Show ${props.defaultRows}"),
-                                   ^.onClick --> toggleRows()
+                                   ^.onClick --> toggleRows
                                  )
                   ),
                   <.td( ^.colSpan:=tp.allPlayers.length+1 )
@@ -656,9 +651,9 @@ object PageSummaryInternal {
 
       <.div(
         dupStyles.divSummary,
-        PopupOkCancel( state.workingOnNew.map( s=>s), None, Some(cancel()) ),
+        PopupOkCancel( state.workingOnNew.map( s=>s), None, Some(cancel) ),
         <.span(
-          !state.alwaysShowAll ?= AppButton( "ShowRows", state.showRows.map( n => "Show All" ).getOrElse(s"Show ${props.defaultRows}"), ^.onClick --> toggleRows() ),
+          !state.alwaysShowAll ?= AppButton( "ShowRows", state.showRows.map( n => "Show All" ).getOrElse(s"Show ${props.defaultRows}"), ^.onClick --> toggleRows ),
           " ",
           AppButton( "Home2", "Home", props.routerCtl.home ),
           whenUndefined(importId)(
@@ -668,7 +663,9 @@ object PageSummaryInternal {
               " ",
               AppButton( "BoardSets2", "BoardSets", props.routerCtl.setOnClick(BoardSetSummaryView) ),
               " ",
-              AppButton( "Movements2", "Movements", props.routerCtl.setOnClick(MovementSummaryView) )
+              AppButton( "Movements2", "Movements", props.routerCtl.setOnClick(MovementSummaryView) ),
+              " ",
+              HelpButton( "/help/duplicate/summary.html" )
             )
           )( a => TagMod() ),
         ),
@@ -692,9 +689,9 @@ object PageSummaryInternal {
                            " ",
                            AppButton("Print", "Print", ^.onClick --> forPrintOk),
                            " ",
-                           AppButton("PrintSelectAll", "Select All", ^.onClick --> selectedAll() ),
+                           AppButton("PrintSelectAll", "Select All", ^.onClick --> selectedAll ),
                            " ",
-                           AppButton("PrintClearAll", "Clear Selected", ^.onClick --> clearAllSelected() )
+                           AppButton("PrintClearAll", "Clear Selected", ^.onClick --> clearAllSelected )
                            ).toTagMod
                   )
                 ),
@@ -707,9 +704,9 @@ object PageSummaryInternal {
                            " ",
                            AppButton("Import", "Import Selected", ^.onClick --> importSelected(importid), ^.disabled:=state.selected.isEmpty),
                            " ",
-                           AppButton("ImportSelectAll", "Select All", ^.onClick --> selectedAll() ),
+                           AppButton("ImportSelectAll", "Select All", ^.onClick --> selectedAll ),
                            " ",
-                           AppButton("ImportClearAll", "Clear Selected", ^.onClick --> clearAllSelected() )
+                           AppButton("ImportClearAll", "Clear Selected", ^.onClick --> clearAllSelected)
                            ).toTagMod
                   )
                 }
@@ -724,9 +721,9 @@ object PageSummaryInternal {
                   ),
                   <.div(
                     baseStyles.divFooterRight,
-                    AppButton( "DuplicateCreateTest", "Test", ^.onClick --> newDuplicate(true) ),
+                    AppButton( "DuplicateCreateTest", "Test", ^.onClick --> newDuplicateTest ),
                     " ",
-                    AppButton("Pairs", "Pairs", props.routerCtl.setOnClick(PairsView))
+                    AppButton("Statistics", "Statistics", props.routerCtl.setOnClick(StatsView))
                   )
                 )
               )
@@ -737,12 +734,12 @@ object PageSummaryInternal {
 
     private var mounted = false
 
-    val storeCallback = Callback { scope.withEffectsImpure.forceUpdate }
+    val storeCallback = scope.forceUpdate
 
-    def didMount() = Callback {
+    val didMount = scope.props >>= { (p) => Callback {
       logger.info("PageSummary.didMount")
+      mounted = true
       DuplicateSummaryStore.addChangeListener(storeCallback)
-    } >> scope.props >>= { (p) => Callback(
       p.page match {
         case isv: ImportSummaryView =>
           val importId = isv.getDecodedId
@@ -750,10 +747,11 @@ object PageSummaryInternal {
         case SummaryView =>
           Controller.getSummary()
       }
-    )}
+    }}
 
-    def willUnmount() = Callback {
+    val willUnmount = Callback {
       logger.finer("PageSummary.willUnmount")
+      mounted = false
       DuplicateSummaryStore.removeChangeListener(storeCallback)
     }
 
@@ -765,8 +763,8 @@ object PageSummaryInternal {
                                                                     false ) }
                             .backend(new Backend(_))
                             .renderBackend
-                            .componentDidMount( scope => scope.backend.didMount())
-                            .componentWillUnmount(scope => scope.backend.willUnmount())
+                            .componentDidMount( scope => scope.backend.didMount)
+                            .componentWillUnmount(scope => scope.backend.willUnmount)
                             .build
 }
 

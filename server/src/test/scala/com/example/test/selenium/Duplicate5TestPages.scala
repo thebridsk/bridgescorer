@@ -34,50 +34,50 @@ import com.example.test.util.NoResultYet
 import com.example.test.util.EventuallyUtils
 import com.example.test.util.ParallelUtils
 import org.scalatest.concurrent.Eventually
-import com.example.pages.bridge.HomePage
-import com.example.pages.duplicate.ListDuplicatePage
-import com.example.pages.duplicate.NewDuplicatePage
-import com.example.pages.duplicate.MovementsPage
-import com.example.pages.duplicate.BoardSetsPage
-import com.example.pages.duplicate.ScoreboardPage
-import com.example.pages.duplicate.TablePage
-import com.example.pages.duplicate.TablePage.EnterNames
-import com.example.pages.duplicate.TableEnterScorekeeperPage
-import com.example.pages.duplicate.TableEnterMissingNamesPage
-import com.example.pages.GenericPage
-import com.example.pages.duplicate.HandPage
+import com.example.test.pages.bridge.HomePage
+import com.example.test.pages.duplicate.ListDuplicatePage
+import com.example.test.pages.duplicate.NewDuplicatePage
+import com.example.test.pages.duplicate.MovementsPage
+import com.example.test.pages.duplicate.BoardSetsPage
+import com.example.test.pages.duplicate.ScoreboardPage
+import com.example.test.pages.duplicate.TablePage
+import com.example.test.pages.duplicate.TablePage.EnterNames
+import com.example.test.pages.duplicate.TableEnterScorekeeperPage
+import com.example.test.pages.duplicate.TableEnterMissingNamesPage
+import com.example.test.pages.GenericPage
+import com.example.test.pages.duplicate.HandPage
 import com.example.test.TestStartLogging
-import com.example.pages.duplicate.BoardPage
-import com.example.pages.duplicate.TablePage.SelectNames
-import com.example.pages.duplicate.TablePage.Hands
-import com.example.pages.duplicate.TableSelectScorekeeperPage
-import com.example.pages.duplicate.Team
-import com.example.pages.Page.AnyPage
-import com.example.pages.duplicate.EnterHand
-import com.example.pages.duplicate.AllHandsInMatch
-import com.example.pages.duplicate.HandsOnBoard
-import com.example.pages.duplicate.OtherHandNotPlayed
-import com.example.pages.duplicate.OtherHandPlayed
-import com.example.pages.duplicate.TeamScoreboard
-import com.example.pages.duplicate.HandDirectorView
-import com.example.pages.duplicate.HandCompletedView
-import com.example.pages.duplicate.HandTableView
-import com.example.pages.duplicate.ScoreboardPage.PlaceEntry
-import com.example.pages.duplicate.ScoreboardPage.PlaceEntry
+import com.example.test.pages.duplicate.BoardPage
+import com.example.test.pages.duplicate.TablePage.SelectNames
+import com.example.test.pages.duplicate.TablePage.Hands
+import com.example.test.pages.duplicate.TableSelectScorekeeperPage
+import com.example.test.pages.duplicate.Team
+import com.example.test.pages.Page.AnyPage
+import com.example.test.pages.duplicate.EnterHand
+import com.example.test.pages.duplicate.AllHandsInMatch
+import com.example.test.pages.duplicate.HandsOnBoard
+import com.example.test.pages.duplicate.OtherHandNotPlayed
+import com.example.test.pages.duplicate.OtherHandPlayed
+import com.example.test.pages.duplicate.TeamScoreboard
+import com.example.test.pages.duplicate.HandDirectorView
+import com.example.test.pages.duplicate.HandCompletedView
+import com.example.test.pages.duplicate.HandTableView
+import com.example.test.pages.duplicate.ScoreboardPage.PlaceEntry
+import com.example.test.pages.duplicate.ScoreboardPage.PlaceEntry
 import java.net.URL
 import com.example.data.MatchDuplicate
 import scala.io.Source
 import scala.io.Codec
 import com.example.backend.resource.FileIO
-import com.example.pages.duplicate.PeopleRow
+import com.example.test.pages.duplicate.PeopleRow
 import com.example.data.BoardSet
-import com.example.pages.duplicate.TableEnterNamesPage
-import com.example.pages.duplicate.TablePage.MissingNames
+import com.example.test.pages.duplicate.TableEnterNamesPage
+import com.example.test.pages.duplicate.TablePage.MissingNames
 import com.example.test.util.MonitorTCP
-import com.example.pages.duplicate.PeopleRowMP
-import com.example.pages.duplicate.PeopleRowIMP
+import com.example.test.pages.duplicate.PeopleRowMP
+import com.example.test.pages.duplicate.PeopleRowIMP
 import com.example.test.util.HttpUtils
-import com.example.pages.duplicate.PairsPage
+import com.example.test.pages.duplicate.StatisticsPage
 import com.example.data.Id
 
 object Duplicate5TestPages {
@@ -99,16 +99,16 @@ object Duplicate5TestPages {
   val team5 = Team( 5, "Alice", "Andy" )
 
   val peopleResult2 = List(
-                        PeopleRow(team5.one,"50.00%","25.00%","56.25%","14.0","0","0.00","1","0.50","2","1","1","0","18","32"),
-                        PeopleRow(team5.two,"0.00%","0.00%","56.25%","-11.0","0","0.00","0","0.00","2","1","1","0","18","32"),
-                        PeopleRow(team3.one,"0.00%","0.00%","46.88%","-1.0","0","0.00","0","0.00","2","1","1","0","15","32"),
-                        PeopleRow(team2.one,"0.00%","0.00%","50.00%","-16.0","0","0.00","0","0.00","2","1","1","0","16","32"),
-                        PeopleRow(team1.one,"50.00%","25.00%","37.50%","14.0","0","0.00","1","0.50","2","1","1","0","12","32"),
-                        PeopleRow(team4.one,"50.00%","50.00%","59.38%","-11.0","1","1.00","0","0.00","2","1","1","0","19","32"),
-                        PeopleRow(team4.two,"50.00%","50.00%","59.38%","-1.0","1","1.00","0","0.00","2","1","1","0","19","32"),
-                        PeopleRow(team1.two,"50.00%","25.00%","37.50%","14.0","0","0.00","1","0.50","2","1","1","0","12","32"),
-                        PeopleRow(team2.two,"50.00%","25.00%","50.00%","14.0","0","0.00","1","0.50","2","1","1","0","16","32"),
-                        PeopleRow(team3.two,"0.00%","0.00%","46.88%","-16.0","0","0.00","0","0.00","2","1","1","0","15","32")
+                        PeopleRow(team5.one,"50.00%","25.00%","56.25%","100.00","14.0","0","0.00","1","0.50","2","1","1","0","18","32"),
+                        PeopleRow(team5.two,"0.00%","0.00%","56.25%","16.67","-11.0","0","0.00","0","0.00","2","1","1","0","18","32"),
+                        PeopleRow(team3.one,"0.00%","0.00%","46.88%","50.00","-1.0","0","0.00","0","0.00","2","1","1","0","15","32"),
+                        PeopleRow(team2.one,"0.00%","0.00%","50.00%","0.00","-16.0","0","0.00","0","0.00","2","1","1","0","16","32"),
+                        PeopleRow(team1.one,"50.00%","25.00%","37.50%","100.00","14.0","0","0.00","1","0.50","2","1","1","0","12","32"),
+                        PeopleRow(team4.one,"50.00%","50.00%","59.38%","16.67","-11.0","1","1.00","0","0.00","2","1","1","0","19","32"),
+                        PeopleRow(team4.two,"50.00%","50.00%","59.38%","50.00","-1.0","1","1.00","0","0.00","2","1","1","0","19","32"),
+                        PeopleRow(team1.two,"50.00%","25.00%","37.50%","100.00","14.0","0","0.00","1","0.50","2","1","1","0","12","32"),
+                        PeopleRow(team2.two,"50.00%","25.00%","50.00%","100.00","14.0","0","0.00","1","0.50","2","1","1","0","16","32"),
+                        PeopleRow(team3.two,"0.00%","0.00%","46.88%","0.00","-16.0","0","0.00","0","0.00","2","1","1","0","15","32")
       )
 
   val peopleResultMP2 = List(
@@ -124,30 +124,30 @@ object Duplicate5TestPages {
                         PeopleRowMP(team3.two,"0.00%","0.00%","42.19%","0","0.00","2","0","27","64")
       )
   val peopleResultIMP2 = List(
-                        PeopleRowIMP(team5.one,"100.00%","50.00%","14.0","2","1.00","2","0"),
-                        PeopleRowIMP(team5.two,"50.00%","25.00%","1.5","1","0.50","2","0"),
-                        PeopleRowIMP(team3.one,"0.00%","0.00%","-6.0","0","0.00","2","0"),
-                        PeopleRowIMP(team2.one,"0.00%","0.00%","-8.5","0","0.00","2","0"),
-                        PeopleRowIMP(team1.one,"50.00%","25.00%","-1.0","1","0.50","2","0"),
-                        PeopleRowIMP(team4.one,"50.00%","25.00%","1.5","1","0.50","2","0"),
-                        PeopleRowIMP(team4.two,"50.00%","25.00%","6.5","1","0.50","2","0"),
-                        PeopleRowIMP(team1.two,"50.00%","25.00%","-1.0","1","0.50","2","0"),
-                        PeopleRowIMP(team2.two,"50.00%","25.00%","6.5","1","0.50","2","0"),
-                        PeopleRowIMP(team3.two,"0.00%","0.00%","-13.5","0","0.00","2","0")
+                        PeopleRowIMP(team5.one,"100.00%","50.00%","100.00","14.0","2","1.00","2","0"),
+                        PeopleRowIMP(team5.two,"50.00%","25.00%","54.55","1.5","1","0.50","2","0"),
+                        PeopleRowIMP(team3.one,"0.00%","0.00%","27.27","-6.0","0","0.00","2","0"),
+                        PeopleRowIMP(team2.one,"0.00%","0.00%","18.18","-8.5","0","0.00","2","0"),
+                        PeopleRowIMP(team1.one,"50.00%","25.00%","45.45","-1.0","1","0.50","2","0"),
+                        PeopleRowIMP(team4.one,"50.00%","25.00%","54.55","1.5","1","0.50","2","0"),
+                        PeopleRowIMP(team4.two,"50.00%","25.00%","72.73","6.5","1","0.50","2","0"),
+                        PeopleRowIMP(team1.two,"50.00%","25.00%","45.45","-1.0","1","0.50","2","0"),
+                        PeopleRowIMP(team2.two,"50.00%","25.00%","72.73","6.5","1","0.50","2","0"),
+                        PeopleRowIMP(team3.two,"0.00%","0.00%","0.00","-13.5","0","0.00","2","0")
       )
 
 
   val peopleResult = List(
-                        PeopleRow(team4.one,"100.00%","100.00%","59.38%","0.0","1","1.00","0","0.00","1","1","0","0","19","32"),
-                        PeopleRow(team4.two,"100.00%","100.00%","59.38%","0.0","1","1.00","0","0.00","1","1","0","0","19","32"),
-                        PeopleRow(team5.one,"0.00%","0.00%","56.25%","0.0","0","0.00","0","0.00","1","1","0","0","18","32"),
-                        PeopleRow(team5.two,"0.00%","0.00%","56.25%","0.0","0","0.00","0","0.00","1","1","0","0","18","32"),
-                        PeopleRow(team2.one,"0.00%","0.00%","50.00%","0.0","0","0.00","0","0.00","1","1","0","0","16","32"),
-                        PeopleRow(team2.two,"0.00%","0.00%","50.00%","0.0","0","0.00","0","0.00","1","1","0","0","16","32"),
-                        PeopleRow(team3.one,"0.00%","0.00%","46.88%","0.0","0","0.00","0","0.00","1","1","0","0","15","32"),
-                        PeopleRow(team3.two,"0.00%","0.00%","46.88%","0.0","0","0.00","0","0.00","1","1","0","0","15","32"),
-                        PeopleRow(team1.one,"0.00%","0.00%","37.50%","0.0","0","0.00","0","0.00","1","1","0","0","12","32"),
-                        PeopleRow(team1.two,"0.00%","0.00%","37.50%","0.0","0","0.00","0","0.00","1","1","0","0","12","32")
+                        PeopleRow(team4.one,"100.00%","100.00%","59.38%","0.00","0.0","1","1.00","0","0.00","1","1","0","0","19","32"),
+                        PeopleRow(team4.two,"100.00%","100.00%","59.38%","0.00","0.0","1","1.00","0","0.00","1","1","0","0","19","32"),
+                        PeopleRow(team5.one,"0.00%","0.00%","56.25%","0.00","0.0","0","0.00","0","0.00","1","1","0","0","18","32"),
+                        PeopleRow(team5.two,"0.00%","0.00%","56.25%","0.00","0.0","0","0.00","0","0.00","1","1","0","0","18","32"),
+                        PeopleRow(team2.one,"0.00%","0.00%","50.00%","0.00","0.0","0","0.00","0","0.00","1","1","0","0","16","32"),
+                        PeopleRow(team2.two,"0.00%","0.00%","50.00%","0.00","0.0","0","0.00","0","0.00","1","1","0","0","16","32"),
+                        PeopleRow(team3.one,"0.00%","0.00%","46.88%","0.00","0.0","0","0.00","0","0.00","1","1","0","0","15","32"),
+                        PeopleRow(team3.two,"0.00%","0.00%","46.88%","0.00","0.0","0","0.00","0","0.00","1","1","0","0","15","32"),
+                        PeopleRow(team1.one,"0.00%","0.00%","37.50%","0.00","0.0","0","0.00","0","0.00","1","1","0","0","12","32"),
+                        PeopleRow(team1.two,"0.00%","0.00%","37.50%","0.00","0.0","0","0.00","0","0.00","1","1","0","0","12","32")
       )
 
   val peopleResultMP = List(
@@ -163,16 +163,16 @@ object Duplicate5TestPages {
                         PeopleRowMP(team1.two,"0.00%","0.00%","37.50%","0","0.00","1","0","12","32")
       )
   val peopleResultIMP = List(
-                        PeopleRowIMP(team4.one,"100.00%","50.00%","14.0","1","0.50","1","0"),
-                        PeopleRowIMP(team4.two,"100.00%","50.00%","14.0","1","0.50","1","0"),
-                        PeopleRowIMP(team5.one,"100.00%","50.00%","14.0","1","0.50","1","0"),
-                        PeopleRowIMP(team5.two,"100.00%","50.00%","14.0","1","0.50","1","0"),
-                        PeopleRowIMP(team2.one,"0.00%","0.00%","-1.0","0","0.00","1","0"),
-                        PeopleRowIMP(team2.two,"0.00%","0.00%","-1.0","0","0.00","1","0"),
-                        PeopleRowIMP(team3.one,"0.00%","0.00%","-11.0","0","0.00","1","0"),
-                        PeopleRowIMP(team3.two,"0.00%","0.00%","-11.0","0","0.00","1","0"),
-                        PeopleRowIMP(team1.one,"0.00%","0.00%","-16.0","0","0.00","1","0"),
-                        PeopleRowIMP(team1.two,"0.00%","0.00%","-16.0","0","0.00","1","0")
+                        PeopleRowIMP(team4.one,"100.00%","50.00%","100.00","14.0","1","0.50","1","0"),
+                        PeopleRowIMP(team4.two,"100.00%","50.00%","100.00","14.0","1","0.50","1","0"),
+                        PeopleRowIMP(team5.one,"100.00%","50.00%","100.00","14.0","1","0.50","1","0"),
+                        PeopleRowIMP(team5.two,"100.00%","50.00%","100.00","14.0","1","0.50","1","0"),
+                        PeopleRowIMP(team2.one,"0.00%","0.00%","50.00","-1.0","0","0.00","1","0"),
+                        PeopleRowIMP(team2.two,"0.00%","0.00%","50.00","-1.0","0","0.00","1","0"),
+                        PeopleRowIMP(team3.one,"0.00%","0.00%","16.67","-11.0","0","0.00","1","0"),
+                        PeopleRowIMP(team3.two,"0.00%","0.00%","16.67","-11.0","0","0.00","1","0"),
+                        PeopleRowIMP(team1.one,"0.00%","0.00%","0.00","-16.0","0","0.00","1","0"),
+                        PeopleRowIMP(team1.two,"0.00%","0.00%","0.00","-16.0","0","0.00","1","0")
       )
 
   val listDuplicateResult = List(
@@ -324,7 +324,7 @@ object Duplicate5TestPages {
  * to the names view, to the hand view.
  * @author werewolf
  */
-class Duplicate5TestPages extends FlatSpec with DuplicateUtils with MustMatchers with BeforeAndAfterAll with EventuallyUtils with CancelAfterFailure {
+class Duplicate5TestPages extends FlatSpec with MustMatchers with BeforeAndAfterAll with EventuallyUtils with CancelAfterFailure {
   import Eventually.{ patienceConfig => _, _ }
   import ParallelUtils._
 
@@ -1050,7 +1050,7 @@ class Duplicate5TestPages extends FlatSpec with DuplicateUtils with MustMatchers
 
     val sb = ListDuplicatePage.current
     val ids = sb.getMatchIds
-    val peoplePage = sb.clickPairs.validate.clickPeopleResults
+    val peoplePage = sb.clickStatistics.validate.clickPeopleResults
 
     maximize
 
@@ -1126,7 +1126,7 @@ class Duplicate5TestPages extends FlatSpec with DuplicateUtils with MustMatchers
 
     val newid = postDuplicate(ndup)
 
-    PairsPage.current.clickSummary.validate( dupid.get, newid )
+    StatisticsPage.current.clickSummary.validate( dupid.get, newid )
   }
 
   it should "show the people page 2" in {
@@ -1134,7 +1134,7 @@ class Duplicate5TestPages extends FlatSpec with DuplicateUtils with MustMatchers
 
     val sb = ListDuplicatePage.current
     val ids = sb.getMatchIds
-    val peoplePage = sb.clickPairs.validate.clickPeopleResults
+    val peoplePage = sb.clickStatistics.validate.clickPeopleResults
 
     peoplePage.withClueAndScreenShot(screenshotDir, "ShowPeoplePage", "Checking people") {
       if (ids.size == 2) {

@@ -1,8 +1,6 @@
 package com.example.pages
 
 import scala.scalajs.js
-import org.scalajs.dom.document
-import org.scalajs.dom.Element
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.extra.router.RouterCtl
@@ -60,7 +58,7 @@ object AboutPageInternal {
    */
   class Backend(scope: BackendScope[Props, State]) {
 
-    def didMount() = Callback {
+    val didMount = Callback {
       import scala.concurrent.ExecutionContext.Implicits.global
       // make AJAX rest call here
       logger.finer("HomePage: Sending serverurl request to server")
@@ -117,7 +115,7 @@ object AboutPageInternal {
                             .initialStateFromProps { props => State(ServerURL(Nil), List(ServerVersion("?","?","?"))) }
                             .backend(new Backend(_))
                             .renderBackend
-                            .componentDidMount( scope => scope.backend.didMount())
+                            .componentDidMount( scope => scope.backend.didMount)
                             .build
 }
 

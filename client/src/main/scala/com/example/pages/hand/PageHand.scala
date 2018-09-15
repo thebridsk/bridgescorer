@@ -1,8 +1,6 @@
 package com.example.pages.hand
 
 import scala.scalajs.js
-import org.scalajs.dom.document
-import org.scalajs.dom.Element
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
 import com.example.data.bridge.ContractTricks
@@ -18,6 +16,7 @@ import com.example.react.AppButton
 import com.example.react.Utils._
 import com.example.react.Button
 import com.example.pages.Pixels
+import com.example.react.HelpButton
 
 /**
  * A skeleton component.
@@ -59,9 +58,10 @@ object PageHand {
              allowPassedOut: Boolean = true,
              callbackWithHonors: Option[CallbackWithHonors] = None,
              honors: Option[Int] = None,
-             honorsPlayer: Option[PlayerPosition] = None ) =
+             honorsPlayer: Option[PlayerPosition] = None,
+             helppage: Option[String] = None ) =
         component(Props(contract.withScoring(),callbackOk,callbackCancel,
-                        teamNS,teamEW,newhand,allowPassedOut,callbackWithHonors,honors,honorsPlayer))
+                        teamNS,teamEW,newhand,allowPassedOut,callbackWithHonors,honors,honorsPlayer,helppage))
 
 
   /**
@@ -100,7 +100,8 @@ object PageHand {
              allowPassedOut: Boolean = true,
              callbackWithHonors: Option[CallbackWithHonors] = None,
              honors: Option[Int] = None,
-             honorsPlayer: Option[PlayerPosition] = None ) =
+             honorsPlayer: Option[PlayerPosition] = None,
+             helppage: Option[String] = None ) =
                                         apply( Contract( h.id,
                                                          h.contractTricks,
                                                          h.contractSuit,
@@ -122,7 +123,7 @@ object PageHand {
                                                          west,
                                                          dealer
                                                ), callbackOk, callbackCancel, teamNS, teamEW, newhand=newhand, allowPassedOut=allowPassedOut, callbackWithHonors=callbackWithHonors,
-                                               honors=honors, honorsPlayer=honorsPlayer)
+                                               honors=honors, honorsPlayer=honorsPlayer, helppage=helppage)
 
   var scorekeeper: PlayerPosition = North
 
@@ -149,7 +150,8 @@ object PageHandInternal {
                     allowPassedOut: Boolean,
                     callbackWithHonors: Option[CallbackWithHonors] = None,
                     honors: Option[Int] = None,
-                    honorsPlayer: Option[PlayerPosition] = None)
+                    honorsPlayer: Option[PlayerPosition] = None,
+                    helppage: Option[String] = None)
 
   /**
    * Internal state for rendering the component.
@@ -288,6 +290,7 @@ object PageHandInternal {
           InputResultMadeOrDown, InputResultTricks, InputAll = Value
 
   }
+
   /**
    * Internal backend object for rendering the component.
    *
@@ -310,12 +313,11 @@ object PageHandInternal {
     def setHonors( honors: Int ) = modState(s => s.setHonors(honors))
     def setHonorsPlayer( honorsPlayer: Option[PlayerPosition] ) = modState(s => s.setHonorsPlayer(honorsPlayer) )
 
-    def clear() = modState( s => s.clear() )
+    val clear = modState( s => s.clear() )
 
-    def kickRefresh() = scope.forceUpdate
+    val kickRefresh = scope.forceUpdate
 
-    def ok() = scope.state >>= { state =>
-      val props = scope.withEffectsImpure.props
+    val ok = scope.stateProps { (state, props) =>
       props.callbackWithHonors match {
         case Some(cb) =>
           cb( state.currentcontract, state.honors.getOrElse(0), state.honorsPlayer.getOrElse(North) )
@@ -334,11 +336,11 @@ object PageHandInternal {
       s.copy(changeScorekeeper=false)
     })
 
-    def cancelSetScorekeeper() = scope.modState(s => {
+    val cancelSetScorekeeper = scope.modState(s => {
       s.copy(changeScorekeeper=false)
     })
 
-    def changeScorekeeper() = scope.modState(s => {
+    val changeScorekeeper = scope.modState(s => {
       s.copy(changeScorekeeper=true)
     })
 
@@ -460,17 +462,18 @@ object PageHandInternal {
               baseStyles.divFooterLeft,
               Button( handStyles.footerButton, "Ok", "OK", ^.disabled := !valid,
                       HandStyles.highlight(required = valid),
-                      ^.onClick --> ok())
+                      ^.onClick --> ok)
             ),
             <.div(
               baseStyles.divFooterCenter,
               Button( handStyles.footerButton, "Cancel", "Cancel", ^.onClick --> props.callbackCancel),
-              Button( handStyles.footerButton, "ChangeSK", "Change Scorekeeper", ^.onClick --> changeScorekeeper())
+              Button( handStyles.footerButton, "ChangeSK", "Change Scorekeeper", ^.onClick --> changeScorekeeper)
             ),
             <.div(
               baseStyles.divFooterRight,
               ComponentInputStyleButton(kickRefresh,true),
-              Button( handStyles.footerButton, "Clear", "Clear", ^.onClick --> this.clear())
+              Button( handStyles.footerButton, "Clear", "Clear", ^.onClick --> this.clear),
+              props.helppage.whenDefined( p => HelpButton(p) )
             )
           )
       )

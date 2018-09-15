@@ -14,6 +14,7 @@ import com.example.react.AppButton
 import com.example.react.Utils._
 import com.example.pages.Pixels
 import com.example.pages.BaseStyles
+import com.example.react.HelpButton
 
 object ViewPlayersFourthRound {
   import PagePlayers._
@@ -29,11 +30,11 @@ object ViewPlayersFourthRound {
     def setEast(p: String)( e: ReactEventFromInput ) = scope.modState( ps => {show("setEast",complete(ps.removePlayer(p).copy(east=p)))})
     def setWest(p: String)( e: ReactEventFromInput ) = scope.modState( ps => {show("setWest",complete(ps.removePlayer(p).copy(west=p)))})
 
-    def setFirstDealer( p: PlayerPosition ) = scope.modState(ps => ps.copy(dealer=p))
+    def setFirstDealer( p: PlayerPosition ) = scope.modState(ps => ps.copy(dealer=Some(p)))
 
-    def changeScoreKeeper() = scope.modState(s => s.copy(changingScoreKeeper = true))
+    val changeScoreKeeper = scope.modState(s => s.copy(changingScoreKeeper = true))
 
-    def reset() = scope.modState(s=> s.copy(north=s.north, south="", east="", west="", changingScoreKeeper = false) )
+    val reset = scope.modState(s=> s.copy(north=s.north, south="", east="", west="", changingScoreKeeper = false) )
 
     /**
      * Only call from within a scope.modState()
@@ -215,7 +216,7 @@ object ViewPlayersFourthRound {
           baseStyles.divFooter,
           <.div(
             baseStyles.divFooterLeft,
-            AppButton( "Ok", "OK" , ^.disabled := !valid, BaseStyles.highlight(requiredNotNext=valid ), baseStyles.appButton, ^.onClick --> ok() )
+            AppButton( "Ok", "OK" , ^.disabled := !valid, BaseStyles.highlight(requiredNotNext=valid ), baseStyles.appButton, ^.onClick --> ok )
           ),
           <.div(
             baseStyles.divFooterCenter,
@@ -223,29 +224,27 @@ object ViewPlayersFourthRound {
           ),
           <.div(
             baseStyles.divFooterRight,
-            AppButton( "Reset", "Reset", baseStyles.appButton, ^.onClick --> reset)
+            AppButton( "Reset", "Reset", baseStyles.appButton, ^.onClick --> reset),
+            HelpButton("/help/chicago/four/selectnames4.html")
           )
         )
       )
     }
 
-    def ok() = CallbackTo {
-      val state = scope.withEffectsImpure.state
-      val props = scope.withEffectsImpure.props
+    val ok = scope.stateProps { (state,props) =>
       val r = if (props.chicago.rounds.size <= props.page.round) {
         Round.create(props.page.round.toString(),
              state.north,
              state.south,
              state.east,
              state.west,
-             state.dealer.pos.toString(),
+             state.getDealer,
              Nil )
       } else {
-        props.chicago.rounds(props.page.round).copy(north=state.north, south=state.south, east=state.east, west=state.west, dealerFirstRound=state.dealer.pos.toString())
+        props.chicago.rounds(props.page.round).copy(north=state.north, south=state.south, east=state.east, west=state.west, dealerFirstRound=state.getDealer)
       }
       ChicagoController.updateChicagoRound(props.chicago.id, r)
-      props
-    } >>= { props =>
+
       props.router.set(props.page.toHandView(0))
     }
 
@@ -254,7 +253,7 @@ object ViewPlayersFourthRound {
   val component = ScalaComponent.builder[Props]("ViewPlayersFourthRound")
                             .initialStateFromProps { props => {
                               val lr = props.chicago.rounds( props.chicago.rounds.size-1 )
-                              ViewPlayersSecondRound.State(lr.north,"","","",North,false)
+                              ViewPlayersSecondRound.State(lr.north,"","","",None,false)
                             } }
                             .backend(new Backend(_))
                             .renderBackend

@@ -2,8 +2,6 @@ package com.example.pages.duplicate
 
 
 import scala.scalajs.js
-import org.scalajs.dom.document
-import org.scalajs.dom.Element
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.extra.router.RouterCtl
@@ -22,20 +20,20 @@ import com.example.data.duplicate.suggestion.PairData
 import scala.annotation.tailrec
 import com.example.data.duplicate.suggestion.ColorByPlayed
 import com.example.pages.BaseStyles
-import com.example.react.StatsTable
-import com.example.react.StatsTable.Column
-import com.example.react.StatsTable.Sorter
-import com.example.react.StatsTable.Row
-import com.example.react.StatsTable.Column
 import com.example.data.duplicate.suggestion.CalculationType
 import com.example.data.duplicate.suggestion.CalculationAsPlayed
 import com.example.data.duplicate.suggestion.CalculationAsPlayed
 import com.example.data.duplicate.suggestion.CalculationMP
 import com.example.data.duplicate.suggestion.CalculationIMP
-import com.example.react.StatsTable.MultiColumnSorter
-import com.example.react.StatsTable.MultiColumnSort
 import com.example.data.duplicate.suggestion.ColorBy
 import com.example.data.duplicate.suggestion.Stat
+import com.example.data.duplicate.suggestion.ColorByPointsPct
+import com.example.data.duplicate.suggestion.ColorByIMP
+import com.example.react.Table
+import com.example.react.Table.Sorter
+import com.example.react.Table.SortableColumn
+import com.example.react.Table.MultiColumnSort
+import com.example.react.Table.Row
 
 /**
  * Shows a summary page of all duplicate matches from the database.
@@ -65,7 +63,7 @@ object ViewPairsTable {
 object ViewPairsTableInternal {
   import ViewPairsTable._
   import DuplicateStyles._
-  import StatsTable.Sorter._
+  import Table.Sorter._
 
   val logger = Logger("bridge.ViewPairsTable")
 
@@ -85,12 +83,12 @@ object ViewPairsTableInternal {
   abstract class StatColumn[T](
       id: String,
       name: String,
-      formatter: T=>String,
+      formatter: T=>TagMod,
       hidden: Boolean = false
     )(
       implicit
       sorter: Sorter[T]
-    ) extends Column( id, name, formatter, hidden = hidden )(sorter) {
+    ) extends SortableColumn( id, name, formatter, hidden = hidden )(sorter) {
 
     val showIn: List[CalculationType] = CalculationAsPlayed::CalculationMP::CalculationIMP::Nil
 
@@ -169,7 +167,7 @@ object ViewPairsTableInternal {
 
   val ostring = Ordering[String]
 
-  class PlayerSorter( cols: String* ) extends MultiColumnSort( cols.map(c=>(c,false)): _* )(ostring)
+  class PlayerSorter( cols: String* ) extends MultiColumnSort( cols.map(c=>(c,None,false)): _* )(ostring)
 
   val pairColumns = List[StatColumn[Any]](
     new StringColumn( "Player1", "Player 1" )(new PlayerSorter("Player1","Player2")) {
@@ -189,12 +187,18 @@ object ViewPairsTableInternal {
   )
 
   val columns = List[StatColumn[Any]](
-      new PercentColumn( "WonPct", "% Won" )(MultiColumnSort(("WonPct",false),("Hidden1",false),("WonPts",false),("Player",true),("Player1",true),("Player2",true))) { def getValue( pd: PairData ) = pd.winPercent },
-      new PercentColumn( "WonPts", "% WonPoints" )(MultiColumnSort(("WonPts",false),("Hidden1",false),("WonPct",false),("Player",true),("Player1",true),("Player2",true))) { def getValue( pd: PairData ) = pd.winPtsPercent },
+      new PercentColumn( "WonPct", "% Won" )(MultiColumnSort.create2(("WonPct",false),("Hidden1",false),("WonPts",false),("Player",true),("Player1",true),("Player2",true))) { def getValue( pd: PairData ) = pd.winPercent },
+      new PercentColumn( "WonPts", "% WonPoints" )(MultiColumnSort.create2(("WonPts",false),("Hidden1",false),("WonPct",false),("Player",true),("Player1",true),("Player2",true))) { def getValue( pd: PairData ) = pd.winPtsPercent },
       new PercentColumn( "ScorePct", "% MP" )(MultiColumnSort.create("ScorePct","WonPct")) {
         def getValue( pd: PairData ) = pd.pointsPercent
         override
         val showIn: List[CalculationType] = CalculationAsPlayed::CalculationMP::Nil
+      },
+      // This entry will get replaced in the render method.
+      new StatColumn( "NormalizedIMP", "Normalized IMP", (v: Double) => f"$v%.2f" ) {
+        def getValue( pd: PairData ) = pd.avgIMP
+        override
+        val showIn: List[CalculationType] = CalculationAsPlayed::CalculationIMP::Nil
       },
       new IMPColumn( "IMP", "IMP" )(MultiColumnSort.create("IMP","WonPct")) {
         def getValue( pd: PairData ) = pd.avgIMP
@@ -255,18 +259,6 @@ object ViewPairsTableInternal {
     }
   }
 
-  object ColorByPtsPer extends ColorBy {
-    val name = "Pts%";
-    def value( pd: PairData ): Double = pd.pointsPercent
-    def n( pd: PairData): Int = pd.playedMP
-  }
-  object ColorByIMP extends ColorBy {
-    val name = "avgIMP";
-    def value( pd: PairData ): Double = pd.avgIMP
-    def n( pd: PairData): Int = pd.playedIMP
-  }
-
-
   /**
    * Internal state for rendering the component.
    *
@@ -276,42 +268,13 @@ object ViewPairsTableInternal {
    */
   class Backend(scope: BackendScope[Props, State]) {
 
-    def toggleShowHidden = scope.modState { s => s.copy( showHidden = !s.showHidden ) }
+    val toggleShowHidden = scope.modState { s => s.copy( showHidden = !s.showHidden ) }
 
     def setCalc( calc: CalculationType ) = scope.modState { s => s.copy( calc = calc ) }
 
     def render( props: Props, state: State ) = {
       props.filter.pairsData match {
         case Some(fpd) =>
-
-          val statPts = new Stat(ColorByPtsPer)
-          val statIMP = new Stat(ColorByIMP)
-
-          Stat.addPairs(fpd.data.values, None, statPts, statIMP)
-
-          val minMP = statPts.min
-          val maxMP = statPts.max
-          val minIMP = statIMP.min
-          val maxIMP = statIMP.max
-
-          val diffMP = maxMP - minMP
-          val diffIMP = maxIMP - minIMP
-
-          val hiddenColumn = new StatColumn( "Hidden1", "Normalize(Point%,IMP)", (v: Double) => f"$v%.2f", !state.showHidden ) {
-            def getValue( pd: PairData ) = {
-              val mpV = (pd.pointsPercent-minMP)/diffMP
-              val mpW = pd.playedMP
-              val impV = (pd.avgIMP-minIMP)/diffIMP
-              val impW = pd.playedIMP
-              (mpV*mpW+impV*impW)/(mpW+impW)
-            }
-          }
-
-          val hiddenColumns: List[StatColumn[Any]] = hiddenColumn::Nil
-
-          val allColumns: List[StatColumn[Any]] = (if (props.showPairs) pairColumns else peopleColumns):::
-                                                  columns :::
-                                                  hiddenColumns
 
           val pd =
             if (fpd.calc == state.calc) fpd
@@ -321,9 +284,59 @@ object ViewPairsTableInternal {
             val filter = props.filter.selectedPlayers
             pd.data.values.filter( pd => filter.contains(pd.player1) && filter.contains(pd.player2) ).toList
           } else {
-            val summary = new PairsDataSummary(pd, ColorByWonPct, props.filter.selected, ColorByPlayed)
+            val summary = new PairsDataSummary(pd, ColorByWonPct, props.filter.selected, props.filter.filterDisplayOnly, ColorByPlayed)
             summary.playerTotals.values.toList
           }
+
+          val statPts = new Stat(ColorByPointsPct)
+          val statIMP = new Stat(ColorByIMP)
+
+          Stat.addPairs(pds, None, statPts, statIMP)
+
+          val minMP = statPts.min
+          val maxMP = statPts.max
+          val minIMP = statIMP.min
+          val maxIMP = statIMP.max
+
+          val diffMP = {
+            if (statPts.n == 0) 0.0
+            else maxMP - minMP
+          }
+          val diffIMP = {
+            if (statIMP.n == 0) 0.0
+            else maxIMP - minIMP
+          }
+
+          val hiddenColumn = new StatColumn( "Hidden1", "Normalize(Point%,IMP)", (v: Double) => f"$v%.2f", !state.showHidden ) {
+            def getValue( pd: PairData ) = {
+              val mpV = if (diffMP == 0.0) 0.0 else (pd.pointsPercent-minMP)/diffMP
+              val mpW = pd.playedMP
+              val impV = if (diffIMP == 0.0) 0.0 else (pd.avgIMP-minIMP)/diffIMP
+              val impW = pd.playedIMP
+              if (mpW+impW == 0) 0.0 else (mpV*mpW+impV*impW)/(mpW+impW)
+            }
+          }
+
+          val normalizedIMPColumn: StatColumn[Any] = new StatColumn( "NormalizedIMP", "Normalized IMP", (v: Double) => f"$v%.2f" ) {
+            def getValue( pd: PairData ) = {
+              val r =
+              if (diffIMP == 0.0) 0.0
+              else 100.0*(pd.avgIMP-minIMP)/diffIMP
+
+//              logger.fine( f"NormalizedIMPColumn ${pd.player1} ${r}%.2f, min=${minIMP}%.2f, max=${maxIMP}%.2f, avgIMP=${pd.avgIMP}%.2f" )
+              r
+            }
+            override
+            val showIn: List[CalculationType] = CalculationAsPlayed::CalculationIMP::Nil
+          }
+
+          val iCols = columns.map( c => if (c.id == normalizedIMPColumn.id) normalizedIMPColumn else c )
+
+          val hiddenColumns: List[StatColumn[Any]] = hiddenColumn::Nil
+
+          val allColumns: List[StatColumn[Any]] = (if (props.showPairs) pairColumns else peopleColumns):::
+                                                  iCols :::
+                                                  hiddenColumns
 
           val cols = allColumns.filter( c => c.isUsed(state.calc) )
 
@@ -333,7 +346,7 @@ object ViewPairsTableInternal {
 
           <.div(
             if (props.showPairs) dupStyles.viewPairsTable else dupStyles.viewPeopleTable,
-            StatsTable(
+            Table(
                 cols,
                 rows,
                 initialSort = Some("WonPct"),
