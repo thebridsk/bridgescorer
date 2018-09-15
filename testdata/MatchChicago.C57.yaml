@@ -1,0 +1,215 @@
+---
+id: "C57"
+players:
+- "Nancy"
+- "Sam"
+- "Ellen"
+- "Wayne"
+rounds:
+- id: "0"
+  north: "Nancy"
+  south: "Sam"
+  east: "Ellen"
+  west: "Wayne"
+  dealerFirstRound: "E"
+  hands:
+  - id: "0"
+    contractTricks: 3
+    contractSuit: "C"
+    contractDoubled: "N"
+    declarer: "W"
+    nsVul: false
+    ewVul: false
+    madeContract: false
+    tricks: 1
+    created: 1536944473024
+    updated: 1536944473024
+  - id: "0"
+    contractTricks: 2
+    contractSuit: "S"
+    contractDoubled: "N"
+    declarer: "W"
+    nsVul: true
+    ewVul: false
+    madeContract: false
+    tricks: 2
+    created: 1536944906028
+    updated: 1536944906028
+  - id: "0"
+    contractTricks: 2
+    contractSuit: "N"
+    contractDoubled: "N"
+    declarer: "E"
+    nsVul: false
+    ewVul: true
+    madeContract: true
+    tricks: 3
+    created: 1536945359313
+    updated: 1536945359313
+  - id: "0"
+    contractTricks: 3
+    contractSuit: "H"
+    contractDoubled: "N"
+    declarer: "E"
+    nsVul: true
+    ewVul: true
+    madeContract: true
+    tricks: 5
+    created: 1536945891446
+    updated: 1536945891446
+  - id: "0"
+    contractTricks: 3
+    contractSuit: "N"
+    contractDoubled: "N"
+    declarer: "E"
+    nsVul: false
+    ewVul: false
+    madeContract: true
+    tricks: 3
+    created: 1536946984426
+    updated: 1536946984426
+  - id: "0"
+    contractTricks: 3
+    contractSuit: "S"
+    contractDoubled: "N"
+    declarer: "N"
+    nsVul: true
+    ewVul: false
+    madeContract: false
+    tricks: 1
+    created: 1536948078533
+    updated: 1536948078533
+  - id: "0"
+    contractTricks: 4
+    contractSuit: "S"
+    contractDoubled: "N"
+    declarer: "N"
+    nsVul: false
+    ewVul: true
+    madeContract: true
+    tricks: 5
+    created: 1536948586177
+    updated: 1536948586177
+  - id: "0"
+    contractTricks: 2
+    contractSuit: "H"
+    contractDoubled: "N"
+    declarer: "W"
+    nsVul: true
+    ewVul: true
+    madeContract: true
+    tricks: 2
+    created: 1536949519880
+    updated: 1536949519880
+  created: 1536943899159
+  updated: 1536949519882
+- id: "1"
+  north: "Nancy"
+  south: "Ellen"
+  east: "Sam"
+  west: "Wayne"
+  dealerFirstRound: "E"
+  hands:
+  - id: "0"
+    contractTricks: 3
+    contractSuit: "N"
+    contractDoubled: "N"
+    declarer: "E"
+    nsVul: false
+    ewVul: false
+    madeContract: true
+    tricks: 5
+    created: 1536949916418
+    updated: 1536949916418
+  - id: "0"
+    contractTricks: 6
+    contractSuit: "N"
+    contractDoubled: "N"
+    declarer: "S"
+    nsVul: true
+    ewVul: false
+    madeContract: true
+    tricks: 6
+    created: 1536950693594
+    updated: 1536950693594
+  - id: "0"
+    contractTricks: 5
+    contractSuit: "C"
+    contractDoubled: "N"
+    declarer: "W"
+    nsVul: false
+    ewVul: true
+    madeContract: true
+    tricks: 6
+    created: 1536951105386
+    updated: 1536951105386
+  - id: "0"
+    contractTricks: 4
+    contractSuit: "H"
+    contractDoubled: "N"
+    declarer: "W"
+    nsVul: true
+    ewVul: true
+    madeContract: true
+    tricks: 4
+    created: 1536951471400
+    updated: 1536951471400
+  - id: "0"
+    contractTricks: 2
+    contractSuit: "H"
+    contractDoubled: "N"
+    declarer: "N"
+    nsVul: false
+    ewVul: false
+    madeContract: false
+    tricks: 2
+    created: 1536951789326
+    updated: 1536951789326
+  - id: "0"
+    contractTricks: 3
+    contractSuit: "N"
+    contractDoubled: "N"
+    declarer: "S"
+    nsVul: true
+    ewVul: false
+    madeContract: false
+    tricks: 3
+    created: 1536952888366
+    updated: 1536952888366
+  - id: "0"
+    contractTricks: 4
+    contractSuit: "H"
+    contractDoubled: "N"
+    declarer: "N"
+    nsVul: false
+    ewVul: true
+    madeContract: true
+    tricks: 4
+    created: 1536953204916
+    updated: 1536953204916
+  - id: "0"
+    contractTricks: 2
+    contractSuit: "S"
+    contractDoubled: "N"
+    declarer: "S"
+    nsVul: true
+    ewVul: true
+    madeContract: true
+    tricks: 2
+    created: 1536953762850
+    updated: 1536953762850
+  created: 1536949548869
+  updated: 1536953762859
+- id: "2"
+  north: "Nancy"
+  south: "Wayne"
+  east: "Ellen"
+  west: "Sam"
+  dealerFirstRound: ""
+  hands: []
+  created: 1536953775734
+  updated: 1536953775734
+gamesPerRound: 8
+simpleRotation: false
+created: 1536943879507
+updated: 1536953775737

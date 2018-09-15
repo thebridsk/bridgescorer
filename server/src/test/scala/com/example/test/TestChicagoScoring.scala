@@ -17,7 +17,7 @@ import com.example.data.chicago.ChicagoScoring
 import com.example.data.Round
 import com.example.data.chicago.ChicagoScoring.Fixture
 
-class TestChicagoScore extends FlatSpec with MustMatchers {
+class TestChicagoScoring extends FlatSpec with MustMatchers {
 
   SystemTimeJVM()
 
