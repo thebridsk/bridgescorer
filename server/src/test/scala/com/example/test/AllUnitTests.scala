@@ -20,7 +20,7 @@ class AllUnitTests extends Sequential(
   new TestResourceStore,
   new TestDuplicateRestSpec,
   new TestDuplicateScore,
-  new TestChicagoScore,
+  new TestChicagoScoring,
   new TestFileStore,
   new TestLoggingWebsocket,
   new TestWinnerSets,

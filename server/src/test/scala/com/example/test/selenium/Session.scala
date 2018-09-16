@@ -38,7 +38,7 @@ import org.openqa.selenium.support.events.WebDriverEventListener
 import org.openqa.selenium.support.events.AbstractWebDriverEventListener
 import org.openqa.selenium.UnhandledAlertException
 import com.example.test.pages.PageBrowser
-import org.openqa.selenium.firefox.internal.ProfilesIni
+import org.openqa.selenium.firefox.ProfilesIni
 
 class Session( name: String = "default" ) extends WebDriver {
   import Session._

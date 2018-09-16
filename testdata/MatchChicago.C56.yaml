@@ -1,5 +1,5 @@
 ---
-id: "C57"
+id: "C56"
 players:
 - "Nancy"
 - "Sam"
@@ -205,7 +205,7 @@ rounds:
   south: "Wayne"
   east: "Ellen"
   west: "Sam"
-  dealerFirstRound: "N"
+  dealerFirstRound: ""
   hands: []
   created: 1536953775734
   updated: 1536953775734
