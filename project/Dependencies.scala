@@ -33,8 +33,8 @@ object Dependencies {
 //  lazy val vScalaJsLibrary = "0.6.13" // http://mvnrepository.com/artifact/org.scala-js/scalajs-library_2.11
 
 
-  lazy val vAkka = "2.5.14"           // http://mvnrepository.com/artifact/com.typesafe.akka/akka-actor_2.11
-  lazy val vAkkaHttp = "10.1.4"       // http://mvnrepository.com/artifact/com.typesafe.akka/akka-http_2.11
+  lazy val vAkka = "2.5.16"           // http://mvnrepository.com/artifact/com.typesafe.akka/akka-actor_2.11
+  lazy val vAkkaHttp = "10.1.5"       // http://mvnrepository.com/artifact/com.typesafe.akka/akka-http_2.11
 
   lazy val vAkkaHttpPlayJson="1.21.0"  // https://github.com/hseeberger/akka-http-json
 
@@ -42,12 +42,12 @@ object Dependencies {
 //  lazy val vSwaggerScalaModule="1.0.4" // http://mvnrepository.com/artifact/io.swagger/swagger-scala-module_2.11
   lazy val vSwagger="1.5.21"           // http://mvnrepository.com/artifact/io.swagger/swagger-core
 
-  lazy val vSwaggerUI = "3.18.1"       // https://www.npmjs.com/package/swagger-ui-dist
+  lazy val vSwaggerUI = "3.19.0"       // https://www.npmjs.com/package/swagger-ui-dist
   lazy val vScalajsdom = "0.9.6"       // http://mvnrepository.com/artifact/org.scala-js/scalajs-dom_sjs0.6_2.11
   lazy val vScalaJsReact = "1.2.3"     // http://mvnrepository.com/artifact/com.github.japgolly.scalajs-react/core_sjs0.6_2.11
   lazy val vScalaCss = "0.5.3"         // http://mvnrepository.com/artifact/com.github.japgolly.scalacss/core_sjs0.6_2.11
 
-  lazy val vWebJarsReact = "16.4.2"    // http://mvnrepository.com/artifact/org.webjars/react
+  lazy val vWebJarsReact = "16.5.1"    // http://mvnrepository.com/artifact/org.webjars/react
   lazy val vReactWidgets = "4.4.4"     // http://mvnrepository.com/artifact/org.webjars.npm/react-widgets
   lazy val vWebJarsFlux = "3.1.3"      // http://mvnrepository.com/artifact/org.webjars/flux
   lazy val vGlobalize = "1.3.0"        // https://www.npmjs.com/package/globalize
@@ -79,14 +79,14 @@ object Dependencies {
   // Selenium needs to be update to update to v23.0
   lazy val vGuavaJre = "26.0-jre"    // https://github.com/google/guava
 
-  lazy val vWebPack = "4.17.0"          // https://www.npmjs.com/package/webpack
+  lazy val vWebPack = "4.19.0"          // https://www.npmjs.com/package/webpack
 
   lazy val vJsDom = "11.12.0"           // https://www.npmjs.com/package/jsdom
 //  lazy val vExposeLoader = "0.7.3"     // https://www.npmjs.com/package/expose-loader
 
   // version 0.2.1 is hardcoded in sbt-scalajs-bundler
 //  lazy val vSourceMapLoader = "0.2.3"   // https://www.npmjs.com/package/source-map-loader
-  lazy val vWebpackDevServer = "3.1.5"   // https://www.npmjs.com/package/webpack-dev-server
+  lazy val vWebpackDevServer = "3.1.8"   // https://www.npmjs.com/package/webpack-dev-server
   lazy val vWebPackCli = "3.1.0"         // https://www.npmjs.com/package/webpack-cli
 
   lazy val vFastClick = "1.0.6"       // https://www.npmjs.com/package/fastclick
