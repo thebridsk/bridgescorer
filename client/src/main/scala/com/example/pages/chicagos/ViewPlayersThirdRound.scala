@@ -52,7 +52,7 @@ object ViewPlayersThirdRound {
       val allFromLastRound = lr.north::lr.south::lr.east::lr.west::Nil
 
       // check if all players from last round are mentioned in new round
-      val valid = !state.changingScoreKeeper
+      val valid = !state.changingScoreKeeper && state.dealer.isDefined
 
       def getSwapButton( id: String ) = {
         AppButton(id, "Swap East West",

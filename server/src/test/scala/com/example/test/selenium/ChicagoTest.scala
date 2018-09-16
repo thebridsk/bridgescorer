@@ -285,6 +285,8 @@ class ChicagoTest extends FlatSpec with MustMatchers with BeforeAndAfterAll with
   it should "allow setting the scorekeeper and dealer for third round" in {
     tcpSleep(30)
 
+    find(id("Ok")) must not be 'enabled
+
     click on id("PlayerWFirstDealer")
     click on id("Ok")
   }
