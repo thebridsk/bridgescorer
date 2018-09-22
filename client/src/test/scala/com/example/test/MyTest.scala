@@ -94,7 +94,7 @@ class MyTest extends FlatSpec with MustMatchers {
     log.warning("Rendering homepage into document")
     val component = ReactTestUtils renderIntoDocument HomePage(router)
     log.warning("Done rendering homepage into document")
-    val y = component.getDOMNode.asElement
+    val y = component.getDOMNode.asMounted().asElement()
     log.info("TestJQuery: ReactDOM.findDOMNode(component) is "+y)
     val jq = jQuery
     log.info("TestJQuery: jquery is "+jQuery)
@@ -108,7 +108,7 @@ class MyTest extends FlatSpec with MustMatchers {
     def selectedPage = router.getSetPage
 
     ReactTestUtils.withRenderedIntoDocument(HomePage( router ) ) { m =>
-      val e = m.getDOMNode.asElement
+      val e = m.getDOMNode.asMounted().asElement()
 
       val jv = new ReactForJQuery(e)
 
@@ -135,7 +135,7 @@ class MyTest extends FlatSpec with MustMatchers {
     }
 
     ReactTestUtils.withRenderedIntoDocument( ViewVulnerability( view.nsVul, view.ewVul, Some(view.setNS), Some(view.setEW) ) ) { m =>
-      val jv = new ReactForJQuery(m.getDOMNode.asElement)
+      val jv = new ReactForJQuery(m.getDOMNode.asMounted().asElement())
 
       jv.show() // view.jqueryComponent.context)
 

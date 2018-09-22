@@ -511,7 +511,7 @@ object PageHandInternal {
                             }
                             .backend(new Backend(_))
                             .renderBackend
-                            .configure(LogLifecycleToServer.verbose)     // logs lifecycle events
+//                            .configure(LogLifecycleToServer.verbose)     // logs lifecycle events
                             .build
 
 }

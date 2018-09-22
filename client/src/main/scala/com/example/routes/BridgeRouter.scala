@@ -61,7 +61,7 @@ class BridgeRouterBaseWithLogging[Page]( ctl: RouterCtl[Page] ) extends BridgeRo
 
   final def setEH(target: Page): ReactEvent => Callback = {
     logger.fine(s"""Setting up callback BridgeRouter.setEH(${target})""")
-    e => CallbackOption.asEventDefault(e, set(target))
+    e => set(target).asEventDefault(e).void
   }
 
   final def setOnClick(target: Page): TagMod = {
@@ -85,7 +85,7 @@ abstract class TestBridgeRouter[Page]( base: BaseUrl ) extends BridgeRouter[Page
 
   def baseUrl: BaseUrl = base
   def urlFor(page: Page): AbsUrl = pathFor(page).abs(baseUrl)
-  def setEH( page: Page ): ReactEvent => Callback = e => CallbackOption.asEventDefault(e, set(page))
+  def setEH( page: Page ): ReactEvent => Callback = e => set(page).asEventDefault(e).void
   def setOnClick( page: Page ) = ^.onClick ==> setEH(page)
   def setOnLinkClick( page: Page ): TagMod = {
     def go(e: ReactMouseEvent): Callback =

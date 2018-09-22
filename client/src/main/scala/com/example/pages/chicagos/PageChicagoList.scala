@@ -236,7 +236,7 @@ object PageChicagoListInternal {
                             .initialStateFromProps { props => State(Array(),None, None) }
                             .backend(new Backend(_))
                             .renderBackend
-                            .configure(LogLifecycleToServer.verbose)     // logs lifecycle events
+//                            .configure(LogLifecycleToServer.verbose)     // logs lifecycle events
                             .componentDidMount( scope => scope.backend.didMount)
                             .componentWillUnmount( scope => scope.backend.willUnmount )
                             .build
