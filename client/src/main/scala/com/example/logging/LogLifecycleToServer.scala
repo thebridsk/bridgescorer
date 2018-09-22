@@ -7,7 +7,7 @@ import scala.util.Failure
 import scala.scalajs.js.Date
 import utils.logging.Logger
 import utils.logging.Level
-import japgolly.scalajs.react.extra.LogLifecycle
+// import japgolly.scalajs.react.extra.LogLifecycle
 
 /**
  * @author werewolf
@@ -40,16 +40,16 @@ object LogLifecycleToServer {
   private[this] def logP[P <: Product](m: String, c: P => js.Any, extra: P => Seq[js.Any])(implicit level: Level, logger: Logger) = (p: P) =>
     logc(m, c(p), extra(p): _*)
 
-  def short[P, C <: Children, S, B]: ScalaComponent.Config[P, C, S, B] =
-    LogLifecycle.custom(componentName => lc =>
-      Callback.log(s"[$componentName] ${lc.toString.replaceFirst("\\(.+", "")}"))
-
-  def default[P, C <: Children, S, B]: ScalaComponent.Config[P, C, S, B] =
-    LogLifecycle.custom(componentName => lc =>
-      Callback.log(s"[$componentName] $lc"))
-
-  def verbose[P, C <: Children, S, B]: ScalaComponent.Config[P, C, S, B] =
-    LogLifecycle.custom(componentName => lc =>
-      Callback.log(s"[$componentName] $lc", lc.raw))
+//  def short[P, C <: Children, S, B]: ScalaComponent.Config[P, C, S, B] =
+//    LogLifecycle.custom(componentName => lc =>
+//      Callback.log(s"[$componentName] ${lc.toString.replaceFirst("\\(.+", "")}"))
+//
+//  def default[P, C <: Children, S, B]: ScalaComponent.Config[P, C, S, B] =
+//    LogLifecycle.custom(componentName => lc =>
+//      Callback.log(s"[$componentName] $lc"))
+//
+//  def verbose[P, C <: Children, S, B]: ScalaComponent.Config[P, C, S, B] =
+//    LogLifecycle.custom(componentName => lc =>
+//      Callback.log(s"[$componentName] $lc", lc.raw))
 
 }

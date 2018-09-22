@@ -189,7 +189,7 @@ object PageRubberListInternal {
                             .initialStateFromProps { props => State( Array(), false, None ) }
                             .backend(new Backend(_))
                             .renderBackend
-                            .configure(LogLifecycleToServer.verbose)     // logs lifecycle events
+//                            .configure(LogLifecycleToServer.verbose)     // logs lifecycle events
                             .componentDidMount( scope => scope.backend.didMount)
                             .build
 }

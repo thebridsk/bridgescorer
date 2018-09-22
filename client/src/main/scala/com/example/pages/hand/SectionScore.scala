@@ -5,7 +5,6 @@ import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
 import com.example.data.bridge.ContractTricks
 import com.example.data.bridge._
-import japgolly.scalajs.react.extra.LogLifecycle
 import com.example.logging.LogLifecycleToServer
 import utils.logging.Logger
 import utils.logging.Level
@@ -83,6 +82,6 @@ object SectionScore {
                                     )
                                 )
                             })
-                            .configure(LogLifecycleToServer.verbose)     // logs lifecycle events
+//                            .configure(LogLifecycleToServer.verbose)     // logs lifecycle events
                             .build
 }

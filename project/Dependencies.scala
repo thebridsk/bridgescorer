@@ -44,15 +44,15 @@ object Dependencies {
 
   lazy val vSwaggerUI = "3.19.0"       // https://www.npmjs.com/package/swagger-ui-dist
   lazy val vScalajsdom = "0.9.6"       // http://mvnrepository.com/artifact/org.scala-js/scalajs-dom_sjs0.6_2.11
-  lazy val vScalaJsReact = "1.2.3"     // http://mvnrepository.com/artifact/com.github.japgolly.scalajs-react/core_sjs0.6_2.11
+  lazy val vScalaJsReact = "1.3.1"     // http://mvnrepository.com/artifact/com.github.japgolly.scalajs-react/core_sjs0.6_2.11
   lazy val vScalaCss = "0.5.3"         // http://mvnrepository.com/artifact/com.github.japgolly.scalacss/core_sjs0.6_2.11
 
-  lazy val vWebJarsReact = "16.5.1"    // http://mvnrepository.com/artifact/org.webjars/react
-  lazy val vReactWidgets = "4.4.4"     // http://mvnrepository.com/artifact/org.webjars.npm/react-widgets
+  lazy val vWebJarsReact = "16.5.2"    // http://mvnrepository.com/artifact/org.webjars/react
+  lazy val vReactWidgets = "4.4.5"     // http://mvnrepository.com/artifact/org.webjars.npm/react-widgets
   lazy val vWebJarsFlux = "3.1.3"      // http://mvnrepository.com/artifact/org.webjars/flux
   lazy val vGlobalize = "1.3.0"        // https://www.npmjs.com/package/globalize
   lazy val vCldr = "4.7.0"             // https://www.npmjs.com/package/cldr
-  lazy val vReactWidgetsMoment = "4.0.20"  // http://mvnrepository.com/artifact/org.webjars.npm/react-widgets-moment
+  lazy val vReactWidgetsMoment = "4.0.21"  // http://mvnrepository.com/artifact/org.webjars.npm/react-widgets-moment
   lazy val vMoment = "2.22.2"          // https://www.npmjs.com/package/moment
 
   lazy val vScalajsJquery = "0.9.2"  // http://mvnrepository.com/artifact/be.doeraene/scalajs-jquery_sjs0.6_2.11
@@ -74,18 +74,18 @@ object Dependencies {
 
   // jackson-module-scala usually updates a few days after the others are updated,
   // don't update until jackson-module-scala is updated
-  lazy val vJackson = "2.9.6"        // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core
+  lazy val vJackson = "2.9.7"        // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core
 
   // Selenium needs to be update to update to v23.0
   lazy val vGuavaJre = "26.0-jre"    // https://github.com/google/guava
 
-  lazy val vWebPack = "4.19.0"          // https://www.npmjs.com/package/webpack
+  lazy val vWebPack = "4.19.1"          // https://www.npmjs.com/package/webpack
 
   lazy val vJsDom = "11.12.0"           // https://www.npmjs.com/package/jsdom
 //  lazy val vExposeLoader = "0.7.3"     // https://www.npmjs.com/package/expose-loader
 
   // version 0.2.1 is hardcoded in sbt-scalajs-bundler
-//  lazy val vSourceMapLoader = "0.2.3"   // https://www.npmjs.com/package/source-map-loader
+//  lazy val vSourceMapLoader = "0.2.4"   // https://www.npmjs.com/package/source-map-loader
   lazy val vWebpackDevServer = "3.1.8"   // https://www.npmjs.com/package/webpack-dev-server
   lazy val vWebPackCli = "3.1.0"         // https://www.npmjs.com/package/webpack-cli
 
