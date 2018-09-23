@@ -81,13 +81,22 @@ object Dependencies {
 
   lazy val vWebPack = "4.19.1"          // https://www.npmjs.com/package/webpack
 
+  // sbt-scalajs-bundler does not support 12.0.0, 
+  // see https://github.com/scalacenter/scalajs-bundler/pull/265
+  // and https://github.com/scalacenter/scalajs-bundler/issues/261
   lazy val vJsDom = "11.12.0"           // https://www.npmjs.com/package/jsdom
 //  lazy val vExposeLoader = "0.7.3"     // https://www.npmjs.com/package/expose-loader
 
-  // version 0.2.1 is hardcoded in sbt-scalajs-bundler
-//  lazy val vSourceMapLoader = "0.2.4"   // https://www.npmjs.com/package/source-map-loader
+  // version 0.2.3 is hardcoded in sbt-scalajs-bundler
+  // current is 0.2.4
+  lazy val vSourceMapLoader = "0.2.3"   // https://www.npmjs.com/package/source-map-loader
+  // version 1.0.7 is hardcoded in sbt-scalajs-bundler
+  // current is 1.1.0
+  lazy val vConcatWithSourcemaps = "1.0.7"  // https://www.npmjs.com/package/concat-with-sourcemaps
+  
+  
   lazy val vWebpackDevServer = "3.1.8"   // https://www.npmjs.com/package/webpack-dev-server
-  lazy val vWebPackCli = "3.1.0"         // https://www.npmjs.com/package/webpack-cli
+  lazy val vWebPackCli = "3.1.1"         // https://www.npmjs.com/package/webpack-cli
 
   lazy val vFastClick = "1.0.6"       // https://www.npmjs.com/package/fastclick
 
@@ -251,7 +260,8 @@ object Dependencies {
 
   val bridgeScorerDevNpmDeps = Seq(
       "webpack" -> vWebPack,
-//      "source-map-loader" -> vSourceMapLoader,
+      "source-map-loader" -> vSourceMapLoader,
+      "concat-with-sourcemaps" -> vConcatWithSourcemaps
 //      "expose-loader" -> vExposeLoader
   )
 
