@@ -13,7 +13,7 @@ val vJGit = "5.1.1.201809181055-r" // https://mvnrepository.com/artifact/org.ecl
 
 val vCrossProject = "0.6.0"        // https://github.com/portable-scala/sbt-crossproject
 val vScalaJSDefault = "0.6.25"     // http://www.scala-js.org/
-val vSbtAssembly = "0.14.7"        // https://github.com/sbt/sbt-assembly
+val vSbtAssembly = "0.14.8"        // https://github.com/sbt/sbt-assembly
 val vSbtGit = "1.0.0"              // https://github.com/sbt/sbt-git
 val vSbtSCoverage = "1.5.1"        // https://github.com/scoverage/sbt-scoverage
 val vSbtBuildInfo = "0.9.0"        // https://github.com/sbt/sbt-buildinfo
