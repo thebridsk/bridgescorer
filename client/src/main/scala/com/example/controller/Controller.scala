@@ -140,10 +140,21 @@ object Controller {
       d
   }
 
+  val useRest: Boolean = true;
+
   def updateHand( dup: MatchDuplicate, hand: DuplicateHand ) = {
     BridgeDispatcher.updateDuplicateHand(dup.id, hand)
-    val msg = Protocol.UpdateDuplicateHand(dup.id, hand)
-    getDuplexPipe().send(msg)
+    if (useRest) {
+      val resource = RestClientDuplicate.boardResource(dup.id).handResource(hand.board)
+      resource.update(hand.id, hand).recordFailure().onComplete { t =>
+        if (t.isFailure) {
+          Alerter.alert("Failure updating hand on server")
+        }
+      }
+    } else {
+      val msg = Protocol.UpdateDuplicateHand(dup.id, hand)
+      getDuplexPipe().send(msg)
+    }
     logger.info("Update hand ("+dup.id+","+hand.board+","+hand.id+")")
   }
 
@@ -156,8 +167,17 @@ object Controller {
 
   def updateTeam( dup: MatchDuplicate, team: Team ) = {
     BridgeDispatcher.updateTeam(dup.id, team)
-    val msg = Protocol.UpdateDuplicateTeam(dup.id, team)
-    getDuplexPipe().send(msg)
+    if (useRest) {
+      val resource = RestClientDuplicate.teamResource(dup.id)
+      resource.update(team.id, team).recordFailure().onComplete { t =>
+        if (t.isFailure) {
+          Alerter.alert("Failure updating team on server")
+        }
+      }
+    } else {
+      val msg = Protocol.UpdateDuplicateTeam(dup.id, team)
+      getDuplexPipe().send(msg)
+    }
     logger.info("Update team ("+dup.id+","+team+")")
   }
 
