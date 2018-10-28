@@ -12,6 +12,6 @@
 </mapAttribute>
 <booleanAttribute key="org.eclipse.jdt.launching.ATTR_USE_START_ON_FIRST_THREAD" value="true"/>
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="com.example.Server"/>
-<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="--logfile logs/server.%u.log start --store ./store --cache 0s --ipad debug"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="--logfile logs/server.%d.%u.log start --store ./store --cache 0s --ipad debug"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="bridgescorer-server"/>
 </launchConfiguration>
