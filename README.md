@@ -96,7 +96,7 @@ The `ws` directory is the eclipse workspace.
 - [SBT 1.1.5](http://www.scala-sbt.org/)
 - [Chrome](https://www.google.com/chrome/)
 - [ChromeDriver](https://sites.google.com/a/chromium.org/chromedriver/), be sure to match the version of Chrome.
-- [Hugo](https://gohugo.io/), at least version 0.40.3
+- [Hugo](https://gohugo.io/), at least version 0.49.2
 
 Optional:
 - [Eclipse Oxygen](https://eclipse.org/)
