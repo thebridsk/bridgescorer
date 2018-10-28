@@ -51,7 +51,7 @@ object TestStartLogging {
       loggingInitialized = true
       val logfilenameprefix = Option(logFilenamePrefix).getOrElse( getProp(logFilePrefix, logFilePrefixDefault ) )
       Config.configureFromResource(Config.getPackageNameAsResource(getClass)+"logging.properties", getClass.getClassLoader)
-      val handler = new FileHandler(s"${logfilenameprefix}.%u.log")
+      val handler = new FileHandler(s"${logfilenameprefix}.%d.%u.log")
       handler.setFormatter( new FileFormatter )
       handler.setLevel(Level.ALL)
       Logger.getLogger("").addHandler(handler)
