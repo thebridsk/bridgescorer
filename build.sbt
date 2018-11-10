@@ -704,8 +704,8 @@ lazy val `bridgescorer-client` = project.in(file("client")).
 //   e.g., `jsEnv := new org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv`.
 //     requiresDOM in Test := true,
 //     ^    
-    
-    requiresDOM in Test := true,
+    requireJsDomEnv in Test := true,
+//    requiresDOM in Test := true,
 //    jsDependencies += RuntimeDOM,      // for testing in node.js and scala.js 0.6.13 https://www.scala-js.org/news/2016/10/17/announcing-scalajs-0.6.13/
 
     // this is for SBT 1.0
