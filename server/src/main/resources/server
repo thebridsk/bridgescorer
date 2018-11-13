@@ -26,5 +26,5 @@ if [[ $jarcount -ne "1" ]] ; then
   exit 1
 fi
 
-java -jar bridgescorer-server-assembly-*.jar --logfile server.%u.log start --store ./store --port 8080 --browser --diagnostics .
+java -jar bridgescorer-server-assembly-*.jar --logfile server.%d.%u.log start --store ./store --port 8080 --browser --diagnostics .
 

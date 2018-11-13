@@ -23,7 +23,7 @@ if not ".%1" == "." goto help
 goto startserver
 
 :startserver
-set xxxargs=--logfile server.%%u.log start --store ./store --browser --diagnostics .
+set xxxargs=--logfile server.%%d.%%u.log start --store ./store --browser --diagnostics .
 goto runcmd
 
 :shutdown
