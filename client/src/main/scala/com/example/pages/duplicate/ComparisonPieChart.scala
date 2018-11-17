@@ -77,11 +77,11 @@ object ComparisonPieChart {
 
   def description = {
     TagMod(
-      "The ",<.b("Aggressive")," and ",<.b("Passive")," columns are when only one side bids at both tables.",
+      "The ",<.b("Aggressive")," and ",<.b("Passive")," columns are when the same side is declarer at both tables.",
       <.br,
       "The ",<.b("Competitive Aggressive")," and ",<.b("Competitive Passive")," columns",
       <.br,
-      " are when the contracts are made from different sides at the tables.",
+      " are when the contracts are declared from different sides at the tables.",
       <.br,
       "The Aggressive is the higher contract, Passive is the lower contract",
       <.br,
@@ -107,7 +107,7 @@ object ComparisonPieChart {
       PieChart( 15, 1.0::Nil, ColorNeutral::Nil, attrs=Some(^.display := "inline-block") ),
       <.ul(
         <.li("no difference, Example: both contracts were partial"),
-        <.li("contracts were played from different sides ending with same score, 1N made 3, 3C down 3")
+        <.li("contracts were played from different sides ending with same score, 1N made 3, 3C down 2")
       )
     )
   }
