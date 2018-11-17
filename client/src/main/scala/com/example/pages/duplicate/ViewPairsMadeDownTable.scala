@@ -195,6 +195,9 @@ object ViewPairsMadeDownTableInternal {
       new PercentColumn( "TookDownPct", "% Took Down" ) {
         def getValue( pd: PairData ) = pd.details.map( d => d.percentTookDown ).getOrElse(0.0)
       },
+      new PercentColumn( "GoodResult", "% Good" ) {
+        def getValue( pd: PairData ) = pd.details.map( d => d.percentTookDown*d.percentDefended/100+d.percentMade*d.percentDeclared/100 ).getOrElse(0.0)
+      },
       new IntColumn( "Total", "Total" ) {
         def getValue( pd: PairData ) = pd.details.map( d => d.total ).getOrElse(0)
       }
@@ -247,7 +250,7 @@ object ViewPairsMadeDownTableInternal {
             Table(
                 cols,
                 rows,
-                Some("DeclarerPct"),
+                Some("GoodResult"),
                 additionalRows = Some(additionalRows _),
                 totalRows = totals,
                 caption = Some( TagMod(if (props.showPairs) "Pairs Hand Results" else "People Hand Results") )
