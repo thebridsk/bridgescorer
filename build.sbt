@@ -41,6 +41,8 @@ import MyEclipseTransformers._
 
 import scala.language.postfixOps
 
+ensimeScalaVersion in ThisBuild := verScalaVersion
+
 enablePlugins(GitVersioning, GitBranchPrompt)
 EclipseKeys.skipParents in ThisBuild := false
 
@@ -66,13 +68,13 @@ lazy val onlyBuildDebug = sys.props.get("OnlyBuildDebug").
 lazy val inTravis = sys.props.get("TRAVIS_BUILD_NUMBER").
                      orElse(sys.env.get("TRAVIS_BUILD_NUMBER")).
                      isDefined
-                     
+
 val buildForHelpOnly = sys.props.get("BUILDFORHELPONLY").
                          orElse(sys.env.get("BUILDFORHELPONLY")).
                            isDefined
 
 val testToRunNotTravis = "com.example.test.AllSuites"
-val testToRunBuildForHelpOnly = "com.example.test.selenium.DuplicateTestPages" 
+val testToRunBuildForHelpOnly = "com.example.test.selenium.DuplicateTestPages"
 val testToRunInTravis = "com.example.test.TravisAllSuites"
 
 lazy val testToRun = if (inTravis) {
@@ -215,10 +217,10 @@ lazy val bridgescorer: Project = project.in(file(".")).
 
     test in assembly := {}, // test in (`bridgescorer-server`, Test),
     test in (Test,assembly) := {}, // { val x = assembly.value },
-    
+
     assemblyJarName in (assembly) := s"${name.value}-server-assembly-${version.value}.jar",  // s"${name.value}-server-assembly-${version.value}.jar",
     assemblyJarName in (Test, assembly) := s"${name.value}-test-${version.value}.jar",
-    
+
     assembly := {
       val log = streams.value.log
       val x = (assembly).value
@@ -273,19 +275,19 @@ lazy val bridgescorer: Project = project.in(file(".")).
         oldStrategy(x)
     },
 
-    assemblyExcludedJars in (Test,assembly) := { 
+    assemblyExcludedJars in (Test,assembly) := {
       val log = streams.value.log
       val ccp = (fullClasspath in (Compile,assembly)).value.map { _.data.getName }
       log.info("fullClasspath in (Compile,assembly): "+ccp)
       val cp = (fullClasspath in (Test,assembly)).value
       log.info("fullClasspath in (Test,assembly): "+ccp)
-      cp filter { x => 
+      cp filter { x =>
         val rc = ccp.contains(x.data.getName)
         log.info("  "+(if (rc) "Excluding " else "Using     ")+x.data.getName)
         rc
       }
     },
-    
+
     mainClass in Test := Some("org.scalatest.tools.Runner"),
 
     allassembly := {
@@ -304,7 +306,7 @@ lazy val bridgescorer: Project = project.in(file(".")).
       val c = clean.value
       val ch = (clean in help).value
     },
-    
+
 
     prereqintegrationtests := {
       val x = (assembly in Compile).value
@@ -373,7 +375,7 @@ lazy val bridgescorer: Project = project.in(file(".")).
                                    Nil
         val inDir = baseDirectory.value
         log.info( s"""Running in directory ${inDir}: java ${jvmargs.mkString(" ")}""" )
-        BridgeServer.runjava( log, jvmargs, 
+        BridgeServer.runjava( log, jvmargs,
                               Some(baseDirectory.value) )
       }
     },
@@ -411,7 +413,7 @@ lazy val bridgescorer: Project = project.in(file(".")).
                                    Nil
         val inDir = baseDirectory.value
         log.info( s"""Running in directory ${inDir}: java ${jvmargs.mkString(" ")}""" )
-        BridgeServer.runjava( log, jvmargs, 
+        BridgeServer.runjava( log, jvmargs,
                               Some(baseDirectory.value) )
       }
     },
@@ -428,7 +430,7 @@ lazy val bridgescorer: Project = project.in(file(".")).
       import java.io.File
       sys.props("user.home") match {
         case homedir if (homedir!=null) =>
-          val configfile = new File( homedir, "bridgescorer/config.properties") 
+          val configfile = new File( homedir, "bridgescorer/config.properties")
           if (configfile.exists()) {
             import java.util.Properties
             import java.io.InputStreamReader
@@ -486,7 +488,7 @@ lazy val bridgescorer: Project = project.in(file(".")).
 
           IO.listFiles(distdir, GlobFilter("*.jar")).foreach { jar => {
             log.info( "Moving jar to save: "+jar )
-            IO.move( jar, new File( new File( jar.getParentFile, "save" ), jar.getName ) ) 
+            IO.move( jar, new File( new File( jar.getParentFile, "save" ), jar.getName ) )
           }}
 
           log.info("Publishing "+assemblyjar+" to "+distdir)
@@ -502,7 +504,7 @@ lazy val bridgescorer: Project = project.in(file(".")).
     },
 
     mypublish := Def.sequential(
-                         disttests in Distribution, 
+                         disttests in Distribution,
                          mypublishcopy in Distribution
                         ).value
 
@@ -576,7 +578,7 @@ lazy val `bridgescorer-shared` = crossProject(JSPlatform, JVMPlatform).in(file("
     //   [info]   org.eclipse.jetty:jetty-websocket:phantom-js-jetty : 8.1.16.v20140903 -> 8.1.19.v20160209
 //    dependencyUpdatesExclusions := moduleFilter(organization = "org.eclipse.jetty")
     dependencyUpdatesFilter -= moduleFilter(organization = "org.eclipse.jetty")
-    
+
   )
 
 lazy val sharedJS: Project = `bridgescorer-shared`.js.
@@ -626,18 +628,18 @@ lazy val `bridgescorer-rotation` = crossProject(JSPlatform, JVMPlatform).in(file
     //   [info]   org.eclipse.jetty:jetty-websocket:phantom-js-jetty : 8.1.16.v20140903 -> 8.1.19.v20160209
 //    dependencyUpdatesExclusions := moduleFilter(organization = "org.eclipse.jetty")
     dependencyUpdatesFilter -= moduleFilter(organization = "org.eclipse.jetty"),
-    
+
     testOptions in Test += {
       if (inTravis) println("Not running JS tests in bridgescorer-rotation")
       Tests.Filter(s => !inTravis)
     }
-    
+
   )
 
 lazy val rotationJS: Project = `bridgescorer-rotation`.js
 lazy val rotationJVM = `bridgescorer-rotation`.jvm
 
-// stuff to have dependencies on other projects 
+// stuff to have dependencies on other projects
 lazy val utilities = RootProject(file("utilities"))
 
 lazy val `bridgescorer-client` = project.in(file("client")).
@@ -658,7 +660,7 @@ lazy val `bridgescorer-client` = project.in(file("client")).
     webpackCliVersion := vWebPackCli,
     version in startWebpackDevServer := vWebpackDevServer,
     version in installJsdom := vJsDom,
-    
+
     scalaJSUseMainModuleInitializer := true,
 
     buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion),
@@ -683,12 +685,12 @@ lazy val `bridgescorer-client` = project.in(file("client")).
     // no tests, npm stuff not working properly with tests
     //   https://github.com/scalacenter/scalajs-bundler/issues/83
 //    testOptions in Test += Tests.Filter(s => { println("TestOption: "+s); false}),
-    testOptions in Test += Tests.Filter(s => { 
+    testOptions in Test += Tests.Filter(s => {
       if (s == "com.example.test.AllUnitTests") {
-        println("Using Test:    "+s) 
+        println("Using Test:    "+s)
         true
       } else {
-        println("Ignoring Test: "+s); 
+        println("Ignoring Test: "+s);
         false
       }
     }),
@@ -697,13 +699,13 @@ lazy val `bridgescorer-client` = project.in(file("client")).
     version in webpack := vWebPack,
     version in installJsdom := vJsDom,
 
-// warning: value requiresDOM in object AutoImport is deprecated (since 0.6.20): 
-//   Requesting a DOM-enabled JS env with `jsDependencies += RuntimeDOM` 
-//   or `requiresDOM := true` will not be supported in Scala.js 1.x. 
-//   Instead, explicitly select a suitable JS with `jsEnv`, 
+// warning: value requiresDOM in object AutoImport is deprecated (since 0.6.20):
+//   Requesting a DOM-enabled JS env with `jsDependencies += RuntimeDOM`
+//   or `requiresDOM := true` will not be supported in Scala.js 1.x.
+//   Instead, explicitly select a suitable JS with `jsEnv`,
 //   e.g., `jsEnv := new org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv`.
 //     requiresDOM in Test := true,
-//     ^    
+//     ^
     requireJsDomEnv in Test := true,
 //    requiresDOM in Test := true,
 //    jsDependencies += RuntimeDOM,      // for testing in node.js and scala.js 0.6.13 https://www.scala-js.org/news/2016/10/17/announcing-scalajs-0.6.13/
@@ -767,6 +769,7 @@ lazy val `bridgescorer-client` = project.in(file("client")).
 
 lazy val help = project.in(file("help")).
   settings(
+    scalaVersion  := verScalaVersion,
     hugo := {
       val setup = hugosetup.value
       val log = streams.value.log
@@ -774,7 +777,7 @@ lazy val help = project.in(file("help")).
       val targ = new File(target.value, "help" )
       Hugo.run(log, bd, targ)
     },
-    
+
     hugosetup := {
       {
         val testgen = new File( baseDirectory.value+"/../server/target/docs" )
@@ -783,7 +786,7 @@ lazy val help = project.in(file("help")).
         MyFileUtils.copyDirectory( testgen, gen, "png", 2 )
       }
     },
-    
+
     hugoWithTest := Def.sequential( hugosetupWithTest, hugo ).value,
 
     hugosetupWithTest := Def.sequential( test in Test in `bridgescorer-server`, hugosetup ).value,
@@ -793,7 +796,7 @@ lazy val help = project.in(file("help")).
       MyFileUtils.deleteDirectory( targ, None )
       val gen = new File( baseDirectory.value, "docs/static/images/gen" ).toPath
       MyFileUtils.deleteDirectory( gen, Some("png") )
-      
+
     }
   )
 
@@ -833,13 +836,13 @@ lazy val `bridgescorer-server`: Project = project.in(file("server")).
 
     test in assembly := {},
     test in (Test,assembly) := {}, // { val x = assembly.value },
-    
+
     assemblyJarName in (assembly) := s"${name.value}-assembly-${version.value}.jar",
     assemblyJarName in (Test, assembly) := s"${name.value}-test-${version.value}.jar",
-    
+
     webassembly := { val x = (assembledMappings in assembly).value },
-    
-    
+
+
     assembly := {
       val log = streams.value.log
       val x = (assembly).value
@@ -847,7 +850,7 @@ lazy val `bridgescorer-server`: Project = project.in(file("server")).
       log.info( s"SHA-256: ${sha}" )
       x
     },
-    
+
     assembly in Test := {
       val log = streams.value.log
       val x = (assembly in Test).value
@@ -862,12 +865,12 @@ lazy val `bridgescorer-server`: Project = project.in(file("server")).
 
 //    testOptions in Test += Tests.Argument(TestFrameworks.ScalaTest, "-oG"),
 
-    testOptions in Test += Tests.Filter(s => { 
+    testOptions in Test += Tests.Filter(s => {
       if (s == testToRun) {
-        println("Using Test:    "+s) 
+        println("Using Test:    "+s)
         true
       } else {
-        println("Ignoring Test: "+s); 
+        println("Ignoring Test: "+s);
         false
       }
     }),
@@ -911,17 +914,17 @@ lazy val `bridgescorer-server`: Project = project.in(file("server")).
 
 //    pipelineStages := Seq(digest, gzip),
 
-//    (resourceGenerators in Compile) <+= 
+//    (resourceGenerators in Compile) <+=
 //      (resourceManaged in Compile, baseDirectory in ThisBuild) map { (dir,base) =>
 //        IO.copy(
-//          Seq( 
+//          Seq(
 //           ( base / "client" / "target" / "js" / "js" / "bridgescorer-js-opt.js" , dir / "js" / "bridgescorer-js-opt.js"),
 //           ( base / "client" / "target" / "js" / "js" / "bridgescorer-js-fastopt.js", dir / "js" / "bridgescorer-js-fastopt.js"),
 //           ( base / "client" / "target" / "js" / "js" / "bridgescorer-js-jsdeps.js", dir / "js" / "bridgescorer-js-jsdeps.js")
 ////           ( base / "client" / "target" / "js" / "js" / "scalajs-launcher.js", dir / "js" / "scalajs-launcher.js")
 //          ),
 //          /* overwrite */ false, /* preserveLastModified */ false )
-//        Seq( 
+//        Seq(
 //          dir / "js" / "bridgescorer-js-opt.js",
 //          dir / "js" / "bridgescorer-js-fastopt.js",
 //          dir / "js" / "bridgescorer-js-jsdeps.js"
@@ -946,7 +949,7 @@ lazy val `bridgescorer-server`: Project = project.in(file("server")).
 
 //    watchSources <++= (watchSources in BridgeScorerJS)
 
-//    assemblyExcludedJars in assembly := { 
+//    assemblyExcludedJars in assembly := {
 //      val cp = (fullClasspath in assembly).value
 //      cp filter {_.data.getName == "compile-0.1.0.jar"}
 //    },
@@ -960,13 +963,13 @@ lazy val `bridgescorer-server`: Project = project.in(file("server")).
         oldStrategy(x)
     },
 
-    assemblyExcludedJars in (Test,assembly) := { 
+    assemblyExcludedJars in (Test,assembly) := {
       val log = streams.value.log
       val ccp = (fullClasspath in (Compile,assembly)).value.map { _.data.getName }
       log.info("fullClasspath in (Compile,assembly): "+ccp)
       val cp = (fullClasspath in (Test,assembly)).value
       log.info("fullClasspath in (Test,assembly): "+ccp)
-      cp filter { x => 
+      cp filter { x =>
         val rc = ccp.contains(x.data.getName)
         log.info("  "+(if (rc) "Excluding " else "Using     ")+x.data.getName)
         rc
@@ -984,13 +987,13 @@ lazy val `bridgescorer-server`: Project = project.in(file("server")).
 
     prereqintegrationtests := Def.sequential(
 //      test in Test in `bridgescorer-server`,
-//      hugo in help, 
-      assembly in Compile, 
+//      hugo in help,
+      assembly in Compile,
       assembly in Test
     ).value,
 
     prereqintegrationtests := {
-      val x = (assembly in Compile).value 
+      val x = (assembly in Compile).value
       val y = (assembly in Test).value
     },
 
@@ -1056,7 +1059,7 @@ lazy val `bridgescorer-server`: Project = project.in(file("server")).
                                    Nil
         val inDir = baseDirectory.value
         log.info( s"""Running in directory ${inDir}: java ${jvmargs.mkString(" ")}""" )
-        BridgeServer.runjava( log, jvmargs, 
+        BridgeServer.runjava( log, jvmargs,
                               Some(baseDirectory.value) )
       }
     },
@@ -1094,7 +1097,7 @@ lazy val `bridgescorer-server`: Project = project.in(file("server")).
                                    Nil
         val inDir = baseDirectory.value
         log.info( s"""Running in directory ${inDir}: java ${jvmargs.mkString(" ")}""" )
-        BridgeServer.runjava( log, jvmargs, 
+        BridgeServer.runjava( log, jvmargs,
                               Some(baseDirectory.value) )
       }
     },
@@ -1111,7 +1114,7 @@ lazy val `bridgescorer-server`: Project = project.in(file("server")).
       import java.io.File
       sys.props("user.home") match {
         case homedir if (homedir!=null) =>
-          val configfile = new File( homedir, "bridgescorer/config.properties") 
+          val configfile = new File( homedir, "bridgescorer/config.properties")
           if (configfile.exists()) {
             import java.util.Properties
             import java.io.InputStreamReader
@@ -1169,7 +1172,7 @@ lazy val `bridgescorer-server`: Project = project.in(file("server")).
 
           IO.listFiles(distdir, GlobFilter("*.jar")).foreach { jar => {
             log.info( "Moving jar to save: "+jar )
-            IO.move( jar, new File( new File( jar.getParentFile, "save" ), jar.getName ) ) 
+            IO.move( jar, new File( new File( jar.getParentFile, "save" ), jar.getName ) )
           }}
 
           log.info("Publishing "+assemblyjar+" to "+distdir)
@@ -1185,7 +1188,7 @@ lazy val `bridgescorer-server`: Project = project.in(file("server")).
     },
 
     mypublish := Def.sequential(
-                         disttests in Distribution, 
+                         disttests in Distribution,
                          mypublishcopy in Distribution
                         ).value
   )
