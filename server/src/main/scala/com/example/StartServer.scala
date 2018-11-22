@@ -355,7 +355,7 @@ private class StartServer {
 
     startFuture.onComplete( _ match {
       case Success(_) =>
-        if (optionBrowser.supplied) {
+        if (optionBrowser.isSupplied) {
           val hostForBrowser = optionLoopback.toOption.filter( lb => lb ).map(lb => "loopback").getOrElse("localhost")
           Browser.start(getURL(hostForBrowser))
         }

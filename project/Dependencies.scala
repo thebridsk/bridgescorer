@@ -42,17 +42,17 @@ object Dependencies {
 //  lazy val vSwaggerScalaModule="1.0.4" // http://mvnrepository.com/artifact/io.swagger/swagger-scala-module_2.11
   lazy val vSwagger="1.5.21"           // http://mvnrepository.com/artifact/io.swagger/swagger-core
 
-  lazy val vSwaggerUI = "3.19.2"       // https://www.npmjs.com/package/swagger-ui-dist
+  lazy val vSwaggerUI = "3.20.0"       // https://www.npmjs.com/package/swagger-ui-dist
   lazy val vScalajsdom = "0.9.6"       // http://mvnrepository.com/artifact/org.scala-js/scalajs-dom_sjs0.6_2.11
   lazy val vScalaJsReact = "1.3.1"     // http://mvnrepository.com/artifact/com.github.japgolly.scalajs-react/core_sjs0.6_2.11
   lazy val vScalaCss = "0.5.3"         // http://mvnrepository.com/artifact/com.github.japgolly.scalacss/core_sjs0.6_2.11
 
-  lazy val vWebJarsReact = "16.6.1"    // http://mvnrepository.com/artifact/org.webjars/react
-  lazy val vReactWidgets = "4.4.6"     // http://mvnrepository.com/artifact/org.webjars.npm/react-widgets
+  lazy val vWebJarsReact = "16.6.3"    // http://mvnrepository.com/artifact/org.webjars/react
+  lazy val vReactWidgets = "4.4.7"     // http://mvnrepository.com/artifact/org.webjars.npm/react-widgets
   lazy val vWebJarsFlux = "3.1.3"      // http://mvnrepository.com/artifact/org.webjars/flux
   lazy val vGlobalize = "1.3.0"        // https://www.npmjs.com/package/globalize
   lazy val vCldr = "4.7.0"             // https://www.npmjs.com/package/cldr
-  lazy val vReactWidgetsMoment = "4.0.22"  // http://mvnrepository.com/artifact/org.webjars.npm/react-widgets-moment
+  lazy val vReactWidgetsMoment = "4.0.23"  // http://mvnrepository.com/artifact/org.webjars.npm/react-widgets-moment
   lazy val vMoment = "2.22.2"          // https://www.npmjs.com/package/moment
 
   lazy val vScalajsJquery = "0.9.2"  // http://mvnrepository.com/artifact/be.doeraene/scalajs-jquery_sjs0.6_2.11
@@ -65,10 +65,10 @@ object Dependencies {
   lazy val vScalatest = "3.0.5"      // http://mvnrepository.com/artifact/org.scalatest/scalatest_2.11
   lazy val vJunit = "4.12"           // http://mvnrepository.com/artifact/junit/junit
 
-  lazy val vSelenium = "3.14.0"      // http://mvnrepository.com/artifact/org.seleniumhq.selenium/selenium-java
+  lazy val vSelenium = "3.141.59"    // http://mvnrepository.com/artifact/org.seleniumhq.selenium/selenium-java
   lazy val vLog4js = "1.4.15"        // http://mvnrepository.com/artifact/org.webjars/log4javascript
   lazy val vScalaArm = "2.0"         // http://mvnrepository.com/artifact/com.jsuereth/scala-arm_2.11
-  lazy val vScallop = "3.1.3"        // http://mvnrepository.com/artifact/org.rogach/scallop_2.11
+  lazy val vScallop = "3.1.5"        // http://mvnrepository.com/artifact/org.rogach/scallop_2.11
   lazy val vSlf4j = "1.7.25"         // https://mvnrepository.com/artifact/org.slf4j/slf4j-jdk14
   lazy val vPlayJson = "2.6.10"      // https://mvnrepository.com/artifact/com.typesafe.play/play-json_2.12
 
@@ -77,9 +77,9 @@ object Dependencies {
   lazy val vJackson = "2.9.7"        // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core
 
   // Selenium needs to be update to update to v23.0
-  lazy val vGuavaJre = "27.0-jre"    // https://github.com/google/guava
+  lazy val vGuavaJre = "27.0.1-jre"    // https://github.com/google/guava
 
-  lazy val vWebPack = "4.25.1"          // https://www.npmjs.com/package/webpack
+  lazy val vWebPack = "4.26.0"          // https://www.npmjs.com/package/webpack
 
   // sbt-scalajs-bundler does not support 12.0.0,
   // see https://github.com/scalacenter/scalajs-bundler/pull/265

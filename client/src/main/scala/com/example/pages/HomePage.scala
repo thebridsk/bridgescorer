@@ -334,10 +334,17 @@ object HomePage {
     def gotoPage( page: AppPage ) = scope.withEffectsImpure.props.routeCtl.set(page).runNow()
 
     /**
-     * Sets the text in the working field.  only call when not doing another modState.
+     * Sets the text in the working field.
+     * Only call when not doing another modState or from a callback from a non GUI item.
      * @param text string to show as an error
      */
     def setPopupText( text: String, cb: Callback = Callback.empty ) = scope.withEffectsImpure.modState( s => s.copy( working = Some(text) ), cb )
+
+    /**
+     * Sets the text in the working field.
+     * @param text string to show as an error
+     */
+    def setPopupTextCB( text: String, cb: Callback = Callback.empty ) = scope.modState( s => s.copy( working = Some(text) ), cb )
 
     val doShutdown = scope.modState( s => s.copy(working = Some("Sending shutdown command to server")), Callback {
 
@@ -367,10 +374,6 @@ object HomePage {
       })
     })
 
-    def errorCB( result: RestResult[MatchChicago] ): Unit = {
-      scope.modState( s => s.copy(working=Some("Unable to contact server")))
-    }
-
     val resultChicago = ResultHolder[MatchChicago]()
     val resultShutdown = ResultHolder[WrapperXMLHttpRequest]()
 
@@ -384,7 +387,7 @@ object HomePage {
     import scala.concurrent.ExecutionContext.Implicits.global
 
     val newChicago = {
-      scope.modState( s => s.copy(working=Some("Working on creating a new Chicago match")), Callback {
+      setPopupTextCB("Working on creating a new Chicago match", Callback {
         val result = ChicagoController.createMatch()
         resultChicago.set(result)
         result.foreach { created =>
@@ -402,7 +405,7 @@ object HomePage {
     }
 
     val newRubber =
-      scope.modState( s => s.copy(working=Some("Working on creating a new rubber match")), Callback {
+      setPopupTextCB("Working on creating a new rubber match", Callback {
         val result = RubberController.createMatch()
         result.foreach { created =>
           logger.info(s"Got new rubber ${created.id}.  HomePage.mounted=${mounted}")
@@ -418,7 +421,7 @@ object HomePage {
       })
 
     val newDuplicate =
-      setPopupText("Working on creating a new duplicate match", Callback {
+      setPopupTextCB("Working on creating a new duplicate match", Callback {
         val result = Controller.createMatchDuplicate().recordFailure()
         result.foreach { created=>
           logger.info("Got new duplicate match ${created.id}.  HomePage.mounted=${mounted}")

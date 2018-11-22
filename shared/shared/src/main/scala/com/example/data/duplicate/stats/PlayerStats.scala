@@ -54,10 +54,10 @@ object ContractType {
     ct match {
       case ContractTypePassed => 0
       case ContractTypePartial => 1
-      case ContractTypeDoubledToGame => 1
-      case ContractTypeGame => 2
-      case ContractTypeSlam => 3
-      case ContractTypeGrandSlam => 4
+      case ContractTypeDoubledToGame => 2
+      case ContractTypeGame => 3
+      case ContractTypeSlam => 4
+      case ContractTypeGrandSlam => 5
       case _ => -1
     }
   }
