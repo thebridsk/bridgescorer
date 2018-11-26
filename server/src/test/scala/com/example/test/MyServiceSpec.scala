@@ -31,6 +31,7 @@ import com.example.service.ShutdownHook
 import scala.concurrent.Future
 import scala.concurrent.Promise
 import com.example.data.websocket.DuplexProtocol.LogEntryV2
+import com.example.test.selenium.TestServer
 
 class MyServiceSpec extends FlatSpec with ScalatestRouteTest with MustMatchers with MyService {
   val restService = new BridgeServiceTesting
@@ -51,6 +52,8 @@ class MyServiceSpec extends FlatSpec with ScalatestRouteTest with MustMatchers w
 
   val version = ResourceFinder.htmlResources.version
 
+  val itOrIgnore = if (TestServer.isProductionPage) ignore else it
+
   it should "find index.html as a resource" in {
     val theClassLoader = getClass.getClassLoader
     val theResource = theClassLoader.getResource("META-INF/resources/webjars/bridgescorer-server/"+version+"/index.html")
@@ -64,6 +67,7 @@ class MyServiceSpec extends FlatSpec with ScalatestRouteTest with MustMatchers w
   }
 
   it should "find bridgescorer-client-fastopt.js as a resource" in {
+    assume(!TestServer.isProductionPage)
     val theClassLoader = getClass.getClassLoader
     val theResource = theClassLoader.getResource("META-INF/resources/webjars/bridgescorer-server/"+version+"/bridgescorer-client-fastopt.js")
     theResource must not be null
@@ -103,13 +107,17 @@ class MyServiceSpec extends FlatSpec with ScalatestRouteTest with MustMatchers w
   }
 
   it should "return the index-fastopt.html to /html/index-fastopt.html" in {
+    assume(!TestServer.isProductionPage)
     Get("/public/index-fastopt.html") ~> addHeader(remoteAddress) ~> Route.seal { myRouteWithLogging } ~> check {
       status mustBe OK
       responseAs[String] must include regex """(?s)<html>.*bridgescorer-client-fastopt\.js.*</html>"""
     }
+
   }
 
   it should "return bridgescorer-client-fastopt.js to /public/bridgescorer-client-fastopt.js" in {
+    assume(!TestServer.isProductionPage)
+
     Get("/public/bridgescorer-client-fastopt.js") ~> addHeader(remoteAddress) ~> Route.seal { myRouteWithLogging } ~> check {
       status mustBe OK
       responseAs[String] must include regex "(?s).*function.*"
