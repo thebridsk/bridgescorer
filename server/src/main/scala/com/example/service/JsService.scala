@@ -79,9 +79,14 @@ trait JsService /* extends HttpService */ {
   }
 
   {
-    val res = htmlResources.baseName+"/bridgescorer-client-fastopt.js"
+    val res = htmlResources.baseName+"/bridgescorer-client-opt.js"
     val url = getClass.getClassLoader.getResource(res)
-    logger.info("Found resource "+res+" at "+url.toString())
+    if (url != null) logger.info("Found resource "+res+" at "+url.toString())
+    else {
+      val res1 = htmlResources.baseName+"/bridgescorer-client-fastopt.js"
+      val url1 = getClass.getClassLoader.getResource(res)
+      if (url1 != null) logger.info("Found resource "+res1+" at "+url1.toString())
+    }
   }
 
 
@@ -129,10 +134,11 @@ trait JsService /* extends HttpService */ {
     pathPrefix("help") {
       respondWithHeaders(cacheHeaders:_*) {
         helpResources.map { helpres =>
-          extractUnmatchedPath { path =>
-            val p = Uri.Path("help"+path.toString())
+          extractUnmatchedPath { ap =>
+            val p = if (ap.startsWithSlash) ap.tail else ap
             logger.info(s"Looking for help file "+p)
             val pa = if (p.toString.endsWith("/")) p+"index.html" else p
+
             safeJoinPaths(helpres.baseName+"/", pa, separator = '/') match {
               case ""           => reject
               case resourceName =>

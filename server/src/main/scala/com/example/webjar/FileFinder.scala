@@ -44,20 +44,22 @@ class FileFinder( groupid: String, artifactid: String, versionoverride: Option[S
    * @param res the resource name in the webjar
    * @return None is returned if not found, Some(name) is returned if found.
    */
-  def getResource( res: String ): Option[String] = {
-    if (checkName(res)) {
-      val s = resourceName(res)
-      val url = loader.getResource(s)
-      if (url != null) Some(s)
+  def getResource( reslist: String* ): Option[String] = {
+    for (res <- reslist) {
+      if (checkName(res)) {
+        val s = resourceName(res)
+        val url = loader.getResource(s)
+        if (url != null) return Some(s)
+        else {
+          FileFinder.log.fine("Unable to find resource in classpath: "+s)
+        }
+      }
       else {
-        FileFinder.log.warning("Unable to find resource in classpath: "+s)
-        None
+        FileFinder.log.fine("Resource name is not valid: "+res)
       }
     }
-    else {
-      FileFinder.log.warning("Resource name is not valid: "+res)
-      None
-    }
+    FileFinder.log.warning("Unable to find one of in classpath: "+reslist.mkString(", "))
+    None
   }
 
   def checkName( res: String ): Boolean = {
