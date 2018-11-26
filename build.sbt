@@ -169,6 +169,9 @@ val hugoWithTest = taskKey[Unit]("Run Hugo")
 val hugosetupWithTest = taskKey[Unit]("Setup to run Hugo")
 val helptask = taskKey[Seq[(java.io.File, String)]]("Identifies help resources")
 
+val patternSourceDir = """^[0-9a-f]{20}$""".r
+val patternFastopt = """-fastopt[.-]|-jsconsole[.-]""".r
+
 lazy val bridgescorer: Project = project.in(file(".")).
   aggregate(sharedJVM, sharedJS, rotationJS, `bridgescorer-client`, `bridgescorer-server`, rotationJVM).
   dependsOn( `bridgescorer-server` % "test->test;compile->compile" ).
@@ -254,11 +257,21 @@ lazy val bridgescorer: Project = project.in(file(".")).
     pipelineStages in Assets := (if (onlyBuildDebug) Seq() else Seq(scalaJSProd)) ++ Seq(scalaJSDev, gzip ),
 
     assemblyMergeStrategy in assembly := {
-      case PathList("META-INF", "maven", xs @ _*) if (!xs.isEmpty && (xs.last endsWith ".properties"))  => MergeStrategy.first
-      case PathList("JS_DEPENDENCIES") => MergeStrategy.rename
-      case PathList("module-info.class") => MergeStrategy.rename
+      case PathList("META-INF", "resources", "webjars", "bridgescorer", xs @ _*) if (!xs.isEmpty && patternFastopt.findFirstIn(xs.last).isDefined) => 
+        MergeStrategy.discard
+      case PathList("META-INF", "resources", "webjars", "bridgescorer-server", xs @ _*) if (!xs.isEmpty && patternFastopt.findFirstIn(xs.last).isDefined) => 
+        MergeStrategy.discard
+      case PathList("META-INF", "resources", "webjars", "bridgescorer-server", ver, dir, xs @ _*) if (!xs.isEmpty && patternSourceDir.pattern.matcher(dir).matches && (xs.last endsWith ".scala")) => 
+        MergeStrategy.discard
+      case PathList("META-INF", "maven", xs @ _*) if (!xs.isEmpty && (xs.last endsWith ".properties"))  =>
+        MergeStrategy.first
+      case PathList("JS_DEPENDENCIES") =>
+        MergeStrategy.rename
+      case PathList("module-info.class") =>
+        MergeStrategy.rename
 //      case PathList("akka", "http", xs @ _*) => MergeStrategy.first
-      case PathList("META-INF", "resources", "webjars", "bridgescorer", version, "lib", "bridgescorer-server", rest @ _*) => MergeStrategy.discard
+      case PathList("META-INF", "resources", "webjars", "bridgescorer", version, "lib", "bridgescorer-server", rest @ _*) =>
+        MergeStrategy.discard
       case x =>
         val oldStrategy = (assemblyMergeStrategy in assembly).value
         oldStrategy(x)

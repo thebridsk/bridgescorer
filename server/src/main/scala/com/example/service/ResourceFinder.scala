@@ -4,109 +4,133 @@ import com.example.webjar.FileFinder
 import com.example.version.VersionServer
 import scala.reflect.io.Directory
 import utils.logging.Logger
+import scala.reflect.io.File
 
 object ResourceFinder {
   val logger = Logger( getClass.getName )
 
-  def htmlResources = {
-    val tryServerVersion = new FileFinder( "com.example", "bridgescorer-server", Some(VersionServer.version) )
-    tryServerVersion.getResource("/bridgescorer-client-fastopt.js") match {
-      case Some(v) => tryServerVersion
+  /**
+   * Validate if the component, version, and suffix contains the client code.
+   * The client code is looked for in the following resource:
+   *
+   *   META-INF/resources/webjars/<component>/<version>[/<suffix>]
+   *
+   * @param component bridgescorer or bridgescorer-server
+   * @param version the version string
+   * @param suffix a suffix
+   * @return an optional FileFinder.  None is return if this is not valid.
+   */
+  def validateServerVersion( component: String, version: String, suffix: Option[String] ): Option[(FileFinder, String)] = {
+    val tryServerVersion = new FileFinder( "com.example", component, Some(version), suffix )
+    tryServerVersion.getResource(
+        "/bridgescorer-client-opt.js",
+        "/bridgescorer-client-opt.js.gz",
+        "/bridgescorer-client-fastopt.js",
+        "/bridgescorer-client-fastopt.js.gz"
+    ) match {
+      case None => None
+      case Some(v) => Some((tryServerVersion, v))
+    }
+  }
+
+  /**
+   * Validate if the component, version, and suffix contains the client code.
+   * The client code is looked for in the following resource:
+   *
+   *   META-INF/resources/webjars/<component>/<version>[/<suffix>]
+   *
+   * @param component bridgescorer or bridgescorer-server
+   * @param version the version string
+   * @param suffix a suffix
+   * @return an optional FileFinder.  None is return if this is not valid.
+   */
+  def validateServerVersionWithHelp( component: String, version: String, suffix: Option[String] ): Option[(FileFinder, String)] = {
+    val tryServerVersion = new FileFinder( "com.example", component, Some(version), suffix )
+    tryServerVersion.getResource(
+        "/index.html"
+    ) match {
+      case None => None
+      case Some(v) => Some((tryServerVersion, v))
+    }
+  }
+
+  def searchOnVersion( component: String,
+                       suffix: Option[String],
+                       validate: (String, String, Option[String]) => Option[(FileFinder,String)]
+                     ): Option[FileFinder] = {
+
+    validate( component, VersionServer.version, suffix ) match {
+      case Some((ff,f)) =>
+        logger.info( s"For $component $suffix found $f" )
+        Some(ff)
       case None =>
-        val dirs = Directory("target/web/classes/main/META-INF/resources/webjars/bridgescorer-server")::
-//                   Directory("target/web/classes/main/META-INF/resources/webjars/bridgescorer")::
-                   Nil
-        val tdir = dirs.flatMap { dir =>
-          logger.warning("Looking in directory "+dir.toAbsolute)
-          if (dir.exists) {
-            try {
-              val (found,date) = dir.dirs.map(d => {
-                val f = d/"bridgescorer-client-fastopt.js.gz"
-                if (f.exists) (d,f.lastModified)
-                else (d,0L)
-              }).reduce((l,r) =>
-                  if (l._2 < r._2) r
-                  else l
-              )
-              val v = found.name
-              logger.warning("Using client version "+v)
-              new FileFinder( "com.example", "bridgescorer-server", Some(v) )::Nil
-            } catch {
-              case x: Exception => throw new IllegalStateException("Can't find the client code",x)
+        val targetDir = Directory(s"target/web/classes/main/META-INF/resources/webjars/$component")
+        logger.warning("Looking in directory "+targetDir.toAbsolute)
+
+        val x =
+        if (targetDir.exists) {
+          val tdir = targetDir.dirs.flatMap { dir =>
+            validate( component, dir.toFile.name, suffix ) match {
+              case None => Nil
+              case Some((ff,f)) =>
+                val resAsFile = File(s"target/web/classes/main/$f")
+                if (resAsFile.isFile) {
+                  logger.info( s"For $component suffix $suffix found $resAsFile" )
+                  Some((ff,resAsFile.lastModified))::Nil
+                } else {
+                  logger.warning(s"Could not find resource $resAsFile")
+                  Nil
+                }
             }
-          } else {
-            Nil
-          }
+          }.toList
+          tdir
+        } else {
+          None::Nil
         }
-        if (tdir.length == 0) {
-          logger.warning( "Unable to find client resource" )
-          throw new IllegalStateException( "Unable to find client resource" )
-        } else if (tdir.length == 1) tdir.head
-        else {
-          logger.warning( "found multiple client resources: "+tdir )
-          throw new IllegalStateException( "found multiple client resources" )
+        val (resultDir, lastmod) = x.foldLeft( (None: Option[FileFinder],0L) ) { (ac,v) =>
+            ac._1.map { cur =>
+              if (v.isDefined) {
+                if (ac._2 < v.get._2) ( Some(v.get._1), v.get._2)
+                else ac
+              } else {
+                ac
+              }
+            }.getOrElse(ac)
+        }
+        resultDir.foreach( f => logger.info( s"Using resource ${f.baseName}" ) )
+        resultDir
+    }
+
+  }
+
+  def htmlResources = {
+    // must look for bridgescorer-server resources also to find client code
+
+    searchOnVersion( "bridgescorer", Some("lib/bridgescorer-server"), validateServerVersion ) match {
+      case Some(f) =>
+        logger.info(s"Found client at ${f.baseName}" )
+        f
+      case None =>
+        searchOnVersion( "bridgescorer-server", None, validateServerVersion ) match {
+          case Some(f) =>
+            logger.info(s"Found client at ${f.baseName}" )
+            f
+          case None =>
+            logger.warning("Unable to find client code")
+            throw new IllegalStateException("Unable to find client code")
         }
     }
 
   }
 
   def helpResources = {
-    val version = VersionServer.version
-    val shortversion = try {
-      Some( version.split("-").head )
-    } catch {
-      case x: NoSuchElementException =>
-        None
-    }
-    val tryServerVersion = new FileFinder( "com.example", "bridgescorer", Some(VersionServer.version) )
-    tryServerVersion.getResource("/help/index.html") match {
-      case Some(v) => tryServerVersion
+
+    searchOnVersion( "bridgescorer", Some("help"), validateServerVersionWithHelp ) match {
+      case Some(f) =>
+        logger.info(s"Found help at ${f.baseName}" )
+        f
       case None =>
-        val r = if (shortversion.isDefined) {
-          val tryServerVersion = new FileFinder( "com.example", "bridgescorer", shortversion )
-          tryServerVersion.getResource("/help/index.html") match {
-            case Some(v) => Some(tryServerVersion)
-            case None => None
-          }
-        } else {
-          None
-        }
-        r match {
-          case Some(ff) => ff
-          case None =>
-            val dirs = Directory("target/web/classes/main/META-INF/resources/webjars/bridgescorer")::
-                       Nil
-            val tdir = dirs.flatMap { dir =>
-              logger.warning("Looking in directory "+dir.toAbsolute)
-              if (dir.exists) {
-                try {
-                  val (found,date) = dir.dirs.map(d => {
-                    val f = d/"help"/"index.html"
-                    if (f.exists) (d,f.lastModified)
-                    else (d,0L)
-                  }).reduce((l,r) =>
-                      if (l._2 < r._2) r
-                      else l
-                  )
-                  val v = found.name
-                  logger.warning("Using client version "+v)
-                  new FileFinder( "com.example", "bridgescorer", Some(v) )::Nil
-                } catch {
-                  case x: Exception => throw new IllegalStateException("Can't find the help code",x)
-                }
-              } else {
-                Nil
-              }
-            }
-            if (tdir.length == 0) {
-              logger.warning( "Unable to find help resource" )
-              throw new IllegalStateException( "Unable to find help resource" )
-            } else if (tdir.length == 1) tdir.head
-            else {
-              logger.warning( "found multiple help resources: "+tdir )
-              throw new IllegalStateException( "found multiple help resources" )
-            }
-        }
+        throw new IllegalStateException( "Unable to find help resource" )
     }
 
   }
