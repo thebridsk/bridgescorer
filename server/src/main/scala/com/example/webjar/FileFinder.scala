@@ -51,14 +51,14 @@ class FileFinder( groupid: String, artifactid: String, versionoverride: Option[S
         val url = loader.getResource(s)
         if (url != null) return Some(s)
         else {
-          FileFinder.log.fine("Unable to find resource in classpath: "+s)
+          FileFinder.log.fine(s"Unable to find resource in classpath in resource dir ${baseName}: $s")
         }
       }
       else {
         FileFinder.log.fine("Resource name is not valid: "+res)
       }
     }
-    FileFinder.log.warning("Unable to find one of in classpath: "+reslist.mkString(", "))
+    FileFinder.log.warning(s"Unable to find one of in classpath in resource dir ${baseName}: ${reslist.mkString(", ")}")
     None
   }
 
