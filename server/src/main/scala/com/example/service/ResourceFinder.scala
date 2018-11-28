@@ -54,53 +54,72 @@ object ResourceFinder {
     }
   }
 
+  private val patternVersion = """(.*?)-[0-9a-fA-F]+""".r
+  def baseVersion( ver: String ) = {
+    ver match {
+      case patternVersion(version) => Some(version)
+      case _ => None
+    }
+  }
+
   def searchOnVersion( component: String,
                        suffix: Option[String],
                        validate: (String, String, Option[String]) => Option[(FileFinder,String)]
                      ): Option[FileFinder] = {
 
-    validate( component, VersionServer.version, suffix ) match {
-      case Some((ff,f)) =>
-        logger.info( s"For $component $suffix found $f" )
-        Some(ff)
-      case None =>
-        val targetDir = Directory(s"target/web/classes/main/META-INF/resources/webjars/$component")
-        logger.warning("Looking in directory "+targetDir.toAbsolute)
+    (baseVersion(VersionServer.version).map { ver =>
+      validate( component, ver, suffix ) match {
+        case Some((ff,f)) =>
+          logger.info( s"For $component $suffix found $f" )
+          Some(ff)
+        case None =>
+          None
+      }
+    }) match {
+      case Some(Some(f)) => Some(f)
+      case _ =>
+        validate( component, VersionServer.version, suffix ) match {
+          case Some((ff,f)) =>
+            logger.info( s"For $component $suffix found $f" )
+            Some(ff)
+          case None =>
+            val targetDir = Directory(s"target/web/classes/main/META-INF/resources/webjars/$component")
+            logger.warning("Looking in directory "+targetDir.toAbsolute)
 
-        val x =
-        if (targetDir.exists) {
-          val tdir = targetDir.dirs.flatMap { dir =>
-            validate( component, dir.toFile.name, suffix ) match {
-              case None => Nil
-              case Some((ff,f)) =>
-                val resAsFile = File(s"target/web/classes/main/$f")
-                if (resAsFile.isFile) {
-                  logger.info( s"For $component suffix $suffix found $resAsFile" )
-                  Some((ff,resAsFile.lastModified))::Nil
-                } else {
-                  logger.warning(s"Could not find resource $resAsFile")
-                  Nil
+            val x =
+            if (targetDir.exists) {
+              val tdir = targetDir.dirs.flatMap { dir =>
+                validate( component, dir.toFile.name, suffix ) match {
+                  case None => Nil
+                  case Some((ff,f)) =>
+                    val resAsFile = File(s"target/web/classes/main/$f")
+                    if (resAsFile.isFile) {
+                      logger.info( s"For $component suffix $suffix found $resAsFile" )
+                      Some((ff,resAsFile.lastModified))::Nil
+                    } else {
+                      logger.warning(s"Could not find resource $resAsFile")
+                      Nil
+                    }
                 }
+              }.toList
+              tdir
+            } else {
+              None::Nil
             }
-          }.toList
-          tdir
-        } else {
-          None::Nil
+            val (resultDir, lastmod) = x.foldLeft( (None: Option[FileFinder],0L) ) { (ac,v) =>
+                ac._1.map { cur =>
+                  if (v.isDefined) {
+                    if (ac._2 < v.get._2) ( Some(v.get._1), v.get._2)
+                    else ac
+                  } else {
+                    ac
+                  }
+                }.getOrElse(ac)
+            }
+            resultDir.foreach( f => logger.info( s"Using resource ${f.baseName}" ) )
+            resultDir
         }
-        val (resultDir, lastmod) = x.foldLeft( (None: Option[FileFinder],0L) ) { (ac,v) =>
-            ac._1.map { cur =>
-              if (v.isDefined) {
-                if (ac._2 < v.get._2) ( Some(v.get._1), v.get._2)
-                else ac
-              } else {
-                ac
-              }
-            }.getOrElse(ac)
-        }
-        resultDir.foreach( f => logger.info( s"Using resource ${f.baseName}" ) )
-        resultDir
     }
-
   }
 
   def htmlResources = {

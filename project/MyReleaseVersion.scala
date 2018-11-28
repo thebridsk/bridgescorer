@@ -170,7 +170,7 @@ object MyReleaseVersion {
     { st: State =>
       val extracted = Project.extract(st)
       val currentBranch = extracted.get(gitCurrentBranch)
-      if (currentBranch != releaseFromBranch) sys.error(s"""Must be on ${releaseFromBranch} branch to release, currently on ${currentBranch}, use RELEASEFROMBRANCH env var""")
+      if (currentBranch != releaseFromBranch) sys.error(s"""Must be on ${releaseFromBranch} branch to release, use RELEASEFROMBRANCH=${currentBranch} env var""")
       st
     }
   )
