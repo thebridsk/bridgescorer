@@ -316,7 +316,7 @@ trait ImportExport {
                             tr match {
                               case Success(Right(list)) =>
                                 diagnosticDir.foreach { dir =>
-                                  dir.files.filter( f => f.extension == "log").foreach { f =>
+                                  dir.files.filter( f => f.extension == "log" || f.extension == "csv").foreach { f =>
                                     zip.putNextEntry( new ZipEntry("logs/"+f.name) )
                                     import _root_.resource._
                                     for ( in <- managed(new FileInputStream( f.jfile )) ) {

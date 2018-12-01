@@ -59,6 +59,7 @@ import java.net.URLClassLoader
 import com.example.datastore.DataStoreCommands
 import scala.annotation.tailrec
 import java.util.logging.ConsoleHandler
+import com.example.util.MemoryMonitor
 
 /**
  * This is the main program for the REST server for our application.
@@ -70,7 +71,14 @@ object Server extends Main {
     0
   }
 
-  override def cleanup() = {}
+  override def setup() = {
+    memoryfile.foreach( f => MemoryMonitor.start(f.toString()))
+    0
+  }
+
+  override def cleanup() = {
+    MemoryMonitor.stop()
+  }
 
   implicit def dateConverter: ValueConverter[Duration] = singleArgConverter[Duration](Duration(_))
 
@@ -126,6 +134,8 @@ Syntax:
 Options:""")
 
   shortSubcommandsHelp(true)
+
+  val memoryfile = opt[Path]("memoryfile", noshort=true, descr="memory monitor filename, start monitoring memory usage every 15 seconds", argName="filename", default=Some(Path("logs/MemoryMonitor.csv")))
 
   addSubcommand( StartServer )
   addSubcommand( ShutdownServer )

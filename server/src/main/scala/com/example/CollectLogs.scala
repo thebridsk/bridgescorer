@@ -71,7 +71,7 @@ The server should NOT be running.
     val store = optionStore.toOption.getOrElse(defaultStore)
 
     val diagDir = optionDiagnosticDir.toOption.map( p => p.toDirectory ).getOrElse( Directory(".") )
-    val logfiles = diagDir.files.filter( f => f.extension == "log")
+    val logfiles = diagDir.files.filter( f => f.extension == "log" || f.extension == "csv" )
 
     val storefiles = Directory(store).files
 

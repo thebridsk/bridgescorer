@@ -1,0 +1,30 @@
+#!/bin/bash
+
+SCRIPTDIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+
+helpme()
+{
+  cat <<HELPMEHELPME
+Syntax: $0 [-h|--help]
+
+Starts the bridge scorer server.  Java 8 must be on the path.
+  
+HELPMEHELPME
+}
+
+if [[ "$1" == "-h" || "$1" == "--help" ]] ; then
+  helpme
+  exit 1
+fi
+
+cd $SCRIPTDIR
+
+jarcount=`ls -1f bridgescorer-server-assembly-*.jar | wc -l`
+if [[ $jarcount -ne "1" ]] ; then 
+  echo Found more than one bridgescorer jar file in directory
+  ls bridgescorer-server-assembly-*.jar
+  exit 1
+fi
+
+java -jar bridgescorer-server-assembly-*.jar --logfile server.%d.%u.log -memoryfile memory.%%d.csv start --store ./store --port 8080 --browser --diagnostics .
+
