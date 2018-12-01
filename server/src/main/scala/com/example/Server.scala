@@ -135,7 +135,11 @@ Options:""")
 
   shortSubcommandsHelp(true)
 
-  val memoryfile = opt[Path]("memoryfile", noshort=true, descr="memory monitor filename, start monitoring memory usage every 15 seconds", argName="filename", default=Some(Path("logs/MemoryMonitor.csv")))
+  val memoryfile = opt[Path]( "memoryfile",
+                              noshort=true,
+                              descr="memory monitor filename, start monitoring memory usage every 15 seconds",
+                              argName="csvfilename",
+                              default=None)
 
   addSubcommand( StartServer )
   addSubcommand( ShutdownServer )
