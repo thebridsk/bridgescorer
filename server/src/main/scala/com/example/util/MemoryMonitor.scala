@@ -7,6 +7,10 @@ import java.io.Writer
 import java.io.BufferedWriter
 import java.text.SimpleDateFormat
 import java.util.Date
+import utils.logging.FileHandler
+import java.io.File
+import java.util.regex.Pattern
+import java.io.FilenameFilter
 
 object MemoryMonitor {
   val log = Logger[MemoryMonitor]
@@ -20,7 +24,7 @@ object MemoryMonitor {
       case Some(am) =>
         log.warning( "Memory monitor is already running" )
       case None =>
-        val m = new MemoryMonitor( getFileName(outfile, getDate()) )
+        val m = new MemoryMonitor( outfile )
         activeMonitor = Some(m)
         m.start()
     }
@@ -37,7 +41,10 @@ object MemoryMonitor {
     }
   }
 
+  private var fCount = 10
+
   private val fSDF = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss.SSS");
+  private val dateRegex = """\d\d\d\d\.\d\d\.\d\d\.\d\d\.\d\d\.\d\d\.\d\d\d"""
 
   private def getDate() = {
     var d = new Date();
@@ -48,8 +55,9 @@ object MemoryMonitor {
   /**
    * @param unique
    * @param date
+   * @param regex generate regex to search for log files
    */
-  private def getFileName( pattern: String, date: String ): String =
+  private def getFileName( pattern: String, date: String, regex: Boolean = false ): String =
   {
       val b = new StringBuilder();
 
@@ -83,11 +91,25 @@ object MemoryMonitor {
                   case 'h' =>
                       b.append(System.getProperty("user.home"));
                   case 'd' =>
+                    if (regex) {
+                      b.append(dateRegex)
+                    } else {
                       b.append(date);
+                    }
                   case _ =>
+                    if (regex) {
+                      if (FileHandler.special.indexOf(c) >= 0) {
+                        b.append('\\')
+                      }
+                    }
                     b.append(c)
                 }
             } else {
+              if (regex) {
+                if (FileHandler.special.indexOf(c) >= 0) {
+                  b.append('\\')
+                }
+              }
               b.append(c)
             }
             i+=1;
@@ -96,11 +118,56 @@ object MemoryMonitor {
       return b.toString();
   }
 
+  private def cleanupExistingFiles( pattern: String ) =
+  {
+      // This is called when starting or rotating file.
+      // need to check existing files to see if they match the pattern.
+      // If they do, need to add them to fOldFiles in cron order, with oldest at index 0.
+
+    val outpat = pattern.replace('\\', '/')
+
+    val filename = getFileName( outpat, "", false )
+    val parent = new File(filename).getParent
+    val dir = (if (parent==null) "." else parent+File.separator).replace('\\','/');
+
+    val reg = if (dir.length()>0 && outpat.startsWith(dir)) {
+      outpat.substring(dir.length())
+    } else {
+      outpat
+    }
+
+    val regex = getFileName( reg, "", true )
+
+    val pat = Pattern.compile(regex)
+
+    val dirf = new File(dir)
+    val files = dirf.list( new FilenameFilter() {
+      def accept( dir1: File, name: String ) = {
+        pat.matcher(name).matches()
+      }
+    })
+
+    import scala.collection.JavaConversions._
+    val sortedfiles = files.toList.sorted
+//    println(s"Found ${sortedfiles.length} log files with pattern ${pat}")
+    if (sortedfiles.length > fCount) {
+      val del = sortedfiles.length - fCount
+      sortedfiles.take(del).foreach { f =>
+        val todelete = new File(dirf,f )
+//        println( s"  Deleting ${todelete}" )
+        todelete.delete
+      }
+      sortedfiles.drop(del)
+    }
+  }
+
 }
 
 import MemoryMonitor._
 
-class MemoryMonitor( outfile: String ) {
+class MemoryMonitor( pattern: String ) {
+
+  val outfile = getFileName(pattern, getDate())
 
   private class Monitor( name: String ) extends Thread(name) {
 
@@ -171,11 +238,13 @@ class MemoryMonitor( outfile: String ) {
 
   private var activeMonitor: Option[Monitor] = None
 
-  def start( outfile: String = "MemoryMonitor.csv" ) = synchronized {
+  def start() = synchronized {
     activeMonitor match {
       case Some(am) =>
-        log.warning( "Memory monitor is already running" )
+      log.warning( "Memory monitor is already running" )
       case None =>
+        log.info( s"MemoryMonitor out file pattern is: $pattern, outfile: $outfile" )
+        cleanupExistingFiles(pattern)
         val m = new Monitor( outfile )
         activeMonitor = Some(m)
         m.start()
