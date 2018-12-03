@@ -19,5 +19,5 @@ fi
 
 cd $SCRIPTDIR
 
-java -jar bridgescorer-server-assembly-*.jar collectlogs --store ./store --zip logs.zip
+java -jar bridgescorer-server-assembly-*.jar collectlogs --store ./store --diagnostics ./logs --zip logs.zip
 

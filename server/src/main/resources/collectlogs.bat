@@ -19,6 +19,6 @@ if ".%xxxjar%" == "." (
   pause
 ) else (
   echo on
-  java.exe -jar %xxxjar% collectlogs --store ./store --zip logs.zip
+  java.exe -jar %xxxjar% collectlogs --store ./store --diagnostics ./logs --zip logs.zip
   @echo off
 )
