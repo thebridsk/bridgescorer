@@ -38,6 +38,10 @@
   background-color: rgb(210,210,210);
   border-style: outset;
   border-width: 2px;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
 }
 
 .baseAppButton {
