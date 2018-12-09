@@ -7,7 +7,7 @@ import scala.scalajs.js.annotation.JSExportTopLevel
 /**
  * @author werewolf
  */
-@JSExportTopLevel("com.example.test.AllUnitTests")
+// @JSExportTopLevel("AllUnitTests")
 class AllUnitTests extends Sequential(
 
     new MyTest,

@@ -655,6 +655,13 @@ lazy val rotationJVM = `bridgescorer-rotation`.jvm
 // stuff to have dependencies on other projects
 lazy val utilities = RootProject(file("utilities"))
 
+val clientUnitTests = "com.example.test.MyTest"::
+                      "com.example.test.TestDuplicateStore"::
+                      "com.example.test.TestLogFilter"::
+                      "com.example.test.TestSerialize"::
+                      "com.example.test.TestColor"::
+                      Nil
+
 lazy val `bridgescorer-client` = project.in(file("client")).
   enablePlugins(BuildInfoPlugin).
   enablePlugins(ScalaJSPlugin).
@@ -699,7 +706,8 @@ lazy val `bridgescorer-client` = project.in(file("client")).
     //   https://github.com/scalacenter/scalajs-bundler/issues/83
 //    testOptions in Test += Tests.Filter(s => { println("TestOption: "+s); false}),
     testOptions in Test += Tests.Filter(s => {
-      if (s == "com.example.test.AllUnitTests") {
+//      if (s == "com.example.test.AllUnitTests") {
+      if (clientUnitTests.contains(s) ) {
         println("Using Test:    "+s)
         true
       } else {

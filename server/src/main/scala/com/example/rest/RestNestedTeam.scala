@@ -142,7 +142,7 @@ class RestNestedTeam {
   @ApiResponses(Array(
     new ApiResponse(code = 204, message = "Team deleted." )
   ))
-  def deleteTeam()(implicit @ApiParam(hidden=true) @ApiParam(hidden=true) res: Resources[Id.Team, Team]) =
+  def deleteTeam()(implicit @ApiParam(hidden=true) res: Resources[Id.Team, Team]) =
     delete {
       path( """[a-zA-Z0-9]+""".r ) { id =>
         resourceDelete( res.select(id).delete() )
