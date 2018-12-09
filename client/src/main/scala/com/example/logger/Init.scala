@@ -55,6 +55,10 @@ object Init {
 
   private var debugLoggerEnabled = false
 
+  private var pclientid: Option[String] = None
+
+  def clientid = pclientid
+
   def isDebugLoggerEnabled = debugLoggerEnabled
 
   val defaultLoggerForRemoteHandlers = "bridge"
@@ -65,6 +69,7 @@ object Init {
     import scala.concurrent.ExecutionContext.Implicits.global
     RestClientLoggerConfig.get("").foreach( config => CommAlerter.tryit {
       logger.info("Got "+config)
+      pclientid = config.clientid
       if (config.loggers.length > 0) {
         // set trace levels in loggers to config.loggers
         processLoggers(config.loggers)

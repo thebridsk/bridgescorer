@@ -23,7 +23,6 @@ import com.example.logger.Alerter
 import com.example.pages.BaseStyles
 import scala.scalajs.js.annotation.JSExportTopLevel
 import scala.scalajs.js.annotation.JSExport
-import scala.scalajs.js.JSApp
 import org.scalajs.dom.raw.Event
 
 /**

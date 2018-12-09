@@ -72,7 +72,10 @@ object DuplexProtocol {
       @(ApiModelProperty @field)(value="The cause", required=true)
       cause: String,
       @(ApiModelProperty @field)(value="The args", required=true)
-      args: List[String]) extends DuplexMessage
+      args: List[String],
+      @(ApiModelProperty @field)(value="A client Id", required=false)
+      clientid: Option[String] = None
+  ) extends DuplexMessage
 
   /**
    * For sending log entries to the server
