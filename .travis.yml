@@ -29,7 +29,7 @@ install: # Install ChromeDriver
 #  - wget -N https://github.com/gohugoio/hugo/releases/download/v0.49.2/hugo_0.49.2_Linux-64bit.tar.gz -P target/drivers/
 #  - echo "74bcca80f549a1b66ec8a5264a9308ef7056b7bd31214f56dac05ffb9dfd32b3 *target/drivers/hugo_0.49.2_Linux-64bit.tar.gz" | sha256sum -c
   - wget -N https://github.com/gohugoio/hugo/releases/download/v0.52/hugo_0.52_Linux-64bit.tar.gz -P target/drivers/
-  - echo "b4d1fe91023e3fe7e92953af12e08344d66ab10a46feb9cbcffbab2b0c14ba44 *hugo_0.52_Linux-64bit.tar.gz" | sha256sum -c
+  - echo "b4d1fe91023e3fe7e92953af12e08344d66ab10a46feb9cbcffbab2b0c14ba44 *target/drivers/hugo_0.52_Linux-64bit.tar.gz" | sha256sum -c
   - tar zxvf target/drivers/hugo_0.*_Linux-64bit.tar.gz --directory target/drivers/
   - sudo mv -f target/drivers/hugo /usr/local/share/
   - sudo chmod +x /usr/local/share/hugo
