@@ -789,6 +789,7 @@ lazy val `bridgescorer-client` = project.in(file("client")).
   )
 
 lazy val help = project.in(file("help")).
+  settings( versionSetting: _* ).
   settings(
     scalaVersion  := verScalaVersion,
     hugo := {
@@ -797,6 +798,35 @@ lazy val help = project.in(file("help")).
       val bd = new File(baseDirectory.value, "docs" )
       val targ = new File(target.value, "help" )
       Hugo.run(log, bd, targ)
+      
+      val helpversion = version.value
+      val htmlversion = s"""<!DOCTYPE html>
+                           |<html>
+                           |<head>
+                           |<title>Bridge Scorekeeper Documentation</title>
+                           |</head>
+                           |<body>
+                           |<h1>Help Version</h1>
+                           |<p id="version">${helpversion}</p>
+                           |<p>
+                           |<a href="introduction.html">Back to Help</a>
+                           |</p>
+                           |</body>
+                           |</html>
+                           |""".stripMargin
+      val verfile = new File(targ, "version.html")
+      
+      import java.io.OutputStreamWriter
+      import java.io.FileOutputStream
+      
+      var o: OutputStreamWriter = null;
+      try {
+        o = new OutputStreamWriter( new FileOutputStream( verfile ), "UTF8" )
+        o.write(htmlversion)
+        o.flush
+      } finally {
+        if (o != null) o.close
+      }
     },
 
     hugosetup := {
