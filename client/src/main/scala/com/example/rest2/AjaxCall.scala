@@ -9,6 +9,7 @@ import com.example.data.RestMessage
 import org.scalajs.dom
 import utils.logging.Logger
 import com.example.logger.CommAlerter
+import com.example.logger.Init
 
 trait IAjaxCall {
   def send(method: String, url: String, data: InputData, timeout: Duration,
@@ -126,6 +127,7 @@ object AjaxCall extends IAjaxCall {
     req.timeout = timeout.toMillis
     req.withCredentials = withCredentials
     headers.foreach(x => req.setRequestHeader(x._1, x._2))
+    Init.clientid.map( x => req.setRequestHeader("x-clientid", x) )
     if (data == null)
       req.send()
     else
