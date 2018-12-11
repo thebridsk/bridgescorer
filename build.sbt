@@ -805,7 +805,7 @@ lazy val help = project.in(file("help")).
                            |<head>
                            |<title>Bridge Scorekeeper Documentation</title>
                            |</head>
-                           |<body>
+                           |<body data-url="/version.html">
                            |<h1>Help Version</h1>
                            |<p id="version">${helpversion}</p>
                            |<p>
