@@ -243,7 +243,8 @@ object Service {
     val args = e.args
     val msg = formatMsg(message,args:_*)
     val lev = toLevel(level)
-    clientlog.log(lev,s"$ts ClientLog($ips) $src $level $position $url $msg $cause")
+    val clientid = e.clientid.getOrElse("")
+    clientlog.log(lev,s"$ts ClientLog($ips,$clientid) $src $level $position $url $msg $cause")
   }
 
   def extractHostPort: HttpHeader => Option[String] = {

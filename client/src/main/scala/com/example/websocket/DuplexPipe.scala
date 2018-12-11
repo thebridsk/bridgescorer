@@ -229,8 +229,8 @@ class DuplexPipe( url: String,
         notifyUnsolicited(data)
       case DuplexProtocol.Send(data) =>  // ignore
       case DuplexProtocol.Request(data, seq, ack) => // ignore
-      case DuplexProtocol.LogEntryS(json) => // ignore
-      case DuplexProtocol.LogEntryV2( pos, logger, timestamp, level, url, message, cause, args) => // ignore
+      case x: DuplexProtocol.LogEntryS => // ignore
+      case x: DuplexProtocol.LogEntryV2 => // ignore
     }
     log.fine("fromWebsocket pending="+pending.size+", outstanding="+outstanding.size)
 

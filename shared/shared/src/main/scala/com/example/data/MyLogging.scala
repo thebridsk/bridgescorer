@@ -9,7 +9,9 @@ import scala.annotation.meta._
 @ApiModel(description = "Logger configuration for the browser")
 case class LoggerConfig(
     @(ApiModelProperty @field)(value="A list of logging level for a logger, syntax: &lt;loggername&gt;=&lt;level}&gt;", required=true, example="[root]=ALL")
-    loggers: List[String], 
+    loggers: List[String],
     @(ApiModelProperty @field)(value="A list of logging level for an appender, syntax: &lt;appendername&gt;=&lt;level}&gt;", required=true, example="[root]=INFO")
-    appenders: List[String] 
+    appenders: List[String],
+    @(ApiModelProperty @field)(value="A client Id", required=false)
+    clientid: Option[String] = None
     )

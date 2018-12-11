@@ -27,11 +27,16 @@ import com.example.backend.resource.Result
 import scala.util.Success
 import scala.util.Failure
 import com.example.backend.resource.Implicits
+import java.util.concurrent.atomic.AtomicInteger
 
 case class ServerPort( httpPort: Option[Int], httpsPort: Option[Int] )
 
 object RestLoggerConfig {
   val log = Logger( getClass.getName )
+
+  private val pclientid = new AtomicInteger()
+
+  def nextClientId = Some(pclientid.incrementAndGet().toString())
 }
 
 /**
@@ -89,7 +94,7 @@ trait RestLoggerConfig extends HasActorSystem {
             complete(StatusCodes.NotFound,RestMessage("Logger config not found"))
           } else {
             RestLoggerConfig.log.info("Logger configuration for "+ips+": "+config)
-            complete(StatusCodes.OK, config)
+            complete(StatusCodes.OK, config.copy(clientid=RestLoggerConfig.nextClientId))
           }
         }
       }}
