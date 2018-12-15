@@ -49,6 +49,9 @@ object Controller {
 
   private var duplexPipe: Option[DuplexPipe] = None
 
+  var useRestToServer: Boolean = true;
+  var useSSEFromServer: Boolean = true;
+
   def log( entry: LogEntryS ) = {
     // This can't create a duplexPipe, we haven't setup all the info
     duplexPipe match {
@@ -147,11 +150,9 @@ object Controller {
     }
   }
 
-  val useRest: Boolean = true;
-
   def updateHand( dup: MatchDuplicate, hand: DuplicateHand ) = {
     BridgeDispatcher.updateDuplicateHand(dup.id, hand)
-    if (useRest) {
+    if (useRestToServer) {
       val resource = RestClientDuplicate.boardResource(dup.id).handResource(hand.board)
       resource.update(hand.id, hand).recordFailure().onComplete { t =>
         if (t.isFailure) {
@@ -174,7 +175,7 @@ object Controller {
 
   def updateTeam( dup: MatchDuplicate, team: Team ) = {
     BridgeDispatcher.updateTeam(dup.id, team)
-    if (useRest) {
+    if (useRestToServer) {
       val resource = RestClientDuplicate.teamResource(dup.id)
       resource.update(team.id, team).recordFailure().onComplete { t =>
         if (t.isFailure) {
@@ -239,7 +240,7 @@ object Controller {
       case Some(mdid) =>
         if (mdid != dupid) {
           logger.info(s"""Switching MatchDuplicate monitor to ${dupid} from ${mdid}""" )
-          if (useRest) {
+          if (useSSEFromServer) {
             BridgeDispatcher.startDuplicateMatch(dupid)
             eventSource.foreach( es => es.close())
             eventSource = getEventSource(dupid)
@@ -257,7 +258,7 @@ object Controller {
         }
       case None =>
         logger.info(s"""Starting MatchDuplicate monitor to ${dupid}""" )
-        if (useRest) {
+        if (useSSEFromServer) {
           BridgeDispatcher.startDuplicateMatch(dupid)
           eventSource.foreach( es => es.close())
           eventSource = getEventSource(dupid)
@@ -275,7 +276,7 @@ object Controller {
    * Stop monitoring a duplicate match
    */
   def stop() = {
-    if (useRest) {
+    if (useSSEFromServer) {
       eventSource.foreach( es => es.close())
       eventSource = None
     } else {

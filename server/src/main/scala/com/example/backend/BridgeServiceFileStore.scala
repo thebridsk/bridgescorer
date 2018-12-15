@@ -1,6 +1,5 @@
 package com.example.backend
 
-import com.example.data.LoggerConfig
 import com.example.backend.resource.StoreSupport
 import com.example.data.Team
 import com.example.data.MatchChicago
