@@ -38,6 +38,9 @@ import play.api.libs.json.Json
 import com.example.data.DuplicateSummary
 import com.example.data.rest.JsonSupport
 import play.api.libs.json.JsSuccess
+import org.scalajs.dom.raw.EventSource
+import org.scalajs.dom.raw.MessageEvent
+import org.scalajs.dom.raw.Event
 
 object Controller {
   val logger = Logger("bridge.Controller")
@@ -123,21 +126,25 @@ object Controller {
       }
       d.addListener(new DuplexPipe.Listener {
         def onMessage( msg: Protocol.ToBrowserMessage ) = {
-          msg match {
-            case Protocol.MonitorJoined(id,members) =>
-            case Protocol.MonitorLeft(id,members) =>
-            case Protocol.UpdateDuplicate(matchDuplicate) =>
-              BridgeDispatcher.updateDuplicateMatch(matchDuplicate)
-            case Protocol.UpdateDuplicateHand(dupid, hand) =>
-              BridgeDispatcher.updateDuplicateHand(dupid,hand)
-            case Protocol.UpdateDuplicateTeam(dupid,team) =>
-              BridgeDispatcher.updateTeam(dupid, team)
-            case Protocol.NoData(_) =>
-          }
+          processMessage(msg)
         }
       })
       duplexPipe = Some(d)
       d
+  }
+
+  def processMessage( msg: Protocol.ToBrowserMessage ) = {
+    msg match {
+      case Protocol.MonitorJoined(id,members) =>
+      case Protocol.MonitorLeft(id,members) =>
+      case Protocol.UpdateDuplicate(matchDuplicate) =>
+        BridgeDispatcher.updateDuplicateMatch(matchDuplicate)
+      case Protocol.UpdateDuplicateHand(dupid, hand) =>
+        BridgeDispatcher.updateDuplicateHand(dupid,hand)
+      case Protocol.UpdateDuplicateTeam(dupid,team) =>
+        BridgeDispatcher.updateTeam(dupid, team)
+      case Protocol.NoData(_) =>
+    }
   }
 
   val useRest: Boolean = true;
@@ -188,16 +195,61 @@ object Controller {
     })
   }
 
+  def esOnMessage( me: MessageEvent ): Unit = {
+    import com.example.data.websocket.DuplexProtocol
+    try {
+      logger.info(s"esOnMessage received ${me.data}")
+      me.data match {
+        case s: String =>
+          if (s.equals("")) {
+            // ignore this, this is a heartbeat
+          } else {
+            DuplexProtocol.fromString(s) match {
+              case DuplexProtocol.Response(data,seq) =>
+                processMessage(data)
+              case DuplexProtocol.Unsolicited(data) =>
+                processMessage(data)
+              case x =>
+                logger.severe(s"EventSource received unknown object: ${me.data}")
+            }
+          }
+      }
+    } catch {
+      case x: Exception =>
+        logger.severe(s"esOnMessage exception: $x", x)
+    }
+  }
+
+  def esOnError( err: Event ): Unit = {
+    logger.info("EventSource error")
+  }
+
+  def getEventSource( dupid: Id.MatchDuplicate ): Option[EventSource] = {
+    val es = new EventSource(s"/v1/sse/duplicates/${dupid}")
+    es.onmessage = esOnMessage
+    es.onerror = esOnError
+    Some(es)
+  }
+
+  var eventSource: Option[EventSource] = None
+
   def monitorMatchDuplicate( dupid: Id.MatchDuplicate ): Unit = {
+
     DuplicateStore.getId() match {
       case Some(mdid) =>
         if (mdid != dupid) {
           logger.info(s"""Switching MatchDuplicate monitor to ${dupid} from ${mdid}""" )
-          getDuplexPipe().clearSession(Protocol.StopMonitor(mdid))
-          BridgeDispatcher.startDuplicateMatch(dupid)
-          getDuplexPipe().setSession { dp =>
-            logger.info(s"""In Session: Switching MatchDuplicate monitor to ${dupid} from ${mdid}""" )
-            dp.send(Protocol.StartMonitor(dupid))
+          if (useRest) {
+            BridgeDispatcher.startDuplicateMatch(dupid)
+            eventSource.foreach( es => es.close())
+            eventSource = getEventSource(dupid)
+          } else {
+            getDuplexPipe().clearSession(Protocol.StopMonitor(mdid))
+            BridgeDispatcher.startDuplicateMatch(dupid)
+            getDuplexPipe().setSession { dp =>
+              logger.info(s"""In Session: Switching MatchDuplicate monitor to ${dupid} from ${mdid}""" )
+              dp.send(Protocol.StartMonitor(dupid))
+            }
           }
         } else {
           // already monitoring id
@@ -205,10 +257,16 @@ object Controller {
         }
       case None =>
         logger.info(s"""Starting MatchDuplicate monitor to ${dupid}""" )
-        BridgeDispatcher.startDuplicateMatch(dupid)
-        getDuplexPipe().setSession { dp =>
-          logger.info(s"""In Session: Starting MatchDuplicate monitor to ${dupid}""" )
-          dp.send(Protocol.StartMonitor(dupid))
+        if (useRest) {
+          BridgeDispatcher.startDuplicateMatch(dupid)
+          eventSource.foreach( es => es.close())
+          eventSource = getEventSource(dupid)
+        } else {
+          BridgeDispatcher.startDuplicateMatch(dupid)
+          getDuplexPipe().setSession { dp =>
+            logger.info(s"""In Session: Starting MatchDuplicate monitor to ${dupid}""" )
+            dp.send(Protocol.StartMonitor(dupid))
+          }
         }
     }
   }
@@ -216,16 +274,23 @@ object Controller {
   /**
    * Stop monitoring a duplicate match
    */
-  def stop() = duplexPipe match {
-    case Some(d) =>
-      DuplicateStore.getId() match {
-        case Some(id) =>
-          d.clearSession(Protocol.StopMonitor(id))
-        case None =>
-      }
-      BridgeDispatcher.stop()
-    case _ =>
+  def stop() = {
+    if (useRest) {
+      eventSource.foreach( es => es.close())
+      eventSource = None
+    } else {
+      duplexPipe match {
+        case Some(d) =>
+          DuplicateStore.getId() match {
+            case Some(id) =>
+              d.clearSession(Protocol.StopMonitor(id))
+            case None =>
+          }
+          BridgeDispatcher.stop()
+        case _ =>
 
+      }
+    }
   }
 
   def getSummary(): Unit = {
