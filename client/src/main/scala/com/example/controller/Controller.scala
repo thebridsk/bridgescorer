@@ -222,7 +222,7 @@ object Controller {
   }
 
   def esOnError( err: Event ): Unit = {
-    logger.info("EventSource error")
+    logger.severe(s"EventSource error: $err")
   }
 
   def getEventSource( dupid: Id.MatchDuplicate ): Option[EventSource] = {
