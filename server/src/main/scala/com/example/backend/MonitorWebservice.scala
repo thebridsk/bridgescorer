@@ -36,16 +36,29 @@ import io.swagger.annotations.ApiOperation
 import io.swagger.annotations.ApiResponses
 import io.swagger.annotations.ApiResponse
 import akka.actor.Props
+import akka.http.scaladsl.model.sse.ServerSentEvent
+import com.example.data.Id
+import io.swagger.annotations.ApiImplicitParams
+import io.swagger.annotations.ApiImplicitParam
+import akka.http.scaladsl.server.RejectionHandler
+import akka.http.scaladsl.server.MalformedRequestContentRejection
+import com.example.data.RestMessage
+import akka.http.scaladsl.server.MethodRejection
+import akka.http.scaladsl.model.headers.Allow
+import akka.http.scaladsl.server.UnsupportedRequestContentTypeRejection
+import akka.http.scaladsl.model.MediaTypes
 
 @Path( "" )
 @Api(tags= Array("Server"), description = "Websocket operations.", produces="application/json")
-class MonitorWebservice(implicit fm: Materializer, system: ActorSystem, bridgeService: BridgeService) extends Directives {
+class MonitorWebservice(totallyMissingResourceHandler: RejectionHandler)(implicit fm: Materializer, system: ActorSystem, bridgeService: BridgeService) extends Directives {
   val log = Logging(system, classOf[MonitorWebservice])
   val monitor = new StoreMonitorManager(system, bridgeService.duplicates)
   import system.dispatcher
 //  system.scheduler.schedule(15.second, 15.second) {
 //    theChat.injectMessage(ChatMessage(sender = "clock", s"Bling! The time is ${new Date().toString}."))
 //  }
+
+  def route = routews ~ routesse
 
 
   @Path("/ws")
@@ -54,18 +67,62 @@ class MonitorWebservice(implicit fm: Materializer, system: ActorSystem, bridgeSe
   @ApiResponses(Array(
     new ApiResponse(code = 101, message = "Switching to websocket protocol", response=classOf[Void] )
   ))
-  def route =
+  def routews =
     get {
-//      pathPrefix("duplicates") {
-//        pathPrefix( """[a-zA-Z0-9]+""".r ) { id =>
-          pathEndOrSingleSlash {
-            extractClientIP { ip => {
-              handleWebSocketMessagesForProtocol(duplicateWebsocketMonitor(ip), Protocol.DuplicateBridge)
-            }}
-          }
-//        }
-//      }
+      pathPrefix("ws") {
+        handleRejections(totallyMissingResourceHandler) {
+  //      pathPrefix("duplicates") {
+  //        pathPrefix( """[a-zA-Z0-9]+""".r ) { id =>
+              pathEndOrSingleSlash {
+                extractClientIP { ip => {
+                  handleWebSocketMessagesForProtocol(duplicateWebsocketMonitor(ip), Protocol.DuplicateBridge)
+                }}
+              }
+  //        }
+  //      }
+        }
+      }
     }
+
+
+  @Path("/sse/duplicates/{dupId}")
+  @ApiOperation(value = "BridgeScorer server set event on a duplicate match", notes = "", nickname = "MonitorWebserviceroute",
+                protocols="WS, WSS", httpMethod = "GET", code=101, response=classOf[String] )
+  @ApiImplicitParams(Array(
+    new ApiImplicitParam(name = "dupId", value = "ID of the board to get", required = true, dataType = "string", paramType = "path")
+  ))
+  @ApiResponses(Array(
+    new ApiResponse(code = 101, message = "Switching to websocket protocol", response=classOf[Void] )
+  ))
+  def routesse = {
+    import akka.http.scaladsl.marshalling.sse.EventStreamMarshalling._
+    import akka.http.scaladsl.model.sse.ServerSentEvent
+    pathPrefix("sse") {
+      handleRejections(totallyMissingResourceHandler) {
+        get {
+          logRequest("sse", Logging.DebugLevel) { logResult("sse", Logging.DebugLevel) {
+            pathPrefix("duplicates") {
+              pathPrefix( """[a-zA-Z0-9]+""".r ) { id =>
+                pathEndOrSingleSlash {
+                  extractClientIP { ip => {
+                    log.info(s"SSE from $ip for $id")
+                    reject(UnsupportedRequestContentTypeRejection(Set( MediaTypes.`text/event-stream` )))
+                    complete {
+                      val dupid: Id.MatchDuplicate = id
+                      sseSource( ip, dupid )
+                    }
+                  }}
+                }
+              }
+            }
+          }}
+        }
+      }
+    }
+  }
+
+
+
 
   val maxChunks: Int = 1000
   val maxChunkCollectionMills: Long = 5000
@@ -107,6 +164,14 @@ class MonitorWebservice(implicit fm: Materializer, system: ActorSystem, bridgeSe
           Nil
       }.withAttributes(Attributes.inputBuffer(initial = 32, max = 128))
       .via(reportErrorsFlow(sender)) // ... then log any processing errors on stdin
+
+
+  def sseSource( sender: RemoteAddress, id: Id.MatchDuplicate): Source[ServerSentEvent, _] = {
+    monitor.monitorDuplicateSource( sender, id ).
+      map( msg => ServerSentEvent( DuplexProtocol.toString(msg) ) ).
+      keepAlive(10.second, () => ServerSentEvent.heartbeat)
+  }
+
 
   def reportErrorsFlow[T](sender: RemoteAddress) =
     new GraphStage[FlowShape[T,T]] {

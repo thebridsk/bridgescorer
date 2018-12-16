@@ -83,6 +83,7 @@ import com.example.backend.StoreMonitor.ReceivedMessage
 import com.example.data.websocket.DuplexProtocol
 import com.example.backend.StoreMonitor.KillOneConnection
 import akka.actor.Actor
+import com.example.backend.StoreMonitor.NewParticipantSSE
 
 object DuplicateTestPages2 {
 
@@ -375,6 +376,7 @@ class DuplicateTestPages2 extends FlatSpec with MustMatchers with BeforeAndAfter
 
   it should "see a restart of the websocket" whenTestServerIsRunInTest {
     var gotJoin = false
+    var gotJoinSSE = false
     var gotStartMonitor = false
 
     def process( msg: Protocol.ToServerMessage ) = {
@@ -392,6 +394,8 @@ class DuplicateTestPages2 extends FlatSpec with MustMatchers with BeforeAndAfter
             msg match {
               case NewParticipant(name, subscriber) =>
                 gotJoin = true
+              case NewParticipantSSE(name, dupid, subscriber) =>
+                gotJoinSSE = true
               case ReceivedMessage(senderid, message) =>
                 DuplexProtocol.fromString(message) match {
                   case DuplexProtocol.Send(data) => process(data)
@@ -410,14 +414,16 @@ class DuplicateTestPages2 extends FlatSpec with MustMatchers with BeforeAndAfter
           storeMonitorActorRef ! KillOneConnection()
 
           eventually {
-            gotJoin mustBe true
+            (gotJoin || gotJoinSSE) mustBe true
           }
           testlog.info(s"""withHook got join""")
 
-          eventually {
-            gotStartMonitor mustBe true
+          if (gotJoin) {
+            eventually {
+              gotStartMonitor mustBe true
+            }
+            testlog.info(s"""withHook got start monitor""")
           }
-          testlog.info(s"""withHook got start monitor""")
         }
       }
     }

@@ -17,6 +17,7 @@ import java.io.StringWriter
 import java.io.PrintWriter
 import com.example.debug.DebugLoggerHandler
 import utils.logging.js.JsConsoleHandlerInfo
+import com.example.controller.Controller
 
 /**
  * Logging manager.
@@ -70,6 +71,8 @@ object Init {
     RestClientLoggerConfig.get("").foreach( config => CommAlerter.tryit {
       logger.info("Got "+config)
       pclientid = config.clientid
+      config.useRestToServer.map( b => Controller.useRestToServer = b )
+      config.useSSEFromServer.map( b => Controller.useSSEFromServer = b )
       if (config.loggers.length > 0) {
         // set trace levels in loggers to config.loggers
         processLoggers(config.loggers)

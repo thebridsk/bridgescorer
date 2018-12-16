@@ -1,6 +1,5 @@
 package com.example.rest
 
-import com.example.data.LoggerConfig
 import com.example.data.Ack
 import akka.event.Logging
 import akka.event.Logging._

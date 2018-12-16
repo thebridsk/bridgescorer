@@ -739,6 +739,7 @@ object PageSummaryInternal {
     val didMount = scope.props >>= { (p) => Callback {
       logger.info("PageSummary.didMount")
       mounted = true
+      Controller.stop()
       DuplicateSummaryStore.addChangeListener(storeCallback)
       p.page match {
         case isv: ImportSummaryView =>

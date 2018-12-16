@@ -53,6 +53,8 @@ import com.example.backend.resource.CreateChangeContext
 import com.example.backend.resource.UpdateChangeContext
 import com.example.backend.resource.DeleteChangeContext
 import com.example.data.VersionedInstance
+import akka.http.scaladsl.model.sse.ServerSentEvent
+import com.example.data.websocket.DuplexProtocol.Send
 
 object StoreMonitor {
   sealed trait ChatEvent
@@ -60,6 +62,8 @@ object StoreMonitor {
   case class ParticipantLeft(name: String) extends ChatEvent
   case class ReceivedMessage(sender: String, message: String) extends ChatEvent
   case class SendTo( to: String, msg: DuplexProtocol.DuplexMessage ) extends ChatEvent
+
+  case class NewParticipantSSE( name: String, id: Id.MatchDuplicate, subscriber: ActorRef) extends ChatEvent
 
   var testHook: Option[ (akka.actor.Actor, Any) => Unit] = None
 
@@ -132,6 +136,12 @@ abstract class BaseStoreMonitor[VId, VType <: VersionedInstance[VType,VType,VId]
           subscriber ! TerminateFlowStage.KillMsg
         }
       }
+    case NewParticipantSSE(name, dupid, subscriber) =>
+      log.info("("+name+"): New monitor")
+      context.watch(subscriber)
+      add(new Subscription( name, subscriber ))
+      dispatchToAll(MonitorJoined(name, members ))
+      process(name, Send(StartMonitor(dupid)) )
 
     case ReceivedMessage(senderid, message) =>
 //      log.info("("+sender+"): Received "+message)
@@ -225,6 +235,10 @@ class StoreMonitorManager[VId, VType <: VersionedInstance[VType,VType,VId]]( sys
     f
   }
 
+  def monitorDuplicateSource( sender: RemoteAddress, id: Id.MatchDuplicate): Source[DuplexProtocol.DuplexMessage, _] = {
+    Source.actorRef[DuplexProtocol.DuplexMessage](10, OverflowStrategy.fail ).
+      mapMaterializedValue { x => monitor ! NewParticipantSSE(sender.toString(),id, x) }
+  }
 }
 
 class TerminateFlowStage(

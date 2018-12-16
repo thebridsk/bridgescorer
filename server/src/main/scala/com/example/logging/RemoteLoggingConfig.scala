@@ -49,12 +49,20 @@ case class RemoteLoggingConfig(
  *          appenders:
  *             - "console=ALL"
  *             - "server=ALL,bridge"
+ *          clientid: "123"
+ *          useRestToServer: true
+ *          useSSEFromServer: true
  *       <configname2>:
  *          ...
  *   <browsername2>:
  *      ...
  *
- * // LoggerConfig( "[root]=ALL"::Nil, "console=ALL"::"server=ALL,bridge"::Nil)
+ * // LoggerConfig( "[root]=ALL"::Nil, "console=ALL"::"server=ALL,bridge"::Nil, "123", true, true)
+ *
+ * The clientid field can be omitted from the yaml file, it will be set and overridden by the server
+ * giving each client a unique id
+ * The useRestToServer is optional, default is true.  if true, use REST calls to update server, otherwise use WebSockets
+ * The useSSEFromServer is optional, default is true.  if true, use SSE to receive updates from server, otherwise use WebSockets
  *
  */
 object RemoteLoggingConfig {

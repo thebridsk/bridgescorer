@@ -58,7 +58,6 @@ import utils.main.Subcommand
 import utils.logging.Logger
 import javax.net.ssl.TrustManagerFactory
 import com.example.service.ShutdownHook
-import com.example.data.LoggerConfig
 import java.net.NetworkInterface
 import java.net.Inet4Address
 import com.example.logging.RemoteLoggingConfig

@@ -120,7 +120,7 @@ trait Service extends ImportExport {
     override implicit lazy val materializer: ActorMaterializer = hasActorSystem.materializer
     override implicit lazy val restService = hasActorSystem.restService
   }
-  object monitor extends MonitorWebservice
+  object monitor extends MonitorWebservice(totallyMissingResourceHandler)
 
   object restLoggerConfig extends RestLoggerConfig {
     override implicit lazy val actorSystem: ActorSystem = hasActorSystem.actorSystem
@@ -184,11 +184,7 @@ trait Service extends ImportExport {
             }
           }
         } ~
-        pathPrefix("ws") {
-          handleRejections(totallyMissingResourceHandler) {
-            monitor.route
-          }
-        } ~
+        monitor.route ~
         importExportRoute
       }
     }
