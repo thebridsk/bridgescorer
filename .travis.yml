@@ -1,4 +1,7 @@
 
+dist: xenial
+sudo: false
+
 language: scala
 scala:
 - 2.12.6
