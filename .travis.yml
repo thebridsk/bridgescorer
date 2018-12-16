@@ -22,8 +22,10 @@ branches:
 
 install: # Install ChromeDriver
   - mkdir -p target/drivers
-  - wget -N https://chromedriver.storage.googleapis.com/2.35/chromedriver_linux64.zip -P target/drivers/
-  - echo "67fad24c4a85e3f33f51c97924a98b619722db15ce92dcd27484fb748af93e8e *target/drivers/chromedriver_linux64.zip" | sha256sum -c
+#  - wget -N https://chromedriver.storage.googleapis.com/2.35/chromedriver_linux64.zip -P target/drivers/
+#  - echo "67fad24c4a85e3f33f51c97924a98b619722db15ce92dcd27484fb748af93e8e *target/drivers/chromedriver_linux64.zip" | sha256sum -c
+  - wget -N https://chromedriver.storage.googleapis.com/2.45/chromedriver_linux64.zip -P target/drivers/
+  - echo "d4a5eec0a3b7fec9bcb71353233dde38630e51b29fa7b218cdd196e2e4487da7 *target/drivers/chromedriver_linux64.zip" | sha256sum -c
   - unzip target/drivers/chromedriver_linux64.zip -d target/drivers/
   - rm target/drivers/chromedriver_linux64.zip
   - sudo mv -f target/drivers/chromedriver /usr/local/share/
