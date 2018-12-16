@@ -42,7 +42,7 @@ object Dependencies {
 //  lazy val vSwaggerScalaModule="1.0.4" // http://mvnrepository.com/artifact/io.swagger/swagger-scala-module_2.11
   lazy val vSwagger="1.5.21"           // http://mvnrepository.com/artifact/io.swagger/swagger-core
 
-  lazy val vSwaggerUI = "3.20.2"       // https://www.npmjs.com/package/swagger-ui-dist
+  lazy val vSwaggerUI = "3.20.3"       // https://www.npmjs.com/package/swagger-ui-dist
   lazy val vScalajsdom = "0.9.6"       // http://mvnrepository.com/artifact/org.scala-js/scalajs-dom_sjs0.6_2.11
   lazy val vScalaJsReact = "1.3.1"     // http://mvnrepository.com/artifact/com.github.japgolly.scalajs-react/core_sjs0.6_2.11
   lazy val vScalaCss = "0.5.3"         // http://mvnrepository.com/artifact/com.github.japgolly.scalacss/core_sjs0.6_2.11
@@ -74,7 +74,7 @@ object Dependencies {
 
   // jackson-module-scala usually updates a few days after the others are updated,
   // don't update until jackson-module-scala is updated
-  lazy val vJackson = "2.9.7"        // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core
+  lazy val vJackson = "2.9.8"        // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core
 
   // Selenium needs to be update to update to v23.0
   lazy val vGuavaJre = "27.0.1-jre"    // https://github.com/google/guava
@@ -84,7 +84,7 @@ object Dependencies {
   // sbt-scalajs-bundler does not support 12.0.0,
   // see https://github.com/scalacenter/scalajs-bundler/pull/265
   // and https://github.com/scalacenter/scalajs-bundler/issues/261
-  lazy val vJsDom = "13.0.0"           // https://www.npmjs.com/package/jsdom
+  lazy val vJsDom = "13.1.0"           // https://www.npmjs.com/package/jsdom
 //  lazy val vExposeLoader = "0.7.3"     // https://www.npmjs.com/package/expose-loader
 
   // version 0.2.3 is hardcoded in sbt-scalajs-bundler
