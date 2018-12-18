@@ -47,9 +47,7 @@ Syntax:
   ${DataStoreCommands.cmdName} convertboards type
 Options:""")
 
-  // TODO option to get mapping file.
-
-  val paramType = trailArg[String]( name="type",
+val paramType = trailArg[String]( name="type",
                                     required=true,
                                     validate= (s)=>validValues.contains(s),
                                     descr=s"""The type to convert to. Valid values: ${validValues.mkString("\"", "\", \"", "\"")}.""")

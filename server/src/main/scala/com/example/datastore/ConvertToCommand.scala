@@ -45,8 +45,6 @@ Syntax:
   ${DataStoreCommands.cmdName} convertto type
 Options:""")
 
-  // TODO option to get mapping file.
-
   val paramType = trailArg[String]( name="type",
                                     required=true,
                                     validate= (s)=>validValues.contains(s),

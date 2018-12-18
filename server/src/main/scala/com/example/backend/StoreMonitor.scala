@@ -205,7 +205,7 @@ class StoreMonitorManager[VId, VType <: VersionedInstance[VType,VType,VId]]( sys
 
   // Wraps the chatActor in a sink. When the stream to this sink will be completed
   // it sends the `ParticipantLeft` message to the chatActor.
-  // FIXME: here some rate-limiting should be applied to prevent single users flooding the chat
+  // FIXME: here some rate-limiting should be applied to prevent single users flooding
   private def chatInSink(sender: String) = Sink.actorRef[ChatEvent](monitor, ParticipantLeft(sender))
 
   def monitorFlow(sender: RemoteAddress): Flow[String, Any, NotUsed] = {
