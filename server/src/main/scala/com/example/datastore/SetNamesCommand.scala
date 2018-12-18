@@ -47,8 +47,6 @@ Syntax:
   ${DataStoreCommands.cmdName} setnames [options]
 Options:""")
 
-  // TODO option to get mapping file.
-
   val optionMapFileName = opt[String]( "mapfile",
                                        short='m',
                                        descr="the name mapping file",

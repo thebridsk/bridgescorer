@@ -12,7 +12,6 @@
 //import japgolly.scalajs.react.CallbackTo
 //import org.scalatest.FlatSpec
 //import org.scalatest.MustMatchers
-//import japgolly.scalajs.react.ReactAddons.Perf
 //
 //object WorkingThingsOutComponents {
 //
@@ -37,19 +36,6 @@
 //  import WorkingThingsOutComponents._
 //
 //  behavior of "WorkingThingsOut in bridgescorer-client"
-//
-//  it should "perf" in {
-//    val c = ReactTestUtils renderIntoDocument componentA(10)
-//// React.addons.Perf not working, https://github.com/ariya/phantomjs/issues/13652
-////      Perf.start()
-//    c.setState(20)
-//    c.setState(5)
-////      Perf.stop()
-//    val m = Perf.getLastMeasurements()
-//    // TODO remove comments when resolved in scalajs react addons
-////      m.length mustBe 2
-////      DebugJs.inspectObject(m(0))
-//  }
 //
 //  it should "vultest" in {
 //    object callbacks extends ReactForJQuery {

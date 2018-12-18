@@ -38,8 +38,6 @@ object DuplicateStore extends ChangeListenable {
   private var completeView: Option[MatchDuplicateScore] = None
   private var teamsView = Map[(Id.Team,Id.Team),MatchDuplicateScore]()
 
-  // TODO add query functions for the store
-
   def getId() = monitoredId
   def getMatch() = bridgeMatch
 
@@ -64,46 +62,6 @@ object DuplicateStore extends ChangeListenable {
           }
         }}
         result
-      case None => None
-    }
-  }
-
-  /**
-   *
-   */
-  @deprecated("Does not work, board can be played multiple times on table", "0.65")
-  def xgetTablePerspectiveFromBoard( table: String, board: Id.DuplicateBoard ): Option[DuplicateViewPerspective] = {
-    bridgeMatch match {
-      case Some(md) =>
-        md.getBoard(board) match {
-          case Some(b) =>
-            b.hands.find { h=>h.table==table } match {
-              case Some(h) =>
-                Some(PerspectiveTable(h.nsTeam,h.ewTeam))
-              case None => None
-            }
-          case None => None
-        }
-      case None => None
-    }
-  }
-
-  /**
-   *
-   */
-  @deprecated("Does not work, board can be played multiple times on table", "0.65")
-  def xgetRoundFromTableBoard( table: String, board: Id.DuplicateBoard ): Option[Int] = {
-    bridgeMatch match {
-      case Some(md) =>
-        md.getBoard(board) match {
-          case Some(b) =>
-            b.hands.find { h=>h.table==table } match {
-              case Some(h) =>
-                Some(h.round)
-              case None => None
-            }
-          case None => None
-        }
       case None => None
     }
   }
