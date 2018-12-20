@@ -24,13 +24,17 @@ object ViewContractSuit {
 
   type CallbackSuit = (ContractSuit)=>Callback
 
-  case class Props( current: Option[ContractSuit], callback: CallbackSuit,
+  case class Props( current: Option[ContractSuit],
+                    contractTricks: Option[ContractTricks],
+                    callback: CallbackSuit,
                     nextInput: PageHandNextInput.Value,
                     visible: Boolean )
 
-  def apply( current: Option[ContractSuit], callback: CallbackSuit,
+  def apply( current: Option[ContractSuit],
+             contractTricks: Option[ContractTricks],
+             callback: CallbackSuit,
              nextInput: PageHandNextInput.Value,
-             visible: Boolean ) = component(Props(current,callback,nextInput,visible))
+             visible: Boolean ) = component(Props(current,contractTricks,callback,nextInput,visible))
 
   private val component = ScalaComponent.builder[Props]("ViewContractSuit")
                             .render_P(props => {
@@ -64,6 +68,7 @@ object ViewContractSuit {
                                   }
                                 }
                                 def getButton(text: String,
+                                              texts: String,
                                               contractSuit: ContractSuit,
                                               icon: Option[String],
                                               color: Option[String]) =
@@ -76,16 +81,16 @@ object ViewContractSuit {
                                                   requiredNotNext = missingNotNext
                                               ),
                                               getIcon(icon,color),
-                                              text
+                                              if (props.contractTricks.map(ct=>ct.tricks).getOrElse(0) == 1) text else texts
                                             )
                                 <.div( handStyles.viewContractSuit, !props.visible ?= baseStyles.notVisible,
-                                    getButton("No Trump", NoTrump, None, None),
+                                    getButton("No Trump", "No Trump", NoTrump, None, None),
                                     <.br,
-                                    getButton("Spades", Spades, Some("&spades;"), Some("black")),
-                                    getButton("Hearts", Hearts, Some("&hearts;"), Some("red")),
+                                    getButton("Spade", "Spades", Spades, Some("&spades;"), Some("black")),
+                                    getButton("Heart", "Hearts", Hearts, Some("&hearts;"), Some("red")),
                                     <.br,
-                                    getButton("Diamonds", Diamonds, Some("&diams;"), Some("red")),
-                                    getButton("Clubs", Clubs, Some("&clubs;"), Some("black"))
+                                    getButton("Diamond", "Diamonds", Diamonds, Some("&diams;"), Some("red")),
+                                    getButton("Club", "Clubs", Clubs, Some("&clubs;"), Some("black"))
                                     )
                             })
                             .build
