@@ -14,7 +14,23 @@ import scala.collection.mutable.ListBuffer
  * @param points the number of points scored by this pair
  * @param totalPoints the total number of points the team could have won.
  */
-case class PairData( player1: String, player2: String, played: Int, won: Int, wonPts: Double, points: Double, totalPoints: Double, incompleteGames: Int, details: Option[DuplicateSummaryDetails], wonImp: Int, wonImpPts: Double, imp: Double, playedMP: Int, playedIMP: Int ) {
+case class PairData(
+    player1: String,
+    player2: String,
+    played: Int,
+    won: Int,
+    wonPts: Double,
+    points: Double,
+    totalPoints: Double,
+    incompleteGames: Int,
+    details: Option[DuplicateSummaryDetails],
+    wonImp: Int,
+    wonImpPts: Double,
+    imp: Double,
+    playedMP: Int,
+    playedIMP: Int,
+    maxMPPercent: Double
+) {
   import PairsData._
 
   def normalize = {
@@ -26,7 +42,7 @@ case class PairData( player1: String, player2: String, played: Int, won: Int, wo
 
   def isNormalized = (player1,player2) == key(player1,player2)
 
-  def add( win: Boolean, winPts: Double, pts: Double, totpts: Double, det: Option[DuplicateSummaryDetails], winImp: Boolean, winImpPts: Double, aimp: Double, playMP: Boolean ) = {
+  def add( win: Boolean, winPts: Double, pts: Double, totpts: Double, det: Option[DuplicateSummaryDetails], winImp: Boolean, winImpPts: Double, aimp: Double, playMP: Boolean, maxMPPer: Double ) = {
     val ds = det.map { d =>
       Some(details.map { cd => cd.add(d) }.getOrElse(d))
     }.getOrElse(details)
@@ -41,7 +57,8 @@ case class PairData( player1: String, player2: String, played: Int, won: Int, wo
           details=ds,
           wonImp=wonImp+(if (winImp) 1 else 0),
           wonImpPts=wonImpPts+winImpPts,
-          imp=imp+aimp
+          imp=imp+aimp,
+          maxMPPercent=Math.max(maxMPPercent,maxMPPer)
         )
   }
 
@@ -80,7 +97,8 @@ case class PairData( player1: String, player2: String, played: Int, won: Int, wo
               incompleteGames = incompleteGames+pd.incompleteGames,
               details = ds,
               playedMP = playedMP+pd.playedMP,
-              playedIMP = playedIMP+pd.playedIMP
+              playedIMP = playedIMP+pd.playedIMP,
+              maxMPPercent = Math.max(maxMPPercent,pd.maxMPPercent)
               )
   }
 }
@@ -124,11 +142,16 @@ class PairsData( val pastgames: List[DuplicateSummary], val calc: CalculationTyp
       addPerson(player1)
       addPerson(player2)
       val pp = key(player1,player2)
-      val newpd = tdata.get(pp).getOrElse( PairData(pp._1,pp._2,0,0,0,0,0,0,None,0,0,0,0,0).normalize )
+      val newpd = tdata.get(pp).getOrElse( PairData(pp._1,pp._2,0,0,0,0,0,0,None,0,0,0,0,0,0.0).normalize )
       val reallynewpd = if (incomplete) {
         newpd.addIncomplete
       } else {
-        newpd.add(win, winPts, pts, totpts, details, winImp, winImpPts, imp, playMP)
+        val max = if (playMP && totpts!=0) {
+          pts/totpts*100
+        } else {
+          0
+        }
+        newpd.add(win, winPts, pts, totpts, details, winImp, winImpPts, imp, playMP,max)
       }
       tdata += newpd.getkey -> reallynewpd
     }
@@ -219,7 +242,7 @@ class PairsData( val pastgames: List[DuplicateSummary], val calc: CalculationTyp
   def get( player: String, playerFilter: Option[List[String]] ) = {
     val (r,p) = data.values.filter { pd =>
       pd.contains(player) && playerFilter.map( f => f.contains(pd.player1) && f.contains(pd.player2)).getOrElse(true)
-    }.foldLeft((PairData(player,"",0,0,0,0,0,0, None,0,0,0,0,0),List[String]())) { (ac,v) =>
+    }.foldLeft((PairData(player,"",0,0,0,0,0,0, None,0,0,0,0,0,0.0),List[String]())) { (ac,v) =>
       (ac._1.addPairData(v), (if (v.player1==player) v.player2 else v.player1)::ac._2)
     }
     r.copy(player2=p.sorted.mkString(","))

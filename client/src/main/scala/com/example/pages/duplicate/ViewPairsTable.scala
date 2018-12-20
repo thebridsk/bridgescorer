@@ -241,6 +241,11 @@ object ViewPairsTableInternal {
       new IntColumn( "Incomplete", "Incomplete" ) {
         def getValue( pd: PairData ) = pd.incompleteGames
       },
+      new PercentColumn( "MaxMPPer" , "Max Points %") {
+        def getValue( pd: PairData ) = pd.maxMPPercent
+        override
+        val showIn: List[CalculationType] = CalculationAsPlayed::CalculationMP::Nil
+      },
       new MPColumn( "Points", "MP" ) {
         def getValue( pd: PairData ) = pd.points
         override

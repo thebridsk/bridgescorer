@@ -206,7 +206,7 @@ object ViewPairsGridInternal {
         }
         d
       }
-      val playerTotals = summary.playerTotals.get(rowplayer).getOrElse(PairData(rowplayer,"",0,0,0,0,0,0,None,0,0,0,0,0))
+      val playerTotals = summary.playerTotals.get(rowplayer).getOrElse(PairData(rowplayer,"",0,0,0,0,0,0,None,0,0,0,0,0,0))
 
       val (totalData, totalTitle) = getData(playerTotals, statTotalSize, statTotalColor, 240, 60, state, 2)
 
