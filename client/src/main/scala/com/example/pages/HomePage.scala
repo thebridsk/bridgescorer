@@ -49,6 +49,7 @@ import japgolly.scalajs.react.extra.router.RouterCtl
 import com.example.routes.BridgeRouter
 import com.example.react.AppButtonLinkNewWindow
 import com.example.react.HelpButton
+import com.example.Bridge
 
 /**
  * @author werewolf
@@ -59,7 +60,7 @@ object HomePage {
 
   case class Props( routeCtl: BridgeRouter[AppPage])
 
-  case class State( debugging: Boolean, serverUrl: ServerURL, working: Option[String], fastclickTest: Boolean )
+  case class State( debugging: Boolean, serverUrl: ServerURL, working: Option[String], fastclickTest: Boolean, userSelect: Boolean = false )
 
   var fastclick: Option[FastClick] = None
 
@@ -84,6 +85,21 @@ object HomePage {
       debugging = newstate.debugging
 
       newstate.copy(debugging = false, working=Some("Debugging not enabled"))
+    }
+
+    val toggleUserSelect = scope.modState { s =>
+      val newstate = s.copy( userSelect = !s.userSelect )
+      val style = Bridge.getElement("allowSelect")
+      if (newstate.userSelect) {
+        style.innerHTML = """
+           |* {
+           |  user-select: text;
+           |}
+           |""".stripMargin
+      } else {
+        style.innerHTML = ""
+      }
+      newstate
     }
 
     def render( props: Props, state: State ) = {
@@ -271,12 +287,19 @@ object HomePage {
                              ^.disabled:=isWorking,
                              ^.onClick --> callbackPage(Info))
                 ),
+//                <.td( ^.width:="25%",
+//                  AppButton( "Debug", "Debug",
+//                             rootStyles.playButton,
+//                             ^.disabled:=true,   // isWorking,
+//                             ^.onClick --> toggleDebug,
+//                             BaseStyles.highlight(selected = debugging )
+//                  )
+//                ),
                 <.td( ^.width:="25%",
-                  AppButton( "Debug", "Debug",
+                  AppButton( "UserSelect", "Allow Select",
                              rootStyles.playButton,
-                             ^.disabled:=true,   // isWorking,
-                             ^.onClick --> toggleDebug,
-                             BaseStyles.highlight(selected = debugging )
+                             ^.onClick --> toggleUserSelect,
+                             BaseStyles.highlight(selected = state.userSelect )
                   )
                 ),
                 <.td( ^.width:="25%",
