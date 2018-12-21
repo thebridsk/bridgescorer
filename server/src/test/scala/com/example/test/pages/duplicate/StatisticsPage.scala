@@ -51,6 +51,7 @@ case class PeopleRow( name: String,
                       playedMP: String,
                       playedIMP: String,
                       incomplete: String,
+                      maxMPPer: String,
                       MP: String,
                       total: String
                     )
@@ -63,6 +64,7 @@ case class PeopleRowMP( name: String,
                         wonMPPoints: String,
                         played: String,
                         incomplete: String,
+                        maxMPPer: String,
                         MP: String,
                         total: String
                       )
@@ -158,15 +160,15 @@ class StatisticsPage( implicit webDriver: WebDriver, pageCreated: SourcePosition
 
   def getPlayerTablePlayed(implicit patienceConfig: PatienceConfig, pos: Position) = {
     getPlayerTableScoringStyle mustBe Some("CalcPlayed")
-    getElemsByXPath("""//div[contains(concat(' ', @class, ' '), ' dupViewPeopleTable ')]/table/tbody/tr/td""").map(e=>e.text).grouped(16).map{ list =>
-      PeopleRow(list(0),list(1),list(2),list(3),list(4),list(5),list(6),list(7),list(8),list(9),list(10),list(11),list(12),list(13),list(14),list(15))
+    getElemsByXPath("""//div[contains(concat(' ', @class, ' '), ' dupViewPeopleTable ')]/table/tbody/tr/td""").map(e=>e.text).grouped(17).map{ list =>
+      PeopleRow(list(0),list(1),list(2),list(3),list(4),list(5),list(6),list(7),list(8),list(9),list(10),list(11),list(12),list(13),list(14),list(15),list(16))
     }.toList
   }
 
   def getPlayerTableMP(implicit patienceConfig: PatienceConfig, pos: Position) = {
     getPlayerTableScoringStyle mustBe Some("CalcMP")
-    getElemsByXPath("""//div[contains(concat(' ', @class, ' '), ' dupViewPeopleTable ')]/table/tbody/tr/td""").map(e=>e.text).grouped(10).map{ list =>
-      PeopleRowMP(list(0),list(1),list(2),list(3),list(4),list(5),list(6),list(7),list(8),list(9))
+    getElemsByXPath("""//div[contains(concat(' ', @class, ' '), ' dupViewPeopleTable ')]/table/tbody/tr/td""").map(e=>e.text).grouped(11).map{ list =>
+      PeopleRowMP(list(0),list(1),list(2),list(3),list(4),list(5),list(6),list(7),list(8),list(9),list(10))
     }.toList
   }
 

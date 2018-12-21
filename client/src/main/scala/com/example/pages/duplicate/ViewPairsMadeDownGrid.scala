@@ -199,7 +199,7 @@ object ViewPairsMadeDownGridInternal {
               }
             }
 
-            val pdTotal = summary.playerTotals.get(rowPlayer).getOrElse(PairData(rowPlayer,"",0,0,0,0,0,0,None,0,0,0,0,0))
+            val pdTotal = summary.playerTotals.get(rowPlayer).getOrElse(PairData(rowPlayer,"",0,0,0,0,0,0,None,0,0,0,0,0,0))
             val totalCell = List( cellAll(pdTotal,true) )
 
             TagMod(rowPlayer)::cells:::totalCell

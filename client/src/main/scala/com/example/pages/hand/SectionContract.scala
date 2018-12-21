@@ -70,7 +70,7 @@ object SectionContract {
                                     handStyles.sectionContract,
                                     header(),
                                     ViewContractTricks(props.allowPassedOut,props.currentTricks,props.callbackTricks, props.nextInput,show( InputContractTricks, true)),
-                                    ViewContractSuit(props.currentSuit,props.callbackSuit, props.nextInput,show( InputContractSuit)),
+                                    ViewContractSuit(props.currentSuit,props.currentTricks,props.callbackSuit, props.nextInput,show( InputContractSuit)),
                                     ViewContractDoubled(props.currentDoubled,props.callbackDoubled, props.nextInput,show( InputContractDoubled))
                                 )
                             })

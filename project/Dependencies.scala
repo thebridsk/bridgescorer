@@ -34,7 +34,7 @@ object Dependencies {
 
 
   lazy val vAkka = "2.5.19"           // http://mvnrepository.com/artifact/com.typesafe.akka/akka-actor_2.11
-  lazy val vAkkaHttp = "10.1.5"       // http://mvnrepository.com/artifact/com.typesafe.akka/akka-http_2.11
+  lazy val vAkkaHttp = "10.1.6"       // http://mvnrepository.com/artifact/com.typesafe.akka/akka-http_2.11
 
   lazy val vAkkaHttpPlayJson="1.22.0"  // https://github.com/hseeberger/akka-http-json
 
@@ -47,7 +47,7 @@ object Dependencies {
   lazy val vScalaJsReact = "1.3.1"     // http://mvnrepository.com/artifact/com.github.japgolly.scalajs-react/core_sjs0.6_2.11
   lazy val vScalaCss = "0.5.3"         // http://mvnrepository.com/artifact/com.github.japgolly.scalacss/core_sjs0.6_2.11
 
-  lazy val vWebJarsReact = "16.6.3"    // http://mvnrepository.com/artifact/org.webjars/react
+  lazy val vWebJarsReact = "16.7.0"    // http://mvnrepository.com/artifact/org.webjars/react
   lazy val vReactWidgets = "4.4.8"     // http://mvnrepository.com/artifact/org.webjars.npm/react-widgets
   lazy val vWebJarsFlux = "3.1.3"      // http://mvnrepository.com/artifact/org.webjars/flux
   lazy val vGlobalize = "1.3.0"        // https://www.npmjs.com/package/globalize
