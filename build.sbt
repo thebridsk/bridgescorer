@@ -50,6 +50,11 @@ lazy val useBrowser = sys.props.get("UseBrowser").
                        orElse(sys.env.get("UseBrowser")).
                        getOrElse("chrome")
 
+lazy val skipGenerateImage = sys.props.get("skipGenerateImage").
+                       orElse(sys.env.get("skipGenerateImage")).
+                       map( s => s.toBoolean ).
+                       getOrElse(false)
+
 lazy val onlyBuildDebug = sys.props.get("OnlyBuildDebug").
                        orElse(sys.env.get("OnlyBuildDebug")).
                        map( s => s.toBoolean ).
@@ -839,6 +844,17 @@ lazy val help = project.in(file("help")).
     },
 
     hugoWithTest := Def.sequential( hugosetupWithTest, hugo ).value,
+
+    hugoWithTest := Def.taskDyn {
+      val log = streams.value.log
+      val bd = new File(baseDirectory.value, "docs" )
+      val oldtask = hugoWithTest.taskValue
+      if (skipGenerateImage && Hugo.gotGeneratedImages(log,bd)) {
+        hugo
+      } else {
+        Def.task(oldtask.value)
+      }
+    }.value,
 
     hugosetupWithTest := Def.sequential( test in Test in `bridgescorer-server`, hugosetup ).value,
 
