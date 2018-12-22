@@ -28,6 +28,14 @@ import com.example.backend.BridgeServiceFileStoreConverters
 import com.example.backend.MatchRubberCacheStoreSupport
 import com.example.test.pages.Page
 import com.example.test.pages.PageBrowser
+import com.example.data.MatchRubber
+import play.api.libs.json.Json
+import java.io.InputStream
+import com.example.test.util.GraphQLUtils
+import java.io.OutputStreamWriter
+import play.api.libs.json.JsSuccess
+import play.api.libs.json.JsError
+import com.example.backend.BridgeResources
 
 /**
  * @author werewolf
@@ -377,6 +385,93 @@ class RubberTest extends FlatSpec with MustMatchers with BeforeAndAfterAll with 
 
     } finally {
       is.close()
+    }
+  }
+
+  case class ResponseData( rubber: MatchRubber )
+  case class QueryResponse( data: ResponseData )
+
+  it should "have rest call and queryml call return the same match" in {
+    val bridgeResources = BridgeResources(false)
+    import bridgeResources._
+
+    import com.example.data.rest.JsonSupport._
+    implicit val rdFormat = Json.format[ResponseData]
+    implicit val qrFormat = Json.format[QueryResponse]
+
+    val url: URL = new URL(TestServer.hosturl+"v1/rest/rubbers/"+rubberId)
+    val connection = url.openConnection()
+    val is = connection.getInputStream
+    var pl: Option[MatchRubber] = None
+    implicit val instanceJson = new BridgeServiceFileStoreConverters(true).matchDuplicateJson
+    var qmlis: InputStream = null
+    try {
+      val json = Source.fromInputStream(is)(Codec.UTF8).mkString
+
+      val (storegood,played) = bridgeResources.matchRubberCacheStoreSupport.fromJSON(json)
+      pl = Some(played)
+
+      val duplicateQML = s"""
+        |{
+        |  rubber( id: "$rubberId") {
+        |    id
+        |    north
+        |    south
+        |    east
+        |    west
+        |    dealerFirstHand
+        |    hands {
+        |      id
+        |      hand {
+        |        id
+        |        contractTricks
+        |        contractSuit
+        |        contractDoubled
+        |        declarer
+        |        nsVul
+        |        ewVul
+        |        madeContract
+        |        tricks
+        |        created
+        |        updated
+        |      }
+        |      honors
+        |      honorsPlayer
+        |      created
+        |      updated
+        |    }
+        |    created
+        |    updated
+        |  }
+        |}
+        |""".stripMargin
+
+      val data = GraphQLUtils.queryToJson(duplicateQML)
+
+      val qmlurl: URL = new URL( TestServer.hosturl+"v1/graphql")
+      val qmlconn = qmlurl.openConnection()
+      val headersForPost=Map("Content-Type" -> "application/json; charset=UTF-8",
+                             "Accept" -> "application/json")
+      headersForPost.foreach { e =>
+        qmlconn.setRequestProperty(e._1, e._2)
+      }
+      qmlconn.setDoOutput(true)
+      qmlconn.setDoInput(true)
+      val wr = new OutputStreamWriter(qmlconn.getOutputStream(), "UTF8")
+      wr.write(data)
+      wr.flush()
+      // Get the response
+      qmlis = qmlconn.getInputStream()
+      val qmljson = Source.fromInputStream(qmlis)(Codec.UTF8).mkString
+      Json.fromJson[QueryResponse]( Json.parse(qmljson) ) match {
+        case JsSuccess(qmlplayed,path) =>
+          played mustBe qmlplayed.data.rubber
+        case JsError(err) =>
+          fail( s"Unable to parse response from graphQL: $err")
+      }
+    } finally {
+      is.close()
+      if (qmlis!=null) qmlis.close()
     }
   }
 

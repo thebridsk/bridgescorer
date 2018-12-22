@@ -19,6 +19,16 @@ import com.example.data.MatchChicago
 import com.example.test.util.HttpUtils
 import com.example.test.pages.chicago.SummaryPage
 import org.scalatest.CancelAfterFailure
+import java.io.InputStream
+import scala.io.Source
+import play.api.libs.json.Json
+import com.example.test.util.GraphQLUtils
+import java.net.URL
+import java.io.OutputStreamWriter
+import scala.io.Codec
+import play.api.libs.json.JsSuccess
+import play.api.libs.json.JsError
+import com.example.backend.resource.FileIO
 
 object ChicagoTestPages {
 
@@ -397,6 +407,88 @@ class ChicagoTestPages extends FlatSpec with MustMatchers with BeforeAndAfterAll
 
   it should "get the MatchChicago object using the REST API" in {
     savedChicago = Some( getChicago(chicagoId.get) )
+  }
+
+  case class ResponseData( chicago: MatchChicago )
+  case class QueryResponse( data: ResponseData )
+
+  it should "have rest call and queryml call return the same match" in {
+    import com.example.data.rest.JsonSupport._
+    implicit val rdFormat = Json.format[ResponseData]
+    implicit val qrFormat = Json.format[QueryResponse]
+
+    chicagoId match {
+      case Some(chiId) =>
+        var qmlis: InputStream = null
+        try {
+
+          val chicagoQML = s"""
+            |{
+            |  chicago( id: "${chiId}") {
+            |    id
+            |    players
+            |    rounds {
+            |      id
+            |      north
+            |      south
+            |      east
+            |      west
+            |      dealerFirstRound
+            |      hands {
+            |        id
+            |        contractTricks
+            |        contractSuit
+            |        contractDoubled
+            |        declarer
+            |        nsVul
+            |        ewVul
+            |        madeContract
+            |        tricks
+            |        created
+            |        updated
+            |      }
+            |      created
+            |      updated
+            |    }
+            |    gamesPerRound
+            |    simpleRotation
+            |    created
+            |    updated
+            |  }
+            |}
+            |""".stripMargin
+
+          val data = GraphQLUtils.queryToJson(chicagoQML)
+
+          val qmlurl: URL = new URL( TestServer.hosturl+"v1/graphql")
+          val qmlconn = qmlurl.openConnection()
+          val headersForPost=Map("Content-Type" -> "application/json; charset=UTF-8",
+                                 "Accept" -> "application/json")
+          headersForPost.foreach { e =>
+            qmlconn.setRequestProperty(e._1, e._2)
+          }
+          qmlconn.setDoOutput(true)
+          qmlconn.setDoInput(true)
+          val wr = new OutputStreamWriter(qmlconn.getOutputStream(), "UTF8")
+          wr.write(data)
+          wr.flush()
+          // Get the response
+          qmlis = qmlconn.getInputStream()
+          val qmljson = Source.fromInputStream(qmlis)(Codec.UTF8).mkString
+          Json.fromJson[QueryResponse]( Json.parse(qmljson) ) match {
+            case JsSuccess(qmlplayed,path) =>
+              savedChicago.get mustBe qmlplayed.data.chicago
+            case JsError(err) =>
+              fail( s"Unable to parse response from graphQL: $err")
+          }
+        } catch {
+          case x: Exception =>
+            throw x
+        } finally {
+          if (qmlis != null) qmlis.close()
+        }
+      case _ =>
+    }
   }
 
   it should "start playing another game using the saved game using next hand with 6 hands in round" in {

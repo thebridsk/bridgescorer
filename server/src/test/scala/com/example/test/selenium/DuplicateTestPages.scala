@@ -79,6 +79,14 @@ import com.example.test.pages.duplicate.PeopleRowMP
 import com.example.test.pages.Page
 import com.example.test.pages.PageBrowser
 import com.example.test.pages.duplicate.SuggestionPage
+import java.io.OutputStreamWriter
+import java.io.InputStream
+import play.api.libs.json.JsObject
+import play.api.libs.json.JsString
+import play.api.libs.json.Json
+import play.api.libs.json.JsSuccess
+import play.api.libs.json.JsError
+import com.example.test.util.GraphQLUtils
 
 object DuplicateTestPages {
 
@@ -1021,6 +1029,121 @@ class DuplicateTestPages extends FlatSpec
       testlog.info(s"Not testing the people page with results, number of matchs played is ${ids.size}")
     }
 
+  }
+
+  case class ResponseData( duplicate: MatchDuplicate )
+  case class QueryResponse( data: ResponseData )
+
+  it should "have rest call and queryml call return the same match" in {
+    import com.example.data.rest.JsonSupport._
+    implicit val rdFormat = Json.format[ResponseData]
+    implicit val qrFormat = Json.format[QueryResponse]
+
+    dupid match {
+      case Some(duplicateId) =>
+        val url: URL = new URL(TestServer.hosturl+"v1/rest/duplicates/"+duplicateId)
+        val connection = url.openConnection()
+        val is = connection.getInputStream
+        var pl: Option[MatchDuplicate] = None
+        implicit val instanceJson = new BridgeServiceFileStoreConverters(true).matchDuplicateJson
+        var qmlis: InputStream = null
+        try {
+          val json = Source.fromInputStream(is)(Codec.UTF8).mkString
+
+          val (storegood,played) = new MatchDuplicateCacheStoreSupport(false).fromJSON(json)
+          pl = Some(played)
+
+          val duplicateQML = s"""
+            |{
+            |  duplicate( id: "$duplicateId") {
+            |    id
+            |    teams {
+            |      id
+            |      player1
+            |      player2
+            |      created
+            |      updated
+            |    }
+            |    boards {
+            |      id
+            |      nsVul
+            |      ewVul
+            |      dealer
+            |      hands {
+            |        id
+            |        played {
+            |          id
+            |          contractTricks
+            |          contractSuit
+            |          contractDoubled
+            |          declarer
+            |          nsVul
+            |          ewVul
+            |          madeContract
+            |          tricks
+            |          created
+            |          updated
+            |        }
+            |        table
+            |        round
+            |        board
+            |        nsTeam
+            |        nIsPlayer1
+            |        ewTeam
+            |        eIsPlayer1
+            |        created
+            |        updated
+            |      }
+            |      created
+            |      updated
+            |    }
+            |    boardset
+            |    movement
+            |    created
+            |    updated
+            |  }
+            |}
+            |""".stripMargin
+
+          val data = GraphQLUtils.queryToJson(duplicateQML)
+
+          val qmlurl: URL = new URL( TestServer.hosturl+"v1/graphql")
+          val qmlconn = qmlurl.openConnection()
+          val headersForPost=Map("Content-Type" -> "application/json; charset=UTF-8",
+                                 "Accept" -> "application/json")
+          headersForPost.foreach { e =>
+            qmlconn.setRequestProperty(e._1, e._2)
+          }
+          qmlconn.setDoOutput(true)
+          qmlconn.setDoInput(true)
+          val wr = new OutputStreamWriter(qmlconn.getOutputStream(), "UTF8")
+          wr.write(data)
+          wr.flush()
+          // Get the response
+          qmlis = qmlconn.getInputStream()
+          val qmljson = Source.fromInputStream(qmlis)(Codec.UTF8).mkString
+          Json.fromJson[QueryResponse]( Json.parse(qmljson) ) match {
+            case JsSuccess(qmlplayed,path) =>
+              played mustBe qmlplayed.data.duplicate
+            case JsError(err) =>
+              fail( s"Unable to parse response from graphQL: $err")
+          }
+        } catch {
+          case x: Exception =>
+            pl match {
+              case Some(played) =>
+                val j = new MatchDuplicateCacheStoreSupport(false).toJSON(played)
+                FileIO.writeFileSafe("DuplicateTestPages.QueryML.json", j)
+              case None =>
+            }
+            throw x
+
+        } finally {
+          is.close()
+          if (qmlis != null) qmlis.close()
+        }
+      case _ =>
+    }
   }
 
   it should "have timestamps on all objects in the MatchDuplicate record" in {

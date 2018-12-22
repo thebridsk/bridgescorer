@@ -38,6 +38,13 @@ import com.example.data.duplicate.stats.ContractStats
 import com.example.data.duplicate.stats.PlayerDoubledStats
 import com.example.data.duplicate.stats.PlayerComparisonStats
 import com.example.data.duplicate.stats.PlayerComparisonStat
+import com.example.data.bridge.PlayerPosition
+import com.example.data.bridge.North
+import com.example.data.bridge.South
+import com.example.data.bridge.East
+import com.example.data.bridge.West
+import com.example.data.RubberHand
+import com.example.data.Round
 
 object SchemaDefinition {
 
@@ -105,7 +112,7 @@ object SchemaDefinition {
           ),
           Field("created", DateTimeType,
               Some("The time the team was last updated"),
-              resolve = _.value.updated
+              resolve = _.value.created
           ),
           Field("updated", DateTimeType,
               Some("The time the team was last updated"),
@@ -132,7 +139,7 @@ object SchemaDefinition {
           ),
           Field("contractDoubled", StringType,
               Some("The doubling of the contract."),
-              resolve = _.value.contractSuit
+              resolve = _.value.contractDoubled
           ),
           Field("declarer", StringType,
               Some("The declarer of the contract."),
@@ -156,13 +163,36 @@ object SchemaDefinition {
           ),
           Field("created", DateTimeType,
               Some("The time the team was last updated"),
-              resolve = _.value.updated
+              resolve = _.value.created
           ),
           Field("updated", DateTimeType,
               Some("The time the team was last updated"),
               resolve = _.value.updated
           )
       )
+  )
+
+  val PositionEnum = EnumType[PlayerPosition](
+    "Position",
+    Some("Player position at table"),
+    List(
+      EnumValue("N",
+          value = North,
+          description = Some("North player")
+      ),
+      EnumValue("S",
+          value = South,
+          description = Some("South player")
+      ),
+      EnumValue("E",
+          value = East,
+          description = Some("East player")
+      ),
+      EnumValue("W",
+          value = West,
+          description = Some("West player")
+      ),
+    )
   )
 
   val DuplicateHandType = ObjectType(
@@ -200,7 +230,7 @@ object SchemaDefinition {
           ),
           Field("ewTeam", TeamIdType,
               Some("The EW team that plays the hand"),
-              resolve = _.value.nsTeam
+              resolve = _.value.ewTeam
           ),
           Field("eIsPlayer1", BooleanType,
               Some("The east player is player 1 of the team"),
@@ -208,7 +238,7 @@ object SchemaDefinition {
           ),
           Field("created", DateTimeType,
               Some("The time the team was last updated"),
-              resolve = _.value.updated
+              resolve = _.value.created
           ),
           Field("updated", DateTimeType,
               Some("The time the team was last updated"),
@@ -257,7 +287,7 @@ object SchemaDefinition {
           ),
           Field("created", DateTimeType,
               Some("The time the team was last updated"),
-              resolve = _.value.updated
+              resolve = _.value.created
           ),
           Field("updated", DateTimeType,
               Some("The time the team was last updated"),
@@ -356,7 +386,7 @@ object SchemaDefinition {
           ),
           Field("created", DateTimeType,
               Some("The time the team was last updated"),
-              resolve = _.value._2.updated
+              resolve = _.value._2.created
           ),
           Field("updated", DateTimeType,
               Some("The time the team was last updated"),
@@ -402,7 +432,7 @@ object SchemaDefinition {
           ),
           Field("created", DateTimeType,
               Some("The time the team was last updated"),
-              resolve = _.value._2.updated
+              resolve = _.value._2.created
           ),
           Field("updated", DateTimeType,
               Some("The time the team was last updated"),
@@ -477,7 +507,7 @@ object SchemaDefinition {
           ),
           Field("created", DateTimeType,
               Some("The time the team was last updated"),
-              resolve = _.value._2.updated
+              resolve = _.value._2.created
           ),
           Field("updated", DateTimeType,
               Some("The time the team was last updated"),
@@ -702,6 +732,170 @@ object SchemaDefinition {
       )
   )
 
+  val RubberHandType = ObjectType(
+      "RubberHand",
+      "A rubber hand",
+      fields[BridgeService,RubberHand](
+          Field("id", StringType,
+              Some("The id of the hand"),
+              resolve = _.value.id
+          ),
+          Field("hand", HandType,
+              Some("The hand"),
+              resolve = _.value.hand
+          ),
+          Field("honors", IntType,
+              Some("The honor points of the hand"),
+              resolve = _.value.honors
+          ),
+          Field("honorsPlayer", PositionEnum,
+              Some("The player that had the honor points"),
+              resolve = ctx => PlayerPosition( ctx.value.honorsPlayer )
+          ),
+          Field("created", DateTimeType,
+              Some("The time the hand was last created"),
+              resolve = _.value.created
+          ),
+          Field("updated", DateTimeType,
+              Some("The time the hand was last updated"),
+              resolve = _.value.updated
+          )
+      )
+  )
+
+  val MatchRubberType = ObjectType(
+      "MatchRubber",
+      "A rubber match",
+      fields[BridgeService,(Option[String],MatchRubber)](
+          Field("id", RubberIdType,
+              Some("The id of the rubber match"),
+              resolve = _.value._2.id
+          ),
+          Field("north", StringType,
+                Some("The north player"),
+              resolve = _.value._2.north
+          ),
+          Field("south", StringType,
+                Some("The south player"),
+              resolve = _.value._2.south
+          ),
+          Field("east", StringType,
+                Some("The east player"),
+              resolve = _.value._2.east
+          ),
+          Field("west", StringType,
+                Some("The west player"),
+              resolve = _.value._2.west
+          ),
+          Field("dealerFirstHand",
+              PositionEnum,
+              Some("The player that dealt the first hand"),
+              resolve = ctx => PlayerPosition( ctx.value._2.dealerFirstHand )
+          ),
+          Field("hands", ListType(RubberHandType),
+              Some("The played hands"),
+              resolve = _.value._2.hands
+          ),
+          Field("created", DateTimeType,
+              Some("The time the match was last created"),
+              resolve = _.value._2.created
+          ),
+          Field("updated", DateTimeType,
+              Some("The time the match was last updated"),
+              resolve = _.value._2.updated
+          )
+      )
+  )
+
+  val ChicagoRoundType = ObjectType(
+      "ChicagoRound",
+      "A chicago round",
+      fields[BridgeService,Round](
+          Field("id", StringType,
+              Some("The id of the chicago round"),
+              resolve = _.value.id
+          ),
+          Field("north", StringType,
+                Some("The north player"),
+              resolve = _.value.north
+          ),
+          Field("south", StringType,
+                Some("The south player"),
+              resolve = _.value.south
+          ),
+          Field("east", StringType,
+                Some("The east player"),
+              resolve = _.value.east
+          ),
+          Field("west", StringType,
+                Some("The west player"),
+              resolve = _.value.west
+          ),
+          Field("dealerFirstRound",
+              PositionEnum,
+              Some("The player that dealt the first hand"),
+              resolve = ctx => PlayerPosition( ctx.value.dealerFirstRound )
+          ),
+          Field("hands", ListType(HandType),
+              Some("The played hands"),
+              resolve = _.value.hands
+          ),
+          Field("created", DateTimeType,
+              Some("The time the match was last created"),
+              resolve = _.value.created
+          ),
+          Field("updated", DateTimeType,
+              Some("The time the match was last updated"),
+              resolve = _.value.updated
+          )
+      )
+
+  )
+
+  val MatchChicagoType = ObjectType(
+      "MatchChicago",
+      "A rubber match",
+      fields[BridgeService,(Option[String],MatchChicago)](
+          Field("id", ChicagoIdType,
+              Some("The id of the rubber match"),
+              resolve = _.value._2.id
+          ),
+          Field("players", ListType( StringType ),
+                Some("The player names"),
+                resolve = _.value._2.players
+          ),
+          Field("rounds", ListType(ChicagoRoundType),
+              Some("The rounds"),
+              resolve = _.value._2.rounds
+          ),
+          Field("gamesPerRound",
+              IntType,
+              Some("The number of hands per round, 1 if fast rotation"),
+              resolve = _.value._2.gamesPerRound
+          ),
+          Field("simpleRotation", BooleanType,
+              Some("Whether simple rotation is used, only valid if fast rotation is used"),
+              resolve = _.value._2.simpleRotation
+          ),
+          Field("created", DateTimeType,
+              Some("The time the match was last created"),
+              resolve = _.value._2.created
+          ),
+          Field("updated", DateTimeType,
+              Some("The time the match was last updated"),
+              resolve = _.value._2.updated
+          )
+      )
+  )
+
+
+  val ArgRubberId = Argument("id",
+                             RubberIdType,
+                             description = "The Id of the rubber match" )
+
+  val ArgChicagoId = Argument("id",
+                              ChicagoIdType,
+                              description = "The Id of the chicago match" )
 
   val ArgDuplicateId = Argument("id",
                              DuplicateIdType,
@@ -780,11 +974,59 @@ object SchemaDefinition {
                 }
           ),
           Field("duplicateIds",
-              ListType( StringType ),
+              ListType( DuplicateIdType ),
               resolve = _.value.duplicates.readAll().map{ rall =>
                 rall match {
                   case Right(all) => all.keys.toList
                   case Left((statusCode,msg)) => throw new Exception( s"Error getting MatchDuplicates: ${statusCode} ${msg.msg}" )
+                }
+              }
+          ),
+
+          Field("rubbber",
+                OptionType(MatchRubberType),
+                arguments = ArgRubberId::Nil,
+                resolve = Action.getRubber
+          ),
+          Field("rubbbers",
+              ListType( MatchRubberType ),
+              resolve = ctx => ctx.value.rubbers.readAll().map{ rall =>
+                rall match {
+                  case Right(all) => all.values.toList.map { md => (if (ctx.ctx.id==ctx.value.id) None else Some(ctx.value.id),md) }
+                  case Left((statusCode,msg)) => throw new Exception( s"Error getting MatchRubbers: ${statusCode} ${msg.msg}" )
+                }
+              }
+          ),
+          Field("rubbberIds",
+              ListType( RubberIdType ),
+              resolve = _.value.rubbers.readAll().map{ rall =>
+                rall match {
+                  case Right(all) => all.keys.toList
+                  case Left((statusCode,msg)) => throw new Exception( s"Error getting MatchRubbers: ${statusCode} ${msg.msg}" )
+                }
+              }
+          ),
+
+          Field("chicago",
+                OptionType(MatchChicagoType),
+                arguments = ArgChicagoId::Nil,
+                resolve = Action.getChicago
+          ),
+          Field("chicagos",
+              ListType( MatchChicagoType ),
+              resolve = ctx => ctx.value.chicagos.readAll().map{ rall =>
+                rall match {
+                  case Right(all) => all.values.toList.map { md => (if (ctx.ctx.id==ctx.value.id) None else Some(ctx.value.id),md) }
+                  case Left((statusCode,msg)) => throw new Exception( s"Error getting MatchChicagos: ${statusCode} ${msg.msg}" )
+                }
+              }
+          ),
+          Field("chicagoIds",
+              ListType( ChicagoIdType ),
+              resolve = _.value.chicagos.readAll().map{ rall =>
+                rall match {
+                  case Right(all) => all.keys.toList
+                  case Left((statusCode,msg)) => throw new Exception( s"Error getting MatchChicagos: ${statusCode} ${msg.msg}" )
                 }
               }
           )
@@ -942,6 +1184,42 @@ object SchemaDefinition {
               "duplicatestats",
               DuplicateStatsType,
               resolve = ctx => ctx.ctx
+          ),
+          Field("rubbers",
+                ListType( MatchRubberType ),
+                arguments = ArgSort::Nil,
+                resolve = ctx => ctx.ctx.rubbers.readAll().map { rmap => rmap match {
+                            case Right(map) =>
+                              val list = map.values.toList
+                              val argsort = ctx.arg( ArgSort )
+                              Action.sortR(list,argsort).map { md => (None,md) }
+                            case Left((statusCode,msg)) =>
+                              throw new Exception(s"Error getting duplicates: ${statusCode} ${msg.msg}")
+                          }
+                }
+          ),
+          Field("rubber",
+                OptionType(MatchRubberType),
+                arguments = ArgRubberId::Nil,
+                resolve = ctx => Action.getRubberFromRoot(ctx).map { md => (None,md) }
+          ),
+          Field("chicagos",
+                ListType( MatchChicagoType ),
+                arguments = ArgSort::Nil,
+                resolve = ctx => ctx.ctx.chicagos.readAll().map { rmap => rmap match {
+                            case Right(map) =>
+                              val list = map.values.toList
+                              val argsort = ctx.arg( ArgSort )
+                              Action.sortC(list,argsort).map { md => (None,md) }
+                            case Left((statusCode,msg)) =>
+                              throw new Exception(s"Error getting duplicates: ${statusCode} ${msg.msg}")
+                          }
+                }
+          ),
+          Field("chicago",
+                OptionType(MatchChicagoType),
+                arguments = ArgChicagoId::Nil,
+                resolve = ctx => Action.getChicagoFromRoot(ctx).map { md => (None,md) }
           )
 
       )
@@ -964,6 +1242,18 @@ object SchemaDefinition {
                 description = Some("Import a duplicate result."),
                 arguments = ArgDuplicateResultId::Nil,
                 resolve = ctx => Action.importDuplicateResult(ctx).map { md => (None,md) }
+          ),
+          Field("importrubber",
+                MatchRubberType,
+                description = Some("Import a rubber match."),
+                arguments = ArgRubberId::Nil,
+                resolve = ctx => Action.importRubber(ctx).map { md => (None,md) }
+          ),
+          Field("importchicago",
+                MatchChicagoType,
+                description = Some("Import a chicago match."),
+                arguments = ArgChicagoId::Nil,
+                resolve = ctx => Action.importChicago(ctx).map { md => (None,md) }
           ),
           Field("delete",
                 BooleanType,
@@ -995,6 +1285,28 @@ object Action {
         case Right(md) => (if (ctx.ctx.id==ctx.value.id) None else Some(ctx.value.id),md)
         case Left((statusCode,msg)) =>
           throw new Exception(s"Error getting match duplicate ${id}: ${statusCode} ${msg.msg}")
+      }
+    }
+  }
+
+  def getRubber( ctx: Context[BridgeService,BridgeService]): Future[(Option[String],MatchRubber)] = {
+    val id = ctx arg ArgRubberId
+    ctx.value.rubbers.read(id).map { rmd =>
+      rmd match {
+        case Right(md) => (if (ctx.ctx.id==ctx.value.id) None else Some(ctx.value.id),md)
+        case Left((statusCode,msg)) =>
+          throw new Exception(s"Error getting match rubber ${id}: ${statusCode} ${msg.msg}")
+      }
+    }
+  }
+
+  def getChicago( ctx: Context[BridgeService,BridgeService]): Future[(Option[String],MatchChicago)] = {
+    val id = ctx arg ArgChicagoId
+    ctx.value.chicagos.read(id).map { rmd =>
+      rmd match {
+        case Right(md) => (if (ctx.ctx.id==ctx.value.id) None else Some(ctx.value.id),md)
+        case Left((statusCode,msg)) =>
+          throw new Exception(s"Error getting match chicago ${id}: ${statusCode} ${msg.msg}")
       }
     }
   }
@@ -1105,6 +1417,28 @@ object Action {
     }
   }
 
+  def getRubberFromRoot( ctx: Context[BridgeService,Unit]): Future[MatchRubber] = {
+    val id = ctx arg ArgRubberId
+    ctx.ctx.rubbers.read(id).map { rmd =>
+      rmd match {
+        case Right(md) => md
+        case Left((statusCode,msg)) =>
+          throw new Exception(s"Error getting match rubber ${id}: ${statusCode} ${msg.msg}")
+      }
+    }
+  }
+
+  def getChicagoFromRoot( ctx: Context[BridgeService,Unit]): Future[MatchChicago] = {
+    val id = ctx arg ArgChicagoId
+    ctx.ctx.chicagos.read(id).map { rmd =>
+      rmd match {
+        case Right(md) => md
+        case Left((statusCode,msg)) =>
+          throw new Exception(s"Error getting match chicago ${id}: ${statusCode} ${msg.msg}")
+      }
+    }
+  }
+
   def getAllImportFromRoot( ctx: Context[BridgeService,Unit]): Future[List[BridgeService]] = {
     ctx.ctx.importStore match {
       case Some(is) =>
@@ -1178,6 +1512,38 @@ object Action {
     }}
   }
 
+  def importRubber( ctx: Context[BridgeService,BridgeService]): Future[MatchRubber] = {
+    val rubId = ctx arg ArgRubberId
+    val bs = ctx.value
+    bs.rubbers.read(rubId).flatMap { rdup => rdup match {
+      case Right(rub) =>
+        ctx.ctx.rubbers.importChild(rub).map { rc => rc match {
+          case Right(cdup) =>
+            cdup
+          case Left((statusCode,msg)) =>
+            throw new Exception(s"Error importing into store: ${rubId} from import store ${bs.id}: ${statusCode} ${msg.msg}")
+        }}
+      case Left((statusCode,msg)) =>
+        throw new Exception(s"Error getting ${rubId} from import store ${bs.id}: ${statusCode} ${msg.msg}")
+    }}
+  }
+
+  def importChicago( ctx: Context[BridgeService,BridgeService]): Future[MatchChicago] = {
+    val chiId = ctx arg ArgChicagoId
+    val bs = ctx.value
+    bs.chicagos.read(chiId).flatMap { rdup => rdup match {
+      case Right(chi) =>
+        ctx.ctx.chicagos.importChild(chi).map { rc => rc match {
+          case Right(cdup) =>
+            cdup
+          case Left((statusCode,msg)) =>
+            throw new Exception(s"Error importing into store: ${chiId} from import store ${bs.id}: ${statusCode} ${msg.msg}")
+        }}
+      case Left((statusCode,msg)) =>
+        throw new Exception(s"Error getting ${chiId} from import store ${bs.id}: ${statusCode} ${msg.msg}")
+    }}
+  }
+
   def deleteImportStore( ctx: Context[BridgeService,BridgeService]): Future[Boolean] = {
     val todelete = ctx.value
     ctx.ctx.importStore match {
@@ -1203,6 +1569,36 @@ object Action {
   }
 
   def sort( list: List[MatchDuplicate], sort: Option[Sort] ) = {
+    val l = sort.map { s =>
+      s match {
+        case SortCreated =>
+          list.sortWith((l,r)=>l.created<r.created)
+        case SortCreatedDescending =>
+          list.sortWith((l,r)=>l.created>r.created)
+        case SortId =>
+          list.sortWith((l,r)=>Id.idComparer(l.id, r.id) < 0)
+      }
+    }.getOrElse(list)
+    log.info( s"""Returning list sorted with ${sort}: ${l.map( md=> s"(${md.id},${md.created})").mkString(",")}""" )
+    l
+  }
+
+  def sortR( list: List[MatchRubber], sort: Option[Sort] ) = {
+    val l = sort.map { s =>
+      s match {
+        case SortCreated =>
+          list.sortWith((l,r)=>l.created<r.created)
+        case SortCreatedDescending =>
+          list.sortWith((l,r)=>l.created>r.created)
+        case SortId =>
+          list.sortWith((l,r)=>Id.idComparer(l.id, r.id) < 0)
+      }
+    }.getOrElse(list)
+    log.info( s"""Returning list sorted with ${sort}: ${l.map( md=> s"(${md.id},${md.created})").mkString(",")}""" )
+    l
+  }
+
+  def sortC( list: List[MatchChicago], sort: Option[Sort] ) = {
     val l = sort.map { s =>
       s match {
         case SortCreated =>
