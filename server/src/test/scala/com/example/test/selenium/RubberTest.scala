@@ -389,7 +389,8 @@ class RubberTest extends FlatSpec with MustMatchers with BeforeAndAfterAll with 
   }
 
   case class ResponseData( rubber: MatchRubber )
-  case class QueryResponse( data: ResponseData )
+  case class ResponseMainStore( mainStore: ResponseData )
+  case class QueryResponse( data: ResponseMainStore )
 
   it should "have rest call and queryml call return the same match" in {
     val bridgeResources = BridgeResources(false)
@@ -397,6 +398,7 @@ class RubberTest extends FlatSpec with MustMatchers with BeforeAndAfterAll with 
 
     import com.example.data.rest.JsonSupport._
     implicit val rdFormat = Json.format[ResponseData]
+    implicit val msFormat = Json.format[ResponseMainStore]
     implicit val qrFormat = Json.format[QueryResponse]
 
     val url: URL = new URL(TestServer.hosturl+"v1/rest/rubbers/"+rubberId)
@@ -413,35 +415,37 @@ class RubberTest extends FlatSpec with MustMatchers with BeforeAndAfterAll with 
 
       val duplicateQML = s"""
         |{
-        |  rubber( id: "$rubberId") {
-        |    id
-        |    north
-        |    south
-        |    east
-        |    west
-        |    dealerFirstHand
-        |    hands {
+        |  mainStore {
+        |    rubber( id: "$rubberId") {
         |      id
-        |      hand {
+        |      north
+        |      south
+        |      east
+        |      west
+        |      dealerFirstHand
+        |      hands {
         |        id
-        |        contractTricks
-        |        contractSuit
-        |        contractDoubled
-        |        declarer
-        |        nsVul
-        |        ewVul
-        |        madeContract
-        |        tricks
+        |        hand {
+        |          id
+        |          contractTricks
+        |          contractSuit
+        |          contractDoubled
+        |          declarer
+        |          nsVul
+        |          ewVul
+        |          madeContract
+        |          tricks
+        |          created
+        |          updated
+        |        }
+        |        honors
+        |        honorsPlayer
         |        created
         |        updated
         |      }
-        |      honors
-        |      honorsPlayer
         |      created
         |      updated
         |    }
-        |    created
-        |    updated
         |  }
         |}
         |""".stripMargin
@@ -465,7 +469,7 @@ class RubberTest extends FlatSpec with MustMatchers with BeforeAndAfterAll with 
       val qmljson = Source.fromInputStream(qmlis)(Codec.UTF8).mkString
       Json.fromJson[QueryResponse]( Json.parse(qmljson) ) match {
         case JsSuccess(qmlplayed,path) =>
-          played mustBe qmlplayed.data.rubber
+          played mustBe qmlplayed.data.mainStore.rubber
         case JsError(err) =>
           fail( s"Unable to parse response from graphQL: $err")
       }

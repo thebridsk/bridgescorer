@@ -33,6 +33,8 @@ case class MovementV1( name: String, short: String, description: String, numberT
 
   def convertToCurrentVersion() = this
 
+  def readyForWrite() = this
+
   def wherePlayed( board: Int ): List[BoardPlayed] = {
     hands.flatMap { h =>
       if (h.boards.contains(board)) BoardPlayed( board, h.table, h.round, h.ns, h.ew )::Nil

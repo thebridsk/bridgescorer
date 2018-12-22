@@ -173,6 +173,8 @@ case class MatchChicagoV2(
                            MatchChicago( id, players, rounds, gamesPerRound, false, created, updated)
                          }
 
+  def readyForWrite() = this
+
 }
 
 object MatchChicagoV2 {

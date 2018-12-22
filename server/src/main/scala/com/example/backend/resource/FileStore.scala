@@ -83,7 +83,7 @@ class FilePersistentSupport[VId,VType <: VersionedInstance[VType,VType,VId]](
             generateNextId(v)
         }) match {
           case Right(id) =>
-            val nv = v.setId(id, true, dontUpdateTimes)
+            val nv = v.setId(id, true, dontUpdateTimes).readyForWrite()
             write(id, nv)
           case Left(error) =>
             Result(error)
@@ -159,7 +159,7 @@ class FilePersistentSupport[VId,VType <: VersionedInstance[VType,VType,VId]](
 
   private def write( id: VId, v: VType ) = {
     try {
-      FileIO.writeFileSafe(writeFilename(id), support.toJSON(v))
+      FileIO.writeFileSafe(writeFilename(id), support.toJSON(v.readyForWrite()))
       Result(v)
     } catch {
       case e: IOException =>

@@ -21,7 +21,7 @@ import com.example.data.rest.JsonSupport
 trait YamlSupport extends JsonSupport {
 
   private lazy val mapper = {
-    new ObjectMapper(new YAMLFactory()).registerModule(PlayJsonModule)
+    new ObjectMapper(new YAMLFactory()).registerModule(new PlayJsonModule(JsonParserSettings()))
   }
 
   def fromYaml[T]( config: String )(implicit reads: Reads[T]): T = {

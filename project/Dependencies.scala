@@ -70,7 +70,7 @@ object Dependencies {
   lazy val vScalaArm = "2.0"         // http://mvnrepository.com/artifact/com.jsuereth/scala-arm_2.11
   lazy val vScallop = "3.1.5"        // http://mvnrepository.com/artifact/org.rogach/scallop_2.11
   lazy val vSlf4j = "1.7.25"         // https://mvnrepository.com/artifact/org.slf4j/slf4j-jdk14
-  lazy val vPlayJson = "2.6.11"      // https://mvnrepository.com/artifact/com.typesafe.play/play-json_2.12
+  lazy val vPlayJson = "2.6.13"      // https://mvnrepository.com/artifact/com.typesafe.play/play-json_2.12
 
   // jackson-module-scala usually updates a few days after the others are updated,
   // don't update until jackson-module-scala is updated

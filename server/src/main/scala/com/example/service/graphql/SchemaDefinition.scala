@@ -45,6 +45,8 @@ import com.example.data.bridge.East
 import com.example.data.bridge.West
 import com.example.data.RubberHand
 import com.example.data.Round
+import com.example.data.ChicagoBestMatch
+import com.example.data.RubberBestMatch
 
 object SchemaDefinition {
 
@@ -763,9 +765,29 @@ object SchemaDefinition {
       )
   )
 
+  val RubberBestMatchType = ObjectType(
+      "BestMatch",
+      "Identifies the best match",
+      fields[BridgeService,(Option[String],RubberBestMatch)](
+          Field("id", OptionType(RubberIdType),
+              Some("The id of the best duplicate match from the main store"),
+              resolve = _.value._2.id
+          ),
+          Field("sameness", FloatType,
+              Some("A percentage of similarity."),
+              resolve = _.value._2.sameness
+          ),
+          Field("differences", OptionType(ListType(StringType)),
+              Some("The fields that are different"),
+              resolve = _.value._2.differences
+          ),
+      )
+  )
+
   val MatchRubberType = ObjectType(
       "MatchRubber",
       "A rubber match",
+      // Option string is the import ID, None for main store
       fields[BridgeService,(Option[String],MatchRubber)](
           Field("id", RubberIdType,
               Some("The id of the rubber match"),
@@ -795,6 +817,10 @@ object SchemaDefinition {
           Field("hands", ListType(RubberHandType),
               Some("The played hands"),
               resolve = _.value._2.hands
+          ),
+          Field("bestMatch", OptionType(RubberBestMatchType),
+                Some("best match with main store"),
+                resolve = Action.getRubberBestMatch
           ),
           Field("created", DateTimeType,
               Some("The time the match was last created"),
@@ -852,9 +878,29 @@ object SchemaDefinition {
 
   )
 
+  val ChicagoBestMatchType = ObjectType(
+      "BestMatch",
+      "Identifies the best match",
+      fields[BridgeService,(Option[String],ChicagoBestMatch)](
+          Field("id", OptionType(ChicagoIdType),
+              Some("The id of the best duplicate match from the main store"),
+              resolve = _.value._2.id
+          ),
+          Field("sameness", FloatType,
+              Some("A percentage of similarity."),
+              resolve = _.value._2.sameness
+          ),
+          Field("differences", OptionType(ListType(StringType)),
+              Some("The fields that are different"),
+              resolve = _.value._2.differences
+          ),
+      )
+  )
+
   val MatchChicagoType = ObjectType(
       "MatchChicago",
       "A rubber match",
+      // Option string is the import ID, None for main store
       fields[BridgeService,(Option[String],MatchChicago)](
           Field("id", ChicagoIdType,
               Some("The id of the rubber match"),
@@ -876,6 +922,10 @@ object SchemaDefinition {
           Field("simpleRotation", BooleanType,
               Some("Whether simple rotation is used, only valid if fast rotation is used"),
               resolve = _.value._2.simpleRotation
+          ),
+          Field("bestMatch", OptionType(ChicagoBestMatchType),
+                Some("best match with main store"),
+                resolve = Action.getChicagoBestMatch
           ),
           Field("created", DateTimeType,
               Some("The time the match was last created"),
@@ -938,101 +988,6 @@ object SchemaDefinition {
                           OptionInputType( SortEnum ),
                           description = "If specified, identifies the sort order of the values in list." )
 
-  val BridgeServiceType = ObjectType(
-      "BridgeService",
-      fields[BridgeService,BridgeService](
-          Field("id", ImportIdType,
-              Some("The id of the bridge service"),
-              resolve = _.value.id),
-          Field("date", DateTimeType,
-              Some("The date for the store."),
-              resolve = _.value.getDate),
-          Field("duplicate",
-                OptionType(MatchDuplicateType),
-                arguments = ArgDuplicateId::Nil,
-                resolve = Action.getDuplicate
-          ),
-          Field("duplicates",
-              ListType( MatchDuplicateType ),
-              resolve = ctx => ctx.value.duplicates.readAll().map{ rall =>
-                rall match {
-                  case Right(all) => all.values.toList.map { md => (if (ctx.ctx.id==ctx.value.id) None else Some(ctx.value.id),md) }
-                  case Left((statusCode,msg)) => throw new Exception( s"Error getting MatchDuplicates: ${statusCode} ${msg.msg}" )
-                }
-              }
-          ),
-          Field("duplicatesummaries",
-                ListType( DuplicateSummaryType ),
-                arguments = ArgSort::Nil,
-                resolve = ctx => ctx.value.getDuplicateSummaries().map { rmap => rmap match {
-                            case Right(list) =>
-                              val argsort = ctx.arg( ArgSort )
-                              Action.sortSummary( list, argsort ).map { md => (if (ctx.ctx.id==ctx.value.id) None else Some(ctx.value.id),md) }
-                            case Left((statusCode,msg)) =>
-                              throw new Exception(s"Error getting duplicate summaries: ${statusCode} ${msg.msg}")
-                          }
-                }
-          ),
-          Field("duplicateIds",
-              ListType( DuplicateIdType ),
-              resolve = _.value.duplicates.readAll().map{ rall =>
-                rall match {
-                  case Right(all) => all.keys.toList
-                  case Left((statusCode,msg)) => throw new Exception( s"Error getting MatchDuplicates: ${statusCode} ${msg.msg}" )
-                }
-              }
-          ),
-
-          Field("rubbber",
-                OptionType(MatchRubberType),
-                arguments = ArgRubberId::Nil,
-                resolve = Action.getRubber
-          ),
-          Field("rubbbers",
-              ListType( MatchRubberType ),
-              resolve = ctx => ctx.value.rubbers.readAll().map{ rall =>
-                rall match {
-                  case Right(all) => all.values.toList.map { md => (if (ctx.ctx.id==ctx.value.id) None else Some(ctx.value.id),md) }
-                  case Left((statusCode,msg)) => throw new Exception( s"Error getting MatchRubbers: ${statusCode} ${msg.msg}" )
-                }
-              }
-          ),
-          Field("rubbberIds",
-              ListType( RubberIdType ),
-              resolve = _.value.rubbers.readAll().map{ rall =>
-                rall match {
-                  case Right(all) => all.keys.toList
-                  case Left((statusCode,msg)) => throw new Exception( s"Error getting MatchRubbers: ${statusCode} ${msg.msg}" )
-                }
-              }
-          ),
-
-          Field("chicago",
-                OptionType(MatchChicagoType),
-                arguments = ArgChicagoId::Nil,
-                resolve = Action.getChicago
-          ),
-          Field("chicagos",
-              ListType( MatchChicagoType ),
-              resolve = ctx => ctx.value.chicagos.readAll().map{ rall =>
-                rall match {
-                  case Right(all) => all.values.toList.map { md => (if (ctx.ctx.id==ctx.value.id) None else Some(ctx.value.id),md) }
-                  case Left((statusCode,msg)) => throw new Exception( s"Error getting MatchChicagos: ${statusCode} ${msg.msg}" )
-                }
-              }
-          ),
-          Field("chicagoIds",
-              ListType( ChicagoIdType ),
-              resolve = _.value.chicagos.readAll().map{ rall =>
-                rall match {
-                  case Right(all) => all.keys.toList
-                  case Left((statusCode,msg)) => throw new Exception( s"Error getting MatchChicagos: ${statusCode} ${msg.msg}" )
-                }
-              }
-          )
-      )
-  )
-
   val DuplicateStatsType = ObjectType(
       "DuplicateStatsType",
       "stats about duplicate matches",
@@ -1084,9 +1039,134 @@ object SchemaDefinition {
       )
   )
 
+  val BridgeServiceFields = fields[BridgeService,BridgeService](
+          Field("id", ImportIdType,
+              Some("The id of the bridge service"),
+              resolve = _.value.id),
+          Field("date", DateTimeType,
+              Some("The date for the store."),
+              resolve = _.value.getDate),
+          Field("duplicate",
+                OptionType(MatchDuplicateType),
+                arguments = ArgDuplicateId::Nil,
+                resolve = Action.getDuplicate
+          ),
+          Field("duplicates",
+              ListType( MatchDuplicateType ),
+              resolve = ctx => ctx.value.duplicates.readAll().map{ rall =>
+                rall match {
+                  case Right(all) => all.values.toList.map { md => (if (ctx.ctx.id==ctx.value.id) None else Some(ctx.value.id),md) }
+                  case Left((statusCode,msg)) => throw new Exception( s"Error getting MatchDuplicates: ${statusCode} ${msg.msg}" )
+                }
+              }
+          ),
+          Field("duplicatesummaries",
+                ListType( DuplicateSummaryType ),
+                arguments = ArgSort::Nil,
+                resolve = ctx => ctx.value.getDuplicateSummaries().map { rmap => rmap match {
+                            case Right(list) =>
+                              val argsort = ctx.arg( ArgSort )
+                              Action.sortSummary( list, argsort ).map { md => (if (ctx.ctx.id==ctx.value.id) None else Some(ctx.value.id),md) }
+                            case Left((statusCode,msg)) =>
+                              throw new Exception(s"Error getting duplicate summaries: ${statusCode} ${msg.msg}")
+                          }
+                }
+          ),
+          Field("duplicateIds",
+              ListType( DuplicateIdType ),
+              resolve = _.value.duplicates.readAll().map{ rall =>
+                rall match {
+                  case Right(all) => all.keys.toList
+                  case Left((statusCode,msg)) => throw new Exception( s"Error getting MatchDuplicates: ${statusCode} ${msg.msg}" )
+                }
+              }
+          ),
+          Field("duplicateResult",
+                OptionType(MatchDuplicateResultType),
+                arguments = ArgDuplicateResultId::Nil,
+                resolve = Action.getDuplicateResult
+          ),
+          Field("duplicateResults",
+              ListType( MatchDuplicateResultType ),
+              resolve = ctx => ctx.value.duplicateresults.readAll().map{ rall =>
+                rall match {
+                  case Right(all) => all.values.toList.map { md => (if (ctx.ctx.id==ctx.value.id) None else Some(ctx.value.id),md) }
+                  case Left((statusCode,msg)) => throw new Exception( s"Error getting MatchDuplicates: ${statusCode} ${msg.msg}" )
+                }
+              }
+          ),
+          Field("duplicateResultIds",
+                ListType( DuplicateResultIdType ),
+                resolve = _.ctx.duplicateresults.readAll().map { rmap => rmap match {
+                            case Right(map) =>
+                              map.keys.toList
+                            case Left((statusCode,msg)) =>
+                              throw new Exception(s"Error getting duplicate ids: ${statusCode} ${msg.msg}")
+                          }
+                }
+          ),
+          Field(
+              "duplicatestats",
+              DuplicateStatsType,
+              resolve = ctx => ctx.ctx
+          ),
+          Field("rubber",
+                OptionType(MatchRubberType),
+                arguments = ArgRubberId::Nil,
+                resolve = Action.getRubber
+          ),
+          Field("rubbers",
+              ListType( MatchRubberType ),
+              resolve = ctx => ctx.value.rubbers.readAll().map{ rall =>
+                rall match {
+                  case Right(all) => all.values.toList.map { md => (if (ctx.ctx.id==ctx.value.id) None else Some(ctx.value.id),md) }
+                  case Left((statusCode,msg)) => throw new Exception( s"Error getting MatchRubbers: ${statusCode} ${msg.msg}" )
+                }
+              }
+          ),
+          Field("rubberIds",
+              ListType( RubberIdType ),
+              resolve = _.value.rubbers.readAll().map{ rall =>
+                rall match {
+                  case Right(all) => all.keys.toList
+                  case Left((statusCode,msg)) => throw new Exception( s"Error getting MatchRubbers: ${statusCode} ${msg.msg}" )
+                }
+              }
+          ),
+
+          Field("chicago",
+                OptionType(MatchChicagoType),
+                arguments = ArgChicagoId::Nil,
+                resolve = Action.getChicago
+          ),
+          Field("chicagos",
+              ListType( MatchChicagoType ),
+              resolve = ctx => ctx.value.chicagos.readAll().map{ rall =>
+                rall match {
+                  case Right(all) => all.values.toList.map { md => (if (ctx.ctx.id==ctx.value.id) None else Some(ctx.value.id),md) }
+                  case Left((statusCode,msg)) => throw new Exception( s"Error getting MatchChicagos: ${statusCode} ${msg.msg}" )
+                }
+              }
+          ),
+          Field("chicagoIds",
+              ListType( ChicagoIdType ),
+              resolve = _.value.chicagos.readAll().map{ rall =>
+                rall match {
+                  case Right(all) => all.keys.toList
+                  case Left((statusCode,msg)) => throw new Exception( s"Error getting MatchChicagos: ${statusCode} ${msg.msg}" )
+                }
+              }
+          )
+      )
+
+  val BridgeServiceType = ObjectType(
+      "BridgeService",
+      BridgeServiceFields
+  )
+
   val QueryType = ObjectType(
       "Query",
-      fields[BridgeService,Unit](
+      fields[BridgeService,BridgeService](
           Field("importIds",
                 ListType( ImportIdType ),
                 resolve = _.ctx.importStore match {
@@ -1110,119 +1190,12 @@ object SchemaDefinition {
                 arguments = ArgImportId::Nil,
                 resolve = Action.getImportFromRoot
           ),
-          Field("duplicateIds",
-                ListType( DuplicateIdType ),
-                resolve = _.ctx.duplicates.readAll().map { rmap => rmap match {
-                            case Right(map) =>
-                              map.keys.toList
-                            case Left((statusCode,msg)) =>
-                              throw new Exception(s"Error getting duplicate ids: ${statusCode} ${msg.msg}")
-                          }
-                }
-          ),
-          Field("duplicateResultIds",
-                ListType( DuplicateResultIdType ),
-                resolve = _.ctx.duplicateresults.readAll().map { rmap => rmap match {
-                            case Right(map) =>
-                              map.keys.toList
-                            case Left((statusCode,msg)) =>
-                              throw new Exception(s"Error getting duplicate ids: ${statusCode} ${msg.msg}")
-                          }
-                }
-          ),
-          Field("chicagoIds",
-                ListType( ChicagoIdType ),
-                resolve = _.ctx.chicagos.readAll().map { rmap => rmap match {
-                            case Right(map) =>
-                              map.keys.toList
-                            case Left((statusCode,msg)) =>
-                              throw new Exception(s"Error getting chicago ids: ${statusCode} ${msg.msg}")
-                          }
-                }
-          ),
-          Field("rubberIds",
-                ListType( RubberIdType ),
-                resolve = _.ctx.rubbers.readAll().map { rmap => rmap match {
-                            case Right(map) =>
-                              map.keys.toList
-                            case Left((statusCode,msg)) =>
-                              throw new Exception(s"Error getting rubber ids: ${statusCode} ${msg.msg}")
-                          }
-                }
-          ),
-          Field("duplicates",
-                ListType( MatchDuplicateType ),
-                arguments = ArgSort::Nil,
-                resolve = ctx => ctx.ctx.duplicates.readAll().map { rmap => rmap match {
-                            case Right(map) =>
-                              val list = map.values.toList
-                              val argsort = ctx.arg( ArgSort )
-                              Action.sort(list,argsort).map { md => (None,md) }
-                            case Left((statusCode,msg)) =>
-                              throw new Exception(s"Error getting duplicates: ${statusCode} ${msg.msg}")
-                          }
-                }
-          ),
-          Field("duplicate",
-                OptionType(MatchDuplicateType),
-                arguments = ArgDuplicateId::Nil,
-                resolve = ctx => Action.getDuplicateFromRoot(ctx).map { md => (None,md) }
-          ),
-          Field("duplicatesummaries",
-                ListType( DuplicateSummaryType ),
-                arguments = ArgSort::Nil,
-                resolve = ctx => ctx.ctx.getDuplicateSummaries().map { rmap => rmap match {
-                            case Right(list) =>
-                              val argsort = ctx.arg( ArgSort )
-                              Action.sortSummary( list, argsort ).map { md => (None,md) }
-                            case Left((statusCode,msg)) =>
-                              throw new Exception(s"Error getting duplicate summaries: ${statusCode} ${msg.msg}")
-                          }
-                }
-          ),
-          Field(
-              "duplicatestats",
-              DuplicateStatsType,
-              resolve = ctx => ctx.ctx
-          ),
-          Field("rubbers",
-                ListType( MatchRubberType ),
-                arguments = ArgSort::Nil,
-                resolve = ctx => ctx.ctx.rubbers.readAll().map { rmap => rmap match {
-                            case Right(map) =>
-                              val list = map.values.toList
-                              val argsort = ctx.arg( ArgSort )
-                              Action.sortR(list,argsort).map { md => (None,md) }
-                            case Left((statusCode,msg)) =>
-                              throw new Exception(s"Error getting duplicates: ${statusCode} ${msg.msg}")
-                          }
-                }
-          ),
-          Field("rubber",
-                OptionType(MatchRubberType),
-                arguments = ArgRubberId::Nil,
-                resolve = ctx => Action.getRubberFromRoot(ctx).map { md => (None,md) }
-          ),
-          Field("chicagos",
-                ListType( MatchChicagoType ),
-                arguments = ArgSort::Nil,
-                resolve = ctx => ctx.ctx.chicagos.readAll().map { rmap => rmap match {
-                            case Right(map) =>
-                              val list = map.values.toList
-                              val argsort = ctx.arg( ArgSort )
-                              Action.sortC(list,argsort).map { md => (None,md) }
-                            case Left((statusCode,msg)) =>
-                              throw new Exception(s"Error getting duplicates: ${statusCode} ${msg.msg}")
-                          }
-                }
-          ),
-          Field("chicago",
-                OptionType(MatchChicagoType),
-                arguments = ArgChicagoId::Nil,
-                resolve = ctx => Action.getChicagoFromRoot(ctx).map { md => (None,md) }
+          Field("mainStore",
+                OptionType(BridgeServiceType),
+                resolve = ctx => ctx.ctx
           )
-
-      )
+      ) ++
+      BridgeServiceFields
   )
 
   val MutationImportType = ObjectType(
@@ -1263,7 +1236,7 @@ object SchemaDefinition {
       )
   )
 
-  val MutationType = ObjectType("Mutation", fields[BridgeService,Unit](
+  val MutationType = ObjectType("Mutation", fields[BridgeService,BridgeService](
     Field("import",
           OptionType(MutationImportType),
           description = Some("Selecting the import store from which imports are done.  returns null if not found."),
@@ -1281,6 +1254,17 @@ object Action {
   def getDuplicate( ctx: Context[BridgeService,BridgeService]): Future[(Option[String],MatchDuplicate)] = {
     val id = ctx arg ArgDuplicateId
     ctx.value.duplicates.read(id).map { rmd =>
+      rmd match {
+        case Right(md) => (if (ctx.ctx.id==ctx.value.id) None else Some(ctx.value.id),md)
+        case Left((statusCode,msg)) =>
+          throw new Exception(s"Error getting match duplicate ${id}: ${statusCode} ${msg.msg}")
+      }
+    }
+  }
+
+  def getDuplicateResult( ctx: Context[BridgeService,BridgeService]): Future[(Option[String],MatchDuplicateResult)] = {
+    val id = ctx arg ArgDuplicateResultId
+    ctx.value.duplicateresults.read(id).map { rmd =>
       rmd match {
         case Right(md) => (if (ctx.ctx.id==ctx.value.id) None else Some(ctx.value.id),md)
         case Left((statusCode,msg)) =>
@@ -1406,7 +1390,67 @@ object Action {
     }
   }
 
-  def getDuplicateFromRoot( ctx: Context[BridgeService,Unit]): Future[MatchDuplicate] = {
+  def getChicagoBestMatch( ctx: Context[BridgeService,(Option[String],MatchChicago)]): Future[Option[(Option[String],ChicagoBestMatch)]] = {
+    val mainStore = ctx.ctx
+    val (importId,md) = ctx.value
+    val sourcestore = if (importId.isEmpty) Future.successful(Some(mainStore))
+                      else mainStore.importStore.get.get(importId.get).map { rbs =>
+                        rbs match {
+                          case Right(bs) => Some(bs)
+                          case Left(error) => None
+                        }
+                      }
+    mainStore.chicagos.readAll().map { rlmd =>
+      rlmd match {
+        case Right(lmd) =>
+          val x =
+          lmd.values.map { mmd =>
+            import DifferenceWrappers._
+            val diff = md.difference("", mmd)
+            log.fine(s"Diff main(${mmd.id}) import(${importId},${md.id}): ${diff}")
+            ChicagoBestMatch( mmd.id, diff )
+          }.foldLeft(ChicagoBestMatch.noMatch) { (ac,v) =>
+            if (ac.sameness < v.sameness) v
+            else ac
+          }
+          Some((importId,x))
+        case Left(err) =>
+          None
+      }
+    }
+  }
+
+  def getRubberBestMatch( ctx: Context[BridgeService,(Option[String],MatchRubber)]): Future[Option[(Option[String],RubberBestMatch)]] = {
+    val mainStore = ctx.ctx
+    val (importId,md) = ctx.value
+    val sourcestore = if (importId.isEmpty) Future.successful(Some(mainStore))
+                      else mainStore.importStore.get.get(importId.get).map { rbs =>
+                        rbs match {
+                          case Right(bs) => Some(bs)
+                          case Left(error) => None
+                        }
+                      }
+    mainStore.rubbers.readAll().map { rlmd =>
+      rlmd match {
+        case Right(lmd) =>
+          val x =
+          lmd.values.map { mmd =>
+            import DifferenceWrappers._
+            val diff = md.difference("", mmd)
+            log.fine(s"Diff main(${mmd.id}) import(${importId},${md.id}): ${diff}")
+            RubberBestMatch( mmd.id, diff )
+          }.foldLeft(RubberBestMatch.noMatch) { (ac,v) =>
+            if (ac.sameness < v.sameness) v
+            else ac
+          }
+          Some((importId,x))
+        case Left(err) =>
+          None
+      }
+    }
+  }
+
+  def getDuplicateFromRoot( ctx: Context[BridgeService,BridgeService]): Future[MatchDuplicate] = {
     val id = ctx arg ArgDuplicateId
     ctx.ctx.duplicates.read(id).map { rmd =>
       rmd match {
@@ -1417,7 +1461,7 @@ object Action {
     }
   }
 
-  def getRubberFromRoot( ctx: Context[BridgeService,Unit]): Future[MatchRubber] = {
+  def getRubberFromRoot( ctx: Context[BridgeService,BridgeService]): Future[MatchRubber] = {
     val id = ctx arg ArgRubberId
     ctx.ctx.rubbers.read(id).map { rmd =>
       rmd match {
@@ -1428,7 +1472,7 @@ object Action {
     }
   }
 
-  def getChicagoFromRoot( ctx: Context[BridgeService,Unit]): Future[MatchChicago] = {
+  def getChicagoFromRoot( ctx: Context[BridgeService,BridgeService]): Future[MatchChicago] = {
     val id = ctx arg ArgChicagoId
     ctx.ctx.chicagos.read(id).map { rmd =>
       rmd match {
@@ -1439,7 +1483,7 @@ object Action {
     }
   }
 
-  def getAllImportFromRoot( ctx: Context[BridgeService,Unit]): Future[List[BridgeService]] = {
+  def getAllImportFromRoot( ctx: Context[BridgeService,BridgeService]): Future[List[BridgeService]] = {
     ctx.ctx.importStore match {
       case Some(is) =>
         is.getAllIds().flatMap { rlids =>
@@ -1463,7 +1507,7 @@ object Action {
     }
   }
 
-  def getImportFromRoot( ctx: Context[BridgeService,Unit]): Future[BridgeService] = {
+  def getImportFromRoot( ctx: Context[BridgeService,BridgeService]): Future[BridgeService] = {
     val id = ctx arg ArgImportId
     ctx.ctx.importStore match {
       case Some(is) =>

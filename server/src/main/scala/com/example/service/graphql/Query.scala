@@ -49,7 +49,8 @@ class Query {
                                    queryAst,
                                    store,
                                    variables = vars,
-                                   operationName = operation
+                                   operationName = operation,
+                                   root=store
                                   )
             .map { r =>
               log.fine( s"GraphQL result: ${r}" )

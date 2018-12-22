@@ -68,7 +68,7 @@ class InMemoryPersistent[VId,VType <: VersionedInstance[VType,VType,VId]](
       self.synchronized {
         useId match {
           case Some(id) =>
-            val nv = v.setId(id, true, dontUpdateTimes)
+            val nv = v.setId(id, true, dontUpdateTimes).readyForWrite()
             add(nv)
             Result(nv)
           case None =>
@@ -116,7 +116,7 @@ class InMemoryPersistent[VId,VType <: VersionedInstance[VType,VType,VId]](
                      ): Future[Result[VType]] = {
     log.fine(s"""putToPersistent id=${id}, v=${v}""")
     Future {
-      val nv = v.setId(id, false, false)
+      val nv = v.setId(id, false, false).readyForWrite()
       internalAdd(nv)
       Result(nv)
     }

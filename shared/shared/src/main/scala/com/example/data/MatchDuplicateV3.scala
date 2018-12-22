@@ -395,6 +395,8 @@ case class MatchDuplicateV3 private(
       created,
       updated )
 
+  def readyForWrite() = this
+
 }
 
 object MatchDuplicateV3 {

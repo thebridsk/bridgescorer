@@ -191,6 +191,9 @@ case class MatchDuplicateResultV1 private(
     }
     MatchDuplicateResultV2(id,r,br,comment,notfinished,played,created,updated,MatchDuplicate.MatchPoints)
   }
+
+  def readyForWrite() = this
+
 }
 
 object MatchDuplicateResultV1 {
