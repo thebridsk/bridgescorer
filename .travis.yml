@@ -41,7 +41,7 @@ install: # Install ChromeDriver
   - sudo ln -s /usr/local/share/hugo /usr/local/bin/hugo
 
 script:
-# - export ParallelUtilsUseSerial=false
+- export ParallelUtilsUseSerial=false
 - export UseBrowser=chromeheadless
 - sbt clean distribution:travis
 
