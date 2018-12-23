@@ -82,7 +82,7 @@ trait MySwaggerService extends SwaggerHttpService {
     swaggerURL
   }
 
-  lazy val swaggerCacheDuration = Duration("5m")
+  lazy val swaggerCacheDuration = Duration("5min")
 
   lazy val swaggerCacheHeaders = {
     import akka.http.scaladsl.model.headers._
