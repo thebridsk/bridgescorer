@@ -447,12 +447,31 @@ class Duplicate5TestPages extends FlatSpec with MustMatchers with BeforeAndAfter
 
   var rounds: List[Int] = Nil
 
+  case class DelayWithClue( f: () => String ) {
+
+    override
+    def toString() = f()
+  }
+
   it should "go to duplicate match game in complete, table 1, and table 2 browsers" in {
     tcpSleep(60)
 
     rounds = MovementsPage.getRoundsFromMovement(movement)
 
-    try {
+    withClue( DelayWithClue { () =>
+
+        import scala.sys.process._
+        import scala.language.postfixOps
+
+        println("top -b -n 1")
+
+        val b = new StringBuilder()
+        
+        val sc = "top -b -n 1" ! ProcessLogger( b append _, b append _)
+
+        b.append(s"\nRC=${sc}\n")
+        b.toString()
+    }) { 
       waitForFutures(
         "Starting browsers",
         CodeBlock {
@@ -472,19 +491,6 @@ class Duplicate5TestPages extends FlatSpec with MustMatchers with BeforeAndAfter
           ScoreboardPage.goto(dupid.get).validate
         }
       )
-    } catch {
-      case x: Exception =>
-
-        import scala.sys.process._
-        import scala.language.postfixOps
-
-        println("top -b -n 1")
-
-        val sc = "top -b -n 1" !
-
-        println(s"RC=${sc}")
-
-        throw x
     }
   }
 
