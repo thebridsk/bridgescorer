@@ -24,6 +24,10 @@ import com.example.data.Id
 import com.example.react.PopupOkCancel
 import com.example.logger.Alerter
 import com.example.react.HelpButton
+import com.example.pages.chicagos.ChicagoRouter.ListViewBase
+import com.example.pages.chicagos.ChicagoRouter.ImportListView
+import com.example.bridge.store.ChicagoSummaryStore
+import com.example.pages.chicagos.ChicagoRouter.ListView
 
 /**
  * @author werewolf
@@ -34,9 +38,9 @@ object PageChicagoList {
   type CallbackDone = Callback
   type ShowCallback = (/* id: */ String)=>Callback
 
-  case class Props( routerCtl: BridgeRouter[ChicagoPage] )
+  case class Props( routerCtl: BridgeRouter[ChicagoPage], page: ListViewBase )
 
-  def apply( routerCtl: BridgeRouter[ChicagoPage] ) = component(Props(routerCtl))
+  def apply( routerCtl: BridgeRouter[ChicagoPage], page: ListViewBase ) = component(Props(routerCtl,page))
 
 }
 
@@ -54,7 +58,7 @@ object PageChicagoListInternal {
    * will cause State to leak.
    *
    */
-  case class State( chicagos: Array[MatchChicago], workingOnNew: Option[String], askingToDelete: Option[String] )
+  case class State( workingOnNew: Option[String], askingToDelete: Option[String] )
 
   /**
    * Internal state for rendering the component.
@@ -118,6 +122,10 @@ object PageChicagoListInternal {
 
 
     def render(props: Props, state:State) = {
+      val importId = props.page match {
+        case ImportListView(id) => Some(id)
+        case _ => None
+      }
       val chicagos = state.chicagos.sortWith((l,r) => Id.idComparer(l.id, r.id) > 0)
       val maxplayers = chicagos.map( mc => mc.players.length ).foldLeft(4){case (m, i) => math.max(m,i)}
       <.div( chiStyles.chicagoListPage,
@@ -130,16 +138,22 @@ object PageChicagoListInternal {
               <.thead(
                 <.tr(
                   <.th( "Id"),
+                  importId.map { id =>
+                    TagMod(
+                      <.th("Import from"),
+                      <.th("Best Match")
+                    )
+                  }.whenDefined,
                   <.th( "Created", <.br(), "Updated"),
                   <.th( "Players - Scores", ^.colSpan:=maxplayers),
                   <.th( "")
               )),
               <.tbody(
-                  ChicagoRowFirst.withKey("New")((this,props,state,maxplayers)),
+                  ChicagoRowFirst.withKey("New")((this,props,state,maxplayers,importId)),
                   (0 until chicagos.length).map { i =>
                     val key="Game"+i
                     val chicago = ChicagoScoring(chicagos(i))
-                    ChicagoRow.withKey(key)((this,props,state,i,maxplayers,chicago))
+                    ChicagoRow.withKey(key)((this,props,state,i,maxplayers,chicago,importId))
                   }.toTagMod
               )
           ),
@@ -159,17 +173,23 @@ object PageChicagoListInternal {
 
     private var mounted = false
 
-    val didMount = Callback {
+    val storeCallback = scope.forceUpdate
+
+    val didMount = scope.props >>= { (p) => Callback {
       mounted = true
 
       // make AJAX rest call here
       logger.finer("PageChicagoList: Sending chicagos list request to server")
-      RestClientChicago.list().recordFailure().foreach( list => Alerter.tryitWithUnit {
-        logger.finer(s"PageChicagoList: got ${list.size} entries, mounted=${mounted}")
-        scope.withEffectsImpure.modState( s => s.copy(chicagos=list))
-      })
+      ChicagoSummaryStore.addChangeListener(storeCallback)
+      p.page match {
+        case isv: ImportListView =>
+          val importId = isv.getDecodedId
+          ChicagoController.getImportSummary(importId)
+        case ListView =>
+          ChicagoController.getSummary()
+      }
 
-    }
+    }}
 
     val willUnmount = Callback {
       mounted = false
@@ -177,26 +197,34 @@ object PageChicagoListInternal {
 
   }
 
-  val ChicagoRowFirst = ScalaComponent.builder[(Backend, Props, State, Int)]("ChicagoRowFirst")
+  val ChicagoRowFirst = ScalaComponent.builder[(Backend, Props, State, Int, Option[String])]("ChicagoRowFirst")
     .stateless
     .render_P { args =>
-      val (backend, props, state, maxplayers) = args
+      val (backend, props, state, maxplayers, importId) = args
       <.tr(
           <.td( "" ),
-          <.td(
-            state.workingOnNew match {
-              case Some(msg) =>
-                <.span(
-                  msg,
-                  " ",
-                  AppButton(
-                    "PopupCancel", "Cancel",
-                    ^.onClick --> backend.cancel
+          importId.map { id =>
+            TagMod(
+              <.th(id),
+              <.th( "" ),
+              <.th( "" )
+            )
+          }.getOrElse(
+            <.td(
+              state.workingOnNew match {
+                case Some(msg) =>
+                  <.span(
+                    msg,
+                    " ",
+                    AppButton(
+                      "PopupCancel", "Cancel",
+                      ^.onClick --> backend.cancel
+                    )
                   )
-                )
-              case None =>
-                AppButton( "New", "New", ^.onClick --> backend.newChicago)
-            }
+                case None =>
+                  AppButton( "New", "New", ^.onClick --> backend.newChicago)
+              }
+            )
           ),
           <.td( ^.colSpan:=maxplayers,"" ),
           <.td( "")

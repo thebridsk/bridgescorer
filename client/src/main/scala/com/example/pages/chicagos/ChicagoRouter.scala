@@ -11,13 +11,16 @@ import com.example.routes.AppRouter.AppPage
 import com.example.routes.Module
 import com.example.routes.BridgeRouterBase
 import com.example.routes.BridgeRouter
+import scala.scalajs.js.URIUtils
 
 object ChicagoModule extends Module {
   case class PlayChicago2( m: ChicagoPage ) extends AppPage
 
   def verifyPages(): List[AppPage] = ChicagoRouter.verifyPages.map( p => PlayChicago2(p).asInstanceOf[AppPage]).toList
 
-  def routes(): Rule[AppPage] = ChicagoRouter.routes.prefixPath_/("#chicago").pmap[AppPage](PlayChicago2){ case PlayChicago2(m) => m }
+  def routes(): Rule[AppPage] =
+    ChicagoRouter.routes.prefixPath_/("#chicago").pmap[AppPage](PlayChicago2){ case PlayChicago2(m) => m } |
+    ChicagoRouter.importRoutes.prefixPath_/("#import").pmap[AppPage](PlayChicago2){ case PlayChicago2(m) => m }
 
   override
   def canRender(selectedPage: Resolution[AppPage]): Boolean = selectedPage.page.isInstanceOf[PlayChicago2]
@@ -30,7 +33,13 @@ object ChicagoRouter {
 
   val logger = Logger("bridge.ChicagoRouter")
 
-  object ListView extends ChicagoPage
+  trait ListViewBase extends ChicagoPage
+
+  object ListView extends ListViewBase
+  case class ImportListView( importId: String ) extends ListViewBase {
+    def getDecodedId = URIUtils.decodeURI(importId)
+  }
+
   case class SummaryView( chiid: String ) extends ChicagoPage {
     def toRoundView( round: Int ) = RoundView(chiid,round)
     def toNamesView( round: Int ) = NamesView(chiid,round)
@@ -83,7 +92,16 @@ object ChicagoRouter {
       | dynamicRouteCT( (string("[a-zA-Z0-9]+") / "rounds" / int / "hands" / int ).caseClass[HandView])
         ~> dynRenderR( (p,routerCtl) => PageChicagoHand(p,routerCtl) )
       | staticRoute( root, ListView )
-        ~> renderR( routerCtl => PageChicagoList(routerCtl) )
+        ~> renderR( routerCtl => PageChicagoList(routerCtl,ListView) )
+      )
+  }
+
+  val importRoutes = RouterConfigDsl[ChicagoPage].buildRule { dsl =>
+    import dsl._
+
+    (emptyRule
+      | dynamicRouteCT( (string(".+") / "chicago" ).caseClass[ImportListView])
+        ~> dynRenderR( (p,routerCtl) => PageChicagoList(routerCtl,p) )
       )
   }
 

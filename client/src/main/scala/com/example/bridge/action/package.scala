@@ -47,6 +47,12 @@ package object action {
 
   sealed trait ChicagoBridgeAction extends BridgeAction
 
+  /**
+   * @param importId the import Id.  If None, then this is the main store.
+   * @param summary
+   */
+  case class ActionUpdateChicagoSummary( importId: Option[String], summary: Array[MatchChicago] ) extends ChicagoBridgeAction
+
   case class ActionUpdateChicago( chi: MatchChicago, callback: Option[MatchChicago=>Unit]=None ) extends ChicagoBridgeAction
   case class ActionUpdateChicagoNames( chiid: String, nplayer1: String, nplayer2: String, nplayer3: String, nplayer4: String, extra: Option[String], quintet: Boolean, simpleRotation: Boolean, callback: Option[MatchChicago=>Unit]=None ) extends ChicagoBridgeAction
   case class ActionUpdateChicagoRound( chiid: String, round: Round, callback: Option[MatchChicago=>Unit]=None ) extends ChicagoBridgeAction
