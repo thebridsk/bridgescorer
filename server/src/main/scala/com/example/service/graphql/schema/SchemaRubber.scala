@@ -89,7 +89,7 @@ object SchemaRubber {
   )
 
   val RubberBestMatchType = ObjectType(
-      "BestMatch",
+      "RubberBestMatch",
       "Identifies the best match",
       fields[BridgeService,(Option[String],RubberBestMatch)](
           Field("id", OptionType(RubberIdType),
