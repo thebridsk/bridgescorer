@@ -969,11 +969,11 @@ lazy val `bridgescorer-server`: Project = project.in(file("server")).
 //      helpdir.allPaths.pair( f => Some( f.toString.substring(prefix) ) )
 //    },
 
-    npmAssets := {
-      val x = npmAssets.value
-//      val h = helptask.value
-      x // ++h
-    },
+//    npmAssets := {
+//      val x = npmAssets.value
+////      val h = helptask.value
+//      x // ++h
+//    },
 
     scalaJSProjects := Seq(`bridgescorer-client`),
     pipelineStages in Assets := (if (onlyBuildDebug) Seq() else Seq(scalaJSProd)) ++ Seq(scalaJSDev, gzip ),

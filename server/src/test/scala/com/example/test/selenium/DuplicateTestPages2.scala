@@ -226,7 +226,7 @@ class DuplicateTestPages2 extends FlatSpec with MustMatchers with BeforeAndAfter
     val hand = en.clickOK.asInstanceOf[HandPage].validate
   }
 
-  it should "allow first round to be played at both tables" in {
+  it should "allow first round to be played at table 1" in {
     tcpSleep(60)
     import SessionDirector._
     val hand = HandPage.current
@@ -265,7 +265,7 @@ class DuplicateTestPages2 extends FlatSpec with MustMatchers with BeforeAndAfter
     val sb = selectScorekeeper(ScoreboardPage.current,1,2, team1, team2, East, false )
   }
 
-  it should "allow second round to be played at both tables" in {
+  it should "allow second round to be played at table 1" in {
     tcpSleep(60)
     import SessionDirector._
     val sb = ScoreboardPage.current

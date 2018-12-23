@@ -70,7 +70,7 @@ object Dependencies {
   lazy val vScalaArm = "2.0"         // http://mvnrepository.com/artifact/com.jsuereth/scala-arm_2.11
   lazy val vScallop = "3.1.5"        // http://mvnrepository.com/artifact/org.rogach/scallop_2.11
   lazy val vSlf4j = "1.7.25"         // https://mvnrepository.com/artifact/org.slf4j/slf4j-jdk14
-  lazy val vPlayJson = "2.6.11"      // https://mvnrepository.com/artifact/com.typesafe.play/play-json_2.12
+  lazy val vPlayJson = "2.6.13"      // https://mvnrepository.com/artifact/com.typesafe.play/play-json_2.12
 
   // jackson-module-scala usually updates a few days after the others are updated,
   // don't update until jackson-module-scala is updated
@@ -102,6 +102,9 @@ object Dependencies {
 
   lazy val vSangria = "1.4.2"           // https://github.com/sangria-graphql/sangria
   lazy val vSangriaPlayJson = "1.0.5"   // https://github.com/sangria-graphql/sangria-playground
+
+  lazy val vGraphQL = "14.0.2"
+  lazy val vGraphQLVoyager = "1.0.0-rc.26"
 
   // libraries
 
@@ -246,7 +249,9 @@ object Dependencies {
       "react-widgets-moment" -> vReactWidgetsMoment,
       "moment" -> vMoment,
       "swagger-ui-dist" -> vSwaggerUI,
-      "fastclick" -> vFastClick
+      "fastclick" -> vFastClick,
+      "graphql-voyager" -> vGraphQLVoyager,
+      "graphql" -> vGraphQL
   )
 
     // this is for SBT 1.0
@@ -271,6 +276,10 @@ object Dependencies {
       (nodeModules / "react-widgets" / "dist" / "css" ).allPaths +++
       (nodeModules / "react-widgets" / "dist" / "fonts" ).allPaths +++
       (nodeModules / "react-widgets" / "dist" / "img" ).allPaths +++
+      (nodeModules / "graphql-voyager" / "dist" ) **(
+          new ExactFilter("voyager.worker.js") |
+          new ExactFilter("voyager.css")
+          ) +++
       nodeModules / "swagger-ui-dist" ** (
           new PatternFilter("""swagger-ui.*""".r.pattern) |
           new ExactFilter("index.html")

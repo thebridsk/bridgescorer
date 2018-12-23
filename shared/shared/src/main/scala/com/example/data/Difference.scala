@@ -261,4 +261,89 @@ object DifferenceWrappers {
 
   }
 
+  implicit class WrapChicagoRound( val me: Round ) extends AnyVal with DifferenceComparable[String, Round, WrapChicagoRound] {
+
+    def id = me.id
+
+    def differenceW( prefix: String, other: WrapChicagoRound ) =
+      difference( prefix, other.me )
+
+    def difference( prefix: String, other: Round ): Difference = {
+      fold(
+        compare( me.id, other.id, prefix+".id" ),
+        compare( me.north, other.north, prefix+".north" ),
+        compare( me.south, other.south, prefix+".south" ),
+        compare( me.east, other.east, prefix+".east" ),
+        compare( me.west, other.west, prefix+".west" ),
+        compare( me.dealerFirstRound, other.dealerFirstRound, prefix+".dealerFirstRound" ),
+        compareList[String,Hand,WrapHand]( me.hands.map(new WrapHand(_)), other.hands.map(new WrapHand(_)), prefix+".hands"),
+        compare( me.created, other.created, prefix+".created" ),
+        compare( me.updated, other.updated, prefix+".updated" ),
+      )
+    }
+  }
+
+  implicit class WrapMatchChicago( val me: MatchChicago ) extends AnyVal with DifferenceComparable[Id.MatchChicago, MatchChicago, WrapMatchChicago] {
+
+    def id = me.id
+
+    def differenceW( prefix: String, other: WrapMatchChicago ) =
+      difference( prefix, other.me )
+
+    def difference( prefix: String, other: MatchChicago ): Difference = {
+      fold(
+        compare( me.id, other.id, prefix+".id" ),
+        compare( me.players, other.players, prefix+".players" ),
+        compareList[String,Round,WrapChicagoRound]( me.rounds.map(new WrapChicagoRound(_)), other.rounds.map(new WrapChicagoRound(_)), prefix+".rounds" ),
+        compare( me.gamesPerRound, other.gamesPerRound, prefix+".gamesPerRound" ),
+        compare( me.simpleRotation, other.simpleRotation, prefix+".simpleRotation" ),
+        compare( me.created, other.created, prefix+".created" ),
+        compare( me.updated, other.updated, prefix+".updated" ),
+      )
+    }
+
+  }
+
+  implicit class WrapRubberHand( val me: RubberHand ) extends AnyVal with DifferenceComparable[String, RubberHand, WrapRubberHand] {
+
+    def id = me.id
+
+    def differenceW( prefix: String, other: WrapRubberHand ) =
+      difference( prefix, other.me )
+
+    def difference( prefix: String, other: RubberHand ): Difference = {
+      fold(
+        compare( me.id, other.id, prefix+".id" ),
+        compare( new WrapHand(me.hand), new WrapHand(other.hand), prefix+".hand"),
+        compare( me.honors, other.honors, prefix+".honors" ),
+        compare( me.honorsPlayer, other.honorsPlayer, prefix+".honorsPlayer" ),
+        compare( me.created, other.created, prefix+".created" ),
+        compare( me.updated, other.updated, prefix+".updated" ),
+      )
+    }
+  }
+
+  implicit class WrapMatchRubber( val me: MatchRubber ) extends AnyVal with DifferenceComparable[String, MatchRubber, WrapMatchRubber] {
+
+    def id = me.id
+
+    def differenceW( prefix: String, other: WrapMatchRubber ) =
+      difference( prefix, other.me )
+
+    def difference( prefix: String, other: MatchRubber ): Difference = {
+      fold(
+        compare( me.id, other.id, prefix+".id" ),
+        compare( me.north, other.north, prefix+".north" ),
+        compare( me.south, other.south, prefix+".south" ),
+        compare( me.east, other.east, prefix+".east" ),
+        compare( me.west, other.west, prefix+".west" ),
+        compare( me.dealerFirstHand, other.dealerFirstHand, prefix+".dealerFirstHand" ),
+        compareList[String,RubberHand,WrapRubberHand]( me.hands.map(new WrapRubberHand(_)), other.hands.map(new WrapRubberHand(_)), prefix+".hands" ),
+        compare( me.created, other.created, prefix+".created" ),
+        compare( me.updated, other.updated, prefix+".updated" ),
+      )
+    }
+
+  }
+
 }

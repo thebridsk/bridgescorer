@@ -41,7 +41,10 @@ case class MatchChicagoV3(
     @(ApiModelProperty @field)(value="The creating date", required=true)
     created: Timestamp,
     @(ApiModelProperty @field)(value="The last update date", required=true)
-    updated: Timestamp ) extends VersionedInstance[ MatchChicago,MatchChicagoV3,String] {
+    updated: Timestamp,
+    @(ApiModelProperty @field)(value="best match in main store when importing, never written to store", required=false)
+    bestMatch: Option[ChicagoBestMatch] = None
+) extends VersionedInstance[ MatchChicago,MatchChicagoV3,String] {
 
   if (players.length < 4 || players.length > 5) {
     throw new IllegalArgumentException( "Must have 4 or 5 players")
@@ -208,6 +211,11 @@ case class MatchChicagoV3(
   }
 
   def convertToCurrentVersion(): MatchChicago = this
+
+  def readyForWrite() = copy( bestMatch=None )
+
+  def addBestMatch( bm: ChicagoBestMatch ) = copy( bestMatch = Option(bm))
+
 }
 
 object MatchChicagoV3 {
@@ -218,5 +226,24 @@ object MatchChicagoV3 {
              simpleRotation: Boolean) = {
     val time = SystemTime.currentTimeMillis()
     new MatchChicagoV3(id,players,rounds,gamesPerRound,simpleRotation,time,time)
+  }
+}
+
+@ApiModel(description = "The best match in the main store")
+case class ChicagoBestMatch(
+    @(ApiModelProperty @field)(value="How similar the matches are", required=true)
+    sameness: Double,
+    @(ApiModelProperty @field)(value="The ID of the MatchChicago in the main store that is the best match, none if no match", required=true)
+    id: Option[Id.MatchChicago],
+    @(ApiModelProperty @field)(value="The fields that are different", required=true)
+    differences: Option[List[String]]
+)
+
+object ChicagoBestMatch {
+
+  def noMatch = new ChicagoBestMatch( -1, None, None )
+
+  def apply( id: String, diff: Difference ) = {
+    new ChicagoBestMatch( diff.percentSame, Some(id), Some(diff.differences) )
   }
 }

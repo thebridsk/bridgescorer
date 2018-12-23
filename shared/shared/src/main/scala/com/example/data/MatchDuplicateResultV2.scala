@@ -207,6 +207,8 @@ case class MatchDuplicateResultV2 private(
   def convertToCurrentVersion() =
     this
 
+  def readyForWrite() = this
+
 }
 
 object MatchDuplicateResultV2 {

@@ -1,4 +1,4 @@
-package com.example.service.graphql
+package com.example.service.graphql.schema
 
 import sangria.schema._
 import com.example.backend.BridgeService
@@ -48,12 +48,49 @@ import com.example.data.Round
 import com.example.data.ChicagoBestMatch
 import com.example.data.RubberBestMatch
 
-import com.example.service.graphql.schema.SchemaQuery.{ log => _, _ }
-import com.example.service.graphql.schema.SchemaMutation.{ log => _, _ }
+import SchemaBase.{ log => _, _ }
+import SchemaHand.{ log => _, _ }
+import SchemaDuplicate.{ log => _, _ }
+import SchemaRubber.{ log => _, _ }
+import SchemaChicago.{ log => _, _ }
+import SchemaService.{ log => _, _ }
 
-object SchemaDefinition {
+object SchemaQuery {
 
-  val log = Logger( SchemaDefinition.getClass.getName )
+  val log = Logger( SchemaQuery.getClass.getName )
 
-  val BridgeScorerSchema = Schema( QueryType, Some(MutationType) )
+  val QueryType = ObjectType(
+      "Query",
+      fields[BridgeService,BridgeService](
+          Field("importIds",
+                ListType( ImportIdType ),
+                resolve = _.ctx.importStore match {
+                            case Some(is) =>
+                              is.getAllIds().map( rlist => rlist match {
+                                case Right(list) =>
+                                  list
+                                case Left((statusCode,msg)) =>
+                                  throw new Exception(s"Error getting import store ids: ${statusCode} ${msg.msg}")
+                              })
+                            case None =>
+                              throw new Exception("Did not find the import store")
+                          }
+          ),
+          Field("imports",
+                ListType( BridgeServiceType ),
+                resolve = ServiceAction.getAllImportFromRoot
+          ),
+          Field("import",
+                OptionType(BridgeServiceType),
+                arguments = ArgImportId::Nil,
+                resolve = ServiceAction.getImportFromRoot
+          ),
+          Field("mainStore",
+                OptionType(BridgeServiceType),
+                resolve = ctx => ctx.ctx
+          )
+      ) ++
+      BridgeServiceFields
+  )
+
 }

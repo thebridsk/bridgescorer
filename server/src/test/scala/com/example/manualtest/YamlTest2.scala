@@ -44,7 +44,7 @@ things:
   def execute() = {
 
     val reader = new StringReader(test)
-    val mapper = new ObjectMapper(new YAMLFactory()).registerModule(PlayJsonModule)
+    val mapper = new ObjectMapper(new YAMLFactory()).registerModule(new PlayJsonModule(JsonParserSettings()))
     val jsvalue = mapper.readValue(reader, classOf[JsValue])
 
     implicit val thingFormat = Json.format[Thing2]

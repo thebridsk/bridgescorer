@@ -43,6 +43,8 @@ case class BoardSetV1 ( name: String, short: String, description: String, boards
 
   def convertToCurrentVersion() = this
 
+  def readyForWrite() = this
+
 }
 
 case class BoardInSet( id: Int, nsVul: Boolean, ewVul: Boolean, dealer: String )

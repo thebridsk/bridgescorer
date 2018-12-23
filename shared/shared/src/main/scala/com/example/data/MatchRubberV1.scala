@@ -27,7 +27,10 @@ case class MatchRubberV1(
     @(ApiModelProperty @field)(value="when the match rubber was created", required=true)
     created: Timestamp,
     @(ApiModelProperty @field)(value="when the match rubber was last updated", required=true)
-    updated: Timestamp ) extends VersionedInstance[MatchRubberV1,MatchRubberV1,String] {
+    updated: Timestamp,
+    @(ApiModelProperty @field)(value="best match in main store when importing, never written to store", required=false)
+    bestMatch: Option[RubberBestMatch] = None
+) extends VersionedInstance[MatchRubberV1,MatchRubberV1,String] {
 
   def equalsIgnoreModifyTime( other: MatchRubberV1 ) = {
     other.id == id &&
@@ -119,6 +122,9 @@ case class MatchRubberV1(
 
   def convertToCurrentVersion() = this
 
+  def readyForWrite() = copy( bestMatch=None )
+
+  def addBestMatch( bm: RubberBestMatch ) = copy( bestMatch = Option(bm))
 }
 
 object MatchRubberV1 {
@@ -132,5 +138,24 @@ object MatchRubberV1 {
     hands: List[RubberHand] ) = {
     val time = SystemTime.currentTimeMillis()
     new MatchRubberV1(id,north,south,east,west,dealerFirstHand,hands,time,time)
+  }
+}
+
+@ApiModel(description = "The best match in the main store")
+case class RubberBestMatch(
+    @(ApiModelProperty @field)(value="How similar the matches are", required=true)
+    sameness: Double,
+    @(ApiModelProperty @field)(value="The ID of the MatchRubber in the main store that is the best match, none if no match", required=true)
+    id: Option[String],
+    @(ApiModelProperty @field)(value="The fields that are different", required=true)
+    differences: Option[List[String]]
+)
+
+object RubberBestMatch {
+
+  def noMatch = new RubberBestMatch( -1, None, None )
+
+  def apply( id: String, diff: Difference ) = {
+    new RubberBestMatch( diff.percentSame, Some(id), Some(diff.differences) )
   }
 }

@@ -341,6 +341,8 @@ case class MatchDuplicateV2(
       created,
       updated )
 
+  def readyForWrite() = this
+
 }
 
 object MatchDuplicateV2 {

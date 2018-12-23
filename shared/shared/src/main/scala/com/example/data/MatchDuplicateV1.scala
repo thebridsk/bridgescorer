@@ -303,6 +303,8 @@ case class MatchDuplicateV1(
       created,
       updated )
 
+  def readyForWrite() = this
+
 }
 
 object MatchDuplicateV1 {

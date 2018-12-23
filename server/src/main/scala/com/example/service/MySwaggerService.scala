@@ -15,6 +15,7 @@ import akka.stream.ActorMaterializer
 import java.util.Properties
 import akka.event.Logging
 import io.swagger.models.Scheme
+import scala.concurrent.duration.Duration
 
 //import io.swagger.util.Json
 //import com.fasterxml.jackson.databind.SerializationConfig
@@ -81,6 +82,25 @@ trait MySwaggerService extends SwaggerHttpService {
     swaggerURL
   }
 
+  lazy val swaggerCacheDuration = Duration("5min")
+
+  lazy val swaggerCacheHeaders = {
+    import akka.http.scaladsl.model.headers._
+    import akka.http.scaladsl.model.headers.CacheDirectives._
+    val sec = swaggerCacheDuration.toSeconds
+    if (sec <= 0) {
+      Seq(
+        `Cache-Control`( `no-cache`, `no-store`, `must-revalidate`),
+        RawHeader("Pragma","no-cache"),
+        Expires(DateTime(0))    // RawHeader("Expires","0")
+      )
+    } else {
+      Seq(
+        `Cache-Control`( `max-age`( sec ), `public` )
+      )
+    }
+  }
+
   def swaggerRoute =
       get {
         pathPrefix(apiVersionURISegment) {
@@ -100,7 +120,9 @@ trait MySwaggerService extends SwaggerHttpService {
               redirect("/"+apiVersionURISegment+"/"+apiDocsPath+"/swagger.json", StatusCodes.PermanentRedirect)
             }
           } ~
-          routes
+          respondWithHeaders(swaggerCacheHeaders:_*) {
+            routes
+          }
         }
       }
 }

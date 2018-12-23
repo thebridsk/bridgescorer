@@ -11,4 +11,6 @@ trait VersionedInstance[CurrentVersion,ThisVersion,VID] {
   def setId( newId: VID, forCreate: Boolean, dontUpdateTime: Boolean = false ): ThisVersion
 
   def convertToCurrentVersion(): CurrentVersion
+
+  def readyForWrite(): ThisVersion
 }

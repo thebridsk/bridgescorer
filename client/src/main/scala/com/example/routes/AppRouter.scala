@@ -32,6 +32,7 @@ object AppRouter {
   case object PageTest extends AppPage  // for debugging
   case object GraphQLAppPage extends AppPage
   case object ColorView extends AppPage
+  case object VoyagerView extends AppPage
 
   private var instance: Option[AppRouter] = None
 
@@ -60,6 +61,7 @@ import com.example.pages.GraphQLPage
 import com.example.pages.ExportPage
 import com.example.pages.ImportsListPage
 import com.example.pages.ColorPage
+import com.example.pages.VoyagerPage
 
 trait ModuleRenderer {
 
@@ -121,6 +123,7 @@ class AppRouter( modules: Module* ) {
               PageTest::
               GraphQLAppPage::
               ColorView::
+              VoyagerView::
               Nil
 
     root:::modulepages
@@ -186,6 +189,7 @@ class AppRouter( modules: Module* ) {
       | staticRoute("#testpage", PageTest) ~> renderR( (routerCtl) => logit(TestPage(Home,routerCtl)) )
       | staticRoute("#graphql", GraphQLAppPage) ~> renderR( (routerCtl) => logit(GraphQLPage(routerCtl)) )
       | staticRoute("#color", ColorView) ~> renderR( (routerCtl) => logit(ColorPage()) )
+      | staticRoute("#voyager", VoyagerView) ~> renderR( (routerCtl) => logit(VoyagerPage()) )
       | moduleRoutes()
       ).notFound( p => logit {
         document.defaultView.alert("Could not find path "+p)
