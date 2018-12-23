@@ -103,6 +103,9 @@ object Dependencies {
   lazy val vSangria = "1.4.2"           // https://github.com/sangria-graphql/sangria
   lazy val vSangriaPlayJson = "1.0.5"   // https://github.com/sangria-graphql/sangria-playground
 
+  lazy val vGraphQL = "14.0.2"
+  lazy val vGraphQLVoyager = "1.0.0-rc.26"
+
   // libraries
 
 
@@ -246,7 +249,9 @@ object Dependencies {
       "react-widgets-moment" -> vReactWidgetsMoment,
       "moment" -> vMoment,
       "swagger-ui-dist" -> vSwaggerUI,
-      "fastclick" -> vFastClick
+      "fastclick" -> vFastClick,
+      "graphql-voyager" -> vGraphQLVoyager,
+      "graphql" -> vGraphQL
   )
 
     // this is for SBT 1.0
@@ -271,6 +276,10 @@ object Dependencies {
       (nodeModules / "react-widgets" / "dist" / "css" ).allPaths +++
       (nodeModules / "react-widgets" / "dist" / "fonts" ).allPaths +++
       (nodeModules / "react-widgets" / "dist" / "img" ).allPaths +++
+      (nodeModules / "graphql-voyager" / "dist" ) **(
+          new ExactFilter("voyager.worker.js") |
+          new ExactFilter("voyager.css")
+          ) +++
       nodeModules / "swagger-ui-dist" ** (
           new PatternFilter("""swagger-ui.*""".r.pattern) |
           new ExactFilter("index.html")
