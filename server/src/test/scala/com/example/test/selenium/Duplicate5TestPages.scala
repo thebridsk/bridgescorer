@@ -452,25 +452,40 @@ class Duplicate5TestPages extends FlatSpec with MustMatchers with BeforeAndAfter
 
     rounds = MovementsPage.getRoundsFromMovement(movement)
 
-    waitForFutures(
-      "Starting browsers",
-      CodeBlock {
-        import SessionDirector._
-        ScoreboardPage.current.clickDirectorButton.validate
-      },
-      CodeBlock {
-        import SessionTable1._
-        ScoreboardPage.goto(dupid.get).validate.clickTableButton(1).validate(rounds)
-      },
-      CodeBlock {
-        import SessionTable2._
-        TablePage.goto(dupid.get,"2", EnterNames).validate(rounds)
-      },
-      CodeBlock {
-        import SessionComplete._
-        ScoreboardPage.goto(dupid.get).validate
-      }
-    )
+    try {
+      waitForFutures(
+        "Starting browsers",
+        CodeBlock {
+          import SessionDirector._
+          ScoreboardPage.current.clickDirectorButton.validate
+        },
+        CodeBlock {
+          import SessionTable1._
+          ScoreboardPage.goto(dupid.get).validate.clickTableButton(1).validate(rounds)
+        },
+        CodeBlock {
+          import SessionTable2._
+          TablePage.goto(dupid.get,"2", EnterNames).validate(rounds)
+        },
+        CodeBlock {
+          import SessionComplete._
+          ScoreboardPage.goto(dupid.get).validate
+        }
+      )
+    } catch {
+      case x: Exception =>
+
+        import scala.sys.process._
+        import scala.language.postfixOps
+
+        println("top -b -n 1")
+
+        val sc = "top -b -n 1" !
+
+        println(s"RC=${sc}")
+
+        throw x
+    }
   }
 
   it should "allow players names to be entered at both tables" in {
