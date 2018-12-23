@@ -103,7 +103,7 @@ object SchemaChicago {
   )
 
   val ChicagoBestMatchType = ObjectType(
-      "BestMatch",
+      "ChicagoBestMatch",
       "Identifies the best match",
       fields[BridgeService,(Option[String],ChicagoBestMatch)](
           Field("id", OptionType(ChicagoIdType),
