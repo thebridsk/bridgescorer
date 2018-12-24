@@ -724,7 +724,7 @@ class ChicagoTestPages extends FlatSpec with MustMatchers with BeforeAndAfterAll
 
     val ip = hp.clickImport.validate
 
-    ip.getImportedIds.length mustBe 0
+    val initcount = ip.getImportedIds.length
 
     ip.checkSelectedFile(None)
 
@@ -734,7 +734,7 @@ class ChicagoTestPages extends FlatSpec with MustMatchers with BeforeAndAfterAll
     val ip2 = rp.clickLink.validate
 
     val imports = ip2.getImportedIds
-    imports.length must be >= 1
+    imports.length mustBe initcount+1
 
     val (importId,row) = imports.last
 
