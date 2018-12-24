@@ -1338,9 +1338,9 @@ class DuplicateTestPages extends FlatSpec
     val imports = ip2.getImportedIds
     imports.length mustBe initcount+1
 
-    val (importId,row) = imports.head
+    val (importId,row) = imports.last
 
-    importId must startWith( importZipFile.get.name )
+    importId mustBe importZipFile.get.name 
 
     val ldp = ip2.importDuplicate(importZipFile.get.name, row).validate
 
