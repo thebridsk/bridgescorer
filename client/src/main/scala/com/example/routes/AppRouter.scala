@@ -189,7 +189,7 @@ class AppRouter( modules: Module* ) {
       | staticRoute("#testpage", PageTest) ~> renderR( (routerCtl) => logit(TestPage(Home,routerCtl)) )
       | staticRoute("#graphql", GraphQLAppPage) ~> renderR( (routerCtl) => logit(GraphQLPage(routerCtl)) )
       | staticRoute("#color", ColorView) ~> renderR( (routerCtl) => logit(ColorPage()) )
-      | staticRoute("#voyager", VoyagerView) ~> renderR( (routerCtl) => logit(VoyagerPage()) )
+      | staticRoute("#voyager", VoyagerView) ~> renderR( (routerCtl) => logit(VoyagerPage(routerCtl)) )
       | moduleRoutes()
       ).notFound( p => logit {
         document.defaultView.alert("Could not find path "+p)
