@@ -22,14 +22,29 @@ trait GraphiQLComponentProperty extends js.Object {
   val fetcher: js.Function1[String, Promise[js.Object]] = js.native
 }
 
-case class GraphQLQuery( query: String)
-
 object GraphiQLComponentProperty {
+
+  def intro( graphqlUrl: String)( query: js.Object): Promise[js.Object] = {
+    import scala.concurrent.ExecutionContext.Implicits.global
+    val gql = new GraphQLBaseClient(graphqlUrl)
+    val r = gql.requestWithBody(query)
+    import js.JSConverters._
+    val x = r.recordFailure().map { resp =>
+
+      val pr = js.Dynamic.literal()
+      resp.data.foreach{ d =>
+        val dd = JSON.parse(d.toString(), (k,v) => v )
+        pr.updateDynamic("data")( dd )
+      }
+      pr
+    }.toJSPromise
+    x
+  }
 
   def apply( graphqlUrl: String ): GraphiQLComponentProperty = {
     val p = js.Dynamic.literal()
 
-    val i = VoyagerComponentProperty.intro(graphqlUrl) _
+    val i = intro(graphqlUrl) _
 
     p.updateDynamic("fetcher")( i)
 
@@ -67,7 +82,7 @@ object GraphiQL {
     component(props)
   }
 
-  @JSImport("graphiql", "GraphiQL")
+  @JSImport("graphiql", JSImport.Namespace ) // "GraphiQL")
   @js.native
   object GraphiQL extends GraphiQL // GraphiQL
 

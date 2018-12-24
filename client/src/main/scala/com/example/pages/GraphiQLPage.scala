@@ -49,14 +49,12 @@ object GraphiQLPageInternal {
    */
   class Backend(scope: BackendScope[Props, State]) {
     def render( props: Props, state: State ) = {
-      <.div(
-        <.div(
-            GraphiQL("/v1/graphql")
-        ),
+      <.div( BaseStyles.baseStyles.divGraphiql,
         <.div(
           AppButton( "Home", "Home",
                      props.router.setOnClick(Home))
-        )
+        ),
+        GraphiQL("/v1/graphql")
       )
     }
 
