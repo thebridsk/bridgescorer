@@ -738,7 +738,7 @@ class ChicagoTestPages extends FlatSpec with MustMatchers with BeforeAndAfterAll
 
     val (importId,row) = imports.last
 
-    importId must startWith( importZipFile.get.name )
+    importId mustBe importZipFile.get.name
 
     val lp = ip2.importChicago(importZipFile.get.name, row).validate
 
