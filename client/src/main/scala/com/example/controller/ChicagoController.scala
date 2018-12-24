@@ -30,6 +30,7 @@ import play.api.libs.json.JsSuccess
 import play.api.libs.json.JsError
 import play.api.libs.json.JsUndefined
 import com.example.logger.Alerter
+import com.example.data.Id
 
 object ChicagoController {
   val logger = Logger("bridge.ChicagoController")
@@ -195,6 +196,11 @@ object ChicagoController {
                 logger.warning(s"exception import duplicatesummaries ${importId}", x)
           }.foreach { x => }
     }
+  }
+
+  def deleteChicago( id: Id.MatchChicago) = {
+    BridgeDispatcher.deleteChicago(id)
+    RestClientChicago.delete(id).recordFailure()
   }
 
 }

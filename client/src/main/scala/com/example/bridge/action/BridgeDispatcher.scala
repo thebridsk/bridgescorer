@@ -53,6 +53,8 @@ object BridgeDispatcher {
 
   def updateChicagoSummary( importId: Option[String], summary: Array[MatchChicago] ) = dispatcher.dispatch( ActionUpdateChicagoSummary(importId,summary))
 
+  def deleteChicago( id: Id.MatchChicago ) = dispatcher.dispatch( ActionDeleteChicago(id))
+
   def updateChicago( chi: MatchChicago, callback: Option[MatchChicago=>Unit]=None ) =
     dispatcher.dispatch( ActionUpdateChicago( chi, callback ))
   def updateChicagoNames( chiid: String, nplayer1: String, nplayer2: String, nplayer3: String, nplayer4: String, extra: Option[String], quintet: Boolean, simpleRotation: Boolean, callback: Option[MatchChicago=>Unit]=None ) = {

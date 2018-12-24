@@ -47,10 +47,10 @@ class TestFailurePersistent[VId,VType <: VersionedInstance[VType,VType,VId]](
    * Get all the IDs from persistent storage
    */
   override
-  def getAllIdsFromPersistent(fCacheKeys: ()=>Set[VId]): Set[VId] = {
+  def getAllIdsFromPersistent(): Set[VId] = {
     log.fine(s"""getAllIdsFromPersistent failGetAllIds=${failGetAllIds}""")
     if (failGetAllIds) throw new Exception("Failure in persistent store!")
-    super.getAllIdsFromPersistent(fCacheKeys)
+    super.getAllIdsFromPersistent()
   }
 
   /**

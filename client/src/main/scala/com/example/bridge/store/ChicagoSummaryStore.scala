@@ -12,6 +12,7 @@ import utils.logging.Logger
 import com.example.bridge.action.ActionUpdateChicagoSummary
 import com.example.logger.Alerter
 import com.example.data.MatchChicago
+import com.example.bridge.action.ActionDeleteChicago
 
 object ChicagoSummaryStore extends ChangeListenable {
   val logger = Logger("bridge.ChicagoSummaryStore")
@@ -26,6 +27,11 @@ object ChicagoSummaryStore extends ChangeListenable {
   def dispatch( msg: Any ) = Alerter.tryitWithUnit { msg match {
     case ActionUpdateChicagoSummary(importId,summary) =>
       updateChicagoSummary(importId,summary)
+    case ActionDeleteChicago(id) =>
+      if (fImportId.isEmpty) {
+        fSummary = fSummary.map { a => a.filter( c => c.id != id ) }
+      }
+
     case x =>
       // There are multiple stores, all the actions get sent to all stores
 //      logger.warning("BoardSetStore: Unknown msg dispatched, "+x)

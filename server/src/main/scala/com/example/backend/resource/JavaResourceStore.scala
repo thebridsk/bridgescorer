@@ -99,7 +99,7 @@ class JavaResourcePersistentSupport[VId,VType <: VersionedInstance[VType,VType,V
   /**
    * Get all the IDs from persistent storage
    */
-  def getAllIdsFromPersistent(cacheKeys: ()=>Set[VId]): Set[VId] = {
+  def getAllIdsFromPersistent(): Set[VId] = {
     val ret =
     knownIds.getOrElse {
       val resdir = if (resourcedirectory.endsWith("/")) resourcedirectory else (resourcedirectory+"/")

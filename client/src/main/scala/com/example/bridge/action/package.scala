@@ -52,6 +52,7 @@ package object action {
    * @param summary
    */
   case class ActionUpdateChicagoSummary( importId: Option[String], summary: Array[MatchChicago] ) extends ChicagoBridgeAction
+  case class ActionDeleteChicago( chi: Id.MatchChicago ) extends ChicagoBridgeAction
 
   case class ActionUpdateChicago( chi: MatchChicago, callback: Option[MatchChicago=>Unit]=None ) extends ChicagoBridgeAction
   case class ActionUpdateChicagoNames( chiid: String, nplayer1: String, nplayer2: String, nplayer3: String, nplayer4: String, extra: Option[String], quintet: Boolean, simpleRotation: Boolean, callback: Option[MatchChicago=>Unit]=None ) extends ChicagoBridgeAction

@@ -181,6 +181,22 @@ object SchemaService {
                   case Left((statusCode,msg)) => throw new Exception( s"Error getting MatchChicagos: ${statusCode} ${msg.msg}" )
                 }
               }
+          ),
+          Field("duplicatesCount", IntType,
+              Some("The id of the bridge service"),
+              resolve = ctx => ctx.value.duplicates.size()
+          ),
+          Field("duplicateresultsCount", IntType,
+              Some("The id of the bridge service"),
+              resolve = ctx => ctx.value.duplicateresults.size()
+          ),
+          Field("chicagosCount", IntType,
+              Some("The id of the bridge service"),
+              resolve = ctx => ctx.value.chicagos.size()
+          ),
+          Field("rubbersCount", IntType,
+              Some("The id of the bridge service"),
+              resolve = ctx => ctx.value.rubbers.size()
           )
       )
 

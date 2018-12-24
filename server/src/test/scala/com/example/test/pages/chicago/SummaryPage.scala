@@ -14,6 +14,7 @@ import com.example.test.pages.Element
 import com.example.test.pages.BaseHandPage
 import com.example.test.pages.PagesAssertions._
 import utils.logging.Logger
+import com.example.test.pages.bridge.Popup
 
 object SummaryPage {
 
@@ -480,4 +481,5 @@ class SummaryPage(
         throw x
     }
   }
+
 }
