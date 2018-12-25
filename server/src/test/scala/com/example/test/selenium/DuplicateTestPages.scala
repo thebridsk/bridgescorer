@@ -1338,11 +1338,11 @@ class DuplicateTestPages extends FlatSpec
     val imports = ip2.getImportedIds
     imports.length mustBe initcount+1
 
-    val (importId,row) = imports.last
+    val foundImport = imports.find( i => i._1 == importZipFile.get.name)
 
-    importId mustBe importZipFile.get.name 
+    assert(foundImport.isDefined)
 
-    val ldp = ip2.importDuplicate(importZipFile.get.name, row).validate
+    val ldp = ip2.importDuplicate(importZipFile.get.name, foundImport.get._2).validate
 
     ldp.checkResults(dupid.get, listDuplicateResult:_*)
 
