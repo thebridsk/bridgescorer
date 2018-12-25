@@ -28,6 +28,8 @@ class Query {
   def query( requestJson: JsObject, store: BridgeService ): Future[(StatusCode,JsValue)] = {
     val JsObject(fields) = requestJson
 
+    log.fine(s"received query: $fields")
+
     val JsString(query) = fields("query")
 
     val operation = fields.get("operationName") collect {

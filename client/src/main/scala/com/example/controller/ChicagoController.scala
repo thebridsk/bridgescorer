@@ -20,6 +20,17 @@ import com.example.rest2.ResultObject
 import com.example.rest2.AjaxResult
 import org.scalactic.source.Position
 import com.example.rest2.WrapperXMLHttpRequest
+import com.example.graphql.GraphQLClient
+import play.api.libs.json.JsObject
+import play.api.libs.json.JsString
+import play.api.libs.json.JsDefined
+import play.api.libs.json.Json
+import com.example.data.rest.JsonSupport
+import play.api.libs.json.JsSuccess
+import play.api.libs.json.JsError
+import play.api.libs.json.JsUndefined
+import com.example.logger.Alerter
+import com.example.data.Id
 
 object ChicagoController {
   val logger = Logger("bridge.ChicagoController")
@@ -101,6 +112,95 @@ object ChicagoController {
 
   def updateChicagoHand( chiid: String, roundid: Int, handid: Int, hand: Hand ) = {
     BridgeDispatcher.updateChicagoHand(chiid, roundid, handid, hand, Some( updateServer ))
+  }
+
+  def getSummary(): Unit = {
+    logger.finer("Sending duplicatesummaries list request to server")
+    import scala.scalajs.js.timers._
+    setTimeout(1) { // note the absence of () =>
+      RestClientChicago.list().recordFailure().foreach { list => Alerter.tryitWithUnit {
+        logger.finer(s"ChicagoSummary got ${list.size} entries")
+        BridgeDispatcher.updateChicagoSummary(None,list)
+      }}
+    }
+  }
+
+  def getImportSummary( importId: String ): Unit = {
+    logger.finer(s"Sending import duplicatesummaries ${importId} list request to server")
+    import scala.scalajs.js.timers._
+    setTimeout(1) { // note the absence of () =>
+      GraphQLClient.request(
+          """query importDuplicates( $importId: ImportId! ) {
+             |  import( id: $importId ) {
+             |    chicagos {
+             |      id
+             |      players
+             |      rounds {
+             |        id
+             |        north
+             |        south
+             |        east
+             |        west
+             |        dealerFirstRound
+             |        hands {
+             |          id
+             |          contractTricks
+             |          contractSuit
+             |          contractDoubled
+             |          declarer
+             |          nsVul
+             |          ewVul
+             |          madeContract
+             |          tricks
+             |          created
+             |          updated
+             |        }
+             |        created
+             |        updated
+             |      }
+             |      gamesPerRound
+             |      simpleRotation
+             |      created
+             |      updated
+             |      bestMatch {
+             |        id
+             |        sameness
+             |        differences
+             |      }
+             |    }
+             |  }
+             |}
+             |""".stripMargin,
+          Some(JsObject( Seq( "importId" -> JsString(importId) ) )),
+          Some("importDuplicates") ).map { r =>
+            r.data match {
+              case Some(data) =>
+                data \ "import" \ "chicagos" match {
+                  case JsDefined( jds ) =>
+                    import JsonSupport._
+                    Json.fromJson[List[MatchChicago]](jds) match {
+                      case JsSuccess(ds,path) =>
+                        logger.finer(s"Import(${importId})/chicagos got ${ds.size} entries")
+                        BridgeDispatcher.updateChicagoSummary(Some(importId),ds.toArray)
+                      case JsError(err) =>
+                        logger.warning(s"Import(${importId})/chicagos, JSON error: ${JsError.toJson(err)}")
+                    }
+                  case _: JsUndefined =>
+                    logger.warning(s"error import duplicatesummaries ${importId}, did not find import/duplicatesummaries field")
+                }
+              case None =>
+                logger.warning(s"error import duplicatesummaries ${importId}, ${r.getError()}")
+            }
+          }.recover {
+            case x: Exception =>
+                logger.warning(s"exception import duplicatesummaries ${importId}", x)
+          }.foreach { x => }
+    }
+  }
+
+  def deleteChicago( id: Id.MatchChicago) = {
+    BridgeDispatcher.deleteChicago(id)
+    RestClientChicago.delete(id).recordFailure()
   }
 
 }

@@ -82,8 +82,6 @@ class Store[VId, VType <: VersionedInstance[VType,VType,VId]](
                  execute: ExecutionContext
              ) extends Resources[VId,VType] with StoreListenerManager {
 
-  persistent.setCacheKeysFunction( cacheKeys _)
-
   /** The URI prefix that identifies the resources served by this store */
   val resourceURI = persistent.resourceURI
 
@@ -196,16 +194,27 @@ class Store[VId, VType <: VersionedInstance[VType,VType,VId]](
     }.logit(s"Store ${name}: CreateChild ${resourceURI}")
   }
 
+  def size()(
+              implicit
+                pos: SourcePosition
+            ): Future[Int] = {
+
+    Future {
+      persistent.size()
+    }
+
+  }
+
   /**
    * Read all the values in the collection
    * @param pos a [[SourcePosition]] object to identify the caller.
    * @return a future to the resources
    */
   def readAll()(
-                   implicit
-                     pos: SourcePosition
-                 ): Future[Result[Map[VId,VType]]] = {
-      val futures = persistent.getAllIdsFromPersistent(cacheKeys _).map { id => read(id) }
+                  implicit
+                    pos: SourcePosition
+                ): Future[Result[Map[VId,VType]]] = {
+      val futures = persistent.getAllIdsFromPersistent().map { id => read(id) }
 
       (Future.foldLeft(futures)( Map[VId,VType]() ){ (ac,v) =>
         v match {

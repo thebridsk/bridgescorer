@@ -552,3 +552,6 @@ body.touched .withTooltipBox:hover {
   border: 1px solid black;
 }
 
+.divGraphiql {
+  height: 100vh;
+}

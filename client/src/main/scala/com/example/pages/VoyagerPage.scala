@@ -3,7 +3,11 @@ package com.example.pages
 import scala.scalajs.js
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
-import graphqlvoyater.Voyager
+import graphqlvoyager.Voyager
+import japgolly.scalajs.react.extra.router.RouterCtl
+import com.example.routes.AppRouter.AppPage
+import com.example.react.AppButton
+import com.example.routes.AppRouter.Home
 
 /**
  * A skeleton component.
@@ -19,9 +23,9 @@ import graphqlvoyater.Voyager
 object VoyagerPage {
   import VoyagerPageInternal._
 
-  case class Props( )
+  case class Props(  router: RouterCtl[AppPage] )
 
-  def apply( ) = component(Props())
+  def apply( router: RouterCtl[AppPage] ) = component(Props(router))
 
 }
 
@@ -46,7 +50,13 @@ object VoyagerPageInternal {
   class Backend(scope: BackendScope[Props, State]) {
     def render( props: Props, state: State ) = {
       <.div(
-          Voyager("/v1/graphql")
+        <.div(
+            Voyager("/v1/graphql")
+        ),
+        <.div(
+          AppButton( "Home", "Home",
+                     props.router.setOnClick(Home))
+        )
       )
     }
 

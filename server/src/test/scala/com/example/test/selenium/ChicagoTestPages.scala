@@ -29,10 +29,13 @@ import scala.io.Codec
 import play.api.libs.json.JsSuccess
 import play.api.libs.json.JsError
 import com.example.backend.resource.FileIO
+import com.example.test.pages.bridge.HomePage
+import scala.reflect.io.File
+import java.util.zip.ZipFile
 
 object ChicagoTestPages {
 
-  val log = Logger[ChicagoTest]
+  val log = Logger[ChicagoTestPages]
 
   val player1 = "Nancy"
   val player2 = "Sam"
@@ -694,4 +697,58 @@ class ChicagoTestPages extends FlatSpec with MustMatchers with BeforeAndAfterAll
 
   }
 
+  var importZipFile: Option[File] = None
+  it should "export zip" in {
+
+    val hp = HomePage.goto.validate
+
+    val ep = hp.clickExport.validate
+
+    val f = ep.export
+
+    importZipFile = Some(f)
+
+    log.info( s"Downloaded export zip: ${f}" )
+
+    import collection.JavaConverters._
+    import resource._
+    for (zip <- managed( new ZipFile(f.jfile) ) ) {
+      zip.entries().asScala.map { ze => ze.getName }.toList must contain( s"store/MatchChicago.${chicagoId.get}.yaml" )
+    }
+
+    ep.clickHome
+  }
+
+  it should "import zip" in {
+    val hp = HomePage.current.validate
+
+    val ip = hp.clickImport.validate
+
+    val initcount = ip.getImportedIds.length
+
+    ip.checkSelectedFile(None)
+
+    val rp = ip.selectFile(importZipFile.get).checkSelectedFile(importZipFile).clickImport.validate
+    rp.isSuccessful mustBe true
+
+    val ip2 = rp.clickLink.validate
+
+    val imports = ip2.getImportedIds
+    imports.length mustBe initcount+1
+
+    val foundImport = imports.find( i => i._1 == importZipFile.get.name)
+
+    assert(foundImport.isDefined)
+
+    val lp = ip2.importChicago(importZipFile.get.name, foundImport.get._2).validate
+
+    lp.checkImportButton(chicagoId.get)
+
+    val ldpr = lp.clickImport( chicagoId.get )
+
+    val newId = ldpr.checkSuccessfulImport( chicagoId.get )
+
+    val lp2 = ldpr.clickPopUpCancel.validate
+    val main = lp2.clickHome.validate.clickListChicagoButton.validate( newId )
+  }
 }

@@ -12,6 +12,7 @@ import com.example.test.pages.Page
 import com.example.test.pages.GenericPage
 import com.example.test.pages.duplicate.ListDuplicatePage
 import com.example.test.pages.duplicate.NewDuplicatePage
+import com.example.test.pages.chicago.ListPage
 
 object HomePage {
 
@@ -49,6 +50,11 @@ class HomePage( implicit webDriver: WebDriver, pageCreated: SourcePosition ) ext
   def clickNewDuplicateButton(implicit patienceConfig: PatienceConfig, pos: Position) = {
     clickButton("NewDuplicate")
     new NewDuplicatePage()(webDriver, pos)
+  }
+
+  def clickListChicagoButton(implicit patienceConfig: PatienceConfig, pos: Position) = {
+    clickButton("ChicagoList2")
+    new ListPage(None)(webDriver, pos)
   }
 
   def clickImport( implicit pos: Position ) = {

@@ -32,6 +32,10 @@ import play.api.libs.json.JsError
 import com.example.react.DateUtils
 import com.example.pages.duplicate.DuplicateRouter.ImportSummaryView
 import com.example.pages.duplicate.DuplicateModule.PlayDuplicate
+import com.example.pages.chicagos.ChicagoRouter
+import com.example.pages.chicagos.ChicagoModule.PlayChicago2
+import com.example.pages.rubber.RubberModule.PlayRubber
+import com.example.pages.rubber.RubberRouter
 
 /**
  * A skeleton component.
@@ -103,7 +107,7 @@ object ImportMethods {
 
   }
 
-  case class ImportStore( id: String, date: Timestamp )
+  case class ImportStore( id: String, date: Timestamp, duplicatesCount: Int, duplicateresultsCount: Int, chicagosCount: Int, rubbersCount: Int )
   case class ImportsList( imports: List[ImportStore] )
 
   implicit val readsImportStore = Json.reads[ImportStore]
@@ -119,6 +123,10 @@ object ImportMethods {
          |  imports {
          |    id
          |    date
+         |    duplicatesCount
+         |    duplicateresultsCount
+         |    chicagosCount
+         |    rubbersCount
          |  }
          |}
          |""".stripMargin
@@ -306,7 +314,9 @@ object ImportsListPageInternal {
                           <.td( store.id ),
                           <.td( DateUtils.formatDate(store.date) ),
                           <.td(
-                            AppButton( s"Duplicate${row}", "Duplicate", props.router.setOnClick(PlayDuplicate(ImportSummaryView(storeid))) ),
+                            AppButton( s"Duplicate${row}", "Duplicate", props.router.setOnClick(PlayDuplicate(ImportSummaryView(storeid))) ).when(store.duplicatesCount+store.duplicateresultsCount>0),
+                            AppButton( s"Chicago${row}", "Chicago", props.router.setOnClick(PlayChicago2(ChicagoRouter.ImportListView(storeid))) ).when(store.chicagosCount>0),
+                            AppButton( s"Rubber${row}", "Rubber", props.router.setOnClick(PlayRubber(RubberRouter.ListView /* (storeid) */)) ).when(store.rubbersCount>0),
                             AppButton( s"Delete${row}", "Delete", ^.onClick --> backend.delete(storeid) )
                           )
                         )

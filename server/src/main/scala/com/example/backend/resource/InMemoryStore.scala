@@ -44,7 +44,7 @@ class InMemoryPersistent[VId,VType <: VersionedInstance[VType,VType,VId]](
   /**
    * Get all the IDs from persistent storage
    */
-  def getAllIdsFromPersistent(fCacheKeys: ()=>Set[VId]): Set[VId] = {
+  def getAllIdsFromPersistent(): Set[VId] = {
     self.synchronized {
       log.fine(s"""getAllIdsFromPersistent""")
       valuesInPersistent.keySet.toSet++deletedKeys

@@ -31,7 +31,9 @@ trait Popup[ +T <: Page[T] ] {
 
   def validatePopup( visible: Boolean = true )(implicit patienceConfig: PatienceConfig, pos: Position): T = {
     eventually {
-      isPopupDisplayed mustBe visible
+      withClue("Looking for popup") {
+        isPopupDisplayed mustBe visible
+      }
     }
     this.asInstanceOf[T]
   }

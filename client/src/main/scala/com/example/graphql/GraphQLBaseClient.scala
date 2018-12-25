@@ -16,6 +16,8 @@ import scala.concurrent.ExecutionContext
 import com.example.source.SourcePosition
 import com.example.rest2.AjaxErrorReturn
 import com.example.data.graphql.GraphQLProtocol._
+import scala.scalajs.js
+import scala.scalajs.js.JSON
 
 class Query[Variables](
                         query: String,
@@ -75,6 +77,26 @@ class GraphQLBaseClient(
             s"""Unable to unmarshal response from server:\n${json}"""
             ), None, None
         )
+    }
+  }
+
+  def requestWithBody(
+      body: js.Object,
+      headers: Map[String, String] = headersForPost,
+      timeout: Duration = AjaxResult.defaultTimeout
+    )(
+      implicit
+        xpos: Position
+  ): AjaxResult[GraphQLResponse] = {
+    val data = JSON.stringify(body)
+    log.fine( s"GraphQLBaseClient.request(${xpos.line}): sending ${data}" )
+    val rr = AjaxResult.post(url, data, timeout, headers )
+    rr.map { wrapper =>
+      val body = wrapper.responseText
+      log.fine( s"GraphQLBaseClient.request(${xpos.line}): received ${body}" )
+      val r = AjaxResult.fromJson[GraphQLResponse](body, url)
+      if (r.data.isEmpty || r.data.get == JsNull) throw new AjaxErrorReturn( wrapper.status, wrapper.responseText, rr )
+      r
     }
   }
 
