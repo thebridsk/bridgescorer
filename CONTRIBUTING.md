@@ -4,7 +4,8 @@ Here are some important resources:
 
   * [Reporting bugs](https://github.com/thebridsk/bridgescorer/issues/new)
   * [Issues](https://github.com/thebridsk/bridgescorer/issues)
-  * [ZenHub](https://app.zenhub.com/workspaces/5a57e97a310d044aa9b372d2/boards?repos=117162545)
+  * [ZenHub this repo](https://app.zenhub.com/workspaces/bridgescorer-repositories-5a57e97a310d044aa9b372d2/boards?repos=117162545)
+  * [ZenHub BridgeScorer Repositories](https://app.zenhub.com/workspaces/bridgescorer-repositories-5a57e97a310d044aa9b372d2/boards?repos=117162545,118057642,117145046)
 
 ## Testing
 
