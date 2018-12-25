@@ -32,6 +32,7 @@ object ChicagoStore extends ChangeListenable {
         case ActionUpdateChicago5(chiid,extraPlayer,cb) => updateChicago5(chiid, extraPlayer, cb)
         case ActionUpdateChicagoRound(chiid,round,cb) => updateChicagoRound(chiid, round,cb)
         case ActionUpdateChicago(chi,cb) => updateChicago(chi, cb)
+        case _ =>
       }
     case x =>
       // There are multiple stores, all the actions get sent to all stores

@@ -342,13 +342,19 @@ object HomePage {
                              ^.onClick --> callbackPage(VoyagerView))
                 ),
                 <.td( ^.width:="25%",
+                  AppButton( "GraphiQL", "GraphiQL",
+                             rootStyles.playButton,
+                             ^.disabled:=isWorking,
+                             ^.onClick --> callbackPage(GraphiQLView))
+                )
+              ),
+              <.tr(
+                <.td( ^.width:="25%",
                   AppButton( "GraphQL", "GraphQL",
                              rootStyles.playButton,
                              ^.disabled:=isWorking,
                              ^.onClick --> callbackPage(GraphQLAppPage))
-                )
-              ),
-              <.tr(
+                ),
                 <.td( ^.width:="25%",
                   AppButton( "Color", "Color",
                              rootStyles.playButton,

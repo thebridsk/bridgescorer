@@ -13,6 +13,8 @@ import scala.reflect.io.File
 import org.openqa.selenium.By.ByName
 import org.scalatest.MustMatchers._
 import com.example.test.pages.duplicate.ListDuplicatePage
+import com.example.test.pages.chicago.SummaryPage
+import com.example.test.pages.chicago.ListPage
 
 object ImportPage {
 
@@ -90,6 +92,16 @@ class ImportPage( implicit val webDriver: WebDriver, pageCreated: SourcePosition
 
   def importDuplicate( importId: String, row: Int )(implicit patienceConfig: PatienceConfig, pos: Position) = {
     clickButton( s"Duplicate${row}" )
+    new ListDuplicatePage( Some(importId) )
+  }
+
+  def importChicago( importId: String, row: Int )(implicit patienceConfig: PatienceConfig, pos: Position) = {
+    clickButton( s"Chicago${row}" )
+    new ListPage( Some(importId) )
+  }
+
+  def importRubber( importId: String, row: Int )(implicit patienceConfig: PatienceConfig, pos: Position) = {
+    clickButton( s"Rubber${row}" )
     new ListDuplicatePage( Some(importId) )
   }
 }

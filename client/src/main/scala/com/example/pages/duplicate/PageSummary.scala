@@ -138,47 +138,6 @@ object PageSummaryInternal {
                           )
                         }).build
 
-  def differenceFilter( s: String ): Boolean = {
-    if (s =="id" || s.contains("created")) false
-    else true
-  }
-
-  def determineDifferences( l: List[String] ) = {
-    val list = l.map { s =>
-      val i = s.lastIndexOf(".")
-      if (i<0) ("",s)
-      else ( s.substring(0, i), s.substring(i+1))
-    }.foldLeft(Map[String,List[String]]()) { ( ac, v ) =>
-      val (prefix, key) = v
-      val cur = ac.get(prefix).getOrElse(List())
-      val next = key::cur
-      val r = ac + (prefix -> next)
-      r
-    }
-
-//    list.map{ s =>
-//      val parts = s.split('.')
-//      if (parts.isEmpty) s
-//      else parts.head
-//    }.distinct
-    list.map { entry =>
-      val (prefix, vkeys) = entry
-      val keys = vkeys.sorted
-      if (prefix == "") s"""${keys.mkString(" ")}"""
-      else s"""${prefix} ${keys.mkString(" ")}"""
-    }.toList.sorted
-  }
-
-  def determineDifferencesOld( l: List[String] ): List[String] = {
-    val list = l.filter(differenceFilter)
-//    list.map{ s =>
-//      val parts = s.split('.')
-//      if (parts.isEmpty) s
-//      else parts.head
-//    }.distinct
-    list
-  }
-
   val SummaryRow = ScalaComponent.builder[(SummaryPeople,DuplicateSummary,Props,State,Backend,Option[String])]("SummaryRow")
                       .render_P( props => {
                         val (tp,ds,pr,st,back,importId) = props
@@ -211,7 +170,7 @@ object PageSummaryInternal {
                               <.td(
                                 ds.bestMatch.map { bm =>
                                   if (bm.id.isDefined && bm.sameness > 90) {
-                                    val title = bm.differences.map{ l => determineDifferences(l).mkString("Differences:\n","\n","") }.getOrElse("")
+                                    val title = bm.htmlTitle
                                     TagMod(Tooltip(
                                       f"""${bm.id.get} ${bm.sameness}%.2f%%""",
                                       <.div( title )

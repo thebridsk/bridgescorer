@@ -15,21 +15,17 @@ class PersistentSupport[VId,VType <: VersionedInstance[VType,VType,VId]](
 
   val resourceURI: String = support.resourceURI
 
-  private var cacheKeys: ()=>Set[VId] = ()=>Set()
-
   private var maxId: Option[VId] = None
 
-  def setCacheKeysFunction( fun: ()=>Set[VId] ) = cacheKeys = fun
-
   /**
    * Get all the IDs from persistent storage
    */
-  def getAllIdsFromPersistent(): Set[VId] = getAllIdsFromPersistent( cacheKeys )
+  def getAllIdsFromPersistent(): Set[VId]
 
   /**
-   * Get all the IDs from persistent storage
+   * Returns the number of matches in this store
    */
-  def getAllIdsFromPersistent(cacheKeys: ()=>Set[VId]): Set[VId]
+  def size(): Int = getAllIdsFromPersistent().size
 
   /**
    * Generate the next ID for a new instance

@@ -1,4 +1,4 @@
-package graphqlvoyater
+package graphqlvoyager
 
 import scala.scalajs.js
 import scala.scalajs.js.annotation.JSName
@@ -21,11 +21,9 @@ trait VoyagerComponentProperty extends js.Object {
   val introspection: js.Function1[String, Promise[js.Object]] = js.native
 }
 
-case class GraphQLQuery( query: String)
-
 object VoyagerComponentProperty {
 
-  private def intro( graphqlUrl: String)( query: String): Promise[js.Object] = {
+  def intro( graphqlUrl: String)( query: String): Promise[js.Object] = {
     import scala.concurrent.ExecutionContext.Implicits.global
     val gql = new GraphQLBaseClient(graphqlUrl)
     val q = new Query[String](query,gql)

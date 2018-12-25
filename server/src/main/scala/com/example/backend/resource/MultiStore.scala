@@ -28,8 +28,8 @@ class MultiPersistentSupport[VId,VType <: VersionedInstance[VType,VType,VId]](
   /**
    * Get all the IDs from persistent storage
    */
-  def getAllIdsFromPersistent(cacheKeys: ()=>Set[VId]): Set[VId] = {
-    persistentStores.map { ps => ps.getAllIdsFromPersistent(cacheKeys) }.foldLeft(Set[VId]())((ac,s)=>ac ++ s)
+  def getAllIdsFromPersistent(): Set[VId] = {
+    persistentStores.map { ps => ps.getAllIdsFromPersistent() }.foldLeft(Set[VId]())((ac,s)=>ac ++ s)
   }
 
   /**
