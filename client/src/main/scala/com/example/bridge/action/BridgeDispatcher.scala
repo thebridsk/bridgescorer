@@ -71,6 +71,10 @@ object BridgeDispatcher {
   def updateChicagoHand( chiid: String, roundid: Int, handid: Int, hand: Hand, callback: Option[MatchChicago=>Unit]=None ) =
     dispatcher.dispatch( ActionUpdateChicagoHand( chiid, roundid, handid, hand, callback ))
 
+  def updateRubberList( importId: Option[String], summary: Array[MatchRubber] ) = dispatcher.dispatch( ActionUpdateRubberList(importId,summary))
+
+  def deleteRubber( id: String ) = dispatcher.dispatch( ActionDeleteRubber(id))
+
   def updateRubber( chi: MatchRubber, callback: Option[MatchRubber=>Unit]=None ) =
     dispatcher.dispatch( ActionUpdateRubber( chi, callback ))
   def updateRubberNames( rubid: String, north: String, south: String, east: String, west: String, firstDealer: PlayerPosition, callback: Option[MatchRubber=>Unit]=None ) =

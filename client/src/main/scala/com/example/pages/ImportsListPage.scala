@@ -316,7 +316,7 @@ object ImportsListPageInternal {
                           <.td(
                             AppButton( s"Duplicate${row}", "Duplicate", props.router.setOnClick(PlayDuplicate(ImportSummaryView(storeid))) ).when(store.duplicatesCount+store.duplicateresultsCount>0),
                             AppButton( s"Chicago${row}", "Chicago", props.router.setOnClick(PlayChicago2(ChicagoRouter.ImportListView(storeid))) ).when(store.chicagosCount>0),
-                            AppButton( s"Rubber${row}", "Rubber", props.router.setOnClick(PlayRubber(RubberRouter.ListView /* (storeid) */)) ).when(store.rubbersCount>0),
+                            AppButton( s"Rubber${row}", "Rubber", props.router.setOnClick(PlayRubber(RubberRouter.ImportListView(storeid))) ).when(store.rubbersCount>0),
                             AppButton( s"Delete${row}", "Delete", ^.onClick --> backend.delete(storeid) )
                           )
                         )

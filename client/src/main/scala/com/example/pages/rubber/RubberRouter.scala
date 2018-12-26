@@ -17,13 +17,15 @@ import japgolly.scalajs.react.extra.router.StaticDsl.Rule
 import com.example.routes.Module
 import com.example.routes.BridgeRouter
 import com.example.routes.BridgeRouterBase
+import scala.scalajs.js.URIUtils
 
 object RubberModule extends Module {
   case class PlayRubber( m: RubberPage ) extends AppPage
 
   def verifyPages(): List[AppPage] = RubberRouter.verifyPages.map( p => PlayRubber(p).asInstanceOf[AppPage]).toList
 
-  def routes(): Rule[AppPage] = RubberRouter.routes.prefixPath_/("#rubber").pmap[AppPage](PlayRubber){ case PlayRubber(m) => m }
+  def routes(): Rule[AppPage] = RubberRouter.routes.prefixPath_/("#rubber").pmap[AppPage](PlayRubber){ case PlayRubber(m) => m } |
+    RubberRouter.importRoutes.prefixPath_/("#import").pmap[AppPage](PlayRubber){ case PlayRubber(m) => m }
 
   override
   def canRender(selectedPage: Resolution[AppPage]): Boolean = selectedPage.page.isInstanceOf[PlayRubber]
@@ -35,7 +37,13 @@ object RubberRouter {
 
   val logger = Logger("bridge.RubberRouter")
 
-  object ListView extends RubberPage
+  trait ListViewBase extends RubberPage
+
+  object ListView extends ListViewBase
+  case class ImportListView( importId: String ) extends ListViewBase {
+    def getDecodedId = URIUtils.decodeURI(importId)
+  }
+
   trait RubberMatchViewBase extends RubberPage {
     val rid: String
     def toRubber() = RubberMatchDetailsView(rid)
@@ -59,6 +67,7 @@ object RubberRouter {
   }
 
   val verifyPages = ListView::
+                    ImportListView("import.zip")::
                     RubberMatchView("R1")::
                     RubberMatchDetailsView("R1")::
                     RubberMatchNamesView("R1")::
@@ -90,4 +99,14 @@ object RubberRouter {
         ~> renderR( routerCtl => PageRubberList(ListView,routerCtl) )
       )
   }
+
+  val importRoutes = RouterConfigDsl[RubberPage].buildRule { dsl =>
+    import dsl._
+
+    (emptyRule
+      | dynamicRouteCT( (string(".+") / "rubber" ).caseClass[ImportListView])
+        ~> dynRenderR( (p,routerCtl) => PageRubberList(p,routerCtl) )
+      )
+  }
+
 }

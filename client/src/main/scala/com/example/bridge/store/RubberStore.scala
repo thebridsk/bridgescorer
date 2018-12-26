@@ -30,6 +30,7 @@ object RubberStore extends ChangeListenable {
         case ActionUpdateRubberHand(rubid,handid,hand,cb) => updateRubberHand(rubid, handid, hand,cb)
         case ActionUpdateRubberNames(rubid,north, south, east, west,firstdealer,cb) => updateRubberNames(rubid, north, south, east, west,firstdealer,cb)
         case ActionUpdateRubber(rub,cb) => updateRubber(rub, cb)
+        case _ =>
       }
     case x =>
       // There are multiple stores, all the actions get sent to all stores

@@ -62,6 +62,13 @@ package object action {
 
   sealed trait RubberBridgeAction extends BridgeAction
 
+  /**
+   * @param importId the import Id.  If None, then this is the main store.
+   * @param summary
+   */
+  case class ActionUpdateRubberList( importId: Option[String], summary: Array[MatchRubber] ) extends RubberBridgeAction
+  case class ActionDeleteRubber( rub: String ) extends RubberBridgeAction
+
   case class ActionUpdateRubber( rub: MatchRubber, callback: Option[MatchRubber=>Unit]=None ) extends RubberBridgeAction
   case class ActionUpdateRubberNames( rubid: String, north: String, south: String, east: String, west: String, firstDealer: PlayerPosition, callback: Option[MatchRubber=>Unit]=None ) extends RubberBridgeAction
   case class ActionUpdateRubberHand( rubid: String, handid: String, hand: RubberHand, callback: Option[MatchRubber=>Unit]=None ) extends RubberBridgeAction
