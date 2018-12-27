@@ -102,6 +102,6 @@ class ImportPage( implicit val webDriver: WebDriver, pageCreated: SourcePosition
 
   def importRubber( importId: String, row: Int )(implicit patienceConfig: PatienceConfig, pos: Position) = {
     clickButton( s"Rubber${row}" )
-    new ListDuplicatePage( Some(importId) )
+    new com.example.test.pages.rubber.ListPage( Some(importId) )
   }
 }

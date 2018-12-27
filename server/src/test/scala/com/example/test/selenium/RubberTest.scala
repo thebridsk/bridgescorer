@@ -36,6 +36,9 @@ import java.io.OutputStreamWriter
 import play.api.libs.json.JsSuccess
 import play.api.libs.json.JsError
 import com.example.backend.BridgeResources
+import com.example.test.pages.bridge.HomePage
+import java.util.zip.ZipFile
+import scala.reflect.io.File
 
 /**
  * @author werewolf
@@ -641,6 +644,62 @@ class RubberTest extends FlatSpec with MustMatchers with BeforeAndAfterAll with 
     takeScreenshot(docsScreenshotDir, "ListPage")
 
   }
+
+  var importZipFile: Option[File] = None
+  it should "export zip" in {
+
+    val hp = HomePage.goto.validate
+
+    val ep = hp.clickExport.validate
+
+    val f = ep.export
+
+    importZipFile = Some(f)
+
+    testlog.info( s"Downloaded export zip: ${f}" )
+
+    import collection.JavaConverters._
+    import resource._
+    for (zip <- managed( new ZipFile(f.jfile) ) ) {
+      zip.entries().asScala.map { ze => ze.getName }.toList must contain( s"store/MatchRubber.${rubberId}.yaml" )
+    }
+
+    ep.clickHome
+  }
+
+  it should "import zip" in {
+    val hp = HomePage.current.validate
+
+    val ip = hp.clickImport.validate
+
+    val initcount = ip.getImportedIds.length
+
+    ip.checkSelectedFile(None)
+
+    val rp = ip.selectFile(importZipFile.get).checkSelectedFile(importZipFile).clickImport.validate
+    rp.isSuccessful mustBe true
+
+    val ip2 = rp.clickLink.validate
+
+    val imports = ip2.getImportedIds
+    imports.length mustBe initcount+1
+
+    val foundImport = imports.find( i => i._1 == importZipFile.get.name)
+
+    assert(foundImport.isDefined)
+
+    val lp = ip2.importRubber(importZipFile.get.name, foundImport.get._2).validate
+
+    lp.checkImportButton(rubberId)
+
+    val ldpr = lp.clickImport( rubberId )
+
+    val newId = ldpr.checkSuccessfulImport( rubberId )
+
+    val lp2 = ldpr.clickPopUpCancel.validate
+    val main = lp2.clickHome.validate.clickListRubberButton.validate( newId )
+  }
+
 
   def getDivByClass( clss: String ) = "div[contains(concat(' ', @class, ' '), ' "+clss+" ')]"
 

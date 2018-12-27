@@ -57,6 +57,11 @@ class HomePage( implicit webDriver: WebDriver, pageCreated: SourcePosition ) ext
     new ListPage(None)(webDriver, pos)
   }
 
+  def clickListRubberButton(implicit patienceConfig: PatienceConfig, pos: Position) = {
+    clickButton("Rubber")
+    new com.example.test.pages.rubber.ListPage(None)(webDriver, pos)
+  }
+
   def clickImport( implicit pos: Position ) = {
     clickButton("Import")
     new ImportPage
