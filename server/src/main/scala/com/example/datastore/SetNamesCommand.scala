@@ -151,7 +151,6 @@ Sam->Norman
         case Left(error) => List()
       }).filter(n => !nameMap.contains(n)).mkString("\n  ","\n  ","")
 
-      // TODO For MatchChicago, MatchDuplicate, and MatchRubber add mapNames( map ) method.
       // Must update names without setting timestamps
       val names = nameMap.map((e)=>e._1+" -> "+e._2).mkString("\n  ", "\n  ", "")
       log.info(s"""Starting to convert, changing: ${names}\nNot modifying:${notmodified}""")
