@@ -22,6 +22,19 @@ import utils.logging.Level
 import com.example.data.Id
 import com.example.react.PopupOkCancel
 import com.example.react.HelpButton
+import com.example.pages.rubber.RubberRouter.ListViewBase
+import com.example.bridge.store.RubberListStore
+import com.example.pages.rubber.RubberRouter.ListView
+import com.example.pages.rubber.RubberRouter.ImportListView
+import com.example.react.Tooltip
+import com.example.react.Utils._
+import play.api.libs.json.JsObject
+import play.api.libs.json.JsString
+import com.example.graphql.GraphQLClient
+import play.api.libs.json.JsDefined
+import play.api.libs.json.JsUndefined
+import com.example.data.graphql.GraphQLProtocol.GraphQLResponse
+import com.example.rest2.ResultHolder
 
 /**
  * A skeleton component.
@@ -37,9 +50,9 @@ import com.example.react.HelpButton
 object PageRubberList {
   import PageRubberListInternal._
 
-  case class Props( page: RubberPage, routerCtl: BridgeRouter[RubberPage] )
+  case class Props( page: ListViewBase, routerCtl: BridgeRouter[RubberPage] )
 
-  def apply( page: RubberPage, routerCtl: BridgeRouter[RubberPage] ) =
+  def apply( page: ListViewBase, routerCtl: BridgeRouter[RubberPage] ) =
     component( Props( page, routerCtl ) )
 
 }
@@ -57,7 +70,7 @@ object PageRubberListInternal {
    * will cause State to leak.
    *
    */
-  case class State( rubbers: Array[MatchRubber], workingOnNew: Boolean, askingToDelete: Option[String] )
+  case class State( workingOnNew: Boolean, askingToDelete: Option[String], popupMsg: Option[String] )
 
   /**
    * Internal state for rendering the component.
@@ -74,16 +87,24 @@ object PageRubberListInternal {
 
     val deleteOK = scope.modState{ s =>
         s.askingToDelete.map{ id =>
-          val ns = s.copy(rubbers= s.rubbers.filter(c=>c.id!=id), askingToDelete = None)
-          RestClientRubber.delete(id).recordFailure()
+          RubberController.deleteRubber(id)
+          val ns = s.copy( askingToDelete = None)
           ns
         }.getOrElse(s)
       }
 
     val deleteCancel = scope.modState(s => s.copy( askingToDelete = None))
 
+    val resultRubber = ResultHolder[MatchRubber]()
+    val resultGraphQL = ResultHolder[GraphQLResponse]()
+
+    val cancel = Callback {
+      resultRubber.cancel()
+      resultGraphQL.cancel()
+    } >> scope.modState( s => s.copy(workingOnNew=false, popupMsg=None))
+
     val newRubber =
-      scope.modState( s => s.copy(s.rubbers, true), Callback {
+      scope.modState( s => s.copy(workingOnNew=true), Callback {
         RubberController.createMatch().foreach( created => {
           logger.info("Got new rubber match "+created.id)
           scope.withEffectsImpure.props.routerCtl.set(RubberMatchNamesView(created.id)).runNow()
@@ -96,61 +117,130 @@ object PageRubberListInternal {
       scope.withEffectsImpure.props.routerCtl.set(RubberMatchView(chi.id))
     }
 
+    def setMessage( msg: String ) = scope.withEffectsImpure.modState( s => s.copy( popupMsg = Some(msg)) )
+
+    def importRubber( importId: String, rubid: String) =
+      scope.modState( s => s.copy(popupMsg=Some(s"Importing Rubber Match ${rubid} from import ${importId}")), Callback {
+        val query = """mutation importChicago( $importId: ImportId!, $rubId: RubberId! ) {
+                      |  import( id: $importId ) {
+                      |    importrubber( id: $rubId ) {
+                      |      id
+                      |    }
+                      |  }
+                      |}
+                      |""".stripMargin
+        val vars = JsObject( Seq( "importId" -> JsString(importId), "rubId" -> JsString(rubid) ) )
+        val op = Some("importChicago")
+        val result = GraphQLClient.request(query, Some(vars), op)
+        resultGraphQL.set(result)
+        result.map { gr =>
+          gr.data match {
+            case Some(data) =>
+              data \ "import" \ "importrubber" \ "id" match {
+                case JsDefined( JsString( newid ) ) =>
+                  setMessage(s"import rubber ${rubid} from ${importId}, new ID ${newid}" )
+                case JsDefined( x ) =>
+                  setMessage(s"expecting string on import rubber ${rubid} from ${importId}, got ${x}")
+                case _: JsUndefined =>
+                  setMessage(s"error import rubber ${rubid} from ${importId}, did not find import/importrubber/id field")
+              }
+            case None =>
+              setMessage(s"error import rubber ${rubid} from ${importId}, ${gr.getError()}")
+          }
+        }.recover {
+          case x: Exception =>
+              logger.warning(s"exception import rubber ${rubid} from ${importId}", x)
+              setMessage(s"exception import rubber ${rubid} from ${importId}")
+        }.foreach { x => }
+      })
+
     def render( props: Props, state: State ) = {
-      val rubbers = state.rubbers.sortWith((l,r) => Id.idComparer( l.id, r.id) > 0)
-      <.div(
-          rubStyles.listPage,
-          PopupOkCancel(
-            state.askingToDelete.map(id => s"Are you sure you want to delete Rubber match ${id}"),
-            Some(deleteOK),
-            Some(deleteCancel)
-          ),
-          <.table(
-              <.thead(
-                <.tr(
-                  <.th( "Id"),
-                  <.th( "Created", <.br(), "Updated"),
-                  <.th( "Complete"),
-                  <.th( "North", <.br(), "South"),
-                  <.th( "NS Score"),
-                  <.th( "East", <.br(), "West"),
-                  <.th( "EW Score"),
-                  <.th( "")
-              )),
-              <.tbody(
-                  <.tr(
-                      <.td( "" ),
-                      <.td(
-                        if (state.workingOnNew) {
-                          <.span("Creating new...")
-                        } else {
-                          AppButton( "New", "New", ^.onClick --> newRubber)
-                        }
-                      ),
-                      <.td( ""),
-                      <.td( ^.colSpan:=4,"" ),
-                      <.td( "")
-                      ),
-                  (0 until rubbers.length).map { i =>
-                    val key="Game"+i
-                    val r = RubberScoring(rubbers(i))
-                    RubberRow(this,props,state,i,r)
-                  }.toTagMod
-              )
-          ),
-          <.div( baseStyles.divFooter,
-            <.div( baseStyles.divFooterLeft,
-              AppButton( "Home", "Home", props.routerCtl.home, ^.disabled:=state.workingOnNew )
-            ),
+      val importId = props.page match {
+        case ilv: ImportListView => Some(ilv.getDecodedId)
+        case _ => None
+      }
+      if (importId == RubberListStore.getImportId) {
+        RubberListStore.getRubberSummary() match {
+          case Some(rubberlist) =>
+            val rubbers = rubberlist.sortWith((l,r) => Id.idComparer( l.id, r.id) > 0)
             <.div(
-              baseStyles.divFooterLeft,
-              HelpButton("/help/rubber/list.html")
+                rubStyles.listPage,
+                if (state.popupMsg.isDefined) {
+                  PopupOkCancel( state.popupMsg.map( s=>s), None, Some(cancel) ),
+                } else {
+                  PopupOkCancel(
+                    state.askingToDelete.map(id => s"Are you sure you want to delete Rubber match ${id}"),
+                    Some(deleteOK),
+                    Some(deleteCancel)
+                  )
+                },
+                <.table(
+                    <.thead(
+                      <.tr(
+                        <.th( "Id"),
+                        importId.map { id =>
+                          TagMod(
+                            <.th("Import from"),
+                            <.th("Best Match")
+                          )
+                        }.whenDefined,
+                        <.th( "Created", <.br(), "Updated"),
+                        <.th( "Complete"),
+                        <.th( "North", <.br(), "South"),
+                        <.th( "NS Score"),
+                        <.th( "East", <.br(), "West"),
+                        <.th( "EW Score"),
+                        <.th( "")
+                    )),
+                    <.tbody(
+                        <.tr(
+                            <.td( "" ),
+                            importId.map { id =>
+                              TagMod(
+                                <.th(id),
+                                <.th( "" ),
+                                <.th( "" )
+                              )
+                            }.getOrElse(
+                              <.td(
+                                if (state.workingOnNew) {
+                                  <.span("Creating new...")
+                                } else {
+                                  AppButton( "New", "New", ^.onClick --> newRubber)
+                                }
+                              )
+                            ),
+                            <.td( ""),
+                            <.td( ^.colSpan:=4,"" ),
+                            <.td( "")
+                            ),
+                        (0 until rubbers.length).map { i =>
+                          val key="Game"+i
+                          val r = RubberScoring(rubbers(i))
+                          RubberRow(this,props,state,i,r,importId)
+                        }.toTagMod
+                    )
+                ),
+                <.div( baseStyles.divFooter,
+                  <.div( baseStyles.divFooterLeft,
+                    AppButton( "Home", "Home", props.routerCtl.home, ^.disabled:=state.workingOnNew )
+                  ),
+                  <.div(
+                    baseStyles.divFooterLeft,
+                    HelpButton("/help/rubber/list.html")
+                  )
+                )
             )
-          )
-      )
+          case None =>
+            <.div("Loading ...")
+        }
+      } else {
+        <.div("Loading ...")
+      }
+
     }
 
-    def RubberRow(backend: Backend, props: Props, state: State, game: Int, rubber: RubberScoring) = {
+    def RubberRow(backend: Backend, props: Props, state: State, game: Int, rubber: RubberScoring, importId: Option[String]) = {
       val id = rubber.rubber.id
       val date = id
       val created = DateUtils.formatDate(rubber.rubber.created)
@@ -163,30 +253,64 @@ object PageRubberListInternal {
                        ^.disabled:=state.workingOnNew,
                        ^.onClick --> backend.showRubber(rubber.rubber) )
           ),
+          importId.map { iid =>
+            TagMod(
+              <.td(
+                AppButton( "ImportRubber_"+id, "Import",
+                           baseStyles.appButton100,
+                           ^.onClick --> backend.importRubber(iid,id)
+                         )
+              ),
+              <.td(
+                rubber.rubber.bestMatch.map { bm =>
+                  if (bm.id.isDefined && bm.sameness > 90) {
+                    val title = bm.htmlTitle
+                    TagMod(Tooltip(
+                      f"""${bm.id.get} ${bm.sameness}%.2f%%""",
+                      <.div( title )
+                    ))
+                  } else {
+                    TagMod()
+                  }
+                }.whenDefined
+              )
+            )
+          }.whenDefined,
           <.td( created,<.br(),updated),
           <.td( if (rubber.done) "done" else ""),
           <.td( rubber.rubber.north,<.br(),rubber.rubber.south),
           <.td( rubber.nsTotal.toString()),
           <.td( rubber.rubber.east,<.br(),rubber.rubber.west),
           <.td( rubber.ewTotal.toString()),
-          <.td( AppButton( "Delete", "Delete", ^.disabled:=state.workingOnNew, ^.onClick --> backend.delete(id) ))
+          <.td(
+              importId.isEmpty ?= AppButton( "Delete", "Delete", ^.disabled:=state.workingOnNew, ^.onClick --> backend.delete(id) )
           )
+      )
     }
 
-    val didMount = Callback {
+    val storeCallback = scope.props >>= { (p) => Callback {
+      logger.fine(s"Got rubberlist update, importid=${p.page}")
+    } >> scope.forceUpdate }
+
+    val didMount = scope.props >>= { (p) => Callback {
       // make AJAX rest call here
-      logger.finer("PageChicagoList: Sending chicagos list request to server")
-      RestClientRubber.list().recordFailure().foreach( list => {
-        scope.withEffectsImpure.modState( s => s.copy(rubbers=list))
-      })
-    }
+      logger.finer("PageRubberList: Sending rubber list request to server")
+      RubberListStore.addChangeListener(storeCallback)
+      p.page match {
+        case isv: ImportListView =>
+          val importId = isv.getDecodedId
+          RubberController.getImportSummary(importId)
+        case ListView =>
+          RubberController.getSummary()
+      }
+    }}
   }
 
   implicit val loggerForReactComponents = Logger("bridge.PageChicagoList")
   implicit val defaultTraceLevelForReactComponents = Level.FINER
 
   val component = ScalaComponent.builder[Props]("PageRubberList")
-                            .initialStateFromProps { props => State( Array(), false, None ) }
+                            .initialStateFromProps { props => State( false, None, None ) }
                             .backend(new Backend(_))
                             .renderBackend
 //                            .configure(LogLifecycleToServer.verbose)     // logs lifecycle events

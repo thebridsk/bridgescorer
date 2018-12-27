@@ -62,6 +62,7 @@ object ChicagoRouter {
   }
 
   val verifyPages = ListView::
+                    ImportListView("import.zip")::
                     SummaryView("C1")::
                     RoundView("C1", 1)::
                     NamesView("C1", 1)::
