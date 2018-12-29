@@ -143,16 +143,16 @@ object PageChicagoListInternal {
           }
           val chicagos = chicagosRaw.sortWith((l,r) => Id.idComparer(l.id, r.id) > 0)
           val maxplayers = chicagos.map( mc => mc.players.length ).foldLeft(4){case (m, i) => math.max(m,i)}
+          val (msg,funOk,funCancel) = state.popupMsg.map( msg => (Some(msg),None,Some(cancel))).
+                                         getOrElse(
+                                           (
+                                             state.askingToDelete.map(id => s"Are you sure you want to delete Chicago match ${id}"),
+                                             Some(deleteOK),
+                                             Some(deleteCancel)
+                                           )
+                                         )
           <.div( chiStyles.chicagoListPage,
-              if (state.popupMsg.isDefined) {
-                PopupOkCancel( state.popupMsg.map( s=>s), None, Some(cancel) ),
-              } else { 
-                PopupOkCancel(
-                  state.askingToDelete.map(id => s"Are you sure you want to delete Chicago match ${id}"),
-                  Some(deleteOK),
-                  Some(deleteCancel)
-                )
-              },
+              PopupOkCancel(msg.map(s=>s),funOk,funCancel),
               <.table(
                   <.thead(
                     <.tr(

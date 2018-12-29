@@ -163,17 +163,17 @@ object PageRubberListInternal {
         RubberListStore.getRubberSummary() match {
           case Some(rubberlist) =>
             val rubbers = rubberlist.sortWith((l,r) => Id.idComparer( l.id, r.id) > 0)
+            val (msg,funOk,funCancel) = state.popupMsg.map( msg => (Some(msg),None,Some(cancel))).
+                                           getOrElse(
+                                             (
+                                               state.askingToDelete.map(id => s"Are you sure you want to delete Rubber match ${id}"),
+                                               Some(deleteOK),
+                                               Some(deleteCancel)
+                                             )
+                                           )
             <.div(
                 rubStyles.listPage,
-                if (state.popupMsg.isDefined) {
-                  PopupOkCancel( state.popupMsg.map( s=>s), None, Some(cancel) ),
-                } else {
-                  PopupOkCancel(
-                    state.askingToDelete.map(id => s"Are you sure you want to delete Rubber match ${id}"),
-                    Some(deleteOK),
-                    Some(deleteCancel)
-                  )
-                },
+                PopupOkCancel(msg.map(s=>s),funOk,funCancel),
                 <.table(
                     <.thead(
                       <.tr(
