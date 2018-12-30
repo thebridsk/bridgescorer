@@ -69,8 +69,11 @@ object PageRubberListInternal {
    * I'd like this class to be private, but the instantiation of component
    * will cause State to leak.
    *
+   * @constructor
+   * @param askingToDelete The Id of rubber match being deleted.  None if not deleting.
+   * @param popupMsg show message in popup if not None.
    */
-  case class State( workingOnNew: Boolean, askingToDelete: Option[String], popupMsg: Option[String] )
+  case class State( askingToDelete: Option[String] = None, popupMsg: Option[String] = None )
 
   /**
    * Internal state for rendering the component.
@@ -101,13 +104,17 @@ object PageRubberListInternal {
     val cancel = Callback {
       resultRubber.cancel()
       resultGraphQL.cancel()
-    } >> scope.modState( s => s.copy(workingOnNew=false, popupMsg=None))
+    } >> scope.modState( s => s.copy(popupMsg=None))
 
     val newRubber =
-      scope.modState( s => s.copy(workingOnNew=true), Callback {
-        RubberController.createMatch().foreach( created => {
+      scope.modState( s => s.copy( popupMsg=Some("Creating new rubber match")), Callback {
+        val rescre = RubberController.createMatch()
+        resultRubber.set(rescre)
+        rescre.foreach( created => {
           logger.info("Got new rubber match "+created.id)
-          scope.withEffectsImpure.props.routerCtl.set(RubberMatchNamesView(created.id)).runNow()
+          scope.modState( s => s.copy( popupMsg = None),
+              scope.props >>= { p => p.routerCtl.set(RubberMatchNamesView(created.id)) }
+              ).runNow()
         })
       })
 
@@ -203,11 +210,7 @@ object PageRubberListInternal {
                               )
                             }.getOrElse(
                               <.td(
-                                if (state.workingOnNew) {
-                                  <.span("Creating new...")
-                                } else {
-                                  AppButton( "New", "New", ^.onClick --> newRubber)
-                                }
+                                AppButton( "New", "New", ^.onClick --> newRubber)
                               )
                             ),
                             <.td( ""),
@@ -223,7 +226,7 @@ object PageRubberListInternal {
                 ),
                 <.div( baseStyles.divFooter,
                   <.div( baseStyles.divFooterLeft,
-                    AppButton( "Home", "Home", props.routerCtl.home, ^.disabled:=state.workingOnNew )
+                    AppButton( "Home", "Home", props.routerCtl.home )
                   ),
                   <.div(
                     baseStyles.divFooterLeft,
@@ -250,7 +253,6 @@ object PageRubberListInternal {
           <.td(
             AppButton( "Rubber"+id, id,
                        baseStyles.appButton100,
-                       ^.disabled:=state.workingOnNew,
                        ^.onClick --> backend.showRubber(rubber.rubber) )
           ),
           importId.map { iid =>
@@ -283,7 +285,7 @@ object PageRubberListInternal {
           <.td( rubber.rubber.east,<.br(),rubber.rubber.west),
           <.td( rubber.ewTotal.toString()),
           <.td(
-              importId.isEmpty ?= AppButton( "Delete", "Delete", ^.disabled:=state.workingOnNew, ^.onClick --> backend.delete(id) )
+              importId.isEmpty ?= AppButton( "Delete", "Delete", ^.onClick --> backend.delete(id) )
           )
       )
     }
@@ -304,17 +306,23 @@ object PageRubberListInternal {
           RubberController.getSummary()
       }
     }}
+
+    val willUnmount = Callback {
+      // TODO: release RubberListStore memory
+    }
+
   }
 
   implicit val loggerForReactComponents = Logger("bridge.PageChicagoList")
   implicit val defaultTraceLevelForReactComponents = Level.FINER
 
   val component = ScalaComponent.builder[Props]("PageRubberList")
-                            .initialStateFromProps { props => State( false, None, None ) }
+                            .initialStateFromProps { props => State() }
                             .backend(new Backend(_))
                             .renderBackend
 //                            .configure(LogLifecycleToServer.verbose)     // logs lifecycle events
                             .componentDidMount( scope => scope.backend.didMount)
+                            .componentWillUnmount( scope => scope.backend.willUnmount )
                             .build
 }
 

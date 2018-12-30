@@ -23,10 +23,10 @@ object ResourceFinder {
   def validateServerVersion( component: String, version: String, suffix: Option[String] ): Option[(FileFinder, String)] = {
     val tryServerVersion = new FileFinder( "com.example", component, Some(version), suffix )
     tryServerVersion.getResource(
-        "/bridgescorer-client-opt.js",
         "/bridgescorer-client-opt.js.gz",
-        "/bridgescorer-client-fastopt.js",
-        "/bridgescorer-client-fastopt.js.gz"
+        "/bridgescorer-client-opt.js",
+        "/bridgescorer-client-fastopt.js.gz",
+        "/bridgescorer-client-fastopt.js"
     ) match {
       case None => None
       case Some(v) => Some((tryServerVersion, v))
@@ -125,12 +125,12 @@ object ResourceFinder {
   def htmlResources = {
     // must look for bridgescorer-server resources also to find client code
 
-    searchOnVersion( "bridgescorer", Some("lib/bridgescorer-server"), validateServerVersion ) match {
+    searchOnVersion( "bridgescorer-server", None, validateServerVersion ) match {
       case Some(f) =>
         logger.info(s"Found client at ${f.baseName}" )
         f
       case None =>
-        searchOnVersion( "bridgescorer-server", None, validateServerVersion ) match {
+        searchOnVersion( "bridgescorer", Some("lib/bridgescorer-server"), validateServerVersion ) match {
           case Some(f) =>
             logger.info(s"Found client at ${f.baseName}" )
             f
