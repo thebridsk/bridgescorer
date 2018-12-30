@@ -119,12 +119,13 @@ The following steps are needed to work in eclipse.  Note: the eclipse will need 
 
 - to generate the eclipse .project and .classpath files:
 
-    cd BridgeScorer
-    cd bridgescorer
-    sbt allassembly
-    sbt updateClassifiers "eclipse with-source=true" "reload plugins" updateClassifiers "eclipse with-source=true"
-    cd utilities
-    sbt "reload plugins" updateClassifiers "eclipse with-source=true"
+```
+cd BridgeScorer/git/bridgescorer
+sbt allassembly
+sbt updateClassifiers "eclipse with-source=true" "reload plugins" updateClassifiers "eclipse with-source=true"
+cd utilities
+sbt "reload plugins" updateClassifiers "eclipse with-source=true"
+```
     
 - Import all projects except for one into eclipse starting at the BridgeScorer directory.  The one to not import into eclipse is one of the `utilities-shared` project, the one that has a directory path that ends in `js`.
 
