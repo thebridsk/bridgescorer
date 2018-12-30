@@ -92,11 +92,11 @@ The `ws` directory is the eclipse workspace.
 ## Prereqs
 
 - Java 1.8
-- [Scala 2.12.6](http://www.scala-lang.org/)
-- [SBT 1.1.5](http://www.scala-sbt.org/)
+- [Scala 2.12.8](http://www.scala-lang.org/)
+- [SBT 1.2.7](http://www.scala-sbt.org/)
 - [Chrome](https://www.google.com/chrome/)
 - [ChromeDriver](https://sites.google.com/a/chromium.org/chromedriver/), be sure to match the version of Chrome.
-- [Hugo](https://gohugo.io/), at least version 0.49.2
+- [Hugo](https://gohugo.io/), at least version 0.52
 
 Optional:
 - [Eclipse Oxygen](https://eclipse.org/)
