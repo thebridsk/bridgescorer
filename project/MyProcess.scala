@@ -25,7 +25,7 @@ class MyProcess( logger: Option[Logger] = None ) {
 
   val counter = new AtomicInteger()
 
-  def exec( cmd: List[String], cwd: File  ) = {
+  def exec( cmd: List[String], cwd: File  ): Process = {
     import scala.collection.JavaConverters._
     val i = counter.incrementAndGet()
     logger.foreach( l => l.info(s"""Executing OS command($i): ${cmd.mkString(" ")}""") )
@@ -34,15 +34,29 @@ class MyProcess( logger: Option[Logger] = None ) {
     proc
   }
 
-  def startOnWindows( cwd: File, cmd: String* ) = {
-    exec( List("cmd", "/c", cmd.mkString(" ")), cwd);
+  def exec( cmd: List[String], addEnvp: Map[String,String], cwd: File  ): Process = {
+    import scala.collection.JavaConverters._
+    val i = counter.incrementAndGet()
+    logger.foreach( l => l.info(s"""Executing OS command($i): ${cmd.mkString(" ")}""") )
+    val pb = new ProcessBuilder().command(cmd.asJava).directory(cwd).inheritIO()
+    val env = pb.environment()
+    addEnvp.foreach( e => env.put(e._1, e._2) )
+    val proc = pb.start()
+    proc
   }
 
-  def startOnMac( cwd: File, cmd: String* ) = {
+
+
+  def startOnWindows( cwd: File, addEnvp: Option[Map[String,String]], cmd: String* ) = {
+    val env = addEnvp.getOrElse(Map.empty)
+    exec( List("cmd", "/c", cmd.mkString(" ")), env, cwd);
+  }
+
+  def startOnMac( cwd: File, addEnvp: Option[Map[String,String]], cmd: String* ) = {
     exec( "sh"::"-c"::cmd.mkString(" ")::Nil, cwd );
   }
 
-  def startOnLinux( cwd: File, cmd: String* ) = {
+  def startOnLinux( cwd: File, addEnvp: Option[Map[String,String]], cmd: String* ) = {
     val c = "sh"::"-c"::cmd.mkString(" ")::Nil
     exec(c, cwd);
   }
@@ -52,11 +66,28 @@ class MyProcess( logger: Option[Logger] = None ) {
    * @param cmd the command with arguments.  The first element is the command, the rest are arguments.
    */
   def start( cwd: File, cmd: String* ): Process = {
+    startoe(cwd,None,cmd:_*)
+  }
+
+
+  /**
+   * @param cwd the current directory for the started process
+   * @param cmd the command with arguments.  The first element is the command, the rest are arguments.
+   */
+  def start( cwd: File, addEnvp: Map[String,String], cmd: String* ): Process = {
+    startoe(cwd,Some(addEnvp),cmd:_*)
+  }
+
+  /**
+   * @param cwd the current directory for the started process
+   * @param cmd the command with arguments.  The first element is the command, the rest are arguments.
+   */
+  def startoe( cwd: File, addEnvp: Option[Map[String,String]], cmd: String* ): Process = {
     try {
       sys.props.getOrElse("os.name", "oops").toLowerCase() match {
-        case os: String if (os.contains("win")) => startOnWindows(cwd,cmd: _*)
-        case os: String if (os.contains("mac")) => startOnMac(cwd,cmd: _*)
-        case os: String if (os.contains("nix")||os.contains("nux")) => startOnLinux(cwd,cmd: _*)
+        case os: String if (os.contains("win")) => startOnWindows(cwd,addEnvp,cmd: _*)
+        case os: String if (os.contains("mac")) => startOnMac(cwd,addEnvp,cmd: _*)
+        case os: String if (os.contains("nix")||os.contains("nux")) => startOnLinux(cwd,addEnvp,cmd: _*)
         case os =>
           logger.foreach( l => l.error("Unknown operating system: "+os) )
           throw new Exception("Unknown operating system: "+os)
