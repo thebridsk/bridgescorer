@@ -65,8 +65,11 @@ object PageChicagoListInternal {
    * I'd like this class to be private, but the instantiation of component
    * will cause State to leak.
    *
+   * @constructor
+   * @param askingToDelete The Id of rubber match being deleted.  None if not deleting.
+   * @param popupMsg show message in popup if not None.
    */
-  case class State( workingOnNew: Option[String], askingToDelete: Option[String], popupMsg: Option[String] )
+  case class State( askingToDelete: Option[String] = None, popupMsg: Option[String] = None )
 
   /**
    * Internal state for rendering the component.
@@ -85,7 +88,7 @@ object PageChicagoListInternal {
         ChicagoController.deleteChicago(id)
         s.copy( askingToDelete = None )
       }.getOrElse {
-        s.copy( workingOnNew = Some("Not ready to delete a chicago match") )
+        s.copy( popupMsg = Some("Not ready to delete a chicago match") )
       }
 
     }
@@ -98,11 +101,11 @@ object PageChicagoListInternal {
     val cancel = Callback {
       resultChicago.cancel()
       resultGraphQL.cancel()
-    } >> scope.modState( s => s.copy(workingOnNew=None, popupMsg=None))
+    } >> scope.modState( s => s.copy( popupMsg=None))
 
     val newChicago = {
       import scala.concurrent.ExecutionContext.Implicits.global
-      scope.modState( s => s.copy(workingOnNew=Some("Creating a new Chicago match...")), Callback {
+      scope.modState( s => s.copy(popupMsg=Some("Creating a new Chicago match...")), Callback {
         logger.info(s"Creating new chicago.  HomePage.mounted=${mounted}")
         val result = ChicagoController.createMatch()
         resultChicago.set(result)
@@ -116,7 +119,7 @@ object PageChicagoListInternal {
           t match {
             case x: RequestCancelled =>
             case _ =>
-              scope.withEffectsImpure.modState( s => s.copy(workingOnNew=Some("Failed to create a new Chicago match")))
+              scope.withEffectsImpure.modState( s => s.copy(popupMsg=Some("Failed to create a new Chicago match")))
           }
         })
       })
@@ -143,16 +146,16 @@ object PageChicagoListInternal {
           }
           val chicagos = chicagosRaw.sortWith((l,r) => Id.idComparer(l.id, r.id) > 0)
           val maxplayers = chicagos.map( mc => mc.players.length ).foldLeft(4){case (m, i) => math.max(m,i)}
+          val (msg,funOk,funCancel) = state.popupMsg.map( msg => (Some(msg),None,Some(cancel))).
+                                         getOrElse(
+                                           (
+                                             state.askingToDelete.map(id => s"Are you sure you want to delete Chicago match ${id}"),
+                                             Some(deleteOK),
+                                             Some(deleteCancel)
+                                           )
+                                         )
           <.div( chiStyles.chicagoListPage,
-              if (state.popupMsg.isDefined) {
-                PopupOkCancel( state.popupMsg.map( s=>s), None, Some(cancel) ),
-              } else { 
-                PopupOkCancel(
-                  state.askingToDelete.map(id => s"Are you sure you want to delete Chicago match ${id}"),
-                  Some(deleteOK),
-                  Some(deleteCancel)
-                )
-              },
+              PopupOkCancel(msg.map(s=>s),funOk,funCancel),
               <.table(
                   <.thead(
                     <.tr(
@@ -273,19 +276,7 @@ object PageChicagoListInternal {
             )
           }.getOrElse(
             <.td(
-              state.workingOnNew match {
-                case Some(msg) =>
-                  <.span(
-                    msg,
-                    " ",
-                    AppButton(
-                      "PopupCancel", "Cancel",
-                      ^.onClick --> backend.cancel
-                    )
-                  )
-                case None =>
-                  AppButton( "New", "New", ^.onClick --> backend.newChicago)
-              }
+              AppButton( "New", "New", ^.onClick --> backend.newChicago)
             )
           ),
           <.td( ^.colSpan:=maxplayers,"" ),
@@ -349,7 +340,7 @@ object PageChicagoListInternal {
     }).build
 
   val component = ScalaComponent.builder[Props]("PageChicagoList")
-                            .initialStateFromProps { props => State(None, None, None) }
+                            .initialStateFromProps { props => State() }
                             .backend(new Backend(_))
                             .renderBackend
 //                            .configure(LogLifecycleToServer.verbose)     // logs lifecycle events
