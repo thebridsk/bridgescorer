@@ -50,6 +50,14 @@ import com.example.routes.BridgeRouter
 import com.example.react.AppButtonLinkNewWindow
 import com.example.react.HelpButton
 import com.example.Bridge
+import com.example.materialui.MuiButton
+import com.example.materialui.ColorVariant
+import com.example.materialui.MuiMenu
+import com.example.materialui.MuiMenuItem
+import org.scalajs.dom.raw.Node
+import org.scalajs.dom.raw.Element
+import com.example.materialui.Variant
+import com.example.materialui.Style
 
 /**
  * @author werewolf
@@ -60,7 +68,14 @@ object HomePage {
 
   case class Props( routeCtl: BridgeRouter[AppPage])
 
-  case class State( debugging: Boolean, serverUrl: ServerURL, working: Option[String], fastclickTest: Boolean, userSelect: Boolean = false )
+  case class State(
+      debugging: Boolean,
+      serverUrl: ServerURL,
+      working: Option[String],
+      fastclickTest: Boolean,
+      userSelect: Boolean = false,
+      anchorEl: js.UndefOr[Element] = js.undefined
+  )
 
   var fastclick: Option[FastClick] = None
 
@@ -102,6 +117,9 @@ object HomePage {
       newstate
     }
 
+    def handleClick( event: ReactEvent ) = event.extract(_.currentTarget)(currentTarget => scope.modState(s => s.copy(anchorEl=currentTarget.asInstanceOf[Element])).runNow() )
+    def handleClose( /* event: js.Object, reason: String */ ) = scope.modState(s => s.copy(anchorEl=js.undefined)).runNow()
+
     def render( props: Props, state: State ) = {
       import BaseStyles._
       def callbackPage(page: AppPage) = props.routeCtl.set(page)
@@ -113,6 +131,38 @@ object HomePage {
         <.div(
           rootStyles.serverDiv,
           ^.id:="url",
+          <.div(
+//            Style.withStyle(ButtonStyle())(
+              MuiButton(
+                  color = ColorVariant.default,
+                  variant = Variant.contained,
+                  onClick = handleClick _,
+//                  classes = ButtonStyle()
+                  style = ButtonStyle.buttonStyle
+              )("Hello world"),
+//            ),
+            MuiMenu(
+                anchorEl=state.anchorEl,
+                open= state.anchorEl.isDefined,
+                onClose = handleClose _
+            )(
+                MuiMenuItem(
+                    onClick = handleClose _
+                )(
+                    "Profile"
+                ),
+                MuiMenuItem(
+                    onClick = handleClose _
+                )(
+                    "My account"
+                ),
+                MuiMenuItem(
+                    onClick = handleClose _
+                )(
+                    "Logout"
+                )
+            )
+          ),
           <.h1("Server"),
           <.ul(
             if (state.serverUrl.serverUrl.isEmpty) {

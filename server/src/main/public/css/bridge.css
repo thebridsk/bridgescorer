@@ -34,6 +34,22 @@
 }
 
 
+.baseMuiButton {
+  font-size: x-large;
+  border-radius: 20px;
+  background-color: rgb(210,210,210);
+  border-style: outset;
+  border-width: 2px;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  white-space: nowrap;
+  padding: 3px 6px;
+  min-width: 37px;
+  margin: 2px;
+}
+
 .baseDefaultButton {
   border-radius: 20px;
   background-color: rgb(210,210,210);
