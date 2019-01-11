@@ -221,24 +221,49 @@ object Controller {
     }
   }
 
-  def esOnError( err: Event ): Unit = {
+  def esOnOpen( e: Event ): Unit = {
+    errorBackoff = 1000
+  }
+
+  var errorBackoff = 1000
+
+  def esOnError( dupid: Id.MatchDuplicate )( err: Event ): Unit = {
     logger.severe(s"EventSource error: $err")
+
+    eventSource.foreach { es =>
+      if (es.readyState == EventSource.CONNECTING) {
+        import scala.scalajs.js.timers._
+
+        logger.severe(s"EventSource error while connecting to server: $err")
+        if (errorBackoff > 1000) {
+          Alerter.alert(s"EventSource error while connecting to server, trying to restart: $err")
+        }
+
+        setTimeout(errorBackoff) {
+          if (errorBackoff < 60000) errorBackoff*=2
+          eventSource.foreach { es =>
+            monitorMatchDuplicate(dupid, true)
+          }
+        }
+      }
+    }
   }
 
   def getEventSource( dupid: Id.MatchDuplicate ): Option[EventSource] = {
     val es = new EventSource(s"/v1/sse/duplicates/${dupid}")
+    es.onopen = esOnOpen
     es.onmessage = esOnMessage
-    es.onerror = esOnError
+    es.onerror = esOnError(dupid)
     Some(es)
   }
 
   var eventSource: Option[EventSource] = None
 
-  def monitorMatchDuplicate( dupid: Id.MatchDuplicate ): Unit = {
+  def monitorMatchDuplicate( dupid: Id.MatchDuplicate, restart: Boolean = false ): Unit = {
 
     DuplicateStore.getId() match {
       case Some(mdid) =>
-        if (mdid != dupid) {
+        if (restart || mdid != dupid) {
           logger.info(s"""Switching MatchDuplicate monitor to ${dupid} from ${mdid}""" )
           if (useSSEFromServer) {
             BridgeDispatcher.startDuplicateMatch(dupid)
