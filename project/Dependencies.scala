@@ -34,7 +34,7 @@ object Dependencies {
 
 
   lazy val vAkka = "2.5.19"           // http://mvnrepository.com/artifact/com.typesafe.akka/akka-actor_2.11
-  lazy val vAkkaHttp = "10.1.6"       // http://mvnrepository.com/artifact/com.typesafe.akka/akka-http_2.11
+  lazy val vAkkaHttp = "10.1.7"       // http://mvnrepository.com/artifact/com.typesafe.akka/akka-http_2.11
 
   lazy val vAkkaHttpPlayJson="1.22.0"  // https://github.com/hseeberger/akka-http-json
 
@@ -79,7 +79,7 @@ object Dependencies {
   // Selenium needs to be update to update to v23.0
   lazy val vGuavaJre = "27.0.1-jre"    // https://github.com/google/guava
 
-  lazy val vWebPack = "4.28.2"          // https://www.npmjs.com/package/webpack
+  lazy val vWebPack = "4.28.4"          // https://www.npmjs.com/package/webpack
 
   // sbt-scalajs-bundler does not support 12.0.0,
   // see https://github.com/scalacenter/scalajs-bundler/pull/265
@@ -95,8 +95,8 @@ object Dependencies {
   lazy val vConcatWithSourcemaps = "1.0.7"  // https://www.npmjs.com/package/concat-with-sourcemaps
 
 
-  lazy val vWebpackDevServer = "3.1.10"   // https://www.npmjs.com/package/webpack-dev-server
-  lazy val vWebPackCli = "3.1.2"         // https://www.npmjs.com/package/webpack-cli
+  lazy val vWebpackDevServer = "3.1.14"   // https://www.npmjs.com/package/webpack-dev-server
+  lazy val vWebPackCli = "3.2.1"         // https://www.npmjs.com/package/webpack-cli
 
   lazy val vFastClick = "1.0.6"       // https://www.npmjs.com/package/fastclick
 
