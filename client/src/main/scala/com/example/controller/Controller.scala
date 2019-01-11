@@ -52,6 +52,9 @@ object Controller {
   var useRestToServer: Boolean = true;
   var useSSEFromServer: Boolean = true;
 
+  val defaultErrorBackoff = 1000   // ms
+  val limitErrorBackoff = 60000 // ms
+
   def log( entry: LogEntryS ) = {
     // This can't create a duplexPipe, we haven't setup all the info
     duplexPipe match {
@@ -222,29 +225,31 @@ object Controller {
   }
 
   def esOnOpen( e: Event ): Unit = {
-    errorBackoff = 1000
+    errorBackoff = defaultErrorBackoff
   }
 
-  var errorBackoff = 1000
+  var errorBackoff = defaultErrorBackoff
 
   def esOnError( dupid: Id.MatchDuplicate )( err: Event ): Unit = {
     logger.severe(s"EventSource error: $err")
 
     eventSource.foreach { es =>
-      if (es.readyState == EventSource.CONNECTING) {
+      if (es.readyState == EventSource.CLOSED) {
         import scala.scalajs.js.timers._
 
-        logger.severe(s"EventSource error while connecting to server: $err")
-        if (errorBackoff > 1000) {
+        logger.severe(s"EventSource error while connecting to server, connection closed: $err")
+        if (errorBackoff > defaultErrorBackoff) {
           Alerter.alert(s"EventSource error while connecting to server, trying to restart: $err")
         }
 
         setTimeout(errorBackoff) {
-          if (errorBackoff < 60000) errorBackoff*=2
+          if (errorBackoff < limitErrorBackoff) errorBackoff*=2
           eventSource.foreach { es =>
             monitorMatchDuplicate(dupid, true)
           }
         }
+      } else if (es.readyState == EventSource.CONNECTING) {
+        logger.warning(s"EventSource error while connecting to server, browser is trying to reconnect: $err")
       }
     }
   }
