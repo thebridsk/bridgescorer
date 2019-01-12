@@ -41,6 +41,7 @@ import play.api.libs.json.JsSuccess
 import org.scalajs.dom.raw.EventSource
 import org.scalajs.dom.raw.MessageEvent
 import org.scalajs.dom.raw.Event
+import scala.scalajs.js.timers.SetTimeoutHandle
 
 object Controller {
   val logger = Logger("bridge.Controller")
@@ -52,6 +53,7 @@ object Controller {
   var useRestToServer: Boolean = true;
   var useSSEFromServer: Boolean = true;
 
+  val heartbeatTimeout = 20000   // ms
   val defaultErrorBackoff = 1000   // ms
   val limitErrorBackoff = 60000 // ms
 
@@ -199,14 +201,50 @@ object Controller {
     })
   }
 
-  def esOnMessage( me: MessageEvent ): Unit = {
+  var currentESTimeout: Option[SetTimeoutHandle] = None
+
+  def resetESConnection( dupid: Id.MatchDuplicate ) = {
+    eventSource.map { es =>
+      logger.info(s"EventSource reseting connection to $dupid")
+      monitorMatchDuplicate(dupid, true)
+    }.getOrElse(
+      logger.info(s"EventSource no connection to reset")
+    )
+  }
+
+
+  def resetESTimeout( dupid: Id.MatchDuplicate ) = {
+    eventSource.map { es =>
+      clearESTimeout()
+
+      logger.info(s"EventSource setting heartbeat timeout to ${heartbeatTimeout} ms")
+      import scala.scalajs.js.timers._
+      currentESTimeout = Some( setTimeout(heartbeatTimeout) {
+        logger.info(s"EventSource heartbeat timeout fired ${heartbeatTimeout} ms, reseting connection")
+        resetESConnection(dupid)
+      })
+    }.getOrElse(
+      logger.info(s"EventSource no connection to reset")
+    )
+  }
+
+  def clearESTimeout() {
+    import scala.scalajs.js.timers._
+    logger.info(s"EventSource clearing timeout")
+    currentESTimeout.foreach( clearTimeout(_))
+    currentESTimeout = None
+  }
+
+  def esOnMessage( dupid: Id.MatchDuplicate )( me: MessageEvent ): Unit = {
     import com.example.data.websocket.DuplexProtocol
     try {
       logger.info(s"esOnMessage received ${me.data}")
+      resetESTimeout(dupid)
       me.data match {
         case s: String =>
           if (s.equals("")) {
             // ignore this, this is a heartbeat
+            logger.fine(s"esOnMessage received heartbeat")
           } else {
             DuplexProtocol.fromString(s) match {
               case DuplexProtocol.Response(data,seq) =>
@@ -224,7 +262,7 @@ object Controller {
     }
   }
 
-  def esOnOpen( e: Event ): Unit = {
+  def esOnOpen( dupid: Id.MatchDuplicate )( e: Event ): Unit = {
     errorBackoff = defaultErrorBackoff
   }
 
@@ -243,6 +281,7 @@ object Controller {
         }
 
         setTimeout(errorBackoff) {
+          logger.warning(s"EventSource error backoff timer $errorBackoff ms fired")
           if (errorBackoff < limitErrorBackoff) errorBackoff*=2
           eventSource.foreach { es =>
             monitorMatchDuplicate(dupid, true)
@@ -256,8 +295,8 @@ object Controller {
 
   def getEventSource( dupid: Id.MatchDuplicate ): Option[EventSource] = {
     val es = new EventSource(s"/v1/sse/duplicates/${dupid}")
-    es.onopen = esOnOpen
-    es.onmessage = esOnMessage
+    es.onopen = esOnOpen(dupid)
+    es.onmessage = esOnMessage(dupid)
     es.onerror = esOnError(dupid)
     Some(es)
   }
@@ -274,6 +313,7 @@ object Controller {
             BridgeDispatcher.startDuplicateMatch(dupid)
             eventSource.foreach( es => es.close())
             eventSource = getEventSource(dupid)
+            resetESTimeout(dupid)
           } else {
             getDuplexPipe().clearSession(Protocol.StopMonitor(mdid))
             BridgeDispatcher.startDuplicateMatch(dupid)
@@ -292,6 +332,7 @@ object Controller {
           BridgeDispatcher.startDuplicateMatch(dupid)
           eventSource.foreach( es => es.close())
           eventSource = getEventSource(dupid)
+          resetESTimeout(dupid)
         } else {
           BridgeDispatcher.startDuplicateMatch(dupid)
           getDuplexPipe().setSession { dp =>
@@ -309,6 +350,7 @@ object Controller {
     if (useSSEFromServer) {
       eventSource.foreach( es => es.close())
       eventSource = None
+      clearESTimeout()
     } else {
       duplexPipe match {
         case Some(d) =>
