@@ -106,6 +106,8 @@ object Dependencies {
   lazy val vGraphQL = "14.0.2"
   lazy val vGraphiQL = "0.12.0"
   lazy val vGraphQLVoyager = "1.0.0-rc.26"
+  lazy val vMaterialUIcore = "3.8.3"        // https://www.npmjs.com/package/@material-ui/core
+  lazy val vMaterialUIicons = "3.0.2"        // https://www.npmjs.com/package/@material-ui/icons
 
   // libraries
 
@@ -253,7 +255,9 @@ object Dependencies {
       "fastclick" -> vFastClick,
       "graphql-voyager" -> vGraphQLVoyager,
       "graphql" -> vGraphQL,
-      "graphiql" -> vGraphiQL
+      "graphiql" -> vGraphiQL,
+      "@material-ui/core" -> vMaterialUIcore,
+      "@material-ui/icons" -> vMaterialUIicons
   )
 
     // this is for SBT 1.0

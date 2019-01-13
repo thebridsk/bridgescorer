@@ -58,6 +58,15 @@ import org.scalajs.dom.raw.Node
 import org.scalajs.dom.raw.Element
 import com.example.materialui.Variant
 import com.example.materialui.Style
+import com.example.materialui.Position
+import com.example.materialui.MuiAppBar
+import com.example.materialui.MuiToolbar
+import com.example.materialui.MuiIconButton
+import com.example.materialui.ColorVariant
+import com.example.materialui.icons.MuiMenuIcon
+import com.example.materialui.MuiTypography
+import com.example.materialui.TextVariant
+import com.example.materialui.TextColor
 
 /**
  * @author werewolf
@@ -132,15 +141,30 @@ object HomePage {
           rootStyles.serverDiv,
           ^.id:="url",
           <.div(
-//            Style.withStyle(ButtonStyle())(
-              MuiButton(
-                  color = ColorVariant.default,
-                  variant = Variant.contained,
-                  onClick = handleClick _,
-//                  classes = ButtonStyle()
-                  style = ButtonStyle.buttonStyle
-              )("Hello world"),
-//            ),
+            MuiAppBar(
+                position=Position.static
+            )(
+                MuiToolbar()(
+                    MuiIconButton(
+                        onClick = handleClick _,
+                        color=ColorVariant.inherit
+                    )(
+                        MuiMenuIcon()
+                    ),
+                    MuiTypography(
+                        variant = TextVariant.h6,
+                        color = TextColor.inherit
+                    )(
+                        "Bridge ScoreKeeper"
+                    )
+                )
+            ),
+//            MuiButton(
+//                color = ColorVariant.default,
+//                variant = Variant.contained,
+//                onClick = handleClick _,
+//                style = ButtonStyle.buttonStyle
+//            )("Hello world"),
             MuiMenu(
                 anchorEl=state.anchorEl,
                 open= state.anchorEl.isDefined,
