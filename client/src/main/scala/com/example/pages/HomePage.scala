@@ -67,6 +67,10 @@ import com.example.materialui.icons.MuiMenuIcon
 import com.example.materialui.MuiTypography
 import com.example.materialui.TextVariant
 import com.example.materialui.TextColor
+import com.example.materialui.icons.MuiHelpIcon
+import com.example.materialui.Style
+import scala.scalajs.js.annotation.JSExportTopLevel
+import scala.scalajs.js.annotation.JSExport
 
 /**
  * @author werewolf
@@ -87,6 +91,34 @@ object HomePage {
   )
 
   var fastclick: Option[FastClick] = None
+
+//  // This will be the props object used from JS-land
+//  @js.native
+//  trait JsProps extends js.Object {
+//    val classes: js.Dictionary[String]
+//  }
+//
+//  val renderWithStyle = ScalaComponent.builder[js.Object]("Title")
+//                            .stateless
+//                            .noBackend
+//                            .render_P { props =>
+//                              val p = props.asInstanceOf[JsProps]
+//                              logger.info(s"""renderWithStyle called with props $props""")
+//                              val clsGrow = p.classes("grow")
+//                              MuiTypography(
+//                                  variant = TextVariant.h6,
+//                                  color = TextColor.inherit,
+//                                  className = clsGrow
+//                              )(
+//                                  "Bridge ScoreKeeper"
+//                              )
+//                            }
+//                            .build
+//
+//  def renderWithStyleFn( props: js.Object ) = {
+//                              logger.info(s"""renderWithStyleFn with props $props""")
+//                              renderWithStyle(props)
+//                            }
 
   class Backend( scope: BackendScope[Props, State]) {
 
@@ -134,6 +166,7 @@ object HomePage {
       def callbackPage(page: AppPage) = props.routeCtl.set(page)
       val doingWork = state.working.getOrElse("")
       val isWorking = state.working.isDefined
+      import japgolly.scalajs.react.vdom.VdomNode
       <.div(
         rootStyles.homeDiv,
         PopupOkCancel( if (isWorking) Some(doingWork) else None, None, Some(cancel) ),
@@ -151,11 +184,25 @@ object HomePage {
                     )(
                         MuiMenuIcon()
                     ),
-                    MuiTypography(
-                        variant = TextVariant.h6,
-                        color = TextColor.inherit
+//                    Style.withStyle(
+//                        Style(
+//                            "grow" -> js.Dictionary( "flexGrow" -> 1 )
+//                        )
+//                    )(
+//                        renderWithStyleFn
+                        MuiTypography(
+                            variant = TextVariant.h6,
+                            color = TextColor.inherit,
+                            classes = js.Dictionary( "root" -> "homePageTitle")
+                        )(
+                            "Bridge ScoreKeeper"
+                        ),
+//                    ),
+                    MuiIconButton(
+                        onClick = handleClick _,
+                        color=ColorVariant.inherit
                     )(
-                        "Bridge ScoreKeeper"
+                        MuiHelpIcon()
                     )
                 )
             ),

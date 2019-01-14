@@ -116,7 +116,8 @@ object TypographyProps {
       p: js.Object with js.Dynamic = js.Dynamic.literal(),
 
       align: js.UndefOr[TextAlign] = js.undefined,
-      classes: js.UndefOr[js.Object] = js.undefined,
+      classes: js.UndefOr[js.Any] = js.undefined,
+      className: js.UndefOr[String] = js.undefined,
       color: js.UndefOr[TextColor] = js.undefined,
       component: js.UndefOr[String] = js.undefined,
       gutterBottom: js.UndefOr[Boolean] = js.undefined,
@@ -130,6 +131,7 @@ object TypographyProps {
 
     align.foreach(p.updateDynamic("action")(_))
     classes.foreach(p.updateDynamic("classes")(_))
+    className.foreach(p.updateDynamic("className")(_))
     color.foreach(p.updateDynamic("color")(_))
     component.foreach(p.updateDynamic("component")(_))
     gutterBottom.foreach(p.updateDynamic("gutterBottom")(_))
@@ -181,7 +183,8 @@ object MuiTypography {
      */
     def apply(
       align: js.UndefOr[TextAlign] = js.undefined,
-      classes: js.UndefOr[js.Object] = js.undefined,
+      classes: js.UndefOr[js.Any] = js.undefined,
+      className: js.UndefOr[String] = js.undefined,
       color: js.UndefOr[TextColor] = js.undefined,
       component: js.UndefOr[String] = js.undefined,
       gutterBottom: js.UndefOr[Boolean] = js.undefined,
@@ -198,6 +201,7 @@ object MuiTypography {
 
                   align,
                   classes,
+                  className,
                   color,
                   component,
                   gutterBottom,

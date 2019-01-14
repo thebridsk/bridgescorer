@@ -571,3 +571,9 @@ body.touched .withTooltipBox:hover {
 .divGraphiql {
   height: 100vh;
 }
+
+.homePageTitle {
+  margin: 0;
+  display: block;
+  flex-grow: 1;
+}
