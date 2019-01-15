@@ -45,6 +45,7 @@ object MuiButtonBase {
      * @param type Used to control the button's purpose. This property passes the value to the type attribute of the native
      *              button component. Valid property values include button, submit, and reset.
      *              Default: "button"
+     * @param id the value of the id attribute
      */
     def set(
         p: js.Object with js.Dynamic,
@@ -63,7 +64,9 @@ object MuiButtonBase {
         `type`: js.UndefOr[String] = js.undefined,
 
         onClick: js.UndefOr[ReactEvent => Unit] = js.undefined,
-        style: js.UndefOr[js.Object] = js.undefined
+        style: js.UndefOr[js.Object] = js.undefined,
+
+        id: js.UndefOr[String] = js.undefined
     ): js.Object with js.Dynamic = {
       action.foreach(p.updateDynamic("action")(_))
       buttonRef.foreach(p.updateDynamic("buttonRef")(_))
@@ -80,6 +83,7 @@ object MuiButtonBase {
       `type`.foreach(p.updateDynamic("type")(_))
       onClick.foreach(p.updateDynamic("onClick")(_))
       style.foreach(p.updateDynamic("style")(_))
+      id.foreach(p.updateDynamic("id")(_))
       p
     }
 
@@ -116,6 +120,7 @@ object MuiButtonBase {
      * @param type Used to control the button's purpose. This property passes the value to the type attribute of the native
      *              button component. Valid property values include button, submit, and reset.
      *              Default: "button"
+     * @param id the value of the id attribute
      */
     def apply(
         action: js.UndefOr[js.Function1[js.Object,Unit]] = js.undefined,
@@ -133,7 +138,8 @@ object MuiButtonBase {
         `type`: js.UndefOr[String] = js.undefined,
 
         onClick: js.UndefOr[ReactEvent => Unit] = js.undefined,
-        style: js.UndefOr[js.Object] = js.undefined
+        style: js.UndefOr[js.Object] = js.undefined,
+        id: js.UndefOr[String] = js.undefined
     )(
         children: CtorType.ChildArg*
     ) = {
@@ -153,7 +159,8 @@ object MuiButtonBase {
                   TouchRippleProps,
                   `type`,
                   onClick,
-                  style
+                  style,
+                  id
               )
       val x = f(p) _
       x(children)

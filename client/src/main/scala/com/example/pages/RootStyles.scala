@@ -151,6 +151,8 @@ class RootStyles {
   val thankYouDiv = cls("rootThankYouDiv baseFontTextLarge")
 
   val infoPageDiv = cls("rootInfoPageDiv baseFontTextLarge")
+
+  val headerSuitSize = cls("headerSuitSize")
 }
 
 class TableStyles {

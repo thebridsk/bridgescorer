@@ -573,7 +573,11 @@ body.touched .withTooltipBox:hover {
 }
 
 .homePageTitle {
-  margin: 0;
+  margin: 0px 0px 0px 20px !important;
   display: block;
   flex-grow: 1;
+}
+
+.headerSuitSize {
+  font-size: 2.5rem;
 }

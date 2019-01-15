@@ -35,6 +35,7 @@ object MuiMenuItem {
      *                 Default: false
      * @param selected Use to apply selected styling.
      *                  Default: false
+     * @param id the id attribute value of the element
      */
     def set(
         p: js.Object with js.Dynamic,
@@ -50,7 +51,10 @@ object MuiMenuItem {
         divider: js.UndefOr[Boolean] = js.undefined,
         selected: js.UndefOr[Boolean] = js.undefined,
 
-        onClick: js.UndefOr[() => Unit] = js.undefined
+        onClick: js.UndefOr[(ReactEvent) => Unit] = js.undefined,
+
+        id: js.UndefOr[String] = js.undefined
+
     ): js.Object with js.Dynamic = {
       MuiListItem.set(
             p,
@@ -64,7 +68,8 @@ object MuiMenuItem {
             disabled,
             disableGutters,
             divider,
-            selected
+            selected,
+            id
         )
       onClick.foreach(p.updateDynamic("onClick")(_))
       p
@@ -92,6 +97,7 @@ object MuiMenuItem {
      *                 Default: false
      * @param selected Use to apply selected styling.
      *                  Default: false
+     * @param id the id attribute value of the element
      * @param children
      */
     def apply(
@@ -107,7 +113,9 @@ object MuiMenuItem {
         divider: js.UndefOr[Boolean] = js.undefined,
         selected: js.UndefOr[Boolean] = js.undefined,
 
-        onClick: js.UndefOr[() => Unit] = js.undefined
+        onClick: js.UndefOr[(ReactEvent) => Unit] = js.undefined,
+
+        id: js.UndefOr[String] = js.undefined
     )(
         children: CtorType.ChildArg*
     ) = {
@@ -124,7 +132,8 @@ object MuiMenuItem {
                   disableGutters,
                   divider,
                   selected,
-                  onClick
+                  onClick,
+                  id
               )
       val x = f(p) _
       x(children)

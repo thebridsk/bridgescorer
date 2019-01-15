@@ -71,6 +71,7 @@ import com.example.materialui.icons.MuiHelpIcon
 import com.example.materialui.Style
 import scala.scalajs.js.annotation.JSExportTopLevel
 import scala.scalajs.js.annotation.JSExport
+import japgolly.scalajs.react.vdom.HtmlStyles
 
 /**
  * @author werewolf
@@ -87,8 +88,17 @@ object HomePage {
       working: Option[String],
       fastclickTest: Boolean,
       userSelect: Boolean = false,
-      anchorEl: js.UndefOr[Element] = js.undefined
-  )
+      anchorMainEl: js.UndefOr[Element] = js.undefined,
+      anchorHelpEl: js.UndefOr[Element] = js.undefined
+  ) {
+
+    def openHelpMenu( n: Node ) = copy( anchorHelpEl = n.asInstanceOf[Element] )
+    def closeHelpMenu() = copy( anchorHelpEl = js.undefined )
+
+    def openMainMenu( n: Node ) = copy( anchorMainEl = n.asInstanceOf[Element] )
+    def closeMainMenu() = copy( anchorMainEl = js.undefined )
+
+  }
 
   var fastclick: Option[FastClick] = None
 
@@ -158,14 +168,34 @@ object HomePage {
       newstate
     }
 
-    def handleClick( event: ReactEvent ) = event.extract(_.currentTarget)(currentTarget => scope.modState(s => s.copy(anchorEl=currentTarget.asInstanceOf[Element])).runNow() )
-    def handleClose( /* event: js.Object, reason: String */ ) = scope.modState(s => s.copy(anchorEl=js.undefined)).runNow()
+    def handleMainClick( event: ReactEvent ) = event.extract(_.currentTarget)(currentTarget => scope.modState(s => s.openMainMenu(currentTarget)).runNow() )
+    def handleMainCloseClick( event: ReactEvent ) = scope.modState(s => s.closeMainMenu()).runNow()
+    def handleMainClose( /* event: js.Object, reason: String */ ) = scope.modState(s => s.closeMainMenu()).runNow()
+
+    def handleHelpClick( event: ReactEvent ) = event.extract(_.currentTarget)(currentTarget => scope.modState(s => s.openHelpMenu(currentTarget)).runNow() )
+    def handleHelpClose( /* event: js.Object, reason: String */ ) = scope.modState(s => s.closeHelpMenu()).runNow()
+
+    def gotoPage( uri: String ) = {
+      val location = document.defaultView.location
+      val origin = location.origin.get
+      val helppath = s"""${origin}${uri}"""
+
+      AppButtonLinkNewWindow.topage(helppath)
+    }
+
+    def handleHelpGotoPageClick(uri: String)( event: ReactEvent ) = {
+
+      handleHelpClose()
+
+      gotoPage(uri)
+    }
 
     def render( props: Props, state: State ) = {
       import BaseStyles._
       def callbackPage(page: AppPage) = props.routeCtl.set(page)
       val doingWork = state.working.getOrElse("")
       val isWorking = state.working.isDefined
+
       import japgolly.scalajs.react.vdom.VdomNode
       <.div(
         rootStyles.homeDiv,
@@ -179,7 +209,8 @@ object HomePage {
             )(
                 MuiToolbar()(
                     MuiIconButton(
-                        onClick = handleClick _,
+                        id = "MainMenu",
+                        onClick = handleMainClick _,
                         color=ColorVariant.inherit
                     )(
                         MuiMenuIcon()
@@ -193,13 +224,44 @@ object HomePage {
                         MuiTypography(
                             variant = TextVariant.h6,
                             color = TextColor.inherit,
+//                            classes = js.Dictionary( "root" -> "homePageTitle")
+                        )(
+                            <.span(
+                              "Bridge ScoreKeeper",
+                            )
+                        ),
+                        MuiTypography(
+                            variant = TextVariant.h6,
+                            color = TextColor.inherit,
                             classes = js.Dictionary( "root" -> "homePageTitle")
                         )(
-                            "Bridge ScoreKeeper"
+                            <.span(
+                              <.span(
+                                  HtmlStyles.color.black,
+                                  rootStyles.headerSuitSize,
+                                  ^.dangerouslySetInnerHtml := " &spades;"
+                              ),
+                              <.span(
+                                  HtmlStyles.color.red,
+                                  rootStyles.headerSuitSize,
+                                  ^.dangerouslySetInnerHtml := " &hearts;"
+                              ),
+                              <.span(
+                                  HtmlStyles.color.red,
+                                  rootStyles.headerSuitSize,
+                                  ^.dangerouslySetInnerHtml := " &diams;"
+                              ),
+                              <.span(
+                                  HtmlStyles.color.black,
+                                  rootStyles.headerSuitSize,
+                                  ^.dangerouslySetInnerHtml := " &clubs;"
+                              ),
+                            )
                         ),
 //                    ),
                     MuiIconButton(
-                        onClick = handleClick _,
+                        id = "HelpMenu",
+                        onClick = handleHelpClick _,
                         color=ColorVariant.inherit
                     )(
                         MuiHelpIcon()
@@ -212,25 +274,62 @@ object HomePage {
 //                onClick = handleClick _,
 //                style = ButtonStyle.buttonStyle
 //            )("Hello world"),
+
+            // Main menu
             MuiMenu(
-                anchorEl=state.anchorEl,
-                open= state.anchorEl.isDefined,
-                onClose = handleClose _
+                anchorEl=state.anchorMainEl,
+                open= state.anchorMainEl.isDefined,
+                onClose = handleMainClose _
             )(
                 MuiMenuItem(
-                    onClick = handleClose _
+                    onClick = handleMainCloseClick _
                 )(
                     "Profile"
                 ),
                 MuiMenuItem(
-                    onClick = handleClose _
+                    onClick = handleMainCloseClick _
                 )(
                     "My account"
                 ),
                 MuiMenuItem(
-                    onClick = handleClose _
+                    onClick = handleMainCloseClick _
                 )(
                     "Logout"
+                )
+            ),
+
+            // help menu
+            MuiMenu(
+                anchorEl=state.anchorHelpEl,
+                open= state.anchorHelpEl.isDefined,
+                onClose = handleHelpClose _
+            )(
+                MuiMenuItem(
+                    id = "Help",
+                    onClick = handleHelpGotoPageClick("/help/introduction.html") _
+                )(
+                    "Help"
+                ),
+                MuiMenuItem(
+                    id = "SwaggerDocs",
+                    onClick = handleHelpGotoPageClick("/v1/docs") _
+                )(
+                    "Swagger Docs"
+                ),
+                MuiMenuItem(
+                    id = "SwaggerDocs2",
+                    onClick = handleHelpGotoPageClick("/public/apidocs.html") _
+                )(
+                    "Swagger API Docs"
+                ),
+                MuiMenuItem(
+                    id = "About",
+                    onClick = { (e: ReactEvent) =>
+                      handleHelpClose()
+                      callbackPage(About).runNow()
+                    }
+                )(
+                    "About"
                 )
             )
           ),
@@ -296,18 +395,18 @@ object HomePage {
                   }
                 )
               ),
-              <.tr(
-                <.td(
-                      {
-                        val location = document.defaultView.location
-                        val origin = location.origin.get
-                        val path = s"""${origin}/help/introduction.html"""
-                        HelpButton( path,
-                                    style = Some(rootStyles.playButton)
-                                  )
-                      }
-                )
-              )
+//              <.tr(
+//                <.td(
+//                      {
+//                        val location = document.defaultView.location
+//                        val origin = location.origin.get
+//                        val path = s"""${origin}/help/introduction.html"""
+//                        HelpButton( path,
+//                                    style = Some(rootStyles.playButton)
+//                                  )
+//                      }
+//                )
+//              )
             )
           )
         ),
@@ -396,12 +495,12 @@ object HomePage {
                 )
               ),
               <.tr(
-                <.td( ^.width:="25%",
-                  AppButton( "About", "About",
-                             rootStyles.playButton,
-                             ^.disabled:=isWorking,
-                             ^.onClick --> callbackPage(About))
-                ),
+//                <.td( ^.width:="25%",
+//                  AppButton( "About", "About",
+//                             rootStyles.playButton,
+//                             ^.disabled:=isWorking,
+//                             ^.onClick --> callbackPage(About))
+//                ),
                 <.td( ^.width:="25%",
                   AppButton( "Info", "Info",
                              rootStyles.playButton,
@@ -434,28 +533,28 @@ object HomePage {
                 <.td(" ")
               ),
               <.tr(
-                <.td( ^.width:="25%",
-                  {
-                    val location = document.defaultView.location
-                    val origin = location.origin.get
-                    val path = s"""${origin}/v1/docs"""
-                    AppButtonLink( "SwaggerDocs", "Swagger Docs", path,
-                                   rootStyles.playButton,
-                                   ^.disabled:=isWorking
-                    )
-                  }
-                ),
-                <.td( ^.width:="25%",
-                  {
-                    val location = document.defaultView.location
-                    val origin = location.origin.get
-                    val path = s"""${origin}/public/apidocs.html"""
-                    AppButtonLink( "SwaggerDocs2", "Swagger API Docs", path,
-                                   rootStyles.playButton,
-                                   ^.disabled:=isWorking
-                    )
-                  }
-                ),
+//                <.td( ^.width:="25%",
+//                  {
+//                    val location = document.defaultView.location
+//                    val origin = location.origin.get
+//                    val path = s"""${origin}/v1/docs"""
+//                    AppButtonLink( "SwaggerDocs", "Swagger Docs", path,
+//                                   rootStyles.playButton,
+//                                   ^.disabled:=isWorking
+//                    )
+//                  }
+//                ),
+//                <.td( ^.width:="25%",
+//                  {
+//                    val location = document.defaultView.location
+//                    val origin = location.origin.get
+//                    val path = s"""${origin}/public/apidocs.html"""
+//                    AppButtonLink( "SwaggerDocs2", "Swagger API Docs", path,
+//                                   rootStyles.playButton,
+//                                   ^.disabled:=isWorking
+//                    )
+//                  }
+//                ),
                 <.td( ^.width:="25%",
                   AppButton( "Voyager", "Voyager",
                              rootStyles.playButton,

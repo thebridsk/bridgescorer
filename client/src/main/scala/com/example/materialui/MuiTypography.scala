@@ -12,7 +12,11 @@ import scala.language.implicitConversions
 
 import js._
 
-class TextAlign( val value: String ) extends AnyVal
+class TextAlign( val value: String ) extends AnyVal {
+  override
+  def toString() = value
+}
+
 object TextAlign {
   val inherit = new TextAlign("inherit")
   val left = new TextAlign("left")
@@ -21,11 +25,13 @@ object TextAlign {
   val justify = new TextAlign("justify")
 
   val default = inherit
-
-  implicit def wrapHorizontal( v: TextAlign ) = js.Object( v.value )
 }
 
-class TextVariant( val value: String ) extends AnyVal
+class TextVariant( val value: String ) extends AnyVal {
+  override
+  def toString() = value
+}
+
 object TextVariant {
   val h1 = new TextVariant("h1")
   val h2 = new TextVariant("h2")
@@ -56,11 +62,13 @@ object TextVariant {
   val title = new TextVariant("title")
   @deprecated("use h3", "0.1")
   val subheading = new TextVariant("subheading")
-
-  implicit def wrapHorizontal( v: TextVariant ) = js.Object( v.value )
 }
 
-class TextColor( val value: String ) extends AnyVal
+class TextColor( val value: String ) extends AnyVal {
+  override
+  def toString() = value
+}
+
 object TextColor {
   val default = new TextColor("default")
   val error = new TextColor("error")
@@ -69,8 +77,6 @@ object TextColor {
   val secondary = new TextColor("secondary")
   val textPrimary = new TextColor("textPrimary")
   val textSecondary = new TextColor("textSecondary")
-
-  implicit def wrapHorizontal( v: TextColor ) = js.Object( v.value )
 }
 
 import js._
@@ -129,17 +135,17 @@ object TypographyProps {
 
   ) = {
 
-    align.foreach(p.updateDynamic("action")(_))
+    align.foreach( v => p.updateDynamic("action")(v.toString()))
     classes.foreach(p.updateDynamic("classes")(_))
     className.foreach(p.updateDynamic("className")(_))
-    color.foreach(p.updateDynamic("color")(_))
+    color.foreach( v => p.updateDynamic("color")(v.toString))
     component.foreach(p.updateDynamic("component")(_))
     gutterBottom.foreach(p.updateDynamic("gutterBottom")(_))
     headlineMapping.foreach(p.updateDynamic("headlineMapping")(_))
     inline.foreach(p.updateDynamic("inline")(_))
     nowrap.foreach(p.updateDynamic("nowrap")(_))
     paragraph.foreach(p.updateDynamic("paragraph")(_))
-    variant.foreach(p.updateDynamic("variant")(_))
+    variant.foreach( v => p.updateDynamic("variant")(v.toString))
 
     val r = p.asInstanceOf[TypographyProps]
 

@@ -48,6 +48,7 @@ object MuiIconButton {
      * @param type Used to control the button's purpose. This property passes the value to the type attribute of the native
      *              button component. Valid property values include button, submit, and reset.
      *              Default: "button"
+     * @param id the value of the id attribute
      */
     def set(
         pb: js.Object with js.Dynamic,
@@ -72,7 +73,8 @@ object MuiIconButton {
         `type`: js.UndefOr[String] = js.undefined,
 
         onClick: js.UndefOr[ReactEvent => Unit] = js.undefined,
-        style: js.UndefOr[js.Object] = js.undefined
+        style: js.UndefOr[js.Object] = js.undefined,
+        id: js.UndefOr[String] = js.undefined
     ): js.Object with js.Dynamic = {
       val p = MuiButtonBase.set(
                  pb,
@@ -90,7 +92,8 @@ object MuiIconButton {
                  TouchRippleProps,
                  `type`,
                  onClick,
-                 style
+                 style,
+                 id
                )
 
       color.foreach(c =>  p.updateDynamic("color")(c.value) )
@@ -133,6 +136,7 @@ object MuiIconButton {
      * @param type Used to control the button's purpose. This property passes the value to the type attribute of the native
      *              button component. Valid property values include button, submit, and reset.
      *              Default: "button"
+     * @param id the value of the id attribute
      */
     def apply(
         classes:  js.UndefOr[js.Object] = js.undefined,
@@ -156,7 +160,8 @@ object MuiIconButton {
         `type`: js.UndefOr[String] = js.undefined,
 
         onClick: js.UndefOr[ReactEvent => Unit] = js.undefined,
-        style: js.UndefOr[js.Object] = js.undefined
+        style: js.UndefOr[js.Object] = js.undefined,
+        id: js.UndefOr[String] = js.undefined
     )(
         children: CtorType.ChildArg*
     ) = {
@@ -178,7 +183,8 @@ object MuiIconButton {
                   TouchRippleProps,
                   `type`,
                   onClick,
-                  style
+                  style,
+                  id
               )
       val x = f(p) _
       x(children)

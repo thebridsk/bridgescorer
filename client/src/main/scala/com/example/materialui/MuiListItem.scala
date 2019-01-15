@@ -43,6 +43,7 @@ object MuiListItem {
      *                 Default: false
      * @param selected Use to apply selected styling.
      *                  Default: false
+     * @param id the id attribute value of the element
      */
     def set(
         p: js.Object with js.Dynamic,
@@ -57,6 +58,7 @@ object MuiListItem {
         disableGutters: js.UndefOr[Boolean] = js.undefined,
         divider: js.UndefOr[Boolean] = js.undefined,
         selected: js.UndefOr[Boolean] = js.undefined,
+        id: js.UndefOr[String] = js.undefined
     ): js.Object with js.Dynamic = {
       alignItems.foreach(v => p.updateDynamic("alignItems")(v.value))
       button.foreach(p.updateDynamic("button")(_))
@@ -69,6 +71,7 @@ object MuiListItem {
       disableGutters.foreach(p.updateDynamic("disableGutters")(_))
       divider.foreach(p.updateDynamic("divider")(_))
       selected.foreach(p.updateDynamic("selected")(_))
+      id.foreach(p.updateDynamic("id")(_))
 
       p
     }
@@ -95,6 +98,7 @@ object MuiListItem {
      *                 Default: false
      * @param selected Use to apply selected styling.
      *                  Default: false
+     * @param id the id attribute value of the element
      * @param children
      */
     def apply(
@@ -108,7 +112,8 @@ object MuiListItem {
         disabled: js.UndefOr[Boolean] = js.undefined,
         disableGutters: js.UndefOr[Boolean] = js.undefined,
         divider: js.UndefOr[Boolean] = js.undefined,
-        selected: js.UndefOr[Boolean] = js.undefined
+        selected: js.UndefOr[Boolean] = js.undefined,
+        id: js.UndefOr[String] = js.undefined
     )(
         children: CtorType.ChildArg*
     ) = {
@@ -124,7 +129,8 @@ object MuiListItem {
                   disabled,
                   disableGutters,
                   divider,
-                  selected
+                  selected,
+                  id
               )
       val x = f(p) _
       x(children)
