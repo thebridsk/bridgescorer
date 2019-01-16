@@ -72,6 +72,8 @@ import com.example.materialui.Style
 import scala.scalajs.js.annotation.JSExportTopLevel
 import scala.scalajs.js.annotation.JSExport
 import japgolly.scalajs.react.vdom.HtmlStyles
+import com.example.materialui.MuiMenuList
+import com.example.materialui.component.MyMenu
 
 /**
  * @author werewolf
@@ -173,7 +175,10 @@ object HomePage {
     def handleMainClose( /* event: js.Object, reason: String */ ) = scope.modState(s => s.closeMainMenu()).runNow()
 
     def handleHelpClick( event: ReactEvent ) = event.extract(_.currentTarget)(currentTarget => scope.modState(s => s.openHelpMenu(currentTarget)).runNow() )
-    def handleHelpClose( /* event: js.Object, reason: String */ ) = scope.modState(s => s.closeHelpMenu()).runNow()
+    def handleHelpClose( /* event: js.Object, reason: String */ ) = {
+      logger.fine("HelpClose called")
+      scope.modState(s => s.closeHelpMenu()).runNow()
+    }
 
     def gotoPage( uri: String ) = {
       val location = document.defaultView.location
@@ -184,7 +189,15 @@ object HomePage {
     }
 
     def handleHelpGotoPageClick(uri: String)( event: ReactEvent ) = {
+      logger.info(s"""Going to page ${uri}""")
+      handleHelpClose()
 
+      gotoPage(uri)
+    }
+
+    def handleHelpGotoPageClickSwaggerAPI( event: ReactEvent ) = {
+      val uri = "/public/apidocs.html"
+      logger.info(s"""Going to page ${uri}""")
       handleHelpClose()
 
       gotoPage(uri)
@@ -276,10 +289,14 @@ object HomePage {
 //            )("Hello world"),
 
             // Main menu
-            MuiMenu(
+//            MuiMenu(
+//                anchorEl=state.anchorMainEl,
+//                open= state.anchorMainEl.isDefined,
+//                onClose = handleMainClose _
+//            )(
+            MyMenu(
                 anchorEl=state.anchorMainEl,
-                open= state.anchorMainEl.isDefined,
-                onClose = handleMainClose _
+                onClickAway = handleMainClose _
             )(
                 MuiMenuItem(
                     onClick = handleMainCloseClick _
@@ -299,10 +316,14 @@ object HomePage {
             ),
 
             // help menu
-            MuiMenu(
+//            MuiMenu(
+//                anchorEl=state.anchorHelpEl,
+//                open= state.anchorHelpEl.isDefined,
+//                onClose = handleHelpClose _
+//            )(
+            MyMenu(
                 anchorEl=state.anchorHelpEl,
-                open= state.anchorHelpEl.isDefined,
-                onClose = handleHelpClose _
+                onClickAway = handleHelpClose _
             )(
                 MuiMenuItem(
                     id = "Help",
@@ -319,6 +340,7 @@ object HomePage {
                 MuiMenuItem(
                     id = "SwaggerDocs2",
                     onClick = handleHelpGotoPageClick("/public/apidocs.html") _
+//                    onClick = handleHelpGotoPageClickSwaggerAPI _
                 )(
                     "Swagger API Docs"
                 ),
