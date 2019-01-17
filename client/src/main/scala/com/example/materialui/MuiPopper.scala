@@ -11,6 +11,9 @@ import org.scalajs.dom.raw.Element
 
 class PopperPlacement( val value: String ) extends AnyVal
 object PopperPlacement {
+  val autoEnd = new PopperPlacement("auto-end")
+  val autoStart = new PopperPlacement("auto-start")
+  val auto = new PopperPlacement("auto")
   val bottomEnd = new PopperPlacement("bottom-end")
   val bottomStart = new PopperPlacement("bottom-start")
   val bottom = new PopperPlacement("bottom")

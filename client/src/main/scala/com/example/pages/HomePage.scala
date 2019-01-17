@@ -74,6 +74,8 @@ import scala.scalajs.js.annotation.JSExport
 import japgolly.scalajs.react.vdom.HtmlStyles
 import com.example.materialui.MuiMenuList
 import com.example.materialui.component.MyMenu
+import com.example.materialui.PopperPlacement
+import com.example.routes.AppRouter
 
 /**
  * @author werewolf
@@ -91,6 +93,7 @@ object HomePage {
       fastclickTest: Boolean,
       userSelect: Boolean = false,
       anchorMainEl: js.UndefOr[Element] = js.undefined,
+      anchorMainTestHandEl: js.UndefOr[Element] = js.undefined,
       anchorHelpEl: js.UndefOr[Element] = js.undefined
   ) {
 
@@ -98,7 +101,10 @@ object HomePage {
     def closeHelpMenu() = copy( anchorHelpEl = js.undefined )
 
     def openMainMenu( n: Node ) = copy( anchorMainEl = n.asInstanceOf[Element] )
-    def closeMainMenu() = copy( anchorMainEl = js.undefined )
+    def closeMainMenu() = copy( anchorMainEl = js.undefined, anchorMainTestHandEl = js.undefined )
+
+    def openMainTestHandMenu( n: Node ) = copy( anchorMainTestHandEl = n.asInstanceOf[Element] )
+    def closeMainTestHandMenu() = copy( anchorMainTestHandEl = js.undefined )
 
   }
 
@@ -172,7 +178,16 @@ object HomePage {
 
     def handleMainClick( event: ReactEvent ) = event.extract(_.currentTarget)(currentTarget => scope.modState(s => s.openMainMenu(currentTarget)).runNow() )
     def handleMainCloseClick( event: ReactEvent ) = scope.modState(s => s.closeMainMenu()).runNow()
-    def handleMainClose( /* event: js.Object, reason: String */ ) = scope.modState(s => s.closeMainMenu()).runNow()
+    def handleMainClose( /* event: js.Object, reason: String */ ) = {
+      logger.fine(s"""Closing main menu""")
+      scope.modStateOption { s =>
+        if (s.anchorMainTestHandEl.isDefined) {
+          None
+        } else {
+          Some(s.closeMainMenu())
+        }
+      }.runNow()
+    }
 
     def handleHelpClick( event: ReactEvent ) = event.extract(_.currentTarget)(currentTarget => scope.modState(s => s.openHelpMenu(currentTarget)).runNow() )
     def handleHelpClose( /* event: js.Object, reason: String */ ) = {
@@ -186,6 +201,26 @@ object HomePage {
       val helppath = s"""${origin}${uri}"""
 
       AppButtonLinkNewWindow.topage(helppath)
+    }
+
+    def gotoView( page: AppRouter.AppPage ): Unit = {
+      logger.fine(s"""GotoView $page""")
+      scope.withEffectsImpure.modState { (s,p) =>
+        s.closeMainMenu()
+      }
+      scope.withEffectsImpure.props.routeCtl.set(page).runNow()
+    }
+
+    def gotoViewShowDuplicateHand(event: ReactEvent): Unit = {
+      gotoView(ShowDuplicateHand)
+    }
+
+    def gotoViewShowChicagoHand(event: ReactEvent): Unit = {
+      gotoView(ShowChicagoHand)
+    }
+
+    def gotoViewShowRubberHand(event: ReactEvent): Unit = {
+      gotoView(ShowRubberHand)
     }
 
     def handleHelpGotoPageClick(uri: String)( event: ReactEvent ) = {
@@ -203,9 +238,43 @@ object HomePage {
       gotoPage(uri)
     }
 
+    def handleTestHandClick( event: ReactEvent ) = event.extract(
+                                                       _.currentTarget
+                                                   )(
+                                                       currentTarget => scope.modState( s =>
+                                                         s.openMainTestHandMenu(currentTarget)).runNow()
+                                                   )
+    def handleMainTestHandClose( /* event: js.Object, reason: String */ ) = scope.modState(s => s.closeMainTestHandMenu()).runNow()
+    def handleMainTestHandCloseClick( event: ReactEvent ) = scope.modState(s => s.closeMainTestHandMenu()).runNow()
+
     def render( props: Props, state: State ) = {
       import BaseStyles._
+
       def callbackPage(page: AppPage) = props.routeCtl.set(page)
+
+//      def gotoView( page: AppRouter.AppPage ): Unit = {
+//        logger.fine(s"""GotoView $page""")
+//        scope.withEffectsImpure.modState { (s,p) =>
+//          s.closeMainMenu()
+//        }
+//        import scalajs.js.timers.setTimeout
+//        setTimeout(1) {
+//          props.routeCtl.set(page).runNow()
+//        }
+//      }
+//
+//      def gotoViewShowDuplicateHand(event: ReactEvent): Unit = {
+//        gotoView(ShowDuplicateHand)
+//      }
+//
+//      def gotoViewShowChicagoHand(event: ReactEvent): Unit = {
+//        gotoView(ShowChicagoHand)
+//      }
+//
+//      def gotoViewShowRubberHand(event: ReactEvent): Unit = {
+//        gotoView(ShowRubberHand)
+//      }
+
       val doingWork = state.working.getOrElse("")
       val isWorking = state.working.isDefined
 
@@ -281,27 +350,16 @@ object HomePage {
                     )
                 )
             ),
-//            MuiButton(
-//                color = ColorVariant.default,
-//                variant = Variant.contained,
-//                onClick = handleClick _,
-//                style = ButtonStyle.buttonStyle
-//            )("Hello world"),
 
             // Main menu
-//            MuiMenu(
-//                anchorEl=state.anchorMainEl,
-//                open= state.anchorMainEl.isDefined,
-//                onClose = handleMainClose _
-//            )(
             MyMenu(
                 anchorEl=state.anchorMainEl,
                 onClickAway = handleMainClose _
             )(
                 MuiMenuItem(
-                    onClick = handleMainCloseClick _
+                    onClick = handleTestHandClick _
                 )(
-                    "Profile"
+                    "Test Hands"
                 ),
                 MuiMenuItem(
                     onClick = handleMainCloseClick _
@@ -312,6 +370,28 @@ object HomePage {
                     onClick = handleMainCloseClick _
                 )(
                     "Logout"
+                )
+            ),
+
+            MyMenu(
+                anchorEl=state.anchorMainTestHandEl,
+                onClickAway = handleMainTestHandClose _,
+                placement = PopperPlacement.rightStart
+            )(
+                MuiMenuItem(
+                    onClick = gotoViewShowDuplicateHand _
+                )(
+                    "Duplicate"
+                ),
+                MuiMenuItem(
+                    onClick = gotoViewShowChicagoHand _
+                )(
+                    "Chicago"
+                ),
+                MuiMenuItem(
+                    onClick = gotoViewShowRubberHand _
+                )(
+                    "Rubber"
                 )
             ),
 
@@ -434,31 +514,31 @@ object HomePage {
         ),
         <.div(
           rootStyles.testHandsDiv,
-          <.h1("Test Hands"),
-          <.table(
-            <.tbody(
-              <.tr(
-                <.td( ^.width:="33%",
-                  AppButton( "TestDuplicateHand",  "Duplicate",
-                             rootStyles.playButton,
-                             ^.disabled:=isWorking,
-                             ^.onClick --> callbackPage(ShowDuplicateHand))
-                ),
-                <.td( ^.width:="33%",
-                  AppButton( "TestChicagoHand", "Chicago",
-                             rootStyles.playButton,
-                             ^.disabled:=isWorking,
-                             ^.onClick --> callbackPage(ShowChicagoHand))
-                ),
-                <.td( ^.width:="33%",
-                  AppButton( "TestRubberHand", "Rubber",
-                             rootStyles.playButton,
-                             ^.disabled:=isWorking,
-                             ^.onClick --> callbackPage(ShowRubberHand))
-                )
-              )
-            )
-          )
+//          <.h1("Test Hands"),
+//          <.table(
+//            <.tbody(
+//              <.tr(
+//                <.td( ^.width:="33%",
+//                  AppButton( "TestDuplicateHand",  "Duplicate",
+//                             rootStyles.playButton,
+//                             ^.disabled:=isWorking,
+//                             ^.onClick --> callbackPage(ShowDuplicateHand))
+//                ),
+//                <.td( ^.width:="33%",
+//                  AppButton( "TestChicagoHand", "Chicago",
+//                             rootStyles.playButton,
+//                             ^.disabled:=isWorking,
+//                             ^.onClick --> callbackPage(ShowChicagoHand))
+//                ),
+//                <.td( ^.width:="33%",
+//                  AppButton( "TestRubberHand", "Rubber",
+//                             rootStyles.playButton,
+//                             ^.disabled:=isWorking,
+//                             ^.onClick --> callbackPage(ShowRubberHand))
+//                )
+//              )
+//            )
+//          )
         ),
         <.div(
           rootStyles.miscDiv,
