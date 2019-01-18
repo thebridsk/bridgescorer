@@ -76,6 +76,8 @@ import com.example.materialui.MuiMenuList
 import com.example.materialui.component.MyMenu
 import com.example.materialui.PopperPlacement
 import com.example.routes.AppRouter
+import com.example.materialui.icons.MuiCheckIcon
+import com.example.materialui.icons.SvgColor
 
 /**
  * @author werewolf
@@ -161,7 +163,7 @@ object HomePage {
       newstate.copy(debugging = false, working=Some("Debugging not enabled"))
     }
 
-    val toggleUserSelect = scope.modState { s =>
+    val toggleUserSelect = { (event: ReactEvent) => scope.withEffectsImpure.modState { s =>
       val newstate = s.copy( userSelect = !s.userSelect )
       val style = Bridge.getElement("allowSelect")
       if (newstate.userSelect) {
@@ -174,7 +176,7 @@ object HomePage {
         style.innerHTML = ""
       }
       newstate
-    }
+    }}
 
     def handleMainClick( event: ReactEvent ) = event.extract(_.currentTarget)(currentTarget => scope.modState(s => s.openMainMenu(currentTarget)).runNow() )
     def handleMainCloseClick( event: ReactEvent ) = scope.modState(s => s.closeMainMenu()).runNow()
@@ -203,7 +205,7 @@ object HomePage {
       AppButtonLinkNewWindow.topage(helppath)
     }
 
-    def gotoView( page: AppRouter.AppPage ): Unit = {
+    def gotoView( page: AppRouter.AppPage ) = { (event: ReactEvent) =>
       logger.fine(s"""GotoView $page""")
       scope.withEffectsImpure.modState { (s,p) =>
         s.closeMainMenu()
@@ -211,16 +213,11 @@ object HomePage {
       scope.withEffectsImpure.props.routeCtl.set(page).runNow()
     }
 
-    def gotoViewShowDuplicateHand(event: ReactEvent): Unit = {
-      gotoView(ShowDuplicateHand)
-    }
+    def handleMainGotoPageClick(uri: String)( event: ReactEvent ) = {
+      logger.info(s"""Going to page ${uri}""")
+      handleMainClose()
 
-    def gotoViewShowChicagoHand(event: ReactEvent): Unit = {
-      gotoView(ShowChicagoHand)
-    }
-
-    def gotoViewShowRubberHand(event: ReactEvent): Unit = {
-      gotoView(ShowRubberHand)
+      gotoPage(uri)
     }
 
     def handleHelpGotoPageClick(uri: String)( event: ReactEvent ) = {
@@ -295,7 +292,7 @@ object HomePage {
                         onClick = handleMainClick _,
                         color=ColorVariant.inherit
                     )(
-                        MuiMenuIcon()
+                        MuiMenuIcon()()
                     ),
 //                    Style.withStyle(
 //                        Style(
@@ -346,7 +343,7 @@ object HomePage {
                         onClick = handleHelpClick _,
                         color=ColorVariant.inherit
                     )(
-                        MuiHelpIcon()
+                        MuiHelpIcon()()
                     )
                 )
             ),
@@ -357,19 +354,88 @@ object HomePage {
                 onClickAway = handleMainClose _
             )(
                 MuiMenuItem(
-                    onClick = handleTestHandClick _
+                    onClick = handleTestHandClick _,
+                    classes = js.Dictionary("root" -> "mainMenuItem").asInstanceOf[js.Object]
                 )(
                     "Test Hands"
                 ),
+                {
+                  val location = document.defaultView.location
+                  val origin = location.origin.get
+                  val path = location.pathname
+                  val (newp,color) = if (path.indexOf("indexNoScale") >= 0) {
+                    ("""/public/index.html""", SvgColor.disabled)
+                  } else {
+                    ("""/public/indexNoScale.html""", SvgColor.inherit)
+                  }
+                  val newpath = if (path.endsWith(".gz")) {
+                    s"""${newp}.gz"""
+                  } else {
+                    newp
+                  }
+                  MuiMenuItem(
+                      id = "NoScaling",
+                      onClick = handleMainGotoPageClick(newp) _,
+                      classes = js.Dictionary("root" -> "mainMenuItem").asInstanceOf[js.Object]
+
+                  )(
+                      "Scaling ",
+                      MuiCheckIcon(
+                          color=color,
+                          classes = js.Dictionary("root" -> "mainMenuItemIcon").asInstanceOf[js.Object]
+                      )()
+                  )
+                },
                 MuiMenuItem(
-                    onClick = handleMainCloseClick _
+                    id = "Info",
+                    onClick = gotoView(Info)
                 )(
-                    "My account"
+                    "Info"
                 ),
                 MuiMenuItem(
-                    onClick = handleMainCloseClick _
+                    id = "UserSelect",
+                    onClick = toggleUserSelect,
+                    classes = js.Dictionary("root" -> "mainMenuItem").asInstanceOf[js.Object]
+
                 )(
-                    "Logout"
+                    "Allow Select",
+                    {
+                      val color = if (state.userSelect) SvgColor.inherit else SvgColor.disabled
+                      MuiCheckIcon(
+                          color=color,
+                          classes = js.Dictionary("root" -> "mainMenuItemIcon").asInstanceOf[js.Object]
+                      )()
+                    }
+                ),
+                MuiMenuItem(
+                    id = "TestPage",
+                    onClick = gotoView(PageTest)
+                )(
+                    "Test Page"
+                ),
+                MuiMenuItem(
+                    id = "Voyager",
+                    onClick = gotoView(VoyagerView)
+                )(
+                    "Voyager"
+                ),
+                MuiMenuItem(
+                    id = "GraphiQL",
+                    onClick = gotoView(GraphiQLView)
+                )(
+                    "GraphiQL"
+                ),
+                MuiMenuItem(
+                    id = "GraphQL",
+                    onClick = gotoView(GraphQLAppPage)
+                )(
+                    "GraphQL"
+                ),
+                MuiMenuItem(
+                    id = "Color",
+                    onClick = gotoView(ColorView)
+                )(
+                    "Color"
                 )
             ),
 
@@ -379,28 +445,23 @@ object HomePage {
                 placement = PopperPlacement.rightStart
             )(
                 MuiMenuItem(
-                    onClick = gotoViewShowDuplicateHand _
+                    onClick = gotoView(ShowDuplicateHand)
                 )(
                     "Duplicate"
                 ),
                 MuiMenuItem(
-                    onClick = gotoViewShowChicagoHand _
+                    onClick = gotoView(ShowChicagoHand)
                 )(
                     "Chicago"
                 ),
                 MuiMenuItem(
-                    onClick = gotoViewShowRubberHand _
+                    onClick = gotoView(ShowRubberHand)
                 )(
                     "Rubber"
                 )
             ),
 
             // help menu
-//            MuiMenu(
-//                anchorEl=state.anchorHelpEl,
-//                open= state.anchorHelpEl.isDefined,
-//                onClose = handleHelpClose _
-//            )(
             MyMenu(
                 anchorEl=state.anchorHelpEl,
                 onClickAway = handleHelpClose _
@@ -420,7 +481,6 @@ object HomePage {
                 MuiMenuItem(
                     id = "SwaggerDocs2",
                     onClick = handleHelpGotoPageClick("/public/apidocs.html") _
-//                    onClick = handleHelpGotoPageClickSwaggerAPI _
                 )(
                     "Swagger API Docs"
                 ),
@@ -496,49 +556,12 @@ object HomePage {
                     )
                   }
                 )
-              ),
-//              <.tr(
-//                <.td(
-//                      {
-//                        val location = document.defaultView.location
-//                        val origin = location.origin.get
-//                        val path = s"""${origin}/help/introduction.html"""
-//                        HelpButton( path,
-//                                    style = Some(rootStyles.playButton)
-//                                  )
-//                      }
-//                )
-//              )
+              )
             )
           )
         ),
         <.div(
           rootStyles.testHandsDiv,
-//          <.h1("Test Hands"),
-//          <.table(
-//            <.tbody(
-//              <.tr(
-//                <.td( ^.width:="33%",
-//                  AppButton( "TestDuplicateHand",  "Duplicate",
-//                             rootStyles.playButton,
-//                             ^.disabled:=isWorking,
-//                             ^.onClick --> callbackPage(ShowDuplicateHand))
-//                ),
-//                <.td( ^.width:="33%",
-//                  AppButton( "TestChicagoHand", "Chicago",
-//                             rootStyles.playButton,
-//                             ^.disabled:=isWorking,
-//                             ^.onClick --> callbackPage(ShowChicagoHand))
-//                ),
-//                <.td( ^.width:="33%",
-//                  AppButton( "TestRubberHand", "Rubber",
-//                             rootStyles.playButton,
-//                             ^.disabled:=isWorking,
-//                             ^.onClick --> callbackPage(ShowRubberHand))
-//                )
-//              )
-//            )
-//          )
         ),
         <.div(
           rootStyles.miscDiv,
@@ -546,27 +569,6 @@ object HomePage {
           <.table(
             <.tbody(
               <.tr(
-                <.td( ^.width:="25%",
-                  {
-                    val location = document.defaultView.location
-                    val origin = location.origin.get
-                    val path = location.pathname
-                    val (newp,name) = if (path.indexOf("indexNoScale") >= 0) {
-                      (s"""${origin}/public/index.html""", "Scaling")
-                    } else {
-                      (s"""${origin}/public/indexNoScale.html""", "No Scaling")
-                    }
-                    val newpath = if (path.endsWith(".gz")) {
-                      s"""${newp}.gz"""
-                    } else {
-                      newp
-                    }
-                    AppButtonLink( "NoScaling", name, newpath,
-                                   rootStyles.playButton,
-                                   ^.disabled:=isWorking
-                    )
-                  }
-                ),
                 <.td( ^.width:="25%",
                   {
                     AppButton(
@@ -597,93 +599,8 @@ object HomePage {
                 )
               ),
               <.tr(
-//                <.td( ^.width:="25%",
-//                  AppButton( "About", "About",
-//                             rootStyles.playButton,
-//                             ^.disabled:=isWorking,
-//                             ^.onClick --> callbackPage(About))
-//                ),
-                <.td( ^.width:="25%",
-                  AppButton( "Info", "Info",
-                             rootStyles.playButton,
-                             ^.disabled:=isWorking,
-                             ^.onClick --> callbackPage(Info))
-                ),
-//                <.td( ^.width:="25%",
-//                  AppButton( "Debug", "Debug",
-//                             rootStyles.playButton,
-//                             ^.disabled:=true,   // isWorking,
-//                             ^.onClick --> toggleDebug,
-//                             BaseStyles.highlight(selected = debugging )
-//                  )
-//                ),
-                <.td( ^.width:="25%",
-                  AppButton( "UserSelect", "Allow Select",
-                             rootStyles.playButton,
-                             ^.onClick --> toggleUserSelect,
-                             BaseStyles.highlight(selected = state.userSelect )
-                  )
-                ),
-                <.td( ^.width:="25%",
-                  AppButton( "TestPage", "Test Page",
-                             rootStyles.playButton,
-                             ^.disabled:=isWorking,
-                             ^.onClick --> callbackPage(PageTest))
-                )
-              ),
-              <.tr(
                 <.td(" ")
               ),
-              <.tr(
-//                <.td( ^.width:="25%",
-//                  {
-//                    val location = document.defaultView.location
-//                    val origin = location.origin.get
-//                    val path = s"""${origin}/v1/docs"""
-//                    AppButtonLink( "SwaggerDocs", "Swagger Docs", path,
-//                                   rootStyles.playButton,
-//                                   ^.disabled:=isWorking
-//                    )
-//                  }
-//                ),
-//                <.td( ^.width:="25%",
-//                  {
-//                    val location = document.defaultView.location
-//                    val origin = location.origin.get
-//                    val path = s"""${origin}/public/apidocs.html"""
-//                    AppButtonLink( "SwaggerDocs2", "Swagger API Docs", path,
-//                                   rootStyles.playButton,
-//                                   ^.disabled:=isWorking
-//                    )
-//                  }
-//                ),
-                <.td( ^.width:="25%",
-                  AppButton( "Voyager", "Voyager",
-                             rootStyles.playButton,
-                             ^.disabled:=isWorking,
-                             ^.onClick --> callbackPage(VoyagerView))
-                ),
-                <.td( ^.width:="25%",
-                  AppButton( "GraphiQL", "GraphiQL",
-                             rootStyles.playButton,
-                             ^.disabled:=isWorking,
-                             ^.onClick --> callbackPage(GraphiQLView))
-                )
-              ),
-              <.tr(
-                <.td( ^.width:="25%",
-                  AppButton( "GraphQL", "GraphQL",
-                             rootStyles.playButton,
-                             ^.disabled:=isWorking,
-                             ^.onClick --> callbackPage(GraphQLAppPage))
-                ),
-                <.td( ^.width:="25%",
-                  AppButton( "Color", "Color",
-                             rootStyles.playButton,
-                             ^.disabled:=isWorking,
-                             ^.onClick --> callbackPage(ColorView))
-                )
-              )
             )
           )
         )

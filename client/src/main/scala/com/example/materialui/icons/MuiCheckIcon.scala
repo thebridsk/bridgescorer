@@ -9,9 +9,9 @@ import scala.scalajs.js.annotation._
 import org.scalajs.dom.raw.Element
 import org.scalajs.dom.raw.Node
 
-object MuiHelpIcon extends SvgIconBase {
+object MuiCheckIcon extends SvgIconBase {
 
-  @js.native @JSImport("@material-ui/icons/Help", JSImport.Default)
+  @js.native @JSImport("@material-ui/icons/Check", JSImport.Default)
   private object icon extends js.Any
 
   protected val f = JsComponent[js.Object, Children.Varargs, Null](icon)

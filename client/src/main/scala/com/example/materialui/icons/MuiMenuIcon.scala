@@ -9,19 +9,11 @@ import scala.scalajs.js.annotation._
 import org.scalajs.dom.raw.Element
 import org.scalajs.dom.raw.Node
 
-object MuiMenuIcon {
+object MuiMenuIcon extends SvgIconBase {
 
   @js.native @JSImport("@material-ui/icons/Menu", JSImport.Default)
   private object icon extends js.Any
 
-  private val f = JsComponent[js.Object, Children.None, Null](icon)
-
-  import js._
-
-  def apply() = {
-    val p = js.Object()
-
-    f(p)
-  }
+  protected val f = JsComponent[js.Object, Children.Varargs, Null](icon)
 
 }
