@@ -13,6 +13,7 @@ import com.example.test.pages.GenericPage
 import com.example.test.pages.duplicate.ListDuplicatePage
 import com.example.test.pages.duplicate.NewDuplicatePage
 import com.example.test.pages.chicago.ListPage
+import com.example.test.pages.Element
 
 object HomePage {
 
@@ -70,6 +71,21 @@ class HomePage( implicit webDriver: WebDriver, pageCreated: SourcePosition ) ext
   def clickExport( implicit pos: Position ) = {
     clickButton("Export")
     new ExportPage
+  }
+
+  def clickHelpMenu( implicit pos: Position ) = {
+    clickButton("HelpMenu")
+    new HomePage
+  }
+
+  def isHelpMenuVisible( implicit pos: Position ) = {
+    try {
+      val we = findElem[Element]( id("Help") )
+      true
+    } catch {
+      case x: Exception => false
+    }
+
   }
 
   def clickHelp( implicit pos: Position ) = {
