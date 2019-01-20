@@ -35,30 +35,93 @@ object AnchorOriginVerticalValue {
 import js._
 
 @js.native
-trait AnchorOrigin extends js.Object {
-    var horizontal: js.UndefOr[JsNumber|AnchorOriginHorizontalValue] = js.native
-    var vertical: js.UndefOr[JsNumber|AnchorOriginHorizontalValue] = js.native
+protected trait AnchorOriginPrivate extends js.Object {
+    @JSName("horizontal")
+    var horizontalInternal: js.UndefOr[JsNumber|String] = js.native
+    @JSName("vertical")
+    var verticalInternal: js.UndefOr[JsNumber|String] = js.native
+}
+
+@js.native
+trait AnchorOrigin extends js.Object with AnchorOriginPrivate {
+
 }
 
 object AnchorOrigin {
+
+  implicit class WrapAnchorOrigin( val p: AnchorOrigin ) extends AnyVal {
+
+    def horizontal = p.horizontalInternal.map { v =>
+      val r: JsNumber|AnchorOriginHorizontalValue =
+        if (js.typeOf(v.asInstanceOf[js.Any])=="string") {
+          val s: String = v.asInstanceOf[String]
+          new AnchorOriginHorizontalValue(s)
+        } else {
+          v.asInstanceOf[JsNumber|AnchorOriginHorizontalValue]
+        }
+      r
+    }
+
+    def horizontal_= (v: JsNumber) = {
+      p.horizontalInternal = v
+    }
+
+    def horizontal_= (v: AnchorOriginHorizontalValue) = {
+      p.horizontalInternal = v.value
+    }
+
+    def vertical = p.verticalInternal.map { v =>
+      val r: JsNumber|AnchorOriginVerticalValue =
+        if (js.typeOf(v.asInstanceOf[js.Any])=="string") {
+          val s: String = v.asInstanceOf[String]
+          new AnchorOriginVerticalValue(s)
+        } else {
+          v.asInstanceOf[JsNumber|AnchorOriginVerticalValue]
+        }
+      r
+    }
+
+    def vertical_= (v: JsNumber) = {
+      p.verticalInternal = v
+    }
+
+    def vertical_= (v: AnchorOriginVerticalValue) = {
+      p.verticalInternal = v.value
+    }
+
+  }
+
   def apply(
            horizontal: js.UndefOr[JsNumber|AnchorOriginHorizontalValue],
-           vertical: js.UndefOr[JsNumber|AnchorOriginHorizontalValue]
+           vertical: js.UndefOr[JsNumber|AnchorOriginVerticalValue]
       ) = {
-    val p = js.Dynamic.literal()
+    val p = new js.Object().asInstanceOf[ AnchorOrigin ]
 
-    val r = p.asInstanceOf[AnchorOrigin]
+    horizontal.foreach { v =>
+        if (js.typeOf(v.asInstanceOf[js.Any])=="number") {
+          val n = v.asInstanceOf[JsNumber]
+          p.horizontal = n
+        } else {
+          p.horizontal = v.asInstanceOf[AnchorOriginHorizontalValue]
+        }
+    }
+    vertical.foreach { v =>
+        if (js.typeOf(v.asInstanceOf[js.Any])=="number") {
+          val n = v.asInstanceOf[JsNumber]
+          p.vertical = n
+        } else {
+          p.vertical = v.asInstanceOf[AnchorOriginVerticalValue]
+        }
+    }
 
-    horizontal.foreach( r.horizontal = _)
-    vertical.foreach( r.vertical = _)
-    r
+    p
   }
 }
 
 @js.native
 trait AnchorPosition extends js.Object {
-    val left: js.UndefOr[Double]
-    val right: js.UndefOr[Double]
+    var left: js.UndefOr[Double] = js.native
+    var right: js.UndefOr[Double] = js.native
 }
 object AnchorPosition {
   def apply(
@@ -80,31 +143,72 @@ object AnchorReference {
 }
 
 @js.native
-trait PopoverProps extends ModalProps {
-  import js._
-  val action: js.UndefOr[js.Function1[js.Object,Unit]] = js.native
-  var anchorEl: js.UndefOr[ js.Object | js.Function0[Element] ] = js.native
-  val anchorOrigin: js.UndefOr[AnchorOrigin] = js.native
-  val anchorPosition: js.UndefOr[AnchorPosition] = js.native
-  val anchorReference: js.UndefOr[AnchorReference] = js.native
-  val elevation: js.UndefOr[Double] = js.native
-  val getContentAnchorEl: js.UndefOr[js.Function0[js.Object]] = js.native
-  val marginThreshold: js.UndefOr[Double] = js.native
-  val modalClasses: js.UndefOr[ModalProps] = js.native
-  val onEnter: js.UndefOr[js.Function0[Unit]] = js.native
-  val onEntered: js.UndefOr[js.Function0[Unit]] = js.native
-  val onEntering: js.UndefOr[js.Function0[Unit]] = js.native
-  val onExit: js.UndefOr[js.Function0[Unit]] = js.native
-  val onExited: js.UndefOr[js.Function0[Unit]] = js.native
-  val onExiting: js.UndefOr[js.Function0[Unit]] = js.native
-  val paperProps: js.UndefOr[PaperProps] = js.native
-  val transformOrigin: js.UndefOr[js.Object] = js.native
-  val transitionComponent: js.UndefOr[js.Object] = js.native
-  var transitionDuration: js.UndefOr[JsNumber | TransitionDuration] = js.native
-  val transitionProps: js.UndefOr[js.Object] = js.native
+protected trait PopoverPropsPrivate extends js.Any {
+  @JSName("anchorEl")
+  var anchorElInternal: js.UndefOr[js.Any] = js.native
+  @JSName("anchorReference")
+  var anchorReferenceInternal: js.UndefOr[String] = js.native
+  @JSName("transitionDuration")
+  var transitionDurationInternal: js.UndefOr[js.Any] = js.native
 }
-object PopoverProps {
+
+@js.native
+trait PopoverProps extends ModalProps with PopoverPropsPrivate {
   import js._
+  var action: js.UndefOr[js.Object=>Unit] = js.native
+  var anchorOrigin: js.UndefOr[AnchorOrigin] = js.native
+  var anchorPosition: js.UndefOr[AnchorPosition] = js.native
+  var elevation: js.UndefOr[Double] = js.native
+  var getContentAnchorEl: js.UndefOr[()=>js.Object] = js.native
+  var marginThreshold: js.UndefOr[Double] = js.native
+  var modalClasses: js.UndefOr[ModalProps] = js.native
+  var onEnter: js.UndefOr[()=>Unit] = js.native
+  var onEntered: js.UndefOr[()=>Unit] = js.native
+  var onEntering: js.UndefOr[()=>Unit] = js.native
+  var onExit: js.UndefOr[()=>Unit] = js.native
+  var onExited: js.UndefOr[()=>Unit] = js.native
+  var onExiting: js.UndefOr[()=>Unit] = js.native
+  var paperProps: js.UndefOr[PaperProps] = js.native
+  var transformOrigin: js.UndefOr[js.Object] = js.native
+  var transitionComponent: js.UndefOr[js.Object] = js.native
+  var transitionProps: js.UndefOr[js.Object] = js.native
+
+//  var anchorEl: js.UndefOr[AnchorElement] = js.native
+//  var anchorReference: js.UndefOr[AnchorReference] = js.native
+//  var transitionDuration: js.UndefOr[JsNumber | TransitionDuration] = js.native
+}
+object PopoverProps extends PropsFactory[PopoverProps] {
+  import js._
+
+  implicit class WrapPopoverProps( val p: PopoverProps ) extends AnyVal {
+
+    def anchorReference = p.anchorReferenceInternal.map( s => new AnchorReference(s) )
+
+    def anchorReference_= (v: js.UndefOr[AnchorReference]): Unit = {
+      v.map{ vv=>p.anchorReferenceInternal=vv.value; None }.
+        orElse{ p.anchorReferenceInternal=js.undefined; None }
+    }
+
+    def anchorEl = p.anchorElInternal.map { v =>
+      v.asInstanceOf[AnchorElement]
+    }
+
+    def anchorEl_= (v: js.UndefOr[AnchorElement]): Unit = {
+      v.map{ vv=>p.anchorElInternal=vv.asInstanceOf[js.Any]; None }.
+        orElse{ p.anchorElInternal=js.undefined; None }
+    }
+
+    def transitionDuration = p.transitionDurationInternal.map { v =>
+      v.asInstanceOf[JsNumber | TransitionDuration]
+    }
+
+    def transitionDuration_= (v: js.UndefOr[JsNumber|TransitionDuration]): Unit = {
+      v.map{ vv=>p.transitionDurationInternal=vv.asInstanceOf[js.Any]; None }.
+        orElse{ p.transitionDurationInternal=js.undefined; None }
+    }
+
+  }
+
   /**
    * @param p the object that will become the properties object
    *
@@ -205,25 +309,26 @@ object PopoverProps {
    * @param onRendered Callback fired once the children has been mounted into the container.
    *                    It signals that the open={true} property took effect.
    * @param open If true, the modal is open.
+   * @param additionalProps a dictionary of additional properties
    */
-  def apply(
-      p: js.Object with js.Dynamic = js.Dynamic.literal(),
+  def apply[P <: PopoverProps](
+      props: js.UndefOr[P] = js.undefined,
 
-      action: js.UndefOr[js.Function1[js.Object,Unit]] = js.undefined,
-      anchorEl: js.UndefOr[ Element | js.Function0[Element] ] = js.undefined,
+      action: js.UndefOr[js.Object=>Unit] = js.undefined,
+      anchorEl: js.UndefOr[AnchorElement] = js.undefined,
       anchorOrigin: js.UndefOr[AnchorOrigin] = js.undefined,
       anchorPosition: js.UndefOr[AnchorPosition] = js.undefined,
       anchorReference: js.UndefOr[AnchorReference] = js.undefined,
       elevation: js.UndefOr[Double] = js.undefined,
-      getContentAnchorEl: js.UndefOr[js.Function0[js.Object]] = js.undefined,
+      getContentAnchorEl: js.UndefOr[()=>js.Object] = js.undefined,
       marginThreshold: js.UndefOr[Double] = js.undefined,
       modalClasses: js.UndefOr[ModalProps] = js.undefined,
-      onEnter: js.UndefOr[js.Function0[Unit]] = js.undefined,
-      onEntered: js.UndefOr[js.Function0[Unit]] = js.undefined,
-      onEntering: js.UndefOr[js.Function0[Unit]] = js.undefined,
-      onExit: js.UndefOr[js.Function0[Unit]] = js.undefined,
-      onExited: js.UndefOr[js.Function0[Unit]] = js.undefined,
-      onExiting: js.UndefOr[js.Function0[Unit]] = js.undefined,
+      onEnter: js.UndefOr[()=>Unit] = js.undefined,
+      onEntered: js.UndefOr[()=>Unit] = js.undefined,
+      onEntering: js.UndefOr[()=>Unit] = js.undefined,
+      onExit: js.UndefOr[()=>Unit] = js.undefined,
+      onExited: js.UndefOr[()=>Unit] = js.undefined,
+      onExiting: js.UndefOr[()=>Unit] = js.undefined,
       paperProps: js.UndefOr[PaperProps] = js.undefined,
       transformOrigin: js.UndefOr[js.Object] = js.undefined,
       transitionComponent: js.UndefOr[js.Object] = js.undefined,
@@ -243,16 +348,17 @@ object PopoverProps {
       hideBackdrop: js.UndefOr[Boolean] = js.undefined,
       keepMounted: js.UndefOr[Boolean] = js.undefined,
       manager: js.UndefOr[js.Object] = js.undefined,
-      onBackdropClick: js.UndefOr[js.Function0[Unit]] = js.undefined,
+      onBackdropClick: js.UndefOr[()=>Unit] = js.undefined,
 //      onClose: js.UndefOr[js.Function2[js.Object,String,Unit]] = js.undefined,
       onClose: js.UndefOr[() => Unit] = js.undefined,
-      onEscapeKeyDown: js.UndefOr[js.Function0[Unit]] = js.undefined,
-      onRendered: js.UndefOr[js.Function0[Unit]] = js.undefined,
+      onEscapeKeyDown: js.UndefOr[()=>Unit] = js.undefined,
+      onRendered: js.UndefOr[()=>Unit] = js.undefined,
       open: js.UndefOr[Boolean] = js.undefined,
 
+      additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
   ) = {
-    val mp = ModalProps(
-        p,
+    val p: P = ModalProps(
+        props,
         backdropComponent,
         backdropProps,
         classes,
@@ -270,44 +376,39 @@ object PopoverProps {
         onClose,
         onEscapeKeyDown,
         onRendered,
-        open
+        open,
+        additionalProps
     )
 
-    action.foreach(p.updateDynamic("action")(_))
-    anchorEl.foreach(v => v.asInstanceOf[Any] match {
-      case e: Element => p.updateDynamic("anchorEl")(_)
-      case o: js.Object => p.updateDynamic("anchorEl")(_)
-    })
-    anchorOrigin.foreach(p.updateDynamic("anchorOrigin")(_))
-    anchorPosition.foreach(p.updateDynamic("anchorPosition")(_))
-    anchorReference.foreach(v => p.updateDynamic("anchorReference")(v.value))
-    elevation.foreach(p.updateDynamic("elevation")(_))
-    getContentAnchorEl.foreach(p.updateDynamic("getContentAnchorEl")(_))
-    marginThreshold.foreach(p.updateDynamic("marginThreshold")(_))
-    modalClasses.foreach(p.updateDynamic("modalClasses")(_))
-    onEnter.foreach(p.updateDynamic("onEnter")(_))
-    onEntered.foreach(p.updateDynamic("onEntered")(_))
-    onEntering.foreach(p.updateDynamic("onEntering")(_))
-    onExit.foreach(p.updateDynamic("onExit")(_))
-    onExited.foreach(p.updateDynamic("onExited")(_))
-    onExiting.foreach(p.updateDynamic("onExiting")(_))
-    paperProps.foreach(p.updateDynamic("PaperProps")(_))
-    transformOrigin.foreach(p.updateDynamic("transformOrigin")(_))
-    transitionComponent.foreach(p.updateDynamic("TransitionComponent")(_))
-    transitionProps.foreach(p.updateDynamic("TransitionProps")(_))
+    action.foreach( p.updateDynamic("action")(_))
+    anchorEl.foreach( p.anchorEl=_)
+    anchorPosition.foreach( p.updateDynamic("anchorPosition")(_))
+    anchorReference.foreach( p.anchorReference=_)
+    elevation.foreach( p.updateDynamic("elevation")(_))
+    getContentAnchorEl.foreach( p.updateDynamic("getContentAnchorEl")(_))
+    marginThreshold.foreach( p.updateDynamic("marginThreshold")(_))
+    modalClasses.foreach( p.updateDynamic("modalClasses")(_))
+    onEnter.foreach( p.updateDynamic("onEnter")(_))
+    onEntered.foreach( p.updateDynamic("onEntered")(_))
+    onEntering.foreach( p.updateDynamic("onEntering")(_))
+    onExit.foreach( p.updateDynamic("onExit")(_))
+    onExited.foreach( p.updateDynamic("onExited")(_))
+    onExiting.foreach( p.updateDynamic("onExiting")(_))
+    paperProps.foreach( p.updateDynamic("paperProps")(_))
+    transformOrigin.foreach( p.updateDynamic("transformOrigin")(_))
+    transitionComponent.foreach( p.updateDynamic("transitionComponent")(_))
+    transitionProps.foreach( p.updateDynamic("transitionProps")(_))
 
-    val r = p.asInstanceOf[PopoverProps]
-    transitionDuration.foreach( r.transitionDuration=_ )
-    anchorEl.foreach( r.anchorEl = _ )
+    transitionDuration.foreach( p.transitionDuration=_)
 
-    r
+    p
   }
 }
 
-object MuiPopover {
+object MuiPopover extends ComponentFactory[PopoverProps] {
     @js.native @JSImport("@material-ui/core/Popover", JSImport.Default) private object Popover extends js.Any
 
-    private val f = JsComponent[js.Object, Children.Varargs, Null](Popover)
+    protected val f = JsComponent[PopoverProps, Children.Varargs, Null](Popover)
 
     /**
      * @param BackdropComponent A backdrop component. This property enables custom
@@ -361,24 +462,25 @@ object MuiPopover {
      * @param onRendered Callback fired once the children has been mounted into the container.
      *                    It signals that the open={true} property took effect.
      * @param open If true, the modal is open.
+     * @param additionalProps a dictionary of additional properties
      */
     def apply(
 
-      action: js.UndefOr[js.Function1[js.Object,Unit]] = js.undefined,
-      anchorEl: js.UndefOr[ Element | js.Function0[Element] ] = js.undefined,
+      action: js.UndefOr[js.Object=>Unit] = js.undefined,
+      anchorEl: js.UndefOr[AnchorElement] = js.undefined,
       anchorOrigin: js.UndefOr[AnchorOrigin] = js.undefined,
       anchorPosition: js.UndefOr[AnchorPosition] = js.undefined,
       anchorReference: js.UndefOr[AnchorReference] = js.undefined,
       elevation: js.UndefOr[Double] = js.undefined,
-      getContentAnchorEl: js.UndefOr[js.Function0[js.Object]] = js.undefined,
+      getContentAnchorEl: js.UndefOr[()=>js.Object] = js.undefined,
       marginThreshold: js.UndefOr[Double] = js.undefined,
       modalClasses: js.UndefOr[ModalProps] = js.undefined,
-      onEnter: js.UndefOr[js.Function0[Unit]] = js.undefined,
-      onEntered: js.UndefOr[js.Function0[Unit]] = js.undefined,
-      onEntering: js.UndefOr[js.Function0[Unit]] = js.undefined,
-      onExit: js.UndefOr[js.Function0[Unit]] = js.undefined,
-      onExited: js.UndefOr[js.Function0[Unit]] = js.undefined,
-      onExiting: js.UndefOr[js.Function0[Unit]] = js.undefined,
+      onEnter: js.UndefOr[()=>Unit] = js.undefined,
+      onEntered: js.UndefOr[()=>Unit] = js.undefined,
+      onEntering: js.UndefOr[()=>Unit] = js.undefined,
+      onExit: js.UndefOr[()=>Unit] = js.undefined,
+      onExited: js.UndefOr[()=>Unit] = js.undefined,
+      onExiting: js.UndefOr[()=>Unit] = js.undefined,
       paperProps: js.UndefOr[PaperProps] = js.undefined,
       transformOrigin: js.UndefOr[js.Object] = js.undefined,
       transitionComponent: js.UndefOr[js.Object] = js.undefined,
@@ -398,57 +500,58 @@ object MuiPopover {
       hideBackdrop: js.UndefOr[Boolean] = js.undefined,
       keepMounted: js.UndefOr[Boolean] = js.undefined,
       manager: js.UndefOr[js.Object] = js.undefined,
-      onBackdropClick: js.UndefOr[js.Function0[Unit]] = js.undefined,
+      onBackdropClick: js.UndefOr[()=>Unit] = js.undefined,
 //      onClose: js.UndefOr[js.Function2[js.Object,String,Unit]] = js.undefined,
       onClose: js.UndefOr[() => Unit] = js.undefined,
-      onEscapeKeyDown: js.UndefOr[js.Function0[Unit]] = js.undefined,
-      onRendered: js.UndefOr[js.Function0[Unit]] = js.undefined,
+      onEscapeKeyDown: js.UndefOr[()=>Unit] = js.undefined,
+      onRendered: js.UndefOr[()=>Unit] = js.undefined,
       open: js.UndefOr[Boolean] = js.undefined,
+
+      additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
     )(
         children: CtorType.ChildArg*
     ) = {
-      val p = PopoverProps(
-                  js.Dynamic.literal(),
+      val p: PopoverProps = PopoverProps(
+                  action = action,
+                  anchorEl = anchorEl,
+                  anchorOrigin = anchorOrigin,
+                  anchorPosition = anchorPosition,
+                  anchorReference = anchorReference,
+                  elevation = elevation,
+                  getContentAnchorEl = getContentAnchorEl,
+                  marginThreshold = marginThreshold,
+                  modalClasses = modalClasses,
+                  onEnter = onEnter,
+                  onEntered = onEntered,
+                  onEntering = onEntering,
+                  onExit = onExit,
+                  onExited = onExited,
+                  onExiting = onExiting,
+                  paperProps = paperProps,
+                  transformOrigin = transformOrigin,
+                  transitionComponent = transitionComponent,
+                  transitionDuration = transitionDuration,
+                  transitionProps = transitionProps,
 
-                  action,
-                  anchorEl,
-                  anchorOrigin,
-                  anchorPosition,
-                  anchorReference,
-                  elevation,
-                  getContentAnchorEl,
-                  marginThreshold,
-                  modalClasses,
-                  onEnter,
-                  onEntered,
-                  onEntering,
-                  onExit,
-                  onExited,
-                  onExiting,
-                  paperProps,
-                  transformOrigin,
-                  transitionComponent,
-                  transitionDuration,
-                  transitionProps,
-
-                  backdropComponent,
-                  backdropProps,
-                  classes,
-                  container,
-                  disableAutoFocus,
-                  disableBackdropClick,
-                  disableEnforceFocus,
-                  disableEscapeKeyDown,
-                  disablePortal,
-                  disableRestoreFocus,
-                  hideBackdrop,
-                  keepMounted,
-                  manager,
-                  onBackdropClick,
-                  onClose,
-                  onEscapeKeyDown,
-                  onRendered,
-                  open,
+                  backdropComponent = backdropComponent,
+                  backdropProps = backdropProps,
+                  classes = classes,
+                  container = container,
+                  disableAutoFocus = disableAutoFocus,
+                  disableBackdropClick = disableBackdropClick,
+                  disableEnforceFocus = disableEnforceFocus,
+                  disableEscapeKeyDown = disableEscapeKeyDown,
+                  disablePortal = disablePortal,
+                  disableRestoreFocus = disableRestoreFocus,
+                  hideBackdrop = hideBackdrop,
+                  keepMounted = keepMounted,
+                  manager = manager,
+                  onBackdropClick = onBackdropClick,
+                  onClose = onClose,
+                  onEscapeKeyDown = onEscapeKeyDown,
+                  onRendered = onRendered,
+                  open = open,
+                  additionalProps = additionalProps
               )
       val x = f(p) _
       x(children)

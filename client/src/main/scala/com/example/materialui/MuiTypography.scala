@@ -82,11 +82,57 @@ object TextColor {
 import js._
 
 @js.native
-trait TypographyProps extends js.Object {
-  val action: js.UndefOr[js.Function1[js.Object,Unit]] = js.native
+trait TypographyPropsPrivate extends js.Any {
+  @JSName("align")
+  var alignInternal: js.UndefOr[String] = js.native
+  @JSName("color")
+  var colorInternal: js.UndefOr[String] = js.native
+  @JSName("variant")
+  var variantInternal: js.UndefOr[String] = js.native
 }
-object TypographyProps {
+
+@js.native
+trait TypographyProps extends AdditionalProps with TypographyPropsPrivate {
+//      var align: js.UndefOr[TextAlign] = js.native
+      var classes: js.UndefOr[js.Any] = js.native
+      var className: js.UndefOr[String] = js.native
+//      var color: js.UndefOr[TextColor] = js.native
+      var component: js.UndefOr[String] = js.native
+      var gutterBottom: js.UndefOr[Boolean] = js.native
+      var headlineMapping: js.UndefOr[Map[String,String]] = js.native
+      var inline: js.UndefOr[Boolean] = js.native
+      var nowrap: js.UndefOr[Boolean] = js.native
+      var paragraph: js.UndefOr[Boolean] = js.native
+//      var variant: js.UndefOr[TextVariant] = js.native
+}
+object TypographyProps extends PropsFactory[TypographyProps] {
   import js._
+
+  implicit class WrapTypographyProps( val p: TypographyProps ) extends AnyVal {
+
+    def align = p.alignInternal.map( s => new TextAlign(s) )
+
+    def align_= (v: js.UndefOr[TextAlign]): Unit = {
+      v.map{ vv=>p.alignInternal=vv.value; None }.
+        orElse{ p.alignInternal=js.undefined; None }
+    }
+
+    def color = p.colorInternal.map( s => new TextColor(s) )
+
+    def color_= (v: js.UndefOr[TextColor]): Unit = {
+      v.map{ vv=>p.colorInternal=vv.value; None }.
+        orElse{ p.colorInternal=js.undefined; None }
+    }
+
+    def variant = p.variantInternal.map( s => new TextVariant(s) )
+
+    def variant_= (v: js.UndefOr[TextVariant]): Unit = {
+      v.map{ vv=>p.variantInternal=vv.value; None }.
+        orElse{ p.variantInternal=js.undefined; None }
+    }
+
+  }
+
   /**
    * @param p the object that will become the properties object
    *
@@ -117,9 +163,10 @@ object TypographyProps {
    *                   Default: false
    * @param variant Applies the theme typography styles. Use body1 as the default value
    *                 with the legacy implementation and body2 with the new one.
+   * @param additionalProps a dictionary of additional properties
    */
-  def apply(
-      p: js.Object with js.Dynamic = js.Dynamic.literal(),
+    def apply[P <: TypographyProps](
+      props: js.UndefOr[P] = js.undefined,
 
       align: js.UndefOr[TextAlign] = js.undefined,
       classes: js.UndefOr[js.Any] = js.undefined,
@@ -133,30 +180,31 @@ object TypographyProps {
       paragraph: js.UndefOr[Boolean] = js.undefined,
       variant: js.UndefOr[TextVariant] = js.undefined,
 
-  ) = {
+      additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
 
-    align.foreach( v => p.updateDynamic("action")(v.toString()))
-    classes.foreach(p.updateDynamic("classes")(_))
-    className.foreach(p.updateDynamic("className")(_))
-    color.foreach( v => p.updateDynamic("color")(v.toString))
-    component.foreach(p.updateDynamic("component")(_))
-    gutterBottom.foreach(p.updateDynamic("gutterBottom")(_))
-    headlineMapping.foreach(p.updateDynamic("headlineMapping")(_))
-    inline.foreach(p.updateDynamic("inline")(_))
-    nowrap.foreach(p.updateDynamic("nowrap")(_))
-    paragraph.foreach(p.updateDynamic("paragraph")(_))
-    variant.foreach( v => p.updateDynamic("variant")(v.toString))
+  ): P = {
+    val p = get(props,additionalProps)
 
-    val r = p.asInstanceOf[TypographyProps]
+    align.foreach( p.align = _ )
+    classes.foreach( p.updateDynamic("classes")(_))
+    className.foreach( p.updateDynamic("className")(_))
+    color.foreach( p.color = _)
+    component.foreach( p.updateDynamic("component")(_))
+    gutterBottom.foreach( p.updateDynamic("gutterBottom")(_))
+    headlineMapping.foreach( p.updateDynamic("headlineMapping")(_))
+    inline.foreach( p.updateDynamic("inline")(_))
+    nowrap.foreach( p.updateDynamic("nowrap")(_))
+    paragraph.foreach( p.updateDynamic("paragraph")(_))
+    variant.foreach( p.variant = _ )
 
-    r
+    p
   }
 }
 
-object MuiTypography {
+object MuiTypography extends ComponentFactory[TypographyProps] {
     @js.native @JSImport("@material-ui/core/Typography", JSImport.Default) private object Typography extends js.Any
 
-    private val f = JsComponent[TypographyProps, Children.Varargs, Null](Typography)
+    protected val f = JsComponent[TypographyProps, Children.Varargs, Null](Typography)
 
     /**
    * @param align Set the text-align on the component.
@@ -186,7 +234,8 @@ object MuiTypography {
    *                   Default: false
    * @param variant Applies the theme typography styles. Use body1 as the default value
    *                 with the legacy implementation and body2 with the new one.
-     */
+   * @param additionalProps a dictionary of additional properties
+   */
     def apply(
       align: js.UndefOr[TextAlign] = js.undefined,
       classes: js.UndefOr[js.Any] = js.undefined,
@@ -199,23 +248,24 @@ object MuiTypography {
       nowrap: js.UndefOr[Boolean] = js.undefined,
       paragraph: js.UndefOr[Boolean] = js.undefined,
       variant: js.UndefOr[TextVariant] = js.undefined,
+
+      additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
     )(
         children: CtorType.ChildArg*
     ) = {
-      val p = TypographyProps(
-                  js.Dynamic.literal(),
-
-                  align,
-                  classes,
-                  className,
-                  color,
-                  component,
-                  gutterBottom,
-                  headlineMapping,
-                  inline,
-                  nowrap,
-                  paragraph,
-                  variant,
+      val p: TypographyProps = TypographyProps(
+                 align = align,
+                 classes = classes,
+                 className = className,
+                 color = color,
+                 component = component,
+                 gutterBottom = gutterBottom,
+                 headlineMapping = headlineMapping,
+                 inline = inline,
+                 nowrap = nowrap,
+                 paragraph = paragraph,
+                 variant = variant,
+                 additionalProps = additionalProps
               )
       val x = f(p) _
       x(children)

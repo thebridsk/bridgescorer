@@ -15,10 +15,39 @@ object AlignItem {
   val values = List(flexStart,center)
 }
 
-object MuiListItem {
-    @js.native @JSImport("@material-ui/core/ListItem", JSImport.Default) private object ListItem extends js.Any
+@js.native
+protected trait ListItemPropsPrivate extends js.Any {
+  @JSName("alignItems")
+  var alignItemsInternal: js.UndefOr[String] = js.native
+}
 
-    private val f = JsComponent[js.Object, Children.Varargs, Null](ListItem)
+@js.native
+trait ListItemProps extends AdditionalProps with ListItemPropsPrivate {
+//        var alignItem: js.UndefOr[AlignItem] = js.native
+        var button: js.UndefOr[Boolean] = js.native
+        var classes: js.UndefOr[js.Object] = js.native
+        var component: js.UndefOr[String] = js.native
+        var ContainerComponent: js.UndefOr[String] = js.native
+        var ContainerProps: js.UndefOr[js.Object] = js.native
+        var dense: js.UndefOr[Boolean] = js.native
+        var disabled: js.UndefOr[Boolean] = js.native
+        var disableGutters: js.UndefOr[Boolean] = js.native
+        var divider: js.UndefOr[Boolean] = js.native
+        var selected: js.UndefOr[Boolean] = js.native
+        var id: js.UndefOr[String] = js.native
+}
+
+object ListItemProps extends PropsFactory[ListItemProps] {
+
+  implicit class WrapListItemProps( val p: ListItemProps ) extends AnyVal {
+    def alignItems = p.alignItemsInternal.map( s => new AlignItem(s) )
+
+    def alignItems_= (v: js.UndefOr[AlignItem]): Unit = {
+      v.map{ vv=>p.alignItemsInternal=vv.value; None }.
+        orElse{ p.alignItemsInternal=js.undefined; None }
+    }
+
+  }
 
     /**
      * @param p the object that will become the properties object
@@ -43,10 +72,11 @@ object MuiListItem {
      *                 Default: false
      * @param selected Use to apply selected styling.
      *                  Default: false
-     * @param id the id attribute value of the element
+     * @param id the value of the id attribute
+     * @param additionalProps a dictionary of additional properties
      */
-    def set(
-        p: js.Object with js.Dynamic,
+    def apply[P <: ListItemProps](
+        props: js.UndefOr[P] = js.undefined,
         alignItems: js.UndefOr[AlignItem] = js.undefined,
         button: js.UndefOr[Boolean] = js.undefined,
         classes: js.UndefOr[js.Object] = js.undefined,
@@ -58,23 +88,34 @@ object MuiListItem {
         disableGutters: js.UndefOr[Boolean] = js.undefined,
         divider: js.UndefOr[Boolean] = js.undefined,
         selected: js.UndefOr[Boolean] = js.undefined,
-        id: js.UndefOr[String] = js.undefined
-    ): js.Object with js.Dynamic = {
-      alignItems.foreach(v => p.updateDynamic("alignItems")(v.value))
-      button.foreach(p.updateDynamic("button")(_))
-      classes.foreach(p.updateDynamic("classes")(_))
-      component.foreach(p.updateDynamic("component")(_))
-      ContainerComponent.foreach(p.updateDynamic("ContainerComponent")(_))
-      ContainerProps.foreach(p.updateDynamic("ContainerProps")(_))
-      dense.foreach(p.updateDynamic("dense")(_))
-      disabled.foreach(p.updateDynamic("disabled")(_))
-      disableGutters.foreach(p.updateDynamic("disableGutters")(_))
-      divider.foreach(p.updateDynamic("divider")(_))
-      selected.foreach(p.updateDynamic("selected")(_))
-      id.foreach(p.updateDynamic("id")(_))
+        id: js.UndefOr[String] = js.undefined,
+
+        additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
+    ): P = {
+      val p = get(props,additionalProps)
+
+      alignItems.foreach( p.alignItems = _ )
+      button.foreach( p.updateDynamic("button")(_))
+      classes.foreach( p.updateDynamic("classes")(_))
+      component.foreach( p.updateDynamic("component")(_))
+      ContainerComponent.foreach( p.updateDynamic("ContainerComponent")(_))
+      ContainerProps.foreach( p.updateDynamic("ContainerProps")(_))
+      dense.foreach( p.updateDynamic("dense")(_))
+      disabled.foreach( p.updateDynamic("disabled")(_))
+      disableGutters.foreach( p.updateDynamic("disableGutters")(_))
+      divider.foreach( p.updateDynamic("divider")(_))
+      selected.foreach( p.updateDynamic("selected")(_))
+      id.foreach( p.updateDynamic("id")(_))
 
       p
     }
+
+}
+
+object MuiListItem extends ComponentFactory[ListItemProps] {
+    @js.native @JSImport("@material-ui/core/ListItem", JSImport.Default) private object ListItem extends js.Any
+
+    protected val f = JsComponent[ListItemProps, Children.Varargs, Null](ListItem)
 
     /**
      * @param alignItems Defines the align-items style property.
@@ -99,6 +140,7 @@ object MuiListItem {
      * @param selected Use to apply selected styling.
      *                  Default: false
      * @param id the id attribute value of the element
+     * @param additionalProps a dictionary of additional properties
      * @param children
      */
     def apply(
@@ -113,24 +155,26 @@ object MuiListItem {
         disableGutters: js.UndefOr[Boolean] = js.undefined,
         divider: js.UndefOr[Boolean] = js.undefined,
         selected: js.UndefOr[Boolean] = js.undefined,
-        id: js.UndefOr[String] = js.undefined
+        id: js.UndefOr[String] = js.undefined,
+
+        additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
     )(
         children: CtorType.ChildArg*
     ) = {
-      val p = set(
-                  js.Dynamic.literal(),
-                  alignItems,
-                  button,
-                  classes,
-                  component,
-                  ContainerComponent,
-                  ContainerProps,
-                  dense,
-                  disabled,
-                  disableGutters,
-                  divider,
-                  selected,
-                  id
+      val p: ListItemProps = ListItemProps(
+                 alignItems = alignItems,
+                 button = button,
+                 classes = classes,
+                 component = component,
+                 ContainerComponent = ContainerComponent,
+                 ContainerProps = ContainerProps,
+                 dense = dense,
+                 disabled = disabled,
+                 disableGutters = disableGutters,
+                 divider = divider,
+                 selected = selected,
+                 id = id,
+                 additionalProps = additionalProps,
               )
       val x = f(p) _
       x(children)

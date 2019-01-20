@@ -7,10 +7,11 @@ import org.scalajs.dom
 import scala.scalajs.js
 import scala.scalajs.js.annotation._
 
-object MuiMenuList {
-    @js.native @JSImport("@material-ui/core/MenuList", JSImport.Default) private object MenuList extends js.Any
+@js.native
+trait MenuListProps extends ListProps {
 
-    private val f = JsComponent[js.Object, Children.Varargs, Null](MenuList)
+}
+object MenuListProps extends PropsFactory[MenuListProps] {
 
     /**
      * @param p the object that will become the properties object
@@ -22,24 +23,36 @@ object MuiMenuList {
      * @param disablePadding If true, vertical padding will be removed from the list.
      *                        Default: false
      * @param subheader The content of the subheader, normally ListSubheader.
+     * @param additionalProps a dictionary of additional properties
      */
-    def set(
-        p: js.Object with js.Dynamic,
+    def apply[P <: MenuListProps](
+        props: js.UndefOr[P] = js.undefined,
         classes: js.UndefOr[js.Object] = js.undefined,
         component: js.UndefOr[String] = js.undefined,
         dense: js.UndefOr[Boolean] = js.undefined,
         disablePadding: js.UndefOr[Boolean] = js.undefined,
-        subheader: js.UndefOr[js.Object] = js.undefined
-    ): js.Object with js.Dynamic = {
-      MuiList.set(
-          js.Dynamic.literal(),
+        subheader: js.UndefOr[js.Object] = js.undefined,
+
+        additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
+    ): P = {
+      val p: P = ListProps(
+          props,
           classes,
           component,
           dense,
           disablePadding,
           subheader,
-      )
+          additionalProps
+          )
+       p
     }
+
+}
+
+object MuiMenuList extends ComponentFactory[MenuListProps] {
+    @js.native @JSImport("@material-ui/core/MenuList", JSImport.Default) private object MenuList extends js.Any
+
+    protected val f = JsComponent[MenuListProps, Children.Varargs, Null](MenuList)
 
     /**
      * @param classes Override or extend the styles applied to the component. See CSS API below for more details.
@@ -57,17 +70,19 @@ object MuiMenuList {
         component: js.UndefOr[String] = js.undefined,
         dense: js.UndefOr[Boolean] = js.undefined,
         disablePadding: js.UndefOr[Boolean] = js.undefined,
-        subheader: js.UndefOr[js.Object] = js.undefined
+        subheader: js.UndefOr[js.Object] = js.undefined,
+
+        additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
     )(
         children: CtorType.ChildArg*
     ) = {
-      val p = set(
-                  js.Dynamic.literal(),
-                  classes,
-                  component,
-                  dense,
-                  disablePadding,
-                  subheader,
+      val p: MenuListProps = MenuListProps(
+                 classes = classes,
+                 component = component,
+                 dense = dense,
+                 disablePadding = disablePadding,
+                 subheader = subheader,
+                 additionalProps = additionalProps,
               )
       val x = f(p) _
       x(children)

@@ -39,6 +39,9 @@ object Style {
 
   log.fine("WithStyle f: "+f)
 
+  /**
+   * Does NOT work
+   */
   def withStyle(
       styles: Style,
       options: js.Object = js.Object()

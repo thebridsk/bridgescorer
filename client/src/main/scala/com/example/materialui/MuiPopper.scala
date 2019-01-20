@@ -29,18 +29,48 @@ object PopperPlacement {
 }
 
 @js.native
-trait PopperProps extends js.Object {
-  val anchorEl: js.UndefOr[ js.Object | js.Function0[Element] ] = js.native
-  val container: js.UndefOr[ js.Object | js.Function0[Object] ] = js.native
-  val disablePortal: js.UndefOr[Boolean] = js.native
-  val keepMounted: js.UndefOr[Boolean] = js.native
-  val modifiers: js.UndefOr[js.Object] = js.native
-  val open: js.UndefOr[Boolean] = js.native
-  val placement: js.UndefOr[PopperPlacement] = js.native
-  val popperOptions: js.UndefOr[js.Object] = js.native
-  val transition: js.UndefOr[Boolean] = js.native
+protected trait PopperPropsPrivate extends js.Any {
+  @JSName("anchorEl")
+  var anchorElInternal: js.UndefOr[ js.Any] = js.native
+//  var containerInternal: js.UndefOr[Container] = js.native
+  @JSName("placement")
+  var placementInternal: js.UndefOr[String] = js.native
+
 }
-object PopperProps {
+
+@js.native
+trait PopperProps extends AdditionalProps with PopperPropsPrivate {
+//  var anchorEl: js.UndefOr[ AnchorElement] = js.native
+  var container: js.UndefOr[Container] = js.native
+  var disablePortal: js.UndefOr[Boolean] = js.native
+  var keepMounted: js.UndefOr[Boolean] = js.native
+  var modifiers: js.UndefOr[js.Object] = js.native
+  var open: js.UndefOr[Boolean] = js.native
+//  var placement: js.UndefOr[PopperPlacement] = js.native
+  var popperOptions: js.UndefOr[js.Object] = js.native
+  var transition: js.UndefOr[Boolean] = js.native
+}
+object PopperProps extends PropsFactory[PopperProps] {
+
+  implicit class WrapPopperProps( val p: PopperProps ) extends AnyVal {
+
+    def placement = p.placementInternal.map( s => new PopperPlacement(s) )
+
+    def placement_= (v: js.UndefOr[PopperPlacement]): Unit = {
+      v.map{ vv=>p.placementInternal=vv.value; None }.
+        orElse{ p.placementInternal=js.undefined; None }
+    }
+
+    def anchorEl = p.anchorElInternal.map { v =>
+      v.asInstanceOf[AnchorElement]
+    }
+
+    def anchorEl_= (v: js.UndefOr[AnchorElement]): Unit = {
+      v.map{ vv=>p.anchorElInternal=vv.asInstanceOf[js.Any]; None }.
+        orElse{ p.anchorElInternal=js.undefined; None }
+    }
+
+  }
 
     /**
      * @param p the object that will become the properties object
@@ -69,30 +99,34 @@ object PopperProps {
      * @param popperOptions Options provided to the popper.js instance.
      * @param transition Help supporting a react-transition-group/Transition component.
      *                    Default: false
+     * @param additionalProps a dictionary of additional properties
      */
-    def apply(
-        p: js.Object with js.Dynamic = js.Dynamic.literal(),
-        anchorEl: js.UndefOr[ js.Object | js.Function0[Element] ] = js.undefined,
-        container: js.UndefOr[ js.Object | js.Function0[Object] ] = js.undefined,
+    def apply[P <: PopperProps](
+        props: js.UndefOr[P] = js.undefined,
+        anchorEl: js.UndefOr[AnchorElement] = js.undefined,
+        container: js.UndefOr[Container] = js.undefined,
         disablePortal: js.UndefOr[Boolean] = js.undefined,
         keepMounted: js.UndefOr[Boolean] = js.undefined,
         modifiers: js.UndefOr[js.Object] = js.undefined,
         open: js.UndefOr[Boolean] = js.undefined,
         placement: js.UndefOr[PopperPlacement] = js.undefined,
         popperOptions: js.UndefOr[js.Object] = js.undefined,
-        transition: js.UndefOr[Boolean] = js.undefined
-    ): PopperProps = {
-      anchorEl.foreach(v => p.updateDynamic("anchorEl")(v.asInstanceOf[js.Any]))
-      container.foreach(v => p.updateDynamic("container")(v.asInstanceOf[js.Any]))
-      disablePortal.foreach(p.updateDynamic("disablePortal")(_))
-      keepMounted.foreach(p.updateDynamic("keepMounted")(_))
-      modifiers.foreach(p.updateDynamic("modifiers")(_))
-      open.foreach(p.updateDynamic("open")(_))
-      placement.foreach(v => p.updateDynamic("placement")(v.value))
-      popperOptions.foreach(p.updateDynamic("popperOptions")(_))
-      transition.foreach(p.updateDynamic("transition")(_))
+        transition: js.UndefOr[Boolean] = js.undefined,
 
-      p.asInstanceOf[PopperProps]
+        additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
+    ): P = {
+      val p = get(props,additionalProps)
+      anchorEl.foreach( p.anchorEl=_)
+      container.foreach( p.container=_)
+      disablePortal.foreach( p.updateDynamic("disablePortal")(_))
+      keepMounted.foreach( p.updateDynamic("keepMounted")(_))
+      modifiers.foreach( p.updateDynamic("modifiers")(_))
+      open.foreach( p.updateDynamic("open")(_))
+      placement.foreach( p.placement=_)
+      popperOptions.foreach( p.updateDynamic("popperOptions")(_))
+      transition.foreach( p.updateDynamic("transition")(_))
+
+      p
     }
 }
 
@@ -127,21 +161,24 @@ object MuiPopper {
      * @param popperOptions Options provided to the popper.js instance.
      * @param transition Help supporting a react-transition-group/Transition component.
      *                    Default: false
+     * @param additionalProps a dictionary of additional properties
      */
     def apply(
-        anchorEl: js.UndefOr[ js.Object | js.Function0[Element] ] = js.undefined,
-        container: js.UndefOr[ js.Object | js.Function0[Object] ] = js.undefined,
+        anchorEl: js.UndefOr[AnchorElement] = js.undefined,
+        container: js.UndefOr[Container] = js.undefined,
         disablePortal: js.UndefOr[Boolean] = js.undefined,
         keepMounted: js.UndefOr[Boolean] = js.undefined,
         modifiers: js.UndefOr[js.Object] = js.undefined,
         open: js.UndefOr[Boolean] = js.undefined,
         placement: js.UndefOr[PopperPlacement] = js.undefined,
         popperOptions: js.UndefOr[js.Object] = js.undefined,
-        transition: js.UndefOr[Boolean] = js.undefined
+        transition: js.UndefOr[Boolean] = js.undefined,
+
+        additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
     )(
         children: CtorType.ChildArg*
     ) = {
-      val p = PopperProps(
+      val p: PopperProps = PopperProps(
                 anchorEl = anchorEl,
                 container = container,
                 disablePortal = disablePortal,
@@ -150,7 +187,8 @@ object MuiPopper {
                 open = open,
                 placement = placement,
                 popperOptions = popperOptions,
-                transition = transition
+                transition = transition,
+                additionalProps = additionalProps
               )
       val x = f(p) _
       x(children)

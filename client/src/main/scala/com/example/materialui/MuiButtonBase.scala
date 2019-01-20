@@ -7,10 +7,29 @@ import org.scalajs.dom
 import scala.scalajs.js
 import scala.scalajs.js.annotation._
 
-object MuiButtonBase {
-    @js.native @JSImport("@material-ui/core/Button", JSImport.Default) private object ButtonBase extends js.Any
+@js.native
+trait ButtonBaseProps extends AdditionalProps {
+  var action: js.UndefOr[js.Object=>Unit] = js.native
+  var buttonRef: js.UndefOr[js.Object] = js.native   // js.object or js.Function0[ref]
+  var centerRipple: js.UndefOr[Boolean] = js.native
+  var classes:  js.UndefOr[js.Object] = js.native
+  var component: js.UndefOr[String] = js.native
+  var disabled: js.UndefOr[Boolean] = js.native
+  var disableRipple: js.UndefOr[Boolean] = js.native
+  var disableTouchRipple: js.UndefOr[Boolean] = js.native
+  var focusRipple: js.UndefOr[Boolean] = js.native
+  var focusVisibleClassName: js.UndefOr[String] = js.native
+  var onFocusVisible: js.UndefOr[()=>Unit] = js.native
+  var TouchRippleProps: js.UndefOr[TouchRippleProps] = js.native
+  var `type`: js.UndefOr[String] = js.native
 
-    private val f = JsComponent[js.Object, Children.Varargs, Null](ButtonBase)
+  var onClick: js.UndefOr[ReactEvent => Unit] = js.native
+  var style: js.UndefOr[js.Object] = js.native
+
+  var id: js.UndefOr[String] = js.native
+}
+
+object ButtonBaseProps extends PropsFactory[ButtonBaseProps] {
 
     /**
      * @param p the object that will become the properties object
@@ -46,10 +65,11 @@ object MuiButtonBase {
      *              button component. Valid property values include button, submit, and reset.
      *              Default: "button"
      * @param id the value of the id attribute
+     * @param additionalProps a dictionary of additional properties
      */
-    def set(
-        p: js.Object with js.Dynamic,
-        action: js.UndefOr[js.Function1[js.Object,Unit]] = js.undefined,
+    def apply[P <: ButtonBaseProps](
+        props: js.UndefOr[P] = js.undefined,
+        action: js.UndefOr[js.Object=>Unit] = js.undefined,
         buttonRef: js.UndefOr[js.Object] = js.undefined,   // js.object or js.Function0[ref]
         centerRipple: js.UndefOr[Boolean] = js.undefined,
         classes:  js.UndefOr[js.Object] = js.undefined,
@@ -59,34 +79,46 @@ object MuiButtonBase {
         disableTouchRipple: js.UndefOr[Boolean] = js.undefined,
         focusRipple: js.UndefOr[Boolean] = js.undefined,
         focusVisibleClassName: js.UndefOr[String] = js.undefined,
-        onFocusVisible: js.UndefOr[js.Function0[Unit]] = js.undefined,
+        onFocusVisible: js.UndefOr[()=>Unit] = js.undefined,
         TouchRippleProps: js.UndefOr[TouchRippleProps] = js.undefined,
         `type`: js.UndefOr[String] = js.undefined,
 
         onClick: js.UndefOr[ReactEvent => Unit] = js.undefined,
         style: js.UndefOr[js.Object] = js.undefined,
 
-        id: js.UndefOr[String] = js.undefined
-    ): js.Object with js.Dynamic = {
-      action.foreach(p.updateDynamic("action")(_))
-      buttonRef.foreach(p.updateDynamic("buttonRef")(_))
-      centerRipple.foreach(p.updateDynamic("centerRipple")(_))
-      classes.foreach(p.updateDynamic("classes")(_))
-      component.foreach(p.updateDynamic("component")(_))
-      disabled.foreach(p.updateDynamic("disabled")(_))
-      disableRipple.foreach(p.updateDynamic("disableRipple")(_))
-      disableTouchRipple.foreach(p.updateDynamic("disableTouchRipple")(_))
-      focusRipple.foreach(p.updateDynamic("focusRipple")(_))
-      focusVisibleClassName.foreach(p.updateDynamic("focusVisibleClassName")(_))
-      onFocusVisible.foreach(p.updateDynamic("onFocusVisible")(_))
-      TouchRippleProps.foreach(p.updateDynamic("TouchRippleProps")(_))
-      `type`.foreach(p.updateDynamic("type")(_))
-      onClick.foreach(p.updateDynamic("onClick")(_))
-      style.foreach(p.updateDynamic("style")(_))
-      id.foreach(p.updateDynamic("id")(_))
+        id: js.UndefOr[String] = js.undefined,
+
+        additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
+    ): P = {
+      val p = get(props,additionalProps)
+
+      action.foreach( p.updateDynamic("action")(_))
+      buttonRef.foreach( p.updateDynamic("buttonRef")(_))
+      centerRipple.foreach( p.updateDynamic("centerRipple")(_))
+      classes.foreach( p.updateDynamic("classes")(_))
+      component.foreach( p.updateDynamic("component")(_))
+      disabled.foreach( p.updateDynamic("disabled")(_))
+      disableRipple.foreach( p.updateDynamic("disableRipple")(_))
+      disableTouchRipple.foreach( p.updateDynamic("disableTouchRipple")(_))
+      focusRipple.foreach( p.updateDynamic("focusRipple")(_))
+      focusVisibleClassName.foreach( p.updateDynamic("focusVisibleClassName")(_))
+      onFocusVisible.foreach( p.updateDynamic("onFocusVisible")(_))
+      TouchRippleProps.foreach( p.updateDynamic("TouchRippleProps")(_))
+      `type`.foreach( p.updateDynamic("type")(_))
+      onClick.foreach( p.updateDynamic("onClick")(_))
+      style.foreach( p.updateDynamic("style")(_))
+      id.foreach( p.updateDynamic("id")(_))
+
       p
     }
 
+}
+
+object MuiButtonBase extends ComponentFactory[ButtonBaseProps] {
+    @js.native @JSImport("@material-ui/core/Button", JSImport.Default) private object ButtonBase extends js.Any
+
+    protected val f = JsComponent[ButtonBaseProps, Children.Varargs, Null](ButtonBase)
+
     /**
      * @param p the object that will become the properties object
      * @param action Callback fired when the component mounts. This is useful when
@@ -121,9 +153,10 @@ object MuiButtonBase {
      *              button component. Valid property values include button, submit, and reset.
      *              Default: "button"
      * @param id the value of the id attribute
+     * @param additionalProps a dictionary of additional properties
      */
     def apply(
-        action: js.UndefOr[js.Function1[js.Object,Unit]] = js.undefined,
+        action: js.UndefOr[js.Object=>Unit] = js.undefined,
         buttonRef: js.UndefOr[js.Object] = js.undefined,   // js.object or js.Function0[ref]
         centerRipple: js.UndefOr[Boolean] = js.undefined,
         classes:  js.UndefOr[js.Object] = js.undefined,
@@ -133,34 +166,36 @@ object MuiButtonBase {
         disableTouchRipple: js.UndefOr[Boolean] = js.undefined,
         focusRipple: js.UndefOr[Boolean] = js.undefined,
         focusVisibleClassName: js.UndefOr[String] = js.undefined,
-        onFocusVisible: js.UndefOr[js.Function0[Unit]] = js.undefined,
+        onFocusVisible: js.UndefOr[()=>Unit] = js.undefined,
         TouchRippleProps: js.UndefOr[TouchRippleProps] = js.undefined,
         `type`: js.UndefOr[String] = js.undefined,
 
         onClick: js.UndefOr[ReactEvent => Unit] = js.undefined,
         style: js.UndefOr[js.Object] = js.undefined,
-        id: js.UndefOr[String] = js.undefined
+        id: js.UndefOr[String] = js.undefined,
+
+        additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
     )(
         children: CtorType.ChildArg*
     ) = {
-      val p = set(
-                  js.Dynamic.literal(),
-                  action,
-                  buttonRef,
-                  centerRipple,
-                  classes,
-                  component,
-                  disabled,
-                  disableRipple,
-                  disableTouchRipple,
-                  focusRipple,
-                  focusVisibleClassName,
-                  onFocusVisible,
-                  TouchRippleProps,
-                  `type`,
-                  onClick,
-                  style,
-                  id
+      val p: ButtonBaseProps = ButtonBaseProps(
+                 action = action,
+                 buttonRef = buttonRef,
+                 centerRipple = centerRipple,
+                 classes = classes,
+                 component = component,
+                 disabled = disabled,
+                 disableRipple = disableRipple,
+                 disableTouchRipple = disableTouchRipple,
+                 focusRipple = focusRipple,
+                 focusVisibleClassName = focusVisibleClassName,
+                 onFocusVisible = onFocusVisible,
+                 TouchRippleProps = TouchRippleProps,
+                 `type` = `type`,
+                 onClick = onClick,
+                 style = style,
+                 id = id,
+                 additionalProps = additionalProps
               )
       val x = f(p) _
       x(children)

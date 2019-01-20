@@ -18,11 +18,37 @@ object Position {
 }
 
 @js.native
-trait AppBarProps extends PaperProps {
-  val color: js.UndefOr[ColorVariant] = js.native
-  val position: js.UndefOr[Position] = js.native
+protected trait AppBarPropsPrivate extends js.Any {
+  @JSName("color")
+  var colorInternal: js.UndefOr[String] = js.native
+  @JSName("position")
+  var positionInternal: js.UndefOr[String] = js.native
 }
-object AppBarProps {
+
+@js.native
+trait AppBarProps extends PaperProps with AppBarPropsPrivate {
+
+}
+object AppBarProps extends PropsFactory[AppBarProps] {
+
+  implicit class WrapAppBarProps( val p: AppBarProps ) extends AnyVal {
+    def position = p.positionInternal.map( s => new Position(s) )
+
+    def position_= (v: js.UndefOr[Position]): Unit = {
+      v.map{ vv=>p.positionInternal=vv.value; None }.
+        orElse{ p.positionInternal=js.undefined; None }
+    }
+
+    def position_= (v: Position) = { p.positionInternal = v.value }
+
+    def color = p.colorInternal.map( s => new ColorVariant(s) )
+
+    def color_= (v: js.UndefOr[ColorVariant]): Unit = {
+      v.map{ vv=>p.colorInternal=vv.value; None }.
+        orElse{ p.colorInternal=js.undefined; None }
+    }
+
+  }
 
     /**
      * @param p the object that will become the properties object
@@ -43,9 +69,10 @@ object AppBarProps {
      *                   Default 2
      * @param square If true, rounded corners are disabled.
      *                Default: false
+     * @param additionalProps a dictionary of additional properties
      */
-    def apply(
-        p: js.Object with js.Dynamic = js.Dynamic.literal(),
+    def apply[P <: AppBarProps](
+        props: js.UndefOr[P] = js.undefined,
         color: js.UndefOr[ColorVariant] = js.undefined,
         position: js.UndefOr[Position] = js.undefined,
 
@@ -53,20 +80,29 @@ object AppBarProps {
         component: js.UndefOr[String] = js.undefined,
         elevation: js.UndefOr[Double] = js.undefined,
         square: js.UndefOr[Boolean] = js.undefined,
+
+        additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
     ): AppBarProps = {
-      val abp = PaperProps(p,classes,component,elevation,square)
+      val p: P = PaperProps(
+          props,
+          classes,
+          component,
+          elevation,
+          square,
+          additionalProps
+      )
 
-      color.foreach( v => p.updateDynamic("color")(v.value))
-      position.foreach( v => p.updateDynamic("position")(v.value))
+      color.foreach( p.color=_)
+      position.foreach( p.position = _)
 
-      p.asInstanceOf[AppBarProps]
+      p
     }
 }
 
-object MuiAppBar {
+object MuiAppBar extends ComponentFactory[AppBarProps] {
     @js.native @JSImport("@material-ui/core/AppBar", JSImport.Default) private object AppBar extends js.Any
 
-    private val f = JsComponent[AppBarProps, Children.Varargs, Null](AppBar)
+    protected val f = JsComponent[AppBarProps, Children.Varargs, Null](AppBar)
 
     /**
      * @param color The color of the component. It supports those theme colors
@@ -86,6 +122,7 @@ object MuiAppBar {
      *                   Default 2
      * @param square If true, rounded corners are disabled.
      *                Default: false
+     * @param additionalProps a dictionary of additional properties
      */
     def apply(
         color: js.UndefOr[ColorVariant] = js.undefined,
@@ -95,16 +132,19 @@ object MuiAppBar {
         component: js.UndefOr[String] = js.undefined,
         elevation: js.UndefOr[Double] = js.undefined,
         square: js.UndefOr[Boolean] = js.undefined,
+
+        additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
     )(
         children: CtorType.ChildArg*
     ) = {
-      val p = AppBarProps(
+      val p: AppBarProps = AppBarProps(
                   color = color,
                   position = position,
                   classes = classes,
                   component = component,
                   elevation = elevation,
                   square = square,
+                  additionalProps = additionalProps
               )
       val x = f(p) _
       x(children)

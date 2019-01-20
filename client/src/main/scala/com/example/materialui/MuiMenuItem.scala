@@ -7,10 +7,12 @@ import org.scalajs.dom
 import scala.scalajs.js
 import scala.scalajs.js.annotation._
 
-object MuiMenuItem {
-    @js.native @JSImport("@material-ui/core/MenuItem", JSImport.Default) private object MenuItem extends js.Any
+@js.native
+trait MenuItemProps extends ListItemProps {
+  var onClick: js.UndefOr[(ReactEvent) => Unit] = js.native,
 
-    private val f = JsComponent[js.Object, Children.Varargs, Null](MenuItem)
+}
+object MenuItemProps extends PropsFactory[MenuItemProps] {
 
     /**
      * @param p the object that will become the properties object
@@ -36,9 +38,10 @@ object MuiMenuItem {
      * @param selected Use to apply selected styling.
      *                  Default: false
      * @param id the id attribute value of the element
+     * @param additionalProps a dictionary of additional properties
      */
-    def set(
-        p: js.Object with js.Dynamic,
+    def apply[P <: MenuItemProps](
+        props: js.UndefOr[P] = js.undefined,
         alignItems: js.UndefOr[AlignItem] = js.undefined,
         button: js.UndefOr[Boolean] = js.undefined,
         classes: js.UndefOr[js.Object] = js.undefined,
@@ -53,11 +56,13 @@ object MuiMenuItem {
 
         onClick: js.UndefOr[(ReactEvent) => Unit] = js.undefined,
 
-        id: js.UndefOr[String] = js.undefined
+        id: js.UndefOr[String] = js.undefined,
 
-    ): js.Object with js.Dynamic = {
-      MuiListItem.set(
-            p,
+        additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
+
+    ): P = {
+      val p: P = ListItemProps(
+            props,
             alignItems,
             button,
             classes,
@@ -69,11 +74,20 @@ object MuiMenuItem {
             disableGutters,
             divider,
             selected,
-            id
+            id,
+            additionalProps
         )
-      onClick.foreach(p.updateDynamic("onClick")(_))
+
+      onClick.map( p.updateDynamic("onClick")(_))
+
       p
     }
+}
+
+object MuiMenuItem extends ComponentFactory[MenuItemProps] {
+    @js.native @JSImport("@material-ui/core/MenuItem", JSImport.Default) private object MenuItem extends js.Any
+
+    protected val f = JsComponent[MenuItemProps, Children.Varargs, Null](MenuItem)
 
     /**
      * @param alignItems Defines the align-items style property.
@@ -98,6 +112,7 @@ object MuiMenuItem {
      * @param selected Use to apply selected styling.
      *                  Default: false
      * @param id the id attribute value of the element
+     * @param additionalProps a dictionary of additional properties
      * @param children
      */
     def apply(
@@ -115,25 +130,27 @@ object MuiMenuItem {
 
         onClick: js.UndefOr[(ReactEvent) => Unit] = js.undefined,
 
-        id: js.UndefOr[String] = js.undefined
+        id: js.UndefOr[String] = js.undefined,
+
+        additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
     )(
         children: CtorType.ChildArg*
     ) = {
-      val p = set(
-                  js.Dynamic.literal(),
-                  alignItems,
-                  button,
-                  classes,
-                  component,
-                  ContainerComponent,
-                  ContainerProps,
-                  dense,
-                  disabled,
-                  disableGutters,
-                  divider,
-                  selected,
-                  onClick,
-                  id
+      val p: MenuItemProps = MenuItemProps(
+                 alignItems = alignItems,
+                 button = button,
+                 classes = classes,
+                 component = component,
+                 ContainerComponent = ContainerComponent,
+                 ContainerProps = ContainerProps,
+                 dense = dense,
+                 disabled = disabled,
+                 disableGutters = disableGutters,
+                 divider = divider,
+                 selected = selected,
+                 onClick = onClick,
+                 id = id,
+                 additionalProps = additionalProps,
               )
       val x = f(p) _
       x(children)

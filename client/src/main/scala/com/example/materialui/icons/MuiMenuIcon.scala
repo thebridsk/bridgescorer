@@ -14,6 +14,6 @@ object MuiMenuIcon extends SvgIconBase {
   @js.native @JSImport("@material-ui/icons/Menu", JSImport.Default)
   private object icon extends js.Any
 
-  protected val f = JsComponent[js.Object, Children.Varargs, Null](icon)
+  protected val f = JsComponent[SvgIconProps, Children.Varargs, Null](icon)
 
 }

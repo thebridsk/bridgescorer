@@ -8,28 +8,28 @@ import scala.scalajs.js
 import scala.scalajs.js.annotation._
 
 @js.native
-trait ModalProps extends js.Object {
+trait ModalProps extends AdditionalProps {
 
-  val backdropComponent: js.UndefOr[js.Object] = js.native
-  val backdropProps: js.UndefOr[BackdropProps] = js.native
-  val classes: js.UndefOr[js.Object] = js.native
-  val container: js.UndefOr[js.Object] = js.native
-  val disableAutoFocus: js.UndefOr[Boolean] = js.native
-  val disableBackdropClick: js.UndefOr[Boolean] = js.native
-  val disableEnforceFocus: js.UndefOr[Boolean] = js.native
-  val disableEscapeKeyDown: js.UndefOr[Boolean] = js.native
-  val disablePortal: js.UndefOr[Boolean] = js.native
-  val disableRestoreFocus: js.UndefOr[Boolean] = js.native
-  val hideBackdrop: js.UndefOr[Boolean] = js.native
-  val keepMounted: js.UndefOr[Boolean] = js.native
-  val manager: js.UndefOr[js.Object] = js.native
-  val onBackdropClick: js.UndefOr[js.Function0[Unit]] = js.native
-  val onClose: js.UndefOr[js.Function2[js.Object,String,Unit]] = js.native
-  val onEscapeKeyDown: js.UndefOr[js.Function0[Unit]] = js.native
-  val onRendered: js.UndefOr[js.Function0[Unit]] = js.native
-  val open: js.UndefOr[Boolean] = js.native
+  var backdropComponent: js.UndefOr[js.Object] = js.native
+  var backdropProps: js.UndefOr[BackdropProps] = js.native
+  var classes: js.UndefOr[js.Object] = js.native
+  var container: js.UndefOr[js.Object] = js.native
+  var disableAutoFocus: js.UndefOr[Boolean] = js.native
+  var disableBackdropClick: js.UndefOr[Boolean] = js.native
+  var disableEnforceFocus: js.UndefOr[Boolean] = js.native
+  var disableEscapeKeyDown: js.UndefOr[Boolean] = js.native
+  var disablePortal: js.UndefOr[Boolean] = js.native
+  var disableRestoreFocus: js.UndefOr[Boolean] = js.native
+  var hideBackdrop: js.UndefOr[Boolean] = js.native
+  var keepMounted: js.UndefOr[Boolean] = js.native
+  var manager: js.UndefOr[js.Object] = js.native
+  var onBackdropClick: js.UndefOr[()=>Unit] = js.native
+  var onClose: js.UndefOr[() => Unit] = js.native
+  var onEscapeKeyDown: js.UndefOr[()=>Unit] = js.native
+  var onRendered: js.UndefOr[()=>Unit] = js.native
+  var open: js.UndefOr[Boolean] = js.native
 }
-object ModalProps {
+object ModalProps extends PropsFactory[ModalProps] {
 
     /**
      * @param p the object that will become the properties object
@@ -84,9 +84,10 @@ object ModalProps {
      * @param onRendered Callback fired once the children has been mounted into the container.
      *                    It signals that the open={true} property took effect.
      * @param open If true, the modal is open.
+     * @param additionalProps a dictionary of additional properties
      */
-    def apply(
-        p: js.Object with js.Dynamic = js.Dynamic.literal(),
+    def apply[P <: ModalProps](
+        props: js.UndefOr[P] = js.undefined,
         backdropComponent: js.UndefOr[js.Object] = js.undefined,
         backdropProps: js.UndefOr[BackdropProps] = js.undefined,
         classes: js.UndefOr[js.Object] = js.undefined,
@@ -100,41 +101,45 @@ object ModalProps {
         hideBackdrop: js.UndefOr[Boolean] = js.undefined,
         keepMounted: js.UndefOr[Boolean] = js.undefined,
         manager: js.UndefOr[js.Object] = js.undefined,
-        onBackdropClick: js.UndefOr[js.Function0[Unit]] = js.undefined,
+        onBackdropClick: js.UndefOr[()=>Unit] = js.undefined,
 //        onClose: js.UndefOr[js.Function2[js.Object,String,Unit]] = js.undefined,
         onClose: js.UndefOr[() => Unit] = js.undefined,
-        onEscapeKeyDown: js.UndefOr[js.Function0[Unit]] = js.undefined,
-        onRendered: js.UndefOr[js.Function0[Unit]] = js.undefined,
+        onEscapeKeyDown: js.UndefOr[()=>Unit] = js.undefined,
+        onRendered: js.UndefOr[()=>Unit] = js.undefined,
         open: js.UndefOr[Boolean] = js.undefined,
 
-    ): ModalProps = {
-      backdropComponent.foreach(p.updateDynamic("BackdropComponent")(_))
-      backdropProps.foreach(p.updateDynamic("BackdropProps")(_))
-      classes.foreach(p.updateDynamic("classes")(_))
-      container.foreach(p.updateDynamic("container")(_))
-      disableAutoFocus.foreach(p.updateDynamic("disableAutoFocus")(_))
-      disableBackdropClick.foreach(p.updateDynamic("disableBackdropClick")(_))
-      disableEnforceFocus.foreach(p.updateDynamic("disableEnforceFocus")(_))
-      disableEscapeKeyDown.foreach(p.updateDynamic("disableEscapeKeyDown")(_))
-      disablePortal.foreach(p.updateDynamic("disablePortal")(_))
-      disableRestoreFocus.foreach(p.updateDynamic("disableRestoreFocus")(_))
-      hideBackdrop.foreach(p.updateDynamic("hideBackdrop")(_))
-      keepMounted.foreach(p.updateDynamic("keepMounted")(_))
-      manager.foreach(p.updateDynamic("manager")(_))
-      onBackdropClick.foreach(p.updateDynamic("onBackdropClick")(_))
-      onClose.foreach(p.updateDynamic("onClose")(_))
-      onEscapeKeyDown.foreach(p.updateDynamic("onEscapeKeyDown")(_))
-      onRendered.foreach(p.updateDynamic("onRendered")(_))
-      open.foreach(p.updateDynamic("open")(_))
+        additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
 
-      p.asInstanceOf[ModalProps]
+    ): P = {
+      val p = get(props,additionalProps)
+
+      backdropComponent.foreach( p.updateDynamic("backdropComponent")(_))
+      backdropProps.foreach( p.updateDynamic("backdropProps")(_))
+      classes.foreach( p.updateDynamic("classes")(_))
+      container.foreach( p.updateDynamic("container")(_))
+      disableAutoFocus.foreach( p.updateDynamic("disableAutoFocus")(_))
+      disableBackdropClick.foreach( p.updateDynamic("disableBackdropClick")(_))
+      disableEnforceFocus.foreach( p.updateDynamic("disableEnforceFocus")(_))
+      disableEscapeKeyDown.foreach( p.updateDynamic("disableEscapeKeyDown")(_))
+      disablePortal.foreach( p.updateDynamic("disablePortal")(_))
+      disableRestoreFocus.foreach( p.updateDynamic("disableRestoreFocus")(_))
+      hideBackdrop.foreach( p.updateDynamic("hideBackdrop")(_))
+      keepMounted.foreach( p.updateDynamic("keepMounted")(_))
+      manager.foreach( p.updateDynamic("manager")(_))
+      onBackdropClick.foreach( p.updateDynamic("onBackdropClick")(_))
+      onClose.foreach( p.updateDynamic("onClose")(_))
+      onEscapeKeyDown.foreach( p.updateDynamic("onEscapeKeyDown")(_))
+      onRendered.foreach( p.updateDynamic("onRendered")(_))
+      open.foreach( p.updateDynamic("open")(_))
+
+      p
     }
 }
 
-object MuiModal {
+object MuiModal extends ComponentFactory[ModalProps] {
     @js.native @JSImport("@material-ui/core/Modal", JSImport.Default) private object Modal extends js.Any
 
-    private val f = JsComponent[js.Object, Children.Varargs, Null](Modal)
+    protected val f = JsComponent[ModalProps, Children.Varargs, Null](Modal)
 
     /**
      * @param BackdropComponent A backdrop component. This property enables custom
@@ -188,6 +193,7 @@ object MuiModal {
      * @param onRendered Callback fired once the children has been mounted into the container.
      *                    It signals that the open={true} property took effect.
      * @param open If true, the modal is open.
+     * @param additionalProps a dictionary of additional properties
      */
     def apply(
         backdropComponent: js.UndefOr[js.Object] = js.undefined,
@@ -203,16 +209,18 @@ object MuiModal {
         hideBackdrop: js.UndefOr[Boolean] = js.undefined,
         keepMounted: js.UndefOr[Boolean] = js.undefined,
         manager: js.UndefOr[js.Object] = js.undefined,
-        onBackdropClick: js.UndefOr[js.Function0[Unit]] = js.undefined,
+        onBackdropClick: js.UndefOr[()=>Unit] = js.undefined,
 //        onClose: js.UndefOr[js.Function2[js.Object,String,Unit]] = js.undefined,
         onClose: js.UndefOr[() => Unit] = js.undefined,
-        onEscapeKeyDown: js.UndefOr[js.Function0[Unit]] = js.undefined,
-        onRendered: js.UndefOr[js.Function0[Unit]] = js.undefined,
+        onEscapeKeyDown: js.UndefOr[()=>Unit] = js.undefined,
+        onRendered: js.UndefOr[()=>Unit] = js.undefined,
         open: js.UndefOr[Boolean] = js.undefined,
+
+        additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
     )(
         children: CtorType.ChildArg*
     ) = {
-      val p = ModalProps(
+      val p: ModalProps = ModalProps(
                  backdropComponent = backdropComponent,
                  backdropProps = backdropProps,
                  classes = classes,
@@ -230,7 +238,8 @@ object MuiModal {
                  onClose = onClose,
                  onEscapeKeyDown = onEscapeKeyDown,
                  onRendered = onRendered,
-                 open = open
+                 open = open,
+                 additionalProps = additionalProps
               )
       val x = f(p) _
       x(children)

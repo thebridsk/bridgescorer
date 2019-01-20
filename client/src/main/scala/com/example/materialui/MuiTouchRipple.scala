@@ -9,21 +9,21 @@ import scala.scalajs.js.annotation._
 
 
 @js.native
-trait TouchRippleProps extends js.Object {
+trait TouchRippleProps extends AdditionalProps {
   /**
    * If true, the ripple starts at the center of the
    * component rather than at the point of interaction.
    */
-  val center: js.UndefOr[Boolean] = js.native
+  var center: js.UndefOr[Boolean] = js.native
 
   /**
    * Override or extend the styles applied to the
    * component. See CSS API below for more details.
    */
-  val classes:  js.UndefOr[js.Object] = js.native
+  var classes:  js.UndefOr[js.Object] = js.native
 }
 
-object TouchRippleProps {
+object TouchRippleProps extends PropsFactory[TouchRippleProps] {
   /**
    * create a TouchRipple object
    *
@@ -31,26 +31,28 @@ object TouchRippleProps {
    *               component rather than at the point of interaction.
    * @param classes Override or extend the styles applied to the
    *                component. See CSS API below for more details.
+   * @param additionalProps a dictionary of additional properties
    */
-  def apply(
-      center: js.UndefOr[Boolean] = js.undefined,
-      classes:  js.UndefOr[js.Object] = js.undefined
-  ) = {
-    val p = js.Dynamic.literal()
+  def apply[P <: TouchRippleProps](
+    props: js.UndefOr[P] = js.undefined,
+    center: js.UndefOr[Boolean] = js.undefined,
+    classes:  js.UndefOr[js.Object] = js.undefined,
 
-    center.foreach(p.updateDynamic("center")(_))
-    classes.foreach(p.updateDynamic("classes")(_))
+    additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
+  ): P = {
+    val p = get(props,additionalProps)
 
-//    Combobox.logger.info("ComboboxComponentMessagesProperty: msgEmptyList="+msgEmptyList+", msgEmptyFilter="+msgEmptyFilter)
+    center.foreach( p.updateDynamic("center")(_))
+    classes.foreach( p.updateDynamic("classes")(_))
 
-    p.asInstanceOf[TouchRippleProps]
+    p
   }
 }
 
-object MuiTouchRipple {
+object MuiTouchRipple extends ComponentFactory[TouchRippleProps] {
   @js.native @JSImport("@material-ui/core/TouchRipple", JSImport.Default) private object TouchRipple extends js.Any
 
-  private val f = JsComponent[js.Object, Children.Varargs, Null](TouchRipple)
+  protected val f = JsComponent[TouchRippleProps, Children.Varargs, Null](TouchRipple)
 
   /**
    *
@@ -58,28 +60,21 @@ object MuiTouchRipple {
    *               component rather than at the point of interaction.
    * @param classes Override or extend the styles applied to the
    *                component. See CSS API below for more details.
-   */
-  def set(
-    center: js.UndefOr[Boolean] = js.undefined,
-    classes:  js.UndefOr[js.Object] = js.undefined
-  ): TouchRippleProps = {
-    TouchRippleProps(center,classes)
-  }
-
-  /**
-   *
-   * @param center If true, the ripple starts at the center of the
-   *               component rather than at the point of interaction.
-   * @param classes Override or extend the styles applied to the
-   *                component. See CSS API below for more details.
+   * @param additionalProps a dictionary of additional properties
    */
   def apply(
     center: js.UndefOr[Boolean] = js.undefined,
-    classes:  js.UndefOr[js.Object] = js.undefined
+    classes:  js.UndefOr[js.Object] = js.undefined,
+
+    additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
   )(
       children: CtorType.ChildArg*
   ) = {
-    val p = set( center, classes )
+    val p: TouchRippleProps = TouchRippleProps(
+               center = center,
+               classes = classes,
+               additionalProps = additionalProps
+               )
     val x = f(p) _
     x(children)
   }

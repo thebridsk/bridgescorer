@@ -7,10 +7,43 @@ import org.scalajs.dom
 import scala.scalajs.js
 import scala.scalajs.js.annotation._
 
-object MuiIconButton {
-    @js.native @JSImport("@material-ui/core/IconButton", JSImport.Default) private object IconButton extends js.Any
 
-    private val f = JsComponent[js.Object, Children.Varargs, Null](IconButton)
+@js.native
+protected trait IconButtonPropsPrivate extends js.Any {
+  @JSName("color")
+  var colorInternal: js.UndefOr[String] = js.native
+  @JSName("size")
+  var sizeInternal: js.UndefOr[String] = js.native
+  @JSName("variant")
+  var variantInternal: js.UndefOr[String] = js.native
+}
+
+@js.native
+trait IconButtonProps extends ButtonBaseProps with IconButtonPropsPrivate {
+  var disableFocusRipple: js.UndefOr[Boolean] = js.native
+  var fullWidth: js.UndefOr[Boolean] = js.native
+  var href: js.UndefOr[String] = js.native
+  var mini: js.UndefOr[Boolean] = js.native
+
+}
+object IconButtonProps extends PropsFactory[IconButtonProps] {
+  import js._
+
+  implicit class WrapButtonProps( val p: IconButtonProps ) extends AnyVal {
+
+    def color = p.colorInternal.map( s => new ColorVariant(s) )
+
+    def color_= (v: js.UndefOr[ColorVariant]) = { p.colorInternal = v.map(pp => pp.value) }
+
+    def size = p.sizeInternal.map( s => new ItemSize(s) )
+
+    def size_= (v: js.UndefOr[ItemSize]) = { p.sizeInternal = v.map(pp => pp.value) }
+
+    def variant = p.variantInternal.map( s => new Variant(s) )
+
+    def variant_= (v: js.UndefOr[Variant]) = { p.variantInternal = v.map(pp => pp.value) }
+
+  }
 
     /**
      * @param p the object that will become the properties object
@@ -50,15 +83,15 @@ object MuiIconButton {
      *              Default: "button"
      * @param id the value of the id attribute
      */
-    def set(
-        pb: js.Object with js.Dynamic,
+    def apply[P <: IconButtonProps](
+        props: js.UndefOr[P] = js.undefined,
         classes:  js.UndefOr[js.Object] = js.undefined,
         color: js.UndefOr[ColorVariant] = js.undefined,
         disabled: js.UndefOr[Boolean] = js.undefined,
         disableRipple: js.UndefOr[Boolean] = js.undefined,
 
         // from ButtonBase
-        action: js.UndefOr[js.Function1[js.Object,Unit]] = js.undefined,
+        action: js.UndefOr[js.Object=>Unit] = js.undefined,
         buttonRef: js.UndefOr[js.Object] = js.undefined,   // js.object or js.Function0[ref]
         centerRipple: js.UndefOr[Boolean] = js.undefined,
 //        classes:  js.UndefOr[js.Object] = js.undefined,
@@ -68,37 +101,48 @@ object MuiIconButton {
         disableTouchRipple: js.UndefOr[Boolean] = js.undefined,
         focusRipple: js.UndefOr[Boolean] = js.undefined,
         focusVisibleClassName: js.UndefOr[String] = js.undefined,
-        onFocusVisible: js.UndefOr[js.Function0[Unit]] = js.undefined,
+        onFocusVisible: js.UndefOr[()=>Unit] = js.undefined,
         TouchRippleProps: js.UndefOr[TouchRippleProps] = js.undefined,
         `type`: js.UndefOr[String] = js.undefined,
 
         onClick: js.UndefOr[ReactEvent => Unit] = js.undefined,
         style: js.UndefOr[js.Object] = js.undefined,
-        id: js.UndefOr[String] = js.undefined
-    ): js.Object with js.Dynamic = {
-      val p = MuiButtonBase.set(
-                 pb,
-                 action,
-                 buttonRef,
-                 centerRipple,
-                 classes,
-                 component,
-                 disabled,
-                 disableRipple,
-                 disableTouchRipple,
-                 focusRipple,
-                 focusVisibleClassName,
-                 onFocusVisible,
-                 TouchRippleProps,
-                 `type`,
-                 onClick,
-                 style,
-                 id
+        id: js.UndefOr[String] = js.undefined,
+
+        additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
+    ): P = {
+      val p = ButtonBaseProps[P](
+                     props,
+                     action,
+                     buttonRef,
+                     centerRipple,
+                     classes,
+                     component,
+                     disabled,
+                     disableRipple,
+                     disableTouchRipple,
+                     focusRipple,
+                     focusVisibleClassName,
+                     onFocusVisible,
+                     TouchRippleProps,
+                     `type`,
+                     onClick,
+                     style,
+                     id,
+                     additionalProps
                )
 
-      color.foreach(c =>  p.updateDynamic("color")(c.value) )
+      color.foreach( p.updateDynamic("color")(_))
+
       p
     }
+
+}
+
+object MuiIconButton extends ComponentFactory[IconButtonProps] {
+    @js.native @JSImport("@material-ui/core/IconButton", JSImport.Default) private object IconButton extends js.Any
+
+    protected val f = JsComponent[IconButtonProps, Children.Varargs, Null](IconButton)
 
 
     /**
@@ -145,7 +189,7 @@ object MuiIconButton {
         disableRipple: js.UndefOr[Boolean] = js.undefined,
 
         // from ButtonBase
-        action: js.UndefOr[js.Function1[js.Object,Unit]] = js.undefined,
+        action: js.UndefOr[js.Object=>Unit] = js.undefined,
         buttonRef: js.UndefOr[js.Object] = js.undefined,   // js.object or js.Function0[ref]
         centerRipple: js.UndefOr[Boolean] = js.undefined,
 //        classes:  js.UndefOr[js.Object] = js.undefined,
@@ -155,36 +199,38 @@ object MuiIconButton {
         disableTouchRipple: js.UndefOr[Boolean] = js.undefined,
         focusRipple: js.UndefOr[Boolean] = js.undefined,
         focusVisibleClassName: js.UndefOr[String] = js.undefined,
-        onFocusVisible: js.UndefOr[js.Function0[Unit]] = js.undefined,
+        onFocusVisible: js.UndefOr[()=>Unit] = js.undefined,
         TouchRippleProps: js.UndefOr[TouchRippleProps] = js.undefined,
         `type`: js.UndefOr[String] = js.undefined,
 
         onClick: js.UndefOr[ReactEvent => Unit] = js.undefined,
         style: js.UndefOr[js.Object] = js.undefined,
-        id: js.UndefOr[String] = js.undefined
+        id: js.UndefOr[String] = js.undefined,
+
+        additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
     )(
         children: CtorType.ChildArg*
     ) = {
-      val p = set(
-                  js.Dynamic.literal(),
-                  classes,
-                  color,
-                  disabled,
-                  disableRipple,
+      val p: IconButtonProps = IconButtonProps(
+                 classes = classes,
+                 color = color,
+                 disabled = disabled,
+                 disableRipple = disableRipple,
 
-                  action,
-                  buttonRef,
-                  centerRipple,
-                  component,
-                  disableTouchRipple,
-                  focusRipple,
-                  focusVisibleClassName,
-                  onFocusVisible,
-                  TouchRippleProps,
-                  `type`,
-                  onClick,
-                  style,
-                  id
+                 action = action,
+                 buttonRef = buttonRef,
+                 centerRipple = centerRipple,
+                 component = component,
+                 disableTouchRipple = disableTouchRipple,
+                 focusRipple = focusRipple,
+                 focusVisibleClassName = focusVisibleClassName,
+                 onFocusVisible = onFocusVisible,
+                 TouchRippleProps = TouchRippleProps,
+                 `type` = `type`,
+                 onClick = onClick,
+                 style = style,
+                 id = id,
+                 additionalProps = additionalProps
               )
       val x = f(p) _
       x(children)

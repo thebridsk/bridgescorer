@@ -14,6 +14,6 @@ object MuiHelpIcon extends SvgIconBase {
   @js.native @JSImport("@material-ui/icons/Help", JSImport.Default)
   private object icon extends js.Any
 
-  protected val f = JsComponent[js.Object, Children.Varargs, Null](icon)
+  protected val f = JsComponent[SvgIconProps, Children.Varargs, Null](icon)
 
 }

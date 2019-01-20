@@ -8,6 +8,7 @@ import org.scalajs.dom.raw.Element
 import com.example.materialui.MuiClickAwayListener
 import com.example.materialui.MuiPaper
 import com.example.materialui.PopperPlacement
+import com.example.materialui.AnchorElement
 
 /**
  * A skeleton component.
@@ -26,14 +27,14 @@ object MyMenu {
   import js._
   case class Props(
       placement: js.UndefOr[PopperPlacement],
-      anchorEl: js.UndefOr[ js.Object | js.Function0[Element] ],
+      anchorEl: js.UndefOr[AnchorElement],
       onClickAway: js.UndefOr[ ()=>Unit ],
       children: Seq[CtorType.ChildArg]
   )
 
   def apply(
       placement: js.UndefOr[PopperPlacement] = js.undefined,
-      anchorEl: js.UndefOr[ js.Object | js.Function0[Element] ] = js.undefined,
+      anchorEl: js.UndefOr[AnchorElement] = js.undefined,
       onClickAway: js.UndefOr[ ()=>Unit ] = js.undefined
   )(
       children: CtorType.ChildArg*

@@ -6,6 +6,7 @@ import japgolly.scalajs.react.vdom._
 import org.scalajs.dom
 import scala.scalajs.js
 import scala.scalajs.js.annotation._
+import scala.language.implicitConversions
 
 class CALMouseEvent( val value: js.Any ) extends AnyVal
 object CALMouseEvent {
@@ -13,6 +14,9 @@ object CALMouseEvent {
   val onMouseDown = new CALMouseEvent("onMouseDown")
   val onMouseUp = new CALMouseEvent("onMouseUp")
   val False = new CALMouseEvent( false )
+
+  implicit def toJsAny( cv: CALMouseEvent ): js.Any = cv.value
+
 }
 
 class CALTouchEvent( val value: js.Any ) extends AnyVal
@@ -20,15 +24,34 @@ object CALTouchEvent {
   val onTouchStart = new CALTouchEvent("onTouchStart")
   val onTouchEnd = new CALTouchEvent("onTouchEnd")
   val False = new CALTouchEvent( false )
+
+  implicit def toJsAny( cv: CALTouchEvent ): js.Any = cv.value
 }
 
 @js.native
-trait ClickAwayListenerProps extends js.Object {
-  val mouseEvent: js.UndefOr[CALMouseEvent] = js.native
-  val onClickAway: js.UndefOr[() => Unit] = js.native
-  val touchEvent: js.UndefOr[CALTouchEvent] = js.native
+protected trait ClickAwayListenerPropsPrivate extends js.Any {
+  @JSName("mouseEvent")
+  var mouseEventInternal: js.UndefOr[js.Any] = js.native
+  @JSName("touchEvent")
+  var touchEventInternal: js.UndefOr[js.Any] = js.native
 }
-object ClickAwayListenerProps {
+
+@js.native
+trait ClickAwayListenerProps extends AdditionalProps with ClickAwayListenerPropsPrivate {
+  var onClickAway: js.UndefOr[() => Unit] = js.native
+}
+object ClickAwayListenerProps extends PropsFactory[ClickAwayListenerProps] {
+
+  implicit class WrapClickAwayListenerProps( val p: ClickAwayListenerProps ) extends AnyVal {
+    def mouseEvent = p.mouseEventInternal.map( s => new CALMouseEvent(s) )
+
+    def mouseEvent_= (v: js.UndefOr[CALMouseEvent]) = { p.mouseEventInternal = v.map(pp => pp.value) }
+
+    def touchEvent = p.touchEventInternal.map( s => new CALTouchEvent(s) )
+
+    def touchEvent_= (v: js.UndefOr[CALTouchEvent]) = { p.touchEventInternal = v.map(pp => pp.value) }
+
+  }
 
     /**
      * @param p the object that will become the properties object
@@ -39,18 +62,23 @@ object ClickAwayListenerProps {
      * @param touchEvent The touch event to listen to. You can disable the
      *                    listener by providing false.
      *                    Default: onTouchEnd
+     * @param additionalProps a dictionary of additional properties
      */
-    def apply(
-        p: js.Object with js.Dynamic = js.Dynamic.literal(),
+    def apply[P <: ClickAwayListenerProps](
+        props: js.UndefOr[P] = js.undefined,
         mouseEvent: js.UndefOr[CALMouseEvent] = js.undefined,
         onClickAway: js.UndefOr[() => Unit] = js.undefined,
-        touchEvent: js.UndefOr[CALTouchEvent] = js.undefined
-    ): ClickAwayListenerProps = {
-      mouseEvent.foreach(v => p.updateDynamic("mouseEvent")(v.value))
-      onClickAway.foreach(p.updateDynamic("onClickAway")(_))
-      touchEvent.foreach(v => p.updateDynamic("touchEvent")(v.value))
+        touchEvent: js.UndefOr[CALTouchEvent] = js.undefined,
 
-      p.asInstanceOf[ClickAwayListenerProps]
+        additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
+    ): P = {
+      val p = get(props,additionalProps)
+
+      mouseEvent.foreach( p.updateDynamic("mouseEvent")(_))
+      onClickAway.foreach( p.updateDynamic("onClickAway")(_) )
+      touchEvent.foreach( p.updateDynamic("touchEvent")(_))
+
+      p
     }
 }
 
@@ -67,18 +95,22 @@ object MuiClickAwayListener {
      * @param touchEvent The touch event to listen to. You can disable the
      *                    listener by providing false.
      *                    Default: onTouchEnd
+     * @param additionalProps a dictionary of additional properties
      */
     def apply(
         mouseEvent: js.UndefOr[CALMouseEvent] = js.undefined,
         onClickAway: js.UndefOr[() => Unit] = js.undefined,
-        touchEvent: js.UndefOr[CALTouchEvent] = js.undefined
+        touchEvent: js.UndefOr[CALTouchEvent] = js.undefined,
+
+        additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
     )(
         children: CtorType.ChildArg*
     ) = {
-      val p = ClickAwayListenerProps(
+      val p: ClickAwayListenerProps = ClickAwayListenerProps(
                 mouseEvent = mouseEvent,
                 onClickAway = onClickAway,
-                touchEvent = touchEvent
+                touchEvent = touchEvent,
+                additionalProps = additionalProps
               )
       val x = f(p) _
       x(children)

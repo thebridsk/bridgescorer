@@ -12,34 +12,34 @@ import org.scalajs.dom.raw.Node
 @js.native
 trait MenuProps extends PopoverProps {
 
-  val disableAutoFocusItem: js.UndefOr[Boolean] = js.native
-  val MenuListProps: js.UndefOr[js.Object] = js.native
-  val PopoverClasses: js.UndefOr[js.Object] = js.native
+  var disableAutoFocusItem: js.UndefOr[Boolean] = js.native
+  var MenuListProps: js.UndefOr[js.Object] = js.native
+  var PopoverClasses: js.UndefOr[js.Object] = js.native
 }
-object MenuProps {
+object MenuProps extends PropsFactory[MenuProps] {
   import js._
-  def apply(
-      p: js.Object with js.Dynamic = js.Dynamic.literal(),
+  def apply[P <: MenuProps](
+      props: js.UndefOr[P] = js.undefined,
 
       disableAutoFocusItem: js.UndefOr[Boolean] = js.undefined,
       MenuListProps: js.UndefOr[js.Object] = js.undefined,
       PopoverClasses: js.UndefOr[js.Object] = js.undefined,
 
-      action: js.UndefOr[js.Function1[js.Object,Unit]] = js.undefined,
-      anchorEl: js.UndefOr[ js.Object | js.Function0[Element] ] = js.undefined,
+      action: js.UndefOr[js.Object=>Unit] = js.undefined,
+      anchorEl: js.UndefOr[AnchorElement] = js.undefined,
       anchorOrigin: js.UndefOr[AnchorOrigin] = js.undefined,
       anchorPosition: js.UndefOr[AnchorPosition] = js.undefined,
       anchorReference: js.UndefOr[AnchorReference] = js.undefined,
       elevation: js.UndefOr[Double] = js.undefined,
-      getContentAnchorEl: js.UndefOr[js.Function0[js.Object]] = js.undefined,
+      getContentAnchorEl: js.UndefOr[()=>js.Object] = js.undefined,
       marginThreshold: js.UndefOr[Double] = js.undefined,
       modalClasses: js.UndefOr[ModalProps] = js.undefined,
-      onEnter: js.UndefOr[js.Function0[Unit]] = js.undefined,
-      onEntered: js.UndefOr[js.Function0[Unit]] = js.undefined,
-      onEntering: js.UndefOr[js.Function0[Unit]] = js.undefined,
-      onExit: js.UndefOr[js.Function0[Unit]] = js.undefined,
-      onExited: js.UndefOr[js.Function0[Unit]] = js.undefined,
-      onExiting: js.UndefOr[js.Function0[Unit]] = js.undefined,
+      onEnter: js.UndefOr[()=>Unit] = js.undefined,
+      onEntered: js.UndefOr[()=>Unit] = js.undefined,
+      onEntering: js.UndefOr[()=>Unit] = js.undefined,
+      onExit: js.UndefOr[()=>Unit] = js.undefined,
+      onExited: js.UndefOr[()=>Unit] = js.undefined,
+      onExiting: js.UndefOr[()=>Unit] = js.undefined,
       paperProps: js.UndefOr[PaperProps] = js.undefined,
       transformOrigin: js.UndefOr[js.Object] = js.undefined,
       transitionComponent: js.UndefOr[js.Object] = js.undefined,
@@ -59,23 +59,76 @@ object MenuProps {
       hideBackdrop: js.UndefOr[Boolean] = js.undefined,
       keepMounted: js.UndefOr[Boolean] = js.undefined,
       manager: js.UndefOr[js.Object] = js.undefined,
-      onBackdropClick: js.UndefOr[js.Function0[Unit]] = js.undefined,
+      onBackdropClick: js.UndefOr[()=>Unit] = js.undefined,
 //      onClose: js.UndefOr[js.Function2[js.Object,String,Unit]] = js.undefined,
       onClose: js.UndefOr[() => Unit] = js.undefined,
-      onEscapeKeyDown: js.UndefOr[js.Function0[Unit]] = js.undefined,
-      onRendered: js.UndefOr[js.Function0[Unit]] = js.undefined,
+      onEscapeKeyDown: js.UndefOr[()=>Unit] = js.undefined,
+      onRendered: js.UndefOr[()=>Unit] = js.undefined,
       open: js.UndefOr[Boolean] = js.undefined,
 
-  ) = {
+      additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
 
+  ): P = {
+    val p: P = PopoverProps(
+        props,
+
+        action = action,
+        anchorEl = anchorEl,
+        anchorOrigin = anchorOrigin,
+        anchorPosition = anchorPosition,
+        anchorReference = anchorReference,
+        elevation = elevation,
+        getContentAnchorEl = getContentAnchorEl,
+        marginThreshold = marginThreshold,
+        modalClasses = modalClasses,
+        onEnter = onEnter,
+        onEntered = onEntered,
+        onEntering = onEntering,
+        onExit = onExit,
+        onExited = onExited,
+        onExiting = onExiting,
+        paperProps = paperProps,
+        transformOrigin = transformOrigin,
+        transitionComponent = transitionComponent,
+        transitionDuration = transitionDuration,
+        transitionProps = transitionProps,
+
+        backdropComponent = backdropComponent,
+        backdropProps = backdropProps,
+        classes = classes,
+        container = container,
+        disableAutoFocus = disableAutoFocus,
+        disableBackdropClick = disableBackdropClick,
+        disableEnforceFocus = disableEnforceFocus,
+        disableEscapeKeyDown = disableEscapeKeyDown,
+        disablePortal = disablePortal,
+        disableRestoreFocus = disableRestoreFocus,
+        hideBackdrop = hideBackdrop,
+        keepMounted = keepMounted,
+        manager = manager,
+        onBackdropClick = onBackdropClick,
+        onClose = onClose,
+        onEscapeKeyDown = onEscapeKeyDown,
+        onRendered = onRendered,
+        open = open,
+
+        additionalProps = additionalProps
+
+    )
+
+    disableAutoFocusItem.foreach( p.updateDynamic("disableAutoFocusItem")(_))
+    MenuListProps.foreach( p.updateDynamic("MenuListProps")(_))
+    PopoverClasses.foreach( p.updateDynamic("PopoverClasses")(_))
+
+    p
   }
 }
 
-object MuiMenu {
+object MuiMenu extends PropsFactory[MenuProps] {
 
   @js.native @JSImport("@material-ui/core/Menu", JSImport.Default) private object Menu extends js.Any
 
-  private val f = JsComponent[js.Object, Children.Varargs, Null](Menu)
+  protected val f = JsComponent[MenuProps, Children.Varargs, Null](Menu)
 
   import js._
   /**
@@ -97,6 +150,7 @@ object MuiMenu {
    * @param open If true, the menu is visible.
    * @param PopoverClasses classes property applied to the Popover element.
    * @param transitionDuration The length of the transition in ms, or 'auto'
+   * @param additionalProps a dictionary of additional properties
    *
    * @param children Menu contents, normally MenuItems.
    */
@@ -106,21 +160,21 @@ object MuiMenu {
       MenuListProps: js.UndefOr[js.Object] = js.undefined,
       PopoverClasses: js.UndefOr[js.Object] = js.undefined,
 
-      action: js.UndefOr[js.Function1[js.Object,Unit]] = js.undefined,
-      anchorEl: js.UndefOr[ Element | js.Function0[Element] ] = js.undefined,
+      action: js.UndefOr[js.Object=>Unit] = js.undefined,
+      anchorEl: js.UndefOr[AnchorElement] = js.undefined,
       anchorOrigin: js.UndefOr[AnchorOrigin] = js.undefined,
       anchorPosition: js.UndefOr[AnchorPosition] = js.undefined,
       anchorReference: js.UndefOr[AnchorReference] = js.undefined,
       elevation: js.UndefOr[Double] = js.undefined,
-      getContentAnchorEl: js.UndefOr[js.Function0[js.Object]] = js.undefined,
+      getContentAnchorEl: js.UndefOr[()=>js.Object] = js.undefined,
       marginThreshold: js.UndefOr[Double] = js.undefined,
       modalClasses: js.UndefOr[ModalProps] = js.undefined,
-      onEnter: js.UndefOr[js.Function0[Unit]] = js.undefined,
-      onEntered: js.UndefOr[js.Function0[Unit]] = js.undefined,
-      onEntering: js.UndefOr[js.Function0[Unit]] = js.undefined,
-      onExit: js.UndefOr[js.Function0[Unit]] = js.undefined,
-      onExited: js.UndefOr[js.Function0[Unit]] = js.undefined,
-      onExiting: js.UndefOr[js.Function0[Unit]] = js.undefined,
+      onEnter: js.UndefOr[()=>Unit] = js.undefined,
+      onEntered: js.UndefOr[()=>Unit] = js.undefined,
+      onEntering: js.UndefOr[()=>Unit] = js.undefined,
+      onExit: js.UndefOr[()=>Unit] = js.undefined,
+      onExited: js.UndefOr[()=>Unit] = js.undefined,
+      onExiting: js.UndefOr[()=>Unit] = js.undefined,
       paperProps: js.UndefOr[PaperProps] = js.undefined,
       transformOrigin: js.UndefOr[js.Object] = js.undefined,
       transitionComponent: js.UndefOr[js.Object] = js.undefined,
@@ -140,64 +194,64 @@ object MuiMenu {
       hideBackdrop: js.UndefOr[Boolean] = js.undefined,
       keepMounted: js.UndefOr[Boolean] = js.undefined,
       manager: js.UndefOr[js.Object] = js.undefined,
-      onBackdropClick: js.UndefOr[js.Function0[Unit]] = js.undefined,
+      onBackdropClick: js.UndefOr[()=>Unit] = js.undefined,
 //      onClose: js.UndefOr[js.Function2[js.Object,String,Unit]] = js.undefined,
       onClose: js.UndefOr[() => Unit] = js.undefined,
-      onEscapeKeyDown: js.UndefOr[js.Function0[Unit]] = js.undefined,
-      onRendered: js.UndefOr[js.Function0[Unit]] = js.undefined,
+      onEscapeKeyDown: js.UndefOr[()=>Unit] = js.undefined,
+      onRendered: js.UndefOr[()=>Unit] = js.undefined,
       open: js.UndefOr[Boolean] = js.undefined,
+
+      additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
   )(
         children: CtorType.ChildArg*
    ) = {
-    val p: js.Object with js.Dynamic = js.Dynamic.literal()
 
-    PopoverProps(
-      p,
+    val p: MenuProps = MenuProps(
+      action = action,
+      anchorEl = anchorEl,
+      anchorOrigin = anchorOrigin,
+      anchorPosition = anchorPosition,
+      anchorReference = anchorReference,
+      elevation = elevation,
+      getContentAnchorEl = getContentAnchorEl,
+      marginThreshold = marginThreshold,
+      modalClasses = modalClasses,
+      onEnter = onEnter,
+      onEntered = onEntered,
+      onEntering = onEntering,
+      onExit = onExit,
+      onExited = onExited,
+      onExiting = onExiting,
+      paperProps = paperProps,
+      transformOrigin = transformOrigin,
+      transitionComponent = transitionComponent,
+      transitionDuration = transitionDuration,
+      transitionProps = transitionProps,
 
-      action,
-      anchorEl,
-      anchorOrigin,
-      anchorPosition,
-      anchorReference,
-      elevation,
-      getContentAnchorEl,
-      marginThreshold,
-      modalClasses,
-      onEnter,
-      onEntered,
-      onEntering,
-      onExit,
-      onExited,
-      onExiting,
-      paperProps,
-      transformOrigin,
-      transitionComponent,
-      transitionDuration,
-      transitionProps,
+      backdropComponent = backdropComponent,
+      backdropProps = backdropProps,
+      classes = classes,
+      container = container,
+      disableAutoFocus = disableAutoFocus,
+      disableBackdropClick = disableBackdropClick,
+      disableEnforceFocus = disableEnforceFocus,
+      disableEscapeKeyDown = disableEscapeKeyDown,
+      disablePortal = disablePortal,
+      disableRestoreFocus = disableRestoreFocus,
+      hideBackdrop = hideBackdrop,
+      keepMounted = keepMounted,
+      manager = manager,
+      onBackdropClick = onBackdropClick,
+      onClose = onClose,
+      onEscapeKeyDown = onEscapeKeyDown,
+      onRendered = onRendered,
+      open = open,
+      disableAutoFocusItem = disableAutoFocusItem,
+      MenuListProps = MenuListProps,
+      PopoverClasses = PopoverClasses,
 
-      backdropComponent,
-      backdropProps,
-      classes,
-      container,
-      disableAutoFocus,
-      disableBackdropClick,
-      disableEnforceFocus,
-      disableEscapeKeyDown,
-      disablePortal,
-      disableRestoreFocus,
-      hideBackdrop,
-      keepMounted,
-      manager,
-      onBackdropClick,
-      onClose,
-      onEscapeKeyDown,
-      onRendered,
-      open,
+      additionalProps = additionalProps
     )
-
-    disableAutoFocusItem.foreach( p.updateDynamic("disableAutoFocusItem")(_))
-    MenuListProps.foreach( p.updateDynamic("MenuListProps")(_))
-    PopoverClasses.foreach( p.updateDynamic("PopoverClasses")(_))
 
     val x = f(p) _
     x(children)
