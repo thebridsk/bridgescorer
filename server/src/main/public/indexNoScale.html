@@ -54,7 +54,10 @@
         });
     </script>
     <div id="ForDefaultStyles" style="visibility:hidden; position: fixed; left: 0px; top: 0px;">
-      <script src="defaults.js" ></script>
+        <script src="loadfile.js" ></script>
+        <script type="text/javascript">
+            getHTMLFragment('defaults.html', '#ForDefaultStyles')
+        </script>
     </div>
     <audio id="audioPlayer" preload="auto">
       Your browser does not support the
