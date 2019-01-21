@@ -27,6 +27,9 @@ import com.example.pages.duplicate.DuplicateRouter.DuplicateResultEditView
 import com.example.react.CheckBox
 import com.example.routes.BridgeRouter
 import com.example.react.Utils.ExtendReactEventFromInput
+import com.example.materialui.MuiTypography
+import com.example.materialui.TextVariant
+import com.example.materialui.TextColor
 
 /**
  * PageSelectMatch.
@@ -114,6 +117,23 @@ object PageSelectMatchInternal {
       <.div(
         dupStyles.divSelectMatch,
         PopupOkCancel( state.error.map( s => <.p(s) ), Some(popupOk), None ),
+        DuplicatePageBridgeAppBar(
+          id = None,
+          tableIds = List(),
+          pageMenuItems = List[CtorType.ChildArg](),
+          title = Seq[CtorType.ChildArg](MuiTypography(
+                variant = TextVariant.h6,
+                color = TextColor.inherit,
+            )(
+                <.span(
+                  "Select a Match"
+                )
+            )),
+          helpurl = "/help/duplicate/summary.html",
+          routeCtl = props.routerCtl
+        )(
+
+        ),
         <.div(
           <.label(
             "Please enter just the number for the match: ",

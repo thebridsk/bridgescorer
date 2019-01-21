@@ -4,7 +4,7 @@ package com.example.pages.duplicate
 import scala.scalajs.js
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
-import japgolly.scalajs.react.extra.router.RouterCtl
+import com.example.routes.BridgeRouter
 import com.example.routes.AppRouter.AppPage
 import com.example.data.Id
 import utils.logging.Logger
@@ -15,6 +15,9 @@ import com.example.pages.duplicate.DuplicateRouter.NamesView
 import com.example.react.AppButton
 import com.example.react.ComboboxOrInput
 import com.example.bridge.store.NamesStore
+import com.example.materialui.MuiTypography
+import com.example.materialui.TextVariant
+import com.example.materialui.TextColor
 
 /**
  * Shows the team x board table and has a totals column that shows the number of points the team has.
@@ -24,7 +27,7 @@ import com.example.bridge.store.NamesStore
  * To use, just code the following:
  *
  * <pre><code>
- * PageNames( routerCtl: RouterCtl[DuplicatePage], page: BaseBoardViewWithPerspective )
+ * PageNames( routerCtl: BridgeRouter[DuplicatePage], page: BaseBoardViewWithPerspective )
  * </code></pre>
  *
  * @author werewolf
@@ -32,9 +35,9 @@ import com.example.bridge.store.NamesStore
 object PageNames {
   import PageNamesInternal._
 
-  case class Props( routerCtl: RouterCtl[DuplicatePage], page: NamesView, returnPage: DuplicatePage )
+  case class Props( routerCtl: BridgeRouter[DuplicatePage], page: NamesView, returnPage: DuplicatePage )
 
-  def apply( routerCtl: RouterCtl[DuplicatePage], page: NamesView, returnPage: DuplicatePage ) = component(Props(routerCtl,page,returnPage))
+  def apply( routerCtl: BridgeRouter[DuplicatePage], page: NamesView, returnPage: DuplicatePage ) = component(Props(routerCtl,page,returnPage))
 
 }
 
@@ -115,10 +118,27 @@ object PageNamesInternal {
       logger.info("Rendering "+props.page+" suggestions="+state.nameSuggestions)
       <.div(
         dupStyles.divNamesPage,
+        DuplicatePageBridgeAppBar(
+          id = Some(props.page.dupid),
+          tableIds = List(),
+          pageMenuItems = List[CtorType.ChildArg](),
+          title = Seq[CtorType.ChildArg](MuiTypography(
+                    variant = TextVariant.h6,
+                    color = TextColor.inherit,
+                )(
+                    <.span(
+                      "Edit Names",
+                    )
+                )),
+          helpurl = "/help/duplicate/summary.html",
+          routeCtl = props.routerCtl
+        )(
+
+        ),
         DuplicateStore.getMatch() match {
           case Some(md) =>
             <.div(
-              <.h1("Edit Names"),
+//              <.h1("Edit Names"),
               <.h2("Only change the spelling of a players name"),
               <.h2("or replace a player."),
               <.h2("Do NOT swap players."),

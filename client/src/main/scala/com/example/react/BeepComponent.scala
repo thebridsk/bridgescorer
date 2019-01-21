@@ -11,6 +11,9 @@ import com.example.react.AppButton
 import utils.logging.Logger
 import com.example.pages.BaseStyles.baseStyles
 import com.example.pages.BaseStyles
+import com.example.materialui.icons.MuiCheckIcon
+import com.example.materialui.MuiMenuItem
+import com.example.materialui.icons.SvgColor
 
 /**
  * A skeleton component.
@@ -58,6 +61,29 @@ object BeepComponent {
     } else {
       log.fine("Beep is not enabled")
     }
+  }
+
+  def toggle( e: ReactEvent ): Unit = {
+    playEnabled = !playEnabled
+    log.info(s"Beep playEnabled is not $playEnabled")
+    if (playEnabled) beep()
+  }
+
+  def getMenuItem(): VdomNode = {
+    MuiMenuItem(
+        id = "Beep",
+        onClick = toggle _,
+        classes = js.Dictionary("root" -> "mainMenuItem").asInstanceOf[js.Object]
+    )(
+        "Beep",
+        {
+          val color = if (playEnabled) SvgColor.inherit else SvgColor.disabled
+          MuiCheckIcon(
+              color=color,
+              classes = js.Dictionary("root" -> "mainMenuItemIcon").asInstanceOf[js.Object]
+          )()
+        }
+    )
   }
 }
 

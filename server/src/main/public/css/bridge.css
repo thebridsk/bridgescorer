@@ -576,6 +576,7 @@ body.touched .withTooltipBox:hover {
   margin: 0px 0px 0px 20px !important;
   display: block;
   flex-grow: 1;
+  text-align: center;
 }
 
 .headerSuitSize {

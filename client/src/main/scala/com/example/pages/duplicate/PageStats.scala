@@ -24,6 +24,9 @@ import com.example.react.Utils._
 import com.example.pages.BaseStyles
 import com.example.data.duplicate.stats.DuplicateStats
 import com.example.react.PopupOkCancel
+import com.example.materialui.MuiTypography
+import com.example.materialui.TextVariant
+import com.example.materialui.TextColor
 
 /**
  * Shows a summary page of all duplicate matches from the database.
@@ -35,7 +38,7 @@ import com.example.react.PopupOkCancel
  * To use, just code the following:
  *
  * <pre><code>
- * PageStats( routerCtl: RouterCtl[DuplicatePage] )
+ * PageStats( routerCtl: BridgeRouter[DuplicatePage] )
  * </code></pre>
  *
  * @author werewolf
@@ -186,7 +189,24 @@ object PageStatsInternal {
       <.div(
         dupStyles.divPageStats,
         PopupOkCancel( state.msg, None, Some(cancel) ),
-        <.h1("Statistics"),
+        DuplicatePageBridgeAppBar(
+          id = None,
+          tableIds = List(),
+          pageMenuItems = List[CtorType.ChildArg](),
+          title = Seq[CtorType.ChildArg](MuiTypography(
+                    variant = TextVariant.h6,
+                    color = TextColor.inherit,
+                )(
+                    <.span(
+                      "Statistics",
+                    )
+                )),
+          helpurl = "/help/duplicate/summary.html",
+          routeCtl = props.routerCtl
+        )(
+
+        ),
+//        <.h1("Statistics"),
         <.div(
           baseStyles.divFooter,
           <.div(

@@ -25,6 +25,10 @@ import com.example.pages.duplicate.DuplicateRouter.FinishedScoreboardView
 import com.example.react.AppButton
 import scala.concurrent.ExecutionContext.Implicits.global
 import com.example.data.MatchDuplicateResult
+import com.example.routes.BridgeRouter
+import com.example.materialui.MuiTypography
+import com.example.materialui.TextVariant
+import com.example.materialui.TextColor
 
 /**
  * Shows the team x board table and has a totals column that shows the number of points the team has.
@@ -34,7 +38,7 @@ import com.example.data.MatchDuplicateResult
  * To use, just code the following:
  *
  * <pre><code>
- * PageScoreboard( routerCtl: RouterCtl[DuplicatePage], game: BaseScoreboardViewWithPerspective )
+ * PageScoreboard( routerCtl: BridgeRouter[DuplicatePage], game: BaseScoreboardViewWithPerspective )
  * </code></pre>
  *
  * @author werewolf
@@ -42,9 +46,9 @@ import com.example.data.MatchDuplicateResult
 object PageFinishedScoreboards {
   import PageFinishedScoreboardsInternal._
 
-  case class Props( routerCtl: RouterCtl[DuplicatePage], game: FinishedScoreboardsView )
+  case class Props( routerCtl: BridgeRouter[DuplicatePage], game: FinishedScoreboardsView )
 
-  def apply( routerCtl: RouterCtl[DuplicatePage], game: FinishedScoreboardsView ) = component(Props(routerCtl,game))
+  def apply( routerCtl: BridgeRouter[DuplicatePage], game: FinishedScoreboardsView ) = component(Props(routerCtl,game))
 
 }
 
@@ -112,6 +116,23 @@ object PageFinishedScoreboardsInternal {
 
       <.div(
         dupStyles.divFinishedScoreboardsPage,
+        DuplicatePageBridgeAppBar(
+          id = None,
+          tableIds = List(),
+          pageMenuItems = List[CtorType.ChildArg](),
+          title = Seq[CtorType.ChildArg](MuiTypography(
+                    variant = TextVariant.h6,
+                    color = TextColor.inherit,
+                )(
+                    <.span(
+                      "Finished Scoreboard",
+                    )
+                )),
+          helpurl = "/help/duplicate/scoreboardcomplete.html",
+          routeCtl = props.routerCtl
+        )(
+
+        ),
         scoreboards(),
         <.div(
           baseStyles.hideInPrint,

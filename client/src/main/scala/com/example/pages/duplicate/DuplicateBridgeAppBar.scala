@@ -1,4 +1,4 @@
-package com.example.pages
+package com.example.pages.duplicate
 
 import scala.scalajs.js
 import japgolly.scalajs.react.vdom.html_<^._
@@ -27,6 +27,8 @@ import com.example.react.AppButtonLinkNewWindow
 import org.scalajs.dom.document
 import japgolly.scalajs.react.vdom.VdomNode
 import com.example.routes.AppRouter.Home
+import com.example.pages.BaseStyles
+import com.example.pages.TitleSuits
 
 /**
  * A simple AppBar for the Bridge client.
@@ -45,27 +47,27 @@ import com.example.routes.AppRouter.Home
  * To use, just code the following:
  *
  * <pre><code>
- * BridgeAppBar( BridgeAppBar.Props( ... ) )
+ * DuplicateBridgeAppBar( DuplicateBridgeAppBar.Props( ... ) )
  * </code></pre>
  *
  * @author werewolf
  */
-object BridgeAppBar {
-  import BridgeAppBarInternal._
+object DuplicateBridgeAppBar {
+  import DuplicateBridgeAppBarInternal._
 
   case class Props(
       mainMenu: Seq[CtorType.ChildArg],
       handleMainClick: ReactEvent=>Unit,
       title: Seq[CtorType.ChildArg],
       helpurl: String,
-      routeCtl: BridgeRouter[AppPage]
+      routeCtl: BridgeRouter[DuplicatePage]
   )
 
   def apply(
       handleMainClick: ReactEvent=>Unit,
       title: Seq[VdomNode],
       helpurl: String,
-      routeCtl: BridgeRouter[AppPage]
+      routeCtl: BridgeRouter[DuplicatePage]
   )(
       mainMenu: CtorType.ChildArg*,
   ) =
@@ -73,10 +75,10 @@ object BridgeAppBar {
 
 }
 
-object BridgeAppBarInternal {
-  import BridgeAppBar._
+object DuplicateBridgeAppBarInternal {
+  import DuplicateBridgeAppBar._
 
-  val logger = Logger("bridge.BridgeAppBar")
+  val logger = Logger("bridge.DuplicateBridgeAppBar")
 
   /**
    * Internal state for rendering the component.
@@ -127,7 +129,10 @@ object BridgeAppBarInternal {
     def render( props: Props, state: State ) = {
       import BaseStyles._
 
-      def callbackPage(page: AppPage)(e: ReactEvent) = props.routeCtl.set(page).runNow()
+      def handleGotoHome(e: ReactEvent) = props.routeCtl.toHome
+      def handleGotoAbout(e: ReactEvent) = props.routeCtl.toAbout
+
+      def callbackPage(page: DuplicatePage)(e: ReactEvent) = props.routeCtl.set(page).runNow()
 
       val helpButton =
         MuiIconButton(
@@ -152,7 +157,7 @@ object BridgeAppBarInternal {
                 ) ::
                 MuiIconButton(
                     id = "Home",
-                    onClick = callbackPage(Home) _,
+                    onClick = handleGotoHome _,
                     color=ColorVariant.inherit
                 )(
                     MuiHomeIcon()()
@@ -162,8 +167,9 @@ object BridgeAppBarInternal {
                     color = TextColor.inherit,
                 )(
                     <.span(
-                      "Bridge ScoreKeeper -",
+                      "Duplicate Bridge -",
                       <.span(^.dangerouslySetInnerHtml:="&nbsp;")
+
                     )
                 ) ::
                 Nil
@@ -207,7 +213,7 @@ object BridgeAppBarInternal {
                 ),
                 MuiMenuItem(
                     id = "About",
-                    onClick = callbackPage(About) _
+                    onClick = handleGotoAbout _
                 )(
                     "About"
                 )
@@ -231,7 +237,7 @@ object BridgeAppBarInternal {
     }
   }
 
-  val component = ScalaComponent.builder[Props]("BridgeAppBar")
+  val component = ScalaComponent.builder[Props]("DuplicateBridgeAppBar")
                             .initialStateFromProps { props => State() }
                             .backend(new Backend(_))
                             .renderBackend

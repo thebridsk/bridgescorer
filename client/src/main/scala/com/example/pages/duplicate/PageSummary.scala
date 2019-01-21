@@ -50,6 +50,16 @@ import com.example.pages.BaseStyles
 import com.example.data.graphql.GraphQLProtocol.GraphQLResponse
 import com.example.react.Tooltip
 import com.example.react.HelpButton
+import com.example.materialui.MuiTypography
+import com.example.materialui.TextVariant
+import com.example.materialui.TextColor
+import org.scalajs.dom.raw.Element
+import org.scalajs.dom.raw.Node
+import com.example.materialui.component.MyMenu
+import com.example.materialui.MuiMenuItem
+import com.example.materialui.icons.SvgColor
+import com.example.materialui.icons.MuiCheckIcon
+import com.example.skeleton.react.BeepComponent
 
 /**
  * Shows a summary page of all duplicate matches from the database.
@@ -61,7 +71,7 @@ import com.example.react.HelpButton
  * To use, just code the following:
  *
  * <pre><code>
- * PageSummary( routerCtl: RouterCtl[DuplicatePage] )
+ * PageSummary( routerCtl: BridgeRouter[DuplicatePage] )
  * </code></pre>
  *
  * @author werewolf
@@ -265,8 +275,13 @@ object PageSummaryInternal {
   case class State( workingOnNew: Option[String], forPrint: Boolean, selected: List[Id.MatchDuplicate],
                     showRows: Option[Int], alwaysShowAll: Boolean,
                     showEntries: ShowEntries = ShowBoth,
-                    useIMP: Option[Boolean] = None
+                    useIMP: Option[Boolean] = None,
+                    anchorMainEl: js.UndefOr[Element] = js.undefined
   ) {
+
+    def openMainMenu( n: Node ) = copy( anchorMainEl = n.asInstanceOf[Element] )
+    def closeMainMenu() = copy( anchorMainEl = js.undefined )
+
     def withError( err: String ) = copy( workingOnNew = Some(err) )
     def clearError() = copy( workingOnNew = None )
 
@@ -301,6 +316,13 @@ object PageSummaryInternal {
    */
   class Backend(scope: BackendScope[Props, State]) {
 
+    def handleMainClick( event: ReactEvent ) = event.extract(_.currentTarget)(currentTarget => scope.modState(s => s.openMainMenu(currentTarget)).runNow() )
+    def handleMainCloseClick( event: ReactEvent ) = scope.modState(s => s.closeMainMenu()).runNow()
+    def handleMainClose( /* event: js.Object, reason: String */ ) = {
+      logger.fine("HelpClose called")
+      scope.modState(s => s.closeMainMenu()).runNow()
+    }
+
     val resultDuplicate = ResultHolder[MatchDuplicate]()
     val resultGraphQL = ResultHolder[GraphQLResponse]()
 
@@ -315,7 +337,7 @@ object PageSummaryInternal {
 
     def setMessageCB( msg: String ) = scope.modState( s => s.withError(msg) )
 
-    val newDuplicateTest =
+    def newDuplicateTest( e: ReactEvent): Unit =
       scope.modState( s => s.copy(workingOnNew=Some("Working on creating a new duplicate match")), Callback {
         val result = Controller.createMatchDuplicate(test=true).recordFailure()
         resultDuplicate.set(result)
@@ -330,7 +352,7 @@ object PageSummaryInternal {
               scope.withEffectsImpure.modState( s => s.copy(workingOnNew=Some("Failed to create a new duplicate match")))
           }
         })
-      })
+      }).runNow()
 
     def toggleSelect( dupid: Id.MatchDuplicate ) = scope.modState(s => {
       val sel = if (s.selected.contains(dupid)) s.selected.filter( s => s!=dupid )
@@ -361,7 +383,7 @@ object PageSummaryInternal {
 
     val forPrintCancel = forPrint(false)
 
-    val toggleRows = scope.modState{ (s,props) =>
+    def toggleRows(e: ReactEvent) = scope.withEffectsImpure.modState{ (s,props) =>
       val n = s.showRows match {
         case Some(r) => None
         case None => Some( props.defaultRows )
@@ -543,19 +565,6 @@ object PageSummaryInternal {
               RadioButton("ShowMDR", "Show Results Only", state.showEntries==ShowMDR, show(ShowMDR) )
             ),
             SummaryHeader((tp,props,state,this,importId)),
-            (!state.alwaysShowAll && state.showRows.isDefined) ?=
-              <.tfoot(
-                <.tr(
-                  <.td(
-                        ^.colSpan:=3+importId.map(id=>2).getOrElse(0)+(if (state.forPrint) 2 else 1),
-                        AppButton( "ShowRows2",
-                                   state.showRows.map( n => "Show All" ).getOrElse(s"Show ${props.defaultRows}"),
-                                   ^.onClick --> toggleRows
-                                 )
-                  ),
-                  <.td( ^.colSpan:=tp.allPlayers.length+1 )
-                )
-              ),
             <.tbody(
                 summaries.get.sortWith((one,two)=>one.created>two.created).
                               filter { ds =>
@@ -608,85 +617,132 @@ object PageSummaryInternal {
         op.fold( f )( a => TagMod() )
       }
 
+      def callbackPage(page: DuplicatePage)(e: ReactEvent) = props.routerCtl.set(page).runNow()
+
       <.div(
         dupStyles.divSummary,
         PopupOkCancel( state.workingOnNew.map( s=>s), None, Some(cancel) ),
-        <.span(
-          !state.alwaysShowAll ?= AppButton( "ShowRows", state.showRows.map( n => "Show All" ).getOrElse(s"Show ${props.defaultRows}"), ^.onClick --> toggleRows ),
-          " ",
-          AppButton( "Home2", "Home", props.routerCtl.home ),
-          whenUndefined(importId)(
-            TagMod(
-              " ",
-              AppButton( "Suggest", "Suggest Pairs", props.routerCtl.setOnClick(SuggestionView) ),
-              " ",
-              AppButton( "BoardSets2", "BoardSets", props.routerCtl.setOnClick(BoardSetSummaryView) ),
-              " ",
-              AppButton( "Movements2", "Movements", props.routerCtl.setOnClick(MovementSummaryView) ),
-              " ",
-              HelpButton( "/help/duplicate/summary.html" )
-            )
-          )( a => TagMod() ),
-        ),
-        <.h1("Summary"),
-//        <.div(
-            if (tp.isData) showMatches()
-            else showWorkingMatches(),
-            <.p,
-            <.div(
-              baseStyles.divFooter,
-              <.div(
-                baseStyles.divFooterLeft,
-                AppButton( "Home", "Home", props.routerCtl.home ),
-                PageScoreboardInternal.scoringMethodButton( state.useIMP, None, false, nextIMPs ),
-                whenUndefined(importId)(
-                  TagMod(
-                    " ",
-                    if (!state.forPrint) AppButton("ForPrint", "Select For Print", ^.onClick --> forPrint(true))
-                    else Seq[TagMod](
-                           AppButton("Cancel Print", "Cancel Print", ^.onClick --> forPrintCancel),
-                           " ",
-                           AppButton("Print", "Print", ^.onClick --> forPrintOk),
-                           " ",
-                           AppButton("PrintSelectAll", "Select All", ^.onClick --> selectedAll ),
-                           " ",
-                           AppButton("PrintClearAll", "Clear Selected", ^.onClick --> clearAllSelected )
-                           ).toTagMod
+        DuplicateBridgeAppBar(
+            handleMainClick = handleMainClick _,
+            title = Seq(MuiTypography(
+                    variant = TextVariant.h6,
+                    color = TextColor.inherit,
+                )(
+                    <.span(
+                      " Summary",
+                    )
+                )
+            ),
+            "/help/duplicate/summary.html",
+            props.routerCtl
+        )(
+            // main menu
+            MyMenu(
+                anchorEl=state.anchorMainEl,
+                onClickAway = handleMainClose _,
+                onItemClick = handleMainCloseClick _,
+                className = Some("popupMenu")
+            )(
+                {
+                  (if (importId.isDefined) {
+                    List[VdomNode]()
+                  } else {
+                    val x: List[VdomNode] =
+                    List(
+                      MuiMenuItem(
+                          id = "Suggest",
+                          onClick = callbackPage(SuggestionView) _
+                      )(
+                          "Suggest Pairs"
+                      ),
+                      MuiMenuItem(
+                          id = "ShowRows",
+                          onClick = toggleRows _,
+                          classes = js.Dictionary("root" -> "mainMenuItem").asInstanceOf[js.Object]
+                      )(
+                          "Show All",
+                          {
+                            val color = if (state.alwaysShowAll || state.showRows.isEmpty) SvgColor.inherit else SvgColor.disabled
+                            MuiCheckIcon(
+                                color=color,
+                                classes = js.Dictionary("root" -> "mainMenuItemIcon").asInstanceOf[js.Object]
+                            )()
+                          }
+                      ),
+                      MuiMenuItem(
+                          id = "Statistics",
+                          onClick = callbackPage(StatsView) _
+                      )(
+                          "Statistics"
+                      ),
+                      MuiMenuItem(
+                          id = "DuplicateCreateTest",
+                          onClick = newDuplicateTest _
+                      )(
+                          "Test"
+                      ),
+                      MuiMenuItem(
+                          id = "BoardSets",
+                          onClick = callbackPage(BoardSetSummaryView) _
+                      )(
+                          "BoardSets"
+                      ),
+                      MuiMenuItem(
+                          id = "Movements",
+                          onClick = callbackPage(MovementSummaryView) _
+                      )(
+                          "Movements"
+                      )
+                    )
+                    BeepComponent.getMenuItem()::x
+                  } :::
+                  List[VdomNode](
                   )
-                ),
-                importId.whenDefined { importid =>
-                  TagMod(
-                    " ",
-                    if (!state.forPrint) AppButton("ForImport", "Select For Import", ^.onClick --> forPrint(true))
-                    else Seq[TagMod](
-                           AppButton("Cancel Import", "Cancel Import", ^.onClick --> forPrintCancel),
-                           " ",
-                           AppButton("Import", "Import Selected", ^.onClick --> importSelected(importid), ^.disabled:=state.selected.isEmpty),
-                           " ",
-                           AppButton("ImportSelectAll", "Select All", ^.onClick --> selectedAll ),
-                           " ",
-                           AppButton("ImportClearAll", "Clear Selected", ^.onClick --> clearAllSelected)
-                           ).toTagMod
-                  )
+                  ):_*
                 }
-              ),
+            )
+        ),
+//        <.div(
+          if (tp.isData) showMatches()
+          else showWorkingMatches(),
+          <.p,
+          <.div(
+            baseStyles.divFooter,
+            <.div(
+              baseStyles.divFooterLeft,
+              PageScoreboardInternal.scoringMethodButton( state.useIMP, None, false, nextIMPs ),
               whenUndefined(importId)(
                 TagMod(
-                  <.div(
-                    baseStyles.divFooterCenter,
-                    AppButton( "BoardSets", "BoardSets", props.routerCtl.setOnClick(BoardSetSummaryView) ),
-                    " ",
-                    AppButton( "Movements", "Movements", props.routerCtl.setOnClick(MovementSummaryView) )
-                  ),
-                  <.div(
-                    baseStyles.divFooterRight,
-                    AppButton( "DuplicateCreateTest", "Test", ^.onClick --> newDuplicateTest ),
-                    " ",
-                    AppButton("Statistics", "Statistics", props.routerCtl.setOnClick(StatsView))
-                  )
+                  " ",
+                  if (!state.forPrint) AppButton("ForPrint", "Select For Print", ^.onClick --> forPrint(true))
+                  else Seq[TagMod](
+                         AppButton("Cancel Print", "Cancel Print", ^.onClick --> forPrintCancel),
+                         " ",
+                         AppButton("Print", "Print", ^.onClick --> forPrintOk),
+                         " ",
+                         AppButton("PrintSelectAll", "Select All", ^.onClick --> selectedAll ),
+                         " ",
+                         AppButton("PrintClearAll", "Clear Selected", ^.onClick --> clearAllSelected )
+                         ).toTagMod
                 )
-              )
-            )
+              ),
+              importId.whenDefined { importid =>
+                TagMod(
+                  " ",
+                  if (!state.forPrint) AppButton("ForImport", "Select For Import", ^.onClick --> forPrint(true))
+                  else Seq[TagMod](
+                         AppButton("Cancel Import", "Cancel Import", ^.onClick --> forPrintCancel),
+                         " ",
+                         AppButton("Import", "Import Selected", ^.onClick --> importSelected(importid), ^.disabled:=state.selected.isEmpty),
+                         " ",
+                         AppButton("ImportSelectAll", "Select All", ^.onClick --> selectedAll ),
+                         " ",
+                         AppButton("ImportClearAll", "Clear Selected", ^.onClick --> clearAllSelected)
+                         ).toTagMod
+                )
+              }
+            ),
+          )
 //        )
       )
     }

@@ -4,7 +4,7 @@ import scala.scalajs.js
 import scala.scalajs.js.timers._
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
-import japgolly.scalajs.react.extra.router.RouterCtl
+import com.example.routes.BridgeRouter
 import utils.logging.Logger
 import com.example.bridge.store.DuplicateSummaryStore
 import com.example.controller.Controller
@@ -25,6 +25,9 @@ import org.scalactic.source.Position
 import com.example.rest2.RequestCancelled
 import com.example.react.Utils._
 import com.example.data.duplicate.suggestion.NeverPair
+import com.example.materialui.MuiTypography
+import com.example.materialui.TextVariant
+import com.example.materialui.TextColor
 
 /**
  * A skeleton component.
@@ -40,9 +43,9 @@ import com.example.data.duplicate.suggestion.NeverPair
 object PageSuggestion {
   import PageSuggestionInternal._
 
-  case class Props( routerCtl: RouterCtl[DuplicatePage] )
+  case class Props( routerCtl: BridgeRouter[DuplicatePage] )
 
-  def apply( routerCtl: RouterCtl[DuplicatePage] ) = component(Props(routerCtl))
+  def apply( routerCtl: BridgeRouter[DuplicatePage] ) = component(Props(routerCtl))
 
 }
 
@@ -228,6 +231,23 @@ object PageSuggestionInternal {
 
       <.div( dupStyles.divSuggestionPage,
         PopupOkCancel( state.error.map(s => TagMod(s)), None, Some(clearError) ),
+        DuplicatePageBridgeAppBar(
+          id = None,
+          tableIds = List(),
+          pageMenuItems = List[CtorType.ChildArg](),
+          title = Seq[CtorType.ChildArg](MuiTypography(
+                    variant = TextVariant.h6,
+                    color = TextColor.inherit,
+                )(
+                    <.span(
+                      "Pairs Suggestion",
+                    )
+                )),
+          helpurl = "/help/duplicate/summary.html",
+          routeCtl = props.routerCtl
+        )(
+
+        ),
         <.div(
           baseStyles.divText100,
           "Number of players: ",

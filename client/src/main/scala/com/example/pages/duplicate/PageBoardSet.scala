@@ -20,6 +20,10 @@ import com.example.data.bridge.BoardScore
 import com.example.pages.duplicate.boardsets.ViewBoardSet
 import com.example.pages.duplicate.DuplicateRouter.DuplicateBoardSetView
 import com.example.react.AppButton
+import com.example.routes.BridgeRouter
+import com.example.materialui.MuiTypography
+import com.example.materialui.TextVariant
+import com.example.materialui.TextColor
 
 /**
  * Shows the team x board table and has a totals column that shows the number of points the team has.
@@ -29,7 +33,7 @@ import com.example.react.AppButton
  * To use, just code the following:
  *
  * <pre><code>
- * PageBoardSet( routerCtl: RouterCtl[DuplicatePage], page: BaseBoardViewWithPerspective )
+ * PageBoardSet( routerCtl: BridgeRouter[DuplicatePage], page: BaseBoardViewWithPerspective )
  * </code></pre>
  *
  * @author werewolf
@@ -37,9 +41,9 @@ import com.example.react.AppButton
 object PageBoardSet {
   import PageBoardSetInternal._
 
-  case class Props( routerCtl: RouterCtl[DuplicatePage], page: DuplicateBoardSetView )
+  case class Props( routerCtl: BridgeRouter[DuplicatePage], page: DuplicateBoardSetView )
 
-  def apply( routerCtl: RouterCtl[DuplicatePage], page: DuplicateBoardSetView ) = component(Props(routerCtl,page))
+  def apply( routerCtl: BridgeRouter[DuplicatePage], page: DuplicateBoardSetView ) = component(Props(routerCtl,page))
 
 }
 
@@ -72,6 +76,23 @@ object PageBoardSetInternal {
           val boardset = md.getBoardSetObject()
           <.div(
             dupStyles.divTablePage,
+            DuplicatePageBridgeAppBar(
+              id = Some(props.page.dupid),
+              tableIds = List(),
+              pageMenuItems = List[CtorType.ChildArg](),
+              title = Seq[CtorType.ChildArg](MuiTypography(
+                        variant = TextVariant.h6,
+                        color = TextColor.inherit,
+                    )(
+                        <.span(
+                          "BoardSet",
+                        )
+                    )),
+              helpurl = "/help/duplicate/summary.html",
+              routeCtl = props.routerCtl
+            )(
+
+            ),
             <.div(
               baseStyles.divText100,
               <.h1( "Boards used for the match" )

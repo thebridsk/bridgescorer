@@ -20,6 +20,7 @@ import com.example.pages.hand.ComponentInputStyleButton
 import com.example.pages.duplicate.DuplicateRouter.TableView
 import com.example.react.AppButton
 import com.example.react.Utils._
+import com.example.routes.BridgeRouter
 
 /**
  * Shows the team x board table and has a totals column that shows the number of points the team has.
@@ -29,7 +30,7 @@ import com.example.react.Utils._
  * To use, just code the following:
  *
  * <pre><code>
- * ViewTable( routerCtl: RouterCtl[DuplicatePage], page: BaseBoardViewWithPerspective )
+ * ViewTable( routerCtl: BridgeRouter[DuplicatePage], page: BaseBoardViewWithPerspective )
  * </code></pre>
  *
  * @author werewolf
@@ -37,9 +38,9 @@ import com.example.react.Utils._
 object ViewTable {
   import ViewTableInternal._
 
-  case class Props( routerCtl: RouterCtl[DuplicatePage], page: TableView, showTableButton: Boolean )
+  case class Props( routerCtl: BridgeRouter[DuplicatePage], page: TableView, showTableButton: Boolean )
 
-  def apply( routerCtl: RouterCtl[DuplicatePage], page: TableView, showTableButton: Boolean = false ) = component(Props(routerCtl,page,showTableButton))
+  def apply( routerCtl: BridgeRouter[DuplicatePage], page: TableView, showTableButton: Boolean = false ) = component(Props(routerCtl,page,showTableButton))
 
 }
 

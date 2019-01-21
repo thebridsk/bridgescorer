@@ -18,6 +18,10 @@ import com.example.pages.duplicate.DuplicateRouter.MovementSummaryView
 import com.example.pages.duplicate.DuplicateRouter.MovementView
 import com.example.pages.duplicate.DuplicateStyles
 import com.example.pages.BaseStyles
+import com.example.pages.duplicate.DuplicatePageBridgeAppBar
+import com.example.materialui.MuiTypography
+import com.example.materialui.TextVariant
+import com.example.materialui.TextColor
 
 /**
  * A skeleton component.
@@ -158,7 +162,23 @@ object PageMovementsInternal {
       <.div(
         dupStyles.divMovementsPage,
         <.div(
-          <.h1("Movements"),
+          DuplicatePageBridgeAppBar(
+            id = None,
+            tableIds = List(),
+            pageMenuItems = List[CtorType.ChildArg](),
+            title = Seq[CtorType.ChildArg](MuiTypography(
+                      variant = TextVariant.h6,
+                      color = TextColor.inherit,
+                  )(
+                      <.span(
+                        "Movements",
+                      )
+                  )),
+            helpurl = "/help/duplicate/summary.html",
+            routeCtl = props.routerCtl
+          )(
+
+          ),
           <.table(
             <.thead(
               SummaryHeader(state)

@@ -17,11 +17,8 @@ import com.example.pages.duplicate.boardsets.PageMovements
 import japgolly.scalajs.react.extra.router.StaticDsl.Rule
 import com.example.routes.Module
 import com.example.routes.TestBridgeRouter
-import com.example.routes.BridgeRouter
-import com.example.routes.BridgeRouterBase
 import com.example.routes.BridgeRouterBase
 import com.example.routes.BridgeRouter
-import com.example.skeleton.react.BeepComponent
 import japgolly.scalajs.react.vdom.TagMod
 import com.example.pages.duplicate.DuplicateRouter.BaseScoreboardView
 import scala.scalajs.js.URIUtils
@@ -44,12 +41,12 @@ object DuplicateModule extends Module {
   def render(selectedPage: Resolution[AppPage]): TagMod =
     TagMod(
       selectedPage.render(),
-      BeepComponent(()=>{
-        selectedPage.page match {
-          case PlayDuplicate(p) => p.isInstanceOf[BaseScoreboardView]
-          case _ => false
-        }
-      })
+//      BeepComponent(()=>{
+//        selectedPage.page match {
+//          case PlayDuplicate(p) => p.isInstanceOf[BaseScoreboardView]
+//          case _ => false
+//        }
+//      })
     )
 
 }
@@ -77,6 +74,11 @@ object DuplicateRouter {
   class DuplicateRouterWithLogging( ctl: RouterCtl[DuplicatePage] ) extends BridgeRouterBaseWithLogging[DuplicatePage](ctl) {
     override
     def home: TagMod = DuplicateModule.gotoAppHome()
+
+    override
+    def toHome: Unit = DuplicateModule.toHome
+    override
+    def toAbout: Unit = DuplicateModule.toAbout
   }
 
   import scala.language.implicitConversions

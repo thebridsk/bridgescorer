@@ -20,6 +20,9 @@ import com.example.pages.duplicate.DuplicateRouter.BaseAllBoardsViewWithPerspect
 import com.example.pages.duplicate.DuplicateRouter.TableRoundAllBoardView
 import com.example.react.AppButton
 import com.example.routes.BridgeRouter
+import com.example.materialui.MuiTypography
+import com.example.materialui.TextVariant
+import com.example.materialui.TextColor
 
 /**
  * Shows the team x board table and has a totals column that shows the number of points the team has.
@@ -29,7 +32,7 @@ import com.example.routes.BridgeRouter
  * To use, just code the following:
  *
  * <pre><code>
- * PageAllBoards( routerCtl: RouterCtl[DuplicatePage], page: BaseBoardViewWithPerspective )
+ * PageAllBoards( routerCtl: BridgeRouter[DuplicatePage], page: BaseBoardViewWithPerspective )
  * </code></pre>
  *
  * @author werewolf
@@ -89,24 +92,40 @@ object PageAllBoardsInternal {
               case TableRoundAllBoardView( dupid, tableid, roundid ) => (roundid,tableid)
               case _ => (-1,"")
             }
-            <.div(
-              <.h1("Board View from Table "+Id.tableIdToTableNumber(currentTable) + " Round "+currentRound),
-              <.h2("Teams "+Id.teamIdToTeamNumber(team1)+" and "+Id.teamIdToTeamNumber(team2))
+            <.span(
+              "Board View from Table "+Id.tableIdToTableNumber(currentTable) + " Round "+currentRound,
+              " Teams "+Id.teamIdToTeamNumber(team1)+" and "+Id.teamIdToTeamNumber(team2)
             )
           case PerspectiveDirector =>
-            <.h1("Director's Board View")
+            <.span("Director's Board View")
           case PerspectiveComplete =>
-            <.h1("Completed Board View")
+            <.span("Completed Board View")
         }
 
       }
 
       <.div(
         dupStyles.divAllBoardsPage,
+        DuplicatePageBridgeAppBar(
+          id = Some(props.page.dupid),
+          tableIds = List(),
+          pageMenuItems = List[CtorType.ChildArg](),
+          title = Seq[CtorType.ChildArg](MuiTypography(
+                    variant = TextVariant.h6,
+                    color = TextColor.inherit,
+                )(
+                    <.span(
+                      title(),
+                    )
+                )),
+          helpurl = "/help/duplicate/boardcomplete.html",
+          routeCtl = props.routerCtl
+        )(
+
+        ),
         DuplicateStore.getView( props.page.getPerspective()) match {
           case Some(score) =>
             <.div(
-              title(),
               <.div(
                 AppButton( "Game", "Scoreboard", props.routerCtl.setOnClick(props.page.toScoreboardView()) )
               ),

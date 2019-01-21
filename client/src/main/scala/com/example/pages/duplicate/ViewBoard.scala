@@ -31,7 +31,7 @@ import com.example.routes.BridgeRouter
  * To use, just code the following:
  *
  * <pre><code>
- * ViewBoard( routerCtl: RouterCtl[DuplicatePage], score: MatchDuplicateScore, board: Id.DuplicateBoard )
+ * ViewBoard( routerCtl: BridgeRouter[DuplicatePage], score: MatchDuplicateScore, board: Id.DuplicateBoard )
  * </code></pre>
  *
  * @author werewolf

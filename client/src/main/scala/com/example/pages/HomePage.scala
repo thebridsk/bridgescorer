@@ -310,34 +310,7 @@ object HomePage {
                               "Bridge ScoreKeeper",
                             )
                         ),
-                        MuiTypography(
-                            variant = TextVariant.h6,
-                            color = TextColor.inherit,
-                            classes = js.Dictionary( "root" -> "homePageTitle")
-                        )(
-                            <.span(
-                              <.span(
-                                  HtmlStyles.color.black,
-                                  rootStyles.headerSuitSize,
-                                  ^.dangerouslySetInnerHtml := " &spades;"
-                              ),
-                              <.span(
-                                  HtmlStyles.color.red,
-                                  rootStyles.headerSuitSize,
-                                  ^.dangerouslySetInnerHtml := " &hearts;"
-                              ),
-                              <.span(
-                                  HtmlStyles.color.red,
-                                  rootStyles.headerSuitSize,
-                                  ^.dangerouslySetInnerHtml := " &diams;"
-                              ),
-                              <.span(
-                                  HtmlStyles.color.black,
-                                  rootStyles.headerSuitSize,
-                                  ^.dangerouslySetInnerHtml := " &clubs;"
-                              ),
-                            )
-                        ),
+                        TitleSuits.suits,
 //                    ),
                     MuiIconButton(
                         id = "HelpMenu",

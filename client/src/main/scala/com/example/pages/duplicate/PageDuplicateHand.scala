@@ -4,7 +4,7 @@ package com.example.pages.duplicate
 import scala.scalajs.js
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
-import japgolly.scalajs.react.extra.router.RouterCtl
+import com.example.routes.BridgeRouter
 import com.example.routes.AppRouter.AppPage
 import com.example.data.DuplicateSummary
 import com.example.data.Id
@@ -27,6 +27,9 @@ import com.example.data.DuplicateHand
 import com.example.data.Board
 import com.example.data.bridge.PlayerPosition
 import com.example.pages.duplicate.DuplicateRouter.BaseHandView
+import com.example.materialui.MuiTypography
+import com.example.materialui.TextVariant
+import com.example.materialui.TextColor
 
 /**
  * Shows the team x board table and has a totals column that shows the number of points the team has.
@@ -36,7 +39,7 @@ import com.example.pages.duplicate.DuplicateRouter.BaseHandView
  * To use, just code the following:
  *
  * <pre><code>
- * PageDuplicateHand( routerCtl: RouterCtl[DuplicatePage], page: BaseHandView )
+ * PageDuplicateHand( routerCtl: BridgeRouter[DuplicatePage], page: BaseHandView )
  * </code></pre>
  *
  * @author werewolf
@@ -44,9 +47,9 @@ import com.example.pages.duplicate.DuplicateRouter.BaseHandView
 object PageDuplicateHand {
   import PageDuplicateHandInternal._
 
-  case class Props( routerCtl: RouterCtl[DuplicatePage], page: BaseHandView )
+  case class Props( routerCtl: BridgeRouter[DuplicatePage], page: BaseHandView )
 
-  def apply( routerCtl: RouterCtl[DuplicatePage], page: BaseHandView ) = component(Props(routerCtl,page))
+  def apply( routerCtl: BridgeRouter[DuplicatePage], page: BaseHandView ) = component(Props(routerCtl,page))
 
 }
 
@@ -106,6 +109,23 @@ object PageDuplicateHandInternal {
     def render( props: Props, state: State ) = {
       logger.fine(s"""PageDuplicateHand.render( ${props.page} )""")
       <.div(
+        DuplicatePageBridgeAppBar(
+          id = Some(props.page.dupid),
+          tableIds = List(),
+          pageMenuItems = List[CtorType.ChildArg](),
+          title = Seq[CtorType.ChildArg](MuiTypography(
+                    variant = TextVariant.h6,
+                    color = TextColor.inherit,
+                )(
+                    <.span(
+                      "Enter Hand",
+                    )
+                )),
+          helpurl = "/help/duplicate/enterhand.html",
+          routeCtl = props.routerCtl
+        )(
+
+        ),
         state.errormsg match {
           case Some(msg) => <.p(msg)
           case None =>

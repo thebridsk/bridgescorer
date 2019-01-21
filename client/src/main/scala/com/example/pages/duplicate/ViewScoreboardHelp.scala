@@ -20,7 +20,7 @@ import com.example.react.Utils._
  * To use, just code the following:
  *
  * <pre><code>
- * ViewScoreboardHelp( routerCtl: RouterCtl[DuplicatePage], score: MatchDuplicateScore )
+ * ViewScoreboardHelp( routerCtl: BridgeRouter[DuplicatePage], score: MatchDuplicateScore )
  * </code></pre>
  *
  * @author werewolf

@@ -3,7 +3,7 @@ package com.example.pages.duplicate
 import scala.scalajs.js
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
-import japgolly.scalajs.react.extra.router.RouterCtl
+import com.example.routes.BridgeRouter
 import utils.logging.Logger
 import com.example.bridge.store.BoardSetStore
 import com.example.controller.BoardSetController
@@ -27,6 +27,9 @@ import com.example.pages.duplicate.DuplicateRouter.DuplicateResultEditView
 import com.example.react.CheckBox
 import scala.annotation.tailrec
 import com.example.react.HelpButton
+import com.example.materialui.MuiTypography
+import com.example.materialui.TextVariant
+import com.example.materialui.TextColor
 
 /**
  * PageNewDuplicate.
@@ -42,9 +45,9 @@ import com.example.react.HelpButton
 object PageNewDuplicate {
   import PageNewDuplicateInternal._
 
-  case class Props( routerCtl: RouterCtl[DuplicatePage], page: DuplicatePage )
+  case class Props( routerCtl: BridgeRouter[DuplicatePage], page: DuplicatePage )
 
-  def apply( routerCtl: RouterCtl[DuplicatePage], page: DuplicatePage ) = component(Props(routerCtl,page))
+  def apply( routerCtl: BridgeRouter[DuplicatePage], page: DuplicatePage ) = component(Props(routerCtl,page))
 
 }
 
@@ -238,7 +241,24 @@ object PageNewDuplicateInternal {
       <.div(
         dupStyles.divNewDuplicate,
         PopupOkCancel( state.workingOnNew, None, Some(cancel) ),
-        <.h1("New Duplicate Match"),
+        DuplicatePageBridgeAppBar(
+          id = None,
+          tableIds = List(),
+          pageMenuItems = List[CtorType.ChildArg](),
+          title = Seq[CtorType.ChildArg](MuiTypography(
+                    variant = TextVariant.h6,
+                    color = TextColor.inherit,
+                )(
+                    <.span(
+                      "New Duplicate Match",
+                    )
+                )),
+          helpurl = "/help/duplicate/summary.html",
+          routeCtl = props.routerCtl
+        )(
+
+        ),
+//        <.h1("New Duplicate Match"),
         HelpButton("/help/duplicate/new.html"),
         CheckBox("resultsOnly", "Create Results Only", state.resultsOnly, resultsOnlyToggle ),
         <.table(

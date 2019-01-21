@@ -27,6 +27,8 @@ trait BridgeRouter[Page] {
     <.a(^.href := urlFor(page).value, setOnLinkClick(page))
 
   def home: TagMod
+  def toHome: Unit = {}
+  def toAbout: Unit = {}
 
   /**
    * Returns the RouterCtl that is wrapped by this

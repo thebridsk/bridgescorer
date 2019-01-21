@@ -26,6 +26,7 @@ import com.example.pages.duplicate.DuplicateRouter.FinishedScoreboardView
 import com.example.pages.duplicate.DuplicateRouter.CompleteScoreboardView
 import com.example.react.AppButton
 import com.example.react.Utils._
+import com.example.routes.BridgeRouter
 
 /**
  * Shows the team x board table and has a totals column that shows the number of points the team has.
@@ -33,7 +34,7 @@ import com.example.react.Utils._
  * To use, just code the following:
  *
  * <pre><code>
- * ViewScoreboard( routerCtl: RouterCtl[DuplicatePage], score: MatchDuplicateScore )
+ * ViewScoreboard( routerCtl: BridgeRouter[DuplicatePage], score: MatchDuplicateScore )
  * </code></pre>
  *
  * @author werewolf
@@ -41,9 +42,9 @@ import com.example.react.Utils._
 object ViewScoreboard {
   import ViewScoreboardInternal._
 
-  case class Props( routerCtl: RouterCtl[DuplicatePage], page: BaseScoreboardViewWithPerspective, score: MatchDuplicateScore, useIMP: Boolean = false )
+  case class Props( routerCtl: BridgeRouter[DuplicatePage], page: BaseScoreboardViewWithPerspective, score: MatchDuplicateScore, useIMP: Boolean = false )
 
-  def apply( routerCtl: RouterCtl[DuplicatePage], page: BaseScoreboardViewWithPerspective, score: MatchDuplicateScore, useIMP: Boolean = false ) =
+  def apply( routerCtl: BridgeRouter[DuplicatePage], page: BaseScoreboardViewWithPerspective, score: MatchDuplicateScore, useIMP: Boolean = false ) =
     component(Props(routerCtl,page,score,useIMP))
 
 }

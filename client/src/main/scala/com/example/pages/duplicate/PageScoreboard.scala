@@ -4,7 +4,7 @@ package com.example.pages.duplicate
 import scala.scalajs.js
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
-import japgolly.scalajs.react.extra.router.RouterCtl
+import com.example.routes.BridgeRouter
 import com.example.routes.AppRouter.AppPage
 import com.example.data.DuplicateSummary
 import com.example.data.Id
@@ -32,6 +32,10 @@ import com.example.react.AppButton
 import com.example.react.PopupOkCancel
 import com.example.pages.BaseStyles
 import com.example.react.HelpButton
+import com.example.routes.BridgeRouter
+import com.example.materialui.MuiTypography
+import com.example.materialui.TextVariant
+import com.example.materialui.TextColor
 
 /**
  * Shows the team x board table and has a totals column that shows the number of points the team has.
@@ -41,7 +45,7 @@ import com.example.react.HelpButton
  * To use, just code the following:
  *
  * <pre><code>
- * PageScoreboard( routerCtl: RouterCtl[DuplicatePage], game: BaseScoreboardViewWithPerspective )
+ * PageScoreboard( routerCtl: BridgeRouter[DuplicatePage], game: BaseScoreboardViewWithPerspective )
  * </code></pre>
  *
  * @author werewolf
@@ -49,9 +53,9 @@ import com.example.react.HelpButton
 object PageScoreboard {
   import PageScoreboardInternal._
 
-  case class Props( routerCtl: RouterCtl[DuplicatePage], game: BaseScoreboardViewWithPerspective )
+  case class Props( routerCtl: BridgeRouter[DuplicatePage], game: BaseScoreboardViewWithPerspective )
 
-  def apply( routerCtl: RouterCtl[DuplicatePage], game: BaseScoreboardViewWithPerspective ) = component(Props(routerCtl,game))
+  def apply( routerCtl: BridgeRouter[DuplicatePage], game: BaseScoreboardViewWithPerspective ) = component(Props(routerCtl,game))
 
 }
 
@@ -120,9 +124,37 @@ object PageScoreboardInternal {
 
           def getScoringMethodButton() = scoringMethodButton( state.useIMP, Some( score.isIMP), false, nextIMPs )
 
+          val (title,helpurl) = props.game match {
+            case _: CompleteScoreboardView =>
+              ("Complete Scoreboard","/help/duplicate/scoreboardcomplete.html")
+            case _: DirectorScoreboardView =>
+              ("Director's Scoreboard","/help/duplicate/scoreboardcomplete.html")
+            case TableRoundScoreboardView(dupid, tableid, round) =>
+              (s"Table $tableid Scoreboard, Round $round","/help/duplicate/scoreboardfromtable.html")
+          }
+
+          val sortedTables = score.tables.keys.toList.sortWith((t1,t2)=>t1<t2)
+
           logger.fine( "WinnerSets: "+winnersets )
           <.div(
             dupStyles.divScoreboardPage,
+            DuplicatePageBridgeAppBar(
+              id = Some(props.game.dupid),
+              tableIds = sortedTables,
+              pageMenuItems = List[CtorType.ChildArg](),
+              title = Seq[CtorType.ChildArg](MuiTypography(
+                    variant = TextVariant.h6,
+                    color = TextColor.inherit,
+                )(
+                    <.span(
+                      title
+                    )
+                )),
+              helpurl = helpurl,
+              routeCtl = props.routerCtl
+            )(
+
+            ),
             PopupOkCancel(
               if (state.deletePopup) {
                 Some( <.span( s"Are you sure you want to delete duplicate match ${score.id}" ) )
@@ -146,7 +178,7 @@ object PageScoreboardInternal {
                   TagMod(
                     <.div(
                       baseStyles.divFooterLeft,
-                      score.tables.keys.toList.sortWith((t1,t2)=>t1<t2).map { table =>
+                      sortedTables.map { table =>
                         val clickToTableView = TableView(props.game.dupid,table)
                         List[TagMod](
                           AppButton( "Table_"+table, "Table "+table,
