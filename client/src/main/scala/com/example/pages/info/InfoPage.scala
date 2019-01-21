@@ -10,6 +10,10 @@ import utils.logging.Logger
 import com.example.pages.BaseStyles
 import japgolly.scalajs.react.extra.router.RouterCtl
 import com.example.routes.BridgeRouter
+import com.example.pages.RootBridgeAppBar
+import com.example.materialui.MuiTypography
+import com.example.materialui.TextVariant
+import com.example.materialui.TextColor
 
 /**
  * @author werewolf
@@ -26,6 +30,19 @@ object InfoPage {
           val gotoPage = props.routeCtl.set _
           <.div(
             rootStyles.infoPageDiv,
+            RootBridgeAppBar(
+                Seq(MuiTypography(
+                        variant = TextVariant.h6,
+                        color = TextColor.inherit,
+                    )(
+                        <.span(
+                          " Info",
+                        )
+                    )
+                ),
+                None,
+                props.routeCtl
+            )(),
             <.table( ^.width := "100%",
                 <.thead(
                   <.tr(
@@ -36,8 +53,8 @@ object InfoPage {
                 )
             ),
             <.p(
-              AppButton( "Cancel", "Cancel", ^.onClick --> gotoPage(Home)),
-              " ",
+//              AppButton( "Cancel", "Cancel", ^.onClick --> gotoPage(Home)),
+//              " ",
               AppButton( "Refresh", "Refresh", ^.onClick --> scope.forceUpdate )
             )
           )

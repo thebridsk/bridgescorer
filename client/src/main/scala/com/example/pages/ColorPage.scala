@@ -11,6 +11,11 @@ import com.example.color.Color
 import com.example.color.Colors
 import com.example.color.Gray
 import com.example.color.RGBPercentColor
+import com.example.materialui.MuiTypography
+import com.example.materialui.TextVariant
+import com.example.materialui.TextColor
+import com.example.routes.BridgeRouter
+import com.example.routes.AppRouter.AppPage
 
 /**
  * A skeleton component.
@@ -26,9 +31,9 @@ import com.example.color.RGBPercentColor
 object ColorPage {
   import ColorPageInternal._
 
-  case class Props()
+  case class Props( router: BridgeRouter[AppPage])
 
-  def apply() = component(Props())
+  def apply( router: BridgeRouter[AppPage]) = component(Props(router))
 
 }
 
@@ -155,6 +160,19 @@ object ColorPageInternal {
     def render( props: Props, state: State ) = {
       <.div(
         BaseStyles.baseStyles.divColorPage,
+        RootBridgeAppBar(
+            Seq(MuiTypography(
+                    variant = TextVariant.h6,
+                    color = TextColor.inherit,
+                )(
+                    <.span(
+                      " Color",
+                    )
+                )
+            ),
+            None,
+            props.router
+        )(),
         <.div(
           <.ul(
             <.li(

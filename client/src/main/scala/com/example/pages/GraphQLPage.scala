@@ -23,6 +23,10 @@ import scala.util.Failure
 import com.example.rest2.AjaxFailure
 import com.example.graphql.GraphQLClient
 import com.example.data.graphql.GraphQLProtocol.GraphQLResponse
+import com.example.materialui.MuiTypography
+import com.example.materialui.TextVariant
+import com.example.materialui.TextColor
+import com.example.routes.BridgeRouter
 
 /**
  * A skeleton component.
@@ -38,9 +42,9 @@ import com.example.data.graphql.GraphQLProtocol.GraphQLResponse
 object GraphQLPage {
   import GraphQLPageInternal._
 
-  case class Props( router: RouterCtl[AppPage] )
+  case class Props( router: BridgeRouter[AppPage] )
 
-  def apply( router: RouterCtl[AppPage] ) = component( Props(router))
+  def apply( router: BridgeRouter[AppPage] ) = component( Props(router))
 }
 
 object GraphQLPageInternal {
@@ -129,6 +133,19 @@ object GraphQLPageInternal {
       <.div(
         rootStyles.graphqlPageDiv,
         PopupOkCancel( state.error, None, Some(cancelError) ),
+        RootBridgeAppBar(
+            Seq(MuiTypography(
+                    variant = TextVariant.h6,
+                    color = TextColor.inherit,
+                )(
+                    <.span(
+                      " GraphQL",
+                    )
+                )
+            ),
+            None,
+            props.router
+        )(),
         <.textarea(
           ^.cols := 80,
           ^.rows := 40,

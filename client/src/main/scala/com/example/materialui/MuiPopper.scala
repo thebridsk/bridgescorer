@@ -31,24 +31,24 @@ object PopperPlacement {
 @js.native
 protected trait PopperPropsPrivate extends js.Any {
   @JSName("anchorEl")
-  var anchorElInternal: js.UndefOr[ js.Any] = js.native
+  val anchorElInternal: js.UndefOr[ js.Any] = js.native
 //  var containerInternal: js.UndefOr[Container] = js.native
   @JSName("placement")
-  var placementInternal: js.UndefOr[String] = js.native
+  val placementInternal: js.UndefOr[String] = js.native
 
 }
 
 @js.native
 trait PopperProps extends AdditionalProps with PopperPropsPrivate {
-//  var anchorEl: js.UndefOr[ AnchorElement] = js.native
-  var container: js.UndefOr[Container] = js.native
-  var disablePortal: js.UndefOr[Boolean] = js.native
-  var keepMounted: js.UndefOr[Boolean] = js.native
-  var modifiers: js.UndefOr[js.Object] = js.native
-  var open: js.UndefOr[Boolean] = js.native
-//  var placement: js.UndefOr[PopperPlacement] = js.native
-  var popperOptions: js.UndefOr[js.Object] = js.native
-  var transition: js.UndefOr[Boolean] = js.native
+//  val anchorEl: js.UndefOr[ AnchorElement] = js.native
+  val container: js.UndefOr[Container] = js.native
+  val disablePortal: js.UndefOr[Boolean] = js.native
+  val keepMounted: js.UndefOr[Boolean] = js.native
+  val modifiers: js.UndefOr[js.Object] = js.native
+  val open: js.UndefOr[Boolean] = js.native
+//  val placement: js.UndefOr[PopperPlacement] = js.native
+  val popperOptions: js.UndefOr[js.Object] = js.native
+  val transition: js.UndefOr[Boolean] = js.native
 }
 object PopperProps extends PropsFactory[PopperProps] {
 
@@ -56,19 +56,19 @@ object PopperProps extends PropsFactory[PopperProps] {
 
     def placement = p.placementInternal.map( s => new PopperPlacement(s) )
 
-    def placement_= (v: js.UndefOr[PopperPlacement]): Unit = {
-      v.map{ vv=>p.placementInternal=vv.value; None }.
-        orElse{ p.placementInternal=js.undefined; None }
-    }
+//    def placement_= (v: js.UndefOr[PopperPlacement]): Unit = {
+//      v.map{ vv=>p.placementInternal=vv.value; None }.
+//        orElse{ p.placementInternal=js.undefined; None }
+//    }
 
     def anchorEl = p.anchorElInternal.map { v =>
       v.asInstanceOf[AnchorElement]
     }
 
-    def anchorEl_= (v: js.UndefOr[AnchorElement]): Unit = {
-      v.map{ vv=>p.anchorElInternal=vv.asInstanceOf[js.Any]; None }.
-        orElse{ p.anchorElInternal=js.undefined; None }
-    }
+//    def anchorEl_= (v: js.UndefOr[AnchorElement]): Unit = {
+//      v.map{ vv=>p.anchorElInternal=vv.asInstanceOf[js.Any]; None }.
+//        orElse{ p.anchorElInternal=js.undefined; None }
+//    }
 
   }
 
@@ -116,13 +116,13 @@ object PopperProps extends PropsFactory[PopperProps] {
         additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
     ): P = {
       val p = get(props,additionalProps)
-      anchorEl.foreach( p.anchorEl=_)
-      container.foreach( p.container=_)
+      anchorEl.foreach( v => p.updateDynamic("anchorEl")(v.asInstanceOf[js.Any]))
+      container.foreach( v => p.updateDynamic("container")(v.asInstanceOf[js.Any]))
       disablePortal.foreach( p.updateDynamic("disablePortal")(_))
       keepMounted.foreach( p.updateDynamic("keepMounted")(_))
       modifiers.foreach( p.updateDynamic("modifiers")(_))
       open.foreach( p.updateDynamic("open")(_))
-      placement.foreach( p.placement=_)
+      placement.foreach( v => p.updateDynamic("placement")(v.value))
       popperOptions.foreach( p.updateDynamic("popperOptions")(_))
       transition.foreach( p.updateDynamic("transition")(_))
 

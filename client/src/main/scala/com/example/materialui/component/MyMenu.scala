@@ -29,16 +29,20 @@ object MyMenu {
       placement: js.UndefOr[PopperPlacement],
       anchorEl: js.UndefOr[AnchorElement],
       onClickAway: js.UndefOr[ ()=>Unit ],
+      onItemClick: js.UndefOr[ReactEvent=>Unit],
+      className: Option[String],
       children: Seq[CtorType.ChildArg]
   )
 
   def apply(
       placement: js.UndefOr[PopperPlacement] = js.undefined,
       anchorEl: js.UndefOr[AnchorElement] = js.undefined,
-      onClickAway: js.UndefOr[ ()=>Unit ] = js.undefined
+      onClickAway: js.UndefOr[ ()=>Unit ] = js.undefined,
+      onItemClick: js.UndefOr[ReactEvent=>Unit] = js.undefined,
+      className: Option[String] = None
   )(
       children: CtorType.ChildArg*
-  ) = component(Props(placement,anchorEl,onClickAway,children))
+  ) = component(Props(placement,anchorEl,onClickAway,onItemClick,className,children))
 
 }
 
@@ -62,12 +66,21 @@ object MyMenuInternal {
    */
   class Backend(scope: BackendScope[Props, State]) {
     def render( props: Props, state: State ) = {
+      val cls: js.UndefOr[js.Dictionary[js.Any]] =
+        if (props.className.isDefined) {
+          val x = js.Dictionary[js.Any]("class" -> props.className.get)
+          x
+        } else {
+          js.undefined
+        }
       MuiPopper(
           placement = props.placement,
           open=props.anchorEl.isDefined,
-          anchorEl=props.anchorEl
+          anchorEl=props.anchorEl,
+          additionalProps = cls
       )(
           MuiPaper(
+              onClick = props.onItemClick,
           )(
               MuiClickAwayListener(
                   onClickAway = props.onClickAway

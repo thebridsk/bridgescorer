@@ -37,13 +37,13 @@ import js._
 @js.native
 protected trait AnchorOriginPrivate extends js.Object {
     @JSName("horizontal")
-    var horizontalInternal: js.UndefOr[JsNumber|String] = js.native
+    val horizontalInternal: js.UndefOr[JsNumber|String] = js.native
     @JSName("vertical")
-    var verticalInternal: js.UndefOr[JsNumber|String] = js.native
+    val verticalInternal: js.UndefOr[JsNumber|String] = js.native
 }
 
 @js.native
-trait AnchorOrigin extends js.Object with AnchorOriginPrivate {
+trait AnchorOrigin extends js.Object with AnchorOriginPrivate with AdditionalProps {
 
 }
 
@@ -62,13 +62,13 @@ object AnchorOrigin {
       r
     }
 
-    def horizontal_= (v: JsNumber) = {
-      p.horizontalInternal = v
-    }
-
-    def horizontal_= (v: AnchorOriginHorizontalValue) = {
-      p.horizontalInternal = v.value
-    }
+//    def horizontal_= (v: JsNumber) = {
+//      p.horizontalInternal = v
+//    }
+//
+//    def horizontal_= (v: AnchorOriginHorizontalValue) = {
+//      p.horizontalInternal = v.value
+//    }
 
     def vertical = p.verticalInternal.map { v =>
       val r: JsNumber|AnchorOriginVerticalValue =
@@ -81,13 +81,13 @@ object AnchorOrigin {
       r
     }
 
-    def vertical_= (v: JsNumber) = {
-      p.verticalInternal = v
-    }
-
-    def vertical_= (v: AnchorOriginVerticalValue) = {
-      p.verticalInternal = v.value
-    }
+//    def vertical_= (v: JsNumber) = {
+//      p.verticalInternal = v
+//    }
+//
+//    def vertical_= (v: AnchorOriginVerticalValue) = {
+//      p.verticalInternal = v.value
+//    }
 
   }
 
@@ -97,22 +97,8 @@ object AnchorOrigin {
       ) = {
     val p = new js.Object().asInstanceOf[ AnchorOrigin ]
 
-    horizontal.foreach { v =>
-        if (js.typeOf(v.asInstanceOf[js.Any])=="number") {
-          val n = v.asInstanceOf[JsNumber]
-          p.horizontal = n
-        } else {
-          p.horizontal = v.asInstanceOf[AnchorOriginHorizontalValue]
-        }
-    }
-    vertical.foreach { v =>
-        if (js.typeOf(v.asInstanceOf[js.Any])=="number") {
-          val n = v.asInstanceOf[JsNumber]
-          p.vertical = n
-        } else {
-          p.vertical = v.asInstanceOf[AnchorOriginVerticalValue]
-        }
-    }
+    horizontal.foreach( v => p.updateDynamic("horizontal")(v.asInstanceOf[js.Any]) )
+    vertical.foreach( v => p.updateDynamic("vertical")(v.asInstanceOf[js.Any]) )
 
     p
   }
@@ -120,8 +106,8 @@ object AnchorOrigin {
 
 @js.native
 trait AnchorPosition extends js.Object {
-    var left: js.UndefOr[Double] = js.native
-    var right: js.UndefOr[Double] = js.native
+    val left: js.UndefOr[Double] = js.native
+    val right: js.UndefOr[Double] = js.native
 }
 object AnchorPosition {
   def apply(
@@ -145,37 +131,37 @@ object AnchorReference {
 @js.native
 protected trait PopoverPropsPrivate extends js.Any {
   @JSName("anchorEl")
-  var anchorElInternal: js.UndefOr[js.Any] = js.native
+  val anchorElInternal: js.UndefOr[js.Any] = js.native
   @JSName("anchorReference")
-  var anchorReferenceInternal: js.UndefOr[String] = js.native
+  val anchorReferenceInternal: js.UndefOr[String] = js.native
   @JSName("transitionDuration")
-  var transitionDurationInternal: js.UndefOr[js.Any] = js.native
+  val transitionDurationInternal: js.UndefOr[js.Any] = js.native
 }
 
 @js.native
 trait PopoverProps extends ModalProps with PopoverPropsPrivate {
   import js._
-  var action: js.UndefOr[js.Object=>Unit] = js.native
-  var anchorOrigin: js.UndefOr[AnchorOrigin] = js.native
-  var anchorPosition: js.UndefOr[AnchorPosition] = js.native
-  var elevation: js.UndefOr[Double] = js.native
-  var getContentAnchorEl: js.UndefOr[()=>js.Object] = js.native
-  var marginThreshold: js.UndefOr[Double] = js.native
-  var modalClasses: js.UndefOr[ModalProps] = js.native
-  var onEnter: js.UndefOr[()=>Unit] = js.native
-  var onEntered: js.UndefOr[()=>Unit] = js.native
-  var onEntering: js.UndefOr[()=>Unit] = js.native
-  var onExit: js.UndefOr[()=>Unit] = js.native
-  var onExited: js.UndefOr[()=>Unit] = js.native
-  var onExiting: js.UndefOr[()=>Unit] = js.native
-  var paperProps: js.UndefOr[PaperProps] = js.native
-  var transformOrigin: js.UndefOr[js.Object] = js.native
-  var transitionComponent: js.UndefOr[js.Object] = js.native
-  var transitionProps: js.UndefOr[js.Object] = js.native
+  val action: js.UndefOr[js.Object=>Unit] = js.native
+  val anchorOrigin: js.UndefOr[AnchorOrigin] = js.native
+  val anchorPosition: js.UndefOr[AnchorPosition] = js.native
+  val elevation: js.UndefOr[Double] = js.native
+  val getContentAnchorEl: js.UndefOr[()=>js.Object] = js.native
+  val marginThreshold: js.UndefOr[Double] = js.native
+  val modalClasses: js.UndefOr[ModalProps] = js.native
+  val onEnter: js.UndefOr[()=>Unit] = js.native
+  val onEntered: js.UndefOr[()=>Unit] = js.native
+  val onEntering: js.UndefOr[()=>Unit] = js.native
+  val onExit: js.UndefOr[()=>Unit] = js.native
+  val onExited: js.UndefOr[()=>Unit] = js.native
+  val onExiting: js.UndefOr[()=>Unit] = js.native
+  val paperProps: js.UndefOr[PaperProps] = js.native
+  val transformOrigin: js.UndefOr[js.Object] = js.native
+  val transitionComponent: js.UndefOr[js.Object] = js.native
+  val transitionProps: js.UndefOr[js.Object] = js.native
 
-//  var anchorEl: js.UndefOr[AnchorElement] = js.native
-//  var anchorReference: js.UndefOr[AnchorReference] = js.native
-//  var transitionDuration: js.UndefOr[JsNumber | TransitionDuration] = js.native
+//  val anchorEl: js.UndefOr[AnchorElement] = js.native
+//  val anchorReference: js.UndefOr[AnchorReference] = js.native
+//  val transitionDuration: js.UndefOr[JsNumber | TransitionDuration] = js.native
 }
 object PopoverProps extends PropsFactory[PopoverProps] {
   import js._
@@ -184,28 +170,28 @@ object PopoverProps extends PropsFactory[PopoverProps] {
 
     def anchorReference = p.anchorReferenceInternal.map( s => new AnchorReference(s) )
 
-    def anchorReference_= (v: js.UndefOr[AnchorReference]): Unit = {
-      v.map{ vv=>p.anchorReferenceInternal=vv.value; None }.
-        orElse{ p.anchorReferenceInternal=js.undefined; None }
-    }
+//    def anchorReference_= (v: js.UndefOr[AnchorReference]): Unit = {
+//      v.map{ vv=>p.anchorReferenceInternal=vv.value; None }.
+//        orElse{ p.anchorReferenceInternal=js.undefined; None }
+//    }
 
     def anchorEl = p.anchorElInternal.map { v =>
       v.asInstanceOf[AnchorElement]
     }
 
-    def anchorEl_= (v: js.UndefOr[AnchorElement]): Unit = {
-      v.map{ vv=>p.anchorElInternal=vv.asInstanceOf[js.Any]; None }.
-        orElse{ p.anchorElInternal=js.undefined; None }
-    }
+//    def anchorEl_= (v: js.UndefOr[AnchorElement]): Unit = {
+//      v.map{ vv=>p.anchorElInternal=vv.asInstanceOf[js.Any]; None }.
+//        orElse{ p.anchorElInternal=js.undefined; None }
+//    }
 
     def transitionDuration = p.transitionDurationInternal.map { v =>
       v.asInstanceOf[JsNumber | TransitionDuration]
     }
 
-    def transitionDuration_= (v: js.UndefOr[JsNumber|TransitionDuration]): Unit = {
-      v.map{ vv=>p.transitionDurationInternal=vv.asInstanceOf[js.Any]; None }.
-        orElse{ p.transitionDurationInternal=js.undefined; None }
-    }
+//    def transitionDuration_= (v: js.UndefOr[JsNumber|TransitionDuration]): Unit = {
+//      v.map{ vv=>p.transitionDurationInternal=vv.asInstanceOf[js.Any]; None }.
+//        orElse{ p.transitionDurationInternal=js.undefined; None }
+//    }
 
   }
 
@@ -381,9 +367,9 @@ object PopoverProps extends PropsFactory[PopoverProps] {
     )
 
     action.foreach( p.updateDynamic("action")(_))
-    anchorEl.foreach( p.anchorEl=_)
+    anchorEl.foreach( v => p.updateDynamic("anchorEl")(v.asInstanceOf[js.Any]))
     anchorPosition.foreach( p.updateDynamic("anchorPosition")(_))
-    anchorReference.foreach( p.anchorReference=_)
+    anchorReference.foreach( v => p.updateDynamic("anchorEl")(v.value))
     elevation.foreach( p.updateDynamic("elevation")(_))
     getContentAnchorEl.foreach( p.updateDynamic("getContentAnchorEl")(_))
     marginThreshold.foreach( p.updateDynamic("marginThreshold")(_))
@@ -399,7 +385,7 @@ object PopoverProps extends PropsFactory[PopoverProps] {
     transitionComponent.foreach( p.updateDynamic("transitionComponent")(_))
     transitionProps.foreach( p.updateDynamic("transitionProps")(_))
 
-    transitionDuration.foreach( p.transitionDuration=_)
+    transitionDuration.foreach( v => p.updateDynamic("transitionDuration")(v.asInstanceOf[js.Any]))
 
     p
   }

@@ -12,9 +12,9 @@ import org.scalajs.dom.raw.Node
 @js.native
 trait MenuProps extends PopoverProps {
 
-  var disableAutoFocusItem: js.UndefOr[Boolean] = js.native
-  var MenuListProps: js.UndefOr[js.Object] = js.native
-  var PopoverClasses: js.UndefOr[js.Object] = js.native
+  val disableAutoFocusItem: js.UndefOr[Boolean] = js.native
+  val MenuListProps: js.UndefOr[js.Object] = js.native
+  val PopoverClasses: js.UndefOr[js.Object] = js.native
 }
 object MenuProps extends PropsFactory[MenuProps] {
   import js._

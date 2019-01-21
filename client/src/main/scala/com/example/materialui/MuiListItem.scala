@@ -18,23 +18,23 @@ object AlignItem {
 @js.native
 protected trait ListItemPropsPrivate extends js.Any {
   @JSName("alignItems")
-  var alignItemsInternal: js.UndefOr[String] = js.native
+  val alignItemsInternal: js.UndefOr[String] = js.native
 }
 
 @js.native
 trait ListItemProps extends AdditionalProps with ListItemPropsPrivate {
 //        var alignItem: js.UndefOr[AlignItem] = js.native
-        var button: js.UndefOr[Boolean] = js.native
-        var classes: js.UndefOr[js.Object] = js.native
-        var component: js.UndefOr[String] = js.native
-        var ContainerComponent: js.UndefOr[String] = js.native
-        var ContainerProps: js.UndefOr[js.Object] = js.native
-        var dense: js.UndefOr[Boolean] = js.native
-        var disabled: js.UndefOr[Boolean] = js.native
-        var disableGutters: js.UndefOr[Boolean] = js.native
-        var divider: js.UndefOr[Boolean] = js.native
-        var selected: js.UndefOr[Boolean] = js.native
-        var id: js.UndefOr[String] = js.native
+        val button: js.UndefOr[Boolean] = js.native
+        val classes: js.UndefOr[js.Object] = js.native
+        val component: js.UndefOr[String] = js.native
+        val ContainerComponent: js.UndefOr[String] = js.native
+        val ContainerProps: js.UndefOr[js.Object] = js.native
+        val dense: js.UndefOr[Boolean] = js.native
+        val disabled: js.UndefOr[Boolean] = js.native
+        val disableGutters: js.UndefOr[Boolean] = js.native
+        val divider: js.UndefOr[Boolean] = js.native
+        val selected: js.UndefOr[Boolean] = js.native
+        val id: js.UndefOr[String] = js.native
 }
 
 object ListItemProps extends PropsFactory[ListItemProps] {
@@ -42,10 +42,10 @@ object ListItemProps extends PropsFactory[ListItemProps] {
   implicit class WrapListItemProps( val p: ListItemProps ) extends AnyVal {
     def alignItems = p.alignItemsInternal.map( s => new AlignItem(s) )
 
-    def alignItems_= (v: js.UndefOr[AlignItem]): Unit = {
-      v.map{ vv=>p.alignItemsInternal=vv.value; None }.
-        orElse{ p.alignItemsInternal=js.undefined; None }
-    }
+//    def alignItems_= (v: js.UndefOr[AlignItem]): Unit = {
+//      v.map{ vv=>p.alignItemsInternal=vv.value; None }.
+//        orElse{ p.alignItemsInternal=js.undefined; None }
+//    }
 
   }
 
@@ -94,7 +94,7 @@ object ListItemProps extends PropsFactory[ListItemProps] {
     ): P = {
       val p = get(props,additionalProps)
 
-      alignItems.foreach( p.alignItems = _ )
+      alignItems.foreach( v => p.updateDynamic("alignItems")(v.value))
       button.foreach( p.updateDynamic("button")(_))
       classes.foreach( p.updateDynamic("classes")(_))
       component.foreach( p.updateDynamic("component")(_))

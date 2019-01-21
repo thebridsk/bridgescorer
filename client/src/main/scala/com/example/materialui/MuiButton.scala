@@ -57,19 +57,19 @@ object Variant {
 @js.native
 protected trait ButtonPropsPrivate extends js.Any {
   @JSName("color")
-  var colorInternal: js.UndefOr[String] = js.native
+  val colorInternal: js.UndefOr[String] = js.native
   @JSName("size")
-  var sizeInternal: js.UndefOr[String] = js.native
+  val sizeInternal: js.UndefOr[String] = js.native
   @JSName("variant")
-  var variantInternal: js.UndefOr[String] = js.native
+  val variantInternal: js.UndefOr[String] = js.native
 }
 
 @js.native
 trait ButtonProps extends ButtonBaseProps with ButtonPropsPrivate {
-  var disableFocusRipple: js.UndefOr[Boolean] = js.native
-  var fullWidth: js.UndefOr[Boolean] = js.native
-  var href: js.UndefOr[String] = js.native
-  var mini: js.UndefOr[Boolean] = js.native
+  val disableFocusRipple: js.UndefOr[Boolean] = js.native
+  val fullWidth: js.UndefOr[Boolean] = js.native
+  val href: js.UndefOr[String] = js.native
+  val mini: js.UndefOr[Boolean] = js.native
 
 }
 
@@ -80,15 +80,15 @@ object ButtonProps extends PropsFactory[ButtonProps] {
 
     def color = p.colorInternal.map( s => new ColorVariant(s) )
 
-    def color_= (v: js.UndefOr[ColorVariant]) = { p.colorInternal = v.map(pp => pp.value) }
+//    def color_= (v: js.UndefOr[ColorVariant]) = { p.colorInternal = v.map(pp => pp.value) }
 
     def size = p.sizeInternal.map( s => new ItemSize(s) )
 
-    def size_= (v: js.UndefOr[ItemSize]) = { p.sizeInternal = v.map(pp => pp.value) }
+//    def size_= (v: js.UndefOr[ItemSize]) = { p.sizeInternal = v.map(pp => pp.value) }
 
     def variant = p.variantInternal.map( s => new Variant(s) )
 
-    def variant_= (v: js.UndefOr[Variant]) = { p.variantInternal = v.map(pp => pp.value) }
+//    def variant_= (v: js.UndefOr[Variant]) = { p.variantInternal = v.map(pp => pp.value) }
 
   }
 

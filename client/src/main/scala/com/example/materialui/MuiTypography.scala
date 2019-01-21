@@ -84,26 +84,26 @@ import js._
 @js.native
 trait TypographyPropsPrivate extends js.Any {
   @JSName("align")
-  var alignInternal: js.UndefOr[String] = js.native
+  val alignInternal: js.UndefOr[String] = js.native
   @JSName("color")
-  var colorInternal: js.UndefOr[String] = js.native
+  val colorInternal: js.UndefOr[String] = js.native
   @JSName("variant")
-  var variantInternal: js.UndefOr[String] = js.native
+  val variantInternal: js.UndefOr[String] = js.native
 }
 
 @js.native
 trait TypographyProps extends AdditionalProps with TypographyPropsPrivate {
-//      var align: js.UndefOr[TextAlign] = js.native
-      var classes: js.UndefOr[js.Any] = js.native
-      var className: js.UndefOr[String] = js.native
-//      var color: js.UndefOr[TextColor] = js.native
-      var component: js.UndefOr[String] = js.native
-      var gutterBottom: js.UndefOr[Boolean] = js.native
-      var headlineMapping: js.UndefOr[Map[String,String]] = js.native
-      var inline: js.UndefOr[Boolean] = js.native
-      var nowrap: js.UndefOr[Boolean] = js.native
-      var paragraph: js.UndefOr[Boolean] = js.native
-//      var variant: js.UndefOr[TextVariant] = js.native
+//      val align: js.UndefOr[TextAlign] = js.native
+      val classes: js.UndefOr[js.Any] = js.native
+      val className: js.UndefOr[String] = js.native
+//      val color: js.UndefOr[TextColor] = js.native
+      val component: js.UndefOr[String] = js.native
+      val gutterBottom: js.UndefOr[Boolean] = js.native
+      val headlineMapping: js.UndefOr[Map[String,String]] = js.native
+      val inline: js.UndefOr[Boolean] = js.native
+      val nowrap: js.UndefOr[Boolean] = js.native
+      val paragraph: js.UndefOr[Boolean] = js.native
+//      val variant: js.UndefOr[TextVariant] = js.native
 }
 object TypographyProps extends PropsFactory[TypographyProps] {
   import js._
@@ -112,24 +112,24 @@ object TypographyProps extends PropsFactory[TypographyProps] {
 
     def align = p.alignInternal.map( s => new TextAlign(s) )
 
-    def align_= (v: js.UndefOr[TextAlign]): Unit = {
-      v.map{ vv=>p.alignInternal=vv.value; None }.
-        orElse{ p.alignInternal=js.undefined; None }
-    }
+//    def align_= (v: js.UndefOr[TextAlign]): Unit = {
+//      v.map{ vv=>p.alignInternal=vv.value; None }.
+//        orElse{ p.alignInternal=js.undefined; None }
+//    }
 
     def color = p.colorInternal.map( s => new TextColor(s) )
 
-    def color_= (v: js.UndefOr[TextColor]): Unit = {
-      v.map{ vv=>p.colorInternal=vv.value; None }.
-        orElse{ p.colorInternal=js.undefined; None }
-    }
+//    def color_= (v: js.UndefOr[TextColor]): Unit = {
+//      v.map{ vv=>p.colorInternal=vv.value; None }.
+//        orElse{ p.colorInternal=js.undefined; None }
+//    }
 
     def variant = p.variantInternal.map( s => new TextVariant(s) )
 
-    def variant_= (v: js.UndefOr[TextVariant]): Unit = {
-      v.map{ vv=>p.variantInternal=vv.value; None }.
-        orElse{ p.variantInternal=js.undefined; None }
-    }
+//    def variant_= (v: js.UndefOr[TextVariant]): Unit = {
+//      v.map{ vv=>p.variantInternal=vv.value; None }.
+//        orElse{ p.variantInternal=js.undefined; None }
+//    }
 
   }
 
@@ -185,17 +185,17 @@ object TypographyProps extends PropsFactory[TypographyProps] {
   ): P = {
     val p = get(props,additionalProps)
 
-    align.foreach( p.align = _ )
+    align.foreach( v => p.updateDynamic("align")(v.value))
     classes.foreach( p.updateDynamic("classes")(_))
     className.foreach( p.updateDynamic("className")(_))
-    color.foreach( p.color = _)
+    color.foreach( v => p.updateDynamic("color")(v.value))
     component.foreach( p.updateDynamic("component")(_))
     gutterBottom.foreach( p.updateDynamic("gutterBottom")(_))
     headlineMapping.foreach( p.updateDynamic("headlineMapping")(_))
     inline.foreach( p.updateDynamic("inline")(_))
     nowrap.foreach( p.updateDynamic("nowrap")(_))
     paragraph.foreach( p.updateDynamic("paragraph")(_))
-    variant.foreach( p.variant = _ )
+    variant.foreach( v => p.updateDynamic("variant")(v.value))
 
     p
   }

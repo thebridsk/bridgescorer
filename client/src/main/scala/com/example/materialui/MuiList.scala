@@ -9,11 +9,11 @@ import scala.scalajs.js.annotation._
 
 @js.native
 trait ListProps extends AdditionalProps {
-    var classes: js.UndefOr[js.Object] = js.undefined
-    var component: js.UndefOr[String] = js.undefined
-    var dense: js.UndefOr[Boolean] = js.undefined
-    var disablePadding: js.UndefOr[Boolean] = js.undefined
-    var subheader: js.UndefOr[js.Object] = js.undefined
+    val classes: js.UndefOr[js.Object] = js.undefined
+    val component: js.UndefOr[String] = js.undefined
+    val dense: js.UndefOr[Boolean] = js.undefined
+    val disablePadding: js.UndefOr[Boolean] = js.undefined
+    val subheader: js.UndefOr[js.Object] = js.undefined
 
 }
 

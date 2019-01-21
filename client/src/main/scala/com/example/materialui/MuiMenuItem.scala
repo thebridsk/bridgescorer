@@ -9,7 +9,7 @@ import scala.scalajs.js.annotation._
 
 @js.native
 trait MenuItemProps extends ListItemProps {
-  var onClick: js.UndefOr[(ReactEvent) => Unit] = js.native,
+  val onClick: js.UndefOr[(ReactEvent) => Unit] = js.native,
 
 }
 object MenuItemProps extends PropsFactory[MenuItemProps] {

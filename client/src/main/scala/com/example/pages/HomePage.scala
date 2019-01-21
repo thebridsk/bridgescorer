@@ -78,6 +78,7 @@ import com.example.materialui.PopperPlacement
 import com.example.routes.AppRouter
 import com.example.materialui.icons.MuiCheckIcon
 import com.example.materialui.icons.SvgColor
+import com.example.materialui.icons.MuiChevronRightIcon
 
 /**
  * @author werewolf
@@ -357,7 +358,10 @@ object HomePage {
                     onClick = handleTestHandClick _,
                     classes = js.Dictionary("root" -> "mainMenuItem").asInstanceOf[js.Object]
                 )(
-                    "Test Hands"
+                    "Test Hands",
+                    MuiChevronRightIcon(
+                        classes = js.Dictionary("root" -> "mainMenuItemIcon").asInstanceOf[js.Object]
+                    )()
                 ),
                 {
                   val location = document.defaultView.location

@@ -6,15 +6,16 @@ import japgolly.scalajs.react.vdom._
 import org.scalajs.dom
 import scala.scalajs.js
 import scala.scalajs.js.annotation._
+import scala.scalajs.js.UndefOr
 
 @js.native
 trait PaperProps extends AdditionalProps {
 
-  var classes: js.UndefOr[js.Object] = js.native
-  var component: js.UndefOr[String] = js.native
-  var elevation: js.UndefOr[Double] = js.native
-  var square: js.UndefOr[Boolean] = js.native
-
+  val classes: js.UndefOr[js.Object] = js.native
+  val component: js.UndefOr[String] = js.native
+  val elevation: js.UndefOr[Double] = js.native
+  val square: js.UndefOr[Boolean] = js.native
+  val onClick: js.UndefOr[ReactEvent=>Unit] = js.native
 }
 object PaperProps extends PropsFactory[PaperProps] {
 
@@ -38,6 +39,7 @@ object PaperProps extends PropsFactory[PaperProps] {
         component: js.UndefOr[String] = js.undefined,
         elevation: js.UndefOr[Double] = js.undefined,
         square: js.UndefOr[Boolean] = js.undefined,
+        onClick: js.UndefOr[ReactEvent=>Unit] = js.undefined,
 
         additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
     ): P = {
@@ -46,7 +48,7 @@ object PaperProps extends PropsFactory[PaperProps] {
       component.foreach( p.updateDynamic("component")(_))
       elevation.foreach( p.updateDynamic("elevation")(_))
       square.foreach( p.updateDynamic("square")(_))
-
+      onClick.map( p.updateDynamic("onClick")(_))
       p
     }
 }
@@ -74,6 +76,7 @@ object MuiPaper extends ComponentFactory[PaperProps] {
         component: js.UndefOr[String] = js.undefined,
         elevation: js.UndefOr[Double] = js.undefined,
         square: js.UndefOr[Boolean] = js.undefined,
+        onClick: js.UndefOr[ReactEvent=>Unit] = js.undefined,
 
         additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
     )(
@@ -84,6 +87,7 @@ object MuiPaper extends ComponentFactory[PaperProps] {
                   component = component,
                   elevation = elevation,
                   square = square,
+                  onClick = onClick,
                   additionalProps = additionalProps
               )
       val x = f(p) _

@@ -20,9 +20,9 @@ object Position {
 @js.native
 protected trait AppBarPropsPrivate extends js.Any {
   @JSName("color")
-  var colorInternal: js.UndefOr[String] = js.native
+  val colorInternal: js.UndefOr[String] = js.native
   @JSName("position")
-  var positionInternal: js.UndefOr[String] = js.native
+  val positionInternal: js.UndefOr[String] = js.native
 }
 
 @js.native
@@ -34,19 +34,19 @@ object AppBarProps extends PropsFactory[AppBarProps] {
   implicit class WrapAppBarProps( val p: AppBarProps ) extends AnyVal {
     def position = p.positionInternal.map( s => new Position(s) )
 
-    def position_= (v: js.UndefOr[Position]): Unit = {
-      v.map{ vv=>p.positionInternal=vv.value; None }.
-        orElse{ p.positionInternal=js.undefined; None }
-    }
+//    def position_= (v: js.UndefOr[Position]): Unit = {
+//      v.map{ vv=>p.positionInternal=vv.value; None }.
+//        orElse{ p.positionInternal=js.undefined; None }
+//    }
 
-    def position_= (v: Position) = { p.positionInternal = v.value }
+//    def position_= (v: Position) = { p.positionInternal = v.value }
 
     def color = p.colorInternal.map( s => new ColorVariant(s) )
 
-    def color_= (v: js.UndefOr[ColorVariant]): Unit = {
-      v.map{ vv=>p.colorInternal=vv.value; None }.
-        orElse{ p.colorInternal=js.undefined; None }
-    }
+//    def color_= (v: js.UndefOr[ColorVariant]): Unit = {
+//      v.map{ vv=>p.colorInternal=vv.value; None }.
+//        orElse{ p.colorInternal=js.undefined; None }
+//    }
 
   }
 
@@ -85,15 +85,15 @@ object AppBarProps extends PropsFactory[AppBarProps] {
     ): AppBarProps = {
       val p: P = PaperProps(
           props,
-          classes,
-          component,
-          elevation,
-          square,
-          additionalProps
+          classes = classes,
+          component = component,
+          elevation = elevation,
+          square = square,
+          additionalProps = additionalProps
       )
 
-      color.foreach( p.color=_)
-      position.foreach( p.position = _)
+      color.foreach( v => p.updateDynamic("color")(v.value))
+      position.foreach( v => p.updateDynamic("position")(v.value))
 
       p
     }

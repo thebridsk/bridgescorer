@@ -589,3 +589,7 @@ body.touched .withTooltipBox:hover {
 .mainMenuItemIcon {
   padding-left: 5px !important;
 }
+
+.popupMenu {
+  z-index: 10;
+}

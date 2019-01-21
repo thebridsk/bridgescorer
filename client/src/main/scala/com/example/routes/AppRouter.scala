@@ -191,7 +191,7 @@ class AppRouter( modules: Module* ) {
       | staticRoute("#thankyou", ThankYou) ~> renderR( (routerCtl) => logit(ThankYouPage()) )
       | staticRoute("#testpage", PageTest) ~> renderR( (routerCtl) => logit(TestPage(Home,routerCtl)) )
       | staticRoute("#graphql", GraphQLAppPage) ~> renderR( (routerCtl) => logit(GraphQLPage(routerCtl)) )
-      | staticRoute("#color", ColorView) ~> renderR( (routerCtl) => logit(ColorPage()) )
+      | staticRoute("#color", ColorView) ~> renderR( (routerCtl) => logit(ColorPage(routerCtl)) )
       | staticRoute("#voyager", VoyagerView) ~> renderR( (routerCtl) => logit(VoyagerPage(routerCtl)) )
       | staticRoute("#graphiql", GraphiQLView) ~> renderR( (routerCtl) => logit(GraphiQLPage(routerCtl)) )
       | moduleRoutes()

@@ -31,25 +31,25 @@ object CALTouchEvent {
 @js.native
 protected trait ClickAwayListenerPropsPrivate extends js.Any {
   @JSName("mouseEvent")
-  var mouseEventInternal: js.UndefOr[js.Any] = js.native
+  val mouseEventInternal: js.UndefOr[js.Any] = js.native
   @JSName("touchEvent")
-  var touchEventInternal: js.UndefOr[js.Any] = js.native
+  val touchEventInternal: js.UndefOr[js.Any] = js.native
 }
 
 @js.native
 trait ClickAwayListenerProps extends AdditionalProps with ClickAwayListenerPropsPrivate {
-  var onClickAway: js.UndefOr[() => Unit] = js.native
+  val onClickAway: js.UndefOr[() => Unit] = js.native
 }
 object ClickAwayListenerProps extends PropsFactory[ClickAwayListenerProps] {
 
   implicit class WrapClickAwayListenerProps( val p: ClickAwayListenerProps ) extends AnyVal {
     def mouseEvent = p.mouseEventInternal.map( s => new CALMouseEvent(s) )
 
-    def mouseEvent_= (v: js.UndefOr[CALMouseEvent]) = { p.mouseEventInternal = v.map(pp => pp.value) }
+//    def mouseEvent_= (v: js.UndefOr[CALMouseEvent]) = { p.mouseEventInternal = v.map(pp => pp.value) }
 
     def touchEvent = p.touchEventInternal.map( s => new CALTouchEvent(s) )
 
-    def touchEvent_= (v: js.UndefOr[CALTouchEvent]) = { p.touchEventInternal = v.map(pp => pp.value) }
+//    def touchEvent_= (v: js.UndefOr[CALTouchEvent]) = { p.touchEventInternal = v.map(pp => pp.value) }
 
   }
 
@@ -74,9 +74,9 @@ object ClickAwayListenerProps extends PropsFactory[ClickAwayListenerProps] {
     ): P = {
       val p = get(props,additionalProps)
 
-      mouseEvent.foreach( p.updateDynamic("mouseEvent")(_))
+      mouseEvent.foreach( v => p.updateDynamic("mouseEvent")(v.value))
       onClickAway.foreach( p.updateDynamic("onClickAway")(_) )
-      touchEvent.foreach( p.updateDynamic("touchEvent")(_))
+      touchEvent.foreach( v => p.updateDynamic("touchEvent")(v.value))
 
       p
     }

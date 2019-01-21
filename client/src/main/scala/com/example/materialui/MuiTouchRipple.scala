@@ -14,13 +14,13 @@ trait TouchRippleProps extends AdditionalProps {
    * If true, the ripple starts at the center of the
    * component rather than at the point of interaction.
    */
-  var center: js.UndefOr[Boolean] = js.native
+  val center: js.UndefOr[Boolean] = js.native
 
   /**
    * Override or extend the styles applied to the
    * component. See CSS API below for more details.
    */
-  var classes:  js.UndefOr[js.Object] = js.native
+  val classes:  js.UndefOr[js.Object] = js.native
 }
 
 object TouchRippleProps extends PropsFactory[TouchRippleProps] {

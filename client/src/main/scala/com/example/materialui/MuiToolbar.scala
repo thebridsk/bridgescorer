@@ -18,13 +18,13 @@ object ToolbarVariant {
 @js.native
 protected trait ToolbarPropsPrivate extends js.Any {
   @JSName("variant")
-  var variantInternal: js.UndefOr[String] = js.native
+  val variantInternal: js.UndefOr[String] = js.native
 }
 
 @js.native
 trait ToolbarProps extends AdditionalProps with ToolbarPropsPrivate {
-  var classes: js.UndefOr[js.Object] = js.native
-  var disableGutters: js.UndefOr[Boolean] = js.native
+  val classes: js.UndefOr[js.Object] = js.native
+  val disableGutters: js.UndefOr[Boolean] = js.native
 //  var variant: js.UndefOr[ToolbarVariant] = js.native
 }
 object ToolbarProps extends PropsFactory[ToolbarProps] {
@@ -33,10 +33,10 @@ object ToolbarProps extends PropsFactory[ToolbarProps] {
 
     def variant = p.variantInternal.map( s => new ToolbarVariant(s) )
 
-    def variant_= (v: js.UndefOr[ToolbarVariant]): Unit = {
-      v.map{ vv=>p.variantInternal=vv.value; None }.
-        orElse{ p.variantInternal=js.undefined; None }
-    }
+//    def variant_= (v: js.UndefOr[ToolbarVariant]): Unit = {
+//      v.map{ vv=>p.variantInternal=vv.value; None }.
+//        orElse{ p.variantInternal=js.undefined; None }
+//    }
 
   }
 
@@ -62,7 +62,7 @@ object ToolbarProps extends PropsFactory[ToolbarProps] {
 
       classes.foreach( p.updateDynamic("classes")(_))
       disableGutters.foreach( p.updateDynamic("disableGutters")(_))
-      variant.foreach( p.variant=_)
+      variant.foreach( v => p.updateDynamic("variant")(v.value))
 
       p
     }

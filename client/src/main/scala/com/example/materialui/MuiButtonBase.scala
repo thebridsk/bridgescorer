@@ -9,24 +9,24 @@ import scala.scalajs.js.annotation._
 
 @js.native
 trait ButtonBaseProps extends AdditionalProps {
-  var action: js.UndefOr[js.Object=>Unit] = js.native
-  var buttonRef: js.UndefOr[js.Object] = js.native   // js.object or js.Function0[ref]
-  var centerRipple: js.UndefOr[Boolean] = js.native
-  var classes:  js.UndefOr[js.Object] = js.native
-  var component: js.UndefOr[String] = js.native
-  var disabled: js.UndefOr[Boolean] = js.native
-  var disableRipple: js.UndefOr[Boolean] = js.native
-  var disableTouchRipple: js.UndefOr[Boolean] = js.native
-  var focusRipple: js.UndefOr[Boolean] = js.native
-  var focusVisibleClassName: js.UndefOr[String] = js.native
-  var onFocusVisible: js.UndefOr[()=>Unit] = js.native
-  var TouchRippleProps: js.UndefOr[TouchRippleProps] = js.native
-  var `type`: js.UndefOr[String] = js.native
+  val action: js.UndefOr[js.Object=>Unit] = js.native
+  val buttonRef: js.UndefOr[js.Object] = js.native   // js.object or js.Function0[ref]
+  val centerRipple: js.UndefOr[Boolean] = js.native
+  val classes:  js.UndefOr[js.Object] = js.native
+  val component: js.UndefOr[String] = js.native
+  val disabled: js.UndefOr[Boolean] = js.native
+  val disableRipple: js.UndefOr[Boolean] = js.native
+  val disableTouchRipple: js.UndefOr[Boolean] = js.native
+  val focusRipple: js.UndefOr[Boolean] = js.native
+  val focusVisibleClassName: js.UndefOr[String] = js.native
+  val onFocusVisible: js.UndefOr[()=>Unit] = js.native
+  val TouchRippleProps: js.UndefOr[TouchRippleProps] = js.native
+  val `type`: js.UndefOr[String] = js.native
 
-  var onClick: js.UndefOr[ReactEvent => Unit] = js.native
-  var style: js.UndefOr[js.Object] = js.native
+  val onClick: js.UndefOr[ReactEvent => Unit] = js.native
+  val style: js.UndefOr[js.Object] = js.native
 
-  var id: js.UndefOr[String] = js.native
+  val id: js.UndefOr[String] = js.native
 }
 
 object ButtonBaseProps extends PropsFactory[ButtonBaseProps] {

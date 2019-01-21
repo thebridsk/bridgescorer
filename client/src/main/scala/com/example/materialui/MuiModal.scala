@@ -10,24 +10,24 @@ import scala.scalajs.js.annotation._
 @js.native
 trait ModalProps extends AdditionalProps {
 
-  var backdropComponent: js.UndefOr[js.Object] = js.native
-  var backdropProps: js.UndefOr[BackdropProps] = js.native
-  var classes: js.UndefOr[js.Object] = js.native
-  var container: js.UndefOr[js.Object] = js.native
-  var disableAutoFocus: js.UndefOr[Boolean] = js.native
-  var disableBackdropClick: js.UndefOr[Boolean] = js.native
-  var disableEnforceFocus: js.UndefOr[Boolean] = js.native
-  var disableEscapeKeyDown: js.UndefOr[Boolean] = js.native
-  var disablePortal: js.UndefOr[Boolean] = js.native
-  var disableRestoreFocus: js.UndefOr[Boolean] = js.native
-  var hideBackdrop: js.UndefOr[Boolean] = js.native
-  var keepMounted: js.UndefOr[Boolean] = js.native
-  var manager: js.UndefOr[js.Object] = js.native
-  var onBackdropClick: js.UndefOr[()=>Unit] = js.native
-  var onClose: js.UndefOr[() => Unit] = js.native
-  var onEscapeKeyDown: js.UndefOr[()=>Unit] = js.native
-  var onRendered: js.UndefOr[()=>Unit] = js.native
-  var open: js.UndefOr[Boolean] = js.native
+  val backdropComponent: js.UndefOr[js.Object] = js.native
+  val backdropProps: js.UndefOr[BackdropProps] = js.native
+  val classes: js.UndefOr[js.Object] = js.native
+  val container: js.UndefOr[js.Object] = js.native
+  val disableAutoFocus: js.UndefOr[Boolean] = js.native
+  val disableBackdropClick: js.UndefOr[Boolean] = js.native
+  val disableEnforceFocus: js.UndefOr[Boolean] = js.native
+  val disableEscapeKeyDown: js.UndefOr[Boolean] = js.native
+  val disablePortal: js.UndefOr[Boolean] = js.native
+  val disableRestoreFocus: js.UndefOr[Boolean] = js.native
+  val hideBackdrop: js.UndefOr[Boolean] = js.native
+  val keepMounted: js.UndefOr[Boolean] = js.native
+  val manager: js.UndefOr[js.Object] = js.native
+  val onBackdropClick: js.UndefOr[()=>Unit] = js.native
+  val onClose: js.UndefOr[() => Unit] = js.native
+  val onEscapeKeyDown: js.UndefOr[()=>Unit] = js.native
+  val onRendered: js.UndefOr[()=>Unit] = js.native
+  val open: js.UndefOr[Boolean] = js.native
 }
 object ModalProps extends PropsFactory[ModalProps] {
 

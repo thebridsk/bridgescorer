@@ -13,26 +13,26 @@ trait BackdropProps extends AdditionalProps {
    * Override or extend the styles applied to the
    * component. See CSS API below for more details.
    */
-  var classes:  js.UndefOr[js.Object] = js.native
+  val classes:  js.UndefOr[js.Object] = js.native
 
   /**
    * If true, the backdrop is invisible. It can be used when rendering a popover
    * or a custom select component.
    * Default false
    */
-  var invisible: js.UndefOr[Boolean] = js.native
+  val invisible: js.UndefOr[Boolean] = js.native
 
   /**
    * If true, the backdrop is open.
    */
-  var open: js.UndefOr[Boolean] = js.native
+  val open: js.UndefOr[Boolean] = js.native
 
   /**
    * The duration for the transition, in milliseconds. You may specify a single
    * timeout for all transitions, or individually with an object.
    * Either a Double or a TransitionDuration object.
    */
-  var transitionDuration: js.UndefOr[js.Object] = js.native
+  val transitionDuration: js.UndefOr[js.Object] = js.native
 
 }
 
