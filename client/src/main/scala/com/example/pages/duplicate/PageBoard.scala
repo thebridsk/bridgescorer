@@ -175,7 +175,7 @@ object PageBoardInternal {
         props.page.getPerspective() match {
           case PerspectiveTable(team1, team2) =>
             <.span(
-              s"Board ${Id.boardIdToBoardNumber(props.page.boardid)} viewed from Table ${Id.tableIdToTableNumber(currentTable)} Round ${currentRound}",
+              s"Board ${Id.boardIdToBoardNumber(props.page.boardid)} from Table ${Id.tableIdToTableNumber(currentTable)} Round ${currentRound}",
               " Teams "+Id.teamIdToTeamNumber(team1)+" and "+Id.teamIdToTeamNumber(team2)
             )
           case PerspectiveDirector =>

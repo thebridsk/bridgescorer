@@ -43,6 +43,16 @@ class HomePage( implicit webDriver: WebDriver, pageCreated: SourcePosition ) ext
     this
   }
 
+  def clickMainMenu(implicit patienceConfig: PatienceConfig, pos: Position) = {
+    clickButton("MainMenu")
+    this
+  }
+
+  def clickHelpMenu(implicit patienceConfig: PatienceConfig, pos: Position) = {
+    clickButton("HelpMenu")
+    this
+  }
+
   def clickListDuplicateButton(implicit patienceConfig: PatienceConfig, pos: Position) = {
     clickButton("Duplicate")
     new ListDuplicatePage(None)(webDriver, pos)
@@ -71,11 +81,6 @@ class HomePage( implicit webDriver: WebDriver, pageCreated: SourcePosition ) ext
   def clickExport( implicit pos: Position ) = {
     clickButton("Export")
     new ExportPage
-  }
-
-  def clickHelpMenu( implicit pos: Position ) = {
-    clickButton("HelpMenu")
-    new HomePage
   }
 
   def isHelpMenuVisible( implicit pos: Position ) = {

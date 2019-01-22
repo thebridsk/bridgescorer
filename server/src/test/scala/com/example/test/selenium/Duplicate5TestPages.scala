@@ -413,13 +413,21 @@ class Duplicate5TestPages extends FlatSpec with MustMatchers with BeforeAndAfter
   it should "go to boardsets page" in {
     import SessionDirector._
 
-    ListDuplicatePage.current.validate.clickBoardSets.validate.click(BoardSetsPage.boardsets.head).validate.clickOK.validate
+    val lp = ListDuplicatePage.current.validate.clickMainMenu.validate
+    eventually {
+      lp.findElemById("BoardSets")
+    }
+    lp.clickBoardSets.validate.click(BoardSetsPage.boardsets.head).validate.clickOK.validate
   }
 
   it should "go to movements page" in {
     import SessionDirector._
 
-    ListDuplicatePage.current.clickMovements.validate.click(MovementsPage.movements.head).validate.clickOK.validate
+    val lp = ListDuplicatePage.current.validate.clickMainMenu.validate
+    eventually {
+      lp.findElemById("Movements")
+    }
+    lp.clickMovements.validate.click(MovementsPage.movements.head).validate.clickOK.validate
   }
 
   it should "allow creating a new duplicate match" in {
@@ -1048,9 +1056,14 @@ class Duplicate5TestPages extends FlatSpec with MustMatchers with BeforeAndAfter
   it should "show the people page" in {
     import SessionComplete._
 
-    val sb = ListDuplicatePage.current
+    val sb = ListDuplicatePage.current.validate
     val ids = sb.getMatchIds
-    val peoplePage = sb.clickStatistics.validate.clickPeopleResults
+    val lp = sb.clickMainMenu.validate
+    eventually {
+      lp.findElemById("Statistics")
+    }
+
+    val peoplePage = lp.clickStatistics.validate.clickPeopleResults
 
     maximize
 
@@ -1134,7 +1147,11 @@ class Duplicate5TestPages extends FlatSpec with MustMatchers with BeforeAndAfter
 
     val sb = ListDuplicatePage.current
     val ids = sb.getMatchIds
-    val peoplePage = sb.clickStatistics.validate.clickPeopleResults
+    val lp = sb.clickMainMenu.validate
+    eventually {
+      lp.findElemById("Statistics")
+    }
+    val peoplePage = lp.clickStatistics.validate.clickPeopleResults
 
     peoplePage.withClueAndScreenShot(screenshotDir, "ShowPeoplePage", "Checking people") {
       if (ids.size == 2) {

@@ -302,13 +302,21 @@ class DuplicateTestPages extends FlatSpec
   it should "go to boardsets page" in {
     import SessionDirector._
 
-    ListDuplicatePage.current.clickBoardSets.validate.click(BoardSetsPage.boardsets.head).validate.clickOK.validate
+    val lp = ListDuplicatePage.current.validate.clickMainMenu.validate
+    eventually {
+      lp.findElemById("BoardSets")
+    }
+    lp.clickBoardSets.validate.click(BoardSetsPage.boardsets.head).validate.clickOK.validate
   }
 
   it should "go to movements page" in {
     import SessionDirector._
 
-    ListDuplicatePage.current.clickMovements.validate.click(MovementsPage.movements.head).validate.clickOK.validate
+    val lp = ListDuplicatePage.current.validate.clickMainMenu.validate
+    eventually {
+      lp.findElemById("Movements")
+    }
+    lp.clickMovements.validate.click(MovementsPage.movements.head).validate.clickOK.validate
   }
 
   it should "allow creating a new duplicate match" in {
@@ -1021,7 +1029,13 @@ class DuplicateTestPages extends FlatSpec
 
     val sb = ListDuplicatePage.current
     val ids = sb.getMatchIds
-    val peoplePage = sb.clickStatistics.validate.takeScreenshot(docsScreenshotDir, "Pairs").clickPeopleResults
+
+    val lp = sb.clickMainMenu.validate
+    eventually {
+      lp.findElemById("Statistics")
+    }
+
+    val peoplePage = lp.clickStatistics.validate.takeScreenshot(docsScreenshotDir, "Pairs").clickPeopleResults
 
     if (ids.size == 1) {
       peoplePage.checkPeopleMP( peopleResult:_*)
@@ -1357,13 +1371,18 @@ class DuplicateTestPages extends FlatSpec
   it should "go to the pair suggestion page" in {
     import SessionDirector._
 
-    ListDuplicatePage.current.clickSuggestion.validate
+    val lp = ListDuplicatePage.current.validate.clickMainMenu.validate
+    eventually {
+      lp.findElemById("Suggest")
+    }
+    lp.clickSuggestion.validate
+
   }
 
   it should "show calculate button with 8 known names selected" in {
     import SessionDirector._
 
-    val sug = SuggestionPage.current
+    val sug = SuggestionPage.current.validate
     sug.getNumberNameFields mustBe 8
 
     sug.isCalculateEnabled mustBe false

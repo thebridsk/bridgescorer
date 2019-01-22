@@ -227,34 +227,34 @@ class ScoreboardPage(
     new ScoreboardPage( Option(did) )
   }}
 
-  def clickDirectorButton(implicit pos: Position) = {
+  def clickDirectorButton(implicit patienceConfig: PatienceConfig, pos: Position) = {
     if (view != CompletedViewType) fail("Must be in Completed view to hit director button")
     clickButton("Director")
     new ScoreboardPage( dupid, DirectorViewType )
   }
 
-  def clickScoreStyle(implicit pos: Position) = {
+  def clickScoreStyle(implicit patienceConfig: PatienceConfig, pos: Position) = {
     clickButton("ScoreStyle")
     this
   }
 
-  def clickCompleteGameButton(implicit pos: Position) = {
+  def clickCompleteGameButton(implicit patienceConfig: PatienceConfig, pos: Position) = {
     if (!view.isInstanceOf[TableViewType]) fail("Must be in Table view to hit complete game button")
     clickButton("Game")
     new ScoreboardPage( dupid, CompletedViewType )
   }
 
-  def clickAllBoards(implicit pos: Position) = {
+  def clickAllBoards(implicit patienceConfig: PatienceConfig, pos: Position) = {
     clickButton("AllBoards")
     new BoardsPage
   }
 
-  def clickEditNames(implicit pos: Position) = {
+  def clickEditNames(implicit patienceConfig: PatienceConfig, pos: Position) = {
     clickButton("EditNames")
     new EditNamesPage( dupid.get )
   }
 
-  def clickTableButton(table: Int)(implicit pos: Position) = {
+  def clickTableButton(table: Int)(implicit patienceConfig: PatienceConfig, pos: Position) = {
     view match {
       case DirectorViewType => fail("Must be in Completed view to hit table button")
       case CompletedViewType =>
@@ -282,17 +282,17 @@ class ScoreboardPage(
   def clickBoardButton( board: Int )(implicit patienceConfig: PatienceConfig, pos: Position): HandPage =
     clickBoardToHand(board)
 
-  def clickBoardToHand( board: Int )(implicit pos: Position) = {
+  def clickBoardToHand( board: Int )(implicit patienceConfig: PatienceConfig, pos: Position) = {
     clickButton(s"Board_B${board}")
     new HandPage
   }
 
-  def clickBoardToBoard( board: Int )(implicit pos: Position) = {
+  def clickBoardToBoard( board: Int )(implicit patienceConfig: PatienceConfig, pos: Position) = {
     clickButton(s"Board_B${board}")
     new BoardPage
   }
 
-  def clickSummary(implicit pos: Position) = {
+  def clickSummary(implicit patienceConfig: PatienceConfig, pos: Position) = {
     clickButton("AllGames")
     new ListDuplicatePage(None)
   }
