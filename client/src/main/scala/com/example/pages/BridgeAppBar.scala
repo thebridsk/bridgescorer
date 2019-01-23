@@ -162,8 +162,15 @@ object BridgeAppBarInternal {
                     color = TextColor.inherit,
                 )(
                     <.span(
-                      "Bridge ScoreKeeper -",
-                      <.span(^.dangerouslySetInnerHtml:="&nbsp;")
+                      "Bridge ScoreKeeper",
+                    )
+                ) ::
+                MuiTypography(
+                    variant = TextVariant.h6,
+                    color = TextColor.inherit,
+                )(
+                    <.span(
+                      <.span(^.dangerouslySetInnerHtml:="&nbsp;-&nbsp;")
                     )
                 ) ::
                 Nil

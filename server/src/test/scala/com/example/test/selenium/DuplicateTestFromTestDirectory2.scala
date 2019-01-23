@@ -89,8 +89,7 @@ class DuplicateTestFromTestDirectory2 extends FlatSpec with MustMatchers with Be
 
   implicit val timeoutduration = Duration( 60, TimeUnit.SECONDS )
 
-  val defaultPatienceConfig = PatienceConfig(timeout=scaled(Span(timeoutMillis, Millis)), interval=scaled(Span(intervalMillis,Millis)))
-  implicit def patienceConfig = defaultPatienceConfig
+  implicit def patienceConfig = PatienceConfig(timeout=scaled(Span(timeoutMillis, Millis)), interval=scaled(Span(intervalMillis,Millis)))
 
   val sessionDirector = new DirectorSession()
   val sessionComplete = new CompleteSession()

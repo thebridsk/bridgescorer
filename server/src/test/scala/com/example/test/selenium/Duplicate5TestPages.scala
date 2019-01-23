@@ -410,25 +410,25 @@ class Duplicate5TestPages extends FlatSpec with MustMatchers with BeforeAndAfter
     HomePage.current.clickListDuplicateButton.validate
   }
 
-  it should "go to boardsets page" in {
-    import SessionDirector._
-
-    val lp = ListDuplicatePage.current.validate.clickMainMenu.validate
-    eventually {
-      lp.findElemById("BoardSets")
-    }
-    lp.clickBoardSets.validate.click(BoardSetsPage.boardsets.head).validate.clickOK.validate
-  }
-
-  it should "go to movements page" in {
-    import SessionDirector._
-
-    val lp = ListDuplicatePage.current.validate.clickMainMenu.validate
-    eventually {
-      lp.findElemById("Movements")
-    }
-    lp.clickMovements.validate.click(MovementsPage.movements.head).validate.clickOK.validate
-  }
+//  it should "go to boardsets page" in {
+//    import SessionDirector._
+//
+//    val lp = ListDuplicatePage.current.validate.clickMainMenu.validate
+//    eventually {
+//      lp.findElemById("BoardSets")
+//    }
+//    lp.clickBoardSets.validate.click(BoardSetsPage.boardsets.head).validate.clickOK.validate
+//  }
+//
+//  it should "go to movements page" in {
+//    import SessionDirector._
+//
+//    val lp = ListDuplicatePage.current.validate.clickMainMenu.validate
+//    eventually {
+//      lp.findElemById("Movements")
+//    }
+//    lp.clickMovements.validate.click(MovementsPage.movements.head).validate.clickOK.validate
+//  }
 
   it should "allow creating a new duplicate match" in {
     import SessionDirector._

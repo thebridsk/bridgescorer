@@ -161,6 +161,7 @@ class TableEnterOrSelectNamesPage( dupid: String,
         case "I_W" => t.value=ewPlayer2
         case x => log.fine( "Found an input field with name "+x )
       }
+      esc
     }}
 
     testNames(nsPlayer1, nsPlayer2, ewPlayer1, ewPlayer2,scorekeeper)

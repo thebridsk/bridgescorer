@@ -167,8 +167,15 @@ object DuplicateBridgeAppBarInternal {
                     color = TextColor.inherit,
                 )(
                     <.span(
-                      "Duplicate Bridge -",
-                      <.span(^.dangerouslySetInnerHtml:="&nbsp;")
+                      "Duplicate Bridge",
+                    )
+                ) ::
+                MuiTypography(
+                    variant = TextVariant.h6,
+                    color = TextColor.inherit,
+                )(
+                    <.span(
+                      <.span(^.dangerouslySetInnerHtml:="&nbsp;-&nbsp;")
 
                     )
                 ) ::
