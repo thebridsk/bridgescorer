@@ -60,6 +60,11 @@ lazy val onlyBuildDebug = sys.props.get("OnlyBuildDebug").
                        map( s => s.toBoolean ).
                        getOrElse(false)
 
+lazy val useFullOpt = sys.props.get("UseFullOpt").
+                       orElse(sys.env.get("UseFullOpt")).
+                       map( s => s.toBoolean ).
+                       getOrElse(false)
+
 //
 // Debugging deprecation and feature warnings
 //
@@ -744,7 +749,11 @@ lazy val `bridgescorer-client` = project.in(file("client")).
 
 // Compile tests to JS using fast-optimisation
 //    scalaJSStage in Test := FastOptStage,
-
+    if (useFullOpt) {
+      scalaJSStage in Test := FullOptStage 
+    } else {
+      scalaJSStage in Test := FastOptStage
+    },
     libraryDependencies ++= bridgeScorerDeps.value,
     libraryDependencies ++= bridgeScorerClientDeps.value,
 
@@ -933,7 +942,8 @@ lazy val `bridgescorer-server`: Project = project.in(file("server")).
       "-DSessionComplete="+useBrowser,
       "-DSessionDirector="+useBrowser,
       "-DSessionTable1="+useBrowser,
-      "-DSessionTable2="+useBrowser
+      "-DSessionTable2="+useBrowser,
+      s"""-DUseProductionPage=${if (useFullOpt) "1" else "0"}""" 
     ),
 
     libraryDependencies ++= bridgeScorerDeps.value,
@@ -956,7 +966,24 @@ lazy val `bridgescorer-server`: Project = project.in(file("server")).
 //    },
 
     scalaJSProjects := Seq(`bridgescorer-client`),
-    pipelineStages in Assets := (if (onlyBuildDebug) Seq() else Seq(scalaJSProd)) ++ Seq(scalaJSDev, gzip ),
+    pipelineStages in Assets := {
+      if (onlyBuildDebug) { 
+        Seq(scalaJSDev, gzip ),
+      } else if (useFullOpt) {
+        Seq(scalaJSProd, gzip)
+      } else { 
+        Seq(scalaJSProd, gzip ),
+      } 
+    },
+    pipelineStages in Test in Assets := {
+      if (onlyBuildDebug) { 
+        Seq(scalaJSDev, gzip ),
+      } else if (useFullOpt) {
+        Seq(scalaJSProd, gzip)
+      } else { 
+        Seq(scalaJSDev, gzip ),
+      } 
+    },
     //(scalaJSPipeline),
 
 //    pipelineStages := Seq(digest, gzip),
