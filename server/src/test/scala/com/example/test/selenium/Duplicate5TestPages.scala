@@ -464,7 +464,11 @@ class Duplicate5TestPages extends FlatSpec with MustMatchers with BeforeAndAfter
       "Starting browsers",
       CodeBlock {
         import SessionDirector._
-        ScoreboardPage.current.clickDirectorButton.validate
+        val main = ScoreboardPage.current.clickMainMenu.validate
+        eventually {
+          main.findElemById("Director")
+        }
+        main.clickDirectorButton.validate
       },
       CodeBlock {
         import SessionTable1._
@@ -1046,8 +1050,12 @@ class Duplicate5TestPages extends FlatSpec with MustMatchers with BeforeAndAfter
 
     dupid match {
       case Some(id) =>
-        val page = ScoreboardPage.current.clickSummary.validate( id )
-        page.checkResults(id, listDuplicateResult:_*)
+        val page = ScoreboardPage.current.clickMainMenu.validate
+        eventually {
+          page.findElemById("Summary")
+        }
+        val sum = page.clickSummary.validate( id )
+        sum.checkResults(id, listDuplicateResult:_*)
       case None =>
         ScoreboardPage.current.clickSummary.validate
     }

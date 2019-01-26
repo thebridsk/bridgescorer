@@ -32,6 +32,10 @@ import com.example.data.Id
 import com.example.pages.duplicate.DuplicateRouter.CompleteScoreboardView
 import com.example.pages.duplicate.DuplicateRouter.SummaryView
 import com.example.pages.duplicate.DuplicateRouter.TableView
+import com.example.pages.duplicate.DuplicateRouter.BoardSetSummaryView
+import com.example.pages.duplicate.DuplicateRouter.MovementSummaryView
+import com.example.pages.duplicate.DuplicateRouter.DuplicateBoardSetView
+import com.example.pages.duplicate.DuplicateRouter.AllTableView
 
 /**
  * A simple AppBar for the Bridge client.
@@ -165,18 +169,43 @@ object DuplicatePageBridgeAppBarInternal {
                 (
                   props.pageMenuItems :::
                   props.id.map { id =>
+                    List[CtorType.ChildArg](
+                      MuiMenuItem(
+                          id = "Complete",
+                          onClick = callbackPage(CompleteScoreboardView(id)) _
+                      )(
+                          "Scoreboard"
+                      ),
+                      MuiMenuItem(
+                          id = "BoardSet",
+                          onClick = callbackPage(DuplicateBoardSetView(id)) _
+                      )(
+                          "BoardSet"
+                      ),
+                      MuiMenuItem(
+                          id = "Tables",
+                          onClick = callbackPage(AllTableView(id)) _
+                      )(
+                          "Tables"
+                      ),
+                    ) :::
                     props.tableIds.sortWith( (l,r) => l.toInt < r.toInt).map { tid => tableMenuItem(id,tid) }
-                  }.getOrElse(List()).toList :::
-                  props.id.map { id =>
-                    val x: CtorType.ChildArg =
-                    MuiMenuItem(
-                        id = "Complete",
-                        onClick = callbackPage(CompleteScoreboardView(id)) _
-                    )(
-                        "Scoreboard"
+                  }.getOrElse(
+                    List[CtorType.ChildArg](
+                      MuiMenuItem(
+                          id = "BoardSets",
+                          onClick = callbackPage(BoardSetSummaryView) _
+                      )(
+                          "BoardSets"
+                      ),
+                      MuiMenuItem(
+                          id = "Movements",
+                          onClick = callbackPage(MovementSummaryView) _
+                      )(
+                          "Movements"
+                      ),
                     )
-                    x
-                  }.toList :::
+                  ) :::
                   List[CtorType.ChildArg](
                     MuiMenuItem(
                         id = "Summary",

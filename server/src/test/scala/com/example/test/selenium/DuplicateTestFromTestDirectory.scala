@@ -349,7 +349,7 @@ class DuplicateTestFromTestDirectory extends FlatSpec with MustMatchers with Bef
 
       sbp.validate( (1 to 18).toList )
 
-      val dsbp = sbp.clickDirectorButton
+      val dsbp = sbp.clickMainMenu.validateMainMenu.clickDirectorButton
 
     }
 

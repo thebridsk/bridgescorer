@@ -335,7 +335,7 @@ class DuplicateTestFromTestDirectory2 extends FlatSpec with MustMatchers with Be
 
       sbp.validate( (1 to 18).toList )
 
-      val dsbp = sbp.clickDirectorButton
+      val dsbp = sbp.clickMainMenu.validateMainMenu.clickDirectorButton
 
     }
 
@@ -509,24 +509,24 @@ class DuplicateTestFromTestDirectory2 extends FlatSpec with MustMatchers with Be
         "atEndGotoSummaryPage",
         logFuture {
           import sessionDirector._
-          click on id("Game")
-          eventually { find(id("AllGames")) }
-          click on id("AllGames")
+//          click on id("Game")
+//          eventually { find(id("AllGames")) }
+//          click on id("AllGames")
           eventually { find(id("Home")) }
           click on id("Home")
         }::
         logFuture {
           import sessionComplete._
-          click on id("AllGames")
+//          click on id("AllGames")
           eventually { find(id("Home")) }
           click on id("Home")
         }::
         sessionTables.values.map { st =>
           logFuture {
             import st._
-            click on id("Game")
-            eventually { find(id("AllGames")) }
-            click on id("AllGames")
+//            click on id("Game")
+//            eventually { find(id("AllGames")) }
+//            click on id("AllGames")
             eventually { find(id("Home")) }
             click on id("Home")
           }

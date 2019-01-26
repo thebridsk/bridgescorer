@@ -36,22 +36,13 @@ object ScoreboardPage {
   val buttonIdsCompleted =
                  ("Table_1", "Table 1") ::
                  ("Table_2", "Table 2") ::
-                 ("AllBoards", "All Boards") ::
-                 ("AllGames", "Summary") ::
-                 ("ForPrint", "For Print") ::
-                 ("Director", "Director's Scoreboard") ::
-                 ("Tables", "All Tables") ::
-                 ("Boardset", "BoardSet") ::
                  Nil
 
   val buttonIdsDirector =
                  ("AllBoards", "All Boards") ::
                  ("Game", "Completed Games Scoreboard") ::
-                 ("AllGames", "Summary") ::
                  ("EditNames", "Edit Names") ::
                  ("Delete", "Delete") ::
-                 ("Tables", "All Tables") ::
-                 ("Boardset", "BoardSet") ::
                  Nil
 
   def buttonIdsTable( n: String ) =
@@ -227,6 +218,30 @@ class ScoreboardPage(
     new ScoreboardPage( Option(did) )
   }}
 
+  def clickMainMenu(implicit patienceConfig: PatienceConfig, pos: Position) = {
+    clickButton("MainMenu")
+    this
+  }
+
+  def validateMainMenu(implicit patienceConfig: PatienceConfig, pos: Position) = {
+    eventually {
+      findElemById("Summary")
+    }
+    this
+  }
+
+  def clickHelpMenu(implicit patienceConfig: PatienceConfig, pos: Position) = {
+    clickButton("HelpMenu")
+    this
+  }
+
+  def validateHelpMenu(implicit patienceConfig: PatienceConfig, pos: Position) = {
+    eventually {
+      findElemById("Help")
+    }
+    this
+  }
+
   def clickDirectorButton(implicit patienceConfig: PatienceConfig, pos: Position) = {
     if (view != CompletedViewType) fail("Must be in Completed view to hit director button")
     clickButton("Director")
@@ -293,7 +308,7 @@ class ScoreboardPage(
   }
 
   def clickSummary(implicit patienceConfig: PatienceConfig, pos: Position) = {
-    clickButton("AllGames")
+    clickButton("Summary")
     new ListDuplicatePage(None)
   }
 

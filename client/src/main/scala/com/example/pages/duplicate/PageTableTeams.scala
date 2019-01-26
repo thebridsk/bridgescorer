@@ -529,7 +529,7 @@ object PageTableTeamsInternal {
                     color = TextColor.inherit,
                 )(
                     <.span(
-                      s"Names for Table ${props.page.tableid} Round ${props.page.round}",
+                      s"Players for Table ${props.page.tableid} Round ${props.page.round}",
                     )
                 )),
           helpurl = helpurl,

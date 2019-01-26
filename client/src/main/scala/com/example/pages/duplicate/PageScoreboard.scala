@@ -36,6 +36,7 @@ import com.example.routes.BridgeRouter
 import com.example.materialui.MuiTypography
 import com.example.materialui.TextVariant
 import com.example.materialui.TextColor
+import com.example.materialui.MuiMenuItem
 
 /**
  * Shows the team x board table and has a totals column that shows the number of points the team has.
@@ -118,19 +119,44 @@ object PageScoreboardInternal {
   class Backend(scope: BackendScope[Props, State]) {
     import DuplicateStyles._
     def render( props: Props, state: State ) = {
+
+      def callbackPage(page: DuplicatePage)(e: ReactEvent) = props.routerCtl.set(page).runNow()
+
       DuplicateStore.getView( props.game.getPerspective() ) match {
         case Some(score) =>
           val winnersets = score.getWinnerSets()
 
           def getScoringMethodButton() = scoringMethodButton( state.useIMP, Some( score.isIMP), false, nextIMPs )
 
-          val (title,helpurl) = props.game match {
+          val (title,helpurl,pagemenu) = props.game match {
             case _: CompleteScoreboardView =>
-              ("Complete Scoreboard","/help/duplicate/scoreboardcomplete.html")
+              ("Complete Scoreboard",
+               "/help/duplicate/scoreboardcomplete.html",
+               List[CtorType.ChildArg](
+                 MuiMenuItem(
+                     id = "Director",
+                     onClick = callbackPage(DirectorScoreboardView(props.game.dupid)) _
+                 )(
+                     "Director's Scoreboard"
+                 ),
+                 MuiMenuItem(
+                     id = "ForPrint",
+                     onClick = callbackPage(FinishedScoreboardsView(props.game.dupid)) _
+                 )(
+                     "For Print"
+                 ),
+               )
+              )
             case _: DirectorScoreboardView =>
-              ("Director's Scoreboard","/help/duplicate/scoreboardcomplete.html")
+              ("Director's Scoreboard",
+               "/help/duplicate/scoreboardcomplete.html",
+               List[CtorType.ChildArg]()
+              )
             case TableRoundScoreboardView(dupid, tableid, round) =>
-              (s"Table $tableid Scoreboard, Round $round","/help/duplicate/scoreboardfromtable.html")
+              (s"Table $tableid Scoreboard, Round $round",
+               "/help/duplicate/scoreboardfromtable.html",
+               List[CtorType.ChildArg]()
+              )
           }
 
           val sortedTables = score.tables.keys.toList.sortWith((t1,t2)=>t1<t2)
@@ -141,7 +167,7 @@ object PageScoreboardInternal {
             DuplicatePageBridgeAppBar(
               id = Some(props.game.dupid),
               tableIds = sortedTables,
-              pageMenuItems = List[CtorType.ChildArg](),
+              pageMenuItems = pagemenu,
               title = Seq[CtorType.ChildArg](MuiTypography(
                     variant = TextVariant.h6,
                     color = TextColor.inherit,
@@ -192,12 +218,6 @@ object PageScoreboardInternal {
                       baseStyles.divFooterCenter,
                       AppButton( "AllBoards", "All Boards", props.routerCtl.setOnClick(props.game.toAllBoardsView()) ),
                       " ",
-                      AppButton( "AllGames", "Summary", props.routerCtl.setOnClick(SummaryView) ),
-                      " ",
-                      AppButton( "Tables", "All Tables", props.routerCtl.setOnClick(AllTableView(props.game.dupid)) ),
-                      " ",
-                      AppButton( "Boardset", "BoardSet", props.routerCtl.setOnClick(DuplicateBoardSetView(props.game.dupid)) ),
-                      " ",
                       getScoringMethodButton(),
                       if (score.alldone) {
                         TagMod(
@@ -207,14 +227,6 @@ object PageScoreboardInternal {
                       } else {
                         TagMod()
                       }
-                    ),
-                    <.div(
-                      baseStyles.divFooterRight,
-                      AppButton( "Director", "Director's Scoreboard", props.routerCtl.setOnClick(DirectorScoreboardView(props.game.dupid)) ),
-                      " ",
-                      AppButton( "ForPrint", "For Print", props.routerCtl.setOnClick(FinishedScoreboardsView(props.game.dupid)) ),
-                      " ",
-                      HelpButton("/help/duplicate/scoreboardcomplete.html"),
                     )
                   )
                 case PerspectiveDirector =>
@@ -226,12 +238,6 @@ object PageScoreboardInternal {
                     <.div(
                       baseStyles.divFooterCenter,
                       AppButton( "AllBoards", "All Boards", props.routerCtl.setOnClick(props.game.toAllBoardsView()) ),
-                      " ",
-                      AppButton( "AllGames", "Summary", props.routerCtl.setOnClick(SummaryView) ),
-                      " ",
-                      AppButton( "Tables", "All Tables", props.routerCtl.setOnClick(AllTableView(props.game.dupid)) ),
-                      " ",
-                      AppButton( "Boardset", "BoardSet", props.routerCtl.setOnClick(DuplicateBoardSetView(props.game.dupid)) ),
                       " ",
                       getScoringMethodButton(),
                     ),
@@ -268,8 +274,6 @@ object PageScoreboardInternal {
                         <.div(
                           baseStyles.divFooterRight,
                           AppButton( "AllBoards", "All Boards", props.routerCtl.setOnClick(props.game.toAllBoardsView())  ),
-                          " ",
-                          HelpButton("/help/duplicate/scoreboardfromtable.html"),
                         )
                       ).toTagMod
                     case _ =>
