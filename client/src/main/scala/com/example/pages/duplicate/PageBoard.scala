@@ -242,9 +242,7 @@ object PageBoardInternal {
                 " ",
                 PageScoreboardInternal.scoringMethodButton( state.useIMP, Some( score.isIMP), false, nextIMPs ),
                 if (tableperspective.isEmpty) boards(score)
-                else TagMod(),
-                " ",
-                HelpButton("/help/duplicate/boardcomplete.html"),
+                else TagMod()
               )
             )
           case None =>

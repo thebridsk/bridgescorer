@@ -106,7 +106,7 @@ object Dependencies {
   lazy val vGraphQL = "14.1.1"
   lazy val vGraphiQL = "0.12.0"
   lazy val vGraphQLVoyager = "1.0.0-rc.26"
-  lazy val vMaterialUIcore = "3.9.0"        // https://www.npmjs.com/package/@material-ui/core
+  lazy val vMaterialUIcore = "3.9.1"        // https://www.npmjs.com/package/@material-ui/core
   lazy val vMaterialUIicons = "3.0.2"        // https://www.npmjs.com/package/@material-ui/icons
 
   // libraries

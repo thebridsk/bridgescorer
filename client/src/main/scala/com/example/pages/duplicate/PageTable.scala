@@ -118,10 +118,6 @@ object PageTableInternal {
                   <.div(
                     baseStyles.divFooterCenter,
                     ComponentInputStyleButton( Callback{} )
-                  ),
-                  <.div(
-                    baseStyles.divFooterRight,
-                    HelpButton("/help/duplicate/table.html"),
                   )
                 )
               )

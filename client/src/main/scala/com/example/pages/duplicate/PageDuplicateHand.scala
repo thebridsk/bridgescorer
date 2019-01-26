@@ -175,7 +175,7 @@ object PageDuplicateHandInternal {
                      Some(hand.ewTeam),
                      newhand=newhand,
                      allowPassedOut=board.timesPlayed()>0,
-                     helppage=Some("/help/duplicate/enterhand.html"))
+                     helppage= None) // Some("/help/duplicate/enterhand.html"))
         }
       )
     }
