@@ -972,7 +972,7 @@ lazy val `bridgescorer-server`: Project = project.in(file("server")).
       } else if (useFullOpt) {
         Seq(scalaJSProd, gzip)
       } else { 
-        Seq(scalaJSProd, gzip ),
+        Seq(scalaJSProd, scalaJSDev, gzip ),
       } 
     },
     pipelineStages in Test in Assets := {
@@ -981,7 +981,7 @@ lazy val `bridgescorer-server`: Project = project.in(file("server")).
       } else if (useFullOpt) {
         Seq(scalaJSProd, gzip)
       } else { 
-        Seq(scalaJSDev, gzip ),
+        Seq(scalaJSProd, scalaJSDev, gzip),
       } 
     },
     //(scalaJSPipeline),
@@ -1059,12 +1059,12 @@ lazy val `bridgescorer-server`: Project = project.in(file("server")).
 //        oldStrategy(x)
 //    }),
 
-    prereqintegrationtests := Def.sequential(
-//      test in Test in `bridgescorer-server`,
-//      hugo in help,
-      assembly in Compile,
-      assembly in Test
-    ).value,
+//    prereqintegrationtests := Def.sequential(
+////      test in Test in `bridgescorer-server`,
+////      hugo in help,
+//      assembly in Compile,
+//      assembly in Test
+//    ).value,
 
     prereqintegrationtests := {
       val x = (assembly in Compile).value
@@ -1269,9 +1269,9 @@ lazy val `bridgescorer-server`: Project = project.in(file("server")).
 
 alltests := Def.sequential(
                        mydist in Distribution in utilities,
-                       fastOptJS in Compile in `bridgescorer-client`,
-                       fullOptJS in Compile in `bridgescorer-client`,
-                       fastOptJS in Test in `bridgescorer-client`,
+//                       fastOptJS in Compile in `bridgescorer-client`,
+//                       fullOptJS in Compile in `bridgescorer-client`,
+//                       fastOptJS in Test in `bridgescorer-client`,
 //                       packageJSDependencies in Compile in `bridgescorer-client`,
                        test in Test in rotationJVM,
                        test in Test in rotationJS,
@@ -1283,9 +1283,9 @@ alltests := Def.sequential(
 
 travis := Def.sequential(
                        travis in Distribution in utilities,
-                       fastOptJS in Compile in `bridgescorer-client`,
-                       fullOptJS in Compile in `bridgescorer-client`,
-                       fastOptJS in Test in `bridgescorer-client`,
+//                       fastOptJS in Compile in `bridgescorer-client`,
+//                       fullOptJS in Compile in `bridgescorer-client`,
+//                       fastOptJS in Test in `bridgescorer-client`,
 //                       packageJSDependencies in Compile in `bridgescorer-client`,
                        test in Test in rotationJVM,
                        test in Test in rotationJS,

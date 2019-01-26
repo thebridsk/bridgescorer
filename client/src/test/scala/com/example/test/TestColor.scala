@@ -8,9 +8,9 @@ class TestColor extends FlatSpec with MustMatchers  {
 
   it should "convert between hsl, rgb and rgb%" in {
 
-    for (r <- 0 to 255;
-         g <- 0 to 255;
-         b <- 0 to 255
+    for (r <- 0 to 255 by 25;
+         g <- 0 to 255 by 25;
+         b <- 0 to 255 by 25
     ) {
       val rgb = Color.rgb(r, g, b)
 

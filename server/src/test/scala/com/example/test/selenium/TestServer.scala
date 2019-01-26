@@ -24,7 +24,13 @@ object TestServer {
   val useTestServerHost = getProp("UseBridgeScorerHost")
   val useTestServerPort = getProp("UseBridgeScorerPort")
   val useWebsocketLogging = getProp("UseWebsocketLogging")
-  val useProductionPage = getProp("UseProductionPage")
+  val envUseProductionPage = getBooleanProp("UseProductionPage",false)
+
+  val useFastOptOnly = getBooleanProp("OnlyBuildDebug",false)
+
+  val useFullOptOnly = getBooleanProp("UseFullOpt",false)
+
+  val useProductionPage = useFullOptOnly || (envUseProductionPage && !useFastOptOnly)
 
   def loggingConfig(l: List[String]) = LoggerConfig( "[root]=ALL"::Nil, "console=INFO"::l)
 
@@ -69,9 +75,7 @@ object TestServer {
   val pagedev = hosturl+"public/index-fastopt.html"
   val docs = hosturl+"v1/docs/"
 
-  val isProductionPage = useProductionPage.map(v => v=="true" || v=="1").getOrElse(false)
-
-  testlog.info( s"""Testing ${if (isProductionPage) "Prod" else "Dev"} pages""" )
+  testlog.info( s"""Testing ${if (useProductionPage) "Prod" else "Dev"} pages""" )
 
   private var startCount = 0
   private def getAndIncrementStartCount() = synchronized {
@@ -129,8 +133,8 @@ object TestServer {
 
   def isServerStartedByTest = startingServer
 
-  def getAppPage() = if (isProductionPage) getAppPageProd else  getAppPageDev
-  def getAppPageUrl( uri: String ) = if (isProductionPage) getAppPageProdUrl(uri) else getAppPageDevUrl(uri)
+  def getAppPage() = if (useProductionPage) getAppPageProd else  getAppPageDev
+  def getAppPageUrl( uri: String ) = if (useProductionPage) getAppPageProdUrl(uri) else getAppPageDevUrl(uri)
 
   def getAppPageProd() = pageprod
   def getAppPageProdUrl( uri: String ) = if (uri.length()==0) pageprod else pageprod+"#"+uri
@@ -151,6 +155,10 @@ object TestServer {
   def getUrl( uri: String ) = {
     if (uri.charAt(0) != '/') throw new IllegalArgumentException("uri must start with a '/'")
     new URL(hosturl+uri.substring(1))
+  }
+
+  def getBooleanProp( name: String, default: Boolean ) = {
+    getProp(name).map(s => s.equalsIgnoreCase("true") || s.equals("1")).getOrElse(default)
   }
 
   def getProp( name: String ) = {
