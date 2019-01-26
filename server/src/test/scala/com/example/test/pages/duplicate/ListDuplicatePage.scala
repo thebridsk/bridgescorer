@@ -63,7 +63,7 @@ object ListDuplicatePage {
           "DuplicateCreate"::
 //          "BoardSets2"::
 //          "Movements2"::
-          "ForPrint"::
+//          "ForPrint"::
 //          "DuplicateCreateTest"::
 //          "BoardSets"::
 //          "Movements"::
@@ -144,7 +144,17 @@ class ListDuplicatePage( importId: Option[String] )( implicit val webDriver: Web
   }
 
   def isForPrintActive( implicit pos: Position ) = {
-    importId.isEmpty && findAll(id("ForPrint")).isEmpty
+    // importId.isEmpty && findAll(id("ForPrint")).isEmpty
+    if (importId.isEmpty) {
+      val els = getElemsByXPath(s"""//div/table/thead/tr[1]/th[2]""")
+      if (els.size == 1) {
+        els.head.text.equals("Print")
+      } else {
+        false
+      }
+    } else {
+      false
+    }
   }
 
   def clickMainMenu(implicit patienceConfig: PatienceConfig, pos: Position) = {

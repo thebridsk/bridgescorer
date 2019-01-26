@@ -372,6 +372,8 @@ object PageSummaryInternal {
 
     def forPrint(flagForPrint: Boolean) = scope.modState(s => s.copy(forPrint = flagForPrint))
 
+    def clickForPrint(flagForPrint: Boolean)( event: ReactEvent ) = forPrint(flagForPrint).runNow
+
     val forPrintOk = CallbackTo {
       val s = scope.withEffectsImpure.state
       val mds = s.selected.reverse.map{ id => id.toString() }.mkString(",")
@@ -692,6 +694,12 @@ object PageSummaryInternal {
                           onClick = callbackPage(MovementSummaryView) _
                       )(
                           "Movements"
+                      ),
+                      MuiMenuItem(
+                          id = "ForPrint",
+                          onClick = clickForPrint(true) _
+                      )(
+                          "Select For Print"
                       )
                     )
                     BeepComponent.getMenuItem()::x
@@ -714,7 +722,7 @@ object PageSummaryInternal {
               whenUndefined(importId)(
                 TagMod(
                   " ",
-                  if (!state.forPrint) AppButton("ForPrint", "Select For Print", ^.onClick --> forPrint(true))
+                  if (!state.forPrint) TagMod() // AppButton("ForPrint", "Select For Print", ^.onClick --> forPrint(true))
                   else Seq[TagMod](
                          AppButton("Cancel Print", "Cancel Print", ^.onClick --> forPrintCancel),
                          " ",
