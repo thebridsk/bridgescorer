@@ -1147,7 +1147,8 @@ class Duplicate5TestPages extends FlatSpec with MustMatchers with BeforeAndAfter
 
     val newid = postDuplicate(ndup)
 
-    StatisticsPage.current.clickSummary.validate( dupid.get, newid )
+    val menu = StatisticsPage.current.clickMainMenu.validateMainMenu
+    menu.clickSummary.validate( dupid.get, newid )
   }
 
   it should "show the people page 2" in {

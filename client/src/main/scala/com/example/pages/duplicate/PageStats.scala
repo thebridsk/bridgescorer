@@ -207,19 +207,19 @@ object PageStatsInternal {
 
         ),
 //        <.h1("Statistics"),
-        <.div(
-          baseStyles.divFooter,
-          <.div(
-            baseStyles.divFooterLeft,
-            AppButton( "Home", "Home", props.routerCtl.home ),
-            " ",
-            AppButton( "Summary", "Summary", props.routerCtl.setOnClick(SummaryView) ),
-            " ",
-            AppButton( "BoardSets", "BoardSets", props.routerCtl.setOnClick(BoardSetSummaryView) ),
-            " ",
-            AppButton( "Movements", "Movements", props.routerCtl.setOnClick(MovementSummaryView) )
-          )
-        ),
+//        <.div(
+//          baseStyles.divFooter,
+//          <.div(
+//            baseStyles.divFooterLeft,
+//            AppButton( "Home", "Home", props.routerCtl.home ),
+//            " ",
+//            AppButton( "Summary", "Summary", props.routerCtl.setOnClick(SummaryView) ),
+//            " ",
+//            AppButton( "BoardSets", "BoardSets", props.routerCtl.setOnClick(BoardSetSummaryView) ),
+//            " ",
+//            AppButton( "Movements", "Movements", props.routerCtl.setOnClick(MovementSummaryView) )
+//          )
+//        ),
         <.div(
           baseStyles.divFooter,
           <.div(
@@ -331,19 +331,19 @@ object PageStatsInternal {
         state.showPairs ?= ViewPairsTable(state.filter, true ),
         state.showPeopleTableDetail ?= ViewPairsMadeDownTable( state.filter, false ),
         state.showPairsDetail ?= ViewPairsMadeDownTable(state.filter, true ),
-        <.div(
-          baseStyles.divFooter,
-          <.div(
-            baseStyles.divFooterLeft,
-            AppButton( "Home2", "Home", props.routerCtl.home ),
-            " ",
-            AppButton( "Summary2", "Summary", props.routerCtl.setOnClick(SummaryView) ),
-            " ",
-            AppButton( "BoardSets2", "BoardSets", props.routerCtl.setOnClick(BoardSetSummaryView) ),
-            " ",
-            AppButton( "Movements2", "Movements", props.routerCtl.setOnClick(MovementSummaryView) )
-          )
-        )
+//        <.div(
+//          baseStyles.divFooter,
+//          <.div(
+//            baseStyles.divFooterLeft,
+//            AppButton( "Home2", "Home", props.routerCtl.home ),
+//            " ",
+//            AppButton( "Summary2", "Summary", props.routerCtl.setOnClick(SummaryView) ),
+//            " ",
+//            AppButton( "BoardSets2", "BoardSets", props.routerCtl.setOnClick(BoardSetSummaryView) ),
+//            " ",
+//            AppButton( "Movements2", "Movements", props.routerCtl.setOnClick(MovementSummaryView) )
+//          )
+//        )
 
       )
     }
