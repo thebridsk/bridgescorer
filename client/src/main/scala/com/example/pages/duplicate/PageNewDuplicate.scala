@@ -253,13 +253,13 @@ object PageNewDuplicateInternal {
                       "New Duplicate Match",
                     )
                 )),
-          helpurl = "/help/duplicate/summary.html",
+          helpurl = "/help/duplicate/new.html",
           routeCtl = props.routerCtl
         )(
 
         ),
 //        <.h1("New Duplicate Match"),
-        HelpButton("/help/duplicate/new.html"),
+//        HelpButton("/help/duplicate/new.html"),
         CheckBox("resultsOnly", "Create Results Only", state.resultsOnly, resultsOnlyToggle ),
         <.table(
           dupStyles.tableNewDuplicate,
