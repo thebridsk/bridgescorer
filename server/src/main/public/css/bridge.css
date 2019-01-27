@@ -594,3 +594,12 @@ body.touched .withTooltipBox:hover {
 .popupMenu {
   z-index: 10;
 }
+
+.appBarTitle {
+   display: flex;
+   flex-grow: 0;
+   flex-wrap: nowrap;
+   justify-content: flex-start;
+   background-color: inherit;
+   align-items: center;
+}

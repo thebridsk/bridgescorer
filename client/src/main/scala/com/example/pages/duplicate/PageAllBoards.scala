@@ -93,8 +93,9 @@ object PageAllBoardsInternal {
               case _ => (-1,"")
             }
             <.span(
-              "Board View from Table "+Id.tableIdToTableNumber(currentTable) + " Round "+currentRound,
-              " Teams "+Id.teamIdToTeamNumber(team1)+" and "+Id.teamIdToTeamNumber(team2)
+              s"Table ${Id.tableIdToTableNumber(currentTable)} Round ${currentRound}" ,
+              s" Teams ${Id.teamIdToTeamNumber(team1)} and ${Id.teamIdToTeamNumber(team2)}",
+              " Board View"
             )
           case PerspectiveDirector =>
             <.span("Director's Board View")

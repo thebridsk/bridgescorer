@@ -140,42 +140,47 @@ object BridgeAppBarInternal {
 
       val toolbarSuits = TitleSuits.suits
 
-      val toolbarContentTail = toolbarSuits::helpButton::Nil
+      val toolbarContentTail: List[CtorType.ChildArg] = List( toolbarSuits, helpButton)
 
-      val toolbarFront =
-                MuiIconButton(
-                    id = "MainMenu",
-                    onClick = props.handleMainClick,
-                    color=ColorVariant.inherit
-                )(
-                  MuiMenuIcon()()
-                ) ::
-                MuiIconButton(
-                    id = "Home",
-                    onClick = callbackPage(Home) _,
-                    color=ColorVariant.inherit
-                )(
-                    MuiHomeIcon()()
-                ) ::
-                MuiTypography(
-                    variant = TextVariant.h6,
-                    color = TextColor.inherit,
-                )(
-                    <.span(
-                      "Bridge ScoreKeeper",
-                    )
-                ) ::
-                MuiTypography(
-                    variant = TextVariant.h6,
-                    color = TextColor.inherit,
-                )(
-                    <.span(
-                      <.span(^.dangerouslySetInnerHtml:="&nbsp;-&nbsp;")
-                    )
-                ) ::
-                Nil
-
-      val toolbarContent = toolbarFront.map(_.vdomElement).toList ::: props.title.toList ::: toolbarContentTail.map(_.vdomElement)
+      val toolbarFront: CtorType.ChildArg = <.div(
+          {
+            val x = List[TagMod](
+              baseStyles.appBarTitle,
+              MuiIconButton(
+                  id = "MainMenu",
+                  onClick = props.handleMainClick,
+                  color=ColorVariant.inherit
+              )(
+                MuiMenuIcon()()
+              ),
+              MuiIconButton(
+                  id = "Home",
+                  onClick = callbackPage(Home) _,
+                  color=ColorVariant.inherit
+              )(
+                  MuiHomeIcon()()
+              ),
+              MuiTypography(
+                  variant = TextVariant.h6,
+                  color = TextColor.inherit,
+              )(
+                  <.span(
+                    "Bridge ScoreKeeper",
+                  )
+              ),
+              MuiTypography(
+                  variant = TextVariant.h6,
+                  color = TextColor.inherit,
+              )(
+                  <.span(
+                    <.span(^.dangerouslySetInnerHtml:="&nbsp;-&nbsp;")
+                  )
+              )
+            ) ::: props.title.toList
+            x
+          }:_*
+      )
+      val toolbarContent = toolbarFront :: toolbarContentTail
 
       <.div(
         (

@@ -145,43 +145,46 @@ object DuplicateBridgeAppBarInternal {
 
       val toolbarSuits = TitleSuits.suits
 
-      val toolbarContentTail = toolbarSuits::helpButton::Nil
+      val toolbarContentTail: List[CtorType.ChildArg] = List( toolbarSuits, helpButton)
 
-      val toolbarFront =
-                MuiIconButton(
-                    id = "MainMenu",
-                    onClick = props.handleMainClick,
-                    color=ColorVariant.inherit
-                )(
-                  MuiMenuIcon()()
-                ) ::
-                MuiIconButton(
-                    id = "Home",
-                    onClick = handleGotoHome _,
-                    color=ColorVariant.inherit
-                )(
-                    MuiHomeIcon()()
-                ) ::
-                MuiTypography(
-                    variant = TextVariant.h6,
-                    color = TextColor.inherit,
-                )(
-                    <.span(
-                      "Duplicate Bridge",
-                    )
-                ) ::
-                MuiTypography(
-                    variant = TextVariant.h6,
-                    color = TextColor.inherit,
-                )(
-                    <.span(
-                      <.span(^.dangerouslySetInnerHtml:="&nbsp;-&nbsp;")
+      val toolbarFront: CtorType.ChildArg = <.div(
+        {
+           val x = List[TagMod](
+               baseStyles.appBarTitle,
+               MuiIconButton(
+                   id = "MainMenu",
+                   onClick = props.handleMainClick,
+                   color=ColorVariant.inherit
+               )(
+                   MuiMenuIcon()()
+               ),
+               MuiIconButton(
+                   id = "Home",
+                   onClick = handleGotoHome _,
+                   color=ColorVariant.inherit
+               )(
+                   MuiHomeIcon()()
+               ),
+               MuiTypography(
+                   variant = TextVariant.h6,
+                   color = TextColor.inherit,
+               )(
+                   <.span(
+                     "Duplicate Bridge",
+                   )
+               ),
+               MuiTypography(
+                   variant = TextVariant.h6,
+                   color = TextColor.inherit,
+               )(
+                   <.span(^.dangerouslySetInnerHtml:="&nbsp;-&nbsp;")
+               )
+           ) ::: props.title.toList
+           x
+        }:_*
+      )
 
-                    )
-                ) ::
-                Nil
-
-      val toolbarContent = toolbarFront.map(_.vdomElement).toList ::: props.title.toList ::: toolbarContentTail.map(_.vdomElement)
+      val toolbarContent: List[CtorType.ChildArg] = toolbarFront :: toolbarContentTail
 
       <.div(
         (

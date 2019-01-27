@@ -153,7 +153,7 @@ object PageScoreboardInternal {
                List[CtorType.ChildArg]()
               )
             case TableRoundScoreboardView(dupid, tableid, round) =>
-              (s"Table $tableid Scoreboard, Round $round",
+              (s"Table $tableid Round $round Scoreboard",
                "/help/duplicate/scoreboardfromtable.html",
                List[CtorType.ChildArg]()
               )
