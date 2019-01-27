@@ -624,8 +624,9 @@ object PageSummaryInternal {
       <.div(
         dupStyles.divSummary,
         PopupOkCancel( state.workingOnNew.map( s=>s), None, Some(cancel) ),
-        DuplicateBridgeAppBar(
-            handleMainClick = handleMainClick _,
+        DuplicatePageBridgeAppBar(
+            id = None,
+            tableIds = List(),
             title = Seq(MuiTypography(
                     variant = TextVariant.h6,
                     color = TextColor.inherit,
@@ -635,19 +636,25 @@ object PageSummaryInternal {
                     )
                 )
             ),
-            "/help/duplicate/summary.html",
-            props.routerCtl
+            helpurl = "/help/duplicate/summary.html",
+            routeCtl = props.routerCtl
         )(
             // main menu
             MyMenu(
                 anchorEl=state.anchorMainEl,
                 onClickAway = handleMainClose _,
                 onItemClick = handleMainCloseClick _,
-                className = Some("popupMenu")
             )(
                 {
                   (if (importId.isDefined) {
-                    List[VdomNode]()
+                    List[VdomNode](
+                      MuiMenuItem(
+                          id = "Summary",
+                          onClick = callbackPage(SummaryView) _
+                      )(
+                          "Summary"
+                      )
+                    )
                   } else {
                     val x: List[VdomNode] =
                     List(
@@ -684,18 +691,6 @@ object PageSummaryInternal {
                           "Test"
                       ),
                       MuiMenuItem(
-                          id = "BoardSets",
-                          onClick = callbackPage(BoardSetSummaryView) _
-                      )(
-                          "BoardSets"
-                      ),
-                      MuiMenuItem(
-                          id = "Movements",
-                          onClick = callbackPage(MovementSummaryView) _
-                      )(
-                          "Movements"
-                      ),
-                      MuiMenuItem(
                           id = "ForPrint",
                           onClick = clickForPrint(true) _
                       )(
@@ -703,12 +698,10 @@ object PageSummaryInternal {
                       )
                     )
                     BeepComponent.getMenuItem()::x
-                  } :::
-                  List[VdomNode](
-                  )
-                  ):_*
-                }
-            )
+                  }
+                ):_*
+              }
+          )
         ),
 //        <.div(
           if (tp.isData) showMatches()

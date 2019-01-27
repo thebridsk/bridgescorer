@@ -30,7 +30,7 @@ object MyMenu {
       anchorEl: js.UndefOr[AnchorElement],
       onClickAway: js.UndefOr[ ()=>Unit ],
       onItemClick: js.UndefOr[ReactEvent=>Unit],
-      className: Option[String],
+      additionalProps: js.UndefOr[js.Dictionary[js.Any]],
       children: Seq[CtorType.ChildArg]
   )
 
@@ -39,10 +39,10 @@ object MyMenu {
       anchorEl: js.UndefOr[AnchorElement] = js.undefined,
       onClickAway: js.UndefOr[ ()=>Unit ] = js.undefined,
       onItemClick: js.UndefOr[ReactEvent=>Unit] = js.undefined,
-      className: Option[String] = None
+      additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
   )(
       children: CtorType.ChildArg*
-  ) = component(Props(placement,anchorEl,onClickAway,onItemClick,className,children))
+  ) = component(Props(placement,anchorEl,onClickAway,onItemClick,additionalProps,children))
 
 }
 
@@ -66,18 +66,24 @@ object MyMenuInternal {
    */
   class Backend(scope: BackendScope[Props, State]) {
     def render( props: Props, state: State ) = {
-      val cls: js.UndefOr[js.Dictionary[js.Any]] =
-        if (props.className.isDefined) {
-          val x = js.Dictionary[js.Any]("class" -> props.className.get)
-          x
-        } else {
-          js.undefined
+
+      val additionalProps = js.Dictionary[js.Any]( "className" -> "popupMenu" )
+      props.additionalProps.foreach { ap =>
+        ap.foreach{ e =>
+          val (key,value) = e
+          if (key == "className") {
+            additionalProps.update(key, value+" popupMenu")
+          } else {
+            additionalProps.update(key, value)
+          }
         }
+      }
+
       MuiPopper(
           placement = props.placement,
           open=props.anchorEl.isDefined,
           anchorEl=props.anchorEl,
-          additionalProps = cls
+          additionalProps = props.additionalProps
       )(
           MuiPaper(
               onClick = props.onItemClick,

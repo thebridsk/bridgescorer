@@ -167,8 +167,8 @@ object PageScoreboardInternal {
             DuplicatePageBridgeAppBar(
               id = Some(props.game.dupid),
               tableIds = sortedTables,
-              pageMenuItems = pagemenu,
-              title = Seq[CtorType.ChildArg](MuiTypography(
+              title = Seq[CtorType.ChildArg](
+                MuiTypography(
                     variant = TextVariant.h6,
                     color = TextColor.inherit,
                 )(
@@ -179,7 +179,7 @@ object PageScoreboardInternal {
               helpurl = helpurl,
               routeCtl = props.routerCtl
             )(
-
+              pagemenu: _*
             ),
             PopupOkCancel(
               if (state.deletePopup) {

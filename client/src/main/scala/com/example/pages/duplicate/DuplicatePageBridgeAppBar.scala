@@ -36,6 +36,7 @@ import com.example.pages.duplicate.DuplicateRouter.BoardSetSummaryView
 import com.example.pages.duplicate.DuplicateRouter.MovementSummaryView
 import com.example.pages.duplicate.DuplicateRouter.DuplicateBoardSetView
 import com.example.pages.duplicate.DuplicateRouter.AllTableView
+import com.example.pages.BridgeAppBar
 
 /**
  * A simple AppBar for the Bridge client.
@@ -65,7 +66,7 @@ object DuplicatePageBridgeAppBar {
   case class Props(
       id: Option[Id.MatchDuplicate],
       tableIds: List[String],
-      pageMenuItems: List[CtorType.ChildArg],
+      pageMenuItems: Seq[CtorType.ChildArg],
       title: Seq[CtorType.ChildArg],
       helpurl: String,
       routeCtl: BridgeRouter[DuplicatePage]
@@ -74,14 +75,13 @@ object DuplicatePageBridgeAppBar {
   def apply(
       id: Option[Id.MatchDuplicate],
       tableIds: List[String],
-      pageMenuItems: List[CtorType.ChildArg],
       title: Seq[CtorType.ChildArg],
       helpurl: String,
       routeCtl: BridgeRouter[DuplicatePage]
   )(
-      mainMenu: CtorType.ChildArg*,
+      mainMenuItems: CtorType.ChildArg*,
   ) =
-    component(Props(id,tableIds,pageMenuItems,title,helpurl,routeCtl))()
+    component(Props(id,tableIds,mainMenuItems,title,helpurl,routeCtl))()
 
 }
 
@@ -153,8 +153,19 @@ object DuplicatePageBridgeAppBarInternal {
       }
 
       <.div( ^.width := "100%",
-          DuplicateBridgeAppBar(
+          BridgeAppBar(
             handleMainClick = handleMainClick _,
+            maintitle =
+              List[VdomNode](
+                MuiTypography(
+                    variant = TextVariant.h6,
+                    color = TextColor.inherit,
+                )(
+                    <.span(
+                      "Duplicate Bridge",
+                    )
+                )
+              ),
             title = props.title,
             helpurl = props.helpurl,
             routeCtl = props.routeCtl
@@ -164,10 +175,9 @@ object DuplicatePageBridgeAppBarInternal {
                   anchorEl=state.anchorMainEl,
                   onClickAway = handleMainClose _,
                   onItemClick = handleMainCloseClick _,
-                  className = Some("popupMenu")
               )(
                 (
-                  props.pageMenuItems :::
+                  props.pageMenuItems.toList :::
                   props.id.map { id =>
                     List[CtorType.ChildArg](
                       MuiMenuItem(
@@ -205,14 +215,13 @@ object DuplicatePageBridgeAppBarInternal {
                           "Movements"
                       ),
                     )
-                  ) :::
-                  List[CtorType.ChildArg](
-                    MuiMenuItem(
-                        id = "Summary",
-                        onClick = callbackPage(SummaryView) _
-                    )(
-                        "Summary"
-                    )
+                  ) ::: List[CtorType.ChildArg](
+                      MuiMenuItem(
+                          id = "Summary",
+                          onClick = callbackPage(SummaryView) _
+                      )(
+                          "Summary"
+                      ),
                   )
                 ): _*
               )

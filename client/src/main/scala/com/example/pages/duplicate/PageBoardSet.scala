@@ -79,8 +79,8 @@ object PageBoardSetInternal {
             DuplicatePageBridgeAppBar(
               id = Some(props.page.dupid),
               tableIds = List(),
-              pageMenuItems = List[CtorType.ChildArg](),
-              title = Seq[CtorType.ChildArg](MuiTypography(
+              title = Seq[CtorType.ChildArg](
+                    MuiTypography(
                         variant = TextVariant.h6,
                         color = TextColor.inherit,
                     )(

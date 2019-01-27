@@ -38,6 +38,15 @@ import com.example.pages.rubber.RubberModule.PlayRubber
 import com.example.pages.duplicate.DuplicateModule.PlayDuplicate
 import com.example.pages.duplicate.DuplicateRouter.SummaryView
 import com.example.routes.AppRouter.ColorView
+import com.example.materialui.icons.MuiChevronRightIcon
+import com.example.materialui.icons.MuiCheckIcon
+import com.example.Bridge
+import com.example.materialui.PopperPlacement
+import com.example.routes.AppRouter.ShowDuplicateHand
+import com.example.routes.AppRouter.ShowChicagoHand
+import com.example.routes.AppRouter.ShowRubberHand
+import com.example.routes.AppRouter.PageTest
+import com.example.materialui.icons.SvgColor
 
 /**
  * A simple AppBar for the Bridge client.
@@ -92,11 +101,16 @@ object RootBridgeAppBarInternal {
    *
    */
   case class State(
+      userSelect: Boolean = false,
       anchorMainEl: js.UndefOr[Element] = js.undefined,
+      anchorMainTestHandEl: js.UndefOr[Element] = js.undefined,
   ) {
 
     def openMainMenu( n: Node ) = copy( anchorMainEl = n.asInstanceOf[Element] )
     def closeMainMenu() = copy( anchorMainEl = js.undefined )
+
+    def openMainTestHandMenu( n: Node ) = copy( anchorMainTestHandEl = n.asInstanceOf[Element] )
+    def closeMainTestHandMenu() = copy( anchorMainTestHandEl = js.undefined )
   }
 
   /**
@@ -112,8 +126,20 @@ object RootBridgeAppBarInternal {
     def handleMainCloseClick( event: ReactEvent ) = scope.modState(s => s.closeMainMenu()).runNow()
     def handleMainClose( /* event: js.Object, reason: String */ ) = {
       logger.fine("MainClose called")
-      scope.modState(s => s.closeMainMenu()).runNow()
+      scope.modState { s => s.closeMainMenu() }.runNow()
     }
+
+    def handleTestHandClick( event: ReactEvent ) = {
+      event.extract{ e =>
+//        e.preventDefault()
+        e.currentTarget
+      }(
+         currentTarget =>
+           scope.modState( s => s.openMainTestHandMenu(currentTarget)).runNow()
+     )
+    }
+    def handleMainTestHandClose( /* event: js.Object, reason: String */ ) = scope.modState(s => s.closeMainTestHandMenu()).runNow()
+    def handleMainTestHandCloseClick( event: ReactEvent ) = scope.modState(s => s.closeMainTestHandMenu()).runNow()
 
     def gotoPage( uri: String ) = {
       val location = document.defaultView.location
@@ -123,33 +149,64 @@ object RootBridgeAppBarInternal {
       AppButtonLinkNewWindow.topage(helppath)
     }
 
-    def handleHelpGotoPageClick(uri: String)( event: ReactEvent ) = {
+    def handleGotoPageClick(uri: String)( event: ReactEvent ) = {
       logger.info(s"""Going to page ${uri}""")
-//      handleHelpClose()
-
+      handleMainClose()
       gotoPage(uri)
     }
+
+    val toggleUserSelect = { (event: ReactEvent) => scope.withEffectsImpure.modState { s =>
+      val newstate = s.copy( userSelect = !s.userSelect )
+      val style = Bridge.getElement("allowSelect")
+      if (newstate.userSelect) {
+        style.innerHTML = """
+           |* {
+           |  user-select: text;
+           |}
+           |""".stripMargin
+      } else {
+        style.innerHTML = ""
+      }
+      newstate
+    }}
 
     def render( props: Props, state: State ) = {
       import BaseStyles._
 
-      def callbackPage(page: AppPage)(e: ReactEvent) = props.routeCtl.set(page).runNow()
+      def callbackPage(page: AppPage)(e: ReactEvent) = {
+        logger.info(s"""Goto page $page""")
+        handleMainClose()
+        props.routeCtl.set(page).runNow()
+      }
+
+      val maintitle: Seq[VdomNode] =
+        List(
+          MuiTypography(
+              variant = TextVariant.h6,
+              color = TextColor.inherit,
+          )(
+              <.span(
+                "Bridge ScoreKeeper",
+              )
+          )
+        )
 
       <.div(
 
           BridgeAppBar(
-              handleMainClick _,
-              props.title,
-              props.helpurl.getOrElse("/help/introduction.html"),
-              props.routeCtl
+              handleMainClick = handleMainClick _,
+              maintitle = maintitle,
+              title = props.title,
+              helpurl = props.helpurl.getOrElse("/help/introduction.html"),
+              routeCtl = props.routeCtl,
+              showHomeButton = !props.title.isEmpty
           )(
 
             // main menu
             MyMenu(
                 anchorEl=state.anchorMainEl,
                 onClickAway = handleMainClose _,
-                onItemClick = handleMainCloseClick _,
-                className = Some("popupMenu")
+//                onItemClick = handleMainCloseClick _,
             )(
                 MuiMenuItem(
                     id = "Duplicate",
@@ -168,6 +225,57 @@ object RootBridgeAppBarInternal {
                     onClick = callbackPage(PlayRubber(RubberListView)) _
                 )(
                     "Rubber"
+                ),
+                MuiMenuItem(
+                    onClick = handleTestHandClick _,
+                    classes = js.Dictionary("root" -> "mainMenuItem").asInstanceOf[js.Object]
+                )(
+                    "Test Hands",
+                    MuiChevronRightIcon(
+                        classes = js.Dictionary("root" -> "mainMenuItemIcon").asInstanceOf[js.Object]
+                    )()
+                ),
+                {
+                  val location = document.defaultView.location
+                  val origin = location.origin.get
+                  val path = location.pathname
+                  val (newp,color) = if (path.indexOf("indexNoScale") >= 0) {
+                    ("""/public/index.html""", SvgColor.disabled)
+                  } else {
+                    ("""/public/indexNoScale.html""", SvgColor.inherit)
+                  }
+                  val newpath = if (path.endsWith(".gz")) {
+                    s"""${newp}.gz"""
+                  } else {
+                    newp
+                  }
+                  MuiMenuItem(
+                      id = "NoScaling",
+                      onClick = handleGotoPageClick(newp) _,
+                      classes = js.Dictionary("root" -> "mainMenuItem").asInstanceOf[js.Object]
+
+                  )(
+                      "Scaling ",
+                      MuiCheckIcon(
+                          color=color,
+                          classes = js.Dictionary("root" -> "mainMenuItemIcon").asInstanceOf[js.Object]
+                      )()
+                  )
+                },
+                MuiMenuItem(
+                    id = "UserSelect",
+                    onClick = toggleUserSelect,
+                    classes = js.Dictionary("root" -> "mainMenuItem").asInstanceOf[js.Object]
+
+                )(
+                    "Allow Select",
+                    {
+                      val color = if (state.userSelect) SvgColor.inherit else SvgColor.disabled
+                      MuiCheckIcon(
+                          color=color,
+                          classes = js.Dictionary("root" -> "mainMenuItemIcon").asInstanceOf[js.Object]
+                      )()
+                    }
                 ),
                 MuiMenuItem(
                     id = "Info",
@@ -194,12 +302,42 @@ object RootBridgeAppBarInternal {
                     "Voyager"
                 ),
                 MuiMenuItem(
+                    id = "TestPage",
+                    onClick = callbackPage(PageTest) _
+                )(
+                    "Test Page"
+                ),
+                MuiMenuItem(
                     id = "Color",
                     onClick = callbackPage(ColorView) _
                 )(
                     "Color"
                 ),
-            )
+            ),
+
+            // test hand menu
+            MyMenu(
+                anchorEl=state.anchorMainTestHandEl,
+                onClickAway = handleMainTestHandClose _,
+                onItemClick = handleMainTestHandCloseClick _,
+                placement = PopperPlacement.rightStart,
+            )(
+                MuiMenuItem(
+                    onClick = callbackPage(ShowDuplicateHand) _
+                )(
+                    "Duplicate"
+                ),
+                MuiMenuItem(
+                    onClick = callbackPage(ShowChicagoHand) _
+                )(
+                    "Chicago"
+                ),
+                MuiMenuItem(
+                    onClick = callbackPage(ShowRubberHand) _
+                )(
+                    "Rubber"
+                )
+            ),
           )
       )
     }

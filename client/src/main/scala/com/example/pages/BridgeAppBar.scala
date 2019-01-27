@@ -56,20 +56,24 @@ object BridgeAppBar {
   case class Props(
       mainMenu: Seq[CtorType.ChildArg],
       handleMainClick: ReactEvent=>Unit,
+      maintitle: Seq[VdomNode],
       title: Seq[CtorType.ChildArg],
       helpurl: String,
-      routeCtl: BridgeRouter[AppPage]
+      routeCtl: BridgeRouter[_],
+      showHomeButton: Boolean
   )
 
   def apply(
       handleMainClick: ReactEvent=>Unit,
+      maintitle: Seq[VdomNode],
       title: Seq[VdomNode],
       helpurl: String,
-      routeCtl: BridgeRouter[AppPage]
+      routeCtl: BridgeRouter[_],
+      showHomeButton: Boolean = true
   )(
       mainMenu: CtorType.ChildArg*,
   ) =
-    component(Props(mainMenu,handleMainClick,title,helpurl,routeCtl))()
+    component(Props(mainMenu,handleMainClick,maintitle,title,helpurl,routeCtl,showHomeButton))()
 
 }
 
@@ -127,7 +131,9 @@ object BridgeAppBarInternal {
     def render( props: Props, state: State ) = {
       import BaseStyles._
 
-      def callbackPage(page: AppPage)(e: ReactEvent) = props.routeCtl.set(page).runNow()
+//      def callbackPage(page: AppPage)(e: ReactEvent) = props.routeCtl.set(page).runNow()
+      def gotoHomePage(e: ReactEvent) = props.routeCtl.toHome
+      def gotoAboutPage(e: ReactEvent) = props.routeCtl.toAbout
 
       val helpButton =
         MuiIconButton(
@@ -153,30 +159,31 @@ object BridgeAppBarInternal {
               )(
                 MuiMenuIcon()()
               ),
-              MuiIconButton(
-                  id = "Home",
-                  onClick = callbackPage(Home) _,
-                  color=ColorVariant.inherit
-              )(
-                  MuiHomeIcon()()
-              ),
-              MuiTypography(
-                  variant = TextVariant.h6,
-                  color = TextColor.inherit,
-              )(
-                  <.span(
-                    "Bridge ScoreKeeper",
-                  )
-              ),
-              MuiTypography(
-                  variant = TextVariant.h6,
-                  color = TextColor.inherit,
-              )(
-                  <.span(
+              if (props.showHomeButton) {
+                MuiIconButton(
+                    id = "Home",
+                    onClick = gotoHomePage _,
+                    color=ColorVariant.inherit
+                )(
+                    MuiHomeIcon()()
+                )
+              } else {
+                TagMod.empty
+              }
+            ) :::
+            props.maintitle.toList :::
+            (if (props.title.isEmpty) {
+              List()
+            } else {
+              List[TagMod](
+                MuiTypography(
+                    variant = TextVariant.h6,
+                    color = TextColor.inherit,
+                )(
                     <.span(^.dangerouslySetInnerHtml:="&nbsp;-&nbsp;")
-                  )
-              )
-            ) ::: props.title.toList
+                )
+              ) ::: props.title.toList
+            })
             x
           }:_*
       )
@@ -197,7 +204,6 @@ object BridgeAppBarInternal {
                 anchorEl=state.anchorHelpEl,
                 onClickAway = handleHelpClose _,
                 onItemClick = handleHelpCloseClick _,
-                className = Some("popupMenu")
             )(
                 MuiMenuItem(
                     id = "Help",
@@ -219,7 +225,7 @@ object BridgeAppBarInternal {
                 ),
                 MuiMenuItem(
                     id = "About",
-                    onClick = callbackPage(About) _
+                    onClick = gotoAboutPage _
                 )(
                     "About"
                 )
