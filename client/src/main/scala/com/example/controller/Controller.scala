@@ -53,9 +53,10 @@ object Controller {
   var useRestToServer: Boolean = true;
   var useSSEFromServer: Boolean = true;
 
-  val heartbeatTimeout = 20000   // ms
-  val defaultErrorBackoff = 1000   // ms
-  val limitErrorBackoff = 60000 // ms
+  val heartbeatTimeout = 20000   // ms  20s
+  val restartTimeout = 10*60*1000   // ms 10m   // TODO find good timeout for restart
+  val defaultErrorBackoff = 1000   // ms  1s
+  val limitErrorBackoff = 60000 // ms  1m
 
   def log( entry: LogEntryS ) = {
     // This can't create a duplexPipe, we haven't setup all the info
@@ -203,6 +204,8 @@ object Controller {
 
   var currentESTimeout: Option[SetTimeoutHandle] = None
 
+  var currentESRestartTimeout: Option[SetTimeoutHandle] = None
+
   def resetESConnection( dupid: Id.MatchDuplicate ) = {
     eventSource.map { es =>
       logger.info(s"EventSource reseting connection to $dupid")
@@ -211,7 +214,6 @@ object Controller {
       logger.info(s"EventSource no connection to reset")
     )
   }
-
 
   def resetESTimeout( dupid: Id.MatchDuplicate ) = {
     eventSource.map { es =>
@@ -233,6 +235,28 @@ object Controller {
     logger.info(s"EventSource clearing timeout")
     currentESTimeout.foreach( clearTimeout(_))
     currentESTimeout = None
+  }
+
+  def resetESRestartTimeout( dupid: Id.MatchDuplicate ) = {
+    eventSource.map { es =>
+      clearESRestartTimeout()
+
+      logger.info(s"EventSource restart timeout to ${restartTimeout} ms")
+      import scala.scalajs.js.timers._
+      currentESRestartTimeout = Some( setTimeout(restartTimeout) {
+        logger.info(s"EventSource restart timeout fired ${restartTimeout} ms, reseting connection")
+        resetESConnection(dupid)
+      })
+    }.getOrElse(
+      logger.info(s"EventSource no connection to restart")
+    )
+  }
+
+  def clearESRestartTimeout() {
+    import scala.scalajs.js.timers._
+    logger.info(s"EventSource restart clear timeout")
+    currentESRestartTimeout.foreach( clearTimeout(_))
+    currentESRestartTimeout = None
   }
 
   def esOnMessage( dupid: Id.MatchDuplicate )( me: MessageEvent ): Unit = {
@@ -314,6 +338,7 @@ object Controller {
             eventSource.foreach( es => es.close())
             eventSource = getEventSource(dupid)
             resetESTimeout(dupid)
+            resetESRestartTimeout(dupid)
           } else {
             getDuplexPipe().clearSession(Protocol.StopMonitor(mdid))
             BridgeDispatcher.startDuplicateMatch(dupid)
@@ -333,6 +358,7 @@ object Controller {
           eventSource.foreach( es => es.close())
           eventSource = getEventSource(dupid)
           resetESTimeout(dupid)
+          resetESRestartTimeout(dupid)
         } else {
           BridgeDispatcher.startDuplicateMatch(dupid)
           getDuplexPipe().setSession { dp =>
@@ -348,9 +374,12 @@ object Controller {
    */
   def stop() = {
     if (useSSEFromServer) {
+      clearESTimeout()
+      clearESRestartTimeout()
       eventSource.foreach( es => es.close())
       eventSource = None
       clearESTimeout()
+      clearESRestartTimeout()
     } else {
       duplexPipe match {
         case Some(d) =>
