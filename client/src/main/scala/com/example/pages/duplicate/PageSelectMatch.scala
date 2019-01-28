@@ -129,7 +129,7 @@ object PageSelectMatchInternal {
                   "Select a Match"
                 )
             )),
-          helpurl = "/help/duplicate/summary.html",
+          helpurl = "../help/duplicate/summary.html",
           routeCtl = props.routerCtl
         )(
 

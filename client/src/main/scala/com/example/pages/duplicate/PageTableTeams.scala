@@ -552,7 +552,7 @@ object PageTableTeamsInternal {
                     renderInput(props, state, score, round )
                   case None =>
                     TagMod(
-                      header(props, "/help/duplicate/enterscorekeepername.html"),
+                      header(props, "../help/duplicate/enterscorekeepername.html"),
                       <.div(
                         dupStyles.divTableNamesPage,
                         <.p("Round "+props.page.round+" not found on Table "+props.page.tableid),
@@ -564,7 +564,7 @@ object PageTableTeamsInternal {
                 }
               case None =>
                 TagMod(
-                  header(props, "/help/duplicate/enterscorekeepername.html"),
+                  header(props, "../help/duplicate/enterscorekeepername.html"),
                   <.div(
                     dupStyles.divTableNamesPage,
                     <.p("Table "+props.page.tableid+" not found"),
@@ -575,7 +575,7 @@ object PageTableTeamsInternal {
             }
           case None =>
             TagMod(
-              header(props, "/help/duplicate/enterscorekeepername.html"),
+              header(props, "../help/duplicate/enterscorekeepername.html"),
               <.div(
                 dupStyles.divTableNamesPage,
                 <.p("Waiting")
@@ -594,7 +594,7 @@ object PageTableTeamsInternal {
       }
 
       TagMod(
-        header(props, helppage.getOrElse("/help/duplicate/enterscorekeepername.html")),
+        header(props, helppage.getOrElse("../help/duplicate/enterscorekeepername.html")),
         <.div(
             dupStyles.divTableNamesPage,
             div,
@@ -697,7 +697,7 @@ object PageTableTeamsInternal {
                   )
           }).toTagMod
         ),
-        Some("/help/duplicate/enterscorekeepername.html")
+        Some("../help/duplicate/enterscorekeepername.html")
       )
 
     }
@@ -748,7 +748,7 @@ object PageTableTeamsInternal {
               EmptyVdom
           }
         ),
-        Some("/help/duplicate/selectscorekeepername.html")
+        Some("../help/duplicate/selectscorekeepername.html")
       )
     }
 
@@ -783,8 +783,8 @@ object PageTableTeamsInternal {
         else None
       }
 
-      val helpurl = if (readonly) "/help/duplicate/selectothernames.html"
-                     else "/help/duplicate/enterothernames.html"
+      val helpurl = if (readonly) "../help/duplicate/selectothernames.html"
+                     else "../help/duplicate/enterothernames.html"
 
       val div =
           <.div(

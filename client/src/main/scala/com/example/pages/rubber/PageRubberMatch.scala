@@ -185,7 +185,7 @@ object PageRubberMatchInternal {
                       baseStyles.divFooterRight,
                       ComponentInputStyleButton( CallbackTo{} ),
                       AppButton( "Quit", "Quit", score.done ?= baseStyles.requiredNotNext, ^.onClick-->quit ),
-                      HelpButton("/help/rubber/summary.html")
+                      HelpButton("../help/rubber/summary.html")
                   )
                 )
               )

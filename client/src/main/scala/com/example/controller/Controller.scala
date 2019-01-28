@@ -43,6 +43,7 @@ import org.scalajs.dom.raw.MessageEvent
 import org.scalajs.dom.raw.Event
 import scala.scalajs.js.timers.SetTimeoutHandle
 import com.example.Bridge
+import com.example.bridge.store.DuplicateSummaryStore
 
 object Controller {
   val logger = Logger("bridge.Controller")
@@ -159,16 +160,18 @@ object Controller {
 
   def updateHand( dup: MatchDuplicate, hand: DuplicateHand ) = {
     BridgeDispatcher.updateDuplicateHand(dup.id, hand)
-    if (useRestToServer) {
-      val resource = RestClientDuplicate.boardResource(dup.id).handResource(hand.board)
-      resource.update(hand.id, hand).recordFailure().onComplete { t =>
-        if (t.isFailure) {
-          Alerter.alert("Failure updating hand on server")
+    if (!Bridge.isDemo) {
+      if (useRestToServer) {
+        val resource = RestClientDuplicate.boardResource(dup.id).handResource(hand.board)
+        resource.update(hand.id, hand).recordFailure().onComplete { t =>
+          if (t.isFailure) {
+            Alerter.alert("Failure updating hand on server")
+          }
         }
+      } else {
+        val msg = Protocol.UpdateDuplicateHand(dup.id, hand)
+        getDuplexPipe().send(msg)
       }
-    } else {
-      val msg = Protocol.UpdateDuplicateHand(dup.id, hand)
-      getDuplexPipe().send(msg)
     }
     logger.info("Update hand ("+dup.id+","+hand.board+","+hand.id+")")
   }
@@ -182,16 +185,18 @@ object Controller {
 
   def updateTeam( dup: MatchDuplicate, team: Team ) = {
     BridgeDispatcher.updateTeam(dup.id, team)
-    if (useRestToServer) {
-      val resource = RestClientDuplicate.teamResource(dup.id)
-      resource.update(team.id, team).recordFailure().onComplete { t =>
-        if (t.isFailure) {
-          Alerter.alert("Failure updating team on server")
+    if (!Bridge.isDemo) {
+      if (useRestToServer) {
+        val resource = RestClientDuplicate.teamResource(dup.id)
+        resource.update(team.id, team).recordFailure().onComplete { t =>
+          if (t.isFailure) {
+            Alerter.alert("Failure updating team on server")
+          }
         }
+      } else {
+        val msg = Protocol.UpdateDuplicateTeam(dup.id, team)
+        getDuplexPipe().send(msg)
       }
-    } else {
-      val msg = Protocol.UpdateDuplicateTeam(dup.id, team)
-      getDuplexPipe().send(msg)
     }
     logger.info("Update team ("+dup.id+","+team+")")
   }
@@ -406,7 +411,9 @@ object Controller {
     import scala.scalajs.js.timers._
     setTimeout(1) { // note the absence of () =>
       if (Bridge.isDemo) {
-        BridgeDispatcher.updateDuplicateSummary(None,List())
+        if (DuplicateSummaryStore.getDuplicateSummary().isEmpty) {
+          BridgeDispatcher.updateDuplicateSummary(None,List())
+        }
       } else {
         RestClientDuplicateSummary.list().recordFailure().foreach { list => Alerter.tryitWithUnit {
           logger.finer(s"DuplicateSummary got ${list.size} entries")

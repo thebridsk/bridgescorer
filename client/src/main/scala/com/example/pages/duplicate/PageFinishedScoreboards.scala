@@ -128,7 +128,7 @@ object PageFinishedScoreboardsInternal {
                       "Finished Scoreboard",
                     )
                 )),
-          helpurl = "/help/duplicate/scoreboardcomplete.html",
+          helpurl = "../help/duplicate/scoreboardcomplete.html",
           routeCtl = props.routerCtl
         )(
 

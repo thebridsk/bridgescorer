@@ -636,7 +636,7 @@ object PageSummaryInternal {
                     )
                 )
             ),
-            helpurl = "/help/duplicate/summary.html",
+            helpurl = "../help/duplicate/summary.html",
             routeCtl = props.routerCtl
         )(
             // main menu additions for page

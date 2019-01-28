@@ -149,7 +149,7 @@ object ViewPlayersVeryFirstRound {
           <.div(
             baseStyles.divFooterRight,
             AppButton( "Cancel", "Cancel", props.router.setOnClick(props.page.toSummaryView()) ),
-            HelpButton( if (state.chicago5) "/help/chicago/five/names5.html" else "/help/chicago/four/names4.html")
+            HelpButton( if (state.chicago5) "../help/chicago/five/names5.html" else "../help/chicago/four/names4.html")
           )
         )
       )

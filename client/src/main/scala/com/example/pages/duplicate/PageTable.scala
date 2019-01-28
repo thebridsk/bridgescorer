@@ -90,7 +90,7 @@ object PageTableInternal {
                               s"Table ${props.page.tableid}",
                             )
                         )),
-                  helpurl = "/help/duplicate/table.html",
+                  helpurl = "../help/duplicate/table.html",
                   routeCtl = props.routerCtl
                 )(
 

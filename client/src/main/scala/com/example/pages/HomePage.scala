@@ -263,7 +263,7 @@ object HomePage {
           <.div(
             RootBridgeAppBar(
                 title = Seq(),
-                helpurl = Some("/help/introduction.html"),
+                helpurl = Some("../help/introduction.html"),
                 routeCtl = props.routeCtl
             )()
           ),

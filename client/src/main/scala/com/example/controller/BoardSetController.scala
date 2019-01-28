@@ -53,7 +53,7 @@ object BoardSetController {
     } else {
       AjaxCall.send(
         method = "GET",
-        url = "/public/demo/boardsetsAndMovements.json",
+        url = "demo/boardsetsAndMovements.json",
         data = null,
         timeout = Duration("30s"),
         headers = Map[String, String](),

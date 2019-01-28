@@ -187,7 +187,7 @@ object PageChicagoListInternal {
                 ),
                 <.div(
                   baseStyles.divFooterLeft,
-                  HelpButton("/help/chicago/list.html")
+                  HelpButton("../help/chicago/list.html")
                 )
               )
           )

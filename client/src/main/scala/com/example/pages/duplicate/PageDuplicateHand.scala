@@ -121,7 +121,7 @@ object PageDuplicateHandInternal {
                       "Enter Hand",
                     )
                 )),
-          helpurl = "/help/duplicate/enterhand.html",
+          helpurl = "../help/duplicate/enterhand.html",
           routeCtl = props.routerCtl
         )(
 
@@ -175,7 +175,7 @@ object PageDuplicateHandInternal {
                      Some(hand.ewTeam),
                      newhand=newhand,
                      allowPassedOut=board.timesPlayed()>0,
-                     helppage= None) // Some("/help/duplicate/enterhand.html"))
+                     helppage= None) // Some("../help/duplicate/enterhand.html"))
         }
       )
     }

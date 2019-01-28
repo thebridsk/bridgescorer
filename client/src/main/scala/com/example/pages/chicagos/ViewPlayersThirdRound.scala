@@ -150,7 +150,7 @@ object ViewPlayersThirdRound {
             ),
             <.div(
               baseStyles.divFooterRight,
-              HelpButton("/help/chicago/four/selectnames4.html")
+              HelpButton("../help/chicago/four/selectnames4.html")
             )
           )
         )

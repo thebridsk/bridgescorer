@@ -259,7 +259,7 @@ object ViewPlayersSecondRound {
           <.div(
             baseStyles.divFooterRight,
             AppButton( "Reset", "Reset", baseStyles.appButton, ^.onClick --> reset),
-            HelpButton("/help/chicago/four/selectnames4.html")
+            HelpButton("../help/chicago/four/selectnames4.html")
           )
         )
       )

@@ -375,7 +375,7 @@ object ViewPlayersQuintetInternal {
           <.div(
             baseStyles.divFooterRight,
             AppButton("Cancel", "Cancel", props.router.setOnClick(props.page.toSummaryView()) ),
-            HelpButton( if (state.isSimple()) "/help/chicago/fastsimple/selectnamessimple.html" else "/help/chicago/fastfair/selectnamesfair.html")
+            HelpButton( if (state.isSimple()) "../help/chicago/fastsimple/selectnamessimple.html" else "../help/chicago/fastfair/selectnamesfair.html")
           )
         )
       )

@@ -201,7 +201,7 @@ object PageBoardInternal {
                       title(),
                     )
                 )),
-          helpurl = "/help/duplicate/boardcomplete.html",
+          helpurl = "../help/duplicate/boardcomplete.html",
           routeCtl = props.routerCtl
         )(
 

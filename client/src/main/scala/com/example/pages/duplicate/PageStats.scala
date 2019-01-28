@@ -201,7 +201,7 @@ object PageStatsInternal {
                       "Statistics",
                     )
                 )),
-          helpurl = "/help/duplicate/summary.html",
+          helpurl = "../help/duplicate/summary.html",
           routeCtl = props.routerCtl
         )(
 

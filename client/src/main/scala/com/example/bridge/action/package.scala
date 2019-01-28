@@ -28,6 +28,8 @@ package object action {
    */
   case class ActionUpdateDuplicateSummary( importId: Option[String], summary: List[DuplicateSummary] ) extends BridgeAction
 
+  case class ActionUpdateDuplicateSummaryItem( importId: Option[String], summary: DuplicateSummary ) extends BridgeAction
+
   case class ActionUpdateDuplicateResult( dr: MatchDuplicateResult ) extends BridgeAction
 
   case class ActionStartDuplicateMatch( dupid: Id.MatchDuplicate ) extends DuplicateBridgeAction

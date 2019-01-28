@@ -12,6 +12,7 @@ import utils.logging.Logger
 import com.example.bridge.action.ActionUpdateDuplicateSummary
 import com.example.data.DuplicateSummary
 import com.example.logger.Alerter
+import com.example.bridge.action.ActionUpdateDuplicateSummaryItem
 
 object DuplicateSummaryStore extends ChangeListenable {
   val logger = Logger("bridge.DuplicateSummaryStore")
@@ -26,6 +27,8 @@ object DuplicateSummaryStore extends ChangeListenable {
   def dispatch( msg: Any ) = Alerter.tryitWithUnit { msg match {
     case ActionUpdateDuplicateSummary(importId,summary) =>
       updateDuplicateSummary(importId,summary)
+    case ActionUpdateDuplicateSummaryItem(importId,summary) =>
+      updateDuplicateSummaryItem(importId,summary)
     case x =>
       // There are multiple stores, all the actions get sent to all stores
 //      logger.warning("BoardSetStore: Unknown msg dispatched, "+x)
@@ -38,8 +41,26 @@ object DuplicateSummaryStore extends ChangeListenable {
   def getImportId = fImportId
 
   def updateDuplicateSummary( importId: Option[String], summary: List[DuplicateSummary] ) = {
+    logger.fine(s"""Update DuplicateSummaryStore from ${importId}: ${summary}""")
     fSummary = Option( summary )
     fImportId = importId
+    notifyChange()
+  }
+
+  def updateDuplicateSummaryItem( importId: Option[String], summary: DuplicateSummary ) = {
+    logger.fine(s"""Update DuplicateSummaryStore from ${importId}: ${summary}""")
+    if (importId == fImportId) {
+      fSummary = fSummary.map { list =>
+        list.map { ds =>
+          if (ds.id == summary.id) summary
+          else ds
+        }
+      }
+    } else {
+      fSummary = Some( List(summary) )
+      fImportId = importId
+    }
+    logger.fine(s"""Updated DuplicateSummaryStore from ${fImportId}: ${fSummary}""")
     notifyChange()
   }
 

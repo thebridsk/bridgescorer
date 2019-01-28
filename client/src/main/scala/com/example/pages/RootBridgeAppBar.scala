@@ -197,7 +197,7 @@ object RootBridgeAppBarInternal {
               handleMainClick = handleMainClick _,
               maintitle = maintitle,
               title = props.title,
-              helpurl = props.helpurl.getOrElse("/help/introduction.html"),
+              helpurl = props.helpurl.getOrElse("../help/introduction.html"),
               routeCtl = props.routeCtl,
               showHomeButton = !props.title.isEmpty
           )(

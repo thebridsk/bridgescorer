@@ -230,7 +230,7 @@ object PageRubberListInternal {
                   ),
                   <.div(
                     baseStyles.divFooterLeft,
-                    HelpButton("/help/rubber/list.html")
+                    HelpButton("../help/rubber/list.html")
                   )
                 )
             )

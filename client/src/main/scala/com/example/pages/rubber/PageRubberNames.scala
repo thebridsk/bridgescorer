@@ -177,7 +177,7 @@ object PageRubberNamesInternal {
           <.div(
             baseStyles.divFooterRight,
             AppButton( "Cancel", "Cancel", props.router.setOnClick( ListView /*props.page.toRubber()*/) ),
-            HelpButton("/help/rubber/names.html")
+            HelpButton("../help/rubber/names.html")
           )
         )
       )

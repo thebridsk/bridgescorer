@@ -19,6 +19,9 @@ import com.example.debug.DebugLoggerHandler
 import utils.logging.js.JsConsoleHandlerInfo
 import com.example.controller.Controller
 import com.example.rest2.AjaxResult
+import com.example.Bridge
+import utils.logging.Filter
+import utils.logging.TraceMsg
 
 /**
  * Logging manager.
@@ -52,7 +55,18 @@ import com.example.rest2.AjaxResult
  * @author werewolf
  */
 object Init {
-  LoggerImplFactory.init(new JsConsoleHandler)
+  {
+    val handler = new JsConsoleHandler
+    LoggerImplFactory.init(handler)
+    if (Bridge.isDemo) {
+      handler.level = Level.ALL
+      handler.filter = new Filter {
+        def isLogged( traceMsg: TraceMsg ) = {
+          !traceMsg.logger.startsWith("comm.")
+        }
+      }
+    }
+  }
   lazy val logger = Logger("comm.logger.Init")
 
   private var debugLoggerEnabled = false

@@ -332,7 +332,7 @@ object ViewPlayersFiveInternal {
           <.div(
             baseStyles.divFooterRight,
             AppButton("Cancel", "Cancel", props.router.setOnClick(props.page.toSummaryView()) ),
-            HelpButton("/help/chicago/five/selectnames5.html")
+            HelpButton("../help/chicago/five/selectnames5.html")
           )
         )
       )

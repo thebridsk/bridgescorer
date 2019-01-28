@@ -84,7 +84,7 @@ object PageAllTablesInternal {
                         "All Tables",
                       )
                   )),
-            helpurl = "/help/duplicate/table.html",
+            helpurl = "../help/duplicate/table.html",
             routeCtl = props.routerCtl
           )(
 

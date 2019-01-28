@@ -162,7 +162,7 @@ object PageSummaryInternal {
                   <.div(
                     baseStyles.divFooterRight,
                     ComponentInputStyleButton( scope.forceUpdate ),
-                    HelpButton( if (scoring.chicago.isQuintet()) "/help/chicago/summaryquintet.html" else "/help/chicago/summary.html")
+                    HelpButton( if (scoring.chicago.isQuintet()) "../help/chicago/summaryquintet.html" else "../help/chicago/summary.html")
                   )
                 )
             )

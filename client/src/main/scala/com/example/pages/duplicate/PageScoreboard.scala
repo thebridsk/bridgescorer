@@ -131,7 +131,7 @@ object PageScoreboardInternal {
           val (title,helpurl,pagemenu) = props.game match {
             case _: CompleteScoreboardView =>
               ("Complete Scoreboard",
-               "/help/duplicate/scoreboardcomplete.html",
+               "../help/duplicate/scoreboardcomplete.html",
                List[CtorType.ChildArg](
                  MuiMenuItem(
                      id = "Director",
@@ -149,12 +149,12 @@ object PageScoreboardInternal {
               )
             case _: DirectorScoreboardView =>
               ("Director's Scoreboard",
-               "/help/duplicate/scoreboardcomplete.html",
+               "../help/duplicate/scoreboardcomplete.html",
                List[CtorType.ChildArg]()
               )
             case TableRoundScoreboardView(dupid, tableid, round) =>
               (s"Table $tableid Round $round Scoreboard",
-               "/help/duplicate/scoreboardfromtable.html",
+               "../help/duplicate/scoreboardfromtable.html",
                List[CtorType.ChildArg]()
               )
           }
