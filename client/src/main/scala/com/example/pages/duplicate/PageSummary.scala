@@ -276,11 +276,11 @@ object PageSummaryInternal {
                     showRows: Option[Int], alwaysShowAll: Boolean,
                     showEntries: ShowEntries = ShowBoth,
                     useIMP: Option[Boolean] = None,
-                    anchorMainEl: js.UndefOr[Element] = js.undefined
+//                    anchorMainEl: js.UndefOr[Element] = js.undefined
   ) {
 
-    def openMainMenu( n: Node ) = copy( anchorMainEl = n.asInstanceOf[Element] )
-    def closeMainMenu() = copy( anchorMainEl = js.undefined )
+//    def openMainMenu( n: Node ) = copy( anchorMainEl = n.asInstanceOf[Element] )
+//    def closeMainMenu() = copy( anchorMainEl = js.undefined )
 
     def withError( err: String ) = copy( workingOnNew = Some(err) )
     def clearError() = copy( workingOnNew = None )
@@ -316,12 +316,12 @@ object PageSummaryInternal {
    */
   class Backend(scope: BackendScope[Props, State]) {
 
-    def handleMainClick( event: ReactEvent ) = event.extract(_.currentTarget)(currentTarget => scope.modState(s => s.openMainMenu(currentTarget)).runNow() )
-    def handleMainCloseClick( event: ReactEvent ) = scope.modState(s => s.closeMainMenu()).runNow()
-    def handleMainClose( /* event: js.Object, reason: String */ ) = {
-      logger.fine("HelpClose called")
-      scope.modState(s => s.closeMainMenu()).runNow()
-    }
+//    def handleMainClick( event: ReactEvent ) = event.extract(_.currentTarget)(currentTarget => scope.modState(s => s.openMainMenu(currentTarget)).runNow() )
+//    def handleMainCloseClick( event: ReactEvent ) = scope.modState(s => s.closeMainMenu()).runNow()
+//    def handleMainClose( /* event: js.Object, reason: String */ ) = {
+//      logger.fine("HelpClose called")
+//      scope.modState(s => s.closeMainMenu()).runNow()
+//    }
 
     val resultDuplicate = ResultHolder[MatchDuplicate]()
     val resultGraphQL = ResultHolder[GraphQLResponse]()
@@ -639,69 +639,63 @@ object PageSummaryInternal {
             helpurl = "/help/duplicate/summary.html",
             routeCtl = props.routerCtl
         )(
-            // main menu
-            MyMenu(
-                anchorEl=state.anchorMainEl,
-                onClickAway = handleMainClose _,
-                onItemClick = handleMainCloseClick _,
-            )(
-                {
-                  (if (importId.isDefined) {
-                    List[VdomNode](
-                      MuiMenuItem(
-                          id = "Summary",
-                          onClick = callbackPage(SummaryView) _
-                      )(
-                          "Summary"
-                      )
-                    )
-                  } else {
-                    val x: List[VdomNode] =
-                    List(
-                      MuiMenuItem(
-                          id = "Suggest",
-                          onClick = callbackPage(SuggestionView) _
-                      )(
-                          "Suggest Pairs"
-                      ),
-                      MuiMenuItem(
-                          id = "ShowRows",
-                          onClick = toggleRows _,
-                          classes = js.Dictionary("root" -> "mainMenuItem").asInstanceOf[js.Object]
-                      )(
-                          "Show All",
-                          {
-                            val color = if (state.alwaysShowAll || state.showRows.isEmpty) SvgColor.inherit else SvgColor.disabled
-                            MuiCheckIcon(
-                                color=color,
-                                classes = js.Dictionary("root" -> "mainMenuItemIcon").asInstanceOf[js.Object]
-                            )()
-                          }
-                      ),
-                      MuiMenuItem(
-                          id = "Statistics",
-                          onClick = callbackPage(StatsView) _
-                      )(
-                          "Statistics"
-                      ),
-                      MuiMenuItem(
-                          id = "DuplicateCreateTest",
-                          onClick = newDuplicateTest _
-                      )(
-                          "Test"
-                      ),
-                      MuiMenuItem(
-                          id = "ForPrint",
-                          onClick = clickForPrint(true) _
-                      )(
-                          "Select For Print"
-                      )
-                    )
-                    BeepComponent.getMenuItem()::x
-                  }
-                ):_*
+            // main menu additions for page
+            {
+              (if (importId.isDefined) {
+                List[VdomNode](
+                  MuiMenuItem(
+                      id = "Summary",
+                      onClick = callbackPage(SummaryView) _
+                  )(
+                      "Summary"
+                  )
+                )
+              } else {
+                val x: List[VdomNode] =
+                List(
+                  MuiMenuItem(
+                      id = "Suggest",
+                      onClick = callbackPage(SuggestionView) _
+                  )(
+                      "Suggest Pairs"
+                  ),
+                  MuiMenuItem(
+                      id = "ShowRows",
+                      onClick = toggleRows _,
+                      classes = js.Dictionary("root" -> "mainMenuItem").asInstanceOf[js.Object]
+                  )(
+                      "Show All",
+                      {
+                        val color = if (state.alwaysShowAll || state.showRows.isEmpty) SvgColor.inherit else SvgColor.disabled
+                        MuiCheckIcon(
+                            color=color,
+                            classes = js.Dictionary("root" -> "mainMenuItemIcon").asInstanceOf[js.Object]
+                        )()
+                      }
+                  ),
+                  MuiMenuItem(
+                      id = "Statistics",
+                      onClick = callbackPage(StatsView) _
+                  )(
+                      "Statistics"
+                  ),
+                  MuiMenuItem(
+                      id = "DuplicateCreateTest",
+                      onClick = newDuplicateTest _
+                  )(
+                      "Test"
+                  ),
+                  MuiMenuItem(
+                      id = "ForPrint",
+                      onClick = clickForPrint(true) _
+                  )(
+                      "Select For Print"
+                  )
+                )
+                BeepComponent.getMenuItem()::x
               }
-          )
+            ):_*
+          }
         ),
 //        <.div(
           if (tp.isData) showMatches()

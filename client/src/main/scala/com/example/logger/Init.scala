@@ -18,6 +18,7 @@ import java.io.PrintWriter
 import com.example.debug.DebugLoggerHandler
 import utils.logging.js.JsConsoleHandlerInfo
 import com.example.controller.Controller
+import com.example.rest2.AjaxResult
 
 /**
  * Logging manager.
@@ -68,21 +69,32 @@ object Init {
 
   def apply( f: ()=>Unit = noop _ ): Unit = {
     import scala.concurrent.ExecutionContext.Implicits.global
-    RestClientLoggerConfig.get("").foreach( config => CommAlerter.tryit {
-      logger.info("Got "+config)
-      pclientid = config.clientid
-      config.useRestToServer.map( b => Controller.useRestToServer = b )
-      config.useSSEFromServer.map( b => Controller.useSSEFromServer = b )
-      if (config.loggers.length > 0) {
-        // set trace levels in loggers to config.loggers
-        processLoggers(config.loggers)
-      }
 
-      if (config.appenders.length>0) {
-        // set handler levels in handlers to config.appenders
-        processHandlers(config.appenders)
-      }
+    if (AjaxResult.isEnabled.getOrElse(false)) {
+      RestClientLoggerConfig.get("").foreach( config => CommAlerter.tryit {
+        logger.info("Got "+config)
+        pclientid = config.clientid
+        config.useRestToServer.map( b => Controller.useRestToServer = b )
+        config.useSSEFromServer.map( b => Controller.useSSEFromServer = b )
+        if (config.loggers.length > 0) {
+          // set trace levels in loggers to config.loggers
+          processLoggers(config.loggers)
+        }
 
+        if (config.appenders.length>0) {
+          // set handler levels in handlers to config.appenders
+          processHandlers(config.appenders)
+        }
+
+        import scala.scalajs.js.timers._
+
+        setTimeout(1000) {
+          InfoPage.info()
+
+          f()
+        }
+      })
+    } else {
       import scala.scalajs.js.timers._
 
       setTimeout(1000) {
@@ -90,7 +102,8 @@ object Init {
 
         f()
       }
-    })
+    }
+
   }
 
   import scala.language.postfixOps

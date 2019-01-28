@@ -256,7 +256,9 @@ class AppRouter( modules: Module* ) {
     r
   }
 
-  AjaxResult.setEnabled(isFromServer)
+  // Demo mode sets isEnabled to false
+  // if not in demo mode, isEnabled is None
+  AjaxResult.setEnabled(AjaxResult.isEnabled.getOrElse( isFromServer ))
 
   def router = routerComponentAndLogic()._1
 

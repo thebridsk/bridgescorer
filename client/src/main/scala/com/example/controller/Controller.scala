@@ -42,6 +42,7 @@ import org.scalajs.dom.raw.EventSource
 import org.scalajs.dom.raw.MessageEvent
 import org.scalajs.dom.raw.Event
 import scala.scalajs.js.timers.SetTimeoutHandle
+import com.example.Bridge
 
 object Controller {
   val logger = Logger("bridge.Controller")
@@ -329,10 +330,31 @@ object Controller {
 
   def monitorMatchDuplicate( dupid: Id.MatchDuplicate, restart: Boolean = false ): Unit = {
 
-    DuplicateStore.getId() match {
-      case Some(mdid) =>
-        if (restart || mdid != dupid) {
-          logger.info(s"""Switching MatchDuplicate monitor to ${dupid} from ${mdid}""" )
+    if (AjaxResult.isEnabled.getOrElse(false)) {
+      DuplicateStore.getId() match {
+        case Some(mdid) =>
+          if (restart || mdid != dupid) {
+            logger.info(s"""Switching MatchDuplicate monitor to ${dupid} from ${mdid}""" )
+            if (useSSEFromServer) {
+              BridgeDispatcher.startDuplicateMatch(dupid)
+              eventSource.foreach( es => es.close())
+              eventSource = getEventSource(dupid)
+              resetESTimeout(dupid)
+              resetESRestartTimeout(dupid)
+            } else {
+              getDuplexPipe().clearSession(Protocol.StopMonitor(mdid))
+              BridgeDispatcher.startDuplicateMatch(dupid)
+              getDuplexPipe().setSession { dp =>
+                logger.info(s"""In Session: Switching MatchDuplicate monitor to ${dupid} from ${mdid}""" )
+                dp.send(Protocol.StartMonitor(dupid))
+              }
+            }
+          } else {
+            // already monitoring id
+            logger.info(s"""Already monitoring MatchDuplicate ${dupid}""" )
+          }
+        case None =>
+          logger.info(s"""Starting MatchDuplicate monitor to ${dupid}""" )
           if (useSSEFromServer) {
             BridgeDispatcher.startDuplicateMatch(dupid)
             eventSource.foreach( es => es.close())
@@ -340,33 +362,17 @@ object Controller {
             resetESTimeout(dupid)
             resetESRestartTimeout(dupid)
           } else {
-            getDuplexPipe().clearSession(Protocol.StopMonitor(mdid))
             BridgeDispatcher.startDuplicateMatch(dupid)
             getDuplexPipe().setSession { dp =>
-              logger.info(s"""In Session: Switching MatchDuplicate monitor to ${dupid} from ${mdid}""" )
+              logger.info(s"""In Session: Starting MatchDuplicate monitor to ${dupid}""" )
               dp.send(Protocol.StartMonitor(dupid))
             }
           }
-        } else {
-          // already monitoring id
-          logger.info(s"""Already monitoring MatchDuplicate ${dupid}""" )
-        }
-      case None =>
-        logger.info(s"""Starting MatchDuplicate monitor to ${dupid}""" )
-        if (useSSEFromServer) {
-          BridgeDispatcher.startDuplicateMatch(dupid)
-          eventSource.foreach( es => es.close())
-          eventSource = getEventSource(dupid)
-          resetESTimeout(dupid)
-          resetESRestartTimeout(dupid)
-        } else {
-          BridgeDispatcher.startDuplicateMatch(dupid)
-          getDuplexPipe().setSession { dp =>
-            logger.info(s"""In Session: Starting MatchDuplicate monitor to ${dupid}""" )
-            dp.send(Protocol.StartMonitor(dupid))
-          }
-        }
+      }
+    } else {
+      BridgeDispatcher.startDuplicateMatch(dupid)
     }
+
   }
 
   /**
@@ -399,10 +405,14 @@ object Controller {
     logger.finer("Sending duplicatesummaries list request to server")
     import scala.scalajs.js.timers._
     setTimeout(1) { // note the absence of () =>
-      RestClientDuplicateSummary.list().recordFailure().foreach { list => Alerter.tryitWithUnit {
-        logger.finer(s"DuplicateSummary got ${list.size} entries")
-        BridgeDispatcher.updateDuplicateSummary(None,list.toList)
-      }}
+      if (Bridge.isDemo) {
+        BridgeDispatcher.updateDuplicateSummary(None,List())
+      } else {
+        RestClientDuplicateSummary.list().recordFailure().foreach { list => Alerter.tryitWithUnit {
+          logger.finer(s"DuplicateSummary got ${list.size} entries")
+          BridgeDispatcher.updateDuplicateSummary(None,list.toList)
+        }}
+      }
     }
   }
 

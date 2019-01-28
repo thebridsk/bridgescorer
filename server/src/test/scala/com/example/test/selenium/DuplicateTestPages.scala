@@ -1330,9 +1330,9 @@ class DuplicateTestPages extends FlatSpec
 
     val hp = HomePage.current.validate
 
-    val menu = hp.clickMainMenu.validate
-    eventually {menu.findElemById("Export")}
-    val ep = menu.clickExport.validate
+//    val menu = hp.clickMainMenu.validate
+//    eventually {menu.findElemById("Export")}
+    val ep = hp.clickExport.validate
 
     val f = ep.export
 
@@ -1352,9 +1352,9 @@ class DuplicateTestPages extends FlatSpec
   it should "import zip" in {
     import SessionDirector._
 
-    val hp = HomePage.current.validate.clickMainMenu.validate
+    val hp = HomePage.current.validate  // .clickMainMenu.validate
     
-    eventually {hp.findElemById("Export")}
+    eventually {hp.findElemById("Import")}
 
     val ip = hp.clickImport.validate
 

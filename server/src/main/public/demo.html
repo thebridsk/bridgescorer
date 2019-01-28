@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <!-- 
+        <link rel="shortcut icon" type="image/ico" href="favicon.ico"/>
+     -->
+    <link rel="icon" type="image/png" href="swagger-ui-dist/favicon-32x32.png" sizes="32x32" />
+    <link rel="icon" type="image/png" href="swagger-ui-dist/favicon-16x16.png" sizes="16x16" />
+    <link href="react-widgets/dist/css/react-widgets.css.gz" rel="stylesheet" />
+    <link rel="stylesheet" type="text/css" href="css/bridge.css" >
+    <link rel="stylesheet" type="text/css" href="css/duplicate.css" >
+    <link rel="stylesheet" type="text/css" href="css/chicago.css" >
+    <link rel="stylesheet" type="text/css" href="css/rubber.css" >
+    <link rel="stylesheet" type="text/css" href="css/hand.css" >
+    <link rel="stylesheet" type="text/css" href="graphql-voyager/dist/voyager.css" >
+    <link rel="stylesheet" type="text/css" href="graphiql/graphiql.css" >
+    <style id="allowSelect">
+    </style>
+    <meta charset="UTF-8">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="format-detection" content="date=no">
+    <meta name="format-detection" content="address=no">
+    <meta name="format-detection" content="email=no">
+    <title>The Bridge Score Keeper</title>
+  </head>
+  <body>
+    <div id="BridgeApp">Loading ...</div>
+    <script type="text/javascript">
+        var demo = true
+    </script>
+    <!-- Include Scala.js compiled code -->
+    <script type="text/javascript" src="bridgescorer-client-opt-library.js.gz"></script>
+    <script type="text/javascript" src="bridgescorer-client-opt-loader.js.gz"></script>
+    <script type="text/javascript" src="bridgescorer-client-opt.js.gz"></script>
+    <script type="text/javascript">
+        document.body.addEventListener('touchstart', function() {
+          document.body.classList.add('touched');
+        });
+    </script>
+    <div id="ForDefaultStyles" style="visibility:hidden; position: fixed; left: 0px; top: 0px;">
+        <script src="loadfile.js" ></script>
+        <script type="text/javascript">
+            getHTMLFragment('defaults.html', '#ForDefaultStyles')
+        </script>
+    </div>
+    <audio id="audioPlayer" preload="auto">
+      Your browser does not support the
+      <code>audio</code>
+      element.
+      <source src="beep.wav" type="audio/wav">
+    </audio>
+  </body>
+</html>

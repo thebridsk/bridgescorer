@@ -23,6 +23,7 @@ import com.example.bridge.action.DuplicateBridgeAction
 import com.example.logger.Alerter
 import japgolly.scalajs.react.Callback
 import com.example.skeleton.react.BeepComponent
+import com.example.Bridge
 
 object DuplicateStore extends ChangeListenable {
   val logger = Logger("bridge.DuplicateStore")
@@ -187,7 +188,8 @@ object DuplicateStore extends ChangeListenable {
 
   def start( dupid: Id.MatchDuplicate ) = {
     monitoredId match {
-      case Some(mid) =>
+      case Some(mid) if mid!=dupid =>
+        bridgeMatch = None
         stop()
       case _ =>
     }
@@ -203,17 +205,21 @@ object DuplicateStore extends ChangeListenable {
   }
 
   def stop() = {
-    monitoredId match {
-      case Some(id) =>
-        logger.info("Stopping monitor "+id)
-        monitoredId = None
-        bridgeMatch = None
-        resetViews()
-//        removeAllListener(ChangeListenable.event)
-        notifyChange()
-      case _ =>
-        logger.info("Stopping monitor")
-        bridgeMatch = None
+    if (Bridge.isDemo) {
+      // keep the match
+    } else {
+      monitoredId match {
+        case Some(id) =>
+          logger.info("Stopping monitor "+id)
+          monitoredId = None
+          bridgeMatch = None
+          resetViews()
+  //        removeAllListener(ChangeListenable.event)
+          notifyChange()
+        case _ =>
+          logger.info("Stopping monitor")
+          bridgeMatch = None
+      }
     }
   }
 
@@ -246,4 +252,15 @@ object DuplicateStore extends ChangeListenable {
   }
 
   startMonitorRoundEnd()
+
+  override
+  def addChangeListener( cb: Callback ) = {
+    super.addChangeListener(cb)
+    if (Bridge.isDemo) {
+      scalajs.js.timers.setTimeout(1) {
+        notifyChange()
+      }
+    }
+  }
+
 }
