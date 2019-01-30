@@ -9,6 +9,7 @@ import com.example.pages.BaseStyles
 import org.scalajs.dom.raw.Window
 import scala.scalajs.js.Dynamic
 import utils.logging.Logger
+import com.example.pages.GotoPage
 
 /**
  * A skeleton component.
@@ -39,18 +40,16 @@ object AppButtonLink {
   import AppButtonInternal._
   import AppButton._
 
-  val location = document.defaultView.location
-
   def apply( id: String, text: String, target: String, attrs: TagMod* ) = {
     val at = ^.onClick --> Callback {
-      location.href = target
+      GotoPage.inSameWindow(target)
     }::attrs.toList
     component(Props(id,text,None,at:_*))
   }
 
   def withKey( key: String )( id: String, text: String, target: String, attrs: TagMod* ) = {
     val at = ^.onClick --> Callback {
-      location.href = target
+      GotoPage.inSameWindow(target)
     }::attrs.toList
     val x = component.withKey(key) // (Props(id,text,None,at:_*))
     component.withKey(key)(Props(id,text,None,at:_*))

@@ -13,6 +13,7 @@ import com.example.bridge.action.ActionUpdateChicago5
 import com.example.bridge.action.ChicagoBridgeAction
 import utils.logging.Logger
 import com.example.logger.Alerter
+import com.example.Bridge
 
 object ChicagoStore extends ChangeListenable {
   val logger = Logger("bridge.ChicagoStore")
@@ -65,6 +66,11 @@ object ChicagoStore extends ChangeListenable {
             fun(chi)
             callback.foreach( cb=>cb(chicago.get) )
             notifyChange()
+            if (Bridge.isDemo) {
+              scalajs.js.timers.setTimeout(1) {
+                ChicagoSummaryStore.dispatch(ActionUpdateChicago(chi))
+              }
+            }
           case None =>
             logger.warning("ChicagoStore."+funName+": did not have chicago, monitoredId is "+monitoredId)
         }

@@ -28,6 +28,8 @@ import play.api.libs.json.Json
 import play.api.libs.json.JsSuccess
 import play.api.libs.json.JsError
 import play.api.libs.json.JsUndefined
+import com.example.Bridge
+import com.example.bridge.store.RubberListStore
 
 object RubberController {
   val logger = Logger("bridge.RubberController")
@@ -55,8 +57,10 @@ object RubberController {
 
   import scala.concurrent.ExecutionContext.Implicits.global
 
+  private var currentId = 0
+
   def createMatch() = {
-    AjaxResult.isEnabled match {
+    AjaxResult.isEnabled.orElse(Some(true)).map( e => e && !Bridge.isDemo ) match {
       case Some(true) | None =>
         // enabled - Some(true)
         // mocked - None
@@ -66,7 +70,8 @@ object RubberController {
         new CreateResultMatchRubber(r)
       case Some(false) =>
         // disabled
-        val created = MatchRubber("R9999","","","","","",Nil)
+        currentId = currentId + 1
+        val created = MatchRubber(s"R$currentId","","","","","",Nil)
         logger.info("PageRubber: created new local rubber game: "+created.id)
         showMatch( created )
         new ResultObject(created)
@@ -76,6 +81,7 @@ object RubberController {
   def showMatch( rub: MatchRubber ) = {
     RubberStore.start(rub.id, rub)
     logger.fine("calling callback with "+rub.id)
+    BridgeDispatcher.updateRubber(rub)
   }
 
   def ensureMatch( rubid: String ) = {
@@ -97,13 +103,15 @@ object RubberController {
   }
 
   def updateServer( rub: MatchRubber ) = {
-    RestClientRubber.update(rub.id, rub).recordFailure().foreach( updated => {
-      logger.fine("PageRubber: Updated rubber game: "+rub.id)
-      // the BridgeDispatcher.updateRubber causes a timing problem.
-      // if two updates are done one right after the other, then the second
-      // update will be lost.
-//      BridgeDispatcher.updateRubber(updated)
-    })
+    if (!Bridge.isDemo) {
+      RestClientRubber.update(rub.id, rub).recordFailure().foreach( updated => {
+        logger.fine("PageRubber: Updated rubber game: "+rub.id)
+        // the BridgeDispatcher.updateRubber causes a timing problem.
+        // if two updates are done one right after the other, then the second
+        // update will be lost.
+  //      BridgeDispatcher.updateRubber(updated)
+      })
+    }
   }
 
   def updateRubberNames( rubid: String, north: String, south: String, east: String, west: String, firstDealer: PlayerPosition ) = {
@@ -118,10 +126,15 @@ object RubberController {
     logger.finer("Sending rubbers list request to server")
     import scala.scalajs.js.timers._
     setTimeout(1) { // note the absence of () =>
-      RestClientRubber.list().recordFailure().foreach { list => Alerter.tryitWithUnit {
-        logger.finer(s"RubberList got ${list.size} entries")
-        BridgeDispatcher.updateRubberList(None,list)
-      }}
+      if (Bridge.isDemo) {
+        val x = RubberListStore.getRubberSummary().getOrElse(Array())
+        BridgeDispatcher.updateRubberList(None,x)
+      } else {
+        RestClientRubber.list().recordFailure().foreach { list => Alerter.tryitWithUnit {
+          logger.finer(s"RubberList got ${list.size} entries")
+          BridgeDispatcher.updateRubberList(None,list)
+        }}
+      }
     }
   }
 
@@ -199,7 +212,7 @@ object RubberController {
 
   def deleteRubber( id: String) = {
     BridgeDispatcher.deleteRubber(id)
-    RestClientRubber.delete(id).recordFailure()
+    if (!Bridge.isDemo) RestClientRubber.delete(id).recordFailure()
   }
 
 }

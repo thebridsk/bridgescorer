@@ -84,7 +84,7 @@ object RootBridgeAppBar {
       helpurl: Option[String],
       routeCtl: BridgeRouter[AppPage]
   )() =
-    component(Props(title,helpurl,routeCtl))()
+    component(Props(title,helpurl,routeCtl))
 
 }
 
@@ -142,11 +142,7 @@ object RootBridgeAppBarInternal {
     def handleMainTestHandCloseClick( event: ReactEvent ) = scope.modState(s => s.closeMainTestHandMenu()).runNow()
 
     def gotoPage( uri: String ) = {
-      val location = document.defaultView.location
-      val origin = location.origin.get
-      val helppath = s"""${origin}${uri}"""
-
-      AppButtonLinkNewWindow.topage(helppath)
+      GotoPage.inSameWindow(uri)
     }
 
     def handleGotoPageClick(uri: String)( event: ReactEvent ) = {
@@ -236,13 +232,11 @@ object RootBridgeAppBarInternal {
                     )()
                 ),
                 {
-                  val location = document.defaultView.location
-                  val origin = location.origin.get
-                  val path = location.pathname
+                  val path = GotoPage.currentURL
                   val (newp,color) = if (path.indexOf("indexNoScale") >= 0) {
-                    ("""/public/index.html""", SvgColor.disabled)
+                    ("""index.html""", SvgColor.disabled)
                   } else {
-                    ("""/public/indexNoScale.html""", SvgColor.inherit)
+                    ("""indexNoScale.html""", SvgColor.inherit)
                   }
                   val newpath = if (path.endsWith(".gz")) {
                     s"""${newp}.gz"""

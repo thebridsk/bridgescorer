@@ -33,7 +33,7 @@ object Dependencies {
 //  lazy val vScalaJsLibrary = "0.6.13" // http://mvnrepository.com/artifact/org.scala-js/scalajs-library_2.11
 
 
-  lazy val vAkka = "2.5.19"           // http://mvnrepository.com/artifact/com.typesafe.akka/akka-actor_2.11
+  lazy val vAkka = "2.5.20"           // http://mvnrepository.com/artifact/com.typesafe.akka/akka-actor_2.11
   lazy val vAkkaHttp = "10.1.7"       // http://mvnrepository.com/artifact/com.typesafe.akka/akka-http_2.11
 
   lazy val vAkkaHttpPlayJson="1.24.3"  // https://github.com/hseeberger/akka-http-json
@@ -44,7 +44,7 @@ object Dependencies {
 
   lazy val vSwaggerUI = "3.20.5"       // https://www.npmjs.com/package/swagger-ui-dist
   lazy val vScalajsdom = "0.9.6"       // http://mvnrepository.com/artifact/org.scala-js/scalajs-dom_sjs0.6_2.11
-  lazy val vScalaJsReact = "1.3.1"     // http://mvnrepository.com/artifact/com.github.japgolly.scalajs-react/core_sjs0.6_2.11
+  lazy val vScalaJsReact = "1.4.0"     // http://mvnrepository.com/artifact/com.github.japgolly.scalajs-react/core_sjs0.6_2.11
   lazy val vScalaCss = "0.5.3"         // http://mvnrepository.com/artifact/com.github.japgolly.scalacss/core_sjs0.6_2.11
 
   lazy val vWebJarsReact = "16.7.0"    // http://mvnrepository.com/artifact/org.webjars/react
@@ -70,7 +70,7 @@ object Dependencies {
   lazy val vScalaArm = "2.0"         // http://mvnrepository.com/artifact/com.jsuereth/scala-arm_2.11
   lazy val vScallop = "3.1.5"        // http://mvnrepository.com/artifact/org.rogach/scallop_2.11
   lazy val vSlf4j = "1.7.25"         // https://mvnrepository.com/artifact/org.slf4j/slf4j-jdk14
-  lazy val vPlayJson = "2.7.0"       // https://mvnrepository.com/artifact/com.typesafe.play/play-json_2.12
+  lazy val vPlayJson = "2.7.1"       // https://mvnrepository.com/artifact/com.typesafe.play/play-json_2.12
 
   // jackson-module-scala usually updates a few days after the others are updated,
   // don't update until jackson-module-scala is updated

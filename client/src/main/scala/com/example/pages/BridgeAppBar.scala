@@ -27,6 +27,8 @@ import com.example.react.AppButtonLinkNewWindow
 import org.scalajs.dom.document
 import japgolly.scalajs.react.vdom.VdomNode
 import com.example.routes.AppRouter.Home
+import org.scalajs.dom.experimental.URL
+import com.example.Bridge
 
 /**
  * A simple AppBar for the Bridge client.
@@ -73,7 +75,7 @@ object BridgeAppBar {
   )(
       mainMenu: CtorType.ChildArg*,
   ) =
-    component(Props(mainMenu,handleMainClick,maintitle,title,helpurl,routeCtl,showHomeButton))()
+    component(Props(mainMenu,handleMainClick,maintitle,title,helpurl,routeCtl,showHomeButton))
 
 }
 
@@ -114,11 +116,7 @@ object BridgeAppBarInternal {
     }
 
     def gotoPage( uri: String ) = {
-      val location = document.defaultView.location
-      val origin = location.origin.get
-      val helppath = s"""${origin}${uri}"""
-
-      AppButtonLinkNewWindow.topage(helppath)
+      GotoPage.inNewWindow(uri)
     }
 
     def handleHelpGotoPageClick(uri: String)( event: ReactEvent ) = {
@@ -150,6 +148,18 @@ object BridgeAppBarInternal {
 
       val toolbarFront: CtorType.ChildArg = <.div(
           {
+            val demo = if (Bridge.isDemo) {
+              List[TagMod](
+                MuiTypography(
+                    variant = TextVariant.h6,
+                    color = TextColor.error,
+                )(
+                    <.span("DEMO",<.span(^.dangerouslySetInnerHtml:="&nbsp;"))
+                )
+              )
+            } else {
+              List()
+            }
             val x = List[TagMod](
               baseStyles.appBarTitle,
               MuiIconButton(
@@ -171,6 +181,7 @@ object BridgeAppBarInternal {
                 TagMod.empty
               }
             ) :::
+            demo :::
             props.maintitle.toList :::
             (if (props.title.isEmpty) {
               List()

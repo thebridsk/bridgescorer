@@ -199,11 +199,7 @@ object HomePage {
     }
 
     def gotoPage( uri: String ) = {
-      val location = document.defaultView.location
-      val origin = location.origin.get
-      val helppath = s"""${origin}${uri}"""
-
-      AppButtonLinkNewWindow.topage(helppath)
+      GotoPage.inNewWindow(uri)
     }
 
     def gotoView( page: AppRouter.AppPage ) = { (event: ReactEvent) =>
@@ -319,9 +315,7 @@ object HomePage {
                 ),
                 <.td(
                   {
-                    val location = document.defaultView.location
-                    val origin = location.origin.get
-                    val path = s"""${origin}/v1/diagnostics"""
+                    val path = GotoPage.getURL( s"""/v1/diagnostics""" )
                     AppButtonLink( "Diagnostics", "Diagnostics", path,
                                    rootStyles.playButton,
                                    ^.disabled:=isWorking
@@ -425,8 +419,6 @@ object HomePage {
     val resultChicago = ResultHolder[MatchChicago]()
     val resultShutdown = ResultHolder[WrapperXMLHttpRequest]()
 
-//  import org.scalajs.dom.document
-//  document.defaultView.location.reload(true)
     val cancel = Callback {
       resultChicago.cancel()
       resultShutdown.cancel()
@@ -507,7 +499,7 @@ object HomePage {
   def isPageFromLocalHost() = {
     import org.scalajs.dom.document
 
-    val hostname = document.defaultView.location.hostname
+    val hostname = GotoPage.hostname
     hostname == "localhost" || hostname == "loopback" || hostname == "127.0.0.1"
 
   }

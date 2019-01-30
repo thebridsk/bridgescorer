@@ -81,7 +81,7 @@ object DuplicatePageBridgeAppBar {
   )(
       mainMenuItems: CtorType.ChildArg*,
   ) =
-    component(Props(id,tableIds,mainMenuItems,title,helpurl,routeCtl))()
+    component(Props(id,tableIds,mainMenuItems,title,helpurl,routeCtl))
 
 }
 
@@ -119,20 +119,6 @@ object DuplicatePageBridgeAppBarInternal {
     def handleMainClose( /* event: js.Object, reason: String */ ) = {
       logger.fine("MainClose called")
       scope.modState(s => s.closeMainMenu()).runNow()
-    }
-
-    def gotoPage( uri: String ) = {
-      val location = document.defaultView.location
-      val origin = location.origin.get
-      val helppath = s"""${origin}${uri}"""
-
-      AppButtonLinkNewWindow.topage(helppath)
-    }
-
-    def handleMainGotoPageClick(uri: String)( event: ReactEvent ) = {
-      logger.info(s"""Going to page ${uri}""")
-
-      gotoPage(uri)
     }
 
     def render( props: Props, state: State ) = {

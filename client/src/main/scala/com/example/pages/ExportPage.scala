@@ -252,9 +252,7 @@ object ExportPageInternal {
                        props.router.setOnClick(Home)),
             {
               val filter = state.selectedIds.map(list => list.mkString("?filter=", ",", "")).getOrElse("")
-              val location = document.defaultView.location
-              val origin = location.origin.get
-              val path = s"""${origin}/v1/export${filter}"""
+              val path = GotoPage.getURL( s"""/v1/export${filter}""" )
               AppButtonLink( "Export", "Export", path,
                              baseStyles.appButton
               )
