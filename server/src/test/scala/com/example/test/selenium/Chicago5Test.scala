@@ -26,7 +26,12 @@ import com.example.backend.MatchChicagoCacheStoreSupport
 /**
  * @author werewolf
  */
-class Chicago5Test extends FlatSpec with MustMatchers with BeforeAndAfterAll with EventuallyUtils {
+class Chicago5Test extends FlatSpec
+    with MustMatchers
+    with BeforeAndAfterAll
+    with EventuallyUtils
+    with CancelAfterFailure
+{
   import com.example.test.pages.PageBrowser._
   import Eventually.{ patienceConfig => _, _ }
 
@@ -117,7 +122,7 @@ class Chicago5Test extends FlatSpec with MustMatchers with BeforeAndAfterAll wit
   }
 
   it should "allow player names to be entered" in {
-    eventually( find(xpath("//h1[2]")).text mustBe "Enter players and identify first dealer" )
+    eventually( find(xpath("//h6[3]/span")).text mustBe "Enter players and identify first dealer" )
   }
 
   it should "allow player names to be entered when playing Chicago" in {

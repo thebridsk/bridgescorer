@@ -7,6 +7,7 @@ import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react.extra.router.RouterCtl
 import com.example.pages.chicagos.ChicagoRouter.SummaryView
 import com.example.react.AppButton
+import com.example.routes.BridgeRouter
 
 /**
  * A skeleton component.
@@ -22,9 +23,9 @@ import com.example.react.AppButton
 object ViewTotalsTable {
   import ViewTotalsTableInternal._
 
-  case class Props( chicagoScoring: ChicagoScoring, page: SummaryView, routerCtl: RouterCtl[ChicagoPage] )
+  case class Props( chicagoScoring: ChicagoScoring, page: SummaryView, routerCtl: BridgeRouter[ChicagoPage] )
 
-  def apply( chicagoScoring: ChicagoScoring, page: SummaryView, routerCtl: RouterCtl[ChicagoPage] ) =
+  def apply( chicagoScoring: ChicagoScoring, page: SummaryView, routerCtl: BridgeRouter[ChicagoPage] ) =
     component( Props( chicagoScoring, page, routerCtl ) )
 
 }

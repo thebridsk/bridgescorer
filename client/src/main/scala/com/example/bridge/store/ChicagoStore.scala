@@ -68,7 +68,7 @@ object ChicagoStore extends ChangeListenable {
             notifyChange()
             if (Bridge.isDemo) {
               scalajs.js.timers.setTimeout(1) {
-                ChicagoSummaryStore.dispatch(ActionUpdateChicago(chi))
+                ChicagoSummaryStore.dispatch(ActionUpdateChicago(chicago.get))
               }
             }
           case None =>

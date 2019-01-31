@@ -36,6 +36,9 @@ import play.api.libs.json.JsDefined
 import play.api.libs.json.JsUndefined
 import com.example.data.graphql.GraphQLProtocol.GraphQLResponse
 import com.example.react.Utils._
+import com.example.materialui.TextVariant
+import com.example.materialui.TextColor
+import com.example.materialui.MuiTypography
 
 /**
  * @author werewolf
@@ -156,6 +159,17 @@ object PageChicagoListInternal {
                                          )
           <.div( chiStyles.chicagoListPage,
               PopupOkCancel(msg.map(s=>s),funOk,funCancel),
+              ChicagoPageBridgeAppBar(
+                title = Seq[CtorType.ChildArg](
+                  MuiTypography(
+                      variant = TextVariant.h6,
+                      color = TextColor.inherit,
+                  )(
+                      <.span( "List" )
+                  )),
+                helpurl = "../help/chicago/list.html",
+                routeCtl = props.routerCtl
+              )(),
               <.table(
                   <.thead(
                     <.tr(
@@ -179,17 +193,17 @@ object PageChicagoListInternal {
                       }.toTagMod
                   )
               ),
-              <.div(
-                baseStyles.divFooter,
-                <.div(
-                  baseStyles.divFooterLeft,
-                  AppButton( "Home", "Home", props.routerCtl.home )
-                ),
-                <.div(
-                  baseStyles.divFooterLeft,
-                  HelpButton("../help/chicago/list.html")
-                )
-              )
+//              <.div(
+//                baseStyles.divFooter,
+//                <.div(
+//                  baseStyles.divFooterLeft,
+//                  AppButton( "Home", "Home", props.routerCtl.home )
+//                ),
+//                <.div(
+//                  baseStyles.divFooterLeft,
+//                  HelpButton("../help/chicago/list.html")
+//                )
+//              )
           )
         case None =>
           <.div(

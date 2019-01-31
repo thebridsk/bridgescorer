@@ -35,6 +35,9 @@ import play.api.libs.json.JsDefined
 import play.api.libs.json.JsUndefined
 import com.example.data.graphql.GraphQLProtocol.GraphQLResponse
 import com.example.rest2.ResultHolder
+import com.example.materialui.MuiTypography
+import com.example.materialui.TextVariant
+import com.example.materialui.TextColor
 
 /**
  * A skeleton component.
@@ -181,6 +184,17 @@ object PageRubberListInternal {
             <.div(
                 rubStyles.listPage,
                 PopupOkCancel(msg.map(s=>s),funOk,funCancel),
+                RubberPageBridgeAppBar(
+                  title = Seq[CtorType.ChildArg](
+                    MuiTypography(
+                        variant = TextVariant.h6,
+                        color = TextColor.inherit,
+                    )(
+                        <.span( "List" )
+                    )),
+                  helpurl = "../help/rubber/list.html",
+                  routeCtl = props.routerCtl
+                )(),
                 <.table(
                     <.thead(
                       <.tr(
@@ -224,15 +238,15 @@ object PageRubberListInternal {
                         }.toTagMod
                     )
                 ),
-                <.div( baseStyles.divFooter,
-                  <.div( baseStyles.divFooterLeft,
-                    AppButton( "Home", "Home", props.routerCtl.home )
-                  ),
-                  <.div(
-                    baseStyles.divFooterLeft,
-                    HelpButton("../help/rubber/list.html")
-                  )
-                )
+//                <.div( baseStyles.divFooter,
+//                  <.div( baseStyles.divFooterLeft,
+//                    AppButton( "Home", "Home", props.routerCtl.home )
+//                  ),
+//                  <.div(
+//                    baseStyles.divFooterLeft,
+//                    HelpButton("../help/rubber/list.html")
+//                  )
+//                )
             )
           case None =>
             <.div("Loading ...")

@@ -14,6 +14,9 @@ import com.example.react.Utils._
 import com.example.pages.Pixels
 import com.example.pages.BaseStyles
 import com.example.react.HelpButton
+import com.example.materialui.MuiTypography
+import com.example.materialui.TextVariant
+import com.example.materialui.TextColor
 
 object ViewPlayersThirdRound {
   import PagePlayers._
@@ -71,7 +74,18 @@ object ViewPlayersThirdRound {
 
       <.div(
         chiStyles.viewPlayersThirdRound,
-        <.h1("Select partners and first dealer"),
+        ChicagoPageBridgeAppBar(
+          title = Seq[CtorType.ChildArg](
+            MuiTypography(
+                variant = TextVariant.h6,
+                color = TextColor.inherit,
+            )(
+                <.span( "Select partners and first dealer" )
+            )),
+          helpurl = "../help/chicago/four/selectnames4.html",
+          routeCtl = props.router
+        )(),
+//        <.h1("Select partners and first dealer"),
         <.table(
           <.tbody(
             <.tr(
@@ -150,7 +164,7 @@ object ViewPlayersThirdRound {
             ),
             <.div(
               baseStyles.divFooterRight,
-              HelpButton("../help/chicago/four/selectnames4.html")
+//              HelpButton("../help/chicago/four/selectnames4.html")
             )
           )
         )

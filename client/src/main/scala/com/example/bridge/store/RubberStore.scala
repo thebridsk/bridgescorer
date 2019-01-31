@@ -66,7 +66,7 @@ object RubberStore extends ChangeListenable {
             notifyChange()
             if (Bridge.isDemo) {
               scalajs.js.timers.setTimeout(1) {
-                RubberListStore.dispatch(ActionUpdateRubber(rub))
+                RubberListStore.dispatch(ActionUpdateRubber(rubber.get))
               }
             }
           case None =>

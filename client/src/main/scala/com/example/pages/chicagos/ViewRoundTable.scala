@@ -10,6 +10,7 @@ import japgolly.scalajs.react.vdom.html_<^._
 import com.example.data.bridge._
 import com.example.pages.chicagos.ChicagoRouter.RoundView
 import com.example.react.AppButton
+import com.example.routes.BridgeRouter
 
 /**
  * A skeleton component.
@@ -25,12 +26,12 @@ import com.example.react.AppButton
 object ViewRoundTable {
   import ViewRoundTableInternal._
 
-  case class Props( scoring: ChicagoScoring, roundid: Int, page: RoundView, routerCtl: RouterCtl[ChicagoPage] )
+  case class Props( scoring: ChicagoScoring, roundid: Int, page: RoundView, routerCtl: BridgeRouter[ChicagoPage] )
 
-  def apply( scoring: ChicagoScoring, roundid: Int, page: RoundView, routerCtl: RouterCtl[ChicagoPage] ) =
+  def apply( scoring: ChicagoScoring, roundid: Int, page: RoundView, routerCtl: BridgeRouter[ChicagoPage] ) =
     component( Props( scoring, roundid, page, routerCtl ) )
 
-  def withKey( key: String )( scoring: ChicagoScoring, roundid: Int, page: RoundView, routerCtl: RouterCtl[ChicagoPage] ) =
+  def withKey( key: String )( scoring: ChicagoScoring, roundid: Int, page: RoundView, routerCtl: BridgeRouter[ChicagoPage] ) =
     component.withKey(key)(Props(scoring, roundid, page, routerCtl))
 }
 

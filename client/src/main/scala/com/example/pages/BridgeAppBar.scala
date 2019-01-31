@@ -29,6 +29,7 @@ import japgolly.scalajs.react.vdom.VdomNode
 import com.example.routes.AppRouter.Home
 import org.scalajs.dom.experimental.URL
 import com.example.Bridge
+import com.example.react.Utils._
 
 /**
  * A simple AppBar for the Bridge client.
@@ -162,7 +163,7 @@ object BridgeAppBarInternal {
             }
             val x = List[TagMod](
               baseStyles.appBarTitle,
-              MuiIconButton(
+              !props.mainMenu.isEmpty ?= MuiIconButton(
                   id = "MainMenu",
                   onClick = props.handleMainClick,
                   color=ColorVariant.inherit

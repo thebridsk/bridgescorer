@@ -18,6 +18,9 @@ import com.example.react.AppButton
 import com.example.react.Utils._
 import com.example.pages.BaseStyles
 import com.example.react.HelpButton
+import com.example.materialui.MuiTypography
+import com.example.materialui.TextVariant
+import com.example.materialui.TextColor
 
 /**
  * A skeleton component.
@@ -313,6 +316,17 @@ object ViewPlayersFiveInternal {
     def render( props: Props, state: State ) = {
       val valid = state.north.isDefined && state.south.isDefined && state.east.isDefined && state.west.isDefined && state.dealer.isDefined
       <.div(
+        ChicagoPageBridgeAppBar(
+          title = Seq[CtorType.ChildArg](
+            MuiTypography(
+                variant = TextVariant.h6,
+                color = TextColor.inherit,
+            )(
+                <.span( "Five Player" )
+            )),
+          helpurl = "../help/chicago/five/selectnames5.html",
+          routeCtl = props.router
+        )(),
         <.div(
           chiStyles.divPageFive,
           renderSelectSittingOut(props, state),
@@ -332,7 +346,7 @@ object ViewPlayersFiveInternal {
           <.div(
             baseStyles.divFooterRight,
             AppButton("Cancel", "Cancel", props.router.setOnClick(props.page.toSummaryView()) ),
-            HelpButton("../help/chicago/five/selectnames5.html")
+//            HelpButton("../help/chicago/five/selectnames5.html")
           )
         )
       )

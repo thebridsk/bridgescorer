@@ -14,6 +14,10 @@ import com.example.pages.chicagos.ChicagoRouter.ListView
 import com.example.react.AppButton
 import com.example.react.Utils._
 import com.example.react.HelpButton
+import com.example.materialui.MuiTypography
+import com.example.materialui.TextVariant
+import com.example.materialui.TextColor
+import com.example.routes.BridgeRouter
 
 /**
  * A skeleton component.
@@ -29,12 +33,12 @@ import com.example.react.HelpButton
 object PageSummary {
   import PageSummaryInternal._
 
-  case class Props( page: Either[SummaryView,RoundView], routerCtl: RouterCtl[ChicagoPage] )
+  case class Props( page: Either[SummaryView,RoundView], routerCtl: BridgeRouter[ChicagoPage] )
 
-  def apply( page: SummaryView, routerCtl: RouterCtl[ChicagoPage] ) =
+  def apply( page: SummaryView, routerCtl: BridgeRouter[ChicagoPage] ) =
     component( Props( Left(page), routerCtl ) )
 
-  def apply( page: RoundView, routerCtl: RouterCtl[ChicagoPage] ) =
+  def apply( page: RoundView, routerCtl: BridgeRouter[ChicagoPage] ) =
     component( Props( Right(page), routerCtl ) )
 
 }
@@ -88,88 +92,102 @@ object PageSummaryInternal {
 
     def render( props: Props, state: State ) = {
       import ChicagoStyles._
-      ChicagoStore.getChicago match {
-        case Some(mc) =>
-          val scoring = ChicagoScoring(mc)
-          val numberRounds = scoring.rounds.length
-          if (numberRounds == 0) {
-            <.div(
-              chiStyles.chicagoSummaryPage,
-              <.p("The Chicago Match has not been started yet."),
-              <.p(),
-              AppButton( "Start", "Start", ^.onClick --> nextRound),
-              " ",
-              AppButton( "Quit", "Quit", ^.onClick --> props.routerCtl.set(ListView))
-                )
-          } else {
-            val lastRound = scoring.rounds( numberRounds-1 )
-            val lastRoundHands = lastRound.hands
-            // The buttons: (description is round and hand one based)
-            //   next hand in round ( handsPerRound==0 or hand < handsPerRound) and not 6 8 hand round buttons
-            //   new round (show in round 1 hand 4, or when #hands == handPerRound != 0)
-            //   6 hand round (show if in round 1 hand 5)
-            //   8 hand round (show if in round 1 hand 5)
-            //
-            val show68HandRound = scoring.gamesPerRound==0 && numberRounds==1 && lastRoundHands.length == 5
-            val showNextHand = (scoring.gamesPerRound==0 || lastRoundHands.length<scoring.gamesPerRound) && !show68HandRound
-            val showNewRound = (numberRounds==1 && lastRoundHands.length == 4) || (scoring.gamesPerRound!=0 && lastRoundHands.length==scoring.gamesPerRound)
-            val showSet68HandRound = numberRounds==1 && lastRoundHands.length == 4 && scoring.gamesPerRound==0
-            val (start,end) = props.page match {
-              case Left(_) => (0,scoring.rounds.length)
-              case Right( RoundView( chiid, round )) => ( round, round+1)
-            }
-
-            def displayRound() =
-              props.page match {
-              case Left(_) => 0
-              case Right( RoundView( chiid, round )) => round
-            }
-
-            <.div(
+      val smc = ChicagoStore.getChicago
+      <.div(
+        ChicagoPageBridgeAppBar(
+          title = Seq[CtorType.ChildArg](
+            MuiTypography(
+                variant = TextVariant.h6,
+                color = TextColor.inherit,
+            )(
+                <.span( "Summary" )
+            )),
+          helpurl = if (smc.map( mc => mc.isQuintet()).getOrElse(false)) "../help/chicago/summaryquintet.html" else "../help/chicago/summary.html",
+          routeCtl = props.routerCtl
+        )(),
+        smc match {
+          case Some(mc) =>
+            val scoring = ChicagoScoring(mc)
+            val numberRounds = scoring.rounds.length
+            if (numberRounds == 0) {
+              <.div(
                 chiStyles.chicagoSummaryPage,
-                if (scoring.chicago.isQuintet()) {
-                  <.div( ViewQuintet(scoring, toSummaryView(props), props.routerCtl) )
-                } else {
-                  Seq[TagMod](
-                    <.div( ViewTotalsTable(scoring, toSummaryView(props), props.routerCtl) ),
-                    (start until end).map { i =>
-                      <.div( ViewRoundTable.withKey("ShowRound"+i)(scoring, i, toRoundView(i,props), props.routerCtl) )
-                    }.toTagMod
-                  ).toTagMod
-                },
-                <.div(
-                  baseStyles.divFooter,
-                  <.div(
-                    baseStyles.divFooterLeft,
-                    (props.page.isLeft || displayRound() == scoring.rounds.length-1) ?=
-                      <.span(
-                        showNewRound ?= AppButton( "NewRound", "New Round", baseStyles.requiredNotNext, ^.onClick --> nextRound),
-                        <.span(" "),
-                        show68HandRound||showSet68HandRound ?= AppButton( "6HandRound", "6 Hand Round", baseStyles.requiredNotNext, ^.onClick --> do68Callback(6)),
-                        <.span(" "),
-                        show68HandRound||showSet68HandRound ?= AppButton( "8HandRound", "8 Hand Round", baseStyles.requiredNotNext, ^.onClick --> do68Callback(8)),
-                        <.span(" "),
-                        showNextHand ?= AppButton( "NextHand", "Next Hand", baseStyles.requiredNotNext, ^.onClick --> nextHand),
-                        <.span(" ")
-                      )
-                  ),
-                  <.div(
-                    baseStyles.divFooterCenter,
-                    AppButton( "Quit", "Quit", ^.onClick --> props.routerCtl.set(ListView)),
-                    " ",
-                    props.page.isRight ?= AppButton( "Summary", "All Rounds", ^.onClick --> props.routerCtl.set(toSummaryView(props)))
-                  ),
-                  <.div(
-                    baseStyles.divFooterRight,
-                    ComponentInputStyleButton( scope.forceUpdate ),
-                    HelpButton( if (scoring.chicago.isQuintet()) "../help/chicago/summaryquintet.html" else "../help/chicago/summary.html")
+                <.p("The Chicago Match has not been started yet."),
+                <.p(),
+                AppButton( "Start", "Start", ^.onClick --> nextRound),
+                " ",
+                AppButton( "Quit", "Quit", ^.onClick --> props.routerCtl.set(ListView))
                   )
-                )
-            )
-          }
-        case _ =>
-          <.div("Loading")
-      }
+            } else {
+              val lastRound = scoring.rounds( numberRounds-1 )
+              val lastRoundHands = lastRound.hands
+              // The buttons: (description is round and hand one based)
+              //   next hand in round ( handsPerRound==0 or hand < handsPerRound) and not 6 8 hand round buttons
+              //   new round (show in round 1 hand 4, or when #hands == handPerRound != 0)
+              //   6 hand round (show if in round 1 hand 5)
+              //   8 hand round (show if in round 1 hand 5)
+              //
+              val show68HandRound = scoring.gamesPerRound==0 && numberRounds==1 && lastRoundHands.length == 5
+              val showNextHand = (scoring.gamesPerRound==0 || lastRoundHands.length<scoring.gamesPerRound) && !show68HandRound
+              val showNewRound = (numberRounds==1 && lastRoundHands.length == 4) || (scoring.gamesPerRound!=0 && lastRoundHands.length==scoring.gamesPerRound)
+              val showSet68HandRound = numberRounds==1 && lastRoundHands.length == 4 && scoring.gamesPerRound==0
+              val (start,end) = props.page match {
+                case Left(_) => (0,scoring.rounds.length)
+                case Right( RoundView( chiid, round )) => ( round, round+1)
+              }
+
+              def displayRound() =
+                props.page match {
+                case Left(_) => 0
+                case Right( RoundView( chiid, round )) => round
+              }
+
+              <.div(
+                  chiStyles.chicagoSummaryPage,
+                  if (scoring.chicago.isQuintet()) {
+                    <.div( ViewQuintet(scoring, toSummaryView(props), props.routerCtl) )
+                  } else {
+                    Seq[TagMod](
+                      <.div( ViewTotalsTable(scoring, toSummaryView(props), props.routerCtl) ),
+                      (start until end).map { i =>
+                        <.div( ViewRoundTable.withKey("ShowRound"+i)(scoring, i, toRoundView(i,props), props.routerCtl) )
+                      }.toTagMod
+                    ).toTagMod
+                  },
+                  <.div(
+                    baseStyles.divFooter,
+                    <.div(
+                      baseStyles.divFooterLeft,
+                      (props.page.isLeft || displayRound() == scoring.rounds.length-1) ?=
+                        <.span(
+                          showNewRound ?= AppButton( "NewRound", "New Round", baseStyles.requiredNotNext, ^.onClick --> nextRound),
+                          <.span(" "),
+                          show68HandRound||showSet68HandRound ?= AppButton( "6HandRound", "6 Hand Round", baseStyles.requiredNotNext, ^.onClick --> do68Callback(6)),
+                          <.span(" "),
+                          show68HandRound||showSet68HandRound ?= AppButton( "8HandRound", "8 Hand Round", baseStyles.requiredNotNext, ^.onClick --> do68Callback(8)),
+                          <.span(" "),
+                          showNextHand ?= AppButton( "NextHand", "Next Hand", baseStyles.requiredNotNext, ^.onClick --> nextHand),
+                          <.span(" ")
+                        )
+                    ),
+                    <.div(
+                      baseStyles.divFooterCenter,
+                      AppButton( "Quit", "Quit", ^.onClick --> props.routerCtl.set(ListView)),
+                      " ",
+                      props.page.isRight ?= AppButton( "Summary", "All Rounds", ^.onClick --> props.routerCtl.set(toSummaryView(props)))
+                    ),
+                    <.div(
+                      baseStyles.divFooterRight,
+                      ComponentInputStyleButton( scope.forceUpdate ),
+  //                    HelpButton( if (scoring.chicago.isQuintet()) "../help/chicago/summaryquintet.html" else "../help/chicago/summary.html")
+                    )
+                  )
+              )
+            }
+          case _ =>
+            <.div("Loading")
+        }
+      )
     }
 
     def do68Callback( gamesInRound: Int ) = scope.props >>= { props => Callback {

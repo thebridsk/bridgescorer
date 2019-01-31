@@ -23,6 +23,9 @@ import com.example.react.RadioButton
 import com.example.react.Utils._
 import com.example.pages.BaseStyles
 import com.example.react.HelpButton
+import com.example.materialui.MuiTypography
+import com.example.materialui.TextVariant
+import com.example.materialui.TextColor
 
 object ViewPlayersVeryFirstRound {
   import PagePlayers._
@@ -86,8 +89,19 @@ object ViewPlayersVeryFirstRound {
 
       <.div(
         chiStyles.viewPlayersVeryFirstRound,
+        ChicagoPageBridgeAppBar(
+          title = Seq[CtorType.ChildArg](
+            MuiTypography(
+                variant = TextVariant.h6,
+                color = TextColor.inherit,
+            )(
+                <.span( "Enter players and identify first dealer" )
+            )),
+          helpurl = if (state.chicago5) "../help/chicago/five/names5.html" else "../help/chicago/four/names4.html",
+          routeCtl = props.router
+        )(),
         <.h1(InfoPage.showOnlyInLandscapeOnTouch(), "Rotate to portrait for a better view"),
-        <.h1("Enter players and identify first dealer"),
+//        <.h1("Enter players and identify first dealer"),
         <.table(
           <.tbody(
             <.tr(
@@ -149,7 +163,7 @@ object ViewPlayersVeryFirstRound {
           <.div(
             baseStyles.divFooterRight,
             AppButton( "Cancel", "Cancel", props.router.setOnClick(props.page.toSummaryView()) ),
-            HelpButton( if (state.chicago5) "../help/chicago/five/names5.html" else "../help/chicago/four/names4.html")
+//            HelpButton( if (state.chicago5) "../help/chicago/five/names5.html" else "../help/chicago/four/names4.html")
           )
         )
       )

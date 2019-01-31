@@ -79,6 +79,11 @@ object RubberRouter {
     new BridgeRouterBase[RubberPage](ctl) {
         override
         def home: TagMod = RubberModule.gotoAppHome()
+
+        override
+        def toHome: Unit = RubberModule.toHome
+        override
+        def toAbout: Unit = RubberModule.toAbout
     }
 
   val routes = RouterConfigDsl[RubberPage].buildRule { dsl =>

@@ -46,7 +46,7 @@ object ChicagoSummaryStore extends ChangeListenable {
             r :+ chi
           }.orElse(Some(Array(chi)))
           fSummary = n
-          logger.info(s"""Chicago summary is now $n""")
+          logger.info(s"""Chicago summary is now ${n.get.mkString("\n")}""")
           // does not call callback, that is for ChicagoStore
         }
 
