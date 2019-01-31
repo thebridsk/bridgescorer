@@ -265,10 +265,14 @@ object HomePage {
           ),
           <.h1("Server"),
           <.ul(
-            if (state.serverUrl.serverUrl.isEmpty) {
-              <.li("No network interfaces found")
+            if (Bridge.isDemo) {
+              <.li("Demo mode, all data entered will be lost on page refresh or closing page")
             } else {
-              state.serverUrl.serverUrl.map{ url => <.li(url) }.toTagMod
+              if (state.serverUrl.serverUrl.isEmpty) {
+                <.li("No network interfaces found")
+              } else {
+                state.serverUrl.serverUrl.map{ url => <.li(url) }.toTagMod
+              }
             }
           )
         ),
