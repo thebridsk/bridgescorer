@@ -32,6 +32,7 @@ import scala.concurrent.Future
 import scala.concurrent.Promise
 import com.example.data.websocket.DuplexProtocol.LogEntryV2
 import com.example.test.selenium.TestServer
+import akka.http.scaladsl.testkit.RouteTestTimeout
 
 class MyServiceSpec extends FlatSpec with ScalatestRouteTest with MustMatchers with MyService {
   val restService = new BridgeServiceTesting
@@ -126,13 +127,20 @@ class MyServiceSpec extends FlatSpec with ScalatestRouteTest with MustMatchers w
 
   }
 
-  it should "return bridgescorer-client-fastopt.js to /public/bridgescorer-client-fastopt.js" in {
-    assume(!TestServer.useProductionPage)
-    assume(!useFullOptOnly)
+  {
+    import scala.concurrent.duration._
+    import akka.testkit.TestDuration
+    import scala.language.postfixOps
+    implicit val timeout = RouteTestTimeout(5.seconds dilated)
 
-    Get("/public/bridgescorer-client-fastopt.js") ~> addHeader(remoteAddress) ~> Route.seal { myRouteWithLogging } ~> check {
-      status mustBe OK
-      responseAs[String] must include regex "(?s).*function.*"
+    it should "return bridgescorer-client-fastopt.js to /public/bridgescorer-client-fastopt.js" in {
+      assume(!TestServer.useProductionPage)
+      assume(!useFullOptOnly)
+
+      Get("/public/bridgescorer-client-fastopt.js") ~> addHeader(remoteAddress) ~> Route.seal { myRouteWithLogging } ~> check {
+        status mustBe OK
+        responseAs[String] must include regex "(?s).*function.*"
+      }
     }
   }
 
