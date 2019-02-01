@@ -22,6 +22,7 @@ import com.example.test.pages.Page.AnyPage
 import com.example.data.bridge._
 import com.example.test.pages.Combobox
 import com.example.test.pages.TextField
+import com.example.test.pages.PageBrowser
 
 object TableEnterOrSelectNamesPage {
 
@@ -166,7 +167,12 @@ class TableEnterOrSelectNamesPage( dupid: String,
 
     testNames(nsPlayer1, nsPlayer2, ewPlayer1, ewPlayer2,scorekeeper)
 
-    clickButton( button )
+    eventually {
+      val b = findButton(button)
+      b.isEnabled mustBe true
+      PageBrowser.scrollToElement(b.underlying)
+      b.click
+    }
   }
 
   /**
