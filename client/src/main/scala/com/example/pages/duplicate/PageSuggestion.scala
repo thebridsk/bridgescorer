@@ -370,7 +370,9 @@ object PageSuggestionInternal {
       logger.info("PageSummary.didMount")
       DuplicateSummaryStore.addChangeListener(storeCallback)
       NamesStore.ensureNamesAreCached(Some(namesCallback))
-      Controller.getSummary()
+      Controller.getSummary(
+          () => scope.withEffectsImpure.modState( s => s.copy(error=Some("Error getting duplicate summary")))
+      )
     }
 
     val willUnmount = Callback {

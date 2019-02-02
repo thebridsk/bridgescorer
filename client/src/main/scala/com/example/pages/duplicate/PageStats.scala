@@ -358,7 +358,9 @@ object PageStatsInternal {
     val didMount = Callback {
       logger.info("PageSummary.didMount")
       DuplicateSummaryStore.addChangeListener(storeCallback)
-      Controller.getSummary()
+      Controller.getSummary(
+          () => scope.withEffectsImpure.modState( s => s.copy(msg=Some("Error getting duplicate summary")))
+      )
     }
 
     val willUnmount = Callback {

@@ -30,6 +30,8 @@ import play.api.libs.json.JsError
 import play.api.libs.json.JsUndefined
 import com.example.Bridge
 import com.example.bridge.store.RubberListStore
+import scala.util.Success
+import scala.util.Failure
 
 object RubberController {
   val logger = Logger("bridge.RubberController")
@@ -122,7 +124,7 @@ object RubberController {
     BridgeDispatcher.updateRubberHand(rubid, handid, hand, Some( updateServer ))
   }
 
-  def getSummary(): Unit = {
+  def getSummary(error: ()=>Unit): Unit = {
     logger.finer("Sending rubbers list request to server")
     import scala.scalajs.js.timers._
     setTimeout(1) { // note the absence of () =>
@@ -130,15 +132,22 @@ object RubberController {
         val x = RubberListStore.getRubberSummary().getOrElse(Array())
         BridgeDispatcher.updateRubberList(None,x)
       } else {
-        RestClientRubber.list().recordFailure().foreach { list => Alerter.tryitWithUnit {
-          logger.finer(s"RubberList got ${list.size} entries")
-          BridgeDispatcher.updateRubberList(None,list)
-        }}
+        RestClientRubber.list().recordFailure().onComplete { trylist =>
+          Alerter.tryitWithUnit {
+            trylist match {
+              case Success(list) =>
+                logger.finer(s"RubberList got ${list.size} entries")
+                BridgeDispatcher.updateRubberList(None,list)
+              case Failure(err) =>
+                error()
+            }
+          }
+        }
       }
     }
   }
 
-  def getImportSummary( importId: String ): Unit = {
+  def getImportSummary( importId: String, error: ()=>Unit ): Unit = {
     logger.finer(s"Sending import rubbersummaries ${importId} list request to server")
     import scala.scalajs.js.timers._
     setTimeout(1) { // note the absence of () =>
@@ -196,16 +205,20 @@ object RubberController {
                         BridgeDispatcher.updateRubberList(Some(importId),ds.toArray)
                       case JsError(err) =>
                         logger.warning(s"Import(${importId})/chicagos, JSON error: ${JsError.toJson(err)}")
+                        error()
                     }
                   case _: JsUndefined =>
                     logger.warning(s"error import rubber list ${importId}, did not find import/rubbers field")
+                    error()
                 }
               case None =>
                 logger.warning(s"error import rubber list ${importId}, ${r.getError()}")
+                error()
             }
           }.recover {
             case x: Exception =>
                 logger.warning(s"exception import rubber list ${importId}", x)
+                error()
           }.foreach { x => }
     }
   }

@@ -44,6 +44,8 @@ import org.scalajs.dom.raw.Event
 import scala.scalajs.js.timers.SetTimeoutHandle
 import com.example.Bridge
 import com.example.bridge.store.DuplicateSummaryStore
+import scala.util.Success
+import scala.util.Failure
 
 object Controller {
   val logger = Logger("bridge.Controller")
@@ -407,7 +409,7 @@ object Controller {
     }
   }
 
-  def getSummary(): Unit = {
+  def getSummary( error: ()=>Unit /* = ()=>{} */ ): Unit = {
     logger.finer("Sending duplicatesummaries list request to server")
     import scala.scalajs.js.timers._
     setTimeout(1) { // note the absence of () =>
@@ -416,15 +418,22 @@ object Controller {
           BridgeDispatcher.updateDuplicateSummary(None,List())
         }
       } else {
-        RestClientDuplicateSummary.list().recordFailure().foreach { list => Alerter.tryitWithUnit {
-          logger.finer(s"DuplicateSummary got ${list.size} entries")
-          BridgeDispatcher.updateDuplicateSummary(None,list.toList)
-        }}
+        RestClientDuplicateSummary.list().recordFailure().onComplete { trylist =>
+          trylist match {
+            case Success(list) =>
+              Alerter.tryitWithUnit {
+                logger.finer(s"DuplicateSummary got ${list.size} entries")
+                BridgeDispatcher.updateDuplicateSummary(None,list.toList)
+              }
+            case Failure(err) =>
+              error()
+          }
+        }
       }
     }
   }
 
-  def getImportSummary( importId: String ): Unit = {
+  def getImportSummary( importId: String, error: ()=>Unit ): Unit = {
     logger.finer(s"Sending import duplicatesummaries ${importId} list request to server")
     import scala.scalajs.js.timers._
     setTimeout(1) { // note the absence of () =>
@@ -473,16 +482,20 @@ object Controller {
                         BridgeDispatcher.updateDuplicateSummary(Some(importId),ds)
                       case JsError(err) =>
                         logger.warning(s"Import(${importId})/DuplicateSummary, JSON error: ${JsError.toJson(err)}")
+                        error()
                     }
                   case _: JsUndefined =>
                     logger.warning(s"error import duplicatesummaries ${importId}, did not find import/duplicatesummaries field")
+                    error()
                 }
               case None =>
                 logger.warning(s"error import duplicatesummaries ${importId}, ${r.getError()}")
+                error()
             }
           }.recover {
             case x: Exception =>
                 logger.warning(s"exception import duplicatesummaries ${importId}", x)
+                error()
           }.foreach { x => }
     }
   }

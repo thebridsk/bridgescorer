@@ -308,6 +308,8 @@ object PageRubberListInternal {
       logger.fine(s"Got rubberlist update, importid=${p.page}")
     } >> scope.forceUpdate }
 
+    def summaryError() = scope.withEffectsImpure.modState( s => s.copy(popupMsg=Some("Error getting duplicate summary")))
+
     val didMount = scope.props >>= { (p) => Callback {
       // make AJAX rest call here
       logger.finer("PageRubberList: Sending rubber list request to server")
@@ -315,9 +317,9 @@ object PageRubberListInternal {
       p.page match {
         case isv: ImportListView =>
           val importId = isv.getDecodedId
-          RubberController.getImportSummary(importId)
+          RubberController.getImportSummary(importId, summaryError _)
         case ListView =>
-          RubberController.getSummary()
+          RubberController.getSummary(summaryError _)
       }
     }}
 

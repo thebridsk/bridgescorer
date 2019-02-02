@@ -254,6 +254,8 @@ object PageChicagoListInternal {
 
     val storeCallback = scope.forceUpdate
 
+    def summaryError() = scope.withEffectsImpure.modState( s => s.copy(popupMsg=Some("Error getting duplicate summary")))
+
     val didMount = scope.props >>= { (p) => Callback {
       mounted = true
 
@@ -263,9 +265,9 @@ object PageChicagoListInternal {
       p.page match {
         case isv: ImportListView =>
           val importId = isv.getDecodedId
-          ChicagoController.getImportSummary(importId)
+          ChicagoController.getImportSummary(importId, summaryError _)
         case ListView =>
-          ChicagoController.getSummary()
+          ChicagoController.getSummary(summaryError _)
       }
 
     }}

@@ -746,6 +746,8 @@ object PageSummaryInternal {
 
     val storeCallback = scope.forceUpdate
 
+    def summaryError() = scope.withEffectsImpure.modState( s => s.copy(workingOnNew=Some("Error getting duplicate summary")))
+
     val didMount = scope.props >>= { (p) => Callback {
       logger.info("PageSummary.didMount")
       mounted = true
@@ -754,9 +756,9 @@ object PageSummaryInternal {
       p.page match {
         case isv: ImportSummaryView =>
           val importId = isv.getDecodedId
-          Controller.getImportSummary(importId)
+          Controller.getImportSummary(importId, summaryError _)
         case SummaryView =>
-          Controller.getSummary()
+          Controller.getSummary(summaryError _)
       }
     }}
 
