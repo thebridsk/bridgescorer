@@ -36,7 +36,7 @@ object Dependencies {
   lazy val vAkka = "2.5.20"           // http://mvnrepository.com/artifact/com.typesafe.akka/akka-actor_2.11
   lazy val vAkkaHttp = "10.1.7"       // http://mvnrepository.com/artifact/com.typesafe.akka/akka-http_2.11
 
-  lazy val vAkkaHttpPlayJson="1.24.3"  // https://github.com/hseeberger/akka-http-json
+  lazy val vAkkaHttpPlayJson="1.25.2"  // https://github.com/hseeberger/akka-http-json
 
   lazy val vSwaggerAkkaHttp = "1.0.0" // http://mvnrepository.com/artifact/com.github.swagger-akka-http/swagger-akka-http_2.12
 //  lazy val vSwaggerScalaModule="1.0.4" // http://mvnrepository.com/artifact/io.swagger/swagger-scala-module_2.11
