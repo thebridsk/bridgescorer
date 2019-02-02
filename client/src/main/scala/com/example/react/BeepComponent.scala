@@ -46,6 +46,11 @@ object BeepComponent {
     log.info("Beep disabled")
   }
 
+  def toggleBeep() = {
+    playEnabled = !playEnabled
+    log.info(s"Beep playEnabled=$playEnabled")
+  }
+
   def isPlayEnabled = playEnabled
 
   def beep() = {

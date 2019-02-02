@@ -19,31 +19,47 @@ import com.example.data.rest.JsonSupport
 object BoardSetController {
   val logger = Logger("bridge.BoardSetController")
 
-  def getBoardSets() = {
-    RestClientBoardSet.list().recordFailure().foreach( items => {
-      BridgeDispatcher.updateAllBoardSet(items.toList)
-    })
+  def getBoardSets(): Unit = {
+    if (!Bridge.isDemo) {
+      RestClientBoardSet.list().recordFailure().foreach( items => {
+        BridgeDispatcher.updateAllBoardSet(items.toList)
+      })
+    } else {
+      getBoardsetsAndMovements()
+    }
   }
 
-  def getBoardSet( name: String) = {
-    RestClientBoardSet.get(name).recordFailure().foreach( item => {
-      BridgeDispatcher.updateBoardSet(item)
-    })
+  def getBoardSet( name: String): Unit = {
+    if (!Bridge.isDemo) {
+      RestClientBoardSet.get(name).recordFailure().foreach( item => {
+        BridgeDispatcher.updateBoardSet(item)
+      })
+    } else {
+      getBoardsetsAndMovements()
+    }
   }
 
-  def getMovement() = {
-    RestClientMovement.list().recordFailure().foreach( items => {
-      BridgeDispatcher.updateAllMovement(items.toList)
-    })
+  def getMovement(): Unit = {
+    if (!Bridge.isDemo) {
+      RestClientMovement.list().recordFailure().foreach( items => {
+        BridgeDispatcher.updateAllMovement(items.toList)
+      })
+    } else {
+      getBoardsetsAndMovements()
+    }
   }
 
-  def getMovement( name: String) = {
-    RestClientMovement.get(name).recordFailure().foreach( item => {
-      BridgeDispatcher.updateMovement(item)
-    })
+  def getMovement( name: String): Unit = {
+    if (!Bridge.isDemo) {
+      RestClientMovement.get(name).recordFailure().foreach( item => {
+        BridgeDispatcher.updateMovement(item)
+      })
+    } else {
+      getBoardsetsAndMovements()
+    }
   }
 
-  def getBoardsetsAndMovements() = {
+  def getBoardsetsAndMovements(): Unit = {
     if (!Bridge.isDemo) {
       RestClientBoardSetsAndMovements.list().recordFailure().foreach( items => {
         items.foreach { bm =>

@@ -171,6 +171,7 @@ class TableEnterOrSelectNamesPage( dupid: String,
       val b = findButton(button)
       b.isEnabled mustBe true
       PageBrowser.scrollToElement(b.underlying)
+      Thread.sleep(50L)
       b.click
     }
   }

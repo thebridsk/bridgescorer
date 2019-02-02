@@ -74,15 +74,15 @@ object ScoreboardPage {
    *            Option(subid)
    *          )
    */
-  def findIds(implicit webDriver: WebDriver, pos: Position): (String, ViewType, Option[String], Option[String]) = {
+  def findIds(implicit webDriver: WebDriver, pos: Position): (String, String, ViewType, Option[String], Option[String]) = {
     val prefix = TestServer.getAppPageUrl("duplicate/")
     val cur = currentUrl
     withClue(s"Unable to determine duplicate id: ${cur}") {
       cur must startWith (prefix)
       cur.drop( prefix.length() ) match {
-        case patternComplete(did,subres,subid) => (did,CompletedViewType, Option(subres), Option(subid))
-        case patternDirector(did,subres,subid) => (did,DirectorViewType, Option(subres), Option(subid))
-        case patternTable(did,tid,rid,subres,subid) => (did,TableViewType(tid,rid), Option(if (subres=="game") null else subres), Option(subid))
+        case patternComplete(did,subres,subid) => (cur,did,CompletedViewType, Option(subres), Option(subid))
+        case patternDirector(did,subres,subid) => (cur,did,DirectorViewType, Option(subres), Option(subid))
+        case patternTable(did,tid,rid,subres,subid) => (cur,did,TableViewType(tid,rid), Option(if (subres=="game") null else subres), Option(subid))
         case _ => fail("Could not determine view type")
       }
     }
@@ -101,7 +101,10 @@ object ScoreboardPage {
    *          )
    */
   def findDuplicateId(implicit webDriver: WebDriver, pos: Position): (String, ViewType) = {
-    val (dupid,viewtype,subres,subid) = findIds
+    val (curr,dupid,viewtype,subres,subid) = findIds
+    withClue(s"Current URL must is not a scoreboard url: $curr") {
+      subres mustBe None
+    }
     (dupid,viewtype)
   }
 

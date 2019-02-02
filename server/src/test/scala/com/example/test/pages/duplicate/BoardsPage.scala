@@ -59,11 +59,11 @@ object BoardsPage {
    *            boardid
    *          )
    */
-  def findIds(implicit webDriver: WebDriver, pos: Position): (String, ViewType, String) = {
+  def findIds(implicit webDriver: WebDriver, pos: Position): (String, ViewType) = {
     ScoreboardPage.findIds match {
-      case ( dupid, viewtype, Some("boards"), Some(boardid) ) => (dupid,viewtype,boardid)
-      case x =>
-        fail(s"""${pos.line} Unable to determine Ids from Board page: ${currentUrl}""")
+      case ( cururl, dupid, viewtype, Some("boards"), None) => (dupid,viewtype)
+      case (cururl,_,_,_,_) =>
+        fail(s"""${pos.line} Unable to determine Ids from Board page: ${cururl}""")
     }
   }
 
@@ -86,7 +86,7 @@ class BoardsPage( implicit webDriver: WebDriver, pageCreated: SourcePosition ) e
   import BoardsPage._
 
   def getTableId(implicit patienceConfig: PatienceConfig, pos: Position) = eventually {
-    val (dupid, viewtype, bid) = findIds
+    val (dupid, viewtype) = findIds
     viewtype match {
       case TableViewType(tid,rid) =>
         Some(tid)

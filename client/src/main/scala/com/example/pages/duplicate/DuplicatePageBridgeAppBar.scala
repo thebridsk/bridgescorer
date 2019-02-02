@@ -37,6 +37,10 @@ import com.example.pages.duplicate.DuplicateRouter.MovementSummaryView
 import com.example.pages.duplicate.DuplicateRouter.DuplicateBoardSetView
 import com.example.pages.duplicate.DuplicateRouter.AllTableView
 import com.example.pages.BridgeAppBar
+import com.example.materialui.icons.MuiCheckIcon
+import com.example.pages.HomePage
+import com.example.materialui.icons.SvgColor
+import com.example.skeleton.react.BeepComponent
 
 /**
  * A simple AppBar for the Bridge client.
@@ -207,6 +211,33 @@ object DuplicatePageBridgeAppBarInternal {
                           onClick = callbackPage(SummaryView) _
                       )(
                           "Summary"
+                      ),
+                      MuiMenuItem(
+                          id = "FastClick",
+                          onClick = ( (e: ReactEvent) => (HomePage.fastclickToggle>>scope.forceUpdate).runNow() ),
+                          classes = js.Dictionary("root" -> "mainMenuItem").asInstanceOf[js.Object]
+
+                      )(
+                          "FastClick ",
+                          MuiCheckIcon(
+                              color= (if (HomePage.isFastclickOn) SvgColor.inherit else SvgColor.disabled),
+                              classes = js.Dictionary("root" -> "mainMenuItemIcon").asInstanceOf[js.Object]
+                          )()
+                      ),
+                      MuiMenuItem(
+                          id = "Beep",
+                          onClick = ( (e: ReactEvent) => {
+                            BeepComponent.toggleBeep
+                            scope.forceUpdate.runNow()
+                          } ),
+                          classes = js.Dictionary("root" -> "mainMenuItem").asInstanceOf[js.Object]
+
+                      )(
+                          "Beep ",
+                          MuiCheckIcon(
+                              color= (if (BeepComponent.isPlayEnabled) SvgColor.inherit else SvgColor.disabled),
+                              classes = js.Dictionary("root" -> "mainMenuItemIcon").asInstanceOf[js.Object]
+                          )()
                       ),
                   )
                 ): _*

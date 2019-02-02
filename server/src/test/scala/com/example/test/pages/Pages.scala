@@ -45,7 +45,7 @@ abstract class Page[ +T <: Page[T] ]()( implicit webDriver: WebDriver, pageCreat
       r
     } catch {
       case x: Exception =>
-        testlog.fine(s"${pos.line} Exception return ${name}: ${x}")
+        testlog.fine(s"${pos.line} Exception return ${name}: ${x}", x)
         throw x
     }
 
@@ -59,7 +59,7 @@ abstract class Page[ +T <: Page[T] ]()( implicit webDriver: WebDriver, pageCreat
       r
     } catch {
       case x: Exception =>
-        testlog.fine(s"Exception return ${name}: ${x}")
+        testlog.fine(s"Exception return ${name}: ${x}",x)
         throw x
     }
 

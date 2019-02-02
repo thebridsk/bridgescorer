@@ -30,6 +30,9 @@ import com.example.routes.AppRouter.Home
 import com.example.pages.BaseStyles
 import com.example.data.Id
 import com.example.pages.BridgeAppBar
+import com.example.pages.HomePage
+import com.example.materialui.icons.MuiCheckIcon
+import com.example.materialui.icons.SvgColor
 
 /**
  * A simple AppBar for the Bridge client.
@@ -137,18 +140,24 @@ object ChicagoPageBridgeAppBarInternal {
             routeCtl = props.routeCtl
           )(
               // main menu
-//              MyMenu(
-//                  anchorEl=state.anchorMainEl,
-//                  onClickAway = handleMainClose _,
-//                  onItemClick = handleMainCloseClick _,
-//              )(
-//                  MuiMenuItem(
-//                      id = "Complete",
-//                      onClick = callbackPage(CompleteScoreboardView(id)) _
-//                  )(
-//                      "Scoreboard"
-//                  ),
-//              )
+              MyMenu(
+                  anchorEl=state.anchorMainEl,
+                  onClickAway = handleMainClose _,
+                  onItemClick = handleMainCloseClick _,
+              )(
+                MuiMenuItem(
+                    id = "FastClick",
+                    onClick = ( (e: ReactEvent) => (HomePage.fastclickToggle>>scope.forceUpdate).runNow() ),
+                    classes = js.Dictionary("root" -> "mainMenuItem").asInstanceOf[js.Object]
+
+                )(
+                    "FastClick ",
+                    MuiCheckIcon(
+                        color= (if (HomePage.isFastclickOn) SvgColor.inherit else SvgColor.disabled),
+                        classes = js.Dictionary("root" -> "mainMenuItemIcon").asInstanceOf[js.Object]
+                    )()
+                ),
+              )
           )
       )
     }

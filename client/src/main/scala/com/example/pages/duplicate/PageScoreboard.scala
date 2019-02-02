@@ -290,7 +290,27 @@ object PageScoreboardInternal {
             )
           )
         case None =>
-          <.h1( "Waiting" )
+          <.div(
+            dupStyles.divScoreboardPage,
+            DuplicatePageBridgeAppBar(
+              id = Some(props.game.dupid),
+              tableIds = List(),
+              title = Seq[CtorType.ChildArg](
+                MuiTypography(
+                    variant = TextVariant.h6,
+                    color = TextColor.inherit,
+                )(
+                    <.span(
+                      "Complete Scoreboard"
+                    )
+                )),
+              helpurl = "../help/duplicate/scoreboardcomplete.html",
+              routeCtl = props.routerCtl
+            )(
+            ),
+            <.h1( "Loading" )
+          )
+
       }
     }
 

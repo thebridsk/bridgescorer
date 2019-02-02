@@ -141,21 +141,23 @@ object HomePage {
 //                              renderWithStyle(props)
 //                            }
 
+  val fastclickToggle = Callback {
+    fastclick match {
+      case Some(fc) =>
+        fc.destroy()
+        fastclick = None
+      case None =>
+        fastclick = Option( FastClick() )
+    }
+  }
+
+  def isFastclickOn = fastclick.isDefined
+
   class Backend( scope: BackendScope[Props, State]) {
 
     val toggleFastclickTest = scope.modState( s => s.copy( fastclickTest = !s.fastclickTest) )
 
-    def isFastclickOn = fastclick.isDefined
-
-    val toggleFastclick = Callback {
-      fastclick match {
-        case Some(fc) =>
-          fc.destroy()
-          fastclick = None
-        case None =>
-          fastclick = Option( FastClick() )
-      }
-    } >> scope.forceUpdate
+    val toggleFastclick = fastclickToggle >> scope.forceUpdate
 
     val toggleDebug = scope.modState { s =>
       val newstate = s.copy(debugging = !s.debugging)

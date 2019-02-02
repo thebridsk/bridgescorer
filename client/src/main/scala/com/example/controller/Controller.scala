@@ -91,6 +91,7 @@ object Controller {
 
     def updateStore( mc: MatchDuplicate ): MatchDuplicate = {
       monitorMatchDuplicate(mc.id)
+      BridgeDispatcher.updateDuplicateMatch(mc)
       logger.info(s"Created new chicago game: ${mc.id}")
       mc
     }
