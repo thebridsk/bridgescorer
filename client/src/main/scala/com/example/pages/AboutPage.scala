@@ -14,6 +14,10 @@ import com.example.version.VersionClient
 import com.example.version.VersionShared
 import com.example.react.AppButton
 import com.example.routes.AppRouter.Home
+import com.example.routes.BridgeRouter
+import com.example.materialui.MuiTypography
+import com.example.materialui.TextColor
+import com.example.materialui.TextVariant
 
 /**
  * A skeleton component.
@@ -29,9 +33,9 @@ import com.example.routes.AppRouter.Home
 object AboutPage {
   import AboutPageInternal._
 
-  case class Props( router: RouterCtl[AppPage] )
+  case class Props( router: BridgeRouter[AppPage] )
 
-  def apply( router: RouterCtl[AppPage] ) = component( Props(router))
+  def apply( router: BridgeRouter[AppPage] ) = component( Props(router))
 
 }
 
@@ -72,6 +76,19 @@ object AboutPageInternal {
       import BaseStyles._
       <.div(
         rootStyles.aboutPageDiv,
+        RootBridgeAppBar(
+            Seq(MuiTypography(
+                    variant = TextVariant.h6,
+                    color = TextColor.inherit,
+                )(
+                    <.span(
+                      " About",
+                    )
+                )
+            ),
+            None,
+            props.router
+        )(),
         <.div(
           ^.id:="url",
           "Server",
@@ -103,10 +120,10 @@ object AboutPageInternal {
             sv.name, " Build date is ", sv.buildDate
           ) ).toTagMod
         ),
-        <.div(
-          AppButton( "OK", "OK",
-                     props.router.setOnClick(Home))
-        )
+//        <.div(
+//          AppButton( "OK", "OK",
+//                     props.router.setOnClick(Home))
+//        )
       )
     }
   }

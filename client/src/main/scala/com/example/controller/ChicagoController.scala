@@ -31,6 +31,10 @@ import play.api.libs.json.JsError
 import play.api.libs.json.JsUndefined
 import com.example.logger.Alerter
 import com.example.data.Id
+import com.example.Bridge
+import com.example.bridge.store.ChicagoSummaryStore
+import scala.util.Success
+import scala.util.Failure
 
 object ChicagoController {
   val logger = Logger("bridge.ChicagoController")
@@ -58,16 +62,25 @@ object ChicagoController {
 
   import scala.concurrent.ExecutionContext.Implicits.global
 
+  private var currentId = 0
+
   def createMatch() = {
     logger.info("Sending create chicago to server")
-    val chi = MatchChicago("",List("","","",""),Nil,0,false)
-    val result = RestClientChicago.create(chi).recordFailure()
-    new CreateResultMatchChicago(result)
+    if (Bridge.isDemo) {
+      currentId = currentId + 1
+      val chi = MatchChicago(s"C$currentId",List("","","",""),Nil,0,false)
+      new CreateResultMatchChicago(null, Future(chi))
+    } else {
+      val chi = MatchChicago("",List("","","",""),Nil,0,false)
+      val result = RestClientChicago.create(chi).recordFailure()
+      new CreateResultMatchChicago(result)
+    }
   }
 
   def showMatch( chi: MatchChicago ) = {
     ChicagoStore.start(chi.id, chi)
     logger.fine("calling callback with "+chi.id)
+    BridgeDispatcher.updateChicago(chi)
   }
 
   def ensureMatch( chiid: String ) = {
@@ -89,13 +102,15 @@ object ChicagoController {
   }
 
   def updateServer( chi: MatchChicago ) = {
-    RestClientChicago.update(chi.id, chi).recordFailure().foreach( updated => {
-      logger.fine(s"PageChicago: Updated chicago game: ${chi.id}")
-      // the BridgeDispatcher.updateChicago causes a timing problem.
-      // if two updates are done one right after the other, then the second
-      // update will be lost.
-//      BridgeDispatcher.updateChicago(updated)
-    })
+    if (!Bridge.isDemo) {
+      RestClientChicago.update(chi.id, chi).recordFailure().foreach( updated => {
+        logger.fine(s"PageChicago: Updated chicago game: ${chi.id}")
+        // the BridgeDispatcher.updateChicago causes a timing problem.
+        // if two updates are done one right after the other, then the second
+        // update will be lost.
+  //      BridgeDispatcher.updateChicago(updated)
+      })
+    }
   }
 
   def updateChicagoNames( chiid: String, nplayer1: String, nplayer2: String, nplayer3: String, nplayer4: String, extra: Option[String], quintet: Boolean, simpleRotation: Boolean ) = {
@@ -114,18 +129,30 @@ object ChicagoController {
     BridgeDispatcher.updateChicagoHand(chiid, roundid, handid, hand, Some( updateServer ))
   }
 
-  def getSummary(): Unit = {
+  def getSummary(error: ()=>Unit): Unit = {
     logger.finer("Sending duplicatesummaries list request to server")
     import scala.scalajs.js.timers._
     setTimeout(1) { // note the absence of () =>
-      RestClientChicago.list().recordFailure().foreach { list => Alerter.tryitWithUnit {
-        logger.finer(s"ChicagoSummary got ${list.size} entries")
-        BridgeDispatcher.updateChicagoSummary(None,list)
-      }}
+      if (Bridge.isDemo) {
+        val x = ChicagoSummaryStore.getChicagoSummary().getOrElse(Array())
+        BridgeDispatcher.updateChicagoSummary(None, x)
+      } else {
+        RestClientChicago.list().recordFailure().onComplete { trylist =>
+          Alerter.tryitWithUnit {
+            trylist match {
+              case Success(list) =>
+                logger.finer(s"ChicagoSummary got ${list.size} entries")
+                BridgeDispatcher.updateChicagoSummary(None,list)
+              case Failure(err) =>
+                error()
+            }
+          }
+        }
+      }
     }
   }
 
-  def getImportSummary( importId: String ): Unit = {
+  def getImportSummary( importId: String, error: ()=>Unit ): Unit = {
     logger.finer(s"Sending import duplicatesummaries ${importId} list request to server")
     import scala.scalajs.js.timers._
     setTimeout(1) { // note the absence of () =>
@@ -184,23 +211,27 @@ object ChicagoController {
                         BridgeDispatcher.updateChicagoSummary(Some(importId),ds.toArray)
                       case JsError(err) =>
                         logger.warning(s"Import(${importId})/chicagos, JSON error: ${JsError.toJson(err)}")
+                        error()
                     }
                   case _: JsUndefined =>
                     logger.warning(s"error import duplicatesummaries ${importId}, did not find import/duplicatesummaries field")
+                    error()
                 }
               case None =>
                 logger.warning(s"error import duplicatesummaries ${importId}, ${r.getError()}")
+                error()
             }
           }.recover {
             case x: Exception =>
                 logger.warning(s"exception import duplicatesummaries ${importId}", x)
+                error()
           }.foreach { x => }
     }
   }
 
   def deleteChicago( id: Id.MatchChicago) = {
     BridgeDispatcher.deleteChicago(id)
-    RestClientChicago.delete(id).recordFailure()
+    if (!Bridge.isDemo) RestClientChicago.delete(id).recordFailure()
   }
 
 }

@@ -42,6 +42,10 @@ import org.scalajs.dom.raw.EventSource
 import org.scalajs.dom.raw.MessageEvent
 import org.scalajs.dom.raw.Event
 import scala.scalajs.js.timers.SetTimeoutHandle
+import com.example.Bridge
+import com.example.bridge.store.DuplicateSummaryStore
+import scala.util.Success
+import scala.util.Failure
 
 object Controller {
   val logger = Logger("bridge.Controller")
@@ -89,6 +93,7 @@ object Controller {
 
     def updateStore( mc: MatchDuplicate ): MatchDuplicate = {
       monitorMatchDuplicate(mc.id)
+      BridgeDispatcher.updateDuplicateMatch(mc)
       logger.info(s"Created new chicago game: ${mc.id}")
       mc
     }
@@ -158,16 +163,18 @@ object Controller {
 
   def updateHand( dup: MatchDuplicate, hand: DuplicateHand ) = {
     BridgeDispatcher.updateDuplicateHand(dup.id, hand)
-    if (useRestToServer) {
-      val resource = RestClientDuplicate.boardResource(dup.id).handResource(hand.board)
-      resource.update(hand.id, hand).recordFailure().onComplete { t =>
-        if (t.isFailure) {
-          Alerter.alert("Failure updating hand on server")
+    if (!Bridge.isDemo) {
+      if (useRestToServer) {
+        val resource = RestClientDuplicate.boardResource(dup.id).handResource(hand.board)
+        resource.update(hand.id, hand).recordFailure().onComplete { t =>
+          if (t.isFailure) {
+            Alerter.alert("Failure updating hand on server")
+          }
         }
+      } else {
+        val msg = Protocol.UpdateDuplicateHand(dup.id, hand)
+        getDuplexPipe().send(msg)
       }
-    } else {
-      val msg = Protocol.UpdateDuplicateHand(dup.id, hand)
-      getDuplexPipe().send(msg)
     }
     logger.info("Update hand ("+dup.id+","+hand.board+","+hand.id+")")
   }
@@ -181,16 +188,18 @@ object Controller {
 
   def updateTeam( dup: MatchDuplicate, team: Team ) = {
     BridgeDispatcher.updateTeam(dup.id, team)
-    if (useRestToServer) {
-      val resource = RestClientDuplicate.teamResource(dup.id)
-      resource.update(team.id, team).recordFailure().onComplete { t =>
-        if (t.isFailure) {
-          Alerter.alert("Failure updating team on server")
+    if (!Bridge.isDemo) {
+      if (useRestToServer) {
+        val resource = RestClientDuplicate.teamResource(dup.id)
+        resource.update(team.id, team).recordFailure().onComplete { t =>
+          if (t.isFailure) {
+            Alerter.alert("Failure updating team on server")
+          }
         }
+      } else {
+        val msg = Protocol.UpdateDuplicateTeam(dup.id, team)
+        getDuplexPipe().send(msg)
       }
-    } else {
-      val msg = Protocol.UpdateDuplicateTeam(dup.id, team)
-      getDuplexPipe().send(msg)
     }
     logger.info("Update team ("+dup.id+","+team+")")
   }
@@ -329,10 +338,31 @@ object Controller {
 
   def monitorMatchDuplicate( dupid: Id.MatchDuplicate, restart: Boolean = false ): Unit = {
 
-    DuplicateStore.getId() match {
-      case Some(mdid) =>
-        if (restart || mdid != dupid) {
-          logger.info(s"""Switching MatchDuplicate monitor to ${dupid} from ${mdid}""" )
+    if (AjaxResult.isEnabled.getOrElse(false)) {
+      DuplicateStore.getId() match {
+        case Some(mdid) =>
+          if (restart || mdid != dupid) {
+            logger.info(s"""Switching MatchDuplicate monitor to ${dupid} from ${mdid}""" )
+            if (useSSEFromServer) {
+              BridgeDispatcher.startDuplicateMatch(dupid)
+              eventSource.foreach( es => es.close())
+              eventSource = getEventSource(dupid)
+              resetESTimeout(dupid)
+              resetESRestartTimeout(dupid)
+            } else {
+              getDuplexPipe().clearSession(Protocol.StopMonitor(mdid))
+              BridgeDispatcher.startDuplicateMatch(dupid)
+              getDuplexPipe().setSession { dp =>
+                logger.info(s"""In Session: Switching MatchDuplicate monitor to ${dupid} from ${mdid}""" )
+                dp.send(Protocol.StartMonitor(dupid))
+              }
+            }
+          } else {
+            // already monitoring id
+            logger.info(s"""Already monitoring MatchDuplicate ${dupid}""" )
+          }
+        case None =>
+          logger.info(s"""Starting MatchDuplicate monitor to ${dupid}""" )
           if (useSSEFromServer) {
             BridgeDispatcher.startDuplicateMatch(dupid)
             eventSource.foreach( es => es.close())
@@ -340,33 +370,17 @@ object Controller {
             resetESTimeout(dupid)
             resetESRestartTimeout(dupid)
           } else {
-            getDuplexPipe().clearSession(Protocol.StopMonitor(mdid))
             BridgeDispatcher.startDuplicateMatch(dupid)
             getDuplexPipe().setSession { dp =>
-              logger.info(s"""In Session: Switching MatchDuplicate monitor to ${dupid} from ${mdid}""" )
+              logger.info(s"""In Session: Starting MatchDuplicate monitor to ${dupid}""" )
               dp.send(Protocol.StartMonitor(dupid))
             }
           }
-        } else {
-          // already monitoring id
-          logger.info(s"""Already monitoring MatchDuplicate ${dupid}""" )
-        }
-      case None =>
-        logger.info(s"""Starting MatchDuplicate monitor to ${dupid}""" )
-        if (useSSEFromServer) {
-          BridgeDispatcher.startDuplicateMatch(dupid)
-          eventSource.foreach( es => es.close())
-          eventSource = getEventSource(dupid)
-          resetESTimeout(dupid)
-          resetESRestartTimeout(dupid)
-        } else {
-          BridgeDispatcher.startDuplicateMatch(dupid)
-          getDuplexPipe().setSession { dp =>
-            logger.info(s"""In Session: Starting MatchDuplicate monitor to ${dupid}""" )
-            dp.send(Protocol.StartMonitor(dupid))
-          }
-        }
+      }
+    } else {
+      BridgeDispatcher.startDuplicateMatch(dupid)
     }
+
   }
 
   /**
@@ -395,18 +409,31 @@ object Controller {
     }
   }
 
-  def getSummary(): Unit = {
+  def getSummary( error: ()=>Unit /* = ()=>{} */ ): Unit = {
     logger.finer("Sending duplicatesummaries list request to server")
     import scala.scalajs.js.timers._
     setTimeout(1) { // note the absence of () =>
-      RestClientDuplicateSummary.list().recordFailure().foreach { list => Alerter.tryitWithUnit {
-        logger.finer(s"DuplicateSummary got ${list.size} entries")
-        BridgeDispatcher.updateDuplicateSummary(None,list.toList)
-      }}
+      if (Bridge.isDemo) {
+        if (DuplicateSummaryStore.getDuplicateSummary().isEmpty) {
+          BridgeDispatcher.updateDuplicateSummary(None,List())
+        }
+      } else {
+        RestClientDuplicateSummary.list().recordFailure().onComplete { trylist =>
+          trylist match {
+            case Success(list) =>
+              Alerter.tryitWithUnit {
+                logger.finer(s"DuplicateSummary got ${list.size} entries")
+                BridgeDispatcher.updateDuplicateSummary(None,list.toList)
+              }
+            case Failure(err) =>
+              error()
+          }
+        }
+      }
     }
   }
 
-  def getImportSummary( importId: String ): Unit = {
+  def getImportSummary( importId: String, error: ()=>Unit ): Unit = {
     logger.finer(s"Sending import duplicatesummaries ${importId} list request to server")
     import scala.scalajs.js.timers._
     setTimeout(1) { // note the absence of () =>
@@ -455,16 +482,20 @@ object Controller {
                         BridgeDispatcher.updateDuplicateSummary(Some(importId),ds)
                       case JsError(err) =>
                         logger.warning(s"Import(${importId})/DuplicateSummary, JSON error: ${JsError.toJson(err)}")
+                        error()
                     }
                   case _: JsUndefined =>
                     logger.warning(s"error import duplicatesummaries ${importId}, did not find import/duplicatesummaries field")
+                    error()
                 }
               case None =>
                 logger.warning(s"error import duplicatesummaries ${importId}, ${r.getError()}")
+                error()
             }
           }.recover {
             case x: Exception =>
                 logger.warning(s"exception import duplicatesummaries ${importId}", x)
+                error()
           }.foreach { x => }
     }
   }

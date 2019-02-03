@@ -18,6 +18,9 @@ import com.example.react.reactwidgets.globalize.Moment
 import com.example.react.reactwidgets.globalize.ReactWidgetsMoment
 import com.example.rest2.RestClientDuplicateResult
 import com.example.react.PopupOkCancel
+import com.example.materialui.MuiTypography
+import com.example.materialui.TextVariant
+import com.example.materialui.TextColor
 
 /**
  * A skeleton component.
@@ -99,6 +102,23 @@ object PageDuplicateResultInternal {
               },
               Some(actionDeleteOk),
               Some(actionDeleteCancel)
+            ),
+            DuplicatePageBridgeAppBar(
+              id = None,
+              tableIds = List(),
+              title = Seq[CtorType.ChildArg](
+                    MuiTypography(
+                        variant = TextVariant.h6,
+                        color = TextColor.inherit,
+                    )(
+                        <.span(
+                          "Duplicate Results",
+                        )
+                    )),
+              helpurl = "../help/duplicate/summary.html",
+              routeCtl = props.routerCtl
+            )(
+
             ),
             <.div( dupStyles.divDuplicateResultPage,
 //              <.div(

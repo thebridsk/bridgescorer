@@ -3,7 +3,7 @@ package com.example.pages.duplicate
 import scala.scalajs.js
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
-import japgolly.scalajs.react.extra.router.RouterCtl
+import com.example.routes.BridgeRouter
 import utils.logging.Logger
 import com.example.bridge.store.BoardSetStore
 import com.example.controller.BoardSetController
@@ -27,6 +27,13 @@ import com.example.pages.duplicate.DuplicateRouter.DuplicateResultEditView
 import com.example.react.CheckBox
 import scala.annotation.tailrec
 import com.example.react.HelpButton
+import com.example.materialui.MuiTypography
+import com.example.materialui.TextVariant
+import com.example.materialui.TextColor
+import com.example.Bridge
+import com.example.bridge.action.BridgeDispatcher
+import com.example.bridge.store.DuplicateSummaryStore
+import com.example.data.DuplicateSummary
 
 /**
  * PageNewDuplicate.
@@ -42,9 +49,9 @@ import com.example.react.HelpButton
 object PageNewDuplicate {
   import PageNewDuplicateInternal._
 
-  case class Props( routerCtl: RouterCtl[DuplicatePage], page: DuplicatePage )
+  case class Props( routerCtl: BridgeRouter[DuplicatePage], page: DuplicatePage )
 
-  def apply( routerCtl: RouterCtl[DuplicatePage], page: DuplicatePage ) = component(Props(routerCtl,page))
+  def apply( routerCtl: BridgeRouter[DuplicatePage], page: DuplicatePage ) = component(Props(routerCtl,page))
 
 }
 
@@ -173,6 +180,8 @@ object PageNewDuplicateInternal {
                           )
                         }).build
 
+  var demoId = 0
+
   /**
    * Internal state for rendering the component.
    *
@@ -196,38 +205,60 @@ object PageNewDuplicateInternal {
                       boards: Option[String] = None,
                       movement: Option[String] = None,
                       fortest: Boolean = false ) =
-      scope.modState { s =>
-        Alerter.tryitWithUnit {
-          if (s.resultsOnly) {
-            val result = RestClientDuplicateResult.createDuplicateResult( MatchDuplicateResult.create(), boards=boards,movement=movement,test=fortest,default=default).recordFailure()
-            result.foreach { created=>
-              logger.info(s"Got new duplicate result ${created.id}.  PageNewDuplicate.mounted=${mounted}")
-              if (mounted) scope.withEffectsImpure.props.routerCtl.set(DuplicateResultEditView(created.id)).runNow()
+        if (Bridge.isDemo) {
+          Callback {
+            val s = scope.withEffectsImpure.state
+            val p = scope.withEffectsImpure.props
+            demoId = demoId + 1
+            val id = s"M${demoId}"
+            val mdraw = MatchDuplicate.create(id)
+            val bs = s.boardsets(boards.getOrElse("StandardBoards"))
+            val mov = s.movements( movement.getOrElse("Howell04T2B18"))
+            val md = mdraw.fillBoards(bs, mov)
+            Controller.monitorMatchDuplicate(md.id)
+            val sum = DuplicateSummaryStore.getDuplicateSummary()
+            val nsum = List(DuplicateSummary.create(md))
+            val newsum = sum.map( l => l:::nsum).getOrElse(nsum)
+            scalajs.js.timers.setTimeout(5) {
+              BridgeDispatcher.updateDuplicateMatch(md)
+              BridgeDispatcher.updateDuplicateSummary(None,newsum)
             }
-            result.failed.foreach( t => {
-              t match {
-                case x: RequestCancelled =>
-                case _ =>
-                  scope.withEffectsImpure.modState( s => s.copy(workingOnNew=Some("Failed to create a new duplicate result")))
+            p.routerCtl.set(CompleteScoreboardView(md.id)).runNow()
+          }
+        } else {
+          scope.modState { (s,p) =>
+            Alerter.tryitWithUnit {
+              if (s.resultsOnly) {
+                val result = RestClientDuplicateResult.createDuplicateResult( MatchDuplicateResult.create(), boards=boards,movement=movement,test=fortest,default=default).recordFailure()
+                result.foreach { created=>
+                  logger.info(s"Got new duplicate result ${created.id}.  PageNewDuplicate.mounted=${mounted}")
+                  if (mounted) scope.withEffectsImpure.props.routerCtl.set(DuplicateResultEditView(created.id)).runNow()
+                }
+                result.failed.foreach( t => {
+                  t match {
+                    case x: RequestCancelled =>
+                    case _ =>
+                      scope.withEffectsImpure.modState( s => s.copy(workingOnNew=Some("Failed to create a new duplicate result")))
+                  }
+                })
+              } else {
+                val result = Controller.createMatchDuplicate(boards=boards,movement=movement,test=fortest,default=default).recordFailure()
+                result.foreach { created=>
+                  logger.info(s"Got new duplicate match ${created.id}.  PageNewDuplicate.mounted=${mounted}")
+                  if (mounted) scope.withEffectsImpure.props.routerCtl.set(CompleteScoreboardView(created.id)).runNow()
+                }
+                result.failed.foreach( t => {
+                  t match {
+                    case x: RequestCancelled =>
+                    case _ =>
+                      scope.withEffectsImpure.modState( s => s.copy(workingOnNew=Some("Failed to create a new duplicate match")))
+                  }
+                })
               }
-            })
-          } else {
-            val result = Controller.createMatchDuplicate(boards=boards,movement=movement,test=fortest,default=default).recordFailure()
-            result.foreach { created=>
-              logger.info(s"Got new duplicate match ${created.id}.  PageNewDuplicate.mounted=${mounted}")
-              if (mounted) scope.withEffectsImpure.props.routerCtl.set(CompleteScoreboardView(created.id)).runNow()
             }
-            result.failed.foreach( t => {
-              t match {
-                case x: RequestCancelled =>
-                case _ =>
-                  scope.withEffectsImpure.modState( s => s.copy(workingOnNew=Some("Failed to create a new duplicate match")))
-              }
-            })
+            s.copy(workingOnNew=Some("Working on creating a new duplicate match"))
           }
         }
-        s.copy(workingOnNew=Some("Working on creating a new duplicate match"))
-      }
 
     val resultsOnlyToggle = scope.modState( s => s.copy( resultsOnly = !s.resultsOnly ) )
 
@@ -238,8 +269,25 @@ object PageNewDuplicateInternal {
       <.div(
         dupStyles.divNewDuplicate,
         PopupOkCancel( state.workingOnNew, None, Some(cancel) ),
-        <.h1("New Duplicate Match"),
-        HelpButton("/help/duplicate/new.html"),
+        DuplicatePageBridgeAppBar(
+          id = None,
+          tableIds = List(),
+          title = Seq[CtorType.ChildArg](
+                MuiTypography(
+                    variant = TextVariant.h6,
+                    color = TextColor.inherit,
+                )(
+                    <.span(
+                      "New Duplicate Match",
+                    )
+                )),
+          helpurl = "../help/duplicate/new.html",
+          routeCtl = props.routerCtl
+        )(
+
+        ),
+//        <.h1("New Duplicate Match"),
+//        HelpButton("../help/duplicate/new.html"),
         CheckBox("resultsOnly", "Create Results Only", state.resultsOnly, resultsOnlyToggle ),
         <.table(
           dupStyles.tableNewDuplicate,

@@ -13,6 +13,7 @@ import com.example.data.bridge.PlayerPosition
 import com.example.data.RubberHand
 import com.example.bridge.action.RubberBridgeAction
 import com.example.logger.Alerter
+import com.example.Bridge
 
 object RubberStore extends ChangeListenable {
   val logger = Logger("bridge.RubberStore")
@@ -63,6 +64,11 @@ object RubberStore extends ChangeListenable {
             fun(rub)
             callback.foreach( cb=>cb(rubber.get) )
             notifyChange()
+            if (Bridge.isDemo) {
+              scalajs.js.timers.setTimeout(1) {
+                RubberListStore.dispatch(ActionUpdateRubber(rubber.get))
+              }
+            }
           case None =>
             logger.warning("RubberStore."+funName+": did not have rubber, monitoredId is "+monitoredId)
         }

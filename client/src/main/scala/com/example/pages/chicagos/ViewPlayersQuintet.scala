@@ -19,6 +19,9 @@ import com.example.bridge.rotation.Table
 import com.example.react.Utils._
 import com.example.pages.BaseStyles
 import com.example.react.HelpButton
+import com.example.materialui.MuiTypography
+import com.example.materialui.TextVariant
+import com.example.materialui.TextColor
 
 /**
  * A skeleton component.
@@ -347,6 +350,17 @@ object ViewPlayersQuintetInternal {
       val lastdealer = PlayerPosition.prevDealer( dealer )
 
       <.div(
+        ChicagoPageBridgeAppBar(
+          title = Seq[CtorType.ChildArg](
+            MuiTypography(
+                variant = TextVariant.h6,
+                color = TextColor.inherit,
+            )(
+                <.span( if (state.isSimple()) "Simple Rotation" else "Fair Rotation" )
+            )),
+          helpurl = if (state.isSimple()) "../help/chicago/fastsimple/selectnamessimple.html" else "../help/chicago/fastfair/selectnamesfair.html",
+          routeCtl = props.router
+        )(),
         <.div(
           baseStyles.divText100,
           <.h1(
@@ -375,7 +389,7 @@ object ViewPlayersQuintetInternal {
           <.div(
             baseStyles.divFooterRight,
             AppButton("Cancel", "Cancel", props.router.setOnClick(props.page.toSummaryView()) ),
-            HelpButton( if (state.isSimple()) "/help/chicago/fastsimple/selectnamessimple.html" else "/help/chicago/fastfair/selectnamesfair.html")
+//            HelpButton( if (state.isSimple()) "../help/chicago/fastsimple/selectnamessimple.html" else "../help/chicago/fastfair/selectnamesfair.html")
           )
         )
       )

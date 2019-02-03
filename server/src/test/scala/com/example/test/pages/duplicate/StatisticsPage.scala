@@ -27,14 +27,15 @@ object StatisticsPage {
 
   def urlFor = TestServer.getAppPageUrl("duplicate/stats")
 
-  val buttons = "Home"::
-                "Summary"::
-                "BoardSets"::
-                "Movements"::
-                "ShowFilter"::
-                "ShowPeopleDetails"::
-                "ShowPairsDetails"::
-                Nil
+  val buttons =
+//    "Home"::
+//    "Summary"::
+//    "BoardSets"::
+//    "Movements"::
+    "ShowFilter"::
+    "ShowPeopleDetails"::
+    "ShowPairsDetails"::
+    Nil
 }
 
 case class PeopleRow( name: String,
@@ -105,6 +106,30 @@ class StatisticsPage( implicit webDriver: WebDriver, pageCreated: SourcePosition
       case x: NoSuchElementException =>
         false
     }
+  }
+
+  def clickMainMenu(implicit patienceConfig: PatienceConfig, pos: Position) = {
+    clickButton("MainMenu")
+    this
+  }
+
+  def validateMainMenu(implicit patienceConfig: PatienceConfig, pos: Position) = {
+    eventually {
+      findElemById("Summary")
+    }
+    this
+  }
+
+  def clickHelpMenu(implicit patienceConfig: PatienceConfig, pos: Position) = {
+    clickButton("HelpMenu")
+    this
+  }
+
+  def validateHelpMenu(implicit patienceConfig: PatienceConfig, pos: Position) = {
+    eventually {
+      findElemById("Help")
+    }
+    this
   }
 
   def clickHome(implicit patienceConfig: PatienceConfig, pos: Position) = {

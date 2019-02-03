@@ -13,6 +13,7 @@ import com.example.test.pages.GenericPage
 import com.example.test.pages.duplicate.ListDuplicatePage
 import com.example.test.pages.duplicate.NewDuplicatePage
 import com.example.test.pages.chicago.ListPage
+import com.example.test.pages.Element
 
 object HomePage {
 
@@ -39,6 +40,16 @@ class HomePage( implicit webDriver: WebDriver, pageCreated: SourcePosition ) ext
       pageTitle mustBe "The Bridge Score Keeper"
       findButton("Duplicate",Some("Duplicate List"))
     }
+    this
+  }
+
+  def clickMainMenu(implicit patienceConfig: PatienceConfig, pos: Position) = {
+    clickButton("MainMenu")
+    this
+  }
+
+  def clickHelpMenu(implicit patienceConfig: PatienceConfig, pos: Position) = {
+    clickButton("HelpMenu")
     this
   }
 
@@ -70,6 +81,16 @@ class HomePage( implicit webDriver: WebDriver, pageCreated: SourcePosition ) ext
   def clickExport( implicit pos: Position ) = {
     clickButton("Export")
     new ExportPage
+  }
+
+  def isHelpMenuVisible( implicit pos: Position ) = {
+    try {
+      val we = findElem[Element]( id("Help") )
+      true
+    } catch {
+      case x: Exception => false
+    }
+
   }
 
   def clickHelp( implicit pos: Position ) = {

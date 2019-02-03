@@ -62,9 +62,9 @@ object BoardPage {
    */
   def findIds(implicit webDriver: WebDriver, pos: Position): (String, ViewType, String) = {
     ScoreboardPage.findIds match {
-      case ( dupid, viewtype, Some("boards"), Some(boardid) ) => (dupid,viewtype,boardid)
-      case x =>
-        fail(s"""${pos.line} Unable to determine Ids from Board page: ${currentUrl}""")
+      case ( cururl, dupid, viewtype, Some("boards"), Some(boardid) ) => (dupid,viewtype,boardid)
+      case (cururl,_,_,_,_) =>
+        fail(s"""${pos.line} Unable to determine Ids from Board page: ${cururl}""")
     }
   }
 

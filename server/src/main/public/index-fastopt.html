@@ -23,7 +23,7 @@
     <title>The Bridge Score Keeper</title>
   </head>
   <body>
-    <div id="BridgeApp">Loading ...</div>
+    <div id="BridgeApp"><h1>Loading ...</h1></div>
     <!-- Include Scala.js compiled code -->
     <script type="text/javascript" src="bridgescorer-client-fastopt-library.js"></script>
     <script type="text/javascript" src="bridgescorer-client-fastopt-loader.js"></script>
@@ -34,7 +34,10 @@
         });
     </script>
     <div id="ForDefaultStyles" style="visibility:hidden; position: fixed; left: 0px; top: 0px;">
-      <script src="defaults.js" ></script>
+        <script src="loadfile.js" ></script>
+        <script type="text/javascript">
+            getHTMLFragment('defaults.html', '#ForDefaultStyles')
+        </script>
     </div>
     <audio id="audioPlayer" preload="auto">
       Your browser does not support the

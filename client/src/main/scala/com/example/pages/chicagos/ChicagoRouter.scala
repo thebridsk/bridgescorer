@@ -74,6 +74,11 @@ object ChicagoRouter {
     new BridgeRouterBase[ChicagoPage](ctl) {
         override
         def home: TagMod = ChicagoModule.gotoAppHome()
+
+        override
+        def toHome: Unit = ChicagoModule.toHome
+        override
+        def toAbout: Unit = ChicagoModule.toAbout
     }
 
   val routes = RouterConfigDsl[ChicagoPage].buildRule { dsl =>

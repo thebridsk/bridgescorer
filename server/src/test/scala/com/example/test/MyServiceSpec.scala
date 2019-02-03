@@ -32,6 +32,7 @@ import scala.concurrent.Future
 import scala.concurrent.Promise
 import com.example.data.websocket.DuplexProtocol.LogEntryV2
 import com.example.test.selenium.TestServer
+import akka.http.scaladsl.testkit.RouteTestTimeout
 
 class MyServiceSpec extends FlatSpec with ScalatestRouteTest with MustMatchers with MyService {
   val restService = new BridgeServiceTesting
@@ -44,6 +45,14 @@ class MyServiceSpec extends FlatSpec with ScalatestRouteTest with MustMatchers w
   implicit lazy val actorExecutor = executor
   implicit lazy val actorMaterializer = materializer
 
+  val useFastOptOnly = TestServer.getProp("OnlyBuildDebug").
+                       map( s => s.toBoolean ).
+                       getOrElse(false)
+
+  val useFullOptOnly = TestServer.getProp("UseFullOpt").
+                       map( s => s.toBoolean ).
+                       getOrElse(false)
+
   TestStartLogging.startLogging()
 
   val testlog = Logging(system, "MyServiceSpec")
@@ -52,7 +61,7 @@ class MyServiceSpec extends FlatSpec with ScalatestRouteTest with MustMatchers w
 
   val version = ResourceFinder.htmlResources.version
 
-  val itOrIgnore = if (TestServer.isProductionPage) ignore else it
+  val itOrIgnore = if (TestServer.useProductionPage) ignore else it
 
   it should "find index.html as a resource" in {
     val theClassLoader = getClass.getClassLoader
@@ -61,13 +70,15 @@ class MyServiceSpec extends FlatSpec with ScalatestRouteTest with MustMatchers w
   }
 
   it should "find bridgescorer-client-opt.js as a resource" in {
+    assume(!useFastOptOnly)
     val theClassLoader = getClass.getClassLoader
     val theResource = theClassLoader.getResource("META-INF/resources/webjars/bridgescorer-server/"+version+"/bridgescorer-client-opt.js")
     theResource must not be null
   }
 
   it should "find bridgescorer-client-fastopt.js as a resource" in {
-    assume(!TestServer.isProductionPage)
+    assume(!useFullOptOnly)
+    assume(!TestServer.useProductionPage)
     val theClassLoader = getClass.getClassLoader
     val theResource = theClassLoader.getResource("META-INF/resources/webjars/bridgescorer-server/"+version+"/bridgescorer-client-fastopt.js")
     theResource must not be null
@@ -107,7 +118,8 @@ class MyServiceSpec extends FlatSpec with ScalatestRouteTest with MustMatchers w
   }
 
   it should "return the index-fastopt.html to /html/index-fastopt.html" in {
-    assume(!TestServer.isProductionPage)
+    assume(!TestServer.useProductionPage)
+    assume(!useFullOptOnly)
     Get("/public/index-fastopt.html") ~> addHeader(remoteAddress) ~> Route.seal { myRouteWithLogging } ~> check {
       status mustBe OK
       responseAs[String] must include regex """(?s)<html>.*bridgescorer-client-fastopt\.js.*</html>"""
@@ -115,16 +127,25 @@ class MyServiceSpec extends FlatSpec with ScalatestRouteTest with MustMatchers w
 
   }
 
-  it should "return bridgescorer-client-fastopt.js to /public/bridgescorer-client-fastopt.js" in {
-    assume(!TestServer.isProductionPage)
+  {
+    import scala.concurrent.duration._
+    import akka.testkit.TestDuration
+    import scala.language.postfixOps
+    implicit val timeout = RouteTestTimeout(5.seconds dilated)
 
-    Get("/public/bridgescorer-client-fastopt.js") ~> addHeader(remoteAddress) ~> Route.seal { myRouteWithLogging } ~> check {
-      status mustBe OK
-      responseAs[String] must include regex "(?s).*function.*"
+    it should "return bridgescorer-client-fastopt.js to /public/bridgescorer-client-fastopt.js" in {
+      assume(!TestServer.useProductionPage)
+      assume(!useFullOptOnly)
+
+      Get("/public/bridgescorer-client-fastopt.js") ~> addHeader(remoteAddress) ~> Route.seal { myRouteWithLogging } ~> check {
+        status mustBe OK
+        responseAs[String] must include regex "(?s).*function.*"
+      }
     }
   }
 
   it should "return bridgescorer-client-opt.js to /public/bridgescorer-client-opt.js" in {
+    assume(!useFastOptOnly)
     Get("/public/bridgescorer-client-opt.js") ~> addHeader(remoteAddress) ~> Route.seal { myRouteWithLogging } ~> check {
       status mustBe OK
       responseAs[String] must include regex "(?s).*function.*"

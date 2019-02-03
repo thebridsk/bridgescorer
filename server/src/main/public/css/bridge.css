@@ -34,6 +34,22 @@
 }
 
 
+.baseMuiButton {
+  font-size: x-large;
+  border-radius: 20px;
+  background-color: rgb(210,210,210);
+  border-style: outset;
+  border-width: 2px;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  white-space: nowrap;
+  padding: 3px 6px;
+  min-width: 37px;
+  margin: 2px;
+}
+
 .baseDefaultButton {
   border-radius: 20px;
   background-color: rgb(210,210,210);
@@ -554,4 +570,36 @@ body.touched .withTooltipBox:hover {
 
 .divGraphiql {
   height: 100vh;
+}
+
+.homePageTitle {
+  margin: 0px 0px 0px 20px !important;
+  display: block;
+  flex-grow: 1;
+  text-align: center;
+}
+
+.headerSuitSize {
+  font-size: 2.5rem;
+}
+
+.mainMenuItem {
+  justify-content: space-between !important;
+}
+
+.mainMenuItemIcon {
+  padding-left: 5px !important;
+}
+
+.popupMenu {
+  z-index: 10;
+}
+
+.appBarTitle {
+   display: flex;
+   flex-grow: 0;
+   flex-wrap: nowrap;
+   justify-content: flex-start;
+   background-color: inherit;
+   align-items: center;
 }

@@ -4,7 +4,7 @@ package com.example.pages.duplicate
 import scala.scalajs.js
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
-import japgolly.scalajs.react.extra.router.RouterCtl
+import com.example.routes.BridgeRouter
 import com.example.routes.AppRouter.AppPage
 import com.example.data.DuplicateSummary
 import com.example.data.Id
@@ -45,7 +45,7 @@ import com.example.react.Table.Row
  * To use, just code the following:
  *
  * <pre><code>
- * ViewPairsTable( routerCtl: RouterCtl[DuplicatePage] )
+ * ViewPairsTable( routerCtl: BridgeRouter[DuplicatePage] )
  * </code></pre>
  *
  * @author werewolf

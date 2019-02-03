@@ -64,6 +64,11 @@ import com.example.pages.ImportsListPage
 import com.example.pages.ColorPage
 import com.example.pages.VoyagerPage
 import com.example.pages.GraphiQLPage
+import com.example.pages.duplicate.DuplicatePageBridgeAppBar
+import com.example.pages.RootBridgeAppBar
+import com.example.materialui.MuiTypography
+import com.example.materialui.TextVariant
+import com.example.materialui.TextColor
 
 trait ModuleRenderer {
 
@@ -79,8 +84,12 @@ object ModuleRenderer extends ModuleRenderer {
 trait Module extends ModuleRenderer {
 
   private var varGotoAppHome: Option[()=>TagMod] = None
+  private var varAppRouter: Option[AppRouter] = None
 
-  private[routes] def setGotoAppHome( f: ()=>TagMod ) = varGotoAppHome=Some(f)
+  private[routes] def setGotoAppHome( appRouter: AppRouter, f: ()=>TagMod ) = {
+    varAppRouter = Some(appRouter)
+    varGotoAppHome=Some(f)
+  }
 
   /**
    * Get an ^.onClick-->Callback TagMod that goes to the home page when invoked.
@@ -94,6 +103,10 @@ trait Module extends ModuleRenderer {
       logger.warning("Du1plicateRouter: ignoring going to home")
       ^.onClick-->Callback {}
   }
+
+  def toHome: Unit = varAppRouter.foreach( _.toHomePage() )
+
+  def toAbout: Unit = varAppRouter.foreach( _.toAboutPage() )
 
   /**
    * All the pages of the module, to verify that they are all routable.
@@ -159,9 +172,33 @@ class AppRouter( modules: Module* ) {
     new BridgeRouterBase[AppPage](ctl) {
         override
         def home: TagMod = gotoHome
+
+        override
+        def toHome: Unit = toHomePage()
+        override
+        def toAbout: Unit = toAboutPage()
     }
 
   def logit[T]( f: => T )(implicit pos: Position): T = Alerter.tryit(f)
+
+  def appBarPage( router: BridgeRouter[AppPage], title: String, page: TagMod ) = {
+    <.div(
+      RootBridgeAppBar(
+        title = List(MuiTypography(
+                    variant = TextVariant.h6,
+                    color = TextColor.inherit,
+                )(
+                    <.span(
+                        title
+                    )
+                )),
+        helpurl = None,
+        routeCtl = router
+      )(
+      ),
+      page
+    )
+  }
 
   val config = RouterConfigDsl[AppPage].buildConfig { dsl =>
     import dsl._
@@ -169,21 +206,21 @@ class AppRouter( modules: Module* ) {
     (emptyRule // trimSlashes
 //      | rewritePathR("^\\?(.*)$".r, m => redirectToPath(m group 1)(Redirect.Replace))     // to get past iPad quirks
       | staticRoute(root, Home) ~> renderR( (routerCtl) => logit(HomePage(routerCtl)) )
-      | staticRoute("#handduplicate", ShowDuplicateHand) ~> renderR( (routerCtl) => logit(PageHand(defaultHand(TestDuplicate),
+      | staticRoute("#handduplicate", ShowDuplicateHand) ~> renderR( (routerCtl) => logit( appBarPage( routerCtl, "Test Duplicate Hand", PageHand(defaultHand(TestDuplicate),
                                                                                     scoringViewCallbackOk(routerCtl),
                                                                                     scoringViewCallbackCancel(routerCtl),
                                                                                     teamNS=Some("1"), teamEW=Some("2"),
-                                                                                    newhand=true))) // ScoringView(defaultContract))
-      | staticRoute("#handchicago", ShowChicagoHand) ~> renderR( (routerCtl) => logit(PageHand(defaultHand(TestChicago),
+                                                                                    newhand=true)))) // ScoringView(defaultContract))
+      | staticRoute("#handchicago", ShowChicagoHand) ~> renderR( (routerCtl) => logit( appBarPage( routerCtl, "Test Chicago Hand", PageHand(defaultHand(TestChicago),
                                                                                   scoringViewCallbackOk(routerCtl),
                                                                                   scoringViewCallbackCancel(routerCtl),
-                                                                                  newhand=true))) // ScoringView(defaultContract))
-      | staticRoute("#rubberhand", ShowRubberHand) ~> renderR( (routerCtl) => logit(PageHand(defaultHand(TestRubber),
+                                                                                  newhand=true)))) // ScoringView(defaultContract))
+      | staticRoute("#rubberhand", ShowRubberHand) ~> renderR( (routerCtl) => logit( appBarPage( routerCtl, "Test Rubber Hand", PageHand(defaultHand(TestRubber),
                                                                                        scoringViewCallbackOk(routerCtl),
                                                                                        scoringViewCallbackCancel(routerCtl),
                                                                                        newhand=true,
                                                                                        allowPassedOut=false,
-                                                                                       callbackWithHonors=Some(scoringViewWithHonorsCallbackOk(routerCtl))))) // ScoringView(defaultContract))
+                                                                                       callbackWithHonors=Some(scoringViewWithHonorsCallbackOk(routerCtl)))))) // ScoringView(defaultContract))
       | staticRoute("#about", About) ~> renderR( (routerCtl) => logit(AboutPage(routerCtl)) )
       | staticRoute("#imports", ImportsList) ~> renderR( (routerCtl) => logit(ImportsListPage(routerCtl,ImportsList)) )
       | staticRoute("#export", Export) ~> renderR( (routerCtl) => logit(ExportPage(routerCtl)) )
@@ -191,7 +228,7 @@ class AppRouter( modules: Module* ) {
       | staticRoute("#thankyou", ThankYou) ~> renderR( (routerCtl) => logit(ThankYouPage()) )
       | staticRoute("#testpage", PageTest) ~> renderR( (routerCtl) => logit(TestPage(Home,routerCtl)) )
       | staticRoute("#graphql", GraphQLAppPage) ~> renderR( (routerCtl) => logit(GraphQLPage(routerCtl)) )
-      | staticRoute("#color", ColorView) ~> renderR( (routerCtl) => logit(ColorPage()) )
+      | staticRoute("#color", ColorView) ~> renderR( (routerCtl) => logit(ColorPage(routerCtl)) )
       | staticRoute("#voyager", VoyagerView) ~> renderR( (routerCtl) => logit(VoyagerPage(routerCtl)) )
       | staticRoute("#graphiql", GraphiQLView) ~> renderR( (routerCtl) => logit(GraphiQLPage(routerCtl)) )
       | moduleRoutes()
@@ -219,7 +256,9 @@ class AppRouter( modules: Module* ) {
     r
   }
 
-  AjaxResult.setEnabled(isFromServer)
+  // Demo mode sets isEnabled to false
+  // if not in demo mode, isEnabled is None
+  AjaxResult.setEnabled(AjaxResult.isEnabled.getOrElse( isFromServer ))
 
   def router = routerComponentAndLogic()._1
 
@@ -235,7 +274,7 @@ class AppRouter( modules: Module* ) {
     fRouter = Some(r)
     fRouterLogic = Some(c)
     fRouterCtl = Some(c.ctl)
-    modules.foreach(_.setGotoAppHome(gotoHome _))
+    modules.foreach(_.setGotoAppHome(this,gotoHome _))
     (r,c)
   }
 
@@ -252,4 +291,23 @@ class AppRouter( modules: Module* ) {
     }
   }
 
+  def toHomePage() = {
+    fRouterCtl match {
+      case Some(ctl) =>
+        ctl.set(Home).runNow()
+      case None =>
+        val window = document.defaultView
+        window.location.href = baseUrl.value
+    }
+  }
+
+  def toAboutPage() = {
+    fRouterCtl match {
+      case Some(ctl) =>
+        ctl.set(About).runNow()
+      case None =>
+        val window = document.defaultView
+        window.location.href = baseUrl.value+"#about"
+    }
+  }
 }

@@ -50,6 +50,35 @@ import com.example.routes.BridgeRouter
 import com.example.react.AppButtonLinkNewWindow
 import com.example.react.HelpButton
 import com.example.Bridge
+import com.example.materialui.MuiButton
+import com.example.materialui.ColorVariant
+import com.example.materialui.MuiMenu
+import com.example.materialui.MuiMenuItem
+import org.scalajs.dom.raw.Node
+import org.scalajs.dom.raw.Element
+import com.example.materialui.Variant
+import com.example.materialui.Style
+import com.example.materialui.Position
+import com.example.materialui.MuiAppBar
+import com.example.materialui.MuiToolbar
+import com.example.materialui.MuiIconButton
+import com.example.materialui.ColorVariant
+import com.example.materialui.icons.MuiMenuIcon
+import com.example.materialui.MuiTypography
+import com.example.materialui.TextVariant
+import com.example.materialui.TextColor
+import com.example.materialui.icons.MuiHelpIcon
+import com.example.materialui.Style
+import scala.scalajs.js.annotation.JSExportTopLevel
+import scala.scalajs.js.annotation.JSExport
+import japgolly.scalajs.react.vdom.HtmlStyles
+import com.example.materialui.MuiMenuList
+import com.example.materialui.component.MyMenu
+import com.example.materialui.PopperPlacement
+import com.example.routes.AppRouter
+import com.example.materialui.icons.MuiCheckIcon
+import com.example.materialui.icons.SvgColor
+import com.example.materialui.icons.MuiChevronRightIcon
 
 /**
  * @author werewolf
@@ -60,25 +89,75 @@ object HomePage {
 
   case class Props( routeCtl: BridgeRouter[AppPage])
 
-  case class State( debugging: Boolean, serverUrl: ServerURL, working: Option[String], fastclickTest: Boolean, userSelect: Boolean = false )
+  case class State(
+      debugging: Boolean,
+      serverUrl: ServerURL,
+      working: Option[String],
+      fastclickTest: Boolean,
+      userSelect: Boolean = false,
+      anchorMainEl: js.UndefOr[Element] = js.undefined,
+      anchorMainTestHandEl: js.UndefOr[Element] = js.undefined,
+      anchorHelpEl: js.UndefOr[Element] = js.undefined
+  ) {
+
+    def openHelpMenu( n: Node ) = copy( anchorHelpEl = n.asInstanceOf[Element] )
+    def closeHelpMenu() = copy( anchorHelpEl = js.undefined )
+
+    def openMainMenu( n: Node ) = copy( anchorMainEl = n.asInstanceOf[Element] )
+    def closeMainMenu() = copy( anchorMainEl = js.undefined, anchorMainTestHandEl = js.undefined )
+
+    def openMainTestHandMenu( n: Node ) = copy( anchorMainTestHandEl = n.asInstanceOf[Element] )
+    def closeMainTestHandMenu() = copy( anchorMainTestHandEl = js.undefined )
+
+  }
 
   var fastclick: Option[FastClick] = None
+
+//  // This will be the props object used from JS-land
+//  @js.native
+//  trait JsProps extends js.Object {
+//    val classes: js.Dictionary[String]
+//  }
+//
+//  val renderWithStyle = ScalaComponent.builder[js.Object]("Title")
+//                            .stateless
+//                            .noBackend
+//                            .render_P { props =>
+//                              val p = props.asInstanceOf[JsProps]
+//                              logger.info(s"""renderWithStyle called with props $props""")
+//                              val clsGrow = p.classes("grow")
+//                              MuiTypography(
+//                                  variant = TextVariant.h6,
+//                                  color = TextColor.inherit,
+//                                  className = clsGrow
+//                              )(
+//                                  "Bridge ScoreKeeper"
+//                              )
+//                            }
+//                            .build
+//
+//  def renderWithStyleFn( props: js.Object ) = {
+//                              logger.info(s"""renderWithStyleFn with props $props""")
+//                              renderWithStyle(props)
+//                            }
+
+  val fastclickToggle = Callback {
+    fastclick match {
+      case Some(fc) =>
+        fc.destroy()
+        fastclick = None
+      case None =>
+        fastclick = Option( FastClick() )
+    }
+  }
+
+  def isFastclickOn = fastclick.isDefined
 
   class Backend( scope: BackendScope[Props, State]) {
 
     val toggleFastclickTest = scope.modState( s => s.copy( fastclickTest = !s.fastclickTest) )
 
-    def isFastclickOn = fastclick.isDefined
-
-    val toggleFastclick = Callback {
-      fastclick match {
-        case Some(fc) =>
-          fc.destroy()
-          fastclick = None
-        case None =>
-          fastclick = Option( FastClick() )
-      }
-    } >> scope.forceUpdate
+    val toggleFastclick = fastclickToggle >> scope.forceUpdate
 
     val toggleDebug = scope.modState { s =>
       val newstate = s.copy(debugging = !s.debugging)
@@ -87,7 +166,7 @@ object HomePage {
       newstate.copy(debugging = false, working=Some("Debugging not enabled"))
     }
 
-    val toggleUserSelect = scope.modState { s =>
+    val toggleUserSelect = { (event: ReactEvent) => scope.withEffectsImpure.modState { s =>
       val newstate = s.copy( userSelect = !s.userSelect )
       val style = Bridge.getElement("allowSelect")
       if (newstate.userSelect) {
@@ -100,25 +179,102 @@ object HomePage {
         style.innerHTML = ""
       }
       newstate
+    }}
+
+    def handleMainClick( event: ReactEvent ) = event.extract(_.currentTarget)(currentTarget => scope.modState(s => s.openMainMenu(currentTarget)).runNow() )
+    def handleMainCloseClick( event: ReactEvent ) = scope.modState(s => s.closeMainMenu()).runNow()
+    def handleMainClose( /* event: js.Object, reason: String */ ) = {
+      logger.fine(s"""Closing main menu""")
+      scope.modStateOption { s =>
+        if (s.anchorMainTestHandEl.isDefined) {
+          None
+        } else {
+          Some(s.closeMainMenu())
+        }
+      }.runNow()
     }
+
+    def handleHelpClick( event: ReactEvent ) = event.extract(_.currentTarget)(currentTarget => scope.modState(s => s.openHelpMenu(currentTarget)).runNow() )
+    def handleHelpClose( /* event: js.Object, reason: String */ ) = {
+      logger.fine("HelpClose called")
+      scope.modState(s => s.closeHelpMenu()).runNow()
+    }
+
+    def gotoPage( uri: String ) = {
+      GotoPage.inNewWindow(uri)
+    }
+
+    def gotoView( page: AppRouter.AppPage ) = { (event: ReactEvent) =>
+      logger.fine(s"""GotoView $page""")
+      scope.withEffectsImpure.modState { (s,p) =>
+        s.closeMainMenu()
+      }
+      scope.withEffectsImpure.props.routeCtl.set(page).runNow()
+    }
+
+    def handleMainGotoPageClick(uri: String)( event: ReactEvent ) = {
+      logger.info(s"""Going to page ${uri}""")
+      handleMainClose()
+
+      gotoPage(uri)
+    }
+
+    def handleHelpGotoPageClick(uri: String)( event: ReactEvent ) = {
+      logger.info(s"""Going to page ${uri}""")
+      handleHelpClose()
+
+      gotoPage(uri)
+    }
+
+    def handleHelpGotoPageClickSwaggerAPI( event: ReactEvent ) = {
+      val uri = "/public/apidocs.html"
+      logger.info(s"""Going to page ${uri}""")
+      handleHelpClose()
+
+      gotoPage(uri)
+    }
+
+    def handleTestHandClick( event: ReactEvent ) = event.extract(
+                                                       _.currentTarget
+                                                   )(
+                                                       currentTarget => scope.modState( s =>
+                                                         s.openMainTestHandMenu(currentTarget)).runNow()
+                                                   )
+    def handleMainTestHandClose( /* event: js.Object, reason: String */ ) = scope.modState(s => s.closeMainTestHandMenu()).runNow()
+    def handleMainTestHandCloseClick( event: ReactEvent ) = scope.modState(s => s.closeMainTestHandMenu()).runNow()
 
     def render( props: Props, state: State ) = {
       import BaseStyles._
+
       def callbackPage(page: AppPage) = props.routeCtl.set(page)
+
       val doingWork = state.working.getOrElse("")
       val isWorking = state.working.isDefined
+
+      import japgolly.scalajs.react.vdom.VdomNode
       <.div(
         rootStyles.homeDiv,
         PopupOkCancel( if (isWorking) Some(doingWork) else None, None, Some(cancel) ),
         <.div(
           rootStyles.serverDiv,
           ^.id:="url",
+          <.div(
+            RootBridgeAppBar(
+                title = Seq(),
+                helpurl = Some("../help/introduction.html"),
+                routeCtl = props.routeCtl
+            )()
+          ),
           <.h1("Server"),
           <.ul(
-            if (state.serverUrl.serverUrl.isEmpty) {
-              <.li("No network interfaces found")
+            if (Bridge.isDemo) {
+              <.li("Demo mode, all data entered will be lost on page refresh or closing page")
             } else {
-              state.serverUrl.serverUrl.map{ url => <.li(url) }.toTagMod
+              if (state.serverUrl.serverUrl.isEmpty) {
+                <.li("No network interfaces found")
+              } else {
+                state.serverUrl.serverUrl.map{ url => <.li(url) }.toTagMod
+              }
             }
           )
         ),
@@ -165,26 +321,12 @@ object HomePage {
                 ),
                 <.td(
                   {
-                    val location = document.defaultView.location
-                    val origin = location.origin.get
-                    val path = s"""${origin}/v1/diagnostics"""
+                    val path = GotoPage.getURL( s"""/v1/diagnostics""" )
                     AppButtonLink( "Diagnostics", "Diagnostics", path,
                                    rootStyles.playButton,
                                    ^.disabled:=isWorking
                     )
                   }
-                )
-              ),
-              <.tr(
-                <.td(
-                      {
-                        val location = document.defaultView.location
-                        val origin = location.origin.get
-                        val path = s"""${origin}/help/introduction.html"""
-                        HelpButton( path,
-                                    style = Some(rootStyles.playButton)
-                                  )
-                      }
                 )
               )
             )
@@ -192,31 +334,6 @@ object HomePage {
         ),
         <.div(
           rootStyles.testHandsDiv,
-          <.h1("Test Hands"),
-          <.table(
-            <.tbody(
-              <.tr(
-                <.td( ^.width:="33%",
-                  AppButton( "TestDuplicateHand",  "Duplicate",
-                             rootStyles.playButton,
-                             ^.disabled:=isWorking,
-                             ^.onClick --> callbackPage(ShowDuplicateHand))
-                ),
-                <.td( ^.width:="33%",
-                  AppButton( "TestChicagoHand", "Chicago",
-                             rootStyles.playButton,
-                             ^.disabled:=isWorking,
-                             ^.onClick --> callbackPage(ShowChicagoHand))
-                ),
-                <.td( ^.width:="33%",
-                  AppButton( "TestRubberHand", "Rubber",
-                             rootStyles.playButton,
-                             ^.disabled:=isWorking,
-                             ^.onClick --> callbackPage(ShowRubberHand))
-                )
-              )
-            )
-          )
         ),
         <.div(
           rootStyles.miscDiv,
@@ -224,27 +341,6 @@ object HomePage {
           <.table(
             <.tbody(
               <.tr(
-                <.td( ^.width:="25%",
-                  {
-                    val location = document.defaultView.location
-                    val origin = location.origin.get
-                    val path = location.pathname
-                    val (newp,name) = if (path.indexOf("indexNoScale") >= 0) {
-                      (s"""${origin}/public/index.html""", "Scaling")
-                    } else {
-                      (s"""${origin}/public/indexNoScale.html""", "No Scaling")
-                    }
-                    val newpath = if (path.endsWith(".gz")) {
-                      s"""${newp}.gz"""
-                    } else {
-                      newp
-                    }
-                    AppButtonLink( "NoScaling", name, newpath,
-                                   rootStyles.playButton,
-                                   ^.disabled:=isWorking
-                    )
-                  }
-                ),
                 <.td( ^.width:="25%",
                   {
                     AppButton(
@@ -275,93 +371,8 @@ object HomePage {
                 )
               ),
               <.tr(
-                <.td( ^.width:="25%",
-                  AppButton( "About", "About",
-                             rootStyles.playButton,
-                             ^.disabled:=isWorking,
-                             ^.onClick --> callbackPage(About))
-                ),
-                <.td( ^.width:="25%",
-                  AppButton( "Info", "Info",
-                             rootStyles.playButton,
-                             ^.disabled:=isWorking,
-                             ^.onClick --> callbackPage(Info))
-                ),
-//                <.td( ^.width:="25%",
-//                  AppButton( "Debug", "Debug",
-//                             rootStyles.playButton,
-//                             ^.disabled:=true,   // isWorking,
-//                             ^.onClick --> toggleDebug,
-//                             BaseStyles.highlight(selected = debugging )
-//                  )
-//                ),
-                <.td( ^.width:="25%",
-                  AppButton( "UserSelect", "Allow Select",
-                             rootStyles.playButton,
-                             ^.onClick --> toggleUserSelect,
-                             BaseStyles.highlight(selected = state.userSelect )
-                  )
-                ),
-                <.td( ^.width:="25%",
-                  AppButton( "TestPage", "Test Page",
-                             rootStyles.playButton,
-                             ^.disabled:=isWorking,
-                             ^.onClick --> callbackPage(PageTest))
-                )
-              ),
-              <.tr(
                 <.td(" ")
               ),
-              <.tr(
-                <.td( ^.width:="25%",
-                  {
-                    val location = document.defaultView.location
-                    val origin = location.origin.get
-                    val path = s"""${origin}/v1/docs"""
-                    AppButtonLink( "SwaggerDocs", "Swagger Docs", path,
-                                   rootStyles.playButton,
-                                   ^.disabled:=isWorking
-                    )
-                  }
-                ),
-                <.td( ^.width:="25%",
-                  {
-                    val location = document.defaultView.location
-                    val origin = location.origin.get
-                    val path = s"""${origin}/public/apidocs.html"""
-                    AppButtonLink( "SwaggerDocs2", "Swagger API Docs", path,
-                                   rootStyles.playButton,
-                                   ^.disabled:=isWorking
-                    )
-                  }
-                ),
-                <.td( ^.width:="25%",
-                  AppButton( "Voyager", "Voyager",
-                             rootStyles.playButton,
-                             ^.disabled:=isWorking,
-                             ^.onClick --> callbackPage(VoyagerView))
-                ),
-                <.td( ^.width:="25%",
-                  AppButton( "GraphiQL", "GraphiQL",
-                             rootStyles.playButton,
-                             ^.disabled:=isWorking,
-                             ^.onClick --> callbackPage(GraphiQLView))
-                )
-              ),
-              <.tr(
-                <.td( ^.width:="25%",
-                  AppButton( "GraphQL", "GraphQL",
-                             rootStyles.playButton,
-                             ^.disabled:=isWorking,
-                             ^.onClick --> callbackPage(GraphQLAppPage))
-                ),
-                <.td( ^.width:="25%",
-                  AppButton( "Color", "Color",
-                             rootStyles.playButton,
-                             ^.disabled:=isWorking,
-                             ^.onClick --> callbackPage(ColorView))
-                )
-              )
             )
           )
         )
@@ -414,8 +425,6 @@ object HomePage {
     val resultChicago = ResultHolder[MatchChicago]()
     val resultShutdown = ResultHolder[WrapperXMLHttpRequest]()
 
-//  import org.scalajs.dom.document
-//  document.defaultView.location.reload(true)
     val cancel = Callback {
       resultChicago.cancel()
       resultShutdown.cancel()
@@ -496,7 +505,7 @@ object HomePage {
   def isPageFromLocalHost() = {
     import org.scalajs.dom.document
 
-    val hostname = document.defaultView.location.hostname
+    val hostname = GotoPage.hostname
     hostname == "localhost" || hostname == "loopback" || hostname == "127.0.0.1"
 
   }

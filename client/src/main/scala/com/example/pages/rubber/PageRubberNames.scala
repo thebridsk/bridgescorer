@@ -27,6 +27,9 @@ import com.example.react.Utils._
 import com.example.pages.rubber.RubberRouter.ListView
 import com.example.pages.BaseStyles
 import com.example.react.HelpButton
+import com.example.materialui.MuiTypography
+import com.example.materialui.TextVariant
+import com.example.materialui.TextColor
 
 object PageRubberNames {
   import PageRubberNamesInternal._
@@ -143,8 +146,19 @@ object PageRubberNamesInternal {
 
       <.div(
         rubStyles.namesPage,
+        RubberPageBridgeAppBar(
+          title = Seq[CtorType.ChildArg](
+            MuiTypography(
+                variant = TextVariant.h6,
+                color = TextColor.inherit,
+            )(
+                <.span( "Enter players and identify first dealer" )
+            )),
+          helpurl = "../help/rubber/names.html",
+          routeCtl = props.router
+        )(),
         <.h1(InfoPage.showOnlyInLandscapeOnTouch(), "Rotate to portrait for a better view"),
-        <.h1("Enter players and identify first dealer"),
+//        <.h1("Enter players and identify first dealer"),
         <.table(
           <.tbody(
             <.tr(
@@ -177,7 +191,7 @@ object PageRubberNamesInternal {
           <.div(
             baseStyles.divFooterRight,
             AppButton( "Cancel", "Cancel", props.router.setOnClick( ListView /*props.page.toRubber()*/) ),
-            HelpButton("/help/rubber/names.html")
+//            HelpButton("../help/rubber/names.html")
           )
         )
       )

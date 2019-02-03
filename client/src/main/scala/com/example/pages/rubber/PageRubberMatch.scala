@@ -19,6 +19,9 @@ import com.example.pages.rubber.RubberRouter.ListView
 import com.example.react.AppButton
 import com.example.react.Utils._
 import com.example.react.HelpButton
+import com.example.materialui.MuiTypography
+import com.example.materialui.TextVariant
+import com.example.materialui.TextColor
 
 /**
  * A skeleton component.
@@ -151,6 +154,17 @@ object PageRubberMatchInternal {
           }
 
           <.div( rubStyles.divRubberMatch,
+              RubberPageBridgeAppBar(
+                title = Seq[CtorType.ChildArg](
+                  MuiTypography(
+                      variant = TextVariant.h6,
+                      color = TextColor.inherit,
+                  )(
+                      <.span( "Match" )
+                  )),
+                helpurl = "../help/rubber/summary.html",
+                routeCtl = props.routerCtl
+              )(),
               <.div( rubStyles.divRubberMatchView,
                   <.table(
                       <.thead(
@@ -185,7 +199,7 @@ object PageRubberMatchInternal {
                       baseStyles.divFooterRight,
                       ComponentInputStyleButton( CallbackTo{} ),
                       AppButton( "Quit", "Quit", score.done ?= baseStyles.requiredNotNext, ^.onClick-->quit ),
-                      HelpButton("/help/rubber/summary.html")
+//                      HelpButton("../help/rubber/summary.html")
                   )
                 )
               )

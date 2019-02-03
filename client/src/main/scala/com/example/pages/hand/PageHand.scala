@@ -448,7 +448,7 @@ object PageHandInternal {
                                            )
 
       <.div( handStyles.pageHand,
-          <.span( ^.id:="VerifySectionHeader","Bridge Scorer:"),
+//          props.teamNS.map( team => TagMod() ).getOrElse( <.span( ^.id:="VerifySectionHeader","Bridge Scorer:") ),
           if (ComponentInputStyleButton.inputMethod == InputMethod.Original) {
             Seq( sectionHeader, sectionContract ).toTagMod
           } else {

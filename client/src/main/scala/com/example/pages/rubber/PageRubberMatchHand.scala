@@ -24,6 +24,10 @@ import com.example.data.RubberHand
 import com.example.data.bridge.PlayerPosition
 import com.example.pages.rubber.RubberRouter.RubberMatchHandView
 import com.example.data.SystemTime
+import com.example.materialui.MuiTypography
+import com.example.materialui.TextVariant
+import com.example.materialui.TextColor
+import com.example.routes.BridgeRouter
 
 
 /**
@@ -40,9 +44,9 @@ import com.example.data.SystemTime
 object PageRubberMatchHand {
   import PageRubberMatchHandInternal._
 
-  case class Props( page: RubberMatchHandView, routerCtl: RouterCtl[RubberPage] )
+  case class Props( page: RubberMatchHandView, routerCtl: BridgeRouter[RubberPage] )
 
-  def apply( page: RubberMatchHandView, routerCtl: RouterCtl[RubberPage] ) =
+  def apply( page: RubberMatchHandView, routerCtl: BridgeRouter[RubberPage] ) =
     component( Props( page, routerCtl ) )
 
 }
@@ -93,10 +97,21 @@ object PageRubberMatchHandInternal {
     }
 
     def render( props: Props, state: State ) = {
-      RubberStore.getRubber match {
-        case Some(rub) if (rub.id == props.page.rid) =>
-          val rubberScoring = RubberScoring(rub)
-          <.div(
+      <.div(
+        RubberPageBridgeAppBar(
+          title = Seq[CtorType.ChildArg](
+            MuiTypography(
+                variant = TextVariant.h6,
+                color = TextColor.inherit,
+            )(
+                <.span( "Enter Hand" )
+            )),
+          helpurl = "../help/rubber/hand.html",
+          routeCtl = props.routerCtl
+        )(),
+        RubberStore.getRubber match {
+          case Some(rub) if (rub.id == props.page.rid) =>
+            val rubberScoring = RubberScoring(rub)
             rub.getHand(props.page.handid) match {
               case Some(h) =>
                 val scorehand = ScoreHand(h)
@@ -137,13 +152,14 @@ object PageRubberMatchHandInternal {
                           callbackWithHonors = Some(viewHandCallbackWithHonors("") _),
                           honors = None,
                           honorsPlayer = None,
-                          helppage = Some("/help/rubber/hand.html"))
+//                          helppage = Some("../help/rubber/hand.html")
+                        )
             }
-          )
-        case _ =>
-          <.div(<.h1("Loading rubber match..."))
-      }
 
+          case _ =>
+            <.h1("Loading rubber match...")
+        }
+      )
     }
 
     val storeCallback = Callback { scope.withEffectsImpure.forceUpdate }

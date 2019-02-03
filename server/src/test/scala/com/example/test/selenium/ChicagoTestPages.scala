@@ -48,7 +48,11 @@ object ChicagoTestPages {
 
 }
 
-class ChicagoTestPages extends FlatSpec with MustMatchers with BeforeAndAfterAll with CancelAfterFailure {
+class ChicagoTestPages extends FlatSpec
+    with MustMatchers
+    with BeforeAndAfterAll
+    with CancelAfterFailure
+{
   import com.example.test.pages.PageBrowser._
   import com.example.test.util.EventuallyUtils._
   import Eventually.{ patienceConfig => _, _ }
@@ -146,7 +150,7 @@ class ChicagoTestPages extends FlatSpec with MustMatchers with BeforeAndAfterAll
   }
 
   it should "allow player names to be entered" in {
-    eventually( find(xpath("//h1[2]")).text mustBe "Enter players and identify first dealer" )
+    eventually( find(xpath("//h6[3]/span")).text mustBe "Enter players and identify first dealer" )
     takeScreenshot(docsScreenshotDir, "EnterNames4")
   }
 

@@ -8,6 +8,10 @@ import japgolly.scalajs.react.extra.router.RouterCtl
 import com.example.routes.AppRouter.AppPage
 import com.example.react.AppButton
 import com.example.routes.AppRouter.Home
+import com.example.materialui.MuiTypography
+import com.example.materialui.TextVariant
+import com.example.materialui.TextColor
+import com.example.routes.BridgeRouter
 
 /**
  * A skeleton component.
@@ -23,9 +27,9 @@ import com.example.routes.AppRouter.Home
 object GraphiQLPage {
   import GraphiQLPageInternal._
 
-  case class Props(  router: RouterCtl[AppPage] )
+  case class Props(  router: BridgeRouter[AppPage] )
 
-  def apply( router: RouterCtl[AppPage] ) = component(Props(router))
+  def apply( router: BridgeRouter[AppPage] ) = component(Props(router))
 
 }
 
@@ -50,10 +54,23 @@ object GraphiQLPageInternal {
   class Backend(scope: BackendScope[Props, State]) {
     def render( props: Props, state: State ) = {
       <.div( BaseStyles.baseStyles.divGraphiql,
-        <.div(
-          AppButton( "Home", "Home",
-                     props.router.setOnClick(Home))
-        ),
+        RootBridgeAppBar(
+            Seq(MuiTypography(
+                    variant = TextVariant.h6,
+                    color = TextColor.inherit,
+                )(
+                    <.span(
+                      " GraphiQL",
+                    )
+                )
+            ),
+            None,
+            props.router
+        )(),
+//        <.div(
+//          AppButton( "Home", "Home",
+//                     props.router.setOnClick(Home))
+//        ),
         GraphiQL("/v1/graphql")
       )
     }

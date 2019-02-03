@@ -45,7 +45,7 @@ abstract class Page[ +T <: Page[T] ]()( implicit webDriver: WebDriver, pageCreat
       r
     } catch {
       case x: Exception =>
-        testlog.fine(s"${pos.line} Exception return ${name}: ${x}")
+        testlog.fine(s"${pos.line} Exception return ${name}: ${x}", x)
         throw x
     }
 
@@ -59,7 +59,7 @@ abstract class Page[ +T <: Page[T] ]()( implicit webDriver: WebDriver, pageCreat
       r
     } catch {
       case x: Exception =>
-        testlog.fine(s"Exception return ${name}: ${x}")
+        testlog.fine(s"Exception return ${name}: ${x}",x)
         throw x
     }
 
@@ -173,11 +173,17 @@ abstract class Page[ +T <: Page[T] ]()( implicit webDriver: WebDriver, pageCreat
   }
 
   def clickButton( bid: String )(implicit patienceConfig: PatienceConfig, pos: Position): this.type = {
-    eventually {
-      val we = findElemById(bid)
-      PageBrowser.scrollToElement(we.underlying)
-      if (!we.underlying.isDisplayed()) Thread.sleep(100)
-      we.click
+    try {
+      eventually {
+        val we = findElemById(bid)
+        PageBrowser.scrollToElement(we.underlying)
+        if (!we.underlying.isDisplayed()) Thread.sleep(100)
+        we.click
+      }
+    } catch {
+      case x: Exception =>
+        log.warning(s"""Got exception clicking button, patienceConfig = ${patienceConfig}""",x)
+        throw x
     }
     self
   }

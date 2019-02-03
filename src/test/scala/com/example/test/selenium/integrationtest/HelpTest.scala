@@ -112,14 +112,13 @@ class HelpTest extends FlatSpec with MustMatchers with BeforeAndAfterAll {
     implicit val webDriver = TestSession.webDriver
 
     val homepage = HomePage.goto.validate
-    val help = eventually {
-      val we = findElem[Element]( id("Help") )
-      val text = we.text
-      text mustBe "Help"
-      we
+    homepage.isHelpMenuVisible mustBe false
+    val hp = homepage.clickHelpMenu.validate
+    eventually {
+      hp.isHelpMenuVisible mustBe true
     }
 
-    val gp = homepage.clickHelp
+    val gp = hp.clickHelp
 
     val helppage = eventually {
       val hh = webDriver.getWindowHandles.flatMap { h =>
@@ -141,14 +140,13 @@ class HelpTest extends FlatSpec with MustMatchers with BeforeAndAfterAll {
     implicit val webDriver = TestSession.webDriver
 
     val homepage = HomePage.goto.validate
-    val help = eventually {
-      val we = findElem[Element]( id("Help") )
-      val text = we.text
-      text mustBe "Help"
-      we
+    homepage.isHelpMenuVisible mustBe false
+    val hp = homepage.clickHelpMenu.validate
+    eventually {
+      hp.isHelpMenuVisible mustBe true
     }
 
-    val gp = homepage.clickHelp
+    val gp = hp.clickHelp
 
     val helppage = eventually {
       val hh = webDriver.getWindowHandles.flatMap { h =>

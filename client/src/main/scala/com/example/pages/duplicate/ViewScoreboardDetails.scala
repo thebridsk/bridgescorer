@@ -21,7 +21,7 @@ import com.example.data.DuplicateSummaryDetails
  * To use, just code the following:
  *
  * <pre><code>
- * ViewScoreboardDetails( routerCtl: RouterCtl[DuplicatePage], score: MatchDuplicateScore )
+ * ViewScoreboardDetails( routerCtl: BridgeRouter[DuplicatePage], score: MatchDuplicateScore )
  * </code></pre>
  *
  * @author werewolf

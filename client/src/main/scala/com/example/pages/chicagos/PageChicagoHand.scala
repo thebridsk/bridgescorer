@@ -22,6 +22,10 @@ import japgolly.scalajs.react.extra.router.RouterCtl
 import japgolly.scalajs.react.vdom.html_<^._
 import utils.logging.Logger
 import com.example.pages.chicagos.ChicagoRouter.HandView
+import com.example.materialui.MuiTypography
+import com.example.routes.BridgeRouter
+import com.example.materialui.TextVariant
+import com.example.materialui.TextColor
 
 /**
  * A skeleton component.
@@ -37,9 +41,9 @@ import com.example.pages.chicagos.ChicagoRouter.HandView
 object PageChicagoHand {
   import PageChicagoHandInternal._
 
-  case class Props( page: HandView, routerCtl: RouterCtl[ChicagoPage] )
+  case class Props( page: HandView, routerCtl: BridgeRouter[ChicagoPage] )
 
-  def apply( page: HandView, routerCtl: RouterCtl[ChicagoPage] ) =
+  def apply( page: HandView, routerCtl: BridgeRouter[ChicagoPage] ) =
     component( Props( page, routerCtl ) )
 
 }
@@ -66,15 +70,26 @@ object PageChicagoHandInternal {
    */
   class Backend(scope: BackendScope[Props, State]) {
     def render( props: Props, state: State ) = {
-      ChicagoStore.getChicago match {
-        case Some(mc) if (mc.id == props.page.chiid) =>
-          log.info("Got: "+mc)
-          val scoring = ChicagoScoring(mc)
-          val iround = props.page.round
-          val ihand = props.page.hand
-          val round = scoring.rounds(iround)
+      <.div(
+        ChicagoPageBridgeAppBar(
+          title = Seq[CtorType.ChildArg](
+            MuiTypography(
+                variant = TextVariant.h6,
+                color = TextColor.inherit,
+            )(
+                <.span( "Enter Hand" )
+            )),
+          helpurl = "../help/chicago/hand.html",
+          routeCtl = props.routerCtl
+        )(),
+        ChicagoStore.getChicago match {
+          case Some(mc) if (mc.id == props.page.chiid) =>
+            log.info("Got: "+mc)
+            val scoring = ChicagoScoring(mc)
+            val iround = props.page.round
+            val ihand = props.page.hand
+            val round = scoring.rounds(iround)
 
-          <.div(
             if (ihand < round.hands.length) {
               val scorehand = round.hands(ihand)
               PageHand.create(scorehand,
@@ -131,12 +146,14 @@ object PageChicagoHandInternal {
                         viewHandCallbackCancel(mc.isQuintet()),
                         newhand=true,
                         allowPassedOut=false,
-                        helppage = Some("/help/chicago/hand.html"))
+//                        helppage = Some("../help/chicago/hand.html")
+                      )
             }
-          )
-        case _ =>
-          <.div("Oops")
-      }
+
+          case _ =>
+            <.div("Oops")
+        }
+      )
     }
 
     def viewHandCallbackOk(iround: Int, ihand: Int, quintet: Boolean)( contract: Contract ) =

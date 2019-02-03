@@ -43,7 +43,13 @@ import scala.reflect.io.File
 /**
  * @author werewolf
  */
-class RubberTest extends FlatSpec with MustMatchers with BeforeAndAfterAll with EventuallyUtils with SeleniumUtils {
+class RubberTest extends FlatSpec 
+    with MustMatchers 
+    with BeforeAndAfterAll 
+    with EventuallyUtils 
+    with SeleniumUtils
+    with CancelAfterFailure
+{
   import com.example.test.pages.PageBrowser._
   import Eventually.{ patienceConfig => _, _ }
 
@@ -172,7 +178,7 @@ class RubberTest extends FlatSpec with MustMatchers with BeforeAndAfterAll with 
   }
 
   it should "allow player names to be entered" in {
-    eventually( find(xpath("//h1[2]")).text mustBe "Enter players and identify first dealer" )
+    eventually( find(xpath("//h6[3]/span")).text mustBe "Enter players and identify first dealer" )
   }
 
   val screenshotDir = "target/screenshots/RubberTest"
@@ -487,7 +493,7 @@ class RubberTest extends FlatSpec with MustMatchers with BeforeAndAfterAll with 
   it should "play another rubber match" in {
     findButtonAndClick("New")
 
-    eventually( find(xpath("//h1[2]")).text mustBe "Enter players and identify first dealer" )
+    eventually( find(xpath("//h6[3]/span")).text mustBe "Enter players and identify first dealer" )
 
     eventually( findButton("Ok").isEnabled mustBe false )
 
@@ -560,7 +566,7 @@ class RubberTest extends FlatSpec with MustMatchers with BeforeAndAfterAll with 
         case Left((rc,msg)) => throw new NoResultYet( rc.toString()+": "+msg )
       })
     }
-    eventually( find(xpath("//h1[2]")).text mustBe "Enter players and identify first dealer" )
+    eventually( find(xpath("//h6[3]/span")).text mustBe "Enter players and identify first dealer" )
   }
 
   it should "give player suggestions when entering names" in {
@@ -754,7 +760,7 @@ class RubberTest extends FlatSpec with MustMatchers with BeforeAndAfterAll with 
   }
 
   def verifyVul( nsVul: Boolean, ewVul: Boolean ) = {
-    find(id("VerifySectionHeader")).text mustBe "Bridge Scorer:"
+    eventually { find(xpath("//h6[3]/span")).text mustBe "Enter Hand" }
 
     val nsVulT = if (nsVul) "Vul" else "vul"
     val ewVulT = if (ewVul) "Vul" else "vul"
@@ -820,7 +826,7 @@ class RubberTest extends FlatSpec with MustMatchers with BeforeAndAfterAll with 
                  dealer: Option[String] = None,
                  screenshot: Option[String] = None
                ) = {
-    eventually {find(id("VerifySectionHeader")).text mustBe "Bridge Scorer:" }
+    eventually { find(xpath("//h6[3]/span")).text mustBe "Enter Hand" }
 
     dealer.foreach( dealerName => eventually { find(id("Dealer")).text } mustBe dealerName )
 

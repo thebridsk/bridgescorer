@@ -24,6 +24,9 @@ import com.example.react.Utils._
 import com.example.pages.BaseStyles
 import com.example.data.duplicate.stats.DuplicateStats
 import com.example.react.PopupOkCancel
+import com.example.materialui.MuiTypography
+import com.example.materialui.TextVariant
+import com.example.materialui.TextColor
 
 /**
  * Shows a summary page of all duplicate matches from the database.
@@ -35,7 +38,7 @@ import com.example.react.PopupOkCancel
  * To use, just code the following:
  *
  * <pre><code>
- * PageStats( routerCtl: RouterCtl[DuplicatePage] )
+ * PageStats( routerCtl: BridgeRouter[DuplicatePage] )
  * </code></pre>
  *
  * @author werewolf
@@ -186,20 +189,37 @@ object PageStatsInternal {
       <.div(
         dupStyles.divPageStats,
         PopupOkCancel( state.msg, None, Some(cancel) ),
-        <.h1("Statistics"),
-        <.div(
-          baseStyles.divFooter,
-          <.div(
-            baseStyles.divFooterLeft,
-            AppButton( "Home", "Home", props.routerCtl.home ),
-            " ",
-            AppButton( "Summary", "Summary", props.routerCtl.setOnClick(SummaryView) ),
-            " ",
-            AppButton( "BoardSets", "BoardSets", props.routerCtl.setOnClick(BoardSetSummaryView) ),
-            " ",
-            AppButton( "Movements", "Movements", props.routerCtl.setOnClick(MovementSummaryView) )
-          )
+        DuplicatePageBridgeAppBar(
+          id = None,
+          tableIds = List(),
+          title = Seq[CtorType.ChildArg](
+                MuiTypography(
+                    variant = TextVariant.h6,
+                    color = TextColor.inherit,
+                )(
+                    <.span(
+                      "Statistics",
+                    )
+                )),
+          helpurl = "../help/duplicate/summary.html",
+          routeCtl = props.routerCtl
+        )(
+
         ),
+//        <.h1("Statistics"),
+//        <.div(
+//          baseStyles.divFooter,
+//          <.div(
+//            baseStyles.divFooterLeft,
+//            AppButton( "Home", "Home", props.routerCtl.home ),
+//            " ",
+//            AppButton( "Summary", "Summary", props.routerCtl.setOnClick(SummaryView) ),
+//            " ",
+//            AppButton( "BoardSets", "BoardSets", props.routerCtl.setOnClick(BoardSetSummaryView) ),
+//            " ",
+//            AppButton( "Movements", "Movements", props.routerCtl.setOnClick(MovementSummaryView) )
+//          )
+//        ),
         <.div(
           baseStyles.divFooter,
           <.div(
@@ -311,19 +331,19 @@ object PageStatsInternal {
         state.showPairs ?= ViewPairsTable(state.filter, true ),
         state.showPeopleTableDetail ?= ViewPairsMadeDownTable( state.filter, false ),
         state.showPairsDetail ?= ViewPairsMadeDownTable(state.filter, true ),
-        <.div(
-          baseStyles.divFooter,
-          <.div(
-            baseStyles.divFooterLeft,
-            AppButton( "Home2", "Home", props.routerCtl.home ),
-            " ",
-            AppButton( "Summary2", "Summary", props.routerCtl.setOnClick(SummaryView) ),
-            " ",
-            AppButton( "BoardSets2", "BoardSets", props.routerCtl.setOnClick(BoardSetSummaryView) ),
-            " ",
-            AppButton( "Movements2", "Movements", props.routerCtl.setOnClick(MovementSummaryView) )
-          )
-        )
+//        <.div(
+//          baseStyles.divFooter,
+//          <.div(
+//            baseStyles.divFooterLeft,
+//            AppButton( "Home2", "Home", props.routerCtl.home ),
+//            " ",
+//            AppButton( "Summary2", "Summary", props.routerCtl.setOnClick(SummaryView) ),
+//            " ",
+//            AppButton( "BoardSets2", "BoardSets", props.routerCtl.setOnClick(BoardSetSummaryView) ),
+//            " ",
+//            AppButton( "Movements2", "Movements", props.routerCtl.setOnClick(MovementSummaryView) )
+//          )
+//        )
 
       )
     }
@@ -338,7 +358,9 @@ object PageStatsInternal {
     val didMount = Callback {
       logger.info("PageSummary.didMount")
       DuplicateSummaryStore.addChangeListener(storeCallback)
-      Controller.getSummary()
+      Controller.getSummary(
+          () => scope.withEffectsImpure.modState( s => s.copy(msg=Some("Error getting duplicate summary")))
+      )
     }
 
     val willUnmount = Callback {

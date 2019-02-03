@@ -11,7 +11,6 @@ import com.example.pages.hand.ComponentInputStyleButton.InputMethod
 import utils.logging.Logger
 import com.example.data.maneuvers.TableManeuvers
 import com.example.react.Utils._
-import japgolly.scalajs.react.extra.Reusability
 import com.example.pages.Pixels
 
 /**
@@ -52,25 +51,6 @@ object ViewDeclarerInternal {
 
   val logger = Logger("bridge.ViewDeclarer")
 
-//  implicit val reuseCurrent = Reusability[ Option[PlayerPosition] ]( (a,b) =>
-//    if (a.isDefined == b.isDefined) {
-//      if (a.isDefined) {
-//        a.get eq b.get
-//      } else {
-//        true
-//      }
-//    } else {
-//      false
-//    }
-//  )
-//  implicit val reuseCB = Reusability.always[ CallbackPlayer ]
-//
-//  implicit val reuseNextI = Reusability[ PageHandNextInput.Value ]( (a,b) =>
-//    a==b || ( a!=PageHandNextInput.InputContractBy && b!=PageHandNextInput.InputContractBy )
-//    )
-//
-//  implicit val reuseProps = Reusability.caseClassExcept[Props]('north, 'south, 'east, 'west, 'callback, 'teamNS, 'teamEW)
-
   /**
    * Internal state for rendering the component.
    *
@@ -79,8 +59,6 @@ object ViewDeclarerInternal {
    *
    */
   case class State()
-
-//  implicit val reuseState = Reusability.always[State]
 
   /**
    * Internal state for rendering the component.
@@ -206,6 +184,5 @@ object ViewDeclarerInternal {
                             .initialStateFromProps { props => State() }
                             .backend(new Backend(_))
                             .renderBackend
-//                            .configure(Reusability.shouldComponentUpdateAndLog("ViewDeclarer"))
                             .build
 }

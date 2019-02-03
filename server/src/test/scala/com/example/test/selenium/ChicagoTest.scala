@@ -29,7 +29,12 @@ import com.example.test.TestStartLogging
 /**
  * @author werewolf
  */
-class ChicagoTest extends FlatSpec with MustMatchers with BeforeAndAfterAll with EventuallyUtils {
+class ChicagoTest extends FlatSpec
+    with MustMatchers
+    with BeforeAndAfterAll
+    with EventuallyUtils
+    with CancelAfterFailure
+{
   import com.example.test.pages.PageBrowser._
   import Eventually.{ patienceConfig => _, _ }
 
@@ -122,7 +127,7 @@ class ChicagoTest extends FlatSpec with MustMatchers with BeforeAndAfterAll with
   }
 
   it should "allow player names to be entered" in {
-    eventually( find(xpath("//h1[2]")).text mustBe "Enter players and identify first dealer" )
+    eventually( find(xpath("//h6[3]/span")).text mustBe "Enter players and identify first dealer" )
   }
 
   it should "allow player names to be entered with suggestions when playing Chicago" in {
@@ -492,7 +497,7 @@ class ChicagoTest extends FlatSpec with MustMatchers with BeforeAndAfterAll with
         case Left((rc,msg)) => throw new NoResultYet( rc.toString()+": "+msg )
       })
     }
-    eventually( find(xpath("//h1[2]")).text mustBe "Enter players and identify first dealer" )
+    eventually( find(xpath("//h6[3]/span")).text mustBe "Enter players and identify first dealer" )
   }
 
   it should "give player suggestions when entering names" in {

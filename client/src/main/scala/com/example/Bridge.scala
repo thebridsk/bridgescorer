@@ -24,6 +24,9 @@ import com.example.pages.BaseStyles
 import scala.scalajs.js.annotation.JSExportTopLevel
 import scala.scalajs.js.annotation.JSExport
 import org.scalajs.dom.raw.Event
+import scala.scalajs.js
+import scala.scalajs.js.annotation.JSGlobal
+import com.example.rest2.AjaxResult
 
 /**
  * @author werewolf
@@ -36,9 +39,20 @@ object Bridge {   // need to figure out how to use new way to call main
 
   import com.example.logger.Init
 
+  SystemTimeJs()
+
   def logger = Logger("bridge.Bridge")
 
   Loader.init
+
+  def isDemo: Boolean = {
+    val g = js.Dynamic.global.asInstanceOf[js.Dictionary[Boolean]]
+    if ( g.contains("demo") ) {
+      g("demo")
+    } else {
+      false
+    }
+  }
 
   def main(args: Array[String]): Unit = main()
 
@@ -47,8 +61,12 @@ object Bridge {   // need to figure out how to use new way to call main
 
 //  @JSExport
   def main(): Unit = Alerter.tryitWithUnit {
+
+    if (isDemo) {
+      AjaxResult.setEnabled(false)
+    }
+
     Alerter.setupError()
-    SystemTimeJs()
 
     Init( startClient _)
 

@@ -21,6 +21,10 @@ import com.example.pages.duplicate.DuplicateRouter.TableView
 import com.example.pages.duplicate.DuplicateRouter.CompleteScoreboardView
 import com.example.react.AppButton
 import com.example.react.HelpButton
+import com.example.routes.BridgeRouter
+import com.example.materialui.MuiTypography
+import com.example.materialui.TextVariant
+import com.example.materialui.TextColor
 
 /**
  * Shows the team x board table and has a totals column that shows the number of points the team has.
@@ -30,7 +34,7 @@ import com.example.react.HelpButton
  * To use, just code the following:
  *
  * <pre><code>
- * PageTable( routerCtl: RouterCtl[DuplicatePage], page: BaseBoardViewWithPerspective )
+ * PageTable( routerCtl: BridgeRouter[DuplicatePage], page: BaseBoardViewWithPerspective )
  * </code></pre>
  *
  * @author werewolf
@@ -38,9 +42,9 @@ import com.example.react.HelpButton
 object PageTable {
   import PageTableInternal._
 
-  case class Props( routerCtl: RouterCtl[DuplicatePage], page: TableView )
+  case class Props( routerCtl: BridgeRouter[DuplicatePage], page: TableView )
 
-  def apply( routerCtl: RouterCtl[DuplicatePage], page: TableView ) = component(Props(routerCtl,page))
+  def apply( routerCtl: BridgeRouter[DuplicatePage], page: TableView ) = component(Props(routerCtl,page))
 
 }
 
@@ -74,6 +78,23 @@ object PageTableInternal {
             case Some(rounds) =>
               <.div(
                 dupStyles.divTablePage,
+                DuplicatePageBridgeAppBar(
+                  id = Some(props.page.dupid),
+                  tableIds = List(),
+                  title = Seq[CtorType.ChildArg](
+                        MuiTypography(
+                            variant = TextVariant.h6,
+                            color = TextColor.inherit,
+                        )(
+                            <.span(
+                              s"Table ${props.page.tableid}",
+                            )
+                        )),
+                  helpurl = "../help/duplicate/table.html",
+                  routeCtl = props.routerCtl
+                )(
+
+                ),
                 ViewTable(props.routerCtl,props.page),
                 <.div(
                   dupStyles.divTableHelp,
@@ -97,10 +118,6 @@ object PageTableInternal {
                   <.div(
                     baseStyles.divFooterCenter,
                     ComponentInputStyleButton( Callback{} )
-                  ),
-                  <.div(
-                    baseStyles.divFooterRight,
-                    HelpButton("/help/duplicate/table.html"),
                   )
                 )
               )

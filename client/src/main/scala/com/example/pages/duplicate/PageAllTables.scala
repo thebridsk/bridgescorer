@@ -20,6 +20,10 @@ import com.example.pages.hand.ComponentInputStyleButton
 import com.example.pages.duplicate.DuplicateRouter.AllTableView
 import com.example.pages.duplicate.DuplicateRouter.CompleteScoreboardView
 import com.example.react.AppButton
+import com.example.materialui.MuiTypography
+import com.example.materialui.TextVariant
+import com.example.materialui.TextColor
+import com.example.routes.BridgeRouter
 
 /**
  * Shows the team x board table and has a totals column that shows the number of points the team has.
@@ -29,7 +33,7 @@ import com.example.react.AppButton
  * To use, just code the following:
  *
  * <pre><code>
- * PageAllTables( routerCtl: RouterCtl[DuplicatePage], page: BaseBoardViewWithPerspective )
+ * PageAllTables( routerCtl: BridgeRouter[DuplicatePage], page: BaseBoardViewWithPerspective )
  * </code></pre>
  *
  * @author werewolf
@@ -37,9 +41,9 @@ import com.example.react.AppButton
 object PageAllTables {
   import PageAllTablesInternal._
 
-  case class Props( routerCtl: RouterCtl[DuplicatePage], page: AllTableView )
+  case class Props( routerCtl: BridgeRouter[DuplicatePage], page: AllTableView )
 
-  def apply( routerCtl: RouterCtl[DuplicatePage], page: AllTableView ) = component(Props(routerCtl,page))
+  def apply( routerCtl: BridgeRouter[DuplicatePage], page: AllTableView ) = component(Props(routerCtl,page))
 
 }
 
@@ -67,30 +71,51 @@ object PageAllTablesInternal {
   class Backend(scope: BackendScope[Props, State]) {
     def render( props: Props, state: State ) = {
       import DuplicateStyles._
-      DuplicateStore.getCompleteView() match {
-        case Some(score) =>
-          val clickPage = CompleteScoreboardView(props.page.dupid)
-          <.div(
-            dupStyles.divAllTablesPage,
-            score.tables.keys.toList.sortWith((t1,t2)=>t1<t2).map { table =>
-              ViewTable( props.routerCtl, props.page.toTableView( table ), true )
-            }.toTagMod,
-            <.div(
-              baseStyles.divFooter,
+      <.div(
+          DuplicatePageBridgeAppBar(
+            id = Some(props.page.dupid),
+            tableIds = List(),
+            title = Seq[CtorType.ChildArg](
+                  MuiTypography(
+                      variant = TextVariant.h6,
+                      color = TextColor.inherit,
+                  )(
+                      <.span(
+                        "All Tables",
+                      )
+                  )),
+            helpurl = "../help/duplicate/table.html",
+            routeCtl = props.routerCtl
+          )(
+
+          ),
+          DuplicateStore.getCompleteView() match {
+            case Some(score) =>
+              val clickPage = CompleteScoreboardView(props.page.dupid)
               <.div(
-                baseStyles.divFooterLeft,
-                AppButton( "Game", "Completed Games Scoreboard", props.routerCtl.setOnClick(clickPage)
+                dupStyles.divAllTablesPage,
+                score.tables.keys.toList.sortWith((t1,t2)=>t1<t2).map { table =>
+                  ViewTable( props.routerCtl, props.page.toTableView( table ), true )
+                }.toTagMod,
+                <.div(
+                  baseStyles.divFooter,
+                  <.div(
+                    baseStyles.divFooterLeft,
+                    AppButton( "Game", "Completed Games Scoreboard", props.routerCtl.setOnClick(clickPage)
+                    )
+                  ),
+                  <.div(
+                    baseStyles.divFooterCenter,
+                    ComponentInputStyleButton( Callback{} )
+                  )
                 )
-              ),
-              <.div(
-                baseStyles.divFooterCenter,
-                ComponentInputStyleButton( Callback{} )
               )
-            )
-          )
-        case None =>
-          <.div( <.p("Waiting to load information") )
-      }
+            case None =>
+              <.div(
+                  <.p("Waiting to load information")
+              )
+          }
+      )
     }
 
     val storeCallback = scope.forceUpdate

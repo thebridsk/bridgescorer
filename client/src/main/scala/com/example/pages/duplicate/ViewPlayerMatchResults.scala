@@ -19,7 +19,7 @@ import com.example.react.DateUtils
  * To use, just code the following:
  *
  * <pre><code>
- * ViewPlayerMatchResult( routerCtl: RouterCtl[DuplicatePage], score: MatchDuplicateScore )
+ * ViewPlayerMatchResult( routerCtl: BridgeRouter[DuplicatePage], score: MatchDuplicateScore )
  * </code></pre>
  *
  * @author werewolf

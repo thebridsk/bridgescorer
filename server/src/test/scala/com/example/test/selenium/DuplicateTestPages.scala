@@ -302,13 +302,21 @@ class DuplicateTestPages extends FlatSpec
   it should "go to boardsets page" in {
     import SessionDirector._
 
-    ListDuplicatePage.current.clickBoardSets.validate.click(BoardSetsPage.boardsets.head).validate.clickOK.validate
+    val lp = ListDuplicatePage.current.validate.clickMainMenu.validate
+    eventually {
+      lp.findElemById("BoardSets")
+    }
+    lp.clickBoardSets.validate.click(BoardSetsPage.boardsets.head).validate.clickOK.validate
   }
 
   it should "go to movements page" in {
     import SessionDirector._
 
-    ListDuplicatePage.current.clickMovements.validate.click(MovementsPage.movements.head).validate.clickOK.validate
+    val lp = ListDuplicatePage.current.validate.clickMainMenu.validate
+    eventually {
+      lp.findElemById("Movements")
+    }
+    lp.clickMovements.validate.click(MovementsPage.movements.head).validate.clickOK.validate
   }
 
   it should "allow creating a new duplicate match" in {
@@ -345,7 +353,11 @@ class DuplicateTestPages extends FlatSpec
       "Starting browsers",
       CodeBlock {
         import SessionDirector._
-        ScoreboardPage.current.clickDirectorButton.validate
+        val menu = ScoreboardPage.current.clickMainMenu.validate
+        eventually {
+          menu.findElemById("Director")
+        }
+        menu.clickDirectorButton.validate
       },
       CodeBlock {
         import SessionTable1._
@@ -595,7 +607,9 @@ class DuplicateTestPages extends FlatSpec
 
     en.getNames mustBe playersAfter
 
-    en.clickOK.validate.clickDirectorButton.validate
+    val menu = en.clickOK.validate.clickMainMenu.validate
+    eventually { menu.findElemById("Director")}
+    menu.clickDirectorButton.validate
   }
 
   it should "allow selecting players for round 2" in {
@@ -1004,7 +1018,9 @@ class DuplicateTestPages extends FlatSpec
         val page = ScoreboardPage.current
         Thread.sleep(100)
         page.takeScreenshot(docsScreenshotDir, "FinalScoreboard")
-        val lp = page.clickSummary.validate( id )
+        val menu = page.clickMainMenu.validate
+        eventually { menu.findElemById("Summary")}
+        val lp = menu.clickSummary.validate( id )
         eventually {
           val names = lp.getNames(false)
           names must contain ( team1.one )
@@ -1021,7 +1037,13 @@ class DuplicateTestPages extends FlatSpec
 
     val sb = ListDuplicatePage.current
     val ids = sb.getMatchIds
-    val peoplePage = sb.clickStatistics.validate.takeScreenshot(docsScreenshotDir, "Pairs").clickPeopleResults
+
+    val lp = sb.clickMainMenu.validate
+    eventually {
+      lp.findElemById("Statistics")
+    }
+
+    val peoplePage = lp.clickStatistics.validate.takeScreenshot(docsScreenshotDir, "Pairs").clickPeopleResults
 
     if (ids.size == 1) {
       peoplePage.checkPeopleMP( peopleResult:_*)
@@ -1210,7 +1232,9 @@ class DuplicateTestPages extends FlatSpec
   it should "allow creating a new duplicate match from the home page" in {
     import SessionDirector._
 
-    ScoreboardPage.current.clickSummary.validate.clickNewDuplicateButton.validate
+    val menu = ScoreboardPage.current.clickMainMenu.validate
+    eventually {menu.findElemById("Summary")}
+    menu.clickSummary.validate.clickNewDuplicateButton.validate
 //    HomePage.goto.validate.clickNewDuplicateButton.validate
   }
 
@@ -1270,7 +1294,9 @@ class DuplicateTestPages extends FlatSpec
 
 //    val sb = ScoreboardPage.goto(dupid2.get).validate
     val sb = ScoreboardPage.current
-    val dsb = sb.clickDirectorButton.validate
+    val menu = sb.clickMainMenu.validate
+    eventually {menu.findElemById("Director")}
+    val dsb = menu.clickDirectorButton.validate
 
     dsb.isPopupDisplayed mustBe false
 
@@ -1293,7 +1319,9 @@ class DuplicateTestPages extends FlatSpec
 
     val sb = ld.clickDuplicate(dupid.get).validate
 
-    val listpage = sb.clickSummary.validate.clickHome
+    val menu = sb.clickMainMenu.validate
+    eventually {menu.findElemById("Summary")}
+    val listpage = menu.clickSummary.validate.clickHome
   }
 
   var importZipFile: Option[File] = None
@@ -1302,6 +1330,8 @@ class DuplicateTestPages extends FlatSpec
 
     val hp = HomePage.current.validate
 
+//    val menu = hp.clickMainMenu.validate
+//    eventually {menu.findElemById("Export")}
     val ep = hp.clickExport.validate
 
     val f = ep.export
@@ -1322,7 +1352,9 @@ class DuplicateTestPages extends FlatSpec
   it should "import zip" in {
     import SessionDirector._
 
-    val hp = HomePage.current.validate
+    val hp = HomePage.current.validate  // .clickMainMenu.validate
+    
+    eventually {hp.findElemById("Import")}
 
     val ip = hp.clickImport.validate
 
@@ -1357,13 +1389,18 @@ class DuplicateTestPages extends FlatSpec
   it should "go to the pair suggestion page" in {
     import SessionDirector._
 
-    ListDuplicatePage.current.clickSuggestion.validate
+    val lp = ListDuplicatePage.current.validate.clickMainMenu.validate
+    eventually {
+      lp.findElemById("Suggest")
+    }
+    lp.clickSuggestion.validate
+
   }
 
   it should "show calculate button with 8 known names selected" in {
     import SessionDirector._
 
-    val sug = SuggestionPage.current
+    val sug = SuggestionPage.current.validate
     sug.getNumberNameFields mustBe 8
 
     sug.isCalculateEnabled mustBe false

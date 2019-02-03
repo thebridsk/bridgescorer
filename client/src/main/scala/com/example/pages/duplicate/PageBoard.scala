@@ -24,6 +24,9 @@ import com.example.react.AppButton
 import com.example.pages.BaseStyles
 import com.example.routes.BridgeRouter
 import com.example.react.HelpButton
+import com.example.materialui.MuiTypography
+import com.example.materialui.TextVariant
+import com.example.materialui.TextColor
 
 /**
  * Shows the team x board table and has a totals column that shows the number of points the team has.
@@ -33,7 +36,7 @@ import com.example.react.HelpButton
  * To use, just code the following:
  *
  * <pre><code>
- * PageBoard( routerCtl: RouterCtl[DuplicatePage], page: BaseBoardViewWithPerspective )
+ * PageBoard( routerCtl: BridgeRouter[DuplicatePage], page: BaseBoardViewWithPerspective )
  * </code></pre>
  *
  * @author werewolf
@@ -171,20 +174,38 @@ object PageBoardInternal {
       def title() = {
         props.page.getPerspective() match {
           case PerspectiveTable(team1, team2) =>
-            <.div(
-              <.h1(s"Board ${Id.boardIdToBoardNumber(props.page.boardid)} viewed from Table ${Id.tableIdToTableNumber(currentTable)} Round ${currentRound}"),
-              <.h2("Teams "+Id.teamIdToTeamNumber(team1)+" and "+Id.teamIdToTeamNumber(team2))
+            <.span(
+              s"Table ${Id.tableIdToTableNumber(currentTable)} Round ${currentRound}" ,
+              s" Board ${Id.boardIdToBoardNumber(props.page.boardid)}",
+              s" Teams ${Id.teamIdToTeamNumber(team1)} and ${Id.teamIdToTeamNumber(team2)}",
             )
           case PerspectiveDirector =>
-            <.h1(s"Director's View of Board ${Id.boardIdToBoardNumber(props.page.boardid)}")
+            <.span(s"Director's View of Board ${Id.boardIdToBoardNumber(props.page.boardid)}")
           case PerspectiveComplete =>
-            <.h1(s"Completed View of Board ${Id.boardIdToBoardNumber(props.page.boardid)}")
+            <.span(s"Completed View of Board ${Id.boardIdToBoardNumber(props.page.boardid)}")
         }
 
       }
 
 
       <.div(
+        DuplicatePageBridgeAppBar(
+          id = Some(props.page.dupid),
+          tableIds = List(),
+          title = Seq[CtorType.ChildArg](
+                MuiTypography(
+                    variant = TextVariant.h6,
+                    color = TextColor.inherit,
+                )(
+                    <.span(
+                      title(),
+                    )
+                )),
+          helpurl = "../help/duplicate/boardcomplete.html",
+          routeCtl = props.routerCtl
+        )(
+
+        ),
         DuplicateStore.getView( perspective ) match {
           case Some(score) =>
             val allplayedInRound = score.getRound(currentTable, currentRound) match {
@@ -195,7 +216,7 @@ object PageBoardInternal {
             val clickToTableView = tableBoardView.map( tbv => tbv.toTableView() )
             <.div(
               dupStyles.divBoardPage,
-              title(),
+//              title(),
               ViewBoard( props.routerCtl, props.page, score, props.page.boardid, state.isIMP ),
               <.p,
               <.div(
@@ -222,9 +243,7 @@ object PageBoardInternal {
                 " ",
                 PageScoreboardInternal.scoringMethodButton( state.useIMP, Some( score.isIMP), false, nextIMPs ),
                 if (tableperspective.isEmpty) boards(score)
-                else TagMod(),
-                " ",
-                HelpButton("/help/duplicate/boardcomplete.html"),
+                else TagMod()
               )
             )
           case None =>

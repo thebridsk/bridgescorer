@@ -49,8 +49,8 @@ object ListDuplicatePage {
   }
 
   val buttons =
-          "PopUpCancel"::
-          "Home2"::
+//          "PopUpCancel"::
+//          "Home2"::
           "Home"::
           Nil
 
@@ -58,15 +58,16 @@ object ListDuplicatePage {
           "ForImport"::
           Nil
 
+//          PopUpCancel,Home,DuplicateCreate,ForPrint
   val mainButtons =
           "DuplicateCreate"::
-          "BoardSets2"::
-          "Movements2"::
-          "ForPrint"::
-          "DuplicateCreateTest"::
-          "BoardSets"::
-          "Movements"::
-          "Statistics"::
+//          "BoardSets2"::
+//          "Movements2"::
+//          "ForPrint"::
+//          "DuplicateCreateTest"::
+//          "BoardSets"::
+//          "Movements"::
+//          "Statistics"::
           Nil
 
   val patternMatchButton = """Duplicate_(M\d+)""".r
@@ -143,7 +144,27 @@ class ListDuplicatePage( importId: Option[String] )( implicit val webDriver: Web
   }
 
   def isForPrintActive( implicit pos: Position ) = {
-    importId.isEmpty && findAll(id("ForPrint")).isEmpty
+    // importId.isEmpty && findAll(id("ForPrint")).isEmpty
+    if (importId.isEmpty) {
+      val els = getElemsByXPath(s"""//div/table/thead/tr[1]/th[2]""")
+      if (els.size == 1) {
+        els.head.text.equals("Print")
+      } else {
+        false
+      }
+    } else {
+      false
+    }
+  }
+
+  def clickMainMenu(implicit patienceConfig: PatienceConfig, pos: Position) = {
+    clickButton("MainMenu")
+    this
+  }
+
+  def clickHelpMenu(implicit patienceConfig: PatienceConfig, pos: Position) = {
+    clickButton("HelpMenu")
+    this
   }
 
   def clickHome(implicit patienceConfig: PatienceConfig, pos: Position) = {

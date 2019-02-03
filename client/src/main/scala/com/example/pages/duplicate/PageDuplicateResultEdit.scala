@@ -31,6 +31,9 @@ import com.example.react.reactwidgets.globalize.ReactWidgetsMoment
 import com.example.react.CheckBox
 import com.example.pages.BaseStyles
 import com.example.data.MatchDuplicate
+import com.example.materialui.MuiTypography
+import com.example.materialui.TextVariant
+import com.example.materialui.TextColor
 
 /**
  * A skeleton component.
@@ -273,7 +276,24 @@ object PageDuplicateResultEditInternal {
           val finished = !state.notfinished
           val comment = state.comment.getOrElse("")
           <.div(
-            <.div( dupStyles.divDuplicateResultEditPage,
+              <.div( dupStyles.divDuplicateResultEditPage,
+              DuplicatePageBridgeAppBar(
+                id = None,
+                tableIds = List(),
+                title = Seq[CtorType.ChildArg](
+                      MuiTypography(
+                          variant = TextVariant.h6,
+                          color = TextColor.inherit,
+                      )(
+                          <.span(
+                            "Edit Duplicate Result",
+                          )
+                      )),
+                helpurl = "../help/duplicate/summary.html",
+                routeCtl = props.routerCtl
+              )(
+  
+              ),
               if (state.original.isEmpty) {
                 <.h1( "Working" )
               } else {

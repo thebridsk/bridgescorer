@@ -116,3 +116,5 @@ object RestClientServerURL extends RestClient[ServerURL]("/v1/rest/serverurls")
 object RestClientServerVersion extends RestClient[ServerVersion]("/v1/rest/serverversion")
 
 object RestClientDuplicateSuggestions extends RestClient[DuplicateSuggestions]("/v1/rest/suggestions")
+
+object RestClientTestBoardsetsAndMovements extends RestClient[BoardSetsAndMovements]("/public/test/boardsetsAndMovements.json")

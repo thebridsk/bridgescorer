@@ -27,6 +27,14 @@ trait BridgeRouter[Page] {
     <.a(^.href := urlFor(page).value, setOnLinkClick(page))
 
   def home: TagMod
+  def toHome: Unit = {}
+  def toAbout: Unit = {}
+
+  /**
+   * Returns the RouterCtl that is wrapped by this
+   * @return None if there is no RouterCtl
+   */
+  def routerCtl: Option[RouterCtl[Page]] = None
 }
 
 class BridgeRouterBase[Page]( ctl: RouterCtl[Page] ) extends BridgeRouter[Page] {
@@ -39,6 +47,8 @@ class BridgeRouterBase[Page]( ctl: RouterCtl[Page] ) extends BridgeRouter[Page] 
   def setOnClick( page: Page ) = ctl.setOnClick(page)
   def setOnLinkClick( page: Page ): TagMod = ctl.setOnLinkClick(page)
   def home = ^.onClick-->CallbackTo {}
+  override
+  def routerCtl: Option[RouterCtl[Page]] = Some(ctl)
 }
 
 object BridgeRouterBaseWithLogging {
@@ -71,6 +81,7 @@ class BridgeRouterBaseWithLogging[Page]( ctl: RouterCtl[Page] ) extends BridgeRo
 
   def setOnLinkClick( page: Page ): TagMod = ctl.setOnLinkClick(page)
   def home = ^.onClick-->CallbackTo {}
+
 }
 
 /**

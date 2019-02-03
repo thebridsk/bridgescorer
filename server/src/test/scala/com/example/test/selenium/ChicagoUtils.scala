@@ -54,7 +54,7 @@ trait ChicagoUtils {
                  tricks: Int,
                  dealer: Option[String] = None
                )(implicit webDriver: WebDriver, config: PatienceConfig, pos: Position) = {
-    eventually { find(id("VerifySectionHeader")).text mustBe "Bridge Scorer:" }
+    eventually { find(xpath("//h6[3]/span")).text mustBe "Enter Hand" }
 
     dealer.foreach( dealerName => eventually { find(id("Dealer")).text } mustBe dealerName )
 

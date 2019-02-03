@@ -410,17 +410,25 @@ class Duplicate5TestPages extends FlatSpec with MustMatchers with BeforeAndAfter
     HomePage.current.clickListDuplicateButton.validate
   }
 
-  it should "go to boardsets page" in {
-    import SessionDirector._
-
-    ListDuplicatePage.current.validate.clickBoardSets.validate.click(BoardSetsPage.boardsets.head).validate.clickOK.validate
-  }
-
-  it should "go to movements page" in {
-    import SessionDirector._
-
-    ListDuplicatePage.current.clickMovements.validate.click(MovementsPage.movements.head).validate.clickOK.validate
-  }
+//  it should "go to boardsets page" in {
+//    import SessionDirector._
+//
+//    val lp = ListDuplicatePage.current.validate.clickMainMenu.validate
+//    eventually {
+//      lp.findElemById("BoardSets")
+//    }
+//    lp.clickBoardSets.validate.click(BoardSetsPage.boardsets.head).validate.clickOK.validate
+//  }
+//
+//  it should "go to movements page" in {
+//    import SessionDirector._
+//
+//    val lp = ListDuplicatePage.current.validate.clickMainMenu.validate
+//    eventually {
+//      lp.findElemById("Movements")
+//    }
+//    lp.clickMovements.validate.click(MovementsPage.movements.head).validate.clickOK.validate
+//  }
 
   it should "allow creating a new duplicate match" in {
     import SessionDirector._
@@ -456,7 +464,11 @@ class Duplicate5TestPages extends FlatSpec with MustMatchers with BeforeAndAfter
       "Starting browsers",
       CodeBlock {
         import SessionDirector._
-        ScoreboardPage.current.clickDirectorButton.validate
+        val main = ScoreboardPage.current.clickMainMenu.validate
+        eventually {
+          main.findElemById("Director")
+        }
+        main.clickDirectorButton.validate
       },
       CodeBlock {
         import SessionTable1._
@@ -1038,8 +1050,12 @@ class Duplicate5TestPages extends FlatSpec with MustMatchers with BeforeAndAfter
 
     dupid match {
       case Some(id) =>
-        val page = ScoreboardPage.current.clickSummary.validate( id )
-        page.checkResults(id, listDuplicateResult:_*)
+        val page = ScoreboardPage.current.clickMainMenu.validate
+        eventually {
+          page.findElemById("Summary")
+        }
+        val sum = page.clickSummary.validate( id )
+        sum.checkResults(id, listDuplicateResult:_*)
       case None =>
         ScoreboardPage.current.clickSummary.validate
     }
@@ -1048,9 +1064,14 @@ class Duplicate5TestPages extends FlatSpec with MustMatchers with BeforeAndAfter
   it should "show the people page" in {
     import SessionComplete._
 
-    val sb = ListDuplicatePage.current
+    val sb = ListDuplicatePage.current.validate
     val ids = sb.getMatchIds
-    val peoplePage = sb.clickStatistics.validate.clickPeopleResults
+    val lp = sb.clickMainMenu.validate
+    eventually {
+      lp.findElemById("Statistics")
+    }
+
+    val peoplePage = lp.clickStatistics.validate.clickPeopleResults
 
     maximize
 
@@ -1126,7 +1147,8 @@ class Duplicate5TestPages extends FlatSpec with MustMatchers with BeforeAndAfter
 
     val newid = postDuplicate(ndup)
 
-    StatisticsPage.current.clickSummary.validate( dupid.get, newid )
+    val menu = StatisticsPage.current.clickMainMenu.validateMainMenu
+    menu.clickSummary.validate( dupid.get, newid )
   }
 
   it should "show the people page 2" in {
@@ -1134,7 +1156,11 @@ class Duplicate5TestPages extends FlatSpec with MustMatchers with BeforeAndAfter
 
     val sb = ListDuplicatePage.current
     val ids = sb.getMatchIds
-    val peoplePage = sb.clickStatistics.validate.clickPeopleResults
+    val lp = sb.clickMainMenu.validate
+    eventually {
+      lp.findElemById("Statistics")
+    }
+    val peoplePage = lp.clickStatistics.validate.clickPeopleResults
 
     peoplePage.withClueAndScreenShot(screenshotDir, "ShowPeoplePage", "Checking people") {
       if (ids.size == 2) {

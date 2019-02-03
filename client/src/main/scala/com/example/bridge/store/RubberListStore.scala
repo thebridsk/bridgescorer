@@ -13,6 +13,8 @@ import com.example.bridge.action.ActionUpdateRubberList
 import com.example.logger.Alerter
 import com.example.bridge.action.ActionDeleteRubber
 import com.example.data.MatchRubber
+import com.example.Bridge
+import com.example.bridge.action.ActionUpdateRubber
 
 object RubberListStore extends ChangeListenable {
   val logger = Logger("bridge.RubberListStore")
@@ -30,6 +32,16 @@ object RubberListStore extends ChangeListenable {
     case ActionDeleteRubber(id) =>
       if (fImportId.isEmpty) {
         fSummary = fSummary.map { a => a.filter( c => c.id != id ) }
+      }
+
+    case ActionUpdateRubber(rub,cb) =>
+      if (Bridge.isDemo) {
+        val n = fSummary.map { a =>
+          val r = a.filter( c => rub.id != c.id )
+          r :+ rub
+        }.orElse(Some(Array(rub)))
+        fSummary = n
+        // does not call callback, that is for RubberStore
       }
 
     case x =>

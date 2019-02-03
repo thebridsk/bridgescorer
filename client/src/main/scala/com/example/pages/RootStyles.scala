@@ -123,6 +123,8 @@ class BaseStyles {
   val divColorPage = cls("divColorPage")
 
   val divGraphiql = cls("divGraphiql")
+
+  val appBarTitle = cls("appBarTitle")
 }
 
 class RootStyles {
@@ -151,6 +153,8 @@ class RootStyles {
   val thankYouDiv = cls("rootThankYouDiv baseFontTextLarge")
 
   val infoPageDiv = cls("rootInfoPageDiv baseFontTextLarge")
+
+  val headerSuitSize = cls("headerSuitSize")
 }
 
 class TableStyles {

@@ -36,22 +36,13 @@ object ScoreboardPage {
   val buttonIdsCompleted =
                  ("Table_1", "Table 1") ::
                  ("Table_2", "Table 2") ::
-                 ("AllBoards", "All Boards") ::
-                 ("AllGames", "Summary") ::
-                 ("ForPrint", "For Print") ::
-                 ("Director", "Director's Scoreboard") ::
-                 ("Tables", "All Tables") ::
-                 ("Boardset", "BoardSet") ::
                  Nil
 
   val buttonIdsDirector =
                  ("AllBoards", "All Boards") ::
                  ("Game", "Completed Games Scoreboard") ::
-                 ("AllGames", "Summary") ::
                  ("EditNames", "Edit Names") ::
                  ("Delete", "Delete") ::
-                 ("Tables", "All Tables") ::
-                 ("Boardset", "BoardSet") ::
                  Nil
 
   def buttonIdsTable( n: String ) =
@@ -83,15 +74,15 @@ object ScoreboardPage {
    *            Option(subid)
    *          )
    */
-  def findIds(implicit webDriver: WebDriver, pos: Position): (String, ViewType, Option[String], Option[String]) = {
+  def findIds(implicit webDriver: WebDriver, pos: Position): (String, String, ViewType, Option[String], Option[String]) = {
     val prefix = TestServer.getAppPageUrl("duplicate/")
     val cur = currentUrl
     withClue(s"Unable to determine duplicate id: ${cur}") {
       cur must startWith (prefix)
       cur.drop( prefix.length() ) match {
-        case patternComplete(did,subres,subid) => (did,CompletedViewType, Option(subres), Option(subid))
-        case patternDirector(did,subres,subid) => (did,DirectorViewType, Option(subres), Option(subid))
-        case patternTable(did,tid,rid,subres,subid) => (did,TableViewType(tid,rid), Option(if (subres=="game") null else subres), Option(subid))
+        case patternComplete(did,subres,subid) => (cur,did,CompletedViewType, Option(subres), Option(subid))
+        case patternDirector(did,subres,subid) => (cur,did,DirectorViewType, Option(subres), Option(subid))
+        case patternTable(did,tid,rid,subres,subid) => (cur,did,TableViewType(tid,rid), Option(if (subres=="game") null else subres), Option(subid))
         case _ => fail("Could not determine view type")
       }
     }
@@ -110,7 +101,10 @@ object ScoreboardPage {
    *          )
    */
   def findDuplicateId(implicit webDriver: WebDriver, pos: Position): (String, ViewType) = {
-    val (dupid,viewtype,subres,subid) = findIds
+    val (curr,dupid,viewtype,subres,subid) = findIds
+    withClue(s"Current URL must is not a scoreboard url: $curr") {
+      subres mustBe None
+    }
     (dupid,viewtype)
   }
 
@@ -227,34 +221,58 @@ class ScoreboardPage(
     new ScoreboardPage( Option(did) )
   }}
 
-  def clickDirectorButton(implicit pos: Position) = {
+  def clickMainMenu(implicit patienceConfig: PatienceConfig, pos: Position) = {
+    clickButton("MainMenu")
+    this
+  }
+
+  def validateMainMenu(implicit patienceConfig: PatienceConfig, pos: Position) = {
+    eventually {
+      findElemById("Summary")
+    }
+    this
+  }
+
+  def clickHelpMenu(implicit patienceConfig: PatienceConfig, pos: Position) = {
+    clickButton("HelpMenu")
+    this
+  }
+
+  def validateHelpMenu(implicit patienceConfig: PatienceConfig, pos: Position) = {
+    eventually {
+      findElemById("Help")
+    }
+    this
+  }
+
+  def clickDirectorButton(implicit patienceConfig: PatienceConfig, pos: Position) = {
     if (view != CompletedViewType) fail("Must be in Completed view to hit director button")
     clickButton("Director")
     new ScoreboardPage( dupid, DirectorViewType )
   }
 
-  def clickScoreStyle(implicit pos: Position) = {
+  def clickScoreStyle(implicit patienceConfig: PatienceConfig, pos: Position) = {
     clickButton("ScoreStyle")
     this
   }
 
-  def clickCompleteGameButton(implicit pos: Position) = {
+  def clickCompleteGameButton(implicit patienceConfig: PatienceConfig, pos: Position) = {
     if (!view.isInstanceOf[TableViewType]) fail("Must be in Table view to hit complete game button")
     clickButton("Game")
     new ScoreboardPage( dupid, CompletedViewType )
   }
 
-  def clickAllBoards(implicit pos: Position) = {
+  def clickAllBoards(implicit patienceConfig: PatienceConfig, pos: Position) = {
     clickButton("AllBoards")
     new BoardsPage
   }
 
-  def clickEditNames(implicit pos: Position) = {
+  def clickEditNames(implicit patienceConfig: PatienceConfig, pos: Position) = {
     clickButton("EditNames")
     new EditNamesPage( dupid.get )
   }
 
-  def clickTableButton(table: Int)(implicit pos: Position) = {
+  def clickTableButton(table: Int)(implicit patienceConfig: PatienceConfig, pos: Position) = {
     view match {
       case DirectorViewType => fail("Must be in Completed view to hit table button")
       case CompletedViewType =>
@@ -282,18 +300,18 @@ class ScoreboardPage(
   def clickBoardButton( board: Int )(implicit patienceConfig: PatienceConfig, pos: Position): HandPage =
     clickBoardToHand(board)
 
-  def clickBoardToHand( board: Int )(implicit pos: Position) = {
+  def clickBoardToHand( board: Int )(implicit patienceConfig: PatienceConfig, pos: Position) = {
     clickButton(s"Board_B${board}")
     new HandPage
   }
 
-  def clickBoardToBoard( board: Int )(implicit pos: Position) = {
+  def clickBoardToBoard( board: Int )(implicit patienceConfig: PatienceConfig, pos: Position) = {
     clickButton(s"Board_B${board}")
     new BoardPage
   }
 
-  def clickSummary(implicit pos: Position) = {
-    clickButton("AllGames")
+  def clickSummary(implicit patienceConfig: PatienceConfig, pos: Position) = {
+    clickButton("Summary")
     new ListDuplicatePage(None)
   }
 

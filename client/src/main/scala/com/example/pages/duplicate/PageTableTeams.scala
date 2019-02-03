@@ -4,7 +4,7 @@ package com.example.pages.duplicate
 import scala.scalajs.js
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
-import japgolly.scalajs.react.extra.router.RouterCtl
+import com.example.routes.BridgeRouter
 import com.example.routes.AppRouter.AppPage
 import com.example.data.DuplicateSummary
 import com.example.data.Id
@@ -42,6 +42,9 @@ import com.example.pages.hand.Properties
 import com.example.pages.Pixels
 import com.example.pages.BaseStyles
 import com.example.react.HelpButton
+import com.example.materialui.MuiTypography
+import com.example.materialui.TextVariant
+import com.example.materialui.TextColor
 
 /**
  * Shows the team x board table and has a totals column that shows the number of points the team has.
@@ -51,7 +54,7 @@ import com.example.react.HelpButton
  * To use, just code the following:
  *
  * <pre><code>
- * PageTableTeams( routerCtl: RouterCtl[DuplicatePage], page: BaseBoardViewWithPerspective )
+ * PageTableTeams( routerCtl: BridgeRouter[DuplicatePage], page: BaseBoardViewWithPerspective )
  * </code></pre>
  *
  * @author werewolf
@@ -59,10 +62,10 @@ import com.example.react.HelpButton
 object PageTableTeams {
   import PageTableTeamsInternal._
 
-  case class Props( routerCtl: RouterCtl[DuplicatePage], page: TableTeamView ) {
+  case class Props( routerCtl: BridgeRouter[DuplicatePage], page: TableTeamView ) {
   }
 
-  def apply( routerCtl: RouterCtl[DuplicatePage], page: TableTeamView ) = component(Props(routerCtl,page))
+  def apply( routerCtl: BridgeRouter[DuplicatePage], page: TableTeamView ) = component(Props(routerCtl,page))
 
 }
 
@@ -516,39 +519,70 @@ object PageTableTeamsInternal {
 
     val reset = scope.modState((s,props)=> State.create(props).copy( nameSuggestions = s.nameSuggestions).logState("PageTableTeams.Backend.reset"))
 
+    def header( props: Props, helpurl: String ) = {
+        DuplicatePageBridgeAppBar(
+          id = Some(props.page.dupid),
+          tableIds = List(),
+          title = Seq[CtorType.ChildArg](
+                MuiTypography(
+                    variant = TextVariant.h6,
+                    color = TextColor.inherit,
+                )(
+                    <.span(
+                      s"Players for Table ${props.page.tableid} Round ${props.page.round}",
+                    )
+                )),
+          helpurl = helpurl,
+          routeCtl = props.routerCtl
+        )(
+
+        )
+    }
+
     def render( props: Props, state: State ) = {
       logger.fine("PageTableTeams.Backend.render state="+state )
-      DuplicateStore.getCompleteView() match {
-        case Some(score) =>
-          score.tables.get(props.page.tableid) match {
-            case Some(rounds) =>
-              val readonly = state.originalNames.isAllValid && !props.page.editPlayers
-              rounds.find { r => r.round==props.page.round } match {
-                case Some(round) =>
-                  renderInput(props, state, score, round )
-                case None =>
+      <.div(
+        DuplicateStore.getCompleteView() match {
+          case Some(score) =>
+            score.tables.get(props.page.tableid) match {
+              case Some(rounds) =>
+                val readonly = state.originalNames.isAllValid && !props.page.editPlayers
+                rounds.find { r => r.round==props.page.round } match {
+                  case Some(round) =>
+                    renderInput(props, state, score, round )
+                  case None =>
+                    TagMod(
+                      header(props, "../help/duplicate/enterscorekeepername.html"),
+                      <.div(
+                        dupStyles.divTableNamesPage,
+                        <.p("Round "+props.page.round+" not found on Table "+props.page.tableid),
+                        <.p(
+                          Button( baseStyles.footerButton, "Game", "Scoreboard", props.routerCtl.setOnClick(CompleteScoreboardView(props.page.dupid)) )
+                        )
+                      )
+                    )
+                }
+              case None =>
+                TagMod(
+                  header(props, "../help/duplicate/enterscorekeepername.html"),
                   <.div(
                     dupStyles.divTableNamesPage,
-                    <.p("Round "+props.page.round+" not found on Table "+props.page.tableid),
+                    <.p("Table "+props.page.tableid+" not found"),
                     <.p(
                       Button( baseStyles.footerButton, "Game", "Scoreboard", props.routerCtl.setOnClick(CompleteScoreboardView(props.page.dupid)) )
-                    )
-                  )
-              }
-            case None =>
+                    ) )
+                )
+            }
+          case None =>
+            TagMod(
+              header(props, "../help/duplicate/enterscorekeepername.html"),
               <.div(
                 dupStyles.divTableNamesPage,
-                <.p("Table "+props.page.tableid+" not found"),
-                <.p(
-                  Button( baseStyles.footerButton, "Game", "Scoreboard", props.routerCtl.setOnClick(CompleteScoreboardView(props.page.dupid)) )
-                ) )
-          }
-        case None =>
-          <.div(
-            dupStyles.divTableNamesPage,
-            <.p("Waiting")
-          )
-      }
+                <.p("Waiting")
+              )
+            )
+        }
+      )
 
     }
 
@@ -559,32 +593,35 @@ object PageTableTeamsInternal {
         else renderNames(props, state, score, round)
       }
 
-      <.div(
-          dupStyles.divTableNamesPage,
-          div,
-          <.div(
-              baseStyles.divFooter,
-              ^.paddingTop:=40.px,
-              <.div(
-                  baseStyles.divFooterLeft,
-                  Button( baseStyles.footerButton,
-                          "OK",
-                          "OK",
-                          ^.onClick --> okCB,
-                          ^.disabled := !valid,
-                          BaseStyles.highlight(required = valid)
-                        )
-              ),
-              <.div(
-                  baseStyles.divFooterCenter,
-                  Button( baseStyles.footerButton, "Reset", "Reset", ^.onClick --> reset )
-              ),
-              <.div(
-                  baseStyles.divFooterRight,
-                  Button( baseStyles.footerButton, "Cancel", "Cancel", props.routerCtl.setOnClick( props.page.toTableView() ) ),
-                  helppage.whenDefined( p => HelpButton(p) )
-              )
-          )
+      TagMod(
+        header(props, helppage.getOrElse("../help/duplicate/enterscorekeepername.html")),
+        <.div(
+            dupStyles.divTableNamesPage,
+            div,
+            <.div(
+                baseStyles.divFooter,
+                ^.paddingTop:=40.px,
+                <.div(
+                    baseStyles.divFooterLeft,
+                    Button( baseStyles.footerButton,
+                            "OK",
+                            "OK",
+                            ^.onClick --> okCB,
+                            ^.disabled := !valid,
+                            BaseStyles.highlight(required = valid)
+                          )
+                ),
+                <.div(
+                    baseStyles.divFooterCenter,
+                    Button( baseStyles.footerButton, "Reset", "Reset", ^.onClick --> reset )
+                ),
+                <.div(
+                    baseStyles.divFooterRight,
+                    Button( baseStyles.footerButton, "Cancel", "Cancel", props.routerCtl.setOnClick( props.page.toTableView() ) ),
+                    helppage.whenDefined( p => HelpButton(p) )
+                )
+            )
+        )
       )
 
     }
@@ -660,7 +697,7 @@ object PageTableTeamsInternal {
                   )
           }).toTagMod
         ),
-        Some("/help/duplicate/enterscorekeepername.html")
+        Some("../help/duplicate/enterscorekeepername.html")
       )
 
     }
@@ -711,7 +748,7 @@ object PageTableTeamsInternal {
               EmptyVdom
           }
         ),
-        Some("/help/duplicate/selectscorekeepername.html")
+        Some("../help/duplicate/selectscorekeepername.html")
       )
     }
 
@@ -745,6 +782,9 @@ object PageTableTeamsInternal {
         if (state.isCurrentValid(pos)) Some(arrow)
         else None
       }
+
+      val helpurl = if (readonly) "../help/duplicate/selectothernames.html"
+                     else "../help/duplicate/enterothernames.html"
 
       val div =
           <.div(
@@ -797,8 +837,7 @@ object PageTableTeamsInternal {
         ok,
         allvalid,
         div,
-        if (readonly) Some("/help/duplicate/selectothernames.html")
-        else Some("/help/duplicate/enterothernames.html")
+        Some(helpurl)
       )
     }
 

@@ -23,6 +23,8 @@ import com.example.bridge.action.DuplicateBridgeAction
 import com.example.logger.Alerter
 import japgolly.scalajs.react.Callback
 import com.example.skeleton.react.BeepComponent
+import com.example.Bridge
+import com.example.data.DuplicateSummary
 
 object DuplicateStore extends ChangeListenable {
   val logger = Logger("bridge.DuplicateStore")
@@ -123,6 +125,11 @@ object DuplicateStore extends ChangeListenable {
                 bridgeMatch = Some(duplicate)
                 resetViews()
                 notifyChange()
+                if (Bridge.isDemo) {
+                  scalajs.js.timers.setTimeout(1) {
+                    BridgeDispatcher.updateDuplicateSummaryItem(None, DuplicateSummary.create(duplicate))
+                  }
+                }
               } else {
                 logger.severe("Duplicate IDs don't match, working with "+mid+" got "+duplicate.id)
               }
@@ -135,20 +142,29 @@ object DuplicateStore extends ChangeListenable {
             case Some(md) =>
               if (md.id == dupid) {
                 logger.info("Updating hand in "+md.id+": "+hand)
-                md.getHand(hand.board, hand.id) match {
+                (md.getHand(hand.board, hand.id) match {
                   case Some(oldhand) =>
                     if (!oldhand.equalsIgnoreModifyTime(hand)) {
                       logger.fine("Updating hand in DuplicateStore: "+hand)
                       bridgeMatch = Some( md.updateHand(hand) )
                       resetViews()
                       notifyChange()
+                      bridgeMatch
                     } else {
                       logger.fine("Not updating hand in DuplicateStore: "+hand+", oldhand: "+oldhand)
+                      None
                     }
                   case None =>
                     bridgeMatch = Some( md.updateHand(hand) )
                     resetViews()
                     notifyChange()
+                    bridgeMatch
+                }).map {md =>
+                  if (Bridge.isDemo) {
+                    scalajs.js.timers.setTimeout(1) {
+                      BridgeDispatcher.updateDuplicateSummaryItem(None, DuplicateSummary.create(md))
+                    }
+                  }
                 }
               } else {
                 logger.severe("Duplicate IDs don't match, working with "+md.id+" got "+dupid)
@@ -161,17 +177,27 @@ object DuplicateStore extends ChangeListenable {
             case Some(md) =>
               if (md.id == dupid) {
                 logger.info("Updating team in "+md.id+": "+team)
-                md.getTeam(team.id) match {
+                (md.getTeam(team.id) match {
                   case Some(oldteam) =>
                     if (!oldteam.equalsIgnoreModifyTime(team)) {
                       bridgeMatch = Some( md.updateTeam(team) )
                       resetViews()
                       notifyChange()
+                      bridgeMatch
+                    } else {
+                      None
                     }
                   case None =>
                     bridgeMatch = Some( md.updateTeam(team) )
                     resetViews()
                     notifyChange()
+                    bridgeMatch
+                }).map {md =>
+                  if (Bridge.isDemo) {
+                    scalajs.js.timers.setTimeout(1) {
+                      BridgeDispatcher.updateDuplicateSummaryItem(None, DuplicateSummary.create(md))
+                    }
+                  }
                 }
               } else {
                 logger.severe("Duplicate IDs don't match, working with "+md.id+" got "+dupid)
@@ -179,6 +205,9 @@ object DuplicateStore extends ChangeListenable {
             case _ =>
               logger.severe("Got a team update and don't have a MatchDuplicate")
           }
+        case x =>
+          // There are multiple stores, all the actions get sent to all stores
+//          logger.fine("Ignoring unknown action: "+action)
       }
     case action =>
       // There are multiple stores, all the actions get sent to all stores
@@ -187,7 +216,8 @@ object DuplicateStore extends ChangeListenable {
 
   def start( dupid: Id.MatchDuplicate ) = {
     monitoredId match {
-      case Some(mid) =>
+      case Some(mid) if mid!=dupid =>
+        bridgeMatch = None
         stop()
       case _ =>
     }
@@ -203,17 +233,21 @@ object DuplicateStore extends ChangeListenable {
   }
 
   def stop() = {
-    monitoredId match {
-      case Some(id) =>
-        logger.info("Stopping monitor "+id)
-        monitoredId = None
-        bridgeMatch = None
-        resetViews()
-//        removeAllListener(ChangeListenable.event)
-        notifyChange()
-      case _ =>
-        logger.info("Stopping monitor")
-        bridgeMatch = None
+    if (Bridge.isDemo) {
+      // keep the match
+    } else {
+      monitoredId match {
+        case Some(id) =>
+          logger.info("Stopping monitor "+id)
+          monitoredId = None
+          bridgeMatch = None
+          resetViews()
+  //        removeAllListener(ChangeListenable.event)
+          notifyChange()
+        case _ =>
+          logger.info("Stopping monitor")
+          bridgeMatch = None
+      }
     }
   }
 
@@ -246,4 +280,15 @@ object DuplicateStore extends ChangeListenable {
   }
 
   startMonitorRoundEnd()
+
+  override
+  def addChangeListener( cb: Callback ) = {
+    super.addChangeListener(cb)
+    if (Bridge.isDemo) {
+      scalajs.js.timers.setTimeout(1) {
+        notifyChange()
+      }
+    }
+  }
+
 }

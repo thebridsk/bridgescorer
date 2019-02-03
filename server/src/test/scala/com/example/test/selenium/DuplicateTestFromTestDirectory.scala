@@ -91,8 +91,7 @@ class DuplicateTestFromTestDirectory extends FlatSpec with MustMatchers with Bef
 
   implicit val timeoutduration = Duration( 60, TimeUnit.SECONDS )
 
-  val defaultPatienceConfig = PatienceConfig(timeout=scaled(Span(timeoutMillis, Millis)), interval=scaled(Span(intervalMillis,Millis)))
-  implicit def patienceConfig = defaultPatienceConfig
+  implicit val patienceConfig = PatienceConfig(timeout=scaled(Span(timeoutMillis, Millis)), interval=scaled(Span(intervalMillis,Millis)))
 
   def getAllGames() = TestData.getAllGames()
 
@@ -350,7 +349,7 @@ class DuplicateTestFromTestDirectory extends FlatSpec with MustMatchers with Bef
 
       sbp.validate( (1 to 18).toList )
 
-      val dsbp = sbp.clickDirectorButton
+      val dsbp = sbp.clickMainMenu.validateMainMenu.clickDirectorButton
 
     }
 
@@ -455,7 +454,7 @@ class DuplicateTestFromTestDirectory extends FlatSpec with MustMatchers with Bef
                 val (north,south,east,west) = getPlayers(hands.head)
                 var scorekeeper = firstScorekeeper
                 (1 to (sessionTable.number.toInt+round)).foreach { i => scorekeeper = scorekeeper.nextDealer }
-                val page: PageWithBoardButtons = eos.playEnterNames(north, south, east, west, scorekeeper).asInstanceOf[ScoreboardPage]
+                val page: PageWithBoardButtons = eos.playEnterNames(north, south, east, west, scorekeeper).validate.asInstanceOf[ScoreboardPage]
 
                 def folder(pg: PageWithBoardButtons,hand: DuplicateHandV2): PageWithBoardButtons = {
                   val np = doPlayHand(sessionTable,hand,pg)

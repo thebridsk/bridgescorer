@@ -167,20 +167,7 @@ class SwaggerSpec extends FlatSpec with ScalatestRouteTest with MustMatchers wit
     (nanos,result)
   }
 
-  var time1: Option[Long] = None
-  var time2: Option[Long] = None
-
-  it should "return the swagger json /v1/api-docs/swagger.json" in {
-    time1 = Some( time(
-    Get("/v1/api-docs/swagger.json") ~> addHeader(`Accept-Encoding`(HttpEncodings.gzip)) ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
-      status mustBe OK
-      val swagger = httpResponseAs[String](decodeResponse(response))
-      swagger must include regex "(?s)Scorekeeper for a Duplicate bridge, Chicago bridge, and Rubber bridge\\."
-    } )._1)
-  }
-
-  it should "the swagger json /v1/api-docs/swagger.json should not contain the string 'Function1'" in {
-    time2 = Some( time(
+  it should "return the swagger json from /v1/api-docs/swagger.json and should not contain the string 'Function1'" in {
     Get("/v1/api-docs/swagger.json") ~> addHeader(`Accept-Encoding`(HttpEncodings.gzip)) ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
       status mustBe OK
       val swagger = httpResponseAs[String](decodeResponse(response))
@@ -194,11 +181,6 @@ class SwaggerSpec extends FlatSpec with ScalatestRouteTest with MustMatchers wit
         swagger must not include ("""Function1""")
         swagger must not include ("""Function1RequestContextFutureRouteResult""")
       }
-    } )._1)
-  }
-
-  it should "take less time the second time" in {
-    println( s"It to ${time1.get} the first time, and ${time2.get} the second")
-//    time2.get must be < ( time1.get )
+    }
   }
 }
