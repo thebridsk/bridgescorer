@@ -75,12 +75,19 @@ import com.example.test.pages.duplicate.PageWithBoardButtons
  * Test playing duplicate matches.  The duplicates matches to play are in the testdata directory.
  * @author werewolf
  */
-class DuplicateTestFromTestDirectory2 extends FlatSpec with MustMatchers with BeforeAndAfterAll with EventuallyUtils {
+class DuplicateTestFromTestDirectory2 extends FlatSpec
+    with MustMatchers
+    with BeforeAndAfterAll
+    with EventuallyUtils
+    with CancelAfterFailure
+{
   import Eventually.{ patienceConfig => _, _ }
   import com.example.test.pages.PageBrowser._
   import ParallelUtils._
 
-  val testlog = Logger[DuplicateTestFromTestDirectory]
+  val testlog = Logger[DuplicateTestFromTestDirectory2]
+
+  val screenshotDir = "target/DuplicateTestFromTestDirectory2"
 
   import scala.concurrent.duration._
 
@@ -435,38 +442,41 @@ class DuplicateTestFromTestDirectory2 extends FlatSpec with MustMatchers with Be
     def playRound( round: Int, sessionTable: TableSession ): Unit = try {
       import sessionTable._
 
-      val tp = TablePage.current(EnterOrSelectNames)
+      withClueAndScreenShot(screenshotDir, "playRound", s"Table ${sessionTable.table} Round ${round}") {
 
-      templateScore.tables.get(sessionTable.table) match {
-        case Some(rounds) =>
-          rounds.find { r => r.round == round } match {
-            case Some(r) =>
-              val hands = r.boards.map { bs => bs.board.hands.find { h => h.table==sessionTable.table && h.round==round } }.
-                                   map { x => x match {
-                                     case Some(h) => h
-                                     case None =>
-                                       fail("Did not find all hands for table "+sessionTable.table+" round "+round)
-                                   }}
-              tp.setInputStyle("Yellow")
-              val eos = tp.clickRound(round).asInstanceOf[TableEnterOrSelectNamesPage]
+        val tp = TablePage.current(EnterOrSelectNames)
 
-              val (north,south,east,west) = getPlayers(hands.head)
-              var scorekeeper = firstScorekeeper
-              (1 to (sessionTable.number.toInt+round)).foreach { i => scorekeeper = scorekeeper.nextDealer }
-              val page: PageWithBoardButtons = eos.playEnterNames(north, south, east, west, scorekeeper).asInstanceOf[ScoreboardPage]
+        templateScore.tables.get(sessionTable.table) match {
+          case Some(rounds) =>
+            rounds.find { r => r.round == round } match {
+              case Some(r) =>
+                val hands = r.boards.map { bs => bs.board.hands.find { h => h.table==sessionTable.table && h.round==round } }.
+                                     map { x => x match {
+                                       case Some(h) => h
+                                       case None =>
+                                         fail("Did not find all hands for table "+sessionTable.table+" round "+round)
+                                     }}
+                tp.setInputStyle("Yellow")
+                val eos = tp.clickRound(round).asInstanceOf[TableEnterOrSelectNamesPage]
 
-              def folder(pg: PageWithBoardButtons,hand: DuplicateHandV2): PageWithBoardButtons = {
-                val np = doPlayHand(sessionTable,hand,pg)
-                np
-              }
+                val (north,south,east,west) = getPlayers(hands.head)
+                var scorekeeper = firstScorekeeper
+                (1 to (sessionTable.number.toInt+round)).foreach { i => scorekeeper = scorekeeper.nextDealer }
+                val page: PageWithBoardButtons = eos.playEnterNames(north, south, east, west, scorekeeper).asInstanceOf[ScoreboardPage]
 
-              val bp = hands.foldLeft(page)(folder).asInstanceOf[BoardPage]
-              bp.clickTableButton(table.toInt).validate
-            case None =>
-              fail("Did not find round "+round+" for table "+sessionTable.table)
-          }
-        case None =>
-          fail("Did not find rounds for table "+sessionTable.table)
+                def folder(pg: PageWithBoardButtons,hand: DuplicateHandV2): PageWithBoardButtons = {
+                  val np = doPlayHand(sessionTable,hand,pg)
+                  np
+                }
+
+                val bp = hands.foldLeft(page)(folder).asInstanceOf[BoardPage]
+                bp.clickTableButton(table.toInt).validate
+              case None =>
+                fail("Did not find round "+round+" for table "+sessionTable.table)
+            }
+          case None =>
+            fail("Did not find rounds for table "+sessionTable.table)
+        }
       }
     } catch {
       case ex: Exception =>
