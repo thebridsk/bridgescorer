@@ -113,6 +113,8 @@ object HomePage {
 
   var fastclick: Option[FastClick] = None
 
+  startFastClick()
+
 //  // This will be the props object used from JS-land
 //  @js.native
 //  trait JsProps extends js.Object {
@@ -143,12 +145,19 @@ object HomePage {
 
   val fastclickToggle = Callback {
     fastclick match {
-      case Some(fc) =>
-        fc.destroy()
-        fastclick = None
-      case None =>
-        fastclick = Option( FastClick() )
+      case Some(fc) => stopFastClick()
+      case None => startFastClick()
+
     }
+  }
+
+  def startFastClick() {
+    fastclick = Some(fastclick.map(f=>f).getOrElse( FastClick() ))
+  }
+
+  def stopFastClick() {
+    fastclick.foreach(_.destroy())
+    fastclick = None
   }
 
   def isFastclickOn = fastclick.isDefined
