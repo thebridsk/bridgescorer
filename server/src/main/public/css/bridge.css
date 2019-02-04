@@ -603,3 +603,7 @@ body.touched .withTooltipBox:hover {
    background-color: inherit;
    align-items: center;
 }
+
+button, body {
+  touch-action: manipulation;
+}
