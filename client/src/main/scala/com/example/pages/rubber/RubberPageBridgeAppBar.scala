@@ -140,24 +140,24 @@ object RubberPageBridgeAppBarInternal {
             routeCtl = props.routeCtl
           )(
               // main menu
-              MyMenu(
-                  anchorEl=state.anchorMainEl,
-                  onClickAway = handleMainClose _,
-                  onItemClick = handleMainCloseClick _,
-              )(
-                MuiMenuItem(
-                    id = "FastClick",
-                    onClick = ( (e: ReactEvent) => (HomePage.fastclickToggle>>scope.forceUpdate).runNow() ),
-                    classes = js.Dictionary("root" -> "mainMenuItem").asInstanceOf[js.Object]
-
-                )(
-                    "FastClick ",
-                    MuiCheckIcon(
-                        color= (if (HomePage.isFastclickOn) SvgColor.inherit else SvgColor.disabled),
-                        classes = js.Dictionary("root" -> "mainMenuItemIcon").asInstanceOf[js.Object]
-                    )()
-                ),
-              )
+//              MyMenu(
+//                  anchorEl=state.anchorMainEl,
+//                  onClickAway = handleMainClose _,
+//                  onItemClick = handleMainCloseClick _,
+//              )(
+//                MuiMenuItem(
+//                    id = "FastClick",
+//                    onClick = ( (e: ReactEvent) => (HomePage.fastclickToggle>>scope.forceUpdate).runNow() ),
+//                    classes = js.Dictionary("root" -> "mainMenuItem").asInstanceOf[js.Object]
+//
+//                )(
+//                    "FastClick ",
+//                    MuiCheckIcon(
+//                        color= (if (HomePage.isFastclickOn) SvgColor.inherit else SvgColor.disabled),
+//                        classes = js.Dictionary("root" -> "mainMenuItemIcon").asInstanceOf[js.Object]
+//                    )()
+//                ),
+//              )
           )
       )
     }

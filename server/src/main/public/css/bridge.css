@@ -604,6 +604,10 @@ body.touched .withTooltipBox:hover {
    align-items: center;
 }
 
-button, body {
+*, html {
   touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+button, input {
 }

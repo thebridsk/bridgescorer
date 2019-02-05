@@ -100,7 +100,7 @@ object Dependencies {
   lazy val vWebpackDevServer = "3.1.14"   // https://www.npmjs.com/package/webpack-dev-server
   lazy val vWebPackCli = "3.2.1"         // https://www.npmjs.com/package/webpack-cli
 
-  lazy val vFastClick = "1.0.6"       // https://www.npmjs.com/package/fastclick
+//  lazy val vFastClick = "1.0.6"       // https://www.npmjs.com/package/fastclick
 
   lazy val vSangria = "1.4.2"           // https://github.com/sangria-graphql/sangria
   lazy val vSangriaPlayJson = "1.0.5"   // https://github.com/sangria-graphql/sangria-playground
@@ -254,7 +254,7 @@ object Dependencies {
       "react-widgets-moment" -> vReactWidgetsMoment,
       "moment" -> vMoment,
       "swagger-ui-dist" -> vSwaggerUI,
-      "fastclick" -> vFastClick,
+//      "fastclick" -> vFastClick,
       "graphql-voyager" -> vGraphQLVoyager,
       "graphql" -> vGraphQL,
       "graphiql" -> vGraphiQL,

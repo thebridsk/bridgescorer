@@ -618,7 +618,7 @@ object PageTableTeamsInternal {
                 <.div(
                     baseStyles.divFooterRight,
                     Button( baseStyles.footerButton, "Cancel", "Cancel", props.routerCtl.setOnClick( props.page.toTableView() ) ),
-                    helppage.whenDefined( p => HelpButton(p) )
+//                    helppage.whenDefined( p => HelpButton(p) )
                 )
             )
         )
