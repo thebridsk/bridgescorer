@@ -42,7 +42,7 @@ import com.example.rest2.AjaxResult
 import com.example.rest2.AjaxFailure
 import com.example.rest2.WrapperXMLHttpRequest
 import com.example.react.AppButtonLink
-import com.example.fastclick.FastClick
+//import com.example.fastclick.FastClick
 import com.example.react.PopupOkCancel
 import com.example.pages.duplicate.DuplicateRouter.SelectMatchView
 import japgolly.scalajs.react.extra.router.RouterCtl
@@ -111,9 +111,9 @@ object HomePage {
 
   }
 
-  var fastclick: Option[FastClick] = None
+//  var fastclick: Option[FastClick] = None
 
-  startFastClick()
+//  startFastClick()
 
 //  // This will be the props object used from JS-land
 //  @js.native
@@ -143,30 +143,30 @@ object HomePage {
 //                              renderWithStyle(props)
 //                            }
 
-  val fastclickToggle = Callback {
-    fastclick match {
-      case Some(fc) => stopFastClick()
-      case None => startFastClick()
-
-    }
-  }
-
-  def startFastClick() {
-    fastclick = Some(fastclick.map(f=>f).getOrElse( FastClick() ))
-  }
-
-  def stopFastClick() {
-    fastclick.foreach(_.destroy())
-    fastclick = None
-  }
-
-  def isFastclickOn = fastclick.isDefined
+//  val fastclickToggle = Callback {
+//    fastclick match {
+//      case Some(fc) => stopFastClick()
+//      case None => startFastClick()
+//
+//    }
+//  }
+//
+//  def startFastClick() {
+//    fastclick = Some(fastclick.map(f=>f).getOrElse( FastClick() ))
+//  }
+//
+//  def stopFastClick() {
+//    fastclick.foreach(_.destroy())
+//    fastclick = None
+//  }
+//
+//  def isFastclickOn = fastclick.isDefined
 
   class Backend( scope: BackendScope[Props, State]) {
 
-    val toggleFastclickTest = scope.modState( s => s.copy( fastclickTest = !s.fastclickTest) )
+//    val toggleFastclickTest = scope.modState( s => s.copy( fastclickTest = !s.fastclickTest) )
 
-    val toggleFastclick = fastclickToggle >> scope.forceUpdate
+//    val toggleFastclick = fastclickToggle >> scope.forceUpdate
 
     val toggleDebug = scope.modState { s =>
       val newstate = s.copy(debugging = !s.debugging)
@@ -341,35 +341,35 @@ object HomePage {
             )
           )
         ),
-        <.div(
-          rootStyles.testHandsDiv,
-        ),
-        <.div(
+//        <.div(
+//          rootStyles.testHandsDiv,
+//        ),
+        isPageFromLocalHost() ?= <.div(
           rootStyles.miscDiv,
           <.h1("Miscellaneous"),
           <.table(
             <.tbody(
               <.tr(
-                <.td( ^.width:="25%",
-                  {
-                    AppButton(
-                      "FastclickTest", "Fast Click Test",
-                      rootStyles.playButton,
-                      ^.disabled:=isWorking,
-                      BaseStyles.highlight(selected = state.fastclickTest),
-                      ^.onClick --> toggleFastclickTest
-                    )
-                  }
-                ),
-                <.td( ^.width:="25%",
-                  AppButton(
-                    "ToggleFastclick", "Fast Click",
-                    rootStyles.playButton,
-                    BaseStyles.highlight( selected = isFastclickOn ),
-                    ^.disabled:=isWorking,
-                    ^.onClick --> toggleFastclick
-                  )
-                ),
+//                <.td( ^.width:="25%",
+//                  {
+//                    AppButton(
+//                      "FastclickTest", "Fast Click Test",
+//                      rootStyles.playButton,
+//                      ^.disabled:=isWorking,
+//                      BaseStyles.highlight(selected = state.fastclickTest),
+//                      ^.onClick --> toggleFastclickTest
+//                    )
+//                  }
+//                ),
+//                <.td( ^.width:="25%",
+//                  AppButton(
+//                    "ToggleFastclick", "Fast Click",
+//                    rootStyles.playButton,
+//                    BaseStyles.highlight( selected = isFastclickOn ),
+//                    ^.disabled:=isWorking,
+//                    ^.onClick --> toggleFastclick
+//                  )
+//                ),
                 <.td( ^.width:="25%",
                   isPageFromLocalHost() ?= AppButton(
                     "Shutdown", "Shutdown Server",
@@ -377,11 +377,17 @@ object HomePage {
                     ^.disabled:=isWorking,
                     ^.onClick --> doShutdown
                   )
-                )
+                ),
+                <.td( ^.width:="25%"
+                ),
+                <.td( ^.width:="25%"
+                ),
+                <.td( ^.width:="25%"
+                ),
               ),
-              <.tr(
-                <.td(" ")
-              ),
+//              <.tr(
+//                <.td(" ")
+//              ),
             )
           )
         )
