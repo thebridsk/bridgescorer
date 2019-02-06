@@ -98,6 +98,8 @@ object PageSummaryInternal {
 
                           val result = state.useIMP.map( useIMP => if (useIMP) " (International Match Points)" else " (Match Points)").getOrElse("")
 
+                          val allplayers = tp.allPlayers.filter(n => n!="")
+
                           <.thead(
                             <.tr(
                               <.th( "Id"),
@@ -111,7 +113,7 @@ object PageSummaryInternal {
                               <.th( "Finished"),
                               <.th( "Created", <.br(), "Last Updated"),
                               <.th( "Scoring", <.br,  "Method", ^.rowSpan:=2 ),
-                              tp.allPlayers.length>0?=(<.th( ^.colSpan:=tp.allPlayers.length, "Results"+result)),
+                              tp.allPlayers.length>0?=(<.th( ^.colSpan:=allplayers.length, "Results"+result)),
                               <.th( "Totals", ^.rowSpan:=2 )
                             ),
                             <.tr(
@@ -132,7 +134,7 @@ object PageSummaryInternal {
                                           )
                                     }
                               ),
-                              tp.allPlayers.filter(p => p!="").map { p =>
+                              allplayers.map { p =>
                                 <.th(
                                   <.span(p)
 //                                  tp.firstPlaces.get(p) match {
