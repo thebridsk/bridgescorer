@@ -23,6 +23,7 @@ import com.example.data.bridge._
 import com.example.test.pages.Combobox
 import com.example.test.pages.TextField
 import com.example.test.pages.PageBrowser
+import org.openqa.selenium.Keys
 
 object TableEnterOrSelectNamesPage {
 
@@ -172,7 +173,9 @@ class TableEnterOrSelectNamesPage( dupid: String,
       b.isEnabled mustBe true
       PageBrowser.scrollToElement(b.underlying)
       Thread.sleep(50L)
-      b.click
+//      b.click
+      val k = Keys.ENTER
+      b.sendKeys(k.toString())
     }
   }
 
