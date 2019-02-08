@@ -694,7 +694,7 @@ object PageSummaryInternal {
                       "Select For Print"
                   )
                 )
-                BeepComponent.getMenuItem()::x
+                BeepComponent.getMenuItem( ()=>scope.withEffectsImpure.forceUpdate)::x
               }
             ):_*
           }

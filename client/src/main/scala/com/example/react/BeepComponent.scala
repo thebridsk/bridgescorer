@@ -69,16 +69,15 @@ object BeepComponent {
     }
   }
 
-  def toggle( e: ReactEvent ): Unit = {
-    playEnabled = !playEnabled
-    log.info(s"Beep playEnabled is not $playEnabled")
-    if (playEnabled) beep()
+  def toggle(cb: ()=>Unit)( e: ReactEvent ): Unit = {
+    toggleBeep()
+    cb()
   }
 
-  def getMenuItem(): VdomNode = {
+  def getMenuItem(cb: ()=>Unit): VdomNode = {
     MuiMenuItem(
         id = "Beep",
-        onClick = toggle _,
+        onClick = toggle(cb) _,
         classes = js.Dictionary("root" -> "mainMenuItem").asInstanceOf[js.Object]
     )(
         "Beep",

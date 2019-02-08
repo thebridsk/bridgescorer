@@ -224,21 +224,7 @@ object DuplicatePageBridgeAppBarInternal {
 //                              classes = js.Dictionary("root" -> "mainMenuItemIcon").asInstanceOf[js.Object]
 //                          )()
 //                      ),
-                      MuiMenuItem(
-                          id = "Beep",
-                          onClick = ( (e: ReactEvent) => {
-                            BeepComponent.toggleBeep
-                            scope.forceUpdate.runNow()
-                          } ),
-                          classes = js.Dictionary("root" -> "mainMenuItem").asInstanceOf[js.Object]
-
-                      )(
-                          "Beep ",
-                          MuiCheckIcon(
-                              color= (if (BeepComponent.isPlayEnabled) SvgColor.inherit else SvgColor.disabled),
-                              classes = js.Dictionary("root" -> "mainMenuItemIcon").asInstanceOf[js.Object]
-                          )()
-                      ),
+                      BeepComponent.getMenuItem( ()=>scope.withEffectsImpure.forceUpdate ),
                   )
                 ): _*
               )

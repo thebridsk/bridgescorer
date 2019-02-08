@@ -605,9 +605,16 @@ body.touched .withTooltipBox:hover {
 }
 
 *, html {
-  touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
 }
 
-button, input {
+button, input, a, li {
+  touch-action: manipulation;
+}
+
+#AppBar {
+  position: sticky;
+  top: 0;
+  left: 0;
+  z-index: 12;
 }

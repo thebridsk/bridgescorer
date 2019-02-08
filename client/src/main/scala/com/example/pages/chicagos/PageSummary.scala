@@ -131,9 +131,9 @@ object PageSummaryInternal {
               val showNextHand = (scoring.gamesPerRound==0 || lastRoundHands.length<scoring.gamesPerRound) && !show68HandRound
               val showNewRound = (numberRounds==1 && lastRoundHands.length == 4) || (scoring.gamesPerRound!=0 && lastRoundHands.length==scoring.gamesPerRound)
               val showSet68HandRound = numberRounds==1 && lastRoundHands.length == 4 && scoring.gamesPerRound==0
-              val (start,end) = props.page match {
-                case Left(_) => (0,scoring.rounds.length)
-                case Right( RoundView( chiid, round )) => ( round, round+1)
+              val (start,end, showRound) = props.page match {
+                case Left(_) => (0,scoring.rounds.length,None)
+                case Right( RoundView( chiid, round )) => ( round, round+1, Some(round))
               }
 
               def displayRound() =
@@ -148,7 +148,7 @@ object PageSummaryInternal {
                     <.div( ViewQuintet(scoring, toSummaryView(props), props.routerCtl) )
                   } else {
                     Seq[TagMod](
-                      <.div( ViewTotalsTable(scoring, toSummaryView(props), props.routerCtl) ),
+                      <.div( ViewTotalsTable(scoring, showRound, toSummaryView(props), props.routerCtl) ),
                       (start until end).map { i =>
                         <.div( ViewRoundTable.withKey("ShowRound"+i)(scoring, i, toRoundView(i,props), props.routerCtl) )
                       }.toTagMod

@@ -8,6 +8,7 @@ import japgolly.scalajs.react.extra.router.RouterCtl
 import com.example.pages.chicagos.ChicagoRouter.SummaryView
 import com.example.react.AppButton
 import com.example.routes.BridgeRouter
+import com.example.pages.BaseStyles
 
 /**
  * A skeleton component.
@@ -23,10 +24,10 @@ import com.example.routes.BridgeRouter
 object ViewTotalsTable {
   import ViewTotalsTableInternal._
 
-  case class Props( chicagoScoring: ChicagoScoring, page: SummaryView, routerCtl: BridgeRouter[ChicagoPage] )
+  case class Props( chicagoScoring: ChicagoScoring, showRound: Option[Int], page: SummaryView, routerCtl: BridgeRouter[ChicagoPage] )
 
-  def apply( chicagoScoring: ChicagoScoring, page: SummaryView, routerCtl: BridgeRouter[ChicagoPage] ) =
-    component( Props( chicagoScoring, page, routerCtl ) )
+  def apply( chicagoScoring: ChicagoScoring, showRound: Option[Int], page: SummaryView, routerCtl: BridgeRouter[ChicagoPage] ) =
+    component( Props( chicagoScoring, showRound, page, routerCtl ) )
 
 }
 
@@ -64,6 +65,7 @@ object ViewTotalsTableInternal {
           <.td(
             AppButton("Round"+(round+1).toString(),
                       (round+1).toString(),
+                      BaseStyles.highlight(selected=props.showRound.map(_ == round).getOrElse(false)),
                       props.routerCtl.setOnClick(props.page.toRoundView(round)))
           ),
           (0 until scores.length).map { j =>
