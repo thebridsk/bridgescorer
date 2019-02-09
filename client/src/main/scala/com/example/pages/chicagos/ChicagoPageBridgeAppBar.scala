@@ -121,7 +121,8 @@ object ChicagoPageBridgeAppBarInternal {
 
       def callbackPage(page: ChicagoPage)(e: ReactEvent) = props.routeCtl.set(page).runNow()
 
-      <.div( ^.width := "100%",
+      <.div(
+          baseStyles.divAppBar,
           BridgeAppBar(
             handleMainClick = handleMainClick _,
             maintitle =

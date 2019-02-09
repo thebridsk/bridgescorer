@@ -142,7 +142,8 @@ object DuplicatePageBridgeAppBarInternal {
         ),
       }
 
-      <.div( ^.width := "100%",
+      <.div(
+          baseStyles.divAppBar,
           BridgeAppBar(
             handleMainClick = handleMainClick _,
             maintitle =

@@ -592,7 +592,7 @@ body.touched .withTooltipBox:hover {
 }
 
 .popupMenu {
-  z-index: 10;
+  z-index: 20;
 }
 
 .appBarTitle {
@@ -612,9 +612,14 @@ button, input, a, li {
   touch-action: manipulation;
 }
 
-#AppBar {
-  position: sticky;
+.divAppBar {
+  position: fixed;
   top: 0;
   left: 0;
   z-index: 12;
+  width: 100%;
+}
+
+.divAppBar + * {
+  margin-top: 68px !important;
 }

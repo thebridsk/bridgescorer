@@ -188,7 +188,7 @@ object RootBridgeAppBarInternal {
         )
 
       <.div(
-          ^.id := "AppBar",
+          baseStyles.divAppBar,
           BridgeAppBar(
               handleMainClick = handleMainClick _,
               maintitle = maintitle,
