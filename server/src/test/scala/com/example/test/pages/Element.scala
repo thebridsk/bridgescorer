@@ -11,8 +11,9 @@ import org.openqa.selenium.OutputType
 import com.example.backend.resource.FileIO
 import com.example.source.SourcePosition
 import org.openqa.selenium.Keys
+import org.openqa.selenium.WebDriver
 
-class Element( val underlying: WebElement )(implicit pos: Position ) {
+class Element( val underlying: WebElement )(implicit pos: Position, webdriver: WebDriver, patienceConfig: PatienceConfig ) {
 
     def location = underlying.getLocation
 
@@ -40,6 +41,7 @@ class Element( val underlying: WebElement )(implicit pos: Position ) {
     }
 
     def click = {
+      PageBrowser.scrollToElement(underlying)
       underlying.click()
       Thread.sleep( 100L )
     }
@@ -112,9 +114,9 @@ object Element {
   val log = Logger[Element]
 }
 
-class InputElement( underlying: WebElement )(implicit pos: Position ) extends Element(underlying) {
+class InputElement( underlying: WebElement )(implicit pos: Position, webdriver: WebDriver, patienceConfig: PatienceConfig ) extends Element(underlying) {
 
-  def this( el: Element )(implicit pos1: Position ) = this(el.underlying)(pos1)
+  def this( el: Element )(implicit pos1: Position, webdriver1: WebDriver, patienceConfig1: PatienceConfig ) = this(el.underlying)(pos1,webdriver1,patienceConfig1)
 
   def `type` = attribute("type")
 
@@ -122,14 +124,15 @@ class InputElement( underlying: WebElement )(implicit pos: Position ) extends El
 
 }
 
-class TextField( underlying: WebElement )(implicit pos: Position ) extends InputElement(underlying) {
+class TextField( underlying: WebElement )(implicit pos: Position, webdriver: WebDriver, patienceConfig1: PatienceConfig ) extends InputElement(underlying) {
 
-  def this( el: Element )(implicit pos1: Position ) = this(el.underlying)(pos1)
+  def this( el: Element )(implicit pos1: Position, webdriver1: WebDriver, patienceConfig1: PatienceConfig ) = this(el.underlying)(pos1,webdriver1,patienceConfig1)
 
   def value: String = underlying.getAttribute("value")
 
   def value_=(value: String): Unit = {
 //    underlying.clear()
+    PageBrowser.scrollToElement(underlying)
     underlying.sendKeys(Keys.chord(Keys.CONTROL, "a"))
     underlying.sendKeys(value)
   }
@@ -138,19 +141,19 @@ class TextField( underlying: WebElement )(implicit pos: Position ) extends Input
 
 }
 
-class NumberField( underlying: WebElement )(implicit pos: Position ) extends TextField(underlying) {
-  def this( el: Element )(implicit pos1: Position ) = this(el.underlying)(pos1)
+class NumberField( underlying: WebElement )(implicit pos: Position, webdriver: WebDriver, patienceConfig: PatienceConfig ) extends TextField(underlying) {
+  def this( el: Element )(implicit pos1: Position, webdriver1: WebDriver, patienceConfig1: PatienceConfig ) = this(el.underlying)(pos1,webdriver1,patienceConfig1)
 }
 
-class RadioButton( underlying: WebElement )(implicit pos: Position ) extends InputElement(underlying) {
+class RadioButton( underlying: WebElement )(implicit pos: Position, webdriver: WebDriver, patienceConfig: PatienceConfig ) extends InputElement(underlying) {
 
-  def this( el: Element )(implicit pos1: Position ) = this(el.underlying)(pos1)
+  def this( el: Element )(implicit pos1: Position, webdriver1: WebDriver, patienceConfig1: PatienceConfig ) = this(el.underlying)(pos1,webdriver1,patienceConfig1)
 
 }
 
-class Checkbox( underlying: WebElement )(implicit pos: Position ) extends InputElement(underlying) {
+class Checkbox( underlying: WebElement )(implicit pos: Position, webdriver: WebDriver, patienceConfig: PatienceConfig ) extends InputElement(underlying) {
 
-  def this( el: Element )(implicit pos1: Position ) = this(el.underlying)(pos1)
+  def this( el: Element )(implicit pos1: Position, webdriver1: WebDriver, patienceConfig1: PatienceConfig ) = this(el.underlying)(pos1,webdriver1,patienceConfig1)
 
   def value: String = underlying.getAttribute("value")
 
@@ -160,9 +163,9 @@ class Checkbox( underlying: WebElement )(implicit pos: Position ) extends InputE
  * @constructor
  * @param underlying - the input element of the combobox
  */
-class Combobox( underlying: WebElement )(implicit pos: Position ) extends TextField(underlying) {
+class Combobox( underlying: WebElement )(implicit pos: Position, webdriver: WebDriver, patienceConfig: PatienceConfig ) extends TextField(underlying) {
 
-  def this( el: Element )(implicit pos1: Position ) = this(el.underlying)(pos1)
+  def this( el: Element )(implicit pos1: Position, webdriver1: WebDriver, patienceConfig1: PatienceConfig ) = this(el.underlying)(pos1,webdriver1,patienceConfig1)
 
   def suggestions: List[Element] = {
     underlying.findElements(By.xpath( """./parent::div/following-sibling::div/div/div/ul/li""" ) ).asScala.map(e => new Element(e)).toList
@@ -181,27 +184,27 @@ class Combobox( underlying: WebElement )(implicit pos: Position ) extends TextFi
  * @constructor
  * @param underlying - the input element of the combobox
  */
-class DateTimePicker( underlying: WebElement )(implicit pos: Position ) extends TextField(underlying) {
+class DateTimePicker( underlying: WebElement )(implicit pos: Position, webdriver: WebDriver, patienceConfig: PatienceConfig ) extends TextField(underlying) {
 
-  def this( el: Element )(implicit pos1: Position ) = this(el.underlying)(pos1)
+  def this( el: Element )(implicit pos1: Position, webdriver1: WebDriver, patienceConfig1: PatienceConfig ) = this(el.underlying)(pos1,webdriver1,patienceConfig1)
 
   def clickSelectDate(implicit pos1: Position ) = {
     val b = underlying.findElement(By.xpath( """./following-sibling::span/button[1]""" ) )
     b.click
   }
 
-  def isSelectDatePopupVisible(implicit pos1: Position ) = {
-    val b = new Element( underlying.findElement(By.xpath( """./parent::div/parent::div/div[2]""" ) ) )(pos1)
+  def isSelectDatePopupVisible(implicit pos1: Position, webdriver: WebDriver, patienceConfig: PatienceConfig ) = {
+    val b = new Element( underlying.findElement(By.xpath( """./parent::div/parent::div/div[2]""" ) ) )(pos1,webdriver,patienceConfig)
     !b.containsClass("rw-popup-transition-exited")
   }
 
-  def clickPreviousMonth(implicit pos1: Position ) = {
-    val b = new Element( underlying.findElement(By.xpath( """./parent::div/parent::div/div[2]/div/div/div/button[1]""" ) ) )(pos1)
+  def clickPreviousMonth(implicit pos1: Position, webdriver: WebDriver, patienceConfig: PatienceConfig ) = {
+    val b = new Element( underlying.findElement(By.xpath( """./parent::div/parent::div/div[2]/div/div/div/button[1]""" ) ) )(pos1,webdriver,patienceConfig)
     b.click
   }
 
-  def clickNextMonth(implicit pos1: Position ) = {
-    val b = new Element( underlying.findElement(By.xpath( """./parent::div/parent::div/div[2]/div/div/div/button[2]""" ) ) )(pos1)
+  def clickNextMonth(implicit pos1: Position, webdriver: WebDriver, patienceConfig: PatienceConfig ) = {
+    val b = new Element( underlying.findElement(By.xpath( """./parent::div/parent::div/div[2]/div/div/div/button[2]""" ) ) )(pos1,webdriver,patienceConfig)
     b.click
   }
 
@@ -209,15 +212,15 @@ class DateTimePicker( underlying: WebElement )(implicit pos: Position ) extends 
    * @return get all the days that are visible in calendar popup.
    * if the popup is not visible, then the empty list is returned.
    */
-  def getDays(implicit pos1: Position ): List[String] = {
+  def getDays(implicit pos1: Position, webdriver: WebDriver, patienceConfig: PatienceConfig ): List[String] = {
     val b = underlying.findElements(By.xpath( """./parent::div/parent::div/div[3]/div/div/div[2]/table/tbody/tr/td""" ) ).asScala
     b.flatMap { cell =>
-      new Element(cell)(pos1).attribute("aria-label")
+      new Element(cell)(pos1,webdriver,patienceConfig).attribute("aria-label")
     }.toList
   }
 
-  def clickDay( d: String)(implicit pos1: Position ) = {
-    val b = new Element( underlying.findElement(By.xpath( s"""./parent::div/parent::div/div[3]/div/div/div[2]/table/tbody/tr/td[@aria-label='${d}']""" ) ) )(pos1)
+  def clickDay( d: String)(implicit pos1: Position, webdriver: WebDriver, patienceConfig: PatienceConfig ) = {
+    val b = new Element( underlying.findElement(By.xpath( s"""./parent::div/parent::div/div[3]/div/div/div[2]/table/tbody/tr/td[@aria-label='${d}']""" ) ) )(pos1,webdriver,patienceConfig)
     b.click
   }
 
@@ -226,8 +229,8 @@ class DateTimePicker( underlying: WebElement )(implicit pos: Position ) extends 
     b.clear()
   }
 
-  def isSelectTimePopupVisible(implicit pos1: Position ) = {
-    val b = new Element( underlying.findElement(By.xpath( """./parent::div/parent::div/div[3]""" ) ) )(pos1)
+  def isSelectTimePopupVisible(implicit pos1: Position, webdriver: WebDriver, patienceConfig: PatienceConfig ) = {
+    val b = new Element( underlying.findElement(By.xpath( """./parent::div/parent::div/div[3]""" ) ) )(pos1,webdriver,patienceConfig)
     !b.containsClass("rw-popup-transition-exited")
   }
 
@@ -235,15 +238,15 @@ class DateTimePicker( underlying: WebElement )(implicit pos: Position ) extends 
    * @return get all the days that are visible in calendar popup.
    * if the popup is not visible, then the empty list is returned.
    */
-  def getTimes(implicit pos1: Position ): List[String] = {
+  def getTimes(implicit pos1: Position, webdriver: WebDriver, patienceConfig: PatienceConfig ): List[String] = {
     val b = underlying.findElements(By.xpath( """./parent::div/parent::div/div[2]/div/div/div/ul/li""" ) ).asScala
     b.map { cell =>
-      new Element(cell)(pos1).text
+      new Element(cell)(pos1,webdriver,patienceConfig).text
     }.toList
   }
 
-  def clickTime( d: String)(implicit pos1: Position ) = {
-    val b = new Element( underlying.findElement(By.xpath( s"""./parent::div/parent::div/div[2]/div/div/div/ul/li[text()='${d}']""" ) ) )(pos1)
+  def clickTime( d: String)(implicit pos1: Position, webdriver: WebDriver, patienceConfig: PatienceConfig ) = {
+    val b = new Element( underlying.findElement(By.xpath( s"""./parent::div/parent::div/div[2]/div/div/div/ul/li[text()='${d}']""" ) ) )(pos1,webdriver,patienceConfig)
     b.click
   }
 

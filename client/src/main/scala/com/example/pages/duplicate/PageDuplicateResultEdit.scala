@@ -34,6 +34,7 @@ import com.example.data.MatchDuplicate
 import com.example.materialui.MuiTypography
 import com.example.materialui.TextVariant
 import com.example.materialui.TextColor
+import japgolly.scalajs.react.vdom.TagMod
 
 /**
  * A skeleton component.
@@ -271,83 +272,85 @@ object PageDuplicateResultEditInternal {
       Moment.locale("en")
       ReactWidgetsMoment()
 
-      DuplicateResultStore.getDuplicateResult() match {
-        case Some(dre) if dre.id == props.page.dupid =>
-          val finished = !state.notfinished
-          val comment = state.comment.getOrElse("")
-          <.div(
-              <.div( dupStyles.divDuplicateResultEditPage,
-              DuplicatePageBridgeAppBar(
-                id = None,
-                tableIds = List(),
-                title = Seq[CtorType.ChildArg](
-                      MuiTypography(
-                          variant = TextVariant.h6,
-                          color = TextColor.inherit,
-                      )(
-                          <.span(
-                            "Edit Duplicate Result",
-                          )
-                      )),
-                helpurl = "../help/duplicate/summary.html",
-                routeCtl = props.routerCtl
-              )(
-  
-              ),
-              if (state.original.isEmpty) {
-                <.h1( "Working" )
-              } else {
-                TagMod(
-                  <.div(
-                    <.p( "Played: " ),
-                    DateTimePicker("played",
-                                   defaultValue=if (state.played==0) Some( new Date() ) else Some(new Date(state.played)),
-                                   defaultCurrentDate = Some( new Date() ),
-                                   onChange = Some(setPlayed),
-                                   disabled = false
-                                  ),
-                    CheckBox("Complete","Match complete",finished,toggleComplete),
-                    CheckBox("IMP","Use IMP",state.useIMP,toggleIMP),
-                    <.br,
-                    <.label(
-                      "Comment: ",
-                      <.input(
-                        ^.`type` := "text",
-                        ^.name := "Comment",
-                        ^.value := comment,
-                        ^.onChange ==> setComment
-                      )
+      <.div(
+        DuplicatePageBridgeAppBar(
+          id = None,
+          tableIds = List(),
+          title = Seq[CtorType.ChildArg](
+                MuiTypography(
+                    variant = TextVariant.h6,
+                    color = TextColor.inherit,
+                )(
+                    <.span(
+                      "Edit Duplicate Result",
                     )
-                  ),
-                  state.teams.zipWithIndex.map{ e =>
-                    val (ws,i) = e
-                    val t = i*ws.length*3
-                    getWinnerSet(i,ws,t)
-                  }.toTagMod,
-                  !state.isValid() ?= <.p("Data not valid"),
-                  <.p( "Created: ", DateUtils.formatDate(dre.created), ", updated ", DateUtils.formatDate(dre.updated) )
-                )
-              }
-            ),
-            <.div(
-              baseStyles.divFooter,
-              <.div(
-                baseStyles.divFooterLeft,
-                AppButton( "OK", "OK",
-                           ^.disabled := !state.isValid(),
-                           ^.onClick --> ok
-                )
+                )),
+          helpurl = "../help/duplicate/summary.html",
+          routeCtl = props.routerCtl
+        )(
+
+        ),
+        DuplicateResultStore.getDuplicateResult() match {
+          case Some(dre) if dre.id == props.page.dupid =>
+            val finished = !state.notfinished
+            val comment = state.comment.getOrElse("")
+            TagMod(
+              <.div( dupStyles.divDuplicateResultEditPage,
+                if (state.original.isEmpty) {
+                  <.h1( "Working" )
+                } else {
+                  TagMod(
+                    <.div(
+                      <.p( "Played: " ),
+                      DateTimePicker("played",
+                                     defaultValue=if (state.played==0) Some( new Date() ) else Some(new Date(state.played)),
+                                     defaultCurrentDate = Some( new Date() ),
+                                     onChange = Some(setPlayed),
+                                     disabled = false
+                                    ),
+                      CheckBox("Complete","Match complete",finished,toggleComplete),
+                      CheckBox("IMP","Use IMP",state.useIMP,toggleIMP),
+                      <.br,
+                      <.label(
+                        "Comment: ",
+                        <.input(
+                          ^.`type` := "text",
+                          ^.name := "Comment",
+                          ^.value := comment,
+                          ^.onChange ==> setComment
+                        )
+                      )
+                    ),
+                    state.teams.zipWithIndex.map{ e =>
+                      val (ws,i) = e
+                      val t = i*ws.length*3
+                      getWinnerSet(i,ws,t)
+                    }.toTagMod,
+                    !state.isValid() ?= <.p("Data not valid"),
+                    <.p( "Created: ", DateUtils.formatDate(dre.created), ", updated ", DateUtils.formatDate(dre.updated) )
+                  )
+                }
               ),
               <.div(
-                baseStyles.divFooterCenter,
-                AppButton( "Cancel", "Cancel",
-                           ^.onClick --> cancel )
+                baseStyles.divFooter,
+                <.div(
+                  baseStyles.divFooterLeft,
+                  AppButton( "OK", "OK",
+                             ^.disabled := !state.isValid(),
+                             ^.onClick --> ok
+                  )
+                ),
+                <.div(
+                  baseStyles.divFooterCenter,
+                  AppButton( "Cancel", "Cancel",
+                             ^.onClick --> cancel )
+                )
               )
             )
-          )
-        case _ =>
-          <.div( s"Working" )
-      }
+          case _ =>
+            <.div( s"Working" )
+        }
+      )
     }
 
     var mounted = false

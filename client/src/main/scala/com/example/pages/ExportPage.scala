@@ -25,6 +25,10 @@ import com.example.react.CheckBox
 import play.api.libs.json.JsValue
 import play.api.libs.json.JsString
 import com.example.data.Id
+import com.example.routes.BridgeRouter
+import com.example.materialui.MuiTypography
+import com.example.materialui.TextVariant
+import com.example.materialui.TextColor
 
 /**
  * A skeleton component.
@@ -40,9 +44,9 @@ import com.example.data.Id
 object ExportPage {
   import ExportPageInternal._
 
-  case class Props( router: RouterCtl[AppPage] )
+  case class Props( router: BridgeRouter[AppPage] )
 
-  def apply( router: RouterCtl[AppPage] ) = component( Props(router))
+  def apply( router: BridgeRouter[AppPage] ) = component( Props(router))
 
 }
 
@@ -235,8 +239,19 @@ object ExportPageInternal {
 
       <.div(
         rootStyles.exportPageDiv,
-
-        <.h1("Export Bridge Store"),
+        RootBridgeAppBar(
+            Seq(MuiTypography(
+                    variant = TextVariant.h6,
+                    color = TextColor.inherit,
+                )(
+                    <.span(
+                      "Export Bridge Store",
+                    )
+                )
+            ),
+            None,
+            props.router
+        )(),
         <.div(
           showList( "Duplicate", "Duplicate", dupids ),
           showList( "Chicago", "Chicago", state.chiids ),

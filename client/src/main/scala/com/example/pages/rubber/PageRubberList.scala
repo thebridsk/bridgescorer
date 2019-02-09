@@ -169,32 +169,32 @@ object PageRubberListInternal {
         case ilv: ImportListView => Some(ilv.getDecodedId)
         case _ => None
       }
-      if (importId == RubberListStore.getImportId) {
-        RubberListStore.getRubberSummary() match {
-          case Some(rubberlist) =>
-            val rubbers = rubberlist.sortWith((l,r) => Id.idComparer( l.id, r.id) > 0)
-            val (msg,funOk,funCancel) = state.popupMsg.map( msg => (Some(msg),None,Some(cancel))).
-                                           getOrElse(
-                                             (
-                                               state.askingToDelete.map(id => s"Are you sure you want to delete Rubber match ${id}"),
-                                               Some(deleteOK),
-                                               Some(deleteCancel)
-                                             )
-                                           )
-            <.div(
-                rubStyles.listPage,
-                PopupOkCancel(msg.map(s=>s),funOk,funCancel),
-                RubberPageBridgeAppBar(
-                  title = Seq[CtorType.ChildArg](
-                    MuiTypography(
-                        variant = TextVariant.h6,
-                        color = TextColor.inherit,
-                    )(
-                        <.span( "List" )
-                    )),
-                  helpurl = "../help/rubber/list.html",
-                  routeCtl = props.routerCtl
-                )(),
+      val (msg,funOk,funCancel) = state.popupMsg.map( msg => (Some(msg),None,Some(cancel))).
+                                     getOrElse(
+                                       (
+                                         state.askingToDelete.map(id => s"Are you sure you want to delete Rubber match ${id}"),
+                                         Some(deleteOK),
+                                         Some(deleteCancel)
+                                       )
+                                     )
+      <.div(
+          rubStyles.listPage,
+          PopupOkCancel(msg.map(s=>s),funOk,funCancel),
+          RubberPageBridgeAppBar(
+            title = Seq[CtorType.ChildArg](
+              MuiTypography(
+                  variant = TextVariant.h6,
+                  color = TextColor.inherit,
+              )(
+                  <.span( "List" )
+              )),
+            helpurl = "../help/rubber/list.html",
+            routeCtl = props.routerCtl
+          )(),
+          if (importId == RubberListStore.getImportId) {
+            RubberListStore.getRubberSummary() match {
+              case Some(rubberlist) =>
+                val rubbers = rubberlist.sortWith((l,r) => Id.idComparer( l.id, r.id) > 0)
                 <.table(
                     <.thead(
                       <.tr(
@@ -237,23 +237,14 @@ object PageRubberListInternal {
                           RubberRow(this,props,state,i,r,importId)
                         }.toTagMod
                     )
-                ),
-//                <.div( baseStyles.divFooter,
-//                  <.div( baseStyles.divFooterLeft,
-//                    AppButton( "Home", "Home", props.routerCtl.home )
-//                  ),
-//                  <.div(
-//                    baseStyles.divFooterLeft,
-//                    HelpButton("../help/rubber/list.html")
-//                  )
-//                )
-            )
-          case None =>
-            <.div("Loading ...")
-        }
-      } else {
-        <.div("Loading ...")
-      }
+                )
+              case None =>
+                <.div(<.h1("Loading ..."))
+            }
+          } else {
+            <.div(<.h1("Loading ..."))
+          }
+      )
 
     }
 

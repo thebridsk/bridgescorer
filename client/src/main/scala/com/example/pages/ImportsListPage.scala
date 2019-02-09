@@ -36,6 +36,10 @@ import com.example.pages.chicagos.ChicagoRouter
 import com.example.pages.chicagos.ChicagoModule.PlayChicago2
 import com.example.pages.rubber.RubberModule.PlayRubber
 import com.example.pages.rubber.RubberRouter
+import com.example.materialui.MuiTypography
+import com.example.materialui.TextVariant
+import com.example.materialui.TextColor
+import com.example.routes.BridgeRouter
 
 /**
  * A skeleton component.
@@ -51,9 +55,9 @@ import com.example.pages.rubber.RubberRouter
 object ImportsListPage {
   import ImportsListPageInternal._
 
-  case class Props( router: RouterCtl[AppPage], page: AppPage )
+  case class Props( router: BridgeRouter[AppPage], page: AppPage )
 
-  def apply( router: RouterCtl[AppPage], page: AppPage ) = component( Props(router,page))
+  def apply( router: BridgeRouter[AppPage], page: AppPage ) = component( Props(router,page))
 
 }
 
@@ -252,8 +256,19 @@ object ImportsListPageInternal {
       <.div(
         rootStyles.importsListPageDiv,
         PopupOkCancel( state.error, None, Some(clearError) ),
-
-        <.h1("Import Bridge Store"),
+        RootBridgeAppBar(
+            Seq(MuiTypography(
+                    variant = TextVariant.h6,
+                    color = TextColor.inherit,
+                )(
+                    <.span(
+                      "Import Bridge Store",
+                    )
+                )
+            ),
+            None,
+            props.router
+        )(),
         <.table(
           <.thead(
             <.tr(

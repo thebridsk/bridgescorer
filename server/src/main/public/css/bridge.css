@@ -592,7 +592,7 @@ body.touched .withTooltipBox:hover {
 }
 
 .popupMenu {
-  z-index: 20;
+  z-index: 101;
 }
 
 .appBarTitle {
@@ -616,7 +616,7 @@ button, input, a, li {
   position: fixed;
   top: 0;
   left: 0;
-  z-index: 12;
+  z-index: 100;
   width: 100%;
 }
 

@@ -49,7 +49,7 @@ class ImportResultPage( implicit webDriver: WebDriver, pageCreated: SourcePositi
   }
 
   def clickLink( implicit pos: Position ) = {
-    find( xpath( "//body/p/a" ) ).click
+    find( xpath( "//body/div/p/a" ) ).click
     new ImportPage()(webDriver,pos)
   }
 }

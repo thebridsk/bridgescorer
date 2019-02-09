@@ -195,8 +195,8 @@ abstract class Page[ +T <: Page[T] ]()( implicit webDriver: WebDriver, pageCreat
    * @return the <code>TextField</code> selected by this query
    * @throws TestFailedException if the input was not found or if the specified <code>itype</code> don't match or if the element tag is not <code>input</code>
    */
-  def findTextInput( iname: String )(implicit pos: Position): TextField = {
-    new TextField(findInput(iname,"text"))(pos)
+  def findTextInput( iname: String )(implicit pos: Position, patienceConfig: PatienceConfig ): TextField = {
+    new TextField(findInput(iname,"text"))(pos,webDriver,patienceConfig)
   }
 
   /**
@@ -206,8 +206,8 @@ abstract class Page[ +T <: Page[T] ]()( implicit webDriver: WebDriver, pageCreat
    * @return the <code>TextField</code> selected by this query
    * @throws TestFailedException if the input was not found or if the specified <code>itype</code> don't match or if the element tag is not <code>input</code>
    */
-  def findNumberInput( iname: String )(implicit pos: Position): NumberField = {
-    new NumberField( findInput(iname,"number") )(pos)
+  def findNumberInput( iname: String )(implicit pos: Position, patienceConfig: PatienceConfig ): NumberField = {
+    new NumberField( findInput(iname,"number") )(pos,webDriver,patienceConfig)
   }
 
   /**
@@ -359,14 +359,14 @@ abstract class Page[ +T <: Page[T] ]()( implicit webDriver: WebDriver, pageCreat
    * @return the <code>Element</code> selected by this query
    * @throws TestFailedException if any of the input fields were not found
    */
-  def findInputs( itype: String, iname: String* )(implicit pos: Position): Map[String,Element] = {
+  def findInputs( itype: String, iname: String* )(implicit pos: Position, patienceConfig: PatienceConfig): Map[String,Element] = {
     try {
       val input = findElements(By.tagName("input")).asScala.
                     flatMap{ we =>
                       if (we.getAttribute("type") == itype) {
                         val n = we.getAttribute("name")
                         if (iname.contains(n)) {
-                          (n, new Element(we)(pos))::Nil
+                          (n, new Element(we)(pos,webDriver,patienceConfig))::Nil
                         } else {
                           Nil
                         }

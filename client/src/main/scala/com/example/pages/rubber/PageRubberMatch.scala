@@ -165,41 +165,43 @@ object PageRubberMatchInternal {
                 helpurl = "../help/rubber/summary.html",
                 routeCtl = props.routerCtl
               )(),
-              <.div( rubStyles.divRubberMatchView,
-                  <.table(
-                      <.thead(
-                          <.tr(
-                              <.th( score.rubber.id ),
-                              <.th( rub.north, " ", rub.south ),
-                              <.th( rub.east, " ", rub.west )
-                              )
-                          ),
-                      <.tfoot(
-                          showRow("Bonus", score.nsBonus.toString(), score.ewBonus.toString()),
-                          showRow("Total", score.nsTotal.toString(), score.ewTotal.toString())
+              <.div(
+                <.div( rubStyles.divRubberMatchView,
+                    <.table(
+                        <.thead(
+                            <.tr(
+                                <.th( score.rubber.id ),
+                                <.th( rub.north, " ", rub.south ),
+                                <.th( rub.east, " ", rub.west )
+                                )
+                            ),
+                        <.tfoot(
+                            showRow("Bonus", score.nsBonus.toString(), score.ewBonus.toString()),
+                            showRow("Total", score.nsTotal.toString(), score.ewTotal.toString())
+                        ),
+                        <.tbody(
+                            aboveTheLine(),
+                            showGames(),
+                        )
+                    )
+                ),
+                PageRubberMatchDetails(props.page.toDetails(), props.routerCtl, true ),
+                <.div( baseStyles.divFooter,
+                    <.div(
+                        baseStyles.divFooterLeft,
+                        !score.done ?= AppButton( "NextHand", "Next Hand", baseStyles.requiredNotNext, ^.onClick-->nextHand )
                       ),
-                      <.tbody(
-                          aboveTheLine(),
-                          showGames(),
-                          )
-                      )
-                  ),
-              PageRubberMatchDetails(props.page.toDetails(), props.routerCtl, true ),
-              <.div( baseStyles.divFooter,
-                  <.div(
-                      baseStyles.divFooterLeft,
-                      !score.done ?= AppButton( "NextHand", "Next Hand", baseStyles.requiredNotNext, ^.onClick-->nextHand )
-                    ),
-                  <.div(
-                      baseStyles.divFooterLeft,
-                      AppButton( "EditNames", "Edit Names", ^.onClick-->tonames )
-//                      false ?= AppButton( "Details", "Details", ^.onClick-->toDetails() )
-                    ),
-                  <.div(
-                      baseStyles.divFooterRight,
-                      ComponentInputStyleButton( CallbackTo{} ),
-                      AppButton( "Quit", "Quit", score.done ?= baseStyles.requiredNotNext, ^.onClick-->quit ),
-//                      HelpButton("../help/rubber/summary.html")
+                    <.div(
+                        baseStyles.divFooterLeft,
+                        AppButton( "EditNames", "Edit Names", ^.onClick-->tonames )
+  //                      false ?= AppButton( "Details", "Details", ^.onClick-->toDetails() )
+                      ),
+                    <.div(
+                        baseStyles.divFooterRight,
+                        ComponentInputStyleButton( CallbackTo{} ),
+                        AppButton( "Quit", "Quit", score.done ?= baseStyles.requiredNotNext, ^.onClick-->quit ),
+  //                      HelpButton("../help/rubber/summary.html")
+                    )
                   )
                 )
               )
@@ -208,7 +210,20 @@ object PageRubberMatchInternal {
             PageRubberNames( RubberMatchNamesView( props.page.rid ), props.routerCtl )
           )
         case _ =>
-          <.div(<.h1("Waiting to load data"))
+          <.div( rubStyles.divRubberMatch,
+              RubberPageBridgeAppBar(
+                title = Seq[CtorType.ChildArg](
+                  MuiTypography(
+                      variant = TextVariant.h6,
+                      color = TextColor.inherit,
+                  )(
+                      <.span( "Match" )
+                  )),
+                helpurl = "../help/rubber/summary.html",
+                routeCtl = props.routerCtl
+              )(),
+              <.div(<.h1("Waiting to load data"))
+          )
       }
     }
 

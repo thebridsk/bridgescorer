@@ -150,8 +150,26 @@ trait ImportExport {
 <title>Import Store</title>
 </head>
 <body>
+<div id="BridgeApp">
+<div style="position: fixed; top: 0; left: 0; width: 100%;
+            padding-left: 16px; padding-right: 16px;
+            display: flex; position: relative; align-items: center;
+            color: #fff; background-color: #3f51b5;
+            font-size: x-large;
+            height: 64px;
+           " >
+  <h6 style="font-size: 1.25rem; font-family: Arial, sans-serif; font-weight: 500; line-height: 1.6; letter-spacing: 0.0075em;
+      " >Bridge ScoreKeeper</h6>
+  <span style="padding-left: 30px; font-size: 2.5rem">
+      <span class="headerSuitSize" style="color: black;"> &spades;</span>
+      <span class="headerSuitSize" style="color: red;"> &hearts;</span>
+      <span class="headerSuitSize" style="color: red;"> &diams;</span>
+      <span class="headerSuitSize" style="color: black;"> &clubs;</span>
+  </span>
+</div>
 <h1>Successfully imported ${filename}</h1>
 <p><a href="${url}">Redirect</a></p>
+</div>
 </body>
 </html>
 """
@@ -168,9 +186,27 @@ trait ImportExport {
 <title>Error Import Store</title>
 </head>
 <body>
+<div id="BridgeApp">
+<div style="position: fixed; top: 0; left: 0; width: 100%;
+            padding-left: 16px; padding-right: 16px;
+            display: flex; position: relative; align-items: center;
+            color: #fff; background-color: #3f51b5;
+            font-size: x-large;
+            height: 64px;
+           " >
+  <h6 style="font-size: 1.25rem; font-family: Arial, sans-serif; font-weight: 500; line-height: 1.6; letter-spacing: 0.0075em;
+      " >Bridge ScoreKeeper</h6>
+  <span style="padding-left: 30px; font-size: 2.5rem">
+      <span class="headerSuitSize" style="color: black;"> &spades;</span>
+      <span class="headerSuitSize" style="color: red;"> &hearts;</span>
+      <span class="headerSuitSize" style="color: red;"> &diams;</span>
+      <span class="headerSuitSize" style="color: black;"> &clubs;</span>
+  </span>
+</div>
 <h1>Error importing ${filename}</h1>
 <p>${error}</p>
 <p><a href="${url}">Return</a></p>
+</div>
 </body>
 </html>
 """

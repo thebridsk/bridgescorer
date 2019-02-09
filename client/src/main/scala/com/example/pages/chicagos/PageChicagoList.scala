@@ -141,35 +141,35 @@ object PageChicagoListInternal {
 
 
     def render(props: Props, state:State) = {
-      ChicagoSummaryStore.getChicagoSummary() match {
-        case Some(chicagosRaw) =>
-          val importId = props.page match {
-            case ilv: ImportListView => Some(ilv.getDecodedId)
-            case _ => None
-          }
-          val chicagos = chicagosRaw.sortWith((l,r) => Id.idComparer(l.id, r.id) > 0)
-          val maxplayers = chicagos.map( mc => mc.players.length ).foldLeft(4){case (m, i) => math.max(m,i)}
-          val (msg,funOk,funCancel) = state.popupMsg.map( msg => (Some(msg),None,Some(cancel))).
-                                         getOrElse(
-                                           (
-                                             state.askingToDelete.map(id => s"Are you sure you want to delete Chicago match ${id}"),
-                                             Some(deleteOK),
-                                             Some(deleteCancel)
-                                           )
-                                         )
-          <.div( chiStyles.chicagoListPage,
-              PopupOkCancel(msg.map(s=>s),funOk,funCancel),
-              ChicagoPageBridgeAppBar(
-                title = Seq[CtorType.ChildArg](
-                  MuiTypography(
-                      variant = TextVariant.h6,
-                      color = TextColor.inherit,
-                  )(
-                      <.span( "List" )
-                  )),
-                helpurl = "../help/chicago/list.html",
-                routeCtl = props.routerCtl
-              )(),
+      val (msg,funOk,funCancel) = state.popupMsg.map( msg => (Some(msg),None,Some(cancel))).
+                                     getOrElse(
+                                       (
+                                         state.askingToDelete.map(id => s"Are you sure you want to delete Chicago match ${id}"),
+                                         Some(deleteOK),
+                                         Some(deleteCancel)
+                                       )
+                                     )
+      <.div( chiStyles.chicagoListPage,
+          PopupOkCancel(msg.map(s=>s),funOk,funCancel),
+          ChicagoPageBridgeAppBar(
+            title = Seq[CtorType.ChildArg](
+              MuiTypography(
+                  variant = TextVariant.h6,
+                  color = TextColor.inherit,
+              )(
+                  <.span( "List" )
+              )),
+            helpurl = "../help/chicago/list.html",
+            routeCtl = props.routerCtl
+          )(),
+          ChicagoSummaryStore.getChicagoSummary() match {
+            case Some(chicagosRaw) =>
+              val importId = props.page match {
+                case ilv: ImportListView => Some(ilv.getDecodedId)
+                case _ => None
+              }
+              val chicagos = chicagosRaw.sortWith((l,r) => Id.idComparer(l.id, r.id) > 0)
+              val maxplayers = chicagos.map( mc => mc.players.length ).foldLeft(4){case (m, i) => math.max(m,i)}
               <.table(
                   <.thead(
                     <.tr(
@@ -192,25 +192,14 @@ object PageChicagoListInternal {
                         ChicagoRow.withKey(key)((this,props,state,i,maxplayers,chicago,importId))
                       }.toTagMod
                   )
-              ),
-//              <.div(
-//                baseStyles.divFooter,
-//                <.div(
-//                  baseStyles.divFooterLeft,
-//                  AppButton( "Home", "Home", props.routerCtl.home )
-//                ),
-//                <.div(
-//                  baseStyles.divFooterLeft,
-//                  HelpButton("../help/chicago/list.html")
-//                )
-//              )
-          )
-        case None =>
-          <.div(
-              chiStyles.chicagoListPage,
-              "Loading ..."
-          )
-      }
+              )
+            case None =>
+              <.div(
+                  chiStyles.chicagoListPage,
+                  <.h1("Loading ...")
+              )
+          }
+      )
     }
 
     def setMessage( msg: String ) = scope.withEffectsImpure.modState( s => s.copy( popupMsg = Some(msg)) )

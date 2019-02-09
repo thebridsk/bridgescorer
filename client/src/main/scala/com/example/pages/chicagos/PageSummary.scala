@@ -185,7 +185,7 @@ object PageSummaryInternal {
               )
             }
           case _ =>
-            <.div("Loading")
+            <.div(<.h1("Loading ..."))
         }
       )
     }
