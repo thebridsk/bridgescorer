@@ -25,7 +25,7 @@ import org.openqa.selenium.OutputType
 object PageBrowsersImplicits {
   import scala.language.implicitConversions
 
-  implicit def convertWebElementToElement( webElement: WebElement ) = new Element(webElement)
+  implicit def convertWebElementToElement( webElement: WebElement )(implicit pos: Position, webdriver: WebDriver, patienceConfig: PatienceConfig) = new Element(webElement)
 
 }
 
@@ -114,7 +114,7 @@ class ClickOn(implicit createdpos: SourcePosition) {
   }
 
   def scrollToElement( e: WebElement )(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position): Unit = {
-    PageBrowser.executeScript( "arguments[0].scrollIntoView(true);", e);
+    PageBrowser.executeScript( """arguments[0].scrollIntoView({behavior: "auto", block: "center", inline: "center"});""", e);
     Thread.sleep(200)
   }
 }
@@ -286,18 +286,20 @@ trait PageBrowser {
 
   def getElement[T <: Element](
       elem: Element
-    )(implicit pos: Position,
-               classtag: ClassTag[T]
+    )(implicit webDriver: WebDriver,
+                patienceConfig: PatienceConfig,
+                pos: Position,
+                classtag: ClassTag[T]
     ): T = {
     if (classtag.runtimeClass == classOf[Element]) elem.asInstanceOf[T]
     else {
       implicit val con = PageBrowser.getConstructor[T]
-      newInstance(elem.underlying,pos)
+      newInstance(elem.underlying,pos,webDriver,patienceConfig)
     }
   }
 
-  private def newInstance[T <: Element]( e: WebElement, pos: Position )(implicit con: Constructor[T]): T = {
-    con.newInstance(e,pos).asInstanceOf[T]
+  private def newInstance[T <: Element]( e: WebElement, pos: Position, webdriver: WebDriver, patienceConfig: PatienceConfig )(implicit con: Constructor[T]): T = {
+    con.newInstance(e,pos,webdriver,patienceConfig).asInstanceOf[T]
   }
 
   def findAllElems[T <: Element](
@@ -309,17 +311,18 @@ trait PageBrowser {
     ): List[T] = {
     val el = findAll(by)
     implicit val con = PageBrowser.getConstructor[T]
-    el.map( e => newInstance(e.underlying,pos))
+    el.map( e => newInstance(e.underlying,pos,webDriver,patienceConfig))
   }
 
   def getAllElements[T <: Element](
       el: List[Element]
     )(implicit patienceConfig: PatienceConfig,
+                webdriver: WebDriver,
                pos: Position,
                classtag: ClassTag[T]
     ): List[T] = {
     implicit val con = PageBrowser.getConstructor[T]
-    el.map( e => newInstance(e.underlying,pos))
+    el.map( e => newInstance(e.underlying,pos,webdriver,patienceConfig))
   }
 
   def takeScreenshot( directory: String, filename: String )( implicit webDriver: WebDriver, pos: Position ): Unit = {
@@ -424,15 +427,15 @@ trait PageBrowser {
   }
 
   def scrollToElement( e: Element )(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position): Unit = {
-    PageBrowser.executeScript( "arguments[0].scrollIntoView(true);", e.underlying);
+    PageBrowser.executeScript( """arguments[0].scrollIntoView({behavior: "auto", block: "center", inline: "center"});""", e.underlying);
   }
 
   def scrollToElement( e: WebElement )(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position): Unit = {
-    PageBrowser.executeScript( "arguments[0].scrollIntoView(true);", e);
+    PageBrowser.executeScript( """arguments[0].scrollIntoView({behavior: "auto", block: "center", inline: "center"});""", e);
   }
 
   def scrollToElement( e: org.scalatest.selenium.WebBrowser.Element )(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position): Unit = {
-    PageBrowser.executeScript( "arguments[0].scrollIntoView(true);", e.underlying)
+    PageBrowser.executeScript( """arguments[0].scrollIntoView({behavior: "auto", block: "center", inline: "center"});""", e.underlying)
   }
 
   /**
@@ -465,7 +468,7 @@ object PageBrowser extends PageBrowser {
   private[pages] val log = Logger[PageBrowser]
 
   private[PageBrowser] def getConstructor[T <: Element](implicit classtag: ClassTag[T]) =
-    classtag.runtimeClass.getDeclaredConstructor(classOf[WebElement],classOf[Position]).asInstanceOf[Constructor[T]]
+    classtag.runtimeClass.getDeclaredConstructor(classOf[WebElement],classOf[Position],classOf[WebDriver],classOf[PatienceConfig] ).asInstanceOf[Constructor[T]]
 
   private[pages] def getPath( filename: File ): Path = FileSystems.getDefault.getPath(filename.toString())
 

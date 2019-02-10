@@ -159,7 +159,10 @@ class Session( name: String = "default" ) extends WebDriver {
       service.start()
       val options = new ChromeOptions
       options.addArguments("--disable-infobars")
-      if (headless) options.addArguments("--headless")
+      if (headless) {
+        options.addArguments("--headless")
+        options.addArguments("--window-size=1920,1080")
+      }
       val capabilities = DesiredCapabilities.chrome();
       capabilities.setCapability(ChromeOptions.CAPABILITY, options);
       testlog.fine("Starting remote driver for chrome")
@@ -565,13 +568,14 @@ object Session {
                 case x: WebDriverException =>
                   // maximize is not supported
                   screenInfoNotSupported = true
+                  testlog.warning("Unable to get size or position", x)
               }
             }
           }
         }
       }
       if (screenInfoNotSupported) {
-        testlog.fine("Screen info not supported")
+        testlog.severe("Screen info not supported")
       } else {
         testlog.fine(s"Screen info size ${screenSize} origin ${origin}")
       }

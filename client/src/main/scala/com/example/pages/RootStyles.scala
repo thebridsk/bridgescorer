@@ -124,7 +124,10 @@ class BaseStyles {
 
   val divGraphiql = cls("divGraphiql")
 
+  val divAppBar = cls("divAppBar")
+
   val appBarTitle = cls("appBarTitle")
+
 }
 
 class RootStyles {

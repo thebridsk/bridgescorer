@@ -286,45 +286,45 @@ object PageNewDuplicateInternal {
         )(
 
         ),
-//        <.h1("New Duplicate Match"),
-//        HelpButton("../help/duplicate/new.html"),
-        CheckBox("resultsOnly", "Create Results Only", state.resultsOnly, resultsOnlyToggle ),
-        <.table(
-          dupStyles.tableNewDuplicate,
-          Header((props,state,this)),
-          <.tbody(
-            state.movementNames().map { movname => {
-              Row.withKey(movname)((movname,props,state,this))
-            }}.toTagMod
+        <.div(
+          CheckBox("resultsOnly", "Create Results Only", state.resultsOnly, resultsOnlyToggle ),
+          <.table(
+            dupStyles.tableNewDuplicate,
+            Header((props,state,this)),
+            <.tbody(
+              state.movementNames().map { movname => {
+                Row.withKey(movname)((movname,props,state,this))
+              }}.toTagMod
+            )
+          ),
+          <.div(
+            <.h2("Show movements"),
+            if (movementNames.isEmpty) {
+              <.p("No movements were found")
+            } else {
+              movementNames.map { movname => {
+                val movement = state.movements(movname)
+                val clickToMovement = MovementView(movname)
+                AppButton( "ShowM_"+movname, movement.short,
+                           props.routerCtl.setOnClick( clickToMovement )
+                )
+              }}.toTagMod
+            }
+          ),
+          <.div(
+            <.h2("Show Boardsets"),
+            if (boardsetNames.isEmpty) {
+              <.p("No boardsets were found")
+            } else {
+              boardsetNames.map { bsname => {
+                val boardset = state.boardsets(bsname)
+                val clickToBoardset = BoardSetView(bsname)
+                AppButton( "ShowB_"+bsname, boardset.short,
+                           props.routerCtl.setOnClick( clickToBoardset )
+                )
+              }}.toTagMod
+            }
           )
-        ),
-        <.div(
-          <.h2("Show movements"),
-          if (movementNames.isEmpty) {
-            <.p("No movements were found")
-          } else {
-            movementNames.map { movname => {
-              val movement = state.movements(movname)
-              val clickToMovement = MovementView(movname)
-              AppButton( "ShowM_"+movname, movement.short,
-                         props.routerCtl.setOnClick( clickToMovement )
-              )
-            }}.toTagMod
-          }
-        ),
-        <.div(
-          <.h2("Show Boardsets"),
-          if (boardsetNames.isEmpty) {
-            <.p("No boardsets were found")
-          } else {
-            boardsetNames.map { bsname => {
-              val boardset = state.boardsets(bsname)
-              val clickToBoardset = BoardSetView(bsname)
-              AppButton( "ShowB_"+bsname, boardset.short,
-                         props.routerCtl.setOnClick( clickToBoardset )
-              )
-            }}.toTagMod
-          }
         )
       )
     }

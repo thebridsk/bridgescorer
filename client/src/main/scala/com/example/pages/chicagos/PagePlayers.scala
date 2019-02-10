@@ -10,6 +10,9 @@ import com.example.routes.BridgeRouter
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.html_<^._
 import com.example.pages.chicagos.ChicagoRouter.NamesView
+import com.example.materialui.MuiTypography
+import com.example.materialui.TextVariant
+import com.example.materialui.TextColor
 
 
 /**
@@ -116,7 +119,20 @@ object PagePlayersInternal {
             }
 //          )
         case _ =>
-          <.div("Loading")
+          <.div(
+            ChicagoPageBridgeAppBar(
+              title = Seq[CtorType.ChildArg](
+                MuiTypography(
+                    variant = TextVariant.h6,
+                    color = TextColor.inherit,
+                )(
+                    <.span( "Enter players and identify first dealer" )
+                )),
+              helpurl = "../help/chicago/four/names4.html",
+              routeCtl = props.router
+            )(),
+            <.div(<.h1("Loading"))
+          )
       }
 
     }

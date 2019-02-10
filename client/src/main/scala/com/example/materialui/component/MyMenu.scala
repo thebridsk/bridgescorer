@@ -30,7 +30,7 @@ object MyMenu {
       anchorEl: js.UndefOr[AnchorElement],
       onClickAway: js.UndefOr[ ()=>Unit ],
       onItemClick: js.UndefOr[ReactEvent=>Unit],
-      additionalProps: js.UndefOr[js.Dictionary[js.Any]],
+//      additionalProps: js.UndefOr[js.Dictionary[js.Any]],
       children: Seq[CtorType.ChildArg]
   )
 
@@ -39,10 +39,10 @@ object MyMenu {
       anchorEl: js.UndefOr[AnchorElement] = js.undefined,
       onClickAway: js.UndefOr[ ()=>Unit ] = js.undefined,
       onItemClick: js.UndefOr[ReactEvent=>Unit] = js.undefined,
-      additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
+//      additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
   )(
       children: CtorType.ChildArg*
-  ) = component(Props(placement,anchorEl,onClickAway,onItemClick,additionalProps,children))
+  ) = component(Props(placement,anchorEl,onClickAway,onItemClick,children))
 
 }
 
@@ -67,32 +67,39 @@ object MyMenuInternal {
   class Backend(scope: BackendScope[Props, State]) {
     def render( props: Props, state: State ) = {
 
-      val additionalProps = js.Dictionary[js.Any]( "className" -> "popupMenu" )
-      props.additionalProps.foreach { ap =>
-        ap.foreach{ e =>
-          val (key,value) = e
-          if (key == "className") {
-            additionalProps.update(key, value+" popupMenu")
-          } else {
-            additionalProps.update(key, value)
-          }
-        }
-      }
+//      val additionalProps = js.Dictionary[js.Any]()
+//      var foundClasses = false
+//      props.additionalProps.foreach { ap =>
+//        ap.foreach{ e =>
+//          val (key,value) = e
+//          if (key == "class") {
+//            val clss = value.asInstanceOf[String]
+//            if (clss.indexOf("popupMenu")<0) additionalProps.update(key, value+" popupMenu")
+//            else additionalProps.update(key, value)
+//          } else {
+//            additionalProps.update(key, value)
+//          }
+//        }
+//      }
 
-      MuiPopper(
-          placement = props.placement,
-          open=props.anchorEl.isDefined,
-          anchorEl=props.anchorEl,
-          additionalProps = props.additionalProps
-      )(
-          MuiPaper(
-              onClick = props.onItemClick,
+      <.div(
+          ^.cls := "popupMenu",
+          MuiPopper(
+              placement = props.placement,
+              open=props.anchorEl.isDefined,
+              anchorEl=props.anchorEl,
+//              additionalProps = props.additionalProps,
+              disablePortal = true
           )(
-              MuiClickAwayListener(
-                  onClickAway = props.onClickAway
+              MuiPaper(
+                  onClick = props.onItemClick,
               )(
-                  <.div(
-                      props.children:_*
+                  MuiClickAwayListener(
+                      onClickAway = props.onClickAway
+                  )(
+                      <.div(
+                          props.children:_*
+                      )
                   )
               )
           )

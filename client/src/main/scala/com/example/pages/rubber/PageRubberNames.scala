@@ -128,7 +128,7 @@ object PageRubberNamesInternal {
         <.table(
           <.tbody(
             <.tr(
-              <.td( <.span( BaseStyles.highlight(required = !playerValid(name)), playerPos)),
+//              <.td( <.span( BaseStyles.highlight(required = !playerValid(name)), playerPos)),
               <.td( getButton(playerPosition,name,tabDealer)),
               <.td( scorekeeper ?= "Scorekeeper" )
             ),
@@ -157,41 +157,42 @@ object PageRubberNamesInternal {
           helpurl = "../help/rubber/names.html",
           routeCtl = props.router
         )(),
-        <.h1(InfoPage.showOnlyInLandscapeOnTouch(), "Rotate to portrait for a better view"),
-//        <.h1("Enter players and identify first dealer"),
-        <.table(
-          <.tbody(
-            <.tr(
-                  <.td( ^.colSpan := 2, tableStyles.tableCellWidth2Of7),
-                  <.td( ^.colSpan := 3, tableStyles.tableCellWidth3Of7, putName("South", South, state.south, false, setSouth, 2, 6) ),
-                  <.td( ^.colSpan := 2, tableStyles.tableCellWidth2Of7)
-                 ),
-            <.tr(
-                  <.td( ^.colSpan := 3, tableStyles.tableCellWidth3Of7, putName("East", East, state.east, false, setEast, 1, 5) ),
-                  <.td( ^.colSpan := 1, tableStyles.tableCellWidth1Of7),
-                  <.td( ^.colSpan := 3, tableStyles.tableCellWidth3Of7, putName("West", West, state.west, false, setWest, 3, 7) )
-                ),
-            <.tr(
-                  <.td( ^.colSpan := 2, tableStyles.tableCellWidth2Of7),
-                  <.td( ^.colSpan := 3, tableStyles.tableCellWidth3Of7, putName("North", North, state.north, true, setNorth, 4, 8) ),
-                  <.td( ^.colSpan := 2, tableStyles.tableCellWidth2Of7)
-                )
-          )
-        ),
         <.div(
-          baseStyles.divFooter,
-          <.div(
-            baseStyles.divFooterLeft,
-            AppButton( "Ok", "OK", ^.disabled := !valid, valid ?= baseStyles.requiredNotNext, ^.onClick-->ok)
+          <.h1(InfoPage.showOnlyInLandscapeOnTouch(), "Rotate to portrait for a better view"),
+          <.table(
+            <.tbody(
+              <.tr(
+                    <.td( ^.colSpan := 2, tableStyles.tableCellWidth2Of7),
+                    <.td( ^.colSpan := 3, tableStyles.tableCellWidth3Of7, putName("South", South, state.south, false, setSouth, 2, 6) ),
+                    <.td( ^.colSpan := 2, tableStyles.tableCellWidth2Of7)
+                   ),
+              <.tr(
+                    <.td( ^.colSpan := 3, tableStyles.tableCellWidth3Of7, putName("East", East, state.east, false, setEast, 1, 5) ),
+                    <.td( ^.colSpan := 1, tableStyles.tableCellWidth1Of7),
+                    <.td( ^.colSpan := 3, tableStyles.tableCellWidth3Of7, putName("West", West, state.west, false, setWest, 3, 7) )
+                  ),
+              <.tr(
+                    <.td( ^.colSpan := 2, tableStyles.tableCellWidth2Of7),
+                    <.td( ^.colSpan := 3, tableStyles.tableCellWidth3Of7, putName("North", North, state.north, true, setNorth, 4, 8) ),
+                    <.td( ^.colSpan := 2, tableStyles.tableCellWidth2Of7)
+                  )
+            )
           ),
           <.div(
-            baseStyles.divFooterCenter,
-            AppButton( "ResetNames", "Reset", ^.onClick --> reset )
-          ),
-          <.div(
-            baseStyles.divFooterRight,
-            AppButton( "Cancel", "Cancel", props.router.setOnClick( ListView /*props.page.toRubber()*/) ),
-//            HelpButton("../help/rubber/names.html")
+            baseStyles.divFooter,
+            <.div(
+              baseStyles.divFooterLeft,
+              AppButton( "Ok", "OK", ^.disabled := !valid, valid ?= baseStyles.requiredNotNext, ^.onClick-->ok)
+            ),
+            <.div(
+              baseStyles.divFooterCenter,
+              AppButton( "ResetNames", "Reset", ^.onClick --> reset )
+            ),
+            <.div(
+              baseStyles.divFooterRight,
+              AppButton( "Cancel", "Cancel", props.router.setOnClick( ListView /*props.page.toRubber()*/) ),
+  //            HelpButton("../help/rubber/names.html")
+            )
           )
         )
       )

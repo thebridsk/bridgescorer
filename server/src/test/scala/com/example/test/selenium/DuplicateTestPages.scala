@@ -316,13 +316,21 @@ class DuplicateTestPages extends FlatSpec
     eventually {
       lp.findElemById("Movements")
     }
-    lp.clickMovements.validate.click(MovementsPage.movements.head).validate.clickOK.validate
+    lp.withClueAndScreenShot(screenshotDir, "Movement", "trying to click first movement") {
+      val mp = lp.clickMovements.validate.takeScreenshot(screenshotDir, "MovementBefore")
+      val mp1 = mp.click(MovementsPage.movements.head).validate
+      mp1.clickOK.validate
+    }
   }
 
   it should "allow creating a new duplicate match" in {
     import SessionDirector._
+    
+    val dp = ListDuplicatePage.current
+    dp.withClueAndScreenShot(screenshotDir, "NewDuplicate", "clicking NewDuplicate button") {
+      dp.clickNewDuplicateButton.validate.takeScreenshot(docsScreenshotDir, "NewDuplicate")
+    }
 
-    ListDuplicatePage.current.clickNewDuplicateButton.validate.takeScreenshot(docsScreenshotDir, "NewDuplicate")
   }
 
   it should "create a new duplicate match" in {
@@ -1353,7 +1361,7 @@ class DuplicateTestPages extends FlatSpec
     import SessionDirector._
 
     val hp = HomePage.current.validate  // .clickMainMenu.validate
-    
+
     eventually {hp.findElemById("Import")}
 
     val ip = hp.clickImport.validate

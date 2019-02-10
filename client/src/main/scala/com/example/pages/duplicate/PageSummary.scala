@@ -694,12 +694,12 @@ object PageSummaryInternal {
                       "Select For Print"
                   )
                 )
-                BeepComponent.getMenuItem()::x
+                BeepComponent.getMenuItem( ()=>scope.withEffectsImpure.forceUpdate)::x
               }
             ):_*
           }
         ),
-//        <.div(
+        <.div(
           if (tp.isData) showMatches()
           else showWorkingMatches(),
           <.p,
@@ -740,7 +740,7 @@ object PageSummaryInternal {
               }
             ),
           )
-//        )
+        )
       )
     }
 

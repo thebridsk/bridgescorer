@@ -102,7 +102,12 @@ object DuplicateTestPages2 {
  * to the names view, to the hand view.
  * @author werewolf
  */
-class DuplicateTestPages2 extends FlatSpec with MustMatchers with BeforeAndAfterAll with EventuallyUtils {
+class DuplicateTestPages2 extends FlatSpec
+    with MustMatchers
+    with BeforeAndAfterAll
+    with EventuallyUtils
+    with CancelAfterFailure
+{
   import Eventually.{ patienceConfig => _, _ }
   import ParallelUtils._
 
@@ -112,6 +117,9 @@ class DuplicateTestPages2 extends FlatSpec with MustMatchers with BeforeAndAfter
   import DuplicateTestPages.{ testlog => _, team1 => _, team2 => _, team3 => _, team4 => _, _ }
 
   import scala.concurrent.duration._
+
+  val screenshotDir = "target/DuplicateTestPages2"
+  val docsScreenshotDir = "target/docs/Duplicate"
 
   val SessionDirector = new DirectorSession()
 
@@ -178,7 +186,10 @@ class DuplicateTestPages2 extends FlatSpec with MustMatchers with BeforeAndAfter
   it should "allow creating a new duplicate match" in {
     import SessionDirector._
 
-    ListDuplicatePage.current.clickNewDuplicateButton.validate
+    val dp = ListDuplicatePage.current
+    dp.withClueAndScreenShot(screenshotDir, "NewDuplicate", "clicking NewDuplicate button") {
+      dp.clickNewDuplicateButton.validate
+    }
   }
 
   it should "create a new duplicate match" in {

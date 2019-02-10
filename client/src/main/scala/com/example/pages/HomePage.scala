@@ -264,16 +264,14 @@ object HomePage {
       <.div(
         rootStyles.homeDiv,
         PopupOkCancel( if (isWorking) Some(doingWork) else None, None, Some(cancel) ),
+        RootBridgeAppBar(
+            title = Seq(),
+            helpurl = Some("../help/introduction.html"),
+            routeCtl = props.routeCtl
+        )(),
         <.div(
           rootStyles.serverDiv,
           ^.id:="url",
-          <.div(
-            RootBridgeAppBar(
-                title = Seq(),
-                helpurl = Some("../help/introduction.html"),
-                routeCtl = props.routeCtl
-            )()
-          ),
           <.h1("Server"),
           <.ul(
             if (Bridge.isDemo) {

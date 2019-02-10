@@ -150,7 +150,7 @@ class DuplicateResultTest extends FlatSpec with MustMatchers with BeforeAndAfter
       import Session._
       // The sessions for the tables and complete is defered to the test that gets the home page url.
       waitForFutures( "Starting browser or server",
-                      CodeBlock { SessionDirector.sessionStart(getPropOrEnv("SessionDirector")).setQuadrant(1) },
+                      CodeBlock { SessionDirector.sessionStart(getPropOrEnv("SessionDirector")).setPositionRelative(0,0).setSize(1024, 800) },
                       CodeBlock { TestServer.start() }
                       )
     } catch {
