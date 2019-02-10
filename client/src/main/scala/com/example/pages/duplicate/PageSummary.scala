@@ -699,7 +699,7 @@ object PageSummaryInternal {
             ):_*
           }
         ),
-//        <.div(
+        <.div(
           if (tp.isData) showMatches()
           else showWorkingMatches(),
           <.p,
@@ -740,7 +740,7 @@ object PageSummaryInternal {
               }
             ),
           )
-//        )
+        )
       )
     }
 
