@@ -89,12 +89,14 @@ object Dependencies {
 
   // version 0.2.3 is hardcoded in sbt-scalajs-bundler
   // current is 0.2.4
-  lazy val vSourceMapLoader = "0.2.3"   // https://www.npmjs.com/package/source-map-loader
+  lazy val vSourceMapLoader = "0.2.4"   // https://www.npmjs.com/package/source-map-loader
   // version 1.0.7 is hardcoded in sbt-scalajs-bundler
   // current is 1.1.0
-  lazy val vConcatWithSourcemaps = "1.0.7"  // https://www.npmjs.com/package/concat-with-sourcemaps
+  lazy val vConcatWithSourcemaps = "1.1.0"  // https://www.npmjs.com/package/concat-with-sourcemaps
   // bug in 3.16.0 of terser
   lazy val vTerser = "3.16.1"               // https://www.npmjs.com/package/terser
+  // but in 6.9.0
+  lazy val vAjv = "6.8.1"                   // https://www.npmjs.com/package/ajv
 
 
   lazy val vWebpackDevServer = "3.1.14"   // https://www.npmjs.com/package/webpack-dev-server
@@ -274,9 +276,10 @@ object Dependencies {
 
   val bridgeScorerDevNpmDeps = Seq(
       "webpack" -> vWebPack,
-      "source-map-loader" -> vSourceMapLoader,
-      "concat-with-sourcemaps" -> vConcatWithSourcemaps,
-      "terser" -> vTerser
+//      "source-map-loader" -> vSourceMapLoader,
+//      "concat-with-sourcemaps" -> vConcatWithSourcemaps,
+      "terser" -> vTerser,
+      "ajv" -> vAjv
 //      "expose-loader" -> vExposeLoader
   )
 
