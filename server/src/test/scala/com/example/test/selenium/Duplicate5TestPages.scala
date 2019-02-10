@@ -332,6 +332,9 @@ class Duplicate5TestPages extends FlatSpec with MustMatchers with BeforeAndAfter
 
   import scala.concurrent.duration._
 
+  val screenshotDir = "target/Duplicate5TestPages"
+  val docsScreenshotDir = "target/docs/Duplicate"
+
   val SessionDirector = new DirectorSession()
   val SessionComplete = new CompleteSession()
   val SessionTable1 = new TableSession("1")
@@ -433,7 +436,10 @@ class Duplicate5TestPages extends FlatSpec with MustMatchers with BeforeAndAfter
   it should "allow creating a new duplicate match" in {
     import SessionDirector._
 
-    ListDuplicatePage.current.clickNewDuplicateButton.validate
+    val dp = ListDuplicatePage.current
+    dp.withClueAndScreenShot(screenshotDir, "NewDuplicate", "clicking NewDuplicate button") {
+      dp.clickNewDuplicateButton.validate
+    }
   }
 
   it should "create a new duplicate match" in {

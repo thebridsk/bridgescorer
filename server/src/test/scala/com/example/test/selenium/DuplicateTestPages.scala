@@ -325,8 +325,12 @@ class DuplicateTestPages extends FlatSpec
 
   it should "allow creating a new duplicate match" in {
     import SessionDirector._
+    
+    val dp = ListDuplicatePage.current
+    dp.withClueAndScreenShot(screenshotDir, "NewDuplicate", "clicking NewDuplicate button") {
+      dp.clickNewDuplicateButton.validate.takeScreenshot(docsScreenshotDir, "NewDuplicate")
+    }
 
-    ListDuplicatePage.current.clickNewDuplicateButton.validate.takeScreenshot(docsScreenshotDir, "NewDuplicate")
   }
 
   it should "create a new duplicate match" in {
