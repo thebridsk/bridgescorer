@@ -17,11 +17,15 @@ import com.example.react.HelpButton
 import com.example.materialui.MuiTypography
 import com.example.materialui.TextVariant
 import com.example.materialui.TextColor
+import com.example.data.util.Strings
 
 object ViewPlayersThirdRound {
   import PagePlayers._
 
   def apply( props: Props ) = component(props)
+
+  private val eastArrow = Strings.arrowRightLeft
+  private val westArrow = Strings.arrowLeftRight
 
   class Backend(scope: BackendScope[Props, ViewPlayersSecondRound.State]) {
 
@@ -57,8 +61,8 @@ object ViewPlayersThirdRound {
       // check if all players from last round are mentioned in new round
       val valid = !state.changingScoreKeeper && state.dealer.isDefined
 
-      def getSwapButton( id: String ) = {
-        AppButton(id, "Swap East West",
+      def getSwapButton( id: String, east: Boolean ) = {
+        AppButton(id, s"Swap ${if (east) eastArrow else westArrow}",
                   baseStyles.nameButton,
                   ^.onClick --> swapEW
                   )
@@ -106,7 +110,7 @@ object ViewPlayersThirdRound {
                         <.br,
                         getDealerButton(East,state.east,8),
                         <.br,
-                        getSwapButton("East")
+                        getSwapButton("East", true)
                       ),
                   <.td(),
                   <.td(
@@ -116,7 +120,7 @@ object ViewPlayersThirdRound {
                         <.br,
                         getDealerButton(West,state.west,8),
                         <.br,
-                        getSwapButton("West")
+                        getSwapButton("West", false)
                       ) ),
             <.tr(
                   <.td(),
