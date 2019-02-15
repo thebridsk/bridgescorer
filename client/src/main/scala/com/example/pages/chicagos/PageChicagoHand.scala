@@ -26,6 +26,7 @@ import com.example.materialui.MuiTypography
 import com.example.routes.BridgeRouter
 import com.example.materialui.TextVariant
 import com.example.materialui.TextColor
+import com.example.pages.BaseStyles.baseStyles
 
 /**
  * A skeleton component.
@@ -70,7 +71,7 @@ object PageChicagoHandInternal {
    */
   class Backend(scope: BackendScope[Props, State]) {
     def render( props: Props, state: State ) = {
-      <.div(
+      <.div( baseStyles.divHandPage,
         ChicagoPageBridgeAppBar(
           title = Seq[CtorType.ChildArg](
             MuiTypography(

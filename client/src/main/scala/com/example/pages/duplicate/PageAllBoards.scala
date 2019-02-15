@@ -106,6 +106,7 @@ object PageAllBoardsInternal {
       }
 
       <.div(
+        baseStyles.divBoardPage,
         dupStyles.divAllBoardsPage,
         DuplicatePageBridgeAppBar(
           id = Some(props.page.dupid),

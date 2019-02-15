@@ -623,3 +623,11 @@ button, input, a, li {
 .divAppBar + * {
   margin-top: 68px !important;
 }
+
+.divBoardPage > .divAppBar{
+  max-width: 1000px
+}
+
+.divHandPage > .divAppBar {
+  max-width: 1024px
+}
