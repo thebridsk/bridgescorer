@@ -33,7 +33,7 @@ object Dependencies {
 //  lazy val vScalaJsLibrary = "0.6.13" // http://mvnrepository.com/artifact/org.scala-js/scalajs-library_2.11
 
 
-  lazy val vAkka = "2.5.20"           // http://mvnrepository.com/artifact/com.typesafe.akka/akka-actor_2.11
+  lazy val vAkka = "2.5.21"           // http://mvnrepository.com/artifact/com.typesafe.akka/akka-actor_2.11
   lazy val vAkkaHttp = "10.1.7"       // http://mvnrepository.com/artifact/com.typesafe.akka/akka-http_2.11
 
   lazy val vAkkaHttpPlayJson="1.25.2"  // https://github.com/hseeberger/akka-http-json
@@ -47,7 +47,7 @@ object Dependencies {
   lazy val vScalaJsReact = "1.4.0"     // http://mvnrepository.com/artifact/com.github.japgolly.scalajs-react/core_sjs0.6_2.11
   lazy val vScalaCss = "0.5.3"         // http://mvnrepository.com/artifact/com.github.japgolly.scalacss/core_sjs0.6_2.11
 
-  lazy val vWebJarsReact = "16.8.1"    // http://mvnrepository.com/artifact/org.webjars/react
+  lazy val vWebJarsReact = "16.8.2"    // http://mvnrepository.com/artifact/org.webjars/react
   lazy val vReactWidgets = "4.4.9"     // http://mvnrepository.com/artifact/org.webjars.npm/react-widgets
   lazy val vWebJarsFlux = "3.1.3"      // http://mvnrepository.com/artifact/org.webjars/flux
   lazy val vGlobalize = "1.3.0"        // https://www.npmjs.com/package/globalize
@@ -95,8 +95,8 @@ object Dependencies {
   lazy val vConcatWithSourcemaps = "1.1.0"  // https://www.npmjs.com/package/concat-with-sourcemaps
   // bug in 3.16.0 of terser
   lazy val vTerser = "3.16.1"               // https://www.npmjs.com/package/terser
-  // but in 6.9.0
-  lazy val vAjv = "6.8.1"                   // https://www.npmjs.com/package/ajv
+  // bug in 6.9.0
+  lazy val vAjv = "6.9.1" // "6.8.1"                   // https://www.npmjs.com/package/ajv
 
 
   lazy val vWebpackDevServer = "3.1.14"   // https://www.npmjs.com/package/webpack-dev-server
