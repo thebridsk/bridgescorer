@@ -105,6 +105,9 @@ Options:""")
   val optionBrowser = toggle("browser", default=Some(false), noshort=true,
                               descrYes="Start a browser on the home page of the server",
                               descrNo="Do not start the browser" )
+  val optionChrome = toggle("chrome", default=Some(false), noshort=true,
+                              descrYes="Start the browser on the home page of the server in fullscreen mode",
+                              descrNo="Do not start the chrome browser" )
   val optionLoopback = toggle("loopback", default=Some(false), noshort=true,
                               descrYes="Use loopback as host name when starting browser",
                               descrNo="Use localhost as host name when starting browser" )
@@ -354,9 +357,9 @@ private class StartServer {
 
     startFuture.onComplete( _ match {
       case Success(_) =>
-        if (optionBrowser.isSupplied) {
+        if (optionBrowser.isSupplied || optionChrome.isSupplied) {
           val hostForBrowser = optionLoopback.toOption.filter( lb => lb ).map(lb => "loopback").getOrElse("localhost")
-          Browser.start(getURL(hostForBrowser))
+          Browser.start(getURL(hostForBrowser), optionChrome.getOrElse(false))
         }
       case Failure(e) =>
         log.severe(s"Failed to start the server ${e.getMessage}")
