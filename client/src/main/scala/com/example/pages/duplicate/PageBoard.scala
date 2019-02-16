@@ -188,7 +188,7 @@ object PageBoardInternal {
       }
 
 
-      <.div(
+      <.div( baseStyles.divBoardPage,
         DuplicatePageBridgeAppBar(
           id = Some(props.page.dupid),
           tableIds = List(),

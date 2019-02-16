@@ -217,10 +217,10 @@ object Controller {
 
   def resetESConnection( dupid: Id.MatchDuplicate ) = {
     eventSource.map { es =>
-      logger.info(s"EventSource reseting connection to $dupid")
+      logger.fine(s"EventSource reseting connection to $dupid")
       monitorMatchDuplicate(dupid, true)
     }.getOrElse(
-      logger.info(s"EventSource no connection to reset")
+      logger.fine(s"EventSource no connection to reset")
     )
   }
 
@@ -228,20 +228,20 @@ object Controller {
     eventSource.map { es =>
       clearESTimeout()
 
-      logger.info(s"EventSource setting heartbeat timeout to ${heartbeatTimeout} ms")
+      logger.fine(s"EventSource setting heartbeat timeout to ${heartbeatTimeout} ms")
       import scala.scalajs.js.timers._
       currentESTimeout = Some( setTimeout(heartbeatTimeout) {
         logger.info(s"EventSource heartbeat timeout fired ${heartbeatTimeout} ms, reseting connection")
         resetESConnection(dupid)
       })
     }.getOrElse(
-      logger.info(s"EventSource no connection to reset")
+      logger.fine(s"EventSource no connection to reset")
     )
   }
 
   def clearESTimeout() {
     import scala.scalajs.js.timers._
-    logger.info(s"EventSource clearing timeout")
+    logger.fine(s"EventSource clearing timeout")
     currentESTimeout.foreach( clearTimeout(_))
     currentESTimeout = None
   }
@@ -250,20 +250,20 @@ object Controller {
     eventSource.map { es =>
       clearESRestartTimeout()
 
-      logger.info(s"EventSource restart timeout to ${restartTimeout} ms")
+      logger.fine(s"EventSource restart timeout to ${restartTimeout} ms")
       import scala.scalajs.js.timers._
       currentESRestartTimeout = Some( setTimeout(restartTimeout) {
-        logger.info(s"EventSource restart timeout fired ${restartTimeout} ms, reseting connection")
+        logger.fine(s"EventSource restart timeout fired ${restartTimeout} ms, reseting connection")
         resetESConnection(dupid)
       })
     }.getOrElse(
-      logger.info(s"EventSource no connection to restart")
+      logger.fine(s"EventSource no connection to restart")
     )
   }
 
   def clearESRestartTimeout() {
     import scala.scalajs.js.timers._
-    logger.info(s"EventSource restart clear timeout")
+    logger.fine(s"EventSource restart clear timeout")
     currentESRestartTimeout.foreach( clearTimeout(_))
     currentESRestartTimeout = None
   }
@@ -271,7 +271,7 @@ object Controller {
   def esOnMessage( dupid: Id.MatchDuplicate )( me: MessageEvent ): Unit = {
     import com.example.data.websocket.DuplexProtocol
     try {
-      logger.info(s"esOnMessage received ${me.data}")
+      logger.fine(s"esOnMessage received ${me.data}")
       resetESTimeout(dupid)
       me.data match {
         case s: String =>

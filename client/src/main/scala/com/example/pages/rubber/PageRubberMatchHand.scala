@@ -28,6 +28,7 @@ import com.example.materialui.MuiTypography
 import com.example.materialui.TextVariant
 import com.example.materialui.TextColor
 import com.example.routes.BridgeRouter
+import com.example.pages.BaseStyles.baseStyles
 
 
 /**
@@ -97,7 +98,7 @@ object PageRubberMatchHandInternal {
     }
 
     def render( props: Props, state: State ) = {
-      <.div(
+      <.div( baseStyles.divHandPage,
         RubberPageBridgeAppBar(
           title = Seq[CtorType.ChildArg](
             MuiTypography(

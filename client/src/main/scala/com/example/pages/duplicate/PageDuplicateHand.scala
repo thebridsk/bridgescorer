@@ -30,6 +30,7 @@ import com.example.pages.duplicate.DuplicateRouter.BaseHandView
 import com.example.materialui.MuiTypography
 import com.example.materialui.TextVariant
 import com.example.materialui.TextColor
+import com.example.pages.BaseStyles.baseStyles
 
 /**
  * Shows the team x board table and has a totals column that shows the number of points the team has.
@@ -108,7 +109,7 @@ object PageDuplicateHandInternal {
   class Backend(scope: BackendScope[Props, State]) {
     def render( props: Props, state: State ) = {
       logger.fine(s"""PageDuplicateHand.render( ${props.page} )""")
-      <.div(
+      <.div( baseStyles.divHandPage,
         DuplicatePageBridgeAppBar(
           id = Some(props.page.dupid),
           tableIds = List(),
