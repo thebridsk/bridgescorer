@@ -212,11 +212,18 @@ class DuplicateTestFromTestDirectory2 extends FlatSpec
       }
     }
 
+    def startup() = {
+      import sessionDirector._
+      withClueAndScreenShot(screenshotDir, "play", s"In startup for template match ${template.id}") {
+        gotoSummaryPage()
+        newDuplicate()
+        gotoDirectorsPage()
+      }
+    }
+
     def play() = {
       gotoRootPage()
-      gotoSummaryPage()
-      newDuplicate()
-      gotoDirectorsPage()
+      startup()
       startCompleteAndTables()
 
       playAllRounds()
@@ -351,22 +358,10 @@ class DuplicateTestFromTestDirectory2 extends FlatSpec
         "startCompleteAndTables",
         logFuture {
           import sessionComplete._
-          assert( dupid.isDefined && dupid.get.length()>0)
-          val hp = if (!sessionCompleteRunning) {
-            HomePage.goto
-          } else {
-            HomePage.current
-          }
-          val dlp = hp.validate.clickListDuplicateButton.validate
-          val sbp = dlp.clickDuplicate(dupid.get).validate
+          withClueAndScreenShot(screenshotDir, "startCompleteAndTables", s"In startup complete for template match ${template.id}") {
 
-          sbp.checkTableButton("1")
-        } ::
-        sessionTables.values.map { st => {
-          logFuture {
-            import st._
             assert( dupid.isDefined && dupid.get.length()>0)
-            val hp = if (newTableSessions.contains(number)) {
+            val hp = if (!sessionCompleteRunning) {
               HomePage.goto
             } else {
               HomePage.current
@@ -374,8 +369,25 @@ class DuplicateTestFromTestDirectory2 extends FlatSpec
             val dlp = hp.validate.clickListDuplicateButton.validate
             val sbp = dlp.clickDuplicate(dupid.get).validate
 
-            sbp.checkTableButton(st.number)
-            sbp.clickTableButton(number.toInt).validate
+            sbp.checkTableButton("1")
+          }
+        } ::
+        sessionTables.values.map { st => {
+          logFuture {
+            import st._
+            withClueAndScreenShot(screenshotDir, "startCompleteAndTables", s"In startup table ${st.table} for template match ${template.id}") {
+              assert( dupid.isDefined && dupid.get.length()>0)
+              val hp = if (newTableSessions.contains(number)) {
+                HomePage.goto
+              } else {
+                HomePage.current
+              }
+              val dlp = hp.validate.clickListDuplicateButton.validate
+              val sbp = dlp.clickDuplicate(dupid.get).validate
+
+              sbp.checkTableButton(st.number)
+              sbp.clickTableButton(number.toInt).validate
+            }
           }
         } }.toList : _*
       )
