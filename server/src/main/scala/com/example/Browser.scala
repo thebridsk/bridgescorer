@@ -11,6 +11,7 @@ import java.io.InputStreamReader
 import scala.sys.process.Process
 import java.util.concurrent.atomic.AtomicInteger
 import scala.concurrent.Future
+import scala.reflect.io.File
 
 object Browser {
 
@@ -60,15 +61,28 @@ object Browser {
     log.info(s"""Executing OS command($i): ${cmd.mkString(" ")}""")
     logExitCode( cmd(0), i, Process(cmd).run(logOutput(cmd(0), i)))
   }
-  def startOnWindows( url: String ) = {
-    exec( List("cmd", "/c", "start " + url));
+
+  val chromeBrowsers = List(
+      """C:\Program Files\Google\Chrome\Application\chrome.exe""",
+      """C:\Program Files (x86)\Google\Chrome\Application\chrome.exe"""
+      )
+
+  def startOnWindows( url: String, fullscreen: Boolean ): Option[Process] = {
+    val chrome = chromeBrowsers.find( f => File(f).isFile )
+    val cmd =
+      (if (fullscreen) {
+        chrome.map( c => List(c,"--start-fullscreen") ).getOrElse(List("cmd", "/c", "start "))
+      } else {
+        List("cmd", "/c", "start ")
+      }) ::: List(url)
+    Some(exec( cmd ))
   }
 
-  def startOnMac( url: String ) = {
+  def startOnMac( url: String, fullscreen: Boolean ) = {
     exec( List("open",url));
   }
 
-  def startOnLinux( url: String ) = {
+  def startOnLinux( url: String, fullscreen: Boolean ) = {
     val browsers = "epiphany"::"firefox"::"mozilla"::"konqueror"::
                    "netscape"::"opera"::"links"::"lynx"::Nil
     val cmd = browsers.map{b => b+" \""+url+"\"" }.mkString(" || ")
@@ -77,12 +91,12 @@ object Browser {
     exec(c);
   }
 
-  def start( url: String ): Option[Process] = {
+  def start( url: String, fullscreen: Boolean = false ): Option[Process] = {
     try {
       sys.props.getOrElse("os.name", "oops").toLowerCase() match {
-        case os: String if (os.contains("win")) => Some(startOnWindows(url))
-        case os: String if (os.contains("mac")) => Some(startOnMac(url))
-        case os: String if (os.contains("nix")||os.contains("nux")) => Some(startOnLinux(url))
+        case os: String if (os.contains("win")) => startOnWindows(url, fullscreen)
+        case os: String if (os.contains("mac")) => Some(startOnMac(url, fullscreen))
+        case os: String if (os.contains("nix")||os.contains("nux")) => Some(startOnLinux(url, fullscreen))
         case os =>
           log.severe("Unknown operating system: "+os)
           None
