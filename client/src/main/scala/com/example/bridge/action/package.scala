@@ -30,6 +30,14 @@ package object action {
 
   case class ActionUpdateDuplicateSummaryItem( importId: Option[String], summary: DuplicateSummary ) extends BridgeAction
 
+  /**
+   * @param importId the import Id.  If None, then this is the main store.
+   * @param summary
+   */
+  case class ActionUpdateDuplicateSummaryDemoMatch( importId: Option[String], summary: List[MatchDuplicate] ) extends BridgeAction
+
+  case class ActionUpdateDuplicateSummaryDemoMatchItem( importId: Option[String], summary: MatchDuplicate ) extends BridgeAction
+
   case class ActionUpdateDuplicateResult( dr: MatchDuplicateResult ) extends BridgeAction
 
   case class ActionStartDuplicateMatch( dupid: Id.MatchDuplicate ) extends DuplicateBridgeAction

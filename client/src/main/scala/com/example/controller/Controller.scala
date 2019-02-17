@@ -46,6 +46,8 @@ import com.example.Bridge
 import com.example.bridge.store.DuplicateSummaryStore
 import scala.util.Success
 import scala.util.Failure
+import com.example.rest2.AjaxCall
+import scala.concurrent.duration.Duration
 
 object Controller {
   val logger = Logger("bridge.Controller")
@@ -409,13 +411,36 @@ object Controller {
     }
   }
 
+  private def getDemoSummary( error: ()=>Unit ): Unit = {
+    val x = AjaxCall.send(
+      method = "GET",
+      url = "demo/demoMatchDuplicates.json",
+      data = null,
+      timeout = Duration("30s"),
+      headers = Map[String, String](),
+      withCredentials = false,
+      responseType = "text/plain"
+    )
+    x.onComplete{ t =>
+      t match {
+        case Success(wxhr) =>
+          val r = wxhr.responseText
+          import JsonSupport._
+          val bm = JsonSupport.readJson[List[MatchDuplicate]](r)
+          BridgeDispatcher.updateDuplicateSummaryDemoMatch(None,bm)
+        case Failure(err) =>
+          error()
+      }
+    }
+  }
+
   def getSummary( error: ()=>Unit /* = ()=>{} */ ): Unit = {
     logger.finer("Sending duplicatesummaries list request to server")
     import scala.scalajs.js.timers._
     setTimeout(1) { // note the absence of () =>
       if (Bridge.isDemo) {
         if (DuplicateSummaryStore.getDuplicateSummary().isEmpty) {
-          BridgeDispatcher.updateDuplicateSummary(None,List())
+          getDemoSummary(error)
         }
       } else {
         RestClientDuplicateSummary.list().recordFailure().onComplete { trylist =>

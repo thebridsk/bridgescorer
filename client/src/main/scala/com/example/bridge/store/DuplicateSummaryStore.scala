@@ -13,6 +13,10 @@ import com.example.bridge.action.ActionUpdateDuplicateSummary
 import com.example.data.DuplicateSummary
 import com.example.logger.Alerter
 import com.example.bridge.action.ActionUpdateDuplicateSummaryItem
+import com.example.bridge.action.ActionUpdateDuplicateSummaryDemoMatchItem
+import com.example.bridge.action.ActionUpdateDuplicateSummaryDemoMatch
+import com.example.data.MatchDuplicate
+import com.example.Bridge
 
 object DuplicateSummaryStore extends ChangeListenable {
   val logger = Logger("bridge.DuplicateSummaryStore")
@@ -29,14 +33,20 @@ object DuplicateSummaryStore extends ChangeListenable {
       updateDuplicateSummary(importId,summary)
     case ActionUpdateDuplicateSummaryItem(importId,summary) =>
       updateDuplicateSummaryItem(importId,summary)
+    case ActionUpdateDuplicateSummaryDemoMatch(importId,summary) =>
+      updateDuplicateSummaryDemoMatch(importId,summary)
+    case ActionUpdateDuplicateSummaryDemoMatchItem(importId,summary) =>
+      updateDuplicateSummaryDemoMatchItem(importId,summary)
     case x =>
       // There are multiple stores, all the actions get sent to all stores
 //      logger.warning("BoardSetStore: Unknown msg dispatched, "+x)
   }}
 
+  private var fMatchSummary: Option[List[MatchDuplicate]] = None
   private var fSummary: Option[List[DuplicateSummary]] = None
   private var fImportId: Option[String] = None
 
+  def getDuplicateMatchSummary() = fMatchSummary
   def getDuplicateSummary() = fSummary
   def getImportId = fImportId
 
@@ -62,6 +72,37 @@ object DuplicateSummaryStore extends ChangeListenable {
     }
     logger.fine(s"""Updated DuplicateSummaryStore from ${fImportId}: ${fSummary}""")
     notifyChange()
+  }
+
+  def updateDuplicateSummaryDemoMatch( importId: Option[String], summary: List[MatchDuplicate] ) = {
+    if (Bridge.isDemo) {
+      logger.fine(s"""Update DuplicateSummaryStore from ${importId}: ${summary}""")
+      if (importId == fImportId) {
+        fMatchSummary = Option(summary)
+        fImportId = importId
+        fSummary = Option( summary.map( md => DuplicateSummary.create(md)))
+      }
+      notifyChange()
+    }
+  }
+
+  def updateDuplicateSummaryDemoMatchItem( importId: Option[String], summary: MatchDuplicate ) = {
+    if (Bridge.isDemo) {
+      logger.fine(s"""Update DuplicateSummaryStore from ${importId}: ${summary}""")
+      if (importId == fImportId) {
+        fMatchSummary = fMatchSummary.map { list =>
+          list.map { ds =>
+            if (ds.id == summary.id) summary
+            else ds
+          }
+        }
+      } else {
+        fMatchSummary = Some( List(summary) )
+        fImportId = importId
+      }
+      logger.fine(s"""Updated DuplicateSummaryStore from ${fImportId}: ${fSummary}""")
+      notifyChange()
+    }
   }
 
 }
