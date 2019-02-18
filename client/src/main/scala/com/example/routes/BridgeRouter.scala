@@ -29,6 +29,9 @@ trait BridgeRouter[Page] {
   def home: TagMod
   def toHome: Unit = {}
   def toAbout: Unit = {}
+  def toInfo: Unit = {}
+
+  def toRootPage( page: AppPage ): Unit = {}
 
   /**
    * Returns the RouterCtl that is wrapped by this

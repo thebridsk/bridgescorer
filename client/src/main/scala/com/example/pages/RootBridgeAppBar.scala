@@ -283,42 +283,6 @@ object RootBridgeAppBarInternal {
                       )()
                     }
                 ),
-                MuiMenuItem(
-                    id = "Info",
-                    onClick = callbackPage(Info) _
-                )(
-                    "Info"
-                ),
-                MuiMenuItem(
-                    id = "GraphQL",
-                    onClick = callbackPage(GraphQLAppPage) _
-                )(
-                    "GraphQL"
-                ),
-                MuiMenuItem(
-                    id = "GraphiQL",
-                    onClick = callbackPage(GraphiQLView) _
-                )(
-                    "GraphiQL"
-                ),
-                MuiMenuItem(
-                    id = "Voyager",
-                    onClick = callbackPage(VoyagerView) _
-                )(
-                    "Voyager"
-                ),
-                MuiMenuItem(
-                    id = "TestPage",
-                    onClick = callbackPage(PageTest) _
-                )(
-                    "Test Page"
-                ),
-                MuiMenuItem(
-                    id = "Color",
-                    onClick = callbackPage(ColorView) _
-                )(
-                    "Color"
-                ),
             ),
 
             // test hand menu
