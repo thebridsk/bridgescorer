@@ -157,7 +157,7 @@ object PageNamesInternal {
               AppButton( "Cancel", "Cancel", props.routerCtl.setOnClick(props.returnPage) )
             )
           case None =>
-            <.p( "Waiting" )
+            <.h1( "Waiting" )
         }
       )
     }

@@ -311,11 +311,6 @@ object ImportsListPageInternal {
             }
           )
         ),
-
-        <.div(
-          AppButton( "Home", "Home",
-                     props.router.setOnClick(Home))
-        )
       )
     }
   }

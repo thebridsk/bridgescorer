@@ -94,21 +94,23 @@ object PageBoardSetInternal {
 
             ),
             <.div(
-              baseStyles.divText100,
-              <.h1( "Boards used for the match" )
-            ),
-            ViewBoardSet(boardset,2),
-            <.div(
-              baseStyles.divFooter,
               <.div(
-                baseStyles.divFooterLeft,
-                AppButton( "Game", "Completed Games Scoreboard", props.routerCtl.setOnClick(props.page.toScoreboard())
+                baseStyles.divText100,
+                <.h1( "Boards used for the match" )
+              ),
+              ViewBoardSet(boardset,2),
+              <.div(
+                baseStyles.divFooter,
+                <.div(
+                  baseStyles.divFooterLeft,
+                  AppButton( "Game", "Completed Games Scoreboard", props.routerCtl.setOnClick(props.page.toScoreboard())
+                  )
                 )
               )
             )
           )
         case None =>
-          <.p( "Waiting" )
+          <.h1( "Waiting" )
       }
     }
 

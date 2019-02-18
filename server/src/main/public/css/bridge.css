@@ -381,19 +381,19 @@
     z-index: -1;
 }
 
-.rootExportPageDiv {
+.rootExportPageDiv > div:nth-child(2) {
     
 }
 
-.rootExportPageDiv > div {
+.rootExportPageDiv > div:nth-child(2) > div {
   font-size: x-large;
 }
 
-.rootExportPageDiv > div > div {
+.rootExportPageDiv > div:nth-child(2) > div > div {
   width: 1024px;
 }
 
-.rootExportPageDiv > div > div > ul {
+.rootExportPageDiv > div:nth-child(2) > div > div > ul {
   columns: 7;
   list-style-type: none;
 }
@@ -613,15 +613,11 @@ button, input, a, li {
 }
 
 .divAppBar {
-  position: fixed;
+  position: sticky;
   top: 0;
   left: 0;
   z-index: 100;
   width: 100%;
-}
-
-.divAppBar + * {
-  margin-top: 68px !important;
 }
 
 .divBoardPage > .divAppBar{
@@ -630,4 +626,16 @@ button, input, a, li {
 
 .divHandPage > .divAppBar {
   max-width: 1024px
+}
+
+.divAppBar + * {
+  margin: 8px;
+}
+
+body {
+  margin: 0;
+}
+
+.divAppBar > div {
+  padding-top: 0 !important;
 }

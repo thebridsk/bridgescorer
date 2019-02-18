@@ -138,29 +138,29 @@ object PageDuplicateResultInternal {
                 val pbws = if (dre.isIMP) dre.placeByWinnerSetIMP(ws) else dre.placeByWinnerSet(ws)
                 ViewPlayerMatchResult( pbws, dre, i+1, wss.length, dre.isIMP )
               }.toTagMod,
-              <.p( "Created: ", DateUtils.formatDate(dre.created), ", updated ", DateUtils.formatDate(dre.updated) )
-            ),
-            <.div(
-              baseStyles.divFooter,
+              <.p( "Created: ", DateUtils.formatDate(dre.created), ", updated ", DateUtils.formatDate(dre.updated) ),
               <.div(
-                baseStyles.divFooterLeft,
-                AppButton( "Summary", "Summary",
-                           props.routerCtl.setOnClick( SummaryView )
-                )
-              ),
-              <.div(
-                baseStyles.divFooterCenter,
-                AppButton( "Edit", "Edit",
-                           props.routerCtl.setOnClick( DuplicateResultEditView(props.page.dupid) )
-                )
-              ),
-              <.div(
-                baseStyles.divFooterRight,
-                AppButton( "Delete", "Delete",
-                           ^.onClick --> delete
+                baseStyles.divFooter,
+                <.div(
+                  baseStyles.divFooterLeft,
+                  AppButton( "Summary", "Summary",
+                             props.routerCtl.setOnClick( SummaryView )
+                  )
+                ),
+                <.div(
+                  baseStyles.divFooterCenter,
+                  AppButton( "Edit", "Edit",
+                             props.routerCtl.setOnClick( DuplicateResultEditView(props.page.dupid) )
+                  )
+                ),
+                <.div(
+                  baseStyles.divFooterRight,
+                  AppButton( "Delete", "Delete",
+                             ^.onClick --> delete
+                  )
                 )
               )
-            )
+            ),
           )
         case _ =>
           <.div( s"Working" )

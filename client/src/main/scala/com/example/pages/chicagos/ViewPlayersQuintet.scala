@@ -368,28 +368,30 @@ object ViewPlayersQuintetInternal {
           )
         ),
         <.div(
-          chiStyles.divPageQuintet,
-          ^.alignItems:="center",
-          showNewPositions( true, "Prior hand", lastdealer, lasthand.north, lasthand.south, lasthand.east, lasthand.west, lasthand.sittingOut ),
-          selectNextSittingOut(),
-          showNewPositions( state.isSimple() || state.nextSittingOut.isDefined, "Next hand", dealer, state.north, state.south, state.east, state.west, state.sittingOut ),
-          showDescription()
-        ),
-        <.div(
-          baseStyles.divFooter,
           <.div(
-            baseStyles.divFooterLeft,
-            AppButton("OK","OK", ^.disabled:= !valid, BaseStyles.highlight(requiredNotNext=valid), ^.onClick --> ok )
+            chiStyles.divPageQuintet,
+            ^.alignItems:="center",
+            showNewPositions( true, "Prior hand", lastdealer, lasthand.north, lasthand.south, lasthand.east, lasthand.west, lasthand.sittingOut ),
+            selectNextSittingOut(),
+            showNewPositions( state.isSimple() || state.nextSittingOut.isDefined, "Next hand", dealer, state.north, state.south, state.east, state.west, state.sittingOut ),
+            showDescription()
           ),
-          !state.isSimple() ?=
-            <.div(
-              baseStyles.divFooterCenter,
-              AppButton("Reset", "Reset", ^.onClick --> reset )
-            ),
           <.div(
-            baseStyles.divFooterRight,
-            AppButton("Cancel", "Cancel", props.router.setOnClick(props.page.toSummaryView()) ),
-//            HelpButton( if (state.isSimple()) "../help/chicago/fastsimple/selectnamessimple.html" else "../help/chicago/fastfair/selectnamesfair.html")
+            baseStyles.divFooter,
+            <.div(
+              baseStyles.divFooterLeft,
+              AppButton("OK","OK", ^.disabled:= !valid, BaseStyles.highlight(requiredNotNext=valid), ^.onClick --> ok )
+            ),
+            !state.isSimple() ?=
+              <.div(
+                baseStyles.divFooterCenter,
+                AppButton("Reset", "Reset", ^.onClick --> reset )
+              ),
+            <.div(
+              baseStyles.divFooterRight,
+              AppButton("Cancel", "Cancel", props.router.setOnClick(props.page.toSummaryView()) ),
+  //            HelpButton( if (state.isSimple()) "../help/chicago/fastsimple/selectnamessimple.html" else "../help/chicago/fastfair/selectnamesfair.html")
+            )
           )
         )
       )

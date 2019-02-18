@@ -328,25 +328,27 @@ object ViewPlayersFiveInternal {
           routeCtl = props.router
         )(),
         <.div(
-          chiStyles.divPageFive,
-          renderSelectSittingOut(props, state),
-          renderSelectFixture(props, state),
-          renderSelectPos(props, state)
-        ),
-        <.div(
-          baseStyles.divFooter,
           <.div(
-            baseStyles.divFooterLeft,
-            AppButton("OK","OK", ^.disabled:= !valid, BaseStyles.highlight( requiredNotNext=valid ), ^.onClick --> ok )
+            chiStyles.divPageFive,
+            renderSelectSittingOut(props, state),
+            renderSelectFixture(props, state),
+            renderSelectPos(props, state)
           ),
           <.div(
-            baseStyles.divFooterCenter,
-            AppButton("Reset", "Reset", ^.onClick --> reset )
-          ),
-          <.div(
-            baseStyles.divFooterRight,
-            AppButton("Cancel", "Cancel", props.router.setOnClick(props.page.toSummaryView()) ),
-//            HelpButton("../help/chicago/five/selectnames5.html")
+            baseStyles.divFooter,
+            <.div(
+              baseStyles.divFooterLeft,
+              AppButton("OK","OK", ^.disabled:= !valid, BaseStyles.highlight( requiredNotNext=valid ), ^.onClick --> ok )
+            ),
+            <.div(
+              baseStyles.divFooterCenter,
+              AppButton("Reset", "Reset", ^.onClick --> reset )
+            ),
+            <.div(
+              baseStyles.divFooterRight,
+              AppButton("Cancel", "Cancel", props.router.setOnClick(props.page.toSummaryView()) ),
+  //            HelpButton("../help/chicago/five/selectnames5.html")
+            )
           )
         )
       )

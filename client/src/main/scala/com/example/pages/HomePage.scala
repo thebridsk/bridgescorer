@@ -270,122 +270,124 @@ object HomePage {
             routeCtl = props.routeCtl
         )(),
         <.div(
-          rootStyles.serverDiv,
-          ^.id:="url",
-          <.h1("Server"),
-          <.ul(
-            if (Bridge.isDemo) {
-              <.li("Demo mode, all data entered will be lost on page refresh or closing page")
-            } else {
-              if (state.serverUrl.serverUrl.isEmpty) {
-                <.li("No network interfaces found")
+          <.div(
+            rootStyles.serverDiv,
+            ^.id:="url",
+            <.h1("Server"),
+            <.ul(
+              if (Bridge.isDemo) {
+                <.li("Demo mode, all data entered will be lost on page refresh or closing page")
               } else {
-                state.serverUrl.serverUrl.map{ url => <.li(url) }.toTagMod
+                if (state.serverUrl.serverUrl.isEmpty) {
+                  <.li("No network interfaces found")
+                } else {
+                  state.serverUrl.serverUrl.map{ url => <.li(url) }.toTagMod
+                }
               }
-            }
-          )
-        ),
-        <.div(
-          rootStyles.gameDiv,
-          <.h1("Play"),
-          <.table(
-            <.tbody(
-              <.tr(
-                <.td( ^.width:="33%",
-                  AppButton( "ChicagoList2", "Chicago List", rootStyles.playButton, ^.disabled:=isWorking, ^.onClick --> callbackPage(PlayChicago2(ListView)))
+            )
+          ),
+          <.div(
+            rootStyles.gameDiv,
+            <.h1("Play"),
+            <.table(
+              <.tbody(
+                <.tr(
+                  <.td( ^.width:="33%",
+                    AppButton( "ChicagoList2", "Chicago List", rootStyles.playButton, ^.disabled:=isWorking, ^.onClick --> callbackPage(PlayChicago2(ListView)))
+                  ),
+                  <.td( ^.width:="33%",
+                    AppButton( "Chicago2", "New Chicago", rootStyles.playButton, ^.disabled:=isWorking, ^.onClick -->newChicago )
+                  ),
+                  <.td( ^.width:="33%"
+                  )
                 ),
-                <.td( ^.width:="33%",
-                  AppButton( "Chicago2", "New Chicago", rootStyles.playButton, ^.disabled:=isWorking, ^.onClick -->newChicago )
+                <.tr(
+                  <.td(
+                    AppButton( "Duplicate", "Duplicate List", rootStyles.playButton, ^.disabled:=isWorking, ^.onClick --> callbackPage(PlayDuplicate(SummaryView)))
+                  ),
+                  <.td(
+                    AppButton( "NewDuplicate", "New Duplicate", rootStyles.playButton, ^.disabled:=isWorking, ^.onClick --> callbackPage(PlayDuplicate(NewDuplicateView)))
+                  ),
+                  <.td(
+                    AppButton( "SelectDuplicate", "Select Match", rootStyles.playButton, ^.disabled:=isWorking, ^.onClick --> callbackPage(PlayDuplicate(SelectMatchView)))
+                  )
                 ),
-                <.td( ^.width:="33%"
-                )
-              ),
-              <.tr(
-                <.td(
-                  AppButton( "Duplicate", "Duplicate List", rootStyles.playButton, ^.disabled:=isWorking, ^.onClick --> callbackPage(PlayDuplicate(SummaryView)))
+                <.tr(
+                  <.td(
+                    AppButton( "Rubber", "Rubber Bridge List", rootStyles.playButton, ^.disabled:=isWorking, ^.onClick --> callbackPage(PlayRubber(RubberListView)))
+                  ),
+                  <.td(
+                    AppButton( "NewRubber", "New Rubber Bridge", rootStyles.playButton, ^.disabled:=isWorking, ^.onClick --> newRubber)
+                  )
                 ),
-                <.td(
-                  AppButton( "NewDuplicate", "New Duplicate", rootStyles.playButton, ^.disabled:=isWorking, ^.onClick --> callbackPage(PlayDuplicate(NewDuplicateView)))
-                ),
-                <.td(
-                  AppButton( "SelectDuplicate", "Select Match", rootStyles.playButton, ^.disabled:=isWorking, ^.onClick --> callbackPage(PlayDuplicate(SelectMatchView)))
-                )
-              ),
-              <.tr(
-                <.td(
-                  AppButton( "Rubber", "Rubber Bridge List", rootStyles.playButton, ^.disabled:=isWorking, ^.onClick --> callbackPage(PlayRubber(RubberListView)))
-                ),
-                <.td(
-                  AppButton( "NewRubber", "New Rubber Bridge", rootStyles.playButton, ^.disabled:=isWorking, ^.onClick --> newRubber)
-                )
-              ),
-              <.tr(
-                <.td(
-                  AppButton( "Import", "Import", rootStyles.playButton, ^.disabled:=isWorking, ^.onClick --> callbackPage(ImportsList))
-                ),
-                <.td(
-                  AppButton( "Export", "Export", rootStyles.playButton, ^.disabled:=isWorking, ^.onClick --> callbackPage(Export))
-                ),
-                <.td(
-                  {
-                    val path = GotoPage.getURL( s"""/v1/diagnostics""" )
-                    AppButtonLink( "Diagnostics", "Diagnostics", path,
-                                   rootStyles.playButton,
-                                   ^.disabled:=isWorking
-                    )
-                  }
+                <.tr(
+                  <.td(
+                    AppButton( "Import", "Import", rootStyles.playButton, ^.disabled:=isWorking, ^.onClick --> callbackPage(ImportsList))
+                  ),
+                  <.td(
+                    AppButton( "Export", "Export", rootStyles.playButton, ^.disabled:=isWorking, ^.onClick --> callbackPage(Export))
+                  ),
+                  <.td(
+                    {
+                      val path = GotoPage.getURL( s"""/v1/diagnostics""" )
+                      AppButtonLink( "Diagnostics", "Diagnostics", path,
+                                     rootStyles.playButton,
+                                     ^.disabled:=isWorking
+                      )
+                    }
+                  )
                 )
               )
             )
-          )
-        ),
-//        <.div(
-//          rootStyles.testHandsDiv,
-//        ),
-        isPageFromLocalHost() ?= <.div(
-          rootStyles.miscDiv,
-          <.h1("Miscellaneous"),
-          <.table(
-            <.tbody(
-              <.tr(
-//                <.td( ^.width:="25%",
-//                  {
-//                    AppButton(
-//                      "FastclickTest", "Fast Click Test",
-//                      rootStyles.playButton,
-//                      ^.disabled:=isWorking,
-//                      BaseStyles.highlight(selected = state.fastclickTest),
-//                      ^.onClick --> toggleFastclickTest
-//                    )
-//                  }
-//                ),
-//                <.td( ^.width:="25%",
-//                  AppButton(
-//                    "ToggleFastclick", "Fast Click",
-//                    rootStyles.playButton,
-//                    BaseStyles.highlight( selected = isFastclickOn ),
-//                    ^.disabled:=isWorking,
-//                    ^.onClick --> toggleFastclick
-//                  )
-//                ),
-                <.td( ^.width:="25%",
-                  isPageFromLocalHost() ?= AppButton(
-                    "Shutdown", "Shutdown Server",
-                    rootStyles.playButton,
-                    ^.disabled:=isWorking,
-                    ^.onClick --> doShutdown
-                  )
+          ),
+  //        <.div(
+  //          rootStyles.testHandsDiv,
+  //        ),
+          isPageFromLocalHost() ?= <.div(
+            rootStyles.miscDiv,
+            <.h1("Miscellaneous"),
+            <.table(
+              <.tbody(
+                <.tr(
+  //                <.td( ^.width:="25%",
+  //                  {
+  //                    AppButton(
+  //                      "FastclickTest", "Fast Click Test",
+  //                      rootStyles.playButton,
+  //                      ^.disabled:=isWorking,
+  //                      BaseStyles.highlight(selected = state.fastclickTest),
+  //                      ^.onClick --> toggleFastclickTest
+  //                    )
+  //                  }
+  //                ),
+  //                <.td( ^.width:="25%",
+  //                  AppButton(
+  //                    "ToggleFastclick", "Fast Click",
+  //                    rootStyles.playButton,
+  //                    BaseStyles.highlight( selected = isFastclickOn ),
+  //                    ^.disabled:=isWorking,
+  //                    ^.onClick --> toggleFastclick
+  //                  )
+  //                ),
+                  <.td( ^.width:="25%",
+                    isPageFromLocalHost() ?= AppButton(
+                      "Shutdown", "Shutdown Server",
+                      rootStyles.playButton,
+                      ^.disabled:=isWorking,
+                      ^.onClick --> doShutdown
+                    )
+                  ),
+                  <.td( ^.width:="25%"
+                  ),
+                  <.td( ^.width:="25%"
+                  ),
+                  <.td( ^.width:="25%"
+                  ),
                 ),
-                <.td( ^.width:="25%"
-                ),
-                <.td( ^.width:="25%"
-                ),
-                <.td( ^.width:="25%"
-                ),
-              ),
-//              <.tr(
-//                <.td(" ")
-//              ),
+  //              <.tr(
+  //                <.td(" ")
+  //              ),
+              )
             )
           )
         )

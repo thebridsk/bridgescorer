@@ -329,23 +329,23 @@ object PageDuplicateResultEditInternal {
                     !state.isValid() ?= <.p("Data not valid"),
                     <.p( "Created: ", DateUtils.formatDate(dre.created), ", updated ", DateUtils.formatDate(dre.updated) )
                   )
-                }
-              ),
-              <.div(
-                baseStyles.divFooter,
+                },
                 <.div(
-                  baseStyles.divFooterLeft,
-                  AppButton( "OK", "OK",
-                             ^.disabled := !state.isValid(),
-                             ^.onClick --> ok
+                  baseStyles.divFooter,
+                  <.div(
+                    baseStyles.divFooterLeft,
+                    AppButton( "OK", "OK",
+                               ^.disabled := !state.isValid(),
+                               ^.onClick --> ok
+                    )
+                  ),
+                  <.div(
+                    baseStyles.divFooterCenter,
+                    AppButton( "Cancel", "Cancel",
+                               ^.onClick --> cancel )
                   )
-                ),
-                <.div(
-                  baseStyles.divFooterCenter,
-                  AppButton( "Cancel", "Cancel",
-                             ^.onClick --> cancel )
                 )
-              )
+              ),
             )
           case _ =>
             <.div( s"Working" )

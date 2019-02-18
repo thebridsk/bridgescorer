@@ -206,145 +206,119 @@ object PageStatsInternal {
         )(
 
         ),
-//        <.h1("Statistics"),
-//        <.div(
-//          baseStyles.divFooter,
-//          <.div(
-//            baseStyles.divFooterLeft,
-//            AppButton( "Home", "Home", props.routerCtl.home ),
-//            " ",
-//            AppButton( "Summary", "Summary", props.routerCtl.setOnClick(SummaryView) ),
-//            " ",
-//            AppButton( "BoardSets", "BoardSets", props.routerCtl.setOnClick(BoardSetSummaryView) ),
-//            " ",
-//            AppButton( "Movements", "Movements", props.routerCtl.setOnClick(MovementSummaryView) )
-//          )
-//        ),
         <.div(
-          baseStyles.divFooter,
           <.div(
-            baseStyles.divFooterLeft,
-            AppButton( "ShowPairsGrid",
-                       "Show Pairs",
-                       BaseStyles.highlight(selected = state.showPairsGrid ),
-                       ^.onClick-->toggleShowPairsGrid
-                     ),
-            AppButton( "ShowMadeDownGrid",
-                       "Show Made/Down",
-                       BaseStyles.highlight(selected = state.showMadeDownGrid ),
-                       ^.onClick-->toggleShowMadeDownGrid
-                     ),
-            AppButton( "ShowPlayerContractResults",
-                       "Show Player Contracts",
-                       BaseStyles.highlight(selected = state.showPlayerContractResults ),
-                       ^.onClick-->toggleShowPlayerContractResults
-                     ),
-            AppButton( "ShowPlayerDoubledContractResults",
-                       "Show Player Doubled Contracts",
-                       BaseStyles.highlight(selected = state.showPlayerDoubledContractResults ),
-                       ^.onClick-->toggleShowPlayerDoubledContractResults
-                     ),
-            AppButton( "ShowContractResults",
-                       "Show Contracts",
-                       BaseStyles.highlight(selected = state.showContractResults ),
-                       ^.onClick-->toggleShowContractResults
-                     ),
-            AppButton( "AggressiveStats",
-                       "Aggressive Stats",
-                       BaseStyles.highlight(selected = state.showPlayerAggressiveness ),
-                       ^.onClick-->toggleShowPlayerAggressiveness
-                     )
-          )
-        ),
-        <.div(
-          baseStyles.divFooter,
-          <.div(
-            baseStyles.divFooterLeft,
-            AppButton( "ShowPeopleResults",
-                       "Show People Results",
-                       BaseStyles.highlight(selected = state.showPeopleTable ),
-                       ^.onClick-->toggleShowPeopleTable
-                     ),
-            AppButton( "ShowPairsResults",
-                       "Show Pairs Results",
-                       BaseStyles.highlight(selected = state.showPairs ),
-                       ^.onClick-->toggleShowPairs
-                     ),
-            AppButton( "ShowPeopleDetails",
-                       "Show People Hand Results",
-                       BaseStyles.highlight(selected = state.showPeopleTableDetail ),
-                       ^.onClick-->toggleShowPeopleTableDetail
-                     ),
-            AppButton( "ShowPairsDetails",
-                       "Show Pairs Hand Results",
-                       BaseStyles.highlight(selected = state.showPairsDetail ),
-                       ^.onClick-->toggleShowPairsDetail
-                     )
-          )
-        ),
-        if (state.filter.pairsData.isDefined) {
-          TagMod(
-            ViewPlayerFilter(state.filter, onChange _),
-            state.showPairsGrid ?= ViewPairsGrid( state.filter ),
-            state.showMadeDownGrid ?= ViewPairsMadeDownGrid( state.filter )
-          )
-        } else {
-          <.div(
-            "Working"
-          )
-        },
-        if (state.showContractResults ||
-            state.showPlayerContractResults ||
-            state.showPlayerDoubledContractResults ||
-            state.showPlayerAggressiveness
-        ) {
-          state.stats.map { cs =>
-            TagMod(
-              optionalView(
-                  state.showPlayerContractResults,
-                  ViewPlayerContractResults( cs.playerStats.get, cs.contractStats.get ),
-                  cs.playerStats,
-                  cs.contractStats),
-              optionalView(
-                  state.showPlayerDoubledContractResults,
-                  ViewPlayerDoubledContractResults( cs.playerDoubledStats.get, cs.contractStats.get ),
-                  cs.playerDoubledStats,
-                  cs.contractStats ),
-              optionalView(
-                  state.showContractResults,
-                  ViewContractResults( cs.contractStats.get ),
-                  cs.contractStats ),
-              optionalView(
-                  state.showPlayerAggressiveness,
-                  ViewPlayerAggressiveness( cs.comparisonStats.get ),
-                  cs.comparisonStats )
-            )
-          }.getOrElse(
+            baseStyles.divFooter,
             <.div(
-              "Working on contract stats"
+              baseStyles.divFooterLeft,
+              AppButton( "ShowPairsGrid",
+                         "Show Pairs",
+                         BaseStyles.highlight(selected = state.showPairsGrid ),
+                         ^.onClick-->toggleShowPairsGrid
+                       ),
+              AppButton( "ShowMadeDownGrid",
+                         "Show Made/Down",
+                         BaseStyles.highlight(selected = state.showMadeDownGrid ),
+                         ^.onClick-->toggleShowMadeDownGrid
+                       ),
+              AppButton( "ShowPlayerContractResults",
+                         "Show Player Contracts",
+                         BaseStyles.highlight(selected = state.showPlayerContractResults ),
+                         ^.onClick-->toggleShowPlayerContractResults
+                       ),
+              AppButton( "ShowPlayerDoubledContractResults",
+                         "Show Player Doubled Contracts",
+                         BaseStyles.highlight(selected = state.showPlayerDoubledContractResults ),
+                         ^.onClick-->toggleShowPlayerDoubledContractResults
+                       ),
+              AppButton( "ShowContractResults",
+                         "Show Contracts",
+                         BaseStyles.highlight(selected = state.showContractResults ),
+                         ^.onClick-->toggleShowContractResults
+                       ),
+              AppButton( "AggressiveStats",
+                         "Aggressive Stats",
+                         BaseStyles.highlight(selected = state.showPlayerAggressiveness ),
+                         ^.onClick-->toggleShowPlayerAggressiveness
+                       )
             )
-          )
-        } else {
-          EmptyVdom
-        },
-        state.showPeopleTable ?= ViewPairsTable( state.filter, false ),
-        state.showPairs ?= ViewPairsTable(state.filter, true ),
-        state.showPeopleTableDetail ?= ViewPairsMadeDownTable( state.filter, false ),
-        state.showPairsDetail ?= ViewPairsMadeDownTable(state.filter, true ),
-//        <.div(
-//          baseStyles.divFooter,
-//          <.div(
-//            baseStyles.divFooterLeft,
-//            AppButton( "Home2", "Home", props.routerCtl.home ),
-//            " ",
-//            AppButton( "Summary2", "Summary", props.routerCtl.setOnClick(SummaryView) ),
-//            " ",
-//            AppButton( "BoardSets2", "BoardSets", props.routerCtl.setOnClick(BoardSetSummaryView) ),
-//            " ",
-//            AppButton( "Movements2", "Movements", props.routerCtl.setOnClick(MovementSummaryView) )
-//          )
-//        )
-
+          ),
+          <.div(
+            baseStyles.divFooter,
+            <.div(
+              baseStyles.divFooterLeft,
+              AppButton( "ShowPeopleResults",
+                         "Show People Results",
+                         BaseStyles.highlight(selected = state.showPeopleTable ),
+                         ^.onClick-->toggleShowPeopleTable
+                       ),
+              AppButton( "ShowPairsResults",
+                         "Show Pairs Results",
+                         BaseStyles.highlight(selected = state.showPairs ),
+                         ^.onClick-->toggleShowPairs
+                       ),
+              AppButton( "ShowPeopleDetails",
+                         "Show People Hand Results",
+                         BaseStyles.highlight(selected = state.showPeopleTableDetail ),
+                         ^.onClick-->toggleShowPeopleTableDetail
+                       ),
+              AppButton( "ShowPairsDetails",
+                         "Show Pairs Hand Results",
+                         BaseStyles.highlight(selected = state.showPairsDetail ),
+                         ^.onClick-->toggleShowPairsDetail
+                       )
+            )
+          ),
+          if (state.filter.pairsData.isDefined) {
+            TagMod(
+              ViewPlayerFilter(state.filter, onChange _),
+              state.showPairsGrid ?= ViewPairsGrid( state.filter ),
+              state.showMadeDownGrid ?= ViewPairsMadeDownGrid( state.filter )
+            )
+          } else {
+            <.div(
+              "Working"
+            )
+          },
+          if (state.showContractResults ||
+              state.showPlayerContractResults ||
+              state.showPlayerDoubledContractResults ||
+              state.showPlayerAggressiveness
+          ) {
+            state.stats.map { cs =>
+              TagMod(
+                optionalView(
+                    state.showPlayerContractResults,
+                    ViewPlayerContractResults( cs.playerStats.get, cs.contractStats.get ),
+                    cs.playerStats,
+                    cs.contractStats),
+                optionalView(
+                    state.showPlayerDoubledContractResults,
+                    ViewPlayerDoubledContractResults( cs.playerDoubledStats.get, cs.contractStats.get ),
+                    cs.playerDoubledStats,
+                    cs.contractStats ),
+                optionalView(
+                    state.showContractResults,
+                    ViewContractResults( cs.contractStats.get ),
+                    cs.contractStats ),
+                optionalView(
+                    state.showPlayerAggressiveness,
+                    ViewPlayerAggressiveness( cs.comparisonStats.get ),
+                    cs.comparisonStats )
+              )
+            }.getOrElse(
+              <.div(
+                "Working on contract stats"
+              )
+            )
+          } else {
+            EmptyVdom
+          },
+          state.showPeopleTable ?= ViewPairsTable( state.filter, false ),
+          state.showPairs ?= ViewPairsTable(state.filter, true ),
+          state.showPeopleTableDetail ?= ViewPairsMadeDownTable( state.filter, false ),
+          state.showPairsDetail ?= ViewPairsMadeDownTable(state.filter, true ),
+        )
       )
     }
 
