@@ -29,7 +29,9 @@ trait BridgeRouter[Page] {
   def home: TagMod
   def toHome: Unit = {}
   def toAbout: Unit = {}
-  def toInfo: Unit = {}
+  def toInfo: Unit = {
+    BridgeRouterBaseWithLogging.logger.info("BridgeRouter.toInfo default handler, does nothing")
+  }
 
   def toRootPage( page: AppPage ): Unit = {}
 

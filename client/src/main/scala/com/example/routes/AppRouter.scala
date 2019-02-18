@@ -110,7 +110,7 @@ trait Module extends ModuleRenderer {
 
   def toInfo: Unit = varAppRouter.foreach( _.toRootPage(Info,"#info") )
 
-  def toRootPage( page: AppPage ): Unit = varAppRouter.foreach( _.toRootPage(page,"") )
+  def toRootPage( page: AppPage, suffix: String = "" ): Unit = varAppRouter.foreach( _.toRootPage(page,suffix) )
 
   /**
    * All the pages of the module, to verify that they are all routable.
@@ -173,8 +173,8 @@ class AppRouter( modules: Module* ) {
   def moduleRoutes() = moduleAllRoutes.reduce(_ | _)
 
   import scala.language.implicitConversions
-  implicit def routerCtlToBridgeRouter( ctl: RouterCtl[AppPage] ): BridgeRouter[AppPage] =
-    new BridgeRouterBase[AppPage](ctl) {
+  implicit def routerCtlToBridgeRouter[P]( ctl: RouterCtl[P] ): BridgeRouter[P] =
+    new BridgeRouterBase[P](ctl) {
         override
         def home: TagMod = gotoHome
 
@@ -183,7 +183,10 @@ class AppRouter( modules: Module* ) {
         override
         def toAbout: Unit = self.toRootPage(About,"#about")
         override
-        def toInfo: Unit = self.toRootPage(Info,"#info")
+        def toInfo: Unit = {
+          logger.info("in AppRouter, going to info page")
+          self.toRootPage(Info,"#info")
+        }
 
         override
         def toRootPage( page: AppPage ): Unit = self.toRootPage(page,"")

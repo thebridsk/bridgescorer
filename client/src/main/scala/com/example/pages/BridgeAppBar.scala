@@ -138,7 +138,10 @@ object BridgeAppBarInternal {
 
       def gotoHomePage(e: ReactEvent) = props.routeCtl.toHome
       def gotoAboutPage(e: ReactEvent) = props.routeCtl.toAbout
-      def gotoInfoPage(e: ReactEvent) = props.routeCtl.toInfo
+      def gotoInfoPage(e: ReactEvent) = {
+        logger.info("going to infopage")
+        props.routeCtl.toInfo
+      }
 
       def callbackPage(page: AppPage)(e: ReactEvent) = props.routeCtl.toRootPage(page)
 
