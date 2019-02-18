@@ -48,8 +48,8 @@ class HomePage( implicit webDriver: WebDriver, pageCreated: SourcePosition ) ext
     this
   }
 
-  def clickHelpMenu(implicit patienceConfig: PatienceConfig, pos: Position) = {
-    clickButton("HelpMenu")
+  def clickMoreMenu(implicit patienceConfig: PatienceConfig, pos: Position) = {
+    clickButton("MoreMenu")
     this
   }
 
@@ -83,9 +83,9 @@ class HomePage( implicit webDriver: WebDriver, pageCreated: SourcePosition ) ext
     new ExportPage
   }
 
-  def isHelpMenuVisible( implicit pos: Position ) = {
+  def isMoreMenuVisible( implicit pos: Position ) = {
     try {
-      val we = findElem[Element]( id("Help") )
+      val we = findElem[Element]( id("About") )
       true
     } catch {
       case x: Exception => false

@@ -30,6 +30,7 @@ import com.example.routes.AppRouter.Home
 import org.scalajs.dom.experimental.URL
 import com.example.Bridge
 import com.example.react.Utils._
+import com.example.materialui.icons.MuiMoreVertIcon
 
 /**
  * A simple AppBar for the Bridge client.
@@ -93,11 +94,11 @@ object BridgeAppBarInternal {
    *
    */
   case class State(
-      anchorHelpEl: js.UndefOr[Element] = js.undefined
+      anchorMoreEl: js.UndefOr[Element] = js.undefined
   ) {
 
-    def openHelpMenu( n: Node ) = copy( anchorHelpEl = n.asInstanceOf[Element] )
-    def closeHelpMenu() = copy( anchorHelpEl = js.undefined )
+    def openMoreMenu( n: Node ) = copy( anchorMoreEl = n.asInstanceOf[Element] )
+    def closeMoreMenu() = copy( anchorMoreEl = js.undefined )
   }
 
   /**
@@ -109,11 +110,11 @@ object BridgeAppBarInternal {
    */
   class Backend(scope: BackendScope[Props, State]) {
 
-    def handleHelpClick( event: ReactEvent ) = event.extract(_.currentTarget)(currentTarget => scope.modState(s => s.openHelpMenu(currentTarget)).runNow() )
-    def handleHelpCloseClick( event: ReactEvent ) = scope.modState(s => s.closeHelpMenu()).runNow()
-    def handleHelpClose( /* event: js.Object, reason: String */ ) = {
-      logger.fine("HelpClose called")
-      scope.modState(s => s.closeHelpMenu()).runNow()
+    def handleMoreClick( event: ReactEvent ) = event.extract(_.currentTarget)(currentTarget => scope.modState(s => s.openMoreMenu(currentTarget)).runNow() )
+    def handleMoreCloseClick( event: ReactEvent ) = scope.modState(s => s.closeMoreMenu()).runNow()
+    def handleMoreClose( /* event: js.Object, reason: String */ ) = {
+      logger.fine("MoreClose called")
+      scope.modState(s => s.closeMoreMenu()).runNow()
     }
 
     def gotoPage( uri: String ) = {
@@ -122,7 +123,7 @@ object BridgeAppBarInternal {
 
     def handleHelpGotoPageClick(uri: String)( event: ReactEvent ) = {
       logger.info(s"""Going to page ${uri}""")
-//      handleHelpClose()
+//      handleMoreClose()
 
       gotoPage(uri)
     }
@@ -134,18 +135,33 @@ object BridgeAppBarInternal {
       def gotoHomePage(e: ReactEvent) = props.routeCtl.toHome
       def gotoAboutPage(e: ReactEvent) = props.routeCtl.toAbout
 
-      val helpButton =
-        MuiIconButton(
-                          id = "HelpMenu",
-                          onClick = handleHelpClick _,
-                          color=ColorVariant.inherit
-                      )(
-                          MuiHelpIcon()()
-                      )
+      val rightButton =
+        List[CtorType.ChildArg](
+          MuiIconButton(
+                            id = "Help",
+                            onClick = handleHelpGotoPageClick(props.helpurl) _,
+                            color=ColorVariant.inherit
+                        )(
+                            MuiHelpIcon()()
+                        ),
+
+          MuiIconButton(
+                            id = "MoreMenu",
+                            onClick = handleMoreClick _,
+                            color=ColorVariant.inherit
+                        )(
+                            MuiMoreVertIcon()()
+                        )
+        )
 
       val toolbarSuits = TitleSuits.suits
 
-      val toolbarContentTail: List[CtorType.ChildArg] = List( toolbarSuits, helpButton)
+      val toolbarContentTail: List[CtorType.ChildArg] = List(
+                                                          toolbarSuits,
+                                                          <.div(
+                                                              rightButton:_*
+                                                          )
+                                                        )
 
       val toolbarFront: CtorType.ChildArg = <.div(
           {
@@ -213,16 +229,10 @@ object BridgeAppBarInternal {
             )::
             // help menu
             MyMenu(
-                anchorEl=state.anchorHelpEl,
-                onClickAway = handleHelpClose _,
-                onItemClick = handleHelpCloseClick _,
+                anchorEl=state.anchorMoreEl,
+                onClickAway = handleMoreClose _,
+                onItemClick = handleMoreCloseClick _,
             )(
-                MuiMenuItem(
-                    id = "Help",
-                    onClick = handleHelpGotoPageClick(props.helpurl) _
-                )(
-                    "Help"
-                ),
                 MuiMenuItem(
                     id = "SwaggerDocs",
                     onClick = handleHelpGotoPageClick("/v1/docs") _
