@@ -176,12 +176,12 @@ class SuggestionPage(
   }
 
   def getNumberChecked(implicit patienceConfig: PatienceConfig, pos: Position) = {
-    findAllElems[Element]( xpath( """//div[contains(concat(' ', @class, ' '), ' dupDivSuggestionPage ')]/div[4]/ul/li/label/input""") ).
+    findAllElems[Element]( xpath( """//div[contains(concat(' ', @class, ' '), ' dupDivSuggestionPage ')]/div[3]/div[2]/ul/li/label/input""") ).
       map( e => e.attribute("checked").map( s => s.toBoolean ).getOrElse(false) ).filter( b => b ).length
   }
 
   private def getCheckboxLabels(implicit patienceConfig: PatienceConfig, pos: Position) = {
-    findAllElems[Element]( xpath( """//div[contains(concat(' ', @class, ' '), ' dupDivSuggestionPage ')]/div[4]/ul/li/label""") )
+    findAllElems[Element]( xpath( """//div[contains(concat(' ', @class, ' '), ' dupDivSuggestionPage ')]/div[3]/div[2]/ul/li/label""") )
   }
 
   def getNumberKnownNames(implicit patienceConfig: PatienceConfig, pos: Position) = {
@@ -213,7 +213,7 @@ class SuggestionPage(
   }
 
   private def getNameFieldsElements(implicit patienceConfig: PatienceConfig, pos: Position) = {
-    findAllElems[Element]( xpath( """//div[contains(concat(' ', @class, ' '), ' dupDivSuggestionPage ')]/div[5]/ul/li/input""") )
+    findAllElems[Element]( xpath( """//div[contains(concat(' ', @class, ' '), ' dupDivSuggestionPage ')]/div[3]/div[3]/ul/li/input""") )
   }
 
   def getNumberNameFields(implicit patienceConfig: PatienceConfig, pos: Position) = {
@@ -230,7 +230,7 @@ class SuggestionPage(
   }
 
   def getNeverPairTableNames(implicit patienceConfig: PatienceConfig, pos: Position) = {
-    findAllElems[Element]( xpath( """//div[contains(concat(' ', @class, ' '), ' dupDivSuggestionPage ')]/div[6]/table/thead/tr[1]/th""") ).
+    findAllElems[Element]( xpath( """//div[contains(concat(' ', @class, ' '), ' dupDivSuggestionPage ')]/div[3]/div[4]/table/thead/tr[1]/th""") ).
       drop(1).map( e => e.text )
   }
 }
