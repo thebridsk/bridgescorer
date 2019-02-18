@@ -104,9 +104,13 @@ trait Module extends ModuleRenderer {
       ^.onClick-->Callback {}
   }
 
-  def toHome: Unit = varAppRouter.foreach( _.toHomePage() )
+  def toHome: Unit = varAppRouter.foreach( _.toRootPage(Home,"") )
 
-  def toAbout: Unit = varAppRouter.foreach( _.toAboutPage() )
+  def toAbout: Unit = varAppRouter.foreach( _.toRootPage(About,"#about") )
+
+  def toInfo: Unit = varAppRouter.foreach( _.toRootPage(Info,"#info") )
+
+  def toRootPage( page: AppPage, suffix: String = "" ): Unit = varAppRouter.foreach( _.toRootPage(page,suffix) )
 
   /**
    * All the pages of the module, to verify that they are all routable.
@@ -120,6 +124,7 @@ trait Module extends ModuleRenderer {
 }
 
 class AppRouter( modules: Module* ) {
+  self =>
 
   def verifyPages: List[AppPage] = {
 
@@ -168,15 +173,23 @@ class AppRouter( modules: Module* ) {
   def moduleRoutes() = moduleAllRoutes.reduce(_ | _)
 
   import scala.language.implicitConversions
-  implicit def routerCtlToBridgeRouter( ctl: RouterCtl[AppPage] ): BridgeRouter[AppPage] =
-    new BridgeRouterBase[AppPage](ctl) {
+  implicit def routerCtlToBridgeRouter[P]( ctl: RouterCtl[P] ): BridgeRouter[P] =
+    new BridgeRouterBase[P](ctl) {
         override
         def home: TagMod = gotoHome
 
         override
-        def toHome: Unit = toHomePage()
+        def toHome: Unit = self.toRootPage(Home,"")
         override
-        def toAbout: Unit = toAboutPage()
+        def toAbout: Unit = self.toRootPage(About,"#about")
+        override
+        def toInfo: Unit = {
+          logger.info("in AppRouter, going to info page")
+          self.toRootPage(Info,"#info")
+        }
+
+        override
+        def toRootPage( page: AppPage ): Unit = self.toRootPage(page,"")
     }
 
   def logit[T]( f: => T )(implicit pos: Position): T = Alerter.tryit(f)
@@ -291,23 +304,14 @@ class AppRouter( modules: Module* ) {
     }
   }
 
-  def toHomePage() = {
+  def toRootPage( page: AppPage, suffix: String ) = {
+    logger.info(s"""toRootPage going to $page, suffix="$suffix".""")
     fRouterCtl match {
       case Some(ctl) =>
-        ctl.set(Home).runNow()
+        ctl.set(page).runNow()
       case None =>
         val window = document.defaultView
-        window.location.href = baseUrl.value
-    }
-  }
-
-  def toAboutPage() = {
-    fRouterCtl match {
-      case Some(ctl) =>
-        ctl.set(About).runNow()
-      case None =>
-        val window = document.defaultView
-        window.location.href = baseUrl.value+"#about"
+        window.location.href = baseUrl.value + suffix
     }
   }
 }

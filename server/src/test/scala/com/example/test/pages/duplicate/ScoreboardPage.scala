@@ -166,6 +166,7 @@ import com.example.test.pages.duplicate.TablePage.EnterNames
 import com.example.test.pages.GenericPage
 import org.openqa.selenium.NoSuchElementException
 import com.example.test.pages.bridge.Popup
+import org.openqa.selenium.Keys
 
 class ScoreboardPage(
                       val dupid: Option[String] = None,
@@ -311,7 +312,9 @@ class ScoreboardPage(
   }
 
   def clickSummary(implicit patienceConfig: PatienceConfig, pos: Position) = {
-    clickButton("Summary")
+//    clickButton("Summary")
+    val b = findElemById("Summary")
+    b.sendKeys(Keys.ENTER.toString())
     new ListDuplicatePage(None)
   }
 

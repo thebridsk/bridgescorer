@@ -31,6 +31,11 @@ import org.scalajs.dom.experimental.URL
 import com.example.Bridge
 import com.example.react.Utils._
 import com.example.materialui.icons.MuiMoreVertIcon
+import com.example.routes.AppRouter.GraphQLAppPage
+import com.example.routes.AppRouter.GraphiQLView
+import com.example.routes.AppRouter.VoyagerView
+import com.example.routes.AppRouter.PageTest
+import com.example.routes.AppRouter.ColorView
 
 /**
  * A simple AppBar for the Bridge client.
@@ -131,9 +136,14 @@ object BridgeAppBarInternal {
     def render( props: Props, state: State ) = {
       import BaseStyles._
 
-//      def callbackPage(page: AppPage)(e: ReactEvent) = props.routeCtl.set(page).runNow()
       def gotoHomePage(e: ReactEvent) = props.routeCtl.toHome
       def gotoAboutPage(e: ReactEvent) = props.routeCtl.toAbout
+      def gotoInfoPage(e: ReactEvent) = {
+        logger.info("going to infopage")
+        props.routeCtl.toInfo
+      }
+
+      def callbackPage(page: AppPage)(e: ReactEvent) = props.routeCtl.toRootPage(page)
 
       val rightButton =
         List[CtorType.ChildArg](
@@ -234,6 +244,12 @@ object BridgeAppBarInternal {
                 onItemClick = handleMoreCloseClick _,
             )(
                 MuiMenuItem(
+                    id = "About",
+                    onClick = gotoAboutPage _
+                )(
+                    "About"
+                ),
+                MuiMenuItem(
                     id = "SwaggerDocs",
                     onClick = handleHelpGotoPageClick("/v1/docs") _
                 )(
@@ -246,11 +262,41 @@ object BridgeAppBarInternal {
                     "Swagger API Docs"
                 ),
                 MuiMenuItem(
-                    id = "About",
-                    onClick = gotoAboutPage _
+                    id = "Info",
+                    onClick = gotoInfoPage _
                 )(
-                    "About"
-                )
+                    "Info"
+                ),
+                MuiMenuItem(
+                    id = "GraphQL",
+                    onClick = callbackPage(GraphQLAppPage) _
+                )(
+                    "GraphQL"
+                ),
+                MuiMenuItem(
+                    id = "GraphiQL",
+                    onClick = callbackPage(GraphiQLView) _
+                )(
+                    "GraphiQL"
+                ),
+                MuiMenuItem(
+                    id = "Voyager",
+                    onClick = callbackPage(VoyagerView) _
+                )(
+                    "Voyager"
+                ),
+                MuiMenuItem(
+                    id = "TestPage",
+                    onClick = callbackPage(PageTest) _
+                )(
+                    "Test Page"
+                ),
+                MuiMenuItem(
+                    id = "Color",
+                    onClick = callbackPage(ColorView) _
+                )(
+                    "Color"
+                ),
             )::Nil
           ).map(_.vdomElement):::
           props.mainMenu.toList

@@ -79,18 +79,21 @@
 .dupDivPairsGrid > table > tbody > tr > td:first-child {
   font-weight: bold;
   position: sticky;
+  position: -webkit-sticky;
   left: 0;
   z-index: 10;
   background-color: rgb(250,250,250);
 }
 .dupDivPairsGrid > table > thead > tr > th {
   position: sticky;
+  position: -webkit-sticky;
   top: 64px;
   z-index: 11;
   background-color: rgb(250,250,250);
 }
 .dupDivPairsGrid > table > thead > tr > th:first-child {
   position: sticky;
+  position: -webkit-sticky;
   top: 64px;
   left: 0;
   z-index: 12;
@@ -131,18 +134,21 @@
 .dupDivPairsDetailsGrid > table > tbody > tr > td:first-child {
   font-weight: bold;
   position: sticky;
+  position: -webkit-sticky;
   left: 0;
   z-index: 10;
   background-color: rgb(250,250,250);
 }
 .dupDivPairsDetailsGrid > table > thead > tr > th {
   position: sticky;
+  position: -webkit-sticky;
   top: 64px;
   z-index: 11;
   background-color: rgb(250,250,250);
 }
 .dupDivPairsDetailsGrid > table > thead > tr > th:first-child {
   position: sticky;
+  position: -webkit-sticky;
   top: 64px;
   left: 0;
   z-index: 12;
@@ -632,18 +638,21 @@
 .dupViewContractResults table > tbody > tr > td:first-child {
   font-weight: bold;
   position: sticky;
+  position: -webkit-sticky;
   left: 0;
   z-index: 10;
   background-color: rgb(250,250,250);
 }
 .dupViewContractResults table > thead > tr:nth-child(1) > th {
   position: sticky;
+  position: -webkit-sticky;
   top: 64px;
   z-index: 11;
   background-color: rgb(250,250,250);
 }
 .dupViewContractResults table > thead > tr:nth-child(2) > th {
   position: sticky;
+  position: -webkit-sticky;
   top: 89px;
   z-index: 11;
   background-color: rgb(250,250,250);
@@ -689,18 +698,21 @@
 .dupViewPlayerContractResults table > tbody > tr > td:first-child {
   font-weight: bold;
   position: sticky;
+  position: -webkit-sticky;
   left: 0;
   z-index: 10;
   background-color: rgb(250,250,250);
 }
 .dupViewPlayerContractResults table > thead > tr > th {
   position: sticky;
+  position: -webkit-sticky;
   top: 64px;
   z-index: 11;
   background-color: rgb(250,250,250);
 }
 .dupViewPlayerContractResults table > thead > tr > th:first-child {
   position: sticky;
+  position: -webkit-sticky;
   top: 64px;
   left: 0;
   z-index: 12;
@@ -764,18 +776,21 @@
 .dupViewPlayerAggressiveness table > tbody > tr > td:first-child {
   font-weight: bold;
   position: sticky;
+  position: -webkit-sticky;
   left: 0;
   z-index: 10;
   background-color: rgb(250,250,250);
 }
 .dupViewPlayerAggressiveness table > thead > tr:last-child > th {
   position: sticky;
+  position: -webkit-sticky;
   top: 64px;
   z-index: 11;
   background-color: rgb(250,250,250);
 }
 .dupViewPlayerAggressiveness table > thead > tr:last-child > th:first-child {
   position: sticky;
+  position: -webkit-sticky;
   top: 64px;
   left: 0;
   z-index: 12;

@@ -79,6 +79,14 @@ object ChicagoRouter {
         def toHome: Unit = ChicagoModule.toHome
         override
         def toAbout: Unit = ChicagoModule.toAbout
+
+        override
+        def toInfo: Unit = {
+          ChicagoModule.toInfo
+        }
+
+        override
+        def toRootPage( page: AppPage ): Unit = ChicagoModule.toRootPage(page)
     }
 
   val routes = RouterConfigDsl[ChicagoPage].buildRule { dsl =>

@@ -79,6 +79,15 @@ object DuplicateRouter {
     def toHome: Unit = DuplicateModule.toHome
     override
     def toAbout: Unit = DuplicateModule.toAbout
+
+    override
+    def toInfo: Unit = {
+      DuplicateModule.toInfo
+    }
+
+    override
+    def toRootPage( page: AppPage ): Unit = DuplicateModule.toRootPage(page)
+
   }
 
   import scala.language.implicitConversions

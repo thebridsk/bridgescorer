@@ -84,6 +84,14 @@ object RubberRouter {
         def toHome: Unit = RubberModule.toHome
         override
         def toAbout: Unit = RubberModule.toAbout
+
+        override
+        def toInfo: Unit = {
+          RubberModule.toInfo
+        }
+
+        override
+        def toRootPage( page: AppPage ): Unit = RubberModule.toRootPage(page)
     }
 
   val routes = RouterConfigDsl[RubberPage].buildRule { dsl =>
