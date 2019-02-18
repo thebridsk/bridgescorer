@@ -247,7 +247,7 @@ object PageBoardInternal {
               )
             )
           case None =>
-            <.p( "Waiting" )
+            <.h1( "Waiting" )
         }
       )
     }

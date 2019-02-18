@@ -112,7 +112,7 @@ object PageAllTablesInternal {
               )
             case None =>
               <.div(
-                  <.p("Waiting to load information")
+                  <.h1("Waiting to load information")
               )
           }
       )

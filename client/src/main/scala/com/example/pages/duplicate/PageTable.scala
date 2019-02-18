@@ -95,29 +95,31 @@ object PageTableInternal {
                 )(
 
                 ),
-                ViewTable(props.routerCtl,props.page),
                 <.div(
-                  dupStyles.divTableHelp,
-                  <.b(
-                    <.p("When starting a new round, wait until you are ready to play the first hand."),
-                    <.p("To enter the results of the next hand, either:"),
-                    <.ul(
-                      <.li("Hit the button for a board to go directly to the scoring for the board"),
-                      <.li("Hit the button for the current round to go to the scoreboard for the table")
-                    )
-                  )
-                ),
-                <.div(
-                  baseStyles.divFooter,
+                  ViewTable(props.routerCtl,props.page),
                   <.div(
-                    baseStyles.divFooterLeft,
-                    AppButton( "Game", "Completed Games Scoreboard",
-                               props.routerCtl.setOnClick(CompleteScoreboardView(props.page.dupid))
+                    dupStyles.divTableHelp,
+                    <.b(
+                      <.p("When starting a new round, wait until you are ready to play the first hand."),
+                      <.p("To enter the results of the next hand, either:"),
+                      <.ul(
+                        <.li("Hit the button for a board to go directly to the scoring for the board"),
+                        <.li("Hit the button for the current round to go to the scoreboard for the table")
+                      )
                     )
                   ),
                   <.div(
-                    baseStyles.divFooterCenter,
-                    ComponentInputStyleButton( Callback{} )
+                    baseStyles.divFooter,
+                    <.div(
+                      baseStyles.divFooterLeft,
+                      AppButton( "Game", "Completed Games Scoreboard",
+                                 props.routerCtl.setOnClick(CompleteScoreboardView(props.page.dupid))
+                      )
+                    ),
+                    <.div(
+                      baseStyles.divFooterCenter,
+                      ComponentInputStyleButton( Callback{} )
+                    )
                   )
                 )
               )

@@ -249,108 +249,110 @@ object PageSuggestionInternal {
 
         ),
         <.div(
-          baseStyles.divText100,
-          "Number of players: ",
-          "8"
-//          <.input(
-//            ^.`type` := "number",
-//            ^.name := "Number",
-//            ^.value := state.numberPlayers.map( n => n.toString() ).getOrElse(""),
-//            ^.onChange ==> setNumberPlayers
-//          )
-        ),
-        <.div(
-          <.ul(
-            state.knownPlayers.whenDefined { list =>
-              val x = list.zipWithIndex.map { entry =>
-                val (p,i) = entry
+          <.div(
+            baseStyles.divText100,
+            "Number of players: ",
+            "8"
+  //          <.input(
+  //            ^.`type` := "number",
+  //            ^.name := "Number",
+  //            ^.value := state.numberPlayers.map( n => n.toString() ).getOrElse(""),
+  //            ^.onChange ==> setNumberPlayers
+  //          )
+          ),
+          <.div(
+            <.ul(
+              state.knownPlayers.whenDefined { list =>
+                val x = list.zipWithIndex.map { entry =>
+                  val (p,i) = entry
+                  <.li(
+                    CheckBox( s"KP${i}", p, state.knownPlayersSelected.contains(p), toggleKnownPlayer(p) )
+                  )
+                }.toTagMod
+                x
+              }
+            )
+          ),
+          <.div(
+            <.ul(
+              (0 until state.numberPlayers.getOrElse(0)-state.knownPlayersSelected.length).map { i =>
                 <.li(
-                  CheckBox( s"KP${i}", p, state.knownPlayersSelected.contains(p), toggleKnownPlayer(p) )
+                  <.input(
+                    ^.`type` := "text",
+                    ^.name := s"NP${i}",
+                    ^.value := (if (i < state.newPlayers.length) state.newPlayers(i) else ""),
+                    ^.onChange ==> setNewPlayers(i)
+                  )
                 )
-              }.toTagMod
-              x
-            }
-          )
-        ),
-        <.div(
-          <.ul(
-            (0 until state.numberPlayers.getOrElse(0)-state.knownPlayersSelected.length).map { i =>
-              <.li(
-                <.input(
-                  ^.`type` := "text",
-                  ^.name := s"NP${i}",
-                  ^.value := (if (i < state.newPlayers.length) state.newPlayers(i) else ""),
-                  ^.onChange ==> setNewPlayers(i)
-                )
-              )
-            }.toTagMod
-          )
-        ),
-        <.div(
-          !state.showNeverPair ?= baseStyles.alwaysHide,
-          <.table(
-            NeverPairHeader(props,state,this,sortedPlayers),
-            <.tbody(
-              sortedPlayers.zipWithIndex.map { e =>
-                val (p,i) = e
-                NeverPairRow.withKey(s"Player${i}")(( props,state,this,p,sortedPlayers))
               }.toTagMod
             )
-          )
-        ),
-        <.div(
-          <.p( history ),
-          state.suggestion match {
-            case None => <.span()
-            case Some(suggestion) =>
-              suggestion.suggestions match {
-                case None => <.span()
-                case Some(sugs) =>
-                  <.table(
-                    SummaryHeader(props,state,this),
-                    <.tfoot(
-                      <.tr(
-                        <.td(),
-                        <.td( ^.colSpan:=sugs.head.players.length, "Note: (games since last played, games played together)" ),
-                        if (state.showDetails) <.td( ^.colSpan:=8, ^.rowSpan:=2, "The higher the weight the better the pairing is" ) else TagMod()
+          ),
+          <.div(
+            !state.showNeverPair ?= baseStyles.alwaysHide,
+            <.table(
+              NeverPairHeader(props,state,this,sortedPlayers),
+              <.tbody(
+                sortedPlayers.zipWithIndex.map { e =>
+                  val (p,i) = e
+                  NeverPairRow.withKey(s"Player${i}")(( props,state,this,p,sortedPlayers))
+                }.toTagMod
+              )
+            )
+          ),
+          <.div(
+            <.p( history ),
+            state.suggestion match {
+              case None => <.span()
+              case Some(suggestion) =>
+                suggestion.suggestions match {
+                  case None => <.span()
+                  case Some(sugs) =>
+                    <.table(
+                      SummaryHeader(props,state,this),
+                      <.tfoot(
+                        <.tr(
+                          <.td(),
+                          <.td( ^.colSpan:=sugs.head.players.length, "Note: (games since last played, games played together)" ),
+                          if (state.showDetails) <.td( ^.colSpan:=8, ^.rowSpan:=2, "The higher the weight the better the pairing is" ) else TagMod()
+                        ),
+                        <.tr(
+                          <.td( ^.colSpan:=sugs.head.players.length+1, suggestion.calcTimeMillis.whenDefined( calcTime => f"Calculation time: ${calcTime}%.0f milliseconds" ) )
+                        )
                       ),
-                      <.tr(
-                        <.td( ^.colSpan:=sugs.head.players.length+1, suggestion.calcTimeMillis.whenDefined( calcTime => f"Calculation time: ${calcTime}%.0f milliseconds" ) )
+                      <.tbody(
+                        sugs.zipWithIndex.map { e =>
+                          val (su,i) = e
+                          SummaryRow.withKey( s"Suggestion${i}" )((props,state,this,i,su))
+                        }.toTagMod
                       )
-                    ),
-                    <.tbody(
-                      sugs.zipWithIndex.map { e =>
-                        val (su,i) = e
-                        SummaryRow.withKey( s"Suggestion${i}" )((props,state,this,i,su))
-                      }.toTagMod
                     )
-                  )
-              }
-          }
-        ),
-        <.div(
-          baseStyles.divFooter,
-          <.div(
-            baseStyles.divFooterLeft,
-            AppButton( "Calculate", "Calculate", ^.disabled := !state.isValid, ^.onClick --> calculateServer )
+                }
+            }
           ),
           <.div(
-            baseStyles.divFooterCenter,
-            AppButton( "CalculateLocal", "Calculate local", ^.disabled := !state.isValid, ^.onClick --> calculateLocal ),
-            AppButton( "Clear", "Clear", state.showNeverPair ?= baseStyles.alwaysHide, ^.onClick --> clear ),
-            AppButton( "NeverPair", "Never Pair", state.showNeverPair || !state.isValid ?= baseStyles.alwaysHide, ^.onClick --> toggleNeverPair ),
-            AppButton( "ClearNeverPair", "Clear Never Pair", !state.showNeverPair ?= baseStyles.alwaysHide, ^.onClick --> clearNeverPair ),
-            AppButton( "CancelNeverPair", "Cancel Never Pair", !state.showNeverPair ?= baseStyles.alwaysHide, ^.onClick --> cancelNeverPair ),
-            AppButton(
-                "ToggleDetails",
-                if (state.showDetails) "Hide Details" else "Show Details",
-                !showDetails ?= baseStyles.alwaysHide,
-                ^.onClick --> toggleDetails
+            baseStyles.divFooter,
+            <.div(
+              baseStyles.divFooterLeft,
+              AppButton( "Calculate", "Calculate", ^.disabled := !state.isValid, ^.onClick --> calculateServer )
             ),
-          ),
-          <.div(
-            baseStyles.divFooterRight,
-            AppButton( "Cancel", "Cancel", props.routerCtl.setOnClick(SummaryView) )
+            <.div(
+              baseStyles.divFooterCenter,
+              AppButton( "CalculateLocal", "Calculate local", ^.disabled := !state.isValid, ^.onClick --> calculateLocal ),
+              AppButton( "Clear", "Clear", state.showNeverPair ?= baseStyles.alwaysHide, ^.onClick --> clear ),
+              AppButton( "NeverPair", "Never Pair", state.showNeverPair || !state.isValid ?= baseStyles.alwaysHide, ^.onClick --> toggleNeverPair ),
+              AppButton( "ClearNeverPair", "Clear Never Pair", !state.showNeverPair ?= baseStyles.alwaysHide, ^.onClick --> clearNeverPair ),
+              AppButton( "CancelNeverPair", "Cancel Never Pair", !state.showNeverPair ?= baseStyles.alwaysHide, ^.onClick --> cancelNeverPair ),
+              AppButton(
+                  "ToggleDetails",
+                  if (state.showDetails) "Hide Details" else "Show Details",
+                  !showDetails ?= baseStyles.alwaysHide,
+                  ^.onClick --> toggleDetails
+              ),
+            ),
+            <.div(
+              baseStyles.divFooterRight,
+              AppButton( "Cancel", "Cancel", props.routerCtl.setOnClick(SummaryView) )
+            )
           )
         )
       )

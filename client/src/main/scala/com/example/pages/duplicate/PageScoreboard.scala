@@ -164,6 +164,15 @@ object PageScoreboardInternal {
           logger.fine( "WinnerSets: "+winnersets )
           <.div(
             dupStyles.divScoreboardPage,
+            PopupOkCancel(
+              if (state.deletePopup) {
+                Some( <.span( s"Are you sure you want to delete duplicate match ${score.id}" ) )
+              } else {
+                None
+              },
+              Some(actionDeleteOk),
+              Some(actionDeleteCancel)
+            ),
             DuplicatePageBridgeAppBar(
               id = Some(props.game.dupid),
               tableIds = sortedTables,
@@ -181,112 +190,105 @@ object PageScoreboardInternal {
             )(
               pagemenu: _*
             ),
-            PopupOkCancel(
-              if (state.deletePopup) {
-                Some( <.span( s"Are you sure you want to delete duplicate match ${score.id}" ) )
-              } else {
-                None
-              },
-              Some(actionDeleteOk),
-              Some(actionDeleteCancel)
-            ),
-            ViewScoreboard( props.routerCtl, props.game, score, state.isIMP ),
-            winnersets.map(ws => ViewPlayerMatchResult( (if (state.isIMP) score.placeImpByWinnerSet(ws) else score.placeByWinnerSet(ws)), state.isIMP )).toTagMod,
-            if (state.showdetails) {
-              ViewScoreboardDetails( props.game, score )
-            } else {
-              ViewScoreboardHelp( props.game, score )
-            },
             <.div(
-              baseStyles.divFooter,
-              props.game.getPerspective() match {
-                case PerspectiveComplete =>
-                  TagMod(
-                    <.div(
-                      baseStyles.divFooterLeft,
-                      sortedTables.map { table =>
-                        val clickToTableView = TableView(props.game.dupid,table)
-                        List[TagMod](
-                          AppButton( "Table_"+table, "Table "+table,
-                                     baseStyles.requiredNotNext,
-                                     props.routerCtl.setOnClick(clickToTableView) ),
-                          <.span(" ")
-                          ).toTagMod
-                      }.toTagMod
-                    ),
-                    <.div(
-                      baseStyles.divFooterCenter,
-                      AppButton( "AllBoards", "All Boards", props.routerCtl.setOnClick(props.game.toAllBoardsView()) ),
-                      " ",
-                      getScoringMethodButton(),
-                      if (score.alldone) {
-                        TagMod(
-                          " ",
-                          AppButton( "Details", "Details", ^.onClick --> toggleShowDetails, BaseStyles.highlight(selected = state.showdetails )  )
-                        )
-                      } else {
-                        TagMod()
-                      }
+              ViewScoreboard( props.routerCtl, props.game, score, state.isIMP ),
+              winnersets.map(ws => ViewPlayerMatchResult( (if (state.isIMP) score.placeImpByWinnerSet(ws) else score.placeByWinnerSet(ws)), state.isIMP )).toTagMod,
+              if (state.showdetails) {
+                ViewScoreboardDetails( props.game, score )
+              } else {
+                ViewScoreboardHelp( props.game, score )
+              },
+              <.div(
+                baseStyles.divFooter,
+                props.game.getPerspective() match {
+                  case PerspectiveComplete =>
+                    TagMod(
+                      <.div(
+                        baseStyles.divFooterLeft,
+                        sortedTables.map { table =>
+                          val clickToTableView = TableView(props.game.dupid,table)
+                          List[TagMod](
+                            AppButton( "Table_"+table, "Table "+table,
+                                       baseStyles.requiredNotNext,
+                                       props.routerCtl.setOnClick(clickToTableView) ),
+                            <.span(" ")
+                            ).toTagMod
+                        }.toTagMod
+                      ),
+                      <.div(
+                        baseStyles.divFooterCenter,
+                        AppButton( "AllBoards", "All Boards", props.routerCtl.setOnClick(props.game.toAllBoardsView()) ),
+                        " ",
+                        getScoringMethodButton(),
+                        if (score.alldone) {
+                          TagMod(
+                            " ",
+                            AppButton( "Details", "Details", ^.onClick --> toggleShowDetails, BaseStyles.highlight(selected = state.showdetails )  )
+                          )
+                        } else {
+                          TagMod()
+                        }
+                      )
                     )
-                  )
-                case PerspectiveDirector =>
-                  Seq(
-                    <.div(
-                      baseStyles.divFooterLeft,
-                      AppButton( "Game", "Completed Games Scoreboard", props.routerCtl.setOnClick(CompleteScoreboardView(props.game.dupid)) )
-                    ),
-                    <.div(
-                      baseStyles.divFooterCenter,
-                      AppButton( "AllBoards", "All Boards", props.routerCtl.setOnClick(props.game.toAllBoardsView()) ),
-                      " ",
-                      getScoringMethodButton(),
-                    ),
-                    <.div(
-                      baseStyles.divFooterRight,
-                      AppButton( "Delete", "Delete", ^.onClick-->actionDelete ),
-                      " ",
-                      AppButton( "EditNames", "Edit Names", props.routerCtl.setOnClick(NamesView(props.game.dupid)) )
-                    )
-                  ).toTagMod
-                case PerspectiveTable(team1, team2) =>
-                  props.game match {
-                    case trgv: TableRoundScoreboardView =>
-                      val tablenumber = Id.tableIdToTableNumber(trgv.tableid)
-                      val allplayedInRound = score.getRound(trgv.tableid, trgv.round) match {
-                        case Some(r) => r.complete
-                        case _ => false
-                      }
-                      Seq(
-                        <.div(
-                          baseStyles.divFooterLeft,
-                          AppButton( "Table", "Table "+tablenumber,
-                                     allplayedInRound ?= baseStyles.requiredNotNext,
-                                     props.routerCtl.setOnClick(trgv.toTableView()) )
-                        ),
-                        <.div(
-                          baseStyles.divFooterCenter,
-                          AppButton( "Game", "Completed Games Scoreboard",
-                                     allplayedInRound ?= baseStyles.requiredNotNext,
-                                     props.routerCtl.setOnClick(CompleteScoreboardView(props.game.dupid)) ),
-                          " ",
-                          getScoringMethodButton(),
-                        ),
-                        <.div(
-                          baseStyles.divFooterRight,
-                          AppButton( "AllBoards", "All Boards", props.routerCtl.setOnClick(props.game.toAllBoardsView())  ),
-                        )
-                      ).toTagMod
-                    case _ =>
+                  case PerspectiveDirector =>
+                    Seq(
                       <.div(
                         baseStyles.divFooterLeft,
                         AppButton( "Game", "Completed Games Scoreboard", props.routerCtl.setOnClick(CompleteScoreboardView(props.game.dupid)) )
+                      ),
+                      <.div(
+                        baseStyles.divFooterCenter,
+                        AppButton( "AllBoards", "All Boards", props.routerCtl.setOnClick(props.game.toAllBoardsView()) ),
+                        " ",
+                        getScoringMethodButton(),
+                      ),
+                      <.div(
+                        baseStyles.divFooterRight,
+                        AppButton( "Delete", "Delete", ^.onClick-->actionDelete ),
+                        " ",
+                        AppButton( "EditNames", "Edit Names", props.routerCtl.setOnClick(NamesView(props.game.dupid)) )
                       )
-                  }
-              }
-            ),
-            <.div(
-              baseStyles.divTextFooter,
-              <.p("Game "+score.id+" created "+DateUtils.formatDate(score.created)+" last updated "+DateUtils.formatDate(score.updated))
+                    ).toTagMod
+                  case PerspectiveTable(team1, team2) =>
+                    props.game match {
+                      case trgv: TableRoundScoreboardView =>
+                        val tablenumber = Id.tableIdToTableNumber(trgv.tableid)
+                        val allplayedInRound = score.getRound(trgv.tableid, trgv.round) match {
+                          case Some(r) => r.complete
+                          case _ => false
+                        }
+                        Seq(
+                          <.div(
+                            baseStyles.divFooterLeft,
+                            AppButton( "Table", "Table "+tablenumber,
+                                       allplayedInRound ?= baseStyles.requiredNotNext,
+                                       props.routerCtl.setOnClick(trgv.toTableView()) )
+                          ),
+                          <.div(
+                            baseStyles.divFooterCenter,
+                            AppButton( "Game", "Completed Games Scoreboard",
+                                       allplayedInRound ?= baseStyles.requiredNotNext,
+                                       props.routerCtl.setOnClick(CompleteScoreboardView(props.game.dupid)) ),
+                            " ",
+                            getScoringMethodButton(),
+                          ),
+                          <.div(
+                            baseStyles.divFooterRight,
+                            AppButton( "AllBoards", "All Boards", props.routerCtl.setOnClick(props.game.toAllBoardsView())  ),
+                          )
+                        ).toTagMod
+                      case _ =>
+                        <.div(
+                          baseStyles.divFooterLeft,
+                          AppButton( "Game", "Completed Games Scoreboard", props.routerCtl.setOnClick(CompleteScoreboardView(props.game.dupid)) )
+                        )
+                    }
+                }
+              ),
+              <.div(
+                baseStyles.divTextFooter,
+                <.p("Game "+score.id+" created "+DateUtils.formatDate(score.created)+" last updated "+DateUtils.formatDate(score.updated))
+              )
             )
           )
         case None =>

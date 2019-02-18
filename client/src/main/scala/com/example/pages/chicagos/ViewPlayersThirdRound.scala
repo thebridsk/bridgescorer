@@ -90,85 +90,87 @@ object ViewPlayersThirdRound {
           routeCtl = props.router
         )(),
 //        <.h1("Select partners and first dealer"),
-        <.table(
-          <.tbody(
-            <.tr(
-                  <.td(),
-                  <.td(
-//                        "South",
-//                        <.br,
-                        state.south,
-                        <.br,
-                        getDealerButton(South,state.south,8)
-                      ),
-                  <.td() ),
-            <.tr(
-                  <.td(
-//                        "East",
-//                        <.br,
-                        state.east,
-                        <.br,
-                        getDealerButton(East,state.east,8),
-                        <.br,
-                        getSwapButton("East", true)
-                      ),
-                  <.td(),
-                  <.td(
-//                        "West",
-//                        <.br,
-                        state.west,
-                        <.br,
-                        getDealerButton(West,state.west,8),
-                        <.br,
-                        getSwapButton("West", false)
-                      ) ),
-            <.tr(
-                  <.td(),
-                  <.td(
-//                        "North, "+
-                        "Scorekeeper",
-                        <.br,
-                        if (state.changingScoreKeeper) {
-                          var i = 0
-                          val extraWidth = Properties.defaultChicagoNameButtonPaddingAndBorder +
-                                           Properties.defaultChicagoNameButtonBorderRadius
-                          val maxPlayerLen = s"${Pixels.maxLength( allFromLastRound: _* )+extraWidth}px"
-                          <.span(
-                              allFromLastRound.map { p =>
-                                i=i+1
-                                AppButton("ChangeScoreKeeper"+i, p,
-                                          baseStyles.nameButton,
-                                          ^.width:=maxPlayerLen,
-                                          BaseStyles.highlight(selected = p==state.north),
-                                          ^.onClick ==> setNorth(p) _ )
-                              }.toTagMod
-                          )
-                        } else {
-                          <.span(
-                            state.north,
-                            <.br,
-                            getDealerButton(North,state.north,8),
-                            <.br,
-                            AppButton( "ChangeScoreKeeper", "Change Scorekeeper", baseStyles.nameButton, ^.onClick --> changeScoreKeeper)
-                          )
-                        }
-                      ),
-                  <.td()
+        <.div(
+          <.table(
+            <.tbody(
+              <.tr(
+                    <.td(),
+                    <.td(
+  //                        "South",
+  //                        <.br,
+                          state.south,
+                          <.br,
+                          getDealerButton(South,state.south,8)
+                        ),
+                    <.td() ),
+              <.tr(
+                    <.td(
+  //                        "East",
+  //                        <.br,
+                          state.east,
+                          <.br,
+                          getDealerButton(East,state.east,8),
+                          <.br,
+                          getSwapButton("East", true)
+                        ),
+                    <.td(),
+                    <.td(
+  //                        "West",
+  //                        <.br,
+                          state.west,
+                          <.br,
+                          getDealerButton(West,state.west,8),
+                          <.br,
+                          getSwapButton("West", false)
+                        ) ),
+              <.tr(
+                    <.td(),
+                    <.td(
+  //                        "North, "+
+                          "Scorekeeper",
+                          <.br,
+                          if (state.changingScoreKeeper) {
+                            var i = 0
+                            val extraWidth = Properties.defaultChicagoNameButtonPaddingAndBorder +
+                                             Properties.defaultChicagoNameButtonBorderRadius
+                            val maxPlayerLen = s"${Pixels.maxLength( allFromLastRound: _* )+extraWidth}px"
+                            <.span(
+                                allFromLastRound.map { p =>
+                                  i=i+1
+                                  AppButton("ChangeScoreKeeper"+i, p,
+                                            baseStyles.nameButton,
+                                            ^.width:=maxPlayerLen,
+                                            BaseStyles.highlight(selected = p==state.north),
+                                            ^.onClick ==> setNorth(p) _ )
+                                }.toTagMod
+                            )
+                          } else {
+                            <.span(
+                              state.north,
+                              <.br,
+                              getDealerButton(North,state.north,8),
+                              <.br,
+                              AppButton( "ChangeScoreKeeper", "Change Scorekeeper", baseStyles.nameButton, ^.onClick --> changeScoreKeeper)
+                            )
+                          }
+                        ),
+                    <.td()
+                )
+            ),
+            <.div(
+              baseStyles.divFooter,
+              <.div(
+                baseStyles.divFooterLeft,
+                AppButton( "Ok", "OK" , ^.disabled := !valid, BaseStyles.highlight(requiredNotNext=valid ), baseStyles.appButton, ^.onClick --> ok )
+              ),
+              <.div(
+                baseStyles.divFooterCenter,
+                AppButton( "Cancel", "Cancel", baseStyles.appButton, props.router.setOnClick(props.page.toSummaryView()))
+              ),
+              <.div(
+                baseStyles.divFooterRight,
+  //              HelpButton("../help/chicago/four/selectnames4.html")
               )
-          ),
-          <.div(
-            baseStyles.divFooter,
-            <.div(
-              baseStyles.divFooterLeft,
-              AppButton( "Ok", "OK" , ^.disabled := !valid, BaseStyles.highlight(requiredNotNext=valid ), baseStyles.appButton, ^.onClick --> ok )
-            ),
-            <.div(
-              baseStyles.divFooterCenter,
-              AppButton( "Cancel", "Cancel", baseStyles.appButton, props.router.setOnClick(props.page.toSummaryView()))
-            ),
-            <.div(
-              baseStyles.divFooterRight,
-//              HelpButton("../help/chicago/four/selectnames4.html")
             )
           )
         )

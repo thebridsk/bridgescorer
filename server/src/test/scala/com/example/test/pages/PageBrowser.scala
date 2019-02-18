@@ -438,6 +438,9 @@ trait PageBrowser {
     PageBrowser.executeScript( """arguments[0].scrollIntoView({behavior: "auto", block: "center", inline: "center"});""", e.underlying)
   }
 
+  def scrollToTop(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position): Unit = {
+    PageBrowser.executeScript("window.scrollTo(0, 0)")
+  }
   /**
    * @param e the element
    */

@@ -133,15 +133,17 @@ object PageFinishedScoreboardsInternal {
         )(
 
         ),
-        scoreboards(),
         <.div(
-          baseStyles.hideInPrint,
-          AppButton( "Summary", "Summary", props.routerCtl.setOnClick(SummaryView) ),
-          <.p( "Add: ", matches(true)),
-          <.p( "Remove: ", matches(false))
-//          <.p( "Add and remove the matches that should be printed. ",
-//               "Due to a layout problem, do NOT print more than one page. ",
-//               "For 2 table matches, 2 matches can be printed in landscape, 3 in portrait." )
+          scoreboards(),
+          <.div(
+            baseStyles.hideInPrint,
+            AppButton( "Summary", "Summary", props.routerCtl.setOnClick(SummaryView) ),
+            <.p( "Add: ", matches(true)),
+            <.p( "Remove: ", matches(false))
+  //          <.p( "Add and remove the matches that should be printed. ",
+  //               "Due to a layout problem, do NOT print more than one page. ",
+  //               "For 2 table matches, 2 matches can be printed in landscape, 3 in portrait." )
+          )
         )
       )
     }

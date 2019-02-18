@@ -119,35 +119,37 @@ object PageBoardSetsInternal {
           )(
 
           ),
-          <.table(
-            <.thead(
-              SummaryHeader(state)
+          <.div(
+            <.table(
+              <.thead(
+                SummaryHeader(state)
+              ),
+              <.tbody(
+                state.boardSets.keySet.toList.sortWith( (t1,t2)=>t1<t2 ).map { name =>
+                  SummaryRow.withKey( name )((state,name,toggleBoardSet(name),props.initialDisplay))
+                }.toTagMod
+              )
             ),
-            <.tbody(
-              state.boardSets.keySet.toList.sortWith( (t1,t2)=>t1<t2 ).map { name =>
-                SummaryRow.withKey( name )((state,name,toggleBoardSet(name),props.initialDisplay))
-              }.toTagMod
-            )
+            AppButton( "OK", "OK", ^.onClick-->okCallback )
           ),
-          AppButton( "OK", "OK", ^.onClick-->okCallback )
+          <.div(
+            props.initialDisplay match {
+              case Some(name) =>
+                state.boardSets.get(name) match {
+                  case Some(bs) =>
+                    <.div(
+                      <.h1("Showing ", bs.short ),
+                      <.p(bs.description),
+                      ViewBoardSet(bs,2)
+                    )
+                  case None =>
+                    <.span(s"BoardSet $name not found")
+                }
+              case None =>
+                <.span()
+            }
+          )
         ),
-        <.div(
-          props.initialDisplay match {
-            case Some(name) =>
-              state.boardSets.get(name) match {
-                case Some(bs) =>
-                  <.div(
-                    <.h1("Showing ", bs.short ),
-                    <.p(bs.description),
-                    ViewBoardSet(bs,2)
-                  )
-                case None =>
-                  <.span(s"BoardSet $name not found")
-              }
-            case None =>
-              <.span()
-          }
-        )
       )
     }
 

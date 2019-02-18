@@ -215,7 +215,7 @@
   font-size: x-large;
 }
 
-.dupDivScoreboardPage {
+.dupDivScoreboardPage > div:nth-child(3) {
   display: flex;
   flex-wrap: wrap;
   flex-direction: row;
@@ -319,7 +319,7 @@
   flex-direction: row;
 }
 
-.dupDivTablePage {
+.dupDivTablePage > div:nth-child(2) {
   display: flex;
   flex-wrap: wrap;
   flex-direction: row;
@@ -579,44 +579,44 @@
   font-size: x-large;
 }
 
-.dupDivSuggestionPage input {
+.dupDivSuggestionPage > div:nth-child(3) input {
   font-size: x-large;
 }
 
-.dupDivSuggestionPage li {
+.dupDivSuggestionPage > div:nth-child(3) li {
   list-style-type: none;
 }
 
-.dupDivSuggestionPage > div:nth-child(4) ul li {
+.dupDivSuggestionPage > div:nth-child(3) > div:nth-child(4) ul li {
   padding: 5px;
 }
-.dupDivSuggestionPage tbody tr:nth-child(2n+1) {
+.dupDivSuggestionPage > div:nth-child(3) tbody tr:nth-child(2n+1) {
   background-color: #f2f2f2;
 }
-.dupDivSuggestionPage td:first-child {
+.dupDivSuggestionPage > div:nth-child(3) td:first-child {
   border: 1px solid black;
   text-align: center;
 }
-.dupDivSuggestionPage td {
+.dupDivSuggestionPage > div:nth-child(3) td {
   border: 1px solid black;
   padding: 4px;
   text-align: center;
 }
-.dupDivSuggestionPage > div:nth-child(6) td:nth-child(n+6) {
+.dupDivSuggestionPage > div:nth-child(3) > div:nth-child(6) td:nth-child(n+6) {
   font-size: large
 }
-.dupDivSuggestionPage > div:nth-child(6) th:nth-child(n+6) {
+.dupDivSuggestionPage > div:nth-child(3) > div:nth-child(6) th:nth-child(n+6) {
   font-size: large
 }
-.dupDivSuggestionPage th {
+.dupDivSuggestionPage > div:nth-child(3) th {
   border: 1px solid black;
   text-align: center;
 }
-.dupDivSuggestionPage table {
+.dupDivSuggestionPage > div:nth-child(3) table {
   border-spacing: 0px;
   border: 1px solid black;
 }
-.dupDivSuggestionPage {
+.dupDivSuggestionPage > div:nth-child(3) {
   font-size: x-large;
   display: flex;
   flex-wrap: wrap;

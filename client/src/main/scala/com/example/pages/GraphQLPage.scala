@@ -146,36 +146,38 @@ object GraphQLPageInternal {
             None,
             props.router
         )(),
-        <.textarea(
-          ^.cols := 80,
-          ^.rows := 40,
-          ^.placeholder := "Enter GraphQL query",
-          ^.onChange ==> setQuery,
-          state.query.map( s => TagMod(s) ).whenDefined
-        ),
         <.div(
-          baseStyles.divFooter,
+          <.textarea(
+            ^.cols := 80,
+            ^.rows := 40,
+            ^.placeholder := "Enter GraphQL query",
+            ^.onChange ==> setQuery,
+            state.query.map( s => TagMod(s) ).whenDefined
+          ),
           <.div(
-            baseStyles.divFooterLeft,
-            AppButton( "Execute", "Execute",
-                       baseStyles.appButton,
-                       ^.disabled := state.query.isEmpty,
-                       ^.onClick --> execute
-            ),
-            AppButton( "ClearQ", "Clear Query",
-                       baseStyles.appButton,
-                       ^.onClick --> clearQuery
-            ),
-            AppButton( "ClearR", "Clear Response",
-                       baseStyles.appButton,
-                       ^.onClick --> clearResponse
+            baseStyles.divFooter,
+            <.div(
+              baseStyles.divFooterLeft,
+              AppButton( "Execute", "Execute",
+                         baseStyles.appButton,
+                         ^.disabled := state.query.isEmpty,
+                         ^.onClick --> execute
+              ),
+              AppButton( "ClearQ", "Clear Query",
+                         baseStyles.appButton,
+                         ^.onClick --> clearQuery
+              ),
+              AppButton( "ClearR", "Clear Response",
+                         baseStyles.appButton,
+                         ^.onClick --> clearResponse
+              )
             )
+          ),
+          <.div(
+            <.code( <.pre(
+              state.response.whenDefined
+            ))
           )
-        ),
-        <.div(
-          <.code( <.pre(
-            state.response.whenDefined
-          ))
         )
       )
     }

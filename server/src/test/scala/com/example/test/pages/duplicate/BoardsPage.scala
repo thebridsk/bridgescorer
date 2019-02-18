@@ -24,6 +24,7 @@ import com.example.data.bridge.ContractDoubled
 import com.example.data.bridge.Vulnerability
 import com.example.data.bridge.Vul
 import com.example.data.bridge.NotVul
+import com.example.test.pages.PageBrowser
 
 object BoardsPage {
 
@@ -371,6 +372,8 @@ class BoardsPage( implicit webDriver: WebDriver, pageCreated: SourcePosition ) e
   }
 
   def clickScoreboard(implicit patienceConfig: PatienceConfig, pos: Position) = {
+    PageBrowser.scrollToTop
+    Thread.sleep(10L)
     clickButton("Game")
     ScoreboardPage.waitFor
   }

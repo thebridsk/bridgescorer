@@ -79,6 +79,7 @@ import com.example.test.pages.duplicate.PeopleRowIMP
 import com.example.test.util.HttpUtils
 import com.example.test.pages.duplicate.StatisticsPage
 import com.example.data.Id
+import com.example.test.pages.PageBrowser
 
 object Duplicate5TestPages {
 
@@ -947,7 +948,7 @@ class Duplicate5TestPages extends FlatSpec with MustMatchers with BeforeAndAfter
       },
       CodeBlock {
         import SessionTable1._
-        withClue( """On session Table 1""" ) {
+        PageBrowser.withClueAndScreenShot(screenshotDir, "VerifyBoards", """On session Table 1""") {
           val page = ScoreboardPage.current.clickAllBoards.validate
 
           page.getBoardIds must contain theSameElementsAs allHands.boards
@@ -962,7 +963,7 @@ class Duplicate5TestPages extends FlatSpec with MustMatchers with BeforeAndAfter
       },
       CodeBlock {
         import SessionTable2._
-        withClue( """On session Table 2""" ) {
+        PageBrowser.withClueAndScreenShot(screenshotDir, "VerifyBoards", """On session Table 2""") {
           val page = ScoreboardPage.current.clickAllBoards.validate
 
           page.checkHand(3, allHands.getBoardsInTableRound(1, 1)(2), allHands, true)

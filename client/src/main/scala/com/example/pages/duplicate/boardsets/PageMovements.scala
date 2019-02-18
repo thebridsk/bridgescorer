@@ -179,39 +179,41 @@ object PageMovementsInternal {
           )(
 
           ),
-          <.table(
-            <.thead(
-              SummaryHeader(state)
+          <.div(
+            <.table(
+              <.thead(
+                SummaryHeader(state)
+              ),
+              <.tbody(
+                state.movements.keySet.toList.sortWith( (t1,t2)=>t1<t2 ).map { name =>
+                  SummaryRow.withKey( name )((state,name,toggleBoardSet(name),props.initialDisplay))
+                }.toTagMod
+              )
             ),
-            <.tbody(
-              state.movements.keySet.toList.sortWith( (t1,t2)=>t1<t2 ).map { name =>
-                SummaryRow.withKey( name )((state,name,toggleBoardSet(name),props.initialDisplay))
-              }.toTagMod
-            )
-          ),
-          AppButton( "OK", "OK", ^.onClick-->okCallback )
-        ),
-        <.div(
-          props.initialDisplay match {
-            case Some(name) =>
-              state.movements.get(name) match {
-                case Some(htp) =>
-                  <.div(
-                    <.h1("Showing ", htp.short ),
-                    <.p( htp.description ),
-                    <.div(
-                      htp.hands.map( h => h.table ).toList.distinct.sorted.map { table =>
-                        MovementTable((state,htp,table))
-                      }.toTagMod
-                    )
-                  )
+            AppButton( "OK", "OK", ^.onClick-->okCallback ),
+            <.div(
+              props.initialDisplay match {
+                case Some(name) =>
+                  state.movements.get(name) match {
+                    case Some(htp) =>
+                      <.div(
+                        <.h1("Showing ", htp.short ),
+                        <.p( htp.description ),
+                        <.div(
+                          htp.hands.map( h => h.table ).toList.distinct.sorted.map { table =>
+                            MovementTable((state,htp,table))
+                          }.toTagMod
+                        )
+                      )
+                    case None =>
+                      <.span(s"BoardSet $name not found")
+                  }
                 case None =>
-                  <.span(s"BoardSet $name not found")
+                  <.span()
               }
-            case None =>
-              <.span()
-          }
-        )
+            )
+          )
+        ),
       )
     }
 

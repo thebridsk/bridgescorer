@@ -253,30 +253,32 @@ object ExportPageInternal {
             props.router
         )(),
         <.div(
-          showList( "Duplicate", "Duplicate", dupids ),
-          showList( "Chicago", "Chicago", state.chiids ),
-          showList( "Rubber", "Rubber", state.rubids ),
-          <.p( if (state.isExportingAll()) "Exporting all" else "Exporting some" )
-        ),
-
-        <.div(
-          baseStyles.divFooter,
           <.div(
-            baseStyles.divFooterLeft,
-            AppButton( "Home", "Home",
-                       props.router.setOnClick(Home)),
-            {
-              val filter = state.selectedIds.map(list => list.mkString("?filter=", ",", "")).getOrElse("")
-              val path = GotoPage.getURL( s"""/v1/export${filter}""" )
-              AppButtonLink( "Export", "Export", path,
-                             baseStyles.appButton
-              )
-            }
+            showList( "Duplicate", "Duplicate", dupids ),
+            showList( "Chicago", "Chicago", state.chiids ),
+            showList( "Rubber", "Rubber", state.rubids ),
+            <.p( if (state.isExportingAll()) "Exporting all" else "Exporting some" )
           ),
+
           <.div(
-            baseStyles.divFooterCenter,
-            AppButton( "SelectAll", "Select All", ^.onClick --> selectAll),
-            AppButton( "ClearAll", "Clear All", ^.onClick --> selectClearAll)
+            baseStyles.divFooter,
+            <.div(
+              baseStyles.divFooterLeft,
+              AppButton( "Home", "Home",
+                         props.router.setOnClick(Home)),
+              {
+                val filter = state.selectedIds.map(list => list.mkString("?filter=", ",", "")).getOrElse("")
+                val path = GotoPage.getURL( s"""/v1/export${filter}""" )
+                AppButtonLink( "Export", "Export", path,
+                               baseStyles.appButton
+                )
+              }
+            ),
+            <.div(
+              baseStyles.divFooterCenter,
+              AppButton( "SelectAll", "Select All", ^.onClick --> selectAll),
+              AppButton( "ClearAll", "Clear All", ^.onClick --> selectClearAll)
+            )
           )
         )
       )

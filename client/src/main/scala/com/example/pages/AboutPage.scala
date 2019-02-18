@@ -90,36 +90,38 @@ object AboutPageInternal {
             props.router
         )(),
         <.div(
-          ^.id:="url",
-          "Server",
-          <.ul(
-            if (state.serverUrl.serverUrl.isEmpty) {
-              <.li("No network interfaces found")
-            } else {
-              state.serverUrl.serverUrl.map{ url => <.li(url) }.toTagMod
-            }
-          )
-        ),
-        <.div(
-          <.p,
-          "Client:",
-          <.br, indent,
-          "Client version is ", VersionClient.version,
-          <.br, indent,
-          "Client Build date is ", VersionClient.builtAtString+" UTC",
-          <.br, indent,
-          "Client Shared version is ", VersionShared.version,
-          <.br, indent,
-          "Client Shared Build date is ", VersionShared.builtAtString+" UTC",
-          <.p,
-          "Server:",
-          state.serverVersion.map(sv => <.span(
+          <.div(
+            ^.id:="url",
+            "Server",
+            <.ul(
+              if (state.serverUrl.serverUrl.isEmpty) {
+                <.li("No network interfaces found")
+              } else {
+                state.serverUrl.serverUrl.map{ url => <.li(url) }.toTagMod
+              }
+            )
+          ),
+          <.div(
+            <.p,
+            "Client:",
             <.br, indent,
-            sv.name, " version is ", sv.version,
+            "Client version is ", VersionClient.version,
             <.br, indent,
-            sv.name, " Build date is ", sv.buildDate
-          ) ).toTagMod
-        ),
+            "Client Build date is ", VersionClient.builtAtString+" UTC",
+            <.br, indent,
+            "Client Shared version is ", VersionShared.version,
+            <.br, indent,
+            "Client Shared Build date is ", VersionShared.builtAtString+" UTC",
+            <.p,
+            "Server:",
+            state.serverVersion.map(sv => <.span(
+              <.br, indent,
+              sv.name, " version is ", sv.version,
+              <.br, indent,
+              sv.name, " Build date is ", sv.buildDate
+            ) ).toTagMod
+          ),
+        )
 //        <.div(
 //          AppButton( "OK", "OK",
 //                     props.router.setOnClick(Home))

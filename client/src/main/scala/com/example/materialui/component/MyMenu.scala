@@ -9,6 +9,9 @@ import com.example.materialui.MuiClickAwayListener
 import com.example.materialui.MuiPaper
 import com.example.materialui.PopperPlacement
 import com.example.materialui.AnchorElement
+import org.scalajs.dom.raw.KeyboardEvent
+import japgolly.scalajs.react.raw.SyntheticKeyboardEvent
+import org.scalajs.dom.raw.Node
 
 /**
  * A skeleton component.
@@ -65,6 +68,7 @@ object MyMenuInternal {
    *
    */
   class Backend(scope: BackendScope[Props, State]) {
+
     def render( props: Props, state: State ) = {
 
 //      val additionalProps = js.Dictionary[js.Any]()

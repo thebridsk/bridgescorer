@@ -43,19 +43,21 @@ object InfoPage {
                 None,
                 props.routeCtl
             )(),
-            <.table( ^.width := "100%",
-                <.thead(
-                  <.tr(
-                    <.th( ^.textAlign:="left", "Property"), <.th(^.textAlign:="left", "Value")
-                )),
-                <.tbody(
-                  info().map{ e => tablerow(e) }.toTagMod
-                )
-            ),
-            <.p(
-//              AppButton( "Cancel", "Cancel", ^.onClick --> gotoPage(Home)),
-//              " ",
-              AppButton( "Refresh", "Refresh", ^.onClick --> scope.forceUpdate )
+            <.div(
+              <.table( ^.width := "100%",
+                  <.thead(
+                    <.tr(
+                      <.th( ^.textAlign:="left", "Property"), <.th(^.textAlign:="left", "Value")
+                  )),
+                  <.tbody(
+                    info().map{ e => tablerow(e) }.toTagMod
+                  )
+              ),
+              <.p(
+  //              AppButton( "Cancel", "Cancel", ^.onClick --> gotoPage(Home)),
+  //              " ",
+                AppButton( "Refresh", "Refresh", ^.onClick --> scope.forceUpdate )
+              )
             )
           )
         }

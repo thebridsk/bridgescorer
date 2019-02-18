@@ -141,22 +141,22 @@ object PageSelectMatchInternal {
                         ^.name:="DuplicateId",
                         ^.onChange ==> inputCB _,
                         ^.value := state.selection.getOrElse(""))
+            ),
+            <.div(
+              baseStyles.divFooter,
+              <.div(
+                baseStyles.divFooterLeft,
+                AppButton( "OK", "OK", ^.onClick-->ok )
+              ),
+              <.div(
+                baseStyles.divFooterCenter,
+                AppButton( "Cancel", "Cancel", props.routerCtl.home ),
+              ),
+              <.div(
+                baseStyles.divFooterRight
+              )
             )
         ),
-        <.div(
-          baseStyles.divFooter,
-          <.div(
-            baseStyles.divFooterLeft,
-            AppButton( "OK", "OK", ^.onClick-->ok )
-          ),
-          <.div(
-            baseStyles.divFooterCenter,
-            AppButton( "Cancel", "Cancel", props.routerCtl.home ),
-          ),
-          <.div(
-            baseStyles.divFooterRight
-          )
-        )
       )
     }
 
