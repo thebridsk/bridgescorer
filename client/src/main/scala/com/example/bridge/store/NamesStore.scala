@@ -4,6 +4,7 @@ import japgolly.scalajs.react.Callback
 import com.example.rest2.RestClientNames
 import utils.logging.Logger
 import com.example.logger.Alerter
+import com.example.Bridge
 
 object NamesStore extends ChangeListenable {
   val logger = Logger("bridge.ViewPlayers")
@@ -24,11 +25,20 @@ object NamesStore extends ChangeListenable {
    * @param cb - callback that should be called when the names have been updated
    */
   def refreshNames( cb: Option[Callback] = None ) = {
-    import scala.concurrent.ExecutionContext.Implicits.global
-    RestClientNames.list().recordFailure().foreach( list => Alerter.tryitWithUnit {
-      names = list.toList
-      cb.foreach { _.runNow() }
-    })
+    if (Bridge.isDemo) {
+      import scala.scalajs.js.timers._
+
+      setTimeout(1) { // note the absence of () =>
+        names = List("Barry","Bill","Cathy","Irene","June","Kelly","Larry","Norman","Victor")
+        cb.foreach { _.runNow() }
+      }
+    } else {
+      import scala.concurrent.ExecutionContext.Implicits.global
+      RestClientNames.list().recordFailure().foreach( list => Alerter.tryitWithUnit {
+        names = list.toList
+        cb.foreach { _.runNow() }
+      })
+    }
   }
 
 
