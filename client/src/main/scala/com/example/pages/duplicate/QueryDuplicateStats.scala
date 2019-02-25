@@ -102,11 +102,30 @@ object QueryDuplicateStats {
          |    }
          |""".stripMargin
 
+  private val queryPlayersOpponentsStats =
+       """
+         |    playersOpponentsStats {
+         |      players {
+         |        player
+         |        opponents {
+         |          player
+         |          opponent
+         |          matchesPlayed
+         |          matchesBeat
+         |          matchesTied
+         |          totalMP
+         |          wonMP
+         |        }
+         |      }
+         |    }
+         |""".stripMargin
+
   def getDuplicateStats(
       playerStats: Boolean = false,
       contractStats: Boolean = false,
       playerDoubledStats: Boolean = false,
-      comparisonStats: Boolean = false
+      comparisonStats: Boolean = false,
+      playersOpponentsStats: Boolean = false
   ) = {
     val query =
        """{
@@ -116,6 +135,7 @@ object QueryDuplicateStats {
          (if (contractStats) queryContractStats else "") +
          (if (playerDoubledStats) queryPlayerDoubledStats else "") +
          (if (comparisonStats) queryComparisonStats else "") +
+         (if (playersOpponentsStats) queryPlayersOpponentsStats else "") +
        """
          |  }
          |}

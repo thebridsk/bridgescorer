@@ -50,6 +50,9 @@ import com.example.data.RubberBestMatch
 
 import SchemaBase.{ log => _, _ }
 import SchemaHand.{ log => _, _ }
+import com.example.data.duplicate.stats.PlayerOpponentStat
+import com.example.data.duplicate.stats.PlayerOpponentsStat
+import com.example.data.duplicate.stats.PlayersOpponentsStats
 
 object SchemaDuplicate {
 
@@ -624,6 +627,87 @@ object SchemaDuplicate {
       )
   )
 
+  val PlayerOpponentStatType = ObjectType(
+      "PlayerOpponentStatType",
+      "player stats against an opponent in duplicate matches",
+      fields[BridgeService,PlayerOpponentStat](
+          Field(
+              "id",
+              OptionType(StringType),
+              resolve = ctx => s"""${ctx.value.player}_${ctx.value.opponent}"""
+          ),
+          Field(
+              "player",
+              OptionType(StringType),
+              resolve = _.value.player
+          ),
+          Field(
+              "opponent",
+              OptionType(StringType),
+              resolve = _.value.opponent
+          ),
+          Field(
+              "matchesPlayed",
+              OptionType(IntType),
+              resolve = _.value.matchesPlayed
+          ),
+          Field(
+              "matchesBeat",
+              OptionType(IntType),
+              resolve = _.value.matchesBeat
+          ),
+          Field(
+              "matchesTied",
+              OptionType(IntType),
+              resolve = _.value.matchesTied
+          ),
+          Field(
+              "totalMP",
+              OptionType(IntType),
+              resolve = _.value.totalMP
+          ),
+          Field(
+              "wonMP",
+              OptionType(IntType),
+              resolve = _.value.wonMP
+          ),
+      )
+  )
+
+  val PlayerOpponentsStatType = ObjectType(
+      "PlayerOpponentsStatType",
+      "player stats against all opponent in duplicate matches",
+      fields[BridgeService,PlayerOpponentsStat](
+          Field(
+              "id",
+              OptionType(StringType),
+              resolve = _.value.player
+          ),
+          Field(
+              "player",
+              OptionType(StringType),
+              resolve = _.value.player
+          ),
+          Field(
+              "opponents",
+              OptionType(ListType(PlayerOpponentStatType)),
+              resolve = _.value.opponents
+          ),
+      )
+  )
+
+  val PlayersOpponentsStatsType = ObjectType(
+      "PlayersOpponentsStatsType",
+      "all player stats against all opponent in duplicate matches",
+      fields[BridgeService,PlayersOpponentsStats](
+          Field(
+              "players",
+              OptionType(ListType(PlayerOpponentsStatType)),
+              resolve = _.value.players
+          ),
+      )
+  )
+
   val ArgDuplicateId = Argument("id",
                              DuplicateIdType,
                              description = "The Id of the duplicate match" )
@@ -675,6 +759,17 @@ object SchemaDuplicate {
               resolve = ctx => ctx.ctx.duplicates.readAll().map { rmap => rmap match {
                           case Right(map) =>
                             PlayerComparisonStats.stats(map)
+                          case Left((statusCode,msg)) =>
+                            throw new Exception(s"Error getting duplicates: ${statusCode} ${msg.msg}")
+                        }
+              }
+          ),
+          Field(
+              "playersOpponentsStats",
+              OptionType(PlayersOpponentsStatsType),
+              resolve = ctx => ctx.ctx.duplicates.readAll().map { rmap => rmap match {
+                          case Right(map) =>
+                            PlayersOpponentsStats.stats(map)
                           case Left((statusCode,msg)) =>
                             throw new Exception(s"Error getting duplicates: ${statusCode} ${msg.msg}")
                         }

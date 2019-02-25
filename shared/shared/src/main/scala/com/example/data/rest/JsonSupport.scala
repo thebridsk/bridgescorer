@@ -15,6 +15,9 @@ import com.example.data.duplicate.stats.PlayerStats
 import com.example.data.duplicate.stats.DuplicateStats
 import com.example.data.duplicate.stats.PlayerComparisonStat
 import com.example.data.duplicate.stats.PlayerComparisonStats
+import com.example.data.duplicate.stats.PlayersOpponentsStats
+import com.example.data.duplicate.stats.PlayerOpponentStat
+import com.example.data.duplicate.stats.PlayerOpponentsStat
 
 //import com.example.data.websocket.DuplexProtocol.{ LogEntry => DpLogEntry, _ }
 //import com.example.data.websocket.Protocol._
@@ -91,6 +94,9 @@ trait JsonSupport {
   implicit val PlayerStatsFormat = Json.format[PlayerStats]
   implicit val PlayerComparisonStatFormat = Json.format[PlayerComparisonStat]
   implicit val PlayerComparisonStatsFormat = Json.format[PlayerComparisonStats]
+  implicit val PlayerOpponentStatFormat = Json.format[PlayerOpponentStat]
+  implicit val PlayerOpponentsStatFormat = Json.format[PlayerOpponentsStat]
+  implicit val PlayersOpponentsStatsFormat = Json.format[PlayersOpponentsStats]
   implicit val DuplicateStatsFormat = Json.format[DuplicateStats]
 
   implicit val unitFormat = new UnitFormat
