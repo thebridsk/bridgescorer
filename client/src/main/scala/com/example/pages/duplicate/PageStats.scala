@@ -83,6 +83,7 @@ object PageStatsInternal {
                     showPlayerAggressiveness: Boolean = false,
 
                     showPlayerOpponentsStatsTable: Boolean = false,
+                    showPlayerOpponentsPairsStatsTable: Boolean = false,
                     showPlayerOpponentsStatsGraph: Boolean = false,
 
                     msg: Option[TagMod] = None
@@ -116,6 +117,13 @@ object PageStatsInternal {
     val togglePlayerOpponentsStatsTable = scope.modState { s =>
       getDuplicateStats(
           s.copy( showPlayerOpponentsStatsTable = !s.showPlayerOpponentsStatsTable),
+          playersOpponentsStats = s.stats.map( cs => cs.playersOpponentsStats.isEmpty ).getOrElse(true),
+      )
+    }
+
+    val togglePlayerOpponentsPairsStatsTable = scope.modState { s =>
+      getDuplicateStats(
+          s.copy( showPlayerOpponentsPairsStatsTable = !s.showPlayerOpponentsPairsStatsTable),
           playersOpponentsStats = s.stats.map( cs => cs.playersOpponentsStats.isEmpty ).getOrElse(true),
       )
     }
@@ -285,11 +293,16 @@ object PageStatsInternal {
                          BaseStyles.highlight(selected = state.showPlayerOpponentsStatsTable ),
                          ^.onClick-->togglePlayerOpponentsStatsTable
                        ),
-              AppButton( "ShowPlayerOpponentGrid",
-                         "Show Opponent Graph",
-                         BaseStyles.highlight(selected = state.showPlayerOpponentsStatsGraph ),
-                         ^.onClick-->togglePlayerOpponentsStatsGraph
+              AppButton( "ShowPlayerOpponentPairsResults",
+                         "Show Opponent Pairs Results",
+                         BaseStyles.highlight(selected = state.showPlayerOpponentsPairsStatsTable ),
+                         ^.onClick-->togglePlayerOpponentsPairsStatsTable
                        ),
+//              AppButton( "ShowPlayerOpponentGrid",
+//                         "Show Opponent Graph",
+//                         BaseStyles.highlight(selected = state.showPlayerOpponentsStatsGraph ),
+//                         ^.onClick-->togglePlayerOpponentsStatsGraph
+//                       ),
             )
           ),
           <.div(
@@ -336,16 +349,16 @@ object PageStatsInternal {
               TagMod(
                 optionalView(
                     state.showPlayerOpponentsStatsTable,
-                    ViewPlayerOpponentStatsTable( cs.playersOpponentsStats, true, true ),
-                    cs.playersOpponentsStats),
-                optionalView(
-                    state.showPlayerOpponentsStatsTable,
                     ViewPlayerOpponentStatsTable( cs.playersOpponentsStats, false, true ),
                     cs.playersOpponentsStats),
                 optionalView(
-                    state.showPlayerOpponentsStatsGraph,
-                    ViewPlayerOpponentStatsTable( cs.playersOpponentsStats, false ),
+                    state.showPlayerOpponentsPairsStatsTable,
+                    ViewPlayerOpponentStatsTable( cs.playersOpponentsStats, true, true ),
                     cs.playersOpponentsStats),
+//                optionalView(
+//                    state.showPlayerOpponentsStatsGraph,
+//                    ViewPlayerOpponentStatsTable( cs.playersOpponentsStats, false ),
+//                    cs.playersOpponentsStats),
               )
             }.getOrElse(
               <.div(
