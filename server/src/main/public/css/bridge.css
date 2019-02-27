@@ -577,6 +577,7 @@ body.touched .withTooltipBox:hover {
   display: block;
   flex-grow: 1;
   text-align: center;
+  line-height: 1 !important;
 }
 
 .headerSuitSize {
@@ -629,14 +630,34 @@ button, input, a, li {
   max-width: 1024px
 }
 
-.divAppBar + * {
-  margin: 8px;
-}
-
 body {
   margin: 0;
 }
 
 .divAppBar > div {
   padding-top: 0 !important;
+  flex: 0 0 auto;
+}
+
+html, body, body > div, body > div > div, body > div > div > div {
+  height: 100%;
+  width: 100%;
+  max-height: 100%;
+  max-width: 100%;
+}
+
+body > div > div > div {
+  display: flex !important;
+  flex-direction: column;;
+}
+
+.divAppBar + * {
+  flex: 1 0;
+  overflow: auto;
+  margin-top: 8px;
+  margin-left: 8px;
+}
+
+.muiToolbar {
+  min-height: 50px !important;
 }

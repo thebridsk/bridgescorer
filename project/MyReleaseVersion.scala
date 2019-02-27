@@ -90,8 +90,9 @@ object MyReleaseVersion {
                  else v1+ "-"+gitCurrentBranch.value
 //        println("Version is "+version.value)
         val js = if (isScalaJSProject.value) " JS" else ""
-        println("Version is "+v2+" in "+ name.value+js)
-        v2
+        val v3 = v2.replaceAll("[\\/]", "_")
+        println("Version is "+v3+" in "+ name.value+js)
+        v3
       },
       isSnapshot := version.value.contains("-SNAPSHOT")
   )

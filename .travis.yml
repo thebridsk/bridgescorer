@@ -52,7 +52,8 @@ install: # Install ChromeDriver
   - sudo mv -f target/drivers/hugo /usr/local/share/
   - sudo chmod +x /usr/local/share/hugo
   - sudo ln -s /usr/local/share/hugo /usr/local/bin/hugo
-
+  - npm config set ignore-scripts true
+  
 script:
 # - export ParallelUtilsUseSerial=false
 - export UseBrowser=chromeheadless

@@ -233,7 +233,9 @@ object BridgeAppBarInternal {
             MuiAppBar(
                 position=Position.static
             )(
-                MuiToolbar()(
+                MuiToolbar(
+                    classes = js.Dictionary("root"->"muiToolbar")
+                )(
                     toolbarContent:_*
                 )
             )::

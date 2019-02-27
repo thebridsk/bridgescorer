@@ -20,7 +20,7 @@ trait TouchRippleProps extends AdditionalProps {
    * Override or extend the styles applied to the
    * component. See CSS API below for more details.
    */
-  val classes:  js.UndefOr[js.Object] = js.native
+  val classes: js.UndefOr[js.Dictionary[String]] = js.native
 }
 
 object TouchRippleProps extends PropsFactory[TouchRippleProps] {
@@ -36,7 +36,7 @@ object TouchRippleProps extends PropsFactory[TouchRippleProps] {
   def apply[P <: TouchRippleProps](
     props: js.UndefOr[P] = js.undefined,
     center: js.UndefOr[Boolean] = js.undefined,
-    classes:  js.UndefOr[js.Object] = js.undefined,
+    classes: js.UndefOr[js.Dictionary[String]] = js.undefined,
 
     additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
   ): P = {
@@ -64,7 +64,7 @@ object MuiTouchRipple extends ComponentFactory[TouchRippleProps] {
    */
   def apply(
     center: js.UndefOr[Boolean] = js.undefined,
-    classes:  js.UndefOr[js.Object] = js.undefined,
+    classes: js.UndefOr[js.Dictionary[String]] = js.undefined,
 
     additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
   )(

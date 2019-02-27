@@ -231,8 +231,8 @@ lazy val bridgescorer: Project = project.in(file(".")).
     test in assembly := {}, // test in (`bridgescorer-server`, Test),
     test in (Test,assembly) := {}, // { val x = assembly.value },
 
-    assemblyJarName in (assembly) := s"${name.value}-server-assembly-${version.value}.jar",  // s"${name.value}-server-assembly-${version.value}.jar",
-    assemblyJarName in (Test, assembly) := s"${name.value}-test-${version.value}.jar",
+    assemblyJarName in (assembly) := s"${name.value}-server-assembly-${version.value.replaceAll("[\\/]","_")}.jar",  // s"${name.value}-server-assembly-${version.value}.jar",
+    assemblyJarName in (Test, assembly) := s"${name.value}-test-${version.value.replaceAll("[\\/]","_")}.jar",
 
     assembly := {
       val log = streams.value.log
@@ -893,8 +893,8 @@ lazy val `bridgescorer-server`: Project = project.in(file("server")).
     test in assembly := {},
     test in (Test,assembly) := {}, // { val x = assembly.value },
 
-    assemblyJarName in (assembly) := s"${name.value}-assembly-${version.value}.jar",
-    assemblyJarName in (Test, assembly) := s"${name.value}-test-${version.value}.jar",
+    assemblyJarName in (assembly) := s"${name.value}-assembly-${version.value.replaceAll("[\\/]","_")}.jar",
+    assemblyJarName in (Test, assembly) := s"${name.value}-test-${version.value.replaceAll("[\\/]","_")}.jar",
 
     webassembly := { val x = (assembledMappings in assembly).value },
 

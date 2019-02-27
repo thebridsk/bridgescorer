@@ -41,7 +41,7 @@ protected trait SvgIconPropsPrivate extends js.Any {
 
 @js.native
 trait SvgIconProps extends AdditionalProps with SvgIconPropsPrivate {
-  var classes: js.UndefOr[js.Object] = js.native
+  var classes: js.UndefOr[js.Dictionary[String]] = js.native
 //  var color: js.UndefOr[SvgColor] = js.native
   var component: js.UndefOr[String] = js.native
 //  var fontSize: js.UndefOr[SvgFontSize] = js.native
@@ -97,7 +97,7 @@ object SvgIconProps extends PropsFactory[SvgIconProps] {
    */
   def apply[P <: SvgIconProps](
       props: js.UndefOr[P] = js.undefined,
-      classes: js.UndefOr[js.Object] = js.undefined,
+      classes: js.UndefOr[js.Dictionary[String]] = js.undefined,
       color: js.UndefOr[SvgColor] = js.undefined,
       component: js.UndefOr[String] = js.undefined,
       fontSize: js.UndefOr[SvgFontSize] = js.undefined,
@@ -159,7 +159,7 @@ trait SvgIconBase extends ComponentFactory[SvgIconProps] {
    * @param children Node passed into the SVG element.
    */
   def apply(
-      classes: js.UndefOr[js.Object] = js.undefined,
+      classes: js.UndefOr[js.Dictionary[String]] = js.undefined,
       color: js.UndefOr[SvgColor] = js.undefined,
       component: js.UndefOr[String] = js.undefined,
       fontSize: js.UndefOr[SvgFontSize] = js.undefined,
@@ -189,7 +189,7 @@ trait SvgIconBase extends ComponentFactory[SvgIconProps] {
 
   @inline
   def create(
-      classes: js.UndefOr[js.Object] = js.undefined,
+      classes: js.UndefOr[js.Dictionary[String]] = js.undefined,
       color: js.UndefOr[SvgColor] = js.undefined,
       component: js.UndefOr[String] = js.undefined,
       fontSize: js.UndefOr[SvgFontSize] = js.undefined,

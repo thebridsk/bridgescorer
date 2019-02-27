@@ -76,7 +76,7 @@ object AppBarProps extends PropsFactory[AppBarProps] {
         color: js.UndefOr[ColorVariant] = js.undefined,
         position: js.UndefOr[Position] = js.undefined,
 
-        classes: js.UndefOr[js.Object] = js.undefined,
+        classes: js.UndefOr[js.Dictionary[String]] = js.undefined,
         component: js.UndefOr[String] = js.undefined,
         elevation: js.UndefOr[Double] = js.undefined,
         square: js.UndefOr[Boolean] = js.undefined,
@@ -128,7 +128,7 @@ object MuiAppBar extends ComponentFactory[AppBarProps] {
         color: js.UndefOr[ColorVariant] = js.undefined,
         position: js.UndefOr[Position] = js.undefined,
 
-        classes: js.UndefOr[js.Object] = js.undefined,
+        classes: js.UndefOr[js.Dictionary[String]] = js.undefined,
         component: js.UndefOr[String] = js.undefined,
         elevation: js.UndefOr[Double] = js.undefined,
         square: js.UndefOr[Boolean] = js.undefined,

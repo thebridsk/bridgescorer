@@ -23,7 +23,7 @@ protected trait ToolbarPropsPrivate extends js.Any {
 
 @js.native
 trait ToolbarProps extends AdditionalProps with ToolbarPropsPrivate {
-  val classes: js.UndefOr[js.Object] = js.native
+  val classes: js.UndefOr[js.Dictionary[String]] = js.native
   val disableGutters: js.UndefOr[Boolean] = js.native
 //  var variant: js.UndefOr[ToolbarVariant] = js.native
 }
@@ -52,7 +52,7 @@ object ToolbarProps extends PropsFactory[ToolbarProps] {
      */
     def apply[P <: ToolbarProps](
         props: js.UndefOr[P] = js.undefined,
-        classes: js.UndefOr[js.Object] = js.undefined,
+        classes: js.UndefOr[js.Dictionary[String]] = js.undefined,
         disableGutters: js.UndefOr[Boolean] = js.undefined,
         variant: js.UndefOr[ToolbarVariant] = js.undefined,
 
@@ -83,7 +83,7 @@ object MuiToolbar {
      * @param additionalProps a dictionary of additional properties
      */
     def apply(
-        classes: js.UndefOr[js.Object] = js.undefined,
+        classes: js.UndefOr[js.Dictionary[String]] = js.undefined,
         disableGutters: js.UndefOr[Boolean] = js.undefined,
         variant: js.UndefOr[ToolbarVariant] = js.undefined,
 

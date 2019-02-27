@@ -12,7 +12,7 @@ trait ModalProps extends AdditionalProps {
 
   val backdropComponent: js.UndefOr[js.Object] = js.native
   val backdropProps: js.UndefOr[BackdropProps] = js.native
-  val classes: js.UndefOr[js.Object] = js.native
+  val classes: js.UndefOr[js.Dictionary[String]] = js.native
   val container: js.UndefOr[js.Object] = js.native
   val disableAutoFocus: js.UndefOr[Boolean] = js.native
   val disableBackdropClick: js.UndefOr[Boolean] = js.native
@@ -90,7 +90,7 @@ object ModalProps extends PropsFactory[ModalProps] {
         props: js.UndefOr[P] = js.undefined,
         backdropComponent: js.UndefOr[js.Object] = js.undefined,
         backdropProps: js.UndefOr[BackdropProps] = js.undefined,
-        classes: js.UndefOr[js.Object] = js.undefined,
+        classes: js.UndefOr[js.Dictionary[String]] = js.undefined,
         container: js.UndefOr[js.Object] = js.undefined,
         disableAutoFocus: js.UndefOr[Boolean] = js.undefined,
         disableBackdropClick: js.UndefOr[Boolean] = js.undefined,
@@ -198,7 +198,7 @@ object MuiModal extends ComponentFactory[ModalProps] {
     def apply(
         backdropComponent: js.UndefOr[js.Object] = js.undefined,
         backdropProps: js.UndefOr[BackdropProps] = js.undefined,
-        classes: js.UndefOr[js.Object] = js.undefined,
+        classes: js.UndefOr[js.Dictionary[String]] = js.undefined,
         container: js.UndefOr[js.Object] = js.undefined,
         disableAutoFocus: js.UndefOr[Boolean] = js.undefined,
         disableBackdropClick: js.UndefOr[Boolean] = js.undefined,

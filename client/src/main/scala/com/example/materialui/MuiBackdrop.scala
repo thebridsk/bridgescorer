@@ -13,7 +13,7 @@ trait BackdropProps extends AdditionalProps {
    * Override or extend the styles applied to the
    * component. See CSS API below for more details.
    */
-  val classes:  js.UndefOr[js.Object] = js.native
+  val classes: js.UndefOr[js.Dictionary[String]] = js.native
 
   /**
    * If true, the backdrop is invisible. It can be used when rendering a popover
@@ -56,7 +56,7 @@ object BackdropProps extends PropsFactory[BackdropProps] {
    */
   def apply[P <: BackdropProps](
       props: js.UndefOr[P] = js.undefined,
-      classes:  js.UndefOr[js.Object] = js.undefined,
+      classes: js.UndefOr[js.Dictionary[String]] = js.undefined,
       invisible: js.UndefOr[Boolean] = js.undefined,
       open: js.UndefOr[Boolean] = js.undefined,
       transitionDuration: js.UndefOr[js.Object] = js.undefined,
@@ -95,7 +95,7 @@ object MuiBackdrop extends ComponentFactory[BackdropProps] {
    * @param additionalProps a dictionary of additional properties
    */
   def apply(
-      classes:  js.UndefOr[js.Object] = js.undefined,
+      classes: js.UndefOr[js.Dictionary[String]] = js.undefined,
       invisible: js.UndefOr[Boolean] = js.undefined,
       open: js.UndefOr[Boolean] = js.undefined,
       transitionDuration: js.UndefOr[js.Object] = js.undefined,

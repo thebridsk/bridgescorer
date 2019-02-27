@@ -78,14 +78,14 @@ object BeepComponent {
     MuiMenuItem(
         id = "Beep",
         onClick = toggle(cb) _,
-        classes = js.Dictionary("root" -> "mainMenuItem").asInstanceOf[js.Object]
+        classes = js.Dictionary("root" -> "mainMenuItem")
     )(
         "Beep",
         {
           val color = if (playEnabled) SvgColor.inherit else SvgColor.disabled
           MuiCheckIcon(
               color=color,
-              classes = js.Dictionary("root" -> "mainMenuItemIcon").asInstanceOf[js.Object]
+              classes = js.Dictionary("root" -> "mainMenuItemIcon")
           )()
         }
     )
