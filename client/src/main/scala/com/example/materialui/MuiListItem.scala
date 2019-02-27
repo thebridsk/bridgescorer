@@ -25,7 +25,7 @@ protected trait ListItemPropsPrivate extends js.Any {
 trait ListItemProps extends AdditionalProps with ListItemPropsPrivate {
 //        var alignItem: js.UndefOr[AlignItem] = js.native
         val button: js.UndefOr[Boolean] = js.native
-        val classes: js.UndefOr[js.Object] = js.native
+        val classes: js.UndefOr[js.Dictionary[String]] = js.native
         val component: js.UndefOr[String] = js.native
         val ContainerComponent: js.UndefOr[String] = js.native
         val ContainerProps: js.UndefOr[js.Object] = js.native
@@ -79,7 +79,7 @@ object ListItemProps extends PropsFactory[ListItemProps] {
         props: js.UndefOr[P] = js.undefined,
         alignItems: js.UndefOr[AlignItem] = js.undefined,
         button: js.UndefOr[Boolean] = js.undefined,
-        classes: js.UndefOr[js.Object] = js.undefined,
+        classes: js.UndefOr[js.Dictionary[String]] = js.undefined,
         component: js.UndefOr[String] = js.undefined,
         ContainerComponent: js.UndefOr[String] = js.undefined,
         ContainerProps: js.UndefOr[js.Object] = js.undefined,
@@ -146,7 +146,7 @@ object MuiListItem extends ComponentFactory[ListItemProps] {
     def apply(
         alignItems: js.UndefOr[AlignItem] = js.undefined,
         button: js.UndefOr[Boolean] = js.undefined,
-        classes: js.UndefOr[js.Object] = js.undefined,
+        classes: js.UndefOr[js.Dictionary[String]] = js.undefined,
         component: js.UndefOr[String] = js.undefined,
         ContainerComponent: js.UndefOr[String] = js.undefined,
         ContainerProps: js.UndefOr[js.Object] = js.undefined,

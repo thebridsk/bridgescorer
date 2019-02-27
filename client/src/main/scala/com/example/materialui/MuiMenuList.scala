@@ -27,7 +27,7 @@ object MenuListProps extends PropsFactory[MenuListProps] {
      */
     def apply[P <: MenuListProps](
         props: js.UndefOr[P] = js.undefined,
-        classes: js.UndefOr[js.Object] = js.undefined,
+        classes: js.UndefOr[js.Dictionary[String]] = js.undefined,
         component: js.UndefOr[String] = js.undefined,
         dense: js.UndefOr[Boolean] = js.undefined,
         disablePadding: js.UndefOr[Boolean] = js.undefined,
@@ -66,7 +66,7 @@ object MuiMenuList extends ComponentFactory[MenuListProps] {
      * @param children
      */
     def apply(
-        classes: js.UndefOr[js.Object] = js.undefined,
+        classes: js.UndefOr[js.Dictionary[String]] = js.undefined,
         component: js.UndefOr[String] = js.undefined,
         dense: js.UndefOr[Boolean] = js.undefined,
         disablePadding: js.UndefOr[Boolean] = js.undefined,

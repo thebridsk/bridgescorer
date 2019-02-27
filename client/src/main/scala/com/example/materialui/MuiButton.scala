@@ -148,7 +148,7 @@ object ButtonProps extends PropsFactory[ButtonProps] {
      */
     def apply[P <: ButtonProps](
         props: js.UndefOr[P] = js.undefined,
-        classes:  js.UndefOr[js.Object] = js.undefined,
+        classes: js.UndefOr[js.Dictionary[String]] = js.undefined,
         color: js.UndefOr[ColorVariant] = js.undefined,
         component: js.UndefOr[String] = js.undefined,
         disabled: js.UndefOr[Boolean] = js.undefined,
@@ -164,7 +164,7 @@ object ButtonProps extends PropsFactory[ButtonProps] {
         action: js.UndefOr[js.Object=>Unit] = js.undefined,
         buttonRef: js.UndefOr[js.Object] = js.undefined,   // js.object or js.Function0[ref]
         centerRipple: js.UndefOr[Boolean] = js.undefined,
-//        classes:  js.UndefOr[js.Object] = js.undefined,
+//        classes: js.UndefOr[js.Dictionary[String]] = js.undefined,
 //        component: js.UndefOr[String] = js.undefined,
 //        disabled: js.UndefOr[Boolean] = js.undefined,
 //        disableRipple: js.UndefOr[Boolean] = js.undefined,
@@ -275,7 +275,7 @@ object MuiButton extends ComponentFactory[ButtonProps] {
      * @param children
      */
     def apply(
-        classes:  js.UndefOr[js.Object] = js.undefined,
+        classes: js.UndefOr[js.Dictionary[String]] = js.undefined,
         color: js.UndefOr[ColorVariant] = js.undefined,
         component: js.UndefOr[String] = js.undefined,
         disabled: js.UndefOr[Boolean] = js.undefined,
@@ -291,7 +291,7 @@ object MuiButton extends ComponentFactory[ButtonProps] {
         action: js.UndefOr[js.Object=>Unit] = js.undefined,
         buttonRef: js.UndefOr[js.Object] = js.undefined,   // js.object or js.Function0[ref]
         centerRipple: js.UndefOr[Boolean] = js.undefined,
-//        classes:  js.UndefOr[js.Object] = js.undefined,
+//        classes: js.UndefOr[js.Dictionary[String]] = js.undefined,
 //        component: js.UndefOr[String] = js.undefined,
 //        disabled: js.UndefOr[Boolean] = js.undefined,
 //        disableRipple: js.UndefOr[Boolean] = js.undefined,

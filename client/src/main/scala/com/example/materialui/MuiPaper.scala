@@ -11,7 +11,7 @@ import scala.scalajs.js.UndefOr
 @js.native
 trait PaperProps extends AdditionalProps {
 
-  val classes: js.UndefOr[js.Object] = js.native
+  val classes: js.UndefOr[js.Dictionary[String]] = js.native
   val component: js.UndefOr[String] = js.native
   val elevation: js.UndefOr[Double] = js.native
   val square: js.UndefOr[Boolean] = js.native
@@ -35,7 +35,7 @@ object PaperProps extends PropsFactory[PaperProps] {
      */
     def apply[P <: PaperProps](
         props: js.UndefOr[P] = js.undefined,
-        classes: js.UndefOr[js.Object] = js.undefined,
+        classes: js.UndefOr[js.Dictionary[String]] = js.undefined,
         component: js.UndefOr[String] = js.undefined,
         elevation: js.UndefOr[Double] = js.undefined,
         square: js.UndefOr[Boolean] = js.undefined,
@@ -72,7 +72,7 @@ object MuiPaper extends ComponentFactory[PaperProps] {
      * @param additionalProps a dictionary of additional properties
      */
     def apply(
-        classes: js.UndefOr[js.Object] = js.undefined,
+        classes: js.UndefOr[js.Dictionary[String]] = js.undefined,
         component: js.UndefOr[String] = js.undefined,
         elevation: js.UndefOr[Double] = js.undefined,
         square: js.UndefOr[Boolean] = js.undefined,

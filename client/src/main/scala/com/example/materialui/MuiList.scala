@@ -9,7 +9,7 @@ import scala.scalajs.js.annotation._
 
 @js.native
 trait ListProps extends AdditionalProps {
-    val classes: js.UndefOr[js.Object] = js.undefined
+    val classes: js.UndefOr[js.Dictionary[String]] = js.undefined
     val component: js.UndefOr[String] = js.undefined
     val dense: js.UndefOr[Boolean] = js.undefined
     val disablePadding: js.UndefOr[Boolean] = js.undefined
@@ -33,7 +33,7 @@ object ListProps extends PropsFactory[ListProps] {
      */
     def apply[P <: ListProps](
         props: js.UndefOr[P] = js.undefined,
-        classes: js.UndefOr[js.Object] = js.undefined,
+        classes: js.UndefOr[js.Dictionary[String]] = js.undefined,
         component: js.UndefOr[String] = js.undefined,
         dense: js.UndefOr[Boolean] = js.undefined,
         disablePadding: js.UndefOr[Boolean] = js.undefined,
@@ -73,7 +73,7 @@ object MuiList extends ComponentFactory[ListProps] {
      * @param children
      */
     def apply(
-        classes: js.UndefOr[js.Object] = js.undefined,
+        classes: js.UndefOr[js.Dictionary[String]] = js.undefined,
         component: js.UndefOr[String] = js.undefined,
         dense: js.UndefOr[Boolean] = js.undefined,
         disablePadding: js.UndefOr[Boolean] = js.undefined,

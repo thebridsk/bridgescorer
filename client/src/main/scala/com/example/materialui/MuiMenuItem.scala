@@ -44,7 +44,7 @@ object MenuItemProps extends PropsFactory[MenuItemProps] {
         props: js.UndefOr[P] = js.undefined,
         alignItems: js.UndefOr[AlignItem] = js.undefined,
         button: js.UndefOr[Boolean] = js.undefined,
-        classes: js.UndefOr[js.Object] = js.undefined,
+        classes: js.UndefOr[js.Dictionary[String]] = js.undefined,
         component: js.UndefOr[String] = js.undefined,
         ContainerComponent: js.UndefOr[String] = js.undefined,
         ContainerProps: js.UndefOr[js.Object] = js.undefined,
@@ -118,7 +118,7 @@ object MuiMenuItem extends ComponentFactory[MenuItemProps] {
     def apply(
         alignItems: js.UndefOr[AlignItem] = js.undefined,
         button: js.UndefOr[Boolean] = js.undefined,
-        classes: js.UndefOr[js.Object] = js.undefined,
+        classes: js.UndefOr[js.Dictionary[String]] = js.undefined,
         component: js.UndefOr[String] = js.undefined,
         ContainerComponent: js.UndefOr[String] = js.undefined,
         ContainerProps: js.UndefOr[js.Object] = js.undefined,

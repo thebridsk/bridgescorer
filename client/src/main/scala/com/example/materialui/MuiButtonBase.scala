@@ -12,7 +12,7 @@ trait ButtonBaseProps extends AdditionalProps {
   val action: js.UndefOr[js.Object=>Unit] = js.native
   val buttonRef: js.UndefOr[js.Object] = js.native   // js.object or js.Function0[ref]
   val centerRipple: js.UndefOr[Boolean] = js.native
-  val classes:  js.UndefOr[js.Object] = js.native
+  val classes: js.UndefOr[js.Dictionary[String]] = js.native
   val component: js.UndefOr[String] = js.native
   val disabled: js.UndefOr[Boolean] = js.native
   val disableRipple: js.UndefOr[Boolean] = js.native
@@ -72,7 +72,7 @@ object ButtonBaseProps extends PropsFactory[ButtonBaseProps] {
         action: js.UndefOr[js.Object=>Unit] = js.undefined,
         buttonRef: js.UndefOr[js.Object] = js.undefined,   // js.object or js.Function0[ref]
         centerRipple: js.UndefOr[Boolean] = js.undefined,
-        classes:  js.UndefOr[js.Object] = js.undefined,
+        classes: js.UndefOr[js.Dictionary[String]] = js.undefined,
         component: js.UndefOr[String] = js.undefined,
         disabled: js.UndefOr[Boolean] = js.undefined,
         disableRipple: js.UndefOr[Boolean] = js.undefined,
@@ -159,7 +159,7 @@ object MuiButtonBase extends ComponentFactory[ButtonBaseProps] {
         action: js.UndefOr[js.Object=>Unit] = js.undefined,
         buttonRef: js.UndefOr[js.Object] = js.undefined,   // js.object or js.Function0[ref]
         centerRipple: js.UndefOr[Boolean] = js.undefined,
-        classes:  js.UndefOr[js.Object] = js.undefined,
+        classes: js.UndefOr[js.Dictionary[String]] = js.undefined,
         component: js.UndefOr[String] = js.undefined,
         disabled: js.UndefOr[Boolean] = js.undefined,
         disableRipple: js.UndefOr[Boolean] = js.undefined,

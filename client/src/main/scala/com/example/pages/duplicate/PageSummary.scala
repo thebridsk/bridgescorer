@@ -105,47 +105,20 @@ object PageSummaryInternal {
                               <.th( "Id"),
                               importId.map { id =>
                                 TagMod(
-                                  <.th("Import from"),
+                                  <.th( s"Import from $id"),
                                   <.th("Best Match")
                                 )
                               }.whenDefined,
                               state.forPrint ?= <.th( importId.map( id => "Import" ).getOrElse( "Print" ).toString ),
                               <.th( "Finished"),
                               <.th( "Created", <.br(), "Last Updated"),
-                              <.th( "Scoring", <.br,  "Method", ^.rowSpan:=2 ),
-                              tp.allPlayers.length>0?=(<.th( ^.colSpan:=allplayers.length, "Results"+result)),
-                              <.th( "Totals", ^.rowSpan:=2 )
-                            ),
-                            <.tr(
-                              <.th( ""),
-                              importId.map { id =>
-                                TagMod(
-                                  <.th( id),
-                                  <.th()
-                                )
-                              }.whenDefined,
-                              state.forPrint ?= <.th( "" ),
-                              <.th( ""),
-                              <.th( if (isImportStore) {
-                                      TagMod()
-                                    } else {
-                                      AppButton( "DuplicateCreate", "New",
-                                                 pr.routerCtl.setOnClick(NewDuplicateView)
-                                          )
-                                    }
-                              ),
+                              <.th( "Scoring", <.br,  "Method" ),
                               allplayers.map { p =>
                                 <.th(
                                   <.span(p)
-//                                  tp.firstPlaces.get(p) match {
-//                                    case Some(fp) => <.span(<.br,fp.toString())
-//                                    case None => <.span()
-//                                  }, (tp.playerScores.get(p) match {
-//                                    case Some(fp) => <.span(<.br,fp.toString())
-//                                    case None => <.span()
-//                                  })
                                 )
-                              }.toTagMod
+                              }.toTagMod,
+                              <.th( "Totals" )
                             )
                           )
                         }).build
@@ -562,11 +535,21 @@ object PageSummaryInternal {
        * Show the matches
        */
       def showMatches() = {
+        val isImportStore = props.page.isInstanceOf[ImportSummaryView]
         <.table(
             <.caption(
-              RadioButton("ShowBoth", "Show All", state.showEntries==ShowBoth, show(ShowBoth) ),
-              RadioButton("ShowMD", "Show Matches", state.showEntries==ShowMD, show(ShowMD) ),
-              RadioButton("ShowMDR", "Show Results Only", state.showEntries==ShowMDR, show(ShowMDR) )
+              if (isImportStore) {
+                TagMod()
+              } else {
+                AppButton( "DuplicateCreate", "New",
+                           props.routerCtl.setOnClick(NewDuplicateView)
+                    )
+              },
+              <.span(
+                RadioButton("ShowBoth", "Show All", state.showEntries==ShowBoth, show(ShowBoth) ),
+                RadioButton("ShowMD", "Show Matches", state.showEntries==ShowMD, show(ShowMD) ),
+                RadioButton("ShowMDR", "Show Results Only", state.showEntries==ShowMDR, show(ShowMDR) )
+              )
             ),
             SummaryHeader((tp,props,state,this,importId)),
             <.tbody(
@@ -664,14 +647,14 @@ object PageSummaryInternal {
                   MuiMenuItem(
                       id = "ShowRows",
                       onClick = toggleRows _,
-                      classes = js.Dictionary("root" -> "mainMenuItem").asInstanceOf[js.Object]
+                      classes = js.Dictionary("root" -> "mainMenuItem")
                   )(
                       "Show All",
                       {
                         val color = if (state.alwaysShowAll || state.showRows.isEmpty) SvgColor.inherit else SvgColor.disabled
                         MuiCheckIcon(
                             color=color,
-                            classes = js.Dictionary("root" -> "mainMenuItemIcon").asInstanceOf[js.Object]
+                            classes = js.Dictionary("root" -> "mainMenuItemIcon")
                         )()
                       }
                   ),

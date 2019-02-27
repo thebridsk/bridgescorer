@@ -323,7 +323,7 @@ object PopoverProps extends PropsFactory[PopoverProps] {
 
       backdropComponent: js.UndefOr[js.Object] = js.undefined,
       backdropProps: js.UndefOr[BackdropProps] = js.undefined,
-      classes: js.UndefOr[js.Object] = js.undefined,
+      classes: js.UndefOr[js.Dictionary[String]] = js.undefined,
       container: js.UndefOr[js.Object] = js.undefined,
       disableAutoFocus: js.UndefOr[Boolean] = js.undefined,
       disableBackdropClick: js.UndefOr[Boolean] = js.undefined,
@@ -475,7 +475,7 @@ object MuiPopover extends ComponentFactory[PopoverProps] {
 
       backdropComponent: js.UndefOr[js.Object] = js.undefined,
       backdropProps: js.UndefOr[BackdropProps] = js.undefined,
-      classes: js.UndefOr[js.Object] = js.undefined,
+      classes: js.UndefOr[js.Dictionary[String]] = js.undefined,
       container: js.UndefOr[js.Object] = js.undefined,
       disableAutoFocus: js.UndefOr[Boolean] = js.undefined,
       disableBackdropClick: js.UndefOr[Boolean] = js.undefined,

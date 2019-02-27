@@ -577,6 +577,7 @@ body.touched .withTooltipBox:hover {
   display: block;
   flex-grow: 1;
   text-align: center;
+  line-height: 1 !important;
 }
 
 .headerSuitSize {
@@ -655,4 +656,8 @@ body > div > div > div {
   overflow: auto;
   margin-top: 8px;
   margin-left: 8px;
+}
+
+.muiToolbar {
+  min-height: 50px !important;
 }

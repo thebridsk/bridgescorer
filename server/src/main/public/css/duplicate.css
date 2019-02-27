@@ -18,6 +18,15 @@
   border-bottom: 0px solid black;
   text-align: left;
 }
+
+.dupDivSummary > div > table > caption > span {
+    float: right;
+}
+.dupDivSummary > div > table thead tr th {
+  position: sticky;
+  top: 0;
+  background: white;
+}
 .dupDivSummary > div > table tbody tr:nth-child(2n+1) {
   background-color: #f2f2f2;
 }

@@ -14,7 +14,7 @@ trait MenuProps extends PopoverProps {
 
   val disableAutoFocusItem: js.UndefOr[Boolean] = js.native
   val MenuListProps: js.UndefOr[js.Object] = js.native
-  val PopoverClasses: js.UndefOr[js.Object] = js.native
+  val Popoverclasses: js.UndefOr[js.Dictionary[String]] = js.native
 }
 object MenuProps extends PropsFactory[MenuProps] {
   import js._
@@ -23,7 +23,7 @@ object MenuProps extends PropsFactory[MenuProps] {
 
       disableAutoFocusItem: js.UndefOr[Boolean] = js.undefined,
       MenuListProps: js.UndefOr[js.Object] = js.undefined,
-      PopoverClasses: js.UndefOr[js.Object] = js.undefined,
+      PopoverClasses: js.UndefOr[js.Dictionary[String]] = js.undefined,
 
       action: js.UndefOr[js.Object=>Unit] = js.undefined,
       anchorEl: js.UndefOr[AnchorElement] = js.undefined,
@@ -48,7 +48,7 @@ object MenuProps extends PropsFactory[MenuProps] {
 
       backdropComponent: js.UndefOr[js.Object] = js.undefined,
       backdropProps: js.UndefOr[BackdropProps] = js.undefined,
-      classes: js.UndefOr[js.Object] = js.undefined,
+      classes: js.UndefOr[js.Dictionary[String]] = js.undefined,
       container: js.UndefOr[js.Object] = js.undefined,
       disableAutoFocus: js.UndefOr[Boolean] = js.undefined,
       disableBackdropClick: js.UndefOr[Boolean] = js.undefined,
@@ -158,7 +158,7 @@ object MuiMenu extends PropsFactory[MenuProps] {
 
       disableAutoFocusItem: js.UndefOr[Boolean] = js.undefined,
       MenuListProps: js.UndefOr[js.Object] = js.undefined,
-      PopoverClasses: js.UndefOr[js.Object] = js.undefined,
+      PopoverClasses: js.UndefOr[js.Dictionary[String]] = js.undefined,
 
       action: js.UndefOr[js.Object=>Unit] = js.undefined,
       anchorEl: js.UndefOr[AnchorElement] = js.undefined,
@@ -183,7 +183,7 @@ object MuiMenu extends PropsFactory[MenuProps] {
 
       backdropComponent: js.UndefOr[js.Object] = js.undefined,
       backdropProps: js.UndefOr[BackdropProps] = js.undefined,
-      classes: js.UndefOr[js.Object] = js.undefined,
+      classes: js.UndefOr[js.Dictionary[String]] = js.undefined,
       container: js.UndefOr[js.Object] = js.undefined,
       disableAutoFocus: js.UndefOr[Boolean] = js.undefined,
       disableBackdropClick: js.UndefOr[Boolean] = js.undefined,

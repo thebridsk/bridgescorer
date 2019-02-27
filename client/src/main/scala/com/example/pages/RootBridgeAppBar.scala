@@ -236,11 +236,11 @@ object RootBridgeAppBarInternal {
 //                ),
                 MuiMenuItem(
                     onClick = handleTestHandClick _,
-                    classes = js.Dictionary("root" -> "mainMenuItem").asInstanceOf[js.Object]
+                    classes = js.Dictionary("root" -> "mainMenuItem")
                 )(
                     "Test Hands",
                     MuiChevronRightIcon(
-                        classes = js.Dictionary("root" -> "mainMenuItemIcon").asInstanceOf[js.Object]
+                        classes = js.Dictionary("root" -> "mainMenuItemIcon")
                     )()
                 ),
                 {
@@ -258,20 +258,20 @@ object RootBridgeAppBarInternal {
                   MuiMenuItem(
                       id = "NoScaling",
                       onClick = handleGotoPageClick(newp) _,
-                      classes = js.Dictionary("root" -> "mainMenuItem").asInstanceOf[js.Object]
+                      classes = js.Dictionary("root" -> "mainMenuItem")
 
                   )(
                       "Scaling ",
                       MuiCheckIcon(
                           color=color,
-                          classes = js.Dictionary("root" -> "mainMenuItemIcon").asInstanceOf[js.Object]
+                          classes = js.Dictionary("root" -> "mainMenuItemIcon")
                       )()
                   )
                 },
                 MuiMenuItem(
                     id = "UserSelect",
                     onClick = toggleUserSelect,
-                    classes = js.Dictionary("root" -> "mainMenuItem").asInstanceOf[js.Object]
+                    classes = js.Dictionary("root" -> "mainMenuItem")
 
                 )(
                     "Allow Select",
@@ -279,7 +279,7 @@ object RootBridgeAppBarInternal {
                       val color = if (state.userSelect) SvgColor.inherit else SvgColor.disabled
                       MuiCheckIcon(
                           color=color,
-                          classes = js.Dictionary("root" -> "mainMenuItemIcon").asInstanceOf[js.Object]
+                          classes = js.Dictionary("root" -> "mainMenuItemIcon")
                       )()
                     }
                 ),
