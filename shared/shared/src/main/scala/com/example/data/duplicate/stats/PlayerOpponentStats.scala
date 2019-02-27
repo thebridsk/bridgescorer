@@ -111,6 +111,8 @@ case class PlayerOpponentsStat(
     )
   }
 
+  def getPlayer( name: String ) = opponents.find(pos => pos.opponent==name)
+
   def playerTotal() = {
     opponents.foldLeft(PlayerOpponentStat(player,"",0,0,0,0,0)) { (ac,v) =>
       ac.add(v)
@@ -131,6 +133,8 @@ case class PlayerOpponentsStat(
 case class PlayersOpponentsStats(
     players: List[PlayerOpponentsStat]
 ) {
+
+  def getPlayer( name: String ) = players.find(pos => pos.player==name)
 
   def sort() = copy( players = players.sortWith((l,r)=>l.player<r.player).map(s=>s.sort()) )
 

@@ -298,11 +298,11 @@ object PageStatsInternal {
                          BaseStyles.highlight(selected = state.showPlayerOpponentsPairsStatsTable ),
                          ^.onClick-->togglePlayerOpponentsPairsStatsTable
                        ),
-//              AppButton( "ShowPlayerOpponentGrid",
-//                         "Show Opponent Graph",
-//                         BaseStyles.highlight(selected = state.showPlayerOpponentsStatsGraph ),
-//                         ^.onClick-->togglePlayerOpponentsStatsGraph
-//                       ),
+              AppButton( "ShowPlayerOpponentGrid",
+                         "Show Opponent Graph",
+                         BaseStyles.highlight(selected = state.showPlayerOpponentsStatsGraph ),
+                         ^.onClick-->togglePlayerOpponentsStatsGraph
+                       ),
             )
           ),
           <.div(
@@ -343,6 +343,7 @@ object PageStatsInternal {
             )
           },
           if (state.showPlayerOpponentsStatsTable ||
+              state.showPlayerOpponentsPairsStatsTable ||
               state.showPlayerOpponentsStatsGraph
           ) {
             state.stats.map { cs =>
@@ -355,10 +356,10 @@ object PageStatsInternal {
                     state.showPlayerOpponentsPairsStatsTable,
                     ViewPlayerOpponentStatsTable( cs.playersOpponentsStats, true, true ),
                     cs.playersOpponentsStats),
-//                optionalView(
-//                    state.showPlayerOpponentsStatsGraph,
-//                    ViewPlayerOpponentStatsTable( cs.playersOpponentsStats, false ),
-//                    cs.playersOpponentsStats),
+                optionalView(
+                    state.showPlayerOpponentsStatsGraph,
+                    ViewPlayerOpponentStatsGraph( cs.playersOpponentsStats, false ),
+                    cs.playersOpponentsStats),
               )
             }.getOrElse(
               <.div(

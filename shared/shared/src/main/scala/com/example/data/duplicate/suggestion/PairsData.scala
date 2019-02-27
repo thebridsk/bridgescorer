@@ -4,6 +4,7 @@ import com.example.data.DuplicateSummary
 import com.example.data.DuplicateSummaryDetails
 import utils.logging.Logger
 import scala.collection.mutable.ListBuffer
+import com.example.data.duplicate.stats.Statistic
 
 /**
  * Constructor
@@ -301,16 +302,7 @@ object ColorByPlayedIMP extends ColorBy {
   def n( pd: PairData): Int = pd.playedIMP
 }
 
-class Stat( val colorBy: ColorBy ) {
-  private var number: Int = 0
-  private var total: Double = 0
-  private var vmax: Double = Double.MinValue
-  private var vmin: Double = Double.MaxValue
-
-  override
-  def toString() = {
-    f"""Stat(${total}%.2f/${number}, ave=${ave}%.2f, min=${vmin}%.2f, max=${vmax}%.2f)"""
-  }
+class Stat( val colorBy: ColorBy ) extends Statistic(colorBy.name) {
 
   def add( pds: PairsData ): Stat = {
     add(pds.data.values)
@@ -322,24 +314,8 @@ class Stat( val colorBy: ColorBy ) {
     this
   }
 
-  def add( v: Double, n: Int ): Unit = {
-    if (n != 0) {
-      number += n
-      total += v*n
-      vmax = Math.max( vmax, v )
-      vmin = Math.min( vmin, v )
-    }
-  }
-
-  def max = vmax
-  def min = vmin
-  def ave = if (number == 0) 0.0 else total/number
-  def n = number
-
   def size( pd: PairData, sizemin: Int, sizemax: Int ): Int = {
-    val v = colorBy.value(pd)
-    if (max == min) sizemax
-    else ((v-min)*(sizemax-sizemin)/(max-min) + sizemin).toInt
+    scale(colorBy.value(pd),sizemin,sizemax)
   }
 
   /**
@@ -351,16 +327,7 @@ class Stat( val colorBy: ColorBy ) {
    * The second is the distance from average (smin - smax).  zero indicates average.
    */
   def sizeAve( pd: PairData, sizemin: Int, sizemax: Int ): (Boolean,Int) = {
-    val v = colorBy.value(pd)
-
-    if (min == max) (true,0)
-    else if (v == ave) (true,0)
-    else if (v < ave) {
-      (false,((v-min)*(sizemax-sizemin)/(ave-min) + sizemin).toInt)
-    } else {
-      (true,((v-ave)*(sizemax-sizemin)/(max-ave) + sizemin).toInt)
-    }
-
+    scaleAve( colorBy.value(pd), sizemin, sizemax )
   }
 
   /**
@@ -372,16 +339,7 @@ class Stat( val colorBy: ColorBy ) {
    * The second is the distance from average, 0-1.  zero indicates average. a 1 indicates min or max
    */
   def sizeAveAsFraction( pd: PairData ): (Boolean,Double) = {
-    val v = colorBy.value(pd)
-
-    if (min == max) (true,0)
-    else if (v == ave) (true,0)
-    else if (v < ave) {
-      (false,((ave-v)/(ave-min)))
-    } else {
-      (true,((v-ave)/(max-ave)))
-    }
-
+    scaleAveAsFraction( colorBy.value(pd) )
   }
 }
 
@@ -414,8 +372,6 @@ object Stat {
 }
 
 import PairsData.log
-import com.example.data.DuplicateSummaryDetails
-import com.example.data.DuplicateSummaryDetails
 import com.example.data.DuplicateSummaryDetails
 
 /**
