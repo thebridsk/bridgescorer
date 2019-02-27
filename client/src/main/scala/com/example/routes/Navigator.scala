@@ -26,10 +26,10 @@ object Navigator {
                             map(mr=>mr.render(props.selectedPage)).
                             getOrElse(props.selectedPage.render())
 
-          <.div(
-            Init.isDebugLoggerEnabled ?= DebugLoggerComponent(),
-            p
-          )
+      <.div(
+        p,
+        Init.isDebugLoggerEnabled ?= DebugLoggerComponent(),
+      )
     }
   }
 

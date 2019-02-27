@@ -191,59 +191,61 @@ object PageRubberListInternal {
             helpurl = "../help/rubber/list.html",
             routeCtl = props.routerCtl
           )(),
-          if (importId == RubberListStore.getImportId) {
-            RubberListStore.getRubberSummary() match {
-              case Some(rubberlist) =>
-                val rubbers = rubberlist.sortWith((l,r) => Id.idComparer( l.id, r.id) > 0)
-                <.table(
-                    <.thead(
-                      <.tr(
-                        <.th( "Id"),
-                        importId.map { id =>
-                          TagMod(
-                            <.th("Import from"),
-                            <.th("Best Match")
-                          )
-                        }.whenDefined,
-                        <.th( "Created", <.br(), "Updated"),
-                        <.th( "Complete"),
-                        <.th( "North", <.br(), "South"),
-                        <.th( "NS Score"),
-                        <.th( "East", <.br(), "West"),
-                        <.th( "EW Score"),
-                        <.th( "")
-                    )),
-                    <.tbody(
+          <.div(
+            if (importId == RubberListStore.getImportId) {
+              RubberListStore.getRubberSummary() match {
+                case Some(rubberlist) =>
+                  val rubbers = rubberlist.sortWith((l,r) => Id.idComparer( l.id, r.id) > 0)
+                  <.table(
+                      <.thead(
                         <.tr(
-                            <.td( "" ),
-                            importId.map { id =>
-                              TagMod(
-                                <.th(id),
-                                <.th( "" ),
-                                <.th( "" )
-                              )
-                            }.getOrElse(
-                              <.td(
-                                AppButton( "New", "New", ^.onClick --> newRubber)
-                              )
-                            ),
-                            <.td( ""),
-                            <.td( ^.colSpan:=4,"" ),
-                            <.td( "")
-                            ),
-                        (0 until rubbers.length).map { i =>
-                          val key="Game"+i
-                          val r = RubberScoring(rubbers(i))
-                          RubberRow(this,props,state,i,r,importId)
-                        }.toTagMod
-                    )
-                )
-              case None =>
-                <.div(<.h1("Loading ..."))
+                          <.th( "Id"),
+                          importId.map { id =>
+                            TagMod(
+                              <.th("Import from"),
+                              <.th("Best Match")
+                            )
+                          }.whenDefined,
+                          <.th( "Created", <.br(), "Updated"),
+                          <.th( "Complete"),
+                          <.th( "North", <.br(), "South"),
+                          <.th( "NS Score"),
+                          <.th( "East", <.br(), "West"),
+                          <.th( "EW Score"),
+                          <.th( "")
+                      )),
+                      <.tbody(
+                          <.tr(
+                              <.td( "" ),
+                              importId.map { id =>
+                                TagMod(
+                                  <.th(id),
+                                  <.th( "" ),
+                                  <.th( "" )
+                                )
+                              }.getOrElse(
+                                <.td(
+                                  AppButton( "New", "New", ^.onClick --> newRubber)
+                                )
+                              ),
+                              <.td( ""),
+                              <.td( ^.colSpan:=4,"" ),
+                              <.td( "")
+                              ),
+                          (0 until rubbers.length).map { i =>
+                            val key="Game"+i
+                            val r = RubberScoring(rubbers(i))
+                            RubberRow(this,props,state,i,r,importId)
+                          }.toTagMod
+                      )
+                  )
+                case None =>
+                  <.h1("Loading ...")
+              }
+            } else {
+              <.h1("Loading ...")
             }
-          } else {
-            <.div(<.h1("Loading ..."))
-          }
+          )
       )
 
     }

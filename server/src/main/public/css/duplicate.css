@@ -87,14 +87,14 @@
 .dupDivPairsGrid > table > thead > tr > th {
   position: sticky;
   position: -webkit-sticky;
-  top: 64px;
+  top: 0px;
   z-index: 11;
   background-color: rgb(250,250,250);
 }
 .dupDivPairsGrid > table > thead > tr > th:first-child {
   position: sticky;
   position: -webkit-sticky;
-  top: 64px;
+  top: 0px;
   left: 0;
   z-index: 12;
   background-color: rgb(250,250,250);
@@ -142,14 +142,14 @@
 .dupDivPairsDetailsGrid > table > thead > tr > th {
   position: sticky;
   position: -webkit-sticky;
-  top: 64px;
+  top: 0px;
   z-index: 11;
   background-color: rgb(250,250,250);
 }
 .dupDivPairsDetailsGrid > table > thead > tr > th:first-child {
   position: sticky;
   position: -webkit-sticky;
-  top: 64px;
+  top: 0px;
   left: 0;
   z-index: 12;
   background-color: rgb(250,250,250);
@@ -646,7 +646,7 @@
 .dupViewContractResults table > thead > tr:nth-child(1) > th {
   position: sticky;
   position: -webkit-sticky;
-  top: 64px;
+  top: 0px;
   z-index: 11;
   background-color: rgb(250,250,250);
 }
@@ -706,14 +706,14 @@
 .dupViewPlayerContractResults table > thead > tr > th {
   position: sticky;
   position: -webkit-sticky;
-  top: 64px;
+  top: 0px;
   z-index: 11;
   background-color: rgb(250,250,250);
 }
 .dupViewPlayerContractResults table > thead > tr > th:first-child {
   position: sticky;
   position: -webkit-sticky;
-  top: 64px;
+  top: 0px;
   left: 0;
   z-index: 12;
   background-color: rgb(250,250,250);
@@ -784,14 +784,14 @@
 .dupViewPlayerAggressiveness table > thead > tr:last-child > th {
   position: sticky;
   position: -webkit-sticky;
-  top: 64px;
+  top: 0px;
   z-index: 11;
   background-color: rgb(250,250,250);
 }
 .dupViewPlayerAggressiveness table > thead > tr:last-child > th:first-child {
   position: sticky;
   position: -webkit-sticky;
-  top: 64px;
+  top: 0px;
   left: 0;
   z-index: 12;
   background-color: rgb(250,250,250);
@@ -815,14 +815,14 @@
 .dupDivPlayerOpponentGrid > table > thead > tr > th {
   position: sticky;
   position: -webkit-sticky;
-  top: 64px;
+  top: 0px;
   z-index: 11;
   background-color: rgb(250,250,250);
 }
 .dupDivPlayerOpponentGrid > table > thead > tr > th:first-child {
   position: sticky;
   position: -webkit-sticky;
-  top: 64px;
+  top: 0px;
   left: 0;
   z-index: 12;
   background-color: rgb(250,250,250);
