@@ -106,8 +106,10 @@ object SectionResult {
                                   <.div(
                                     handStyles.sectionResultInner,
                                     header(),
-                                    showButtons ?= ViewMadeOrDown(props.madeOrDown,props.callbackMadeOrDown, props.nextInput, show(InputResultMadeOrDown)),
-                                    showButtons ?= ViewTricks(props.tricks,props.contractTricks,props.madeOrDown,props.callbackTricks, props.nextInput, show(InputResultTricks))
+                                    <.div(
+                                      showButtons ?= ViewMadeOrDown(props.madeOrDown,props.callbackMadeOrDown, props.nextInput, show(InputResultMadeOrDown)),
+                                      showButtons ?= ViewTricks(props.tricks,props.contractTricks,props.madeOrDown,props.callbackTricks, props.nextInput, show(InputResultTricks))
+                                    )
                                   )
                                 )
                             })

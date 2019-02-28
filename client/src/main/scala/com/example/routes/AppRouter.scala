@@ -13,6 +13,7 @@ import japgolly.scalajs.react.CallbackTo
 import com.example.pages.ThankYouPage
 import com.example.pages.AboutPage
 import japgolly.scalajs.react.extra.router.StaticDsl.Rule
+import com.example.pages.BaseStyles.baseStyles
 
 object AppRouter {
 
@@ -194,8 +195,9 @@ class AppRouter( modules: Module* ) {
 
   def logit[T]( f: => T )(implicit pos: Position): T = Alerter.tryit(f)
 
-  def appBarPage( router: BridgeRouter[AppPage], title: String, page: TagMod ) = {
+  def appBarPage( router: BridgeRouter[AppPage], title: String, page: TagMod, mainStyle: TagMod = TagMod() ) = {
     <.div(
+      mainStyle,
       RootBridgeAppBar(
         title = List(MuiTypography(
                     variant = TextVariant.h6,
@@ -223,17 +225,17 @@ class AppRouter( modules: Module* ) {
                                                                                     scoringViewCallbackOk(routerCtl),
                                                                                     scoringViewCallbackCancel(routerCtl),
                                                                                     teamNS=Some("1"), teamEW=Some("2"),
-                                                                                    newhand=true)))) // ScoringView(defaultContract))
+                                                                                    newhand=true), baseStyles.divHandPage ))) // ScoringView(defaultContract))
       | staticRoute("#handchicago", ShowChicagoHand) ~> renderR( (routerCtl) => logit( appBarPage( routerCtl, "Test Chicago Hand", PageHand(defaultHand(TestChicago),
                                                                                   scoringViewCallbackOk(routerCtl),
                                                                                   scoringViewCallbackCancel(routerCtl),
-                                                                                  newhand=true)))) // ScoringView(defaultContract))
+                                                                                  newhand=true), baseStyles.divHandPage ))) // ScoringView(defaultContract))
       | staticRoute("#rubberhand", ShowRubberHand) ~> renderR( (routerCtl) => logit( appBarPage( routerCtl, "Test Rubber Hand", PageHand(defaultHand(TestRubber),
                                                                                        scoringViewCallbackOk(routerCtl),
                                                                                        scoringViewCallbackCancel(routerCtl),
                                                                                        newhand=true,
                                                                                        allowPassedOut=false,
-                                                                                       callbackWithHonors=Some(scoringViewWithHonorsCallbackOk(routerCtl)))))) // ScoringView(defaultContract))
+                                                                                       callbackWithHonors=Some(scoringViewWithHonorsCallbackOk(routerCtl))), baseStyles.divHandPage ))) // ScoringView(defaultContract))
       | staticRoute("#about", About) ~> renderR( (routerCtl) => logit(AboutPage(routerCtl)) )
       | staticRoute("#imports", ImportsList) ~> renderR( (routerCtl) => logit(ImportsListPage(routerCtl,ImportsList)) )
       | staticRoute("#export", Export) ~> renderR( (routerCtl) => logit(ExportPage(routerCtl)) )
