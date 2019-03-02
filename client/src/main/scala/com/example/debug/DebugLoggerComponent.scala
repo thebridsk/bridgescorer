@@ -83,7 +83,7 @@ object DebugLoggerComponentInternal {
         AppButton( "StartLogs", "Start Logs", ^.onClick --> startLogs() ).unless(enabled),
 
         <.pre(
-          <.code(
+          <.p(
             txt
           )
         )

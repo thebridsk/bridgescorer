@@ -258,6 +258,14 @@
  * Root pages
 */
 
+.rootLogDiv {
+  display: block;
+}
+.rootLogDiv > div > pre > p {
+  font-family: monospace;
+  font-size: medium;
+}
+
 .rootHomeDiv {
   display: block;
 }

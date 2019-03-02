@@ -36,6 +36,9 @@ import com.example.routes.AppRouter.GraphiQLView
 import com.example.routes.AppRouter.VoyagerView
 import com.example.routes.AppRouter.PageTest
 import com.example.routes.AppRouter.ColorView
+import com.example.routes.AppRouter.LogView
+import com.example.bridge.action.BridgeDispatcher
+import com.example.logger.Init
 
 /**
  * A simple AppBar for the Bridge client.
@@ -132,6 +135,12 @@ object BridgeAppBarInternal {
 
       gotoPage(uri)
     }
+
+    def startLog( event: ReactEvent ) = {
+      Init.startMaybeDebugLogging(true)
+      BridgeDispatcher.startLogs()
+    }
+    def stopLog( event: ReactEvent ) = BridgeDispatcher.stopLogs()
 
     def render( props: Props, state: State ) = {
       import BaseStyles._
@@ -239,7 +248,7 @@ object BridgeAppBarInternal {
                     toolbarContent:_*
                 )
             )::
-            // help menu
+            // more menu
             MyMenu(
                 anchorEl=state.anchorMoreEl,
                 onClickAway = handleMoreClose _,
@@ -298,6 +307,24 @@ object BridgeAppBarInternal {
                     onClick = callbackPage(ColorView) _
                 )(
                     "Color"
+                ),
+                MuiMenuItem(
+                    id = "Log",
+                    onClick = callbackPage(LogView) _
+                )(
+                    "Show Logs"
+                ),
+                MuiMenuItem(
+                    id = "StartLog",
+                    onClick = startLog _
+                )(
+                    "Start Logging"
+                ),
+                MuiMenuItem(
+                    id = "StopLog",
+                    onClick = stopLog _
+                )(
+                    "Stop Logging"
                 ),
             )::Nil
           ).map(_.vdomElement):::
