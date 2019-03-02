@@ -19,3 +19,4 @@ test-output/
 /debug.log
 .ensime
 .ensime_cache
+/debugDomSuggestion.html

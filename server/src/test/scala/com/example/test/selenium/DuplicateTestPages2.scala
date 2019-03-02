@@ -84,6 +84,7 @@ import com.example.data.websocket.DuplexProtocol
 import com.example.backend.StoreMonitor.KillOneConnection
 import akka.actor.Actor
 import com.example.backend.StoreMonitor.NewParticipantSSE
+import com.example.test.pages.PageBrowser
 
 object DuplicateTestPages2 {
 
@@ -317,50 +318,57 @@ class DuplicateTestPages2 extends FlatSpec
     tcpSleep(60)
     import SessionDirector._
 
-    val page = TablePage.current(MissingNames).clickBoard(3, 7).asInstanceOf[TableEnterMissingNamesPage].validate
-    val missing = page.getInputFieldNames
-    missing must contain theSameElementsAs(List(North,South))
+    PageBrowser.withClueAndScreenShot(screenshotDir, "EnterTeam3", "Entering team 3") {
 
-    page.isOKEnabled mustBe false
+      val page = TablePage.current(MissingNames).clickBoard(3, 7).asInstanceOf[TableEnterMissingNamesPage].validate
+      val missing = page.getInputFieldNames
+      missing must contain theSameElementsAs(List(North,South))
 
-    page.enterPlayer(North, prefixThatMatchesNoOne)
-    page.isPlayerSuggestionsVisible(North) mustBe true
-    val sugN = page.getPlayerSuggestions(North)
-    sugN.size mustBe 1
-    sugN.head.text mustBe "No names matched"
+      page.isOKEnabled mustBe false
 
-    page.enterPlayer(North, team3.one)
+      page.enterPlayer(North, prefixThatMatchesNoOne)
+      eventually {
+        page.isPlayerSuggestionsVisible(North) mustBe true
+        val sugN = page.getPlayerSuggestions(North)
+        sugN.size mustBe 1
+        sugN.head.text mustBe "No names matched"
+      }
 
-    page.isOKEnabled mustBe false
+      page.enterPlayer(North, team3.one)
 
-    page.enterPlayer(South, prefixThatMatchesSomeNames)
+      eventually {
+        page.isOKEnabled mustBe false
+      }
 
-    eventually {
-      page.isPlayerSuggestionsVisible(South) mustBe true
-      val suggestions = page.getPlayerSuggestions(South)
-      val sugNames = suggestions.map(e=>e.text)
-//      sugNames must contain allElementsOf matchedNames
-//      sugNames.size must be >= matchedNames.size
-      sugNames.size must be > 0
-      sugNames.foreach(e => e.toLowerCase().startsWith(prefixThatMatchesSomeNames))
-      suggestions
+      page.enterPlayer(South, prefixThatMatchesSomeNames)
+
+      eventually {
+        page.isPlayerSuggestionsVisible(South) mustBe true
+        val suggestions = page.getPlayerSuggestions(South)
+        val sugNames = suggestions.map(e=>e.text)
+  //      sugNames must contain allElementsOf matchedNames
+  //      sugNames.size must be >= matchedNames.size
+        sugNames.size must be > 0
+        sugNames.foreach(e => e.toLowerCase().startsWith(prefixThatMatchesSomeNames))
+        suggestions
+      }
+      page.enterPlayer(South, team3.two)
+
+      page.esc
+
+      val pg = page.clickReset.validate
+      pg.enterPlayer(North, team3.one)
+      pg.esc
+      pg.enterPlayer(South, team3.two)
+      pg.esc
+
+      pg.isOKEnabled mustBe true
+
+      val ss = page.clickOK.validate
+
+      val sn = ss.verifyAndSelectScorekeeper(team3.one, team3.two, team1.one, team1.two, East)
+      val handpage = sn.verifyNamesAndSelect(team3.teamid, team1.teamid, team3.one, team3.two, team1.one, team1.two, East, false).asInstanceOf[HandPage].validate
     }
-    page.enterPlayer(South, team3.two)
-
-    page.esc
-
-    val pg = page.clickReset.validate
-    pg.enterPlayer(North, team3.one)
-    pg.esc
-    pg.enterPlayer(South, team3.two)
-    pg.esc
-
-    pg.isOKEnabled mustBe true
-
-    val ss = page.clickOK.validate
-
-    val sn = ss.verifyAndSelectScorekeeper(team3.one, team3.two, team1.one, team1.two, East)
-    val handpage = sn.verifyNamesAndSelect(team3.teamid, team1.teamid, team3.one, team3.two, team1.one, team1.two, East, false).asInstanceOf[HandPage].validate
 
   }
 
