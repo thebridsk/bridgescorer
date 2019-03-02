@@ -28,7 +28,7 @@ object Navigator {
 
       <.div(
         p,
-        Init.isDebugLoggerEnabled ?= DebugLoggerComponent(),
+//        Init.isDebugLoggerEnabled ?= DebugLoggerComponent(),
       )
     }
   }

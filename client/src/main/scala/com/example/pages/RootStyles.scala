@@ -135,6 +135,8 @@ class BaseStyles {
 class RootStyles {
   import BaseStyles._
 
+  val logDiv = cls("rootLogDiv baseFontTextLarge")
+
   val homeDiv = cls("rootHomeDiv baseFontTextLarge")
 
   val serverDiv = cls("rootServerDiv")

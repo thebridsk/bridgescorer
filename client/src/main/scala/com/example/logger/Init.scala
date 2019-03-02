@@ -155,6 +155,39 @@ object Init {
     })
   }
 
+  def filterTraceSend( h: Handler ): Unit = {
+    val f = new Filter() {
+      def isLogged( traceMsg: TraceMsg ): Boolean = {
+        traceMsg.pos.fileName!="AjaxCall.scala" || !traceMsg.message.startsWith("PUT /v1/logger/entry")
+      }
+    }
+    h.filter = f
+  }
+
+  def getLoggerName( forRemoteHandler: Boolean, loggername: String = "" ) = if (loggername.length()==0) {
+    if (forRemoteHandler) "bridge" else "[root]"
+  } else {
+    loggername
+  }
+
+  def startMaybeDebugLogging(ignoreIfStarted: Boolean = false, loggername: String = "", l: Level = Level.FINEST) = {
+    if (!ignoreIfStarted || !debugLoggerEnabled) {
+      debugLoggerEnabled = true
+      val target = Logger(loggername)
+      target.getHandlers().find(h=>h.isInstanceOf[DebugLoggerHandler]) match {
+        case Some(h) =>
+          logger.info("On %s setting debug logger trace level to %s",getLoggerName(false,loggername),l)
+          h.level=l
+        case None =>
+          logger.info("On %s starting debug logger trace with level %s",getLoggerName(false,loggername),l)
+          val h = new DebugLoggerHandler
+          h.level = l
+          target.addHandler(h)
+          filterTraceSend(h)
+      }
+    }
+  }
+
   def setHandler( spec: String, name: String, level: String, loggername: String ) = {
     val target = Logger(loggername)
     def getLoggerName( forRemoteHandler: Boolean ) = if (loggername.length()==0) {
@@ -174,6 +207,7 @@ object Init {
               case Some(h) =>
                 logger.info("On %s setting console trace level to %s",getLoggerName(false),l)
                 h.level=l
+                filterTraceSend(h)
               case None =>
                 logger.info("On %s starting console trace with level %s",getLoggerName(false),l)
                 val h = new JsConsoleHandler
@@ -194,19 +228,10 @@ object Init {
                 val h = new JsConsoleHandlerInfo
                 h.level = l
                 target.addHandler(h)
+                filterTraceSend(h)
             }
           case "debug" =>
-            debugLoggerEnabled = true
-            target.getHandlers().find(h=>h.isInstanceOf[DebugLoggerHandler]) match {
-              case Some(h) =>
-                logger.info("On %s setting debug logger trace level to %s",getLoggerName(false),l)
-                h.level=l
-              case None =>
-                logger.info("On %s starting debug logger trace with level %s",getLoggerName(false),l)
-                val h = new DebugLoggerHandler
-                h.level = l
-                target.addHandler(h)
-            }
+            startMaybeDebugLogging(true, loggername, l)
           case "server" =>
             target.getHandlers().find(h=>h.isInstanceOf[SendToServerHandler]) match {
               case Some(h) =>

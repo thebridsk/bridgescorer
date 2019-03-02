@@ -12,7 +12,9 @@ import com.example.bridge.action.StartLogs
 
 object LoggerStore extends ChangeListenable {
 
-  val MaxSize = 100
+  baseclass: ChangeListenable =>
+
+  val MaxSize = 200
 
   /**
    * Required to instantiate the store.
@@ -41,20 +43,27 @@ object LoggerStore extends ChangeListenable {
       if (enabled) {
         messages.insert(0, MessageEntry(counter,tracemsg))
         if (messages.size > MaxSize) messages = messages.take(MaxSize)
-        notifyChange()
+        notifyLogChange()
       }
     case _: ClearLogs =>
       messages.clear()
-      notifyChange()
+      notifyLogChange()
     case _: StopLogs =>
       enabled = false
-      notifyChange()
+      notifyLogChange()
     case _: StartLogs =>
       enabled = true
-      notifyChange()
+      notifyLogChange()
     case x =>
       // There are multiple stores, all the actions get sent to all stores
 //      logger.warning("BoardSetStore: Unknown msg dispatched, "+x)
   }
 
+  def notifyLogChange() = {
+    import scala.scalajs.js.timers._
+
+    setTimeout(0) { // note the absence of () =>
+      notifyChange()
+    }
+  }
 }

@@ -35,6 +35,7 @@ object AppRouter {
   case object ColorView extends AppPage
   case object VoyagerView extends AppPage
   case object GraphiQLView extends AppPage
+  case object LogView extends AppPage
 
   private var instance: Option[AppRouter] = None
 
@@ -70,6 +71,7 @@ import com.example.pages.RootBridgeAppBar
 import com.example.materialui.MuiTypography
 import com.example.materialui.TextVariant
 import com.example.materialui.TextColor
+import com.example.pages.LogPage
 
 trait ModuleRenderer {
 
@@ -146,6 +148,7 @@ class AppRouter( modules: Module* ) {
               ColorView::
               VoyagerView::
               GraphiQLView::
+              LogView::
               Nil
 
     root:::modulepages
@@ -246,6 +249,7 @@ class AppRouter( modules: Module* ) {
       | staticRoute("#color", ColorView) ~> renderR( (routerCtl) => logit(ColorPage(routerCtl)) )
       | staticRoute("#voyager", VoyagerView) ~> renderR( (routerCtl) => logit(VoyagerPage(routerCtl)) )
       | staticRoute("#graphiql", GraphiQLView) ~> renderR( (routerCtl) => logit(GraphiQLPage(routerCtl)) )
+      | staticRoute("#log", LogView) ~> renderR( (routerCtl) => logit(LogPage(routerCtl)) )
       | moduleRoutes()
       ).notFound( p => logit {
         document.defaultView.alert("Could not find path "+p)
