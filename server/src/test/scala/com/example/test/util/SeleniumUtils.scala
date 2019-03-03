@@ -20,7 +20,7 @@ object SeleniumUtilsLogger {
 }
 
 trait SeleniumUtils {
-  import org.scalatest.selenium.WebBrowser._
+  import org.scalatestplus.selenium.WebBrowser._
   import org.scalatest.MustMatchers._
   import EventuallyUtils._
 
