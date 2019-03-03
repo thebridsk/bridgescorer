@@ -19,7 +19,6 @@
   flex-direction: row;
   align-items: flex-start;
   justify-content: center;
-  width: 99%;
 }
 @media screen and (max-width: 1024px) {
   .handPageHand {
@@ -260,7 +259,11 @@
 }
 
 .handSectionScore > div {
-    flex: 0 0 auto; 
-    padding: 0 10px 0 10px;
+  flex: 0 0 auto; 
+  padding: 0 10px 0 10px;
+}
+
+.handSectionScore > div:nth-child(2) {
+  background: cyan;
 }
 
