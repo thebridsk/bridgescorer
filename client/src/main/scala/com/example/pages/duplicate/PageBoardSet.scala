@@ -75,7 +75,7 @@ object PageBoardSetInternal {
         case Some(md) =>
           val boardset = md.getBoardSetObject()
           <.div(
-            dupStyles.divTablePage,
+            dupStyles.divBoardSetPage,
             DuplicatePageBridgeAppBar(
               id = Some(props.page.dupid),
               tableIds = List(),
@@ -95,14 +95,13 @@ object PageBoardSetInternal {
             ),
             <.div(
               <.div(
-                baseStyles.divText100,
                 <.h1( "Boards used for the match" )
               ),
               ViewBoardSet(boardset,2),
               <.div(
                 baseStyles.divFooter,
                 <.div(
-                  baseStyles.divFooterLeft,
+                  baseStyles.divFooterCenter,
                   AppButton( "Game", "Completed Games Scoreboard", props.routerCtl.setOnClick(props.page.toScoreboard())
                   )
                 )

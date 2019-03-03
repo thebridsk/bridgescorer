@@ -66,6 +66,7 @@ class DuplicateStyles {
   val divTableView = cls("dupDivTableView")
   val boardButtonInTable = cls("dupBoardButtonInTable")
 
+  val divBoardSetPage = cls("dupDivBoardSetPage")
   val divBoardPage = cls("dupDivBoardPage")
   val divBoardView = cls("dupDivBoardView")
   val tableCellGray = cls("dupTableCellGray")

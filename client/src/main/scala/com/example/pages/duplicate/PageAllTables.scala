@@ -100,12 +100,9 @@ object PageAllTablesInternal {
                 <.div(
                   baseStyles.divFooter,
                   <.div(
-                    baseStyles.divFooterLeft,
-                    AppButton( "Game", "Completed Games Scoreboard", props.routerCtl.setOnClick(clickPage)
-                    )
-                  ),
-                  <.div(
                     baseStyles.divFooterCenter,
+                    AppButton( "Game", "Completed Games Scoreboard", props.routerCtl.setOnClick(clickPage)
+                    ),
                     ComponentInputStyleButton( Callback{} )
                   )
                 )

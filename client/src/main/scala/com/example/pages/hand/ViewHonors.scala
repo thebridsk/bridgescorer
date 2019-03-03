@@ -123,17 +123,19 @@ object ViewHonors {
                                 <.div( handStyles.viewHonors,
                                   <.div( "Honors:" ),
                                   <.div(
-                                      !show() ?= handStyles.notVisible,
-                                      getButton(0),
-                                      !notrump ?= getButton(100),
-                                      getButton(150)
-                                  ),
-                                  <.div(
-                                      !(props.currentHonors.getOrElse(0)>0 && showP()) ?= handStyles.notVisible,
-                                      getPlayerButton( North, props.north ),
-                                      getPlayerButton( South, props.south ),
-                                      getPlayerButton( East, props.east ),
-                                      getPlayerButton( West, props.west )
+                                    <.div(
+                                        !show() ?= handStyles.notVisible,
+                                        getButton(0),
+                                        !notrump ?= getButton(100),
+                                        getButton(150)
+                                    ),
+                                    <.div(
+                                        !(props.currentHonors.getOrElse(0)>0 && showP()) ?= handStyles.notVisible,
+                                        getPlayerButton( North, props.north ),
+                                        getPlayerButton( South, props.south ),
+                                        getPlayerButton( East, props.east ),
+                                        getPlayerButton( West, props.west )
+                                    )
                                   )
                                 )
                             })
