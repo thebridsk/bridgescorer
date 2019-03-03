@@ -18,6 +18,7 @@ class ChicagoStyles {
 
   val chicagoListPage = cls("chiChicagoListPage")
   val chicagoSummaryPage = cls("chiChicagoSummaryPage")
+  val chicagoFastSummaryPage = cls("chiChicagoFastSummaryPage")
 
   val divPageFive = cls("chiDivPageFive")
   val divPageSelectSittingOut = cls("chiDivPageSelectSittingOut")

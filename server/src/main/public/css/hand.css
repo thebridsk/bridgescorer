@@ -17,7 +17,7 @@
   font-size: x-large;
   display: flex;
   flex-direction: row;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
   width: 99%;
 }
@@ -25,7 +25,7 @@
   .handPageHand {
     max-width: 99vw;
   }
-  .handSectionScore {
+  .handPageHand > div > div {
     max-width: 99vw;
   }
 }
@@ -111,7 +111,7 @@
   flex: 0 0 100%;
   display: flex;
   flex-direction: row;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
   align-items: center;
   padding-top: 20px;
 }
@@ -167,7 +167,7 @@
   flex: 0 0 100%;
   display: flex;
   flex-direction: row;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
   justify-content: flex-start;
   align-items: flex-start;
   width: 100%;

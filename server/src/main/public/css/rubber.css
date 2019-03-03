@@ -47,6 +47,7 @@
   display: flex;
   flex-wrap: wrap;
   flex-direction: row;
+  justify-content: center;
 }
 .rubDivRubberMatch > div:nth-child(2) table {
   margin: 2px;
