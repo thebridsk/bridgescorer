@@ -780,7 +780,7 @@ class RubberTest extends FlatSpec
   }
 
   def getHonorsButtons() = {
-    val div = find(xpath("//"+getDivByClass("handViewHonors")+"/div[2]" ))
+    val div = find(xpath("//"+getDivByClass("handViewHonors")+"/div/div[1]" ))
     div.findAll(tagName("button")).toList.map( e => (e.id.get, e) ).toMap
   }
 
@@ -800,7 +800,7 @@ class RubberTest extends FlatSpec
   }
 
   def checkHonorPos( contractTricks: ContractTricks, honorPoints: Int ) = {
-    val div = find(xpath("//"+getDivByClass("handViewHonors")+"/div[3]"))
+    val div = find(xpath("//"+getDivByClass("handViewHonors")+"/div/div[2]"))
     contractTricks match {
       case PassedOut =>
         div.attribute("class").get must include ("baseNotVisible")

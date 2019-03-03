@@ -28,10 +28,26 @@
   text-align: center;
 }
 
+.chiChicagoFastSummaryPage {
+  font-size: x-large;
+  display: flex;
+  flex-flow: wrap;
+  align-content: flex-start;
+}
+.chiChicagoFastSummaryPage > div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+}
 .chiChicagoSummaryPage {
   font-size: x-large;
   display: flex;
   flex-flow: wrap;
+  justify-content: center;
+  align-items: flex-start;
+  align-content: flex-start;
 }
 .chiChicagoSummaryPage > div:not(:last-child) {
   flex: 0 0 auto;

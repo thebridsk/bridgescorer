@@ -162,43 +162,42 @@ object PageChicagoListInternal {
             helpurl = "../help/chicago/list.html",
             routeCtl = props.routerCtl
           )(),
-          ChicagoSummaryStore.getChicagoSummary() match {
-            case Some(chicagosRaw) =>
-              val importId = props.page match {
-                case ilv: ImportListView => Some(ilv.getDecodedId)
-                case _ => None
-              }
-              val chicagos = chicagosRaw.sortWith((l,r) => Id.idComparer(l.id, r.id) > 0)
-              val maxplayers = chicagos.map( mc => mc.players.length ).foldLeft(4){case (m, i) => math.max(m,i)}
-              <.table(
-                  <.thead(
-                    <.tr(
-                      <.th( "Id"),
-                      importId.map { id =>
-                        TagMod(
-                          <.th("Import from"),
-                          <.th("Best Match")
-                        )
-                      }.whenDefined,
-                      <.th( "Created", <.br(), "Updated"),
-                      <.th( "Players - Scores", ^.colSpan:=maxplayers),
-                      <.th( "")
-                  )),
-                  <.tbody(
-                      ChicagoRowFirst.withKey("New")((this,props,state,maxplayers,importId)),
-                      (0 until chicagos.length).map { i =>
-                        val key="Game"+i
-                        val chicago = ChicagoScoring(chicagos(i))
-                        ChicagoRow.withKey(key)((this,props,state,i,maxplayers,chicago,importId))
-                      }.toTagMod
-                  )
-              )
-            case None =>
-              <.div(
-                  chiStyles.chicagoListPage,
-                  <.h1("Loading ...")
-              )
-          }
+          <.div(
+            ChicagoSummaryStore.getChicagoSummary() match {
+              case Some(chicagosRaw) =>
+                val importId = props.page match {
+                  case ilv: ImportListView => Some(ilv.getDecodedId)
+                  case _ => None
+                }
+                val chicagos = chicagosRaw.sortWith((l,r) => Id.idComparer(l.id, r.id) > 0)
+                val maxplayers = chicagos.map( mc => mc.players.length ).foldLeft(4){case (m, i) => math.max(m,i)}
+                <.table(
+                    <.thead(
+                      <.tr(
+                        <.th( "Id"),
+                        importId.map { id =>
+                          TagMod(
+                            <.th("Import from"),
+                            <.th("Best Match")
+                          )
+                        }.whenDefined,
+                        <.th( "Created", <.br(), "Updated"),
+                        <.th( "Players - Scores", ^.colSpan:=maxplayers),
+                        <.th( "")
+                    )),
+                    <.tbody(
+                        ChicagoRowFirst.withKey("New")((this,props,state,maxplayers,importId)),
+                        (0 until chicagos.length).map { i =>
+                          val key="Game"+i
+                          val chicago = ChicagoScoring(chicagos(i))
+                          ChicagoRow.withKey(key)((this,props,state,i,maxplayers,chicago,importId))
+                        }.toTagMod
+                    )
+                )
+              case None =>
+                <.h1("Loading ...")
+            }
+          )
       )
     }
 

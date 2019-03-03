@@ -597,29 +597,33 @@ object PageTableTeamsInternal {
         header(props, helppage.getOrElse("../help/duplicate/enterscorekeepername.html")),
         <.div(
             dupStyles.divTableNamesPage,
-            div,
             <.div(
-                baseStyles.divFooter,
-                ^.paddingTop:=40.px,
+              <.div(
+                div,
                 <.div(
-                    baseStyles.divFooterLeft,
-                    Button( baseStyles.footerButton,
-                            "OK",
-                            "OK",
-                            ^.onClick --> okCB,
-                            ^.disabled := !valid,
-                            BaseStyles.highlight(required = valid)
-                          )
-                ),
-                <.div(
-                    baseStyles.divFooterCenter,
-                    Button( baseStyles.footerButton, "Reset", "Reset", ^.onClick --> reset )
-                ),
-                <.div(
-                    baseStyles.divFooterRight,
-                    Button( baseStyles.footerButton, "Cancel", "Cancel", props.routerCtl.setOnClick( props.page.toTableView() ) ),
-//                    helppage.whenDefined( p => HelpButton(p) )
+                    baseStyles.divFooter,
+                    ^.paddingTop:=40.px,
+                    <.div(
+                        baseStyles.divFooterLeft,
+                        Button( baseStyles.footerButton,
+                                "OK",
+                                "OK",
+                                ^.onClick --> okCB,
+                                ^.disabled := !valid,
+                                BaseStyles.highlight(required = valid)
+                              )
+                    ),
+                    <.div(
+                        baseStyles.divFooterCenter,
+                        Button( baseStyles.footerButton, "Reset", "Reset", ^.onClick --> reset )
+                    ),
+                    <.div(
+                        baseStyles.divFooterRight,
+                        Button( baseStyles.footerButton, "Cancel", "Cancel", props.routerCtl.setOnClick( props.page.toTableView() ) ),
+    //                    helppage.whenDefined( p => HelpButton(p) )
+                    )
                 )
+              ),
             )
         )
       )

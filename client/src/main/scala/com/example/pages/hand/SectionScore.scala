@@ -35,51 +35,47 @@ object SectionScore {
                                 import HandStyles._
                                 <.div(
                                     handStyles.sectionScore,
-                                    <.table( ^.width:="100%",
-                                        <.tbody(
-                                            props.contract.scorer match {
-                                              case Some(Left(score)) /* Rubber */ =>
-                                                val c = props.contract
-                                                <.tr(
-                                                  <.td(^.textAlign := "left", "Score: "+score.totalScore(c.north,c.south,c.east,c.west)),
-                                                  <.td(^.textAlign := "center", score.contractAndResultAsString ),
-                                                  <.td(^.textAlign := "right", score.explain())
-                                                )
-                                              case Some(Right(score)) /* Duplicate */ =>
-                                                val c = props.contract
-                                                val ts = c.scoringSystem match {
-                                                  case Chicago => score.totalScoreNoPos(c.north,c.south,c.east,c.west)
-                                                  case _ => score.totalScore(c.north,c.south,c.east,c.west)
-                                                }
-                                                <.tr(
-                                                  <.td(^.textAlign := "left", "Score: "+ts ),
-                                                  <.td(^.textAlign := "center", score.contractAndResultAsString ),
-                                                  <.td(^.textAlign := "right", score.explain() )
-                                                )
-                                              case None =>
-                                                import PageHandNextInput._
-                                                val msg = (props.nextInput match {
-                                                  case InputContractTricks => Some("contract tricks")
-                                                  case InputContractSuit => Some("contract suit")
-                                                  case InputContractDoubled => Some("contract doubled")
-                                                  case InputContractBy => Some("declarer")
-                                                  case InputHonors => Some("honors")
-                                                  case InputHonorsPlayer => Some("honors player")
-                                                  case InputResultMadeOrDown => Some("made/down")
-                                                  case InputResultTricks => Some("tricks")
-                                                  case InputAll => None
-                                                }) match {
-                                                  case Some(s) => s"Enter $s"
-                                                  case None => "Unknown missing information"
-                                                }
-                                                <.tr(
-                                                  <.td(^.textAlign := "left", handStyles.required, "Missing required information" ),
-                                                  <.td(^.textAlign := "center" ),
-                                                  <.td(^.textAlign := "right", handStyles.required, msg )
-                                                )
-                                            }
+                                    props.contract.scorer match {
+                                      case Some(Left(score)) /* Rubber */ =>
+                                        val c = props.contract
+                                        TagMod(
+                                          <.div("Score: "+score.totalScore(c.north,c.south,c.east,c.west)),
+                                          <.div(score.contractAndResultAsString ),
+                                          <.div(score.explain())
                                         )
-                                    )
+                                      case Some(Right(score)) /* Duplicate */ =>
+                                        val c = props.contract
+                                        val ts = c.scoringSystem match {
+                                          case Chicago => score.totalScoreNoPos(c.north,c.south,c.east,c.west)
+                                          case _ => score.totalScore(c.north,c.south,c.east,c.west)
+                                        }
+                                        TagMod(
+                                          <.div("Score: "+ts ),
+                                          <.div(score.contractAndResultAsString ),
+                                          <.div(score.explain() )
+                                        )
+                                      case None =>
+                                        import PageHandNextInput._
+                                        val msg = (props.nextInput match {
+                                          case InputContractTricks => Some("contract tricks")
+                                          case InputContractSuit => Some("contract suit")
+                                          case InputContractDoubled => Some("contract doubled")
+                                          case InputContractBy => Some("declarer")
+                                          case InputHonors => Some("honors")
+                                          case InputHonorsPlayer => Some("honors player")
+                                          case InputResultMadeOrDown => Some("made/down")
+                                          case InputResultTricks => Some("tricks")
+                                          case InputAll => None
+                                        }) match {
+                                          case Some(s) => s"Enter $s"
+                                          case None => "Unknown missing information"
+                                        }
+                                        TagMod(
+                                          <.div(handStyles.required, "Missing required information" ),
+                                          <.div(),
+                                          <.div(handStyles.required, msg )
+                                        )
+                                    }
                                 )
                             })
 //                            .configure(LogLifecycleToServer.verbose)     // logs lifecycle events

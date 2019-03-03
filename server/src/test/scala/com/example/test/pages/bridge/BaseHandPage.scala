@@ -368,7 +368,7 @@ abstract class BaseHandPage( implicit webDriver: WebDriver, pageCreated: SourceP
 
   def getScore(implicit patienceConfig: PatienceConfig, pos: Position): (String,String,String) = logMethod("getScore"){
     eventually {
-      findElemsByXPath( "//div[contains(concat(' ', @class, ' '), ' handSectionScore ')]/table/tbody/tr/td" ) match {
+      findElemsByXPath( "//div[contains(concat(' ', @class, ' '), ' handSectionScore ')]/div" ) match {
         case List( r1, r2, r3 ) => ( r1.text, r2.text, r3.text )
         case x => fail(s"Did not get exactly three elements: $x")
       }

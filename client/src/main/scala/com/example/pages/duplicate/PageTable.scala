@@ -111,13 +111,10 @@ object PageTableInternal {
                   <.div(
                     baseStyles.divFooter,
                     <.div(
-                      baseStyles.divFooterLeft,
+                      baseStyles.divFooterCenter,
                       AppButton( "Game", "Completed Games Scoreboard",
                                  props.routerCtl.setOnClick(CompleteScoreboardView(props.page.dupid))
-                      )
-                    ),
-                    <.div(
-                      baseStyles.divFooterCenter,
+                      ),
                       ComponentInputStyleButton( Callback{} )
                     )
                   )

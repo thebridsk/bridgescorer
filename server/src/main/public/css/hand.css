@@ -10,12 +10,33 @@
 }
 
 .divHandPage {
-  max-width: 1165px;
+  align-items: center;
 }
 
 .handPageHand {
   font-size: x-large;
-  width: 100%
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: center;
+}
+@media screen and (max-width: 1024px) {
+  .handPageHand {
+    max-width: 99vw;
+  }
+  .handPageHand > div > div {
+    max-width: 99vw;
+  }
+}
+  
+.handPageHand #Ok {
+  width: 100px;
+}
+
+.handPageHand > div {
+  flex: 1 0 auto;
+  font-size: x-large;
+  max-width: 1165px;
 }
 
 .divHandPage > .divAppBar {
@@ -89,7 +110,7 @@
   flex: 0 0 100%;
   display: flex;
   flex-direction: row;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
   align-items: center;
   padding-top: 20px;
 }
@@ -145,7 +166,7 @@
   flex: 0 0 100%;
   display: flex;
   flex-direction: row;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
   justify-content: flex-start;
   align-items: flex-start;
   width: 100%;
@@ -153,7 +174,7 @@
 }
 .handSectionResultInner {
   flex: 0 0 auto;
-  padding-left: 100px;
+  padding-left: 50px;
 }
 .handSectionResultInner > div:nth-child(2) {
   display: flex;
@@ -170,27 +191,29 @@
 .handViewHonors {
       flex: 0 0 auto;
       display: flex;
-      flex-direction: row;
-      flex-wrap: wrap;
-      border-left-width: 10px;
-      border-right-width: 10px;
-      font-size: x-large
+      flex-direction: column;
+      flex-wrap: nowrap;
+      align-items: flex-start;
+      font-size: x-large;
 }
 .handViewHonors > div:first-child {
-  flex: 0 0 100%;
+  flex: 0 0 auto;
   clear: both;
   text-align: left;
 }
 .handViewHonors > div:nth-child(2) {
+  display: flex;
+}
+.handViewHonors > div:nth-child(2) > div:nth-child(1) {
   flex: 0 0 auto;
   display: flex;
   flex-direction: column;
   flex-wrap: nowrap;
 }
-.handViewHonors > div:nth-child(2) button {
+.handViewHonors > div:nth-child(2) > div:nth-child(1) button {
   width: 60px;
 }
-.handViewHonors > div:nth-child(3) {
+.handViewHonors > div:nth-child(2) > div:nth-child(2) {
   flex: 0 0 auto;
   display: flex;
   flex-direction: column;
@@ -230,7 +253,17 @@
   flex: 0 0 100%;
   display: flex;
   flex-direction: row;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
 }
+
+.handSectionScore > div {
+  flex: 0 0 auto; 
+  padding: 0 10px 0 10px;
+}
+
+.handSectionScore > div:nth-child(2) {
+  background: cyan;
+}
+

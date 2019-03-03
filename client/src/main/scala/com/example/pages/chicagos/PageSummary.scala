@@ -143,7 +143,8 @@ object PageSummaryInternal {
               }
 
               <.div(
-                  chiStyles.chicagoSummaryPage,
+                  if (scoring.chicago.gamesPerRound==1) chiStyles.chicagoFastSummaryPage
+                  else chiStyles.chicagoSummaryPage,
                   if (scoring.chicago.isQuintet()) {
                     <.div( ViewQuintet(scoring, toSummaryView(props), props.routerCtl) )
                   } else {

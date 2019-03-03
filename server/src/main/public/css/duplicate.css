@@ -332,16 +332,27 @@
   display: flex;
   flex-wrap: wrap;
   flex-direction: row;
+  align-content: flex-start;
+  justify-content: center;
 }
 
+.dupDivBoardSetPage > div:nth-child(2) {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+}
 .dupDivTablePage > div:nth-child(2) {
   display: flex;
   flex-wrap: wrap;
   flex-direction: row;
+  align-content: flex-start;
 }
 .dupDivTableHelp {
   flex: 1 1 180px;
   padding-left: 20px;
+  display: flex;
+  align-items: center;
 }
 
 .dupDivTableView {
@@ -406,6 +417,9 @@
 }
 
 .dupDivBoardPage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .dupDivBoardView {
@@ -440,6 +454,11 @@
 }
 .dupDivAllBoardsPage > div > div {
   padding-top: 5px;
+}
+.dupDivAllBoardsPage > div:nth-child(2) {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .dupDivFinishedScoreboardsPage > div {
@@ -554,6 +573,13 @@
 
 .dupDivTableNamesPage {
   font-size: x-large;
+}
+.dupDivTableNamesPage > div {
+  display: flex;
+  justify-content: center;
+}
+.dupDivTableNamesPage > div > div {
+  flex: 1 0 auto;
   max-width: 700px; 
 }
 
