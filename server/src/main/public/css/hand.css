@@ -10,7 +10,6 @@
 }
 
 .divHandPage {
-  align-items: center;
 }
 
 .handPageHand {
@@ -36,6 +35,8 @@
 .handPageHand > div {
   flex: 1 0 auto;
   font-size: x-large;
+}
+.handPageHand > div {
   max-width: 1165px;
 }
 
