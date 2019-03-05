@@ -101,68 +101,70 @@ object ViewPlayersVeryFirstRound {
           routeCtl = props.router
         )(),
         <.div(
-          <.h1(InfoPage.showOnlyInLandscapeOnTouch(), "Rotate to portrait for a better view"),
-          <.table(
-            <.tbody(
-              <.tr(
-                !state.chicago5 ?= baseStyles.notVisible,
-                <.td( ^.colSpan := 2, tableStyles.tableCellWidth2Of7),
-                <.td( ^.colSpan := 3, tableStyles.tableCellWidth3Of7),
-                <.td( ^.colSpan := 2, tableStyles.tableCellWidth2Of7,
-                  "Sitting out",
-                  <.br,
-                  ComboboxOrInput( setExtra, noNull(state.extra.getOrElse("")), names, "startsWith", 9, "Extra",
-                                               msgEmptyList="No suggested names", msgEmptyFilter="No names matched"),
-                  <.br,
-                  CheckBox( "Quintet", "Fast Rotation", state.quintet, toggleQuintet ),
-                  if (state.quintet) {
-                    Seq[TagMod](
-                      <.br,
-                      RadioButton( "Simple", "Simple Rotation", state.simpleRotation, setSimpleRotation(true) ),
-                      <.br,
-                      RadioButton( "Fair", "Fair Rotation", !state.simpleRotation, setSimpleRotation(false) )
-                    ).toTagMod
-                  } else {
-                    EmptyVdom
-                  },
-                  BaseStyles.highlight( required = !isExtraValid() )
+          <.div(
+            <.h1(InfoPage.showOnlyInLandscapeOnTouch(), "Rotate to portrait for a better view"),
+            <.table(
+              <.tbody(
+                <.tr(
+                  !state.chicago5 ?= baseStyles.collapse,
+                  <.td( ^.colSpan := 2, tableStyles.tableCellWidth2Of7),
+                  <.td( ^.colSpan := 3, tableStyles.tableCellWidth3Of7),
+                  <.td( ^.colSpan := 2, tableStyles.tableCellWidth2Of7,
+                    "Sitting out",
+                    <.br,
+                    ComboboxOrInput( setExtra, noNull(state.extra.getOrElse("")), names, "startsWith", 9, "Extra",
+                                                 msgEmptyList="No suggested names", msgEmptyFilter="No names matched"),
+                    <.br,
+                    CheckBox( "Quintet", "Fast Rotation", state.quintet, toggleQuintet ),
+                    if (state.quintet) {
+                      Seq[TagMod](
+                        <.br,
+                        RadioButton( "Simple", "Simple Rotation", state.simpleRotation, setSimpleRotation(true) ),
+                        <.br,
+                        RadioButton( "Fair", "Fair Rotation", !state.simpleRotation, setSimpleRotation(false) )
+                      ).toTagMod
+                    } else {
+                      EmptyVdom
+                    },
+                    BaseStyles.highlight( required = !isExtraValid() )
+                  )
+                ),
+                <.tr(
+                  <.td( ^.colSpan := 2, tableStyles.tableCellWidth2Of7),
+                  <.td( ^.colSpan := 3, tableStyles.tableCellWidth3Of7, putName("South", South, state.south, false, setSouth, 2, 6)),
+                  <.td( ^.colSpan := 2, tableStyles.tableCellWidth2Of7)
+                ),
+                <.tr(
+                  <.td( ^.colSpan := 3, tableStyles.tableCellWidth3Of7, putName("East", East, state.east, false, setEast, 1, 5)),
+                  <.td( ^.colSpan := 1, tableStyles.tableCellWidth1Of7),
+                  <.td( ^.colSpan := 3, tableStyles.tableCellWidth3Of7, putName("West", West, state.west, false, setWest, 3, 7))
+                ),
+                <.tr(
+                  <.td( ^.colSpan := 2, tableStyles.tableCellWidth2Of7),
+                  <.td( ^.colSpan := 3, tableStyles.tableCellWidth3Of7, putName("North", North, state.north, false, setNorth, 4, 8)),
+                  <.td( ^.colSpan := 2, tableStyles.tableCellWidth2Of7)
+                )
+              )
+            ),
+            <.div(
+              baseStyles.divFooter,
+              <.div(
+                baseStyles.divFooterLeft,
+                AppButton( "Ok", "OK", ^.disabled := !valid, BaseStyles.highlight( requiredNotNext=valid ), ^.onClick-->ok ),
+                AppButton(
+                  "ToggleFive",
+                  if (state.chicago5) "Four" else "Five",
+                  ^.onClick-->doChicagoFive
                 )
               ),
-              <.tr(
-                <.td( ^.colSpan := 2, tableStyles.tableCellWidth2Of7),
-                <.td( ^.colSpan := 3, tableStyles.tableCellWidth3Of7, putName("South", South, state.south, false, setSouth, 2, 6)),
-                <.td( ^.colSpan := 2, tableStyles.tableCellWidth2Of7)
+              <.div(
+                baseStyles.divFooterCenter,
+                AppButton( "ResetNames", "Reset", ^.onClick --> reset)
               ),
-              <.tr(
-                <.td( ^.colSpan := 3, tableStyles.tableCellWidth3Of7, putName("East", East, state.east, false, setEast, 1, 5)),
-                <.td( ^.colSpan := 1, tableStyles.tableCellWidth1Of7),
-                <.td( ^.colSpan := 3, tableStyles.tableCellWidth3Of7, putName("West", West, state.west, false, setWest, 3, 7))
-              ),
-              <.tr(
-                <.td( ^.colSpan := 2, tableStyles.tableCellWidth2Of7),
-                <.td( ^.colSpan := 3, tableStyles.tableCellWidth3Of7, putName("North", North, state.north, false, setNorth, 4, 8)),
-                <.td( ^.colSpan := 2, tableStyles.tableCellWidth2Of7)
+              <.div(
+                baseStyles.divFooterRight,
+                AppButton( "Cancel", "Cancel", props.router.setOnClick(props.page.toSummaryView()) ),
               )
-            )
-          ),
-          <.div(
-            baseStyles.divFooter,
-            <.div(
-              baseStyles.divFooterLeft,
-              AppButton( "Ok", "OK", ^.disabled := !valid, BaseStyles.highlight( requiredNotNext=valid ), ^.onClick-->ok ),
-              AppButton(
-                "ToggleFive",
-                if (state.chicago5) "Four" else "Five",
-                ^.onClick-->doChicagoFive
-              )
-            ),
-            <.div(
-              baseStyles.divFooterCenter,
-              AppButton( "ResetNames", "Reset", ^.onClick --> reset)
-            ),
-            <.div(
-              baseStyles.divFooterRight,
-              AppButton( "Cancel", "Cancel", props.router.setOnClick(props.page.toSummaryView()) ),
             )
           )
         )

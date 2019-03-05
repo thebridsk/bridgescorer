@@ -104,6 +104,7 @@ class BaseStyles {
   val hideInPortrait = cls("baseHideInPortrait")
   val alwaysHide = cls("baseAlwaysHide")
   val notVisible = cls("baseNotVisible")
+  val collapse = cls("baseCollapse")
 
   val testPage = cls("baseTestPage")
 
