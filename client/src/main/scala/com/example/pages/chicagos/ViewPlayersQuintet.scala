@@ -362,12 +362,12 @@ object ViewPlayersQuintetInternal {
           routeCtl = props.router
         )(),
         <.div(
-          baseStyles.divText100,
-          <.h1(
-            if (state.isSimple()) "Simple Rotation" else "Fair Rotation"
-          )
-        ),
-        <.div(
+          <.div(
+            baseStyles.divText100,
+            <.h1(
+              if (state.isSimple()) "Simple Rotation" else "Fair Rotation"
+            )
+          ),
           <.div(
             chiStyles.divPageQuintet,
             ^.alignItems:="center",
