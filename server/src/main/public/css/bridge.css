@@ -19,6 +19,10 @@
   visibility: hidden;
 }
 
+.baseCollapse {
+  visibility: collapse;
+}
+
 @media screen and (orientation: portrait) {
   .baseHideInPortrait {
     display: none;

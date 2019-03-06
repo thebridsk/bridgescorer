@@ -112,7 +112,30 @@
 
 .chiViewPlayersVeryFirstRound {
   font-size: x-large;
+}
+
+.chiViewPlayersVeryFirstRound > div:nth-child(2),
+.chiViewPlayersSecondRound > div:nth-child(2),
+.chiViewPlayersThirdRound > div:nth-child(2),
+.chiViewPlayersFourthRound > div:nth-child(2)
+{
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.chiViewPlayersVeryFirstRound > div:nth-child(2) > div,
+.chiViewPlayersSecondRound > div:nth-child(2) > div,
+.chiViewPlayersThirdRound > div:nth-child(2) > div,
+.chiViewPlayersFourthRound > div:nth-child(2) > div
+{
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
   max-width: 900px;
+  flex: 1 0 auto;
 }
 
 .chiViewPlayersSecondRound {
