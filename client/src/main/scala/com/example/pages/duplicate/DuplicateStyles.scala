@@ -52,6 +52,8 @@ class DuplicateStyles {
 
   val divScoreboardPage = cls("dupDivScoreboardPage")
   val divViewScoreboard = cls("dupDivViewScoreboard")
+  val divViewScoreboardAllButtons = cls("dupDivViewScoreboardAllButtons")
+
   val tableViewScoreboard = cls("dupTableViewScoreboard")
   val cellScoreboardBoardColumn = cls("dupCellScoreboardBoardColumn")
 

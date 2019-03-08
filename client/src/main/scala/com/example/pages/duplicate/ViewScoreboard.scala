@@ -200,6 +200,11 @@ object ViewScoreboardInternal {
       val showidbutton = props.page.isInstanceOf[FinishedScoreboardView]
       <.div(
         dupStyles.divViewScoreboard,
+        props.page.getPerspective() match {
+          case PerspectiveDirector => dupStyles.divViewScoreboardAllButtons
+          case PerspectiveComplete => dupStyles.divViewScoreboardAllButtons
+          case PerspectiveTable(t1, t2) => TagMod()
+        },
         <.table( ^.id := "scoreboard",
           dupStyles.tableViewScoreboard,
           <.caption(
