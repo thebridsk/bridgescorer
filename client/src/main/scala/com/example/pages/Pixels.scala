@@ -17,6 +17,12 @@ object Pixels {
     window.getComputedStyle(elem)
   }
 
+  def getElementAndComputedProperties( id: String ) = {
+    val elem = Bridge.getElement(id)
+    val window = document.defaultView
+    (elem,window.getComputedStyle(elem))
+  }
+
   /**
    * Returns the computed font for the element with the specified Id.
    * @param id
@@ -55,6 +61,13 @@ object Pixels {
     val ml = getPixels( "borderLeft", computed.borderLeft, id )
     val mr = getPixels( "borderRight", computed.borderRight, id )
     pl+pr+ml+mr
+  }
+
+  def getWidthWithBoarder( id: String ) = {
+    val (elem,computed) = getElementAndComputedProperties(id)
+    val ml = getPixels( "borderLeft", computed.borderLeft, id )
+    val mr = getPixels( "borderRight", computed.borderRight, id )
+    elem.clientWidth+ml+mr
   }
 
   /**
