@@ -25,6 +25,7 @@ import com.example.data.bridge.Vulnerability
 import com.example.data.bridge.Vul
 import com.example.data.bridge.NotVul
 import com.example.test.pages.Element
+import com.example.test.pages.bridge.HomePage
 
 object BoardPage {
 
@@ -274,7 +275,7 @@ class BoardPage( implicit webDriver: WebDriver, pageCreated: SourcePosition ) ex
   }
 
   private def getTeamRow( team: Int )(implicit pos: Position) = {
-    findElemsByXPath(s"""//table/tbody/tr[${team}]/td""")
+    findElemsByXPath(HomePage.divBridgeAppPrefix+s"""//table/tbody/tr[${team}]/td""")
   }
 
   def checkTeamNSScore( team: Int,

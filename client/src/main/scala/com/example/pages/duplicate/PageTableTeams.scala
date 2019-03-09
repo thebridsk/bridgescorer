@@ -38,7 +38,7 @@ import com.example.data.bridge._
 import scala.scalajs.js.JSConverters._
 import com.example.react.Button
 import com.example.pages.hand.PageHand
-import com.example.pages.hand.Properties
+import com.example.pages.hand.{ Properties => HProperties}
 import com.example.pages.Pixels
 import com.example.pages.BaseStyles
 import com.example.react.HelpButton
@@ -707,8 +707,8 @@ object PageTableTeamsInternal {
     }
 
     def renderSelectScorekeeper( props: Props, state: State ): (TagMod, Option[String]) = {
-      val extraWidth = Properties.defaultHandButtonBorderRadius+
-                       Properties.defaultHandButtonPaddingBorder
+      val extraWidth = HProperties.defaultHandButtonBorderRadius+
+                       HProperties.defaultHandButtonPaddingBorder
       val width = s"${Pixels.maxLength( state.players.players(): _* )+extraWidth}px"
       val bwidth: TagMod = ^.width := width
       ( <.div(

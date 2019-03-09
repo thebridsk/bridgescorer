@@ -210,17 +210,21 @@ class ScoreboardPage(
     sb
   }}
 
-  def validate(boards: List[Int])(implicit patienceConfig: PatienceConfig, pos: Position) = logMethod(s"${pos.line} ${getClass.getSimpleName}.validate") { eventually {
-    val did = validateInternal
+  def validate(boards: List[Int])(implicit patienceConfig: PatienceConfig, pos: Position) = logMethod(s"${pos.line} ${getClass.getSimpleName}.validate") {
+    eventually {
+      logMethod(s"${pos.line} ${getClass.getSimpleName}.validate inside eventually") {
+        val did = validateInternal
 
-    val ids = buttonIds(view) :::
-              (for (i <- boards) yield {
-                ("Board_B"+i, i.toString() )
-              }).toList
+        val ids = buttonIds(view) :::
+                  (for (i <- boards) yield {
+                    ("Board_B"+i, i.toString() )
+                  }).toList
 
-    val buttons = findButtons( Map( ids:_* ) )
-    new ScoreboardPage( Option(did) )
-  }}
+        val buttons = findButtons( Map( ids:_* ) )
+        new ScoreboardPage( Option(did) )
+      }
+    }
+  }
 
   def clickMainMenu(implicit patienceConfig: PatienceConfig, pos: Position) = {
     clickButton("MainMenu")

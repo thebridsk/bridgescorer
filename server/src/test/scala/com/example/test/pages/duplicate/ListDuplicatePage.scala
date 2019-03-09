@@ -133,7 +133,7 @@ class ListDuplicatePage( importId: Option[String] )( implicit val webDriver: Web
 
   def isWorking(implicit patienceConfig: PatienceConfig, pos: Position): Boolean = {
     try {
-      val text = find(xpath("""//div/table/tbody/tr[1]/td[1]""")).text
+      val text = find(xpath(HomePage.divBridgeAppPrefix+"""//div/table/tbody/tr[1]/td[1]""")).text
       val rc = text == "Working"
       log.fine( s"""Looking for working on duplicate list page, rc=${rc}: "${text}"""" )
       rc
@@ -146,7 +146,7 @@ class ListDuplicatePage( importId: Option[String] )( implicit val webDriver: Web
   def isForPrintActive( implicit pos: Position ) = {
     // importId.isEmpty && findAll(id("ForPrint")).isEmpty
     if (importId.isEmpty) {
-      val els = getElemsByXPath(s"""//div/table/thead/tr[1]/th[2]""")
+      val els = getElemsByXPath(HomePage.divBridgeAppPrefix+s"""//div/table/thead/tr[1]/th[2]""")
       if (els.size == 1) {
         els.head.text.equals("Print")
       } else {
@@ -233,7 +233,7 @@ class ListDuplicatePage( importId: Option[String] )( implicit val webDriver: Web
     // 3 = Id, Created, Finished
     // Note the scoring method header does not show up in this row.
     val dr = 4+importColumns+(if (forPrintActive) 1 else 0)
-    val names = getElemsByXPath("""//div/table/thead/tr/th""").drop(dr)
+    val names = getElemsByXPath(HomePage.divBridgeAppPrefix+"""//div/table/thead/tr/th""").drop(dr)
     names.dropRight(1).map(e => e.text)
   }
 
@@ -242,7 +242,7 @@ class ListDuplicatePage( importId: Option[String] )( implicit val webDriver: Web
     withClueAndScreenShot(screenshotDir, "getResults", s"""working on results from match ${id}, ${pos.line}""") {
       eventually {
         val forPrintActive = isForPrintActive
-        val row = getElemsByXPath(s"""//div/table/tbody/tr[td/button[@id='${matchIdToButtonId(id)}' or @id='${resultIdToButtonId(id)}']]/td""")
+        val row = getElemsByXPath(HomePage.divBridgeAppPrefix+s"""//div/table/tbody/tr[td/button[@id='${matchIdToButtonId(id)}' or @id='${resultIdToButtonId(id)}']]/td""")
         val names = getNames(forPrintActive)
         // 4 = Id, Created, Finished, scoring method
         val dr = 4+importColumns+(if (forPrintActive) 1 else 0)

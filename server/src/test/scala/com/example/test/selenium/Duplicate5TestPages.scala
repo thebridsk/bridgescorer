@@ -446,18 +446,26 @@ class Duplicate5TestPages extends FlatSpec with MustMatchers with BeforeAndAfter
   it should "create a new duplicate match" in {
     import SessionDirector._
 
-    val curPage = NewDuplicatePage.current
-
-    val boards = MovementsPage.getBoardsFromMovement(movement)
-
-    testlog.info(s"Boards are $boards")
-
-    dupid = curPage.click(boardset, movement).validate(boards).dupid
-    dupid mustBe 'defined
-
-    testlog.info(s"Duplicate id is ${dupid.get}")
-
-    allHands.boardsets mustBe 'defined
+    try {
+    
+      val curPage = NewDuplicatePage.current
+  
+      val boards = MovementsPage.getBoardsFromMovement(movement)
+  
+      testlog.info(s"Boards are $boards")
+  
+      dupid = curPage.click(boardset, movement).validate(boards).dupid
+      dupid mustBe 'defined
+  
+      testlog.info(s"Duplicate id is ${dupid.get}")
+  
+      allHands.boardsets mustBe 'defined
+    } catch {
+      case x: Exception =>
+        testlog.severe("Error creating new duplicate match", x)
+        
+        throw x
+    }
   }
 
   var rounds: List[Int] = Nil

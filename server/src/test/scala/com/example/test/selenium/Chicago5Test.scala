@@ -22,6 +22,7 @@ import scala.io.Codec
 import com.example.test.util.MonitorTCP
 import com.example.backend.BridgeServiceFileStoreConverters
 import com.example.backend.MatchChicagoCacheStoreSupport
+import com.example.test.pages.bridge.HomePage
 
 /**
  * @author werewolf
@@ -368,7 +369,7 @@ class Chicago5Test extends FlatSpec
       val rows = eventually {
         pageTitle mustBe ("The Bridge Score Keeper")
 
-        val rows = findElements(By.xpath("//table[1]/tbody/tr[2]"))
+        val rows = findElements(By.xpath(HomePage.divBridgeAppPrefix+"//table[1]/tbody/tr[1]"))
         rows.size() mustBe 1
         rows
       }
@@ -385,7 +386,7 @@ class Chicago5Test extends FlatSpec
       val rows = eventually {
         pageTitle mustBe ("The Bridge Score Keeper")
 
-        val rows = findElements(By.xpath("//table[1]/tbody/tr[1]"))
+        val rows = findElements(By.xpath(HomePage.divBridgeAppPrefix+"//table[1]/tbody/tr[1]"))
         rows.size() mustBe 1
         rows
       }
