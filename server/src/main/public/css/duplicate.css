@@ -24,7 +24,7 @@
 }
 .dupDivSummary > div > table thead tr th {
   position: sticky;
-  top: 0;
+  top: -8px;
   background: white;
 }
 .dupDivSummary > div > table tbody tr:nth-child(2n+1) {
@@ -89,22 +89,22 @@
   font-weight: bold;
   position: sticky;
   position: -webkit-sticky;
-  left: 0;
+  left: -8px;
   z-index: 10;
   background-color: rgb(250,250,250);
 }
 .dupDivPairsGrid > table > thead > tr > th {
   position: sticky;
   position: -webkit-sticky;
-  top: 0px;
+  top: -8px;
   z-index: 11;
   background-color: rgb(250,250,250);
 }
 .dupDivPairsGrid > table > thead > tr > th:first-child {
   position: sticky;
   position: -webkit-sticky;
-  top: 0px;
-  left: 0;
+  top: -8px;
+  left: -8px;
   z-index: 12;
   background-color: rgb(250,250,250);
 }
@@ -144,22 +144,22 @@
   font-weight: bold;
   position: sticky;
   position: -webkit-sticky;
-  left: 0;
+  left: -8px;
   z-index: 10;
   background-color: rgb(250,250,250);
 }
 .dupDivPairsDetailsGrid > table > thead > tr > th {
   position: sticky;
   position: -webkit-sticky;
-  top: 0px;
+  top: -8px;
   z-index: 11;
   background-color: rgb(250,250,250);
 }
 .dupDivPairsDetailsGrid > table > thead > tr > th:first-child {
   position: sticky;
   position: -webkit-sticky;
-  top: 0px;
-  left: 0;
+  top: -8px;
+  left: -8px;
   z-index: 12;
   background-color: rgb(250,250,250);
 }
@@ -181,21 +181,60 @@
 .dupViewPairsDetailsTable {
   padding: 4px;
 }
+.dupViewPairsDetailsTable > table > thead > tr > th {
+  position: sticky;
+  z-index: 11;
+  top: -8px;
+  background-color: white;
+}
 
 .dupViewPeopleDetailsTable {
   padding: 4px;
+}
+.dupViewPeopleDetailsTable > table > thead > tr > th {
+  position: sticky;
+  z-index: 11;
+  top: -8px;
+  background-color: white;
+}
+.dupViewPeopleDetailsTable > table > thead > tr > th:first-child {
+  z-index: 12;
+  left: -8px;
+  background-color: white;
+}
+.dupViewPeopleDetailsTable > table > tbody > tr > td:first-child {
+  position: sticky;
+  z-index: 10;
+  left: -8px;
+  background-color: white;
 }
 
 .dupViewPairsTable {
   padding: 4px;
 }
-
-.dupViewPeopleTable {
-  padding: 4px;
+.dupViewPairsTable > table > thead > tr > th {
+  position: sticky;
+  z-index: 11;
+  top: -8px;
+  background-color: white;
 }
 
-.dupDivNewDuplicate {
-    
+.dupViewPeopleTable > table > thead > tr > th {
+  position: sticky;
+  z-index: 11;
+  top: -8px;
+  background-color: white;
+}
+.dupViewPeopleTable > table > thead > tr > th:first-child {
+  z-index: 12;
+  left: -8px;
+  background-color: white;
+}
+.dupViewPeopleTable > table > tbody > tr > td:first-child {
+  position: sticky;
+  z-index: 10;
+  left: -8px;
+  background-color: white;
 }
 
 .dupTableNewDuplicate {
@@ -686,25 +725,28 @@
   font-weight: bold;
   position: sticky;
   position: -webkit-sticky;
-  left: 0;
+  left: -8px;
   z-index: 10;
   background-color: rgb(250,250,250);
 }
 .dupViewContractResults table > thead > tr:nth-child(1) > th {
   position: sticky;
   position: -webkit-sticky;
-  top: 0px;
+  top: -8px;
   z-index: 11;
   background-color: rgb(250,250,250);
 }
 .dupViewContractResults table > thead > tr:nth-child(2) > th {
   position: sticky;
   position: -webkit-sticky;
-  top: 89px;
+  top: 19px;
   z-index: 11;
   background-color: rgb(250,250,250);
 }
-
+.dupViewContractResults table > thead > tr:nth-child(2) > th:first-child {
+  z-index: 12;
+  left: -8px;
+}
 .dupViewContractResults table > tbody > tr > td > div {
   display: flex;
   flex-flow: row nowrap;
@@ -746,22 +788,30 @@
   font-weight: bold;
   position: sticky;
   position: -webkit-sticky;
-  left: 0;
+  left: -8px;
+  z-index: 10;
+  background-color: rgb(250,250,250);
+}
+.dupViewPlayerContractResults table > tfoot > tr:first-child > td:first-child {
+  font-weight: bold;
+  position: sticky;
+  position: -webkit-sticky;
+  left: -8px;
   z-index: 10;
   background-color: rgb(250,250,250);
 }
 .dupViewPlayerContractResults table > thead > tr > th {
   position: sticky;
   position: -webkit-sticky;
-  top: 0px;
+  top: -8px;
   z-index: 11;
   background-color: rgb(250,250,250);
 }
 .dupViewPlayerContractResults table > thead > tr > th:first-child {
   position: sticky;
   position: -webkit-sticky;
-  top: 0px;
-  left: 0;
+  top: -8px;
+  left: -8px;
   z-index: 12;
   background-color: rgb(250,250,250);
 }
@@ -824,22 +874,30 @@
   font-weight: bold;
   position: sticky;
   position: -webkit-sticky;
-  left: 0;
+  left: -8px;
+  z-index: 10;
+  background-color: rgb(250,250,250);
+}
+.dupViewPlayerAggressiveness table > tfoot > tr:first-child > td:first-child {
+  font-weight: bold;
+  position: sticky;
+  position: -webkit-sticky;
+  left: -8px;
   z-index: 10;
   background-color: rgb(250,250,250);
 }
 .dupViewPlayerAggressiveness table > thead > tr:last-child > th {
   position: sticky;
   position: -webkit-sticky;
-  top: 0px;
+  top: -8px;
   z-index: 11;
   background-color: rgb(250,250,250);
 }
 .dupViewPlayerAggressiveness table > thead > tr:last-child > th:first-child {
   position: sticky;
   position: -webkit-sticky;
-  top: 0px;
-  left: 0;
+  top: -8px;
+  left: -8px;
   z-index: 12;
   background-color: rgb(250,250,250);
 }
@@ -855,22 +913,22 @@
   font-weight: bold;
   position: sticky;
   position: -webkit-sticky;
-  left: 0;
+  left: -8px;
   z-index: 10;
   background-color: rgb(250,250,250);
 }
 .dupDivPlayerOpponentGrid > table > thead > tr > th {
   position: sticky;
   position: -webkit-sticky;
-  top: 0px;
+  top: -8px;
   z-index: 11;
   background-color: rgb(250,250,250);
 }
 .dupDivPlayerOpponentGrid > table > thead > tr > th:first-child {
   position: sticky;
   position: -webkit-sticky;
-  top: 0px;
-  left: 0;
+  top: -8px;
+  left: -8px;
   z-index: 12;
   background-color: rgb(250,250,250);
 }
