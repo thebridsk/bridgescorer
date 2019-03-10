@@ -30,6 +30,7 @@ object HomePage {
 
   def urlFor = TestServer.getAppPage()
 
+  val divBridgeAppPrefix = """//div[@id="BridgeApp"]"""
 }
 
 class HomePage( implicit webDriver: WebDriver, pageCreated: SourcePosition ) extends Page[HomePage] {

@@ -190,6 +190,11 @@ object ViewScoreboardInternal {
    */
   class Backend(scope: BackendScope[Props, State]) {
     def render( props: Props, state: State ) = {
+      {
+        val names = props.score.teams.flatMap( t => t.player1::t.player2::Nil)
+        val boards = props.score.boards.size
+        Properties.setViewportContent(boards, names:_*)
+      }
       def teamColumn( teams: List[Team] ) = {
         var count = 0
         for (team <- teams.sortWith((t1,t2)=> Id.idComparer(t1.id, t2.id)<0)) yield {
@@ -200,6 +205,11 @@ object ViewScoreboardInternal {
       val showidbutton = props.page.isInstanceOf[FinishedScoreboardView]
       <.div(
         dupStyles.divViewScoreboard,
+        props.page.getPerspective() match {
+          case PerspectiveDirector => dupStyles.divViewScoreboardAllButtons
+          case PerspectiveComplete => dupStyles.divViewScoreboardAllButtons
+          case PerspectiveTable(t1, t2) => TagMod()
+        },
         <.table( ^.id := "scoreboard",
           dupStyles.tableViewScoreboard,
           <.caption(
@@ -251,12 +261,18 @@ object ViewScoreboardInternal {
       )
     }
 
+    val willUnmount = CallbackTo {
+      logger.info("ViewScoreboard.willUnmount")
+      Properties.restoreViewportContentWidth()
+    }
+
   }
 
   val component = ScalaComponent.builder[Props]("ViewScoreboard")
                             .initialStateFromProps { props => State() }
                             .backend(new Backend(_))
                             .renderBackend
+                            .componentWillUnmount( scope => scope.backend.willUnmount )
                             .build
 }
 

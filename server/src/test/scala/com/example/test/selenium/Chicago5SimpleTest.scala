@@ -25,6 +25,7 @@ import com.example.test.util.HttpUtils.ResponseFromHttp
 import com.example.test.util.HttpUtils
 import com.example.backend.BridgeServiceFileStoreConverters
 import com.example.backend.MatchChicagoCacheStoreSupport
+import com.example.test.pages.bridge.HomePage
 
 /**
  * @author werewolf
@@ -360,7 +361,7 @@ class Chicago5SimpleTest extends FlatSpec
       val rows = eventually {
         pageTitle mustBe ("The Bridge Score Keeper")
 
-        val rows = findElements(By.xpath("//table[1]/tbody/tr[2]"))
+        val rows = findElements(By.xpath(HomePage.divBridgeAppPrefix+"//table[1]/tbody/tr[1]"))
         rows.size() mustBe 1
         rows
       }
@@ -377,7 +378,7 @@ class Chicago5SimpleTest extends FlatSpec
       val rows = eventually {
         pageTitle mustBe ("The Bridge Score Keeper")
 
-        val rows = findElements(By.xpath("//table[1]/tbody/tr[1]"))
+        val rows = findElements(By.xpath(HomePage.divBridgeAppPrefix+"//table[1]/tbody/tr[1]"))
         rows.size() mustBe 1
         rows
       }

@@ -241,8 +241,17 @@
   margin-right: 5px;
   padding-right: 5px;
   padding-bottom: 5px;
-  page-break-inside: avoid !important
+  page-break-inside: avoid !important;
 }
+
+/*
+@media screen and (max-width: 1025px) {
+  .dupDivViewScoreboardAllButtons {
+    transform: scale(.93);
+    transform-origin: top left;
+  }
+}
+*/
 
 .dupTableViewScoreboard {
   border-spacing: 0px;

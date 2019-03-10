@@ -23,6 +23,7 @@ import com.example.data.bridge.South
 import com.example.data.bridge.East
 import com.example.data.bridge.West
 import com.example.data.util.Strings
+import com.example.test.pages.bridge.HomePage
 
 object TableSelectNamesPage {
 
@@ -171,7 +172,7 @@ class TableSelectNamesPage( dupid: String,
     val t = s"""${top.name} (Team ${tbteam})\n${playerT.trim}"""
     val b = s"""${scorekeeper.name} (Team ${tbteam})\n${playerB.trim}"""
 
-    val cells = getElemsByXPath("""//div/table[2]/tbody/tr/td/span""").map(e => e.text)
+    val cells = getElemsByXPath(HomePage.divBridgeAppPrefix+"""//div/table[2]/tbody/tr/td/span""").map(e => e.text)
     cells.size mustBe 4
 
     if (mustswap) {
@@ -181,7 +182,7 @@ class TableSelectNamesPage( dupid: String,
       if (scorekeeper == North || scorekeeper == East) clickSwapLeft
       else clickSwapRight
       eventually {
-        val cells = getElemsByXPath("""//div/table[2]/tbody/tr/td/span""").map(e => e.text)
+        val cells = getElemsByXPath(HomePage.divBridgeAppPrefix+"""//div/table[2]/tbody/tr/td/span""").map(e => e.text)
         cells.size mustBe 4
         cells mustBe List(t,s"""${l}\nSwap ${Strings.arrowRightLeft}""",s"""${r}\nSwap ${Strings.arrowLeftRight}""",b)
       }

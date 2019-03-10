@@ -25,6 +25,7 @@ import com.example.data.bridge.Vulnerability
 import com.example.data.bridge.Vul
 import com.example.data.bridge.NotVul
 import com.example.test.pages.PageBrowser
+import com.example.test.pages.bridge.HomePage
 
 object BoardsPage {
 
@@ -360,7 +361,7 @@ class BoardsPage( implicit webDriver: WebDriver, pageCreated: SourcePosition ) e
   }
 
   def getBoardIds(implicit patienceConfig: PatienceConfig, pos: Position) = eventually {
-    findElemsByXPath("""//table""").flatMap(e => elemIdToBoardId(e.attribute("id").get) match {
+    findElemsByXPath(HomePage.divBridgeAppPrefix+"""//table""").flatMap(e => elemIdToBoardId(e.attribute("id").get) match {
       case Some(id) => id::Nil
       case None => Nil
     } ).sorted

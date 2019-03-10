@@ -98,7 +98,7 @@ class StatisticsPage( implicit webDriver: WebDriver, pageCreated: SourcePosition
 
   def isWorking(implicit patienceConfig: PatienceConfig, pos: Position): Boolean = {
     try {
-      val text = find(xpath("""//div/table/tbody/tr[1]/td[2]""")).text
+      val text = find(xpath(HomePage.divBridgeAppPrefix+"""//div/table/tbody/tr[1]/td[2]""")).text
       val rc = text == "Working"
       log.fine( s"""Looking for working on people page, rc=${rc}: "${text}"""" )
       rc

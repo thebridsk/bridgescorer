@@ -184,9 +184,10 @@ object PageChicagoListInternal {
                         <.th( "Created", <.br(), "Updated"),
                         <.th( "Players - Scores", ^.colSpan:=maxplayers),
                         <.th( "")
-                    )),
+                      ),
+                      ChicagoRowFirst.withKey("New")((this,props,state,maxplayers,importId)),
+                    ),
                     <.tbody(
-                        ChicagoRowFirst.withKey("New")((this,props,state,maxplayers,importId)),
                         (0 until chicagos.length).map { i =>
                           val key="Game"+i
                           val chicago = ChicagoScoring(chicagos(i))
@@ -271,7 +272,7 @@ object PageChicagoListInternal {
     .render_P { args =>
       val (backend, props, state, maxplayers, importId) = args
       <.tr(
-          <.td( "" ),
+          <.th( "" ),
           importId.map { id =>
             TagMod(
               <.th(id),
@@ -279,12 +280,12 @@ object PageChicagoListInternal {
               <.th( "" )
             )
           }.getOrElse(
-            <.td(
+            <.th(
               AppButton( "New", "New", ^.onClick --> backend.newChicago)
             )
           ),
-          <.td( ^.colSpan:=maxplayers,"" ),
-          <.td( "")
+          <.th( ^.colSpan:=maxplayers,"" ),
+          <.th( "")
           )
     }.build
 

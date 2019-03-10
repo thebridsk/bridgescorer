@@ -78,11 +78,11 @@ class ListPage( importId: Option[String] = None )( implicit val webDriver: WebDr
   }
 
   def getMatchButtons()(implicit pos: Position) = {
-    getElemsByXPath("""//div/table/tbody/tr/td[1]/button""").map(e => e.text)
+    getElemsByXPath(HomePage.divBridgeAppPrefix+"""//div[contains(concat(' ', @class, ' '), ' chiChicagoListPage ')]//div/table/tbody/tr/td[1]/button""").map(e => e.text)
   }
 
   def getImportButtons()(implicit pos: Position) = {
-    getElemsByXPath("""//div/table/tbody/tr/td[2]/button""").flatMap(e => e.id.toList)
+    getElemsByXPath(HomePage.divBridgeAppPrefix+"""//div/table/tbody/tr/td[2]/button""").flatMap(e => e.id.toList)
   }
 
   def checkMatchButton( id: String )(implicit pos: Position) = {

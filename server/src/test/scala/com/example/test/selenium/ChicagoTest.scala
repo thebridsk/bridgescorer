@@ -25,6 +25,7 @@ import com.example.backend.BridgeServiceFileStoreConverters
 import com.example.backend.MatchChicagoCacheStoreSupport
 import com.example.test.pages.PageBrowser
 import com.example.test.TestStartLogging
+import com.example.test.pages.bridge.HomePage
 
 /**
  * @author werewolf
@@ -411,7 +412,7 @@ class ChicagoTest extends FlatSpec
       val rows = eventually {
         pageTitle mustBe ("The Bridge Score Keeper")
 
-        val rows = findElements(By.xpath("//table[1]/tbody/tr[2]"))
+        val rows = findElements(By.xpath(HomePage.divBridgeAppPrefix+"//table[1]/tbody/tr[1]"))
         rows.size() mustBe 1
         rows
       }
@@ -427,7 +428,7 @@ class ChicagoTest extends FlatSpec
       val rows = eventually {
         pageTitle mustBe ("The Bridge Score Keeper")
 
-        val rows = findElements(By.xpath("//table[1]/tbody/tr[1]"))
+        val rows = findElements(By.xpath(HomePage.divBridgeAppPrefix+"//table[1]/tbody/tr[1]"))
         rows.size() mustBe 1
         rows
       }
@@ -559,7 +560,7 @@ class ChicagoTest extends FlatSpec
 
     eventually { find( id("popup") ).isDisplayed mustBe false }
 
-    val buttons = eventually { findAll( xpath( "//table/tbody/tr[2]/td/button" ) ) }
+    val buttons = eventually { findAll( xpath( HomePage.divBridgeAppPrefix+"//table/tbody/tr[1]/td/button" ) ) }
     buttons.size mustBe 2
     val buttontext = buttons(0).text
     buttons(1).click
@@ -570,7 +571,7 @@ class ChicagoTest extends FlatSpec
 
     eventually { find( id("popup") ).isDisplayed mustBe false }
 
-    val buttons2 = eventually { findAll( xpath( "//table/tbody/tr[2]/td/button" ) ) }
+    val buttons2 = eventually { findAll( xpath( HomePage.divBridgeAppPrefix+"//table/tbody/tr[1]/td/button" ) ) }
     buttons2.size mustBe 2
     buttons2(1).click
 
@@ -580,7 +581,7 @@ class ChicagoTest extends FlatSpec
 
     eventually { find( id("popup") ).isDisplayed mustBe false }
 
-    val buttons3 = eventually { findAll( xpath( "//table/tbody/tr[2]/td/button" ) ) }
+    val buttons3 = eventually { findAll( xpath( HomePage.divBridgeAppPrefix+"//table/tbody/tr[1]/td/button" ) ) }
     val button3text = buttons3(0).text
 
     buttontext must not be button3text

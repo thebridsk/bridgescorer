@@ -137,11 +137,17 @@ abstract class Page[ +T <: Page[T] ]()( implicit webDriver: WebDriver, pageCreat
   def findButtons( map: Map[String,String] )(implicit pos: Position): Map[String,Element] = {
     val buttons = findButtons( map.keySet.toList :_* )
 
-    buttons.foreach{ case (id,e) => map.get(id) match {
-      case Some(t) => e.text mustBe t
-      case None =>
-    }}
-    buttons
+    withClue(s"""finding buttons ${map}""") {
+      buttons.foreach{ case (id,e) => map.get(id) match {
+        case Some(t) =>
+          withClue(s"""checking text on $id to be $t""") {
+            val txt = e.text
+            txt mustBe t
+          }
+        case None =>
+      }}
+      buttons
+    }
   }
 
   /**

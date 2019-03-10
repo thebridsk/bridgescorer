@@ -43,10 +43,10 @@ import scala.reflect.io.File
 /**
  * @author werewolf
  */
-class RubberTest extends FlatSpec 
-    with MustMatchers 
-    with BeforeAndAfterAll 
-    with EventuallyUtils 
+class RubberTest extends FlatSpec
+    with MustMatchers
+    with BeforeAndAfterAll
+    with EventuallyUtils
     with SeleniumUtils
     with CancelAfterFailure
 {
@@ -621,7 +621,7 @@ class RubberTest extends FlatSpec
 
     eventually { find( id("popup") ).isDisplayed mustBe false }
 
-    val buttons = eventually { findAll( xpath( "//table/tbody/tr[2]/td/button" ) ) }
+    val buttons = eventually { findAll( xpath( HomePage.divBridgeAppPrefix+"//table/tbody/tr[2]/td/button" ) ) }
     buttons.size mustBe 2
     val buttontext = buttons(0).text
     buttons(1).click
@@ -632,7 +632,7 @@ class RubberTest extends FlatSpec
 
     eventually { find( id("popup") ).isDisplayed mustBe false }
 
-    val buttons2 = eventually { findAll( xpath( "//table/tbody/tr[2]/td/button" ) ) }
+    val buttons2 = eventually { findAll( xpath( HomePage.divBridgeAppPrefix+"//table/tbody/tr[2]/td/button" ) ) }
     buttons2.size mustBe 2
     buttons2(1).click
 
@@ -642,7 +642,7 @@ class RubberTest extends FlatSpec
 
     eventually { find( id("popup") ).isDisplayed mustBe false }
 
-    val buttons3 = eventually { findAll( xpath( "//table/tbody/tr[2]/td/button" ) ) }
+    val buttons3 = eventually { findAll( xpath( HomePage.divBridgeAppPrefix+"//table/tbody/tr[2]/td/button" ) ) }
     val button3text = buttons3(0).text
 
     buttontext must not be button3text
