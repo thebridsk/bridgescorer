@@ -3,6 +3,10 @@
 [![Build Status](https://travis-ci.org/thebridsk/bridgescorer.svg?branch=master)](https://travis-ci.org/thebridsk/bridgescorer)
 [![GitHub release](https://img.shields.io/github/release/thebridsk/bridgescorer.svg)]()
 
+## Demo
+
+See the demo of the BridgeScorer [here](https://thebridsk.github.io/bridgescorerdemo/public/demo.html).
+
 ## Contributing
 
 Use pull requests
