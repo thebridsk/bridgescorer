@@ -47,7 +47,7 @@ object Dependencies {
   lazy val vScalaJsReact = "1.4.0"     // http://mvnrepository.com/artifact/com.github.japgolly.scalajs-react/core_sjs0.6_2.11
   lazy val vScalaCss = "0.5.3"         // http://mvnrepository.com/artifact/com.github.japgolly.scalacss/core_sjs0.6_2.11
 
-  lazy val vWebJarsReact = "16.8.3"    // http://mvnrepository.com/artifact/org.webjars/react
+  lazy val vWebJarsReact = "16.8.4"    // http://mvnrepository.com/artifact/org.webjars/react
   lazy val vReactWidgets = "4.4.10"    // http://mvnrepository.com/artifact/org.webjars.npm/react-widgets
   lazy val vWebJarsFlux = "3.1.3"      // http://mvnrepository.com/artifact/org.webjars/flux
   lazy val vGlobalize = "1.3.0"        // https://www.npmjs.com/package/globalize
@@ -77,7 +77,7 @@ object Dependencies {
   lazy val vJackson = "2.9.8"        // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core
 
   // Selenium needs to be update to update to v23.0
-  lazy val vGuavaJre = "27.0.1-jre"    // https://github.com/google/guava
+  lazy val vGuavaJre = "27.1-jre"    // https://github.com/google/guava
 
   lazy val vWebPack = "4.29.6"          // https://www.npmjs.com/package/webpack
 
@@ -96,7 +96,7 @@ object Dependencies {
   // bug in 3.16.0 of terser
   lazy val vTerser = "3.16.1"               // https://www.npmjs.com/package/terser
 
-  lazy val vAjv = "6.9.2"                   // https://www.npmjs.com/package/ajv
+  lazy val vAjv = "6.10.0"                  // https://www.npmjs.com/package/ajv
 
 
   lazy val vWebpackDevServer = "3.2.1"   // https://www.npmjs.com/package/webpack-dev-server
