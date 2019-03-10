@@ -182,7 +182,7 @@ object BridgeAppBarInternal {
                                                           )
                                                         )
 
-      val toolbarFront: CtorType.ChildArg = <.div(
+      val toolbarFront: List[CtorType.ChildArg] =
           {
             val demo = if (Bridge.isDemo) {
               List[TagMod](
@@ -196,45 +196,48 @@ object BridgeAppBarInternal {
             } else {
               List()
             }
-            val x = List[TagMod](
-              baseStyles.appBarTitle,
-              !props.mainMenu.isEmpty ?= MuiIconButton(
-                  id = "MainMenu",
-                  onClick = props.handleMainClick,
-                  color=ColorVariant.inherit
-              )(
-                MuiMenuIcon()()
-              ),
-              if (props.showHomeButton) {
-                MuiIconButton(
-                    id = "Home",
-                    onClick = gotoHomePage _,
+            List(
+              <.div(
+                baseStyles.appBarTitle,
+                !props.mainMenu.isEmpty ?= MuiIconButton(
+                    id = "MainMenu",
+                    onClick = props.handleMainClick,
                     color=ColorVariant.inherit
                 )(
-                    MuiHomeIcon()()
-                )
-              } else {
-                TagMod.empty
-              }
-            ) :::
-            demo :::
-            props.maintitle.toList :::
-            (if (props.title.isEmpty) {
-              List()
-            } else {
-              List[TagMod](
-                MuiTypography(
-                    variant = TextVariant.h6,
-                    color = TextColor.inherit,
-                )(
-                    <.span(^.dangerouslySetInnerHtml:="&nbsp;-&nbsp;")
-                )
-              ) ::: props.title.toList
-            })
-            x
-          }:_*
-      )
-      val toolbarContent = toolbarFront :: toolbarContentTail
+                  MuiMenuIcon()()
+                ),
+                if (props.showHomeButton) {
+                  MuiIconButton(
+                      id = "Home",
+                      onClick = gotoHomePage _,
+                      color=ColorVariant.inherit
+                  )(
+                      MuiHomeIcon()()
+                  )
+                } else {
+                  TagMod.empty
+                }
+              ),
+              <.div(
+                (demo :::
+                props.maintitle.toList :::
+                (if (props.title.isEmpty) {
+                  List()
+                } else {
+                  List[TagMod](
+                    MuiTypography(
+                        variant = TextVariant.h6,
+                        color = TextColor.inherit,
+                    )(
+                        <.span(^.dangerouslySetInnerHtml:="&nbsp;-&nbsp;")
+                    )
+                  ) ::: props.title.toList
+                })):_*
+              )
+            )
+          }
+
+      val toolbarContent = toolbarFront ::: toolbarContentTail
 
       <.div(
         (

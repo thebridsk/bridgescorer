@@ -285,6 +285,9 @@
   flex: 1 1 180px;
   padding-left: 20px;
 }
+.dupDivScoreboardHelp h1 {
+  margin-top: 10px;
+}
 
 .dupDivScoreboardDetails {
   flex: 1 1 180px;
