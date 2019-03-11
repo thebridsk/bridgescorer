@@ -24,6 +24,7 @@
 }
 .dupDivSummary > div > table thead tr th {
   position: sticky;
+  position: -webkit-sticky;
   top: -8px;
   background: white;
 }
@@ -109,10 +110,10 @@
   background-color: rgb(250,250,250);
 }
 .dupDivPairsGrid > table > tbody > tr > td:last-child {
-  border-left: 3px solid black
+  border-left: 3px solid black;
 }
 .dupDivPairsGrid > table > thead > tr > th:last-child {
-  border-left: 3px solid black
+  border-left: 3px solid black;
 }
 
 .dupDivPairsGrid .tooltipContent > div.tooltipBody {
@@ -183,6 +184,7 @@
 }
 .dupViewPairsDetailsTable > table > thead > tr > th {
   position: sticky;
+  position: -webkit-sticky;
   z-index: 11;
   top: -8px;
   background-color: white;
@@ -193,6 +195,7 @@
 }
 .dupViewPeopleDetailsTable > table > thead > tr > th {
   position: sticky;
+  position: -webkit-sticky;
   z-index: 11;
   top: -8px;
   background-color: white;
@@ -204,6 +207,7 @@
 }
 .dupViewPeopleDetailsTable > table > tbody > tr > td:first-child {
   position: sticky;
+  position: -webkit-sticky;
   z-index: 10;
   left: -8px;
   background-color: white;
@@ -214,6 +218,7 @@
 }
 .dupViewPairsTable > table > thead > tr > th {
   position: sticky;
+  position: -webkit-sticky;
   z-index: 11;
   top: -8px;
   background-color: white;
@@ -221,6 +226,7 @@
 
 .dupViewPeopleTable > table > thead > tr > th {
   position: sticky;
+  position: -webkit-sticky;
   z-index: 11;
   top: -8px;
   background-color: white;
@@ -232,6 +238,7 @@
 }
 .dupViewPeopleTable > table > tbody > tr > td:first-child {
   position: sticky;
+  position: -webkit-sticky;
   z-index: 10;
   left: -8px;
   background-color: white;
