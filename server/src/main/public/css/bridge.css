@@ -631,7 +631,7 @@ button, input, a, li {
   top: 0;
   left: 0;
   z-index: 100;
-  width: 100%;
+  width: 100vw;
 }
 
 .divBoardPage {
@@ -667,4 +667,18 @@ body > div > div > div {
 
 .muiToolbar {
   min-height: 50px !important;
+}
+
+.divAppBar > div > header > div {
+  white-space: nowrap;
+}
+.divAppBar > div > header > div > h6 {
+  overflow: hidden;
+}
+.appBarTitle > div:first-child {
+}
+.appBarTitle + div {
+  display: flex;
+  flex-direction: row;
+  overflow: hidden;
 }
