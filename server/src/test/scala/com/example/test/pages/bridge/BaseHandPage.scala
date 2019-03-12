@@ -118,6 +118,7 @@ abstract class BaseHandPage( implicit webDriver: WebDriver, pageCreated: SourceP
 
   def clickOk(implicit patienceConfig: PatienceConfig, pos: Position): Page.AnyPage = {
     val ok = findElemById("Ok")
+    scrollToElement(ok)
     ok.sendKeys(Keys.ENTER.toString())
 //    clickButton( "Ok" )
     GenericPage.current
