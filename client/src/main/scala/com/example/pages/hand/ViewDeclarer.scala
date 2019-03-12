@@ -160,7 +160,7 @@ object ViewDeclarerInternal {
         handStyles.viewDeclarer, // !props.visible ?= handStyles.notVisible,
         <.div(
           // row 1
-          <.div( twidth, <.b( "Declarer" ) ),
+          <.div( twidth, <.b( playingDuplicate ?= handStyles.titleDeclarerDup, "Declarer" ) ),
           <.div( t2width, getButton( maneuvers.partnerOfPosition(scorekeeper) ) ),
           <.div( twidth )
         ),

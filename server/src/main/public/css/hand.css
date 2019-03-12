@@ -19,12 +19,21 @@
   align-items: flex-start;
   justify-content: center;
 }
-@media screen and (max-width: 1024px) {
+@media screen and (max-device-width: 1024px) {
   .handPageHand {
     max-width: 99vw;
+    padding-top: 4px;
+    padding-bottom: 2px;
   }
   .handPageHand > div > div {
     max-width: 99vw;
+  }
+  .handSectionHeader {
+    padding-top: 10px !important;
+  }
+  
+  .handPageHand .baseDivFooter {
+    padding-top: 5px;
   }
 }
   
@@ -105,8 +114,6 @@
   font-size: x-large;
 }
 
-
-
 .handSectionHeader {
   flex: 0 0 100%;
   display: flex;
@@ -140,6 +147,13 @@
 .handViewDeclarer > div > div {
   flex: 0 0 auto;
   padding: 0px 5px;
+}
+.handViewDeclarer > div:first-child > div:first-child {
+  display: flex;
+  align-items: center;
+}
+.titleDeclarerDup {
+  padding-left: 10px;
 }
 
 .handViewTableBoard {
