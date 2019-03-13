@@ -295,7 +295,7 @@ class DuplicateTestFromTestDirectory2 extends FlatSpec
       waitForFutures(
         "gotoRootPage",
         logFuture {
-          sessionDirector.sessionStartIfNotRunning(getPropOrEnv("SessionDirector")).setQuadrant(1)
+          sessionDirector.sessionStartIfNotRunning(getPropOrEnv("SessionDirector")).setQuadrant(1,1024,768)
           import sessionDirector._
           val hp = if (!sessionDirectorRunning) {
             HomePage.goto
@@ -304,9 +304,9 @@ class DuplicateTestFromTestDirectory2 extends FlatSpec
           }
           hp.validate
         }::
-        logFuture { sessionComplete.sessionStartIfNotRunning(getPropOrEnv("SessionComplete")).setQuadrant(2) }::
-        logFuture { firstSession.sessionStartIfNotRunning(envSessionTable).setQuadrant(3) }::
-        restSession.map { ts => logFuture { val x = ts.sessionStartIfNotRunning(envSessionTable).setQuadrant(4) } }.toList : _*
+        logFuture { sessionComplete.sessionStartIfNotRunning(getPropOrEnv("SessionComplete")).setQuadrant(2,1024,768) }::
+        logFuture { firstSession.sessionStartIfNotRunning(envSessionTable).setQuadrant(3,1024,768) }::
+        restSession.map { ts => logFuture { val x = ts.sessionStartIfNotRunning(envSessionTable).setQuadrant(4,1024,768) } }.toList : _*
       )
     }
 
