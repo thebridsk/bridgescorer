@@ -19,6 +19,7 @@ import org.openqa.selenium.By
 import com.example.test.pages.duplicate.ScoreboardPage
 import com.example.test.pages.duplicate.BoardPage
 import com.example.data.bridge.Vulnerability
+import org.openqa.selenium.Keys
 
 object BaseHandPage {
 
@@ -116,7 +117,10 @@ abstract class BaseHandPage( implicit webDriver: WebDriver, pageCreated: SourceP
   def clickHonors( i: Int )(implicit patienceConfig: PatienceConfig, pos: Position): this.type = clickButton( honorsPoints(i) )
 
   def clickOk(implicit patienceConfig: PatienceConfig, pos: Position): Page.AnyPage = {
-    clickButton( "Ok" )
+    val ok = findElemById("Ok")
+    scrollToElement(ok)
+    ok.sendKeys(Keys.ENTER.toString())
+//    clickButton( "Ok" )
     GenericPage.current
   }
 

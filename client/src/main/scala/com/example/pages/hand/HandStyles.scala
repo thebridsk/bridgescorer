@@ -72,5 +72,7 @@ class HandStyles {
   val viewVulnerability = cls("handViewVulnerability")
 
   val sectionScore = cls("handSectionScore")
+
+  val titleDeclarerDup = cls("titleDeclarerDup")
 }
 

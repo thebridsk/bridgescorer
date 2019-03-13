@@ -199,7 +199,7 @@ class DuplicateTestFromTestDirectory extends FlatSpec with MustMatchers with Bef
       try {
         import Session._
         waitForFutures( "setup",
-                        logFuture { sessionDirector.sessionStart(getPropOrEnv("SessionDirector")).setQuadrant(1) },
+                        logFuture { sessionDirector.sessionStart(getPropOrEnv("SessionDirector")).setQuadrant(1,1024,768) },
                         logFuture { TestServer.start() }
                         )
       } catch {
@@ -300,13 +300,13 @@ class DuplicateTestFromTestDirectory extends FlatSpec with MustMatchers with Bef
 
       waitForFutures(
         "gotoRootPage",
-        logFuture { val x = firstSession.sessionStart(envSessionTable).setQuadrant(3) }::
-        logFuture { val x = sessionComplete.sessionStart(getPropOrEnv("SessionComplete")).setQuadrant(2) }::
+        logFuture { val x = firstSession.sessionStart(envSessionTable).setQuadrant(3,1024,768) }::
+        logFuture { val x = sessionComplete.sessionStart(getPropOrEnv("SessionComplete")).setQuadrant(2,1024,768) }::
         logFuture {
           import sessionDirector._
           val hp = HomePage.goto.validate
         }::
-        restSession.map { ts => logFuture { val x = ts.sessionStart(envSessionTable).setQuadrant(4) } }.toList : _*
+        restSession.map { ts => logFuture { val x = ts.sessionStart(envSessionTable).setQuadrant(4,1024,768) } }.toList : _*
       )
     }
 
