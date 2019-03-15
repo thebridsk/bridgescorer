@@ -681,4 +681,5 @@ body > div > div > div {
   display: flex;
   flex-direction: row;
   overflow: hidden;
+  text-shadow: 3px 3px 3px #f00;
 }

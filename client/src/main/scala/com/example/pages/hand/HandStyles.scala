@@ -74,5 +74,6 @@ class HandStyles {
   val sectionScore = cls("handSectionScore")
 
   val titleDeclarerDup = cls("titleDeclarerDup")
+  val contractAndResult = cls("contractAndResult")
 }
 
