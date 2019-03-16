@@ -40,18 +40,18 @@ object SectionScore {
                                         val c = props.contract
                                         TagMod(
                                           <.div("Score: "+score.totalScore(c.north,c.south,c.east,c.west)),
-                                          <.div(score.contractAndResultAsString ),
+                                          <.div(score.contractAndResultAsString, handStyles.contractAndResult ),
                                           <.div(score.explain())
                                         )
                                       case Some(Right(score)) /* Duplicate */ =>
                                         val c = props.contract
                                         val ts = c.scoringSystem match {
-                                          case Chicago => score.totalScoreNoPos(c.north,c.south,c.east,c.west)
+                                          case _ : Chicago => score.totalScoreNoPos(c.north,c.south,c.east,c.west)
                                           case _ => score.totalScore(c.north,c.south,c.east,c.west)
                                         }
                                         TagMod(
                                           <.div("Score: "+ts ),
-                                          <.div(score.contractAndResultAsString ),
+//                                          <.div(score.contractAndResultAsString, handStyles.contractAndResult ),
                                           <.div(score.explain() )
                                         )
                                       case None =>
@@ -72,7 +72,6 @@ object SectionScore {
                                         }
                                         TagMod(
                                           <.div(handStyles.required, "Missing required information" ),
-                                          <.div(),
                                           <.div(handStyles.required, msg )
                                         )
                                     }

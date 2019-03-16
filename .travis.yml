@@ -9,7 +9,13 @@ jdk:
 - openjdk8
 
 addons:
-  chrome: stable
+#  chrome: stable
+  apt:
+    packages:
+        # this installs matching chrome browser
+      - chromium-chromedriver
+  snaps:
+    - hugo
 
 branches:
   only: 
@@ -33,26 +39,10 @@ before_cache:
 #- sh -e /etc/init.d/xvfb start
 
 install: # Install ChromeDriver
-  - mkdir -p target/drivers
-#  - wget -N https://chromedriver.storage.googleapis.com/2.45/chromedriver_linux64.zip -P target/drivers/
-#  - echo "d4a5eec0a3b7fec9bcb71353233dde38630e51b29fa7b218cdd196e2e4487da7 *target/drivers/chromedriver_linux64.zip" | sha256sum -c
-  - wget -N https://chromedriver.storage.googleapis.com/2.46/chromedriver_linux64.zip -P target/drivers/
-  - echo "461919e080e19335a34224e2d353b96b07c7d068621aa940f9c136e86d090047 *target/drivers/chromedriver_linux64.zip" | sha256sum -c
-  - unzip target/drivers/chromedriver_linux64.zip -d target/drivers/
-  - rm target/drivers/chromedriver_linux64.zip
-  - sudo mv -f target/drivers/chromedriver /usr/local/share/
-  - sudo chmod +x /usr/local/share/chromedriver
-  - sudo ln -s /usr/local/share/chromedriver /usr/local/bin/chromedriver
-#  - wget -N https://github.com/gohugoio/hugo/releases/download/v0.52/hugo_0.52_Linux-64bit.tar.gz -P target/drivers/
-#  - echo "b4d1fe91023e3fe7e92953af12e08344d66ab10a46feb9cbcffbab2b0c14ba44 *target/drivers/hugo_0.52_Linux-64bit.tar.gz" | sha256sum -c
-  - wget -N https://github.com/gohugoio/hugo/releases/download/v0.54.0/hugo_0.54.0_Linux-64bit.tar.gz -P target/drivers/
-  - echo "76f90287c12a682c9137b85146c406be410b2b30b0df7367f02ee7c4142bb416 *target/drivers/hugo_0.54.0_Linux-64bit.tar.gz" | sha256sum -c
-  
-  - tar zxvf target/drivers/hugo_0.*_Linux-64bit.tar.gz --directory target/drivers/
-  - sudo mv -f target/drivers/hugo /usr/local/share/
-  - sudo chmod +x /usr/local/share/hugo
-  - sudo ln -s /usr/local/share/hugo /usr/local/bin/hugo
   - npm config set ignore-scripts true
+  
+before_script:
+  - sudo ln -s /usr/lib/chromium-browser/chromedriver /usr/local/bin/chromedriver
   
 script:
 # - export ParallelUtilsUseSerial=false

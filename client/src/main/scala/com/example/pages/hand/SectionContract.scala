@@ -7,6 +7,7 @@ import com.example.data.bridge.ContractTricks
 import com.example.data.bridge._
 import com.example.pages.hand.PageHandInternal.PageHandNextInput
 import com.example.pages.hand.ComponentInputStyleButton.InputMethod
+import com.example.react.Utils._
 
 /**
  * A skeleton component.
@@ -28,7 +29,9 @@ object SectionContract {
                     callbackTricks: ViewContractTricks.CallbackTricks,
                     callbackSuit: ViewContractSuit.CallbackSuit,
                     callbackDoubled: ViewContractDoubled.CallbackDoubled,
-                    nextInput: PageHandNextInput.Value ) {
+                    nextInput: PageHandNextInput.Value,
+                    showContractHeader: Boolean
+  ) {
     def missingRequired: Boolean = {
       currentTricks match {
         case Some(tricks) =>
@@ -46,13 +49,15 @@ object SectionContract {
              callbackTricks: ViewContractTricks.CallbackTricks,
              callbackSuit: ViewContractSuit.CallbackSuit,
              callbackDoubled: ViewContractDoubled.CallbackDoubled,
-             nextInput: PageHandNextInput.Value) =
-    component(Props(currentTricks,currentSuit,currentDoubled,allowPassedOut,callbackTricks,callbackSuit,callbackDoubled,nextInput))
+             nextInput: PageHandNextInput.Value,
+             showContractHeader: Boolean
+  ) =
+    component(Props(currentTricks,currentSuit,currentDoubled,allowPassedOut,callbackTricks,callbackSuit,callbackDoubled,nextInput,showContractHeader))
 
-  private val header = ScalaComponent.builder[Unit]("SectionHeader")
-                 .render( _ =>
+  private val header = ScalaComponent.builder[Props]("SectionHeader")
+                 .render_P( props =>
                    <.div(
-                     <.span( "Contract:")
+                     props.showContractHeader ?= <.span( "Contract:")
                    )
                  ).build
 
@@ -68,7 +73,7 @@ object SectionContract {
                                 }
                                 <.div(
                                     handStyles.sectionContract,
-                                    header(),
+                                    header(props),
                                     ViewContractTricks(props.allowPassedOut,props.currentTricks,props.callbackTricks, props.nextInput,show( InputContractTricks, true)),
                                     ViewContractSuit(props.currentSuit,props.currentTricks,props.callbackSuit, props.nextInput,show( InputContractSuit)),
                                     ViewContractDoubled(props.currentDoubled,props.callbackDoubled, props.nextInput,show( InputContractDoubled))

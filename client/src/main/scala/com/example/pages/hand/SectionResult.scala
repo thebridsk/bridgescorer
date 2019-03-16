@@ -30,15 +30,17 @@ object SectionResult {
                     declarer: Option[PlayerPosition],
                     currentHonors: Option[Int],
                     currentHonorsPlayer: Option[PlayerPosition],
-                    north: String,
-                    south: String,
-                    east: String,
-                    west: String,
+//                    north: String,
+//                    south: String,
+//                    east: String,
+//                    west: String,
                     callbackMadeOrDown: ViewMadeOrDown.CallbackMade,
                     callbackTricks: ViewTricks.CallbackTricks,
                     callbackHonors: Option[ViewHonors.CallbackHonors],
                     callbackHonorsPlayer: Option[ViewHonors.CallbackHonorsPlayer],
-                    nextInput: PageHandNextInput.Value ) {
+                    nextInput: PageHandNextInput.Value,
+                    contract: Contract
+  ) {
     def missingRequired = {
       contractTricks match {
         case Some(ct) =>
@@ -58,21 +60,23 @@ object SectionResult {
              declarer: Option[PlayerPosition],
              currentHonors: Option[Int],
              currentHonorsPlayer: Option[PlayerPosition],
-             north: String,
-             south: String,
-             east: String,
-             west: String,
+//             north: String,
+//             south: String,
+//             east: String,
+//             west: String,
              callbackMadeOrDown: ViewMadeOrDown.CallbackMade,
              callbackTricks: ViewTricks.CallbackTricks,
              callbackHonors: Option[ViewHonors.CallbackHonors],
              callbackHonorsPlayer: Option[ViewHonors.CallbackHonorsPlayer],
-             nextInput: PageHandNextInput.Value ) =
+             nextInput: PageHandNextInput.Value,
+             contract: Contract
+           ) =
     component(Props(madeOrDown,tricks,contractTricks,contractSuit,contractDoubled,declarer,
                     currentHonors, currentHonorsPlayer,
-                    north,south,east,west,
+//                    north,south,east,west,
                     callbackMadeOrDown,callbackTricks,
                     callbackHonors, callbackHonorsPlayer,
-                    nextInput))
+                    nextInput, contract))
 
   def header = ScalaComponent.builder[Unit]("SectionHeader")
                  .render( _ =>
@@ -98,7 +102,7 @@ object SectionResult {
                                     ViewHonors(props.currentHonors, props.currentHonorsPlayer,
                                                props.contractTricks,
                                                props.contractSuit,
-                                               props.north, props.south, props.east, props.west,
+                                               props.contract.north, props.contract.south, props.contract.east, props.contract.west,
                                                props.callbackHonors.get,
                                                props.callbackHonorsPlayer.get,
                                                props.nextInput)
@@ -110,7 +114,16 @@ object SectionResult {
                                       showButtons ?= ViewMadeOrDown(props.madeOrDown,props.callbackMadeOrDown, props.nextInput, show(InputResultMadeOrDown)),
                                       showButtons ?= ViewTricks(props.tricks,props.contractTricks,props.madeOrDown,props.callbackTricks, props.nextInput, show(InputResultTricks))
                                     )
-                                  )
+                                  ),
+                                  props.callbackHonors.isEmpty ?= {
+
+                                    props.contract.scorer match {
+                                      case Some(Right(score)) /* Duplicate */ =>
+                                        <.div( score.contractAndResultAsString, handStyles.contractAndResult )
+
+                                      case _ => TagMod()
+                                    }
+                                }
                                 )
                             })
                             .build

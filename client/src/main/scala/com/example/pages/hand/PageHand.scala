@@ -425,35 +425,44 @@ object PageHandInternal {
                       state.declarer,
                       curHonors,
                       curHonorsP,
-                      contract.north,
-                      contract.south,
-                      contract.east,
-                      contract.west,
+//                      contract.north,
+//                      contract.south,
+//                      contract.east,
+//                      contract.west,
                       setMadeOrDown,
                       setTricks,
                       cbHonors,
                       cbHonorsP,
-                      nextInput
+                      nextInput,
+                      contract
                      )
       }
 
-      def sectionContract = SectionContract(state.contractTricks,
-                                            state.contractSuit,
-                                            state.contractDoubled,
-                                            props.allowPassedOut,
-                                            setContractTricks,
-                                            setContractSuit,
-                                            setContractDoubled,
-                                            nextInput
-                                           )
+      def sectionContract(showContractHeader: Boolean ) =
+        SectionContract(state.contractTricks,
+                        state.contractSuit,
+                        state.contractDoubled,
+                        props.allowPassedOut,
+                        setContractTricks,
+                        setContractSuit,
+                        setContractDoubled,
+                        nextInput,
+                        showContractHeader
+                       )
 
       <.div( handStyles.pageHand,
+        contract.scoringSystem match {
+        case _ : Duplicate => handStyles.playDuplicate
+        case _ : Chicago => handStyles.playChicago
+        case _ : Rubber => handStyles.playRubber
+        case _ => TagMod()
+        },
         <.div(
 //          props.teamNS.map( team => TagMod() ).getOrElse( <.span( ^.id:="VerifySectionHeader","Bridge Scorer:") ),
           if (ComponentInputStyleButton.inputMethod == InputMethod.Original) {
-            Seq( sectionHeader, sectionContract ).toTagMod
+            Seq( sectionHeader, sectionContract(true) ).toTagMod
           } else {
-            Seq( sectionContract, sectionHeader ).toTagMod
+            Seq( sectionContract(true), sectionHeader ).toTagMod
           },
           sectionResults,
           SectionScore(contract,nextInput),
