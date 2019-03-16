@@ -374,6 +374,12 @@ abstract class BaseHandPage( implicit webDriver: WebDriver, pageCreated: SourceP
     eventually {
       findElemsByXPath( "//div[contains(concat(' ', @class, ' '), ' handSectionScore ')]/div" ) match {
         case List( r1, r2, r3 ) => ( r1.text, r2.text, r3.text )
+        case List( r1, r3 ) =>
+          findElemsByXPath( "//div[contains(concat(' ', @class, ' '), ' contractAndResult ')]" ) match {
+            case List( r2 ) => ( r1.text, r2.text, r3.text )
+            case x => ( r1.text, "", r3.text )
+          }
+
         case x => fail(s"Did not get exactly three elements: $x")
       }
     }
