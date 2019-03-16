@@ -9,10 +9,10 @@ jdk:
 - openjdk8
 
 addons:
-  - chrome: stable
-  - apt:
-      packages:
-        - chromium-chromedriver
+  chrome: stable
+  apt:
+    packages:
+      - chromium-chromedriver
 
 branches:
   only: 
