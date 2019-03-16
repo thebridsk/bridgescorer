@@ -37,7 +37,7 @@ before_cache:
 
 install: # Install ChromeDriver
   - mkdir -p target/drivers
-  - chrome --product-version
+#  - chrome --product-version
 #  - wget -N https://chromedriver.storage.googleapis.com/2.45/chromedriver_linux64.zip -P target/drivers/
 #  - echo "d4a5eec0a3b7fec9bcb71353233dde38630e51b29fa7b218cdd196e2e4487da7 *target/drivers/chromedriver_linux64.zip" | sha256sum -c
 #  - wget -N https://chromedriver.storage.googleapis.com/2.46/chromedriver_linux64.zip -P target/drivers/
