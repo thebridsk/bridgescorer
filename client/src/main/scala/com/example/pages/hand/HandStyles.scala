@@ -75,5 +75,10 @@ class HandStyles {
 
   val titleDeclarerDup = cls("titleDeclarerDup")
   val contractAndResult = cls("contractAndResult")
+
+  val playDuplicate = cls("playDuplicate")
+  val playChicago = cls("playChicago")
+  val playRubber = cls("playRubber")
+
 }
 

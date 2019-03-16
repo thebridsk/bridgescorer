@@ -278,12 +278,16 @@
   padding: 0 10px 0 10px;
 }
 
-.handSectionScore > div:first-child {
-  background: cyan;
+.playDuplicate .handSectionScore > div:first-child {
+  background-color: cyan;
+}
+
+.playChicago .handSectionScore > div:first-child {
+  background-color: cyan;
 }
 
 .contractAndResult {
-  background: cyan;
+  background-color: cyan;
 }
 .handSectionResult .contractAndResult {
   padding-right: 10px;

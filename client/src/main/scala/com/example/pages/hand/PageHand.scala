@@ -451,6 +451,12 @@ object PageHandInternal {
                        )
 
       <.div( handStyles.pageHand,
+        contract.scoringSystem match {
+        case _ : Duplicate => handStyles.playDuplicate
+        case _ : Chicago => handStyles.playChicago
+        case _ : Rubber => handStyles.playRubber
+        case _ => TagMod()
+        },
         <.div(
 //          props.teamNS.map( team => TagMod() ).getOrElse( <.span( ^.id:="VerifySectionHeader","Bridge Scorer:") ),
           if (ComponentInputStyleButton.inputMethod == InputMethod.Original) {

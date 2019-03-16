@@ -46,7 +46,7 @@ object SectionScore {
                                       case Some(Right(score)) /* Duplicate */ =>
                                         val c = props.contract
                                         val ts = c.scoringSystem match {
-                                          case Chicago => score.totalScoreNoPos(c.north,c.south,c.east,c.west)
+                                          case _ : Chicago => score.totalScoreNoPos(c.north,c.south,c.east,c.west)
                                           case _ => score.totalScore(c.north,c.south,c.east,c.west)
                                         }
                                         TagMod(
