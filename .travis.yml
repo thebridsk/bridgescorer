@@ -50,6 +50,20 @@ script:
 - export UseFullOpt=true
 - sbt clean distribution:travis
 
+jobs:
+  include:
+    - script: 
+        - |
+          export ServerTestToRun=com.example.test.AllUnitTests
+          sbt distribution:travis1
+    - stage: deploy
+      script:
+        - |
+          export UseBrowser=chromeheadless
+          export UseFullOpt=true
+          export ServerTestToRun=com.example.test.selenium.AllSeleniumSuites
+          sbt distribution:travis2
+
 after_failure:
 - cat server/logs/unittestTcpMonitorTimeWait.csv
 # - cat server/logs/unittest.1.log
