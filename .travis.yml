@@ -8,14 +8,14 @@ scala:
 jdk:
 - openjdk8
 
-addons:
-#  chrome: stable
-  apt:
-    packages:
-        # this installs matching chrome browser
-      - chromium-chromedriver
-  snaps:
-    - hugo
+#addons:
+##  chrome: stable
+#  apt:
+#    packages:
+#        # this installs matching chrome browser
+#      - chromium-chromedriver
+#  snaps:
+#    - hugo
 
 branches:
   only: 
@@ -41,8 +41,8 @@ before_cache:
 install: # Install ChromeDriver
   - npm config set ignore-scripts true
   
-before_script:
-  - sudo ln -s /usr/lib/chromium-browser/chromedriver /usr/local/bin/chromedriver
+#before_script:
+#  - sudo ln -s /usr/lib/chromium-browser/chromedriver /usr/local/bin/chromedriver
   
 #script:
 ## - export ParallelUtilsUseSerial=false
@@ -53,11 +53,21 @@ before_script:
 jobs:
   include:
     - stage: test
-    - script: 
+      script: 
         - |
           export ServerTestToRun=com.example.test.AllUnitTests
           sbt distribution:travis1
     - stage: systemtest
+      addons:
+      #  chrome: stable
+        apt:
+          packages:
+            # this installs matching chrome browser
+            - chromium-chromedriver
+        snaps:
+          - hugo
+      before_script:
+        - sudo ln -s /usr/lib/chromium-browser/chromedriver /usr/local/bin/chromedriver
       script:
         - |
           export UseBrowser=chromeheadless
