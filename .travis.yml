@@ -44,11 +44,11 @@ install: # Install ChromeDriver
 before_script:
   - sudo ln -s /usr/lib/chromium-browser/chromedriver /usr/local/bin/chromedriver
   
-script:
-# - export ParallelUtilsUseSerial=false
-- export UseBrowser=chromeheadless
-- export UseFullOpt=true
-- sbt clean distribution:travis
+#script:
+## - export ParallelUtilsUseSerial=false
+#- export UseBrowser=chromeheadless
+#- export UseFullOpt=true
+#- sbt clean distribution:travis
 
 jobs:
   include:
