@@ -52,11 +52,12 @@ before_script:
 
 jobs:
   include:
+    - stage: test
     - script: 
         - |
           export ServerTestToRun=com.example.test.AllUnitTests
           sbt distribution:travis1
-    - stage: deploy
+    - stage: systemtest
       script:
         - |
           export UseBrowser=chromeheadless
