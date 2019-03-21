@@ -65,6 +65,9 @@ lazy val useFullOpt = sys.props.get("UseFullOpt").
                        map( s => s.toBoolean ).
                        getOrElse(false)
 
+lazy val serverTestToRun = sys.props.get("ServerTestToRun").
+                           orElse(sys.env.get("ServerTestToRun"))
+
 //
 // Debugging deprecation and feature warnings
 //
@@ -87,17 +90,19 @@ val testToRunNotTravis = "com.example.test.AllSuites"
 val testToRunBuildForHelpOnly = "com.example.test.selenium.DuplicateTestPages"
 val testToRunInTravis = "com.example.test.TravisAllSuites"
 
-lazy val testToRun = if (inTravis) {
-  println( s"Running in Travis CI, tests to run: ${testToRunInTravis}" )
-  testToRunInTravis
-} else {
-  println( s"Not running in Travis CI, tests to run: ${testToRunNotTravis}" )
-  if (buildForHelpOnly) {
-    testToRunBuildForHelpOnly
-  } else {
-    testToRunNotTravis
-  }
-}
+lazy val testToRun = serverTestToRun.getOrElse(
+    if (inTravis) {
+      println( s"Running in Travis CI, tests to run: ${testToRunInTravis}" )
+      testToRunInTravis
+    } else {
+      println( s"Not running in Travis CI, tests to run: ${testToRunNotTravis}" )
+      if (buildForHelpOnly) {
+        testToRunBuildForHelpOnly
+      } else {
+        testToRunNotTravis
+      }
+    }
+)
 
 val moretestToRun = "com.example.test.selenium.IntegrationTests"
 val travisMoretestToRun = "com.example.test.selenium.TravisIntegrationTests"
@@ -144,6 +149,10 @@ val travismoretests = taskKey[Unit]("Runs travis more tests on the assembly.jar 
 val alltests = taskKey[Unit]("Runs all tests in JS and JVM projects.") in Distribution
 
 val travis = taskKey[Unit]("The build that is run in Travis CI.") in Distribution
+
+val travis1 = taskKey[Unit]("The build that is run in Travis CI.") in Distribution
+
+val travis2 = taskKey[Unit]("The build that is run in Travis CI.") in Distribution
 
 val disttests = taskKey[Unit]("Runs unit tests and more tests on the assembly.jar file.") in Distribution
 
@@ -1292,6 +1301,23 @@ travis := Def.sequential(
                        test in Test in `bridgescorer-client`,
                        test in Test in `bridgescorer-server`,
 //                       hugo in help,
+                       travismoretests in Distribution in `bridgescorer`
+                      ).value
+
+travis1 := Def.sequential(
+                       travis in Distribution in utilities,
+//                       fastOptJS in Compile in `bridgescorer-client`,
+//                       fullOptJS in Compile in `bridgescorer-client`,
+//                       fastOptJS in Test in `bridgescorer-client`,
+//                       packageJSDependencies in Compile in `bridgescorer-client`,
+                       test in Test in rotationJVM,
+                       test in Test in rotationJS,
+                       test in Test in `bridgescorer-client`,
+                       test in Test in `bridgescorer-server`,
+                      ).value
+
+travis2 := Def.sequential(
+                       test in Test in `bridgescorer-server`,
                        travismoretests in Distribution in `bridgescorer`
                       ).value
 

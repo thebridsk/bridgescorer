@@ -148,7 +148,7 @@ class DuplicateTestPages2 extends FlatSpec
       import Session._
       // The sessions for the tables and complete is defered to the test that gets the home page url.
       waitForFutures( "Starting browser or server",
-                      CodeBlock { SessionDirector.sessionStart(getPropOrEnv("SessionDirector")).setQuadrant(1) },
+                      CodeBlock { SessionDirector.sessionStart(getPropOrEnv("SessionDirector")).setQuadrant(1,1024,768) },
                       CodeBlock { TestServer.start() }
                       )
     } catch {
