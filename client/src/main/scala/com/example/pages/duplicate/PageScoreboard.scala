@@ -37,6 +37,7 @@ import com.example.materialui.MuiTypography
 import com.example.materialui.TextVariant
 import com.example.materialui.TextColor
 import com.example.materialui.MuiMenuItem
+import com.example.data.MatchDuplicate
 
 /**
  * Shows the team x board table and has a totals column that shows the number of points the team has.
@@ -74,11 +75,17 @@ object PageScoreboardInternal {
    */
   case class State( deletePopup: Boolean = false, showdetails: Boolean = false, useIMP: Option[Boolean] = None ) {
 
-    def isMP = useIMP.getOrElse(true)
-    def isIMP = useIMP.getOrElse(false)
+    /**
+     * whether the current display should show MP scoring
+     */
+    def isMP(md: MatchDuplicate) = !useIMP.getOrElse(md.isIMP)
+    /**
+     * whether the current display should show IMP scoring
+     */
+    def isIMP(md: MatchDuplicate) = useIMP.getOrElse(md.isIMP)
 
-    def toggleIMP = {
-      copy( useIMP = Some(!isIMP) )
+    def toggleIMP(md: MatchDuplicate) = {
+      copy( useIMP = Some(!isIMP(md)) )
     }
 
     def nextIMPs = {
@@ -118,9 +125,38 @@ object PageScoreboardInternal {
    */
   class Backend(scope: BackendScope[Props, State]) {
     import DuplicateStyles._
+
+    def setScoringMethod(currentInMatchIsIMP: Boolean) = scope.state >>= { state => Callback {
+      state.useIMP match {
+        case Some(next) if currentInMatchIsIMP!=next =>
+          // switch to next
+          DuplicateStore.getMatch() match {
+            case Some(md) =>
+              val nmd = md.copy( scoringmethod = Some( if (next) MatchDuplicate.InternationalMatchPoints else MatchDuplicate.MatchPoints ) )
+              Controller.updateMatch(nmd)
+            case None =>
+          }
+        case _ =>
+          // nothing to do, already scoring with the wanted scoring method
+      }
+    } }
+
     def render( props: Props, state: State ) = {
 
       def callbackPage(page: DuplicatePage)(e: ReactEvent) = props.routerCtl.set(page).runNow()
+
+      def isSetScoringMethodEnabled(currentInMatchIsIMP: Boolean) = {
+        val rc = state.useIMP match {
+          case Some(next) =>
+            // switch to next
+            currentInMatchIsIMP!=next
+          case _ =>
+            // nothing to do, already scoring with the wanted scoring method
+            false
+        }
+        logger.fine(s"""isSetScoringMethodEnabled rc=$rc, useIMP=${state.useIMP}, currentInMatchIsIMP=$currentInMatchIsIMP""")
+        rc
+      }
 
       DuplicateStore.getView( props.game.getPerspective() ) match {
         case Some(score) =>
@@ -191,8 +227,8 @@ object PageScoreboardInternal {
               pagemenu: _*
             ),
             <.div(
-              ViewScoreboard( props.routerCtl, props.game, score, state.isIMP ),
-              winnersets.map(ws => ViewPlayerMatchResult( (if (state.isIMP) score.placeImpByWinnerSet(ws) else score.placeByWinnerSet(ws)), state.isIMP )).toTagMod,
+              ViewScoreboard( props.routerCtl, props.game, score, state.isIMP(score.duplicate) ),
+              winnersets.map(ws => ViewPlayerMatchResult( (if (state.isIMP(score.duplicate)) score.placeImpByWinnerSet(ws) else score.placeByWinnerSet(ws)), state.isIMP(score.duplicate) )).toTagMod,
               if (state.showdetails) {
                 ViewScoreboardDetails( props.game, score )
               } else {
@@ -241,6 +277,10 @@ object PageScoreboardInternal {
                         AppButton( "AllBoards", "All Boards", props.routerCtl.setOnClick(props.game.toAllBoardsView()) ),
                         " ",
                         getScoringMethodButton(),
+                        AppButton( "SetScoringMethod", "Set Scoring Method",
+                                   ^.onClick --> setScoringMethod(score.duplicate.isIMP),
+                                   ^.disabled := !isSetScoringMethodEnabled(score.duplicate.isIMP)
+                                 )
                       ),
                       <.div(
                         baseStyles.divFooterRight,

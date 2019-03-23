@@ -14,7 +14,7 @@ case object PerspectiveDirector extends DuplicateViewPerspective
 case class PerspectiveTable( teamId1: Id.Team, teamId2: Id.Team ) extends DuplicateViewPerspective
 case object PerspectiveComplete extends DuplicateViewPerspective
 
-class MatchDuplicateScore private ( duplicate: MatchDuplicate, val perspective: DuplicateViewPerspective ) {
+class MatchDuplicateScore private ( val duplicate: MatchDuplicate, val perspective: DuplicateViewPerspective ) {
   import MatchDuplicateScore._
 
   val id = duplicate.id

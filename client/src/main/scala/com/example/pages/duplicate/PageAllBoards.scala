@@ -60,7 +60,7 @@ object PageAllBoardsInternal {
    */
   case class State( useIMP: Option[Boolean] = None ) {
 
-    def isMP = useIMP.getOrElse(true)
+    def isMP = !useIMP.getOrElse(false)
     def isIMP = useIMP.getOrElse(false)
 
     def toggleIMP = {
