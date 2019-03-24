@@ -14,7 +14,7 @@ case object PerspectiveDirector extends DuplicateViewPerspective
 case class PerspectiveTable( teamId1: Id.Team, teamId2: Id.Team ) extends DuplicateViewPerspective
 case object PerspectiveComplete extends DuplicateViewPerspective
 
-class MatchDuplicateScore private ( duplicate: MatchDuplicate, val perspective: DuplicateViewPerspective ) {
+class MatchDuplicateScore private ( val duplicate: MatchDuplicate, val perspective: DuplicateViewPerspective ) {
   import MatchDuplicateScore._
 
   val id = duplicate.id
@@ -27,6 +27,11 @@ class MatchDuplicateScore private ( duplicate: MatchDuplicate, val perspective: 
   val sortedBoards = boards.values.toList.sortWith((b1,b2)=>Id.idComparer(b1.id, b2.id)<0)
 
   val alldone = !boards.values.exists( b => !b.allplayed )
+
+  def isStarted = {
+    val ts = duplicate.teams.exists( t => t.areBothPlayersSet())
+    ts || boards.values.exists( bb => bb.anyplayed )
+  }
 
   val teams = duplicate.teams
 

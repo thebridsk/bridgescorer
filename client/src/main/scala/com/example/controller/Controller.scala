@@ -163,6 +163,23 @@ object Controller {
     }
   }
 
+  def updateMatch( dup: MatchDuplicate ) = {
+    BridgeDispatcher.updateDuplicateMatch(dup)
+    if (!Bridge.isDemo) {
+      if (useRestToServer) {
+        val resource = RestClientDuplicate.update(dup.id, dup).recordFailure().onComplete { t =>
+          if (t.isFailure) {
+            Alerter.alert("Failure updating hand on server")
+          }
+        }
+      } else {
+        val msg = Protocol.UpdateDuplicate(dup)
+        getDuplexPipe().send(msg)
+      }
+    }
+    logger.info("Update hand ("+dup.id+","+dup+")")
+  }
+
   def updateHand( dup: MatchDuplicate, hand: DuplicateHand ) = {
     BridgeDispatcher.updateDuplicateHand(dup.id, hand)
     if (!Bridge.isDemo) {
