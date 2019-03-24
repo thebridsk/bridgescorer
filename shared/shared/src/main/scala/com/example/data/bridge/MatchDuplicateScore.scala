@@ -28,6 +28,11 @@ class MatchDuplicateScore private ( val duplicate: MatchDuplicate, val perspecti
 
   val alldone = !boards.values.exists( b => !b.allplayed )
 
+  def isStarted = {
+    val ts = duplicate.teams.exists( t => t.areBothPlayersSet())
+    ts || boards.values.exists( bb => bb.anyplayed )
+  }
+
   val teams = duplicate.teams
 
   def getTeam( tid: Id.Team ) = duplicate.getTeam(tid)

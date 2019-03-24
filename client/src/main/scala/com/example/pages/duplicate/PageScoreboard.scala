@@ -256,6 +256,10 @@ object PageScoreboardInternal {
                         AppButton( "AllBoards", "All Boards", props.routerCtl.setOnClick(props.game.toAllBoardsView()) ),
                         " ",
                         getScoringMethodButton(),
+                        AppButton( "SetScoringMethod", "Set Scoring Method",
+                                   ^.onClick --> setScoringMethod(score.duplicate.isIMP),
+                                   ^.disabled := !isSetScoringMethodEnabled(score.duplicate.isIMP)
+                                 ).when(!score.isStarted),
                         if (score.alldone) {
                           TagMod(
                             " ",
