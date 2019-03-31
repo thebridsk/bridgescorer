@@ -9,7 +9,7 @@ import org.openqa.selenium.WebDriver
 import org.openqa.selenium.Keys
 import org.openqa.selenium.JavascriptExecutor
 import com.example.source.SourcePosition
-import org.scalatest.selenium.WebBrowser
+import org.scalatestplus.selenium.WebBrowser
 import org.openqa.selenium.By
 import scala.collection.JavaConverters._
 import java.net.URL
@@ -434,7 +434,7 @@ trait PageBrowser {
     PageBrowser.executeScript( """arguments[0].scrollIntoView({behavior: "auto", block: "center", inline: "center"});""", e);
   }
 
-  def scrollToElement( e: org.scalatest.selenium.WebBrowser.Element )(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position): Unit = {
+  def scrollToElement( e: org.scalatestplus.selenium.WebBrowser.Element )(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position): Unit = {
     PageBrowser.executeScript( """arguments[0].scrollIntoView({behavior: "auto", block: "center", inline: "center"});""", e.underlying)
   }
 
