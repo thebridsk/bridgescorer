@@ -389,7 +389,7 @@ class SummaryPage(
 
   private def dropFirstAndLast[T]( list: List[T] ): List[T] = {
     val x = list.drop(1)
-    x.take(x.length-1)
+    x.take(x.length-2)
   }
 
   def getRoundTables(implicit pos: Position): List[RoundTable] = {
@@ -401,13 +401,12 @@ class SummaryPage(
   }
 
   /**
-   * Get a RoundTable from the page.
-   * @param index the index, 0 based.
+   * Get a RoundTable from the page.  There must only be one round table
    */
   def getOnlyRoundTable()(implicit pos: Position): RoundTable = {
     withClueEx("Looking for only one RoundTable") {
       val rawdivs = getElemsByXPath("""//div[contains(concat(' ', @class, ' '), ' chiChicagoSummaryPage ')]/div""")
-      rawdivs.length mustBe 3
+      rawdivs.length mustBe 4
       val alldivs = dropFirstAndLast(rawdivs)
       alldivs.length mustBe 1
       getRoundTableFromElement(alldivs(0))
