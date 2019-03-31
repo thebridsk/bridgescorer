@@ -87,6 +87,8 @@ class BaseStyles {
 
   val divPopupOKCancelBody = cls("baseDivPopupOKCancelBody")
 
+  val divFlexBreak = cls("baseDivFlexBreak")
+
   val divFooter = cls("baseDivFooter")
 
   val divFooterLeft = cls("baseDivFooterLeft")

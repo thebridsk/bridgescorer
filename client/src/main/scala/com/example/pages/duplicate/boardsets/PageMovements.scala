@@ -161,7 +161,7 @@ object PageMovementsInternal {
       logger.info("PageMovements.Backend.render: display "+props.initialDisplay)
       <.div(
         dupStyles.divMovementsPage,
-        <.div(
+//        <.div(
           DuplicatePageBridgeAppBar(
             id = None,
             tableIds = List(),
@@ -191,30 +191,29 @@ object PageMovementsInternal {
               )
             ),
             AppButton( "OK", "OK", ^.onClick-->okCallback ),
-            <.div(
-              props.initialDisplay match {
-                case Some(name) =>
-                  state.movements.get(name) match {
-                    case Some(htp) =>
+            props.initialDisplay match {
+              case Some(name) =>
+                state.movements.get(name) match {
+                  case Some(htp) =>
+                    TagMod(
+                      <.h1("Showing ", htp.short ),
+                      <.p( htp.description ),
                       <.div(
-                        <.h1("Showing ", htp.short ),
-                        <.p( htp.description ),
-                        <.div(
-                          htp.hands.map( h => h.table ).toList.distinct.sorted.map { table =>
-                            MovementTable((state,htp,table))
-                          }.toTagMod
-                        )
+                        dupStyles.divMovementView,
+                        htp.hands.map( h => h.table ).toList.distinct.sorted.map { table =>
+                          MovementTable((state,htp,table))
+                        }.toTagMod
                       )
-                    case None =>
-                      <.span(s"BoardSet $name not found")
-                  }
-                case None =>
-                  <.span()
-              }
-            )
+                    )
+                  case None =>
+                    <.span(s"BoardSet $name not found")
+                }
+              case None =>
+                <.span()
+            }
           )
         ),
-      )
+//      )
     }
 
     val storeCallback = scope.modState { s =>

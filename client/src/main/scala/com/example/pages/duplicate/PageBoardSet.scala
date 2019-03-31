@@ -98,6 +98,7 @@ object PageBoardSetInternal {
                 <.h1( "Boards used for the match" )
               ),
               ViewBoardSet(boardset,2),
+              <.div( baseStyles.divFlexBreak ),
               <.div(
                 baseStyles.divFooter,
                 <.div(

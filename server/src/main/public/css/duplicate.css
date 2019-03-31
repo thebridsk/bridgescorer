@@ -528,25 +528,23 @@
 }
 
 .dupDivBoardSetsPage {
-  display: flex;
-  flex-wrap: wrap;
-  flex-direction: column;
+  flex-wrap: nowrap;
 }
-.dupDivBoardSetsPage > div:first-child table {
+.dupDivBoardSetsPage > div:nth-child(2) > div table {
   border-spacing: 0px;
   font-size: x-large;
   white-space: nowrap;
   border: 1px solid black;
 }
-.dupDivBoardSetsPage > div:first-child tbody tr:nth-child(2n+1) {
+.dupDivBoardSetsPage > div:nth-child(2) > div tbody tr:nth-child(2n+1) {
   background-color: #f2f2f2;
 }
-.dupDivBoardSetsPage > div:first-child td {
+.dupDivBoardSetsPage > div:nth-child(2) > div td {
   border: 1px solid black;
   text-align: center;
   padding: 2px 4px 2px 4px;
 }
-.dupDivBoardSetsPage > div:first-child th {
+.dupDivBoardSetsPage > div:nth-child(2) > div th {
   border: 1px solid black;
   text-align: center;
   padding: 2px 4px 2px 4px;
@@ -583,11 +581,9 @@
 }
 
 .dupDivMovementsPage {
-  display: flex;
-  flex-wrap: wrap;
-  flex-direction: row;
+  flex-wrap: nowrap;
 }
-
+/*
 .dupDivMovementsPage > div:nth-child(2) > div > div {
   display: flex;
   flex-wrap: wrap;
@@ -605,6 +601,7 @@
   border-width: 5px;
   vertical-align: top;
 }
+*/
 .dupDivMovementsPage table {
   border-spacing: 0px;
   font-size: x-large;
@@ -623,6 +620,16 @@
   border: 1px solid black;
   text-align: center;
   padding: 2px 4px 2px 4px;
+}
+
+.dupDivMovementView {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  padding: 10px 2px 2px 2px;
+}
+.dupDivMovementView > div {
+  padding: 4px;
 }
 
 .dupDivNamesPage {

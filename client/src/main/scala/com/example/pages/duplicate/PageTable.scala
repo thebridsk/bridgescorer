@@ -108,6 +108,7 @@ object PageTableInternal {
                       )
                     )
                   ),
+                  <.div( baseStyles.divFlexBreak ),
                   <.div(
                     baseStyles.divFooter,
                     <.div(

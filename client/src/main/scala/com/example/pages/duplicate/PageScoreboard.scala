@@ -234,6 +234,7 @@ object PageScoreboardInternal {
               } else {
                 ViewScoreboardHelp( props.game, score )
               },
+              <.div( baseStyles.divFlexBreak ),
               <.div(
                 baseStyles.divFooter,
                 props.game.getPerspective() match {

@@ -142,6 +142,7 @@ object PageSelectMatchInternal {
                         ^.onChange ==> inputCB _,
                         ^.value := state.selection.getOrElse(""))
             ),
+            <.div( baseStyles.divFlexBreak ),
             <.div(
               baseStyles.divFooter,
               <.div(
