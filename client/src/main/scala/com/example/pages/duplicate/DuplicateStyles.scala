@@ -80,6 +80,7 @@ class DuplicateStyles {
   val divBoardSetView = cls("dupDivBoardSetView")
 
   val divMovementsPage = cls("dupDivMovementsPage")
+  val divMovementView = cls("dupDivMovementView")
 
   val divNamesPage = cls("dupDivNamesPage")
 
