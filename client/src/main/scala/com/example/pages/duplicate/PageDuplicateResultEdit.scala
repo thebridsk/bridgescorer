@@ -330,6 +330,7 @@ object PageDuplicateResultEditInternal {
                     <.p( "Created: ", DateUtils.formatDate(dre.created), ", updated ", DateUtils.formatDate(dre.updated) )
                   )
                 },
+                <.div( baseStyles.divFlexBreak ),
                 <.div(
                   baseStyles.divFooter,
                   <.div(

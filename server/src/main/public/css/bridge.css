@@ -196,6 +196,11 @@
   z-index: 100000;
 }
 
+.baseDivFlexBreak {
+  flex: 1 0 100%;
+  width: 100%;
+}
+
 .baseDivFooter {
   flex: 0 1 100%;
   display: flex;
@@ -204,6 +209,7 @@
   align-content: flex-start;
   padding-top: 10px;
   width: 100%;
+  max-width: 1050px;
 }
 
 .baseDivFooterLeft {

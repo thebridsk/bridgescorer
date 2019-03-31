@@ -178,6 +178,7 @@ object PageRubberNamesInternal {
                   )
             )
           ),
+          <.div( baseStyles.divFlexBreak ),
           <.div(
             baseStyles.divFooter,
             <.div(

@@ -186,6 +186,7 @@ object PageRubberMatchInternal {
                     )
                 ),
                 PageRubberMatchDetails(props.page.toDetails(), props.routerCtl, true ),
+                <.div( baseStyles.divFlexBreak ),
                 <.div( baseStyles.divFooter,
                     <.div(
                         baseStyles.divFooterLeft,

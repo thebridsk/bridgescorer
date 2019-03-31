@@ -195,19 +195,22 @@ object PageRubberMatchDetailsInternal {
                 )
               )
             ),
-            !props.noFooter ?= <.div( baseStyles.divFooter,
-              <.div(
-                baseStyles.divFooterLeft,
-                !score.done ?= AppButton( "NextHand", "Next Hand", baseStyles.requiredNotNext, ^.onClick-->nextHand )
-              ),
-              <.div(
-                baseStyles.divFooterLeft,
-                AppButton( "EditNames", "Edit Names", ^.onClick-->tonames ),
-                AppButton( "EditNames", "Rubber Match", ^.onClick-->toRubber )
-              ),
-              <.div(
-                baseStyles.divFooterRight,
-                AppButton( "Quit", "Quit", score.done ?= baseStyles.requiredNotNext, ^.onClick-->quit )
+            !props.noFooter ?= TagMod(
+              <.div( baseStyles.divFlexBreak ),
+              <.div( baseStyles.divFooter,
+                <.div(
+                  baseStyles.divFooterLeft,
+                  !score.done ?= AppButton( "NextHand", "Next Hand", baseStyles.requiredNotNext, ^.onClick-->nextHand )
+                ),
+                <.div(
+                  baseStyles.divFooterLeft,
+                  AppButton( "EditNames", "Edit Names", ^.onClick-->tonames ),
+                  AppButton( "EditNames", "Rubber Match", ^.onClick-->toRubber )
+                ),
+                <.div(
+                  baseStyles.divFooterRight,
+                  AppButton( "Quit", "Quit", score.done ?= baseStyles.requiredNotNext, ^.onClick-->quit )
+                )
               )
             )
           )

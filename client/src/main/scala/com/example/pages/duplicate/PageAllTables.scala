@@ -97,6 +97,7 @@ object PageAllTablesInternal {
                 score.tables.keys.toList.sortWith((t1,t2)=>t1<t2).map { table =>
                   ViewTable( props.routerCtl, props.page.toTableView( table ), true )
                 }.toTagMod,
+                <.div( baseStyles.divFlexBreak ),
                 <.div(
                   baseStyles.divFooter,
                   <.div(

@@ -139,6 +139,7 @@ object PageDuplicateResultInternal {
                 ViewPlayerMatchResult( pbws, dre, i+1, wss.length, dre.isIMP )
               }.toTagMod,
               <.p( "Created: ", DateUtils.formatDate(dre.created), ", updated ", DateUtils.formatDate(dre.updated) ),
+              <.div( baseStyles.divFlexBreak ),
               <.div(
                 baseStyles.divFooter,
                 <.div(

@@ -155,6 +155,7 @@ object PageSummaryInternal {
                       }.toTagMod
                     ).toTagMod
                   },
+                  <.div( baseStyles.divFlexBreak ),
                   <.div(
                     baseStyles.divFooter,
                     <.div(
