@@ -30,16 +30,9 @@ import akka.stream.stage.GraphStage
 import akka.stream.stage.GraphStageLogic
 import akka.stream.stage.InHandler
 import akka.stream.stage.OutHandler
-import javax.ws.rs.Path
-import io.swagger.annotations.Api
-import io.swagger.annotations.ApiOperation
-import io.swagger.annotations.ApiResponses
-import io.swagger.annotations.ApiResponse
 import akka.actor.Props
 import akka.http.scaladsl.model.sse.ServerSentEvent
 import com.example.data.Id
-import io.swagger.annotations.ApiImplicitParams
-import io.swagger.annotations.ApiImplicitParam
 import akka.http.scaladsl.server.RejectionHandler
 import akka.http.scaladsl.server.MalformedRequestContentRejection
 import com.example.data.RestMessage
@@ -47,9 +40,16 @@ import akka.http.scaladsl.server.MethodRejection
 import akka.http.scaladsl.model.headers.Allow
 import akka.http.scaladsl.server.UnsupportedRequestContentTypeRejection
 import akka.http.scaladsl.model.MediaTypes
+import javax.ws.rs.Path
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.responses.ApiResponse
+import io.swagger.v3.oas.annotations.Parameter
+import io.swagger.v3.oas.annotations.enums.ParameterIn
+import io.swagger.v3.oas.annotations.media.Schema
+import io.swagger.v3.oas.annotations.media.Content
+import javax.ws.rs.GET
 
 @Path( "" )
-@Api(tags= Array("Server"), description = "Websocket operations.", produces="application/json")
 class MonitorWebservice(totallyMissingResourceHandler: RejectionHandler)(implicit fm: Materializer, system: ActorSystem, bridgeService: BridgeService) extends Directives {
   val log = Logging(system, classOf[MonitorWebservice])
   val monitor = new StoreMonitorManager(system, bridgeService.duplicates)
@@ -62,11 +62,19 @@ class MonitorWebservice(totallyMissingResourceHandler: RejectionHandler)(implici
 
 
   @Path("/ws")
-  @ApiOperation(value = "BridgeScorer websocket", notes = "", nickname = "MonitorWebserviceroute",
-                protocols="WS, WSS", httpMethod = "GET", code=101, response=classOf[String] )
-  @ApiResponses(Array(
-    new ApiResponse(code = 101, message = "Switching to websocket protocol", response=classOf[Void] )
-  ))
+  @GET
+  @Operation(
+//      protocols = "WS, WSS",
+      tags = Array("Server"),
+      summary = "BridgeScorer websocket, protocol: WS, WSS",
+      operationId = "MonitorWebserviceroute",
+      responses = Array(
+          new ApiResponse(
+              responseCode = "101",
+              description = "Switching to websocket protocol",
+          )
+      )
+  )
   def routews =
     get {
       pathPrefix("ws") {
@@ -86,14 +94,45 @@ class MonitorWebservice(totallyMissingResourceHandler: RejectionHandler)(implici
 
 
   @Path("/sse/duplicates/{dupId}")
-  @ApiOperation(value = "BridgeScorer server set event on a duplicate match", notes = "", nickname = "MonitorWebserviceroute",
-                protocols="WS, WSS", httpMethod = "GET", code=101, response=classOf[String] )
-  @ApiImplicitParams(Array(
-    new ApiImplicitParam(name = "dupId", value = "ID of the board to get", required = true, dataType = "string", paramType = "path")
-  ))
-  @ApiResponses(Array(
-    new ApiResponse(code = 101, message = "Switching to websocket protocol", response=classOf[Void] )
-  ))
+  @GET
+  @Operation(
+      tags = Array("Duplicate"),
+      summary = "BridgeScorer server set event on a duplicate match",
+      operationId = "MonitorSSE",
+      parameters = Array(
+          new Parameter(
+              allowEmptyValue=false,
+              description="ID of the match to get",
+              in=ParameterIn.PATH,
+              name="dupId",
+              required=true,
+              schema=new Schema(`type`="string")
+          )
+      ),
+      responses = Array(
+          new ApiResponse(
+              responseCode = "200",
+              description = "Server sent event stream starting",
+              content = Array(
+                  new Content(
+                      mediaType = "text/event-stream",
+                      schema = new Schema( implementation=classOf[String] )
+                  )
+              )
+          ),
+          new ApiResponse(
+              responseCode = "404",
+              description = "Does not exist",
+              content = Array(
+                  new Content(
+                      mediaType = "application/json",
+                      schema = new Schema(implementation = classOf[RestMessage])
+                  )
+              )
+          )
+
+      )
+  )
   def routesse = {
     import akka.http.scaladsl.marshalling.sse.EventStreamMarshalling._
     import akka.http.scaladsl.model.sse.ServerSentEvent

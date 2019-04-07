@@ -5,7 +5,6 @@ import com.example.data.Board
 import com.example.data.MatchDuplicate
 import akka.event.Logging
 import akka.event.Logging._
-import io.swagger.annotations._
 import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.server.Directives._
 import akka.stream.Materializer
@@ -21,6 +20,14 @@ import com.example.data.SystemTime
 import akka.http.scaladsl.model.headers.Location
 import scala.util.Success
 import scala.util.Failure
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.responses.ApiResponse
+import io.swagger.v3.oas.annotations.media.Content
+import io.swagger.v3.oas.annotations.media.ArraySchema
+import io.swagger.v3.oas.annotations.media.Schema
+import io.swagger.v3.oas.annotations.tags.Tags
+import io.swagger.v3.oas.annotations.tags.Tag
+import javax.ws.rs.GET
 
 /**
  * Rest API implementation for the board resource.
@@ -29,7 +36,7 @@ import scala.util.Failure
  * swagger annotations.
  */
 @Path( "/rest/duplicatesummaries" )
-@Api(tags= Array("Duplicate"), description = "Operations about duplicate summaries.", produces="application/json", protocols="http, https")
+@Tags( Array( new Tag(name="Duplicate")))
 trait RestDuplicateSummary extends HasActorSystem {
 
   private lazy val log = Logging(actorSystem, classOf[RestDuplicate])
@@ -49,10 +56,28 @@ trait RestDuplicateSummary extends HasActorSystem {
 //      }
   }
 
-  @ApiOperation(value = "Get all duplicate matches", notes = "Returns a list of matches.", response=classOf[DuplicateSummary], responseContainer="List", nickname = "getDuplicateSummary", httpMethod = "GET")
-  @ApiResponses(Array(
-    new ApiResponse(code = 200, message = "A list of match summaries, as a JSON array", response=classOf[DuplicateSummary], responseContainer="List")
-  ))
+  @GET
+  @Operation(
+      summary = "Get all duplicate matches",
+      description = "Returns a list of matches.",
+      operationId = "getDuplicateSummaries",
+      responses = Array(
+          new ApiResponse(
+              responseCode = "200",
+              description = "A list of match summaries, as a JSON array",
+              content = Array(
+                  new Content(
+                      mediaType = "application/json",
+                      array = new ArraySchema(
+                          minItems = 0,
+                          uniqueItems = true,
+                          schema = new Schema( implementation=classOf[DuplicateSummary] )
+                      )
+                  )
+              )
+          )
+      )
+  )
   def getDuplicateSummaries =
 //    logRequest("routeDuplicateSummaries", DebugLevel ) { logResult("routeDuplicateSummaries", DebugLevel ) {
       get {

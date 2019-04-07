@@ -1,35 +1,35 @@
 package com.example.data
 
-import io.swagger.annotations._
 import scala.annotation.meta._
 import com.example.data.SystemTime.Timestamp
+import io.swagger.v3.oas.annotations.media.Schema
 
 /**
  * @author werewolf
  */
-@ApiModel(description = "The result of playing a hand")
+@Schema(description = "The result of playing a hand")
 case class Hand(
-    @(ApiModelProperty @field)(value="The ID of a hand", required=true)
+    @Schema(description="The ID of a hand", required=true)
     id: String,
-    @(ApiModelProperty @field)(value="The number of tricks in the bid", required=true)
+    @Schema(description="The number of tricks in the bid", required=true, minimum="0", maximum="7")
     contractTricks: Int,
-    @(ApiModelProperty @field)(value="The suit of the bid", required=true)
+    @Schema(description="The suit of the bid", required=true, `type`="enum", allowableValues=Array("N","S","H","D","C"))
     contractSuit: String,
-    @(ApiModelProperty @field)(value="The doubling of the contract", required=true)
+    @Schema(description="The doubling of the contract", required=true, `type`="enum", allowableValues=Array("N","D","R"))
     contractDoubled: String,
-    @(ApiModelProperty @field)(value="The declarer", required=true)
+    @Schema(description="The declarer", required=true, `type`="enum", allowableValues=Array("N","S","E","W"))
     declarer: String,
-    @(ApiModelProperty @field)(value="true if NS was vulnerable", required=true)
+    @Schema(description="true if NS was vulnerable", required=true)
     nsVul: Boolean,
-    @(ApiModelProperty @field)(value="true if EW was vulnerable", required=true)
+    @Schema(description="true if EW was vulnerable", required=true)
     ewVul: Boolean,
-    @(ApiModelProperty @field)(value="true if the contract was made", required=true)
+    @Schema(description="true if the contract was made", required=true)
     madeContract: Boolean,
-    @(ApiModelProperty @field)(value="The number of tricks made or down", required=true)
+    @Schema(description="The number of tricks made or down", required=true, minimum="0", maximum="13")
     tricks: Int,
-    @(ApiModelProperty @field)(value="when the duplicate hand was created", required=true)
+    @Schema(description="when the duplicate hand was created", required=true)
     created: Timestamp,
-    @(ApiModelProperty @field)(value="when the duplicate hand was last updated", required=true)
+    @Schema(description="when the duplicate hand was last updated", required=true)
     updated: Timestamp ) {
   require(0<=contractTricks && contractTricks <= 7)
   require(validContract())

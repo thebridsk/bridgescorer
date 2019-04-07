@@ -5,7 +5,6 @@ import com.example.data.Board
 import com.example.data.MatchDuplicate
 import akka.event.Logging
 import akka.event.Logging._
-import io.swagger.annotations._
 import akka.http.scaladsl.model.StatusCodes._
 import akka.http.scaladsl.server.Directives._
 import akka.stream.Materializer
@@ -24,6 +23,21 @@ import scala.util.Failure
 import akka.http.scaladsl.model.StatusCodes
 import scala.concurrent.ExecutionContext.Implicits.global
 import com.example.backend.BridgeNestedResources._
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.responses.ApiResponse
+import io.swagger.v3.oas.annotations.media.Schema
+import io.swagger.v3.oas.annotations.media.ArraySchema
+import io.swagger.v3.oas.annotations.media.Content
+import io.swagger.v3.oas.annotations.Parameter
+import io.swagger.v3.oas.annotations.enums.ParameterIn
+import io.swagger.v3.oas.annotations.parameters.RequestBody
+import io.swagger.v3.oas.annotations.headers.Header
+import io.swagger.v3.oas.annotations.tags.Tags
+import io.swagger.v3.oas.annotations.tags.Tag
+import javax.ws.rs.GET
+import javax.ws.rs.POST
+import javax.ws.rs.PUT
+import javax.ws.rs.DELETE
 
 /**
  * Rest API implementation for the board resource.
@@ -32,7 +46,7 @@ import com.example.backend.BridgeNestedResources._
  * swagger annotations.
  */
 @Path( "/rest/duplicates" )
-@Api(tags= Array("Duplicate"), description = "Operations about duplicates.", produces="application/json", protocols="http, https")
+@Tags( Array( new Tag(name="Duplicate")))
 trait RestDuplicate extends HasActorSystem {
 
   private lazy val log = Logging(actorSystem, classOf[RestDuplicate])
@@ -57,10 +71,28 @@ trait RestDuplicate extends HasActorSystem {
 //      }
   }
 
-  @ApiOperation(value = "Get all duplicate matches", notes = "Returns a list of matches.", response=classOf[MatchDuplicate], responseContainer="List", nickname = "getDuplicates", httpMethod = "GET")
-  @ApiResponses(Array(
-    new ApiResponse(code = 200, message = "A list of matches, as a JSON array", response=classOf[MatchDuplicate], responseContainer="List")
-  ))
+  @GET
+  @Operation(
+      summary = "Get all duplicate matches",
+      description = "Returns a list of matches.",
+      operationId = "getDuplicates",
+      responses = Array(
+          new ApiResponse(
+              responseCode = "200",
+              description = "A list of matches, as a JSON array",
+              content = Array(
+                  new Content(
+                      mediaType = "application/json",
+                      array = new ArraySchema(
+                          minItems = 0,
+                          uniqueItems = true,
+                          schema = new Schema( implementation=classOf[MatchDuplicate] )
+                      )
+                  )
+              )
+          )
+      )
+  )
   def getDuplicates = pathEnd {
     get {
       resourceMap( store.readAll() )
@@ -68,14 +100,45 @@ trait RestDuplicate extends HasActorSystem {
   }
 
   @Path("/{dupId}")
-  @ApiOperation(value = "Get the match by ID", notes = "", response=classOf[MatchDuplicate], nickname = "getDuplicateById", httpMethod = "GET")
-  @ApiImplicitParams(Array(
-    new ApiImplicitParam(name = "dupId", value = "ID of the board to get", required = true, dataType = "string", paramType = "path")
-  ))
-  @ApiResponses(Array(
-    new ApiResponse(code = 200, message = "The board, as a JSON object", response=classOf[MatchDuplicate]),
-    new ApiResponse(code = 404, message = "Does not exist.", response=classOf[RestMessage])
-  ))
+  @GET
+  @Operation(
+      summary = "Get the match by ID",
+      description = "Returns the specified match.",
+      operationId = "getDuplicateById",
+      parameters = Array(
+          new Parameter(
+              allowEmptyValue=false,
+              description="ID of the match to get",
+              in=ParameterIn.PATH,
+              name="dupId",
+              required=true,
+              schema=new Schema(`type`="string")
+          )
+      ),
+      responses = Array(
+          new ApiResponse(
+              responseCode = "200",
+              description = "A match, as a JSON object",
+              content = Array(
+                  new Content(
+                      mediaType = "application/json",
+                      schema = new Schema( implementation=classOf[MatchDuplicate] )
+                  )
+              )
+          ),
+          new ApiResponse(
+              responseCode = "404",
+              description = "Does not exist",
+              content = Array(
+                  new Content(
+                      mediaType = "application/json",
+                      schema = new Schema(implementation = classOf[RestMessage])
+                  )
+              )
+          )
+
+      )
+  )
   def getDuplicate = logRequest("RestDuplicate.getDuplicate", DebugLevel) { logResult("RestDuplicate.getDuplicate") { get {
     pathPrefix( """[a-zA-Z0-9]+""".r ) { id: Id.MatchDuplicate =>
       pathEndOrSingleSlash {
@@ -92,22 +155,85 @@ trait RestDuplicate extends HasActorSystem {
     }
   }}
 
-  @ApiOperation(value = "Create a duplicate match", notes = "", response=classOf[MatchDuplicate], nickname = "createDuplicate", httpMethod = "POST", code=201)
-  @ApiImplicitParams(Array(
-    new ApiImplicitParam(name = "test", value = "If present, create test match", required = false, dataType = "string", paramType = "query"),
-    new ApiImplicitParam(name = "default", value = "If present, indicates boards and hands should be added.  Default movements is Armonk2Tables, default boards is ArmonkBoards", required = false, dataType = "string", paramType = "query"),
-    new ApiImplicitParam(name = "boards", value = "If present, indicates which boards to use", allowableValues="StandardBoards, ArmonkBoards", required = false, dataType = "string", paramType = "query"),
-    new ApiImplicitParam(name = "movements", value = "If present, indicates which movements to use", allowableValues="Howell3TableNoRelay, Mitchell3Table, Howell2Table5Teams, Armonk2Tables", required = false, dataType = "string", paramType = "query"),
-    new ApiImplicitParam(name = "body", value = "duplicate Match to create", dataTypeClass = classOf[MatchDuplicate], required = true, paramType = "body")
-  ))
-  @ApiResponses(Array(
-    new ApiResponse(code = 201, message = "The created match's JSON", response=classOf[MatchDuplicate],
-        responseHeaders= Array(
-            new ResponseHeader( name="Location", description="The URL of the newly created resource", response=classOf[String] )
-            )
-        ),
-    new ApiResponse(code = 400, message = "Bad request", response=classOf[RestMessage])
-  ))
+  @POST
+  @Operation(
+      summary = "Create a duplicate match",
+      operationId = "postDuplicate",
+      parameters = Array(
+          new Parameter(
+              name = "test",
+              in = ParameterIn.QUERY,
+              allowEmptyValue = true,
+              description = "If present, create test match, value is ignored.",
+              required = false,
+              schema = new Schema(implementation=classOf[String]),
+          ),
+          new Parameter(
+              name = "default",
+              in = ParameterIn.QUERY,
+              allowEmptyValue = true,
+              description = "If present, indicates boards and hands should be added.  Default movements is Armonk2Tables, default boards is ArmonkBoards, value is ignored.",
+              required = false,
+              schema = new Schema(implementation=classOf[String]),
+          ),
+          new Parameter(
+              name = "boards",
+              in = ParameterIn.QUERY,
+              allowEmptyValue = false,
+              description = "If present, indicates which boards to use, example values: StandardBoards, ArmonkBoards",
+              required = false,
+              schema = new Schema(implementation=classOf[String]),
+          ),
+          new Parameter(
+              name = "movements",
+              in = ParameterIn.QUERY,
+              allowEmptyValue = false,
+              description = "If present, indicates which movements to use, example values: Howell3TableNoRelay, Mitchell3Table, Howell2Table5Teams, Armonk2Tables",
+              required = false,
+              schema = new Schema(implementation=classOf[String]),
+          ),
+      ),
+      requestBody = new RequestBody(
+          description = "duplicate Match to create",
+          content = Array(
+              new Content(
+                  mediaType = "application/json",
+                  schema = new Schema(
+                      implementation = classOf[MatchDuplicate]
+                  )
+              )
+          )
+      ),
+      responses = Array(
+          new ApiResponse(
+              responseCode = "201",
+              description = "The created match's JSON",
+              content = Array(
+                  new Content(
+                      mediaType = "application/json",
+                      schema = new Schema( implementation=classOf[MatchDuplicate] )
+                  )
+              ),
+              headers = Array(
+                  new Header(
+                      name="Location",
+                      description="The URL of the newly created resource",
+                      schema = new Schema( implementation=classOf[String] )
+                  )
+              )
+          ),
+          new ApiResponse(
+              responseCode = "400",
+              description = "Bad request",
+              content = Array(
+                  new Content(
+                      mediaType = "application/json",
+                      schema = new Schema(implementation = classOf[RestMessage])
+                  )
+              )
+          )
+      )
+  )
   def postDuplicate =
     logRequest("RestDuplicate.postDuplicate") {
       logResult("RestDuplicate.postDuplicate") {
@@ -142,16 +268,58 @@ trait RestDuplicate extends HasActorSystem {
 
 
   @Path("/{dupId}")
-  @ApiOperation(value = "Update a duplicate match", notes = "", response=classOf[MatchDuplicate], nickname = "updateDuplicate", httpMethod = "PUT", code=204)
-  @ApiImplicitParams(Array(
-    new ApiImplicitParam(name = "dupId", value = "ID of the match to delete", required = true, dataType = "string", paramType = "path"),
-    new ApiImplicitParam(name = "body", value = "The updated duplicate Match", dataTypeClass = classOf[MatchDuplicate], required = true, paramType = "body")
-  ))
-  @ApiResponses(Array(
-    new ApiResponse(code = 204, message = "Duplicate match updated" ),
-    new ApiResponse(code = 404, message = "Does not exist.", response=classOf[RestMessage]),
-    new ApiResponse(code = 400, message = "Bad request", response=classOf[RestMessage])
-  ))
+  @PUT
+  @Operation(
+      summary = "Update a duplicate match",
+      operationId = "updateDuplicate",
+      parameters = Array(
+          new Parameter(
+              allowEmptyValue=false,
+              description="ID of the match to update",
+              in=ParameterIn.PATH,
+              name="dupId",
+              required=true,
+              schema=new Schema(`type`="string")
+          )
+      ),
+      requestBody = new RequestBody(
+          description = "The updated duplicate Match",
+          content = Array(
+              new Content(
+                  mediaType = "application/json",
+                  schema = new Schema(
+                      implementation = classOf[MatchDuplicate]
+                  )
+              )
+          )
+      ),
+      responses = Array(
+          new ApiResponse(
+              responseCode = "204",
+              description = "Duplicate match updated",
+          ),
+          new ApiResponse(
+              responseCode = "404",
+              description = "Does not exist",
+              content = Array(
+                  new Content(
+                      mediaType = "application/json",
+                      schema = new Schema(implementation = classOf[RestMessage])
+                  )
+              )
+          ),
+          new ApiResponse(
+              responseCode = "400",
+              description = "Bad request",
+              content = Array(
+                  new Content(
+                      mediaType = "application/json",
+                      schema = new Schema(implementation = classOf[RestMessage])
+                  )
+              )
+          )
+      )
+  )
   def putDuplicate =
     logRequest("RestDuplicate.putDuplicate") {
       logResult("RestDuplicate.putDuplicate") {
@@ -167,13 +335,27 @@ trait RestDuplicate extends HasActorSystem {
 
 
   @Path("/{dupId}")
-  @ApiOperation(value = "Delete a match by ID", notes = "", response=classOf[RestMessage], nickname = "deleteDuplicateById", httpMethod = "DELETE", code=204)
-  @ApiImplicitParams(Array(
-    new ApiImplicitParam(name = "dupId", value = "ID of the match to delete", required = true, dataType = "string", paramType = "path")
-  ))
-  @ApiResponses(Array(
-    new ApiResponse(code = 204, message = "duplicate deleted." )
-  ))
+  @DELETE
+  @Operation(
+      summary = "Delete a match by ID",
+      operationId = "deleteDuplicateById",
+      parameters = Array(
+          new Parameter(
+              allowEmptyValue=false,
+              description="ID of the match to delete",
+              in=ParameterIn.PATH,
+              name="dupId",
+              required=true,
+              schema=new Schema(`type`="string")
+          )
+      ),
+      responses = Array(
+          new ApiResponse(
+              responseCode = "204",
+              description = "duplicate deleted.",
+          )
+      )
+  )
   def deleteDuplicate = delete {
     path( """[a-zA-Z0-9]+""".r ) {
       id: Id.MatchDuplicate => {

@@ -3,6 +3,7 @@ package com.example.data.duplicate.suggestion
 import com.example.data.DuplicateSummary
 import utils.logging.Logger
 import com.example.data.SystemTime
+import io.swagger.v3.oas.annotations.media.Schema
 
 /**
  * Constructor
@@ -43,7 +44,9 @@ case class NeverPair( player1: String, player2: String )
 case class DuplicateSuggestions( players: List[String],
                                  numberSuggestion: Int,
                                  suggestions: Option[List[Suggestion]],
+                                 @Schema( `type`="number", format="double", required=false, description="Calculation time in ms")
                                  calcTimeMillis: Option[Double],
+                                 @Schema( `type`="integer", format="int32", required=false)
                                  history: Option[Int],
                                  neverPair: Option[List[NeverPair]]
                                ) {

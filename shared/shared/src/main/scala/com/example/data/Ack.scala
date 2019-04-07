@@ -1,12 +1,13 @@
 package com.example.data
 
-import io.swagger.annotations._
 import scala.annotation.meta._
+import io.swagger.v3.oas.annotations.media.Schema
 
 /**
  * @author werewolf
  */
-@ApiModel(description = "An ack of a message sent to the server, sent over a websocket interface.")
+@Schema(description = "An ack of a message sent to the server, sent over a websocket interface.")
 case class Ack(
-    @(ApiModelProperty @field)(value="The id of the message sent to the server", required=true)
-    id: String )
+    @Schema(description="The id of the message sent to the server", required=true)
+    id: String
+)

@@ -106,11 +106,11 @@ class SwaggerTest extends FlatSpec with MustMatchers with BeforeAndAfterAll {
 
   behavior of "Swagger test of Bridge Server"
 
-  it should "get the swagger json" in {
+  it should "get the swagger.yaml" in {
     tcpSleep(15)
     implicit val webDriver = TestSession.webDriver
 
-    val ResponseFromHttp(status,headerloc,contentEncoding,resp,cd) = getHttp( TestServer.getUrl("/v1/api-docs/swagger.json") )
+    val ResponseFromHttp(status,headerloc,contentEncoding,resp,cd) = getHttp( TestServer.getUrl("/v1/api-docs/swagger.yaml") )
     resp must include regex """Scorekeeper for a Duplicate bridge, Chicago bridge, and Rubber bridge\."""
   }
 
@@ -119,7 +119,7 @@ class SwaggerTest extends FlatSpec with MustMatchers with BeforeAndAfterAll {
 
     val ResponseFromHttp(status,headerloc,contentEncoding,resp,cd) = getHttp( TestServer.getUrl("/v1/docs/") )
     status mustBe 308
-    headerloc mustBe Some("/public/swagger-ui-dist/index.html.gz?url=/v1/api-docs/swagger.json&validatorUrl=")
+    headerloc mustBe Some("/public/swagger-ui-dist/index.html.gz?url=/v1/api-docs/swagger.yaml&validatorUrl=")
 //    resp must include regex """\<html\>"""
   }
 
@@ -146,18 +146,18 @@ class SwaggerTest extends FlatSpec with MustMatchers with BeforeAndAfterAll {
     eventually {
       val we = find(xpath("//h2[contains(concat(' ', normalize-space(@class), ' '), ' title ')]"))
       val text = we.text
-      text mustBe "Duplicate Bridge Scorekeeper\n v1 "
+      text must startWith ( "Duplicate Bridge Scorekeeper" )
     }
   }
 
   it should "display the swagger docs going to /public/swagger-ui-dist/index.html.gz" in {
     implicit val webDriver = TestSession.webDriver
 
-    go to TestServer.getUrl("/public/swagger-ui-dist/index.html.gz?url=/v1/api-docs/swagger.json&validatorUrl=")
+    go to TestServer.getUrl("/public/swagger-ui-dist/index.html.gz?url=/v1/api-docs/swagger.yaml&validatorUrl=")
     eventually {
       val we = find(xpath("//h2[contains(concat(' ', normalize-space(@class), ' '), ' title ')]"))
       val text = we.text
-      text mustBe "Duplicate Bridge Scorekeeper\n v1 "
+      text must startWith ( "Duplicate Bridge Scorekeeper" )
     }
   }
 

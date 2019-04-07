@@ -4,31 +4,39 @@ import com.example.data.bridge.DuplicateBridge
 import com.example.data.SystemTime.Timestamp
 import com.example.data.bridge.DuplicateBridge.DuplicateScore
 
-import io.swagger.annotations._
 import scala.annotation.meta._
+import io.swagger.v3.oas.annotations.media.ArraySchema
+import io.swagger.v3.oas.annotations.media.Schema
 
-@ApiModel(value="DuplicateHand", description = "A hand from a duplicate match")
+@Schema(name="DuplicateHand", description = "A hand from a duplicate match")
 case class DuplicateHandV2 private(
-    @(ApiModelProperty @field)(value="The played hand.  Length of 0 indicates not played, length of 1 indicates played.", required=true)
+    @ArraySchema(
+        maxItems=1,
+        minItems=0,
+        uniqueItems=true,
+        schema=new Schema(implementation=classOf[Hand])
+//      description="The played hand.  Length of 0 indicates not played, length of 1 indicates played."
+    )
     played: List[Hand],
-    @(ApiModelProperty @field)(value="The table id of where the hand is played", required=true)
+    @Schema(description="The table id of where the hand is played", required=true)
     table: String,
-    @(ApiModelProperty @field)(value="The round the hand is played in", required=true)
+    @Schema(description="The round the hand is played in", required=true, minimum="1")
     round: Int,
-    @(ApiModelProperty @field)(value="The board id", required=true)
+    @Schema(description="The board id", required=true)
     board: Id.DuplicateBoard,
-    @(ApiModelProperty @field)(value="The team id of the team playing NS.  This is also the id of the DuplicateHand", required=true)
+    @Schema(description="The team id of the team playing NS.  This is also the id of the DuplicateHand", required=true)
     nsTeam: Id.Team,
-    @(ApiModelProperty @field)(value="true if player 1 of the NS team is the north player", required=true)
+    @Schema(description="true if player 1 of the NS team is the north player", required=true)
     nIsPlayer1: Boolean,
-    @(ApiModelProperty @field)(value="The team id of the team playing EW", required=true)
+    @Schema(description="The team id of the team playing EW", required=true)
     ewTeam: Id.Team,
-    @(ApiModelProperty @field)(value="true if player 1 of the EW team is the east player", required=true)
+    @Schema(description="true if player 1 of the EW team is the east player", required=true)
     eIsPlayer1: Boolean,
-    @(ApiModelProperty @field)(value="when the duplicate hand was created", required=true)
+    @Schema(description="when the duplicate hand was created", required=true)
     created: Timestamp,
-    @(ApiModelProperty @field)(value="when the duplicate hand was last updated", required=true)
-    updated: Timestamp ) {
+    @Schema(description="when the duplicate hand was last updated", required=true)
+    updated: Timestamp
+) {
 
   def equalsIgnoreModifyTime( other: DuplicateHandV2 ) = table==other.table &&
                                                        round==other.round &&
@@ -94,7 +102,7 @@ case class DuplicateHandV2 private(
   def setPlayer1North( flag: Boolean ) = copy( nIsPlayer1=flag, updated=SystemTime.currentTimeMillis() )
   def setPlayer1East( flag: Boolean ) = copy( eIsPlayer1=flag, updated=SystemTime.currentTimeMillis() )
 
-  @ApiModelProperty(hidden = true)
+  @Schema(hidden = true)
   def convertToCurrentVersion() = {
     DuplicateHandV2( hand.toList,
                      table,

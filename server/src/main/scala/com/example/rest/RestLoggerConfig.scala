@@ -4,7 +4,6 @@ import com.example.data.LoggerConfig
 import com.example.data.Ack
 import akka.event.Logging
 import akka.event.Logging._
-import io.swagger.annotations._
 import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.server.Directives._
 import akka.stream.Materializer
@@ -28,6 +27,14 @@ import scala.util.Success
 import scala.util.Failure
 import com.example.backend.resource.Implicits
 import java.util.concurrent.atomic.AtomicInteger
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.responses.ApiResponse
+import io.swagger.v3.oas.annotations.media.Content
+import io.swagger.v3.oas.annotations.media.Schema
+import io.swagger.v3.oas.annotations.media.ArraySchema
+import io.swagger.v3.oas.annotations.tags.Tags
+import io.swagger.v3.oas.annotations.tags.Tag
+import javax.ws.rs.GET
 
 case class ServerPort( httpPort: Option[Int], httpsPort: Option[Int] )
 
@@ -46,7 +53,6 @@ object RestLoggerConfig {
  * swagger annotations.
  */
 @Path("/rest")
-@Api(tags= Array("Utility"), description = "Utility operations.", produces="application/json", protocols="http, https")
 trait RestLoggerConfig extends HasActorSystem {
 
   /**
@@ -75,12 +81,34 @@ trait RestLoggerConfig extends HasActorSystem {
   }
 
   @Path("/loggerConfig")
-//  @Api(tags= Array("utility"), description = "Logger configuration", produces="application/json")
-  @ApiOperation(value = "Get the logger config", response=classOf[LoggerConfig], notes = "", nickname = "getLoggerConfig", httpMethod = "GET")
-  @ApiResponses(Array(
-    new ApiResponse(code = 200, message = "The logger config, as a JSON object", response=classOf[LoggerConfig]),
-    new ApiResponse(code = 404, message = "Does not exist.", response=classOf[RestMessage])
-  ))
+  @GET
+  @Operation(
+      tags = Array("Server"),
+      summary = "Get the logger config",
+      operationId = "getLoggerConfig",
+      responses = Array(
+          new ApiResponse(
+              responseCode = "200",
+              description = "The logger config, as a JSON object",
+              content = Array(
+                  new Content(
+                      mediaType = "application/json",
+                      schema = new Schema( implementation=classOf[LoggerConfig] )
+                  )
+              )
+          ),
+          new ApiResponse(
+              responseCode = "404",
+              description = "Does not exist",
+              content = Array(
+                  new Content(
+                      mediaType = "application/json",
+                      schema = new Schema(implementation = classOf[RestMessage])
+                  )
+              )
+          )
+      )
+  )
   def getLoggerConfig = pathEndOrSingleSlash {
     get {
       extractClientIP { ip => {
@@ -102,12 +130,38 @@ trait RestLoggerConfig extends HasActorSystem {
   }
 
   @Path("/serverversion")
-//  @Api(tags= Array("utility"), description = "Server versions", produces="application/json")
-  @ApiOperation(value = "Get the server version", notes = "", response=classOf[ServerVersion], responseContainer="List", nickname = "getServerVersion", httpMethod = "GET")
-  @ApiResponses(Array(
-    new ApiResponse(code = 200, message = "The server version", response=classOf[ServerVersion], responseContainer="List"),
-    new ApiResponse(code = 404, message = "Does not exist.", response=classOf[RestMessage])
-  ))
+  @GET
+  @Operation(
+      tags = Array("Server"),
+      summary = "Get the server version",
+      operationId = "getServerVersion",
+      responses = Array(
+          new ApiResponse(
+              responseCode = "200",
+              description = "The server versions",
+              content = Array(
+                  new Content(
+                      mediaType = "application/json",
+                      array = new ArraySchema(
+                          minItems = 0,
+                          uniqueItems = true,
+                          schema = new Schema( implementation=classOf[ServerVersion] )
+                      )
+                  )
+              )
+          ),
+          new ApiResponse(
+              responseCode = "404",
+              description = "Does not exist",
+              content = Array(
+                  new Content(
+                      mediaType = "application/json",
+                      schema = new Schema(implementation = classOf[RestMessage])
+                  )
+              )
+          )
+      )
+  )
   def getServerVersion = pathEndOrSingleSlash {
     get {
       val serverversion = List(
@@ -120,12 +174,38 @@ trait RestLoggerConfig extends HasActorSystem {
   }
 
   @Path("/serverurls")
-//  @Api(tags= Array("utility"), description = "Server URLs", produces="application/json")
-  @ApiOperation(value = "Get the server URL", notes = "", response=classOf[ServerURL], responseContainer="List", nickname = "getServerURL", httpMethod = "GET")
-  @ApiResponses(Array(
-    new ApiResponse(code = 200, message = "The server URLs", response=classOf[ServerURL], responseContainer="List"),
-    new ApiResponse(code = 404, message = "Does not exist.", response=classOf[RestMessage])
-  ))
+  @GET
+  @Operation(
+      tags = Array("Server"),
+      summary = "Get the server URLs",
+      operationId = "getServerURL",
+      responses = Array(
+          new ApiResponse(
+              responseCode = "200",
+              description = "The server URLs",
+              content = Array(
+                  new Content(
+                      mediaType = "application/json",
+                      array = new ArraySchema(
+                          minItems = 0,
+                          uniqueItems = true,
+                          schema = new Schema( implementation=classOf[ServerURL] )
+                      )
+                  )
+              )
+          ),
+          new ApiResponse(
+              responseCode = "404",
+              description = "Does not exist",
+              content = Array(
+                  new Content(
+                      mediaType = "application/json",
+                      schema = new Schema(implementation = classOf[RestMessage])
+                  )
+              )
+          )
+      )
+  )
   def getServerURL = pathEndOrSingleSlash {
     get {
       val serverurl = List(serverURL())
@@ -134,12 +214,38 @@ trait RestLoggerConfig extends HasActorSystem {
   }
 
   @Path("/boardsetsandmovements")
-//  @Api(tags= Array("utility"), description = "Server URLs", produces="application/json")
-  @ApiOperation(value = "Get the boardsets and movements", notes = "", response=classOf[BoardSetsAndMovements], responseContainer="List", nickname = "getBoardsetsAndMovements", httpMethod = "GET")
-  @ApiResponses(Array(
-    new ApiResponse(code = 200, message = "The boardsets and movements", response=classOf[BoardSetsAndMovements], responseContainer="List"),
-    new ApiResponse(code = 404, message = "Does not exist.", response=classOf[RestMessage])
-  ))
+  @GET
+  @Operation(
+      tags = Array("Duplicate"),
+      summary = "Get the boardsets and movements",
+      operationId = "getBoardSetsAndMovements",
+      responses = Array(
+          new ApiResponse(
+              responseCode = "200",
+              description = "The boardsets and movements",
+              content = Array(
+                  new Content(
+                      mediaType = "application/json",
+                      array = new ArraySchema(
+                          minItems = 0,
+                          uniqueItems = true,
+                          schema = new Schema( implementation=classOf[BoardSetsAndMovements] )
+                      )
+                  )
+              )
+          ),
+          new ApiResponse(
+              responseCode = "404",
+              description = "Does not exist",
+              content = Array(
+                  new Content(
+                      mediaType = "application/json",
+                      schema = new Schema(implementation = classOf[RestMessage])
+                  )
+              )
+          )
+      )
+  )
   def getBoardSetsAndMovements = pathEndOrSingleSlash {
     get {
       val fbs = restService.boardSets.readAll().map { r =>

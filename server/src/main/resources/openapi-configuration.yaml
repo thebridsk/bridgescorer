@@ -1,0 +1,4 @@
+
+readAllResources: false
+cacheTTL: 300000
+prettyPrint: xxx

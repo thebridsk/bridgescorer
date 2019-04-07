@@ -3,8 +3,8 @@ package com.example.data
 import com.example.data.bridge.PlayerPosition
 import com.example.data.SystemTime.Timestamp
 
-import io.swagger.annotations._
 import scala.annotation.meta._
+import io.swagger.v3.oas.annotations.media.Schema
 
 /**
  * @author werewolf
@@ -15,22 +15,28 @@ import scala.annotation.meta._
  * @param dealer the dealer on the board
  * @param hands map nsTeam -> DuplicateHand
  */
-@ApiModel(description = "A board from a duplicate match")
+@Schema(description = "A board from a duplicate match")
 case class BoardV1(
-    @(ApiModelProperty @field)(value="The ID of the board", required=true)
+    @Schema(description="The ID of the board", required=true, implementation=classOf[String])
     id: Id.DuplicateBoard,
-    @(ApiModelProperty @field)(value="True if NS is vulnerable on the board", required=true)
+    @Schema(description="True if NS is vulnerable on the board", required=true)
     nsVul: Boolean,
-    @(ApiModelProperty @field)(value="True if EW is vulnerable on the board", required=true)
+    @Schema(description="True if EW is vulnerable on the board", required=true)
     ewVul: Boolean,
-    @(ApiModelProperty @field)(value="The dealer for the board", required=true)
+    @Schema(
+        description="the dealer for the board",
+        required=true,
+        allowableValues=Array("N", "S", "E", "W"),
+        `type`="enum"
+    )
     dealer: String,
-    @(ApiModelProperty @field)(value="The duplicate hands for the board, the key is the team ID of the NS team.", required=true)
+    @Schema(description="The duplicate hands for the board, the key is the team ID of the NS team.", required=true)
     hands: Map[Id.DuplicateHand,DuplicateHandV1],
-    @(ApiModelProperty @field)(value="when the duplicate hand was created", required=true)
+    @Schema(description="when the duplicate hand was created", required=true)
     created: Timestamp,
-    @(ApiModelProperty @field)(value="when the duplicate hand was last updated", required=true)
-    updated: Timestamp ) {
+    @Schema(description="when the duplicate hand was last updated", required=true)
+    updated: Timestamp
+) {
 
   def equalsIgnoreModifyTime( other: BoardV1 ) = id==other.id &&
                                                nsVul==other.nsVul &&
@@ -130,10 +136,10 @@ case class BoardV1(
 
   }
 
-  @ApiModelProperty(hidden = true)
+  @Schema(hidden = true)
   def getBoardInSet() = BoardInSet(Id.boardIdToBoardNumber(id).toInt,nsVul,ewVul,dealer)
 
-  @ApiModelProperty(hidden = true)
+  @Schema(hidden = true)
   def convertToCurrentVersion() = BoardV2( id,
                                            nsVul,
                                            ewVul,

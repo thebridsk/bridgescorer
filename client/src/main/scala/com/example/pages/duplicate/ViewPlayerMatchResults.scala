@@ -5,7 +5,6 @@ import com.example.data.Team
 import com.example.data.bridge.MatchDuplicateScore
 import utils.logging.Logger
 
-import io.swagger.annotations.ApiModel
 import japgolly.scalajs.react._
 import com.example.react.Utils._
 import japgolly.scalajs.react.vdom.html_<^._

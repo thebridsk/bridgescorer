@@ -7,7 +7,6 @@ import com.example.data.Team
 import com.example.data.Id
 import akka.event.Logging
 import akka.event.Logging._
-import io.swagger.annotations._
 import akka.http.scaladsl.model.StatusCode
 import akka.http.scaladsl.model.StatusCodes._
 import akka.http.scaladsl.server.Directives._
@@ -22,6 +21,22 @@ import com.example.backend.resource.Resources
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import com.example.backend.resource.Result
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.responses.ApiResponse
+import io.swagger.v3.oas.annotations.media.Schema
+import io.swagger.v3.oas.annotations.media.ArraySchema
+import io.swagger.v3.oas.annotations.media.Content
+import io.swagger.v3.oas.annotations.Parameter
+import io.swagger.v3.oas.annotations.enums.ParameterIn
+import io.swagger.v3.oas.annotations.parameters.RequestBody
+import io.swagger.v3.oas.annotations.headers.Header
+import io.swagger.v3.oas.annotations.Hidden
+import io.swagger.v3.oas.annotations.tags.Tags
+import io.swagger.v3.oas.annotations.tags.Tag
+import javax.ws.rs.GET
+import javax.ws.rs.POST
+import javax.ws.rs.PUT
+import javax.ws.rs.DELETE
 
 /**
  * Rest API implementation for the board resource.
@@ -30,7 +45,7 @@ import com.example.backend.resource.Result
  * swagger annotations.
  */
 @Path("/rest/duplicates/{dupId}/teams")
-@Api(tags= Array("Duplicate"), description = "Operations about teams.", produces="application/json", protocols="http, https")
+@Tags( Array( new Tag(name="Duplicate")))
 class RestNestedTeam {
 
   val resName = "teams"
@@ -40,7 +55,7 @@ class RestNestedTeam {
   /**
    * spray route for all the methods on this resource
    */
-  def route(implicit @ApiParam(hidden=true) res: Resources[Id.Team, Team]) =
+  def route(implicit @Hidden res: Resources[Id.Team, Team]) =
     logRequest("RestDuplicate.nestedTeam", DebugLevel) { logResult("RestDuplicate.nestedTeam") {
       pathPrefix(resName) {
         logRequestResult("RestDuplicate.nestedTeam", DebugLevel) {
@@ -50,32 +65,92 @@ class RestNestedTeam {
     }
   }
 
-  @ApiOperation(value = "Get all teams", notes = "Returns a list of teams.", response=classOf[Team], responseContainer="List", nickname = "getTeams", httpMethod = "GET")
-  @ApiImplicitParams(Array(
-    new ApiImplicitParam(name = "dupId", value = "ID of the match duplicate that contains the teams to manipulate",
-                         required = true, dataType = "string", paramType = "path")
-  ))
-  @ApiResponses(Array(
-    new ApiResponse(code = 200, message = "A list of teams, as a JSON array", response=classOf[Team], responseContainer="List")
-  ))
-  def getTeams(implicit @ApiParam(hidden=true) res: Resources[Id.Team, Team]) = pathEnd {
+  @GET
+  @Operation(
+      summary = "Get all teams",
+      description = "Returns a list of teams.",
+      operationId = "getTeams",
+      parameters = Array(
+          new Parameter(
+              allowEmptyValue=false,
+              description="ID of the match duplicate that contains the teams to manipulate",
+              in=ParameterIn.PATH,
+              name="dupId",
+              required=true,
+              schema=new Schema(`type`="string")
+          )
+      ),
+      responses = Array(
+          new ApiResponse(
+              responseCode = "200",
+              description = "A list of teams, as a JSON array",
+              content = Array(
+                  new Content(
+                      mediaType = "application/json",
+                      array = new ArraySchema(
+                          minItems = 0,
+                          uniqueItems = true,
+                          schema = new Schema( implementation=classOf[Team] )
+                      )
+                  )
+              )
+          )
+
+      )
+  )
+  def getTeams(implicit @Hidden res: Resources[Id.Team, Team]) = pathEnd {
     get {
       resourceMap( res.readAll() )
     }
   }
 
   @Path("/{teamId}")
-  @ApiOperation(value = "Get the team by ID", notes = "", response=classOf[Team], nickname = "getTeamById", httpMethod = "GET")
-  @ApiImplicitParams(Array(
-    new ApiImplicitParam(name = "dupId", value = "ID of the match duplicate that contains the teams to manipulate",
-                         required = true, dataType = "string", paramType = "path"),
-    new ApiImplicitParam(name = "teamId", value = "ID of the team to get", required = true, dataType = "string", paramType = "path")
-  ))
-  @ApiResponses(Array(
-    new ApiResponse(code = 200, message = "The team, as a JSON object", response=classOf[Team]),
-    new ApiResponse(code = 404, message = "Does not exist.", response=classOf[RestMessage])
-  ))
-  def getTeam(implicit @ApiParam(hidden=true) res: Resources[Id.Team, Team]) = logRequest("getTeam", DebugLevel) {
+  @GET
+  @Operation(
+      summary = "Get the team by ID",
+      operationId = "getTeamById",
+      parameters = Array(
+          new Parameter(
+              allowEmptyValue=false,
+              description="ID of the match duplicate that contains the teams to manipulate",
+              in=ParameterIn.PATH,
+              name="dupId",
+              required=true,
+              schema=new Schema(`type`="string")
+          ),
+          new Parameter(
+              allowEmptyValue=false,
+              description="ID of the team to get",
+              in=ParameterIn.PATH,
+              name="teamId",
+              required=true,
+              schema=new Schema(`type`="string")
+          )
+      ),
+      responses = Array(
+          new ApiResponse(
+              responseCode = "200",
+              description = "The team, as a JSON object",
+              content = Array(
+                  new Content(
+                      mediaType = "application/json",
+                      schema = new Schema( implementation=classOf[Team] )
+                  )
+              )
+          ),
+          new ApiResponse(
+              responseCode = "404",
+              description = "Does not exist",
+              content = Array(
+                  new Content(
+                      mediaType = "application/json",
+                      schema = new Schema(implementation = classOf[RestMessage])
+                  )
+              )
+          )
+      )
+  )
+  def getTeam(implicit @Hidden res: Resources[Id.Team, Team]) = logRequest("getTeam", DebugLevel) {
     get {
       path( """[a-zA-Z0-9]+""".r ) { id =>
         resource( res.select(id).read() )
@@ -83,21 +158,62 @@ class RestNestedTeam {
     }
   }
 
-  @ApiOperation(value = "Create a team", notes = "", response=classOf[Team], nickname = "createTeam", httpMethod = "POST", code=201)
-  @ApiImplicitParams(Array(
-    new ApiImplicitParam(name = "dupId", value = "ID of the match duplicate that contains the teams to manipulate",
-                         required = true, dataType = "string", paramType = "path"),
-    new ApiImplicitParam(name = "body", value = "team to create", dataTypeClass = classOf[Team], required = true, paramType = "body")
-  ))
-  @ApiResponses(Array(
-    new ApiResponse(code = 201, message = "The created team's JSON", response=classOf[Team],
-        responseHeaders= Array(
-            new ResponseHeader( name="Location", description="The URL of the newly created resource", response=classOf[String] )
-            )
-        ),
-    new ApiResponse(code = 400, message = "Bad request", response=classOf[RestMessage])
-  ))
-  def postTeam(implicit @ApiParam(hidden=true) res: Resources[Id.Team, Team]) = pathEnd {
+  @POST
+  @Operation(
+      summary = "Create a team",
+      operationId = "createTeam",
+      parameters = Array(
+          new Parameter(
+              allowEmptyValue=false,
+              description="ID of the match duplicate that contains the teams to manipulate",
+              in=ParameterIn.PATH,
+              name="dupId",
+              required=true,
+              schema=new Schema(`type`="string")
+          ),
+      ),
+      requestBody = new RequestBody(
+          description = "team to create",
+          content = Array(
+              new Content(
+                  mediaType = "application/json",
+                  schema = new Schema(
+                      implementation = classOf[Team]
+                  )
+              )
+          )
+      ),
+      responses = Array(
+          new ApiResponse(
+              responseCode = "201",
+              description = "The created team's JSON",
+              content = Array(
+                  new Content(
+                      mediaType = "application/json",
+                      schema = new Schema( implementation=classOf[Team] )
+                  )
+              ),
+              headers = Array(
+                  new Header(
+                      name="Location",
+                      description="The URL of the newly created resource",
+                      schema = new Schema( implementation=classOf[String] )
+                  )
+              )
+          ),
+          new ApiResponse(
+              responseCode = "400",
+              description = "Bad request",
+              content = Array(
+                  new Content(
+                      mediaType = "application/json",
+                      schema = new Schema(implementation = classOf[RestMessage])
+                  )
+              )
+          )
+      )
+  )
+  def postTeam(implicit @Hidden res: Resources[Id.Team, Team]) = pathEnd {
     post {
         entity(as[Team]) { hand =>
           resourceCreated( res.resourceURI, addIdToFuture(res.createChild(hand)) )
@@ -114,19 +230,67 @@ class RestNestedTeam {
     }
 
   @Path("/{teamId}")
-  @ApiOperation(value = "Update a team", notes = "", response=classOf[Team], nickname = "createTeam", httpMethod = "PUT", code=204)
-  @ApiImplicitParams(Array(
-    new ApiImplicitParam(name = "dupId", value = "ID of the match duplicate that contains the teams to manipulate",
-                         required = true, dataType = "string", paramType = "path"),
-    new ApiImplicitParam(name = "teamId", value = "ID of the team to delete", required = true, dataType = "string", paramType = "path"),
-    new ApiImplicitParam(name = "body", value = "team to create", dataTypeClass = classOf[Team], required = true, paramType = "body")
-  ))
-  @ApiResponses(Array(
-    new ApiResponse(code = 204, message = "Team updated" ),
-    new ApiResponse(code = 404, message = "Does not exist.", response=classOf[RestMessage]),
-    new ApiResponse(code = 400, message = "Bad request", response=classOf[RestMessage])
-  ))
-  def putTeam(implicit @ApiParam(hidden=true) res: Resources[Id.Team, Team]) = put {
+  @PUT
+  @Operation(
+      summary = "Update a team",
+      operationId = "updateTeam",
+      parameters = Array(
+          new Parameter(
+              allowEmptyValue=false,
+              description="ID of the match duplicate that contains the teams to manipulate",
+              in=ParameterIn.PATH,
+              name="dupId",
+              required=true,
+              schema=new Schema(`type`="string")
+          ),
+          new Parameter(
+              allowEmptyValue=false,
+              description="ID of the team to delete",
+              in=ParameterIn.PATH,
+              name="teamId",
+              required=true,
+              schema=new Schema(`type`="string")
+          ),
+      ),
+      requestBody = new RequestBody(
+          description = "team to update",
+          content = Array(
+              new Content(
+                  mediaType = "application/json",
+                  schema = new Schema(
+                      implementation = classOf[Team]
+                  )
+              )
+          )
+      ),
+      responses = Array(
+          new ApiResponse(
+              responseCode = "204",
+              description = "Team updated",
+          ),
+          new ApiResponse(
+              responseCode = "404",
+              description = "Does not exist.",
+              content = Array(
+                  new Content(
+                      mediaType = "application/json",
+                      schema = new Schema(implementation = classOf[RestMessage])
+                  )
+              )
+          ),
+          new ApiResponse(
+              responseCode = "400",
+              description = "Bad request",
+              content = Array(
+                  new Content(
+                      mediaType = "application/json",
+                      schema = new Schema(implementation = classOf[RestMessage])
+                  )
+              )
+          )
+      )
+  )
+  def putTeam(implicit @Hidden res: Resources[Id.Team, Team]) = put {
     path( """[a-zA-Z0-9]+""".r ) { id =>
       entity(as[Team]) { hand =>
         resourceUpdated( res.select(id).update(hand) )
@@ -135,14 +299,36 @@ class RestNestedTeam {
   }
 
   @Path("/{teamId}")
-  @ApiOperation(value = "Delete a team by ID", notes = "", response=classOf[RestMessage], nickname = "deleteTeamById", httpMethod = "DELETE", code=204)
-  @ApiImplicitParams(Array(
-    new ApiImplicitParam(name = "teamId", value = "ID of the team to delete", required = true, dataType = "string", paramType = "path")
-  ))
-  @ApiResponses(Array(
-    new ApiResponse(code = 204, message = "Team deleted." )
-  ))
-  def deleteTeam()(implicit @ApiParam(hidden=true) res: Resources[Id.Team, Team]) =
+  @DELETE
+  @Operation(
+      summary = "Delete a team by ID",
+      operationId = "deleteTeamById",
+      parameters = Array(
+          new Parameter(
+              allowEmptyValue=false,
+              description="ID of the duplicate that contains the team to manipulate",
+              in=ParameterIn.PATH,
+              name="dupId",
+              required=true,
+              schema=new Schema(`type`="string")
+          ),
+          new Parameter(
+              allowEmptyValue=false,
+              description="ID of the team to delete",
+              in=ParameterIn.PATH,
+              name="teamId",
+              required=true,
+              schema=new Schema(`type`="string")
+          ),
+      ),
+      responses = Array(
+          new ApiResponse(
+              responseCode = "204",
+              description = "Team deleted.",
+          ),
+      )
+  )
+  def deleteTeam()(implicit @Hidden res: Resources[Id.Team, Team]) =
     delete {
       path( """[a-zA-Z0-9]+""".r ) { id =>
         resourceDelete( res.select(id).delete() )

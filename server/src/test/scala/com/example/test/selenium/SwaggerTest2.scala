@@ -113,7 +113,7 @@ class SwaggerTest2 extends FlatSpec with MustMatchers with BeforeAndAfterAll {
     eventually {
       val we = find(xpath("//h2[contains(concat(' ', normalize-space(@class), ' '), ' title ')]"))
       val text = we.text
-      text mustBe "Duplicate Bridge Scorekeeper\n v1 "
+      text must startWith ( "Duplicate Bridge Scorekeeper" )
     }
   }
 

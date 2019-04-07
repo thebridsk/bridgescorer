@@ -1,7 +1,6 @@
 package com.example.data
 
-import io.swagger.annotations.ApiModel
-import io.swagger.annotations.ApiModelProperty
+import io.swagger.v3.oas.annotations.media.Schema
 
 /**
  * <pre><code>
@@ -22,7 +21,7 @@ import io.swagger.annotations.ApiModelProperty
  * }
  * </code></pre>
  */
-@ApiModel(value="Movement", description = "A movements for a duplicate bridge match")
+@Schema(name="Movement", description = "A movements for a duplicate bridge match")
 case class MovementV1( name: String, short: String, description: String, numberTeams: Int, hands: List[HandInTable] ) extends VersionedInstance[MovementV1,MovementV1,String] {
 
   def id = name
@@ -42,25 +41,25 @@ case class MovementV1( name: String, short: String, description: String, numberT
     }
   }
 
-  @ApiModelProperty(hidden = true)
+  @Schema(hidden = true)
   def getBoards = {
     hands.flatMap( h => h.boards ).distinct.sorted
   }
 
 
-  @ApiModelProperty(hidden = true)
+  @Schema(hidden = true)
   def getRoundForAllTables( round: Int ) = {
     hands.filter { r =>
       r.round == round
     }.toList
   }
 
-  @ApiModelProperty(hidden = true)
+  @Schema(hidden = true)
   def allRounds = {
     hands.map( r => r.round ).distinct
   }
 
-  @ApiModelProperty(hidden = true)
+  @Schema(hidden = true)
   def matchHasRelay = {
     allRounds.find { ir =>
       val all = getRoundForAllTables(ir).flatMap( r => r.boards )
@@ -72,7 +71,7 @@ case class MovementV1( name: String, short: String, description: String, numberT
   /**
    * @returns table IDs
    */
-  @ApiModelProperty(hidden = true)
+  @Schema(hidden = true)
   def tableRoundRelay( itable: Int, iround: Int ) = {
     val allRounds = getRoundForAllTables(iround)
     val otherRounds = allRounds.filter( r => r.table != itable )

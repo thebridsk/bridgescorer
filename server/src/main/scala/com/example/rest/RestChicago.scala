@@ -4,7 +4,6 @@ import com.example.backend.BridgeService
 import com.example.data.MatchChicago
 import akka.event.Logging
 import akka.event.Logging._
-import io.swagger.annotations._
 import akka.http.scaladsl.model.StatusCode
 import akka.http.scaladsl.model.StatusCodes._
 import akka.http.scaladsl.server.Directives._
@@ -26,6 +25,21 @@ object RestChicago {
 }
 
 import RestChicago._
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.responses.ApiResponse
+import io.swagger.v3.oas.annotations.media.Content
+import io.swagger.v3.oas.annotations.media.ArraySchema
+import io.swagger.v3.oas.annotations.media.Schema
+import io.swagger.v3.oas.annotations.Parameter
+import io.swagger.v3.oas.annotations.enums.ParameterIn
+import io.swagger.v3.oas.annotations.parameters.RequestBody
+import io.swagger.v3.oas.annotations.headers.Header
+import io.swagger.v3.oas.annotations.tags.Tags
+import io.swagger.v3.oas.annotations.tags.Tag
+import javax.ws.rs.GET
+import javax.ws.rs.POST
+import javax.ws.rs.PUT
+import javax.ws.rs.DELETE
 
 /**
  * Rest API implementation for the board resource.
@@ -34,7 +48,7 @@ import RestChicago._
  * swagger annotations.
  */
 @Path( "/rest/chicagos" )
-@Api(tags= Array("Chicago"), description = "Operations about chicago matches.", produces="application/json", protocols="http, https")
+@Tags( Array( new Tag(name="Chicago")))
 trait RestChicago extends HasActorSystem {
 
   /**
@@ -56,10 +70,28 @@ trait RestChicago extends HasActorSystem {
 //      }
   }
 
-  @ApiOperation(value = "Get all chicago matches", notes = "Returns a list of matches.", response=classOf[MatchChicago], responseContainer="List", nickname = "getChicagos", httpMethod = "GET")
-  @ApiResponses(Array(
-    new ApiResponse(code = 200, message = "A list of matches, as a JSON array", response=classOf[MatchChicago], responseContainer="List")
-  ))
+  @GET
+  @Operation(
+      summary = "Get all chicago matches",
+      description = "Returns a list of matches.",
+      operationId = "getChicagos",
+      responses = Array(
+          new ApiResponse(
+              responseCode = "200",
+              description = "A list of matches, as a JSON array",
+              content = Array(
+                  new Content(
+                      mediaType = "application/json",
+                      array = new ArraySchema(
+                          minItems = 0,
+                          uniqueItems = true,
+                          schema = new Schema( implementation=classOf[MatchChicago] )
+                      )
+                  )
+              )
+          )
+      )
+  )
   def getChicagos = pathEnd {
     get {
       resourceMap( store.readAll() )
@@ -67,33 +99,96 @@ trait RestChicago extends HasActorSystem {
   }
 
   @Path("/{matchId}")
-  @ApiOperation(value = "Get the match by ID", notes = "", response=classOf[MatchChicago], nickname = "getChicagoById", httpMethod = "GET")
-  @ApiImplicitParams(Array(
-    new ApiImplicitParam(name = "matchId", value = "ID of the board to get", required = true, dataType = "string", paramType = "path")
-  ))
-  @ApiResponses(Array(
-    new ApiResponse(code = 200, message = "The board, as a JSON object", response=classOf[MatchChicago]),
-    new ApiResponse(code = 404, message = "Does not exist.", response=classOf[RestMessage])
-  ))
+  @GET
+  @Operation(
+      summary = "Get the match by ID",
+      description = "Returns the specified chicago match.",
+      operationId = "getChicagoById",
+      parameters = Array(
+          new Parameter(
+              allowEmptyValue=false,
+              description="ID of the match to get",
+              in=ParameterIn.PATH,
+              name="matchId",
+              required=true,
+              schema=new Schema(`type`="string")
+          )
+      ),
+      responses = Array(
+          new ApiResponse(
+              responseCode = "200",
+              description = "The requested Chicago match, as a JSON object",
+              content = Array(
+                  new Content(
+                      mediaType = "application/json",
+                      schema = new Schema( implementation=classOf[MatchChicago] )
+                  )
+              )
+          ),
+          new ApiResponse(
+              responseCode = "404",
+              description = "Does not exist",
+              content = Array(
+                  new Content(
+                      mediaType = "application/json",
+                      schema = new Schema(implementation = classOf[RestMessage])
+                  )
+              )
+          )
+
+      )
+  )
   def getChicago = logRequest("RestChicago.getChicago", DebugLevel) { logResult("RestChicago.postChicago") { get {
     path( """[a-zA-Z0-9]+""".r ) { id =>
       resource( store.select(id).read() )
     }
   }}}
 
-
-  @ApiOperation(value = "Create a chicago match", notes = "", response=classOf[MatchChicago], nickname = "createChicago", httpMethod = "POST", code=201)
-  @ApiImplicitParams(Array(
-    new ApiImplicitParam(name = "body", value = "Chicago Match to create", dataTypeClass = classOf[MatchChicago], required = true, paramType = "body")
-  ))
-  @ApiResponses(Array(
-    new ApiResponse(code = 201, message = "The created match's JSON", response=classOf[MatchChicago],
-        responseHeaders= Array(
-            new ResponseHeader( name="Location", description="The URL of the newly created resource", response=classOf[String] )
-            )
-        ),
-    new ApiResponse(code = 400, message = "Bad request", response=classOf[RestMessage])
-  ))
+  @POST
+  @Operation(
+      summary = "Create a chicago match",
+      operationId = "createChicago",
+      requestBody = new RequestBody(
+          description = "Chicago Match to create",
+          content = Array(
+              new Content(
+                  mediaType = "application/json",
+                  schema = new Schema(
+                      implementation = classOf[MatchChicago]
+                  )
+              )
+          )
+      ),
+      responses = Array(
+          new ApiResponse(
+              responseCode = "201",
+              description = "The created match's JSON",
+              content = Array(
+                  new Content(
+                      mediaType = "application/json",
+                      schema = new Schema( implementation=classOf[MatchChicago] )
+                  )
+              ),
+              headers = Array(
+                  new Header(
+                      name="Location",
+                      description="The URL of the newly created resource",
+                      schema = new Schema( implementation=classOf[String] )
+                  )
+              )
+          ),
+          new ApiResponse(
+              responseCode = "400",
+              description = "Bad request",
+              content = Array(
+                  new Content(
+                      mediaType = "application/json",
+                      schema = new Schema(implementation = classOf[RestMessage])
+                  )
+              )
+          )
+      )
+  )
   def postChicago =
     logRequest("RestChicago.postChicago") {
       logResult("RestChicago.postChicago") {
@@ -109,16 +204,59 @@ trait RestChicago extends HasActorSystem {
 
 
   @Path("/{matchId}")
-  @ApiOperation(value = "Update a chicago match", notes = "", response=classOf[MatchChicago], nickname = "updateChicago", httpMethod = "PUT", code=204)
-  @ApiImplicitParams(Array(
-    new ApiImplicitParam(name = "matchId", value = "ID of the board to get", required = true, dataType = "string", paramType = "path"),
-    new ApiImplicitParam(name = "body", value = "Chicago Match to update", dataTypeClass = classOf[MatchChicago], required = true, paramType = "body")
-  ))
-  @ApiResponses(Array(
-    new ApiResponse(code = 204, message = "Chicago match updated", response=classOf[Void] ),
-    new ApiResponse(code = 404, message = "Does not exist.", response=classOf[RestMessage]),
-    new ApiResponse(code = 400, message = "Bad request", response=classOf[RestMessage])
-  ))
+  @PUT
+  @Operation(
+      summary = "Update a chicago match",
+      description = "Update a chicago match.  The id of the chicago match in the body is replaced with matchId",
+      operationId = "updateChicago",
+      parameters = Array(
+          new Parameter(
+              allowEmptyValue=false,
+              description="ID of the match to get",
+              in=ParameterIn.PATH,
+              name="matchId",
+              required=true,
+              schema=new Schema(`type`="string")
+          )
+      ),
+      requestBody = new RequestBody(
+          description = "Chicago Match to update",
+          content = Array(
+              new Content(
+                  mediaType = "application/json",
+                  schema = new Schema(
+                      implementation = classOf[MatchChicago]
+                  )
+              )
+          )
+      ),
+      responses = Array(
+          new ApiResponse(
+              responseCode = "204",
+              description = "The match was updated",
+          ),
+          new ApiResponse(
+              responseCode = "404",
+              description = "Does not exist",
+              content = Array(
+                  new Content(
+                      mediaType = "application/json",
+                      schema = new Schema(implementation = classOf[RestMessage])
+                  )
+              )
+          ),
+          new ApiResponse(
+              responseCode = "400",
+              description = "Bad request",
+              content = Array(
+                  new Content(
+                      mediaType = "application/json",
+                      schema = new Schema(implementation = classOf[RestMessage])
+                  )
+              )
+          )
+      )
+  )
   def putChicago =
     logRequest("RestChicago.putChicago") {
       logResult("RestChicago.putChicago") {
@@ -134,13 +272,27 @@ trait RestChicago extends HasActorSystem {
 
 
   @Path("/{matchId}")
-  @ApiOperation(value = "Delete a match by ID", notes = "", response=classOf[RestMessage], nickname = "deleteChicagoById", httpMethod = "DELETE", code=204)
-  @ApiImplicitParams(Array(
-    new ApiImplicitParam(name = "matchId", value = "ID of the match to delete", required = true, dataType = "string", paramType = "path")
-  ))
-  @ApiResponses(Array(
-    new ApiResponse(code = 204, message = "Chicago match deleted." )
-  ))
+  @DELETE
+  @Operation(
+      summary = "Delete a match by ID",
+      operationId = "deleteChicagoById",
+      parameters = Array(
+          new Parameter(
+              allowEmptyValue=false,
+              description="ID of the match to delete",
+              in=ParameterIn.PATH,
+              name="matchId",
+              required=true,
+              schema=new Schema(`type`="string")
+          )
+      ),
+      responses = Array(
+          new ApiResponse(
+              responseCode = "204",
+              description = "Chicago match deleted.",
+          )
+      )
+  )
   def deleteChicago = path( """[a-zA-Z0-9]+""".r ) { id => {
     delete {
         resourceDelete( store.select(id).delete() )

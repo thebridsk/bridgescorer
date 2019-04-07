@@ -1,6 +1,7 @@
 package com.example.data
 
-import io.swagger.annotations.ApiModel
+import io.swagger.v3.oas.annotations.media.Schema
+import io.swagger.v3.oas.annotations.media.ArraySchema
 
 /**
  * Contains a set of boards.  For each board there is the following information:
@@ -32,8 +33,30 @@ import io.swagger.annotations.ApiModel
  * </code></pre>
  *
  */
-@ApiModel(value="BoardSet", description = "A set of boards for duplicate bridge")
-case class BoardSetV1 ( name: String, short: String, description: String, boards: List[BoardInSet] ) extends VersionedInstance[BoardSetV1,BoardSetV1,String] {
+@Schema(name="BoardSet", description = "A set of boards for duplicate bridge")
+case class BoardSetV1 (
+    @Schema(
+        description="The name of the boardset",
+        required=true
+    )
+    name: String,
+    @Schema(
+        description="A short description of the boardset",
+        required=true
+    )
+    short: String,
+    @Schema(
+        description="A long description of the boardset",
+        required=true
+    )
+    description: String,
+    @ArraySchema(
+        minItems = 0,
+        uniqueItems = true,
+        schema = new Schema( implementation=classOf[BoardInSet] )
+    )
+    boards: List[BoardInSet]
+) extends VersionedInstance[BoardSetV1,BoardSetV1,String] {
 
   def id = name
 
@@ -47,4 +70,29 @@ case class BoardSetV1 ( name: String, short: String, description: String, boards
 
 }
 
-case class BoardInSet( id: Int, nsVul: Boolean, ewVul: Boolean, dealer: String )
+@Schema(name="BoardInSet", description = "The vulnerabilities and dealer of a board")
+case class BoardInSet(
+    @Schema(
+        description="The board number, 1, 2, ...",
+        required=true,
+        minimum="1"
+    )
+    id: Int,
+    @Schema(
+        description="true if NS is vulnerable",
+        required=true
+    )
+    nsVul: Boolean,
+    @Schema(
+        description="true if EW is vulnerable",
+        required=true
+    )
+    ewVul: Boolean,
+    @Schema(
+        description="the dealer",
+        required=true,
+        allowableValues=Array("N", "S", "E", "W"),
+        `type`="enum"
+    )
+    dealer: String
+)

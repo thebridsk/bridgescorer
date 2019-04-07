@@ -2,29 +2,47 @@ package com.example.data
 
 import com.example.data.SystemTime.Timestamp
 
-import io.swagger.annotations._
 import scala.annotation.meta._
 import scala.collection.Iterator
+import io.swagger.v3.oas.annotations.media.Schema
+import io.swagger.v3.oas.annotations.media.ArraySchema
 
-@ApiModel(value="MatchDuplicate", description = "A duplicate match")
+@Schema(name="MatchDuplicate", description = "A duplicate match, version 3 (current version)")
 case class MatchDuplicateV3 private(
-    @(ApiModelProperty @field)(value="The ID of the MatchDuplicate", required=true)
+    @Schema(description="The ID of the MatchDuplicate", required=true)
     id: Id.MatchDuplicate,
-    @(ApiModelProperty @field)(value="The teams playing the match, the key is the team ID", required=true)
+    @ArraySchema(
+        minItems=0,
+        uniqueItems=true,
+        schema=new Schema(
+            description="The teams playing the match",
+            required=true,
+            implementation=classOf[Team]
+        )
+
+    )
     teams: List[Team],
-    @(ApiModelProperty @field)(value="The duplicate boards of the match, the key is the board ID", required=true)
+    @ArraySchema(
+        minItems=0,
+        uniqueItems=true,
+        schema=new Schema(
+            description="The duplicate boards of the match",
+            required=true,
+            implementation=classOf[BoardV2]
+        )
+    )
     boards: List[BoardV2],
-    @(ApiModelProperty @field)(value="The boardsets being used", required=true)
+    @Schema(description="The boardsets being used", required=true)
     boardset: String,
-    @(ApiModelProperty @field)(value="The movements being used", required=true)
+    @Schema(description="The movements being used", required=true)
     movement: String,
-    @(ApiModelProperty @field)(value="when the duplicate hand was created", required=true)
+    @Schema(description="when the duplicate hand was created", required=true)
     created: Timestamp,
-    @(ApiModelProperty @field)(value="when the duplicate hand was last updated", required=true)
+    @Schema(description="when the duplicate hand was last updated", required=true)
     updated: Timestamp,
-    @(ApiModelProperty @field)(value="the scoring method used, default is MP", allowableValues="MP, IMP",  required=false)
+    @Schema(description="the scoring method used, default is MP", allowableValues=Array("MP", "IMP"),  required=false, `type`="string")
     scoringmethod: Option[String] = None
-  ) extends VersionedInstance[MatchDuplicate,MatchDuplicateV3,String] {
+) extends VersionedInstance[MatchDuplicate,MatchDuplicateV3,String] {
 
   def equalsIgnoreModifyTime( other: MatchDuplicateV3, throwit: Boolean = false ) = equalsInId(other,throwit) &&
                                                equalsInTeams(other,throwit) &&
@@ -340,18 +358,18 @@ case class MatchDuplicateV3 private(
 //    copy( teams = useteams.sortWith(MatchDuplicateV3.sort), boards=filledB.values.filter( e => !e.hands.isEmpty ).toList.sortWith(MatchDuplicateV3.sort), boardset=bs.name, movement=mov.name, updated=SystemTime.currentTimeMillis() )
   }
 
-  @ApiModelProperty(hidden = true)
+  @Schema(hidden = true)
   def getScoringMethod = scoringmethod.getOrElse(MatchDuplicateV3.MatchPoints)
 
   /**
    * Get all the table Ids in sort order.
    */
-  @ApiModelProperty(hidden = true)
+  @Schema(hidden = true)
   def getTableIds() = {
     boards.flatMap(b => b.hands).map(h=> h.table).map { id => id.asInstanceOf[Id.Table] }.toSet.toList.sortWith((l,r) => l<r)
   }
 
-  @ApiModelProperty(hidden = true)
+  @Schema(hidden = true)
   def getBoardSetObject() = {
     val bins = boards.map { b => b.getBoardInSet() }.toList.sortWith(MatchDuplicateV3.sort)
 //     name: String, short: String, description: String, boards: List[BoardInSet]

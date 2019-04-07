@@ -1,24 +1,24 @@
 package com.example.data
 
-import io.swagger.annotations._
 import scala.annotation.meta._
 import com.example.data.SystemTime.Timestamp
+import io.swagger.v3.oas.annotations.media.Schema
 
 /**
  * @author werewolf
  */
-@ApiModel(description = "The result of playing a hand")
+@Schema(description = "The result of playing a hand")
 case class RubberHand(
-    @(ApiModelProperty @field)(value="The ID of a hand", required=true)
+    @Schema(description="The ID of a hand", required=true)
     id: String,
-    @(ApiModelProperty @field)(value="the hand", required=true)
+    @Schema(description="the hand", required=true)
     hand: Hand,
-    @(ApiModelProperty @field)(value="The number of honor points given", required=true)
+    @Schema(description="The number of honor points given", required=true)
     honors: Int,
-    @(ApiModelProperty @field)(value="The player that got the honors points", required=true)
+    @Schema(description="The player that got the honors points", required=true)
     honorsPlayer: String,
     created: Timestamp,
-    @(ApiModelProperty @field)(value="when the duplicate hand was last updated", required=true)
+    @Schema(description="when the duplicate hand was last updated", required=true)
     updated: Timestamp ) {
 
   def equalsIgnoreModifyTime( other: RubberHand ) = {

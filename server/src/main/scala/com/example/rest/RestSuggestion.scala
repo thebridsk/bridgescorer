@@ -3,7 +3,6 @@ package com.example.rest
 import com.example.data.Ack
 import akka.event.Logging
 import akka.event.Logging._
-import io.swagger.annotations._
 import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.server.Directives._
 import akka.stream.Materializer
@@ -19,6 +18,14 @@ import com.example.data.duplicate.suggestion.DuplicateSuggestionsCalculation
 import com.example.backend.resource.Result
 
 import scala.concurrent.ExecutionContext.Implicits.global
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.responses.ApiResponse
+import io.swagger.v3.oas.annotations.media.Content
+import io.swagger.v3.oas.annotations.media.Schema
+import io.swagger.v3.oas.annotations.parameters.RequestBody
+import io.swagger.v3.oas.annotations.tags.Tags
+import io.swagger.v3.oas.annotations.tags.Tag
+import javax.ws.rs.POST
 
 /**
  * Rest API implementation for the logger config
@@ -27,7 +34,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
  * swagger annotations.
  */
 @Path("/rest/suggestions")
-@Api(tags= Array("Duplicate"), description = "Get pairs suggestion", produces="application/json", protocols="http, https")
+@Tags( Array( new Tag(name="Duplicate")))
 trait RestSuggestion extends HasActorSystem {
 
   /**
@@ -44,14 +51,45 @@ trait RestSuggestion extends HasActorSystem {
     suggestion
   }
 
-  @ApiOperation(value = "Get a suggestion of pairings", notes = "", response=classOf[String], nickname = "suggestion", httpMethod = "POST")
-  @ApiImplicitParams(Array(
-    new ApiImplicitParam(name = "body", value = "The 8 names of the players and the number of suggestions wanted", dataTypeClass = classOf[DuplicateSuggestions], required = true, paramType = "body")
-  ))
-  @ApiResponses(Array(
-    new ApiResponse(code = 201, message = "The suggestion", response=classOf[DuplicateSuggestions]),
-    new ApiResponse(code = 400, message = "Bad request", response=classOf[RestMessage])
-  ))
+  @POST
+  @Operation(
+      summary = "Get a suggestion of pairings",
+      operationId = "suggestion",
+      requestBody = new RequestBody(
+          description = "The 8 names of the players and the number of suggestions wanted",
+          content = Array(
+              new Content(
+                  mediaType = "application/json",
+                  schema = new Schema(
+                      implementation = classOf[DuplicateSuggestions]
+                  )
+              )
+          )
+      ),
+      responses = Array(
+          new ApiResponse(
+              responseCode = "201",
+              description = "The suggestion",
+              content = Array(
+                  new Content(
+                      mediaType = "application/json",
+                      schema = new Schema( implementation=classOf[DuplicateSuggestions] )
+                  )
+              )
+          ),
+          new ApiResponse(
+              responseCode = "400",
+              description = "Bad request",
+              content = Array(
+                  new Content(
+                      mediaType = "application/json",
+                      schema = new Schema(implementation = classOf[RestMessage])
+                  )
+              )
+          )
+
+      )
+  )
   def suggestion = pathEndOrSingleSlash {
     post {
       entity(as[DuplicateSuggestions]) { input =>

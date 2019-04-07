@@ -5,7 +5,6 @@ import com.example.data.MatchDuplicate
 import com.example.data.DuplicateHand
 import akka.event.Logging
 import akka.event.Logging._
-import io.swagger.annotations._
 import akka.http.scaladsl.model.StatusCodes._
 import akka.http.scaladsl.server.Directives._
 import akka.stream.Materializer
@@ -23,6 +22,22 @@ import com.example.backend.resource.Resources
 import com.example.backend.BridgeNestedResources
 import scala.concurrent.Future
 import com.example.backend.resource.Result
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.responses.ApiResponse
+import io.swagger.v3.oas.annotations.media.Schema
+import io.swagger.v3.oas.annotations.media.ArraySchema
+import io.swagger.v3.oas.annotations.media.Content
+import io.swagger.v3.oas.annotations.Parameter
+import io.swagger.v3.oas.annotations.enums.ParameterIn
+import io.swagger.v3.oas.annotations.parameters.RequestBody
+import io.swagger.v3.oas.annotations.headers.Header
+import io.swagger.v3.oas.annotations.Hidden
+import io.swagger.v3.oas.annotations.tags.Tags
+import io.swagger.v3.oas.annotations.tags.Tag
+import javax.ws.rs.GET
+import javax.ws.rs.POST
+import javax.ws.rs.PUT
+import javax.ws.rs.DELETE
 
 /**
  * Rest API implementation for the board resource.
@@ -31,7 +46,7 @@ import com.example.backend.resource.Result
  * swagger annotations.
  */
 @Path("/rest/duplicates/{dupId}/boards")
-@Api(tags= Array("Duplicate"), description = "Operations about boards in duplicate matches.", produces="application/json", protocols="http, https")
+@Tags( Array( new Tag(name="Duplicate")))
 class RestNestedBoard {
 
   import UtilsPlayJson._
@@ -41,62 +56,166 @@ class RestNestedBoard {
   /**
    * spray route for all the methods on this resource
    */
-  def route( implicit @ApiParam(hidden=true) res: Resources[Id.DuplicateBoard, Board]) =pathPrefix("boards") {
+  def route( implicit @Hidden res: Resources[Id.DuplicateBoard, Board]) =pathPrefix("boards") {
 //    logRequest("route", DebugLevel) {
         getBoard ~ getBoards ~ postBoard ~ putBoard ~ deleteBoard ~ restNestedHands
 //      }
   }
 
-  @ApiOperation(value = "Get all boards", notes = "Returns a list of boards.", response=classOf[Board], responseContainer="List", nickname = "getBoards", httpMethod = "GET")
-  @ApiImplicitParams(Array(
-    new ApiImplicitParam(name = "dupId", value = "ID of the duplicate that contains the boards to manipulate", required = true, dataType = "string", paramType = "path")
-  ))
-  @ApiResponses(Array(
-    new ApiResponse(code = 200, message = "A list of boards, as a JSON array", response=classOf[Board], responseContainer="List")
-  ))
-  def getBoards( implicit @ApiParam(hidden=true) res: Resources[Id.DuplicateBoard, Board]) = pathEndOrSingleSlash {
+  @GET
+  @Operation(
+      summary = "Get all boards",
+      description = "Returns a list of boards.",
+      operationId = "getBoards",
+      parameters = Array(
+          new Parameter(
+              allowEmptyValue=false,
+              description="ID of the duplicate that contains the boards to manipulate",
+              in=ParameterIn.PATH,
+              name="dupId",
+              required=true,
+              schema=new Schema(`type`="string")
+          )
+      ),
+      responses = Array(
+          new ApiResponse(
+              responseCode = "200",
+              description = "A list of boards, as a JSON array",
+              content = Array(
+                  new Content(
+                      mediaType = "application/json",
+                      array = new ArraySchema(
+                          minItems = 0,
+                          uniqueItems = true,
+                          schema = new Schema( implementation=classOf[Board] )
+                      )
+                  )
+              )
+          )
+
+      )
+  )
+  def getBoards( implicit @Hidden res: Resources[Id.DuplicateBoard, Board]) = pathEndOrSingleSlash {
     get {
       resourceMap( res.readAll() )
     }
   }
 
   @Path("/{boardId}")
-  @ApiOperation(value = "Get the board by ID", notes = "", response=classOf[Board], nickname = "getBoardById", httpMethod = "GET")
-  @ApiImplicitParams(Array(
-    new ApiImplicitParam(name = "dupId", value = "ID of the duplicate that contains the boards to manipulate", required = true, dataType = "string", paramType = "path"),
-    new ApiImplicitParam(name = "boardId", value = "ID of the board to get", required = true, dataType = "string", paramType = "path")
-  ))
-  @ApiResponses(Array(
-    new ApiResponse(code = 200, message = "The board, as a JSON object", response=classOf[Board]),
-    new ApiResponse(code = 404, message = "Does not exist.", response=classOf[RestMessage])
-  ))
-  def getBoard( implicit @ApiParam(hidden=true) res: Resources[Id.DuplicateBoard, Board]) = logRequest("getBoard", DebugLevel) { get {
+  @GET
+  @Operation(
+      summary = "Get the board by ID",
+      operationId = "getBoardById",
+      parameters = Array(
+          new Parameter(
+              allowEmptyValue=false,
+              description="ID of the duplicate that contains the boards to manipulate",
+              in=ParameterIn.PATH,
+              name="dupId",
+              required=true,
+              schema=new Schema(`type`="string")
+          ),
+          new Parameter(
+              allowEmptyValue=false,
+              description="ID of the board to get",
+              in=ParameterIn.PATH,
+              name="boardId",
+              required=true,
+              schema=new Schema(`type`="string")
+          )
+      ),
+      responses = Array(
+          new ApiResponse(
+              responseCode = "200",
+              description = "The board, as a JSON object",
+              content = Array(
+                  new Content(
+                      mediaType = "application/json",
+                      schema = new Schema( implementation=classOf[Board] )
+                  )
+              )
+          ),
+          new ApiResponse(
+              responseCode = "404",
+              description = "Does not exist",
+              content = Array(
+                  new Content(
+                      mediaType = "application/json",
+                      schema = new Schema(implementation = classOf[RestMessage])
+                  )
+              )
+          )
+      )
+  )
+  def getBoard( implicit @Hidden res: Resources[Id.DuplicateBoard, Board]) = logRequest("getBoard", DebugLevel) { get {
     path( """[a-zA-Z0-9]+""".r ) { id =>
       resource( res.select(id).read() )
     }
   }}
 
-  def restNestedHands( implicit @ApiParam(hidden=true) res: Resources[Id.DuplicateBoard, Board]) = logRequestResult("RestNestedBoard.restNestedHand", DebugLevel) {
+  def restNestedHands( implicit @Hidden res: Resources[Id.DuplicateBoard, Board]) = logRequestResult("RestNestedBoard.restNestedHand", DebugLevel) {
     pathPrefix( """[a-zA-Z0-9]+""".r ) { id =>
       import BridgeNestedResources._
       nestedHands.route(res.select(id).resourceHands)
     }
   }
 
-  @ApiOperation(value = "Create a board", notes = "", response=classOf[Board], nickname = "createBoard", httpMethod = "POST", code=201)
-  @ApiImplicitParams(Array(
-    new ApiImplicitParam(name = "dupId", value = "ID of the duplicate that contains the boards to manipulate", required = true, dataType = "string", paramType = "path"),
-    new ApiImplicitParam(name = "body", value = "duplicate board to create", dataTypeClass = classOf[Board], required = true, paramType = "body")
-  ))
-  @ApiResponses(Array(
-    new ApiResponse(code = 201, message = "The created board's JSON", response=classOf[Board],
-        responseHeaders= Array(
-            new ResponseHeader( name="Location", description="The URL of the newly created resource", response=classOf[String] )
-            )
-        ),
-    new ApiResponse(code = 400, message = "Bad request", response=classOf[RestMessage])
-  ))
-  def postBoard( implicit @ApiParam(hidden=true) res: Resources[Id.DuplicateBoard, Board]) = pathEnd {
+  @POST
+  @Operation(
+      summary = "Create a board",
+      operationId = "createBoard",
+      parameters = Array(
+          new Parameter(
+              allowEmptyValue=false,
+              description="ID of the duplicate that contains the boards to manipulate",
+              in=ParameterIn.PATH,
+              name="dupId",
+              required=true,
+              schema=new Schema(`type`="string")
+          ),
+      ),
+      requestBody = new RequestBody(
+          description = "duplicate board to create",
+          content = Array(
+              new Content(
+                  mediaType = "application/json",
+                  schema = new Schema(
+                      implementation = classOf[Board]
+                  )
+              )
+          )
+      ),
+      responses = Array(
+          new ApiResponse(
+              responseCode = "201",
+              description = "The created board's JSON",
+              content = Array(
+                  new Content(
+                      mediaType = "application/json",
+                      schema = new Schema( implementation=classOf[Board] )
+                  )
+              ),
+              headers = Array(
+                  new Header(
+                      name="Location",
+                      description="The URL of the newly created resource",
+                      schema = new Schema( implementation=classOf[String] )
+                  )
+              )
+          ),
+          new ApiResponse(
+              responseCode = "400",
+              description = "Bad request",
+              content = Array(
+                  new Content(
+                      mediaType = "application/json",
+                      schema = new Schema(implementation = classOf[RestMessage])
+                  )
+              )
+          )
+      )
+  )
+  def postBoard( implicit @Hidden res: Resources[Id.DuplicateBoard, Board]) = pathEnd {
     post {
         entity(as[Board]) { board =>
           resourceCreated( res.resourceURI, addIdToFuture(res.createChild(board)) )
@@ -113,18 +232,67 @@ class RestNestedBoard {
     }
 
   @Path("/{boardId}")
-  @ApiOperation(value = "Update a board", notes = "", response=classOf[Board], nickname = "createBoard", httpMethod = "PUT", code=204)
-  @ApiImplicitParams(Array(
-    new ApiImplicitParam(name = "dupId", value = "ID of the duplicate that contains the boards to manipulate", required = true, dataType = "string", paramType = "path"),
-    new ApiImplicitParam(name = "boardId", value = "ID of the board to update", required = true, dataType = "string", paramType = "path"),
-    new ApiImplicitParam(name = "body", value = "duplicate board to create", dataTypeClass = classOf[Board], required = true, paramType = "body")
-  ))
-  @ApiResponses(Array(
-    new ApiResponse(code = 204, message = "Board updated" ),
-    new ApiResponse(code = 404, message = "Does not exist.", response=classOf[RestMessage]),
-    new ApiResponse(code = 400, message = "Bad request", response=classOf[RestMessage])
-  ))
-  def putBoard( implicit @ApiParam(hidden=true) res: Resources[Id.DuplicateBoard, Board]) =
+  @PUT
+  @Operation(
+      summary = "Update a board",
+      operationId = "updateBoard",
+      parameters = Array(
+          new Parameter(
+              allowEmptyValue=false,
+              description="ID of the duplicate that contains the boards to manipulate",
+              in=ParameterIn.PATH,
+              name="dupId",
+              required=true,
+              schema=new Schema(`type`="string")
+          ),
+          new Parameter(
+              allowEmptyValue=false,
+              description="ID of the board to update",
+              in=ParameterIn.PATH,
+              name="boardId",
+              required=true,
+              schema=new Schema(`type`="string")
+          ),
+      ),
+      requestBody = new RequestBody(
+          description = "duplicate board to update",
+          content = Array(
+              new Content(
+                  mediaType = "application/json",
+                  schema = new Schema(
+                      implementation = classOf[Board]
+                  )
+              )
+          )
+      ),
+      responses = Array(
+          new ApiResponse(
+              responseCode = "204",
+              description = "Board updated",
+          ),
+          new ApiResponse(
+              responseCode = "404",
+              description = "Does not exist.",
+              content = Array(
+                  new Content(
+                      mediaType = "application/json",
+                      schema = new Schema(implementation = classOf[RestMessage])
+                  )
+              )
+          ),
+          new ApiResponse(
+              responseCode = "400",
+              description = "Bad request",
+              content = Array(
+                  new Content(
+                      mediaType = "application/json",
+                      schema = new Schema(implementation = classOf[RestMessage])
+                  )
+              )
+          )
+      )
+  )
+  def putBoard( implicit @Hidden res: Resources[Id.DuplicateBoard, Board]) =
     put {
       path( """[a-zA-Z0-9]+""".r ) { id =>
         entity(as[Board]) { board =>
@@ -135,15 +303,36 @@ class RestNestedBoard {
 
 
   @Path("/{boardId}")
-  @ApiOperation(value = "Delete a board by ID", response=classOf[RestMessage], notes = "", nickname = "deleteBoardById", httpMethod = "DELETE", code=204)
-  @ApiImplicitParams(Array(
-    new ApiImplicitParam(name = "dupId", value = "ID of the duplicate that contains the boards to manipulate", required = true, dataType = "string", paramType = "path"),
-    new ApiImplicitParam(name = "boardId", value = "ID of the board to delete", required = true, dataType = "string", paramType = "path")
-  ))
-  @ApiResponses(Array(
-    new ApiResponse(code = 204, message = "Board deleted." )
-  ))
-  def deleteBoard( implicit @ApiParam(hidden=true) res: Resources[Id.DuplicateBoard, Board]) = delete {
+  @DELETE
+  @Operation(
+      summary = "Delete a board by ID",
+      operationId = "deleteBoardById",
+      parameters = Array(
+          new Parameter(
+              allowEmptyValue=false,
+              description="ID of the duplicate that contains the boards to manipulate",
+              in=ParameterIn.PATH,
+              name="dupId",
+              required=true,
+              schema=new Schema(`type`="string")
+          ),
+          new Parameter(
+              allowEmptyValue=false,
+              description="ID of the board to delete",
+              in=ParameterIn.PATH,
+              name="boardId",
+              required=true,
+              schema=new Schema(`type`="string")
+          ),
+      ),
+      responses = Array(
+          new ApiResponse(
+              responseCode = "204",
+              description = "Board deleted.",
+          ),
+      )
+  )
+  def deleteBoard( implicit @Hidden res: Resources[Id.DuplicateBoard, Board]) = delete {
     path( """[a-zA-Z0-9]+""".r ) { id =>
       resourceDelete( res.select(id).delete() )
     }

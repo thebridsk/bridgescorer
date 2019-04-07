@@ -1,12 +1,26 @@
 package com.example.data
 
-import io.swagger.annotations.ApiModel
+import io.swagger.v3.oas.annotations.media.Schema
+import io.swagger.v3.oas.annotations.media.ArraySchema
 
 /**
  * All BoardSets and Movements
  */
-@ApiModel(value="BoardSetsAndMovements", description = "All board sets and movements")
-case class BoardSetsAndMovementsV1( boardsets: List[BoardSet], movements: List[Movement] ) {
+@Schema(name="BoardSetsAndMovements", description = "All board sets and movements")
+case class BoardSetsAndMovementsV1(
+    @ArraySchema(
+        minItems = 0,
+        uniqueItems = true,
+        schema = new Schema( implementation=classOf[BoardSetV1] )
+    )
+    boardsets: List[BoardSet],
+    @ArraySchema(
+        minItems = 0,
+        uniqueItems = true,
+        schema = new Schema( implementation=classOf[MovementV1] )
+    )
+    movements: List[Movement]
+) {
 
   def convertToCurrentVersion() = this
 

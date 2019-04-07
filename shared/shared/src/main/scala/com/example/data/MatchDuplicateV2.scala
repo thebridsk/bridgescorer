@@ -2,27 +2,28 @@ package com.example.data
 
 import com.example.data.SystemTime.Timestamp
 
-import io.swagger.annotations._
 import scala.annotation.meta._
+import io.swagger.v3.oas.annotations.media.Schema
 
 case class MatchPlayerPosition( north: String, south: String, east: String, west: String, allspecified: Boolean, gotns: Boolean, gotew: Boolean )
 
-@ApiModel(value="MatchDuplicate", description = "A hand from a duplicate match")
+@Schema(description = "A duplicate match, version 2 (old version)")
 case class MatchDuplicateV2(
-    @(ApiModelProperty @field)(value="The ID of the MatchDuplicate", required=true)
+    @Schema(description="The ID of the MatchDuplicate", required=true)
     id: Id.MatchDuplicate,
-    @(ApiModelProperty @field)(value="The teams playing the match, the key is the team ID", required=true)
+    @Schema(description="The teams playing the match, the key is the team ID", required=true)
     teams: Map[Id.Team,Team],
-    @(ApiModelProperty @field)(value="The duplicate boards of the match, the key is the board ID", required=true)
+    @Schema(description="The duplicate boards of the match, the key is the board ID", required=true)
     boards: Map[Id.DuplicateBoard,BoardV1],
-    @(ApiModelProperty @field)(value="The boardsets being used", required=true)
+    @Schema(description="The boardsets being used", required=true)
     boardset: String,
-    @(ApiModelProperty @field)(value="The movements being used", required=true)
+    @Schema(description="The movements being used", required=true)
     movement: String,
-    @(ApiModelProperty @field)(value="when the duplicate hand was created", required=true)
+    @Schema(description="when the duplicate hand was created", required=true)
     created: Timestamp,
-    @(ApiModelProperty @field)(value="when the duplicate hand was last updated", required=true)
-    updated: Timestamp ) extends VersionedInstance[MatchDuplicate,MatchDuplicateV2,String] {
+    @Schema(description="when the duplicate hand was last updated", required=true)
+    updated: Timestamp
+) extends VersionedInstance[MatchDuplicate,MatchDuplicateV2,String] {
 
   def equalsIgnoreModifyTime( other: MatchDuplicateV2, throwit: Boolean = false ) = id==other.id &&
                                                equalsInTeams(other,throwit) &&
@@ -319,12 +320,12 @@ case class MatchDuplicateV2(
   /**
    * Get all the table Ids in sort order.
    */
-  @ApiModelProperty(hidden = true)
+  @Schema(hidden = true)
   def getTableIds() = {
     boards.values.flatMap(b => b.hands.values).map(h=> h.table).map { id => id.asInstanceOf[Id.Table] }.toSet.toList.sortWith { (l,r) => Id.idComparer(l,r)<0 }
   }
 
-  @ApiModelProperty(hidden = true)
+  @Schema(hidden = true)
   def getBoardSetObject() = {
     val bins = boards.values.map { b => b.getBoardInSet() }.toList.sortWith((l,r) => l.id<r.id)
 //     name: String, short: String, description: String, boards: List[BoardInSet]

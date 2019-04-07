@@ -1,12 +1,21 @@
 package com.example.data
 
+import io.swagger.v3.oas.annotations.media.Schema
+
 object Id {
+  @Schema(description="The id of a duplicate match result, just has the points scored by a team")
   type MatchDuplicateResult = String
+  @Schema(description="The id of a duplicate match")
   type MatchDuplicate = String
+  @Schema(description="The id of a Chicago match")
   type MatchChicago = String
+  @Schema(description="The id of a duplicate board, positive integer")
   type DuplicateBoard = String
+  @Schema(description="The id of a duplicate hand")
   type DuplicateHand = String
+  @Schema(description="The id of a team")
   type Team = String
+  @Schema(description="The id of a table")
   type Table = String
 
   private val idpattern = "[a-zA-Z]*(\\d+)".r

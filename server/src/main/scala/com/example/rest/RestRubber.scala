@@ -4,7 +4,6 @@ import com.example.backend.BridgeService
 import com.example.data.MatchRubber
 import akka.event.Logging
 import akka.event.Logging._
-import io.swagger.annotations._
 import akka.http.scaladsl.model.StatusCode
 import akka.http.scaladsl.model.StatusCodes._
 import akka.http.scaladsl.server.Directives._
@@ -16,6 +15,21 @@ import com.example.data.Id
 import scala.util.Sorting
 import akka.http.scaladsl.model.headers.Location
 import scala.concurrent.ExecutionContext.Implicits.global
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.responses.ApiResponse
+import io.swagger.v3.oas.annotations.media.Schema
+import io.swagger.v3.oas.annotations.media.ArraySchema
+import io.swagger.v3.oas.annotations.media.Content
+import io.swagger.v3.oas.annotations.Parameter
+import io.swagger.v3.oas.annotations.enums.ParameterIn
+import io.swagger.v3.oas.annotations.parameters.RequestBody
+import io.swagger.v3.oas.annotations.headers.Header
+import io.swagger.v3.oas.annotations.tags.Tags
+import io.swagger.v3.oas.annotations.tags.Tag
+import javax.ws.rs.GET
+import javax.ws.rs.POST
+import javax.ws.rs.PUT
+import javax.ws.rs.DELETE
 
 object RestRubber {
   implicit class OrdFoo( val x: MatchRubber) extends AnyVal with Ordered[MatchRubber] {
@@ -33,7 +47,7 @@ import RestRubber._
  * swagger annotations.
  */
 @Path( "/rest/rubbers" )
-@Api(tags= Array("Rubber"), description = "Operations about rubbers.", produces="application/json", protocols="http, https")
+@Tags( Array( new Tag(name="Rubber")))
 trait RestRubber extends HasActorSystem {
 
   /**
@@ -61,10 +75,28 @@ trait RestRubber extends HasActorSystem {
 //      }
   }
 
-  @ApiOperation(value = "Get all rubber matches", notes = "Returns a list of matches.", response=classOf[MatchRubber], responseContainer="List", nickname = "getRubbers", httpMethod = "GET")
-  @ApiResponses(Array(
-    new ApiResponse(code = 200, message = "A list of matches, as a JSON array", response=classOf[MatchRubber], responseContainer="List")
-  ))
+  @GET
+  @Operation(
+      summary = "Get all rubber matches",
+      description = "Returns a list of matches.",
+      operationId = "getRubbers",
+      responses = Array(
+          new ApiResponse(
+              responseCode = "200",
+              description = "A list of matches, as a JSON array",
+              content = Array(
+                  new Content(
+                      mediaType = "application/json",
+                      array = new ArraySchema(
+                          minItems = 0,
+                          uniqueItems = true,
+                          schema = new Schema( implementation=classOf[MatchRubber] )
+                      )
+                  )
+              )
+          )
+      )
+  )
   def getRubbers = pathEnd {
     get {
       resourceMap( store.readAll() )
@@ -72,33 +104,96 @@ trait RestRubber extends HasActorSystem {
   }
 
   @Path("/{matchId}")
-  @ApiOperation(value = "Get the match by ID", notes = "", response=classOf[MatchRubber], nickname = "getRubberById", httpMethod = "GET")
-  @ApiImplicitParams(Array(
-    new ApiImplicitParam(name = "matchId", value = "ID of the board to get", required = true, dataType = "string", paramType = "path")
-  ))
-  @ApiResponses(Array(
-    new ApiResponse(code = 200, message = "The board, as a JSON object", response=classOf[MatchRubber]),
-    new ApiResponse(code = 404, message = "Does not exist.", response=classOf[RestMessage])
-  ))
+  @GET
+  @Operation(
+      summary = "Get the match by ID",
+      description = "Returns the specified rubber match.",
+      operationId = "getRubberById",
+      parameters = Array(
+          new Parameter(
+              allowEmptyValue=false,
+              description="ID of the rubber match to get",
+              in=ParameterIn.PATH,
+              name="matchId",
+              required=true,
+              schema=new Schema(`type`="string")
+          )
+      ),
+      responses = Array(
+          new ApiResponse(
+              responseCode = "200",
+              description = "The requested Rubber match, as a JSON object",
+              content = Array(
+                  new Content(
+                      mediaType = "application/json",
+                      schema = new Schema( implementation=classOf[MatchRubber] )
+                  )
+              )
+          ),
+          new ApiResponse(
+              responseCode = "404",
+              description = "Does not exist",
+              content = Array(
+                  new Content(
+                      mediaType = "application/json",
+                      schema = new Schema(implementation = classOf[RestMessage])
+                  )
+              )
+          )
+
+      )
+  )
   def getRubber = logRequest("RestRubber.getRubber", DebugLevel) { logResult("RestRubber.postRubber") { get {
     path( """[a-zA-Z0-9]+""".r ) { id =>
       resource( store.select(id).read() )
     }
   }}}
 
-
-  @ApiOperation(value = "Create a rubber match", notes = "", response=classOf[MatchRubber], nickname = "createRubber", httpMethod = "POST", code=201)
-  @ApiImplicitParams(Array(
-    new ApiImplicitParam(name = "body", value = "Rubber Match to create", dataTypeClass = classOf[MatchRubber], required = true, paramType = "body")
-  ))
-  @ApiResponses(Array(
-    new ApiResponse(code = 201, message = "The created match's JSON", response=classOf[MatchRubber],
-        responseHeaders= Array(
-            new ResponseHeader( name="Location", description="The URL of the newly created resource", response=classOf[String] )
-            )
-        ),
-    new ApiResponse(code = 400, message = "Bad request", response=classOf[RestMessage])
-  ))
+  @POST
+  @Operation(
+      summary = "Create a rubber match",
+      operationId = "createChicago",
+      requestBody = new RequestBody(
+          description = "Rubber Match to create",
+          content = Array(
+              new Content(
+                  mediaType = "application/json",
+                  schema = new Schema(
+                      implementation = classOf[MatchRubber]
+                  )
+              )
+          )
+      ),
+      responses = Array(
+          new ApiResponse(
+              responseCode = "201",
+              description = "The created match's JSON",
+              content = Array(
+                  new Content(
+                      mediaType = "application/json",
+                      schema = new Schema( implementation=classOf[MatchRubber] )
+                  )
+              ),
+              headers = Array(
+                  new Header(
+                      name="Location",
+                      description="The URL of the newly created resource",
+                      schema = new Schema( implementation=classOf[String] )
+                  )
+              )
+          ),
+          new ApiResponse(
+              responseCode = "400",
+              description = "Bad request",
+              content = Array(
+                  new Content(
+                      mediaType = "application/json",
+                      schema = new Schema(implementation = classOf[RestMessage])
+                  )
+              )
+          )
+      )
+  )
   def postRubber =
     logRequest("RestRubber.postRubber") {
       logResult("RestRubber.postRubber") {
@@ -114,16 +209,70 @@ trait RestRubber extends HasActorSystem {
 
 
   @Path("/{matchId}")
-  @ApiOperation(value = "Update a rubber match", notes = "", response=classOf[MatchRubber], nickname = "updateRubber", httpMethod = "PUT", code=204)
-  @ApiImplicitParams(Array(
-    new ApiImplicitParam(name = "matchId", value = "ID of the board to get", required = true, dataType = "string", paramType = "path"),
-    new ApiImplicitParam(name = "body", value = "Rubber Match to update", dataTypeClass = classOf[com.example.data.MatchRubber], required = true, paramType = "body")
-  ))
-  @ApiResponses(Array(
-    new ApiResponse(code = 204, message = "Rubber match updated" ),
-    new ApiResponse(code = 404, message = "Does not exist.", response=classOf[RestMessage]),
-    new ApiResponse(code = 400, message = "Bad request", response=classOf[RestMessage])
-  ))
+  @PUT
+  @Operation(
+      summary = "Update a rubber match",
+      description = "Update a rubber match.  The id of the rubber match in the body is replaced with matchId",
+      operationId = "updateRubber",
+      parameters = Array(
+          new Parameter(
+              allowEmptyValue=false,
+              description="ID of the match to get",
+              in=ParameterIn.PATH,
+              name="matchId",
+              required=true,
+              schema=new Schema(`type`="string")
+          )
+      ),
+      requestBody = new RequestBody(
+          description = "Rubber Match to update",
+          content = Array(
+              new Content(
+                  mediaType = "application/json",
+                  schema = new Schema(
+                      implementation = classOf[MatchRubber]
+                  )
+              )
+          )
+      ),
+      responses = Array(
+          new ApiResponse(
+              responseCode = "204",
+              description = "The match was updated",
+          ),
+          new ApiResponse(
+              responseCode = "404",
+              description = "Does not exist",
+              content = Array(
+                  new Content(
+                      mediaType = "application/json",
+                      schema = new Schema(implementation = classOf[RestMessage])
+                  )
+              )
+          ),
+          new ApiResponse(
+              responseCode = "400",
+              description = "Bad request",
+              content = Array(
+                  new Content(
+                      mediaType = "application/json",
+                      schema = new Schema(implementation = classOf[RestMessage])
+                  )
+              )
+          )
+      )
+  )
+  @RequestBody(
+      description = "Rubber Match to update",
+      content = Array(
+          new Content(
+              mediaType = "application/json",
+              schema = new Schema(
+                  implementation = classOf[MatchRubber]
+              )
+          )
+      )
+  )
   def putRubber =
     logRequest("RestRubber.putRubber") {
       logResult("RestRubber.putRubber") {
@@ -139,13 +288,27 @@ trait RestRubber extends HasActorSystem {
 
 
   @Path("/{matchId}")
-  @ApiOperation(value = "Delete a match by ID", notes = "", response=classOf[RestMessage], nickname = "deleteRubberById", httpMethod = "DELETE", code=204)
-  @ApiImplicitParams(Array(
-    new ApiImplicitParam(name = "matchId", value = "ID of the match to delete", required = true, dataType = "string", paramType = "path")
-  ))
-  @ApiResponses(Array(
-    new ApiResponse(code = 204, message = "Rubber match deleted." )
-  ))
+  @DELETE
+  @Operation(
+      summary = "Delete a match by ID",
+      operationId = "deleteRubberById",
+      parameters = Array(
+          new Parameter(
+              allowEmptyValue=false,
+              description="ID of the match to delete",
+              in=ParameterIn.PATH,
+              name="matchId",
+              required=true,
+              schema=new Schema(`type`="string")
+          )
+      ),
+      responses = Array(
+          new ApiResponse(
+              responseCode = "204",
+              description = "Rubber match deleted.",
+          )
+      )
+  )
   def deleteRubber = delete {
     path( """[a-zA-Z0-9]+""".r ) {
       id => {
