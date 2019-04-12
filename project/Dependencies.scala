@@ -33,7 +33,7 @@ object Dependencies {
 //  lazy val vScalaJsLibrary = "0.6.13" // http://mvnrepository.com/artifact/org.scala-js/scalajs-library_2.11
 
 
-  lazy val vAkka = "2.5.21"           // http://mvnrepository.com/artifact/com.typesafe.akka/akka-actor_2.11
+  lazy val vAkka = "2.5.22"           // http://mvnrepository.com/artifact/com.typesafe.akka/akka-actor_2.11
   lazy val vAkkaHttp = "10.1.8"       // http://mvnrepository.com/artifact/com.typesafe.akka/akka-http_2.11
 
   lazy val vAkkaHttpPlayJson="1.25.2"  // https://github.com/hseeberger/akka-http-json
@@ -61,7 +61,7 @@ object Dependencies {
 
   lazy val vJqueryFacade = "1.2"     // https://mvnrepository.com/artifact/org.querki/jquery-facade
 
-  lazy val vJQuery = "3.3.1"         // https://www.npmjs.com/package/jquery
+  lazy val vJQuery = "3.4.0"         // https://www.npmjs.com/package/jquery
 
   // bug in scalatest 3.0.7 see https://github.com/scalatest/scalatest/issues/1561
   lazy val vScalactic = "3.0.6"      // https://mvnrepository.com/artifact/org.scalactic/scalactic_2.12
@@ -101,7 +101,7 @@ object Dependencies {
   lazy val vAjv = "6.10.0"                  // https://www.npmjs.com/package/ajv
 
 
-  lazy val vWebpackDevServer = "3.2.1"   // https://www.npmjs.com/package/webpack-dev-server
+  lazy val vWebpackDevServer = "3.3.1"   // https://www.npmjs.com/package/webpack-dev-server
   lazy val vWebPackCli = "3.3.0"         // https://www.npmjs.com/package/webpack-cli
 
 //  lazy val vFastClick = "1.0.6"       // https://www.npmjs.com/package/fastclick
@@ -109,9 +109,9 @@ object Dependencies {
   lazy val vSangria = "1.4.2"           // https://github.com/sangria-graphql/sangria
   lazy val vSangriaPlayJson = "1.0.5"   // https://github.com/sangria-graphql/sangria-playground
 
-  lazy val vGraphQL = "14.2.0"
-  lazy val vGraphiQL = "0.13.0"
-  lazy val vGraphQLVoyager = "1.0.0-rc.26"
+  lazy val vGraphQL = "14.2.1"              // https://github.com/graphql/graphql-js
+  lazy val vGraphiQL = "0.13.0"             // https://github.com/graphql/graphiql
+  lazy val vGraphQLVoyager = "1.0.0-rc.26"  // https://github.com/APIs-guru/graphql-voyager
   lazy val vMaterialUIcore = "3.9.3"        // https://www.npmjs.com/package/@material-ui/core
   lazy val vMaterialUIicons = "3.0.2"        // https://www.npmjs.com/package/@material-ui/icons
 

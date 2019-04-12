@@ -12,7 +12,7 @@ val vLog4j = "1.7.26"               // https://mvnrepository.com/artifact/org.sl
 val vJGit = "5.3.0.201903130848-r" // https://mvnrepository.com/artifact/org.eclipse.jgit/org.eclipse.jgit.pgm
 
 val vCrossProject = "0.6.0"        // https://github.com/portable-scala/sbt-crossproject
-val vScalaJSDefault = "0.6.26"     // http://www.scala-js.org/
+val vScalaJSDefault = "0.6.27"     // http://www.scala-js.org/
 val vSbtAssembly = "0.14.9"        // https://github.com/sbt/sbt-assembly
 val vSbtGit = "1.0.0"              // https://github.com/sbt/sbt-git
 val vSbtSCoverage = "1.5.1"        // https://github.com/scoverage/sbt-scoverage
