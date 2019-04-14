@@ -83,9 +83,9 @@ object GraphQLProtocol {
       title ="ErrorLocation - An error location",
       description = "The error location of a GraphQL request")
   case class ErrorLocation(
-      @Schema(description="The line number", `type`="number", format="int32", required=false)
+      @Schema(description="The line number", `type`="integer", required=false)
       line: Option[Int],
-      @Schema(description="The column number", `type`="number", format="int32", required=false)
+      @Schema(description="The column number", `type`="integer", required=false)
       column: Option[Int]
   ) {
     @Schema(hidden = true)
