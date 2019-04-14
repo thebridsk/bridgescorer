@@ -10,7 +10,10 @@ import io.swagger.v3.oas.annotations.media.ArraySchema
 /**
  * @author werewolf
  */
-@Schema(description = "A round in a chicago match")
+@Schema(
+    title = "Round - A round in a chicago match",
+    description = "A round in a chicago match"
+)
 case class Round(
     @Schema(description="The round ID", required=true)
     id: String,
@@ -27,13 +30,13 @@ case class Round(
     @ArraySchema(
         minItems=0,
         schema=new Schema(implementation=classOf[Hand]),
-        uniqueItems=false
-//        description="The played hands in the round", required=true
+        uniqueItems=false,
+        arraySchema = new Schema( description = "The played hands in the round.", required=true)
     )
     hands: List[Hand],
-    @Schema(description="when the duplicate hand was created", required=true)
+    @Schema(description="When the duplicate hand was created, in milliseconds since 1/1/1970 UTC", required=true)
     created: Timestamp,
-    @Schema(description="when the duplicate hand was last updated", required=true)
+    @Schema(description="When the duplicate hand was last updated, in milliseconds since 1/1/1970 UTC", required=true)
     updated: Timestamp ) {
 
   def setId( newId: String, forCreate: Boolean ) = {

@@ -158,7 +158,7 @@ trait RestDuplicate extends HasActorSystem {
   @POST
   @Operation(
       summary = "Create a duplicate match",
-      operationId = "postDuplicate",
+      operationId = "createDuplicate",
       parameters = Array(
           new Parameter(
               name = "test",

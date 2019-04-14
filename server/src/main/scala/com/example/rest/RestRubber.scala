@@ -152,7 +152,7 @@ trait RestRubber extends HasActorSystem {
   @POST
   @Operation(
       summary = "Create a rubber match",
-      operationId = "createChicago",
+      operationId = "createRubber",
       requestBody = new RequestBody(
           description = "Rubber Match to create",
           content = Array(

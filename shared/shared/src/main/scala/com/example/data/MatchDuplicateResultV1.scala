@@ -8,22 +8,29 @@ import com.example.data.bridge.PerspectiveComplete
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.media.ArraySchema
 
-@Schema(description = "The result for a team playing on a board")
+@Schema(
+    title = "BoardTeamResults - team results on board.",
+    description="The results of a team when they played the board."
+)
 case class BoardTeamResults(
     @Schema(description="The id of the team", required=true)
     team: Id.Team,
     @Schema(description="The number of points the team got playing the board", required=true)
     points: Double )
 
-@Schema(description = "The results of a board")
+@Schema(
+    title = "BoardResults - the results of a board.",
+    description = "The results of a board in a Duplicate results object.")
 case class BoardResults(
     @Schema(description="The board", required=true)
     board: Int,
     @ArraySchema(
         minItems=0,
         uniqueItems=true,
-        schema=new Schema(implementation=classOf[BoardTeamResults])
-//        description="The results per team.  A list of BoardTeamResults objects", required=true
+        schema=new Schema(
+            implementation=classOf[BoardTeamResults],
+        ),
+        arraySchema = new Schema( description = "The played hands in the round.", required=true)
     )
     points: List[BoardTeamResults] )
 
@@ -45,9 +52,9 @@ case class MatchDuplicateResultV1 private(
     notfinished: Option[Boolean],
     @Schema(description="when the duplicate match was played", required=true)
     played: Timestamp,
-    @Schema(description="when the duplicate match was created", required=true)
+    @Schema(description="When the duplicate match was created, in milliseconds since 1/1/1970 UTC", required=true)
     created: Timestamp,
-    @Schema(description="when the duplicate match was last updated", required=true)
+    @Schema(description="When the duplicate match was last updated, in milliseconds since 1/1/1970 UTC", required=true)
     updated: Timestamp
   ) extends VersionedInstance[MatchDuplicateResult,  MatchDuplicateResultV1,String] {
 

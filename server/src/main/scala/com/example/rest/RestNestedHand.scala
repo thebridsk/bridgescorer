@@ -98,7 +98,11 @@ class RestNestedHand {
                       array = new ArraySchema(
                           minItems = 0,
                           uniqueItems = true,
-                          schema = new Schema( implementation=classOf[DuplicateHand] )
+                          schema = new Schema(
+                              implementation=classOf[DuplicateHand],
+                              description = "A hand from the board."
+                          ),
+                          arraySchema=new Schema(description="All the hands from the board.")
                       )
                   )
               )

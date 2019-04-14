@@ -6,8 +6,12 @@ import scala.annotation.meta._
 import scala.collection.Iterator
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.media.ArraySchema
+import io.swagger.v3.oas.annotations.Hidden
 
-@Schema(name="MatchDuplicate", description = "A duplicate match, version 3 (current version)")
+@Schema(
+    name="MatchDuplicate",
+    title="MatchDuplicate - A duplicate match.",
+    description = "A duplicate match, version 3 (current version)")
 case class MatchDuplicateV3 private(
     @Schema(description="The ID of the MatchDuplicate", required=true)
     id: Id.MatchDuplicate,
@@ -18,8 +22,8 @@ case class MatchDuplicateV3 private(
             description="The teams playing the match",
             required=true,
             implementation=classOf[Team]
-        )
-
+        ),
+        arraySchema = new Schema( description = "All the teams.", required=true)
     )
     teams: List[Team],
     @ArraySchema(
@@ -29,16 +33,17 @@ case class MatchDuplicateV3 private(
             description="The duplicate boards of the match",
             required=true,
             implementation=classOf[BoardV2]
-        )
+        ),
+        arraySchema = new Schema( description = "All the boards being played in this match.", required=true)
     )
     boards: List[BoardV2],
     @Schema(description="The boardsets being used", required=true)
     boardset: String,
     @Schema(description="The movements being used", required=true)
     movement: String,
-    @Schema(description="when the duplicate hand was created", required=true)
+    @Schema(description="When the duplicate hand was created, in milliseconds since 1/1/1970 UTC", required=true)
     created: Timestamp,
-    @Schema(description="when the duplicate hand was last updated", required=true)
+    @Schema(description="When the duplicate hand was last updated, in milliseconds since 1/1/1970 UTC", required=true)
     updated: Timestamp,
     @Schema(description="the scoring method used, default is MP", allowableValues=Array("MP", "IMP"),  required=false, `type`="string")
     scoringmethod: Option[String] = None
@@ -273,7 +278,9 @@ case class MatchDuplicateV3 private(
     }
 
   import MatchDuplicateV3._
+  @Hidden
   def isMP = scoringmethod.map { sm => sm == MatchPoints }.getOrElse(true)
+  @Hidden
   def isIMP = scoringmethod.map { sm => sm == InternationalMatchPoints }.getOrElse(false)
 
   /**

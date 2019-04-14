@@ -6,28 +6,43 @@ import scala.annotation.meta._
 import com.example.data.bridge.MatchDuplicateScore
 import com.example.data.bridge.PerspectiveComplete
 import io.swagger.v3.oas.annotations.media.Schema
+import io.swagger.v3.oas.annotations.media.ArraySchema
+import io.swagger.v3.oas.annotations.Hidden
 
 @Schema(name="MatchDuplicateResult",
-        description = "A hand from a duplicate match.  On input, the place field in DuplicateSummaryEntry is ignored.  If boardresults is specified, then the result field in DuplicateSummaryEntry is also ignored on input."
+        title="MatchDuplicateResult - the results of a match.",
+        description = "The results of a match.  This is used when the scoring was done by paper and only the results are known."
 )
 case class MatchDuplicateResultV2 private(
     @Schema(description="The ID of the MatchDuplicate", required=true)
     id: Id.MatchDuplicateResult,
-    @Schema(description="The results of the match, a list of winnersets."
-                                    +"  Each winnerset is a list of DuplicateSummaryEntry objects",
-                               required=true)
+    @ArraySchema(
+        minItems = 0,
+        uniqueItems = true,
+        schema=new Schema(description="A duplicate summary entry", implementation=classOf[DuplicateSummaryEntry]),
+        arraySchema=new Schema(
+            description="The results of the match, a list of winnersets."
+                       +"  Each winnerset is a list of DuplicateSummaryEntry objects that show the results of teams that competed against each other.",
+            required=true)
+        )
     results: List[List[DuplicateSummaryEntry]],
-    @Schema(description="The board scores of the teams, a list of BoardResults objects", required=false)
+    @ArraySchema(
+        schema=new Schema(
+            implementation=classOf[BoardResults],
+            description="The results of one board"
+        ),
+        arraySchema=new Schema( description="The board scores of the teams, a list of BoardResults objects", required=false )
+    )
     boardresults: Option[List[BoardResults]],
     @Schema(description="a comment", required=false)
     comment: Option[String],
-    @Schema(description="True if the match is not finished, default is false", required=false)
+    @Schema(description="True if the match is not finished, default is false", `type`="boolean", required=false)
     notfinished: Option[Boolean],
-    @Schema(description="when the duplicate match was played", required=true)
+    @Schema(description="when the duplicate match was played, in milliseconds since 1/1/1970 UTC", required=true)
     played: Timestamp,
-    @Schema(description="when the duplicate match was created", required=true)
+    @Schema(description="When the duplicate match was created, in milliseconds since 1/1/1970 UTC", required=true)
     created: Timestamp,
-    @Schema(description="when the duplicate match was last updated", required=true)
+    @Schema(description="When the duplicate match was last updated, in milliseconds since 1/1/1970 UTC", required=true)
     updated: Timestamp,
     @Schema(description="the scoring method used", `type`="enum", allowableValues=Array("MP", "IMP"),  required=true)
     scoringmethod: String
@@ -199,7 +214,9 @@ case class MatchDuplicateResultV2 private(
   }
 
   import MatchDuplicateV3._
+  @Hidden
   def isMP = scoringmethod == MatchPoints
+  @Hidden
   def isIMP = scoringmethod == InternationalMatchPoints
 
   def convertToCurrentVersion() =

@@ -25,9 +25,9 @@ case class DuplicateHandV1(
     ewTeam: Id.Team,
     @Schema(description="true if player 1 of the EW team is the east player", required=true)
     eIsPlayer1: Boolean,
-    @Schema(description="when the duplicate hand was created", required=true)
+    @Schema(description="When the duplicate hand was created, in milliseconds since 1/1/1970 UTC", required=true)
     created: Timestamp,
-    @Schema(description="when the duplicate hand was last updated", required=true)
+    @Schema(description="When the duplicate hand was last updated, in milliseconds since 1/1/1970 UTC", required=true)
     updated: Timestamp
 ) {
 

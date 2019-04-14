@@ -8,14 +8,23 @@ import scala.annotation.meta._
 import io.swagger.v3.oas.annotations.media.ArraySchema
 import io.swagger.v3.oas.annotations.media.Schema
 
-@Schema(name="DuplicateHand", description = "A hand from a duplicate match")
+@Schema(
+    name = "DuplicateHand",
+    title = "DuplicateHand - A hand from a duplicate match",
+    description = "A hand from a duplicate match, it may or may not have been played."
+)
 case class DuplicateHandV2 private(
     @ArraySchema(
         maxItems=1,
         minItems=0,
         uniqueItems=true,
-        schema=new Schema(implementation=classOf[Hand])
-//      description="The played hand.  Length of 0 indicates not played, length of 1 indicates played."
+        schema=new Schema(
+            implementation=classOf[Hand],
+        ),
+        arraySchema=new Schema(
+          description="The played hand.  Length of 0 indicates not played, length of 1 indicates played.",
+          required=true
+        )
     )
     played: List[Hand],
     @Schema(description="The table id of where the hand is played", required=true)
@@ -32,9 +41,13 @@ case class DuplicateHandV2 private(
     ewTeam: Id.Team,
     @Schema(description="true if player 1 of the EW team is the east player", required=true)
     eIsPlayer1: Boolean,
-    @Schema(description="when the duplicate hand was created", required=true)
+    @Schema(
+        description="When the duplicate hand was created, in milliseconds since 1/1/1970 UTC",
+        required=true)
     created: Timestamp,
-    @Schema(description="when the duplicate hand was last updated", required=true)
+    @Schema(
+        description="When the duplicate hand was last updated, in milliseconds since 1/1/1970 UTC",
+        required=true)
     updated: Timestamp
 ) {
 
@@ -99,7 +112,9 @@ case class DuplicateHandV2 private(
 
   def updateHand( newhand: Hand ) = copy( played=List(newhand), updated=SystemTime.currentTimeMillis() )
 
+  @Schema(hidden = true)
   def setPlayer1North( flag: Boolean ) = copy( nIsPlayer1=flag, updated=SystemTime.currentTimeMillis() )
+  @Schema(hidden = true)
   def setPlayer1East( flag: Boolean ) = copy( eIsPlayer1=flag, updated=SystemTime.currentTimeMillis() )
 
   @Schema(hidden = true)

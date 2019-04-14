@@ -277,7 +277,9 @@ trait MyService extends Service with JsService with WebJar with LoggingService w
           "ListDuplicateHand",
           "RemoteAddress",
           "ListErrorMessage",
-          "ListSuggestion"
+          "ListSuggestion",
+          "JsObject",
+          "JsValue"
       )
 
     def readerConfig = {

@@ -7,28 +7,33 @@ import io.swagger.v3.oas.annotations.media.ArraySchema
 /**
  * @author werewolf
  */
-@Schema(description = "Logger configuration for the browser")
+@Schema(
+    title = "LoggerConfig - Logger configuration for the browser",
+    description = "Logger configuration for the browser"
+)
 case class LoggerConfig(
     @ArraySchema(
         minItems=0,
         uniqueItems=true,
         schema=new Schema(
-          description="A list of logging level for a logger, syntax: &lt;loggername&gt;=&lt;level}&gt;",
+          description="The logging level for a logger, syntax: &lt;loggername&gt;=&lt;level&gt;",
           required=true,
           example="[root]=ALL",
           `type`="string"
-        )
+        ),
+        arraySchema = new Schema( description = "All the logger configurations.", required=true)
     )
     loggers: List[String],
     @ArraySchema(
         minItems=0,
         uniqueItems=true,
         schema=new Schema(
-          description="A list of logging level for an appender, syntax: &lt;appendername&gt;=&lt;level}&gt;",
+          description="The logging level for an appender, syntax: &lt;appendername&gt;=&lt;level&gt;",
           required=true,
           example="[root]=ALL",
           `type`="string"
-        )
+        ),
+        arraySchema = new Schema( description = "All the appender configurations.", required=true)
     )
     appenders: List[String],
     @Schema(description="A client Id", required=false, `type`="string")

@@ -4,6 +4,7 @@ import com.example.data.DuplicateSummary
 import utils.logging.Logger
 import com.example.data.SystemTime
 import io.swagger.v3.oas.annotations.media.Schema
+import io.swagger.v3.oas.annotations.media.ArraySchema
 
 /**
  * Constructor
@@ -11,7 +12,20 @@ import io.swagger.v3.oas.annotations.media.Schema
  * @param player2
  * @param lastPlayed number of games since they played
  */
-case class Pairing( player1: String, player2: String, lastPlayed: Int, timesPlayed: Int ) {
+@Schema(
+    title="Pairing - A suggested pairing",
+    description="A suggested pairing and some stats about the pairing."
+)
+case class Pairing(
+    @Schema(description="The name of a player", required=true)
+    player1: String,
+    @Schema(description="The name of a player", required=true)
+    player2: String,
+    @Schema(description="The number of matches since they last played together.", required=true)
+    lastPlayed: Int,
+    @Schema(description="The number of times the pair has played together.", required=true)
+    timesPlayed: Int
+) {
 
   def normalize = if (player1 < player2) this else copy( player1=player2, player2=player1 )
 
@@ -26,31 +40,92 @@ case class Pairing( player1: String, player2: String, lastPlayed: Int, timesPlay
  * @param random a random number
  *
  */
-case class Suggestion( players: List[Pairing],
-                       minLastPlayed: Int,
-                       maxLastPlayed: Int,
-                       maxTimesPlayed: Int,
-                       avgLastPlayed: Double,
-                       avgTimesPlayed: Double,
-                       lastPlayedAllTeams: Int,
-                       countAllPlayed: Int,
-                       weight: Double,
-                       weights: List[Double],
-                       random: Int,
-                       key: String )
 
-case class NeverPair( player1: String, player2: String )
+@Schema(
+    title="Suggestion - A suggested player pairings.",
+    description="A suggested player pairings.")
+case class Suggestion(
+    @ArraySchema(
+        minItems=4,
+        maxItems=4,
+        schema=new Schema(implementation=classOf[Pairing]),
+        uniqueItems=true,
+        arraySchema = new Schema( description = "The player pair, otherwise known as a team", required=true)
+    )
+    players: List[Pairing],
+    @Schema(description="The minimum number of matches that any of the pairs last played together", required=true)
+    minLastPlayed: Int,
+    @Schema(description="The maximum number of matches that any of the pairs last played together", required=true)
+    maxLastPlayed: Int,
+    @Schema(description="The maximum number of times that any of the pairs last played together", required=true)
+    maxTimesPlayed: Int,
+    @Schema(description="The average number of times that the pairs last played together", required=true)
+    avgLastPlayed: Double,
+    @Schema(description="The average number of times that the pairs played together", required=true)
+    avgTimesPlayed: Double,
+    @Schema(description="The last time this suggested pairing played", required=true)
+    lastPlayedAllTeams: Int,
+    @Schema(description="The number of times the same pairings played", required=true)
+    countAllPlayed: Int,
+    @Schema(description="The weight of this pairing, the higher the better", required=true)
+    weight: Double,
+    @ArraySchema(
+        minItems=0,
+        schema=new Schema(`type`="number", format="double"),
+        uniqueItems=false,
+        arraySchema = new Schema( description = "The calculated weights various comparisons, the higher the better", required=true)
+    )
+    weights: List[Double],
+    @Schema(description="A random number to make each suggestion unique", required=true)
+    random: Int,
+    @Schema(description="A key to identify this pairing.", required=true)
+    key: String
+)
 
-case class DuplicateSuggestions( players: List[String],
-                                 numberSuggestion: Int,
-                                 suggestions: Option[List[Suggestion]],
-                                 @Schema( `type`="number", format="double", required=false, description="Calculation time in ms")
-                                 calcTimeMillis: Option[Double],
-                                 @Schema( `type`="integer", format="int32", required=false)
-                                 history: Option[Int],
-                                 neverPair: Option[List[NeverPair]]
-                               ) {
-}
+@Schema(
+    title="NeverPair - A pair of players that should not be paired.",
+    description="NeverPair - A pair of players that should not be paired when making a suggestion of pairings."
+)
+case class NeverPair(
+    @Schema(description="The name of a player", required=true)
+    player1: String,
+    @Schema(description="The name of a player", required=true)
+    player2: String
+)
+
+@Schema(
+    title="DuplicateSuggestions - Suggested player pairings.",
+    description="Data structure for requesting and recieving player pairings.")
+case class DuplicateSuggestions(
+        @ArraySchema(
+            minItems=8,
+            maxItems=8,
+            schema=new Schema(implementation=classOf[String]),
+            uniqueItems=false,
+            arraySchema = new Schema( description = "The players to pair, must be exactly 8 players", required=true)
+        )
+        players: List[String],
+        @Schema( description = "The number of suggestions to return.")
+        numberSuggestion: Int,
+        @ArraySchema(
+            minItems=0,
+            schema=new Schema(implementation=classOf[Suggestion]),
+            uniqueItems=false,
+            arraySchema = new Schema( description = "The top suggested pairings", required=false)
+        )
+        suggestions: Option[List[Suggestion]],
+        @Schema( `type`="number", format="double", required=false, description="Calculation time in ms")
+        calcTimeMillis: Option[Double],
+        @Schema( `type`="integer", format="int32", required=false)
+        history: Option[Int],
+        @ArraySchema(
+            minItems=0,
+            schema=new Schema(implementation=classOf[NeverPair]),
+            uniqueItems=false,
+            arraySchema = new Schema( description = "Players that should not be paired.", required=false)
+        )
+        neverPair: Option[List[NeverPair]]
+)
 
 object DuplicateSuggestions {
   def apply( players: List[String],

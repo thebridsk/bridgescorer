@@ -33,7 +33,11 @@ import io.swagger.v3.oas.annotations.media.ArraySchema
  * </code></pre>
  *
  */
-@Schema(name="BoardSet", description = "A set of boards for duplicate bridge")
+@Schema(
+    name="BoardSet",
+    title = "BoardSet - A set of boards for duplicate bridge.",
+    description = "A set of boards for duplicate bridge."
+)
 case class BoardSetV1 (
     @Schema(
         description="The name of the boardset",
@@ -53,7 +57,8 @@ case class BoardSetV1 (
     @ArraySchema(
         minItems = 0,
         uniqueItems = true,
-        schema = new Schema( implementation=classOf[BoardInSet] )
+        schema = new Schema( implementation=classOf[BoardInSet] ),
+        arraySchema = new Schema( description = "All the boards in the boardset", required=true)
     )
     boards: List[BoardInSet]
 ) extends VersionedInstance[BoardSetV1,BoardSetV1,String] {
@@ -70,7 +75,9 @@ case class BoardSetV1 (
 
 }
 
-@Schema(name="BoardInSet", description = "The vulnerabilities and dealer of a board")
+@Schema(name="BoardInSet",
+    title = "BoardInSet - The vulnerabilities and dealer of a board",
+    description = "Shows the vulnerabilities NS and EW and dealer of a board when a hand is played.")
 case class BoardInSet(
     @Schema(
         description="The board number, 1, 2, ...",

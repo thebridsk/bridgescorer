@@ -7,10 +7,13 @@ import com.example.data.bridge.PerspectiveComplete
 import scala.annotation.meta._
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.media.ArraySchema
+import io.swagger.v3.oas.annotations.Hidden
 
-@Schema(description = "Details about a team in a match")
+@Schema(
+    title = "DuplicateSummaryDetails - Team stats in a match",
+    description = "Details about a team in a match")
 case class DuplicateSummaryDetails(
-    @Schema(description="The team", required=true)
+    @Schema(description="The id of the team", required=true)
     team: Id.Team,
     @Schema(description="The number of times the team was declarer", required=true, minimum="0")
     declarer: Int = 0,
@@ -56,13 +59,15 @@ object DuplicateSummaryDetails {
   def tookDown( team: Id.Team ) = new DuplicateSummaryDetails( team, defended = 1, tookDown = 1 )
 }
 
-@Schema(description = "The summary of a duplicate match")
+@Schema(
+    title = "DuplicateSummaryEntry - The summary of a team in a duplicate match",
+    description = "The summary of a team in a duplicate match")
 case class DuplicateSummaryEntry(
     @Schema(description="The team", required=true)
     team: Team,
-    @Schema(description="The points the team scored", required=false, `type`="number", format="double")
+    @Schema(description="The points the team scored when using MP scoring", required=false, `type`="number", format="double")
     result: Option[Double],
-    @Schema(description="The place the team finished in", required=false, `type`="integer", format="int32")
+    @Schema(description="The place the team finished in when using MP scoring", required=false, `type`="integer", format="int32")
     place: Option[Int],
     @Schema(description="Details about the team", required=false, implementation=classOf[DuplicateSummaryDetails])
     details: Option[DuplicateSummaryDetails] = None,
@@ -73,7 +78,9 @@ case class DuplicateSummaryEntry(
     ) {
   def id = team.id
 
+  @Hidden
   def getResultMp = result.getOrElse(0.0)
+  @Hidden
   def getPlaceMp = place.getOrElse(1)
 
   def getResultImp = resultImp.getOrElse(0.0)
@@ -83,13 +90,31 @@ case class DuplicateSummaryEntry(
   def hasMp = result.isDefined&&place.isDefined
 }
 
-@Schema(description = "The best match in the main store")
+@Schema(
+    name = "BestMatch",
+    title = "BestMatch - Identifies the best match in the main store.",
+    description = "Identifies the best match in the main store."
+)
 case class BestMatch(
-    @Schema(description="How similar the matches are", required=true)
+    @Schema(
+        title = "How similar the matches are",
+        description="How similar the matches are, percent of fields that are the same.",
+        required=true)
     sameness: Double,
-    @Schema(description="The ID of the MatchDuplicate in the main store that is the best match, none if no match", required=true)
+    @Schema(
+        title="The ID of the matching match duplicate",
+        description="The ID of the MatchDuplicate in the main store that is the best match, none if no match",
+        required=false)
     id: Option[Id.MatchDuplicate],
-    @Schema(description="The fields that are different", required=true)
+    @ArraySchema(
+        minItems=0,
+        uniqueItems=true,
+        schema=new Schema(
+            `type` = "string",
+            description="A field that is different",
+        ),
+        arraySchema = new Schema( description = "All the fields that are different.", required=false)
+    )
     differences: Option[List[String]]
 ) {
 
@@ -137,7 +162,9 @@ object BestMatch {
   }
 }
 
-@Schema(description = "The summary of duplicate matches")
+@Schema(
+    title = "DuplicateSummary - A summary of duplicate matches that have been played.",
+    description = "The summary of duplicate matches that have been played")
 case class DuplicateSummary(
     @Schema(description="The ID of the MatchDuplicate being summarized", required=true)
     id: Id.MatchDuplicate,
@@ -146,8 +173,8 @@ case class DuplicateSummary(
     @ArraySchema(
         minItems=0,
         schema=new Schema(implementation=classOf[DuplicateSummaryEntry]),
-        uniqueItems=true
-//        description="The scores of the teams", required=true
+        uniqueItems=true,
+        arraySchema = new Schema( description = "The scores of the teams.", required=true)
     )
     teams: List[DuplicateSummaryEntry],
     @Schema(description="The number of boards in the match", required=true, minimum="1")
@@ -156,15 +183,18 @@ case class DuplicateSummary(
     tables: Int,
     @Schema(description="True if this is only the results", required=true)
     onlyresult: Boolean,
-    @Schema(description="when the duplicate hand was created", required=true)
+    @Schema(description="When the duplicate match was created, in milliseconds since 1/1/1970 UTC", required=true)
     created: Timestamp,
-    @Schema(description="when the duplicate hand was last updated", required=true)
+    @Schema(description="When the duplicate match was last updated, in milliseconds since 1/1/1970 UTC", required=true)
     updated: Timestamp,
     @Schema(description="the best match in the main store", required=false, implementation=classOf[BestMatch])
     bestMatch: Option[BestMatch] = None,
-    @Schema(description="the scoring method used, default is MP", allowableValues=Array("MP", "IMP"), implementation=classOf[String],  required=false)
+    @Schema(description="the scoring method used, default is MP",
+            allowableValues=Array("MP", "IMP"),
+            implementation=classOf[String],
+            required=false)
     scoringmethod: Option[String] = None
-    ) {
+) {
 
   def players() = teams.flatMap { t => Seq(t.team.player1, t.team.player2) }.toList
   def playerPlaces() = teams.flatMap{ t => Seq( (t.team.player1->t.getPlaceMp), (t.team.player2->t.getPlaceMp) ) }.toMap
@@ -218,7 +248,9 @@ case class DuplicateSummary(
   }
 
   import MatchDuplicateV3._
+  @Hidden
   def isMP = scoringmethod.map { sm => sm == MatchPoints }.getOrElse(true)
+  @Hidden
   def isIMP = scoringmethod.map { sm => sm == InternationalMatchPoints }.getOrElse(false)
 
 }

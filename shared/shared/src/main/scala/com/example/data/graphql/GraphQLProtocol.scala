@@ -6,16 +6,68 @@ import scala.reflect.ClassTag
 import org.scalactic.source.Position
 import com.example.data.rest.JsonException
 import io.swagger.v3.oas.annotations.media.Schema
+import io.swagger.v3.oas.annotations.media.ArraySchema
 
 object GraphQLProtocol {
 
-  @Schema(description = "A GraphQL Request")
+//      anyOf:
+//        - type: string
+//        - type: number
+//        - type: integer
+//        - type: boolean
+//        - type: array
+//          items: {}
+//        - type: object
+
+  @Schema( name="string", `type`="string")
+  class VJsString
+
+  @Schema( name="number", `type`="number")
+  class VJsNumber
+
+  @Schema( name="integer", `type`="integer")
+  class VJsInt
+
+  @Schema( name="boolean", `type`="boolean")
+  class VJsBoolean
+
+  @Schema( name="object", `type`="object", requiredProperties=Array())
+  class VJsObject
+
+  @ArraySchema( minItems=0,
+                uniqueItems=false,
+                schema=new Schema(implementation=classOf[AnyValue]),
+                arraySchema=new Schema(
+                    name="array",
+                    title="array"
+                )
+  )
+  class VJsArray
+
+  @Schema(
+      name="anyvalue",
+//      description="Any valid JSON",
+      oneOf=Array(
+          classOf[VJsString],
+          classOf[VJsNumber],
+          classOf[VJsInt],
+          classOf[VJsBoolean],
+          classOf[VJsObject],
+          classOf[VJsArray]
+      ),
+      nullable = true
+  )
+  class AnyValue
+
+  @Schema(
+      title = "GraphQLRequest - A GraphQL Request",
+      description = "A GraphQL Request")
   case class GraphQLRequest(
       @Schema(description="The GraphQL query", required=true)
       query: String,
-      @Schema(description="The operationName, optional", required=false, `type`="string")
+      @Schema(description="The operationName, optional", required=false)
       operationName: Option[String],
-      @Schema(description="The variables (optional object)", `type`="object", required=false)
+      @Schema(description="The variables (optional object)", implementation=classOf[VJsObject], required=false)
       variables: Option[JsObject]
   )
 
@@ -27,11 +79,13 @@ object GraphQLProtocol {
 //  }]}
 // {"error":"Syntax error while parsing GraphQL query. Invalid input 'x', expected OperationDefinition, FragmentDefinition or TypeSystemDefinition (line 1, column 1):\nxxx\n^"}
 
-  @Schema(description = "An error location")
+  @Schema(
+      title ="ErrorLocation - An error location",
+      description = "The error location of a GraphQL request")
   case class ErrorLocation(
-      @Schema(description="The line number", `type`="int", required=false)
+      @Schema(description="The line number", `type`="number", format="int32", required=false)
       line: Option[Int],
-      @Schema(description="The column number", `type`="int", required=false)
+      @Schema(description="The column number", `type`="number", format="int32", required=false)
       column: Option[Int]
   ) {
     @Schema(hidden = true)
@@ -39,11 +93,22 @@ object GraphQLProtocol {
     def toString() = s"""${line.getOrElse("unknown")}:${column.map(i=>i.toString()).getOrElse("unknown")}"""
   }
 
-  @Schema(description = "An Error message")
+  @Schema(
+      title = "ErrorMessage - A GraphQL error message",
+      description = "An Error message")
   case class ErrorMessage(
       @Schema(description="The text of the error message", required=false)
       message: Option[String],
-      @Schema(description="The location of the error", required=false)
+      @ArraySchema(
+          minItems=0,
+          schema=new Schema(
+              description="The location of the error",
+              implementation=classOf[ErrorLocation]
+          ),
+          arraySchema=new Schema(
+              required=false
+          )
+      )
       locations: Option[List[ErrorLocation]]
   ) {
     @Schema(hidden = true)
@@ -51,19 +116,27 @@ object GraphQLProtocol {
     def toString() = s"""${message.getOrElse("")} from location ${locations.map(l=>l.mkString(", ")).getOrElse("")}"""
   }
 
-  @Schema(description = "An GraphQL response")
+  @Schema(
+      title = "GraphQLResponse - An GraphQL response",
+      description = "An GraphQL response"
+  )
   case class GraphQLResponse(
-      @Schema(description="The response data", required=false)
+      @Schema(description="The response data", implementation=classOf[AnyValue], required=false)
       data: Option[JsValue],
-      @Schema(description="An error message", `type`="string", required=false)
+      @Schema(name="error", description="An error message", `type`="string", required=false)
       error: Option[String],
-      @Schema(description="Error message(s)", required=false)
+      @ArraySchema(
+          minItems=0,
+          schema=new Schema(implementation=classOf[ErrorMessage]),
+          uniqueItems=false,
+          arraySchema = new Schema( description = "Error message(s)", required=false)
+      )
       errors: Option[List[ErrorMessage]],
-      @Schema(description="Extensions", required=false)
+      @Schema(description="Extensions",  implementation=classOf[AnyValue], required=false)
       extensions: Option[JsValue]
   ) {
 
-    @Schema(hidden = true)
+//    @Schema(hidden = true)
     def getError() = {
       val er = error.toList:::errors.map(l=>l.map(e=>e.toString())).getOrElse(Nil)
       er.mkString("\n")

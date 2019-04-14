@@ -10,7 +10,11 @@ import io.swagger.v3.oas.annotations.Hidden
 /**
  * @author werewolf
  */
-@Schema(name="MatchRubber", description = "A rubber bridge match")
+@Schema(
+    name="MatchRubber",
+    title="MatchRubber - A rubber bridge match",
+    description = "A rubber bridge match"
+)
 case class MatchRubberV1(
     @Schema(description="The round ID", required=true)
     id: String,
@@ -28,15 +32,16 @@ case class MatchRubberV1(
         minItems=0,
         uniqueItems=false,
         schema=new Schema(
-            description="The played hands in the round",
+            description="A played hand",
             required=true,
             implementation=classOf[RubberHand]
-        )
+        ),
+        arraySchema = new Schema( description = "All the hands played in the rubber match.", required=true)
     )
     hands: List[RubberHand],
-    @Schema(description="when the match rubber was created", required=true)
+    @Schema(description="When the match rubber was created, in milliseconds since 1/1/1970 UTC", required=true)
     created: Timestamp,
-    @Schema(description="when the match rubber was last updated", required=true)
+    @Schema(description="When the match rubber was last updated, in milliseconds since 1/1/1970 UTC", required=true)
     updated: Timestamp,
     @Schema(description="best match in main store when importing, never written to store", required=false, implementation=classOf[RubberBestMatch])
     bestMatch: Option[RubberBestMatch] = None
@@ -152,14 +157,24 @@ object MatchRubberV1 {
   }
 }
 
-@Schema(description = "The best match in the main store")
+@Schema(
+    title = "RubberBestMatch - The best match in the main store",
+    description = "The best match in the main store."
+)
 case class RubberBestMatch(
     @Schema(description="How similar the matches are", required=true)
     sameness: Double,
     @Schema(description="The ID of the MatchRubber in the main store that is the best match, none if no match", required=true, `type`="string")
     id: Option[String],
-    @Schema(
-        description="The fields that are different", required=true
+    @ArraySchema(
+        schema=new Schema(
+            `type`="string",
+            description="A field that is different"
+        ),
+        arraySchema=new Schema(
+            description="The fields that are different",
+            required=true
+        )
     )
     differences: Option[List[String]]
 ) {

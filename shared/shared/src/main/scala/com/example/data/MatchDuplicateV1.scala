@@ -13,9 +13,9 @@ case class MatchDuplicateV1(
     teams: Map[Id.Team,Team],
     @Schema(description="The duplicate boards of the match, the key is the board ID", required=true)
     boards: Map[Id.DuplicateBoard,BoardV1],
-    @Schema(description="when the duplicate hand was created", required=true)
+    @Schema(description="When the duplicate hand was created, in milliseconds since 1/1/1970 UTC", required=true)
     created: Timestamp,
-    @Schema(description="when the duplicate hand was last updated", required=true)
+    @Schema(description="When the duplicate hand was last updated, in milliseconds since 1/1/1970 UTC", required=true)
     updated: Timestamp
 ) extends VersionedInstance[MatchDuplicate,MatchDuplicateV1,String] {
 

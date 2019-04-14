@@ -57,7 +57,10 @@ object DuplexProtocol {
   /**
    * For sending log entries to the server
    */
-  @Schema(name="LogEntry", description = "For a log message from the client.")
+  @Schema(
+      name="LogEntry",
+      title="LogEntry - For a log message from the client.",
+      description = "For a log message from the client.")
   case class LogEntryV2(
       @Schema(description="The source position", required=true)
       position: String,
@@ -76,9 +79,12 @@ object DuplexProtocol {
       @ArraySchema(
           minItems=0,
           schema=new Schema(
-              description="The args",
+              description="An argument to the message.",
               required=true,
               `type`="string"
+          ),
+          arraySchema=new Schema(
+              description="The arguments to formatting the message."
           )
       )
       args: List[String],

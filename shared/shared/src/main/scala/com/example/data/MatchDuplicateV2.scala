@@ -19,9 +19,9 @@ case class MatchDuplicateV2(
     boardset: String,
     @Schema(description="The movements being used", required=true)
     movement: String,
-    @Schema(description="when the duplicate hand was created", required=true)
+    @Schema(description="When the duplicate hand was created, in milliseconds since 1/1/1970 UTC", required=true)
     created: Timestamp,
-    @Schema(description="when the duplicate hand was last updated", required=true)
+    @Schema(description="When the duplicate hand was last updated, in milliseconds since 1/1/1970 UTC", required=true)
     updated: Timestamp
 ) extends VersionedInstance[MatchDuplicate,MatchDuplicateV2,String] {
 

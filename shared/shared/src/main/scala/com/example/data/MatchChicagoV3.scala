@@ -27,31 +27,35 @@ import io.swagger.v3.oas.annotations.media.ArraySchema
  * @param created
  * @param updated
  */
-@Schema(name="MatchChicago", description = "A chicago match, version 3 (current version)")
+@Schema(
+    name="MatchChicago",
+    title = "MatchChicago - A chicago match",
+    description = "A chicago match, version 3 (current version)"
+)
 case class MatchChicagoV3(
     @Schema(description="The chicago ID", required=true)
     id: String,
     @ArraySchema(
         minItems=4,
         uniqueItems=true,
-        schema=new Schema(description="A player", implementation=classOf[String])
-//        description="The players", required=true
+        schema=new Schema(description="A player", implementation=classOf[String]),
+        arraySchema = new Schema( description = "All the players.", required=true)
     )
     players: List[String],
     @ArraySchema(
         minItems=0,
         uniqueItems=true,
-        schema=new Schema(description="A round", implementation=classOf[Round])
-//        description="The rounds", required=true
+        schema=new Schema(description="A round", implementation=classOf[Round]),
+        arraySchema = new Schema( description = "All the rounds.", required=true)
     )
     rounds: List[Round],
     @Schema(description="The number of games per round.", required=true, `type`="enum", allowableValues=Array("0","4","6","8"))
     gamesPerRound: Int,
     @Schema(description="Use simple rotation.", required=true)
     simpleRotation: Boolean,
-    @Schema(description="The creating date", required=true)
+    @Schema(description="The creating date, in milliseconds since 1/1/1970 UTC", required=true)
     created: Timestamp,
-    @Schema(description="The last update date", required=true)
+    @Schema(description="The last update date, in milliseconds since 1/1/1970 UTC", required=true)
     updated: Timestamp,
     @Schema(
         description="best match in main store when importing, never written to store",
@@ -244,13 +248,31 @@ object MatchChicagoV3 {
   }
 }
 
-@Schema(description = "The best match in the main store")
+@Schema(
+    title = "ChicagoBestMatch - The best match in the main store",
+    description = "The best match in the main store"
+)
 case class ChicagoBestMatch(
-    @Schema(description="How similar the matches are", required=true)
+    @Schema(
+        title = "How similar the matches are.",
+        description="The percentage of fields that are the same.",
+        required=true
+    )
     sameness: Double,
-    @Schema(description="The ID of the MatchChicago in the main store that is the best match, none if no match", required=true)
+    @Schema(
+        title = "The ID of the best match.",
+        description="The ID of the MatchChicago in the main store that is the best match, none if no match",
+        required=true)
     id: Option[Id.MatchChicago],
-    @Schema(description="The fields that are different", required=true)
+    @ArraySchema(
+        minItems=0,
+        uniqueItems=true,
+        schema=new Schema(
+            `type` = "string",
+            description="A field that is different",
+        ),
+        arraySchema = new Schema( description = "All the different fields.", required=false)
+    )
     differences: Option[List[String]]
 ) {
 

@@ -7,18 +7,26 @@ import io.swagger.v3.oas.annotations.media.Schema
 /**
  * @author werewolf
  */
-@Schema(description = "The result of playing a hand")
+@Schema(
+    title = "RubberHand - The result of playing a hand",
+    description = "The result of playing a hand"
+)
 case class RubberHand(
     @Schema(description="The ID of a hand", required=true)
     id: String,
-    @Schema(description="the hand", required=true)
+    @Schema(description="the played hand", required=true)
     hand: Hand,
     @Schema(description="The number of honor points given", required=true)
     honors: Int,
-    @Schema(description="The player that got the honors points", required=true)
+    @Schema(
+        description="The player that got the honors points, ignored if honors is 0.",
+        allowableValues=Array("N", "S", "E", "W"),
+        required=true
+    )
     honorsPlayer: String,
+    @Schema(description="When the duplicate hand was created, in milliseconds since 1/1/1970 UTC", required=true)
     created: Timestamp,
-    @Schema(description="when the duplicate hand was last updated", required=true)
+    @Schema(description="When the duplicate hand was last updated, in milliseconds since 1/1/1970 UTC", required=true)
     updated: Timestamp ) {
 
   def equalsIgnoreModifyTime( other: RubberHand ) = {

@@ -162,7 +162,7 @@ trait RestDuplicateResult extends HasActorSystem {
   @POST
   @Operation(
       summary = "Create a duplicate result",
-      operationId = "postDuplicateResult",
+      operationId = "createDuplicateResult",
       parameters = Array(
           new Parameter(
               name = "test",

@@ -6,7 +6,10 @@ import io.swagger.v3.oas.annotations.media.Schema
 /**
  * @author werewolf
  */
-@Schema(description = "Server version information")
+@Schema(
+    title = "ServerVersion - Server version information",
+    description = "Server version information"
+)
 case class ServerVersion(
     @Schema(description="The name of the entity", required=true)
     name: String,

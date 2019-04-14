@@ -7,7 +7,9 @@ import io.swagger.v3.oas.annotations.media.Schema
 /**
  * @author werewolf
  */
-@Schema(description = "The result of playing a hand")
+@Schema(
+    title = "Hand - The result of playing a hand",
+    description = "The result of playing a hand")
 case class Hand(
     @Schema(description="The ID of a hand", required=true)
     id: String,
@@ -27,9 +29,9 @@ case class Hand(
     madeContract: Boolean,
     @Schema(description="The number of tricks made or down", required=true, minimum="0", maximum="13")
     tricks: Int,
-    @Schema(description="when the duplicate hand was created", required=true)
+    @Schema(description="When the duplicate hand was created, in milliseconds since 1/1/1970 UTC", required=true)
     created: Timestamp,
-    @Schema(description="when the duplicate hand was last updated", required=true)
+    @Schema(description="When the duplicate hand was last updated, in milliseconds since 1/1/1970 UTC", required=true)
     updated: Timestamp ) {
   require(0<=contractTricks && contractTricks <= 7)
   require(validContract())
