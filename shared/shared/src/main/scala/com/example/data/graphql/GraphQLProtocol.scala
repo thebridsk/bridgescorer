@@ -34,6 +34,9 @@ object GraphQLProtocol {
   @Schema( name="object", `type`="object", requiredProperties=Array())
   class VJsObject
 
+  @Schema( name="objectreq", `type`="object", requiredProperties=Array())
+  class VJsObjectReq
+
   @ArraySchema( minItems=0,
                 uniqueItems=false,
                 schema=new Schema(implementation=classOf[AnyValue]),
@@ -60,6 +63,36 @@ object GraphQLProtocol {
   class AnyValue
 
   @Schema(
+      name="anyvaluedata",
+//      description="Any valid JSON",
+      oneOf=Array(
+          classOf[VJsString],
+          classOf[VJsNumber],
+          classOf[VJsInt],
+          classOf[VJsBoolean],
+          classOf[VJsObject],
+          classOf[VJsArray]
+      ),
+      nullable = true
+  )
+  class AnyValueData
+
+  @Schema(
+      name="anyvalueext",
+//      description="Any valid JSON",
+      oneOf=Array(
+          classOf[VJsString],
+          classOf[VJsNumber],
+          classOf[VJsInt],
+          classOf[VJsBoolean],
+          classOf[VJsObject],
+          classOf[VJsArray]
+      ),
+      nullable = true
+  )
+  class AnyValueExt
+
+  @Schema(
       title = "GraphQLRequest - A GraphQL Request",
       description = "A GraphQL Request")
   case class GraphQLRequest(
@@ -67,7 +100,7 @@ object GraphQLProtocol {
       query: String,
       @Schema(description="The operationName, optional", required=false)
       operationName: Option[String],
-      @Schema(description="The variables (optional object)", implementation=classOf[VJsObject], required=false)
+      @Schema(description="The variables (optional object)", implementation=classOf[VJsObjectReq], required=false)
       variables: Option[JsObject]
   )
 
@@ -121,7 +154,7 @@ object GraphQLProtocol {
       description = "An GraphQL response"
   )
   case class GraphQLResponse(
-      @Schema(description="The response data", implementation=classOf[AnyValue], required=false)
+      @Schema(description="The response data", implementation=classOf[AnyValueData], required=false)
       data: Option[JsValue],
       @Schema(name="error", description="An error message", `type`="string", required=false)
       error: Option[String],
@@ -132,7 +165,7 @@ object GraphQLProtocol {
           arraySchema = new Schema( description = "Error message(s)", required=false)
       )
       errors: Option[List[ErrorMessage]],
-      @Schema(description="Extensions",  implementation=classOf[AnyValue], required=false)
+      @Schema(description="Extensions",  implementation=classOf[AnyValueExt], required=false)
       extensions: Option[JsValue]
   ) {
 
