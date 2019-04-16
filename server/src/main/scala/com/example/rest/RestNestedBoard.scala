@@ -56,7 +56,7 @@ class RestNestedBoard {
   /**
    * spray route for all the methods on this resource
    */
-  def route( implicit @Hidden res: Resources[Id.DuplicateBoard, Board]) =pathPrefix("boards") {
+  def route( implicit @Parameter(hidden=true) res: Resources[Id.DuplicateBoard, Board]) =pathPrefix("boards") {
 //    logRequest("route", DebugLevel) {
         getBoard ~ getBoards ~ postBoard ~ putBoard ~ deleteBoard ~ restNestedHands
 //      }
@@ -95,7 +95,7 @@ class RestNestedBoard {
 
       )
   )
-  def getBoards( implicit @Hidden res: Resources[Id.DuplicateBoard, Board]) = pathEndOrSingleSlash {
+  def getBoards( implicit @Parameter(hidden=true) res: Resources[Id.DuplicateBoard, Board]) = pathEndOrSingleSlash {
     get {
       resourceMap( res.readAll() )
     }
@@ -147,13 +147,13 @@ class RestNestedBoard {
           )
       )
   )
-  def getBoard( implicit @Hidden res: Resources[Id.DuplicateBoard, Board]) = logRequest("getBoard", DebugLevel) { get {
+  def getBoard( implicit @Parameter(hidden=true) res: Resources[Id.DuplicateBoard, Board]) = logRequest("getBoard", DebugLevel) { get {
     path( """[a-zA-Z0-9]+""".r ) { id =>
       resource( res.select(id).read() )
     }
   }}
 
-  def restNestedHands( implicit @Hidden res: Resources[Id.DuplicateBoard, Board]) = logRequestResult("RestNestedBoard.restNestedHand", DebugLevel) {
+  def restNestedHands( implicit @Parameter(hidden=true) res: Resources[Id.DuplicateBoard, Board]) = logRequestResult("RestNestedBoard.restNestedHand", DebugLevel) {
     pathPrefix( """[a-zA-Z0-9]+""".r ) { id =>
       import BridgeNestedResources._
       nestedHands.route(res.select(id).resourceHands)
@@ -215,7 +215,7 @@ class RestNestedBoard {
           )
       )
   )
-  def postBoard( implicit @Hidden res: Resources[Id.DuplicateBoard, Board]) = pathEnd {
+  def postBoard( implicit @Parameter(hidden=true) res: Resources[Id.DuplicateBoard, Board]) = pathEnd {
     post {
         entity(as[Board]) { board =>
           resourceCreated( res.resourceURI, addIdToFuture(res.createChild(board)) )
@@ -292,7 +292,7 @@ class RestNestedBoard {
           )
       )
   )
-  def putBoard( implicit @Hidden res: Resources[Id.DuplicateBoard, Board]) =
+  def putBoard( implicit @Parameter(hidden=true) res: Resources[Id.DuplicateBoard, Board]) =
     put {
       path( """[a-zA-Z0-9]+""".r ) { id =>
         entity(as[Board]) { board =>
@@ -332,7 +332,7 @@ class RestNestedBoard {
           ),
       )
   )
-  def deleteBoard( implicit @Hidden res: Resources[Id.DuplicateBoard, Board]) = delete {
+  def deleteBoard( implicit @Parameter(hidden=true) res: Resources[Id.DuplicateBoard, Board]) = delete {
     path( """[a-zA-Z0-9]+""".r ) { id =>
       resourceDelete( res.select(id).delete() )
     }

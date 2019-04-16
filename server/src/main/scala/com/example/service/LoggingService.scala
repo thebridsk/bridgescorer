@@ -37,6 +37,7 @@ import io.swagger.v3.oas.annotations.tags.Tags
 import io.swagger.v3.oas.annotations.tags.Tag
 import javax.ws.rs.GET
 import javax.ws.rs.POST
+import io.swagger.v3.oas.annotations.Parameter
 
 /**
  * <p>
@@ -102,7 +103,7 @@ trait LoggingService extends HasActorSystem with ClientLoggingService {
           )
       )
   )
-  def callRemoteLogging( @Hidden ips: String ) =
+  def callRemoteLogging( @Parameter(hidden=true) ips: String ) =
     path("entry") {
       (post | put) {
         import com.example.rest.UtilsPlayJson._
@@ -148,7 +149,7 @@ trait LoggingService extends HasActorSystem with ClientLoggingService {
           )
       )
   )
-  def callRemoteLoggingWS( @Hidden ips: String ) =
+  def callRemoteLoggingWS( @Parameter(hidden=true) ips: String ) =
     pathPrefix("ws") {
 //      logRequest(ips, logLevelForTracingRequestResponse) {
         routeLogging(ips)

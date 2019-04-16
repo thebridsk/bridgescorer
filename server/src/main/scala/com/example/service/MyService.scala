@@ -258,28 +258,6 @@ trait MyService extends Service with JsService with WebJar with LoggingService w
     override def unwantedDefinitions: Seq[String] =
       Seq(
           "Function1RequestContextFutureRouteResult",
-          "ResourcesStringBoard",
-          "ListHandInTable",
-          "ExecutionContext",
-          "SeqTuple2StringJsValue",
-          "Tuple2StringJsValue",
-          "MapStringJsValue",
-          "ResourcesStringDuplicateHand",
-          "ResourcesStringTeam",
-          "ListBoardResults",
-          "ListPairing",
-          "ListObject",
-          "ListErrorLocation",
-          "ListDuplicateSummaryEntry",
-          "ListListDuplicateSummaryEntry",
-          "ListNeverPair",
-          "ListString",
-          "ListDuplicateHand",
-          "RemoteAddress",
-          "ListErrorMessage",
-          "ListSuggestion",
-          "JsObject",
-          "JsValue"
       )
 
     def readerConfig = {

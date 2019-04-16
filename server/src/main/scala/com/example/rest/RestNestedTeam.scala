@@ -55,7 +55,7 @@ class RestNestedTeam {
   /**
    * spray route for all the methods on this resource
    */
-  def route(implicit @Hidden res: Resources[Id.Team, Team]) =
+  def route(implicit @Parameter(hidden=true) res: Resources[Id.Team, Team]) =
     logRequest("RestDuplicate.nestedTeam", DebugLevel) { logResult("RestDuplicate.nestedTeam") {
       pathPrefix(resName) {
         logRequestResult("RestDuplicate.nestedTeam", DebugLevel) {
@@ -98,7 +98,7 @@ class RestNestedTeam {
 
       )
   )
-  def getTeams(implicit @Hidden res: Resources[Id.Team, Team]) = pathEnd {
+  def getTeams(implicit @Parameter(hidden=true) res: Resources[Id.Team, Team]) = pathEnd {
     get {
       resourceMap( res.readAll() )
     }
@@ -150,7 +150,7 @@ class RestNestedTeam {
           )
       )
   )
-  def getTeam(implicit @Hidden res: Resources[Id.Team, Team]) = logRequest("getTeam", DebugLevel) {
+  def getTeam(implicit @Parameter(hidden=true) res: Resources[Id.Team, Team]) = logRequest("getTeam", DebugLevel) {
     get {
       path( """[a-zA-Z0-9]+""".r ) { id =>
         resource( res.select(id).read() )
@@ -213,7 +213,7 @@ class RestNestedTeam {
           )
       )
   )
-  def postTeam(implicit @Hidden res: Resources[Id.Team, Team]) = pathEnd {
+  def postTeam(implicit @Parameter(hidden=true) res: Resources[Id.Team, Team]) = pathEnd {
     post {
         entity(as[Team]) { hand =>
           resourceCreated( res.resourceURI, addIdToFuture(res.createChild(hand)) )
@@ -290,7 +290,7 @@ class RestNestedTeam {
           )
       )
   )
-  def putTeam(implicit @Hidden res: Resources[Id.Team, Team]) = put {
+  def putTeam(implicit @Parameter(hidden=true) res: Resources[Id.Team, Team]) = put {
     path( """[a-zA-Z0-9]+""".r ) { id =>
       entity(as[Team]) { hand =>
         resourceUpdated( res.select(id).update(hand) )
@@ -328,7 +328,7 @@ class RestNestedTeam {
           ),
       )
   )
-  def deleteTeam()(implicit @Hidden res: Resources[Id.Team, Team]) =
+  def deleteTeam()(implicit @Parameter(hidden=true) res: Resources[Id.Team, Team]) =
     delete {
       path( """[a-zA-Z0-9]+""".r ) { id =>
         resourceDelete( res.select(id).delete() )

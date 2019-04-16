@@ -59,7 +59,7 @@ class RestNestedHand {
   /**
    * spray route for all the methods on this resource
    */
-  def route(implicit @Hidden res: Resources[Id.Team, DuplicateHand]) =pathPrefix("hands") {
+  def route(implicit @Parameter(hidden=true) res: Resources[Id.Team, DuplicateHand]) =pathPrefix("hands") {
     logRequestResult("route", DebugLevel) {
         getHand ~ getHands ~ postHand ~ putHand ~ deleteHand
     }
@@ -110,7 +110,7 @@ class RestNestedHand {
 
       )
   )
-  def getHands(implicit @Hidden res: Resources[Id.DuplicateHand, DuplicateHand]) = pathEndOrSingleSlash {
+  def getHands(implicit @Parameter(hidden=true) res: Resources[Id.DuplicateHand, DuplicateHand]) = pathEndOrSingleSlash {
     get {
       resourceMap( res.readAll() )
     }
@@ -171,7 +171,7 @@ class RestNestedHand {
 
       )
   )
-  def getHand(implicit @Hidden res: Resources[String, DuplicateHand]) = logRequest("getHand", DebugLevel) {
+  def getHand(implicit @Parameter(hidden=true) res: Resources[String, DuplicateHand]) = logRequest("getHand", DebugLevel) {
     get {
       path( """[a-zA-Z0-9]+""".r ) { id =>
         resource( res.select(id).read() )
@@ -242,7 +242,7 @@ class RestNestedHand {
           )
       )
   )
-  def postHand(implicit @Hidden res: Resources[String, DuplicateHand]) = pathEnd {
+  def postHand(implicit @Parameter(hidden=true) res: Resources[String, DuplicateHand]) = pathEnd {
     post {
         entity(as[DuplicateHand]) { hand =>
           log.fine(s"Creating new hand ${hand} in ${res.resourceURI}")
@@ -328,7 +328,7 @@ class RestNestedHand {
           )
       )
   )
-  def putHand(implicit @Hidden res: Resources[String, DuplicateHand]) = logRequest("putHand", DebugLevel) { logResult("putHand", DebugLevel) {
+  def putHand(implicit @Parameter(hidden=true) res: Resources[String, DuplicateHand]) = logRequest("putHand", DebugLevel) { logResult("putHand", DebugLevel) {
     put {
       path( """[a-zA-Z0-9]+""".r ) { id =>
         entity(as[DuplicateHand]) { hand =>
@@ -376,7 +376,7 @@ class RestNestedHand {
           ),
       )
   )
-  def deleteHand(implicit @Hidden res: Resources[String, DuplicateHand]) = delete {
+  def deleteHand(implicit @Parameter(hidden=true) res: Resources[String, DuplicateHand]) = delete {
     path( """[a-zA-Z0-9]+""".r ) { id =>
       resourceDelete( res.select(id).delete() )
     }
