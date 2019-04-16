@@ -167,7 +167,7 @@ trait Service extends ImportExport {
     }
     .result()
 
-  def routeRest =
+  val routeRest =
     respondWithHeaders(`Cache-Control`( `no-cache`, `no-store`, `must-revalidate`),
                      RawHeader("Pragma","no-cache"),
                      Expires(DateTime(0))    // RawHeader("Expires","0")

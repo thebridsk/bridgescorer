@@ -108,7 +108,8 @@ trait ImportExport {
           )
       )
   )
-  def exportStore = get {
+  def xxxexportStore() = {}
+  val exportStore = get {
     path( "export" ) {
       parameter( 'filter.? ) { (filter) =>
         val filt = filter.map{ f =>
@@ -283,7 +284,8 @@ trait ImportExport {
           )
       )
   )
-  def importStore = post {
+  def xxximportStore() = {}
+  val importStore = post {
     path( "import" ) {
       if (restService.importStore.isDefined) {
         parameter( 'url.? ) { (opturl) =>
@@ -368,7 +370,8 @@ trait ImportExport {
           )
       )
   )
-  def diagnostics = get {
+  def xxxdiagnostics() = {}
+  val diagnostics = get {
     path( "diagnostics" ) {
       log.fine(s"starting to export of diagnostic information")
       val byteSource: Source[ByteString, Unit] = StreamConverters.asOutputStream()

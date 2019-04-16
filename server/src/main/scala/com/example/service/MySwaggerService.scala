@@ -102,7 +102,7 @@ trait MySwaggerService extends SwaggerHttpService {
   }
 
   import CorsDirectives._
-  def swaggerRoute =
+  val swaggerRoute =
       get {
         cors() {
           respondWithHeaders(swaggerCacheHeaders:_*) {

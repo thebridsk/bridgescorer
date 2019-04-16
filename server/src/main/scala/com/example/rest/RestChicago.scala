@@ -64,7 +64,7 @@ trait RestChicago extends HasActorSystem {
   /**
    * spray route for all the methods on this resource
    */
-  def route =pathPrefix(resName) {
+  val route =pathPrefix(resName) {
 //    logRequest("route", DebugLevel) {
         getChicago ~ getChicagos ~ postChicago ~ putChicago ~ deleteChicago
 //      }
@@ -92,7 +92,8 @@ trait RestChicago extends HasActorSystem {
           )
       )
   )
-  def getChicagos = pathEnd {
+  def xxxgetChicagos() = {}
+  val getChicagos = pathEnd {
     get {
       resourceMap( store.readAll() )
     }
@@ -138,7 +139,8 @@ trait RestChicago extends HasActorSystem {
 
       )
   )
-  def getChicago = logRequest("RestChicago.getChicago", DebugLevel) { logResult("RestChicago.postChicago") { get {
+  def xxxgetChicago() = {}
+  val getChicago = logRequest("RestChicago.getChicago", DebugLevel) { logResult("RestChicago.postChicago") { get {
     path( """[a-zA-Z0-9]+""".r ) { id =>
       resource( store.select(id).read() )
     }
@@ -189,7 +191,8 @@ trait RestChicago extends HasActorSystem {
           )
       )
   )
-  def postChicago =
+  def xxxpostChicago() = {}
+  val postChicago =
     logRequest("RestChicago.postChicago") {
       logResult("RestChicago.postChicago") {
         pathEnd {
@@ -257,7 +260,8 @@ trait RestChicago extends HasActorSystem {
           )
       )
   )
-  def putChicago =
+  def xxxputChicago() = {}
+  val putChicago =
     logRequest("RestChicago.putChicago") {
       logResult("RestChicago.putChicago") {
         path( """[a-zA-Z0-9]+""".r ) { id =>
@@ -293,7 +297,8 @@ trait RestChicago extends HasActorSystem {
           )
       )
   )
-  def deleteChicago = path( """[a-zA-Z0-9]+""".r ) { id => {
+  def xxxdeleteChicago() = {}
+  val deleteChicago = path( """[a-zA-Z0-9]+""".r ) { id => {
     delete {
         resourceDelete( store.select(id).delete() )
     } }

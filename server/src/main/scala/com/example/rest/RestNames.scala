@@ -43,7 +43,7 @@ trait RestNames extends HasActorSystem {
   /**
    * spray route for all the methods on this resource
    */
-  def route = pathPrefix("names") {
+  val route = pathPrefix("names") {
     getNames
   }
 
@@ -68,7 +68,8 @@ trait RestNames extends HasActorSystem {
           )
       )
   )
-  def getNames = pathEndOrSingleSlash {
+  def xxxgetNames() = {}
+  val getNames = pathEndOrSingleSlash {
     get {
       resourceList( restService.getAllNames() )
     }

@@ -56,6 +56,7 @@ class RestNestedBoard {
   /**
    * spray route for all the methods on this resource
    */
+  @Hidden
   def route( implicit @Parameter(hidden=true) res: Resources[Id.DuplicateBoard, Board]) =pathPrefix("boards") {
 //    logRequest("route", DebugLevel) {
         getBoard ~ getBoards ~ postBoard ~ putBoard ~ deleteBoard ~ restNestedHands

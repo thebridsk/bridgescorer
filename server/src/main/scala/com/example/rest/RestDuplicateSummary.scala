@@ -50,7 +50,7 @@ trait RestDuplicateSummary extends HasActorSystem {
   /**
    * spray route for all the methods on this resource
    */
-  def route = pathPrefix(resName) {
+  val route = pathPrefix(resName) {
 //    logRequest("route", DebugLevel) {
         getDuplicateSummaries
 //      }
@@ -78,7 +78,8 @@ trait RestDuplicateSummary extends HasActorSystem {
           )
       )
   )
-  def getDuplicateSummaries =
+  def xxxgetDuplicateSummaries() = {}
+  val getDuplicateSummaries =
 //    logRequest("routeDuplicateSummaries", DebugLevel ) { logResult("routeDuplicateSummaries", DebugLevel ) {
       get {
         pathEndOrSingleSlash {

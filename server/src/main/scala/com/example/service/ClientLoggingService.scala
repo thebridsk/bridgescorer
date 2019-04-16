@@ -38,6 +38,7 @@ import java.io.PrintWriter
 //import jawn.ParseException
 import com.example.data.rest.JsonException
 import com.fasterxml.jackson.core.JsonParseException
+import io.swagger.v3.oas.annotations.Hidden
 
 class Counter( max: Long ) {
   private var counter: Long = 0
@@ -62,7 +63,7 @@ trait ClientLoggingService {
 
   private lazy val log = Logging(hasActorSystem.actorSystem, classOf[ClientLoggingService])
 
-
+  @Hidden
   def routeLogging( ip: String ) =
     get {
       pathEndOrSingleSlash {

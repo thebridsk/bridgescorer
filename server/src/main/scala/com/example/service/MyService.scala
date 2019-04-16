@@ -110,7 +110,7 @@ trait MyService extends Service with JsService with WebJar with LoggingService w
   /**
    * Spray routing which logs all requests and responses at the Debug level.
    */
-  def myRouteWithLogging = handleExceptions(excptHandler) {
+  val myRouteWithLogging = handleExceptions(excptHandler) {
     handleRejections(totallyMissingHandler) {
 //    logRequest(("topLevel", Logging.DebugLevel)) {
 //      logResult(("topLevel", Logging.DebugLevel)) {
@@ -123,7 +123,7 @@ trait MyService extends Service with JsService with WebJar with LoggingService w
   /**
    * Spray routing with logging of incoming IP address.
    */
-  def logRouteWithIp =
+  val logRouteWithIp =
     extractClientIP { ip =>
         import CorsDirectives._
         pathPrefix("v1") {
@@ -142,7 +142,7 @@ trait MyService extends Service with JsService with WebJar with LoggingService w
   /**
    * The main spray route of the service
    */
-  def myRoute = handleRejections(totallyMissingHandler) {
+  val myRoute = handleRejections(totallyMissingHandler) {
       import CorsDirectives._
       encodeResponse {
         logRequest("myRoute", Logging.DebugLevel) { logResult("myRoute", Logging.DebugLevel) {
@@ -257,6 +257,9 @@ trait MyService extends Service with JsService with WebJar with LoggingService w
 
     override def unwantedDefinitions: Seq[String] =
       Seq(
+          // this is a akka.http.scaladsl.server.Route
+          // RequestContext => Future[RouteResult]
+          // This could be generated since all the CRUD calls return a Route
           "Function1RequestContextFutureRouteResult",
       )
 
@@ -280,6 +283,8 @@ trait MyService extends Service with JsService with WebJar with LoggingService w
         val filteredSchemas = asScala(swagger.getComponents.getSchemas).filterKeys(
           definitionName => !unwantedDefinitions.contains(definitionName)).toMap.asJava
         swagger.getComponents.setSchemas(new TreeMap(filteredSchemas))
+      } else {
+        swagger.getComponents.setSchemas(new TreeMap(swagger.getComponents.getSchemas))
       }
       swagger
     }

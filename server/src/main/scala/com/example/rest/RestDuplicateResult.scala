@@ -79,7 +79,7 @@ trait RestDuplicateResult extends HasActorSystem {
   /**
    * spray route for all the methods on this resource
    */
-  def route =pathPrefix(resName) {
+  val route =pathPrefix(resName) {
 //    logRequest("route", DebugLevel) {
         getDuplicateResult ~ getDuplicateResults ~ postDuplicateResult ~ putDuplicateResult ~ deleteDuplicateResult
 //      }
@@ -107,7 +107,8 @@ trait RestDuplicateResult extends HasActorSystem {
           )
       )
   )
-  def getDuplicateResults = pathEnd {
+  def xxxgetDuplicateResults() = {}
+  val getDuplicateResults = pathEnd {
     get {
       resourceMap( store.readAll() )
     }
@@ -153,7 +154,8 @@ trait RestDuplicateResult extends HasActorSystem {
 
       )
   )
-  def getDuplicateResult = logRequest("RestDuplicateResult.getDuplicateResult", DebugLevel) { logResult("RestDuplicateResult.postDuplicateResult") { get {
+  def xxxgetDuplicateResult() = {}
+  val getDuplicateResult = logRequest("RestDuplicateResult.getDuplicateResult", DebugLevel) { logResult("RestDuplicateResult.postDuplicateResult") { get {
     path( """[a-zA-Z0-9]+""".r ) { id =>
       resource( store.select(id).read() )
     }
@@ -238,7 +240,8 @@ trait RestDuplicateResult extends HasActorSystem {
           )
       )
   )
-  def postDuplicateResult =
+  def xxxpostDuplicateResult() = {}
+  val postDuplicateResult =
     logRequest("RestDuplicateResult.postDuplicateResult") {
       logResult("RestDuplicateResult.postDuplicateResult") {
         pathEnd {
@@ -324,7 +327,8 @@ trait RestDuplicateResult extends HasActorSystem {
           )
       )
   )
-  def putDuplicateResult =
+  def xxxputDuplicateResult() = {}
+  val putDuplicateResult =
     logRequest("RestDuplicateResult.putDuplicateResult") {
       logResult("RestDuplicateResult.putDuplicateResult") {
         path( """[a-zA-Z0-9]+""".r ) { id =>
@@ -360,7 +364,8 @@ trait RestDuplicateResult extends HasActorSystem {
           )
       )
   )
-  def deleteDuplicateResult = path( """[a-zA-Z0-9]+""".r ) { id => {
+  def xxxdeleteDuplicateResult() = {}
+  val deleteDuplicateResult = path( """[a-zA-Z0-9]+""".r ) { id => {
     delete {
         resourceDelete( store.select(id).delete() )
     } }

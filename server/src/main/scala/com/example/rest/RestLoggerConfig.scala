@@ -67,7 +67,7 @@ trait RestLoggerConfig extends HasActorSystem {
   /**
    * spray route for all the methods on this resource
    */
-  def route = pathPrefix( "loggerConfig") {
+  val route = pathPrefix( "loggerConfig") {
     getLoggerConfig
   } ~
   pathPrefix( "serverurls" ) {
@@ -109,7 +109,8 @@ trait RestLoggerConfig extends HasActorSystem {
           )
       )
   )
-  def getLoggerConfig = pathEndOrSingleSlash {
+  def xxxgetLoggerConfig() = {}
+  val getLoggerConfig = pathEndOrSingleSlash {
     get {
       extractClientIP { ip => {
         optionalHeaderValueByName("User-Agent") { userAgent =>
@@ -162,7 +163,8 @@ trait RestLoggerConfig extends HasActorSystem {
           )
       )
   )
-  def getServerVersion = pathEndOrSingleSlash {
+  def xxxgetServerVersion() = {}
+  val getServerVersion = pathEndOrSingleSlash {
     get {
       val serverversion = List(
                             ServerVersion( "Server", VersionServer.version, VersionServer.builtAtString+" UTC"),
@@ -206,7 +208,8 @@ trait RestLoggerConfig extends HasActorSystem {
           )
       )
   )
-  def getServerURL = pathEndOrSingleSlash {
+  def xxxgetServerURL() = {}
+  val getServerURL = pathEndOrSingleSlash {
     get {
       val serverurl = List(serverURL())
       complete(StatusCodes.OK, serverurl)
@@ -246,7 +249,8 @@ trait RestLoggerConfig extends HasActorSystem {
           )
       )
   )
-  def getBoardSetsAndMovements = pathEndOrSingleSlash {
+  def xxxgetBoardSetsAndMovements() = {}
+  val getBoardSetsAndMovements = pathEndOrSingleSlash {
     get {
       val fbs = restService.boardSets.readAll().map { r =>
         r match {

@@ -56,7 +56,7 @@ trait RestMovement extends HasActorSystem {
   /**
    * spray route for all the methods on this resource
    */
-  def route =pathPrefix(resName) {
+  val route =pathPrefix(resName) {
     logRequest("movements", DebugLevel) {
       logResult("movements", DebugLevel) {
         getBoard ~ getBoards ~ postBoard ~ putBoard ~ deleteBoard
@@ -86,7 +86,8 @@ trait RestMovement extends HasActorSystem {
           )
       )
   )
-  def getBoards = pathEnd {
+  def xxxgetBoards() = {}
+  val getBoards = pathEnd {
     get {
       resourceMap( store.readAll())
     }
@@ -131,7 +132,8 @@ trait RestMovement extends HasActorSystem {
 
       )
   )
-  def getBoard = logRequest("getMovement", DebugLevel) { get {
+  def xxxgetBoard() = {}
+  val getBoard = logRequest("getMovement", DebugLevel) { get {
     path( """[a-zA-Z0-9]+""".r ) { id =>
       resource( store.select(id).read() )
     }
@@ -182,7 +184,8 @@ trait RestMovement extends HasActorSystem {
           )
       )
   )
-  def postBoard = pathEnd {
+  def xxxpostBoard() = {}
+  val postBoard = pathEnd {
     post {
         entity(as[Movement]) { board =>
           resourceCreated( resName, store.createChild(board), Created )
@@ -244,7 +247,8 @@ trait RestMovement extends HasActorSystem {
           )
       )
   )
-  def putBoard =
+  def xxxputBoard() = {}
+  val putBoard =
     put {
       path( """[a-zA-Z0-9]+""".r ) { id =>
         entity(as[Movement]) { board =>
@@ -276,7 +280,8 @@ trait RestMovement extends HasActorSystem {
           )
       )
   )
-  def deleteBoard = delete {
+  def xxxdeleteBoard() = {}
+  val deleteBoard = delete {
     logRequest("movement.delete", DebugLevel) {
       logResult("movement.delete", DebugLevel) {
         path( """[a-zA-Z0-9]+""".r ) {

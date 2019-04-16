@@ -55,6 +55,7 @@ class RestNestedTeam {
   /**
    * spray route for all the methods on this resource
    */
+  @Hidden
   def route(implicit @Parameter(hidden=true) res: Resources[Id.Team, Team]) =
     logRequest("RestDuplicate.nestedTeam", DebugLevel) { logResult("RestDuplicate.nestedTeam") {
       pathPrefix(resName) {

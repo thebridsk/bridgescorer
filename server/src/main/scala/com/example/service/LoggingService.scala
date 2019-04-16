@@ -55,7 +55,7 @@ trait LoggingService extends HasActorSystem with ClientLoggingService {
   /**
    * spray route for all the methods on this resource
    */
-  def loggingRoute = {
+  val loggingRoute = {
     extractClientIP { ip =>
       {
 //        log.debug(s"In loggingRoute from ${ip.toString()}")

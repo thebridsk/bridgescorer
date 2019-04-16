@@ -65,7 +65,7 @@ trait RestDuplicate extends HasActorSystem {
   /**
    * spray route for all the methods on this resource
    */
-  def route = pathPrefix(resName) {
+  val route = pathPrefix(resName) {
 //    logRequest("route", DebugLevel) {
         getDuplicate ~ getDuplicates ~ postDuplicate ~ putDuplicate ~ deleteDuplicate ~ nested
 //      }
@@ -93,7 +93,8 @@ trait RestDuplicate extends HasActorSystem {
           )
       )
   )
-  def getDuplicates = pathEnd {
+  def xxxgetDuplicates() = {}
+  val getDuplicates = pathEnd {
     get {
       resourceMap( store.readAll() )
     }
@@ -139,7 +140,8 @@ trait RestDuplicate extends HasActorSystem {
 
       )
   )
-  def getDuplicate = logRequest("RestDuplicate.getDuplicate", DebugLevel) { logResult("RestDuplicate.getDuplicate") { get {
+  def xxxgetDuplicate() = {}
+  val getDuplicate = logRequest("RestDuplicate.getDuplicate", DebugLevel) { logResult("RestDuplicate.getDuplicate") { get {
     pathPrefix( """[a-zA-Z0-9]+""".r ) { id: Id.MatchDuplicate =>
       pathEndOrSingleSlash {
         resource( store.select(id).read() )
@@ -234,7 +236,8 @@ trait RestDuplicate extends HasActorSystem {
           )
       )
   )
-  def postDuplicate =
+  def xxxpostDuplicate() = {}
+  val postDuplicate =
     logRequest("RestDuplicate.postDuplicate") {
       logResult("RestDuplicate.postDuplicate") {
         pathEnd {
@@ -320,7 +323,8 @@ trait RestDuplicate extends HasActorSystem {
           )
       )
   )
-  def putDuplicate =
+  def xxxputDuplicate() = {}
+  val putDuplicate =
     logRequest("RestDuplicate.putDuplicate") {
       logResult("RestDuplicate.putDuplicate") {
         put {
@@ -356,7 +360,8 @@ trait RestDuplicate extends HasActorSystem {
           )
       )
   )
-  def deleteDuplicate = delete {
+  def xxxdeleteDuplicate() = {}
+  val deleteDuplicate = delete {
     path( """[a-zA-Z0-9]+""".r ) {
       id: Id.MatchDuplicate => {
         resourceDelete( store.select(id).delete() )

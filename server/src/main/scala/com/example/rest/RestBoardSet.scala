@@ -58,7 +58,7 @@ trait RestBoardSet extends HasActorSystem {
   /**
    * spray route for all the methods on this resource
    */
-  def route =pathPrefix(resName) {
+  val route =pathPrefix(resName) {
     logRequest("boardsets", DebugLevel) {
       logResult("boardsets", DebugLevel) {
         getBoard ~ getBoards ~ postBoard ~ putBoard ~ deleteBoard
@@ -88,7 +88,8 @@ trait RestBoardSet extends HasActorSystem {
           )
       )
   )
-  def getBoards = pathEnd {
+  def xxxgetBoards() = {}
+  val getBoards = pathEnd {
     get {
       resourceMap( store.readAll() )
     }
@@ -134,7 +135,8 @@ trait RestBoardSet extends HasActorSystem {
 
       )
   )
-  def getBoard = logRequest("getBoardset", DebugLevel) { get {
+  def xxxgetBoard() = {}
+  val getBoard = logRequest("getBoardset", DebugLevel) { get {
     path( """[a-zA-Z0-9]+""".r ) { id =>
       resource( store.select(id).read() )
     }
@@ -185,7 +187,8 @@ trait RestBoardSet extends HasActorSystem {
           )
       )
   )
-  def postBoard = pathEnd {
+  def xxxpostBoard() = {}
+  val postBoard = pathEnd {
     post {
         entity(as[BoardSet]) { board =>
           resourceCreated( resName, store.createChild(board) )
@@ -248,7 +251,8 @@ trait RestBoardSet extends HasActorSystem {
           )
       )
   )
-  def putBoard = logRequest("putBoardset", DebugLevel) { logResult("putBoardsets", DebugLevel) {
+  def xxxputBoard() = {}
+  val putBoard = logRequest("putBoardset", DebugLevel) { logResult("putBoardsets", DebugLevel) {
     put {
       path( """[a-zA-Z0-9]+""".r ) { id =>
         testlog.info("putBoardset: id is "+id)
@@ -283,7 +287,8 @@ trait RestBoardSet extends HasActorSystem {
           )
       )
   )
-  def deleteBoard = delete {
+  def xxxdeleteBoard() = {}
+  val deleteBoard = delete {
     logRequest("boardsets.delete", DebugLevel) {
       logResult("boardsets.delete", DebugLevel) {
         path( """[a-zA-Z0-9]+""".r ) {

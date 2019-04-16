@@ -59,6 +59,7 @@ class RestNestedHand {
   /**
    * spray route for all the methods on this resource
    */
+  @Hidden
   def route(implicit @Parameter(hidden=true) res: Resources[Id.Team, DuplicateHand]) =pathPrefix("hands") {
     logRequestResult("route", DebugLevel) {
         getHand ~ getHands ~ postHand ~ putHand ~ deleteHand

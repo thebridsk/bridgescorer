@@ -69,7 +69,7 @@ trait RestRubber extends HasActorSystem {
   /**
    * spray route for all the methods on this resource
    */
-  def route =pathPrefix(resName) {
+  val route =pathPrefix(resName) {
 //    logRequest("route", DebugLevel) {
         getRubber ~ getRubbers ~ postRubber ~ putRubber ~ deleteRubber
 //      }
@@ -97,7 +97,8 @@ trait RestRubber extends HasActorSystem {
           )
       )
   )
-  def getRubbers = pathEnd {
+  def xxxgetRubbers() = {}
+  val getRubbers = pathEnd {
     get {
       resourceMap( store.readAll() )
     }
@@ -143,7 +144,8 @@ trait RestRubber extends HasActorSystem {
 
       )
   )
-  def getRubber = logRequest("RestRubber.getRubber", DebugLevel) { logResult("RestRubber.postRubber") { get {
+  def xxxgetRubber() = {}
+  val getRubber = logRequest("RestRubber.getRubber", DebugLevel) { logResult("RestRubber.postRubber") { get {
     path( """[a-zA-Z0-9]+""".r ) { id =>
       resource( store.select(id).read() )
     }
@@ -194,7 +196,8 @@ trait RestRubber extends HasActorSystem {
           )
       )
   )
-  def postRubber =
+  def xxxpostRubber() = {}
+  val postRubber =
     logRequest("RestRubber.postRubber") {
       logResult("RestRubber.postRubber") {
         pathEnd {
@@ -273,7 +276,8 @@ trait RestRubber extends HasActorSystem {
           )
       )
   )
-  def putRubber =
+  def xxxputRubber() = {}
+  val putRubber =
     logRequest("RestRubber.putRubber") {
       logResult("RestRubber.putRubber") {
         path( """[a-zA-Z0-9]+""".r ) { id =>
@@ -309,7 +313,8 @@ trait RestRubber extends HasActorSystem {
           )
       )
   )
-  def deleteRubber = delete {
+  def xxxdeleteRubber() = {}
+  val deleteRubber = delete {
     path( """[a-zA-Z0-9]+""".r ) {
       id => {
         resourceDelete( store.select(id).delete() )

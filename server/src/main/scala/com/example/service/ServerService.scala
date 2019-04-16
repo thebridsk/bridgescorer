@@ -67,7 +67,7 @@ class ServerService( totallyMissingHandler: RejectionHandler ) {
   /**
    * spray route for all the methods on this resource
    */
-  def serverRoute = {
+  val serverRoute = {
     extractClientIP { ip =>
       {
         pathPrefix(serverUrlPrefix) {

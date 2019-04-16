@@ -47,7 +47,7 @@ trait RestSuggestion extends HasActorSystem {
   /**
    * spray route for all the methods on this resource
    */
-  def route = pathPrefix("suggestions") {
+  val route = pathPrefix("suggestions") {
     suggestion
   }
 
@@ -90,7 +90,8 @@ trait RestSuggestion extends HasActorSystem {
 
       )
   )
-  def suggestion = pathEndOrSingleSlash {
+  def xxxsuggestion() = {}
+  val suggestion = pathEndOrSingleSlash {
     post {
       entity(as[DuplicateSuggestions]) { input =>
         val f = restService.getDuplicateSummaries().map { rds =>
