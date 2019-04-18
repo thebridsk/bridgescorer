@@ -103,6 +103,7 @@ trait LoggingService extends HasActorSystem with ClientLoggingService {
           )
       )
   )
+  def xxxcallRemoteLogging = {}
   def callRemoteLogging( @Parameter(hidden=true) ips: String ) =
     path("entry") {
       (post | put) {
@@ -149,6 +150,7 @@ trait LoggingService extends HasActorSystem with ClientLoggingService {
           )
       )
   )
+  def xxxcallRemoteLoggingWS = {}
   def callRemoteLoggingWS( @Parameter(hidden=true) ips: String ) =
     pathPrefix("ws") {
 //      logRequest(ips, logLevelForTracingRequestResponse) {

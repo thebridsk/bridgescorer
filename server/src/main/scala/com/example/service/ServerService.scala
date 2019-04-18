@@ -130,6 +130,7 @@ class ServerService( totallyMissingHandler: RejectionHandler ) {
 
       )
   )
+  def xxxshutdown = {}
   def shutdown( @Parameter(hidden=true) ip: RemoteAddress ) =
     logRequestResult(ip.toString(), logLevelForTracingRequestResponse) {
       post {

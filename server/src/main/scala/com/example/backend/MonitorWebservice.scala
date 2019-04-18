@@ -75,7 +75,8 @@ class MonitorWebservice(totallyMissingResourceHandler: RejectionHandler)(implici
           )
       )
   )
-  def routews =
+  def xxxroutews = {}
+  val routews =
     get {
       pathPrefix("ws") {
         handleRejections(totallyMissingResourceHandler) {
@@ -133,7 +134,8 @@ class MonitorWebservice(totallyMissingResourceHandler: RejectionHandler)(implici
 
       )
   )
-  def routesse = {
+  def xxxroutesse = {}
+  val routesse = {
     import akka.http.scaladsl.marshalling.sse.EventStreamMarshalling._
     import akka.http.scaladsl.model.sse.ServerSentEvent
     pathPrefix("sse") {

@@ -96,6 +96,7 @@ class RestNestedBoard {
 
       )
   )
+  def xxxgetBoards = {}
   def getBoards( implicit @Parameter(hidden=true) res: Resources[Id.DuplicateBoard, Board]) = pathEndOrSingleSlash {
     get {
       resourceMap( res.readAll() )
@@ -148,6 +149,7 @@ class RestNestedBoard {
           )
       )
   )
+  def xxxgetBoard = {}
   def getBoard( implicit @Parameter(hidden=true) res: Resources[Id.DuplicateBoard, Board]) = logRequest("getBoard", DebugLevel) { get {
     path( """[a-zA-Z0-9]+""".r ) { id =>
       resource( res.select(id).read() )
@@ -216,6 +218,7 @@ class RestNestedBoard {
           )
       )
   )
+  def xxxpostBoard = {}
   def postBoard( implicit @Parameter(hidden=true) res: Resources[Id.DuplicateBoard, Board]) = pathEnd {
     post {
         entity(as[Board]) { board =>
@@ -293,6 +296,7 @@ class RestNestedBoard {
           )
       )
   )
+  def xxxputBoard = {}
   def putBoard( implicit @Parameter(hidden=true) res: Resources[Id.DuplicateBoard, Board]) =
     put {
       path( """[a-zA-Z0-9]+""".r ) { id =>
@@ -333,6 +337,7 @@ class RestNestedBoard {
           ),
       )
   )
+  def xxxdeleteBoard = {}
   def deleteBoard( implicit @Parameter(hidden=true) res: Resources[Id.DuplicateBoard, Board]) = delete {
     path( """[a-zA-Z0-9]+""".r ) { id =>
       resourceDelete( res.select(id).delete() )

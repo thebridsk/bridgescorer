@@ -260,7 +260,7 @@ trait MyService extends Service with JsService with WebJar with LoggingService w
           // this is a akka.http.scaladsl.server.Route
           // RequestContext => Future[RouteResult]
           // This could be generated since all the CRUD calls return a Route
-          "Function1RequestContextFutureRouteResult",
+//          "Function1RequestContextFutureRouteResult",
       )
 
     def readerConfig = {

@@ -111,6 +111,7 @@ class RestNestedHand {
 
       )
   )
+  def xxxgetHands = {}
   def getHands(implicit @Parameter(hidden=true) res: Resources[Id.DuplicateHand, DuplicateHand]) = pathEndOrSingleSlash {
     get {
       resourceMap( res.readAll() )
@@ -172,6 +173,7 @@ class RestNestedHand {
 
       )
   )
+  def xxxgetHand = {}
   def getHand(implicit @Parameter(hidden=true) res: Resources[String, DuplicateHand]) = logRequest("getHand", DebugLevel) {
     get {
       path( """[a-zA-Z0-9]+""".r ) { id =>
@@ -243,6 +245,7 @@ class RestNestedHand {
           )
       )
   )
+  def xxxpostHand = {}
   def postHand(implicit @Parameter(hidden=true) res: Resources[String, DuplicateHand]) = pathEnd {
     post {
         entity(as[DuplicateHand]) { hand =>
@@ -329,6 +332,7 @@ class RestNestedHand {
           )
       )
   )
+  def xxxputHand = {}
   def putHand(implicit @Parameter(hidden=true) res: Resources[String, DuplicateHand]) = logRequest("putHand", DebugLevel) { logResult("putHand", DebugLevel) {
     put {
       path( """[a-zA-Z0-9]+""".r ) { id =>
@@ -377,6 +381,7 @@ class RestNestedHand {
           ),
       )
   )
+  def xxxdeleteHand = {}
   def deleteHand(implicit @Parameter(hidden=true) res: Resources[String, DuplicateHand]) = delete {
     path( """[a-zA-Z0-9]+""".r ) { id =>
       resourceDelete( res.select(id).delete() )

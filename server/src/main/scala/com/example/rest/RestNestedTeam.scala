@@ -99,6 +99,7 @@ class RestNestedTeam {
 
       )
   )
+  def xxxgetTeams = {}
   def getTeams(implicit @Parameter(hidden=true) res: Resources[Id.Team, Team]) = pathEnd {
     get {
       resourceMap( res.readAll() )
@@ -151,6 +152,7 @@ class RestNestedTeam {
           )
       )
   )
+  def xxxgetTeam = {}
   def getTeam(implicit @Parameter(hidden=true) res: Resources[Id.Team, Team]) = logRequest("getTeam", DebugLevel) {
     get {
       path( """[a-zA-Z0-9]+""".r ) { id =>
@@ -214,6 +216,7 @@ class RestNestedTeam {
           )
       )
   )
+  def xxxpostTeam = {}
   def postTeam(implicit @Parameter(hidden=true) res: Resources[Id.Team, Team]) = pathEnd {
     post {
         entity(as[Team]) { hand =>
@@ -291,6 +294,7 @@ class RestNestedTeam {
           )
       )
   )
+  def xxxputTeam = {}
   def putTeam(implicit @Parameter(hidden=true) res: Resources[Id.Team, Team]) = put {
     path( """[a-zA-Z0-9]+""".r ) { id =>
       entity(as[Team]) { hand =>
@@ -329,6 +333,7 @@ class RestNestedTeam {
           ),
       )
   )
+  def xxxdeleteTeams = {}
   def deleteTeam()(implicit @Parameter(hidden=true) res: Resources[Id.Team, Team]) =
     delete {
       path( """[a-zA-Z0-9]+""".r ) { id =>

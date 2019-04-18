@@ -98,7 +98,8 @@ trait GraphQLRoute {
 
       )
   )
-  def graphQLRoute: Route =
+  def xxxgraphQLRoute = {}
+  val graphQLRoute: Route =
     pathPrefix("v1") {
       logRequestResult("GraphQLRoute") {
         (post & path("graphql")) {
