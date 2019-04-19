@@ -531,6 +531,53 @@ object PageSummaryInternal {
         }
       }
 
+      def footer() = {
+        <.div(
+          baseStyles.divFooter,
+          <.div(
+            baseStyles.divFooterLeft,
+            PageScoreboardInternal.scoringMethodButton( state.useIMP, None, false, nextIMPs ),
+            whenUndefined(importId)(
+              TagMod(
+                " ",
+                if (!state.forPrint) TagMod() // AppButton("ForPrint", "Select For Print", ^.onClick --> forPrint(true))
+                else Seq[TagMod](
+                       AppButton("Cancel Print", "Cancel Print", ^.onClick --> forPrintCancel),
+                       " ",
+                       AppButton("Print", "Print", ^.onClick --> forPrintOk),
+                       " ",
+                       AppButton("PrintSelectAll", "Select All", ^.onClick --> selectedAll ),
+                       " ",
+                       AppButton("PrintClearAll", "Clear Selected", ^.onClick --> clearAllSelected )
+                       ).toTagMod
+              )
+            ),
+            importId.whenDefined { importid =>
+              TagMod(
+                " ",
+                if (!state.forPrint) AppButton("ForImport", "Select For Import", ^.onClick --> forPrint(true))
+                else Seq[TagMod](
+                       AppButton("Cancel Import", "Cancel Import", ^.onClick --> forPrintCancel),
+                       " ",
+                       AppButton("Import", "Import Selected", ^.onClick --> importSelected(importid), ^.disabled:=state.selected.isEmpty),
+                       " ",
+                       AppButton("ImportSelectAll", "Select All", ^.onClick --> selectedAll ),
+                       " ",
+                       AppButton("ImportClearAll", "Clear Selected", ^.onClick --> clearAllSelected)
+                       ).toTagMod
+              )
+            }
+          ),
+        )
+      }
+
+      def footerColspan = {
+        5+  // the number columns on normal summary (no names)
+        tp.allPlayers.size+
+        importId.map(i=>2).getOrElse(0)+
+        (if (state.forPrint) 1 else 0)
+      }
+
       /**
        * Show the matches
        */
@@ -552,6 +599,13 @@ object PageSummaryInternal {
               )
             ),
             SummaryHeader((tp,props,state,this,importId)),
+            <.tfoot(
+              <.tr(
+                <.td( ^.colSpan:=footerColspan,
+                  footer()
+                )
+              )
+            ),
             <.tbody(
                 summaries.get.sortWith((one,two)=>one.created>two.created).
                               filter { ds =>
@@ -578,6 +632,13 @@ object PageSummaryInternal {
       def showWorkingMatches() = {
         <.table(
             SummaryHeader((tp,props,state,this,importId)),
+            <.tfoot(
+              <.tr(
+                <.td( ^.colSpan:=footerColspan,
+                  footer()
+                )
+              )
+            ),
             <.tbody(
               <.tr(
                 <.td( "Working" ),
@@ -685,44 +746,6 @@ object PageSummaryInternal {
         <.div(
           if (tp.isData) showMatches()
           else showWorkingMatches(),
-          <.p,
-          <.div(
-            baseStyles.divFooter,
-            <.div(
-              baseStyles.divFooterLeft,
-              PageScoreboardInternal.scoringMethodButton( state.useIMP, None, false, nextIMPs ),
-              whenUndefined(importId)(
-                TagMod(
-                  " ",
-                  if (!state.forPrint) TagMod() // AppButton("ForPrint", "Select For Print", ^.onClick --> forPrint(true))
-                  else Seq[TagMod](
-                         AppButton("Cancel Print", "Cancel Print", ^.onClick --> forPrintCancel),
-                         " ",
-                         AppButton("Print", "Print", ^.onClick --> forPrintOk),
-                         " ",
-                         AppButton("PrintSelectAll", "Select All", ^.onClick --> selectedAll ),
-                         " ",
-                         AppButton("PrintClearAll", "Clear Selected", ^.onClick --> clearAllSelected )
-                         ).toTagMod
-                )
-              ),
-              importId.whenDefined { importid =>
-                TagMod(
-                  " ",
-                  if (!state.forPrint) AppButton("ForImport", "Select For Import", ^.onClick --> forPrint(true))
-                  else Seq[TagMod](
-                         AppButton("Cancel Import", "Cancel Import", ^.onClick --> forPrintCancel),
-                         " ",
-                         AppButton("Import", "Import Selected", ^.onClick --> importSelected(importid), ^.disabled:=state.selected.isEmpty),
-                         " ",
-                         AppButton("ImportSelectAll", "Select All", ^.onClick --> selectedAll ),
-                         " ",
-                         AppButton("ImportClearAll", "Clear Selected", ^.onClick --> clearAllSelected)
-                         ).toTagMod
-                )
-              }
-            ),
-          )
         )
       )
     }

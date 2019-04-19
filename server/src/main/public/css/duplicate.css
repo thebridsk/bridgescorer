@@ -27,6 +27,22 @@
   position: -webkit-sticky;
   top: -8px;
   background: white;
+  z-index: 11;
+}
+.dupDivSummary > div > table thead tr th:first-child {
+  position: sticky;
+  position: -webkit-sticky;
+  top: -8px;
+  left: -8px;
+  background: white;
+  z-index: 12;
+}
+.dupDivSummary > div > table tbody tr td:first-child {
+  position: sticky;
+  position: -webkit-sticky;
+  left: -8px;
+  background: white;
+  z-index: 10;
 }
 .dupDivSummary > div > table tbody tr:nth-child(2n+1) {
   background-color: #f2f2f2;
@@ -44,6 +60,16 @@
   border: 1px solid black;
   text-align: center;
   padding: 0px 3px;
+}
+.dupDivSummary > div > table > tfoot > tr > td {
+  position: sticky;
+  position: -webkit-sticky;
+  bottom: -8px;
+  background: white;
+  z-index: 12;
+}
+.dupDivSummary > div > table > tfoot > tr > td > div {
+  padding-top: 0px;
 }
 
 .dupDivPlayerFilter {
