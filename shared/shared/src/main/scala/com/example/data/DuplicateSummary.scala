@@ -4,26 +4,30 @@ import com.example.data.SystemTime.Timestamp
 import com.example.data.bridge.MatchDuplicateScore
 import com.example.data.bridge.PerspectiveComplete
 
-import io.swagger.annotations._
 import scala.annotation.meta._
+import io.swagger.v3.oas.annotations.media.Schema
+import io.swagger.v3.oas.annotations.media.ArraySchema
+import io.swagger.v3.oas.annotations.Hidden
 
-@ApiModel(description = "Details about a team in a match")
+@Schema(
+    title = "DuplicateSummaryDetails - Team stats in a match",
+    description = "Details about a team in a match")
 case class DuplicateSummaryDetails(
-    @(ApiModelProperty @field)(value="The team", required=true)
+    @Schema(description="The id of the team", required=true)
     team: Id.Team,
-    @(ApiModelProperty @field)(value="The number of times the team was declarer", required=true)
+    @Schema(description="The number of times the team was declarer", required=true, minimum="0")
     declarer: Int = 0,
-    @(ApiModelProperty @field)(value="The number of times the team made the contract as declarer", required=true)
+    @Schema(description="The number of times the team made the contract as declarer", required=true, minimum="0")
     made: Int = 0,
-    @(ApiModelProperty @field)(value="The number of times the team went down as declarer", required=true)
+    @Schema(description="The number of times the team went down as declarer", required=true, minimum="0")
     down: Int = 0,
-    @(ApiModelProperty @field)(value="The number of times the team defended the contract", required=true)
+    @Schema(description="The number of times the team defended the contract", required=true, minimum="0")
     defended: Int = 0,
-    @(ApiModelProperty @field)(value="The number of times the team took down the contract as defenders", required=true)
+    @Schema(description="The number of times the team took down the contract as defenders", required=true, minimum="0")
     tookDown: Int = 0,
-    @(ApiModelProperty @field)(value="The number of times the team allowed the contract to be made as defenders", required=true)
+    @Schema(description="The number of times the team allowed the contract to be made as defenders", required=true, minimum="0")
     allowedMade: Int = 0,
-    @(ApiModelProperty @field)(value="The number of times the team passed out a game", required=true)
+    @Schema(description="The number of times the team passed out a game", required=true, minimum="0")
     passed: Int = 0
   ) {
 
@@ -55,24 +59,28 @@ object DuplicateSummaryDetails {
   def tookDown( team: Id.Team ) = new DuplicateSummaryDetails( team, defended = 1, tookDown = 1 )
 }
 
-@ApiModel(description = "The summary of a duplicate match")
+@Schema(
+    title = "DuplicateSummaryEntry - The summary of a team in a duplicate match",
+    description = "The summary of a team in a duplicate match")
 case class DuplicateSummaryEntry(
-    @(ApiModelProperty @field)(value="The team", required=true)
+    @Schema(description="The team", required=true)
     team: Team,
-    @(ApiModelProperty @field)(value="The points the team scored", required=false)
+    @Schema(description="The points the team scored when using MP scoring", required=false, `type`="number", format="double")
     result: Option[Double],
-    @(ApiModelProperty @field)(value="The place the team finished in", required=false)
+    @Schema(description="The place the team finished in when using MP scoring", required=false, `type`="integer", format="int32")
     place: Option[Int],
-    @(ApiModelProperty @field)(value="Details about the team", required=false)
+    @Schema(description="Details about the team", required=false, implementation=classOf[DuplicateSummaryDetails])
     details: Option[DuplicateSummaryDetails] = None,
-    @(ApiModelProperty @field)(value="The IMPs the team scored", required=false)
+    @Schema(description="The IMPs the team scored", required=false, `type`="number", format="double")
     resultImp: Option[Double] = None,
-    @(ApiModelProperty @field)(value="The place using IMPs the team finished in", required=false)
+    @Schema(description="The place using IMPs the team finished in", required=false, `type`="integer", format="int32")
     placeImp: Option[Int] = None
     ) {
   def id = team.id
 
+  @Hidden
   def getResultMp = result.getOrElse(0.0)
+  @Hidden
   def getPlaceMp = place.getOrElse(1)
 
   def getResultImp = resultImp.getOrElse(0.0)
@@ -82,13 +90,31 @@ case class DuplicateSummaryEntry(
   def hasMp = result.isDefined&&place.isDefined
 }
 
-@ApiModel(description = "The best match in the main store")
+@Schema(
+    name = "BestMatch",
+    title = "BestMatch - Identifies the best match in the main store.",
+    description = "Identifies the best match in the main store."
+)
 case class BestMatch(
-    @(ApiModelProperty @field)(value="How similar the matches are", required=true)
+    @Schema(
+        title = "How similar the matches are",
+        description="How similar the matches are, percent of fields that are the same.",
+        required=true)
     sameness: Double,
-    @(ApiModelProperty @field)(value="The ID of the MatchDuplicate in the main store that is the best match, none if no match", required=true)
+    @Schema(
+        title="The ID of the matching match duplicate",
+        description="The ID of the MatchDuplicate in the main store that is the best match, none if no match",
+        required=false)
     id: Option[Id.MatchDuplicate],
-    @(ApiModelProperty @field)(value="The fields that are different", required=true)
+    @ArraySchema(
+        minItems=0,
+        uniqueItems=true,
+        schema=new Schema(
+            `type` = "string",
+            description="A field that is different",
+        ),
+        arraySchema = new Schema( description = "All the fields that are different.", required=false)
+    )
     differences: Option[List[String]]
 ) {
 
@@ -136,29 +162,39 @@ object BestMatch {
   }
 }
 
-@ApiModel(description = "The summary of duplicate matches")
+@Schema(
+    title = "DuplicateSummary - A summary of duplicate matches that have been played.",
+    description = "The summary of duplicate matches that have been played")
 case class DuplicateSummary(
-    @(ApiModelProperty @field)(value="The ID of the MatchDuplicate being summarized", required=true)
+    @Schema(description="The ID of the MatchDuplicate being summarized", required=true)
     id: Id.MatchDuplicate,
-    @(ApiModelProperty @field)(value="True if the match is finished", required=true)
+    @Schema(description="True if the match is finished", required=true)
     finished: Boolean,
-    @(ApiModelProperty @field)(value="The scores of the teams", required=true)
+    @ArraySchema(
+        minItems=0,
+        schema=new Schema(implementation=classOf[DuplicateSummaryEntry]),
+        uniqueItems=true,
+        arraySchema = new Schema( description = "The scores of the teams.", required=true)
+    )
     teams: List[DuplicateSummaryEntry],
-    @(ApiModelProperty @field)(value="The number of boards in the match", required=true)
+    @Schema(description="The number of boards in the match", required=true, minimum="1")
     boards: Int,
-    @(ApiModelProperty @field)(value="The number of tables in the match", required=true)
+    @Schema(description="The number of tables in the match", required=true, minimum="2")
     tables: Int,
-    @(ApiModelProperty @field)(value="True if this is only the results", required=true)
+    @Schema(description="True if this is only the results", required=true)
     onlyresult: Boolean,
-    @(ApiModelProperty @field)(value="when the duplicate hand was created", required=true)
+    @Schema(description="When the duplicate match was created, in milliseconds since 1/1/1970 UTC", required=true)
     created: Timestamp,
-    @(ApiModelProperty @field)(value="when the duplicate hand was last updated", required=true)
+    @Schema(description="When the duplicate match was last updated, in milliseconds since 1/1/1970 UTC", required=true)
     updated: Timestamp,
-    @(ApiModelProperty @field)(value="the best match in the main store", required=false)
+    @Schema(description="the best match in the main store", required=false, implementation=classOf[BestMatch])
     bestMatch: Option[BestMatch] = None,
-    @(ApiModelProperty @field)(value="the scoring method used, default is MP", allowableValues="MP, IMP",  required=false)
+    @Schema(description="the scoring method used, default is MP",
+            allowableValues=Array("MP", "IMP"),
+            implementation=classOf[String],
+            required=false)
     scoringmethod: Option[String] = None
-    ) {
+) {
 
   def players() = teams.flatMap { t => Seq(t.team.player1, t.team.player2) }.toList
   def playerPlaces() = teams.flatMap{ t => Seq( (t.team.player1->t.getPlaceMp), (t.team.player2->t.getPlaceMp) ) }.toMap
@@ -212,7 +248,9 @@ case class DuplicateSummary(
   }
 
   import MatchDuplicateV3._
+  @Hidden
   def isMP = scoringmethod.map { sm => sm == MatchPoints }.getOrElse(true)
+  @Hidden
   def isIMP = scoringmethod.map { sm => sm == InternationalMatchPoints }.getOrElse(false)
 
 }

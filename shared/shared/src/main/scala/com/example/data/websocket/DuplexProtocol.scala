@@ -7,8 +7,10 @@ import com.example.data.DuplicateHand
 import com.example.data.Team
 import play.api.libs.json._
 import com.example.data.rest.JsonSupport._
-import io.swagger.annotations._
 import scala.annotation.meta._
+import io.swagger.v3.oas.annotations.media.Schema
+import io.swagger.v3.oas.annotations.media.ArraySchema
+import com.example.data.SystemTime.Timestamp
 
 object DuplexProtocol {
 
@@ -55,25 +57,38 @@ object DuplexProtocol {
   /**
    * For sending log entries to the server
    */
-  @ApiModel(value="LogEntry", description = "For a log message from the client.")
+  @Schema(
+      name="LogEntry",
+      title="LogEntry - For a log message from the client.",
+      description = "For a log message from the client.")
   case class LogEntryV2(
-      @(ApiModelProperty @field)(value="The source position", required=true)
+      @Schema(description="The source position", required=true)
       position: String,
-      @(ApiModelProperty @field)(value="The logger name", required=true)
+      @Schema(description="The logger name", required=true)
       logger: String,
-      @(ApiModelProperty @field)(value="The timestamp, in milleseconds since 1/1/1970", required=true)
-      timestamp: Double,
-      @(ApiModelProperty @field)(value="The trace level", required=true)
+      @Schema(description="The timestamp, in milleseconds since 1/1/1970", required=true)
+      timestamp: Timestamp,
+      @Schema(description="The trace level", required=true)
       level: String,
-      @(ApiModelProperty @field)(value="The URL of the page", required=true)
+      @Schema(description="The URL of the page", required=true)
       url: String,
-      @(ApiModelProperty @field)(value="The message", required=true)
+      @Schema(description="The message", required=true)
       message: String,
-      @(ApiModelProperty @field)(value="The cause", required=true)
+      @Schema(description="The cause", required=true)
       cause: String,
-      @(ApiModelProperty @field)(value="The args", required=true)
+      @ArraySchema(
+          minItems=0,
+          schema=new Schema(
+              description="An argument to the message.",
+              required=true,
+              `type`="string"
+          ),
+          arraySchema=new Schema(
+              description="The arguments to formatting the message."
+          )
+      )
       args: List[String],
-      @(ApiModelProperty @field)(value="A client Id", required=false)
+      @Schema(description="A client Id", required=false)
       clientid: Option[String] = None
   ) extends DuplexMessage
 

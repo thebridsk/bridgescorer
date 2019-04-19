@@ -1,10 +1,11 @@
 package com.example.data
 
-import io.swagger.annotations._
 import scala.annotation.meta._
 
 import com.example.data.SystemTime.Timestamp
 import com.example.data.bridge.PlayerPosition
+import io.swagger.v3.oas.annotations.media.Schema
+import io.swagger.v3.oas.annotations.media.ArraySchema
 
 /**
  * A match of chicago.
@@ -23,20 +24,31 @@ import com.example.data.bridge.PlayerPosition
  * @param created
  * @param updated
  */
-@ApiModel(description = "A chicago match")
+@Schema(description = "A chicago match, version 2 (old version)")
 case class MatchChicagoV2(
-    @(ApiModelProperty @field)(value="The chicago ID", required=true)
+    @Schema(description="The chicago ID", required=true)
     id: String,
-    @(ApiModelProperty @field)(value="The players", required=true)
+    @ArraySchema(
+        minItems=4,
+        uniqueItems=true,
+        schema=new Schema(description="A player", implementation=classOf[String])
+//        description="The players", required=true
+    )
     players: List[String],
-    @(ApiModelProperty @field)(value="The rounds", required=true)
+    @ArraySchema(
+        minItems=0,
+        uniqueItems=true,
+        schema=new Schema(description="A round", implementation=classOf[Round])
+//        description="The rounds", required=true
+    )
     rounds: List[Round],
-    @(ApiModelProperty @field)(value="The number of games per round.", required=true)
+    @Schema(description="The number of games per round.", required=true, `type`="enum", allowableValues=Array("0","4","6","8"))
     gamesPerRound: Int,
-    @(ApiModelProperty @field)(value="The creating date", required=true)
+    @Schema(description="The creating date", required=true)
     created: Timestamp,
-    @(ApiModelProperty @field)(value="The last update date", required=true)
-    updated: Timestamp ) extends VersionedInstance[MatchChicago,MatchChicagoV2,String] {
+    @Schema(description="The last update date", required=true)
+    updated: Timestamp
+) extends VersionedInstance[MatchChicago,MatchChicagoV2,String] {
 
   if (players.length < 4 || players.length > 5) {
     throw new IllegalArgumentException( "Must have 4 or 5 players")

@@ -1,33 +1,42 @@
 package com.example.data
 
-import io.swagger.annotations._
 import scala.annotation.meta._
 
 import com.example.data.SystemTime.Timestamp
 import com.example.data.bridge.PlayerPosition
+import io.swagger.v3.oas.annotations.media.Schema
+import io.swagger.v3.oas.annotations.media.ArraySchema
 
 /**
  * @author werewolf
  */
-@ApiModel(description = "A round in a chicago match")
+@Schema(
+    title = "Round - A round in a chicago match",
+    description = "A round in a chicago match"
+)
 case class Round(
-    @(ApiModelProperty @field)(value="The round ID", required=true)
+    @Schema(description="The round ID", required=true)
     id: String,
-    @(ApiModelProperty @field)(value="The north player for the round", required=true)
+    @Schema(description="The north player for the round", required=true)
     north: String,
-    @(ApiModelProperty @field)(value="The south player for the round", required=true)
+    @Schema(description="The south player for the round", required=true)
     south: String,
-    @(ApiModelProperty @field)(value="The east player for the round", required=true)
+    @Schema(description="The east player for the round", required=true)
     east: String,
-    @(ApiModelProperty @field)(value="The west player for the round", required=true)
+    @Schema(description="The west player for the round", required=true)
     west: String,
-    @(ApiModelProperty @field)(value="The first dealer, N, S, E, W", required=true)
+    @Schema(description="The first dealer", required=true, `type`="enum", allowableValues=Array("N","S","E","W"))
     dealerFirstRound: String,
-    @(ApiModelProperty @field)(value="The played hands in the round", required=true)
+    @ArraySchema(
+        minItems=0,
+        schema=new Schema(implementation=classOf[Hand]),
+        uniqueItems=false,
+        arraySchema = new Schema( description = "The played hands in the round.", required=true)
+    )
     hands: List[Hand],
-    @(ApiModelProperty @field)(value="when the duplicate hand was created", required=true)
+    @Schema(description="When the duplicate hand was created, in milliseconds since 1/1/1970 UTC", required=true)
     created: Timestamp,
-    @(ApiModelProperty @field)(value="when the duplicate hand was last updated", required=true)
+    @Schema(description="When the duplicate hand was last updated, in milliseconds since 1/1/1970 UTC", required=true)
     updated: Timestamp ) {
 
   def setId( newId: String, forCreate: Boolean ) = {

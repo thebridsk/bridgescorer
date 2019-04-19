@@ -4,7 +4,6 @@ import com.example.backend.BridgeService
 import com.example.data.Board
 import akka.event.Logging
 import akka.event.Logging._
-import io.swagger.annotations._
 import akka.http.scaladsl.model.StatusCodes._
 import akka.http.scaladsl.server.Directives._
 import akka.stream.Materializer
@@ -17,6 +16,21 @@ import akka.http.scaladsl.model.headers.Location
 import com.example.backend.resource.Result
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.responses.ApiResponse
+import io.swagger.v3.oas.annotations.media.Schema
+import io.swagger.v3.oas.annotations.media.ArraySchema
+import io.swagger.v3.oas.annotations.media.Content
+import io.swagger.v3.oas.annotations.Parameter
+import io.swagger.v3.oas.annotations.enums.ParameterIn
+import io.swagger.v3.oas.annotations.parameters.RequestBody
+import io.swagger.v3.oas.annotations.headers.Header
+import javax.ws.rs.GET
+import javax.ws.rs.POST
+import javax.ws.rs.PUT
+import javax.ws.rs.DELETE
+import io.swagger.v3.oas.annotations.tags.Tags
+import io.swagger.v3.oas.annotations.tags.Tag
 
 /**
  * Rest API implementation for the board resource.
@@ -25,7 +39,7 @@ import scala.concurrent.Future
  * swagger annotations.
  */
 @Path( "/rest/boardsets" )
-@Api(tags = Array("Duplicate"), description = "Operations about boardsets.", produces="application/json", protocols="http, https")
+@Tags( Array( new Tag(name="Duplicate")))
 trait RestBoardSet extends HasActorSystem {
 
   lazy val testlog = Logging(actorSystem, classOf[RestBoardSet])
@@ -44,7 +58,7 @@ trait RestBoardSet extends HasActorSystem {
   /**
    * spray route for all the methods on this resource
    */
-  def route =pathPrefix(resName) {
+  val route =pathPrefix(resName) {
     logRequest("boardsets", DebugLevel) {
       logResult("boardsets", DebugLevel) {
         getBoard ~ getBoards ~ postBoard ~ putBoard ~ deleteBoard
@@ -52,46 +66,129 @@ trait RestBoardSet extends HasActorSystem {
     }
   }
 
-  @ApiOperation(value = "Get all boardsets", notes = "Returns a list of boardsets.", nickname = "getBoardsets", httpMethod = "GET", code=200, response=classOf[BoardSet], responseContainer="List")
-  @ApiResponses(Array(
-    new ApiResponse(code = 200, message = "A list of boardsets, as a JSON array", response=classOf[BoardSet], responseContainer="List")
-  ))
-  def getBoards = pathEnd {
+  @GET
+  @Operation(
+      summary = "Get all boardsets",
+      description = "Returns a list of boardsets.",
+      operationId = "getBoardsets",
+      responses = Array(
+          new ApiResponse(
+              responseCode = "200",
+              description = "A list of boardsets, as a JSON array",
+              content = Array(
+                  new Content(
+                      mediaType = "application/json",
+                      array = new ArraySchema(
+                          minItems = 0,
+                          uniqueItems = true,
+                          schema = new Schema( implementation=classOf[BoardSet] )
+                      )
+                  )
+              )
+          )
+      )
+  )
+  def xxxgetBoards() = {}
+  val getBoards = pathEnd {
     get {
       resourceMap( store.readAll() )
     }
   }
 
   @Path("/{boardsetId}")
-  @ApiOperation(value = "Get the boardset by ID", notes = "", nickname = "getBoardsetById", httpMethod = "GET", code=200, response=classOf[BoardSet])
-  @ApiImplicitParams(Array(
-    new ApiImplicitParam(name = "boardsetId", value = "ID of the boardset to get", required = true, dataType = "string", paramType = "path")
-  ))
-  @ApiResponses(Array(
-    new ApiResponse(code = 200, message = "The boardset, as a JSON object", response=classOf[BoardSet]),
-    new ApiResponse(code = 404, message = "Does not exist.", response=classOf[RestMessage])
-  ))
-  def getBoard = logRequest("getBoardset", DebugLevel) { get {
+  @GET
+  @Operation(
+      summary = "Get the boardset by ID",
+      description = "Returns the specified boardset.",
+      operationId = "getBoardsetById",
+      parameters = Array(
+          new Parameter(
+              allowEmptyValue=false,
+              description="ID of the boardset to get",
+              in=ParameterIn.PATH,
+              name="boardsetId",
+              required=true,
+              schema=new Schema(`type`="string")
+          )
+      ),
+      responses = Array(
+          new ApiResponse(
+              responseCode = "200",
+              description = "A boardset, as a JSON object",
+              content = Array(
+                  new Content(
+                      mediaType = "application/json",
+                      schema = new Schema( implementation=classOf[BoardSet] )
+                  )
+              )
+          ),
+          new ApiResponse(
+              responseCode = "404",
+              description = "Does not exist",
+              content = Array(
+                  new Content(
+                      mediaType = "application/json",
+                      schema = new Schema(implementation = classOf[RestMessage])
+                  )
+              )
+          )
+
+      )
+  )
+  def xxxgetBoard() = {}
+  val getBoard = logRequest("getBoardset", DebugLevel) { get {
     path( """[a-zA-Z0-9]+""".r ) { id =>
       resource( store.select(id).read() )
     }
   }}
 
-
-  @ApiOperation(value = "Create a boardset", notes = "", nickname = "createBoardset", httpMethod = "POST", code=201, response=classOf[BoardSet])
-  @ApiImplicitParams(Array(
-    new ApiImplicitParam(name = "body", value = "board to create", required = true,
-        dataTypeClass = classOf[BoardSet], paramType = "body")
-  ))
-  @ApiResponses(Array(
-    new ApiResponse(code = 201, message = "The created board's JSON", response=classOf[BoardSet],
-        responseHeaders= Array(
-            new ResponseHeader( name="Location", description="The URL of the newly created resource", response=classOf[String] )
-            )
-        ),
-    new ApiResponse(code = 400, message = "Bad request", response=classOf[RestMessage])
-  ))
-  def postBoard = pathEnd {
+  @POST
+  @Operation(
+      summary = "Create a boardset",
+      operationId = "createBoardset",
+      requestBody = new RequestBody(
+          description = "the boardset to create",
+          content = Array(
+              new Content(
+                  mediaType = "application/json",
+                  schema = new Schema(
+                      implementation = classOf[BoardSet]
+                  )
+              )
+          )
+      ),
+      responses = Array(
+          new ApiResponse(
+              responseCode = "201",
+              description = "The boardset was created",
+              content = Array(
+                  new Content(
+                      mediaType = "application/json",
+                      schema = new Schema( implementation=classOf[BoardSet] )
+                  )
+              ),
+              headers = Array(
+                  new Header(
+                      name="Location",
+                      description="The URL of the newly created resource",
+                      schema = new Schema( implementation=classOf[String] )
+                  )
+              )
+          ),
+          new ApiResponse(
+              responseCode = "400",
+              description = "Bad request",
+              content = Array(
+                  new Content(
+                      mediaType = "application/json",
+                      schema = new Schema(implementation = classOf[RestMessage])
+                  )
+              )
+          )
+      )
+  )
+  def xxxpostBoard() = {}
+  val postBoard = pathEnd {
     post {
         entity(as[BoardSet]) { board =>
           resourceCreated( resName, store.createChild(board) )
@@ -101,18 +198,61 @@ trait RestBoardSet extends HasActorSystem {
 
 
   @Path("/{boardsetId}")
-  @ApiOperation(value = "Update a boardset", notes = "", nickname = "updateBoardset", httpMethod = "PUT", code=204, response=classOf[RestMessage])
-  @ApiImplicitParams(Array(
-    new ApiImplicitParam(name = "boardsetId", value = "ID of the boardset to update", required = true, dataType = "string", paramType = "path"),
-    new ApiImplicitParam(name = "body", value = "board to update", required = true,
-        dataTypeClass = classOf[BoardSet], paramType = "body")
-  ))
-  @ApiResponses(Array(
-    new ApiResponse(code = 204, message = "BoardSet updated", response=classOf[Void] ),
-    new ApiResponse(code = 404, message = "Does not exist.", response=classOf[RestMessage]),
-    new ApiResponse(code = 400, message = "Bad request", response=classOf[RestMessage])
-  ))
-  def putBoard = logRequest("putBoardset", DebugLevel) { logResult("putBoardsets", DebugLevel) {
+  @PUT
+  @Operation(
+      summary = "Update a boardset",
+      description = "The boardset given in the body replaces the boardset with the specified boardsetId, the id field in the given boardset is set to boardsetId",
+      operationId = "updateBoardset",
+      parameters = Array(
+          new Parameter(
+              allowEmptyValue=false,
+              description="ID of the boardset to update",
+              in=ParameterIn.PATH,
+              name="boardsetId",
+              required=true,
+              schema=new Schema(`type`="string")
+          )
+      ),
+      requestBody = new RequestBody(
+          description = "the boardset to update",
+          content = Array(
+              new Content(
+                  mediaType = "application/json",
+                  schema = new Schema(
+                      implementation = classOf[BoardSet]
+                  )
+              )
+          )
+      ),
+      responses = Array(
+          new ApiResponse(
+              responseCode = "204",
+              description = "The boardset was updated",
+          ),
+          new ApiResponse(
+              responseCode = "404",
+              description = "Does not exist",
+              content = Array(
+                  new Content(
+                      mediaType = "application/json",
+                      schema = new Schema(implementation = classOf[RestMessage])
+                  )
+              )
+          ),
+          new ApiResponse(
+              responseCode = "400",
+              description = "Bad request",
+              content = Array(
+                  new Content(
+                      mediaType = "application/json",
+                      schema = new Schema(implementation = classOf[RestMessage])
+                  )
+              )
+          )
+      )
+  )
+  def xxxputBoard() = {}
+  val putBoard = logRequest("putBoardset", DebugLevel) { logResult("putBoardsets", DebugLevel) {
     put {
       path( """[a-zA-Z0-9]+""".r ) { id =>
         testlog.info("putBoardset: id is "+id)
@@ -126,14 +266,29 @@ trait RestBoardSet extends HasActorSystem {
 
 
   @Path("/{boardsetId}")
-  @ApiOperation(value = "Delete a boardset by ID", notes = "", nickname = "deleteBoardsetById", httpMethod = "DELETE", code=204, response=classOf[RestMessage])
-  @ApiImplicitParams(Array(
-    new ApiImplicitParam(name = "boardsetId", value = "ID of the boardset to delete", required = true, dataType = "string", paramType = "path")
-  ))
-  @ApiResponses(Array(
-    new ApiResponse(code = 204, message = "Boardset deleted.", response=classOf[Void])
-  ))
-  def deleteBoard = delete {
+  @DELETE
+  @Operation(
+      summary = "Delete a boardset by ID",
+      operationId = "deleteBoardsetById",
+      parameters = Array(
+          new Parameter(
+              allowEmptyValue=false,
+              description="ID of the boardset to delete",
+              in=ParameterIn.PATH,
+              name="boardsetId",
+              required=true,
+              schema=new Schema(`type`="string")
+          )
+      ),
+      responses = Array(
+          new ApiResponse(
+              responseCode = "204",
+              description = "The boardset was deleted",
+          )
+      )
+  )
+  def xxxdeleteBoard() = {}
+  val deleteBoard = delete {
     logRequest("boardsets.delete", DebugLevel) {
       logResult("boardsets.delete", DebugLevel) {
         path( """[a-zA-Z0-9]+""".r ) {

@@ -2,48 +2,59 @@ package com.example.data
 
 import com.example.data.SystemTime.Timestamp
 
-import io.swagger.annotations._
 import scala.annotation.meta._
 import com.example.data.bridge.MatchDuplicateScore
 import com.example.data.bridge.PerspectiveComplete
+import io.swagger.v3.oas.annotations.media.Schema
+import io.swagger.v3.oas.annotations.media.ArraySchema
 
-@ApiModel(description = "The result for a team playing on a board")
+@Schema(
+    title = "BoardTeamResults - team results on board.",
+    description="The results of a team when they played the board."
+)
 case class BoardTeamResults(
-    @(ApiModelProperty @field)(value="The id of the team", required=true)
+    @Schema(description="The id of the team", required=true)
     team: Id.Team,
-    @(ApiModelProperty @field)(value="The number of points the team got playing the board", required=true)
+    @Schema(description="The number of points the team got playing the board", required=true)
     points: Double )
 
-@ApiModel(description = "The results of a board")
+@Schema(
+    title = "BoardResults - the results of a board.",
+    description = "The results of a board in a Duplicate results object.")
 case class BoardResults(
-    @(ApiModelProperty @field)(value="The board", required=true)
+    @Schema(description="The board", required=true)
     board: Int,
-    @(ApiModelProperty @field)(value="The results per team.  A list of BoardTeamResults objects", required=true)
+    @ArraySchema(
+        minItems=0,
+        uniqueItems=true,
+        schema=new Schema(
+            implementation=classOf[BoardTeamResults],
+        ),
+        arraySchema = new Schema( description = "The played hands in the round.", required=true)
+    )
     points: List[BoardTeamResults] )
 
-@ApiModel(value="MatchDuplicateResult",
-          description = "A hand from a duplicate match."
-                        +"  On input, the place field in DuplicateSummaryEntry is ignored."
-                        +"  If boardresults is specified, then the result field in DuplicateSummaryEntry is also ignored on input."
-         )
+@Schema(name="MatchDuplicateResult",
+        description = "A hand from a duplicate match.  On input, the place field in DuplicateSummaryEntry is ignored.  If boardresults is specified, then the result field in DuplicateSummaryEntry is also ignored on input."
+)
 case class MatchDuplicateResultV1 private(
-    @(ApiModelProperty @field)(value="The ID of the MatchDuplicate", required=true)
+    @Schema(description="The ID of the MatchDuplicate", required=true)
     id: Id.MatchDuplicateResult,
-    @(ApiModelProperty @field)(value="The results of the match, a list of winnersets."
-                                    +"  Each winnerset is a list of DuplicateSummaryEntry objects",
-                               required=true)
+    @Schema(description="The results of the match, a list of winnersets."
+                        +"  Each winnerset is a list of DuplicateSummaryEntry objects",
+            required=true)
     results: List[List[DuplicateSummaryEntry]],
-    @(ApiModelProperty @field)(value="The board scores of the teams, a list of BoardResults objects", required=false)
+    @Schema(description="The board scores of the teams, a list of BoardResults objects", required=false)
     boardresults: Option[List[BoardResults]],
-    @(ApiModelProperty @field)(value="a comment", required=false)
+    @Schema(description="a comment", required=false, `type`="string")
     comment: Option[String],
-    @(ApiModelProperty @field)(value="True if the match is not finished, default is false", required=false)
+    @Schema(description="True if the match is not finished, default is false", required=false, `type`="boolean")
     notfinished: Option[Boolean],
-    @(ApiModelProperty @field)(value="when the duplicate match was played", required=true)
+    @Schema(description="when the duplicate match was played", required=true)
     played: Timestamp,
-    @(ApiModelProperty @field)(value="when the duplicate match was created", required=true)
+    @Schema(description="When the duplicate match was created, in milliseconds since 1/1/1970 UTC", required=true)
     created: Timestamp,
-    @(ApiModelProperty @field)(value="when the duplicate match was last updated", required=true)
+    @Schema(description="When the duplicate match was last updated, in milliseconds since 1/1/1970 UTC", required=true)
     updated: Timestamp
   ) extends VersionedInstance[MatchDuplicateResult,  MatchDuplicateResultV1,String] {
 
@@ -82,12 +93,12 @@ case class MatchDuplicateResultV1 private(
 
   }
 
-  @ApiModelProperty(hidden = true)
+  @Schema(hidden = true)
   def getTables(): Int = {
     results.flatten.length/2
   }
 
-  @ApiModelProperty(hidden = true)
+  @Schema(hidden = true)
   def getBoards(): Int = {
     val nTables = getTables
     val pointsPerBoard = nTables*(nTables-1)
@@ -95,7 +106,7 @@ case class MatchDuplicateResultV1 private(
     else getTotalPoints/pointsPerBoard
   }
 
-  @ApiModelProperty(hidden = true)
+  @Schema(hidden = true)
   def getTotalPoints(): Int = {
     results.flatten.map{ r => r.result.getOrElse(0.0) }.foldLeft(0.0)((ac,v)=>ac+v).toInt
   }
@@ -118,7 +129,7 @@ case class MatchDuplicateResultV1 private(
     copy(results=places)
   }
 
-  @ApiModelProperty(hidden = true)
+  @Schema(hidden = true)
   def fixupSummary() = {
     boardresults match {
       case Some(l) =>
@@ -128,17 +139,17 @@ case class MatchDuplicateResultV1 private(
     }
   }
 
-  @ApiModelProperty(hidden = true)
+  @Schema(hidden = true)
   def fixup() = {
     fixupSummary().fixPlaces()
   }
 
-  @ApiModelProperty(hidden = true)
+  @Schema(hidden = true)
   def getWinnerSets: List[List[Id.Team]] = {
     results.map( l => l.map( e => e.team.id))
   }
 
-  @ApiModelProperty(hidden = true)
+  @Schema(hidden = true)
   def placeByWinnerSet(winnerset: List[Id.Team]): List[MatchDuplicateScore.Place] = {
     results.find( ws => ws.find( e => !winnerset.contains(e.team.id)).isEmpty) match {
       case Some(rws) =>

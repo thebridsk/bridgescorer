@@ -14,8 +14,8 @@ import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import java.util.Properties
 import akka.event.Logging
-import io.swagger.models.Scheme
 import scala.concurrent.duration.Duration
+import ch.megard.akka.http.cors.scaladsl.CorsDirectives
 
 //import io.swagger.util.Json
 //import com.fasterxml.jackson.databind.SerializationConfig
@@ -37,7 +37,7 @@ import scala.concurrent.duration.Duration
 trait MySwaggerService extends SwaggerHttpService {
   this: HasActorSystem =>
 
-  // does not work.  Trying to alphabetize swagger.json properties
+  // does not work.  Trying to alphabetize swagger.yaml properties
   // Json.mapper().configure(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY, true)
 
   lazy val log = Logging(actorSystem, classOf[MySwaggerService])
@@ -73,9 +73,9 @@ trait MySwaggerService extends SwaggerHttpService {
 
   // Parameters
   //    validatorUrl=    - (null) to not validate the swagger against
-  //                           https://online.swagger.io/validator/debug?url=/v1/api-docs/swagger.json
-  //    url=xxx          - URL to swagger.json
-  def swaggerURL = swaggergui+"?url=/"+apiVersionURISegment+"/"+apiDocsPath+"/swagger.json&validatorUrl="
+  //                           https://online.swagger.io/validator/debug?url=/v1/api-docs/swagger.yaml
+  //    url=xxx          - URL to swagger.yaml
+  def swaggerURL = swaggergui+"?url=/"+apiVersionURISegment+"/"+apiDocsPath+"/swagger.yaml&validatorUrl="
 
   def getSwaggerURL(): String = {
     log.info("SwaggerURL: "+swaggerURL)
@@ -101,27 +101,30 @@ trait MySwaggerService extends SwaggerHttpService {
     }
   }
 
-  def swaggerRoute =
+  import CorsDirectives._
+  val swaggerRoute =
       get {
-        pathPrefix(apiVersionURISegment) {
-          logRequest(("topLevel", Logging.DebugLevel)) {
-          logResult(("topLevel", Logging.DebugLevel)) {
-            pathPrefix("docs") {
-              pathEndOrSingleSlash {
-                redirect(getSwaggerURL(), StatusCodes.PermanentRedirect)
-              } ~
-              path("index.html") {
-                redirect(getSwaggerURL(), StatusCodes.PermanentRedirect)
-              }
-            }
-          }} ~
-          pathPrefix( apiDocsPath ) {
-            pathEndOrSingleSlash {
-              redirect("/"+apiVersionURISegment+"/"+apiDocsPath+"/swagger.json", StatusCodes.PermanentRedirect)
-            }
-          } ~
+        cors() {
           respondWithHeaders(swaggerCacheHeaders:_*) {
-            routes
+            pathPrefix(apiVersionURISegment) {
+              logRequest(("topLevel", Logging.DebugLevel)) {
+              logResult(("topLevel", Logging.DebugLevel)) {
+                pathPrefix("docs") {
+                  pathEndOrSingleSlash {
+                    redirect(getSwaggerURL(), StatusCodes.PermanentRedirect)
+                  } ~
+                  path("index.html") {
+                    redirect(getSwaggerURL(), StatusCodes.PermanentRedirect)
+                  }
+                }
+              }} ~
+              pathPrefix( apiDocsPath ) {
+                pathEndOrSingleSlash {
+                  redirect("/"+apiVersionURISegment+"/"+apiDocsPath+"/swagger.yaml", StatusCodes.PermanentRedirect)
+                }
+              } ~
+              routes
+            }
           }
         }
       }

@@ -2,21 +2,22 @@ package com.example.data
 
 import com.example.data.SystemTime.Timestamp
 
-import io.swagger.annotations._
 import scala.annotation.meta._
+import io.swagger.v3.oas.annotations.media.Schema
 
-@ApiModel(description = "A hand from a duplicate match")
+@Schema(description = "A duplicate match, version 1 (old version)")
 case class MatchDuplicateV1(
-    @(ApiModelProperty @field)(value="The ID of the MatchDuplicate", required=true)
+    @Schema(description="The ID of the MatchDuplicate", required=true)
     id: Id.MatchDuplicate,
-    @(ApiModelProperty @field)(value="The teams playing the match, the key is the team ID", required=true)
+    @Schema(description="The teams playing the match, the key is the team ID", required=true)
     teams: Map[Id.Team,Team],
-    @(ApiModelProperty @field)(value="The duplicate boards of the match, the key is the board ID", required=true)
+    @Schema(description="The duplicate boards of the match, the key is the board ID", required=true)
     boards: Map[Id.DuplicateBoard,BoardV1],
-    @(ApiModelProperty @field)(value="when the duplicate hand was created", required=true)
+    @Schema(description="When the duplicate hand was created, in milliseconds since 1/1/1970 UTC", required=true)
     created: Timestamp,
-    @(ApiModelProperty @field)(value="when the duplicate hand was last updated", required=true)
-    updated: Timestamp ) extends VersionedInstance[MatchDuplicate,MatchDuplicateV1,String] {
+    @Schema(description="When the duplicate hand was last updated, in milliseconds since 1/1/1970 UTC", required=true)
+    updated: Timestamp
+) extends VersionedInstance[MatchDuplicate,MatchDuplicateV1,String] {
 
   def equalsIgnoreModifyTime( other: MatchDuplicateV1 ) = id==other.id &&
                                                equalsInTeams(other) &&

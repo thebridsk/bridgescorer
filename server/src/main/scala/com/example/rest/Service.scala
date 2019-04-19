@@ -2,7 +2,6 @@ package com.example.rest
 
 import akka.event.Logging
 import akka.event.Logging._
-import io.swagger.annotations._
 import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.server.Directives._
 import akka.stream.Materializer
@@ -168,7 +167,7 @@ trait Service extends ImportExport {
     }
     .result()
 
-  def routeRest =
+  val routeRest =
     respondWithHeaders(`Cache-Control`( `no-cache`, `no-store`, `must-revalidate`),
                      RawHeader("Pragma","no-cache"),
                      Expires(DateTime(0))    // RawHeader("Expires","0")

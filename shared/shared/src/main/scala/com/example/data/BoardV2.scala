@@ -3,8 +3,9 @@ package com.example.data
 import com.example.data.bridge.PlayerPosition
 import com.example.data.SystemTime.Timestamp
 
-import io.swagger.annotations._
 import scala.annotation.meta._
+import io.swagger.v3.oas.annotations.media.Schema
+import io.swagger.v3.oas.annotations.media.ArraySchema
 
 /**
  * @author werewolf
@@ -15,23 +16,40 @@ import scala.annotation.meta._
  * @param dealer the dealer on the board
  * @param hands map nsTeam -> DuplicateHand
  */
-@ApiModel(value="Board", description = "A board from a duplicate match")
+@Schema(name="Board",
+        title = "Board - Represents a board of a duplicate match.",
+        description = "A board from a duplicate match, contains all the played hands on the board."
+       )
 case class BoardV2 private(
-    @(ApiModelProperty @field)(value="The ID of the board", required=true)
+    @Schema(description="The ID of the board", required=true, implementation=classOf[String])
     id: Id.DuplicateBoard,
-    @(ApiModelProperty @field)(value="True if NS is vulnerable on the board", required=true)
+    @Schema(description="True if NS is vulnerable on the board", required=true)
     nsVul: Boolean,
-    @(ApiModelProperty @field)(value="True if EW is vulnerable on the board", required=true)
+    @Schema(description="True if EW is vulnerable on the board", required=true)
     ewVul: Boolean,
-    @(ApiModelProperty @field)(value="The dealer for the board", required=true)
+    @Schema(
+        description="the dealer for the board",
+        required=true,
+        allowableValues=Array("N", "S", "E", "W"),
+        `type`="enum"
+    )
     dealer: String,
-    @(ApiModelProperty @field)(value="The duplicate hands for the board", required=true)
+    @ArraySchema(
+        minItems=0,
+        uniqueItems=true,
+        schema = new Schema( implementation = classOf[DuplicateHandV2] ),
+        arraySchema = new Schema( description = "All duplicate hands for the board", required=true)
+    )
     hands: List[DuplicateHandV2],
-    @(ApiModelProperty @field)(value="when the duplicate hand was created", required=true)
+    @Schema(
+        description="When the board was created, in milliseconds since 1/1/1970 UTC",
+        required=true)
     created: Timestamp,
-    @(ApiModelProperty @field)(value="when the duplicate hand was last updated", required=true)
-    updated: Timestamp ) {
-
+    @Schema(
+        description="When the board was last updated, in milliseconds since 1/1/1970 UTC",
+        required=true)
+    updated: Timestamp
+) {
   def equalsIgnoreModifyTime( other: BoardV2 ) = id==other.id &&
                                                nsVul==other.nsVul &&
                                                ewVul==other.ewVul &&
@@ -127,15 +145,15 @@ case class BoardV2 private(
 
   }
 
-  @ApiModelProperty(hidden = true)
+  @Schema(hidden = true)
   def getHand( handId: Id.DuplicateHand ) = {
     hands.find(h=>h.id==handId)
   }
 
-  @ApiModelProperty(hidden = true)
+  @Schema(hidden = true)
   def getBoardInSet() = BoardInSet(Id.boardIdToBoardNumber(id).toInt,nsVul,ewVul,dealer)
 
-  @ApiModelProperty(hidden = true)
+  @Schema(hidden = true)
   def convertToCurrentVersion() = BoardV2( id,
                                            nsVul,
                                            ewVul,

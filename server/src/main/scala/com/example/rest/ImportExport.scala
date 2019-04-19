@@ -3,7 +3,6 @@ package com.example.rest
 import akka.http.scaladsl.server._
 import akka.http.scaladsl.model._
 import akka.http.scaladsl.server.Directives._
-import io.swagger.annotations._
 import javax.ws.rs.Path
 import com.example.data.RestMessage
 import com.example.backend.BridgeService
@@ -39,14 +38,25 @@ import akka.http.scaladsl.model.headers.ContentDispositionTypes
 import com.example.version.VersionServer
 import com.example.version.VersionShared
 import com.example.utilities.version.VersionUtilities
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.Parameter
+import io.swagger.v3.oas.annotations.enums.ParameterIn
+import io.swagger.v3.oas.annotations.media.Schema
+import io.swagger.v3.oas.annotations.responses.ApiResponse
+import io.swagger.v3.oas.annotations.media.Content
+import io.swagger.v3.oas.annotations.parameters.RequestBody
+import io.swagger.v3.oas.annotations.tags.Tags
+import io.swagger.v3.oas.annotations.tags.Tag
+import javax.ws.rs.GET
+import javax.ws.rs.POST
 
 object ImportExport {
   val log = Logger[ImportExport]
 }
 
-@Path( "" )
-@Api( tags = Array("Server"),
-      description = "Import/Export operations.", protocols="http, https")
+@Tags( Array( new Tag(name="Server")))
+//@Api( tags = Array("Server"),
+//      description = "Import/Export operations.", protocols="http, https")
 trait ImportExport {
   import ImportExport._
 
@@ -58,38 +68,48 @@ trait ImportExport {
     exportStore ~ importStore ~ diagnostics
   }
 
-  @Path( "export" )
-  @ApiOperation(
-      value = "Export a bridge store",
-      notes = "",
-      response=classOf[Array[Byte]],
-      nickname = "exportStore",
-      httpMethod = "GET",
-      code=200,
-      produces="application/zip"
+  @Path( "/export" )
+  @GET
+  @Operation(
+      summary = "Export matches",
+      description = "Export matches, returns a zipfile with the matches.  This zipfile can be used for import.",
+      operationId = "exportStore",
+      parameters = Array(
+          new Parameter(
+              allowEmptyValue=true,
+              description="If present, the Ids of the items to export.  A comma separated list.  If omitted, all are exported.",
+              example="M1,M2",
+              in=ParameterIn.QUERY,
+              name="filter",
+              required=false,
+              schema=new Schema(`type`="string")
+          )
+      ),
+      responses=Array(
+          new ApiResponse(
+              responseCode = "200",
+              description = "The exported data store as a zip file.",
+              content = Array(
+                  new Content(
+                      mediaType = "application/zip",
+                      schema = new Schema(`type`="string", format="binary")
+                  )
+              )
+          ),
+          new ApiResponse(
+              responseCode = "400",
+              description = "Bad request",
+              content = Array(
+                  new Content(
+                      mediaType = "application/json",
+                      schema = new Schema(implementation = classOf[RestMessage])
+                  )
+              )
+          )
+      )
   )
-  @ApiImplicitParams(Array(
-    new ApiImplicitParam(
-        name = "filter",
-        value = "If present, the Ids of the items to export.  A comma separated list.  If omitted, all are exported.",
-        required = false,
-        dataType = "string",
-        paramType = "query"
-    )
-  ))
-  @ApiResponses(Array(
-    new ApiResponse(
-        code = 200,
-        message = "The exported data store as a zip file.",
-        response=classOf[Array[Byte]],
-    ),
-    new ApiResponse(
-        code = 400,
-        message = "Bad request",
-        response=classOf[RestMessage]
-    )
-  ))
-  def exportStore = get {
+  def xxxexportStore() = {}
+  val exportStore = get {
     path( "export" ) {
       parameter( 'filter.? ) { (filter) =>
         val filt = filter.map{ f =>
@@ -215,43 +235,57 @@ trait ImportExport {
 
   import UtilsPlayJson._
 
-  @Path( "import" )
-  @ApiOperation(
-      value = "Import a bridge store",
-      notes = "",
-      response=classOf[Array[Byte]],
-      nickname = "importStore",
-      httpMethod = "POST",
-      code=200,
-      produces="text/html"
+  @Path( "/import" )
+  @POST
+  @Operation(
+      summary = "Import matches",
+      description = "Import matches from a zipfile with the matches.  This zipfile is created by the export api call.",
+      operationId = "importStore",
+      parameters = Array(
+          new Parameter(
+              allowEmptyValue=true,
+              description="The URL to redirect the successful page to.  Default is \"/\"",
+              in=ParameterIn.QUERY,
+              name="url",
+              required=false,
+              schema=new Schema(`type`="string")
+          ),
+      ),
+      requestBody = new RequestBody(
+          description="The zip file that contains the bridge store.",
+          required=true,
+          content=Array(
+              new Content(
+                  mediaType = "application/zip",
+                  schema = new Schema(name="zip", `type`="string", format="binary")
+              )
+          )
+      ),
+      responses=Array(
+          new ApiResponse(
+              responseCode = "200",
+              description = "The zip file was imported.",
+              content = Array(
+                  new Content(
+                      mediaType = "text/html",
+                      schema = new Schema(`type`="string")
+                  )
+              )
+          ),
+          new ApiResponse(
+              responseCode = "400",
+              description = "Bad request",
+              content = Array(
+                  new Content(
+                      mediaType = "application/json",
+                      schema = new Schema(implementation = classOf[RestMessage])
+                  )
+              )
+          )
+      )
   )
-  @ApiImplicitParams(Array(
-    new ApiImplicitParam(
-        name = "url",
-        value = "The URL to redirect the successful page to.  Default is \"/\"",
-        required = false,
-        dataType = "string",
-        paramType = "query"
-    ),
-    new ApiImplicitParam(
-        name = "zip",
-        value = "The zip file that contains the bridge store.",
-        required = false,
-        dataType = "file",
-        paramType = "form"
-    )
-  ))
-  @ApiResponses(Array(
-    new ApiResponse(
-        code = 200,
-        message = "The bridge store was imported.",
-    ),
-    new ApiResponse(
-        code = 400,
-        message = "Bad request",
-    )
-  ))
-  def importStore = post {
+  def xxximportStore() = {}
+  val importStore = post {
     path( "import" ) {
       if (restService.importStore.isDefined) {
         parameter( 'url.? ) { (opturl) =>
@@ -307,29 +341,37 @@ trait ImportExport {
     }
   }
 
-  @Path( "diagnostics" )
-  @ApiOperation(
-      value = "Export diagnostic information from the server.  This consists of the logs and store.",
-      notes = "",
-      response=classOf[Array[Byte]],
-      nickname = "exportStore",
-      httpMethod = "GET",
-      code=200,
-      produces="application/zip"
+  @Path( "/diagnostics" )
+  @GET
+  @Operation(
+      summary = "Get diagnostic information",
+      description = "Export diagnostic information from the server.  This consists of the logs and store.",
+      operationId = "diagnostics",
+      responses=Array(
+          new ApiResponse(
+              responseCode = "200",
+              description = "The diagnostic information as a zip file.",
+              content = Array(
+                  new Content(
+                      mediaType = "application/zip",
+                      schema = new Schema(`type`="string", format="binary")
+                  )
+              )
+          ),
+          new ApiResponse(
+              responseCode = "400",
+              description = "Bad request",
+              content = Array(
+                  new Content(
+                      mediaType = "application/json",
+                      schema = new Schema(implementation = classOf[RestMessage])
+                  )
+              )
+          )
+      )
   )
-  @ApiResponses(Array(
-    new ApiResponse(
-        code = 200,
-        message = "The diagnostic information as a zip file.",
-        response=classOf[Array[Byte]],
-    ),
-    new ApiResponse(
-        code = 400,
-        message = "Bad request",
-        response=classOf[RestMessage]
-    )
-  ))
-  def diagnostics = get {
+  def xxxdiagnostics() = {}
+  val diagnostics = get {
     path( "diagnostics" ) {
       log.fine(s"starting to export of diagnostic information")
       val byteSource: Source[ByteString, Unit] = StreamConverters.asOutputStream()

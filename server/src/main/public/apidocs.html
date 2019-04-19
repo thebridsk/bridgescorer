@@ -44,9 +44,14 @@ window.onload = function() {
   // looks like apisSorter, operationsSorter, docExpansion, showRequestHeaders, jsonEditor are not implemented yet
   
   const ui = SwaggerUIBundle({
-    url: "/v1/api-docs/swagger.json",
+    url: "/v1/api-docs/swagger.yaml",
     dom_id: '#swagger-ui',
     deepLinking: true,
+    displayOperationId: true,
+    defaultModelsExpandDepth: 1,
+    defaultModelExpandDepth: 1,
+    displayRequestDuration: true,
+    filter: true,
     validatorUrl: null,
     tagsSorter: "alpha",
     operationsSorter: "alpha",

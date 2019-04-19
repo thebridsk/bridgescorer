@@ -33,14 +33,16 @@ object Dependencies {
 //  lazy val vScalaJsLibrary = "0.6.13" // http://mvnrepository.com/artifact/org.scala-js/scalajs-library_2.11
 
 
-  lazy val vAkka = "2.5.21"           // http://mvnrepository.com/artifact/com.typesafe.akka/akka-actor_2.11
+  lazy val vAkka = "2.5.22"           // http://mvnrepository.com/artifact/com.typesafe.akka/akka-actor_2.11
   lazy val vAkkaHttp = "10.1.8"       // http://mvnrepository.com/artifact/com.typesafe.akka/akka-http_2.11
 
   lazy val vAkkaHttpPlayJson="1.25.2"  // https://github.com/hseeberger/akka-http-json
 
-  lazy val vSwaggerAkkaHttp = "1.0.0" // http://mvnrepository.com/artifact/com.github.swagger-akka-http/swagger-akka-http_2.12
-//  lazy val vSwaggerScalaModule="1.0.4" // http://mvnrepository.com/artifact/io.swagger/swagger-scala-module_2.11
-  lazy val vSwagger="1.5.22"           // http://mvnrepository.com/artifact/io.swagger/swagger-core
+  lazy val vSwaggerAkkaHttp = "2.0.2"  // http://mvnrepository.com/artifact/com.github.swagger-akka-http/swagger-akka-http_2.12
+  lazy val vSwaggerScalaModule="2.0.3"  // http://mvnrepository.com/artifact/io.swagger/swagger-scala-module_2.11
+  lazy val vSwagger="2.0.7"            // http://mvnrepository.com/artifact/io.swagger.core.v3/swagger-core
+  lazy val vWsRsApi="2.1.5"            // https://github.com/eclipse-ee4j/jaxrs-api
+  lazy val vAkkaHttpCors = "0.4.0"     // https://github.com/lomigmegard/akka-http-cors
 
   lazy val vSwaggerUI = "3.22.0"       // https://www.npmjs.com/package/swagger-ui-dist
   lazy val vScalajsdom = "0.9.6"       // http://mvnrepository.com/artifact/org.scala-js/scalajs-dom_sjs0.6_2.11
@@ -59,7 +61,7 @@ object Dependencies {
 
   lazy val vJqueryFacade = "1.2"     // https://mvnrepository.com/artifact/org.querki/jquery-facade
 
-  lazy val vJQuery = "3.3.1"         // https://www.npmjs.com/package/jquery
+  lazy val vJQuery = "3.4.0"         // https://www.npmjs.com/package/jquery
 
   // bug in scalatest 3.0.7 see https://github.com/scalatest/scalatest/issues/1561
   lazy val vScalactic = "3.0.6"      // https://mvnrepository.com/artifact/org.scalactic/scalactic_2.12
@@ -99,7 +101,7 @@ object Dependencies {
   lazy val vAjv = "6.10.0"                  // https://www.npmjs.com/package/ajv
 
 
-  lazy val vWebpackDevServer = "3.2.1"   // https://www.npmjs.com/package/webpack-dev-server
+  lazy val vWebpackDevServer = "3.3.1"   // https://www.npmjs.com/package/webpack-dev-server
   lazy val vWebPackCli = "3.3.0"         // https://www.npmjs.com/package/webpack-cli
 
 //  lazy val vFastClick = "1.0.6"       // https://www.npmjs.com/package/fastclick
@@ -107,9 +109,9 @@ object Dependencies {
   lazy val vSangria = "1.4.2"           // https://github.com/sangria-graphql/sangria
   lazy val vSangriaPlayJson = "1.0.5"   // https://github.com/sangria-graphql/sangria-playground
 
-  lazy val vGraphQL = "14.2.0"
-  lazy val vGraphiQL = "0.13.0"
-  lazy val vGraphQLVoyager = "1.0.0-rc.26"
+  lazy val vGraphQL = "14.2.1"              // https://github.com/graphql/graphql-js
+  lazy val vGraphiQL = "0.13.0"             // https://github.com/graphql/graphiql
+  lazy val vGraphQLVoyager = "1.0.0-rc.26"  // https://github.com/APIs-guru/graphql-voyager
   lazy val vMaterialUIcore = "3.9.3"        // https://www.npmjs.com/package/@material-ui/core
   lazy val vMaterialUIicons = "3.0.2"        // https://www.npmjs.com/package/@material-ui/icons
 
@@ -184,17 +186,22 @@ object Dependencies {
 //      "com.typesafe.akka"   %% "akka-http2-support"      % vAkkaHttp % "test" withSources(),
       "de.heikoseeberger"   %% "akka-http-play-json"     % vAkkaHttpPlayJson withSources(),
 
-//      ("io.swagger"          %%  "swagger-scala-module" % vSwaggerScalaModule withSources()).exclude("com.google.code.findbugs","jsr305"),
+//      (
+      "com.github.swagger-akka-http" %%  "swagger-scala-module" % vSwaggerScalaModule withSources(),
+//      ).exclude("com.google.code.findbugs","jsr305"),
       "com.github.swagger-akka-http" %% "swagger-akka-http" % vSwaggerAkkaHttp withSources(),
+      "ch.megard" %% "akka-http-cors" % vAkkaHttpCors withSources(),
 
       "org.sangria-graphql" %% "sangria" % vSangria withSources(),
       "org.sangria-graphql" %% "sangria-relay" % vSangria withSources(),
       "org.sangria-graphql" %% "sangria-play-json" % vSangriaPlayJson withSources(),
 
-      "io.swagger" % "swagger-core" % vSwagger withSources(),
-      "io.swagger" % "swagger-annotations" % vSwagger withSources(),
-      "io.swagger" % "swagger-models" % vSwagger withSources(),
-      "io.swagger" % "swagger-jaxrs" % vSwagger withSources(),
+      "io.swagger.core.v3" % "swagger-core" % vSwagger withSources(),
+      "io.swagger.core.v3" % "swagger-annotations" % vSwagger withSources(),
+      "io.swagger.core.v3" % "swagger-models" % vSwagger withSources(),
+      "io.swagger.core.v3" % "swagger-jaxrs2" % vSwagger withSources(),
+
+      "jakarta.ws.rs" % "jakarta.ws.rs-api" % vWsRsApi withSources(),
 
 //      "org.webjars.npm" % "react-widgets" % vReactWidgets,
 
@@ -225,7 +232,7 @@ object Dependencies {
 
   val bridgeScorerSharedDeps = Def.setting(Seq(
       "com.typesafe.play" %%% "play-json" % vPlayJson withSources(),
-      "io.swagger" % "swagger-annotations" % vSwagger withSources(),
+      "io.swagger.core.v3" % "swagger-annotations" % vSwagger withSources(),
       "org.scalactic" %%% "scalactic" % vScalactic withSources()
       ))
 
@@ -235,7 +242,7 @@ object Dependencies {
   val bridgeScorerClientDeps = Def.setting(Seq(
 
       "org.scala-js" %%%  "scalajs-dom"    % vScalajsdom withSources(),
-      "io.swagger" % "swagger-annotations" % vSwagger withSources(),
+      "io.swagger.core.v3" % "swagger-annotations" % vSwagger withSources(),
 
       "com.github.japgolly.scalajs-react" %%% "core"          % vScalaJsReact withSources(),
 //      "com.github.japgolly.scalajs-react" %%% "ext-scalaz71"  % vScalaJsReact withSources(),

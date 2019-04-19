@@ -1,7 +1,7 @@
 package com.example.data
 
-import io.swagger.annotations.ApiModel
-import io.swagger.annotations.ApiModelProperty
+import io.swagger.v3.oas.annotations.media.Schema
+import io.swagger.v3.oas.annotations.media.ArraySchema
 
 /**
  * <pre><code>
@@ -22,8 +22,34 @@ import io.swagger.annotations.ApiModelProperty
  * }
  * </code></pre>
  */
-@ApiModel(value="Movement", description = "A movements for a duplicate bridge match")
-case class MovementV1( name: String, short: String, description: String, numberTeams: Int, hands: List[HandInTable] ) extends VersionedInstance[MovementV1,MovementV1,String] {
+@Schema(
+    name="Movement",
+    title="Movement - A movement for a duplicate bridge match",
+    description = "A movements for a duplicate bridge match"
+)
+case class MovementV1(
+    @Schema( description = "The name of the movement", required=true)
+    name: String,
+    @Schema( description = "A short description of the movement", required=true)
+    short: String,
+    @Schema( description = "A longer description of the movement", required=true)
+    description: String,
+    @Schema( description = "The number of teams in the movement", required=true)
+    numberTeams: Int,
+    @ArraySchema(
+        minItems=1,
+        uniqueItems=true,
+        schema=new Schema(
+            implementation=classOf[HandInTable],
+            description="A description of a round on a table, identifies NS and EW teams, and boards to play."
+        ),
+        arraySchema=new Schema(
+            description = "All the round descriptions on all the tables.",
+            required=true
+        )
+    )
+    hands: List[HandInTable]
+) extends VersionedInstance[MovementV1,MovementV1,String] {
 
   def id = name
 
@@ -42,25 +68,25 @@ case class MovementV1( name: String, short: String, description: String, numberT
     }
   }
 
-  @ApiModelProperty(hidden = true)
+  @Schema(hidden = true)
   def getBoards = {
     hands.flatMap( h => h.boards ).distinct.sorted
   }
 
 
-  @ApiModelProperty(hidden = true)
+  @Schema(hidden = true)
   def getRoundForAllTables( round: Int ) = {
     hands.filter { r =>
       r.round == round
     }.toList
   }
 
-  @ApiModelProperty(hidden = true)
+  @Schema(hidden = true)
   def allRounds = {
     hands.map( r => r.round ).distinct
   }
 
-  @ApiModelProperty(hidden = true)
+  @Schema(hidden = true)
   def matchHasRelay = {
     allRounds.find { ir =>
       val all = getRoundForAllTables(ir).flatMap( r => r.boards )
@@ -72,7 +98,7 @@ case class MovementV1( name: String, short: String, description: String, numberT
   /**
    * @returns table IDs
    */
-  @ApiModelProperty(hidden = true)
+  @Schema(hidden = true)
   def tableRoundRelay( itable: Int, iround: Int ) = {
     val allRounds = getRoundForAllTables(iround)
     val otherRounds = allRounds.filter( r => r.table != itable )
@@ -91,4 +117,47 @@ case class MovementV1( name: String, short: String, description: String, numberT
 
 case class BoardPlayed( board: Int, table: Int, round: Int, ns: Int, ew: Int )
 
-case class HandInTable( table: Int, round: Int, ns: Int, ew: Int, boards: List[Int] )
+@Schema(
+    title="HandInTable - Information about a round at a table",
+    description = "Contains the NS and EW teams and boards in a round at a table"
+)
+case class HandInTable(
+    @Schema(
+        description="The table number",
+        minimum="1",
+        required=true,
+    )
+    table: Int,
+    @Schema(
+        description="The round number",
+        minimum="1",
+        required=true,
+    )
+    round: Int,
+    @Schema(
+        description="The NS team number ",
+        minimum="1",
+        required=true,
+    )
+    ns: Int,
+    @Schema(
+        description="The EW team number ",
+        minimum="1",
+        required=true,
+    )
+    ew: Int,
+    @ArraySchema(
+        minItems=0,
+        schema=new Schema(
+            description="The board number",
+            minimum="1",
+            `type`="number",
+            format="int32"
+        ),
+        arraySchema= new Schema(
+            description="The boards that are being played in this round at the table.",
+            required=true,
+        )
+    )
+    boards: List[Int]
+)

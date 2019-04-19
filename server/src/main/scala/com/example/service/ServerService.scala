@@ -5,7 +5,6 @@ import com.example.data.Board
 import com.example.data.MatchDuplicate
 import akka.event.Logging
 import akka.event.Logging._
-import io.swagger.annotations._
 import akka.http.scaladsl.model.StatusCodes._
 import akka.http.scaladsl.server.Directives._
 import akka.stream.Materializer
@@ -28,17 +27,34 @@ import akka.http.scaladsl.server.UnsupportedWebSocketSubprotocolRejection
 import akka.util.ByteString
 import akka.http.scaladsl.model.RemoteAddress
 import scala.concurrent.duration._
+import io.swagger.v3.oas.annotations.Hidden
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.Parameter
+import io.swagger.v3.oas.annotations.media.Schema
+import io.swagger.v3.oas.annotations.responses.ApiResponse
+import io.swagger.v3.oas.annotations.enums.ParameterIn
+import io.swagger.v3.oas.annotations.tags.Tags
+import io.swagger.v3.oas.annotations.tags.Tag
+import io.swagger.v3.oas.annotations.tags.Tags
+import io.swagger.v3.oas.annotations.tags.Tag
+import javax.ws.rs.POST
+import io.swagger.v3.oas.annotations.parameters.RequestBody
+import io.swagger.v3.oas.annotations.media.Content
+import io.swagger.v3.jaxrs2.ReaderListener
+import io.swagger.v3.jaxrs2.Reader
+import io.swagger.v3.oas.models.OpenAPI
+import java.util.TreeMap
+import utils.logging.Logger
 
 /**
  * <p>
  * The REST API and all the methods are documented using
  * swagger annotations.
  */
-@Path( "" )
-@Api(tags= Array("Server"), description = "server operations.", produces="application/json", protocols="http, https")
-trait ServerService extends HasActorSystem with ClientLoggingService {
+@Tags( Array( new Tag(name="Server") ) )
+class ServerService( totallyMissingHandler: RejectionHandler ) {
 
-  private lazy val log = Logging(actorSystem, classOf[LoggingService])
+  val log = Logger[ServerService]
 
   /**
    * Allow the logging level to be overridden for
@@ -51,15 +67,15 @@ trait ServerService extends HasActorSystem with ClientLoggingService {
   /**
    * spray route for all the methods on this resource
    */
-  def serverRoute = {
+  val serverRoute = {
     extractClientIP { ip =>
       {
         pathPrefix(serverUrlPrefix) {
-//          logRequest("route", DebugLevel) {
+          logRequest("serverRoute", DebugLevel) {
             handleRejections(totallyMissingHandler) {
               shutdown(ip)
             }
-//          }
+          }
         }
       }
     }
@@ -68,20 +84,54 @@ trait ServerService extends HasActorSystem with ClientLoggingService {
   /**
    * Handler for converting rejections into HttpResponse
    */
-  def totallyMissingHandler: RejectionHandler
+//  def totallyMissingHandler: RejectionHandler
 
   import scala.language.postfixOps
 
   @Path("/shutdown")
-  @ApiOperation(value = "Shutdown the server, must be issued through loopback interface", notes = "", nickname = "shutdown", httpMethod = "POST", code=204, response=classOf[String])
-  @ApiImplicitParams(Array(
-    new ApiImplicitParam(name = "doit", value = "Actually do the shutdown", required = true, dataType = "string", paramType = "query")
-  ))
-  @ApiResponses(Array(
-    new ApiResponse(code = 204, message = "Accepted", response=classOf[Void] ),
-    new ApiResponse(code = 400, message = "Bad request", response=classOf[Void] )
-  ))
-  def shutdown( @ApiParam(hidden=true) ip: RemoteAddress ) =
+  @POST
+  @Operation(
+      summary = "Shutdown the server",
+      description = "Shutdown the server, must be issued through loopback interface",
+      operationId = "shutdown",
+      parameters = Array(
+          new Parameter(
+              allowEmptyValue=false,
+              description="Actually do the shutdown",
+              in=ParameterIn.QUERY,
+              name="doit",
+              required=true,
+              schema=new Schema(
+                  `type`="string",
+                  allowableValues=Array("yes")
+              )
+          )
+      ),
+      requestBody = new RequestBody(
+          description = "movement to create",
+          content = Array(
+              new Content(
+                  mediaType = "text/plain",
+                  schema = new Schema(
+                      `type`="string"
+                  )
+              )
+          )
+      ),
+      responses = Array(
+          new ApiResponse(
+              responseCode = "204",
+              description = "Accepted",
+          ),
+          new ApiResponse(
+              responseCode = "400",
+              description = "Bad request",
+          )
+
+      )
+  )
+  def xxxshutdown = {}
+  def shutdown( @Parameter(hidden=true) ip: RemoteAddress ) =
     logRequestResult(ip.toString(), logLevelForTracingRequestResponse) {
       post {
         parameterMap { params =>
@@ -95,19 +145,18 @@ trait ServerService extends HasActorSystem with ClientLoggingService {
                     hook.terminateServerIn( 1 second)
                     complete(StatusCodes.NoContent)
                   case None =>
-                    log.error("Error")
+                    log.severe("Error")
                     complete(StatusCodes.BadRequest)
                 }
               case _ =>
-                log.error("Could not determine remote address or it is not local, ip="+ip)
+                log.severe("Could not determine remote address or it is not local, ip="+ip)
                 complete(StatusCodes.BadRequest)
             }
           } else {
-            log.error("Missing secret")
+            log.severe("Missing secret")
             complete(StatusCodes.BadRequest)
           }
         }
       }
     }
-
 }

@@ -1,15 +1,16 @@
 package com.example.data
 
-import io.swagger.annotations._
 import scala.annotation.meta._
 
 import com.example.data.SystemTime.Timestamp
 import com.example.data.bridge.PlayerPosition
+import io.swagger.v3.oas.annotations.media.Schema
 
 /**
  * A match of chicago
  * @param gamesPerRound ==0 unknown, 4, 6, or 8
  */
+@Schema(description = "A chicago match, version 1 (old version)")
 case class MatchChicagoV1( id: String,
                          player1: String,
                          player2: String,

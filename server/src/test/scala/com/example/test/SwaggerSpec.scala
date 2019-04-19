@@ -62,7 +62,7 @@ class SwaggerSpec extends FlatSpec with ScalatestRouteTest with MustMatchers wit
       status mustBe PermanentRedirect
       header("Location") match {
         case Some(httpheader) =>
-          httpheader.value() mustBe "/public/swagger-ui-dist/index.html.gz?url=/v1/api-docs/swagger.json&validatorUrl="
+          httpheader.value() mustBe "/public/swagger-ui-dist/index.html.gz?url=/v1/api-docs/swagger.yaml&validatorUrl="
         case None =>
           fail("Did not get location header")
       }
@@ -144,12 +144,12 @@ class SwaggerSpec extends FlatSpec with ScalatestRouteTest with MustMatchers wit
     }
   }
 
-  it should "return the swagger json /v1/api-docs" in {
+  it should "return the swagger.yaml /v1/api-docs" in {
     Get("/v1/api-docs") ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
       status mustBe PermanentRedirect
       header("Location") match {
         case Some(httpheader) =>
-          httpheader.value() mustBe "/v1/api-docs/swagger.json"
+          httpheader.value() mustBe "/v1/api-docs/swagger.yaml"
         case None =>
           fail("Did not get location header")
       }
@@ -167,8 +167,8 @@ class SwaggerSpec extends FlatSpec with ScalatestRouteTest with MustMatchers wit
     (nanos,result)
   }
 
-  it should "return the swagger json from /v1/api-docs/swagger.json and should not contain the string 'Function1'" in {
-    Get("/v1/api-docs/swagger.json") ~> addHeader(`Accept-Encoding`(HttpEncodings.gzip)) ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
+  it should "return the swagger.yaml from /v1/api-docs/swagger.yaml and should not contain the string 'Function1'" in {
+    Get("/v1/api-docs/swagger.yaml") ~> addHeader(`Accept-Encoding`(HttpEncodings.gzip)) ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
       status mustBe OK
       val swagger = httpResponseAs[String](decodeResponse(response))
       swagger must include regex "(?s)Scorekeeper for a Duplicate bridge, Chicago bridge, and Rubber bridge\\."

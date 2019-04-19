@@ -16,20 +16,28 @@ import com.example.data.rest.JsonSupport._
 import com.example.rest.UtilsPlayJson._
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.util.Success
-import io.swagger.annotations._
 import scala.annotation.meta._
 import javax.ws.rs.Path
 import utils.logging.Logger
 import com.example.data.graphql.GraphQLProtocol.GraphQLResponse
 import com.example.data.graphql.GraphQLProtocol.GraphQLRequest
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.Parameter
+import io.swagger.v3.oas.annotations.parameters.RequestBody
+import io.swagger.v3.oas.annotations.media.Schema
+import io.swagger.v3.oas.annotations.enums.ParameterIn
+import io.swagger.v3.oas.annotations.media.Content
+import io.swagger.v3.oas.annotations.responses.ApiResponse
+import javax.ws.rs.POST
+import io.swagger.v3.oas.annotations.tags.Tags
+import io.swagger.v3.oas.annotations.tags.Tag
 
 object GraphQLRoute {
   val log = Logger[GraphQLRoute]
 }
 
 @Path( "" )
-@Api( tags = Array("Server"),
-      description = "Execute GraphQL requests.", protocols="http, https")
+@Tags( Array( new Tag(name="Server")))
 trait GraphQLRoute {
   import GraphQLRoute._
 
@@ -41,38 +49,57 @@ trait GraphQLRoute {
 
 
   @Path( "graphql" )
-  @ApiOperation(
-      value = "Make a GraphQL request",
-      notes = "",
-      response=classOf[Array[Byte]],
-      nickname = "graphql",
-      httpMethod = "POST",
-      code=200,
-      produces="application/json"
+  @POST
+  @Operation(
+      summary = "Make a GraphQL request",
+      operationId = "graphql",
+      requestBody = new RequestBody(
+        description = "The request.  A JSON object with three fields: query (string), operationName (optional string), variables (optional object)",
+        content = Array(
+            new Content(
+                mediaType = "application/json",
+                schema = new Schema(
+                    implementation = classOf[GraphQLRequest]
+                )
+            )
+        )
+      ),
+      responses = Array(
+          new ApiResponse(
+              responseCode = "200",
+              description = "The result of the GraphQL request.",
+              content = Array(
+                  new Content(
+                      mediaType = "application/json",
+                      schema = new Schema( implementation=classOf[GraphQLResponse] )
+                  )
+              )
+          ),
+          new ApiResponse(
+              responseCode = "400",
+              description = "Bad request",
+              content = Array(
+                  new Content(
+                      mediaType = "application/json",
+                      schema = new Schema(implementation = classOf[GraphQLResponse])
+                  )
+              )
+          ),
+          new ApiResponse(
+              responseCode = "500",
+              description = "Internal server error",
+              content = Array(
+                  new Content(
+                      mediaType = "application/json",
+                      schema = new Schema(implementation = classOf[GraphQLResponse])
+                  )
+              )
+          )
+
+      )
   )
-  @ApiImplicitParams(Array(
-    new ApiImplicitParam(name = "body",
-                         value = "The request.  A JSON object with three fields: query (string), operationName (optional string), variables (optional object)",
-                         dataTypeClass = classOf[GraphQLRequest],
-                         required = true,
-                         paramType = "body")
-  ))
-  @ApiResponses(Array(
-    new ApiResponse(
-        code = 200,
-        response=classOf[GraphQLResponse],
-        message = "The result of the GraphQL request.",
-    ),
-    new ApiResponse(
-        code = 400,
-        message = "Bad request"
-    ),
-    new ApiResponse(
-        code = 500,
-        message = "Internal server error"
-    )
-  ))
-  def graphQLRoute: Route =
+  def xxxgraphQLRoute = {}
+  val graphQLRoute: Route =
     pathPrefix("v1") {
       logRequestResult("GraphQLRoute") {
         (post & path("graphql")) {

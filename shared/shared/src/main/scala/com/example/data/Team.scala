@@ -2,20 +2,23 @@ package com.example.data
 
 import com.example.data.SystemTime.Timestamp
 
-import io.swagger.annotations._
 import scala.annotation.meta._
+import io.swagger.v3.oas.annotations.media.Schema
 
-@ApiModel(description = "A team from a duplicate match")
+@Schema(
+    title = "Team - A team from a duplicate match",
+    description = "A team from a duplicate match"
+)
 case class Team(
-    @(ApiModelProperty @field)(value="The ID of the team.", required=true)
+    @Schema(description="The ID of the team.", required=true)
     id: Id.Team,
-    @(ApiModelProperty @field)(value="The name of player 1 on the team", required=true)
+    @Schema(description="The name of player 1 on the team", required=true)
     player1: String,
-    @(ApiModelProperty @field)(value="The name of player 2 on the team", required=true)
+    @Schema(description="The name of player 2 on the team", required=true)
     player2: String,
-    @(ApiModelProperty @field)(value="when the duplicate hand was created", required=true)
+    @Schema(description="When the duplicate hand was created, in milliseconds since 1/1/1970 UTC", required=true)
     created: Timestamp,
-    @(ApiModelProperty @field)(value="when the duplicate hand was last updated", required=true)
+    @Schema(description="When the duplicate hand was last updated, in milliseconds since 1/1/1970 UTC", required=true)
     updated: Timestamp ) {
 
   def equalsIgnoreModifyTime( other: Team ) = this == other.copy( created=created, updated=updated )

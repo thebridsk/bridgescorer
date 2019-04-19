@@ -1,10 +1,13 @@
 package com.example.data
 
-import io.swagger.annotations._
 import scala.annotation.meta._
+import io.swagger.v3.oas.annotations.media.Schema
 
-@ApiModel(description = "Structure returned for all REST API errors")
-case class RestMessage( 
-    @(ApiModelProperty @field)(value="A message indicating what the error was")
-    msg: String 
+@Schema(
+    title = "RestMessage - Structure returned for all REST API errors",
+    description = "Structure returned for all REST API errors"
+)
+case class RestMessage(
+    @Schema(description="A message indicating what the error was", required=true)
+    msg: String
 )

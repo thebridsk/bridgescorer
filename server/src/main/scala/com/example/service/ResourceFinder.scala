@@ -107,14 +107,16 @@ object ResourceFinder {
               None::Nil
             }
             val (resultDir, lastmod) = x.foldLeft( (None: Option[FileFinder],0L) ) { (ac,v) =>
-                ac._1.map { cur =>
+                if (ac._1.isDefined) {
                   if (v.isDefined) {
                     if (ac._2 < v.get._2) ( Some(v.get._1), v.get._2)
                     else ac
                   } else {
                     ac
                   }
-                }.getOrElse(ac)
+                } else {
+                  ( Some(v.get._1), v.get._2)
+                }
             }
             resultDir.foreach( f => logger.info( s"Using resource ${f.baseName}" ) )
             resultDir

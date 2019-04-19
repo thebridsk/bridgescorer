@@ -24,26 +24,39 @@ import akka.stream.ActorMaterializer
 import akka.event.Logging
 import akka.util.ByteString
 import akka.event.LoggingAdapter
-import io.swagger.config.FilterFactory
 import com.example.Server
 import com.example.StartServer
 import scala.concurrent.Future
 import com.example.webjar.WebJar
-import io.swagger.models.Scheme
 import com.example.rest.ServerPort
-import io.swagger.models.Tag
 import com.example.service.graphql.GraphQLRoute
+import io.swagger.v3.oas.models.Components
+import io.swagger.v3.oas.models.security.SecurityRequirement
+import io.swagger.v3.oas.models.security.SecurityScheme
+import io.swagger.v3.oas.models.ExternalDocumentation
+import com.example.rest.ImportExport
+import io.swagger.v3.jaxrs2.Reader
+import com.github.swagger.akka.SwaggerHttpService
+import io.swagger.v3.oas.integration.SwaggerConfiguration
+import com.example.rest.RestDuplicate
+import ch.megard.akka.http.cors.scaladsl.CorsDirectives
+import java.util.TreeMap
+import io.swagger.v3.oas.models.media.Schema
+import io.swagger.v3.core.util.Json
+import scala.util.control.NonFatal
+import io.swagger.v3.core.util.Yaml
+import io.swagger.v3.oas.models.OpenAPI
 
 /**
  * The service trait.
  * This trait defines our service behavior independently from the service actor,
  * this allows us to test this class without spinning up a server.
  */
-trait MyService extends Service with JsService with WebJar with LoggingService with ServerService with GraphQLRoute with HasActorSystem {
+trait MyService extends Service with JsService with WebJar with LoggingService with GraphQLRoute with HasActorSystem {
   hasActorSystem: HasActorSystem =>
 
-// This is commented out because the baseURL in swagger.json is /v1/rest
-// which causes these to not be found when trying it out.
+  import hasActorSystem._
+
   val addLoggingAndServerToSwagger = true
 
   lazy val log = Logging(actorSystem, classOf[MyService])
@@ -63,7 +76,7 @@ trait MyService extends Service with JsService with WebJar with LoggingService w
   /**
    * Handler for converting rejections into HttpResponse
    */
-  def totallyMissingHandler = RejectionHandler.newBuilder()
+  val totallyMissingHandler = RejectionHandler.newBuilder()
     .handle { case MissingCookieRejection(cookieName) =>
       complete(HttpResponse(StatusCodes.BadRequest, entity = "No cookies, no service!!!"))
     }
@@ -80,6 +93,8 @@ trait MyService extends Service with JsService with WebJar with LoggingService w
     .handleNotFound { complete(StatusCodes.NotFound, "Not here!myservice") }
     .result()
 
+  val serverService = new ServerService(totallyMissingHandler)
+
   val myRouteWithLoggingDebugging =
 //    logRequest(("topLevel", Logging.DebugLevel)) {
 //      logResult(("topLevel", Logging.DebugLevel)) {
@@ -95,35 +110,46 @@ trait MyService extends Service with JsService with WebJar with LoggingService w
   /**
    * Spray routing which logs all requests and responses at the Debug level.
    */
-  def myRouteWithLogging = handleExceptions(excptHandler) {
+  val myRouteWithLogging = handleExceptions(excptHandler) {
+    handleRejections(totallyMissingHandler) {
 //    logRequest(("topLevel", Logging.DebugLevel)) {
 //      logResult(("topLevel", Logging.DebugLevel)) {
         logRouteWithIp
 //      }
 //    }
+    }
   }
 
   /**
    * Spray routing with logging of incoming IP address.
    */
-  def logRouteWithIp =
+  val logRouteWithIp =
     extractClientIP { ip =>
-      {
+        import CorsDirectives._
         pathPrefix("v1") {
-          loggingRoute ~ serverRoute
+          loggingRoute ~
+          cors() {
+            logRequest("logRouteWithIp", Logging.DebugLevel) { logResult("myRoute", Logging.DebugLevel) {
+//            handleRejections(totallyMissingHandler) {
+              serverService.serverRoute
+//            }
+            }}
+          }
         } ~
         myRoute
-      }
     }
 
   /**
    * The main spray route of the service
    */
-  def myRoute = handleRejections(totallyMissingHandler) {
+  val myRoute = handleRejections(totallyMissingHandler) {
+      import CorsDirectives._
       encodeResponse {
         logRequest("myRoute", Logging.DebugLevel) { logResult("myRoute", Logging.DebugLevel) {
-          graphQLRoute ~
-          routeRest  ~        // for REST API of the service
+          cors() {
+            graphQLRoute ~
+            routeRest
+          } ~        // for REST API of the service
           webjars ~
           swaggerRoute ~      // for the Swagger-UI documentation pages
           html                // for the static html files for our application
@@ -164,14 +190,14 @@ trait MyService extends Service with JsService with WebJar with LoggingService w
     httpsURL.getOrElse( httpURL.get )
   }
 
-  def getScheme = ports.httpsPort.map( p => Scheme.HTTPS ).getOrElse(Scheme.HTTP)
+  def getScheme = ports.httpsPort.map( p => "HTTPS" ).getOrElse("HTTP")
 
-  def getSchemeWS = ports.httpsPort.map( p => Scheme.WSS ).getOrElse(Scheme.WS)
+  def getSchemeWS = ports.httpsPort.map( p => "WSS" ).getOrElse("WS")
 
-  def getSchemes = ports.httpsPort.map( p => List(Scheme.HTTPS) ).getOrElse(Nil):::
-                   ports.httpPort.map( p => List(Scheme.HTTP) ).getOrElse(Nil)
+  def getSchemes = ports.httpsPort.map( p => List("HTTPS") ).getOrElse(Nil):::
+                   ports.httpPort.map( p => List("HTTP") ).getOrElse(Nil)
 
-  def getSchemesWS = ports.httpsPort.map( p => List(Scheme.WSS) ).getOrElse(List(Scheme.WS))
+  def getSchemesWS = ports.httpsPort.map( p => List("WSS") ).getOrElse(List("WS"))
 
   val x = classOf[LoggingService]
 
@@ -195,25 +221,95 @@ trait MyService extends Service with JsService with WebJar with LoggingService w
     implicit lazy val actorSystem: ActorSystem = hasActorSystem.actorSystem
     implicit lazy val materializer: ActorMaterializer = hasActorSystem.materializer
 
-//    override val scheme = getScheme
-    override val schemes = getSchemes ::: (if (addLoggingAndServerToSwagger) getSchemesWS else Nil)
-    override val host = "" // getHostPort
+//    override val apiVersionURISegment = "v1"
 
-    override val apiClasses = serverRestTypes
-    override val apiVersionURISegment = "v1"
+    override def apiClasses = serverRestTypes
 
     // let swagger-ui determine the host and port
-    override val basePath: String = s"/${apiVersionURISegment}"
-//    override def docsPath = "api-docs"     // URI will be /v1/api-docs
-//    override def actorRefFactory = myActorRefFactory
-    override val info = Info("Scorekeeper for a Duplicate bridge, Chicago bridge, and Rubber bridge.",
-                                            "v1",
-                                            "Duplicate Bridge Scorekeeper",
-                                            "/public/termsOfService.html",
-                                            Some(Contact("The Bridge Scorekeeper","https://github.com/thebridsk/bridgescorer","")),
-                                            Some(License("Free","/public/license.html")))
+    override def host = getHostPort
 
-    //authorizations, not used
+    override def basePath: String = s"/${apiVersionURISegment}"
+
+    override def apiDocsPath: String = "api-docs"
+
+    override def info =
+      Info(
+          description = "Scorekeeper for a Duplicate bridge, Chicago bridge, and Rubber bridge.",
+          version = "v1",
+          title = "Duplicate Bridge Scorekeeper",
+          termsOfService = "/public/termsOfService.html",
+          contact = Some(Contact(name="The Bridge Scorekeeper", url="https://github.com/thebridsk/bridgescorer", email="")),
+          license = Some(License( name="MIT", url="/public/license.html")),
+          vendorExtensions = Map.empty
+      )
+
+    override def components: Option[Components] = None
+
+    override def schemes = getSchemes ::: (if (addLoggingAndServerToSwagger) getSchemesWS else Nil)
+
+    override def security: List[SecurityRequirement] = List()
+
+    override def securitySchemes: Map[String, SecurityScheme] = Map.empty
+
+    override def externalDocs: Option[ExternalDocumentation] = None
+
+    override def vendorExtensions: Map[String, Object] = Map.empty
+
+    override def unwantedDefinitions: Seq[String] =
+      Seq(
+          // this is a akka.http.scaladsl.server.Route
+          // RequestContext => Future[RouteResult]
+          // This could be generated since all the CRUD calls return a Route
+//          "Function1RequestContextFutureRouteResult",
+      )
+
+    def readerConfig = {
+      val rc = new SwaggerConfiguration()
+      rc.setCacheTTL(300000L)
+      rc.setReadAllResources(false)
+      rc.setPrettyPrint(true)
+      rc
+    }
+
+    override def reader = {
+      val r = new Reader(readerConfig.openAPI(swaggerConfig))
+      r
+    }
+
+    private def myFilteredSwagger: OpenAPI = {
+      import scala.collection.JavaConverters._
+      val swagger: OpenAPI = reader.read(apiClasses.asJava)
+      if (!unwantedDefinitions.isEmpty) {
+        val filteredSchemas = asScala(swagger.getComponents.getSchemas).filterKeys(
+          definitionName => !unwantedDefinitions.contains(definitionName)).toMap.asJava
+        swagger.getComponents.setSchemas(new TreeMap(filteredSchemas))
+      } else {
+        swagger.getComponents.setSchemas(new TreeMap(swagger.getComponents.getSchemas))
+      }
+      swagger
+    }
+
+    override def generateSwaggerJson: String = {
+      try {
+        Json.pretty().writeValueAsString(myFilteredSwagger)
+      } catch {
+        case NonFatal(t) => {
+          log.error("Issue with creating swagger.json", t)
+          throw t
+        }
+      }
+    }
+
+    override def generateSwaggerYaml: String = {
+      try {
+        Yaml.pretty().writeValueAsString(myFilteredSwagger)
+      } catch {
+        case NonFatal(t) => {
+          log.error("Issue with creating swagger.yaml", t)
+          throw t
+        }
+      }
+    }
 
     /**
      * Add the ws scheme to the swagger config.
@@ -221,15 +317,18 @@ trait MyService extends Service with JsService with WebJar with LoggingService w
      */
     override
     def swaggerConfig = {
+      import io.swagger.v3.oas.models.tags.Tag
+
       var s = super.swaggerConfig
 //      s = if (addLoggingAndServerToSwagger) s.scheme(getSchemeWS)
 //          else s
-      s.tag( new Tag().name("Duplicate").description("Duplicate bridge operations") )
-       .tag( new Tag().name("Chicago").description("Chicage bridge operations") )
-       .tag( new Tag().name("Rubber").description("Rubber bridge operations") )
-       .tag( new Tag().name("Utility").description("Utility operations") )
-       .tag( new Tag().name("Logging").description("Logging operations") )
-       .tag( new Tag().name("Server").description("Server operations") )
+      val r = s.addTagsItem( new Tag().name("Duplicate").description("Duplicate bridge operations") )
+               .addTagsItem( new Tag().name("Chicago").description("Chicage bridge operations") )
+               .addTagsItem( new Tag().name("Rubber").description("Rubber bridge operations") )
+//               .addTagsItem( new Tag().name("Utility").description("Utility operations") )
+//               .addTagsItem( new Tag().name("Logging").description("Logging operations") )
+               .addTagsItem( new Tag().name("Server").description("Server operations") )
+      r
     }
   }
 

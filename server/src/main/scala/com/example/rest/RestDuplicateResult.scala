@@ -4,7 +4,6 @@ import com.example.backend.BridgeService
 import com.example.data.MatchDuplicateResult
 import akka.event.Logging
 import akka.event.Logging._
-import io.swagger.annotations._
 import akka.http.scaladsl.model.StatusCode
 import akka.http.scaladsl.model.StatusCodes._
 import akka.http.scaladsl.server.Directives._
@@ -22,6 +21,21 @@ import scala.util.Success
 import scala.util.Failure
 import akka.http.scaladsl.model.StatusCodes
 import scala.concurrent.ExecutionContext.Implicits.global
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.responses.ApiResponse
+import io.swagger.v3.oas.annotations.media.Schema
+import io.swagger.v3.oas.annotations.media.ArraySchema
+import io.swagger.v3.oas.annotations.media.Content
+import io.swagger.v3.oas.annotations.Parameter
+import io.swagger.v3.oas.annotations.enums.ParameterIn
+import io.swagger.v3.oas.annotations.parameters.RequestBody
+import io.swagger.v3.oas.annotations.headers.Header
+import io.swagger.v3.oas.annotations.tags.Tags
+import io.swagger.v3.oas.annotations.tags.Tag
+import javax.ws.rs.GET
+import javax.ws.rs.POST
+import javax.ws.rs.PUT
+import javax.ws.rs.DELETE
 
 object RestDuplicateResult {
   implicit class OrdFoo( val x: MatchDuplicateResult) extends AnyVal with Ordered[MatchDuplicateResult] {
@@ -30,6 +44,9 @@ object RestDuplicateResult {
 }
 
 import RestDuplicateResult._
+import io.swagger.v3.oas.annotations.tags.Tags
+import io.swagger.v3.oas.annotations.tags.Tag
+import javax.ws.rs.GET
 
 /**
  * Rest API implementation for the board resource.
@@ -38,10 +55,7 @@ import RestDuplicateResult._
  * swagger annotations.
  */
 @Path( "/rest/duplicateresults" )
-@Api(tags= Array("Duplicate"),
-     description = "Operations about duplicateresults.",
-     produces="application/json",
-     protocols="http, https")
+@Tags( Array( new Tag(name="Duplicate")))
 trait RestDuplicateResult extends HasActorSystem {
 
   private lazy val log = Logging(actorSystem, classOf[RestDuplicate])
@@ -65,88 +79,169 @@ trait RestDuplicateResult extends HasActorSystem {
   /**
    * spray route for all the methods on this resource
    */
-  def route =pathPrefix(resName) {
+  val route =pathPrefix(resName) {
 //    logRequest("route", DebugLevel) {
         getDuplicateResult ~ getDuplicateResults ~ postDuplicateResult ~ putDuplicateResult ~ deleteDuplicateResult
 //      }
   }
 
-  @ApiOperation(value = "Get all duplicate results",
-                notes = "Returns a list of matches.",
-                response=classOf[MatchDuplicateResult],
-                responseContainer="List",
-                nickname = "getDuplicateResults",
-                httpMethod = "GET")
-  @ApiResponses(Array(
-    new ApiResponse(code = 200,
-                    message = "A list of matches, as a JSON array",
-                    response=classOf[MatchDuplicateResult],
-                    responseContainer="List")
-  ))
-  def getDuplicateResults = pathEnd {
+  @GET
+  @Operation(
+      summary = "Get all duplicate results",
+      description = "Returns a list of matches.",
+      operationId = "getDuplicateResults",
+      responses = Array(
+          new ApiResponse(
+              responseCode = "200",
+              description = "A list of matches, as a JSON array",
+              content = Array(
+                  new Content(
+                      mediaType = "application/json",
+                      array = new ArraySchema(
+                          minItems = 0,
+                          uniqueItems = true,
+                          schema = new Schema( implementation=classOf[MatchDuplicateResult] )
+                      )
+                  )
+              )
+          )
+      )
+  )
+  def xxxgetDuplicateResults() = {}
+  val getDuplicateResults = pathEnd {
     get {
       resourceMap( store.readAll() )
     }
   }
 
   @Path("/{matchId}")
-  @ApiOperation(value = "Get the match by ID",
-                notes = "",
-                response=classOf[MatchDuplicateResult],
-                nickname = "getDuplicateResultById",
-                httpMethod = "GET")
-  @ApiImplicitParams(Array(
-    new ApiImplicitParam(name = "matchId",
-                         value = "ID of the board to get",
-                         required = true,
-                         dataType = "string",
-                         paramType = "path")
-  ))
-  @ApiResponses(Array(
-    new ApiResponse(code = 200,
-                    message = "The board, as a JSON object",
-                    response=classOf[MatchDuplicateResult]),
-    new ApiResponse(code = 404,
-                    message = "Does not exist.",
-                    response=classOf[RestMessage])
-  ))
-  def getDuplicateResult = logRequest("RestDuplicateResult.getDuplicateResult", DebugLevel) { logResult("RestDuplicateResult.postDuplicateResult") { get {
+  @GET
+  @Operation(
+      summary = "Get the duplicate results by ID",
+      description = "Returns the specified duplicate results.",
+      operationId = "getDuplicateResultById",
+      parameters = Array(
+          new Parameter(
+              allowEmptyValue=false,
+              description="ID of the duplicate results to get",
+              in=ParameterIn.PATH,
+              name="matchId",
+              required=true,
+              schema=new Schema(`type`="string")
+          )
+      ),
+      responses = Array(
+          new ApiResponse(
+              responseCode = "200",
+              description = "A duplicate results, as a JSON object",
+              content = Array(
+                  new Content(
+                      mediaType = "application/json",
+                      schema = new Schema( implementation=classOf[MatchDuplicateResult] )
+                  )
+              )
+          ),
+          new ApiResponse(
+              responseCode = "404",
+              description = "Does not exist",
+              content = Array(
+                  new Content(
+                      mediaType = "application/json",
+                      schema = new Schema(implementation = classOf[RestMessage])
+                  )
+              )
+          )
+
+      )
+  )
+  def xxxgetDuplicateResult() = {}
+  val getDuplicateResult = logRequest("RestDuplicateResult.getDuplicateResult", DebugLevel) { logResult("RestDuplicateResult.postDuplicateResult") { get {
     path( """[a-zA-Z0-9]+""".r ) { id =>
       resource( store.select(id).read() )
     }
   }}}
 
-
-  @ApiOperation(value = "Create a chicago match",
-                notes = "",
-                response=classOf[MatchDuplicateResult],
-                nickname = "createDuplicateResult",
-                httpMethod = "POST",
-                code=201)
-  @ApiImplicitParams(Array(
-    new ApiImplicitParam(name = "test", value = "If present, create test match", required = false, dataType = "string", paramType = "query"),
-    new ApiImplicitParam(name = "default", value = "If present, indicates boards and hands should be added.  Default movements is Armonk2Tables, default boards is ArmonkBoards", required = false, dataType = "string", paramType = "query"),
-    new ApiImplicitParam(name = "boards", value = "If present, indicates which boards to use", allowableValues="StandardBoards, ArmonkBoards", required = false, dataType = "string", paramType = "query"),
-    new ApiImplicitParam(name = "movements", value = "If present, indicates which movements to use", allowableValues="Howell3TableNoRelay, Mitchell3Table, Howell2Table5Teams, Armonk2Tables", required = false, dataType = "string", paramType = "query"),
-    new ApiImplicitParam(name = "body",
-                         value = "DuplicateResult Match to create",
-                         dataTypeClass = classOf[MatchDuplicateResult],
-                         required = true,
-                         paramType = "body")
-  ))
-  @ApiResponses(Array(
-    new ApiResponse(code = 201,
-                    message = "The created match's JSON",
-                    response=classOf[MatchDuplicateResult],
-        responseHeaders= Array(
-            new ResponseHeader( name="Location",
-                                description="The URL of the newly created resource",
-                                response=classOf[String] )
-            )
-        ),
-    new ApiResponse(code = 400, message = "Bad request", response=classOf[RestMessage])
-  ))
-  def postDuplicateResult =
+  @POST
+  @Operation(
+      summary = "Create a duplicate result",
+      operationId = "createDuplicateResult",
+      parameters = Array(
+          new Parameter(
+              name = "test",
+              in = ParameterIn.QUERY,
+              allowEmptyValue = true,
+              description = "If present, create test match, value is ignored.",
+              required = false,
+              schema = new Schema(implementation=classOf[String]),
+          ),
+          new Parameter(
+              name = "default",
+              in = ParameterIn.QUERY,
+              allowEmptyValue = true,
+              description = "If present, indicates boards and hands should be added.  Default movements is Armonk2Tables, default boards is ArmonkBoards, value is ignored.",
+              required = false,
+              schema = new Schema(implementation=classOf[String]),
+          ),
+          new Parameter(
+              name = "boards",
+              in = ParameterIn.QUERY,
+              allowEmptyValue = false,
+              description = "If present, indicates which boards to use, example values: StandardBoards, ArmonkBoards",
+              required = false,
+              schema = new Schema(implementation=classOf[String]),
+          ),
+          new Parameter(
+              name = "movements",
+              in = ParameterIn.QUERY,
+              allowEmptyValue = false,
+              description = "If present, indicates which movements to use, example values: Howell3TableNoRelay, Mitchell3Table, Howell2Table5Teams, Armonk2Tables",
+              required = false,
+              schema = new Schema(implementation=classOf[String]),
+          ),
+      ),
+      requestBody = new RequestBody(
+          description = "duplicate results to create",
+          content = Array(
+              new Content(
+                  mediaType = "application/json",
+                  schema = new Schema(
+                      implementation = classOf[MatchDuplicateResult]
+                  )
+              )
+          )
+      ),
+      responses = Array(
+          new ApiResponse(
+              responseCode = "201",
+              description = "The created duplicate result's JSON",
+              content = Array(
+                  new Content(
+                      mediaType = "application/json",
+                      schema = new Schema( implementation=classOf[MatchDuplicateResult] )
+                  )
+              ),
+              headers = Array(
+                  new Header(
+                      name="Location",
+                      description="The URL of the newly created resource",
+                      schema = new Schema( implementation=classOf[String] )
+                  )
+              )
+          ),
+          new ApiResponse(
+              responseCode = "400",
+              description = "Bad request",
+              content = Array(
+                  new Content(
+                      mediaType = "application/json",
+                      schema = new Schema(implementation = classOf[RestMessage])
+                  )
+              )
+          )
+      )
+  )
+  def xxxpostDuplicateResult() = {}
+  val postDuplicateResult =
     logRequest("RestDuplicateResult.postDuplicateResult") {
       logResult("RestDuplicateResult.postDuplicateResult") {
         pathEnd {
@@ -180,30 +275,60 @@ trait RestDuplicateResult extends HasActorSystem {
     }
 
   @Path("/{matchId}")
-  @ApiOperation(value = "Update a chicago match",
-                notes = "",
-                response=classOf[MatchDuplicateResult],
-                nickname = "updateDuplicateResult",
-                httpMethod = "PUT",
-                code=204)
-  @ApiImplicitParams(Array(
-    new ApiImplicitParam(name = "matchId",
-                         value = "ID of the board to get",
-                         required = true,
-                         dataType = "string",
-                         paramType = "path"),
-    new ApiImplicitParam(name = "body",
-                         value = "DuplicateResult Match to update",
-                         dataTypeClass = classOf[MatchDuplicateResult],
-                         required = true,
-                         paramType = "body")
-  ))
-  @ApiResponses(Array(
-    new ApiResponse(code = 204, message = "DuplicateResult match updated", response=classOf[Void] ),
-    new ApiResponse(code = 404, message = "Does not exist.", response=classOf[RestMessage]),
-    new ApiResponse(code = 400, message = "Bad request", response=classOf[RestMessage])
-  ))
-  def putDuplicateResult =
+  @PUT
+  @Operation(
+      summary = "Update a duplicate result",
+      operationId = "updateDuplicateResult",
+      parameters = Array(
+          new Parameter(
+              allowEmptyValue=false,
+              description="ID of the match to update",
+              in=ParameterIn.PATH,
+              name="matchId",
+              required=true,
+              schema=new Schema(`type`="string")
+          )
+      ),
+      requestBody = new RequestBody(
+          description = "The updated duplicate Match",
+          content = Array(
+              new Content(
+                  mediaType = "application/json",
+                  schema = new Schema(
+                      implementation = classOf[MatchDuplicateResult]
+                  )
+              )
+          )
+      ),
+      responses = Array(
+          new ApiResponse(
+              responseCode = "204",
+              description = "Duplicate result updated",
+          ),
+          new ApiResponse(
+              responseCode = "404",
+              description = "Does not exist",
+              content = Array(
+                  new Content(
+                      mediaType = "application/json",
+                      schema = new Schema(implementation = classOf[RestMessage])
+                  )
+              )
+          ),
+          new ApiResponse(
+              responseCode = "400",
+              description = "Bad request",
+              content = Array(
+                  new Content(
+                      mediaType = "application/json",
+                      schema = new Schema(implementation = classOf[RestMessage])
+                  )
+              )
+          )
+      )
+  )
+  def xxxputDuplicateResult() = {}
+  val putDuplicateResult =
     logRequest("RestDuplicateResult.putDuplicateResult") {
       logResult("RestDuplicateResult.putDuplicateResult") {
         path( """[a-zA-Z0-9]+""".r ) { id =>
@@ -218,23 +343,29 @@ trait RestDuplicateResult extends HasActorSystem {
 
 
   @Path("/{matchId}")
-  @ApiOperation(value = "Delete a match by ID",
-                notes = "",
-                response=classOf[RestMessage],
-                nickname = "deleteDuplicateResultById",
-                httpMethod = "DELETE",
-                code=204)
-  @ApiImplicitParams(Array(
-    new ApiImplicitParam(name = "matchId",
-                         value = "ID of the match to delete",
-                         required = true,
-                         dataType = "string",
-                         paramType = "path")
-  ))
-  @ApiResponses(Array(
-    new ApiResponse(code = 204, message = "DuplicateResult match deleted." )
-  ))
-  def deleteDuplicateResult = path( """[a-zA-Z0-9]+""".r ) { id => {
+  @DELETE
+  @Operation(
+      summary = "Delete a match by ID",
+      operationId = "deleteDuplicateResultById",
+      parameters = Array(
+          new Parameter(
+              allowEmptyValue=false,
+              description="ID of the match to delete",
+              in=ParameterIn.PATH,
+              name="matchId",
+              required=true,
+              schema=new Schema(`type`="string")
+          )
+      ),
+      responses = Array(
+          new ApiResponse(
+              responseCode = "204",
+              description = "DuplicateResult match deleted.",
+          )
+      )
+  )
+  def xxxdeleteDuplicateResult() = {}
+  val deleteDuplicateResult = path( """[a-zA-Z0-9]+""".r ) { id => {
     delete {
         resourceDelete( store.select(id).delete() )
     } }

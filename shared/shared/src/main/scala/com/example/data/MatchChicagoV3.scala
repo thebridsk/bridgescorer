@@ -1,10 +1,11 @@
 package com.example.data
 
-import io.swagger.annotations._
 import scala.annotation.meta._
 
 import com.example.data.SystemTime.Timestamp
 import com.example.data.bridge.PlayerPosition
+import io.swagger.v3.oas.annotations.media.Schema
+import io.swagger.v3.oas.annotations.media.ArraySchema
 
 /**
  * A match of chicago.
@@ -26,23 +27,41 @@ import com.example.data.bridge.PlayerPosition
  * @param created
  * @param updated
  */
-@ApiModel(value="MatchChicago", description = "A chicago match")
+@Schema(
+    name="MatchChicago",
+    title = "MatchChicago - A chicago match",
+    description = "A chicago match, version 3 (current version)"
+)
 case class MatchChicagoV3(
-    @(ApiModelProperty @field)(value="The chicago ID", required=true)
+    @Schema(description="The chicago ID", required=true)
     id: String,
-    @(ApiModelProperty @field)(value="The players", required=true)
+    @ArraySchema(
+        minItems=4,
+        uniqueItems=true,
+        schema=new Schema(description="A player", implementation=classOf[String]),
+        arraySchema = new Schema( description = "All the players.", required=true)
+    )
     players: List[String],
-    @(ApiModelProperty @field)(value="The rounds", required=true)
+    @ArraySchema(
+        minItems=0,
+        uniqueItems=true,
+        schema=new Schema(description="A round", implementation=classOf[Round]),
+        arraySchema = new Schema( description = "All the rounds.", required=true)
+    )
     rounds: List[Round],
-    @(ApiModelProperty @field)(value="The number of games per round.", required=true)
+    @Schema(description="The number of games per round.", required=true, `type`="enum", allowableValues=Array("0","4","6","8"))
     gamesPerRound: Int,
-    @(ApiModelProperty @field)(value="Use simple rotation.", required=true)
+    @Schema(description="Use simple rotation.", required=true)
     simpleRotation: Boolean,
-    @(ApiModelProperty @field)(value="The creating date", required=true)
+    @Schema(description="The creating date, in milliseconds since 1/1/1970 UTC", required=true)
     created: Timestamp,
-    @(ApiModelProperty @field)(value="The last update date", required=true)
+    @Schema(description="The last update date, in milliseconds since 1/1/1970 UTC", required=true)
     updated: Timestamp,
-    @(ApiModelProperty @field)(value="best match in main store when importing, never written to store", required=false)
+    @Schema(
+        description="best match in main store when importing, never written to store",
+        required=false,
+        implementation=classOf[ChicagoBestMatch]
+    )
     bestMatch: Option[ChicagoBestMatch] = None
 ) extends VersionedInstance[ MatchChicago,MatchChicagoV3,String] {
 
@@ -144,7 +163,7 @@ case class MatchChicagoV3(
 
   }
 
-  @ApiModelProperty(hidden = true)
+  @Schema(hidden = true)
   def isConvertableToChicago5 = players.length==4 && rounds.length<2
 
   def playChicago5( extraPlayer: String ) = {
@@ -195,7 +214,7 @@ case class MatchChicagoV3(
   /**
    * Is this a quintet match
    */
-  @ApiModelProperty(hidden = true)
+  @Schema(hidden = true)
   def isQuintet() = {
     gamesPerRound == 1
   }
@@ -204,7 +223,7 @@ case class MatchChicagoV3(
    * Start a match of quintet.
    * This can only be done if gamesPerRound is still 0 AND no rounds have been started.
    */
-  @ApiModelProperty(hidden = true)
+  @Schema(hidden = true)
   def setQuintet( simple: Boolean ) = {
     if (gamesPerRound != 0 || !rounds.isEmpty) this
     setGamesPerRound(1).copy(simpleRotation=simple)
@@ -229,13 +248,31 @@ object MatchChicagoV3 {
   }
 }
 
-@ApiModel(description = "The best match in the main store")
+@Schema(
+    title = "ChicagoBestMatch - The best match in the main store",
+    description = "The best match in the main store"
+)
 case class ChicagoBestMatch(
-    @(ApiModelProperty @field)(value="How similar the matches are", required=true)
+    @Schema(
+        title = "How similar the matches are.",
+        description="The percentage of fields that are the same.",
+        required=true
+    )
     sameness: Double,
-    @(ApiModelProperty @field)(value="The ID of the MatchChicago in the main store that is the best match, none if no match", required=true)
+    @Schema(
+        title = "The ID of the best match.",
+        description="The ID of the MatchChicago in the main store that is the best match, none if no match",
+        required=true)
     id: Option[Id.MatchChicago],
-    @(ApiModelProperty @field)(value="The fields that are different", required=true)
+    @ArraySchema(
+        minItems=0,
+        uniqueItems=true,
+        schema=new Schema(
+            `type` = "string",
+            description="A field that is different",
+        ),
+        arraySchema = new Schema( description = "All the different fields.", required=false)
+    )
     differences: Option[List[String]]
 ) {
 

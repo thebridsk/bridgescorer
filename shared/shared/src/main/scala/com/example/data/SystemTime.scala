@@ -1,6 +1,9 @@
 package com.example.data
 
+import io.swagger.v3.oas.annotations.media.Schema
+
 object SystemTime {
+  @Schema(description="Timestamp in milliseconds since 1/1/1970")
   type Timestamp = Double
 
   private var timekeeper = new SystemTime {

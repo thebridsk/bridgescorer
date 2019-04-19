@@ -5,7 +5,6 @@ import com.example.data.Board
 import com.example.data.MatchDuplicate
 import akka.event.Logging
 import akka.event.Logging._
-import io.swagger.annotations._
 import akka.http.scaladsl.model.StatusCodes._
 import akka.http.scaladsl.server.Directives._
 import akka.stream.Materializer
@@ -28,6 +27,17 @@ import akka.http.scaladsl.server.UnsupportedWebSocketSubprotocolRejection
 import akka.util.ByteString
 import com.example.rest.Service
 import com.example.data.websocket.DuplexProtocol.LogEntryV2
+import io.swagger.v3.oas.annotations.parameters.RequestBody
+import io.swagger.v3.oas.annotations.media.Schema
+import io.swagger.v3.oas.annotations.media.Content
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.responses.ApiResponse
+import io.swagger.v3.oas.annotations.Hidden
+import io.swagger.v3.oas.annotations.tags.Tags
+import io.swagger.v3.oas.annotations.tags.Tag
+import javax.ws.rs.GET
+import javax.ws.rs.POST
+import io.swagger.v3.oas.annotations.Parameter
 
 /**
  * <p>
@@ -35,7 +45,7 @@ import com.example.data.websocket.DuplexProtocol.LogEntryV2
  * swagger annotations.
  */
 @Path( "" )
-@Api(tags= Array("Logging"), description = "logging operations.", produces="application/json")
+@Tags( Array( new Tag(name="Server")))
 trait LoggingService extends HasActorSystem with ClientLoggingService {
 
   private lazy val log = Logging(actorSystem, classOf[LoggingService])
@@ -45,7 +55,7 @@ trait LoggingService extends HasActorSystem with ClientLoggingService {
   /**
    * spray route for all the methods on this resource
    */
-  def loggingRoute = {
+  val loggingRoute = {
     extractClientIP { ip =>
       {
 //        log.debug(s"In loggingRoute from ${ip.toString()}")
@@ -69,18 +79,32 @@ trait LoggingService extends HasActorSystem with ClientLoggingService {
 
   import scala.language.postfixOps
 
-  @Path("/logger")
-  @ApiOperation(value = "Remote logging", notes = "", nickname = "callRemoteLogging",
-                httpMethod = "PUT", code=204, response=classOf[String], protocols="http, https")
-  @ApiImplicitParams(Array(
-    new ApiImplicitParam(name = "id", value = "the value 'entry'", required = true, dataType = "string", paramType = "path"),
-    new ApiImplicitParam(name = "body", value = "Log entry", dataTypeClass = classOf[LogEntryV2],
-                         required = true, paramType = "body")
-  ))
-  @ApiResponses(Array(
-    new ApiResponse(code = 204, message = "Accepted", response=classOf[Void] )
-  ))
-  def callRemoteLogging( @ApiParam(hidden=true) ips: String ) =
+  @Path("/logger/entry")
+  @POST
+  @Operation(
+      summary = "Remote logging",
+      operationId = "callRemoteLogging",
+      requestBody = new RequestBody(
+          description = "Log entry",
+          content = Array(
+              new Content(
+                  mediaType = "application/json",
+                  schema = new Schema(
+                      required = true,
+                      implementation = classOf[LogEntryV2]
+                  )
+              )
+          )
+      ),
+      responses = Array(
+          new ApiResponse(
+              responseCode = "204",
+              description = "Accepted",
+          )
+      )
+  )
+  def xxxcallRemoteLogging = {}
+  def callRemoteLogging( @Parameter(hidden=true) ips: String ) =
     path("entry") {
       (post | put) {
         import com.example.rest.UtilsPlayJson._
@@ -114,12 +138,20 @@ trait LoggingService extends HasActorSystem with ClientLoggingService {
     }
 
   @Path("/logger/ws")
-  @ApiOperation(value = "Remote logging", notes = "", nickname = "callRemoteLoggingWS",
-                protocols="ws, wss", httpMethod = "GET", code=101, response=classOf[String] )
-  @ApiResponses(Array(
-    new ApiResponse(code = 101, message = "Switching to websocket protocol", response=classOf[Void] )
-  ))
-  def callRemoteLoggingWS( @ApiParam(hidden=true) ips: String ) =
+  @GET
+  @Operation(
+//      protocols = "WS, WSS",
+      summary = "Remote logging, protocols: WS, WSS",
+      operationId = "callRemoteLoggingWS",
+      responses = Array(
+          new ApiResponse(
+              responseCode = "101",
+              description = "Switching to websocket protocol",
+          )
+      )
+  )
+  def xxxcallRemoteLoggingWS = {}
+  def callRemoteLoggingWS( @Parameter(hidden=true) ips: String ) =
     pathPrefix("ws") {
 //      logRequest(ips, logLevelForTracingRequestResponse) {
         routeLogging(ips)

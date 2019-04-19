@@ -3,7 +3,6 @@ package com.example.rest
 import com.example.data.Ack
 import akka.event.Logging
 import akka.event.Logging._
-import io.swagger.annotations._
 import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.server.Directives._
 import akka.stream.Materializer
@@ -14,6 +13,14 @@ import javax.ws.rs.Path
 import com.example.data.RestMessage
 import scala.util.Success
 import scala.util.Failure
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.responses.ApiResponse
+import io.swagger.v3.oas.annotations.media.Content
+import io.swagger.v3.oas.annotations.media.ArraySchema
+import io.swagger.v3.oas.annotations.media.Schema
+import io.swagger.v3.oas.annotations.tags.Tags
+import io.swagger.v3.oas.annotations.tags.Tag
+import javax.ws.rs.GET
 
 
 /**
@@ -23,7 +30,7 @@ import scala.util.Failure
  * swagger annotations.
  */
 @Path("/rest/names")
-@Api(tags= Array("Utility"), description = "Getting all known names.", produces="application/json", protocols="http, https")
+@Tags( Array( new Tag(name="Server")))
 trait RestNames extends HasActorSystem {
 
   /**
@@ -36,15 +43,33 @@ trait RestNames extends HasActorSystem {
   /**
    * spray route for all the methods on this resource
    */
-  def route = pathPrefix("names") {
+  val route = pathPrefix("names") {
     getNames
   }
 
-  @ApiOperation(value = "Get all known names", notes = "", response=classOf[String], responseContainer="List", nickname = "getNames", httpMethod = "GET")
-  @ApiResponses(Array(
-    new ApiResponse(code = 200, message = "The names as a list of string objects", response=classOf[String], responseContainer="List")
-  ))
-  def getNames = pathEndOrSingleSlash {
+  @GET
+  @Operation(
+      summary = "Get all known names",
+      operationId = "getNames",
+      responses = Array(
+          new ApiResponse(
+              responseCode = "200",
+              description = "The names as a list of string objects",
+              content = Array(
+                  new Content(
+                      mediaType = "application/json",
+                      array = new ArraySchema(
+                          minItems = 0,
+                          uniqueItems = true,
+                          schema = new Schema( implementation=classOf[String] )
+                      )
+                  )
+              )
+          )
+      )
+  )
+  def xxxgetNames() = {}
+  val getNames = pathEndOrSingleSlash {
     get {
       resourceList( restService.getAllNames() )
     }

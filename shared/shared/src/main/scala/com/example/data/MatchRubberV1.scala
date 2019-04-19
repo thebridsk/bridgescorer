@@ -1,34 +1,49 @@
 package com.example.data
 
-import io.swagger.annotations._
 import scala.annotation.meta._
 
 import com.example.data.SystemTime.Timestamp
+import io.swagger.v3.oas.annotations.media.Schema
+import io.swagger.v3.oas.annotations.media.ArraySchema
+import io.swagger.v3.oas.annotations.Hidden
 
 /**
  * @author werewolf
  */
-@ApiModel(value="MatchRubber", description = "A rubber bridge match")
+@Schema(
+    name="MatchRubber",
+    title="MatchRubber - A rubber bridge match",
+    description = "A rubber bridge match"
+)
 case class MatchRubberV1(
-    @(ApiModelProperty @field)(value="The round ID", required=true)
+    @Schema(description="The round ID", required=true)
     id: String,
-    @(ApiModelProperty @field)(value="The north player", required=true)
+    @Schema(description="The north player", required=true)
     north: String,
-    @(ApiModelProperty @field)(value="The south player", required=true)
+    @Schema(description="The south player", required=true)
     south: String,
-    @(ApiModelProperty @field)(value="The east player", required=true)
+    @Schema(description="The east player", required=true)
     east: String,
-    @(ApiModelProperty @field)(value="The west player", required=true)
+    @Schema(description="The west player", required=true)
     west: String,
-    @(ApiModelProperty @field)(value="The first dealer, N, S, E, W", required=true)
+    @Schema(description="The first dealer", required=true, `type`="enum", allowableValues=Array("N", "S", "E", "W"))
     dealerFirstHand: String,
-    @(ApiModelProperty @field)(value="The played hands in the round", required=true)
+    @ArraySchema(
+        minItems=0,
+        uniqueItems=false,
+        schema=new Schema(
+            description="A played hand",
+            required=true,
+            implementation=classOf[RubberHand]
+        ),
+        arraySchema = new Schema( description = "All the hands played in the rubber match.", required=true)
+    )
     hands: List[RubberHand],
-    @(ApiModelProperty @field)(value="when the match rubber was created", required=true)
+    @Schema(description="When the match rubber was created, in milliseconds since 1/1/1970 UTC", required=true)
     created: Timestamp,
-    @(ApiModelProperty @field)(value="when the match rubber was last updated", required=true)
+    @Schema(description="When the match rubber was last updated, in milliseconds since 1/1/1970 UTC", required=true)
     updated: Timestamp,
-    @(ApiModelProperty @field)(value="best match in main store when importing, never written to store", required=false)
+    @Schema(description="best match in main store when importing, never written to store", required=false, implementation=classOf[RubberBestMatch])
     bestMatch: Option[RubberBestMatch] = None
 ) extends VersionedInstance[MatchRubberV1,MatchRubberV1,String] {
 
@@ -69,6 +84,7 @@ case class MatchRubberV1(
   /**
    * @param pos the first dealer, N, S, E, W
    */
+  @Hidden
   def setFirstDealer( pos: String ) = copy( dealerFirstHand=pos, updated=SystemTime.currentTimeMillis())
 
   /**
@@ -141,13 +157,25 @@ object MatchRubberV1 {
   }
 }
 
-@ApiModel(description = "The best match in the main store")
+@Schema(
+    title = "RubberBestMatch - The best match in the main store",
+    description = "The best match in the main store."
+)
 case class RubberBestMatch(
-    @(ApiModelProperty @field)(value="How similar the matches are", required=true)
+    @Schema(description="How similar the matches are", required=true)
     sameness: Double,
-    @(ApiModelProperty @field)(value="The ID of the MatchRubber in the main store that is the best match, none if no match", required=true)
+    @Schema(description="The ID of the MatchRubber in the main store that is the best match, none if no match", required=true, `type`="string")
     id: Option[String],
-    @(ApiModelProperty @field)(value="The fields that are different", required=true)
+    @ArraySchema(
+        schema=new Schema(
+            `type`="string",
+            description="A field that is different"
+        ),
+        arraySchema=new Schema(
+            description="The fields that are different",
+            required=true
+        )
+    )
     differences: Option[List[String]]
 ) {
 
