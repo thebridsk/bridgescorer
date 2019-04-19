@@ -44,7 +44,7 @@ object Dependencies {
   lazy val vWsRsApi="2.1.5"            // https://github.com/eclipse-ee4j/jaxrs-api
   lazy val vAkkaHttpCors = "0.4.0"     // https://github.com/lomigmegard/akka-http-cors
 
-  lazy val vSwaggerUI = "3.22.0"       // https://www.npmjs.com/package/swagger-ui-dist
+  lazy val vSwaggerUI = "3.22.1"       // https://www.npmjs.com/package/swagger-ui-dist
   lazy val vScalajsdom = "0.9.6"       // http://mvnrepository.com/artifact/org.scala-js/scalajs-dom_sjs0.6_2.11
   lazy val vScalaJsReact = "1.4.1"     // http://mvnrepository.com/artifact/com.github.japgolly.scalajs-react/core_sjs0.6_2.11
   lazy val vScalaCss = "0.5.3"         // http://mvnrepository.com/artifact/com.github.japgolly.scalacss/core_sjs0.6_2.11
@@ -73,7 +73,7 @@ object Dependencies {
   lazy val vScalaArm = "2.0"         // http://mvnrepository.com/artifact/com.jsuereth/scala-arm_2.11
   lazy val vScallop = "3.2.0"        // http://mvnrepository.com/artifact/org.rogach/scallop_2.11
   lazy val vSlf4j = "1.7.26"         // https://mvnrepository.com/artifact/org.slf4j/slf4j-jdk14
-  lazy val vPlayJson = "2.7.2"       // https://mvnrepository.com/artifact/com.typesafe.play/play-json_2.12
+  lazy val vPlayJson = "2.7.3"       // https://mvnrepository.com/artifact/com.typesafe.play/play-json_2.12
 
   // jackson-module-scala usually updates a few days after the others are updated,
   // don't update until jackson-module-scala is updated
@@ -82,7 +82,7 @@ object Dependencies {
   // Selenium needs to be update to update to v23.0
   lazy val vGuavaJre = "27.1-jre"    // https://github.com/google/guava
 
-  lazy val vWebPack = "4.29.6"          // https://www.npmjs.com/package/webpack
+  lazy val vWebPack = "4.30.0"          // https://www.npmjs.com/package/webpack
 
   // sbt-scalajs-bundler does not support 12.0.0,
   // see https://github.com/scalacenter/scalajs-bundler/pull/265
@@ -111,7 +111,7 @@ object Dependencies {
 
   lazy val vGraphQL = "14.2.1"              // https://github.com/graphql/graphql-js
   lazy val vGraphiQL = "0.13.0"             // https://github.com/graphql/graphiql
-  lazy val vGraphQLVoyager = "1.0.0-rc.26"  // https://github.com/APIs-guru/graphql-voyager
+  lazy val vGraphQLVoyager = "1.0.0-rc.27"  // https://github.com/APIs-guru/graphql-voyager
   lazy val vMaterialUIcore = "3.9.3"        // https://www.npmjs.com/package/@material-ui/core
   lazy val vMaterialUIicons = "3.0.2"        // https://www.npmjs.com/package/@material-ui/icons
 
