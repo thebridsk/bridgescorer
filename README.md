@@ -2,6 +2,7 @@
 
 [![Build Status](https://travis-ci.org/thebridsk/bridgescorer.svg?branch=master)](https://travis-ci.org/thebridsk/bridgescorer)
 [![GitHub release](https://img.shields.io/github/release/thebridsk/bridgescorer.svg)](https://github.com/thebridsk/bridgescorer/releases/latest)
+[![ZenHub](https://img.shields.io/badge/Managed_with-ZenHub-5e60ba.svg)](https://app.zenhub.com/workspace/o/thebridsk/bridgescorer/boards)
 
 ## Demo
 
