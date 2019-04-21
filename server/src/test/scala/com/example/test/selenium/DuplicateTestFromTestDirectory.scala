@@ -241,53 +241,56 @@ class DuplicateTestFromTestDirectory extends FlatSpec with MustMatchers with Bef
     def compareResultLocal(): Unit = {
 
       TestServer.onlyRunWhenStartingServer(Some("Skipping comparing to database, no access to database")) { () =>
-        TestServer.backend.duplicates.syncStore.read(dupid.get) match {
-          case Right(played) =>
-            val n = played.copy(id=template.id)
-            try {
-              n.equalsIgnoreModifyTime(template,true) mustBe true
-              testlog.warning("Backend compare for MatchDuplicate "+dupid.get+" is ok")
-            } catch {
-              case e: Exception =>
-                testlog.severe(s"""The two MatchDuplicates for ${template.id} don't compare.\n  1 - Played\n  2 - Template""", e)
-                implicit val instanceJson = new BridgeServiceFileStoreConverters(true).matchDuplicateJson
-                val conv = new MatchDuplicateCacheStoreSupport(false)
-                FileIO.writeFileSafe("MatchDuplicate.PlayedJson"+conv.getWriteExtension(), conv.toJSON(played))
-                FileIO.writeFileSafe("MatchDuplicate.Template"+conv.getWriteExtension(), conv.toJSON(template))
-                throw e
-            }
-          case Left((statuscode,restMessage)) =>
-            fail("Did not find newly created MatchDuplicate in store, id="+dupid.get+": "+statuscode+" "+restMessage )
+        eventually {
+          TestServer.backend.duplicates.syncStore.read(dupid.get) match {
+            case Right(played) =>
+              val n = played.copy(id=template.id)
+              try {
+                n.equalsIgnoreModifyTime(template,true) mustBe true
+                testlog.warning("Backend compare for MatchDuplicate "+dupid.get+" is ok")
+              } catch {
+                case e: Exception =>
+                  testlog.severe(s"""The two MatchDuplicates for ${template.id} don't compare.\n  1 - Played\n  2 - Template""", e)
+                  implicit val instanceJson = new BridgeServiceFileStoreConverters(true).matchDuplicateJson
+                  val conv = new MatchDuplicateCacheStoreSupport(false)
+                  FileIO.writeFileSafe("MatchDuplicate.PlayedJson"+conv.getWriteExtension(), conv.toJSON(played))
+                  FileIO.writeFileSafe("MatchDuplicate.Template"+conv.getWriteExtension(), conv.toJSON(template))
+                  throw e
+              }
+            case Left((statuscode,restMessage)) =>
+              fail("Did not find newly created MatchDuplicate in store, id="+dupid.get+": "+statuscode+" "+restMessage )
+          }
         }
       }
     }
 
     def compareResultRest(): Unit = {
-
-      val url: URL = new URL(TestServer.hosturl+"v1/rest/duplicates/"+dupid.get)
-      testlog.fine("Rest URL for MatchDuplicate "+dupid.get+" is "+url)
-      val connection = url.openConnection()
-      val is = connection.getInputStream
-      try {
-        val json = Source.fromInputStream(is)(Codec.UTF8).mkString
-        import com.example.rest.UtilsPlayJson._
-
-        val played = readJson[MatchDuplicate](json)
-        val n = played.copy(id=template.id)
+      eventually {
+        val url: URL = new URL(TestServer.hosturl+"v1/rest/duplicates/"+dupid.get)
+        testlog.fine("Rest URL for MatchDuplicate "+dupid.get+" is "+url)
+        val connection = url.openConnection()
+        val is = connection.getInputStream
         try {
-          n.equalsIgnoreModifyTime(template,true) mustBe true
-          testlog.warning("Rest compare for MatchDuplicate "+dupid.get+" is ok")
-        } catch {
-          case e: Exception =>
-            testlog.severe(s"""The two MatchDuplicates for ${template.id} don't compare.\n  1 - Played\n  2 - Template""", e)
-            implicit val instanceJson = new BridgeServiceFileStoreConverters(true).matchDuplicateJson
-            val conv = new MatchDuplicateCacheStoreSupport(false)
-            FileIO.writeFileSafe("MatchDuplicate.PlayedJson"+conv.getWriteExtension(), conv.toJSON(played))
-            FileIO.writeFileSafe("MatchDuplicate.Template"+conv.getWriteExtension(), conv.toJSON(template))
-            throw e
+          val json = Source.fromInputStream(is)(Codec.UTF8).mkString
+          import com.example.rest.UtilsPlayJson._
+
+          val played = readJson[MatchDuplicate](json)
+          val n = played.copy(id=template.id)
+          try {
+            n.equalsIgnoreModifyTime(template,true) mustBe true
+            testlog.warning("Rest compare for MatchDuplicate "+dupid.get+" is ok")
+          } catch {
+            case e: Exception =>
+              testlog.severe(s"""The two MatchDuplicates for ${template.id} don't compare.\n  1 - Played\n  2 - Template""", e)
+              implicit val instanceJson = new BridgeServiceFileStoreConverters(true).matchDuplicateJson
+              val conv = new MatchDuplicateCacheStoreSupport(false)
+              FileIO.writeFileSafe("MatchDuplicate.PlayedJson"+conv.getWriteExtension(), conv.toJSON(played))
+              FileIO.writeFileSafe("MatchDuplicate.Template"+conv.getWriteExtension(), conv.toJSON(template))
+              throw e
+          }
+        } finally {
+          is.close()
         }
-      } finally {
-        is.close()
       }
     }
 
@@ -396,30 +399,32 @@ class DuplicateTestFromTestDirectory extends FlatSpec with MustMatchers with Bef
       val boardButton = "Board_"+hand.board
       val (north,south,east,west) = getPlayers(hand)
 
-      hand.hand match {
-        case Some(h) =>
-          val bh = BridgeHand(h)
-          val bid = boardIdToNumber(hand.board)
-          val board = boardSet.get.boards.find( b => b.id == bid).get
-          val nsvul = board.nsVul
-          val ewvul = board.ewVul
-          val nsteam = Id.teamIdToTeamNumber(hand.nsTeam)
-          val ewteam = Id.teamIdToTeamNumber(hand.ewTeam)
+      withClue(s"Going to board ${hand.board}") {
+        hand.hand match {
+          case Some(h) =>
+            val bh = BridgeHand(h)
+            val bid = boardIdToNumber(hand.board)
+            val board = boardSet.get.boards.find( b => b.id == bid).get
+            val nsvul = board.nsVul
+            val ewvul = board.ewVul
+            val nsteam = Id.teamIdToTeamNumber(hand.nsTeam)
+            val ewteam = Id.teamIdToTeamNumber(hand.ewTeam)
 
-          val hp = page.clickBoardButton(board.id)
+            val hp = page.clickBoardButton(board.id).validate
 
-          val r = hp.onlyEnterHand( bh.contractTricks,
-                                    bh.contractSuit,
-                                    bh.contractDoubled,
-                                    bh.declarer,
-                                    bh.madeOrDown,
-                                    bh.tricks,
-                                    false
-                                  )
+            val r = hp.onlyEnterHand( bh.contractTricks,
+                                      bh.contractSuit,
+                                      bh.contractDoubled,
+                                      bh.declarer,
+                                      bh.madeOrDown,
+                                      bh.tricks,
+                                      false
+                                    )
 
-          r
-        case None =>
-          page
+            r
+          case None =>
+            page
+        }
       }
 
     } catch {

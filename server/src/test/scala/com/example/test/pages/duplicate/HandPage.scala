@@ -113,7 +113,7 @@ class HandPage( implicit webDriver: WebDriver, pageCreated: SourcePosition ) ext
   }
 
   def enterHand(  table: Int, round: Int, board: Int, allhands: AllHandsInMatch, nsTeam: Team, ewTeam: Team )(implicit patienceConfig: PatienceConfig, pos: Position): BoardPage = {
-    withClue( s"""${pos.line} HandPage.onlyEnterHand table ${table} round ${round} board ${board} """ ) {
+    withClue( s"""${pos.line} HandPage.enterHand table ${table} round ${round} board ${board} """ ) {
       val b = allhands.getBoard(table, round, board)
       onlyEnterHand(table, round, board, allhands, nsTeam, ewTeam).checkOthers(b, allhands)
     }

@@ -187,7 +187,7 @@ object Controller {
         val resource = RestClientDuplicate.boardResource(dup.id).handResource(hand.board)
         resource.update(hand.id, hand).recordFailure().onComplete { t =>
           if (t.isFailure) {
-            Alerter.alert("Failure updating hand on server")
+            Alerter.alert(s"Failure updating hand on server\n${hand}")
           }
         }
       } else {

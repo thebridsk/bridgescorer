@@ -15,7 +15,8 @@ object MyNpm {
 
   val myNpmSettings = Seq(
     checkForNpmUpdates := {
-      val npmDirectory = (npmUpdate).value
+//      val npmDirectory = (npmUpdate).value       // this does a compile of project that uses npm
+      val npmDirectory = (crossTarget in npmUpdate).value   // this just gets the npm base dir for project
       val log = streams.value.log
       log.debug("npmDirectory is "+npmDirectory)
 

@@ -50,6 +50,7 @@ class FilePersistentSupport[VId,VType <: VersionedInstance[VType,VType,VId]](
    */
   def getAllIdsFromPersistent(): Set[VId] = {
     val pattern = (resourceName+"\\.([^.]+)\\..*").r
+//    val pattern = s"""${resourceName}\.([^.]+)\..*""".r
 
     val keys = directory.files.map { path => {
       path.name
