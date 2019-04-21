@@ -40,6 +40,10 @@ class Element( val underlying: WebElement )(implicit pos: Position, webdriver: W
       if (txt != null) txt else ""
     }
 
+    def scrollToElement = {
+      PageBrowser.scrollToElement(underlying)
+    }
+
     def click = {
       PageBrowser.scrollToElement(underlying)
       underlying.click()

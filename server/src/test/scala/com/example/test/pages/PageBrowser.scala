@@ -96,17 +96,13 @@ class ClickOn(implicit createdpos: SourcePosition) {
     PageBrowser.log.fine( s"Clicking on ${e}: patienceConfig=${patienceConfig}, pos=${pos.line}" )
 //    moveToElement(e)
     scrollToElement(e)
-    PageBrowser.log.fine( s"""Clicking on ${e}: text = ${e.text}""" )
+//    PageBrowser.log.fine( s"""Clicking on ${e}: text = ${e.text}""" )
     e.click()
   }
   def on( query: QueryBy )(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position): Unit = {
     val e = query.queryElement
     PageBrowser.log.fine( s"Clicking on element ${query} ${e}: patienceConfig=${patienceConfig}, pos=${pos.line}" )
-    scrollToElement(e.underlying)
-
-    val x = query.queryElement
-    PageBrowser.log.fine( s"""Clicking on element ${query} ${x}: text = ${x.text}""" )
-    x.click
+    on(e)
   }
 
   def moveToElement( e: WebElement )(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position): Unit = {

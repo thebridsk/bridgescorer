@@ -741,13 +741,12 @@ class TestDuplicateRestSpec extends FlatSpecLike with ScalatestRouteTest with Mu
 
   it should "return a list of duplicate summaries for GET requests to /v1/rest/duplicatesummaries" in {
     Get("/v1/rest/duplicatesummaries") ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
+      testlog.info( s"resp is: ${response}")
       handled mustBe true
       status mustBe OK
       mediaType mustBe MediaTypes.`application/json`
       val resp = responseAs[List[DuplicateSummary]]
       resp.length must be (3)
-
-//      println("resp is: "+resp)
     }
   }
 

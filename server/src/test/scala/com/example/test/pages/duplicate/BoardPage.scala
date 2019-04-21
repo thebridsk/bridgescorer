@@ -554,7 +554,11 @@ class BoardPage( implicit webDriver: WebDriver, pageCreated: SourcePosition ) ex
   }
 
   def clickUnplayedBoard( board: Int )(implicit patienceConfig: PatienceConfig, pos: Position) = eventually {
-    click on id(s"""Board_B${board}""")
+//    click on id(s"""Board_B${board}""")
+    import org.openqa.selenium.Keys
+    val b = findElemById(s"""Board_B${board}""")
+    b.scrollToElement
+    b.sendKeys(Keys.ENTER.toString())
     new HandPage
   }
 

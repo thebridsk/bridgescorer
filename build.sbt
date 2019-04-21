@@ -128,6 +128,27 @@ lazy val commonSettings = versionSetting ++ Seq(
   EclipseKeys.useProjectId := true
 )
 
+import XTimestamp._
+
+lazy val buildInfoCommonSettings = Seq(
+
+// this replaces 
+//
+//     buildInfoOptions += BuildInfoOption.BuildTime
+//
+// This uses a constant timestamp if it is a snapshot build
+// to mitigate a long build time.
+
+  buildInfoKeys ++= Seq[BuildInfoKey](
+    BuildInfoKey.action( "builtAtString" ) { 
+        string(isSnapshotVersion) 
+    },
+    BuildInfoKey.action( "builtAtMillis" ) { 
+        millis(isSnapshotVersion) 
+    }
+  )
+)
+
 lazy val Distribution = config("distribution") describedAs("tasks for creating a distribution.")
 
 // The prereqs for the integration tests,
@@ -194,6 +215,7 @@ val patternFastopt = """-fastopt[.-]|-jsconsole[.-]""".r
 lazy val bridgescorer: Project = project.in(file(".")).
   aggregate(sharedJVM, sharedJS, rotationJS, `bridgescorer-client`, `bridgescorer-server`, rotationJVM).
   dependsOn( `bridgescorer-server` % "test->test;compile->compile" ).
+  dependsOn( ProjectRef( uri("utilities"), "utilities" )).
   enablePlugins(BuildInfoPlugin).
   enablePlugins(WebScalaJSBundlerPlugin).
   settings(commonSettings: _*).
@@ -206,12 +228,12 @@ lazy val bridgescorer: Project = project.in(file(".")).
     publishLocal := {},
     resolvers += Resolver.bintrayRepo("scalaz", "releases"),
 
-    buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion),
-    buildInfoPackage := "com.example.version",
-    buildInfoObject := "Version2",
+    buildInfoRenderFactory := PropertiesBuildInfoRenderer.apply,
+    buildInfoPackage := "com.example.bridgescorer.version",
+    buildInfoObject := "VersionBridgeScorer",
     buildInfoUsePackageAsPath := true,
+    buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion),
     buildInfoOptions += BuildInfoOption.BuildTime,
-    buildInfoOptions += BuildInfoOption.ToJson,
 
     aggregate in assembly := false,
     aggregate in webassembly := false,
@@ -579,7 +601,7 @@ lazy val `bridgescorer-shared` = crossProject(JSPlatform, JVMPlatform).in(file("
     buildInfoPackage := "com.example.version",
     buildInfoObject := "VersionShared",
     buildInfoUsePackageAsPath := true,
-    buildInfoOptions += BuildInfoOption.BuildTime,
+//    buildInfoOptions += BuildInfoOption.BuildTime,
     buildInfoOptions += BuildInfoOption.ToJson,
 
     libraryDependencies ++= bridgeScorerDeps.value,
@@ -599,6 +621,7 @@ lazy val `bridgescorer-shared` = crossProject(JSPlatform, JVMPlatform).in(file("
     )
 
   ).
+  settings( buildInfoCommonSettings: _* ).
   jvmSettings(
     libraryDependencies ++= bridgeScorerSharedJVMDeps.value
   ).
@@ -630,7 +653,7 @@ lazy val `bridgescorer-rotation` = crossProject(JSPlatform, JVMPlatform).in(file
     buildInfoPackage := "com.example.version",
     buildInfoObject := "VersionRotation",
     buildInfoUsePackageAsPath := true,
-    buildInfoOptions += BuildInfoOption.BuildTime,
+//    buildInfoOptions += BuildInfoOption.BuildTime,
     buildInfoOptions += BuildInfoOption.ToJson,
 
     libraryDependencies ++= bridgeScorerRotationDeps.value,
@@ -649,6 +672,7 @@ lazy val `bridgescorer-rotation` = crossProject(JSPlatform, JVMPlatform).in(file
     )
 
   ).
+  settings( buildInfoCommonSettings: _* ).
   jvmSettings(
 
   ).
@@ -706,7 +730,7 @@ lazy val `bridgescorer-client` = project.in(file("client")).
     buildInfoPackage := "com.example.version",
     buildInfoObject := "VersionClient",
     buildInfoUsePackageAsPath := true,
-    buildInfoOptions += BuildInfoOption.BuildTime,
+//    buildInfoOptions += BuildInfoOption.BuildTime,
     buildInfoOptions += BuildInfoOption.ToJson,
 
     // This gets rid of the jetty check which is required for the sbt runtime
@@ -809,7 +833,8 @@ lazy val `bridgescorer-client` = project.in(file("client")).
   settings(
     inConfig(Compile)(MyNpm.myNpmSettings),
     inConfig(Test)(MyNpm.myNpmSettings)
-  )
+  ).
+  settings( buildInfoCommonSettings: _* )
 
 val patternVersion = """(\d+(?:\.\d+)*(?:-SNAPSHOT)?)-.*""".r
 
@@ -892,7 +917,7 @@ lazy val `bridgescorer-server`: Project = project.in(file("server")).
     buildInfoPackage := "com.example.version",
     buildInfoObject := "VersionServer",
     buildInfoUsePackageAsPath := true,
-    buildInfoOptions += BuildInfoOption.BuildTime,
+//    buildInfoOptions += BuildInfoOption.BuildTime,
     buildInfoOptions += BuildInfoOption.ToJson,
 
     // shebang the jar file.  7z and jar will no longer see it as a valid zip file.
@@ -1274,7 +1299,8 @@ lazy val `bridgescorer-server`: Project = project.in(file("server")).
                          disttests in Distribution,
                          mypublishcopy in Distribution
                         ).value
-  )
+  ).
+  settings( buildInfoCommonSettings: _* )
 
 alltests := Def.sequential(
                        mydist in Distribution in utilities,
