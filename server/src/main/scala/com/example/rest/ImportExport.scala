@@ -49,6 +49,7 @@ import io.swagger.v3.oas.annotations.tags.Tags
 import io.swagger.v3.oas.annotations.tags.Tag
 import javax.ws.rs.GET
 import javax.ws.rs.POST
+import com.example.CollectLogs
 
 object ImportExport {
   val log = Logger[ImportExport]
@@ -383,12 +384,23 @@ trait ImportExport {
                           {
                             val nameInZip = "version.txt"
                             val ze = new ZipEntry(nameInZip)
-                            println(s"Adding version info => ${ze.getName}")
+                            log.fine(s"Adding version info => ${ze.getName}")
                             zip.putNextEntry(ze)
                             val v = s"""${VersionServer.toString}\n${VersionShared.toString}\n${VersionUtilities.toString}"""
                             zip.write(v.getBytes("UTF8"))
                             zip.closeEntry()
                           }
+                          CollectLogs.copyResourceToZip(
+                              "com/example/bridgescorer/version/VersionBridgeScorer.properties",
+                              "VersionBridgeScorer.properties",
+                              zip
+                          )
+
+                          CollectLogs.copyResourceToZip(
+                              "com/example/utilities/version/VersionUtilities.properties",
+                              "VersionUtilities.properties",
+                              zip
+                          )
 
                           restService.exportToZip(zip,None).onComplete { tr =>
                             tr match {
@@ -398,7 +410,7 @@ trait ImportExport {
                                     zip.putNextEntry( new ZipEntry("logs/"+f.name) )
                                     import _root_.resource._
                                     for ( in <- managed(new FileInputStream( f.jfile )) ) {
-                                      copy(in, zip)
+                                      CollectLogs.copy(in, zip)
                                     }
                                   }
                                 }
@@ -430,17 +442,5 @@ trait ImportExport {
                       )
       )
     }
-  }
-
-  private def copy( in: InputStream, out: OutputStream ) = {
-    val b = new Array[Byte]( 1024*1024 )
-
-    var count: Long = 0
-    var rlen = 0
-    while ( { rlen=in.read(b); rlen } > 0 ) {
-      out.write(b, 0, rlen)
-      count += rlen
-    }
-    count
   }
 }

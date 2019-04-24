@@ -93,6 +93,17 @@ The server should NOT be running.
         zip.write(v.getBytes("UTF8"))
         zip.closeEntry()
       }
+      CollectLogs.copyResourceToZip(
+          "com/example/bridgescorer/version/VersionBridgeScorer.properties",
+          "VersionBridgeScorer.properties",
+          zip
+      )
+
+      CollectLogs.copyResourceToZip(
+          "com/example/utilities/version/VersionUtilities.properties",
+          "VersionUtilities.properties",
+          zip
+      )
       logfiles.foreach { file =>
         val nameInZip = file.name.toString
         val ze = new ZipEntry("logs/"+nameInZip)
@@ -111,6 +122,40 @@ The server should NOT be running.
         zip.closeEntry()
       }
     }
+  }
+
+  /**
+   * Copy the specified resource into the zip file with the given name.
+   * If resource does not exist, then this is a noop.
+   * @param resource the resource to load
+   * @param nameInZip the name of the file in the zipfile.
+   * @param zip the zip output stream
+   */
+  def copyResourceToZip( resource: String, nameInZip: String, zip: ZipOutputStream ) = {
+    val cl = getClass.getClassLoader
+    val instream = cl.getResourceAsStream(resource)
+    if (instream != null) {
+      import _root_.resource._
+      for ( in <- managed(instream) ) {
+        val ze = new ZipEntry(nameInZip)
+        logger.fine(s"Adding version info => ${ze.getName}")
+        zip.putNextEntry(ze)
+        copy(in,zip)
+        zip.closeEntry()
+      }
+    }
+  }
+
+  def copy( in: InputStream, out: OutputStream ) = {
+    val b = new Array[Byte]( 1024*1024 )
+
+    var count: Long = 0
+    var rlen = 0
+    while ( { rlen=in.read(b); rlen } > 0 ) {
+      out.write(b, 0, rlen)
+      count += rlen
+    }
+    count
   }
 
 }
