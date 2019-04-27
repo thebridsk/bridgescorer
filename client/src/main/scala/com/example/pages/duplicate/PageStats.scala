@@ -310,7 +310,7 @@ object PageStatsInternal {
             <.div(
               baseStyles.divFooterLeft,
               AppButton( "ShowPeopleResults",
-                         "Show People Results",
+                         "Show Player Results",
                          BaseStyles.highlight(selected = state.showPeopleTable ),
                          ^.onClick-->toggleShowPeopleTable
                        ),
@@ -320,7 +320,7 @@ object PageStatsInternal {
                          ^.onClick-->toggleShowPairs
                        ),
               AppButton( "ShowPeopleDetails",
-                         "Show People Hand Results",
+                         "Show Player Hand Results",
                          BaseStyles.highlight(selected = state.showPeopleTableDetail ),
                          ^.onClick-->toggleShowPeopleTableDetail
                        ),
