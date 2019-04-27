@@ -360,7 +360,7 @@ object Controller {
     if (AjaxResult.isEnabled.getOrElse(false)) {
       DuplicateStore.getId() match {
         case Some(mdid) =>
-          if (restart || mdid != dupid) {
+          if (restart || mdid != dupid || eventSource.isEmpty) {
             logger.info(s"""Switching MatchDuplicate monitor to ${dupid} from ${mdid}""" )
             if (useSSEFromServer) {
               BridgeDispatcher.startDuplicateMatch(dupid)

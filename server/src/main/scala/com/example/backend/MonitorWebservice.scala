@@ -210,7 +210,15 @@ class MonitorWebservice(totallyMissingResourceHandler: RejectionHandler)(implici
   def sseSource( sender: RemoteAddress, id: Id.MatchDuplicate): Source[ServerSentEvent, _] = {
     monitor.monitorDuplicateSource( sender, id ).
       map( msg => ServerSentEvent( DuplexProtocol.toString(msg) ) ).
-      keepAlive(10.second, () => ServerSentEvent.heartbeat)
+      keepAlive(10.second, () => ServerSentEvent.heartbeat).
+      map { s =>
+        val ip = sender.toIP match {
+          case Some(x) => s"""${x.ip}:${x.port}"""
+          case None => "Unknown"
+        }
+        log.debug(s"""Sending ServerSentEvent to ${ip}: ${s}""")
+        s
+      }
   }
 
 
