@@ -31,6 +31,9 @@ import scala.reflect.ClassTag
 import akka.http.scaladsl.unmarshalling.Unmarshal
 import scala.concurrent.Await
 import akka.http.scaladsl.util.FastFuture._
+import com.example.backend.resource.FileIO
+import java.io.File
+import org.scalactic.source.Position
 
 class SwaggerSpec extends FlatSpec with ScalatestRouteTest with MustMatchers with MyService {
   val restService = new BridgeServiceTesting
@@ -171,6 +174,7 @@ class SwaggerSpec extends FlatSpec with ScalatestRouteTest with MustMatchers wit
     Get("/v1/api-docs/swagger.yaml") ~> addHeader(`Accept-Encoding`(HttpEncodings.gzip)) ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
       status mustBe OK
       val swagger = httpResponseAs[String](decodeResponse(response))
+      FileIO.writeFile(new File("target/swagger.yaml"), swagger)
       swagger must include regex "(?s)Scorekeeper for a Duplicate bridge, Chicago bridge, and Rubber bridge\\."
       withClue("""Found Function1[RequestContextFutureRouteResult],
                  |most likely because an @ApiOperation annotation is missing response attribute
@@ -182,5 +186,28 @@ class SwaggerSpec extends FlatSpec with ScalatestRouteTest with MustMatchers wit
         swagger must not include ("""Function1RequestContextFutureRouteResult""")
       }
     }
+  }
+
+  private object ItVerbStringTest {
+    // can't extend AnyVal, ItVerbString is a nested class of trait FlatSpecLike
+    implicit class ItVerbStringWrapper( val itVerb: ItVerbString ) {
+      def whenFileExists(testFun: => Any /* Assertion */)( implicit pos: Position ): Unit = {
+        if (srcfile.isFile()) itVerb.in(testFun)
+        else itVerb.ignore(testFun)
+      }
+    }
+  }
+
+  import ItVerbStringTest._
+
+  val srcfile = new File("src/main/public/apidocs.html")
+
+  it should "find /v1/api-docs/swagger.yaml in apidocs.html and replace it with /public/swagger.yaml" whenFileExists {
+
+    val destfile = new File("target/apidocs.html")
+    val apidocs = FileIO.readFile(srcfile)
+    val newapidocs = apidocs.replaceAll("/v1/api-docs/swagger.yaml","/public/swagger.yaml")
+    apidocs must not be (newapidocs)
+    FileIO.writeFile(destfile, newapidocs)
   }
 }
