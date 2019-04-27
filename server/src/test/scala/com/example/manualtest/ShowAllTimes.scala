@@ -39,7 +39,7 @@ object ShowAllTimes extends Main {
     val patternDuplicate = """.*/MatchDuplicate\.[^/]*"""r
     val patternRubber = """.*/MatchRubber\.[^/]*"""r
 
-    optionFilename() match {
+    optionFilename().replace('\\', '/') match {
       case patternChicago() =>
         val (good,chi) = new MatchChicagoCacheStoreSupport(true).fromJSON(json)
         showTimestamps(chi)
