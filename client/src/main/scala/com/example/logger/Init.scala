@@ -22,6 +22,7 @@ import com.example.rest2.AjaxResult
 import com.example.Bridge
 import utils.logging.Filter
 import utils.logging.TraceMsg
+import org.scalajs.dom.raw.XMLHttpRequest
 
 /**
  * Logging manager.
@@ -264,4 +265,8 @@ object Init {
     }
   }
 
+  def addClientId( req: XMLHttpRequest ): XMLHttpRequest = {
+    clientid.map( x => req.setRequestHeader("x-clientid", x) )
+    req
+  }
 }
