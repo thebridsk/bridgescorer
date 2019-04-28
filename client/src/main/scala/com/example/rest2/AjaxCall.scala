@@ -127,7 +127,7 @@ object AjaxCall extends IAjaxCall {
     req.timeout = timeout.toMillis.toDouble
     req.withCredentials = withCredentials
     headers.foreach(x => req.setRequestHeader(x._1, x._2))
-    Init.clientid.map( x => req.setRequestHeader("x-clientid", x) )
+    Init.addClientId(req)
     if (data == null)
       req.send()
     else
