@@ -253,7 +253,7 @@ object ViewPairsMadeDownTableInternal {
                 Some("GoodResult"),
                 additionalRows = Some(additionalRows _),
                 totalRows = totals,
-                caption = Some( TagMod(if (props.showPairs) "Pairs Hand Results" else "People Hand Results") )
+                caption = Some( TagMod(if (props.showPairs) "Pairs Hand Results" else "Player Hand Results") )
             )
           )
         case None =>

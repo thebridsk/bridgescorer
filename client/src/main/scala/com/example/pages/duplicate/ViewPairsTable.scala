@@ -363,7 +363,7 @@ object ViewPairsTableInternal {
                 additionalRows = Some(additionalRows _),
                 caption = Some(
                   TagMod(
-                    if (props.showPairs) "Pairs Results" else "People Results",
+                    if (props.showPairs) "Pairs Results" else "Player Results",
                     " ",
                     AppButton(
                         "CalcPlayed",
