@@ -143,6 +143,7 @@ object PageTableInternal {
     val willUnmount = Callback {
       logger.info("PageTable.willUnmount")
       DuplicateStore.removeChangeListener(storeCallback)
+      Controller.delayStop()
     }
   }
 

@@ -24,12 +24,14 @@ trait ServerHandler {
     //               val cause: Throwable = null
     //             )( val args: Any* )(implicit val pos: Position)
 
+    val id = Init.clientid.getOrElse("?")
+
     LogEntryV2( posToString(tm.pos),
                 tm.logger,
                 tm.time,
                 tm.level.short,
                 url(),
-                tm.message,
+                s"""(${id}): ${Option(tm.message).getOrElse("")}""",
                 exceptionToString(tm.cause),
                 tm.args.map{o=>o.toString}.toList,
                 Init.clientid

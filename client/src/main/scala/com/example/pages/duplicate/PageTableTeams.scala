@@ -870,6 +870,7 @@ object PageTableTeamsInternal {
     val willUnmount = Callback {
       logger.info("PageTableTeams.willUnmount")
       DuplicateStore.removeChangeListener(storeCallback)
+      Controller.delayStop()
     }
   }
 

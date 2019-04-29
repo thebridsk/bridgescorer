@@ -204,6 +204,7 @@ object ViewTableInternal {
     val willUnmount = Callback {
       logger.info("ViewTable.willUnmount")
       DuplicateStore.removeChangeListener(storeCallback)
+      Controller.delayStop()
     }
   }
 

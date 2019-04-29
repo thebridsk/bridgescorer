@@ -392,6 +392,7 @@ object PageScoreboardInternal {
     val willUnmount = CallbackTo {
       logger.info("PageScoreboard.willUnmount")
       DuplicateStore.removeChangeListener(storeCallback)
+      Controller.delayStop()
     }
   }
 

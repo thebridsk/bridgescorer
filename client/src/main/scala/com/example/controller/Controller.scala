@@ -360,6 +360,7 @@ object Controller {
     if (AjaxResult.isEnabled.getOrElse(false)) {
       DuplicateStore.getId() match {
         case Some(mdid) =>
+          cancelStop()
           if (restart || mdid != dupid || eventSource.isEmpty) {
             logger.info(s"""Switching MatchDuplicate monitor to ${dupid} from ${mdid}""" )
             if (useSSEFromServer) {
@@ -402,10 +403,37 @@ object Controller {
 
   }
 
+  private var delayHandle: Option[SetTimeoutHandle] = None
+
+  def cancelStop() = {
+      import scala.scalajs.js.timers._
+
+      logger.fine(s"CancelStop: Cancelling stop: ${DuplicateStore.getId()}")
+
+      delayHandle.foreach( h => clearTimeout(h))
+      delayHandle = None
+  }
+
+  /**
+   * In 30 seconds stop monitoring a duplicate match
+   */
+  def delayStop() = {
+      import scala.scalajs.js.timers._
+
+      logger.fine(s"DelayStop: Requesting stop monitoring duplicate match on server in 30 seconds: ${DuplicateStore.getId()}")
+      delayHandle.foreach( h => clearTimeout(h))     // cancel old timer if it exists
+      delayHandle = Some( setTimeout(30000) { // note the absence of () =>
+        delayHandle = None
+        logger.fine(s"DelayStop: Stopping monitoring duplicate match on server: ${DuplicateStore.getId()}")
+        stop()
+      })
+  }
+
   /**
    * Stop monitoring a duplicate match
    */
   def stop() = {
+    logger.fine(s"Controller.stop ${DuplicateStore.getId()}")
     if (useSSEFromServer) {
       clearESTimeout()
       clearESRestartTimeout()

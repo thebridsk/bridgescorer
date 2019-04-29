@@ -157,6 +157,7 @@ object PageAllBoardsInternal {
     val willUnmount = CallbackTo {
       logger.info("PageAllBoards.willUnmount")
       DuplicateStore.removeChangeListener(storeCallback)
+      Controller.delayStop()
     }
   }
 
