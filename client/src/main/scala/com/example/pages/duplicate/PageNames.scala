@@ -226,6 +226,7 @@ object PageNamesInternal {
     val willUnmount = Callback {
       logger.info("PageNames.willUnmount")
       DuplicateStore.removeChangeListener(storeCallback)
+      Controller.delayStop()
     }
   }
 

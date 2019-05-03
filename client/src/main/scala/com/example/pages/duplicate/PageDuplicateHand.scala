@@ -224,6 +224,7 @@ object PageDuplicateHandInternal {
     val willUnmount = CallbackTo {
       logger.info("PageDuplicateHand.willUnmount")
       DuplicateStore.removeChangeListener(storeCallback)
+      Controller.delayStop()
     }
   }
 
