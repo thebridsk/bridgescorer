@@ -213,7 +213,7 @@ val patternSourceDir = """^[0-9a-f]{20}$""".r
 val patternFastopt = """-fastopt[.-]|-jsconsole[.-]""".r
 
 lazy val bridgescorer: Project = project.in(file(".")).
-  aggregate(sharedJVM, sharedJS, rotationJS, `bridgescorer-client`, `bridgescorer-server`, rotationJVM).
+  aggregate(sharedJVM, sharedJS, rotationJS, materialui, `bridgescorer-client`, `bridgescorer-server`, rotationJVM).
   dependsOn( `bridgescorer-server` % "test->test;compile->compile" ).
   dependsOn( ProjectRef( uri("utilities"), "utilities" )).
   enablePlugins(BuildInfoPlugin).
@@ -705,11 +705,18 @@ val clientUnitTests = "com.example.test.MyTest"::
                       "com.example.test.TestColor"::
                       Nil
 
+lazy val materialui = project.in(file("materialui")).
+  enablePlugins(ScalaJSPlugin).
+  settings(commonSettings: _*).
+  settings(
+    libraryDependencies ++= materialUiDeps.value,
+  )
+
 lazy val `bridgescorer-client` = project.in(file("client")).
   enablePlugins(BuildInfoPlugin).
   enablePlugins(ScalaJSPlugin).
   enablePlugins(ScalaJSBundlerPlugin).
-  dependsOn( sharedJS, rotationJS ).
+  dependsOn( sharedJS, rotationJS, materialui ).
   dependsOn( ProjectRef( uri("utilities"), "utilities-js" )).
   settings(commonSettings: _*).
   settings(

@@ -7,16 +7,14 @@ import com.example.materialui.MuiAppBar
 import com.example.materialui.Position
 import com.example.materialui.MuiToolbar
 import com.example.materialui.MuiIconButton
-import com.example.materialui.icons.MuiMenuIcon
+import com.example.materialui.icons.MuiIcons
 import com.example.materialui.MuiTypography
 import com.example.materialui.ColorVariant
 import com.example.materialui.TextVariant
 import com.example.materialui.TextColor
-import com.example.materialui.icons.MuiHomeIcon
 import org.scalajs.dom.raw.Element
 import org.scalajs.dom.raw.Node
 import utils.logging.Logger
-import com.example.materialui.icons.MuiHelpIcon
 import japgolly.scalajs.react.vdom.HtmlStyles
 import com.example.materialui.component.MyMenu
 import com.example.materialui.MuiMenuItem
@@ -30,7 +28,6 @@ import com.example.routes.AppRouter.Home
 import org.scalajs.dom.experimental.URL
 import com.example.Bridge
 import com.example.react.Utils._
-import com.example.materialui.icons.MuiMoreVertIcon
 import com.example.routes.AppRouter.GraphQLAppPage
 import com.example.routes.AppRouter.GraphiQLView
 import com.example.routes.AppRouter.VoyagerView
@@ -161,7 +158,7 @@ object BridgeAppBarInternal {
                             onClick = handleHelpGotoPageClick(props.helpurl) _,
                             color=ColorVariant.inherit
                         )(
-                            MuiHelpIcon()()
+                            MuiIcons.Help()()
                         ),
 
           MuiIconButton(
@@ -169,7 +166,7 @@ object BridgeAppBarInternal {
                             onClick = handleMoreClick _,
                             color=ColorVariant.inherit
                         )(
-                            MuiMoreVertIcon()()
+                            MuiIcons.MoreVert()()
                         )
         )
 
@@ -204,7 +201,7 @@ object BridgeAppBarInternal {
                     onClick = props.handleMainClick,
                     color=ColorVariant.inherit
                 )(
-                  MuiMenuIcon()()
+                  MuiIcons.Menu()()
                 ),
                 if (props.showHomeButton) {
                   MuiIconButton(
@@ -212,7 +209,7 @@ object BridgeAppBarInternal {
                       onClick = gotoHomePage _,
                       color=ColorVariant.inherit
                   )(
-                      MuiHomeIcon()()
+                      MuiIcons.Home()()
                   )
                 } else {
                   TagMod.empty

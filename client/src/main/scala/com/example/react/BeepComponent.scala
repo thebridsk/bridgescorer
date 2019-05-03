@@ -11,7 +11,7 @@ import com.example.react.AppButton
 import utils.logging.Logger
 import com.example.pages.BaseStyles.baseStyles
 import com.example.pages.BaseStyles
-import com.example.materialui.icons.MuiCheckIcon
+import com.example.materialui.icons.MuiIcons
 import com.example.materialui.MuiMenuItem
 import com.example.materialui.icons.SvgColor
 
@@ -82,11 +82,16 @@ object BeepComponent {
     )(
         "Beep",
         {
-          val color = if (playEnabled) SvgColor.inherit else SvgColor.disabled
-          MuiCheckIcon(
-              color=color,
-              classes = js.Dictionary("root" -> "mainMenuItemIcon")
-          )()
+//          val color = if (playEnabled) SvgColor.inherit else SvgColor.disabled
+//          MuiIcons.Check(
+//              color=color,
+//              classes = js.Dictionary("root" -> "mainMenuItemIcon")
+//          )()
+          if (playEnabled) {
+            MuiIcons.CheckBox()()
+          } else {
+            MuiIcons.CheckBoxOutlineBlank()()
+          }
         }
     )
   }

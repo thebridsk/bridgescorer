@@ -6,17 +6,13 @@ import japgolly.scalajs.react._
 import com.example.materialui.MuiAppBar
 import com.example.materialui.Position
 import com.example.materialui.MuiToolbar
-import com.example.materialui.MuiIconButton
-import com.example.materialui.icons.MuiMenuIcon
 import com.example.materialui.MuiTypography
 import com.example.materialui.ColorVariant
 import com.example.materialui.TextVariant
 import com.example.materialui.TextColor
-import com.example.materialui.icons.MuiHomeIcon
 import org.scalajs.dom.raw.Element
 import org.scalajs.dom.raw.Node
 import utils.logging.Logger
-import com.example.materialui.icons.MuiHelpIcon
 import japgolly.scalajs.react.vdom.HtmlStyles
 import com.example.materialui.component.MyMenu
 import com.example.materialui.MuiMenuItem
@@ -31,7 +27,6 @@ import com.example.pages.BaseStyles
 import com.example.data.Id
 import com.example.pages.BridgeAppBar
 import com.example.pages.HomePage
-import com.example.materialui.icons.MuiCheckIcon
 import com.example.materialui.icons.SvgColor
 
 /**

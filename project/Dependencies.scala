@@ -239,6 +239,14 @@ object Dependencies {
 
   val bridgeScorerSharedJVMDeps = Def.setting( jacksons )
 
+  val materialUiDeps = Def.setting(Seq(
+
+      "com.github.japgolly.scalajs-react" %%% "core"          % vScalaJsReact withSources(),
+      "com.github.japgolly.scalajs-react" %%% "extra"         % vScalaJsReact withSources(),
+
+      "com.github.japgolly.scalajs-react" %%% "test" % vScalaJsReact % "test" withSources()
+      ))
+
   val bridgeScorerClientDeps = Def.setting(Seq(
 
       "org.scala-js" %%%  "scalajs-dom"    % vScalajsdom withSources(),

@@ -7,16 +7,14 @@ import com.example.materialui.MuiAppBar
 import com.example.materialui.Position
 import com.example.materialui.MuiToolbar
 import com.example.materialui.MuiIconButton
-import com.example.materialui.icons.MuiMenuIcon
+import com.example.materialui.icons.MuiIcons
 import com.example.materialui.MuiTypography
 import com.example.materialui.ColorVariant
 import com.example.materialui.TextVariant
 import com.example.materialui.TextColor
-import com.example.materialui.icons.MuiHomeIcon
 import org.scalajs.dom.raw.Element
 import org.scalajs.dom.raw.Node
 import utils.logging.Logger
-import com.example.materialui.icons.MuiHelpIcon
 import japgolly.scalajs.react.vdom.HtmlStyles
 import com.example.materialui.component.MyMenu
 import com.example.materialui.MuiMenuItem
@@ -38,8 +36,6 @@ import com.example.pages.rubber.RubberModule.PlayRubber
 import com.example.pages.duplicate.DuplicateModule.PlayDuplicate
 import com.example.pages.duplicate.DuplicateRouter.SummaryView
 import com.example.routes.AppRouter.ColorView
-import com.example.materialui.icons.MuiChevronRightIcon
-import com.example.materialui.icons.MuiCheckIcon
 import com.example.Bridge
 import com.example.materialui.PopperPlacement
 import com.example.routes.AppRouter.ShowDuplicateHand
@@ -227,16 +223,16 @@ object RootBridgeAppBarInternal {
                     classes = js.Dictionary("root" -> "mainMenuItem")
                 )(
                     "Test Hands",
-                    MuiChevronRightIcon(
+                    MuiIcons.ChevronRight(
                         classes = js.Dictionary("root" -> "mainMenuItemIcon")
                     )()
                 ),
                 {
                   val path = GotoPage.currentURL
-                  val (newp,color) = if (path.indexOf("indexNoScale") >= 0) {
-                    ("""index.html""", SvgColor.disabled)
+                  val (newp,color,check) = if (path.indexOf("indexNoScale") >= 0) {
+                    ("""index.html""", SvgColor.disabled, false)
                   } else {
-                    ("""indexNoScale.html""", SvgColor.inherit)
+                    ("""indexNoScale.html""", SvgColor.inherit, true)
                   }
                   val newpath = if (path.endsWith(".gz")) {
                     s"""${newp}.gz"""
@@ -250,10 +246,15 @@ object RootBridgeAppBarInternal {
 
                   )(
                       "Scaling ",
-                      MuiCheckIcon(
-                          color=color,
-                          classes = js.Dictionary("root" -> "mainMenuItemIcon")
-                      )()
+//                      MuiIcons.Check(
+//                          color=color,
+//                          classes = js.Dictionary("root" -> "mainMenuItemIcon")
+//                      )()
+                      if (check) {
+                        MuiIcons.CheckBox()()
+                      } else {
+                        MuiIcons.CheckBoxOutlineBlank()()
+                      }
                   )
                 },
                 MuiMenuItem(
@@ -264,11 +265,16 @@ object RootBridgeAppBarInternal {
                 )(
                     "Allow Select",
                     {
-                      val color = if (state.userSelect) SvgColor.inherit else SvgColor.disabled
-                      MuiCheckIcon(
-                          color=color,
-                          classes = js.Dictionary("root" -> "mainMenuItemIcon")
-                      )()
+//                      val color = if (state.userSelect) SvgColor.inherit else SvgColor.disabled
+//                      MuiIcons.Check(
+//                          color=color,
+//                          classes = js.Dictionary("root" -> "mainMenuItemIcon")
+//                      )()
+                      if (state.userSelect) {
+                        MuiIcons.CheckBox()()
+                      } else {
+                        MuiIcons.CheckBoxOutlineBlank()()
+                      }
                     }
                 ),
             ),
