@@ -7,7 +7,7 @@ import scala.scalajs.js
 import scala.scalajs.js.annotation._
 import japgolly.scalajs.react.raw.React.Component
 import japgolly.scalajs.react.component.Generic.ComponentRaw
-import utils.logging.Logger
+// import utils.logging.Logger
 import japgolly.scalajs.react.component.Scala
 
 class Style( styles: (String,js.Dictionary[js.Any])*) {
@@ -20,7 +20,7 @@ class Style( styles: (String,js.Dictionary[js.Any])*) {
 
 object Style {
 
-  private val log = Logger("bridge.mui.Style")
+//  private val log = Logger("bridge.mui.Style")
 
   def apply( styles: (String,js.Dictionary[js.Any])*) = {
     new Style(styles:_*)
@@ -31,13 +31,13 @@ object Style {
   @js.native @JSImport("@material-ui/core/styles/withStyles", JSImport.Default)
   private object WithStyle extends js.Any // with Function2[js.Object,js.Object,Function1[js.Any,VdomNode]]
 
-  log.fine("WithStyle: "+WithStyle)
+//  log.fine("WithStyle: "+WithStyle)
 
 //  private val f = WithStyle.asInstanceOf[Function2[js.Object,js.Object,Function1[js.Any,TagMod]]]
 //  private val f = WithStyle.asInstanceOf[(js.Object,js.Object)=> js.Any => TagMod ]
   private val f = WithStyle.asInstanceOf[js.Dynamic]
 
-  log.fine("WithStyle f: "+f)
+//  log.fine("WithStyle f: "+f)
 
   /**
    * Does NOT work
@@ -53,9 +53,9 @@ object Style {
 //    p.updateDynamic("options")(options)
 
     val c = f(styles.asJS,options)
-    log.fine("WithStyle c: "+c)
+//    log.fine("WithStyle c: "+c)
     val x = c(child.asInstanceOf[js.Any])
-    log.fine("WithStyle x: "+x)
+//    log.fine("WithStyle x: "+x)
     x.asInstanceOf[VdomNode]
   }
 

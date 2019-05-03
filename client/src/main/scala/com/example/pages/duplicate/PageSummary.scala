@@ -58,8 +58,8 @@ import org.scalajs.dom.raw.Node
 import com.example.materialui.component.MyMenu
 import com.example.materialui.MuiMenuItem
 import com.example.materialui.icons.SvgColor
-import com.example.materialui.icons.MuiCheckIcon
 import com.example.skeleton.react.BeepComponent
+import com.example.materialui.icons.MuiIcons
 
 /**
  * Shows a summary page of all duplicate matches from the database.
@@ -712,11 +712,16 @@ object PageSummaryInternal {
                   )(
                       "Show All",
                       {
-                        val color = if (state.alwaysShowAll || state.showRows.isEmpty) SvgColor.inherit else SvgColor.disabled
-                        MuiCheckIcon(
-                            color=color,
-                            classes = js.Dictionary("root" -> "mainMenuItemIcon")
-                        )()
+//                        val color = if (state.alwaysShowAll || state.showRows.isEmpty) SvgColor.inherit else SvgColor.disabled
+//                        MuiIcons.Check(
+//                            color=color,
+//                            classes = js.Dictionary("root" -> "mainMenuItemIcon")
+//                        )()
+                        if (state.alwaysShowAll || state.showRows.isEmpty) {
+                          MuiIcons.CheckBox()()
+                        } else {
+                          MuiIcons.CheckBoxOutlineBlank()()
+                        }
                       }
                   ),
                   MuiMenuItem(

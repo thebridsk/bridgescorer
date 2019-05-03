@@ -61,13 +61,10 @@ import com.example.materialui.Style
 import com.example.materialui.Position
 import com.example.materialui.MuiAppBar
 import com.example.materialui.MuiToolbar
-import com.example.materialui.MuiIconButton
 import com.example.materialui.ColorVariant
-import com.example.materialui.icons.MuiMenuIcon
 import com.example.materialui.MuiTypography
 import com.example.materialui.TextVariant
 import com.example.materialui.TextColor
-import com.example.materialui.icons.MuiHelpIcon
 import com.example.materialui.Style
 import scala.scalajs.js.annotation.JSExportTopLevel
 import scala.scalajs.js.annotation.JSExport
@@ -76,9 +73,6 @@ import com.example.materialui.MuiMenuList
 import com.example.materialui.component.MyMenu
 import com.example.materialui.PopperPlacement
 import com.example.routes.AppRouter
-import com.example.materialui.icons.MuiCheckIcon
-import com.example.materialui.icons.SvgColor
-import com.example.materialui.icons.MuiChevronRightIcon
 
 /**
  * @author werewolf
