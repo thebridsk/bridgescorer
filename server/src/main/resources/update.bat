@@ -39,9 +39,17 @@ goto :eof
 :doit
 cd %~dp0..
 
-for %%f in (bridgescorer-server-assembly-*.jar) do set xxxoldjar=%%f
+set xxxoldjar=
+for %%f in (bridgescorer-server-assembly-*.jar bridgescorekeeper-*.jar) do (
+  if not ".%xxxoldjar%" == "." (
+    echo Found multiple %xxxoldjar% %%f
+    pause
+    goto :eof
+  ) 
+  set xxxoldjar=%%f
+)
 if ".%xxxoldjar%" == "." (
-  echo Did not find bridgescorer-server-assembly-*.jar
+  echo Did not find bridgescorer-server-assembly-*.jar or bridgescorekeeper-*.jar
   pause
   goto :eof
 ) 
@@ -52,11 +60,11 @@ if ERRORLEVEL 1 (
   goto :eof
 )
 
-for %%f in (bridgescorer-server-assembly-*.jar) do (
+for %%f in (bridgescorer-server-assembly-*.jar bridgescorekeeper-*.jar) do (
   if not "%%f" == "%xxxoldjar%" set xxxnewjar=%%f
 )
 if ".%xxxnewjar%" == "." (
-  echo Did not find new bridgescorer-server-assembly-*.jar
+  echo Did not find new bridgescorer-server-assembly-*.jar or bridgescorekeeper-*.jar
   pause
   goto :eof
 ) 
@@ -66,3 +74,4 @@ move %xxxoldjar% save\
 move %xxxoldjar%.sha256 save\
 
 call :docmd java.exe -jar %xxxnewjar% install
+goto :eof
