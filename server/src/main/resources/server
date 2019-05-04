@@ -19,13 +19,15 @@ fi
 
 cd $SCRIPTDIR
 
-jarcount=`ls -1f bridgescorer-server-assembly-*.jar | wc -l`
+jarcount=`ls -1f bridgescorer-server-assembly-*.jar bridgescorekeeper-*.jar 2>/dev/null | wc -l`
 if [[ $jarcount -ne "1" ]] ; then 
-  echo Found more than one bridgescorer jar file in directory
-  ls bridgescorer-server-assembly-*.jar
+  echo Did not find one bridgescorer jar file in directory, found $jarcount
+  ls bridgescorer-server-assembly-*.jar bridgescorekeeper-*.jar 2>/dev/null
   exit 1
 fi
 
+oldjar=`ls -1f bridgescorer-server-assembly-*.jar bridgescorekeeper-*.jar 2>/dev/null`
+
 mkdir logs 2>/dev/null
-java -jar bridgescorer-server-assembly-*.jar --logfile logs/server.%d.%u.log start --store ./store --port 8080 --browser --diagnostics logs
+java -jar $oldjar --logfile logs/server.%d.%u.log start --store ./store --port 8080 --browser --diagnostics logs
 
