@@ -325,7 +325,7 @@ class DuplicateTestPages extends FlatSpec
 
   it should "allow creating a new duplicate match" in {
     import SessionDirector._
-    
+
     val dp = ListDuplicatePage.current
     dp.withClueAndScreenShot(screenshotDir, "NewDuplicate", "clicking NewDuplicate button") {
       dp.clickNewDuplicateButton.validate.takeScreenshot(docsScreenshotDir, "NewDuplicate")
@@ -423,6 +423,19 @@ class DuplicateTestPages extends FlatSpec
         en.isOKEnabled mustBe true
         val scoreboard = en.clickOK.asInstanceOf[ScoreboardPage].validate(4::5::6::Nil)
         val hand = scoreboard.clickBoardToHand(4).validate
+      },
+      CodeBlock {
+        import SessionComplete._
+        // test for fix https://github.com/thebridsk/bridgescorer/pull/290
+        // and https://github.com/thebridsk/bridgescorer/pull/299 either will fix
+        // browser not being updated anymore.
+        // The following code will setup the condition of the browser not
+        // updating.  One of the following test cases will fail.
+        val sb = ScoreboardPage.current
+        val menu = sb.clickMainMenu.validate
+        eventually { menu.findElemById("Summary")}
+        val sum = menu.clickSummary.validate
+        sum.clickDuplicate(dupid.get).validate
       }
     )
   }
@@ -549,6 +562,8 @@ class DuplicateTestPages extends FlatSpec
         import SessionComplete._
 
         val sb = ScoreboardPage.current
+        // a failure here could be because fixes https://github.com/thebridsk/bridgescorer/pull/290
+        // and https://github.com/thebridsk/bridgescorer/pull/299 have not been applied
         sb.checkTable(resultAfterOneRoundCheckMark:_*)
         val (ts,pes) = toOriginal(allHands.getScoreToRound(1, HandCompletedView))
         sb.checkTable( ts: _*)
