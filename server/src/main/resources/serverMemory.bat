@@ -36,12 +36,12 @@ set xxxargs=--logfile shutdown.log shutdown
 goto runcmd
 
 :runcmd
-for %%f in (bridgescorer-server-assembly-*.jar) do set xxxjar=%%f
-if ".%xxxjar%" == "." (
-  echo Did not find bridgescorer-server-assembly-*.jar
+
+call findServerJar.bat
+if ERRORLEVEL 1 (
   pause
-) else (
-  echo on
-  start "BridgeServer" /MIN java.exe -jar %xxxjar% %xxxargs% --port %xxxport%
-  @echo off
+  exit /b 1
 )
+
+echo on
+start "BridgeServer" /MIN java.exe -jar %xxxserverjar% %xxxargs% --port %xxxport%

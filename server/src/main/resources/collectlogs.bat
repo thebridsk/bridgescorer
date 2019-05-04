@@ -5,7 +5,7 @@ echo Syntax: %0 [--help]
 echo Where:
 echo   --help      - show help
 echo Notes:
-echo   Collects the logs and store
+echo   Collects the logs and store and saves it in logs.zip
 goto :eof
 
 :cmdline
@@ -13,12 +13,12 @@ goto :eof
 setlocal
 cd %~dp0
 
-for %%f in (bridgescorer-server-assembly-*.jar) do set xxxjar=%%f
-if ".%xxxjar%" == "." (
-  echo Did not find bridgescorer-server-assembly-*.jar
+call findServerJar.bat
+if ERRORLEVEL 1 (
   pause
-) else (
-  echo on
-  java.exe -jar %xxxjar% collectlogs --store ./store --diagnostics ./logs --zip logs.zip
-  @echo off
+  exit /b 1
 )
+
+echo on
+java.exe -jar %xxxserverjar% collectlogs --store ./store --diagnostics ./logs --zip logs.zip
+@echo off
