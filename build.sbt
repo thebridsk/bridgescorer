@@ -41,8 +41,6 @@ import MyEclipseTransformers._
 
 import scala.language.postfixOps
 
-ensimeScalaVersion in ThisBuild := verScalaVersion
-
 enablePlugins(GitVersioning, GitBranchPrompt)
 EclipseKeys.skipParents in ThisBuild := false
 
@@ -132,7 +130,7 @@ import XTimestamp._
 
 lazy val buildInfoCommonSettings = Seq(
 
-// this replaces 
+// this replaces
 //
 //     buildInfoOptions += BuildInfoOption.BuildTime
 //
@@ -140,11 +138,11 @@ lazy val buildInfoCommonSettings = Seq(
 // to mitigate a long build time.
 
   buildInfoKeys ++= Seq[BuildInfoKey](
-    BuildInfoKey.action( "builtAtString" ) { 
-        string(isSnapshotVersion) 
+    BuildInfoKey.action( "builtAtString" ) {
+        string(isSnapshotVersion)
     },
-    BuildInfoKey.action( "builtAtMillis" ) { 
-        millis(isSnapshotVersion) 
+    BuildInfoKey.action( "builtAtMillis" ) {
+        millis(isSnapshotVersion)
     }
   )
 )
@@ -159,7 +157,7 @@ lazy val Distribution = config("distribution") describedAs("tasks for creating a
 // defined with taskKey[Unit](desc) instead of TaskKey[Unit](name,desc).
 // The error is a type error, expecting a T got a Unit.
 //
-val prereqintegrationtests = TaskKey[Unit]("prereqintegrationtests", "Prereqs for unit tests on the assembly.jar file.") in Distribution
+val prereqintegrationtests = taskKey[Unit]( "Prereqs for unit tests on the assembly.jar file.") in Distribution
 
 val integrationtests = taskKey[Unit]("Runs integration tests on the assembly.jar file.") in Distribution
 
@@ -202,6 +200,8 @@ val allassembly = taskKey[Unit]("Build assembly and test assembly")
 val webassembly = taskKey[Unit]("Build web application")
 
 val checkForUpdates = taskKey[Unit]("Check for updates")
+
+val skipGenerateImageSetting = settingKey[Boolean]("if true images generation is skipped if they already exist")
 
 val hugo = taskKey[Unit]("Run Hugo")
 val hugosetup = taskKey[Unit]("Setup to run Hugo")
@@ -298,11 +298,11 @@ lazy val bridgescorer: Project = project.in(file(".")).
     pipelineStages in Assets := (if (onlyBuildDebug) Seq() else Seq(scalaJSProd)) ++ Seq(scalaJSDev, gzip ),
 
     assemblyMergeStrategy in assembly := {
-      case PathList("META-INF", "resources", "webjars", "bridgescorer", xs @ _*) if (!xs.isEmpty && patternFastopt.findFirstIn(xs.last).isDefined) => 
+      case PathList("META-INF", "resources", "webjars", "bridgescorer", xs @ _*) if (!xs.isEmpty && patternFastopt.findFirstIn(xs.last).isDefined) =>
         MergeStrategy.discard
-      case PathList("META-INF", "resources", "webjars", "bridgescorer-server", xs @ _*) if (!xs.isEmpty && patternFastopt.findFirstIn(xs.last).isDefined) => 
+      case PathList("META-INF", "resources", "webjars", "bridgescorer-server", xs @ _*) if (!xs.isEmpty && patternFastopt.findFirstIn(xs.last).isDefined) =>
         MergeStrategy.discard
-      case PathList("META-INF", "resources", "webjars", "bridgescorer-server", ver, dir, xs @ _*) if (!xs.isEmpty && patternSourceDir.pattern.matcher(dir).matches && (xs.last endsWith ".scala")) => 
+      case PathList("META-INF", "resources", "webjars", "bridgescorer-server", ver, dir, xs @ _*) if (!xs.isEmpty && patternSourceDir.pattern.matcher(dir).matches && (xs.last endsWith ".scala")) =>
         MergeStrategy.discard
       case PathList("META-INF", "maven", xs @ _*) if (!xs.isEmpty && (xs.last endsWith ".properties"))  =>
         MergeStrategy.first
@@ -372,13 +372,13 @@ lazy val bridgescorer: Project = project.in(file(".")).
     fvt := {
       val log = streams.value.log
       def getclasspath() = {
-        val targetdir = (classDirectory in Compile).value+"/../"
+        val targetdir = (classDirectory in Compile).value + "/../"
 
         val assemblyjar = BridgeServer.findFile( targetdir+(assemblyJarName in assembly).value, "-SNAPSHOT.jar" )
         val testjar = BridgeServer.findFile( targetdir+(assemblyJarName in (Test,assembly)).value, "-SNAPSHOT.jar" )
 
         val cp = assemblyjar+java.io.File.pathSeparator+testjar
-        log.info( "Classpath is "+cp )
+        log.info( "Classpath is " + cp )
         cp
       }
       val args = "-DUseProductionPage=1"::
@@ -402,7 +402,7 @@ lazy val bridgescorer: Project = project.in(file(".")).
     svt := {
       val log = streams.value.log
       val (assemblyJar, testJar) = {
-        val targetdir = (classDirectory in Compile).value+"/../"
+        val targetdir = (classDirectory in Compile).value + "/../"
 
         val assemblyjar = BridgeServer.findFile( targetdir+(assemblyJarName in assembly).value, "-SNAPSHOT.jar" )
         val testjar = BridgeServer.findFile( targetdir+(assemblyJarName in (Test,assembly)).value, "-SNAPSHOT.jar" )
@@ -414,7 +414,7 @@ lazy val bridgescorer: Project = project.in(file(".")).
       val cp = assemblyJar+java.io.File.pathSeparator+testJar
 
       val server = new BridgeServer(assemblyJar)
-      server.runWithServer(log, baseDirectory.value+"/logs/itestServerInTest.%u.log") {
+      server.runWithServer(log, baseDirectory.value + "/logs/itestServerInTest.%u.log") {
         val jvmargs = server.getTestDefine():::
                                    "-DUseProductionPage=1"::
                                    "-DToMonitorFile=logs/itestTcpMonitorTimeWait.csv"::
@@ -439,7 +439,7 @@ lazy val bridgescorer: Project = project.in(file(".")).
     travissvt := {
       val log = streams.value.log
       val (assemblyJar, testJar) = {
-        val targetdir = (classDirectory in Compile).value+"/../"
+        val targetdir = (classDirectory in Compile).value + "/../"
 
         val assemblyjar = BridgeServer.findFile( targetdir+(assemblyJarName in assembly).value, "-SNAPSHOT.jar" )
         val testjar = BridgeServer.findFile( targetdir+(assemblyJarName in (Test,assembly)).value, "-SNAPSHOT.jar" )
@@ -451,14 +451,14 @@ lazy val bridgescorer: Project = project.in(file(".")).
       val cp = assemblyJar+java.io.File.pathSeparator+testJar
 
       val server = new BridgeServer(assemblyJar)
-      server.runWithServer(log, baseDirectory.value+"/logs/itestServerInTest.%u.log") {
+      server.runWithServer(log, baseDirectory.value + "/logs/itestServerInTest.%u.log") {
         val jvmargs = server.getTestDefine():::
                                    "-DUseProductionPage=1"::
                                    "-DToMonitorFile=logs/itestTcpMonitorTimeWait.csv"::
                                    "-DUseLogFilePrefix=logs/itest"::
-                                   "-DTestDataDirectory="+itestdataDir::
+                                   "-DTestDataDirectory=" + itestdataDir::
                                    "-DMatchToTest=10"::
-                                   "-DDefaultWebDriver="+useBrowser::
+                                   "-DDefaultWebDriver=" + useBrowser::
                                    "-cp"::cp::
                                    "org.scalatest.tools.Runner"::
                                    "-oD"::
@@ -529,9 +529,9 @@ lazy val bridgescorer: Project = project.in(file(".")).
           import java.nio.file.StandardCopyOption
           import java.nio.file.Files
 
-          log.info( "Publishing to "+distdir )
+          log.info( "Publishing to " + distdir )
 
-          val targetdir = (classDirectory in Compile).value+"/../"
+          val targetdir = (classDirectory in Compile).value + "/../"
           val assemblyjar = (assemblyJarName in assembly).value
           val testjar = (assemblyJarName in (Test,assembly)).value
 
@@ -545,12 +545,12 @@ lazy val bridgescorer: Project = project.in(file(".")).
             IO.move( jar, new File( new File( jar.getParentFile, "save" ), jar.getName ) )
           }}
 
-          log.info("Publishing "+assemblyjar+" to "+distdir)
+          log.info("Publishing " + assemblyjar + " to "+distdir)
           Files.copy( sourceassemblyjar.toPath, targetassemblyjar.toPath, StandardCopyOption.REPLACE_EXISTING )
-          log.info("Publishing "+testjar+" to "+distdir )
+          log.info("Publishing " + testjar + " to " + distdir )
           Files.copy( sourcetestjar.toPath, targettestjar.toPath, StandardCopyOption.REPLACE_EXISTING )
 
-          log.info( "Published to "+distdir )
+          log.info( "Published to " + distdir )
         case None =>
           throw new RuntimeException("DistributionDirectory is not set")
       }
@@ -625,6 +625,7 @@ lazy val `bridgescorer-shared` = crossProject(JSPlatform, JVMPlatform).in(file("
   jvmSettings(
     libraryDependencies ++= bridgeScorerSharedJVMDeps.value
   ).
+//   jvmConfigure( _.dependsOn( `utilities-jvm` ) ).
   jsSettings(
 
     // This gets rid of the jetty check which is required for the sbt runtime
@@ -634,13 +635,14 @@ lazy val `bridgescorer-shared` = crossProject(JSPlatform, JVMPlatform).in(file("
 //    dependencyUpdatesExclusions := moduleFilter(organization = "org.eclipse.jetty")
     dependencyUpdatesFilter -= moduleFilter(organization = "org.eclipse.jetty")
 
-  )
+  ) // .
+//  jvmConfigure( _.dependsOn( `utilities-jvm` ) )
 
 lazy val sharedJS: Project = `bridgescorer-shared`.js.
-  dependsOn( ProjectRef( uri("utilities"), "utilities-js" ))
+  dependsOn( `utilities-js` )
 
 lazy val sharedJVM = `bridgescorer-shared`.jvm.
-  dependsOn( ProjectRef( uri("utilities"), "utilities-jvm" ))
+  dependsOn( `utilities-jvm` )
 
 lazy val `bridgescorer-rotation` = crossProject(JSPlatform, JVMPlatform).in(file("rotation")).
   enablePlugins(BuildInfoPlugin).
@@ -712,12 +714,15 @@ lazy val materialui = project.in(file("materialui")).
     libraryDependencies ++= materialUiDeps.value,
   )
 
+lazy val `utilities-js` = ProjectRef( uri("utilities"), "utilities-js" )
+lazy val `utilities-jvm` = ProjectRef( uri("utilities"), "utilities-jvm" )
+
 lazy val `bridgescorer-client` = project.in(file("client")).
   enablePlugins(BuildInfoPlugin).
   enablePlugins(ScalaJSPlugin).
   enablePlugins(ScalaJSBundlerPlugin).
   dependsOn( sharedJS, rotationJS, materialui ).
-  dependsOn( ProjectRef( uri("utilities"), "utilities-js" )).
+  dependsOn( `utilities-js` ).
   settings(commonSettings: _*).
   settings(
     name := "bridgescorer-client",
@@ -790,7 +795,7 @@ lazy val `bridgescorer-client` = project.in(file("client")).
 // Compile tests to JS using fast-optimisation
 //    scalaJSStage in Test := FastOptStage,
     if (useFullOpt) {
-      scalaJSStage in Test := FullOptStage 
+      scalaJSStage in Test := FullOptStage
     } else {
       scalaJSStage in Test := FastOptStage
     },
@@ -849,12 +854,15 @@ lazy val help = project.in(file("help")).
   settings( versionSetting: _* ).
   settings(
     scalaVersion  := verScalaVersion,
+
+    skipGenerateImageSetting := skipGenerateImage,
+
     hugo := {
       val setup = hugosetup.value
       val log = streams.value.log
       val bd = new File(baseDirectory.value, "docs" )
       val targ = new File(target.value, "help" )
-      
+
       val helpversion = version.value
       val shorthelpversion = helpversion match {
         case patternVersion(v) => v
@@ -866,7 +874,7 @@ lazy val help = project.in(file("help")).
 
     hugosetup := {
       {
-        val testgen = new File( baseDirectory.value+"/../server/target/docs" )
+        val testgen = new File( baseDirectory.value + "/../server/target/docs" )
         val gen = new File( baseDirectory.value, "docs/static/images/gen" )
         println( s"Copy ${testgen} to ${gen}" )
         MyFileUtils.copyDirectory( testgen, gen, "png", 2 )
@@ -879,7 +887,7 @@ lazy val help = project.in(file("help")).
       val log = streams.value.log
       val bd = new File(baseDirectory.value, "docs" )
       val oldtask = hugoWithTest.taskValue
-      if (skipGenerateImage && Hugo.gotGeneratedImages(log,bd)) {
+      if (skipGenerateImageSetting.value && Hugo.gotGeneratedImages(log,bd)) {
         hugo
       } else {
         Def.task(oldtask.value)
@@ -917,7 +925,7 @@ lazy val `bridgescorer-server`: Project = project.in(file("server")).
     mainClass in Compile := Some("com.example.Server"),
     EclipseKeys.classpathTransformerFactories ++= Seq(
       addDependentRunClassFolder("target/web/classes/main"),
-      removeRelativePath("target\\scala-"+verScalaMajorMinor+"\\resource_managed\\main")
+      removeRelativePath("target\\scala-" + verScalaMajorMinor + "\\resource_managed\\main")
     ),
 
     buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion),
@@ -984,7 +992,7 @@ lazy val `bridgescorer-server`: Project = project.in(file("server")).
       "-DSessionDirector="+useBrowser,
       "-DSessionTable1="+useBrowser,
       "-DSessionTable2="+useBrowser,
-      s"""-DUseProductionPage=${if (useFullOpt) "1" else "0"}""" 
+      s"""-DUseProductionPage=${if (useFullOpt) "1" else "0"}"""
     ),
 
     libraryDependencies ++= bridgeScorerDeps.value,
@@ -1008,22 +1016,22 @@ lazy val `bridgescorer-server`: Project = project.in(file("server")).
 
     scalaJSProjects := Seq(`bridgescorer-client`),
     pipelineStages in Assets := {
-      if (onlyBuildDebug) { 
+      if (onlyBuildDebug) {
         Seq(scalaJSDev, gzip ),
       } else if (useFullOpt) {
         Seq(scalaJSProd, gzip)
-      } else { 
+      } else {
         Seq(scalaJSProd, scalaJSDev, gzip ),
-      } 
+      }
     },
     pipelineStages in Test in Assets := {
-      if (onlyBuildDebug) { 
+      if (onlyBuildDebug) {
         Seq(scalaJSDev, gzip ),
       } else if (useFullOpt) {
         Seq(scalaJSProd, gzip)
-      } else { 
+      } else {
         Seq(scalaJSProd, scalaJSDev, gzip),
-      } 
+      }
     },
     //(scalaJSPipeline),
 
@@ -1117,7 +1125,7 @@ lazy val `bridgescorer-server`: Project = project.in(file("server")).
     fvt := {
       val log = streams.value.log
       def getclasspath() = {
-        val targetdir = (classDirectory in Compile).value+"/../"
+        val targetdir = (classDirectory in Compile).value + "/../"
 
         val assemblyjar = BridgeServer.findFile( targetdir+(assemblyJarName in assembly).value, "-SNAPSHOT.jar" )
         val testjar = BridgeServer.findFile( targetdir+(assemblyJarName in (Test,assembly)).value, "-SNAPSHOT.jar" )
@@ -1147,7 +1155,7 @@ lazy val `bridgescorer-server`: Project = project.in(file("server")).
     svt := {
       val log = streams.value.log
       val (assemblyJar, testJar) = {
-        val targetdir = (classDirectory in Compile).value+"/../"
+        val targetdir = (classDirectory in Compile).value + "/../"
 
         val assemblyjar = BridgeServer.findFile( targetdir+(assemblyJarName in assembly).value, "-SNAPSHOT.jar" )
         val testjar = BridgeServer.findFile( targetdir+(assemblyJarName in (Test,assembly)).value, "-SNAPSHOT.jar" )
@@ -1159,7 +1167,7 @@ lazy val `bridgescorer-server`: Project = project.in(file("server")).
       val cp = assemblyJar+java.io.File.pathSeparator+testJar
 
       val server = new BridgeServer(assemblyJar)
-      server.runWithServer(log, baseDirectory.value+"/logs/itestServerInTest.%u.log") {
+      server.runWithServer(log, baseDirectory.value + "/logs/itestServerInTest.%u.log") {
         val jvmargs = server.getTestDefine():::
                                    "-DUseProductionPage=1"::
                                    "-DToMonitorFile=logs/itestTcpMonitorTimeWait.csv"::
@@ -1184,7 +1192,7 @@ lazy val `bridgescorer-server`: Project = project.in(file("server")).
     travissvt := {
       val log = streams.value.log
       val (assemblyJar, testJar) = {
-        val targetdir = (classDirectory in Compile).value+"/../"
+        val targetdir = (classDirectory in Compile).value + "/../"
 
         val assemblyjar = BridgeServer.findFile( targetdir+(assemblyJarName in assembly).value, "-SNAPSHOT.jar" )
         val testjar = BridgeServer.findFile( targetdir+(assemblyJarName in (Test,assembly)).value, "-SNAPSHOT.jar" )
@@ -1196,7 +1204,7 @@ lazy val `bridgescorer-server`: Project = project.in(file("server")).
       val cp = assemblyJar+java.io.File.pathSeparator+testJar
 
       val server = new BridgeServer(assemblyJar)
-      server.runWithServer(log, baseDirectory.value+"/logs/itestServerInTest.%u.log") {
+      server.runWithServer(log, baseDirectory.value + "/logs/itestServerInTest.%u.log") {
         val jvmargs = server.getTestDefine():::
                                    "-DUseProductionPage=1"::
                                    "-DToMonitorFile=logs/itestTcpMonitorTimeWait.csv"::
@@ -1276,7 +1284,7 @@ lazy val `bridgescorer-server`: Project = project.in(file("server")).
 
           log.info( "Publishing to "+distdir )
 
-          val targetdir = (classDirectory in Compile).value+"/../"
+          val targetdir = (classDirectory in Compile).value + "/../"
           val assemblyjar = (assemblyJarName in assembly).value
           val testjar = (assemblyJarName in (Test,assembly)).value
 
@@ -1290,9 +1298,9 @@ lazy val `bridgescorer-server`: Project = project.in(file("server")).
             IO.move( jar, new File( new File( jar.getParentFile, "save" ), jar.getName ) )
           }}
 
-          log.info("Publishing "+assemblyjar+" to "+distdir)
+          log.info("Publishing " + assemblyjar + " to " + distdir)
           Files.copy( sourceassemblyjar.toPath, targetassemblyjar.toPath, StandardCopyOption.REPLACE_EXISTING )
-          log.info("Publishing "+testjar+" to "+distdir )
+          log.info("Publishing " + testjar + " to " + distdir )
           Files.copy( sourcetestjar.toPath, targettestjar.toPath, StandardCopyOption.REPLACE_EXISTING )
 
           log.info( "Published to "+distdir )

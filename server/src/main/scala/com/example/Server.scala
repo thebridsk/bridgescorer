@@ -117,29 +117,32 @@ object Server extends Main {
     }
   }
 
-  val serverVersion = "BridgeScorer Server version "+VersionServer.version+
-                    "\n  Build date "+VersionServer.builtAtString+" UTC"+
-                    "\n  Scala "+VersionServer.scalaVersion+", SBT "+VersionServer.sbtVersion+
-                    "\nBridgeScorer Shared version "+VersionShared.version+
-                    "\n  Build date "+VersionShared.builtAtString+" UTC"+
-                    "\n  Scala "+VersionShared.scalaVersion+", SBT "+VersionShared.sbtVersion
+  val serverVersion =
+    s"""BridgeScorer Server version ${VersionServer.version}
+       |Build date ${VersionServer.builtAtString} UTC
+       |Scala ${VersionServer.scalaVersion}, SBT ${VersionServer.sbtVersion}
+       |BridgeScorer Shared version ${VersionShared.version}
+       |Build date ${VersionShared.builtAtString} UTC
+       |Scala ${VersionShared.scalaVersion}, SBT ${VersionShared.sbtVersion}""".stripMargin
   version(serverVersion)
-  banner(s"""
-HTTP server for scoring duplicate and chicago bridge
-
-Syntax:
-  ${cmdName} options cmd cmdoptions
-  ${cmdName} --help
-  ${cmdName} cmd --help
-Options:""")
+  banner(
+    s"""
+        |HTTP server for scoring duplicate and chicago bridge
+        |
+        |Syntax:
+        |  ${cmdName} options cmd cmdoptions
+        |  ${cmdName} --help
+        |  ${cmdName} cmd --help
+        |Options:""".stripMargin
+  )
 
   shortSubcommandsHelp(true)
 
   val memoryfile = opt[Path]( "memoryfile",
-                              noshort=true,
-                              descr="memory monitor filename, start monitoring memory usage every 15 seconds",
-                              argName="csvfilename",
-                              default=None)
+                              noshort = true,
+                              descr = "memory monitor filename, start monitoring memory usage every 15 seconds",
+                              argName = "csvfilename",
+                              default = None)
 
   addSubcommand( StartServer )
   addSubcommand( ShutdownServer )

@@ -92,50 +92,50 @@ Start HTTP server for scoring duplicate and chicago bridge
 Syntax:
   ${Server.cmdName} start options
 Options:""")
-  val optionInterface = opt[String]("interface", short='i', descr="the port the server listens on, default=0.0.0.0", argName="ip", default=Some("0.0.0.0"))
-  val optionPort = opt[Int]("port", short='p', descr="the port the server listens on, use 0 for no http, default=8080", argName="port", default=Some(8080), validate= {p => p>=0 && p<=65535})
-  val optionCertificate = opt[String]("certificate", short='c', descr="the private certificate for the server, default=None", argName="p12", default=None)
-  val optionCertPassword = opt[String]("certpassword", descr="the password for the private certificate, default=None", argName="pw", default=None)
-  val optionHttps = opt[Int]("https", short='h', descr="https port to use", argName="port", default=None, validate= {p => p>0 && p<=65535});
-  val optionStore = opt[Path]("store", short='s', descr="The store directory, default=./store", argName="dir", default=Some("./store"))
-  val optionRunFor = opt[Duration]("runfor", short='r', descr=s"Run for specified as a duration, default ${defaultRunFor}", argName="dur", default=Some(Duration(defaultRunFor)), validate={p=>p.compare(Duration.Zero)>0});
-//  val optionShutdown = toggle("shutdown", default=Some(false), noshort=true,
-//                              descrYes="Shutdown a server running on the same machine, other options should be the same as when starting server",
-//                              descrNo="Start the server." )
-  val optionBrowser = toggle("browser", default=Some(false), noshort=true,
-                              descrYes="Start a browser on the home page of the server",
-                              descrNo="Do not start the browser" )
-  val optionChrome = toggle("chrome", default=Some(false), noshort=true,
-                              descrYes="Start the browser on the home page of the server in fullscreen mode",
-                              descrNo="Do not start the chrome browser" )
-  val optionLoopback = toggle("loopback", default=Some(false), noshort=true,
-                              descrYes="Use loopback as host name when starting browser",
-                              descrNo="Use localhost as host name when starting browser" )
-  val optionHttp2 = toggle("http2", default=Some(false), noshort=true,
-                              descrYes="Enable http2 support",
-                              descrNo="Disable http2 support" )
+  val optionInterface = opt[String]("interface", short = 'i', descr = "the port the server listens on, default=0.0.0.0", argName = "ip", default = Some("0.0.0.0"))
+  val optionPort = opt[Int]("port", short = 'p', descr = "the port the server listens on, use 0 for no http, default=8080", argName = "port", default = Some(8080), validate = {p => p >= 0 && p <= 65535})
+  val optionCertificate = opt[String]("certificate", short = 'c', descr = "the private certificate for the server, default=None", argName = "p12", default = None)
+  val optionCertPassword = opt[String]("certpassword", descr = "the password for the private certificate, default=None", argName = "pw", default = None)
+  val optionHttps = opt[Int]("https", short = 'h', descr = "https port to use", argName = "port", default = None, validate= {p => p > 0 && p <= 65535});
+  val optionStore = opt[Path]("store", short = 's', descr = "The store directory, default=./store", argName = "dir", default = Some("./store"))
+  val optionRunFor = opt[Duration]("runfor", short = 'r', descr = s"Run for specified as a duration, default ${defaultRunFor}", argName = "dur", default = Some(Duration(defaultRunFor)), validate = {p => p.compare(Duration.Zero) > 0});
+//  val optionShutdown = toggle("shutdown", default = Some(false), noshort = true,
+//                              descrYes = "Shutdown a server running on the same machine, other options should be the same as when starting server",
+//                              descrNo = "Start the server." )
+  val optionBrowser = toggle("browser", default = Some(false), noshort = true,
+                              descrYes = "Start a browser on the home page of the server",
+                              descrNo = "Do not start the browser" )
+  val optionChrome = toggle("chrome", default = Some(false), noshort = true,
+                              descrYes = "Start the browser on the home page of the server in fullscreen mode",
+                              descrNo = "Do not start the chrome browser" )
+  val optionLoopback = toggle("loopback", default = Some(false), noshort = true,
+                              descrYes = "Use loopback as host name when starting browser",
+                              descrNo = "Use localhost as host name when starting browser" )
+  val optionHttp2 = toggle("http2", default = Some(false), noshort = true,
+                              descrYes = "Enable http2 support",
+                              descrNo = "Disable http2 support" )
   val optionCache = opt[Duration]("cache",
-                                  descr=s"time to set in cache-control header of responses.  0s for no-cache. default ${defaultCacheFor}",
-                                  argName="dur",
-                                  default=Some(Duration(defaultCacheFor)),
-                                  validate={p=>p.compare(Duration.Zero)>=0})
+                                  descr = s"time to set in cache-control header of responses.  0s for no-cache. default ${defaultCacheFor}",
+                                  argName = "dur",
+                                  default = Some(Duration(defaultCacheFor)),
+                                  validate = {p => p.compare(Duration.Zero) >= 0})
 
-  val optionRemoteLogger = opt[Path]("remotelogging", short='l',
-                                     descr="Specify remote logging YAML profile to use instead of built in one",
-                                     argName="file",
-                                     default=None )
+  val optionRemoteLogger = opt[Path]("remotelogging", short = 'l',
+                                     descr = "Specify remote logging YAML profile to use instead of built in one",
+                                     argName = "file",
+                                     default = None )
 
-  val optionIPadRemoteLogging = opt[String]("ipad", noshort=true,
-                                            descr="The remote logging profile to use for the iPad, default: off",
-                                            argName="profile",
-                                            default=Some("default"))
+  val optionIPadRemoteLogging = opt[String]("ipad", noshort = true,
+                                            descr = "The remote logging profile to use for the iPad, default: off",
+                                            argName = "profile",
+                                            default = Some("default"))
 
-  val optionBrowserRemoteLogging = opt[String]("browserlogging", noshort=true,
-                                               descr="The remote logging profile to use for browsers, default: default",
-                                               argName="profile",
-                                               default=Some("default"))
+  val optionBrowserRemoteLogging = opt[String]("browserlogging", noshort = true,
+                                               descr = "The remote logging profile to use for browsers, default: default",
+                                               argName = "profile",
+                                               default = Some("default"))
 
-  val optionDiagnosticDir = opt[Path]("diagnostics", noshort=true, descr="The directory that contains the log files, default is none.  All .log files in directory may be collected for diagnostic purposes.", argName="dir", default=None)
+  val optionDiagnosticDir = opt[Path]("diagnostics", noshort = true, descr = "The directory that contains the log files, default is none.  All .log files in directory may be collected for diagnostic purposes.", argName = "dir", default = None)
 
   footer(s"""
 To have the server listen for HTTPS, you must use one or both of the following options:
@@ -264,13 +264,13 @@ private class StartServer {
   def getURL( interface: String ) = {
     val httpsURL = optionHttps.toOption match {
       case Some(port) =>
-        if (port==443) Some("https://"+interface+"/")
+        if (port == 443) Some("https://"+interface+"/")
         else Some("https://"+interface+":"+port+"/")
       case None => None
     }
     val httpURL = optionPort.toOption match {
       case Some(port) =>
-        if (port==80) Some("http://"+interface+"/")
+        if (port == 80) Some("http://"+interface+"/")
         else Some("http://"+interface+":"+port+"/")
       case None if (httpsURL.isEmpty) => Some("http://"+interface+":8080/")
       case None => None
@@ -305,9 +305,9 @@ private class StartServer {
             logger.severe("Unable to create directory for FileStore: "+d)
             return 1
           }
-          Some( new BridgeServiceFileStore( d, oid=Some("root") ) )
+          Some( new BridgeServiceFileStore( d, oid = Some("root") ) )
         } else {
-          Some( new BridgeServiceFileStore( d, oid=Some("root") ) )
+          Some( new BridgeServiceFileStore( d, oid = Some("root") ) )
         }
 
       case None => None
@@ -342,7 +342,7 @@ private class StartServer {
     val startFuture = start( interface = optionInterface(),
                              httpPort = getHttpPortOption(),
                              httpsPort = httpsPort,
-                             connectionContext=context,
+                             connectionContext = context,
                              bridge = bs,
                              cache = optionCache.toOption,
                              optRemoteLogger = optionRemoteLogger.toOption,
@@ -469,7 +469,7 @@ private class StartServer {
       override
       def ports = ServerPort( httpPort, httpsPort )
       override
-      lazy val host = if (interface=="0.0.0.0") {
+      lazy val host = if (interface == "0.0.0.0") {
         import scala.collection.JavaConverters._
         val x = NetworkInterface.getNetworkInterfaces.asScala.
           filter { x => x.isUp() && !x.isLoopback() }.
@@ -515,7 +515,7 @@ private class StartServer {
       Some(Http().bindAndHandleAsync( Route.asyncHandler(myService.myRouteWithLogging),
                                       interface,
                                       httpsPort.get,
-                                      connectionContext=connectionContext.get,
+                                      connectionContext = connectionContext.get,
                                       settings = httpsSettings
                                     ))
     } else {
@@ -524,10 +524,10 @@ private class StartServer {
     bindingHttp = if (httpPort.isDefined) {
       if (httpsPort.isDefined) {
         // both http and https defined, redirect http to https
-        Some(Http().bindAndHandleAsync(Route.asyncHandler(redirectRoute("https",httpsPort.get)), interface, httpPort.get, settings=httpSettings))
+        Some(Http().bindAndHandleAsync(Route.asyncHandler(redirectRoute("https",httpsPort.get)), interface, httpPort.get, settings = httpSettings))
       } else {
         // only http defined
-        Some(Http().bindAndHandleAsync(Route.asyncHandler(myService.myRouteWithLogging), interface, httpPort.get, settings=httpSettings))
+        Some(Http().bindAndHandleAsync(Route.asyncHandler(myService.myRouteWithLogging), interface, httpPort.get, settings = httpSettings))
       }
     } else {
       if (httpsPort.isDefined) {
@@ -535,7 +535,7 @@ private class StartServer {
         None
       } else {
         // no http or https port defined.  Use port 8080 for http
-        Some(Http().bindAndHandleAsync(Route.asyncHandler(myService.myRouteWithLogging), interface, 8080, settings=httpSettings))
+        Some(Http().bindAndHandleAsync(Route.asyncHandler(myService.myRouteWithLogging), interface, 8080, settings = httpSettings))
       }
     }
     bindingHttp.foreach { f =>
@@ -633,11 +633,11 @@ private class StartServer {
     val connection = optionHttps.toOption match {
       case Some(port) =>
         Http().outgoingConnectionHttps("loopback", port,
-                                       connectionContext=serverContext,
-                                       localAddress=Some(new InetSocketAddress( InetAddress.getLoopbackAddress, 0) ) )
+                                       connectionContext = serverContext,
+                                       localAddress = Some(new InetSocketAddress( InetAddress.getLoopbackAddress, 0) ) )
       case None =>
         val port = optionPort.toOption.get
-        Http().outgoingConnection("loopback", port, localAddress=Some(new InetSocketAddress( InetAddress.getLoopbackAddress, 0)))
+        Http().outgoingConnection("loopback", port, localAddress = Some(new InetSocketAddress( InetAddress.getLoopbackAddress, 0)))
     }
     val request:HttpRequest = RequestBuilding.Post( Uri("/v1/shutdown").withQuery( Query( Map("doit" -> "yes") )))
     val responseFuture: Future[HttpResponse] =
