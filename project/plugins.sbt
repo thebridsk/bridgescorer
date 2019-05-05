@@ -21,7 +21,6 @@ val vSbtRelease = "1.0.11"         // https://github.com/sbt/sbt-release
 val vSbtEclipse = "5.2.4"          // https://github.com/typesafehub/sbteclipse
 val vSbtDependencyGraph = "0.9.2"  // https://github.com/jrudolph/sbt-dependency-graph
 val vSbtUpdates = "0.4.0"          // https://github.com/rtimush/sbt-updates
-val vSbtEnsime = "2.6.1"           // https://github.com/ensime/ensime-sbt
 
 val scalaJSVersion = Option(System.getenv("SCALAJS_VERSION")).getOrElse(vScalaJSDefault)
 
@@ -66,8 +65,6 @@ addSbtPlugin("com.github.gseitz" % "sbt-release" % vSbtRelease)
 addSbtPlugin("com.typesafe.sbteclipse" % "sbteclipse-plugin" % vSbtEclipse)
 addSbtPlugin("com.timushev.sbt" % "sbt-updates" % vSbtUpdates)
 addSbtPlugin("net.virtual-void" % "sbt-dependency-graph" % vSbtDependencyGraph)  // must be updated for sbt 1.0
-
-addSbtPlugin("org.ensime" % "sbt-ensime" % vSbtEnsime)
 
 scalacOptions ++= Seq( "-unchecked", "-deprecation" )
 

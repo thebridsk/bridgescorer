@@ -17,6 +17,6 @@ test-output/
 /unittest.1.log
 /keys/
 /debug.log
-.ensime
-.ensime_cache
 /debugDomSuggestion.html
+.metals/
+.bloop/

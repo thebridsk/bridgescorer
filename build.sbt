@@ -41,8 +41,6 @@ import MyEclipseTransformers._
 
 import scala.language.postfixOps
 
-ensimeScalaVersion in ThisBuild := verScalaVersion
-
 enablePlugins(GitVersioning, GitBranchPrompt)
 EclipseKeys.skipParents in ThisBuild := false
 
@@ -132,7 +130,7 @@ import XTimestamp._
 
 lazy val buildInfoCommonSettings = Seq(
 
-// this replaces 
+// this replaces
 //
 //     buildInfoOptions += BuildInfoOption.BuildTime
 //
@@ -140,11 +138,11 @@ lazy val buildInfoCommonSettings = Seq(
 // to mitigate a long build time.
 
   buildInfoKeys ++= Seq[BuildInfoKey](
-    BuildInfoKey.action( "builtAtString" ) { 
-        string(isSnapshotVersion) 
+    BuildInfoKey.action( "builtAtString" ) {
+        string(isSnapshotVersion)
     },
-    BuildInfoKey.action( "builtAtMillis" ) { 
-        millis(isSnapshotVersion) 
+    BuildInfoKey.action( "builtAtMillis" ) {
+        millis(isSnapshotVersion)
     }
   )
 )
@@ -298,11 +296,11 @@ lazy val bridgescorer: Project = project.in(file(".")).
     pipelineStages in Assets := (if (onlyBuildDebug) Seq() else Seq(scalaJSProd)) ++ Seq(scalaJSDev, gzip ),
 
     assemblyMergeStrategy in assembly := {
-      case PathList("META-INF", "resources", "webjars", "bridgescorer", xs @ _*) if (!xs.isEmpty && patternFastopt.findFirstIn(xs.last).isDefined) => 
+      case PathList("META-INF", "resources", "webjars", "bridgescorer", xs @ _*) if (!xs.isEmpty && patternFastopt.findFirstIn(xs.last).isDefined) =>
         MergeStrategy.discard
-      case PathList("META-INF", "resources", "webjars", "bridgescorer-server", xs @ _*) if (!xs.isEmpty && patternFastopt.findFirstIn(xs.last).isDefined) => 
+      case PathList("META-INF", "resources", "webjars", "bridgescorer-server", xs @ _*) if (!xs.isEmpty && patternFastopt.findFirstIn(xs.last).isDefined) =>
         MergeStrategy.discard
-      case PathList("META-INF", "resources", "webjars", "bridgescorer-server", ver, dir, xs @ _*) if (!xs.isEmpty && patternSourceDir.pattern.matcher(dir).matches && (xs.last endsWith ".scala")) => 
+      case PathList("META-INF", "resources", "webjars", "bridgescorer-server", ver, dir, xs @ _*) if (!xs.isEmpty && patternSourceDir.pattern.matcher(dir).matches && (xs.last endsWith ".scala")) =>
         MergeStrategy.discard
       case PathList("META-INF", "maven", xs @ _*) if (!xs.isEmpty && (xs.last endsWith ".properties"))  =>
         MergeStrategy.first
@@ -790,7 +788,7 @@ lazy val `bridgescorer-client` = project.in(file("client")).
 // Compile tests to JS using fast-optimisation
 //    scalaJSStage in Test := FastOptStage,
     if (useFullOpt) {
-      scalaJSStage in Test := FullOptStage 
+      scalaJSStage in Test := FullOptStage
     } else {
       scalaJSStage in Test := FastOptStage
     },
@@ -854,7 +852,7 @@ lazy val help = project.in(file("help")).
       val log = streams.value.log
       val bd = new File(baseDirectory.value, "docs" )
       val targ = new File(target.value, "help" )
-      
+
       val helpversion = version.value
       val shorthelpversion = helpversion match {
         case patternVersion(v) => v
@@ -984,7 +982,7 @@ lazy val `bridgescorer-server`: Project = project.in(file("server")).
       "-DSessionDirector="+useBrowser,
       "-DSessionTable1="+useBrowser,
       "-DSessionTable2="+useBrowser,
-      s"""-DUseProductionPage=${if (useFullOpt) "1" else "0"}""" 
+      s"""-DUseProductionPage=${if (useFullOpt) "1" else "0"}"""
     ),
 
     libraryDependencies ++= bridgeScorerDeps.value,
@@ -1008,22 +1006,22 @@ lazy val `bridgescorer-server`: Project = project.in(file("server")).
 
     scalaJSProjects := Seq(`bridgescorer-client`),
     pipelineStages in Assets := {
-      if (onlyBuildDebug) { 
+      if (onlyBuildDebug) {
         Seq(scalaJSDev, gzip ),
       } else if (useFullOpt) {
         Seq(scalaJSProd, gzip)
-      } else { 
+      } else {
         Seq(scalaJSProd, scalaJSDev, gzip ),
-      } 
+      }
     },
     pipelineStages in Test in Assets := {
-      if (onlyBuildDebug) { 
+      if (onlyBuildDebug) {
         Seq(scalaJSDev, gzip ),
       } else if (useFullOpt) {
         Seq(scalaJSProd, gzip)
-      } else { 
+      } else {
         Seq(scalaJSProd, scalaJSDev, gzip),
-      } 
+      }
     },
     //(scalaJSPipeline),
 
