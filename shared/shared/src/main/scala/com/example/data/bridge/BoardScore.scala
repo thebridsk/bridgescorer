@@ -3,7 +3,7 @@ package com.example.data.bridge
 import com.example.data.Board
 import com.example.data.Id
 import com.example.data.bridge.DuplicateBridge.ScoreHand
-import utils.logging.Logger
+//import utils.logging.Logger
 import java.io.StringWriter
 
 case class ContractForScore( contract: String, declarer: String, made: Option[String], down: Option[String] )
@@ -228,7 +228,7 @@ class BoardScore( val board: Board, perspective: DuplicateViewPerspective ) {
 object BoardScore {
   def apply( board: Board, perspective: DuplicateViewPerspective ) = new BoardScore(board, perspective)
 
-  val log = Logger("bridge.BoardScore")
+//  val log = Logger("bridge.BoardScore")
 
 //  https://www.bridgehands.com/I/IMP.htm
 //

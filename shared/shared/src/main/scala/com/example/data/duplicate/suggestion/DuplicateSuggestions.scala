@@ -1,7 +1,7 @@
 package com.example.data.duplicate.suggestion
 
 import com.example.data.DuplicateSummary
-import utils.logging.Logger
+// import utils.logging.Logger
 import com.example.data.SystemTime
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.media.ArraySchema
@@ -13,21 +13,21 @@ import io.swagger.v3.oas.annotations.media.ArraySchema
  * @param lastPlayed number of games since they played
  */
 @Schema(
-    title="Pairing - A suggested pairing",
-    description="A suggested pairing and some stats about the pairing."
+    title = "Pairing - A suggested pairing",
+    description = "A suggested pairing and some stats about the pairing."
 )
 case class Pairing(
-    @Schema(description="The name of a player", required=true)
+    @Schema(description = "The name of a player", required = true)
     player1: String,
-    @Schema(description="The name of a player", required=true)
+    @Schema(description = "The name of a player", required = true)
     player2: String,
-    @Schema(description="The number of matches since they last played together.", required=true)
+    @Schema(description = "The number of matches since they last played together.", required = true)
     lastPlayed: Int,
-    @Schema(description="The number of times the pair has played together.", required=true)
+    @Schema(description = "The number of times the pair has played together.", required = true)
     timesPlayed: Int
 ) {
 
-  def normalize = if (player1 < player2) this else copy( player1=player2, player2=player1 )
+  def normalize = if (player1 < player2) this else copy( player1 = player2, player2 = player1 )
 
   def key = (player1,player2)
 }
@@ -42,87 +42,87 @@ case class Pairing(
  */
 
 @Schema(
-    title="Suggestion - A suggested player pairings.",
-    description="A suggested player pairings.")
+    title = "Suggestion - A suggested player pairings.",
+    description = "A suggested player pairings.")
 case class Suggestion(
     @ArraySchema(
-        minItems=4,
-        maxItems=4,
-        schema=new Schema(implementation=classOf[Pairing]),
-        uniqueItems=true,
-        arraySchema = new Schema( description = "The player pair, otherwise known as a team", required=true)
+        minItems = 4,
+        maxItems = 4,
+        schema = new Schema(implementation = classOf[Pairing]),
+        uniqueItems = true,
+        arraySchema = new Schema( description = "The player pair, otherwise known as a team", required = true)
     )
     players: List[Pairing],
-    @Schema(description="The minimum number of matches that any of the pairs last played together", required=true)
+    @Schema(description = "The minimum number of matches that any of the pairs last played together", required = true)
     minLastPlayed: Int,
-    @Schema(description="The maximum number of matches that any of the pairs last played together", required=true)
+    @Schema(description = "The maximum number of matches that any of the pairs last played together", required = true)
     maxLastPlayed: Int,
-    @Schema(description="The maximum number of times that any of the pairs last played together", required=true)
+    @Schema(description = "The maximum number of times that any of the pairs last played together", required = true)
     maxTimesPlayed: Int,
-    @Schema(description="The average number of times that the pairs last played together", required=true)
+    @Schema(description = "The average number of times that the pairs last played together", required = true)
     avgLastPlayed: Double,
-    @Schema(description="The average number of times that the pairs played together", required=true)
+    @Schema(description = "The average number of times that the pairs played together", required = true)
     avgTimesPlayed: Double,
-    @Schema(description="The last time this suggested pairing played", required=true)
+    @Schema(description = "The last time this suggested pairing played", required = true)
     lastPlayedAllTeams: Int,
-    @Schema(description="The number of times the same pairings played", required=true)
+    @Schema(description = "The number of times the same pairings played", required = true)
     countAllPlayed: Int,
-    @Schema(description="The weight of this pairing, the higher the better", required=true)
+    @Schema(description = "The weight of this pairing, the higher the better", required = true)
     weight: Double,
     @ArraySchema(
-        minItems=0,
-        schema=new Schema(`type`="number", format="double"),
-        uniqueItems=false,
-        arraySchema = new Schema( description = "The calculated weights various comparisons, the higher the better", required=true)
+        minItems = 0,
+        schema = new Schema(`type` = "number", format = "double"),
+        uniqueItems = false,
+        arraySchema = new Schema( description = "The calculated weights various comparisons, the higher the better", required = true)
     )
     weights: List[Double],
-    @Schema(description="A random number to make each suggestion unique", required=true)
+    @Schema(description = "A random number to make each suggestion unique", required = true)
     random: Int,
-    @Schema(description="A key to identify this pairing.", required=true)
+    @Schema(description = "A key to identify this pairing.", required = true)
     key: String
 )
 
 @Schema(
-    title="NeverPair - A pair of players that should not be paired.",
-    description="NeverPair - A pair of players that should not be paired when making a suggestion of pairings."
+    title = "NeverPair - A pair of players that should not be paired.",
+    description = "NeverPair - A pair of players that should not be paired when making a suggestion of pairings."
 )
 case class NeverPair(
-    @Schema(description="The name of a player", required=true)
+    @Schema(description = "The name of a player", required = true)
     player1: String,
-    @Schema(description="The name of a player", required=true)
+    @Schema(description = "The name of a player", required = true)
     player2: String
 )
 
 @Schema(
-    title="DuplicateSuggestions - Suggested player pairings.",
-    description="Data structure for requesting and recieving player pairings.")
+    title = "DuplicateSuggestions - Suggested player pairings.",
+    description = "Data structure for requesting and recieving player pairings.")
 case class DuplicateSuggestions(
         @ArraySchema(
-            minItems=8,
-            maxItems=8,
-            schema=new Schema(implementation=classOf[String]),
-            uniqueItems=false,
-            arraySchema = new Schema( description = "The players to pair, must be exactly 8 players", required=true)
+            minItems = 8,
+            maxItems = 8,
+            schema = new Schema(implementation = classOf[String]),
+            uniqueItems = false,
+            arraySchema = new Schema( description = "The players to pair, must be exactly 8 players", required = true)
         )
         players: List[String],
         @Schema( description = "The number of suggestions to return.")
         numberSuggestion: Int,
         @ArraySchema(
-            minItems=0,
-            schema=new Schema(implementation=classOf[Suggestion]),
-            uniqueItems=false,
-            arraySchema = new Schema( description = "The top suggested pairings", required=false)
+            minItems = 0,
+            schema = new Schema(implementation = classOf[Suggestion]),
+            uniqueItems = false,
+            arraySchema = new Schema( description = "The top suggested pairings", required = false)
         )
         suggestions: Option[List[Suggestion]],
-        @Schema( `type`="number", format="double", required=false, description="Calculation time in ms")
+        @Schema( `type` = "number", format = "double", required = false, description = "Calculation time in ms")
         calcTimeMillis: Option[Double],
-        @Schema( `type`="integer", format="int32", required=false)
+        @Schema( `type` = "integer", format = "int32", required = false)
         history: Option[Int],
         @ArraySchema(
-            minItems=0,
-            schema=new Schema(implementation=classOf[NeverPair]),
-            uniqueItems=false,
-            arraySchema = new Schema( description = "Players that should not be paired.", required=false)
+            minItems = 0,
+            schema = new Schema(implementation = classOf[NeverPair]),
+            uniqueItems = false,
+            arraySchema = new Schema( description = "Players that should not be paired.", required = false)
         )
         neverPair: Option[List[NeverPair]]
 )
@@ -141,7 +141,7 @@ object DuplicateSuggestions {
 }
 
 object DuplicateSuggestionsCalculation {
-  val log = Logger("bridge.DuplicateSuggestionsCalculation")
+  // val log = Logger("bridge.DuplicateSuggestionsCalculation")
 
   def getKey( player1: String, player2: String ) = if (player1 < player2) (player1,player2) else (player2,player1)
 
@@ -150,7 +150,7 @@ object DuplicateSuggestionsCalculation {
     val calc = new DuplicateSuggestionsCalculation( pastgames, input.players, input.neverPair )
     val end = SystemTime.currentTimeMillis()
     val calctime = end-start
-    input.copy( suggestions = Some(calc.suggest.take(input.numberSuggestion)), calcTimeMillis=Some(calctime), history=Some(pastgames.length) )
+    input.copy( suggestions = Some(calc.suggest.take(input.numberSuggestion)), calcTimeMillis = Some(calctime), history = Some(pastgames.length) )
   }
 }
 
@@ -257,7 +257,7 @@ class DuplicateSuggestionsCalculation(
       import math._
       val p = maps.get(getKey(p1, p2)) match {
         case Some(pair) =>
-          pair.copy( lastPlayed=min(pair.lastPlayed, last), timesPlayed=pair.timesPlayed+1)
+          pair.copy( lastPlayed = min(pair.lastPlayed, last), timesPlayed = pair.timesPlayed+1)
         case None =>
           Pairing( p1, p2, last, 1 ).normalize
       }
@@ -266,8 +266,8 @@ class DuplicateSuggestionsCalculation(
 
     val sortedgames = pastgames.sortWith((l,r) => l.created > r.created)
 
-    log.fine("Sorted Games")
-    sortedgames.foreach(ds => log.fine((s"""  ${ds}""")))
+    // log.fine("Sorted Games")
+    // sortedgames.foreach(ds => log.fine((s"""  ${ds}""")))
 
     for ( i1 <- 0 until len;
           i2 <- i1+1 until len ) {
@@ -297,7 +297,7 @@ class DuplicateSuggestionsCalculation(
         case Some(p) => p
         case None =>
           val p = Pairing(p1,p2, numberGames, 0).normalize
-          maps += p.key->p
+          maps += p.key -> p
           p
       }
     }
@@ -309,7 +309,7 @@ class DuplicateSuggestionsCalculation(
 
     val sug = {
       val y = sortedPlayers.permutations.map { perm =>
-        perm.grouped(2).map { pp => getPairing(pp(0),pp(1)) }.toList.sortWith((l,r) => l.player1<r.player1)
+        perm.grouped(2).map { pp => getPairing(pp(0),pp(1)) }.toList.sortWith((l,r) => l.player1 < r.player1)
       }.filter { pairs =>
         val np = pairs.find { p => isNeverPair(p.player1, p.player2)}
         np.isEmpty
@@ -373,7 +373,7 @@ class DuplicateSuggestionsCalculation(
       }.map { w =>
         if (s.countAllPlayed <= statCountAllPayed.min+1) w else w-0.5
       }.get
-      s.copy(weight=weight, weights=weightsL)
+      s.copy(weight = weight, weights = weightsL)
     }
 
     def normalizeLastPlayed( lp: Int ) = statTeamLastPlayed.normalizeForMax(lp)
@@ -418,7 +418,7 @@ class DuplicateSuggestionsCalculation(
     def sortFun( l: Suggestion, r: Suggestion ): Boolean = {
       for (c <- compfun) {
         val rc = c(l,r)
-        if (rc != 0) return rc<0
+        if (rc != 0) return rc < 0
       }
       false
     }
@@ -426,17 +426,17 @@ class DuplicateSuggestionsCalculation(
 
     val rsug = sug1.sortWith( sortFun )
 
-    log.fine(s"Suggestions:")
-    log.info("The numbers in parentheses are ( lasttime played together, number of times played together)")
-    log.info("The numbers at the end are the weights (higher means more likely) => total - minlastplayed maxlastplayed timesplayed avelastplayed avetimesplayed lastall minlastall")
+    // log.fine(s"Suggestions:")
+    // log.info("The numbers in parentheses are ( lasttime played together, number of times played together)")
+    // log.info("The numbers at the end are the weights (higher means more likely) => total - minlastplayed maxlastplayed timesplayed avelastplayed avetimesplayed lastall minlastall")
     rsug.zipWithIndex.foreach { e =>
       val (sg,i) = e
       val s = sg.players.sortWith { (l,r) =>
-                            if (l.lastPlayed==r.lastPlayed) l.timesPlayed<r.timesPlayed
-                            else l.lastPlayed<r.lastPlayed
+                            if (l.lastPlayed == r.lastPlayed) l.timesPlayed < r.timesPlayed
+                            else l.lastPlayed < r.lastPlayed
                           }.map( p => f"${p.player1}%8s-${p.player2}%-8s (${p.lastPlayed}%2d,${p.timesPlayed}%2d)").mkString(", ")
       val wts = sg.weights.map( w => f"${w}%6.4f" ).mkString(" ")
-      log.info(f"  ${i+1}%3d: ${s}%s ${sg.weight}%6.4f - ${wts}")
+      // log.info(f"  ${i+1}%3d: ${s}%s ${sg.weight}%6.4f - ${wts}")
     }
 
     ( rsug, maps.toMap )
@@ -445,17 +445,17 @@ class DuplicateSuggestionsCalculation(
   def trace( aps: collection.mutable.Map[(String, String), Pairing] ): Unit = {
 
     def getPairing( p1: String, p2: String ) = {
-      val key = if (p1<p2) (p1,p2) else (p2,p1)
+      val key = if (p1 < p2) (p1,p2) else (p2,p1)
       aps.get(key)
     }
 
-    log.fine(s"""         ${sortedPlayers.mkString(" ")}""")
-    sortedPlayers.foreach { p1 =>
-      val s = sortedPlayers.map { p2 =>
-        getPairing(p1, p2).map(p => p.lastPlayed.toString()).getOrElse("x")
-      }
-      log.fine(s"""${p1}: ${s.mkString(" ")}""")
-    }
+    // log.fine(s"""         ${sortedPlayers.mkString(" ")}""")
+    // sortedPlayers.foreach { p1 =>
+    //   val s = sortedPlayers.map { p2 =>
+    //     getPairing(p1, p2).map(p => p.lastPlayed.toString()).getOrElse("x")
+    //   }
+    //   log.fine(s"""${p1}: ${s.mkString(" ")}""")
+    // }
   }
 
 }

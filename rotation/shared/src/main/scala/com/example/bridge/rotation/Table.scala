@@ -106,11 +106,11 @@ case class Table( north: String,
 
   def setPlayer( l: Location, p: String ) = {
     l match {
-      case North => copy( north=p )
-      case South => copy( south=p )
-      case East => copy( east=p )
-      case West => copy( west=p )
-      case SittingOut => copy( sittingOut=p )
+      case North => copy( north = p )
+      case South => copy( south = p )
+      case East => copy( east = p )
+      case West => copy( west = p )
+      case SittingOut => copy( sittingOut = p )
     }
   }
 
@@ -211,7 +211,7 @@ case class Table( north: String,
   }
 
   def hasPartnership( p1: String, p2: String ) = {
-    (north==p1 && south==p2) || (north==p2 && south==p1) || (east==p1 && west==p2) || (east==p2 && west==p1)
+    (north == p1 && south == p2) || (north == p2 && south == p1) || (east == p1 && west == p2) || (east == p2 && west == p1)
   }
 
   def players() = {
@@ -252,7 +252,7 @@ object Chicago5Rotation {
    * @param order must be length 4.  The order that the players sit out.  If Nil, then north,south,west,east
    * @param list the already played hands
    */
-  def playRight(order: List[String] = Nil, list: List[Table] = Table( north="1", south="2", east="3", west="4", sittingOut="5" )::Nil) = {
+  def playRight(order: List[String] = Nil, list: List[Table] = Table( north = "1", south = "2", east = "3", west = "4", sittingOut = "5" )::Nil) = {
     var ts = list
     var s = ts.last
     var players = if (order.isEmpty) s.north::s.south::s.west::s.east::Nil else order
@@ -268,7 +268,7 @@ object Chicago5Rotation {
    * @param order must be length 1.  The order that the players sit out.  If Nil, then north,south,west,east
    * @param list the already played hands
    */
-  def playOneRight(order: List[String], list: List[Table] = Table( north="1", south="2", east="3", west="4", sittingOut="5" )::Nil) = {
+  def playOneRight(order: List[String], list: List[Table] = Table( north = "1", south = "2", east = "3", west = "4", sittingOut = "5" )::Nil) = {
     var ts = list
     var t = ts.last
     val l = getLocationNotSittingOut(order.head,ts)
@@ -280,7 +280,7 @@ object Chicago5Rotation {
    * @param order must be length 1.  The order that the players sit out.  If Nil, then north,south,west,east
    * @param list the already played hands
    */
-  def playOneLeft(order: List[String], list: List[Table] = Table( north="1", south="2", east="3", west="4", sittingOut="5" )::Nil) = {
+  def playOneLeft(order: List[String], list: List[Table] = Table( north = "1", south = "2", east = "3", west = "4", sittingOut = "5" )::Nil) = {
     var ts = list
     var t = ts.last
     val l = getLocationNotSittingOut(order.head,ts)
@@ -292,7 +292,7 @@ object Chicago5Rotation {
    * @param order must be length 4.  The order that the players sit out.  If Nil, then north,south,west,east
    * @param list the already played hands
    */
-  def playLeft(order: List[String] = Nil, list: List[Table] = Table( north="1", south="2", east="3", west="4", sittingOut="5" )::Nil) = {
+  def playLeft(order: List[String] = Nil, list: List[Table] = Table( north = "1", south = "2", east = "3", west = "4", sittingOut = "5" )::Nil) = {
     var ts = list
     var s = ts.last
     var players = if (order.isEmpty) s.north::s.south::s.west::s.east::Nil else order
@@ -310,7 +310,7 @@ object Chicago5Rotation {
    *              The first entry must be 'sittingOut' in the last entry in list
    * @param list the already played hands
    */
-  def playBoth(order: List[String] = Nil, list: List[Table] = Table( north="1", south="2", east="3", west="4", sittingOut="5" )::Nil) = {
+  def playBoth(order: List[String] = Nil, list: List[Table] = Table( north = "1", south = "2", east = "3", west = "4", sittingOut = "5" )::Nil) = {
     var ts = list
     val s = ts.last
     val players = if (order.isEmpty) s.sittingOut::s.west::s.east::s.south::s.north::Nil else order
@@ -324,7 +324,7 @@ object Chicago5Rotation {
     ts
   }
 
-  def playCounterClockwise( playerGoingOut: String, list: List[Table] = Table( north="1", south="2", east="3", west="4", sittingOut="5" )::Nil) = {
+  def playCounterClockwise( playerGoingOut: String, list: List[Table] = Table( north = "1", south = "2", east = "3", west = "4", sittingOut = "5" )::Nil) = {
     var ts = list
     val s = ts.last
     val loc = getLocationNotSittingOut(playerGoingOut,list)
@@ -333,7 +333,7 @@ object Chicago5Rotation {
 
   }
 
-  def playClockwise( playerGoingOut: String, list: List[Table] = Table( north="1", south="2", east="3", west="4", sittingOut="5" )::Nil) = {
+  def playClockwise( playerGoingOut: String, list: List[Table] = Table( north = "1", south = "2", east = "3", west = "4", sittingOut = "5" )::Nil) = {
     var ts = list
     val s = ts.last
     val loc = getLocationNotSittingOut(playerGoingOut,list)
@@ -354,7 +354,7 @@ object Chicago5Rotation {
     loc
   }
 
-  def playSwapLeftRight( playerGoingOut: String, list: List[Table] = Table( north="1", south="2", east="3", west="4", sittingOut="5" )::Nil) = {
+  def playSwapLeftRight( playerGoingOut: String, list: List[Table] = Table( north = "1", south = "2", east = "3", west = "4", sittingOut = "5" )::Nil) = {
     var ts = list
     val s = ts.last
     val loc = getLocationNotSittingOut(playerGoingOut,ts)
@@ -368,7 +368,7 @@ object Chicago5Rotation {
    *              The first entry must be 'sittingOut' in the last entry in list
    * @param list the already played hands
    */
-  def allRotations(rightfirst: Boolean, order: List[String] = Nil, list: List[Table] = Table( north="1", south="2", east="3", west="4", sittingOut="5" )::Nil) = {
+  def allRotations(rightfirst: Boolean, order: List[String] = Nil, list: List[Table] = Table( north = "1", south = "2", east = "3", west = "4", sittingOut = "5" )::Nil) = {
 
 // http://www.bridgeguys.com/pdf/FrenchPartyBridge04.pdf
 //
@@ -419,7 +419,7 @@ object Chicago5Rotation {
     }
   }
 
-  def playComplete(order: List[String] = Nil, list: List[Table] = Table( north="1", south="2", east="3", west="4", sittingOut="5" )::Nil) = {
+  def playComplete(order: List[String] = Nil, list: List[Table] = Table( north = "1", south = "2", east = "3", west = "4", sittingOut = "5" )::Nil) = {
     var nextPlayer = order.tail
     def next = {
       nextPlayer match {
@@ -486,7 +486,7 @@ object Chicago5Rotation {
     t.rotateSwapLeftRight(l)
   }
 
-  def play( maneuvers: List[Maneuver], list: List[Table] = Table( north="1", south="2", east="3", west="4", sittingOut="5" )::Nil) = {
+  def play( maneuvers: List[Maneuver], list: List[Table] = Table( north = "1", south = "2", east = "3", west = "4", sittingOut = "5" )::Nil) = {
     var ts = list
     var last = list.last
     for ( maneuver <- maneuvers ) {

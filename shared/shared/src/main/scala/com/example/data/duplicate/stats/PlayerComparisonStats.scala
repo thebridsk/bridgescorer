@@ -5,7 +5,7 @@ import com.example.data.MatchDuplicate
 import com.example.data.Hand
 import com.example.data.bridge.ContractSuit
 import com.example.data.bridge.DuplicateBridge.ScoreHand
-import utils.logging.Logger
+//import utils.logging.Logger
 import com.example.data.Team
 
 
@@ -54,12 +54,12 @@ object PlayerComparisonStat {
   val PassedOut: StatType = 3
 
   def zero( player: String, stattype: StatType ) = PlayerComparisonStat(player,stattype)
-  def aggressivegood( player: String, stattype: StatType ) = PlayerComparisonStat(player,stattype, aggressivegood=1)
-  def aggressivebad( player: String, stattype: StatType ) = PlayerComparisonStat(player,stattype, aggressivebad=1)
-  def aggressiveneutral( player: String, stattype: StatType ) = PlayerComparisonStat(player,stattype, aggressiveneutral=1)
-  def passivegood( player: String, stattype: StatType ) = PlayerComparisonStat(player,stattype, passivegood=1)
-  def passivebad( player: String, stattype: StatType ) = PlayerComparisonStat(player,stattype, passivebad=1)
-  def passiveneutral( player: String, stattype: StatType ) = PlayerComparisonStat(player,stattype, passiveneutral=1)
+  def aggressivegood( player: String, stattype: StatType ) = PlayerComparisonStat(player,stattype, aggressivegood = 1)
+  def aggressivebad( player: String, stattype: StatType ) = PlayerComparisonStat(player,stattype, aggressivebad = 1)
+  def aggressiveneutral( player: String, stattype: StatType ) = PlayerComparisonStat(player,stattype, aggressiveneutral = 1)
+  def passivegood( player: String, stattype: StatType ) = PlayerComparisonStat(player,stattype, passivegood = 1)
+  def passivebad( player: String, stattype: StatType ) = PlayerComparisonStat(player,stattype, passivebad = 1)
+  def passiveneutral( player: String, stattype: StatType ) = PlayerComparisonStat(player,stattype, passiveneutral = 1)
 
 }
 
@@ -95,7 +95,7 @@ case class PlayerComparisonStats( data: List[PlayerComparisonStat] )
 
 object PlayerComparisonStats {
 
-  val log = Logger("bridge.PlayerComparisonStats")
+//  val log = Logger("bridge.PlayerComparisonStats")
 
   implicit class WrapperCompareContractHand( val hand: Hand ) extends AnyVal with Ordered[Hand] {
 
@@ -174,12 +174,12 @@ object PlayerComparisonStats {
         Nil
     } else {
       // h2 down, h1 made
-      val (scorePassive, scoreAggressive) = if (passiveDealer=="NS") {
+      val (scorePassive, scoreAggressive) = if (passiveDealer == "NS") {
         (ScoreHand(passiveHand).score.ns, ScoreHand(aggressiveHand).score.ns)
       } else {
         (ScoreHand(passiveHand).score.ew, ScoreHand(aggressiveHand).score.ew)
       }
-      if (scoreAggressive>scorePassive) {
+      if (scoreAggressive > scorePassive) {
         // 2 good, 1 bad
         PlayerComparisonStat.passivebad(passiveDefender.player1, Competitive)::
         PlayerComparisonStat.passivebad(passiveDefender.player2, Competitive)::
@@ -218,7 +218,7 @@ object PlayerComparisonStats {
       aggressiveDeclarer: Team,
       passiveTeam: Team
   ) = {
-    val scoreAggressive = if (aggressiveDealer=="NS") {
+    val scoreAggressive = if (aggressiveDealer == "NS") {
       ScoreHand(aggressiveHand).score.ns
     } else {
       ScoreHand(aggressiveHand).score.ew
@@ -328,7 +328,7 @@ object PlayerComparisonStats {
       }
     }.toList
     val pcss = PlayerComparisonStats(r)
-    log.fine( pcss.toString() )
+//    log.fine( pcss.toString() )
     pcss
   }
 
