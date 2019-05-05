@@ -97,7 +97,7 @@ Options:""")
   val optionCertificate = opt[String]("certificate", short = 'c', descr = "the private certificate for the server, default=None", argName = "p12", default = None)
   val optionCertPassword = opt[String]("certpassword", descr = "the password for the private certificate, default=None", argName = "pw", default = None)
   val optionHttps = opt[Int]("https", short = 'h', descr = "https port to use", argName = "port", default = None, validate= {p => p > 0 && p <= 65535});
-  val optionStorex = opt[Path]("store", short = 's', descr = "The store directory, default=./store", argName = "dir", default = Some("./store"))
+  val optionStore = opt[Path]("store", short = 's', descr = "The store directory, default=./store", argName = "dir", default = Some("./store"))
   val optionRunFor = opt[Duration]("runfor", short = 'r', descr = s"Run for specified as a duration, default ${defaultRunFor}", argName = "dur", default = Some(Duration(defaultRunFor)), validate = {p => p.compare(Duration.Zero) > 0});
 //  val optionShutdown = toggle("shutdown", default = Some(false), noshort = true,
 //                              descrYes = "Shutdown a server running on the same machine, other options should be the same as when starting server",

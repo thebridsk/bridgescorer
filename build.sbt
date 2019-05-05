@@ -157,7 +157,7 @@ lazy val Distribution = config("distribution") describedAs("tasks for creating a
 // defined with taskKey[Unit](desc) instead of TaskKey[Unit](name,desc).
 // The error is a type error, expecting a T got a Unit.
 //
-val prereqintegrationtests = TaskKey[Unit]("prereqintegrationtests", "Prereqs for unit tests on the assembly.jar file.") in Distribution
+val prereqintegrationtests = taskKey[Unit]( "Prereqs for unit tests on the assembly.jar file.") in Distribution
 
 val integrationtests = taskKey[Unit]("Runs integration tests on the assembly.jar file.") in Distribution
 
@@ -200,6 +200,8 @@ val allassembly = taskKey[Unit]("Build assembly and test assembly")
 val webassembly = taskKey[Unit]("Build web application")
 
 val checkForUpdates = taskKey[Unit]("Check for updates")
+
+val skipGenerateImageSetting = settingKey[Boolean]("if true images generation is skipped if they already exist")
 
 val hugo = taskKey[Unit]("Run Hugo")
 val hugosetup = taskKey[Unit]("Setup to run Hugo")
@@ -623,6 +625,7 @@ lazy val `bridgescorer-shared` = crossProject(JSPlatform, JVMPlatform).in(file("
   jvmSettings(
     libraryDependencies ++= bridgeScorerSharedJVMDeps.value
   ).
+//   jvmConfigure( _.dependsOn( `utilities-jvm` ) ).
   jsSettings(
 
     // This gets rid of the jetty check which is required for the sbt runtime
@@ -632,13 +635,14 @@ lazy val `bridgescorer-shared` = crossProject(JSPlatform, JVMPlatform).in(file("
 //    dependencyUpdatesExclusions := moduleFilter(organization = "org.eclipse.jetty")
     dependencyUpdatesFilter -= moduleFilter(organization = "org.eclipse.jetty")
 
-  )
+  ) // .
+//  jvmConfigure( _.dependsOn( `utilities-jvm` ) )
 
 lazy val sharedJS: Project = `bridgescorer-shared`.js.
-  dependsOn( ProjectRef( uri("utilities"), "utilities-js" ))
+  dependsOn( `utilities-js` )
 
 lazy val sharedJVM = `bridgescorer-shared`.jvm.
-  dependsOn( ProjectRef( uri("utilities"), "utilities-jvm" ))
+  dependsOn( `utilities-jvm` )
 
 lazy val `bridgescorer-rotation` = crossProject(JSPlatform, JVMPlatform).in(file("rotation")).
   enablePlugins(BuildInfoPlugin).
@@ -710,12 +714,15 @@ lazy val materialui = project.in(file("materialui")).
     libraryDependencies ++= materialUiDeps.value,
   )
 
+lazy val `utilities-js` = ProjectRef( uri("utilities"), "utilities-js" )
+lazy val `utilities-jvm` = ProjectRef( uri("utilities"), "utilities-jvm" )
+
 lazy val `bridgescorer-client` = project.in(file("client")).
   enablePlugins(BuildInfoPlugin).
   enablePlugins(ScalaJSPlugin).
   enablePlugins(ScalaJSBundlerPlugin).
   dependsOn( sharedJS, rotationJS, materialui ).
-  dependsOn( ProjectRef( uri("utilities"), "utilities-js" )).
+  dependsOn( `utilities-js` ).
   settings(commonSettings: _*).
   settings(
     name := "bridgescorer-client",
@@ -847,6 +854,9 @@ lazy val help = project.in(file("help")).
   settings( versionSetting: _* ).
   settings(
     scalaVersion  := verScalaVersion,
+
+    skipGenerateImageSetting := skipGenerateImage,
+
     hugo := {
       val setup = hugosetup.value
       val log = streams.value.log
@@ -877,7 +887,7 @@ lazy val help = project.in(file("help")).
       val log = streams.value.log
       val bd = new File(baseDirectory.value, "docs" )
       val oldtask = hugoWithTest.taskValue
-      if (skipGenerateImage && Hugo.gotGeneratedImages(log,bd)) {
+      if (skipGenerateImageSetting.value && Hugo.gotGeneratedImages(log,bd)) {
         hugo
       } else {
         Def.task(oldtask.value)
