@@ -1066,7 +1066,7 @@ class DuplicateTestPages extends FlatSpec
       lp.findElemById("Statistics")
     }
 
-    val peoplePage = lp.clickStatistics.validate.takeScreenshot(docsScreenshotDir, "Pairs").clickPeopleResults
+    val peoplePage = lp.clickStatistics.validate.takeScreenshot(docsScreenshotDir, "Stats").clickPeopleResults
 
     if (ids.size == 1) {
       peoplePage.checkPeopleMP( peopleResult:_*)
@@ -1474,6 +1474,8 @@ class DuplicateTestPages extends FlatSpec
     val players = "Iqbal"::checkNames
 
     players must contain theSameElementsAs neverPairNames
+    
+    sug.takeScreenshot(docsScreenshotDir, "PairingsEnter")
   }
 
   it should "calculate a pairing" in {
@@ -1489,6 +1491,7 @@ class DuplicateTestPages extends FlatSpec
     val se = SuggestionPage.current
     se.pageType mustBe SuggestionPage.ResultWithNeverPair
 
+    se.clickCancelNeverPair.validate.takeScreenshot(docsScreenshotDir, "Pairings")
   }
 
   it should "go to duplicate list page from suggestion page" in {
