@@ -99,7 +99,9 @@ object Install extends Subcommand("install") {
 
   val logger = Logger( Install.getClass.getName )
 
-  val filesForWindows = "server.bat"::"serverMemory.bat"::"collectlogs.bat"::"update.bat"::Nil
+  val filesForWindows = "server.bat"::"serverMemory.bat"::
+                        "collectlogs.bat"::"update.bat"::
+                        "findServerJar.bat"::Nil
   val filesForLinux = "server"::"serverMemory"::"collectlogs"::"update"::Nil
 
   implicit def dateConverter: ValueConverter[Duration] = singleArgConverter[Duration](Duration(_))
