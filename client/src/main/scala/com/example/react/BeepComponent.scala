@@ -86,11 +86,11 @@ object BeepComponent {
 //          MuiIcons.Check(
 //              color=color,
 //              classes = js.Dictionary("root" -> "mainMenuItemIcon")
-//          )()
+//          )
           if (playEnabled) {
-            MuiIcons.CheckBox()()
+            MuiIcons.CheckBox()
           } else {
-            MuiIcons.CheckBoxOutlineBlank()()
+            MuiIcons.CheckBoxOutlineBlank()
           }
         }
     )

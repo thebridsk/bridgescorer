@@ -716,11 +716,11 @@ object PageSummaryInternal {
 //                        MuiIcons.Check(
 //                            color=color,
 //                            classes = js.Dictionary("root" -> "mainMenuItemIcon")
-//                        )()
+//                        )
                         if (state.alwaysShowAll || state.showRows.isEmpty) {
-                          MuiIcons.CheckBox()()
+                          MuiIcons.CheckBox()
                         } else {
-                          MuiIcons.CheckBoxOutlineBlank()()
+                          MuiIcons.CheckBoxOutlineBlank()
                         }
                       }
                   ),

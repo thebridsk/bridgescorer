@@ -1315,20 +1315,23 @@ class DuplicateTestPages extends FlatSpec
   it should "go to second game and delete it" in {
     import SessionDirector._
 
-//    val sb = ScoreboardPage.goto(dupid2.get).validate
-    val sb = ScoreboardPage.current
-    val menu = sb.clickMainMenu.validate
-    eventually {menu.findElemById("Director")}
-    val dsb = menu.clickDirectorButton.validate
+    PageBrowser.withClueAndScreenShot(screenshotDir, "DeleteSecondGame", "") {
 
-    dsb.isPopupDisplayed mustBe false
+//      val sb = ScoreboardPage.goto(dupid2.get).validate
+      val sb = ScoreboardPage.current
+      val menu = sb.clickMainMenu.validate
+      eventually {menu.findElemById("Director")}
+      val dsb = menu.clickDirectorButton.validate
 
-    val pop = dsb.clickDelete.validatePopup()
-    Thread.sleep(2000L)
-    val dsb2 = pop.clickPopUpCancel.validatePopup(false)
+      dsb.isPopupDisplayed mustBe false
 
-    val listpage = dsb2.clickDelete.validatePopup().clickDeleteOk.validate
-    listpage.getMatchIds must not contain dupid2.get
+      val pop = dsb.clickDelete.validatePopup()
+      Thread.sleep(2000L)
+      val dsb2 = pop.clickPopUpCancel.validatePopup(false)
+
+      val listpage = dsb2.clickDelete.validatePopup().clickDeleteOk.validate
+      listpage.getMatchIds must not contain dupid2.get
+    }
   }
 
   it should "go to first game when it is selected on summary page" in {
@@ -1474,7 +1477,7 @@ class DuplicateTestPages extends FlatSpec
     val players = "Iqbal"::checkNames
 
     players must contain theSameElementsAs neverPairNames
-    
+
     sug.takeScreenshot(docsScreenshotDir, "PairingsEnter")
   }
 

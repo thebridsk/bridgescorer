@@ -158,7 +158,7 @@ object BridgeAppBarInternal {
                             onClick = handleHelpGotoPageClick(props.helpurl) _,
                             color=ColorVariant.inherit
                         )(
-                            MuiIcons.Help()()
+                            MuiIcons.Help()
                         ),
 
           MuiIconButton(
@@ -166,7 +166,7 @@ object BridgeAppBarInternal {
                             onClick = handleMoreClick _,
                             color=ColorVariant.inherit
                         )(
-                            MuiIcons.MoreVert()()
+                            MuiIcons.MoreVert()
                         )
         )
 
@@ -201,7 +201,7 @@ object BridgeAppBarInternal {
                     onClick = props.handleMainClick,
                     color=ColorVariant.inherit
                 )(
-                  MuiIcons.Menu()()
+                  MuiIcons.Menu()
                 ),
                 if (props.showHomeButton) {
                   MuiIconButton(
@@ -209,7 +209,7 @@ object BridgeAppBarInternal {
                       onClick = gotoHomePage _,
                       color=ColorVariant.inherit
                   )(
-                      MuiIcons.Home()()
+                      MuiIcons.Home()
                   )
                 } else {
                   TagMod.empty
