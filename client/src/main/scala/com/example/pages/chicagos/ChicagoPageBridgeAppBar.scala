@@ -153,7 +153,7 @@ object ChicagoPageBridgeAppBarInternal {
 //                    MuiIcons.Check(
 //                        color= (if (HomePage.isFastclickOn) SvgColor.inherit else SvgColor.disabled),
 //                        classes = js.Dictionary("root" -> "mainMenuItemIcon").asInstanceOf[js.Object]
-//                    )()
+//                    )
 //                ),
 //              )
           )

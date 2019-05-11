@@ -225,7 +225,7 @@ object RootBridgeAppBarInternal {
                     "Test Hands",
                     MuiIcons.ChevronRight(
                         classes = js.Dictionary("root" -> "mainMenuItemIcon")
-                    )()
+                    )
                 ),
                 {
                   val path = GotoPage.currentURL
@@ -249,11 +249,11 @@ object RootBridgeAppBarInternal {
 //                      MuiIcons.Check(
 //                          color=color,
 //                          classes = js.Dictionary("root" -> "mainMenuItemIcon")
-//                      )()
+//                      )
                       if (check) {
-                        MuiIcons.CheckBox()()
+                        MuiIcons.CheckBox()
                       } else {
-                        MuiIcons.CheckBoxOutlineBlank()()
+                        MuiIcons.CheckBoxOutlineBlank()
                       }
                   )
                 },
@@ -269,11 +269,11 @@ object RootBridgeAppBarInternal {
 //                      MuiIcons.Check(
 //                          color=color,
 //                          classes = js.Dictionary("root" -> "mainMenuItemIcon")
-//                      )()
+//                      )
                       if (state.userSelect) {
-                        MuiIcons.CheckBox()()
+                        MuiIcons.CheckBox()
                       } else {
-                        MuiIcons.CheckBoxOutlineBlank()()
+                        MuiIcons.CheckBoxOutlineBlank()
                       }
                     }
                 ),

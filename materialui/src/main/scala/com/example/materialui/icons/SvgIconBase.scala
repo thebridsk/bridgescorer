@@ -168,8 +168,6 @@ trait SvgIconBase extends ComponentFactory[SvgIconProps] {
       viewBox: js.UndefOr[String] = js.undefined,
 
       additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
-  )(
-      children: CtorType.ChildArg*
   ) = {
     val p: SvgIconProps = SvgIconProps(
       classes = classes,
@@ -183,7 +181,7 @@ trait SvgIconBase extends ComponentFactory[SvgIconProps] {
       additionalProps = additionalProps
     )
 
-    f(p)(children:_*)
+    f(p)()
   }
 
   @inline
@@ -210,6 +208,6 @@ trait SvgIconBase extends ComponentFactory[SvgIconProps] {
       titleAccess = titleAccess,
       viewBox = viewBox,
       additionalProps = additionalProps
-    )()
+    )
   }
 }
