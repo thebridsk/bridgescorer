@@ -50,6 +50,16 @@ class Element( val underlying: WebElement )(implicit pos: Position, webdriver: W
       Thread.sleep( 100L )
     }
 
+    /**
+     * Send enter to the element.
+     * Most of the time this is functionally equivalent to clicking the element.
+     */
+    def enter = {
+      PageBrowser.scrollToElement(underlying)
+      sendKeys( Keys.ENTER.toString() )
+      Thread.sleep( 100L )
+    }
+
     override def equals(other: Any): Boolean = underlying == other
 
     override def hashCode: Int = underlying.hashCode

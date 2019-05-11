@@ -25,11 +25,14 @@ var getHTML = function ( url, callback ) {
 
 };
 
-var getHTMLFragment = function( url, selector ) {
+var getHTMLFragment = function( url, selector, callback ) {
     getHTML( url, function (response) {
         var someElem = document.querySelector( selector );
         var someOtherElem = response.querySelector( ':root > body > div' );
         someElem.innerHTML = someOtherElem.innerHTML;
+        if ( callback && typeof( callback ) === 'function' ) {
+            callback();
+        }
     });
     
 }

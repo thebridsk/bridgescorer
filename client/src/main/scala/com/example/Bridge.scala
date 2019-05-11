@@ -31,6 +31,7 @@ import com.example.rest2.AjaxResult
 /**
  * @author werewolf
  */
+@JSExportTopLevel("Bridge")
 object Bridge {   // need to figure out how to use new way to call main
 
   sealed trait MyPages
@@ -54,12 +55,12 @@ object Bridge {   // need to figure out how to use new way to call main
     }
   }
 
-  def main(args: Array[String]): Unit = main()
+//  def main(args: Array[String]): Unit = main()
 
 //  @JSExportTopLevel("com.example.Bridge")
 //  protected def getInstance(): this.type = this
 
-//  @JSExport
+  @JSExport
   def main(): Unit = Alerter.tryitWithUnit {
 
     if (isDemo) {

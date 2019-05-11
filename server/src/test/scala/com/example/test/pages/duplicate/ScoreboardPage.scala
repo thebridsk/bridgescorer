@@ -318,7 +318,7 @@ class ScoreboardPage(
   def clickSummary(implicit patienceConfig: PatienceConfig, pos: Position) = {
 //    clickButton("Summary")
     val b = findElemById("Summary")
-    b.sendKeys(Keys.ENTER.toString())
+    b.enter
     new ListDuplicatePage(None)
   }
 
