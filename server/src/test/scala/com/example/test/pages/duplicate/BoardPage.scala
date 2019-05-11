@@ -558,7 +558,7 @@ class BoardPage( implicit webDriver: WebDriver, pageCreated: SourcePosition ) ex
     import org.openqa.selenium.Keys
     val b = findElemById(s"""Board_B${board}""")
     b.scrollToElement
-    b.sendKeys(Keys.ENTER.toString())
+    b.enter
     new HandPage
   }
 
@@ -566,7 +566,7 @@ class BoardPage( implicit webDriver: WebDriver, pageCreated: SourcePosition ) ex
     getTableId match {
       case Some(id) =>
         if (id != table.toString()) fail(s"""Not on board for table ${table}, on ${id}""")
-        clickButton("Table")
+        enterOnButton("Table")
         eventually { TablePage.current(Hands) }
       case None =>
         fail(s"""Not on board for table ${table}""")

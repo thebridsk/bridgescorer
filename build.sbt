@@ -736,7 +736,7 @@ lazy val `bridgescorer-client` = project.in(file("client")).
     version in startWebpackDevServer := vWebpackDevServer,
     version in installJsdom := vJsDom,
 
-    scalaJSUseMainModuleInitializer := true,
+//    scalaJSUseMainModuleInitializer := true,
 
     buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion),
     buildInfoPackage := "com.example.version",

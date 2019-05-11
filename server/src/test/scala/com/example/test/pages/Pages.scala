@@ -194,6 +194,22 @@ abstract class Page[ +T <: Page[T] ]()( implicit webDriver: WebDriver, pageCreat
     self
   }
 
+  def enterOnButton( bid: String )(implicit patienceConfig: PatienceConfig, pos: Position): this.type = {
+    try {
+      eventually {
+        val we = findElemById(bid)
+//        PageBrowser.scrollToElement(we.underlying)
+        if (!we.underlying.isDisplayed()) Thread.sleep(100)
+        we.enter
+      }
+    } catch {
+      case x: Exception =>
+        log.warning(s"""Got exception clicking button, patienceConfig = ${patienceConfig}""",x)
+        throw x
+    }
+    self
+  }
+
   /**
    * Find an input field
    * @param iname the value of the <code>name</code> attribute of the button

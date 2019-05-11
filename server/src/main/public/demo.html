@@ -65,7 +65,7 @@
     <div id="ForDefaultStyles" style="visibility:hidden; position: fixed; left: 0px; top: 0px;">
         <script src="loadfile.js" ></script>
         <script type="text/javascript">
-            getHTMLFragment('defaults.html', '#ForDefaultStyles')
+            getHTMLFragment('defaults.html', '#ForDefaultStyles', function() { Bridge.main() } )
         </script>
     </div>
     <audio id="audioPlayer" preload="auto">
