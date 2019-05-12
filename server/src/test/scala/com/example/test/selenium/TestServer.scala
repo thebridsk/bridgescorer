@@ -14,6 +14,9 @@ import java.net.URL
 import com.example.service.MyService
 import scala.reflect.io.Directory
 import com.example.backend.FileImportStore
+import com.example.logging.RemoteLoggingConfig
+import java.io.File
+import com.example.backend.BridgeServiceWithLogging
 
 object TestServer {
 
@@ -30,6 +33,10 @@ object TestServer {
 
   val useFullOptOnly = getBooleanProp("UseFullOpt",false)
 
+  val optRemoteLogger = getProp("OptRemoteLogger")
+  val optBrowserRemoteLogging = getProp("OptBrowserRemoteLogging")
+  val optIPadRemoteLogging = getProp("OptIPadRemoteLogging")
+
   val useProductionPage = useFullOptOnly || (envUseProductionPage && !useFastOptOnly)
 
   def loggingConfig(l: List[String]) = LoggerConfig( "[root]=ALL"::Nil, "console=INFO"::l)
@@ -45,16 +52,45 @@ object TestServer {
       }
 
     }
-    bs.setDefaultLoggerConfig( useWebsocketLogging match {
-        case Some(v) =>
-          testlog.info(s"useWebsocketLogging: ${v}")
-          if (java.lang.Boolean.parseBoolean(v)) loggingConfig("websocket=ALL,bridge"::Nil)
-          else loggingConfig("server=ALL"::Nil)
-        case _ =>
-          testlog.info(s"useWebsocketLogging was not set")
-          loggingConfig("server=ALL"::Nil)
-      }, false
-    )
+
+    var setConfig: Boolean = false
+
+    val rlc = optRemoteLogger.flatMap { f =>
+      val x = Option(RemoteLoggingConfig.readConfig(new File(f)))
+      testlog.info(s"Maybe using ${f}: ${x}")
+      setConfig = true
+      x
+    }.getOrElse {
+      BridgeServiceWithLogging.getDefaultRemoteLoggerConfig().getOrElse(RemoteLoggingConfig())
+    }
+
+    optBrowserRemoteLogging.orElse(Some("default")).map { p =>
+      rlc.browserConfig("default", p).foreach { lc =>
+        testlog.info(s"Setting browser logging to ${p}: ${lc}")
+        bs.setDefaultLoggerConfig(lc, false)
+        setConfig = true
+      }
+    }
+    optIPadRemoteLogging.orElse(Some("default")).foreach { p =>
+      rlc.browserConfig("ipad", p).foreach { lc =>
+        testlog.info(s"Setting iPad logging to ${p}: ${lc}")
+        bs.setDefaultLoggerConfig(lc, true)
+        setConfig = true
+      }
+    }
+
+    if (!setConfig) {
+      bs.setDefaultLoggerConfig( useWebsocketLogging match {
+          case Some(v) =>
+            testlog.info(s"useWebsocketLogging: ${v}")
+            if (java.lang.Boolean.parseBoolean(v)) loggingConfig("websocket=ALL,bridge"::Nil)
+            else loggingConfig("server=ALL"::Nil)
+          case _ =>
+            testlog.info(s"useWebsocketLogging was not set")
+            loggingConfig("server=ALL"::Nil)
+        }, false
+      )
+    }
     testlog.fine("Using browser logging config: "+bs.getDefaultLoggerConfig(false) )
     bs
   }

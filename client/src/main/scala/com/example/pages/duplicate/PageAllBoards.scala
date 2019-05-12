@@ -151,7 +151,7 @@ object PageAllBoardsInternal {
     val didMount = scope.props >>= { (p) => CallbackTo {
       logger.info("PageAllBoards.didMount")
       DuplicateStore.addChangeListener(storeCallback)
-      Controller.monitorMatchDuplicate(p.page.dupid)
+      Controller.monitor(p.page.dupid)
     }}
 
     val willUnmount = CallbackTo {

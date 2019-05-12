@@ -864,7 +864,7 @@ object PageTableTeamsInternal {
       logger.info("PageTableTeams.didMount")
       NamesStore.ensureNamesAreCached(Some(namesCallback))
       DuplicateStore.addChangeListener(storeCallback)
-      Controller.monitorMatchDuplicate(p.page.dupid)
+      Controller.monitor(p.page.dupid)
     }}
 
     val willUnmount = Callback {

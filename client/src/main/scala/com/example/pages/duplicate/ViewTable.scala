@@ -198,7 +198,7 @@ object ViewTableInternal {
     val didMount = scope.props >>= { (p) => Callback {
       logger.info("ViewTable.didMount")
       DuplicateStore.addChangeListener(storeCallback)
-      Controller.monitorMatchDuplicate(p.page.dupid)
+      Controller.monitor(p.page.dupid)
     }}
 
     val willUnmount = Callback {

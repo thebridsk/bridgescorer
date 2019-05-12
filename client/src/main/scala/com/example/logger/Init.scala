@@ -90,7 +90,7 @@ object Init {
         logger.info("Got "+config)
         pclientid = config.clientid
         config.useRestToServer.map( b => Controller.useRestToServer = b )
-        config.useSSEFromServer.map( b => Controller.useSSEFromServer = b )
+        config.useSSEFromServer.map( b => Controller.setUseSSEFromServer(b) )
         if (config.loggers.length > 0) {
           // set trace levels in loggers to config.loggers
           processLoggers(config.loggers)

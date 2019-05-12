@@ -220,7 +220,7 @@ object PageNamesInternal {
       NamesStore.ensureNamesAreCached(Some(namesCallback))
       DuplicateStore.addChangeListener(storeCallback)
 
-      Controller.monitorMatchDuplicate(props.page.dupid)
+      Controller.monitor(props.page.dupid)
     }}
 
     val willUnmount = Callback {
