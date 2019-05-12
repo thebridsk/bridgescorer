@@ -160,6 +160,8 @@ object Controller {
       case Protocol.UpdateDuplicateTeam(dupid,team) =>
         BridgeDispatcher.updateTeam(dupid, team)
       case Protocol.NoData(_) =>
+      case Protocol.UpdateChicago(_) =>
+      case Protocol.UpdateRubber(_) =>
     }
   }
 
@@ -370,11 +372,11 @@ object Controller {
               resetESTimeout(dupid)
               resetESRestartTimeout(dupid)
             } else {
-              getDuplexPipe().clearSession(Protocol.StopMonitor(mdid))
+              getDuplexPipe().clearSession(Protocol.StopMonitorDuplicate(mdid))
               BridgeDispatcher.startDuplicateMatch(dupid)
               getDuplexPipe().setSession { dp =>
                 logger.info(s"""In Session: Switching MatchDuplicate monitor to ${dupid} from ${mdid}""" )
-                dp.send(Protocol.StartMonitor(dupid))
+                dp.send(Protocol.StartMonitorDuplicate(dupid))
               }
             }
           } else {
@@ -393,7 +395,7 @@ object Controller {
             BridgeDispatcher.startDuplicateMatch(dupid)
             getDuplexPipe().setSession { dp =>
               logger.info(s"""In Session: Starting MatchDuplicate monitor to ${dupid}""" )
-              dp.send(Protocol.StartMonitor(dupid))
+              dp.send(Protocol.StartMonitorDuplicate(dupid))
             }
           }
       }
@@ -446,7 +448,7 @@ object Controller {
         case Some(d) =>
           DuplicateStore.getId() match {
             case Some(id) =>
-              d.clearSession(Protocol.StopMonitor(id))
+              d.clearSession(Protocol.StopMonitorDuplicate(id))
             case None =>
           }
           BridgeDispatcher.stop()

@@ -75,7 +75,6 @@ import com.example.test.util.HttpUtils
 import com.example.test.util.HttpUtils.ResponseFromHttp
 import com.example.backend.StoreMonitor
 import com.example.data.websocket.Protocol
-import com.example.data.websocket.Protocol.StartMonitor
 import com.example.backend.StoreMonitor.NewParticipant
 import com.example.backend.StoreMonitor.ReceivedMessage
 import com.example.data.websocket.DuplexProtocol

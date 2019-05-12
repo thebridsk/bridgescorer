@@ -57,7 +57,7 @@ import com.example.data.DuplicateSummary
 import akka.http.scaladsl.testkit.RouteTest
 import com.example.data.websocket.Protocol.ToServerMessage
 import com.example.data.websocket.DuplexProtocol.Send
-import com.example.data.websocket.Protocol.StartMonitor
+import com.example.data.websocket.Protocol.StartMonitorDuplicate
 import com.example.data.websocket.DuplexProtocol.DuplexMessage
 import com.example.test.util.WebsocketClient
 import com.example.test.util.WebsocketClientImplicits
@@ -235,7 +235,7 @@ class TestDuplicateWebsocket extends FlatSpec with ScalatestRouteTest with MustM
     def process( msg: Protocol.ToServerMessage ) = {
       testlog.info(s"""withHook got $msg""")
       msg match {
-        case _: StartMonitor => gotStartMonitor = true
+        case _: StartMonitorDuplicate => gotStartMonitor = true
         case _ =>
       }
     }
@@ -264,7 +264,7 @@ class TestDuplicateWebsocket extends FlatSpec with ScalatestRouteTest with MustM
       testlog.info(s"withHook gotJoin=$gotJoin gotStartMonitor=$gotStartMonitor")
       gotJoin mustBe true
       gotStartMonitor mustBe false
-      client1.send(StartMonitor("M1"))
+      client1.send(StartMonitorDuplicate("M1"))
       client1.within(10 seconds) {
         client1.testUpdate(createdM1.get)
       }
@@ -327,7 +327,7 @@ class TestDuplicateWebsocket extends FlatSpec with ScalatestRouteTest with MustM
       client1.within(10 seconds) { client1.testJoin() }
       client3.within(10 seconds) { client3.testJoin() }
 
-      client2.send(StartMonitor(s"${md.id}"))
+      client2.send(StartMonitorDuplicate(s"${md.id}"))
       client2.within(10 seconds) {
         client2.testUpdate(md)
       }

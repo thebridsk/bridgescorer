@@ -57,7 +57,7 @@ import com.example.data.DuplicateSummary
 import akka.http.scaladsl.testkit.RouteTest
 import com.example.data.websocket.Protocol.ToServerMessage
 import com.example.data.websocket.DuplexProtocol.Send
-import com.example.data.websocket.Protocol.StartMonitor
+import com.example.data.websocket.Protocol.StartMonitorDuplicate
 import com.example.data.MatchDuplicateResult
 import com.example.data.Id
 import scala.reflect.ClassTag
@@ -68,6 +68,8 @@ import com.example.backend.resource.DeleteChangeContext
 import com.example.backend.resource.StoreListener
 import com.example.backend.resource.Store
 import com.example.data.VersionedInstance
+import com.example.data.websocket.Protocol.UpdateRubber
+import com.example.data.websocket.Protocol.UpdateChicago
 
 class TestDuplicateRestSpec extends FlatSpecLike with ScalatestRouteTest with MustMatchers with MyService {
 
@@ -180,6 +182,10 @@ class TestDuplicateRestSpec extends FlatSpecLike with ScalatestRouteTest with Mu
           fail("Unexpected response from the monitor: "+pl)
         case nd: NoData =>
           fail("Unexpected response from the monitor: "+nd)
+        case m: UpdateChicago =>
+          fail("Unexpected response from the monitor: "+m)
+        case m: UpdateRubber =>
+          fail("Unexpected response from the monitor: "+m)
       }) {}
   }
 
@@ -220,6 +226,10 @@ class TestDuplicateRestSpec extends FlatSpecLike with ScalatestRouteTest with Mu
           fail("Unexpected response from the monitor: "+pl)
         case nd: NoData =>
           fail("Unexpected response from the monitor: "+nd)
+        case m: UpdateChicago =>
+          fail("Unexpected response from the monitor: "+m)
+        case m: UpdateRubber =>
+          fail("Unexpected response from the monitor: "+m)
       }
   }
 
@@ -257,6 +267,10 @@ class TestDuplicateRestSpec extends FlatSpecLike with ScalatestRouteTest with Mu
           testlog.debug ("Got the join: "+pj )
         case nd: NoData =>
           fail("Unexpected response from the monitor: "+nd)
+        case m: UpdateChicago =>
+          fail("Unexpected response from the monitor: "+m)
+        case m: UpdateRubber =>
+          fail("Unexpected response from the monitor: "+m)
       }
   }
 
@@ -294,6 +308,10 @@ class TestDuplicateRestSpec extends FlatSpecLike with ScalatestRouteTest with Mu
           fail("Unexpected response from the monitor: "+pj)
         case nd: NoData =>
           fail("Unexpected response from the monitor: "+nd)
+        case m: UpdateChicago =>
+          fail("Unexpected response from the monitor: "+m)
+        case m: UpdateRubber =>
+          fail("Unexpected response from the monitor: "+m)
       }
   }
 
@@ -352,7 +370,7 @@ class TestDuplicateRestSpec extends FlatSpecLike with ScalatestRouteTest with Mu
           val cleanmd = new BridgeServiceInMemory("test").fillBoards(MatchDuplicate.create("M1"))
 //          testUpdate(wsClient,cleanmd)
         }
-        wsClient.send(StartMonitor("M1"))
+        wsClient.send(StartMonitorDuplicate("M1"))
         wsClient.inProbe.within(10 seconds) {
           testUpdate(wsClient,createdM1.get)
         }
