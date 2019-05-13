@@ -63,6 +63,7 @@ import com.example.data.websocket.Protocol.UpdateChicago
 import com.example.data.websocket.Protocol.UpdateRubber
 import com.example.data.MatchChicago
 import com.example.data.MatchRubber
+import com.example.backend.StoreMonitor.ChatEvent
 
 object StoreMonitor {
   sealed trait ChatEvent
@@ -266,7 +267,8 @@ abstract class BaseStoreMonitor[VId, VType <: VersionedInstance[VType,VType,VId]
 class StoreMonitorManager[VId, VType <: VersionedInstance[VType,VType,VId]](
     system: ActorSystem,
     store: Store[VId,VType],
-    storeMonitorClass: Class[_]
+    storeMonitorClass: Class[_],
+    newParticipant: (String,VId,ActorRef) => ChatEvent
 ) {
   val log = Logging(system, getClass)
 
@@ -306,24 +308,12 @@ class StoreMonitorManager[VId, VType <: VersionedInstance[VType,VType,VId]](
     f
   }
 
-  def monitorDuplicateSource( sender: RemoteAddress, id: Id.MatchDuplicate) = {
-    sseSource(sender,
-              Source.actorRef[DuplexProtocol.DuplexMessage](10, OverflowStrategy.fail ).
-                mapMaterializedValue { x => monitor ! NewParticipantSSEDuplicate(sender.toString(),id, x) }
-    )
-  }
 
-  def monitorChicagoSource( sender: RemoteAddress, id: Id.MatchChicago) = {
-    sseSource(sender,
-              Source.actorRef[DuplexProtocol.DuplexMessage](10, OverflowStrategy.fail ).
-                mapMaterializedValue { x => monitor ! NewParticipantSSEChicago(sender.toString(),id, x) }
-    )
-  }
 
-  def monitorRubberSource( sender: RemoteAddress, id: String) = {
+  def monitorMatch( sender: RemoteAddress, id: VId) = {
     sseSource(sender,
               Source.actorRef[DuplexProtocol.DuplexMessage](10, OverflowStrategy.fail ).
-                mapMaterializedValue { x => monitor ! NewParticipantSSERubber(sender.toString(),id, x) }
+                mapMaterializedValue { x => monitor ! newParticipant(sender.toString(),id, x) }
     )
   }
 
@@ -398,14 +388,17 @@ class DuplicateStoreMonitor(system: ActorSystem,
         log.warning("Updating the MatchDuplicate object is not supported")
         DuplexProtocol.ErrorResponse("Updating the MatchDuplicate object is not supported", seq)
       case UpdateDuplicateHand( dupid, hand ) =>
+        log.warning(s"UpdateDuplicateHand ${dupid} ${hand}")
         Await.result( store.select(dupid).resourceBoards.select(hand.board).resourceHands.select(hand.id).update(hand), 30.seconds )
         dispatchToAllDuplicate(dupid,UpdateDuplicateHand(dupid,hand))
         DuplexProtocol.Response(if (ack) UpdateDuplicateHand( dupid, hand ) else NoData(),seq)
       case UpdateDuplicateTeam( dupid, team ) =>
+        log.warning(s"UpdateDuplicateTeam ${dupid} ${team}")
         Await.result( store.select(dupid).resourceTeams.select(team.id).update(team), 30.seconds )
         dispatchToAllDuplicate(dupid,UpdateDuplicateTeam(dupid,team))
         DuplexProtocol.Response(if (ack) UpdateDuplicateTeam( dupid, team ) else NoData(), seq)
       case StartMonitorDuplicate(dupid: Id.MatchDuplicate ) =>
+        log.warning(s"StartMonitorDuplicate ${dupid}")
         get(sender) match {
           case Some(sub) =>
             add( new DuplicateSubscription( sub, dupid ) )
@@ -424,7 +417,7 @@ class DuplicateStoreMonitor(system: ActorSystem,
             DuplexProtocol.Response(NoData(),seq)
         }
       case StopMonitorDuplicate(dupid) =>
-        log.info(s"StopMonitor ${dupid}")
+        log.info(s"StopMonitorDuplicate ${dupid}")
         get(sender) match {
           case Some(sub) =>
             add( sub.getSubscription() )
@@ -505,6 +498,7 @@ class ChicagoStoreMonitor(system: ActorSystem,
         DuplexProtocol.ErrorResponse("Unknown request", seq)
 
       case StartMonitorChicago(dupid: Id.MatchChicago ) =>
+        log.info(s"StartMonitorChicago ${dupid}")
         get(sender) match {
           case Some(sub) =>
             add( new ChicagoSubscription( sub, dupid ) )
@@ -531,6 +525,7 @@ class ChicagoStoreMonitor(system: ActorSystem,
         }
         DuplexProtocol.Response(NoData(),seq)
       case UpdateChicago(chi) =>
+        log.info(s"UpdateChicago ${chi}")
         Await.result( store.select(chi.id).update(chi), 30.seconds )
         dispatchToAllChicago(chi.id,UpdateChicago(chi))
         DuplexProtocol.Response(if (ack) UpdateChicago( chi ) else NoData(),seq)
@@ -599,6 +594,7 @@ class RubberStoreMonitor(system: ActorSystem,
         DuplexProtocol.ErrorResponse("Unknown request", seq)
 
       case StartMonitorRubber(dupid: String ) =>
+        log.info(s"StartMonitorRubber ${dupid}")
         get(sender) match {
           case Some(sub) =>
             add( new RubberSubscription( sub, dupid ) )
@@ -625,6 +621,7 @@ class RubberStoreMonitor(system: ActorSystem,
         }
         DuplexProtocol.Response(NoData(),seq)
       case UpdateRubber(rub) =>
+        log.info(s"UpdateRubber ${rub}")
         Await.result( store.select(rub.id).update(rub), 30.seconds )
         dispatchToAllRubber(rub.id,UpdateRubber(rub))
         DuplexProtocol.Response(if (ack) UpdateRubber( rub ) else NoData(),seq)
@@ -656,6 +653,8 @@ class Listener( log: LoggingAdapter, actor: ActorRef ) extends StoreListener {
             case md: MatchDuplicate => Some(md.id)
             case b: Board => None
             case h: DuplicateHand => None
+            case mc: MatchChicago => Some(mc.id)
+            case mr: MatchRubber => Some(mr.id)
           }
           case None => None
         }) match {
@@ -673,6 +672,8 @@ class Listener( log: LoggingAdapter, actor: ActorRef ) extends StoreListener {
                 case b: Board =>
                 case h: DuplicateHand => actor ! UpdateDuplicateHand(mdid,h)
                 case t: Team => actor ! UpdateDuplicateTeam(mdid,t)
+                case mc: MatchChicago => actor ! UpdateChicago(mc)
+                case mr: MatchRubber => actor ! UpdateRubber(mr)
               }
               case None =>
             }

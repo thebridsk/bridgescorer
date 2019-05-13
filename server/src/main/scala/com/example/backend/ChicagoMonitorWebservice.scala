@@ -49,6 +49,7 @@ import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.media.Content
 import javax.ws.rs.GET
 import com.example.data.MatchChicago
+import com.example.backend.StoreMonitor.NewParticipantSSEChicago
 
 @Path( "" )
 class ChicagoMonitorWebservice(
@@ -59,7 +60,12 @@ class ChicagoMonitorWebservice(
               bridgeService: BridgeService
 ) extends MonitorWebservice[Id.MatchChicago,MatchChicago](totallyMissingResourceHandler) {
   val log = Logging(system, classOf[ChicagoMonitorWebservice])
-  val monitor = new StoreMonitorManager(system, bridgeService.chicagos,classOf[ChicagoStoreMonitor])
+  val monitor = new StoreMonitorManager(
+                           system,
+                           bridgeService.chicagos,
+                           classOf[ChicagoStoreMonitor],
+                           NewParticipantSSEChicago.apply _
+                )
   import system.dispatcher
 //  system.scheduler.schedule(15.second, 15.second) {
 //    theChat.injectMessage(ChatMessage(sender = "clock", s"Bling! The time is ${new Date().toString}."))
@@ -112,10 +118,10 @@ class ChicagoMonitorWebservice(
     import akka.http.scaladsl.marshalling.sse.EventStreamMarshalling._
     import akka.http.scaladsl.model.sse.ServerSentEvent
     pathPrefix("sse") {
-      handleRejections(totallyMissingResourceHandler) {
-        get {
-          logRequest("sse", Logging.DebugLevel) { logResult("sse", Logging.DebugLevel) {
-            pathPrefix("chicagos") {
+      get {
+        logRequest("sse", Logging.DebugLevel) { logResult("sse", Logging.DebugLevel) {
+          pathPrefix("chicagos") {
+            handleRejections(totallyMissingResourceHandler) {
               pathPrefix( """[a-zA-Z0-9]+""".r ) { id =>
                 pathEndOrSingleSlash {
                   extractClientIP { ip => {
@@ -123,14 +129,14 @@ class ChicagoMonitorWebservice(
                     reject(UnsupportedRequestContentTypeRejection(Set( MediaTypes.`text/event-stream` )))
                     complete {
                       val dupid: Id.MatchChicago = id
-                      monitor.monitorChicagoSource( ip, dupid )
+                      monitor.monitorMatch( ip, dupid )
                     }
                   }}
                 }
               }
             }
-          }}
-        }
+          }
+        }}
       }
     }
   }

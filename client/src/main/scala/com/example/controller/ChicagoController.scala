@@ -35,6 +35,7 @@ import com.example.Bridge
 import com.example.bridge.store.ChicagoSummaryStore
 import scala.util.Success
 import scala.util.Failure
+import com.example.data.websocket.Protocol
 
 object ChicagoController {
   val logger = Logger("bridge.ChicagoController")
@@ -232,6 +233,85 @@ object ChicagoController {
   def deleteChicago( id: Id.MatchChicago) = {
     BridgeDispatcher.deleteChicago(id)
     if (!Bridge.isDemo) RestClientChicago.delete(id).recordFailure()
+  }
+
+
+  private var sseConnection: ServerEventConnection[Id.MatchChicago] = null
+
+  var useRestToServer: Boolean = true;
+  private var useSSEFromServer: Boolean = true;
+
+  def setUseSSEFromServer( b: Boolean ) = {
+    if (b != useSSEFromServer) {
+      useSSEFromServer = b
+      setServerEventConnection()
+    }
+  }
+
+  setServerEventConnection()
+
+  private def setServerEventConnection(): Unit = {
+    sseConnection = new SSE[Id.MatchChicago]( "/v1/sse/chicagos/", Listener)
+  }
+
+  object Listener extends SECListener[Id.MatchChicago] {
+    def handleStart( dupid: Id.MatchChicago) = {
+    }
+    def handleStop( dupid: Id.MatchChicago) = {
+    }
+
+    def processMessage( msg: Protocol.ToBrowserMessage ) = {
+      msg match {
+        case Protocol.MonitorJoined(id,members) =>
+        case Protocol.MonitorLeft(id,members) =>
+        case Protocol.UpdateDuplicate(matchDuplicate) =>
+        case Protocol.UpdateDuplicateHand(dupid, hand) =>
+        case Protocol.UpdateDuplicateTeam(dupid,team) =>
+        case Protocol.NoData(_) =>
+        case Protocol.UpdateChicago(mc) =>
+          BridgeDispatcher.updateChicago(mc)
+        case Protocol.UpdateRubber(_) =>
+      }
+    }
+  }
+
+  def monitor( dupid: Id.MatchChicago, restart: Boolean = false ): Unit = {
+
+    if (AjaxResult.isEnabled.getOrElse(false)) {
+      ChicagoStore.getMonitoredId match {
+        case Some(mdid) =>
+          sseConnection.cancelStop()
+          if (restart || mdid != dupid || !sseConnection.isConnected) {
+            logger.info(s"""Switching MatchChicago monitor to ${dupid} from ${mdid}""" )
+            sseConnection.monitor(dupid, restart)
+          } else {
+            // already monitoring id
+            logger.info(s"""Already monitoring MatchChicago ${dupid}""" )
+          }
+        case None =>
+          logger.info(s"""Starting MatchChicago monitor to ${dupid}""" )
+          sseConnection.monitor(dupid, restart)
+      }
+    } else {
+
+    }
+
+  }
+
+  /**
+   * Stop monitoring a duplicate match
+   */
+  def delayStop() = {
+    logger.fine(s"Controller.delayStop ${ChicagoStore.getMonitoredId}")
+    sseConnection.delayStop()
+  }
+
+  /**
+   * Stop monitoring a duplicate match
+   */
+  def stop() = {
+    logger.fine(s"Controller.stop ${ChicagoStore.getMonitoredId}")
+    sseConnection.stop()
   }
 
 }

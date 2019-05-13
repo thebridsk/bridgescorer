@@ -49,6 +49,7 @@ import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.media.Content
 import javax.ws.rs.GET
 import com.example.data.MatchDuplicate
+import com.example.backend.StoreMonitor.NewParticipantSSEDuplicate
 
 @Path( "" )
 class DuplicateMonitorWebservice(
@@ -59,7 +60,12 @@ class DuplicateMonitorWebservice(
               bridgeService: BridgeService
 ) extends MonitorWebservice[Id.MatchDuplicate,MatchDuplicate](totallyMissingResourceHandler) {
   val log = Logging(system, classOf[DuplicateMonitorWebservice])
-  val monitor = new StoreMonitorManager(system, bridgeService.duplicates,classOf[DuplicateStoreMonitor])
+  val monitor = new StoreMonitorManager(
+                         system,
+                         bridgeService.duplicates,
+                         classOf[DuplicateStoreMonitor],
+                         NewParticipantSSEDuplicate.apply _
+                 )
   import system.dispatcher
 //  system.scheduler.schedule(15.second, 15.second) {
 //    theChat.injectMessage(ChatMessage(sender = "clock", s"Bling! The time is ${new Date().toString}."))
@@ -146,10 +152,10 @@ class DuplicateMonitorWebservice(
     import akka.http.scaladsl.marshalling.sse.EventStreamMarshalling._
     import akka.http.scaladsl.model.sse.ServerSentEvent
     pathPrefix("sse") {
-      handleRejections(totallyMissingResourceHandler) {
-        get {
-          logRequest("sse", Logging.DebugLevel) { logResult("sse", Logging.DebugLevel) {
-            pathPrefix("duplicates") {
+      get {
+        logRequest("sse", Logging.DebugLevel) { logResult("sse", Logging.DebugLevel) {
+          pathPrefix("duplicates") {
+            handleRejections(totallyMissingResourceHandler) {
               pathPrefix( """[a-zA-Z0-9]+""".r ) { id =>
                 pathEndOrSingleSlash {
                   extractClientIP { ip => {
@@ -157,14 +163,14 @@ class DuplicateMonitorWebservice(
                     reject(UnsupportedRequestContentTypeRejection(Set( MediaTypes.`text/event-stream` )))
                     complete {
                       val dupid: Id.MatchDuplicate = id
-                      monitor.monitorDuplicateSource( ip, dupid )
+                      monitor.monitorMatch( ip, dupid )
                     }
                   }}
                 }
               }
             }
-          }}
-        }
+          }
+        }}
       }
     }
   }

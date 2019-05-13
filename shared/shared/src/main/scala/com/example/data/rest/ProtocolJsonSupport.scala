@@ -113,6 +113,10 @@ class ToServerMessageFormat extends SealedFormat[ToServerMessage] {
       Option(Json.fromJson[UpdateDuplicateTeam](o).map{ o => o})
     } else if (className == classOf[NoData].getName) {
       Option(Json.fromJson[NoData](o).map{ o => o})
+    } else if (className == classOf[UpdateChicago].getName) {
+      Option(Json.fromJson[UpdateChicago](o).map{ o => o})
+    } else if (className == classOf[UpdateRubber].getName) {
+      Option(Json.fromJson[UpdateRubber](o).map{ o => o})
     } else {
       None
     }
@@ -156,6 +160,10 @@ class ToBrowserMessageFormat extends SealedFormat[ToBrowserMessage] {
       Option(Json.fromJson[UpdateDuplicateTeam](o).map{ o => o})
     } else if (className == classOf[NoData].getName) {
       Option(Json.fromJson[NoData](o).map{ o => o})
+    } else if (className == classOf[UpdateChicago].getName) {
+      Option(Json.fromJson[UpdateChicago](o).map{ o => o})
+    } else if (className == classOf[UpdateRubber].getName) {
+      Option(Json.fromJson[UpdateRubber](o).map{ o => o})
     } else {
       None
     }

@@ -50,6 +50,7 @@ import io.swagger.v3.oas.annotations.media.Content
 import javax.ws.rs.GET
 import com.example.data.MatchDuplicate
 import com.example.data.MatchRubber
+import com.example.backend.StoreMonitor.NewParticipantSSERubber
 
 @Path( "" )
 class RubberMonitorWebservice(
@@ -60,7 +61,12 @@ class RubberMonitorWebservice(
               bridgeService: BridgeService
 ) extends MonitorWebservice[String,MatchRubber](totallyMissingResourceHandler) {
   val log = Logging(system, classOf[RubberMonitorWebservice])
-  val monitor = new StoreMonitorManager(system, bridgeService.rubbers,classOf[RubberStoreMonitor])
+  val monitor = new StoreMonitorManager(
+                            system,
+                            bridgeService.rubbers,
+                            classOf[RubberStoreMonitor],
+                            NewParticipantSSERubber.apply _
+                 )
   import system.dispatcher
 //  system.scheduler.schedule(15.second, 15.second) {
 //    theChat.injectMessage(ChatMessage(sender = "clock", s"Bling! The time is ${new Date().toString}."))
@@ -113,24 +119,24 @@ class RubberMonitorWebservice(
     import akka.http.scaladsl.marshalling.sse.EventStreamMarshalling._
     import akka.http.scaladsl.model.sse.ServerSentEvent
     pathPrefix("sse") {
-      handleRejections(totallyMissingResourceHandler) {
-        get {
-          logRequest("sse", Logging.DebugLevel) { logResult("sse", Logging.DebugLevel) {
-            pathPrefix("duplicates") {
+      get {
+        logRequest("sse", Logging.DebugLevel) { logResult("sse", Logging.DebugLevel) {
+          pathPrefix("rubbers") {
+            handleRejections(totallyMissingResourceHandler) {
               pathPrefix( """[a-zA-Z0-9]+""".r ) { id =>
                 pathEndOrSingleSlash {
                   extractClientIP { ip => {
                     log.info(s"SSE from $ip for $id")
                     reject(UnsupportedRequestContentTypeRejection(Set( MediaTypes.`text/event-stream` )))
                     complete {
-                      monitor.monitorRubberSource( ip, id )
+                      monitor.monitorMatch( ip, id )
                     }
                   }}
                 }
               }
             }
-          }}
-        }
+          }
+        }}
       }
     }
   }

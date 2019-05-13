@@ -253,12 +253,14 @@ object PageSummaryInternal {
       }
       logger.info(s"PageSummary.didMount on $chiid")
       import scala.concurrent.ExecutionContext.Implicits.global
-      ChicagoController.ensureMatch(chiid).foreach( m => scope.withEffectsImpure.forceUpdate )
+//      ChicagoController.ensureMatch(chiid).foreach( m => scope.withEffectsImpure.forceUpdate )
+      ChicagoController.monitor(chiid)
     } }
 
     val willUnmount = Callback {
       logger.info("PageSummary.willUnmount")
       ChicagoStore.removeChangeListener(storeCallback)
+      ChicagoController.delayStop()
     }
 
   }
