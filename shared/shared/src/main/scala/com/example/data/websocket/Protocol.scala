@@ -9,6 +9,8 @@ import play.api.libs.json._
 import com.example.data.rest.JsonSupport._
 import com.example.data.MatchChicago
 import com.example.data.MatchRubber
+import com.example.data.Round
+import com.example.data.Hand
 
 object Protocol {
 
@@ -94,6 +96,16 @@ object Protocol {
    * Update the MatchChicago.
    */
   case class UpdateChicago(matchChicago: MatchChicago) extends ToServerMessage with ToBrowserMessage
+
+  /**
+   * Update the Chicago Round.
+   */
+  case class UpdateChicagoRound(matchChicago: Id.MatchChicago, round: Round) extends ToServerMessage with ToBrowserMessage
+
+  /**
+   * Update the Chicago Hand.
+   */
+  case class UpdateChicagoHand(matchChicago: Id.MatchChicago, roundId: String, hand: Hand ) extends ToServerMessage with ToBrowserMessage
 
   /**
    * Update the MatchRubber.

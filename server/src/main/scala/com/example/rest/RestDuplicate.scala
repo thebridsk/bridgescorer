@@ -149,7 +149,7 @@ trait RestDuplicate extends HasActorSystem {
     }
   }}}
 
-  def nested= logRequest("RestDuplicate.nested", DebugLevel) { logResult("RestDuplicate.nested") {
+  val nested= logRequest("RestDuplicate.nested", DebugLevel) { logResult("RestDuplicate.nested") {
     pathPrefix( """[a-zA-Z0-9]+""".r ) { id: Id.MatchDuplicate =>
       val selected = store.select(id)
       nestedBoards.route( selected.resourceBoards ) ~

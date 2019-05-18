@@ -23,4 +23,7 @@ trait NestedResourceSupport[PVType, NVId, NVType] {
 
   def notFound( parentResource: String, id: NVId ) =
     Result(StatusCodes.NotFound,RestMessage(s"Did not find resource ${parentResource}/${resourceURI}/$id") )
+
+  def badRequest( parentResource: String, id: NVId, msg: String ) =
+    Result(StatusCodes.BadRequest,RestMessage(s"Error on resource ${parentResource}/${resourceURI}/$id: $msg") )
 }

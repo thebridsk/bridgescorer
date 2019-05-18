@@ -175,6 +175,8 @@ object Controller extends  {
           BridgeDispatcher.updateTeam(dupid, team)
         case Protocol.NoData(_) =>
         case Protocol.UpdateChicago(_) =>
+        case Protocol.UpdateChicagoRound(_,_) =>
+        case Protocol.UpdateChicagoHand(_,_,_) =>
         case Protocol.UpdateRubber(_) =>
       }
     }

@@ -64,6 +64,10 @@ import com.example.data.websocket.Protocol.UpdateRubber
 import com.example.data.MatchChicago
 import com.example.data.MatchRubber
 import com.example.backend.StoreMonitor.ChatEvent
+import com.example.data.Round
+import com.example.data.websocket.Protocol.UpdateChicagoRound
+import com.example.data.Hand
+import com.example.data.websocket.Protocol.UpdateChicagoHand
 
 object StoreMonitor {
   sealed trait ChatEvent
@@ -443,6 +447,12 @@ class DuplicateStoreMonitor(system: ActorSystem,
       case x: UpdateChicago =>
         log.warning("UpcateChicago not implemented")
         DuplexProtocol.ErrorResponse("Unknown request", seq)
+      case x: UpdateChicagoRound =>
+        log.warning("UpcateChicagoRound not implemented")
+        DuplexProtocol.ErrorResponse("Unknown request", seq)
+      case x: UpdateChicagoHand =>
+        log.warning("UpcateChicagoHand not implemented")
+        DuplexProtocol.ErrorResponse("Unknown request", seq)
 
       case StartMonitorRubber(_) =>
         log.warning("StartMonitorRubber not implemented")
@@ -529,6 +539,16 @@ class ChicagoStoreMonitor(system: ActorSystem,
         Await.result( store.select(chi.id).update(chi), 30.seconds )
         dispatchToAllChicago(chi.id,UpdateChicago(chi))
         DuplexProtocol.Response(if (ack) UpdateChicago( chi ) else NoData(),seq)
+      case UpdateChicagoRound(chiid,round) =>
+        log.info(s"UpdateChicagoRound ${chiid} ${round}")
+        Await.result( store.select(chiid).resourceRounds.select(round.id).update(round), 30.seconds )
+        dispatchToAllChicago(chiid,UpdateChicagoRound(chiid,round))
+        DuplexProtocol.Response(if (ack) UpdateChicagoRound( chiid,round ) else NoData(),seq)
+      case UpdateChicagoHand(chiid,rid,hand) =>
+        log.info(s"UpdateChicagoHand ${chiid} ${rid} ${hand}")
+        Await.result( store.select(chiid).resourceRounds.select(rid).resourceHands.select(hand.id).update(hand), 30.seconds )
+        dispatchToAllChicago(chiid,UpdateChicagoHand(chiid,rid,hand))
+        DuplexProtocol.Response(if (ack) UpdateChicagoHand( chiid,rid,hand ) else NoData(),seq)
 
       case StartMonitorRubber(_) =>
         log.warning("StartMonitorRubber not implemented")
@@ -591,6 +611,12 @@ class RubberStoreMonitor(system: ActorSystem,
         DuplexProtocol.ErrorResponse("Unknown request", seq)
       case x: UpdateChicago =>
         log.warning("UpcateChicago not implemented")
+        DuplexProtocol.ErrorResponse("Unknown request", seq)
+      case x: UpdateChicagoRound =>
+        log.warning("UpcateChicagoRound not implemented")
+        DuplexProtocol.ErrorResponse("Unknown request", seq)
+      case x: UpdateChicagoHand =>
+        log.warning("UpcateChicagoHand not implemented")
         DuplexProtocol.ErrorResponse("Unknown request", seq)
 
       case StartMonitorRubber(dupid: String ) =>
@@ -655,6 +681,7 @@ class Listener( log: LoggingAdapter, actor: ActorRef ) extends StoreListener {
             case h: DuplicateHand => None
             case mc: MatchChicago => Some(mc.id)
             case mr: MatchRubber => Some(mr.id)
+            case _ => None
           }
           case None => None
         }) match {
@@ -673,7 +700,29 @@ class Listener( log: LoggingAdapter, actor: ActorRef ) extends StoreListener {
                 case h: DuplicateHand => actor ! UpdateDuplicateHand(mdid,h)
                 case t: Team => actor ! UpdateDuplicateTeam(mdid,t)
                 case mc: MatchChicago => actor ! UpdateChicago(mc)
+                case cr: Round => actor ! UpdateChicagoRound(mdid,cr)
+                case ch: Hand =>
+                  changes.tail.headOption match {
+                    case Some(fcd) =>
+                      ((fcd match {
+                        case cc: CreateChangeContext => Some(cc.newValue)
+                        case uc: UpdateChangeContext => Some(uc.newValue)
+                        case dc: DeleteChangeContext => None   // can't happen here
+                      }) match {
+                        case Some(fdata) => fdata match {
+                          case r: Round => Some(r.id)
+                          case _ => None
+                        }
+                        case None => None
+                      }) match {
+                        case Some(rid) =>
+                          actor ! UpdateChicagoHand(mdid,rid,ch)
+                        case None =>
+                      }
+                    case None =>
+                  }
                 case mr: MatchRubber => actor ! UpdateRubber(mr)
+                case _ =>
               }
               case None =>
             }

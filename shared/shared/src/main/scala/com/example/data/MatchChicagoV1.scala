@@ -121,9 +121,9 @@ case class MatchChicagoV1( id: String,
     copy(id = id, updated=SystemTime.currentTimeMillis())
   }
 
-  def convertToCurrentVersion(): MatchChicago = {
-                           MatchChicago( id, player1::player2::player3::player4::Nil, rounds, gamesPerRound, false, created, updated)
-                         }
+  def convertToCurrentVersion() = {
+    (false,MatchChicago( id, player1::player2::player3::player4::Nil, rounds, gamesPerRound, false, created, updated).convertToCurrentVersion()._2)
+  }
 
   def readyForWrite() = this
 

@@ -270,6 +270,8 @@ object ChicagoController {
         case Protocol.NoData(_) =>
         case Protocol.UpdateChicago(mc) =>
           BridgeDispatcher.updateChicago(mc)
+        case Protocol.UpdateChicagoRound(mc,r) =>
+        case Protocol.UpdateChicagoHand(mc,r,hand) =>
         case Protocol.UpdateRubber(_) =>
       }
     }

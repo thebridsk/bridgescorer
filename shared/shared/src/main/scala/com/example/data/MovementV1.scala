@@ -57,7 +57,7 @@ case class MovementV1(
     copy( name=newId )
   }
 
-  def convertToCurrentVersion() = this
+  def convertToCurrentVersion() = (true,this)
 
   def readyForWrite() = this
 

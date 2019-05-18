@@ -136,7 +136,7 @@ case class MatchRubberV1(
     }
   }
 
-  def convertToCurrentVersion() = this
+  def convertToCurrentVersion() = (true,this)
 
   def readyForWrite() = copy( bestMatch=None )
 

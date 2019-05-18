@@ -295,14 +295,14 @@ case class MatchDuplicateV1(
   }
 
   def convertToCurrentVersion() =
-    MatchDuplicateV3(
+    (false,MatchDuplicateV3(
       id,
       teams.values.toList,
       boards.values.map{ e => e.convertToCurrentVersion }.toList.sortWith((b1,b2)=>Id.idComparer(b1.id, b2.id)>0),
       "ArmonkBoards",
       "Armonk2Tables",
       created,
-      updated )
+      updated ))
 
   def readyForWrite() = this
 

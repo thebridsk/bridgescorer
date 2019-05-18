@@ -59,6 +59,8 @@ trait Service extends ImportExport {
   val restTypes: Seq[Class[_]]
                 = Seq(classOf[RestBoardSet],
                       classOf[RestChicago],
+                      classOf[RestNestedChicagoRound],
+                      classOf[RestNestedChicagoRoundHand],
                       classOf[RestRubber],
                       classOf[RestLoggerConfig],
                       classOf[RestDuplicate],

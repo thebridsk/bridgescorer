@@ -66,7 +66,7 @@ abstract class BridgeService( val id: String ) {
 
   def setDefaultLoggerConfig( default: LoggerConfig, iPad: Boolean )
 
-  val chicagos: Store[String,MatchChicago]
+  val chicagos: Store[Id.MatchChicago,MatchChicago]
   val duplicates: Store[Id.MatchDuplicate,MatchDuplicate]
   val duplicateresults: Store[Id.MatchDuplicateResult,MatchDuplicateResult]
   val rubbers: Store[String,MatchRubber]

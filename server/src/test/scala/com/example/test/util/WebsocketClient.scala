@@ -28,6 +28,8 @@ import com.example.data.MatchDuplicate
 import akka.event.LoggingAdapter
 import com.example.data.websocket.Protocol.UpdateChicago
 import com.example.data.websocket.Protocol.UpdateRubber
+import com.example.data.websocket.Protocol.UpdateChicagoHand
+import com.example.data.websocket.Protocol.UpdateChicagoRound
 
 class WebsocketClient(implicit system: ActorSystem, materializer: Materializer, routetest: RouteTest) {
 
@@ -209,6 +211,10 @@ object WebsocketClientImplicits {
             fail(s"${wc.address} Unexpected response from the monitor: ${nd}")
           case m: UpdateChicago =>
             fail(s"${wc.address} Unexpected response from the monitor: $m")
+          case m: UpdateChicagoRound =>
+            fail(s"${wc.address} Unexpected response from the monitor: $m")
+          case m: UpdateChicagoHand =>
+            fail(s"${wc.address} Unexpected response from the monitor: $m")
           case m: UpdateRubber =>
             fail(s"${wc.address} Unexpected response from the monitor: $m")
         }) {}
@@ -232,6 +238,10 @@ object WebsocketClientImplicits {
             fail(s"${wc.address} Unexpected response from the monitor: ${nd}")
           case m: UpdateChicago =>
             fail(s"${wc.address} Unexpected response from the monitor: $m")
+          case m: UpdateChicagoRound =>
+            fail(s"${wc.address} Unexpected response from the monitor: $m")
+          case m: UpdateChicagoHand =>
+            fail(s"${wc.address} Unexpected response from the monitor: $m")
           case m: UpdateRubber =>
             fail(s"${wc.address} Unexpected response from the monitor: $m")
         }
@@ -253,6 +263,10 @@ object WebsocketClientImplicits {
             fail(s"${wc.address} Unexpected response from the monitor: ${nd}")
           case m: UpdateChicago =>
             fail(s"${wc.address} Unexpected response from the monitor: $m")
+          case m: UpdateChicagoRound =>
+            fail(s"${wc.address} Unexpected response from the monitor: $m")
+          case m: UpdateChicagoHand =>
+            fail(s"${wc.address} Unexpected response from the monitor: $m")
           case m: UpdateRubber =>
             fail(s"${wc.address} Unexpected response from the monitor: $m")
         }
@@ -273,6 +287,10 @@ object WebsocketClientImplicits {
           case nd: NoData =>
             fail(s"${wc.address} Unexpected response from the monitor: ${nd}")
           case m: UpdateChicago =>
+            fail(s"${wc.address} Unexpected response from the monitor: $m")
+          case m: UpdateChicagoRound =>
+            fail(s"${wc.address} Unexpected response from the monitor: $m")
+          case m: UpdateChicagoHand =>
             fail(s"${wc.address} Unexpected response from the monitor: $m")
           case m: UpdateRubber =>
             fail(s"${wc.address} Unexpected response from the monitor: $m")

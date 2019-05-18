@@ -219,8 +219,7 @@ case class MatchDuplicateResultV2 private(
   @Hidden
   def isIMP = scoringmethod == InternationalMatchPoints
 
-  def convertToCurrentVersion() =
-    this
+  def convertToCurrentVersion() = (true,this)
 
   def readyForWrite() = this
 

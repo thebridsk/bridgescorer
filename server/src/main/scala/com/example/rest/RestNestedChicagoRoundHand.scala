@@ -1,117 +1,76 @@
 package com.example.rest
 
-import com.example.backend.BridgeService
-import com.example.data.MatchChicago
 import akka.event.Logging
 import akka.event.Logging._
-import akka.http.scaladsl.model.StatusCode
 import akka.http.scaladsl.model.StatusCodes._
 import akka.http.scaladsl.server.Directives._
 import akka.stream.Materializer
 import com.example.util.HasActorSystem
+import akka.actor.ActorSystem
+import akka.stream.ActorMaterializer
+import akka.http.scaladsl.model.StatusCode
+import com.example.backend.BridgeService
+import com.example.data.Id
 import javax.ws.rs.Path
 import com.example.data.RestMessage
-import com.example.data.Id
-import scala.util.Sorting
 import akka.http.scaladsl.model.headers.Location
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
-
-object RestChicago {
-  implicit class OrdFoo( val x: MatchChicago) extends AnyVal with Ordered[MatchChicago] {
-    def compare(that:MatchChicago) = Id.idComparer(that.id, x.id)
-  }
-
-}
-
-import RestChicago._
+import com.example.backend.resource.Resources
+import com.example.backend.BridgeNestedResources
+import scala.concurrent.Future
+import com.example.backend.resource.Result
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
-import io.swagger.v3.oas.annotations.media.Content
-import io.swagger.v3.oas.annotations.media.ArraySchema
 import io.swagger.v3.oas.annotations.media.Schema
+import io.swagger.v3.oas.annotations.media.ArraySchema
+import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.enums.ParameterIn
 import io.swagger.v3.oas.annotations.parameters.RequestBody
 import io.swagger.v3.oas.annotations.headers.Header
+import io.swagger.v3.oas.annotations.Hidden
 import io.swagger.v3.oas.annotations.tags.Tags
 import io.swagger.v3.oas.annotations.tags.Tag
 import javax.ws.rs.GET
 import javax.ws.rs.POST
 import javax.ws.rs.PUT
 import javax.ws.rs.DELETE
-import com.example.backend.BridgeNestedResources
+import com.example.data.Hand
+import akka.http.scaladsl.model.StatusCodes
 
 /**
- * Rest API implementation for the board resource.
+ * Rest API implementation for the hand resource.
  * <p>
  * The REST API and all the methods are documented using
  * swagger annotations.
  */
-@Path( "/rest/chicagos" )
+@Path("/rest/chicagos/{chiId}/rounds/{roundId}/hands")
 @Tags( Array( new Tag(name="Chicago")))
-trait RestChicago extends HasActorSystem {
-
-  /**
-   * The bridge service backend
-   */
-  implicit val restService: BridgeService
-  lazy val store = restService.chicagos
-
-  val resName = "chicagos"
-
-  val nestedBoards = new RestNestedChicagoRound
+class RestNestedChicagoRoundHand {
 
   import UtilsPlayJson._
+
+  val nestedHands = new RestNestedHand
 
   /**
    * spray route for all the methods on this resource
    */
-  val route =pathPrefix(resName) {
+  @Hidden
+  def route( implicit @Parameter(hidden=true) res: Resources[String, Hand]) =pathPrefix("hands") {
 //    logRequest("route", DebugLevel) {
-        getChicago ~ getChicagos ~ postChicago ~ putChicago ~ deleteChicago ~ nested
+        getHand ~ getHands ~ postHand ~ putHand ~ deleteHand
 //      }
   }
 
   @GET
   @Operation(
-      summary = "Get all chicago matches",
-      description = "Returns a list of matches.",
-      operationId = "getChicagos",
-      responses = Array(
-          new ApiResponse(
-              responseCode = "200",
-              description = "A list of matches, as a JSON array",
-              content = Array(
-                  new Content(
-                      mediaType = "application/json",
-                      array = new ArraySchema(
-                          minItems = 0,
-                          uniqueItems = true,
-                          schema = new Schema( implementation=classOf[MatchChicago] )
-                      )
-                  )
-              )
-          )
-      )
-  )
-  def xxxgetChicagos() = {}
-  val getChicagos = pathEnd {
-    get {
-      resourceMap( store.readAll() )
-    }
-  }
-
-  @Path("/{chiId}")
-  @GET
-  @Operation(
-      summary = "Get the match by ID",
-      description = "Returns the specified chicago match.",
-      operationId = "getChicagoById",
+      summary = "Get all hands",
+      description = "Returns a list of hands.",
+      operationId = "getHands",
       parameters = Array(
           new Parameter(
               allowEmptyValue=false,
-              description="ID of the match to get",
+              description="ID of the chicago match that contains the hands to get",
               in=ParameterIn.PATH,
               name="chiId",
               required=true,
@@ -121,11 +80,59 @@ trait RestChicago extends HasActorSystem {
       responses = Array(
           new ApiResponse(
               responseCode = "200",
-              description = "The requested Chicago match, as a JSON object",
+              description = "A list of hands, as a JSON array",
               content = Array(
                   new Content(
                       mediaType = "application/json",
-                      schema = new Schema( implementation=classOf[MatchChicago] )
+                      array = new ArraySchema(
+                          minItems = 0,
+                          uniqueItems = true,
+                          schema = new Schema( implementation=classOf[Hand] )
+                      )
+                  )
+              )
+          )
+
+      )
+  )
+  def xxxgetHands = {}
+  def getHands( implicit @Parameter(hidden=true) res: Resources[String, Hand]) = pathEndOrSingleSlash {
+    get {
+      resourceMap( res.readAll() )
+    }
+  }
+
+  @Path("/{handId}")
+  @GET
+  @Operation(
+      summary = "Get the hand by ID",
+      operationId = "getHandById",
+      parameters = Array(
+          new Parameter(
+              allowEmptyValue=false,
+              description="ID of the chicago match that contains the hands to manipulate",
+              in=ParameterIn.PATH,
+              name="chiId",
+              required=true,
+              schema=new Schema(`type`="string")
+          ),
+          new Parameter(
+              allowEmptyValue=false,
+              description="ID of the hand to get",
+              in=ParameterIn.PATH,
+              name="handId",
+              required=true,
+              schema=new Schema(`type`="string")
+          )
+      ),
+      responses = Array(
+          new ApiResponse(
+              responseCode = "200",
+              description = "The hand, as a JSON object",
+              content = Array(
+                  new Content(
+                      mediaType = "application/json",
+                      schema = new Schema( implementation=classOf[Hand] )
                   )
               )
           ),
@@ -139,35 +146,36 @@ trait RestChicago extends HasActorSystem {
                   )
               )
           )
-
       )
   )
-  def xxxgetChicago() = {}
-  val getChicago = logRequest("RestChicago.getChicago", DebugLevel) { logResult("RestChicago.postChicago") { get {
+  def xxxgetHand = {}
+  def getHand( implicit @Parameter(hidden=true) res: Resources[String, Hand]) = logRequest("getHand", DebugLevel) { get {
     path( """[a-zA-Z0-9]+""".r ) { id =>
-      resource( store.select(id).read() )
-    }
-  }}}
-
-  val nested= logRequest("RestChicago.nested", DebugLevel) { logResult("RestChicago.nested") {
-    pathPrefix( """[a-zA-Z0-9]+""".r ) { id: Id.MatchChicago =>
-      import BridgeNestedResources._
-      val selected = store.select(id)
-      nestedBoards.route( selected.resourceRounds )
+      resource( res.select(id).read() )
     }
   }}
 
   @POST
   @Operation(
-      summary = "Create a chicago match",
-      operationId = "createChicago",
+      summary = "Create a hand",
+      operationId = "createHand",
+      parameters = Array(
+          new Parameter(
+              allowEmptyValue=false,
+              description="ID of the chicago match that contains the hands to manipulate",
+              in=ParameterIn.PATH,
+              name="chiId",
+              required=true,
+              schema=new Schema(`type`="string")
+          ),
+      ),
       requestBody = new RequestBody(
-          description = "Chicago Match to create",
+          description = "chicago hand to create",
           content = Array(
               new Content(
                   mediaType = "application/json",
                   schema = new Schema(
-                      implementation = classOf[MatchChicago]
+                      implementation = classOf[Hand]
                   )
               )
           )
@@ -175,11 +183,11 @@ trait RestChicago extends HasActorSystem {
       responses = Array(
           new ApiResponse(
               responseCode = "201",
-              description = "The created match's JSON",
+              description = "The created hand's JSON",
               content = Array(
                   new Content(
                       mediaType = "application/json",
-                      schema = new Schema( implementation=classOf[MatchChicago] )
+                      schema = new Schema( implementation=classOf[Hand] )
                   )
               ),
               headers = Array(
@@ -202,44 +210,53 @@ trait RestChicago extends HasActorSystem {
           )
       )
   )
-  def xxxpostChicago() = {}
-  val postChicago =
-    logRequest("RestChicago.postChicago") {
-      logResult("RestChicago.postChicago") {
-        pathEnd {
-          post {
-            entity(as[MatchChicago]) { chi =>
-              resourceCreated( resName, store.createChild(chi) )
-            }
-          }
+  def xxxpostHand = {}
+  def postHand( implicit @Parameter(hidden=true) res: Resources[String, Hand]) = pathEnd {
+    post {
+        entity(as[Hand]) { hand =>
+          resourceCreated( res.resourceURI, addIdToFuture(res.createChild(hand)) )
         }
+    }
+  }
+
+  def addIdToFuture( f: Future[Result[Hand]] ): Future[Result[(String,Hand)]] =
+    f.map { r =>
+      r match {
+        case Right(md) => Right((md.id.toString(),md))
+        case Left(e) => Left(e)
       }
     }
 
-
-  @Path("/{chiId}")
+  @Path("/{handId}")
   @PUT
   @Operation(
-      summary = "Update a chicago match",
-      description = "Update a chicago match.  The id of the chicago match in the body is replaced with chiId",
-      operationId = "updateChicago",
+      summary = "Update a hand",
+      operationId = "updateHand",
       parameters = Array(
           new Parameter(
               allowEmptyValue=false,
-              description="ID of the match to get",
+              description="ID of the chicago match that contains the hands to manipulate",
               in=ParameterIn.PATH,
               name="chiId",
               required=true,
               schema=new Schema(`type`="string")
-          )
+          ),
+          new Parameter(
+              allowEmptyValue=false,
+              description="ID of the hand to update",
+              in=ParameterIn.PATH,
+              name="handId",
+              required=true,
+              schema=new Schema(`type`="string")
+          ),
       ),
       requestBody = new RequestBody(
-          description = "Chicago Match to update",
+          description = "chicago hand to update",
           content = Array(
               new Content(
                   mediaType = "application/json",
                   schema = new Schema(
-                      implementation = classOf[MatchChicago]
+                      implementation = classOf[Hand]
                   )
               )
           )
@@ -247,11 +264,11 @@ trait RestChicago extends HasActorSystem {
       responses = Array(
           new ApiResponse(
               responseCode = "204",
-              description = "The match was updated",
+              description = "Hand updated",
           ),
           new ApiResponse(
               responseCode = "404",
-              description = "Does not exist",
+              description = "Does not exist.",
               content = Array(
                   new Content(
                       mediaType = "application/json",
@@ -271,47 +288,51 @@ trait RestChicago extends HasActorSystem {
           )
       )
   )
-  def xxxputChicago() = {}
-  val putChicago =
-    logRequest("RestChicago.putChicago") {
-      logResult("RestChicago.putChicago") {
-        path( """[a-zA-Z0-9]+""".r ) { id =>
-          put {
-            entity(as[MatchChicago]) { chi =>
-              resourceUpdated( store.select(id).update(chi) )
-            }
-          }
+  def xxxputHand = {}
+  def putHand( implicit @Parameter(hidden=true) res: Resources[String, Hand]) =
+    put {
+      path( """[a-zA-Z0-9]+""".r ) { id =>
+        entity(as[Hand]) { hand =>
+          resourceUpdated( res.select(id).update(hand) )
         }
       }
     }
 
 
-  @Path("/{chiId}")
+  @Path("/{handId}")
   @DELETE
   @Operation(
-      summary = "Delete a match by ID",
-      operationId = "deleteChicagoById",
+      summary = "Delete a hand by ID",
+      operationId = "deleteHandById",
       parameters = Array(
           new Parameter(
               allowEmptyValue=false,
-              description="ID of the match to delete",
+              description="ID of the chicago match that contains the hands to manipulate",
               in=ParameterIn.PATH,
               name="chiId",
               required=true,
               schema=new Schema(`type`="string")
-          )
+          ),
+          new Parameter(
+              allowEmptyValue=false,
+              description="ID of the hand to delete",
+              in=ParameterIn.PATH,
+              name="handId",
+              required=true,
+              schema=new Schema(`type`="string")
+          ),
       ),
       responses = Array(
           new ApiResponse(
               responseCode = "204",
-              description = "Chicago match deleted.",
-          )
+              description = "Hand deleted.",
+          ),
       )
   )
-  def xxxdeleteChicago() = {}
-  val deleteChicago = path( """[a-zA-Z0-9]+""".r ) { id => {
-    delete {
-        resourceDelete( store.select(id).delete() )
-    } }
+  def xxxdeleteHand = {}
+  def deleteHand( implicit @Parameter(hidden=true) res: Resources[String, Hand]) = delete {
+    path( """[a-zA-Z0-9]+""".r ) { id =>
+      resourceDelete( res.select(id).delete() )
+    }
   }
 }
