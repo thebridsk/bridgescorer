@@ -57,9 +57,9 @@ class RestNestedChicagoRound {
    */
   @Hidden
   def route( implicit @Parameter(hidden=true) res: Resources[String, Round]) =pathPrefix("rounds") {
-//    logRequest("route", DebugLevel) {
+    logRequest("route", DebugLevel) {
         getRound ~ getRounds ~ postRound ~ putRound ~ deleteRound ~ restNestedHands
-//      }
+    }
   }
 
   @GET
@@ -156,7 +156,6 @@ class RestNestedChicagoRound {
   }}
 
   def restNestedHands( implicit @Parameter(hidden=true) res: Resources[String, Round]) = logRequestResult("RestNestedRound.restNestedHand", DebugLevel) {
-    complete(StatusCodes.BadRequest)
     pathPrefix( """[a-zA-Z0-9]+""".r ) { id =>
       import BridgeNestedResources._
       nestedHands.route(res.select(id).resourceHands)

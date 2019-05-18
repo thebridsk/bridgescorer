@@ -99,6 +99,27 @@ case class MatchRubberV1(
     hands.find { h => h.id == id }
   }
 
+  def setHands( newhands: Map[String,RubberHand] ) = {
+    val nhs = newhands.values.toList.sortBy( h => h.id.toInt )
+    copy(hands=nhs)
+  }
+
+  def updateHand( nh: RubberHand ) = {
+    val newhs = hands.map { h =>
+      if (h.id == nh.id) nh
+      else h
+    }
+    copy(hands=newhs)
+  }
+
+  def deleteHand( hid: String ) = {
+    val last = hands.length-1
+    if (hid.toInt != last) {
+      throw new IllegalArgumentException(s"Trying to delete $hid from $id, can only delete last hand: $last")
+    }
+    copy( hands = hands.take(last))
+  }
+
   def partnerOf( p: String ) = p match {
     case `north` => south
     case `south` => north

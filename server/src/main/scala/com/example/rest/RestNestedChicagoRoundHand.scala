@@ -50,8 +50,6 @@ class RestNestedChicagoRoundHand {
 
   import UtilsPlayJson._
 
-  val nestedHands = new RestNestedHand
-
   /**
    * spray route for all the methods on this resource
    */
@@ -73,6 +71,14 @@ class RestNestedChicagoRoundHand {
               description="ID of the chicago match that contains the hands to get",
               in=ParameterIn.PATH,
               name="chiId",
+              required=true,
+              schema=new Schema(`type`="string")
+          ),
+          new Parameter(
+              allowEmptyValue=false,
+              description="ID of the chicago round that contains the hands to get",
+              in=ParameterIn.PATH,
+              name="roundId",
               required=true,
               schema=new Schema(`type`="string")
           )
@@ -113,6 +119,14 @@ class RestNestedChicagoRoundHand {
               description="ID of the chicago match that contains the hands to manipulate",
               in=ParameterIn.PATH,
               name="chiId",
+              required=true,
+              schema=new Schema(`type`="string")
+          ),
+          new Parameter(
+              allowEmptyValue=false,
+              description="ID of the chicago round that contains the hands to get",
+              in=ParameterIn.PATH,
+              name="roundId",
               required=true,
               schema=new Schema(`type`="string")
           ),
@@ -168,6 +182,14 @@ class RestNestedChicagoRoundHand {
               required=true,
               schema=new Schema(`type`="string")
           ),
+          new Parameter(
+              allowEmptyValue=false,
+              description="ID of the chicago round that contains the hands to get",
+              in=ParameterIn.PATH,
+              name="roundId",
+              required=true,
+              schema=new Schema(`type`="string")
+          )
       ),
       requestBody = new RequestBody(
           description = "chicago hand to create",
@@ -243,6 +265,14 @@ class RestNestedChicagoRoundHand {
           ),
           new Parameter(
               allowEmptyValue=false,
+              description="ID of the chicago round that contains the hands to get",
+              in=ParameterIn.PATH,
+              name="roundId",
+              required=true,
+              schema=new Schema(`type`="string")
+          ),
+          new Parameter(
+              allowEmptyValue=false,
               description="ID of the hand to update",
               in=ParameterIn.PATH,
               name="handId",
@@ -310,6 +340,14 @@ class RestNestedChicagoRoundHand {
               description="ID of the chicago match that contains the hands to manipulate",
               in=ParameterIn.PATH,
               name="chiId",
+              required=true,
+              schema=new Schema(`type`="string")
+          ),
+          new Parameter(
+              allowEmptyValue=false,
+              description="ID of the chicago round that contains the hands to get",
+              in=ParameterIn.PATH,
+              name="roundId",
               required=true,
               schema=new Schema(`type`="string")
           ),

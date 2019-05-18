@@ -62,6 +62,7 @@ trait Service extends ImportExport {
                       classOf[RestNestedChicagoRound],
                       classOf[RestNestedChicagoRoundHand],
                       classOf[RestRubber],
+                      classOf[RestNestedRubberHand],
                       classOf[RestLoggerConfig],
                       classOf[RestDuplicate],
                       classOf[RestDuplicateResult],
