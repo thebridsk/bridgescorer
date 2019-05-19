@@ -68,6 +68,7 @@ import com.example.data.Round
 import com.example.data.websocket.Protocol.UpdateChicagoRound
 import com.example.data.Hand
 import com.example.data.websocket.Protocol.UpdateChicagoHand
+import com.example.data.websocket.Protocol.UpdateRubberHand
 
 object StoreMonitor {
   sealed trait ChatEvent
@@ -463,6 +464,9 @@ class DuplicateStoreMonitor(system: ActorSystem,
       case x: UpdateRubber =>
         log.warning("UpcateRubber not implemented")
         DuplexProtocol.ErrorResponse("Unknown request", seq)
+      case x: UpdateRubberHand =>
+        log.warning("UpcateRubber not implemented")
+        DuplexProtocol.ErrorResponse("Unknown request", seq)
 
 //      case _ =>
 //        log.warning("Unknown request "+msg)
@@ -559,6 +563,9 @@ class ChicagoStoreMonitor(system: ActorSystem,
       case x: UpdateRubber =>
         log.warning("UpcateRubber not implemented")
         DuplexProtocol.ErrorResponse("Unknown request", seq)
+      case x: UpdateRubberHand =>
+        log.warning("UpcateRubber not implemented")
+        DuplexProtocol.ErrorResponse("Unknown request", seq)
 
 //      case _ =>
 //        log.warning("Unknown request "+msg)
@@ -651,6 +658,11 @@ class RubberStoreMonitor(system: ActorSystem,
         Await.result( store.select(rub.id).update(rub), 30.seconds )
         dispatchToAllRubber(rub.id,UpdateRubber(rub))
         DuplexProtocol.Response(if (ack) UpdateRubber( rub ) else NoData(),seq)
+      case UpdateRubberHand(rid,hand) =>
+        log.info(s"UpdateRubberHand ${rid} ${hand}")
+        Await.result( store.select(rid).resourceHands.select(hand.id).update(hand), 30.seconds )
+        dispatchToAllRubber(rid,UpdateRubberHand(rid,hand))
+        DuplexProtocol.Response(if (ack) UpdateRubberHand( rid,hand ) else NoData(),seq)
 
 //      case _ =>
 //        log.warning("Unknown request "+msg)

@@ -25,13 +25,13 @@ import com.example.react.Utils._
  * To use, just code the following:
  *
  * <pre><code>
- * PageRubberMatchDetails( PageRubberMatchDetails.Props( ... ) )
+ * ViewRubberMatchDetails( ViewRubberMatchDetails.Props( ... ) )
  * </code></pre>
  *
  * @author werewolf
  */
-object PageRubberMatchDetails {
-  import PageRubberMatchDetailsInternal._
+object ViewRubberMatchDetails {
+  import ViewRubberMatchDetailsInternal._
 
   case class Props( page: RubberMatchViewBase, routerCtl: BridgeRouter[RubberPage], noFooter: Boolean )
 
@@ -40,11 +40,11 @@ object PageRubberMatchDetails {
 
 }
 
-object PageRubberMatchDetailsInternal {
-  import PageRubberMatchDetails._
+object ViewRubberMatchDetailsInternal {
+  import ViewRubberMatchDetails._
   import RubberStyles._
 
-  val logger = Logger("bridge.PageRubberMatchDetails")
+  val logger = Logger("bridge.ViewRubberMatchDetails")
 
   /**
    * Internal state for rendering the component.
@@ -244,8 +244,9 @@ object PageRubberMatchDetailsInternal {
     val didMount = CallbackTo {
       logger.info("PageRubberNames.didMount")
       RubberStore.addChangeListener(storeCallback)
-    } >> scope.props >>= { (p) => Callback(
-      RubberController.ensureMatch(p.page.rid))
+    } >> scope.props >>= { (p) => Callback {
+      RubberController.ensureMatch(p.page.rid)
+    }
     }
 
     val willUnmount = CallbackTo {
@@ -254,7 +255,7 @@ object PageRubberMatchDetailsInternal {
     }
   }
 
-  val component = ScalaComponent.builder[Props]("PageRubberMatchDetails")
+  val component = ScalaComponent.builder[Props]("ViewRubberMatchDetails")
                             .initialStateFromProps { props => State() }
                             .backend(new Backend(_))
                             .renderBackend

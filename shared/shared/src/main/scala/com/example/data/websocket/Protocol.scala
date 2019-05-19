@@ -11,6 +11,7 @@ import com.example.data.MatchChicago
 import com.example.data.MatchRubber
 import com.example.data.Round
 import com.example.data.Hand
+import com.example.data.RubberHand
 
 object Protocol {
 
@@ -111,6 +112,11 @@ object Protocol {
    * Update the MatchRubber.
    */
   case class UpdateRubber(matchRubber: MatchRubber) extends ToServerMessage with ToBrowserMessage
+
+  /**
+   * Update the MatchRubber.
+   */
+  case class UpdateRubberHand(matchRubberId: String, hand: RubberHand) extends ToServerMessage with ToBrowserMessage
 
   case class NoData( data: String = "") extends ToServerMessage with ToBrowserMessage
 

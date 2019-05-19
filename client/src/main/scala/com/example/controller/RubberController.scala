@@ -32,6 +32,7 @@ import com.example.Bridge
 import com.example.bridge.store.RubberListStore
 import scala.util.Success
 import scala.util.Failure
+import com.example.data.websocket.Protocol
 
 object RubberController {
   val logger = Logger("bridge.RubberController")
@@ -226,6 +227,87 @@ object RubberController {
   def deleteRubber( id: String) = {
     BridgeDispatcher.deleteRubber(id)
     if (!Bridge.isDemo) RestClientRubber.delete(id).recordFailure()
+  }
+
+  private var sseConnection: ServerEventConnection[String] = null
+
+  private var useSSEFromServer: Boolean = true;
+
+  def setUseSSEFromServer( b: Boolean ) = {
+    if (b != useSSEFromServer) {
+      useSSEFromServer = b
+      setServerEventConnection()
+    }
+  }
+
+  setServerEventConnection()
+
+  private def setServerEventConnection(): Unit = {
+    sseConnection = new SSE[String]( "/v1/sse/rubbers/", Listener)
+  }
+
+  object Listener extends SECListener[String] {
+    def handleStart( dupid: String) = {
+    }
+    def handleStop( dupid: String) = {
+    }
+
+    def processMessage( msg: Protocol.ToBrowserMessage ) = {
+      msg match {
+        case Protocol.MonitorJoined(id,members) =>
+        case Protocol.MonitorLeft(id,members) =>
+        case Protocol.UpdateDuplicate(matchDuplicate) =>
+        case Protocol.UpdateDuplicateHand(dupid, hand) =>
+        case Protocol.UpdateDuplicateTeam(dupid,team) =>
+        case Protocol.NoData(_) =>
+        case Protocol.UpdateChicago(mc) =>
+        case Protocol.UpdateChicagoRound(mc,r) =>
+        case Protocol.UpdateChicagoHand(mc,r,hand) =>
+        case Protocol.UpdateRubber(mr) =>
+          BridgeDispatcher.updateRubber(mr)
+        case Protocol.UpdateRubberHand(mrid,hand) =>
+          BridgeDispatcher.updateRubberHand(mrid,hand.id,hand)
+      }
+    }
+  }
+
+  def monitor( dupid: String, restart: Boolean = false ): Unit = {
+
+    if (AjaxResult.isEnabled.getOrElse(false)) {
+      RubberStore.getMonitoredId match {
+        case Some(mdid) =>
+          sseConnection.cancelStop()
+          if (restart || mdid != dupid || !sseConnection.isConnected) {
+            logger.info(s"""Switching MatchChicago monitor to ${dupid} from ${mdid}""" )
+            sseConnection.monitor(dupid, restart)
+          } else {
+            // already monitoring id
+            logger.info(s"""Already monitoring MatchChicago ${dupid}""" )
+          }
+        case None =>
+          logger.info(s"""Starting MatchChicago monitor to ${dupid}""" )
+          sseConnection.monitor(dupid, restart)
+      }
+    } else {
+
+    }
+
+  }
+
+  /**
+   * Stop monitoring a duplicate match
+   */
+  def delayStop() = {
+    logger.fine(s"Controller.delayStop ${RubberStore.getMonitoredId}")
+    sseConnection.delayStop()
+  }
+
+  /**
+   * Stop monitoring a duplicate match
+   */
+  def stop() = {
+    logger.fine(s"Controller.stop ${RubberStore.getMonitoredId}")
+    sseConnection.stop()
   }
 
 }

@@ -30,6 +30,7 @@ import com.example.data.websocket.Protocol.UpdateChicago
 import com.example.data.websocket.Protocol.UpdateRubber
 import com.example.data.websocket.Protocol.UpdateChicagoHand
 import com.example.data.websocket.Protocol.UpdateChicagoRound
+import com.example.data.websocket.Protocol.UpdateRubberHand
 
 class WebsocketClient(implicit system: ActorSystem, materializer: Materializer, routetest: RouteTest) {
 
@@ -217,6 +218,8 @@ object WebsocketClientImplicits {
             fail(s"${wc.address} Unexpected response from the monitor: $m")
           case m: UpdateRubber =>
             fail(s"${wc.address} Unexpected response from the monitor: $m")
+          case m: UpdateRubberHand =>
+            fail("Unexpected response from the monitor: "+m)
         }) {}
     }
 
@@ -244,6 +247,8 @@ object WebsocketClientImplicits {
             fail(s"${wc.address} Unexpected response from the monitor: $m")
           case m: UpdateRubber =>
             fail(s"${wc.address} Unexpected response from the monitor: $m")
+          case m: UpdateRubberHand =>
+            fail("Unexpected response from the monitor: "+m)
         }
     }
 
@@ -269,6 +274,8 @@ object WebsocketClientImplicits {
             fail(s"${wc.address} Unexpected response from the monitor: $m")
           case m: UpdateRubber =>
             fail(s"${wc.address} Unexpected response from the monitor: $m")
+          case m: UpdateRubberHand =>
+            fail("Unexpected response from the monitor: "+m)
         }
     }
 
@@ -294,6 +301,8 @@ object WebsocketClientImplicits {
             fail(s"${wc.address} Unexpected response from the monitor: $m")
           case m: UpdateRubber =>
             fail(s"${wc.address} Unexpected response from the monitor: $m")
+          case m: UpdateRubberHand =>
+            fail("Unexpected response from the monitor: "+m)
         }
     }
 

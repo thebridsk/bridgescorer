@@ -238,7 +238,6 @@ object ChicagoController {
 
   private var sseConnection: ServerEventConnection[Id.MatchChicago] = null
 
-  var useRestToServer: Boolean = true;
   private var useSSEFromServer: Boolean = true;
 
   def setUseSSEFromServer( b: Boolean ) = {
@@ -271,8 +270,11 @@ object ChicagoController {
         case Protocol.UpdateChicago(mc) =>
           BridgeDispatcher.updateChicago(mc)
         case Protocol.UpdateChicagoRound(mc,r) =>
+          BridgeDispatcher.updateChicagoRound(mc, r)
         case Protocol.UpdateChicagoHand(mc,r,hand) =>
+          BridgeDispatcher.updateChicagoHand(mc,r.toInt,hand.id.toInt,hand)
         case Protocol.UpdateRubber(_) =>
+        case _: Protocol.UpdateRubberHand =>
       }
     }
   }

@@ -178,6 +178,7 @@ object Controller extends  {
         case Protocol.UpdateChicagoRound(_,_) =>
         case Protocol.UpdateChicagoHand(_,_,_) =>
         case Protocol.UpdateRubber(_) =>
+        case _: Protocol.UpdateRubberHand =>
       }
     }
   }

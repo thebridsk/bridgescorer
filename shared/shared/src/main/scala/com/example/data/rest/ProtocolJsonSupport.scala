@@ -24,6 +24,7 @@ object ProtocolJsonSupportImpl {
   implicit val updateChicagoRoundFormat = Json.format[UpdateChicagoRound]
   implicit val updateChicagoHandFormat = Json.format[UpdateChicagoHand]
   implicit val updateRubberFormat = Json.format[UpdateRubber]
+  implicit val updateRubberHandFormat = Json.format[UpdateRubberHand]
 
   implicit val StartMonitorSummaryFormat = Json.format[StartMonitorSummary]
   implicit val StopMonitorSummaryFormat = Json.format[StopMonitorSummary]
@@ -123,6 +124,8 @@ class ToServerMessageFormat extends SealedFormat[ToServerMessage] {
       Option(Json.fromJson[UpdateChicagoHand](o).map{ o => o})
     } else if (className == classOf[UpdateRubber].getName) {
       Option(Json.fromJson[UpdateRubber](o).map{ o => o})
+    } else if (className == classOf[UpdateRubberHand].getName) {
+      Option(Json.fromJson[UpdateRubberHand](o).map{ o => o})
     } else {
       None
     }
@@ -146,6 +149,7 @@ class ToServerMessageFormat extends SealedFormat[ToServerMessage] {
       case x: UpdateChicagoRound => Json.toJson(x)
       case x: UpdateChicagoHand => Json.toJson(x)
       case x: UpdateRubber => Json.toJson(x)
+      case x: UpdateRubberHand => Json.toJson(x)
     }
   }
 }
@@ -176,6 +180,8 @@ class ToBrowserMessageFormat extends SealedFormat[ToBrowserMessage] {
       Option(Json.fromJson[UpdateChicagoHand](o).map{ o => o})
     } else if (className == classOf[UpdateRubber].getName) {
       Option(Json.fromJson[UpdateRubber](o).map{ o => o})
+    } else if (className == classOf[UpdateRubberHand].getName) {
+      Option(Json.fromJson[UpdateRubberHand](o).map{ o => o})
     } else {
       None
     }
@@ -192,7 +198,8 @@ class ToBrowserMessageFormat extends SealedFormat[ToBrowserMessage] {
       case x: UpdateChicago => Json.toJson[UpdateChicago](x)
       case x: UpdateChicagoRound => Json.toJson(x)
       case x: UpdateChicagoHand => Json.toJson(x)
-      case x: UpdateRubber => Json.toJson[UpdateRubber](x)
+      case x: UpdateRubber => Json.toJson(x)
+      case x: UpdateRubberHand => Json.toJson(x)
     }
   }
 }

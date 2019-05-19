@@ -72,6 +72,7 @@ import com.example.data.websocket.Protocol.UpdateRubber
 import com.example.data.websocket.Protocol.UpdateChicago
 import com.example.data.websocket.Protocol.UpdateChicagoRound
 import com.example.data.websocket.Protocol.UpdateChicagoHand
+import com.example.data.websocket.Protocol.UpdateRubberHand
 
 class TestDuplicateRestSpec extends FlatSpecLike with ScalatestRouteTest with MustMatchers with MyService {
 
@@ -194,6 +195,8 @@ class TestDuplicateRestSpec extends FlatSpecLike with ScalatestRouteTest with Mu
           fail("Unexpected response from the monitor: "+m)
         case m: UpdateRubber =>
           fail("Unexpected response from the monitor: "+m)
+        case m: UpdateRubberHand =>
+          fail("Unexpected response from the monitor: "+m)
       }) {}
   }
 
@@ -242,6 +245,8 @@ class TestDuplicateRestSpec extends FlatSpecLike with ScalatestRouteTest with Mu
           fail("Unexpected response from the monitor: "+m)
         case m: UpdateRubber =>
           fail("Unexpected response from the monitor: "+m)
+        case m: UpdateRubberHand =>
+          fail("Unexpected response from the monitor: "+m)
       }
   }
 
@@ -287,6 +292,8 @@ class TestDuplicateRestSpec extends FlatSpecLike with ScalatestRouteTest with Mu
           fail(s"Unexpected response from the monitor: $m")
         case m: UpdateRubber =>
           fail("Unexpected response from the monitor: "+m)
+        case m: UpdateRubberHand =>
+          fail("Unexpected response from the monitor: "+m)
       }
   }
 
@@ -331,6 +338,8 @@ class TestDuplicateRestSpec extends FlatSpecLike with ScalatestRouteTest with Mu
         case m: UpdateChicagoHand =>
           fail(s"Unexpected response from the monitor: $m")
         case m: UpdateRubber =>
+          fail("Unexpected response from the monitor: "+m)
+        case m: UpdateRubberHand =>
           fail("Unexpected response from the monitor: "+m)
       }
   }
