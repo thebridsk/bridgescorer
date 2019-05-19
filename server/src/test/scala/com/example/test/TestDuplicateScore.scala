@@ -14,8 +14,8 @@ import com.example.backend.BridgeService
 import com.example.data.bridge.PerspectiveTable
 import com.example.data.bridge.PerspectiveDirector
 import com.example.backend.BridgeServiceInMemory
-import scala.concurrent.Await
 import scala.concurrent.duration._
+import scala.concurrent.ExecutionContext
 
 class TestDuplicateScore extends FlatSpec with MustMatchers {
 
@@ -194,12 +194,13 @@ class TestDuplicateScore extends FlatSpec with MustMatchers {
   behavior of "creating a new match"
 
   it should "not throw any exceptions" in {
-    Await.result( new BridgeServiceInMemory("test").fillBoards(MatchDuplicate.create("M3")), 30.seconds) match {
+    implicit val ec = ExecutionContext.global
+    new BridgeServiceInMemory("test").fillBoards(MatchDuplicate.create("M3")).map { _ match {
       case Right(m) =>
         val s = MatchDuplicateScore(m, PerspectiveDirector )
         s.tables.size mustBe 2
       case Left((code,msg)) =>
         fail( "Did not fill boards: "+code+" "+msg.msg )
-    }
+    }}
   }
 }

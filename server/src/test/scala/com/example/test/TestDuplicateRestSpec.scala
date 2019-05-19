@@ -40,7 +40,6 @@ import akka.testkit.TestKitBase
 import akka.stream.scaladsl.Source
 import akka.stream.scaladsl.Sink
 import scala.concurrent.duration._
-import scala.concurrent.Await
 import akka.http.scaladsl.model.ws.BinaryMessage
 import com.example.data.Team
 import com.example.data.RestMessage
@@ -812,7 +811,7 @@ class TestDuplicateRestSpec extends FlatSpecLike with ScalatestRouteTest with Mu
   behavior of "MyService REST for DuplicateResult"
 
   it should "return a MatchDuplicateResult given a MatchDuplicate instance" in {
-    Await.result( restService.createTestDuplicate(MatchDuplicate.create()), 30.seconds) match {
+    restService.createTestDuplicate(MatchDuplicate.create()).map { _ match {
       case Right(dup) =>
         val mdr = MatchDuplicateResult.createFrom(dup)
 
@@ -820,7 +819,7 @@ class TestDuplicateRestSpec extends FlatSpecLike with ScalatestRouteTest with Mu
         mdr.results(0).size mustBe 4
       case Left((status,msg)) =>
         fail(s"unable to crete a match duplicate object ${status} ${msg}")
-    }
+    }}
 
   }
 

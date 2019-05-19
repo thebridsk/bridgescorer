@@ -16,7 +16,6 @@ import utils.logging.Logger
 import akka.http.scaladsl.model.StatusCode
 
 import Store._
-import scala.concurrent.Await
 import com.example.data.VersionedInstance
 import org.scalactic.source.Position
 import com.example.source.SourcePosition

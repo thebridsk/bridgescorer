@@ -49,7 +49,6 @@ import akka.stream.stage.OutHandler
 import akka.io.Tcp
 import com.example.backend.resource.Store
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Await
 import scala.concurrent.duration._
 import com.example.backend.resource.StoreListener
 import com.example.backend.resource.ChangeContext
@@ -110,8 +109,7 @@ abstract class BaseStoreMonitor[VId, VType <: VersionedInstance[VType,VType,VId]
 //        dispatchTo(sender,resp)
       case DuplexProtocol.Request(data, seq, ack) =>
         log.info("Processing "+msg)
-        val resp = processProtocolMessage(sender,seq,data,ack)
-        dispatchTo(resp, sender )
+        processProtocolMessage(sender,seq,data,ack).foreach( r => dispatchTo(r, sender ) )
       case DuplexProtocol.LogEntryS(s) =>
         {
           val le = DuplexProtocol.fromString(s).asInstanceOf[DuplexProtocol.LogEntryV2]
@@ -140,7 +138,7 @@ abstract class BaseStoreMonitor[VId, VType <: VersionedInstance[VType,VType,VId]
     Service.logFromBrowser(ips, "ws", e)
   }
 
-  def processProtocolMessage( sender: String, seq: Int, msg: Protocol.ToServerMessage, ack: Boolean ): DuplexProtocol.DuplexMessage
+  def processProtocolMessage( sender: String, seq: Int, msg: Protocol.ToServerMessage, ack: Boolean ): Future[DuplexProtocol.DuplexMessage]
 
   protected def dispatchToAll( data: ToBrowserMessage ): Unit = {
     log.debug(s"BaseStoreMonitor.dispatchToAll: ${data}")
@@ -267,6 +265,9 @@ abstract class BaseStoreMonitor[VId, VType <: VersionedInstance[VType,VType,VId]
   override def register() = store.addListener(listener)
   override def unregister() = store.removeListener(listener)
 
+  protected def futureError( msg: String, seq: Int ): Future[DuplexProtocol.DuplexMessage] = Future {
+    DuplexProtocol.ErrorResponse(msg, seq)
+  }
 }
 
 class StoreMonitorManager[VId, VType <: VersionedInstance[VType,VType,VId]](
@@ -385,23 +386,25 @@ class DuplicateStoreMonitor(system: ActorSystem,
                    store: Store[Id.MatchDuplicate,MatchDuplicate]
                   ) extends BaseStoreMonitor[Id.MatchDuplicate,MatchDuplicate](system, store, Protocol.UpdateDuplicate(_)) {
 
-  def processProtocolMessage( sender: String, seq: Int, msg: Protocol.ToServerMessage, ack: Boolean ): DuplexProtocol.DuplexMessage = {
+  def processProtocolMessage( sender: String, seq: Int, msg: Protocol.ToServerMessage, ack: Boolean ): Future[DuplexProtocol.DuplexMessage] = {
     import BridgeNestedResources._
     log.info("ProcessProtocolMessage("+seq+") "+msg)
-    val resp = msg match {
+    val resp: Future[DuplexProtocol.DuplexMessage] = msg match {
       case UpdateDuplicate( dup ) =>
         log.warning("Updating the MatchDuplicate object is not supported")
-        DuplexProtocol.ErrorResponse("Updating the MatchDuplicate object is not supported", seq)
+        futureError("Updating the MatchDuplicate object is not supported", seq)
       case UpdateDuplicateHand( dupid, hand ) =>
         log.warning(s"UpdateDuplicateHand ${dupid} ${hand}")
-        Await.result( store.select(dupid).resourceBoards.select(hand.board).resourceHands.select(hand.id).update(hand), 30.seconds )
-        dispatchToAllDuplicate(dupid,UpdateDuplicateHand(dupid,hand))
-        DuplexProtocol.Response(if (ack) UpdateDuplicateHand( dupid, hand ) else NoData(),seq)
+        store.select(dupid).resourceBoards.select(hand.board).resourceHands.select(hand.id).update(hand).map { rh =>
+          dispatchToAllDuplicate(dupid,UpdateDuplicateHand(dupid,hand))
+          DuplexProtocol.Response(if (ack) UpdateDuplicateHand( dupid, hand ) else NoData(),seq)
+        }
       case UpdateDuplicateTeam( dupid, team ) =>
         log.warning(s"UpdateDuplicateTeam ${dupid} ${team}")
-        Await.result( store.select(dupid).resourceTeams.select(team.id).update(team), 30.seconds )
-        dispatchToAllDuplicate(dupid,UpdateDuplicateTeam(dupid,team))
-        DuplexProtocol.Response(if (ack) UpdateDuplicateTeam( dupid, team ) else NoData(), seq)
+        store.select(dupid).resourceTeams.select(team.id).update(team).map { rt =>
+          dispatchToAllDuplicate(dupid,UpdateDuplicateTeam(dupid,team))
+          DuplexProtocol.Response(if (ack) UpdateDuplicateTeam( dupid, team ) else NoData(), seq)
+        }
       case StartMonitorDuplicate(dupid: Id.MatchDuplicate ) =>
         log.warning(s"StartMonitorDuplicate ${dupid}")
         get(sender) match {
@@ -409,17 +412,19 @@ class DuplicateStoreMonitor(system: ActorSystem,
             add( new DuplicateSubscription( sub, dupid ) )
           case None =>
         }
-        Await.result( store.read(dupid), 30.seconds) match {
-          case Right(dup) =>
-            if (ack) {
-              log.info("Sending MatchDuplicate to "+sender+": "+dup)
-              dispatchTo(DuplexProtocol.Unsolicited( UpdateDuplicate(dup)), sender)
-              DuplexProtocol.Response( NoData(), seq )
-            } else {
-              DuplexProtocol.Response( UpdateDuplicate( dup ), seq )
-            }
-          case _ =>
-            DuplexProtocol.Response(NoData(),seq)
+        store.read(dupid).map { rd =>
+          rd match {
+            case Right(dup) =>
+              if (ack) {
+                log.info("Sending MatchDuplicate to "+sender+": "+dup)
+                dispatchTo(DuplexProtocol.Unsolicited( UpdateDuplicate(dup)), sender)
+                DuplexProtocol.Response( NoData(), seq )
+              } else {
+                DuplexProtocol.Response( UpdateDuplicate( dup ), seq )
+              }
+            case _ =>
+              DuplexProtocol.Response(NoData(),seq)
+          }
         }
       case StopMonitorDuplicate(dupid) =>
         log.info(s"StopMonitorDuplicate ${dupid}")
@@ -428,52 +433,52 @@ class DuplicateStoreMonitor(system: ActorSystem,
             add( sub.getSubscription() )
           case None =>
         }
-        DuplexProtocol.Response(NoData(),seq)
+        Future( DuplexProtocol.Response(NoData(),seq) )
       case NoData(_) =>
         log.debug("No data")
-        DuplexProtocol.Response(NoData(),seq)
+        Future(DuplexProtocol.Response(NoData(),seq))
       case StartMonitorSummary(_) =>
         log.warning("StartMonitorSummary not implemented")
-        DuplexProtocol.ErrorResponse("Unknown request", seq)
+        futureError("Unknown request", seq)
       case StopMonitorSummary(_) =>
         log.warning("StopMonitorSummary not implemented")
-        DuplexProtocol.ErrorResponse("Unknown request", seq)
+        futureError("Unknown request", seq)
 
       case StartMonitorChicago(_) =>
         log.warning("StartMonitorChicago not implemented")
-        DuplexProtocol.ErrorResponse("Unknown request", seq)
+        futureError("Unknown request", seq)
       case StopMonitorChicago(_) =>
         log.warning("StopMonitorChicago not implemented")
-        DuplexProtocol.ErrorResponse("Unknown request", seq)
+        futureError("Unknown request", seq)
       case x: UpdateChicago =>
         log.warning("UpcateChicago not implemented")
-        DuplexProtocol.ErrorResponse("Unknown request", seq)
+        futureError("Unknown request", seq)
       case x: UpdateChicagoRound =>
         log.warning("UpcateChicagoRound not implemented")
-        DuplexProtocol.ErrorResponse("Unknown request", seq)
+        futureError("Unknown request", seq)
       case x: UpdateChicagoHand =>
         log.warning("UpcateChicagoHand not implemented")
-        DuplexProtocol.ErrorResponse("Unknown request", seq)
+        futureError("Unknown request", seq)
 
       case StartMonitorRubber(_) =>
         log.warning("StartMonitorRubber not implemented")
-        DuplexProtocol.ErrorResponse("Unknown request", seq)
+        futureError("Unknown request", seq)
       case StopMonitorRubber(_) =>
         log.warning("StopMonitorRubber not implemented")
-        DuplexProtocol.ErrorResponse("Unknown request", seq)
+        futureError("Unknown request", seq)
       case x: UpdateRubber =>
         log.warning("UpcateRubber not implemented")
-        DuplexProtocol.ErrorResponse("Unknown request", seq)
+        futureError("Unknown request", seq)
       case x: UpdateRubberHand =>
         log.warning("UpcateRubber not implemented")
-        DuplexProtocol.ErrorResponse("Unknown request", seq)
+        futureError("Unknown request", seq)
 
 //      case _ =>
 //        log.warning("Unknown request "+msg)
-//        DuplexProtocol.ErrorResponse("Unknown request", seq)
+//        futureError("Unknown request", seq)
     }
-    log.info("ProcessProtocolMessage Response("+seq+") "+resp)
-    resp
+
+    resp.map { r => log.info("ProcessProtocolMessage Response("+seq+") "+r); r }
   }
 
 }
@@ -482,34 +487,34 @@ class ChicagoStoreMonitor(system: ActorSystem,
                    store: Store[Id.MatchChicago,MatchChicago]
                   ) extends BaseStoreMonitor[Id.MatchChicago,MatchChicago](system, store, Protocol.UpdateChicago(_)) {
 
-  def processProtocolMessage( sender: String, seq: Int, msg: Protocol.ToServerMessage, ack: Boolean ): DuplexProtocol.DuplexMessage = {
+  def processProtocolMessage( sender: String, seq: Int, msg: Protocol.ToServerMessage, ack: Boolean ): Future[DuplexProtocol.DuplexMessage] = {
     import BridgeNestedResources._
     log.info("ProcessProtocolMessage("+seq+") "+msg)
-    val resp = msg match {
+    val resp: Future[DuplexProtocol.DuplexMessage] = msg match {
       case UpdateDuplicate( dup ) =>
         log.warning("Updating the MatchDuplicate object is not supported")
-        DuplexProtocol.ErrorResponse("Updating the MatchDuplicate object is not supported", seq)
+        futureError("Updating the MatchDuplicate object is not supported", seq)
       case UpdateDuplicateHand( dupid, hand ) =>
         log.warning("UpdateDuplicateHand not implemented")
-        DuplexProtocol.ErrorResponse("Unknown request", seq)
+        futureError("Unknown request", seq)
       case UpdateDuplicateTeam( dupid, team ) =>
         log.warning("UpdateDuplicateTeam not implemented")
-        DuplexProtocol.ErrorResponse("Unknown request", seq)
+        futureError("Unknown request", seq)
       case StartMonitorDuplicate(dupid: Id.MatchDuplicate ) =>
         log.warning("StartMonitorDuplicate not implemented")
-        DuplexProtocol.ErrorResponse("Unknown request", seq)
+        futureError("Unknown request", seq)
       case StopMonitorDuplicate(dupid) =>
         log.warning("StopMonitorDuplicate not implemented")
-        DuplexProtocol.ErrorResponse("Unknown request", seq)
+        futureError("Unknown request", seq)
       case NoData(_) =>
         log.debug("No data")
-        DuplexProtocol.Response(NoData(),seq)
+        Future(DuplexProtocol.Response(NoData(),seq))
       case StartMonitorSummary(_) =>
         log.warning("StartMonitorSummary not implemented")
-        DuplexProtocol.ErrorResponse("Unknown request", seq)
+        futureError("Unknown request", seq)
       case StopMonitorSummary(_) =>
         log.warning("StopMonitorSummary not implemented")
-        DuplexProtocol.ErrorResponse("Unknown request", seq)
+        futureError("Unknown request", seq)
 
       case StartMonitorChicago(dupid: Id.MatchChicago ) =>
         log.info(s"StartMonitorChicago ${dupid}")
@@ -518,17 +523,19 @@ class ChicagoStoreMonitor(system: ActorSystem,
             add( new ChicagoSubscription( sub, dupid ) )
           case None =>
         }
-        Await.result( store.read(dupid), 30.seconds) match {
-          case Right(dup) =>
-            if (ack) {
-              log.info("Sending MatchChicago to "+sender+": "+dup)
-              dispatchTo(DuplexProtocol.Unsolicited( UpdateChicago(dup)), sender)
-              DuplexProtocol.Response( NoData(), seq )
-            } else {
-              DuplexProtocol.Response( UpdateChicago( dup ), seq )
-            }
-          case _ =>
-            DuplexProtocol.Response(NoData(),seq)
+        store.read(dupid).map { rchi =>
+          rchi match {
+            case Right(dup) =>
+              if (ack) {
+                log.info("Sending MatchChicago to "+sender+": "+dup)
+                dispatchTo(DuplexProtocol.Unsolicited( UpdateChicago(dup)), sender)
+                DuplexProtocol.Response( NoData(), seq )
+              } else {
+                DuplexProtocol.Response( UpdateChicago( dup ), seq )
+              }
+            case _ =>
+              DuplexProtocol.Response(NoData(),seq)
+          }
         }
       case StopMonitorChicago(dupid) =>
         log.info(s"StopMonitorChicago ${dupid}")
@@ -537,42 +544,44 @@ class ChicagoStoreMonitor(system: ActorSystem,
             add( sub.getSubscription() )
           case None =>
         }
-        DuplexProtocol.Response(NoData(),seq)
+        Future(DuplexProtocol.Response(NoData(),seq))
       case UpdateChicago(chi) =>
         log.info(s"UpdateChicago ${chi}")
-        Await.result( store.select(chi.id).update(chi), 30.seconds )
-        dispatchToAllChicago(chi.id,UpdateChicago(chi))
-        DuplexProtocol.Response(if (ack) UpdateChicago( chi ) else NoData(),seq)
+        store.select(chi.id).update(chi).map { rchi =>
+          dispatchToAllChicago(chi.id,UpdateChicago(chi))
+          DuplexProtocol.Response(if (ack) UpdateChicago( chi ) else NoData(),seq)
+        }
       case UpdateChicagoRound(chiid,round) =>
         log.info(s"UpdateChicagoRound ${chiid} ${round}")
-        Await.result( store.select(chiid).resourceRounds.select(round.id).update(round), 30.seconds )
-        dispatchToAllChicago(chiid,UpdateChicagoRound(chiid,round))
-        DuplexProtocol.Response(if (ack) UpdateChicagoRound( chiid,round ) else NoData(),seq)
+        store.select(chiid).resourceRounds.select(round.id).update(round).map { r =>
+          dispatchToAllChicago(chiid,UpdateChicagoRound(chiid,round))
+          DuplexProtocol.Response(if (ack) UpdateChicagoRound( chiid,round ) else NoData(),seq)
+        }
       case UpdateChicagoHand(chiid,rid,hand) =>
         log.info(s"UpdateChicagoHand ${chiid} ${rid} ${hand}")
-        Await.result( store.select(chiid).resourceRounds.select(rid).resourceHands.select(hand.id).update(hand), 30.seconds )
-        dispatchToAllChicago(chiid,UpdateChicagoHand(chiid,rid,hand))
-        DuplexProtocol.Response(if (ack) UpdateChicagoHand( chiid,rid,hand ) else NoData(),seq)
+        store.select(chiid).resourceRounds.select(rid).resourceHands.select(hand.id).update(hand).map { h =>
+          dispatchToAllChicago(chiid,UpdateChicagoHand(chiid,rid,hand))
+          DuplexProtocol.Response(if (ack) UpdateChicagoHand( chiid,rid,hand ) else NoData(),seq)
+        }
 
       case StartMonitorRubber(_) =>
         log.warning("StartMonitorRubber not implemented")
-        DuplexProtocol.ErrorResponse("Unknown request", seq)
+        futureError("Unknown request", seq)
       case StopMonitorRubber(_) =>
         log.warning("StopMonitorRubber not implemented")
-        DuplexProtocol.ErrorResponse("Unknown request", seq)
+        futureError("Unknown request", seq)
       case x: UpdateRubber =>
         log.warning("UpcateRubber not implemented")
-        DuplexProtocol.ErrorResponse("Unknown request", seq)
+        futureError("Unknown request", seq)
       case x: UpdateRubberHand =>
         log.warning("UpcateRubber not implemented")
-        DuplexProtocol.ErrorResponse("Unknown request", seq)
+        futureError("Unknown request", seq)
 
 //      case _ =>
 //        log.warning("Unknown request "+msg)
-//        DuplexProtocol.ErrorResponse("Unknown request", seq)
+//        futureError("Unknown request", seq)
     }
-    log.info("ProcessProtocolMessage Response("+seq+") "+resp)
-    resp
+    resp.map { r => log.info("ProcessProtocolMessage Response("+seq+") "+r); r }
   }
 
 }
@@ -581,50 +590,50 @@ class RubberStoreMonitor(system: ActorSystem,
                    store: Store[String,MatchRubber]
                   ) extends BaseStoreMonitor[String,MatchRubber](system, store, Protocol.UpdateRubber(_)) {
 
-  def processProtocolMessage( sender: String, seq: Int, msg: Protocol.ToServerMessage, ack: Boolean ): DuplexProtocol.DuplexMessage = {
+  def processProtocolMessage( sender: String, seq: Int, msg: Protocol.ToServerMessage, ack: Boolean ): Future[DuplexProtocol.DuplexMessage] = {
     import BridgeNestedResources._
     log.info("ProcessProtocolMessage("+seq+") "+msg)
-    val resp = msg match {
+    val resp: Future[DuplexProtocol.DuplexMessage] = msg match {
       case UpdateDuplicate( dup ) =>
         log.warning("Updating the MatchDuplicate object is not supported")
-        DuplexProtocol.ErrorResponse("Updating the MatchDuplicate object is not supported", seq)
+        futureError("Updating the MatchDuplicate object is not supported", seq)
       case UpdateDuplicateHand( dupid, hand ) =>
         log.warning("UpdateDuplicateHand not implemented")
-        DuplexProtocol.ErrorResponse("Unknown request", seq)
+        futureError("Unknown request", seq)
       case UpdateDuplicateTeam( dupid, team ) =>
         log.warning("UpdateDuplicateTeam not implemented")
-        DuplexProtocol.ErrorResponse("Unknown request", seq)
+        futureError("Unknown request", seq)
       case StartMonitorDuplicate(dupid: Id.MatchDuplicate ) =>
         log.warning("StartMonitorDuplicate not implemented")
-        DuplexProtocol.ErrorResponse("Unknown request", seq)
+        futureError("Unknown request", seq)
       case StopMonitorDuplicate(dupid) =>
         log.warning("StopMonitorDuplicate not implemented")
-        DuplexProtocol.ErrorResponse("Unknown request", seq)
+        futureError("Unknown request", seq)
       case NoData(_) =>
         log.debug("No data")
-        DuplexProtocol.Response(NoData(),seq)
+        Future(DuplexProtocol.Response(NoData(),seq))
       case StartMonitorSummary(_) =>
         log.warning("StartMonitorSummary not implemented")
-        DuplexProtocol.ErrorResponse("Unknown request", seq)
+        futureError("Unknown request", seq)
       case StopMonitorSummary(_) =>
         log.warning("StopMonitorSummary not implemented")
-        DuplexProtocol.ErrorResponse("Unknown request", seq)
+        futureError("Unknown request", seq)
 
       case StartMonitorChicago(_) =>
         log.warning("StartMonitorChicago not implemented")
-        DuplexProtocol.ErrorResponse("Unknown request", seq)
+        futureError("Unknown request", seq)
       case StopMonitorChicago(_) =>
         log.warning("StopMonitorChicago not implemented")
-        DuplexProtocol.ErrorResponse("Unknown request", seq)
+        futureError("Unknown request", seq)
       case x: UpdateChicago =>
         log.warning("UpcateChicago not implemented")
-        DuplexProtocol.ErrorResponse("Unknown request", seq)
+        futureError("Unknown request", seq)
       case x: UpdateChicagoRound =>
         log.warning("UpcateChicagoRound not implemented")
-        DuplexProtocol.ErrorResponse("Unknown request", seq)
+        futureError("Unknown request", seq)
       case x: UpdateChicagoHand =>
         log.warning("UpcateChicagoHand not implemented")
-        DuplexProtocol.ErrorResponse("Unknown request", seq)
+        futureError("Unknown request", seq)
 
       case StartMonitorRubber(dupid: String ) =>
         log.info(s"StartMonitorRubber ${dupid}")
@@ -633,17 +642,19 @@ class RubberStoreMonitor(system: ActorSystem,
             add( new RubberSubscription( sub, dupid ) )
           case None =>
         }
-        Await.result( store.read(dupid), 30.seconds) match {
-          case Right(dup) =>
-            if (ack) {
-              log.info("Sending MatchRubber to "+sender+": "+dup)
-              dispatchTo(DuplexProtocol.Unsolicited( UpdateRubber(dup)), sender)
-              DuplexProtocol.Response( NoData(), seq )
-            } else {
-              DuplexProtocol.Response( UpdateRubber( dup ), seq )
-            }
-          case _ =>
-            DuplexProtocol.Response(NoData(),seq)
+        store.read(dupid).map { rr =>
+          rr match {
+            case Right(dup) =>
+              if (ack) {
+                log.info("Sending MatchRubber to "+sender+": "+dup)
+                dispatchTo(DuplexProtocol.Unsolicited( UpdateRubber(dup)), sender)
+                DuplexProtocol.Response( NoData(), seq )
+              } else {
+                DuplexProtocol.Response( UpdateRubber( dup ), seq )
+              }
+            case _ =>
+              DuplexProtocol.Response(NoData(),seq)
+          }
         }
       case StopMonitorRubber(dupid) =>
         log.info(s"StopMonitorRubber ${dupid}")
@@ -652,24 +663,25 @@ class RubberStoreMonitor(system: ActorSystem,
             add( sub.getSubscription() )
           case None =>
         }
-        DuplexProtocol.Response(NoData(),seq)
+        Future(DuplexProtocol.Response(NoData(),seq))
       case UpdateRubber(rub) =>
         log.info(s"UpdateRubber ${rub}")
-        Await.result( store.select(rub.id).update(rub), 30.seconds )
-        dispatchToAllRubber(rub.id,UpdateRubber(rub))
-        DuplexProtocol.Response(if (ack) UpdateRubber( rub ) else NoData(),seq)
+        store.select(rub.id).update(rub).map { rr =>
+          dispatchToAllRubber(rub.id,UpdateRubber(rub))
+          DuplexProtocol.Response(if (ack) UpdateRubber( rub ) else NoData(),seq)
+        }
       case UpdateRubberHand(rid,hand) =>
         log.info(s"UpdateRubberHand ${rid} ${hand}")
-        Await.result( store.select(rid).resourceHands.select(hand.id).update(hand), 30.seconds )
-        dispatchToAllRubber(rid,UpdateRubberHand(rid,hand))
-        DuplexProtocol.Response(if (ack) UpdateRubberHand( rid,hand ) else NoData(),seq)
+        store.select(rid).resourceHands.select(hand.id).update(hand).map { rh =>
+          dispatchToAllRubber(rid,UpdateRubberHand(rid,hand))
+          DuplexProtocol.Response(if (ack) UpdateRubberHand( rid,hand ) else NoData(),seq)
+        }
 
 //      case _ =>
 //        log.warning("Unknown request "+msg)
-//        DuplexProtocol.ErrorResponse("Unknown request", seq)
+//        futureError("Unknown request", seq)
     }
-    log.info("ProcessProtocolMessage Response("+seq+") "+resp)
-    resp
+    resp.map { r => log.info("ProcessProtocolMessage Response("+seq+") "+r); r }
   }
 
 }

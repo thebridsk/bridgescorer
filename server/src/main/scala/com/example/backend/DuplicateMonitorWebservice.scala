@@ -1,6 +1,5 @@
 package com.example.backend
 
-import scala.concurrent.Await
 import scala.concurrent.duration.DurationLong
 import scala.language.postfixOps
 

@@ -25,7 +25,6 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.util.Left
 import scala.util.Right
 import scala.concurrent.Future
-import scala.concurrent.Await
 import scala.concurrent.duration._
 import scala.concurrent.Promise
 import scala.util.Success

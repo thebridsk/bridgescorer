@@ -40,7 +40,6 @@ import akka.testkit.TestKitBase
 import akka.stream.scaladsl.Source
 import akka.stream.scaladsl.Sink
 import scala.concurrent.duration._
-import scala.concurrent.Await
 import akka.http.scaladsl.model.ws.BinaryMessage
 import com.example.data.Team
 import com.example.data.RestMessage

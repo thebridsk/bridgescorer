@@ -31,7 +31,6 @@ import com.example.data.Hand
 import com.example.data.DuplicateHand
 import com.example.data.Board
 import com.example.backend.resource.ChangeContextData
-import scala.concurrent.Await
 import scala.concurrent.duration._
 import com.example.data.Movement
 import scala.concurrent.Promise

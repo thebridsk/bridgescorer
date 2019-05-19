@@ -33,7 +33,6 @@ import com.example.data.DuplicateSummary
 import com.example.backend.resource.Store
 import com.example.backend.resource.Result
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Await
 import scala.concurrent.duration._
 import scala.concurrent.Promise
 import scala.concurrent.Future
