@@ -79,13 +79,14 @@ object ChicagoController {
   }
 
   def showMatch( chi: MatchChicago ) = {
-    ChicagoStore.start(chi.id, chi)
+    ChicagoStore.start(chi.id, Some(chi))
     logger.fine("calling callback with "+chi.id)
     BridgeDispatcher.updateChicago(chi)
   }
 
   def ensureMatch( chiid: String ) = {
     if (!ChicagoStore.isMonitoredId(chiid)) {
+      ChicagoStore.start(chiid,None)
       val result = RestClientChicago.get(chiid).recordFailure()
       result.foreach( created=>{
         logger.info(s"PageChicago: got chicago game: ${created.id}")
@@ -287,6 +288,7 @@ object ChicagoController {
           sseConnection.cancelStop()
           if (restart || mdid != dupid || !sseConnection.isConnected) {
             logger.info(s"""Switching MatchChicago monitor to ${dupid} from ${mdid}""" )
+            ChicagoStore.start(dupid,None)
             sseConnection.monitor(dupid, restart)
           } else {
             // already monitoring id
@@ -294,6 +296,7 @@ object ChicagoController {
           }
         case None =>
           logger.info(s"""Starting MatchChicago monitor to ${dupid}""" )
+          ChicagoStore.start(dupid,None)
           sseConnection.monitor(dupid, restart)
       }
     } else {

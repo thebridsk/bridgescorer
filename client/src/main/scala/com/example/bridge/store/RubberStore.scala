@@ -49,19 +49,19 @@ object RubberStore extends ChangeListenable {
     case None => false
   }
 
-  def start( id: String, rub: MatchRubber ) = {
+  def start( id: String, rub: Option[MatchRubber] ) = {
     monitoredId = Some(id)
-    rubber = Some(rub)
+    rubber = rub
     notifyChange()
   }
 
-  private def update(funName: String, rubid: String, fun: (MatchRubber)=>Unit, callback: Option[MatchRubber=>Unit]) = {
+  private def update(funName: String, rubid: String, fun: (Option[MatchRubber])=>Option[MatchRubber], callback: Option[MatchRubber=>Unit]) = {
     monitoredId match {
       case Some(id) if (id == rubid) =>
+        rubber = fun(rubber)
         rubber match {
           case Some(rub) =>
             logger.info("RubberStore."+funName+": updating rubberstore id="+rub.id)
-            fun(rub)
             callback.foreach( cb=>cb(rubber.get) )
             notifyChange()
             if (Bridge.isDemo) {
@@ -79,22 +79,27 @@ object RubberStore extends ChangeListenable {
 
   def updateRubber( rub: MatchRubber, callback: Option[MatchRubber=>Unit] ) = {
     update("updateRubber", rub.id, (oldrub)=>{
-      rubber = Some(rub)
+      Some(rub)
     },callback)
   }
 
   def updateRubberNames( rubid: String, north: String, south: String, east: String, west: String, firstDealer: PlayerPosition, callback: Option[MatchRubber=>Unit] ) = {
     update("updateRubberNames", rubid, (rub)=>{
-      rubber = Some( rub.setPlayers(north, south, east, west).setFirstDealer(firstDealer.pos) )
+      rub.map(_.setPlayers(north, south, east, west).setFirstDealer(firstDealer.pos))
     },callback)
   }
 
   def updateRubberHand( rubid: String, handid: String, hand: RubberHand, callback: Option[MatchRubber=>Unit] ) = {
     update("updateRubberHand", rubid, (rub)=>{
-      rubber = Some(rub.getHand(handid) match {
-        case Some(h) => rub.modifyHand(hand)
-        case None => rub.addHand(hand)
-      })
+      rub match {
+        case Some(mr) =>
+          Some( mr.getHand(handid) match {
+            case Some(h) => mr.modifyHand(hand)
+            case None => mr.addHand(hand)
+          })
+        case None =>
+          None
+      }
     },callback)
   }
 

@@ -32,6 +32,7 @@ import com.example.backend.resource.FileIO
 import com.example.test.pages.bridge.HomePage
 import scala.reflect.io.File
 import java.util.zip.ZipFile
+import org.openqa.selenium.WebDriver
 
 object ChicagoTestPages {
 
@@ -69,6 +70,8 @@ class ChicagoTestPages extends FlatSpec
 
   val Session1 = new Session
 
+  val SessionWatcher = new Session("watcher")
+
   val timeoutMillis = 15000
   val intervalMillis = 500
 
@@ -93,6 +96,7 @@ class ChicagoTestPages extends FlatSpec
     try {
       waitForFutures("Starting a browser or server",
                      CodeBlock { Session1.sessionStart().setPositionRelative(0,0).setSize(1100, 800)},
+                     CodeBlock { SessionWatcher.sessionStart().setQuadrant(2, 1100, 800)},
                      CodeBlock { TestServer.start() } )
     } catch {
       case e: Throwable =>
@@ -110,6 +114,7 @@ class ChicagoTestPages extends FlatSpec
 
     waitForFuturesIgnoreTimeouts("Stopping a browser or server",
                    CodeBlock { Session1.sessionStop() },
+                   CodeBlock { SessionWatcher.sessionStop() },
                    CodeBlock { TestServer.stop() } )
 
   }
@@ -117,17 +122,19 @@ class ChicagoTestPages extends FlatSpec
   var chicagoId: Option[String] = None   // eventually this will be obtained dynamically
   var startingNumberOfChicagosInServer = 0
 
-  import Session1._
-
   behavior of "Chicago test of Bridge Server"
 
   it should "return a root page that has a title of \"The Bridge Score Keeper\"" in {
+    import Session1._
+
     tcpSleep(15)
     go to (TestServer.getAppPage())
     eventually { pageTitle mustBe ("The Bridge Score Keeper") }
   }
 
   it should "allow us to score a Chicago match" in {
+    import Session1._
+
     if (TestServer.isServerStartedByTest) {
       startingNumberOfChicagosInServer = backend.chicagos.syncStore.readAll() match {
         case Right(l) => l.size
@@ -149,12 +156,22 @@ class ChicagoTestPages extends FlatSpec
     }
   }
 
+  it should "start the watcher session on the created match" in {
+    import SessionWatcher._
+
+    SummaryPage.goto(chicagoId.get, None)
+  }
+
   it should "allow player names to be entered" in {
+    import Session1._
+
     eventually( find(xpath("//h6[3]/span")).text mustBe "Enter players and identify first dealer" )
     takeScreenshot(docsScreenshotDir, "EnterNames4")
   }
 
   it should "allow player names to be entered with suggestions when playing Chicago" in {
+    import Session1._
+
     val p = EnterNamesPage.current
 
     eventually( find(id(EnterNamesPage.buttonReset)) mustBe 'Enabled )
@@ -181,6 +198,8 @@ class ChicagoTestPages extends FlatSpec
   }
 
   it should "allow player names to be reset when playing Chicago" in {
+    import Session1._
+
     val p = EnterNamesPage.current
 
     find(id(EnterNamesPage.buttonReset)) mustBe 'Enabled
@@ -198,6 +217,8 @@ class ChicagoTestPages extends FlatSpec
   }
 
   it should "not allow duplicate names" in {
+    import Session1._
+
     val p = EnterNamesPage.current
 
     withClue("OK must be disabled") {
@@ -232,6 +253,8 @@ class ChicagoTestPages extends FlatSpec
   }
 
   it should "allow player names to be entered when playing Chicago" in {
+    import Session1._
+
     val p = EnterNamesPage.current
 
     withClue("OK must be disabled") {
@@ -275,6 +298,7 @@ class ChicagoTestPages extends FlatSpec
 
 
   it should "send the player names to the server" in {
+    import Session1._
 
     def testPlayers( players: String* ) = {
         backend.chicagos.syncStore.read(chicagoId.get) match {
@@ -325,6 +349,7 @@ class ChicagoTestPages extends FlatSpec
         roundScores: List[Int],
         totals: List[Int]
       )(implicit
+          webDriver: WebDriver,
           pos: Position
       ) = {
 
@@ -350,6 +375,8 @@ class ChicagoTestPages extends FlatSpec
   }
 
   it should "play a round of 4 hands" in {
+    import Session1._
+
     tcpSleep(30)
     val h = HandPage.current
 
@@ -413,6 +440,8 @@ class ChicagoTestPages extends FlatSpec
   var savedChicago: Option[MatchChicago] = None
 
   it should "get the MatchChicago object using the REST API" in {
+    import Session1._
+
     savedChicago = Some( getChicago(chicagoId.get) )
   }
 
@@ -420,6 +449,8 @@ class ChicagoTestPages extends FlatSpec
   case class QueryResponse( data: ResponseData )
 
   it should "have rest call and queryml call return the same match" in {
+    import Session1._
+
     import com.example.data.rest.JsonSupport._
     implicit val rdFormat = Json.format[ResponseData]
     implicit val qrFormat = Json.format[QueryResponse]
@@ -498,7 +529,19 @@ class ChicagoTestPages extends FlatSpec
     }
   }
 
+  it should "validate the 4 hands played in first session" in {
+    import SessionWatcher._
+
+    val sum = SummaryPage.current.validate
+
+    val roundS = List(1120,1120,620,620).map(s => s.toString())
+    val totalsS = List(1120,1120,620,620).map(s => s.toString())
+    sum.checkTotalScore(0, players, roundS, totalsS)
+  }
+
   it should "start playing another game using the saved game using next hand with 6 hands in round" in {
+    import Session1._
+
     val chiid = postChicago( savedChicago.get )
 
     val gp = SummaryPage.current.validate.clickQuit.validate
@@ -541,6 +584,8 @@ class ChicagoTestPages extends FlatSpec
   }
 
   it should "start playing another game using the saved game using next hand with 8 hands in round" in {
+    import Session1._
+
     val chiid = postChicago( savedChicago.get )
 
     val gp = SummaryPage.current.validate.clickQuit.validate
@@ -598,6 +643,8 @@ class ChicagoTestPages extends FlatSpec
   }
 
   it should "start playing another game using the saved game with 6 hands in round" in {
+    import Session1._
+
     val chiid = postChicago( savedChicago.get )
 
     val gp = SummaryPage.current.validate.clickQuit.validate
@@ -644,6 +691,8 @@ class ChicagoTestPages extends FlatSpec
   }
 
   it should "start playing another game using the saved game with 8 hands in round" in {
+    import Session1._
+
     val chiid = postChicago( savedChicago.get )
 
     val gp = SummaryPage.current.validate.clickQuit.validate
@@ -703,6 +752,7 @@ class ChicagoTestPages extends FlatSpec
 
   var importZipFile: Option[File] = None
   it should "export zip" in {
+    import Session1._
 
     val hp = HomePage.goto.validate
 
@@ -724,6 +774,8 @@ class ChicagoTestPages extends FlatSpec
   }
 
   it should "import zip" in {
+    import Session1._
+
     val hp = HomePage.current.validate
 
     val ip = hp.clickImport.validate

@@ -93,6 +93,7 @@ object PageSummaryInternal {
     def render( props: Props, state: State ) = {
       import ChicagoStyles._
       val smc = ChicagoStore.getChicago
+      logger.fine(s"Render with $smc")
       <.div(
         ChicagoPageBridgeAppBar(
           title = Seq[CtorType.ChildArg](

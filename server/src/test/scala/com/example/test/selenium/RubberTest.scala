@@ -61,6 +61,7 @@ class RubberTest extends FlatSpec
   val docsScreenshotDir = "target/docs/Rubber"
 
   val Session1 = new Session
+  val SessionWatcher = new Session("Watcher")
 
   val timeoutMillis = 10000
   val intervalMillis = 500
@@ -87,6 +88,7 @@ class RubberTest extends FlatSpec
     try {
       waitForFutures( "Starting browser and server",
                       CodeBlock { Session1.sessionStart().setPositionRelative(0,0).setSize(1300, 800)},
+                      CodeBlock { SessionWatcher.sessionStart().setQuadrant(3,1300, 800)},
                       CodeBlock { TestServer.start() }
                     )
     } catch {
@@ -119,6 +121,14 @@ class RubberTest extends FlatSpec
                           testlog.warning("Timeout closing sessions and server, ignoring", x )
                       }
                     },
+                    CodeBlock {
+                      try {
+                        SessionWatcher.sessionStop()
+                      } catch {
+                        case x: TimeoutException =>
+                          testlog.warning("Timeout closing sessions and server, ignoring", x )
+                      }
+                    },
                     CodeBlock { TestServer.stop() }
                   )
   }
@@ -146,17 +156,19 @@ class RubberTest extends FlatSpec
     }
   }
 
-  import Session1._
-
   behavior of "Rubber Match test of Bridge Server"
 
   it should "return a root page that has a title of \"The Bridge Score Keeper\"" in {
+    import Session1._
+
     tcpSleep(15)
     go to (TestServer.getAppPage())
     eventually( pageTitle mustBe ("The Bridge Score Keeper") )
   }
 
   it should "allow us to score a rubber match" in {
+    import Session1._
+
     if (TestServer.isServerStartedByTest) {
       startingNumberOfRubbersInServer = backend.rubbers.syncStore.readAll() match {
         case Right(l) => l.size
@@ -178,12 +190,15 @@ class RubberTest extends FlatSpec
   }
 
   it should "allow player names to be entered" in {
+    import Session1._
+
     eventually( find(xpath("//h6[3]/span")).text mustBe "Enter players and identify first dealer" )
   }
 
   val screenshotDir = "target/screenshots/RubberTest"
 
   it should "allow player names to be entered with suggestions when playing rubber match" in {
+    import Session1._
 
     takeScreenshot(docsScreenshotDir, "EnterNames")
 
@@ -206,6 +221,7 @@ class RubberTest extends FlatSpec
   }
 
   it should "allow player names to be reset when playing rubber match" in {
+    import Session1._
 
     withClueAndScreenShot(screenshotDir, "AllowNamesReset", "Names reset with suggestions") {
       PageBrowser.esc
@@ -221,6 +237,7 @@ class RubberTest extends FlatSpec
   }
 
   it should "allow player names to be entered when playing rubber match and select first dealer" in {
+    import Session1._
 
     find(id("Ok")) must not be 'Enabled
 
@@ -244,6 +261,7 @@ class RubberTest extends FlatSpec
   }
 
   it should "send the player names to the server" in {
+    import Session1._
 
     def testPlayers( north: String, south: String, east: String, west: String ) = {
         backend.rubbers.syncStore.read(rubberId) match {
@@ -259,10 +277,14 @@ class RubberTest extends FlatSpec
   }
 
   it should "allow the input style to be set to original" in {
+    import Session1._
+
     InputStyleHelper.hitInputStyleButton( "Original" )
   }
 
   it should "play first game in rubber" in {
+    import Session1._
+
     val assertScore = assertTotals("Nancy", "Sam", "Ellen", "Wayne" ) _
 
     findButtonAndClick("NextHand")
@@ -309,6 +331,8 @@ class RubberTest extends FlatSpec
   }
 
   it should "play second game in rubber" in {
+    import Session1._
+
     val assertScore = assertTotals("Nancy", "Sam", "Ellen", "Wayne" ) _
 
     findButtonAndClick("NextHand")
@@ -342,6 +366,8 @@ class RubberTest extends FlatSpec
   }
 
   it should "play third game in rubber" in {
+    import Session1._
+
     val assertScore = assertTotals("Nancy", "Sam", "Ellen", "Wayne" ) _
 
     findButtonAndClick("NextHand")
@@ -364,10 +390,14 @@ class RubberTest extends FlatSpec
   }
 
   it should "quit playing the rubber match" in {
+    import Session1._
+
     findButtonAndClick("Quit")
   }
 
   it should "have timestamps on all objects in the MatchRubber record" in {
+    import Session1._
+
     val url: URL = new URL(TestServer.hosturl+"v1/rest/rubbers/"+rubberId)
     val connection = url.openConnection()
     val is = connection.getInputStream
@@ -402,6 +432,8 @@ class RubberTest extends FlatSpec
   case class QueryResponse( data: ResponseMainStore )
 
   it should "have rest call and queryml call return the same match" in {
+    import Session1._
+
     val bridgeResources = BridgeResources(false)
     import bridgeResources._
 
@@ -490,10 +522,35 @@ class RubberTest extends FlatSpec
 
   behavior of "playing a second rubber match"
 
+  var secondUrl: Option[String] = None
+
   it should "play another rubber match" in {
+    import Session1._
+
     findButtonAndClick("New")
 
     eventually( find(xpath("//h6[3]/span")).text mustBe "Enter players and identify first dealer" )
+
+    secondUrl = Some( currentUrl )
+  }
+
+  it should "start the watcher" in {
+    import SessionWatcher._
+
+    secondUrl match {
+      case Some(url) =>
+        val names = "/names"
+        val u = if (url.endsWith(names)) url.substring(0, url.length()-names.length()) else url
+        println(s"Second URL is ${u}")
+        go to u
+      case None =>
+        fail("Did not get the URL of the page to watch")
+    }
+
+  }
+
+  it should "enter names in the second match" in {
+    import Session1._
 
     eventually( findButton("Ok").isEnabled mustBe false )
 
@@ -515,6 +572,8 @@ class RubberTest extends FlatSpec
   }
 
   it should "play the second rubber" in {
+    import Session1._
+
     val assertScore = assertTotals("Nancy", "Sam", "Ellen", "Wayne" ) _
 
     findButtonAndClick("NextHand")
@@ -532,9 +591,23 @@ class RubberTest extends FlatSpec
     checkRubberTable( ("Game 2", Nil, 380::Nil), ("Above", Nil, 800::1250::Nil),("Game 1", Nil, 880::Nil) )
   }
 
+  it should "have the same score on the watcher" in {
+    import SessionWatcher._
+
+    val assertScore = assertTotals("Nancy", "Sam", "Ellen", "Wayne" ) _
+
+    assertScore( 0, 4010 )
+    assertRowDetails(4, "", "380 (800)")
+
+    checkRubberTable( ("Game 2", Nil, 380::Nil), ("Above", Nil, 800::1250::Nil),("Game 1", Nil, 880::Nil) )
+
+  }
+
   behavior of "Names resource"
 
   it should "show the names without leading and trailing spaces" in {
+    import Session1._
+
     import com.example.rest.UtilsPlayJson._
     val rnames: ResponseFromHttp[Option[Array[String]]] = HttpUtils.getHttpObject( new URL(TestServer.hosturl+"v1/rest/names") )
 
@@ -556,6 +629,8 @@ class RubberTest extends FlatSpec
   behavior of "Rubber test of entering names"
 
   it should "start a new rubber game" in {
+    import Session1._
+
     go to (TestServer.getAppPage())
     pageTitle mustBe ("The Bridge Score Keeper")
 
@@ -570,6 +645,7 @@ class RubberTest extends FlatSpec
   }
 
   it should "give player suggestions when entering names" in {
+    import Session1._
 
     eventually( find(id("ResetNames")) mustBe 'Enabled )
     find(id("Ok")) must not be 'Enabled
@@ -615,6 +691,8 @@ class RubberTest extends FlatSpec
   }
 
   it should "delete the match just created" in {
+    import Session1._
+
     click on id("Cancel")
 
     eventually { find( id("Home") ) }
@@ -653,6 +731,7 @@ class RubberTest extends FlatSpec
 
   var importZipFile: Option[File] = None
   it should "export zip" in {
+    import Session1._
 
     val hp = HomePage.goto.validate
 
@@ -674,6 +753,8 @@ class RubberTest extends FlatSpec
   }
 
   it should "import zip" in {
+    import Session1._
+
     val hp = HomePage.current.validate
 
     val ip = hp.clickImport.validate
@@ -710,13 +791,14 @@ class RubberTest extends FlatSpec
   def getDivByClass( clss: String ) = "div[contains(concat(' ', @class, ' '), ' "+clss+" ')]"
 
   def assertTotals( north: String, south: String, east: String, west: String)
-                  ( nsScore: Int, ewScore: Int) = {
+                  ( nsScore: Int, ewScore: Int)
+                  (implicit webDriver: WebDriver)= {
     assertRubberTotals( north, south, east, west )(nsScore, ewScore)
     assertDetailsTotals( north, south, east, west )(nsScore, ewScore)
   }
 
   def assertRubberTotals( north: String, south: String, east: String, west: String)
-                        ( nsScore: Int, ewScore: Int) = {
+                        ( nsScore: Int, ewScore: Int)(implicit webDriver: WebDriver) = {
 
     val header = findAll( xpath("//"+getDivByClass("rubDivRubberMatchView")+"/table/thead/tr/th")).toList.drop(1)
     header.size mustBe 2
@@ -733,7 +815,8 @@ class RubberTest extends FlatSpec
   }
 
   def assertDetailsTotals( north: String, south: String, east: String, west: String)
-                         ( nsScore: Int, ewScore: Int) = {
+                         ( nsScore: Int, ewScore: Int)
+                         (implicit webDriver: WebDriver) = {
 
     val header = findAll( xpath("//"+getDivByClass("rubDivDetailsView")+"/div/table/thead/tr/th")).toList.drop(5)
     header.size mustBe 2
@@ -749,7 +832,8 @@ class RubberTest extends FlatSpec
 
   }
 
-  def assertRowDetails( irow: Int, nsScore: String, ewScore: String) = {
+  def assertRowDetails( irow: Int, nsScore: String, ewScore: String)
+                       (implicit webDriver: WebDriver)= {
 
     val totals = findAll( xpath("//"+getDivByClass("rubDivDetailsView")+"/div/table/tbody/tr["+irow+"]/td")).toList
     totals.size mustBe 7
@@ -759,7 +843,7 @@ class RubberTest extends FlatSpec
 
   }
 
-  def verifyVul( nsVul: Boolean, ewVul: Boolean ) = {
+  def verifyVul( nsVul: Boolean, ewVul: Boolean )(implicit webDriver: WebDriver) = {
     eventually { find(xpath("//h6[3]/span")).text mustBe "Enter Hand" }
 
     val nsVulT = if (nsVul) "Vul" else "vul"
@@ -779,12 +863,13 @@ class RubberTest extends FlatSpec
 //    ewVul mustBe ewClass
   }
 
-  def getHonorsButtons() = {
+  def getHonorsButtons()(implicit webDriver: WebDriver) = {
     val div = find(xpath("//"+getDivByClass("handViewHonors")+"/div/div[1]" ))
     div.findAll(tagName("button")).toList.map( e => (e.id.get, e) ).toMap
   }
 
-  def checkHonorPoints( contractTricks: ContractTricks, contractSuit: ContractSuit ) = {
+  def checkHonorPoints( contractTricks: ContractTricks, contractSuit: ContractSuit )
+                      (implicit webDriver: WebDriver) = {
     val buttons = getHonorsButtons()
     contractTricks match {
       case PassedOut =>
@@ -799,7 +884,8 @@ class RubberTest extends FlatSpec
     }
   }
 
-  def checkHonorPos( contractTricks: ContractTricks, honorPoints: Int ) = {
+  def checkHonorPos( contractTricks: ContractTricks, honorPoints: Int )
+                    (implicit webDriver: WebDriver)= {
     val div = find(xpath("//"+getDivByClass("handViewHonors")+"/div/div[2]"))
     contractTricks match {
       case PassedOut =>
@@ -825,7 +911,7 @@ class RubberTest extends FlatSpec
                  testHonorsButtons: Boolean = true,
                  dealer: Option[String] = None,
                  screenshot: Option[String] = None
-               ) = {
+               )(implicit webDriver: WebDriver) = {
     eventually { find(xpath("//h6[3]/span")).text mustBe "Enter Hand" }
 
     dealer.foreach( dealerName => eventually { find(id("Dealer")).text } mustBe dealerName )
@@ -881,14 +967,14 @@ class RubberTest extends FlatSpec
   /**
    * Gets the rows of the rubber table, PageRubberMatchInternal.component
    */
-  def getRubberTable() = {
+  def getRubberTable()(implicit webDriver: WebDriver) = {
     val rows = findAll(xpath("//"+getDivByClass("rubDivRubberMatchView")+"/table/tbody/tr"))
     rows.map { r => {
       r.findAll(tagName("td")).map { e => e.text }.toList
     }}.foldLeft( ListGames(Nil) )( (a,r)=> a.add(r) ).toMap
   }
 
-  def checkRubberTable( checker: (String, List[Int], List[Int])* )( implicit pos: Position ) = {
+  def checkRubberTable( checker: (String, List[Int], List[Int])* )( implicit pos: Position, webDriver: WebDriver ) = {
     checker.foreach( c => {
       val (label, ns, ew) = c
       getRubberTable().get(label) match {

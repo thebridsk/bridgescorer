@@ -82,7 +82,7 @@ object RubberController {
   }
 
   def showMatch( rub: MatchRubber ) = {
-    RubberStore.start(rub.id, rub)
+    RubberStore.start(rub.id, Some(rub))
     logger.fine("calling callback with "+rub.id)
     BridgeDispatcher.updateRubber(rub)
   }
@@ -279,6 +279,7 @@ object RubberController {
           sseConnection.cancelStop()
           if (restart || mdid != dupid || !sseConnection.isConnected) {
             logger.info(s"""Switching MatchChicago monitor to ${dupid} from ${mdid}""" )
+            RubberStore.start(dupid, None)
             sseConnection.monitor(dupid, restart)
           } else {
             // already monitoring id
@@ -286,6 +287,7 @@ object RubberController {
           }
         case None =>
           logger.info(s"""Starting MatchChicago monitor to ${dupid}""" )
+          RubberStore.start(dupid, None)
           sseConnection.monitor(dupid, restart)
       }
     } else {
