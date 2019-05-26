@@ -391,22 +391,22 @@ class DuplicateStoreMonitor(system: ActorSystem,
     log.info("ProcessProtocolMessage("+seq+") "+msg)
     val resp: Future[DuplexProtocol.DuplexMessage] = msg match {
       case UpdateDuplicate( dup ) =>
-        log.warning("Updating the MatchDuplicate object is not supported")
+        log.debug("Updating the MatchDuplicate object is not supported")
         futureError("Updating the MatchDuplicate object is not supported", seq)
       case UpdateDuplicateHand( dupid, hand ) =>
-        log.warning(s"UpdateDuplicateHand ${dupid} ${hand}")
+        log.debug(s"UpdateDuplicateHand ${dupid} ${hand}")
         store.select(dupid).resourceBoards.select(hand.board).resourceHands.select(hand.id).update(hand).map { rh =>
           dispatchToAllDuplicate(dupid,UpdateDuplicateHand(dupid,hand))
           DuplexProtocol.Response(if (ack) UpdateDuplicateHand( dupid, hand ) else NoData(),seq)
         }
       case UpdateDuplicateTeam( dupid, team ) =>
-        log.warning(s"UpdateDuplicateTeam ${dupid} ${team}")
+        log.debug(s"UpdateDuplicateTeam ${dupid} ${team}")
         store.select(dupid).resourceTeams.select(team.id).update(team).map { rt =>
           dispatchToAllDuplicate(dupid,UpdateDuplicateTeam(dupid,team))
           DuplexProtocol.Response(if (ack) UpdateDuplicateTeam( dupid, team ) else NoData(), seq)
         }
       case StartMonitorDuplicate(dupid: Id.MatchDuplicate ) =>
-        log.warning(s"StartMonitorDuplicate ${dupid}")
+        log.info(s"StartMonitorDuplicate ${dupid}")
         get(sender) match {
           case Some(sub) =>
             add( new DuplicateSubscription( sub, dupid ) )
@@ -438,10 +438,10 @@ class DuplicateStoreMonitor(system: ActorSystem,
         log.debug("No data")
         Future(DuplexProtocol.Response(NoData(),seq))
       case StartMonitorSummary(_) =>
-        log.warning("StartMonitorSummary not implemented")
+        log.info("StartMonitorSummary not implemented")
         futureError("Unknown request", seq)
       case StopMonitorSummary(_) =>
-        log.warning("StopMonitorSummary not implemented")
+        log.info("StopMonitorSummary not implemented")
         futureError("Unknown request", seq)
 
       case StartMonitorChicago(_) =>
