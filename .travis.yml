@@ -58,6 +58,8 @@ jobs:
           cat /proc/meminfo
           which sbt
           cat /etc/sbt/jvmopts
+          export JVM_OPTS=@travis/jvmopts.txt
+          cat travis/jvmopts.txt
           export ServerTestToRun=com.example.test.AllUnitTests
           sbt distribution:travis1
     - stage: systemtest

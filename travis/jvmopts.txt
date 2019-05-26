@@ -1,0 +1,11 @@
+# Set the java args to high
+
+-Xmx4G
+
+#-XX:MaxPermSize=256m
+
+-XX:ReservedCodeCacheSize=256m
+
+# Set the extra SBT options
+
+-Dsbt.log.format=true
