@@ -55,6 +55,9 @@ jobs:
     - stage: test
       script: 
         - |
+          cat /proc/meminfo
+          which sbt
+          cat /etc/sbt/jvmopts
           export ServerTestToRun=com.example.test.AllUnitTests
           sbt distribution:travis1
     - stage: systemtest
