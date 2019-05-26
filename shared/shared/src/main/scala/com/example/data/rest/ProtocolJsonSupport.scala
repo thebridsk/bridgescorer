@@ -20,11 +20,20 @@ object ProtocolJsonSupportImpl {
   implicit val updateDuplicateHandFormat = Json.format[UpdateDuplicateHand]
   implicit val updateDuplicateTeamFormat = Json.format[UpdateDuplicateTeam]
   implicit val noDataFormat = Json.format[NoData]
+  implicit val updateChicagoFormat = Json.format[UpdateChicago]
+  implicit val updateChicagoRoundFormat = Json.format[UpdateChicagoRound]
+  implicit val updateChicagoHandFormat = Json.format[UpdateChicagoHand]
+  implicit val updateRubberFormat = Json.format[UpdateRubber]
+  implicit val updateRubberHandFormat = Json.format[UpdateRubberHand]
 
   implicit val StartMonitorSummaryFormat = Json.format[StartMonitorSummary]
   implicit val StopMonitorSummaryFormat = Json.format[StopMonitorSummary]
-  implicit val StartMonitorFormat = Json.format[StartMonitor]
-  implicit val StopMonitorFormat = Json.format[StopMonitor]
+  implicit val StartMonitorDuplicateFormat = Json.format[StartMonitorDuplicate]
+  implicit val StopMonitorDuplicateFormat = Json.format[StopMonitorDuplicate]
+  implicit val StartMonitorChicagoFormat = Json.format[StartMonitorChicago]
+  implicit val StopMonitorChicagoFormat = Json.format[StopMonitorChicago]
+  implicit val StartMonitorRubberFormat = Json.format[StartMonitorRubber]
+  implicit val StopMonitorRubberFormat = Json.format[StopMonitorRubber]
 
 }
 
@@ -87,10 +96,18 @@ class ToServerMessageFormat extends SealedFormat[ToServerMessage] {
       Option(Json.fromJson[StartMonitorSummary](o).map{ o => o })
     } else if (className == classOf[StopMonitorSummary].getName) {
       Option(Json.fromJson[StopMonitorSummary](o).map{ o => o})
-    } else if (className == classOf[StartMonitor].getName) {
-      Option(Json.fromJson[StartMonitor](o).map{ o => o})
-    } else if (className == classOf[StopMonitor].getName) {
-      Option(Json.fromJson[StopMonitor](o).map{ o => o})
+    } else if (className == classOf[StartMonitorDuplicate].getName) {
+      Option(Json.fromJson[StartMonitorDuplicate](o).map{ o => o})
+    } else if (className == classOf[StopMonitorDuplicate].getName) {
+      Option(Json.fromJson[StopMonitorDuplicate](o).map{ o => o})
+    } else if (className == classOf[StartMonitorChicago].getName) {
+      Option(Json.fromJson[StartMonitorChicago](o).map{ o => o})
+    } else if (className == classOf[StopMonitorChicago].getName) {
+      Option(Json.fromJson[StopMonitorChicago](o).map{ o => o})
+    } else if (className == classOf[StartMonitorRubber].getName) {
+      Option(Json.fromJson[StartMonitorRubber](o).map{ o => o})
+    } else if (className == classOf[StopMonitorRubber].getName) {
+      Option(Json.fromJson[StopMonitorRubber](o).map{ o => o})
     } else if (className == classOf[UpdateDuplicate].getName) {
       Option(Json.fromJson[UpdateDuplicate](o).map{ o => o})
     } else if (className == classOf[UpdateDuplicateHand].getName) {
@@ -99,6 +116,16 @@ class ToServerMessageFormat extends SealedFormat[ToServerMessage] {
       Option(Json.fromJson[UpdateDuplicateTeam](o).map{ o => o})
     } else if (className == classOf[NoData].getName) {
       Option(Json.fromJson[NoData](o).map{ o => o})
+    } else if (className == classOf[UpdateChicago].getName) {
+      Option(Json.fromJson[UpdateChicago](o).map{ o => o})
+    } else if (className == classOf[UpdateChicagoRound].getName) {
+      Option(Json.fromJson[UpdateChicagoRound](o).map{ o => o})
+    } else if (className == classOf[UpdateChicagoHand].getName) {
+      Option(Json.fromJson[UpdateChicagoHand](o).map{ o => o})
+    } else if (className == classOf[UpdateRubber].getName) {
+      Option(Json.fromJson[UpdateRubber](o).map{ o => o})
+    } else if (className == classOf[UpdateRubberHand].getName) {
+      Option(Json.fromJson[UpdateRubberHand](o).map{ o => o})
     } else {
       None
     }
@@ -108,12 +135,21 @@ class ToServerMessageFormat extends SealedFormat[ToServerMessage] {
     obj match {
       case x: StartMonitorSummary => Json.toJson(x)
       case x: StopMonitorSummary => Json.toJson(x)
-      case x: StartMonitor => Json.toJson(x)
-      case x: StopMonitor => Json.toJson(x)
+      case x: StartMonitorDuplicate => Json.toJson(x)
+      case x: StopMonitorDuplicate => Json.toJson(x)
+      case x: StartMonitorChicago => Json.toJson(x)
+      case x: StopMonitorChicago => Json.toJson(x)
+      case x: StartMonitorRubber => Json.toJson(x)
+      case x: StopMonitorRubber => Json.toJson(x)
       case x: UpdateDuplicate => Json.toJson(x)
       case x: UpdateDuplicateHand => Json.toJson(x)
       case x: UpdateDuplicateTeam => Json.toJson(x)
       case x: NoData => Json.toJson(x)
+      case x: UpdateChicago => Json.toJson(x)
+      case x: UpdateChicagoRound => Json.toJson(x)
+      case x: UpdateChicagoHand => Json.toJson(x)
+      case x: UpdateRubber => Json.toJson(x)
+      case x: UpdateRubberHand => Json.toJson(x)
     }
   }
 }
@@ -136,6 +172,16 @@ class ToBrowserMessageFormat extends SealedFormat[ToBrowserMessage] {
       Option(Json.fromJson[UpdateDuplicateTeam](o).map{ o => o})
     } else if (className == classOf[NoData].getName) {
       Option(Json.fromJson[NoData](o).map{ o => o})
+    } else if (className == classOf[UpdateChicago].getName) {
+      Option(Json.fromJson[UpdateChicago](o).map{ o => o})
+    } else if (className == classOf[UpdateChicagoRound].getName) {
+      Option(Json.fromJson[UpdateChicagoRound](o).map{ o => o})
+    } else if (className == classOf[UpdateChicagoHand].getName) {
+      Option(Json.fromJson[UpdateChicagoHand](o).map{ o => o})
+    } else if (className == classOf[UpdateRubber].getName) {
+      Option(Json.fromJson[UpdateRubber](o).map{ o => o})
+    } else if (className == classOf[UpdateRubberHand].getName) {
+      Option(Json.fromJson[UpdateRubberHand](o).map{ o => o})
     } else {
       None
     }
@@ -149,6 +195,11 @@ class ToBrowserMessageFormat extends SealedFormat[ToBrowserMessage] {
       case x: UpdateDuplicateHand => Json.toJson[UpdateDuplicateHand](x)
       case x: UpdateDuplicateTeam => Json.toJson[UpdateDuplicateTeam](x)
       case x: NoData => Json.toJson[NoData](x)
+      case x: UpdateChicago => Json.toJson[UpdateChicago](x)
+      case x: UpdateChicagoRound => Json.toJson(x)
+      case x: UpdateChicagoHand => Json.toJson(x)
+      case x: UpdateRubber => Json.toJson(x)
+      case x: UpdateRubberHand => Json.toJson(x)
     }
   }
 }

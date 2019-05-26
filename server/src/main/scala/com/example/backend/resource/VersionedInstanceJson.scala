@@ -54,9 +54,15 @@ private class ReaderAndConvert[TId,
 
   def parse(s: String): ( Boolean, T) = {
     val (primary, r) = parseOld(s)
-    (primary, r.convertToCurrentVersion())
+    val cur = r.convertToCurrentVersion()
+    (primary && cur._1, cur._2)
   }
 
+  /**
+   * @param s the json string of the object
+   * @return a tuple, First is a boolean when true indicates input string was current version.
+   *                   Second is the T object.
+   */
   def parseOld( s: String ): ( Boolean, R ) = converter.read[R](s)
 
   def toJsonOld( r: R ) = converter.write(r)
@@ -96,6 +102,8 @@ class VersionedInstanceJson[TId, T <: VersionedInstance[T,T, TId]](
 
   import VersionedInstanceJson._
 
+  private val currentReaderAndConvert =  new ReaderAndConvert[TId, T, T]
+
   /** ReadAndConvert objects for older versions. */
   private val converters = scala.collection.mutable.ListBuffer[ReaderAndConvert[TId,T,_]]()
 
@@ -126,7 +134,7 @@ class VersionedInstanceJson[TId, T <: VersionedInstance[T,T, TId]](
    */
   def parse( s: String ): (Boolean, T) = {
     try {
-      converter.read(s)
+      currentReaderAndConvert.parse(s)
     } catch {
       case e: JsonException =>
         var lastE: Option[Exception] = None

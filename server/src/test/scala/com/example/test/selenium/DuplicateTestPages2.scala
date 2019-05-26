@@ -10,7 +10,6 @@ import org.openqa.selenium._
 import org.scalatest.concurrent.Eventually
 import java.util.concurrent.TimeUnit
 import com.example.Server
-import scala.concurrent.Await
 import com.example.data.bridge._
 import com.example.backend.BridgeServiceInMemory
 import com.example.backend.BridgeService
@@ -77,13 +76,13 @@ import com.example.test.util.HttpUtils
 import com.example.test.util.HttpUtils.ResponseFromHttp
 import com.example.backend.StoreMonitor
 import com.example.data.websocket.Protocol
-import com.example.data.websocket.Protocol.StartMonitor
+import com.example.data.websocket.Protocol.StartMonitorDuplicate
 import com.example.backend.StoreMonitor.NewParticipant
 import com.example.backend.StoreMonitor.ReceivedMessage
 import com.example.data.websocket.DuplexProtocol
 import com.example.backend.StoreMonitor.KillOneConnection
 import akka.actor.Actor
-import com.example.backend.StoreMonitor.NewParticipantSSE
+import com.example.backend.StoreMonitor.NewParticipantSSEDuplicate
 import com.example.test.pages.PageBrowser
 
 object DuplicateTestPages2 {
@@ -401,7 +400,7 @@ class DuplicateTestPages2 extends FlatSpec
     def process( msg: Protocol.ToServerMessage ) = {
       testlog.info(s"""withHook got $msg""")
       msg match {
-        case _: StartMonitor => gotStartMonitor = true
+        case _: StartMonitorDuplicate => gotStartMonitor = true
         case _ =>
       }
     }
@@ -413,7 +412,7 @@ class DuplicateTestPages2 extends FlatSpec
             msg match {
               case NewParticipant(name, subscriber) =>
                 gotJoin = true
-              case NewParticipantSSE(name, dupid, subscriber) =>
+              case NewParticipantSSEDuplicate(name, dupid, subscriber) =>
                 gotJoinSSE = true
               case ReceivedMessage(senderid, message) =>
                 DuplexProtocol.fromString(message) match {
@@ -429,7 +428,7 @@ class DuplicateTestPages2 extends FlatSpec
           }
         } ) {
           testlog.info(s"""withHook starting""")
-          val storeMonitorActorRef = TestServer.getMyService.monitor.monitor.monitor
+          val storeMonitorActorRef = TestServer.getMyService.duplicateMonitor.monitor.monitor
           storeMonitorActorRef ! KillOneConnection()
 
           eventually {

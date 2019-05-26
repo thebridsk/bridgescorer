@@ -10,7 +10,11 @@ trait VersionedInstance[CurrentVersion,ThisVersion,VID] {
 
   def setId( newId: VID, forCreate: Boolean, dontUpdateTime: Boolean = false ): ThisVersion
 
-  def convertToCurrentVersion(): CurrentVersion
+  /**
+   * @return a tuple, First is a boolean when true indicates input string was current version.
+   *                   Second is the CurrentVersion object.
+   */
+  def convertToCurrentVersion(): (Boolean,CurrentVersion)
 
   def readyForWrite(): ThisVersion
 }

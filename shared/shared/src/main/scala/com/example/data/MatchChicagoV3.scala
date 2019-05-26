@@ -85,9 +85,47 @@ case class MatchChicagoV3(
 
   }
 
+  def getRound( id: String ) = {
+    rounds.find( r => r.id == id)
+  }
+
   def addRound( r: Round ) = {
-    val n = copy(rounds= (r.copyForCreate(r.id)::(rounds.reverse)).reverse, updated=SystemTime.currentTimeMillis() )
+    if (r.id.toInt != rounds.length) {
+      throw new IllegalArgumentException(s"Can only add next round, ${rounds.length}, trying to add ${r.id}")
+    }
+    val n = copy(rounds= rounds:::List(r.copyForCreate(r.id)), updated=SystemTime.currentTimeMillis() )
     n
+  }
+
+  def setRounds( rounds: Map[String,Round] ): MatchChicago = {
+    val rs = rounds.values.toList.sortBy( r => r.id.toInt )
+    copy( rounds = rs )
+  }
+
+  def updateRound( round: Round ): MatchChicago = {
+    var found = false
+    val newrs = rounds.map { r =>
+      if (r.id == round.id) {
+        found = true;
+        round
+      } else {
+        r
+      }
+    }
+    if (found) {
+      copy( rounds = newrs )
+    } else {
+      throw new IllegalArgumentException(s"Round ${round.id} not found in match ${id}")
+    }
+  }
+
+  def deleteRound( id: String ) = {
+    val last = rounds.length-1
+    if (id.toInt != last) {
+      throw new IllegalArgumentException(s"Can only delete last round, ${last}, trying to delete ${id}")
+    }
+    val newrs = rounds.take(last)
+    copy( rounds = newrs )
   }
 
   def modifyRound( r: Round ) = {
@@ -229,7 +267,29 @@ case class MatchChicagoV3(
     setGamesPerRound(1).copy(simpleRotation=simple)
   }
 
-  def convertToCurrentVersion(): MatchChicago = this
+  def convertToCurrentVersion(): (Boolean, MatchChicago) = {
+    val (isNew, rs) = {
+      rounds.map { r =>
+        val (isNewV, hands) =
+        r.hands.zipWithIndex.map { entry =>
+          val (h,i) = entry
+          if (h.id != i.toString()) {
+            (false,h.copy(id=i.toString()))
+          } else {
+            (true,h)
+          }
+        }.foldLeft((true,List[Hand]())) { (ac,v) =>
+          ( ac._1&&v._1, ac._2:::List(v._2))
+        }
+        if (isNewV) (isNewV,r)
+        else (isNewV, r.copy(hands=hands))
+      }.foldLeft((true,List[Round]())) { (ac,v) =>
+        ( ac._1&&v._1, ac._2:::List(v._2))
+      }
+    }
+
+    ( isNew, if (isNew) this else copy(rounds=rs))
+  }
 
   def readyForWrite() = copy( bestMatch=None )
 

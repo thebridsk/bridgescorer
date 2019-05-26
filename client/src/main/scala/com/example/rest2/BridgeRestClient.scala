@@ -60,6 +60,7 @@ object Implicits {
 import Implicits._
 import com.example.data.duplicate.suggestion.DuplicateSuggestions
 import scala.concurrent.ExecutionContext.Implicits.global
+import com.example.data.Round
 
 object RestClientLogEntryV2 extends RestClient[LogEntryV2]("/v1/logger")
 
@@ -73,9 +74,20 @@ class RestClientDuplicateBoard( parent: RestClient[MatchDuplicate], instance: St
 }
 class RestClientDuplicateTeam( parent: RestClient[MatchDuplicate], instance: String ) extends RestClient[Team]("teams", Some(parent), Some(instance) )
 
+class RestClientChicagoRoundHand( parent: RestClientChicagoRound, instance: String ) extends RestClient[Hand]("hands", Some(parent), Some(instance) )
+class RestClientChicagoRound( parent: RestClient[MatchChicago], instance: String ) extends RestClient[Round]("boards", Some(parent), Some(instance) ) {
+  def handResource( boardid: String ) = new RestClientChicagoRoundHand( this, boardid )
+}
+
+class RestClientRubberHand( parent: RestClient[MatchRubber], instance: String ) extends RestClient[RubberHand]("hands", Some(parent), Some(instance) )
+
 object RestClientNames extends RestClient[String]("/v1/rest/names")
-object RestClientChicago extends RestClient[MatchChicago]("/v1/rest/chicagos")
-object RestClientRubber extends RestClient[MatchRubber]("/v1/rest/rubbers")
+object RestClientChicago extends RestClient[MatchChicago]("/v1/rest/chicagos") {
+  def roundResource( rubid: String ) = new RestClientChicagoRound(this,rubid)
+}
+object RestClientRubber extends RestClient[MatchRubber]("/v1/rest/rubbers") {
+  def handResource( rubid: String ) = new RestClientRubberHand(this,rubid)
+}
 object RestClientDuplicateResult extends RestClient[MatchDuplicateResult]("/v1/rest/duplicateresults") {
 
   def createDuplicateResult( hand: MatchDuplicateResult,

@@ -3,7 +3,6 @@ package com.example.test.pages
 
 import scala.concurrent.Future
 import utils.main.Main
-import scala.concurrent.Await
 import scala.concurrent.duration.Duration
 import org.openqa.selenium.WebDriver
 import com.example.source.SourcePosition

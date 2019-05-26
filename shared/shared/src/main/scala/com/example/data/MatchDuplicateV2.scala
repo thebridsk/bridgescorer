@@ -333,14 +333,14 @@ case class MatchDuplicateV2(
   }
 
   def convertToCurrentVersion() =
-    MatchDuplicateV3(
+    (false,MatchDuplicateV3(
       id,
       teams.values.toList.sortWith((b1,b2)=>Id.idComparer(b1.id, b2.id)<0),
       boards.values.map{ e => e.convertToCurrentVersion }.toList.sortWith((b1,b2)=>Id.idComparer(b1.id, b2.id)<0),
       boardset,
       movement,
       created,
-      updated )
+      updated ))
 
   def readyForWrite() = this
 

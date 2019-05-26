@@ -51,7 +51,44 @@ case class Round(
 
   }
 
-  def addHand( h: Hand ) = copy(hands=(h::(hands.reverse)).reverse, updated=SystemTime.currentTimeMillis())
+  def getHand( id: String ) = hands.find( h => h.id == id )
+
+  def addHand( h: Hand ) = {
+    if (h.id.toInt == hands.length) {
+      copy(hands=hands:::List(h), updated=SystemTime.currentTimeMillis())
+    } else {
+      throw new IllegalArgumentException(s"Trying to add hand ${h} to round ${id}, with ${hands.length} hands")
+    }
+  }
+
+  def setHands( hs: Map[String,Hand]) = {
+    val newh = hs.values.toList.sortBy(h => h.id.toInt)
+    copy( hands = newh )
+  }
+
+  /**
+   * Updates a hand.  If the hand does not exist in the round
+   * @param h
+   * @throws IllegalArgumentException if hand does not exist already.
+   */
+  def updateHand( h: Hand ) = {
+    var found = false
+    val newh = hands.map( hh => if (hh.id == h.id) { found=true; h } else hh )
+    if (found) {
+      copy(hands = newh)
+    } else {
+      throw new IllegalArgumentException(s"Update not allowed, hand ${h.id} in round ${id}, with ${hands.length} hands")
+    }
+  }
+
+  def deleteHand( hid: String ) = {
+    val last = hands.length-1
+    if (hid.toInt == last) {
+      copy(hands=hands.take(last), updated=SystemTime.currentTimeMillis())
+    } else {
+      throw new IllegalArgumentException(s"Trying to delete hand ${hid} to round ${id}, with ${hands.length} hands")
+    }
+  }
 
   def partnerOf( p: String ) = p match {
     case `north` => south

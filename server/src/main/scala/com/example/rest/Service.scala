@@ -29,6 +29,9 @@ import com.example.data.websocket.DuplexProtocol
 import utils.logging.TraceLevel
 import akka.http.scaladsl.model.HttpHeader
 import com.example.data.RestMessage
+import com.example.backend.DuplicateMonitorWebservice
+import com.example.backend.ChicagoMonitorWebservice
+import com.example.backend.RubberMonitorWebservice
 
 //import akka.event.LoggingAdapter
 
@@ -56,7 +59,10 @@ trait Service extends ImportExport {
   val restTypes: Seq[Class[_]]
                 = Seq(classOf[RestBoardSet],
                       classOf[RestChicago],
+                      classOf[RestNestedChicagoRound],
+                      classOf[RestNestedChicagoRoundHand],
                       classOf[RestRubber],
+                      classOf[RestNestedRubberHand],
                       classOf[RestLoggerConfig],
                       classOf[RestDuplicate],
                       classOf[RestDuplicateResult],
@@ -68,7 +74,9 @@ trait Service extends ImportExport {
                       classOf[RestNames],
                       classOf[RestBoardSet],
                       classOf[RestMovement],
-                      classOf[MonitorWebservice],
+                      classOf[DuplicateMonitorWebservice],
+                      classOf[ChicagoMonitorWebservice],
+                      classOf[RubberMonitorWebservice],
                       classOf[ImportExport]
                      )
 
@@ -119,7 +127,9 @@ trait Service extends ImportExport {
     override implicit lazy val materializer: ActorMaterializer = hasActorSystem.materializer
     override implicit lazy val restService = hasActorSystem.restService
   }
-  object monitor extends MonitorWebservice(totallyMissingResourceHandler)
+  object duplicateMonitor extends DuplicateMonitorWebservice(totallyMissingResourceHandler)
+  object chicagoMonitor extends ChicagoMonitorWebservice(totallyMissingResourceHandler)
+  object rubberMonitor extends RubberMonitorWebservice(totallyMissingResourceHandler)
 
   object restLoggerConfig extends RestLoggerConfig {
     override implicit lazy val actorSystem: ActorSystem = hasActorSystem.actorSystem
@@ -183,7 +193,9 @@ trait Service extends ImportExport {
             }
           }
         } ~
-        monitor.route ~
+        duplicateMonitor.route ~
+        chicagoMonitor.route ~
+        rubberMonitor.route ~
         importExportRoute
       }
     }

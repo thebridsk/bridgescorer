@@ -21,7 +21,6 @@ import akka.http.scaladsl.testkit.WSProbe
 import akka.http.scaladsl.server.Route
 import akka.http.scaladsl.model.StatusCodes._
 import scala.concurrent.duration._
-import scala.concurrent.Await
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 

@@ -40,6 +40,7 @@ import javax.ws.rs.GET
 import javax.ws.rs.POST
 import javax.ws.rs.PUT
 import javax.ws.rs.DELETE
+import com.example.backend.BridgeNestedResources
 
 /**
  * Rest API implementation for the board resource.
@@ -59,6 +60,8 @@ trait RestChicago extends HasActorSystem {
 
   val resName = "chicagos"
 
+  val nestedBoards = new RestNestedChicagoRound
+
   import UtilsPlayJson._
 
   /**
@@ -66,7 +69,7 @@ trait RestChicago extends HasActorSystem {
    */
   val route =pathPrefix(resName) {
 //    logRequest("route", DebugLevel) {
-        getChicago ~ getChicagos ~ postChicago ~ putChicago ~ deleteChicago
+        getChicago ~ getChicagos ~ postChicago ~ putChicago ~ deleteChicago ~ nested
 //      }
   }
 
@@ -99,7 +102,7 @@ trait RestChicago extends HasActorSystem {
     }
   }
 
-  @Path("/{matchId}")
+  @Path("/{chiId}")
   @GET
   @Operation(
       summary = "Get the match by ID",
@@ -110,7 +113,7 @@ trait RestChicago extends HasActorSystem {
               allowEmptyValue=false,
               description="ID of the match to get",
               in=ParameterIn.PATH,
-              name="matchId",
+              name="chiId",
               required=true,
               schema=new Schema(`type`="string")
           )
@@ -145,6 +148,14 @@ trait RestChicago extends HasActorSystem {
       resource( store.select(id).read() )
     }
   }}}
+
+  val nested= logRequest("RestChicago.nested", DebugLevel) { logResult("RestChicago.nested") {
+    pathPrefix( """[a-zA-Z0-9]+""".r ) { id: Id.MatchChicago =>
+      import BridgeNestedResources._
+      val selected = store.select(id)
+      nestedBoards.route( selected.resourceRounds )
+    }
+  }}
 
   @POST
   @Operation(
@@ -206,18 +217,18 @@ trait RestChicago extends HasActorSystem {
     }
 
 
-  @Path("/{matchId}")
+  @Path("/{chiId}")
   @PUT
   @Operation(
       summary = "Update a chicago match",
-      description = "Update a chicago match.  The id of the chicago match in the body is replaced with matchId",
+      description = "Update a chicago match.  The id of the chicago match in the body is replaced with chiId",
       operationId = "updateChicago",
       parameters = Array(
           new Parameter(
               allowEmptyValue=false,
               description="ID of the match to get",
               in=ParameterIn.PATH,
-              name="matchId",
+              name="chiId",
               required=true,
               schema=new Schema(`type`="string")
           )
@@ -275,7 +286,7 @@ trait RestChicago extends HasActorSystem {
     }
 
 
-  @Path("/{matchId}")
+  @Path("/{chiId}")
   @DELETE
   @Operation(
       summary = "Delete a match by ID",
@@ -285,7 +296,7 @@ trait RestChicago extends HasActorSystem {
               allowEmptyValue=false,
               description="ID of the match to delete",
               in=ParameterIn.PATH,
-              name="matchId",
+              name="chiId",
               required=true,
               schema=new Schema(`type`="string")
           )

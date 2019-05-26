@@ -122,7 +122,7 @@ object PageChicagoHandInternal {
                 }
 
               }
-              val contract = Contract( "0",
+              val contract = Contract( ihand.toString(),
                                        PassedOut,
                                        NoTrump,
                                        NotDoubled,

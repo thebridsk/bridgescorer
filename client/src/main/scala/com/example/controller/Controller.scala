@@ -48,21 +48,46 @@ import scala.util.Success
 import scala.util.Failure
 import com.example.rest2.AjaxCall
 import scala.concurrent.duration.Duration
+import com.example.data.websocket.Protocol.ToBrowserMessage
+import com.example.data.websocket.Protocol.ToServerMessage
 
-object Controller {
+object Controller extends  {
   val logger = Logger("bridge.Controller")
 
   class AlreadyStarted extends Exception
 
+  private var sseConnection: ServerEventConnection[Id.MatchDuplicate] = null
+
   private var duplexPipe: Option[DuplexPipe] = None
 
   var useRestToServer: Boolean = true;
-  var useSSEFromServer: Boolean = true;
+  private var useSSEFromServer: Boolean = true;
 
-  val heartbeatTimeout = 20000   // ms  20s
-  val restartTimeout = 10*60*1000   // ms 10m   // TODO find good timeout for restart
-  val defaultErrorBackoff = 1000   // ms  1s
-  val limitErrorBackoff = 60000 // ms  1m
+  def setUseSSEFromServer( b: Boolean ) = {
+    if (b != useSSEFromServer) {
+      useSSEFromServer = b
+      setServerEventConnection()
+    }
+  }
+
+  setServerEventConnection()
+
+  private def setServerEventConnection(): Unit = {
+    sseConnection = if (useSSEFromServer) {
+      new SSE[Id.MatchDuplicate]( "/v1/sse/duplicates/", Listener)
+    } else {
+      new DuplexPipeServerEventConnection( "", Listener ) {
+
+        def actionStartMonitor( mdid: Id.MatchDuplicate ): ToServerMessage = {
+          Protocol.StartMonitorDuplicate(mdid)
+        }
+        def actionStopMonitor( mdid: Id.MatchDuplicate ): ToServerMessage = {
+          Protocol.StopMonitorDuplicate(mdid)
+        }
+
+      }
+    }
+  }
 
   def log( entry: LogEntryS ) = {
     // This can't create a duplexPipe, we haven't setup all the info
@@ -94,7 +119,7 @@ object Controller {
     }
 
     def updateStore( mc: MatchDuplicate ): MatchDuplicate = {
-      monitorMatchDuplicate(mc.id)
+      monitor(mc.id)
       BridgeDispatcher.updateDuplicateMatch(mc)
       logger.info(s"Created new chicago game: ${mc.id}")
       mc
@@ -130,37 +155,36 @@ object Controller {
     result
   }
 
-  def getDuplexPipe() = duplexPipe match {
-    case Some(d) => d
-    case None =>
-      val url = AppRouter.hostUrl.replaceFirst("http", "ws") + "/v1/ws/"
-      val d = new DuplexPipe( url, Protocol.DuplicateBridge ) {
-        override
-        def onNormalClose() = {
-          start(true)
-        }
+  object Listener extends SECListener[Id.MatchDuplicate] {
+    def handleStart( dupid: Id.MatchDuplicate) = {
+      BridgeDispatcher.startDuplicateMatch(dupid)
+    }
+    def handleStop( dupid: Id.MatchDuplicate) = {
+      BridgeDispatcher.stop()
+    }
+
+    def processMessage( msg: Protocol.ToBrowserMessage ) = {
+      msg match {
+        case Protocol.MonitorJoined(id,members) =>
+        case Protocol.MonitorLeft(id,members) =>
+        case Protocol.UpdateDuplicate(matchDuplicate) =>
+          BridgeDispatcher.updateDuplicateMatch(matchDuplicate)
+        case Protocol.UpdateDuplicateHand(dupid, hand) =>
+          BridgeDispatcher.updateDuplicateHand(dupid,hand)
+        case Protocol.UpdateDuplicateTeam(dupid,team) =>
+          BridgeDispatcher.updateTeam(dupid, team)
+        case Protocol.NoData(_) =>
+        case Protocol.UpdateChicago(_) =>
+        case Protocol.UpdateChicagoRound(_,_) =>
+        case Protocol.UpdateChicagoHand(_,_,_) =>
+        case Protocol.UpdateRubber(_) =>
+        case _: Protocol.UpdateRubberHand =>
       }
-      d.addListener(new DuplexPipe.Listener {
-        def onMessage( msg: Protocol.ToBrowserMessage ) = {
-          processMessage(msg)
-        }
-      })
-      duplexPipe = Some(d)
-      d
+    }
   }
 
-  def processMessage( msg: Protocol.ToBrowserMessage ) = {
-    msg match {
-      case Protocol.MonitorJoined(id,members) =>
-      case Protocol.MonitorLeft(id,members) =>
-      case Protocol.UpdateDuplicate(matchDuplicate) =>
-        BridgeDispatcher.updateDuplicateMatch(matchDuplicate)
-      case Protocol.UpdateDuplicateHand(dupid, hand) =>
-        BridgeDispatcher.updateDuplicateHand(dupid,hand)
-      case Protocol.UpdateDuplicateTeam(dupid,team) =>
-        BridgeDispatcher.updateTeam(dupid, team)
-      case Protocol.NoData(_) =>
-    }
+  def send( msg: ToServerMessage ): Unit = {
+    sseConnection.getDuplexPipeServerEventConnection().map( c => c.send(msg))
   }
 
   def updateMatch( dup: MatchDuplicate ) = {
@@ -174,7 +198,7 @@ object Controller {
         }
       } else {
         val msg = Protocol.UpdateDuplicate(dup)
-        getDuplexPipe().send(msg)
+        send(msg)
       }
     }
     logger.info("Update hand ("+dup.id+","+dup+")")
@@ -192,7 +216,7 @@ object Controller {
         }
       } else {
         val msg = Protocol.UpdateDuplicateHand(dup.id, hand)
-        getDuplexPipe().send(msg)
+        send(msg)
       }
     }
     logger.info("Update hand ("+dup.id+","+hand.board+","+hand.id+")")
@@ -217,7 +241,7 @@ object Controller {
         }
       } else {
         val msg = Protocol.UpdateDuplicateTeam(dup.id, team)
-        getDuplexPipe().send(msg)
+        send(msg)
       }
     }
     logger.info("Update team ("+dup.id+","+team+")")
@@ -230,172 +254,22 @@ object Controller {
     })
   }
 
-  var currentESTimeout: Option[SetTimeoutHandle] = None
-
-  var currentESRestartTimeout: Option[SetTimeoutHandle] = None
-
-  def resetESConnection( dupid: Id.MatchDuplicate ) = {
-    eventSource.map { es =>
-      logger.fine(s"EventSource reseting connection to $dupid")
-      monitorMatchDuplicate(dupid, true)
-    }.getOrElse(
-      logger.fine(s"EventSource no connection to reset")
-    )
-  }
-
-  def resetESTimeout( dupid: Id.MatchDuplicate ) = {
-    eventSource.map { es =>
-      clearESTimeout()
-
-      logger.fine(s"EventSource setting heartbeat timeout to ${heartbeatTimeout} ms")
-      import scala.scalajs.js.timers._
-      currentESTimeout = Some( setTimeout(heartbeatTimeout) {
-        logger.info(s"EventSource heartbeat timeout fired ${heartbeatTimeout} ms, reseting connection")
-        resetESConnection(dupid)
-      })
-    }.getOrElse(
-      logger.fine(s"EventSource no connection to reset")
-    )
-  }
-
-  def clearESTimeout() {
-    import scala.scalajs.js.timers._
-    logger.fine(s"EventSource clearing timeout")
-    currentESTimeout.foreach( clearTimeout(_))
-    currentESTimeout = None
-  }
-
-  def resetESRestartTimeout( dupid: Id.MatchDuplicate ) = {
-    eventSource.map { es =>
-      clearESRestartTimeout()
-
-      logger.fine(s"EventSource restart timeout to ${restartTimeout} ms")
-      import scala.scalajs.js.timers._
-      currentESRestartTimeout = Some( setTimeout(restartTimeout) {
-        logger.fine(s"EventSource restart timeout fired ${restartTimeout} ms, reseting connection")
-        resetESConnection(dupid)
-      })
-    }.getOrElse(
-      logger.fine(s"EventSource no connection to restart")
-    )
-  }
-
-  def clearESRestartTimeout() {
-    import scala.scalajs.js.timers._
-    logger.fine(s"EventSource restart clear timeout")
-    currentESRestartTimeout.foreach( clearTimeout(_))
-    currentESRestartTimeout = None
-  }
-
-  def esOnMessage( dupid: Id.MatchDuplicate )( me: MessageEvent ): Unit = {
-    import com.example.data.websocket.DuplexProtocol
-    try {
-      logger.fine(s"esOnMessage received ${me.data}")
-      resetESTimeout(dupid)
-      me.data match {
-        case s: String =>
-          if (s.equals("")) {
-            // ignore this, this is a heartbeat
-            logger.fine(s"esOnMessage received heartbeat")
-          } else {
-            DuplexProtocol.fromString(s) match {
-              case DuplexProtocol.Response(data,seq) =>
-                processMessage(data)
-              case DuplexProtocol.Unsolicited(data) =>
-                processMessage(data)
-              case x =>
-                logger.severe(s"EventSource received unknown object: ${me.data}")
-            }
-          }
-      }
-    } catch {
-      case x: Exception =>
-        logger.severe(s"esOnMessage exception: $x", x)
-    }
-  }
-
-  def esOnOpen( dupid: Id.MatchDuplicate )( e: Event ): Unit = {
-    errorBackoff = defaultErrorBackoff
-  }
-
-  var errorBackoff = defaultErrorBackoff
-
-  def esOnError( dupid: Id.MatchDuplicate )( err: Event ): Unit = {
-    logger.severe(s"EventSource error: $err")
-
-    eventSource.foreach { es =>
-      if (es.readyState == EventSource.CLOSED) {
-        import scala.scalajs.js.timers._
-
-        logger.severe(s"EventSource error while connecting to server, connection closed: $err")
-        if (errorBackoff > defaultErrorBackoff) {
-          Alerter.alert(s"EventSource error while connecting to server, trying to restart: $err")
-        }
-
-        setTimeout(errorBackoff) {
-          logger.warning(s"EventSource error backoff timer $errorBackoff ms fired")
-          if (errorBackoff < limitErrorBackoff) errorBackoff*=2
-          eventSource.foreach { es =>
-            monitorMatchDuplicate(dupid, true)
-          }
-        }
-      } else if (es.readyState == EventSource.CONNECTING) {
-        logger.warning(s"EventSource error while connecting to server, browser is trying to reconnect: $err")
-      }
-    }
-  }
-
-  def getEventSource( dupid: Id.MatchDuplicate ): Option[EventSource] = {
-    val es = new EventSource(s"/v1/sse/duplicates/${dupid}")
-    es.onopen = esOnOpen(dupid)
-    es.onmessage = esOnMessage(dupid)
-    es.onerror = esOnError(dupid)
-    Some(es)
-  }
-
-  var eventSource: Option[EventSource] = None
-
-  def monitorMatchDuplicate( dupid: Id.MatchDuplicate, restart: Boolean = false ): Unit = {
+  def monitor( dupid: Id.MatchDuplicate, restart: Boolean = false ): Unit = {
 
     if (AjaxResult.isEnabled.getOrElse(false)) {
       DuplicateStore.getId() match {
         case Some(mdid) =>
-          cancelStop()
-          if (restart || mdid != dupid || eventSource.isEmpty) {
+          sseConnection.cancelStop()
+          if (restart || mdid != dupid || !sseConnection.isConnected) {
             logger.info(s"""Switching MatchDuplicate monitor to ${dupid} from ${mdid}""" )
-            if (useSSEFromServer) {
-              BridgeDispatcher.startDuplicateMatch(dupid)
-              eventSource.foreach( es => es.close())
-              eventSource = getEventSource(dupid)
-              resetESTimeout(dupid)
-              resetESRestartTimeout(dupid)
-            } else {
-              getDuplexPipe().clearSession(Protocol.StopMonitor(mdid))
-              BridgeDispatcher.startDuplicateMatch(dupid)
-              getDuplexPipe().setSession { dp =>
-                logger.info(s"""In Session: Switching MatchDuplicate monitor to ${dupid} from ${mdid}""" )
-                dp.send(Protocol.StartMonitor(dupid))
-              }
-            }
+            sseConnection.monitor(dupid, restart)
           } else {
             // already monitoring id
             logger.info(s"""Already monitoring MatchDuplicate ${dupid}""" )
           }
         case None =>
           logger.info(s"""Starting MatchDuplicate monitor to ${dupid}""" )
-          if (useSSEFromServer) {
-            BridgeDispatcher.startDuplicateMatch(dupid)
-            eventSource.foreach( es => es.close())
-            eventSource = getEventSource(dupid)
-            resetESTimeout(dupid)
-            resetESRestartTimeout(dupid)
-          } else {
-            BridgeDispatcher.startDuplicateMatch(dupid)
-            getDuplexPipe().setSession { dp =>
-              logger.info(s"""In Session: Starting MatchDuplicate monitor to ${dupid}""" )
-              dp.send(Protocol.StartMonitor(dupid))
-            }
-          }
+          sseConnection.monitor(dupid, restart)
       }
     } else {
       BridgeDispatcher.startDuplicateMatch(dupid)
@@ -403,30 +277,12 @@ object Controller {
 
   }
 
-  private var delayHandle: Option[SetTimeoutHandle] = None
-
-  def cancelStop() = {
-      import scala.scalajs.js.timers._
-
-      logger.fine(s"CancelStop: Cancelling stop: ${DuplicateStore.getId()}")
-
-      delayHandle.foreach( h => clearTimeout(h))
-      delayHandle = None
-  }
-
   /**
-   * In 30 seconds stop monitoring a duplicate match
+   * Stop monitoring a duplicate match
    */
   def delayStop() = {
-      import scala.scalajs.js.timers._
-
-      logger.fine(s"DelayStop: Requesting stop monitoring duplicate match on server in 30 seconds: ${DuplicateStore.getId()}")
-      delayHandle.foreach( h => clearTimeout(h))     // cancel old timer if it exists
-      delayHandle = Some( setTimeout(30000) { // note the absence of () =>
-        delayHandle = None
-        logger.fine(s"DelayStop: Stopping monitoring duplicate match on server: ${DuplicateStore.getId()}")
-        stop()
-      })
+    logger.fine(s"Controller.delayStop ${DuplicateStore.getId()}")
+    sseConnection.delayStop()
   }
 
   /**
@@ -434,26 +290,7 @@ object Controller {
    */
   def stop() = {
     logger.fine(s"Controller.stop ${DuplicateStore.getId()}")
-    if (useSSEFromServer) {
-      clearESTimeout()
-      clearESRestartTimeout()
-      eventSource.foreach( es => es.close())
-      eventSource = None
-      clearESTimeout()
-      clearESRestartTimeout()
-    } else {
-      duplexPipe match {
-        case Some(d) =>
-          DuplicateStore.getId() match {
-            case Some(id) =>
-              d.clearSession(Protocol.StopMonitor(id))
-            case None =>
-          }
-          BridgeDispatcher.stop()
-        case _ =>
-
-      }
-    }
+    sseConnection.stop()
   }
 
   private def getDemoSummary( error: ()=>Unit ): Unit = {

@@ -185,7 +185,7 @@ object PageRubberMatchInternal {
                         )
                     )
                 ),
-                PageRubberMatchDetails(props.page.toDetails(), props.routerCtl, true ),
+                ViewRubberMatchDetails(props.page.toDetails(), props.routerCtl, true ),
                 <.div( baseStyles.divFlexBreak ),
                 <.div( baseStyles.divFooter,
                     <.div(
@@ -249,13 +249,15 @@ object PageRubberMatchInternal {
     val didMount = Callback {
       logger.info("PageRubberNames.didMount")
       RubberStore.addChangeListener(storeCallback)
-    } >> scope.props >>= { (p) => Callback(
+    } >> scope.props >>= { (p) => Callback {
       RubberController.ensureMatch(p.page.rid)
-    )}
+      RubberController.monitor(p.page.rid)
+    }}
 
     val willUnmount = Callback {
       logger.info("PageRubberNames.willUnmount")
       RubberStore.removeChangeListener(storeCallback)
+      RubberController.delayStop()
     }
   }
 

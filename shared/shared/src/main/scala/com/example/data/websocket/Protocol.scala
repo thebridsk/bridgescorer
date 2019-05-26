@@ -7,6 +7,11 @@ import com.example.data.DuplicateHand
 import com.example.data.Team
 import play.api.libs.json._
 import com.example.data.rest.JsonSupport._
+import com.example.data.MatchChicago
+import com.example.data.MatchRubber
+import com.example.data.Round
+import com.example.data.Hand
+import com.example.data.RubberHand
 
 object Protocol {
 
@@ -46,12 +51,32 @@ object Protocol {
    * Start monitoring a duplicate match
    * @param dupid - the id of the duplicate match to start/stop monitoring
    */
-  case class StartMonitor( dupid: Id.MatchDuplicate ) extends ToServerMessage
+  case class StartMonitorDuplicate( dupid: Id.MatchDuplicate ) extends ToServerMessage
   /**
    * Stop monitoring a duplicate match
    * @param dupid - the id of the duplicate match to start/stop monitoring
    */
-  case class StopMonitor( dupid: Id.MatchDuplicate ) extends ToServerMessage
+  case class StopMonitorDuplicate( dupid: Id.MatchDuplicate ) extends ToServerMessage
+  /**
+   * Start monitoring a chicago match
+   * @param chiid - the id of the chicago match to start/stop monitoring
+   */
+  case class StartMonitorChicago( chiid: Id.MatchChicago ) extends ToServerMessage
+  /**
+   * Stop monitoring a chicago match
+   * @param chiid - the id of the chicago match to start/stop monitoring
+   */
+  case class StopMonitorChicago( chiid: Id.MatchChicago ) extends ToServerMessage
+  /**
+   * Start monitoring a rubber match
+   * @param rubid - the id of the rubber match to start/stop monitoring
+   */
+  case class StartMonitorRubber( rubid: String ) extends ToServerMessage
+  /**
+   * Stop monitoring a rubber match
+   * @param rubid - the id of the rubber match to start/stop monitoring
+   */
+  case class StopMonitorRubber( rubid: String ) extends ToServerMessage
 
   // Data that can flow either way
 
@@ -67,6 +92,31 @@ object Protocol {
    * Update a board in a duplicate match.
    */
   case class UpdateDuplicateTeam(dupid: Id.MatchDuplicate, team: Team) extends ToServerMessage with ToBrowserMessage
+
+  /**
+   * Update the MatchChicago.
+   */
+  case class UpdateChicago(matchChicago: MatchChicago) extends ToServerMessage with ToBrowserMessage
+
+  /**
+   * Update the Chicago Round.
+   */
+  case class UpdateChicagoRound(matchChicago: Id.MatchChicago, round: Round) extends ToServerMessage with ToBrowserMessage
+
+  /**
+   * Update the Chicago Hand.
+   */
+  case class UpdateChicagoHand(matchChicago: Id.MatchChicago, roundId: String, hand: Hand ) extends ToServerMessage with ToBrowserMessage
+
+  /**
+   * Update the MatchRubber.
+   */
+  case class UpdateRubber(matchRubber: MatchRubber) extends ToServerMessage with ToBrowserMessage
+
+  /**
+   * Update the MatchRubber.
+   */
+  case class UpdateRubberHand(matchRubberId: String, hand: RubberHand) extends ToServerMessage with ToBrowserMessage
 
   case class NoData( data: String = "") extends ToServerMessage with ToBrowserMessage
 

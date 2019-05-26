@@ -181,9 +181,9 @@ case class MatchChicagoV2(
     setGamesPerRound(1)
   }
 
-  def convertToCurrentVersion(): MatchChicago = {
-                           MatchChicago( id, players, rounds, gamesPerRound, false, created, updated)
-                         }
+  def convertToCurrentVersion() = {
+    (false,MatchChicago( id, players, rounds, gamesPerRound, false, created, updated).convertToCurrentVersion()._2)
+  }
 
   def readyForWrite() = this
 

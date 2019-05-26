@@ -200,7 +200,7 @@ case class MatchDuplicateResultV1 private(
         b.copy( points = b.points.map( t => t.copy( points = t.points*2) ) )
       }
     }
-    MatchDuplicateResultV2(id,r,br,comment,notfinished,played,created,updated,MatchDuplicate.MatchPoints)
+    (false,MatchDuplicateResultV2(id,r,br,comment,notfinished,played,created,updated,MatchDuplicate.MatchPoints))
   }
 
   def readyForWrite() = this

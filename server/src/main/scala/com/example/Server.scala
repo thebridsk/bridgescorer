@@ -9,7 +9,6 @@ import scala.language.postfixOps
 import utils.main.Main
 import java.util.logging.Level
 import scala.concurrent.Future
-import scala.concurrent.Await
 import akka.actor.ActorRef
 import akka.io.Tcp
 import com.example.backend.BridgeService

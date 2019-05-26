@@ -10,7 +10,6 @@ import org.openqa.selenium._
 import org.scalatest.concurrent.Eventually
 import java.util.concurrent.TimeUnit
 import com.example.Server
-import scala.concurrent.Await
 import com.example.data.bridge._
 import com.example.backend.BridgeServiceInMemory
 import com.example.backend.BridgeService
@@ -75,7 +74,6 @@ import com.example.test.util.HttpUtils
 import com.example.test.util.HttpUtils.ResponseFromHttp
 import com.example.backend.StoreMonitor
 import com.example.data.websocket.Protocol
-import com.example.data.websocket.Protocol.StartMonitor
 import com.example.backend.StoreMonitor.NewParticipant
 import com.example.backend.StoreMonitor.ReceivedMessage
 import com.example.data.websocket.DuplexProtocol

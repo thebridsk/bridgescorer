@@ -21,6 +21,9 @@ import com.example.data.MatchDuplicateResult
 import com.example.backend.resource.Resource
 import scala.concurrent.ExecutionContext
 import scala.concurrent.Future
+import com.example.data.Round
+import com.example.data.Hand
+import com.example.data.RubberHand
 
 class GenericIdCacheStoreSupport[VId,VType <: VersionedInstance[VType,VType,VId]](
                    idprefix: String,
@@ -225,6 +228,168 @@ object DuplicateHandsNestedResource extends NestedResourceSupport[Board, Id.Team
   }
 }
 
+object ChicagoRoundNestedResource extends NestedResourceSupport[MatchChicago, String, Round] {
+  val resourceURI = "hands"
+
+  def getResources( parent: MatchChicago, parentResource: String ): Result[Map[String,Round]] =
+    Result(parent.rounds.map(t => t.id -> t).toMap)
+
+  def getResource( parent: MatchChicago, parentResource: String, id: String ): Result[Round] =
+    parent.rounds.find( r => r.id == id).
+           map( t => Result(t) ).
+           getOrElse( notFound(parentResource, id) )
+
+  def updateResources( parent: MatchChicago, parentResource: String, map: Map[String,Round] ): Result[MatchChicago] =
+    Result( parent.setRounds(map))
+
+  def updateResource( parent: MatchChicago, parentResource: String, id: String, value: Round ): Result[(MatchChicago,Round)] = {
+    val t = value.setId(id, false)
+    try {
+      if (parent.getRound(id).isDefined) {
+        val mc = parent.updateRound(t)
+        Result( (mc,t) )
+      } else {
+        notFound(parentResource, id)
+      }
+    } catch {
+      case x: IllegalArgumentException =>
+        badRequest(parentResource,id,x.getMessage)
+    }
+  }
+
+  def createResource( parent: MatchChicago, parentResource: String, value: Round ): Result[(MatchChicago,Round)] = {
+    try {
+      val mc = parent.addRound(value)
+      Result( (mc, value) )
+    } catch {
+      case x: IllegalArgumentException =>
+        badRequest(parentResource,value.id,x.getMessage)
+    }
+  }
+
+  def deleteResource( parent: MatchChicago, parentResource: String, id: String ): Result[(MatchChicago,Round)] = {
+    parent.getRound(id).
+           map { t =>
+             try {
+               val mc = parent.deleteRound(id)
+               Result( (mc, t) )
+             } catch {
+               case x: IllegalArgumentException =>
+                 badRequest(parentResource,id,x.getMessage)
+             }
+           }.
+           getOrElse( notFound(parentResource, id) )
+  }
+}
+
+object ChicagoRoundHandNestedResource extends NestedResourceSupport[Round, String, Hand] {
+  val resourceURI = "hands"
+
+  def getResources( parent: Round, parentResource: String ): Result[Map[String,Hand]] =
+    Result(parent.hands.map(t => t.id -> t).toMap)
+
+  def getResource( parent: Round, parentResource: String, id: String ): Result[Hand] =
+    parent.hands.find( r => r.id == id).
+           map( t => Result(t) ).
+           getOrElse( notFound(parentResource, id) )
+
+  def updateResources( parent: Round, parentResource: String, map: Map[String,Hand] ): Result[Round] =
+    Result( parent.setHands(map))
+
+  def updateResource( parent: Round, parentResource: String, id: String, value: Hand ): Result[(Round,Hand)] = {
+    val t = value.setId(id, false)
+    try {
+      if (parent.getHand(id).isDefined) {
+        val mc = parent.updateHand(t)
+        Result( (mc,t) )
+      } else {
+        notFound(parentResource, id)
+      }
+    } catch {
+      case x: IllegalArgumentException =>
+        badRequest(parentResource,id,x.getMessage)
+    }
+  }
+
+  def createResource( parent: Round, parentResource: String, value: Hand ): Result[(Round,Hand)] = {
+    try {
+      val mc = parent.addHand(value)
+      Result( (mc, value) )
+    } catch {
+      case x: IllegalArgumentException =>
+        badRequest(parentResource,value.id,x.getMessage)
+    }
+  }
+
+  def deleteResource( parent: Round, parentResource: String, id: String ): Result[(Round,Hand)] = {
+    parent.getHand(id).
+           map { t =>
+             try {
+               val mc = parent.deleteHand(id)
+               Result( (mc, t) )
+             } catch {
+               case x: IllegalArgumentException =>
+                 badRequest(parentResource,id,x.getMessage)
+             }
+           }.
+           getOrElse( notFound(parentResource, id) )
+  }
+}
+
+object RubberHandNestedResource extends NestedResourceSupport[MatchRubber, String, RubberHand] {
+  val resourceURI = "hands"
+
+  def getResources( parent: MatchRubber, parentResource: String ): Result[Map[String,RubberHand]] =
+    Result(parent.hands.map(t => t.id -> t).toMap)
+
+  def getResource( parent: MatchRubber, parentResource: String, id: String ): Result[RubberHand] =
+    parent.hands.find( r => r.id == id).
+           map( t => Result(t) ).
+           getOrElse( notFound(parentResource, id) )
+
+  def updateResources( parent: MatchRubber, parentResource: String, map: Map[String,RubberHand] ): Result[MatchRubber] =
+    Result( parent.setHands(map))
+
+  def updateResource( parent: MatchRubber, parentResource: String, id: String, value: RubberHand ): Result[(MatchRubber,RubberHand)] = {
+    val t = value.setId(id, false)
+    try {
+      if (parent.getHand(id).isDefined) {
+        val mc = parent.updateHand(t)
+        Result( (mc,t) )
+      } else {
+        notFound(parentResource, id)
+      }
+    } catch {
+      case x: IllegalArgumentException =>
+        badRequest(parentResource,id,x.getMessage)
+    }
+  }
+
+  def createResource( parent: MatchRubber, parentResource: String, value: RubberHand ): Result[(MatchRubber,RubberHand)] = {
+    try {
+      val mc = parent.addHand(value)
+      Result( (mc, value) )
+    } catch {
+      case x: IllegalArgumentException =>
+        badRequest(parentResource,value.id,x.getMessage)
+    }
+  }
+
+  def deleteResource( parent: MatchRubber, parentResource: String, id: String ): Result[(MatchRubber,RubberHand)] = {
+    parent.getHand(id).
+           map { t =>
+             try {
+               val mc = parent.deleteHand(id)
+               Result( (mc, t) )
+             } catch {
+               case x: IllegalArgumentException =>
+                 badRequest(parentResource,id,x.getMessage)
+             }
+           }.
+           getOrElse( notFound(parentResource, id) )
+  }
+}
+
 object BridgeNestedResources {
 
   implicit class WrapMatchDuplicateResource( val r: Resource[Id.MatchDuplicate,MatchDuplicate] ) extends AnyVal {
@@ -234,6 +399,18 @@ object BridgeNestedResources {
 
   implicit class WrapBoardResource( val r: Resource[Id.DuplicateBoard,Board] ) extends AnyVal {
     def resourceHands( implicit execute: ExecutionContext ) = r.nestedResource( DuplicateHandsNestedResource )
+  }
+
+  implicit class WrapMatchChicagoResource( val r: Resource[Id.MatchChicago,MatchChicago] ) extends AnyVal {
+    def resourceRounds( implicit execute: ExecutionContext ) = r.nestedResource( ChicagoRoundNestedResource )
+  }
+
+  implicit class WrapMatchChicagoRoundResource( val r: Resource[String,Round] ) extends AnyVal {
+    def resourceHands( implicit execute: ExecutionContext ) = r.nestedResource( ChicagoRoundHandNestedResource )
+  }
+
+  implicit class WrapMatchRubberResource( val r: Resource[String,MatchRubber] ) extends AnyVal {
+    def resourceHands( implicit execute: ExecutionContext ) = r.nestedResource( RubberHandNestedResource )
   }
 
 }

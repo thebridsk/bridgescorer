@@ -33,7 +33,6 @@ import com.example.data.DuplicateSummary
 import com.example.backend.resource.Store
 import com.example.backend.resource.Result
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Await
 import scala.concurrent.duration._
 import scala.concurrent.Promise
 import scala.concurrent.Future
@@ -66,7 +65,7 @@ abstract class BridgeService( val id: String ) {
 
   def setDefaultLoggerConfig( default: LoggerConfig, iPad: Boolean )
 
-  val chicagos: Store[String,MatchChicago]
+  val chicagos: Store[Id.MatchChicago,MatchChicago]
   val duplicates: Store[Id.MatchDuplicate,MatchDuplicate]
   val duplicateresults: Store[Id.MatchDuplicateResult,MatchDuplicateResult]
   val rubbers: Store[String,MatchRubber]

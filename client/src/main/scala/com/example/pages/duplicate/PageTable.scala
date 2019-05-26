@@ -137,7 +137,7 @@ object PageTableInternal {
       logger.info("PageTable.didMount")
       DuplicateStore.addChangeListener(storeCallback)
 
-      Controller.monitorMatchDuplicate(p.page.dupid)
+      Controller.monitor(p.page.dupid)
     }}
 
     val willUnmount = Callback {

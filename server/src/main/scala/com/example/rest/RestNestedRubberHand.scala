@@ -1,20 +1,24 @@
 package com.example.rest
 
-import com.example.backend.BridgeService
-import com.example.data.MatchRubber
 import akka.event.Logging
 import akka.event.Logging._
-import akka.http.scaladsl.model.StatusCode
 import akka.http.scaladsl.model.StatusCodes._
 import akka.http.scaladsl.server.Directives._
 import akka.stream.Materializer
 import com.example.util.HasActorSystem
+import akka.actor.ActorSystem
+import akka.stream.ActorMaterializer
+import akka.http.scaladsl.model.StatusCode
+import com.example.backend.BridgeService
+import com.example.data.Id
 import javax.ws.rs.Path
 import com.example.data.RestMessage
-import com.example.data.Id
-import scala.util.Sorting
 import akka.http.scaladsl.model.headers.Location
 import scala.concurrent.ExecutionContext.Implicits.global
+import com.example.backend.resource.Resources
+import com.example.backend.BridgeNestedResources
+import scala.concurrent.Future
+import com.example.backend.resource.Result
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.media.Schema
@@ -24,100 +28,48 @@ import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.enums.ParameterIn
 import io.swagger.v3.oas.annotations.parameters.RequestBody
 import io.swagger.v3.oas.annotations.headers.Header
+import io.swagger.v3.oas.annotations.Hidden
 import io.swagger.v3.oas.annotations.tags.Tags
 import io.swagger.v3.oas.annotations.tags.Tag
 import javax.ws.rs.GET
 import javax.ws.rs.POST
 import javax.ws.rs.PUT
 import javax.ws.rs.DELETE
-
-object RestRubber {
-  implicit class OrdFoo( val x: MatchRubber) extends AnyVal with Ordered[MatchRubber] {
-    def compare(that:MatchRubber) = Id.idComparer(that.id, x.id)
-  }
-
-}
-
-import RestRubber._
-import com.example.backend.BridgeNestedResources
-import com.example.backend.resource.Resources
+import akka.http.scaladsl.model.StatusCodes
+import com.example.data.MatchRubber
+import com.example.data.RubberHand
 
 /**
- * Rest API implementation for the board resource.
+ * Rest API implementation for the hand resource.
  * <p>
  * The REST API and all the methods are documented using
  * swagger annotations.
  */
-@Path( "/rest/rubbers" )
+@Path("/rest/rubbers/{rubId}/hands")
 @Tags( Array( new Tag(name="Rubber")))
-trait RestRubber extends HasActorSystem {
-
-  /**
-   * The bridge service backend
-   */
-  implicit val restService: BridgeService
-  lazy val store = restService.rubbers
-
-  val resName = "rubbers"
-
-  val nestedHands = new RestNestedRubberHand
+class RestNestedRubberHand {
 
   import UtilsPlayJson._
-
-  def sort( a: Array[MatchRubber] ) = {
-
-    Sorting.quickSort(a)
-    a
-  }
 
   /**
    * spray route for all the methods on this resource
    */
-  val route =pathPrefix(resName) {
+  @Hidden
+  def route( implicit @Parameter(hidden=true) res: Resources[String, RubberHand]) =pathPrefix("hands") {
 //    logRequest("route", DebugLevel) {
-        getRubber ~ getRubbers ~ postRubber ~ putRubber ~ deleteRubber ~ restNestedHands
+        getHand ~ getHands ~ postHand ~ putHand ~ deleteHand
 //      }
   }
 
   @GET
   @Operation(
-      summary = "Get all rubber matches",
-      description = "Returns a list of matches.",
-      operationId = "getRubbers",
-      responses = Array(
-          new ApiResponse(
-              responseCode = "200",
-              description = "A list of matches, as a JSON array",
-              content = Array(
-                  new Content(
-                      mediaType = "application/json",
-                      array = new ArraySchema(
-                          minItems = 0,
-                          uniqueItems = true,
-                          schema = new Schema( implementation=classOf[MatchRubber] )
-                      )
-                  )
-              )
-          )
-      )
-  )
-  def xxxgetRubbers() = {}
-  val getRubbers = pathEnd {
-    get {
-      resourceMap( store.readAll() )
-    }
-  }
-
-  @Path("/{rubId}")
-  @GET
-  @Operation(
-      summary = "Get the match by ID",
-      description = "Returns the specified rubber match.",
-      operationId = "getRubberById",
+      summary = "Get all hands",
+      description = "Returns a list of hands.",
+      operationId = "getHands",
       parameters = Array(
           new Parameter(
               allowEmptyValue=false,
-              description="ID of the rubber match to get",
+              description="ID of the rubber match that contains the hands to get",
               in=ParameterIn.PATH,
               name="rubId",
               required=true,
@@ -127,11 +79,59 @@ trait RestRubber extends HasActorSystem {
       responses = Array(
           new ApiResponse(
               responseCode = "200",
-              description = "The requested Rubber match, as a JSON object",
+              description = "A list of hands, as a JSON array",
               content = Array(
                   new Content(
                       mediaType = "application/json",
-                      schema = new Schema( implementation=classOf[MatchRubber] )
+                      array = new ArraySchema(
+                          minItems = 0,
+                          uniqueItems = true,
+                          schema = new Schema( implementation=classOf[RubberHand] )
+                      )
+                  )
+              )
+          )
+
+      )
+  )
+  def xxxgetHands = {}
+  def getHands( implicit @Parameter(hidden=true) res: Resources[String, RubberHand]) = pathEndOrSingleSlash {
+    get {
+      resourceMap( res.readAll() )
+    }
+  }
+
+  @Path("/{handId}")
+  @GET
+  @Operation(
+      summary = "Get the hand by ID",
+      operationId = "getHandById",
+      parameters = Array(
+          new Parameter(
+              allowEmptyValue=false,
+              description="ID of the rubber match that contains the hands to manipulate",
+              in=ParameterIn.PATH,
+              name="rubId",
+              required=true,
+              schema=new Schema(`type`="string")
+          ),
+          new Parameter(
+              allowEmptyValue=false,
+              description="ID of the hand to get",
+              in=ParameterIn.PATH,
+              name="handId",
+              required=true,
+              schema=new Schema(`type`="string")
+          )
+      ),
+      responses = Array(
+          new ApiResponse(
+              responseCode = "200",
+              description = "The hand, as a JSON object",
+              content = Array(
+                  new Content(
+                      mediaType = "application/json",
+                      schema = new Schema( implementation=classOf[RubberHand] )
                   )
               )
           ),
@@ -145,34 +145,44 @@ trait RestRubber extends HasActorSystem {
                   )
               )
           )
-
       )
   )
-  def xxxgetRubber() = {}
-  val getRubber = logRequest("RestRubber.getRubber", DebugLevel) { logResult("RestRubber.postRubber") { get {
+  def xxxgetHand = {}
+  def getHand( implicit @Parameter(hidden=true) res: Resources[String, RubberHand]) = logRequest("getHand", DebugLevel) { get {
     path( """[a-zA-Z0-9]+""".r ) { id =>
-      resource( store.select(id).read() )
+      resource( res.select(id).read() )
     }
-  }}}
-
-  val restNestedHands = logRequestResult("RestNestedRubberHand.restNestedHand", DebugLevel) {
-    pathPrefix( """[a-zA-Z0-9]+""".r ) { id =>
-      import BridgeNestedResources._
-      nestedHands.route(store.select(id).resourceHands)
-    }
-  }
+  }}
 
   @POST
   @Operation(
-      summary = "Create a rubber match",
-      operationId = "createRubber",
+      summary = "Create a hand",
+      operationId = "createHand",
+      parameters = Array(
+          new Parameter(
+              allowEmptyValue=false,
+              description="ID of the rubber match that contains the hands to manipulate",
+              in=ParameterIn.PATH,
+              name="rubId",
+              required=true,
+              schema=new Schema(`type`="string")
+          ),
+          new Parameter(
+              allowEmptyValue=false,
+              description="ID of the hand to get",
+              in=ParameterIn.PATH,
+              name="handId",
+              required=true,
+              schema=new Schema(`type`="string")
+          ),
+      ),
       requestBody = new RequestBody(
-          description = "Rubber Match to create",
+          description = "rubber hand to create",
           content = Array(
               new Content(
                   mediaType = "application/json",
                   schema = new Schema(
-                      implementation = classOf[MatchRubber]
+                      implementation = classOf[RubberHand]
                   )
               )
           )
@@ -180,11 +190,11 @@ trait RestRubber extends HasActorSystem {
       responses = Array(
           new ApiResponse(
               responseCode = "201",
-              description = "The created match's JSON",
+              description = "The created hand's JSON",
               content = Array(
                   new Content(
                       mediaType = "application/json",
-                      schema = new Schema( implementation=classOf[MatchRubber] )
+                      schema = new Schema( implementation=classOf[RubberHand] )
                   )
               ),
               headers = Array(
@@ -207,44 +217,53 @@ trait RestRubber extends HasActorSystem {
           )
       )
   )
-  def xxxpostRubber() = {}
-  val postRubber =
-    logRequest("RestRubber.postRubber") {
-      logResult("RestRubber.postRubber") {
-        pathEnd {
-          post {
-            entity(as[MatchRubber]) { chi =>
-              resourceCreated( resName, store.createChild(chi), Created )
-            }
-          }
+  def xxxpostHand = {}
+  def postHand( implicit @Parameter(hidden=true) res: Resources[String, RubberHand]) = pathEnd {
+    post {
+        entity(as[RubberHand]) { hand =>
+          resourceCreated( res.resourceURI, addIdToFuture(res.createChild(hand)) )
         }
+    }
+  }
+
+  def addIdToFuture( f: Future[Result[RubberHand]] ): Future[Result[(String,RubberHand)]] =
+    f.map { r =>
+      r match {
+        case Right(md) => Right((md.id.toString(),md))
+        case Left(e) => Left(e)
       }
     }
 
-
-  @Path("/{rubId}")
+  @Path("/{handId}")
   @PUT
   @Operation(
-      summary = "Update a rubber match",
-      description = "Update a rubber match.  The id of the rubber match in the body is replaced with rubId",
-      operationId = "updateRubber",
+      summary = "Update a hand",
+      operationId = "updateHand",
       parameters = Array(
           new Parameter(
               allowEmptyValue=false,
-              description="ID of the match to get",
+              description="ID of the rubber match that contains the hands to manipulate",
               in=ParameterIn.PATH,
               name="rubId",
               required=true,
               schema=new Schema(`type`="string")
-          )
+          ),
+          new Parameter(
+              allowEmptyValue=false,
+              description="ID of the hand to update",
+              in=ParameterIn.PATH,
+              name="handId",
+              required=true,
+              schema=new Schema(`type`="string")
+          ),
       ),
       requestBody = new RequestBody(
-          description = "Rubber Match to update",
+          description = "rubber hand to update",
           content = Array(
               new Content(
                   mediaType = "application/json",
                   schema = new Schema(
-                      implementation = classOf[MatchRubber]
+                      implementation = classOf[RubberHand]
                   )
               )
           )
@@ -252,11 +271,11 @@ trait RestRubber extends HasActorSystem {
       responses = Array(
           new ApiResponse(
               responseCode = "204",
-              description = "The match was updated",
+              description = "RubberHand updated",
           ),
           new ApiResponse(
               responseCode = "404",
-              description = "Does not exist",
+              description = "Does not exist.",
               content = Array(
                   new Content(
                       mediaType = "application/json",
@@ -276,60 +295,51 @@ trait RestRubber extends HasActorSystem {
           )
       )
   )
-  @RequestBody(
-      description = "Rubber Match to update",
-      content = Array(
-          new Content(
-              mediaType = "application/json",
-              schema = new Schema(
-                  implementation = classOf[MatchRubber]
-              )
-          )
-      )
-  )
-  def xxxputRubber() = {}
-  val putRubber =
-    logRequest("RestRubber.putRubber") {
-      logResult("RestRubber.putRubber") {
-        path( """[a-zA-Z0-9]+""".r ) { id =>
-          put {
-            entity(as[MatchRubber]) { chi =>
-              resourceUpdated( store.select(id).update(chi) )
-            }
-          }
+  def xxxputHand = {}
+  def putHand( implicit @Parameter(hidden=true) res: Resources[String, RubberHand]) =
+    put {
+      path( """[a-zA-Z0-9]+""".r ) { id =>
+        entity(as[RubberHand]) { hand =>
+          resourceUpdated( res.select(id).update(hand) )
         }
       }
     }
 
 
-  @Path("/{rubId}")
+  @Path("/{handId}")
   @DELETE
   @Operation(
-      summary = "Delete a match by ID",
-      operationId = "deleteRubberById",
+      summary = "Delete a hand by ID",
+      operationId = "deleteHandById",
       parameters = Array(
           new Parameter(
               allowEmptyValue=false,
-              description="ID of the match to delete",
+              description="ID of the rubber match that contains the hands to manipulate",
               in=ParameterIn.PATH,
               name="rubId",
               required=true,
               schema=new Schema(`type`="string")
-          )
+          ),
+          new Parameter(
+              allowEmptyValue=false,
+              description="ID of the hand to delete",
+              in=ParameterIn.PATH,
+              name="handId",
+              required=true,
+              schema=new Schema(`type`="string")
+          ),
       ),
       responses = Array(
           new ApiResponse(
               responseCode = "204",
-              description = "Rubber match deleted.",
-          )
+              description = "RubberHand deleted.",
+          ),
       )
   )
-  def xxxdeleteRubber() = {}
-  val deleteRubber = delete {
-    path( """[a-zA-Z0-9]+""".r ) {
-      id => {
-        resourceDelete( store.select(id).delete() )
-      }
+  def xxxdeleteHand = {}
+  def deleteHand( implicit @Parameter(hidden=true) res: Resources[String, RubberHand]) = delete {
+    path( """[a-zA-Z0-9]+""".r ) { id =>
+      resourceDelete( res.select(id).delete() )
     }
   }
 }

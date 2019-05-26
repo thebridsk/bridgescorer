@@ -386,7 +386,7 @@ object PageScoreboardInternal {
       logger.info("PageScoreboard.didMount")
       DuplicateStore.addChangeListener(storeCallback)
 
-      Controller.monitorMatchDuplicate(p.game.dupid)
+      Controller.monitor(p.game.dupid)
     }}
 
     val willUnmount = CallbackTo {

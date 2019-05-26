@@ -411,14 +411,14 @@ case class MatchDuplicateV3 private(
   }
 
   def convertToCurrentVersion() =
-    MatchDuplicateV3(
+    (true,MatchDuplicateV3(
       id,
       teams,
       boards,
       boardset,
       movement,
       created,
-      updated )
+      updated ))
 
   def readyForWrite() = this
 
