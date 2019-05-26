@@ -116,16 +116,6 @@ import com.typesafe.sbt.SbtGit.GitKeys._
 
 import MyReleaseVersion._
 
-lazy val commonSettings = versionSetting ++ Seq(
-  organization  := "com.example",
-  scalaVersion  := verScalaVersion,
-  crossScalaVersions := verCrossScalaVersions,
-  scalacOptions := Seq("-unchecked", "-deprecation", "-encoding", "utf8", "-feature" /* , "-Xlog-implicits" */),
-  EclipseKeys.withSource := true,
-  testOptions in Test += Tests.Argument(TestFrameworks.ScalaTest, "-oD"),
-  EclipseKeys.useProjectId := true
-)
-
 import XTimestamp._
 
 lazy val buildInfoCommonSettings = Seq(
@@ -201,6 +191,8 @@ val webassembly = taskKey[Unit]("Build web application")
 
 val checkForUpdates = taskKey[Unit]("Check for updates")
 
+val checkProject = taskKey[Unit]("Check the project type")
+
 val skipGenerateImageSetting = settingKey[Boolean]("if true images generation is skipped if they already exist")
 
 val hugo = taskKey[Unit]("Run Hugo")
@@ -211,6 +203,21 @@ val helptask = taskKey[Seq[(java.io.File, String)]]("Identifies help resources")
 
 val patternSourceDir = """^[0-9a-f]{20}$""".r
 val patternFastopt = """-fastopt[.-]|-jsconsole[.-]""".r
+
+lazy val commonSettings = versionSetting ++ Seq(
+  organization  := "com.example",
+  scalaVersion  := verScalaVersion,
+  crossScalaVersions := verCrossScalaVersions,
+  scalacOptions := Seq("-unchecked", "-deprecation", "-encoding", "utf8", "-feature" /* , "-Xlog-implicits" */),
+  EclipseKeys.withSource := true,
+  testOptions in Test += Tests.Argument(TestFrameworks.ScalaTest, "-oD"),
+  EclipseKeys.useProjectId := true,
+  
+  checkProject := {
+//    val p = crossProject.value
+//    println(s"Project of of type $p" )
+  }
+)
 
 lazy val bridgescorer: Project = project.in(file(".")).
   aggregate(sharedJVM, sharedJS, rotationJS, materialui, `bridgescorer-client`, `bridgescorer-server`, rotationJVM).

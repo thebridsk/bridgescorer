@@ -37,19 +37,9 @@ object GraphQLProtocol {
   @Schema( name="objectreq", `type`="object", requiredProperties=Array())
   class VJsObjectReq
 
-  @ArraySchema( minItems=0,
-                uniqueItems=false,
-                schema=new Schema(implementation=classOf[AnyValue]),
-                arraySchema=new Schema(
-                    name="array",
-                    title="array"
-                )
-  )
-  class VJsArray
-
   @Schema(
       name="anyvalue",
-//      description="Any valid JSON",
+      description="Any valid JSON",
       oneOf=Array(
           classOf[VJsString],
           classOf[VJsNumber],
@@ -62,9 +52,22 @@ object GraphQLProtocol {
   )
   class AnyValue
 
+  @ArraySchema(
+      minItems=0,
+      uniqueItems=false,
+      schema=new Schema(
+          implementation=classOf[AnyValue]
+      ),
+      arraySchema=new Schema(
+          name="Array",
+          description="array of any value",
+      )
+  )
+  class VJsArray
+
   @Schema(
       name="anyvaluedata",
-//      description="Any valid JSON",
+      description="Any valid JSON",
       oneOf=Array(
           classOf[VJsString],
           classOf[VJsNumber],
@@ -79,7 +82,7 @@ object GraphQLProtocol {
 
   @Schema(
       name="anyvalueext",
-//      description="Any valid JSON",
+      description="Any valid JSON",
       oneOf=Array(
           classOf[VJsString],
           classOf[VJsNumber],
