@@ -1304,8 +1304,10 @@ class DuplicateTestPages extends FlatSpec
       en.enterPlayer(North, prefixThatMatchesNoOne)
       en.isPlayerSuggestionsVisible(North) mustBe true
       val sugN = en.getPlayerSuggestions(North)
-      sugN.size mustBe 1
-      sugN.head.text mustBe "No names matched"
+      eventually {
+        sugN.size mustBe 1
+        sugN.head.text mustBe "No names matched"
+      }
 
       en.clickCancel.validate.clickCompletedScoreboard.validate
     }
