@@ -55,6 +55,11 @@ jobs:
     - stage: test
       script: 
         - |
+          cat /proc/meminfo
+          which sbt
+          cat /etc/sbt/jvmopts
+          export JVM_OPTS=@travis/jvmopts.txt
+          cat travis/jvmopts.txt
           export ServerTestToRun=com.example.test.AllUnitTests
           sbt distribution:travis1
     - stage: systemtest
@@ -70,6 +75,11 @@ jobs:
         - sudo ln -s /usr/lib/chromium-browser/chromedriver /usr/local/bin/chromedriver
       script:
         - |
+          cat /proc/meminfo
+          which sbt
+          cat /etc/sbt/jvmopts
+          export JVM_OPTS=@travis/jvmopts.txt
+          cat travis/jvmopts.txt
           export UseBrowser=chromeheadless
           export UseFullOpt=true
           export ServerTestToRun=com.example.test.selenium.AllSeleniumSuites
