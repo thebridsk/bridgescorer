@@ -44,7 +44,7 @@ trait SvgIconProps extends AdditionalProps with SvgIconPropsPrivate {
 //  var color: js.UndefOr[SvgColor] = js.native
   var component: js.UndefOr[String] = js.native
 //  var fontSize: js.UndefOr[SvgFontSize] = js.native
-  var nativeColor: js.UndefOr[String] = js.native
+  var htmlColor: js.UndefOr[String] = js.native
   var shapeRendering: js.UndefOr[String] = js.native
   var titleAccess: js.UndefOr[String] = js.native
   var viewBox: js.UndefOr[String] = js.native
@@ -69,7 +69,7 @@ object SvgIconProps extends PropsFactory[SvgIconProps] {
    * @param classes Node passed into the SVG element.
    * @param color The color of the component. It supports those theme colors
    *               that make sense for this component. You can use the
-   *               nativeColor property to apply a color attribute to the
+   *               htmlColor property to apply a color attribute to the
    *               SVG element.
    *               Default: inherit
    * @param component The component used for the root node. Either a string
@@ -78,7 +78,7 @@ object SvgIconProps extends PropsFactory[SvgIconProps] {
    * @param fontSize The fontSize applied to the icon. Defaults to 24px,
    *                  but can be configure to inherit font size.
    *                  Default: default
-   * @param nativeColor Applies a color attribute to the SVG element.
+   * @param htmlColor Applies a color attribute to the SVG element.
    * @param shapeRendering The shape-rendering attribute. The behavior of the
    *                        different options is described on the MDN Web Docs.
    *                        If you are having issues with blurry icons you should
@@ -100,7 +100,7 @@ object SvgIconProps extends PropsFactory[SvgIconProps] {
       color: js.UndefOr[SvgColor] = js.undefined,
       component: js.UndefOr[String] = js.undefined,
       fontSize: js.UndefOr[SvgFontSize] = js.undefined,
-      nativeColor: js.UndefOr[String] = js.undefined,
+      htmlColor: js.UndefOr[String] = js.undefined,
       shapeRendering: js.UndefOr[String] = js.undefined,
       titleAccess: js.UndefOr[String] = js.undefined,
       viewBox: js.UndefOr[String] = js.undefined,
@@ -111,7 +111,7 @@ object SvgIconProps extends PropsFactory[SvgIconProps] {
       p.color = color
       p.component = component
       p.fontSize = fontSize
-      p.nativeColor = nativeColor
+      p.htmlColor = htmlColor
       p.shapeRendering = shapeRendering
       p.titleAccess = titleAccess
       p.viewBox = viewBox
@@ -130,7 +130,7 @@ trait SvgIconBase extends ComponentFactory[SvgIconProps] {
    * @param classes Node passed into the SVG element.
    * @param color The color of the component. It supports those theme colors
    *               that make sense for this component. You can use the
-   *               nativeColor property to apply a color attribute to the
+   *               htmlColor property to apply a color attribute to the
    *               SVG element.
    *               Default: inherit
    * @param component The component used for the root node. Either a string
@@ -139,7 +139,7 @@ trait SvgIconBase extends ComponentFactory[SvgIconProps] {
    * @param fontSize The fontSize applied to the icon. Defaults to 24px,
    *                  but can be configure to inherit font size.
    *                  Default: default
-   * @param nativeColor Applies a color attribute to the SVG element.
+   * @param htmlColor Applies a color attribute to the SVG element.
    * @param shapeRendering The shape-rendering attribute. The behavior of the
    *                        different options is described on the MDN Web Docs.
    *                        If you are having issues with blurry icons you should
@@ -162,7 +162,7 @@ trait SvgIconBase extends ComponentFactory[SvgIconProps] {
       color: js.UndefOr[SvgColor] = js.undefined,
       component: js.UndefOr[String] = js.undefined,
       fontSize: js.UndefOr[SvgFontSize] = js.undefined,
-      nativeColor: js.UndefOr[String] = js.undefined,
+      htmlColor: js.UndefOr[String] = js.undefined,
       shapeRendering: js.UndefOr[String] = js.undefined,
       titleAccess: js.UndefOr[String] = js.undefined,
       viewBox: js.UndefOr[String] = js.undefined,
@@ -174,7 +174,7 @@ trait SvgIconBase extends ComponentFactory[SvgIconProps] {
       color = color,
       component = component,
       fontSize = fontSize,
-      nativeColor = nativeColor,
+      htmlColor = htmlColor,
       shapeRendering = shapeRendering,
       titleAccess = titleAccess,
       viewBox = viewBox,
@@ -190,7 +190,7 @@ trait SvgIconBase extends ComponentFactory[SvgIconProps] {
       color: js.UndefOr[SvgColor] = js.undefined,
       component: js.UndefOr[String] = js.undefined,
       fontSize: js.UndefOr[SvgFontSize] = js.undefined,
-      nativeColor: js.UndefOr[String] = js.undefined,
+      htmlColor: js.UndefOr[String] = js.undefined,
       shapeRendering: js.UndefOr[String] = js.undefined,
       titleAccess: js.UndefOr[String] = js.undefined,
       viewBox: js.UndefOr[String] = js.undefined,
@@ -203,7 +203,7 @@ trait SvgIconBase extends ComponentFactory[SvgIconProps] {
       color = color,
       component = component,
       fontSize = fontSize,
-      nativeColor = nativeColor,
+      htmlColor = htmlColor,
       shapeRendering = shapeRendering,
       titleAccess = titleAccess,
       viewBox = viewBox,
