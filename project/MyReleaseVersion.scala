@@ -91,9 +91,12 @@ object MyReleaseVersion {
         val uncommittedChanges = gitUncommittedChanges.value
 
         // hack to determine if this is a JS project
-        val isScalaJSx = SettingKey[Boolean]("scalaJSUseMainModuleInitializer").?.value.isDefined
+//        val isScalaJSx = SettingKey[Boolean]("scalaJSUseMainModuleInitializer").?.value.isDefined
 
-        val isScalaJS = isScalaJSProject.value
+        val crossVersion = Keys.crossVersion.value
+        val isScalaJS = crossVersion == org.scalajs.sbtplugin.ScalaJSCrossVersion.binary
+
+//        val isScalaJS = isScalaJSProject.value
         val js = if (isScalaJS) " JS" else ""
 //        println(s"""Original version for ${n+js}: ${v}""")
         val v1 = if (v contains headCommit.getOrElse("Unknown")) v
@@ -104,7 +107,9 @@ object MyReleaseVersion {
                  else v1+ "-"+curBranch
 //        println("v2 is "+v2+" in "+ n+js)
         val v3 = v2.replaceAll("[\\/]", "_")
-        println(s"Version is $v3 in $n$js")
+        println(s"Version is $v3 in $n$js"
+                // + " $crossVersion ${org.scalajs.sbtplugin.ScalaJSCrossVersion.binary}"
+               )
         v3
       },
       isSnapshot := {
