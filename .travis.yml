@@ -81,7 +81,10 @@ jobs:
           export JVM_OPTS=@travis/jvmopts.txt
           cat travis/jvmopts.txt
           chromedriver --version
+          which google-chrome
           google-chrome --version
+          which chromium-browser
+          chromium-browser --version
           export UseBrowser=chromeheadless
           export UseFullOpt=true
           export ServerTestToRun=com.example.test.selenium.AllSeleniumSuites
