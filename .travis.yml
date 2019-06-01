@@ -80,6 +80,8 @@ jobs:
           cat /etc/sbt/jvmopts
           export JVM_OPTS=@travis/jvmopts.txt
           cat travis/jvmopts.txt
+          chromedriver --version
+          google-chrome --version
           export UseBrowser=chromeheadless
           export UseFullOpt=true
           export ServerTestToRun=com.example.test.selenium.AllSeleniumSuites
