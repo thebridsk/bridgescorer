@@ -85,6 +85,7 @@ jobs:
           google-chrome --version
           which chromium-browser
           chromium-browser --version
+          rm -f /usr/bin/google-chrome
           export UseBrowser=chromeheadless
           export UseFullOpt=true
           export ServerTestToRun=com.example.test.selenium.AllSeleniumSuites
