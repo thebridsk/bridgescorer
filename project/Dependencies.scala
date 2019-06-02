@@ -84,7 +84,7 @@ object Dependencies {
 
   lazy val vWebPack = "4.32.2"          // https://www.npmjs.com/package/webpack
 
-  lazy val vJsDom = "15.1.0"           // https://www.npmjs.com/package/jsdom
+  lazy val vJsDom = "15.1.1"           // https://www.npmjs.com/package/jsdom
 //  lazy val vExposeLoader = "0.7.3"     // https://www.npmjs.com/package/expose-loader
 
   // version 0.2.3 is hardcoded in sbt-scalajs-bundler
@@ -98,7 +98,7 @@ object Dependencies {
   lazy val vAjv = "6.10.0"                  // https://www.npmjs.com/package/ajv
 
 
-  lazy val vWebpackDevServer = "3.4.1"   // https://www.npmjs.com/package/webpack-dev-server
+  lazy val vWebpackDevServer = "3.5.0"   // https://www.npmjs.com/package/webpack-dev-server
   lazy val vWebPackCli = "3.3.2"         // https://www.npmjs.com/package/webpack-cli
 
 //  lazy val vFastClick = "1.0.6"       // https://www.npmjs.com/package/fastclick
@@ -109,8 +109,8 @@ object Dependencies {
   lazy val vGraphQL = "14.3.1"              // https://github.com/graphql/graphql-js
   lazy val vGraphiQL = "0.13.0"             // https://github.com/graphql/graphiql
   lazy val vGraphQLVoyager = "1.0.0-rc.27"  // https://github.com/APIs-guru/graphql-voyager
-  lazy val vMaterialUIcore = "4.0.0"        // https://www.npmjs.com/package/@material-ui/core
-  lazy val vMaterialUIicons = "4.0.0"        // https://www.npmjs.com/package/@material-ui/icons
+  lazy val vMaterialUIcore = "4.0.1"        // https://www.npmjs.com/package/@material-ui/core
+  lazy val vMaterialUIicons = "4.0.1"        // https://www.npmjs.com/package/@material-ui/icons
 
   // libraries
 
