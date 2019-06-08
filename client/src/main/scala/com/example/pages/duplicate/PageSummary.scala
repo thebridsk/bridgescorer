@@ -502,15 +502,22 @@ object PageSummaryInternal {
     )
 
     def getDuplicateSummaries( props: Props ): (Option[String], Option[List[DuplicateSummary]]) = {
+      logger.fine("PageSummary.getDuplicateSummaries")
       val importId = DuplicateSummaryStore.getImportId
       val summaries = props.page match {
         case isv: ImportSummaryView =>
           val id = isv.getDecodedId
           if (importId.isDefined && id == importId.get) DuplicateSummaryStore.getDuplicateSummary()
-          else None
+          else {
+            initializeNewSummary(props)
+            None
+          }
         case SummaryView =>
           if (importId.isEmpty) DuplicateSummaryStore.getDuplicateSummary()
-          else None
+          else {
+            initializeNewSummary(props)
+            None
+          }
       }
       (importId,summaries)
     }
@@ -689,12 +696,12 @@ object PageSummaryInternal {
             {
               (if (importId.isDefined) {
                 List[VdomNode](
-                  MuiMenuItem(
-                      id = "Summary",
-                      onClick = callbackPage(SummaryView) _
-                  )(
-                      "Summary"
-                  )
+//                  MuiMenuItem(
+//                      id = "Summary",
+//                      onClick = callbackPage(SummaryView) _
+//                  )(
+//                      "Summary"
+//                  )
                 )
               } else {
                 val x: List[VdomNode] =
@@ -761,10 +768,8 @@ object PageSummaryInternal {
 
     def summaryError() = scope.withEffectsImpure.modState( s => s.copy(workingOnNew=Some("Error getting duplicate summary")))
 
-    val didMount = scope.props >>= { (p) => Callback {
-      logger.info("PageSummary.didMount")
-      mounted = true
-      DuplicateSummaryStore.addChangeListener(storeCallback)
+    def initializeNewSummary(p: Props) = {
+      logger.fine("PageSummary.initializeNewSummary")
       p.page match {
         case isv: ImportSummaryView =>
           val importId = isv.getDecodedId
@@ -772,6 +777,13 @@ object PageSummaryInternal {
         case SummaryView =>
           Controller.getSummary(summaryError _)
       }
+    }
+
+    val didMount = scope.props >>= { (p) => Callback {
+      logger.fine("PageSummary.didMount")
+      mounted = true
+      DuplicateSummaryStore.addChangeListener(storeCallback)
+//      initializeNewSummary(p)     // already called from render
     }}
 
     val willUnmount = Callback {
