@@ -247,17 +247,20 @@ object PageSummaryInternal {
    * will cause State to leak.
    *
    */
-  case class State( workingOnNew: Option[String], forPrint: Boolean, selected: List[Id.MatchDuplicate],
-                    showRows: Option[Int], alwaysShowAll: Boolean,
-                    showEntries: ShowEntries = ShowBoth,
-                    useIMP: Option[Boolean] = None,
+  case class State( workingOnNew: Option[String],
+                     forPrint: Boolean,
+                     selected: List[Id.MatchDuplicate],
+                     showRows: Option[Int], alwaysShowAll: Boolean,
+                     showEntries: ShowEntries = ShowBoth,
+                     useIMP: Option[Boolean] = None,
+                     info: Boolean = false
 //                    anchorMainEl: js.UndefOr[Element] = js.undefined
   ) {
 
 //    def openMainMenu( n: Node ) = copy( anchorMainEl = n.asInstanceOf[Element] )
 //    def closeMainMenu() = copy( anchorMainEl = js.undefined )
 
-    def withError( err: String ) = copy( workingOnNew = Some(err) )
+    def withError( err: String, info: Boolean ) = copy( workingOnNew = Some(err), info=info )
     def clearError() = copy( workingOnNew = None )
 
     def isMP = useIMP.getOrElse(true)
@@ -308,9 +311,9 @@ object PageSummaryInternal {
       resultGraphQL.cancel()
     } >> scope.modState( s => s.clearError())
 
-    def setMessage( msg: String ) = scope.withEffectsImpure.modState( s => s.withError(msg) )
+    def setMessage( msg: String, info: Boolean = false ) = scope.withEffectsImpure.modState( s => s.withError(msg,info) )
 
-    def setMessageCB( msg: String ) = scope.modState( s => s.withError(msg) )
+    def setMessageCB( msg: String ) = scope.modState( s => s.withError(msg,false) )
 
     def newDuplicateTest( e: ReactEvent): Unit =
       scope.modState( s => s.copy(workingOnNew=Some("Working on creating a new duplicate match")), Callback {
@@ -387,7 +390,7 @@ object PageSummaryInternal {
             case Some(data) =>
               data \ "import" \ "importduplicateresult" \ "id" match {
                 case JsDefined( JsString( newid ) ) =>
-                  setMessage(s"import duplicate result ${id} from ${importId}, new ID ${newid}" )
+                  setMessage(s"import duplicate result ${id} from ${importId}, new ID ${newid}", true )
                 case JsDefined( x ) =>
                   setMessage(s"expecting string on import duplicate result ${id} from ${importId}, got ${x}")
                 case _: JsUndefined =>
@@ -422,7 +425,7 @@ object PageSummaryInternal {
             case Some(data) =>
               data \ "import" \ "importduplicate" \ "id" match {
                 case JsDefined( JsString( newid ) ) =>
-                  setMessage(s"import duplicate ${id} from ${importId}, new ID ${newid}" )
+                  setMessage(s"import duplicate ${id} from ${importId}, new ID ${newid}", true )
                 case JsDefined( x ) =>
                   setMessage(s"expecting string on import duplicate ${id} from ${importId}, got ${x}")
                 case _: JsUndefined =>
@@ -480,7 +483,7 @@ object PageSummaryInternal {
                   Json.fromJson[Map[String,ImportReturn]](map) match {
                     case JsSuccess( m, path ) =>
                       val v = m.map( e => s"${e._1}->${e._2.id}" )
-                      setMessage(s"import selected from ${importId}, old IDs -> new IDs: ${v.mkString(", ")}" )
+                      setMessage(s"import selected from ${importId}, old IDs -> new IDs: ${v.mkString(", ")}", true )
                     case JsError(err) =>
                       setMessage(s"expecting map on import selected from ${importId}, got error ${err}")
                   }
@@ -502,17 +505,37 @@ object PageSummaryInternal {
     )
 
     def getDuplicateSummaries( props: Props ): (Option[String], Option[List[DuplicateSummary]]) = {
-      val importId = DuplicateSummaryStore.getImportId
-      val summaries = props.page match {
-        case isv: ImportSummaryView =>
-          val id = isv.getDecodedId
-          if (importId.isDefined && id == importId.get) DuplicateSummaryStore.getDuplicateSummary()
-          else None
-        case SummaryView =>
-          if (importId.isEmpty) DuplicateSummaryStore.getDuplicateSummary()
-          else None
+      logger.fine("PageSummary.getDuplicateSummaries")
+      DuplicateSummaryStore.getCalledImportId match {
+        case Right(importId) =>
+          val summaries = props.page match {
+            case isv: ImportSummaryView =>
+              val id = isv.getDecodedId
+              if (importId.isDefined && id == importId.get) DuplicateSummaryStore.getDuplicateSummary()
+              else {
+                initializeNewSummary(props)
+                None
+              }
+            case SummaryView =>
+              if (importId.isEmpty) DuplicateSummaryStore.getDuplicateSummary()
+              else {
+                initializeNewSummary(props)
+                None
+              }
+          }
+          (importId,summaries)
+        case Left(msg) =>
+          initializeNewSummary(props)
+          (
+            props.page match {
+              case isv: ImportSummaryView =>
+                Some(isv.importId)
+              case SummaryView =>
+                None
+            },
+            None
+          )
       }
-      (importId,summaries)
     }
 
     val nextIMPs = scope.modState { s => s.nextIMPs }
@@ -667,9 +690,15 @@ object PageSummaryInternal {
 
       def callbackPage(page: DuplicatePage)(e: ReactEvent) = props.routerCtl.set(page).runNow()
 
+      val (bok,bcancel) = if (state.info) {
+        (Some(cancel), None)
+      } else {
+        (None, Some(cancel))
+      }
+
       <.div(
         dupStyles.divSummary,
-        PopupOkCancel( state.workingOnNew.map( s=>s), None, Some(cancel) ),
+        PopupOkCancel( state.workingOnNew.map( s=>s), bok, bcancel ),
         DuplicatePageBridgeAppBar(
             id = None,
             tableIds = List(),
@@ -689,12 +718,12 @@ object PageSummaryInternal {
             {
               (if (importId.isDefined) {
                 List[VdomNode](
-                  MuiMenuItem(
-                      id = "Summary",
-                      onClick = callbackPage(SummaryView) _
-                  )(
-                      "Summary"
-                  )
+//                  MuiMenuItem(
+//                      id = "Summary",
+//                      onClick = callbackPage(SummaryView) _
+//                  )(
+//                      "Summary"
+//                  )
                 )
               } else {
                 val x: List[VdomNode] =
@@ -761,10 +790,8 @@ object PageSummaryInternal {
 
     def summaryError() = scope.withEffectsImpure.modState( s => s.copy(workingOnNew=Some("Error getting duplicate summary")))
 
-    val didMount = scope.props >>= { (p) => Callback {
-      logger.info("PageSummary.didMount")
-      mounted = true
-      DuplicateSummaryStore.addChangeListener(storeCallback)
+    def initializeNewSummary(p: Props) = {
+      logger.fine("PageSummary.initializeNewSummary")
       p.page match {
         case isv: ImportSummaryView =>
           val importId = isv.getDecodedId
@@ -772,6 +799,13 @@ object PageSummaryInternal {
         case SummaryView =>
           Controller.getSummary(summaryError _)
       }
+    }
+
+    val didMount = scope.props >>= { (p) => Callback {
+      logger.fine("PageSummary.didMount")
+      mounted = true
+      DuplicateSummaryStore.addChangeListener(storeCallback)
+      initializeNewSummary(p)
     }}
 
     val willUnmount = Callback {

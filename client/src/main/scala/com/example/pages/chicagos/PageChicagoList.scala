@@ -72,7 +72,7 @@ object PageChicagoListInternal {
    * @param askingToDelete The Id of rubber match being deleted.  None if not deleting.
    * @param popupMsg show message in popup if not None.
    */
-  case class State( askingToDelete: Option[String] = None, popupMsg: Option[String] = None )
+  case class State( askingToDelete: Option[String] = None, popupMsg: Option[String] = None, info: Boolean = false )
 
   /**
    * Internal state for rendering the component.
@@ -141,7 +141,13 @@ object PageChicagoListInternal {
 
 
     def render(props: Props, state:State) = {
-      val (msg,funOk,funCancel) = state.popupMsg.map( msg => (Some(msg),None,Some(cancel))).
+
+      val (bok,bcancel) = if (state.info) {
+        (Some(cancel), None)
+      } else {
+        (None, Some(cancel))
+      }
+      val (msg,funOk,funCancel) = state.popupMsg.map( msg => (Some(msg),bok,bcancel)).
                                      getOrElse(
                                        (
                                          state.askingToDelete.map(id => s"Are you sure you want to delete Chicago match ${id}"),
@@ -202,7 +208,7 @@ object PageChicagoListInternal {
       )
     }
 
-    def setMessage( msg: String ) = scope.withEffectsImpure.modState( s => s.copy( popupMsg = Some(msg)) )
+    def setMessage( msg: String, info: Boolean = false ) = scope.withEffectsImpure.modState( s => s.copy( popupMsg = Some(msg), info=info) )
 
     def importChicago( importId: String, id: String ) =
       scope.modState( s => s.copy(popupMsg=Some(s"Importing Chicago Match ${id} from import ${importId}")), Callback {
@@ -223,7 +229,7 @@ object PageChicagoListInternal {
             case Some(data) =>
               data \ "import" \ "importchicago" \ "id" match {
                 case JsDefined( JsString( newid ) ) =>
-                  setMessage(s"import chicago ${id} from ${importId}, new ID ${newid}" )
+                  setMessage(s"import chicago ${id} from ${importId}, new ID ${newid}", true )
                 case JsDefined( x ) =>
                   setMessage(s"expecting string on import chicago ${id} from ${importId}, got ${x}")
                 case _: JsUndefined =>
