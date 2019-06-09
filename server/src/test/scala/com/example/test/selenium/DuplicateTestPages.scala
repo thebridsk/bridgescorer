@@ -1409,7 +1409,7 @@ class DuplicateTestPages extends FlatSpec
 
     val newId = ldpr.checkSuccessfulImport( dupid.get )
 
-    val main = ldpr.clickPopUpCancel.validate.clickHome.validate.clickListDuplicateButton.validate( newId )
+    val main = ldpr.clickPopUpOk.validate.clickHome.validate.clickListDuplicateButton.validate( newId )
   }
 
 

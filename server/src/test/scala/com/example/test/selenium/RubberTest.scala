@@ -783,7 +783,7 @@ class RubberTest extends FlatSpec
 
     val newId = ldpr.checkSuccessfulImport( rubberId )
 
-    val lp2 = ldpr.clickPopUpCancel.validate
+    val lp2 = ldpr.clickPopUpOk.validate
     val main = lp2.clickHome.validate.clickListRubberButton.validate( newId )
   }
 

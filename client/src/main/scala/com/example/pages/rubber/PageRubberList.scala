@@ -76,7 +76,10 @@ object PageRubberListInternal {
    * @param askingToDelete The Id of rubber match being deleted.  None if not deleting.
    * @param popupMsg show message in popup if not None.
    */
-  case class State( askingToDelete: Option[String] = None, popupMsg: Option[String] = None )
+  case class State( askingToDelete: Option[String] = None,
+                     popupMsg: Option[String] = None,
+                     info: Boolean = false
+                   )
 
   /**
    * Internal state for rendering the component.
@@ -127,7 +130,7 @@ object PageRubberListInternal {
       scope.withEffectsImpure.props.routerCtl.set(RubberMatchView(chi.id))
     }
 
-    def setMessage( msg: String ) = scope.withEffectsImpure.modState( s => s.copy( popupMsg = Some(msg)) )
+    def setMessage( msg: String, info: Boolean = false ) = scope.withEffectsImpure.modState( s => s.copy( popupMsg = Some(msg), info=info) )
 
     def importRubber( importId: String, rubid: String) =
       scope.modState( s => s.copy(popupMsg=Some(s"Importing Rubber Match ${rubid} from import ${importId}")), Callback {
@@ -148,7 +151,7 @@ object PageRubberListInternal {
             case Some(data) =>
               data \ "import" \ "importrubber" \ "id" match {
                 case JsDefined( JsString( newid ) ) =>
-                  setMessage(s"import rubber ${rubid} from ${importId}, new ID ${newid}" )
+                  setMessage(s"import rubber ${rubid} from ${importId}, new ID ${newid}", true )
                 case JsDefined( x ) =>
                   setMessage(s"expecting string on import rubber ${rubid} from ${importId}, got ${x}")
                 case _: JsUndefined =>
@@ -169,7 +172,14 @@ object PageRubberListInternal {
         case ilv: ImportListView => Some(ilv.getDecodedId)
         case _ => None
       }
-      val (msg,funOk,funCancel) = state.popupMsg.map( msg => (Some(msg),None,Some(cancel))).
+
+      val (bok,bcancel) = if (state.info) {
+        (Some(cancel), None)
+      } else {
+        (None, Some(cancel))
+      }
+
+      val (msg,funOk,funCancel) = state.popupMsg.map( msg => (Some(msg),bok,bcancel)).
                                      getOrElse(
                                        (
                                          state.askingToDelete.map(id => s"Are you sure you want to delete Rubber match ${id}"),

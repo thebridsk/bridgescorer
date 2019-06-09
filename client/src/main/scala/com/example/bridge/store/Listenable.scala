@@ -32,6 +32,8 @@ trait Listenable {
     fListeners ::= Listener(event, autoRemoveCb, Some(cb))
   }
 
+  def noListener() = {}
+
   def removeListener( event: Event, cb: Callback ) = {
     loggerListener.info("Removing "+event+" callback"+", had "+fListeners.size)
     fListeners = fListeners.filterNot({
@@ -40,6 +42,7 @@ trait Listenable {
       case _ => false
     })
     loggerListener.info("Removing "+event+" callback done"+", have "+fListeners.size)
+    if (fListeners.isEmpty) noListener
   }
 
   def removeAllListener( event: Event ) = {
@@ -49,11 +52,13 @@ trait Listenable {
       case _ => false
     })
     loggerListener.info("Removing all "+event+" callbacks done"+", have "+fListeners.size)
+    if (fListeners.isEmpty) noListener
   }
 
   def removeListener() = {
     loggerListener.info("Removing all callbacks"+", had "+fListeners.size)
     fListeners = List()
+    noListener
   }
 
   def notify( event: Event ) = {

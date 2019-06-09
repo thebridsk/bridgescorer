@@ -804,7 +804,7 @@ class ChicagoTestPages extends FlatSpec
 
     val newId = ldpr.checkSuccessfulImport( chicagoId.get )
 
-    val lp2 = ldpr.clickPopUpCancel.validate
+    val lp2 = ldpr.clickPopUpOk.validate
     val main = lp2.clickHome.validate.clickListChicagoButton.validate( newId )
   }
 }
