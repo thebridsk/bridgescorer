@@ -9,7 +9,7 @@ name := "project-bridgescorer"
 scalaVersion := "2.12.8"
 
 val vLog4j = "1.7.26"               // https://mvnrepository.com/artifact/org.slf4j/slf4j-simple
-val vJGit = "5.3.1.201904271842-r" // https://mvnrepository.com/artifact/org.eclipse.jgit/org.eclipse.jgit.pgm
+val vJGit = "5.4.0.201906121030-r" // https://mvnrepository.com/artifact/org.eclipse.jgit/org.eclipse.jgit.pgm
 
 val vCrossProject = "0.6.0"        // https://github.com/portable-scala/sbt-crossproject
 val vScalaJSDefault = "0.6.28"     // http://www.scala-js.org/
@@ -20,7 +20,7 @@ val vSbtBuildInfo = "0.9.0"        // https://github.com/sbt/sbt-buildinfo
 val vSbtRelease = "1.0.11"         // https://github.com/sbt/sbt-release
 val vSbtEclipse = "5.2.4"          // https://github.com/typesafehub/sbteclipse
 val vSbtDependencyGraph = "0.9.2"  // https://github.com/jrudolph/sbt-dependency-graph
-val vSbtUpdates = "0.4.0"          // https://github.com/rtimush/sbt-updates
+val vSbtUpdates = "0.4.1"          // https://github.com/rtimush/sbt-updates
 
 val scalaJSVersion = Option(System.getenv("SCALAJS_VERSION")).getOrElse(vScalaJSDefault)
 
