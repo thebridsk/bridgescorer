@@ -10,41 +10,47 @@ import utils.logging.Logger
 import ZipFileForStore.log
 
 class ZipFileForStore(
-                       val zipfilename: File
-                     ) {
+    val zipfilename: File
+) {
 
-  private val zipfile = new ZipFile( zipfilename.toString )
+  private val zipfile = new ZipFile(zipfilename.toString)
 
   /**
-   * Returns all the entries in the zip file
-   */
+    * Returns all the entries in the zip file
+    */
   def entries(): Iterator[ZipEntry] = {
     zipfile.entries().asScala
   }
 
   /**
-   * Returns the input stream of a zip entry
-   * @param zipentry
-   * @return None if an error occurred
-   */
-  def getInputStream( zipentry: ZipEntry ) = {
+    * Returns the input stream of a zip entry
+    * @param zipentry
+    * @return None if an error occurred
+    */
+  def getInputStream(zipentry: ZipEntry) = {
     try {
-      Option( zipfile.getInputStream(zipentry) )
+      Option(zipfile.getInputStream(zipentry))
     } catch {
       case x: Exception =>
-        log.info(s"Error getting file ${zipentry.getName} from ${zipfilename}", x)
+        log.info(
+          s"Error getting file ${zipentry.getName} from ${zipfilename}",
+          x
+        )
         None
     }
   }
 
-  def readFileSafe( filename: String ): Option[String] = {
-    Option( zipfile.getEntry(filename) ).flatMap { zipentry =>
+  def readFileSafe(filename: String): Option[String] = {
+    Option(zipfile.getEntry(filename)).flatMap { zipentry =>
       getInputStream(zipentry).flatMap { is =>
         try {
           Option(Source.fromInputStream(is, "UTF8").mkString)
         } catch {
           case x: Exception =>
-            log.info(s"Error reading file ${zipentry.getName} from ${zipfilename}", x)
+            log.info(
+              s"Error reading file ${zipentry.getName} from ${zipfilename}",
+              x
+            )
             None
         } finally {
           is.close()

@@ -8,8 +8,10 @@ import com.example.data.bridge.East
 import com.example.data.bridge.South
 import com.example.data.bridge.West
 
-class RoundScoring( val round: Round ) {
-  val hands = round.hands.map { h => ScoreHand(h) }.toArray
+class RoundScoring(val round: Round) {
+  val hands = round.hands.map { h =>
+    ScoreHand(h)
+  }.toArray
   val dealerFirstRound = PlayerPosition(round.dealerFirstRound)
 
   val players = Array(round.north, round.south, round.east, round.west)
@@ -20,27 +22,27 @@ class RoundScoring( val round: Round ) {
 
     while (after.headOption.isDefined && after.head != dealerFirstRound) {
       val current = after.head
-      before = current::before
+      before = current :: before
       after = after.tail
     }
     before = before.reverse
-    (after:::before).toArray
+    (after ::: before).toArray
   }
 
-  def dealerForHand( hand: Int ) = {
-    val h = (hand-1)%4
+  def dealerForHand(hand: Int) = {
+    val h = (hand - 1) % 4
     dealerOrder(h)
   }
 
   /**
-   * totals - array of player totals.  the index corresponds to the index in players
-   * byHands - the first index is the hand (same as hands index), the second
-   * is player (same as players index)
-   */
+    * totals - array of player totals.  the index corresponds to the index in players
+    * byHands - the first index is the hand (same as hands index), the second
+    * is player (same as players index)
+    */
   val (totals, byHands) = calculate()
 
   private def calculate(): (Array[Int], Array[Array[Int]]) = {
-    val totals = Array(0,0,0,0)
+    val totals = Array(0, 0, 0, 0)
     val len = hands.length
     var byHands: List[Array[Int]] = Nil
 
@@ -48,8 +50,8 @@ class RoundScoring( val round: Round ) {
       val nsscore = if (hands(i).nsScored) hands(i).score.ns; else 0
       val ewscore = if (hands(i).nsScored) 0; else hands(i).score.ew
 
-      val scores = Array(nsscore,nsscore,ewscore,ewscore)
-      byHands = scores::byHands
+      val scores = Array(nsscore, nsscore, ewscore, ewscore)
+      byHands = scores :: byHands
       totals(0) += nsscore
       totals(1) += nsscore
       totals(2) += ewscore
@@ -62,8 +64,7 @@ class RoundScoring( val round: Round ) {
 }
 
 object RoundScoring {
-  def apply( round: Round ) = new RoundScoring(round)
+  def apply(round: Round) = new RoundScoring(round)
 
-  val definedDealerOrder = North::East::South::West::Nil
+  val definedDealerOrder = North :: East :: South :: West :: Nil
 }
-

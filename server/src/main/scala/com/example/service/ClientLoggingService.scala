@@ -1,6 +1,5 @@
 package com.example.service
 
-
 import akka.NotUsed
 import akka.actor.ActorSystem
 import akka.event.Logging
@@ -40,13 +39,13 @@ import com.example.data.rest.JsonException
 import com.fasterxml.jackson.core.JsonParseException
 import io.swagger.v3.oas.annotations.Hidden
 
-class Counter( max: Long ) {
+class Counter(max: Long) {
   private var counter: Long = 0
 
   /**
-   * Increment the counter
-   * @return true if max has been hit, in which case the counter is reset to 0
-   */
+    * Increment the counter
+    * @return true if max has been hit, in which case the counter is reset to 0
+    */
   def inc() = synchronized {
     counter = counter + 1;
     if (counter > max) {
@@ -61,32 +60,42 @@ class Counter( max: Long ) {
 trait ClientLoggingService {
   hasActorSystem: HasActorSystem =>
 
-  private lazy val log = Logging(hasActorSystem.actorSystem, classOf[ClientLoggingService])
+  private lazy val log =
+    Logging(hasActorSystem.actorSystem, classOf[ClientLoggingService])
 
   @Hidden
-  def routeLogging( ip: String ) =
+  def routeLogging(ip: String) =
     get {
       pathEndOrSingleSlash {
-        logRequest( "ClientLoggingService.routeLogging pathend", DebugLevel ) {
-          logResult( "ClientLoggingService.routeLogging pathend result", DebugLevel ) {
-            handleWebSocketMessagesForProtocol(websocketMonitor(ip, new Counter(100)), Protocol.Logging)
+        logRequest("ClientLoggingService.routeLogging pathend", DebugLevel) {
+          logResult(
+            "ClientLoggingService.routeLogging pathend result",
+            DebugLevel
+          ) {
+            handleWebSocketMessagesForProtocol(
+              websocketMonitor(ip, new Counter(100)),
+              Protocol.Logging
+            )
           }
         }
       }
     }
 
-  def websocketMonitor(sender: String, counter: Counter): Flow[Message, Message, NotUsed] = {
-    log.debug("Setting up logging websocket for "+sender)
+  def websocketMonitor(
+      sender: String,
+      counter: Counter
+  ): Flow[Message, Message, NotUsed] = {
+    log.debug("Setting up logging websocket for " + sender)
     Flow[Message]
       .mapConcat {
         case TextMessage.Strict(msg) =>
 //          log.debug("("+sender+"): Received "+msg)
-          msg::Nil // unpack incoming WS text messages...
+          msg :: Nil // unpack incoming WS text messages...
         case tm: TextMessage =>
 //          log.debug("From ("+sender+"): Received TextMessage.Streamed")
-          collect(tm.textStream)(_ + _)::Nil
+          collect(tm.textStream)(_ + _) :: Nil
         case bm: BinaryMessage =>
-          log.info("From ("+sender+"): Received BinaryMessage")
+          log.info("From (" + sender + "): Received BinaryMessage")
           // ignore binary messages but drain content to avoid the stream being clogged
           bm.dataStream.runWith(Sink.ignore)
           Nil
@@ -106,33 +115,34 @@ trait ClientLoggingService {
               Service.logFromBrowser(sender.toString(), "ws", msg)
               Nil
             case msg =>
-              if (counter.inc()) DuplexProtocol.ErrorResponse( "Unknown message", 0 )::Nil
+              if (counter.inc())
+                DuplexProtocol.ErrorResponse("Unknown message", 0) :: Nil
               else Nil
           }
         } catch {
           case x: JsonException =>
-            log.debug("Got invalid data: "+s)
+            log.debug("Got invalid data: " + s)
             if (counter.inc()) {
               val sw = new StringWriter
               val pw = new PrintWriter(sw)
               x.printStackTrace(pw)
               pw.flush()
               val e = sw.toString()
-              log.warning("Exception processing message: "+e)
-              DuplexProtocol.ErrorResponse( "Unknown message", 0 )::Nil
+              log.warning("Exception processing message: " + e)
+              DuplexProtocol.ErrorResponse("Unknown message", 0) :: Nil
             } else {
               Nil
             }
           case x: JsonParseException =>
-            log.debug("Got invalid data: "+s)
+            log.debug("Got invalid data: " + s)
             if (counter.inc()) {
               val sw = new StringWriter
               val pw = new PrintWriter(sw)
               x.printStackTrace(pw)
               pw.flush()
               val e = sw.toString()
-              log.warning("Exception processing message: "+e)
-              DuplexProtocol.ErrorResponse( "Unknown message", 0 )::Nil
+              log.warning("Exception processing message: " + e)
+              DuplexProtocol.ErrorResponse("Unknown message", 0) :: Nil
             } else {
               Nil
             }
@@ -140,7 +150,7 @@ trait ClientLoggingService {
       }
       .map {
         case msg: DuplexProtocol.DuplexMessage =>
-          log.debug("("+sender+"): Sending "+msg )
+          log.debug("(" + sender + "): Sending " + msg)
           TextMessage.Strict(DuplexProtocol.toString(msg)) // ... pack outgoing messages into WS JSON messages ...
       }
       .withAttributes(Attributes.inputBuffer(initial = 32, max = 128))
@@ -160,33 +170,40 @@ trait ClientLoggingService {
   }
 
   def reportErrorsFlow[T](sender: String) =
-    new GraphStage[FlowShape[T,T]] {
+    new GraphStage[FlowShape[T, T]] {
       val in = Inlet[T]("reportErrorsFlow.in")
       val out = Outlet[T]("reportErrorsFlow.out")
       override val shape = FlowShape(in, out)
-      override def initialAttributes: Attributes = Attributes( List(Name("reportErrorsFlow")))
+      override def initialAttributes: Attributes =
+        Attributes(List(Name("reportErrorsFlow")))
       def createLogic(inheritedAttributes: Attributes): GraphStageLogic = {
         new GraphStageLogic(shape) {
-          setHandler(in, new InHandler {
-            override def onPush(): Unit = push(out, grab(in))
+          setHandler(
+            in,
+            new InHandler {
+              override def onPush(): Unit = push(out, grab(in))
 
-            override def onUpstreamFinish(): Unit = {
-              log.info("("+sender+"): Upstream finished" )
-              completeStage()
-            }
+              override def onUpstreamFinish(): Unit = {
+                log.info("(" + sender + "): Upstream finished")
+                completeStage()
+              }
 
-            override def onUpstreamFailure(ex: Throwable): Unit = {
-              log.error(ex,"("+sender+"): Upstream failure" )
-              failStage(ex)
+              override def onUpstreamFailure(ex: Throwable): Unit = {
+                log.error(ex, "(" + sender + "): Upstream failure")
+                failStage(ex)
+              }
             }
-          })
-          setHandler(out, new OutHandler {
-            override def onPull(): Unit = pull(in)
-            override def onDownstreamFinish(): Unit = {
-              log.info("("+sender+"): Downstream finished" )
-              completeStage()
+          )
+          setHandler(
+            out,
+            new OutHandler {
+              override def onPull(): Unit = pull(in)
+              override def onDownstreamFinish(): Unit = {
+                log.info("(" + sender + "): Downstream finished")
+                completeStage()
+              }
             }
-          })
+          )
         }
       }
     }
@@ -197,7 +214,9 @@ object ClientLoggingService {
 
   val maxChunks: Int = 1000
   val maxChunkCollectionMills: Long = 5000
-  def collect[T](stream: Source[T, Any])(reduce: (T, T) => T)(implicit materializer: akka.stream.Materializer): T = {
+  def collect[T](
+      stream: Source[T, Any]
+  )(reduce: (T, T) => T)(implicit materializer: akka.stream.Materializer): T = {
     import scala.language.postfixOps
     import scala.concurrent.duration._
     val g = stream.grouped(maxChunks)

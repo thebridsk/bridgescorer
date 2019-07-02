@@ -18,7 +18,7 @@ import com.example.service.ResourceFinder
 
 trait WebJar {
 
-  private val logger = Logger( getClass.getName, null )
+  private val logger = Logger(getClass.getName, null)
 
   lazy val cacheDuration = Duration("0s")
 
@@ -28,13 +28,13 @@ trait WebJar {
     val sec = cacheDuration.toSeconds
     if (sec <= 0) {
       Seq(
-        `Cache-Control`( `no-cache`, `no-store`, `must-revalidate`),
-        RawHeader("Pragma","no-cache"),
-        Expires(DateTime(0))    // RawHeader("Expires","0")
+        `Cache-Control`(`no-cache`, `no-store`, `must-revalidate`),
+        RawHeader("Pragma", "no-cache"),
+        Expires(DateTime(0)) // RawHeader("Expires","0")
       )
     } else {
       Seq(
-        `Cache-Control`( `max-age`( sec ), `public` )
+        `Cache-Control`(`max-age`(sec), `public`)
       )
     }
   }
@@ -53,7 +53,8 @@ trait WebJar {
 //    .handleNotFound { complete(StatusCodes.NotFound, "Not here!"+where) }
 //    .result()
 
-  val webjarsResources: List[FileFinder] = Nil // new FileFinder( "org.webjars", "swagger-ui" ) :: Nil
+  val webjarsResources
+      : List[FileFinder] = Nil // new FileFinder( "org.webjars", "swagger-ui" ) :: Nil
 
 //  val faviconResources = ResourceFinder.htmlResources
 
@@ -62,10 +63,11 @@ trait WebJar {
   import com.example.rest.UtilsPlayJson._
 
   /**
-   * The spray route for the js static files
-   */
-  val webjars = logRequest("webjars", Logging.InfoLevel) { logResult("webjars",Logging.InfoLevel) {
-    pathPrefix("libs") {
+    * The spray route for the js static files
+    */
+  val webjars = logRequest("webjars", Logging.InfoLevel) {
+    logResult("webjars", Logging.InfoLevel) {
+      pathPrefix("libs") {
 //      pathPrefix("public") {
 //        extractUnmatchedPath { path =>
 //          path.toString() match {
@@ -76,26 +78,39 @@ trait WebJar {
 //          }
 //        }
 //      } ~
-      path( """[^/]+""".r / Remaining ) { (artifactid,resource) =>
-        logger.fine("Looking for webjars "+artifactid+" resource "+resource)
-        respondWithHeaders(cacheHeaders:_*) {
-          webjarsResources.find { x => x.isArtifact(artifactid) } match {
-            case Some(ff) =>
-              ff.getResource(resource.toString()) match {
-                case Some(r) =>
+        path("""[^/]+""".r / Remaining) { (artifactid, resource) =>
+          logger.fine(
+            "Looking for webjars " + artifactid + " resource " + resource
+          )
+          respondWithHeaders(cacheHeaders: _*) {
+            webjarsResources.find { x =>
+              x.isArtifact(artifactid)
+            } match {
+              case Some(ff) =>
+                ff.getResource(resource.toString()) match {
+                  case Some(r) =>
 //                  handleRejections(totallyMissingFileHandler("webjars")) {
-                    logger.fine("Getting webjars resource for "+r)
+                    logger.fine("Getting webjars resource for " + r)
                     getFromResource(r)
 //                  }
-                case None =>
-                  complete( StatusCodes.NotFound, RestMessage("Unable to find resource /webjars/"+artifactid+"/"+resource) )
-              }
-            case None =>
-              complete( StatusCodes.NotFound, RestMessage("Unable to find resource /webjars/"+artifactid) )
+                  case None =>
+                    complete(
+                      StatusCodes.NotFound,
+                      RestMessage(
+                        "Unable to find resource /webjars/" + artifactid + "/" + resource
+                      )
+                    )
+                }
+              case None =>
+                complete(
+                  StatusCodes.NotFound,
+                  RestMessage("Unable to find resource /webjars/" + artifactid)
+                )
+            }
           }
         }
       }
     }
-  }}
+  }
 
 }

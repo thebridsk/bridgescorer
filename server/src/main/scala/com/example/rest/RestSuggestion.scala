@@ -28,67 +28,65 @@ import io.swagger.v3.oas.annotations.tags.Tag
 import javax.ws.rs.POST
 
 /**
- * Rest API implementation for the logger config
- * <p>
- * The REST API and all the methods are documented using
- * swagger annotations.
- */
+  * Rest API implementation for the logger config
+  * <p>
+  * The REST API and all the methods are documented using
+  * swagger annotations.
+  */
 @Path("/rest/suggestions")
-@Tags( Array( new Tag(name="Duplicate")))
+@Tags(Array(new Tag(name = "Duplicate")))
 trait RestSuggestion extends HasActorSystem {
 
   /**
-   * The bridge service backend
-   */
+    * The bridge service backend
+    */
   implicit val restService: BridgeService
 
   import UtilsPlayJson._
 
   /**
-   * spray route for all the methods on this resource
-   */
+    * spray route for all the methods on this resource
+    */
   val route = pathPrefix("suggestions") {
     suggestion
   }
 
   @POST
   @Operation(
-      summary = "Get a suggestion of pairings",
-      operationId = "suggestion",
-      requestBody = new RequestBody(
-          description = "The 8 names of the players and the number of suggestions wanted",
-          content = Array(
-              new Content(
-                  mediaType = "application/json",
-                  schema = new Schema(
-                      implementation = classOf[DuplicateSuggestions]
-                  )
-              )
-          )
-      ),
-      responses = Array(
-          new ApiResponse(
-              responseCode = "201",
-              description = "The suggestion",
-              content = Array(
-                  new Content(
-                      mediaType = "application/json",
-                      schema = new Schema( implementation=classOf[DuplicateSuggestions] )
-                  )
-              )
-          ),
-          new ApiResponse(
-              responseCode = "400",
-              description = "Bad request",
-              content = Array(
-                  new Content(
-                      mediaType = "application/json",
-                      schema = new Schema(implementation = classOf[RestMessage])
-                  )
-              )
-          )
-
+    summary = "Get a suggestion of pairings",
+    operationId = "suggestion",
+    requestBody = new RequestBody(
+      description =
+        "The 8 names of the players and the number of suggestions wanted",
+      content = Array(
+        new Content(
+          mediaType = "application/json",
+          schema = new Schema(implementation = classOf[DuplicateSuggestions])
+        )
       )
+    ),
+    responses = Array(
+      new ApiResponse(
+        responseCode = "201",
+        description = "The suggestion",
+        content = Array(
+          new Content(
+            mediaType = "application/json",
+            schema = new Schema(implementation = classOf[DuplicateSuggestions])
+          )
+        )
+      ),
+      new ApiResponse(
+        responseCode = "400",
+        description = "Bad request",
+        content = Array(
+          new Content(
+            mediaType = "application/json",
+            schema = new Schema(implementation = classOf[RestMessage])
+          )
+        )
+      )
+    )
   )
   def xxxsuggestion() = {}
   val suggestion = pathEndOrSingleSlash {
@@ -99,11 +97,11 @@ trait RestSuggestion extends HasActorSystem {
             case Right(ds) =>
               val output = DuplicateSuggestionsCalculation.calculate(input, ds)
               Result(output)
-            case Left( error ) =>
+            case Left(error) =>
               Result(error)
           }
         }
-        resourceCreatedNoLocationHeader( f )
+        resourceCreatedNoLocationHeader(f)
       }
     }
   }

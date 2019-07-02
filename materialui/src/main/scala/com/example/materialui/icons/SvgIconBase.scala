@@ -12,7 +12,7 @@ import com.example.materialui.PropsFactory
 import com.example.materialui.ComponentFactory
 import com.example.materialui.AdditionalProps
 
-class SvgColor( val value: String) extends AnyVal
+class SvgColor(val value: String) extends AnyVal
 object SvgColor {
   val inherit = new SvgColor("inherit")
   val primary = new SvgColor("primary")
@@ -22,7 +22,7 @@ object SvgColor {
   val disabled = new SvgColor("disabled")
 }
 
-class SvgFontSize( val value: String) extends AnyVal
+class SvgFontSize(val value: String) extends AnyVal
 object SvgFontSize {
   val inherit = new SvgFontSize("inherit")
   val default = new SvgFontSize("default")
@@ -52,48 +52,52 @@ trait SvgIconProps extends AdditionalProps with SvgIconPropsPrivate {
 
 object SvgIconProps extends PropsFactory[SvgIconProps] {
 
-  implicit class WrapTypographyProps( val p: SvgIconProps ) extends AnyVal {
+  implicit class WrapTypographyProps(val p: SvgIconProps) extends AnyVal {
 
-    def color = p.colorInternal.map( s => new SvgColor(s) )
+    def color = p.colorInternal.map(s => new SvgColor(s))
 
-    def color_= (v: js.UndefOr[SvgColor]) = { p.colorInternal = v.map(pp => pp.value) }
+    def color_=(v: js.UndefOr[SvgColor]) = {
+      p.colorInternal = v.map(pp => pp.value)
+    }
 
-    def fontSize = p.fontSizeInternal.map( s => new SvgFontSize(s) )
+    def fontSize = p.fontSizeInternal.map(s => new SvgFontSize(s))
 
-    def fontSize_= (v: js.UndefOr[SvgFontSize]) = { p.fontSizeInternal = v.map(pp => pp.value) }
+    def fontSize_=(v: js.UndefOr[SvgFontSize]) = {
+      p.fontSizeInternal = v.map(pp => pp.value)
+    }
 
   }
 
   /**
-   * @param props
-   * @param classes Node passed into the SVG element.
-   * @param color The color of the component. It supports those theme colors
-   *               that make sense for this component. You can use the
-   *               htmlColor property to apply a color attribute to the
-   *               SVG element.
-   *               Default: inherit
-   * @param component The component used for the root node. Either a string
-   *                   to use a DOM element or a component.
-   *                   Default: svg
-   * @param fontSize The fontSize applied to the icon. Defaults to 24px,
-   *                  but can be configure to inherit font size.
-   *                  Default: default
-   * @param htmlColor Applies a color attribute to the SVG element.
-   * @param shapeRendering The shape-rendering attribute. The behavior of the
-   *                        different options is described on the MDN Web Docs.
-   *                        If you are having issues with blurry icons you should
-   *                        investigate this property.
-   * @param titleAccess Provides a human-readable title for the element that
-   *                     contains it. https://www.w3.org/TR/SVG-access/#Equivalent
-   * @param viewBox Allows you to redefine what the coordinates without units mean
-   *                 inside an SVG element. For example, if the SVG element is
-   *                 500 (width) by 200 (height), and you pass viewBox="0 0 50 20",
-   *                 this means that the coordinates inside the SVG will go from
-   *                 the top left corner (0,0) to bottom right (50,20) and each
-   *                 unit will be worth 10px.
-   *                 Default: '0 0 24 24'
-   * @param additionalProps a dictionary of additional properties
-   */
+    * @param props
+    * @param classes Node passed into the SVG element.
+    * @param color The color of the component. It supports those theme colors
+    *               that make sense for this component. You can use the
+    *               htmlColor property to apply a color attribute to the
+    *               SVG element.
+    *               Default: inherit
+    * @param component The component used for the root node. Either a string
+    *                   to use a DOM element or a component.
+    *                   Default: svg
+    * @param fontSize The fontSize applied to the icon. Defaults to 24px,
+    *                  but can be configure to inherit font size.
+    *                  Default: default
+    * @param htmlColor Applies a color attribute to the SVG element.
+    * @param shapeRendering The shape-rendering attribute. The behavior of the
+    *                        different options is described on the MDN Web Docs.
+    *                        If you are having issues with blurry icons you should
+    *                        investigate this property.
+    * @param titleAccess Provides a human-readable title for the element that
+    *                     contains it. https://www.w3.org/TR/SVG-access/#Equivalent
+    * @param viewBox Allows you to redefine what the coordinates without units mean
+    *                 inside an SVG element. For example, if the SVG element is
+    *                 500 (width) by 200 (height), and you pass viewBox="0 0 50 20",
+    *                 this means that the coordinates inside the SVG will go from
+    *                 the top left corner (0,0) to bottom right (50,20) and each
+    *                 unit will be worth 10px.
+    *                 Default: '0 0 24 24'
+    * @param additionalProps a dictionary of additional properties
+    */
   def apply[P <: SvgIconProps](
       props: js.UndefOr[P] = js.undefined,
       classes: js.UndefOr[js.Dictionary[String]] = js.undefined,
@@ -106,19 +110,18 @@ object SvgIconProps extends PropsFactory[SvgIconProps] {
       viewBox: js.UndefOr[String] = js.undefined,
       additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
   ): P = {
-      val p = get(props,additionalProps)
-      p.classes = classes
-      p.color = color
-      p.component = component
-      p.fontSize = fontSize
-      p.htmlColor = htmlColor
-      p.shapeRendering = shapeRendering
-      p.titleAccess = titleAccess
-      p.viewBox = viewBox
-      p
+    val p = get(props, additionalProps)
+    p.classes = classes
+    p.color = color
+    p.component = component
+    p.fontSize = fontSize
+    p.htmlColor = htmlColor
+    p.shapeRendering = shapeRendering
+    p.titleAccess = titleAccess
+    p.viewBox = viewBox
+    p
   }
 }
-
 
 trait SvgIconBase extends ComponentFactory[SvgIconProps] {
 
@@ -127,36 +130,36 @@ trait SvgIconBase extends ComponentFactory[SvgIconProps] {
   import js._
 
   /**
-   * @param classes Node passed into the SVG element.
-   * @param color The color of the component. It supports those theme colors
-   *               that make sense for this component. You can use the
-   *               htmlColor property to apply a color attribute to the
-   *               SVG element.
-   *               Default: inherit
-   * @param component The component used for the root node. Either a string
-   *                   to use a DOM element or a component.
-   *                   Default: svg
-   * @param fontSize The fontSize applied to the icon. Defaults to 24px,
-   *                  but can be configure to inherit font size.
-   *                  Default: default
-   * @param htmlColor Applies a color attribute to the SVG element.
-   * @param shapeRendering The shape-rendering attribute. The behavior of the
-   *                        different options is described on the MDN Web Docs.
-   *                        If you are having issues with blurry icons you should
-   *                        investigate this property.
-   * @param titleAccess Provides a human-readable title for the element that
-   *                     contains it. https://www.w3.org/TR/SVG-access/#Equivalent
-   * @param viewBox Allows you to redefine what the coordinates without units mean
-   *                 inside an SVG element. For example, if the SVG element is
-   *                 500 (width) by 200 (height), and you pass viewBox="0 0 50 20",
-   *                 this means that the coordinates inside the SVG will go from
-   *                 the top left corner (0,0) to bottom right (50,20) and each
-   *                 unit will be worth 10px.
-   *                 Default: '0 0 24 24'
-   * @param additionalProps a dictionary of additional properties
-   *
-   * @param children Node passed into the SVG element.
-   */
+    * @param classes Node passed into the SVG element.
+    * @param color The color of the component. It supports those theme colors
+    *               that make sense for this component. You can use the
+    *               htmlColor property to apply a color attribute to the
+    *               SVG element.
+    *               Default: inherit
+    * @param component The component used for the root node. Either a string
+    *                   to use a DOM element or a component.
+    *                   Default: svg
+    * @param fontSize The fontSize applied to the icon. Defaults to 24px,
+    *                  but can be configure to inherit font size.
+    *                  Default: default
+    * @param htmlColor Applies a color attribute to the SVG element.
+    * @param shapeRendering The shape-rendering attribute. The behavior of the
+    *                        different options is described on the MDN Web Docs.
+    *                        If you are having issues with blurry icons you should
+    *                        investigate this property.
+    * @param titleAccess Provides a human-readable title for the element that
+    *                     contains it. https://www.w3.org/TR/SVG-access/#Equivalent
+    * @param viewBox Allows you to redefine what the coordinates without units mean
+    *                 inside an SVG element. For example, if the SVG element is
+    *                 500 (width) by 200 (height), and you pass viewBox="0 0 50 20",
+    *                 this means that the coordinates inside the SVG will go from
+    *                 the top left corner (0,0) to bottom right (50,20) and each
+    *                 unit will be worth 10px.
+    *                 Default: '0 0 24 24'
+    * @param additionalProps a dictionary of additional properties
+    *
+    * @param children Node passed into the SVG element.
+    */
   def apply(
       classes: js.UndefOr[js.Dictionary[String]] = js.undefined,
       color: js.UndefOr[SvgColor] = js.undefined,
@@ -166,7 +169,6 @@ trait SvgIconBase extends ComponentFactory[SvgIconProps] {
       shapeRendering: js.UndefOr[String] = js.undefined,
       titleAccess: js.UndefOr[String] = js.undefined,
       viewBox: js.UndefOr[String] = js.undefined,
-
       additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
   ) = {
     val p: SvgIconProps = SvgIconProps(
@@ -194,7 +196,6 @@ trait SvgIconBase extends ComponentFactory[SvgIconProps] {
       shapeRendering: js.UndefOr[String] = js.undefined,
       titleAccess: js.UndefOr[String] = js.undefined,
       viewBox: js.UndefOr[String] = js.undefined,
-
       additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
   ) = {
 

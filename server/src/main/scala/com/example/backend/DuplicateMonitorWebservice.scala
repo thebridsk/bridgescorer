@@ -50,101 +50,102 @@ import javax.ws.rs.GET
 import com.example.data.MatchDuplicate
 import com.example.backend.StoreMonitor.NewParticipantSSEDuplicate
 
-@Path( "" )
+@Path("")
 class DuplicateMonitorWebservice(
     totallyMissingResourceHandler: RejectionHandler
 )(
     implicit fm: Materializer,
-              system: ActorSystem,
-              bridgeService: BridgeService
-) extends MonitorWebservice[Id.MatchDuplicate,MatchDuplicate](totallyMissingResourceHandler) {
+    system: ActorSystem,
+    bridgeService: BridgeService
+) extends MonitorWebservice[Id.MatchDuplicate, MatchDuplicate](
+      totallyMissingResourceHandler
+    ) {
   val log = Logging(system, classOf[DuplicateMonitorWebservice])
   val monitor = new StoreMonitorManager(
-                         system,
-                         bridgeService.duplicates,
-                         classOf[DuplicateStoreMonitor],
-                         NewParticipantSSEDuplicate.apply _
-                 )
+    system,
+    bridgeService.duplicates,
+    classOf[DuplicateStoreMonitor],
+    NewParticipantSSEDuplicate.apply _
+  )
   import system.dispatcher
 //  system.scheduler.schedule(15.second, 15.second) {
 //    theChat.injectMessage(ChatMessage(sender = "clock", s"Bling! The time is ${new Date().toString}."))
 //  }
 
   def route = routews ~ routesse
-
-
   @Path("/ws")
   @GET
   @Operation(
-//      protocols = "WS, WSS",
-      tags = Array("Server"),
-      summary = "BridgeScorer websocket, protocol: WS, WSS",
-      operationId = "MonitorWebserviceroute",
-      responses = Array(
-          new ApiResponse(
-              responseCode = "101",
-              description = "Switching to websocket protocol",
-          )
+    tags = Array("Server"),
+    summary = "BridgeScorer websocket, protocol: WS, WSS",
+    operationId = "MonitorWebserviceroute",
+    responses = Array(
+      new ApiResponse(
+        responseCode = "101",
+        description = "Switching to websocket protocol"
       )
+    )
   )
   def xxxroutews = {}
   val routews =
     get {
       pathPrefix("ws") {
         handleRejections(totallyMissingResourceHandler) {
-  //      pathPrefix("duplicates") {
-  //        pathPrefix( """[a-zA-Z0-9]+""".r ) { id =>
-              pathEndOrSingleSlash {
-                extractClientIP { ip => {
-                  handleWebSocketMessagesForProtocol(websocketMonitor(ip), Protocol.DuplicateBridge)
-                }}
+          //      pathPrefix("duplicates") {
+          //        pathPrefix( """[a-zA-Z0-9]+""".r ) { id =>
+          pathEndOrSingleSlash {
+            extractClientIP { ip =>
+              {
+                handleWebSocketMessagesForProtocol(
+                  websocketMonitor(ip),
+                  Protocol.DuplicateBridge
+                )
               }
-  //        }
-  //      }
+            }
+          }
+          //        }
+          //      }
         }
       }
     }
-
-
   @Path("/sse/duplicates/{dupId}")
   @GET
   @Operation(
-      tags = Array("Duplicate"),
-      summary = "BridgeScorer server set event on a duplicate match",
-      operationId = "MonitorSSE",
-      parameters = Array(
-          new Parameter(
-              allowEmptyValue=false,
-              description="ID of the match to get",
-              in=ParameterIn.PATH,
-              name="dupId",
-              required=true,
-              schema=new Schema(`type`="string")
-          )
-      ),
-      responses = Array(
-          new ApiResponse(
-              responseCode = "200",
-              description = "Server sent event stream starting",
-              content = Array(
-                  new Content(
-                      mediaType = "text/event-stream",
-                      schema = new Schema( implementation=classOf[String] )
-                  )
-              )
-          ),
-          new ApiResponse(
-              responseCode = "404",
-              description = "Does not exist",
-              content = Array(
-                  new Content(
-                      mediaType = "application/json",
-                      schema = new Schema(implementation = classOf[RestMessage])
-                  )
-              )
-          )
-
+    tags = Array("Duplicate"),
+    summary = "BridgeScorer server set event on a duplicate match",
+    operationId = "MonitorSSE",
+    parameters = Array(
+      new Parameter(
+        allowEmptyValue = false,
+        description = "ID of the match to get",
+        in = ParameterIn.PATH,
+        name = "dupId",
+        required = true,
+        schema = new Schema(`type` = "string")
       )
+    ),
+    responses = Array(
+      new ApiResponse(
+        responseCode = "200",
+        description = "Server sent event stream starting",
+        content = Array(
+          new Content(
+            mediaType = "text/event-stream",
+            schema = new Schema(implementation = classOf[String])
+          )
+        )
+      ),
+      new ApiResponse(
+        responseCode = "404",
+        description = "Does not exist",
+        content = Array(
+          new Content(
+            mediaType = "application/json",
+            schema = new Schema(implementation = classOf[RestMessage])
+          )
+        )
+      )
+    )
   )
   def xxxroutesse = {}
   val routesse = {
@@ -152,24 +153,32 @@ class DuplicateMonitorWebservice(
     import akka.http.scaladsl.model.sse.ServerSentEvent
     pathPrefix("sse") {
       get {
-        logRequest("sse", Logging.DebugLevel) { logResult("sse", Logging.DebugLevel) {
-          pathPrefix("duplicates") {
-            handleRejections(totallyMissingResourceHandler) {
-              pathPrefix( """[a-zA-Z0-9]+""".r ) { id =>
-                pathEndOrSingleSlash {
-                  extractClientIP { ip => {
-                    log.info(s"SSE from $ip for $id")
-                    reject(UnsupportedRequestContentTypeRejection(Set( MediaTypes.`text/event-stream` )))
-                    complete {
-                      val dupid: Id.MatchDuplicate = id
-                      monitor.monitorMatch( ip, dupid )
+        logRequest("sse", Logging.DebugLevel) {
+          logResult("sse", Logging.DebugLevel) {
+            pathPrefix("duplicates") {
+              handleRejections(totallyMissingResourceHandler) {
+                pathPrefix("""[a-zA-Z0-9]+""".r) { id =>
+                  pathEndOrSingleSlash {
+                    extractClientIP { ip =>
+                      {
+                        log.info(s"SSE from $ip for $id")
+                        reject(
+                          UnsupportedRequestContentTypeRejection(
+                            Set(MediaTypes.`text/event-stream`)
+                          )
+                        )
+                        complete {
+                          val dupid: Id.MatchDuplicate = id
+                          monitor.monitorMatch(ip, dupid)
+                        }
+                      }
                     }
-                  }}
+                  }
                 }
               }
             }
           }
-        }}
+        }
       }
     }
   }

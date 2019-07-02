@@ -23,17 +23,16 @@ import akka.event.LoggingAdapter
 import scala.annotation.tailrec
 import java.io.{File => JFile}
 
-
 /**
- * HttpService for the static html and js pages.
- * The html pages are served up from the classpath at the
- * resource directory "html", and the URI is /html/...
- * The js pages are at the resource directory "js",
- * and the URI is /js/...
- */
+  * HttpService for the static html and js pages.
+  * The html pages are served up from the classpath at the
+  * resource directory "html", and the URI is /html/...
+  * The js pages are at the resource directory "js",
+  * and the URI is /js/...
+  */
 trait JsService /* extends HttpService */ {
 
-  val logger = Logger( getClass.getName, null )
+  val logger = Logger(getClass.getName, null)
 
   lazy val cacheDuration = Duration("0s")
 
@@ -43,13 +42,13 @@ trait JsService /* extends HttpService */ {
     val sec = cacheDuration.toSeconds
     if (sec <= 0) {
       Seq(
-        `Cache-Control`( `no-cache`, `no-store`, `must-revalidate`),
-        RawHeader("Pragma","no-cache"),
-        Expires(DateTime(0))    // RawHeader("Expires","0")
+        `Cache-Control`(`no-cache`, `no-store`, `must-revalidate`),
+        RawHeader("Pragma", "no-cache"),
+        Expires(DateTime(0)) // RawHeader("Expires","0")
       )
     } else {
       Seq(
-        `Cache-Control`( `max-age`( sec ), `public` )
+        `Cache-Control`(`max-age`(sec), `public`)
       )
     }
   }
@@ -74,32 +73,42 @@ trait JsService /* extends HttpService */ {
     Some(ResourceFinder.helpResources)
   } catch {
     case x: Exception =>
-      logger.warning( "Unable to find help resources, ignoring help." )
+      logger.warning("Unable to find help resources, ignoring help.")
       None
   }
 
   {
-    val res = htmlResources.baseName+"/bridgescorer-client-opt.js"
+    val res = htmlResources.baseName + "/bridgescorer-client-opt.js"
     val url = getClass.getClassLoader.getResource(res)
-    if (url != null) logger.info("Found resource "+res+" at "+url.toString())
+    if (url != null)
+      logger.info("Found resource " + res + " at " + url.toString())
     else {
-      val res1 = htmlResources.baseName+"/bridgescorer-client-fastopt.js"
+      val res1 = htmlResources.baseName + "/bridgescorer-client-fastopt.js"
       val url1 = getClass.getClassLoader.getResource(res)
-      if (url1 != null) logger.info("Found resource "+res1+" at "+url1.toString())
+      if (url1 != null)
+        logger.info("Found resource " + res1 + " at " + url1.toString())
     }
   }
 
-
-  private def safeJoinPaths(base: String, path: Uri.Path, separator: Char = JFile.separatorChar): String = {
+  private def safeJoinPaths(
+      base: String,
+      path: Uri.Path,
+      separator: Char = JFile.separatorChar
+  ): String = {
     import java.lang.StringBuilder
-    @tailrec def rec(p: Uri.Path, result: StringBuilder = new StringBuilder(base)): String =
+    @tailrec def rec(
+        p: Uri.Path,
+        result: StringBuilder = new StringBuilder(base)
+    ): String =
       p match {
         case Uri.Path.Empty       => result.toString
         case Uri.Path.Slash(tail) => rec(tail, result.append(separator))
         case Uri.Path.Segment(head, tail) =>
           if (head.indexOf('/') >= 0 || head.indexOf('\\') >= 0 || head == "..") {
-            logger.warning(s"File-system path for base [${base}] and Uri.Path [${path}] contains suspicious path segment [${head}], " +
-              "GET access was disallowed")
+            logger.warning(
+              s"File-system path for base [${base}] and Uri.Path [${path}] contains suspicious path segment [${head}], " +
+                "GET access was disallowed"
+            )
             ""
           } else rec(tail, result.append(head))
       }
@@ -107,51 +116,56 @@ trait JsService /* extends HttpService */ {
   }
 
   /**
-   * The spray route for the html static files
-   */
+    * The spray route for the html static files
+    */
   val html = {
     pathSingleSlash {
       redirect("/public/index.html", StatusCodes.PermanentRedirect)
     } ~
-    pathPrefix("public") {
-      respondWithHeaders(cacheHeaders:_*) {
-        pathEndOrSingleSlash {
-          redirect("/public/index.html", StatusCodes.PermanentRedirect)
-        } ~
-        getFromResourceDirectory(htmlResources.baseName) ~
-        extractUnmatchedPath { path =>
-          logger.info(s"Looking for file "+path)
-          safeJoinPaths(htmlResources.baseName+"/", path, separator = '/') match {
-            case ""           => reject
-            case resourceName =>
-              val resname = resourceName+".gz"
-              logger.info(s"Looking for gzipped file as a resource "+resname)
-              getFromResource(resname)
-          }
+      pathPrefix("public") {
+        respondWithHeaders(cacheHeaders: _*) {
+          pathEndOrSingleSlash {
+            redirect("/public/index.html", StatusCodes.PermanentRedirect)
+          } ~
+            getFromResourceDirectory(htmlResources.baseName) ~
+            extractUnmatchedPath { path =>
+              logger.info(s"Looking for file " + path)
+              safeJoinPaths(htmlResources.baseName + "/", path, separator = '/') match {
+                case "" => reject
+                case resourceName =>
+                  val resname = resourceName + ".gz"
+                  logger.info(
+                    s"Looking for gzipped file as a resource " + resname
+                  )
+                  getFromResource(resname)
+              }
+            }
+        }
+      } ~
+      pathPrefix("help") {
+        respondWithHeaders(cacheHeaders: _*) {
+          helpResources
+            .map { helpres =>
+              extractUnmatchedPath { ap =>
+                val p = if (ap.startsWithSlash) ap.tail else ap
+                logger.info(s"Looking for help file " + p)
+                val pa = if (p.toString.endsWith("/")) p + "index.html" else p
+
+                safeJoinPaths(helpres.baseName + "/", pa, separator = '/') match {
+                  case "" => reject
+                  case resourceName =>
+                    val resname = resourceName + ".gz"
+                    logger.info(
+                      s"Looking for gzipped file as a resource " + resname
+                    )
+                    getFromResource(resname) ~
+                      getFromResource(resourceName)
+                }
+              }
+            }
+            .getOrElse(reject)
         }
       }
-    } ~
-    pathPrefix("help") {
-      respondWithHeaders(cacheHeaders:_*) {
-        helpResources.map { helpres =>
-          extractUnmatchedPath { ap =>
-            val p = if (ap.startsWithSlash) ap.tail else ap
-            logger.info(s"Looking for help file "+p)
-            val pa = if (p.toString.endsWith("/")) p+"index.html" else p
-
-            safeJoinPaths(helpres.baseName+"/", pa, separator = '/') match {
-              case ""           => reject
-              case resourceName =>
-                val resname = resourceName+".gz"
-                logger.info(s"Looking for gzipped file as a resource "+resname)
-                getFromResource(resname) ~
-                getFromResource(resourceName)
-            }
-          }
-        }.getOrElse( reject )
-      }
-    }
   }
 
 }
-

@@ -22,7 +22,6 @@ import com.example.data.duplicate.stats.PlayerOpponentsStat
 //import com.example.data.websocket.DuplexProtocol.{ LogEntry => DpLogEntry, _ }
 //import com.example.data.websocket.Protocol._
 
-
 class UnitFormat extends Format[Unit] {
 
   def unit = {}
@@ -31,11 +30,10 @@ class UnitFormat extends Format[Unit] {
     JsSuccess(unit)
   }
 
-   def writes(o: Unit): JsValue = {
-     JsNull
-   }
+  def writes(o: Unit): JsValue = {
+    JsNull
+  }
 }
-
 
 trait JsonSupport {
 
@@ -54,7 +52,8 @@ trait JsonSupport {
   implicit val duplicateV1Format = Json.format[MatchDuplicateV1]
   implicit val duplicateV2Format = Json.format[MatchDuplicateV2]
   implicit val duplicateV3Format = Json.format[MatchDuplicateV3]
-  implicit val duplicateSummaryDetailsFormat = Json.format[DuplicateSummaryDetails]
+  implicit val duplicateSummaryDetailsFormat =
+    Json.format[DuplicateSummaryDetails]
   implicit val duplicateSummaryEntryFormat = Json.format[DuplicateSummaryEntry]
   implicit val bestMatchFormat = Json.format[BestMatch]
   implicit val duplicateSummaryFormat = Json.format[DuplicateSummary]
@@ -80,7 +79,8 @@ trait JsonSupport {
   implicit val MovementFormat = Json.format[Movement]
   implicit val loggerFormat = Json.format[LogEntryV2]
 //  implicit val boarsetsAndMovementsFormat = Json.format[BoardSetsAndMovementsV1]
-  implicit val boarsetsAndMovementsV1Format = Json.format[BoardSetsAndMovementsV1]
+  implicit val boarsetsAndMovementsV1Format =
+    Json.format[BoardSetsAndMovementsV1]
 
   implicit val pairingFormat = Json.format[Pairing]
   implicit val suggestionFormat = Json.format[Suggestion]
@@ -101,27 +101,29 @@ trait JsonSupport {
 
   implicit val unitFormat = new UnitFormat
 
-  def readJson[T]( s: String )( implicit reader: Reads[T] ): T = {
+  def readJson[T](s: String)(implicit reader: Reads[T]): T = {
     val json = Json.parse(s)
     convertJson[T](json)
   }
 
-  def convertJson[T]( jsvalue: JsValue )(implicit reads: Reads[T]): T = {
+  def convertJson[T](jsvalue: JsValue)(implicit reads: Reads[T]): T = {
     Json.fromJson[T](jsvalue) match {
-      case JsSuccess(value,path) =>
+      case JsSuccess(value, path) =>
         value
       case e: JsError =>
         println("Errors: " + JsError.toJson(e).toString())
-        throw new JsonException(s"JSON error on ${jsvalue.getClass.getName}: ${JsError.toJson(e)}")
+        throw new JsonException(
+          s"JSON error on ${jsvalue.getClass.getName}: ${JsError.toJson(e)}"
+        )
     }
   }
 
-  def writeJson[T]( t: T )( implicit writer: Writes[T] ): String = {
+  def writeJson[T](t: T)(implicit writer: Writes[T]): String = {
     val json = Json.toJson(t)
     Json.stringify(json)
   }
 
-  def writePrettyJson[T]( t: T )( implicit writer: Writes[T] ): String = {
+  def writePrettyJson[T](t: T)(implicit writer: Writes[T]): String = {
     val json = Json.toJson(t)
     Json.prettyPrint(json)
   }
@@ -130,13 +132,13 @@ trait JsonSupport {
 
 object JsonSupport extends JsonSupport {
 
-  implicit class ToJsonSupportWrapper[T]( val t: T ) extends AnyVal {
-    def toJson( implicit writer: Writes[T] ) = writeJson(t)
-    def toJsonPretty( implicit writer: Writes[T] ) = writePrettyJson(t)
+  implicit class ToJsonSupportWrapper[T](val t: T) extends AnyVal {
+    def toJson(implicit writer: Writes[T]) = writeJson(t)
+    def toJsonPretty(implicit writer: Writes[T]) = writePrettyJson(t)
   }
 
-  implicit class FromJsonSupportWrapper( val json: String ) extends AnyVal {
-    def parseJson[T]( implicit reader: Reads[T] ): T = readJson[T](json)
+  implicit class FromJsonSupportWrapper(val json: String) extends AnyVal {
+    def parseJson[T](implicit reader: Reads[T]): T = readJson[T](json)
   }
 
 }

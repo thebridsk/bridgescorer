@@ -6,15 +6,15 @@ object Strings {
 
   val xmark = "\u2717"
 
-  val arrowLeft  = "\u2190"
-  val arrowUp    = "\u2191"
+  val arrowLeft = "\u2190"
+  val arrowUp = "\u2191"
   val arrowRight = "\u2192"
-  val arrowDown  = "\u2193"
+  val arrowDown = "\u2193"
 
-  val doubleArrowLeft  = "\u21d0"
-  val doubleArrowUp    = "\u21d1"
+  val doubleArrowLeft = "\u21d0"
+  val doubleArrowUp = "\u21d1"
   val doubleArrowRight = "\u21d2"
-  val doubleArrowDown  = "\u21d3"
+  val doubleArrowDown = "\u21d3"
 
   val arrowUpDown = "\u21c5"
   val arrowRightLeft = "\u21c4"

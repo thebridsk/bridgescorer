@@ -45,346 +45,359 @@ object RestNestedHand {
 import RestNestedHand._
 
 /**
- * Rest API implementation for the hand resource.
- * <p>
- * The REST API and all the methods are documented using
- * swagger annotations.
- */
+  * Rest API implementation for the hand resource.
+  * <p>
+  * The REST API and all the methods are documented using
+  * swagger annotations.
+  */
 @Path("/rest/duplicates/{dupId}/boards/{boardId}/hands")
-@Tags( Array( new Tag(name="Duplicate")))
+@Tags(Array(new Tag(name = "Duplicate")))
 class RestNestedHand {
 
   import UtilsPlayJson._
 
   /**
-   * spray route for all the methods on this resource
-   */
+    * spray route for all the methods on this resource
+    */
   @Hidden
-  def route(implicit @Parameter(hidden=true) res: Resources[Id.Team, DuplicateHand]) =pathPrefix("hands") {
+  def route(
+      implicit @Parameter(hidden = true) res: Resources[Id.Team, DuplicateHand]
+  ) = pathPrefix("hands") {
     logRequestResult("route", DebugLevel) {
-        getHand ~ getHands ~ postHand ~ putHand ~ deleteHand
+      getHand ~ getHands ~ postHand ~ putHand ~ deleteHand
     }
   }
 
   @GET
   @Operation(
-      summary = "Get all hands",
-      description = "Returns a list of hands.",
-      operationId = "getHands",
-      parameters = Array(
-          new Parameter(
-              allowEmptyValue=false,
-              description="ID of the duplicate that contains the boards to manipulate",
-              in=ParameterIn.PATH,
-              name="dupId",
-              required=true,
-              schema=new Schema(`type`="string")
-          ),
-          new Parameter(
-              allowEmptyValue=false,
-              description="ID of the board that contains the hands to manipulate",
-              in=ParameterIn.PATH,
-              name="boardId",
-              required=true,
-              schema=new Schema(`type`="string")
-          )
+    summary = "Get all hands",
+    description = "Returns a list of hands.",
+    operationId = "getHands",
+    parameters = Array(
+      new Parameter(
+        allowEmptyValue = false,
+        description =
+          "ID of the duplicate that contains the boards to manipulate",
+        in = ParameterIn.PATH,
+        name = "dupId",
+        required = true,
+        schema = new Schema(`type` = "string")
       ),
-      responses = Array(
-          new ApiResponse(
-              responseCode = "200",
-              description = "A list of hands, as a JSON array",
-              content = Array(
-                  new Content(
-                      mediaType = "application/json",
-                      array = new ArraySchema(
-                          minItems = 0,
-                          uniqueItems = true,
-                          schema = new Schema(
-                              implementation=classOf[DuplicateHand],
-                              description = "A hand from the board."
-                          ),
-                          arraySchema=new Schema(description="All the hands from the board.")
-                      )
-                  )
-              )
-          )
-
+      new Parameter(
+        allowEmptyValue = false,
+        description = "ID of the board that contains the hands to manipulate",
+        in = ParameterIn.PATH,
+        name = "boardId",
+        required = true,
+        schema = new Schema(`type` = "string")
       )
+    ),
+    responses = Array(
+      new ApiResponse(
+        responseCode = "200",
+        description = "A list of hands, as a JSON array",
+        content = Array(
+          new Content(
+            mediaType = "application/json",
+            array = new ArraySchema(
+              minItems = 0,
+              uniqueItems = true,
+              schema = new Schema(
+                implementation = classOf[DuplicateHand],
+                description = "A hand from the board."
+              ),
+              arraySchema =
+                new Schema(description = "All the hands from the board.")
+            )
+          )
+        )
+      )
+    )
   )
   def xxxgetHands = {}
-  def getHands(implicit @Parameter(hidden=true) res: Resources[Id.DuplicateHand, DuplicateHand]) = pathEndOrSingleSlash {
+  def getHands(
+      implicit @Parameter(hidden = true) res: Resources[
+        Id.DuplicateHand,
+        DuplicateHand
+      ]
+  ) = pathEndOrSingleSlash {
     get {
-      resourceMap( res.readAll() )
+      resourceMap(res.readAll())
     }
   }
 
   @Path("/{handId}")
   @GET
   @Operation(
-      summary = "Get the hand by ID",
-      operationId = "getHandById",
-      parameters = Array(
-          new Parameter(
-              allowEmptyValue=false,
-              description="ID of the duplicate that contains the boards to manipulate",
-              in=ParameterIn.PATH,
-              name="dupId",
-              required=true,
-              schema=new Schema(`type`="string")
-          ),
-          new Parameter(
-              allowEmptyValue=false,
-              description="ID of the board that contains the hands to manipulate",
-              in=ParameterIn.PATH,
-              name="boardId",
-              required=true,
-              schema=new Schema(`type`="string")
-          ),
-          new Parameter(
-              allowEmptyValue=false,
-              description="ID of the hand to get",
-              in=ParameterIn.PATH,
-              name="handId",
-              required=true,
-              schema=new Schema(`type`="string")
-          )
+    summary = "Get the hand by ID",
+    operationId = "getHandById",
+    parameters = Array(
+      new Parameter(
+        allowEmptyValue = false,
+        description =
+          "ID of the duplicate that contains the boards to manipulate",
+        in = ParameterIn.PATH,
+        name = "dupId",
+        required = true,
+        schema = new Schema(`type` = "string")
       ),
-      responses = Array(
-          new ApiResponse(
-              responseCode = "200",
-              description = "The hand, as a JSON object",
-              content = Array(
-                  new Content(
-                      mediaType = "application/json",
-                      schema = new Schema( implementation=classOf[DuplicateHand] )
-                  )
-              )
-          ),
-          new ApiResponse(
-              responseCode = "404",
-              description = "Does not exist",
-              content = Array(
-                  new Content(
-                      mediaType = "application/json",
-                      schema = new Schema(implementation = classOf[RestMessage])
-                  )
-              )
-          )
-
+      new Parameter(
+        allowEmptyValue = false,
+        description = "ID of the board that contains the hands to manipulate",
+        in = ParameterIn.PATH,
+        name = "boardId",
+        required = true,
+        schema = new Schema(`type` = "string")
+      ),
+      new Parameter(
+        allowEmptyValue = false,
+        description = "ID of the hand to get",
+        in = ParameterIn.PATH,
+        name = "handId",
+        required = true,
+        schema = new Schema(`type` = "string")
       )
+    ),
+    responses = Array(
+      new ApiResponse(
+        responseCode = "200",
+        description = "The hand, as a JSON object",
+        content = Array(
+          new Content(
+            mediaType = "application/json",
+            schema = new Schema(implementation = classOf[DuplicateHand])
+          )
+        )
+      ),
+      new ApiResponse(
+        responseCode = "404",
+        description = "Does not exist",
+        content = Array(
+          new Content(
+            mediaType = "application/json",
+            schema = new Schema(implementation = classOf[RestMessage])
+          )
+        )
+      )
+    )
   )
   def xxxgetHand = {}
-  def getHand(implicit @Parameter(hidden=true) res: Resources[String, DuplicateHand]) = logRequest("getHand", DebugLevel) {
+  def getHand(
+      implicit @Parameter(hidden = true) res: Resources[String, DuplicateHand]
+  ) = logRequest("getHand", DebugLevel) {
     get {
-      path( """[a-zA-Z0-9]+""".r ) { id =>
-        resource( res.select(id).read() )
+      path("""[a-zA-Z0-9]+""".r) { id =>
+        resource(res.select(id).read())
       }
     }
   }
 
   @POST
   @Operation(
-      summary = "Create a hand",
-      operationId = "createHand",
-      parameters = Array(
-          new Parameter(
-              allowEmptyValue=false,
-              description="ID of the duplicate that contains the boards to manipulate",
-              in=ParameterIn.PATH,
-              name="dupId",
-              required=true,
-              schema=new Schema(`type`="string")
-          ),
-          new Parameter(
-              allowEmptyValue=false,
-              description="ID of the board that contains the hands to manipulate",
-              in=ParameterIn.PATH,
-              name="boardId",
-              required=true,
-              schema=new Schema(`type`="string")
-          ),
+    summary = "Create a hand",
+    operationId = "createHand",
+    parameters = Array(
+      new Parameter(
+        allowEmptyValue = false,
+        description =
+          "ID of the duplicate that contains the boards to manipulate",
+        in = ParameterIn.PATH,
+        name = "dupId",
+        required = true,
+        schema = new Schema(`type` = "string")
       ),
-      requestBody = new RequestBody(
-          description = "hand to create",
-          content = Array(
-              new Content(
-                  mediaType = "application/json",
-                  schema = new Schema(
-                      implementation = classOf[DuplicateHand]
-                  )
-              )
-          )
-      ),
-      responses = Array(
-          new ApiResponse(
-              responseCode = "201",
-              description = "The created hand's JSON",
-              content = Array(
-                  new Content(
-                      mediaType = "application/json",
-                      schema = new Schema( implementation=classOf[DuplicateHand] )
-                  )
-              ),
-              headers = Array(
-                  new Header(
-                      name="Location",
-                      description="The URL of the newly created resource",
-                      schema = new Schema( implementation=classOf[String] )
-                  )
-              )
-          ),
-          new ApiResponse(
-              responseCode = "400",
-              description = "Bad request",
-              content = Array(
-                  new Content(
-                      mediaType = "application/json",
-                      schema = new Schema(implementation = classOf[RestMessage])
-                  )
-              )
-          )
+      new Parameter(
+        allowEmptyValue = false,
+        description = "ID of the board that contains the hands to manipulate",
+        in = ParameterIn.PATH,
+        name = "boardId",
+        required = true,
+        schema = new Schema(`type` = "string")
       )
+    ),
+    requestBody = new RequestBody(
+      description = "hand to create",
+      content = Array(
+        new Content(
+          mediaType = "application/json",
+          schema = new Schema(implementation = classOf[DuplicateHand])
+        )
+      )
+    ),
+    responses = Array(
+      new ApiResponse(
+        responseCode = "201",
+        description = "The created hand's JSON",
+        content = Array(
+          new Content(
+            mediaType = "application/json",
+            schema = new Schema(implementation = classOf[DuplicateHand])
+          )
+        ),
+        headers = Array(
+          new Header(
+            name = "Location",
+            description = "The URL of the newly created resource",
+            schema = new Schema(implementation = classOf[String])
+          )
+        )
+      ),
+      new ApiResponse(
+        responseCode = "400",
+        description = "Bad request",
+        content = Array(
+          new Content(
+            mediaType = "application/json",
+            schema = new Schema(implementation = classOf[RestMessage])
+          )
+        )
+      )
+    )
   )
   def xxxpostHand = {}
-  def postHand(implicit @Parameter(hidden=true) res: Resources[String, DuplicateHand]) = pathEnd {
+  def postHand(
+      implicit @Parameter(hidden = true) res: Resources[String, DuplicateHand]
+  ) = pathEnd {
     post {
-        entity(as[DuplicateHand]) { hand =>
-          log.fine(s"Creating new hand ${hand} in ${res.resourceURI}")
-          resourceCreated( res.resourceURI, addIdToFuture(res.createChild(hand)) )
-        }
+      entity(as[DuplicateHand]) { hand =>
+        log.fine(s"Creating new hand ${hand} in ${res.resourceURI}")
+        resourceCreated(res.resourceURI, addIdToFuture(res.createChild(hand)))
+      }
     }
   }
 
-  def addIdToFuture( f: Future[Result[DuplicateHand]] ): Future[Result[(String,DuplicateHand)]] =
+  def addIdToFuture(
+      f: Future[Result[DuplicateHand]]
+  ): Future[Result[(String, DuplicateHand)]] =
     f.map { r =>
       r match {
-        case Right(md) => Right((md.id.toString(),md))
-        case Left(e) => Left(e)
+        case Right(md) => Right((md.id.toString(), md))
+        case Left(e)   => Left(e)
       }
     }
 
   @Path("/{handId}")
   @PUT
   @Operation(
-      summary = "Update a hand",
-      operationId = "updateHand",
-      parameters = Array(
-          new Parameter(
-              allowEmptyValue=false,
-              description="ID of the duplicate that contains the boards to manipulate",
-              in=ParameterIn.PATH,
-              name="dupId",
-              required=true,
-              schema=new Schema(`type`="string")
-          ),
-          new Parameter(
-              allowEmptyValue=false,
-              description="ID of the board that contains the hands to manipulate",
-              in=ParameterIn.PATH,
-              name="boardId",
-              required=true,
-              schema=new Schema(`type`="string")
-          ),
-          new Parameter(
-              allowEmptyValue=false,
-              description="ID of the hand to update",
-              in=ParameterIn.PATH,
-              name="handId",
-              required=true,
-              schema=new Schema(`type`="string")
-          ),
+    summary = "Update a hand",
+    operationId = "updateHand",
+    parameters = Array(
+      new Parameter(
+        allowEmptyValue = false,
+        description =
+          "ID of the duplicate that contains the boards to manipulate",
+        in = ParameterIn.PATH,
+        name = "dupId",
+        required = true,
+        schema = new Schema(`type` = "string")
       ),
-      requestBody = new RequestBody(
-          description = "hand to update",
-          content = Array(
-              new Content(
-                  mediaType = "application/json",
-                  schema = new Schema(
-                      implementation = classOf[DuplicateHand]
-                  )
-              )
-          )
+      new Parameter(
+        allowEmptyValue = false,
+        description = "ID of the board that contains the hands to manipulate",
+        in = ParameterIn.PATH,
+        name = "boardId",
+        required = true,
+        schema = new Schema(`type` = "string")
       ),
-      responses = Array(
-          new ApiResponse(
-              responseCode = "204",
-              description = "Hand updated",
-          ),
-          new ApiResponse(
-              responseCode = "404",
-              description = "Does not exist.",
-              content = Array(
-                  new Content(
-                      mediaType = "application/json",
-                      schema = new Schema(implementation = classOf[RestMessage])
-                  )
-              )
-          ),
-          new ApiResponse(
-              responseCode = "400",
-              description = "Bad request",
-              content = Array(
-                  new Content(
-                      mediaType = "application/json",
-                      schema = new Schema(implementation = classOf[RestMessage])
-                  )
-              )
-          )
+      new Parameter(
+        allowEmptyValue = false,
+        description = "ID of the hand to update",
+        in = ParameterIn.PATH,
+        name = "handId",
+        required = true,
+        schema = new Schema(`type` = "string")
       )
+    ),
+    requestBody = new RequestBody(
+      description = "hand to update",
+      content = Array(
+        new Content(
+          mediaType = "application/json",
+          schema = new Schema(implementation = classOf[DuplicateHand])
+        )
+      )
+    ),
+    responses = Array(
+      new ApiResponse(responseCode = "204", description = "Hand updated"),
+      new ApiResponse(
+        responseCode = "404",
+        description = "Does not exist.",
+        content = Array(
+          new Content(
+            mediaType = "application/json",
+            schema = new Schema(implementation = classOf[RestMessage])
+          )
+        )
+      ),
+      new ApiResponse(
+        responseCode = "400",
+        description = "Bad request",
+        content = Array(
+          new Content(
+            mediaType = "application/json",
+            schema = new Schema(implementation = classOf[RestMessage])
+          )
+        )
+      )
+    )
   )
   def xxxputHand = {}
-  def putHand(implicit @Parameter(hidden=true) res: Resources[String, DuplicateHand]) = logRequest("putHand", DebugLevel) { logResult("putHand", DebugLevel) {
-    put {
-      path( """[a-zA-Z0-9]+""".r ) { id =>
-        entity(as[DuplicateHand]) { hand =>
-          resourceUpdated( res.select(id).update(hand) )
+  def putHand(
+      implicit @Parameter(hidden = true) res: Resources[String, DuplicateHand]
+  ) = logRequest("putHand", DebugLevel) {
+    logResult("putHand", DebugLevel) {
+      put {
+        path("""[a-zA-Z0-9]+""".r) { id =>
+          entity(as[DuplicateHand]) { hand =>
+            resourceUpdated(res.select(id).update(hand))
+          }
         }
       }
     }
-  }}
+  }
 
   @Path("/{handId}")
   @DELETE
   @Operation(
-      summary = "Delete a hand by ID",
-      operationId = "deleteHandById",
-      parameters = Array(
-          new Parameter(
-              allowEmptyValue=false,
-              description="ID of the duplicate that contains the boards to manipulate",
-              in=ParameterIn.PATH,
-              name="dupId",
-              required=true,
-              schema=new Schema(`type`="string")
-          ),
-          new Parameter(
-              allowEmptyValue=false,
-              description="ID of the board that contains the hands to manipulate",
-              in=ParameterIn.PATH,
-              name="boardId",
-              required=true,
-              schema=new Schema(`type`="string")
-          ),
-          new Parameter(
-              allowEmptyValue=false,
-              description="ID of the hand to delete",
-              in=ParameterIn.PATH,
-              name="handId",
-              required=true,
-              schema=new Schema(`type`="string")
-          ),
+    summary = "Delete a hand by ID",
+    operationId = "deleteHandById",
+    parameters = Array(
+      new Parameter(
+        allowEmptyValue = false,
+        description =
+          "ID of the duplicate that contains the boards to manipulate",
+        in = ParameterIn.PATH,
+        name = "dupId",
+        required = true,
+        schema = new Schema(`type` = "string")
       ),
-      responses = Array(
-          new ApiResponse(
-              responseCode = "204",
-              description = "Hand deleted.",
-          ),
+      new Parameter(
+        allowEmptyValue = false,
+        description = "ID of the board that contains the hands to manipulate",
+        in = ParameterIn.PATH,
+        name = "boardId",
+        required = true,
+        schema = new Schema(`type` = "string")
+      ),
+      new Parameter(
+        allowEmptyValue = false,
+        description = "ID of the hand to delete",
+        in = ParameterIn.PATH,
+        name = "handId",
+        required = true,
+        schema = new Schema(`type` = "string")
       )
+    ),
+    responses = Array(
+      new ApiResponse(responseCode = "204", description = "Hand deleted.")
+    )
   )
   def xxxdeleteHand = {}
-  def deleteHand(implicit @Parameter(hidden=true) res: Resources[String, DuplicateHand]) = delete {
-    path( """[a-zA-Z0-9]+""".r ) { id =>
-      resourceDelete( res.select(id).delete() )
+  def deleteHand(
+      implicit @Parameter(hidden = true) res: Resources[String, DuplicateHand]
+  ) = delete {
+    path("""[a-zA-Z0-9]+""".r) { id =>
+      resourceDelete(res.select(id).delete())
     }
   }
 }

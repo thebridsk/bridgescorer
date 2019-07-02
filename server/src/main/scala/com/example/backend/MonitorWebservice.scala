@@ -50,14 +50,18 @@ import io.swagger.v3.oas.annotations.media.Content
 import javax.ws.rs.GET
 import com.example.data.VersionedInstance
 
-abstract class MonitorWebservice[VId, VType <: VersionedInstance[VType,VType,VId]](
+abstract class MonitorWebservice[VId, VType <: VersionedInstance[
+  VType,
+  VType,
+  VId
+]](
     totallyMissingResourceHandler: RejectionHandler
 )(
     implicit fm: Materializer,
-              system: ActorSystem,
+    system: ActorSystem
 ) extends Directives {
-  private val log = Logging(system, classOf[MonitorWebservice[_,_]])
-  val monitor: StoreMonitorManager[VId,VType]
+  private val log = Logging(system, classOf[MonitorWebservice[_, _]])
+  val monitor: StoreMonitorManager[VId, VType]
 
   import system.dispatcher
 //  system.scheduler.schedule(15.second, 15.second) {
@@ -80,13 +84,13 @@ abstract class MonitorWebservice[VId, VType <: VersionedInstance[VType,VType,VId
     Flow[Message]
       .mapConcat {
         case TextMessage.Strict(msg) =>
-          log.debug("("+sender+"): Received "+msg)
-          msg::Nil // unpack incoming WS text messages...
+          log.debug("(" + sender + "): Received " + msg)
+          msg :: Nil // unpack incoming WS text messages...
         case tm: TextMessage =>
-          log.debug("From ("+sender+"): Received TextMessage.Streamed")
-          collect(tm.textStream)(_ + _)::Nil
+          log.debug("From (" + sender + "): Received TextMessage.Streamed")
+          collect(tm.textStream)(_ + _) :: Nil
         case bm: BinaryMessage =>
-          log.debug("From ("+sender+"): Received BinaryMessage")
+          log.debug("From (" + sender + "): Received BinaryMessage")
           // ignore binary messages but drain content to avoid the stream being clogged
           bm.dataStream.runWith(Sink.ignore)
           Nil
@@ -94,45 +98,53 @@ abstract class MonitorWebservice[VId, VType <: VersionedInstance[VType,VType,VId
       .via(monitor.monitorFlow(sender)) // ... and route them through the chatFlow ...
       .mapConcat {
         case msg: DuplexProtocol.DuplexMessage =>
-          log.debug("("+sender+"): Sending "+msg )
-          TextMessage.Strict(DuplexProtocol.toString(msg))::Nil // ... pack outgoing messages into WS JSON messages ...
+          log.debug("(" + sender + "): Sending " + msg)
+          TextMessage.Strict(DuplexProtocol.toString(msg)) :: Nil // ... pack outgoing messages into WS JSON messages ...
         case msg: Message =>
           log.debug(s"""(${sender}): Sending message ${msg}""")
-          msg::Nil
+          msg :: Nil
         case msg =>
           log.info(s"""(${sender}): Unknown message: ${msg.getClass} ${msg}""")
           Nil
-      }.withAttributes(Attributes.inputBuffer(initial = 32, max = 128))
+      }
+      .withAttributes(Attributes.inputBuffer(initial = 32, max = 128))
       .via(reportErrorsFlow(sender)) // ... then log any processing errors on stdin
 
   def reportErrorsFlow[T](sender: RemoteAddress) =
-    new GraphStage[FlowShape[T,T]] {
+    new GraphStage[FlowShape[T, T]] {
       val in = Inlet[T]("reportErrorsFlow.in")
       val out = Outlet[T]("reportErrorsFlow.out")
       override val shape = FlowShape(in, out)
-      override def initialAttributes: Attributes = Attributes( List(Name("reportErrorsFlow")))
+      override def initialAttributes: Attributes =
+        Attributes(List(Name("reportErrorsFlow")))
       def createLogic(inheritedAttributes: Attributes): GraphStageLogic = {
         new GraphStageLogic(shape) {
-          setHandler(in, new InHandler {
-            override def onPush(): Unit = push(out, grab(in))
+          setHandler(
+            in,
+            new InHandler {
+              override def onPush(): Unit = push(out, grab(in))
 
-            override def onUpstreamFinish(): Unit = {
-              log.info("("+sender+"): Upstream finished" )
-              completeStage()
-            }
+              override def onUpstreamFinish(): Unit = {
+                log.info("(" + sender + "): Upstream finished")
+                completeStage()
+              }
 
-            override def onUpstreamFailure(ex: Throwable): Unit = {
-              log.error(ex,"("+sender+"): Upstream failure" )
-              failStage(ex)
+              override def onUpstreamFailure(ex: Throwable): Unit = {
+                log.error(ex, "(" + sender + "): Upstream failure")
+                failStage(ex)
+              }
             }
-          })
-          setHandler(out, new OutHandler {
-            override def onPull(): Unit = pull(in)
-            override def onDownstreamFinish(): Unit = {
-              log.info("("+sender+"): Downstream finished" )
-              completeStage()
+          )
+          setHandler(
+            out,
+            new OutHandler {
+              override def onPull(): Unit = pull(in)
+              override def onDownstreamFinish(): Unit = {
+                log.info("(" + sender + "): Downstream finished")
+                completeStage()
+              }
             }
-          })
+          )
         }
       }
     }

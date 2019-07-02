@@ -1,6 +1,6 @@
 package com.example
 
-import akka.actor.{ActorSystem, Props, Actor}
+import akka.actor.{Actor, ActorSystem, Props}
 import akka.io.IO
 import akka.pattern.ask
 import akka.util.Timeout
@@ -22,7 +22,7 @@ import scala.util.Failure
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.client.RequestBuilding
 import akka.http.scaladsl.marshalling.ToResponseMarshallable
-import akka.http.scaladsl.model.{HttpResponse, HttpRequest}
+import akka.http.scaladsl.model.{HttpRequest, HttpResponse}
 import akka.http.scaladsl.model.StatusCodes._
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.unmarshalling.Unmarshal
@@ -61,8 +61,8 @@ import java.util.logging.ConsoleHandler
 import com.example.util.MemoryMonitor
 
 /**
- * This is the main program for the REST server for our application.
- */
+  * This is the main program for the REST server for our application.
+  */
 object Server extends Main {
 
   override def init() = {
@@ -71,7 +71,7 @@ object Server extends Main {
   }
 
   override def setup() = {
-    memoryfile.foreach( f => MemoryMonitor.start(f.toString()))
+    memoryfile.foreach(f => MemoryMonitor.start(f.toString()))
     0
   }
 
@@ -79,7 +79,8 @@ object Server extends Main {
     MemoryMonitor.stop()
   }
 
-  implicit def dateConverter: ValueConverter[Duration] = singleArgConverter[Duration](Duration(_))
+  implicit def dateConverter: ValueConverter[Duration] =
+    singleArgConverter[Duration](Duration(_))
 
   import utils.main.Converters._
 
@@ -102,17 +103,17 @@ object Server extends Main {
     }) match {
       case Some(url) =>
         if (url.getProtocol == "file") {
-          Some( new File(url.getFile).getName )
+          Some(new File(url.getFile).getName)
         } else {
           None
         }
       case None => None
     }) match {
       case Some(jarname) =>
-        "java -jar "+jarname
+        "java -jar " + jarname
       case None =>
         val x = Server.getClass.getName
-        "scala "+x.substring(0, x.length()-1)
+        "scala " + x.substring(0, x.length() - 1)
     }
   }
 
@@ -126,30 +127,33 @@ object Server extends Main {
   version(serverVersion)
   banner(
     s"""
-        |HTTP server for scoring duplicate and chicago bridge
-        |
-        |Syntax:
-        |  ${cmdName} options cmd cmdoptions
-        |  ${cmdName} --help
-        |  ${cmdName} cmd --help
-        |Options:""".stripMargin
+       |HTTP server for scoring duplicate and chicago bridge
+       |
+       |Syntax:
+       |  ${cmdName} options cmd cmdoptions
+       |  ${cmdName} --help
+       |  ${cmdName} cmd --help
+       |Options:""".stripMargin
   )
 
   shortSubcommandsHelp(true)
 
-  val memoryfile = opt[Path]( "memoryfile",
-                              noshort = true,
-                              descr = "memory monitor filename, start monitoring memory usage every 15 seconds",
-                              argName = "csvfilename",
-                              default = None)
+  val memoryfile = opt[Path](
+    "memoryfile",
+    noshort = true,
+    descr =
+      "memory monitor filename, start monitoring memory usage every 15 seconds",
+    argName = "csvfilename",
+    default = None
+  )
 
-  addSubcommand( StartServer )
-  addSubcommand( ShutdownServer )
-  addSubcommand( UpdateInstall )
-  addSubcommand( Install )
-  addSubcommand( CollectLogs )
+  addSubcommand(StartServer)
+  addSubcommand(ShutdownServer)
+  addSubcommand(UpdateInstall)
+  addSubcommand(Install)
+  addSubcommand(CollectLogs)
 
-  addSubcommand( DataStoreCommands )
+  addSubcommand(DataStoreCommands)
 
   footer(s"""
 To get help on subcommands, use the command:
@@ -165,12 +169,13 @@ To get help on subcommands, use the command:
 
   lazy val isConsoleLoggingToInfo = {
 
-    import java.util.logging.{ Logger => JLogger }
+    import java.util.logging.{Logger => JLogger}
     @tailrec
-    def findConsoleHandler( log: JLogger ): Boolean = {
-      val handlers = log.getHandlers.filter( h => h.isInstanceOf[ConsoleHandler] )
+    def findConsoleHandler(log: JLogger): Boolean = {
+      val handlers = log.getHandlers.filter(h => h.isInstanceOf[ConsoleHandler])
       if (handlers.length != 0) {
-        val infohandler = handlers.find( h=> h.getLevel.intValue() <= Level.INFO.intValue() )
+        val infohandler =
+          handlers.find(h => h.getLevel.intValue() <= Level.INFO.intValue())
         infohandler.isDefined
       } else {
         val parent = log.getParent
@@ -182,7 +187,7 @@ To get help on subcommands, use the command:
     findConsoleHandler(logger.logger)
   }
 
-  def output( s: String ) = {
+  def output(s: String) = {
     logger.info(s)
     if (!isConsoleLoggingToInfo) println(s)
   }

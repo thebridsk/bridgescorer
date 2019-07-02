@@ -50,21 +50,23 @@ import javax.ws.rs.GET
 import com.example.data.MatchChicago
 import com.example.backend.StoreMonitor.NewParticipantSSEChicago
 
-@Path( "" )
+@Path("")
 class ChicagoMonitorWebservice(
     totallyMissingResourceHandler: RejectionHandler
 )(
     implicit fm: Materializer,
-              system: ActorSystem,
-              bridgeService: BridgeService
-) extends MonitorWebservice[Id.MatchChicago,MatchChicago](totallyMissingResourceHandler) {
+    system: ActorSystem,
+    bridgeService: BridgeService
+) extends MonitorWebservice[Id.MatchChicago, MatchChicago](
+      totallyMissingResourceHandler
+    ) {
   val log = Logging(system, classOf[ChicagoMonitorWebservice])
   val monitor = new StoreMonitorManager(
-                           system,
-                           bridgeService.chicagos,
-                           classOf[ChicagoStoreMonitor],
-                           NewParticipantSSEChicago.apply _
-                )
+    system,
+    bridgeService.chicagos,
+    classOf[ChicagoStoreMonitor],
+    NewParticipantSSEChicago.apply _
+  )
   import system.dispatcher
 //  system.scheduler.schedule(15.second, 15.second) {
 //    theChat.injectMessage(ChatMessage(sender = "clock", s"Bling! The time is ${new Date().toString}."))
@@ -75,42 +77,41 @@ class ChicagoMonitorWebservice(
   @Path("/sse/chicagos/{chiId}")
   @GET
   @Operation(
-      tags = Array("Chicago"),
-      summary = "BridgeScorer server set event on a chicago match",
-      operationId = "MonitorSSEChicago",
-      parameters = Array(
-          new Parameter(
-              allowEmptyValue=false,
-              description="ID of the match to get",
-              in=ParameterIn.PATH,
-              name="chiId",
-              required=true,
-              schema=new Schema(`type`="string")
-          )
-      ),
-      responses = Array(
-          new ApiResponse(
-              responseCode = "200",
-              description = "Server sent event stream starting",
-              content = Array(
-                  new Content(
-                      mediaType = "text/event-stream",
-                      schema = new Schema( implementation=classOf[String] )
-                  )
-              )
-          ),
-          new ApiResponse(
-              responseCode = "404",
-              description = "Does not exist",
-              content = Array(
-                  new Content(
-                      mediaType = "application/json",
-                      schema = new Schema(implementation = classOf[RestMessage])
-                  )
-              )
-          )
-
+    tags = Array("Chicago"),
+    summary = "BridgeScorer server set event on a chicago match",
+    operationId = "MonitorSSEChicago",
+    parameters = Array(
+      new Parameter(
+        allowEmptyValue = false,
+        description = "ID of the match to get",
+        in = ParameterIn.PATH,
+        name = "chiId",
+        required = true,
+        schema = new Schema(`type` = "string")
       )
+    ),
+    responses = Array(
+      new ApiResponse(
+        responseCode = "200",
+        description = "Server sent event stream starting",
+        content = Array(
+          new Content(
+            mediaType = "text/event-stream",
+            schema = new Schema(implementation = classOf[String])
+          )
+        )
+      ),
+      new ApiResponse(
+        responseCode = "404",
+        description = "Does not exist",
+        content = Array(
+          new Content(
+            mediaType = "application/json",
+            schema = new Schema(implementation = classOf[RestMessage])
+          )
+        )
+      )
+    )
   )
   def xxxroutesse = {}
   val routesse = {
@@ -118,24 +119,32 @@ class ChicagoMonitorWebservice(
     import akka.http.scaladsl.model.sse.ServerSentEvent
     pathPrefix("sse") {
       get {
-        logRequest("sse", Logging.DebugLevel) { logResult("sse", Logging.DebugLevel) {
-          pathPrefix("chicagos") {
-            handleRejections(totallyMissingResourceHandler) {
-              pathPrefix( """[a-zA-Z0-9]+""".r ) { id =>
-                pathEndOrSingleSlash {
-                  extractClientIP { ip => {
-                    log.info(s"SSE from $ip for $id")
-                    reject(UnsupportedRequestContentTypeRejection(Set( MediaTypes.`text/event-stream` )))
-                    complete {
-                      val dupid: Id.MatchChicago = id
-                      monitor.monitorMatch( ip, dupid )
+        logRequest("sse", Logging.DebugLevel) {
+          logResult("sse", Logging.DebugLevel) {
+            pathPrefix("chicagos") {
+              handleRejections(totallyMissingResourceHandler) {
+                pathPrefix("""[a-zA-Z0-9]+""".r) { id =>
+                  pathEndOrSingleSlash {
+                    extractClientIP { ip =>
+                      {
+                        log.info(s"SSE from $ip for $id")
+                        reject(
+                          UnsupportedRequestContentTypeRejection(
+                            Set(MediaTypes.`text/event-stream`)
+                          )
+                        )
+                        complete {
+                          val dupid: Id.MatchChicago = id
+                          monitor.monitorMatch(ip, dupid)
+                        }
+                      }
                     }
-                  }}
+                  }
                 }
               }
             }
           }
-        }}
+        }
       }
     }
   }

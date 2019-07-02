@@ -40,73 +40,85 @@ import com.example.data.SystemTime.Timestamp
 
 object BridgeServiceZipStore {
 
-  val log = Logger( getClass().getName )
+  val log = Logger(getClass().getName)
 
 }
 
 /**
- * An implementation of the backend for our service.
- * This is used for testing, and is predefined with
- * resources to facilitate testing.
- * @author werewolf
- */
+  * An implementation of the backend for our service.
+  * This is used for testing, and is predefined with
+  * resources to facilitate testing.
+  * @author werewolf
+  */
 class BridgeServiceZipStore(
-                             id: String,
-                             val zipfilename: File,
-                             useYaml: Boolean = true
-                           )(
-                             implicit
-                               execute: ExecutionContext
-                           ) extends BridgeServiceWithLogging( id ) {
+    id: String,
+    val zipfilename: File,
+    useYaml: Boolean = true
+)(
+    implicit
+    execute: ExecutionContext
+) extends BridgeServiceWithLogging(id) {
   self =>
 
   import BridgeServiceZipStore._
 
   import scala.collection.mutable.Map
 
-  override
-  def getDate: Timestamp = {
+  override def getDate: Timestamp = {
     zipfilename.lastModified
   }
 
-  val bridgeResources = BridgeResources(useYaml,true,false,true)
+  val bridgeResources = BridgeResources(useYaml, true, false, true)
   import bridgeResources._
 
   val zipfile = new ZipFileForStore(zipfilename)
 
-  val chicagos = ZipStore[Id.MatchDuplicate,MatchChicago](id,zipfile)
-  val duplicates = ZipStore[Id.MatchDuplicate,MatchDuplicate](id,zipfile)
-  val duplicateresults = ZipStore[Id.MatchDuplicateResult,MatchDuplicateResult](id,zipfile)
-  val rubbers = ZipStore[String,MatchRubber](id,zipfile)
+  val chicagos = ZipStore[Id.MatchDuplicate, MatchChicago](id, zipfile)
+  val duplicates = ZipStore[Id.MatchDuplicate, MatchDuplicate](id, zipfile)
+  val duplicateresults =
+    ZipStore[Id.MatchDuplicateResult, MatchDuplicateResult](id, zipfile)
+  val rubbers = ZipStore[String, MatchRubber](id, zipfile)
 
-  val boardSets = MultiStore[String,BoardSet]( id,List(
-                                                    new ZipPersistentSupport(zipfile),
-                                                    new JavaResourcePersistentSupport("/com/example/backend/", "Boardsets.txt", self.getClass.getClassLoader)
-                                              ))
+  val boardSets = MultiStore[String, BoardSet](
+    id,
+    List(
+      new ZipPersistentSupport(zipfile),
+      new JavaResourcePersistentSupport(
+        "/com/example/backend/",
+        "Boardsets.txt",
+        self.getClass.getClassLoader
+      )
+    )
+  )
 
-  val movements = MultiStore[String,Movement]( id,List(
-                                                    new ZipPersistentSupport(zipfile),
-                                                    new JavaResourcePersistentSupport("/com/example/backend/", "Movements.txt", self.getClass.getClassLoader)
-                                              ))
+  val movements = MultiStore[String, Movement](
+    id,
+    List(
+      new ZipPersistentSupport(zipfile),
+      new JavaResourcePersistentSupport(
+        "/com/example/backend/",
+        "Movements.txt",
+        self.getClass.getClassLoader
+      )
+    )
+  )
 
   /**
-   * closes the store.  Do not call other methods after calling this method.
-   */
+    * closes the store.  Do not call other methods after calling this method.
+    */
   def close() = {
     zipfile.close()
   }
 
   /**
-   * closes and deletes the zip file.  Do not call other methods after calling this method.
-   * @return  <code>true</code> if zip file is successfully deleted; <code>false</code> otherwise
-   */
-  override
-  def delete() = Future {
+    * closes and deletes the zip file.  Do not call other methods after calling this method.
+    * @return  <code>true</code> if zip file is successfully deleted; <code>false</code> otherwise
+    */
+  override def delete() = Future {
     zipfile.close()
     zipfilename.delete()
-    Result( zipfilename.name )
+    Result(zipfilename.name)
   }
 
-  override
-  def toString() = "BridgeServiceZipStore"
+  override def toString() = "BridgeServiceZipStore"
 }

@@ -40,12 +40,12 @@ import javax.ws.rs.POST
 import io.swagger.v3.oas.annotations.Parameter
 
 /**
- * <p>
- * The REST API and all the methods are documented using
- * swagger annotations.
- */
-@Path( "" )
-@Tags( Array( new Tag(name="Server")))
+  * <p>
+  * The REST API and all the methods are documented using
+  * swagger annotations.
+  */
+@Path("")
+@Tags(Array(new Tag(name = "Server")))
 trait LoggingService extends HasActorSystem with ClientLoggingService {
 
   private lazy val log = Logging(actorSystem, classOf[LoggingService])
@@ -53,8 +53,8 @@ trait LoggingService extends HasActorSystem with ClientLoggingService {
   val loggerUrlPrefix = "logger"
 
   /**
-   * spray route for all the methods on this resource
-   */
+    * spray route for all the methods on this resource
+    */
   val loggingRoute = {
     extractClientIP { ip =>
       {
@@ -62,10 +62,10 @@ trait LoggingService extends HasActorSystem with ClientLoggingService {
         val ips = ip.toString()
         pathPrefix(loggerUrlPrefix) {
 //          logRequest("loggingRoute", DebugLevel) { logResult( "loggingRoute" ) {
-            handleRejections(totallyMissingHandler) {
-              callRemoteLogging(ips) ~
+          handleRejections(totallyMissingHandler) {
+            callRemoteLogging(ips) ~
               callRemoteLoggingWS(ips)
-            }
+          }
 //          }}
         }
       }
@@ -73,8 +73,8 @@ trait LoggingService extends HasActorSystem with ClientLoggingService {
   }
 
   /**
-   * Handler for converting rejections into HttpResponse
-   */
+    * Handler for converting rejections into HttpResponse
+    */
   def totallyMissingHandler: RejectionHandler
 
   import scala.language.postfixOps
@@ -82,29 +82,24 @@ trait LoggingService extends HasActorSystem with ClientLoggingService {
   @Path("/logger/entry")
   @POST
   @Operation(
-      summary = "Remote logging",
-      operationId = "callRemoteLogging",
-      requestBody = new RequestBody(
-          description = "Log entry",
-          content = Array(
-              new Content(
-                  mediaType = "application/json",
-                  schema = new Schema(
-                      required = true,
-                      implementation = classOf[LogEntryV2]
-                  )
-              )
-          )
-      ),
-      responses = Array(
-          new ApiResponse(
-              responseCode = "204",
-              description = "Accepted",
-          )
+    summary = "Remote logging",
+    operationId = "callRemoteLogging",
+    requestBody = new RequestBody(
+      description = "Log entry",
+      content = Array(
+        new Content(
+          mediaType = "application/json",
+          schema =
+            new Schema(required = true, implementation = classOf[LogEntryV2])
+        )
       )
+    ),
+    responses = Array(
+      new ApiResponse(responseCode = "204", description = "Accepted")
+    )
   )
   def xxxcallRemoteLogging = {}
-  def callRemoteLogging( @Parameter(hidden=true) ips: String ) =
+  def callRemoteLogging(@Parameter(hidden = true) ips: String) =
     path("entry") {
       (post | put) {
         import com.example.rest.UtilsPlayJson._
@@ -115,10 +110,14 @@ trait LoggingService extends HasActorSystem with ClientLoggingService {
           entity(as[ByteString]) { bs =>
             val s = bs.decodeString("ASCII")
             Service.logStringFromBrowser(ips, s)
-            log.error(s"ClientLog($ips): ERROR did not get a string for /logging\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n")
+            log.error(
+              s"ClientLog($ips): ERROR did not get a string for /logging\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"
+            )
             complete(StatusCodes.NoContent)
           } ~ complete {
-            log.error(s"ClientLog($ips): ERROR did not get a string for /logging\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n")
+            log.error(
+              s"ClientLog($ips): ERROR did not get a string for /logging\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"
+            )
             StatusCodes.NoContent
           }
         }
@@ -127,11 +126,15 @@ trait LoggingService extends HasActorSystem with ClientLoggingService {
           val s = bs.decodeString("ASCII")
           Service.logStringFromBrowser(ips, s)
           complete {
-            log.error(s"ClientLog($ips): ERROR did not get a POST or PUT for /logging\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n")
+            log.error(
+              s"ClientLog($ips): ERROR did not get a POST or PUT for /logging\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"
+            )
             StatusCodes.NoContent
           }
         } ~ complete {
-          log.error(s"ClientLog($ips): ERROR did not get a string for /logging\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n")
+          log.error(
+            s"ClientLog($ips): ERROR did not get a string for /logging\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"
+          )
           StatusCodes.NoContent
         }
       }
@@ -140,21 +143,20 @@ trait LoggingService extends HasActorSystem with ClientLoggingService {
   @Path("/logger/ws")
   @GET
   @Operation(
-//      protocols = "WS, WSS",
-      summary = "Remote logging, protocols: WS, WSS",
-      operationId = "callRemoteLoggingWS",
-      responses = Array(
-          new ApiResponse(
-              responseCode = "101",
-              description = "Switching to websocket protocol",
-          )
+    summary = "Remote logging, protocols: WS, WSS",
+    operationId = "callRemoteLoggingWS",
+    responses = Array(
+      new ApiResponse(
+        responseCode = "101",
+        description = "Switching to websocket protocol"
       )
+    )
   )
   def xxxcallRemoteLoggingWS = {}
-  def callRemoteLoggingWS( @Parameter(hidden=true) ips: String ) =
+  def callRemoteLoggingWS(@Parameter(hidden = true) ips: String) =
     pathPrefix("ws") {
 //      logRequest(ips, logLevelForTracingRequestResponse) {
-        routeLogging(ips)
+      routeLogging(ips)
 //      }
     }
 

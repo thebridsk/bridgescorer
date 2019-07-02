@@ -25,7 +25,8 @@ object ShowCommand extends Subcommand("show") {
 
   val log = Logger[ShowCommand]
 
-  implicit def dateConverter: ValueConverter[Duration] = singleArgConverter[Duration](Duration(_))
+  implicit def dateConverter: ValueConverter[Duration] =
+    singleArgConverter[Duration](Duration(_))
 
   import utils.main.Converters._
 
@@ -59,7 +60,8 @@ object ShowNamesCommand extends Subcommand("names") {
   import DataStoreCommands.optionStore
   import ShowCommand.log
 
-  implicit def dateConverter: ValueConverter[Duration] = singleArgConverter[Duration](Duration(_))
+  implicit def dateConverter: ValueConverter[Duration] =
+    singleArgConverter[Duration](Duration(_))
 
   import utils.main.Converters._
 
@@ -74,16 +76,16 @@ Options:""")
 
 //  footer(s""" """)
 
-  def await[T]( fut: Future[T] ) = Await.result(fut, 30.seconds)
+  def await[T](fut: Future[T]) = Await.result(fut, 30.seconds)
 
   def executeSubcommand(): Int = {
     val storedir = optionStore().toDirectory
     log.info(s"Using datastore ${storedir}")
-    val datastore = new BridgeServiceFileStore( storedir )
-    log.info(  (await(datastore.getAllNames()) match {
-        case Right(list) => list
-        case Left(error) => List()
-      }).mkString("\n") )
+    val datastore = new BridgeServiceFileStore(storedir)
+    log.info((await(datastore.getAllNames()) match {
+      case Right(list) => list
+      case Left(error) => List()
+    }).mkString("\n"))
     0
   }
 }
@@ -92,7 +94,8 @@ object ShowSuggestionCommand extends Subcommand("suggestion") {
   import DataStoreCommands.optionStore
   import ShowCommand.log
 
-  implicit def dateConverter: ValueConverter[Duration] = singleArgConverter[Duration](Duration(_))
+  implicit def dateConverter: ValueConverter[Duration] =
+    singleArgConverter[Duration](Duration(_))
 
   import utils.main.Converters._
 
@@ -105,50 +108,68 @@ Syntax:
   ${DataStoreCommands.cmdName} show suggestion args
 Options:""")
 
-  val optionNeverPair = opt[List[String]]("neverpair",
-                                  short='n',
-                                  descr="never pair players.  Value is player1,player2",
-                                  argName="pair",
-                                  default=None)
+  val optionNeverPair = opt[List[String]](
+    "neverpair",
+    short = 'n',
+    descr = "never pair players.  Value is player1,player2",
+    argName = "pair",
+    default = None
+  )
 
   val players = (1 to 8).map { i =>
     trailArg[String](
-            s"player${i}",
-            descr = s"player ${i}",
-            required = true,
-            default = None,
-            hidden = false)
+      s"player${i}",
+      descr = s"player ${i}",
+      required = true,
+      default = None,
+      hidden = false
+    )
   }.toList
 
-  validate( players(0), players(1), players(2), players(3), players(4), players(5), players(6), players(7) ) { (p1,p2,p3,p4,p5,p6,p7,p8) =>
-    val distinct = List(p1,p2,p3,p4,p5,p6,p7,p8).distinct
+  validate(
+    players(0),
+    players(1),
+    players(2),
+    players(3),
+    players(4),
+    players(5),
+    players(6),
+    players(7)
+  ) { (p1, p2, p3, p4, p5, p6, p7, p8) =>
+    val distinct = List(p1, p2, p3, p4, p5, p6, p7, p8).distinct
     val l = distinct.length
     if (l == 8) Right(Unit)
-    else Left( s"Did not specify 8 distinct names: ${distinct}" )
+    else Left(s"Did not specify 8 distinct names: ${distinct}")
   }
 
 //  footer(s""" """)
 
-  def await[T]( fut: Future[T] ) = Await.result(fut, 30.seconds)
+  def await[T](fut: Future[T]) = Await.result(fut, 30.seconds)
 
   val patternPair = """([^,]+),([^,]+)""".r
 
   def executeSubcommand(): Int = {
     val storedir = optionStore().toDirectory
     log.info(s"Using datastore ${storedir}")
-    val datastore = new BridgeServiceFileStore( storedir )
-    await( datastore.getDuplicateSummaries() ) match {
+    val datastore = new BridgeServiceFileStore(storedir)
+    await(datastore.getDuplicateSummaries()) match {
       case Right(summary) =>
-        val neverPair = optionNeverPair.toOption.map( lnp => lnp.flatMap { pair =>
-          pair match {
-            case patternPair(p1,p2) =>
-              NeverPair(p1,p2)::Nil
-            case _ =>
-              log.severe(s"""Never pair option not valid, ignoring: ${pair}""")
-              Nil
-          }
-        })
-        val input = DuplicateSuggestions( players.map(sc => sc()), neverPair = neverPair )
+        val neverPair = optionNeverPair.toOption.map(
+          lnp =>
+            lnp.flatMap { pair =>
+              pair match {
+                case patternPair(p1, p2) =>
+                  NeverPair(p1, p2) :: Nil
+                case _ =>
+                  log.severe(
+                    s"""Never pair option not valid, ignoring: ${pair}"""
+                  )
+                  Nil
+              }
+            }
+        )
+        val input =
+          DuplicateSuggestions(players.map(sc => sc()), neverPair = neverPair)
         val sug = DuplicateSuggestionsCalculation.calculate(input, summary)
         log.info(s"Took ${sug.calcTimeMillis} milliseconds to calculate")
 //        sug.suggestions.foreach { list =>
@@ -158,15 +179,23 @@ Options:""")
 //            log.info( s"""${i+1}: ${pairs.mkString(", ")}""")
 //          }
 //        }
-        log.info("The numbers in parentheses are ( lasttime played together, number of times played together)")
+        log.info(
+          "The numbers in parentheses are ( lasttime played together, number of times played together)"
+        )
         sug.suggestions.foreach { list =>
           list.zipWithIndex.foreach { e =>
-            val (sg,i) = e
-            val s = sg.players.sortWith { (l,r) =>
-                                  if (l.lastPlayed==r.lastPlayed) l.timesPlayed<r.timesPlayed
-                                  else l.lastPlayed<r.lastPlayed
-                                }.map( p => f"${p.player1}%8s-${p.player2}%-8s (${p.lastPlayed}%2d,${p.timesPlayed}%2d)").mkString(", ")
-            log.info(f"  ${i+1}%3d: ${s}%s")
+            val (sg, i) = e
+            val s = sg.players
+              .sortWith { (l, r) =>
+                if (l.lastPlayed == r.lastPlayed) l.timesPlayed < r.timesPlayed
+                else l.lastPlayed < r.lastPlayed
+              }
+              .map(
+                p =>
+                  f"${p.player1}%8s-${p.player2}%-8s (${p.lastPlayed}%2d,${p.timesPlayed}%2d)"
+              )
+              .mkString(", ")
+            log.info(f"  ${i + 1}%3d: ${s}%s")
           }
         }
         0
@@ -181,7 +210,8 @@ object ShowBoardsetsAndMovementsCommand extends Subcommand("boardsets") {
   import DataStoreCommands.optionStore
   import ShowCommand.log
 
-  implicit def dateConverter: ValueConverter[Duration] = singleArgConverter[Duration](Duration(_))
+  implicit def dateConverter: ValueConverter[Duration] =
+    singleArgConverter[Duration](Duration(_))
 
   import utils.main.Converters._
 
@@ -196,12 +226,12 @@ Options:""")
 
 //  footer(s""" """)
 
-  def await[T]( fut: Future[T] ) = Await.result(fut, 30.seconds)
+  def await[T](fut: Future[T]) = Await.result(fut, 30.seconds)
 
   def executeSubcommand(): Int = {
     val storedir = optionStore().toDirectory
     log.info(s"Using datastore ${storedir}")
-    val datastore = new BridgeServiceFileStore( storedir )
+    val datastore = new BridgeServiceFileStore(storedir)
 
     await(datastore.boardSets.readAll()) match {
       case Right(map) =>
@@ -211,7 +241,7 @@ Options:""")
           val n = bs.boards.length
           log.info(s"${name} ${n} ${desc}")
         }
-      case Left((status,msg)) =>
+      case Left((status, msg)) =>
         log.warning(s"Error getting boardsets: ${msg}")
     }
 
@@ -223,7 +253,7 @@ Options:""")
           val team = m.numberTeams
           log.info(s"${name} ${team} ${desc}")
         }
-      case Left((status,msg)) =>
+      case Left((status, msg)) =>
         log.warning(s"Error getting movements: ${msg}")
     }
 
@@ -235,7 +265,8 @@ object ShowPartnersOfCommand extends Subcommand("partnersof") {
   import DataStoreCommands.optionStore
   import ShowCommand.log
 
-  implicit def dateConverter: ValueConverter[Duration] = singleArgConverter[Duration](Duration(_))
+  implicit def dateConverter: ValueConverter[Duration] =
+    singleArgConverter[Duration](Duration(_))
 
   import utils.main.Converters._
 
@@ -249,22 +280,23 @@ Syntax:
 Options:""")
 
   val player = trailArg[String](
-                                "player",
-                                descr = "player",
-                                required = true,
-                                default = None,
-                                hidden = false)
+    "player",
+    descr = "player",
+    required = true,
+    default = None,
+    hidden = false
+  )
 
 //  footer(s""" """)
 
-  def await[T]( fut: Future[T] ) = Await.result(fut, 30.seconds)
+  def await[T](fut: Future[T]) = Await.result(fut, 30.seconds)
 
-  val sdf = new SimpleDateFormat( "MM/dd/YYYY" )
+  val sdf = new SimpleDateFormat("MM/dd/YYYY")
 
   def executeSubcommand(): Int = {
     val storedir = optionStore().toDirectory
     log.info(s"Using datastore ${storedir}")
-    val datastore = new BridgeServiceFileStore( storedir )
+    val datastore = new BridgeServiceFileStore(storedir)
 
     val p = player()
 
@@ -273,22 +305,23 @@ Options:""")
     val fut = datastore.getDuplicateSummaries().map { rl =>
       rl match {
         case Right(summaries) =>
-          summaries.
-            sortWith( (l,r) => l.created > r.created).
-            foreach { summary =>
+          summaries.sortWith((l, r) => l.created > r.created).foreach {
+            summary =>
               val date = sdf.format(new Date(summary.created.toLong))
               if (summary.containsPlayer(p)) {
-                val partner = summary.teams.find( dse => dse.team.player1==p || dse.team.player2==p ).
-                                            map { dse =>
-                                              if (dse.team.player1 == p) dse.team.player2
-                                              else dse.team.player1
-                                            }.get
-                log.info( f"""${summary.id}%4s ${date} ${partner}""")
+                val partner = summary.teams
+                  .find(dse => dse.team.player1 == p || dse.team.player2 == p)
+                  .map { dse =>
+                    if (dse.team.player1 == p) dse.team.player2
+                    else dse.team.player1
+                  }
+                  .get
+                log.info(f"""${summary.id}%4s ${date} ${partner}""")
               } else {
-                log.info( f"""${summary.id}%4s ${date} -""")
+                log.info(f"""${summary.id}%4s ${date} -""")
               }
-            }
-        case Left((status,msg)) =>
+          }
+        case Left((status, msg)) =>
           log.warning(s"Error getting summaries: ${msg}")
       }
     }
@@ -316,43 +349,49 @@ Options:""")
 
 //  footer(s""" """)
 
-  def await[T]( fut: Future[T] ) = Await.result(fut, 30.seconds)
+  def await[T](fut: Future[T]) = Await.result(fut, 30.seconds)
 
-  val sdf = new SimpleDateFormat( "MM/dd/YYYY" )
+  val sdf = new SimpleDateFormat("MM/dd/YYYY")
 
   def executeSubcommand(): Int = {
     val storedir = optionStore().toDirectory
     log.info(s"Using datastore ${storedir}")
-    val datastore = new BridgeServiceFileStore( storedir )
+    val datastore = new BridgeServiceFileStore(storedir)
 
     val fut = datastore.duplicates.readAll().map { rl =>
       rl match {
         case Right(dups) =>
-          dups.values.toList.
-            sortWith( (l,r) => l.created > r.created).
-            foreach { dup =>
-              val counts = dup.boards.flatMap { b =>
-                b.hands.flatMap { dh =>
-                  dh.played.map { h =>
-                    h.declarer match {
-                      case "N" | "S" =>
-                        dh.nsTeam
-                      case "E" | "W" =>
-                        dh.ewTeam
+          dups.values.toList.sortWith((l, r) => l.created > r.created).foreach {
+            dup =>
+              val counts = dup.boards
+                .flatMap { b =>
+                  b.hands.flatMap { dh =>
+                    dh.played.map { h =>
+                      h.declarer match {
+                        case "N" | "S" =>
+                          dh.nsTeam
+                        case "E" | "W" =>
+                          dh.ewTeam
+                      }
                     }
                   }
                 }
-              }.foldLeft(Map[Id.Team,Int]()) { (ac,v) =>
-                val c = ac.get(v).getOrElse(0)
-                ac + ( v -> (c+1) )
-              }.toList.sortBy { e => e._2 }.map { e =>
-                val (k,v) = e
-                f"${k}=${v}%2s"
-              }
+                .foldLeft(Map[Id.Team, Int]()) { (ac, v) =>
+                  val c = ac.get(v).getOrElse(0)
+                  ac + (v -> (c + 1))
+                }
+                .toList
+                .sortBy { e =>
+                  e._2
+                }
+                .map { e =>
+                  val (k, v) = e
+                  f"${k}=${v}%2s"
+                }
               val d = sdf.format(new Date(dup.created.toLong))
               log.info(f"""${dup.id}%-4s ${d} ${counts.mkString("  ")}""")
-            }
-        case Left((status,msg)) =>
+          }
+        case Left((status, msg)) =>
           log.warning(s"Error getting movements: ${msg}")
       }
     }

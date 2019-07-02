@@ -8,7 +8,10 @@ import com.example.materialui.icons.SvgIconBase
 import com.example.materialui.icons.SvgIconProps
 
 object CheckBoxOutlineBlank extends SvgIconBase {
-  @js.native @JSImport("@material-ui/icons/CheckBoxOutlineBlank", JSImport.Default)
+  @js.native @JSImport(
+    "@material-ui/icons/CheckBoxOutlineBlank",
+    JSImport.Default
+  )
   private object icon extends js.Any
   protected val f = JsComponent[SvgIconProps, Children.Varargs, Null](icon)
 }

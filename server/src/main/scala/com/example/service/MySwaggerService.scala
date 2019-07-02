@@ -22,18 +22,18 @@ import ch.megard.akka.http.cors.scaladsl.CorsDirectives
 //import com.fasterxml.jackson.databind.MapperFeature
 
 /**
- * Extends the SwaggerHttpService with the spray route
- * for the static pages and the swagger dynamic pages.
- * <p>
- * The static pages are served up with the /v1/docs/... URI.
- * The swagger dynamic pages are served up with a
- * /v1/&lt.{@link SwaggerHttpService#docsPath docsPath}> URI.
- * <p>
- * The index.html file to bring up the page must be on the
- * classpath at the web/swagger-ui/index.html resource.
- * The rest of the Swagger-UI's static pages are served up
- * from the classpath at the web/swagger-ui/ directory.
- */
+  * Extends the SwaggerHttpService with the spray route
+  * for the static pages and the swagger dynamic pages.
+  * <p>
+  * The static pages are served up with the /v1/docs/... URI.
+  * The swagger dynamic pages are served up with a
+  * /v1/&lt.{@link SwaggerHttpService#docsPath docsPath}> URI.
+  * <p>
+  * The index.html file to bring up the page must be on the
+  * classpath at the web/swagger-ui/index.html resource.
+  * The rest of the Swagger-UI's static pages are served up
+  * from the classpath at the web/swagger-ui/ directory.
+  */
 trait MySwaggerService extends SwaggerHttpService {
   this: HasActorSystem =>
 
@@ -75,10 +75,11 @@ trait MySwaggerService extends SwaggerHttpService {
   //    validatorUrl=    - (null) to not validate the swagger against
   //                           https://online.swagger.io/validator/debug?url=/v1/api-docs/swagger.yaml
   //    url=xxx          - URL to swagger.yaml
-  def swaggerURL = swaggergui+"?url=/"+apiVersionURISegment+"/"+apiDocsPath+"/swagger.yaml&validatorUrl="
+  def swaggerURL =
+    swaggergui + "?url=/" + apiVersionURISegment + "/" + apiDocsPath + "/swagger.yaml&validatorUrl="
 
   def getSwaggerURL(): String = {
-    log.info("SwaggerURL: "+swaggerURL)
+    log.info("SwaggerURL: " + swaggerURL)
     swaggerURL
   }
 
@@ -90,42 +91,46 @@ trait MySwaggerService extends SwaggerHttpService {
     val sec = swaggerCacheDuration.toSeconds
     if (sec <= 0) {
       Seq(
-        `Cache-Control`( `no-cache`, `no-store`, `must-revalidate`),
-        RawHeader("Pragma","no-cache"),
-        Expires(DateTime(0))    // RawHeader("Expires","0")
+        `Cache-Control`(`no-cache`, `no-store`, `must-revalidate`),
+        RawHeader("Pragma", "no-cache"),
+        Expires(DateTime(0)) // RawHeader("Expires","0")
       )
     } else {
       Seq(
-        `Cache-Control`( `max-age`( sec ), `public` )
+        `Cache-Control`(`max-age`(sec), `public`)
       )
     }
   }
 
   import CorsDirectives._
   val swaggerRoute =
-      get {
-        cors() {
-          respondWithHeaders(swaggerCacheHeaders:_*) {
-            pathPrefix(apiVersionURISegment) {
-              logRequest(("topLevel", Logging.DebugLevel)) {
+    get {
+      cors() {
+        respondWithHeaders(swaggerCacheHeaders: _*) {
+          pathPrefix(apiVersionURISegment) {
+            logRequest(("topLevel", Logging.DebugLevel)) {
               logResult(("topLevel", Logging.DebugLevel)) {
                 pathPrefix("docs") {
                   pathEndOrSingleSlash {
                     redirect(getSwaggerURL(), StatusCodes.PermanentRedirect)
                   } ~
-                  path("index.html") {
-                    redirect(getSwaggerURL(), StatusCodes.PermanentRedirect)
-                  }
+                    path("index.html") {
+                      redirect(getSwaggerURL(), StatusCodes.PermanentRedirect)
+                    }
                 }
-              }} ~
-              pathPrefix( apiDocsPath ) {
+              }
+            } ~
+              pathPrefix(apiDocsPath) {
                 pathEndOrSingleSlash {
-                  redirect("/"+apiVersionURISegment+"/"+apiDocsPath+"/swagger.yaml", StatusCodes.PermanentRedirect)
+                  redirect(
+                    "/" + apiVersionURISegment + "/" + apiDocsPath + "/swagger.yaml",
+                    StatusCodes.PermanentRedirect
+                  )
                 }
               } ~
               routes
-            }
           }
         }
       }
+    }
 }

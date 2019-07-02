@@ -1,6 +1,4 @@
 package client
-class LogW {
-  
-}
+class LogW {}
 
 class LogA {}

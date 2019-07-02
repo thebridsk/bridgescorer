@@ -7,13 +7,11 @@ object MuiIcon {
 
   def apply(): SvgIconBase = macro createIconComponent
 
-
-  def createIconComponent( c: Context )() = {
+  def createIconComponent(c: Context)() = {
     import c.universe._
 
     val term = c.internal.enclosingOwner.asTerm
     val iconName = term.name.decodedName.toString
-
 
     // does not work
     val code = s"""

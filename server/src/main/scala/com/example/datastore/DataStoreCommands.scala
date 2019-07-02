@@ -34,7 +34,8 @@ object DataStoreCommands extends Subcommand("datastore") {
     Config.setLevelOnConsoleHandler(savelevel)
   }
 
-  implicit def dateConverter: ValueConverter[Duration] = singleArgConverter[Duration](Duration(_))
+  implicit def dateConverter: ValueConverter[Duration] =
+    singleArgConverter[Duration](Duration(_))
 
   import utils.main.Converters._
 
@@ -51,11 +52,13 @@ Options:""")
 
   shortSubcommandsHelp(true)
 
-  val optionStore = opt[Path]("store",
-                              short='s',
-                              descr="The store directory, default=./store",
-                              argName="dir",
-                              default=Some("./store"))
+  val optionStore = opt[Path](
+    "store",
+    short = 's',
+    descr = "The store directory, default=./store",
+    argName = "dir",
+    default = Some("./store")
+  )
 
   addSubcommand(ShowCommand)
   addSubcommand(SetNamesCommand)
