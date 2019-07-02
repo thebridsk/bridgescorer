@@ -17,14 +17,13 @@ object MemoryMonitor {
 
   var activeMonitor: Option[MemoryMonitor] = None
 
-
-  def start( outfile: String = "MemoryMonitor.csv" ) = synchronized {
-    log.info( s"Starting Memory Monitor with $outfile")
+  def start(outfile: String = "MemoryMonitor.csv") = synchronized {
+    log.info(s"Starting Memory Monitor with $outfile")
     activeMonitor match {
       case Some(am) =>
-        log.warning( "Memory monitor is already running" )
+        log.warning("Memory monitor is already running")
       case None =>
-        val m = new MemoryMonitor( outfile )
+        val m = new MemoryMonitor(outfile)
         activeMonitor = Some(m)
         m.start()
     }
@@ -33,7 +32,7 @@ object MemoryMonitor {
   def stop() = synchronized {
     activeMonitor match {
       case Some(am) =>
-        log.info( "Stopping Memory Monitor")
+        log.info("Stopping Memory Monitor")
         am.stop()
         activeMonitor = None
       case None =>
@@ -51,98 +50,96 @@ object MemoryMonitor {
     fSDF.format(d)
   }
 
-
   /**
-   * @param unique
-   * @param date
-   * @param regex generate regex to search for log files
-   */
-  private def getFileName( pattern: String, date: String, regex: Boolean = false ): String =
-  {
-      val b = new StringBuilder();
+    * @param unique
+    * @param date
+    * @param regex generate regex to search for log files
+    */
+  private def getFileName(
+      pattern: String,
+      date: String,
+      regex: Boolean = false
+  ): String = {
+    val b = new StringBuilder();
 
-      val len = pattern.length();
-      var i = 0;
-      import scala.util.control.Breaks._
-      breakable {
-        while (i < len)
-        {
-            var c = pattern.charAt(i);
-            if (c == '%')
-            {
-                i+=1;
-                if (i >= len)
-                {
-                    // ignore an isolated % at end of string
-                    break;
-                }
-                c = pattern.charAt(i);
-                c match {
-                  case '%' =>
-                      b.append(c);
-                  case 't' =>
-                  {
-                      var tmpDir = System.getProperty("java.io.tmpdir");
-                      if (tmpDir == null) {
-                          tmpDir = System.getProperty("user.home");
-                      }
-                      b.append(tmpDir);
-                  }
-                  case 'h' =>
-                      b.append(System.getProperty("user.home"));
-                  case 'd' =>
-                    if (regex) {
-                      b.append(dateRegex)
-                    } else {
-                      b.append(date);
-                    }
-                  case _ =>
-                    if (regex) {
-                      if (FileHandler.special.indexOf(c) >= 0) {
-                        b.append('\\')
-                      }
-                    }
-                    b.append(c)
-                }
-            } else {
+    val len = pattern.length();
+    var i = 0;
+    import scala.util.control.Breaks._
+    breakable {
+      while (i < len) {
+        var c = pattern.charAt(i);
+        if (c == '%') {
+          i += 1;
+          if (i >= len) {
+            // ignore an isolated % at end of string
+            break;
+          }
+          c = pattern.charAt(i);
+          c match {
+            case '%' =>
+              b.append(c);
+            case 't' => {
+              var tmpDir = System.getProperty("java.io.tmpdir");
+              if (tmpDir == null) {
+                tmpDir = System.getProperty("user.home");
+              }
+              b.append(tmpDir);
+            }
+            case 'h' =>
+              b.append(System.getProperty("user.home"));
+            case 'd' =>
+              if (regex) {
+                b.append(dateRegex)
+              } else {
+                b.append(date);
+              }
+            case _ =>
               if (regex) {
                 if (FileHandler.special.indexOf(c) >= 0) {
                   b.append('\\')
                 }
               }
               b.append(c)
+          }
+        } else {
+          if (regex) {
+            if (FileHandler.special.indexOf(c) >= 0) {
+              b.append('\\')
             }
-            i+=1;
+          }
+          b.append(c)
         }
+        i += 1;
       }
-      return b.toString();
+    }
+    return b.toString();
   }
 
-  private def cleanupExistingFiles( pattern: String ) =
-  {
-      // This is called when starting or rotating file.
-      // need to check existing files to see if they match the pattern.
-      // If they do, need to add them to fOldFiles in cron order, with oldest at index 0.
+  private def cleanupExistingFiles(pattern: String) = {
+    // This is called when starting or rotating file.
+    // need to check existing files to see if they match the pattern.
+    // If they do, need to add them to fOldFiles in cron order, with oldest at index 0.
 
     val outpat = pattern.replace('\\', '/')
 
-    val filename = getFileName( outpat, "", false )
+    val filename = getFileName(outpat, "", false)
     val parent = new File(filename).getParent
-    val dir = (if (parent==null) "." else parent+File.separator).replace('\\','/');
+    val dir =
+      (if (parent == null) "." else parent + File.separator).replace('\\', '/');
 
-    val reg = if (dir.length()>0 && outpat.startsWith(dir)) {
+    val reg = if (dir.length() > 0 && outpat.startsWith(dir)) {
       outpat.substring(dir.length())
     } else {
       outpat
     }
 
-    val regex = getFileName( reg, "", true )
+    val regex = getFileName(reg, "", true)
 
     val pat = Pattern.compile(regex)
 
     val dirf = new File(dir)
-    val files = dirf.list( new FilenameFilter() {
-      def accept( dir1: File, name: String ) = {
+    val files = dirf.list(new FilenameFilter() {
+      def accept(dir1: File, name: String) = {
         pat.matcher(name).matches()
       }
     })
@@ -153,7 +150,7 @@ object MemoryMonitor {
     if (sortedfiles.length > fCount) {
       val del = sortedfiles.length - fCount
       sortedfiles.take(del).foreach { f =>
-        val todelete = new File(dirf,f )
+        val todelete = new File(dirf, f)
 //        println( s"  Deleting ${todelete}" )
         todelete.delete
       }
@@ -165,11 +162,11 @@ object MemoryMonitor {
 
 import MemoryMonitor._
 
-class MemoryMonitor( pattern: String ) {
+class MemoryMonitor(pattern: String) {
 
   val outfile = getFileName(pattern, getDate())
 
-  private class Monitor( name: String ) extends Thread(name) {
+  private class Monitor(name: String) extends Thread(name) {
 
     setDaemon(true)
 
@@ -180,9 +177,10 @@ class MemoryMonitor( pattern: String ) {
 
     private var interval = 15000
 
-    override
-    def run() = {
-      val out = new BufferedWriter( new OutputStreamWriter( new FileOutputStream( outfile ) ))
+    override def run() = {
+      val out = new BufferedWriter(
+        new OutputStreamWriter(new FileOutputStream(outfile))
+      )
       try {
         header(out)
         active = true
@@ -201,36 +199,36 @@ class MemoryMonitor( pattern: String ) {
       } finally {
         out.flush()
         out.close()
-        log.info( s"Memory monitor closed: $outfile" )
+        log.info(s"Memory monitor closed: $outfile")
       }
     }
 
     val rt = Runtime.getRuntime
 
-    def writeRow( out: Writer ) = {
+    def writeRow(out: Writer) = {
       val free = rt.freeMemory()
       val total = rt.totalMemory()
       val max = rt.maxMemory()
-      row( out, free, total, max )
+      row(out, free, total, max)
     }
 
-    def header( out: Writer ) = {
+    def header(out: Writer) = {
       val head = "time,used,free,total,max"
       log.fine(head)
-      out.write( head )
-      out.write( "\n" )
+      out.write(head)
+      out.write("\n")
     }
 
-    def row( out: Writer, free: Long, total: Long, max: Long ) = {
+    def row(out: Writer, free: Long, total: Long, max: Long) = {
       val dt = System.currentTimeMillis() - startTime
-      val r = s"""$dt,${total-free},$free,$total,$max"""
+      val r = s"""$dt,${total - free},$free,$total,$max"""
       log.fine(r)
       out.write(r)
       out.write("\n")
       out.flush()
     }
 
-    def stopMonitor() = sleepLock.synchronized  {
+    def stopMonitor() = sleepLock.synchronized {
       active = false
       sleepLock.notify()
     }
@@ -241,11 +239,13 @@ class MemoryMonitor( pattern: String ) {
   def start() = synchronized {
     activeMonitor match {
       case Some(am) =>
-      log.warning( "Memory monitor is already running" )
+        log.warning("Memory monitor is already running")
       case None =>
-        log.info( s"MemoryMonitor out file pattern is: $pattern, outfile: $outfile" )
+        log.info(
+          s"MemoryMonitor out file pattern is: $pattern, outfile: $outfile"
+        )
         cleanupExistingFiles(pattern)
-        val m = new Monitor( outfile )
+        val m = new Monitor(outfile)
         activeMonitor = Some(m)
         m.start()
     }
@@ -257,9 +257,8 @@ class MemoryMonitor( pattern: String ) {
         am.stopMonitor()
         activeMonitor = None
       case None =>
-        log.warning( "Memory monitor is not running" )
+        log.warning("Memory monitor is not running")
     }
   }
-
 
 }

@@ -11,6 +11,6 @@ package object materialui {
   type AnchorElement = Element | AnchorElementFn
 
   type ContainerFnNode = () => Node
-  type ContainerFnComp = () => Component[_,_]
-  type Container = Node | Component[_,_] | ContainerFnNode | ContainerFnComp
+  type ContainerFnComp = () => Component[_, _]
+  type Container = Node | Component[_, _] | ContainerFnNode | ContainerFnComp
 }

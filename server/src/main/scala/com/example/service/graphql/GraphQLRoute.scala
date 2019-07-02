@@ -36,8 +36,8 @@ object GraphQLRoute {
   val log = Logger[GraphQLRoute]
 }
 
-@Path( "" )
-@Tags( Array( new Tag(name="Server")))
+@Path("")
+@Tags(Array(new Tag(name = "Server")))
 trait GraphQLRoute {
   import GraphQLRoute._
 
@@ -46,57 +46,53 @@ trait GraphQLRoute {
   val query = new Query()
 
   implicit val jsObjectReads = Reads.JsObjectReads
-
-
-  @Path( "graphql" )
+  @Path("graphql")
   @POST
   @Operation(
-      summary = "Make a GraphQL request",
-      operationId = "graphql",
-      requestBody = new RequestBody(
-        description = "The request.  A JSON object with three fields: query (string), operationName (optional string), variables (optional object)",
+    summary = "Make a GraphQL request",
+    operationId = "graphql",
+    requestBody = new RequestBody(
+      description =
+        "The request.  A JSON object with three fields: query (string), operationName (optional string), variables (optional object)",
+      content = Array(
+        new Content(
+          mediaType = "application/json",
+          schema = new Schema(implementation = classOf[GraphQLRequest])
+        )
+      )
+    ),
+    responses = Array(
+      new ApiResponse(
+        responseCode = "200",
+        description = "The result of the GraphQL request.",
         content = Array(
-            new Content(
-                mediaType = "application/json",
-                schema = new Schema(
-                    implementation = classOf[GraphQLRequest]
-                )
-            )
+          new Content(
+            mediaType = "application/json",
+            schema = new Schema(implementation = classOf[GraphQLResponse])
+          )
         )
       ),
-      responses = Array(
-          new ApiResponse(
-              responseCode = "200",
-              description = "The result of the GraphQL request.",
-              content = Array(
-                  new Content(
-                      mediaType = "application/json",
-                      schema = new Schema( implementation=classOf[GraphQLResponse] )
-                  )
-              )
-          ),
-          new ApiResponse(
-              responseCode = "400",
-              description = "Bad request",
-              content = Array(
-                  new Content(
-                      mediaType = "application/json",
-                      schema = new Schema(implementation = classOf[GraphQLResponse])
-                  )
-              )
-          ),
-          new ApiResponse(
-              responseCode = "500",
-              description = "Internal server error",
-              content = Array(
-                  new Content(
-                      mediaType = "application/json",
-                      schema = new Schema(implementation = classOf[GraphQLResponse])
-                  )
-              )
+      new ApiResponse(
+        responseCode = "400",
+        description = "Bad request",
+        content = Array(
+          new Content(
+            mediaType = "application/json",
+            schema = new Schema(implementation = classOf[GraphQLResponse])
           )
-
+        )
+      ),
+      new ApiResponse(
+        responseCode = "500",
+        description = "Internal server error",
+        content = Array(
+          new Content(
+            mediaType = "application/json",
+            schema = new Schema(implementation = classOf[GraphQLResponse])
+          )
+        )
       )
+    )
   )
   def xxxgraphQLRoute = {}
   val graphQLRoute: Route =
@@ -106,11 +102,23 @@ trait GraphQLRoute {
           entity(as[JsObject]) { requestJson =>
             val f = query.query(requestJson, restService)
             onComplete(f) {
-              case Success((statusCode,obj)) =>
+              case Success((statusCode, obj)) =>
                 complete(statusCode, obj)
               case Failure(ex) =>
-                log.warning( "Internal server error", ex )
-                complete((InternalServerError, JsObject( Seq(("error", JsString(s"An error occurred: ${ex.getMessage}")))) ))
+                log.warning("Internal server error", ex)
+                complete(
+                  (
+                    InternalServerError,
+                    JsObject(
+                      Seq(
+                        (
+                          "error",
+                          JsString(s"An error occurred: ${ex.getMessage}")
+                        )
+                      )
+                    )
+                  )
+                )
             }
           }
         }

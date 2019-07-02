@@ -30,13 +30,13 @@ import io.swagger.v3.oas.annotations.tags.Tag
 import javax.ws.rs.GET
 
 /**
- * Rest API implementation for the board resource.
- * <p>
- * The REST API and all the methods are documented using
- * swagger annotations.
- */
-@Path( "/rest/duplicatesummaries" )
-@Tags( Array( new Tag(name="Duplicate")))
+  * Rest API implementation for the board resource.
+  * <p>
+  * The REST API and all the methods are documented using
+  * swagger annotations.
+  */
+@Path("/rest/duplicatesummaries")
+@Tags(Array(new Tag(name = "Duplicate")))
 trait RestDuplicateSummary extends HasActorSystem {
 
   private lazy val log = Logging(actorSystem, classOf[RestDuplicate])
@@ -48,44 +48,44 @@ trait RestDuplicateSummary extends HasActorSystem {
   import UtilsPlayJson._
 
   /**
-   * spray route for all the methods on this resource
-   */
+    * spray route for all the methods on this resource
+    */
   val route = pathPrefix(resName) {
 //    logRequest("route", DebugLevel) {
-        getDuplicateSummaries
+    getDuplicateSummaries
 //      }
   }
 
   @GET
   @Operation(
-      summary = "Get all duplicate matches",
-      description = "Returns a list of matches.",
-      operationId = "getDuplicateSummaries",
-      responses = Array(
-          new ApiResponse(
-              responseCode = "200",
-              description = "A list of match summaries, as a JSON array",
-              content = Array(
-                  new Content(
-                      mediaType = "application/json",
-                      array = new ArraySchema(
-                          minItems = 0,
-                          uniqueItems = true,
-                          schema = new Schema( implementation=classOf[DuplicateSummary] )
-                      )
-                  )
-              )
+    summary = "Get all duplicate matches",
+    description = "Returns a list of matches.",
+    operationId = "getDuplicateSummaries",
+    responses = Array(
+      new ApiResponse(
+        responseCode = "200",
+        description = "A list of match summaries, as a JSON array",
+        content = Array(
+          new Content(
+            mediaType = "application/json",
+            array = new ArraySchema(
+              minItems = 0,
+              uniqueItems = true,
+              schema = new Schema(implementation = classOf[DuplicateSummary])
+            )
           )
+        )
       )
+    )
   )
   def xxxgetDuplicateSummaries() = {}
   val getDuplicateSummaries =
 //    logRequest("routeDuplicateSummaries", DebugLevel ) { logResult("routeDuplicateSummaries", DebugLevel ) {
-      get {
-        pathEndOrSingleSlash {
-          resourceList(restService.getDuplicateSummaries())
-        }
+    get {
+      pathEndOrSingleSlash {
+        resourceList(restService.getDuplicateSummaries())
       }
+    }
 //    }}
 
 }

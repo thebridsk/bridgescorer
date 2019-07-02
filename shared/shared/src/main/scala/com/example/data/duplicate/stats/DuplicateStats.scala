@@ -8,18 +8,22 @@ case class DuplicateStats(
     playersOpponentsStats: Option[PlayersOpponentsStats]
 ) {
 
-  def withPlayerStats( ps: PlayerStats ) = copy( playerStats = Some(ps) )
-  def withContractStats( cs: ContractStats ) = copy( contractStats = Some(cs) )
-  def withPlayerDoubledStats( pds: PlayerStats ) = copy( playerDoubledStats = Some(pds) )
-  def withComparisonStats( cs: PlayerComparisonStats ) = copy( comparisonStats = Some(cs) )
-  def withPlayersOpponentsStats( cs: PlayersOpponentsStats ) = copy( playersOpponentsStats = Some(cs) )
+  def withPlayerStats(ps: PlayerStats) = copy(playerStats = Some(ps))
+  def withContractStats(cs: ContractStats) = copy(contractStats = Some(cs))
+  def withPlayerDoubledStats(pds: PlayerStats) =
+    copy(playerDoubledStats = Some(pds))
+  def withComparisonStats(cs: PlayerComparisonStats) =
+    copy(comparisonStats = Some(cs))
+  def withPlayersOpponentsStats(cs: PlayersOpponentsStats) =
+    copy(playersOpponentsStats = Some(cs))
 
-  def update( ds: DuplicateStats ) =
+  def update(ds: DuplicateStats) =
     copy(
-        playerStats = ds.playerStats.orElse( playerStats ),
-        contractStats = ds.contractStats.orElse(contractStats),
-        playerDoubledStats = ds.playerDoubledStats.orElse(playerDoubledStats),
-        comparisonStats = ds.comparisonStats.orElse(comparisonStats),
-        playersOpponentsStats = ds.playersOpponentsStats.orElse(playersOpponentsStats)
+      playerStats = ds.playerStats.orElse(playerStats),
+      contractStats = ds.contractStats.orElse(contractStats),
+      playerDoubledStats = ds.playerDoubledStats.orElse(playerDoubledStats),
+      comparisonStats = ds.comparisonStats.orElse(comparisonStats),
+      playersOpponentsStats =
+        ds.playersOpponentsStats.orElse(playersOpponentsStats)
     )
 }

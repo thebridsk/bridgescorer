@@ -35,7 +35,6 @@ import com.example.backend.RubberMonitorWebservice
 
 //import akka.event.LoggingAdapter
 
-
 trait Service extends ImportExport {
   hasActorSystem: HasActorSystem =>
 
@@ -56,147 +55,183 @@ trait Service extends ImportExport {
   // 6. in the definition for routeRest, add a ~restXxx.route
   //
 
-  val restTypes: Seq[Class[_]]
-                = Seq(classOf[RestBoardSet],
-                      classOf[RestChicago],
-                      classOf[RestNestedChicagoRound],
-                      classOf[RestNestedChicagoRoundHand],
-                      classOf[RestRubber],
-                      classOf[RestNestedRubberHand],
-                      classOf[RestLoggerConfig],
-                      classOf[RestDuplicate],
-                      classOf[RestDuplicateResult],
-                      classOf[RestDuplicateSummary],
-                      classOf[RestNestedBoard],
-                      classOf[RestNestedHand],
-                      classOf[RestNestedTeam],
-                      classOf[RestSuggestion],
-                      classOf[RestNames],
-                      classOf[RestBoardSet],
-                      classOf[RestMovement],
-                      classOf[DuplicateMonitorWebservice],
-                      classOf[ChicagoMonitorWebservice],
-                      classOf[RubberMonitorWebservice],
-                      classOf[ImportExport]
-                     )
+  val restTypes: Seq[Class[_]] = Seq(
+    classOf[RestBoardSet],
+    classOf[RestChicago],
+    classOf[RestNestedChicagoRound],
+    classOf[RestNestedChicagoRoundHand],
+    classOf[RestRubber],
+    classOf[RestNestedRubberHand],
+    classOf[RestLoggerConfig],
+    classOf[RestDuplicate],
+    classOf[RestDuplicateResult],
+    classOf[RestDuplicateSummary],
+    classOf[RestNestedBoard],
+    classOf[RestNestedHand],
+    classOf[RestNestedTeam],
+    classOf[RestSuggestion],
+    classOf[RestNames],
+    classOf[RestBoardSet],
+    classOf[RestMovement],
+    classOf[DuplicateMonitorWebservice],
+    classOf[ChicagoMonitorWebservice],
+    classOf[RubberMonitorWebservice],
+    classOf[ImportExport]
+  )
 
   implicit val restService: BridgeService
 
   object restMovement extends RestMovement {
-    override implicit lazy val actorSystem: ActorSystem = hasActorSystem.actorSystem
-    override implicit lazy val materializer: ActorMaterializer = hasActorSystem.materializer
-    override implicit lazy val restService = hasActorSystem.restService
+    implicit override lazy val actorSystem: ActorSystem =
+      hasActorSystem.actorSystem
+    implicit override lazy val materializer: ActorMaterializer =
+      hasActorSystem.materializer
+    implicit override lazy val restService = hasActorSystem.restService
   }
   object restBoardSet extends RestBoardSet {
-    override implicit lazy val actorSystem: ActorSystem = hasActorSystem.actorSystem
-    override implicit lazy val materializer: ActorMaterializer = hasActorSystem.materializer
-    override implicit lazy val restService = hasActorSystem.restService
+    implicit override lazy val actorSystem: ActorSystem =
+      hasActorSystem.actorSystem
+    implicit override lazy val materializer: ActorMaterializer =
+      hasActorSystem.materializer
+    implicit override lazy val restService = hasActorSystem.restService
   }
   object restChicago extends RestChicago {
-    override implicit lazy val actorSystem: ActorSystem = hasActorSystem.actorSystem
-    override implicit lazy val materializer: ActorMaterializer = hasActorSystem.materializer
-    override implicit lazy val restService = hasActorSystem.restService
+    implicit override lazy val actorSystem: ActorSystem =
+      hasActorSystem.actorSystem
+    implicit override lazy val materializer: ActorMaterializer =
+      hasActorSystem.materializer
+    implicit override lazy val restService = hasActorSystem.restService
   }
   object restRubber extends RestRubber {
-    override implicit lazy val actorSystem: ActorSystem = hasActorSystem.actorSystem
-    override implicit lazy val materializer: ActorMaterializer = hasActorSystem.materializer
-    override implicit lazy val restService = hasActorSystem.restService
+    implicit override lazy val actorSystem: ActorSystem =
+      hasActorSystem.actorSystem
+    implicit override lazy val materializer: ActorMaterializer =
+      hasActorSystem.materializer
+    implicit override lazy val restService = hasActorSystem.restService
   }
   val restDuplicate = new RestDuplicate {
-    override implicit lazy val actorSystem: ActorSystem = hasActorSystem.actorSystem
-    override implicit lazy val materializer: ActorMaterializer = hasActorSystem.materializer
-    override implicit lazy val restService = hasActorSystem.restService
+    implicit override lazy val actorSystem: ActorSystem =
+      hasActorSystem.actorSystem
+    implicit override lazy val materializer: ActorMaterializer =
+      hasActorSystem.materializer
+    implicit override lazy val restService = hasActorSystem.restService
   }
   val restDuplicateResult = new RestDuplicateResult {
-    override implicit lazy val actorSystem: ActorSystem = hasActorSystem.actorSystem
-    override implicit lazy val materializer: ActorMaterializer = hasActorSystem.materializer
-    override implicit lazy val restService = hasActorSystem.restService
+    implicit override lazy val actorSystem: ActorSystem =
+      hasActorSystem.actorSystem
+    implicit override lazy val materializer: ActorMaterializer =
+      hasActorSystem.materializer
+    implicit override lazy val restService = hasActorSystem.restService
   }
   val restDuplicateSummary = new RestDuplicateSummary {
-    override implicit lazy val actorSystem: ActorSystem = hasActorSystem.actorSystem
-    override implicit lazy val materializer: ActorMaterializer = hasActorSystem.materializer
-    override implicit lazy val restService = hasActorSystem.restService
+    implicit override lazy val actorSystem: ActorSystem =
+      hasActorSystem.actorSystem
+    implicit override lazy val materializer: ActorMaterializer =
+      hasActorSystem.materializer
+    implicit override lazy val restService = hasActorSystem.restService
   }
   val restSuggestion = new RestSuggestion {
-    override implicit lazy val actorSystem: ActorSystem = hasActorSystem.actorSystem
-    override implicit lazy val materializer: ActorMaterializer = hasActorSystem.materializer
-    override implicit lazy val restService = hasActorSystem.restService
+    implicit override lazy val actorSystem: ActorSystem =
+      hasActorSystem.actorSystem
+    implicit override lazy val materializer: ActorMaterializer =
+      hasActorSystem.materializer
+    implicit override lazy val restService = hasActorSystem.restService
   }
   object restNames extends RestNames {
-    override implicit lazy val actorSystem: ActorSystem = hasActorSystem.actorSystem
-    override implicit lazy val materializer: ActorMaterializer = hasActorSystem.materializer
-    override implicit lazy val restService = hasActorSystem.restService
+    implicit override lazy val actorSystem: ActorSystem =
+      hasActorSystem.actorSystem
+    implicit override lazy val materializer: ActorMaterializer =
+      hasActorSystem.materializer
+    implicit override lazy val restService = hasActorSystem.restService
   }
-  object duplicateMonitor extends DuplicateMonitorWebservice(totallyMissingResourceHandler)
-  object chicagoMonitor extends ChicagoMonitorWebservice(totallyMissingResourceHandler)
-  object rubberMonitor extends RubberMonitorWebservice(totallyMissingResourceHandler)
+  object duplicateMonitor
+      extends DuplicateMonitorWebservice(totallyMissingResourceHandler)
+  object chicagoMonitor
+      extends ChicagoMonitorWebservice(totallyMissingResourceHandler)
+  object rubberMonitor
+      extends RubberMonitorWebservice(totallyMissingResourceHandler)
 
   object restLoggerConfig extends RestLoggerConfig {
-    override implicit lazy val actorSystem: ActorSystem = hasActorSystem.actorSystem
-    override implicit lazy val materializer: ActorMaterializer = hasActorSystem.materializer
-    override implicit lazy val restService = hasActorSystem.restService
+    implicit override lazy val actorSystem: ActorSystem =
+      hasActorSystem.actorSystem
+    implicit override lazy val materializer: ActorMaterializer =
+      hasActorSystem.materializer
+    implicit override lazy val restService = hasActorSystem.restService
     val ports = hasActorSystem.ports
   }
 
   import UtilsPlayJson._
 
   /**
-   * Handler for converting rejections into HttpResponse
-   */
-  def totallyMissingResourceHandler = RejectionHandler.newBuilder()
-    .handle { case MalformedRequestContentRejection(errorMsg, ex) =>
+    * Handler for converting rejections into HttpResponse
+    */
+  def totallyMissingResourceHandler =
+    RejectionHandler
+      .newBuilder()
+      .handle {
+        case MalformedRequestContentRejection(errorMsg, ex) =>
 //      logger.warning("Oops: "+errorMsg, ex)
-      complete( StatusCodes.BadRequest, RestMessage(errorMsg))
-    }
-    .handleAll[MethodRejection] { rejections =>
-      val methods = rejections map (_.supported)
-      lazy val names = methods map (_.name) mkString ", "
-
-      respondWithHeader(Allow(methods)) {
-        options {
-          complete(StatusCodes.OK, "")
-        } ~
-        complete(StatusCodes.MethodNotAllowed, s"HTTP method not allowed, supported methods: $names!")
+          complete(StatusCodes.BadRequest, RestMessage(errorMsg))
       }
-    }
-    .handleNotFound { complete(StatusCodes.NotFound, RestMessage("Not found, code=service")) }
-    .result()
+      .handleAll[MethodRejection] { rejections =>
+        val methods = rejections map (_.supported)
+        lazy val names = methods map (_.name) mkString ", "
 
+        respondWithHeader(Allow(methods)) {
+          options {
+            complete(StatusCodes.OK, "")
+          } ~
+            complete(
+              StatusCodes.MethodNotAllowed,
+              s"HTTP method not allowed, supported methods: $names!"
+            )
+        }
+      }
+      .handleNotFound {
+        complete(StatusCodes.NotFound, RestMessage("Not found, code=service"))
+      }
+      .result()
 
   def rejectionHandler =
-    RejectionHandler.newBuilder().handleAll[MethodRejection] { rejections =>
-      val methods = rejections map (_.supported)
-      lazy val names = methods map (_.name) mkString ", "
+    RejectionHandler
+      .newBuilder()
+      .handleAll[MethodRejection] { rejections =>
+        val methods = rejections map (_.supported)
+        lazy val names = methods map (_.name) mkString ", "
 
-      respondWithHeader(Allow(methods)) {
-        options {
-          complete(s"Supported methods : $names.")
-        } ~
-        complete(StatusCodes.MethodNotAllowed, s"HTTP method not allowed, supported methods: $names!")
+        respondWithHeader(Allow(methods)) {
+          options {
+            complete(s"Supported methods : $names.")
+          } ~
+            complete(
+              StatusCodes.MethodNotAllowed,
+              s"HTTP method not allowed, supported methods: $names!"
+            )
+        }
       }
-    }
-    .result()
+      .result()
 
   val routeRest =
-    respondWithHeaders(`Cache-Control`( `no-cache`, `no-store`, `must-revalidate`),
-                     RawHeader("Pragma","no-cache"),
-                     Expires(DateTime(0))    // RawHeader("Expires","0")
-      ) {
+    respondWithHeaders(
+      `Cache-Control`(`no-cache`, `no-store`, `must-revalidate`),
+      RawHeader("Pragma", "no-cache"),
+      Expires(DateTime(0)) // RawHeader("Expires","0")
+    ) {
       pathPrefix("v1") {
         pathPrefix("rest") {
           logRequestResult("Service.routeRest") {
             handleRejections(totallyMissingResourceHandler) {
               restLoggerConfig.route ~
-              restBoardSet.route ~ restMovement.route ~ restChicago.route ~
-              restDuplicate.route ~ restDuplicateResult.route ~ restDuplicateSummary.route ~
-              restNames.route ~ restRubber.route ~ restSuggestion.route // ~ restMyLogging.route
+                restBoardSet.route ~ restMovement.route ~ restChicago.route ~
+                restDuplicate.route ~ restDuplicateResult.route ~ restDuplicateSummary.route ~
+                restNames.route ~ restRubber.route ~ restSuggestion.route // ~ restMyLogging.route
             }
           }
         } ~
-        duplicateMonitor.route ~
-        chicagoMonitor.route ~
-        rubberMonitor.route ~
-        importExportRoute
+          duplicateMonitor.route ~
+          chicagoMonitor.route ~
+          rubberMonitor.route ~
+          importExportRoute
       }
     }
 }
@@ -208,22 +243,22 @@ object Service {
 
   private val format = new java.text.SimpleDateFormat("HH:mm:ss.SSS")
 
-  def logStringFromBrowser( ips: String, msg: String ): Unit = {
+  def logStringFromBrowser(ips: String, msg: String): Unit = {
     clientlog.info(s"ClientLog($ips) $msg")
   }
 
-  def formatMsg( msg: String, args: String* ) = {
+  def formatMsg(msg: String, args: String*) = {
     if (args.length == 0) msg
     else {
       val b = new java.lang.StringBuilder()
       val f = new Formatter(b)
       val a = args.asInstanceOf[Object]
-      f.format(msg, args:_*)
+      f.format(msg, args: _*)
       b.toString()
     }
   }
 
-  def toLevel( level: String ) = {
+  def toLevel(level: String) = {
     level match {
       case "E" => Level.SEVERE
       case "W" => Level.WARNING
@@ -234,12 +269,16 @@ object Service {
       case "3" => Level.FINEST
       case "O" => TraceLevel.STDOUT
       case "R" => TraceLevel.STDERR
-      case _ => Level.WARNING
+      case _   => Level.WARNING
     }
 
   }
 
-  def logFromBrowser( ips: String, src: String, e: DuplexProtocol.LogEntryV2 ): Unit = {
+  def logFromBrowser(
+      ips: String,
+      src: String,
+      e: DuplexProtocol.LogEntryV2
+  ): Unit = {
     val format = new java.text.SimpleDateFormat("HH:mm:ss.SSS")
     val ts = format.format(new Date(e.timestamp.toLong))
     val level = e.level
@@ -248,14 +287,17 @@ object Service {
     val message = e.message
     val cause = e.cause
     val args = e.args
-    val msg = formatMsg(message,args:_*)
+    val msg = formatMsg(message, args: _*)
     val lev = toLevel(level)
     val clientid = e.clientid.getOrElse("")
-    clientlog.log(lev,s"$ts ClientLog($ips,$clientid) $src $level $position $url $msg $cause")
+    clientlog.log(
+      lev,
+      s"$ts ClientLog($ips,$clientid) $src $level $position $url $msg $cause"
+    )
   }
 
   def extractHostPort: HttpHeader => Option[String] = {
-    case h: `Host` => Some(h.host.address()+":"+h.port)
+    case h: `Host` => Some(h.host.address() + ":" + h.port)
     case x         => None
   }
 

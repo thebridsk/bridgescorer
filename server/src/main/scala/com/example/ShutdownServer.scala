@@ -1,6 +1,6 @@
 package com.example
 
-import akka.actor.{ActorSystem, Props, Actor}
+import akka.actor.{Actor, ActorSystem, Props}
 import akka.io.IO
 import akka.pattern.ask
 import akka.util.Timeout
@@ -23,7 +23,7 @@ import scala.util.Failure
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.client.RequestBuilding
 import akka.http.scaladsl.marshalling.ToResponseMarshallable
-import akka.http.scaladsl.model.{HttpResponse, HttpRequest}
+import akka.http.scaladsl.model.{HttpRequest, HttpResponse}
 import akka.http.scaladsl.model.StatusCodes._
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.unmarshalling.Unmarshal
@@ -61,16 +61,17 @@ import java.net.HttpURLConnection
 import java.io.IOException
 
 /**
- * This is the main program for the REST server for our application.
- */
+  * This is the main program for the REST server for our application.
+  */
 object ShutdownServer extends Subcommand("shutdown") {
 
-  val logger = Logger( ShutdownServer.getClass.getName )
+  val logger = Logger(ShutdownServer.getClass.getName)
 
   val defaultHttpsPort = 8443
   val defaultCertificate = "keys/example.com.p12"
 
-  implicit def dateConverter: ValueConverter[Duration] = singleArgConverter[Duration](Duration(_))
+  implicit def dateConverter: ValueConverter[Duration] =
+    singleArgConverter[Duration](Duration(_))
 
   import utils.main.Converters._
 
@@ -82,10 +83,39 @@ Stops the HTTP server
 Syntax:
   ${Server.cmdName} shutdown options
 Options:""")
-  val optionPort = opt[Int]("port", short='p', descr="the port the server listens on, use 0 for no http, default=8080", argName="port", default=Some(8080), validate= {p => p>=0 && p<=65535})
-  val optionHttps = opt[Int]("https", short='h', descr="https port to use", argName="port", default=None, validate= {p => p>0 && p<=65535});
-  val optionCertificate = opt[String]("certificate", short='c', descr="the private certificate for the server, default=None", argName="p12", default=None)
-  val optionCertPassword = opt[String]("certpassword", descr="the password for the private certificate, default=None", argName="pw", default=None)
+  val optionPort = opt[Int](
+    "port",
+    short = 'p',
+    descr = "the port the server listens on, use 0 for no http, default=8080",
+    argName = "port",
+    default = Some(8080),
+    validate = { p =>
+      p >= 0 && p <= 65535
+    }
+  )
+  val optionHttps = opt[Int](
+    "https",
+    short = 'h',
+    descr = "https port to use",
+    argName = "port",
+    default = None,
+    validate = { p =>
+      p > 0 && p <= 65535
+    }
+  );
+  val optionCertificate = opt[String](
+    "certificate",
+    short = 'c',
+    descr = "the private certificate for the server, default=None",
+    argName = "p12",
+    default = None
+  )
+  val optionCertPassword = opt[String](
+    "certpassword",
+    descr = "the password for the private certificate, default=None",
+    argName = "pw",
+    default = None
+  )
   footer(s"""
 The --port and --https options must be the same as used to start the server.
 """)
@@ -98,27 +128,27 @@ The --port and --https options must be the same as used to start the server.
 private class ShutdownServer {
   import ShutdownServer._
 
-  private def flushAndCloseInputStream( is: InputStream ) = {
+  private def flushAndCloseInputStream(is: InputStream) = {
     var len = 0
     val buf = new Array[Byte](1024)
-    while ( { len=is.read(buf) ; len > 0 } ) len = 0
+    while ({ len = is.read(buf); len > 0 }) len = 0
     is.close()
   }
 
   def execute(): Int = {
     val url = optionHttps.toOption match {
       case Some(port) =>
-        new URL("https://loopback:"+port+"/v1/shutdown?doit=yes")
+        new URL("https://loopback:" + port + "/v1/shutdown?doit=yes")
       case None =>
         val port = optionPort.toOption.getOrElse(8080)
-        new URL("http://loopback:"+port+"/v1/shutdown?doit=yes")
+        new URL("http://loopback:" + port + "/v1/shutdown?doit=yes")
     }
     try {
       val conn = url.openConnection().asInstanceOf[HttpURLConnection]
       conn.setRequestMethod("POST")
       val status = conn.getResponseCode
       if (status < 200 && status >= 300) {
-        println("Error shutting down server, status code is "+status)
+        println("Error shutting down server, status code is " + status)
       }
       try {
         flushAndCloseInputStream(conn.getInputStream)
@@ -136,7 +166,7 @@ private class ShutdownServer {
   }
 }
 
-private class ShutdownServerAkka  {
+private class ShutdownServerAkka {
   import ShutdownServer._
   // we need an ActorSystem to host our application in
   implicit val system = ActorSystem("bridgescorer")
@@ -154,7 +184,7 @@ private class ShutdownServerAkka  {
   def getHttpPortOption() = {
     optionPort.toOption match {
       case Some(0) => None
-      case x => x
+      case x       => x
     }
   }
 
@@ -165,27 +195,30 @@ private class ShutdownServerAkka  {
     val dur = 60 seconds
 
     try {
-      Await.ready( shutdownServer(), dur )
+      Await.ready(shutdownServer(), dur)
     } catch {
       case _: TimeoutException =>
-        log.info("Timed out after "+dur.toString())
+        log.info("Timed out after " + dur.toString())
         rc = 1
     }
     rc
   }
 
   /**
-   * Get the ssl context
-   */
+    * Get the ssl context
+    */
   def serverContext = {
-    val password = optionCertPassword.toOption.getOrElse("abcdef").toCharArray         // default NOT SECURE
+    val password = optionCertPassword.toOption.getOrElse("abcdef").toCharArray // default NOT SECURE
     val context = SSLContext.getInstance("TLS")
     val ks = KeyStore.getInstance("PKCS12")
     optionCertificate.toOption match {
       case Some(cert) =>
         ks.load(new FileInputStream(cert), password)
       case None =>
-        ks.load(getClass.getClassLoader.getResourceAsStream(defaultCertificate), password)
+        ks.load(
+          getClass.getClassLoader.getResourceAsStream(defaultCertificate),
+          password
+        )
     }
     val keyManagerFactory = KeyManagerFactory.getInstance("SunX509")
     keyManagerFactory.init(ks, password)
@@ -195,30 +228,44 @@ private class ShutdownServerAkka  {
   }
 
   /**
-   * Uses shutdown request to stop the server
-   */
+    * Uses shutdown request to stop the server
+    */
   def shutdownServer(): Future[HttpResponse] = {
     val connection = optionHttps.toOption match {
       case Some(port) =>
-        Http().outgoingConnectionHttps("loopback", port,
-                                       connectionContext=serverContext,
-                                       localAddress=Some(new InetSocketAddress( InetAddress.getLoopbackAddress, 0) ) )
+        Http().outgoingConnectionHttps(
+          "loopback",
+          port,
+          connectionContext = serverContext,
+          localAddress =
+            Some(new InetSocketAddress(InetAddress.getLoopbackAddress, 0))
+        )
       case None =>
         val port = optionPort.toOption.get
-        Http().outgoingConnection("loopback", port, localAddress=Some(new InetSocketAddress( InetAddress.getLoopbackAddress, 0)))
+        Http().outgoingConnection(
+          "loopback",
+          port,
+          localAddress =
+            Some(new InetSocketAddress(InetAddress.getLoopbackAddress, 0))
+        )
     }
-    val request:HttpRequest = RequestBuilding.Post( Uri("/v1/shutdown").withQuery( Query( Map("doit" -> "yes") )))
+    val request: HttpRequest = RequestBuilding.Post(
+      Uri("/v1/shutdown").withQuery(Query(Map("doit" -> "yes")))
+    )
     val responseFuture: Future[HttpResponse] =
-      Source.single(request)
+      Source
+        .single(request)
         .via(connection)
         .runWith(Sink.head)
 
-    responseFuture.andThen {
-      case Success(_) => println("request succeded")
-      case Failure(_) => println("request failed")
-    }.andThen {
-      case _ => system.terminate()
-    }
+    responseFuture
+      .andThen {
+        case Success(_) => println("request succeded")
+        case Failure(_) => println("request failed")
+      }
+      .andThen {
+        case _ => system.terminate()
+      }
 
     responseFuture
   }

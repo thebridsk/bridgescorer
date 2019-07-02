@@ -14,16 +14,16 @@ import scala.util.Failure
 import java.util.concurrent.atomic.AtomicInteger
 
 /**
- * Provides type definitions.
- */
+  * Provides type definitions.
+  */
 package object resource {
 
   /**
-   * The result of an operation on the [[Store]].
-   * A successful result is held in a [[Right]], with the value in the [[Right]] object.
-   * An error is held in a [[Left]], the contents is a tuple2, the first entry is 
-   * the HTML status code, and the second is a message.
-   */
-  type Result[T] = Either[(StatusCode,RestMessage),T]
-  
+    * The result of an operation on the [[Store]].
+    * A successful result is held in a [[Right]], with the value in the [[Right]] object.
+    * An error is held in a [[Left]], the contents is a tuple2, the first entry is
+    * the HTML status code, and the second is a message.
+    */
+  type Result[T] = Either[(StatusCode, RestMessage), T]
+
 }

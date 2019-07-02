@@ -10,10 +10,10 @@ import japgolly.scalajs.react.component.Generic.ComponentRaw
 // import utils.logging.Logger
 import japgolly.scalajs.react.component.Scala
 
-class Style( styles: (String,js.Dictionary[js.Any])*) {
+class Style(styles: (String, js.Dictionary[js.Any])*) {
 
   def asJS = {
-    val r = js.Dictionary[js.Dictionary[js.Any]]( styles:_* )
+    val r = js.Dictionary[js.Dictionary[js.Any]](styles: _*)
     r
   }
 }
@@ -22,8 +22,8 @@ object Style {
 
 //  private val log = Logger("bridge.mui.Style")
 
-  def apply( styles: (String,js.Dictionary[js.Any])*) = {
-    new Style(styles:_*)
+  def apply(styles: (String, js.Dictionary[js.Any])*) = {
+    new Style(styles: _*)
   }
 
 //  import { withStyles } from '@material-ui/styles'
@@ -40,8 +40,8 @@ object Style {
 //  log.fine("WithStyle f: "+f)
 
   /**
-   * Does NOT work
-   */
+    * Does NOT work
+    */
   def withStyle(
       styles: Style,
       options: js.Object = js.Object()
@@ -52,7 +52,7 @@ object Style {
 //    p.updateDynamic("styles")(styles.asJS)
 //    p.updateDynamic("options")(options)
 
-    val c = f(styles.asJS,options)
+    val c = f(styles.asJS, options)
 //    log.fine("WithStyle c: "+c)
     val x = c(child.asInstanceOf[js.Any])
 //    log.fine("WithStyle x: "+x)

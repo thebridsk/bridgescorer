@@ -9,11 +9,8 @@ import com.example.data.MatchRubber
 object Data {
 
   class ImportBridgeService(
-                             val id: String
-                           )
+      val id: String
+  )
 
-  class ImportBridgeServiceRepo( val bridgeService: BridgeService ) {
-
-
-  }
+  class ImportBridgeServiceRepo(val bridgeService: BridgeService) {}
 }

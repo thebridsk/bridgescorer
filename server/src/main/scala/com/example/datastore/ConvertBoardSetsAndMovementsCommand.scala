@@ -32,11 +32,12 @@ object ConvertBoardSetsAndMovementsCommand extends Subcommand("convertboards") {
 
   val log = Logger[ConvertBoardSetsAndMovementsCommand]
 
-  implicit def dateConverter: ValueConverter[Duration] = singleArgConverter[Duration](Duration(_))
+  implicit def dateConverter: ValueConverter[Duration] =
+    singleArgConverter[Duration](Duration(_))
 
   import utils.main.Converters._
 
-  val validValues = List("yaml","json")
+  val validValues = List("yaml", "json")
 
   descr("converts a database to use yaml or json")
 
@@ -47,10 +48,13 @@ Syntax:
   ${DataStoreCommands.cmdName} convertboards type
 Options:""")
 
-val paramType = trailArg[String]( name="type",
-                                    required=true,
-                                    validate= (s)=>validValues.contains(s),
-                                    descr=s"""The type to convert to. Valid values: ${validValues.mkString("\"", "\", \"", "\"")}.""")
+  val paramType = trailArg[String](
+    name = "type",
+    required = true,
+    validate = (s) => validValues.contains(s),
+    descr = s"""The type to convert to. Valid values: ${validValues
+      .mkString("\"", "\", \"", "\"")}."""
+  )
 
   footer(s"""
 """)
@@ -63,30 +67,30 @@ val paramType = trailArg[String]( name="type",
 
       log.info(s"Converting datastore ${storedir} to ${t}")
 
-      val useYaml = t=="yaml"
-      val datastore = new BridgeServiceFileStore( storedir, useYaml=useYaml )
+      val useYaml = t == "yaml"
+      val datastore = new BridgeServiceFileStore(storedir, useYaml = useYaml)
 
       val converters = new BridgeServiceFileStoreConverters(useYaml)
 
-      Await.result( datastore.boardSets.readAll(), 30.seconds ) match {
+      Await.result(datastore.boardSets.readAll(), 30.seconds) match {
         case Right(map) =>
           map.values.foreach { bs =>
             val name = bs.name
             val data = converters.boardSetJson.toJson(bs)
-            FileIO.writeFile(new File( "Boardset"+name+"."+t), data)
+            FileIO.writeFile(new File("Boardset" + name + "." + t), data)
           }
-        case Left((status,msg)) =>
+        case Left((status, msg)) =>
           log.warning(s"Error getting boardsets: ${msg}")
       }
 
-      Await.result( datastore.movements.readAll(), 30.seconds ) match {
+      Await.result(datastore.movements.readAll(), 30.seconds) match {
         case Right(map) =>
           map.values.foreach { m =>
             val name = m.name
             val data = converters.movementJson.toJson(m)
-            FileIO.writeFile(new File( "Movement"+name+"."+t), data)
+            FileIO.writeFile(new File("Movement" + name + "." + t), data)
           }
-        case Left((status,msg)) =>
+        case Left((status, msg)) =>
           log.warning(s"Error getting movements: ${msg}")
       }
 
@@ -95,7 +99,10 @@ val paramType = trailArg[String]( name="type",
       0
     } catch {
       case x: Exception =>
-        log.severe(s"Error converting boardsets and movements ${storedir} to ${t}", x)
+        log.severe(
+          s"Error converting boardsets and movements ${storedir} to ${t}",
+          x
+        )
         1
     }
 

@@ -23,8 +23,8 @@ trait AdditionalProps extends js.Object {
 
 object AdditionalProps {
 
-  implicit class WrapProps[T <: AdditionalProps]( val props: T ) extends AnyVal {
-    def add( additionalProps: js.UndefOr[js.Dictionary[js.Any]] ) = {
+  implicit class WrapProps[T <: AdditionalProps](val props: T) extends AnyVal {
+    def add(additionalProps: js.UndefOr[js.Dictionary[js.Any]]) = {
       additionalProps.foreach { ap =>
         ap.foreach { e =>
           val (key, value) = e
@@ -54,15 +54,15 @@ trait PropsFactory[Props <: js.Object with AdditionalProps] {
 
 trait ComponentFactory[Props <: js.Object with AdditionalProps] {
 
-    protected val f: Js.Component[Props, Null, CtorType.PropsAndChildren]
+  protected val f: Js.Component[Props, Null, CtorType.PropsAndChildren]
 
-    def apply(
-               props: Props
-             )(
-               children: CtorType.ChildArg*
-             ) = {
-      val x = f(props) _
-      x(children)
-    }
+  def apply(
+      props: Props
+  )(
+      children: CtorType.ChildArg*
+  ) = {
+    val x = f(props) _
+    x(children)
+  }
 
 }

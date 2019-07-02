@@ -30,11 +30,12 @@ object ConvertToCommand extends Subcommand("convertto") {
 
   val log = Logger[ConvertToCommand]
 
-  implicit def dateConverter: ValueConverter[Duration] = singleArgConverter[Duration](Duration(_))
+  implicit def dateConverter: ValueConverter[Duration] =
+    singleArgConverter[Duration](Duration(_))
 
   import utils.main.Converters._
 
-  val validValues = List("yaml","json")
+  val validValues = List("yaml", "json")
 
   descr("converts a database to use yaml or json")
 
@@ -45,10 +46,13 @@ Syntax:
   ${DataStoreCommands.cmdName} convertto type
 Options:""")
 
-  val paramType = trailArg[String]( name="type",
-                                    required=true,
-                                    validate= (s)=>validValues.contains(s),
-                                    descr=s"""The type to convert to. Valid values: ${validValues.mkString("\"", "\", \"", "\"")}.""")
+  val paramType = trailArg[String](
+    name = "type",
+    required = true,
+    validate = (s) => validValues.contains(s),
+    descr = s"""The type to convert to. Valid values: ${validValues
+      .mkString("\"", "\", \"", "\"")}."""
+  )
 
   footer(s"""
 """)
@@ -61,14 +65,15 @@ Options:""")
 
       log.info(s"Converting datastore ${storedir} to ${t}")
 
-      val datastore = new BridgeServiceFileStore( storedir, useYaml=t=="yaml" )
+      val datastore =
+        new BridgeServiceFileStore(storedir, useYaml = t == "yaml")
 
-      Await.result( datastore.rubbers.readAll(), 30.seconds )
-      Await.result( datastore.chicagos.readAll(), 30.seconds )
-      Await.result( datastore.duplicates.readAll(), 30.seconds )
-      Await.result( datastore.duplicateresults.readAll(), 30.seconds )
-      Await.result( datastore.boardSets.readAll(), 30.seconds )
-      Await.result( datastore.movements.readAll(), 30.seconds )
+      Await.result(datastore.rubbers.readAll(), 30.seconds)
+      Await.result(datastore.chicagos.readAll(), 30.seconds)
+      Await.result(datastore.duplicates.readAll(), 30.seconds)
+      Await.result(datastore.duplicateresults.readAll(), 30.seconds)
+      Await.result(datastore.boardSets.readAll(), 30.seconds)
+      Await.result(datastore.movements.readAll(), 30.seconds)
 
       log.info(s"Done converting datastore ${storedir} to ${t}")
 

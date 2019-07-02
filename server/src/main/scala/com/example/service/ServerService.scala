@@ -47,26 +47,26 @@ import java.util.TreeMap
 import utils.logging.Logger
 
 /**
- * <p>
- * The REST API and all the methods are documented using
- * swagger annotations.
- */
-@Tags( Array( new Tag(name="Server") ) )
-class ServerService( totallyMissingHandler: RejectionHandler ) {
+  * <p>
+  * The REST API and all the methods are documented using
+  * swagger annotations.
+  */
+@Tags(Array(new Tag(name = "Server")))
+class ServerService(totallyMissingHandler: RejectionHandler) {
 
   val log = Logger[ServerService]
 
   /**
-   * Allow the logging level to be overridden for
-   * tracing request and responses
-   */
+    * Allow the logging level to be overridden for
+    * tracing request and responses
+    */
   val logLevelForTracingRequestResponse = DebugLevel // ErrorLevel // DebugLevel
 
   val serverUrlPrefix = "shutdown"
 
   /**
-   * spray route for all the methods on this resource
-   */
+    * spray route for all the methods on this resource
+    */
   val serverRoute = {
     extractClientIP { ip =>
       {
@@ -82,8 +82,8 @@ class ServerService( totallyMissingHandler: RejectionHandler ) {
   }
 
   /**
-   * Handler for converting rejections into HttpResponse
-   */
+    * Handler for converting rejections into HttpResponse
+    */
 //  def totallyMissingHandler: RejectionHandler
 
   import scala.language.postfixOps
@@ -91,47 +91,36 @@ class ServerService( totallyMissingHandler: RejectionHandler ) {
   @Path("/shutdown")
   @POST
   @Operation(
-      summary = "Shutdown the server",
-      description = "Shutdown the server, must be issued through loopback interface",
-      operationId = "shutdown",
-      parameters = Array(
-          new Parameter(
-              allowEmptyValue=false,
-              description="Actually do the shutdown",
-              in=ParameterIn.QUERY,
-              name="doit",
-              required=true,
-              schema=new Schema(
-                  `type`="string",
-                  allowableValues=Array("yes")
-              )
-          )
-      ),
-      requestBody = new RequestBody(
-          description = "movement to create",
-          content = Array(
-              new Content(
-                  mediaType = "text/plain",
-                  schema = new Schema(
-                      `type`="string"
-                  )
-              )
-          )
-      ),
-      responses = Array(
-          new ApiResponse(
-              responseCode = "204",
-              description = "Accepted",
-          ),
-          new ApiResponse(
-              responseCode = "400",
-              description = "Bad request",
-          )
-
+    summary = "Shutdown the server",
+    description =
+      "Shutdown the server, must be issued through loopback interface",
+    operationId = "shutdown",
+    parameters = Array(
+      new Parameter(
+        allowEmptyValue = false,
+        description = "Actually do the shutdown",
+        in = ParameterIn.QUERY,
+        name = "doit",
+        required = true,
+        schema = new Schema(`type` = "string", allowableValues = Array("yes"))
       )
+    ),
+    requestBody = new RequestBody(
+      description = "movement to create",
+      content = Array(
+        new Content(
+          mediaType = "text/plain",
+          schema = new Schema(`type` = "string")
+        )
+      )
+    ),
+    responses = Array(
+      new ApiResponse(responseCode = "204", description = "Accepted"),
+      new ApiResponse(responseCode = "400", description = "Bad request")
+    )
   )
   def xxxshutdown = {}
-  def shutdown( @Parameter(hidden=true) ip: RemoteAddress ) =
+  def shutdown(@Parameter(hidden = true) ip: RemoteAddress) =
     logRequestResult(ip.toString(), logLevelForTracingRequestResponse) {
       post {
         parameterMap { params =>
@@ -142,14 +131,16 @@ class ServerService( totallyMissingHandler: RejectionHandler ) {
                 import scala.language.postfixOps
                 MyService.shutdownHook match {
                   case Some(hook) =>
-                    hook.terminateServerIn( 1 second)
+                    hook.terminateServerIn(1 second)
                     complete(StatusCodes.NoContent)
                   case None =>
                     log.severe("Error")
                     complete(StatusCodes.BadRequest)
                 }
               case _ =>
-                log.severe("Could not determine remote address or it is not local, ip="+ip)
+                log.severe(
+                  "Could not determine remote address or it is not local, ip=" + ip
+                )
                 complete(StatusCodes.BadRequest)
             }
           } else {

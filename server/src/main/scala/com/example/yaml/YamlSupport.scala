@@ -21,10 +21,11 @@ import com.example.data.rest.JsonSupport
 trait YamlSupport extends JsonSupport {
 
   private lazy val mapper = {
-    new ObjectMapper(new YAMLFactory()).registerModule(new PlayJsonModule(JsonParserSettings()))
+    new ObjectMapper(new YAMLFactory())
+      .registerModule(new PlayJsonModule(JsonParserSettings()))
   }
 
-  def fromYaml[T]( config: String )(implicit reads: Reads[T]): T = {
+  def fromYaml[T](config: String)(implicit reads: Reads[T]): T = {
     val jsvalue = try {
       mapper.readValue(config, classOf[JsValue])
     } catch {
@@ -35,15 +36,15 @@ trait YamlSupport extends JsonSupport {
     convertJson[T](jsvalue)
   }
 
-  def readYaml[T]( configFile: File )(implicit reads: Reads[T]): T = {
-    readYaml[T]( new FileInputStream(configFile) )
+  def readYaml[T](configFile: File)(implicit reads: Reads[T]): T = {
+    readYaml[T](new FileInputStream(configFile))
   }
 
-  def readYaml[T]( is: InputStream )(implicit reads: Reads[T]): T = {
-    readYaml[T]( new BufferedReader( new InputStreamReader( is, "UTF8" ) ) )
+  def readYaml[T](is: InputStream)(implicit reads: Reads[T]): T = {
+    readYaml[T](new BufferedReader(new InputStreamReader(is, "UTF8")))
   }
 
-  def readYaml[T]( reader: Reader )(implicit reads: Reads[T]): T = {
+  def readYaml[T](reader: Reader)(implicit reads: Reads[T]): T = {
     val jsvalue = try {
       mapper.readValue(reader, classOf[JsValue])
     } catch {
@@ -54,26 +55,26 @@ trait YamlSupport extends JsonSupport {
     convertJson[T](jsvalue)
   }
 
-  def writeYaml[T]( t: T )(implicit writes: Writes[T]): String = {
+  def writeYaml[T](t: T)(implicit writes: Writes[T]): String = {
     val jsvalue = Json.toJson(t)
     mapper.writeValueAsString(jsvalue)
   }
 
-  def writeYaml[T]( os: OutputStream, t: T )(implicit writes: Writes[T]): Unit = {
-    val w = new BufferedWriter( new OutputStreamWriter( os, "UTF8" ) )
-    writeYaml(w,t)
+  def writeYaml[T](os: OutputStream, t: T)(implicit writes: Writes[T]): Unit = {
+    val w = new BufferedWriter(new OutputStreamWriter(os, "UTF8"))
+    writeYaml(w, t)
     w.flush()
   }
 
-  def writeYaml[T]( writer: Writer, t: T )(implicit writes: Writes[T]): Unit = {
+  def writeYaml[T](writer: Writer, t: T)(implicit writes: Writes[T]): Unit = {
     val jsvalue = Json.toJson(t)
     mapper.writeValue(writer, jsvalue)
   }
 
-  def writeYaml[T]( outfile: File, t: T )(implicit writes: Writes[T]): Unit = {
+  def writeYaml[T](outfile: File, t: T)(implicit writes: Writes[T]): Unit = {
     import resource._
-    for ( os <- managed(new FileOutputStream(outfile)) ) {
-      writeYaml(os,t)
+    for (os <- managed(new FileOutputStream(outfile))) {
+      writeYaml(os, t)
     }
   }
 }

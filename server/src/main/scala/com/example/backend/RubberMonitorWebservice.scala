@@ -51,21 +51,23 @@ import com.example.data.MatchDuplicate
 import com.example.data.MatchRubber
 import com.example.backend.StoreMonitor.NewParticipantSSERubber
 
-@Path( "" )
+@Path("")
 class RubberMonitorWebservice(
     totallyMissingResourceHandler: RejectionHandler
 )(
     implicit fm: Materializer,
-              system: ActorSystem,
-              bridgeService: BridgeService
-) extends MonitorWebservice[String,MatchRubber](totallyMissingResourceHandler) {
+    system: ActorSystem,
+    bridgeService: BridgeService
+) extends MonitorWebservice[String, MatchRubber](
+      totallyMissingResourceHandler
+    ) {
   val log = Logging(system, classOf[RubberMonitorWebservice])
   val monitor = new StoreMonitorManager(
-                            system,
-                            bridgeService.rubbers,
-                            classOf[RubberStoreMonitor],
-                            NewParticipantSSERubber.apply _
-                 )
+    system,
+    bridgeService.rubbers,
+    classOf[RubberStoreMonitor],
+    NewParticipantSSERubber.apply _
+  )
   import system.dispatcher
 //  system.scheduler.schedule(15.second, 15.second) {
 //    theChat.injectMessage(ChatMessage(sender = "clock", s"Bling! The time is ${new Date().toString}."))
@@ -76,42 +78,41 @@ class RubberMonitorWebservice(
   @Path("/sse/rubbers/{rubId}")
   @GET
   @Operation(
-      tags = Array("Rubber"),
-      summary = "BridgeScorer server set event on a rubber match",
-      operationId = "MonitorSSERubber",
-      parameters = Array(
-          new Parameter(
-              allowEmptyValue=false,
-              description="ID of the match to get",
-              in=ParameterIn.PATH,
-              name="rubId",
-              required=true,
-              schema=new Schema(`type`="string")
-          )
-      ),
-      responses = Array(
-          new ApiResponse(
-              responseCode = "200",
-              description = "Server sent event stream starting",
-              content = Array(
-                  new Content(
-                      mediaType = "text/event-stream",
-                      schema = new Schema( implementation=classOf[String] )
-                  )
-              )
-          ),
-          new ApiResponse(
-              responseCode = "404",
-              description = "Does not exist",
-              content = Array(
-                  new Content(
-                      mediaType = "application/json",
-                      schema = new Schema(implementation = classOf[RestMessage])
-                  )
-              )
-          )
-
+    tags = Array("Rubber"),
+    summary = "BridgeScorer server set event on a rubber match",
+    operationId = "MonitorSSERubber",
+    parameters = Array(
+      new Parameter(
+        allowEmptyValue = false,
+        description = "ID of the match to get",
+        in = ParameterIn.PATH,
+        name = "rubId",
+        required = true,
+        schema = new Schema(`type` = "string")
       )
+    ),
+    responses = Array(
+      new ApiResponse(
+        responseCode = "200",
+        description = "Server sent event stream starting",
+        content = Array(
+          new Content(
+            mediaType = "text/event-stream",
+            schema = new Schema(implementation = classOf[String])
+          )
+        )
+      ),
+      new ApiResponse(
+        responseCode = "404",
+        description = "Does not exist",
+        content = Array(
+          new Content(
+            mediaType = "application/json",
+            schema = new Schema(implementation = classOf[RestMessage])
+          )
+        )
+      )
+    )
   )
   def xxxroutesse = {}
   val routesse = {
@@ -119,23 +120,31 @@ class RubberMonitorWebservice(
     import akka.http.scaladsl.model.sse.ServerSentEvent
     pathPrefix("sse") {
       get {
-        logRequest("sse", Logging.DebugLevel) { logResult("sse", Logging.DebugLevel) {
-          pathPrefix("rubbers") {
-            handleRejections(totallyMissingResourceHandler) {
-              pathPrefix( """[a-zA-Z0-9]+""".r ) { id =>
-                pathEndOrSingleSlash {
-                  extractClientIP { ip => {
-                    log.info(s"SSE from $ip for $id")
-                    reject(UnsupportedRequestContentTypeRejection(Set( MediaTypes.`text/event-stream` )))
-                    complete {
-                      monitor.monitorMatch( ip, id )
+        logRequest("sse", Logging.DebugLevel) {
+          logResult("sse", Logging.DebugLevel) {
+            pathPrefix("rubbers") {
+              handleRejections(totallyMissingResourceHandler) {
+                pathPrefix("""[a-zA-Z0-9]+""".r) { id =>
+                  pathEndOrSingleSlash {
+                    extractClientIP { ip =>
+                      {
+                        log.info(s"SSE from $ip for $id")
+                        reject(
+                          UnsupportedRequestContentTypeRejection(
+                            Set(MediaTypes.`text/event-stream`)
+                          )
+                        )
+                        complete {
+                          monitor.monitorMatch(ip, id)
+                        }
+                      }
                     }
-                  }}
+                  }
                 }
               }
             }
           }
-        }}
+        }
       }
     }
   }

@@ -48,12 +48,12 @@ import com.example.data.Round
 import com.example.data.ChicagoBestMatch
 import com.example.data.RubberBestMatch
 
-import com.example.service.graphql.schema.SchemaQuery.{ log => _, _ }
-import com.example.service.graphql.schema.SchemaMutation.{ log => _, _ }
+import com.example.service.graphql.schema.SchemaQuery.{log => _, _}
+import com.example.service.graphql.schema.SchemaMutation.{log => _, _}
 
 object SchemaDefinition {
 
-  val log = Logger( SchemaDefinition.getClass.getName )
+  val log = Logger(SchemaDefinition.getClass.getName)
 
-  val BridgeScorerSchema = Schema( QueryType, Some(MutationType) )
+  val BridgeScorerSchema = Schema(QueryType, Some(MutationType))
 }
