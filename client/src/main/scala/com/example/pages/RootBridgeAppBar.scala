@@ -6,7 +6,6 @@ import japgolly.scalajs.react._
 import com.example.materialui.MuiAppBar
 import com.example.materialui.Position
 import com.example.materialui.MuiToolbar
-import com.example.materialui.MuiIconButton
 import com.example.materialui.icons.MuiIcons
 import com.example.materialui.MuiTypography
 import com.example.materialui.ColorVariant
@@ -79,9 +78,12 @@ object RootBridgeAppBar {
       title: Seq[VdomNode],
       helpurl: Option[String],
       routeCtl: BridgeRouter[AppPage]
-  )() =
-    component(Props(title,helpurl,routeCtl))
-
+  )() = {
+    TagMod(
+      ServerURLPopup(),
+      component(Props(title,helpurl,routeCtl))
+    )
+  }
 }
 
 object RootBridgeAppBarInternal {

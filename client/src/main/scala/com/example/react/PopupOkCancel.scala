@@ -14,10 +14,10 @@ object PopupOkCancelImplicits {
 object PopupOkCancel {
   import PopupOkCancelInternal._
 
-  case class Props( content: Option[TagMod], ok: Option[Callback], cancel: Option[Callback] )
+  case class Props( content: Option[TagMod], ok: Option[Callback], cancel: Option[Callback], id: Option[String] )
 
-  def apply( content: Option[TagMod], ok: Option[Callback], cancel: Option[Callback] ) =
-    component( Props( content,ok,cancel ) )
+  def apply( content: Option[TagMod], ok: Option[Callback], cancel: Option[Callback], id: Option[String] = None ) =
+    component( Props( content,ok,cancel,id ) )
 }
 
 
@@ -57,7 +57,8 @@ object PopupOkCancelInternal {
               props.cancel.map( cancel => AppButton("PopUpCancel", "Cancel", ^.width := "6em" , ^.onClick --> cancel ) ).whenDefined
             )
           )
-        )
+        ),
+        props.id
       )
     }
   }

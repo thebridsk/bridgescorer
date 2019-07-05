@@ -84,6 +84,9 @@ val buildForHelpOnly = sys.props.get("BUILDFORHELPONLY").
                          orElse(sys.env.get("BUILDFORHELPONLY")).
                            isDefined
 
+val testCaseToRun = sys.props.get("TESTCASETORUN").
+                           orElse(sys.env.get("TESTCASETORUN"))
+
 val testToRunNotTravis = "com.example.test.AllSuites"
 val testToRunBuildForHelpOnly = "com.example.test.selenium.DuplicateTestPages"
 val testToRunInTravis = "com.example.test.TravisAllSuites"
@@ -93,12 +96,15 @@ lazy val testToRun = serverTestToRun.getOrElse(
       println( s"Running in Travis CI, tests to run: ${testToRunInTravis}" )
       testToRunInTravis
     } else {
-      println( s"Not running in Travis CI, tests to run: ${testToRunNotTravis}" )
-      if (buildForHelpOnly) {
-        testToRunBuildForHelpOnly
-      } else {
-        testToRunNotTravis
-      }
+      val t = testCaseToRun.getOrElse(
+        if (buildForHelpOnly) {
+          testToRunBuildForHelpOnly
+        } else {
+          testToRunNotTravis
+        }
+      )
+      println( s"Not running in Travis CI, tests to run: ${t}" )
+      t
     }
 )
 
@@ -212,7 +218,7 @@ lazy val commonSettings = versionSetting ++ Seq(
   EclipseKeys.withSource := true,
   testOptions in Test += Tests.Argument(TestFrameworks.ScalaTest, "-oD"),
   EclipseKeys.useProjectId := true,
-  
+
   checkProject := {
 //    val p = crossProject.value
 //    println(s"Project of of type $p" )
@@ -262,7 +268,10 @@ lazy val bridgescorer: Project = project.in(file(".")).
     ),
 
     EclipseKeys.withSource := true,
-    mainClass in Compile := Some("com.example.Server"),
+//    mainClass in Compile := Some("com.example.Server"),
+    mainClass in (Compile, run) := Some("com.example.Server"),
+    mainClass in (Compile, packageBin) := Some("com.example.Server"),
+    Compile / run / fork := true,
 
     testOptions in Test := Seq(),
 
@@ -929,8 +938,14 @@ lazy val `bridgescorer-server`: Project = project.in(file("server")).
       MyEclipseTransformers.replaceRelativePath("/bridgescorer-rotation", "/bridgescorer-rotationJVM")
     ),
     EclipseKeys.withSource := true,
-    mainClass in Compile := Some("com.example.Server"),
-    EclipseKeys.classpathTransformerFactories ++= Seq(
+
+//    mainClass in Compile := Some("com.example.Server"),
+    mainClass in (Compile, run) := Some("com.example.Server"),
+    mainClass in (Compile, packageBin) := Some("com.example.Server"),
+
+    Compile / run / fork := true,
+
+EclipseKeys.classpathTransformerFactories ++= Seq(
       addDependentRunClassFolder("target/web/classes/main"),
       removeRelativePath("target\\scala-" + verScalaMajorMinor + "\\resource_managed\\main")
     ),

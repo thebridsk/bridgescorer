@@ -1,4 +1,4 @@
-@CHARSET "UTF-8";
+/* @CHARSET "UTF-8"; */
 
 .chiChicagoListPage {
   font-size: x-large;
@@ -114,10 +114,10 @@
   font-size: x-large;
 }
 
-.chiViewPlayersVeryFirstRound > div:nth-child(2),
-.chiViewPlayersSecondRound > div:nth-child(2),
-.chiViewPlayersThirdRound > div:nth-child(2),
-.chiViewPlayersFourthRound > div:nth-child(2)
+.chiViewPlayersVeryFirstRound > div:nth-child(3),
+.chiViewPlayersSecondRound > div:nth-child(3),
+.chiViewPlayersThirdRound > div:nth-child(3),
+.chiViewPlayersFourthRound > div:nth-child(3)
 {
   display: flex;
   flex-direction: row;
@@ -125,10 +125,10 @@
   align-items: flex-start;
 }
 
-.chiViewPlayersVeryFirstRound > div:nth-child(2) > div,
-.chiViewPlayersSecondRound > div:nth-child(2) > div,
-.chiViewPlayersThirdRound > div:nth-child(2) > div,
-.chiViewPlayersFourthRound > div:nth-child(2) > div
+.chiViewPlayersVeryFirstRound > div:nth-child(3) > div,
+.chiViewPlayersSecondRound > div:nth-child(3) > div,
+.chiViewPlayersThirdRound > div:nth-child(3) > div,
+.chiViewPlayersFourthRound > div:nth-child(3) > div
 {
   display: block;
   margin-left: auto;
@@ -141,13 +141,13 @@
   */
   max-width: 768px;
   flex: 1 0 auto;
-  
+
 }
 
-.chiViewPlayersVeryFirstRound > div:nth-child(2) > div table,
-.chiViewPlayersSecondRound > div:nth-child(2) > div table,
-.chiViewPlayersThirdRound > div:nth-child(2) > div table,
-.chiViewPlayersFourthRound > div:nth-child(2) > div table
+.chiViewPlayersVeryFirstRound > div:nth-child(3) > div table,
+.chiViewPlayersSecondRound > div:nth-child(3) > div table,
+.chiViewPlayersThirdRound > div:nth-child(3) > div table,
+.chiViewPlayersFourthRound > div:nth-child(3) > div table
 {
   margin-left: auto;
   margin-right: auto;
@@ -230,8 +230,10 @@
   flex-basis: 100%;
   text-align: center;
 }
+/*
 .chiViewShowNewPosition {
 }
+ */
 .chiViewShowNewPosition > p:first-child {
   font-weight: bold;
 }

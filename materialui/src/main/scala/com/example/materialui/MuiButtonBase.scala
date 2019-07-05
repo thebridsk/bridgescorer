@@ -66,6 +66,7 @@ object ButtonBaseProps extends PropsFactory[ButtonBaseProps] {
     *              button component. Valid property values include button, submit, and reset.
     *              Default: "button"
     * @param id the value of the id attribute
+    * @param title the value of the title attribute
     * @param additionalProps a dictionary of additional properties
     */
   def apply[P <: ButtonBaseProps](
@@ -86,6 +87,7 @@ object ButtonBaseProps extends PropsFactory[ButtonBaseProps] {
       onClick: js.UndefOr[ReactEvent => Unit] = js.undefined,
       style: js.UndefOr[js.Object] = js.undefined,
       id: js.UndefOr[String] = js.undefined,
+      title: js.UndefOr[String] = js.undefined,
       additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
   ): P = {
     val p = get(props, additionalProps)
@@ -106,7 +108,7 @@ object ButtonBaseProps extends PropsFactory[ButtonBaseProps] {
     onClick.foreach(p.updateDynamic("onClick")(_))
     style.foreach(p.updateDynamic("style")(_))
     id.foreach(p.updateDynamic("id")(_))
-
+    title.foreach(p.updateDynamic("title")(_))
     p
   }
 
@@ -153,6 +155,7 @@ object MuiButtonBase extends ComponentFactory[ButtonBaseProps] {
     *              button component. Valid property values include button, submit, and reset.
     *              Default: "button"
     * @param id the value of the id attribute
+    * @param title the value of the title attribute
     * @param additionalProps a dictionary of additional properties
     */
   def apply(
@@ -172,6 +175,7 @@ object MuiButtonBase extends ComponentFactory[ButtonBaseProps] {
       onClick: js.UndefOr[ReactEvent => Unit] = js.undefined,
       style: js.UndefOr[js.Object] = js.undefined,
       id: js.UndefOr[String] = js.undefined,
+      title: js.UndefOr[String] = js.undefined,
       additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
   )(
       children: CtorType.ChildArg*
@@ -193,6 +197,7 @@ object MuiButtonBase extends ComponentFactory[ButtonBaseProps] {
       onClick = onClick,
       style = style,
       id = id,
+      title = title,
       additionalProps = additionalProps
     )
     val x = f(p) _

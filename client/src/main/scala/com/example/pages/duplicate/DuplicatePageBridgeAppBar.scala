@@ -37,6 +37,7 @@ import com.example.materialui.icons.MuiIcons
 import com.example.pages.HomePage
 import com.example.materialui.icons.SvgColor
 import com.example.skeleton.react.BeepComponent
+import com.example.pages.ServerURLPopup
 
 /**
  * A simple AppBar for the Bridge client.
@@ -80,9 +81,12 @@ object DuplicatePageBridgeAppBar {
       routeCtl: BridgeRouter[DuplicatePage]
   )(
       mainMenuItems: CtorType.ChildArg*,
-  ) =
-    component(Props(id,tableIds,mainMenuItems,title,helpurl,routeCtl))
-
+  ) = {
+    TagMod(
+      ServerURLPopup(),
+      component(Props(id,tableIds,mainMenuItems,title,helpurl,routeCtl))
+    )
+  }
 }
 
 object DuplicatePageBridgeAppBarInternal {

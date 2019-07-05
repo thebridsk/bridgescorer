@@ -1,4 +1,4 @@
-@CHARSET "UTF-8";
+/* @CHARSET "UTF-8"; */
 
 * {
   font-family: Arial;
@@ -99,7 +99,7 @@
 }
 
 .baseCheckbox {
-  whiteSpace: nowrap;
+  white-space: nowrap;
   padding: 1px 6px;
   font-size: x-large;
 }
@@ -108,7 +108,7 @@
 }
 
 .baseRadioButton {
-  whiteSpace: nowrap;
+  white-space: nowrap;
   padding: 1px 6px;
   font-size: x-large;
 }
@@ -116,8 +116,8 @@
   transform: scale(2);
 }
 
-.baseNormal {
-}
+/* .baseNormal {
+} */
 
 .baseRequired {
   background-color: yellow !important;
@@ -163,7 +163,7 @@
   opacity: 0.5;
   z-index: 99999;
   overflow: hidden;
-  
+
 }
 
 /**
@@ -214,19 +214,19 @@
 
 .baseDivFooterLeft {
       flex: 1 1 auto;
-      min-width: 25 %;
+      min-width: 25%;
       text-align: left;
 }
 
 .baseDivFooterCenter {
       flex: 1 1 auto;
-      min-width: 25 %;
+      min-width: 25%;
       text-align: center;
 }
 
 .baseDivFooterRight {
       flex: 1 1 auto;
-      min-width: 25 %;
+      min-width: 25%;
       text-align: right;
 }
 
@@ -243,26 +243,25 @@
   .baseHideInPrint {
     display: none;
   }
-  .baseOnlyInPrint {
-  }
+  /* .baseOnlyInPrint {
+  } */
 }
 
 @media screen {
-  .baseHideInPrint {
-  }
+  /* .baseHideInPrint {
+  } */
   .baseOnlyInPrint {
     display: none;
   }
 }
 
-.baseHideInPrint {
-}
-.baseOnlyInPrint {
-}
+/* .baseHideInPrint {
+} */
+/* .baseOnlyInPrint {
+} */
 
-.baseTestPage {
-
-}
+/* .baseTestPage {
+} */
 
 /*
  * Root pages
@@ -399,19 +398,18 @@
     z-index: -1;
 }
 
-.rootExportPageDiv > div:nth-child(2) {
-    
-}
+/* .rootExportPageDiv > div:nth-child(3) {
+} */
 
-.rootExportPageDiv > div:nth-child(2) > div {
+.rootExportPageDiv > div:nth-child(3) > div {
   font-size: x-large;
 }
 
-.rootExportPageDiv > div:nth-child(2) > div > div {
+.rootExportPageDiv > div:nth-child(3) > div > div {
   width: 1024px;
 }
 
-.rootExportPageDiv > div:nth-child(2) > div > div > ul {
+.rootExportPageDiv > div:nth-child(3) > div > div > ul {
   columns: 7;
   list-style-type: none;
 }
@@ -511,15 +509,15 @@ body.touched .withTooltipBox:hover {
  *  App Stuff
  */
 .withTooltipBox {
-  display: flex; 
-  flex-flow: row nowrap; 
-  justify-content: center; 
-  align-items: center; 
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: center;
+  align-items: center;
   align-content: center;
 }
 
-.tooltipContent {
-}
+/* .tooltipContent {
+} */
 
 .tooltipContent > div.tooltipBody > div {
   white-space: pre;
@@ -528,10 +526,10 @@ body.touched .withTooltipBox:hover {
 }
 
 .tooltipContent > div.tooltipBody {
-  display: flex; 
-  flex-flow: row nowrap; 
-  justify-content: left; 
-  align-items: center; 
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: left;
+  align-items: center;
   align-content: center;
   white-space: pre;
 }
@@ -544,8 +542,8 @@ body.touched .withTooltipBox:hover {
 }
 
 .colorbar {
-  display: flex; 
-  flex-flow: row nowrap; 
+  display: flex;
+  flex-flow: row nowrap;
   justify-content: center;
   border: none;
 }
@@ -554,11 +552,10 @@ body.touched .withTooltipBox:hover {
   white-space: pre
 }
 
-.divColorPage {
+/* .divColorPage {
+} */
 
-}
-
-.divColorPage > div {
+.divColorPage > div:nth-child(3) {
   padding-top: 5px;
 }
 
@@ -640,9 +637,9 @@ button, input, a, li {
   width: 100vw;
 }
 
-.divBoardPage {
-/*  max-width: 1000px; */
-}
+/* .divBoardPage {
+  max-width: 1000px;
+} */
 
 body {
   margin: 0;
@@ -681,8 +678,8 @@ body > div > div > div {
 .divAppBar > div > header > div > h6 {
   overflow: hidden;
 }
-.appBarTitle > div:first-child {
-}
+/* .appBarTitle > div:first-child {
+} */
 .appBarTitle + div {
   display: flex;
   flex-direction: row;

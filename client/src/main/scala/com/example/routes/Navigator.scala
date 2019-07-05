@@ -10,6 +10,7 @@ import com.example.logger.Init
 import com.example.debug.DebugLoggerComponent
 import japgolly.scalajs.react.vdom.VdomElement
 import com.example.react.Utils._
+import com.example.pages.ServerURLPopup
 
 /**
  * @author werewolf
@@ -28,6 +29,7 @@ object Navigator {
 
       <.div(
         p,
+//        ServerURLPopup(),
 //        Init.isDebugLoggerEnabled ?= DebugLoggerComponent(),
       )
     }

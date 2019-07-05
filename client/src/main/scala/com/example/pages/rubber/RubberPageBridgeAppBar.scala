@@ -28,6 +28,7 @@ import com.example.data.Id
 import com.example.pages.BridgeAppBar
 import com.example.pages.HomePage
 import com.example.materialui.icons.SvgColor
+import com.example.pages.ServerURLPopup
 
 /**
  * A simple AppBar for the Bridge client.
@@ -67,9 +68,12 @@ object RubberPageBridgeAppBar {
       routeCtl: BridgeRouter[RubberPage]
   )(
       mainMenuItems: CtorType.ChildArg*,
-  ) =
-    component(Props(mainMenuItems,title,helpurl,routeCtl))
-
+  ) = {
+    TagMod(
+      ServerURLPopup(),
+      component(Props(mainMenuItems,title,helpurl,routeCtl))
+    )
+  }
 }
 
 object RubberPageBridgeAppBarInternal {

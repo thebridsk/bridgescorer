@@ -269,48 +269,50 @@ object ImportsListPageInternal {
             None,
             props.router
         )(),
-        <.table(
-          <.thead(
-            <.tr(
-              <.th(
-                ^.colSpan := 2,
-                <.form(
-                  ^.action:=s"/v1/import?url=${returnUrl}",
-                  ^.method:="post",
-                  ^.encType:="multipart/form-data",
+        <.div(
+          <.table(
+            <.thead(
+              <.tr(
+                <.th(
+                  ^.colSpan := 2,
+                  <.form(
+                    ^.action:=s"/v1/import?url=${returnUrl}",
+                    ^.method:="post",
+                    ^.encType:="multipart/form-data",
 
-                  <.label(
-                    importFileText,
+                    <.label(
+                      importFileText,
+                      <.input(
+                        ^.`type` := "file",
+                        ^.name := "zip",
+                        ^.accept := "application/zip",
+                        ^.onChange ==> setSelected _
+                      )
+                    ),
                     <.input(
-                      ^.`type` := "file",
-                      ^.name := "zip",
-                      ^.accept := "application/zip",
-                      ^.onChange ==> setSelected _
+                      ^.`type` := "submit",
+                      ^.name := "submit",
+                      ^.value := "Import"
                     )
                   ),
-                  <.input(
-                    ^.`type` := "submit",
-                    ^.name := "submit",
-                    ^.value := "Import"
-                  )
                 ),
-              ),
-              <.th( "Actions" )
-            )
-          ),
-          <.tbody(
-            if (state.stores.isEmpty) {
-              <.tr(
-                <.td( "Working" )
+                <.th( "Actions" )
               )
-            } else {
-              state.stores.get.imports.zipWithIndex.map { entry =>
-                val (store,i) = entry
-                SummaryRow.withKey( s"Import${i}" )((props,state,this,i,store))
-              }.toTagMod
-            }
+            ),
+            <.tbody(
+              if (state.stores.isEmpty) {
+                <.tr(
+                  <.td( "Working" )
+                )
+              } else {
+                state.stores.get.imports.zipWithIndex.map { entry =>
+                  val (store,i) = entry
+                  SummaryRow.withKey( s"Import${i}" )((props,state,this,i,store))
+                }.toTagMod
+              }
+            )
           )
-        ),
+        )
       )
     }
   }

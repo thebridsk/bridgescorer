@@ -36,35 +36,36 @@ import com.example.routes.AppRouter.ColorView
 import com.example.routes.AppRouter.LogView
 import com.example.bridge.action.BridgeDispatcher
 import com.example.logger.Init
+import com.example.materialui.MuiButton
 
 /**
- * A simple AppBar for the Bridge client.
- *
- * It can be used for all pages but the home page.
- *
- * The AppBar has in the banner from left to right:
- *
- * <ol>
- * <li>Page Menu button
- * <li>Home button
- * <li>title
- * <li>Help button
- * </ol>
- *
- * To use, just code the following:
- *
- * <pre><code>
- * BridgeAppBar( BridgeAppBar.Props( ... ) )
- * </code></pre>
- *
- * @author werewolf
- */
+  * A simple AppBar for the Bridge client.
+  *
+  * It can be used for all pages but the home page.
+  *
+  * The AppBar has in the banner from left to right:
+  *
+  * <ol>
+  * <li>Page Menu button
+  * <li>Home button
+  * <li>title
+  * <li>Help button
+  * </ol>
+  *
+  * To use, just code the following:
+  *
+  * <pre><code>
+  * BridgeAppBar( BridgeAppBar.Props( ... ) )
+  * </code></pre>
+  *
+  * @author werewolf
+  */
 object BridgeAppBar {
   import BridgeAppBarInternal._
 
   case class Props(
       mainMenu: Seq[CtorType.ChildArg],
-      handleMainClick: ReactEvent=>Unit,
+      handleMainClick: ReactEvent => Unit,
       maintitle: Seq[VdomNode],
       title: Seq[CtorType.ChildArg],
       helpurl: String,
@@ -73,16 +74,26 @@ object BridgeAppBar {
   )
 
   def apply(
-      handleMainClick: ReactEvent=>Unit,
+      handleMainClick: ReactEvent => Unit,
       maintitle: Seq[VdomNode],
       title: Seq[VdomNode],
       helpurl: String,
       routeCtl: BridgeRouter[_],
       showHomeButton: Boolean = true
   )(
-      mainMenu: CtorType.ChildArg*,
+      mainMenu: CtorType.ChildArg*
   ) =
-    component(Props(mainMenu,handleMainClick,maintitle,title,helpurl,routeCtl,showHomeButton))
+    component(
+      Props(
+        mainMenu,
+        handleMainClick,
+        maintitle,
+        title,
+        helpurl,
+        routeCtl,
+        showHomeButton
+      )
+    )
 
 }
 
@@ -92,54 +103,64 @@ object BridgeAppBarInternal {
   val logger = Logger("bridge.BridgeAppBar")
 
   /**
-   * Internal state for rendering the component.
-   *
-   * I'd like this class to be private, but the instantiation of component
-   * will cause State to leak.
-   *
-   */
+    * Internal state for rendering the component.
+    *
+    * I'd like this class to be private, but the instantiation of component
+    * will cause State to leak.
+    *
+    */
   case class State(
       anchorMoreEl: js.UndefOr[Element] = js.undefined
   ) {
 
-    def openMoreMenu( n: Node ) = copy( anchorMoreEl = n.asInstanceOf[Element] )
-    def closeMoreMenu() = copy( anchorMoreEl = js.undefined )
+    def openMoreMenu(n: Node) = copy(anchorMoreEl = n.asInstanceOf[Element])
+    def closeMoreMenu() = copy(anchorMoreEl = js.undefined)
   }
 
   /**
-   * Internal state for rendering the component.
-   *
-   * I'd like this class to be private, but the instantiation of component
-   * will cause Backend to leak.
-   *
-   */
+    * Internal state for rendering the component.
+    *
+    * I'd like this class to be private, but the instantiation of component
+    * will cause Backend to leak.
+    *
+    */
   class Backend(scope: BackendScope[Props, State]) {
 
-    def handleMoreClick( event: ReactEvent ) = event.extract(_.currentTarget)(currentTarget => scope.modState(s => s.openMoreMenu(currentTarget)).runNow() )
-    def handleMoreCloseClick( event: ReactEvent ) = scope.modState(s => s.closeMoreMenu()).runNow()
+    def handleMoreClick(event: ReactEvent) =
+      event.extract(_.currentTarget)(
+        currentTarget =>
+          scope.modState(s => s.openMoreMenu(currentTarget)).runNow()
+      )
+    def handleMoreCloseClick(event: ReactEvent) =
+      scope.modState(s => s.closeMoreMenu()).runNow()
     def handleMoreClose( /* event: js.Object, reason: String */ ) = {
       logger.fine("MoreClose called")
       scope.modState(s => s.closeMoreMenu()).runNow()
     }
 
-    def gotoPage( uri: String ) = {
+    def gotoPage(uri: String) = {
       GotoPage.inNewWindow(uri)
     }
 
-    def handleHelpGotoPageClick(uri: String)( event: ReactEvent ) = {
+    def handleHelpGotoPageClick(uri: String)(event: ReactEvent) = {
       logger.info(s"""Going to page ${uri}""")
 //      handleMoreClose()
 
       gotoPage(uri)
     }
 
-    def startLog( event: ReactEvent ) = {
+    def startLog(event: ReactEvent) = {
       Init.startMaybeDebugLogging(true)
       BridgeDispatcher.startLogs()
     }
-    def stopLog( event: ReactEvent ) = BridgeDispatcher.stopLogs()
+    def stopLog(event: ReactEvent) = BridgeDispatcher.stopLogs()
 
-    def render( props: Props, state: State ) = {
+    def serverUrlClick(event: ReactEvent) = {
+      logger.info("Requesting to show server URL popup")
+      ServerURLPopup.setShowServerURLPopup(true)
+    }
+
+    def render(props: Props, state: State) = {
       import BaseStyles._
 
       def gotoHomePage(e: ReactEvent) = props.routeCtl.toHome
@@ -149,188 +170,206 @@ object BridgeAppBarInternal {
         props.routeCtl.toInfo
       }
 
-      def callbackPage(page: AppPage)(e: ReactEvent) = props.routeCtl.toRootPage(page)
+      def callbackPage(page: AppPage)(e: ReactEvent) =
+        props.routeCtl.toRootPage(page)
 
       val rightButton =
         List[CtorType.ChildArg](
           MuiIconButton(
-                            id = "Help",
-                            onClick = handleHelpGotoPageClick(props.helpurl) _,
-                            color=ColorVariant.inherit
-                        )(
-                            MuiIcons.Help()
-                        ),
-
+            id = "Help",
+            onClick = handleHelpGotoPageClick(props.helpurl) _,
+            title = "Help",
+            color = ColorVariant.inherit
+          )(
+            MuiIcons.Help()
+          ),
           MuiIconButton(
-                            id = "MoreMenu",
-                            onClick = handleMoreClick _,
-                            color=ColorVariant.inherit
-                        )(
-                            MuiIcons.MoreVert()
-                        )
+            id = "ServerURL",
+            onClick = serverUrlClick _,
+            title = "Show server URLs",
+            color = ColorVariant.inherit
+          )(
+            MuiIcons.Place()
+            // MuiTypography(
+            //   variant = TextVariant.h6,
+            // )(
+            //   "Server"
+            // )
+          ),
+          MuiIconButton(
+            id = "MoreMenu",
+            onClick = handleMoreClick _,
+            title = "Developer Menu",
+            color = ColorVariant.inherit
+          )(
+            MuiIcons.MoreVert()
+          )
         )
 
       val toolbarSuits = TitleSuits.suits
 
       val toolbarContentTail: List[CtorType.ChildArg] = List(
-                                                          toolbarSuits,
-                                                          <.div(
-                                                              rightButton:_*
-                                                          )
-                                                        )
+        toolbarSuits,
+        <.div(
+          rightButton: _*
+        )
+      )
 
-      val toolbarFront: List[CtorType.ChildArg] =
-          {
-            val demo = if (Bridge.isDemo) {
-              List[TagMod](
-                MuiTypography(
-                    variant = TextVariant.h6,
-                    color = TextColor.error,
-                )(
-                    <.span("DEMO",<.span(^.dangerouslySetInnerHtml:="&nbsp;"))
-                )
+      val toolbarFront: List[CtorType.ChildArg] = {
+        val demo = if (Bridge.isDemo) {
+          List[TagMod](
+            MuiTypography(
+              variant = TextVariant.h6,
+              color = TextColor.error
+            )(
+              <.span("DEMO", <.span(^.dangerouslySetInnerHtml := "&nbsp;"))
+            )
+          )
+        } else {
+          List()
+        }
+        List(
+          <.div(
+            baseStyles.appBarTitle,
+            !props.mainMenu.isEmpty ?= MuiIconButton(
+              id = "MainMenu",
+              onClick = props.handleMainClick,
+              title = "Menu",
+              color = ColorVariant.inherit
+            )(
+              MuiIcons.Menu()
+            ),
+            if (props.showHomeButton) {
+              MuiIconButton(
+                id = "Home",
+                onClick = gotoHomePage _,
+                title = "Home",
+                color = ColorVariant.inherit
+              )(
+                MuiIcons.Home()
               )
             } else {
-              List()
+              TagMod.empty
             }
-            List(
-              <.div(
-                baseStyles.appBarTitle,
-                !props.mainMenu.isEmpty ?= MuiIconButton(
-                    id = "MainMenu",
-                    onClick = props.handleMainClick,
-                    color=ColorVariant.inherit
-                )(
-                  MuiIcons.Menu()
-                ),
-                if (props.showHomeButton) {
-                  MuiIconButton(
-                      id = "Home",
-                      onClick = gotoHomePage _,
-                      color=ColorVariant.inherit
-                  )(
-                      MuiIcons.Home()
-                  )
-                } else {
-                  TagMod.empty
-                }
-              ),
-              <.div(
-                (demo :::
-                props.maintitle.toList :::
-                (if (props.title.isEmpty) {
-                  List()
-                } else {
-                  List[TagMod](
-                    MuiTypography(
-                        variant = TextVariant.h6,
-                        color = TextColor.inherit,
-                    )(
-                        <.span(^.dangerouslySetInnerHtml:="&nbsp;-&nbsp;")
-                    )
-                  ) ::: props.title.toList
-                })):_*
-              )
-            )
-          }
+          ),
+          <.div(
+            (demo :::
+              props.maintitle.toList :::
+              (if (props.title.isEmpty) {
+                 List()
+               } else {
+                 List[TagMod](
+                   MuiTypography(
+                     variant = TextVariant.h6,
+                     color = TextColor.inherit
+                   )(
+                     <.span(^.dangerouslySetInnerHtml := "&nbsp;-&nbsp;")
+                   )
+                 ) ::: props.title.toList
+               })): _*
+          )
+        )
+      }
 
       val toolbarContent = toolbarFront ::: toolbarContentTail
 
-      <.div(
+      val bar = <.div(
         (
           (
             MuiAppBar(
-                position=Position.static
+              position = Position.static
             )(
-                MuiToolbar(
-                    classes = js.Dictionary("root"->"muiToolbar")
-                )(
-                    toolbarContent:_*
-                )
-            )::
-            // more menu
-            MyMenu(
-                anchorEl=state.anchorMoreEl,
+              MuiToolbar(
+                classes = js.Dictionary("root" -> "muiToolbar")
+              )(
+                toolbarContent: _*
+              )
+            ) ::
+              // more menu
+              MyMenu(
+                anchorEl = state.anchorMoreEl,
                 onClickAway = handleMoreClose _,
-                onItemClick = handleMoreCloseClick _,
-            )(
+                onItemClick = handleMoreCloseClick _
+              )(
                 MuiMenuItem(
-                    id = "About",
-                    onClick = gotoAboutPage _
+                  id = "About",
+                  onClick = gotoAboutPage _
                 )(
-                    "About"
+                  "About"
                 ),
                 MuiMenuItem(
-                    id = "SwaggerDocs",
-                    onClick = handleHelpGotoPageClick("/v1/docs") _
+                  id = "SwaggerDocs",
+                  onClick = handleHelpGotoPageClick("/v1/docs") _
                 )(
-                    "Swagger Docs"
+                  "Swagger Docs"
                 ),
                 MuiMenuItem(
-                    id = "SwaggerDocs2",
-                    onClick = handleHelpGotoPageClick("/public/apidocs.html") _
+                  id = "SwaggerDocs2",
+                  onClick = handleHelpGotoPageClick("/public/apidocs.html") _
                 )(
-                    "Swagger API Docs"
+                  "Swagger API Docs"
                 ),
                 MuiMenuItem(
-                    id = "Info",
-                    onClick = gotoInfoPage _
+                  id = "Info",
+                  onClick = gotoInfoPage _
                 )(
-                    "Info"
+                  "Info"
                 ),
                 MuiMenuItem(
-                    id = "GraphQL",
-                    onClick = callbackPage(GraphQLAppPage) _
+                  id = "GraphQL",
+                  onClick = callbackPage(GraphQLAppPage) _
                 )(
-                    "GraphQL"
+                  "GraphQL"
                 ),
                 MuiMenuItem(
-                    id = "GraphiQL",
-                    onClick = callbackPage(GraphiQLView) _
+                  id = "GraphiQL",
+                  onClick = callbackPage(GraphiQLView) _
                 )(
-                    "GraphiQL"
+                  "GraphiQL"
                 ),
                 MuiMenuItem(
-                    id = "Voyager",
-                    onClick = callbackPage(VoyagerView) _
+                  id = "Voyager",
+                  onClick = callbackPage(VoyagerView) _
                 )(
-                    "Voyager"
+                  "Voyager"
                 ),
                 MuiMenuItem(
-                    id = "TestPage",
-                    onClick = callbackPage(PageTest) _
+                  id = "TestPage",
+                  onClick = callbackPage(PageTest) _
                 )(
-                    "Test Page"
+                  "Test Page"
                 ),
                 MuiMenuItem(
-                    id = "Color",
-                    onClick = callbackPage(ColorView) _
+                  id = "Color",
+                  onClick = callbackPage(ColorView) _
                 )(
-                    "Color"
+                  "Color"
                 ),
                 MuiMenuItem(
-                    id = "Log",
-                    onClick = callbackPage(LogView) _
+                  id = "Log",
+                  onClick = callbackPage(LogView) _
                 )(
-                    "Show Logs"
+                  "Show Logs"
                 ),
                 MuiMenuItem(
-                    id = "StartLog",
-                    onClick = startLog _
+                  id = "StartLog",
+                  onClick = startLog _
                 )(
-                    "Start Logging"
+                  "Start Logging"
                 ),
                 MuiMenuItem(
-                    id = "StopLog",
-                    onClick = stopLog _
+                  id = "StopLog",
+                  onClick = stopLog _
                 )(
-                    "Stop Logging"
-                ),
-            )::Nil
-          ).map(_.vdomElement):::
-          props.mainMenu.toList
+                  "Stop Logging"
+                )
+              ) :: Nil
+          ).map(_.vdomElement) :::
+            props.mainMenu.toList
         ): _*
       )
+
+      bar
     }
 
     private var mounted = false
@@ -346,12 +385,14 @@ object BridgeAppBarInternal {
     }
   }
 
-  val component = ScalaComponent.builder[Props]("BridgeAppBar")
-                            .initialStateFromProps { props => State() }
-                            .backend(new Backend(_))
-                            .renderBackend
-                            .componentDidMount( scope => scope.backend.didMount)
-                            .componentWillUnmount( scope => scope.backend.willUnmount )
-                            .build
+  val component = ScalaComponent
+    .builder[Props]("BridgeAppBar")
+    .initialStateFromProps { props =>
+      State()
+    }
+    .backend(new Backend(_))
+    .renderBackend
+    .componentDidMount(scope => scope.backend.didMount)
+    .componentWillUnmount(scope => scope.backend.willUnmount)
+    .build
 }
-

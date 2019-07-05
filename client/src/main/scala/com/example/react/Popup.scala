@@ -3,6 +3,7 @@ package com.example.react
 import scala.scalajs.js
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
+import utils.logging.Logger
 
 /**
  * A skeleton Popup.
@@ -18,14 +19,17 @@ import japgolly.scalajs.react._
 object Popup {
   import PopupInternal._
 
-  case class Props( display: Boolean, content: TagMod )
+  case class Props( display: Boolean, content: TagMod, id: Option[String] )
 
-  def apply( display: Boolean, content: TagMod ) = component(Props(display,content))
+  def apply( display: Boolean, content: TagMod, id: Option[String] = None ) = component(Props(display,content,id))
 
 }
 
 object PopupInternal {
   import Popup._
+
+  val logger = Logger("bridge.Popup")
+
   /**
    * Internal state for rendering the Popup.
    *
@@ -47,6 +51,10 @@ object PopupInternal {
       import com.example.pages.BaseStyles._
       val disp = ^.display.none.when(!props.display)
       <.div(
+        props.id.whenDefined { i =>
+          logger.info(s"""Popup.render setting id to $i""")
+           ^.id:=i
+        },
         <.div(
           ^.id:="overlay",
           baseStyles.divPopupOverlay,

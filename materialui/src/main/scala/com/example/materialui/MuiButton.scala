@@ -144,6 +144,8 @@ object ButtonProps extends PropsFactory[ButtonProps] {
     * @param type Used to control the button's purpose. This property passes the value to the type attribute of the native
     *              button component. Valid property values include button, submit, and reset.
     *              Default: "button"
+    * @param id the value of the id attribute
+    * @param title the value of the title attribute
     * @param additionalProps a dictionary of additional properties
     */
   def apply[P <: ButtonProps](
@@ -176,6 +178,7 @@ object ButtonProps extends PropsFactory[ButtonProps] {
       onClick: js.UndefOr[ReactEvent => Unit] = js.undefined,
       style: js.UndefOr[js.Object] = js.undefined,
       id: js.UndefOr[String] = js.undefined,
+      title: js.UndefOr[String] = js.undefined,
       additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
   ): P = {
     val p: P = ButtonBaseProps(
@@ -196,6 +199,7 @@ object ButtonProps extends PropsFactory[ButtonProps] {
       onClick,
       style,
       id,
+      title,
       additionalProps
     )
 
@@ -269,6 +273,8 @@ object MuiButton extends ComponentFactory[ButtonProps] {
     * @param type Used to control the button's purpose. This property passes the value to the type attribute of the native
     *              button component. Valid property values include button, submit, and reset.
     *              Default: "button"
+    * @param id the value of the id attribute
+    * @param title the value of the title attribute
     * @param additionalProps a dictionary of additional properties
     * @param children
     */
@@ -301,6 +307,7 @@ object MuiButton extends ComponentFactory[ButtonProps] {
       onClick: js.UndefOr[ReactEvent => Unit] = js.undefined,
       style: js.UndefOr[js.Object] = js.undefined,
       id: js.UndefOr[String] = js.undefined,
+      title: js.UndefOr[String] = js.undefined,
       additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
   )(
       children: CtorType.ChildArg*
@@ -330,6 +337,7 @@ object MuiButton extends ComponentFactory[ButtonProps] {
       onClick,
       style,
       id,
+      title,
       additionalProps
     )
     val x = f(p) _

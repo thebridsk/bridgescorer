@@ -1,4 +1,4 @@
-@CHARSET "UTF-8";
+/* @CHARSET "UTF-8"; */
 
 .rubListPage {
   font-size: x-large;
@@ -42,14 +42,14 @@
   text-align: left !important;
 }
 
-.rubDivRubberMatch > div:nth-child(2) {
+.rubDivRubberMatch > div:nth-child(3) {
   font-size: x-large;
   display: flex;
   flex-wrap: wrap;
   flex-direction: row;
   justify-content: center;
 }
-.rubDivRubberMatch > div:nth-child(2) table {
+.rubDivRubberMatch > div:nth-child(3) table {
   margin: 2px;
 }
 

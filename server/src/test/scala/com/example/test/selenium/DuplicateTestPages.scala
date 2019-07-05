@@ -1504,4 +1504,14 @@ class DuplicateTestPages extends FlatSpec
     SuggestionPage.current.clickCancel.validate
   }
 
+  it should "show server URLs" in {
+    import SessionDirector._
+
+    val ldp = ListDuplicatePage.current
+    val ldpurl = ldp.clickServerURL.validateServerURL
+    val urls = ldpurl.getServerURLs
+    urls.length mustBe 1
+    ldpurl.checkForValidServerURLs
+    ldpurl.clickServerURLOK.validate
+  }
 }
