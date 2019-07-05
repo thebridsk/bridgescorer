@@ -14,6 +14,7 @@ import utils.logging.Logger
 import com.example.test.pages.GenericPage
 import com.example.test.pages.bridge.HomePage
 import com.example.test.pages.bridge.Popup
+import com.example.test.pages.ServerURLAddOn
 
 object ListDuplicatePage {
 
@@ -100,7 +101,13 @@ object ListDuplicatePage {
 
 }
 
-class ListDuplicatePage( importId: Option[String] )( implicit val webDriver: WebDriver, pageCreated: SourcePosition ) extends Page[ListDuplicatePage] with Popup[ListDuplicatePage] {
+class ListDuplicatePage(
+    importId: Option[String]
+)(
+  implicit
+    val webDriver: WebDriver,
+    pageCreated: SourcePosition
+) extends Page[ListDuplicatePage] with Popup[ListDuplicatePage] with ServerURLAddOn[ListDuplicatePage] {
   import ListDuplicatePage._
 
   val importColumns = importId.map( id => 2 ).getOrElse(0)

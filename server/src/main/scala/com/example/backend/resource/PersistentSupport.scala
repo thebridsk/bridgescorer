@@ -7,7 +7,8 @@ import scala.concurrent.Future
 import com.example.data.Id
 
 abstract class PersistentSupport[
-    VId, VType <: VersionedInstance[VType, VType, VId]
+    VId,
+    VType <: VersionedInstance[VType, VType, VId]
 ](
     implicit
     val support: StoreSupport[VId, VType]
