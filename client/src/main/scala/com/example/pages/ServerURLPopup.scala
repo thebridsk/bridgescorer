@@ -89,7 +89,11 @@ object ServerURLPopupInternal {
   def render( props: Props, state: State ) = {
       val content: Option[TagMod] = if (isShowServerURLPopup) {
         implicit val ec = ExecutionContext.global
-        if (state.serverUrl.isEmpty && !Bridge.isDemo && !state.requestedUrl) {
+        val item = if (Bridge.isDemo) {
+          Some(
+            <.li("Demo mode, all data entered will be lost on page refresh or closing page")
+          )
+        } else if (state.serverUrl.isEmpty && !state.requestedUrl) {
           js.timers.setTimeout(1) {
             scope.withEffectsImpure.modState(s=>s.copy(requestedUrl=true))
           }
@@ -101,30 +105,22 @@ object ServerURLPopupInternal {
             }
           })
           Some(
-            <.div(
-              <.h1("Server URL"),
-              <.ul(
-                <.li("Waiting for response from server")
-              )
-            )
+            <.li("Waiting for response from server")
           )
         } else {
           logger.info(s"In ServerURLPopup.render, displaying server URLs: ${state.serverUrl}")
           Some(
-            <.div(
-              <.h1("Server URL"),
-              <.ul(
-                if (Bridge.isDemo) {
-                  <.li("Demo mode, all data entered will be lost on page refresh or closing page")
-                } else {
-                  if (state.serverUrl.isEmpty || state.serverUrl.get.serverUrl.isEmpty) {
-                    <.li("No network interfaces found")
-                  } else {
-                    state.serverUrl.get.serverUrl.map{ url => <.li(url) }.toTagMod
-                  }
-                }
-              )
-            )
+            if (state.serverUrl.isEmpty || state.serverUrl.get.serverUrl.isEmpty) {
+              <.li("No network interfaces found")
+            } else {
+              state.serverUrl.get.serverUrl.map{ url => <.li(url) }.toTagMod
+            }
+          )
+        }
+        item.map { i =>
+          <.div(
+            <.h1("Server URL"),
+            <.ul( i )
           )
         }
       } else {
