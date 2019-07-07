@@ -30,19 +30,22 @@ object DuplicateSummaryStore extends ChangeListenable {
 
   private var dispatchToken: Option[DispatchToken] = Some(BridgeDispatcher.register(dispatch _))
 
-  def dispatch( msg: Any ) = Alerter.tryitWithUnit { msg match {
-    case ActionUpdateDuplicateSummary(importId,summary) =>
-      updateDuplicateSummary(importId,summary)
-    case ActionUpdateDuplicateSummaryItem(importId,summary) =>
-      updateDuplicateSummaryItem(importId,summary)
-    case ActionUpdateDuplicateSummaryDemoMatch(importId,summary) =>
-      updateDuplicateSummaryDemoMatch(importId,summary)
-    case ActionUpdateDuplicateSummaryDemoMatchItem(importId,summary) =>
-      updateDuplicateSummaryDemoMatchItem(importId,summary)
-    case x =>
-      // There are multiple stores, all the actions get sent to all stores
-//      logger.warning("BoardSetStore: Unknown msg dispatched, "+x)
-  }}
+  def dispatch( msg: Any ) = Alerter.tryitWithUnit {
+//    logger.info(s"DuplicateSummaryStore.dispatch $msg")
+    msg match {
+      case ActionUpdateDuplicateSummary(importId,summary) =>
+        updateDuplicateSummary(importId,summary)
+      case ActionUpdateDuplicateSummaryItem(importId,summary) =>
+        updateDuplicateSummaryItem(importId,summary)
+      case ActionUpdateDuplicateSummaryDemoMatch(importId,summary) =>
+        updateDuplicateSummaryDemoMatch(importId,summary)
+      case ActionUpdateDuplicateSummaryDemoMatchItem(importId,summary) =>
+        updateDuplicateSummaryDemoMatchItem(importId,summary)
+      case x =>
+        // There are multiple stores, all the actions get sent to all stores
+//        logger.warning("BoardSetStore: Unknown msg dispatched, "+x)
+    }
+  }
 
   private var fMatchSummary: Option[List[MatchDuplicate]] = None
   private var fSummary: Option[List[DuplicateSummary]] = None
@@ -105,10 +108,11 @@ object DuplicateSummaryStore extends ChangeListenable {
 
   def updateDuplicateSummaryDemoMatch( importId: Option[String], summary: List[MatchDuplicate] ) = {
     if (Bridge.isDemo) {
-      logger.fine(s"""Update DuplicateSummaryStore from ${importId}: ${summary}""")
+//      logger.info(s"""Update DuplicateSummaryStore from ${importId}: ${summary}""")
       if (importId == fImportId) {
         fMatchSummary = Option(summary)
         fImportId = importId
+        fCalled = true;
         fSummary = Option( summary.map( md => DuplicateSummary.create(md)))
       }
       notifyChange()
