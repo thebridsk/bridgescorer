@@ -309,6 +309,7 @@ object Controller extends  {
           val r = wxhr.responseText
           import JsonSupport._
           val bm = JsonSupport.readJson[List[MatchDuplicate]](r)
+//          logger.info(s"Controller.getDemoSummary got json = ${bm}")
           BridgeDispatcher.updateDuplicateSummaryDemoMatch(None,bm)
         case Failure(err) =>
           error()

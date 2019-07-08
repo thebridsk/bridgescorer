@@ -543,6 +543,8 @@ object PageSummaryInternal {
     def render( props: Props, state: State ) = {
       val (importId,summaries) = getDuplicateSummaries( props )
 
+//      logger.info(s"PageSummary.render called, importId=${importId}, summaries=${summaries}")
+
       val tp = SummaryPeople(summaries)
       val takerows = if (state.alwaysShowAll)
       {
@@ -715,67 +717,67 @@ object PageSummaryInternal {
             routeCtl = props.routerCtl
         )(
             // main menu additions for page
-            {
-              (if (importId.isDefined) {
-                List[VdomNode](
-//                  MuiMenuItem(
-//                      id = "Summary",
-//                      onClick = callbackPage(SummaryView) _
-//                  )(
-//                      "Summary"
-//                  )
-                )
-              } else {
-                val x: List[VdomNode] =
-                List(
-                  MuiMenuItem(
-                      id = "Suggest",
-                      onClick = callbackPage(SuggestionView) _
-                  )(
-                      "Suggest Pairs"
-                  ),
-                  MuiMenuItem(
-                      id = "ShowRows",
-                      onClick = toggleRows _,
-                      classes = js.Dictionary("root" -> "mainMenuItem")
-                  )(
-                      "Show All",
-                      {
+
+            (if (importId.isDefined) {
+              List[VdomNode](
+//                MuiMenuItem(
+//                    id = "Summary",
+//                    onClick = callbackPage(SummaryView) _
+//                )(
+//                    "Summary"
+//                )
+              )
+            } else {
+              val x: List[VdomNode] =
+              List(
+                MuiMenuItem(
+                    id = "Suggest",
+                    onClick = callbackPage(SuggestionView) _
+                )(
+                    "Suggest Pairs"
+                ),
+                MuiMenuItem(
+                    id = "ShowRows",
+                    onClick = toggleRows _,
+                    classes = js.Dictionary("root" -> "mainMenuItem")
+                )(
+                    "Show All",
+                    {
 //                        val color = if (state.alwaysShowAll || state.showRows.isEmpty) SvgColor.inherit else SvgColor.disabled
 //                        MuiIcons.Check(
 //                            color=color,
 //                            classes = js.Dictionary("root" -> "mainMenuItemIcon")
 //                        )
-                        if (state.alwaysShowAll || state.showRows.isEmpty) {
-                          MuiIcons.CheckBox()
-                        } else {
-                          MuiIcons.CheckBoxOutlineBlank()
-                        }
+                      if (state.alwaysShowAll || state.showRows.isEmpty) {
+                        MuiIcons.CheckBox()
+                      } else {
+                        MuiIcons.CheckBoxOutlineBlank()
                       }
-                  ),
-                  MuiMenuItem(
-                      id = "Statistics",
-                      onClick = callbackPage(StatsView) _
-                  )(
-                      "Statistics"
-                  ),
-                  MuiMenuItem(
-                      id = "DuplicateCreateTest",
-                      onClick = newDuplicateTest _
-                  )(
-                      "Test"
-                  ),
-                  MuiMenuItem(
-                      id = "ForPrint",
-                      onClick = clickForPrint(true) _
-                  )(
-                      "Select For Print"
-                  )
+                    }
+                ),
+                MuiMenuItem(
+                    id = "Statistics",
+                    onClick = callbackPage(StatsView) _
+                )(
+                    "Statistics"
+                ),
+                MuiMenuItem(
+                    id = "DuplicateCreateTest",
+                    onClick = newDuplicateTest _
+                )(
+                    "Test"
+                ),
+                MuiMenuItem(
+                    id = "ForPrint",
+                    onClick = clickForPrint(true) _
+                )(
+                    "Select For Print"
                 )
-                x
-              }
-            ):_*
-          }
+              )
+              x
+            }
+          ):_*
+
         ),
         <.div(
           if (tp.isData) showMatches()
@@ -786,7 +788,11 @@ object PageSummaryInternal {
 
     private var mounted = false
 
-    val storeCallback = scope.forceUpdate
+    val storeCallback = Callback {
+      logger.fine("PageSummary.Backend.storeCallback called")
+    } >>
+      scope.forceUpdate
+
 
     def summaryError() = scope.withEffectsImpure.modState( s => s.copy(workingOnNew=Some("Error getting duplicate summary")))
 
