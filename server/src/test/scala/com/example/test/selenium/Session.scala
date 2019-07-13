@@ -39,6 +39,7 @@ import org.openqa.selenium.support.events.AbstractWebDriverEventListener
 import org.openqa.selenium.UnhandledAlertException
 import com.example.test.pages.PageBrowser
 import org.openqa.selenium.firefox.ProfilesIni
+import scala.io.Codec
 
 class Session( name: String = "default" ) extends WebDriver {
   import Session._
@@ -517,7 +518,7 @@ class Session( name: String = "default" ) extends WebDriver {
   def saveDom( tofile: String ): Unit = {
     import com.example.test.pages.PageBrowser._
     try {
-      scala.tools.nsc.io.File(tofile).writeAll( executeScript("return document.documentElement.outerHTML")(webDriver).toString() )
+      reflect.io.File(tofile)(Codec.UTF8).writeAll( executeScript("return document.documentElement.outerHTML")(webDriver).toString() )
     } catch {
       case e: Exception =>
         testlog.warning("Exception trying to execute a script in browser", e)
