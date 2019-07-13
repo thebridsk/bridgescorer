@@ -1,6 +1,6 @@
-package com.example.manualtest
+package com.github.thebridsk.bridge.manualtest
 
-import utils.main.Main
+import com.github.thebridsk.utilities.main.Main
 
 object TestOptionList extends Main {
 

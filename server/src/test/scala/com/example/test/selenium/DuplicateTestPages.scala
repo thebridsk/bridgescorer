@@ -1,4 +1,4 @@
-package com.example.test.selenium
+package com.github.thebridsk.bridge.test.selenium
 
 import org.scalatest.FlatSpec
 import org.scalatest.MustMatchers
@@ -9,10 +9,10 @@ import org.scalatest._
 import org.openqa.selenium._
 import org.scalatest.concurrent.Eventually
 import java.util.concurrent.TimeUnit
-import com.example.Server
-import com.example.data.bridge._
-import com.example.backend.BridgeServiceInMemory
-import com.example.backend.BridgeService
+import com.github.thebridsk.bridge.Server
+import com.github.thebridsk.bridge.data.bridge._
+import com.github.thebridsk.bridge.backend.BridgeServiceInMemory
+import com.github.thebridsk.bridge.backend.BridgeService
 import org.scalatest.time.Span
 import org.scalatest.time.Millis
 import org.openqa.selenium.chrome.ChromeOptions
@@ -20,64 +20,64 @@ import org.openqa.selenium.chrome.ChromeDriver
 import org.openqa.selenium.remote.RemoteWebDriver
 import org.openqa.selenium.firefox.FirefoxDriver
 import org.openqa.selenium.safari.SafariDriver
-import com.example.data.bridge._
+import com.github.thebridsk.bridge.data.bridge._
 import scala.collection.JavaConversions._
 import scala.util.Failure
 import scala.concurrent._
 import ExecutionContext.Implicits.global
-import utils.logging.Logger
+import com.github.thebridsk.utilities.logging.Logger
 import java.util.logging.Level
 import org.scalactic.source.Position
-import com.example.data.util.Strings
-import com.example.test.util.NoResultYet
-import com.example.test.util.EventuallyUtils
-import com.example.test.util.ParallelUtils
+import com.github.thebridsk.bridge.data.util.Strings
+import com.github.thebridsk.bridge.test.util.NoResultYet
+import com.github.thebridsk.bridge.test.util.EventuallyUtils
+import com.github.thebridsk.bridge.test.util.ParallelUtils
 import org.scalatest.concurrent.Eventually
-import com.example.test.pages.duplicate.ListDuplicatePage
-import com.example.test.pages.duplicate.NewDuplicatePage
-import com.example.test.pages.duplicate.MovementsPage
-import com.example.test.pages.duplicate.BoardSetsPage
-import com.example.test.pages.duplicate.ScoreboardPage
-import com.example.test.pages.duplicate.TablePage
-import com.example.test.pages.duplicate.TablePage.EnterNames
-import com.example.test.pages.duplicate.TableEnterScorekeeperPage
-import com.example.test.pages.GenericPage
-import com.example.test.pages.duplicate.HandPage
-import com.example.test.TestStartLogging
-import com.example.test.pages.duplicate.BoardPage
-import com.example.test.pages.duplicate.TablePage.SelectNames
-import com.example.test.pages.duplicate.TablePage.Hands
-import com.example.test.pages.duplicate.TableSelectScorekeeperPage
-import com.example.test.pages.duplicate.Team
-import com.example.test.pages.Page.AnyPage
-import com.example.test.pages.duplicate.EnterHand
-import com.example.test.pages.duplicate.AllHandsInMatch
-import com.example.test.pages.duplicate.HandsOnBoard
-import com.example.test.pages.duplicate.OtherHandNotPlayed
-import com.example.test.pages.duplicate.OtherHandPlayed
-import com.example.test.pages.duplicate.TeamScoreboard
-import com.example.test.pages.duplicate.HandDirectorView
-import com.example.test.pages.duplicate.HandCompletedView
-import com.example.test.pages.duplicate.HandTableView
-import com.example.test.pages.duplicate.ScoreboardPage.PlaceEntry
-import com.example.test.pages.duplicate.ScoreboardPage.PlaceEntry
+import com.github.thebridsk.bridge.test.pages.duplicate.ListDuplicatePage
+import com.github.thebridsk.bridge.test.pages.duplicate.NewDuplicatePage
+import com.github.thebridsk.bridge.test.pages.duplicate.MovementsPage
+import com.github.thebridsk.bridge.test.pages.duplicate.BoardSetsPage
+import com.github.thebridsk.bridge.test.pages.duplicate.ScoreboardPage
+import com.github.thebridsk.bridge.test.pages.duplicate.TablePage
+import com.github.thebridsk.bridge.test.pages.duplicate.TablePage.EnterNames
+import com.github.thebridsk.bridge.test.pages.duplicate.TableEnterScorekeeperPage
+import com.github.thebridsk.bridge.test.pages.GenericPage
+import com.github.thebridsk.bridge.test.pages.duplicate.HandPage
+import com.github.thebridsk.bridge.test.TestStartLogging
+import com.github.thebridsk.bridge.test.pages.duplicate.BoardPage
+import com.github.thebridsk.bridge.test.pages.duplicate.TablePage.SelectNames
+import com.github.thebridsk.bridge.test.pages.duplicate.TablePage.Hands
+import com.github.thebridsk.bridge.test.pages.duplicate.TableSelectScorekeeperPage
+import com.github.thebridsk.bridge.test.pages.duplicate.Team
+import com.github.thebridsk.bridge.test.pages.Page.AnyPage
+import com.github.thebridsk.bridge.test.pages.duplicate.EnterHand
+import com.github.thebridsk.bridge.test.pages.duplicate.AllHandsInMatch
+import com.github.thebridsk.bridge.test.pages.duplicate.HandsOnBoard
+import com.github.thebridsk.bridge.test.pages.duplicate.OtherHandNotPlayed
+import com.github.thebridsk.bridge.test.pages.duplicate.OtherHandPlayed
+import com.github.thebridsk.bridge.test.pages.duplicate.TeamScoreboard
+import com.github.thebridsk.bridge.test.pages.duplicate.HandDirectorView
+import com.github.thebridsk.bridge.test.pages.duplicate.HandCompletedView
+import com.github.thebridsk.bridge.test.pages.duplicate.HandTableView
+import com.github.thebridsk.bridge.test.pages.duplicate.ScoreboardPage.PlaceEntry
+import com.github.thebridsk.bridge.test.pages.duplicate.ScoreboardPage.PlaceEntry
 import java.net.URL
-import com.example.data.MatchDuplicate
+import com.github.thebridsk.bridge.data.MatchDuplicate
 import scala.io.Source
 import scala.io.Codec
-import com.example.backend.resource.FileIO
-import com.example.test.pages.duplicate.PeopleRow
-import com.example.data.BoardSet
-import com.example.test.util.MonitorTCP
-import com.example.backend.BridgeServiceFileStoreConverters
-import com.example.backend.MatchDuplicateCacheStoreSupport
-import com.example.test.pages.bridge.HomePage
+import com.github.thebridsk.bridge.backend.resource.FileIO
+import com.github.thebridsk.bridge.test.pages.duplicate.PeopleRow
+import com.github.thebridsk.bridge.data.BoardSet
+import com.github.thebridsk.bridge.test.util.MonitorTCP
+import com.github.thebridsk.bridge.backend.BridgeServiceFileStoreConverters
+import com.github.thebridsk.bridge.backend.MatchDuplicateCacheStoreSupport
+import com.github.thebridsk.bridge.test.pages.bridge.HomePage
 import java.util.zip.ZipFile
 import scala.reflect.io.File
-import com.example.test.pages.duplicate.PeopleRowMP
-import com.example.test.pages.Page
-import com.example.test.pages.PageBrowser
-import com.example.test.pages.duplicate.SuggestionPage
+import com.github.thebridsk.bridge.test.pages.duplicate.PeopleRowMP
+import com.github.thebridsk.bridge.test.pages.Page
+import com.github.thebridsk.bridge.test.pages.PageBrowser
+import com.github.thebridsk.bridge.test.pages.duplicate.SuggestionPage
 import java.io.OutputStreamWriter
 import java.io.InputStream
 import play.api.libs.json.JsObject
@@ -85,7 +85,7 @@ import play.api.libs.json.JsString
 import play.api.libs.json.Json
 import play.api.libs.json.JsSuccess
 import play.api.libs.json.JsError
-import com.example.test.util.GraphQLUtils
+import com.github.thebridsk.bridge.test.util.GraphQLUtils
 
 object DuplicateTestPages {
 
@@ -1079,7 +1079,7 @@ class DuplicateTestPages extends FlatSpec
   case class QueryResponse( data: ResponseData )
 
   it should "have rest call and queryml call return the same match" in {
-    import com.example.data.rest.JsonSupport._
+    import com.github.thebridsk.bridge.data.rest.JsonSupport._
     implicit val rdFormat = Json.format[ResponseData]
     implicit val qrFormat = Json.format[QueryResponse]
 

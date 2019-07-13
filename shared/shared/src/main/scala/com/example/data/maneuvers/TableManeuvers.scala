@@ -1,6 +1,6 @@
-package com.example.data.maneuvers
+package com.github.thebridsk.bridge.data.maneuvers
 
-import com.example.data.bridge._
+import com.github.thebridsk.bridge.data.bridge._
 
 case class TableManeuvers(
     north: String,

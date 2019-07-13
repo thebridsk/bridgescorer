@@ -1,18 +1,18 @@
-package com.example.backend.resource
+package com.github.thebridsk.bridge.backend.resource
 
 import scala.concurrent.duration._
 import akka.http.scaladsl.model.StatusCodes
-import com.example.data.RestMessage
-import com.example.data.VersionedInstance
+import com.github.thebridsk.bridge.data.RestMessage
+import com.github.thebridsk.bridge.data.VersionedInstance
 import scala.reflect.io.Directory
-import utils.logging.Logger
+import com.github.thebridsk.utilities.logging.Logger
 import scala.annotation.tailrec
 import java.io.IOException
 
 import FileStore.log
 import scala.concurrent.ExecutionContext
 import scala.concurrent.Future
-import com.example.data.Id
+import com.github.thebridsk.bridge.data.Id
 
 object FileStore {
   val log = Logger[FileStore[_, _]]

@@ -1,6 +1,6 @@
-package com.example.backend.resource
+package com.github.thebridsk.bridge.backend.resource
 
-import utils.logging.Logger
+import com.github.thebridsk.utilities.logging.Logger
 
 trait StoreListener {
   def create(change: ChangeContext): Unit = {}

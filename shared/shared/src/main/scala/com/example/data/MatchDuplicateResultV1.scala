@@ -1,10 +1,10 @@
-package com.example.data
+package com.github.thebridsk.bridge.data
 
-import com.example.data.SystemTime.Timestamp
+import com.github.thebridsk.bridge.data.SystemTime.Timestamp
 
 import scala.annotation.meta._
-import com.example.data.bridge.MatchDuplicateScore
-import com.example.data.bridge.PerspectiveComplete
+import com.github.thebridsk.bridge.data.bridge.MatchDuplicateScore
+import com.github.thebridsk.bridge.data.bridge.PerspectiveComplete
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.media.ArraySchema
 

@@ -1,9 +1,9 @@
-package com.example.pages
+package com.github.thebridsk.bridge.pages
 
 import org.scalajs.dom
 import dom.document
-import utils.logging.Logger
-import com.example.Bridge
+import com.github.thebridsk.utilities.logging.Logger
+import com.github.thebridsk.bridge.Bridge
 
 object Pixels {
 

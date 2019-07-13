@@ -1,27 +1,27 @@
-package com.example.pages.duplicate.boardsets
+package com.github.thebridsk.bridge.pages.duplicate.boardsets
 
 import scala.scalajs.js
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
-import com.example.bridge.store.BoardSetStore
-import com.example.controller.BoardSetController
-import com.example.data.BoardSet
-import utils.logging.Logger
+import com.github.thebridsk.bridge.bridge.store.BoardSetStore
+import com.github.thebridsk.bridge.controller.BoardSetController
+import com.github.thebridsk.bridge.data.BoardSet
+import com.github.thebridsk.utilities.logging.Logger
 import japgolly.scalajs.react.extra.router.RouterCtl
-import com.example.routes.BridgeRouter
-import com.example.data.BoardInSet
-import com.example.data.Movement
-import com.example.data.HandInTable
-import com.example.pages.duplicate.DuplicatePage
-import com.example.react.AppButton
-import com.example.pages.duplicate.DuplicateRouter.MovementSummaryView
-import com.example.pages.duplicate.DuplicateRouter.MovementView
-import com.example.pages.duplicate.DuplicateStyles
-import com.example.pages.BaseStyles
-import com.example.pages.duplicate.DuplicatePageBridgeAppBar
-import com.example.materialui.MuiTypography
-import com.example.materialui.TextVariant
-import com.example.materialui.TextColor
+import com.github.thebridsk.bridge.routes.BridgeRouter
+import com.github.thebridsk.bridge.data.BoardInSet
+import com.github.thebridsk.bridge.data.Movement
+import com.github.thebridsk.bridge.data.HandInTable
+import com.github.thebridsk.bridge.pages.duplicate.DuplicatePage
+import com.github.thebridsk.bridge.react.AppButton
+import com.github.thebridsk.bridge.pages.duplicate.DuplicateRouter.MovementSummaryView
+import com.github.thebridsk.bridge.pages.duplicate.DuplicateRouter.MovementView
+import com.github.thebridsk.bridge.pages.duplicate.DuplicateStyles
+import com.github.thebridsk.bridge.pages.BaseStyles
+import com.github.thebridsk.bridge.pages.duplicate.DuplicatePageBridgeAppBar
+import com.github.thebridsk.materialui.MuiTypography
+import com.github.thebridsk.materialui.TextVariant
+import com.github.thebridsk.materialui.TextColor
 
 /**
  * A skeleton component.
@@ -45,7 +45,7 @@ object PageMovements {
 
 object PageMovementsInternal {
   import PageMovements._
-  import com.example.react.Utils._
+  import com.github.thebridsk.bridge.react.Utils._
   import DuplicateStyles._
 
   val logger = Logger("bridge.PageMovements")

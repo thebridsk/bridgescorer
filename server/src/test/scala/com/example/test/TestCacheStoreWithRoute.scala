@@ -1,4 +1,4 @@
-package com.example.test
+package com.github.thebridsk.bridge.test
 
 import java.net.InetAddress
 
@@ -32,47 +32,47 @@ import scala.util.Failure
 import scala.reflect.io.Directory
 import org.scalactic.source.Position
 import org.scalatest._
-import com.example.backend.resource.InMemoryStore
-import com.example.data.Id
-import com.example.data.MatchDuplicate
-import com.example.backend.BridgeResources
-import com.example.data.sample.TestMatchDuplicate
-import com.example.backend.resource.ChangeContext
-import com.example.backend.resource.Result
-import com.example.source.SourcePosition
-import com.example.backend.DuplicateTeamsNestedResource
-import com.example.data.Team
-import com.example.data.BoardSet
-import com.example.backend.resource.JavaResourceStore
-import com.example.backend.resource.StoreListener
-import com.example.backend.resource.CreateChangeContext
-import com.example.backend.resource.UpdateChangeContext
-import com.example.backend.resource.DeleteChangeContext
-import com.example.backend.DuplicateBoardsNestedResource
-import com.example.backend.DuplicateHandsNestedResource
-import com.example.data.Hand
-import com.example.data.DuplicateHand
-import com.example.data.Board
-import com.example.backend.resource.ChangeContextData
-import com.example.data.Movement
-import com.example.backend.resource.FileStore
-import com.example.backend.resource.FileIO
-import com.example.backend.resource.MultiStore
-import com.example.backend.resource.Store
-import com.example.backend.BridgeServiceInMemory
-import com.example.test.backend.TestFailurePersistent
-import com.example.test.backend.TestFailureStore
-import com.example.test.backend.BridgeServiceTesting
-import com.example.service.MyService
-import com.example.rest.ServerPort
-import com.example.json.BridgePlayJsonSupport
-import com.example.rest.UtilsPlayJson
+import com.github.thebridsk.bridge.backend.resource.InMemoryStore
+import com.github.thebridsk.bridge.data.Id
+import com.github.thebridsk.bridge.data.MatchDuplicate
+import com.github.thebridsk.bridge.backend.BridgeResources
+import com.github.thebridsk.bridge.data.sample.TestMatchDuplicate
+import com.github.thebridsk.bridge.backend.resource.ChangeContext
+import com.github.thebridsk.bridge.backend.resource.Result
+import com.github.thebridsk.bridge.source.SourcePosition
+import com.github.thebridsk.bridge.backend.DuplicateTeamsNestedResource
+import com.github.thebridsk.bridge.data.Team
+import com.github.thebridsk.bridge.data.BoardSet
+import com.github.thebridsk.bridge.backend.resource.JavaResourceStore
+import com.github.thebridsk.bridge.backend.resource.StoreListener
+import com.github.thebridsk.bridge.backend.resource.CreateChangeContext
+import com.github.thebridsk.bridge.backend.resource.UpdateChangeContext
+import com.github.thebridsk.bridge.backend.resource.DeleteChangeContext
+import com.github.thebridsk.bridge.backend.DuplicateBoardsNestedResource
+import com.github.thebridsk.bridge.backend.DuplicateHandsNestedResource
+import com.github.thebridsk.bridge.data.Hand
+import com.github.thebridsk.bridge.data.DuplicateHand
+import com.github.thebridsk.bridge.data.Board
+import com.github.thebridsk.bridge.backend.resource.ChangeContextData
+import com.github.thebridsk.bridge.data.Movement
+import com.github.thebridsk.bridge.backend.resource.FileStore
+import com.github.thebridsk.bridge.backend.resource.FileIO
+import com.github.thebridsk.bridge.backend.resource.MultiStore
+import com.github.thebridsk.bridge.backend.resource.Store
+import com.github.thebridsk.bridge.backend.BridgeServiceInMemory
+import com.github.thebridsk.bridge.test.backend.TestFailurePersistent
+import com.github.thebridsk.bridge.test.backend.TestFailureStore
+import com.github.thebridsk.bridge.test.backend.BridgeServiceTesting
+import com.github.thebridsk.bridge.service.MyService
+import com.github.thebridsk.bridge.rest.ServerPort
+import com.github.thebridsk.bridge.json.BridgePlayJsonSupport
+import com.github.thebridsk.bridge.rest.UtilsPlayJson
 import akka.http.scaladsl.testkit.RouteTestTimeout
 
 object TestCacheStoreWithRoute {
   import MustMatchers._
 
-  val testlog = utils.logging.Logger[TestCacheStoreWithRoute]
+  val testlog = com.github.thebridsk.utilities.logging.Logger[TestCacheStoreWithRoute]
 
   TestStartLogging.startLogging()
 
@@ -80,11 +80,11 @@ object TestCacheStoreWithRoute {
   import bridgeResources._
 
   def getBoardSetStore: Store[String,BoardSet] = {
-    JavaResourceStore("test","/com/example/backend/", "Boardsets.txt", getClass.getClassLoader)
+    JavaResourceStore("test","/com/github/thebridsk/bridge/backend/", "Boardsets.txt", getClass.getClassLoader)
   }
 
   def getMovementStore: Store[String,Movement] = {
-    JavaResourceStore("test","/com/example/backend/", "Movements.txt", getClass.getClassLoader)
+    JavaResourceStore("test","/com/github/thebridsk/bridge/backend/", "Movements.txt", getClass.getClassLoader)
   }
 
   import ExecutionContext.Implicits.global

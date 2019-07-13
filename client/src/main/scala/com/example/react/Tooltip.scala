@@ -1,9 +1,9 @@
-package com.example.react
+package com.github.thebridsk.bridge.react
 
 import scala.scalajs.js
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
-import com.example.pages.BaseStyles._
+import com.github.thebridsk.bridge.pages.BaseStyles._
 import org.scalajs.dom.raw.Event
 
 /**

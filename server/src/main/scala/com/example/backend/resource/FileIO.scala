@@ -1,4 +1,4 @@
-package com.example.backend.resource
+package com.github.thebridsk.bridge.backend.resource
 
 import java.io.Reader
 import java.io.FileInputStream
@@ -21,7 +21,7 @@ import java.nio.file.NoSuchFileException
 import java.io.IOException
 import java.util.function.Predicate
 import java.util.function.Consumer
-import utils.logging.Logger
+import com.github.thebridsk.utilities.logging.Logger
 import scala.io.BufferedSource
 import java.util.logging.Level
 

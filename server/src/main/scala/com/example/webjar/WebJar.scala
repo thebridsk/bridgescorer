@@ -1,4 +1,4 @@
-package com.example.webjar
+package com.github.thebridsk.bridge.webjar
 
 import akka.http.scaladsl.server._
 import akka.http.scaladsl.server.Directives._
@@ -7,14 +7,14 @@ import akka.http.scaladsl.server.RejectionHandler
 import akka.http.scaladsl.model._
 import akka.http.scaladsl.server._
 import akka.http.scaladsl.model.headers.RawHeader
-import utils.logging.Logger
+import com.github.thebridsk.utilities.logging.Logger
 import java.util.logging.Level
 import akka.event.Logging
 import akka.http.scaladsl.model.headers._
 import akka.http.scaladsl.model.headers.CacheDirectives._
-import com.example.data.RestMessage
+import com.github.thebridsk.bridge.data.RestMessage
 import scala.concurrent.duration.Duration
-import com.example.service.ResourceFinder
+import com.github.thebridsk.bridge.service.ResourceFinder
 
 trait WebJar {
 
@@ -60,7 +60,7 @@ trait WebJar {
 
 //  val favicon = """favicon-\d+x\d+\.png""".r
 
-  import com.example.rest.UtilsPlayJson._
+  import com.github.thebridsk.bridge.rest.UtilsPlayJson._
 
   /**
     * The spray route for the js static files

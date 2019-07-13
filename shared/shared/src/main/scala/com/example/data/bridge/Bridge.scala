@@ -1,9 +1,9 @@
-package com.example.data.bridge
+package com.github.thebridsk.bridge.data.bridge
 
-import com.example.data.Hand
+import com.github.thebridsk.bridge.data.Hand
 
 import scala.language.implicitConversions
-import com.example.data.SystemTime
+import com.github.thebridsk.bridge.data.SystemTime
 
 sealed abstract case class ContractSuit(suit: String)
 

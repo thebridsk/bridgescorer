@@ -1,7 +1,7 @@
-package com.example.data.bridge
+package com.github.thebridsk.bridge.data.bridge
 
-import com.example.data.Hand
-import com.example.data.RubberHand
+import com.github.thebridsk.bridge.data.Hand
+import com.github.thebridsk.bridge.data.RubberHand
 
 /**
   * @author werewolf
@@ -20,8 +20,8 @@ case class Contract(
     honorPlayer: Option[PlayerPosition],
     scoringSystem: ScoringSystem,
     scorer: Option[Either[
-      com.example.data.bridge.RubberBridge.ScoreHand,
-      com.example.data.bridge.DuplicateBridge.ScoreHand
+      com.github.thebridsk.bridge.data.bridge.RubberBridge.ScoreHand,
+      com.github.thebridsk.bridge.data.bridge.DuplicateBridge.ScoreHand
     ]],
     table: Int = 0,
     board: Int = 0,
@@ -44,7 +44,7 @@ case class Contract(
       madeOrDown,
       tricks
     )
-  def toHand(): com.example.data.Hand = toBridgeHand()
+  def toHand(): com.github.thebridsk.bridge.data.Hand = toBridgeHand()
   def toRubberHand() =
     RubberHand(
       id,
@@ -55,7 +55,7 @@ case class Contract(
       0
     )
   def toDuplicate() =
-    com.example.data.bridge.DuplicateBridge.ScoreHand(
+    com.github.thebridsk.bridge.data.bridge.DuplicateBridge.ScoreHand(
       id,
       contractTricks,
       contractSuit,
@@ -66,7 +66,7 @@ case class Contract(
       madeOrDown,
       tricks
     )
-  def toRubber() = com.example.data.bridge.RubberBridge.ScoreHand(toRubberHand)
+  def toRubber() = com.github.thebridsk.bridge.data.bridge.RubberBridge.ScoreHand(toRubberHand)
   def withScoring() = {
     try {
       val s = Some(scoringSystem match {
@@ -117,8 +117,8 @@ object Contract {
       hand: Hand,
       scoringSystem: ScoringSystem,
       scorer: Option[Either[
-        com.example.data.bridge.RubberBridge.ScoreHand,
-        com.example.data.bridge.DuplicateBridge.ScoreHand
+        com.github.thebridsk.bridge.data.bridge.RubberBridge.ScoreHand,
+        com.github.thebridsk.bridge.data.bridge.DuplicateBridge.ScoreHand
       ]],
       table: Int = 0,
       board: Int = 0,
@@ -162,7 +162,7 @@ object Contract {
   def createRubber(
       rubberhand: RubberHand,
       scoringSystem: ScoringSystem,
-      scorer: Option[com.example.data.bridge.RubberBridge.ScoreHand],
+      scorer: Option[com.github.thebridsk.bridge.data.bridge.RubberBridge.ScoreHand],
       table: Int = 0,
       board: Int = 0,
       north: String = "nsPlayer1",

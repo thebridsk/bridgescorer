@@ -1,10 +1,10 @@
-package com.example.bridge.rotation.test
+package com.github.thebridsk.bridge.bridge.rotation.test
 
 import org.scalatest.FlatSpec
 import org.scalatest.MustMatchers
-import com.example.bridge.rotation.Table
-import com.example.bridge.rotation.Table._
-import com.example.bridge.rotation.Chicago5Rotation
+import com.github.thebridsk.bridge.bridge.rotation.Table
+import com.github.thebridsk.bridge.bridge.rotation.Table._
+import com.github.thebridsk.bridge.bridge.rotation.Chicago5Rotation
 import org.scalatest.exceptions.TestFailedException
 
 object TestChicago5Rotation {

@@ -1,4 +1,4 @@
-package com.example.data.rest
+package com.github.thebridsk.bridge.data.rest
 
 class JsonException(msg: String, cause: Throwable)
     extends Exception(msg, cause) {

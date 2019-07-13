@@ -1,4 +1,4 @@
-package com.example
+package com.github.thebridsk
 
 import org.scalajs.dom.raw.Element
 import scala.scalajs.js

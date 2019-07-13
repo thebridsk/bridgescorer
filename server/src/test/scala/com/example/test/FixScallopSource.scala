@@ -1,10 +1,10 @@
-package com.example.test
+package com.github.thebridsk.bridge.test
 
-import utils.main.Main
+import com.github.thebridsk.utilities.main.Main
 import java.io.File
 import scala.io.Source
 import java.io.FileFilter
-import com.example.util.Version
+import com.github.thebridsk.bridge.util.Version
 import java.nio.file.Files
 import java.util.jar.JarOutputStream
 import java.util.jar.JarInputStream

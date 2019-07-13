@@ -1,21 +1,21 @@
-package com.example.manualtest
+package com.github.thebridsk.bridge.manualtest
 
-import utils.main.Main
+import com.github.thebridsk.utilities.main.Main
 import scala.reflect.io.Path
 import scala.io.Source
 import java.io.Closeable
-import com.example.data.Movement
-import com.example.data.HandInTable
+import com.github.thebridsk.bridge.data.Movement
+import com.github.thebridsk.bridge.data.HandInTable
 import scala.annotation.tailrec
-import com.example.backend.MovementCacheStoreSupport
-import com.example.backend.BridgeServiceFileStoreConverters
-import com.example.backend.resource.FileIO
+import com.github.thebridsk.bridge.backend.MovementCacheStoreSupport
+import com.github.thebridsk.bridge.backend.BridgeServiceFileStoreConverters
+import com.github.thebridsk.bridge.backend.resource.FileIO
 
 class CreateMovement
 
 object CreateMovement extends Main {
 
-  import utils.main.Converters._
+  import com.github.thebridsk.utilities.main.Converters._
 
   val cmdName = s"scala ${classOf[CreateMovement].getName}"
 

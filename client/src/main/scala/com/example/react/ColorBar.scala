@@ -1,16 +1,16 @@
-package com.example.react
+package com.github.thebridsk.bridge.react
 
 import scala.scalajs.js
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.TagMod
-import com.example.pages.BaseStyles
+import com.github.thebridsk.bridge.pages.BaseStyles
 import japgolly.scalajs.react.vdom.HtmlStyles
-import com.example.color.Color
+import com.github.thebridsk.bridge.color.Color
 import Utils._
-import com.example.color.RGBColor
-import com.example.color.HSLColor
-import com.example.color.RGBPercentColor
+import com.github.thebridsk.bridge.color.RGBColor
+import com.github.thebridsk.bridge.color.HSLColor
+import com.github.thebridsk.bridge.color.RGBPercentColor
 
 /**
  * A skeleton component.
@@ -25,7 +25,7 @@ import com.example.color.RGBPercentColor
  */
 object ColorBar {
   import ColorBarInternal._
-  import com.example.color.Colors._
+  import com.github.thebridsk.bridge.color.Colors._
 
   /**
    * Props for ColorBar
@@ -201,7 +201,7 @@ object ColorBarInternal {
   import Utils._
 
   import BaseStyles._
-  import com.example.color.Colors._
+  import com.github.thebridsk.bridge.color.Colors._
 
   private def box( color: Color, title: Option[TagMod] ): VdomNode = {
     Tooltip(

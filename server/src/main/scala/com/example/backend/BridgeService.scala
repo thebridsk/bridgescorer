@@ -1,53 +1,53 @@
-package com.example.backend
+package com.github.thebridsk.bridge.backend
 
-import com.example.data.Board
-import com.example.data.Table
-import com.example.data.Hand
-import com.example.data.MatchChicago
-import com.example.data.MatchChicago
-import com.example.data.MatchChicago
-import com.example.data.LoggerConfig
-import com.example.data.bridge.North
-import com.example.data.bridge.East
-import com.example.data.MatchDuplicate
-import com.example.data.DuplicateHand
+import com.github.thebridsk.bridge.data.Board
+import com.github.thebridsk.bridge.data.Table
+import com.github.thebridsk.bridge.data.Hand
+import com.github.thebridsk.bridge.data.MatchChicago
+import com.github.thebridsk.bridge.data.MatchChicago
+import com.github.thebridsk.bridge.data.MatchChicago
+import com.github.thebridsk.bridge.data.LoggerConfig
+import com.github.thebridsk.bridge.data.bridge.North
+import com.github.thebridsk.bridge.data.bridge.East
+import com.github.thebridsk.bridge.data.MatchDuplicate
+import com.github.thebridsk.bridge.data.DuplicateHand
 import akka.http.scaladsl.model.StatusCodes._
-import com.example.data.SystemTime
-import com.example.data.Team
-import com.example.data.Id
-import com.example.data.Board
+import com.github.thebridsk.bridge.data.SystemTime
+import com.github.thebridsk.bridge.data.Team
+import com.github.thebridsk.bridge.data.Id
+import com.github.thebridsk.bridge.data.Board
 import scala.util.parsing.json.JSON
 import scala.io.Source
 import scala.collection.immutable.Map
-import com.example.data.sample.TestMatchDuplicate
-import com.example.backend.resource.MultiStore
-import com.example.backend.resource.JavaResourceStore
+import com.github.thebridsk.bridge.data.sample.TestMatchDuplicate
+import com.github.thebridsk.bridge.backend.resource.MultiStore
+import com.github.thebridsk.bridge.backend.resource.JavaResourceStore
 import akka.http.scaladsl.model.StatusCodes
-import com.example.data.BoardSet
-import com.example.data.Movement
-import com.example.data.MatchRubber
-import com.example.logging.RemoteLoggingConfig
-import utils.logging.Logger
-import com.example.data.MatchDuplicateResult
-import com.example.data.DuplicateSummary
-import com.example.backend.resource.Store
-import com.example.backend.resource.Result
+import com.github.thebridsk.bridge.data.BoardSet
+import com.github.thebridsk.bridge.data.Movement
+import com.github.thebridsk.bridge.data.MatchRubber
+import com.github.thebridsk.bridge.logging.RemoteLoggingConfig
+import com.github.thebridsk.utilities.logging.Logger
+import com.github.thebridsk.bridge.data.MatchDuplicateResult
+import com.github.thebridsk.bridge.data.DuplicateSummary
+import com.github.thebridsk.bridge.backend.resource.Store
+import com.github.thebridsk.bridge.backend.resource.Result
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
 import scala.concurrent.Promise
 import scala.concurrent.Future
-import com.example.backend.resource.InMemoryStore
-import com.example.backend.resource.Implicits
-import com.example.data.RestMessage
+import com.github.thebridsk.bridge.backend.resource.InMemoryStore
+import com.github.thebridsk.bridge.backend.resource.Implicits
+import com.github.thebridsk.bridge.data.RestMessage
 import java.io.OutputStream
 import java.util.zip.ZipOutputStream
 import java.nio.charset.StandardCharsets
-import com.example.backend.resource.VersionedInstanceJson
-import com.example.data.VersionedInstance
+import com.github.thebridsk.bridge.backend.resource.VersionedInstanceJson
+import com.github.thebridsk.bridge.data.VersionedInstance
 import java.util.zip.ZipEntry
 import java.io.OutputStreamWriter
 import java.io.BufferedOutputStream
-import com.example.data.SystemTime.Timestamp
+import com.github.thebridsk.bridge.data.SystemTime.Timestamp
 import scala.reflect.io.Directory
 import scala.reflect.io.Path
 import scala.concurrent.ExecutionContext
@@ -537,7 +537,7 @@ class BridgeServiceInMemory(
   val boardSets: Store[String, BoardSet] =
     MultiStore.createInMemoryAndResource[String, BoardSet](
       id,
-      "/com/example/backend/",
+      "/com/github/thebridsk/bridge/backend/",
       "Boardsets.txt",
       self.getClass.getClassLoader
     )
@@ -545,7 +545,7 @@ class BridgeServiceInMemory(
   val movements: Store[String, Movement] =
     MultiStore.createInMemoryAndResource[String, Movement](
       id,
-      "/com/example/backend/",
+      "/com/github/thebridsk/bridge/backend/",
       "Movements.txt",
       self.getClass.getClassLoader
     )

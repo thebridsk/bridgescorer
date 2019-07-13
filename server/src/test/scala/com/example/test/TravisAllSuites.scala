@@ -1,7 +1,7 @@
-package com.example.test
+package com.github.thebridsk.bridge.test
 
 import org.scalatest.Sequential
-import com.example.test.selenium.TravisSeleniumSuites
+import com.github.thebridsk.bridge.test.selenium.TravisSeleniumSuites
 
 /**
  * @author werewolf

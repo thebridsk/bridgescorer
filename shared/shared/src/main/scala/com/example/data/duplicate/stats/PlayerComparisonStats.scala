@@ -1,12 +1,12 @@
-package com.example.data.duplicate.stats
+package com.github.thebridsk.bridge.data.duplicate.stats
 
-import com.example.data.Id
-import com.example.data.MatchDuplicate
-import com.example.data.Hand
-import com.example.data.bridge.ContractSuit
-import com.example.data.bridge.DuplicateBridge.ScoreHand
-import utils.logging.Logger
-import com.example.data.Team
+import com.github.thebridsk.bridge.data.Id
+import com.github.thebridsk.bridge.data.MatchDuplicate
+import com.github.thebridsk.bridge.data.Hand
+import com.github.thebridsk.bridge.data.bridge.ContractSuit
+import com.github.thebridsk.bridge.data.bridge.DuplicateBridge.ScoreHand
+import com.github.thebridsk.utilities.logging.Logger
+import com.github.thebridsk.bridge.data.Team
 
 /*
  * For a duplicate board, determine category of contract (pass, partial, game, slam, grand slam).

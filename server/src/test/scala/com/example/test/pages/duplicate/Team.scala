@@ -1,4 +1,4 @@
-package com.example.test.pages.duplicate
+package com.github.thebridsk.bridge.test.pages.duplicate
 
 
 case class Team( teamid: Int, one: String, two: String ) {

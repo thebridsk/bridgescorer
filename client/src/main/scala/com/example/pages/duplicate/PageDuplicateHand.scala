@@ -1,36 +1,36 @@
-package com.example.pages.duplicate
+package com.github.thebridsk.bridge.pages.duplicate
 
 
 import scala.scalajs.js
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
-import com.example.routes.BridgeRouter
-import com.example.routes.AppRouter.AppPage
-import com.example.data.DuplicateSummary
-import com.example.data.Id
-import utils.logging.Logger
-import com.example.controller.Controller
-import com.example.data.bridge.DuplicateViewPerspective
-import com.example.bridge.store.DuplicateStore
-import com.example.data.bridge.MatchDuplicateScore
-import com.example.data.bridge.PerspectiveComplete
-import com.example.data.bridge.PerspectiveDirector
-import com.example.data.bridge.Contract
-import com.example.data.bridge.NoTrump
-import com.example.data.bridge.NotDoubled
-import com.example.data.bridge.North
-import com.example.data.bridge.Duplicate
-import com.example.data.Hand
-import com.example.pages.hand.PageHand
-import com.example.data.MatchDuplicate
-import com.example.data.DuplicateHand
-import com.example.data.Board
-import com.example.data.bridge.PlayerPosition
-import com.example.pages.duplicate.DuplicateRouter.BaseHandView
-import com.example.materialui.MuiTypography
-import com.example.materialui.TextVariant
-import com.example.materialui.TextColor
-import com.example.pages.BaseStyles.baseStyles
+import com.github.thebridsk.bridge.routes.BridgeRouter
+import com.github.thebridsk.bridge.routes.AppRouter.AppPage
+import com.github.thebridsk.bridge.data.DuplicateSummary
+import com.github.thebridsk.bridge.data.Id
+import com.github.thebridsk.utilities.logging.Logger
+import com.github.thebridsk.bridge.controller.Controller
+import com.github.thebridsk.bridge.data.bridge.DuplicateViewPerspective
+import com.github.thebridsk.bridge.bridge.store.DuplicateStore
+import com.github.thebridsk.bridge.data.bridge.MatchDuplicateScore
+import com.github.thebridsk.bridge.data.bridge.PerspectiveComplete
+import com.github.thebridsk.bridge.data.bridge.PerspectiveDirector
+import com.github.thebridsk.bridge.data.bridge.Contract
+import com.github.thebridsk.bridge.data.bridge.NoTrump
+import com.github.thebridsk.bridge.data.bridge.NotDoubled
+import com.github.thebridsk.bridge.data.bridge.North
+import com.github.thebridsk.bridge.data.bridge.Duplicate
+import com.github.thebridsk.bridge.data.Hand
+import com.github.thebridsk.bridge.pages.hand.PageHand
+import com.github.thebridsk.bridge.data.MatchDuplicate
+import com.github.thebridsk.bridge.data.DuplicateHand
+import com.github.thebridsk.bridge.data.Board
+import com.github.thebridsk.bridge.data.bridge.PlayerPosition
+import com.github.thebridsk.bridge.pages.duplicate.DuplicateRouter.BaseHandView
+import com.github.thebridsk.materialui.MuiTypography
+import com.github.thebridsk.materialui.TextVariant
+import com.github.thebridsk.materialui.TextColor
+import com.github.thebridsk.bridge.pages.BaseStyles.baseStyles
 
 /**
  * Shows the team x board table and has a totals column that shows the number of points the team has.

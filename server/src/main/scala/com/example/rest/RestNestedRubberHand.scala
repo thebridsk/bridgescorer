@@ -1,24 +1,24 @@
-package com.example.rest
+package com.github.thebridsk.bridge.rest
 
 import akka.event.Logging
 import akka.event.Logging._
 import akka.http.scaladsl.model.StatusCodes._
 import akka.http.scaladsl.server.Directives._
 import akka.stream.Materializer
-import com.example.util.HasActorSystem
+import com.github.thebridsk.bridge.util.HasActorSystem
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import akka.http.scaladsl.model.StatusCode
-import com.example.backend.BridgeService
-import com.example.data.Id
+import com.github.thebridsk.bridge.backend.BridgeService
+import com.github.thebridsk.bridge.data.Id
 import javax.ws.rs.Path
-import com.example.data.RestMessage
+import com.github.thebridsk.bridge.data.RestMessage
 import akka.http.scaladsl.model.headers.Location
 import scala.concurrent.ExecutionContext.Implicits.global
-import com.example.backend.resource.Resources
-import com.example.backend.BridgeNestedResources
+import com.github.thebridsk.bridge.backend.resource.Resources
+import com.github.thebridsk.bridge.backend.BridgeNestedResources
 import scala.concurrent.Future
-import com.example.backend.resource.Result
+import com.github.thebridsk.bridge.backend.resource.Result
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.media.Schema
@@ -36,8 +36,8 @@ import javax.ws.rs.POST
 import javax.ws.rs.PUT
 import javax.ws.rs.DELETE
 import akka.http.scaladsl.model.StatusCodes
-import com.example.data.MatchRubber
-import com.example.data.RubberHand
+import com.github.thebridsk.bridge.data.MatchRubber
+import com.github.thebridsk.bridge.data.RubberHand
 
 /**
   * Rest API implementation for the hand resource.

@@ -1,29 +1,29 @@
-package com.example.pages.duplicate
+package com.github.thebridsk.bridge.pages.duplicate
 
 
 import scala.scalajs.js
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.extra.router.RouterCtl
-import com.example.routes.AppRouter.AppPage
-import com.example.data.DuplicateSummary
-import com.example.data.Id
-import utils.logging.Logger
-import com.example.controller.Controller
-import com.example.data.bridge.DuplicateViewPerspective
-import com.example.data.bridge.MatchDuplicateScore
-import com.example.data.Team
-import com.example.bridge.store.DuplicateStore
-import com.example.data.bridge.TeamBoardScore
-import com.example.data.bridge.BoardScore
-import com.example.data.bridge.PerspectiveTable
-import com.example.data.bridge.PerspectiveComplete
-import com.example.data.bridge.PerspectiveDirector
-import com.example.data.util.Strings
-import com.example.pages.duplicate.DuplicateRouter.BaseBoardView
-import com.example.react.AppButton
-import com.example.react.Utils._
-import com.example.routes.BridgeRouter
+import com.github.thebridsk.bridge.routes.AppRouter.AppPage
+import com.github.thebridsk.bridge.data.DuplicateSummary
+import com.github.thebridsk.bridge.data.Id
+import com.github.thebridsk.utilities.logging.Logger
+import com.github.thebridsk.bridge.controller.Controller
+import com.github.thebridsk.bridge.data.bridge.DuplicateViewPerspective
+import com.github.thebridsk.bridge.data.bridge.MatchDuplicateScore
+import com.github.thebridsk.bridge.data.Team
+import com.github.thebridsk.bridge.bridge.store.DuplicateStore
+import com.github.thebridsk.bridge.data.bridge.TeamBoardScore
+import com.github.thebridsk.bridge.data.bridge.BoardScore
+import com.github.thebridsk.bridge.data.bridge.PerspectiveTable
+import com.github.thebridsk.bridge.data.bridge.PerspectiveComplete
+import com.github.thebridsk.bridge.data.bridge.PerspectiveDirector
+import com.github.thebridsk.bridge.data.util.Strings
+import com.github.thebridsk.bridge.pages.duplicate.DuplicateRouter.BaseBoardView
+import com.github.thebridsk.bridge.react.AppButton
+import com.github.thebridsk.bridge.react.Utils._
+import com.github.thebridsk.bridge.routes.BridgeRouter
 
 /**
  * Shows the board results

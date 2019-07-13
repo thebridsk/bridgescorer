@@ -1,11 +1,11 @@
-package com.example.logger
+package com.github.thebridsk.bridge.logger
 
-import com.example.controller.Controller
-import utils.logging.Handler
-import utils.logging.Logger
-import utils.logging.TraceMsg
-import com.example.routes.AppRouter
-import com.example.data.websocket.DuplexProtocol
+import com.github.thebridsk.bridge.controller.Controller
+import com.github.thebridsk.utilities.logging.Handler
+import com.github.thebridsk.utilities.logging.Logger
+import com.github.thebridsk.utilities.logging.TraceMsg
+import com.github.thebridsk.bridge.routes.AppRouter
+import com.github.thebridsk.bridge.data.websocket.DuplexProtocol
 
 object SendToWebsocketHandler {
   val log = Logger("comm.SendToWebsocketHandler")

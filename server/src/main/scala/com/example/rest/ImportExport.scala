@@ -1,17 +1,17 @@
-package com.example.rest
+package com.github.thebridsk.bridge.rest
 
 import akka.http.scaladsl.server._
 import akka.http.scaladsl.model._
 import akka.http.scaladsl.server.Directives._
 import javax.ws.rs.Path
-import com.example.data.RestMessage
-import com.example.backend.BridgeService
+import com.github.thebridsk.bridge.data.RestMessage
+import com.github.thebridsk.bridge.backend.BridgeService
 import akka.stream.scaladsl.Source
 import akka.util.ByteString
 import akka.stream.scaladsl.StreamConverters
 import scala.concurrent.ExecutionContext.Implicits.global
-import com.example.backend.resource.Implicits._
-import utils.logging.Logger
+import com.github.thebridsk.bridge.backend.resource.Implicits._
+import com.github.thebridsk.utilities.logging.Logger
 import scala.util.Success
 import scala.util.Failure
 import akka.http.scaladsl.marshalling.ToResponseMarshallable.apply
@@ -35,9 +35,9 @@ import java.io.InputStream
 import java.io.OutputStream
 import scala.concurrent.Future
 import akka.http.scaladsl.model.headers.ContentDispositionTypes
-import com.example.version.VersionServer
-import com.example.version.VersionShared
-import com.example.utilities.version.VersionUtilities
+import com.github.thebridsk.bridge.version.VersionServer
+import com.github.thebridsk.bridge.version.VersionShared
+import com.github.thebridsk.utilities.version.VersionUtilities
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.enums.ParameterIn
@@ -49,7 +49,7 @@ import io.swagger.v3.oas.annotations.tags.Tags
 import io.swagger.v3.oas.annotations.tags.Tag
 import javax.ws.rs.GET
 import javax.ws.rs.POST
-import com.example.CollectLogs
+import com.github.thebridsk.bridge.CollectLogs
 
 object ImportExport {
   val log = Logger[ImportExport]
@@ -446,13 +446,13 @@ trait ImportExport {
             zip.closeEntry()
           }
           CollectLogs.copyResourceToZip(
-            "com/example/bridgescorer/version/VersionBridgeScorer.properties",
+            "com/github/thebridsk/bridge/bridgescorer/version/VersionBridgeScorer.properties",
             "VersionBridgeScorer.properties",
             zip
           )
 
           CollectLogs.copyResourceToZip(
-            "com/example/utilities/version/VersionUtilities.properties",
+            "com/github/thebridsk/bridge/utilities/version/VersionUtilities.properties",
             "VersionUtilities.properties",
             zip
           )

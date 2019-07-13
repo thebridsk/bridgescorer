@@ -1,13 +1,13 @@
-package com.example.debug
+package com.github.thebridsk.bridge.debug
 
 import scala.scalajs.js
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
-import com.example.react.DateUtils
-import utils.logging.TraceMsg
-import com.example.logger.Alerter
-import com.example.react.AppButton
-import com.example.bridge.action.BridgeDispatcher
+import com.github.thebridsk.bridge.react.DateUtils
+import com.github.thebridsk.utilities.logging.TraceMsg
+import com.github.thebridsk.bridge.logger.Alerter
+import com.github.thebridsk.bridge.react.AppButton
+import com.github.thebridsk.bridge.bridge.action.BridgeDispatcher
 
 /**
  * A skeleton component.

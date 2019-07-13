@@ -1,21 +1,21 @@
-package com.example.test.pages.chicago
+package com.github.thebridsk.bridge.test.pages.chicago
 
-import com.example.test.pages.Page
-import com.example.source.SourcePosition
+import com.github.thebridsk.bridge.test.pages.Page
+import com.github.thebridsk.bridge.source.SourcePosition
 import org.openqa.selenium.WebDriver
 import org.scalactic.source.Position
 import org.scalatest.concurrent.Eventually._
 import org.scalatest.MustMatchers._
-import com.example.test.pages.PageBrowser._
-import com.example.test.selenium.TestServer
-import utils.logging.Logger
-import com.example.test.util.HttpUtils
-import com.example.data.BoardSet
-import com.example.data.Movement
+import com.github.thebridsk.bridge.test.pages.PageBrowser._
+import com.github.thebridsk.bridge.test.selenium.TestServer
+import com.github.thebridsk.utilities.logging.Logger
+import com.github.thebridsk.bridge.test.util.HttpUtils
+import com.github.thebridsk.bridge.data.BoardSet
+import com.github.thebridsk.bridge.data.Movement
 import java.net.URL
-import com.example.data.bridge.PlayerPosition
-import com.example.test.pages.GenericPage
-import com.example.test.pages.Page.AnyPage
+import com.github.thebridsk.bridge.data.bridge.PlayerPosition
+import com.github.thebridsk.bridge.test.pages.GenericPage
+import com.github.thebridsk.bridge.test.pages.Page.AnyPage
 
 object EnterNamesPage {
 
@@ -90,7 +90,7 @@ class EnterNamesPage( val chiid: String,
                          pageCreated: SourcePosition
                     ) extends Page[EnterNamesPage] {
   import EnterNamesPage._
-  import com.example.data.bridge._
+  import com.github.thebridsk.bridge.data.bridge._
 
   def validate(implicit patienceConfig: PatienceConfig, pos: Position) = logMethod(s"${pos.line} ${getClass.getSimpleName}.validate") { eventually {
 

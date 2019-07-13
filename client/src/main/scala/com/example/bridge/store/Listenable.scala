@@ -1,8 +1,8 @@
-package com.example.bridge.store
+package com.github.thebridsk.bridge.bridge.store
 
-import utils.logging.Logger
+import com.github.thebridsk.utilities.logging.Logger
 import japgolly.scalajs.react.Callback
-import com.example.logger.Alerter
+import com.github.thebridsk.bridge.logger.Alerter
 
 trait Listenable {
 

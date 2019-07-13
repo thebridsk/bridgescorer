@@ -1,9 +1,9 @@
-package com.example.websocket
+package com.github.thebridsk.bridge.websocket
 
 import scala.scalajs.js
-import com.example.data.websocket.Protocol
+import com.github.thebridsk.bridge.data.websocket.Protocol
 import scala.scalajs.js.Array
-import utils.logging.Logger
+import com.github.thebridsk.utilities.logging.Logger
 
 abstract class BridgeWebsocket(url: String, protocol: String) extends MyWebsocket(url,protocol) {
 

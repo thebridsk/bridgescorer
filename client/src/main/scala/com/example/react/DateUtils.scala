@@ -1,6 +1,6 @@
-package com.example.react
+package com.github.thebridsk.bridge.react
 
-import com.example.data.SystemTime
+import com.github.thebridsk.bridge.data.SystemTime
 import scala.scalajs.js
 
 object DateUtils {

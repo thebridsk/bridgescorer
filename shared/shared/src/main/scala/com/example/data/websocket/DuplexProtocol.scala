@@ -1,16 +1,16 @@
-package com.example.data.websocket
+package com.github.thebridsk.bridge.data.websocket
 
-import com.example.data.MatchDuplicate
-import com.example.data.Id
-import com.example.data.Board
-import com.example.data.DuplicateHand
-import com.example.data.Team
+import com.github.thebridsk.bridge.data.MatchDuplicate
+import com.github.thebridsk.bridge.data.Id
+import com.github.thebridsk.bridge.data.Board
+import com.github.thebridsk.bridge.data.DuplicateHand
+import com.github.thebridsk.bridge.data.Team
 import play.api.libs.json._
-import com.example.data.rest.JsonSupport._
+import com.github.thebridsk.bridge.data.rest.JsonSupport._
 import scala.annotation.meta._
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.media.ArraySchema
-import com.example.data.SystemTime.Timestamp
+import com.github.thebridsk.bridge.data.SystemTime.Timestamp
 
 object DuplexProtocol {
 
@@ -105,8 +105,8 @@ object DuplexProtocol {
     */
   case class LogEntryS(json: String) extends DuplexMessage
 
-  import com.example.data.rest.JsonSupport._
-  import com.example.data.rest.DuplexProtocolJsonSupport._
+  import com.github.thebridsk.bridge.data.rest.JsonSupport._
+  import com.github.thebridsk.bridge.data.rest.DuplexProtocolJsonSupport._
 
   def toString(msg: DuplexMessage) = msg.toJson
 

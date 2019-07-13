@@ -1,7 +1,7 @@
-package com.example.pages.duplicate
+package com.github.thebridsk.bridge.pages.duplicate
 
-import com.example.pages.Pixels
-import com.example.Bridge
+import com.github.thebridsk.bridge.pages.Pixels
+import com.github.thebridsk.bridge.Bridge
 
 object Properties {
 

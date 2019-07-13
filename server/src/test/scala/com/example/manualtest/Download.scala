@@ -1,11 +1,11 @@
-package com.example.manualtest
+package com.github.thebridsk.bridge.manualtest
 
-import utils.main.Main
+import com.github.thebridsk.utilities.main.Main
 import java.net.URL
 import java.io.File
-import com.example.util.HttpUtils
-import com.example.util.HttpUtils.NullOutputStream
-import com.example.util.GitHub
+import com.github.thebridsk.bridge.util.HttpUtils
+import com.github.thebridsk.bridge.util.HttpUtils.NullOutputStream
+import com.github.thebridsk.bridge.util.GitHub
 
 object Download extends Main {
 

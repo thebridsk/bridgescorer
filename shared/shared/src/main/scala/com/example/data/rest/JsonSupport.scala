@@ -1,26 +1,26 @@
-package com.example.data.rest
+package com.github.thebridsk.bridge.data.rest
 
 import play.api.libs.json._
-import com.example.data._
-import com.example.data.websocket.DuplexProtocol.LogEntryV2
-import com.example.data.duplicate.suggestion.Suggestion
-import com.example.data.duplicate.suggestion.DuplicateSuggestions
-import com.example.data.duplicate.suggestion.Pairing
-import com.example.data.duplicate.suggestion.NeverPair
-import com.example.data.duplicate.stats.CounterStat
-import com.example.data.duplicate.stats.ContractStat
-import com.example.data.duplicate.stats.ContractStats
-import com.example.data.duplicate.stats.PlayerStat
-import com.example.data.duplicate.stats.PlayerStats
-import com.example.data.duplicate.stats.DuplicateStats
-import com.example.data.duplicate.stats.PlayerComparisonStat
-import com.example.data.duplicate.stats.PlayerComparisonStats
-import com.example.data.duplicate.stats.PlayersOpponentsStats
-import com.example.data.duplicate.stats.PlayerOpponentStat
-import com.example.data.duplicate.stats.PlayerOpponentsStat
+import com.github.thebridsk.bridge.data._
+import com.github.thebridsk.bridge.data.websocket.DuplexProtocol.LogEntryV2
+import com.github.thebridsk.bridge.data.duplicate.suggestion.Suggestion
+import com.github.thebridsk.bridge.data.duplicate.suggestion.DuplicateSuggestions
+import com.github.thebridsk.bridge.data.duplicate.suggestion.Pairing
+import com.github.thebridsk.bridge.data.duplicate.suggestion.NeverPair
+import com.github.thebridsk.bridge.data.duplicate.stats.CounterStat
+import com.github.thebridsk.bridge.data.duplicate.stats.ContractStat
+import com.github.thebridsk.bridge.data.duplicate.stats.ContractStats
+import com.github.thebridsk.bridge.data.duplicate.stats.PlayerStat
+import com.github.thebridsk.bridge.data.duplicate.stats.PlayerStats
+import com.github.thebridsk.bridge.data.duplicate.stats.DuplicateStats
+import com.github.thebridsk.bridge.data.duplicate.stats.PlayerComparisonStat
+import com.github.thebridsk.bridge.data.duplicate.stats.PlayerComparisonStats
+import com.github.thebridsk.bridge.data.duplicate.stats.PlayersOpponentsStats
+import com.github.thebridsk.bridge.data.duplicate.stats.PlayerOpponentStat
+import com.github.thebridsk.bridge.data.duplicate.stats.PlayerOpponentsStat
 
-//import com.example.data.websocket.DuplexProtocol.{ LogEntry => DpLogEntry, _ }
-//import com.example.data.websocket.Protocol._
+//import com.github.thebridsk.bridge.data.websocket.DuplexProtocol.{ LogEntry => DpLogEntry, _ }
+//import com.github.thebridsk.bridge.data.websocket.Protocol._
 
 class UnitFormat extends Format[Unit] {
 

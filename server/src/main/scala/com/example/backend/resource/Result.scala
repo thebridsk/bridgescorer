@@ -1,8 +1,8 @@
-package com.example.backend.resource
+package com.github.thebridsk.bridge.backend.resource
 
-import utils.logging.Logger
+import com.github.thebridsk.utilities.logging.Logger
 import akka.http.scaladsl.model.StatusCode
-import com.example.data.RestMessage
+import com.github.thebridsk.bridge.data.RestMessage
 import scala.concurrent.Future
 import scala.concurrent.Promise
 

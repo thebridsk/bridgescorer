@@ -1,4 +1,4 @@
-package com.example.skeleton.react
+package com.github.thebridsk.bridge.skeleton.react
 
 import scala.scalajs.js
 import japgolly.scalajs.react.vdom.html_<^._

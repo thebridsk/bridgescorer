@@ -1,36 +1,36 @@
-package com.example.test.util
+package com.github.thebridsk.bridge.test.util
 
 import scala.concurrent.duration._
 import scala.language.postfixOps
 import akka.http.scaladsl.testkit.WSProbe
 import akka.http.scaladsl.model.ws.TextMessage
-import com.example.data.websocket.DuplexProtocol
+import com.github.thebridsk.bridge.data.websocket.DuplexProtocol
 import akka.http.scaladsl.model.ws.BinaryMessage
 import org.scalatest.Assertions._
-import com.example.service.ClientLoggingService._
+import com.github.thebridsk.bridge.service.ClientLoggingService._
 import akka.actor.ActorSystem
 import akka.stream.Materializer
-import com.example.data.websocket.Protocol.ToServerMessage
-import com.example.data.websocket.DuplexProtocol.DuplexMessage
+import com.github.thebridsk.bridge.data.websocket.Protocol.ToServerMessage
+import com.github.thebridsk.bridge.data.websocket.DuplexProtocol.DuplexMessage
 import org.scalatest.MustMatchers
 import akka.http.scaladsl.testkit.RouteTest
-import com.example.data.websocket.Protocol
+import com.github.thebridsk.bridge.data.websocket.Protocol
 import akka.http.scaladsl.server.Route
 import akka.http.scaladsl.model.headers.`Remote-Address`
 import org.scalatest.Assertions
-import com.example.data.websocket.Protocol.UpdateDuplicateTeam
-import com.example.data.websocket.Protocol.UpdateDuplicateHand
-import com.example.data.websocket.Protocol.UpdateDuplicate
-import com.example.data.websocket.Protocol.MonitorJoined
-import com.example.data.websocket.Protocol.MonitorLeft
-import com.example.data.websocket.Protocol.NoData
-import com.example.data.MatchDuplicate
+import com.github.thebridsk.bridge.data.websocket.Protocol.UpdateDuplicateTeam
+import com.github.thebridsk.bridge.data.websocket.Protocol.UpdateDuplicateHand
+import com.github.thebridsk.bridge.data.websocket.Protocol.UpdateDuplicate
+import com.github.thebridsk.bridge.data.websocket.Protocol.MonitorJoined
+import com.github.thebridsk.bridge.data.websocket.Protocol.MonitorLeft
+import com.github.thebridsk.bridge.data.websocket.Protocol.NoData
+import com.github.thebridsk.bridge.data.MatchDuplicate
 import akka.event.LoggingAdapter
-import com.example.data.websocket.Protocol.UpdateChicago
-import com.example.data.websocket.Protocol.UpdateRubber
-import com.example.data.websocket.Protocol.UpdateChicagoHand
-import com.example.data.websocket.Protocol.UpdateChicagoRound
-import com.example.data.websocket.Protocol.UpdateRubberHand
+import com.github.thebridsk.bridge.data.websocket.Protocol.UpdateChicago
+import com.github.thebridsk.bridge.data.websocket.Protocol.UpdateRubber
+import com.github.thebridsk.bridge.data.websocket.Protocol.UpdateChicagoHand
+import com.github.thebridsk.bridge.data.websocket.Protocol.UpdateChicagoRound
+import com.github.thebridsk.bridge.data.websocket.Protocol.UpdateRubberHand
 
 class WebsocketClient(implicit system: ActorSystem, materializer: Materializer, routetest: RouteTest) {
 

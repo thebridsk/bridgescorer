@@ -1,36 +1,36 @@
-package com.example.pages.duplicate
+package com.github.thebridsk.bridge.pages.duplicate
 
 
 import scala.scalajs.js
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
-import com.example.routes.BridgeRouter
-import com.example.routes.AppRouter.AppPage
-import com.example.data.DuplicateSummary
-import com.example.data.Id
-import utils.logging.Logger
-import com.example.controller.Controller
-import com.example.data.SystemTime
-import com.example.react.AppButton
-import com.example.react.Utils._
-import com.example.data.duplicate.suggestion.PairsData
-import com.example.data.duplicate.suggestion.PairsDataSummary
-import com.example.data.duplicate.suggestion.ColorByWonPct
-import com.example.data.duplicate.suggestion.PairData
+import com.github.thebridsk.bridge.routes.BridgeRouter
+import com.github.thebridsk.bridge.routes.AppRouter.AppPage
+import com.github.thebridsk.bridge.data.DuplicateSummary
+import com.github.thebridsk.bridge.data.Id
+import com.github.thebridsk.utilities.logging.Logger
+import com.github.thebridsk.bridge.controller.Controller
+import com.github.thebridsk.bridge.data.SystemTime
+import com.github.thebridsk.bridge.react.AppButton
+import com.github.thebridsk.bridge.react.Utils._
+import com.github.thebridsk.bridge.data.duplicate.suggestion.PairsData
+import com.github.thebridsk.bridge.data.duplicate.suggestion.PairsDataSummary
+import com.github.thebridsk.bridge.data.duplicate.suggestion.ColorByWonPct
+import com.github.thebridsk.bridge.data.duplicate.suggestion.PairData
 import scala.annotation.tailrec
-import com.example.data.duplicate.suggestion.ColorByPlayed
-import com.example.pages.BaseStyles
-import com.example.data.duplicate.suggestion.CalculationType
-import com.example.data.duplicate.suggestion.CalculationAsPlayed
-import com.example.data.duplicate.suggestion.CalculationAsPlayed
-import com.example.data.duplicate.suggestion.CalculationMP
-import com.example.data.duplicate.suggestion.CalculationIMP
-import com.example.data.DuplicateSummaryDetails
-import com.example.react.Table
-import com.example.react.Table.Sorter
-import com.example.react.Table.SortableColumn
-import com.example.react.Table.MultiColumnSort
-import com.example.react.Table.Row
+import com.github.thebridsk.bridge.data.duplicate.suggestion.ColorByPlayed
+import com.github.thebridsk.bridge.pages.BaseStyles
+import com.github.thebridsk.bridge.data.duplicate.suggestion.CalculationType
+import com.github.thebridsk.bridge.data.duplicate.suggestion.CalculationAsPlayed
+import com.github.thebridsk.bridge.data.duplicate.suggestion.CalculationAsPlayed
+import com.github.thebridsk.bridge.data.duplicate.suggestion.CalculationMP
+import com.github.thebridsk.bridge.data.duplicate.suggestion.CalculationIMP
+import com.github.thebridsk.bridge.data.DuplicateSummaryDetails
+import com.github.thebridsk.bridge.react.Table
+import com.github.thebridsk.bridge.react.Table.Sorter
+import com.github.thebridsk.bridge.react.Table.SortableColumn
+import com.github.thebridsk.bridge.react.Table.MultiColumnSort
+import com.github.thebridsk.bridge.react.Table.Row
 
 /**
  * Shows a summary page of all duplicate matches from the database.

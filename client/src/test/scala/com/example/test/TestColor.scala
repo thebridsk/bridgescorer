@@ -1,7 +1,7 @@
-package com.example.test
+package com.github.thebridsk.bridge.test
 
 import org.scalatest.FlatSpec
-import com.example.color._
+import com.github.thebridsk.bridge.color._
 import org.scalatest.MustMatchers
 
 class TestColor extends FlatSpec with MustMatchers  {

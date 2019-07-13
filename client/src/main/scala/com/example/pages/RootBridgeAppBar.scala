@@ -1,47 +1,47 @@
-package com.example.pages
+package com.github.thebridsk.bridge.pages
 
 import scala.scalajs.js
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
-import com.example.materialui.MuiAppBar
-import com.example.materialui.Position
-import com.example.materialui.MuiToolbar
-import com.example.materialui.icons.MuiIcons
-import com.example.materialui.MuiTypography
-import com.example.materialui.ColorVariant
-import com.example.materialui.TextVariant
-import com.example.materialui.TextColor
+import com.github.thebridsk.materialui.MuiAppBar
+import com.github.thebridsk.materialui.Position
+import com.github.thebridsk.materialui.MuiToolbar
+import com.github.thebridsk.materialui.icons.MuiIcons
+import com.github.thebridsk.materialui.MuiTypography
+import com.github.thebridsk.materialui.ColorVariant
+import com.github.thebridsk.materialui.TextVariant
+import com.github.thebridsk.materialui.TextColor
 import org.scalajs.dom.raw.Element
 import org.scalajs.dom.raw.Node
-import utils.logging.Logger
+import com.github.thebridsk.utilities.logging.Logger
 import japgolly.scalajs.react.vdom.HtmlStyles
-import com.example.materialui.component.MyMenu
-import com.example.materialui.MuiMenuItem
-import com.example.routes.AppRouter.AppPage
-import com.example.routes.BridgeRouter
-import com.example.routes.AppRouter.About
-import com.example.react.AppButtonLinkNewWindow
+import com.github.thebridsk.materialui.component.MyMenu
+import com.github.thebridsk.materialui.MuiMenuItem
+import com.github.thebridsk.bridge.routes.AppRouter.AppPage
+import com.github.thebridsk.bridge.routes.BridgeRouter
+import com.github.thebridsk.bridge.routes.AppRouter.About
+import com.github.thebridsk.bridge.react.AppButtonLinkNewWindow
 import org.scalajs.dom.document
 import japgolly.scalajs.react.vdom.VdomNode
-import com.example.routes.AppRouter.Home
-import com.example.routes.AppRouter.Info
-import com.example.routes.AppRouter.GraphQLAppPage
-import com.example.routes.AppRouter.GraphiQLView
-import com.example.routes.AppRouter.VoyagerView
-import com.example.pages.chicagos.ChicagoModule.PlayChicago2
-import com.example.pages.chicagos.ChicagoRouter.{ ListView => ChicagoListView }
-import com.example.pages.rubber.RubberRouter.{ ListView => RubberListView }
-import com.example.pages.rubber.RubberModule.PlayRubber
-import com.example.pages.duplicate.DuplicateModule.PlayDuplicate
-import com.example.pages.duplicate.DuplicateRouter.SummaryView
-import com.example.routes.AppRouter.ColorView
-import com.example.Bridge
-import com.example.materialui.PopperPlacement
-import com.example.routes.AppRouter.ShowDuplicateHand
-import com.example.routes.AppRouter.ShowChicagoHand
-import com.example.routes.AppRouter.ShowRubberHand
-import com.example.routes.AppRouter.PageTest
-import com.example.materialui.icons.SvgColor
+import com.github.thebridsk.bridge.routes.AppRouter.Home
+import com.github.thebridsk.bridge.routes.AppRouter.Info
+import com.github.thebridsk.bridge.routes.AppRouter.GraphQLAppPage
+import com.github.thebridsk.bridge.routes.AppRouter.GraphiQLView
+import com.github.thebridsk.bridge.routes.AppRouter.VoyagerView
+import com.github.thebridsk.bridge.pages.chicagos.ChicagoModule.PlayChicago2
+import com.github.thebridsk.bridge.pages.chicagos.ChicagoRouter.{ ListView => ChicagoListView }
+import com.github.thebridsk.bridge.pages.rubber.RubberRouter.{ ListView => RubberListView }
+import com.github.thebridsk.bridge.pages.rubber.RubberModule.PlayRubber
+import com.github.thebridsk.bridge.pages.duplicate.DuplicateModule.PlayDuplicate
+import com.github.thebridsk.bridge.pages.duplicate.DuplicateRouter.SummaryView
+import com.github.thebridsk.bridge.routes.AppRouter.ColorView
+import com.github.thebridsk.bridge.Bridge
+import com.github.thebridsk.materialui.PopperPlacement
+import com.github.thebridsk.bridge.routes.AppRouter.ShowDuplicateHand
+import com.github.thebridsk.bridge.routes.AppRouter.ShowChicagoHand
+import com.github.thebridsk.bridge.routes.AppRouter.ShowRubberHand
+import com.github.thebridsk.bridge.routes.AppRouter.PageTest
+import com.github.thebridsk.materialui.icons.SvgColor
 
 /**
  * A simple AppBar for the Bridge client.

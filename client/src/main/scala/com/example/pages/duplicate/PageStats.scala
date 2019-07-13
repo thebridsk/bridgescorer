@@ -1,32 +1,32 @@
-package com.example.pages.duplicate
+package com.github.thebridsk.bridge.pages.duplicate
 
 
 import scala.scalajs.js
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.extra.router.RouterCtl
-import com.example.routes.AppRouter.AppPage
-import com.example.data.DuplicateSummary
-import com.example.data.Id
-import utils.logging.Logger
-import com.example.controller.Controller
-import com.example.data.SystemTime
-import com.example.routes.BridgeRouter
-import com.example.react.AppButton
-import com.example.pages.duplicate.DuplicateRouter.CompleteScoreboardView
-import com.example.pages.duplicate.DuplicateRouter.SummaryView
-import com.example.pages.duplicate.DuplicateRouter.BoardSetSummaryView
-import com.example.pages.duplicate.DuplicateRouter.MovementSummaryView
-import com.example.rest2.RestClientDuplicateSummary
-import com.example.bridge.store.DuplicateSummaryStore
-import com.example.data.duplicate.suggestion.PairsData
-import com.example.react.Utils._
-import com.example.pages.BaseStyles
-import com.example.data.duplicate.stats.DuplicateStats
-import com.example.react.PopupOkCancel
-import com.example.materialui.MuiTypography
-import com.example.materialui.TextVariant
-import com.example.materialui.TextColor
+import com.github.thebridsk.bridge.routes.AppRouter.AppPage
+import com.github.thebridsk.bridge.data.DuplicateSummary
+import com.github.thebridsk.bridge.data.Id
+import com.github.thebridsk.utilities.logging.Logger
+import com.github.thebridsk.bridge.controller.Controller
+import com.github.thebridsk.bridge.data.SystemTime
+import com.github.thebridsk.bridge.routes.BridgeRouter
+import com.github.thebridsk.bridge.react.AppButton
+import com.github.thebridsk.bridge.pages.duplicate.DuplicateRouter.CompleteScoreboardView
+import com.github.thebridsk.bridge.pages.duplicate.DuplicateRouter.SummaryView
+import com.github.thebridsk.bridge.pages.duplicate.DuplicateRouter.BoardSetSummaryView
+import com.github.thebridsk.bridge.pages.duplicate.DuplicateRouter.MovementSummaryView
+import com.github.thebridsk.bridge.rest2.RestClientDuplicateSummary
+import com.github.thebridsk.bridge.bridge.store.DuplicateSummaryStore
+import com.github.thebridsk.bridge.data.duplicate.suggestion.PairsData
+import com.github.thebridsk.bridge.react.Utils._
+import com.github.thebridsk.bridge.pages.BaseStyles
+import com.github.thebridsk.bridge.data.duplicate.stats.DuplicateStats
+import com.github.thebridsk.bridge.react.PopupOkCancel
+import com.github.thebridsk.materialui.MuiTypography
+import com.github.thebridsk.materialui.TextVariant
+import com.github.thebridsk.materialui.TextColor
 
 /**
  * Shows a summary page of all duplicate matches from the database.

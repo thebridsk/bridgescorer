@@ -1,7 +1,7 @@
-package com.example.backend.resource
+package com.github.thebridsk.bridge.backend.resource
 
 import akka.http.scaladsl.model.StatusCodes
-import com.example.data.RestMessage
+import com.github.thebridsk.bridge.data.RestMessage
 
 /**
   * @param PVType parent resource type

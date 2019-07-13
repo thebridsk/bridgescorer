@@ -1,17 +1,17 @@
-package com.example.pages
+package com.github.thebridsk.bridge.pages
 
 import scala.scalajs.js
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
 import graphqlvoyager.Voyager
 import japgolly.scalajs.react.extra.router.RouterCtl
-import com.example.routes.AppRouter.AppPage
-import com.example.react.AppButton
-import com.example.routes.AppRouter.Home
-import com.example.routes.BridgeRouter
-import com.example.materialui.MuiTypography
-import com.example.materialui.TextVariant
-import com.example.materialui.TextColor
+import com.github.thebridsk.bridge.routes.AppRouter.AppPage
+import com.github.thebridsk.bridge.react.AppButton
+import com.github.thebridsk.bridge.routes.AppRouter.Home
+import com.github.thebridsk.bridge.routes.BridgeRouter
+import com.github.thebridsk.materialui.MuiTypography
+import com.github.thebridsk.materialui.TextVariant
+import com.github.thebridsk.materialui.TextColor
 
 /**
  * A skeleton component.

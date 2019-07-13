@@ -1,4 +1,4 @@
-package com.example.test.util
+package com.github.thebridsk.bridge.test.util
 
 import org.scalatest.concurrent.Eventually
 import org.scalactic.source.Position
@@ -6,7 +6,7 @@ import org.scalatest.exceptions.StackDepthException
 import org.scalatest.exceptions.TestFailedException
 import org.scalatest.exceptions.StackDepthException
 import org.scalactic.exceptions.NullArgumentException
-import utils.logging.Logger
+import com.github.thebridsk.utilities.logging.Logger
 
 object EventuallyUtilsInternals {
   val log = Logger[EventuallyUtils]

@@ -1,17 +1,17 @@
-package com.example.backend.resource
+package com.github.thebridsk.bridge.backend.resource
 
 import scala.concurrent.duration._
 import akka.http.scaladsl.model.StatusCodes
-import com.example.data.RestMessage
-import com.example.data.VersionedInstance
+import com.github.thebridsk.bridge.data.RestMessage
+import com.github.thebridsk.bridge.data.VersionedInstance
 import scala.annotation.tailrec
 import scala.reflect.io.Directory
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext
-import com.example.backend.resource.Implicits._
+import com.github.thebridsk.bridge.backend.resource.Implicits._
 import scala.util.Success
 import scala.util.Failure
-import utils.logging.Logger
+import com.github.thebridsk.utilities.logging.Logger
 
 class MultiPersistentSupport[VId, VType <: VersionedInstance[VType, VType, VId]](
     val persistentStores: List[PersistentSupport[VId, VType]]

@@ -1,9 +1,9 @@
-package com.example.backend.resource
+package com.github.thebridsk.bridge.backend.resource
 
 import play.api.libs.json._
-import com.example.yaml.YamlSupport
-import utils.logging.Logger
-import com.example.data.rest.JsonException
+import com.github.thebridsk.bridge.yaml.YamlSupport
+import com.github.thebridsk.utilities.logging.Logger
+import com.github.thebridsk.bridge.data.rest.JsonException
 
 object Converter {
   private[resource] val log = Logger[Converter]

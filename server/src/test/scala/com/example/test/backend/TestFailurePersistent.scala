@@ -1,19 +1,19 @@
-package com.example.test.backend
+package com.github.thebridsk.bridge.test.backend
 
-import com.example.data.VersionedInstance
-import com.example.backend.resource.StoreSupport
-import com.example.backend.resource.PersistentSupport
-import com.example.backend.resource.Result
-import utils.logging.Logger
+import com.github.thebridsk.bridge.data.VersionedInstance
+import com.github.thebridsk.bridge.backend.resource.StoreSupport
+import com.github.thebridsk.bridge.backend.resource.PersistentSupport
+import com.github.thebridsk.bridge.backend.resource.Result
+import com.github.thebridsk.utilities.logging.Logger
 import TestFailurePersistent.log
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext
-import com.example.backend.resource.Implicits._
+import com.github.thebridsk.bridge.backend.resource.Implicits._
 import akka.http.scaladsl.model.StatusCodes
-import com.example.data.Id
+import com.github.thebridsk.bridge.data.Id
 import scala.concurrent.duration.Duration
-import com.example.backend.resource.Store
-import com.example.backend.resource.InMemoryPersistent
+import com.github.thebridsk.bridge.backend.resource.Store
+import com.github.thebridsk.bridge.backend.resource.InMemoryPersistent
 
 object TestFailurePersistent {
 

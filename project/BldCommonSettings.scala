@@ -75,9 +75,9 @@ object BldCommonSettings {
   val testCaseToRun =
     sys.props.get("TESTCASETORUN").orElse(sys.env.get("TESTCASETORUN"))
 
-  val testToRunNotTravis = "com.example.test.AllSuites"
-  val testToRunBuildForHelpOnly = "com.example.test.selenium.DuplicateTestPages"
-  val testToRunInTravis = "com.example.test.TravisAllSuites"
+  val testToRunNotTravis = "com.github.thebridsk.bridge.test.AllSuites"
+  val testToRunBuildForHelpOnly = "com.github.thebridsk.bridge.test.selenium.DuplicateTestPages"
+  val testToRunInTravis = "com.github.thebridsk.bridge.test.TravisAllSuites"
 
   lazy val testToRun = serverTestToRun.getOrElse(
     if (inTravis) {
@@ -96,14 +96,14 @@ object BldCommonSettings {
     }
   )
 
-  val moretestToRun = "com.example.test.selenium.IntegrationTests"
-  val travisMoretestToRun = "com.example.test.selenium.TravisIntegrationTests"
+  val moretestToRun = "com.github.thebridsk.bridge.test.selenium.IntegrationTests"
+  val travisMoretestToRun = "com.github.thebridsk.bridge.test.selenium.TravisIntegrationTests"
   val testdataDir = "../testdata"
 
   val imoretestToRun =
-    "com.example.test.selenium.integrationtest.IntegrationTests"
+    "com.github.thebridsk.bridge.test.selenium.integrationtest.IntegrationTests"
   val itravisMoretestToRun =
-    "com.example.test.selenium.integrationtest.TravisIntegrationTests"
+    "com.github.thebridsk.bridge.test.selenium.integrationtest.TravisIntegrationTests"
   val itestdataDir = "./testdata"
 
 

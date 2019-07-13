@@ -1,8 +1,8 @@
-package com.example.yaml
+package com.github.thebridsk.bridge.yaml
 
 import play.api.libs.json.jackson.PlayJsonModule
 import play.api.libs.json._
-import com.example.data.rest.JsonException
+import com.github.thebridsk.bridge.data.rest.JsonException
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
 import java.io.File
@@ -16,7 +16,7 @@ import java.io.OutputStreamWriter
 import java.io.FileOutputStream
 import java.io.InputStream
 import java.io.OutputStream
-import com.example.data.rest.JsonSupport
+import com.github.thebridsk.bridge.data.rest.JsonSupport
 
 trait YamlSupport extends JsonSupport {
 

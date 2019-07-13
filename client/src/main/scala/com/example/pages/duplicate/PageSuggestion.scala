@@ -1,33 +1,33 @@
-package com.example.pages.duplicate
+package com.github.thebridsk.bridge.pages.duplicate
 
 import scala.scalajs.js
 import scala.scalajs.js.timers._
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
-import com.example.routes.BridgeRouter
-import utils.logging.Logger
-import com.example.bridge.store.DuplicateSummaryStore
-import com.example.controller.Controller
-import com.example.react.AppButton
-import com.example.pages.duplicate.DuplicateRouter.SummaryView
-import com.example.bridge.store.NamesStore
-import com.example.react.CheckBox
-import com.example.react.PopupOkCancel
+import com.github.thebridsk.bridge.routes.BridgeRouter
+import com.github.thebridsk.utilities.logging.Logger
+import com.github.thebridsk.bridge.bridge.store.DuplicateSummaryStore
+import com.github.thebridsk.bridge.controller.Controller
+import com.github.thebridsk.bridge.react.AppButton
+import com.github.thebridsk.bridge.pages.duplicate.DuplicateRouter.SummaryView
+import com.github.thebridsk.bridge.bridge.store.NamesStore
+import com.github.thebridsk.bridge.react.CheckBox
+import com.github.thebridsk.bridge.react.PopupOkCancel
 import scala.annotation.tailrec
-import com.example.logger.Alerter
-import com.example.data.duplicate.suggestion.DuplicateSuggestionsCalculation
-import com.example.data.duplicate.suggestion.Suggestion
-import com.example.data.SystemTime
-import com.example.data.duplicate.suggestion.DuplicateSuggestions
-import com.example.rest2.RestClientDuplicateSuggestions
+import com.github.thebridsk.bridge.logger.Alerter
+import com.github.thebridsk.bridge.data.duplicate.suggestion.DuplicateSuggestionsCalculation
+import com.github.thebridsk.bridge.data.duplicate.suggestion.Suggestion
+import com.github.thebridsk.bridge.data.SystemTime
+import com.github.thebridsk.bridge.data.duplicate.suggestion.DuplicateSuggestions
+import com.github.thebridsk.bridge.rest2.RestClientDuplicateSuggestions
 import scala.concurrent.ExecutionContext.Implicits.global
 import org.scalactic.source.Position
-import com.example.rest2.RequestCancelled
-import com.example.react.Utils._
-import com.example.data.duplicate.suggestion.NeverPair
-import com.example.materialui.MuiTypography
-import com.example.materialui.TextVariant
-import com.example.materialui.TextColor
+import com.github.thebridsk.bridge.rest2.RequestCancelled
+import com.github.thebridsk.bridge.react.Utils._
+import com.github.thebridsk.bridge.data.duplicate.suggestion.NeverPair
+import com.github.thebridsk.materialui.MuiTypography
+import com.github.thebridsk.materialui.TextVariant
+import com.github.thebridsk.materialui.TextColor
 
 /**
  * A skeleton component.
@@ -144,7 +144,7 @@ object PageSuggestionInternal {
       s.copy( knownPlayersSelected = kps, newPlayers=np, error=error ).trace(s"""toggleKnownPlayer(${p})""")
     }
 
-    import com.example.react.Utils._
+    import com.github.thebridsk.bridge.react.Utils._
     def setNumberPlayers( e: ReactEventFromInput ) =  e.inputText { number =>
       scope.modState { s =>
         val error = if (s.knownPlayersSelected.length > s.numberPlayers.getOrElse(0)) Some("Too many players are selected")

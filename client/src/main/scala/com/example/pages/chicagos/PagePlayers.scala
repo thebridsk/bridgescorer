@@ -1,18 +1,18 @@
-package com.example.pages.chicagos
+package com.github.thebridsk.bridge.pages.chicagos
 
-import com.example.bridge.store.ChicagoStore
-import com.example.controller.ChicagoController
-import com.example.data._
-import com.example.data.bridge._
-import utils.logging.Logger
-import com.example.routes.BridgeRouter
+import com.github.thebridsk.bridge.bridge.store.ChicagoStore
+import com.github.thebridsk.bridge.controller.ChicagoController
+import com.github.thebridsk.bridge.data._
+import com.github.thebridsk.bridge.data.bridge._
+import com.github.thebridsk.utilities.logging.Logger
+import com.github.thebridsk.bridge.routes.BridgeRouter
 
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.html_<^._
-import com.example.pages.chicagos.ChicagoRouter.NamesView
-import com.example.materialui.MuiTypography
-import com.example.materialui.TextVariant
-import com.example.materialui.TextColor
+import com.github.thebridsk.bridge.pages.chicagos.ChicagoRouter.NamesView
+import com.github.thebridsk.materialui.MuiTypography
+import com.github.thebridsk.materialui.TextVariant
+import com.github.thebridsk.materialui.TextColor
 
 /**
   * @author werewolf

@@ -1,23 +1,23 @@
-package com.example.pages.chicagos
+package com.github.thebridsk.bridge.pages.chicagos
 
-import com.example.bridge.store.ChicagoStore
-import com.example.controller.ChicagoController
-import com.example.data.chicago.ChicagoScoring
-import utils.logging.Logger
-import com.example.pages.hand.ComponentInputStyleButton
+import com.github.thebridsk.bridge.bridge.store.ChicagoStore
+import com.github.thebridsk.bridge.controller.ChicagoController
+import com.github.thebridsk.bridge.data.chicago.ChicagoScoring
+import com.github.thebridsk.utilities.logging.Logger
+import com.github.thebridsk.bridge.pages.hand.ComponentInputStyleButton
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.extra.router.RouterCtl
 import japgolly.scalajs.react.vdom.html_<^._
-import com.example.pages.chicagos.ChicagoRouter.RoundView
-import com.example.pages.chicagos.ChicagoRouter.SummaryView
-import com.example.pages.chicagos.ChicagoRouter.ListView
-import com.example.react.AppButton
-import com.example.react.Utils._
-import com.example.react.HelpButton
-import com.example.materialui.MuiTypography
-import com.example.materialui.TextVariant
-import com.example.materialui.TextColor
-import com.example.routes.BridgeRouter
+import com.github.thebridsk.bridge.pages.chicagos.ChicagoRouter.RoundView
+import com.github.thebridsk.bridge.pages.chicagos.ChicagoRouter.SummaryView
+import com.github.thebridsk.bridge.pages.chicagos.ChicagoRouter.ListView
+import com.github.thebridsk.bridge.react.AppButton
+import com.github.thebridsk.bridge.react.Utils._
+import com.github.thebridsk.bridge.react.HelpButton
+import com.github.thebridsk.materialui.MuiTypography
+import com.github.thebridsk.materialui.TextVariant
+import com.github.thebridsk.materialui.TextColor
+import com.github.thebridsk.bridge.routes.BridgeRouter
 
 /**
   * A skeleton component.

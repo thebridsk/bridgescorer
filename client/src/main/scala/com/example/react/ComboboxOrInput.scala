@@ -1,11 +1,11 @@
-package com.example.react
+package com.github.thebridsk.bridge.react
 
 import scala.scalajs.js
 import scala.scalajs.js.annotation.JSName
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react.vdom.TagMod
-import com.example.react.Utils.ExtendReactEventFromInput
+import com.github.thebridsk.bridge.react.Utils.ExtendReactEventFromInput
 
 
 object ComboboxOrInput {

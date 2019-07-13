@@ -1,26 +1,26 @@
-package com.example.pages.duplicate
+package com.github.thebridsk.bridge.pages.duplicate
 
 import scala.scalajs.js
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
-import com.example.routes.BridgeRouter
-import com.example.pages.duplicate.DuplicateRouter.DuplicateResultView
-import utils.logging.Logger
-import com.example.bridge.store.DuplicateResultStore
-import com.example.controller.Controller
-import com.example.react.AppButton
-import com.example.pages.duplicate.DuplicateRouter.SummaryView
-import com.example.pages.duplicate.DuplicateRouter.DuplicateResultEditView
-import com.example.react.DateUtils
-import com.example.react.DateTimePicker
+import com.github.thebridsk.bridge.routes.BridgeRouter
+import com.github.thebridsk.bridge.pages.duplicate.DuplicateRouter.DuplicateResultView
+import com.github.thebridsk.utilities.logging.Logger
+import com.github.thebridsk.bridge.bridge.store.DuplicateResultStore
+import com.github.thebridsk.bridge.controller.Controller
+import com.github.thebridsk.bridge.react.AppButton
+import com.github.thebridsk.bridge.pages.duplicate.DuplicateRouter.SummaryView
+import com.github.thebridsk.bridge.pages.duplicate.DuplicateRouter.DuplicateResultEditView
+import com.github.thebridsk.bridge.react.DateUtils
+import com.github.thebridsk.bridge.react.DateTimePicker
 import scala.scalajs.js.Date
-import com.example.react.reactwidgets.globalize.Moment
-import com.example.react.reactwidgets.globalize.ReactWidgetsMoment
-import com.example.rest2.RestClientDuplicateResult
-import com.example.react.PopupOkCancel
-import com.example.materialui.MuiTypography
-import com.example.materialui.TextVariant
-import com.example.materialui.TextColor
+import com.github.thebridsk.bridge.react.reactwidgets.globalize.Moment
+import com.github.thebridsk.bridge.react.reactwidgets.globalize.ReactWidgetsMoment
+import com.github.thebridsk.bridge.rest2.RestClientDuplicateResult
+import com.github.thebridsk.bridge.react.PopupOkCancel
+import com.github.thebridsk.materialui.MuiTypography
+import com.github.thebridsk.materialui.TextVariant
+import com.github.thebridsk.materialui.TextColor
 
 /**
  * A skeleton component.

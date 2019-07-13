@@ -1,21 +1,21 @@
-package com.example.manualtest
+package com.github.thebridsk.bridge.manualtest
 
 import java.util.logging.Level
-import utils.main.Main
-import com.example.data.Hand
-import com.example.data.bridge._
-import com.example.data.bridge.DuplicateBridge._
+import com.github.thebridsk.utilities.main.Main
+import com.github.thebridsk.bridge.data.Hand
+import com.github.thebridsk.bridge.data.bridge._
+import com.github.thebridsk.bridge.data.bridge.DuplicateBridge._
 
 /**
  * @author werewolf
  */
 object TestScoringManual extends Main {
-  
+
   def execute() = {
     showHand( Hand.create("1",4,"N","R","N",true,false,true,5) )
     simpleTest()
     checkallmade()
-    
+
     checkalldown()
     checkalldownwithcontract()
     0
@@ -24,12 +24,12 @@ object TestScoringManual extends Main {
   def showHand( hand: ScoreHand ): Unit = {
     logger.info("Hand: "+hand)
   }
-  
+
   def simpleTest(): Unit = {
     showHand( Hand.create("1",4,"S","N","N",true,false,true,5) )
     showHand( Hand.create("1",4,"N","D","N",true,false,false,5) )
   }
-  
+
   def checkallmade() = {
     println();
     println("made")
@@ -52,7 +52,7 @@ object TestScoringManual extends Main {
       }
     }
   }
-  
+
   def checkMajorMinor() = {
     println("Starting to check majors and minors")
     for ((suit1,suit2) <- (Spades,Hearts)::(Diamonds,Clubs)::Nil;
@@ -74,7 +74,7 @@ object TestScoringManual extends Main {
     println("Done checking majors and minors")
   }
 
-  
+
   def checkalldown() = {
     println()
     println("down")

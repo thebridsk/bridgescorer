@@ -1,14 +1,14 @@
-package com.example.test.pages.bridge
+package com.github.thebridsk.bridge.test.pages.bridge
 
-import com.example.source.SourcePosition
+import com.github.thebridsk.bridge.source.SourcePosition
 import org.openqa.selenium.WebDriver
 import org.scalactic.source.Position
 import org.scalatest.concurrent.Eventually._
 import org.scalatest.MustMatchers._
-import com.example.test.pages.PageBrowser._
-import com.example.test.selenium.TestServer
-import utils.logging.Logger
-import com.example.test.pages.Page
+import com.github.thebridsk.bridge.test.pages.PageBrowser._
+import com.github.thebridsk.bridge.test.selenium.TestServer
+import com.github.thebridsk.utilities.logging.Logger
+import com.github.thebridsk.bridge.test.pages.Page
 
 object ImportResultPage {
 

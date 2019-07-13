@@ -1,16 +1,16 @@
-package com.example.pages.duplicate.boardsets
+package com.github.thebridsk.bridge.pages.duplicate.boardsets
 
 import scala.scalajs.js
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
-import com.example.bridge.store.BoardSetStore
-import com.example.controller.BoardSetController
-import com.example.data.BoardSet
-import utils.logging.Logger
+import com.github.thebridsk.bridge.bridge.store.BoardSetStore
+import com.github.thebridsk.bridge.controller.BoardSetController
+import com.github.thebridsk.bridge.data.BoardSet
+import com.github.thebridsk.utilities.logging.Logger
 import japgolly.scalajs.react.extra.router.RouterCtl
-import com.example.routes.BridgeRouter
-import com.example.data.BoardInSet
-import com.example.pages.duplicate.DuplicateStyles
+import com.github.thebridsk.bridge.routes.BridgeRouter
+import com.github.thebridsk.bridge.data.BoardInSet
+import com.github.thebridsk.bridge.pages.duplicate.DuplicateStyles
 
 /**
  * A skeleton component.

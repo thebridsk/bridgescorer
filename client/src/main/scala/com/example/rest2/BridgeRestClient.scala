@@ -1,28 +1,28 @@
-package com.example.rest2
+package com.github.thebridsk.bridge.rest2
 
-import com.example.data.Hand
-import com.example.data.LoggerConfig
-import com.example.data.MatchChicago
-import com.example.data.LoggerConfig
-import com.example.data.MatchDuplicate
-import com.example.data.DuplicateSummary
-import com.example.data.Board
-import com.example.data.DuplicateHand
-import com.example.data.Team
-import com.example.data.ServerURL
-import com.example.data.ServerVersion
-import com.example.data.BoardSet
-import com.example.data.Movement
-import com.example.data.MatchRubber
-import com.example.data.RubberHand
+import com.github.thebridsk.bridge.data.Hand
+import com.github.thebridsk.bridge.data.LoggerConfig
+import com.github.thebridsk.bridge.data.MatchChicago
+import com.github.thebridsk.bridge.data.LoggerConfig
+import com.github.thebridsk.bridge.data.MatchDuplicate
+import com.github.thebridsk.bridge.data.DuplicateSummary
+import com.github.thebridsk.bridge.data.Board
+import com.github.thebridsk.bridge.data.DuplicateHand
+import com.github.thebridsk.bridge.data.Team
+import com.github.thebridsk.bridge.data.ServerURL
+import com.github.thebridsk.bridge.data.ServerVersion
+import com.github.thebridsk.bridge.data.BoardSet
+import com.github.thebridsk.bridge.data.Movement
+import com.github.thebridsk.bridge.data.MatchRubber
+import com.github.thebridsk.bridge.data.RubberHand
 import scala.concurrent.duration.Duration
-import com.example.data.RestMessage
+import com.github.thebridsk.bridge.data.RestMessage
 
-import com.example.data.rest.JsonSupport._
-import com.example.data.websocket.DuplexProtocol.LogEntryV2
-import com.example.data.BoardSetsAndMovementsV1
-import com.example.data.BoardSetsAndMovements
-import com.example.data.MatchDuplicateResult
+import com.github.thebridsk.bridge.data.rest.JsonSupport._
+import com.github.thebridsk.bridge.data.websocket.DuplexProtocol.LogEntryV2
+import com.github.thebridsk.bridge.data.BoardSetsAndMovementsV1
+import com.github.thebridsk.bridge.data.BoardSetsAndMovements
+import com.github.thebridsk.bridge.data.MatchDuplicateResult
 
 /**
  * @author werewolf
@@ -58,9 +58,9 @@ object Implicits {
 }
 
 import Implicits._
-import com.example.data.duplicate.suggestion.DuplicateSuggestions
+import com.github.thebridsk.bridge.data.duplicate.suggestion.DuplicateSuggestions
 import scala.concurrent.ExecutionContext.Implicits.global
-import com.example.data.Round
+import com.github.thebridsk.bridge.data.Round
 
 object RestClientLogEntryV2 extends RestClient[LogEntryV2]("/v1/logger")
 

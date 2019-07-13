@@ -1,14 +1,14 @@
-package com.example.debug
+package com.github.thebridsk.bridge.debug
 
-import com.example.controller.Controller
-import com.example.rest2.RestClientLogEntryV2
+import com.github.thebridsk.bridge.controller.Controller
+import com.github.thebridsk.bridge.rest2.RestClientLogEntryV2
 
-import utils.logging.Handler
-import utils.logging.Logger
-import utils.logging.TraceMsg
-import com.example.rest2.AjaxFailure
-import com.example.logger.ServerHandler
-import com.example.bridge.action.BridgeDispatcher
+import com.github.thebridsk.utilities.logging.Handler
+import com.github.thebridsk.utilities.logging.Logger
+import com.github.thebridsk.utilities.logging.TraceMsg
+import com.github.thebridsk.bridge.rest2.AjaxFailure
+import com.github.thebridsk.bridge.logger.ServerHandler
+import com.github.thebridsk.bridge.bridge.action.BridgeDispatcher
 
 object DebugLoggerHandler {
   val exclude = "bridge.Listenable"::

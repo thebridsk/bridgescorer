@@ -1,6 +1,6 @@
-package com.example.pages.hand
+package com.github.thebridsk.bridge.pages.hand
 
-import com.example.pages.Pixels
+import com.github.thebridsk.bridge.pages.Pixels
 
 object Properties {
 

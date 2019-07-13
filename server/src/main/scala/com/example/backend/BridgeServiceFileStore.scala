@@ -1,36 +1,36 @@
-package com.example.backend
+package com.github.thebridsk.bridge.backend
 
-import com.example.backend.resource.StoreSupport
-import com.example.data.Team
-import com.example.data.MatchChicago
-import com.example.data.MatchDuplicate
-import com.example.data.MatchDuplicateResult
-import com.example.data.Hand
-import com.example.data.Board
-import com.example.data.Table
-import com.example.backend.resource.FileStore
+import com.github.thebridsk.bridge.backend.resource.StoreSupport
+import com.github.thebridsk.bridge.data.Team
+import com.github.thebridsk.bridge.data.MatchChicago
+import com.github.thebridsk.bridge.data.MatchDuplicate
+import com.github.thebridsk.bridge.data.MatchDuplicateResult
+import com.github.thebridsk.bridge.data.Hand
+import com.github.thebridsk.bridge.data.Board
+import com.github.thebridsk.bridge.data.Table
+import com.github.thebridsk.bridge.backend.resource.FileStore
 import scala.reflect.io.Directory
-import com.example.backend.resource.MultiStore
-import com.example.backend.resource.JavaResourceStore
-import com.example.data.BoardSet
-import com.example.data.Movement
-import com.example.data.MatchRubber
-import com.example.data.MatchDuplicateV1
-import utils.logging.Logger
-import com.example.data.MatchChicagoV1
-import com.example.data.MatchChicagoV2
-import com.example.backend.resource.VersionedInstanceJson
-import com.example.data.MatchDuplicateV2
-import com.example.backend.resource.FileIO
-import com.example.backend.resource.JsonYamlConverter
-import com.example.backend.resource.JsonConverter
-import com.example.backend.resource.YamlConverter
+import com.github.thebridsk.bridge.backend.resource.MultiStore
+import com.github.thebridsk.bridge.backend.resource.JavaResourceStore
+import com.github.thebridsk.bridge.data.BoardSet
+import com.github.thebridsk.bridge.data.Movement
+import com.github.thebridsk.bridge.data.MatchRubber
+import com.github.thebridsk.bridge.data.MatchDuplicateV1
+import com.github.thebridsk.utilities.logging.Logger
+import com.github.thebridsk.bridge.data.MatchChicagoV1
+import com.github.thebridsk.bridge.data.MatchChicagoV2
+import com.github.thebridsk.bridge.backend.resource.VersionedInstanceJson
+import com.github.thebridsk.bridge.data.MatchDuplicateV2
+import com.github.thebridsk.bridge.backend.resource.FileIO
+import com.github.thebridsk.bridge.backend.resource.JsonYamlConverter
+import com.github.thebridsk.bridge.backend.resource.JsonConverter
+import com.github.thebridsk.bridge.backend.resource.YamlConverter
 import play.api.libs.json._
-import com.example.yaml.YamlSupport._
-import com.example.data.Id
+import com.github.thebridsk.bridge.yaml.YamlSupport._
+import com.github.thebridsk.bridge.data.Id
 import scala.concurrent.ExecutionContext
-import com.example.data.MatchDuplicateResultV1
-import com.example.backend.resource.Converter
+import com.github.thebridsk.bridge.data.MatchDuplicateResultV1
+import com.github.thebridsk.bridge.backend.resource.Converter
 
 class BridgeServiceFileStoreConverters(yaml: Boolean) {
 
@@ -100,7 +100,7 @@ class BridgeServiceFileStore(
   val boardSets = MultiStore.createFileAndResource[String, BoardSet](
     id,
     dir,
-    "/com/example/backend/",
+    "/com/github/thebridsk/bridge/backend/",
     "Boardsets.txt",
     self.getClass.getClassLoader
   )
@@ -108,7 +108,7 @@ class BridgeServiceFileStore(
   val movements = MultiStore.createFileAndResource[String, Movement](
     id,
     dir,
-    "/com/example/backend/",
+    "/com/github/thebridsk/bridge/backend/",
     "Movements.txt",
     self.getClass.getClassLoader
   )

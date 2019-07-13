@@ -1,7 +1,7 @@
-package com.example.manualtest
+package com.github.thebridsk.bridge.manualtest
 
-import utils.main.Main
-import com.example.data.bridge.BoardScore
+import com.github.thebridsk.utilities.main.Main
+import com.github.thebridsk.bridge.data.bridge.BoardScore
 
 object TestIMPs extends Main {
 

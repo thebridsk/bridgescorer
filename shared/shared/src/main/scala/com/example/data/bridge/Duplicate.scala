@@ -1,8 +1,8 @@
-package com.example.data.bridge
+package com.github.thebridsk.bridge.data.bridge
 
 import scala.language.implicitConversions
 
-import com.example.data.Hand
+import com.github.thebridsk.bridge.data.Hand
 
 /**
   * @author werewolf

@@ -1,13 +1,13 @@
-package com.example.util
+package com.github.thebridsk.bridge.util
 
-import utils.logging.Logger
+import com.github.thebridsk.utilities.logging.Logger
 import java.io.OutputStreamWriter
 import java.io.FileOutputStream
 import java.io.Writer
 import java.io.BufferedWriter
 import java.text.SimpleDateFormat
 import java.util.Date
-import utils.logging.FileHandler
+import com.github.thebridsk.utilities.logging.FileHandler
 import java.io.File
 import java.util.regex.Pattern
 import java.io.FilenameFilter

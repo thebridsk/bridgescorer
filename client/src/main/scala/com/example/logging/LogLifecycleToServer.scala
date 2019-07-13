@@ -1,12 +1,12 @@
-package com.example.logging
+package com.github.thebridsk.bridge.logging
 
 import scala.scalajs.js
 import japgolly.scalajs.react._
 import scala.util.Success
 import scala.util.Failure
 import scala.scalajs.js.Date
-import utils.logging.Logger
-import utils.logging.Level
+import com.github.thebridsk.utilities.logging.Logger
+import com.github.thebridsk.utilities.logging.Level
 // import japgolly.scalajs.react.extra.LogLifecycle
 
 /**

@@ -1,10 +1,10 @@
-package com.example.test
+package com.github.thebridsk.bridge.test
 
 import org.scalatest.Finders
 import org.scalatest.FlatSpec
 import org.scalatest.MustMatchers
-import com.example.test.backend.BridgeServiceTesting
-import com.example.service.MyService
+import com.github.thebridsk.bridge.test.backend.BridgeServiceTesting
+import com.github.thebridsk.bridge.service.MyService
 import akka.http.scaladsl.model.StatusCodes._
 import akka.http.scaladsl.testkit.ScalatestRouteTest
 import akka.http.scaladsl.model.HttpResponse
@@ -21,18 +21,18 @@ import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import akka.http.scaladsl.model.RemoteAddress.IP
 import java.net.InetAddress
-import _root_.utils.logging.Config
-import _root_.utils.classpath.ClassPath
+import com.github.thebridsk.utilities.logging.Config
+import com.github.thebridsk.utilities.classpath.ClassPath
 import java.util.logging.LogManager
 import java.util.logging.Logger
-import _root_.utils.logging.FileHandler
-import _root_.utils.logging.FileFormatter
+import com.github.thebridsk.utilities.logging.FileHandler
+import com.github.thebridsk.utilities.logging.FileFormatter
 import java.util.logging.Level
-import _root_.utils.logging.RedirectOutput
+import com.github.thebridsk.utilities.logging.RedirectOutput
 
 object TestStartLogging {
 
-  val testlog = utils.logging.Logger[TestStartLogging]
+  val testlog = com.github.thebridsk.utilities.logging.Logger[TestStartLogging]
 
   private var loggingInitialized = false
 

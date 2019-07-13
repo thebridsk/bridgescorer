@@ -1,15 +1,15 @@
-package com.example.pages
+package com.github.thebridsk.bridge.pages
 
 import scala.scalajs.js
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
-import com.example.react.Popup
-import com.example.react.PopupOkCancel
-import com.example.data.ServerURL
-import com.example.rest2.RestClientServerURL
+import com.github.thebridsk.bridge.react.Popup
+import com.github.thebridsk.bridge.react.PopupOkCancel
+import com.github.thebridsk.bridge.data.ServerURL
+import com.github.thebridsk.bridge.rest2.RestClientServerURL
 import scala.concurrent.ExecutionContext
-import com.example.Bridge
-import utils.logging.Logger
+import com.github.thebridsk.bridge.Bridge
+import com.github.thebridsk.utilities.logging.Logger
 
 /**
  * A skeleton component.

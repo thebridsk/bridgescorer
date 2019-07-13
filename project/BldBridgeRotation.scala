@@ -18,7 +18,7 @@ import BldVersion._
 object BldBridgeRotation {
 
   lazy val `bridgescorer-rotation` = crossProject(JSPlatform, JVMPlatform).in(file("rotation")).
-    configure(commonSettings,buildInfo("com.example.version", "VersionRotation")).
+    configure(commonSettings,buildInfo("com.github.thebridsk.bridge.version", "VersionRotation")).
     settings(
       name := "bridgescorer-rotation",
       resolvers += Resolver.bintrayRepo("scalaz", "releases"),

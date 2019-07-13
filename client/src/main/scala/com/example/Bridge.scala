@@ -1,32 +1,32 @@
-package com.example
+package com.github.thebridsk.bridge
 
-import com.example.data.Table
+import com.github.thebridsk.bridge.data.Table
 import org.scalajs.dom.document
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
-import com.example.data.bridge._
+import com.github.thebridsk.bridge.data.bridge._
 import japgolly.scalajs.react.extra.router.RouterConfigDsl
-import com.example.pages.hand._
-import com.example.routes.AppRouter
+import com.github.thebridsk.bridge.pages.hand._
+import com.github.thebridsk.bridge.routes.AppRouter
 import org.scalajs.dom.raw.HTMLElement
 import org.scalajs.dom.raw.Node
-import com.example.data.SystemTime
+import com.github.thebridsk.bridge.data.SystemTime
 import scala.scalajs.js.Date
-import com.example.data.js.SystemTimeJs
-import com.example.bridge.store.NamesStore
-import com.example.pages.chicagos.ChicagoModule
-import com.example.pages.duplicate.DuplicateModule
-import com.example.pages.rubber.RubberModule
-import utils.logging.Logger
-import com.example.modules.Loader
-import com.example.logger.Alerter
-import com.example.pages.BaseStyles
+import com.github.thebridsk.bridge.data.js.SystemTimeJs
+import com.github.thebridsk.bridge.bridge.store.NamesStore
+import com.github.thebridsk.bridge.pages.chicagos.ChicagoModule
+import com.github.thebridsk.bridge.pages.duplicate.DuplicateModule
+import com.github.thebridsk.bridge.pages.rubber.RubberModule
+import com.github.thebridsk.utilities.logging.Logger
+import com.github.thebridsk.bridge.modules.Loader
+import com.github.thebridsk.bridge.logger.Alerter
+import com.github.thebridsk.bridge.pages.BaseStyles
 import scala.scalajs.js.annotation.JSExportTopLevel
 import scala.scalajs.js.annotation.JSExport
 import org.scalajs.dom.raw.Event
 import scala.scalajs.js
 import scala.scalajs.js.annotation.JSGlobal
-import com.example.rest2.AjaxResult
+import com.github.thebridsk.bridge.rest2.AjaxResult
 
 /**
  * @author werewolf
@@ -38,7 +38,7 @@ object Bridge {   // need to figure out how to use new way to call main
   case object Home extends MyPages
   case object ScoreHand extends MyPages
 
-  import com.example.logger.Init
+  import com.github.thebridsk.bridge.logger.Init
 
   SystemTimeJs()
 
@@ -57,7 +57,7 @@ object Bridge {   // need to figure out how to use new way to call main
 
 //  def main(args: Array[String]): Unit = main()
 
-//  @JSExportTopLevel("com.example.Bridge")
+//  @JSExportTopLevel("com.github.thebridsk.bridge.Bridge")
 //  protected def getInstance(): this.type = this
 
   @JSExport

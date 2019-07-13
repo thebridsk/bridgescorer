@@ -1,20 +1,20 @@
-package com.example.manualtest
+package com.github.thebridsk.bridge.manualtest
 
-import com.example.data.MatchChicago
-import com.example.data.MatchChicagoV2
-import com.example.data.MatchChicagoV1
-import utils.main.Main
+import com.github.thebridsk.bridge.data.MatchChicago
+import com.github.thebridsk.bridge.data.MatchChicagoV2
+import com.github.thebridsk.bridge.data.MatchChicagoV1
+import com.github.thebridsk.utilities.main.Main
 
 import scala.reflect.ClassTag
 import scala.language.implicitConversions
-import com.example.backend.resource.VersionedInstanceJson
+import com.github.thebridsk.bridge.backend.resource.VersionedInstanceJson
 import play.api.libs.json._
-import com.example.yaml.YamlSupport._
-import com.example.backend.resource.JsonYamlConverter
-import com.example.backend.resource.JsonConverter
-import com.example.backend.resource.YamlConverter
-import com.example.data.rest.JsonException
-import com.example.backend.resource.Converter
+import com.github.thebridsk.bridge.yaml.YamlSupport._
+import com.github.thebridsk.bridge.backend.resource.JsonYamlConverter
+import com.github.thebridsk.bridge.backend.resource.JsonConverter
+import com.github.thebridsk.bridge.backend.resource.YamlConverter
+import com.github.thebridsk.bridge.data.rest.JsonException
+import com.github.thebridsk.bridge.backend.resource.Converter
 
 object TestParseChicago extends Main {
 

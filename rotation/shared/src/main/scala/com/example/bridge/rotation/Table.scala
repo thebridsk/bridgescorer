@@ -1,4 +1,4 @@
-package com.example.bridge.rotation
+package com.github.thebridsk.bridge.bridge.rotation
 
 case class Table(
     north: String,

@@ -1,34 +1,34 @@
-package com.example.pages.duplicate
+package com.github.thebridsk.bridge.pages.duplicate
 
 
 import scala.scalajs.js
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.extra.router.RouterCtl
-import com.example.routes.AppRouter.AppPage
-import com.example.data.DuplicateSummary
-import com.example.data.Id
-import utils.logging.Logger
-import com.example.rest2.RestClientDuplicateSummary
-import com.example.controller.Controller
-import com.example.data.bridge.DuplicateViewPerspective
-import com.example.bridge.store.DuplicateStore
-import com.example.data.bridge.MatchDuplicateScore
-import com.example.data.bridge.PerspectiveDirector
-import com.example.data.bridge.PerspectiveTable
-import com.example.data.bridge.PerspectiveComplete
-import com.example.react.DateUtils
-import com.example.data.MatchDuplicate
-import com.example.pages.duplicate.DuplicateRouter.FinishedScoreboardsView
-import com.example.pages.duplicate.DuplicateRouter.SummaryView
-import com.example.pages.duplicate.DuplicateRouter.FinishedScoreboardView
-import com.example.react.AppButton
+import com.github.thebridsk.bridge.routes.AppRouter.AppPage
+import com.github.thebridsk.bridge.data.DuplicateSummary
+import com.github.thebridsk.bridge.data.Id
+import com.github.thebridsk.utilities.logging.Logger
+import com.github.thebridsk.bridge.rest2.RestClientDuplicateSummary
+import com.github.thebridsk.bridge.controller.Controller
+import com.github.thebridsk.bridge.data.bridge.DuplicateViewPerspective
+import com.github.thebridsk.bridge.bridge.store.DuplicateStore
+import com.github.thebridsk.bridge.data.bridge.MatchDuplicateScore
+import com.github.thebridsk.bridge.data.bridge.PerspectiveDirector
+import com.github.thebridsk.bridge.data.bridge.PerspectiveTable
+import com.github.thebridsk.bridge.data.bridge.PerspectiveComplete
+import com.github.thebridsk.bridge.react.DateUtils
+import com.github.thebridsk.bridge.data.MatchDuplicate
+import com.github.thebridsk.bridge.pages.duplicate.DuplicateRouter.FinishedScoreboardsView
+import com.github.thebridsk.bridge.pages.duplicate.DuplicateRouter.SummaryView
+import com.github.thebridsk.bridge.pages.duplicate.DuplicateRouter.FinishedScoreboardView
+import com.github.thebridsk.bridge.react.AppButton
 import scala.concurrent.ExecutionContext.Implicits.global
-import com.example.data.MatchDuplicateResult
-import com.example.routes.BridgeRouter
-import com.example.materialui.MuiTypography
-import com.example.materialui.TextVariant
-import com.example.materialui.TextColor
+import com.github.thebridsk.bridge.data.MatchDuplicateResult
+import com.github.thebridsk.bridge.routes.BridgeRouter
+import com.github.thebridsk.materialui.MuiTypography
+import com.github.thebridsk.materialui.TextVariant
+import com.github.thebridsk.materialui.TextColor
 
 /**
  * Shows the team x board table and has a totals column that shows the number of points the team has.

@@ -1,10 +1,10 @@
-package com.example.backend.resource
+package com.github.thebridsk.bridge.backend.resource
 
 import akka.http.scaladsl.model.StatusCodes
-import com.example.data.RestMessage
-import com.example.data.VersionedInstance
+import com.github.thebridsk.bridge.data.RestMessage
+import com.github.thebridsk.bridge.data.VersionedInstance
 import scala.concurrent.Future
-import com.example.data.Id
+import com.github.thebridsk.bridge.data.Id
 
 abstract class PersistentSupport[
     VId,

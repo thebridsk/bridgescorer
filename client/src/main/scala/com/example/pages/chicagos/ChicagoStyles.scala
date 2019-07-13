@@ -1,7 +1,7 @@
-package com.example.pages.chicagos
+package com.github.thebridsk.bridge.pages.chicagos
 
 import japgolly.scalajs.react.vdom.html_<^._
-import com.example.pages.BaseStyles
+import com.github.thebridsk.bridge.pages.BaseStyles
 
 object ChicagoStyles {
 

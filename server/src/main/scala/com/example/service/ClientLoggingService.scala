@@ -1,4 +1,4 @@
-package com.example.service
+package com.github.thebridsk.bridge.service
 
 import akka.NotUsed
 import akka.actor.ActorSystem
@@ -27,15 +27,15 @@ import akka.stream.stage.OutHandler
 import akka.http.scaladsl.server.Directives._
 
 import client.LogA
-import com.example.util.HasActorSystem
-import com.example.data.websocket.DuplexProtocol
+import com.github.thebridsk.bridge.util.HasActorSystem
+import com.github.thebridsk.bridge.data.websocket.DuplexProtocol
 import scala.concurrent.Await
-import com.example.rest.Service
-import com.example.data.websocket.Protocol
+import com.github.thebridsk.bridge.rest.Service
+import com.github.thebridsk.bridge.data.websocket.Protocol
 import java.io.StringWriter
 import java.io.PrintWriter
 //import jawn.ParseException
-import com.example.data.rest.JsonException
+import com.github.thebridsk.bridge.data.rest.JsonException
 import com.fasterxml.jackson.core.JsonParseException
 import io.swagger.v3.oas.annotations.Hidden
 

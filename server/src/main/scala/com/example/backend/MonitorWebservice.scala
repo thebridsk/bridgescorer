@@ -1,11 +1,11 @@
-package com.example.backend
+package com.github.thebridsk.bridge.backend
 
 import scala.concurrent.Await
 import scala.concurrent.duration.DurationLong
 import scala.language.postfixOps
 
-import com.example.data.websocket.DuplexProtocol
-import com.example.data.websocket.Protocol
+import com.github.thebridsk.bridge.data.websocket.DuplexProtocol
+import com.github.thebridsk.bridge.data.websocket.Protocol
 
 import akka.NotUsed
 import akka.actor.ActorSystem
@@ -32,10 +32,10 @@ import akka.stream.stage.InHandler
 import akka.stream.stage.OutHandler
 import akka.actor.Props
 import akka.http.scaladsl.model.sse.ServerSentEvent
-import com.example.data.Id
+import com.github.thebridsk.bridge.data.Id
 import akka.http.scaladsl.server.RejectionHandler
 import akka.http.scaladsl.server.MalformedRequestContentRejection
-import com.example.data.RestMessage
+import com.github.thebridsk.bridge.data.RestMessage
 import akka.http.scaladsl.server.MethodRejection
 import akka.http.scaladsl.model.headers.Allow
 import akka.http.scaladsl.server.UnsupportedRequestContentTypeRejection
@@ -48,7 +48,7 @@ import io.swagger.v3.oas.annotations.enums.ParameterIn
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.media.Content
 import javax.ws.rs.GET
-import com.example.data.VersionedInstance
+import com.github.thebridsk.bridge.data.VersionedInstance
 
 abstract class MonitorWebservice[VId, VType <: VersionedInstance[
   VType,

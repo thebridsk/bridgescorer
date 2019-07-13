@@ -1,21 +1,21 @@
-package com.example.graphql
+package com.github.thebridsk.bridge.graphql
 
 import play.api.libs.json._
-import utils.logging.Logger
+import com.github.thebridsk.utilities.logging.Logger
 import scala.concurrent.Future
 import scala.concurrent.duration.Duration
-import com.example.rest2.AjaxResult
+import com.github.thebridsk.bridge.rest2.AjaxResult
 import org.scalactic.source.Position
-import com.example.data.rest.JsonSupport._
+import com.github.thebridsk.bridge.data.rest.JsonSupport._
 import scala.reflect.ClassTag
 import scala.util.Success
 import scala.util.Failure
-import com.example.data.rest.JsonException
+import com.github.thebridsk.bridge.data.rest.JsonException
 import scala.util.Try
 import scala.concurrent.ExecutionContext
-import com.example.source.SourcePosition
-import com.example.rest2.AjaxErrorReturn
-import com.example.data.graphql.GraphQLProtocol._
+import com.github.thebridsk.bridge.source.SourcePosition
+import com.github.thebridsk.bridge.rest2.AjaxErrorReturn
+import com.github.thebridsk.bridge.data.graphql.GraphQLProtocol._
 import scala.scalajs.js
 import scala.scalajs.js.JSON
 

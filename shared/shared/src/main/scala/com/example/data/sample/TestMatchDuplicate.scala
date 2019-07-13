@@ -1,11 +1,11 @@
-package com.example.data.sample
+package com.github.thebridsk.bridge.data.sample
 
-import com.example.data.Id
-import com.example.data.MatchDuplicate
-import com.example.data.Team
-import com.example.data.Board
-import com.example.data.DuplicateHand
-import com.example.data.Hand
+import com.github.thebridsk.bridge.data.Id
+import com.github.thebridsk.bridge.data.MatchDuplicate
+import com.github.thebridsk.bridge.data.Team
+import com.github.thebridsk.bridge.data.Board
+import com.github.thebridsk.bridge.data.DuplicateHand
+import com.github.thebridsk.bridge.data.Hand
 
 object TestMatchDuplicate {
 

@@ -1,10 +1,10 @@
-package com.example.backend.resource
+package com.github.thebridsk.bridge.backend.resource
 
 import scala.concurrent.Future
 import scala.concurrent.Await
 import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext.Implicits.global
-import com.example.data.VersionedInstance
+import com.github.thebridsk.bridge.data.VersionedInstance
 
 class SyncStore[VId, VType <: VersionedInstance[VType, VType, VId]](
     store: Store[VId, VType]

@@ -1,10 +1,10 @@
-package com.example.backend
+package com.github.thebridsk.bridge.backend
 
 import akka.actor.ActorRef
-import com.example.data.Id
+import com.github.thebridsk.bridge.data.Id
 import akka.actor.Actor
-import com.example.data.websocket.DuplexProtocol.DuplexMessage
-import utils.logging.Logger
+import com.github.thebridsk.bridge.data.websocket.DuplexProtocol.DuplexMessage
+import com.github.thebridsk.utilities.logging.Logger
 
 class Subscription(val id: String, val actor: ActorRef) {
 

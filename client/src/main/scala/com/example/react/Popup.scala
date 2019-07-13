@@ -1,9 +1,9 @@
-package com.example.react
+package com.github.thebridsk.bridge.react
 
 import scala.scalajs.js
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
-import utils.logging.Logger
+import com.github.thebridsk.utilities.logging.Logger
 
 /**
  * A skeleton Popup.
@@ -48,7 +48,7 @@ object PopupInternal {
    */
   class Backend(scope: BackendScope[Props, State]) {
     def render( props: Props, state: State ) = {
-      import com.example.pages.BaseStyles._
+      import com.github.thebridsk.bridge.pages.BaseStyles._
       val disp = ^.display.none.when(!props.display)
       <.div(
         props.id.whenDefined { i =>

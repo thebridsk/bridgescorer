@@ -1,15 +1,15 @@
-package com.example.test.selenium.integrationtest
+package com.github.thebridsk.bridge.test.selenium.integrationtest
 
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.Sequential
-import com.example.test.selenium.TestServer
-import com.example.test.selenium.DuplicateTestFromTestDirectory2
+import com.github.thebridsk.bridge.test.selenium.TestServer
+import com.github.thebridsk.bridge.test.selenium.DuplicateTestFromTestDirectory2
 
 /**
  * @author werewolf
  */
 class TravisIntegrationTests extends Sequential(
-  new com.example.test.selenium.TravisIntegrationTests,
+  new com.github.thebridsk.bridge.test.selenium.TravisIntegrationTests,
   new HelpTest
 ) with BeforeAndAfterAll {
   override

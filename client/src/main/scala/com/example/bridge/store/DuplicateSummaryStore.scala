@@ -1,24 +1,24 @@
-package com.example.bridge.store
+package com.github.thebridsk.bridge.bridge.store
 
 import flux.dispatcher.DispatchToken
-import com.example.data.BoardSet
-import com.example.data.Movement
-import com.example.bridge.action.ActionUpdateBoardSet
-import com.example.bridge.action.BridgeDispatcher
-import com.example.bridge.action.ActionUpdateMovement
-import com.example.bridge.action.ActionUpdateAllBoardSets
-import com.example.bridge.action.ActionUpdateAllMovement
-import utils.logging.Logger
-import com.example.bridge.action.ActionUpdateDuplicateSummary
-import com.example.data.DuplicateSummary
-import com.example.logger.Alerter
-import com.example.bridge.action.ActionUpdateDuplicateSummaryItem
-import com.example.bridge.action.ActionUpdateDuplicateSummaryDemoMatchItem
-import com.example.bridge.action.ActionUpdateDuplicateSummaryDemoMatch
-import com.example.data.MatchDuplicate
-import com.example.Bridge
+import com.github.thebridsk.bridge.data.BoardSet
+import com.github.thebridsk.bridge.data.Movement
+import com.github.thebridsk.bridge.bridge.action.ActionUpdateBoardSet
+import com.github.thebridsk.bridge.bridge.action.BridgeDispatcher
+import com.github.thebridsk.bridge.bridge.action.ActionUpdateMovement
+import com.github.thebridsk.bridge.bridge.action.ActionUpdateAllBoardSets
+import com.github.thebridsk.bridge.bridge.action.ActionUpdateAllMovement
+import com.github.thebridsk.utilities.logging.Logger
+import com.github.thebridsk.bridge.bridge.action.ActionUpdateDuplicateSummary
+import com.github.thebridsk.bridge.data.DuplicateSummary
+import com.github.thebridsk.bridge.logger.Alerter
+import com.github.thebridsk.bridge.bridge.action.ActionUpdateDuplicateSummaryItem
+import com.github.thebridsk.bridge.bridge.action.ActionUpdateDuplicateSummaryDemoMatchItem
+import com.github.thebridsk.bridge.bridge.action.ActionUpdateDuplicateSummaryDemoMatch
+import com.github.thebridsk.bridge.data.MatchDuplicate
+import com.github.thebridsk.bridge.Bridge
 import japgolly.scalajs.react.Callback
-import com.example.data.SystemTime
+import com.github.thebridsk.bridge.data.SystemTime
 
 object DuplicateSummaryStore extends ChangeListenable {
   val logger = Logger("bridge.DuplicateSummaryStore")

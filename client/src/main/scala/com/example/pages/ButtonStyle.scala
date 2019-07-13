@@ -1,4 +1,4 @@
-package com.example.pages
+package com.github.thebridsk.bridge.pages
 
 import scala.scalajs.js
 

@@ -1,8 +1,8 @@
-package com.example.rest
+package com.github.thebridsk.bridge.rest
 
-import com.example.backend.BridgeService
-import com.example.data.Board
-import com.example.data.MatchDuplicate
+import com.github.thebridsk.bridge.backend.BridgeService
+import com.github.thebridsk.bridge.data.Board
+import com.github.thebridsk.bridge.data.MatchDuplicate
 import akka.event.Logging
 import akka.event.Logging._
 import akka.http.scaladsl.model.StatusCodes
@@ -10,13 +10,13 @@ import akka.http.scaladsl.server.Directives._
 import akka.stream.Materializer
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
-import com.example.util.HasActorSystem
+import com.github.thebridsk.bridge.util.HasActorSystem
 import akka.http.scaladsl.model.StatusCode
-import com.example.data.Id
-import com.example.data.DuplicateSummary
+import com.github.thebridsk.bridge.data.Id
+import com.github.thebridsk.bridge.data.DuplicateSummary
 import javax.ws.rs.Path
-import com.example.data.RestMessage
-import com.example.data.SystemTime
+import com.github.thebridsk.bridge.data.RestMessage
+import com.github.thebridsk.bridge.data.SystemTime
 import akka.http.scaladsl.model.headers.Location
 import scala.util.Success
 import scala.util.Failure

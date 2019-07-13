@@ -1,4 +1,4 @@
-package com.example.data.duplicate.stats
+package com.github.thebridsk.bridge.data.duplicate.stats
 
 class Statistic(name: String) {
   private var number: Int = 0

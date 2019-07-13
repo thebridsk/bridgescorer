@@ -1,8 +1,8 @@
-package com.example.test.util
+package com.github.thebridsk.bridge.test.util
 
 import org.openqa.selenium.WebDriver
 import org.scalatest.MustMatchers
-import utils.logging.Logger
+import com.github.thebridsk.utilities.logging.Logger
 import java.util.logging.Level
 import org.scalactic.source.Position
 import org.openqa.selenium.WebElement
@@ -11,7 +11,7 @@ import scala.collection.convert.ImplicitConversionsToScala._
 import org.openqa.selenium.By.ByTagName
 import org.scalatest.concurrent.Eventually.eventually
 import org.scalatest.concurrent.Eventually.PatienceConfig
-import com.example.test.pages.PageBrowser
+import com.github.thebridsk.bridge.test.pages.PageBrowser
 
 object SeleniumUtilsLogger {
 

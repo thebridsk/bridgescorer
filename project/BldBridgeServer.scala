@@ -33,7 +33,7 @@ object BldBridgeServer {
     .in(file("server"))
     .configure(
       commonSettings,
-      buildInfo("com.example.version", "VersionServer")
+      buildInfo("com.github.thebridsk.bridge.version", "VersionServer")
     )
     .enablePlugins(WebScalaJSBundlerPlugin)
     .dependsOn(BldBridgeShared.sharedJVM)
@@ -55,9 +55,9 @@ object BldBridgeServer {
         )
       ),
       EclipseKeys.withSource := true,
-      //    mainClass in Compile := Some("com.example.Server"),
-      mainClass in (Compile, run) := Some("com.example.Server"),
-      mainClass in (Compile, packageBin) := Some("com.example.Server"),
+      //    mainClass in Compile := Some("com.github.thebridsk.bridge.Server"),
+      mainClass in (Compile, run) := Some("com.github.thebridsk.bridge.Server"),
+      mainClass in (Compile, packageBin) := Some("com.github.thebridsk.bridge.Server"),
       Compile / run / fork := true,
       EclipseKeys.classpathTransformerFactories ++= Seq(
         addDependentRunClassFolder("target/web/classes/main"),

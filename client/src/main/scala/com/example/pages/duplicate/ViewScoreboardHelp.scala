@@ -1,18 +1,18 @@
-package com.example.pages.duplicate
+package com.github.thebridsk.bridge.pages.duplicate
 
-import com.example.data.Id
-import com.example.data.Team
-import com.example.data.bridge.PerspectiveComplete
-import com.example.data.bridge.PerspectiveDirector
-import com.example.data.bridge.PerspectiveTable
-import utils.logging.Logger
+import com.github.thebridsk.bridge.data.Id
+import com.github.thebridsk.bridge.data.Team
+import com.github.thebridsk.bridge.data.bridge.PerspectiveComplete
+import com.github.thebridsk.bridge.data.bridge.PerspectiveDirector
+import com.github.thebridsk.bridge.data.bridge.PerspectiveTable
+import com.github.thebridsk.utilities.logging.Logger
 
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.html_<^._
-import com.example.data.bridge.MatchDuplicateScore
-import com.example.pages.duplicate.DuplicateRouter.BaseScoreboardViewWithPerspective
-import com.example.pages.duplicate.DuplicateRouter.TableRoundScoreboardView
-import com.example.react.Utils._
+import com.github.thebridsk.bridge.data.bridge.MatchDuplicateScore
+import com.github.thebridsk.bridge.pages.duplicate.DuplicateRouter.BaseScoreboardViewWithPerspective
+import com.github.thebridsk.bridge.pages.duplicate.DuplicateRouter.TableRoundScoreboardView
+import com.github.thebridsk.bridge.react.Utils._
 
 /**
  * Shows the team x board table and has a totals column that shows the number of points the team has.

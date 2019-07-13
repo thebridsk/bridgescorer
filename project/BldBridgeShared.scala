@@ -18,7 +18,7 @@ import BldVersion._
 object BldBridgeShared {
 
   lazy val `bridgescorer-shared` = crossProject(JSPlatform, JVMPlatform).in(file("shared")).
-    configure(commonSettings,buildInfo("com.example.version", "VersionShared")).
+    configure(commonSettings,buildInfo("com.github.thebridsk.bridge.version", "VersionShared")).
     settings(
       name := "bridgescorer-shared",
       resolvers += Resolver.bintrayRepo("scalaz", "releases"),

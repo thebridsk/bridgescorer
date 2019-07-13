@@ -1,9 +1,9 @@
-package com.example.backend.resource
+package com.github.thebridsk.bridge.backend.resource
 
 import scala.concurrent.ExecutionContext
 import scala.concurrent.Future
-import com.example.backend.resource.Implicits._
-import com.example.source.SourcePosition
+import com.github.thebridsk.bridge.backend.resource.Implicits._
+import com.github.thebridsk.bridge.source.SourcePosition
 
 class NestedResources[PVId, PVType, NVId, NVType](
     val parent: Resource[PVId, PVType],

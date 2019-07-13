@@ -1,19 +1,19 @@
-package com.example.bridge.store
+package com.github.thebridsk.bridge.bridge.store
 
-import utils.logging.Logger
+import com.github.thebridsk.utilities.logging.Logger
 import flux.dispatcher.DispatchToken
-import com.example.bridge.action.BridgeDispatcher
-import com.example.data.Hand
-import com.example.bridge.action.ActionUpdateChicago
-import com.example.bridge.action.ActionUpdateRubberHand
-import com.example.bridge.action.ActionUpdateRubberNames
-import com.example.bridge.action.ActionUpdateRubber
-import com.example.data.MatchRubber
-import com.example.data.bridge.PlayerPosition
-import com.example.data.RubberHand
-import com.example.bridge.action.RubberBridgeAction
-import com.example.logger.Alerter
-import com.example.Bridge
+import com.github.thebridsk.bridge.bridge.action.BridgeDispatcher
+import com.github.thebridsk.bridge.data.Hand
+import com.github.thebridsk.bridge.bridge.action.ActionUpdateChicago
+import com.github.thebridsk.bridge.bridge.action.ActionUpdateRubberHand
+import com.github.thebridsk.bridge.bridge.action.ActionUpdateRubberNames
+import com.github.thebridsk.bridge.bridge.action.ActionUpdateRubber
+import com.github.thebridsk.bridge.data.MatchRubber
+import com.github.thebridsk.bridge.data.bridge.PlayerPosition
+import com.github.thebridsk.bridge.data.RubberHand
+import com.github.thebridsk.bridge.bridge.action.RubberBridgeAction
+import com.github.thebridsk.bridge.logger.Alerter
+import com.github.thebridsk.bridge.Bridge
 
 object RubberStore extends ChangeListenable {
   val logger = Logger("bridge.RubberStore")

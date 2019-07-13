@@ -1,33 +1,33 @@
-package com.example.test
+package com.github.thebridsk.bridge.test
 
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react.test._
-import com.example.pages.hand.ViewVulnerability
-import com.example.data.bridge.Vulnerability
-import com.example.data.bridge.NotVul
-import com.example.data.bridge.Vul
+import com.github.thebridsk.bridge.pages.hand.ViewVulnerability
+import com.github.thebridsk.bridge.data.bridge.Vulnerability
+import com.github.thebridsk.bridge.data.bridge.NotVul
+import com.github.thebridsk.bridge.data.bridge.Vul
 //import org.scalajs.jquery.{ jQuery => _, _ }
-import com.example.test.utils.jQuery
-import com.example.data.Round
+import com.github.thebridsk.bridge.test.utils.jQuery
+import com.github.thebridsk.bridge.data.Round
 import japgolly.scalajs.react._
-import com.example.data.bridge._
-import com.example.routes.AppRouter.AppPage
-import com.example.pages.HomePage
+import com.github.thebridsk.bridge.data.bridge._
+import com.github.thebridsk.bridge.routes.AppRouter.AppPage
+import com.github.thebridsk.bridge.pages.HomePage
 import org.scalatest.FlatSpec
 import org.scalatest.MustMatchers
-import com.example.pages.chicagos.ChicagoModule.PlayChicago2
-import com.example.pages.chicagos.ChicagoRouter.ListView
-import com.example.data.js.SystemTimeJs
-import com.example.rest2.AjaxResult
-import com.example.test.utils.StartLogging
-import _root_.utils.logging.Logger
-import com.example.source.SourcePosition
+import com.github.thebridsk.bridge.pages.chicagos.ChicagoModule.PlayChicago2
+import com.github.thebridsk.bridge.pages.chicagos.ChicagoRouter.ListView
+import com.github.thebridsk.bridge.data.js.SystemTimeJs
+import com.github.thebridsk.bridge.rest2.AjaxResult
+import com.github.thebridsk.bridge.test.utils.StartLogging
+import com.github.thebridsk.utilities.logging.Logger
+import com.github.thebridsk.bridge.source.SourcePosition
 import japgolly.scalajs.react.extra.router.BaseUrl
-import com.example.routes.TestBridgeRouter
+import com.github.thebridsk.bridge.routes.TestBridgeRouter
 import japgolly.scalajs.react.extra.router.Path
-import com.example.routes.AppRouter.Home
-import com.example.pages.duplicate.PageNewDuplicate
-import com.example.pages.duplicate.PageNewDuplicateInternal
+import com.github.thebridsk.bridge.routes.AppRouter.Home
+import com.github.thebridsk.bridge.pages.duplicate.PageNewDuplicate
+import com.github.thebridsk.bridge.pages.duplicate.PageNewDuplicateInternal
 
 object MyTest {
   val log = Logger("bridge.MyTest")
@@ -38,8 +38,8 @@ object MyTest {
  */
 class MyTest extends FlatSpec with MustMatchers {
   import MyTest._
-  com.example.modules.Loader.init
-  com.example.test.utils.Loader.init
+  com.github.thebridsk.bridge.modules.Loader.init
+  com.github.thebridsk.bridge.test.utils.Loader.init
 
   SystemTimeJs()
   AjaxResult.setEnabled(false)      // disable server communications when running this test suite

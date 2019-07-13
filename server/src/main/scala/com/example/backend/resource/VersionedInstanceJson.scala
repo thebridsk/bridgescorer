@@ -1,11 +1,11 @@
-package com.example.backend.resource
+package com.github.thebridsk.bridge.backend.resource
 
-import com.example.data.VersionedInstance
+import com.github.thebridsk.bridge.data.VersionedInstance
 import scala.reflect.ClassTag
-import utils.logging.Logger
+import com.github.thebridsk.utilities.logging.Logger
 import scala.language.reflectiveCalls
 import play.api.libs.json._
-import com.example.data.rest.JsonException
+import com.github.thebridsk.bridge.data.rest.JsonException
 
 object VersionedInstanceJson {
   val log = Logger[VersionedInstanceJson[_, _]]

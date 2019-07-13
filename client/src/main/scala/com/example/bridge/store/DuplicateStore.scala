@@ -1,30 +1,30 @@
-package com.example.bridge.store
+package com.github.thebridsk.bridge.bridge.store
 
-import com.example.bridge.action.ActionUpdateDuplicateHand
-import com.example.bridge.action.BridgeDispatcher
-import com.example.data.MatchDuplicate
-import com.example.bridge.action.ActionUpdateDuplicateMatch
-import utils.logging.Logger
+import com.github.thebridsk.bridge.bridge.action.ActionUpdateDuplicateHand
+import com.github.thebridsk.bridge.bridge.action.BridgeDispatcher
+import com.github.thebridsk.bridge.data.MatchDuplicate
+import com.github.thebridsk.bridge.bridge.action.ActionUpdateDuplicateMatch
+import com.github.thebridsk.utilities.logging.Logger
 import flux.dispatcher.DispatchToken
-import com.example.bridge.action.ActionUpdateDuplicateMatch
-import com.example.bridge.action.ActionStartDuplicateMatch
-import com.example.bridge.action.ActionStop
-import com.example.data.Id
-import com.example.data.bridge.MatchDuplicateScore
-import com.example.data.bridge.PerspectiveDirector
-import com.example.data.bridge.PerspectiveComplete
-import com.example.data.bridge.PerspectiveTable
-import com.example.data.bridge.DuplicateViewPerspective
-import com.example.data.bridge.PerspectiveTable
-import com.example.data.Board
-import com.example.data.DuplicateHand
-import com.example.bridge.action.ActionUpdateTeam
-import com.example.bridge.action.DuplicateBridgeAction
-import com.example.logger.Alerter
+import com.github.thebridsk.bridge.bridge.action.ActionUpdateDuplicateMatch
+import com.github.thebridsk.bridge.bridge.action.ActionStartDuplicateMatch
+import com.github.thebridsk.bridge.bridge.action.ActionStop
+import com.github.thebridsk.bridge.data.Id
+import com.github.thebridsk.bridge.data.bridge.MatchDuplicateScore
+import com.github.thebridsk.bridge.data.bridge.PerspectiveDirector
+import com.github.thebridsk.bridge.data.bridge.PerspectiveComplete
+import com.github.thebridsk.bridge.data.bridge.PerspectiveTable
+import com.github.thebridsk.bridge.data.bridge.DuplicateViewPerspective
+import com.github.thebridsk.bridge.data.bridge.PerspectiveTable
+import com.github.thebridsk.bridge.data.Board
+import com.github.thebridsk.bridge.data.DuplicateHand
+import com.github.thebridsk.bridge.bridge.action.ActionUpdateTeam
+import com.github.thebridsk.bridge.bridge.action.DuplicateBridgeAction
+import com.github.thebridsk.bridge.logger.Alerter
 import japgolly.scalajs.react.Callback
-import com.example.skeleton.react.BeepComponent
-import com.example.Bridge
-import com.example.data.DuplicateSummary
+import com.github.thebridsk.bridge.skeleton.react.BeepComponent
+import com.github.thebridsk.bridge.Bridge
+import com.github.thebridsk.bridge.data.DuplicateSummary
 
 object DuplicateStore extends ChangeListenable {
   val logger = Logger("bridge.DuplicateStore")

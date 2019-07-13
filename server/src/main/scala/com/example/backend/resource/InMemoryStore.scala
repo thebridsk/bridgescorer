@@ -1,16 +1,16 @@
-package com.example.backend.resource
+package com.github.thebridsk.bridge.backend.resource
 
-import com.example.data.VersionedInstance
+import com.github.thebridsk.bridge.data.VersionedInstance
 import akka.http.scaladsl.model.StatusCodes
-import com.example.data.RestMessage
-import utils.logging.Logger
+import com.github.thebridsk.bridge.data.RestMessage
+import com.github.thebridsk.utilities.logging.Logger
 import scala.concurrent.duration._
 
 import InMemoryStore.log
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext
 import Implicits._
-import com.example.data.Id
+import com.github.thebridsk.bridge.data.Id
 
 class InMemoryPersistent[VId, VType <: VersionedInstance[VType, VType, VId]](
     implicit

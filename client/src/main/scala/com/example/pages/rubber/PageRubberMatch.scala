@@ -1,27 +1,27 @@
-package com.example.pages.rubber
+package com.github.thebridsk.bridge.pages.rubber
 
 import japgolly.scalajs.react.BackendScope
 import japgolly.scalajs.react.extra.router.RouterCtl
 import japgolly.scalajs.react.vdom.html_<^._
-import utils.logging.Logger
-import com.example.bridge.store.RubberStore
-import com.example.controller.RubberController
+import com.github.thebridsk.utilities.logging.Logger
+import com.github.thebridsk.bridge.bridge.store.RubberStore
+import com.github.thebridsk.bridge.controller.RubberController
 import japgolly.scalajs.react._
-import com.example.bridge.store.RubberStore
-import com.example.bridge.store.RubberStore
-import com.example.data.rubber.RubberScoring
-import com.example.data.rubber.GameScoring
-import com.example.pages.hand.ComponentInputStyleButton
-import com.example.routes.BridgeRouter
-import com.example.pages.rubber.RubberRouter.RubberMatchViewBase
-import com.example.pages.rubber.RubberRouter.RubberMatchNamesView
-import com.example.pages.rubber.RubberRouter.ListView
-import com.example.react.AppButton
-import com.example.react.Utils._
-import com.example.react.HelpButton
-import com.example.materialui.MuiTypography
-import com.example.materialui.TextVariant
-import com.example.materialui.TextColor
+import com.github.thebridsk.bridge.bridge.store.RubberStore
+import com.github.thebridsk.bridge.bridge.store.RubberStore
+import com.github.thebridsk.bridge.data.rubber.RubberScoring
+import com.github.thebridsk.bridge.data.rubber.GameScoring
+import com.github.thebridsk.bridge.pages.hand.ComponentInputStyleButton
+import com.github.thebridsk.bridge.routes.BridgeRouter
+import com.github.thebridsk.bridge.pages.rubber.RubberRouter.RubberMatchViewBase
+import com.github.thebridsk.bridge.pages.rubber.RubberRouter.RubberMatchNamesView
+import com.github.thebridsk.bridge.pages.rubber.RubberRouter.ListView
+import com.github.thebridsk.bridge.react.AppButton
+import com.github.thebridsk.bridge.react.Utils._
+import com.github.thebridsk.bridge.react.HelpButton
+import com.github.thebridsk.materialui.MuiTypography
+import com.github.thebridsk.materialui.TextVariant
+import com.github.thebridsk.materialui.TextColor
 
 /**
  * A skeleton component.

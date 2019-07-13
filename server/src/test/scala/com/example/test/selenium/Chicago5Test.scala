@@ -1,4 +1,4 @@
-package com.example.test.selenium
+package com.github.thebridsk.bridge.test.selenium
 
 import org.scalatest.FlatSpec
 import org.scalatest.MustMatchers
@@ -6,23 +6,23 @@ import org.scalatest._
 import org.scalatest.concurrent.Eventually
 import org.scalatest.time.Millis
 import org.scalatest.time.Span
-import com.example.data.bridge._
+import com.github.thebridsk.bridge.data.bridge._
 import org.openqa.selenium.By
 import java.util.concurrent.TimeUnit
 import org.scalactic.source.Position
 import scala.collection.convert.ImplicitConversionsToScala._
 import org.openqa.selenium.Keys
-import com.example.test.util.NoResultYet
-import com.example.test.util.EventuallyUtils
+import com.github.thebridsk.bridge.test.util.NoResultYet
+import com.github.thebridsk.bridge.test.util.EventuallyUtils
 import org.scalatest.concurrent.Eventually
-import utils.logging.Logger
+import com.github.thebridsk.utilities.logging.Logger
 import java.net.URL
 import scala.io.Source
 import scala.io.Codec
-import com.example.test.util.MonitorTCP
-import com.example.backend.BridgeServiceFileStoreConverters
-import com.example.backend.MatchChicagoCacheStoreSupport
-import com.example.test.pages.bridge.HomePage
+import com.github.thebridsk.bridge.test.util.MonitorTCP
+import com.github.thebridsk.bridge.backend.BridgeServiceFileStoreConverters
+import com.github.thebridsk.bridge.backend.MatchChicagoCacheStoreSupport
+import com.github.thebridsk.bridge.test.pages.bridge.HomePage
 
 /**
  * @author werewolf
@@ -33,7 +33,7 @@ class Chicago5Test extends FlatSpec
     with EventuallyUtils
     with CancelAfterFailure
 {
-  import com.example.test.pages.PageBrowser._
+  import com.github.thebridsk.bridge.test.pages.PageBrowser._
   import Eventually.{ patienceConfig => _, _ }
 
   import scala.concurrent.duration._
@@ -63,7 +63,7 @@ class Chicago5Test extends FlatSpec
   def beforeAll() = {
     import scala.concurrent._
     import ExecutionContext.Implicits.global
-    import com.example.test.util.ParallelUtils._
+    import com.github.thebridsk.bridge.test.util.ParallelUtils._
 
     MonitorTCP.nextTest()
 
@@ -83,7 +83,7 @@ class Chicago5Test extends FlatSpec
   def afterAll() = {
     import scala.concurrent._
     import ExecutionContext.Implicits.global
-    import com.example.test.util.ParallelUtils._
+    import com.github.thebridsk.bridge.test.util.ParallelUtils._
 
     waitForFuturesIgnoreTimeouts("Stopping a browser or server",
                    CodeBlock { Session1.sessionStop() },

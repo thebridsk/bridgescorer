@@ -1,9 +1,9 @@
-package com.example.service
+package com.github.thebridsk.bridge.service
 
-import com.example.webjar.FileFinder
-import com.example.version.VersionServer
+import com.github.thebridsk.bridge.webjar.FileFinder
+import com.github.thebridsk.bridge.version.VersionServer
 import scala.reflect.io.Directory
-import utils.logging.Logger
+import com.github.thebridsk.utilities.logging.Logger
 import scala.reflect.io.File
 
 object ResourceFinder {
@@ -26,7 +26,7 @@ object ResourceFinder {
       suffix: Option[String]
   ): Option[(FileFinder, String)] = {
     val tryServerVersion =
-      new FileFinder("com.example", component, Some(version), suffix)
+      new FileFinder("com.github.thebridsk.bridge", component, Some(version), suffix)
     tryServerVersion.getResource(
       "/bridgescorer-client-opt.js.gz",
       "/bridgescorer-client-opt.js",
@@ -55,7 +55,7 @@ object ResourceFinder {
       suffix: Option[String]
   ): Option[(FileFinder, String)] = {
     val tryServerVersion =
-      new FileFinder("com.example", component, Some(version), suffix)
+      new FileFinder("com.github.thebridsk.bridge", component, Some(version), suffix)
     tryServerVersion.getResource(
       "/index.html"
     ) match {

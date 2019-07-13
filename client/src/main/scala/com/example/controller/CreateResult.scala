@@ -1,17 +1,17 @@
-package com.example.controller
+package com.github.thebridsk.bridge.controller
 
 import scala.concurrent.duration.Duration
 import scala.concurrent.CanAwait
-import com.example.rest2.Result
+import com.github.thebridsk.bridge.rest2.Result
 import scala.concurrent.ExecutionContext
 import scala.util.Try
-import utils.logging.Logger
+import com.github.thebridsk.utilities.logging.Logger
 import scala.concurrent.Future
-import com.example.rest2.ResultRecorder
+import com.github.thebridsk.bridge.rest2.ResultRecorder
 import org.scalactic.source.Position
-import com.example.rest2.RestResult
-import com.example.rest2.AjaxResult
-import com.example.rest2.WrapperXMLHttpRequest
+import com.github.thebridsk.bridge.rest2.RestResult
+import com.github.thebridsk.bridge.rest2.AjaxResult
+import com.github.thebridsk.bridge.rest2.WrapperXMLHttpRequest
 
 abstract class CreateResult[T](
                                 ajaxResult: AjaxResult[WrapperXMLHttpRequest],

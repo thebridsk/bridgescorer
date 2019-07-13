@@ -1,16 +1,16 @@
-package com.example.pages.chicagos
+package com.github.thebridsk.bridge.pages.chicagos
 
-import utils.logging.Logger
+import com.github.thebridsk.utilities.logging.Logger
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.Callback
 import japgolly.scalajs.react.CallbackTo
 import japgolly.scalajs.react.extra.router.{RouterConfigDsl, RouterCtl, _}
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react.extra.router.StaticDsl.Rule
-import com.example.routes.AppRouter.AppPage
-import com.example.routes.Module
-import com.example.routes.BridgeRouterBase
-import com.example.routes.BridgeRouter
+import com.github.thebridsk.bridge.routes.AppRouter.AppPage
+import com.github.thebridsk.bridge.routes.Module
+import com.github.thebridsk.bridge.routes.BridgeRouterBase
+import com.github.thebridsk.bridge.routes.BridgeRouter
 import scala.scalajs.js.URIUtils
 
 object ChicagoModule extends Module {

@@ -1,27 +1,27 @@
-package com.example.logger
+package com.github.thebridsk.bridge.logger
 
-import com.example.data.LoggerConfig
-import com.example.rest2.RestClientLoggerConfig
+import com.github.thebridsk.bridge.data.LoggerConfig
+import com.github.thebridsk.bridge.rest2.RestClientLoggerConfig
 import scala.scalajs.js
 import scala.scalajs.js.Object
-import utils.logging.Logger
-import utils.logging.impl.LoggerImplFactory
-import utils.logging.js.JsConsoleHandler
-import utils.logging.Level
+import com.github.thebridsk.utilities.logging.Logger
+import com.github.thebridsk.utilities.logging.impl.LoggerImplFactory
+import com.github.thebridsk.utilities.logging.js.JsConsoleHandler
+import com.github.thebridsk.utilities.logging.Level
 import scala.reflect.ClassTag
-import utils.logging.Handler
-import com.example.pages.info.InfoPage
+import com.github.thebridsk.utilities.logging.Handler
+import com.github.thebridsk.bridge.pages.info.InfoPage
 import org.scalactic.source.Position
-import com.example.source._
+import com.github.thebridsk.bridge.source._
 import java.io.StringWriter
 import java.io.PrintWriter
-import com.example.debug.DebugLoggerHandler
-import utils.logging.js.JsConsoleHandlerInfo
-import com.example.controller.Controller
-import com.example.rest2.AjaxResult
-import com.example.Bridge
-import utils.logging.Filter
-import utils.logging.TraceMsg
+import com.github.thebridsk.bridge.debug.DebugLoggerHandler
+import com.github.thebridsk.utilities.logging.js.JsConsoleHandlerInfo
+import com.github.thebridsk.bridge.controller.Controller
+import com.github.thebridsk.bridge.rest2.AjaxResult
+import com.github.thebridsk.bridge.Bridge
+import com.github.thebridsk.utilities.logging.Filter
+import com.github.thebridsk.utilities.logging.TraceMsg
 import org.scalajs.dom.raw.XMLHttpRequest
 
 /**
@@ -31,7 +31,7 @@ import org.scalajs.dom.raw.XMLHttpRequest
   * call to the server to get the logging configuration.  The configuration is
   * applied once it is received.
   *
-  * The com.example.data.LoggerConfig object, obtained from the server, contains the configuration.
+  * The com.github.thebridsk.bridge.data.LoggerConfig object, obtained from the server, contains the configuration.
   *
   * This has two fields, one to configure the loggers, the other to configure the handlers.
   *

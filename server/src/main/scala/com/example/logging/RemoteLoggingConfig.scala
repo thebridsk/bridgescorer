@@ -1,18 +1,18 @@
-package com.example.logging
+package com.github.thebridsk.bridge.logging
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
 import java.util.{List => JList, Map => JMap}
 import scala.collection.JavaConverters._
-import com.example.data.LoggerConfig
+import com.github.thebridsk.bridge.data.LoggerConfig
 import java.io.Reader
 import java.io.File
 import java.io.BufferedReader
 import java.io.FileInputStream
 import java.io.InputStreamReader
-import com.example.data.rest.JsonException
-import com.example.yaml.YamlSupport
+import com.github.thebridsk.bridge.data.rest.JsonException
+import com.github.thebridsk.bridge.yaml.YamlSupport
 import java.io.InputStream
 
 /**
@@ -72,7 +72,7 @@ object RemoteLoggingConfig {
   implicit val remoteLoggerConfigFormat = Json.format[RemoteLoggingConfig]
 
   def getDefaultRemoteLoggerConfig() = {
-    readFromResource("com/example/remoteLogging.yaml")
+    readFromResource("com/github/thebridsk/bridge/remoteLogging.yaml")
   }
 
   def read(config: String): RemoteLoggingConfig = {

@@ -1,28 +1,28 @@
-package com.example.pages.duplicate
+package com.github.thebridsk.bridge.pages.duplicate
 
 import japgolly.scalajs.react.extra.router.{Resolution, RouterConfigDsl, RouterCtl, Router, _}
 import japgolly.scalajs.react.vdom.html_<^._
-import com.example.data.bridge._
-import com.example.pages.info.InfoPage
-import com.example.pages.HomePage
-import utils.logging.Logger
+import com.github.thebridsk.bridge.data.bridge._
+import com.github.thebridsk.bridge.pages.info.InfoPage
+import com.github.thebridsk.bridge.pages.HomePage
+import com.github.thebridsk.utilities.logging.Logger
 import japgolly.scalajs.react.Callback
-import com.example.data.Id
-import com.example.bridge.store.DuplicateStore
-import com.example.routes.AppRouter.AppPage
+import com.github.thebridsk.bridge.data.Id
+import com.github.thebridsk.bridge.bridge.store.DuplicateStore
+import com.github.thebridsk.bridge.routes.AppRouter.AppPage
 import japgolly.scalajs.react.CallbackTo
 import japgolly.scalajs.react._
-import com.example.pages.duplicate.boardsets.PageBoardSets
-import com.example.pages.duplicate.boardsets.PageMovements
+import com.github.thebridsk.bridge.pages.duplicate.boardsets.PageBoardSets
+import com.github.thebridsk.bridge.pages.duplicate.boardsets.PageMovements
 import japgolly.scalajs.react.extra.router.StaticDsl.Rule
-import com.example.routes.Module
-import com.example.routes.TestBridgeRouter
-import com.example.routes.BridgeRouterBase
-import com.example.routes.BridgeRouter
+import com.github.thebridsk.bridge.routes.Module
+import com.github.thebridsk.bridge.routes.TestBridgeRouter
+import com.github.thebridsk.bridge.routes.BridgeRouterBase
+import com.github.thebridsk.bridge.routes.BridgeRouter
 import japgolly.scalajs.react.vdom.TagMod
-import com.example.pages.duplicate.DuplicateRouter.BaseScoreboardView
+import com.github.thebridsk.bridge.pages.duplicate.DuplicateRouter.BaseScoreboardView
 import scala.scalajs.js.URIUtils
-import com.example.routes.BridgeRouterBaseWithLogging
+import com.github.thebridsk.bridge.routes.BridgeRouterBaseWithLogging
 
 object DuplicateModule extends Module {
   case class PlayDuplicate(m: DuplicatePage ) extends AppPage

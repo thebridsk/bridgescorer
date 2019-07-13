@@ -1,4 +1,4 @@
-package com.example.react
+package com.github.thebridsk.bridge.react
 
 import scala.scalajs.js
 import scala.scalajs.js.annotation.JSImport

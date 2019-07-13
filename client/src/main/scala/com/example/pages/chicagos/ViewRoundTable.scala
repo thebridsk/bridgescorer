@@ -1,16 +1,16 @@
-package com.example.pages.chicagos
+package com.github.thebridsk.bridge.pages.chicagos
 
-import com.example.data.bridge.DuplicateBridge
-import com.example.data.bridge.PlayerPosition
-import com.example.data.chicago.ChicagoScoring
-import utils.logging.Logger
+import com.github.thebridsk.bridge.data.bridge.DuplicateBridge
+import com.github.thebridsk.bridge.data.bridge.PlayerPosition
+import com.github.thebridsk.bridge.data.chicago.ChicagoScoring
+import com.github.thebridsk.utilities.logging.Logger
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.extra.router.RouterCtl
 import japgolly.scalajs.react.vdom.html_<^._
-import com.example.data.bridge._
-import com.example.pages.chicagos.ChicagoRouter.RoundView
-import com.example.react.AppButton
-import com.example.routes.BridgeRouter
+import com.github.thebridsk.bridge.data.bridge._
+import com.github.thebridsk.bridge.pages.chicagos.ChicagoRouter.RoundView
+import com.github.thebridsk.bridge.react.AppButton
+import com.github.thebridsk.bridge.routes.BridgeRouter
 
 /**
  * A skeleton component.

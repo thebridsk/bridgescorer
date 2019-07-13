@@ -1,31 +1,31 @@
-package com.example.test.pages.duplicate
+package com.github.thebridsk.bridge.test.pages.duplicate
 
-import com.example.source.SourcePosition
+import com.github.thebridsk.bridge.source.SourcePosition
 import org.openqa.selenium.WebDriver
 import org.scalactic.source.Position
 import org.scalatest.concurrent.Eventually.{ patienceConfig => _, _ }
 import org.scalatest.MustMatchers._
-import com.example.test.selenium.TestServer
-import utils.logging.Logger
-import com.example.test.pages.Page
-import com.example.test.pages.PageBrowser._
-import com.example.test.pages.duplicate.ScoreboardPage.TableViewType
-import com.example.test.pages.duplicate.ScoreboardPage.ViewType
-import com.example.test.pages.duplicate.ScoreboardPage.CompletedViewType
-import com.example.test.pages.duplicate.ScoreboardPage.DirectorViewType
-import com.example.data.bridge.PlayerPosition
-import com.example.data.bridge.MadeOrDown
-import com.example.data.bridge.Made
-import com.example.data.bridge.Down
-import com.example.data.util.Strings
-import com.example.test.pages.duplicate.TablePage.Hands
-import com.example.data.bridge.ContractSuit
-import com.example.data.bridge.ContractDoubled
-import com.example.data.bridge.Vulnerability
-import com.example.data.bridge.Vul
-import com.example.data.bridge.NotVul
-import com.example.test.pages.Element
-import com.example.test.pages.bridge.HomePage
+import com.github.thebridsk.bridge.test.selenium.TestServer
+import com.github.thebridsk.utilities.logging.Logger
+import com.github.thebridsk.bridge.test.pages.Page
+import com.github.thebridsk.bridge.test.pages.PageBrowser._
+import com.github.thebridsk.bridge.test.pages.duplicate.ScoreboardPage.TableViewType
+import com.github.thebridsk.bridge.test.pages.duplicate.ScoreboardPage.ViewType
+import com.github.thebridsk.bridge.test.pages.duplicate.ScoreboardPage.CompletedViewType
+import com.github.thebridsk.bridge.test.pages.duplicate.ScoreboardPage.DirectorViewType
+import com.github.thebridsk.bridge.data.bridge.PlayerPosition
+import com.github.thebridsk.bridge.data.bridge.MadeOrDown
+import com.github.thebridsk.bridge.data.bridge.Made
+import com.github.thebridsk.bridge.data.bridge.Down
+import com.github.thebridsk.bridge.data.util.Strings
+import com.github.thebridsk.bridge.test.pages.duplicate.TablePage.Hands
+import com.github.thebridsk.bridge.data.bridge.ContractSuit
+import com.github.thebridsk.bridge.data.bridge.ContractDoubled
+import com.github.thebridsk.bridge.data.bridge.Vulnerability
+import com.github.thebridsk.bridge.data.bridge.Vul
+import com.github.thebridsk.bridge.data.bridge.NotVul
+import com.github.thebridsk.bridge.test.pages.Element
+import com.github.thebridsk.bridge.test.pages.bridge.HomePage
 
 object BoardPage {
 

@@ -1,23 +1,23 @@
-package com.example.pages.duplicate
+package com.github.thebridsk.bridge.pages.duplicate
 
 
 import scala.scalajs.js
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
-import com.example.routes.BridgeRouter
-import com.example.routes.AppRouter.AppPage
-import com.example.data.Id
-import utils.logging.Logger
-import com.example.controller.Controller
-import com.example.bridge.store.DuplicateStore
-import com.example.data.Team
-import com.example.pages.duplicate.DuplicateRouter.NamesView
-import com.example.react.AppButton
-import com.example.react.ComboboxOrInput
-import com.example.bridge.store.NamesStore
-import com.example.materialui.MuiTypography
-import com.example.materialui.TextVariant
-import com.example.materialui.TextColor
+import com.github.thebridsk.bridge.routes.BridgeRouter
+import com.github.thebridsk.bridge.routes.AppRouter.AppPage
+import com.github.thebridsk.bridge.data.Id
+import com.github.thebridsk.utilities.logging.Logger
+import com.github.thebridsk.bridge.controller.Controller
+import com.github.thebridsk.bridge.bridge.store.DuplicateStore
+import com.github.thebridsk.bridge.data.Team
+import com.github.thebridsk.bridge.pages.duplicate.DuplicateRouter.NamesView
+import com.github.thebridsk.bridge.react.AppButton
+import com.github.thebridsk.bridge.react.ComboboxOrInput
+import com.github.thebridsk.bridge.bridge.store.NamesStore
+import com.github.thebridsk.materialui.MuiTypography
+import com.github.thebridsk.materialui.TextVariant
+import com.github.thebridsk.materialui.TextColor
 
 /**
  * Shows the team x board table and has a totals column that shows the number of points the team has.
@@ -162,7 +162,7 @@ object PageNamesInternal {
       )
     }
 
-    import com.example.react.Utils._
+    import com.github.thebridsk.bridge.react.Utils._
     def setPlayer(teamid: Id.Team, player: Int)( name: String ) =
       scope.modState( ps => {
         ps.teams.get(teamid) match {

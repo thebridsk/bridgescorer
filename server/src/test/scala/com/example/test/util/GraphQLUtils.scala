@@ -1,4 +1,4 @@
-package com.example.test.util
+package com.github.thebridsk.bridge.test.util
 
 import play.api.libs.json.JsObject
 import play.api.libs.json.JsString

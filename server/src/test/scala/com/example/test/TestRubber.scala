@@ -1,7 +1,7 @@
-package com.example.test
+package com.github.thebridsk.bridge.test
 
-import com.example.test.backend.BridgeServiceTesting
-import com.example.service.MyService
+import com.github.thebridsk.bridge.test.backend.BridgeServiceTesting
+import com.github.thebridsk.bridge.service.MyService
 import akka.http.scaladsl.model.StatusCodes._
 import akka.http.scaladsl.testkit.ScalatestRouteTest
 import akka.http.scaladsl.model.HttpResponse
@@ -23,11 +23,11 @@ import akka.event.Logging
 import java.net.InetAddress
 import akka.http.scaladsl.model.RemoteAddress.IP
 import akka.http.scaladsl.model.headers.`Remote-Address`
-import com.example.Server
+import com.github.thebridsk.bridge.Server
 import org.rogach.scallop.exceptions.IncompleteBuildException
-import com.example.data.ServerURL
-import com.example.rest.ServerPort
-import com.example.data.MatchRubber
+import com.github.thebridsk.bridge.data.ServerURL
+import com.github.thebridsk.bridge.rest.ServerPort
+import com.github.thebridsk.bridge.data.MatchRubber
 
 class TestRubber extends FlatSpec with ScalatestRouteTest with MustMatchers with MyService {
   val restService = new BridgeServiceTesting
@@ -46,7 +46,7 @@ class TestRubber extends FlatSpec with ScalatestRouteTest with MustMatchers with
 
   val remoteAddress = `Remote-Address`( IP( InetAddress.getLocalHost, Some(12345) ))
 
-  import com.example.rest.UtilsPlayJson._
+  import com.github.thebridsk.bridge.rest.UtilsPlayJson._
 
   it should "return an empty list for /rubbers" in {
     Get("/v1/rest/rubbers") ~> addHeader(remoteAddress) ~> Route.seal { myRouteWithLogging } ~> check {

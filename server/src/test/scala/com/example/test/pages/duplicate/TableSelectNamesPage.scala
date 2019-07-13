@@ -1,29 +1,29 @@
-package com.example.test.pages.duplicate
+package com.github.thebridsk.bridge.test.pages.duplicate
 
-import com.example.test.pages.Page
-import com.example.source.SourcePosition
+import com.github.thebridsk.bridge.test.pages.Page
+import com.github.thebridsk.bridge.source.SourcePosition
 import org.openqa.selenium.WebDriver
 import org.scalactic.source.Position
 import org.scalatest.concurrent.Eventually._
 import org.scalatest.MustMatchers._
-import com.example.test.pages.PageBrowser._
-import com.example.test.selenium.TestServer
-import utils.logging.Logger
-import com.example.test.util.HttpUtils
-import com.example.data.BoardSet
-import com.example.data.Movement
+import com.github.thebridsk.bridge.test.pages.PageBrowser._
+import com.github.thebridsk.bridge.test.selenium.TestServer
+import com.github.thebridsk.utilities.logging.Logger
+import com.github.thebridsk.bridge.test.util.HttpUtils
+import com.github.thebridsk.bridge.data.BoardSet
+import com.github.thebridsk.bridge.data.Movement
 import java.net.URL
-import com.example.test.pages.duplicate.ScoreboardPage.CompletedViewType
-import com.example.test.pages.duplicate.ScoreboardPage.TableViewType
-import com.example.data.bridge.PlayerPosition
-import com.example.test.pages.GenericPage
-import com.example.test.pages.Page.AnyPage
-import com.example.data.bridge.North
-import com.example.data.bridge.South
-import com.example.data.bridge.East
-import com.example.data.bridge.West
-import com.example.data.util.Strings
-import com.example.test.pages.bridge.HomePage
+import com.github.thebridsk.bridge.test.pages.duplicate.ScoreboardPage.CompletedViewType
+import com.github.thebridsk.bridge.test.pages.duplicate.ScoreboardPage.TableViewType
+import com.github.thebridsk.bridge.data.bridge.PlayerPosition
+import com.github.thebridsk.bridge.test.pages.GenericPage
+import com.github.thebridsk.bridge.test.pages.Page.AnyPage
+import com.github.thebridsk.bridge.data.bridge.North
+import com.github.thebridsk.bridge.data.bridge.South
+import com.github.thebridsk.bridge.data.bridge.East
+import com.github.thebridsk.bridge.data.bridge.West
+import com.github.thebridsk.bridge.data.util.Strings
+import com.github.thebridsk.bridge.test.pages.bridge.HomePage
 
 object TableSelectNamesPage {
 

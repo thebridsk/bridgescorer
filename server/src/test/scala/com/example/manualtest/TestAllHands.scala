@@ -1,11 +1,11 @@
-package com.example.manualtest
+package com.github.thebridsk.bridge.manualtest
 
-import utils.main.Main
-import com.example.test.selenium.Duplicate5TestPages
-import com.example.test.selenium.DuplicateTestPages
+import com.github.thebridsk.utilities.main.Main
+import com.github.thebridsk.bridge.test.selenium.Duplicate5TestPages
+import com.github.thebridsk.bridge.test.selenium.DuplicateTestPages
 import java.io.StringWriter
 import java.io.PrintWriter
-import utils.logging.Logger
+import com.github.thebridsk.utilities.logging.Logger
 
 object TestAllHands extends Main {
 

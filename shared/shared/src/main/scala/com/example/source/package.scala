@@ -1,4 +1,4 @@
-package com.example
+package com.github.thebridsk.bridge
 
 import org.scalactic.source.Position
 

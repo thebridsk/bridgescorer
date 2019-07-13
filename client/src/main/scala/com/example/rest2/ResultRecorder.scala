@@ -1,7 +1,7 @@
-package com.example.rest2
+package com.github.thebridsk.bridge.rest2
 
 import org.scalactic.source.Position
-import utils.logging.Logger
+import com.github.thebridsk.utilities.logging.Logger
 import org.scalajs.dom.ext.Ajax.InputData
 import org.scalajs.dom.ext.AjaxException
 
@@ -12,7 +12,7 @@ trait ResultRecorder {
 object ResultRecorder extends ResultRecorder {
   val log = Logger("bridge.ResultRecorder")
 
-  import com.example.source._
+  import com.github.thebridsk.bridge.source._
 
   def logException( x: Exception, url: Option[String] = None, reqbody: Option[InputData] = None ) = {
     x match {

@@ -1,29 +1,29 @@
-package com.example.backend
+package com.github.thebridsk.bridge.backend
 
-import com.example.backend.resource.NestedResourceSupport
-import com.example.backend.resource.Result
-import com.example.data.MatchDuplicate
-import com.example.data.Board
-import com.example.data.Team
-import com.example.data.Id
+import com.github.thebridsk.bridge.backend.resource.NestedResourceSupport
+import com.github.thebridsk.bridge.backend.resource.Result
+import com.github.thebridsk.bridge.data.MatchDuplicate
+import com.github.thebridsk.bridge.data.Board
+import com.github.thebridsk.bridge.data.Team
+import com.github.thebridsk.bridge.data.Id
 import akka.http.scaladsl.model.StatusCodes
-import com.example.data.RestMessage
-import com.example.backend.resource.StoreSupport
-import com.example.backend.resource.VersionedInstanceJson
-import com.example.backend.resource.PersistentSupport
-import com.example.data.BoardSet
-import com.example.data.DuplicateHand
-import com.example.data.Movement
-import com.example.data.VersionedInstance
-import com.example.data.MatchChicago
-import com.example.data.MatchRubber
-import com.example.data.MatchDuplicateResult
-import com.example.backend.resource.Resource
+import com.github.thebridsk.bridge.data.RestMessage
+import com.github.thebridsk.bridge.backend.resource.StoreSupport
+import com.github.thebridsk.bridge.backend.resource.VersionedInstanceJson
+import com.github.thebridsk.bridge.backend.resource.PersistentSupport
+import com.github.thebridsk.bridge.data.BoardSet
+import com.github.thebridsk.bridge.data.DuplicateHand
+import com.github.thebridsk.bridge.data.Movement
+import com.github.thebridsk.bridge.data.VersionedInstance
+import com.github.thebridsk.bridge.data.MatchChicago
+import com.github.thebridsk.bridge.data.MatchRubber
+import com.github.thebridsk.bridge.data.MatchDuplicateResult
+import com.github.thebridsk.bridge.backend.resource.Resource
 import scala.concurrent.ExecutionContext
 import scala.concurrent.Future
-import com.example.data.Round
-import com.example.data.Hand
-import com.example.data.RubberHand
+import com.github.thebridsk.bridge.data.Round
+import com.github.thebridsk.bridge.data.Hand
+import com.github.thebridsk.bridge.data.RubberHand
 
 class GenericIdCacheStoreSupport[VId, VType <: VersionedInstance[
   VType,

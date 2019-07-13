@@ -1,9 +1,9 @@
-package com.example.data.rest
+package com.github.thebridsk.bridge.data.rest
 
 import play.api.libs.json._
 
-import com.example.data.websocket.DuplexProtocol._
-import com.example.data.websocket.Protocol._
+import com.github.thebridsk.bridge.data.websocket.DuplexProtocol._
+import com.github.thebridsk.bridge.data.websocket.Protocol._
 import scala.reflect.ClassTag
 
 object ProtocolJsonSupportImpl {

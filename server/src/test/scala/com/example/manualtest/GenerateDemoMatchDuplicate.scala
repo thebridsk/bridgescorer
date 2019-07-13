@@ -1,21 +1,21 @@
-package com.example.manualtest
+package com.github.thebridsk.bridge.manualtest
 
-import utils.main.Main
+import com.github.thebridsk.utilities.main.Main
 import scala.reflect.io.Path
-import com.example.backend.BridgeService
+import com.github.thebridsk.bridge.backend.BridgeService
 import scala.concurrent.ExecutionContext
-import com.example.data.Id
-import com.example.data.MatchDuplicate
+import com.github.thebridsk.bridge.data.Id
+import com.github.thebridsk.bridge.data.MatchDuplicate
 import scala.concurrent.Future
-import com.example.backend.BridgeResources
+import com.github.thebridsk.bridge.backend.BridgeResources
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
-import com.example.data.rest.JsonSupport
-import com.example.backend.resource.FileIO
+import com.github.thebridsk.bridge.data.rest.JsonSupport
+import com.github.thebridsk.bridge.backend.resource.FileIO
 
 object GenerateDemoMatchDuplicate extends Main {
 
-  import utils.main.Converters._
+  import com.github.thebridsk.utilities.main.Converters._
 
   val optionStore = opt[Path]("store", short='s', descr="The store directory, default=./store", argName="dir", default=Some("../testdata"))
 

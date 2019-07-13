@@ -1,23 +1,23 @@
-package com.example.pages.chicagos
+package com.github.thebridsk.bridge.pages.chicagos
 
-import com.example.controller.ChicagoController
-import com.example.data.Round
-import com.example.data.bridge.East
-import com.example.data.bridge.North
-import com.example.data.bridge.PlayerPosition
-import com.example.data.bridge.South
-import com.example.data.bridge.West
+import com.github.thebridsk.bridge.controller.ChicagoController
+import com.github.thebridsk.bridge.data.Round
+import com.github.thebridsk.bridge.data.bridge.East
+import com.github.thebridsk.bridge.data.bridge.North
+import com.github.thebridsk.bridge.data.bridge.PlayerPosition
+import com.github.thebridsk.bridge.data.bridge.South
+import com.github.thebridsk.bridge.data.bridge.West
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.html_<^._
-import com.example.react.AppButton
-import com.example.react.Utils._
-import com.example.pages.Pixels
-import com.example.pages.BaseStyles
-import com.example.react.HelpButton
-import com.example.materialui.MuiTypography
-import com.example.materialui.TextVariant
-import com.example.materialui.TextColor
-import com.example.data.util.Strings
+import com.github.thebridsk.bridge.react.AppButton
+import com.github.thebridsk.bridge.react.Utils._
+import com.github.thebridsk.bridge.pages.Pixels
+import com.github.thebridsk.bridge.pages.BaseStyles
+import com.github.thebridsk.bridge.react.HelpButton
+import com.github.thebridsk.materialui.MuiTypography
+import com.github.thebridsk.materialui.TextVariant
+import com.github.thebridsk.materialui.TextColor
+import com.github.thebridsk.bridge.data.util.Strings
 
 object ViewPlayersThirdRound {
   import PagePlayers._

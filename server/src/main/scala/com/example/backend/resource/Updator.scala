@@ -1,4 +1,4 @@
-package com.example.backend.resource
+package com.github.thebridsk.bridge.backend.resource
 
 trait Updator[V, T, R] {
   val changeContext: ChangeContext = new ChangeContext()

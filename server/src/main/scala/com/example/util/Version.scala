@@ -1,4 +1,4 @@
-package com.example.util
+package com.github.thebridsk.bridge.util
 
 import scala.annotation.tailrec
 

@@ -1,21 +1,21 @@
-package com.example.manualtest
+package com.github.thebridsk.bridge.manualtest
 
-import utils.main.Main
+import com.github.thebridsk.utilities.main.Main
 import scala.reflect.io.Path
-import com.example.backend.BridgeServiceFileStore
-import utils.logging.Logger
-import com.example.data.DuplicateSummary
-import com.example.data.duplicate.suggestion.DuplicateSuggestionsCalculation
-import com.example.data.duplicate.suggestion.PairsData
-import com.example.data.duplicate.suggestion.PairData
+import com.github.thebridsk.bridge.backend.BridgeServiceFileStore
+import com.github.thebridsk.utilities.logging.Logger
+import com.github.thebridsk.bridge.data.DuplicateSummary
+import com.github.thebridsk.bridge.data.duplicate.suggestion.DuplicateSuggestionsCalculation
+import com.github.thebridsk.bridge.data.duplicate.suggestion.PairsData
+import com.github.thebridsk.bridge.data.duplicate.suggestion.PairData
 import scala.concurrent.Await
 import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext.Implicits.global
-import com.example.data.duplicate.suggestion.NeverPair
+import com.github.thebridsk.bridge.data.duplicate.suggestion.NeverPair
 
 object ShowSuggestions extends Main {
 
-  import utils.main.Converters._
+  import com.github.thebridsk.utilities.main.Converters._
 
   val log = Logger( ShowSuggestions.getClass.getName )
 

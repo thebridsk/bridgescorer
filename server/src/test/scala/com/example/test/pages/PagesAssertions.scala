@@ -1,9 +1,9 @@
-package com.example.test.pages
+package com.github.thebridsk.bridge.test.pages
 
 import org.scalatest.exceptions.ModifiableMessage
 import org.scalatest.exceptions.TestFailedException
 import org.scalactic.source.Position
-import com.example.source.SourcePosition
+import com.github.thebridsk.bridge.source.SourcePosition
 import org.scalatest.Assertions._
 
 trait PagesAssertions {

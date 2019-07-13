@@ -1,24 +1,24 @@
-package com.example.test.pages
+package com.github.thebridsk.bridge.test.pages
 
-import com.example.source.SourcePosition
+import com.github.thebridsk.bridge.source.SourcePosition
 import org.openqa.selenium.WebDriver
 import org.scalactic.source.Position
 import org.scalatest.concurrent.Eventually._
 import org.scalatest.MustMatchers._
-import com.example.test.pages.PageBrowser._
-import com.example.test.selenium.TestServer
-import utils.logging.Logger
-import com.example.data.bridge.ContractSuit
-import com.example.data.bridge.ContractDoubled
-import com.example.data.bridge.PlayerPosition
-import com.example.data.bridge.Made
-import com.example.data.bridge.Down
-import com.example.data.bridge.MadeOrDown
+import com.github.thebridsk.bridge.test.pages.PageBrowser._
+import com.github.thebridsk.bridge.test.selenium.TestServer
+import com.github.thebridsk.utilities.logging.Logger
+import com.github.thebridsk.bridge.data.bridge.ContractSuit
+import com.github.thebridsk.bridge.data.bridge.ContractDoubled
+import com.github.thebridsk.bridge.data.bridge.PlayerPosition
+import com.github.thebridsk.bridge.data.bridge.Made
+import com.github.thebridsk.bridge.data.bridge.Down
+import com.github.thebridsk.bridge.data.bridge.MadeOrDown
 import org.scalatest.exceptions.TestFailedException
 import org.openqa.selenium.By
-import com.example.test.pages.duplicate.ScoreboardPage
-import com.example.test.pages.duplicate.BoardPage
-import com.example.data.bridge.Vulnerability
+import com.github.thebridsk.bridge.test.pages.duplicate.ScoreboardPage
+import com.github.thebridsk.bridge.test.pages.duplicate.BoardPage
+import com.github.thebridsk.bridge.data.bridge.Vulnerability
 import org.openqa.selenium.Keys
 
 object BaseHandPage {

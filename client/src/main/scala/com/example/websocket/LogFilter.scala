@@ -1,7 +1,7 @@
-package com.example.websocket
+package com.github.thebridsk.bridge.websocket
 
-import utils.logging.Filter
-import utils.logging.TraceMsg
+import com.github.thebridsk.utilities.logging.Filter
+import com.github.thebridsk.utilities.logging.TraceMsg
 
 object LogFilter {
   val filterlist = "DuplexPipe.scala"::

@@ -1,4 +1,4 @@
-package com.example.data.duplicate.stats
+package com.github.thebridsk.bridge.data.duplicate.stats
 
 case class DuplicateStats(
     playerStats: Option[PlayerStats],

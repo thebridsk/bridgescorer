@@ -1,4 +1,4 @@
-package com.example.test.pages
+package com.github.thebridsk.bridge.test.pages
 
 import org.openqa.selenium.WebElement
 import org.scalactic.source.Position
@@ -6,10 +6,10 @@ import org.openqa.selenium.By
 import scala.collection.JavaConverters._
 import scala.reflect.ClassTag
 import org.scalatest.concurrent.Eventually.PatienceConfig
-import utils.logging.Logger
+import com.github.thebridsk.utilities.logging.Logger
 import org.openqa.selenium.OutputType
-import com.example.backend.resource.FileIO
-import com.example.source.SourcePosition
+import com.github.thebridsk.bridge.backend.resource.FileIO
+import com.github.thebridsk.bridge.source.SourcePosition
 import org.openqa.selenium.Keys
 import org.openqa.selenium.WebDriver
 

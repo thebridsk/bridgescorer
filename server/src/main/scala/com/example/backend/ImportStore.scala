@@ -1,20 +1,20 @@
-package com.example.backend
+package com.github.thebridsk.bridge.backend
 
 import scala.concurrent.ExecutionContext
 import scala.concurrent.duration._
-import com.example.backend.resource.MyCache
-import com.example.backend.resource.Result
+import com.github.thebridsk.bridge.backend.resource.MyCache
+import com.github.thebridsk.bridge.backend.resource.Result
 import scala.reflect.io.Directory
 import scala.concurrent.Future
 import akka.http.scaladsl.model.StatusCodes
-import com.example.backend.resource.Implicits._
-import com.example.data.MatchDuplicate
+import com.github.thebridsk.bridge.backend.resource.Implicits._
+import com.github.thebridsk.bridge.data.MatchDuplicate
 import java.io.InputStream
 import scala.reflect.io.File
 import java.nio.file.Files
-import com.example.backend.resource.FileIO
+import com.github.thebridsk.bridge.backend.resource.FileIO
 import java.io.IOException
-import utils.logging.Logger
+import com.github.thebridsk.utilities.logging.Logger
 import ImportStore.log
 import java.nio.file.Path
 import java.io.FileNotFoundException

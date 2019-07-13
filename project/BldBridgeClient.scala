@@ -20,18 +20,18 @@ import BldVersion._
 
 object BldBridgeClient {
 
-  val clientUnitTests = "com.example.test.MyTest" ::
-    "com.example.test.TestDuplicateStore" ::
-    "com.example.test.TestLogFilter" ::
-    "com.example.test.TestSerialize" ::
-    "com.example.test.TestColor" ::
+  val clientUnitTests = "com.github.thebridsk.bridge.test.MyTest" ::
+    "com.github.thebridsk.bridge.test.TestDuplicateStore" ::
+    "com.github.thebridsk.bridge.test.TestLogFilter" ::
+    "com.github.thebridsk.bridge.test.TestSerialize" ::
+    "com.github.thebridsk.bridge.test.TestColor" ::
     Nil
 
   lazy val `bridgescorer-client` = project
     .in(file("client"))
     .configure(
       commonSettings,
-      buildInfo("com.example.version", "VersionClient")
+      buildInfo("com.github.thebridsk.bridge.version", "VersionClient")
     )
     .enablePlugins(ScalaJSPlugin)
     .enablePlugins(ScalaJSBundlerPlugin)
@@ -75,7 +75,7 @@ object BldBridgeClient {
       //   https://github.com/scalacenter/scalajs-bundler/issues/83
 //    testOptions in Test += Tests.Filter(s => { println("TestOption: "+s); false}),
       testOptions in Test += Tests.Filter(s => {
-//      if (s == "com.example.test.AllUnitTests") {
+//      if (s == "com.github.thebridsk.bridge.test.AllUnitTests") {
         if (clientUnitTests.contains(s)) {
           println("Using Test:    " + s)
           true

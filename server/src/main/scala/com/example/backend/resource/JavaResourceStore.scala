@@ -1,12 +1,12 @@
-package com.example.backend.resource
+package com.github.thebridsk.bridge.backend.resource
 
 import scala.concurrent.duration._
 import akka.http.scaladsl.model.StatusCodes
-import com.example.data.RestMessage
-import com.example.data.VersionedInstance
+import com.github.thebridsk.bridge.data.RestMessage
+import com.github.thebridsk.bridge.data.VersionedInstance
 import java.io.InputStream
 import scala.io.BufferedSource
-import utils.logging.Logger
+import com.github.thebridsk.utilities.logging.Logger
 
 import JavaResourceStore._
 import Implicits._

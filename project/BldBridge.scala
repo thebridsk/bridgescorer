@@ -65,7 +65,7 @@ object BldBridge {
       BldBridgeServer.`bridgescorer-server`,
       BldBridgeRotation.rotationJVM
     )
-    .configure( commonSettings, buildInfo("com.example.bridgescorer.version", "VersionBridgeScorer"))
+    .configure( commonSettings, buildInfo("com.github.thebridsk.bridge.bridgescorer.version", "VersionBridgeScorer"))
     .dependsOn(BldBridgeServer.`bridgescorer-server` % "test->test;compile->compile")
     .dependsOn(ProjectRef(uri("utilities"), "utilities-jvm"))
     .enablePlugins(WebScalaJSBundlerPlugin)
@@ -95,9 +95,9 @@ object BldBridge {
 //      removeRelativePath("target\\scala-"+verScalaMajorMinor+"\\resource_managed\\main")
       ),
       EclipseKeys.withSource := true,
-//    mainClass in Compile := Some("com.example.Server"),
-      mainClass in (Compile, run) := Some("com.example.Server"),
-      mainClass in (Compile, packageBin) := Some("com.example.Server"),
+//    mainClass in Compile := Some("com.github.thebridsk.bridge.Server"),
+      mainClass in (Compile, run) := Some("com.github.thebridsk.bridge.Server"),
+      mainClass in (Compile, packageBin) := Some("com.github.thebridsk.bridge.Server"),
       Compile / run / fork := true,
       testOptions in Test := Seq(),
       test in assembly := {}, // test in (`bridgescorer-server`, Test),

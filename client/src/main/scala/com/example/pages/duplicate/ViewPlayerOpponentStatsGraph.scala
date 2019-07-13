@@ -1,29 +1,29 @@
-package com.example.pages.duplicate
+package com.github.thebridsk.bridge.pages.duplicate
 
 
 import scala.scalajs.js
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
-import com.example.routes.BridgeRouter
-import com.example.routes.AppRouter.AppPage
-import com.example.data.DuplicateSummary
-import com.example.data.Id
-import utils.logging.Logger
-import com.example.controller.Controller
-import com.example.data.SystemTime
-import com.example.react.AppButton
-import com.example.react.Utils._
-import com.example.color.Color
-import com.example.react.CheckBox
-import com.example.pages.BaseStyles
-import com.example.react.ColorBar
-import com.example.react.Table
-import com.example.react.SvgRect
-import com.example.react.Tooltip
-import com.example.react.Table.Column
-import com.example.data.duplicate.stats.PlayersOpponentsStats
-import com.example.data.duplicate.stats.PlayerOpponentStat
-import com.example.data.duplicate.stats.Statistic
+import com.github.thebridsk.bridge.routes.BridgeRouter
+import com.github.thebridsk.bridge.routes.AppRouter.AppPage
+import com.github.thebridsk.bridge.data.DuplicateSummary
+import com.github.thebridsk.bridge.data.Id
+import com.github.thebridsk.utilities.logging.Logger
+import com.github.thebridsk.bridge.controller.Controller
+import com.github.thebridsk.bridge.data.SystemTime
+import com.github.thebridsk.bridge.react.AppButton
+import com.github.thebridsk.bridge.react.Utils._
+import com.github.thebridsk.bridge.color.Color
+import com.github.thebridsk.bridge.react.CheckBox
+import com.github.thebridsk.bridge.pages.BaseStyles
+import com.github.thebridsk.bridge.react.ColorBar
+import com.github.thebridsk.bridge.react.Table
+import com.github.thebridsk.bridge.react.SvgRect
+import com.github.thebridsk.bridge.react.Tooltip
+import com.github.thebridsk.bridge.react.Table.Column
+import com.github.thebridsk.bridge.data.duplicate.stats.PlayersOpponentsStats
+import com.github.thebridsk.bridge.data.duplicate.stats.PlayerOpponentStat
+import com.github.thebridsk.bridge.data.duplicate.stats.Statistic
 
 /**
  * Shows a pairs summary page.

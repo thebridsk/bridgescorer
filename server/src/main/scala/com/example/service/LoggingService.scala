@@ -1,8 +1,8 @@
-package com.example.service
+package com.github.thebridsk.bridge.service
 
-import com.example.backend.BridgeService
-import com.example.data.Board
-import com.example.data.MatchDuplicate
+import com.github.thebridsk.bridge.backend.BridgeService
+import com.github.thebridsk.bridge.data.Board
+import com.github.thebridsk.bridge.data.MatchDuplicate
 import akka.event.Logging
 import akka.event.Logging._
 import akka.http.scaladsl.model.StatusCodes._
@@ -10,13 +10,13 @@ import akka.http.scaladsl.server.Directives._
 import akka.stream.Materializer
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
-import com.example.util.HasActorSystem
+import com.github.thebridsk.bridge.util.HasActorSystem
 import akka.http.scaladsl.model.StatusCode
-import com.example.data.Id
-import com.example.data.DuplicateSummary
+import com.github.thebridsk.bridge.data.Id
+import com.github.thebridsk.bridge.data.DuplicateSummary
 import javax.ws.rs.Path
-import com.example.data.RestMessage
-import com.example.data.SystemTime
+import com.github.thebridsk.bridge.data.RestMessage
+import com.github.thebridsk.bridge.data.SystemTime
 import akka.http.scaladsl.model.headers.Location
 import akka.http.scaladsl.server.RejectionHandler
 import akka.http.scaladsl.server.MissingCookieRejection
@@ -25,8 +25,8 @@ import akka.http.scaladsl.server.MethodRejection
 import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.server.UnsupportedWebSocketSubprotocolRejection
 import akka.util.ByteString
-import com.example.rest.Service
-import com.example.data.websocket.DuplexProtocol.LogEntryV2
+import com.github.thebridsk.bridge.rest.Service
+import com.github.thebridsk.bridge.data.websocket.DuplexProtocol.LogEntryV2
 import io.swagger.v3.oas.annotations.parameters.RequestBody
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.media.Content
@@ -102,7 +102,7 @@ trait LoggingService extends HasActorSystem with ClientLoggingService {
   def callRemoteLogging(@Parameter(hidden = true) ips: String) =
     path("entry") {
       (post | put) {
-        import com.example.rest.UtilsPlayJson._
+        import com.github.thebridsk.bridge.rest.UtilsPlayJson._
         entity(as[LogEntryV2]) { traceMsg =>
           Service.logFromBrowser(ips, "rs", traceMsg)
           complete(StatusCodes.NoContent)

@@ -1,7 +1,7 @@
-package com.example.webjar
+package com.github.thebridsk.bridge.webjar
 
 import java.util.Properties
-import utils.logging.Logger
+import com.github.thebridsk.utilities.logging.Logger
 
 object FileFinder {
   val log = Logger[FileFinder]

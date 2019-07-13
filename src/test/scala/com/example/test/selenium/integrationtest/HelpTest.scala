@@ -1,4 +1,4 @@
-package com.example.test.selenium.integrationtest
+package com.github.thebridsk.bridge.test.selenium.integrationtest
 
 import org.scalatest.FlatSpec
 import org.scalatest.MustMatchers
@@ -10,11 +10,11 @@ import selenium._
 import org.openqa.selenium._
 import org.scalatest.concurrent.Eventually
 import java.util.concurrent.TimeUnit
-import com.example.Server
+import com.github.thebridsk.bridge.Server
 import scala.concurrent.Await
-import com.example.data.bridge._
-import com.example.backend.BridgeServiceInMemory
-import com.example.backend.BridgeService
+import com.github.thebridsk.bridge.data.bridge._
+import com.github.thebridsk.bridge.backend.BridgeServiceInMemory
+import com.github.thebridsk.bridge.backend.BridgeService
 import org.scalatest.time.Span
 import org.scalatest.time.Millis
 import org.openqa.selenium.chrome.ChromeOptions
@@ -23,30 +23,30 @@ import org.openqa.selenium.remote.RemoteWebDriver
 import org.openqa.selenium.firefox.FirefoxDriver
 import org.openqa.selenium.safari.SafariDriver
 import scala.collection.convert.ImplicitConversionsToScala._
-import com.example.data.MatchDuplicate
-import utils.logging.Logger
+import com.github.thebridsk.bridge.data.MatchDuplicate
+import com.github.thebridsk.utilities.logging.Logger
 import java.util.logging.Level
 import org.scalactic.source.Position
-import com.example.test.util.NoResultYet
-import com.example.test.util.EventuallyUtils
-import com.example.test.util.HttpUtils
+import com.github.thebridsk.bridge.test.util.NoResultYet
+import com.github.thebridsk.bridge.test.util.EventuallyUtils
+import com.github.thebridsk.bridge.test.util.HttpUtils
 import java.net.URL
 import java.io.InputStream
 import java.io.ByteArrayInputStream
 import java.io.InputStreamReader
 import java.io.IOException
 import java.net.HttpURLConnection
-import com.example.test.TestStartLogging
-import com.example.data.BoardSet
+import com.github.thebridsk.bridge.test.TestStartLogging
+import com.github.thebridsk.bridge.data.BoardSet
 import akka.http.scaladsl.coding.GzipDecompressor
-import com.example.test.pages.Element
-import com.example.test.util.MonitorTCP
-import com.example.test.util.ParallelUtils
-import com.example.test.pages.PageBrowser
-import com.example.test.selenium.Session
-import com.example.test.selenium.TestServer
-import com.example.test.pages.bridge.HomePage
-import com.example.test.pages.HelpPage
+import com.github.thebridsk.bridge.test.pages.Element
+import com.github.thebridsk.bridge.test.util.MonitorTCP
+import com.github.thebridsk.bridge.test.util.ParallelUtils
+import com.github.thebridsk.bridge.test.pages.PageBrowser
+import com.github.thebridsk.bridge.test.selenium.Session
+import com.github.thebridsk.bridge.test.selenium.TestServer
+import com.github.thebridsk.bridge.test.pages.bridge.HomePage
+import com.github.thebridsk.bridge.test.pages.HelpPage
 import scala.annotation.tailrec
 import akka.http.scaladsl.model.StatusCodes
 
@@ -54,7 +54,7 @@ import akka.http.scaladsl.model.StatusCodes
  * @author werewolf
  */
 class HelpTest extends FlatSpec with MustMatchers with BeforeAndAfterAll {
-  import com.example.test.pages.PageBrowser._
+  import com.github.thebridsk.bridge.test.pages.PageBrowser._
   import ParallelUtils._
 
   val logger = Logger[HelpTest]

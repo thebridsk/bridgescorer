@@ -1,4 +1,4 @@
-package com.example.graphql
+package com.github.thebridsk.bridge.graphql
 
 import scala.concurrent.ExecutionContext.Implicits.global
 

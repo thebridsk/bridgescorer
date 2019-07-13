@@ -1,4 +1,4 @@
-package com.example.util
+package com.github.thebridsk.bridge.util
 
 import java.io.InputStream
 import java.io.ByteArrayInputStream
@@ -6,7 +6,7 @@ import java.net.HttpURLConnection
 import java.net.URL
 import java.io.IOException
 import java.io.InputStreamReader
-import utils.logging.Logger
+import com.github.thebridsk.utilities.logging.Logger
 import java.io.ByteArrayOutputStream
 import java.util.zip.GZIPInputStream
 import play.api.libs.json.Reads

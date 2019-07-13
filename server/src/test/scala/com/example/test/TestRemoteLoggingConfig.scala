@@ -1,12 +1,12 @@
-package com.example.test
+package com.github.thebridsk.bridge.test
 
 import org.scalatest.FlatSpec
 import org.scalatest.MustMatchers
 import org.scalatest.Matchers
 
-import com.example.data.bridge._
-import com.example.logging.RemoteLoggingConfig
-import com.example.yaml.YamlSupport
+import com.github.thebridsk.bridge.data.bridge._
+import com.github.thebridsk.bridge.logging.RemoteLoggingConfig
+import com.github.thebridsk.bridge.yaml.YamlSupport
 
 object TestRemoteLoggingConfig {
 

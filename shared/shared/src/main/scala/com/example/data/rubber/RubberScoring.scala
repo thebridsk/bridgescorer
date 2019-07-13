@@ -1,10 +1,10 @@
-package com.example.data.rubber
+package com.github.thebridsk.bridge.data.rubber
 
-import com.example.data.MatchRubber
-import com.example.data.Hand
-import com.example.data.bridge.RubberBridge.ScoreHand
-import com.example.data.RubberHand
-import com.example.data.bridge.PlayerPosition
+import com.github.thebridsk.bridge.data.MatchRubber
+import com.github.thebridsk.bridge.data.Hand
+import com.github.thebridsk.bridge.data.bridge.RubberBridge.ScoreHand
+import com.github.thebridsk.bridge.data.RubberHand
+import com.github.thebridsk.bridge.data.bridge.PlayerPosition
 
 class GameDone(msg: String = null, cause: Throwable = null)
     extends java.lang.Exception(msg, cause) {}
@@ -38,7 +38,7 @@ class GameScoring(
     *            nsBelow: Int
     *            ewAbove: Int
     *            ewBelow: Int
-    *            scoredHands: List[com.example.data.bridge.RubberBridge.ScoreHand]  // same index as hands
+    *            scoredHands: List[com.github.thebridsk.bridge.data.bridge.RubberBridge.ScoreHand]  // same index as hands
     *
     */
   private def calculate() = {

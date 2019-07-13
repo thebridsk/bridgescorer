@@ -1,22 +1,22 @@
-//package com.example.test
+//package com.github.thebridsk.bridge.test
 //
 //import japgolly.scalajs.react.vdom.html_<^._
 //import japgolly.scalajs.react.test._
-//import com.example.pages.hand.ViewVulnerability
-//import com.example.data.bridge.Vulnerability
-//import com.example.data.bridge.NotVul
-//import com.example.data.bridge.Vul
+//import com.github.thebridsk.bridge.pages.hand.ViewVulnerability
+//import com.github.thebridsk.bridge.data.bridge.Vulnerability
+//import com.github.thebridsk.bridge.data.bridge.NotVul
+//import com.github.thebridsk.bridge.data.bridge.Vul
 //import org.scalajs.jquery.{ jQuery => _, _ }
-//import com.example.test.utils.jQuery
-//import com.example.data.Round
+//import com.github.thebridsk.bridge.test.utils.jQuery
+//import com.github.thebridsk.bridge.data.Round
 //import japgolly.scalajs.react._
-//import com.example.data.bridge._
-//import com.example.rest.RestClient
-//import com.example.routes.AppRouter.AppPage
-//import com.example.pages.HomePage
+//import com.github.thebridsk.bridge.data.bridge._
+//import com.github.thebridsk.bridge.rest.RestClient
+//import com.github.thebridsk.bridge.routes.AppRouter.AppPage
+//import com.github.thebridsk.bridge.pages.HomePage
 //import org.scalatest.FlatSpec
 //import org.scalatest.MustMatchers
-//import com.example.data.js.SystemTimeJs
+//import com.github.thebridsk.bridge.data.js.SystemTimeJs
 //
 ///**
 // * @author werewolf

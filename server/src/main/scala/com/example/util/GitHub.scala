@@ -1,6 +1,6 @@
-package com.example.util
+package com.github.thebridsk.bridge.util
 
-import utils.logging.Logger
+import com.github.thebridsk.utilities.logging.Logger
 import java.net.URL
 import java.io.File
 import play.api.libs.json._

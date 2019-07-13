@@ -1,21 +1,21 @@
-package com.example.pages
+package com.github.thebridsk.bridge.pages
 
 import scala.scalajs.js
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
-import com.example.react.ColorBar
-import com.example.react.Utils._
-import utils.logging.Logger
-import com.example.color.NamedColor
-import com.example.color.Color
-import com.example.color.Colors
-import com.example.color.Gray
-import com.example.color.RGBPercentColor
-import com.example.materialui.MuiTypography
-import com.example.materialui.TextVariant
-import com.example.materialui.TextColor
-import com.example.routes.BridgeRouter
-import com.example.routes.AppRouter.AppPage
+import com.github.thebridsk.bridge.react.ColorBar
+import com.github.thebridsk.bridge.react.Utils._
+import com.github.thebridsk.utilities.logging.Logger
+import com.github.thebridsk.bridge.color.NamedColor
+import com.github.thebridsk.bridge.color.Color
+import com.github.thebridsk.bridge.color.Colors
+import com.github.thebridsk.bridge.color.Gray
+import com.github.thebridsk.bridge.color.RGBPercentColor
+import com.github.thebridsk.materialui.MuiTypography
+import com.github.thebridsk.materialui.TextVariant
+import com.github.thebridsk.materialui.TextColor
+import com.github.thebridsk.bridge.routes.BridgeRouter
+import com.github.thebridsk.bridge.routes.AppRouter.AppPage
 
 /**
  * A skeleton component.

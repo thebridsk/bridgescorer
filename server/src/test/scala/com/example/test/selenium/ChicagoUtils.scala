@@ -1,19 +1,19 @@
-package com.example.test.selenium
+package com.github.thebridsk.bridge.test.selenium
 
-import com.example.data.bridge.ContractTricks
-import com.example.data.bridge.ContractSuit
-import com.example.data.bridge.PlayerPosition
-import com.example.data.bridge.MadeOrDown
-import com.example.data.bridge.ContractDoubled
+import com.github.thebridsk.bridge.data.bridge.ContractTricks
+import com.github.thebridsk.bridge.data.bridge.ContractSuit
+import com.github.thebridsk.bridge.data.bridge.PlayerPosition
+import com.github.thebridsk.bridge.data.bridge.MadeOrDown
+import com.github.thebridsk.bridge.data.bridge.ContractDoubled
 import org.scalactic.source.Position
 import org.openqa.selenium.WebDriver
-import utils.logging.Logger
+import com.github.thebridsk.utilities.logging.Logger
 
 trait ChicagoUtils {
   import org.scalatest.MustMatchers._
-  import com.example.test.util.EventuallyUtils._
-  import com.example.test.util.ParallelUtils._
-  import com.example.test.pages.PageBrowser._
+  import com.github.thebridsk.bridge.test.util.EventuallyUtils._
+  import com.github.thebridsk.bridge.test.util.ParallelUtils._
+  import com.github.thebridsk.bridge.test.pages.PageBrowser._
   import org.scalatest.concurrent.Eventually
   import Eventually.{ patienceConfig => _, _ }
 

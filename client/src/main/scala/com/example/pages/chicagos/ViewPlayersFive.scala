@@ -1,26 +1,26 @@
-package com.example.pages.chicagos
+package com.github.thebridsk.bridge.pages.chicagos
 
 import scala.scalajs.js
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
-import com.example.data.MatchChicago
-import com.example.routes.BridgeRouter
-import com.example.pages.chicagos.PagePlayers.Props
-import com.example.data.chicago.ChicagoScoring
-import com.example.data.Round
-import com.example.data.bridge.PlayerPosition
-import com.example.controller.ChicagoController
-import com.example.data.util.Strings._
-import com.example.data.bridge._
-import utils.logging.Logger
-import com.example.data.util.Strings
-import com.example.react.AppButton
-import com.example.react.Utils._
-import com.example.pages.BaseStyles
-import com.example.react.HelpButton
-import com.example.materialui.MuiTypography
-import com.example.materialui.TextVariant
-import com.example.materialui.TextColor
+import com.github.thebridsk.bridge.data.MatchChicago
+import com.github.thebridsk.bridge.routes.BridgeRouter
+import com.github.thebridsk.bridge.pages.chicagos.PagePlayers.Props
+import com.github.thebridsk.bridge.data.chicago.ChicagoScoring
+import com.github.thebridsk.bridge.data.Round
+import com.github.thebridsk.bridge.data.bridge.PlayerPosition
+import com.github.thebridsk.bridge.controller.ChicagoController
+import com.github.thebridsk.bridge.data.util.Strings._
+import com.github.thebridsk.bridge.data.bridge._
+import com.github.thebridsk.utilities.logging.Logger
+import com.github.thebridsk.bridge.data.util.Strings
+import com.github.thebridsk.bridge.react.AppButton
+import com.github.thebridsk.bridge.react.Utils._
+import com.github.thebridsk.bridge.pages.BaseStyles
+import com.github.thebridsk.bridge.react.HelpButton
+import com.github.thebridsk.materialui.MuiTypography
+import com.github.thebridsk.materialui.TextVariant
+import com.github.thebridsk.materialui.TextColor
 
 /**
   * A skeleton component.

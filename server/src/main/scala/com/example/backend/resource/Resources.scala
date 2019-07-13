@@ -1,11 +1,11 @@
-package com.example.backend.resource
+package com.github.thebridsk.bridge.backend.resource
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext
-import utils.logging.Logger
+import com.github.thebridsk.utilities.logging.Logger
 import Resources._
 import org.scalactic.source.Position
-import com.example.source.SourcePosition
+import com.github.thebridsk.bridge.source.SourcePosition
 
 object Resources {
 

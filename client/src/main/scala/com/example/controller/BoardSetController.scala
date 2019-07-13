@@ -1,20 +1,20 @@
-package com.example.controller
+package com.github.thebridsk.bridge.controller
 
-import com.example.rest2.RestClientBoardSet
-import com.example.data.BoardSet
-import com.example.bridge.action.BridgeDispatcher
-import utils.logging.Logger
-import com.example.data.Movement
-import com.example.rest2.RestClientMovement
+import com.github.thebridsk.bridge.rest2.RestClientBoardSet
+import com.github.thebridsk.bridge.data.BoardSet
+import com.github.thebridsk.bridge.bridge.action.BridgeDispatcher
+import com.github.thebridsk.utilities.logging.Logger
+import com.github.thebridsk.bridge.data.Movement
+import com.github.thebridsk.bridge.rest2.RestClientMovement
 import scala.concurrent.ExecutionContext.Implicits.global
-import com.example.rest2.RestClientBoardSetsAndMovements
-import com.example.rest2.AjaxResult
-import com.example.rest2.RestClientTestBoardsetsAndMovements
-import com.example.Bridge
-import com.example.rest2.AjaxCall
+import com.github.thebridsk.bridge.rest2.RestClientBoardSetsAndMovements
+import com.github.thebridsk.bridge.rest2.AjaxResult
+import com.github.thebridsk.bridge.rest2.RestClientTestBoardsetsAndMovements
+import com.github.thebridsk.bridge.Bridge
+import com.github.thebridsk.bridge.rest2.AjaxCall
 import scala.concurrent.duration.Duration
-import com.example.data.BoardSetsAndMovements
-import com.example.data.rest.JsonSupport
+import com.github.thebridsk.bridge.data.BoardSetsAndMovements
+import com.github.thebridsk.bridge.data.rest.JsonSupport
 
 object BoardSetController {
   val logger = Logger("bridge.BoardSetController")

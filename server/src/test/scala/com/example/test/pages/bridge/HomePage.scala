@@ -1,19 +1,19 @@
-package com.example.test.pages.bridge
+package com.github.thebridsk.bridge.test.pages.bridge
 
-import com.example.source.SourcePosition
+import com.github.thebridsk.bridge.source.SourcePosition
 import org.openqa.selenium.WebDriver
 import org.scalactic.source.Position
 import org.scalatest.concurrent.Eventually._
 import org.scalatest.MustMatchers._
-import com.example.test.pages.PageBrowser._
-import com.example.test.selenium.TestServer
-import utils.logging.Logger
-import com.example.test.pages.Page
-import com.example.test.pages.GenericPage
-import com.example.test.pages.duplicate.ListDuplicatePage
-import com.example.test.pages.duplicate.NewDuplicatePage
-import com.example.test.pages.chicago.ListPage
-import com.example.test.pages.Element
+import com.github.thebridsk.bridge.test.pages.PageBrowser._
+import com.github.thebridsk.bridge.test.selenium.TestServer
+import com.github.thebridsk.utilities.logging.Logger
+import com.github.thebridsk.bridge.test.pages.Page
+import com.github.thebridsk.bridge.test.pages.GenericPage
+import com.github.thebridsk.bridge.test.pages.duplicate.ListDuplicatePage
+import com.github.thebridsk.bridge.test.pages.duplicate.NewDuplicatePage
+import com.github.thebridsk.bridge.test.pages.chicago.ListPage
+import com.github.thebridsk.bridge.test.pages.Element
 
 object HomePage {
 
@@ -71,7 +71,7 @@ class HomePage( implicit webDriver: WebDriver, pageCreated: SourcePosition ) ext
 
   def clickListRubberButton(implicit patienceConfig: PatienceConfig, pos: Position) = {
     clickButton("Rubber")
-    new com.example.test.pages.rubber.ListPage(None)(webDriver, pos)
+    new com.github.thebridsk.bridge.test.pages.rubber.ListPage(None)(webDriver, pos)
   }
 
   def clickImport( implicit pos: Position ) = {

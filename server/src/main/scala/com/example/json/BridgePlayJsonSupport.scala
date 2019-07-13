@@ -1,4 +1,4 @@
-package com.example.json
+package com.github.thebridsk.bridge.json
 
 import de.heikoseeberger.akkahttpplayjson.PlayJsonSupport
 import play.api.libs.json.Writes
@@ -7,7 +7,7 @@ import akka.http.scaladsl.unmarshalling.{FromEntityUnmarshaller, Unmarshaller}
 import play.api.libs.json.JsValue
 import play.api.libs.json.Json
 import scala.language.implicitConversions
-import com.example.data.rest.JsonSupport
+import com.github.thebridsk.bridge.data.rest.JsonSupport
 import play.api.libs.json.Reads
 
 trait BridgePlayJsonSupport extends JsonSupport {

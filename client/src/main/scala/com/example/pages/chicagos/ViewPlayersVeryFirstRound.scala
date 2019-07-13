@@ -1,31 +1,31 @@
-package com.example.pages.chicagos
+package com.github.thebridsk.bridge.pages.chicagos
 
 import scala.scalajs.js
 import scala.scalajs.js.UndefOr.any2undefOrA
 
-import com.example.bridge.store.NamesStore
-import com.example.controller.ChicagoController
-import com.example.data.Round
-import com.example.data.bridge.East
-import com.example.data.bridge.North
-import com.example.data.bridge.PlayerPosition
-import com.example.data.bridge.South
-import com.example.data.bridge.West
-import com.example.pages.info.InfoPage
-import com.example.react.Combobox
-import com.example.react.Utils.ExtendReactEventFromInput
+import com.github.thebridsk.bridge.bridge.store.NamesStore
+import com.github.thebridsk.bridge.controller.ChicagoController
+import com.github.thebridsk.bridge.data.Round
+import com.github.thebridsk.bridge.data.bridge.East
+import com.github.thebridsk.bridge.data.bridge.North
+import com.github.thebridsk.bridge.data.bridge.PlayerPosition
+import com.github.thebridsk.bridge.data.bridge.South
+import com.github.thebridsk.bridge.data.bridge.West
+import com.github.thebridsk.bridge.pages.info.InfoPage
+import com.github.thebridsk.bridge.react.Combobox
+import com.github.thebridsk.bridge.react.Utils.ExtendReactEventFromInput
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.html_<^._
-import com.example.react.ComboboxOrInput
-import com.example.react.AppButton
-import com.example.react.CheckBox
-import com.example.react.RadioButton
-import com.example.react.Utils._
-import com.example.pages.BaseStyles
-import com.example.react.HelpButton
-import com.example.materialui.MuiTypography
-import com.example.materialui.TextVariant
-import com.example.materialui.TextColor
+import com.github.thebridsk.bridge.react.ComboboxOrInput
+import com.github.thebridsk.bridge.react.AppButton
+import com.github.thebridsk.bridge.react.CheckBox
+import com.github.thebridsk.bridge.react.RadioButton
+import com.github.thebridsk.bridge.react.Utils._
+import com.github.thebridsk.bridge.pages.BaseStyles
+import com.github.thebridsk.bridge.react.HelpButton
+import com.github.thebridsk.materialui.MuiTypography
+import com.github.thebridsk.materialui.TextVariant
+import com.github.thebridsk.materialui.TextColor
 
 object ViewPlayersVeryFirstRound {
   import PagePlayers._

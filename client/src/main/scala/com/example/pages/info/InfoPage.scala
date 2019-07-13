@@ -1,19 +1,19 @@
-package com.example.pages.info
+package com.github.thebridsk.bridge.pages.info
 
 import org.scalajs.dom.document
 import scala.scalajs.js
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
-import com.example.routes.AppRouter._
-import com.example.react.AppButton
-import utils.logging.Logger
-import com.example.pages.BaseStyles
+import com.github.thebridsk.bridge.routes.AppRouter._
+import com.github.thebridsk.bridge.react.AppButton
+import com.github.thebridsk.utilities.logging.Logger
+import com.github.thebridsk.bridge.pages.BaseStyles
 import japgolly.scalajs.react.extra.router.RouterCtl
-import com.example.routes.BridgeRouter
-import com.example.pages.RootBridgeAppBar
-import com.example.materialui.MuiTypography
-import com.example.materialui.TextVariant
-import com.example.materialui.TextColor
+import com.github.thebridsk.bridge.routes.BridgeRouter
+import com.github.thebridsk.bridge.pages.RootBridgeAppBar
+import com.github.thebridsk.materialui.MuiTypography
+import com.github.thebridsk.materialui.TextVariant
+import com.github.thebridsk.materialui.TextColor
 
 /**
  * @author werewolf

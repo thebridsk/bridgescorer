@@ -1,15 +1,15 @@
-package com.example.rest2
+package com.github.thebridsk.bridge.rest2
 
 import org.scalajs.dom.ext.Ajax.InputData
 import scala.concurrent.duration.Duration
-import com.example.source.SourcePosition
+import com.github.thebridsk.bridge.source.SourcePosition
 import org.scalactic.source.Position
 import scala.concurrent.Promise
-import com.example.data.RestMessage
+import com.github.thebridsk.bridge.data.RestMessage
 import org.scalajs.dom
-import utils.logging.Logger
-import com.example.logger.CommAlerter
-import com.example.logger.Init
+import com.github.thebridsk.utilities.logging.Logger
+import com.github.thebridsk.bridge.logger.CommAlerter
+import com.github.thebridsk.bridge.logger.Init
 
 trait IAjaxCall {
   def send(method: String, url: String, data: InputData, timeout: Duration,

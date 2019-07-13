@@ -1,10 +1,10 @@
-package com.example.service.graphql
+package com.github.thebridsk.bridge.service.graphql
 
 import sangria.schema._
-import com.example.backend.BridgeService
-import com.example.data.MatchDuplicate
-import com.example.data.MatchChicago
-import com.example.data.MatchRubber
+import com.github.thebridsk.bridge.backend.BridgeService
+import com.github.thebridsk.bridge.data.MatchDuplicate
+import com.github.thebridsk.bridge.data.MatchChicago
+import com.github.thebridsk.bridge.data.MatchRubber
 
 object Data {
 

@@ -1,6 +1,6 @@
-package com.example.util
+package com.github.thebridsk.bridge.util
 
-import com.example.data.SystemTime
+import com.github.thebridsk.bridge.data.SystemTime
 
 object SystemTimeJVM {
 

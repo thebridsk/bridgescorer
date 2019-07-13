@@ -1,9 +1,9 @@
-package com.example.test
+package com.github.thebridsk.bridge.test
 
 import org.scalatest.Finders
 import org.scalatest.MustMatchers
-import com.example.test.backend.BridgeServiceTesting
-import com.example.service.MyService
+import com.github.thebridsk.bridge.test.backend.BridgeServiceTesting
+import com.github.thebridsk.bridge.service.MyService
 import akka.http.scaladsl.model.StatusCodes._
 import akka.http.scaladsl.testkit.ScalatestRouteTest
 import akka.http.scaladsl.model.HttpResponse
@@ -20,25 +20,25 @@ import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import akka.http.scaladsl.model.RemoteAddress.IP
 import java.net.InetAddress
-import _root_.utils.logging.Config
-import _root_.utils.classpath.ClassPath
+import com.github.thebridsk.utilities.logging.Config
+import com.github.thebridsk.utilities.classpath.ClassPath
 import java.util.logging.LogManager
 import java.util.logging.Logger
-import _root_.utils.logging.FileHandler
-import _root_.utils.logging.FileFormatter
+import com.github.thebridsk.utilities.logging.FileHandler
+import com.github.thebridsk.utilities.logging.FileFormatter
 import java.util.logging.Level
-import _root_.utils.logging.RedirectOutput
+import com.github.thebridsk.utilities.logging.RedirectOutput
 import sangria.macros._
 import play.api.libs.json._
-import com.example.service.graphql.Query
+import com.github.thebridsk.bridge.service.graphql.Query
 import akka.http.scaladsl.model.StatusCodes
-import com.example.backend.FileImportStore
+import com.github.thebridsk.bridge.backend.FileImportStore
 import scala.reflect.io.Directory
 import scala.concurrent.ExecutionContext.Implicits.global
-import com.example.service.graphql.GraphQLRoute
-import com.example.data.rest.JsonSupport._
-import com.example.rest.UtilsPlayJson._
-import com.example.test.backend.ImportStoreTesting
+import com.github.thebridsk.bridge.service.graphql.GraphQLRoute
+import com.github.thebridsk.bridge.data.rest.JsonSupport._
+import com.github.thebridsk.bridge.rest.UtilsPlayJson._
+import com.github.thebridsk.bridge.test.backend.ImportStoreTesting
 import java.io.FileOutputStream
 import scala.concurrent.Await
 import scala.concurrent.duration._
@@ -46,7 +46,7 @@ import scala.language.postfixOps
 
 object TestGraphQL {
 
-  val testlog = utils.logging.Logger[TestGraphQL]
+  val testlog = com.github.thebridsk.utilities.logging.Logger[TestGraphQL]
 
   val graphQL = new Query
 

@@ -1,21 +1,21 @@
-package com.example.rest
+package com.github.thebridsk.bridge.rest
 
-import com.example.data.Ack
+import com.github.thebridsk.bridge.data.Ack
 import akka.event.Logging
 import akka.event.Logging._
 import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.server.Directives._
 import akka.stream.Materializer
-import com.example.util.HasActorSystem
+import com.github.thebridsk.bridge.util.HasActorSystem
 import java.util.Date
-import com.example.backend.BridgeService
+import com.github.thebridsk.bridge.backend.BridgeService
 import javax.ws.rs.Path
-import com.example.data.RestMessage
+import com.github.thebridsk.bridge.data.RestMessage
 import scala.util.Success
 import scala.util.Failure
-import com.example.data.duplicate.suggestion.DuplicateSuggestions
-import com.example.data.duplicate.suggestion.DuplicateSuggestionsCalculation
-import com.example.backend.resource.Result
+import com.github.thebridsk.bridge.data.duplicate.suggestion.DuplicateSuggestions
+import com.github.thebridsk.bridge.data.duplicate.suggestion.DuplicateSuggestionsCalculation
+import com.github.thebridsk.bridge.backend.resource.Result
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import io.swagger.v3.oas.annotations.Operation

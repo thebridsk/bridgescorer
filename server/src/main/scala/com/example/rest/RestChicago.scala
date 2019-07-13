@@ -1,17 +1,17 @@
-package com.example.rest
+package com.github.thebridsk.bridge.rest
 
-import com.example.backend.BridgeService
-import com.example.data.MatchChicago
+import com.github.thebridsk.bridge.backend.BridgeService
+import com.github.thebridsk.bridge.data.MatchChicago
 import akka.event.Logging
 import akka.event.Logging._
 import akka.http.scaladsl.model.StatusCode
 import akka.http.scaladsl.model.StatusCodes._
 import akka.http.scaladsl.server.Directives._
 import akka.stream.Materializer
-import com.example.util.HasActorSystem
+import com.github.thebridsk.bridge.util.HasActorSystem
 import javax.ws.rs.Path
-import com.example.data.RestMessage
-import com.example.data.Id
+import com.github.thebridsk.bridge.data.RestMessage
+import com.github.thebridsk.bridge.data.Id
 import scala.util.Sorting
 import akka.http.scaladsl.model.headers.Location
 import scala.concurrent.Future
@@ -42,7 +42,7 @@ import javax.ws.rs.GET
 import javax.ws.rs.POST
 import javax.ws.rs.PUT
 import javax.ws.rs.DELETE
-import com.example.backend.BridgeNestedResources
+import com.github.thebridsk.bridge.backend.BridgeNestedResources
 
 /**
   * Rest API implementation for the board resource.

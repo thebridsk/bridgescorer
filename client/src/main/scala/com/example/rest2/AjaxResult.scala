@@ -1,4 +1,4 @@
-package com.example.rest2
+package com.github.thebridsk.bridge.rest2
 
 import scala.util.Try
 import scala.concurrent.ExecutionContext
@@ -7,20 +7,20 @@ import scala.concurrent.Future
 import scala.concurrent.Promise
 import org.scalactic.source.Position
 import org.scalajs.dom.raw.XMLHttpRequest
-import com.example.data.RestMessage
+import com.github.thebridsk.bridge.data.RestMessage
 import scala.concurrent.CanAwait
 import scala.concurrent.duration.Duration
 import scala.util.Failure
-import com.example.logger.CommAlerter
-import com.example.logger.Alerter
-import utils.logging.Logger
+import com.github.thebridsk.bridge.logger.CommAlerter
+import com.github.thebridsk.bridge.logger.Alerter
+import com.github.thebridsk.utilities.logging.Logger
 import scala.reflect.ClassTag
 import scala.util.Success
 import play.api.libs.json.Reads
 import play.api.libs.json.Json
 import play.api.libs.json.JsSuccess
 import play.api.libs.json.JsError
-import com.example.data.rest.JsonException
+import com.github.thebridsk.bridge.data.rest.JsonException
 import play.api.libs.json.JsValue
 
 trait Cancellable[T] {

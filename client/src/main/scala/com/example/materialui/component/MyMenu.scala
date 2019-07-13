@@ -1,14 +1,14 @@
-package com.example.materialui.component
+package com.github.thebridsk.materialui.component
 
 import scala.scalajs.js
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
-import com.example.materialui.MuiPopper
+import com.github.thebridsk.materialui.MuiPopper
 import org.scalajs.dom.raw.Element
-import com.example.materialui.MuiClickAwayListener
-import com.example.materialui.MuiPaper
-import com.example.materialui.PopperPlacement
-import com.example.materialui.AnchorElement
+import com.github.thebridsk.materialui.MuiClickAwayListener
+import com.github.thebridsk.materialui.MuiPaper
+import com.github.thebridsk.materialui.PopperPlacement
+import com.github.thebridsk.materialui.AnchorElement
 import org.scalajs.dom.raw.KeyboardEvent
 import japgolly.scalajs.react.raw.SyntheticKeyboardEvent
 import org.scalajs.dom.raw.Node

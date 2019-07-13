@@ -1,36 +1,36 @@
-package com.example.pages.duplicate
+package com.github.thebridsk.bridge.pages.duplicate
 
 
 import scala.scalajs.js
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
-import com.example.routes.BridgeRouter
-import com.example.routes.AppRouter.AppPage
-import com.example.data.DuplicateSummary
-import com.example.data.Id
-import utils.logging.Logger
-import com.example.controller.Controller
-import com.example.data.SystemTime
-import com.example.react.AppButton
-import com.example.react.Utils._
-import com.example.data.duplicate.suggestion.PairsData
-import com.example.data.duplicate.suggestion.PairData
-import com.example.color.Color
-import com.example.react.CheckBox
-import com.example.data.duplicate.suggestion.ColorBy
-import com.example.data.duplicate.suggestion.ColorByWonPct
-import com.example.data.duplicate.suggestion.ColorBy
-import com.example.data.duplicate.suggestion.PairsDataSummary
-import com.example.data.duplicate.suggestion.Stat
-import com.example.data.duplicate.suggestion.ColorByWon
-import com.example.data.duplicate.suggestion.ColorByWonPts
-import com.example.data.duplicate.suggestion.ColorByWonPtsPct
-import com.example.data.duplicate.suggestion.ColorByPointsPct
-import com.example.react.PieChart
-import com.example.react.PieChartOrSquareForZero
-import com.example.pages.BaseStyles
-import com.example.react.Table.Column
-import com.example.react.Table
+import com.github.thebridsk.bridge.routes.BridgeRouter
+import com.github.thebridsk.bridge.routes.AppRouter.AppPage
+import com.github.thebridsk.bridge.data.DuplicateSummary
+import com.github.thebridsk.bridge.data.Id
+import com.github.thebridsk.utilities.logging.Logger
+import com.github.thebridsk.bridge.controller.Controller
+import com.github.thebridsk.bridge.data.SystemTime
+import com.github.thebridsk.bridge.react.AppButton
+import com.github.thebridsk.bridge.react.Utils._
+import com.github.thebridsk.bridge.data.duplicate.suggestion.PairsData
+import com.github.thebridsk.bridge.data.duplicate.suggestion.PairData
+import com.github.thebridsk.bridge.color.Color
+import com.github.thebridsk.bridge.react.CheckBox
+import com.github.thebridsk.bridge.data.duplicate.suggestion.ColorBy
+import com.github.thebridsk.bridge.data.duplicate.suggestion.ColorByWonPct
+import com.github.thebridsk.bridge.data.duplicate.suggestion.ColorBy
+import com.github.thebridsk.bridge.data.duplicate.suggestion.PairsDataSummary
+import com.github.thebridsk.bridge.data.duplicate.suggestion.Stat
+import com.github.thebridsk.bridge.data.duplicate.suggestion.ColorByWon
+import com.github.thebridsk.bridge.data.duplicate.suggestion.ColorByWonPts
+import com.github.thebridsk.bridge.data.duplicate.suggestion.ColorByWonPtsPct
+import com.github.thebridsk.bridge.data.duplicate.suggestion.ColorByPointsPct
+import com.github.thebridsk.bridge.react.PieChart
+import com.github.thebridsk.bridge.react.PieChartOrSquareForZero
+import com.github.thebridsk.bridge.pages.BaseStyles
+import com.github.thebridsk.bridge.react.Table.Column
+import com.github.thebridsk.bridge.react.Table
 
 /**
  * Shows a pairs summary page.

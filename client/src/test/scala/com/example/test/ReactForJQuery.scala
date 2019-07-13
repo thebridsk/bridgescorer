@@ -1,11 +1,11 @@
-package com.example.test
+package com.github.thebridsk.bridge.test
 
 import org.scalajs.dom.raw.Element
 import org.scalajs.dom.raw.Node
 import org.scalajs.dom.raw.Text
 //import org.scalajs.jquery.{ jQuery => _, _ }
 import org.querki.jquery._
-import com.example.test.utils.jQuery
+import com.github.thebridsk.bridge.test.utils.jQuery
 import japgolly.scalajs.react.test.ReactTestUtils
 import org.scalajs.dom.raw.DocumentType
 import org.scalajs.dom.raw.ProcessingInstruction
@@ -22,7 +22,7 @@ import japgolly.scalajs.react.component.Scala.MountedRoot
 
 import scala.language.higherKinds
 import japgolly.scalajs.react.test.SimEvent
-import _root_.utils.logging.Logger
+import com.github.thebridsk.utilities.logging.Logger
 
 object ReactForJQuery {
   val log = Logger("bridge.ReactForJQuery")

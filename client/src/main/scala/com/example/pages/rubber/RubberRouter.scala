@@ -1,22 +1,22 @@
-package com.example.pages.rubber
+package com.github.thebridsk.bridge.pages.rubber
 
-import utils.logging.Logger
-//import com.example.pages.rubber.PageMatch
-//import com.example.pages.rubber.PageDetails
-//import com.example.pages.rubber.PagePlayers
-//import com.example.pages.rubber.PageRubberHand
-//import com.example.pages.rubber.PageRubberList
+import com.github.thebridsk.utilities.logging.Logger
+//import com.github.thebridsk.bridge.pages.rubber.PageMatch
+//import com.github.thebridsk.bridge.pages.rubber.PageDetails
+//import com.github.thebridsk.bridge.pages.rubber.PagePlayers
+//import com.github.thebridsk.bridge.pages.rubber.PageRubberHand
+//import com.github.thebridsk.bridge.pages.rubber.PageRubberList
 
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.Callback
 import japgolly.scalajs.react.CallbackTo
 import japgolly.scalajs.react.extra.router.{ RouterConfigDsl, RouterCtl, _ }
 import japgolly.scalajs.react.vdom.html_<^._
-import com.example.routes.AppRouter.AppPage
+import com.github.thebridsk.bridge.routes.AppRouter.AppPage
 import japgolly.scalajs.react.extra.router.StaticDsl.Rule
-import com.example.routes.Module
-import com.example.routes.BridgeRouter
-import com.example.routes.BridgeRouterBase
+import com.github.thebridsk.bridge.routes.Module
+import com.github.thebridsk.bridge.routes.BridgeRouter
+import com.github.thebridsk.bridge.routes.BridgeRouterBase
 import scala.scalajs.js.URIUtils
 
 object RubberModule extends Module {

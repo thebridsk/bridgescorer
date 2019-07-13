@@ -1,10 +1,10 @@
-package com.example.data.bridge
+package com.github.thebridsk.bridge.data.bridge
 
-import com.example.data.MatchDuplicate
-import com.example.data.Id
-import com.example.data.Team
-import com.example.data.DuplicateHand
-import com.example.data.DuplicateSummaryDetails
+import com.github.thebridsk.bridge.data.MatchDuplicate
+import com.github.thebridsk.bridge.data.Id
+import com.github.thebridsk.bridge.data.Team
+import com.github.thebridsk.bridge.data.DuplicateHand
+import com.github.thebridsk.bridge.data.DuplicateSummaryDetails
 
 case class DuplicateException(message: String) extends Exception(message)
 

@@ -1,4 +1,4 @@
-package com.example.react
+package com.github.thebridsk.bridge.react
 
 import japgolly.scalajs.react.vdom.TagMod
 import japgolly.scalajs.react.Callback
@@ -41,7 +41,7 @@ object PopupOkCancelInternal {
    */
   class Backend(scope: BackendScope[Props, State]) {
     def render( props: Props, state: State ) = {
-      import com.example.pages.BaseStyles._
+      import com.github.thebridsk.bridge.pages.BaseStyles._
       Popup(
         props.content.isDefined,
         <.div(

@@ -1,4 +1,4 @@
-//package com.example.fastclick
+//package com.github.thebridsk.bridge.fastclick
 
 //import scala.scalajs.js
 //import scala.scalajs.js.annotation.JSImport

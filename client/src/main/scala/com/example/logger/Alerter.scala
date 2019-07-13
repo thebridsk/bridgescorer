@@ -1,10 +1,10 @@
-package com.example.logger
+package com.github.thebridsk.bridge.logger
 
-import utils.logging.Logger
+import com.github.thebridsk.utilities.logging.Logger
 import java.io.StringWriter
 import java.io.PrintWriter
 import org.scalactic.source.Position
-import com.example.source._
+import com.github.thebridsk.bridge.source._
 import org.scalajs.dom.raw.Event
 
 trait Alerter {

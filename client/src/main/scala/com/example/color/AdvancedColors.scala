@@ -1,4 +1,4 @@
-package com.example.color
+package com.github.thebridsk.bridge.color
 
 // addapted from https://www.w3.org/TR/css-color-4/
 

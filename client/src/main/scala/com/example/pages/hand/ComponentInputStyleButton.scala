@@ -1,10 +1,10 @@
-package com.example.pages.hand
+package com.github.thebridsk.bridge.pages.hand
 
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.extra.router.RouterCtl
-import utils.logging.Logger
-import com.example.react.Button
+import com.github.thebridsk.utilities.logging.Logger
+import com.github.thebridsk.bridge.react.Button
 
 /**
  * A skeleton component.

@@ -1,17 +1,17 @@
-package com.example.data.websocket
+package com.github.thebridsk.bridge.data.websocket
 
-import com.example.data.MatchDuplicate
-import com.example.data.Id
-import com.example.data.Board
-import com.example.data.DuplicateHand
-import com.example.data.Team
+import com.github.thebridsk.bridge.data.MatchDuplicate
+import com.github.thebridsk.bridge.data.Id
+import com.github.thebridsk.bridge.data.Board
+import com.github.thebridsk.bridge.data.DuplicateHand
+import com.github.thebridsk.bridge.data.Team
 import play.api.libs.json._
-import com.example.data.rest.JsonSupport._
-import com.example.data.MatchChicago
-import com.example.data.MatchRubber
-import com.example.data.Round
-import com.example.data.Hand
-import com.example.data.RubberHand
+import com.github.thebridsk.bridge.data.rest.JsonSupport._
+import com.github.thebridsk.bridge.data.MatchChicago
+import com.github.thebridsk.bridge.data.MatchRubber
+import com.github.thebridsk.bridge.data.Round
+import com.github.thebridsk.bridge.data.Hand
+import com.github.thebridsk.bridge.data.RubberHand
 
 object Protocol {
 
@@ -155,25 +155,25 @@ object Protocol {
       extends ToServerMessage
       with ToBrowserMessage
 
-  import com.example.data.rest.JsonSupport._
+  import com.github.thebridsk.bridge.data.rest.JsonSupport._
 
   def toStringToBrowserMessage(msg: ToBrowserMessage) = {
-    import com.example.data.rest.ToBrowserProtocolJsonSupport._
+    import com.github.thebridsk.bridge.data.rest.ToBrowserProtocolJsonSupport._
     msg.toJson
   }
 
   def fromStringToBrowserMessage(str: String) = {
-    import com.example.data.rest.ToBrowserProtocolJsonSupport._
+    import com.github.thebridsk.bridge.data.rest.ToBrowserProtocolJsonSupport._
     str.parseJson[ToBrowserMessage]
   }
 
   def toStringToServerMessage(msg: ToServerMessage) = {
-    import com.example.data.rest.ToServerProtocolJsonSupport._
+    import com.github.thebridsk.bridge.data.rest.ToServerProtocolJsonSupport._
     msg.toJson
   }
 
   def fromStringToServerMessage(str: String) = {
-    import com.example.data.rest.ToServerProtocolJsonSupport._
+    import com.github.thebridsk.bridge.data.rest.ToServerProtocolJsonSupport._
     str.parseJson[ToServerMessage]
   }
 }

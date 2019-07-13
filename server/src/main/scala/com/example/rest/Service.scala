@@ -1,37 +1,37 @@
-package com.example.rest
+package com.github.thebridsk.bridge.rest
 
 import akka.event.Logging
 import akka.event.Logging._
 import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.server.Directives._
 import akka.stream.Materializer
-import com.example.util.HasActorSystem
-import com.example.backend.BridgeService
+import com.github.thebridsk.bridge.util.HasActorSystem
+import com.github.thebridsk.bridge.backend.BridgeService
 import scala.reflect.runtime.universe._
 import akka.actor.ActorRefFactory
 import akka.event.Logging._
-import utils.logging.Logging
+import com.github.thebridsk.utilities.logging.Logging
 import java.util.logging.Level
 import akka.http.scaladsl.server.MalformedRequestContentRejection
 import akka.http.scaladsl.server.RejectionHandler
 import akka.http.scaladsl.server.MethodRejection
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
-import com.example.backend.MonitorWebservice
+import com.github.thebridsk.bridge.backend.MonitorWebservice
 import java.util.Date
 import client.LogA
 import akka.http.scaladsl.model.headers._
 import akka.http.scaladsl.model.headers.CacheDirectives._
 import akka.http.scaladsl.model.DateTime
 import java.util.Formatter
-import utils.logging.Logger
-import com.example.data.websocket.DuplexProtocol
-import utils.logging.TraceLevel
+import com.github.thebridsk.utilities.logging.Logger
+import com.github.thebridsk.bridge.data.websocket.DuplexProtocol
+import com.github.thebridsk.utilities.logging.TraceLevel
 import akka.http.scaladsl.model.HttpHeader
-import com.example.data.RestMessage
-import com.example.backend.DuplicateMonitorWebservice
-import com.example.backend.ChicagoMonitorWebservice
-import com.example.backend.RubberMonitorWebservice
+import com.github.thebridsk.bridge.data.RestMessage
+import com.github.thebridsk.bridge.backend.DuplicateMonitorWebservice
+import com.github.thebridsk.bridge.backend.ChicagoMonitorWebservice
+import com.github.thebridsk.bridge.backend.RubberMonitorWebservice
 
 //import akka.event.LoggingAdapter
 
@@ -43,7 +43,7 @@ trait Service extends ImportExport {
   //
   // To add a new resource, xxx, the following must be done:
   // 1. Create a case class called Xxx in the shared (js,jvm) project
-  //    that has all the fields for the rest api in the com.example.data
+  //    that has all the fields for the rest api in the com.github.thebridsk.bridge.data
   //    package
   // 2. To the JsonSupport.scala file add an implicit jsonFormat&lt.n>(Xxx)
   //    line to the file, like the others.

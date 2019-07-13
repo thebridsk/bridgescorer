@@ -1,34 +1,34 @@
-package com.example.pages
+package com.github.thebridsk.bridge.pages
 
 import scala.scalajs.js
 import org.scalajs.dom.document
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.extra.router.RouterCtl
-import com.example.routes.AppRouter.AppPage
-import com.example.rest2.RestClientServerURL
-import com.example.rest2.RestClientServerVersion
-import utils.logging.Logger
-import com.example.data.ServerURL
-import com.example.data.ServerVersion
-import com.example.version.VersionClient
-import com.example.version.VersionShared
-import com.example.react.AppButton
-import com.example.routes.AppRouter.Home
-import com.example.graphql.GraphQLClient
+import com.github.thebridsk.bridge.routes.AppRouter.AppPage
+import com.github.thebridsk.bridge.rest2.RestClientServerURL
+import com.github.thebridsk.bridge.rest2.RestClientServerVersion
+import com.github.thebridsk.utilities.logging.Logger
+import com.github.thebridsk.bridge.data.ServerURL
+import com.github.thebridsk.bridge.data.ServerVersion
+import com.github.thebridsk.bridge.version.VersionClient
+import com.github.thebridsk.bridge.version.VersionShared
+import com.github.thebridsk.bridge.react.AppButton
+import com.github.thebridsk.bridge.routes.AppRouter.Home
+import com.github.thebridsk.bridge.graphql.GraphQLClient
 import play.api.libs.json.JsDefined
 import play.api.libs.json.JsUndefined
 import scala.concurrent.ExecutionContext.Implicits.global
 import play.api.libs.json.JsArray
-import com.example.react.AppButtonLink
-import com.example.react.CheckBox
+import com.github.thebridsk.bridge.react.AppButtonLink
+import com.github.thebridsk.bridge.react.CheckBox
 import play.api.libs.json.JsValue
 import play.api.libs.json.JsString
-import com.example.data.Id
-import com.example.routes.BridgeRouter
-import com.example.materialui.MuiTypography
-import com.example.materialui.TextVariant
-import com.example.materialui.TextColor
+import com.github.thebridsk.bridge.data.Id
+import com.github.thebridsk.bridge.routes.BridgeRouter
+import com.github.thebridsk.materialui.MuiTypography
+import com.github.thebridsk.materialui.TextVariant
+import com.github.thebridsk.materialui.TextColor
 
 /**
  * A skeleton component.

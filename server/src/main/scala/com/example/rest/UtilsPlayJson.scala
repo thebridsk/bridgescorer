@@ -1,7 +1,7 @@
-package com.example.rest
+package com.github.thebridsk.bridge.rest
 
-import com.example.data.MatchDuplicate
-import com.example.data.RestMessage
+import com.github.thebridsk.bridge.data.MatchDuplicate
+import com.github.thebridsk.bridge.data.RestMessage
 
 import akka.http.scaladsl.model._
 import akka.http.scaladsl.model.StatusCodes.{Success => _, _}
@@ -9,18 +9,18 @@ import akka.http.scaladsl.model.headers.Location
 import akka.http.scaladsl.server.Directives._
 import scala.concurrent.ExecutionContext
 import scala.reflect.ClassTag
-import com.example.json.BridgePlayJsonSupport
+import com.github.thebridsk.bridge.json.BridgePlayJsonSupport
 import akka.http.scaladsl.marshalling._
 import akka.http.scaladsl.unmarshalling._
 import play.api.libs.json._
 import akka.http.scaladsl.server.Route
-import com.example.backend.resource.Result
+import com.github.thebridsk.bridge.backend.resource.Result
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.util.Failure
 import scala.util.Success
-import com.example.data.VersionedInstance
-import utils.logging.Logger
+import com.github.thebridsk.bridge.data.VersionedInstance
+import com.github.thebridsk.utilities.logging.Logger
 
 class UtilsPlayJson
 

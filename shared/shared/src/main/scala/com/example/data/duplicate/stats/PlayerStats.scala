@@ -1,10 +1,10 @@
-package com.example.data.duplicate.stats
+package com.github.thebridsk.bridge.data.duplicate.stats
 
 import java.io.PrintStream
-import com.example.data.Id
-import com.example.data.MatchDuplicate
+import com.github.thebridsk.bridge.data.Id
+import com.github.thebridsk.bridge.data.MatchDuplicate
 import scala.annotation.tailrec
-import com.example.data.Hand
+import com.github.thebridsk.bridge.data.Hand
 
 case class CounterStat(tricks: Int, counter: Int) {
 

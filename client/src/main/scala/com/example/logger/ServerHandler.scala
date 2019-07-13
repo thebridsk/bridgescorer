@@ -1,10 +1,10 @@
-package com.example.logger
+package com.github.thebridsk.bridge.logger
 
-import utils.logging.TraceMsg
-import com.example.data.websocket.DuplexProtocol.LogEntryV2
+import com.github.thebridsk.utilities.logging.TraceMsg
+import com.github.thebridsk.bridge.data.websocket.DuplexProtocol.LogEntryV2
 import org.scalactic.source.Position
-import com.example.data.SystemTime
-import com.example.routes.AppRouter
+import com.github.thebridsk.bridge.data.SystemTime
+import com.github.thebridsk.bridge.routes.AppRouter
 import java.io.StringWriter
 import java.io.PrintWriter
 
@@ -19,7 +19,7 @@ trait ServerHandler {
     //              cause: String,
     //              args: String*)
     // TraceMsg( val msgtype: TraceType,
-    //               val level: utils.logging.Level,
+    //               val level: com.github.thebridsk.utilities.logging.Level,
     //               val message: String=null,
     //               val cause: Throwable = null
     //             )( val args: Any* )(implicit val pos: Position)

@@ -1,4 +1,4 @@
-package com.example.javascript
+package com.github.thebridsk.bridge.javascript
 
 import scala.scalajs.js
 import scala.scalajs.js.|

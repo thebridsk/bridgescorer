@@ -1,16 +1,16 @@
 
-package com.example.test.pages
+package com.github.thebridsk.bridge.test.pages
 
 import scala.concurrent.Future
-import utils.main.Main
+import com.github.thebridsk.utilities.main.Main
 import scala.concurrent.duration.Duration
 import org.openqa.selenium.WebDriver
-import com.example.source.SourcePosition
+import com.github.thebridsk.bridge.source.SourcePosition
 import org.scalactic.source.Position
 import org.scalatest.concurrent.Eventually.eventually
 import org.scalatest.concurrent.Eventually.PatienceConfig
 import org.scalatest.MustMatchers._
-import utils.logging.Logger
+import com.github.thebridsk.utilities.logging.Logger
 import org.openqa.selenium.By.ByName
 import org.openqa.selenium.By.ByTagName
 import scala.collection.JavaConverters._

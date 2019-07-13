@@ -1,10 +1,10 @@
-package com.example.react
+package com.github.thebridsk.bridge.react
 
 import scala.scalajs.js
 import scala.scalajs.js.annotation.JSName
 import japgolly.scalajs.react._
 import scala.scalajs.js.UndefOr
-import utils.logging.Logger
+import com.github.thebridsk.utilities.logging.Logger
 import scala.scalajs.js.annotation.JSGlobal
 import scala.scalajs.js.Date
 

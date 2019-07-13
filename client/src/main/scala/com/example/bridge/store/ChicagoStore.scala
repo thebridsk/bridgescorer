@@ -1,19 +1,19 @@
-package com.example.bridge.store
+package com.github.thebridsk.bridge.bridge.store
 
 import flux.dispatcher.DispatchToken
-import com.example.bridge.action.BridgeDispatcher
-import com.example.bridge.action.ActionUpdateChicagoHand
-import com.example.bridge.action.ActionUpdateChicagoNames
-import com.example.bridge.action.ActionUpdateChicagoRound
-import com.example.data.MatchChicago
-import com.example.data.Round
-import com.example.data.Hand
-import com.example.bridge.action.ActionUpdateChicago
-import com.example.bridge.action.ActionUpdateChicago5
-import com.example.bridge.action.ChicagoBridgeAction
-import utils.logging.Logger
-import com.example.logger.Alerter
-import com.example.Bridge
+import com.github.thebridsk.bridge.bridge.action.BridgeDispatcher
+import com.github.thebridsk.bridge.bridge.action.ActionUpdateChicagoHand
+import com.github.thebridsk.bridge.bridge.action.ActionUpdateChicagoNames
+import com.github.thebridsk.bridge.bridge.action.ActionUpdateChicagoRound
+import com.github.thebridsk.bridge.data.MatchChicago
+import com.github.thebridsk.bridge.data.Round
+import com.github.thebridsk.bridge.data.Hand
+import com.github.thebridsk.bridge.bridge.action.ActionUpdateChicago
+import com.github.thebridsk.bridge.bridge.action.ActionUpdateChicago5
+import com.github.thebridsk.bridge.bridge.action.ChicagoBridgeAction
+import com.github.thebridsk.utilities.logging.Logger
+import com.github.thebridsk.bridge.logger.Alerter
+import com.github.thebridsk.bridge.Bridge
 
 object ChicagoStore extends ChangeListenable {
   val logger = Logger("bridge.ChicagoStore")

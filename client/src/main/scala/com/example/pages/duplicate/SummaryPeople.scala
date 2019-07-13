@@ -1,6 +1,6 @@
-package com.example.pages.duplicate
+package com.github.thebridsk.bridge.pages.duplicate
 
-import com.example.data.DuplicateSummary
+import com.github.thebridsk.bridge.data.DuplicateSummary
 
 object SummaryPeople {
 

@@ -1,25 +1,25 @@
-package com.example.test
+package com.github.thebridsk.bridge.test
 
 import org.scalatest.FlatSpec
 import org.scalatest.MustMatchers
-import com.example.data.Board
-import com.example.data.Table
-import com.example.data.Hand
-import com.example.data.bridge.North
-import com.example.data.bridge.East
-import com.example.data.bridge.South
-import com.example.test.backend.BridgeServiceTesting
-import com.example.data.MatchDuplicate
+import com.github.thebridsk.bridge.data.Board
+import com.github.thebridsk.bridge.data.Table
+import com.github.thebridsk.bridge.data.Hand
+import com.github.thebridsk.bridge.data.bridge.North
+import com.github.thebridsk.bridge.data.bridge.East
+import com.github.thebridsk.bridge.data.bridge.South
+import com.github.thebridsk.bridge.test.backend.BridgeServiceTesting
+import com.github.thebridsk.bridge.data.MatchDuplicate
 import org.scalatest._
 import java.net.InetAddress
-import com.example.data.DuplicateHand
-import com.example.data.bridge.Spades
-import com.example.data.bridge.Doubled
+import com.github.thebridsk.bridge.data.DuplicateHand
+import com.github.thebridsk.bridge.data.bridge.Spades
+import com.github.thebridsk.bridge.data.bridge.Doubled
 import akka.http.scaladsl.model.StatusCodes._
 import akka.http.scaladsl.model.StatusCodes
-import com.example.backend.BridgeServiceInMemory
-import com.example.data.RestMessage
-import com.example.backend.BridgeNestedResources
+import com.github.thebridsk.bridge.backend.BridgeServiceInMemory
+import com.github.thebridsk.bridge.data.RestMessage
+import com.github.thebridsk.bridge.backend.BridgeNestedResources
 
 class TestResourceStore extends AsyncFlatSpec with MustMatchers {
 

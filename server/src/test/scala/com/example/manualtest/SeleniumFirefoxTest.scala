@@ -1,4 +1,4 @@
-package com.example.manualtest
+package com.github.thebridsk.bridge.manualtest
 
 import org.openqa.selenium.firefox.FirefoxDriver
 

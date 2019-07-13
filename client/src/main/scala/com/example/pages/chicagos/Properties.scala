@@ -1,6 +1,6 @@
-package com.example.pages.chicagos
+package com.github.thebridsk.bridge.pages.chicagos
 
-import com.example.pages.Pixels
+import com.github.thebridsk.bridge.pages.Pixels
 
 object Properties {
 

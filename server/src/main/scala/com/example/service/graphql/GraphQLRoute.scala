@@ -1,4 +1,4 @@
-package com.example.service.graphql
+package com.github.thebridsk.bridge.service.graphql
 
 import akka.http.scaladsl.model.StatusCodes._
 import akka.http.scaladsl.server.Directives._
@@ -10,17 +10,17 @@ import sangria.execution.deferred.DeferredResolver
 import sangria.execution.QueryAnalysisError
 import sangria.execution.ErrorWithResolver
 import scala.util.Failure
-import com.example.backend.BridgeService
+import com.github.thebridsk.bridge.backend.BridgeService
 import akka.http.scaladsl.server.Route
-import com.example.data.rest.JsonSupport._
-import com.example.rest.UtilsPlayJson._
+import com.github.thebridsk.bridge.data.rest.JsonSupport._
+import com.github.thebridsk.bridge.rest.UtilsPlayJson._
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.util.Success
 import scala.annotation.meta._
 import javax.ws.rs.Path
-import utils.logging.Logger
-import com.example.data.graphql.GraphQLProtocol.GraphQLResponse
-import com.example.data.graphql.GraphQLProtocol.GraphQLRequest
+import com.github.thebridsk.utilities.logging.Logger
+import com.github.thebridsk.bridge.data.graphql.GraphQLProtocol.GraphQLResponse
+import com.github.thebridsk.bridge.data.graphql.GraphQLProtocol.GraphQLRequest
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.parameters.RequestBody

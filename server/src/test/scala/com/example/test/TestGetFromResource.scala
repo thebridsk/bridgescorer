@@ -1,12 +1,12 @@
-package com.example.test
+package com.github.thebridsk.bridge.test
 
 import org.scalatest.Finders
 import org.scalatest.FlatSpec
 import org.scalatest.MustMatchers
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
-import com.example.test.backend.BridgeServiceTesting
-import com.example.service.MyService
+import com.github.thebridsk.bridge.test.backend.BridgeServiceTesting
+import com.github.thebridsk.bridge.service.MyService
 import akka.http.scaladsl.model.{HttpResponse, HttpRequest}
 import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.testkit.ScalatestRouteTest
@@ -17,8 +17,8 @@ import akka.http.scaladsl.server.RouteResult.Rejected
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.directives.LogEntry
 import akka.event.Logging
-import com.example.rest.ServerPort
-import com.example.version.VersionServer
+import com.github.thebridsk.bridge.rest.ServerPort
+import com.github.thebridsk.bridge.version.VersionServer
 
 class TestGetFromResource extends FlatSpec with ScalatestRouteTest with MustMatchers with MyService {
   val restService = new BridgeServiceTesting

@@ -1,10 +1,10 @@
-package com.example.bridge.store
+package com.github.thebridsk.bridge.bridge.store
 
 import japgolly.scalajs.react.Callback
-import com.example.rest2.RestClientNames
-import utils.logging.Logger
-import com.example.logger.Alerter
-import com.example.Bridge
+import com.github.thebridsk.bridge.rest2.RestClientNames
+import com.github.thebridsk.utilities.logging.Logger
+import com.github.thebridsk.bridge.logger.Alerter
+import com.github.thebridsk.bridge.Bridge
 
 object NamesStore extends ChangeListenable {
   val logger = Logger("bridge.ViewPlayers")

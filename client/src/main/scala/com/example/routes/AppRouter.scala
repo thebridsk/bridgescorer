@@ -1,19 +1,19 @@
-package com.example.routes
+package com.github.thebridsk.bridge.routes
 
 import japgolly.scalajs.react.extra.router.{Resolution, RouterConfigDsl, RouterCtl, Router, _}
 import japgolly.scalajs.react.vdom.html_<^._
 import org.scalajs.dom.document
-import com.example.data.bridge._
-import com.example.pages.info.InfoPage
-import com.example.pages.HomePage
-import com.example.pages.hand.PageHand
-import utils.logging.Logger
+import com.github.thebridsk.bridge.data.bridge._
+import com.github.thebridsk.bridge.pages.info.InfoPage
+import com.github.thebridsk.bridge.pages.HomePage
+import com.github.thebridsk.bridge.pages.hand.PageHand
+import com.github.thebridsk.utilities.logging.Logger
 import japgolly.scalajs.react.Callback
 import japgolly.scalajs.react.CallbackTo
-import com.example.pages.ThankYouPage
-import com.example.pages.AboutPage
+import com.github.thebridsk.bridge.pages.ThankYouPage
+import com.github.thebridsk.bridge.pages.AboutPage
 import japgolly.scalajs.react.extra.router.StaticDsl.Rule
-import com.example.pages.BaseStyles.baseStyles
+import com.github.thebridsk.bridge.pages.BaseStyles.baseStyles
 
 object AppRouter {
 
@@ -56,22 +56,22 @@ object AppRouter {
 }
 
 import AppRouter._
-import com.example.rest2.AjaxResult
-import com.example.testpage.TestPage
-import com.example.logger.Alerter
+import com.github.thebridsk.bridge.rest2.AjaxResult
+import com.github.thebridsk.bridge.testpage.TestPage
+import com.github.thebridsk.bridge.logger.Alerter
 import org.scalactic.source.Position
-import com.example.pages.GraphQLPage
-import com.example.pages.ExportPage
-import com.example.pages.ImportsListPage
-import com.example.pages.ColorPage
-import com.example.pages.VoyagerPage
-import com.example.pages.GraphiQLPage
-import com.example.pages.duplicate.DuplicatePageBridgeAppBar
-import com.example.pages.RootBridgeAppBar
-import com.example.materialui.MuiTypography
-import com.example.materialui.TextVariant
-import com.example.materialui.TextColor
-import com.example.pages.LogPage
+import com.github.thebridsk.bridge.pages.GraphQLPage
+import com.github.thebridsk.bridge.pages.ExportPage
+import com.github.thebridsk.bridge.pages.ImportsListPage
+import com.github.thebridsk.bridge.pages.ColorPage
+import com.github.thebridsk.bridge.pages.VoyagerPage
+import com.github.thebridsk.bridge.pages.GraphiQLPage
+import com.github.thebridsk.bridge.pages.duplicate.DuplicatePageBridgeAppBar
+import com.github.thebridsk.bridge.pages.RootBridgeAppBar
+import com.github.thebridsk.materialui.MuiTypography
+import com.github.thebridsk.materialui.TextVariant
+import com.github.thebridsk.materialui.TextColor
+import com.github.thebridsk.bridge.pages.LogPage
 
 trait ModuleRenderer {
 

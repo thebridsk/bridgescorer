@@ -1,13 +1,13 @@
-package com.example.backend
+package com.github.thebridsk.bridge.backend
 
 import akka.http.scaladsl.model.StatusCode
-import com.example.data.RestMessage
+import com.github.thebridsk.bridge.data.RestMessage
 import scala.concurrent.Promise
 import scala.concurrent.Future
-import utils.logging.Logger
+import com.github.thebridsk.utilities.logging.Logger
 import org.scalactic.source.Position
-import com.example.source.SourcePosition
-import com.example.data.VersionedInstance
+import com.github.thebridsk.bridge.source.SourcePosition
+import com.github.thebridsk.bridge.data.VersionedInstance
 import scala.concurrent.ExecutionContext
 import scala.util.Success
 import scala.util.Failure

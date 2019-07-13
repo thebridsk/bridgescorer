@@ -1,6 +1,6 @@
-package com.example.test.utils
+package com.github.thebridsk.bridge.test.utils
 
-import com.example.logger.Init
+import com.github.thebridsk.bridge.logger.Init
 
 object StartLogging {
 

@@ -1,21 +1,21 @@
-package com.example.datastore.stats
+package com.github.thebridsk.bridge.datastore.stats
 
-import utils.main.Subcommand
-import com.example.datastore.DataStoreCommands
-import com.example.datastore.ShowCommand
+import com.github.thebridsk.utilities.main.Subcommand
+import com.github.thebridsk.bridge.datastore.DataStoreCommands
+import com.github.thebridsk.bridge.datastore.ShowCommand
 import org.rogach.scallop.ValueConverter
 import scala.concurrent.duration._
 import org.rogach.scallop._
-import com.example.backend.BridgeService
+import com.github.thebridsk.bridge.backend.BridgeService
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Await
 import scala.concurrent.Future
 import scala.reflect.io.Path
 import java.io.PrintStream
-import com.example.data.Id
-import com.example.data.MatchDuplicate
-import com.example.data.duplicate.stats.PlayerStats
-import com.example.data.duplicate.stats.ContractStats
+import com.github.thebridsk.bridge.data.Id
+import com.github.thebridsk.bridge.data.MatchDuplicate
+import com.github.thebridsk.bridge.data.duplicate.stats.PlayerStats
+import com.github.thebridsk.bridge.data.duplicate.stats.ContractStats
 
 object DuplicateStatsCommand extends Subcommand("stats") {
   import DataStoreCommands.optionStore
@@ -24,7 +24,7 @@ object DuplicateStatsCommand extends Subcommand("stats") {
   implicit def dateConverter: ValueConverter[Duration] =
     singleArgConverter[Duration](Duration(_))
 
-  import utils.main.Converters._
+  import com.github.thebridsk.utilities.main.Converters._
 
   descr("show all player stats in datastore")
 

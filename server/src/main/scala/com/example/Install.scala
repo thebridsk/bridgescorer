@@ -1,4 +1,4 @@
-package com.example
+package com.github.thebridsk.bridge
 
 import scala.concurrent.duration.Duration
 import scala.language.postfixOps
@@ -6,8 +6,8 @@ import scala.language.postfixOps
 import org.rogach.scallop.ValueConverter
 import org.rogach.scallop.singleArgConverter
 
-import utils.logging.Logger
-import utils.main.Subcommand
+import com.github.thebridsk.utilities.logging.Logger
+import com.github.thebridsk.utilities.main.Subcommand
 import scala.reflect.io.Path
 import scala.reflect.io.Directory
 import java.net.URL
@@ -23,11 +23,11 @@ import java.io.FileOutputStream
 import java.nio.file.Files
 import java.nio.file.{Path => JPath}
 import java.nio.file.StandardCopyOption
-import utils.classpath.ClassPath
+import com.github.thebridsk.utilities.classpath.ClassPath
 import java.nio.file.Paths
-import com.example.util.GitHub
-import com.example.version.VersionServer
-import com.example.util.Version
+import com.github.thebridsk.bridge.util.GitHub
+import com.github.thebridsk.bridge.version.VersionServer
+import com.github.thebridsk.bridge.util.Version
 
 /**
   * This is the update subcommand.
@@ -118,7 +118,7 @@ object Install extends Subcommand("install") {
   implicit def dateConverter: ValueConverter[Duration] =
     singleArgConverter[Duration](Duration(_))
 
-  import utils.main.Converters._
+  import com.github.thebridsk.utilities.main.Converters._
 
   descr("Install the jar used to run this command")
 

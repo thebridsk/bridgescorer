@@ -1,4 +1,4 @@
-package com.example.test.selenium
+package com.github.thebridsk.bridge.test.selenium
 
 class PrivateMethodCaller(x: AnyRef, methodName: String) {
   def apply(_args: Any*): Any = {

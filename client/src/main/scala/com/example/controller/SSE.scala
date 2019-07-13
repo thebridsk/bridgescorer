@@ -1,22 +1,22 @@
-package com.example.controller
+package com.github.thebridsk.bridge.controller
 
-import com.example.data.websocket.Protocol
-import utils.logging.Logger
+import com.github.thebridsk.bridge.data.websocket.Protocol
+import com.github.thebridsk.utilities.logging.Logger
 import japgolly.scalajs.react.Callback
-import com.example.routes.AppRouter
+import com.github.thebridsk.bridge.routes.AppRouter
 import japgolly.scalajs.react.CallbackTo
 import scala.concurrent.ExecutionContext
-import com.example.logger.Alerter
+import com.github.thebridsk.bridge.logger.Alerter
 import scala.concurrent.Future
-import com.example.rest2.AjaxResult
+import com.github.thebridsk.bridge.rest2.AjaxResult
 import org.scalactic.source.Position
-import com.example.rest2.WrapperXMLHttpRequest
+import com.github.thebridsk.bridge.rest2.WrapperXMLHttpRequest
 import org.scalajs.dom.raw.EventSource
 import org.scalajs.dom.raw.MessageEvent
 import org.scalajs.dom.raw.Event
 import scala.scalajs.js.timers.SetTimeoutHandle
 import scala.concurrent.duration.Duration
-import com.example.data.websocket.Protocol.ToBrowserMessage
+import com.github.thebridsk.bridge.data.websocket.Protocol.ToBrowserMessage
 
 object SSE {
   private val logger = Logger("bridge.SSE")
@@ -100,7 +100,7 @@ class SSE[T]( urlprefix: String, listener: SECListener[T] ) extends ServerEventC
   }
 
   private def esOnMessage( dupid: T )( me: MessageEvent ): Unit = {
-    import com.example.data.websocket.DuplexProtocol
+    import com.github.thebridsk.bridge.data.websocket.DuplexProtocol
     try {
       logger.fine(s"esOnMessage received ${me.data}")
       resetESTimeout(dupid)

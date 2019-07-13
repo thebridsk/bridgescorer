@@ -1,21 +1,21 @@
-package com.example.manualtest
+package com.github.thebridsk.bridge.manualtest
 
-import com.example.data.duplicate.suggestion.Suggestion
-import com.example.data.DuplicateSummary
-import com.example.data.Team
-import com.example.data.DuplicateSummaryEntry
-import com.example.data.duplicate.suggestion.DuplicateSuggestionsCalculation
-import utils.main.Main
-import utils.logging.Logger
+import com.github.thebridsk.bridge.data.duplicate.suggestion.Suggestion
+import com.github.thebridsk.bridge.data.DuplicateSummary
+import com.github.thebridsk.bridge.data.Team
+import com.github.thebridsk.bridge.data.DuplicateSummaryEntry
+import com.github.thebridsk.bridge.data.duplicate.suggestion.DuplicateSuggestionsCalculation
+import com.github.thebridsk.utilities.main.Main
+import com.github.thebridsk.utilities.logging.Logger
 import scala.reflect.io.Path
-import com.example.backend.BridgeServiceFileStore
+import com.github.thebridsk.bridge.backend.BridgeServiceFileStore
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Await
 import scala.concurrent.duration._
 import java.net.URLClassLoader
 import java.io.File
-import com.example.data.duplicate.suggestion.DuplicateSuggestions
-import com.example.data.duplicate.suggestion.NeverPair
+import com.github.thebridsk.bridge.data.duplicate.suggestion.DuplicateSuggestions
+import com.github.thebridsk.bridge.data.duplicate.suggestion.NeverPair
 
 object Suggestion200 extends Main {
 
@@ -25,7 +25,7 @@ object Suggestion200 extends Main {
 
   val playedMatches = collection.mutable.ArrayBuffer[DuplicateSummary]()
 
-  import utils.main.Converters._
+  import com.github.thebridsk.utilities.main.Converters._
 
   val cmdName = {
     ((getClass.getClassLoader match {

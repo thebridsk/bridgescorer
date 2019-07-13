@@ -1,11 +1,11 @@
-package com.example.data.js
+package com.github.thebridsk.bridge.data.js
 
-import com.example.data.SystemTime
+import com.github.thebridsk.bridge.data.SystemTime
 import scala.scalajs.js.Date
 
-import utils.logging.impl.{ SystemTime => LogSystemTime }
-import utils.logging.impl.LoggerImplFactory
-import com.example.react.DateUtils
+import com.github.thebridsk.utilities.logging.impl.{ SystemTime => LogSystemTime }
+import com.github.thebridsk.utilities.logging.impl.LoggerImplFactory
+import com.github.thebridsk.bridge.react.DateUtils
 
 class SystemTimeJs extends SystemTime with LogSystemTime {
   def currentTimeMillis() = {

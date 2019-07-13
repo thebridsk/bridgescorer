@@ -1,20 +1,20 @@
-package com.example.test.pages.duplicate
+package com.github.thebridsk.bridge.test.pages.duplicate
 
-import com.example.test.pages.Page
+import com.github.thebridsk.bridge.test.pages.Page
 import org.openqa.selenium.WebDriver
-import com.example.source.SourcePosition
+import com.github.thebridsk.bridge.source.SourcePosition
 import org.scalactic.source.Position
 import org.scalatest.concurrent.Eventually._
 import org.scalatest.MustMatchers._
-import com.example.test.pages.PageBrowser._
-import com.example.test.selenium.TestServer
-import com.example.data.Id
+import com.github.thebridsk.bridge.test.pages.PageBrowser._
+import com.github.thebridsk.bridge.test.selenium.TestServer
+import com.github.thebridsk.bridge.data.Id
 import org.openqa.selenium.NoSuchElementException
-import utils.logging.Logger
-import com.example.test.pages.GenericPage
-import com.example.test.pages.bridge.HomePage
-import com.example.test.pages.bridge.Popup
-import com.example.test.pages.ServerURLAddOn
+import com.github.thebridsk.utilities.logging.Logger
+import com.github.thebridsk.bridge.test.pages.GenericPage
+import com.github.thebridsk.bridge.test.pages.bridge.HomePage
+import com.github.thebridsk.bridge.test.pages.bridge.Popup
+import com.github.thebridsk.bridge.test.pages.ServerURLAddOn
 
 object ListDuplicatePage {
 

@@ -1,4 +1,4 @@
-package com.example.materialui
+package com.github.thebridsk.materialui
 
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.raw._
@@ -7,7 +7,7 @@ import org.scalajs.dom
 import scala.scalajs.js
 import scala.scalajs.js.annotation._
 import org.scalajs.dom.raw.Element
-//import com.example.materialui.util.{ JsNumber => _, _ }
+//import com.github.thebridsk.materialui.util.{ JsNumber => _, _ }
 import scala.language.implicitConversions
 
 class AnchorOriginHorizontalValue(val value: String) extends AnyVal

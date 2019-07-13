@@ -1,4 +1,4 @@
-package com.example.test
+package com.github.thebridsk.bridge.test
 
 import org.scalatest.FlatSpec
 import org.scalatest.MustMatchers
@@ -29,7 +29,7 @@ import akka.http.scaladsl.server.Route
 import akka.http.scaladsl.model.HttpHeader
 import akka.http.scaladsl.model.RemoteAddress.IP
 import java.net.InetAddress
-import utils.logging.Logger
+import com.github.thebridsk.utilities.logging.Logger
 import java.util.logging.Level
 
 object TestRoute {

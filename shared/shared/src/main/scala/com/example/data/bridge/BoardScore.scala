@@ -1,9 +1,9 @@
-package com.example.data.bridge
+package com.github.thebridsk.bridge.data.bridge
 
-import com.example.data.Board
-import com.example.data.Id
-import com.example.data.bridge.DuplicateBridge.ScoreHand
-import utils.logging.Logger
+import com.github.thebridsk.bridge.data.Board
+import com.github.thebridsk.bridge.data.Id
+import com.github.thebridsk.bridge.data.bridge.DuplicateBridge.ScoreHand
+import com.github.thebridsk.utilities.logging.Logger
 import java.io.StringWriter
 
 case class ContractForScore(

@@ -1,4 +1,4 @@
-package com.example.data
+package com.github.thebridsk.bridge.data
 
 import io.swagger.v3.oas.annotations.media.Schema
 

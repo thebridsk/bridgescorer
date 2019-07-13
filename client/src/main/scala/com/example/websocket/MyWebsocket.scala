@@ -1,12 +1,12 @@
-package com.example.websocket
+package com.github.thebridsk.bridge.websocket
 
 import org.scalajs.dom.raw._
 import scala.scalajs.js
 import org.scalajs.dom
-import com.example.data.websocket.Protocol
+import com.github.thebridsk.bridge.data.websocket.Protocol
 import scala.scalajs.js.Array
-import utils.logging.Logger
-import com.example.logger.CommAlerter
+import com.github.thebridsk.utilities.logging.Logger
+import com.github.thebridsk.bridge.logger.CommAlerter
 
 class WebsocketClosed extends Exception
 

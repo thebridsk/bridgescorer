@@ -1,4 +1,4 @@
-package com.example.pages
+package com.github.thebridsk.bridge.pages
 
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.html_<^._

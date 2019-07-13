@@ -1,17 +1,17 @@
-package com.example.logger
+package com.github.thebridsk.bridge.logger
 
 import scala.collection.mutable.Queue
 
 import org.scalajs.dom.raw.WebSocket
 
-import com.example.data.SystemTime
-import com.example.data.websocket.DuplexProtocol
-import com.example.data.websocket.DuplexProtocol.LogEntryV2
-import com.example.data.websocket.Protocol
-import com.example.websocket.Code
-import com.example.websocket.MyWebsocket
+import com.github.thebridsk.bridge.data.SystemTime
+import com.github.thebridsk.bridge.data.websocket.DuplexProtocol
+import com.github.thebridsk.bridge.data.websocket.DuplexProtocol.LogEntryV2
+import com.github.thebridsk.bridge.data.websocket.Protocol
+import com.github.thebridsk.bridge.websocket.Code
+import com.github.thebridsk.bridge.websocket.MyWebsocket
 
-import utils.logging.Logger
+import com.github.thebridsk.utilities.logging.Logger
 
 
 object DuplexPipeForLogging {

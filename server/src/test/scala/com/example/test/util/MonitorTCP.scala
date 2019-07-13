@@ -1,12 +1,12 @@
-package com.example.test.util
+package com.github.thebridsk.bridge.test.util
 
 import java.text.SimpleDateFormat
 import java.util.Date
 import scala.concurrent.duration._
 import scala.language.postfixOps
 import java.util.logging.Level
-import utils.logging.Logger
-import utils.logging.Logging
+import com.github.thebridsk.utilities.logging.Logger
+import com.github.thebridsk.utilities.logging.Logging
 import java.io.PrintWriter
 import java.io.BufferedWriter
 import java.io.OutputStreamWriter

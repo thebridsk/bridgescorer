@@ -1,19 +1,19 @@
-package com.example.test
+package com.github.thebridsk.bridge.test
 
-import com.example.data.MatchDuplicate
-import com.example.data.sample.TestMatchDuplicate
-import com.example.data.Id
-import com.example.data.DuplicateHand
-import com.example.data.Hand
-import com.example.data.SystemTime
-import com.example.data.bridge.MatchDuplicateScore
+import com.github.thebridsk.bridge.data.MatchDuplicate
+import com.github.thebridsk.bridge.data.sample.TestMatchDuplicate
+import com.github.thebridsk.bridge.data.Id
+import com.github.thebridsk.bridge.data.DuplicateHand
+import com.github.thebridsk.bridge.data.Hand
+import com.github.thebridsk.bridge.data.SystemTime
+import com.github.thebridsk.bridge.data.bridge.MatchDuplicateScore
 import org.scalatest.MustMatchers
-import com.example.util.SystemTimeJVM
+import com.github.thebridsk.bridge.util.SystemTimeJVM
 import org.scalatest.FlatSpec
-import com.example.backend.BridgeService
-import com.example.data.bridge.PerspectiveTable
-import com.example.data.bridge.PerspectiveDirector
-import com.example.backend.BridgeServiceInMemory
+import com.github.thebridsk.bridge.backend.BridgeService
+import com.github.thebridsk.bridge.data.bridge.PerspectiveTable
+import com.github.thebridsk.bridge.data.bridge.PerspectiveDirector
+import com.github.thebridsk.bridge.backend.BridgeServiceInMemory
 import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext
 

@@ -1,10 +1,10 @@
-package com.example.data.duplicate.suggestion
+package com.github.thebridsk.bridge.data.duplicate.suggestion
 
-import com.example.data.DuplicateSummary
-import com.example.data.DuplicateSummaryDetails
-import utils.logging.Logger
+import com.github.thebridsk.bridge.data.DuplicateSummary
+import com.github.thebridsk.bridge.data.DuplicateSummaryDetails
+import com.github.thebridsk.utilities.logging.Logger
 import scala.collection.mutable.ListBuffer
-import com.example.data.duplicate.stats.Statistic
+import com.github.thebridsk.bridge.data.duplicate.stats.Statistic
 
 /**
   * Constructor
@@ -492,7 +492,7 @@ object Stat {
 }
 
 import PairsData.log
-import com.example.data.DuplicateSummaryDetails
+import com.github.thebridsk.bridge.data.DuplicateSummaryDetails
 
 /**
   * @param pds

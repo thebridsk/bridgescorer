@@ -1,4 +1,4 @@
-package com.example
+package com.github.thebridsk.bridge
 
 package object data {
 

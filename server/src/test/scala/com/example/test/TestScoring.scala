@@ -1,16 +1,16 @@
-package com.example.test
+package com.github.thebridsk.bridge.test
 
 import org.scalatest.FlatSpec
 import org.scalatest.MustMatchers
 import org.scalatest.Matchers
 
-import com.example.data.bridge._
+import com.github.thebridsk.bridge.data.bridge._
 
 
 class TestScoring extends FlatSpec with MustMatchers {
 
-  import com.example.data.bridge.RubberBridge.{ScoreHand => RubberScore}
-  import com.example.data.bridge.DuplicateBridge.{ScoreHand => DuplicateScore}
+  import com.github.thebridsk.bridge.data.bridge.RubberBridge.{ScoreHand => RubberScore}
+  import com.github.thebridsk.bridge.data.bridge.DuplicateBridge.{ScoreHand => DuplicateScore}
 
   behavior of "Duplicate Bridge Scoring"
 

@@ -1,19 +1,19 @@
-package com.example.skeleton.react
+package com.github.thebridsk.bridge.skeleton.react
 
 import scala.scalajs.js
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
-import com.example.Bridge
+import com.github.thebridsk.bridge.Bridge
 import org.scalajs.dom.raw.HTMLAudioElement
 import japgolly.scalajs.react.vdom.TagMod
-import com.example.react.Utils._
-import com.example.react.AppButton
-import utils.logging.Logger
-import com.example.pages.BaseStyles.baseStyles
-import com.example.pages.BaseStyles
-import com.example.materialui.icons.MuiIcons
-import com.example.materialui.MuiMenuItem
-import com.example.materialui.icons.SvgColor
+import com.github.thebridsk.bridge.react.Utils._
+import com.github.thebridsk.bridge.react.AppButton
+import com.github.thebridsk.utilities.logging.Logger
+import com.github.thebridsk.bridge.pages.BaseStyles.baseStyles
+import com.github.thebridsk.bridge.pages.BaseStyles
+import com.github.thebridsk.materialui.icons.MuiIcons
+import com.github.thebridsk.materialui.MuiMenuItem
+import com.github.thebridsk.materialui.icons.SvgColor
 
 /**
  * A skeleton component.

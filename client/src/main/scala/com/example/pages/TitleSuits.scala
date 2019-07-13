@@ -1,8 +1,8 @@
-package com.example.pages
+package com.github.thebridsk.bridge.pages
 
-import com.example.materialui.MuiTypography
-import com.example.materialui.TextVariant
-import com.example.materialui.TextColor
+import com.github.thebridsk.materialui.MuiTypography
+import com.github.thebridsk.materialui.TextVariant
+import com.github.thebridsk.materialui.TextColor
 import japgolly.scalajs.react.vdom.HtmlStyles
 import scala.scalajs.js
 import japgolly.scalajs.react.vdom.html_<^._

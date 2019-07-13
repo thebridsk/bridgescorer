@@ -1,4 +1,4 @@
-package com.example.backend.resource
+package com.github.thebridsk.bridge.backend.resource
 
 import scala.concurrent.ExecutionContext
 import org.scalactic.source.Position
@@ -6,7 +6,7 @@ import scala.concurrent.Future
 import java.util.concurrent.atomic.AtomicInteger
 import scala.util.Success
 import scala.util.Failure
-import com.example.source.SourcePosition
+import com.github.thebridsk.bridge.source.SourcePosition
 
 object Implicits {
 

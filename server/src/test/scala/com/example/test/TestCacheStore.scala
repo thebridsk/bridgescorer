@@ -1,53 +1,53 @@
-package com.example.test
+package com.github.thebridsk.bridge.test
 
 import akka.http.scaladsl.testkit.ScalatestRouteTest
 import org.scalatest._
-import com.example.backend.resource.InMemoryStore
-import com.example.data.Id
-import com.example.data.MatchDuplicate
-import com.example.backend.BridgeResources
-import com.example.data.sample.TestMatchDuplicate
+import com.github.thebridsk.bridge.backend.resource.InMemoryStore
+import com.github.thebridsk.bridge.data.Id
+import com.github.thebridsk.bridge.data.MatchDuplicate
+import com.github.thebridsk.bridge.backend.BridgeResources
+import com.github.thebridsk.bridge.data.sample.TestMatchDuplicate
 import scala.concurrent.ExecutionContext
-import com.example.backend.resource.ChangeContext
+import com.github.thebridsk.bridge.backend.resource.ChangeContext
 import scala.util.Left
 import scala.util.Right
 import scala.concurrent.Future
-import com.example.backend.resource.Result
+import com.github.thebridsk.bridge.backend.resource.Result
 import org.scalactic.source.Position
-import com.example.source.SourcePosition
-import com.example.backend.DuplicateTeamsNestedResource
-import com.example.data.Team
-import com.example.data.BoardSet
-import com.example.backend.resource.JavaResourceStore
+import com.github.thebridsk.bridge.source.SourcePosition
+import com.github.thebridsk.bridge.backend.DuplicateTeamsNestedResource
+import com.github.thebridsk.bridge.data.Team
+import com.github.thebridsk.bridge.data.BoardSet
+import com.github.thebridsk.bridge.backend.resource.JavaResourceStore
 import akka.http.scaladsl.model.StatusCode
 import akka.http.scaladsl.model.StatusCodes
-import com.example.backend.resource.StoreListener
-import com.example.backend.resource.CreateChangeContext
-import com.example.backend.resource.UpdateChangeContext
-import com.example.backend.resource.DeleteChangeContext
-import com.example.backend.DuplicateBoardsNestedResource
-import com.example.backend.DuplicateHandsNestedResource
-import com.example.data.Hand
-import com.example.data.DuplicateHand
-import com.example.data.Board
-import com.example.backend.resource.ChangeContextData
+import com.github.thebridsk.bridge.backend.resource.StoreListener
+import com.github.thebridsk.bridge.backend.resource.CreateChangeContext
+import com.github.thebridsk.bridge.backend.resource.UpdateChangeContext
+import com.github.thebridsk.bridge.backend.resource.DeleteChangeContext
+import com.github.thebridsk.bridge.backend.DuplicateBoardsNestedResource
+import com.github.thebridsk.bridge.backend.DuplicateHandsNestedResource
+import com.github.thebridsk.bridge.data.Hand
+import com.github.thebridsk.bridge.data.DuplicateHand
+import com.github.thebridsk.bridge.data.Board
+import com.github.thebridsk.bridge.backend.resource.ChangeContextData
 import scala.concurrent.Await
 import scala.concurrent.duration._
-import com.example.data.Movement
+import com.github.thebridsk.bridge.data.Movement
 import scala.concurrent.Promise
 import scala.util.Success
 import scala.util.Failure
-import com.example.backend.resource.FileStore
+import com.github.thebridsk.bridge.backend.resource.FileStore
 import scala.reflect.io.Directory
-import com.example.backend.resource.FileIO
-import com.example.backend.resource.MultiStore
-import com.example.backend.resource.Store
+import com.github.thebridsk.bridge.backend.resource.FileIO
+import com.github.thebridsk.bridge.backend.resource.MultiStore
+import com.github.thebridsk.bridge.backend.resource.Store
 import scala.concurrent.ExecutionContext.Implicits.global
 
 object TestCacheStore {
   import MustMatchers._
 
-  val testlog = utils.logging.Logger[TestCacheStore]
+  val testlog = com.github.thebridsk.utilities.logging.Logger[TestCacheStore]
 
   TestStartLogging.startLogging()
 
@@ -61,11 +61,11 @@ object TestCacheStore {
     FileStore("test",dir)
 
   def getBoardSetStore: Store[String,BoardSet] = {
-    JavaResourceStore("test","/com/example/backend/", "Boardsets.txt", getClass.getClassLoader)
+    JavaResourceStore("test","/com/github/thebridsk/bridge/backend/", "Boardsets.txt", getClass.getClassLoader)
   }
 
   def getMovementStore: Store[String,Movement] = {
-    JavaResourceStore("test","/com/example/backend/", "Movements.txt", getClass.getClassLoader)
+    JavaResourceStore("test","/com/github/thebridsk/bridge/backend/", "Movements.txt", getClass.getClassLoader)
   }
 
   def getBoardSetFileStore( dir: Directory ): Store[String,BoardSet] = {
@@ -73,7 +73,7 @@ object TestCacheStore {
   }
 
   def getBoardSetMultiStore( dir: Directory ): Store[String,BoardSet] = {
-    MultiStore.createFileAndResource("test",dir, "/com/example/backend/", "Boardsets.txt", getClass.getClassLoader)
+    MultiStore.createFileAndResource("test",dir, "/com/github/thebridsk/bridge/backend/", "Boardsets.txt", getClass.getClassLoader)
   }
 
   import ExecutionContext.Implicits.global

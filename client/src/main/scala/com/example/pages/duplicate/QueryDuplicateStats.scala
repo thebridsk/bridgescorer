@@ -1,13 +1,13 @@
-package com.example.pages.duplicate
+package com.github.thebridsk.bridge.pages.duplicate
 
-import com.example.data.duplicate.stats.DuplicateStats
+import com.github.thebridsk.bridge.data.duplicate.stats.DuplicateStats
 import play.api.libs.json.Json
-import com.example.graphql.GraphQLClient
+import com.github.thebridsk.bridge.graphql.GraphQLClient
 import play.api.libs.json.JsObject
 import play.api.libs.json.JsSuccess
 import play.api.libs.json.JsError
-import utils.logging.Logger
-import com.example.data.rest.JsonSupport
+import com.github.thebridsk.utilities.logging.Logger
+import com.github.thebridsk.bridge.data.rest.JsonSupport
 
 object QueryDuplicateStats {
   import JsonSupport._

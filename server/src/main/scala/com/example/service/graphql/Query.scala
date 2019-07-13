@@ -1,11 +1,11 @@
-package com.example.service.graphql
+package com.github.thebridsk.bridge.service.graphql
 
 import play.api.libs.json._
 import sangria.parser.QueryParser
 import scala.util.Success
 import scala.util.Failure
 import sangria.execution.Executor
-import com.example.backend.BridgeService
+import com.github.thebridsk.bridge.backend.BridgeService
 import sangria.execution.deferred.DeferredResolver
 import scala.concurrent.ExecutionContext.Implicits.global
 import sangria.marshalling.playJson._
@@ -14,7 +14,7 @@ import sangria.execution.QueryAnalysisError
 import sangria.execution.ErrorWithResolver
 import scala.concurrent.Future
 import akka.http.scaladsl.model.StatusCode
-import utils.logging.Logger
+import com.github.thebridsk.utilities.logging.Logger
 import sangria.parser.SyntaxError
 
 object Query {

@@ -1,11 +1,11 @@
-package com.example.react
+package com.github.thebridsk.bridge.react
 
 import scala.scalajs.js
 import org.scalajs.dom.document
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.TagMod
-import com.example.pages.BaseStyles
+import com.github.thebridsk.bridge.pages.BaseStyles
 
 object HelpButton {
   import HelpButtonInternal._

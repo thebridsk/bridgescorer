@@ -1,11 +1,11 @@
-package com.example.datastore
+package com.github.thebridsk.bridge.datastore
 
-import utils.main.Subcommand
-import utils.logging.Logger
+import com.github.thebridsk.utilities.main.Subcommand
+import com.github.thebridsk.utilities.logging.Logger
 import org.rogach.scallop._
 import scala.concurrent.duration.Duration
 import scala.reflect.io.Path
-import com.example.backend.BridgeServiceFileStore
+import com.github.thebridsk.bridge.backend.BridgeServiceFileStore
 import java.io.File
 import java.io.Reader
 import java.io.BufferedReader
@@ -13,20 +13,20 @@ import scala.io.Source
 import scala.io.BufferedSource
 import scala.util.Left
 import java.io.InputStream
-import com.example.backend.BridgeServiceInMemory
-import com.example.data.Id
-import com.example.data.MatchDuplicate
-import com.example.data.MatchChicago
-import com.example.data.MatchRubber
+import com.github.thebridsk.bridge.backend.BridgeServiceInMemory
+import com.github.thebridsk.bridge.data.Id
+import com.github.thebridsk.bridge.data.MatchDuplicate
+import com.github.thebridsk.bridge.data.MatchChicago
+import com.github.thebridsk.bridge.data.MatchRubber
 import akka.http.scaladsl.model.StatusCodes
 import scala.concurrent.Await
 import scala.concurrent.duration._
-import com.example.backend.resource.Store
+import com.github.thebridsk.bridge.backend.resource.Store
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import com.example.data.VersionedInstance
-import com.example.data.MatchDuplicateResult
-import com.example.backend.BridgeServiceZipStore
+import com.github.thebridsk.bridge.data.VersionedInstance
+import com.github.thebridsk.bridge.data.MatchDuplicateResult
+import com.github.thebridsk.bridge.backend.BridgeServiceZipStore
 
 trait Copy
 
@@ -38,7 +38,7 @@ object Copy extends Subcommand("copy") {
   implicit def dateConverter: ValueConverter[Duration] =
     singleArgConverter[Duration](Duration(_))
 
-  import utils.main.Converters._
+  import com.github.thebridsk.utilities.main.Converters._
 
   descr("Copies a datastore, reassigning Ids")
 

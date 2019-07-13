@@ -1,22 +1,22 @@
-package com.example.testpage
+package com.github.thebridsk.bridge.testpage
 
 import scala.scalajs.js
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
-import com.example.routes.AppRouter.AppPage
-import com.example.pages.BaseStyles
-import utils.logging.Logger
-import com.example.react.AppButton
-import com.example.routes.BridgeRouter
-import com.example.rest2.RestClientDuplicateSummary
-import com.example.rest2.AjaxResult
+import com.github.thebridsk.bridge.routes.AppRouter.AppPage
+import com.github.thebridsk.bridge.pages.BaseStyles
+import com.github.thebridsk.utilities.logging.Logger
+import com.github.thebridsk.bridge.react.AppButton
+import com.github.thebridsk.bridge.routes.BridgeRouter
+import com.github.thebridsk.bridge.rest2.RestClientDuplicateSummary
+import com.github.thebridsk.bridge.rest2.AjaxResult
 import scala.concurrent.ExecutionContext.Implicits.global
-import com.example.logger.Alerter
-import com.example.data.DuplicateSummary
-import com.example.react.PopupOkCancel
-import com.example.data.rest.JsonSupport
+import com.github.thebridsk.bridge.logger.Alerter
+import com.github.thebridsk.bridge.data.DuplicateSummary
+import com.github.thebridsk.bridge.react.PopupOkCancel
+import com.github.thebridsk.bridge.data.rest.JsonSupport
 import play.api.libs.json._
-import com.example.data.rest.JsonException
+import com.github.thebridsk.bridge.data.rest.JsonException
 
 /**
  * A skeleton component.

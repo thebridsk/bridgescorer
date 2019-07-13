@@ -1,8 +1,8 @@
-package com.example.manualtest
+package com.github.thebridsk.bridge.manualtest
 
-import utils.main.Main
-import com.example.data.chicago.ChicagoScoring
-import com.example.data.chicago.ChicagoScoring.Fixture
+import com.github.thebridsk.utilities.main.Main
+import com.github.thebridsk.bridge.data.chicago.ChicagoScoring
+import com.github.thebridsk.bridge.data.chicago.ChicagoScoring.Fixture
 
 object TestFixtures extends Main {
   def execute(): Int = {

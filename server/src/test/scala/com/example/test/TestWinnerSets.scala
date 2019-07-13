@@ -1,22 +1,22 @@
-package com.example.test
+package com.github.thebridsk.bridge.test
 
 import org.scalatest.FlatSpec
 import org.scalatest.MustMatchers
 import org.scalatest.Matchers
-import com.example.data.Board
-import com.example.data.Table
-import com.example.data.bridge.North
-import com.example.data.MatchDuplicate
-import com.example.backend.BridgeService
-import utils.logging.Logger
+import com.github.thebridsk.bridge.data.Board
+import com.github.thebridsk.bridge.data.Table
+import com.github.thebridsk.bridge.data.bridge.North
+import com.github.thebridsk.bridge.data.MatchDuplicate
+import com.github.thebridsk.bridge.backend.BridgeService
+import com.github.thebridsk.utilities.logging.Logger
 import java.util.logging.Level
-import com.example.backend.BridgeServiceInMemory
-import com.example.test.backend.BridgeServiceTesting
-import com.example.data.Movement
-import com.example.data.bridge.MatchDuplicateScore
-import com.example.data.bridge.PerspectiveDirector
-import com.example.data.DuplicateHand
-import com.example.data.Id
+import com.github.thebridsk.bridge.backend.BridgeServiceInMemory
+import com.github.thebridsk.bridge.test.backend.BridgeServiceTesting
+import com.github.thebridsk.bridge.data.Movement
+import com.github.thebridsk.bridge.data.bridge.MatchDuplicateScore
+import com.github.thebridsk.bridge.data.bridge.PerspectiveDirector
+import com.github.thebridsk.bridge.data.DuplicateHand
+import com.github.thebridsk.bridge.data.Id
 import scala.concurrent.Await
 import scala.concurrent.duration._
 

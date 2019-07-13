@@ -1,4 +1,4 @@
-package com.example.color
+package com.github.thebridsk.bridge.color
 
 import japgolly.scalajs.react.vdom.Attr.ValueType
 

@@ -1,12 +1,12 @@
-package com.example.logger
+package com.github.thebridsk.bridge.logger
 
-import com.example.controller.Controller
-import com.example.rest2.RestClientLogEntryV2
+import com.github.thebridsk.bridge.controller.Controller
+import com.github.thebridsk.bridge.rest2.RestClientLogEntryV2
 
-import utils.logging.Handler
-import utils.logging.Logger
-import utils.logging.TraceMsg
-import com.example.rest2.AjaxFailure
+import com.github.thebridsk.utilities.logging.Handler
+import com.github.thebridsk.utilities.logging.Logger
+import com.github.thebridsk.utilities.logging.TraceMsg
+import com.github.thebridsk.bridge.rest2.AjaxFailure
 import org.scalajs.dom.ext.AjaxException
 
 object SendToServerHandler {

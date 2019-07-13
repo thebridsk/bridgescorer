@@ -1,4 +1,4 @@
-package com.example.rest2
+package com.github.thebridsk.bridge.rest2
 
 import scala.concurrent.Future
 import scala.concurrent.duration.Duration
@@ -9,14 +9,14 @@ import scala.util.Success
 import scala.util.Failure
 import scala.reflect.ClassTag
 import org.scalajs.dom.ext.AjaxException
-import utils.logging.Logger
+import com.github.thebridsk.utilities.logging.Logger
 import scala.concurrent.Awaitable
 import scala.concurrent.Promise
 import org.scalactic.source.Position
-import com.example.logger.Alerter
+import com.github.thebridsk.bridge.logger.Alerter
 import play.api.libs.json._
-import com.example.data.rest.JsonSupport._
-import com.example.logger.CommAlerter
+import com.github.thebridsk.bridge.data.rest.JsonSupport._
+import com.github.thebridsk.bridge.logger.CommAlerter
 import scala.language.implicitConversions
 
 object RestResult {

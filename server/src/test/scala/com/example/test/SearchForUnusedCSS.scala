@@ -1,16 +1,16 @@
-package com.example.test
+package com.github.thebridsk.bridge.test
 
-import utils.main.Main
+import com.github.thebridsk.utilities.main.Main
 import scala.reflect.io.Path
 import scala.reflect.io.Directory
 import scala.io.Source
 import scala.reflect.io.File
-import com.example.source.SourcePosition
+import com.github.thebridsk.bridge.source.SourcePosition
 import org.scalactic.source.Position
 
 object SearchForUnusedCSS extends Main {
 
-  import utils.main.Converters._
+  import com.github.thebridsk.utilities.main.Converters._
 
   val cssDir = trailArg[Directory](
       name = "cssdir",

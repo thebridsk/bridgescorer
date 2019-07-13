@@ -1,4 +1,4 @@
-package com.example.routes
+package com.github.thebridsk.bridge.routes
 
 import AppRouter.AppPage
 import japgolly.scalajs.react._
@@ -6,11 +6,11 @@ import japgolly.scalajs.react.extra.router.RouterCtl
 import japgolly.scalajs.react.vdom.html_<^._
 import scala.scalajs.js
 import japgolly.scalajs.react.extra.router.Resolution
-import com.example.logger.Init
-import com.example.debug.DebugLoggerComponent
+import com.github.thebridsk.bridge.logger.Init
+import com.github.thebridsk.bridge.debug.DebugLoggerComponent
 import japgolly.scalajs.react.vdom.VdomElement
-import com.example.react.Utils._
-import com.example.pages.ServerURLPopup
+import com.github.thebridsk.bridge.react.Utils._
+import com.github.thebridsk.bridge.pages.ServerURLPopup
 
 /**
  * @author werewolf

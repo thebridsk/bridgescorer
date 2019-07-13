@@ -1,4 +1,4 @@
-package com.example.rest2
+package com.github.thebridsk.bridge.rest2
 
 import scala.scalajs.js
 import org.scalajs.dom.raw.XMLHttpRequest

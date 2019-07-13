@@ -1,7 +1,7 @@
-package com.example.logger
+package com.github.thebridsk.bridge.logger
 
-import utils.logging.Filter
-import utils.logging.TraceMsg
+import com.github.thebridsk.utilities.logging.Filter
+import com.github.thebridsk.utilities.logging.TraceMsg
 
 object LogFilter {
   val filterlist = "DuplexPipeForLogging.scala"::
@@ -15,7 +15,7 @@ object LogFilter {
 }
 
 
-class LogFilter extends com.example.websocket.LogFilter {
+class LogFilter extends com.github.thebridsk.bridge.websocket.LogFilter {
   override
   def isLogged(traceMsg: TraceMsg) = {
     super.isLogged(traceMsg) && ( !traceMsg.logger.startsWith("comm.")

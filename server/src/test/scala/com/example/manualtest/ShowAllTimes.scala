@@ -1,22 +1,22 @@
-package com.example.manualtest
+package com.github.thebridsk.bridge.manualtest
 
-import utils.main.Main
-import com.example.backend.resource.FileIO
+import com.github.thebridsk.utilities.main.Main
+import com.github.thebridsk.bridge.backend.resource.FileIO
 import scala.language.postfixOps
-import com.example.data.MatchChicago
+import com.github.thebridsk.bridge.data.MatchChicago
 import java.text.SimpleDateFormat
-import com.example.data.Round
-import com.example.data.Hand
-import com.example.data.MatchDuplicate
-import com.example.data.Board
-import com.example.data.DuplicateHand
-import com.example.data.MatchRubber
-import com.example.data.RubberHand
-import com.example.data.SystemTime.Timestamp
-import com.example.backend.BridgeServiceFileStoreConverters
-import com.example.backend.MatchChicagoCacheStoreSupport
-import com.example.backend.MatchRubberCacheStoreSupport
-import com.example.backend.MatchDuplicateCacheStoreSupport
+import com.github.thebridsk.bridge.data.Round
+import com.github.thebridsk.bridge.data.Hand
+import com.github.thebridsk.bridge.data.MatchDuplicate
+import com.github.thebridsk.bridge.data.Board
+import com.github.thebridsk.bridge.data.DuplicateHand
+import com.github.thebridsk.bridge.data.MatchRubber
+import com.github.thebridsk.bridge.data.RubberHand
+import com.github.thebridsk.bridge.data.SystemTime.Timestamp
+import com.github.thebridsk.bridge.backend.BridgeServiceFileStoreConverters
+import com.github.thebridsk.bridge.backend.MatchChicagoCacheStoreSupport
+import com.github.thebridsk.bridge.backend.MatchRubberCacheStoreSupport
+import com.github.thebridsk.bridge.backend.MatchDuplicateCacheStoreSupport
 
 object ShowAllTimes extends Main {
 

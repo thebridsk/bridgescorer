@@ -1,14 +1,14 @@
-package com.example.react
+package com.github.thebridsk.bridge.react
 
 import scala.scalajs.js
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
 import scala.math.Ordering
 import scala.annotation.tailrec
-import com.example.pages.BaseStyles
-import com.example.pages.BaseStyles.baseStyles
-import com.example.data.util.Strings
-import utils.logging.Logger
+import com.github.thebridsk.bridge.pages.BaseStyles
+import com.github.thebridsk.bridge.pages.BaseStyles.baseStyles
+import com.github.thebridsk.bridge.data.util.Strings
+import com.github.thebridsk.utilities.logging.Logger
 
 /**
  * Shows a table with sort buttons has the headers of the columns.

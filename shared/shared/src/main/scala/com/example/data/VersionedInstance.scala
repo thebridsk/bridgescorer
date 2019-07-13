@@ -1,4 +1,4 @@
-package com.example.data
+package com.github.thebridsk.bridge.data
 
 /**
   * @tparam CurrentVersion the current version type

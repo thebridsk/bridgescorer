@@ -1,16 +1,16 @@
-package com.example.test.util
+package com.github.thebridsk.bridge.test.util
 
 import scala.concurrent.duration._
 import scala.util.Failure
 import scala.concurrent._
 import ExecutionContext.Implicits.global
-import utils.logging.Logger
+import com.github.thebridsk.utilities.logging.Logger
 import org.scalactic.source.Position
 import java.util.concurrent.TimeUnit
 import java.io.StringWriter
 import java.io.PrintWriter
 import java.io.PrintStream
-import com.example.source.SourcePosition
+import com.github.thebridsk.bridge.source.SourcePosition
 import scala.util.Success
 
 object ParallelUtilsInternals {

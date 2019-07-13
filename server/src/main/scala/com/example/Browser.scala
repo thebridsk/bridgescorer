@@ -1,6 +1,6 @@
-package com.example
+package com.github.thebridsk.bridge
 
-import utils.logging.Logger
+import com.github.thebridsk.utilities.logging.Logger
 import java.io.IOException
 import scala.sys.process.ProcessIO
 import java.util.logging.Level

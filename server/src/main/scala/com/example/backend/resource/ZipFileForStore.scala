@@ -1,11 +1,11 @@
-package com.example.backend.resource
+package com.github.thebridsk.bridge.backend.resource
 
 import scala.reflect.io.File
 import java.util.zip.ZipFile
 import scala.collection.JavaConverters._
 import java.util.zip.ZipEntry
 import scala.io.Source
-import utils.logging.Logger
+import com.github.thebridsk.utilities.logging.Logger
 
 import ZipFileForStore.log
 

@@ -1,27 +1,27 @@
-package com.example.pages.duplicate
+package com.github.thebridsk.bridge.pages.duplicate
 
 import scala.scalajs.js
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
-import com.example.data.duplicate.stats.PlayerStats
-import com.example.data.duplicate.stats.ContractStats
-import com.example.data.duplicate.stats.ContractType
-import com.example.data.duplicate.stats.PlayerStat
-import com.example.data.duplicate.stats.CounterStat
-import com.example.data.duplicate.stats.ContractTypePassed
-import com.example.data.duplicate.stats.ContractTypePartial
-import com.example.data.duplicate.stats.ContractTypeGame
-import com.example.data.duplicate.stats.ContractTypeSlam
-import com.example.data.duplicate.stats.ContractTypeGrandSlam
-import com.example.data.duplicate.stats.ContractType
+import com.github.thebridsk.bridge.data.duplicate.stats.PlayerStats
+import com.github.thebridsk.bridge.data.duplicate.stats.ContractStats
+import com.github.thebridsk.bridge.data.duplicate.stats.ContractType
+import com.github.thebridsk.bridge.data.duplicate.stats.PlayerStat
+import com.github.thebridsk.bridge.data.duplicate.stats.CounterStat
+import com.github.thebridsk.bridge.data.duplicate.stats.ContractTypePassed
+import com.github.thebridsk.bridge.data.duplicate.stats.ContractTypePartial
+import com.github.thebridsk.bridge.data.duplicate.stats.ContractTypeGame
+import com.github.thebridsk.bridge.data.duplicate.stats.ContractTypeSlam
+import com.github.thebridsk.bridge.data.duplicate.stats.ContractTypeGrandSlam
+import com.github.thebridsk.bridge.data.duplicate.stats.ContractType
 import scala.annotation.tailrec
-import com.example.data.duplicate.stats.ContractTypeTotal
-import utils.logging.Logger
-import com.example.react.Table.Column
-import com.example.react.Table
-import com.example.data.duplicate.stats.ContractStat
+import com.github.thebridsk.bridge.data.duplicate.stats.ContractTypeTotal
+import com.github.thebridsk.utilities.logging.Logger
+import com.github.thebridsk.bridge.react.Table.Column
+import com.github.thebridsk.bridge.react.Table
+import com.github.thebridsk.bridge.data.duplicate.stats.ContractStat
 import DuplicateStyles._
-import com.example.data.duplicate.stats.ContractTypeDoubledToGame
+import com.github.thebridsk.bridge.data.duplicate.stats.ContractTypeDoubledToGame
 
 /**
  * A skeleton component.

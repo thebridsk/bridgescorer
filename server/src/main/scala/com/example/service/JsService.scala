@@ -1,4 +1,4 @@
-package com.example.service
+package com.github.thebridsk.bridge.service
 
 import akka.http.scaladsl.server._
 import akka.http.scaladsl.server.Directives._
@@ -7,15 +7,15 @@ import akka.http.scaladsl.server.RejectionHandler
 import akka.http.scaladsl.model._
 import akka.http.scaladsl.server._
 import akka.http.scaladsl.model.headers.RawHeader
-import com.example.webjar.FileFinder
-import utils.logging.Logger
+import com.github.thebridsk.bridge.webjar.FileFinder
+import com.github.thebridsk.utilities.logging.Logger
 import java.util.logging.Level
 import akka.event.Logging
 import akka.http.scaladsl.model.headers._
 import akka.http.scaladsl.model.headers.CacheDirectives._
-import com.example.data.RestMessage
+import com.github.thebridsk.bridge.data.RestMessage
 import scala.concurrent.duration.Duration
-import com.example.version.VersionServer
+import com.github.thebridsk.bridge.version.VersionServer
 import scala.reflect.io.Directory
 import scala.reflect.io.File
 import scala.reflect.io.Path

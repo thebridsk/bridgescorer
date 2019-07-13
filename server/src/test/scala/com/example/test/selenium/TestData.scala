@@ -1,14 +1,14 @@
-package com.example.test.selenium
+package com.github.thebridsk.bridge.test.selenium
 
 import scala.reflect.io.Directory
 import scala.reflect.io.File
-import com.example.data.MatchDuplicate
-import com.example.backend.BridgeServiceFileStore
-import com.example.backend.resource.FileIO
-import com.example.data.Id
+import com.github.thebridsk.bridge.data.MatchDuplicate
+import com.github.thebridsk.bridge.backend.BridgeServiceFileStore
+import com.github.thebridsk.bridge.backend.resource.FileIO
+import com.github.thebridsk.bridge.data.Id
 import org.scalatest.Assertions._
-import utils.logging.Logger
-import com.example.backend.BridgeServiceFileStoreConverters
+import com.github.thebridsk.utilities.logging.Logger
+import com.github.thebridsk.bridge.backend.BridgeServiceFileStoreConverters
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.annotation.tailrec
 import java.io.FileNotFoundException

@@ -1,14 +1,14 @@
-package com.example.debug
+package com.github.thebridsk.bridge.debug
 
-import com.example.bridge.store.ChangeListenable
-import utils.logging.TraceMsg
+import com.github.thebridsk.bridge.bridge.store.ChangeListenable
+import com.github.thebridsk.utilities.logging.TraceMsg
 import flux.dispatcher.DispatchToken
-import com.example.bridge.action.BridgeDispatcher
-import com.example.bridge.action.PostLogEntry
+import com.github.thebridsk.bridge.bridge.action.BridgeDispatcher
+import com.github.thebridsk.bridge.bridge.action.PostLogEntry
 import scala.collection.mutable.ListBuffer
-import com.example.bridge.action.ClearLogs
-import com.example.bridge.action.StopLogs
-import com.example.bridge.action.StartLogs
+import com.github.thebridsk.bridge.bridge.action.ClearLogs
+import com.github.thebridsk.bridge.bridge.action.StopLogs
+import com.github.thebridsk.bridge.bridge.action.StartLogs
 
 object LoggerStore extends ChangeListenable {
 

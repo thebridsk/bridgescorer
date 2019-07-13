@@ -1,11 +1,11 @@
-package com.example.manualtest
+package com.github.thebridsk.bridge.manualtest
 
-import utils.main.Main
+import com.github.thebridsk.utilities.main.Main
 import scala.reflect.io.Path
 
 object CompareDuplicate extends Main {
 
-  import utils.main.Converters._
+  import com.github.thebridsk.utilities.main.Converters._
 
   val optionOne = trailArg[Path](name="one", descr="MatchDuplicate one", default=None, required=true)
   val optionTwo = trailArg[Path](name="two", descr="MatchDuplicate two", default=None, required=true)

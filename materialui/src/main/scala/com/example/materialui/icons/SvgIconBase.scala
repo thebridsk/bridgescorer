@@ -1,4 +1,4 @@
-package com.example.materialui.icons
+package com.github.thebridsk.materialui.icons
 
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.raw._
@@ -8,9 +8,9 @@ import scala.scalajs.js.annotation._
 import org.scalajs.dom.raw.Element
 import org.scalajs.dom.raw.Node
 import japgolly.scalajs.react.component.Js
-import com.example.materialui.PropsFactory
-import com.example.materialui.ComponentFactory
-import com.example.materialui.AdditionalProps
+import com.github.thebridsk.materialui.PropsFactory
+import com.github.thebridsk.materialui.ComponentFactory
+import com.github.thebridsk.materialui.AdditionalProps
 
 class SvgColor(val value: String) extends AnyVal
 object SvgColor {

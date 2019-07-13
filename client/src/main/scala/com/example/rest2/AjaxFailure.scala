@@ -1,7 +1,7 @@
-package com.example.rest2
+package com.github.thebridsk.bridge.rest2
 
 import org.scalactic.source.Position
-import com.example.data.RestMessage
+import com.github.thebridsk.bridge.data.RestMessage
 
 class AjaxFailureException( val exmsg: String, val result: AjaxResult[_] )(implicit val pos: Position) extends Exception(exmsg)
 

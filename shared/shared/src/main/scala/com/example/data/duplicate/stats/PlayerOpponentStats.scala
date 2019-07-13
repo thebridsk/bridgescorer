@@ -1,12 +1,12 @@
-package com.example.data.duplicate.stats
+package com.github.thebridsk.bridge.data.duplicate.stats
 
-import com.example.data.Id
-import com.example.data.MatchDuplicate
-import com.example.data.bridge.MatchDuplicateScore
-import com.example.data.bridge.PerspectiveComplete
-import com.example.data.bridge.BoardScore
-import com.example.data.Team
-import com.example.data.bridge.TeamBoardScore
+import com.github.thebridsk.bridge.data.Id
+import com.github.thebridsk.bridge.data.MatchDuplicate
+import com.github.thebridsk.bridge.data.bridge.MatchDuplicateScore
+import com.github.thebridsk.bridge.data.bridge.PerspectiveComplete
+import com.github.thebridsk.bridge.data.bridge.BoardScore
+import com.github.thebridsk.bridge.data.Team
+import com.github.thebridsk.bridge.data.bridge.TeamBoardScore
 
 /**
   * The stats against an opponent.

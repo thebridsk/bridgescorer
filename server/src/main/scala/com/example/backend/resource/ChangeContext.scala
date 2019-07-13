@@ -1,4 +1,4 @@
-package com.example.backend.resource
+package com.github.thebridsk.bridge.backend.resource
 
 sealed trait ChangeContextData
 case class CreateChangeContext(

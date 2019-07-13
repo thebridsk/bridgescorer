@@ -1,18 +1,18 @@
-package com.example.test.pages.duplicate
+package com.github.thebridsk.bridge.test.pages.duplicate
 
-import com.example.test.pages.Page
-import com.example.source.SourcePosition
+import com.github.thebridsk.bridge.test.pages.Page
+import com.github.thebridsk.bridge.source.SourcePosition
 import org.openqa.selenium.WebDriver
 import org.scalactic.source.Position
 import org.scalatest.concurrent.Eventually._
 import org.scalatest.MustMatchers._
-import com.example.test.pages.PageBrowser._
-import com.example.test.selenium.TestServer
-import utils.logging.Logger
-import com.example.test.util.HttpUtils
+import com.github.thebridsk.bridge.test.pages.PageBrowser._
+import com.github.thebridsk.bridge.test.selenium.TestServer
+import com.github.thebridsk.utilities.logging.Logger
+import com.github.thebridsk.bridge.test.util.HttpUtils
 import java.net.URL
-import com.example.test.util.HttpUtils.ResponseFromHttp
-import com.example.data.{ Team => PTeam }
+import com.github.thebridsk.bridge.test.util.HttpUtils.ResponseFromHttp
+import com.github.thebridsk.bridge.data.{ Team => PTeam }
 
 object EditNamesPage {
 
@@ -31,7 +31,7 @@ object EditNamesPage {
   }
 
   def getTeam( dupid: String, teamid: String ): Option[PTeam] = {
-    import com.example.rest.UtilsPlayJson._
+    import com.github.thebridsk.bridge.rest.UtilsPlayJson._
     val ResponseFromHttp(status,loc,ce,mov,cd) = HttpUtils.getHttpObject[PTeam](restUrlFor(dupid,teamid))
     mov
   }

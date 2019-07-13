@@ -1,35 +1,35 @@
-package com.example.pages.duplicate
+package com.github.thebridsk.bridge.pages.duplicate
 
 import scala.scalajs.js
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.extra.router.RouterCtl
-import utils.logging.Logger
-import com.example.bridge.store.BoardSetStore
-import com.example.controller.BoardSetController
-import com.example.data.BoardSet
-import com.example.data.Movement
-import com.example.controller.Controller
-import com.example.pages.duplicate.DuplicateRouter.CompleteScoreboardView
-import com.example.pages.duplicate.DuplicateRouter.MovementView
-import com.example.pages.duplicate.DuplicateRouter.BoardSetView
-import com.example.react.AppButton
-import com.example.react.Popup
-import com.example.rest2.ResultHolder
-import com.example.data.MatchDuplicate
-import com.example.rest2.RequestCancelled
-import com.example.pages.duplicate.DuplicateModule.PlayDuplicate
-import com.example.react.PopupOkCancel
-import com.example.logger.Alerter
-import com.example.rest2.RestClientDuplicateResult
-import com.example.data.MatchDuplicateResult
-import com.example.pages.duplicate.DuplicateRouter.DuplicateResultEditView
-import com.example.react.CheckBox
-import com.example.routes.BridgeRouter
-import com.example.react.Utils.ExtendReactEventFromInput
-import com.example.materialui.MuiTypography
-import com.example.materialui.TextVariant
-import com.example.materialui.TextColor
+import com.github.thebridsk.utilities.logging.Logger
+import com.github.thebridsk.bridge.bridge.store.BoardSetStore
+import com.github.thebridsk.bridge.controller.BoardSetController
+import com.github.thebridsk.bridge.data.BoardSet
+import com.github.thebridsk.bridge.data.Movement
+import com.github.thebridsk.bridge.controller.Controller
+import com.github.thebridsk.bridge.pages.duplicate.DuplicateRouter.CompleteScoreboardView
+import com.github.thebridsk.bridge.pages.duplicate.DuplicateRouter.MovementView
+import com.github.thebridsk.bridge.pages.duplicate.DuplicateRouter.BoardSetView
+import com.github.thebridsk.bridge.react.AppButton
+import com.github.thebridsk.bridge.react.Popup
+import com.github.thebridsk.bridge.rest2.ResultHolder
+import com.github.thebridsk.bridge.data.MatchDuplicate
+import com.github.thebridsk.bridge.rest2.RequestCancelled
+import com.github.thebridsk.bridge.pages.duplicate.DuplicateModule.PlayDuplicate
+import com.github.thebridsk.bridge.react.PopupOkCancel
+import com.github.thebridsk.bridge.logger.Alerter
+import com.github.thebridsk.bridge.rest2.RestClientDuplicateResult
+import com.github.thebridsk.bridge.data.MatchDuplicateResult
+import com.github.thebridsk.bridge.pages.duplicate.DuplicateRouter.DuplicateResultEditView
+import com.github.thebridsk.bridge.react.CheckBox
+import com.github.thebridsk.bridge.routes.BridgeRouter
+import com.github.thebridsk.bridge.react.Utils.ExtendReactEventFromInput
+import com.github.thebridsk.materialui.MuiTypography
+import com.github.thebridsk.materialui.TextVariant
+import com.github.thebridsk.materialui.TextColor
 
 /**
  * PageSelectMatch.
@@ -53,7 +53,7 @@ object PageSelectMatch {
 
 object PageSelectMatchInternal {
   import PageSelectMatch._
-  import com.example.react.PopupOkCancelImplicits._
+  import com.github.thebridsk.bridge.react.PopupOkCancelImplicits._
 
   val logger = Logger("bridge.PageSelectMatch")
 

@@ -1,13 +1,13 @@
-package com.example.rest2
+package com.github.thebridsk.bridge.rest2
 
-import com.example.data.RestMessage
+import com.github.thebridsk.bridge.data.RestMessage
 import org.scalajs.dom.ext.Ajax.InputData
 import scala.concurrent.duration.Duration
 import scala.reflect.ClassTag
 import java.net.URI
 import org.scalactic.source.Position
 import play.api.libs.json._
-import com.example.data.rest.JsonSupport._
+import com.github.thebridsk.bridge.data.rest.JsonSupport._
 import scala.concurrent.ExecutionContext
 
 /**

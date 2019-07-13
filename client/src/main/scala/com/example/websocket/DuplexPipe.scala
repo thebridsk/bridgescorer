@@ -1,15 +1,15 @@
-package com.example.websocket
+package com.github.thebridsk.bridge.websocket
 
-import com.example.data.websocket.Protocol
-import com.example.data.websocket.DuplexProtocol
+import com.github.thebridsk.bridge.data.websocket.Protocol
+import com.github.thebridsk.bridge.data.websocket.DuplexProtocol
 import DuplexPipe._
 import scala.collection.mutable.Queue
 import org.scalajs.dom.document
-import com.example.data.SystemTime
-import utils.logging.Logger
+import com.github.thebridsk.bridge.data.SystemTime
+import com.github.thebridsk.utilities.logging.Logger
 import org.scalajs.dom.raw.WebSocket
-import com.example.data.websocket.DuplexProtocol.LogEntryS
-import com.example.data.websocket.DuplexProtocol.LogEntryV2
+import com.github.thebridsk.bridge.data.websocket.DuplexProtocol.LogEntryS
+import com.github.thebridsk.bridge.data.websocket.DuplexProtocol.LogEntryV2
 
 
 object DuplexPipe {

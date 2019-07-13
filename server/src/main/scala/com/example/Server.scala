@@ -1,4 +1,4 @@
-package com.example
+package com.github.thebridsk.bridge
 
 import akka.actor.{Actor, ActorSystem, Props}
 import akka.io.IO
@@ -6,14 +6,14 @@ import akka.pattern.ask
 import akka.util.Timeout
 import scala.concurrent.duration._
 import scala.language.postfixOps
-import utils.main.Main
+import com.github.thebridsk.utilities.main.Main
 import java.util.logging.Level
 import scala.concurrent.Future
 import akka.actor.ActorRef
 import akka.io.Tcp
-import com.example.backend.BridgeService
-import com.example.service.MyService
-import com.example.backend.BridgeServiceInMemory
+import com.github.thebridsk.bridge.backend.BridgeService
+import com.github.thebridsk.bridge.service.MyService
+import com.github.thebridsk.bridge.backend.BridgeServiceInMemory
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.Http.ServerBinding
 import akka.stream.ActorMaterializer
@@ -27,20 +27,20 @@ import akka.http.scaladsl.model.StatusCodes._
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.unmarshalling.Unmarshal
 import akka.stream.scaladsl.{Flow, Sink, Source}
-import com.example.service.MyService
-import com.example.util.SystemTimeJVM
+import com.github.thebridsk.bridge.service.MyService
+import com.github.thebridsk.bridge.util.SystemTimeJVM
 import akka.event.Logging
 import akka.http.scaladsl.ConnectionContext
 import javax.net.ssl.SSLContext
 import akka.http.scaladsl.HttpExt
-import com.example.backend.BridgeServiceFileStore
+import com.github.thebridsk.bridge.backend.BridgeServiceFileStore
 import scala.reflect.io.Directory
 import scala.reflect.io.Path
 import java.io.File
 import java.security.KeyStore
 import javax.net.ssl.KeyManagerFactory
 import java.security.SecureRandom
-import com.example.rest.ServerPort
+import com.github.thebridsk.bridge.rest.ServerPort
 import akka.http.scaladsl.model.StatusCodes
 import java.io.FileInputStream
 import org.rogach.scallop._
@@ -52,13 +52,13 @@ import java.net.InetSocketAddress
 import java.net.InetAddress
 import akka.http.scaladsl.model.Uri
 import akka.http.scaladsl.model.Uri.Query
-import com.example.version.VersionServer
-import com.example.version.VersionShared
+import com.github.thebridsk.bridge.version.VersionServer
+import com.github.thebridsk.bridge.version.VersionShared
 import java.net.URLClassLoader
-import com.example.datastore.DataStoreCommands
+import com.github.thebridsk.bridge.datastore.DataStoreCommands
 import scala.annotation.tailrec
 import java.util.logging.ConsoleHandler
-import com.example.util.MemoryMonitor
+import com.github.thebridsk.bridge.util.MemoryMonitor
 
 /**
   * This is the main program for the REST server for our application.
@@ -82,7 +82,7 @@ object Server extends Main {
   implicit def dateConverter: ValueConverter[Duration] =
     singleArgConverter[Duration](Duration(_))
 
-  import utils.main.Converters._
+  import com.github.thebridsk.utilities.main.Converters._
 
   val cmdName = {
     ((getClass.getClassLoader match {

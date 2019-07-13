@@ -1,6 +1,6 @@
-package com.example.manualtest
+package com.github.thebridsk.bridge.manualtest
 
-import utils.main.Main
+import com.github.thebridsk.utilities.main.Main
 import play.api.libs.json._
 
 object TestPlayJson extends Main {

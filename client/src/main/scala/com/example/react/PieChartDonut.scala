@@ -1,9 +1,9 @@
-package com.example.react
+package com.github.thebridsk.bridge.react
 
 import scala.scalajs.js
 import japgolly.scalajs.react.vdom.svg_<^._
 import japgolly.scalajs.react._
-import com.example.color.Color
+import com.github.thebridsk.bridge.color.Color
 import Utils._
 
 /**

@@ -1,7 +1,7 @@
-package com.example.backend.resource
+package com.github.thebridsk.bridge.backend.resource
 
 import scala.concurrent.Future
-import utils.logging.Logger
+import com.github.thebridsk.utilities.logging.Logger
 import scala.concurrent.duration._
 
 class CreateKeyFailed[K](result: Result[K]) extends Exception

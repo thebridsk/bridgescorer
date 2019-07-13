@@ -1,12 +1,12 @@
-package com.example.data.chicago
+package com.github.thebridsk.bridge.data.chicago
 
-import com.example.data._
-import com.example.data.bridge.DuplicateBridge.ScoreHand
-import com.example.data.bridge.PlayerPosition
-import com.example.data.bridge.North
-import com.example.data.bridge.East
-import com.example.data.bridge.South
-import com.example.data.bridge.West
+import com.github.thebridsk.bridge.data._
+import com.github.thebridsk.bridge.data.bridge.DuplicateBridge.ScoreHand
+import com.github.thebridsk.bridge.data.bridge.PlayerPosition
+import com.github.thebridsk.bridge.data.bridge.North
+import com.github.thebridsk.bridge.data.bridge.East
+import com.github.thebridsk.bridge.data.bridge.South
+import com.github.thebridsk.bridge.data.bridge.West
 
 class RoundScoring(val round: Round) {
   val hands = round.hands.map { h =>

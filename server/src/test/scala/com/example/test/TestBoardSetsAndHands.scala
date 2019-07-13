@@ -1,13 +1,13 @@
-package com.example.test
+package com.github.thebridsk.bridge.test
 
 import org.scalatest.FlatSpec
 import org.scalatest.MustMatchers
-import com.example.data.Board
-import com.example.data.Table
-import com.example.service.MyService
-import com.example.data.Hand
-import com.example.test.backend.BridgeServiceTesting
-import com.example.backend.BridgeService
+import com.github.thebridsk.bridge.data.Board
+import com.github.thebridsk.bridge.data.Table
+import com.github.thebridsk.bridge.service.MyService
+import com.github.thebridsk.bridge.data.Hand
+import com.github.thebridsk.bridge.test.backend.BridgeServiceTesting
+import com.github.thebridsk.bridge.backend.BridgeService
 import akka.http.scaladsl.model.StatusCodes._
 import akka.http.scaladsl.testkit.ScalatestRouteTest
 import akka.http.scaladsl.model.HttpResponse
@@ -26,14 +26,14 @@ import akka.http.scaladsl.model.RemoteAddress.IP
 import java.net.InetAddress
 import akka.http.scaladsl.model.MediaTypes
 import akka.http.scaladsl.model.MediaTypes.`application/json`
-import com.example.data.bridge.North
-import com.example.data.bridge.East
-import com.example.data.bridge.South
-import com.example.data.RestMessage
-import com.example.rest.ServerPort
-import com.example.data.BoardSet
-import com.example.data.Movement
-import com.example.data.MatchDuplicate
+import com.github.thebridsk.bridge.data.bridge.North
+import com.github.thebridsk.bridge.data.bridge.East
+import com.github.thebridsk.bridge.data.bridge.South
+import com.github.thebridsk.bridge.data.RestMessage
+import com.github.thebridsk.bridge.rest.ServerPort
+import com.github.thebridsk.bridge.data.BoardSet
+import com.github.thebridsk.bridge.data.Movement
+import com.github.thebridsk.bridge.data.MatchDuplicate
 
 
 class TestBoardSetsAndHands extends FlatSpec with ScalatestRouteTest with MustMatchers with MyService {
@@ -54,7 +54,7 @@ class TestBoardSetsAndHands extends FlatSpec with ScalatestRouteTest with MustMa
 
   TestStartLogging.startLogging()
 
-  import com.example.rest.UtilsPlayJson._
+  import com.github.thebridsk.bridge.rest.UtilsPlayJson._
 
   behavior of "MyService REST for BoardSet"
 

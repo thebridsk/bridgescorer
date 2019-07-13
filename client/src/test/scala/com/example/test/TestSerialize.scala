@@ -1,10 +1,10 @@
-package com.example.test
+package com.github.thebridsk.bridge.test
 
-import com.example.data.MatchDuplicate
-import com.example.data.sample.TestMatchDuplicate
+import com.github.thebridsk.bridge.data.MatchDuplicate
+import com.github.thebridsk.bridge.data.sample.TestMatchDuplicate
 import org.scalatest.FlatSpec
 import org.scalatest.MustMatchers
-import com.example.data.rest.JsonSupport._
+import com.github.thebridsk.bridge.data.rest.JsonSupport._
 
 class TestSerialize extends FlatSpec with MustMatchers {
 

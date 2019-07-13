@@ -1,4 +1,4 @@
-//package com.example.test
+//package com.github.thebridsk.bridge.test
 //
 //import japgolly.scalajs.react.vdom.html_<^._
 //import japgolly.scalajs.react.test._
@@ -7,7 +7,7 @@
 //import japgolly.scalajs.react.extra.LogLifecycle
 //import org.scalatest.FlatSpec
 //import org.scalatest.MustMatchers
-//import com.example.data.js.SystemTimeJs
+//import com.github.thebridsk.bridge.data.js.SystemTimeJs
 //
 //object TestingStateComponent {
 //

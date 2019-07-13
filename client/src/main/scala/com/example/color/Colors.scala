@@ -1,4 +1,4 @@
-package com.example.color
+package com.github.thebridsk.bridge.color
 
 object Colors {
 

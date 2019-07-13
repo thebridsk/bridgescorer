@@ -1,4 +1,4 @@
-package com.example
+package com.github.thebridsk.bridge
 
 import scala.concurrent.duration.Duration
 import scala.language.postfixOps
@@ -6,8 +6,8 @@ import scala.language.postfixOps
 import org.rogach.scallop.ValueConverter
 import org.rogach.scallop.singleArgConverter
 
-import utils.logging.Logger
-import utils.main.Subcommand
+import com.github.thebridsk.utilities.logging.Logger
+import com.github.thebridsk.utilities.main.Subcommand
 import scala.reflect.io.Path
 import scala.reflect.io.Directory
 import java.net.URL
@@ -27,9 +27,9 @@ import java.util.zip.ZipOutputStream
 import java.util.zip.ZipEntry
 import scala.reflect.io.File
 import java.nio.file.Paths
-import com.example.version.VersionServer
-import com.example.version.VersionShared
-import com.example.utilities.version.VersionUtilities
+import com.github.thebridsk.bridge.version.VersionServer
+import com.github.thebridsk.bridge.version.VersionShared
+import com.github.thebridsk.utilities.version.VersionUtilities
 
 /**
   * This is the update subcommand.
@@ -43,7 +43,7 @@ object CollectLogs extends Subcommand("collectlogs") {
   implicit def dateConverter: ValueConverter[Duration] =
     singleArgConverter[Duration](Duration(_))
 
-  import utils.main.Converters._
+  import com.github.thebridsk.utilities.main.Converters._
 
   val defaultZip = Path("logs.zip")
   val defaultStore = Path("./store")
@@ -126,13 +126,13 @@ The server should NOT be running.
         zip.closeEntry()
       }
       CollectLogs.copyResourceToZip(
-        "com/example/bridgescorer/version/VersionBridgeScorer.properties",
+        "com/github/thebridsk/bridge/bridgescorer/version/VersionBridgeScorer.properties",
         "VersionBridgeScorer.properties",
         zip
       )
 
       CollectLogs.copyResourceToZip(
-        "com/example/utilities/version/VersionUtilities.properties",
+        "com/github/thebridsk/bridge/utilities/version/VersionUtilities.properties",
         "VersionUtilities.properties",
         zip
       )

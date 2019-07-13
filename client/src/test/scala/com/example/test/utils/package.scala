@@ -1,4 +1,4 @@
-package com.example.test
+package com.github.thebridsk.bridge.test
 
 import org.querki.jquery._
 

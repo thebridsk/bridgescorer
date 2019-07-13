@@ -1,14 +1,14 @@
-package com.example.pages.duplicate
+package com.github.thebridsk.bridge.pages.duplicate
 
 import japgolly.scalajs.react.vdom.html_<^._
-import com.example.color.Color
-import com.example.react.PieChart
-import com.example.data.duplicate.stats.CounterStat
-import com.example.pages.BaseStyles.baseStyles
-import com.example.react.PieChartWithTooltip.IntLegendUtil
-import com.example.react.PieChartWithTooltip
-import com.example.react.ColorBar
-import com.example.react.Utils._
+import com.github.thebridsk.bridge.color.Color
+import com.github.thebridsk.bridge.react.PieChart
+import com.github.thebridsk.bridge.data.duplicate.stats.CounterStat
+import com.github.thebridsk.bridge.pages.BaseStyles.baseStyles
+import com.github.thebridsk.bridge.react.PieChartWithTooltip.IntLegendUtil
+import com.github.thebridsk.bridge.react.PieChartWithTooltip
+import com.github.thebridsk.bridge.react.ColorBar
+import com.github.thebridsk.bridge.react.Utils._
 
 object TrickPieChart {
 

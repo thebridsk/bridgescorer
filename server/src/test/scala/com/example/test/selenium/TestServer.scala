@@ -1,22 +1,22 @@
-package com.example.test.selenium
+package com.github.thebridsk.bridge.test.selenium
 
-import com.example.backend.BridgeServiceInMemory
-import com.example.Server
-import com.example.data.LoggerConfig
-import utils.logging.Logger
+import com.github.thebridsk.bridge.backend.BridgeServiceInMemory
+import com.github.thebridsk.bridge.Server
+import com.github.thebridsk.bridge.data.LoggerConfig
+import com.github.thebridsk.utilities.logging.Logger
 import java.util.logging.Level
 import scala.concurrent.Await
 import scala.concurrent.duration._
 import scala.language.postfixOps
-import com.example.test.util.MonitorTCP
-import com.example.StartServer
+import com.github.thebridsk.bridge.test.util.MonitorTCP
+import com.github.thebridsk.bridge.StartServer
 import java.net.URL
-import com.example.service.MyService
+import com.github.thebridsk.bridge.service.MyService
 import scala.reflect.io.Directory
-import com.example.backend.FileImportStore
-import com.example.logging.RemoteLoggingConfig
+import com.github.thebridsk.bridge.backend.FileImportStore
+import com.github.thebridsk.bridge.logging.RemoteLoggingConfig
 import java.io.File
-import com.example.backend.BridgeServiceWithLogging
+import com.github.thebridsk.bridge.backend.BridgeServiceWithLogging
 
 object TestServer {
 

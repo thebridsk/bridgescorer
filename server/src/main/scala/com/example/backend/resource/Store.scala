@@ -1,4 +1,4 @@
-package com.example.backend.resource
+package com.github.thebridsk.bridge.backend.resource
 
 import akka.http.caching.scaladsl.Cache
 import akka.http.caching.scaladsl.CachingSettings
@@ -8,17 +8,17 @@ import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext
 import scala.concurrent.Future
 import akka.http.scaladsl.model.StatusCodes
-import com.example.data.RestMessage
+import com.github.thebridsk.bridge.data.RestMessage
 import scala.concurrent.Promise
 import scala.util.Success
 import scala.util.Failure
-import utils.logging.Logger
+import com.github.thebridsk.utilities.logging.Logger
 import akka.http.scaladsl.model.StatusCode
 
 import Store._
-import com.example.data.VersionedInstance
+import com.github.thebridsk.bridge.data.VersionedInstance
 import org.scalactic.source.Position
-import com.example.source.SourcePosition
+import com.github.thebridsk.bridge.source.SourcePosition
 import Implicits._
 
 object Store {

@@ -1,6 +1,6 @@
-package com.example.test
+package com.github.thebridsk.bridge.test
 
-import com.example.test.selenium.AllSeleniumSuites
+import com.github.thebridsk.bridge.test.selenium.AllSeleniumSuites
 import org.scalatest.Sequential
 
 /**

@@ -1,32 +1,32 @@
-package com.example.pages.chicagos
+package com.github.thebridsk.bridge.pages.chicagos
 
-import com.example.bridge.store.ChicagoStore
-import com.example.controller.ChicagoController
-import com.example.data.bridge.Chicago
-import com.example.data.bridge.Contract
-import com.example.data.bridge.Made
-import com.example.data.bridge.NoTrump
-import com.example.data.bridge.North
-import com.example.data.bridge.NotDoubled
-import com.example.data.bridge.NotVul
-import com.example.data.bridge.PassedOut
-import com.example.data.bridge.South
-import com.example.data.bridge.Vul
-import com.example.data.bridge.Vulnerability
-import com.example.data.chicago.ChicagoScoring
-import com.example.pages.hand.PageHand
+import com.github.thebridsk.bridge.bridge.store.ChicagoStore
+import com.github.thebridsk.bridge.controller.ChicagoController
+import com.github.thebridsk.bridge.data.bridge.Chicago
+import com.github.thebridsk.bridge.data.bridge.Contract
+import com.github.thebridsk.bridge.data.bridge.Made
+import com.github.thebridsk.bridge.data.bridge.NoTrump
+import com.github.thebridsk.bridge.data.bridge.North
+import com.github.thebridsk.bridge.data.bridge.NotDoubled
+import com.github.thebridsk.bridge.data.bridge.NotVul
+import com.github.thebridsk.bridge.data.bridge.PassedOut
+import com.github.thebridsk.bridge.data.bridge.South
+import com.github.thebridsk.bridge.data.bridge.Vul
+import com.github.thebridsk.bridge.data.bridge.Vulnerability
+import com.github.thebridsk.bridge.data.chicago.ChicagoScoring
+import com.github.thebridsk.bridge.pages.hand.PageHand
 
 import japgolly.scalajs.react.BackendScope
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.extra.router.RouterCtl
 import japgolly.scalajs.react.vdom.html_<^._
-import utils.logging.Logger
-import com.example.pages.chicagos.ChicagoRouter.HandView
-import com.example.materialui.MuiTypography
-import com.example.routes.BridgeRouter
-import com.example.materialui.TextVariant
-import com.example.materialui.TextColor
-import com.example.pages.BaseStyles.baseStyles
+import com.github.thebridsk.utilities.logging.Logger
+import com.github.thebridsk.bridge.pages.chicagos.ChicagoRouter.HandView
+import com.github.thebridsk.materialui.MuiTypography
+import com.github.thebridsk.bridge.routes.BridgeRouter
+import com.github.thebridsk.materialui.TextVariant
+import com.github.thebridsk.materialui.TextColor
+import com.github.thebridsk.bridge.pages.BaseStyles.baseStyles
 
 /**
   * A skeleton component.

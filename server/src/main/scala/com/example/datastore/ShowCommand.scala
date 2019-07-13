@@ -1,23 +1,23 @@
-package com.example.datastore
+package com.github.thebridsk.bridge.datastore
 
-import utils.main.Subcommand
-import utils.logging.Logger
+import com.github.thebridsk.utilities.main.Subcommand
+import com.github.thebridsk.utilities.logging.Logger
 import org.rogach.scallop._
 import scala.concurrent.duration.Duration
 import scala.reflect.io.Path
-import com.example.backend.BridgeServiceFileStore
+import com.github.thebridsk.bridge.backend.BridgeServiceFileStore
 import scala.concurrent.Future
 import scala.concurrent.Await
 import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext.Implicits.global
-import com.example.data.duplicate.suggestion.DuplicateSuggestionsCalculation
-import com.example.data.DuplicateSummary
-import com.example.data.duplicate.suggestion.DuplicateSuggestions
+import com.github.thebridsk.bridge.data.duplicate.suggestion.DuplicateSuggestionsCalculation
+import com.github.thebridsk.bridge.data.DuplicateSummary
+import com.github.thebridsk.bridge.data.duplicate.suggestion.DuplicateSuggestions
 import java.text.SimpleDateFormat
 import java.util.Date
-import com.example.data.duplicate.suggestion.NeverPair
-import com.example.data.Id
-import com.example.datastore.stats.DuplicateStatsCommand
+import com.github.thebridsk.bridge.data.duplicate.suggestion.NeverPair
+import com.github.thebridsk.bridge.data.Id
+import com.github.thebridsk.bridge.datastore.stats.DuplicateStatsCommand
 
 trait ShowCommand
 
@@ -28,7 +28,7 @@ object ShowCommand extends Subcommand("show") {
   implicit def dateConverter: ValueConverter[Duration] =
     singleArgConverter[Duration](Duration(_))
 
-  import utils.main.Converters._
+  import com.github.thebridsk.utilities.main.Converters._
 
   descr("show information about a datastore")
 
@@ -63,7 +63,7 @@ object ShowNamesCommand extends Subcommand("names") {
   implicit def dateConverter: ValueConverter[Duration] =
     singleArgConverter[Duration](Duration(_))
 
-  import utils.main.Converters._
+  import com.github.thebridsk.utilities.main.Converters._
 
   descr("show all names in datastore")
 
@@ -97,7 +97,7 @@ object ShowSuggestionCommand extends Subcommand("suggestion") {
   implicit def dateConverter: ValueConverter[Duration] =
     singleArgConverter[Duration](Duration(_))
 
-  import utils.main.Converters._
+  import com.github.thebridsk.utilities.main.Converters._
 
   descr("show all names in datastore")
 
@@ -213,7 +213,7 @@ object ShowBoardsetsAndMovementsCommand extends Subcommand("boardsets") {
   implicit def dateConverter: ValueConverter[Duration] =
     singleArgConverter[Duration](Duration(_))
 
-  import utils.main.Converters._
+  import com.github.thebridsk.utilities.main.Converters._
 
   descr("show all boardsets and movements")
 
@@ -268,7 +268,7 @@ object ShowPartnersOfCommand extends Subcommand("partnersof") {
   implicit def dateConverter: ValueConverter[Duration] =
     singleArgConverter[Duration](Duration(_))
 
-  import utils.main.Converters._
+  import com.github.thebridsk.utilities.main.Converters._
 
   descr("show partners of a player")
 
@@ -336,7 +336,7 @@ object ShowTeamDeclarerCommand extends Subcommand("declarer") {
   import DataStoreCommands.optionStore
   import ShowCommand.log
 
-  import utils.main.Converters._
+  import com.github.thebridsk.utilities.main.Converters._
 
   descr("show the number of times team was declarer in match")
 

@@ -1,8 +1,8 @@
-package com.example.data.duplicate.suggestion
+package com.github.thebridsk.bridge.data.duplicate.suggestion
 
-import com.example.data.DuplicateSummary
-import utils.logging.Logger
-import com.example.data.SystemTime
+import com.github.thebridsk.bridge.data.DuplicateSummary
+import com.github.thebridsk.utilities.logging.Logger
+import com.github.thebridsk.bridge.data.SystemTime
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.media.ArraySchema
 

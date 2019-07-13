@@ -1,12 +1,12 @@
-//package com.example.test
+//package com.github.thebridsk.bridge.test
 //
 //import japgolly.scalajs.react.vdom.html_<^._
 //import japgolly.scalajs.react.test._
 //import japgolly.scalajs.react._
-//import com.example.pages.hand.ViewVulnerability
-//import com.example.data.bridge.Vulnerability
-//import com.example.data.bridge.NotVul
-//import com.example.data.bridge.Vul
+//import com.github.thebridsk.bridge.pages.hand.ViewVulnerability
+//import com.github.thebridsk.bridge.data.bridge.Vulnerability
+//import com.github.thebridsk.bridge.data.bridge.NotVul
+//import com.github.thebridsk.bridge.data.bridge.Vul
 //import japgolly.scalajs.react.ReactDOM
 //import japgolly.scalajs.react.Callback
 //import japgolly.scalajs.react.CallbackTo

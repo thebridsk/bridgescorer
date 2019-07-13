@@ -1,4 +1,4 @@
-package com.example.service
+package com.github.thebridsk.bridge.service
 
 import com.github.swagger.akka.SwaggerHttpService
 import akka.http.scaladsl.server._
@@ -9,7 +9,7 @@ import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.server.RejectionHandler
 import akka.http.scaladsl.model._
 import akka.http.scaladsl.server._
-import com.example.util.HasActorSystem
+import com.github.thebridsk.bridge.util.HasActorSystem
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import java.util.Properties

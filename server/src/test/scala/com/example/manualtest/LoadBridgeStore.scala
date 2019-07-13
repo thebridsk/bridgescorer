@@ -1,12 +1,12 @@
-package com.example.manualtest
+package com.github.thebridsk.bridge.manualtest
 
-import utils.main.Main
+import com.github.thebridsk.utilities.main.Main
 import scala.reflect.io.Directory
-import com.example.backend.BridgeServiceFileStore
-import utils.logging.Logger
-import com.example.data.RestMessage
+import com.github.thebridsk.bridge.backend.BridgeServiceFileStore
+import com.github.thebridsk.utilities.logging.Logger
+import com.github.thebridsk.bridge.data.RestMessage
 import scala.concurrent.ExecutionContext.Implicits.global
-import com.example.data.DifferenceWrappers
+import com.github.thebridsk.bridge.data.DifferenceWrappers
 
 object LoadBridgeStore extends Main {
 

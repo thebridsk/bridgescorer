@@ -1,16 +1,16 @@
-package com.example.datastore
+package com.github.thebridsk.bridge.datastore
 
-import utils.main.Main
-import com.example.version.VersionServer
-import com.example.version.VersionShared
+import com.github.thebridsk.utilities.main.Main
+import com.github.thebridsk.bridge.version.VersionServer
+import com.github.thebridsk.bridge.version.VersionShared
 import java.io.File
 import org.rogach.scallop._
 import scala.concurrent.duration.Duration
 import java.util.logging.Level
-import com.example.Server
-import utils.main.Subcommand
-import utils.logging.Logger
-import utils.logging.Config
+import com.github.thebridsk.bridge.Server
+import com.github.thebridsk.utilities.main.Subcommand
+import com.github.thebridsk.utilities.logging.Logger
+import com.github.thebridsk.utilities.logging.Config
 import scala.reflect.io.Path
 
 trait DataStoreCommands
@@ -37,7 +37,7 @@ object DataStoreCommands extends Subcommand("datastore") {
   implicit def dateConverter: ValueConverter[Duration] =
     singleArgConverter[Duration](Duration(_))
 
-  import utils.main.Converters._
+  import com.github.thebridsk.utilities.main.Converters._
 
   val cmdName = "${Server.cmdName} datastore"
 

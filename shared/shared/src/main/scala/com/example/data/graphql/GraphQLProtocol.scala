@@ -1,10 +1,10 @@
-package com.example.data.graphql
+package com.github.thebridsk.bridge.data.graphql
 
 import scala.annotation.meta._
 import play.api.libs.json._
 import scala.reflect.ClassTag
 import org.scalactic.source.Position
-import com.example.data.rest.JsonException
+import com.github.thebridsk.bridge.data.rest.JsonException
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.media.ArraySchema
 

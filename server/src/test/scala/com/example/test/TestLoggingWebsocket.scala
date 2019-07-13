@@ -1,4 +1,4 @@
-package com.example.test
+package com.github.thebridsk.bridge.test
 
 import java.net.InetAddress
 
@@ -8,7 +8,7 @@ import org.scalatest._
 import org.scalatest.FlatSpec
 import org.scalatest.MustMatchers
 
-import com.example.service.MyService
+import com.github.thebridsk.bridge.service.MyService
 
 import akka.event.Logging
 import akka.http.scaladsl.model.RemoteAddress.IP
@@ -25,8 +25,8 @@ import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 
 trait XXX extends MyService {
-  import com.example.rest.ServerPort
-  import com.example.test.backend.BridgeServiceTesting
+  import com.github.thebridsk.bridge.rest.ServerPort
+  import com.github.thebridsk.bridge.test.backend.BridgeServiceTesting
   val restService = new BridgeServiceTesting
 
   val httpport = 8080
@@ -165,8 +165,8 @@ class TestLoggingWebsocket extends FlatSpec with ScalatestRouteTest with MustMat
   }
 
   def getLogEntry( i: Int ) = {
-    import com.example.data.websocket.DuplexProtocol
-    import com.example.data.websocket.Protocol
+    import com.github.thebridsk.bridge.data.websocket.DuplexProtocol
+    import com.github.thebridsk.bridge.data.websocket.Protocol
 
     //  position: String, timestamp: Long, level: String, url: String, message: String, cause: String, args: List[String])
     val dp = DuplexProtocol.LogEntryV2( position, "logger", System.currentTimeMillis(), "I", "http://example.com/test", "message: %s %s %s", "", List("hello", "world", i.toString()))
@@ -179,7 +179,7 @@ class TestLoggingWebsocket extends FlatSpec with ScalatestRouteTest with MustMat
   }
 
   def process( msg: String ) = {
-    import com.example.data.websocket.DuplexProtocol
+    import com.github.thebridsk.bridge.data.websocket.DuplexProtocol
     val r = DuplexProtocol.fromString(msg)
     r match {
       case DuplexProtocol.ErrorResponse(data,seq) =>

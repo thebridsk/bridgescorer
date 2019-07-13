@@ -1,14 +1,14 @@
-package com.example.routes
+package com.github.thebridsk.bridge.routes
 
 import japgolly.scalajs.react.extra.router.{Resolution, RouterConfigDsl, RouterCtl, Router, _}
 import japgolly.scalajs.react.vdom.html_<^._
-import com.example.data.bridge._
-import com.example.pages.info.InfoPage
-import com.example.pages.HomePage
-import utils.logging.Logger
+import com.github.thebridsk.bridge.data.bridge._
+import com.github.thebridsk.bridge.pages.info.InfoPage
+import com.github.thebridsk.bridge.pages.HomePage
+import com.github.thebridsk.utilities.logging.Logger
 import japgolly.scalajs.react.Callback
-import com.example.data.Id
-import com.example.routes.AppRouter.AppPage
+import com.github.thebridsk.bridge.data.Id
+import com.github.thebridsk.bridge.routes.AppRouter.AppPage
 import japgolly.scalajs.react.CallbackTo
 import org.scalajs.dom.html
 import japgolly.scalajs.react._

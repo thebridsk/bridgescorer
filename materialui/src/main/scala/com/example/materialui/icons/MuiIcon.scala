@@ -1,4 +1,4 @@
-package com.example.materialui.icons
+package com.github.thebridsk.materialui.icons
 
 import scala.reflect.macros.blackbox.Context
 
@@ -15,7 +15,7 @@ object MuiIcon {
 
     // does not work
     val code = s"""
-        new com.example.materialui.icons.SvgIconBase {
+        new com.github.thebridsk.materialui.icons.SvgIconBase {
 
           @scala.scalajs.js.native
           @scala.scalajs.js.annotation.JSImport(
@@ -25,7 +25,7 @@ object MuiIcon {
           private object icon extends scala.scalajs.js.Any
 
           protected val f = japgolly.scalajs.react.JsComponent[
-                                    com.example.materialui.icons.SvgIconProps,
+                                    com.github.thebridsk.materialui.icons.SvgIconProps,
                                     japgolly.scalajs.react.Children.Varargs,
                                     Null
                             ](icon)

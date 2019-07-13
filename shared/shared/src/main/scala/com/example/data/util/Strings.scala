@@ -1,4 +1,4 @@
-package com.example.data.util
+package com.github.thebridsk.bridge.data.util
 
 object Strings {
   val half = "\u00BD"

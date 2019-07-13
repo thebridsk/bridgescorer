@@ -1,12 +1,12 @@
-package com.example.test
+package com.github.thebridsk.bridge.test
 
-import com.example.data.MatchDuplicate
-import com.example.data.sample.TestMatchDuplicate
+import com.github.thebridsk.bridge.data.MatchDuplicate
+import com.github.thebridsk.bridge.data.sample.TestMatchDuplicate
 import org.scalatest.FlatSpec
 import org.scalatest.MustMatchers
-import com.example.logger.LogFilter
+import com.github.thebridsk.bridge.logger.LogFilter
 import org.scalactic.source.Position
-import com.example.websocket.{ LogFilter => WLogFilter }
+import com.github.thebridsk.bridge.websocket.{ LogFilter => WLogFilter }
 
 class TestLogFilter extends FlatSpec with MustMatchers {
 
@@ -46,7 +46,7 @@ class TestLogFilter extends FlatSpec with MustMatchers {
 
     forAll (filtered) { (filename: String, loggername: String) =>
       it should s"1 Not log ${filename} ${loggername}" in {
-        val traceMsg = _root_.utils.logging.TraceMsg(0, loggername, _root_.utils.logging.LogMsgType, _root_.utils.logging.Level.FINE)()( Position(filename,null,21) )
+        val traceMsg = com.github.thebridsk.utilities.logging.TraceMsg(0, loggername, com.github.thebridsk.utilities.logging.LogMsgType, com.github.thebridsk.utilities.logging.Level.FINE)()( Position(filename,null,21) )
         filter.isLogged(traceMsg) mustBe false
       }
     }
@@ -64,7 +64,7 @@ class TestLogFilter extends FlatSpec with MustMatchers {
 
     forAll (filtered) { (filename: String, loggername: String) =>
       it should s"2 Not log ${filename} ${loggername}" in {
-        val traceMsg = _root_.utils.logging.TraceMsg(0, loggername, _root_.utils.logging.LogMsgType, _root_.utils.logging.Level.FINE)()( Position(filename,null,21) )
+        val traceMsg = com.github.thebridsk.utilities.logging.TraceMsg(0, loggername, com.github.thebridsk.utilities.logging.LogMsgType, com.github.thebridsk.utilities.logging.Level.FINE)()( Position(filename,null,21) )
         filter.isLogged(traceMsg) mustBe false
       }
     }
@@ -82,7 +82,7 @@ class TestLogFilter extends FlatSpec with MustMatchers {
 
     forAll (filtered) { (filename: String, loggername: String) =>
       it should s"3 log ${filename} ${loggername}" in {
-        val traceMsg = _root_.utils.logging.TraceMsg(0, loggername, _root_.utils.logging.LogMsgType, _root_.utils.logging.Level.FINE)()( Position(filename,null,21) )
+        val traceMsg = com.github.thebridsk.utilities.logging.TraceMsg(0, loggername, com.github.thebridsk.utilities.logging.LogMsgType, com.github.thebridsk.utilities.logging.Level.FINE)()( Position(filename,null,21) )
         filter.isLogged(traceMsg) mustBe true
       }
     }

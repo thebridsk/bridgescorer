@@ -1,70 +1,70 @@
-package com.example.test
+package com.github.thebridsk.bridge.test
 
 import akka.http.scaladsl.testkit.ScalatestRouteTest
 import org.scalatest._
-import com.example.backend.resource.InMemoryStore
-import com.example.data.Id
-import com.example.data.MatchDuplicate
-import com.example.backend.BridgeResources
-import com.example.data.sample.TestMatchDuplicate
+import com.github.thebridsk.bridge.backend.resource.InMemoryStore
+import com.github.thebridsk.bridge.data.Id
+import com.github.thebridsk.bridge.data.MatchDuplicate
+import com.github.thebridsk.bridge.backend.BridgeResources
+import com.github.thebridsk.bridge.data.sample.TestMatchDuplicate
 import scala.concurrent.ExecutionContext
-import com.example.backend.resource.ChangeContext
+import com.github.thebridsk.bridge.backend.resource.ChangeContext
 import scala.util.Left
 import scala.util.Right
 import scala.concurrent.Future
-import com.example.backend.resource.Result
+import com.github.thebridsk.bridge.backend.resource.Result
 import org.scalactic.source.Position
-import com.example.source.SourcePosition
-import com.example.backend.DuplicateTeamsNestedResource
-import com.example.data.Team
-import com.example.data.BoardSet
-import com.example.backend.resource.JavaResourceStore
+import com.github.thebridsk.bridge.source.SourcePosition
+import com.github.thebridsk.bridge.backend.DuplicateTeamsNestedResource
+import com.github.thebridsk.bridge.data.Team
+import com.github.thebridsk.bridge.data.BoardSet
+import com.github.thebridsk.bridge.backend.resource.JavaResourceStore
 import akka.http.scaladsl.model.StatusCode
 import akka.http.scaladsl.model.StatusCodes
-import com.example.backend.resource.StoreListener
-import com.example.backend.resource.CreateChangeContext
-import com.example.backend.resource.UpdateChangeContext
-import com.example.backend.resource.DeleteChangeContext
-import com.example.backend.DuplicateBoardsNestedResource
-import com.example.backend.DuplicateHandsNestedResource
-import com.example.data.Hand
-import com.example.data.DuplicateHand
-import com.example.data.Board
-import com.example.backend.resource.ChangeContextData
+import com.github.thebridsk.bridge.backend.resource.StoreListener
+import com.github.thebridsk.bridge.backend.resource.CreateChangeContext
+import com.github.thebridsk.bridge.backend.resource.UpdateChangeContext
+import com.github.thebridsk.bridge.backend.resource.DeleteChangeContext
+import com.github.thebridsk.bridge.backend.DuplicateBoardsNestedResource
+import com.github.thebridsk.bridge.backend.DuplicateHandsNestedResource
+import com.github.thebridsk.bridge.data.Hand
+import com.github.thebridsk.bridge.data.DuplicateHand
+import com.github.thebridsk.bridge.data.Board
+import com.github.thebridsk.bridge.backend.resource.ChangeContextData
 import scala.concurrent.duration._
-import com.example.data.Movement
+import com.github.thebridsk.bridge.data.Movement
 import scala.concurrent.Promise
 import scala.util.Success
 import scala.util.Failure
-import com.example.backend.resource.FileStore
+import com.github.thebridsk.bridge.backend.resource.FileStore
 import scala.reflect.io.Directory
-import com.example.backend.resource.FileIO
-import com.example.backend.resource.MultiStore
-import com.example.backend.resource.Store
-import com.example.backend.resource.InMemoryPersistent
-import com.example.data.VersionedInstance
-import com.example.backend.resource.StoreSupport
+import com.github.thebridsk.bridge.backend.resource.FileIO
+import com.github.thebridsk.bridge.backend.resource.MultiStore
+import com.github.thebridsk.bridge.backend.resource.Store
+import com.github.thebridsk.bridge.backend.resource.InMemoryPersistent
+import com.github.thebridsk.bridge.data.VersionedInstance
+import com.github.thebridsk.bridge.backend.resource.StoreSupport
 import scala.util.Try
-import com.example.backend.resource.ChangeContextData
-import com.example.backend.resource.JavaResourcePersistentSupport
-import com.example.backend.resource.Implicits._
-import com.example.data.RestMessage
+import com.github.thebridsk.bridge.backend.resource.ChangeContextData
+import com.github.thebridsk.bridge.backend.resource.JavaResourcePersistentSupport
+import com.github.thebridsk.bridge.backend.resource.Implicits._
+import com.github.thebridsk.bridge.data.RestMessage
 import scala.concurrent.ExecutionContext.Implicits.global
-import com.example.test.backend.TestFailurePersistent
-import com.example.test.backend.TestFailureStore
+import com.github.thebridsk.bridge.test.backend.TestFailurePersistent
+import com.github.thebridsk.bridge.test.backend.TestFailureStore
 
 object TestCacheStoreForFailures {
   import MustMatchers._
 
-  val testlog = utils.logging.Logger[TestCacheStoreForFailures]
+  val testlog = com.github.thebridsk.utilities.logging.Logger[TestCacheStoreForFailures]
 
   TestStartLogging.startLogging()
 
   val bridgeResources = BridgeResources()
   import bridgeResources._
 
-  val boardsetsPersistent = JavaResourcePersistentSupport[String,BoardSet]("/com/example/backend/", "Boardsets.txt", getClass.getClassLoader)
-  val movementsPersistent = JavaResourcePersistentSupport[String,Movement]("/com/example/backend/", "Movements.txt", getClass.getClassLoader)
+  val boardsetsPersistent = JavaResourcePersistentSupport[String,BoardSet]("/com/github/thebridsk/bridge/backend/", "Boardsets.txt", getClass.getClassLoader)
+  val movementsPersistent = JavaResourcePersistentSupport[String,Movement]("/com/github/thebridsk/bridge/backend/", "Movements.txt", getClass.getClassLoader)
 
   def standardBoardset = boardsetsPersistent.read("StandardBoards") match {
     case Right(v) => v

@@ -1,14 +1,14 @@
-package com.example.test.pages.duplicate
+package com.github.thebridsk.bridge.test.pages.duplicate
 
-import com.example.test.pages.Page
-import com.example.source.SourcePosition
+import com.github.thebridsk.bridge.test.pages.Page
+import com.github.thebridsk.bridge.source.SourcePosition
 import org.openqa.selenium.WebDriver
 import org.scalactic.source.Position
 import org.scalatest.concurrent.Eventually._
 import org.scalatest.MustMatchers._
-import com.example.test.pages.PageBrowser._
-import com.example.test.selenium.TestServer
-import com.example.data.Id
+import com.github.thebridsk.bridge.test.pages.PageBrowser._
+import com.github.thebridsk.bridge.test.selenium.TestServer
+import com.github.thebridsk.bridge.data.Id
 
 object ScoreboardPage {
 
@@ -162,10 +162,10 @@ object ScoreboardPage {
 }
 
 import ScoreboardPage._
-import com.example.test.pages.duplicate.TablePage.EnterNames
-import com.example.test.pages.GenericPage
+import com.github.thebridsk.bridge.test.pages.duplicate.TablePage.EnterNames
+import com.github.thebridsk.bridge.test.pages.GenericPage
 import org.openqa.selenium.NoSuchElementException
-import com.example.test.pages.bridge.Popup
+import com.github.thebridsk.bridge.test.pages.bridge.Popup
 import org.openqa.selenium.Keys
 
 class ScoreboardPage(

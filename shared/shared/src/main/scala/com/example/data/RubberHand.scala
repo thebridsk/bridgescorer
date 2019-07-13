@@ -1,7 +1,7 @@
-package com.example.data
+package com.github.thebridsk.bridge.data
 
 import scala.annotation.meta._
-import com.example.data.SystemTime.Timestamp
+import com.github.thebridsk.bridge.data.SystemTime.Timestamp
 import io.swagger.v3.oas.annotations.media.Schema
 
 /**

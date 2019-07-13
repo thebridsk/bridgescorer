@@ -1,14 +1,14 @@
-package com.example.pages.hand
+package com.github.thebridsk.bridge.pages.hand
 
 import scala.scalajs.js
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
-import com.example.data.bridge.ContractTricks
-import com.example.data.bridge._
-import com.example.pages.hand.ComponentInputStyleButton.InputMethod
-import com.example.pages.hand.PageHandInternal.PageHandNextInput
-import com.example.react.Utils._
-import com.example.react.RadioButton
+import com.github.thebridsk.bridge.data.bridge.ContractTricks
+import com.github.thebridsk.bridge.data.bridge._
+import com.github.thebridsk.bridge.pages.hand.ComponentInputStyleButton.InputMethod
+import com.github.thebridsk.bridge.pages.hand.PageHandInternal.PageHandNextInput
+import com.github.thebridsk.bridge.react.Utils._
+import com.github.thebridsk.bridge.react.RadioButton
 
 /**
  * A skeleton component.
