@@ -67,7 +67,7 @@ object BldBridge {
     )
     .configure( commonSettings, buildInfo("com.example.bridgescorer.version", "VersionBridgeScorer"))
     .dependsOn(BldBridgeServer.`bridgescorer-server` % "test->test;compile->compile")
-    .dependsOn(ProjectRef(uri("utilities"), "utilities"))
+    .dependsOn(ProjectRef(uri("utilities"), "utilities-jvm"))
     .enablePlugins(WebScalaJSBundlerPlugin)
     .settings(
       inConfig(Test)(baseAssemblySettings): _*
