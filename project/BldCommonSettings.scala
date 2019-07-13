@@ -97,7 +97,7 @@ object BldCommonSettings {
       }
     )
     println(s"Running test: ${tst}")
-
+    tst
   }
 
   val moretestToRun = "com.github.thebridsk.bridge.test.selenium.IntegrationTests"
