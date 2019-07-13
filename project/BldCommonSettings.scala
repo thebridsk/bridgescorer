@@ -79,22 +79,26 @@ object BldCommonSettings {
   val testToRunBuildForHelpOnly = "com.github.thebridsk.bridge.test.selenium.DuplicateTestPages"
   val testToRunInTravis = "com.github.thebridsk.bridge.test.TravisAllSuites"
 
-  lazy val testToRun = serverTestToRun.getOrElse(
-    if (inTravis) {
-      println(s"Running in Travis CI, tests to run: ${testToRunInTravis}")
-      testToRunInTravis
-    } else {
-      val t = testCaseToRun.getOrElse(
-        if (buildForHelpOnly) {
-          testToRunBuildForHelpOnly
-        } else {
-          testToRunNotTravis
-        }
-      )
-      println(s"Not running in Travis CI, tests to run: ${t}")
-      t
-    }
-  )
+  val testToRun = {
+    val tst = serverTestToRun.getOrElse(
+      if (inTravis) {
+        println(s"Running in Travis CI, tests to run: ${testToRunInTravis}")
+        testToRunInTravis
+      } else {
+        val t = testCaseToRun.getOrElse(
+          if (buildForHelpOnly) {
+            testToRunBuildForHelpOnly
+          } else {
+            testToRunNotTravis
+          }
+        )
+        println(s"Not running in Travis CI, tests to run: ${t}")
+        t
+      }
+    )
+    println(s"Running test: ${tst}")
+
+  }
 
   val moretestToRun = "com.github.thebridsk.bridge.test.selenium.IntegrationTests"
   val travisMoretestToRun = "com.github.thebridsk.bridge.test.selenium.TravisIntegrationTests"
