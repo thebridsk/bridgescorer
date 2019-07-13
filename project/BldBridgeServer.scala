@@ -92,15 +92,15 @@ object BldBridgeServer {
       mainClass in Test := Some("org.scalatest.tools.Runner"),
       EclipseKeys.createSrc := EclipseCreateSrc.Default + EclipseCreateSrc.ManagedClasses,
       //    testOptions in Test += Tests.Argument(TestFrameworks.ScalaTest, "-oG"),
-      testOptions in Test += Tests.Filter(s => {
+      testOptions in Test += Tests.Filter { s =>
         if (s == testToRun) {
           println("Using Test:    " + s)
           true
         } else {
-          println("Ignoring Test: " + s);
+          println(s"Ignoring Test: $s, looking for $testToRun");
           false
         }
-      }),
+      },
       baseDirectory in Test := {
         val x = (baseDirectory in Test).value
         println(s"baseDirectory in test is ${x}")
