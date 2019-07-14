@@ -334,12 +334,6 @@ object BridgeAppBarInternal {
                   "Voyager"
                 ),
                 MuiMenuItem(
-                  id = "TestPage",
-                  onClick = callbackPage(PageTest) _
-                )(
-                  "Test Page"
-                ),
-                MuiMenuItem(
                   id = "Color",
                   onClick = callbackPage(ColorView) _
                 )(

@@ -117,8 +117,8 @@ object BldBridgeServer {
       ),
       libraryDependencies ++= bridgeScorerDeps.value,
       libraryDependencies ++= bridgeScorerServerDeps.value,
-      bridgeScorerNpmAssets(BldBridgeClient.`bridgescorer-client`),
-      scalaJSProjects := Seq(BldBridgeClient.`bridgescorer-client`),
+      bridgeScorerNpmAssets(BldBridgeClientApi.`bridgescorer-clientapi`),
+      scalaJSProjects := Seq(BldBridgeClient.`bridgescorer-client`, BldBridgeClientApi.`bridgescorer-clientapi`),
       pipelineStages in Assets := {
         if (onlyBuildDebug) {
           Seq(scalaJSDev, gzip),

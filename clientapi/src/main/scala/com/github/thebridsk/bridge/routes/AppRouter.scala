@@ -67,9 +67,6 @@ class AppRouter {
               ThankYou::
               About::
               Info::
-              ShowDuplicateHand::
-              ShowChicagoHand::
-              ShowRubberHand::
               GraphQLAppPage::
               ColorView::
               VoyagerView::

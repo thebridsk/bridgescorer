@@ -61,7 +61,9 @@ object BldBridge {
       BldBridgeShared.sharedJS,
       BldBridgeRotation.rotationJS,
       BldBridgeMaterialUI.materialui,
+      BldBridgeClientCommon.`bridgescorer-clientcommon`,
       BldBridgeClient.`bridgescorer-client`,
+      BldBridgeClientApi.`bridgescorer-clientapi`,
       BldBridgeServer.`bridgescorer-server`,
       BldBridgeRotation.rotationJVM
     )
