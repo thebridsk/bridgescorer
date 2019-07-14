@@ -10,6 +10,6 @@
 <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
 <listEntry value="1"/>
 </listAttribute>
-<stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="com.example.test.AllUnitTests"/>
+<stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="com.github.thebridsk.bridge.test.AllUnitTests"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="bridgescorer-server"/>
 </launchConfiguration>
