@@ -116,27 +116,35 @@ class Session( name: String = "default" ) extends WebDriver {
 
   private def chrome( headless: Boolean ) =
 //   chromeCurrent(headless)
-   chromeExperiment(headless)
+   chromeWithOptions(headless)
 
-  private def chromeExperiment( headless: Boolean ): RemoteWebDriver = {
+  private def chromeWithOptions( headless: Boolean ): RemoteWebDriver = {
     val logfile = new File("logs", s"chromedriver.${Session.sessionCounter.incrementAndGet()}.log")
 
     val options = new ChromeOptions
     // http://peter.sh/experiments/chromium-command-line-switches/
     // and "chromedriver --help"
     if (!debug) options.addArguments("--silent" )
-    else options.addArguments(s"""--log-path=${logfile.toString}""", "--verbose", "--silent")
+    else options.addArguments(s"""--log-path=${logfile.toString}""", "--verbose")
 //    options.addArguments("--enable-automation=false")
     options.addArguments("--disable-infobars")
     if (headless) {
       options.addArguments("--headless")
       options.addArguments("--window-size=1920,1080")
     }
-//    val capabilities = DesiredCapabilities.chrome();
-//    capabilities.setCapability(ChromeOptions.CAPABILITY, options);
+//    options.AddArguments("--no-sandbox")
+    options.addArguments("--disable-extensions")
+//    options.addArguments("--whitelisted-ips=127.0.0.1")
     val driver = new ChromeDriver(options);
     driver
   }
+
+  // ChromeOptions options = new ChromeOptions();
+  // options.AddArgument("--headless");
+  // options.AddArgument("--whitelisted-ips");
+  // options.AddArgument("--no-sandbox");
+  // options.AddArgument("--disable-extensions");
+  // this.driver = new ChromeDriver(options);
 
   private def chromeCurrent( headless: Boolean ) = {
     // does not work
