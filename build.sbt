@@ -38,7 +38,8 @@ lazy val rotationJS: Project = BldBridgeRotation.rotationJS
 lazy val rotationJVM = BldBridgeRotation.rotationJVM
 
 lazy val materialui = BldBridgeMaterialUI.materialui
-
+lazy val `bridgescorer-clientcommon` = BldBridgeClientCommon.`bridgescorer-clientcommon`
+lazy val `bridgescorer-clientapi` = BldBridgeClientApi.`bridgescorer-clientapi`
 lazy val `bridgescorer-client` = BldBridgeClient.`bridgescorer-client`
 
 lazy val help = BldBridgeHelp.help
