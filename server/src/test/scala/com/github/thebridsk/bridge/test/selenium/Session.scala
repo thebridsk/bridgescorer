@@ -114,7 +114,7 @@ class Session( name: String = "default" ) extends WebDriver {
 
   private var chromeDriverService: Option[ChromeDriverService] = None
 
-  private def chrome( headless: Boolean ) = chromeCurrent(headless)
+  private def chrome( headless: Boolean ) = chromeExperiment(headless) // chromeCurrent(headless)
 
   private def chromeExperiment( headless: Boolean ): RemoteWebDriver = {
     val logfile = new File("logs", s"chromedriver.${Session.sessionCounter.incrementAndGet()}.log")
