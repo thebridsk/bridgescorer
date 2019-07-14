@@ -114,7 +114,9 @@ class Session( name: String = "default" ) extends WebDriver {
 
   private var chromeDriverService: Option[ChromeDriverService] = None
 
-  private def chrome( headless: Boolean ) = chromeExperiment(headless) // chromeCurrent(headless)
+  private def chrome( headless: Boolean ) =
+//   chromeCurrent(headless)
+   chromeExperiment(headless)
 
   private def chromeExperiment( headless: Boolean ): RemoteWebDriver = {
     val logfile = new File("logs", s"chromedriver.${Session.sessionCounter.incrementAndGet()}.log")
@@ -126,7 +128,10 @@ class Session( name: String = "default" ) extends WebDriver {
     else options.addArguments(s"""--log-path=${logfile.toString}""", "--verbose", "--silent")
 //    options.addArguments("--enable-automation=false")
     options.addArguments("--disable-infobars")
-    if (headless) options.addArguments("--headless")
+    if (headless) {
+      options.addArguments("--headless")
+      options.addArguments("--window-size=1920,1080")
+    }
 //    val capabilities = DesiredCapabilities.chrome();
 //    capabilities.setCapability(ChromeOptions.CAPABILITY, options);
     val driver = new ChromeDriver(options);
