@@ -31,6 +31,8 @@
 //   set BUILDFORHELPONLY=true
 //   sbt webassembly
 
+bloopExportJarClassifiers in Global := Some(Set("sources"))
+
 lazy val sharedJS: Project = BldBridgeShared.sharedJS
 lazy val sharedJVM = BldBridgeShared.sharedJVM
 
