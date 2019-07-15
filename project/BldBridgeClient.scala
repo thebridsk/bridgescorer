@@ -38,6 +38,7 @@ object BldBridgeClient {
     .dependsOn(
       BldBridgeShared.sharedJS,
       BldBridgeRotation.rotationJS,
+      BldBridgeClientCommon.`bridgescorer-clientcommon`,
       BldBridgeMaterialUI.materialui
     )
     .dependsOn(`utilities-js`)

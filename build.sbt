@@ -31,6 +31,8 @@
 //   set BUILDFORHELPONLY=true
 //   sbt webassembly
 
+bloopExportJarClassifiers in Global := Some(Set("sources"))
+
 lazy val sharedJS: Project = BldBridgeShared.sharedJS
 lazy val sharedJVM = BldBridgeShared.sharedJVM
 
@@ -38,7 +40,8 @@ lazy val rotationJS: Project = BldBridgeRotation.rotationJS
 lazy val rotationJVM = BldBridgeRotation.rotationJVM
 
 lazy val materialui = BldBridgeMaterialUI.materialui
-
+lazy val `bridgescorer-clientcommon` = BldBridgeClientCommon.`bridgescorer-clientcommon`
+lazy val `bridgescorer-clientapi` = BldBridgeClientApi.`bridgescorer-clientapi`
 lazy val `bridgescorer-client` = BldBridgeClient.`bridgescorer-client`
 
 lazy val help = BldBridgeHelp.help

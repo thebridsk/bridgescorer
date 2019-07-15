@@ -142,6 +142,14 @@ object BldDependencies {
       "com.github.japgolly.scalajs-react" %%% "test" % vScalaJsReact % "test" withSources()
       ))
 
+  val clientcommonDeps = Def.setting(scalatestDeps.value ++ Seq(
+
+    "com.github.japgolly.scalajs-react" %%% "core"          % vScalaJsReact withSources(),
+    "com.github.japgolly.scalajs-react" %%% "extra"         % vScalaJsReact withSources(),
+
+    "com.github.japgolly.scalajs-react" %%% "test" % vScalaJsReact % "test" withSources()
+    ))
+
   val bridgeScorerClientDeps = Def.setting(Seq(
 
       "org.scala-js" %%%  "scalajs-dom"    % vScalajsdom withSources(),
@@ -159,7 +167,35 @@ object BldDependencies {
       "com.github.japgolly.scalajs-react" %%% "test" % vScalaJsReact % "test" withSources()
       ))
 
+  val bridgeScorerClientApiDeps = Def.setting(Seq(
+
+    "org.scala-js" %%%  "scalajs-dom"    % vScalajsdom withSources(),
+    "io.swagger.core.v3" % "swagger-annotations" % vSwagger withSources(),
+
+    "com.github.japgolly.scalajs-react" %%% "core"          % vScalaJsReact withSources(),
+//      "com.github.japgolly.scalajs-react" %%% "ext-scalaz71"  % vScalaJsReact withSources(),
+    "com.github.japgolly.scalajs-react" %%% "extra"         % vScalaJsReact withSources(),
+//      "com.github.japgolly.scalacss"      %%% "core"          % vScalaCss withSources(),
+//      "com.github.japgolly.scalacss"      %%% "ext-react"     % vScalaCss withSources(),
+
+//      "be.doeraene"  %%%  "scalajs-jquery" % vScalajsJquery % "test" withSources(),
+    "org.querki" %%% "jquery-facade" % vJqueryFacade % "test" withSources(),
+
+    "com.github.japgolly.scalajs-react" %%% "test" % vScalaJsReact % "test" withSources()
+    ))
+
   val bridgeScorerNpmDeps = Seq(
+      "react" -> vWebJarsReact,
+      "react-dom" -> vWebJarsReact,
+      "flux" -> vWebJarsFlux,
+      "react-widgets" -> vReactWidgets,
+      "react-widgets-moment" -> vReactWidgetsMoment,
+      "moment" -> vMoment,
+      "@material-ui/core" -> vMaterialUIcore,
+      "@material-ui/icons" -> vMaterialUIicons
+  )
+
+  val bridgeScorerClientApiNpmDeps = Seq(
       "react" -> vWebJarsReact,
       "react-dom" -> vWebJarsReact,
       "flux" -> vWebJarsFlux,
@@ -185,7 +221,22 @@ object BldDependencies {
       "jquery" -> vJQuery,
   )
 
+  val bridgeScorerClientApiTestNpmDeps = Seq(
+      "jsdom" -> vJsDom,
+      "jquery" -> vJQuery,
+  )
+
   val bridgeScorerDevNpmDeps = Seq(
+      "webpack" -> vWebPack,
+//      "source-map-loader" -> vSourceMapLoader,
+//      "concat-with-sourcemaps" -> vConcatWithSourcemaps,
+      "terser" -> vTerser,
+      "ajv" -> vAjv
+//      "expose-loader" -> vExposeLoader
+  )
+
+
+  val bridgeScorerClientApiDevNpmDeps = Seq(
       "webpack" -> vWebPack,
 //      "source-map-loader" -> vSourceMapLoader,
 //      "concat-with-sourcemaps" -> vConcatWithSourcemaps,

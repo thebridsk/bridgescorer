@@ -28,11 +28,7 @@ import com.github.thebridsk.bridge.routes.AppRouter.Home
 import org.scalajs.dom.experimental.URL
 import com.github.thebridsk.bridge.Bridge
 import com.github.thebridsk.bridge.react.Utils._
-import com.github.thebridsk.bridge.routes.AppRouter.GraphQLAppPage
-import com.github.thebridsk.bridge.routes.AppRouter.GraphiQLView
-import com.github.thebridsk.bridge.routes.AppRouter.VoyagerView
 import com.github.thebridsk.bridge.routes.AppRouter.PageTest
-import com.github.thebridsk.bridge.routes.AppRouter.ColorView
 import com.github.thebridsk.bridge.routes.AppRouter.LogView
 import com.github.thebridsk.bridge.bridge.action.BridgeDispatcher
 import com.github.thebridsk.bridge.logger.Init
@@ -317,19 +313,19 @@ object BridgeAppBarInternal {
                 ),
                 MuiMenuItem(
                   id = "GraphQL",
-                  onClick = callbackPage(GraphQLAppPage) _
+                  onClick = handleHelpGotoPageClick("/public/index-api.html#graphql") _  // callbackPage(GraphQLAppPage) _
                 )(
                   "GraphQL"
                 ),
                 MuiMenuItem(
                   id = "GraphiQL",
-                  onClick = callbackPage(GraphiQLView) _
+                  onClick = handleHelpGotoPageClick("/public/index-api.html#graphiql") _  // callbackPage(GraphiQLView) _
                 )(
                   "GraphiQL"
                 ),
                 MuiMenuItem(
                   id = "Voyager",
-                  onClick = callbackPage(VoyagerView) _
+                  onClick = handleHelpGotoPageClick("/public/index-api.html#voyager") _  // callbackPage(VoyagerView) _
                 )(
                   "Voyager"
                 ),
@@ -341,7 +337,7 @@ object BridgeAppBarInternal {
                 ),
                 MuiMenuItem(
                   id = "Color",
-                  onClick = callbackPage(ColorView) _
+                  onClick = handleHelpGotoPageClick("/public/index-api.html#color") _  // callbackPage(ColorView) _
                 )(
                   "Color"
                 ),

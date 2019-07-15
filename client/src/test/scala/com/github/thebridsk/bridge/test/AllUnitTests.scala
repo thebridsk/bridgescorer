@@ -13,9 +13,7 @@ class AllUnitTests extends Sequential(
     new MyTest,
     new TestDuplicateStore,
     new TestLogFilter,
-    new TestSerialize,
-    new TestColor
-
+    new TestSerialize
 ) {
   println( "Creating AllUnitTests" )
 }
