@@ -73,8 +73,8 @@ object BldBridgeClientApi {
       //   https://github.com/scalacenter/scalajs-bundler/issues/83
 //    testOptions in Test += Tests.Filter(s => { println("TestOption: "+s); false}),
       testOptions in Test += Tests.Filter(s => {
-//      if (s == "com.github.thebridsk.bridge.test.AllUnitTests") {
-        if (clientUnitTests.contains(s)) {
+        if (s == "xxcom.github.thebridsk.bridge.test.AllUnitTests") {
+//        if (clientUnitTests.contains(s)) {
           println("Using Test:    " + s)
           true
         } else {

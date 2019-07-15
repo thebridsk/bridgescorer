@@ -516,8 +516,9 @@ object BldBridge {
 //                       packageJSDependencies in Compile in `bridgescorer-client`,
           test in Test in BldBridgeRotation.rotationJVM,
           test in Test in BldBridgeRotation.rotationJS,
+          test in Test in BldBridgeClientCommon.`bridgescorer-clientcommon`,
           test in Test in BldBridgeClient.`bridgescorer-client`,
-          test in Test in BldBridgeClientApi.`bridgescorer-clientapi`,
+//          test in Test in BldBridgeClientApi.`bridgescorer-clientapi`,
           test in Test in BldBridgeServer.`bridgescorer-server`,
 //                       hugo in help,
           disttests in Distribution
@@ -532,7 +533,9 @@ object BldBridge {
 //                       packageJSDependencies in Compile in `bridgescorer-client`,
           test in Test in BldBridgeRotation.rotationJVM,
           test in Test in BldBridgeRotation.rotationJS,
+          test in Test in BldBridgeClientCommon.`bridgescorer-clientcommon`,
           test in Test in BldBridgeClient.`bridgescorer-client`,
+//          test in Test in BldBridgeClientApi.`bridgescorer-clientapi`,
           test in Test in BldBridgeServer.`bridgescorer-server`,
 //                       hugo in help,
           travismoretests in Distribution
@@ -547,7 +550,9 @@ object BldBridge {
 //                       packageJSDependencies in Compile in `bridgescorer-client`,
           test in Test in BldBridgeRotation.rotationJVM,
           test in Test in BldBridgeRotation.rotationJS,
+          test in Test in BldBridgeClientCommon.`bridgescorer-clientcommon`,
           test in Test in BldBridgeClient.`bridgescorer-client`,
+//          test in Test in BldBridgeClientApi.`bridgescorer-clientapi`,
           test in Test in BldBridgeServer.`bridgescorer-server`
         )
         .value,
@@ -568,7 +573,9 @@ object BldBridge {
 //                       assembly in Test in `bridgescorer-client`,
           test in Test in BldBridgeRotation.rotationJVM,
           test in Test in BldBridgeRotation.rotationJS,
+          test in Test in BldBridgeClientCommon.`bridgescorer-clientcommon`,
           test in Test in BldBridgeClient.`bridgescorer-client`,
+//          test in Test in BldBridgeClientApi.`bridgescorer-clientapi`,
           test in Test in BldBridgeServer.`bridgescorer-server`,
 //                       hugo in help,
           mypublish in Distribution
@@ -585,7 +592,9 @@ object BldBridge {
 //                       fullOptJS in Compile in `bridgescorer-client`,
           allassembly,
 //                       packageJSDependencies in Compile in `bridgescorer-client`,
+          test in Test in BldBridgeClientCommon.`bridgescorer-clientcommon`,
           test in Test in BldBridgeClient.`bridgescorer-client`,
+//          test in Test in BldBridgeClientApi.`bridgescorer-clientapi`,
           test in Test in BldBridgeServer.`bridgescorer-server`,
           test in Test
         )

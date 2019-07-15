@@ -7,9 +7,11 @@ import scala.scalajs.js.annotation.JSExportTopLevel
 /**
  * @author werewolf
  */
-// @JSExportTopLevel("AllUnitTests")
-class AllUnitTests extends Sequential(
+// @JSExportTopLevel("AllCommonUnitTests")
+class AllCommonUnitTests extends Sequential(
+
+    new TestColor
 
 ) {
-  println( "Creating AllUnitTests" )
+  println( "Creating AllCommonUnitTests" )
 }

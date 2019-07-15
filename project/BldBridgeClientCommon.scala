@@ -28,7 +28,16 @@ object BldBridgeClientCommon {
     .settings(
       name := "bridgescorer-clientcommon",
       libraryDependencies ++= clientcommonDeps.value,
-      libraryDependencies in Test ++= scalatestDeps.value
+      testOptions in Test += Tests.Filter(s => {
+//        if (s == "com.github.thebridsk.bridge.test.AllCommonUnitTests") {
+          if (s == "com.github.thebridsk.bridge.test.TestColor") {
+            println("Using Test:    " + s)
+            true
+          } else {
+            println("Ignoring Test: " + s);
+            false
+          }
+        }),
     )
 
 }
