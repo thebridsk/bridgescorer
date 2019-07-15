@@ -25,16 +25,12 @@ import org.scalajs.dom.document
 import japgolly.scalajs.react.vdom.VdomNode
 import com.github.thebridsk.bridge.routes.AppRouter.Home
 import com.github.thebridsk.bridge.routes.AppRouter.Info
-import com.github.thebridsk.bridge.routes.AppRouter.GraphQLAppPage
-import com.github.thebridsk.bridge.routes.AppRouter.GraphiQLView
-import com.github.thebridsk.bridge.routes.AppRouter.VoyagerView
 import com.github.thebridsk.bridge.pages.chicagos.ChicagoModule.PlayChicago2
 import com.github.thebridsk.bridge.pages.chicagos.ChicagoRouter.{ ListView => ChicagoListView }
 import com.github.thebridsk.bridge.pages.rubber.RubberRouter.{ ListView => RubberListView }
 import com.github.thebridsk.bridge.pages.rubber.RubberModule.PlayRubber
 import com.github.thebridsk.bridge.pages.duplicate.DuplicateModule.PlayDuplicate
 import com.github.thebridsk.bridge.pages.duplicate.DuplicateRouter.SummaryView
-import com.github.thebridsk.bridge.routes.AppRouter.ColorView
 import com.github.thebridsk.bridge.Bridge
 import com.github.thebridsk.materialui.PopperPlacement
 import com.github.thebridsk.bridge.routes.AppRouter.ShowDuplicateHand

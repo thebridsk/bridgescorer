@@ -191,11 +191,6 @@ object BldDependencies {
       "react-widgets" -> vReactWidgets,
       "react-widgets-moment" -> vReactWidgetsMoment,
       "moment" -> vMoment,
-      "swagger-ui-dist" -> vSwaggerUI,
-//      "fastclick" -> vFastClick,
-      "graphql-voyager" -> vGraphQLVoyager,
-      "graphql" -> vGraphQL,
-      "graphiql" -> vGraphiQL,
       "@material-ui/core" -> vMaterialUIcore,
       "@material-ui/icons" -> vMaterialUIicons
   )

@@ -28,6 +28,7 @@ object BldBridgeClientCommon {
     .settings(
       name := "bridgescorer-clientcommon",
       libraryDependencies ++= clientcommonDeps.value,
+      libraryDependencies in Test ++= scalatestDeps.value
     )
 
 }

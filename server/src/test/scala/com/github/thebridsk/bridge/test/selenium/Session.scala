@@ -115,8 +115,8 @@ class Session( name: String = "default" ) extends WebDriver {
   private var chromeDriverService: Option[ChromeDriverService] = None
 
   private def chrome( headless: Boolean ) =
-//   chromeCurrent(headless)
-   chromeWithOptions(headless)
+   chromeCurrent(headless)
+//   chromeWithOptions(headless)
 
   private def chromeWithOptions( headless: Boolean ): RemoteWebDriver = {
     val logfile = new File("logs", s"chromedriver.${Session.sessionCounter.incrementAndGet()}.log")
@@ -177,10 +177,9 @@ class Session( name: String = "default" ) extends WebDriver {
         options.addArguments("--headless")
         options.addArguments("--window-size=1920,1080")
       }
-      val capabilities = DesiredCapabilities.chrome();
-      capabilities.setCapability(ChromeOptions.CAPABILITY, options);
+      options.addArguments("--disable-extensions")
       testlog.fine("Starting remote driver for chrome")
-      val dr = new RemoteWebDriver(service.getUrl(), capabilities)
+      val dr = new ChromeDriver(service, options)
       testlog.fine("Started remote driver for chrome")
       dr
     } catch {

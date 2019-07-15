@@ -21,6 +21,7 @@ import BldVersion._
 object BldBridgeClientApi {
 
   val clientUnitTests =
+    "com.github.thebridsk.bridge.test.TestColor" ::
     Nil
 
   lazy val `bridgescorer-clientapi` = project

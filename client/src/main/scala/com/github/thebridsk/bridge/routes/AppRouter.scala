@@ -31,10 +31,6 @@ object AppRouter {
   case object ShowChicagoHand extends AppPage     // for debugging
   case object ShowRubberHand extends AppPage      // for debugging
   case object PageTest extends AppPage  // for debugging
-  case object GraphQLAppPage extends AppPage
-  case object ColorView extends AppPage
-  case object VoyagerView extends AppPage
-  case object GraphiQLView extends AppPage
   case object LogView extends AppPage
 
   private var instance: Option[AppRouter] = None
@@ -60,12 +56,8 @@ import com.github.thebridsk.bridge.rest2.AjaxResult
 import com.github.thebridsk.bridge.testpage.TestPage
 import com.github.thebridsk.bridge.logger.Alerter
 import org.scalactic.source.Position
-import com.github.thebridsk.bridge.pages.GraphQLPage
 import com.github.thebridsk.bridge.pages.ExportPage
 import com.github.thebridsk.bridge.pages.ImportsListPage
-import com.github.thebridsk.bridge.pages.ColorPage
-import com.github.thebridsk.bridge.pages.VoyagerPage
-import com.github.thebridsk.bridge.pages.GraphiQLPage
 import com.github.thebridsk.bridge.pages.duplicate.DuplicatePageBridgeAppBar
 import com.github.thebridsk.bridge.pages.RootBridgeAppBar
 import com.github.thebridsk.materialui.MuiTypography
@@ -144,10 +136,6 @@ class AppRouter( modules: Module* ) {
               ShowChicagoHand::
               ShowRubberHand::
               PageTest::
-              GraphQLAppPage::
-              ColorView::
-              VoyagerView::
-              GraphiQLView::
               LogView::
               Nil
 
@@ -245,10 +233,6 @@ class AppRouter( modules: Module* ) {
       | staticRoute("#info", Info) ~> renderR( (routerCtl) => logit(InfoPage(routerCtl)) )
       | staticRoute("#thankyou", ThankYou) ~> renderR( (routerCtl) => logit(ThankYouPage()) )
       | staticRoute("#testpage", PageTest) ~> renderR( (routerCtl) => logit(TestPage(Home,routerCtl)) )
-      | staticRoute("#graphql", GraphQLAppPage) ~> renderR( (routerCtl) => logit(GraphQLPage(routerCtl)) )
-      | staticRoute("#color", ColorView) ~> renderR( (routerCtl) => logit(ColorPage(routerCtl)) )
-      | staticRoute("#voyager", VoyagerView) ~> renderR( (routerCtl) => logit(VoyagerPage(routerCtl)) )
-      | staticRoute("#graphiql", GraphiQLView) ~> renderR( (routerCtl) => logit(GraphiQLPage(routerCtl)) )
       | staticRoute("#log", LogView) ~> renderR( (routerCtl) => logit(LogPage(routerCtl)) )
       | moduleRoutes()
       ).notFound( p => logit {

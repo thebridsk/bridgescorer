@@ -517,6 +517,7 @@ object BldBridge {
           test in Test in BldBridgeRotation.rotationJVM,
           test in Test in BldBridgeRotation.rotationJS,
           test in Test in BldBridgeClient.`bridgescorer-client`,
+          test in Test in BldBridgeClientApi.`bridgescorer-clientapi`,
           test in Test in BldBridgeServer.`bridgescorer-server`,
 //                       hugo in help,
           disttests in Distribution
