@@ -97,9 +97,9 @@ object BldBridge {
 //      removeRelativePath("target\\scala-"+verScalaMajorMinor+"\\resource_managed\\main")
       ),
       EclipseKeys.withSource := true,
-//    mainClass in Compile := Some("com.github.thebridsk.bridge.Server"),
-      mainClass in (Compile, run) := Some("com.github.thebridsk.bridge.Server"),
-      mainClass in (Compile, packageBin) := Some("com.github.thebridsk.bridge.Server"),
+//    mainClass in Compile := Some("com.github.thebridsk.bridge.server.Server"),
+      mainClass in (Compile, run) := Some("com.github.thebridsk.bridge.server.Server"),
+      mainClass in (Compile, packageBin) := Some("com.github.thebridsk.bridge.server.Server"),
       Compile / run / fork := true,
       testOptions in Test := Seq(),
       test in assembly := {}, // test in (`bridgescorer-server`, Test),
