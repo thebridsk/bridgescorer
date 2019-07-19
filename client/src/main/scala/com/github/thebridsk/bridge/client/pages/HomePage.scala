@@ -12,7 +12,7 @@ import com.github.thebridsk.bridge.data.ServerVersion
 import com.github.thebridsk.bridge.client.controller.Controller
 import com.github.thebridsk.bridge.client.controller.RubberController
 import com.github.thebridsk.bridge.client.version.VersionClient
-import com.github.thebridsk.bridge.version.VersionShared
+import com.github.thebridsk.bridge.data.version.VersionShared
 import scala.util.Success
 import scala.util.Failure
 import com.github.thebridsk.bridge.clientcommon.react.AppButton

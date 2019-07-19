@@ -10,7 +10,7 @@ import com.github.thebridsk.bridge.data.ServerURL
 import com.github.thebridsk.bridge.clientcommon.rest2.RestClientServerURL
 import com.github.thebridsk.bridge.data.ServerVersion
 import com.github.thebridsk.bridge.clientapi.version.VersionClient
-import com.github.thebridsk.bridge.version.VersionShared
+import com.github.thebridsk.bridge.data.version.VersionShared
 import scala.util.Success
 import scala.util.Failure
 import com.github.thebridsk.bridge.clientcommon.react.AppButton

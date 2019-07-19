@@ -2,7 +2,7 @@ package com.github.thebridsk.bridge.datastore
 
 import com.github.thebridsk.utilities.main.Main
 import com.github.thebridsk.bridge.server.version.VersionServer
-import com.github.thebridsk.bridge.version.VersionShared
+import com.github.thebridsk.bridge.data.version.VersionShared
 import java.io.File
 import org.rogach.scallop._
 import scala.concurrent.duration.Duration

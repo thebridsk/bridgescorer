@@ -36,7 +36,7 @@ import java.io.OutputStream
 import scala.concurrent.Future
 import akka.http.scaladsl.model.headers.ContentDispositionTypes
 import com.github.thebridsk.bridge.server.version.VersionServer
-import com.github.thebridsk.bridge.version.VersionShared
+import com.github.thebridsk.bridge.data.version.VersionShared
 import com.github.thebridsk.utilities.version.VersionUtilities
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter

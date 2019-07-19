@@ -28,7 +28,7 @@ import java.util.zip.ZipEntry
 import scala.reflect.io.File
 import java.nio.file.Paths
 import com.github.thebridsk.bridge.server.version.VersionServer
-import com.github.thebridsk.bridge.version.VersionShared
+import com.github.thebridsk.bridge.data.version.VersionShared
 import com.github.thebridsk.utilities.version.VersionUtilities
 
 /**

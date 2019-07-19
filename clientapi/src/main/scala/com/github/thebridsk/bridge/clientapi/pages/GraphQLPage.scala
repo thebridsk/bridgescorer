@@ -11,7 +11,7 @@ import com.github.thebridsk.utilities.logging.Logger
 import com.github.thebridsk.bridge.data.ServerURL
 import com.github.thebridsk.bridge.data.ServerVersion
 import com.github.thebridsk.bridge.clientapi.version.VersionClient
-import com.github.thebridsk.bridge.version.VersionShared
+import com.github.thebridsk.bridge.data.version.VersionShared
 import com.github.thebridsk.bridge.clientcommon.react.AppButton
 import com.github.thebridsk.bridge.clientapi.routes.AppRouter.Home
 import com.github.thebridsk.bridge.clientcommon.react.PopupOkCancel

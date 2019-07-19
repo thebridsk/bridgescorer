@@ -12,7 +12,7 @@ import com.github.thebridsk.utilities.logging.Logger
 import com.github.thebridsk.bridge.data.ServerURL
 import com.github.thebridsk.bridge.data.ServerVersion
 import com.github.thebridsk.bridge.client.version.VersionClient
-import com.github.thebridsk.bridge.version.VersionShared
+import com.github.thebridsk.bridge.data.version.VersionShared
 import com.github.thebridsk.bridge.clientcommon.react.AppButton
 import com.github.thebridsk.bridge.client.routes.AppRouter.Home
 import com.github.thebridsk.bridge.clientcommon.graphql.GraphQLClient

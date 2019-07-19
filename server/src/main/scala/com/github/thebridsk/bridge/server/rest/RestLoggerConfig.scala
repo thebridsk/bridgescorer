@@ -17,7 +17,7 @@ import com.github.thebridsk.bridge.server.Server
 import org.rogach.scallop.exceptions.IncompleteBuildException
 import com.github.thebridsk.bridge.data.ServerVersion
 import com.github.thebridsk.bridge.server.version.VersionServer
-import com.github.thebridsk.bridge.version.VersionShared
+import com.github.thebridsk.bridge.data.version.VersionShared
 import com.github.thebridsk.utilities.version.VersionUtilities
 import com.github.thebridsk.utilities.logging.Logger
 import com.github.thebridsk.bridge.data.BoardSetsAndMovements

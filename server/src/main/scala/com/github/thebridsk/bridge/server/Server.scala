@@ -53,7 +53,7 @@ import java.net.InetAddress
 import akka.http.scaladsl.model.Uri
 import akka.http.scaladsl.model.Uri.Query
 import com.github.thebridsk.bridge.server.version.VersionServer
-import com.github.thebridsk.bridge.version.VersionShared
+import com.github.thebridsk.bridge.data.version.VersionShared
 import java.net.URLClassLoader
 import com.github.thebridsk.bridge.datastore.DataStoreCommands
 import scala.annotation.tailrec
