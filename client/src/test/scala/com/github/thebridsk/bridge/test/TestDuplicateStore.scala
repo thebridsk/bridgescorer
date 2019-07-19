@@ -1,20 +1,20 @@
 package com.github.thebridsk.bridge.test
 
-import com.github.thebridsk.bridge.bridge.store.DuplicateStore
+import com.github.thebridsk.bridge.client.bridge.store.DuplicateStore
 import com.github.thebridsk.bridge.data.MatchDuplicate
 import com.github.thebridsk.bridge.data.sample.TestMatchDuplicate
-import com.github.thebridsk.bridge.bridge.action.ActionStartDuplicateMatch
+import com.github.thebridsk.bridge.client.bridge.action.ActionStartDuplicateMatch
 import com.github.thebridsk.bridge.data.Id
 import com.github.thebridsk.bridge.data.DuplicateHand
 import com.github.thebridsk.bridge.data.Hand
-import com.github.thebridsk.bridge.bridge.action.ActionUpdateDuplicateHand
-import com.github.thebridsk.bridge.bridge.store.ChangeListenable
+import com.github.thebridsk.bridge.client.bridge.action.ActionUpdateDuplicateHand
+import com.github.thebridsk.bridge.client.bridge.store.ChangeListenable
 import com.github.thebridsk.bridge.data.SystemTime
 import scala.scalajs.js.Date
 import com.github.thebridsk.bridge.data.js.SystemTimeJs
 import com.github.thebridsk.bridge.data.bridge.MatchDuplicateScore
 import com.github.thebridsk.bridge.data.bridge.PerspectiveTable
-import com.github.thebridsk.bridge.bridge.action.ActionUpdateDuplicateMatch
+import com.github.thebridsk.bridge.client.bridge.action.ActionUpdateDuplicateMatch
 import japgolly.scalajs.react.Callback
 import org.scalatest.FlatSpec
 import org.scalatest.MustMatchers

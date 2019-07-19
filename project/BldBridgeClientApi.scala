@@ -28,7 +28,7 @@ object BldBridgeClientApi {
     .in(file("clientapi"))
     .configure(
       commonSettings,
-      buildInfo("com.github.thebridsk.bridge.version", "VersionClient")
+      buildInfo("com.github.thebridsk.bridge.clientapi.version", "VersionClient")
     )
     .enablePlugins(ScalaJSPlugin)
     .enablePlugins(ScalaJSBundlerPlugin)

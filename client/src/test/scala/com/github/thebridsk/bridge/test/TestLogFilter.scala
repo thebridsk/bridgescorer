@@ -4,9 +4,10 @@ import com.github.thebridsk.bridge.data.MatchDuplicate
 import com.github.thebridsk.bridge.data.sample.TestMatchDuplicate
 import org.scalatest.FlatSpec
 import org.scalatest.MustMatchers
-import com.github.thebridsk.bridge.logger.LogFilter
+import com.github.thebridsk.bridge.clientcommon.logger.LogFilter
 import org.scalactic.source.Position
-import com.github.thebridsk.bridge.websocket.{ LogFilter => WLogFilter }
+import com.github.thebridsk.bridge.clientcommon
+.websocket.{ LogFilter => WLogFilter }
 
 class TestLogFilter extends FlatSpec with MustMatchers {
 
