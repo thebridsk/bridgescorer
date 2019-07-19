@@ -63,8 +63,8 @@ object TestCacheStoreForFailures {
   val bridgeResources = BridgeResources()
   import bridgeResources._
 
-  val boardsetsPersistent = JavaResourcePersistentSupport[String,BoardSet]("/com/github/thebridsk/bridge/backend/", "Boardsets.txt", getClass.getClassLoader)
-  val movementsPersistent = JavaResourcePersistentSupport[String,Movement]("/com/github/thebridsk/bridge/backend/", "Movements.txt", getClass.getClassLoader)
+  val boardsetsPersistent = JavaResourcePersistentSupport[String,BoardSet]("/com/github/thebridsk/bridge/server/backend/", "Boardsets.txt", getClass.getClassLoader)
+  val movementsPersistent = JavaResourcePersistentSupport[String,Movement]("/com/github/thebridsk/bridge/server/backend/", "Movements.txt", getClass.getClassLoader)
 
   def standardBoardset = boardsetsPersistent.read("StandardBoards") match {
     case Right(v) => v

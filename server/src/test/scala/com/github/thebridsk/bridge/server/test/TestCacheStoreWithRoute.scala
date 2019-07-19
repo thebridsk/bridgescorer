@@ -80,11 +80,11 @@ object TestCacheStoreWithRoute {
   import bridgeResources._
 
   def getBoardSetStore: Store[String,BoardSet] = {
-    JavaResourceStore("test","/com/github/thebridsk/bridge/backend/", "Boardsets.txt", getClass.getClassLoader)
+    JavaResourceStore("test","/com/github/thebridsk/bridge/server/backend/", "Boardsets.txt", getClass.getClassLoader)
   }
 
   def getMovementStore: Store[String,Movement] = {
-    JavaResourceStore("test","/com/github/thebridsk/bridge/backend/", "Movements.txt", getClass.getClassLoader)
+    JavaResourceStore("test","/com/github/thebridsk/bridge/server/backend/", "Movements.txt", getClass.getClassLoader)
   }
 
   import ExecutionContext.Implicits.global

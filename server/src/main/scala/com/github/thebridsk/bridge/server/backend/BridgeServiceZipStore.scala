@@ -84,7 +84,7 @@ class BridgeServiceZipStore(
     List(
       new ZipPersistentSupport(zipfile),
       new JavaResourcePersistentSupport(
-        "/com/github/thebridsk/bridge/backend/",
+        "/com/github/thebridsk/bridge/server/backend/",
         "Boardsets.txt",
         self.getClass.getClassLoader
       )
@@ -96,7 +96,7 @@ class BridgeServiceZipStore(
     List(
       new ZipPersistentSupport(zipfile),
       new JavaResourcePersistentSupport(
-        "/com/github/thebridsk/bridge/backend/",
+        "/com/github/thebridsk/bridge/server/backend/",
         "Movements.txt",
         self.getClass.getClassLoader
       )

@@ -176,14 +176,14 @@ class MyServiceSpec extends FlatSpec with ScalatestRouteTest with MustMatchers w
   }
 
   it should "return NotFound for requests to /html/../com/..." in {
-    Get("/html/../com/github/thebridsk/bridge/Server.class") ~> Route.seal { myRoute } ~> check {
+    Get("/html/../com/github/thebridsk/bridge/server/Server.class") ~> Route.seal { myRoute } ~> check {
       handled mustBe true
       status mustBe NotFound
     }
   }
 
   it should "return NotFound for requests to /js/../com/..." in {
-    Get("/js/../com/github/thebridsk/bridge/Server.class") ~> Route.seal { myRoute } ~> check {
+    Get("/js/../com/github/thebridsk/bridge/server/Server.class") ~> Route.seal { myRoute } ~> check {
       handled mustBe true
       status mustBe NotFound
     }

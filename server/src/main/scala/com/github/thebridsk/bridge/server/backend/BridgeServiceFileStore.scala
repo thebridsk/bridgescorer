@@ -100,7 +100,7 @@ class BridgeServiceFileStore(
   val boardSets = MultiStore.createFileAndResource[String, BoardSet](
     id,
     dir,
-    "/com/github/thebridsk/bridge/backend/",
+    "/com/github/thebridsk/bridge/server/backend/",
     "Boardsets.txt",
     self.getClass.getClassLoader
   )
@@ -108,7 +108,7 @@ class BridgeServiceFileStore(
   val movements = MultiStore.createFileAndResource[String, Movement](
     id,
     dir,
-    "/com/github/thebridsk/bridge/backend/",
+    "/com/github/thebridsk/bridge/server/backend/",
     "Movements.txt",
     self.getClass.getClassLoader
   )

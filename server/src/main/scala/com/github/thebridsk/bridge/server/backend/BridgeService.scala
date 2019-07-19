@@ -537,7 +537,7 @@ class BridgeServiceInMemory(
   val boardSets: Store[String, BoardSet] =
     MultiStore.createInMemoryAndResource[String, BoardSet](
       id,
-      "/com/github/thebridsk/bridge/backend/",
+      "/com/github/thebridsk/bridge/server/backend/",
       "Boardsets.txt",
       self.getClass.getClassLoader
     )
@@ -545,7 +545,7 @@ class BridgeServiceInMemory(
   val movements: Store[String, Movement] =
     MultiStore.createInMemoryAndResource[String, Movement](
       id,
-      "/com/github/thebridsk/bridge/backend/",
+      "/com/github/thebridsk/bridge/server/backend/",
       "Movements.txt",
       self.getClass.getClassLoader
     )

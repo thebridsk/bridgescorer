@@ -72,7 +72,7 @@ object RemoteLoggingConfig {
   implicit val remoteLoggerConfigFormat = Json.format[RemoteLoggingConfig]
 
   def getDefaultRemoteLoggerConfig() = {
-    readFromResource("com/github/thebridsk/bridge/remoteLogging.yaml")
+    readFromResource("com/github/thebridsk/bridge/server/remoteLogging.yaml")
   }
 
   def read(config: String): RemoteLoggingConfig = {

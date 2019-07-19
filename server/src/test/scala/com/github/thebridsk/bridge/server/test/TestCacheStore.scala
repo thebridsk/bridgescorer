@@ -61,11 +61,11 @@ object TestCacheStore {
     FileStore("test",dir)
 
   def getBoardSetStore: Store[String,BoardSet] = {
-    JavaResourceStore("test","/com/github/thebridsk/bridge/backend/", "Boardsets.txt", getClass.getClassLoader)
+    JavaResourceStore("test","/com/github/thebridsk/bridge/server/backend/", "Boardsets.txt", getClass.getClassLoader)
   }
 
   def getMovementStore: Store[String,Movement] = {
-    JavaResourceStore("test","/com/github/thebridsk/bridge/backend/", "Movements.txt", getClass.getClassLoader)
+    JavaResourceStore("test","/com/github/thebridsk/bridge/server/backend/", "Movements.txt", getClass.getClassLoader)
   }
 
   def getBoardSetFileStore( dir: Directory ): Store[String,BoardSet] = {
@@ -73,7 +73,7 @@ object TestCacheStore {
   }
 
   def getBoardSetMultiStore( dir: Directory ): Store[String,BoardSet] = {
-    MultiStore.createFileAndResource("test",dir, "/com/github/thebridsk/bridge/backend/", "Boardsets.txt", getClass.getClassLoader)
+    MultiStore.createFileAndResource("test",dir, "/com/github/thebridsk/bridge/server/backend/", "Boardsets.txt", getClass.getClassLoader)
   }
 
   import ExecutionContext.Implicits.global
