@@ -100,14 +100,16 @@ object BldCommonSettings {
     tst
   }
 
+  // these run out of bridgescorer-server project
   val moretestToRun = "com.github.thebridsk.bridge.server.test.selenium.IntegrationTests"
   val travisMoretestToRun = "com.github.thebridsk.bridge.server.test.selenium.TravisIntegrationTests"
   val testdataDir = "../testdata"
 
+  // these run out of bridgescorer project
   val imoretestToRun =
-    "com.github.thebridsk.bridge.server.test.selenium.integrationtest.IntegrationTests"
+    "com.github.thebridsk.bridge.test.selenium.integrationtest.IntegrationTests"
   val itravisMoretestToRun =
-    "com.github.thebridsk.bridge.server.test.selenium.integrationtest.TravisIntegrationTests"
+    "com.github.thebridsk.bridge.test.selenium.integrationtest.TravisIntegrationTests"
   val itestdataDir = "./testdata"
 
 
