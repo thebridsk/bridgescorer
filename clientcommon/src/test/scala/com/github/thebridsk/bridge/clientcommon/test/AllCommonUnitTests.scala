@@ -1,4 +1,4 @@
-package com.github.thebridsk.bridge.test
+package com.github.thebridsk.bridge.clientcommon.test
 
 import org.scalatest.Sequential
 import scala.scalajs.js.annotation.JSExport

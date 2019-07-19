@@ -1,4 +1,4 @@
-package com.github.thebridsk.bridge.test
+package com.github.thebridsk.bridge.clientcommon.test
 
 import org.scalatest.FlatSpec
 import com.github.thebridsk.bridge.clientcommon.color._

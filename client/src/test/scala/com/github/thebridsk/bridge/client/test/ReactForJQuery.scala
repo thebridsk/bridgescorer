@@ -1,11 +1,11 @@
-package com.github.thebridsk.bridge.test
+package com.github.thebridsk.bridge.client.test
 
 import org.scalajs.dom.raw.Element
 import org.scalajs.dom.raw.Node
 import org.scalajs.dom.raw.Text
 //import org.scalajs.jquery.{ jQuery => _, _ }
 import org.querki.jquery._
-import com.github.thebridsk.bridge.test.utils.jQuery
+import com.github.thebridsk.bridge.client.test.utils.jQuery
 import japgolly.scalajs.react.test.ReactTestUtils
 import org.scalajs.dom.raw.DocumentType
 import org.scalajs.dom.raw.ProcessingInstruction

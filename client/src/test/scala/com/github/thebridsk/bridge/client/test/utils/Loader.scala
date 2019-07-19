@@ -1,4 +1,4 @@
-package com.github.thebridsk.bridge.test.utils
+package com.github.thebridsk.bridge.client.test.utils
 
 import scala.scalajs.js
 import scala.scalajs.js.annotation.JSImport

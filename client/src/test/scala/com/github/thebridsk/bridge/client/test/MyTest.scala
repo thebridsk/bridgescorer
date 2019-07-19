@@ -1,4 +1,4 @@
-package com.github.thebridsk.bridge.test
+package com.github.thebridsk.bridge.client.test
 
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react.test._
@@ -7,7 +7,7 @@ import com.github.thebridsk.bridge.data.bridge.Vulnerability
 import com.github.thebridsk.bridge.data.bridge.NotVul
 import com.github.thebridsk.bridge.data.bridge.Vul
 //import org.scalajs.jquery.{ jQuery => _, _ }
-import com.github.thebridsk.bridge.test.utils.jQuery
+import com.github.thebridsk.bridge.client.test.utils.jQuery
 import com.github.thebridsk.bridge.data.Round
 import japgolly.scalajs.react._
 import com.github.thebridsk.bridge.data.bridge._
@@ -19,7 +19,7 @@ import com.github.thebridsk.bridge.client.pages.chicagos.ChicagoModule.PlayChica
 import com.github.thebridsk.bridge.client.pages.chicagos.ChicagoRouter.ListView
 import com.github.thebridsk.bridge.data.js.SystemTimeJs
 import com.github.thebridsk.bridge.clientcommon.rest2.AjaxResult
-import com.github.thebridsk.bridge.test.utils.StartLogging
+import com.github.thebridsk.bridge.client.test.utils.StartLogging
 import com.github.thebridsk.utilities.logging.Logger
 import com.github.thebridsk.bridge.source.SourcePosition
 import japgolly.scalajs.react.extra.router.BaseUrl
@@ -39,7 +39,7 @@ object MyTest {
 class MyTest extends FlatSpec with MustMatchers {
   import MyTest._
   com.github.thebridsk.bridge.client.modules.Loader.init
-  com.github.thebridsk.bridge.test.utils.Loader.init
+  com.github.thebridsk.bridge.client.test.utils.Loader.init
 
   SystemTimeJs()
   AjaxResult.setEnabled(false)      // disable server communications when running this test suite

@@ -1,4 +1,4 @@
-//package com.github.thebridsk.bridge.test.utils
+//package com.github.thebridsk.bridge.client.test.utils
 //
 //import org.scalajs.jquery.JQueryStatic
 //import scala.scalajs.js

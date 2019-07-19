@@ -20,11 +20,11 @@ import BldVersion._
 
 object BldBridgeClient {
 
-  val clientUnitTests = "com.github.thebridsk.bridge.test.MyTest" ::
-    "com.github.thebridsk.bridge.test.TestDuplicateStore" ::
-    "com.github.thebridsk.bridge.test.TestLogFilter" ::
-    "com.github.thebridsk.bridge.test.TestSerialize" ::
-    "com.github.thebridsk.bridge.test.TestColor" ::
+  val clientUnitTests = "com.github.thebridsk.bridge.client.test.MyTest" ::
+    "com.github.thebridsk.bridge.client.test.TestDuplicateStore" ::
+    "com.github.thebridsk.bridge.client.test.TestLogFilter" ::
+    "com.github.thebridsk.bridge.client.test.TestSerialize" ::
+    "com.github.thebridsk.bridge.client.test.TestColor" ::
     Nil
 
   lazy val `bridgescorer-client` = project
@@ -76,7 +76,7 @@ object BldBridgeClient {
       //   https://github.com/scalacenter/scalajs-bundler/issues/83
 //    testOptions in Test += Tests.Filter(s => { println("TestOption: "+s); false}),
       testOptions in Test += Tests.Filter(s => {
-//      if (s == "com.github.thebridsk.bridge.test.AllUnitTests") {
+//      if (s == "com.github.thebridsk.bridge.client.test.AllUnitTests") {
         if (clientUnitTests.contains(s)) {
           println("Using Test:    " + s)
           true

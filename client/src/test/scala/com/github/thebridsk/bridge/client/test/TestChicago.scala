@@ -1,4 +1,4 @@
-//package com.github.thebridsk.bridge.test
+//package com.github.thebridsk.bridge.client.test
 //
 //import japgolly.scalajs.react.vdom.html_<^._
 //import japgolly.scalajs.react.test._
@@ -7,7 +7,7 @@
 //import com.github.thebridsk.bridge.data.bridge.NotVul
 //import com.github.thebridsk.bridge.data.bridge.Vul
 //import org.scalajs.jquery.{ jQuery => _, _ }
-//import com.github.thebridsk.bridge.test.utils.jQuery
+//import com.github.thebridsk.bridge.client.test.utils.jQuery
 //import com.github.thebridsk.bridge.data.Round
 //import japgolly.scalajs.react._
 //import com.github.thebridsk.bridge.data.bridge._

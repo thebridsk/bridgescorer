@@ -21,13 +21,14 @@ import BldVersion._
 object BldBridgeClientApi {
 
   val clientUnitTests =
-    "com.github.thebridsk.bridge.test.TestColor" ::
+    "com.github.thebridsk.bridge.clientapi.test.TestColor" ::
     Nil
 
   lazy val `bridgescorer-clientapi` = project
     .in(file("clientapi"))
     .configure(
       commonSettings,
+      noTests(true),
       buildInfo("com.github.thebridsk.bridge.clientapi.version", "VersionClient")
     )
     .enablePlugins(ScalaJSPlugin)
@@ -73,7 +74,7 @@ object BldBridgeClientApi {
       //   https://github.com/scalacenter/scalajs-bundler/issues/83
 //    testOptions in Test += Tests.Filter(s => { println("TestOption: "+s); false}),
       testOptions in Test += Tests.Filter(s => {
-        if (s == "xxcom.github.thebridsk.bridge.test.AllUnitTests") {
+        if (s == "xxcom.github.thebridsk.bridge.clientapi.test.AllUnitTests") {
 //        if (clientUnitTests.contains(s)) {
           println("Using Test:    " + s)
           true

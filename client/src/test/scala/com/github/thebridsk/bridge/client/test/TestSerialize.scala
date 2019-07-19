@@ -1,4 +1,4 @@
-package com.github.thebridsk.bridge.test
+package com.github.thebridsk.bridge.client.test
 
 import com.github.thebridsk.bridge.data.MatchDuplicate
 import com.github.thebridsk.bridge.data.sample.TestMatchDuplicate
