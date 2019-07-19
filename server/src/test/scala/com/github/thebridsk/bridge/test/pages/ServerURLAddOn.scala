@@ -1,4 +1,4 @@
-package com.github.thebridsk.bridge.test.pages
+package com.github.thebridsk.bridge.server.test.pages
 
 import org.scalactic.source.Position
 import org.scalatest.concurrent.Eventually._

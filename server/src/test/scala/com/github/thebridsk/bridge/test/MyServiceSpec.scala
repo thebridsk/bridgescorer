@@ -1,7 +1,7 @@
-package com.github.thebridsk.bridge.test
+package com.github.thebridsk.bridge.server.test
 
-import com.github.thebridsk.bridge.test.backend.BridgeServiceTesting
-import com.github.thebridsk.bridge.service.MyService
+import com.github.thebridsk.bridge.server.test.backend.BridgeServiceTesting
+import com.github.thebridsk.bridge.server.service.MyService
 import akka.http.scaladsl.model.StatusCodes._
 import akka.http.scaladsl.testkit.ScalatestRouteTest
 import akka.http.scaladsl.model.HttpResponse
@@ -22,16 +22,16 @@ import akka.event.Logging
 import java.net.InetAddress
 import akka.http.scaladsl.model.RemoteAddress.IP
 import akka.http.scaladsl.model.headers.`Remote-Address`
-import com.github.thebridsk.bridge.Server
+import com.github.thebridsk.bridge.server.Server
 import com.github.thebridsk.bridge.data.ServerURL
-import com.github.thebridsk.bridge.rest.ServerPort
-import com.github.thebridsk.bridge.version.VersionServer
-import com.github.thebridsk.bridge.service.ResourceFinder
-import com.github.thebridsk.bridge.service.ShutdownHook
+import com.github.thebridsk.bridge.server.rest.ServerPort
+import com.github.thebridsk.bridge.server.version.VersionServer
+import com.github.thebridsk.bridge.server.service.ResourceFinder
+import com.github.thebridsk.bridge.server.service.ShutdownHook
 import scala.concurrent.Future
 import scala.concurrent.Promise
 import com.github.thebridsk.bridge.data.websocket.DuplexProtocol.LogEntryV2
-import com.github.thebridsk.bridge.test.selenium.TestServer
+import com.github.thebridsk.bridge.server.test.selenium.TestServer
 import akka.http.scaladsl.testkit.RouteTestTimeout
 
 class MyServiceSpec extends FlatSpec with ScalatestRouteTest with MustMatchers with MyService {
@@ -216,7 +216,7 @@ class MyServiceSpec extends FlatSpec with ScalatestRouteTest with MustMatchers w
 
 
   it should "return OK for POST request to /v1/logging/entry" in {
-    import com.github.thebridsk.bridge.rest.UtilsPlayJson._
+    import com.github.thebridsk.bridge.server.rest.UtilsPlayJson._
     Post("/v1/logger/entry", logentry) ~> addHeader(remoteAddress) ~> /* handleRejections(myRejectionHandler) { */ myRouteWithLogging /* } */ ~> check {
       status mustBe NoContent
 //      responseAs[String] mustBe "OK"
@@ -229,7 +229,7 @@ class MyServiceSpec extends FlatSpec with ScalatestRouteTest with MustMatchers w
       handled mustBe true
       status mustBe OK
 
-      import com.github.thebridsk.bridge.rest.UtilsPlayJson._
+      import com.github.thebridsk.bridge.server.rest.UtilsPlayJson._
       val resp = responseAs[Array[ServerURL]]
       resp.length mustBe 1
       resp(0) mustBe getURL(httpport)

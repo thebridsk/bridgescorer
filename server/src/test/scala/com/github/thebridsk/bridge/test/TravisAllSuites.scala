@@ -1,7 +1,7 @@
-package com.github.thebridsk.bridge.test
+package com.github.thebridsk.bridge.server.test
 
 import org.scalatest.Sequential
-import com.github.thebridsk.bridge.test.selenium.TravisSeleniumSuites
+import com.github.thebridsk.bridge.server.test.selenium.TravisSeleniumSuites
 
 /**
  * @author werewolf

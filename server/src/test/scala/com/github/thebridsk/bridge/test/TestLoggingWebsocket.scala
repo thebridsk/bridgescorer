@@ -1,4 +1,4 @@
-package com.github.thebridsk.bridge.test
+package com.github.thebridsk.bridge.server.test
 
 import java.net.InetAddress
 
@@ -8,7 +8,7 @@ import org.scalatest._
 import org.scalatest.FlatSpec
 import org.scalatest.MustMatchers
 
-import com.github.thebridsk.bridge.service.MyService
+import com.github.thebridsk.bridge.server.service.MyService
 
 import akka.event.Logging
 import akka.http.scaladsl.model.RemoteAddress.IP
@@ -25,8 +25,8 @@ import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 
 trait XXX extends MyService {
-  import com.github.thebridsk.bridge.rest.ServerPort
-  import com.github.thebridsk.bridge.test.backend.BridgeServiceTesting
+  import com.github.thebridsk.bridge.server.rest.ServerPort
+  import com.github.thebridsk.bridge.server.test.backend.BridgeServiceTesting
   val restService = new BridgeServiceTesting
 
   val httpport = 8080

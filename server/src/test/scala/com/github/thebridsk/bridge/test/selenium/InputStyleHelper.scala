@@ -1,4 +1,4 @@
-package com.github.thebridsk.bridge.test.selenium
+package com.github.thebridsk.bridge.server.test.selenium
 
 import org.scalatest.MustMatchers
 import org.openqa.selenium.WebDriver
@@ -13,17 +13,17 @@ import scala.concurrent._
 import scala.concurrent.duration._
 import com.github.thebridsk.utilities.logging.Logger
 import java.util.logging.Level
-import com.github.thebridsk.bridge.test.util.NoResultYet
-import com.github.thebridsk.bridge.test.util.MonitorTCP
-import com.github.thebridsk.bridge.test.pages.Element
+import com.github.thebridsk.bridge.server.test.util.NoResultYet
+import com.github.thebridsk.bridge.server.test.util.MonitorTCP
+import com.github.thebridsk.bridge.server.test.pages.Element
 import org.scalatest.time.Millis
 import org.scalatest.time.Span
 
 
 class InputStyleHelper extends MustMatchers {
     import InputStyleHelper._
-    import com.github.thebridsk.bridge.test.pages.PageBrowser._
-    import com.github.thebridsk.bridge.test.util.EventuallyUtils._
+    import com.github.thebridsk.bridge.server.test.pages.PageBrowser._
+    import com.github.thebridsk.bridge.server.test.util.EventuallyUtils._
 
   def getButton( id: String )(implicit webDriver: WebDriver, patienceConfig: PatienceConfig) = {
      eventuallySome{ findButton(id) }

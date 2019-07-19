@@ -1,4 +1,4 @@
-package com.github.thebridsk.bridge.test.selenium
+package com.github.thebridsk.bridge.server.test.selenium
 
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.Sequential

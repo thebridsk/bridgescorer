@@ -1,8 +1,8 @@
-package com.github.thebridsk.bridge.manualtest
+package com.github.thebridsk.bridge.server.manualtest
 
 import com.github.thebridsk.utilities.main.Main
 import scala.reflect.io.Directory
-import com.github.thebridsk.bridge.backend.BridgeServiceFileStore
+import com.github.thebridsk.bridge.server.backend.BridgeServiceFileStore
 import com.github.thebridsk.utilities.logging.Logger
 import com.github.thebridsk.bridge.data.RestMessage
 import scala.concurrent.ExecutionContext.Implicits.global

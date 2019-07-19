@@ -1,8 +1,8 @@
-package com.github.thebridsk.bridge.manualtest
+package com.github.thebridsk.bridge.server.manualtest
 
 import com.github.thebridsk.utilities.main.Main
-import com.github.thebridsk.bridge.test.selenium.Duplicate5TestPages
-import com.github.thebridsk.bridge.test.selenium.DuplicateTestPages
+import com.github.thebridsk.bridge.server.test.selenium.Duplicate5TestPages
+import com.github.thebridsk.bridge.server.test.selenium.DuplicateTestPages
 import java.io.StringWriter
 import java.io.PrintWriter
 import com.github.thebridsk.utilities.logging.Logger

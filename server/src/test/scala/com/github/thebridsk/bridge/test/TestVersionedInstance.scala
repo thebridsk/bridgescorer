@@ -1,4 +1,4 @@
-package com.github.thebridsk.bridge.test
+package com.github.thebridsk.bridge.server.test
 
 import org.scalatest.FlatSpec
 import org.scalatest.MustMatchers
@@ -9,17 +9,17 @@ import com.github.thebridsk.utilities.logging.Logger
 import com.github.thebridsk.bridge.data.MatchChicagoV3
 import com.github.thebridsk.bridge.data.MatchChicagoV2
 import com.github.thebridsk.bridge.data.MatchChicagoV1
-import com.github.thebridsk.bridge.backend.resource.VersionedInstanceJson
+import com.github.thebridsk.bridge.server.backend.resource.VersionedInstanceJson
 import com.github.thebridsk.bridge.data.VersionedInstance
 import com.github.thebridsk.bridge.data.MatchChicago
-import com.github.thebridsk.bridge.backend.resource.JsonConverter
-import com.github.thebridsk.bridge.backend.resource.YamlConverter
-import com.github.thebridsk.bridge.backend.resource.JsonYamlConverter
+import com.github.thebridsk.bridge.server.backend.resource.JsonConverter
+import com.github.thebridsk.bridge.server.backend.resource.YamlConverter
+import com.github.thebridsk.bridge.server.backend.resource.JsonYamlConverter
 import play.api.libs.json._
-import com.github.thebridsk.bridge.yaml.YamlSupport._
+import com.github.thebridsk.bridge.server.yaml.YamlSupport._
 import com.github.thebridsk.bridge.data.rest.JsonException
-import com.github.thebridsk.bridge.backend.BridgeServiceFileStoreConverters
-import com.github.thebridsk.bridge.backend.resource.Converter
+import com.github.thebridsk.bridge.server.backend.BridgeServiceFileStoreConverters
+import com.github.thebridsk.bridge.server.backend.resource.Converter
 
 class TestVersionedInstance extends FlatSpec with MustMatchers {
 

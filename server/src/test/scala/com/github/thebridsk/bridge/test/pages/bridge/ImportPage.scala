@@ -1,20 +1,20 @@
-package com.github.thebridsk.bridge.test.pages.bridge
+package com.github.thebridsk.bridge.server.test.pages.bridge
 
 import com.github.thebridsk.bridge.source.SourcePosition
 import org.openqa.selenium.WebDriver
 import org.scalactic.source.Position
 import org.scalatest.concurrent.Eventually._
 import org.scalatest.MustMatchers._
-import com.github.thebridsk.bridge.test.pages.PageBrowser._
-import com.github.thebridsk.bridge.test.selenium.TestServer
+import com.github.thebridsk.bridge.server.test.pages.PageBrowser._
+import com.github.thebridsk.bridge.server.test.selenium.TestServer
 import com.github.thebridsk.utilities.logging.Logger
-import com.github.thebridsk.bridge.test.pages.Page
+import com.github.thebridsk.bridge.server.test.pages.Page
 import scala.reflect.io.File
 import org.openqa.selenium.By.ByName
 import org.scalatest.MustMatchers._
-import com.github.thebridsk.bridge.test.pages.duplicate.ListDuplicatePage
-import com.github.thebridsk.bridge.test.pages.chicago.SummaryPage
-import com.github.thebridsk.bridge.test.pages.chicago.ListPage
+import com.github.thebridsk.bridge.server.test.pages.duplicate.ListDuplicatePage
+import com.github.thebridsk.bridge.server.test.pages.chicago.SummaryPage
+import com.github.thebridsk.bridge.server.test.pages.chicago.ListPage
 
 object ImportPage {
 
@@ -102,6 +102,6 @@ class ImportPage( implicit val webDriver: WebDriver, pageCreated: SourcePosition
 
   def importRubber( importId: String, row: Int )(implicit patienceConfig: PatienceConfig, pos: Position) = {
     clickButton( s"Rubber${row}" )
-    new com.github.thebridsk.bridge.test.pages.rubber.ListPage( Some(importId) )
+    new com.github.thebridsk.bridge.server.test.pages.rubber.ListPage( Some(importId) )
   }
 }

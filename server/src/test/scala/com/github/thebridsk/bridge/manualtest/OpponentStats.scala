@@ -1,11 +1,11 @@
-package com.github.thebridsk.bridge.manualtest
+package com.github.thebridsk.bridge.server.manualtest
 
 import com.github.thebridsk.utilities.main.Main
 import scala.reflect.io.Path
-import com.github.thebridsk.bridge.backend.BridgeService
+import com.github.thebridsk.bridge.server.backend.BridgeService
 import scala.concurrent.ExecutionContext.Implicits.global
 import com.github.thebridsk.bridge.data.duplicate.stats.PlayersOpponentsStats
-import com.github.thebridsk.bridge.backend.resource.SyncStore
+import com.github.thebridsk.bridge.server.backend.resource.SyncStore
 import scala.concurrent.duration._
 
 object OpponentStats extends Main {

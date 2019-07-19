@@ -1,4 +1,4 @@
-package com.github.thebridsk.bridge.test.util
+package com.github.thebridsk.bridge.server.test.util
 
 import java.io.InputStream
 import java.io.ByteArrayInputStream
@@ -211,7 +211,7 @@ trait HttpUtils {
   }
 
   def getHttpObject[T :Reads]( url: URL ): ResponseFromHttp[Option[T]] = {
-    import com.github.thebridsk.bridge.rest.UtilsPlayJson._
+    import com.github.thebridsk.bridge.server.rest.UtilsPlayJson._
 
     val ResponseFromHttp(status,loc,ce,resp,cd) = getHttpAll(url)
     if (status >=200 && status <300) {
@@ -250,7 +250,7 @@ trait HttpUtils {
   }
 
   def postHttpObject[T :Format]( url: URL, data: T ): ResponseFromHttp[Option[T]] = {
-    import com.github.thebridsk.bridge.rest.UtilsPlayJson._
+    import com.github.thebridsk.bridge.server.rest.UtilsPlayJson._
 
     val ResponseFromHttp(status,loc,ce,resp,cd) = postHttp(url, writeJson(data), "UTF8")
     if (status >=200 && status <300) {

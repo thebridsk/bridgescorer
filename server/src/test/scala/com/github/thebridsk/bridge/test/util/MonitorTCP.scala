@@ -1,4 +1,4 @@
-package com.github.thebridsk.bridge.test.util
+package com.github.thebridsk.bridge.server.test.util
 
 import java.text.SimpleDateFormat
 import java.util.Date

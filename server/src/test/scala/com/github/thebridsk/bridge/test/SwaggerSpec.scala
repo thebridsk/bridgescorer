@@ -1,10 +1,10 @@
-package com.github.thebridsk.bridge.test
+package com.github.thebridsk.bridge.server.test
 
 import org.scalatest.Finders
 import org.scalatest.FlatSpec
 import org.scalatest.MustMatchers
-import com.github.thebridsk.bridge.test.backend.BridgeServiceTesting
-import com.github.thebridsk.bridge.service.MyService
+import com.github.thebridsk.bridge.server.test.backend.BridgeServiceTesting
+import com.github.thebridsk.bridge.server.service.MyService
 import akka.http.scaladsl.model.StatusCodes._
 import akka.http.scaladsl.testkit.ScalatestRouteTest
 import akka.http.scaladsl.model.HttpResponse
@@ -21,7 +21,7 @@ import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import akka.http.scaladsl.model.RemoteAddress.IP
 import java.net.InetAddress
-import com.github.thebridsk.bridge.rest.ServerPort
+import com.github.thebridsk.bridge.server.rest.ServerPort
 import akka.http.scaladsl.model.headers.HttpEncodings
 import akka.http.scaladsl.coding.Gzip
 import akka.http.scaladsl.coding.Deflate
@@ -31,7 +31,7 @@ import scala.reflect.ClassTag
 import akka.http.scaladsl.unmarshalling.Unmarshal
 import scala.concurrent.Await
 import akka.http.scaladsl.util.FastFuture._
-import com.github.thebridsk.bridge.backend.resource.FileIO
+import com.github.thebridsk.bridge.server.backend.resource.FileIO
 import java.io.File
 import org.scalactic.source.Position
 

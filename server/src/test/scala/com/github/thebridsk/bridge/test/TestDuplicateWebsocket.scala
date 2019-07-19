@@ -1,17 +1,17 @@
-package com.github.thebridsk.bridge.test
+package com.github.thebridsk.bridge.server.test
 
 import org.scalatest.FlatSpec
 import org.scalatest.MustMatchers
 import com.github.thebridsk.bridge.data.Board
 import com.github.thebridsk.bridge.data.Table
-import com.github.thebridsk.bridge.service.MyService
+import com.github.thebridsk.bridge.server.service.MyService
 import com.github.thebridsk.bridge.data.Hand
 import com.github.thebridsk.bridge.data.bridge.North
 import com.github.thebridsk.bridge.data.bridge.East
 import com.github.thebridsk.bridge.data.bridge.South
 import com.github.thebridsk.bridge.data.MatchDuplicate
-import com.github.thebridsk.bridge.test.backend.BridgeServiceTesting
-import com.github.thebridsk.bridge.backend.BridgeService
+import com.github.thebridsk.bridge.server.test.backend.BridgeServiceTesting
+import com.github.thebridsk.bridge.server.backend.BridgeService
 import akka.http.scaladsl.model.StatusCodes._
 import akka.http.scaladsl.testkit.ScalatestRouteTest
 import akka.http.scaladsl.model.HttpResponse
@@ -31,7 +31,7 @@ import akka.http.scaladsl.model.MediaTypes
 import com.github.thebridsk.bridge.data.DuplicateHand
 import com.github.thebridsk.bridge.data.bridge.Spades
 import com.github.thebridsk.bridge.data.bridge.Doubled
-import com.github.thebridsk.bridge.backend.BridgeServiceInMemory
+import com.github.thebridsk.bridge.server.backend.BridgeServiceInMemory
 import akka.http.scaladsl.testkit.WSProbe
 import com.github.thebridsk.bridge.data.websocket.Protocol
 import akka.http.scaladsl.model.ws.TextMessage
@@ -51,27 +51,27 @@ import com.github.thebridsk.bridge.data.websocket.Protocol.MonitorLeft
 import com.github.thebridsk.bridge.data.websocket.DuplexProtocol
 import com.github.thebridsk.bridge.data.websocket.Protocol.NoData
 import akka.event.Logging
-import com.github.thebridsk.bridge.rest.ServerPort
+import com.github.thebridsk.bridge.server.rest.ServerPort
 import com.github.thebridsk.bridge.data.DuplicateSummary
 import akka.http.scaladsl.testkit.RouteTest
 import com.github.thebridsk.bridge.data.websocket.Protocol.ToServerMessage
 import com.github.thebridsk.bridge.data.websocket.DuplexProtocol.Send
 import com.github.thebridsk.bridge.data.websocket.Protocol.StartMonitorDuplicate
 import com.github.thebridsk.bridge.data.websocket.DuplexProtocol.DuplexMessage
-import com.github.thebridsk.bridge.test.util.WebsocketClient
-import com.github.thebridsk.bridge.test.util.WebsocketClientImplicits
+import com.github.thebridsk.bridge.server.test.util.WebsocketClient
+import com.github.thebridsk.bridge.server.test.util.WebsocketClientImplicits
 import akka.event.LoggingAdapter
 import java.io.Closeable
-import com.github.thebridsk.bridge.backend.StoreMonitor
-import com.github.thebridsk.bridge.backend.StoreMonitor.ReceivedMessage
-import com.github.thebridsk.bridge.backend.StoreMonitor.NewParticipant
+import com.github.thebridsk.bridge.server.backend.StoreMonitor
+import com.github.thebridsk.bridge.server.backend.StoreMonitor.ReceivedMessage
+import com.github.thebridsk.bridge.server.backend.StoreMonitor.NewParticipant
 import akka.actor.Actor
-import com.github.thebridsk.bridge.test.selenium.TestServer
-import com.github.thebridsk.bridge.backend.resource.StoreListener
-import com.github.thebridsk.bridge.backend.resource.ChangeContext
-import com.github.thebridsk.bridge.backend.resource.CreateChangeContext
-import com.github.thebridsk.bridge.backend.resource.UpdateChangeContext
-import com.github.thebridsk.bridge.backend.resource.DeleteChangeContext
+import com.github.thebridsk.bridge.server.test.selenium.TestServer
+import com.github.thebridsk.bridge.server.backend.resource.StoreListener
+import com.github.thebridsk.bridge.server.backend.resource.ChangeContext
+import com.github.thebridsk.bridge.server.backend.resource.CreateChangeContext
+import com.github.thebridsk.bridge.server.backend.resource.UpdateChangeContext
+import com.github.thebridsk.bridge.server.backend.resource.DeleteChangeContext
 
 class TestDuplicateWebsocket extends FlatSpec with ScalatestRouteTest with MustMatchers with MyService with BeforeAndAfterAll {
 
@@ -192,7 +192,7 @@ class TestDuplicateWebsocket extends FlatSpec with ScalatestRouteTest with MustM
     }
   }
 
-  import com.github.thebridsk.bridge.rest.UtilsPlayJson._
+  import com.github.thebridsk.bridge.server.rest.UtilsPlayJson._
 
   var createdM1: Option[MatchDuplicate] = None
   it should "return a MatchDuplicate json object for match 1 for POST request to /v1/rest/duplicates" in withListener( listenerstatus=> {

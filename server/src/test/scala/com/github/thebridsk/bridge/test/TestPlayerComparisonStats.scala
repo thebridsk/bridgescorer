@@ -1,10 +1,10 @@
-package com.github.thebridsk.bridge.test
+package com.github.thebridsk.bridge.server.test
 
 import org.scalatest.Finders
 import org.scalatest.FlatSpec
 import org.scalatest.MustMatchers
-import com.github.thebridsk.bridge.test.backend.BridgeServiceTesting
-import com.github.thebridsk.bridge.service.MyService
+import com.github.thebridsk.bridge.server.test.backend.BridgeServiceTesting
+import com.github.thebridsk.bridge.server.service.MyService
 import akka.http.scaladsl.model.StatusCodes._
 import akka.http.scaladsl.testkit.ScalatestRouteTest
 import akka.http.scaladsl.model.HttpResponse

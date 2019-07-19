@@ -1,9 +1,9 @@
-package com.github.thebridsk.bridge.test
+package com.github.thebridsk.bridge.server.test
 
 import org.scalatest.Finders
 import org.scalatest.MustMatchers
-import com.github.thebridsk.bridge.test.backend.BridgeServiceTesting
-import com.github.thebridsk.bridge.service.MyService
+import com.github.thebridsk.bridge.server.test.backend.BridgeServiceTesting
+import com.github.thebridsk.bridge.server.service.MyService
 import akka.http.scaladsl.model.StatusCodes._
 import akka.http.scaladsl.testkit.ScalatestRouteTest
 import akka.http.scaladsl.model.HttpResponse
@@ -30,15 +30,15 @@ import java.util.logging.Level
 import com.github.thebridsk.utilities.logging.RedirectOutput
 import sangria.macros._
 import play.api.libs.json._
-import com.github.thebridsk.bridge.service.graphql.Query
+import com.github.thebridsk.bridge.server.service.graphql.Query
 import akka.http.scaladsl.model.StatusCodes
-import com.github.thebridsk.bridge.backend.FileImportStore
+import com.github.thebridsk.bridge.server.backend.FileImportStore
 import scala.reflect.io.Directory
 import scala.concurrent.ExecutionContext.Implicits.global
-import com.github.thebridsk.bridge.service.graphql.GraphQLRoute
+import com.github.thebridsk.bridge.server.service.graphql.GraphQLRoute
 import com.github.thebridsk.bridge.data.rest.JsonSupport._
-import com.github.thebridsk.bridge.rest.UtilsPlayJson._
-import com.github.thebridsk.bridge.test.backend.ImportStoreTesting
+import com.github.thebridsk.bridge.server.rest.UtilsPlayJson._
+import com.github.thebridsk.bridge.server.test.backend.ImportStoreTesting
 import java.io.FileOutputStream
 import scala.concurrent.Await
 import scala.concurrent.duration._

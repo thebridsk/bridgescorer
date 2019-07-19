@@ -1,20 +1,20 @@
-package com.github.thebridsk.bridge.test.pages.chicago
+package com.github.thebridsk.bridge.server.test.pages.chicago
 
-import com.github.thebridsk.bridge.test.pages.Page
+import com.github.thebridsk.bridge.server.test.pages.Page
 import com.github.thebridsk.bridge.source.SourcePosition
 import org.openqa.selenium.WebDriver
 import org.scalactic.source.Position
 import org.scalatest.concurrent.Eventually._
 import org.scalatest.MustMatchers._
-import com.github.thebridsk.bridge.test.pages.PageBrowser._
-import com.github.thebridsk.bridge.test.selenium.TestServer
+import com.github.thebridsk.bridge.server.test.pages.PageBrowser._
+import com.github.thebridsk.bridge.server.test.selenium.TestServer
 import com.github.thebridsk.bridge.data.Id
-import com.github.thebridsk.bridge.test.pages.GenericPage
-import com.github.thebridsk.bridge.test.pages.Element
-import com.github.thebridsk.bridge.test.pages.BaseHandPage
-import com.github.thebridsk.bridge.test.pages.PagesAssertions._
+import com.github.thebridsk.bridge.server.test.pages.GenericPage
+import com.github.thebridsk.bridge.server.test.pages.Element
+import com.github.thebridsk.bridge.server.test.pages.BaseHandPage
+import com.github.thebridsk.bridge.server.test.pages.PagesAssertions._
 import com.github.thebridsk.utilities.logging.Logger
-import com.github.thebridsk.bridge.test.pages.bridge.Popup
+import com.github.thebridsk.bridge.server.test.pages.bridge.Popup
 
 object SummaryPage {
 

@@ -1,4 +1,4 @@
-package com.github.thebridsk.bridge.test.pages
+package com.github.thebridsk.bridge.server.test.pages
 
 import com.github.thebridsk.bridge.source.SourcePosition
 import org.openqa.selenium.WebDriver

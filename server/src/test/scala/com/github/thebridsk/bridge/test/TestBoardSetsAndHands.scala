@@ -1,13 +1,13 @@
-package com.github.thebridsk.bridge.test
+package com.github.thebridsk.bridge.server.test
 
 import org.scalatest.FlatSpec
 import org.scalatest.MustMatchers
 import com.github.thebridsk.bridge.data.Board
 import com.github.thebridsk.bridge.data.Table
-import com.github.thebridsk.bridge.service.MyService
+import com.github.thebridsk.bridge.server.service.MyService
 import com.github.thebridsk.bridge.data.Hand
-import com.github.thebridsk.bridge.test.backend.BridgeServiceTesting
-import com.github.thebridsk.bridge.backend.BridgeService
+import com.github.thebridsk.bridge.server.test.backend.BridgeServiceTesting
+import com.github.thebridsk.bridge.server.backend.BridgeService
 import akka.http.scaladsl.model.StatusCodes._
 import akka.http.scaladsl.testkit.ScalatestRouteTest
 import akka.http.scaladsl.model.HttpResponse
@@ -30,7 +30,7 @@ import com.github.thebridsk.bridge.data.bridge.North
 import com.github.thebridsk.bridge.data.bridge.East
 import com.github.thebridsk.bridge.data.bridge.South
 import com.github.thebridsk.bridge.data.RestMessage
-import com.github.thebridsk.bridge.rest.ServerPort
+import com.github.thebridsk.bridge.server.rest.ServerPort
 import com.github.thebridsk.bridge.data.BoardSet
 import com.github.thebridsk.bridge.data.Movement
 import com.github.thebridsk.bridge.data.MatchDuplicate
@@ -54,7 +54,7 @@ class TestBoardSetsAndHands extends FlatSpec with ScalatestRouteTest with MustMa
 
   TestStartLogging.startLogging()
 
-  import com.github.thebridsk.bridge.rest.UtilsPlayJson._
+  import com.github.thebridsk.bridge.server.rest.UtilsPlayJson._
 
   behavior of "MyService REST for BoardSet"
 

@@ -1,4 +1,4 @@
-package com.github.thebridsk.bridge.test.selenium
+package com.github.thebridsk.bridge.server.test.selenium
 
 import org.scalatest.FlatSpec
 import org.scalatest.MustMatchers
@@ -11,32 +11,32 @@ import java.util.concurrent.TimeUnit
 import org.scalactic.source.Position
 import scala.collection.convert.ImplicitConversionsToScala._
 import org.openqa.selenium.Keys
-import com.github.thebridsk.bridge.test.util.EventuallyUtils
-import com.github.thebridsk.bridge.test.util.SeleniumUtils
-import com.github.thebridsk.bridge.test.util.NoResultYet
+import com.github.thebridsk.bridge.server.test.util.EventuallyUtils
+import com.github.thebridsk.bridge.server.test.util.SeleniumUtils
+import com.github.thebridsk.bridge.server.test.util.NoResultYet
 import org.openqa.selenium.WebDriver
 import com.github.thebridsk.utilities.logging.Logger
-import com.github.thebridsk.bridge.test.util.MonitorTCP
+import com.github.thebridsk.bridge.server.test.util.MonitorTCP
 import java.net.URL
 import scala.io.Source
 import scala.io.Codec
-import com.github.thebridsk.bridge.test.util.HttpUtils.ResponseFromHttp
-import com.github.thebridsk.bridge.test.util.HttpUtils
-import com.github.thebridsk.bridge.test.TestStartLogging
+import com.github.thebridsk.bridge.server.test.util.HttpUtils.ResponseFromHttp
+import com.github.thebridsk.bridge.server.test.util.HttpUtils
+import com.github.thebridsk.bridge.server.test.TestStartLogging
 import com.github.thebridsk.bridge.source.SourcePosition
-import com.github.thebridsk.bridge.backend.BridgeServiceFileStoreConverters
-import com.github.thebridsk.bridge.backend.MatchRubberCacheStoreSupport
-import com.github.thebridsk.bridge.test.pages.Page
-import com.github.thebridsk.bridge.test.pages.PageBrowser
+import com.github.thebridsk.bridge.server.backend.BridgeServiceFileStoreConverters
+import com.github.thebridsk.bridge.server.backend.MatchRubberCacheStoreSupport
+import com.github.thebridsk.bridge.server.test.pages.Page
+import com.github.thebridsk.bridge.server.test.pages.PageBrowser
 import com.github.thebridsk.bridge.data.MatchRubber
 import play.api.libs.json.Json
 import java.io.InputStream
-import com.github.thebridsk.bridge.test.util.GraphQLUtils
+import com.github.thebridsk.bridge.server.test.util.GraphQLUtils
 import java.io.OutputStreamWriter
 import play.api.libs.json.JsSuccess
 import play.api.libs.json.JsError
-import com.github.thebridsk.bridge.backend.BridgeResources
-import com.github.thebridsk.bridge.test.pages.bridge.HomePage
+import com.github.thebridsk.bridge.server.backend.BridgeResources
+import com.github.thebridsk.bridge.server.test.pages.bridge.HomePage
 import java.util.zip.ZipFile
 import scala.reflect.io.File
 
@@ -50,7 +50,7 @@ class RubberTest extends FlatSpec
     with SeleniumUtils
     with CancelAfterFailure
 {
-  import com.github.thebridsk.bridge.test.pages.PageBrowser._
+  import com.github.thebridsk.bridge.server.test.pages.PageBrowser._
   import Eventually.{ patienceConfig => _, _ }
 
   import scala.language.postfixOps
@@ -81,7 +81,7 @@ class RubberTest extends FlatSpec
   def beforeAll() = {
     import scala.concurrent._
     import ExecutionContext.Implicits.global
-    import com.github.thebridsk.bridge.test.util.ParallelUtils._
+    import com.github.thebridsk.bridge.server.test.util.ParallelUtils._
 
     MonitorTCP.nextTest()
 
@@ -110,7 +110,7 @@ class RubberTest extends FlatSpec
   def afterAll() = {
     import scala.concurrent._
     import ExecutionContext.Implicits.global
-    import com.github.thebridsk.bridge.test.util.ParallelUtils._
+    import com.github.thebridsk.bridge.server.test.util.ParallelUtils._
 
     waitForFuturesIgnoreTimeouts( "Stopping browser and server",
                     CodeBlock {
@@ -608,7 +608,7 @@ class RubberTest extends FlatSpec
   it should "show the names without leading and trailing spaces" in {
     import Session1._
 
-    import com.github.thebridsk.bridge.rest.UtilsPlayJson._
+    import com.github.thebridsk.bridge.server.rest.UtilsPlayJson._
     val rnames: ResponseFromHttp[Option[Array[String]]] = HttpUtils.getHttpObject( new URL(TestServer.hosturl+"v1/rest/names") )
 
     rnames.data match {

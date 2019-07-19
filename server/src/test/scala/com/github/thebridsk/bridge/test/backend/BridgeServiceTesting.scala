@@ -1,10 +1,10 @@
-package com.github.thebridsk.bridge.test.backend
+package com.github.thebridsk.bridge.server.test.backend
 
 import com.github.thebridsk.bridge.data.Board
 import com.github.thebridsk.bridge.data.Table
 import com.github.thebridsk.bridge.data.Hand
-import com.github.thebridsk.bridge.backend.BridgeService
-import com.github.thebridsk.bridge.backend.BridgeServiceInMemory
+import com.github.thebridsk.bridge.server.backend.BridgeService
+import com.github.thebridsk.bridge.server.backend.BridgeServiceInMemory
 import com.github.thebridsk.bridge.data.bridge.East
 import com.github.thebridsk.bridge.data.bridge.North
 import com.github.thebridsk.bridge.data.MatchDuplicate
@@ -18,12 +18,12 @@ import java.util.Date
 import com.github.thebridsk.bridge.data.MatchDuplicateV3
 import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext
-import com.github.thebridsk.bridge.backend.ImportStore
-import com.github.thebridsk.bridge.backend.resource.MyCache
-import com.github.thebridsk.bridge.backend.resource.Result
+import com.github.thebridsk.bridge.server.backend.ImportStore
+import com.github.thebridsk.bridge.server.backend.resource.MyCache
+import com.github.thebridsk.bridge.server.backend.resource.Result
 import scala.concurrent.Future
 import akka.http.scaladsl.model.StatusCodes
-import com.github.thebridsk.bridge.backend.resource.Implicits._
+import com.github.thebridsk.bridge.server.backend.resource.Implicits._
 import scala.reflect.io.File
 
 

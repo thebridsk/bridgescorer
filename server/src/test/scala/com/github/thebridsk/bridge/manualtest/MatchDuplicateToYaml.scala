@@ -1,9 +1,9 @@
-package com.github.thebridsk.bridge.manualtest
+package com.github.thebridsk.bridge.server.manualtest
 
 import com.github.thebridsk.utilities.main.Main
-import com.github.thebridsk.bridge.backend.BridgeServiceFileStore
+import com.github.thebridsk.bridge.server.backend.BridgeServiceFileStore
 import scala.reflect.io.Directory
-import com.github.thebridsk.bridge.yaml.YamlSupport
+import com.github.thebridsk.bridge.server.yaml.YamlSupport
 import scala.concurrent.ExecutionContext.Implicits.global
 
 object MatchDuplicateToYaml extends Main {

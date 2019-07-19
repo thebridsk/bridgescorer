@@ -1,5 +1,5 @@
 
-package com.github.thebridsk.bridge.manualtest
+package com.github.thebridsk.bridge.server.manualtest
 
 import akka.stream.ActorMaterializer
 import akka.http.scaladsl.Http

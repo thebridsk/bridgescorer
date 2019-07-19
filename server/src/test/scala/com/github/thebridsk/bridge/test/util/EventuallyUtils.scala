@@ -1,4 +1,4 @@
-package com.github.thebridsk.bridge.test.util
+package com.github.thebridsk.bridge.server.test.util
 
 import org.scalatest.concurrent.Eventually
 import org.scalactic.source.Position

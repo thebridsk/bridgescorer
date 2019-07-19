@@ -1,5 +1,5 @@
 
-package com.github.thebridsk.bridge.test.pages
+package com.github.thebridsk.bridge.server.test.pages
 
 import scala.concurrent.Future
 import com.github.thebridsk.utilities.main.Main

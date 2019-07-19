@@ -1,4 +1,4 @@
-package com.github.thebridsk.bridge.test.util
+package com.github.thebridsk.bridge.server.test.util
 
 import scala.concurrent.duration._
 import scala.language.postfixOps
@@ -7,7 +7,7 @@ import akka.http.scaladsl.model.ws.TextMessage
 import com.github.thebridsk.bridge.data.websocket.DuplexProtocol
 import akka.http.scaladsl.model.ws.BinaryMessage
 import org.scalatest.Assertions._
-import com.github.thebridsk.bridge.service.ClientLoggingService._
+import com.github.thebridsk.bridge.server.service.ClientLoggingService._
 import akka.actor.ActorSystem
 import akka.stream.Materializer
 import com.github.thebridsk.bridge.data.websocket.Protocol.ToServerMessage

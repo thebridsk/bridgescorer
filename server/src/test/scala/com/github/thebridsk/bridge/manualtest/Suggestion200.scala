@@ -1,4 +1,4 @@
-package com.github.thebridsk.bridge.manualtest
+package com.github.thebridsk.bridge.server.manualtest
 
 import com.github.thebridsk.bridge.data.duplicate.suggestion.Suggestion
 import com.github.thebridsk.bridge.data.DuplicateSummary
@@ -8,7 +8,7 @@ import com.github.thebridsk.bridge.data.duplicate.suggestion.DuplicateSuggestion
 import com.github.thebridsk.utilities.main.Main
 import com.github.thebridsk.utilities.logging.Logger
 import scala.reflect.io.Path
-import com.github.thebridsk.bridge.backend.BridgeServiceFileStore
+import com.github.thebridsk.bridge.server.backend.BridgeServiceFileStore
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Await
 import scala.concurrent.duration._

@@ -1,13 +1,13 @@
-package com.github.thebridsk.bridge.test
+package com.github.thebridsk.bridge.server.test
 
 import org.scalatest.FlatSpec
 import org.scalatest.MustMatchers
 import com.github.thebridsk.bridge.data.Board
 import com.github.thebridsk.bridge.data.Table
-import com.github.thebridsk.bridge.service.MyService
+import com.github.thebridsk.bridge.server.service.MyService
 import com.github.thebridsk.bridge.data.Hand
-import com.github.thebridsk.bridge.test.backend.BridgeServiceTesting
-import com.github.thebridsk.bridge.backend.BridgeService
+import com.github.thebridsk.bridge.server.test.backend.BridgeServiceTesting
+import com.github.thebridsk.bridge.server.backend.BridgeService
 import akka.http.scaladsl.model.StatusCodes._
 import akka.http.scaladsl.testkit.ScalatestRouteTest
 import akka.http.scaladsl.model.HttpResponse
@@ -49,7 +49,7 @@ import akka.stream.stage.OutHandler
 import akka.stream.Shape
 import akka.stream.Attributes.Name
 import akka.event.Logging
-import com.github.thebridsk.bridge.rest.ServerPort
+import com.github.thebridsk.bridge.server.rest.ServerPort
 
 class TestWebsocket extends FlatSpec with ScalatestRouteTest with MustMatchers with MyService {
   val restService = new BridgeServiceTesting

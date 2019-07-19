@@ -1,4 +1,4 @@
-package com.github.thebridsk.bridge.test
+package com.github.thebridsk.bridge.server.test
 
 import org.scalatest.FlatSpec
 import org.scalatest.MustMatchers
@@ -8,7 +8,7 @@ import com.github.thebridsk.bridge.data.Hand
 import com.github.thebridsk.bridge.data.bridge.North
 import com.github.thebridsk.bridge.data.bridge.East
 import com.github.thebridsk.bridge.data.bridge.South
-import com.github.thebridsk.bridge.test.backend.BridgeServiceTesting
+import com.github.thebridsk.bridge.server.test.backend.BridgeServiceTesting
 import com.github.thebridsk.bridge.data.MatchDuplicate
 import org.scalatest._
 import java.net.InetAddress
@@ -17,9 +17,9 @@ import com.github.thebridsk.bridge.data.bridge.Spades
 import com.github.thebridsk.bridge.data.bridge.Doubled
 import akka.http.scaladsl.model.StatusCodes._
 import akka.http.scaladsl.model.StatusCodes
-import com.github.thebridsk.bridge.backend.BridgeServiceInMemory
+import com.github.thebridsk.bridge.server.backend.BridgeServiceInMemory
 import com.github.thebridsk.bridge.data.RestMessage
-import com.github.thebridsk.bridge.backend.BridgeNestedResources
+import com.github.thebridsk.bridge.server.backend.BridgeNestedResources
 
 class TestResourceStore extends AsyncFlatSpec with MustMatchers {
 

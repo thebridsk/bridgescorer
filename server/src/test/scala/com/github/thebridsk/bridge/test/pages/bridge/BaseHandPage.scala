@@ -1,12 +1,12 @@
-package com.github.thebridsk.bridge.test.pages
+package com.github.thebridsk.bridge.server.test.pages
 
 import com.github.thebridsk.bridge.source.SourcePosition
 import org.openqa.selenium.WebDriver
 import org.scalactic.source.Position
 import org.scalatest.concurrent.Eventually._
 import org.scalatest.MustMatchers._
-import com.github.thebridsk.bridge.test.pages.PageBrowser._
-import com.github.thebridsk.bridge.test.selenium.TestServer
+import com.github.thebridsk.bridge.server.test.pages.PageBrowser._
+import com.github.thebridsk.bridge.server.test.selenium.TestServer
 import com.github.thebridsk.utilities.logging.Logger
 import com.github.thebridsk.bridge.data.bridge.ContractSuit
 import com.github.thebridsk.bridge.data.bridge.ContractDoubled
@@ -16,8 +16,8 @@ import com.github.thebridsk.bridge.data.bridge.Down
 import com.github.thebridsk.bridge.data.bridge.MadeOrDown
 import org.scalatest.exceptions.TestFailedException
 import org.openqa.selenium.By
-import com.github.thebridsk.bridge.test.pages.duplicate.ScoreboardPage
-import com.github.thebridsk.bridge.test.pages.duplicate.BoardPage
+import com.github.thebridsk.bridge.server.test.pages.duplicate.ScoreboardPage
+import com.github.thebridsk.bridge.server.test.pages.duplicate.BoardPage
 import com.github.thebridsk.bridge.data.bridge.Vulnerability
 import org.openqa.selenium.Keys
 

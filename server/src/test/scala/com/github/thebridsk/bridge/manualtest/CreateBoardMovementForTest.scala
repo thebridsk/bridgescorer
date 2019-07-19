@@ -1,14 +1,14 @@
-package com.github.thebridsk.bridge.manualtest
+package com.github.thebridsk.bridge.server.manualtest
 
 import com.github.thebridsk.utilities.main.Main
-import com.github.thebridsk.bridge.backend.BridgeServiceInMemory
+import com.github.thebridsk.bridge.server.backend.BridgeServiceInMemory
 import com.github.thebridsk.bridge.data.BoardSetsAndMovements
 import scala.concurrent.ExecutionContext
 import scala.concurrent.Await
 import scala.concurrent.duration._
 import com.github.thebridsk.bridge.data.rest.JsonSupport._
 import com.github.thebridsk.bridge.data.rest.JsonSupport
-import com.github.thebridsk.bridge.backend.resource.FileIO
+import com.github.thebridsk.bridge.server.backend.resource.FileIO
 
 object CreateBoardMovementForTest extends Main {
 

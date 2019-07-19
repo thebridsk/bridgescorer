@@ -1,7 +1,7 @@
-package com.github.thebridsk.bridge.manualtest
+package com.github.thebridsk.bridge.server.manualtest
 
 import com.github.thebridsk.utilities.main.Main
-import com.github.thebridsk.bridge.backend.resource.FileIO
+import com.github.thebridsk.bridge.server.backend.resource.FileIO
 import scala.language.postfixOps
 import com.github.thebridsk.bridge.data.MatchChicago
 import java.text.SimpleDateFormat
@@ -13,10 +13,10 @@ import com.github.thebridsk.bridge.data.DuplicateHand
 import com.github.thebridsk.bridge.data.MatchRubber
 import com.github.thebridsk.bridge.data.RubberHand
 import com.github.thebridsk.bridge.data.SystemTime.Timestamp
-import com.github.thebridsk.bridge.backend.BridgeServiceFileStoreConverters
-import com.github.thebridsk.bridge.backend.MatchChicagoCacheStoreSupport
-import com.github.thebridsk.bridge.backend.MatchRubberCacheStoreSupport
-import com.github.thebridsk.bridge.backend.MatchDuplicateCacheStoreSupport
+import com.github.thebridsk.bridge.server.backend.BridgeServiceFileStoreConverters
+import com.github.thebridsk.bridge.server.backend.MatchChicagoCacheStoreSupport
+import com.github.thebridsk.bridge.server.backend.MatchRubberCacheStoreSupport
+import com.github.thebridsk.bridge.server.backend.MatchDuplicateCacheStoreSupport
 
 object ShowAllTimes extends Main {
 

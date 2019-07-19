@@ -1,4 +1,4 @@
-package com.github.thebridsk.bridge.test.selenium
+package com.github.thebridsk.bridge.server.test.selenium
 
 import org.scalatest.FlatSpec
 import org.scalatest.MustMatchers
@@ -9,10 +9,10 @@ import org.scalatest._
 import org.openqa.selenium._
 import org.scalatest.concurrent.Eventually
 import java.util.concurrent.TimeUnit
-import com.github.thebridsk.bridge.Server
+import com.github.thebridsk.bridge.server.Server
 import com.github.thebridsk.bridge.data.bridge._
-import com.github.thebridsk.bridge.backend.BridgeServiceInMemory
-import com.github.thebridsk.bridge.backend.BridgeService
+import com.github.thebridsk.bridge.server.backend.BridgeServiceInMemory
+import com.github.thebridsk.bridge.server.backend.BridgeService
 import org.scalatest.time.Span
 import org.scalatest.time.Millis
 import org.openqa.selenium.chrome.ChromeOptions
@@ -29,24 +29,24 @@ import com.github.thebridsk.utilities.logging.Logger
 import java.util.logging.Level
 import org.scalactic.source.Position
 import com.github.thebridsk.bridge.data.util.Strings
-import com.github.thebridsk.bridge.test.util.NoResultYet
-import com.github.thebridsk.bridge.test.util.EventuallyUtils
-import com.github.thebridsk.bridge.test.util.ParallelUtils
+import com.github.thebridsk.bridge.server.test.util.NoResultYet
+import com.github.thebridsk.bridge.server.test.util.EventuallyUtils
+import com.github.thebridsk.bridge.server.test.util.ParallelUtils
 import org.scalatest.concurrent.Eventually
-import com.github.thebridsk.bridge.test.pages.bridge.HomePage
-import com.github.thebridsk.bridge.test.pages.duplicate.ListDuplicatePage
-import com.github.thebridsk.bridge.test.pages.duplicate.NewDuplicatePage
-import com.github.thebridsk.bridge.test.pages.duplicate.MovementsPage
-import com.github.thebridsk.bridge.test.pages.duplicate.BoardSetsPage
-import com.github.thebridsk.bridge.test.pages.duplicate.ScoreboardPage
-import com.github.thebridsk.bridge.test.pages.duplicate.TablePage
-import com.github.thebridsk.bridge.test.pages.duplicate.TablePage.EnterNames
-import com.github.thebridsk.bridge.test.pages.duplicate.TableEnterScorekeeperPage
-import com.github.thebridsk.bridge.test.pages.GenericPage
-import com.github.thebridsk.bridge.test.pages.duplicate.HandPage
-import com.github.thebridsk.bridge.test.TestStartLogging
+import com.github.thebridsk.bridge.server.test.pages.bridge.HomePage
+import com.github.thebridsk.bridge.server.test.pages.duplicate.ListDuplicatePage
+import com.github.thebridsk.bridge.server.test.pages.duplicate.NewDuplicatePage
+import com.github.thebridsk.bridge.server.test.pages.duplicate.MovementsPage
+import com.github.thebridsk.bridge.server.test.pages.duplicate.BoardSetsPage
+import com.github.thebridsk.bridge.server.test.pages.duplicate.ScoreboardPage
+import com.github.thebridsk.bridge.server.test.pages.duplicate.TablePage
+import com.github.thebridsk.bridge.server.test.pages.duplicate.TablePage.EnterNames
+import com.github.thebridsk.bridge.server.test.pages.duplicate.TableEnterScorekeeperPage
+import com.github.thebridsk.bridge.server.test.pages.GenericPage
+import com.github.thebridsk.bridge.server.test.pages.duplicate.HandPage
+import com.github.thebridsk.bridge.server.test.TestStartLogging
 import com.github.thebridsk.bridge.source.SourcePosition
-import com.github.thebridsk.bridge.test.util.MonitorTCP
+import com.github.thebridsk.bridge.server.test.util.MonitorTCP
 
 /**
  * Test going from the table view, by hitting a board button,
@@ -55,7 +55,7 @@ import com.github.thebridsk.bridge.test.util.MonitorTCP
  */
 class SeleniumPerformanceTesting extends FlatSpec with MustMatchers with BeforeAndAfterAll with EventuallyUtils {
     import Eventually.{ patienceConfig => _, _ }
-    import com.github.thebridsk.bridge.test.pages.PageBrowser._
+    import com.github.thebridsk.bridge.server.test.pages.PageBrowser._
 
   val log = Logger[SeleniumPerformanceTesting]
 

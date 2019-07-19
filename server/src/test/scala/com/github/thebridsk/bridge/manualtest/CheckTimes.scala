@@ -1,11 +1,11 @@
-package com.github.thebridsk.bridge.manualtest
+package com.github.thebridsk.bridge.server.manualtest
 
 import com.github.thebridsk.utilities.main.Main
-import com.github.thebridsk.bridge.backend.resource.FileIO
+import com.github.thebridsk.bridge.server.backend.resource.FileIO
 import org.scalatest.MustMatchers
 import com.github.thebridsk.bridge.data.MatchDuplicate
-import com.github.thebridsk.bridge.backend.BridgeServiceFileStoreConverters
-import com.github.thebridsk.bridge.backend.MatchDuplicateCacheStoreSupport
+import com.github.thebridsk.bridge.server.backend.BridgeServiceFileStoreConverters
+import com.github.thebridsk.bridge.server.backend.MatchDuplicateCacheStoreSupport
 
 object CheckTimes extends Main with MustMatchers {
 

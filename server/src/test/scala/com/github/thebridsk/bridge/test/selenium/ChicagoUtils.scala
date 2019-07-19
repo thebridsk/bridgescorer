@@ -1,4 +1,4 @@
-package com.github.thebridsk.bridge.test.selenium
+package com.github.thebridsk.bridge.server.test.selenium
 
 import com.github.thebridsk.bridge.data.bridge.ContractTricks
 import com.github.thebridsk.bridge.data.bridge.ContractSuit
@@ -11,9 +11,9 @@ import com.github.thebridsk.utilities.logging.Logger
 
 trait ChicagoUtils {
   import org.scalatest.MustMatchers._
-  import com.github.thebridsk.bridge.test.util.EventuallyUtils._
-  import com.github.thebridsk.bridge.test.util.ParallelUtils._
-  import com.github.thebridsk.bridge.test.pages.PageBrowser._
+  import com.github.thebridsk.bridge.server.test.util.EventuallyUtils._
+  import com.github.thebridsk.bridge.server.test.util.ParallelUtils._
+  import com.github.thebridsk.bridge.server.test.pages.PageBrowser._
   import org.scalatest.concurrent.Eventually
   import Eventually.{ patienceConfig => _, _ }
 

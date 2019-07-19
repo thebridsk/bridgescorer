@@ -1,15 +1,15 @@
-package com.github.thebridsk.bridge.test
+package com.github.thebridsk.bridge.server.test
 
 import org.scalatest.FlatSpec
 import org.scalatest.MustMatchers
 import org.scalatest.Matchers
 import com.github.thebridsk.utilities.logging.Logger
 import java.util.logging.Level
-import com.github.thebridsk.bridge.backend.BridgeServiceInMemory
-import com.github.thebridsk.bridge.backend.Subscriptions
+import com.github.thebridsk.bridge.server.backend.BridgeServiceInMemory
+import com.github.thebridsk.bridge.server.backend.Subscriptions
 import akka.actor.Actor
-import com.github.thebridsk.bridge.backend.Subscription
-import com.github.thebridsk.bridge.backend.DuplicateSubscription
+import com.github.thebridsk.bridge.server.backend.Subscription
+import com.github.thebridsk.bridge.server.backend.DuplicateSubscription
 
 class MySubscription extends Subscriptions {
 

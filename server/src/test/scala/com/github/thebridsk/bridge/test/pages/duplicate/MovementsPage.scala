@@ -1,19 +1,19 @@
-package com.github.thebridsk.bridge.test.pages.duplicate
+package com.github.thebridsk.bridge.server.test.pages.duplicate
 
-import com.github.thebridsk.bridge.test.pages.Page
+import com.github.thebridsk.bridge.server.test.pages.Page
 import com.github.thebridsk.bridge.source.SourcePosition
 import org.openqa.selenium.WebDriver
 import org.scalactic.source.Position
 import org.scalatest.concurrent.Eventually._
 import org.scalatest.MustMatchers._
-import com.github.thebridsk.bridge.test.pages.PageBrowser._
-import com.github.thebridsk.bridge.test.selenium.TestServer
+import com.github.thebridsk.bridge.server.test.pages.PageBrowser._
+import com.github.thebridsk.bridge.server.test.selenium.TestServer
 import com.github.thebridsk.utilities.logging.Logger
-import com.github.thebridsk.bridge.test.util.HttpUtils
+import com.github.thebridsk.bridge.server.test.util.HttpUtils
 import com.github.thebridsk.bridge.data.BoardSet
 import com.github.thebridsk.bridge.data.Movement
 import java.net.URL
-import com.github.thebridsk.bridge.test.util.HttpUtils.ResponseFromHttp
+import com.github.thebridsk.bridge.server.test.util.HttpUtils.ResponseFromHttp
 
 object MovementsPage {
 
@@ -35,7 +35,7 @@ object MovementsPage {
   val movements = "Armonk2Tables"::"Howell3TableNoRelay"::"Mitchell3Table"::Nil
 
   def getMovement( movement: String ): Option[Movement] = {
-    import com.github.thebridsk.bridge.rest.UtilsPlayJson._
+    import com.github.thebridsk.bridge.server.rest.UtilsPlayJson._
     val ResponseFromHttp(status,loc,ce,mov,cd) = HttpUtils.getHttpObject[Movement](restUrlFor(movement))
     mov
   }

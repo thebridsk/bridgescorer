@@ -1,4 +1,4 @@
-package com.github.thebridsk.bridge.test
+package com.github.thebridsk.bridge.server.test
 
 import org.scalatest.FlatSpec
 import org.scalatest.MustMatchers
@@ -8,10 +8,10 @@ import com.github.thebridsk.bridge.data.bridge._
 import org.scalatest.BeforeAndAfterAll
 import scala.reflect.io.Directory
 import com.github.thebridsk.bridge.data.Team
-import com.github.thebridsk.bridge.backend.resource.StoreSupport
-import com.github.thebridsk.bridge.backend.resource.FileIO
+import com.github.thebridsk.bridge.server.backend.resource.StoreSupport
+import com.github.thebridsk.bridge.server.backend.resource.FileIO
 import java.io.File
-import com.github.thebridsk.bridge.backend.resource.FileStore
+import com.github.thebridsk.bridge.server.backend.resource.FileStore
 import com.github.thebridsk.utilities.logging.Logger
 import java.util.logging.Level
 import com.github.thebridsk.bridge.data.MatchDuplicate
@@ -20,13 +20,13 @@ import com.github.thebridsk.bridge.data.MatchRubber
 import com.github.thebridsk.bridge.data.MatchDuplicateV3
 import com.github.thebridsk.bridge.data.MatchDuplicateV2
 import play.api.libs.json.Writes
-import com.github.thebridsk.bridge.backend.BridgeServiceFileStoreConverters
-import com.github.thebridsk.bridge.backend.resource.Store
-import com.github.thebridsk.bridge.backend.MatchRubberCacheStoreSupport
-import com.github.thebridsk.bridge.backend.resource.SyncStore
+import com.github.thebridsk.bridge.server.backend.BridgeServiceFileStoreConverters
+import com.github.thebridsk.bridge.server.backend.resource.Store
+import com.github.thebridsk.bridge.server.backend.MatchRubberCacheStoreSupport
+import com.github.thebridsk.bridge.server.backend.resource.SyncStore
 import org.scalatest.AsyncFlatSpec
 import com.github.thebridsk.bridge.data.Id
-import com.github.thebridsk.bridge.backend.MatchDuplicateCacheStoreSupport
+import com.github.thebridsk.bridge.server.backend.MatchDuplicateCacheStoreSupport
 
 class TestFileStore extends AsyncFlatSpec with MustMatchers with BeforeAndAfterAll {
 
@@ -197,7 +197,7 @@ class TestFileStore extends AsyncFlatSpec with MustMatchers with BeforeAndAfterA
 
   behavior of "Filestore updating MatchDuplicate versions"
 
-  import com.github.thebridsk.bridge.rest.UtilsPlayJson._
+  import com.github.thebridsk.bridge.server.rest.UtilsPlayJson._
 
   def toString[T]( md: T )(implicit writer: Writes[T]) = {
     writePrettyJson(md)

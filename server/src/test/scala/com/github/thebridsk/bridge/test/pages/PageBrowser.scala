@@ -1,4 +1,4 @@
-package com.github.thebridsk.bridge.test.pages
+package com.github.thebridsk.bridge.server.test.pages
 
 import com.github.thebridsk.utilities.logging.Logger
 import org.openqa.selenium.WebElement
@@ -18,7 +18,7 @@ import java.lang.reflect.Constructor
 import java.io.File
 import java.nio.file.Path
 import java.nio.file.FileSystems
-import com.github.thebridsk.bridge.backend.resource.FileIO
+import com.github.thebridsk.bridge.server.backend.resource.FileIO
 import org.openqa.selenium.TakesScreenshot
 import org.openqa.selenium.OutputType
 

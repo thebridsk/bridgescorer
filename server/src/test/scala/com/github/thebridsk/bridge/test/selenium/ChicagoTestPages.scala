@@ -1,4 +1,4 @@
-package com.github.thebridsk.bridge.test.selenium
+package com.github.thebridsk.bridge.server.test.selenium
 
 import org.scalatest.FlatSpec
 import org.scalatest.MustMatchers
@@ -8,28 +8,28 @@ import com.github.thebridsk.utilities.logging.Logger
 import org.scalatest.time.Millis
 import org.scalatest.time.Span
 import java.util.concurrent.TimeUnit
-import com.github.thebridsk.bridge.test.util.MonitorTCP
-import com.github.thebridsk.bridge.test.util.NoResultYet
-import com.github.thebridsk.bridge.test.pages.chicago.EnterNamesPage
+import com.github.thebridsk.bridge.server.test.util.MonitorTCP
+import com.github.thebridsk.bridge.server.test.util.NoResultYet
+import com.github.thebridsk.bridge.server.test.pages.chicago.EnterNamesPage
 import com.github.thebridsk.bridge.data.bridge._
-import com.github.thebridsk.bridge.test.pages.chicago.HandPage
+import com.github.thebridsk.bridge.server.test.pages.chicago.HandPage
 import org.scalactic.source.Position
-import com.github.thebridsk.bridge.test.TestStartLogging
+import com.github.thebridsk.bridge.server.test.TestStartLogging
 import com.github.thebridsk.bridge.data.MatchChicago
-import com.github.thebridsk.bridge.test.util.HttpUtils
-import com.github.thebridsk.bridge.test.pages.chicago.SummaryPage
+import com.github.thebridsk.bridge.server.test.util.HttpUtils
+import com.github.thebridsk.bridge.server.test.pages.chicago.SummaryPage
 import org.scalatest.CancelAfterFailure
 import java.io.InputStream
 import scala.io.Source
 import play.api.libs.json.Json
-import com.github.thebridsk.bridge.test.util.GraphQLUtils
+import com.github.thebridsk.bridge.server.test.util.GraphQLUtils
 import java.net.URL
 import java.io.OutputStreamWriter
 import scala.io.Codec
 import play.api.libs.json.JsSuccess
 import play.api.libs.json.JsError
-import com.github.thebridsk.bridge.backend.resource.FileIO
-import com.github.thebridsk.bridge.test.pages.bridge.HomePage
+import com.github.thebridsk.bridge.server.backend.resource.FileIO
+import com.github.thebridsk.bridge.server.test.pages.bridge.HomePage
 import scala.reflect.io.File
 import java.util.zip.ZipFile
 import org.openqa.selenium.WebDriver
@@ -54,8 +54,8 @@ class ChicagoTestPages extends FlatSpec
     with BeforeAndAfterAll
     with CancelAfterFailure
 {
-  import com.github.thebridsk.bridge.test.pages.PageBrowser._
-  import com.github.thebridsk.bridge.test.util.EventuallyUtils._
+  import com.github.thebridsk.bridge.server.test.pages.PageBrowser._
+  import com.github.thebridsk.bridge.server.test.util.EventuallyUtils._
   import Eventually.{ patienceConfig => _, _ }
   import ChicagoTestPages._
 
@@ -89,7 +89,7 @@ class ChicagoTestPages extends FlatSpec
   def beforeAll() = {
     import scala.concurrent._
     import ExecutionContext.Implicits.global
-    import com.github.thebridsk.bridge.test.util.ParallelUtils._
+    import com.github.thebridsk.bridge.server.test.util.ParallelUtils._
 
     MonitorTCP.nextTest()
 
@@ -110,7 +110,7 @@ class ChicagoTestPages extends FlatSpec
   def afterAll() = {
     import scala.concurrent._
     import ExecutionContext.Implicits.global
-    import com.github.thebridsk.bridge.test.util.ParallelUtils._
+    import com.github.thebridsk.bridge.server.test.util.ParallelUtils._
 
     waitForFuturesIgnoreTimeouts("Stopping a browser or server",
                    CodeBlock { Session1.sessionStop() },

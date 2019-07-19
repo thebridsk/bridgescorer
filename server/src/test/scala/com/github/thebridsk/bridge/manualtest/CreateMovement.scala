@@ -1,4 +1,4 @@
-package com.github.thebridsk.bridge.manualtest
+package com.github.thebridsk.bridge.server.manualtest
 
 import com.github.thebridsk.utilities.main.Main
 import scala.reflect.io.Path
@@ -7,9 +7,9 @@ import java.io.Closeable
 import com.github.thebridsk.bridge.data.Movement
 import com.github.thebridsk.bridge.data.HandInTable
 import scala.annotation.tailrec
-import com.github.thebridsk.bridge.backend.MovementCacheStoreSupport
-import com.github.thebridsk.bridge.backend.BridgeServiceFileStoreConverters
-import com.github.thebridsk.bridge.backend.resource.FileIO
+import com.github.thebridsk.bridge.server.backend.MovementCacheStoreSupport
+import com.github.thebridsk.bridge.server.backend.BridgeServiceFileStoreConverters
+import com.github.thebridsk.bridge.server.backend.resource.FileIO
 
 class CreateMovement
 

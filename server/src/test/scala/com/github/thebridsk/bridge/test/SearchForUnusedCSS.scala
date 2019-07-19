@@ -1,4 +1,4 @@
-package com.github.thebridsk.bridge.test
+package com.github.thebridsk.bridge.server.test
 
 import com.github.thebridsk.utilities.main.Main
 import scala.reflect.io.Path

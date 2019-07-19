@@ -1,4 +1,4 @@
-package com.github.thebridsk.bridge.test.selenium
+package com.github.thebridsk.bridge.server.test.selenium
 
 import org.scalatest.FlatSpec
 import org.scalatest.MustMatchers
@@ -12,20 +12,20 @@ import java.util.concurrent.TimeUnit
 import org.scalactic.source.Position
 import scala.collection.convert.ImplicitConversionsToScala._
 import org.openqa.selenium.Keys
-import com.github.thebridsk.bridge.test.util.NoResultYet
-import com.github.thebridsk.bridge.test.util.EventuallyUtils
+import com.github.thebridsk.bridge.server.test.util.NoResultYet
+import com.github.thebridsk.bridge.server.test.util.EventuallyUtils
 import org.scalatest.concurrent.Eventually
 import com.github.thebridsk.utilities.logging.Logger
 import java.net.URL
 import scala.io.Source
 import scala.io.Codec
 import org.openqa.selenium.By.ByXPath
-import com.github.thebridsk.bridge.test.util.MonitorTCP
-import com.github.thebridsk.bridge.test.util.HttpUtils.ResponseFromHttp
-import com.github.thebridsk.bridge.test.util.HttpUtils
-import com.github.thebridsk.bridge.backend.BridgeServiceFileStoreConverters
-import com.github.thebridsk.bridge.backend.MatchChicagoCacheStoreSupport
-import com.github.thebridsk.bridge.test.pages.bridge.HomePage
+import com.github.thebridsk.bridge.server.test.util.MonitorTCP
+import com.github.thebridsk.bridge.server.test.util.HttpUtils.ResponseFromHttp
+import com.github.thebridsk.bridge.server.test.util.HttpUtils
+import com.github.thebridsk.bridge.server.backend.BridgeServiceFileStoreConverters
+import com.github.thebridsk.bridge.server.backend.MatchChicagoCacheStoreSupport
+import com.github.thebridsk.bridge.server.test.pages.bridge.HomePage
 
 /**
  * @author werewolf
@@ -36,7 +36,7 @@ class Chicago5SimpleTest extends FlatSpec
     with EventuallyUtils
     with CancelAfterFailure
 {
-  import com.github.thebridsk.bridge.test.pages.PageBrowser._
+  import com.github.thebridsk.bridge.server.test.pages.PageBrowser._
   import Eventually.{ patienceConfig => _, _ }
 
   import scala.concurrent.duration._
@@ -66,7 +66,7 @@ class Chicago5SimpleTest extends FlatSpec
   def beforeAll() = {
     import scala.concurrent._
     import ExecutionContext.Implicits.global
-    import com.github.thebridsk.bridge.test.util.ParallelUtils._
+    import com.github.thebridsk.bridge.server.test.util.ParallelUtils._
 
     MonitorTCP.nextTest()
 
@@ -86,7 +86,7 @@ class Chicago5SimpleTest extends FlatSpec
   def afterAll() = {
     import scala.concurrent._
     import ExecutionContext.Implicits.global
-    import com.github.thebridsk.bridge.test.util.ParallelUtils._
+    import com.github.thebridsk.bridge.server.test.util.ParallelUtils._
 
     waitForFuturesIgnoreTimeouts("Stopping a browser or server",
                    CodeBlock { Session1.sessionStop() },
@@ -440,7 +440,7 @@ class Chicago5SimpleTest extends FlatSpec
   behavior of "Names resource"
 
   it should "show the names without leading and trailing spaces" in {
-    import com.github.thebridsk.bridge.rest.UtilsPlayJson._
+    import com.github.thebridsk.bridge.server.rest.UtilsPlayJson._
     val rnames: ResponseFromHttp[Option[Array[String]]] = HttpUtils.getHttpObject( new URL(TestServer.hosturl+"v1/rest/names") )
 
     rnames.data match {

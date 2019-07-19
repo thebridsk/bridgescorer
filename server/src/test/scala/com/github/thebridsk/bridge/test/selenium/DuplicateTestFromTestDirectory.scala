@@ -1,4 +1,4 @@
-package com.github.thebridsk.bridge.test.selenium
+package com.github.thebridsk.bridge.server.test.selenium
 
 import org.scalatest.FlatSpec
 import org.scalatest.MustMatchers
@@ -10,10 +10,10 @@ import selenium._
 import org.openqa.selenium._
 import org.scalatest.concurrent.Eventually
 import java.util.concurrent.TimeUnit
-import com.github.thebridsk.bridge.Server
+import com.github.thebridsk.bridge.server.Server
 import com.github.thebridsk.bridge.data.bridge._
-import com.github.thebridsk.bridge.backend.BridgeServiceInMemory
-import com.github.thebridsk.bridge.backend.BridgeService
+import com.github.thebridsk.bridge.server.backend.BridgeServiceInMemory
+import com.github.thebridsk.bridge.server.backend.BridgeService
 import org.scalatest.time.Span
 import org.scalatest.time.Millis
 import org.openqa.selenium.chrome.ChromeOptions
@@ -30,12 +30,12 @@ import com.github.thebridsk.utilities.logging.Logger
 import java.util.logging.Level
 import org.scalactic.source.Position
 import com.github.thebridsk.bridge.data.util.Strings
-import com.github.thebridsk.bridge.test.util.NoResultYet
-import com.github.thebridsk.bridge.test.util.EventuallyUtils
-import com.github.thebridsk.bridge.test.util.ParallelUtils
+import com.github.thebridsk.bridge.server.test.util.NoResultYet
+import com.github.thebridsk.bridge.server.test.util.EventuallyUtils
+import com.github.thebridsk.bridge.server.test.util.ParallelUtils
 import com.github.thebridsk.bridge.data.MatchDuplicate
-import com.github.thebridsk.bridge.backend.BridgeServiceFileStore
-import com.github.thebridsk.bridge.backend.resource.FileIO
+import com.github.thebridsk.bridge.server.backend.BridgeServiceFileStore
+import com.github.thebridsk.bridge.server.backend.resource.FileIO
 import scala.reflect.io.Directory
 import java.io.File
 import scala.language.postfixOps
@@ -47,28 +47,28 @@ import java.io.InputStreamReader
 import scala.io.Codec
 import scala.io.Source
 import com.github.thebridsk.bridge.data.BoardSet
-import com.github.thebridsk.bridge.test.util.HttpUtils
-import com.github.thebridsk.bridge.test.TestStartLogging
+import com.github.thebridsk.bridge.server.test.util.HttpUtils
+import com.github.thebridsk.bridge.server.test.TestStartLogging
 import com.github.thebridsk.bridge.data.MatchPlayerPosition
 import org.scalatest.exceptions.TestFailedException
 import com.github.thebridsk.bridge.source.SourcePosition
-import com.github.thebridsk.bridge.test.pages.GenericPage
-import com.github.thebridsk.bridge.test.pages.Element
-import com.github.thebridsk.bridge.test.util.MonitorTCP
-import com.github.thebridsk.bridge.test.util.HttpUtils.ResponseFromHttp
-import com.github.thebridsk.bridge.backend.BridgeServiceFileStoreConverters
-import com.github.thebridsk.bridge.backend.MatchDuplicateCacheStoreSupport
-import com.github.thebridsk.bridge.test.util.ParallelUtils.CodeBlock
-import com.github.thebridsk.bridge.test.pages.PageBrowser
-import com.github.thebridsk.bridge.test.pages.bridge.HomePage
-import com.github.thebridsk.bridge.test.pages.duplicate.ListDuplicatePage
-import com.github.thebridsk.bridge.test.pages.duplicate.ScoreboardPage
-import com.github.thebridsk.bridge.test.pages.duplicate.PageWithBoardButtons
-import com.github.thebridsk.bridge.test.pages.duplicate.TablePage.EnterOrSelectNames
-import com.github.thebridsk.bridge.test.pages.duplicate.TablePage
-import com.github.thebridsk.bridge.test.pages.duplicate.TableEnterOrSelectNamesPage
+import com.github.thebridsk.bridge.server.test.pages.GenericPage
+import com.github.thebridsk.bridge.server.test.pages.Element
+import com.github.thebridsk.bridge.server.test.util.MonitorTCP
+import com.github.thebridsk.bridge.server.test.util.HttpUtils.ResponseFromHttp
+import com.github.thebridsk.bridge.server.backend.BridgeServiceFileStoreConverters
+import com.github.thebridsk.bridge.server.backend.MatchDuplicateCacheStoreSupport
+import com.github.thebridsk.bridge.server.test.util.ParallelUtils.CodeBlock
+import com.github.thebridsk.bridge.server.test.pages.PageBrowser
+import com.github.thebridsk.bridge.server.test.pages.bridge.HomePage
+import com.github.thebridsk.bridge.server.test.pages.duplicate.ListDuplicatePage
+import com.github.thebridsk.bridge.server.test.pages.duplicate.ScoreboardPage
+import com.github.thebridsk.bridge.server.test.pages.duplicate.PageWithBoardButtons
+import com.github.thebridsk.bridge.server.test.pages.duplicate.TablePage.EnterOrSelectNames
+import com.github.thebridsk.bridge.server.test.pages.duplicate.TablePage
+import com.github.thebridsk.bridge.server.test.pages.duplicate.TableEnterOrSelectNamesPage
 import com.github.thebridsk.bridge.data.DuplicateHandV2
-import com.github.thebridsk.bridge.test.pages.duplicate.BoardPage
+import com.github.thebridsk.bridge.server.test.pages.duplicate.BoardPage
 
 /**
  * Test playing duplicate matches.  The duplicates matches to play are in the testdata directory.
@@ -76,7 +76,7 @@ import com.github.thebridsk.bridge.test.pages.duplicate.BoardPage
  */
 class DuplicateTestFromTestDirectory extends FlatSpec with MustMatchers with BeforeAndAfterAll with EventuallyUtils {
   import Eventually.{ patienceConfig => _, _ }
-  import com.github.thebridsk.bridge.test.pages.PageBrowser._
+  import com.github.thebridsk.bridge.server.test.pages.PageBrowser._
   import ParallelUtils._
 
   val testlog = Logger[DuplicateTestFromTestDirectory]
@@ -271,7 +271,7 @@ class DuplicateTestFromTestDirectory extends FlatSpec with MustMatchers with Bef
         val is = connection.getInputStream
         try {
           val json = Source.fromInputStream(is)(Codec.UTF8).mkString
-          import com.github.thebridsk.bridge.rest.UtilsPlayJson._
+          import com.github.thebridsk.bridge.server.rest.UtilsPlayJson._
 
           val played = readJson[MatchDuplicate](json)
           val n = played.copy(id=template.id)
@@ -497,7 +497,7 @@ class DuplicateTestFromTestDirectory extends FlatSpec with MustMatchers with Bef
     def playAllRounds(): Unit = {
       val boardsetName = templateScore.getBoardSet()
 
-      import com.github.thebridsk.bridge.rest.UtilsPlayJson._
+      import com.github.thebridsk.bridge.server.rest.UtilsPlayJson._
       val ResponseFromHttp(status,loc,ce,bs,cd) = HttpUtils.getHttpObject[BoardSet](TestServer.getUrl("/v1/rest/boardsets/"+boardsetName))
       boardSet = bs
 
