@@ -4,12 +4,12 @@ import com.github.thebridsk.utilities.logging.Logger
 import org.openqa.selenium.WebDriver
 import org.scalatest.concurrent.Eventually._
 import org.scalactic.source.Position
-import com.github.thebridsk.bridge.test.selenium.TestServer
-import com.github.thebridsk.bridge.test.pages.PageBrowser._
+import com.github.thebridsk.bridge.server.test.selenium.TestServer
+import com.github.thebridsk.bridge.server.test.pages.PageBrowser._
 import org.scalatest.MustMatchers._
-import com.github.thebridsk.bridge.test.pages.bridge.HomePage
+import com.github.thebridsk.bridge.server.test.pages.bridge.HomePage
 import com.github.thebridsk.bridge.source.SourcePosition
-import com.github.thebridsk.bridge.test.util.HttpUtils
+import com.github.thebridsk.bridge.server.test.util.HttpUtils
 import java.net.URL
 
 object HelpPage {

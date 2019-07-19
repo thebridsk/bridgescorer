@@ -2,8 +2,8 @@ package com.github.thebridsk.bridge.test.selenium.integrationtest
 
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.Sequential
-import com.github.thebridsk.bridge.test.selenium.TestServer
-import com.github.thebridsk.bridge.test.selenium.DuplicateTestFromTestDirectory2
+import com.github.thebridsk.bridge.server.test.selenium.TestServer
+import com.github.thebridsk.bridge.server.test.selenium.DuplicateTestFromTestDirectory2
 
 /**
  * @author werewolf
