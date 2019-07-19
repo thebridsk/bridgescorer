@@ -10,7 +10,7 @@ import com.github.thebridsk.bridge.server.test.selenium.DuplicateTestFromTestDir
  * @author werewolf
  */
 class IntegrationTests extends Sequential(
-  new com.github.thebridsk.bridge.test.selenium.IntegrationTests,
+  new com.github.thebridsk.bridge.server.test.selenium.IntegrationTests,
   new HelpTest
 ) with BeforeAndAfterAll {
   override

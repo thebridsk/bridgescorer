@@ -9,7 +9,7 @@ import com.github.thebridsk.bridge.server.test.selenium.DuplicateTestFromTestDir
  * @author werewolf
  */
 class TravisIntegrationTests extends Sequential(
-  new com.github.thebridsk.bridge.test.selenium.TravisIntegrationTests,
+  new com.github.thebridsk.bridge.server.test.selenium.TravisIntegrationTests,
   new HelpTest
 ) with BeforeAndAfterAll {
   override

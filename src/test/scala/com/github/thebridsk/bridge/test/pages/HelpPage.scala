@@ -11,6 +11,8 @@ import com.github.thebridsk.bridge.server.test.pages.bridge.HomePage
 import com.github.thebridsk.bridge.source.SourcePosition
 import com.github.thebridsk.bridge.server.test.util.HttpUtils
 import java.net.URL
+import com.github.thebridsk.bridge.server.test.pages.Element
+import com.github.thebridsk.bridge.server.test.pages.Page
 
 object HelpPage {
 
