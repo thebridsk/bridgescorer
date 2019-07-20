@@ -10,11 +10,8 @@ import selenium._
 import org.openqa.selenium._
 import org.scalatest.concurrent.Eventually
 import java.util.concurrent.TimeUnit
-import com.github.thebridsk.bridge.Server
 import scala.concurrent.Await
 import com.github.thebridsk.bridge.data.bridge._
-import com.github.thebridsk.bridge.backend.BridgeServiceInMemory
-import com.github.thebridsk.bridge.backend.BridgeService
 import org.scalatest.time.Span
 import org.scalatest.time.Millis
 import org.openqa.selenium.chrome.ChromeOptions
@@ -27,25 +24,24 @@ import com.github.thebridsk.bridge.data.MatchDuplicate
 import com.github.thebridsk.utilities.logging.Logger
 import java.util.logging.Level
 import org.scalactic.source.Position
-import com.github.thebridsk.bridge.test.util.NoResultYet
-import com.github.thebridsk.bridge.test.util.EventuallyUtils
-import com.github.thebridsk.bridge.test.util.HttpUtils
+import com.github.thebridsk.bridge.server.test.util.EventuallyUtils
+import com.github.thebridsk.bridge.server.test.util.HttpUtils
 import java.net.URL
 import java.io.InputStream
 import java.io.ByteArrayInputStream
 import java.io.InputStreamReader
 import java.io.IOException
 import java.net.HttpURLConnection
-import com.github.thebridsk.bridge.test.TestStartLogging
+import com.github.thebridsk.bridge.server.test.TestStartLogging
 import com.github.thebridsk.bridge.data.BoardSet
 import akka.http.scaladsl.coding.GzipDecompressor
-import com.github.thebridsk.bridge.test.pages.Element
-import com.github.thebridsk.bridge.test.util.MonitorTCP
-import com.github.thebridsk.bridge.test.util.ParallelUtils
-import com.github.thebridsk.bridge.test.pages.PageBrowser
-import com.github.thebridsk.bridge.test.selenium.Session
-import com.github.thebridsk.bridge.test.selenium.TestServer
-import com.github.thebridsk.bridge.test.pages.bridge.HomePage
+import com.github.thebridsk.bridge.server.test.pages.Element
+import com.github.thebridsk.bridge.server.test.util.MonitorTCP
+import com.github.thebridsk.bridge.server.test.util.ParallelUtils
+import com.github.thebridsk.bridge.server.test.pages.PageBrowser
+import com.github.thebridsk.bridge.server.test.selenium.Session
+import com.github.thebridsk.bridge.server.test.selenium.TestServer
+import com.github.thebridsk.bridge.server.test.pages.bridge.HomePage
 import com.github.thebridsk.bridge.test.pages.HelpPage
 import scala.annotation.tailrec
 import akka.http.scaladsl.model.StatusCodes
@@ -54,7 +50,7 @@ import akka.http.scaladsl.model.StatusCodes
  * @author werewolf
  */
 class HelpTest extends FlatSpec with MustMatchers with BeforeAndAfterAll {
-  import com.github.thebridsk.bridge.test.pages.PageBrowser._
+  import com.github.thebridsk.bridge.server.test.pages.PageBrowser._
   import ParallelUtils._
 
   val logger = Logger[HelpTest]

@@ -2,9 +2,9 @@ package com.github.thebridsk.bridge.bridge.rotation.test
 
 import org.scalatest.FlatSpec
 import org.scalatest.MustMatchers
-import com.github.thebridsk.bridge.bridge.rotation.Table
-import com.github.thebridsk.bridge.bridge.rotation.Table._
-import com.github.thebridsk.bridge.bridge.rotation.Chicago5Rotation
+import com.github.thebridsk.bridge.rotation.Table
+import com.github.thebridsk.bridge.rotation.Table._
+import com.github.thebridsk.bridge.rotation.Chicago5Rotation
 import org.scalatest.exceptions.TestFailedException
 
 object TestChicago5Rotation {

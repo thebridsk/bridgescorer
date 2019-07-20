@@ -75,9 +75,9 @@ object BldCommonSettings {
   val testCaseToRun =
     sys.props.get("TESTCASETORUN").orElse(sys.env.get("TESTCASETORUN"))
 
-  val testToRunNotTravis = "com.github.thebridsk.bridge.test.AllSuites"
-  val testToRunBuildForHelpOnly = "com.github.thebridsk.bridge.test.selenium.DuplicateTestPages"
-  val testToRunInTravis = "com.github.thebridsk.bridge.test.TravisAllSuites"
+  val testToRunNotTravis = "com.github.thebridsk.bridge.server.test.AllSuites"
+  val testToRunBuildForHelpOnly = "com.github.thebridsk.bridge.server.test.selenium.DuplicateTestPages"
+  val testToRunInTravis = "com.github.thebridsk.bridge.server.test.TravisAllSuites"
 
   val testToRun = {
     val tst = serverTestToRun.getOrElse(
@@ -100,10 +100,12 @@ object BldCommonSettings {
     tst
   }
 
-  val moretestToRun = "com.github.thebridsk.bridge.test.selenium.IntegrationTests"
-  val travisMoretestToRun = "com.github.thebridsk.bridge.test.selenium.TravisIntegrationTests"
+  // these run out of bridgescorer-server project
+  val moretestToRun = "com.github.thebridsk.bridge.server.test.selenium.IntegrationTests"
+  val travisMoretestToRun = "com.github.thebridsk.bridge.server.test.selenium.TravisIntegrationTests"
   val testdataDir = "../testdata"
 
+  // these run out of bridgescorer project
   val imoretestToRun =
     "com.github.thebridsk.bridge.test.selenium.integrationtest.IntegrationTests"
   val itravisMoretestToRun =

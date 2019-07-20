@@ -7,9 +7,9 @@ import com.github.thebridsk.utilities.logging.Logger
 import scala.scalajs.js.annotation.JSGlobal
 import scala.scalajs.js.Promise
 import scala.scalajs.js.annotation.JSImport
-import com.github.thebridsk.bridge.graphql.GraphQLBaseClient
-import com.github.thebridsk.bridge.graphql.Query
-import com.github.thebridsk.bridge.rest2.AjaxResult
+import com.github.thebridsk.bridge.clientcommon.graphql.GraphQLBaseClient
+import com.github.thebridsk.bridge.clientcommon.graphql.Query
+import com.github.thebridsk.bridge.clientcommon.rest2.AjaxResult
 import com.github.thebridsk.bridge.data.graphql.GraphQLProtocol.GraphQLResponse
 import scala.scalajs.js.JSON
 import play.api.libs.json.JsValue
