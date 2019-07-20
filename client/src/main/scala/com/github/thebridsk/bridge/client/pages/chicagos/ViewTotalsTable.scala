@@ -8,7 +8,7 @@ import japgolly.scalajs.react.extra.router.RouterCtl
 import com.github.thebridsk.bridge.client.pages.chicagos.ChicagoRouter.SummaryView
 import com.github.thebridsk.bridge.clientcommon.react.AppButton
 import com.github.thebridsk.bridge.client.routes.BridgeRouter
-import com.github.thebridsk.bridge.client.pages.BaseStyles
+import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles
 
 /**
  * A skeleton component.

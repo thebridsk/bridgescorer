@@ -25,7 +25,7 @@ import com.github.thebridsk.bridge.client.pages.rubber.RubberRouter.RubberMatchN
 import com.github.thebridsk.bridge.clientcommon.react.AppButton
 import com.github.thebridsk.bridge.clientcommon.react.Utils._
 import com.github.thebridsk.bridge.client.pages.rubber.RubberRouter.ListView
-import com.github.thebridsk.bridge.client.pages.BaseStyles
+import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles
 import com.github.thebridsk.bridge.clientcommon.react.HelpButton
 import com.github.thebridsk.materialui.MuiTypography
 import com.github.thebridsk.materialui.TextVariant
@@ -145,7 +145,6 @@ object PageRubberNamesInternal {
       }
 
       <.div(
-        rubStyles.namesPage,
         RubberPageBridgeAppBar(
           title = Seq[CtorType.ChildArg](
             MuiTypography(
@@ -158,6 +157,7 @@ object PageRubberNamesInternal {
           routeCtl = props.router
         )(),
         <.div(
+          rubStyles.namesPage,
           <.h1(InfoPage.showOnlyInLandscapeOnTouch(), "Rotate to portrait for a better view"),
           <.table(
             <.tbody(

@@ -12,7 +12,7 @@ import japgolly.scalajs.react.vdom.html_<^._
 import com.github.thebridsk.bridge.clientcommon.react.AppButton
 import com.github.thebridsk.bridge.clientcommon.react.Utils._
 import com.github.thebridsk.bridge.client.pages.Pixels
-import com.github.thebridsk.bridge.client.pages.BaseStyles
+import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles
 import com.github.thebridsk.bridge.clientcommon.react.HelpButton
 import com.github.thebridsk.materialui.MuiTypography
 import com.github.thebridsk.materialui.TextVariant
@@ -77,7 +77,6 @@ object ViewPlayersThirdRound {
                   )
 
       <.div(
-        chiStyles.viewPlayersThirdRound,
         ChicagoPageBridgeAppBar(
           title = Seq[CtorType.ChildArg](
             MuiTypography(
@@ -91,6 +90,7 @@ object ViewPlayersThirdRound {
         )(),
 //        <.h1("Select partners and first dealer"),
         <.div(
+          chiStyles.viewPlayersThirdRound,
           <.div(
             <.table(
               <.tbody(

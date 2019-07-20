@@ -75,7 +75,6 @@ object PageBoardSetInternal {
         case Some(md) =>
           val boardset = md.getBoardSetObject()
           <.div(
-            dupStyles.divBoardSetPage,
             DuplicatePageBridgeAppBar(
               id = Some(props.page.dupid),
               tableIds = List(),
@@ -94,6 +93,7 @@ object PageBoardSetInternal {
 
             ),
             <.div(
+              dupStyles.divBoardSetPage,
               <.div(
                 <.h1( "Boards used for the match" )
               ),

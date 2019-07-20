@@ -153,7 +153,7 @@ object PageRubberMatchInternal {
             }.toTagMod
           }
 
-          <.div( rubStyles.divRubberMatch,
+          <.div(
               RubberPageBridgeAppBar(
                 title = Seq[CtorType.ChildArg](
                   MuiTypography(
@@ -166,6 +166,7 @@ object PageRubberMatchInternal {
                 routeCtl = props.routerCtl
               )(),
               <.div(
+                rubStyles.divRubberMatch,
                 <.div( rubStyles.divRubberMatchView,
                     <.table(
                         <.thead(
@@ -211,7 +212,7 @@ object PageRubberMatchInternal {
             PageRubberNames( RubberMatchNamesView( props.page.rid ), props.routerCtl )
           )
         case _ =>
-          <.div( rubStyles.divRubberMatch,
+          <.div(
               RubberPageBridgeAppBar(
                 title = Seq[CtorType.ChildArg](
                   MuiTypography(
@@ -223,7 +224,10 @@ object PageRubberMatchInternal {
                 helpurl = "../help/rubber/summary.html",
                 routeCtl = props.routerCtl
               )(),
-              <.div(<.h1("Waiting to load data"))
+              <.div(
+                rubStyles.divRubberMatch,
+                <.h1("Waiting to load data")
+              )
           )
       }
     }

@@ -114,10 +114,10 @@
   font-size: x-large;
 }
 
-.chiViewPlayersVeryFirstRound > div:nth-child(3),
-.chiViewPlayersSecondRound > div:nth-child(3),
-.chiViewPlayersThirdRound > div:nth-child(3),
-.chiViewPlayersFourthRound > div:nth-child(3)
+.chiViewPlayersVeryFirstRound,
+.chiViewPlayersSecondRound,
+.chiViewPlayersThirdRound,
+.chiViewPlayersFourthRound
 {
   display: flex;
   flex-direction: row;
@@ -125,10 +125,10 @@
   align-items: flex-start;
 }
 
-.chiViewPlayersVeryFirstRound > div:nth-child(3) > div,
-.chiViewPlayersSecondRound > div:nth-child(3) > div,
-.chiViewPlayersThirdRound > div:nth-child(3) > div,
-.chiViewPlayersFourthRound > div:nth-child(3) > div
+.chiViewPlayersVeryFirstRound > div,
+.chiViewPlayersSecondRound > div,
+.chiViewPlayersThirdRound > div,
+.chiViewPlayersFourthRound > div
 {
   display: block;
   margin-left: auto;
@@ -144,10 +144,10 @@
 
 }
 
-.chiViewPlayersVeryFirstRound > div:nth-child(3) > div table,
-.chiViewPlayersSecondRound > div:nth-child(3) > div table,
-.chiViewPlayersThirdRound > div:nth-child(3) > div table,
-.chiViewPlayersFourthRound > div:nth-child(3) > div table
+.chiViewPlayersVeryFirstRound > div table,
+.chiViewPlayersSecondRound > div table,
+.chiViewPlayersThirdRound > div table,
+.chiViewPlayersFourthRound > div table
 {
   margin-left: auto;
   margin-right: auto;

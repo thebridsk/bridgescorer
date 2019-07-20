@@ -3,14 +3,14 @@
 .dupDivSummary {
 }
  */
-.dupDivSummary > div:nth-child(4) > table {
+.dupDivSummary > table {
   border-spacing: 0px;
   font-size: x-large;
   white-space: nowrap;
   border: 1px solid black;
 }
 
-.dupDivSummary > div:nth-child(4) > table > caption {
+.dupDivSummary > table > caption {
   font-size: x-large;
   white-space: nowrap;
   border: 2px solid black;
@@ -18,17 +18,17 @@
   text-align: left;
 }
 
-.dupDivSummary > div:nth-child(4) > table > caption > span {
+.dupDivSummary > table > caption > span {
     float: right;
 }
-.dupDivSummary > div:nth-child(4) > table thead tr th {
+.dupDivSummary > table thead tr th {
   position: sticky;
   position: -webkit-sticky;
   top: -8px;
   background: white;
   z-index: 11;
 }
-.dupDivSummary > div:nth-child(4) > table thead tr th:first-child {
+.dupDivSummary > table thead tr th:first-child {
   position: sticky;
   position: -webkit-sticky;
   top: -8px;
@@ -36,38 +36,38 @@
   background: white;
   z-index: 12;
 }
-.dupDivSummary > div:nth-child(4) > table tbody tr td:first-child {
+.dupDivSummary > table tbody tr td:first-child {
   position: sticky;
   position: -webkit-sticky;
   left: -8px;
   background: white;
   z-index: 10;
 }
-.dupDivSummary > div:nth-child(4) > table tbody tr:nth-child(2n+1) {
+.dupDivSummary > table tbody tr:nth-child(2n+1) {
   background-color: #f2f2f2;
 }
-.dupDivSummary > div:nth-child(4) > table td:first-child {
+.dupDivSummary > table td:first-child {
   border: 1px solid black;
   padding: 4px 8px 4px 4px;
   text-align: center;
 }
-.dupDivSummary > div:nth-child(4) > table td {
+.dupDivSummary > table td {
   border: 1px solid black;
   text-align: center;
 }
-.dupDivSummary > div:nth-child(4) > table th {
+.dupDivSummary > table th {
   border: 1px solid black;
   text-align: center;
   padding: 0px 3px;
 }
-.dupDivSummary > div:nth-child(4) > table > tfoot > tr > td {
+.dupDivSummary > table > tfoot > tr > td {
   position: sticky;
   position: -webkit-sticky;
   bottom: -8px;
   background: white;
   z-index: 12;
 }
-.dupDivSummary > div:nth-child(4) > table > tfoot > tr > td > div {
+.dupDivSummary > table > tfoot > tr > td > div {
   padding-top: 0px;
 }
 
@@ -301,7 +301,7 @@
   font-size: x-large;
 }
 
-.dupDivScoreboardPage > div:nth-child(4) {
+.dupDivScoreboardPage {
   display: flex;
   flex-wrap: wrap;
   flex-direction: row;
@@ -419,13 +419,13 @@
   justify-content: center;
 }
 
-.dupDivBoardSetPage > div:nth-child(3) {
+.dupDivBoardSetPage {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
 }
-.dupDivTablePage > div:nth-child(3) {
+.dupDivTablePage {
   display: flex;
   flex-wrap: wrap;
   flex-direction: row;
@@ -532,15 +532,8 @@
 .dupTableCellGray {
   background-color: lightgrey;
 }
-/*
-.dupDivAllBoardsPage {
-}
-.dupDivAllBoardsPage > div > div {
-  padding-top: 5px;
-}
- */
 
-.dupDivAllBoardsPage > div:nth-child(2) {
+.dupDivAllBoardsPage {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -557,21 +550,21 @@
 .dupDivBoardSetsPage {
   flex-wrap: nowrap;
 }
-.dupDivBoardSetsPage > div:nth-child(3) > div table {
+.dupDivBoardSetsPage > div table {
   border-spacing: 0px;
   font-size: x-large;
   white-space: nowrap;
   border: 1px solid black;
 }
-.dupDivBoardSetsPage > div:nth-child(3) > div tbody tr:nth-child(2n+1) {
+.dupDivBoardSetsPage > div tbody tr:nth-child(2n+1) {
   background-color: #f2f2f2;
 }
-.dupDivBoardSetsPage > div:nth-child(3) > div td {
+.dupDivBoardSetsPage > div td {
   border: 1px solid black;
   text-align: center;
   padding: 2px 4px 2px 4px;
 }
-.dupDivBoardSetsPage > div:nth-child(3) > div th {
+.dupDivBoardSetsPage > div th {
   border: 1px solid black;
   text-align: center;
   padding: 2px 4px 2px 4px;
@@ -611,7 +604,7 @@
   flex-wrap: nowrap;
 }
 /*
-.dupDivMovementsPage > div:nth-child(3) > div > div {
+.dupDivMovementsPage > div > div {
   display: flex;
   flex-wrap: wrap;
   flex-direction: row;
@@ -620,7 +613,7 @@
   border-width: 5px;
   vertical-align: top;
 }
-.dupDivMovementsPage > div:nth-child(3) > div > div > div {
+.dupDivMovementsPage > div > div > div {
   flex: 0 0 auto;
   padding: 10px 2px 2px 2px;
   border-style: solid;
@@ -712,44 +705,44 @@
   font-size: x-large;
 }
 
-.dupDivSuggestionPage > div:nth-child(4) input {
+.dupDivSuggestionPage input {
   font-size: x-large;
 }
 
-.dupDivSuggestionPage > div:nth-child(4) li {
+.dupDivSuggestionPage li {
   list-style-type: none;
 }
 
-.dupDivSuggestionPage > div:nth-child(4) > div:nth-child(4) ul li {
+.dupDivSuggestionPage > div:nth-child(4) ul li {
   padding: 5px;
 }
-.dupDivSuggestionPage > div:nth-child(4) tbody tr:nth-child(2n+1) {
+.dupDivSuggestionPage tbody tr:nth-child(2n+1) {
   background-color: #f2f2f2;
 }
-.dupDivSuggestionPage > div:nth-child(4) td:first-child {
+.dupDivSuggestionPage td:first-child {
   border: 1px solid black;
   text-align: center;
 }
-.dupDivSuggestionPage > div:nth-child(4) td {
+.dupDivSuggestionPage td {
   border: 1px solid black;
   padding: 4px;
   text-align: center;
 }
-.dupDivSuggestionPage > div:nth-child(4) > div:nth-child(6) td:nth-child(n+6) {
+.dupDivSuggestionPage > div:nth-child(6) td:nth-child(n+6) {
   font-size: large
 }
-.dupDivSuggestionPage > div:nth-child(4) > div:nth-child(6) th:nth-child(n+6) {
+.dupDivSuggestionPage > div:nth-child(6) th:nth-child(n+6) {
   font-size: large
 }
-.dupDivSuggestionPage > div:nth-child(4) th {
+.dupDivSuggestionPage th {
   border: 1px solid black;
   text-align: center;
 }
-.dupDivSuggestionPage > div:nth-child(4) table {
+.dupDivSuggestionPage table {
   border-spacing: 0px;
   border: 1px solid black;
 }
-.dupDivSuggestionPage > div:nth-child(4) {
+.dupDivSuggestionPage {
   font-size: x-large;
   display: flex;
   flex-wrap: wrap;

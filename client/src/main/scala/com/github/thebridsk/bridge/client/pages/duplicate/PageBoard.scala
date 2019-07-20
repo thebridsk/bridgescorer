@@ -21,7 +21,7 @@ import com.github.thebridsk.bridge.data.bridge.BoardScore
 import com.github.thebridsk.bridge.client.pages.duplicate.DuplicateRouter.BaseBoardViewWithPerspective
 import com.github.thebridsk.bridge.client.pages.duplicate.DuplicateRouter.TableBoardView
 import com.github.thebridsk.bridge.clientcommon.react.AppButton
-import com.github.thebridsk.bridge.client.pages.BaseStyles
+import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles
 import com.github.thebridsk.bridge.client.routes.BridgeRouter
 import com.github.thebridsk.bridge.clientcommon.react.HelpButton
 import com.github.thebridsk.materialui.MuiTypography
@@ -188,7 +188,7 @@ object PageBoardInternal {
       }
 
 
-      <.div( baseStyles.divBoardPage,
+      <.div(
         DuplicatePageBridgeAppBar(
           id = Some(props.page.dupid),
           tableIds = List(),

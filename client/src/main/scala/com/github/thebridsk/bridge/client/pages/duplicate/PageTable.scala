@@ -77,7 +77,6 @@ object PageTableInternal {
           score.tables.get(props.page.tableid) match {
             case Some(rounds) =>
               <.div(
-                dupStyles.divTablePage,
                 DuplicatePageBridgeAppBar(
                   id = Some(props.page.dupid),
                   tableIds = List(),
@@ -96,6 +95,7 @@ object PageTableInternal {
 
                 ),
                 <.div(
+                  dupStyles.divTablePage,
                   ViewTable(props.routerCtl,props.page),
                   <.div(
                     dupStyles.divTableHelp,

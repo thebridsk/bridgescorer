@@ -42,14 +42,14 @@
   text-align: left !important;
 }
 
-.rubDivRubberMatch > div:nth-child(3) {
+.rubDivRubberMatch {
   font-size: x-large;
   display: flex;
   flex-wrap: wrap;
   flex-direction: row;
   justify-content: center;
 }
-.rubDivRubberMatch > div:nth-child(3) table {
+.rubDivRubberMatch table {
   margin: 2px;
 }
 

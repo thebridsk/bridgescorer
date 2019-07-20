@@ -7,7 +7,7 @@ import japgolly.scalajs.react._
 import com.github.thebridsk.bridge.clientapi.routes.AppRouter._
 import com.github.thebridsk.bridge.clientcommon.react.AppButton
 import com.github.thebridsk.utilities.logging.Logger
-import com.github.thebridsk.bridge.clientapi.pages.BaseStyles
+import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles
 import japgolly.scalajs.react.extra.router.RouterCtl
 import com.github.thebridsk.bridge.clientapi.routes.BridgeRouter
 import com.github.thebridsk.bridge.clientapi.pages.RootBridgeAppBar
@@ -29,7 +29,6 @@ object InfoPage {
     def render( props: Props ) = {
           val gotoPage = props.routeCtl.set _
           <.div(
-            rootStyles.infoPageDiv,
             RootBridgeAppBar(
                 Seq(MuiTypography(
                         variant = TextVariant.h6,
@@ -44,6 +43,7 @@ object InfoPage {
                 props.routeCtl
             )(),
             <.div(
+              rootStyles.infoPageDiv,
               <.table( ^.width := "100%",
                   <.thead(
                     <.tr(

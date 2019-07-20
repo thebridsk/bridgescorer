@@ -30,7 +30,7 @@ import com.github.thebridsk.bridge.client.pages.duplicate.DuplicateRouter.Comple
 import com.github.thebridsk.bridge.client.pages.duplicate.DuplicateRouter.TableRoundScoreboardView
 import com.github.thebridsk.bridge.clientcommon.react.AppButton
 import com.github.thebridsk.bridge.clientcommon.react.PopupOkCancel
-import com.github.thebridsk.bridge.client.pages.BaseStyles
+import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles
 import com.github.thebridsk.bridge.clientcommon.react.HelpButton
 import com.github.thebridsk.bridge.client.routes.BridgeRouter
 import com.github.thebridsk.materialui.MuiTypography
@@ -199,7 +199,6 @@ object PageScoreboardInternal {
 
           logger.fine( "WinnerSets: "+winnersets )
           <.div(
-            dupStyles.divScoreboardPage,
             PopupOkCancel(
               if (state.deletePopup) {
                 Some( <.span( s"Are you sure you want to delete duplicate match ${score.id}" ) )
@@ -227,6 +226,7 @@ object PageScoreboardInternal {
               pagemenu: _*
             ),
             <.div(
+              dupStyles.divScoreboardPage,
               ViewScoreboard( props.routerCtl, props.game, score, state.isIMP(score.duplicate) ),
               winnersets.map(ws => ViewPlayerMatchResult( (if (state.isIMP(score.duplicate)) score.placeImpByWinnerSet(ws) else score.placeByWinnerSet(ws)), state.isIMP(score.duplicate) )).toTagMod,
               if (state.showdetails) {
@@ -338,7 +338,6 @@ object PageScoreboardInternal {
           )
         case None =>
           <.div(
-            dupStyles.divScoreboardPage,
             DuplicatePageBridgeAppBar(
               id = Some(props.game.dupid),
               tableIds = List(),
@@ -355,7 +354,7 @@ object PageScoreboardInternal {
               routeCtl = props.routerCtl
             )(
             ),
-            <.h1( "Loading" )
+            <.h1( "Loading..." )
           )
 
       }

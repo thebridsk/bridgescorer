@@ -2,6 +2,7 @@ package com.github.thebridsk.bridge.clientapi.pages
 
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.html_<^._
+import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles._
 
 object ThankYouPage {
   import ThankYouPageInternal._
@@ -14,7 +15,6 @@ object ThankYouPage {
 
 object ThankYouPageInternal {
   import ThankYouPage._
-  import BaseStyles._
 
   val component = ScalaComponent.builder[Props]("ThankYouPage")
                             .stateless

@@ -16,6 +16,7 @@ import com.github.thebridsk.materialui.TextVariant
 import com.github.thebridsk.materialui.TextColor
 import com.github.thebridsk.bridge.clientapi.routes.BridgeRouter
 import com.github.thebridsk.bridge.clientapi.routes.AppRouter.AppPage
+import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles._
 
 /**
  * A skeleton component.
@@ -159,7 +160,7 @@ object ColorPageInternal {
 
     def render( props: Props, state: State ) = {
       <.div(
-        BaseStyles.baseStyles.divColorPage,
+        baseStyles.divColorPage,
         RootBridgeAppBar(
             Seq(MuiTypography(
                     variant = TextVariant.h6,

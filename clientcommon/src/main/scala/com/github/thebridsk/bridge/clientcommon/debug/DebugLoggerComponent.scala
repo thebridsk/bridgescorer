@@ -8,6 +8,7 @@ import com.github.thebridsk.utilities.logging.TraceMsg
 import com.github.thebridsk.bridge.clientcommon.logger.Alerter
 import com.github.thebridsk.bridge.clientcommon.react.AppButton
 import com.github.thebridsk.bridge.clientcommon.dispatcher.Dispatcher
+import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles.rootStyles
 
 /**
  * A skeleton component.
@@ -78,6 +79,7 @@ object DebugLoggerComponentInternal {
       val txt = LoggerStore.getMessages().map(m => m.i.toString+": "+format(m.traceMsg)).mkString("\n")
       val enabled = LoggerStore.isEnabled()
       <.div(
+        rootStyles.logDiv,
         AppButton( "ClearLogs", "Clear Logs", ^.onClick --> clearLogs() ),
         AppButton( "StopLogs", "Stop Logs", ^.onClick --> stopLogs() ).when(enabled),
         AppButton( "StartLogs", "Start Logs", ^.onClick --> startLogs() ).unless(enabled),

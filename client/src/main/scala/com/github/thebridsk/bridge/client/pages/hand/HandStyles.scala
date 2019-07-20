@@ -1,8 +1,8 @@
 package com.github.thebridsk.bridge.client.pages.hand
 
 import japgolly.scalajs.react.vdom.html_<^._
-import com.github.thebridsk.bridge.client.pages.BaseStyles
-import com.github.thebridsk.bridge.client.pages.BaseStylesImplicits
+import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles
+import com.github.thebridsk.bridge.clientcommon.pages.BaseStylesImplicits
 
 object HandStyles {
   import BaseStylesImplicits._

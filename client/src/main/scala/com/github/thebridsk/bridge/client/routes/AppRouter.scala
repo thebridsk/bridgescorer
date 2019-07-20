@@ -13,7 +13,7 @@ import japgolly.scalajs.react.CallbackTo
 import com.github.thebridsk.bridge.client.pages.ThankYouPage
 import com.github.thebridsk.bridge.client.pages.AboutPage
 import japgolly.scalajs.react.extra.router.StaticDsl.Rule
-import com.github.thebridsk.bridge.client.pages.BaseStyles.baseStyles
+import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles.baseStyles
 
 object AppRouter {
 
@@ -213,17 +213,17 @@ class AppRouter( modules: Module* ) {
                                                                                     scoringViewCallbackOk(routerCtl),
                                                                                     scoringViewCallbackCancel(routerCtl),
                                                                                     teamNS=Some("1"), teamEW=Some("2"),
-                                                                                    newhand=true), baseStyles.divHandPage ))) // ScoringView(defaultContract))
+                                                                                    newhand=true) ))) // ScoringView(defaultContract))
       | staticRoute("#handchicago", ShowChicagoHand) ~> renderR( (routerCtl) => logit( appBarPage( routerCtl, "Test Chicago Hand", PageHand(defaultHand(TestChicago),
                                                                                   scoringViewCallbackOk(routerCtl),
                                                                                   scoringViewCallbackCancel(routerCtl),
-                                                                                  newhand=true), baseStyles.divHandPage ))) // ScoringView(defaultContract))
+                                                                                  newhand=true) ))) // ScoringView(defaultContract))
       | staticRoute("#rubberhand", ShowRubberHand) ~> renderR( (routerCtl) => logit( appBarPage( routerCtl, "Test Rubber Hand", PageHand(defaultHand(TestRubber),
                                                                                        scoringViewCallbackOk(routerCtl),
                                                                                        scoringViewCallbackCancel(routerCtl),
                                                                                        newhand=true,
                                                                                        allowPassedOut=false,
-                                                                                       callbackWithHonors=Some(scoringViewWithHonorsCallbackOk(routerCtl))), baseStyles.divHandPage ))) // ScoringView(defaultContract))
+                                                                                       callbackWithHonors=Some(scoringViewWithHonorsCallbackOk(routerCtl))) ))) // ScoringView(defaultContract))
       | staticRoute("#about", About) ~> renderR( (routerCtl) => logit(AboutPage(routerCtl)) )
       | staticRoute("#imports", ImportsList) ~> renderR( (routerCtl) => logit(ImportsListPage(routerCtl,ImportsList)) )
       | staticRoute("#export", Export) ~> renderR( (routerCtl) => logit(ExportPage(routerCtl)) )

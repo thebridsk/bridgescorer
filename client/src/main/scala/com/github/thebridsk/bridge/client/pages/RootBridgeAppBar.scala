@@ -38,6 +38,7 @@ import com.github.thebridsk.bridge.client.routes.AppRouter.ShowChicagoHand
 import com.github.thebridsk.bridge.client.routes.AppRouter.ShowRubberHand
 import com.github.thebridsk.materialui.icons.SvgColor
 import com.github.thebridsk.bridge.clientcommon.pages.GotoPage
+import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles._
 
 /**
  * A simple AppBar for the Bridge client.
@@ -161,7 +162,6 @@ object RootBridgeAppBarInternal {
     }}
 
     def render( props: Props, state: State ) = {
-      import BaseStyles._
 
       def callbackPage(page: AppPage)(e: ReactEvent) = {
         logger.info(s"""Goto page $page""")

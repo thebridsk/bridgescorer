@@ -229,7 +229,7 @@ object PageSuggestionInternal {
 
       val showDetails = state.suggestion.flatMap( s => s.suggestions ).isDefined
 
-      <.div( dupStyles.divSuggestionPage,
+      <.div(
         PopupOkCancel( state.error.map(s => TagMod(s)), None, Some(clearError) ),
         DuplicatePageBridgeAppBar(
           id = None,
@@ -249,6 +249,7 @@ object PageSuggestionInternal {
 
         ),
         <.div(
+          dupStyles.divSuggestionPage,
           <.div(
             baseStyles.divText100,
             "Number of players: ",

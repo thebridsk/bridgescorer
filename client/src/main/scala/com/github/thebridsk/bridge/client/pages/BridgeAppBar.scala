@@ -34,6 +34,7 @@ import com.github.thebridsk.bridge.clientcommon.logger.Init
 import com.github.thebridsk.materialui.MuiButton
 import com.github.thebridsk.bridge.clientcommon.pages.GotoPage
 import com.github.thebridsk.bridge.clientcommon.pages.TitleSuits
+import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles._
 
 /**
   * A simple AppBar for the Bridge client.
@@ -158,7 +159,6 @@ object BridgeAppBarInternal {
     }
 
     def render(props: Props, state: State) = {
-      import BaseStyles._
 
       def gotoHomePage(e: ReactEvent) = props.routeCtl.toHome
       def gotoAboutPage(e: ReactEvent) = props.routeCtl.toAbout

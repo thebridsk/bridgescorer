@@ -40,7 +40,7 @@ import com.github.thebridsk.bridge.clientcommon.react.Button
 import com.github.thebridsk.bridge.client.pages.hand.PageHand
 import com.github.thebridsk.bridge.client.pages.hand.{ Properties => HProperties}
 import com.github.thebridsk.bridge.client.pages.Pixels
-import com.github.thebridsk.bridge.client.pages.BaseStyles
+import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles
 import com.github.thebridsk.bridge.clientcommon.react.HelpButton
 import com.github.thebridsk.materialui.MuiTypography
 import com.github.thebridsk.materialui.TextVariant

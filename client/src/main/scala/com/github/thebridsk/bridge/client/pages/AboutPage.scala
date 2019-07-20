@@ -18,6 +18,7 @@ import com.github.thebridsk.bridge.client.routes.BridgeRouter
 import com.github.thebridsk.materialui.MuiTypography
 import com.github.thebridsk.materialui.TextColor
 import com.github.thebridsk.materialui.TextVariant
+import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles._
 
 /**
  * A skeleton component.
@@ -73,9 +74,7 @@ object AboutPageInternal {
     val indent = <.span( ^.dangerouslySetInnerHtml := "&nbsp;&nbsp;&nbsp;" )
 
     def render( props: Props, state: State ) = {
-      import BaseStyles._
       <.div(
-        rootStyles.aboutPageDiv,
         RootBridgeAppBar(
             Seq(MuiTypography(
                     variant = TextVariant.h6,
@@ -90,6 +89,7 @@ object AboutPageInternal {
             props.router
         )(),
         <.div(
+          rootStyles.aboutPageDiv,
           <.div(
             ^.id:="url",
             "Server",

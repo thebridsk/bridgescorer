@@ -131,8 +131,6 @@ class BaseStyles {
 
   val appBarTitle = cls("appBarTitle")
 
-  val divBoardPage = cls("divBoardPage")
-  val divHandPage = cls("divHandPage")
 }
 
 class RootStyles {

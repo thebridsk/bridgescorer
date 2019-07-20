@@ -24,7 +24,7 @@ import com.github.thebridsk.bridge.clientcommon.react.PieChartOrSquareForZero
 import com.github.thebridsk.bridge.clientcommon.color.Colors
 import com.github.thebridsk.bridge.clientcommon.color.Color
 import com.github.thebridsk.bridge.clientcommon.react.AppButton
-import com.github.thebridsk.bridge.client.pages.BaseStyles
+import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles
 import DuplicateStyles._
 
 /**

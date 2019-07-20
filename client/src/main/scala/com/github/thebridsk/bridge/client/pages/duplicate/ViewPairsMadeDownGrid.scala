@@ -28,7 +28,7 @@ import com.github.thebridsk.bridge.data.duplicate.suggestion.ColorByWonPtsPct
 import com.github.thebridsk.bridge.data.duplicate.suggestion.ColorByPointsPct
 import com.github.thebridsk.bridge.clientcommon.react.PieChart
 import com.github.thebridsk.bridge.clientcommon.react.PieChartOrSquareForZero
-import com.github.thebridsk.bridge.client.pages.BaseStyles
+import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles
 import com.github.thebridsk.bridge.clientcommon.react.Table.Column
 import com.github.thebridsk.bridge.clientcommon.react.Table
 

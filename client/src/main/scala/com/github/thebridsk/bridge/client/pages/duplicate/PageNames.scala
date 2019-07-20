@@ -117,7 +117,6 @@ object PageNamesInternal {
       import DuplicateStyles._
       logger.info("Rendering "+props.page+" suggestions="+state.nameSuggestions)
       <.div(
-        dupStyles.divNamesPage,
         DuplicatePageBridgeAppBar(
           id = Some(props.page.dupid),
           tableIds = List(),
@@ -138,7 +137,8 @@ object PageNamesInternal {
         DuplicateStore.getMatch() match {
           case Some(md) =>
             <.div(
-//              <.h1("Edit Names"),
+              dupStyles.divNamesPage,
+              //              <.h1("Edit Names"),
               <.h2("Only change the spelling of a players name"),
               <.h2("or replace a player."),
               <.h2("Do NOT swap players."),

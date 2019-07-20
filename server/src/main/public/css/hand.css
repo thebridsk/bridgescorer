@@ -9,9 +9,6 @@
   height: 50px;
 }
 
-.divHandPage {
-}
-
 .handPageHand {
   font-size: x-large;
   display: flex;
@@ -31,12 +28,12 @@
   .handSectionHeader {
     padding-top: 10px !important;
   }
-  
+
   .handPageHand .baseDivFooter {
     padding-top: 5px;
   }
 }
-  
+
 .handPageHand #Ok {
   width: 100px;
 }
@@ -47,10 +44,6 @@
 }
 .handPageHand > div {
   max-width: 1165px;
-}
-
-.divHandPage > .divAppBar {
-  width: 100%
 }
 
 .handSectionContract {
@@ -133,14 +126,14 @@
   flex: 1 0 auto;
   border-left-width: 20px;
   border-right-width: 10px;
-  display: flex; 
+  display: flex;
   flex-direction: column;
   flex-wrap: nowrap;
   align-items: center;
 }
 .handViewDeclarer > div {
   flex: 0 0 auto;
-  display: flex; 
+  display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
 }
@@ -274,7 +267,7 @@
 }
 
 .handSectionScore > div {
-  flex: 0 0 auto; 
+  flex: 0 0 auto;
   padding: 0 10px 0 10px;
 }
 

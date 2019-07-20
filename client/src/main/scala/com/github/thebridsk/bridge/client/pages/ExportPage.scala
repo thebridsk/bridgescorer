@@ -30,6 +30,7 @@ import com.github.thebridsk.materialui.MuiTypography
 import com.github.thebridsk.materialui.TextVariant
 import com.github.thebridsk.materialui.TextColor
 import com.github.thebridsk.bridge.clientcommon.pages.GotoPage
+import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles._
 
 /**
  * A skeleton component.
@@ -198,7 +199,6 @@ object ExportPageInternal {
     val indent = <.span( ^.dangerouslySetInnerHtml := "&nbsp;&nbsp;&nbsp;" )
 
     def render( props: Props, state: State ) = {
-      import BaseStyles._
 
       def showList( tid: String, header: String, list: Option[List[String]] ) = {
         <.div(
@@ -239,7 +239,6 @@ object ExportPageInternal {
       }
 
       <.div(
-        rootStyles.exportPageDiv,
         RootBridgeAppBar(
             Seq(MuiTypography(
                     variant = TextVariant.h6,
@@ -254,6 +253,7 @@ object ExportPageInternal {
             props.router
         )(),
         <.div(
+          rootStyles.exportPageDiv,
           <.div(
             showList( "Duplicate", "Duplicate", dupids ),
             showList( "Chicago", "Chicago", state.chiids ),

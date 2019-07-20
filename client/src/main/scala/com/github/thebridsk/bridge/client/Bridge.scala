@@ -20,7 +20,7 @@ import com.github.thebridsk.bridge.client.pages.rubber.RubberModule
 import com.github.thebridsk.utilities.logging.Logger
 import com.github.thebridsk.bridge.client.modules.Loader
 import com.github.thebridsk.bridge.clientcommon.logger.Alerter
-import com.github.thebridsk.bridge.client.pages.BaseStyles
+import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles
 import scala.scalajs.js.annotation.JSExportTopLevel
 import scala.scalajs.js.annotation.JSExport
 import org.scalajs.dom.raw.Event

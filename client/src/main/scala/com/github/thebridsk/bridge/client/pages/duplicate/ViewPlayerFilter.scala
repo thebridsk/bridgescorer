@@ -26,7 +26,7 @@ import com.github.thebridsk.bridge.data.duplicate.suggestion.ColorByWon
 import com.github.thebridsk.bridge.data.duplicate.suggestion.ColorByWonPts
 import com.github.thebridsk.bridge.data.duplicate.suggestion.ColorByWonPtsPct
 import com.github.thebridsk.bridge.data.duplicate.suggestion.ColorByPointsPct
-import com.github.thebridsk.bridge.client.pages.BaseStyles
+import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles
 
 /**
  * Shows a pairs summary page.
