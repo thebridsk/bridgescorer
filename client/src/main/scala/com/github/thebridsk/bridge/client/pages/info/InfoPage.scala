@@ -29,7 +29,6 @@ object InfoPage {
     def render( props: Props ) = {
           val gotoPage = props.routeCtl.set _
           <.div(
-            rootStyles.infoPageDiv,
             RootBridgeAppBar(
                 Seq(MuiTypography(
                         variant = TextVariant.h6,
@@ -44,6 +43,7 @@ object InfoPage {
                 props.routeCtl
             )(),
             <.div(
+              rootStyles.infoPageDiv,
               <.table( ^.width := "100%",
                   <.thead(
                     <.tr(

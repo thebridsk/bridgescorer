@@ -115,7 +115,6 @@ object PageFinishedScoreboardsInternal {
       }
 
       <.div(
-        dupStyles.divFinishedScoreboardsPage,
         DuplicatePageBridgeAppBar(
           id = None,
           tableIds = List(),
@@ -134,6 +133,7 @@ object PageFinishedScoreboardsInternal {
 
         ),
         <.div(
+          dupStyles.divFinishedScoreboardsPage,
           scoreboards(),
           <.div(
             baseStyles.hideInPrint,

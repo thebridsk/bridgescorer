@@ -115,7 +115,6 @@ object PageSelectMatchInternal {
       import DuplicateStyles._
 
       <.div(
-        dupStyles.divSelectMatch,
         PopupOkCancel( state.error.map( s => <.p(s) ), Some(popupOk), None ),
         DuplicatePageBridgeAppBar(
           id = None,
@@ -135,6 +134,7 @@ object PageSelectMatchInternal {
 
         ),
         <.div(
+          dupStyles.divSelectMatch,
           <.label(
             "Please enter just the number for the match: ",
             <.input.text(

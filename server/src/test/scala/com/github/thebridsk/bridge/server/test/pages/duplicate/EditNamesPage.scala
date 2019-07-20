@@ -98,7 +98,7 @@ class EditNamesPage(
    * The columns (second index) are the players on the team.
    */
   def getNames(implicit patienceConfig: PatienceConfig, pos: Position) = {
-    getElemsByXPath("""//div[contains(concat(' ', @class, ' '), ' dupDivNamesPage ')]/div/table/tbody/tr/td/div/div/input""").map { e =>
+    getElemsByXPath("""//div[contains(concat(' ', @class, ' '), ' dupDivNamesPage ')]/table/tbody/tr/td/div/div/input""").map { e =>
       e.attribute("value").getOrElse("")
     }.grouped(2).toList
   }

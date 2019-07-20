@@ -228,7 +228,6 @@ object PageStatsInternal {
 
     def render( props: Props, state: State ) = {
       <.div(
-        dupStyles.divPageStats,
         PopupOkCancel( state.msg, None, Some(cancel) ),
         DuplicatePageBridgeAppBar(
           id = None,
@@ -248,6 +247,7 @@ object PageStatsInternal {
 
         ),
         <.div(
+          dupStyles.divPageStats,
           <.div(
             baseStyles.divFooter,
             <.div(

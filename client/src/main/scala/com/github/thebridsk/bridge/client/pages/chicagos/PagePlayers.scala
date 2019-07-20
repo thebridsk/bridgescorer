@@ -152,7 +152,7 @@ object PagePlayersInternal {
               helpurl = "../help/chicago/four/names4.html",
               routeCtl = props.router
             )(),
-            <.div(<.h1("Loading"))
+            <.div(<.h1("Loading..."))
           )
       }
 

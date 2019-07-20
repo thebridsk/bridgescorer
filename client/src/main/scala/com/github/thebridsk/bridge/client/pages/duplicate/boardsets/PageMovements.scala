@@ -160,60 +160,58 @@ object PageMovementsInternal {
     def render( props: Props, state: State ) = {
       logger.info("PageMovements.Backend.render: display "+props.initialDisplay)
       <.div(
-        dupStyles.divMovementsPage,
-//        <.div(
-          DuplicatePageBridgeAppBar(
-            id = None,
-            tableIds = List(),
-            title = Seq[CtorType.ChildArg](
-                  MuiTypography(
-                      variant = TextVariant.h6,
-                      color = TextColor.inherit,
-                  )(
-                      <.span(
-                        "Movements",
-                      )
-                  )),
-            helpurl = "../help/duplicate/summary.html",
-            routeCtl = props.routerCtl
-          )(
-
-          ),
-          <.div(
-            <.table(
-              <.thead(
-                SummaryHeader(state)
-              ),
-              <.tbody(
-                state.movements.keySet.toList.sortWith( (t1,t2)=>t1<t2 ).map { name =>
-                  SummaryRow.withKey( name )((state,name,toggleBoardSet(name),props.initialDisplay))
-                }.toTagMod
-              )
-            ),
-            AppButton( "OK", "OK", ^.onClick-->okCallback ),
-            props.initialDisplay match {
-              case Some(name) =>
-                state.movements.get(name) match {
-                  case Some(htp) =>
-                    TagMod(
-                      <.h1("Showing ", htp.short ),
-                      <.p( htp.description ),
-                      <.div(
-                        dupStyles.divMovementView,
-                        htp.hands.map( h => h.table ).toList.distinct.sorted.map { table =>
-                          MovementTable((state,htp,table))
-                        }.toTagMod
-                      )
+        DuplicatePageBridgeAppBar(
+          id = None,
+          tableIds = List(),
+          title = Seq[CtorType.ChildArg](
+                MuiTypography(
+                    variant = TextVariant.h6,
+                    color = TextColor.inherit,
+                )(
+                    <.span(
+                      "Movements",
                     )
-                  case None =>
-                    <.span(s"BoardSet $name not found")
-                }
-              case None =>
-                <.span()
-            }
-          )
+                )),
+          helpurl = "../help/duplicate/summary.html",
+          routeCtl = props.routerCtl
+        )(
+
         ),
-//      )
+        <.div(
+          dupStyles.divMovementsPage,
+          <.table(
+            <.thead(
+              SummaryHeader(state)
+            ),
+            <.tbody(
+              state.movements.keySet.toList.sortWith( (t1,t2)=>t1<t2 ).map { name =>
+                SummaryRow.withKey( name )((state,name,toggleBoardSet(name),props.initialDisplay))
+              }.toTagMod
+            )
+          ),
+          AppButton( "OK", "OK", ^.onClick-->okCallback ),
+          props.initialDisplay match {
+            case Some(name) =>
+              state.movements.get(name) match {
+                case Some(htp) =>
+                  TagMod(
+                    <.h1("Showing ", htp.short ),
+                    <.p( htp.description ),
+                    <.div(
+                      dupStyles.divMovementView,
+                      htp.hands.map( h => h.table ).toList.distinct.sorted.map { table =>
+                        MovementTable((state,htp,table))
+                      }.toTagMod
+                    )
+                  )
+                case None =>
+                  <.span(s"BoardSet $name not found")
+              }
+            case None =>
+              <.span()
+          }
+        )
+      )
     }
 
     val storeCallback = scope.modState { s =>

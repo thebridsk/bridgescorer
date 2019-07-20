@@ -267,7 +267,6 @@ object PageNewDuplicateInternal {
       val movementNames = state.movementNames()
       val boardsetNames = state.boardsetNames()
       <.div(
-        dupStyles.divNewDuplicate,
         PopupOkCancel( state.workingOnNew, None, Some(cancel) ),
         DuplicatePageBridgeAppBar(
           id = None,
@@ -287,6 +286,7 @@ object PageNewDuplicateInternal {
 
         ),
         <.div(
+          dupStyles.divNewDuplicate,
           CheckBox("resultsOnly", "Create Results Only", state.resultsOnly, resultsOnlyToggle ),
           <.table(
             dupStyles.tableNewDuplicate,

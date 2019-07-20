@@ -106,8 +106,6 @@ object PageAllBoardsInternal {
       }
 
       <.div(
-        baseStyles.divBoardPage,
-        dupStyles.divAllBoardsPage,
         DuplicatePageBridgeAppBar(
           id = Some(props.page.dupid),
           tableIds = List(),
@@ -127,6 +125,7 @@ object PageAllBoardsInternal {
         DuplicateStore.getView( props.page.getPerspective()) match {
           case Some(score) =>
             <.div(
+              dupStyles.divAllBoardsPage,
               <.div(
                 AppButton( "Game", "Scoreboard", props.routerCtl.setOnClick(props.page.toScoreboardView()) )
               ),
