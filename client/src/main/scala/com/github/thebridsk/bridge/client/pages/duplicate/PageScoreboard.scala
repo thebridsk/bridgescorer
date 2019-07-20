@@ -30,7 +30,7 @@ import com.github.thebridsk.bridge.client.pages.duplicate.DuplicateRouter.Comple
 import com.github.thebridsk.bridge.client.pages.duplicate.DuplicateRouter.TableRoundScoreboardView
 import com.github.thebridsk.bridge.clientcommon.react.AppButton
 import com.github.thebridsk.bridge.clientcommon.react.PopupOkCancel
-import com.github.thebridsk.bridge.client.pages.BaseStyles
+import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles
 import com.github.thebridsk.bridge.clientcommon.react.HelpButton
 import com.github.thebridsk.bridge.client.routes.BridgeRouter
 import com.github.thebridsk.materialui.MuiTypography

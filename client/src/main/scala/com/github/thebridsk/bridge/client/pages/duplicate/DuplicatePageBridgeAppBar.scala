@@ -23,7 +23,7 @@ import com.github.thebridsk.bridge.clientcommon.react.AppButtonLinkNewWindow
 import org.scalajs.dom.document
 import japgolly.scalajs.react.vdom.VdomNode
 import com.github.thebridsk.bridge.client.routes.AppRouter.Home
-import com.github.thebridsk.bridge.client.pages.BaseStyles
+import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles
 import com.github.thebridsk.bridge.data.Id
 import com.github.thebridsk.bridge.client.pages.duplicate.DuplicateRouter.CompleteScoreboardView
 import com.github.thebridsk.bridge.client.pages.duplicate.DuplicateRouter.SummaryView

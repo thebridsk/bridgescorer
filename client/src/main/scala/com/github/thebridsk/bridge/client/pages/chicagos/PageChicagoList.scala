@@ -181,7 +181,6 @@ object PageChicagoListInternal {
           )
         )
       <.div(
-        chiStyles.chicagoListPage,
         PopupOkCancel(msg.map(s => s), funOk, funCancel),
         ChicagoPageBridgeAppBar(
           title = Seq[CtorType.ChildArg](
@@ -196,6 +195,7 @@ object PageChicagoListInternal {
           routeCtl = props.routerCtl
         )(),
         <.div(
+          chiStyles.chicagoListPage,
           ChicagoSummaryStore.getChicagoSummary() match {
             case Some(chicagosRaw) =>
               val importId = props.page match {

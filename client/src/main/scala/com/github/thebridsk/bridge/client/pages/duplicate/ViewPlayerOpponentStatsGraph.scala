@@ -15,7 +15,7 @@ import com.github.thebridsk.bridge.clientcommon.react.AppButton
 import com.github.thebridsk.bridge.clientcommon.react.Utils._
 import com.github.thebridsk.bridge.clientcommon.color.Color
 import com.github.thebridsk.bridge.clientcommon.react.CheckBox
-import com.github.thebridsk.bridge.client.pages.BaseStyles
+import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles
 import com.github.thebridsk.bridge.clientcommon.react.ColorBar
 import com.github.thebridsk.bridge.clientcommon.react.Table
 import com.github.thebridsk.bridge.clientcommon.react.SvgRect

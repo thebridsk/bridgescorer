@@ -270,7 +270,7 @@
 .rootLogDiv {
   display: block;
 }
-.rootLogDiv > div > pre > p {
+.rootLogDiv > pre > p {
   font-family: monospace;
   font-size: medium;
 }
@@ -398,18 +398,18 @@
     z-index: -1;
 }
 
-/* .rootExportPageDiv > div:nth-child(3) {
+/* .rootExportPageDiv {
 } */
 
-.rootExportPageDiv > div:nth-child(3) > div {
+.rootExportPageDiv > div {
   font-size: x-large;
 }
 
-.rootExportPageDiv > div:nth-child(3) > div > div {
+.rootExportPageDiv > div > div {
   width: 1024px;
 }
 
-.rootExportPageDiv > div:nth-child(3) > div > div > ul {
+.rootExportPageDiv > div > div > ul {
   columns: 7;
   list-style-type: none;
 }

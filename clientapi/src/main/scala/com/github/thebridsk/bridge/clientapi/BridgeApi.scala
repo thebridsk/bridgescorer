@@ -14,7 +14,7 @@ import scala.scalajs.js.Date
 import com.github.thebridsk.bridge.data.js.SystemTimeJs
 import com.github.thebridsk.utilities.logging.Logger
 import com.github.thebridsk.bridge.clientcommon.logger.Alerter
-import com.github.thebridsk.bridge.clientapi.pages.BaseStyles
+import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles
 import scala.scalajs.js.annotation.JSExportTopLevel
 import scala.scalajs.js.annotation.JSExport
 import org.scalajs.dom.raw.Event

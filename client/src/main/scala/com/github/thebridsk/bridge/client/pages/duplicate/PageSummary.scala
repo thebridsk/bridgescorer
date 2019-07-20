@@ -46,7 +46,7 @@ import play.api.libs.json.Json
 import play.api.libs.json.JsResult
 import play.api.libs.json.JsSuccess
 import play.api.libs.json.JsError
-import com.github.thebridsk.bridge.client.pages.BaseStyles
+import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles
 import com.github.thebridsk.bridge.data.graphql.GraphQLProtocol.GraphQLResponse
 import com.github.thebridsk.bridge.clientcommon.react.Tooltip
 import com.github.thebridsk.bridge.clientcommon.react.HelpButton

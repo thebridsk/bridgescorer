@@ -21,7 +21,7 @@ import com.github.thebridsk.bridge.clientcommon.react.AppButton
 import com.github.thebridsk.bridge.clientcommon.react.CheckBox
 import com.github.thebridsk.bridge.clientcommon.react.RadioButton
 import com.github.thebridsk.bridge.clientcommon.react.Utils._
-import com.github.thebridsk.bridge.client.pages.BaseStyles
+import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles
 import com.github.thebridsk.bridge.clientcommon.react.HelpButton
 import com.github.thebridsk.materialui.MuiTypography
 import com.github.thebridsk.materialui.TextVariant
@@ -88,7 +88,6 @@ object ViewPlayersVeryFirstRound {
       }
 
       <.div(
-        chiStyles.viewPlayersVeryFirstRound,
         ChicagoPageBridgeAppBar(
           title = Seq[CtorType.ChildArg](
             MuiTypography(
@@ -101,6 +100,7 @@ object ViewPlayersVeryFirstRound {
           routeCtl = props.router
         )(),
         <.div(
+          chiStyles.viewPlayersVeryFirstRound,
           <.div(
             <.h1(InfoPage.showOnlyInLandscapeOnTouch(), "Rotate to portrait for a better view"),
             <.table(

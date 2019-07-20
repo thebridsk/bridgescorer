@@ -12,6 +12,7 @@ import com.github.thebridsk.materialui.MuiTypography
 import com.github.thebridsk.materialui.TextVariant
 import com.github.thebridsk.materialui.TextColor
 import com.github.thebridsk.bridge.clientapi.routes.BridgeRouter
+import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles._
 
 /**
  * A skeleton component.
@@ -53,7 +54,7 @@ object GraphiQLPageInternal {
    */
   class Backend(scope: BackendScope[Props, State]) {
     def render( props: Props, state: State ) = {
-      <.div( BaseStyles.baseStyles.divGraphiql,
+      <.div( baseStyles.divGraphiql,
         RootBridgeAppBar(
             Seq(MuiTypography(
                     variant = TextVariant.h6,

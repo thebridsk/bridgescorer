@@ -12,7 +12,7 @@ import japgolly.scalajs.react.CallbackTo
 import com.github.thebridsk.bridge.clientapi.pages.ThankYouPage
 import com.github.thebridsk.bridge.clientapi.pages.AboutPage
 import japgolly.scalajs.react.extra.router.StaticDsl.Rule
-import com.github.thebridsk.bridge.clientapi.pages.BaseStyles.baseStyles
+import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles.baseStyles
 import com.github.thebridsk.bridge.clientcommon.logger.{ Info => LogInfo }
 
 object AppRouter {

@@ -27,7 +27,7 @@ import com.github.thebridsk.bridge.data.duplicate.suggestion.ColorByWonPts
 import com.github.thebridsk.bridge.data.duplicate.suggestion.ColorByWonPtsPct
 import com.github.thebridsk.bridge.data.duplicate.suggestion.ColorByPointsPct
 import com.github.thebridsk.bridge.data.duplicate.suggestion.ColorByPlayed
-import com.github.thebridsk.bridge.client.pages.BaseStyles
+import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles
 import com.github.thebridsk.bridge.clientcommon.react.ColorBar
 import com.github.thebridsk.bridge.data.duplicate.suggestion.CalculationType
 import com.github.thebridsk.bridge.data.duplicate.suggestion.CalculationAsPlayed

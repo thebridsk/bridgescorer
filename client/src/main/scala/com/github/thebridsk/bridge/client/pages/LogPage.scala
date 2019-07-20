@@ -58,6 +58,7 @@ import com.github.thebridsk.materialui.component.MyMenu
 import com.github.thebridsk.materialui.PopperPlacement
 import com.github.thebridsk.bridge.client.routes.AppRouter
 import com.github.thebridsk.bridge.clientcommon.debug.DebugLoggerComponent
+import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles._
 
 /**
  * @author werewolf
@@ -75,7 +76,6 @@ object LogPage {
   class Backend( scope: BackendScope[Props, State]) {
 
     def render( props: Props, state: State ) = {
-      import BaseStyles._
       <.div(
         rootStyles.logDiv,
         RootBridgeAppBar(

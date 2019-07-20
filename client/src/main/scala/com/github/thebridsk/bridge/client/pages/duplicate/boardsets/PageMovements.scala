@@ -17,7 +17,7 @@ import com.github.thebridsk.bridge.clientcommon.react.AppButton
 import com.github.thebridsk.bridge.client.pages.duplicate.DuplicateRouter.MovementSummaryView
 import com.github.thebridsk.bridge.client.pages.duplicate.DuplicateRouter.MovementView
 import com.github.thebridsk.bridge.client.pages.duplicate.DuplicateStyles
-import com.github.thebridsk.bridge.client.pages.BaseStyles
+import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles
 import com.github.thebridsk.bridge.client.pages.duplicate.DuplicatePageBridgeAppBar
 import com.github.thebridsk.materialui.MuiTypography
 import com.github.thebridsk.materialui.TextVariant

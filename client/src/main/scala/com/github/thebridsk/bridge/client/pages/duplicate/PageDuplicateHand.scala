@@ -30,7 +30,7 @@ import com.github.thebridsk.bridge.client.pages.duplicate.DuplicateRouter.BaseHa
 import com.github.thebridsk.materialui.MuiTypography
 import com.github.thebridsk.materialui.TextVariant
 import com.github.thebridsk.materialui.TextColor
-import com.github.thebridsk.bridge.client.pages.BaseStyles.baseStyles
+import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles.baseStyles
 
 /**
  * Shows the team x board table and has a totals column that shows the number of points the team has.
@@ -109,7 +109,7 @@ object PageDuplicateHandInternal {
   class Backend(scope: BackendScope[Props, State]) {
     def render( props: Props, state: State ) = {
       logger.fine(s"""PageDuplicateHand.render( ${props.page} )""")
-      <.div( baseStyles.divHandPage,
+      <.div(
         DuplicatePageBridgeAppBar(
           id = Some(props.page.dupid),
           tableIds = List(),

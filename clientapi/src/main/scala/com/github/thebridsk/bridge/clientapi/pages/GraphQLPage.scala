@@ -27,6 +27,7 @@ import com.github.thebridsk.materialui.MuiTypography
 import com.github.thebridsk.materialui.TextVariant
 import com.github.thebridsk.materialui.TextColor
 import com.github.thebridsk.bridge.clientapi.routes.BridgeRouter
+import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles._
 
 /**
  * A skeleton component.
@@ -129,7 +130,6 @@ object GraphQLPageInternal {
     }
 
     def render( props: Props, state: State ) = {
-      import BaseStyles._
       <.div(
         rootStyles.graphqlPageDiv,
         PopupOkCancel( state.error, None, Some(cancelError) ),

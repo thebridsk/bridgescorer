@@ -74,6 +74,7 @@ import com.github.thebridsk.materialui.component.MyMenu
 import com.github.thebridsk.materialui.PopperPlacement
 import com.github.thebridsk.bridge.client.routes.AppRouter
 import com.github.thebridsk.bridge.clientcommon.pages.GotoPage
+import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles._
 
 /**
  * @author werewolf
@@ -248,7 +249,6 @@ object HomePage {
     def handleMainTestHandCloseClick( event: ReactEvent ) = scope.modState(s => s.closeMainTestHandMenu()).runNow()
 
     def render( props: Props, state: State ) = {
-      import BaseStyles._
 
       def callbackPage(page: AppPage) = props.routeCtl.set(page)
 
@@ -257,7 +257,6 @@ object HomePage {
 
       import japgolly.scalajs.react.vdom.VdomNode
       <.div(
-        rootStyles.homeDiv,
         PopupOkCancel( if (isWorking) Some(doingWork) else None, None, Some(cancel) ),
         RootBridgeAppBar(
             title = Seq(),
@@ -265,6 +264,7 @@ object HomePage {
             routeCtl = props.routeCtl
         )(),
         <.div(
+          rootStyles.homeDiv,
           <.div(
             rootStyles.serverDiv,
             ^.id:="url",

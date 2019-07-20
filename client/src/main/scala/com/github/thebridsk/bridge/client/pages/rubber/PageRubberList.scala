@@ -188,7 +188,6 @@ object PageRubberListInternal {
                                        )
                                      )
       <.div(
-          rubStyles.listPage,
           PopupOkCancel(msg.map(s=>s),funOk,funCancel),
           RubberPageBridgeAppBar(
             title = Seq[CtorType.ChildArg](
@@ -202,6 +201,7 @@ object PageRubberListInternal {
             routeCtl = props.routerCtl
           )(),
           <.div(
+            rubStyles.listPage,
             if (importId == RubberListStore.getImportId) {
               RubberListStore.getRubberSummary() match {
                 case Some(rubberlist) =>

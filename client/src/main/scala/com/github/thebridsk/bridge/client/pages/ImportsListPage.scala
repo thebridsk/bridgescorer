@@ -40,6 +40,7 @@ import com.github.thebridsk.materialui.MuiTypography
 import com.github.thebridsk.materialui.TextVariant
 import com.github.thebridsk.materialui.TextColor
 import com.github.thebridsk.bridge.client.routes.BridgeRouter
+import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles._
 
 /**
  * A skeleton component.
@@ -250,7 +251,6 @@ object ImportsListPageInternal {
     }
 
     def render( props: Props, state: State ) = {
-      import BaseStyles._
       val importFileText = state.selectedForImport.map( f => s"Selected ${f}" ).getOrElse( "Zipfile to import as a bridgestore" )
       val returnUrl = props.router.urlFor( props.page ).value.replace("#", "%23")
       <.div(

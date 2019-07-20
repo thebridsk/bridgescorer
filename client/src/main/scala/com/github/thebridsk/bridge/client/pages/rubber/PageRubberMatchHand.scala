@@ -28,7 +28,7 @@ import com.github.thebridsk.materialui.MuiTypography
 import com.github.thebridsk.materialui.TextVariant
 import com.github.thebridsk.materialui.TextColor
 import com.github.thebridsk.bridge.client.routes.BridgeRouter
-import com.github.thebridsk.bridge.client.pages.BaseStyles.baseStyles
+import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles.baseStyles
 
 
 /**
@@ -98,7 +98,7 @@ object PageRubberMatchHandInternal {
     }
 
     def render( props: Props, state: State ) = {
-      <.div( baseStyles.divHandPage,
+      <.div(
         RubberPageBridgeAppBar(
           title = Seq[CtorType.ChildArg](
             MuiTypography(

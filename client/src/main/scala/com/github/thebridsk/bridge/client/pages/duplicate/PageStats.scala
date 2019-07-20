@@ -21,7 +21,7 @@ import com.github.thebridsk.bridge.clientcommon.rest2.RestClientDuplicateSummary
 import com.github.thebridsk.bridge.client.bridge.store.DuplicateSummaryStore
 import com.github.thebridsk.bridge.data.duplicate.suggestion.PairsData
 import com.github.thebridsk.bridge.clientcommon.react.Utils._
-import com.github.thebridsk.bridge.client.pages.BaseStyles
+import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles
 import com.github.thebridsk.bridge.data.duplicate.stats.DuplicateStats
 import com.github.thebridsk.bridge.clientcommon.react.PopupOkCancel
 import com.github.thebridsk.materialui.MuiTypography
