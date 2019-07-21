@@ -19,7 +19,7 @@ import com.github.thebridsk.bridge.data.MatchDuplicate
 import com.github.thebridsk.bridge.data.MatchChicago
 import com.github.thebridsk.bridge.data.MatchRubber
 import akka.http.scaladsl.model.StatusCodes
-import com.github.thebridsk.bridge.server.backend.resource.FileIO
+import com.github.thebridsk.utilities.file.FileIO
 import com.github.thebridsk.bridge.server.backend.BridgeServiceFileStoreConverters
 import scala.concurrent.duration._
 import scala.concurrent.Await

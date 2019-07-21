@@ -35,7 +35,7 @@ import com.github.thebridsk.bridge.server.test.util.EventuallyUtils
 import com.github.thebridsk.bridge.server.test.util.ParallelUtils
 import com.github.thebridsk.bridge.data.MatchDuplicate
 import com.github.thebridsk.bridge.server.backend.BridgeServiceFileStore
-import com.github.thebridsk.bridge.server.backend.resource.FileIO
+import com.github.thebridsk.utilities.file.FileIO
 import scala.reflect.io.Directory
 import java.io.File
 import scala.language.postfixOps
@@ -51,9 +51,9 @@ import com.github.thebridsk.bridge.server.test.util.HttpUtils
 import com.github.thebridsk.bridge.server.test.TestStartLogging
 import com.github.thebridsk.bridge.data.MatchPlayerPosition
 import org.scalatest.exceptions.TestFailedException
-import com.github.thebridsk.bridge.source.SourcePosition
-import com.github.thebridsk.bridge.server.test.pages.GenericPage
-import com.github.thebridsk.bridge.server.test.pages.Element
+import com.github.thebridsk.source.SourcePosition
+import com.github.thebridsk.browserpages.GenericPage
+import com.github.thebridsk.browserpages.Element
 import com.github.thebridsk.bridge.server.test.util.MonitorTCP
 import com.github.thebridsk.bridge.server.test.util.HttpUtils.ResponseFromHttp
 import com.github.thebridsk.bridge.server.backend.BridgeServiceFileStoreConverters
@@ -65,10 +65,11 @@ import com.github.thebridsk.bridge.server.test.pages.duplicate.TablePage
 import com.github.thebridsk.bridge.server.test.pages.duplicate.TablePage.EnterOrSelectNames
 import com.github.thebridsk.bridge.server.test.pages.duplicate.TableEnterOrSelectNamesPage
 import com.github.thebridsk.bridge.server.test.pages.duplicate.BoardPage
-import com.github.thebridsk.bridge.server.test.pages.Page
+import com.github.thebridsk.browserpages.Page
 import com.github.thebridsk.bridge.data.DuplicateHandV2
 import com.github.thebridsk.bridge.server.test.pages.duplicate.PageWithBoardButtons
 import com.github.thebridsk.bridge.server.test.pages.duplicate.PageWithBoardButtons
+import com.github.thebridsk.browserpages.Session
 
 /**
  * Test playing duplicate matches.  The duplicates matches to play are in the testdata directory.
@@ -81,7 +82,7 @@ class DuplicateTestFromTestDirectory2 extends FlatSpec
     with CancelAfterFailure
 {
   import Eventually.{ patienceConfig => _, _ }
-  import com.github.thebridsk.bridge.server.test.pages.PageBrowser._
+  import com.github.thebridsk.browserpages.PageBrowser._
   import ParallelUtils._
 
   val testlog = Logger[DuplicateTestFromTestDirectory2]

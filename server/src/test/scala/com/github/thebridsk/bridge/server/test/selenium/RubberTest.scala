@@ -23,11 +23,11 @@ import scala.io.Codec
 import com.github.thebridsk.bridge.server.test.util.HttpUtils.ResponseFromHttp
 import com.github.thebridsk.bridge.server.test.util.HttpUtils
 import com.github.thebridsk.bridge.server.test.TestStartLogging
-import com.github.thebridsk.bridge.source.SourcePosition
+import com.github.thebridsk.source.SourcePosition
 import com.github.thebridsk.bridge.server.backend.BridgeServiceFileStoreConverters
 import com.github.thebridsk.bridge.server.backend.MatchRubberCacheStoreSupport
-import com.github.thebridsk.bridge.server.test.pages.Page
-import com.github.thebridsk.bridge.server.test.pages.PageBrowser
+import com.github.thebridsk.browserpages.Page
+import com.github.thebridsk.browserpages.PageBrowser
 import com.github.thebridsk.bridge.data.MatchRubber
 import play.api.libs.json.Json
 import java.io.InputStream
@@ -39,6 +39,7 @@ import com.github.thebridsk.bridge.server.backend.BridgeResources
 import com.github.thebridsk.bridge.server.test.pages.bridge.HomePage
 import java.util.zip.ZipFile
 import scala.reflect.io.File
+import com.github.thebridsk.browserpages.Session
 
 /**
  * @author werewolf
@@ -50,7 +51,7 @@ class RubberTest extends FlatSpec
     with SeleniumUtils
     with CancelAfterFailure
 {
-  import com.github.thebridsk.bridge.server.test.pages.PageBrowser._
+  import com.github.thebridsk.browserpages.PageBrowser._
   import Eventually.{ patienceConfig => _, _ }
 
   import scala.language.postfixOps

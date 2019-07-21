@@ -60,7 +60,7 @@ object BldBridge {
       BldBridgeShared.sharedJVM,
       BldBridgeShared.sharedJS,
       BldBridgeRotation.rotationJS,
-      BldBridgeMaterialUI.materialui,
+      BldMaterialUI.materialui,
       BldBridgeClientCommon.`bridgescorer-clientcommon`,
       BldBridgeClient.`bridgescorer-client`,
       BldBridgeClientApi.`bridgescorer-clientapi`,
@@ -510,6 +510,7 @@ object BldBridge {
       alltests := Def
         .sequential(
           mydist in Distribution in utilities,
+          test in Test in BldBrowserPages.browserpages,
 //                       fastOptJS in Compile in `bridgescorer-client`,
 //                       fullOptJS in Compile in `bridgescorer-client`,
 //                       fastOptJS in Test in `bridgescorer-client`,

@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit
 import java.io.StringWriter
 import java.io.PrintWriter
 import java.io.PrintStream
-import com.github.thebridsk.bridge.source.SourcePosition
+import com.github.thebridsk.source.SourcePosition
 import scala.util.Success
 
 object ParallelUtilsInternals {

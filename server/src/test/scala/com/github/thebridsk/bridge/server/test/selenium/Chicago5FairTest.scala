@@ -21,13 +21,14 @@ import scala.io.Source
 import scala.io.Codec
 import org.openqa.selenium.By.ByXPath
 import org.scalatest.exceptions.TestFailedException
-import com.github.thebridsk.bridge.source.SourcePosition
+import com.github.thebridsk.source.SourcePosition
 import com.github.thebridsk.bridge.server.test.TestStartLogging
 import com.github.thebridsk.bridge.server.test.util.MonitorTCP
 import com.github.thebridsk.bridge.server.backend.BridgeServiceFileStoreConverters
 import com.github.thebridsk.bridge.server.backend.MatchChicagoCacheStoreSupport
-import com.github.thebridsk.bridge.server.test.pages.PageBrowser
+import com.github.thebridsk.browserpages.PageBrowser
 import com.github.thebridsk.bridge.server.test.pages.bridge.HomePage
+import com.github.thebridsk.browserpages.Session
 
 /**
  * @author werewolf
@@ -38,7 +39,7 @@ class Chicago5FairTest extends FlatSpec
     with EventuallyUtils
     with CancelAfterFailure
 {
-  import com.github.thebridsk.bridge.server.test.pages.PageBrowser._
+  import com.github.thebridsk.browserpages.PageBrowser._
   import Eventually.{ patienceConfig => _, _ }
 
   import scala.concurrent.duration._

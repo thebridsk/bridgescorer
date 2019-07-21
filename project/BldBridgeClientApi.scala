@@ -37,7 +37,7 @@ object BldBridgeClientApi {
       BldBridgeShared.sharedJS,
       BldBridgeRotation.rotationJS,
       BldBridgeClientCommon.`bridgescorer-clientcommon`,
-      BldBridgeMaterialUI.materialui
+      BldMaterialUI.materialui
     )
     .dependsOn(`utilities-js`)
     .settings(

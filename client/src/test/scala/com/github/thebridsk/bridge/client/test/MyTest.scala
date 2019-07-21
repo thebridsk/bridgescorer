@@ -21,7 +21,7 @@ import com.github.thebridsk.bridge.data.js.SystemTimeJs
 import com.github.thebridsk.bridge.clientcommon.rest2.AjaxResult
 import com.github.thebridsk.bridge.client.test.utils.StartLogging
 import com.github.thebridsk.utilities.logging.Logger
-import com.github.thebridsk.bridge.source.SourcePosition
+import com.github.thebridsk.source.SourcePosition
 import japgolly.scalajs.react.extra.router.BaseUrl
 import com.github.thebridsk.bridge.client.routes.TestBridgeRouter
 import japgolly.scalajs.react.extra.router.Path

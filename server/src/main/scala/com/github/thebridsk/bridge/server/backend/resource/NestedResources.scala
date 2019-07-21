@@ -3,7 +3,7 @@ package com.github.thebridsk.bridge.server.backend.resource
 import scala.concurrent.ExecutionContext
 import scala.concurrent.Future
 import com.github.thebridsk.bridge.server.backend.resource.Implicits._
-import com.github.thebridsk.bridge.source.SourcePosition
+import com.github.thebridsk.source.SourcePosition
 
 class NestedResources[PVId, PVType, NVId, NVType](
     val parent: Resource[PVId, PVType],

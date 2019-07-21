@@ -9,7 +9,7 @@ import com.github.thebridsk.bridge.data.HandInTable
 import scala.annotation.tailrec
 import com.github.thebridsk.bridge.server.backend.MovementCacheStoreSupport
 import com.github.thebridsk.bridge.server.backend.BridgeServiceFileStoreConverters
-import com.github.thebridsk.bridge.server.backend.resource.FileIO
+import com.github.thebridsk.utilities.file.FileIO
 
 class CreateMovement
 

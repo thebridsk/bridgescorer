@@ -6,7 +6,7 @@ import scala.concurrent.Future
 import java.util.concurrent.atomic.AtomicInteger
 import scala.util.Success
 import scala.util.Failure
-import com.github.thebridsk.bridge.source.SourcePosition
+import com.github.thebridsk.source.SourcePosition
 
 object Implicits {
 

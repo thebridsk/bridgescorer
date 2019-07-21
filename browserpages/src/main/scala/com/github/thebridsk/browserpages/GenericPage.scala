@@ -1,6 +1,6 @@
-package com.github.thebridsk.bridge.server.test.pages
+package com.github.thebridsk.browserpages
 
-import com.github.thebridsk.bridge.source.SourcePosition
+import com.github.thebridsk.source.SourcePosition
 import org.openqa.selenium.WebDriver
 import org.scalactic.source.Position
 import org.scalatest.concurrent.Eventually._

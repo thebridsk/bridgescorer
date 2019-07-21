@@ -12,7 +12,7 @@ trait ResultRecorder {
 object ResultRecorder extends ResultRecorder {
   val log = Logger("bridge.ResultRecorder")
 
-  import com.github.thebridsk.bridge.source._
+  import com.github.thebridsk.source._
 
   def logException( x: Exception, url: Option[String] = None, reqbody: Option[InputData] = None ) = {
     x match {

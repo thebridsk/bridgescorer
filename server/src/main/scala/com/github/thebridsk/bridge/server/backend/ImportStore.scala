@@ -12,7 +12,7 @@ import com.github.thebridsk.bridge.data.MatchDuplicate
 import java.io.InputStream
 import scala.reflect.io.File
 import java.nio.file.Files
-import com.github.thebridsk.bridge.server.backend.resource.FileIO
+import com.github.thebridsk.utilities.file.FileIO
 import java.io.IOException
 import com.github.thebridsk.utilities.logging.Logger
 import ImportStore.log

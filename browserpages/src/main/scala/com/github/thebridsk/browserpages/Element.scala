@@ -1,4 +1,4 @@
-package com.github.thebridsk.bridge.server.test.pages
+package com.github.thebridsk.browserpages
 
 import org.openqa.selenium.WebElement
 import org.scalactic.source.Position
@@ -8,8 +8,8 @@ import scala.reflect.ClassTag
 import org.scalatest.concurrent.Eventually.PatienceConfig
 import com.github.thebridsk.utilities.logging.Logger
 import org.openqa.selenium.OutputType
-import com.github.thebridsk.bridge.server.backend.resource.FileIO
-import com.github.thebridsk.bridge.source.SourcePosition
+import com.github.thebridsk.utilities.file.FileIO
+import com.github.thebridsk.source.SourcePosition
 import org.openqa.selenium.Keys
 import org.openqa.selenium.WebDriver
 

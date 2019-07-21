@@ -14,7 +14,7 @@ import scala.util.Right
 import scala.concurrent.Future
 import com.github.thebridsk.bridge.server.backend.resource.Result
 import org.scalactic.source.Position
-import com.github.thebridsk.bridge.source.SourcePosition
+import com.github.thebridsk.source.SourcePosition
 import com.github.thebridsk.bridge.server.backend.DuplicateTeamsNestedResource
 import com.github.thebridsk.bridge.data.Team
 import com.github.thebridsk.bridge.data.BoardSet
@@ -38,7 +38,7 @@ import scala.util.Success
 import scala.util.Failure
 import com.github.thebridsk.bridge.server.backend.resource.FileStore
 import scala.reflect.io.Directory
-import com.github.thebridsk.bridge.server.backend.resource.FileIO
+import com.github.thebridsk.utilities.file.FileIO
 import com.github.thebridsk.bridge.server.backend.resource.MultiStore
 import com.github.thebridsk.bridge.server.backend.resource.Store
 import com.github.thebridsk.bridge.server.backend.resource.InMemoryPersistent

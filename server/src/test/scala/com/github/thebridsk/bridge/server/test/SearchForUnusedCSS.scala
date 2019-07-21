@@ -5,7 +5,7 @@ import scala.reflect.io.Path
 import scala.reflect.io.Directory
 import scala.io.Source
 import scala.reflect.io.File
-import com.github.thebridsk.bridge.source.SourcePosition
+import com.github.thebridsk.source.SourcePosition
 import org.scalactic.source.Position
 
 object SearchForUnusedCSS extends Main {

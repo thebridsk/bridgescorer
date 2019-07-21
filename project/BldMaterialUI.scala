@@ -15,7 +15,7 @@ import BldDependencies._
 import BldCommonSettings._
 import BldVersion._
 
-object BldBridgeMaterialUI {
+object BldMaterialUI {
 
   lazy val materialui = project.in(file("materialui")).
     configure( commonSettings ).

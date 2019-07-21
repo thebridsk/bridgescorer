@@ -21,7 +21,7 @@ import com.github.thebridsk.bridge.data.MatchChicagoV1
 import com.github.thebridsk.bridge.data.MatchChicagoV2
 import com.github.thebridsk.bridge.server.backend.resource.VersionedInstanceJson
 import com.github.thebridsk.bridge.data.MatchDuplicateV2
-import com.github.thebridsk.bridge.server.backend.resource.FileIO
+import com.github.thebridsk.utilities.file.FileIO
 import com.github.thebridsk.bridge.server.backend.resource.JsonYamlConverter
 import com.github.thebridsk.bridge.server.backend.resource.JsonConverter
 import com.github.thebridsk.bridge.server.backend.resource.YamlConverter

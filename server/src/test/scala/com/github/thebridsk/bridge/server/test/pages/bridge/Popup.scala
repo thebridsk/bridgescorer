@@ -2,11 +2,11 @@ package com.github.thebridsk.bridge.server.test.pages.bridge
 
 import com.github.thebridsk.bridge.server.test.util.EventuallyUtils
 import org.scalactic.source.Position
-import com.github.thebridsk.bridge.server.test.pages.PageBrowser
+import com.github.thebridsk.browserpages.PageBrowser
 import org.scalatest.concurrent.Eventually._
 import org.openqa.selenium.WebDriver
 import org.scalatest.MustMatchers
-import com.github.thebridsk.bridge.server.test.pages.Page
+import com.github.thebridsk.browserpages.Page
 
 object Popup {
   val buttonPopUpCancel = "PopUpCancel"

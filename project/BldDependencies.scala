@@ -42,18 +42,6 @@ object BldDependencies {
   val bridgeScorerDeps = Def.setting(scalatestDeps.value ++ Seq(
       ))
 
-  val pagesDeps = Def.setting(scalatestDeps.value ++ Seq(
-
-      "org.seleniumhq.selenium" %   "selenium-java" % vSelenium withSources(),
-      "org.seleniumhq.selenium" %   "selenium-api"  % vSelenium withSources(),
-//      "org.seleniumhq.selenium" %   "selenium-support" % vSelenium withSources(),
-//      "org.seleniumhq.selenium" %   "selenium-remote-driver" % vSelenium withSources(),
-//      "org.seleniumhq.selenium" % "htmlunit-driver" % "2.34.0" withSources(),
-// Test
-      lJunit
-
-      ))
-
   val jacksons = Seq(
     "com.fasterxml.jackson.core" % "jackson-core",
     "com.fasterxml.jackson.core" % "jackson-annotations",
@@ -67,6 +55,20 @@ object BldDependencies {
     "com.fasterxml.jackson.module" %% "jackson-module-scala",
     "com.fasterxml.jackson.module" % "jackson-module-paranamer"
   ).map(_ % vJackson withSources())
+
+  val browserPagesDeps = Def.setting(scalatestDeps.value ++ Seq(
+    "org.seleniumhq.selenium" %   "selenium-java" % vSelenium withSources(),
+    //      "org.seleniumhq.selenium" %   "selenium-api"  % vSelenium withSources(),
+    //      "org.seleniumhq.selenium" %   "selenium-support" % vSelenium withSources()
+    //      "org.seleniumhq.selenium" % "htmlunit-driver" % "2.34.0" withSources(),
+
+    "org.scalatest" %%% "scalatest" % vScalatest withSources(),
+    "org.scalactic" %%% "scalactic" % vScalactic withSources(),
+
+// Test
+      lJunit,
+
+      ))
 
   val bridgeScorerServerDeps = Def.setting(morejacksons ++ jacksons ++ Seq(
 

@@ -2,7 +2,7 @@ package com.github.thebridsk.bridge.clientcommon.rest2
 
 import org.scalajs.dom.ext.Ajax.InputData
 import scala.concurrent.duration.Duration
-import com.github.thebridsk.bridge.source.SourcePosition
+import com.github.thebridsk.source.SourcePosition
 import org.scalactic.source.Position
 import scala.concurrent.Promise
 import com.github.thebridsk.bridge.data.RestMessage

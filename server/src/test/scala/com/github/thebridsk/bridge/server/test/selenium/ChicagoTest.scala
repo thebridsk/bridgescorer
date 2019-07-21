@@ -23,9 +23,10 @@ import com.github.thebridsk.bridge.data.MatchChicago
 import com.github.thebridsk.bridge.server.test.util.MonitorTCP
 import com.github.thebridsk.bridge.server.backend.BridgeServiceFileStoreConverters
 import com.github.thebridsk.bridge.server.backend.MatchChicagoCacheStoreSupport
-import com.github.thebridsk.bridge.server.test.pages.PageBrowser
+import com.github.thebridsk.browserpages.PageBrowser
 import com.github.thebridsk.bridge.server.test.TestStartLogging
 import com.github.thebridsk.bridge.server.test.pages.bridge.HomePage
+import com.github.thebridsk.browserpages.Session
 
 /**
  * @author werewolf
@@ -36,7 +37,7 @@ class ChicagoTest extends FlatSpec
     with EventuallyUtils
     with CancelAfterFailure
 {
-  import com.github.thebridsk.bridge.server.test.pages.PageBrowser._
+  import com.github.thebridsk.browserpages.PageBrowser._
   import Eventually.{ patienceConfig => _, _ }
 
   import scala.concurrent.duration._

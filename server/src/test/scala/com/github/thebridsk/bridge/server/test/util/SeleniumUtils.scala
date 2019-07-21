@@ -11,7 +11,7 @@ import scala.collection.convert.ImplicitConversionsToScala._
 import org.openqa.selenium.By.ByTagName
 import org.scalatest.concurrent.Eventually.eventually
 import org.scalatest.concurrent.Eventually.PatienceConfig
-import com.github.thebridsk.bridge.server.test.pages.PageBrowser
+import com.github.thebridsk.browserpages.PageBrowser
 
 object SeleniumUtilsLogger {
 

@@ -11,7 +11,7 @@ import com.github.thebridsk.bridge.server.backend.BridgeResources
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
 import com.github.thebridsk.bridge.data.rest.JsonSupport
-import com.github.thebridsk.bridge.server.backend.resource.FileIO
+import com.github.thebridsk.utilities.file.FileIO
 
 object GenerateDemoMatchDuplicate extends Main {
 

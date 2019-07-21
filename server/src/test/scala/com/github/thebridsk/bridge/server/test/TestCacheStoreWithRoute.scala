@@ -39,7 +39,7 @@ import com.github.thebridsk.bridge.server.backend.BridgeResources
 import com.github.thebridsk.bridge.data.sample.TestMatchDuplicate
 import com.github.thebridsk.bridge.server.backend.resource.ChangeContext
 import com.github.thebridsk.bridge.server.backend.resource.Result
-import com.github.thebridsk.bridge.source.SourcePosition
+import com.github.thebridsk.source.SourcePosition
 import com.github.thebridsk.bridge.server.backend.DuplicateTeamsNestedResource
 import com.github.thebridsk.bridge.data.Team
 import com.github.thebridsk.bridge.data.BoardSet
@@ -56,7 +56,7 @@ import com.github.thebridsk.bridge.data.Board
 import com.github.thebridsk.bridge.server.backend.resource.ChangeContextData
 import com.github.thebridsk.bridge.data.Movement
 import com.github.thebridsk.bridge.server.backend.resource.FileStore
-import com.github.thebridsk.bridge.server.backend.resource.FileIO
+import com.github.thebridsk.utilities.file.FileIO
 import com.github.thebridsk.bridge.server.backend.resource.MultiStore
 import com.github.thebridsk.bridge.server.backend.resource.Store
 import com.github.thebridsk.bridge.server.backend.BridgeServiceInMemory
