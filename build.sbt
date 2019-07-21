@@ -33,13 +33,15 @@
 
 bloopExportJarClassifiers in Global := Some(Set("sources"))
 
+lazy val browserpages: Project = BldBrowserPages.browserpages
+
 lazy val sharedJS: Project = BldBridgeShared.sharedJS
 lazy val sharedJVM = BldBridgeShared.sharedJVM
 
 lazy val rotationJS: Project = BldBridgeRotation.rotationJS
 lazy val rotationJVM = BldBridgeRotation.rotationJVM
 
-lazy val materialui = BldBridgeMaterialUI.materialui
+lazy val materialui = BldMaterialUI.materialui
 lazy val `bridgescorer-clientcommon` = BldBridgeClientCommon.`bridgescorer-clientcommon`
 lazy val `bridgescorer-clientapi` = BldBridgeClientApi.`bridgescorer-clientapi`
 lazy val `bridgescorer-client` = BldBridgeClient.`bridgescorer-client`

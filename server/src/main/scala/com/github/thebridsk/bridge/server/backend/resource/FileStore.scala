@@ -13,6 +13,7 @@ import FileStore.log
 import scala.concurrent.ExecutionContext
 import scala.concurrent.Future
 import com.github.thebridsk.bridge.data.Id
+import com.github.thebridsk.utilities.file.FileIO
 
 object FileStore {
   val log = Logger[FileStore[_, _]]

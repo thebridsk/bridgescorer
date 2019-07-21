@@ -1,11 +1,11 @@
 
-package com.github.thebridsk.bridge.server.test.pages
+package com.github.thebridsk.browserpages
 
 import scala.concurrent.Future
 import com.github.thebridsk.utilities.main.Main
 import scala.concurrent.duration.Duration
 import org.openqa.selenium.WebDriver
-import com.github.thebridsk.bridge.source.SourcePosition
+import com.github.thebridsk.source.SourcePosition
 import org.scalactic.source.Position
 import org.scalatest.concurrent.Eventually.eventually
 import org.scalatest.concurrent.Eventually.PatienceConfig

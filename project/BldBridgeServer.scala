@@ -39,6 +39,7 @@ object BldBridgeServer {
     .dependsOn(BldBridgeShared.sharedJVM)
     .dependsOn(ProjectRef(uri("utilities"), "utilities-jvm"))
     .dependsOn(BldBridgeRotation.rotationJVM % "test")
+    .dependsOn(BldBrowserPages.browserpages % "test->compile")
     .settings(
       inConfig(Test)(baseAssemblySettings): _*
     )

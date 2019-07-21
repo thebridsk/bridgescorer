@@ -22,7 +22,7 @@ object BldBridgeClientCommon {
     .enablePlugins(ScalaJSPlugin)
     .dependsOn(
       BldBridgeShared.sharedJS,
-      BldBridgeMaterialUI.materialui,
+      BldMaterialUI.materialui,
       `utilities-js`
     )
     .settings(

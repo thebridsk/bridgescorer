@@ -8,7 +8,7 @@ import scala.concurrent.Await
 import scala.concurrent.duration._
 import com.github.thebridsk.bridge.data.rest.JsonSupport._
 import com.github.thebridsk.bridge.data.rest.JsonSupport
-import com.github.thebridsk.bridge.server.backend.resource.FileIO
+import com.github.thebridsk.utilities.file.FileIO
 
 object CreateBoardMovementForTest extends Main {
 

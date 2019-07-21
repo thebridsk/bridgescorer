@@ -6,7 +6,7 @@ import scala.concurrent.Promise
 import scala.concurrent.Future
 import com.github.thebridsk.utilities.logging.Logger
 import org.scalactic.source.Position
-import com.github.thebridsk.bridge.source.SourcePosition
+import com.github.thebridsk.source.SourcePosition
 import com.github.thebridsk.bridge.data.VersionedInstance
 import scala.concurrent.ExecutionContext
 import scala.util.Success

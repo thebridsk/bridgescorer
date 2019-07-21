@@ -35,11 +35,11 @@ import java.net.HttpURLConnection
 import com.github.thebridsk.bridge.server.test.TestStartLogging
 import com.github.thebridsk.bridge.data.BoardSet
 import akka.http.scaladsl.coding.GzipDecompressor
-import com.github.thebridsk.bridge.server.test.pages.Element
+import com.github.thebridsk.browserpages.Element
 import com.github.thebridsk.bridge.server.test.util.MonitorTCP
 import com.github.thebridsk.bridge.server.test.util.ParallelUtils
-import com.github.thebridsk.bridge.server.test.pages.PageBrowser
-import com.github.thebridsk.bridge.server.test.selenium.Session
+import com.github.thebridsk.browserpages.PageBrowser
+import com.github.thebridsk.browserpages.Session
 import com.github.thebridsk.bridge.server.test.selenium.TestServer
 import com.github.thebridsk.bridge.server.test.pages.bridge.HomePage
 import com.github.thebridsk.bridge.test.pages.HelpPage
@@ -50,7 +50,7 @@ import akka.http.scaladsl.model.StatusCodes
  * @author werewolf
  */
 class HelpTest extends FlatSpec with MustMatchers with BeforeAndAfterAll {
-  import com.github.thebridsk.bridge.server.test.pages.PageBrowser._
+  import com.github.thebridsk.browserpages.PageBrowser._
   import ParallelUtils._
 
   val logger = Logger[HelpTest]

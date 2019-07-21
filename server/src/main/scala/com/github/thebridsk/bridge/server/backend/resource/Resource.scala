@@ -6,7 +6,7 @@ import scala.concurrent.ExecutionContext
 import org.scalactic.source.Position
 import com.github.thebridsk.bridge.server.backend.resource.Implicits._
 import Resource._
-import com.github.thebridsk.bridge.source.SourcePosition
+import com.github.thebridsk.source.SourcePosition
 
 object Resource {
 

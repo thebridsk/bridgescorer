@@ -18,7 +18,7 @@ import akka.http.scaladsl.model.StatusCode
 import Store._
 import com.github.thebridsk.bridge.data.VersionedInstance
 import org.scalactic.source.Position
-import com.github.thebridsk.bridge.source.SourcePosition
+import com.github.thebridsk.source.SourcePosition
 import Implicits._
 
 object Store {

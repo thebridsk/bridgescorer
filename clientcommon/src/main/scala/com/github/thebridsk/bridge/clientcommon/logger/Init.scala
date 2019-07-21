@@ -11,7 +11,7 @@ import com.github.thebridsk.utilities.logging.Level
 import scala.reflect.ClassTag
 import com.github.thebridsk.utilities.logging.Handler
 import org.scalactic.source.Position
-import com.github.thebridsk.bridge.source._
+import com.github.thebridsk.source._
 import java.io.StringWriter
 import java.io.PrintWriter
 import com.github.thebridsk.bridge.clientcommon.debug.DebugLoggerHandler

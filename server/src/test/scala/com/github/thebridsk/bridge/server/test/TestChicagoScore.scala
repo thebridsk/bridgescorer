@@ -7,7 +7,7 @@ import scala.reflect.io.Directory
 import scala.reflect.io.Path
 import scala.reflect.io.File
 import com.github.thebridsk.bridge.server.backend.BridgeServiceFileStoreConverters
-import com.github.thebridsk.bridge.server.backend.resource.FileIO
+import com.github.thebridsk.utilities.file.FileIO
 import com.github.thebridsk.bridge.data.chicago.ChicagoScoring
 import com.github.thebridsk.bridge.data.Round
 

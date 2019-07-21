@@ -13,7 +13,7 @@ trait ChicagoUtils {
   import org.scalatest.MustMatchers._
   import com.github.thebridsk.bridge.server.test.util.EventuallyUtils._
   import com.github.thebridsk.bridge.server.test.util.ParallelUtils._
-  import com.github.thebridsk.bridge.server.test.pages.PageBrowser._
+  import com.github.thebridsk.browserpages.PageBrowser._
   import org.scalatest.concurrent.Eventually
   import Eventually.{ patienceConfig => _, _ }
 

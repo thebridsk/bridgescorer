@@ -13,7 +13,7 @@ import scala.util.Failure
 import com.github.thebridsk.bridge.data.rest.JsonException
 import scala.util.Try
 import scala.concurrent.ExecutionContext
-import com.github.thebridsk.bridge.source.SourcePosition
+import com.github.thebridsk.source.SourcePosition
 import com.github.thebridsk.bridge.clientcommon.rest2.AjaxErrorReturn
 import com.github.thebridsk.bridge.data.graphql.GraphQLProtocol._
 import scala.scalajs.js

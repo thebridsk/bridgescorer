@@ -1,4 +1,4 @@
-package com.github.thebridsk.bridge.server.test.pages
+package com.github.thebridsk.browserpages
 
 import com.github.thebridsk.utilities.logging.Logger
 import org.openqa.selenium.WebElement
@@ -8,7 +8,7 @@ import org.scalatest.concurrent.Eventually.PatienceConfig
 import org.openqa.selenium.WebDriver
 import org.openqa.selenium.Keys
 import org.openqa.selenium.JavascriptExecutor
-import com.github.thebridsk.bridge.source.SourcePosition
+import com.github.thebridsk.source.SourcePosition
 import org.scalatestplus.selenium.WebBrowser
 import org.openqa.selenium.By
 import scala.collection.JavaConverters._
@@ -18,7 +18,7 @@ import java.lang.reflect.Constructor
 import java.io.File
 import java.nio.file.Path
 import java.nio.file.FileSystems
-import com.github.thebridsk.bridge.server.backend.resource.FileIO
+import com.github.thebridsk.utilities.file.FileIO
 import org.openqa.selenium.TakesScreenshot
 import org.openqa.selenium.OutputType
 
@@ -464,15 +464,15 @@ trait PageBrowser {
 
 object PageBrowser extends PageBrowser {
 
-  private[pages] val log = Logger[PageBrowser]
+  private[browserpages] val log = Logger[PageBrowser]
 
   private[PageBrowser] def getConstructor[T <: Element](implicit classtag: ClassTag[T]) =
     classtag.runtimeClass.getDeclaredConstructor(classOf[WebElement],classOf[Position],classOf[WebDriver],classOf[PatienceConfig] ).asInstanceOf[Constructor[T]]
 
-  private[pages] def getPath( filename: File ): Path = FileSystems.getDefault.getPath(filename.toString())
+  private[browserpages] def getPath( filename: File ): Path = FileSystems.getDefault.getPath(filename.toString())
 
-  private[pages] def getPath( filename: String ): Path = FileSystems.getDefault.getPath(filename)
+  private[browserpages] def getPath( filename: String ): Path = FileSystems.getDefault.getPath(filename)
 
-  private[pages] def getPath( directory: String, filename: String ): Path = FileSystems.getDefault.getPath(directory,filename)
+  private[browserpages] def getPath( directory: String, filename: String ): Path = FileSystems.getDefault.getPath(directory,filename)
 
 }

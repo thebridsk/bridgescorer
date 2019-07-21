@@ -4,7 +4,7 @@ import com.github.thebridsk.utilities.logging.Logger
 import java.io.StringWriter
 import java.io.PrintWriter
 import org.scalactic.source.Position
-import com.github.thebridsk.bridge.source._
+import com.github.thebridsk.source._
 import org.scalajs.dom.raw.Event
 
 trait Alerter {

@@ -28,11 +28,12 @@ import java.io.OutputStreamWriter
 import scala.io.Codec
 import play.api.libs.json.JsSuccess
 import play.api.libs.json.JsError
-import com.github.thebridsk.bridge.server.backend.resource.FileIO
+import com.github.thebridsk.utilities.file.FileIO
 import com.github.thebridsk.bridge.server.test.pages.bridge.HomePage
 import scala.reflect.io.File
 import java.util.zip.ZipFile
 import org.openqa.selenium.WebDriver
+import com.github.thebridsk.browserpages.Session
 
 object ChicagoTestPages {
 
@@ -54,7 +55,7 @@ class ChicagoTestPages extends FlatSpec
     with BeforeAndAfterAll
     with CancelAfterFailure
 {
-  import com.github.thebridsk.bridge.server.test.pages.PageBrowser._
+  import com.github.thebridsk.browserpages.PageBrowser._
   import com.github.thebridsk.bridge.server.test.util.EventuallyUtils._
   import Eventually.{ patienceConfig => _, _ }
   import ChicagoTestPages._

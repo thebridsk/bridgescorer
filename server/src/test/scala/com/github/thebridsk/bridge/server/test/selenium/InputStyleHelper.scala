@@ -15,14 +15,14 @@ import com.github.thebridsk.utilities.logging.Logger
 import java.util.logging.Level
 import com.github.thebridsk.bridge.server.test.util.NoResultYet
 import com.github.thebridsk.bridge.server.test.util.MonitorTCP
-import com.github.thebridsk.bridge.server.test.pages.Element
+import com.github.thebridsk.browserpages.Element
 import org.scalatest.time.Millis
 import org.scalatest.time.Span
 
 
 class InputStyleHelper extends MustMatchers {
     import InputStyleHelper._
-    import com.github.thebridsk.bridge.server.test.pages.PageBrowser._
+    import com.github.thebridsk.browserpages.PageBrowser._
     import com.github.thebridsk.bridge.server.test.util.EventuallyUtils._
 
   def getButton( id: String )(implicit webDriver: WebDriver, patienceConfig: PatienceConfig) = {

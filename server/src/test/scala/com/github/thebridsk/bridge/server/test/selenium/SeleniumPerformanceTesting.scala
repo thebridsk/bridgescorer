@@ -42,11 +42,12 @@ import com.github.thebridsk.bridge.server.test.pages.duplicate.ScoreboardPage
 import com.github.thebridsk.bridge.server.test.pages.duplicate.TablePage
 import com.github.thebridsk.bridge.server.test.pages.duplicate.TablePage.EnterNames
 import com.github.thebridsk.bridge.server.test.pages.duplicate.TableEnterScorekeeperPage
-import com.github.thebridsk.bridge.server.test.pages.GenericPage
+import com.github.thebridsk.browserpages.GenericPage
 import com.github.thebridsk.bridge.server.test.pages.duplicate.HandPage
 import com.github.thebridsk.bridge.server.test.TestStartLogging
-import com.github.thebridsk.bridge.source.SourcePosition
+import com.github.thebridsk.source.SourcePosition
 import com.github.thebridsk.bridge.server.test.util.MonitorTCP
+import com.github.thebridsk.browserpages.Session
 
 /**
  * Test going from the table view, by hitting a board button,
@@ -55,7 +56,7 @@ import com.github.thebridsk.bridge.server.test.util.MonitorTCP
  */
 class SeleniumPerformanceTesting extends FlatSpec with MustMatchers with BeforeAndAfterAll with EventuallyUtils {
     import Eventually.{ patienceConfig => _, _ }
-    import com.github.thebridsk.bridge.server.test.pages.PageBrowser._
+    import com.github.thebridsk.browserpages.PageBrowser._
 
   val log = Logger[SeleniumPerformanceTesting]
 

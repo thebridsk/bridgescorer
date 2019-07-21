@@ -9,7 +9,7 @@ import org.scalatest.BeforeAndAfterAll
 import scala.reflect.io.Directory
 import com.github.thebridsk.bridge.data.Team
 import com.github.thebridsk.bridge.server.backend.resource.StoreSupport
-import com.github.thebridsk.bridge.server.backend.resource.FileIO
+import com.github.thebridsk.utilities.file.FileIO
 import java.io.File
 import com.github.thebridsk.bridge.server.backend.resource.FileStore
 import com.github.thebridsk.utilities.logging.Logger

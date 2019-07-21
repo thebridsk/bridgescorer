@@ -43,7 +43,7 @@ import com.github.thebridsk.bridge.server.test.pages.duplicate.TablePage
 import com.github.thebridsk.bridge.server.test.pages.duplicate.TablePage.EnterNames
 import com.github.thebridsk.bridge.server.test.pages.duplicate.TableEnterScorekeeperPage
 import com.github.thebridsk.bridge.server.test.pages.duplicate.TableEnterMissingNamesPage
-import com.github.thebridsk.bridge.server.test.pages.GenericPage
+import com.github.thebridsk.browserpages.GenericPage
 import com.github.thebridsk.bridge.server.test.pages.duplicate.HandPage
 import com.github.thebridsk.bridge.server.test.TestStartLogging
 import com.github.thebridsk.bridge.server.test.pages.duplicate.BoardPage
@@ -51,7 +51,7 @@ import com.github.thebridsk.bridge.server.test.pages.duplicate.TablePage.SelectN
 import com.github.thebridsk.bridge.server.test.pages.duplicate.TablePage.Hands
 import com.github.thebridsk.bridge.server.test.pages.duplicate.TableSelectScorekeeperPage
 import com.github.thebridsk.bridge.server.test.pages.duplicate.Team
-import com.github.thebridsk.bridge.server.test.pages.Page.AnyPage
+import com.github.thebridsk.browserpages.Page.AnyPage
 import com.github.thebridsk.bridge.server.test.pages.duplicate.EnterHand
 import com.github.thebridsk.bridge.server.test.pages.duplicate.AllHandsInMatch
 import com.github.thebridsk.bridge.server.test.pages.duplicate.HandsOnBoard
@@ -67,7 +67,7 @@ import java.net.URL
 import com.github.thebridsk.bridge.data.MatchDuplicate
 import scala.io.Source
 import scala.io.Codec
-import com.github.thebridsk.bridge.server.backend.resource.FileIO
+import com.github.thebridsk.utilities.file.FileIO
 import com.github.thebridsk.bridge.server.test.pages.duplicate.PeopleRow
 import com.github.thebridsk.bridge.data.BoardSet
 import com.github.thebridsk.bridge.server.test.pages.duplicate.TableEnterNamesPage
@@ -78,7 +78,8 @@ import com.github.thebridsk.bridge.server.test.pages.duplicate.PeopleRowIMP
 import com.github.thebridsk.bridge.server.test.util.HttpUtils
 import com.github.thebridsk.bridge.server.test.pages.duplicate.StatisticsPage
 import com.github.thebridsk.bridge.data.Id
-import com.github.thebridsk.bridge.server.test.pages.PageBrowser
+import com.github.thebridsk.browserpages.PageBrowser
+import com.github.thebridsk.browserpages.Session
 
 object Duplicate5TestPages {
 

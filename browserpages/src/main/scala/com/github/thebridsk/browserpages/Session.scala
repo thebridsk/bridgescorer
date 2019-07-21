@@ -1,4 +1,4 @@
-package com.github.thebridsk.bridge.server.test.selenium
+package com.github.thebridsk.browserpages
 
 import org.openqa.selenium.WebDriver
 import org.openqa.selenium.firefox.FirefoxDriver
@@ -16,7 +16,6 @@ import org.openqa.selenium.ie.InternetExplorerDriver
 import com.github.thebridsk.utilities.logging.Logger
 import java.util.logging.Level
 import org.openqa.selenium.JavascriptExecutor
-import com.github.thebridsk.bridge.data.Id
 import org.openqa.selenium.chrome.ChromeDriverService
 import java.util.concurrent.atomic.AtomicLong
 import java.io.File
@@ -37,7 +36,6 @@ import org.openqa.selenium.support.events.EventFiringWebDriver
 import org.openqa.selenium.support.events.WebDriverEventListener
 import org.openqa.selenium.support.events.AbstractWebDriverEventListener
 import org.openqa.selenium.UnhandledAlertException
-import com.github.thebridsk.bridge.server.test.pages.PageBrowser
 import org.openqa.selenium.firefox.ProfilesIni
 import scala.io.Codec
 
@@ -528,7 +526,7 @@ class Session( name: String = "default" ) extends WebDriver {
   }
 
   def saveDom( tofile: String ): Unit = {
-    import com.github.thebridsk.bridge.server.test.pages.PageBrowser._
+    import com.github.thebridsk.browserpages.PageBrowser._
     try {
       reflect.io.File(tofile)(Codec.UTF8).writeAll( executeScript("return document.documentElement.outerHTML")(webDriver).toString() )
     } catch {
@@ -634,10 +632,4 @@ object Session {
   }
 
   val sessionCounter = new AtomicLong()
-}
-
-class DirectorSession extends Session( "Director")
-class CompleteSession extends Session( "Complete")
-class TableSession( val table: String ) extends Session( s"Table ${table}" ) {
-  val number = Id.tableIdToTableNumber(table)
 }

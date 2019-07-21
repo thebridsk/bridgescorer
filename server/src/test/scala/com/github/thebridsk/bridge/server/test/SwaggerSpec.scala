@@ -31,7 +31,7 @@ import scala.reflect.ClassTag
 import akka.http.scaladsl.unmarshalling.Unmarshal
 import scala.concurrent.Await
 import akka.http.scaladsl.util.FastFuture._
-import com.github.thebridsk.bridge.server.backend.resource.FileIO
+import com.github.thebridsk.utilities.file.FileIO
 import java.io.File
 import org.scalactic.source.Position
 
