@@ -24,7 +24,7 @@ object BldVersion {
 
 
   lazy val vAkka = "2.5.23"           // https://github.com/akka/akka
-  lazy val vAkkaHttp = "10.1.8"       // https://github.com/akka/akka-http
+  lazy val vAkkaHttp = "10.1.9"       // https://github.com/akka/akka-http
 
   lazy val vAkkaHttpPlayJson="1.27.0"  // https://github.com/hseeberger/akka-http-json
 
@@ -61,12 +61,14 @@ object BldVersion {
 
   // jackson-module-scala usually updates a few days after the others are updated,
   // don't update until jackson-module-scala is updated
-  lazy val vJackson = "2.9.9"        // https://github.com/FasterXML/jackson-core
+  lazy val vJackson = "2.9.9"           // https://github.com/FasterXML/jackson-core
+  // v2.9.9.2 causes NPE in getting swagger.yaml
+  lazy val vJacksonDatabind = "2.9.9"   // https://github.com/FasterXML/jackson-databind
 
   // Selenium needs to be update to update to v23.0
   lazy val vGuavaJre = "28.0-jre"    // https://github.com/google/guava
 
-  lazy val vWebPack = "4.35.0"          // https://www.npmjs.com/package/webpack
+  lazy val vWebPack = "4.38.0"          // https://www.npmjs.com/package/webpack
 
   lazy val vJsDom = "15.1.1"           // https://www.npmjs.com/package/jsdom
 
@@ -76,13 +78,13 @@ object BldVersion {
   // version 1.0.7 is hardcoded in sbt-scalajs-bundler
   // current is 1.1.0
   lazy val vConcatWithSourcemaps = "1.1.0"  // https://www.npmjs.com/package/concat-with-sourcemaps
-  lazy val vTerser = "4.0.0"               // https://www.npmjs.com/package/terser
+  lazy val vTerser = "4.1.2"               // https://www.npmjs.com/package/terser
 
-  lazy val vAjv = "6.10.0"                  // https://www.npmjs.com/package/ajv
+  lazy val vAjv = "6.10.2"                  // https://www.npmjs.com/package/ajv
 
 
   lazy val vWebpackDevServer = "3.7.2"   // https://www.npmjs.com/package/webpack-dev-server
-  lazy val vWebPackCli = "3.3.5"         // https://www.npmjs.com/package/webpack-cli
+  lazy val vWebPackCli = "3.3.6"         // https://www.npmjs.com/package/webpack-cli
 
   lazy val vSangria = "1.4.2"           // https://github.com/sangria-graphql/sangria
   lazy val vSangriaPlayJson = "1.0.5"   // https://github.com/sangria-graphql/sangria-playground
@@ -90,7 +92,7 @@ object BldVersion {
   lazy val vGraphQL = "14.4.1"              // https://github.com/graphql/graphql-js
   lazy val vGraphiQL = "0.13.2"             // https://github.com/graphql/graphiql
   lazy val vGraphQLVoyager = "1.0.0-rc.27"  // https://github.com/APIs-guru/graphql-voyager
-  lazy val vMaterialUIcore = "4.1.3"        // https://www.npmjs.com/package/@material-ui/core
+  lazy val vMaterialUIcore = "4.2.1"        // https://www.npmjs.com/package/@material-ui/core
   lazy val vMaterialUIicons = "4.2.1"        // https://www.npmjs.com/package/@material-ui/icons
 
 }

@@ -42,13 +42,16 @@ object BldDependencies {
   val bridgeScorerDeps = Def.setting(scalatestDeps.value ++ Seq(
       ))
 
+  val jacksonDatabind = Seq(
+    "com.fasterxml.jackson.core" % "jackson-databind",
+  ).map( _ % vJacksonDatabind withSources())
+
   val jacksons = Seq(
     "com.fasterxml.jackson.core" % "jackson-core",
     "com.fasterxml.jackson.core" % "jackson-annotations",
-    "com.fasterxml.jackson.core" % "jackson-databind",
     "com.fasterxml.jackson.datatype" % "jackson-datatype-jdk8",
     "com.fasterxml.jackson.datatype" % "jackson-datatype-jsr310"
- ).map( _ % vJackson withSources())
+ ).map( _ % vJackson withSources()) ++ jacksonDatabind
 
  val morejacksons = Seq(
     "com.fasterxml.jackson.dataformat" % "jackson-dataformat-yaml",
