@@ -4,7 +4,7 @@
 //    sbt "reload plugins" dependencyUpdates
 //
 
-val vLog4j = "1.7.25"              // https://mvnrepository.com/artifact/org.slf4j/slf4j-simple
+val vLog4j = "1.7.26"              // https://github.com/qos-ch/slf4j
 
 val vSbtEclipse = "5.2.4"          // https://github.com/typesafehub/sbteclipse
 

@@ -8,8 +8,8 @@ name := "project-bridgescorer"
 
 scalaVersion := "2.12.8"
 
-val vLog4j = "1.7.26"               // https://mvnrepository.com/artifact/org.slf4j/slf4j-simple
-val vJGit = "5.4.0.201906121030-r" // https://mvnrepository.com/artifact/org.eclipse.jgit/org.eclipse.jgit.pgm
+val vLog4j = "1.7.26"              // https://github.com/qos-ch/slf4j
+val vJGit = "5.4.0.201906121030-r" // https://github.com/eclipse/jgit
 
 val vCrossProject = "0.6.0"        // https://github.com/portable-scala/sbt-crossproject
 val vScalaJSDefault = "0.6.28"     // http://www.scala-js.org/
@@ -33,7 +33,7 @@ val vSbtRevolver = "0.8.0"         // https://github.com/spray/sbt-revolver
 val vSbtUniDoc = "0.3.3"           // https://github.com/sbt/sbt-unidoc
 val vSbtDigest = "1.1.1"           // https://github.com/sbt/sbt-digest
 val vSbtScalaFmt="2.0.2"           // https://github.com/scalameta/sbt-scalafmt
-val vBloop = "1.3.2"               // https://scalacenter.github.io/bloop/setup#universal
+val vBloop = "1.3.2"               // https://github.com/scalacenter/bloop
 
 // The following is needed to get rid of the message
 //   SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".
@@ -52,13 +52,9 @@ libraryDependencies ++= Seq(
      exclude("com.sun.jmx", "jmxri")
 )
 
-// resolvers +=
-//   "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
-
 addSbtPlugin("org.portable-scala" % "sbt-scalajs-crossproject" % vCrossProject withSources())
 addSbtPlugin("org.scala-js" % "sbt-scalajs" % scalaJSVersion withSources())
 
-// addSbtPlugin("io.spray" % "sbt-revolver" % vSbtRevolver withSources())
 addSbtPlugin("com.eed3si9n" % "sbt-assembly" % vSbtAssembly withSources())
 addSbtPlugin("com.typesafe.sbt" % "sbt-git" % vSbtGit withSources())
 addSbtPlugin("org.scoverage" % "sbt-scoverage" % vSbtSCoverage withSources())
@@ -72,11 +68,7 @@ scalacOptions ++= Seq( "-unchecked", "-deprecation" )
 
 scalacOptions ++= Seq( "-unchecked", "-feature", "-deprecation" )
 
-// addSbtPlugin("com.eed3si9n" % "sbt-unidoc" % vSbtUniDoc)
-
 addSbtPlugin("com.typesafe.sbt" % "sbt-gzip" % vSbtGzip withSources())
-
-// addSbtPlugin("com.typesafe.sbt" % "sbt-digest" % vSbtDigest withSources())
 
 addSbtPlugin("ch.epfl.scala" % "sbt-web-scalajs-bundler" % vSbtScalaJsBundler withSources())
 addSbtPlugin("ch.epfl.scala" % "sbt-scalajs-bundler" % vSbtScalaJsBundler withSources())

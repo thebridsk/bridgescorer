@@ -86,16 +86,8 @@ object BldBridgeClientApi {
 // Indicate that unit tests will access the DOM
       version in webpack := vWebPack,
       version in installJsdom := vJsDom,
-// warning: value requiresDOM in object AutoImport is deprecated (since 0.6.20):
-//   Requesting a DOM-enabled JS env with `jsDependencies += RuntimeDOM`
-//   or `requiresDOM := true` will not be supported in Scala.js 1.x.
-//   Instead, explicitly select a suitable JS with `jsEnv`,
-//   e.g., `jsEnv := new org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv`.
-//     requiresDOM in Test := true,
-//     ^
+
       requireJsDomEnv in Test := true,
-//    requiresDOM in Test := true,
-//    jsDependencies += RuntimeDOM,      // for testing in node.js and scala.js 0.6.13 https://www.scala-js.org/news/2016/10/17/announcing-scalajs-0.6.13/
 
       // this is for SBT 1.0
       // 11/18/17, 12/4/17 currently does not work, looks like JSDOM is not loaded
