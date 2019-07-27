@@ -58,9 +58,6 @@ object BldDependencies {
 
   val browserPagesDeps = Def.setting(scalatestDeps.value ++ Seq(
     "org.seleniumhq.selenium" %   "selenium-java" % vSelenium withSources(),
-    //      "org.seleniumhq.selenium" %   "selenium-api"  % vSelenium withSources(),
-    //      "org.seleniumhq.selenium" %   "selenium-support" % vSelenium withSources()
-    //      "org.seleniumhq.selenium" % "htmlunit-driver" % "2.34.0" withSources(),
 
     "org.scalatest" %%% "scalatest" % vScalatest withSources(),
     "org.scalactic" %%% "scalactic" % vScalactic withSources(),
@@ -73,11 +70,7 @@ object BldDependencies {
   val bridgeScorerServerDeps = Def.setting(morejacksons ++ jacksons ++ Seq(
 
       "com.typesafe.akka"   %%  "akka-actor"    % vAkka withSources(),
-//      "com.typesafe.akka"   %%  "akka-contrib"  % vAkka withSources(),   // needed for logging
-
       "com.typesafe.akka"   %% "akka-stream"             % vAkka withSources(),
-
-//      "com.typesafe.akka"   %% "akka-http-core"          % vAkkaHttp withSources(),
       "com.typesafe.akka"   %% "akka-http"               % vAkkaHttp withSources(),
       "com.typesafe.akka"   %% "akka-http-caching"       % vAkkaHttp withSources(),
 //      "com.typesafe.akka"   %% "akka-http2-support"      % vAkkaHttp % "test" withSources(),
@@ -100,10 +93,6 @@ object BldDependencies {
 
       "jakarta.ws.rs" % "jakarta.ws.rs-api" % vWsRsApi withSources(),
 
-//      "org.webjars.npm" % "react-widgets" % vReactWidgets,
-
-      // webjar is included by sbt-web
-//      "org.webjars" % "swagger-ui" % vSwaggerUI % "provided",
       "com.jsuereth" %% "scala-arm" % vScalaArm withSources(),
       lScallop,
       "org.slf4j" % "slf4j-jdk14" % vSlf4j withSources(),
@@ -121,9 +110,6 @@ object BldDependencies {
       "com.typesafe.akka"       %% "akka-http-testkit" % vAkkaHttp % "test" withSources(),
 
       "org.seleniumhq.selenium" %   "selenium-java" % vSelenium  % "test" withSources(),
-//      "org.seleniumhq.selenium" %   "selenium-api"  % vSelenium  % "test" withSources(),
-//      "org.seleniumhq.selenium" %   "selenium-support" % vSelenium  % "test" withSources()
-//      "org.seleniumhq.selenium" % "htmlunit-driver" % "2.34.0" % "test" withSources(),
 
       ))
 
@@ -158,12 +144,8 @@ object BldDependencies {
       "io.swagger.core.v3" % "swagger-annotations" % vSwagger withSources(),
 
       "com.github.japgolly.scalajs-react" %%% "core"          % vScalaJsReact withSources(),
-//      "com.github.japgolly.scalajs-react" %%% "ext-scalaz71"  % vScalaJsReact withSources(),
       "com.github.japgolly.scalajs-react" %%% "extra"         % vScalaJsReact withSources(),
-//      "com.github.japgolly.scalacss"      %%% "core"          % vScalaCss withSources(),
-//      "com.github.japgolly.scalacss"      %%% "ext-react"     % vScalaCss withSources(),
 
-//      "be.doeraene"  %%%  "scalajs-jquery" % vScalajsJquery % "test" withSources(),
       "org.querki" %%% "jquery-facade" % vJqueryFacade % "test" withSources(),
 
       "com.github.japgolly.scalajs-react" %%% "test" % vScalaJsReact % "test" withSources()
@@ -175,12 +157,8 @@ object BldDependencies {
     "io.swagger.core.v3" % "swagger-annotations" % vSwagger withSources(),
 
     "com.github.japgolly.scalajs-react" %%% "core"          % vScalaJsReact withSources(),
-//      "com.github.japgolly.scalajs-react" %%% "ext-scalaz71"  % vScalaJsReact withSources(),
     "com.github.japgolly.scalajs-react" %%% "extra"         % vScalaJsReact withSources(),
-//      "com.github.japgolly.scalacss"      %%% "core"          % vScalaCss withSources(),
-//      "com.github.japgolly.scalacss"      %%% "ext-react"     % vScalaCss withSources(),
 
-//      "be.doeraene"  %%%  "scalajs-jquery" % vScalajsJquery % "test" withSources(),
     "org.querki" %%% "jquery-facade" % vJqueryFacade % "test" withSources(),
 
     "com.github.japgolly.scalajs-react" %%% "test" % vScalaJsReact % "test" withSources()
@@ -205,7 +183,6 @@ object BldDependencies {
       "react-widgets-moment" -> vReactWidgetsMoment,
       "moment" -> vMoment,
       "swagger-ui-dist" -> vSwaggerUI,
-//      "fastclick" -> vFastClick,
       "graphql-voyager" -> vGraphQLVoyager,
       "graphql" -> vGraphQL,
       "graphiql" -> vGraphiQL,
@@ -234,7 +211,6 @@ object BldDependencies {
 //      "concat-with-sourcemaps" -> vConcatWithSourcemaps,
       "terser" -> vTerser,
       "ajv" -> vAjv
-//      "expose-loader" -> vExposeLoader
   )
 
 
@@ -244,7 +220,6 @@ object BldDependencies {
 //      "concat-with-sourcemaps" -> vConcatWithSourcemaps,
       "terser" -> vTerser,
       "ajv" -> vAjv
-//      "expose-loader" -> vExposeLoader
   )
 
   def bridgeScorerNpmAssets(client: ProjectReference) = {
@@ -267,16 +242,7 @@ object BldDependencies {
   }
 
   val bridgeScorerJsDeps = Seq(
-//      "org.webjars.npm" % "react" % vWebJarsReact / "react-with-addons.js"  minified "react-with-addons.min.js" commonJSName "React",
-//      "org.webjars.npm" % "react-dom" % vWebJarsReact / "react-dom.js"          minified "react-dom.min.js"         dependsOn "react-with-addons.js" commonJSName "ReactDOM",
-//      "org.webjars.npm" % "react-dom" % vWebJarsReact / "react-dom-server.js"   minified "react-dom-server.min.js"  dependsOn "react-dom.js" commonJSName "ReactDOMServer",
-//      "org.webjars.npm" % "flux" % vWebJarsFlux / "Flux.js" minified "Flux.min.js" commonJSName "flux",
-//      "org.webjars" % "log4javascript" % vLog4js / "js/log4javascript_uncompressed.js" % "compile",
-//      "org.webjars" % "log4javascript" % vLog4js / "js/stubs/log4javascript_uncompressed.js" % "test",
-//      "org.webjars" % "log4javascript" % vLog4js / "js/log4javascript.js",
 
-//      "org.webjars.npm" % "react-widgets" % vReactWidgets / "react-widgets.js", // commonJSName "ReactWidgets",
-
-      )
+  )
 
 }
