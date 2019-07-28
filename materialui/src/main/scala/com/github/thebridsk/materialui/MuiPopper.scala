@@ -129,11 +129,13 @@ object PopperProps extends PropsFactory[PopperProps] {
   }
 }
 
-object MuiPopper {
+object MuiPopper extends ComponentFactory[PopperProps] {
   @js.native @JSImport("@material-ui/core/Popper", JSImport.Default) private object Popper
       extends js.Any
 
-  private val f = JsComponent[PopperProps, Children.Varargs, Null](Popper)
+      protected val f = JsComponent[PopperProps, Children.Varargs, Null](Popper)
+
+      // protected val f = JsFnComponent[PopperProps, Children.Varargs](Popper)
 
   /**
     * @param anchorEl This is the DOM element, or a function that returns the DOM element,
