@@ -401,7 +401,7 @@ object MuiPopover extends ComponentFactory[PopoverProps] {
 
       protected val f = JsComponent[PopoverProps, Children.Varargs, Null](Popover)
 
-      protected val f1 = JsFnComponent[PopoverProps, Children.Varargs](Popover)
+      // protected val f = JsFnComponent[PopoverProps, Children.Varargs](Popover)
 
   /**
     * @param BackdropComponent A backdrop component. This property enables custom

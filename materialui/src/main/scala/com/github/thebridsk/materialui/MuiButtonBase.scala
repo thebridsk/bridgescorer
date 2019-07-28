@@ -114,93 +114,93 @@ object ButtonBaseProps extends PropsFactory[ButtonBaseProps] {
 
 }
 
-object MuiButtonBase extends ComponentFactory[ButtonBaseProps] {
-  @js.native @JSImport("@material-ui/core/ButtonBase", JSImport.Default) private object ButtonBase
-      extends js.Any
+// object MuiButtonBase extends ComponentFactory[ButtonBaseProps] {
+//   @js.native @JSImport("@material-ui/core/ButtonBase", JSImport.Default) private object ButtonBase
+//       extends js.Any
 
-  protected val f =
-    JsComponent[ButtonBaseProps, Children.Varargs, Null](ButtonBase)
+//   protected val f =
+//     JsComponent[ButtonBaseProps, Children.Varargs, Null](ButtonBase)
 
-  /**
-    * @param p the object that will become the properties object
-    * @param action Callback fired when the component mounts. This is useful when
-    *                you want to trigger an action programmatically. It currently
-    *                only supports focusVisible() action.
-    *                Signature:
-    *                  function(actions: object) => void
-    *                  actions: This object contains all possible actions that
-    *                           can be triggered programmatically.
-    * @param buttonRef Use that property to pass a ref callback to the native button component.
-    * @param centerRipple If true, the ripples will be centered. They won't start at the cursor interaction position.
-    *                      Default: false
-    * @param classes Override or extend the styles applied to the component.
-    *                 See [[https://material-ui.com/api/button/#css CSS API]]
-    *                 for more details.
-    * @param component The component used for the root node.
-    *                   Either a string to use a DOM element or a component.
-    *                   Default: "button"
-    * @param disabled If `true`, the button will be disabled.
-    * @param disableRipple If `true`, the ripple effect will be disabled.  Default: false
-    * @param disableTouchRipple If true, the touch ripple effect will be disabled.  Default: false
-    * @param focusRipple If true, the base button will have a keyboard focus ripple. disableRipple must also be false
-    *                     Default: false
-    * @param focusVisibleClassName This property can help a person know which element has
-    *                               the keyboard focus. The class name will be applied when
-    *                               the element gain the focus through a keyboard interaction.
-    *                               It's a polyfill for the CSS :focus-visible feature.
-    *                               The rational for using this feature is explain here.
-    * @param onFocusVisible Callback fired when the component is focused with a keyboard. We trigger a onFocus callback too.
-    * @param TouchRippleProps Properties applied to the TouchRipple element.
-    * @param type Used to control the button's purpose. This property passes the value to the type attribute of the native
-    *              button component. Valid property values include button, submit, and reset.
-    *              Default: "button"
-    * @param id the value of the id attribute
-    * @param title the value of the title attribute
-    * @param additionalProps a dictionary of additional properties
-    */
-  def apply(
-      action: js.UndefOr[js.Object => Unit] = js.undefined,
-      buttonRef: js.UndefOr[js.Object] = js.undefined, // js.object or js.Function0[ref]
-      centerRipple: js.UndefOr[Boolean] = js.undefined,
-      classes: js.UndefOr[js.Dictionary[String]] = js.undefined,
-      component: js.UndefOr[String] = js.undefined,
-      disabled: js.UndefOr[Boolean] = js.undefined,
-      disableRipple: js.UndefOr[Boolean] = js.undefined,
-      disableTouchRipple: js.UndefOr[Boolean] = js.undefined,
-      focusRipple: js.UndefOr[Boolean] = js.undefined,
-      focusVisibleClassName: js.UndefOr[String] = js.undefined,
-      onFocusVisible: js.UndefOr[() => Unit] = js.undefined,
-      TouchRippleProps: js.UndefOr[TouchRippleProps] = js.undefined,
-      `type`: js.UndefOr[String] = js.undefined,
-      onClick: js.UndefOr[ReactEvent => Unit] = js.undefined,
-      style: js.UndefOr[js.Object] = js.undefined,
-      id: js.UndefOr[String] = js.undefined,
-      title: js.UndefOr[String] = js.undefined,
-      additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
-  )(
-      children: CtorType.ChildArg*
-  ) = {
-    val p: ButtonBaseProps = ButtonBaseProps(
-      action = action,
-      buttonRef = buttonRef,
-      centerRipple = centerRipple,
-      classes = classes,
-      component = component,
-      disabled = disabled,
-      disableRipple = disableRipple,
-      disableTouchRipple = disableTouchRipple,
-      focusRipple = focusRipple,
-      focusVisibleClassName = focusVisibleClassName,
-      onFocusVisible = onFocusVisible,
-      TouchRippleProps = TouchRippleProps,
-      `type` = `type`,
-      onClick = onClick,
-      style = style,
-      id = id,
-      title = title,
-      additionalProps = additionalProps
-    )
-    val x = f(p) _
-    x(children)
-  }
-}
+//   /**
+//     * @param p the object that will become the properties object
+//     * @param action Callback fired when the component mounts. This is useful when
+//     *                you want to trigger an action programmatically. It currently
+//     *                only supports focusVisible() action.
+//     *                Signature:
+//     *                  function(actions: object) => void
+//     *                  actions: This object contains all possible actions that
+//     *                           can be triggered programmatically.
+//     * @param buttonRef Use that property to pass a ref callback to the native button component.
+//     * @param centerRipple If true, the ripples will be centered. They won't start at the cursor interaction position.
+//     *                      Default: false
+//     * @param classes Override or extend the styles applied to the component.
+//     *                 See [[https://material-ui.com/api/button/#css CSS API]]
+//     *                 for more details.
+//     * @param component The component used for the root node.
+//     *                   Either a string to use a DOM element or a component.
+//     *                   Default: "button"
+//     * @param disabled If `true`, the button will be disabled.
+//     * @param disableRipple If `true`, the ripple effect will be disabled.  Default: false
+//     * @param disableTouchRipple If true, the touch ripple effect will be disabled.  Default: false
+//     * @param focusRipple If true, the base button will have a keyboard focus ripple. disableRipple must also be false
+//     *                     Default: false
+//     * @param focusVisibleClassName This property can help a person know which element has
+//     *                               the keyboard focus. The class name will be applied when
+//     *                               the element gain the focus through a keyboard interaction.
+//     *                               It's a polyfill for the CSS :focus-visible feature.
+//     *                               The rational for using this feature is explain here.
+//     * @param onFocusVisible Callback fired when the component is focused with a keyboard. We trigger a onFocus callback too.
+//     * @param TouchRippleProps Properties applied to the TouchRipple element.
+//     * @param type Used to control the button's purpose. This property passes the value to the type attribute of the native
+//     *              button component. Valid property values include button, submit, and reset.
+//     *              Default: "button"
+//     * @param id the value of the id attribute
+//     * @param title the value of the title attribute
+//     * @param additionalProps a dictionary of additional properties
+//     */
+//   def apply(
+//       action: js.UndefOr[js.Object => Unit] = js.undefined,
+//       buttonRef: js.UndefOr[js.Object] = js.undefined, // js.object or js.Function0[ref]
+//       centerRipple: js.UndefOr[Boolean] = js.undefined,
+//       classes: js.UndefOr[js.Dictionary[String]] = js.undefined,
+//       component: js.UndefOr[String] = js.undefined,
+//       disabled: js.UndefOr[Boolean] = js.undefined,
+//       disableRipple: js.UndefOr[Boolean] = js.undefined,
+//       disableTouchRipple: js.UndefOr[Boolean] = js.undefined,
+//       focusRipple: js.UndefOr[Boolean] = js.undefined,
+//       focusVisibleClassName: js.UndefOr[String] = js.undefined,
+//       onFocusVisible: js.UndefOr[() => Unit] = js.undefined,
+//       TouchRippleProps: js.UndefOr[TouchRippleProps] = js.undefined,
+//       `type`: js.UndefOr[String] = js.undefined,
+//       onClick: js.UndefOr[ReactEvent => Unit] = js.undefined,
+//       style: js.UndefOr[js.Object] = js.undefined,
+//       id: js.UndefOr[String] = js.undefined,
+//       title: js.UndefOr[String] = js.undefined,
+//       additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
+//   )(
+//       children: CtorType.ChildArg*
+//   ) = {
+//     val p: ButtonBaseProps = ButtonBaseProps(
+//       action = action,
+//       buttonRef = buttonRef,
+//       centerRipple = centerRipple,
+//       classes = classes,
+//       component = component,
+//       disabled = disabled,
+//       disableRipple = disableRipple,
+//       disableTouchRipple = disableTouchRipple,
+//       focusRipple = focusRipple,
+//       focusVisibleClassName = focusVisibleClassName,
+//       onFocusVisible = onFocusVisible,
+//       TouchRippleProps = TouchRippleProps,
+//       `type` = `type`,
+//       onClick = onClick,
+//       style = style,
+//       id = id,
+//       title = title,
+//       additionalProps = additionalProps
+//     )
+//     val x = f(p) _
+//     x(children)
+//   }
+// }

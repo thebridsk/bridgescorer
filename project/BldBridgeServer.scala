@@ -102,11 +102,11 @@ object BldBridgeServer {
           false
         }
       },
-      baseDirectory in Test := {
-        val x = (baseDirectory in Test).value
-        println(s"baseDirectory in test is ${x}")
-        x
-      },
+      // baseDirectory in Test := {
+      //   val x = (baseDirectory in Test).value
+      //   println(s"baseDirectory in test is ${x}")
+      //   x
+      // },
       fork in Test := true,
       javaOptions in Test ++= Seq(
         "-DDefaultWebDriver=" + useBrowser,

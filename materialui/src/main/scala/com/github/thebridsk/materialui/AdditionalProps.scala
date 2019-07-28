@@ -67,17 +67,17 @@ trait ComponentFactory[Props <: js.Object with AdditionalProps] {
 
 }
 
-// trait FsComponentFactory[Props <: js.Object with AdditionalProps] {
+trait FnComponentFactory[Props <: js.Object with AdditionalProps] {
 
-//   protected val f: Js.Component[Props, CtorType.PropsAndChildren]
+  protected val f: JsFnComponent.Component[Props, CtorType.PropsAndChildren]
 
-//   def apply(
-//       props: Props
-//   )(
-//       children: CtorType.ChildArg*
-//   ) = {
-//     val x = f(props) _
-//     x(children)
-//   }
+  def apply(
+      props: Props
+  )(
+      children: CtorType.ChildArg*
+  ) = {
+    val x = f(props) _
+    x(children)
+  }
 
-// }
+}
