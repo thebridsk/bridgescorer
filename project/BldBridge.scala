@@ -49,9 +49,9 @@ object BldBridge {
 
   import ReleaseTransformations.{setReleaseVersion => _, setNextVersion => _, _}
 
-  val publishRelease = ReleaseStep(
+  lazy val publishRelease = ReleaseStep(
     check = releaseCheck, // upfront check
-    action = releaseStepTaskAggregated(mydist in Distribution) // publish release notes
+    action = releaseStepTaskAggregated(mydist in Distribution in bridgescorer) // publish release notes
   )
 
   lazy val bridgescorer: Project = project
