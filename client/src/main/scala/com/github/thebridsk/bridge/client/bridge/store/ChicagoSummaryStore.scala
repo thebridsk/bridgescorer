@@ -15,6 +15,7 @@ import com.github.thebridsk.bridge.data.MatchChicago
 import com.github.thebridsk.bridge.client.bridge.action.ActionDeleteChicago
 import com.github.thebridsk.bridge.client.bridge.action.ActionUpdateChicago
 import com.github.thebridsk.bridge.client.Bridge
+import com.github.thebridsk.bridge.clientcommon.demo.BridgeDemo
 
 object ChicagoSummaryStore extends ChangeListenable {
   val logger = Logger("bridge.ChicagoSummaryStore")
@@ -39,7 +40,7 @@ object ChicagoSummaryStore extends ChangeListenable {
         }
 
       case ActionUpdateChicago(chi,cb) =>
-        if (Bridge.isDemo) {
+        if (BridgeDemo.isDemo) {
           logger.info("Updating MatchChicago for demo")
           val n = fSummary.map { a =>
             val r = a.filter( c => chi.id != c.id )

@@ -75,6 +75,7 @@ import com.github.thebridsk.materialui.PopperPlacement
 import com.github.thebridsk.bridge.client.routes.AppRouter
 import com.github.thebridsk.bridge.clientcommon.pages.GotoPage
 import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles._
+import com.github.thebridsk.bridge.clientcommon.demo.BridgeDemo
 
 /**
  * @author werewolf
@@ -270,7 +271,7 @@ object HomePage {
             ^.id:="url",
             <.h1("Server"),
             <.ul(
-              if (Bridge.isDemo) {
+              if (BridgeDemo.isDemo) {
                 <.li("Demo mode, all data entered will be lost on page refresh or closing page")
               } else {
                 if (state.serverUrl.serverUrl.isEmpty) {

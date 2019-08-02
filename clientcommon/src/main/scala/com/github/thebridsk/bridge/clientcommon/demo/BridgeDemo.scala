@@ -19,4 +19,13 @@ object BridgeDemo {   // need to figure out how to use new way to call main
     }
   }
 
+  def demoLogLevel: String = {
+    val g = js.Dynamic.global.asInstanceOf[js.Dictionary[String]]
+    if ( g.contains("demoLogLevel") ) {
+      g("demoLogLevel")
+    } else {
+      ""
+    }
+  }
+
 }

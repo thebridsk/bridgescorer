@@ -63,6 +63,7 @@ object BldVersion {
   // don't update until jackson-module-scala is updated
   lazy val vJackson = "2.9.9"           // https://github.com/FasterXML/jackson-core
   // v2.9.9.2 causes NPE in getting swagger.yaml
+  // https://github.com/FasterXML/jackson-databind/commit/dd4c5acb321a6aa9ca230aa505266fb2dd2f90ff
   lazy val vJacksonDatabind = "2.9.9"   // https://github.com/FasterXML/jackson-databind
 
   // Selenium needs to be update to update to v23.0

@@ -15,6 +15,7 @@ import com.github.thebridsk.bridge.client.bridge.action.ActionDeleteRubber
 import com.github.thebridsk.bridge.data.MatchRubber
 import com.github.thebridsk.bridge.client.Bridge
 import com.github.thebridsk.bridge.client.bridge.action.ActionUpdateRubber
+import com.github.thebridsk.bridge.clientcommon.demo.BridgeDemo
 
 object RubberListStore extends ChangeListenable {
   val logger = Logger("bridge.RubberListStore")
@@ -35,7 +36,7 @@ object RubberListStore extends ChangeListenable {
       }
 
     case ActionUpdateRubber(rub,cb) =>
-      if (Bridge.isDemo) {
+      if (BridgeDemo.isDemo) {
         val n = fSummary.map { a =>
           val r = a.filter( c => rub.id != c.id )
           r :+ rub

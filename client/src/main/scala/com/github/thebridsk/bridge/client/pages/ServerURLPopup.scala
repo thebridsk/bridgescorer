@@ -10,6 +10,7 @@ import com.github.thebridsk.bridge.clientcommon.rest2.RestClientServerURL
 import scala.concurrent.ExecutionContext
 import com.github.thebridsk.bridge.client.Bridge
 import com.github.thebridsk.utilities.logging.Logger
+import com.github.thebridsk.bridge.clientcommon.demo.BridgeDemo
 
 /**
  * A skeleton component.
@@ -89,7 +90,7 @@ object ServerURLPopupInternal {
   def render( props: Props, state: State ) = {
       val content: Option[TagMod] = if (isShowServerURLPopup) {
         implicit val ec = ExecutionContext.global
-        val item = if (Bridge.isDemo) {
+        val item = if (BridgeDemo.isDemo) {
           Some(
             <.li("Demo mode, all data entered will be lost on page refresh or closing page")
           )

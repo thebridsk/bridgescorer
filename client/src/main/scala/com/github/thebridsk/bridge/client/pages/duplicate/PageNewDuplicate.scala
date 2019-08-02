@@ -34,6 +34,7 @@ import com.github.thebridsk.bridge.client.Bridge
 import com.github.thebridsk.bridge.client.bridge.action.BridgeDispatcher
 import com.github.thebridsk.bridge.client.bridge.store.DuplicateSummaryStore
 import com.github.thebridsk.bridge.data.DuplicateSummary
+import com.github.thebridsk.bridge.clientcommon.demo.BridgeDemo
 
 /**
  * PageNewDuplicate.
@@ -205,7 +206,7 @@ object PageNewDuplicateInternal {
                       boards: Option[String] = None,
                       movement: Option[String] = None,
                       fortest: Boolean = false ) =
-        if (Bridge.isDemo) {
+        if (BridgeDemo.isDemo) {
           Callback {
             val s = scope.withEffectsImpure.state
             val p = scope.withEffectsImpure.props

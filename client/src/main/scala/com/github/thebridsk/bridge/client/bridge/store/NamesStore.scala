@@ -5,6 +5,7 @@ import com.github.thebridsk.bridge.clientcommon.rest2.RestClientNames
 import com.github.thebridsk.utilities.logging.Logger
 import com.github.thebridsk.bridge.clientcommon.logger.Alerter
 import com.github.thebridsk.bridge.client.Bridge
+import com.github.thebridsk.bridge.clientcommon.demo.BridgeDemo
 
 object NamesStore extends ChangeListenable {
   val logger = Logger("bridge.ViewPlayers")
@@ -25,7 +26,7 @@ object NamesStore extends ChangeListenable {
    * @param cb - callback that should be called when the names have been updated
    */
   def refreshNames( cb: Option[Callback] = None ) = {
-    if (Bridge.isDemo) {
+    if (BridgeDemo.isDemo) {
       import scala.scalajs.js.timers._
 
       setTimeout(1) { // note the absence of () =>

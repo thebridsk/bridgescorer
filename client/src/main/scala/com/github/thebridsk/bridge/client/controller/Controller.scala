@@ -50,6 +50,7 @@ import com.github.thebridsk.bridge.clientcommon.rest2.AjaxCall
 import scala.concurrent.duration.Duration
 import com.github.thebridsk.bridge.data.websocket.Protocol.ToBrowserMessage
 import com.github.thebridsk.bridge.data.websocket.Protocol.ToServerMessage
+import com.github.thebridsk.bridge.clientcommon.demo.BridgeDemo
 
 object Controller extends  {
   val logger = Logger("bridge.Controller")
@@ -189,7 +190,7 @@ object Controller extends  {
 
   def updateMatch( dup: MatchDuplicate ) = {
     BridgeDispatcher.updateDuplicateMatch(dup)
-    if (!Bridge.isDemo) {
+    if (!BridgeDemo.isDemo) {
       if (useRestToServer) {
         val resource = RestClientDuplicate.update(dup.id, dup).recordFailure().onComplete { t =>
           if (t.isFailure) {
@@ -206,7 +207,7 @@ object Controller extends  {
 
   def updateHand( dup: MatchDuplicate, hand: DuplicateHand ) = {
     BridgeDispatcher.updateDuplicateHand(dup.id, hand)
-    if (!Bridge.isDemo) {
+    if (!BridgeDemo.isDemo) {
       if (useRestToServer) {
         val resource = RestClientDuplicate.boardResource(dup.id).handResource(hand.board)
         resource.update(hand.id, hand).recordFailure().onComplete { t =>
@@ -231,7 +232,7 @@ object Controller extends  {
 
   def updateTeam( dup: MatchDuplicate, team: Team ) = {
     BridgeDispatcher.updateTeam(dup.id, team)
-    if (!Bridge.isDemo) {
+    if (!BridgeDemo.isDemo) {
       if (useRestToServer) {
         val resource = RestClientDuplicate.teamResource(dup.id)
         resource.update(team.id, team).recordFailure().onComplete { t =>
@@ -321,9 +322,12 @@ object Controller extends  {
     logger.finer("Sending duplicatesummaries list request to server")
     import scala.scalajs.js.timers._
     setTimeout(1) { // note the absence of () =>
-      if (Bridge.isDemo) {
-        if (DuplicateSummaryStore.getDuplicateSummary().isEmpty) {
-          getDemoSummary(error)
+      if (BridgeDemo.isDemo) {
+        DuplicateSummaryStore.getDuplicateSummary() match {
+          case Some(list) =>
+            BridgeDispatcher.updateDuplicateSummary(None,list)
+          case None =>
+            getDemoSummary(error)
         }
       } else {
         RestClientDuplicateSummary.list().recordFailure().onComplete { trylist =>

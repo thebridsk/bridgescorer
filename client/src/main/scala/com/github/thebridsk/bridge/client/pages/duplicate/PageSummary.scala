@@ -543,7 +543,7 @@ object PageSummaryInternal {
     def render( props: Props, state: State ) = {
       val (importId,summaries) = getDuplicateSummaries( props )
 
-//      logger.info(s"PageSummary.render called, importId=${importId}, summaries=${summaries}")
+      logger.finer(s"PageSummary.render called, importId=${importId}, summaries=${summaries}")
 
       val tp = SummaryPeople(summaries)
       val takerows = if (state.alwaysShowAll)

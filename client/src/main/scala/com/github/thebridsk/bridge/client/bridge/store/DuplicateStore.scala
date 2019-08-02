@@ -25,6 +25,7 @@ import japgolly.scalajs.react.Callback
 import com.github.thebridsk.bridge.clientcommon.react.BeepComponent
 import com.github.thebridsk.bridge.client.Bridge
 import com.github.thebridsk.bridge.data.DuplicateSummary
+import com.github.thebridsk.bridge.clientcommon.demo.BridgeDemo
 
 object DuplicateStore extends ChangeListenable {
   val logger = Logger("bridge.DuplicateStore")
@@ -125,7 +126,7 @@ object DuplicateStore extends ChangeListenable {
                 bridgeMatch = Some(duplicate)
                 resetViews()
                 notifyChange()
-                if (Bridge.isDemo) {
+                if (BridgeDemo.isDemo) {
                   scalajs.js.timers.setTimeout(1) {
                     BridgeDispatcher.updateDuplicateSummaryDemoMatchItem(None, duplicate)
                     BridgeDispatcher.updateDuplicateSummaryItem(None, DuplicateSummary.create(duplicate))
@@ -161,7 +162,7 @@ object DuplicateStore extends ChangeListenable {
                     notifyChange()
                     bridgeMatch
                 }).map {md =>
-                  if (Bridge.isDemo) {
+                  if (BridgeDemo.isDemo) {
                     scalajs.js.timers.setTimeout(1) {
                       BridgeDispatcher.updateDuplicateSummaryDemoMatchItem(None, md)
                       BridgeDispatcher.updateDuplicateSummaryItem(None, DuplicateSummary.create(md))
@@ -195,7 +196,7 @@ object DuplicateStore extends ChangeListenable {
                     notifyChange()
                     bridgeMatch
                 }).map {md =>
-                  if (Bridge.isDemo) {
+                  if (BridgeDemo.isDemo) {
                     scalajs.js.timers.setTimeout(1) {
                       BridgeDispatcher.updateDuplicateSummaryDemoMatchItem(None, md)
                       BridgeDispatcher.updateDuplicateSummaryItem(None, DuplicateSummary.create(md))
@@ -226,7 +227,7 @@ object DuplicateStore extends ChangeListenable {
     }
     logger.info("Starting to monitor "+dupid)
     monitoredId = Some(dupid)
-    if (Bridge.isDemo) {
+    if (BridgeDemo.isDemo) {
       bridgeMatch = DuplicateSummaryStore.getDuplicateMatchSummary().flatMap( list => list.find(md => md.id == dupid))
     }
     notifyChange()
@@ -239,7 +240,7 @@ object DuplicateStore extends ChangeListenable {
   }
 
   def stop() = {
-    if (Bridge.isDemo) {
+    if (BridgeDemo.isDemo) {
       // keep the match
     } else {
       monitoredId match {
@@ -290,7 +291,7 @@ object DuplicateStore extends ChangeListenable {
   override
   def addChangeListener( cb: Callback ) = {
     super.addChangeListener(cb)
-    if (Bridge.isDemo) {
+    if (BridgeDemo.isDemo) {
       scalajs.js.timers.setTimeout(1) {
         notifyChange()
       }

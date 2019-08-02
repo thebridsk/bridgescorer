@@ -33,6 +33,7 @@ import com.github.thebridsk.bridge.client.bridge.store.RubberListStore
 import scala.util.Success
 import scala.util.Failure
 import com.github.thebridsk.bridge.data.websocket.Protocol
+import com.github.thebridsk.bridge.clientcommon.demo.BridgeDemo
 
 object RubberController {
   val logger = Logger("bridge.RubberController")
@@ -63,7 +64,7 @@ object RubberController {
   private var currentId = 0
 
   def createMatch() = {
-    AjaxResult.isEnabled.orElse(Some(true)).map( e => e && !Bridge.isDemo ) match {
+    AjaxResult.isEnabled.orElse(Some(true)).map( e => e && !BridgeDemo.isDemo ) match {
       case Some(true) | None =>
         // enabled - Some(true)
         // mocked - None
@@ -106,7 +107,7 @@ object RubberController {
   }
 
   def updateServer( rub: MatchRubber ) = {
-    if (!Bridge.isDemo) {
+    if (!BridgeDemo.isDemo) {
       RestClientRubber.update(rub.id, rub).recordFailure().foreach( updated => {
         logger.fine("PageRubber: Updated rubber game: "+rub.id)
         // the BridgeDispatcher.updateRubber causes a timing problem.
@@ -129,7 +130,7 @@ object RubberController {
     logger.finer("Sending rubbers list request to server")
     import scala.scalajs.js.timers._
     setTimeout(1) { // note the absence of () =>
-      if (Bridge.isDemo) {
+      if (BridgeDemo.isDemo) {
         val x = RubberListStore.getRubberSummary().getOrElse(Array())
         BridgeDispatcher.updateRubberList(None,x)
       } else {
@@ -226,7 +227,7 @@ object RubberController {
 
   def deleteRubber( id: String) = {
     BridgeDispatcher.deleteRubber(id)
-    if (!Bridge.isDemo) RestClientRubber.delete(id).recordFailure()
+    if (!BridgeDemo.isDemo) RestClientRubber.delete(id).recordFailure()
   }
 
   private var sseConnection: ServerEventConnection[String] = null

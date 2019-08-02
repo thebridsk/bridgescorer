@@ -27,6 +27,7 @@ import org.scalajs.dom.raw.Event
 import scala.scalajs.js
 import scala.scalajs.js.annotation.JSGlobal
 import com.github.thebridsk.bridge.clientcommon.rest2.AjaxResult
+import com.github.thebridsk.bridge.clientcommon.demo.BridgeDemo
 
 /**
  * @author werewolf
@@ -46,15 +47,6 @@ object Bridge {   // need to figure out how to use new way to call main
 
   Loader.init
 
-  def isDemo: Boolean = {
-    val g = js.Dynamic.global.asInstanceOf[js.Dictionary[Boolean]]
-    if ( g.contains("demo") ) {
-      g("demo")
-    } else {
-      false
-    }
-  }
-
 //  def main(args: Array[String]): Unit = main()
 
 //  @JSExportTopLevel("com.github.thebridsk.bridge.client.Bridge")
@@ -63,7 +55,7 @@ object Bridge {   // need to figure out how to use new way to call main
   @JSExport
   def main(): Unit = Alerter.tryitWithUnit {
 
-    if (isDemo) {
+    if (BridgeDemo.isDemo) {
       AjaxResult.setEnabled(false)
     }
 
