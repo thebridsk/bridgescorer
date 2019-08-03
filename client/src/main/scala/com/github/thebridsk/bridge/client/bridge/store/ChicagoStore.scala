@@ -14,6 +14,7 @@ import com.github.thebridsk.bridge.client.bridge.action.ChicagoBridgeAction
 import com.github.thebridsk.utilities.logging.Logger
 import com.github.thebridsk.bridge.clientcommon.logger.Alerter
 import com.github.thebridsk.bridge.client.Bridge
+import com.github.thebridsk.bridge.clientcommon.demo.BridgeDemo
 
 object ChicagoStore extends ChangeListenable {
   val logger = Logger("bridge.ChicagoStore")
@@ -66,7 +67,7 @@ object ChicagoStore extends ChangeListenable {
           case Some(chi) =>
             callback.foreach( cb=>cb(chicago.get) )
             notifyChange()
-            if (Bridge.isDemo) {
+            if (BridgeDemo.isDemo) {
               scalajs.js.timers.setTimeout(1) {
                 ChicagoSummaryStore.dispatch(ActionUpdateChicago(chicago.get))
               }

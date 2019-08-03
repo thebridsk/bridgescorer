@@ -316,33 +316,46 @@ class DuplicateTestFromTestDirectory extends FlatSpec with MustMatchers with Bef
     def gotoSummaryPage() = {
       import sessionDirector._
 
-      val hp = HomePage.current
+      PageBrowser.withClueAndScreenShot(
+          screenshotDir,
+          s"${template.id}SummaryPage",
+          s"Error going to summary page to play ${template.id}"
+      ) {
 
-      val sum = hp.clickListDuplicateButton.validate
+        val hp = HomePage.current
 
-      val dc = hp.getButton("DuplicateCreate",Some("New")) mustBe 'Enabled
+        val sum = hp.clickListDuplicateButton.validate
+
+        val dc = hp.getButton("DuplicateCreate",Some("New")) mustBe 'Enabled
+      }
     }
 
     def newDuplicate() = {
       import sessionDirector._
 
-      val ldp = ListDuplicatePage.current
+      PageBrowser.withClueAndScreenShot(
+          screenshotDir,
+          s"${template.id}NewDuplicate",
+          s"Error creating new duplicate to play ${template.id}"
+      ) {
 
-      val newd = ldp.clickNewDuplicateButton.validate
+        val ldp = ListDuplicatePage.current
 
-      val boardset = template.boardset
-      val movement = template.movement
+        val newd = ldp.clickNewDuplicateButton.validate
 
-      newd.getNewButton(boardset, movement) mustBe 'Enabled
+        val boardset = template.boardset
+        val movement = template.movement
 
-      tcpSleep(2)
+        newd.getNewButton(boardset, movement) mustBe 'Enabled
 
-      val dup = newd.click(boardset, movement).validate
+        tcpSleep(2)
 
-      dupid = dup.dupid
+        val dup = newd.click(boardset, movement).validate
 
-      assert( dupid.isDefined && dupid.get.length()>0)
+        dupid = dup.dupid
 
+        assert( dupid.isDefined && dupid.get.length()>0)
+      }
     }
 
     def gotoDirectorsPage() = {
@@ -439,7 +452,7 @@ class DuplicateTestFromTestDirectory extends FlatSpec with MustMatchers with Bef
     def playRound( round: Int, sessionTable: TableSession ): Unit = try {
       import sessionTable._
 
-      PageBrowser.withClueAndScreenShot(screenshotDir, s"Round${round}Table${sessionTable.table}", s"Round ${round} Table ${sessionTable.table}") {
+      PageBrowser.withClueAndScreenShot(screenshotDir, s"${template.id}Round${round}Table${sessionTable.table}", s"Round ${round} Table ${sessionTable.table}") {
 
         val tp = TablePage.current(EnterOrSelectNames)
 

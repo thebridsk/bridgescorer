@@ -15,12 +15,13 @@ import com.github.thebridsk.bridge.clientcommon.rest2.AjaxCall
 import scala.concurrent.duration.Duration
 import com.github.thebridsk.bridge.data.BoardSetsAndMovements
 import com.github.thebridsk.bridge.data.rest.JsonSupport
+import com.github.thebridsk.bridge.clientcommon.demo.BridgeDemo
 
 object BoardSetController {
   val logger = Logger("bridge.BoardSetController")
 
   def getBoardSets(): Unit = {
-    if (!Bridge.isDemo) {
+    if (!BridgeDemo.isDemo) {
       RestClientBoardSet.list().recordFailure().foreach( items => {
         BridgeDispatcher.updateAllBoardSet(items.toList)
       })
@@ -30,7 +31,7 @@ object BoardSetController {
   }
 
   def getBoardSet( name: String): Unit = {
-    if (!Bridge.isDemo) {
+    if (!BridgeDemo.isDemo) {
       RestClientBoardSet.get(name).recordFailure().foreach( item => {
         BridgeDispatcher.updateBoardSet(item)
       })
@@ -40,7 +41,7 @@ object BoardSetController {
   }
 
   def getMovement(): Unit = {
-    if (!Bridge.isDemo) {
+    if (!BridgeDemo.isDemo) {
       RestClientMovement.list().recordFailure().foreach( items => {
         BridgeDispatcher.updateAllMovement(items.toList)
       })
@@ -50,7 +51,7 @@ object BoardSetController {
   }
 
   def getMovement( name: String): Unit = {
-    if (!Bridge.isDemo) {
+    if (!BridgeDemo.isDemo) {
       RestClientMovement.get(name).recordFailure().foreach( item => {
         BridgeDispatcher.updateMovement(item)
       })
@@ -60,7 +61,7 @@ object BoardSetController {
   }
 
   def getBoardsetsAndMovements(): Unit = {
-    if (!Bridge.isDemo) {
+    if (!BridgeDemo.isDemo) {
       RestClientBoardSetsAndMovements.list().recordFailure().foreach( items => {
         items.foreach { bm =>
           BridgeDispatcher.updateAllBoardSetAndMovements(bm.boardsets,bm.movements)

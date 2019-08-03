@@ -72,6 +72,8 @@ object Init {
           !traceMsg.logger.startsWith("comm.")
         }
       }
+      val level = BridgeDemo.demoLogLevel
+      if (level != "") setLoggerLevel("[root]",level)
     }
   }
   lazy val logger = Logger("comm.logger.Init")
@@ -87,6 +89,15 @@ object Init {
   val defaultLoggerForRemoteHandlers = "bridge"
 
   def noop() = {}
+
+  def setLoggerLevel(name: String, level: String) = {
+    val n = if (name == "[root]") "" else name
+    Level.toLevel(level) match {
+      case Some(l) => Logger(n).setLevel(l)
+      case None =>
+        logger.warning("Unknown logger level: %s=%s", name,level)
+    }
+  }
 
   def apply( f: () => Unit = noop _, controller: InitController = new InitController {}): Unit = {
     import scala.concurrent.ExecutionContext.Implicits.global
@@ -141,15 +152,8 @@ object Init {
   def processLoggers(spec: List[String]) = {
     spec.foreach(s => {
       s match {
-        case loggerSpec(name, level) =>
-          val n = if (name == "[root]") "" else name
-          Level.toLevel(level) match {
-            case Some(l) => Logger(n).setLevel(l)
-            case None =>
-              logger.warning("Unknown logger level: %s", s)
-          }
-        case _ =>
-          logger.warning("Unknown logger specification: %s", s)
+        case loggerSpec(name, level) => setLoggerLevel(name,level)
+        case _ => logger.warning("Unknown logger specification: %s", s)
       }
     })
   }

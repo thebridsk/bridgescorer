@@ -19,6 +19,7 @@ import com.github.thebridsk.bridge.data.MatchDuplicate
 import com.github.thebridsk.bridge.client.Bridge
 import japgolly.scalajs.react.Callback
 import com.github.thebridsk.bridge.data.SystemTime
+import com.github.thebridsk.bridge.clientcommon.demo.BridgeDemo
 
 object DuplicateSummaryStore extends ChangeListenable {
   val logger = Logger("bridge.DuplicateSummaryStore")
@@ -107,7 +108,7 @@ object DuplicateSummaryStore extends ChangeListenable {
   }
 
   def updateDuplicateSummaryDemoMatch( importId: Option[String], summary: List[MatchDuplicate] ) = {
-    if (Bridge.isDemo) {
+    if (BridgeDemo.isDemo) {
 //      logger.info(s"""Update DuplicateSummaryStore from ${importId}: ${summary}""")
       if (importId == fImportId) {
         fMatchSummary = Option(summary)
@@ -120,7 +121,7 @@ object DuplicateSummaryStore extends ChangeListenable {
   }
 
   def updateDuplicateSummaryDemoMatchItem( importId: Option[String], summary: MatchDuplicate ) = {
-    if (Bridge.isDemo) {
+    if (BridgeDemo.isDemo) {
       logger.fine(s"""Update DuplicateSummaryStore from ${importId}: ${summary}""")
       if (importId == fImportId) {
         fMatchSummary = fMatchSummary.map { list =>

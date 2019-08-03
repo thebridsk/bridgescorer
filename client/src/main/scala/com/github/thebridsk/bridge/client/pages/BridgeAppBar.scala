@@ -35,6 +35,7 @@ import com.github.thebridsk.materialui.MuiButton
 import com.github.thebridsk.bridge.clientcommon.pages.GotoPage
 import com.github.thebridsk.bridge.clientcommon.pages.TitleSuits
 import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles._
+import com.github.thebridsk.bridge.clientcommon.demo.BridgeDemo
 
 /**
   * A simple AppBar for the Bridge client.
@@ -213,7 +214,7 @@ object BridgeAppBarInternal {
       )
 
       val toolbarFront: List[CtorType.ChildArg] = {
-        val demo = if (Bridge.isDemo) {
+        val demo = if (BridgeDemo.isDemo) {
           List[TagMod](
             MuiTypography(
               variant = TextVariant.h6,

@@ -36,6 +36,7 @@ import com.github.thebridsk.bridge.client.bridge.store.ChicagoSummaryStore
 import scala.util.Success
 import scala.util.Failure
 import com.github.thebridsk.bridge.data.websocket.Protocol
+import com.github.thebridsk.bridge.clientcommon.demo.BridgeDemo
 
 object ChicagoController {
   val logger = Logger("bridge.ChicagoController")
@@ -67,7 +68,7 @@ object ChicagoController {
 
   def createMatch() = {
     logger.info("Sending create chicago to server")
-    if (Bridge.isDemo) {
+    if (BridgeDemo.isDemo) {
       currentId = currentId + 1
       val chi = MatchChicago(s"C$currentId",List("","","",""),Nil,0,false)
       new CreateResultMatchChicago(null, Future(chi))
@@ -104,7 +105,7 @@ object ChicagoController {
   }
 
   def updateServer( chi: MatchChicago ) = {
-    if (!Bridge.isDemo) {
+    if (!BridgeDemo.isDemo) {
       RestClientChicago.update(chi.id, chi).recordFailure().foreach( updated => {
         logger.fine(s"PageChicago: Updated chicago game: ${chi.id}")
         // the BridgeDispatcher.updateChicago causes a timing problem.
@@ -135,7 +136,7 @@ object ChicagoController {
     logger.finer("Sending duplicatesummaries list request to server")
     import scala.scalajs.js.timers._
     setTimeout(1) { // note the absence of () =>
-      if (Bridge.isDemo) {
+      if (BridgeDemo.isDemo) {
         val x = ChicagoSummaryStore.getChicagoSummary().getOrElse(Array())
         BridgeDispatcher.updateChicagoSummary(None, x)
       } else {
@@ -233,7 +234,7 @@ object ChicagoController {
 
   def deleteChicago( id: Id.MatchChicago) = {
     BridgeDispatcher.deleteChicago(id)
-    if (!Bridge.isDemo) RestClientChicago.delete(id).recordFailure()
+    if (!BridgeDemo.isDemo) RestClientChicago.delete(id).recordFailure()
   }
 
 

@@ -14,6 +14,7 @@ import com.github.thebridsk.bridge.data.RubberHand
 import com.github.thebridsk.bridge.client.bridge.action.RubberBridgeAction
 import com.github.thebridsk.bridge.clientcommon.logger.Alerter
 import com.github.thebridsk.bridge.client.Bridge
+import com.github.thebridsk.bridge.clientcommon.demo.BridgeDemo
 
 object RubberStore extends ChangeListenable {
   val logger = Logger("bridge.RubberStore")
@@ -64,7 +65,7 @@ object RubberStore extends ChangeListenable {
             logger.info("RubberStore."+funName+": updating rubberstore id="+rub.id)
             callback.foreach( cb=>cb(rubber.get) )
             notifyChange()
-            if (Bridge.isDemo) {
+            if (BridgeDemo.isDemo) {
               scalajs.js.timers.setTimeout(1) {
                 RubberListStore.dispatch(ActionUpdateRubber(rubber.get))
               }
