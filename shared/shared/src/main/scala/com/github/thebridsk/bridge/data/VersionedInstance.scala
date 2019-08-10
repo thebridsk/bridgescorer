@@ -6,6 +6,8 @@ package com.github.thebridsk.bridge.data
   */
 trait VersionedInstance[CurrentVersion, ThisVersion, VID] {
 
+  def created: SystemTime.Timestamp
+
   def id: VID
 
   def setId(

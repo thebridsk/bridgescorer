@@ -92,6 +92,8 @@ object BldBridge {
       aggregate in integrationtests in Distribution := false,
       aggregate in mypublish in Distribution := false,
       aggregate in mypublishcopy in Distribution := false,
+      aggregate in server := false,
+      aggregate in serverlogs := false,
       EclipseKeys.classpathTransformerFactories ++= Seq(
         addDependentRunClassFolder("target/web/classes/main")
 //      removeRelativePath("target\\scala-"+verScalaMajorMinor+"\\resource_managed\\main")
@@ -100,6 +102,12 @@ object BldBridge {
 //    mainClass in Compile := Some("com.github.thebridsk.bridge.server.Server"),
       mainClass in (Compile, run) := Some("com.github.thebridsk.bridge.server.Server"),
       mainClass in (Compile, packageBin) := Some("com.github.thebridsk.bridge.server.Server"),
+      server := {
+        (run in Compile).toTask(""" --logfile "server/logs/serverhelp.sbt.%d.%u.log" start --store server/store""").value
+      },
+      serverlogs := {
+        (run in Compile).toTask(""" --logconsolelevel=ALL start --store server/store""").value
+      },
       Compile / run / fork := true,
       testOptions in Test := Seq(),
       test in assembly := {}, // test in (`bridgescorer-server`, Test),
@@ -501,6 +509,8 @@ object BldBridge {
         .sequential(
           MyNpm.checkForNpmUpdates in Compile in BldBridgeClient.`bridgescorer-client`,
           MyNpm.checkForNpmUpdates in Test in BldBridgeClient.`bridgescorer-client`,
+          MyNpm.checkForNpmUpdates in Compile in BldBridgeClientApi.`bridgescorer-clientapi`,
+//          MyNpm.checkForNpmUpdates in Test in BldBridgeClientApi.`bridgescorer-clientapi`,
           //  MyNpm.checkForNpmUpdates.all(bridgescorerAllProjects),
           dependencyUpdates.all(bridgescorerAllProjects),
           dependencyUpdates

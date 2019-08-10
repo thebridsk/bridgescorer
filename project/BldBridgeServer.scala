@@ -66,6 +66,12 @@ object BldBridgeServer {
           "target\\scala-" + verScalaMajorMinor + "\\resource_managed\\main"
         )
       ),
+      server := {
+        (run in Compile).toTask(""" --logfile "logs/server.sbt.%d.%u.log" start --store store""").value
+      },
+      serverlogs := {
+        (run in Compile).toTask(""" --logconsolelevel=ALL start --store store""").value
+      },
       // shebang the jar file.  7z and jar will no longer see it as a valid zip file.
       //    assemblyOption in assembly := (assemblyOption in assembly).value.copy(prependShellScript = Some(defaultShellScript)),
       //    assemblyJarName in assembly := s"${name.value}-{version.value}",

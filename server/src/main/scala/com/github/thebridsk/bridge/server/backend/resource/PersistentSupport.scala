@@ -6,6 +6,20 @@ import com.github.thebridsk.bridge.data.VersionedInstance
 import scala.concurrent.Future
 import com.github.thebridsk.bridge.data.Id
 
+
+/**
+ * @constructor
+ * @param id
+ * @param timestamp A timestamp with the format "yyyy-MM-dd-HH-mm-ss"
+ * @param persistentMeta A string defined by the persistentSupport instantance
+ */
+case class StoreIdMeta[VId]( id: VId, timestamp: String, persistentMeta: String, persistentMeta2: String )
+
+object StoreIdMeta {
+
+  val timestampFormat = "yyyy-MM-dd-HH-mm-ss"
+}
+
 abstract class PersistentSupport[
     VId,
     VType <: VersionedInstance[VType, VType, VId]
@@ -22,6 +36,11 @@ abstract class PersistentSupport[
     * Get all the IDs from persistent storage
     */
   def getAllIdsFromPersistent(): Set[VId]
+
+  /**
+    * Get all the IDs from persistent storage
+    */
+  def getOrderedListOfIds(): Seq[StoreIdMeta[VId]] = Nil
 
   /**
     * Returns the number of matches in this store

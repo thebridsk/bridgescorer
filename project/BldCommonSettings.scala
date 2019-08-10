@@ -198,6 +198,9 @@ object BldCommonSettings {
   val hugosetupWithTest = taskKey[Unit]("Setup to run Hugo")
   val helptask = taskKey[Seq[(java.io.File, String)]]("Identifies help resources")
 
+  val server = taskKey[Unit]("Run server with default store and logging to server/logs directory")
+  val serverlogs = taskKey[Unit]("Run server with default store and logs to console")
+
   val patternSourceDir = """^[0-9a-f]{20}$""".r
   val patternFastopt = """-fastopt[.-]|-jsconsole[.-]""".r
 

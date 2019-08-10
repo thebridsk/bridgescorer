@@ -74,6 +74,9 @@ case class BoardSetV1(
 
   def readyForWrite() = this
 
+  @Schema(hidden = true)
+  def created: SystemTime.Timestamp = 0
+
 }
 
 @Schema(
