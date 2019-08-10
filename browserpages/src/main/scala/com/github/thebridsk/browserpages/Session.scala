@@ -122,27 +122,20 @@ class Session( name: String = "default" ) extends WebDriver {
     val options = new ChromeOptions
     // http://peter.sh/experiments/chromium-command-line-switches/
     // and "chromedriver --help"
-    if (!debug) options.addArguments("--silent" )
-    else options.addArguments(s"""--log-path=${logfile.toString}""", "--verbose")
-//    options.addArguments("--enable-automation=false")
-    options.addArguments("--disable-infobars")
+    if (!debug) options.addArguments("silent" )
+    else options.addArguments(s"""log-path=${logfile.toString}""", "verbose")
+//    options.addArguments("enable-automation=false")
+    options.addArguments("disable-infobars")
     if (headless) {
-      options.addArguments("--headless")
-      options.addArguments("--window-size=1920,1080")
+      options.addArguments("headless")
+      options.addArguments("window-size=1920,1080")
     }
-//    options.AddArguments("--no-sandbox")
-    options.addArguments("--disable-extensions")
-//    options.addArguments("--whitelisted-ips=127.0.0.1")
+//    options.AddArguments("no-sandbox")
+    options.addArguments("disable-extensions")
+    options.addArguments("whitelisted-ips=127.0.0.1")
     val driver = new ChromeDriver(options);
     driver
   }
-
-  // ChromeOptions options = new ChromeOptions();
-  // options.AddArgument("--headless");
-  // options.AddArgument("--whitelisted-ips");
-  // options.AddArgument("--no-sandbox");
-  // options.AddArgument("--disable-extensions");
-  // this.driver = new ChromeDriver(options);
 
   private def chromeCurrent( headless: Boolean ) = {
     // does not work
@@ -170,12 +163,12 @@ class Session( name: String = "default" ) extends WebDriver {
       chromeDriverService = Some(service)
       service.start()
       val options = new ChromeOptions
-      options.addArguments("--disable-infobars")
+      options.addArguments("disable-infobars")
       if (headless) {
-        options.addArguments("--headless")
-        options.addArguments("--window-size=1920,1080")
+        options.addArguments("headless")
+        options.addArguments("window-size=1920,1080")
       }
-      options.addArguments("--disable-extensions")
+      options.addArguments("disable-extensions")
       testlog.fine("Starting remote driver for chrome")
       val dr = new ChromeDriver(service, options)
       testlog.fine("Started remote driver for chrome")
