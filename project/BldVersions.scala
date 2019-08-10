@@ -2,7 +2,7 @@
 
 object BldVersion {
 
-  lazy val verScalaVersion = "2.12.8"
+  lazy val verScalaVersion = "2.12.9"
   lazy val verScalaMajorMinor = {
     val i = verScalaVersion.indexOf('.')
     val i2 = verScalaVersion.indexOf('.', i+1)
