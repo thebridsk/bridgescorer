@@ -132,6 +132,9 @@ case class MovementV1(
       .getOrElse(Nil)
   }
 
+  @Schema(hidden = true)
+  def created: SystemTime.Timestamp = 0
+
 }
 
 case class BoardPlayed(board: Int, table: Int, round: Int, ns: Int, ew: Int)

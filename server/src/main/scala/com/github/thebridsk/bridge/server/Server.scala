@@ -156,11 +156,10 @@ object Server extends Main {
   addSubcommand(DataStoreCommands)
 
   footer(s"""
-To get help on subcommands, use the command:
-  ${cmdName} cmd --help
-
-
-""")
+            |To get help on subcommands, use the command:
+            |  ${cmdName} cmd --help
+            |
+            |""".stripMargin)
 
   def execute(): Int = {
     logger.severe("Unknown options specified")
