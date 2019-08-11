@@ -226,6 +226,19 @@ abstract class Store[VId, VType <: VersionedInstance[VType, VType, VId]](
   }
 
   /**
+   * Read all the Ids in the collection
+   */
+  def getAllIds()(
+    implicit
+    pos: SourcePosition
+  ): Future[Result[Set[VId]]] = {
+    Future {
+      val ids = persistent.getAllIdsFromPersistent()
+      Result(ids)
+    }
+  }
+
+  /**
     * Read all the values in the collection
     * @param pos a [[SourcePosition]] object to identify the caller.
     * @return a future to the resources

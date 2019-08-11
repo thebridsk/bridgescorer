@@ -51,6 +51,8 @@ import com.github.thebridsk.bridge.data.SystemTime.Timestamp
 import scala.reflect.io.Directory
 import scala.reflect.io.Path
 import scala.concurrent.ExecutionContext
+import com.github.thebridsk.bridge.data.duplicate.stats.PlayerPlaces
+import com.github.thebridsk.bridge.data.duplicate.stats.CalculatePlayerPlaces
 
 /**
   * The backend trait for our service.
@@ -388,6 +390,36 @@ abstract class BridgeService(val id: String) {
         Result((mds ::: mdrs).sortWith((one, two) => one.created > two.created))
       }
     }
+  }
+
+  def getDuplicatePlaceResults( scoringMethod: CalculatePlayerPlaces.ScoringMethod ): Future[Result[PlayerPlaces]] = {
+    val fmds = duplicates.readAll().map { fmds =>
+      fmds match {
+        case Right(m) =>
+          m.values.map(md => DuplicateSummary.create(md)).toList
+        case Left(r) =>
+          Nil
+      }
+    }
+    val fmdrs = duplicateresults.readAll().map { fmds =>
+      fmds match {
+        case Right(m) =>
+          m.values.map(md => DuplicateSummary.create(md)).toList
+        case Left(r) =>
+          Nil
+      }
+    }
+
+    fmds.flatMap { mds =>
+      fmdrs.map { mdrs =>
+        Result {
+          val calc = new CalculatePlayerPlaces(scoringMethod)
+          (mds ::: mdrs).map(d=>calc.add(d))
+          calc.finish
+        }
+      }
+    }
+
   }
 
   /**
