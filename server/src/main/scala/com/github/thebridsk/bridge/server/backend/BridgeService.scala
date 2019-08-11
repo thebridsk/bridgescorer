@@ -392,7 +392,7 @@ abstract class BridgeService(val id: String) {
     }
   }
 
-  def getDuplicatePlaceResults( scoringMethod: CalculatePlayerPlaces.ScoringMethod ): Future[Result[PlayerPlaces]] = {
+  def getDuplicatePlaceResults( scoringMethod: CalculatePlayerPlaces.ScoringMethod = CalculatePlayerPlaces.AsPlayedScoring ): Future[Result[PlayerPlaces]] = {
     val fmds = duplicates.readAll().map { fmds =>
       fmds match {
         case Right(m) =>

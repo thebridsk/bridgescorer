@@ -66,6 +66,7 @@ trait Service extends ImportExport {
     classOf[RestDuplicate],
     classOf[RestDuplicateResult],
     classOf[RestDuplicateSummary],
+    classOf[RestDuplicatePlaces],
     classOf[RestNestedBoard],
     classOf[RestNestedHand],
     classOf[RestNestedTeam],
@@ -124,6 +125,13 @@ trait Service extends ImportExport {
     implicit override lazy val restService = hasActorSystem.restService
   }
   val restDuplicateSummary = new RestDuplicateSummary {
+    implicit override lazy val actorSystem: ActorSystem =
+      hasActorSystem.actorSystem
+    implicit override lazy val materializer: ActorMaterializer =
+      hasActorSystem.materializer
+    implicit override lazy val restService = hasActorSystem.restService
+  }
+  val restDuplicatePlaces = new RestDuplicatePlaces {
     implicit override lazy val actorSystem: ActorSystem =
       hasActorSystem.actorSystem
     implicit override lazy val materializer: ActorMaterializer =
@@ -224,7 +232,8 @@ trait Service extends ImportExport {
               restLoggerConfig.route ~
                 restBoardSet.route ~ restMovement.route ~ restChicago.route ~
                 restDuplicate.route ~ restDuplicateResult.route ~ restDuplicateSummary.route ~
-                restNames.route ~ restRubber.route ~ restSuggestion.route // ~ restMyLogging.route
+                restNames.route ~ restRubber.route ~ restSuggestion.route ~
+                restDuplicatePlaces.route // ~ restMyLogging.route
             }
           }
         } ~

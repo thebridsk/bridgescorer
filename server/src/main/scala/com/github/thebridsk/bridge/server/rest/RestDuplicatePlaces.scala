@@ -28,6 +28,7 @@ import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.tags.Tags
 import io.swagger.v3.oas.annotations.tags.Tag
 import javax.ws.rs.GET
+import com.github.thebridsk.bridge.data.duplicate.stats.PlayerPlaces
 
 /**
   * Rest API implementation for the board resource.
@@ -35,15 +36,15 @@ import javax.ws.rs.GET
   * The REST API and all the methods are documented using
   * swagger annotations.
   */
-@Path("/rest/duplicatesummaries")
+@Path("/rest/duplicateplaces")
 @Tags(Array(new Tag(name = "Duplicate")))
-trait RestDuplicateSummary extends HasActorSystem {
+trait RestDuplicatePlaces extends HasActorSystem {
 
-  private lazy val log = Logging(actorSystem, classOf[RestDuplicateSummary])
+  private lazy val log = Logging(actorSystem, classOf[RestDuplicatePlaces])
 
   val restService: BridgeService
 
-  val resName = "duplicatesummaries"
+  val resName = "duplicateplaces"
 
   import UtilsPlayJson._
 
@@ -52,38 +53,34 @@ trait RestDuplicateSummary extends HasActorSystem {
     */
   val route = pathPrefix(resName) {
 //    logRequest("route", DebugLevel) {
-    getDuplicateSummaries
+    getDuplicatePlaces
 //      }
   }
 
   @GET
   @Operation(
-    summary = "Get all duplicate matches",
-    description = "Returns a list of matches.",
-    operationId = "getDuplicateSummaries",
+    summary = "Get all player places for duplicate matches",
+    description = "Returns the player places.",
+    operationId = "getDuplicatePlaces",
     responses = Array(
       new ApiResponse(
         responseCode = "200",
-        description = "A list of match summaries, as a JSON array",
+        description = "The player places",
         content = Array(
           new Content(
             mediaType = "application/json",
-            array = new ArraySchema(
-              minItems = 0,
-              uniqueItems = true,
-              schema = new Schema(implementation = classOf[DuplicateSummary])
-            )
+            schema = new Schema(implementation = classOf[PlayerPlaces])
           )
         )
       )
     )
   )
-  def xxxgetDuplicateSummaries() = {}
-  val getDuplicateSummaries =
-//    logRequest("routeDuplicateSummaries", DebugLevel ) { logResult("routeDuplicateSummaries", DebugLevel ) {
+  def xxxgetDuplicatePlaces() = {}
+  val getDuplicatePlaces =
+//    logRequest("getDuplicatePlaces", DebugLevel ) { logResult("getDuplicatePlaces", DebugLevel ) {
     get {
       pathEndOrSingleSlash {
-        resourceList(restService.getDuplicateSummaries())
+        resource(restService.getDuplicatePlaceResults())
       }
     }
 //    }}

@@ -18,6 +18,8 @@ import com.github.thebridsk.bridge.data.duplicate.stats.PlayerComparisonStats
 import com.github.thebridsk.bridge.data.duplicate.stats.PlayersOpponentsStats
 import com.github.thebridsk.bridge.data.duplicate.stats.PlayerOpponentStat
 import com.github.thebridsk.bridge.data.duplicate.stats.PlayerOpponentsStat
+import com.github.thebridsk.bridge.data.duplicate.stats.PlayerPlace
+import com.github.thebridsk.bridge.data.duplicate.stats.PlayerPlaces
 
 //import com.github.thebridsk.bridge.data.websocket.DuplexProtocol.{ LogEntry => DpLogEntry, _ }
 //import com.github.thebridsk.bridge.data.websocket.Protocol._
@@ -86,6 +88,8 @@ trait JsonSupport {
   implicit val suggestionFormat = Json.format[Suggestion]
   implicit val duplicateNeverPairFormat = Json.format[NeverPair]
   implicit val duplicateSuggestionsFormat = Json.format[DuplicateSuggestions]
+  implicit val duplicatePlayerPlaceFormat = Json.format[PlayerPlace]
+  implicit val duplicatePlayerPlacesFormat = Json.format[PlayerPlaces]
 
   implicit val CounterStatFormat = Json.format[CounterStat]
   implicit val ContractStatFormat = Json.format[ContractStat]
