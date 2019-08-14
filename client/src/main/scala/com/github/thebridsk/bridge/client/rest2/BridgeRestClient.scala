@@ -23,6 +23,7 @@ import com.github.thebridsk.bridge.data.websocket.DuplexProtocol.LogEntryV2
 import com.github.thebridsk.bridge.data.BoardSetsAndMovementsV1
 import com.github.thebridsk.bridge.data.BoardSetsAndMovements
 import com.github.thebridsk.bridge.data.MatchDuplicateResult
+import com.github.thebridsk.bridge.data.duplicate.stats.PlayerPlaces
 
 /**
  * @author werewolf
@@ -130,3 +131,5 @@ object RestClientServerVersion extends RestClient[ServerVersion]("/v1/rest/serve
 object RestClientDuplicateSuggestions extends RestClient[DuplicateSuggestions]("/v1/rest/suggestions")
 
 object RestClientTestBoardsetsAndMovements extends RestClient[BoardSetsAndMovements]("/public/test/boardsetsAndMovements.json")
+
+object RestClientDuplicatePlayerPlaces extends RestClient[PlayerPlaces]("/v1/rest/duplicateplaces")

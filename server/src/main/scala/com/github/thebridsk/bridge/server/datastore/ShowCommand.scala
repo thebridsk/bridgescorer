@@ -6,6 +6,7 @@ import org.rogach.scallop._
 import scala.concurrent.duration.Duration
 import scala.reflect.io.Path
 import com.github.thebridsk.bridge.server.backend.BridgeServiceFileStore
+import scala.util.Success
 import scala.concurrent.Future
 import scala.concurrent.Await
 import scala.concurrent.duration._
@@ -45,6 +46,7 @@ Options:""")
   addSubcommand(ShowPartnersOfCommand)
   addSubcommand(ShowTeamDeclarerCommand)
   addSubcommand(DuplicateStatsCommand)
+  addSubcommand(ShowPlayerPlaceCommand)
 
   shortSubcommandsHelp(true)
 
@@ -400,4 +402,95 @@ Options:""")
 
     0
   }
+}
+
+object ShowPlayerPlaceCommand extends Subcommand("place") {
+  import DataStoreCommands.optionStore
+  import ShowCommand.log
+
+  import com.github.thebridsk.utilities.main.Converters._
+
+  descr("show the number of times team was declarer in match")
+
+  banner(s"""
+show the number of times team was declarer in match
+
+Syntax:
+  ${DataStoreCommands.cmdName} show declarer
+Options:""")
+
+  val paramScoringMethod = trailArg[String](
+    name = "scoringMethod",
+    descr = "The scoring method, if omitted the played scoring method is used.  Valid values: mp, imp.",
+    required = false,
+    validate = a => a=="mp"||a=="imp"
+  )
+
+
+//  footer(s""" """)
+
+  import com.github.thebridsk.bridge.data.duplicate.stats.CalculatePlayerPlaces
+
+  def await[T](fut: Future[T]) = Await.result(fut, 30.seconds)
+
+  def executeSubcommand(): Int = {
+    val storedir = optionStore().toDirectory
+    log.info(s"Using datastore ${storedir}")
+    val datastore = new BridgeServiceFileStore(storedir)
+
+    val sm = paramScoringMethod.toOption match {
+      case Some("mp") =>
+        CalculatePlayerPlaces.MPScoring
+      case Some("imp") =>
+        CalculatePlayerPlaces.IMPScoring
+      case _ =>
+        CalculatePlayerPlaces.AsPlayedScoring
+    }
+
+    val fut = datastore.getDuplicatePlaceResults(sm)
+
+    await(fut)
+
+    val otrlp = fut.value
+    otrlp match {
+      case Some(Success(rlp)) =>
+        rlp match {
+          case Right(pp) =>
+            val lp = pp.players
+            var sep = false
+
+            log.info( """Name         | Played  | 1       | 1,2     | 1,2,3   | 1,2,3,4 |   2     |   2,3   |   2,3,4 |     3   |     3,4 |       4 |""")
+            val div = """----------------------------------------------------------------------------------------------------------------------------"""
+            log.info(div)
+
+            lp.foreach { p =>
+              val b = new StringBuilder
+              b.append( f"""${p.name}%12s | ${p.total}%7d |""" )
+              val il = p.place.length
+              for (i <- 0 until 4) {
+                val jl = if (i<il) p.place(i).length else 0
+                for (j <- 0 until (4-i)) {
+                  if (i<il && j<jl) {
+                    b.append( f""" ${p.place(i)(j)}%7d |""" )
+                  } else {
+                    b.append( "         |")
+                  }
+                }
+              }
+              log.info( b.toString )
+              if (sep) log.info(div)
+              sep = !sep
+            }
+            // Thread.sleep(2000L)
+            0
+          case Left(err) =>
+            log.severe( s"""Error get place results: ${err._2.msg}""")
+            1
+        }
+      case _ =>
+        log.severe("Unable to get player place results")
+        1
+    }
+  }
+
 }

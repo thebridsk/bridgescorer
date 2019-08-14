@@ -1004,3 +1004,35 @@
 .dupDivPlayerOpponentGrid .withTooltipBox .tooltipBody li > svg {
   display: inline;
 }
+
+.dupViewPlayerPlaces {
+  display: block;
+}
+
+.dupViewPlayerPlaces table {
+  border: 1px solid black;
+  border-spacing: 0px;
+}
+
+.dupViewPlayerPlaces table td {
+  border: 1px solid black;
+  text-align: center;
+}
+
+.dupViewPlayerPlaces table td > div {
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: center;
+  align-items: center;
+  align-content: center;
+}
+.dupViewPlayerPlaces .tooltipContent .piechart {
+  display: inline;
+}
+.dupViewPlayerPlaces table > caption {
+  font-size: x-large;
+  white-space: nowrap;
+  border: 2px solid black;
+  border-bottom: 0px solid black;
+  text-align: center;
+}

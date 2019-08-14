@@ -2,6 +2,7 @@ package com.github.thebridsk.bridge.client.pages.duplicate
 
 
 import scala.scalajs.js
+import scala.util.Success
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.extra.router.RouterCtl
@@ -27,6 +28,7 @@ import com.github.thebridsk.bridge.clientcommon.react.PopupOkCancel
 import com.github.thebridsk.materialui.MuiTypography
 import com.github.thebridsk.materialui.TextVariant
 import com.github.thebridsk.materialui.TextColor
+import com.github.thebridsk.bridge.clientcommon.rest2.RestClientDuplicatePlayerPlaces
 
 /**
  * Shows a summary page of all duplicate matches from the database.
@@ -85,6 +87,8 @@ object PageStatsInternal {
                     showPlayerOpponentsStatsTable: Boolean = false,
                     showPlayerOpponentsPairsStatsTable: Boolean = false,
                     showPlayerOpponentsStatsGraph: Boolean = false,
+
+                    showPlayerPlacesGraph: Boolean = false,
 
                     msg: Option[TagMod] = None
                   )
@@ -179,13 +183,44 @@ object PageStatsInternal {
       )
     }
 
+    val toggleShowPlayerPlaces = scope.modState { s =>
+      getPlayerPlaces(
+          s.copy( showPlayerPlacesGraph = !s.showPlayerPlacesGraph),
+          playerPlacesStats = s.stats.map( cs => cs.playerPlacesStats.isEmpty ).getOrElse(true),
+      )
+    }
+
+    def getPlayerPlaces(
+      s: State,
+      playerPlacesStats: Boolean = false
+    ) = {
+      if ( s.stats.isEmpty ||
+        (playerPlacesStats && s.stats.get.playerPlacesStats.isEmpty)
+      ) {
+        RestClientDuplicatePlayerPlaces.get("").recordFailure().onComplete { tpp =>
+          scope.withEffectsImpure.modState { ss =>
+            tpp match {
+              case Success(ppStats) =>
+                val ds = DuplicateStats(None,None,None,None,None,Some(ppStats))
+                ss.copy(stats = ss.stats.map( sss => sss.update(ds) ).orElse(Option(ds)))
+              case _ =>
+                ss.copy(msg = Some(TagMod("Error getting stats")))
+            }
+          }
+        }
+        s.copy( gotStats=true )
+      } else {
+        s
+      }
+    }
+
     def getDuplicateStats(
         s: State,
         playerStats: Boolean = false,
         contractStats: Boolean = false,
         playerDoubledStats: Boolean = false,
         comparisonStats: Boolean = false,
-        playersOpponentsStats: Boolean = false
+        playersOpponentsStats: Boolean = false,
     ) = {
       if ( s.stats.isEmpty ||
            (playerStats && s.stats.get.playerStats.isEmpty) ||
@@ -194,7 +229,12 @@ object PageStatsInternal {
            (comparisonStats && s.stats.get.comparisonStats.isEmpty) ||
            (playersOpponentsStats && s.stats.get.playersOpponentsStats.isEmpty)
       ) {
-        QueryDuplicateStats.getDuplicateStats(playerStats,contractStats,playerDoubledStats,comparisonStats,playersOpponentsStats).map { result =>
+        QueryDuplicateStats.getDuplicateStats(
+            playerStats,contractStats,
+            playerDoubledStats,
+            comparisonStats,
+            playersOpponentsStats
+        ).map { result =>
           scope.withEffectsImpure.modState { s =>
             result match {
               case Right(stats) =>
@@ -314,6 +354,11 @@ object PageStatsInternal {
                          BaseStyles.highlight(selected = state.showPeopleTable ),
                          ^.onClick-->toggleShowPeopleTable
                        ),
+              AppButton( "ShowPlayerPlaces",
+                         "Show Player Places",
+                         BaseStyles.highlight(selected = state.showPlayerPlacesGraph ),
+                         ^.onClick-->toggleShowPlayerPlaces
+                       ),
               AppButton( "ShowPairsResults",
                          "Show Pairs Results",
                          BaseStyles.highlight(selected = state.showPairs ),
@@ -403,6 +448,7 @@ object PageStatsInternal {
           } else {
             EmptyVdom
           },
+          state.showPlayerPlacesGraph ?= ViewPlayerPlacesGraph( state.stats.flatMap( s => s.playerPlacesStats) ),
           state.showPeopleTable ?= ViewPairsTable( state.filter, false ),
           state.showPairs ?= ViewPairsTable(state.filter, true ),
           state.showPeopleTableDetail ?= ViewPairsMadeDownTable( state.filter, false ),

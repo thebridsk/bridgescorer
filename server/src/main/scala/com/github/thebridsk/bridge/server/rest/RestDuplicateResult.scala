@@ -60,7 +60,7 @@ import javax.ws.rs.GET
 @Tags(Array(new Tag(name = "Duplicate")))
 trait RestDuplicateResult extends HasActorSystem {
 
-  private lazy val log = Logging(actorSystem, classOf[RestDuplicate])
+  private lazy val log = Logging(actorSystem, classOf[RestDuplicateResult])
 
   /**
     * The bridge service backend

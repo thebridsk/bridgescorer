@@ -177,16 +177,23 @@ object PieChartWithTooltip {
   )
 
   /**
-   * @param histogram
-   * @param title
+   * Component that shows a pie chart.  When the mouse goes over the piechart, a tooltip is shown
+   * with the piechart in a standard size and a legend.
+   *
+   * @param histogram a list of histogram.  The entry is a section that is a tuple2 with a name and histogram.
+   *                  The legend will have totals for each section, and a total for the entire histogram.
+   * @param title     The title that is shown in the tooltip that also shows the legend.
    * @param legendtitle an either legend title.
    *                    If Left(true), then "Total: <n>" is used.
    *                    If Left(false) then no title will be used.
    *                    If Right(title) then title will be used.
-   * @param util
-   * @param size
-   * @param sizeInLegend
-   * @param minSize
+   * @param util      a LegendUtil object used to obtained the TagMod values that are put into the pie chart.
+   * @param size      The size of the piechart on the page
+   * @param sizeInLegend the size of the piechart in the legend in the tooltip
+   * @param minSize   The minimum height of the element containing the pie chart
+   *
+   * @param N the type for the name.  This is the type of the first entry in the tuple2 of the histogram.
+   * @param V the type for the value.
    */
   def apply[N,V](
       histogram: List[(String,List[(N,V)])],
