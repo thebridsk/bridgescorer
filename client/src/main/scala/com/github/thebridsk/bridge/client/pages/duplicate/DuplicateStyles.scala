@@ -44,6 +44,8 @@ class DuplicateStyles {
 
   val viewContractResults = cls("dupViewContractResults")
 
+  val viewPlayerPlaces = cls("dupViewPlayerPlaces")
+
   val divNewDuplicate = cls("dupDivNewDuplicate")
 
   val divSelectMatch = cls("dupDivSelectMatch")

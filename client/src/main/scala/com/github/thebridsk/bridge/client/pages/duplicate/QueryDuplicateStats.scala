@@ -8,6 +8,9 @@ import play.api.libs.json.JsSuccess
 import play.api.libs.json.JsError
 import com.github.thebridsk.utilities.logging.Logger
 import com.github.thebridsk.bridge.data.rest.JsonSupport
+import com.github.thebridsk.bridge.clientcommon.rest2.Result
+import com.github.thebridsk.bridge.clientcommon.rest2.RestClientDuplicatePlayerPlaces
+import com.github.thebridsk.bridge.data.duplicate.stats.PlayerPlaces
 
 object QueryDuplicateStats {
   import JsonSupport._
@@ -125,7 +128,7 @@ object QueryDuplicateStats {
       contractStats: Boolean = false,
       playerDoubledStats: Boolean = false,
       comparisonStats: Boolean = false,
-      playersOpponentsStats: Boolean = false
+      playersOpponentsStats: Boolean = false,
   ) = {
     val query =
        """{
@@ -173,6 +176,10 @@ object QueryDuplicateStats {
         Left("Internal error")
     }
 
+  }
+
+  def queryPlayerStats( playerPlacesStats: Boolean = false ): Result[PlayerPlaces] = {
+    RestClientDuplicatePlayerPlaces.get("")
   }
 
 }
