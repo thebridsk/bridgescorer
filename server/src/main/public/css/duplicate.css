@@ -1009,30 +1009,53 @@
   display: block;
 }
 
-.dupViewPlayerPlaces table {
+.dupViewPlayerPlaces > table {
   border: 1px solid black;
   border-spacing: 0px;
 }
 
-.dupViewPlayerPlaces table td {
+.dupViewPlayerPlaces > table > tbody > tr > td {
+  border: 1px solid black;
+  text-align: center;
+}
+.dupViewPlayerPlaces > table > tfoot > tr > td {
   border: 1px solid black;
   text-align: center;
 }
 
-.dupViewPlayerPlaces table td > div {
+.dupViewPlayerPlaces > table >tbody > tr > td > div {
   display: flex;
   flex-flow: column nowrap;
   justify-content: center;
   align-items: center;
   align-content: center;
 }
+.dupViewPlayerPlaces > table > tfoot > tr > td > div {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: center;
+  align-items: center;
+  align-content: center;
+  font-weight: bold;
+}
 .dupViewPlayerPlaces .tooltipContent .piechart {
   display: inline;
 }
-.dupViewPlayerPlaces table > caption {
+.dupViewPlayerPlaces > table > caption {
   font-size: x-large;
   white-space: nowrap;
   border: 2px solid black;
   border-bottom: 0px solid black;
+  text-align: center;
+}
+.dupViewPlayerPlaces > table > tfoot > tr > td > div > * {
+  margin-left: 10px;
+}
+.dupViewPlayerPlaces > table table {
+  border: 1px solid black;
+  border-spacing: 0px;
+}
+.dupViewPlayerPlaces > table table td,th {
+  border: 1px solid black;
   text-align: center;
 }
