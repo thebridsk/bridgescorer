@@ -7,6 +7,7 @@ import com.github.thebridsk.bridge.data.duplicate.stats.PlayerPlaces
 import com.github.thebridsk.bridge.data.duplicate.stats.PlayerPlace
 import com.github.thebridsk.bridge.client.pages.duplicate.DuplicateStyles.dupStyles
 import com.github.thebridsk.bridge.clientcommon.color.Color
+import com.github.thebridsk.bridge.clientcommon.react.PieChart
 import com.github.thebridsk.bridge.clientcommon.react.PieChartWithTooltip
 import com.github.thebridsk.utilities.logging.Logger
 import com.github.thebridsk.bridge.clientcommon.react.PieChartWithTooltip.IntLegendUtil
@@ -70,7 +71,7 @@ object ViewPlayerPlacesGraphInternal {
    * @param maxOther the max number of other teams tied with player
    */
   def getLightness( other: Int, maxOther: Int ) = {
-    (maxLightness-minLightness)*other/maxOther + minLightness
+    (maxLightness-minLightness)*other/(maxOther-1) + minLightness
   }
 
   val sPlaces = "First"::"Second"::"Third"::"Fourth"::Nil
@@ -124,6 +125,49 @@ object ViewPlayerPlacesGraphInternal {
                 )
               }).build
 
+  //
+  val Legend = ScalaComponent.builder[(Props,IntLegendUtil[(Int,Int)],Int,Int)]("ComponentBoard.TeamRow")
+              .render_P( cprops => {
+                val (props,legendUtil,maxTeams,maxOthers) = cprops
+
+                log.fine(s"maxTeams=${maxTeams}, maxOthers=${maxOthers}")
+
+                <.table(
+                  <.thead(
+                    <.tr(
+                      <.th( ^.rowSpan:=2, "Place" ),
+                      <.th( ^.colSpan:=(maxOthers+1), "Tied With")
+                    ),
+                    <.tr(
+                      ((0 to maxOthers).map { i =>
+                        <.th( i.toString )
+                      }).toTagMod
+                    )
+                  ),
+                  <.tbody(
+                    ((0 until maxTeams).map { p =>
+                      val maxO = Math.min( maxTeams-p, maxOthers)
+                      <.tr(
+                        <.th(getPlaceString(p)),
+                        ((0 until maxTeams).map { o =>
+                          <.td(
+                            if (o < maxO) {
+                              PieChart(
+                                20,
+                                1::Nil,
+                                legendUtil.colorMap((p,o))::Nil
+                              )
+                            } else {
+                              ""
+                            }
+                          )
+                        }).toTagMod
+                      )
+                    }).toTagMod
+                  )
+                )
+
+              }).build
 
   val pieChartMaxSize = 200
   val pieChartMinSize = 5
@@ -180,13 +224,16 @@ object ViewPlayerPlacesGraphInternal {
                 <.tr(
                   <.td(
                     ^.colSpan := rowLength,
-                    ""
+                    <.div(
+                      "Legend",
+                      Legend((props,legendUtil,maxTeams,maxOther))
+                    )
                   )
                 )
               ),
               <.tbody(
                 players.map { p =>
-                  Row(props,p,rowLength,legendUtil,calcSize)
+                  Row((props,p,rowLength,legendUtil,calcSize))
                 }.toTagMod
               )
             )
