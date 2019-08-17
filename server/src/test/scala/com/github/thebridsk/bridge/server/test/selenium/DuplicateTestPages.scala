@@ -1509,10 +1509,12 @@ class DuplicateTestPages extends FlatSpec
     import SessionDirector._
 
     val ldp = ListDuplicatePage.current
-    val ldpurl = ldp.clickServerURL.validateServerURL
-    val urls = ldpurl.getServerURLs
-    urls.length mustBe 1
-    ldpurl.checkForValidServerURLs
-    ldpurl.clickServerURLOK.validate
+    ldp.withClueAndScreenShot(screenshotDir, "ShowServerURLs", "Unable to see server URLs") {
+      val ldpurl = ldp.clickServerURL.validateServerURL
+      val urls = ldpurl.getServerURLs
+      urls.length mustBe 1
+      ldpurl.checkForValidServerURLs
+      ldpurl.clickServerURLOK.validate
+    }
   }
 }

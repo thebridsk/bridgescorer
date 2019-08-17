@@ -32,7 +32,7 @@ trait ServerURLAddOn[+T <: Page[T]] {
     getServerURLs must contain theSameElementsAs l
   }
 
-  def checkForValidServerURLs(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def checkForValidServerURLs(implicit patienceConfig: PatienceConfig, pos: Position) = eventually {
     getServerURLs.map { u =>
       u match {
         case ServerURLAddOn.patternURL() =>
