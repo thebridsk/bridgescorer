@@ -213,8 +213,8 @@ object ViewPlayerPlacesGraphInternal {
 
           val rowLength = 5
 
-          val footerLeftLength: Int = rowLength/2
-          val footerRightLength = rowLength - footerLeftLength
+          val footerRightLength: Int = rowLength/2
+          val footerLeftLength = rowLength - footerRightLength
 
           val players = pps.players.grouped(rowLength)
 
@@ -230,7 +230,9 @@ object ViewPlayerPlacesGraphInternal {
                     "Shows how many times a player came in first, second, ...",
                     <.br,
                     "Also shows if they were tied with other teams.",
+                    <.br,
                     " The size of the pie chart is relative to the number of matches the player played.",
+                    <.br,
                     " The slice size is the percentage of times the player came in that place."
                   ),
                   <.td(
