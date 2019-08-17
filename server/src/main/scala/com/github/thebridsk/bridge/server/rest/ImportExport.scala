@@ -50,6 +50,9 @@ import io.swagger.v3.oas.annotations.tags.Tag
 import javax.ws.rs.GET
 import javax.ws.rs.POST
 import com.github.thebridsk.bridge.server.CollectLogs
+import com.github.thebridsk.bridge.server.backend.ImportStore.importStoreExtension
+import com.github.thebridsk.bridge.server.backend.ImportStore.importStoreDotExtension
+import com.github.thebridsk.bridge.data.ImportStoreConstants
 
 object ImportExport {
   val log = Logger[ImportExport]
@@ -93,8 +96,12 @@ trait ImportExport {
         responseCode = "200",
         description = "The exported data store as a zip file.",
         content = Array(
+          // new Content(
+          //   mediaType = "application/zip",
+          //   schema = new Schema(`type` = "string", format = "binary")
+          // ),
           new Content(
-            mediaType = "application/zip",
+            mediaType = "application/octet-stream",
             schema = new Schema(`type` = "string", format = "binary")
           )
         )
@@ -154,10 +161,10 @@ trait ImportExport {
           }
         complete(
           HttpResponse(
-            entity = HttpEntity(MediaTypes.`application/zip`, byteSource),
+            entity = HttpEntity(MediaTypes.`application/octet-stream`, byteSource),
             headers = `Content-Disposition`(
               ContentDispositionTypes.attachment,
-              Map("filename" -> "BridgeScorerExport.zip")
+              Map("filename" -> s"BridgeScorerExport.${ImportStoreConstants.importStoreFileExtension}")
             ) :: Nil
           )
         )
@@ -169,7 +176,7 @@ trait ImportExport {
 
   def tempDestination(fileInfo: FileInfo): JFile = {
     val fn = fileInfo.fileName
-    if (fn.endsWith(".zip")) new JFile(tempDir.toString(), fileInfo.fileName)
+    if (fn.endsWith(".zip") || fn.endsWith(importStoreDotExtension)) new JFile(tempDir.toString(), fileInfo.fileName)
     else throw new IllegalArgumentException("Filename not valid")
   }
 
@@ -324,7 +331,7 @@ trait ImportExport {
                   val url = opturl.getOrElse("/")
 
                   val r =
-                    if (metadata.fileName.endsWith(".zip")) {
+                    if (metadata.fileName.endsWith(".zip") || metadata.fileName.endsWith(importStoreDotExtension)) {
                       val rr =
                         is.create(metadata.fileName, f).transform { tr =>
                           tr match {
@@ -408,7 +415,7 @@ trait ImportExport {
         description = "The diagnostic information as a zip file.",
         content = Array(
           new Content(
-            mediaType = "application/zip",
+            mediaType = "application/octet-stream",
             schema = new Schema(`type` = "string", format = "binary")
           )
         )
@@ -497,10 +504,10 @@ trait ImportExport {
         }
       complete(
         HttpResponse(
-          entity = HttpEntity(MediaTypes.`application/zip`, byteSource),
+          entity = HttpEntity(MediaTypes.`application/octet-stream`, byteSource),
           headers = `Content-Disposition`(
             ContentDispositionTypes.attachment,
-            Map("filename" -> "BridgeScorerDiagnostics.zip")
+            Map("filename" -> s"BridgeScorerDiagnostics.${ImportStoreConstants.importStoreFileExtension}")
           ) :: Nil
         )
       )
