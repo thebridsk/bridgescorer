@@ -7,7 +7,6 @@ import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
 import com.github.thebridsk.utilities.logging.Logger
 import com.github.thebridsk.bridge.data.ServerURL
-import com.github.thebridsk.bridge.clientcommon.rest2.RestClientServerURL
 import com.github.thebridsk.bridge.data.ServerVersion
 import com.github.thebridsk.bridge.client.controller.Controller
 import com.github.thebridsk.bridge.client.controller.RubberController
@@ -42,7 +41,6 @@ import com.github.thebridsk.bridge.clientcommon.rest2.AjaxResult
 import com.github.thebridsk.bridge.clientcommon.rest2.AjaxFailure
 import com.github.thebridsk.bridge.clientcommon.rest2.WrapperXMLHttpRequest
 import com.github.thebridsk.bridge.clientcommon.react.AppButtonLink
-//import com.github.thebridsk.bridge.client.fastclick.FastClick
 import com.github.thebridsk.bridge.clientcommon.react.PopupOkCancel
 import com.github.thebridsk.bridge.client.pages.duplicate.DuplicateRouter.SelectMatchView
 import japgolly.scalajs.react.extra.router.RouterCtl
@@ -76,6 +74,7 @@ import com.github.thebridsk.bridge.client.routes.AppRouter
 import com.github.thebridsk.bridge.clientcommon.pages.GotoPage
 import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles._
 import com.github.thebridsk.bridge.clientcommon.demo.BridgeDemo
+import com.github.thebridsk.bridge.client.bridge.store.ServerURLStore
 
 /**
  * @author werewolf
@@ -88,7 +87,6 @@ object HomePage {
 
   case class State(
       debugging: Boolean,
-      serverUrl: ServerURL,
       working: Option[String],
       fastclickTest: Boolean,
       userSelect: Boolean = false,
@@ -107,57 +105,6 @@ object HomePage {
     def closeMainTestHandMenu() = copy( anchorMainTestHandEl = js.undefined )
 
   }
-
-//  var fastclick: Option[FastClick] = None
-
-//  startFastClick()
-
-//  // This will be the props object used from JS-land
-//  @js.native
-//  trait JsProps extends js.Object {
-//    val classes: js.Dictionary[String]
-//  }
-//
-//  val renderWithStyle = ScalaComponent.builder[js.Object]("Title")
-//                            .stateless
-//                            .noBackend
-//                            .render_P { props =>
-//                              val p = props.asInstanceOf[JsProps]
-//                              logger.info(s"""renderWithStyle called with props $props""")
-//                              val clsGrow = p.classes("grow")
-//                              MuiTypography(
-//                                  variant = TextVariant.h6,
-//                                  color = TextColor.inherit,
-//                                  className = clsGrow
-//                              )(
-//                                  "Bridge ScoreKeeper"
-//                              )
-//                            }
-//                            .build
-//
-//  def renderWithStyleFn( props: js.Object ) = {
-//                              logger.info(s"""renderWithStyleFn with props $props""")
-//                              renderWithStyle(props)
-//                            }
-
-//  val fastclickToggle = Callback {
-//    fastclick match {
-//      case Some(fc) => stopFastClick()
-//      case None => startFastClick()
-//
-//    }
-//  }
-//
-//  def startFastClick() {
-//    fastclick = Some(fastclick.map(f=>f).getOrElse( FastClick() ))
-//  }
-//
-//  def stopFastClick() {
-//    fastclick.foreach(_.destroy())
-//    fastclick = None
-//  }
-//
-//  def isFastclickOn = fastclick.isDefined
 
   class Backend( scope: BackendScope[Props, State]) {
 
@@ -271,15 +218,7 @@ object HomePage {
             ^.id:="url",
             <.h1("Server"),
             <.ul(
-              if (BridgeDemo.isDemo) {
-                <.li("Demo mode, all data entered will be lost on page refresh or closing page")
-              } else {
-                if (state.serverUrl.serverUrl.isEmpty) {
-                  <.li("No network interfaces found")
-                } else {
-                  state.serverUrl.serverUrl.map{ url => <.li(url) }.toTagMod
-                }
-              }
+              ServerURLStore.getURLItems
             )
           ),
           <.div(
@@ -336,35 +275,12 @@ object HomePage {
               )
             )
           ),
-  //        <.div(
-  //          rootStyles.testHandsDiv,
-  //        ),
           isPageFromLocalHost() ?= <.div(
             rootStyles.miscDiv,
             <.h1("Miscellaneous"),
             <.table(
               <.tbody(
                 <.tr(
-  //                <.td( ^.width:="25%",
-  //                  {
-  //                    AppButton(
-  //                      "FastclickTest", "Fast Click Test",
-  //                      rootStyles.playButton,
-  //                      ^.disabled:=isWorking,
-  //                      BaseStyles.highlight(selected = state.fastclickTest),
-  //                      ^.onClick --> toggleFastclickTest
-  //                    )
-  //                  }
-  //                ),
-  //                <.td( ^.width:="25%",
-  //                  AppButton(
-  //                    "ToggleFastclick", "Fast Click",
-  //                    rootStyles.playButton,
-  //                    BaseStyles.highlight( selected = isFastclickOn ),
-  //                    ^.disabled:=isWorking,
-  //                    ^.onClick --> toggleFastclick
-  //                  )
-  //                ),
                   <.td( ^.width:="25%",
                     isPageFromLocalHost() ?= AppButton(
                       "Shutdown", "Shutdown Server",
@@ -379,10 +295,7 @@ object HomePage {
                   ),
                   <.td( ^.width:="25%"
                   ),
-                ),
-  //              <.tr(
-  //                <.td(" ")
-  //              ),
+                )
               )
             )
           )
@@ -499,11 +412,8 @@ object HomePage {
       mounted = true
       // make AJAX rest call here
       logger.info("HomePage.didMount: Sending serverurl request to server")
-      RestClientServerURL.list().recordFailure().foreach( serverUrl => {
-        if (mounted) {
-          scope.withEffectsImpure.modState( s => s.copy(serverUrl=serverUrl(0)))
-        }
-      })
+
+      ServerURLStore.updateURLs()
     }
 
     val willUnmount = Callback {
@@ -526,7 +436,7 @@ object HomePage {
   private val component = ScalaComponent.builder[Props]("HomePage")
         .initialStateFromProps { props =>
           logger.info("HomePage.initialStateFromProps")
-          State(debugging,ServerURL(Nil), None, false )
+          State(debugging, None, false )
         }
         .backend( backendScope => new Backend(backendScope))
         .renderBackend

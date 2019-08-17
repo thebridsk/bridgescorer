@@ -21,6 +21,7 @@ import com.github.thebridsk.utilities.logging.Logger
 import com.github.thebridsk.bridge.data.DuplicateSummary
 import com.github.thebridsk.utilities.logging.TraceMsg
 import com.github.thebridsk.bridge.data.MatchDuplicateResult
+import com.github.thebridsk.bridge.data.ServerURL
 
 object BridgeDispatcher {
   val dispatcher: FluxDispatcher[BridgeAction] = FluxDispatcher() // new FluxDispatcher()
@@ -102,6 +103,8 @@ object BridgeDispatcher {
   def stopLogs() = dispatcher.dispatch(StopLogs())
   def startLogs() = dispatcher.dispatch(StartLogs())
   def clearLogs() = dispatcher.dispatch(ClearLogs())
+
+  def updateServerURL( urls: ServerURL ) = dispatcher.dispatch( ActionUpdateServerURLs(urls) )
 
   /**
    * Waits for the callbacks specified to be invoked before continuing execution of the current callback.

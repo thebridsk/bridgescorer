@@ -11,6 +11,7 @@ import scala.concurrent.ExecutionContext
 import com.github.thebridsk.bridge.client.Bridge
 import com.github.thebridsk.utilities.logging.Logger
 import com.github.thebridsk.bridge.clientcommon.demo.BridgeDemo
+import com.github.thebridsk.bridge.client.bridge.store.ServerURLStore
 
 /**
  * A skeleton component.
@@ -70,7 +71,7 @@ object ServerURLPopupInternal {
    * will cause State to leak.
    *
    */
-  case class State( serverUrl: Option[ServerURL] = None, requestedUrl: Boolean = false )
+  case class State()
 
   /**
    * Internal state for rendering the component.
@@ -81,49 +82,22 @@ object ServerURLPopupInternal {
    */
   class Backend(scope: BackendScope[Props, State]) {
 
-  val ok: Option[Callback] = Some( Callback {
-    setShowServerURLPopup(false)
-    scope.withEffectsImpure.forceUpdate
-  })
-  val cancel: Option[Callback] = None
+    val ok: Option[Callback] = Some( Callback {
+      setShowServerURLPopup(false)
+      scope.withEffectsImpure.forceUpdate
+    })
+    val cancel: Option[Callback] = None
 
-  def render( props: Props, state: State ) = {
+    def render( props: Props, state: State ) = {
       val content: Option[TagMod] = if (isShowServerURLPopup) {
+        ServerURLStore.updateURLs()
         implicit val ec = ExecutionContext.global
-        val item = if (BridgeDemo.isDemo) {
-          Some(
-            <.li("Demo mode, all data entered will be lost on page refresh or closing page")
-          )
-        } else if (state.serverUrl.isEmpty && !state.requestedUrl) {
-          js.timers.setTimeout(1) {
-            scope.withEffectsImpure.modState(s=>s.copy(requestedUrl=true))
-          }
-          logger.info("In ServerURLPopup.render, no server URLs, requesting")
-          RestClientServerURL.list().recordFailure().foreach( serverUrl => {
-            logger.info(s"In ServerURLPopup.render, mounted=$mounted got server URLs: $serverUrl")
-            if (mounted) {
-              scope.withEffectsImpure.modState( s => s.copy(serverUrl=Some(serverUrl(0))) )
-            }
-          })
-          Some(
-            <.li("Waiting for response from server")
-          )
-        } else {
-          logger.info(s"In ServerURLPopup.render, displaying server URLs: ${state.serverUrl}")
-          Some(
-            if (state.serverUrl.isEmpty || state.serverUrl.get.serverUrl.isEmpty) {
-              <.li("No network interfaces found")
-            } else {
-              state.serverUrl.get.serverUrl.map{ url => <.li(url) }.toTagMod
-            }
-          )
-        }
-        item.map { i =>
+        Some(
           <.div(
             <.h1("Server URL"),
-            <.ul( i )
+            <.ul( ServerURLStore.getURLItems )
           )
-        }
+        )
       } else {
         None
       }
