@@ -136,10 +136,10 @@ object ViewPlayerPlacesGraphInternal {
                   <.thead(
                     <.tr(
                       <.th( ^.rowSpan:=2, "Place" ),
-                      <.th( ^.colSpan:=(maxOthers+1), "Tied With")
+                      <.th( ^.colSpan:=(maxOthers), "Tied With")
                     ),
                     <.tr(
-                      ((0 to maxOthers).map { i =>
+                      ((0 until maxOthers).map { i =>
                         <.th( i.toString )
                       }).toTagMod
                     )
@@ -149,7 +149,7 @@ object ViewPlayerPlacesGraphInternal {
                       val maxO = Math.min( maxTeams-p, maxOthers)
                       <.tr(
                         <.th(getPlaceString(p)),
-                        ((0 until maxTeams).map { o =>
+                        ((0 until maxOthers).map { o =>
                           <.td(
                             if (o < maxO) {
                               PieChart(
@@ -213,6 +213,9 @@ object ViewPlayerPlacesGraphInternal {
 
           val rowLength = 5
 
+          val footerLeftLength: Int = rowLength/2
+          val footerRightLength = rowLength - footerLeftLength
+
           val players = pps.players.grouped(rowLength)
 
           <.div(
@@ -223,7 +226,15 @@ object ViewPlayerPlacesGraphInternal {
               <.tfoot(
                 <.tr(
                   <.td(
-                    ^.colSpan := rowLength,
+                    ^.colSpan := footerLeftLength,
+                    "Shows how many times a player came in first, second, ...",
+                    <.br,
+                    "Also shows if they were tied with other teams.",
+                    " The size of the pie chart is relative to the number of matches the player played.",
+                    " The slice size is the percentage of times the player came in that place."
+                  ),
+                  <.td(
+                    ^.colSpan := footerRightLength,
                     <.div(
                       "Legend",
                       Legend((props,legendUtil,maxTeams,maxOther))
