@@ -6,6 +6,7 @@ import scala.util.Success
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.extra.router.RouterCtl
+import japgolly.scalajs.react.component.Js.Component
 import com.github.thebridsk.bridge.client.routes.AppRouter.AppPage
 import com.github.thebridsk.bridge.data.DuplicateSummary
 import com.github.thebridsk.bridge.data.Id
@@ -29,6 +30,9 @@ import com.github.thebridsk.materialui.MuiTypography
 import com.github.thebridsk.materialui.TextVariant
 import com.github.thebridsk.materialui.TextColor
 import com.github.thebridsk.bridge.clientcommon.rest2.RestClientDuplicatePlayerPlaces
+import com.github.thebridsk.bridge.data.duplicate.stats.ContractStats
+import com.github.thebridsk.bridge.data.duplicate.stats.PlayerComparisonStats
+import com.github.thebridsk.bridge.data.duplicate.stats.PlayerStats
 
 /**
  * Shows a summary page of all duplicate matches from the database.
@@ -60,6 +64,26 @@ object PageStatsInternal {
 
   val logger = Logger("bridge.PageStats")
 
+  sealed trait ShowView
+
+  object ShowPeopleTable extends ShowView
+  object ShowPairs extends ShowView
+  object ShowPeopleTableDetail extends ShowView
+  object ShowPairsDetail extends ShowView
+
+  object ShowPairsGrid extends ShowView
+  object ShowMadeDownGrid extends ShowView
+  object ShowPlayerContractResults extends ShowView
+  object ShowPlayerDoubledContractResults extends ShowView
+  object ShowContractResults extends ShowView
+  object ShowPlayerAggressiveness extends ShowView
+
+  object ShowPlayerOpponentsStatsTable extends ShowView
+  object ShowPlayerOpponentsPairsStatsTable extends ShowView
+  object ShowPlayerOpponentsStatsGraph extends ShowView
+
+  object ShowPlayerPlacesGraph extends ShowView
+
   /**
    * Internal state for rendering the component.
    *
@@ -72,26 +96,22 @@ object PageStatsInternal {
                     stats: Option[DuplicateStats] = None,
                     gotStats: Boolean = false,
 
-                    showPeopleTable: Boolean = false,
-                    showPairs: Boolean = false,
-                    showPeopleTableDetail: Boolean = false,
-                    showPairsDetail: Boolean = false,
-
-                    showPairsGrid: Boolean = true,
-                    showMadeDownGrid: Boolean = false,
-                    showPlayerContractResults: Boolean = false,
-                    showPlayerDoubledContractResults: Boolean = false,
-                    showContractResults: Boolean = false,
-                    showPlayerAggressiveness: Boolean = false,
-
-                    showPlayerOpponentsStatsTable: Boolean = false,
-                    showPlayerOpponentsPairsStatsTable: Boolean = false,
-                    showPlayerOpponentsStatsGraph: Boolean = false,
-
-                    showPlayerPlacesGraph: Boolean = false,
+                    showViews: List[ShowView] = ShowPairsGrid::Nil,
 
                     msg: Option[TagMod] = None
-                  )
+  ) {
+
+    def toggle( view: ShowView ) = {
+      val r = showViews.filter( sv => sv != view )
+      val newsv = if (r.length == showViews.length) view::showViews
+      else r
+      copy(showViews = newsv)
+    }
+
+    def isVisible( view: ShowView ) = {
+      showViews.find( sv => sv==view ).isDefined
+    }
+  }
 
   /**
    * Internal state for rendering the component.
@@ -106,42 +126,42 @@ object PageStatsInternal {
 
     def onChange( filter: ViewPlayerFilter.Filter ) = scope.modState( s => s.copy( filter = filter ) )
 
-    val toggleShowPeopleTable = scope.modState( s => s.copy( showPeopleTable = !s.showPeopleTable) )
+    val toggleShowPeopleTable = scope.modState( s => s.toggle( ShowPeopleTable ) )
 
-    val toggleShowPairs = scope.modState( s => s.copy( showPairs = !s.showPairs) )
+    val toggleShowPairs = scope.modState( s => s.toggle( ShowPairs ) )
 
-    val toggleShowPeopleTableDetail = scope.modState( s => s.copy( showPeopleTableDetail = !s.showPeopleTableDetail) )
+    val toggleShowPeopleTableDetail = scope.modState( s => s.toggle( ShowPeopleTableDetail ) )
 
-    val toggleShowPairsDetail = scope.modState( s => s.copy( showPairsDetail = !s.showPairsDetail) )
+    val toggleShowPairsDetail = scope.modState( s => s.toggle( ShowPairsDetail ) )
 
-    val toggleShowPairsGrid = scope.modState( s => s.copy( showPairsGrid = !s.showPairsGrid) )
+    val toggleShowPairsGrid = scope.modState( s => s.toggle( ShowPairsGrid ) )
 
-    val toggleShowMadeDownGrid = scope.modState( s => s.copy( showMadeDownGrid = !s.showMadeDownGrid) )
+    val toggleShowMadeDownGrid = scope.modState( s => s.toggle( ShowMadeDownGrid ) )
 
     val togglePlayerOpponentsStatsTable = scope.modState { s =>
       getDuplicateStats(
-          s.copy( showPlayerOpponentsStatsTable = !s.showPlayerOpponentsStatsTable),
+          s.toggle( ShowPlayerOpponentsStatsTable ),
           playersOpponentsStats = s.stats.map( cs => cs.playersOpponentsStats.isEmpty ).getOrElse(true),
       )
     }
 
     val togglePlayerOpponentsPairsStatsTable = scope.modState { s =>
       getDuplicateStats(
-          s.copy( showPlayerOpponentsPairsStatsTable = !s.showPlayerOpponentsPairsStatsTable),
+          s.toggle( ShowPlayerOpponentsPairsStatsTable ),
           playersOpponentsStats = s.stats.map( cs => cs.playersOpponentsStats.isEmpty ).getOrElse(true),
       )
     }
 
     val togglePlayerOpponentsStatsGraph = scope.modState { s =>
       getDuplicateStats(
-          s.copy( showPlayerOpponentsStatsGraph = !s.showPlayerOpponentsStatsGraph),
+          s.toggle( ShowPlayerOpponentsStatsGraph ),
           playersOpponentsStats = s.stats.map( cs => cs.playersOpponentsStats.isEmpty ).getOrElse(true),
       )
     }
 
     val toggleShowPlayerContractResults = scope.modState { s =>
       getDuplicateStats(
-          s.copy( showPlayerContractResults = !s.showPlayerContractResults),
+          s.toggle( ShowPlayerContractResults ),
           playerStats = s.stats.map( cs => cs.playerStats.isEmpty ).getOrElse(true),
           contractStats = s.stats.map( cs => cs.contractStats.isEmpty ).getOrElse(true)
       )
@@ -149,7 +169,7 @@ object PageStatsInternal {
 
     val toggleShowPlayerDoubledContractResults = scope.modState { s =>
       getDuplicateStats(
-          s.copy( showPlayerDoubledContractResults = !s.showPlayerDoubledContractResults),
+          s.toggle( ShowPlayerDoubledContractResults ),
           playerDoubledStats = s.stats.map( cs => cs.playerDoubledStats.isEmpty ).getOrElse(true),
           contractStats = s.stats.map( cs => cs.contractStats.isEmpty ).getOrElse(true)
       )
@@ -157,35 +177,35 @@ object PageStatsInternal {
 
     val toggleShowContractResults = scope.modState { s =>
       getDuplicateStats(
-          s.copy( showContractResults = !s.showContractResults),
+          s.toggle( ShowContractResults ),
           contractStats = s.stats.map( cs => cs.contractStats.isEmpty ).getOrElse(true)
       )
     }
 
     val toggleShowPlayerOpponentsStatsTable = scope.modState { s =>
       getDuplicateStats(
-          s.copy( showPlayerOpponentsStatsTable = !s.showPlayerOpponentsStatsTable),
+          s.toggle( ShowPlayerOpponentsStatsTable ),
           playersOpponentsStats = s.stats.map( cs => cs.playersOpponentsStats.isEmpty ).getOrElse(true)
       )
     }
 
     val toggleShowPlayerOpponentsStatsGraph = scope.modState { s =>
       getDuplicateStats(
-          s.copy( showPlayerOpponentsStatsGraph = !s.showPlayerOpponentsStatsGraph),
+          s.toggle( ShowPlayerOpponentsStatsGraph ),
           playersOpponentsStats = s.stats.map( cs => cs.playersOpponentsStats.isEmpty ).getOrElse(true)
       )
     }
 
     val toggleShowPlayerAggressiveness = scope.modState { s =>
       getDuplicateStats(
-          s.copy( showPlayerAggressiveness = !s.showPlayerAggressiveness),
+          s.toggle( ShowPlayerAggressiveness ),
           comparisonStats = s.stats.map( cs => cs.comparisonStats.isEmpty ).getOrElse(true),
       )
     }
 
     val toggleShowPlayerPlaces = scope.modState { s =>
       getPlayerPlaces(
-          s.copy( showPlayerPlacesGraph = !s.showPlayerPlacesGraph),
+          s.toggle( ShowPlayerPlacesGraph ),
           playerPlacesStats = s.stats.map( cs => cs.playerPlacesStats.isEmpty ).getOrElse(true),
       )
     }
@@ -254,19 +274,44 @@ object PageStatsInternal {
 
     val working = <.div( "Working on getting data" )
 
-    def optionalView( show: Boolean, view: => TagMod, data: Option[_]* ) = {
-      if (show) {
-        if (data.find( d => d.isEmpty ).isEmpty) {
-          view
-        } else {
-          working
-        }
+    def optionalView( view: => TagMod, data: Option[_]* ): TagMod = {
+      if (data.find( d => d.isEmpty ).isEmpty) {
+        view
       } else {
-        TagMod()
+        working
       }
     }
 
     def render( props: Props, state: State ) = {
+
+      def optionalStatsView( view: DuplicateStats => TagMod ): TagMod = {
+        state.stats.map { cs =>
+          if (cs.playersOpponentsStats.isDefined) {
+            view(cs)
+          } else {
+            working
+          }
+        }.getOrElse( working )
+      }
+
+      def optionalStats1View[S]( view: (S) => TagMod, stat: DuplicateStats => Option[S] ): TagMod = {
+        state.stats.map { cs =>
+          stat(cs).map { s =>
+            view(s)
+          }.getOrElse( working )
+        }.getOrElse( working )
+      }
+
+      def optionalStats2View[S,T]( view: (S,T) => TagMod, statS: DuplicateStats => Option[S], statT: DuplicateStats => Option[T] ) = {
+        state.stats.map { cs =>
+          statS(cs).map { s =>
+            statT(cs).map { t =>
+              view(s,t)
+            }.getOrElse( working )
+          }.getOrElse( working )
+        }.getOrElse( working )
+      }
+
       <.div(
         PopupOkCancel( state.msg, None, Some(cancel) ),
         DuplicatePageBridgeAppBar(
@@ -294,32 +339,32 @@ object PageStatsInternal {
               baseStyles.divFooterLeft,
               AppButton( "ShowPairsGrid",
                          "Show Pairs",
-                         BaseStyles.highlight(selected = state.showPairsGrid ),
+                         BaseStyles.highlight(selected = state.isVisible( ShowPairsGrid ) ),
                          ^.onClick-->toggleShowPairsGrid
                        ),
               AppButton( "ShowMadeDownGrid",
                          "Show Made/Down",
-                         BaseStyles.highlight(selected = state.showMadeDownGrid ),
+                         BaseStyles.highlight(selected = state.isVisible( ShowMadeDownGrid ) ),
                          ^.onClick-->toggleShowMadeDownGrid
                        ),
               AppButton( "ShowPlayerContractResults",
                          "Show Player Contracts",
-                         BaseStyles.highlight(selected = state.showPlayerContractResults ),
+                         BaseStyles.highlight(selected = state.isVisible( ShowPlayerContractResults ) ),
                          ^.onClick-->toggleShowPlayerContractResults
                        ),
               AppButton( "ShowPlayerDoubledContractResults",
                          "Show Player Doubled Contracts",
-                         BaseStyles.highlight(selected = state.showPlayerDoubledContractResults ),
+                         BaseStyles.highlight(selected = state.isVisible( ShowPlayerDoubledContractResults ) ),
                          ^.onClick-->toggleShowPlayerDoubledContractResults
                        ),
               AppButton( "ShowContractResults",
                          "Show Contracts",
-                         BaseStyles.highlight(selected = state.showContractResults ),
+                         BaseStyles.highlight(selected = state.isVisible( ShowContractResults ) ),
                          ^.onClick-->toggleShowContractResults
                        ),
               AppButton( "AggressiveStats",
                          "Aggressive Stats",
-                         BaseStyles.highlight(selected = state.showPlayerAggressiveness ),
+                         BaseStyles.highlight(selected = state.isVisible( ShowPlayerAggressiveness ) ),
                          ^.onClick-->toggleShowPlayerAggressiveness
                        )
             )
@@ -330,17 +375,17 @@ object PageStatsInternal {
               baseStyles.divFooterLeft,
               AppButton( "ShowPlayerOpponentResults",
                          "Show Opponent Results",
-                         BaseStyles.highlight(selected = state.showPlayerOpponentsStatsTable ),
+                         BaseStyles.highlight(selected = state.isVisible( ShowPlayerOpponentsStatsTable ) ),
                          ^.onClick-->togglePlayerOpponentsStatsTable
                        ),
               AppButton( "ShowPlayerOpponentPairsResults",
                          "Show Opponent Pairs Results",
-                         BaseStyles.highlight(selected = state.showPlayerOpponentsPairsStatsTable ),
+                         BaseStyles.highlight(selected = state.isVisible( ShowPlayerOpponentsPairsStatsTable ) ),
                          ^.onClick-->togglePlayerOpponentsPairsStatsTable
                        ),
               AppButton( "ShowPlayerOpponentGrid",
                          "Show Opponent Graph",
-                         BaseStyles.highlight(selected = state.showPlayerOpponentsStatsGraph ),
+                         BaseStyles.highlight(selected = state.isVisible( ShowPlayerOpponentsStatsGraph ) ),
                          ^.onClick-->togglePlayerOpponentsStatsGraph
                        ),
             )
@@ -351,108 +396,78 @@ object PageStatsInternal {
               baseStyles.divFooterLeft,
               AppButton( "ShowPeopleResults",
                          "Show Player Results",
-                         BaseStyles.highlight(selected = state.showPeopleTable ),
+                         BaseStyles.highlight(selected = state.isVisible( ShowPeopleTable ) ),
                          ^.onClick-->toggleShowPeopleTable
                        ),
               AppButton( "ShowPlayerPlaces",
                          "Show Player Places",
-                         BaseStyles.highlight(selected = state.showPlayerPlacesGraph ),
+                         BaseStyles.highlight(selected = state.isVisible( ShowPlayerPlacesGraph ) ),
                          ^.onClick-->toggleShowPlayerPlaces
                        ),
               AppButton( "ShowPairsResults",
                          "Show Pairs Results",
-                         BaseStyles.highlight(selected = state.showPairs ),
+                         BaseStyles.highlight(selected = state.isVisible( ShowPairs ) ),
                          ^.onClick-->toggleShowPairs
                        ),
               AppButton( "ShowPeopleDetails",
                          "Show Player Hand Results",
-                         BaseStyles.highlight(selected = state.showPeopleTableDetail ),
+                         BaseStyles.highlight(selected = state.isVisible( ShowPeopleTableDetail ) ),
                          ^.onClick-->toggleShowPeopleTableDetail
                        ),
               AppButton( "ShowPairsDetails",
                          "Show Pairs Hand Results",
-                         BaseStyles.highlight(selected = state.showPairsDetail ),
+                         BaseStyles.highlight(selected = state.isVisible( ShowPairsDetail ) ),
                          ^.onClick-->toggleShowPairsDetail
                        )
             )
           ),
           if (state.filter.pairsData.isDefined) {
-            TagMod(
-              ViewPlayerFilter(state.filter, onChange _),
-              state.showPairsGrid ?= ViewPairsGrid( state.filter ),
-              state.showMadeDownGrid ?= ViewPairsMadeDownGrid( state.filter )
-            )
+            ViewPlayerFilter(state.filter, onChange _),
           } else {
-            <.div(
-              "Working"
-            )
+            working
           },
-          if (state.showPlayerOpponentsStatsTable ||
-              state.showPlayerOpponentsPairsStatsTable ||
-              state.showPlayerOpponentsStatsGraph
-          ) {
-            state.stats.map { cs =>
-              TagMod(
-                optionalView(
-                    state.showPlayerOpponentsStatsTable,
-                    ViewPlayerOpponentStatsTable( cs.playersOpponentsStats, false, true ),
-                    cs.playersOpponentsStats),
-                optionalView(
-                    state.showPlayerOpponentsPairsStatsTable,
-                    ViewPlayerOpponentStatsTable( cs.playersOpponentsStats, true, true ),
-                    cs.playersOpponentsStats),
-                optionalView(
-                    state.showPlayerOpponentsStatsGraph,
-                    ViewPlayerOpponentStatsGraph( cs.playersOpponentsStats, false ),
-                    cs.playersOpponentsStats),
-              )
-            }.getOrElse(
-              <.div(
-                "Working on contract stats"
-              )
-            )
-          } else {
-            EmptyVdom
-          },
-          if (state.showContractResults ||
-              state.showPlayerContractResults ||
-              state.showPlayerDoubledContractResults ||
-              state.showPlayerAggressiveness
-          ) {
-            state.stats.map { cs =>
-              TagMod(
-                optionalView(
-                    state.showPlayerContractResults,
-                    ViewPlayerContractResults( cs.playerStats.get, cs.contractStats.get ),
-                    cs.playerStats,
-                    cs.contractStats),
-                optionalView(
-                    state.showPlayerDoubledContractResults,
-                    ViewPlayerDoubledContractResults( cs.playerDoubledStats.get, cs.contractStats.get ),
-                    cs.playerDoubledStats,
-                    cs.contractStats ),
-                optionalView(
-                    state.showContractResults,
-                    ViewContractResults( cs.contractStats.get ),
-                    cs.contractStats ),
-                optionalView(
-                    state.showPlayerAggressiveness,
-                    ViewPlayerAggressiveness( cs.comparisonStats.get ),
-                    cs.comparisonStats )
-              )
-            }.getOrElse(
-              <.div(
-                "Working on contract stats"
-              )
-            )
-          } else {
-            EmptyVdom
-          },
-          state.showPlayerPlacesGraph ?= ViewPlayerPlacesGraph( state.stats.flatMap( s => s.playerPlacesStats) ),
-          state.showPeopleTable ?= ViewPairsTable( state.filter, false ),
-          state.showPairs ?= ViewPairsTable(state.filter, true ),
-          state.showPeopleTableDetail ?= ViewPairsMadeDownTable( state.filter, false ),
-          state.showPairsDetail ?= ViewPairsMadeDownTable(state.filter, true ),
+          (state.showViews.map { view =>
+            val v: TagMod = view match {
+              case ShowPairsGrid => optionalView( ViewPairsGrid( state.filter ), state.filter.pairsData )
+              case ShowMadeDownGrid => optionalView( ViewPairsMadeDownGrid( state.filter ), state.filter.pairsData )
+              case ShowPlayerOpponentsStatsTable =>
+                optionalStatsView(
+                    cs => ViewPlayerOpponentStatsTable( cs.playersOpponentsStats, false, true )
+                )
+              case ShowPlayerOpponentsPairsStatsTable =>
+                optionalStatsView(
+                  cs => ViewPlayerOpponentStatsTable( cs.playersOpponentsStats, true, true ),
+                )
+              case ShowPlayerOpponentsStatsGraph =>
+                optionalStatsView(
+                  cs => ViewPlayerOpponentStatsGraph( cs.playersOpponentsStats, false ),
+                )
+              case ShowPlayerContractResults =>
+                optionalStats2View(
+                    (s: PlayerStats, t: ContractStats) => ViewPlayerContractResults( s,t ),
+                    _.playerStats,
+                    _.contractStats)
+              case ShowPlayerDoubledContractResults =>
+                optionalStats2View(
+                    (s: PlayerStats, t: ContractStats) => ViewPlayerDoubledContractResults( s,t ),
+                    _.playerDoubledStats,
+                    _.contractStats )
+              case ShowContractResults =>
+                optionalStats1View(
+                    (cs: ContractStats) => ViewContractResults( cs ),
+                    _.contractStats )
+              case ShowPlayerAggressiveness =>
+                optionalStats1View(
+                    (cs: PlayerComparisonStats) => ViewPlayerAggressiveness( cs ),
+                    _.comparisonStats )
+              case ShowPlayerPlacesGraph => ViewPlayerPlacesGraph( state.stats.flatMap( s => s.playerPlacesStats) )
+              case ShowPeopleTable => ViewPairsTable( state.filter, false )
+              case ShowPairs => ViewPairsTable(state.filter, true )
+              case ShowPeopleTableDetail => ViewPairsMadeDownTable( state.filter, false )
+              case ShowPairsDetail => ViewPairsMadeDownTable(state.filter, true )
+            }
+            v
+          }).toTagMod
         )
       )
     }
