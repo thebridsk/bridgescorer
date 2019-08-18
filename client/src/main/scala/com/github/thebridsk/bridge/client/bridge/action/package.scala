@@ -15,6 +15,7 @@ import com.github.thebridsk.bridge.data.RubberHand
 import com.github.thebridsk.bridge.data.DuplicateSummary
 import com.github.thebridsk.utilities.logging.TraceMsg
 import com.github.thebridsk.bridge.data.MatchDuplicateResult
+import com.github.thebridsk.bridge.data.ServerURL
 
 package object action {
 
@@ -87,5 +88,7 @@ package object action {
   case class StopLogs() extends BridgeAction
   case class StartLogs() extends BridgeAction
   case class ClearLogs() extends BridgeAction
+
+  case class ActionUpdateServerURLs( urls: ServerURL ) extends BridgeAction
 
 }

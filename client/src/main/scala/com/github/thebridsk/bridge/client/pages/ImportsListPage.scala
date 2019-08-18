@@ -41,6 +41,7 @@ import com.github.thebridsk.materialui.TextVariant
 import com.github.thebridsk.materialui.TextColor
 import com.github.thebridsk.bridge.client.routes.BridgeRouter
 import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles._
+import com.github.thebridsk.bridge.data.ImportStoreConstants
 
 /**
  * A skeleton component.
@@ -285,7 +286,7 @@ object ImportsListPageInternal {
                       <.input(
                         ^.`type` := "file",
                         ^.name := "zip",
-                        ^.accept := "application/zip",
+                        ^.accept := s".${ImportStoreConstants.importStoreFileExtension},application/zip",
                         ^.onChange ==> setSelected _
                       )
                     ),

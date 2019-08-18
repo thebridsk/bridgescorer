@@ -12,6 +12,7 @@ import com.github.thebridsk.browserpages.Page
 import com.github.thebridsk.browserpages.GenericPage
 import scala.reflect.io.File
 import com.github.thebridsk.bridge.server.test.util.HttpUtils
+import com.github.thebridsk.bridge.data.ImportStoreConstants
 
 object ExportPage {
 
@@ -66,7 +67,7 @@ class ExportPage( implicit webDriver: WebDriver, pageCreated: SourcePosition ) e
     if (r.status == 200) {
       r.contentdisposition match {
         case Some(cd) =>
-          if (!cd.contains("attachment") || !cd.contains("BridgeScorerExport.zip") ) {
+          if (!cd.contains("attachment") || !cd.contains(s"BridgeScorerExport.${ImportStoreConstants.importStoreFileExtension}") ) {
             fail( s"Expecting content-disposition to contain attachment and BridgeScorerExport.zip, got ${cd}" )
           }
         case None =>

@@ -15,13 +15,17 @@ import java.nio.file.Files
 import com.github.thebridsk.utilities.file.FileIO
 import java.io.IOException
 import com.github.thebridsk.utilities.logging.Logger
-import ImportStore.log
+import ImportStore._
 import java.nio.file.Path
 import java.io.FileNotFoundException
+import com.github.thebridsk.bridge.data.ImportStoreConstants
 
 object ImportStore {
 
   val log = Logger[ImportStore]
+
+  val importStoreExtension = ImportStoreConstants.importStoreFileExtension
+  val importStoreDotExtension = s".${importStoreExtension}"
 }
 
 abstract class ImportStore()(
@@ -81,7 +85,7 @@ class FileImportStore(
       Result(
         dir.dirs.map(dir => dir.name).toList :::
           dir.files
-            .filter(file => file.extension == "zip")
+            .filter(file => file.extension == "zip" || file.extension == importStoreExtension)
             .map(file => file.name)
             .toList
       )
@@ -148,7 +152,7 @@ class FileImportStore(
     * Error is returned if id already exists.
     */
   def create(id: String, zipfile: File): Future[Result[BridgeService]] = {
-    if (!id.endsWith(".zip"))
+    if (!id.endsWith(".zip") && !id.endsWith(importStoreDotExtension))
       Result(StatusCodes.BadRequest, s"Not a valid Id: ${id}").toFuture
     else {
       get(id)
