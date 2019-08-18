@@ -33,36 +33,21 @@ object ServerURLPopup {
 
   private var showURL = false
 
-  def setShowServerURLPopup( f: Boolean ) = {
+  def setShowServerURLPopup( f: Boolean ): Unit = {
     showURL = f
-    notifyListeners
+    scalajs.js.timers.setTimeout(1) {
+      ServerURLStore.notifyChange
+    }
   }
 
   def isShowServerURLPopup = showURL
+
 }
 
 object ServerURLPopupInternal {
   import ServerURLPopup._
 
   private val logger = Logger("bridge.ServerURLPopup")
-
-  private var listeners: List[Listener] = Nil
-
-  trait Listener {
-    def showChanged( f: Boolean ): Unit
-  }
-
-  def addListener( l: Listener ) = {
-    listeners = l::listeners
-  }
-
-  def removeListener( l: Listener ) = {
-    listeners = listeners.filter( f => f!=l )
-  }
-
-  def notifyListeners = {
-    listeners.foreach(l => l.showChanged(isShowServerURLPopup))
-  }
 
   /**
    * Internal state for rendering the component.
@@ -90,7 +75,6 @@ object ServerURLPopupInternal {
 
     def render( props: Props, state: State ) = {
       val content: Option[TagMod] = if (isShowServerURLPopup) {
-        ServerURLStore.updateURLs()
         implicit val ec = ExecutionContext.global
         Some(
           <.div(
@@ -106,22 +90,17 @@ object ServerURLPopupInternal {
 
     private var mounted = false
 
+    val urlStoreListener = scope.forceUpdate
+
     val didMount = Callback {
       mounted = true
-      addListener(listener)
+      ServerURLStore.addChangeListener(urlStoreListener)
+      ServerURLStore.updateURLs()
     }
 
     val willUnmount = Callback {
       mounted = false
-      removeListener(listener)
-    }
-
-    val listener = new Listener {
-      def showChanged( f: Boolean ): Unit = {
-        logger.info("In showChanged listener: Forcing ServerURLPopup update")
-        scope.withEffectsImpure.forceUpdate
-      }
-
+      ServerURLStore.removeChangeListener(urlStoreListener)
     }
 
   }

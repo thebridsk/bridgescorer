@@ -108,9 +108,7 @@ object HomePage {
 
   class Backend( scope: BackendScope[Props, State]) {
 
-//    val toggleFastclickTest = scope.modState( s => s.copy( fastclickTest = !s.fastclickTest) )
-
-//    val toggleFastclick = fastclickToggle >> scope.forceUpdate
+    val urlStoreListener = scope.forceUpdate
 
     val toggleDebug = scope.modState { s =>
       val newstate = s.copy(debugging = !s.debugging)
@@ -412,13 +410,14 @@ object HomePage {
       mounted = true
       // make AJAX rest call here
       logger.info("HomePage.didMount: Sending serverurl request to server")
-
+      ServerURLStore.addChangeListener(urlStoreListener)
       ServerURLStore.updateURLs()
     }
 
     val willUnmount = Callback {
       mounted = false
       logger.finer("HomePage.willUnmount")
+      ServerURLStore.removeChangeListener(urlStoreListener)
     }
 
   }
