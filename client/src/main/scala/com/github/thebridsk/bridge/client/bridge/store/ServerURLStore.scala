@@ -43,11 +43,14 @@ object ServerURLStore extends ChangeListenable {
 
   private var dispatchToken: Option[DispatchToken] = Some(BridgeDispatcher.register(dispatch _))
 
-  def dispatch( msg: Any ) = Alerter.tryitWithUnit { msg match {
-    case ActionUpdateServerURLs(serverurl) =>
-      urls = Some(serverurl)
-      notifyChange
-  } }
+  def dispatch( msg: Any ) = Alerter.tryitWithUnit {
+    msg match {
+      case ActionUpdateServerURLs(serverurl) =>
+        urls = Some(serverurl)
+        notifyChange
+      case _ =>
+    }
+  }
 
   def updateURLs( force: Boolean = false ) = {
     if (force || !hasURLs) {
