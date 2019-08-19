@@ -2,6 +2,7 @@ package com.github.thebridsk.bridge.data.duplicate.stats
 
 import com.github.thebridsk.bridge.data.Id
 import com.github.thebridsk.bridge.data.MatchDuplicate
+import com.github.thebridsk.bridge.data.Board
 import com.github.thebridsk.bridge.data.Hand
 import com.github.thebridsk.bridge.data.bridge.ContractSuit
 import com.github.thebridsk.bridge.data.bridge.DuplicateBridge.ScoreHand
@@ -257,40 +258,51 @@ object PlayerComparisonStats {
     * Note: the passive hand is the passed out hand
     */
   def auctionWithPassedOut(
-      aggressiveDealer: String, // "NS" or "EW"
+      aggressiveDec: String, // "NS" or "EW"
       aggressiveHand: Hand,
-      aggressiveDeclarer: Team,
-      passiveTeam: Team
+      aggressiveDeclarerTeam: Team,
+      aggressiveDefenderTeam: Team,
+      passiveSameAsDeclarer: Team,
+      passiveSameAsDefender: Team,
+      dup: MatchDuplicate,
+      board: Board
   ) = {
-    val scoreAggressive = if (aggressiveDealer == "NS") {
+    val scoreAggressive = if (aggressiveDec == "NS") {
       ScoreHand(aggressiveHand).score.ns
     } else {
       ScoreHand(aggressiveHand).score.ew
     }
 
+    // Debug
+    // val target = "xxxxx"    // target player
+    // def isPlayerOnTeam( team: Team ) = team.player1==target || team.player2==target
+
+    // if (isPlayerOnTeam(aggressiveDeclarerTeam)) log.info(s"""Played Declarer ${scoreAggressive} ${dup.id} ${board.id} ${aggressiveHand}""")
+    // if (isPlayerOnTeam(aggressiveDefenderTeam)) log.info(s"""Played Defended ${scoreAggressive} ${dup.id} ${board.id} ${aggressiveHand}""")
+    // if (isPlayerOnTeam(passiveSameAsDeclarer)) log.info(s"""Passed Declarer ${scoreAggressive} ${dup.id} ${board.id} ${aggressiveHand}""")
+    // if (isPlayerOnTeam(passiveSameAsDefender)) log.info(s"""Passed Defended ${scoreAggressive} ${dup.id} ${board.id} ${aggressiveHand}""")
+
+    // End debug
+
     if (scoreAggressive < 0) {
-      PlayerComparisonStat.passivegood(passiveTeam.player1, PassedOut) ::
-        PlayerComparisonStat.passivegood(passiveTeam.player2, PassedOut) ::
-        PlayerComparisonStat.aggressivebad(
-          aggressiveDeclarer.player1,
-          PassedOut
-        ) ::
-        PlayerComparisonStat.aggressivebad(
-          aggressiveDeclarer.player2,
-          PassedOut
-        ) ::
+      PlayerComparisonStat.aggressivegood(aggressiveDefenderTeam.player1, PassedOut) ::
+        PlayerComparisonStat.aggressivegood(aggressiveDefenderTeam.player2, PassedOut) ::
+        PlayerComparisonStat.aggressivebad(aggressiveDeclarerTeam.player1, PassedOut) ::
+        PlayerComparisonStat.aggressivebad(aggressiveDeclarerTeam.player2, PassedOut) ::
+        PlayerComparisonStat.passivegood(passiveSameAsDeclarer.player1, PassedOut) ::
+        PlayerComparisonStat.passivegood(passiveSameAsDeclarer.player2, PassedOut) ::
+        PlayerComparisonStat.passivebad(passiveSameAsDefender.player1, PassedOut) ::
+        PlayerComparisonStat.passivebad(passiveSameAsDefender.player2, PassedOut) ::
         Nil
     } else {
-      PlayerComparisonStat.passivebad(passiveTeam.player1, PassedOut) ::
-        PlayerComparisonStat.passivebad(passiveTeam.player2, PassedOut) ::
-        PlayerComparisonStat.aggressivegood(
-          aggressiveDeclarer.player1,
-          PassedOut
-        ) ::
-        PlayerComparisonStat.aggressivegood(
-          aggressiveDeclarer.player2,
-          PassedOut
-        ) ::
+      PlayerComparisonStat.aggressivebad(aggressiveDefenderTeam.player1, PassedOut) ::
+        PlayerComparisonStat.aggressivebad(aggressiveDefenderTeam.player2, PassedOut) ::
+        PlayerComparisonStat.aggressivegood(aggressiveDeclarerTeam.player1, PassedOut) ::
+        PlayerComparisonStat.aggressivegood(aggressiveDeclarerTeam.player2, PassedOut) ::
+        PlayerComparisonStat.passivebad(passiveSameAsDeclarer.player1, PassedOut) ::
+        PlayerComparisonStat.passivebad(passiveSameAsDeclarer.player2, PassedOut) ::
+        PlayerComparisonStat.passivegood(passiveSameAsDefender.player1, PassedOut) ::
+        PlayerComparisonStat.passivegood(passiveSameAsDefender.player2, PassedOut) ::
         Nil
     }
 
@@ -300,6 +312,7 @@ object PlayerComparisonStats {
 
     val result = dups.values.flatMap { dup =>
       dup.boards.flatMap { board =>
+//        log.info(s"Working on ${dup.id} ${board.id}")
         val hands = board.playedHands()
         hands.map { dh =>
           dh.played.head.declarer match {
@@ -320,19 +333,19 @@ object PlayerComparisonStats {
             val c = ct1.compare(ct2)
             if (h1.contractTricks == 0 || h2.contractTricks == 0) {
               if (h1.contractTricks == 0) {
-                val (t1, t2) = if (d2 == "NS") {
-                  (dup.getTeam(dh1.nsTeam).get, dup.getTeam(dh2.nsTeam).get)
+                val (aggdec, aggdef,passdec,passdef) = if (d2 == "NS") {
+                  (dup.getTeam(dh2.nsTeam).get, dup.getTeam(dh2.ewTeam).get,dup.getTeam(dh1.nsTeam).get, dup.getTeam(dh1.ewTeam).get)
                 } else {
-                  (dup.getTeam(dh1.ewTeam).get, dup.getTeam(dh2.ewTeam).get)
+                  (dup.getTeam(dh2.ewTeam).get, dup.getTeam(dh2.nsTeam).get,dup.getTeam(dh1.ewTeam).get, dup.getTeam(dh1.nsTeam).get)
                 }
-                auctionWithPassedOut(d2, h2, t2, t1)
+                auctionWithPassedOut(d2, h2, aggdec, aggdef, passdec, passdef, dup, board)
               } else {
-                val (t1, t2) = if (d1 == "NS") {
-                  (dup.getTeam(dh1.nsTeam).get, dup.getTeam(dh2.nsTeam).get)
+                val (aggdec, aggdef,passdec,passdef) = if (d1 == "NS") {
+                  (dup.getTeam(dh1.nsTeam).get, dup.getTeam(dh1.ewTeam).get,dup.getTeam(dh2.nsTeam).get, dup.getTeam(dh2.ewTeam).get)
                 } else {
-                  (dup.getTeam(dh1.ewTeam).get, dup.getTeam(dh2.ewTeam).get)
+                  (dup.getTeam(dh1.ewTeam).get, dup.getTeam(dh1.nsTeam).get,dup.getTeam(dh2.ewTeam).get, dup.getTeam(dh2.nsTeam).get)
                 }
-                auctionWithPassedOut(d1, h1, t1, t2)
+                auctionWithPassedOut(d1, h1, aggdec, aggdef, passdec, passdef, dup, board)
               }
             } else if (d1 == d2) {
               // contract was played by same side
@@ -382,6 +395,7 @@ object PlayerComparisonStats {
             }
           case _ =>
             // ignore for now
+            log.finest(s"Ignoring ${dup.id} ${board.id}")
             Nil
         }
       }
@@ -391,6 +405,9 @@ object PlayerComparisonStats {
         .groupBy(pcs => (pcs.player, pcs.stattype))
         .map { entry =>
           val ((player, stattype), list) = entry
+          // if (player == "xxxx" && stattype == 3) {
+          //   log.info(s"Stats: ${list}")
+          // }
           list.foldLeft(PlayerComparisonStat.zero(player, stattype)) {
             (ac, v) =>
               ac.add(v)
