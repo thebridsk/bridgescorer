@@ -69,6 +69,9 @@ object BldBridgeServer {
       server := {
         (run in Compile).toTask(""" --logfile "logs/server.sbt.%d.%u.log" start --store store""").value
       },
+      servertemp := {
+        (run in Compile).toTask(""" --logfile "logs/server.sbt.%d.%u.log" start --store temp""").value
+      },
       serverlogs := {
         (run in Compile).toTask(""" --logconsolelevel=ALL start --store store""").value
       },
