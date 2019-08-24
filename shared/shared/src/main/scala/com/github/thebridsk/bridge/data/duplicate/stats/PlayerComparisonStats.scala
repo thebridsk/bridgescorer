@@ -400,21 +400,12 @@ object PlayerComparisonStats {
         }
       }
     }
-    val r =
-      result
-        .groupBy(pcs => (pcs.player, pcs.stattype))
-        .map { entry =>
-          val ((player, stattype), list) = entry
-          // if (player == "xxxx" && stattype == 3) {
-          //   log.info(s"Stats: ${list}")
-          // }
-          list.foldLeft(PlayerComparisonStat.zero(player, stattype)) {
-            (ac, v) =>
-              ac.add(v)
-          }
-        }
-        .toList
-    val pcss = PlayerComparisonStats(r)
+    val r = result.foldLeft( Map[(String,Int),PlayerComparisonStat]() ) { (ac,v) =>
+      val key = (v.player,v.stattype)
+      val newpcs = ac.get(key).map( old => old.add(v)).getOrElse(v)
+      ac + (key -> newpcs)
+    }
+    val pcss = PlayerComparisonStats(r.values.toList)
     log.fine(pcss.toString())
     pcss
   }
