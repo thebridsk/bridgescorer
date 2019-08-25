@@ -18,6 +18,7 @@ import com.github.thebridsk.bridge.client.bridge.store.NamesStore
 import com.github.thebridsk.materialui.MuiTypography
 import com.github.thebridsk.materialui.TextVariant
 import com.github.thebridsk.materialui.TextColor
+import com.github.thebridsk.bridge.client.pages.HomePage
 
 /**
  * Shows the team x board table and has a totals column that shows the number of points the team has.
@@ -135,7 +136,7 @@ object PageNamesInternal {
 
         ),
         DuplicateStore.getMatch() match {
-          case Some(md) =>
+          case Some(md) if md.id == props.page.dupid =>
             <.div(
               dupStyles.divNamesPage,
               //              <.h1("Edit Names"),
@@ -156,8 +157,8 @@ object PageNamesInternal {
               " ",
               AppButton( "Cancel", "Cancel", props.routerCtl.setOnClick(props.returnPage) )
             )
-          case None =>
-            <.h1( "Waiting" )
+          case _ =>
+            HomePage.loading
         }
       )
     }

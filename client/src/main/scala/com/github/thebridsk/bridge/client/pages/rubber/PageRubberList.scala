@@ -38,6 +38,7 @@ import com.github.thebridsk.bridge.clientcommon.rest2.ResultHolder
 import com.github.thebridsk.materialui.MuiTypography
 import com.github.thebridsk.materialui.TextVariant
 import com.github.thebridsk.materialui.TextColor
+import com.github.thebridsk.bridge.client.pages.HomePage
 
 /**
  * A skeleton component.
@@ -250,10 +251,10 @@ object PageRubberListInternal {
                       )
                   )
                 case None =>
-                  <.h1("Loading ...")
+                  HomePage.loading
               }
             } else {
-              <.h1("Loading ...")
+              HomePage.loading
             }
           )
       )

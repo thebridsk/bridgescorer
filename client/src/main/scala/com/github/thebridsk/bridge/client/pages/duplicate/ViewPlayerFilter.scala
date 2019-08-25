@@ -27,6 +27,7 @@ import com.github.thebridsk.bridge.data.duplicate.suggestion.ColorByWonPts
 import com.github.thebridsk.bridge.data.duplicate.suggestion.ColorByWonPtsPct
 import com.github.thebridsk.bridge.data.duplicate.suggestion.ColorByPointsPct
 import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles
+import com.github.thebridsk.bridge.client.pages.HomePage
 
 /**
  * Shows a pairs summary page.
@@ -182,10 +183,7 @@ object ViewPlayerFilterInternal {
             "No past duplicate matches were found"
           )
         case None =>
-          <.div(
-            dupStyles.divPlayerFilter,
-            "Waiting for data"
-          )
+          HomePage.loading
       }
     }
   }

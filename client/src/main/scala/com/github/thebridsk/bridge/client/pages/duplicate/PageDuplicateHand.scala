@@ -31,6 +31,7 @@ import com.github.thebridsk.materialui.MuiTypography
 import com.github.thebridsk.materialui.TextVariant
 import com.github.thebridsk.materialui.TextColor
 import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles.baseStyles
+import com.github.thebridsk.bridge.client.pages.HomePage
 
 /**
  * Shows the team x board table and has a totals column that shows the number of points the team has.
@@ -130,53 +131,57 @@ object PageDuplicateHandInternal {
         state.errormsg match {
           case Some(msg) => <.p(msg)
           case None =>
-            val (md,board,hand,res) = state.vals.get
-            val newhand = state.newhand
-            val (north,south,east,west) = {
-              var n = "Unknown"
-              var s = n
-              var e = n
-              var w = n
-              md.getTeam(hand.nsTeam) match {
-                case Some(team) =>
-                  if (hand.nIsPlayer1) {
-                    n = team.player1
-                    s = team.player2
-                  } else {
-                    s = team.player1
-                    n = team.player2
+            state.vals match {
+              case Some((md,board,hand,res)) if md.id == props.page.dupid =>
+                val newhand = state.newhand
+                val (north,south,east,west) = {
+                  var n = "Unknown"
+                  var s = n
+                  var e = n
+                  var w = n
+                  md.getTeam(hand.nsTeam) match {
+                    case Some(team) =>
+                      if (hand.nIsPlayer1) {
+                        n = team.player1
+                        s = team.player2
+                      } else {
+                        s = team.player1
+                        n = team.player2
+                      }
+                    case None =>
                   }
-                case None =>
-              }
-              md.getTeam(hand.ewTeam) match {
-                case Some(team) =>
-                  if (hand.eIsPlayer1) {
-                    e = team.player1
-                    w = team.player2
-                  } else {
-                    w = team.player1
-                    e = team.player2
+                  md.getTeam(hand.ewTeam) match {
+                    case Some(team) =>
+                      if (hand.eIsPlayer1) {
+                        e = team.player1
+                        w = team.player2
+                      } else {
+                        w = team.player1
+                        e = team.player2
+                      }
+                    case None =>
                   }
-                case None =>
-              }
-              (n,s,e,w)
-            }
-            val contract = Contract.create(res,
-                                           Duplicate,
-                                           None,
-                                           hand.table.toInt,
-                                           Id.boardIdToBoardNumber(hand.board).toInt,
-                                           north,south,east,west,
-                                           PlayerPosition(board.dealer))
+                  (n,s,e,w)
+                }
+                val contract = Contract.create(res,
+                                              Duplicate,
+                                              None,
+                                              hand.table.toInt,
+                                              Id.boardIdToBoardNumber(hand.board).toInt,
+                                              north,south,east,west,
+                                              PlayerPosition(board.dealer))
 
-            PageHand(contract,
-                     viewHandCallbackOk(md,hand) _,
-                     viewHandCallbackCancel,
-                     Some(hand.nsTeam),
-                     Some(hand.ewTeam),
-                     newhand=newhand,
-                     allowPassedOut=board.timesPlayed()>0,
-                     helppage= None) // Some("../help/duplicate/enterhand.html"))
+                PageHand(contract,
+                        viewHandCallbackOk(md,hand) _,
+                        viewHandCallbackCancel,
+                        Some(hand.nsTeam),
+                        Some(hand.ewTeam),
+                        newhand=newhand,
+                        allowPassedOut=board.timesPlayed()>0,
+                        helppage= None) // Some("../help/duplicate/enterhand.html"))
+              case _ =>
+                HomePage.loading
+            }
         }
       )
     }

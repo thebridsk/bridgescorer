@@ -38,6 +38,7 @@ import com.github.thebridsk.materialui.TextVariant
 import com.github.thebridsk.materialui.TextColor
 import com.github.thebridsk.materialui.MuiMenuItem
 import com.github.thebridsk.bridge.data.MatchDuplicate
+import com.github.thebridsk.bridge.client.pages.HomePage
 
 /**
  * Shows the team x board table and has a totals column that shows the number of points the team has.
@@ -159,7 +160,7 @@ object PageScoreboardInternal {
       }
 
       DuplicateStore.getView( props.game.getPerspective() ) match {
-        case Some(score) =>
+        case Some(score) if score.id == props.game.dupid =>
           val winnersets = score.getWinnerSets()
 
           def getScoringMethodButton() = scoringMethodButton( state.useIMP, Some( score.isIMP), false, nextIMPs )
@@ -336,7 +337,7 @@ object PageScoreboardInternal {
               )
             )
           )
-        case None =>
+        case _ =>
           <.div(
             DuplicatePageBridgeAppBar(
               id = Some(props.game.dupid),
@@ -354,7 +355,7 @@ object PageScoreboardInternal {
               routeCtl = props.routerCtl
             )(
             ),
-            <.h1( "Loading..." )
+            HomePage.loading
           )
 
       }

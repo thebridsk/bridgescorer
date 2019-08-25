@@ -31,6 +31,7 @@ import com.github.thebridsk.bridge.clientcommon.react.Table.Sorter
 import com.github.thebridsk.bridge.clientcommon.react.Table.SortableColumn
 import com.github.thebridsk.bridge.clientcommon.react.Table.MultiColumnSort
 import com.github.thebridsk.bridge.clientcommon.react.Table.Row
+import com.github.thebridsk.bridge.client.pages.HomePage
 
 /**
  * Shows a summary page of all duplicate matches from the database.
@@ -259,7 +260,7 @@ object ViewPairsMadeDownTableInternal {
         case None =>
           <.div(
             if (props.showPairs) dupStyles.viewPairsDetailsTable else dupStyles.viewPeopleDetailsTable,
-            props.showNoDataMsg ?= "Waiting for data"
+            props.showNoDataMsg ?= HomePage.loading
           )
       }
     }
