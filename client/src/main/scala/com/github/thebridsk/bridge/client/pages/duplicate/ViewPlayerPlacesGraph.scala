@@ -11,6 +11,7 @@ import com.github.thebridsk.bridge.clientcommon.react.PieChart
 import com.github.thebridsk.bridge.clientcommon.react.PieChartWithTooltip
 import com.github.thebridsk.utilities.logging.Logger
 import com.github.thebridsk.bridge.clientcommon.react.PieChartWithTooltip.IntLegendUtil
+import com.github.thebridsk.bridge.client.pages.HomePage
 
 
 /**
@@ -255,7 +256,7 @@ object ViewPlayerPlacesGraphInternal {
         case None =>
           <.div(
             dupStyles.viewPlayerPlaces,
-            <.h1("Loading...")
+            HomePage.loading
           )
       }
     }

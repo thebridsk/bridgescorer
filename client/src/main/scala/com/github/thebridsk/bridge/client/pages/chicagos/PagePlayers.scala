@@ -13,6 +13,7 @@ import com.github.thebridsk.bridge.client.pages.chicagos.ChicagoRouter.NamesView
 import com.github.thebridsk.materialui.MuiTypography
 import com.github.thebridsk.materialui.TextVariant
 import com.github.thebridsk.materialui.TextColor
+import com.github.thebridsk.bridge.client.pages.HomePage
 
 /**
   * @author werewolf
@@ -152,7 +153,7 @@ object PagePlayersInternal {
               helpurl = "../help/chicago/four/names4.html",
               routeCtl = props.router
             )(),
-            <.div(<.h1("Loading..."))
+            HomePage.loading
           )
       }
 

@@ -35,6 +35,7 @@ import com.github.thebridsk.materialui.MuiTypography
 import com.github.thebridsk.materialui.TextVariant
 import com.github.thebridsk.materialui.TextColor
 import japgolly.scalajs.react.vdom.TagMod
+import com.github.thebridsk.bridge.client.pages.HomePage
 
 /**
  * A skeleton component.
@@ -349,7 +350,7 @@ object PageDuplicateResultEditInternal {
               ),
             )
           case _ =>
-            <.div( s"Working" )
+            HomePage.loading
         }
       )
     }

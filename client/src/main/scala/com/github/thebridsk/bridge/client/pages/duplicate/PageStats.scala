@@ -33,6 +33,7 @@ import com.github.thebridsk.bridge.clientcommon.rest2.RestClientDuplicatePlayerP
 import com.github.thebridsk.bridge.data.duplicate.stats.ContractStats
 import com.github.thebridsk.bridge.data.duplicate.stats.PlayerComparisonStats
 import com.github.thebridsk.bridge.data.duplicate.stats.PlayerStats
+import com.github.thebridsk.bridge.client.pages.HomePage
 
 /**
  * Shows a summary page of all duplicate matches from the database.
@@ -272,7 +273,7 @@ object PageStatsInternal {
 
     val cancel = scope.modState( s => s.copy(msg = None) )
 
-    val working = <.div( "Working on getting data" )
+    val working = HomePage.loading
 
     def optionalView( view: => TagMod, data: Option[_]* ): TagMod = {
       if (data.find( d => d.isEmpty ).isEmpty) {

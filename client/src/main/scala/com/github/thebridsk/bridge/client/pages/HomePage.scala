@@ -81,6 +81,8 @@ import com.github.thebridsk.bridge.client.bridge.store.ServerURLStore
  */
 object HomePage {
 
+  val loading = <.h1("Loading...")
+
   var debugging = false
 
   case class Props( routeCtl: BridgeRouter[AppPage])

@@ -24,6 +24,7 @@ import com.github.thebridsk.bridge.client.routes.BridgeRouter
 import com.github.thebridsk.materialui.MuiTypography
 import com.github.thebridsk.materialui.TextVariant
 import com.github.thebridsk.materialui.TextColor
+import com.github.thebridsk.bridge.client.pages.HomePage
 
 /**
  * Shows the team x board table and has a totals column that shows the number of points the team has.
@@ -71,47 +72,47 @@ object PageBoardSetInternal {
   class Backend(scope: BackendScope[Props, State]) {
     def render( props: Props, state: State ) = {
       import DuplicateStyles._
-      DuplicateStore.getMatch() match {
-        case Some(md) =>
-          val boardset = md.getBoardSetObject()
-          <.div(
-            DuplicatePageBridgeAppBar(
-              id = Some(props.page.dupid),
-              tableIds = List(),
-              title = Seq[CtorType.ChildArg](
-                    MuiTypography(
-                        variant = TextVariant.h6,
-                        color = TextColor.inherit,
-                    )(
-                        <.span(
-                          "BoardSet",
-                        )
-                    )),
-              helpurl = "../help/duplicate/summary.html",
-              routeCtl = props.routerCtl
-            )(
+      <.div(
+        DuplicatePageBridgeAppBar(
+          id = Some(props.page.dupid),
+          tableIds = List(),
+          title = Seq[CtorType.ChildArg](
+                MuiTypography(
+                    variant = TextVariant.h6,
+                    color = TextColor.inherit,
+                )(
+                    <.span(
+                      "BoardSet",
+                    )
+                )),
+          helpurl = "../help/duplicate/summary.html",
+          routeCtl = props.routerCtl
+        )(
 
-            ),
-            <.div(
-              dupStyles.divBoardSetPage,
+        ),
+        DuplicateStore.getMatch() match {
+          case Some(md) if md.id == props.page.dupid =>
+            val boardset = md.getBoardSetObject()
               <.div(
-                <.h1( "Boards used for the match" )
-              ),
-              ViewBoardSet(boardset,2),
-              <.div( baseStyles.divFlexBreak ),
-              <.div(
-                baseStyles.divFooter,
+                dupStyles.divBoardSetPage,
                 <.div(
-                  baseStyles.divFooterCenter,
-                  AppButton( "Game", "Completed Games Scoreboard", props.routerCtl.setOnClick(props.page.toScoreboard())
+                  <.h1( "Boards used for the match" )
+                ),
+                ViewBoardSet(boardset,2),
+                <.div( baseStyles.divFlexBreak ),
+                <.div(
+                  baseStyles.divFooter,
+                  <.div(
+                    baseStyles.divFooterCenter,
+                    AppButton( "Game", "Completed Games Scoreboard", props.routerCtl.setOnClick(props.page.toScoreboard())
+                    )
                   )
                 )
               )
-            )
-          )
-        case None =>
-          <.h1( "Waiting" )
-      }
+          case _ =>
+            HomePage.loading
+        }
+      )
     }
 
     val storeCallback = scope.forceUpdate

@@ -25,6 +25,7 @@ import com.github.thebridsk.bridge.client.routes.BridgeRouter
 import com.github.thebridsk.materialui.MuiTypography
 import com.github.thebridsk.materialui.TextVariant
 import com.github.thebridsk.materialui.TextColor
+import com.github.thebridsk.bridge.client.pages.HomePage
 
 /**
  * Shows the team x board table and has a totals column that shows the number of points the team has.
@@ -72,28 +73,29 @@ object PageTableInternal {
   class Backend(scope: BackendScope[Props, State]) {
     def render( props: Props, state: State ) = {
       import DuplicateStyles._
-      DuplicateStore.getCompleteView() match {
-        case Some(score) =>
-          score.tables.get(props.page.tableid) match {
-            case Some(rounds) =>
-              <.div(
-                DuplicatePageBridgeAppBar(
-                  id = Some(props.page.dupid),
-                  tableIds = List(),
-                  title = Seq[CtorType.ChildArg](
-                        MuiTypography(
-                            variant = TextVariant.h6,
-                            color = TextColor.inherit,
-                        )(
-                            <.span(
-                              s"Table ${props.page.tableid}",
-                            )
-                        )),
-                  helpurl = "../help/duplicate/table.html",
-                  routeCtl = props.routerCtl
+      <.div(
+        DuplicatePageBridgeAppBar(
+          id = Some(props.page.dupid),
+          tableIds = List(),
+          title = Seq[CtorType.ChildArg](
+                MuiTypography(
+                    variant = TextVariant.h6,
+                    color = TextColor.inherit,
                 )(
+                    <.span(
+                      s"Table ${props.page.tableid}",
+                    )
+                )),
+          helpurl = "../help/duplicate/table.html",
+          routeCtl = props.routerCtl
+        )(
 
-                ),
+        ),
+
+        DuplicateStore.getCompleteView() match {
+          case Some(score) if score.id == props.page.dupid =>
+            score.tables.get(props.page.tableid) match {
+              case Some(rounds) =>
                 <.div(
                   dupStyles.divTablePage,
                   ViewTable(props.routerCtl,props.page),
@@ -120,15 +122,15 @@ object PageTableInternal {
                     )
                   )
                 )
-              )
-            case None =>
-              <.div( <.p("Table not found"), <.p(
-                  AppButton( "Game", "Completed Games Scoreboard", props.routerCtl.setOnClick(CompleteScoreboardView(props.page.dupid)) )
-                  ) )
-          }
-        case None =>
-          <.div( <.p("Waiting") )
-      }
+              case None =>
+                <.div( <.p("Table not found"), <.p(
+                    AppButton( "Game", "Completed Games Scoreboard", props.routerCtl.setOnClick(CompleteScoreboardView(props.page.dupid)) )
+                    ) )
+            }
+          case _ =>
+            HomePage.loading
+        }
+      )
     }
 
     val storeCallback = scope.forceUpdate

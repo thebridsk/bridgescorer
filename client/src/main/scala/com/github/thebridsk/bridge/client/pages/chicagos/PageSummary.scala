@@ -18,6 +18,7 @@ import com.github.thebridsk.materialui.MuiTypography
 import com.github.thebridsk.materialui.TextVariant
 import com.github.thebridsk.materialui.TextColor
 import com.github.thebridsk.bridge.client.routes.BridgeRouter
+import com.github.thebridsk.bridge.client.pages.HomePage
 
 /**
   * A skeleton component.
@@ -246,7 +247,7 @@ object PageSummaryInternal {
               )
             }
           case _ =>
-            <.div(<.h1("Loading ..."))
+            HomePage.loading
         }
       )
     }

@@ -39,6 +39,7 @@ import com.github.thebridsk.bridge.clientcommon.react.Utils._
 import com.github.thebridsk.materialui.TextVariant
 import com.github.thebridsk.materialui.TextColor
 import com.github.thebridsk.materialui.MuiTypography
+import com.github.thebridsk.bridge.client.pages.HomePage
 
 /**
   * @author werewolf
@@ -237,7 +238,7 @@ object PageChicagoListInternal {
                 )
               )
             case None =>
-              <.h1("Loading ...")
+              HomePage.loading
           }
         )
       )

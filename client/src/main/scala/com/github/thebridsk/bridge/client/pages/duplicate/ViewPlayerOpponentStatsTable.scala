@@ -36,6 +36,7 @@ import com.github.thebridsk.bridge.clientcommon.react.Table.MultiColumnSort
 import com.github.thebridsk.bridge.clientcommon.react.Table.Row
 import com.github.thebridsk.bridge.data.duplicate.stats.PlayersOpponentsStats
 import com.github.thebridsk.bridge.data.duplicate.stats.PlayerOpponentStat
+import com.github.thebridsk.bridge.client.pages.HomePage
 
 /**
  * Shows a summary page of all duplicate matches from the database.
@@ -272,7 +273,7 @@ object ViewPlayerOpponentStatsTableInternal {
         case None =>
           <.div(
             if (props.showPairs) dupStyles.viewPairsTable else dupStyles.viewPeopleTable,
-            props.showNoDataMsg ?= "Waiting for data"
+            props.showNoDataMsg ?= HomePage.loading
           )
       }
     }

@@ -1,6 +1,5 @@
 package com.github.thebridsk.bridge.client.pages.duplicate
 
-
 import scala.scalajs.js
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
@@ -24,6 +23,7 @@ import com.github.thebridsk.materialui.MuiTypography
 import com.github.thebridsk.materialui.TextVariant
 import com.github.thebridsk.materialui.TextColor
 import com.github.thebridsk.bridge.client.routes.BridgeRouter
+import com.github.thebridsk.bridge.client.pages.HomePage
 
 /**
  * Shows the team x board table and has a totals column that shows the number of points the team has.
@@ -90,7 +90,7 @@ object PageAllTablesInternal {
 
           ),
           DuplicateStore.getCompleteView() match {
-            case Some(score) =>
+            case Some(score) if score.id == props.page.dupid =>
               val clickPage = CompleteScoreboardView(props.page.dupid)
               <.div(
                 dupStyles.divAllTablesPage,
@@ -108,9 +108,9 @@ object PageAllTablesInternal {
                   )
                 )
               )
-            case None =>
+            case _ =>
               <.div(
-                  <.h1("Waiting to load information")
+                  HomePage.loading
               )
           }
       )

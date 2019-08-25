@@ -38,6 +38,7 @@ import com.github.thebridsk.bridge.clientcommon.react.Table
 import com.github.thebridsk.bridge.clientcommon.react.SvgRect
 import com.github.thebridsk.bridge.clientcommon.react.Tooltip
 import com.github.thebridsk.bridge.clientcommon.react.Table.Column
+import com.github.thebridsk.bridge.client.pages.HomePage
 
 /**
  * Shows a pairs summary page.
@@ -357,10 +358,7 @@ object ViewPairsGridInternal {
             props.showNoDataMsg ?= "No past duplicate matches were found"
           )
         case None =>
-          <.div(
-            dupStyles.divPairsGrid,
-            props.showNoDataMsg ?= "Waiting for data"
-          )
+          HomePage.loading
       }
     }
   }

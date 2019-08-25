@@ -29,6 +29,7 @@ import com.github.thebridsk.materialui.TextVariant
 import com.github.thebridsk.materialui.TextColor
 import com.github.thebridsk.bridge.client.routes.BridgeRouter
 import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles.baseStyles
+import com.github.thebridsk.bridge.client.pages.HomePage
 
 
 /**
@@ -158,7 +159,7 @@ object PageRubberMatchHandInternal {
             }
 
           case _ =>
-            <.h1("Loading rubber match...")
+            HomePage.loading
         }
       )
     }

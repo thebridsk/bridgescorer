@@ -24,6 +24,7 @@ import com.github.thebridsk.bridge.clientcommon.react.Table.Column
 import com.github.thebridsk.bridge.data.duplicate.stats.PlayersOpponentsStats
 import com.github.thebridsk.bridge.data.duplicate.stats.PlayerOpponentStat
 import com.github.thebridsk.bridge.data.duplicate.stats.Statistic
+import com.github.thebridsk.bridge.client.pages.HomePage
 
 /**
  * Shows a pairs summary page.
@@ -281,7 +282,7 @@ object ViewPlayerOpponentStatsGraphInternal {
         case None =>
           <.div(
             dupStyles.divPairsGrid,
-            props.showNoDataMsg ?= "Waiting for data"
+            props.showNoDataMsg ?= HomePage.loading
           )
       }
     }

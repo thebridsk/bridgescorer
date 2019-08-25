@@ -21,6 +21,7 @@ import com.github.thebridsk.bridge.clientcommon.react.PopupOkCancel
 import com.github.thebridsk.materialui.MuiTypography
 import com.github.thebridsk.materialui.TextVariant
 import com.github.thebridsk.materialui.TextColor
+import com.github.thebridsk.bridge.client.pages.HomePage
 
 /**
  * A skeleton component.
@@ -87,52 +88,40 @@ object PageDuplicateResultInternal {
       Moment.locale("en")
       ReactWidgetsMoment()
 
-      DuplicateResultStore.getDuplicateResult() match {
-        case Some(dre) if dre.id == props.page.dupid =>
-          val bfinished = !dre.notfinished.getOrElse(false)
-          val finished = if (bfinished) "Match complete" else "Match not complete"
-          val comment = dre.comment.getOrElse("")
-          val wss = dre.getWinnerSets
-          <.div(
-            PopupOkCancel(
-              if (state.deletePopup) {
-                Some( <.span( s"Are you sure you want to delete duplicate result ${props.page.dupid}" ) )
-              } else {
-                None
-              },
-              Some(actionDeleteOk),
-              Some(actionDeleteCancel)
-            ),
-            DuplicatePageBridgeAppBar(
-              id = None,
-              tableIds = List(),
-              title = Seq[CtorType.ChildArg](
-                    MuiTypography(
-                        variant = TextVariant.h6,
-                        color = TextColor.inherit,
-                    )(
-                        <.span(
-                          "Duplicate Results",
-                        )
-                    )),
-              helpurl = "../help/duplicate/summary.html",
-              routeCtl = props.routerCtl
-            )(
+      <.div(
+        PopupOkCancel(
+          if (state.deletePopup) {
+            Some( <.span( s"Are you sure you want to delete duplicate result ${props.page.dupid}" ) )
+          } else {
+            None
+          },
+          Some(actionDeleteOk),
+          Some(actionDeleteCancel)
+        ),
+        DuplicatePageBridgeAppBar(
+          id = None,
+          tableIds = List(),
+          title = Seq[CtorType.ChildArg](
+                MuiTypography(
+                    variant = TextVariant.h6,
+                    color = TextColor.inherit,
+                )(
+                    <.span(
+                      "Duplicate Results",
+                    )
+                )),
+          helpurl = "../help/duplicate/summary.html",
+          routeCtl = props.routerCtl
+        )(
 
-            ),
+        ),
+        DuplicateResultStore.getDuplicateResult() match {
+          case Some(dre) if dre.id == props.page.dupid =>
+            val bfinished = !dre.notfinished.getOrElse(false)
+            val finished = if (bfinished) "Match complete" else "Match not complete"
+            val comment = dre.comment.getOrElse("")
+            val wss = dre.getWinnerSets
             <.div( dupStyles.divDuplicateResultPage,
-//              <.div(
-//                <.p( "Played: " ),
-//                DateTimePicker("played",
-//                               defaultValue=if (dre.played==0) None else Some(new Date(dre.played)),
-//                               defaultCurrentDate = Some( state.currentDate ),
-//  //                             onChange = Some(setPlayedIgnore),
-//  //                             onCurrentDateChange = Some(setPlayedIgnore),
-//                               readOnly = true
-//                              ),
-//                <.p( finished ),
-//                <.p( comment )
-//              ),
               wss.zipWithIndex.map { arg =>
                 val (ws,i) = arg
                 val pbws = if (dre.isIMP) dre.placeByWinnerSetIMP(ws) else dre.placeByWinnerSet(ws)
@@ -161,11 +150,11 @@ object PageDuplicateResultInternal {
                   )
                 )
               )
-            ),
-          )
-        case _ =>
-          <.div( s"Working" )
-      }
+            )
+          case _ =>
+            HomePage.loading
+        }
+      )
     }
 
     val storeCallback = scope.forceUpdate

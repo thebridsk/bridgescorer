@@ -45,6 +45,7 @@ import com.github.thebridsk.bridge.clientcommon.react.HelpButton
 import com.github.thebridsk.materialui.MuiTypography
 import com.github.thebridsk.materialui.TextVariant
 import com.github.thebridsk.materialui.TextColor
+import com.github.thebridsk.bridge.client.pages.HomePage
 
 /**
  * Shows the team x board table and has a totals column that shows the number of points the team has.
@@ -543,7 +544,7 @@ object PageTableTeamsInternal {
       logger.fine("PageTableTeams.Backend.render state="+state )
       <.div(
         DuplicateStore.getCompleteView() match {
-          case Some(score) =>
+          case Some(score) if score.id == props.page.dupid =>
             score.tables.get(props.page.tableid) match {
               case Some(rounds) =>
                 val readonly = state.originalNames.isAllValid && !props.page.editPlayers
@@ -573,12 +574,12 @@ object PageTableTeamsInternal {
                     ) )
                 )
             }
-          case None =>
+          case _ =>
             TagMod(
               header(props, "../help/duplicate/enterscorekeepername.html"),
               <.div(
                 dupStyles.divTableNamesPage,
-                <.p("Waiting")
+                HomePage.loading
               )
             )
         }

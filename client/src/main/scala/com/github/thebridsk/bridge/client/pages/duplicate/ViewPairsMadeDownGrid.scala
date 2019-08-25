@@ -31,6 +31,7 @@ import com.github.thebridsk.bridge.clientcommon.react.PieChartOrSquareForZero
 import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles
 import com.github.thebridsk.bridge.clientcommon.react.Table.Column
 import com.github.thebridsk.bridge.clientcommon.react.Table
+import com.github.thebridsk.bridge.client.pages.HomePage
 
 /**
  * Shows a pairs summary page.
@@ -234,10 +235,7 @@ object ViewPairsMadeDownGridInternal {
             props.showNoDataMsg ?= "No past duplicate matches were found"
           )
         case None =>
-          <.div(
-            dupStyles.divPairsDetailsGrid,
-            props.showNoDataMsg ?= "Waiting for data"
-          )
+          HomePage.loading
       }
     }
   }
