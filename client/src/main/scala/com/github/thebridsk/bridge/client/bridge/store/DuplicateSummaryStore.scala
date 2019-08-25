@@ -52,9 +52,8 @@ object DuplicateSummaryStore extends ChangeListenable {
   private var fSummary: Option[List[DuplicateSummary]] = None
   private var fImportId: Option[String] = None
   private var fCalled: Boolean = false
-  private var fLastCalledImportId = 0.0
 
-  private val maxTimeLastCalledImportId = 1000.0
+  private val maxTimeLastCalledImportId = 30000.0  // 30 seconds
 
   override
   def noListener() = {
@@ -64,23 +63,6 @@ object DuplicateSummaryStore extends ChangeListenable {
   def getDuplicateMatchSummary() = fMatchSummary
   def getDuplicateSummary() = fSummary
   def getImportId = fImportId
-
-  def getCalledImportId = {
-    val currentTime = SystemTime.currentTimeMillis()
-    val rc = if (fCalled) {
-      if (currentTime - fLastCalledImportId < maxTimeLastCalledImportId) {
-        Right(fImportId)
-      }
-      else {
-        Left("within timeout")
-      }
-    }
-    else {
-      Left("never called")
-    }
-    fLastCalledImportId = currentTime
-    rc
-  }
 
   def updateDuplicateSummary( importId: Option[String], summary: List[DuplicateSummary] ) = {
     logger.fine(s"""Update DuplicateSummaryStore from ${importId}: ${summary}""")

@@ -506,36 +506,7 @@ object PageSummaryInternal {
 
     def getDuplicateSummaries( props: Props ): (Option[String], Option[List[DuplicateSummary]]) = {
       logger.fine("PageSummary.getDuplicateSummaries")
-      DuplicateSummaryStore.getCalledImportId match {
-        case Right(importId) =>
-          val summaries = props.page match {
-            case isv: ImportSummaryView =>
-              val id = isv.getDecodedId
-              if (importId.isDefined && id == importId.get) DuplicateSummaryStore.getDuplicateSummary()
-              else {
-                initializeNewSummary(props)
-                None
-              }
-            case SummaryView =>
-              if (importId.isEmpty) DuplicateSummaryStore.getDuplicateSummary()
-              else {
-                initializeNewSummary(props)
-                None
-              }
-          }
-          (importId,summaries)
-        case Left(msg) =>
-          initializeNewSummary(props)
-          (
-            props.page match {
-              case isv: ImportSummaryView =>
-                Some(isv.importId)
-              case SummaryView =>
-                None
-            },
-            None
-          )
-      }
+      (DuplicateSummaryStore.getImportId, DuplicateSummaryStore.getDuplicateSummary)
     }
 
     val nextIMPs = scope.modState { s => s.nextIMPs }
