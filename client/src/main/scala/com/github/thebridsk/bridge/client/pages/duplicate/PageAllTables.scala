@@ -24,6 +24,7 @@ import com.github.thebridsk.materialui.TextVariant
 import com.github.thebridsk.materialui.TextColor
 import com.github.thebridsk.bridge.client.routes.BridgeRouter
 import com.github.thebridsk.bridge.client.pages.HomePage
+import japgolly.scalajs.react.component.builder.Lifecycle.ComponentDidUpdate
 
 /**
  * Shows the team x board table and has a totals column that shows the number of points the team has.
@@ -132,12 +133,21 @@ object PageAllTablesInternal {
     }
   }
 
+  def didUpdate( cdu: ComponentDidUpdate[Props,State,Backend,Unit] ) = Callback {
+    val props = cdu.currentProps
+    val prevProps = cdu.prevProps
+    if (prevProps.page != props.page) {
+      Controller.monitor(props.page.dupid)
+    }
+  }
+
   val component = ScalaComponent.builder[Props]("PageAllTables")
                             .initialStateFromProps { props => State() }
                             .backend(new Backend(_))
                             .renderBackend
                             .componentDidMount( scope => scope.backend.didMount)
                             .componentWillUnmount( scope => scope.backend.willUnmount )
+                            .componentDidUpdate( didUpdate )
                             .build
 }
 

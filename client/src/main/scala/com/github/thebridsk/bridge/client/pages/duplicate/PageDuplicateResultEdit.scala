@@ -36,6 +36,7 @@ import com.github.thebridsk.materialui.TextVariant
 import com.github.thebridsk.materialui.TextColor
 import japgolly.scalajs.react.vdom.TagMod
 import com.github.thebridsk.bridge.client.pages.HomePage
+import japgolly.scalajs.react.component.builder.Lifecycle.ComponentDidUpdate
 
 /**
  * A skeleton component.
@@ -449,12 +450,21 @@ object PageDuplicateResultEditInternal {
                       }).build
 
 
+  def didUpdate( cdu: ComponentDidUpdate[Props,State,Backend,Unit] ) = Callback {
+    val props = cdu.currentProps
+    val prevProps = cdu.prevProps
+    if (prevProps.page != props.page) {
+      Controller.monitor(props.page.dupid)
+    }
+  }
+
   val component = ScalaComponent.builder[Props]("PageDuplicateResultEdit")
                             .initialStateFromProps { props => State() }
                             .backend(new Backend(_))
                             .renderBackend
                             .componentDidMount( scope => scope.backend.didMount)
                             .componentWillUnmount( scope => scope.backend.willUnmount )
+                            .componentDidUpdate( didUpdate )
                             .build
 }
 
