@@ -30,7 +30,7 @@ import com.github.thebridsk.materialui.TextColor
 import com.github.thebridsk.bridge.client.routes.BridgeRouter
 import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles.baseStyles
 import com.github.thebridsk.bridge.client.pages.HomePage
-
+import japgolly.scalajs.react.component.builder.Lifecycle.ComponentDidUpdate
 
 /**
  * A skeleton component.
@@ -167,17 +167,25 @@ object PageRubberMatchHandInternal {
     val storeCallback = Callback { scope.withEffectsImpure.forceUpdate }
 
     val didMount = CallbackTo {
-      logger.info("PageRubberNames.didMount")
+      logger.info("PageRubberMatchHand.didMount")
       RubberStore.addChangeListener(storeCallback)
     } >> scope.props >>= { (p) => Callback(
       RubberController.ensureMatch(p.page.rid))
     }
 
     val willUnmount = CallbackTo {
-      logger.info("PageRubberNames.willUnmount")
+      logger.info("PageRubberMatchHand.willUnmount")
       RubberStore.removeChangeListener(storeCallback)
     }
 
+  }
+
+  def didUpdate( cdu: ComponentDidUpdate[Props,State,Backend,Unit] ) = Callback {
+    val props = cdu.currentProps
+    val prevProps = cdu.prevProps
+    if (prevProps.page != props.page) {
+      RubberController.monitor(props.page.rid)
+    }
   }
 
   val component = ScalaComponent.builder[Props]("PageRubberMatchHand")
@@ -186,6 +194,7 @@ object PageRubberMatchHandInternal {
                             .renderBackend
                             .componentDidMount( scope => scope.backend.didMount)
                             .componentWillUnmount( scope => scope.backend.willUnmount )
+                            .componentDidUpdate( didUpdate )
                             .build
 }
 
