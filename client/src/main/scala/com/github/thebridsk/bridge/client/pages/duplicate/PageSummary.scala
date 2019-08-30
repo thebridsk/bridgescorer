@@ -580,62 +580,46 @@ object PageSummaryInternal {
       def showMatches() = {
         val isImportStore = props.page.isInstanceOf[ImportSummaryView]
         <.table(
-            <.caption(
-              if (isImportStore) {
-                TagMod()
-              } else {
-                AppButton( "DuplicateCreate", "New",
-                           props.routerCtl.setOnClick(NewDuplicateView)
-                    )
-              },
-              <.span(
-                RadioButton("ShowBoth", "Show All", state.showEntries==ShowBoth, show(ShowBoth) ),
-                RadioButton("ShowMD", "Show Matches", state.showEntries==ShowMD, show(ShowMD) ),
-                RadioButton("ShowMDR", "Show Results Only", state.showEntries==ShowMDR, show(ShowMDR) )
-              )
-            ),
-            SummaryHeader((tp,props,state,this,importId)),
-            <.tfoot(
-              <.tr(
-                <.td( ^.colSpan:=footerColspan,
-                  footer()
-                )
-              )
-            ),
-            <.tbody(
-                summaries.get.sortWith((one,two)=>one.created>two.created).
-                              filter { ds =>
-                                state.showEntries match {
-                                  case ShowMD =>
-                                    !ds.onlyresult
-                                  case ShowMDR =>
-                                    ds.onlyresult
-                                  case ShowBoth =>
-                                    true
-                                }
-                              }.
-                              take(takerows).
-                              map { ds =>
-                                    SummaryRow.withKey( ds.id )((tp,ds,props,state,this,importId))
-                                  }.toTagMod,
+          <.caption(
+            if (isImportStore) {
+              TagMod()
+            } else {
+              AppButton( "DuplicateCreate", "New",
+                          props.routerCtl.setOnClick(NewDuplicateView)
+                  )
+            },
+            <.span(
+              RadioButton("ShowBoth", "Show All", state.showEntries==ShowBoth, show(ShowBoth) ),
+              RadioButton("ShowMD", "Show Matches", state.showEntries==ShowMD, show(ShowMD) ),
+              RadioButton("ShowMDR", "Show Results Only", state.showEntries==ShowMDR, show(ShowMDR) )
             )
-        )
-      }
-
-      /**
-       * Display the still working to fill table
-       */
-      def showWorkingMatches() = {
-        <.table(
-            SummaryHeader((tp,props,state,this,importId)),
-            <.tfoot(
-              <.tr(
-                <.td( ^.colSpan:=footerColspan,
-                  footer()
-                )
+          ),
+          SummaryHeader((tp,props,state,this,importId)),
+          <.tfoot(
+            <.tr(
+              <.td( ^.colSpan:=footerColspan,
+                footer()
               )
-            ),
-            <.tbody(
+            )
+          ),
+          <.tbody(
+            if (tp.isData) {
+              summaries.get.sortWith((one,two)=>one.created>two.created).
+              filter { ds =>
+                state.showEntries match {
+                  case ShowMD =>
+                    !ds.onlyresult
+                  case ShowMDR =>
+                    ds.onlyresult
+                  case ShowBoth =>
+                    true
+                }
+              }.
+              take(takerows).
+              map { ds =>
+                    SummaryRow.withKey( ds.id )((tp,ds,props,state,this,importId))
+                  }.toTagMod,
+            } else {
               <.tr(
                 <.td( "Working" ),
                 importId.map { id =>
@@ -653,7 +637,8 @@ object PageSummaryInternal {
                 <.td( ""),
                 <.td( "")
               )
-            )
+            }
+          )
         )
       }
 
@@ -750,9 +735,8 @@ object PageSummaryInternal {
 
         ),
         <.div(
-          dupStyles.divSummary,
-          if (tp.isData) showMatches()
-          else showWorkingMatches(),
+            dupStyles.divSummary,
+            showMatches()
         )
       )
     }

@@ -39,6 +39,7 @@ import com.github.thebridsk.materialui.TextColor
 import com.github.thebridsk.materialui.MuiMenuItem
 import com.github.thebridsk.bridge.data.MatchDuplicate
 import com.github.thebridsk.bridge.client.pages.HomePage
+import japgolly.scalajs.react.component.builder.Lifecycle.ComponentDidUpdate
 
 /**
  * Shows the team x board table and has a totals column that shows the number of points the team has.
@@ -396,12 +397,21 @@ object PageScoreboardInternal {
     }
   }
 
+  def didUpdate( cdu: ComponentDidUpdate[Props,State,Backend,Unit] ) = Callback {
+    val props = cdu.currentProps
+    val prevProps = cdu.prevProps
+    if (prevProps.game != props.game) {
+      Controller.monitor(props.game.dupid)
+    }
+  }
+
   val component = ScalaComponent.builder[Props]("PageScoreboard")
                             .initialStateFromProps { props => State() }
                             .backend(new Backend(_))
                             .renderBackend
                             .componentDidMount( scope => scope.backend.didMount)
                             .componentWillUnmount( scope => scope.backend.willUnmount )
+                            .componentDidUpdate( didUpdate )
                             .build
 }
 
