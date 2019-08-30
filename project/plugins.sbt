@@ -8,8 +8,8 @@ name := "project-bridgescorer"
 
 scalaVersion := "2.12.9"
 
-val vLog4j = "1.7.26"              // https://github.com/qos-ch/slf4j
-val vJGit = "5.4.0.201906121030-r" // https://github.com/eclipse/jgit
+val vLog4j = "1.7.28"              // https://github.com/qos-ch/slf4j
+val vJGit = "5.4.2.201908231537-r" // https://github.com/eclipse/jgit
 
 val vCrossProject = "0.6.1"        // https://github.com/portable-scala/sbt-crossproject
 val vScalaJSDefault = "0.6.28"     // http://www.scala-js.org/
