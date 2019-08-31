@@ -307,6 +307,11 @@
 
 .rootThankYouDiv {
   display: block;
+  align-items: center;
+}
+
+.rootThankYouDiv .headerSuitSize {
+  font-size: 5rem;
 }
 
 .rootInfoPageDiv {
