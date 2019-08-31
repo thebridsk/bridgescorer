@@ -3,6 +3,7 @@ package com.github.thebridsk.bridge.client.pages
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.html_<^._
 import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles._
+import com.github.thebridsk.bridge.clientcommon.pages.TitleSuits
 
 object ThankYouPage {
   import ThankYouPageInternal._
@@ -23,7 +24,8 @@ object ThankYouPageInternal {
                               <.div(
                                 rootStyles.thankYouDiv,
                                 <.h1("Thank you for using the Bridge Scorer"),
-                                <.p("You can now close this window")
+                                <.p("You can now close this window"),
+                                <.p( TitleSuits.suitspan)
                               )
                             )
                             .build
