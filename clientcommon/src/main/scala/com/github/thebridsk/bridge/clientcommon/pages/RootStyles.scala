@@ -131,6 +131,8 @@ class BaseStyles {
 
   val appBarTitle = cls("appBarTitle")
 
+  val lightDarkIcon1 = cls("lightDarkIcon1")
+  val lightDarkIcon2 = cls("lightDarkIcon2")
 }
 
 class RootStyles {

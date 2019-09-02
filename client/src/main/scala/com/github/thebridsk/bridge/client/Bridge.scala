@@ -114,4 +114,9 @@ object Bridge {   // need to figure out how to use new way to call main
     }
     root
   }
+
+  def getBody() = {
+    document.body
+  }
+
 }

@@ -1,4 +1,4 @@
-@CHARSET "UTF-8";
+/* @CHARSET "UTF-8"; */
 
 
 .handFooterButton {
@@ -101,7 +101,8 @@
   margin: 2px;
   padding: 1px 6px;
   border-radius: 20px;
-  background-color: rgb(210,210,210);
+  background-color: var(--color-default-button);
+  color: var(--color-fg-default-button);
   border-style: outset;
   border-width: 2px;
   font-size: x-large;
@@ -155,14 +156,14 @@
   border-right-width: 10px;
 }
 .handVulnerable {
-  background-color: red !important;
-  borderStyle: inset;
+  background-color: var(--color-bg-vulnerable) !important;
+  border-style: inset;
   padding: 1px 5px;
 }
 
 .handNotVulnerable {
-  background-color: lightgray;
-  color: gray;
+  background-color: var(--color-bg-not-vulnerable);
+  color: var(--color-not-vulnerable);
   text-decoration: line-through;
   border-style: inset;
   padding: 1px 5px;
@@ -272,15 +273,18 @@
 }
 
 .playDuplicate .handSectionScore > div:first-child {
-  background-color: cyan;
+  background-color: var(--color-bg-hand-section-score);
+  color: var(--color-hand-section-score);
 }
 
 .playChicago .handSectionScore > div:first-child {
-  background-color: cyan;
+  background-color: var(--color-bg-hand-section-score);
+  color: var(--color-hand-section-score);
 }
 
 .contractAndResult {
-  background-color: cyan;
+  background-color: var(--color-bg-hand-section-score);
+  color: var(--color-hand-section-score);
 }
 .handSectionResult .contractAndResult {
   padding-right: 10px;

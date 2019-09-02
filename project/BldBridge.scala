@@ -103,10 +103,10 @@ object BldBridge {
       mainClass in (Compile, run) := Some("com.github.thebridsk.bridge.server.Server"),
       mainClass in (Compile, packageBin) := Some("com.github.thebridsk.bridge.server.Server"),
       server := {
-        (run in Compile).toTask(""" --logfile "server/logs/serverhelp.sbt.%d.%u.log" start --store server/store""").value
+        (run in Compile).toTask(""" --logfile "server/logs/serverhelp.sbt.%d.%u.log" start --cache 0s --store server/store""").value
       },
       serverlogs := {
-        (run in Compile).toTask(""" --logconsolelevel=ALL start --store server/store""").value
+        (run in Compile).toTask(""" --logconsolelevel=ALL start --cache 0s --store server/store""").value
       },
       Compile / run / fork := true,
       testOptions in Test := Seq(),

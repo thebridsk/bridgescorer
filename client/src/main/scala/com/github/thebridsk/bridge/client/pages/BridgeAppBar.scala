@@ -36,6 +36,7 @@ import com.github.thebridsk.bridge.clientcommon.pages.GotoPage
 import com.github.thebridsk.bridge.clientcommon.pages.TitleSuits
 import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles._
 import com.github.thebridsk.bridge.clientcommon.demo.BridgeDemo
+import com.github.thebridsk.bridge.clientcmmon.material.icons.LightDark
 
 /**
   * A simple AppBar for the Bridge client.
@@ -159,6 +160,20 @@ object BridgeAppBarInternal {
       ServerURLPopup.setShowServerURLPopup(true)
     }
 
+    // data-theme="dark"
+    def toggleLightDark(event: ReactEvent) = {
+      logger.info("toggle light dark")
+      val body = Bridge.getBody()
+      val ntheme = if (body.hasAttribute("data-theme")) {
+        val theme = body.getAttribute("data-theme")
+        if (theme == "dark") "light"
+        else "dark"
+      } else {
+        "dark"
+      }
+      body.setAttribute("data-theme",ntheme)
+    }
+
     def render(props: Props, state: State) = {
 
       def gotoHomePage(e: ReactEvent) = props.routeCtl.toHome
@@ -193,6 +208,14 @@ object BridgeAppBarInternal {
             // )(
             //   "Server"
             // )
+          ),
+          MuiIconButton(
+            id = "LightDark",
+            onClick = toggleLightDark _,
+            title = "Change color mode",
+            color = ColorVariant.inherit
+          )(
+            LightDark()
           ),
           MuiIconButton(
             id = "MoreMenu",
