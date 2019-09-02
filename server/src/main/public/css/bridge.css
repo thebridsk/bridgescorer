@@ -3,6 +3,7 @@
 :root {
   /* Light mode color theme */
   --color-bg: white;
+  --color-other-bg: rgb(50,54,57);
   --color-fg: rgb(50,54,57);
   --color-table-border: black;
   --color-table-row-alt: #f2f2f2;
@@ -31,6 +32,7 @@
 [data-theme="dark"] {
   /* Dark mode color theme */
   --color-bg: rgb(50,54,57);
+  --color-other-bg: white;
   --color-fg: rgb(210,210,210);
   --color-table-border: rgb(210,210,210);
   --color-table-row-alt: rgb(63,67,70);
@@ -735,4 +737,11 @@ body > div > div > div {
   flex-direction: row;
   overflow: hidden;
   text-shadow: 3px 3px 3px var(--color-appbar-title-shadow);
+}
+
+.lightDarkIcon1 {
+  fill: var(--color-other-bg)
+}
+.lightDarkIcon2 {
+  fill: var(--color-bg)
 }
