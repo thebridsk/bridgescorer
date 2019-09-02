@@ -7,14 +7,14 @@
   border-spacing: 0px;
   font-size: x-large;
   white-space: nowrap;
-  border: 1px solid black;
+  border: 1px solid var(--color-table-border);
 }
 
 .dupDivSummary > table > caption {
   font-size: x-large;
   white-space: nowrap;
-  border: 2px solid black;
-  border-bottom: 0px solid black;
+  border: 2px solid var(--color-table-border);
+  border-bottom: 0px solid var(--color-table-border);
   text-align: left;
 }
 
@@ -25,7 +25,7 @@
   position: sticky;
   position: -webkit-sticky;
   top: -8px;
-  background: white;
+  background-color: var(--color-bg);
   z-index: 11;
 }
 .dupDivSummary > table thead tr th:first-child {
@@ -33,30 +33,30 @@
   position: -webkit-sticky;
   top: -8px;
   left: -8px;
-  background: white;
+  background-color: var(--color-bg);
   z-index: 12;
 }
 .dupDivSummary > table tbody tr td:first-child {
   position: sticky;
   position: -webkit-sticky;
   left: -8px;
-  background: white;
+  background-color: var(--color-bg);
   z-index: 10;
 }
 .dupDivSummary > table tbody tr:nth-child(2n+1) {
-  background-color: #f2f2f2;
+  background-color: var(--color-table-row-alt);
 }
 .dupDivSummary > table td:first-child {
-  border: 1px solid black;
+  border: 1px solid var(--color-table-border);
   padding: 4px 8px 4px 4px;
   text-align: center;
 }
 .dupDivSummary > table td {
-  border: 1px solid black;
+  border: 1px solid var(--color-table-border);
   text-align: center;
 }
 .dupDivSummary > table th {
-  border: 1px solid black;
+  border: 1px solid var(--color-table-border);
   text-align: center;
   padding: 0px 3px;
 }
@@ -64,7 +64,7 @@
   position: sticky;
   position: -webkit-sticky;
   bottom: -8px;
-  background: white;
+  background-color: var(--color-bg);
   z-index: 12;
 }
 .dupDivSummary > table > tfoot > tr > td > div {
@@ -73,6 +73,7 @@
 
 .dupDivPlayerFilter {
   font-size: x-large;
+  padding-bottom: 10px;
 }
 
 .dupDivPlayerFilter ul {
@@ -117,14 +118,14 @@
   position: -webkit-sticky;
   left: -8px;
   z-index: 10;
-  background-color: rgb(250,250,250);
+  background-color: var(--color-bg);
 }
 .dupDivPairsGrid > table > thead > tr > th {
   position: sticky;
   position: -webkit-sticky;
   top: -8px;
   z-index: 11;
-  background-color: rgb(250,250,250);
+  background-color: var(--color-bg);
 }
 .dupDivPairsGrid > table > thead > tr > th:first-child {
   position: sticky;
@@ -132,13 +133,13 @@
   top: -8px;
   left: -8px;
   z-index: 12;
-  background-color: rgb(250,250,250);
+  background-color: var(--color-bg);
 }
 .dupDivPairsGrid > table > tbody > tr > td:last-child {
-  border-left: 3px solid black;
+  border-left: 3px solid var(--color-table-border);
 }
 .dupDivPairsGrid > table > thead > tr > th:last-child {
-  border-left: 3px solid black;
+  border-left: 3px solid var(--color-table-border);
 }
 
 .dupDivPairsGrid .tooltipContent > div.tooltipBody {
@@ -172,14 +173,14 @@
   position: -webkit-sticky;
   left: -8px;
   z-index: 10;
-  background-color: rgb(250,250,250);
+  background-color: var(--color-bg);
 }
 .dupDivPairsDetailsGrid > table > thead > tr > th {
   position: sticky;
   position: -webkit-sticky;
   top: -8px;
   z-index: 11;
-  background-color: rgb(250,250,250);
+  background-color: var(--color-bg);
 }
 .dupDivPairsDetailsGrid > table > thead > tr > th:first-child {
   position: sticky;
@@ -187,13 +188,13 @@
   top: -8px;
   left: -8px;
   z-index: 12;
-  background-color: rgb(250,250,250);
+  background-color: var(--color-bg);
 }
 .dupDivPairsDetailsGrid > table > tbody > tr > td:last-child {
-  border-left: 3px solid black
+  border-left: 3px solid var(--color-table-border);
 }
 .dupDivPairsDetailsGrid > table > thead > tr > th:last-child {
-  border-left: 3px solid black
+  border-left: 3px solid var(--color-table-border);
 }
 
 .dupDivPairsDetailsGrid .tooltipContent .piechart {
@@ -212,7 +213,7 @@
   position: -webkit-sticky;
   z-index: 11;
   top: -8px;
-  background-color: white;
+  background-color: var(--color-bg);
 }
 
 .dupViewPeopleDetailsTable {
@@ -223,19 +224,19 @@
   position: -webkit-sticky;
   z-index: 11;
   top: -8px;
-  background-color: white;
+  background-color: var(--color-bg);
 }
 .dupViewPeopleDetailsTable > table > thead > tr > th:first-child {
   z-index: 12;
   left: -8px;
-  background-color: white;
+  background-color: var(--color-bg);
 }
 .dupViewPeopleDetailsTable > table > tbody > tr > td:first-child {
   position: sticky;
   position: -webkit-sticky;
   z-index: 10;
   left: -8px;
-  background-color: white;
+  background-color: var(--color-bg);
 }
 
 .dupViewPairsTable {
@@ -246,7 +247,7 @@
   position: -webkit-sticky;
   z-index: 11;
   top: -8px;
-  background-color: white;
+  background-color: var(--color-bg);
 }
 
 .dupViewPeopleTable > table > thead > tr > th {
@@ -254,38 +255,38 @@
   position: -webkit-sticky;
   z-index: 11;
   top: -8px;
-  background-color: white;
+  background-color: var(--color-bg);
 }
 .dupViewPeopleTable > table > thead > tr > th:first-child {
   z-index: 12;
   left: -8px;
-  background-color: white;
+  background-color: var(--color-bg);
 }
 .dupViewPeopleTable > table > tbody > tr > td:first-child {
   position: sticky;
   position: -webkit-sticky;
   z-index: 10;
   left: -8px;
-  background-color: white;
+  background-color: var(--color-bg);
 }
 
 .dupTableNewDuplicate {
   border-spacing: 0px;
   font-size: x-large;
   white-space: nowrap;
-  border: 1px solid black;
+  border: 1px solid var(--color-table-border);
 }
 .dupTableNewDuplicate td:first-child {
-  border: 1px solid black;
+  border: 1px solid var(--color-table-border);
   padding: 4px 8px 4px 4px;
   text-align: left;
 }
 .dupTableNewDuplicate td {
-  border: 1px solid black;
+  border: 1px solid var(--color-table-border);
   text-align: center;
 }
 .dupTableNewDuplicate th {
-  border: 1px solid black;
+  border: 1px solid var(--color-table-border);
   text-align: center;
 }
 
@@ -328,27 +329,27 @@
   border-spacing: 0px;
   font-size: x-large;
   white-space: nowrap;
-  border: 1px solid black;
+  border: 1px solid var(--color-table-border);
 }
 .dupTableViewScoreboard > caption {
   font-size: x-large;
   white-space: nowrap;
-  border: 2px solid black;
-  border-bottom: 0px solid black;
+  border: 2px solid var(--color-table-border);
+  border-bottom: 0px solid var(--color-table-border);
   padding: 0px 3px;
 }
 .dupTableViewScoreboard tbody tr:nth-child(2n+1) {
-  background-color: #f2f2f2;
+  background-color: var(--color-table-row-alt);
 }
 .dupCellScoreboardBoardColumn {
   width: 43px;
 }
 .dupTableViewScoreboard td {
-  border: 1px solid black;
+  border: 1px solid var(--color-table-border);
   text-align: center;
 }
 .dupTableViewScoreboard th {
-  border: 1px solid black;
+  border: 1px solid var(--color-table-border);
   text-align: center;
 }
 
@@ -368,15 +369,15 @@
 }
 
 .dupDivScoreboardDetails table {
-  border: 1px solid black;
+  border: 1px solid var(--color-table-border);
   border-spacing: 0px;
 }
 .dupDivScoreboardDetails td {
-  border: 1px solid black;
+  border: 1px solid var(--color-table-border);
   text-align: center;
 }
 .dupDivScoreboardDetails th {
-  border: 1px solid black;
+  border: 1px solid var(--color-table-border);
   text-align: center;
   padding: 0px 3px;
 }
@@ -391,22 +392,22 @@
   border-spacing: 0px;
   font-size: x-large;
   white-space: nowrap;
-  border: 1px solid black;
+  border: 1px solid var(--color-table-border);
 }
 .dupTablePlayerPosition tbody tr:nth-child(2n+1) {
-  background-color: #f2f2f2;
+  background-color: var(--color-table-row-alt);
 }
 .dupTablePlayerPosition td:nth-child(3) {
-  border: 1px solid black;
+  border: 1px solid var(--color-table-border);
   text-align: left;
 }
 .dupTablePlayerPosition td {
-  border: 1px solid black;
+  border: 1px solid var(--color-table-border);
   text-align: center;
   padding: 0px 3px;
 }
 .dupTablePlayerPosition th {
-  border: 1px solid black;
+  border: 1px solid var(--color-table-border);
   text-align: center;
   padding: 0px 3px;
 }
@@ -446,39 +447,40 @@
   border-spacing: 0px;
   font-size: x-large;
   white-space: nowrap;
-  border: 1px solid black;
+  border: 1px solid var(--color-table-border);
 }
 .dupDivTableView > table > caption {
   font-size: x-large;
   white-space: nowrap;
-  border: 2px solid black;
-  border-bottom: 0px solid black;
+  border: 2px solid var(--color-table-border);
+  border-bottom: 0px solid var(--color-table-border);
 }
 .dupDivTableView > table > tbody > tr:nth-child(2n+1) {
-  background-color: #f2f2f2;
+  background-color: var(--color-table-row-alt);
 }
 .dupDivTableView > table > tbody > tr > td:first-child {
-  border: 1px solid black;
+  border: 1px solid var(--color-table-border);
   padding-left: 10px;
   padding-right: 10px;
 }
 .dupDivTableView > table > tbody > tr > td:nth-child(2) {
-  border: 1px solid black;
+  border: 1px solid var(--color-table-border);
   text-align: left;
   padding-left: 10px;
   padding-right: 10px;
 }
 .dupDivTableView > table > tbody > tr > td {
-  border: 1px solid black;
+  border: 1px solid var(--color-table-border);
   text-align: center;
 }
 .dupDivTableView > table > thead > tr > th {
-  border: 1px solid black;
+  border: 1px solid var(--color-table-border);
   text-align: center;
 }
 .dupBoardButtonInTable {
   border-radius: 20px;
-  background-color: rgb(210,210,210);
+  background-color: var(--color-default-button);
+  color: var(--color-fg-default-button);
   border-style: outset;
   border-width: 2px;
   padding: 3px 6px;
@@ -510,27 +512,27 @@
 }
 .dupDivBoardView table {
   border-spacing: 0px;
-  border: 1px solid black;
+  border: 1px solid var(--color-table-border);
 }
 .dupDivBoardView table > caption {
-  border: 2px solid black;
-  border-bottom: 0px solid black;
+  border: 2px solid var(--color-table-border);
+  border-bottom: 0px solid var(--color-table-border);
   padding: 0px 3px;
 }
 .dupDivBoardView th {
-  border: 1px solid black;
+  border: 1px solid var(--color-table-border);
   padding-left: 10px;
   padding-right: 10px;
   text-align: center;
 }
 .dupDivBoardView td {
-  border: 1px solid black;
+  border: 1px solid var(--color-table-border);
   padding-left: 10px;
   padding-right: 10px;
   text-align: center;
 }
 .dupTableCellGray {
-  background-color: lightgrey;
+  background-color: var(--color-table-cell-gray);
 }
 
 .dupDivAllBoardsPage {
@@ -554,18 +556,18 @@
   border-spacing: 0px;
   font-size: x-large;
   white-space: nowrap;
-  border: 1px solid black;
+  border: 1px solid var(--color-table-border);
 }
 .dupDivBoardSetsPage > div tbody tr:nth-child(2n+1) {
-  background-color: #f2f2f2;
+  background-color: var(--color-table-row-alt);
 }
 .dupDivBoardSetsPage > div td {
-  border: 1px solid black;
+  border: 1px solid var(--color-table-border);
   text-align: center;
   padding: 2px 4px 2px 4px;
 }
 .dupDivBoardSetsPage > div th {
-  border: 1px solid black;
+  border: 1px solid var(--color-table-border);
   text-align: center;
   padding: 2px 4px 2px 4px;
 }
@@ -584,18 +586,18 @@
   border-spacing: 0px;
   font-size: x-large;
   white-space: nowrap;
-  border: 1px solid black;
+  border: 1px solid var(--color-table-border);
 }
 .dupDivBoardSetView tbody tr:nth-child(2n+1) {
-  background-color: #f2f2f2;
+  background-color: var(--color-table-row-alt);
 }
 .dupDivBoardSetView td {
-  border: 1px solid black;
+  border: 1px solid var(--color-table-border);
   text-align: center;
   padding: 2px 4px 2px 4px;
 }
 .dupDivBoardSetView th {
-  border: 1px solid black;
+  border: 1px solid var(--color-table-border);
   text-align: center;
   padding: 2px 4px 2px 4px;
 }
@@ -626,18 +628,18 @@
   border-spacing: 0px;
   font-size: x-large;
   white-space: nowrap;
-  border: 1px solid black;
+  border: 1px solid var(--color-table-border);
 }
 .dupDivMovementsPage tbody tr:nth-child(2n+1) {
-  background-color: #f2f2f2;
+  background-color: var(--color-table-row-alt);
 }
 .dupDivMovementsPage td {
-  border: 1px solid black;
+  border: 1px solid var(--color-table-border);
   text-align: center;
   padding: 2px 4px 2px 4px;
 }
 .dupDivMovementsPage th {
-  border: 1px solid black;
+  border: 1px solid var(--color-table-border);
   text-align: center;
   padding: 2px 4px 2px 4px;
 }
@@ -717,14 +719,14 @@
   padding: 5px;
 }
 .dupDivSuggestionPage tbody tr:nth-child(2n+1) {
-  background-color: #f2f2f2;
+  background-color: var(--color-table-row-alt);
 }
 .dupDivSuggestionPage td:first-child {
-  border: 1px solid black;
+  border: 1px solid var(--color-table-border);;
   text-align: center;
 }
 .dupDivSuggestionPage td {
-  border: 1px solid black;
+  border: 1px solid var(--color-table-border);;
   padding: 4px;
   text-align: center;
 }
@@ -735,12 +737,12 @@
   font-size: large
 }
 .dupDivSuggestionPage th {
-  border: 1px solid black;
+  border: 1px solid var(--color-table-border);;
   text-align: center;
 }
 .dupDivSuggestionPage table {
   border-spacing: 0px;
-  border: 1px solid black;
+  border: 1px solid var(--color-table-border);;
 }
 .dupDivSuggestionPage {
   font-size: x-large;
@@ -760,21 +762,21 @@
   position: -webkit-sticky;
   left: -8px;
   z-index: 10;
-  background-color: rgb(250,250,250);
+  background-color: var(--color-bg);
 }
 .dupViewContractResults table > thead > tr:nth-child(1) > th {
   position: sticky;
   position: -webkit-sticky;
   top: -8px;
   z-index: 11;
-  background-color: rgb(250,250,250);
+  background-color: var(--color-bg);
 }
 .dupViewContractResults table > thead > tr:nth-child(2) > th {
   position: sticky;
   position: -webkit-sticky;
   top: 19px;
   z-index: 11;
-  background-color: rgb(250,250,250);
+  background-color: var(--color-bg);
 }
 .dupViewContractResults table > thead > tr:nth-child(2) > th:first-child {
   z-index: 12;
@@ -797,16 +799,16 @@
 }
 
 .dupViewContractResults table > thead > tr:first-child > th:nth-child(2) {
-  border-left: 3px solid black
+  border-left: 3px solid var(--color-table-border);
 }
 
 .dupViewContractResults table > thead > tr:nth-child(2) > th:nth-child(9) {
-  border-left: 3px solid black
+  border-left: 3px solid var(--color-table-border);
 }
 
 .dupViewContractResults table > tbody > tr > td:nth-child(9) {
   font-weight: bold;
-  border-left: 3px solid black
+  border-left: 3px solid var(--color-table-border);
 }
 
 .dupViewContractResults table > tbody > tr > td:first-child {
@@ -823,7 +825,7 @@
   position: -webkit-sticky;
   left: -8px;
   z-index: 10;
-  background-color: rgb(250,250,250);
+  background-color: var(--color-bg);
 }
 .dupViewPlayerContractResults table > tfoot > tr:first-child > td:first-child {
   font-weight: bold;
@@ -831,14 +833,14 @@
   position: -webkit-sticky;
   left: -8px;
   z-index: 10;
-  background-color: rgb(250,250,250);
+  background-color: var(--color-bg);
 }
 .dupViewPlayerContractResults table > thead > tr > th {
   position: sticky;
   position: -webkit-sticky;
   top: -8px;
   z-index: 11;
-  background-color: rgb(250,250,250);
+  background-color: var(--color-bg);
 }
 .dupViewPlayerContractResults table > thead > tr > th:first-child {
   position: sticky;
@@ -846,41 +848,41 @@
   top: -8px;
   left: -8px;
   z-index: 12;
-  background-color: rgb(250,250,250);
+  background-color: var(--color-bg);
 }
 
 .dupViewPlayerContractResults table > thead > tr > th:first-child {
   font-weight: bold;
-  border-right: 3px solid black
+  border-right: 3px solid var(--color-table-border);
 }
 
 .dupViewPlayerContractResults table > tbody > tr > td:first-child {
   font-weight: bold;
-  border-right: 3px solid black
+  border-right: 3px solid var(--color-table-border);
 }
 
 .dupViewPlayerContractResults table > thead > tr > th:nth-child(6) {
-  border-left: 3px solid black
+  border-left: 3px solid var(--color-table-border);
 }
 
 .dupViewPlayerContractResults table > tbody > tr > td:nth-child(6) {
-  border-left: 3px solid black
+  border-left: 3px solid var(--color-table-border);
 }
 
 .dupViewPlayerContractResults table > tfoot > tr:first-child > td:nth-child(4) {
-  border-left: 3px solid black
+  border-left: 3px solid var(--color-table-border);
 }
 
 .dupViewPlayerContractResults table > thead > tr > th:nth-child(3) {
-  border-right: 3px solid black
+  border-right: 3px solid var(--color-table-border);
 }
 
 .dupViewPlayerContractResults table > tbody > tr > td:nth-child(3) {
-  border-right: 3px solid black
+  border-right: 3px solid var(--color-table-border);
 }
 
 .dupViewPlayerContractResults table > tfoot > tr:first-child > td:nth-child(2) {
-  border-right: 3px solid black
+  border-right: 3px solid var(--color-table-border);
 }
 
 .dupViewPlayerContractResults .tooltipContent .piechart {
@@ -908,7 +910,7 @@
   position: -webkit-sticky;
   left: -8px;
   z-index: 10;
-  background-color: rgb(250,250,250);
+  background-color: var(--color-bg);
 }
 .dupViewPlayerAggressiveness table > tfoot > tr:first-child > td:first-child {
   font-weight: bold;
@@ -916,14 +918,14 @@
   position: -webkit-sticky;
   left: -8px;
   z-index: 10;
-  background-color: rgb(250,250,250);
+  background-color: var(--color-bg);
 }
 .dupViewPlayerAggressiveness table > thead > tr:last-child > th {
   position: sticky;
   position: -webkit-sticky;
   top: -8px;
   z-index: 11;
-  background-color: rgb(250,250,250);
+  background-color: var(--color-bg);
 }
 .dupViewPlayerAggressiveness table > thead > tr:last-child > th:first-child {
   position: sticky;
@@ -931,7 +933,7 @@
   top: -8px;
   left: -8px;
   z-index: 12;
-  background-color: rgb(250,250,250);
+  background-color: var(--color-bg);
 }
 
 .dupDivPlayerOpponentGrid {
@@ -947,14 +949,14 @@
   position: -webkit-sticky;
   left: -8px;
   z-index: 10;
-  background-color: rgb(250,250,250);
+  background-color: var(--color-bg);
 }
 .dupDivPlayerOpponentGrid > table > thead > tr > th {
   position: sticky;
   position: -webkit-sticky;
   top: -8px;
   z-index: 11;
-  background-color: rgb(250,250,250);
+  background-color: var(--color-bg);
 }
 .dupDivPlayerOpponentGrid > table > thead > tr > th:first-child {
   position: sticky;
@@ -962,13 +964,13 @@
   top: -8px;
   left: -8px;
   z-index: 12;
-  background-color: rgb(250,250,250);
+  background-color: var(--color-bg);
 }
 .dupDivPlayerOpponentGrid > table > tbody > tr > td:last-child {
-  border-left: 3px solid black
+  border-left: 3px solid var(--color-table-border)
 }
 .dupDivPlayerOpponentGrid > table > thead > tr > th:last-child {
-  border-left: 3px solid black
+  border-left: 3px solid var(--color-table-border)
 }
 
 .dupDivPlayerOpponentGrid .tooltipContent > div.tooltipBody {
@@ -1010,16 +1012,13 @@
 }
 
 .dupViewPlayerPlaces > table {
-  border: 1px solid black;
+  border: 1px solid var(--color-table-border);
   border-spacing: 0px;
 }
 
-.dupViewPlayerPlaces > table > tbody > tr > td {
-  border: 1px solid black;
-  text-align: center;
-}
+.dupViewPlayerPlaces > table > tbody > tr > td,
 .dupViewPlayerPlaces > table > tfoot > tr > td {
-  border: 1px solid black;
+  border: 1px solid var(--color-table-border);
   text-align: center;
 }
 
@@ -1048,18 +1047,22 @@
 .dupViewPlayerPlaces > table > caption {
   font-size: x-large;
   white-space: nowrap;
-  border: 2px solid black;
-  border-bottom: 0px solid black;
+  border: 2px solid var(--color-table-border);
+  border-bottom: 0px solid var(--color-table-border);
   text-align: center;
 }
 .dupViewPlayerPlaces > table > tfoot > tr > td > div > * {
   margin-left: 10px;
 }
 .dupViewPlayerPlaces > table table {
-  border: 1px solid black;
+  border: 1px solid var(--color-table-border);
   border-spacing: 0px;
 }
-.dupViewPlayerPlaces > table table td,th {
-  border: 1px solid black;
+.dupViewPlayerPlaces > table table th {
+  border: 1px solid var(--color-table-border);
+  text-align: center;
+}
+.dupViewPlayerPlaces > table table td {
+  border: 1px solid var(--color-table-border);
   text-align: center;
 }

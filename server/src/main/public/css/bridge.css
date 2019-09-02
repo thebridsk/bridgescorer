@@ -1,5 +1,66 @@
 /* @CHARSET "UTF-8"; */
 
+:root {
+  /* Light mode color theme */
+  --color-bg: white;
+  --color-fg: rgb(50,54,57);
+  --color-table-border: black;
+  --color-table-row-alt: #f2f2f2;
+  --color-div-border: black;
+  --color-default-button: rgb(210,210,210);
+  --color-fg-default-button: black;
+  --color-button-selected: lightgreen;
+  --color-fg-button-selected: black;
+  --color-button-required: yellow;
+  --color-fg-button-required: black;
+  --color-button-required-not-next: lightyellow;
+  --color-fg-button-required-not-next: black;
+  --color-bg-popupoverlay: black;
+  --color-bg-popup: white;
+  --color-popup-border: black;
+  --color-tooltip-hover: orange;
+  --color-appbar-title-shadow: #f00;
+  --color-table-cell-gray: lightgrey;
+  --color-bg-vulnerable: red;
+  --color-bg-not-vulnerable: lightgrey;
+  --color-not-vulnerable: gray;
+  --color-bg-hand-section-score: cyan;
+  --color-hand-section-score: black;
+}
+
+[data-theme="dark"] {
+  /* Dark mode color theme */
+  --color-bg: rgb(50,54,57);
+  --color-fg: rgb(210,210,210);
+  --color-table-border: rgb(210,210,210);
+  --color-table-row-alt: rgb(63,67,70);
+  --color-div-border: rgb(210,210,210);
+  --color-default-button: rgb(210,210,210);
+  --color-fg-default-button: black;
+  --color-button-selected: lightgreen;
+  --color-fg-button-selected: black;
+  --color-button-required: yellow;
+  --color-fg-button-required: black;
+  --color-button-required-not-next: rgb(255,255,190);
+  --color-fg-button-required-not-next: black;
+  --color-bg-popupoverlay: black;
+  --color-bg-popup: black;
+  --color-popup-border: rgb(210,210,210);
+  --color-tooltip-hover: orange;
+  --color-appbar-title-shadow: #f00;
+  --color-table-cell-gray: #606060;
+  --color-bg-vulnerable: red;
+  --color-bg-not-vulnerable: lightgrey;
+  --color-not-vulnerable: gray;
+  --color-bg-hand-section-score: cyan;
+  --color-hand-section-score: black;
+}
+
+body {
+  background-color: var(--color-bg);
+  color: var(--color-fg);
+}
+
 * {
   font-family: Arial;
   user-select: none;
@@ -37,26 +98,10 @@
   font-size: larger;
 }
 
-
-.baseMuiButton {
-  font-size: x-large;
-  border-radius: 20px;
-  background-color: rgb(210,210,210);
-  border-style: outset;
-  border-width: 2px;
-  user-select: none;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  white-space: nowrap;
-  padding: 3px 6px;
-  min-width: 37px;
-  margin: 2px;
-}
-
 .baseDefaultButton {
   border-radius: 20px;
-  background-color: rgb(210,210,210);
+  background-color: var(--color-default-button);
+  color: var(--color-fg-default-button);
   border-style: outset;
   border-width: 2px;
   user-select: none;
@@ -74,7 +119,7 @@
 
 .baseNameButton {
   border-radius: 25px;
-  background-color: rgb(210,210,210);
+  background-color: var(--color-default-button);
   font-size: x-large;
   white-space: nowrap;
   height: 50px;
@@ -94,7 +139,8 @@
 }
 
 .baseButtonSelected {
-  background-color: lightgreen !important;
+  background-color: var(--color-button-selected) !important;
+  color: var(--color-fg-button-selected) !important;
   border-style: inset !important;
 }
 
@@ -120,16 +166,19 @@
 } */
 
 .baseRequired {
-  background-color: yellow !important;
+  background-color: var(--color-button-required) !important;
+  color: var(--color-fg-button-required) !important;
 }
 
 .baseRequiredName {
-  background-color: yellow !important;
+  background-color: var(--color-button-required) !important;
+  color: var(--color-fg-button-required) !important;
   padding: 4px !important;
 }
 
 .baseRequiredNotNext {
-  background-color: lightyellow !important;
+  background-color: var(--color-button-required-not-next) !important;
+  color: var(--color-fg-button-required-not-next) !important;
 }
 
 .baseDivPopupOKCancelBody {
@@ -159,8 +208,8 @@
   top: 0px;
   width: 100%;
   height: 100%;
-  background-color: black;
-  opacity: 0.5;
+  background-color: var(--color-bg-popupoverlay);
+  opacity: 0.7;
   z-index: 99999;
   overflow: hidden;
 
@@ -172,8 +221,8 @@
 .baseDivPopup > div {
   max-width:90%;
   max-height:90%;
-  background-color: white;
-  border: 2px solid black;
+  background-color: var(--color-bg-popup);
+  border: 2px solid var(--color-popup-border);
   padding: 5px;
   position:absolute;
   top:50%;
@@ -360,16 +409,16 @@
 .rootImportsListPageDiv table {
   border-spacing: 0px;
   font-size: larger;
-  border: 1px solid black;
+  border: 1px solid var(--color-table-border);
   margin: 5px;
 }
 .rootImportsListPageDiv td {
   font-size: larger;
-  border: 1px solid black;
+  border: 1px solid var(--color-table-border);
 }
 .rootImportsListPageDiv th {
   font-size: larger;
-  border: 1px solid black;
+  border: 1px solid var(--color-table-border);
 }
 .rootImportsListPageDiv label {
   font-size: larger;
@@ -429,21 +478,21 @@
 }
 
 .colorbar > div {
-  border: 1px solid black;
+  border: 1px solid var(--color-div-border);
 }
 
 .tableComponent {
   border-spacing: 0px;
   font-size: large;
   white-space: nowrap;
-  border: 1px solid black;
+  border: 1px solid var(--color-table-border);
   /*
   table-layout: fixed;
   */
 }
 .tableComponent caption {
-  border: 2px solid black;
-  border-bottom: 0px solid black;
+  border: 2px solid var(--color-table-border);
+  border-bottom: 0px solid var(--color-table-border);
   font-weight: bold;
   font-size: x-large;
 }
@@ -455,20 +504,20 @@
   font-weight: bold;
 }
 .tableComponent tbody tr:nth-child(2n+1) {
-  background-color: #f2f2f2;
+  background-color: var(--color-table-row-alt);
 }
 .tableComponent td {
-  border: 1px solid black;
+  border: 1px solid var(--color-table-border);
   text-align: center;
   padding: 2px 4px 2px 4px;
 }
 .tableComponent th {
-  border: 1px solid black;
+  border: 1px solid var(--color-table-border);
   text-align: center;
   padding: 2px 4px 2px 4px;
 }
 .tableComponent tfoot > tr:first-child td {
-  border-top: 3px solid black;
+  border-top: 3px solid var(--color-table-border);
 }
 
 /***********
@@ -480,11 +529,11 @@
 }
 .withTooltipBox > .tooltipContent {
     visibility: hidden;
-    color: black;
-    background-color: white;
+    color: var(--color-fg);
+    background-color: var(--color-bg);
     padding: 5px;
     border-radius: 6px;
-    border: 1px solid black;
+    border: 1px solid var(--color-div-border);
 
     /* Position the tooltip text - see examples below! */
     position: absolute;
@@ -502,12 +551,12 @@ body.touched .withTooltipBox:hover > .tooltipContent {
 
 .withTooltipBox:hover {
     user-select: auto;
-    background-color: orange;
+    background-color: var(--color-tooltip-hover);
 }
 
 body.touched .withTooltipBox:hover {
     user-select: auto;
-    background-color: orange;
+    background-color: var(--color-tooltip-hover);
 }
 
 /*****
@@ -566,26 +615,26 @@ body.touched .withTooltipBox:hover {
 
 .divColorPage div:nth-child(2) td, .divColorPage div:nth-child(2) th {
   white-space: nowrap;
-  border: 1px solid black;
+  border: 1px solid var(--color-div-border);
 }
 
 .divColorPage div:nth-child(2) table {
   border-spacing: 0px;
   font-size: large;
   white-space: nowrap;
-  border: 1px solid black;
+  border: 1px solid var(--color-table-border);
 }
 
 .divColorPage div:nth-child(3) td, .divColorPage div:nth-child(3) th {
   white-space: nowrap;
-  border: 1px solid black;
+  border: 1px solid var(--color-table-border);
 }
 
 .divColorPage div:nth-child(3) table {
   border-spacing: 0px;
   font-size: large;
   white-space: nowrap;
-  border: 1px solid black;
+  border: 1px solid var(--color-table-border);
 }
 
 .divGraphiql {
@@ -685,5 +734,5 @@ body > div > div > div {
   display: flex;
   flex-direction: row;
   overflow: hidden;
-  text-shadow: 3px 3px 3px #f00;
+  text-shadow: 3px 3px 3px var(--color-appbar-title-shadow);
 }

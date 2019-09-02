@@ -67,13 +67,13 @@ object BldBridgeServer {
         )
       ),
       server := {
-        (run in Compile).toTask(""" --logfile "logs/server.sbt.%d.%u.log" start --store store""").value
+        (run in Compile).toTask(""" --logfile "logs/server.sbt.%d.%u.log" start --cache 0s --store store""").value
       },
       servertemp := {
-        (run in Compile).toTask(""" --logfile "logs/server.sbt.%d.%u.log" start --store temp""").value
+        (run in Compile).toTask(""" --logfile "logs/server.sbt.%d.%u.log" start --cache 0s --store temp""").value
       },
       serverlogs := {
-        (run in Compile).toTask(""" --logconsolelevel=ALL start --store store""").value
+        (run in Compile).toTask(""" --logconsolelevel=ALL start --cache 0s --store store""").value
       },
       // shebang the jar file.  7z and jar will no longer see it as a valid zip file.
       //    assemblyOption in assembly := (assemblyOption in assembly).value.copy(prependShellScript = Some(defaultShellScript)),
