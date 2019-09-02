@@ -731,10 +731,10 @@
   text-align: center;
 }
 .dupDivSuggestionPage > div:nth-child(6) td:nth-child(n+6) {
-  font-size: large
+  font-size: large;
 }
 .dupDivSuggestionPage > div:nth-child(6) th:nth-child(n+6) {
-  font-size: large
+  font-size: large;
 }
 .dupDivSuggestionPage th {
   border: 1px solid var(--color-table-border);;
@@ -901,7 +901,7 @@
 }
 
 .dupViewPlayerAggressiveness .tooltipContent .piechart {
-  display: inline
+  display: inline;
 }
 
 .dupViewPlayerAggressiveness table > tbody > tr > td:first-child {
@@ -967,10 +967,10 @@
   background-color: var(--color-bg);
 }
 .dupDivPlayerOpponentGrid > table > tbody > tr > td:last-child {
-  border-left: 3px solid var(--color-table-border)
+  border-left: 3px solid var(--color-table-border);
 }
 .dupDivPlayerOpponentGrid > table > thead > tr > th:last-child {
-  border-left: 3px solid var(--color-table-border)
+  border-left: 3px solid var(--color-table-border);
 }
 
 .dupDivPlayerOpponentGrid .tooltipContent > div.tooltipBody {
