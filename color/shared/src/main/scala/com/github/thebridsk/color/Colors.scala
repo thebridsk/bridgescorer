@@ -1,4 +1,4 @@
-package com.github.thebridsk.bridge.clientcommon.color
+package com.github.thebridsk.color
 
 object Colors {
 

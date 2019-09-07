@@ -17,11 +17,12 @@ import BldVersion._
 object BldBridgeClientCommon {
 
   lazy val `bridgescorer-clientcommon` = project.in(file("clientcommon"))
-    .configure( commonSettings )
+    .configure( commonSettings, noTests(true) )
     .enablePlugins(ScalaJSPlugin)
     .dependsOn(
       BldBridgeShared.sharedJS,
       BldMaterialUI.materialui,
+      BldColor.colorJS,
       `utilities-js`
     )
     .settings(

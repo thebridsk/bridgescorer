@@ -6,11 +6,11 @@ import japgolly.scalajs.react._
 import com.github.thebridsk.bridge.clientcommon.react.ColorBar
 import com.github.thebridsk.bridge.clientcommon.react.Utils._
 import com.github.thebridsk.utilities.logging.Logger
-import com.github.thebridsk.bridge.clientcommon.color.NamedColor
-import com.github.thebridsk.bridge.clientcommon.color.Color
-import com.github.thebridsk.bridge.clientcommon.color.Colors
-import com.github.thebridsk.bridge.clientcommon.color.Gray
-import com.github.thebridsk.bridge.clientcommon.color.RGBPercentColor
+import com.github.thebridsk.color.NamedColor
+import com.github.thebridsk.color.Color
+import com.github.thebridsk.color.Colors
+import com.github.thebridsk.color.Gray
+import com.github.thebridsk.color.RGBPercentColor
 import com.github.thebridsk.materialui.MuiTypography
 import com.github.thebridsk.materialui.TextVariant
 import com.github.thebridsk.materialui.TextColor

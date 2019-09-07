@@ -41,6 +41,9 @@ lazy val sharedJVM = BldBridgeShared.sharedJVM
 lazy val rotationJS: Project = BldBridgeRotation.rotationJS
 lazy val rotationJVM = BldBridgeRotation.rotationJVM
 
+lazy val colorJS: Project = BldColor.colorJS
+lazy val colorJVM: Project = BldColor.colorJVM
+
 lazy val materialui = BldMaterialUI.materialui
 lazy val `bridgescorer-clientcommon` = BldBridgeClientCommon.`bridgescorer-clientcommon`
 lazy val `bridgescorer-clientapi` = BldBridgeClientApi.`bridgescorer-clientapi`

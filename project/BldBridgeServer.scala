@@ -38,6 +38,7 @@ object BldBridgeServer {
     .dependsOn(ProjectRef(uri("utilities"), "utilities-jvm"))
     .dependsOn(BldBridgeRotation.rotationJVM % "test")
     .dependsOn(BldBrowserPages.browserpages % "test->compile")
+    .dependsOn(BldColor.colorJVM % "test->compile")
     .settings(
       inConfig(Test)(baseAssemblySettings): _*
     )

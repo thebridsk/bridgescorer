@@ -13,7 +13,7 @@ import com.github.thebridsk.bridge.client.controller.Controller
 import com.github.thebridsk.bridge.data.SystemTime
 import com.github.thebridsk.bridge.clientcommon.react.AppButton
 import com.github.thebridsk.bridge.clientcommon.react.Utils._
-import com.github.thebridsk.bridge.clientcommon.color.Color
+import com.github.thebridsk.color.Color
 import com.github.thebridsk.bridge.clientcommon.react.CheckBox
 import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles
 import com.github.thebridsk.bridge.clientcommon.react.ColorBar

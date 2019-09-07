@@ -6,7 +6,7 @@ import japgolly.scalajs.react._
 import com.github.thebridsk.bridge.data.duplicate.stats.PlayerPlaces
 import com.github.thebridsk.bridge.data.duplicate.stats.PlayerPlace
 import com.github.thebridsk.bridge.client.pages.duplicate.DuplicateStyles.dupStyles
-import com.github.thebridsk.bridge.clientcommon.color.Color
+import com.github.thebridsk.color.Color
 import com.github.thebridsk.bridge.clientcommon.react.PieChart
 import com.github.thebridsk.bridge.clientcommon.react.PieChartWithTooltip
 import com.github.thebridsk.utilities.logging.Logger

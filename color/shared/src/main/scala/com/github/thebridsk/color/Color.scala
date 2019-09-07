@@ -1,6 +1,4 @@
-package com.github.thebridsk.bridge.clientcommon.color
-
-import japgolly.scalajs.react.vdom.Attr.ValueType
+package com.github.thebridsk.color
 
 trait Color {
   def toAttrValue: String
@@ -93,7 +91,7 @@ object ColorInternal {
   }
 }
 
-object Color {
+trait ColorObj {
   import ColorInternal._
 
   /**
@@ -254,16 +252,9 @@ object Color {
    */
   def allNamedColors: Iterable[String] = NamedColor.namedColors.keys
 
-  /**
-   * This implicit value allows the direct assignment to an attribute.
-   * For example:
-   *
-   *     ^.color := Color("red")
-   */
-  implicit val vdomAttrColor: ValueType[Color, String] =
-    ValueType((b, a) => b(a.toAttrValue))
-
 }
+
+object Color extends ColorObj
 
 /**
  * Support a named color.  Also the pseudo colors transparent, currentColor.

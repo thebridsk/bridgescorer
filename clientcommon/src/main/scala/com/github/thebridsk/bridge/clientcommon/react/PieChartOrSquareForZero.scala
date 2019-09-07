@@ -3,7 +3,7 @@ package com.github.thebridsk.bridge.clientcommon.react
 import scala.scalajs.js
 import japgolly.scalajs.react.vdom.svg_<^._
 import japgolly.scalajs.react._
-import com.github.thebridsk.bridge.clientcommon.color.Color
+import com.github.thebridsk.color.Color
 import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles
 import com.github.thebridsk.bridge.clientcommon.react.PieChart.Props
 
@@ -19,6 +19,8 @@ import com.github.thebridsk.bridge.clientcommon.react.PieChart.Props
  * @author werewolf
  */
 object PieChartOrSquareForZero {
+
+  import ReactColor._
 
   case class SquareProps( squareColor: Color, piechartProps: Props )
 

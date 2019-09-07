@@ -39,6 +39,8 @@ object BldDependencies {
 
   val bridgeScorerRotationDeps = Def.setting(scalatestDeps.value)
 
+  val bridgeScorerColorDeps = Def.setting(scalatestDeps.value)
+
   val bridgeScorerDeps = Def.setting(scalatestDeps.value ++ Seq(
       ))
 

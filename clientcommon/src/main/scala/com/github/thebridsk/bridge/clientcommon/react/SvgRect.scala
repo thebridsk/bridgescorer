@@ -3,9 +3,9 @@ package com.github.thebridsk.bridge.clientcommon.react
 import scala.scalajs.js
 import japgolly.scalajs.react.vdom.svg_<^._
 import japgolly.scalajs.react._
-import com.github.thebridsk.bridge.clientcommon.color.Color
 import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles
 import Utils._
+import com.github.thebridsk.color.Color
 
 /**
  * A skeleton component.
@@ -19,6 +19,8 @@ import Utils._
  * @author werewolf
  */
 object SvgRect {
+
+  import ReactColor._
 
   /**
    * Makes a rectangle where the slices are vertical.

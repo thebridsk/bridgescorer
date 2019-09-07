@@ -1,4 +1,4 @@
-package com.github.thebridsk.bridge.clientcommon.color
+package com.github.thebridsk.color
 
 // addapted from https://www.w3.org/TR/css-color-4/
 
