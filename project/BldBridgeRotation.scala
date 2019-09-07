@@ -6,7 +6,6 @@ import sbtcrossproject.{crossProject, CrossType}
 import org.portablescala.sbtplatformdeps.PlatformDepsPlugin.autoImport._
 import sbtcrossproject.CrossPlugin.autoImport._
 import scalajscrossproject.ScalaJSCrossPlugin.autoImport._
-import com.typesafe.sbteclipse.plugin.EclipsePlugin.autoImport._
 import com.timushev.sbt.updates.UpdatesPlugin.autoImport._
 import org.scalajs.sbtplugin.ScalaJSPlugin
 import org.scalajs.sbtplugin.ScalaJSPlugin.autoImport.{crossProject => _, CrossType => _, _}
@@ -24,19 +23,6 @@ object BldBridgeRotation {
       resolvers += Resolver.bintrayRepo("scalaz", "releases"),
 
       libraryDependencies ++= bridgeScorerRotationDeps.value,
-
-      EclipseKeys.classpathTransformerFactories ++= Seq(
-        MyEclipseTransformers.fixLinkedNameFromClasspath("-rotation-shared-src-main-scala", "shared-src-main-scala"),
-        MyEclipseTransformers.fixLinkedNameFromClasspath("-rotation-shared-src-test-scala", "shared-src-test-scala"),
-        MyEclipseTransformers.fixLinkedNameFromClasspath("-rotation-shared-src-main-scala-"+verScalaMajorMinor, "shared-src-main-scala-"+verScalaMajorMinor),
-        MyEclipseTransformers.fixLinkedNameFromClasspath("-rotation-shared-src-test-scala-"+verScalaMajorMinor, "shared-src-test-scala-"+verScalaMajorMinor)
-      ),
-      EclipseKeys.projectTransformerFactories ++= Seq(
-        MyEclipseTransformers.fixLinkName("-rotation-shared-src-main-scala", "shared-src-main-scala"),
-        MyEclipseTransformers.fixLinkName("-rotation-shared-src-test-scala", "shared-src-test-scala"),
-        MyEclipseTransformers.fixLinkName("-rotation-shared-src-main-scala-"+verScalaMajorMinor, "shared-src-main-scala-"+verScalaMajorMinor),
-        MyEclipseTransformers.fixLinkName("-rotation-shared-src-test-scala-"+verScalaMajorMinor, "shared-src-test-scala-"+verScalaMajorMinor)
-      )
 
     ).
     jvmSettings(

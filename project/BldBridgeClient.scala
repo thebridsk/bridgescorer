@@ -5,7 +5,6 @@ import sbtcrossproject.{crossProject, CrossType}
 import org.portablescala.sbtplatformdeps.PlatformDepsPlugin.autoImport._
 import sbtcrossproject.CrossPlugin.autoImport._
 import scalajscrossproject.ScalaJSCrossPlugin.autoImport._
-import com.typesafe.sbteclipse.plugin.EclipsePlugin.autoImport._
 import com.timushev.sbt.updates.UpdatesPlugin.autoImport._
 import org.scalajs.sbtplugin.ScalaJSPlugin
 import org.scalajs.sbtplugin.ScalaJSPlugin.autoImport._
@@ -44,16 +43,6 @@ object BldBridgeClient {
     .dependsOn(`utilities-js`)
     .settings(
       name := "bridgescorer-client",
-      EclipseKeys.classpathTransformerFactories ++= Seq(
-        MyEclipseTransformers.replaceRelativePath(
-          "/bridgescorer-shared",
-          "/bridgescorer-sharedJS"
-        ),
-        MyEclipseTransformers.replaceRelativePath(
-          "/bridgescorer-rotation",
-          "/bridgescorer-rotationJS"
-        )
-      ),
       version in webpack := vWebPack,
       webpackCliVersion := vWebPackCli,
       version in startWebpackDevServer := vWebpackDevServer,

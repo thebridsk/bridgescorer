@@ -5,7 +5,6 @@ import sbtcrossproject.{crossProject, CrossType}
 import org.portablescala.sbtplatformdeps.PlatformDepsPlugin.autoImport._
 import sbtcrossproject.CrossPlugin.autoImport._
 import scalajscrossproject.ScalaJSCrossPlugin.autoImport._
-import com.typesafe.sbteclipse.plugin.EclipsePlugin.autoImport._
 import com.timushev.sbt.updates.UpdatesPlugin.autoImport._
 import sbtrelease.ReleasePlugin.autoImport._
 import com.typesafe.sbt.GitPlugin.autoImport._
@@ -24,7 +23,6 @@ import BldDependencies._
 import BldCommonSettings._
 import BldVersion._
 import MyReleaseVersion._
-import MyEclipseTransformers._
 
 object BldBridge {
 
@@ -94,11 +92,6 @@ object BldBridge {
       aggregate in mypublishcopy in Distribution := false,
       aggregate in server := false,
       aggregate in serverlogs := false,
-      EclipseKeys.classpathTransformerFactories ++= Seq(
-        addDependentRunClassFolder("target/web/classes/main")
-//      removeRelativePath("target\\scala-"+verScalaMajorMinor+"\\resource_managed\\main")
-      ),
-      EclipseKeys.withSource := true,
 //    mainClass in Compile := Some("com.github.thebridsk.bridge.server.Server"),
       mainClass in (Compile, run) := Some("com.github.thebridsk.bridge.server.Server"),
       mainClass in (Compile, packageBin) := Some("com.github.thebridsk.bridge.server.Server"),
@@ -516,7 +509,6 @@ object BldBridge {
           dependencyUpdates
         )
         .value,
-      EclipseKeys.skipParents in ThisBuild := false,
       alltests := Def
         .sequential(
           mydist in Distribution in utilities,

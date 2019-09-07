@@ -18,7 +18,6 @@ val vSbtGit = "1.0.0"              // https://github.com/sbt/sbt-git
 val vSbtSCoverage = "1.5.1"        // https://github.com/scoverage/sbt-scoverage
 val vSbtBuildInfo = "0.9.0"        // https://github.com/sbt/sbt-buildinfo
 val vSbtRelease = "1.0.11"         // https://github.com/sbt/sbt-release
-val vSbtEclipse = "5.2.4"          // https://github.com/typesafehub/sbteclipse
 val vSbtDependencyGraph = "0.9.2"  // https://github.com/jrudolph/sbt-dependency-graph
 val vSbtUpdates = "0.4.2"          // https://github.com/rtimush/sbt-updates
 
@@ -60,7 +59,6 @@ addSbtPlugin("com.typesafe.sbt" % "sbt-git" % vSbtGit withSources())
 addSbtPlugin("org.scoverage" % "sbt-scoverage" % vSbtSCoverage withSources())
 addSbtPlugin("com.eed3si9n" % "sbt-buildinfo" % vSbtBuildInfo withSources())
 addSbtPlugin("com.github.gseitz" % "sbt-release" % vSbtRelease withSources())
-addSbtPlugin("com.typesafe.sbteclipse" % "sbteclipse-plugin" % vSbtEclipse withSources())
 addSbtPlugin("com.timushev.sbt" % "sbt-updates" % vSbtUpdates withSources())
 addSbtPlugin("net.virtual-void" % "sbt-dependency-graph" % vSbtDependencyGraph withSources())  // must be updated for sbt 1.0
 
@@ -74,7 +72,3 @@ addSbtPlugin("ch.epfl.scala" % "sbt-web-scalajs-bundler" % vSbtScalaJsBundler wi
 addSbtPlugin("ch.epfl.scala" % "sbt-scalajs-bundler" % vSbtScalaJsBundler withSources())
 addSbtPlugin("org.scalameta" % "sbt-scalafmt" % vSbtScalaFmt withSources())
 addSbtPlugin("ch.epfl.scala" % "sbt-bloop" % vBloop withSources())
-
-EclipseKeys.classpathTransformerFactories ++= Seq(
-  MyProjectEclipseTransformers.addProjectFolderToClasspath()
-)
