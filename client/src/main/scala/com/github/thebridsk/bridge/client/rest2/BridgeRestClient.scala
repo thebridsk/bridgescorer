@@ -24,6 +24,7 @@ import com.github.thebridsk.bridge.data.BoardSetsAndMovementsV1
 import com.github.thebridsk.bridge.data.BoardSetsAndMovements
 import com.github.thebridsk.bridge.data.MatchDuplicateResult
 import com.github.thebridsk.bridge.data.duplicate.stats.PlayerPlaces
+import com.github.thebridsk.bridge.data.util.ColorTheme
 
 /**
  * @author werewolf
@@ -133,3 +134,5 @@ object RestClientDuplicateSuggestions extends RestClient[DuplicateSuggestions]("
 object RestClientTestBoardsetsAndMovements extends RestClient[BoardSetsAndMovements]("/public/test/boardsetsAndMovements.json")
 
 object RestClientDuplicatePlayerPlaces extends RestClient[PlayerPlaces]("/v1/rest/duplicateplaces")
+
+object RestClientColorTheme extends RestClient[ColorTheme]("/v1/colortheme")

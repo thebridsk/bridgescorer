@@ -37,6 +37,7 @@ import io.swagger.v3.oas.annotations.tags.Tags
 import io.swagger.v3.oas.annotations.tags.Tag
 import io.swagger.v3.oas.annotations.tags.Tags
 import io.swagger.v3.oas.annotations.tags.Tag
+import javax.ws.rs.GET
 import javax.ws.rs.POST
 import io.swagger.v3.oas.annotations.parameters.RequestBody
 import io.swagger.v3.oas.annotations.media.Content
@@ -45,6 +46,13 @@ import io.swagger.v3.jaxrs2.Reader
 import io.swagger.v3.oas.models.OpenAPI
 import java.util.TreeMap
 import com.github.thebridsk.utilities.logging.Logger
+import com.github.thebridsk.bridge.data.util.ColorTheme
+import com.github.thebridsk.bridge.server.rest.UtilsPlayJson
+import akka.http.scaladsl.model.headers.HttpCookie
+import scala.concurrent.Future
+import com.github.thebridsk.bridge.server.backend.resource.Result
+import scala.concurrent.ExecutionContext.Implicits.global
+import akka.http.scaladsl.model.DateTime
 
 /**
   * <p>
@@ -53,6 +61,8 @@ import com.github.thebridsk.utilities.logging.Logger
   */
 @Tags(Array(new Tag(name = "Server")))
 class ServerService(totallyMissingHandler: RejectionHandler) {
+
+  import UtilsPlayJson._
 
   val log = Logger[ServerService]
 
@@ -64,10 +74,12 @@ class ServerService(totallyMissingHandler: RejectionHandler) {
 
   val serverUrlPrefix = "shutdown"
 
+  val cookieTimeout = 30*24*60*60*1000L
+
   /**
     * spray route for all the methods on this resource
     */
-  val serverRoute = {
+  lazy val serverRoute = {
     extractClientIP { ip =>
       {
         pathPrefix(serverUrlPrefix) {
@@ -78,7 +90,7 @@ class ServerService(totallyMissingHandler: RejectionHandler) {
           }
         }
       }
-    }
+    } ~ getColorTheme ~ setColorTheme
   }
 
   /**
@@ -150,4 +162,73 @@ class ServerService(totallyMissingHandler: RejectionHandler) {
         }
       }
     }
+
+    @Path("/colortheme")
+    @GET
+    @Operation(
+      summary = "Get the color theme setting",
+      description =
+        "Get the color theme setting from cookie",
+      operationId = "getColorTheme",
+      responses = Array(
+        new ApiResponse(responseCode = "200", description = "Accepted"),
+      )
+    )
+    def xxxGetColorTheme = {}
+    val getColorTheme = get {
+      pathPrefix("colortheme") {
+        pathEndOrSingleSlash {
+          optionalCookie("colorTheme") {
+            case Some(colorTheme) => complete(Array[ColorTheme]( ColorTheme(colorTheme.value) ) )
+            case None             => complete( Array[ColorTheme]( ColorTheme.light ) )
+          }
+        }
+        optionalCookie("colorTheme") {
+          case Some(colorTheme) => complete(Array[ColorTheme]( ColorTheme(colorTheme.value) ) )
+          case None             => complete( Array[ColorTheme]( ColorTheme.light ) )
+        }
+      }
+    }
+
+    @POST
+    @Operation(
+      summary = "Sets the color theme",
+      description =
+        "Set the color theme cookie to the specified theme",
+      operationId = "SetColorTheme",
+      requestBody = new RequestBody(
+        description = "The color theme to use",
+        content = Array(
+          new Content(
+            mediaType = "application/json",
+            schema = new Schema(implementation = classOf[ColorTheme])
+          )
+        )
+      ),
+      responses = Array(
+        new ApiResponse(
+          responseCode = "201",
+          description = "The color theme cookie was set",
+          content = Array(
+            new Content(
+              mediaType = "application/json",
+              schema = new Schema(implementation = classOf[ColorTheme])
+            )
+          )
+        )
+      )
+    )
+    def xxxSetColorTheme = {}
+    val setColorTheme = {
+      post {
+        pathPrefix("colortheme") {
+          entity(as[ColorTheme]) { theme =>
+            setCookie(HttpCookie("colorTheme", value = theme.theme, expires=Some(DateTime.now+cookieTimeout))) {
+              resourceCreated("colortheme", Future(Result[(String,ColorTheme)]("",theme)), Created)
+            }
+          }
+        }
+      }
+    }
+
 }

@@ -28,6 +28,9 @@ import scala.scalajs.js
 import scala.scalajs.js.annotation.JSGlobal
 import com.github.thebridsk.bridge.clientcommon.rest2.AjaxResult
 import com.github.thebridsk.bridge.clientcommon.demo.BridgeDemo
+import com.github.thebridsk.bridge.clientcommon.rest2.RestClientColorTheme
+import scala.util.Success
+import scala.util.Failure
 
 /**
  * @author werewolf
@@ -61,8 +64,37 @@ object Bridge {   // need to figure out how to use new way to call main
 
     Alerter.setupError()
 
+    import scala.concurrent.ExecutionContext.Implicits.global
+
+    RestClientColorTheme.list().recordFailure().onComplete { trylist =>
+      trylist match {
+        case Success(list) =>
+          Alerter.tryitWithUnit {
+            list.headOption match {
+              case Some(theme) =>
+                setColorTheme(theme.theme)
+              case None =>
+            }
+          }
+        case Failure(err) =>
+      }
+    }
+
     Init( startClient _)
 
+  }
+
+  def setColorTheme( theme: String ) = {
+    getBody().setAttribute("data-theme",theme)
+  }
+
+  def getColorTheme() = {
+    val body = Bridge.getBody()
+    if (body.hasAttribute("data-theme")) {
+      Some(body.getAttribute("data-theme"))
+    } else {
+      None
+    }
   }
 
   def startClient() = Alerter.tryitWithUnit {
