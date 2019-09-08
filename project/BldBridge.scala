@@ -5,7 +5,6 @@ import sbtcrossproject.{crossProject, CrossType}
 import org.portablescala.sbtplatformdeps.PlatformDepsPlugin.autoImport._
 import sbtcrossproject.CrossPlugin.autoImport._
 import scalajscrossproject.ScalaJSCrossPlugin.autoImport._
-import com.typesafe.sbteclipse.plugin.EclipsePlugin.autoImport._
 import com.timushev.sbt.updates.UpdatesPlugin.autoImport._
 import sbtrelease.ReleasePlugin.autoImport._
 import com.typesafe.sbt.GitPlugin.autoImport._
@@ -24,7 +23,6 @@ import BldDependencies._
 import BldCommonSettings._
 import BldVersion._
 import MyReleaseVersion._
-import MyEclipseTransformers._
 
 object BldBridge {
 
@@ -94,11 +92,6 @@ object BldBridge {
       aggregate in mypublishcopy in Distribution := false,
       aggregate in server := false,
       aggregate in serverlogs := false,
-      EclipseKeys.classpathTransformerFactories ++= Seq(
-        addDependentRunClassFolder("target/web/classes/main")
-//      removeRelativePath("target\\scala-"+verScalaMajorMinor+"\\resource_managed\\main")
-      ),
-      EclipseKeys.withSource := true,
 //    mainClass in Compile := Some("com.github.thebridsk.bridge.server.Server"),
       mainClass in (Compile, run) := Some("com.github.thebridsk.bridge.server.Server"),
       mainClass in (Compile, packageBin) := Some("com.github.thebridsk.bridge.server.Server"),
@@ -516,7 +509,6 @@ object BldBridge {
           dependencyUpdates
         )
         .value,
-      EclipseKeys.skipParents in ThisBuild := false,
       alltests := Def
         .sequential(
           mydist in Distribution in utilities,
@@ -527,6 +519,7 @@ object BldBridge {
 //                       packageJSDependencies in Compile in `bridgescorer-client`,
           test in Test in BldBridgeRotation.rotationJVM,
           test in Test in BldBridgeRotation.rotationJS,
+          test in Test in BldColor.colorJVM,
           test in Test in BldBridgeClientCommon.`bridgescorer-clientcommon`,
           test in Test in BldBridgeClient.`bridgescorer-client`,
 //          test in Test in BldBridgeClientApi.`bridgescorer-clientapi`,
@@ -544,6 +537,7 @@ object BldBridge {
 //                       packageJSDependencies in Compile in `bridgescorer-client`,
           test in Test in BldBridgeRotation.rotationJVM,
           test in Test in BldBridgeRotation.rotationJS,
+          test in Test in BldColor.colorJVM,
           test in Test in BldBridgeClientCommon.`bridgescorer-clientcommon`,
           test in Test in BldBridgeClient.`bridgescorer-client`,
 //          test in Test in BldBridgeClientApi.`bridgescorer-clientapi`,
@@ -561,6 +555,7 @@ object BldBridge {
 //                       packageJSDependencies in Compile in `bridgescorer-client`,
           test in Test in BldBridgeRotation.rotationJVM,
           test in Test in BldBridgeRotation.rotationJS,
+          test in Test in BldColor.colorJVM,
           test in Test in BldBridgeClientCommon.`bridgescorer-clientcommon`,
           test in Test in BldBridgeClient.`bridgescorer-client`,
 //          test in Test in BldBridgeClientApi.`bridgescorer-clientapi`,
@@ -584,6 +579,7 @@ object BldBridge {
 //                       assembly in Test in `bridgescorer-client`,
           test in Test in BldBridgeRotation.rotationJVM,
           test in Test in BldBridgeRotation.rotationJS,
+          test in Test in BldColor.colorJVM,
           test in Test in BldBridgeClientCommon.`bridgescorer-clientcommon`,
           test in Test in BldBridgeClient.`bridgescorer-client`,
 //          test in Test in BldBridgeClientApi.`bridgescorer-clientapi`,
@@ -603,6 +599,7 @@ object BldBridge {
 //                       fullOptJS in Compile in `bridgescorer-client`,
           allassembly,
 //                       packageJSDependencies in Compile in `bridgescorer-client`,
+          test in Test in BldColor.colorJVM,
           test in Test in BldBridgeClientCommon.`bridgescorer-clientcommon`,
           test in Test in BldBridgeClient.`bridgescorer-client`,
 //          test in Test in BldBridgeClientApi.`bridgescorer-clientapi`,

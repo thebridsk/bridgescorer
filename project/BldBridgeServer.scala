@@ -5,7 +5,6 @@ import sbtcrossproject.{crossProject, CrossType}
 import org.portablescala.sbtplatformdeps.PlatformDepsPlugin.autoImport._
 import sbtcrossproject.CrossPlugin.autoImport._
 import scalajscrossproject.ScalaJSCrossPlugin.autoImport._
-import com.typesafe.sbteclipse.plugin.EclipsePlugin.autoImport._
 import com.timushev.sbt.updates.UpdatesPlugin.autoImport._
 import sbtassembly.AssemblyPlugin.autoImport._
 import com.typesafe.sbt.gzip.SbtGzip.autoImport._
@@ -22,7 +21,6 @@ import scalajsbundler.sbtplugin.WebScalaJSBundlerPlugin.autoImport._
 import BldDependencies._
 import BldCommonSettings._
 import BldVersion._
-import MyEclipseTransformers._
 import MyReleaseVersion._
 
 // import MyReleaseVersion._
@@ -40,32 +38,16 @@ object BldBridgeServer {
     .dependsOn(ProjectRef(uri("utilities"), "utilities-jvm"))
     .dependsOn(BldBridgeRotation.rotationJVM % "test")
     .dependsOn(BldBrowserPages.browserpages % "test->compile")
+    .dependsOn(BldColor.colorJVM % "test->compile")
     .settings(
       inConfig(Test)(baseAssemblySettings): _*
     )
     .settings(
       name := "bridgescorer-server",
-      EclipseKeys.classpathTransformerFactories ++= Seq(
-        MyEclipseTransformers.replaceRelativePath(
-          "/bridgescorer-shared",
-          "/bridgescorer-sharedJVM"
-        ),
-        MyEclipseTransformers.replaceRelativePath(
-          "/bridgescorer-rotation",
-          "/bridgescorer-rotationJVM"
-        )
-      ),
-      EclipseKeys.withSource := true,
       //    mainClass in Compile := Some("com.github.thebridsk.bridge.server.Server"),
       mainClass in (Compile, run) := Some("com.github.thebridsk.bridge.server.Server"),
       mainClass in (Compile, packageBin) := Some("com.github.thebridsk.bridge.server.Server"),
       Compile / run / fork := true,
-      EclipseKeys.classpathTransformerFactories ++= Seq(
-        addDependentRunClassFolder("target/web/classes/main"),
-        removeRelativePath(
-          "target\\scala-" + verScalaMajorMinor + "\\resource_managed\\main"
-        )
-      ),
       server := {
         (run in Compile).toTask(""" --logfile "logs/server.sbt.%d.%u.log" start --cache 0s --store store""").value
       },
@@ -100,7 +82,6 @@ object BldBridgeServer {
         x
       },
       mainClass in Test := Some("org.scalatest.tools.Runner"),
-      EclipseKeys.createSrc := EclipseCreateSrc.Default + EclipseCreateSrc.ManagedClasses,
       //    testOptions in Test += Tests.Argument(TestFrameworks.ScalaTest, "-oG"),
       testOptions in Test += Tests.Filter { s =>
         if (s == testToRun) {

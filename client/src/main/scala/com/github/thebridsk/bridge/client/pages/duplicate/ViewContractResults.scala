@@ -21,8 +21,8 @@ import com.github.thebridsk.bridge.clientcommon.react.Table.Column
 import com.github.thebridsk.bridge.clientcommon.react.Table
 import com.github.thebridsk.bridge.data.duplicate.stats.ContractStat
 import com.github.thebridsk.bridge.clientcommon.react.PieChartOrSquareForZero
-import com.github.thebridsk.bridge.clientcommon.color.Colors
-import com.github.thebridsk.bridge.clientcommon.color.Color
+import com.github.thebridsk.color.Colors
+import com.github.thebridsk.color.Color
 import com.github.thebridsk.bridge.clientcommon.react.AppButton
 import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles
 import DuplicateStyles._

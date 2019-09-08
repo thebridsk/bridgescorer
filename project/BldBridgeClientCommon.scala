@@ -6,7 +6,6 @@ import sbtcrossproject.{crossProject, CrossType}
 import org.portablescala.sbtplatformdeps.PlatformDepsPlugin.autoImport._
 import sbtcrossproject.CrossPlugin.autoImport._
 import scalajscrossproject.ScalaJSCrossPlugin.autoImport._
-import com.typesafe.sbteclipse.plugin.EclipsePlugin.autoImport._
 import com.timushev.sbt.updates.UpdatesPlugin.autoImport._
 import org.scalajs.sbtplugin.ScalaJSPlugin
 import org.scalajs.sbtplugin.ScalaJSPlugin.autoImport._
@@ -18,11 +17,12 @@ import BldVersion._
 object BldBridgeClientCommon {
 
   lazy val `bridgescorer-clientcommon` = project.in(file("clientcommon"))
-    .configure( commonSettings )
+    .configure( commonSettings, noTests(true) )
     .enablePlugins(ScalaJSPlugin)
     .dependsOn(
       BldBridgeShared.sharedJS,
       BldMaterialUI.materialui,
+      BldColor.colorJS,
       `utilities-js`
     )
     .settings(

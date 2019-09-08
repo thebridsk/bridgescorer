@@ -14,15 +14,14 @@ import BldDependencies._
 import BldCommonSettings._
 import BldVersion._
 
-object BldBridgeRotation {
+object BldColor {
 
-  lazy val `bridgescorer-rotation` = crossProject(JSPlatform, JVMPlatform).in(file("rotation")).
-    configure(commonSettings,buildInfo("com.github.thebridsk.bridge.version", "VersionRotation")).
+  lazy val color = crossProject(JSPlatform, JVMPlatform).in(file("color")).
+    configure(commonSettings,buildInfo("com.github.thebridsk.color.version", "VersionColor")).
     settings(
-      name := "bridgescorer-rotation",
-      resolvers += Resolver.bintrayRepo("scalaz", "releases"),
+      name := "color",
 
-      libraryDependencies ++= bridgeScorerRotationDeps.value,
+      libraryDependencies ++= bridgeScorerColorDeps.value,
 
     ).
     jvmSettings(
@@ -44,7 +43,7 @@ object BldBridgeRotation {
 
     )
 
-  lazy val rotationJS: Project = `bridgescorer-rotation`.js
-  lazy val rotationJVM = `bridgescorer-rotation`.jvm
+  lazy val colorJS: Project = color.js
+  lazy val colorJVM = color.jvm
 
 }

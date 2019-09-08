@@ -13,6 +13,7 @@ import com.github.thebridsk.browserpages.GenericPage
 import com.github.thebridsk.bridge.server.test.pages.duplicate.ListDuplicatePage
 import com.github.thebridsk.bridge.server.test.pages.duplicate.NewDuplicatePage
 import com.github.thebridsk.bridge.server.test.pages.chicago.ListPage
+import com.github.thebridsk.bridge.server.test.pages.LightDarkAddOn
 import com.github.thebridsk.browserpages.Element
 
 object HomePage {
@@ -33,7 +34,7 @@ object HomePage {
   val divBridgeAppPrefix = """//div[@id="BridgeApp"]"""
 }
 
-class HomePage( implicit webDriver: WebDriver, pageCreated: SourcePosition ) extends Page[HomePage] {
+class HomePage( implicit webDriver: WebDriver, pageCreated: SourcePosition ) extends Page[HomePage] with LightDarkAddOn[HomePage] {
   import HomePage._
 
   def validate(implicit patienceConfig: PatienceConfig, pos: Position) = logMethod(s"${pos.line} ${getClass.getSimpleName}.validate") {

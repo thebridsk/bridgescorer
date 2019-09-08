@@ -6,11 +6,12 @@ import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.TagMod
 import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles
 import japgolly.scalajs.react.vdom.HtmlStyles
-import com.github.thebridsk.bridge.clientcommon.color.Color
 import Utils._
-import com.github.thebridsk.bridge.clientcommon.color.RGBColor
-import com.github.thebridsk.bridge.clientcommon.color.HSLColor
-import com.github.thebridsk.bridge.clientcommon.color.RGBPercentColor
+import com.github.thebridsk.color.Color
+import com.github.thebridsk.color.Colors
+import com.github.thebridsk.color.RGBColor
+import com.github.thebridsk.color.HSLColor
+import com.github.thebridsk.color.RGBPercentColor
 
 /**
  * A skeleton component.
@@ -25,7 +26,7 @@ import com.github.thebridsk.bridge.clientcommon.color.RGBPercentColor
  */
 object ColorBar {
   import ColorBarInternal._
-  import com.github.thebridsk.bridge.clientcommon.color.Colors._
+  import ReactColor._
 
   /**
    * Props for ColorBar
@@ -74,8 +75,8 @@ object ColorBar {
         whiteTitle: Option[TagMod] = None
     ) = {
       new Props(
-          colorsExcludeEnd(hue1,minLightness1,n1,darkToLight1),
-          colorsExcludeEnd(hue2,minLightness2,n2,darkToLight2),
+          Colors.colorsExcludeEnd(hue1,minLightness1,n1,darkToLight1),
+          Colors.colorsExcludeEnd(hue2,minLightness2,n2,darkToLight2),
           middle,
           titles1,
           titles2,
@@ -201,7 +202,8 @@ object ColorBarInternal {
   import Utils._
 
   import BaseStyles._
-  import com.github.thebridsk.bridge.clientcommon.color.Colors._
+  import com.github.thebridsk.color.Colors._
+  import ReactColor._
 
   private def box( color: Color, title: Option[TagMod] ): VdomNode = {
     Tooltip(

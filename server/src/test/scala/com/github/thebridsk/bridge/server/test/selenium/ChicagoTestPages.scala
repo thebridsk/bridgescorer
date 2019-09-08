@@ -133,6 +133,17 @@ class ChicagoTestPages extends FlatSpec
     eventually { pageTitle mustBe ("The Bridge Score Keeper") }
   }
 
+  it should "set dark mode" in {
+    import Session1._
+
+    val hp = HomePage.current
+    hp.checkIconLightMode
+    hp.checkBodyLightMode
+    val hp2 = hp.clickLightDark
+    hp2.checkIconDarkMode
+    hp2.checkBodyDarkMode
+  }
+
   it should "allow us to score a Chicago match" in {
     import Session1._
 

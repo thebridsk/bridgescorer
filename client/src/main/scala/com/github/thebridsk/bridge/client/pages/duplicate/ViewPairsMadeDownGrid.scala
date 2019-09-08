@@ -15,7 +15,7 @@ import com.github.thebridsk.bridge.clientcommon.react.AppButton
 import com.github.thebridsk.bridge.clientcommon.react.Utils._
 import com.github.thebridsk.bridge.data.duplicate.suggestion.PairsData
 import com.github.thebridsk.bridge.data.duplicate.suggestion.PairData
-import com.github.thebridsk.bridge.clientcommon.color.Color
+import com.github.thebridsk.color.Color
 import com.github.thebridsk.bridge.clientcommon.react.CheckBox
 import com.github.thebridsk.bridge.data.duplicate.suggestion.ColorBy
 import com.github.thebridsk.bridge.data.duplicate.suggestion.ColorByWonPct

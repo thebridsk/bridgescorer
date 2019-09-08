@@ -29,6 +29,20 @@ class Element( val underlying: WebElement )(implicit pos: Position, webdriver: W
 
     def attribute(name: String): Option[String] = Option(underlying.getAttribute(name))
 
+    /**
+     * Get the value of a given CSS property. Color values should be returned as rgba strings,
+     * so, for example if the "background-color" property is set as "green" in the HTML source,
+     * the returned value will be "rgba(0, 255, 0, 1)". Note that shorthand CSS properties
+     * (e.g. background, font, border, border-top, margin, margin-top, padding, padding-top,
+     * list-style, outline, pause, cue) are not returned, in accordance with the DOM CSS2
+     * specification - you should directly access the longhand properties (e.g. background-color)
+     *  to access the desired values.
+     *
+     * @param propertyName - the css property name of the element
+     * @return The current, computed value of the property.
+     */
+    def cssValue( name: String ) = underlying.getCssValue(name)
+
     def id = attribute("id")
 
     def containsClass( cls: String ) = attribute("class").map{ clses =>

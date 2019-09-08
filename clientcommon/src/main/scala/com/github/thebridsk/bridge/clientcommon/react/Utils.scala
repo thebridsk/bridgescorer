@@ -3,7 +3,6 @@ package com.github.thebridsk.bridge.clientcommon.react
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.TagMod
 import japgolly.scalajs.react.vdom.html_<^._
-import com.github.thebridsk.bridge.clientcommon.color.Color
 import japgolly.scalajs.react.vdom.Attr
 import japgolly.scalajs.react.vdom.Attr.ValueType
 
