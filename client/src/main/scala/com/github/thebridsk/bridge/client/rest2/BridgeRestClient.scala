@@ -24,7 +24,6 @@ import com.github.thebridsk.bridge.data.BoardSetsAndMovementsV1
 import com.github.thebridsk.bridge.data.BoardSetsAndMovements
 import com.github.thebridsk.bridge.data.MatchDuplicateResult
 import com.github.thebridsk.bridge.data.duplicate.stats.PlayerPlaces
-import com.github.thebridsk.bridge.data.util.ColorTheme
 
 /**
  * @author werewolf

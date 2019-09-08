@@ -37,7 +37,6 @@ import io.swagger.v3.oas.annotations.tags.Tags
 import io.swagger.v3.oas.annotations.tags.Tag
 import io.swagger.v3.oas.annotations.tags.Tags
 import io.swagger.v3.oas.annotations.tags.Tag
-import javax.ws.rs.GET
 import javax.ws.rs.POST
 import io.swagger.v3.oas.annotations.parameters.RequestBody
 import io.swagger.v3.oas.annotations.media.Content
@@ -46,13 +45,6 @@ import io.swagger.v3.jaxrs2.Reader
 import io.swagger.v3.oas.models.OpenAPI
 import java.util.TreeMap
 import com.github.thebridsk.utilities.logging.Logger
-import com.github.thebridsk.bridge.data.util.ColorTheme
-import com.github.thebridsk.bridge.server.rest.UtilsPlayJson
-import akka.http.scaladsl.model.headers.HttpCookie
-import scala.concurrent.Future
-import com.github.thebridsk.bridge.server.backend.resource.Result
-import scala.concurrent.ExecutionContext.Implicits.global
-import akka.http.scaladsl.model.DateTime
 
 /**
   * <p>
@@ -61,8 +53,6 @@ import akka.http.scaladsl.model.DateTime
   */
 @Tags(Array(new Tag(name = "Server")))
 class ServerService(totallyMissingHandler: RejectionHandler) {
-
-  import UtilsPlayJson._
 
   val log = Logger[ServerService]
 
@@ -77,7 +67,7 @@ class ServerService(totallyMissingHandler: RejectionHandler) {
   /**
     * spray route for all the methods on this resource
     */
-  lazy val serverRoute = {
+  val serverRoute = {
     extractClientIP { ip =>
       {
         pathPrefix(serverUrlPrefix) {

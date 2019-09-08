@@ -62,8 +62,6 @@ object Bridge {   // need to figure out how to use new way to call main
 
     Alerter.setupError()
 
-    import scala.concurrent.ExecutionContext.Implicits.global
-
     Init( startClient _)
 
     ColorThemeStorage.initTheme()
