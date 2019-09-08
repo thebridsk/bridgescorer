@@ -42,6 +42,7 @@ import com.github.thebridsk.materialui.TextColor
 import com.github.thebridsk.bridge.client.routes.BridgeRouter
 import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles._
 import com.github.thebridsk.bridge.data.ImportStoreConstants
+import com.github.thebridsk.bridge.clientcommon.pages.ColorThemeStorage
 
 /**
  * A skeleton component.
@@ -252,8 +253,9 @@ object ImportsListPageInternal {
     }
 
     def render( props: Props, state: State ) = {
-      val importFileText = state.selectedForImport.map( f => s"Selected ${f}" ).getOrElse( "Zipfile to import as a bridgestore" )
+      val importFileText = state.selectedForImport.map( f => s"Selected ${f}" ).getOrElse( "Select Bridgestore file" )
       val returnUrl = props.router.urlFor( props.page ).value.replace("#", "%23")
+      val theme = ColorThemeStorage.getColorThemeFromBody().map( t => s"""&theme=$t""").getOrElse("")
       <.div(
         rootStyles.importsListPageDiv,
         PopupOkCancel( state.error, None, Some(clearError) ),
@@ -277,7 +279,7 @@ object ImportsListPageInternal {
                 <.th(
                   ^.colSpan := 2,
                   <.form(
-                    ^.action:=s"/v1/import?url=${returnUrl}",
+                    ^.action:=s"/v1/import?url=${returnUrl}${theme}",
                     ^.method:="post",
                     ^.encType:="multipart/form-data",
 

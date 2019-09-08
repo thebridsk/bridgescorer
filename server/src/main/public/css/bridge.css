@@ -27,6 +27,7 @@
   --color-not-vulnerable: gray;
   --color-bg-hand-section-score: cyan;
   --color-hand-section-score: black;
+  --color-weblink: rgb(85, 26, 139);
 }
 
 [data-theme="dark"] {
@@ -56,11 +57,17 @@
   --color-not-vulnerable: gray;
   --color-bg-hand-section-score: cyan;
   --color-hand-section-score: black;
+  --color-weblink: cyan;
 }
 
 body {
   background-color: var(--color-bg);
   color: var(--color-fg);
+}
+
+#BridgeAppImport > p > a {
+  background-color: var(--color-bg);
+  color: var(--color-weblink);
 }
 
 * {
@@ -425,7 +432,8 @@ body {
 .rootImportsListPageDiv label {
   font-size: larger;
   border-radius: 20px;
-  background-color: rgb(210,210,210);
+  background-color: var(--color-default-button);
+  color: var(--color-fg-default-button);
   border-style: outset;
   border-width: 2px;
   white-space: nowrap;
@@ -436,7 +444,8 @@ body {
 .rootImportsListPageDiv input {
   font-size: larger;
   border-radius: 20px;
-  background-color: rgb(210,210,210);
+  background-color: var(--color-default-button);
+  color: var(--color-fg-default-button);
   border-style: outset;
   border-width: 2px;
   white-space: nowrap;

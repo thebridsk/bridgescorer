@@ -180,7 +180,11 @@ trait ImportExport {
     else throw new IllegalArgumentException("Filename not valid")
   }
 
-  def successhtml(url: String, filename: String) = HttpResponse(
+  def successhtml(
+    url: String,
+    filename: String,
+    theme: Option[String] = None
+  ) = HttpResponse(
     StatusCodes.OK,
     entity = HttpEntity(
       ContentTypes.`text/html(UTF-8)`,
@@ -189,10 +193,11 @@ trait ImportExport {
 <head>
 <meta charset="ISO-8859-1">
 <meta http-equiv="refresh" content="5;url=${url}" />
+<link rel="stylesheet" type="text/css" href="/public/css/bridge.css" >
 <title>Import Store</title>
 </head>
-<body>
-<div id="BridgeApp">
+<body${theme.map(t => s""" data-theme="$t"""").getOrElse("")}>
+<div id="BridgeAppImport">
 <div style="position: fixed; top: 0; left: 0; width: 100%;
             padding-left: 16px; padding-right: 16px;
             display: flex; position: relative; align-items: center;
@@ -222,7 +227,8 @@ trait ImportExport {
       url: String,
       filename: String,
       error: String,
-      statusCode: StatusCode = StatusCodes.BadRequest
+      statusCode: StatusCode = StatusCodes.BadRequest,
+      theme: Option[String] = None
   ) = HttpResponse(
     statusCode,
     entity = HttpEntity(
@@ -231,10 +237,11 @@ trait ImportExport {
 <html>
 <head>
 <meta charset="ISO-8859-1">
+<link rel="stylesheet" type="text/css" href="/public/css/bridge.css" >
 <title>Error Import Store</title>
 </head>
-<body>
-<div id="BridgeApp">
+<body${theme.map(t => s""" data-theme="$t"""").getOrElse("")}>
+<div id="BridgeAppImport">
 <div style="position: fixed; top: 0; left: 0; width: 100%;
             padding-left: 16px; padding-right: 16px;
             display: flex; position: relative; align-items: center;
@@ -319,7 +326,7 @@ trait ImportExport {
   val importStore = post {
     path("import") {
       if (restService.importStore.isDefined) {
-        parameter('url.?) { (opturl) =>
+        parameter('url.?, 'theme.? ) { (opturl,theme) =>
           extractScheme { scheme =>
             headerValue(Service.extractHostPort) { host =>
               storeUploadedFiles("zip", tempDestination) { files =>
@@ -344,14 +351,14 @@ trait ImportExport {
                               log.fine(
                                 s"imported zipfile ${metadata.fileName}, redirecting to location to ${scheme}://${hn}/"
                               )
-                              Success(successhtml(url, metadata.fileName))
+                              Success(successhtml(url, metadata.fileName, theme=theme))
                             case Success(Left((statusCode, msg))) =>
                               file.delete()
                               log.warning(
                                 s"Error importing bridge store ${metadata.fileName}: ${statusCode} ${msg.msg}"
                               )
                               Success(
-                                failurehtml(url, metadata.fileName, msg.msg)
+                                failurehtml(url, metadata.fileName, msg.msg,theme=theme)
                               )
                             case Failure(ex) =>
                               file.delete()
@@ -364,7 +371,8 @@ trait ImportExport {
                                   url,
                                   metadata.fileName,
                                   s"An error occurred: ${ex.getMessage}",
-                                  StatusCodes.InternalServerError
+                                  StatusCodes.InternalServerError,
+                                  theme=theme
                                 )
                               )
                           }
@@ -376,7 +384,8 @@ trait ImportExport {
                           url,
                           metadata.fileName,
                           "Only zip files are accepted",
-                          StatusCodes.BadRequest
+                          StatusCodes.BadRequest,
+                          theme=theme
                         )
                       )
                     }
