@@ -74,8 +74,6 @@ class ServerService(totallyMissingHandler: RejectionHandler) {
 
   val serverUrlPrefix = "shutdown"
 
-  val cookieTimeout = 30*24*60*60*1000L
-
   /**
     * spray route for all the methods on this resource
     */
@@ -90,7 +88,7 @@ class ServerService(totallyMissingHandler: RejectionHandler) {
           }
         }
       }
-    } ~ getColorTheme ~ setColorTheme
+    }
   }
 
   /**
@@ -162,73 +160,4 @@ class ServerService(totallyMissingHandler: RejectionHandler) {
         }
       }
     }
-
-    @Path("/colortheme")
-    @GET
-    @Operation(
-      summary = "Get the color theme setting",
-      description =
-        "Get the color theme setting from cookie",
-      operationId = "getColorTheme",
-      responses = Array(
-        new ApiResponse(responseCode = "200", description = "Accepted"),
-      )
-    )
-    def xxxGetColorTheme = {}
-    val getColorTheme = get {
-      pathPrefix("colortheme") {
-        pathEndOrSingleSlash {
-          optionalCookie("colorTheme") {
-            case Some(colorTheme) => complete(Array[ColorTheme]( ColorTheme(colorTheme.value) ) )
-            case None             => complete( Array[ColorTheme]( ColorTheme.light ) )
-          }
-        }
-        optionalCookie("colorTheme") {
-          case Some(colorTheme) => complete(Array[ColorTheme]( ColorTheme(colorTheme.value) ) )
-          case None             => complete( Array[ColorTheme]( ColorTheme.light ) )
-        }
-      }
-    }
-
-    @POST
-    @Operation(
-      summary = "Sets the color theme",
-      description =
-        "Set the color theme cookie to the specified theme",
-      operationId = "SetColorTheme",
-      requestBody = new RequestBody(
-        description = "The color theme to use",
-        content = Array(
-          new Content(
-            mediaType = "application/json",
-            schema = new Schema(implementation = classOf[ColorTheme])
-          )
-        )
-      ),
-      responses = Array(
-        new ApiResponse(
-          responseCode = "201",
-          description = "The color theme cookie was set",
-          content = Array(
-            new Content(
-              mediaType = "application/json",
-              schema = new Schema(implementation = classOf[ColorTheme])
-            )
-          )
-        )
-      )
-    )
-    def xxxSetColorTheme = {}
-    val setColorTheme = {
-      post {
-        pathPrefix("colortheme") {
-          entity(as[ColorTheme]) { theme =>
-            setCookie(HttpCookie("colorTheme", value = theme.theme, expires=Some(DateTime.now+cookieTimeout))) {
-              resourceCreated("colortheme", Future(Result[(String,ColorTheme)]("",theme)), Created)
-            }
-          }
-        }
-      }
-    }
-
 }

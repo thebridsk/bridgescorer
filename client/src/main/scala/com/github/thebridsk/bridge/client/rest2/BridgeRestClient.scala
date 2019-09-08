@@ -134,5 +134,3 @@ object RestClientDuplicateSuggestions extends RestClient[DuplicateSuggestions]("
 object RestClientTestBoardsetsAndMovements extends RestClient[BoardSetsAndMovements]("/public/test/boardsetsAndMovements.json")
 
 object RestClientDuplicatePlayerPlaces extends RestClient[PlayerPlaces]("/v1/rest/duplicateplaces")
-
-object RestClientColorTheme extends RestClient[ColorTheme]("/v1/colortheme")

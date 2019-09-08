@@ -36,10 +36,8 @@ import com.github.thebridsk.bridge.clientcommon.pages.GotoPage
 import com.github.thebridsk.bridge.clientcommon.pages.TitleSuits
 import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles._
 import com.github.thebridsk.bridge.clientcommon.demo.BridgeDemo
-import com.github.thebridsk.bridge.clientcmmon.material.icons.LightDark
-import com.github.thebridsk.bridge.clientcommon.rest2.RestClientColorTheme
-import _root_.com.github.thebridsk.bridge.data.util.ColorTheme
-import scala.concurrent.ExecutionContext.Implicits.global
+import com.github.thebridsk.bridge.clientcommon.material.icons.LightDark
+import com.github.thebridsk.bridge.clientcommon.pages.ColorThemeStorage
 
 /**
   * A simple AppBar for the Bridge client.
@@ -166,15 +164,14 @@ object BridgeAppBarInternal {
     // data-theme="dark"
     def toggleLightDark(event: ReactEvent) = {
       logger.info("toggle light dark")
-      val ntheme = Bridge.getColorTheme() match {
+      val ntheme = ColorThemeStorage.getColorTheme() match {
         case Some(curtheme) =>
           if (curtheme == "dark") "light"
           else "dark"
         case None =>
           "dark"
       }
-      RestClientColorTheme.create( ColorTheme(ntheme) ).recordFailure()
-      Bridge.setColorTheme(ntheme)
+      ColorThemeStorage.setColorTheme(ntheme)
     }
 
     def render(props: Props, state: State) = {
