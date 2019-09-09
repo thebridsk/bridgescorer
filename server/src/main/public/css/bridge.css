@@ -21,7 +21,7 @@
   --color-popup-border: black;
   --color-tooltip-hover: orange;
   --color-appbar-title-shadow: #f00;
-  --color-table-cell-gray: lightgrey;
+  --color-table-cell-gray: rgb(151, 151, 151);
   --color-bg-vulnerable: red;
   --color-bg-not-vulnerable: lightgrey;
   --color-not-vulnerable: gray;
