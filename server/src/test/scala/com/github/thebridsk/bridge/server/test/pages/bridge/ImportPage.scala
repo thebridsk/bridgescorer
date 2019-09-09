@@ -65,7 +65,7 @@ class ImportPage( implicit val webDriver: WebDriver, pageCreated: SourcePosition
       case Some(f) =>
         t mustBe s"Selected ${f.name}"
       case None =>
-        t mustBe "Zipfile to import as a bridgestore"
+        t mustBe "Select Bridgestore file"
     }
     this
   }

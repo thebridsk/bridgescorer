@@ -28,6 +28,7 @@ import scala.scalajs.js
 import scala.scalajs.js.annotation.JSGlobal
 import com.github.thebridsk.bridge.clientcommon.rest2.AjaxResult
 import com.github.thebridsk.bridge.clientcommon.demo.BridgeDemo
+import com.github.thebridsk.bridge.clientcommon.pages.ColorThemeStorage
 
 /**
  * @author werewolf
@@ -62,6 +63,8 @@ object Bridge {   // need to figure out how to use new way to call main
     Alerter.setupError()
 
     Init( startClient _)
+
+    ColorThemeStorage.initTheme()
 
   }
 

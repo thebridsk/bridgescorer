@@ -37,7 +37,7 @@ class ImportResultPage( implicit webDriver: WebDriver, pageCreated: SourcePositi
       val cur = currentUrl
       withClue( s"""currentUrl is ${cur}\nurlfor is     ${urlFor}""" ) {
         log.info(s"""currentUrl is ${cur}\nurlfor is     ${urlFor}""")
-        cur mustBe urlFor
+        cur must startWith (urlFor)
       }
 
       this
