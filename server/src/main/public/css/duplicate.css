@@ -532,7 +532,8 @@
   text-align: center;
 }
 .dupTableCellGray {
-  background-color: var(--color-table-cell-gray);
+  /* background-color: var(--color-table-cell-gray); */
+  background: repeating-linear-gradient(-45deg, var(--color-table-cell-gray), var(--color-table-cell-gray) 5px, var(--color-bg) 5px, var(--color-bg) 10px);
 }
 
 .dupDivAllBoardsPage {
