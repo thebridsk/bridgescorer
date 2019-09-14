@@ -192,7 +192,8 @@ object BldDependencies {
       "graphql" -> vGraphQL,
       "graphiql" -> vGraphiQL,
       "@material-ui/core" -> vMaterialUIcore,
-      "@material-ui/icons" -> vMaterialUIicons
+      "@material-ui/icons" -> vMaterialUIicons,
+      "prop-types" -> vPropTypes
   )
 
     // this is for SBT 1.0

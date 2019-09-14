@@ -2,14 +2,14 @@
 
 object BldVersion {
 
-  lazy val verScalaVersion = "2.12.9"
+  lazy val verScalaVersion = "2.12.10"
   lazy val verScalaMajorMinor = {
     val i = verScalaVersion.indexOf('.')
     val i2 = verScalaVersion.indexOf('.', i+1)
     verScalaVersion.substring(0, i2)
   }
 
-  lazy val verCrossScalaVersions = Seq("2.12.8", verScalaVersion)
+  lazy val verCrossScalaVersions = Seq("2.12.10", verScalaVersion)
 
 // The scala.js version is NOT defined in this file.
 // It is defined in ProjectScala/project/plugins.sbt
@@ -31,10 +31,10 @@ object BldVersion {
   lazy val vSwaggerAkkaHttp = "2.0.3"  // https://github.com/swagger-akka-http/swagger-akka-http
   lazy val vSwaggerScalaModule="2.0.4" // https://github.com/swagger-api/swagger-scala-module
   lazy val vSwagger="2.0.9"            // https://github.com/swagger-api/swagger-core
-  lazy val vWsRsApi="2.1.5"            // https://github.com/eclipse-ee4j/jaxrs-api
+  lazy val vWsRsApi="2.1.6"            // https://github.com/eclipse-ee4j/jaxrs-api
   lazy val vAkkaHttpCors = "0.4.1"     // https://github.com/lomigmegard/akka-http-cors
 
-  lazy val vSwaggerUI = "3.23.6"       // https://www.npmjs.com/package/swagger-ui-dist
+  lazy val vSwaggerUI = "3.23.9"       // https://www.npmjs.com/package/swagger-ui-dist
   lazy val vScalajsdom = "0.9.7"       // https://github.com/scala-js/scala-js-dom
   lazy val vScalaJsReact = "1.4.2"     // https://github.com/japgolly/scalajs-react
 
@@ -69,7 +69,7 @@ object BldVersion {
   // Selenium needs to be update to update to v23.0
   lazy val vGuavaJre = "28.1-jre"    // https://github.com/google/guava
 
-  lazy val vWebPack = "4.39.3"          // https://www.npmjs.com/package/webpack
+  lazy val vWebPack = "4.40.2"          // https://www.npmjs.com/package/webpack
 
   lazy val vJsDom = "15.1.1"           // https://www.npmjs.com/package/jsdom
 
@@ -79,21 +79,21 @@ object BldVersion {
   // version 1.0.7 is hardcoded in sbt-scalajs-bundler
   // current is 1.1.0
   lazy val vConcatWithSourcemaps = "1.1.0"  // https://www.npmjs.com/package/concat-with-sourcemaps
-  lazy val vTerser = "4.2.1"               // https://www.npmjs.com/package/terser
+  lazy val vTerser = "4.3.1"               // https://www.npmjs.com/package/terser
 
   lazy val vAjv = "6.10.2"                  // https://www.npmjs.com/package/ajv
 
 
   lazy val vWebpackDevServer = "3.8.0"   // https://www.npmjs.com/package/webpack-dev-server
-  lazy val vWebPackCli = "3.3.7"         // https://www.npmjs.com/package/webpack-cli
+  lazy val vWebPackCli = "3.3.8"         // https://www.npmjs.com/package/webpack-cli
 
   lazy val vSangria = "1.4.2"           // https://github.com/sangria-graphql/sangria
   lazy val vSangriaPlayJson = "1.0.5"   // https://github.com/sangria-graphql/sangria-playground
 
-  lazy val vGraphQL = "14.5.4"              // https://github.com/graphql/graphql-js
+  lazy val vGraphQL = "14.5.5"              // https://github.com/graphql/graphql-js
   lazy val vGraphiQL = "0.14.2"             // https://github.com/graphql/graphiql
   lazy val vGraphQLVoyager = "1.0.0-rc.27"  // https://github.com/APIs-guru/graphql-voyager
-  lazy val vMaterialUIcore = "4.3.3"        // https://www.npmjs.com/package/@material-ui/core
-  lazy val vMaterialUIicons = "4.2.1"        // https://www.npmjs.com/package/@material-ui/icons
-
+  lazy val vMaterialUIcore = "4.4.2"        // https://www.npmjs.com/package/@material-ui/core
+  lazy val vMaterialUIicons = "4.4.1"       // https://www.npmjs.com/package/@material-ui/icons
+  lazy val vPropTypes = "15.7.2"            // https://www.npmjs.com/package/prop-types
 }

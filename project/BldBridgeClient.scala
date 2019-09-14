@@ -56,6 +56,15 @@ object BldBridgeClient {
       dependencyUpdatesFilter -= moduleFilter(
         organization = "org.eclipse.jetty"
       ),
+
+      cleanKeepGlobs /* in Compile */ ++= Seq(
+        Glob((crossTarget in npmUpdate in Compile).value, "node_modules") / **,
+      ),
+
+      cleanKeepGlobs /* in Test */ ++= Seq(
+        Glob((crossTarget in npmUpdate in Test).value, "node_modules") / **
+      ),
+
 //    test in assembly := {},
 
 //    testOptions in Test += Tests.Argument(TestFrameworks.ScalaTest, "-oU"),
