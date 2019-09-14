@@ -185,9 +185,9 @@ class ChicagoTest extends FlatSpec
     click on id("PlayerNFirstDealer")
 
     val ok = eventually {
-      val e = find(id("Ok"))
-      e.isEnabled mustBe true
-      e
+      val elem = find(id("Ok"))
+      elem.isEnabled mustBe true
+      elem
     }
 
     ok.click
