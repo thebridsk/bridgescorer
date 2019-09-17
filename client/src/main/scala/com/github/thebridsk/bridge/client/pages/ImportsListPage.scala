@@ -43,7 +43,7 @@ import com.github.thebridsk.bridge.client.routes.BridgeRouter
 import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles._
 import com.github.thebridsk.bridge.data.ImportStoreConstants
 import com.github.thebridsk.bridge.clientcommon.pages.ColorThemeStorage
-import japgolly.scalajs.react.raw.SyntheticEvent
+import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles
 
 /**
  * A skeleton component.
@@ -297,20 +297,26 @@ object ImportsListPageInternal {
                     ^.method:="post",
                     ^.encType:="multipart/form-data",
                     ^.onSubmit ==> handleSubmit,
-
                     <.label(
                       importFileText,
-                      <.input(
+                      BaseStyles.highlight(
+                        required = state.selectedForImport.isEmpty,
+                      ),
+                    <.input(
                         ^.`type` := "file",
                         ^.name := "zip",
                         ^.accept := s".${ImportStoreConstants.importStoreFileExtension},application/zip",
-                        ^.onChange ==> setSelected _
+                        ^.onChange ==> setSelected _,
                       )
                     ),
                     <.input(
                       ^.`type` := "submit",
                       ^.name := "submit",
-                      ^.value := "Import"
+                      ^.value := "Import",
+                      ^.disabled := state.selectedForImport.isEmpty,
+                      BaseStyles.highlight(
+                        required = state.selectedForImport.isDefined,
+                      ),
                     )
                   ),
                 ),
