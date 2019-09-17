@@ -290,8 +290,15 @@ object ImportsListPageInternal {
           <.table(
             <.thead(
               <.tr(
+                <.th( "Id" ),
+                <.th( "Created" ),
+                <.th( "Actions" )
+              )
+            ),
+            <.tbody(
+              <.tr(
                 <.th(
-                  ^.colSpan := 2,
+                  ^.colSpan := 3,
                   <.form(
                     ^.action:=s"/v1/import?url=${returnUrl}${theme}",
                     ^.method:="post",
@@ -319,11 +326,8 @@ object ImportsListPageInternal {
                       ),
                     )
                   ),
-                ),
-                <.th( "Actions" )
-              )
-            ),
-            <.tbody(
+                )
+              ),
               if (state.stores.isEmpty) {
                 <.tr(
                   <.td( "Working" )
