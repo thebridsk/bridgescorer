@@ -177,7 +177,7 @@ trait ImportExport {
   def tempDestination(fileInfo: FileInfo): JFile = {
     val fn = fileInfo.fileName
     if (fn.endsWith(".zip") || fn.endsWith(importStoreDotExtension)) new JFile(tempDir.toString(), fileInfo.fileName)
-    else throw new IllegalArgumentException("Filename not valid")
+    else throw new IllegalArgumentException(s"Filename not valid: $fn")
   }
 
   def successhtml(

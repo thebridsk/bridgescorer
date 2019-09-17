@@ -43,6 +43,7 @@ import com.github.thebridsk.bridge.client.routes.BridgeRouter
 import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles._
 import com.github.thebridsk.bridge.data.ImportStoreConstants
 import com.github.thebridsk.bridge.clientcommon.pages.ColorThemeStorage
+import japgolly.scalajs.react.raw.SyntheticEvent
 
 /**
  * A skeleton component.
@@ -252,6 +253,19 @@ object ImportsListPageInternal {
       s.withError(s"Working on deleting ${id}")
     }
 
+    def handleSubmit(e: ReactEventFromInput) = scope.state >>= { state =>
+      CallbackTo[Boolean] {
+        val valid = state.selectedForImport.isDefined
+        if (!valid) {
+          scope.withEffectsImpure.modState( _.withError("Must select a file"))
+          e.preventDefault()
+          false
+        } else {
+          true
+        }
+      }
+    }
+
     def render( props: Props, state: State ) = {
       val importFileText = state.selectedForImport.map( f => s"Selected ${f}" ).getOrElse( "Select Bridgestore file" )
       val returnUrl = props.router.urlFor( props.page ).value.replace("#", "%23")
@@ -282,6 +296,7 @@ object ImportsListPageInternal {
                     ^.action:=s"/v1/import?url=${returnUrl}${theme}",
                     ^.method:="post",
                     ^.encType:="multipart/form-data",
+                    ^.onSubmit ==> handleSubmit,
 
                     <.label(
                       importFileText,
