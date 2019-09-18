@@ -71,14 +71,14 @@ class ImportPage( implicit val webDriver: WebDriver, pageCreated: SourcePosition
   }
 
   def isWorking(implicit pos: Position) = {
-    findElemByXPath(HomePage.divBridgeAppPrefix+"//table/tbody/tr[1]/td[2]").text == "Working"
+    findElemByXPath(HomePage.divBridgeAppPrefix+"//table/tbody/tr[2]/td[1]").text == "Working"
   }
 
   /**
    * @return list of tuple2.  Each tuple2 is (importId,row)
    */
   def getImportedIds(implicit patienceConfig: PatienceConfig, pos: Position) = eventually {
-    val r = findElemsByXPath(HomePage.divBridgeAppPrefix+"//table/tbody/tr/td[1]").map( e => e.text ).drop(1).zipWithIndex
+    val r = findElemsByXPath(HomePage.divBridgeAppPrefix+"//table/tbody/tr/td[1]").drop(1).map( e => e.text ).zipWithIndex
     if (r.length == 1) {
       r.head._1 must not be "Working"
     }
