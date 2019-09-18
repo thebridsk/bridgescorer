@@ -329,18 +329,18 @@ object ImportsListPageInternal {
                       ),
                     )
                   ),
-                )
+                ),
+                if (state.stores.isEmpty) {
+                  <.tr(
+                    <.td( "Working" )
+                  )
+                } else {
+                  state.stores.get.imports.zipWithIndex.map { entry =>
+                    val (store,i) = entry
+                    SummaryRow.withKey( s"Import${i}" )((props,state,this,i,store))
+                  }.toTagMod
+                }
               ),
-              if (state.stores.isEmpty) {
-                <.tr(
-                  <.td( "Working" )
-                )
-              } else {
-                state.stores.get.imports.zipWithIndex.map { entry =>
-                  val (store,i) = entry
-                  SummaryRow.withKey( s"Import${i}" )((props,state,this,i,store))
-                }.toTagMod
-              }
             )
           )
         )
