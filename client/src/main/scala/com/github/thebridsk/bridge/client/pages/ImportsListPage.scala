@@ -287,40 +287,43 @@ object ImportsListPageInternal {
             props.router
         )(),
         <.div(
-          <.table(
-            <.thead(
-              <.tr(
-                <.th( "Id" ),
-                <.th( "Created" ),
-                <.th( "Actions" )
-              )
-            ),
-            <.tbody(
-              <.tr(
-                <.th(
-                  ^.colSpan := 3,
-                  <.form(
-                    ^.action:=s"/v1/import?url=${returnUrl}${theme}",
-                    ^.method:="post",
-                    ^.encType:="multipart/form-data",
-                    ^.onSubmit ==> handleSubmit,
+          <.form(
+            ^.action:=s"/v1/import?url=${returnUrl}${theme}",
+            ^.method:="post",
+            ^.encType:="multipart/form-data",
+            ^.onSubmit ==> handleSubmit,
+            <.table(
+              <.thead(
+                <.tr(
+                  <.th( "Id" ),
+                  <.th( "Created" ),
+                  <.th( "Actions" )
+                )
+              ),
+              <.tbody(
+                <.tr(
+                  <.th(
                     <.label(
                       importFileText,
                       BaseStyles.highlight(
                         required = state.selectedForImport.isEmpty,
                       ),
-                    <.input(
+                      <.input(
                         ^.`type` := "file",
                         ^.name := "zip",
                         ^.accept := s".${ImportStoreConstants.importStoreFileExtension},application/zip",
                         ^.onChange ==> setSelected _,
                       )
                     ),
+                  ),
+                  <.th(),
+                  <.th(
                     <.input(
                       ^.`type` := "submit",
                       ^.name := "submit",
                       ^.value := "Import",
                       ^.disabled := state.selectedForImport.isEmpty,
+                      ^.hidden := state.selectedForImport.isEmpty,
                       BaseStyles.highlight(
                         required = state.selectedForImport.isDefined,
                       ),
