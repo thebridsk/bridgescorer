@@ -60,7 +60,7 @@ class ImportPage( implicit val webDriver: WebDriver, pageCreated: SourcePosition
   }
 
   def checkSelectedFile( file: Option[File] )( implicit pos: Position ) = {
-    val t = findElemByXPath("//form/label").text
+    val t = findElemByXPath("//form/table/tbody/tr/td/label").text
     file match {
       case Some(f) =>
         t mustBe s"Selected ${f.name}"

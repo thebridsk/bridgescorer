@@ -302,7 +302,7 @@ object ImportsListPageInternal {
               ),
               <.tbody(
                 <.tr(
-                  <.th(
+                  <.td(
                     <.label(
                       importFileText,
                       BaseStyles.highlight(
@@ -316,8 +316,8 @@ object ImportsListPageInternal {
                       )
                     ),
                   ),
-                  <.th(),
-                  <.th(
+                  <.td(),
+                  <.td(
                     <.input(
                       ^.`type` := "submit",
                       ^.name := "submit",
