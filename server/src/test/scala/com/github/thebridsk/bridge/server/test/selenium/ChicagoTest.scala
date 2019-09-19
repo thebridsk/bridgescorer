@@ -192,9 +192,17 @@ class ChicagoTest extends FlatSpec
 
     ok.click
 
-    eventually {
-      val text = find(id("North")).text
-      text mustBe "Nancy vul"
+    try {
+      eventually {
+        val text = find(id("North")).text
+        text mustBe "Nancy vul"
+      }
+    } catch {
+      case x: Throwable =>
+        x.printStackTrace()
+        val html = PageBrowser.find( tagName("body") ).underlying.getAttribute("innerHTML")
+        System.err.println(html)
+        throw x
     }
     find(id("South")).text mustBe "Sam vul"
     find(id("East")).text mustBe "Ellen vul"
