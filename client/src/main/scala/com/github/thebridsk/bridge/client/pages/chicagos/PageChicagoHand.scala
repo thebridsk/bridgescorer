@@ -28,6 +28,7 @@ import com.github.thebridsk.materialui.TextVariant
 import com.github.thebridsk.materialui.TextColor
 import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles.baseStyles
 import japgolly.scalajs.react.component.builder.Lifecycle.ComponentDidUpdate
+import com.github.thebridsk.bridge.client.pages.HomePage
 
 /**
   * A skeleton component.
@@ -92,84 +93,89 @@ object PageChicagoHandInternal {
             val scoring = ChicagoScoring(mc)
             val iround = props.page.round
             val ihand = props.page.hand
-            val round = scoring.rounds(iround)
+            if (iround < scoring.rounds.length) {
+              val round = scoring.rounds(iround)
 
-            if (ihand < round.hands.length) {
-              val scorehand = round.hands(ihand)
-              PageHand.create(
-                scorehand,
-                Chicago,
-                0,
-                0,
-                round.round.north,
-                round.round.south,
-                round.round.east,
-                round.round.west,
-                round.dealerOrder(ihand),
-                viewHandCallbackOk(iround, ihand, mc.isQuintet()),
-                viewHandCallbackCancel(mc.isQuintet()),
-                allowPassedOut = false
-              )
-            } else {
-              val (nsVul, ewVul, dealer) = {
-                if (ihand == 5 && mc.gamesPerRound == 6) {
-                  (Vul, Vul, round.dealerOrder(1))
-                } else {
-                  val dealerInFirstGame =
-                    scoring.rounds(iround).dealerFirstRound
-                  val nsDealer = dealerInFirstGame == North || dealerInFirstGame == South
-                  def vulIfNSDealer(nsdealer: Boolean): Vulnerability = {
-                    if (nsdealer) Vul; else NotVul
+              if (ihand < round.hands.length) {
+                val scorehand = round.hands(ihand)
+                PageHand.create(
+                  scorehand,
+                  Chicago,
+                  0,
+                  0,
+                  round.round.north,
+                  round.round.south,
+                  round.round.east,
+                  round.round.west,
+                  round.dealerOrder(ihand),
+                  viewHandCallbackOk(iround, ihand, mc.isQuintet()),
+                  viewHandCallbackCancel(mc.isQuintet()),
+                  allowPassedOut = false
+                )
+              } else {
+                val (nsVul, ewVul, dealer) = {
+                  if (ihand == 5 && mc.gamesPerRound == 6) {
+                    (Vul, Vul, round.dealerOrder(1))
+                  } else {
+                    val dealerInFirstGame =
+                      scoring.rounds(iround).dealerFirstRound
+                    val nsDealer = dealerInFirstGame == North || dealerInFirstGame == South
+                    def vulIfNSDealer(nsdealer: Boolean): Vulnerability = {
+                      if (nsdealer) Vul; else NotVul
+                    }
+                    ihand % 4 match {
+                      case 0 => (NotVul, NotVul, round.dealerOrder(0))
+                      case 1 =>
+                        (
+                          vulIfNSDealer(!nsDealer),
+                          vulIfNSDealer(nsDealer),
+                          round.dealerOrder(1)
+                        )
+                      case 2 =>
+                        (
+                          vulIfNSDealer(nsDealer),
+                          vulIfNSDealer(!nsDealer),
+                          round.dealerOrder(2)
+                        )
+                      case 3 => (Vul, Vul, round.dealerOrder(3))
+                    }
                   }
-                  ihand % 4 match {
-                    case 0 => (NotVul, NotVul, round.dealerOrder(0))
-                    case 1 =>
-                      (
-                        vulIfNSDealer(!nsDealer),
-                        vulIfNSDealer(nsDealer),
-                        round.dealerOrder(1)
-                      )
-                    case 2 =>
-                      (
-                        vulIfNSDealer(nsDealer),
-                        vulIfNSDealer(!nsDealer),
-                        round.dealerOrder(2)
-                      )
-                    case 3 => (Vul, Vul, round.dealerOrder(3))
-                  }
+
                 }
-
+                val contract = Contract(
+                  ihand.toString(),
+                  PassedOut,
+                  NoTrump,
+                  NotDoubled,
+                  North,
+                  nsVul,
+                  ewVul,
+                  Made,
+                  0,
+                  None,
+                  None,
+                  Chicago,
+                  None,
+                  0,
+                  0,
+                  round.round.north,
+                  round.round.south,
+                  round.round.east,
+                  round.round.west,
+                  dealer
+                )
+                PageHand(
+                  contract,
+                  viewHandCallbackOk(iround, ihand, mc.isQuintet()),
+                  viewHandCallbackCancel(mc.isQuintet()),
+                  newhand = true,
+                  allowPassedOut = false
+  //                        helppage = Some("../help/chicago/hand.html")
+                )
               }
-              val contract = Contract(
-                ihand.toString(),
-                PassedOut,
-                NoTrump,
-                NotDoubled,
-                North,
-                nsVul,
-                ewVul,
-                Made,
-                0,
-                None,
-                None,
-                Chicago,
-                None,
-                0,
-                0,
-                round.round.north,
-                round.round.south,
-                round.round.east,
-                round.round.west,
-                dealer
-              )
-              PageHand(
-                contract,
-                viewHandCallbackOk(iround, ihand, mc.isQuintet()),
-                viewHandCallbackCancel(mc.isQuintet()),
-                newhand = true,
-                allowPassedOut = false
-//                        helppage = Some("../help/chicago/hand.html")
-              )
+
+            } else {
+              HomePage.loading
             }
 
           case _ =>
