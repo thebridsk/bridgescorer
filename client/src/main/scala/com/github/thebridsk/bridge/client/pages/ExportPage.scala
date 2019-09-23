@@ -162,7 +162,7 @@ object ExportPageInternal {
     }
 
     val selectAll = scope.modState { s =>
-      val sel = s.dupids.getOrElse(List()):::s.chiids.getOrElse(List()):::s.rubids.getOrElse(List())
+      val sel = s.dupids.getOrElse(List()):::s.duprids.getOrElse(List()):::s.chiids.getOrElse(List()):::s.rubids.getOrElse(List())
       s.copy(selectedIds = Some(sel))
     }
 
@@ -232,7 +232,7 @@ object ExportPageInternal {
         )
       }
 
-      val dupids = if (state.dupids.isEmpty || state.duprids.isEmpty) {
+      val dupids = if (state.dupids.isEmpty && state.duprids.isEmpty) {
         None
       } else {
         Some(state.dupids.getOrElse(List()):::state.duprids.getOrElse(List()))

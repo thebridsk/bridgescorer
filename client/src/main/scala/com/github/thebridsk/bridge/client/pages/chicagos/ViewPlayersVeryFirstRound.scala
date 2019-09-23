@@ -192,19 +192,27 @@ object ViewPlayersVeryFirstRound {
       val south = state.south.trim
       val east = state.east.trim
       val west = state.west.trim
-      ChicagoController.updateChicagoNames(props.chicago.id, north, south, east, west, e, quintet, state.simpleRotation)
-      val r = if (props.chicago.rounds.isEmpty) {
-        Round.create("0",
+      val chinames = props.chicago.setPlayers( north, south, east, west )
+      val chine = e.map( ext => chinames.playChicago5(ext)).getOrElse(chinames)
+      val chineq = if (quintet) chine.setQuintet(state.simpleRotation)
+                   else chine
+//      ChicagoController.updateChicagoNames(props.chicago.id, north, south, east, west, e, quintet, state.simpleRotation)
+      val chi2 = if (props.chicago.rounds.isEmpty) {
+        val r = Round.create("0",
              north,
              south,
              east,
              west,
              state.getDealer,
              Nil )
+        chineq.addRound(r)
       } else {
-        props.chicago.rounds(0).copy(north=north, south=south, east=east, west=west, dealerFirstRound=state.getDealer)
+        val r = props.chicago.rounds(0).copy(north=north, south=south, east=east, west=west, dealerFirstRound=state.getDealer)
+        chineq.updateRound(r)
       }
-      ChicagoController.updateChicagoRound(props.chicago.id, r)
+//      ChicagoController.updateChicagoRound(props.chicago.id, r)
+
+      ChicagoController.updateMatch(chi2)
 
       props.router.set(props.page.toHandView(0))
     }

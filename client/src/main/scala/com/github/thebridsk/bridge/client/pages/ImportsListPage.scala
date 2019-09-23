@@ -43,6 +43,7 @@ import com.github.thebridsk.bridge.client.routes.BridgeRouter
 import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles._
 import com.github.thebridsk.bridge.data.ImportStoreConstants
 import com.github.thebridsk.bridge.clientcommon.pages.ColorThemeStorage
+import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles
 
 /**
  * A skeleton component.
@@ -252,6 +253,19 @@ object ImportsListPageInternal {
       s.withError(s"Working on deleting ${id}")
     }
 
+    def handleSubmit(e: ReactEventFromInput) = scope.state >>= { state =>
+      CallbackTo[Boolean] {
+        val valid = state.selectedForImport.isDefined
+        if (!valid) {
+          scope.withEffectsImpure.modState( _.withError("Must select a file"))
+          e.preventDefault()
+          false
+        } else {
+          true
+        }
+      }
+    }
+
     def render( props: Props, state: State ) = {
       val importFileText = state.selectedForImport.map( f => s"Selected ${f}" ).getOrElse( "Select Bridgestore file" )
       val returnUrl = props.router.urlFor( props.page ).value.replace("#", "%23")
@@ -273,46 +287,60 @@ object ImportsListPageInternal {
             props.router
         )(),
         <.div(
-          <.table(
-            <.thead(
-              <.tr(
-                <.th(
-                  ^.colSpan := 2,
-                  <.form(
-                    ^.action:=s"/v1/import?url=${returnUrl}${theme}",
-                    ^.method:="post",
-                    ^.encType:="multipart/form-data",
-
+          <.form(
+            ^.action:=s"/v1/import?url=${returnUrl}${theme}",
+            ^.method:="post",
+            ^.encType:="multipart/form-data",
+            ^.onSubmit ==> handleSubmit,
+            <.table(
+              <.thead(
+                <.tr(
+                  <.th( "Id" ),
+                  <.th( "Created" ),
+                  <.th( "Actions" )
+                )
+              ),
+              <.tbody(
+                <.tr(
+                  <.td(
                     <.label(
                       importFileText,
+                      BaseStyles.highlight(
+                        required = state.selectedForImport.isEmpty,
+                      ),
                       <.input(
                         ^.`type` := "file",
                         ^.name := "zip",
                         ^.accept := s".${ImportStoreConstants.importStoreFileExtension},application/zip",
-                        ^.onChange ==> setSelected _
+                        ^.onChange ==> setSelected _,
                       )
                     ),
+                  ),
+                  <.td(),
+                  <.td(
                     <.input(
                       ^.`type` := "submit",
                       ^.name := "submit",
-                      ^.value := "Import"
+                      ^.value := "Import",
+                      ^.disabled := state.selectedForImport.isEmpty,
+                      ^.hidden := state.selectedForImport.isEmpty,
+                      BaseStyles.highlight(
+                        required = state.selectedForImport.isDefined,
+                      ),
                     )
                   ),
                 ),
-                <.th( "Actions" )
-              )
-            ),
-            <.tbody(
-              if (state.stores.isEmpty) {
-                <.tr(
-                  <.td( "Working" )
-                )
-              } else {
-                state.stores.get.imports.zipWithIndex.map { entry =>
-                  val (store,i) = entry
-                  SummaryRow.withKey( s"Import${i}" )((props,state,this,i,store))
-                }.toTagMod
-              }
+                if (state.stores.isEmpty) {
+                  <.tr(
+                    <.td( "Working" )
+                  )
+                } else {
+                  state.stores.get.imports.zipWithIndex.map { entry =>
+                    val (store,i) = entry
+                    SummaryRow.withKey( s"Import${i}" )((props,state,this,i,store))
+                  }.toTagMod
+                }
+              ),
             )
           )
         )

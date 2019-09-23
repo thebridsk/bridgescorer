@@ -27,6 +27,7 @@ import com.github.thebridsk.browserpages.PageBrowser
 import com.github.thebridsk.bridge.server.test.TestStartLogging
 import com.github.thebridsk.bridge.server.test.pages.bridge.HomePage
 import com.github.thebridsk.browserpages.Session
+import com.github.thebridsk.bridge.server.test.util.CaptureLog
 
 /**
  * @author werewolf
@@ -46,6 +47,11 @@ class ChicagoTest extends FlatSpec
 
   val log = Logger[ChicagoTest]
 
+  lazy val inTravis = sys.props
+    .get("TRAVIS_BUILD_NUMBER")
+    .orElse(sys.env.get("TRAVIS_BUILD_NUMBER"))
+    .isDefined
+
   val docsScreenshotDir = "target/docs/Chicago"
 
   val Session1 = new Session
@@ -61,6 +67,8 @@ class ChicagoTest extends FlatSpec
   val chicagoListURL: Option[String] = None
   val chicagoToListId: Option[String] = Some("Quit")
 
+  val captureLog = new CaptureLog
+
   implicit val timeoutduration = Duration( 60, TimeUnit.SECONDS )
 
   TestStartLogging.startLogging()
@@ -70,6 +78,8 @@ class ChicagoTest extends FlatSpec
     import scala.concurrent._
     import ExecutionContext.Implicits.global
     import com.github.thebridsk.bridge.server.test.util.ParallelUtils._
+
+    if (true) captureLog.enable
 
     MonitorTCP.nextTest()
 
@@ -184,17 +194,21 @@ class ChicagoTest extends FlatSpec
 
     click on id("PlayerNFirstDealer")
 
-    val ok = eventually {
-      val elem = find(id("Ok"))
-      elem.isEnabled mustBe true
-      elem
-    }
+    captureLog.printLogOnException {
+      log.severe("testing capture log")
+      val ok = eventually {
+        val elem = find(id("Ok"))
+        elem.isEnabled mustBe true
+        elem
+      }
 
-    ok.click
+      ok.click
 
-    eventually {
-      val text = find(id("North")).text
-      text mustBe "Nancy vul"
+      eventually {
+        val text = find(id("North")).text
+        text mustBe "Nancy vul"
+      }
+
     }
     find(id("South")).text mustBe "Sam vul"
     find(id("East")).text mustBe "Ellen vul"

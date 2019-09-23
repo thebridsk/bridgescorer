@@ -675,12 +675,20 @@ object PageSummaryInternal {
 
             (if (importId.isDefined) {
               List[VdomNode](
-//                MuiMenuItem(
-//                    id = "Summary",
-//                    onClick = callbackPage(SummaryView) _
-//                )(
-//                    "Summary"
-//                )
+                MuiMenuItem(
+                    id = "ShowRows",
+                    onClick = toggleRows _,
+                    classes = js.Dictionary("root" -> "mainMenuItem")
+                )(
+                    "Show All",
+                    {
+                      if (state.alwaysShowAll || state.showRows.isEmpty) {
+                        MuiIcons.CheckBox()
+                      } else {
+                        MuiIcons.CheckBoxOutlineBlank()
+                      }
+                    }
+                ),
               )
             } else {
               val x: List[VdomNode] =
@@ -698,11 +706,6 @@ object PageSummaryInternal {
                 )(
                     "Show All",
                     {
-//                        val color = if (state.alwaysShowAll || state.showRows.isEmpty) SvgColor.inherit else SvgColor.disabled
-//                        MuiIcons.Check(
-//                            color=color,
-//                            classes = js.Dictionary("root" -> "mainMenuItemIcon")
-//                        )
                       if (state.alwaysShowAll || state.showRows.isEmpty) {
                         MuiIcons.CheckBox()
                       } else {

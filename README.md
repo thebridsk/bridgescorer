@@ -97,47 +97,28 @@ The `ws` directory is the eclipse workspace.
 ## Prereqs
 
 - Java 1.8
-- [Scala 2.12.8](http://www.scala-lang.org/)
-- [SBT 1.2.7](http://www.scala-sbt.org/)
+- [Scala 2.12.10](http://www.scala-lang.org/)
+- [SBT 1.3.0](http://www.scala-sbt.org/)
 - [Chrome](https://www.google.com/chrome/)
 - [ChromeDriver](https://sites.google.com/a/chromium.org/chromedriver/), be sure to match the version of Chrome.
 - [Hugo](https://gohugo.io/), at least version 0.52
 
 Optional:
-- [Eclipse Oxygen](https://eclipse.org/)
-- [Scala IDE](http://scala-ide.org/) [Update site](http://download.scala-ide.org/sdk/lithium/e46/scala211/stable/site)
+- [Visual Studio Code](https://code.visualstudio.com/)
+- [Scala Metals](https://scalameta.org/metals/)
 
 ## SBT Global Setup
 
 - In the SBT install, edit the file `conf/sbtconfig.txt` and make the following changes:
 
   - Change `-Xmx` option to `-Xmx=4096M`.  512m is not enough.
-  - Comment out `-XX:MaxPermSize=256m`.  Doesn't exist in Java 1.8 anymore.
-    
+
 - If you update SBT, you may need to clean out the `~/.sbt` directory.  Make sure you save `global.sbt`, `plugins.sbt` and any other configuration files.
 - Optionally copy the files in `setup/sbt/1.0` to `~/.sbt/1.0`.  This has a `plugins.sbt` file with plugins that are nice to have.
 
+## Setup for VSCode
 
-## Setup for Eclipse
-
-The following steps are needed to work in eclipse.  Note: the eclipse will need the [Scala IDE](http://scala-ide.org/) plugin installed.
-
-- to generate the eclipse .project and .classpath files:
-
-```
-cd BridgeScorer/git/bridgescorer
-sbt allassembly
-sbt updateClassifiers "eclipse with-source=true" "reload plugins" updateClassifiers "eclipse with-source=true"
-cd utilities
-sbt "reload plugins" updateClassifiers "eclipse with-source=true"
-```
-    
-- Import all projects except for one into eclipse starting at the BridgeScorer directory.  The one to not import into eclipse is one of the `utilities-shared` project, the one that has a directory path that ends in `js`.
-
-### Eclipse preferences:
-
-Turn off Eclipse > Preferences > Team > Git > Projects > "Automatically ignore derived resources by adding them to .gitignore"
-See https://github.com/typesafehub/sbteclipse/issues/271
+Install the scalametals extension.  Add sbt, Scala, Java, chromedriver, hugo to the path when starting VSCode.
 
 ## Debugging iOS (Oct 28, 2017)
 
@@ -149,7 +130,7 @@ Use jsconsole from https://github.com/remy/jsconsole
     cd jsconsole
     npm install
     node .
- 
+
 ### Browser to jsconsole
 
 edit server/src/main/public/index-jsconsole.html to set the correct IP address for the jsconsole server.
