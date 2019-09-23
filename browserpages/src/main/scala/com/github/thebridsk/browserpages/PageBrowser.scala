@@ -100,6 +100,7 @@ class ClickOn(implicit createdpos: SourcePosition) {
     e.click()
   }
   def on( query: QueryBy )(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position): Unit = {
+    PageBrowser.log.fine( s"Finding element ${query} to click: patienceConfig=${patienceConfig}, pos=${pos.line}" )
     val e = query.queryElement
     PageBrowser.log.fine( s"Clicking on element ${query} ${e}: patienceConfig=${patienceConfig}, pos=${pos.line}" )
     on(e)

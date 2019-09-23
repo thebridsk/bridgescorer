@@ -192,7 +192,9 @@ object ViewPlayersVeryFirstRound {
       val south = state.south.trim
       val east = state.east.trim
       val west = state.west.trim
-      val chinames = props.chicago.setPlayers( north::south::east::west::e.toList ).setQuintet(quintet).copy( simpleRotation = state.simpleRotation )
+      val chinames = props.chicago.setPlayers( north::south::east::west::e.toList )
+      val chinamesq = if (quintet) chinames.setQuintet(state.simpleRotation)
+                      else chinames
 //      ChicagoController.updateChicagoNames(props.chicago.id, north, south, east, west, e, quintet, state.simpleRotation)
       val chi2 = if (props.chicago.rounds.isEmpty) {
         val r = Round.create("0",
@@ -202,10 +204,10 @@ object ViewPlayersVeryFirstRound {
              west,
              state.getDealer,
              Nil )
-        chinames.addRound(r)
+        chinamesq.addRound(r)
       } else {
         val r = props.chicago.rounds(0).copy(north=north, south=south, east=east, west=west, dealerFirstRound=state.getDealer)
-        chinames.updateRound(r)
+        chinamesq.updateRound(r)
       }
 //      ChicagoController.updateChicagoRound(props.chicago.id, r)
 
