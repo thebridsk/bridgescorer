@@ -37,7 +37,6 @@ import akka.http.scaladsl.server.MalformedRequestContentRejection
 import com.github.thebridsk.bridge.data.RestMessage
 import akka.http.scaladsl.server.MethodRejection
 import akka.http.scaladsl.model.headers.Allow
-import akka.http.scaladsl.server.UnsupportedRequestContentTypeRejection
 import akka.http.scaladsl.model.MediaTypes
 import javax.ws.rs.Path
 import io.swagger.v3.oas.annotations.Operation
@@ -129,11 +128,6 @@ class RubberMonitorWebservice(
                     extractClientIP { ip =>
                       {
                         log.info(s"SSE from $ip for $id")
-                        reject(
-                          UnsupportedRequestContentTypeRejection(
-                            Set(MediaTypes.`text/event-stream`)
-                          )
-                        )
                         complete {
                           monitor.monitorMatch(ip, id)
                         }
