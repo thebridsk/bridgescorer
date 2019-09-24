@@ -197,7 +197,8 @@ object BldCommonSettings {
   val hugosetupWithTest = taskKey[Unit]("Setup to run Hugo")
   val helptask = taskKey[Seq[(java.io.File, String)]]("Identifies help resources")
 
-  val server = taskKey[Unit]("Run server with default store and logging to server/logs directory")
+  val server = taskKey[Unit]("Run server with default store and logging to server/logs directory, no help")
+  val serverhelp = taskKey[Unit]("Run server with default store and logging to server/logs directory, with help")
   val servertemp = taskKey[Unit]("Run server with temp store and logging to server/logs directory")
   val serverlogs = taskKey[Unit]("Run server with default store and logs to console")
 
