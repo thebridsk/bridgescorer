@@ -95,7 +95,8 @@ object BldBridge {
 //    mainClass in Compile := Some("com.github.thebridsk.bridge.server.Server"),
       mainClass in (Compile, run) := Some("com.github.thebridsk.bridge.server.Server"),
       mainClass in (Compile, packageBin) := Some("com.github.thebridsk.bridge.server.Server"),
-      server := {
+      server := { (server in BldBridgeServer.`bridgescorer-server`).value },
+      serverhelp := {
         (run in Compile).toTask(""" --logfile "server/logs/serverhelp.sbt.%d.%u.log" start --cache 0s --store server/store""").value
       },
       serverlogs := {
