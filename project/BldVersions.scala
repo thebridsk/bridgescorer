@@ -64,7 +64,7 @@ object BldVersion {
   lazy val vJackson = "2.9.10"           // https://github.com/FasterXML/jackson-core
   // v2.9.9.2 causes NPE in getting swagger.yaml
   // https://github.com/FasterXML/jackson-databind/commit/dd4c5acb321a6aa9ca230aa505266fb2dd2f90ff
-  lazy val vJacksonDatabind = "2.9.9.3"   // https://github.com/FasterXML/jackson-databind
+  lazy val vJacksonDatabind = "2.9.10"   // https://github.com/FasterXML/jackson-databind
 
   // Selenium needs to be update to update to v23.0
   lazy val vGuavaJre = "28.1-jre"    // https://github.com/google/guava
@@ -79,7 +79,7 @@ object BldVersion {
   // version 1.0.7 is hardcoded in sbt-scalajs-bundler
   // current is 1.1.0
   lazy val vConcatWithSourcemaps = "1.1.0"  // https://www.npmjs.com/package/concat-with-sourcemaps
-  lazy val vTerser = "4.3.1"               // https://www.npmjs.com/package/terser
+  lazy val vTerser = "4.3.2"               // https://www.npmjs.com/package/terser
 
   lazy val vAjv = "6.10.2"                  // https://www.npmjs.com/package/ajv
 
