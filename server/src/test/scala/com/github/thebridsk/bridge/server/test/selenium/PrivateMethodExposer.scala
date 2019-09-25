@@ -10,11 +10,10 @@ class PrivateMethodCaller(x: AnyRef, methodName: String) {
     val methods = parents.flatMap(_.getDeclaredMethods)
     val method = methods.find(_.getName == methodName).getOrElse(throw new IllegalArgumentException("Method " + methodName + " not found"))
     method.setAccessible(true)
-    val saveAcc = method.isAccessible()
     try {
       method.invoke(x, args: _*)
     } finally {
-      method.setAccessible(saveAcc)
+      method.setAccessible(false)
     }
 
   }

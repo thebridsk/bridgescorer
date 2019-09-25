@@ -19,6 +19,7 @@ import ImportStore._
 import java.nio.file.Path
 import java.io.FileNotFoundException
 import com.github.thebridsk.bridge.data.ImportStoreConstants
+import java.nio.file.NoSuchFileException
 
 object ImportStore {
 
@@ -99,15 +100,17 @@ class FileImportStore(
           val path = dir / id
           if (path.isDirectory) {
             Result(new BridgeServiceFileStore(path.toDirectory, false, true))
-          } else if (path.extension == "zip") {
+          } else if (path.extension == "zip" || path.extension == importStoreExtension) {
             try {
               Result(new BridgeServiceZipStore(path.name, path.toFile))
             } catch {
-              case x: FileNotFoundException =>
+              case e @ (_ : FileNotFoundException | _ : NoSuchFileException) =>
                 Result(StatusCodes.NotFound, "Not found")
+              case x: IOException =>
+                Result(StatusCodes.NotFound, "IO Error")
             }
           } else {
-            Result(StatusCodes.NotFound, "Not found")
+            Result(StatusCodes.NotFound, "File not a bridgestore file")
           }
         }
       )
