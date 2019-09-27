@@ -66,14 +66,18 @@ Then push the release branch and make a pull request.  Once the [Travis CI](http
 
 To generate the server key for the HTTPS Connection run the following:
 
-	cd jvm
-	md key
-	cd key
-	..\generateServerKey.bat abcdef xyzabc
-	copy example.com.p12 ..\src\main\resources\keys\
+    md key
+    cd key
+    ..\generateServerKey.bat abcdef abcdef
 
-Warning: The above is **NOT** secure, the password for the private key is hardcoded in Server.scala.
+Warning: The above is **NOT** secure, the password for the private key trivial.
 This only shows how to make a server that supports HTTPS.
+
+With this key, the following options will enable https and http2 when starting the server:
+
+    --certificate key/example.com.p12 --certpassword abcdef --https 8443 --http2
+
+The sbt build target `bridgescorer-server/serverssl` can be used to start the server with https support and `bridgescorer-server/serverhttp2` can be used to start the server with https and http2 support.  Note that the akka-http2-support library is added in the test scope, as is the serverhttp2 target.
 
 ## Development Environment
 
