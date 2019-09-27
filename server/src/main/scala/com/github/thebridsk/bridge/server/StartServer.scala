@@ -726,7 +726,8 @@ private class StartServer {
     val f = waitfor(60 seconds, bindingHttp, bindingHttps)
     f.onComplete(_ match {
       case Success(_) =>
-        log.info("ClassPath:\n" + ClassPath.show("  ", getClass.getClassLoader))
+        log.info(s"ClassPath:\n${ClassPath.show("  ", getClass.getClassLoader)}")
+        log.info(s"System Properties:\n${ClassPath.showProperties("  ")}")
       case Failure(e) =>
         log.severe(
           s"Waiting for bindings to finish failed with ${e.getMessage}"

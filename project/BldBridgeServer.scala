@@ -51,6 +51,15 @@ object BldBridgeServer {
       server := {
         (run in Compile).toTask(""" --logfile "logs/server.sbt.%d.%u.log" start --cache 0s --store store""").value
       },
+      serverssl := {
+        (run in Compile).toTask(""" --logfile "logs/server.sbt.%d.%u.log" start --cache 0s --store store --certificate key/example.com.p12 --certpassword abcdef --https 8443""").value
+      },
+      serverhttps2 in Test := {
+        (runMain in Test).toTask(""" com.github.thebridsk.bridge.server.Server --logfile "logs/server.sbt.%d.%u.log" start --cache 0s --store store --certificate key/example.com.p12 --certpassword abcdef --https 8443 --http2""").value
+      },
+      serverhttp2 in Test := {
+        (runMain in Test).toTask(""" com.github.thebridsk.bridge.server.Server --logfile "logs/server.sbt.%d.%u.log" start --cache 0s --store store --http2""").value
+      },
       servertemp := {
         (run in Compile).toTask(""" --logfile "logs/server.sbt.%d.%u.log" start --cache 0s --store temp""").value
       },

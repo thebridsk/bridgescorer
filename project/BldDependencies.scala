@@ -78,7 +78,8 @@ object BldDependencies {
       "com.typesafe.akka"   %% "akka-stream"             % vAkka withSources(),
       "com.typesafe.akka"   %% "akka-http"               % vAkkaHttp withSources(),
       "com.typesafe.akka"   %% "akka-http-caching"       % vAkkaHttp withSources(),
-//      "com.typesafe.akka"   %% "akka-http2-support"      % vAkkaHttp % "test" withSources(),
+      // add http2 support to test only for now.  annoying if cert from trusted CA is not used
+      "com.typesafe.akka"   %% "akka-http2-support"      % vAkkaHttp % "test" withSources(),
       "de.heikoseeberger"   %% "akka-http-play-json"     % vAkkaHttpPlayJson withSources(),
 
 //      (
