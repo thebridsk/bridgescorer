@@ -1,0 +1,9 @@
+
+-Xms1024m
+-Xmx4096m
+-Xss4M
+-XX:ReservedCodeCacheSize=128m
+
+# Set the extra sbt options
+
+# -Dsbt.log.format=true

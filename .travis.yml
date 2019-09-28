@@ -58,8 +58,8 @@ jobs:
           cat /proc/meminfo
           which sbt
           cat /etc/sbt/jvmopts
-          export JVM_OPTS=@travis/jvmopts.txt
-          cat travis/jvmopts.txt
+          # export JVM_OPTS=@travis/jvmopts.txt
+          # cat travis/jvmopts.txt
           export ServerTestToRun=com.github.thebridsk.bridge.server.test.AllUnitTests
           sbt distribution:travis1
     - stage: systemtest
@@ -78,8 +78,8 @@ jobs:
           cat /proc/meminfo
           which sbt
           cat /etc/sbt/jvmopts
-          export JVM_OPTS=@travis/jvmopts.txt
-          cat travis/jvmopts.txt
+          # export JVM_OPTS=@travis/jvmopts.txt
+          # cat travis/jvmopts.txt
           chromedriver --version
           which google-chrome
           google-chrome --version
