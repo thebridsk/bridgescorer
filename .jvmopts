@@ -1,8 +1,9 @@
 
--Xms1024m
--Xmx4096m
--Xss4M
--XX:ReservedCodeCacheSize=128m
+-Xms2048M
+-Xmx4096M
+-Xss6M
+#-XX:MaxPermSize=512M
+-XX:ReservedCodeCacheSize=512M
 
 # Set the extra sbt options
 
