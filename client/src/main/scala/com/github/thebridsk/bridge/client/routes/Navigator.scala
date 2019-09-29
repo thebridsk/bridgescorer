@@ -23,12 +23,13 @@ object Navigator {
 
   class Backend( me: BackendScope[Props, State]) {
     def render(props: Props, state: State) = {
-      val p = props.modules.find(mr=>mr.canRender(props.selectedPage)).
-                            map(mr=>mr.render(props.selectedPage)).
-                            getOrElse(props.selectedPage.render())
+      // val p = props.modules.find(mr=>mr.canRender(props.selectedPage)).
+      //                       map(mr=>mr.render(props.selectedPage)).
+      //                       getOrElse(props.selectedPage.render())
 
       <.div(
-        p,
+        // p,
+        props.selectedPage.render()
 //        ServerURLPopup(),
 //        Init.isDebugLoggerEnabled ?= DebugLoggerComponent(),
       )
