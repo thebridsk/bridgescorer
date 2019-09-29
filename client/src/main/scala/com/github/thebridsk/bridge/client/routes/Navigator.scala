@@ -17,21 +17,14 @@ import com.github.thebridsk.bridge.client.pages.ServerURLPopup
  */
 object Navigator {
 
-  case class Props( selectedPage: Resolution[AppPage], ctrl: RouterCtl[AppPage], modules: List[ModuleRenderer] )
+  case class Props( selectedPage: Resolution[AppPage], ctrl: RouterCtl[AppPage], modules: List[Module] )
 
   case class State()
 
   class Backend( me: BackendScope[Props, State]) {
     def render(props: Props, state: State) = {
-      // val p = props.modules.find(mr=>mr.canRender(props.selectedPage)).
-      //                       map(mr=>mr.render(props.selectedPage)).
-      //                       getOrElse(props.selectedPage.render())
-
       <.div(
-        // p,
-        props.selectedPage.render()
-//        ServerURLPopup(),
-//        Init.isDebugLoggerEnabled ?= DebugLoggerComponent(),
+        props.selectedPage.render(),
       )
     }
   }
@@ -42,7 +35,7 @@ object Navigator {
         .renderBackend
         .build
 
-  def apply( selectedPage: Resolution[AppPage], ctrl: RouterCtl[AppPage], modules: List[ModuleRenderer] ): VdomElement = {
+  def apply( selectedPage: Resolution[AppPage], ctrl: RouterCtl[AppPage], modules: List[Module] ): VdomElement = {
     component( Props(selectedPage, ctrl, modules)),
   }
 

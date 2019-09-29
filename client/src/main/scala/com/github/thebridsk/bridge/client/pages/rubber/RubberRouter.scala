@@ -27,9 +27,6 @@ object RubberModule extends Module {
   def routes(): Rule[AppPage] = RubberRouter.routes.prefixPath_/("#rubber").pmap[AppPage](PlayRubber){ case PlayRubber(m) => m } |
     RubberRouter.importRoutes.prefixPath_/("#import").pmap[AppPage](PlayRubber){ case PlayRubber(m) => m }
 
-  override
-  def canRender(selectedPage: Resolution[AppPage]): Boolean = selectedPage.page.isInstanceOf[PlayRubber]
-
 }
 
 sealed trait RubberPage

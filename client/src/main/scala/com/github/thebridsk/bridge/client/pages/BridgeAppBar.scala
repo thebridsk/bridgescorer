@@ -38,6 +38,7 @@ import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles._
 import com.github.thebridsk.bridge.clientcommon.demo.BridgeDemo
 import com.github.thebridsk.bridge.clientcommon.material.icons.LightDark
 import com.github.thebridsk.bridge.clientcommon.pages.ColorThemeStorage
+import com.github.thebridsk.bridge.clientcommon.debug.DebugLoggerComponent
 
 /**
   * A simple AppBar for the Bridge client.
@@ -150,11 +151,19 @@ object BridgeAppBarInternal {
       gotoPage(uri)
     }
 
-    def startLog(event: ReactEvent) = {
-      Init.startMaybeDebugLogging(true)
-      BridgeDispatcher.startLogs()
+    def startLog(event: ReactEvent): Unit = {
+      logger.info(s"""BridgeAppBar start logging""")
+      DebugLoggerComponent.init()
+      scalajs.js.timers.setTimeout(1) {
+        BridgeDispatcher.startLogs()
+      }
     }
-    def stopLog(event: ReactEvent) = BridgeDispatcher.stopLogs()
+    def stopLog(event: ReactEvent): Unit = {
+      logger.info(s"""BridgeAppBar start logging""")
+      scalajs.js.timers.setTimeout(1) {
+        BridgeDispatcher.stopLogs()
+      }
+    }
 
     def serverUrlClick(event: ReactEvent) = {
       logger.info("Requesting to show server URL popup")

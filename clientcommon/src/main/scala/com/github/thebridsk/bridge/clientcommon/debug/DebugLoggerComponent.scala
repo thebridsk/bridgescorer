@@ -9,6 +9,11 @@ import com.github.thebridsk.bridge.clientcommon.logger.Alerter
 import com.github.thebridsk.bridge.clientcommon.react.AppButton
 import com.github.thebridsk.bridge.clientcommon.dispatcher.Dispatcher
 import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles.rootStyles
+import com.github.thebridsk.utilities.logging.Level
+import com.github.thebridsk.utilities.logging.Logger
+import com.github.thebridsk.bridge.clientcommon.logger.Init
+import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles.baseStyles
+
 
 /**
  * A skeleton component.
@@ -28,10 +33,57 @@ object DebugLoggerComponent {
 
   def apply( ) = component( Props() )
 
+  def getLoggerName(forRemoteHandler: Boolean, loggername: String = "") =
+    if (loggername.length() == 0) {
+      if (forRemoteHandler) ("bridge","bridge") else ("","[root]")
+    } else {
+      (loggername,loggername)
+    }
+
+  def setLoggingLevel( loggername: String, level: Level ): Unit = {
+    val (targetlog, targetdisp) = getLoggerName(false,loggername)
+    val target = Logger(targetlog)
+    target.getHandlers().find(h => h.isInstanceOf[DebugLoggerHandler]) match {
+      case Some(h) =>
+        logger.info( s"On ${targetdisp} setting debug logger trace level to ${level.name}" )
+        h.level = level
+      case None =>
+        logger.info( s"On ${targetdisp} starting debug logger trace with level ${level.name}" )
+        val h = new DebugLoggerHandler
+        h.level = level
+        Init.filterTraceSend(h)
+        target.addHandler(h)
+    }
+  }
+
+  def getLoggingLevel( loggername: String ) = {
+    val (targetlog, targetdisp) = getLoggerName(false,loggername)
+    val target = Logger(targetlog)
+    target.getHandlers().find(h => h.isInstanceOf[DebugLoggerHandler]) match {
+      case Some(h) =>
+        h.level
+      case None =>
+        Level.OFF
+    }
+  }
+
+  def init(
+      loggername: String = "",
+      l: Level = Level.FINEST
+  ) = {
+    setLoggingLevel(loggername,l)
+  }
+
 }
 
 object DebugLoggerComponentInternal {
   import DebugLoggerComponent._
+
+  val rootlogger = ""
+
+  /** logger for use only in setting up the component, NOT for handling log messages */
+  val logger = Logger("bridge.DebugLoggerComponent")
+
   /**
    * Internal state for rendering the component.
    *
@@ -39,8 +91,10 @@ object DebugLoggerComponentInternal {
    * will cause State to leak.
    *
    */
-  case class State() {
-
+  case class State(
+    level: Level =  DebugLoggerComponent.getLoggingLevel(DebugLoggerComponentInternal.rootlogger)
+  ) {
+    def withLevel( l: Level ) = copy( level = l )
   }
 
   def format( msg: TraceMsg ): String = {
@@ -75,19 +129,29 @@ object DebugLoggerComponentInternal {
     def startLogs() = Callback { Dispatcher.startLogs() }
     def stopLogs() = Callback { Dispatcher.stopLogs() }
 
+    def setLoggingLevelCB( level: Level ) = scope.modState { s =>
+      setLoggingLevel(rootlogger,level)
+      s.withLevel(level)
+    }
+
     def render( props: Props, state: State ) = {
       val txt = LoggerStore.getMessages().map(m => m.i.toString+": "+format(m.traceMsg)).mkString("\n")
       val enabled = LoggerStore.isEnabled()
       <.div(
         rootStyles.logDiv,
-        AppButton( "ClearLogs", "Clear Logs", ^.onClick --> clearLogs() ),
-        AppButton( "StopLogs", "Stop Logs", ^.onClick --> stopLogs() ).when(enabled),
-        AppButton( "StartLogs", "Start Logs", ^.onClick --> startLogs() ).unless(enabled),
+        <.div(
+          AppButton( "ClearLogs", "Clear Logs", ^.onClick --> clearLogs() ),
+          AppButton( "StopLogs", "Stop Logs", ^.onClick --> stopLogs() ).when(enabled),
+          AppButton( "StartLogs", "Start Logs", ^.onClick --> startLogs() ).unless(enabled),
 
-        <.pre(
-          <.p(
-            txt
-          )
+          Level.allLevels.filter(l => l!=Level.STDERR && l!=Level.STDOUT).map { l =>
+            val styl = if (state.level != l) baseStyles.normal
+                       else baseStyles.buttonSelected
+            AppButton( l.name, l.name, ^.onClick --> setLoggingLevelCB(l), styl ).when(enabled),
+          }.toTagMod,
+        ),
+        <.div(
+          txt
         )
       )
     }
@@ -96,6 +160,7 @@ object DebugLoggerComponentInternal {
 
     def didMount() = Callback {
       LoggerStore.addChangeListener(storeCallback)
+      setLoggingLevel(rootlogger,getLoggingLevel(rootlogger))
     }
 
     def willUnmount() = Callback {

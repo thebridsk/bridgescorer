@@ -17,6 +17,7 @@ class DebugLoggerHandler extends Handler with ServerHandler {
 
   def logIt( traceMsg: TraceMsg ): Unit = {
     if (!exclude.contains(traceMsg.logger)) {
+      LoggerStore.toConsole(s"sending to DebugLogger: ${traceMsg}")
       Dispatcher.log(traceMsg)
     }
   }

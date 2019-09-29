@@ -324,14 +324,33 @@ body {
 /*
  * Root pages
 */
-
 .rootLogDiv {
-  display: block;
+  padding: 0px !important;
+  overflow: hidden !important;
+  display: flex;
+  flex-direction: column;
 }
-.rootLogDiv > pre > p {
+.rootLogDiv > div:first-child {
+  position: sticky;
+  position: -webkit-sticky;
+  top: 0;
+  left: 0;
+  z-index: 101;
+  width: 100vw;
+  background-color: black;
+  padding: 8px;
+}
+.rootLogDiv > div:nth-child(2) {
+  padding: 8px;
+  overflow: auto;
   font-family: monospace;
   font-size: medium;
+  white-space: pre-line;
 }
+/* .rootLogDiv > div > pre > p {
+  font-family: monospace;
+  font-size: medium;
+} */
 
 .rootHomeDiv {
   display: block;

@@ -39,6 +39,7 @@ import com.github.thebridsk.bridge.clientcommon.logger.Init
 import com.github.thebridsk.materialui.MuiButton
 import com.github.thebridsk.bridge.clientcommon.pages.TitleSuits
 import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles._
+import com.github.thebridsk.bridge.clientcommon.debug.DebugLoggerComponent
 
 /**
   * A simple AppBar for the Bridge client.
@@ -152,7 +153,7 @@ object BridgeAppBarInternal {
     }
 
     def startLog(event: ReactEvent) = {
-      Init.startMaybeDebugLogging(true)
+      DebugLoggerComponent.init()
       Dispatcher.startLogs()
     }
     def stopLog(event: ReactEvent) = Dispatcher.stopLogs()

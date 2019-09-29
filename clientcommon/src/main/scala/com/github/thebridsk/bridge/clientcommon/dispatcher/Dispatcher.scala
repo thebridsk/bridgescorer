@@ -11,9 +11,13 @@ import com.github.thebridsk.utilities.logging.TraceMsg
 object Dispatcher extends Dispatcher {
 }
 
+object InternalDispatcher {
+  val fluxdispatcher: FluxDispatcher[Action] = FluxDispatcher() // new FluxDispatcher()
+}
+
 trait Dispatcher {
-  val dispatcher: FluxDispatcher[Action] = FluxDispatcher() // new FluxDispatcher()
-  val logger = Logger("bridge.Dispatcher")
+
+  val dispatcher: FluxDispatcher[Action] = InternalDispatcher.fluxdispatcher
 
   def log( msg: TraceMsg ) = {
     if (dispatcher.isDispatching()) {

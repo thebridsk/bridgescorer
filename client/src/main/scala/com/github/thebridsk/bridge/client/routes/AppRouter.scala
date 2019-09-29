@@ -63,18 +63,7 @@ import com.github.thebridsk.materialui.TextVariant
 import com.github.thebridsk.materialui.TextColor
 import com.github.thebridsk.bridge.client.pages.LogPage
 
-trait ModuleRenderer {
-
-  def canRender(selectedPage: Resolution[AppPage]): Boolean
-  def render(selectedPage: Resolution[AppPage]): TagMod = selectedPage.render()
-}
-
-object ModuleRenderer extends ModuleRenderer {
-  override
-  def canRender(selectedPage: Resolution[AppPage]): Boolean = true
-}
-
-trait Module extends ModuleRenderer {
+trait Module {
 
   private var varGotoAppHome: Option[()=>TagMod] = None
   private var varAppRouter: Option[AppRouter] = None
