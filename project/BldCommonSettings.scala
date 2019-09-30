@@ -266,7 +266,7 @@ object BldCommonSettings {
             log.error("Test class must be specified")
           })
         } else {
-          val ra = s""" org.scalatest.tools.Runner -oDG ${(atests.map( t => s"-s ${t.replace('/','.')}"):::options).mkString(" ")}"""
+          val ra = s""" org.scalatest.tools.Runner -oD ${(atests.map( t => s"-s ${t.replace('/','.')}"):::options).mkString(" ")}"""
           // println(s"testClass running=${ra}")
           (Def.taskDyn {
             (runMain in Test).toTask( ra )

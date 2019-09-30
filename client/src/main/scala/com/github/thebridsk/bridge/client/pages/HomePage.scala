@@ -338,7 +338,7 @@ object HomePage {
             }
           }
           sorted.headOption match {
-            case Some(md) if !md.onlyresult =>
+            case Some(md) if !md.onlyresult && !md.finished =>
               gotoPage( PlayDuplicate(CompleteScoreboardView(md.id)) )
             case _ =>
               logger.severe("Did not find an unfinished duplicate match")

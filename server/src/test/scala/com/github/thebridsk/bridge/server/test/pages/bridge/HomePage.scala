@@ -15,6 +15,7 @@ import com.github.thebridsk.bridge.server.test.pages.duplicate.NewDuplicatePage
 import com.github.thebridsk.bridge.server.test.pages.chicago.ListPage
 import com.github.thebridsk.bridge.server.test.pages.LightDarkAddOn
 import com.github.thebridsk.browserpages.Element
+import com.github.thebridsk.bridge.server.test.pages.duplicate.ScoreboardPage
 
 object HomePage {
 
@@ -34,8 +35,10 @@ object HomePage {
   val divBridgeAppPrefix = """//div[@id="BridgeApp"]"""
 }
 
-class HomePage( implicit webDriver: WebDriver, pageCreated: SourcePosition ) extends Page[HomePage] with LightDarkAddOn[HomePage] {
+class HomePage( implicit webDrivr: WebDriver, pageCreated: SourcePosition ) extends Page[HomePage] with LightDarkAddOn[HomePage] with Popup[Page[HomePage]] {
   import HomePage._
+
+  val webDriver = webDrivr
 
   def validate(implicit patienceConfig: PatienceConfig, pos: Position) = logMethod(s"${pos.line} ${getClass.getSimpleName}.validate") {
     eventually {
@@ -63,6 +66,15 @@ class HomePage( implicit webDriver: WebDriver, pageCreated: SourcePosition ) ext
   def clickNewDuplicateButton(implicit patienceConfig: PatienceConfig, pos: Position) = {
     clickButton("NewDuplicate")
     new NewDuplicatePage()(webDriver, pos)
+  }
+
+  def clickLatestNewDuplicateButton(succeed: Boolean)(implicit patienceConfig: PatienceConfig, pos: Position): Page[_] = {
+    clickButton("LatestNewMatch")
+    if (succeed) {
+      ScoreboardPage.current
+    } else {
+      new HomePage()(webDriver, pos)
+    }
   }
 
   def clickListChicagoButton(implicit patienceConfig: PatienceConfig, pos: Position) = {
