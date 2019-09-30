@@ -9,6 +9,7 @@ import org.scalatest.MustMatchers._
 import com.github.thebridsk.browserpages.PageBrowser._
 import com.github.thebridsk.bridge.server.test.selenium.TestServer
 import com.github.thebridsk.bridge.data.Id
+import com.github.thebridsk.bridge.server.test.pages.bridge.HomePage
 
 object ScoreboardPage {
 
@@ -224,6 +225,11 @@ class ScoreboardPage(
         new ScoreboardPage( Option(did) )
       }
     }
+  }
+
+  def clickHome(implicit patienceConfig: PatienceConfig, pos: Position) = {
+    clickButton("Home")
+    new HomePage
   }
 
   def clickMainMenu(implicit patienceConfig: PatienceConfig, pos: Position) = {

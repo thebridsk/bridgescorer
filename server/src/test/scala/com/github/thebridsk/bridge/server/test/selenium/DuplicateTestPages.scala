@@ -87,6 +87,7 @@ import play.api.libs.json.JsSuccess
 import play.api.libs.json.JsError
 import com.github.thebridsk.bridge.server.test.util.GraphQLUtils
 import com.github.thebridsk.browserpages.Session
+import com.github.thebridsk.bridge.server.test.pages.duplicate.StatisticsPage
 
 object DuplicateTestPages {
 
@@ -1250,6 +1251,24 @@ class DuplicateTestPages extends FlatSpec
     }
   }
 
+  it should "try going to latest new match, and fail" in {
+    import SessionComplete._
+
+    val hp = StatisticsPage.current.clickHome.validate
+
+    val hpe = hp.clickLatestNewDuplicateButton(false).asInstanceOf[HomePage]
+
+    hpe.validatePopup(true)
+
+    hpe.getPopUpText mustBe "Did not find an unfinished duplicate match"
+
+    hpe.clickPopUpCancel
+
+    val sp = ListDuplicatePage.current.validate
+
+    sp.clickHome.validate
+  }
+
   var dupid2: Option[String] = None
 
   it should "allow creating a new duplicate match from the home page" in {
@@ -1276,6 +1295,17 @@ class DuplicateTestPages extends FlatSpec
     testlog.info(s"Duplicate id is ${dupid2.get}")
 
     allHands.boardsets mustBe 'defined
+  }
+
+  it should "try going to latest new match, and succeed" in {
+    import SessionComplete._
+
+    val hp = HomePage.current
+
+    val sp = hp.clickLatestNewDuplicateButton(true).validate.asInstanceOf[ScoreboardPage]
+
+    sp.dupid mustBe dupid2
+
   }
 
   it should "go to table 1 page and go to round 1 and test suggestions" in {

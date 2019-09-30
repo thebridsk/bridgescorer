@@ -91,7 +91,6 @@ object BldBridgeServer {
         x
       },
       mainClass in Test := Some("org.scalatest.tools.Runner"),
-      //    testOptions in Test += Tests.Argument(TestFrameworks.ScalaTest, "-oG"),
       testOptions in Test += Tests.Filter { s =>
         if (s == testToRun) {
           println("Using Test:    " + s)
