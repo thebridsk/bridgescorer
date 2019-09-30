@@ -21,6 +21,8 @@ import com.github.thebridsk.bridge.clientcommon.demo.BridgeDemo
 import com.github.thebridsk.utilities.logging.Filter
 import com.github.thebridsk.utilities.logging.TraceMsg
 import org.scalajs.dom.raw.XMLHttpRequest
+import com.github.thebridsk.bridge.clientcommon.debug.DebugLoggerComponent
+import com.github.thebridsk.bridge.clientcommon.debug.LoggerStore
 
 trait InitController {
 
@@ -78,13 +80,9 @@ object Init {
   }
   lazy val logger = Logger("comm.logger.Init")
 
-  private var debugLoggerEnabled = false
-
   private var pclientid: Option[String] = None
 
   def clientid = pclientid
-
-  def isDebugLoggerEnabled = debugLoggerEnabled
 
   val defaultLoggerForRemoteHandlers = "bridge"
 
@@ -126,6 +124,7 @@ object Init {
               import scala.scalajs.js.timers._
 
               setTimeout(1000) {
+                LoggerStore.init()
                 Info.info()
 
                 f()
@@ -136,6 +135,7 @@ object Init {
       import scala.scalajs.js.timers._
 
       setTimeout(1000) {
+        LoggerStore.init()
         Info.info()
 
         f()
@@ -189,36 +189,6 @@ object Init {
     } else {
       loggername
     }
-
-  def startMaybeDebugLogging(
-      ignoreIfStarted: Boolean = false,
-      loggername: String = "",
-      l: Level = Level.FINEST
-  ) = {
-    if (!ignoreIfStarted || !debugLoggerEnabled) {
-      debugLoggerEnabled = true
-      val target = Logger(loggername)
-      target.getHandlers().find(h => h.isInstanceOf[DebugLoggerHandler]) match {
-        case Some(h) =>
-          logger.info(
-            "On %s setting debug logger trace level to %s",
-            getLoggerName(false, loggername),
-            l
-          )
-          h.level = l
-        case None =>
-          logger.info(
-            "On %s starting debug logger trace with level %s",
-            getLoggerName(false, loggername),
-            l
-          )
-          val h = new DebugLoggerHandler
-          h.level = l
-          target.addHandler(h)
-          filterTraceSend(h)
-      }
-    }
-  }
 
   def setHandler(
       spec: String,
@@ -293,7 +263,7 @@ object Init {
                 filterTraceSend(h)
             }
           case "debug" =>
-            startMaybeDebugLogging(true, loggername, l)
+            DebugLoggerComponent.init(loggername, l)
           case "server" =>
             target
               .getHandlers()

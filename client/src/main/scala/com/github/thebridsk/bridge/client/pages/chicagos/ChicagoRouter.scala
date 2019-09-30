@@ -29,9 +29,6 @@ object ChicagoModule extends Module {
         .prefixPath_/("#import")
         .pmap[AppPage](PlayChicago2) { case PlayChicago2(m) => m }
 
-  override def canRender(selectedPage: Resolution[AppPage]): Boolean =
-    selectedPage.page.isInstanceOf[PlayChicago2]
-
 }
 
 sealed trait ChicagoPage

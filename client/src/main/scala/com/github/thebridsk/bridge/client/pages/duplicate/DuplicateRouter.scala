@@ -34,21 +34,6 @@ object DuplicateModule extends Module {
     DuplicateRouter.importRoutes.prefixPath_/("#import").pmap[AppPage](PlayDuplicate){ case PlayDuplicate(m) => m }
   }
 
-  override
-  def canRender(selectedPage: Resolution[AppPage]): Boolean = selectedPage.page.isInstanceOf[DuplicateModule.PlayDuplicate]
-
-  override
-  def render(selectedPage: Resolution[AppPage]): TagMod =
-    TagMod(
-      selectedPage.render(),
-//      BeepComponent(()=>{
-//        selectedPage.page match {
-//          case PlayDuplicate(p) => p.isInstanceOf[BaseScoreboardView]
-//          case _ => false
-//        }
-//      })
-    )
-
 }
 
 sealed trait DuplicatePage

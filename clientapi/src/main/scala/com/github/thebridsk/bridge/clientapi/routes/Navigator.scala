@@ -27,8 +27,6 @@ object Navigator {
 
       <.div(
         p,
-//        ServerURLPopup(),
-//        Init.isDebugLoggerEnabled ?= DebugLoggerComponent(),
       )
     }
   }

@@ -77,9 +77,15 @@ object LogPage {
 
     def render( props: Props, state: State ) = {
       <.div(
-        rootStyles.logDiv,
         RootBridgeAppBar(
-            title = Seq("Logs"),
+            title = Seq(MuiTypography(
+                variant = TextVariant.h6,
+                color = TextColor.inherit,
+            )(
+                <.span(
+                  " Logs",
+                )
+            ) ),
             helpurl = Some("../help/introduction.html"),
             routeCtl = props.routeCtl
         )(),

@@ -19,14 +19,22 @@ object LoggerStore extends ChangeListenable {
   /**
    * Required to instantiate the store.
    */
-  def init() = {}
+  def init() = {
+    dispatchToken.map { x =>
+      toConsole("LoggerStore registered")
+    }
+  }
 
-  private var dispatchToken: Option[DispatchToken] = Some(Dispatcher.register(dispatch _))
+  private var dispatchToken: Option[DispatchToken] = {
+    val tok = Some(Dispatcher.register(dispatch _))
+    toConsole(s"""LoggerStore registered on dispatcher: ${tok}""")
+    tok
+  }
 
   case class MessageEntry( i: Long, traceMsg: TraceMsg )
 
   private var messages: ListBuffer[MessageEntry] = ListBuffer()
-  private var enabled: Boolean = true
+  private var enabled: Boolean = false
   private var counter: Long = 0
 
   /**
@@ -41,6 +49,7 @@ object LoggerStore extends ChangeListenable {
     case PostLogEntry(tracemsg) =>
       counter = counter + 1
       if (enabled) {
+        logToConsole(tracemsg)
         messages.insert(0, MessageEntry(counter,tracemsg))
         if (messages.size > MaxSize) messages = messages.take(MaxSize)
         notifyLogChange()
@@ -49,9 +58,11 @@ object LoggerStore extends ChangeListenable {
       messages.clear()
       notifyLogChange()
     case _: StopLogs =>
+      toConsole("Stopping logging")
       enabled = false
       notifyLogChange()
     case _: StartLogs =>
+      toConsole("Starting logging")
       enabled = true
       notifyLogChange()
     case x =>
@@ -64,6 +75,22 @@ object LoggerStore extends ChangeListenable {
 
     setTimeout(0) { // note the absence of () =>
       notifyChange()
+    }
+  }
+
+  var debug = true
+
+  def logToConsole( msg: => TraceMsg ): Unit = {
+    if (debug) {
+      import org.scalajs.dom
+      dom.window.console.log( msg.toString )
+    }
+  }
+
+  def toConsole( msg: => String ): Unit = {
+    if (debug) {
+      import org.scalajs.dom
+      dom.window.console.log( msg )
     }
   }
 }

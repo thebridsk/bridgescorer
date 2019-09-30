@@ -16,10 +16,11 @@ import com.github.thebridsk.bridge.data.DuplicateSummary
 import com.github.thebridsk.utilities.logging.TraceMsg
 import com.github.thebridsk.bridge.data.MatchDuplicateResult
 import com.github.thebridsk.bridge.data.ServerURL
+import com.github.thebridsk.bridge.clientcommon.dispatcher.Action
 
 package object action {
 
-  sealed trait BridgeAction
+  sealed trait BridgeAction extends Action
 
   sealed trait DuplicateBridgeAction extends BridgeAction
 
@@ -83,11 +84,6 @@ package object action {
   case class ActionUpdateRubber( rub: MatchRubber, callback: Option[MatchRubber=>Unit]=None ) extends RubberBridgeAction
   case class ActionUpdateRubberNames( rubid: String, north: String, south: String, east: String, west: String, firstDealer: PlayerPosition, callback: Option[MatchRubber=>Unit]=None ) extends RubberBridgeAction
   case class ActionUpdateRubberHand( rubid: String, handid: String, hand: RubberHand, callback: Option[MatchRubber=>Unit]=None ) extends RubberBridgeAction
-
-  case class PostLogEntry( traceMsg: TraceMsg ) extends BridgeAction
-  case class StopLogs() extends BridgeAction
-  case class StartLogs() extends BridgeAction
-  case class ClearLogs() extends BridgeAction
 
   case class ActionUpdateServerURLs( urls: ServerURL ) extends BridgeAction
 
