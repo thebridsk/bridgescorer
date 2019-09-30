@@ -75,6 +75,10 @@ import com.github.thebridsk.bridge.clientcommon.pages.GotoPage
 import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles._
 import com.github.thebridsk.bridge.clientcommon.demo.BridgeDemo
 import com.github.thebridsk.bridge.client.bridge.store.ServerURLStore
+import _root_.com.github.thebridsk.bridge.data.DuplicateSummary
+import com.github.thebridsk.bridge.clientcommon.rest2.RestClientDuplicateSummary
+import com.github.thebridsk.bridge.data.Id
+import com.github.thebridsk.bridge.data.SystemTime
 
 /**
  * @author werewolf
@@ -94,7 +98,8 @@ object HomePage {
       userSelect: Boolean = false,
       anchorMainEl: js.UndefOr[Element] = js.undefined,
       anchorMainTestHandEl: js.UndefOr[Element] = js.undefined,
-      anchorHelpEl: js.UndefOr[Element] = js.undefined
+      anchorHelpEl: js.UndefOr[Element] = js.undefined,
+      gotoDuplicateList: Boolean = false
   ) {
 
     def openHelpMenu( n: Node ) = copy( anchorHelpEl = n.asInstanceOf[Element] )
@@ -200,12 +205,15 @@ object HomePage {
 
       def callbackPage(page: AppPage) = props.routeCtl.set(page)
 
+      val toCancel = if (state.gotoDuplicateList) scope.modState( s => s.copy(working=None, gotoDuplicateList = false), callbackPage(PlayDuplicate(SummaryView)) )
+                     else cancel
+
       val doingWork = state.working.getOrElse("")
       val isWorking = state.working.isDefined
 
       import japgolly.scalajs.react.vdom.VdomNode
       <.div(
-        PopupOkCancel( if (isWorking) Some(doingWork) else None, None, Some(cancel) ),
+        PopupOkCancel( if (isWorking) Some(doingWork) else None, None, Some( toCancel) ),
         RootBridgeAppBar(
             title = Seq(),
             helpurl = Some("../help/introduction.html"),
@@ -227,13 +235,15 @@ object HomePage {
             <.table(
               <.tbody(
                 <.tr(
-                  <.td( ^.width:="33%",
+                  <.td( ^.width:="25%",
                     AppButton( "ChicagoList2", "Chicago List", rootStyles.playButton, ^.disabled:=isWorking, ^.onClick --> callbackPage(PlayChicago2(ListView)))
                   ),
-                  <.td( ^.width:="33%",
+                  <.td( ^.width:="25%",
                     AppButton( "Chicago2", "New Chicago", rootStyles.playButton, ^.disabled:=isWorking, ^.onClick -->newChicago )
                   ),
-                  <.td( ^.width:="33%"
+                  <.td( ^.width:="25%"
+                  ),
+                  <.td( ^.width:="25%"
                   )
                 ),
                 <.tr(
@@ -245,6 +255,9 @@ object HomePage {
                   ),
                   <.td(
                     AppButton( "SelectDuplicate", "Select Match", rootStyles.playButton, ^.disabled:=isWorking, ^.onClick --> callbackPage(PlayDuplicate(SelectMatchView)))
+                  ),
+                  <.td(
+                    AppButton( "LatestNewMatch", "Latest New Match", rootStyles.playButton, ^.disabled:=isWorking, ^.onClick --> latestNewMatch)
                   )
                 ),
                 <.tr(
@@ -303,6 +316,46 @@ object HomePage {
       )
     }
 
+    val resultDuplicateSummary = ResultHolder[Array[DuplicateSummary]]()
+
+    val latestNewMatch = setPopupTextCB( "Determining latest match", Callback {
+      val list = RestClientDuplicateSummary.list().recordFailure()
+      resultDuplicateSummary.set(list)
+      list.onComplete( _ match {
+        case Success(req) =>
+          val oneHourAgo = SystemTime.currentTimeMillis() - 1*60*60*1000   // one hour ago
+          val sorted = req.filter( md => md.created > oneHourAgo ).sortWith { (l,r) =>
+            if (l.finished == r.finished) {
+              if (l.onlyresult == r.onlyresult) {
+                Id.idComparer(l.id,r.id) > 0
+              } else {
+                if (l.onlyresult) false
+                else true
+              }
+            } else {
+              if (l.finished) false
+              else true
+            }
+          }
+          sorted.headOption match {
+            case Some(md) if !md.onlyresult =>
+              gotoPage( PlayDuplicate(CompleteScoreboardView(md.id)) )
+            case _ =>
+              logger.severe("Did not find an unfinished duplicate match")
+              setPopupText("Did not find an unfinished duplicate match", gotoDuplicateList = true )
+          }
+
+        case Failure(f) =>
+          f match {
+            case x: RequestCancelled =>
+              // ignore this
+            case _ =>
+              logger.severe("Error trying to obtain list of duplicate matches: ",f)
+              setPopupText(s"Error trying to obtain list of duplicate matches: ${f}", gotoDuplicateList = true )
+          }
+      })
+    })
+
     def gotoPage( page: AppPage ) = scope.withEffectsImpure.props.routeCtl.set(page).runNow()
 
     /**
@@ -310,7 +363,8 @@ object HomePage {
      * Only call when not doing another modState or from a callback from a non GUI item.
      * @param text string to show as an error
      */
-    def setPopupText( text: String, cb: Callback = Callback.empty ) = scope.withEffectsImpure.modState( s => s.copy( working = Some(text) ), cb )
+    def setPopupText( text: String, cb: Callback = Callback.empty, gotoDuplicateList: Boolean = false ) =
+      scope.withEffectsImpure.modState( s => s.copy( working = Some(text), gotoDuplicateList = gotoDuplicateList ), cb )
 
     /**
      * Sets the text in the working field.
@@ -352,6 +406,7 @@ object HomePage {
     val cancel = Callback {
       resultChicago.cancel()
       resultShutdown.cancel()
+      resultDuplicateSummary.cancel()
     } >> scope.modState( s => s.copy(working=None))
 
     import scala.concurrent.ExecutionContext.Implicits.global
