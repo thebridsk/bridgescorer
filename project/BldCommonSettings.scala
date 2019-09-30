@@ -205,9 +205,18 @@ object BldCommonSettings {
   val servertemp = taskKey[Unit]("Run server with temp store and logging to server/logs directory")
   val serverlogs = taskKey[Unit]("Run server with default store and logs to console")
 
+  val testClass = inputKey[Unit]("Run specified test class")
+
   val patternSourceDir = """^[0-9a-f]{20}$""".r
   val patternFastopt = """-fastopt[.-]|-jsconsole[.-]""".r
 
+  def walkTree(file: File): Iterable[File] = {
+    // println(s"walkTree file $file")
+    val children = new Iterable[File] {
+      def iterator = if (file.isDirectory) file.listFiles.iterator else Iterator.empty
+    }
+    Seq(file) ++: children.flatMap(walkTree(_))
+  }
 
   /**
     * Add common settings to a project.
@@ -229,7 +238,42 @@ object BldCommonSettings {
         "-feature",
 //        "-Xlog-implicits",
       ),
-      testOptions in Test += Tests.Argument(TestFrameworks.ScalaTest, "-oD"),
+      testOptions in Test += Tests.Argument(TestFrameworks.ScalaTest, "-oDG"),
+      testClass in Test := (Def.inputTaskDyn {
+        import complete.DefaultParsers._
+        val args: Seq[String] = spaceDelimited("<arg>").parsed
+        val testdir = (scalaSource in Test).value
+        val lentestdir = testdir.toString.length
+        // println(s"testClass testdir $testdir")
+        val (options,atests) = args.foldLeft( (List[String](), List[String]()) ) { (ac,s) =>
+          // println(s"testClass processing $s: $ac")
+          if (s.charAt(0)=='-') (ac._1:::List(s), ac._2)
+          else {
+            // this needs to be resolved into a classname
+            val gscalaclass = s"${s.replace('.','/')}.scala"
+            // println(s"testClass scalaclass=$gscalaclass")
+            val gf = GlobFilter(gscalaclass)
+            val wtests = walkTree(testdir).filter(_.toString.length>lentestdir).map(_.toString.substring(lentestdir+1).replace('\\','/')).filter(gf.accept(_)).map{ f =>
+              f.substring(0, f.length-6)
+            }.toList
+            // println(s"testClass found $wtests")
+            (ac._1,ac._2:::wtests)
+          }
+        }
+        if (atests.isEmpty) {
+          (Def.task {
+            val log = streams.value.log
+            log.error("Test class must be specified")
+          })
+        } else {
+          val ra = s""" org.scalatest.tools.Runner -oDG ${(atests.map( t => s"-s ${t.replace('/','.')}"):::options).mkString(" ")}"""
+          // println(s"testClass running=${ra}")
+          (Def.taskDyn {
+            (runMain in Test).toTask( ra )
+          })
+        }
+
+      }).evaluated,
 
 //       checkProject := {
 // //        val p = crossProject.value
