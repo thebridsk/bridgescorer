@@ -257,18 +257,12 @@ object BldBridge {
       fvt := {
         val log = streams.value.log
         def getclasspath() = {
-          val targetdir = (classDirectory in Compile).value + "/../"
-
-          val assemblyjar = BridgeServer.findFile(
-            targetdir + (assemblyJarName in assembly).value,
-            "-SNAPSHOT.jar"
-          )
-          val testjar = BridgeServer.findFile(
-            targetdir + (assemblyJarName in (Test, assembly)).value,
-            "-SNAPSHOT.jar"
-          )
-
-          val cp = assemblyjar + java.io.File.pathSeparator + testjar
+          val (projjar,testjar) = BridgeServer.findBridgeJars(
+                                    (crossTarget in Compile).value,
+                                    (assemblyJarName in assembly).value,
+                                    (assemblyJarName in (Test, assembly)).value
+                                  )
+          val cp = projjar + java.io.File.pathSeparator + testjar
           log.info("Classpath is " + cp)
           cp
         }
@@ -295,18 +289,11 @@ object BldBridge {
       svt := {
         val log = streams.value.log
         val (assemblyJar, testJar) = {
-          val targetdir = (classDirectory in Compile).value + "/../"
-
-          val assemblyjar = BridgeServer.findFile(
-            targetdir + (assemblyJarName in assembly).value,
-            "-SNAPSHOT.jar"
-          )
-          val testjar = BridgeServer.findFile(
-            targetdir + (assemblyJarName in (Test, assembly)).value,
-            "-SNAPSHOT.jar"
-          )
-
-          val cp = (assemblyjar, testjar)
+          val cp = BridgeServer.findBridgeJars(
+                                  (crossTarget in Compile).value,
+                                  (assemblyJarName in assembly).value,
+                                  (assemblyJarName in (Test, assembly)).value
+                                 )
           log.info("Jars are " + cp)
           cp
         }
@@ -344,18 +331,11 @@ object BldBridge {
       travissvt := {
         val log = streams.value.log
         val (assemblyJar, testJar) = {
-          val targetdir = (classDirectory in Compile).value + "/../"
-
-          val assemblyjar = BridgeServer.findFile(
-            targetdir + (assemblyJarName in assembly).value,
-            "-SNAPSHOT.jar"
-          )
-          val testjar = BridgeServer.findFile(
-            targetdir + (assemblyJarName in (Test, assembly)).value,
-            "-SNAPSHOT.jar"
-          )
-
-          val cp = (assemblyjar, testjar)
+          val cp = BridgeServer.findBridgeJars(
+                                  (crossTarget in Compile).value,
+                                  (assemblyJarName in assembly).value,
+                                  (assemblyJarName in (Test, assembly)).value
+                                 )
           log.info("Jars are " + cp)
           cp
         }
@@ -453,7 +433,7 @@ object BldBridge {
 
             log.info("Publishing to " + distdir)
 
-            val targetdir = (classDirectory in Compile).value + "/../"
+            val targetdir = (crossTarget in Compile).value
             val assemblyjar = (assemblyJarName in assembly).value
             val testjar = (assemblyJarName in (Test, assembly)).value
 
