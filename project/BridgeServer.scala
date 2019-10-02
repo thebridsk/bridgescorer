@@ -109,19 +109,50 @@ object BridgeServer {
   }
 
   /**
-   * Find a file given the name.
-   * @param suffix a suffix that replaces the last 4 chars of name to search for an alternate if name does not exist.
+   * Find a file given the name.  If the name
+   * @param targetname the name of the file to find.
+   * @param suffix a suffix that replaces the extension of name to search for an alternate if name does not exist.
    */
-  def findFile( filename: String, suffix: String ) = {
-    val name = filename.replace(if ("/" == File.separator) "\\" else "/", File.separator)
-    if ( new File(name).isFile() ) name
+  def findFile( targetname: File, suffix: String ): String = {
+    val filename = targetname.toString
+    if ( targetname.isFile() ) filename
     else {
+      val name = filename.replace(if ("/" == File.separator) "\\" else "/", File.separator)
       if (name.endsWith(suffix)) throw new Error( "File does not exist: "+name )
       else {
-        val nname = name.substring(0, name.length()-4)+suffix
+        val nnamex = name.substring(0, name.length()-4)+suffix
+        val idot = targetname.getName().lastIndexOf(".")
+        val nname = if (idot < 0) name+suffix
+        else {
+          val lname = targetname.getName().length()
+          name.substring(0, name.length()-lname+idot-1)+suffix
+        }
         if (new File(nname).isFile() ) nname
         else throw new Error( "File does not exist: "+name )
       }
     }
+  }
+
+  /**
+   * returns the names of the assembly jar and test jar for the project.
+   * @param targetDirectory the directory that contains the jar files
+   * @param assemblyJar the name of the assembly jar file
+   * @param assemblyTestJar the name of the test jar file
+   * @return a 2 tuple, the first entry is the assembly jar file name, the second is the test jar file name.
+   */
+  def findBridgeJars(
+    targetDirectory: File,
+    assemblyJar: String,
+    assemblyTestJar: String
+  ): (String, String) = {
+    val assemblyjar = BridgeServer.findFile(
+      new File(targetDirectory, assemblyJar),
+      "-SNAPSHOT.jar"
+    )
+    val testjar = BridgeServer.findFile(
+      new File(targetDirectory, assemblyTestJar),
+      "-SNAPSHOT.jar"
+    )
+    (assemblyjar,testjar)
   }
 }
