@@ -322,6 +322,61 @@ object BldBridge {
           BridgeServer.runjava(log, jvmargs, Some(baseDirectory.value))
         }
       },
+      nsvt := {
+        val log = streams.value.log
+        import complete.DefaultParsers._
+        val args: Seq[String] = spaceDelimited("<n>").parsed
+
+        val n = if (args.isEmpty) 1
+                else if (args.length == 1) {
+                  try {
+                    args(0).toInt
+                  } catch {
+                    case _: NumberFormatException =>
+                      throw new Error(s"Must specify an integer: ${args}")
+                    case x: Exception =>
+                      throw new Error(s"Unexpected exception parsing ${args}", x)
+                  }
+                } else {
+                  throw new Error(s"Too many arguments specified: ${args}")
+                }
+        val ntimes = if (n<1) 1 else n
+
+        val (assemblyJar, testJar) = {
+          val cp = BridgeServer.findBridgeJars(
+                                  (crossTarget in Compile).value,
+                                  (assemblyJarName in assembly).value,
+                                  (assemblyJarName in (Test, assembly)).value
+                                 )
+          log.info("Jars are " + cp)
+          cp
+        }
+        val cp = assemblyJar + java.io.File.pathSeparator + testJar
+
+        val server = new BridgeServer(assemblyJar)
+        server.runWithServer(
+          log,
+          baseDirectory.value + "/logs/itestServerInTest.%u.log"
+        ) {
+          val jvmargs = server.getTestDefine() :::
+            "-DUseProductionPage=1" ::
+            "-DToMonitorFile=logs/itestTcpMonitorTimeWait.csv" ::
+            "-DUseLogFilePrefix=logs/itest" ::
+            "-DTestDataDirectory=" + itestdataDir ::
+            "-DDefaultWebDriver=" + useBrowser ::
+            "-cp" :: cp ::
+            "org.scalatest.tools.Runner" ::
+            "-oD" ::
+            "-s" ::
+            imoretestToRun ::
+            Nil
+          val inDir = baseDirectory.value
+          log.info(s"""Running ${ntimes} times in directory ${inDir}: java ${jvmargs
+            .mkString(" ")}""")
+          for (i <- 1 to ntimes) BridgeServer.runjava(log, jvmargs, Some(baseDirectory.value))
+        }
+      },
+
       travismoretests := Def
         .sequential(
           prereqintegrationtests in Distribution,
