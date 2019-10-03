@@ -130,6 +130,7 @@ class BaseStyles {
   val divAppBar = cls("divAppBar")
 
   val appBarTitle = cls("appBarTitle")
+  val appBarTitleWhenFullscreen = cls("appBarTitleWhenFullscreen")
 
   val lightDarkIcon1 = cls("lightDarkIcon1")
   val lightDarkIcon2 = cls("lightDarkIcon2")

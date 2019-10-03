@@ -152,6 +152,11 @@ object InfoPage {
     (p=="Win32") && ((w==1368 && h==768)||(w==768 && h==1368))
   }
 
+  def isIpad() = {
+    val p = js.Dynamic.global.window.navigator.platform.asInstanceOf[String]
+    p == "iPad"
+  }
+
   def isTouchEnabled() = {
     val g = js.Dynamic.global.window
     !js.isUndefined(g.ontouchstart) || isWindowsAsusTablet()

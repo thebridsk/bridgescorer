@@ -705,6 +705,10 @@ body.touched .withTooltipBox:hover {
    align-items: center;
 }
 
+.appBarTitleWhenFullscreen {
+  width: 75px;
+}
+
 *, html {
   -webkit-tap-highlight-color: transparent;
 }

@@ -17,6 +17,13 @@ object ThankYouPage {
 object ThankYouPageInternal {
   import ThankYouPage._
 
+  def exitFullscreen() = Callback {
+    import org.scalajs.dom.document
+    import com.github.thebridsk.bridge.clientcommon.fullscreen.Implicits._
+
+    if (document.isFullscreen) document.exitFullscreen()
+  }
+
   val component = ScalaComponent.builder[Props]("ThankYouPage")
                             .stateless
                             .noBackend
@@ -28,5 +35,7 @@ object ThankYouPageInternal {
                                 <.p( TitleSuits.suitspan)
                               )
                             )
+                            .componentDidMount( scope => exitFullscreen() )
+                            .componentDidUpdate( scope => exitFullscreen() )
                             .build
 }
