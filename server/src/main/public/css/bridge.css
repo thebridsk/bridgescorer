@@ -339,6 +339,7 @@ body {
   width: 100vw;
   background-color: black;
   padding: 8px;
+  z-index: 10;
 }
 .rootLogDiv > div:nth-child(2) {
   padding: 8px;
@@ -692,7 +693,7 @@ body.touched .withTooltipBox:hover {
 }
 
 .popupMenu {
-  z-index: 101;
+  z-index: 200;
 }
 
 .appBarTitle {
@@ -750,6 +751,12 @@ body > div > div > div {
 
 .muiToolbar {
   min-height: 50px !important;
+  padding-left: 8px !important;
+  padding-right: 8px !important;
+}
+
+.toolbarIcon {
+  padding: 12px 6px !important;
 }
 
 .divAppBar > div > header > div {

@@ -195,13 +195,16 @@ object BridgeAppBarInternal {
       def callbackPage(page: AppPage)(e: ReactEvent) =
         props.routeCtl.toRootPage(page)
 
+      val buttonStyle = js.Dictionary("root" -> "toolbarIcon")
+
       val rightButton =
         List[CtorType.ChildArg](
           MuiIconButton(
             id = "Help",
             onClick = handleHelpGotoPageClick(props.helpurl) _,
             title = "Help",
-            color = ColorVariant.inherit
+            color = ColorVariant.inherit,
+            classes = buttonStyle
           )(
             MuiIcons.Help()
           ),
@@ -209,7 +212,8 @@ object BridgeAppBarInternal {
             id = "ServerURL",
             onClick = serverUrlClick _,
             title = "Show server URLs",
-            color = ColorVariant.inherit
+            color = ColorVariant.inherit,
+            classes = buttonStyle
           )(
             MuiIcons.Place()
             // MuiTypography(
@@ -222,7 +226,8 @@ object BridgeAppBarInternal {
             id = "LightDark",
             onClick = toggleLightDark _,
             title = "Change color mode",
-            color = ColorVariant.inherit
+            color = ColorVariant.inherit,
+            classes = buttonStyle
           )(
             LightDark()
           ),
@@ -230,7 +235,8 @@ object BridgeAppBarInternal {
             id = "MoreMenu",
             onClick = handleMoreClick _,
             title = "Developer Menu",
-            color = ColorVariant.inherit
+            color = ColorVariant.inherit,
+            classes = buttonStyle
           )(
             MuiIcons.MoreVert()
           )
@@ -265,7 +271,8 @@ object BridgeAppBarInternal {
               id = "MainMenu",
               onClick = props.handleMainClick,
               title = "Menu",
-              color = ColorVariant.inherit
+              color = ColorVariant.inherit,
+              classes = buttonStyle
             )(
               MuiIcons.Menu()
             ),
@@ -274,7 +281,8 @@ object BridgeAppBarInternal {
                 id = "Home",
                 onClick = gotoHomePage _,
                 title = "Home",
-                color = ColorVariant.inherit
+                color = ColorVariant.inherit,
+                classes = buttonStyle
               )(
                 MuiIcons.Home()
               )

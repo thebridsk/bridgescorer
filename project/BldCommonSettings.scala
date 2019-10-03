@@ -177,6 +177,8 @@ object BldCommonSettings {
 
   val svt = taskKey[Unit]("Run test cases using assembled jars, does not build jars") in Distribution
 
+  val nsvt = inputKey[Unit]("Run test cases multiple times using assembled jars, does not build jars") in Distribution
+
   val travissvt = taskKey[Unit]("Run test cases that Travis CI uses using assembled jars, does not build jars") in Distribution
 
   val standalonetests = taskKey[Unit]("Run test cases using assembled jars, does not build jars") in Distribution
