@@ -3,6 +3,8 @@ package com.github.thebridsk.bridge.clientcommon.fullscreen
 import scala.scalajs.js
 import org.scalajs.dom.raw.Element
 import org.scalajs.dom.raw.Document
+import org.scalajs.dom.document
+
 
 
 @js.native
@@ -37,9 +39,13 @@ object Implicits {
     def doc = document.asInstanceOf[DocumentFullscreen]
 
     def fullscreenEnabled: Boolean = (if (isIpad) doc.webkitFullscreenEnabled else doc.fullscreenEnabled).getOrElse(false)
-    def fullscreenElement: Element = if (isIpad) doc.webkitFullscreenElement else doc.fullscreenElement
+    def fullscreenElement: Element = {
+      if (isFullscreenEnabled) if (isIpad) doc.webkitFullscreenElement else doc.fullscreenElement
+      else null
+    }
     def exitFullscreen(): js.Promise[js.UndefOr[js.Any]] = {
-      if (isIpad) doc.webkitExitFullscreen else doc.exitFullscreen
+      if (isFullscreenEnabled) if (isIpad) doc.webkitExitFullscreen else doc.exitFullscreen
+      else js.Promise.reject("fullscreen not enabled")
     }
 
     def isFullscreen = fullscreenElement != null
@@ -50,8 +56,12 @@ object Implicits {
 
     def elem = element.asInstanceOf[DocumentElementFullscreen]
 
-    def requestFullscreen(): js.Promise[js.UndefOr[js.Any]] = if (isIpad) elem.webkitRequestFullscreen() else elem.requestFullscreen()
+    def requestFullscreen(): js.Promise[js.UndefOr[js.Any]] = {
+      if (isFullscreenEnabled) if (isIpad) elem.webkitRequestFullscreen() else elem.requestFullscreen()
+      else js.Promise.reject("fullscreen not enabled")
+    }
 
   }
 
+  val isFullscreenEnabled = document.fullscreenEnabled
 }

@@ -80,6 +80,7 @@ import com.github.thebridsk.bridge.server.test.pages.duplicate.StatisticsPage
 import com.github.thebridsk.bridge.data.Id
 import com.github.thebridsk.browserpages.PageBrowser
 import com.github.thebridsk.browserpages.Session
+import com.github.thebridsk.bridge.server.test.pages.FullscreenAddOn
 
 object Duplicate5TestPages {
 
@@ -325,7 +326,14 @@ object Duplicate5TestPages {
  * to the names view, to the hand view.
  * @author werewolf
  */
-class Duplicate5TestPages extends FlatSpec with MustMatchers with BeforeAndAfterAll with EventuallyUtils with CancelAfterFailure {
+class Duplicate5TestPages
+    extends FlatSpec
+    with MustMatchers
+    with BeforeAndAfterAll
+    with EventuallyUtils
+    with CancelAfterFailure
+    with FullscreenAddOn
+{
   import Eventually.{ patienceConfig => _, _ }
   import ParallelUtils._
 
@@ -1088,7 +1096,8 @@ class Duplicate5TestPages extends FlatSpec with MustMatchers with BeforeAndAfter
 
     val peoplePage = lp.clickStatistics.validate.clickPeopleResults
 
-    maximize
+//    maximize
+    clickFullscreen
 
     peoplePage.withClueAndScreenShot(screenshotDir, "ShowPeoplePage", "Checking people") {
       if (ids.size == 1) {
@@ -1105,6 +1114,7 @@ class Duplicate5TestPages extends FlatSpec with MustMatchers with BeforeAndAfter
         testlog.info(s"Not testing the people page with results, number of matchs played was not 1: ${ids.size}")
       }
     }
+    clickFullscreen
   }
 
   def getDuplicate( dupid: String ): MatchDuplicate = {
