@@ -12,6 +12,7 @@ import com.github.thebridsk.bridge.server.test.selenium.TestServer
 import com.github.thebridsk.bridge.server.test.pages.bridge.HomePage
 import org.openqa.selenium.NoSuchElementException
 import javax.validation.constraints.AssertFalse
+import com.github.thebridsk.bridge.server.test.pages.FullscreenAddOn
 
 object StatisticsPage {
   val log = Logger[StatisticsPage]
@@ -81,7 +82,10 @@ case class PeopleRowIMP( name: String,
                          incomplete: String,
                        )
 
-class StatisticsPage( implicit webDriver: WebDriver, pageCreated: SourcePosition ) extends Page[StatisticsPage] {
+class StatisticsPage( implicit webDriver: WebDriver, pageCreated: SourcePosition )
+    extends Page[StatisticsPage]
+    with FullscreenAddOn[StatisticsPage]
+{
 
   import StatisticsPage._
 
