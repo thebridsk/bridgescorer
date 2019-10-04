@@ -216,6 +216,7 @@ object BridgeAppBarInternal {
     }
 
     def toggleFullscreen( event: ReactEvent ): Unit = {
+      import scala.concurrent.ExecutionContext.Implicits.global
       import com.github.thebridsk.bridge.clientcommon.fullscreen.Implicits._
       val body = document.documentElement
       val doc = document
@@ -228,6 +229,7 @@ object BridgeAppBarInternal {
           logger.info(s"browser requesting fullscreen on body")
           body.requestFullscreen()
         }
+        scalajs.js.timers.setTimeout(500) { scope.withEffectsImpure.forceUpdate }
       } else {
         logger.info(s"fullscreen is disabled")
       }
@@ -279,23 +281,19 @@ object BridgeAppBarInternal {
           )(
             LightDark()
           ),
-          if (isFullscreenEnabledI) {
-            MuiIconButton(
-              id = "Fullscreen",
-              onClick = toggleFullscreen _,
-              title = if (isfullscreen) "Exit fullscreen" else "Go to fullscreen",
-              color = ColorVariant.inherit,
-              classes = buttonStyle
-            )(
-              if (isfullscreen) {
-                MuiIcons.FullscreenExit()
-              } else {
-                MuiIcons.Fullscreen()
-              }
-            )
-          } else {
-            EmptyVdom
-          },
+          MuiIconButton(
+            id = "Fullscreen",
+            onClick = toggleFullscreen _,
+            title = if (isfullscreen) "Exit fullscreen" else "Go to fullscreen",
+            color = ColorVariant.inherit,
+            classes = buttonStyle
+          )(
+            if (isfullscreen) {
+              MuiIcons.FullscreenExit()
+            } else {
+              MuiIcons.Fullscreen()
+            }
+          ),
           MuiIconButton(
             id = "MoreMenu",
             onClick = handleMoreClick _,
