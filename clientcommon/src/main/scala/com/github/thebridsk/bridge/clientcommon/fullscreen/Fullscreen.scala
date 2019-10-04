@@ -7,11 +7,11 @@ import org.scalajs.dom.raw.Document
 
 @js.native
 trait DocumentFullscreen extends js.Object {
-  val fullscreenEnabled: Boolean = js.native
+  val fullscreenEnabled: js.UndefOr[Boolean] = js.native
   val fullscreenElement: Element = js.native
   def exitFullscreen(): js.Promise[js.UndefOr[js.Any]] = js.native
 
-  val webkitFullscreenEnabled: Boolean = js.native
+  val webkitFullscreenEnabled: js.UndefOr[Boolean] = js.native
   val webkitFullscreenElement: Element = js.native
   def webkitExitFullscreen(): js.Promise[js.UndefOr[js.Any]] = js.native
 }
@@ -36,7 +36,7 @@ object Implicits {
 
     def doc = document.asInstanceOf[DocumentFullscreen]
 
-    def fullscreenEnabled: Boolean = if (isIpad) doc.webkitFullscreenEnabled else doc.fullscreenEnabled
+    def fullscreenEnabled: Boolean = (if (isIpad) doc.webkitFullscreenEnabled else doc.fullscreenEnabled).getOrElse(false)
     def fullscreenElement: Element = if (isIpad) doc.webkitFullscreenElement else doc.fullscreenElement
     def exitFullscreen(): js.Promise[js.UndefOr[js.Any]] = {
       if (isIpad) doc.webkitExitFullscreen else doc.exitFullscreen
