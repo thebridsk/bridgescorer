@@ -332,7 +332,6 @@ class Duplicate5TestPages
     with BeforeAndAfterAll
     with EventuallyUtils
     with CancelAfterFailure
-    with FullscreenAddOn
 {
   import Eventually.{ patienceConfig => _, _ }
   import ParallelUtils._
@@ -1097,7 +1096,8 @@ class Duplicate5TestPages
     val peoplePage = lp.clickStatistics.validate.clickPeopleResults
 
 //    maximize
-    clickFullscreen
+    val hasFullscreen = peoplePage.hasFullscreenButton
+    if (hasFullscreen) peoplePage.clickFullscreen
 
     peoplePage.withClueAndScreenShot(screenshotDir, "ShowPeoplePage", "Checking people") {
       if (ids.size == 1) {
@@ -1114,7 +1114,7 @@ class Duplicate5TestPages
         testlog.info(s"Not testing the people page with results, number of matchs played was not 1: ${ids.size}")
       }
     }
-    clickFullscreen
+    if (hasFullscreen) peoplePage.clickFullscreen
   }
 
   def getDuplicate( dupid: String ): MatchDuplicate = {

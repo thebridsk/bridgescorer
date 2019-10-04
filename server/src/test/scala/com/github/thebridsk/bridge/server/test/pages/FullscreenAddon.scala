@@ -9,11 +9,23 @@ import org.openqa.selenium.WebDriver
 import com.github.thebridsk.color.Color
 import com.github.thebridsk.browserpages.GenericPage
 
-trait FullscreenAddOn {
+trait FullscreenAddOn[+T <: Page[T]] {
+  page: Page[T] =>
+
+  def hasFullscreenButton(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position): Boolean = {
+    try {
+      webDriver.findElement( id("Fullscreen").query )
+      true
+    } catch {
+      case x: org.openqa.selenium.NoSuchElementException =>
+        false
+      case x: Exception =>
+        fail("Unknown error finding button Fullscreen",x)
+    }
+  }
 
   def clickFullscreen(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
-    implicit val page = GenericPage.current
-    page.clickButton("Fullscreen")
+    clickButton("Fullscreen")
     this
   }
 }
