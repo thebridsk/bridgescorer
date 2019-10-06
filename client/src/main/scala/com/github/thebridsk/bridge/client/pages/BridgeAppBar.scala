@@ -179,10 +179,9 @@ object BridgeAppBarInternal {
       logger.info("toggle light dark")
       val ntheme = ColorThemeStorage.getColorTheme() match {
         case Some(curtheme) =>
-          if (curtheme == "dark") "light"
-          else "dark"
+          LightDark.nextTheme(curtheme)
         case None =>
-          "dark"
+          "medium"
       }
       ColorThemeStorage.setColorTheme(ntheme)
     }
@@ -379,8 +378,9 @@ object BridgeAppBarInternal {
         (
           (
             MuiAppBar(
-              position = Position.static
-            )(
+              position = Position.static,
+              classes = js.Dictionary("root" -> "muiAppBar")
+              )(
               MuiToolbar(
                 classes = js.Dictionary("root" -> "muiToolbar")
               )(

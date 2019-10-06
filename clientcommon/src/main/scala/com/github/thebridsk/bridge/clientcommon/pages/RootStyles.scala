@@ -134,6 +134,7 @@ class BaseStyles {
 
   val lightDarkIcon1 = cls("lightDarkIcon1")
   val lightDarkIcon2 = cls("lightDarkIcon2")
+  val lightDarkIcon3 = cls("lightDarkIcon3")
 }
 
 class RootStyles {

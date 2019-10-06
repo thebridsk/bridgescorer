@@ -86,7 +86,7 @@ object ComparisonPieChart {
       "The Aggressive is the higher contract, Passive is the lower contract",
       <.br,
       "Good, ",
-      PieChart( 15, 1.0::Nil, ColorGood::Nil, attrs=Some(^.display := "inline-block") ),
+      PieChart( 15, 1.0::Nil, Some(ColorGood::Nil), attrs=Some(^.display := "inline-block") ),
       <.ul(
         <.li("team with higher contract, aggressive, was successful.  example: made game over partial"),
         <.li("team with lower contract, passive, was successful.  Example: made partial over down game"),
@@ -95,7 +95,7 @@ object ComparisonPieChart {
       ),
       <.br,
       "Bad, ",
-      PieChart( 15, 1.0::Nil, ColorBad::Nil, attrs=Some(^.display := "inline-block") ),
+      PieChart( 15, 1.0::Nil, Some(ColorBad::Nil), attrs=Some(^.display := "inline-block") ),
       <.ul(
         <.li("team with lower contract, passive, failed.  example: made game under partial"),
         <.li("team with higher contract, aggressive, failed.  Example: down game under made partial"),
@@ -104,7 +104,7 @@ object ComparisonPieChart {
       ),
       <.br,
       "Neutral, ",
-      PieChart( 15, 1.0::Nil, ColorNeutral::Nil, attrs=Some(^.display := "inline-block") ),
+      PieChart( 15, 1.0::Nil, Some(ColorNeutral::Nil), attrs=Some(^.display := "inline-block") ),
       <.ul(
         <.li("no difference, Example: both contracts were partial"),
         <.li("contracts were played from different sides ending with same score, 1N made 3, 3C down 2")

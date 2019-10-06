@@ -33,14 +33,38 @@ object PieChart {
    * Must be the same size array as slices.
    */
   case class Props(
-      size: Double,
       slices: List[Double],
-      colors: List[Color],
+      colors: Option[List[Color]],
       chartTitle: Option[String] = None,
       sliceTitles: Option[List[String]] = None,
-      attrs: Option[TagMod] = None
+      size: Option[Double] = None,
+      attrs: Option[TagMod] = None,
+      sliceAttrs: Option[List[TagMod]] = None
   )
 
+  /**
+   * A pie chart.  The full circle will be used for the chart.
+   * @param slices the slices to carve up the circle.  The sum of the entries MUST NOT be 0
+   * @param colors the colors of the slices, must be the same size array as slices.
+   * @param chartTitle the title of the chart, will be a flyover.  Ignored if sliceTitles is specified.
+   * @param sliceTitles the title of slices, will be flyover.
+   * @param size the relative area of the circle, if None, then css must set the height and width
+   * @param attrs attributes to add to the <svg> element
+   * Must be the same size array as slices.
+   * If both chartTitle and sliceTitles is specified, then sliceTitles is used.
+   * Must be the same size array as slices.
+   */
+  def create(
+      slices: List[Double],
+      colors: Option[List[Color]],
+      chartTitle: Option[String] = None,
+      sliceTitles: Option[List[String]] = None,
+      size: Option[Double] = None,
+      attrs: Option[TagMod] = None,
+      sliceAttrs: Option[List[TagMod]] = None
+  ) = {
+    component(Props(slices,colors,chartTitle,sliceTitles,size,attrs,sliceAttrs))
+  }
 
   /**
    * A pie chart.  The full circle will be used for the chart.
@@ -49,6 +73,7 @@ object PieChart {
    * @param colors the colors of the slices, must be the same size array as slices.
    * @param chartTitle the title of the chart, will be a flyover.  Ignored if sliceTitles is specified.
    * @param sliceTitles the title of slices, will be flyover.
+   * @param attrs attributes to add to the <svg> element
    * Must be the same size array as slices.
    * If both chartTitle and sliceTitles is specified, then sliceTitles is used.
    * Must be the same size array as slices.
@@ -56,12 +81,13 @@ object PieChart {
   def apply(
       size: Double,
       slices: List[Double],
-      colors: List[Color],
+      colors: Option[List[Color]],
       chartTitle: Option[String] = None,
       sliceTitles: Option[List[String]] = None,
-      attrs: Option[TagMod] = None
+      attrs: Option[TagMod] = None,
+      sliceAttrs: Option[List[TagMod]] = None
   ) = {
-    component(Props(size,slices,colors,chartTitle,sliceTitles,attrs))
+    component(Props(slices,colors,chartTitle,sliceTitles,Some(size),attrs,sliceAttrs))
   }
 
   def apply( props: Props ) = component(props)
@@ -79,23 +105,29 @@ object PieChart {
       .noBackend
       .render_P { props =>
         val chartTitle = props.sliceTitles.flatMap( l => None ).getOrElse( props.chartTitle )
-        val slices = props.slices.zip( props.colors ).filter( e => e._1 != 0 )
+        val colors = props.colors.map{ cs => cs.map { c => val r = ^.fill:=c; r }}.getOrElse( (0 until props.slices.length).map( n => TagMod() ) )
+        val sliceattr = props.sliceAttrs.getOrElse( (0 until props.slices.length).map( n => TagMod() ) )
+        val slicetitles = props.sliceTitles.map{ cs => cs.map { t => Some(t) }}.getOrElse( (0 until props.slices.length).map( n => None ) )
+        val slices = props.slices.zip( colors ).zip(sliceattr).zip(slicetitles).filter( e => e._1._1._1 != 0 )
         if (slices.length == 1) {
+          val (((slice,color),attr),slicetitle) = slices.head
           <.svg(
             chartTitle.whenDefined( t => <.title(t) ),
-            ^.width := f"${props.size}%.2f",
-            ^.height := f"${props.size}%.2f",
+            props.size.whenDefined { s =>
+              TagMod(
+                ^.width := f"${s}%.2f",
+                ^.height := f"${s}%.2f",
+              )
+            },
             ^.viewBox := "-1.1 -1.1 2.2 2.2",
             BaseStyles.baseStyles.piechart,
             <.circle(
-              props.sliceTitles.flatMap { list =>
-                props.slices.zip( list ).find( e => e._1 != 0 ).
-                  map( t => Some(<.title(t._2)) ).getOrElse(None)
-              }.whenDefined,
+              slicetitle.whenDefined( t => <.title(t)),
+              attr,
               ^.cx := 0,
               ^.cy := 0,
               ^.r := 1,
-              ^.fill := slices.head._2
+              color
             ),
             props.attrs.whenDefined
           )
@@ -107,11 +139,16 @@ object PieChart {
           var lasty = y
           <.svg(
             chartTitle.whenDefined( t => <.title(t) ),
-            ^.width := f"${props.size}%.2f",
-            ^.height := f"${props.size}%.2f",
+            props.size.whenDefined { s =>
+              TagMod(
+                ^.width := f"${s}%.2f",
+                ^.height := f"${s}%.2f",
+              )
+            },
             ^.viewBox := "-1.1 -1.1 2.2 2.2",
             BaseStyles.baseStyles.piechart,
-            props.slices.zip( props.colors ).zipWithIndex.flatMap { case ( (slice, color), i ) =>
+            slices.map { e =>
+              val (((slice,color),attr),slicetitle) = e
               if (slice == 0) None
               else {
                 val sweep = slice/sum
@@ -122,13 +159,13 @@ object PieChart {
                 val (targetx,targety) = getCoordinatesForPercent(sofar)
                 lastx = targetx
                 lasty = targety
-                val title = props.sliceTitles.flatMap( l => if (l.isDefinedAt(i)) Some(l(i)) else None )
                 Some( <.path(
-                  title.whenDefined( t => <.title(t) ),
+                  slicetitle.whenDefined( t => <.title(t) ),
                   ^.d := f"M ${sourcex}%.2f ${sourcey}%.2f" +
                          f" A 1 1 0 ${largeArcFlag} 1 ${targetx}%.2f ${targety}%.2f" +
                           " L 0 0",
-                  ^.fill := color,
+                  color,
+                  attr
                 ))
               }
             }.toTagMod,

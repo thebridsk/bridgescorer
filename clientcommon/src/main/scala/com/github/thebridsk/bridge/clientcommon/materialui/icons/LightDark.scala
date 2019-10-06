@@ -5,6 +5,7 @@ import japgolly.scalajs.react.vdom.svg_<^._
 import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles._
 import com.github.thebridsk.bridge.clientcommon.pages.TitleSuits
 import com.github.thebridsk.materialui.icons.MuiSvgIcon
+import com.github.thebridsk.bridge.clientcommon.react.PieChart
 
 object LightDark {
   import LightDarkInternal._
@@ -13,12 +14,25 @@ object LightDark {
 
   def apply(  ) = component(Props())
 
+  val themes = List("white","medium","dark")
+
+  val colors = List(
+                     baseStyles.lightDarkIcon3,  // prev
+                     baseStyles.lightDarkIcon1,  // current theme
+                     baseStyles.lightDarkIcon2   // next
+                   )
+
+  def nextTheme( current: String ) = {
+    val i = (themes.indexOf(current)+1)%themes.length
+    themes(i)
+  }
+
 }
 
 object LightDarkInternal {
   import LightDark._
 
-  val component = ScalaComponent.builder[Props]("LightDark")
+  val componentold = ScalaComponent.builder[Props]("LightDark")
                             .stateless
                             .noBackend
                             .render_P( props =>
@@ -41,4 +55,18 @@ object LightDarkInternal {
                               )
                             )
                             .build
+
+  val component = ScalaComponent.builder[Props]("LightMediumDark")
+                            .stateless
+                            .noBackend
+                            .render_P( props =>
+                              PieChart.create(
+                                List(1,1,1),
+                                None,
+                                size = Some(24),
+                                sliceAttrs = Some( colors )
+                              )
+                            )
+                            .build
+
 }

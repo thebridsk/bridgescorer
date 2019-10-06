@@ -140,8 +140,11 @@ class ChicagoTestPages extends FlatSpec
     hp.checkIconLightMode
     hp.checkBodyLightMode
     val hp2 = hp.clickLightDark
-    hp2.checkIconDarkMode
-    hp2.checkBodyDarkMode
+    hp2.checkIconMediumMode
+    hp2.checkBodyMediumMode
+    val hp3 = hp2.clickLightDark
+    hp3.checkIconDarkMode
+    hp3.checkBodyDarkMode
   }
 
   it should "allow us to score a Chicago match" in {
