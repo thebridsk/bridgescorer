@@ -20,6 +20,7 @@ import com.github.thebridsk.bridge.client.pages.duplicate.DuplicatePageBridgeApp
 import com.github.thebridsk.materialui.MuiTypography
 import com.github.thebridsk.materialui.TextVariant
 import com.github.thebridsk.materialui.TextColor
+import japgolly.scalajs.react.component.builder.Lifecycle.ComponentDidUpdate
 
 /**
  * A skeleton component.
@@ -88,6 +89,8 @@ object PageBoardSetsInternal {
    */
   class Backend(scope: BackendScope[Props, State]) {
 
+    private val boardSetViewRef = ViewBoardSet.getRef()
+
     val okCallback = scope.forceUpdate >> scope.props >>= { props => props.routerCtl.set(props.backpage) }
 
     def toggleBoardSet( name: String ) = scope.props >>= { props =>
@@ -140,7 +143,7 @@ object PageBoardSetsInternal {
                     <.div(
                       <.h1("Showing ", bs.short ),
                       <.p(bs.description),
-                      ViewBoardSet(bs,2)
+                      ViewBoardSet.withRef(boardSetViewRef)(bs,2)
                     )
                   case None =>
                     <.span(s"BoardSet $name not found")
@@ -153,11 +156,19 @@ object PageBoardSetsInternal {
       )
     }
 
+    val forceUpdate = scope.withEffectsImpure.forceUpdate
+
     val storeCallback = scope.modState { s =>
       val boardsets = BoardSetStore.getBoardSets()
       logger.info("Got all boardsets, n="+boardsets.size )
       s.copy( boardSets=boardsets)
     }
+
+    val scrollToCB = boardSetViewRef.get.map { re =>
+      re.getDOMNode.toElement.map { el =>
+        el.scrollIntoView(false)
+      }
+    }.asCallback.void
 
     val didMount = CallbackTo {
       logger.info("PageBoardSets.didMount")
@@ -172,6 +183,15 @@ object PageBoardSetsInternal {
     }
   }
 
+  def didUpdate( cdu: ComponentDidUpdate[Props,State,Backend,Unit] ) = Callback {
+    val props = cdu.currentProps
+    val prevProps = cdu.prevProps
+    if (props.initialDisplay != prevProps.initialDisplay) {
+      cdu.backend.scrollToCB.runNow
+      cdu.backend.forceUpdate
+    }
+  }
+
   val component = ScalaComponent.builder[Props]("PageBoardSets")
                             .initialStateFromProps { props => {
                               logger.info("PageBoardSets.component.initialState: initial display "+props.initialDisplay)
@@ -180,6 +200,7 @@ object PageBoardSetsInternal {
                             .backend(new Backend(_))
                             .renderBackend
                             .componentDidMount( scope => scope.backend.didMount)
+                            .componentDidUpdate( didUpdate )
                             .componentWillUnmount( scope => scope.backend.willUnmount )
                             .build
 }

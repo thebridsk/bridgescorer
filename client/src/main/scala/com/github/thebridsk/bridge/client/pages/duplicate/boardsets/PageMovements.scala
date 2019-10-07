@@ -218,6 +218,8 @@ object PageMovementsInternal {
       )
     }
 
+    val forceUpdate = scope.withEffectsImpure.forceUpdate
+
     val storeCallback = scope.modState { s =>
       val boardsets = BoardSetStore.getMovement()
       logger.info("Got all boardsets, n="+boardsets.size )
@@ -228,14 +230,14 @@ object PageMovementsInternal {
       re.getDOMNode.toElement.map { el =>
         el.scrollIntoView(false)
       }
-    }.asCallback
+    }.asCallback.void
 
     val didMount = CallbackTo {
       logger.info("PageMovements.didMount")
       BoardSetStore.addChangeListener(storeCallback)
     } >> Callback {
       BoardSetController.getMovement()
-    } >> scrollToCB >> Callback{}
+    } >> scrollToCB
 
     val willUnmount = CallbackTo {
       logger.info("PageMovements.willUnmount")
@@ -248,6 +250,7 @@ object PageMovementsInternal {
     val prevProps = cdu.prevProps
     if (props.initialDisplay != prevProps.initialDisplay) {
       cdu.backend.scrollToCB.runNow
+      cdu.backend.forceUpdate
     }
   }
 

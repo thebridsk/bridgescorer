@@ -606,25 +606,13 @@
 .dupDivMovementsPage {
   flex-wrap: nowrap;
 }
-/*
-.dupDivMovementsPage > div > div {
-  display: flex;
-  flex-wrap: wrap;
-  flex-direction: row;
-  border-style: solid;
-  border-color: transparent;
-  border-width: 5px;
-  vertical-align: top;
+.dupDivMovementsPage > table thead tr th {
+  position: sticky;
+  position: -webkit-sticky;
+  top: -8px;
+  background-color: var(--color-bg);
+  z-index: 11;
 }
-.dupDivMovementsPage > div > div > div {
-  flex: 0 0 auto;
-  padding: 10px 2px 2px 2px;
-  border-style: solid;
-  border-color: transparent;
-  border-width: 5px;
-  vertical-align: top;
-}
-*/
 .dupDivMovementsPage table {
   border-spacing: 0px;
   font-size: x-large;
