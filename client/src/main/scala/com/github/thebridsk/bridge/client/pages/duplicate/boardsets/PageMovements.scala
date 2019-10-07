@@ -22,6 +22,7 @@ import com.github.thebridsk.bridge.client.pages.duplicate.DuplicatePageBridgeApp
 import com.github.thebridsk.materialui.MuiTypography
 import com.github.thebridsk.materialui.TextVariant
 import com.github.thebridsk.materialui.TextColor
+import japgolly.scalajs.react.component.builder.Lifecycle.ComponentDidUpdate
 
 /**
  * A skeleton component.
@@ -139,6 +140,7 @@ object PageMovementsInternal {
                             )
                           )
                         }).build
+
   /**
    * Internal state for rendering the component.
    *
@@ -146,7 +148,9 @@ object PageMovementsInternal {
    * will cause Backend to leak.
    *
    */
-  class Backend(scope: BackendScope[Props, State]) {
+  class Backend( scope: BackendScope[Props, State]) {
+
+    private val movementTableRef = Ref.toScalaComponent(MovementTable)
 
     val okCallback = scope.forceUpdate >> scope.props >>= { props => props.routerCtl.set(props.backpage) }
 
@@ -200,7 +204,7 @@ object PageMovementsInternal {
                     <.div(
                       dupStyles.divMovementView,
                       htp.hands.map( h => h.table ).toList.distinct.sorted.map { table =>
-                        MovementTable((state,htp,table))
+                        MovementTable.withRef(movementTableRef)((state,htp,table))
                       }.toTagMod
                     )
                   )
@@ -220,16 +224,30 @@ object PageMovementsInternal {
       s.copy( movements=boardsets)
     }
 
+    val scrollToCB = movementTableRef.get.map { re =>
+      re.getDOMNode.toElement.map { el =>
+        el.scrollIntoView(false)
+      }
+    }.asCallback
+
     val didMount = CallbackTo {
       logger.info("PageMovements.didMount")
       BoardSetStore.addChangeListener(storeCallback)
-    } >> scope.props >>= { (p) => CallbackTo(
+    } >> Callback {
       BoardSetController.getMovement()
-    )}
+    } >> scrollToCB >> Callback{}
 
     val willUnmount = CallbackTo {
       logger.info("PageMovements.willUnmount")
       BoardSetStore.removeChangeListener(storeCallback)
+    }
+  }
+
+  def didUpdate( cdu: ComponentDidUpdate[Props,State,Backend,Unit] ) = Callback {
+    val props = cdu.currentProps
+    val prevProps = cdu.prevProps
+    if (props.initialDisplay != prevProps.initialDisplay) {
+      cdu.backend.scrollToCB.runNow
     }
   }
 
@@ -241,6 +259,7 @@ object PageMovementsInternal {
                             .backend(new Backend(_))
                             .renderBackend
                             .componentDidMount( scope => scope.backend.didMount)
+                            .componentDidUpdate( didUpdate )
                             .componentWillUnmount( scope => scope.backend.willUnmount )
                             .build
 }
