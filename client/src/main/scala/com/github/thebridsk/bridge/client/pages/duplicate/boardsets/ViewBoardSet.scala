@@ -11,14 +11,26 @@ import japgolly.scalajs.react.extra.router.RouterCtl
 import com.github.thebridsk.bridge.client.routes.BridgeRouter
 import com.github.thebridsk.bridge.data.BoardInSet
 import com.github.thebridsk.bridge.client.pages.duplicate.DuplicateStyles
+import japgolly.scalajs.react.CtorType
 
 /**
- * A skeleton component.
+ * Shows all the boards of a boardset.
  *
  * To use, just code the following:
  *
  * <pre><code>
- * ViewBoardSet( ViewBoardSet.Props( ... ) )
+ * ViewBoardSet( ... )
+ * </code></pre>
+ *
+ * To obtain a reference to the ViewBoardSet:
+ *
+ * <pre><code>
+ * val ref = ViewBoardSet.getRef()
+ *
+ * def render() = {
+ *   ViewBoardSet.withRef(ref)( ... )
+ * }
+ *
  * </code></pre>
  *
  * @author werewolf
@@ -26,9 +38,20 @@ import com.github.thebridsk.bridge.client.pages.duplicate.DuplicateStyles
 object ViewBoardSet {
   import ViewBoardSetInternal._
 
+  type RefType = Ref.WithScalaComponent[Props,State,Backend,CtorType.Props]
+
+  def getRef(): RefType = Ref.toScalaComponent(component)
+
   case class Props( boardset: BoardSet, columns: Int )
 
   def apply( boardset: BoardSet, columns: Int = 1 ) = component(Props(boardset,columns))
+
+  def withRef(
+      ref: RefType
+  )(
+      boardset: BoardSet,
+      columns: Int = 1
+  ) = component.withRef(ref)(Props(boardset,columns))
 
 }
 
