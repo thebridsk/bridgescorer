@@ -46,7 +46,7 @@ object PieChartOrSquareForZero {
       sliceTitles: Option[List[String]] = None,
       attrs: Option[TagMod] = None
   ) = {
-    component(SquareProps( squareColor, Props(size,slices,colors,chartTitle,sliceTitles,attrs)))
+    component(SquareProps( squareColor, Props(slices,Some(colors),chartTitle,sliceTitles,Some(size),attrs)))
   }
 
   private def getCoordinatesForPercent( fraction: Double ) = {
@@ -61,12 +61,12 @@ object PieChartOrSquareForZero {
       .stateless
       .noBackend
       .render_P { props =>
-        if (props.piechartProps.size < 0) {
+        if (props.piechartProps.size.get < 0) {
           val chartTitle = props.piechartProps.sliceTitles.flatMap( l => None ).getOrElse( props.piechartProps.chartTitle )
           <.svg(
             chartTitle.whenDefined( t => <.title(t) ),
-            ^.width := f"${-props.piechartProps.size}%.2f",
-            ^.height := f"${-props.piechartProps.size}%.2f",
+            ^.width := f"${-props.piechartProps.size.get}%.2f",
+            ^.height := f"${-props.piechartProps.size.get}%.2f",
             ^.viewBox := "-10.1 -10.1 20.2 20.2",
             BaseStyles.baseStyles.piechart,
             <.rect(

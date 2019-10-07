@@ -156,7 +156,7 @@ object ViewPlayerPlacesGraphInternal {
                               PieChart(
                                 20,
                                 1::Nil,
-                                legendUtil.colorMap((p,o))::Nil
+                                Some(legendUtil.colorMap((p,o))::Nil)
                               )
                             } else {
                               ""

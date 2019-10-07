@@ -2,8 +2,9 @@
 
 :root {
   /* Light mode color theme */
-  --color-bg: white;
-  --color-other-bg: rgb(50,54,57);
+  --color-bg: white;                /* must match LightDarkAddOn.light */
+  --color-other-bg: rgb(50,54,57);  /* must match LightDarkAddOn.medium */
+  --color-other2-bg: black;         /* must match LightDarkAddOn.dark */
   --color-fg: rgb(50,54,57);
   --color-table-border: black;
   --color-table-row-alt: #f2f2f2;
@@ -20,6 +21,7 @@
   --color-bg-popup: white;
   --color-popup-border: black;
   --color-tooltip-hover: orange;
+  --color-bg-appbar: rgb(64,128,64);
   --color-appbar-title-shadow: #f00;
   --color-table-cell-gray: rgb(151, 151, 151);
   --color-bg-vulnerable: red;
@@ -30,34 +32,71 @@
   --color-weblink: rgb(85, 26, 139);
 }
 
-[data-theme="dark"] {
-  /* Dark mode color theme */
-  --color-bg: rgb(50,54,57);
-  --color-other-bg: white;
-  --color-fg: rgb(210,210,210);
-  --color-table-border: rgb(210,210,210);
-  --color-table-row-alt: rgb(63,67,70);
-  --color-div-border: rgb(210,210,210);
-  --color-default-button: rgb(210,210,210);
-  --color-fg-default-button: black;
-  --color-button-selected: lightgreen;
-  --color-fg-button-selected: black;
-  --color-button-required: yellow;
-  --color-fg-button-required: black;
-  --color-button-required-not-next: rgb(255,255,190);
-  --color-fg-button-required-not-next: black;
-  --color-bg-popupoverlay: black;
-  --color-bg-popup: black;
-  --color-popup-border: rgb(210,210,210);
-  --color-tooltip-hover: orange;
-  --color-appbar-title-shadow: #f00;
-  --color-table-cell-gray: #606060;
-  --color-bg-vulnerable: red;
-  --color-bg-not-vulnerable: lightgrey;
-  --color-not-vulnerable: gray;
-  --color-bg-hand-section-score: cyan;
-  --color-hand-section-score: black;
-  --color-weblink: cyan;
+@media screen {
+
+  [data-theme="medium"] {
+    /* Dark mode color theme */
+    --color-bg: rgb(50,54,57);      /* must match light mode --color-other-bg */
+    --color-other-bg: black;        /* must match light mode --color-other2-bg */
+    --color-other2-bg: white;       /* must match light mode --color-bg */
+    --color-fg: rgb(210,210,210);
+    --color-table-border: rgb(210,210,210);
+    --color-table-row-alt: rgb(63,67,70);
+    --color-div-border: rgb(210,210,210);
+    --color-default-button: rgb(210,210,210);
+    --color-fg-default-button: black;
+    --color-button-selected: lightgreen;
+    --color-fg-button-selected: black;
+    --color-button-required: yellow;
+    --color-fg-button-required: black;
+    --color-button-required-not-next: rgb(255,255,190);
+    --color-fg-button-required-not-next: black;
+    --color-bg-popupoverlay: black;
+    --color-bg-popup: black;
+    --color-popup-border: rgb(210,210,210);
+    --color-tooltip-hover: orange;
+    --color-bg-appbar: rgb(64,128,64);
+    --color-appbar-title-shadow: #f00;
+    --color-table-cell-gray: #606060;
+    --color-bg-vulnerable: red;
+    --color-bg-not-vulnerable: lightgrey;
+    --color-not-vulnerable: gray;
+    --color-bg-hand-section-score: cyan;
+    --color-hand-section-score: black;
+    --color-weblink: cyan;
+  }
+
+  [data-theme="dark"] {
+    --color-bg: black;                /* must match light mode --color-other2-bg */
+    --color-other-bg: white;          /* must match light mode --color-bg */
+    --color-other2-bg: rgb(50,54,57); /* must match light mode --color-other-bg */
+    --color-fg: rgb(210,210,210);
+    --color-table-border: rgb(210,210,210);
+    --color-table-row-alt: rgb(40,40,40);
+    --color-div-border: rgb(210,210,210);
+    --color-default-button: rgb(40,40,40);
+    --color-fg-default-button: rgb(210,210,210);
+    --color-button-selected: darkgreen;
+    --color-fg-button-selected: rgb(210,210,210);
+    --color-button-required: rgb(128,128,0);
+    --color-fg-button-required: rgb(210,210,210);
+    --color-button-required-not-next: rgb(64,64,0);
+    --color-fg-button-required-not-next: rgb(210,210,210);
+    --color-bg-popupoverlay: black;
+    --color-bg-popup: black;
+    --color-popup-border: rgb(210,210,210);
+    --color-tooltip-hover: orange;
+    --color-bg-appbar: rgb(64,128,64);
+    --color-appbar-title-shadow: #f00;
+    --color-table-cell-gray: #606060;
+    --color-bg-vulnerable: darkred;
+    --color-bg-not-vulnerable: rgb(60,60,60);
+    --color-not-vulnerable: rgb(210,210,210);
+    --color-bg-hand-section-score: darkcyan;
+    --color-hand-section-score: black;
+    --color-weblink: cyan;
+  }
+
 }
 
 body {
@@ -682,6 +721,7 @@ body.touched .withTooltipBox:hover {
 
 .headerSuitSize {
   font-size: 2.5rem;
+  text-shadow: -1px 0px 0 #fff, 1px 0px 0 #fff, 0px 1px 0 #fff, 0px -1px 0 #fff;
 }
 
 .mainMenuItem {
@@ -753,6 +793,10 @@ body > div > div > div {
   padding: 8px;
 }
 
+.muiAppBar {
+  background-color: var(--color-bg-appbar) !important;
+}
+
 .muiToolbar {
   min-height: 50px !important;
   padding-left: 8px !important;
@@ -779,8 +823,11 @@ body > div > div > div {
 }
 
 .lightDarkIcon1 {
-  fill: var(--color-other-bg)
+  fill: var(--color-bg)
 }
 .lightDarkIcon2 {
-  fill: var(--color-bg)
+  fill: var(--color-other-bg)
+}
+.lightDarkIcon3 {
+  fill: var(--color-other2-bg)
 }

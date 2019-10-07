@@ -66,7 +66,7 @@ object PieChartWithTooltip {
       val l2 = total2.map( t => f", ${100.0*divideValue(n,t)}%.2f%%" ).getOrElse("")
       val l = f": ${formatValue(n)} (${100.0*divideValue(n,total)}%.2f%%${l2})"
       <.li(
-        PieChart( 15, colors.map(c=>1.0).toList, colors.toList ),
+        PieChart( 15, colors.map(c=>1.0).toList, Some(colors.toList) ),
         " ",
         title,
         l
@@ -217,11 +217,11 @@ object PieChartWithTooltipInternal {
       }}.unzip
       Tooltip(
         data = TagMod(
-            PieChart( props.size, slices, colors ),
+            PieChart( props.size, slices, Some(colors) ),
             ^.minHeight := props.minSize.px
         ),
         tooltipbody = TagMod(
-            <.div(PieChart( props.sizeInLegend, slices, colors )),
+            <.div(PieChart( props.sizeInLegend, slices, Some(colors) )),
             <.div(
               props.util.legend(props.histogram, props.legendtitle)
             )
