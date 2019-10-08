@@ -317,7 +317,7 @@ class RubberTest extends FlatSpec
 
     tcpSleep(10)
 
-    InputStyleHelper.hitInputStyleButton( "Yellow" )
+    InputStyleHelper.hitInputStyleButton( "Guide" )
 
     findButtonAndClick("NextHand")
     verifyVul(false, false)

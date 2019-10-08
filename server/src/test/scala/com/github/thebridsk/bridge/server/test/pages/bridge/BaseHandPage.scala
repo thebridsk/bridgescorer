@@ -53,7 +53,7 @@ object BaseHandPage {
 
   val patternInputStyle = """Input Style: (.*)""".r
 
-  val validInputStyles = "Yellow"::"Prompt"::"Original"::Nil
+  val validInputStyles = "Guide"::"Prompt"::"Original"::Nil
 
   import com.github.thebridsk.browserpages.PageBrowser._
   def getInputStyle(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position): Option[String] = {
@@ -64,7 +64,7 @@ object BaseHandPage {
   }
 
   /**
-   * @param style the input style, valid values are Yellow, Prompt, Original
+   * @param style the input style, valid values are Guide, Prompt, Original
    * @return Some(style) if successful, otherwise returns current input style
    */
   def setInputStyle( want: String )( implicit webDriver: WebDriver, pos: Position ): Option[String] = {
@@ -391,7 +391,7 @@ abstract class BaseHandPage( implicit webDriver: WebDriver, pageCreated: SourceP
     BaseHandPage.getInputStyle
 
   /**
-   * @param style the input style, valid values are Yellow, Prompt, Original
+   * @param style the input style, valid values are Guide, Prompt, Original
    * @return Some(style) if successful, otherwise returns current input style
    */
   def setInputStyle( style: String ): Option[String] =

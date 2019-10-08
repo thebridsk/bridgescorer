@@ -227,7 +227,7 @@ class SummaryPage(
     BaseHandPage.getInputStyle
 
   /**
-   * @param style the input style, valid values are Yellow, Prompt, Original
+   * @param style the input style, valid values are Guide, Prompt, Original
    * @return Some(style) if successful, otherwise returns current input style
    */
   def setInputStyle( style: String ): Option[String] =

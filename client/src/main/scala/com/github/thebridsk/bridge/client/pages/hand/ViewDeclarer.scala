@@ -74,7 +74,7 @@ object ViewDeclarerInternal {
       val (missingRequired,missingNotNext) = {
         val mr = props.current.isEmpty
         if (mr) {
-          if (ComponentInputStyleButton.inputMethod == InputMethod.Yellow) {
+          if (ComponentInputStyleButton.inputMethod == InputMethod.Guide) {
             val ni = props.nextInput == PageHandNextInput.InputContractBy
             (ni,!ni)
           } else {

@@ -42,7 +42,7 @@ object ViewContractSuit {
                                 val (missingRequired,missingNotNext) = {
                                   val mr = props.current.isEmpty
                                   if (mr) {
-                                    if (ComponentInputStyleButton.inputMethod == InputMethod.Yellow) {
+                                    if (ComponentInputStyleButton.inputMethod == InputMethod.Guide) {
                                       val ni = props.nextInput == PageHandNextInput.InputContractSuit
                                       (ni,!ni)
                                     } else {

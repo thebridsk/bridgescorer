@@ -93,7 +93,7 @@
     --color-bg-not-vulnerable: rgb(60,60,60);
     --color-not-vulnerable: rgb(210,210,210);
     --color-bg-hand-section-score: darkcyan;
-    --color-hand-section-score: black;
+    --color-hand-section-score: white;
     --color-weblink: cyan;
   }
 

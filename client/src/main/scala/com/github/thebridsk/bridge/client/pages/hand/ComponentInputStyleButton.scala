@@ -54,7 +54,7 @@ object ComponentInputStyleButton {
     /**
      * Same as original method, but one set of buttons is blue to prompt for next
      */
-    val Yellow = Value
+    val Guide = Value
     /**
      * Only show buttons from previous input and current prompt
      */
@@ -78,7 +78,7 @@ object ComponentInputStyleButton {
         pInputMethod match {
           case Original => "Original"
           case Prompt => "Prompt"
-          case Yellow => "Yellow"
+          case Guide => "Guide"
         }
       }
 

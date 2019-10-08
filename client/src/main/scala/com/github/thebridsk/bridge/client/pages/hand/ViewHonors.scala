@@ -56,7 +56,7 @@ object ViewHonors {
                                 val (hMissingRequired,hMissingNotNext) = {
                                   val mr = props.currentHonors.isEmpty
                                   if (mr) {
-                                    if (ComponentInputStyleButton.inputMethod == InputMethod.Yellow) {
+                                    if (ComponentInputStyleButton.inputMethod == InputMethod.Guide) {
                                       val ni = props.nextInput == PageHandNextInput.InputHonors
                                       (ni,!ni)
                                     } else {
@@ -69,7 +69,7 @@ object ViewHonors {
                                 val (hpMissingRequired,hpMissingNotNext) = {
                                   val mr = props.currentPlayer.isEmpty
                                   if (mr) {
-                                    if (ComponentInputStyleButton.inputMethod == InputMethod.Yellow) {
+                                    if (ComponentInputStyleButton.inputMethod == InputMethod.Guide) {
                                       val ni = props.nextInput == PageHandNextInput.InputHonorsPlayer
                                       (ni,!ni)
                                     } else {
