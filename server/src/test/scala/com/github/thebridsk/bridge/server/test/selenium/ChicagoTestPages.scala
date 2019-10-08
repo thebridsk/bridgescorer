@@ -328,7 +328,7 @@ class ChicagoTestPages extends FlatSpec
       eventually( testPlayers(players:_*) mustBe true )
     }
 
-    InputStyleHelper.hitInputStyleButton( "Yellow" )
+    InputStyleHelper.hitInputStyleButton( "Guide" )
   }
 
 

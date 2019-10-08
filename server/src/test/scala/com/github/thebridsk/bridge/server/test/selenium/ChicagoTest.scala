@@ -249,7 +249,7 @@ class ChicagoTest extends FlatSpec
     enterHand(3,Clubs,NotDoubled,West,Made,4, Some("Wayne"))  // EW score 130
     assertScore( 1020, 1020, 750, 750 )
 
-    InputStyleHelper.hitInputStyleButton( "Yellow" )
+    InputStyleHelper.hitInputStyleButton( "Guide" )
 
     click on id("NewRound")
   }

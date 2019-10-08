@@ -221,7 +221,7 @@ class Chicago5FairTest extends FlatSpec
 //    val table = find(xpath("""//div/div/div/div"""))
 //    table.takeScreenshot(screenshotDir, "summarytable.png")
 
-    InputStyleHelper.hitInputStyleButton( "Yellow" )
+    InputStyleHelper.hitInputStyleButton( "Guide" )
 
     click on id("NewRound")
   }

@@ -56,7 +56,7 @@ object ViewTricks {
                                 val (missingRequired,missingNotNext) = {
                                   val mr = props.missingRequired
                                   if (mr) {
-                                    if (ComponentInputStyleButton.inputMethod == InputMethod.Yellow) {
+                                    if (ComponentInputStyleButton.inputMethod == InputMethod.Guide) {
                                       val ni = props.nextInput == PageHandNextInput.InputResultTricks
                                       (ni,!ni)
                                     } else {

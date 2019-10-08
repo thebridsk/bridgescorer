@@ -204,7 +204,7 @@ class Chicago5SimpleTest extends FlatSpec
     enterHand(4,Spades,NotDoubled,North,Made,4, Some("Nancy"))  // NS score 420
     assertScore( 420, 420, 0, 0, 0 )
 
-    InputStyleHelper.hitInputStyleButton( "Yellow" )
+    InputStyleHelper.hitInputStyleButton( "Guide" )
 
     click on id("NewRound")
   }

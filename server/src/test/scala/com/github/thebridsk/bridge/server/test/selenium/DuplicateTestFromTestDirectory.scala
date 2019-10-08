@@ -466,7 +466,7 @@ class DuplicateTestFromTestDirectory extends FlatSpec with MustMatchers with Bef
                                        case None =>
                                          fail("Did not find all hands for table "+sessionTable.table+" round "+round)
                                      }}
-                tp.setInputStyle("Yellow")
+                tp.setInputStyle("Guide")
                 val eos = tp.clickRound(round).asInstanceOf[TableEnterOrSelectNamesPage]
 
                 val (north,south,east,west) = getPlayers(hands.head)

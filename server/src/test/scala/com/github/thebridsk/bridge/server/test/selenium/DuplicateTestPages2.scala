@@ -244,7 +244,7 @@ class DuplicateTestPages2 extends FlatSpec
     val hand = HandPage.current
     hand.getScore mustBe ( "Missing required information", "", "Enter contract tricks" )
     hand.isOkEnabled mustBe false
-    hand.getInputStyle mustBe Some("Yellow")
+    hand.getInputStyle mustBe Some("Guide")
     val board = hand.enterHand( 1, 1, 1, allHands, team1, team2)
     board.checkBoardButtons(1,true,1).checkBoardButtons(1,false, 2, 3)
     val hand2 = board.clickUnplayedBoard(2).validate

@@ -42,7 +42,7 @@ object ViewContractTricks {
                               val (missingRequired,missingNotNext) = {
                                 val mr = props.current.isEmpty || (props.current.get.tricks == 0 && !props.allowPassedOut)
                                 if (mr) {
-                                  if (ComponentInputStyleButton.inputMethod == InputMethod.Yellow) {
+                                  if (ComponentInputStyleButton.inputMethod == InputMethod.Guide) {
                                     val ni = props.nextInput == PageHandNextInput.InputContractTricks
                                     (ni,!ni)
                                   } else {
