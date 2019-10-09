@@ -139,6 +139,7 @@ object ViewPlayerDoubledContractResultsInternal {
           )
         )
       case _ =>
+        // really never happens
         TagMod( "Oops" )
     }
   }
@@ -172,6 +173,7 @@ object ViewPlayerDoubledContractResultsInternal {
           )
         )
       case _ =>
+        // really never happens
         TagMod( "Oops" )
     }
   }
@@ -325,7 +327,7 @@ object ViewPlayerDoubledContractResultsInternal {
           } else {
             val histogram = ps.histogram.filter(cs => cs.counter!=0 ).sortBy(cs=>cs.tricks)
             val hist = if (ct == ContractTypePassed) {
-              histogram.map(ct => ct.copy(tricks=10))
+              histogram.map(cs => cs.copy(tricks=10))
             } else {
               histogram
             }
@@ -342,7 +344,7 @@ object ViewPlayerDoubledContractResultsInternal {
             )
           }
         case None =>
-          TagMod( ^.colSpan := colspan, "Oops" )
+          TagMod( ^.colSpan := colspan, "" )
       }
     }
   }

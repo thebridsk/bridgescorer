@@ -2,8 +2,9 @@
 -Xms2048M
 -Xmx4096M
 -Xss6M
-#-XX:MaxPermSize=512M
--XX:ReservedCodeCacheSize=512M
+-XX:ReservedCodeCacheSize=1024M
+
+-Dfile.encoding=UTF-8
 
 # Set the extra sbt options
 
