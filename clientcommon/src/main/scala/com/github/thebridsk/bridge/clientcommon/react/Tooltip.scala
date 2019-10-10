@@ -5,6 +5,7 @@ import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
 import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles._
 import org.scalajs.dom.raw.Event
+import org.scalajs.dom.raw.EventListenerOptions
 
 /**
  * Creates a tooltip that will show up when a mouse enters the element,
@@ -157,11 +158,15 @@ object Tooltip {
   def init() = {
     import org.scalajs.dom.document
 
+    val options = js.Object().asInstanceOf[EventListenerOptions]
+    options.capture = false
+    options.once = true
+
     if (!initialized) {
       document.body.addEventListener(
           "touchstart",
           listener = (e: Event)=>document.body.classList.add("touched"),
-          useCapture = false)
+          options = options)
       initialized = true
     }
   }

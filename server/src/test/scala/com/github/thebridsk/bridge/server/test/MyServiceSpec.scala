@@ -69,10 +69,10 @@ class MyServiceSpec extends FlatSpec with ScalatestRouteTest with MustMatchers w
     theResource must not be null
   }
 
-  it should "find bridgescorer-client-opt.js as a resource" in {
+  it should "find bridgescorer-client-opt-bundle.js as a resource" in {
     assume(!useFastOptOnly)
     val theClassLoader = getClass.getClassLoader
-    val theResource = theClassLoader.getResource("META-INF/resources/webjars/bridgescorer-server/"+version+"/bridgescorer-client-opt.js")
+    val theResource = theClassLoader.getResource("META-INF/resources/webjars/bridgescorer-server/"+version+"/bridgescorer-client-opt-bundle.js")
     theResource must not be null
   }
 
@@ -113,7 +113,7 @@ class MyServiceSpec extends FlatSpec with ScalatestRouteTest with MustMatchers w
   it should "return the index.html to /public/index.html" in {
     Get("/public/index.html") ~> addHeader(remoteAddress) ~> Route.seal { myRouteWithLogging } ~> check {
       status mustBe OK
-      responseAs[String] must include regex """(?s-)(?m-)<html.*bridgescorer-client-opt\.js.*</html>"""
+      responseAs[String] must include regex """(?s-)(?m-)<html.*bridgescorer-client-opt-bundle\.js.*</html>"""
     }
   }
 
@@ -144,9 +144,9 @@ class MyServiceSpec extends FlatSpec with ScalatestRouteTest with MustMatchers w
     }
   }
 
-  it should "return bridgescorer-client-opt.js to /public/bridgescorer-client-opt.js" in {
+  it should "return bridgescorer-client-opt-bundle.js to /public/bridgescorer-client-opt-bundle.js" in {
     assume(!useFastOptOnly)
-    Get("/public/bridgescorer-client-opt.js") ~> addHeader(remoteAddress) ~> Route.seal { myRouteWithLogging } ~> check {
+    Get("/public/bridgescorer-client-opt-bundle.js") ~> addHeader(remoteAddress) ~> Route.seal { myRouteWithLogging } ~> check {
       status mustBe OK
       responseAs[String] must include regex "(?s).*function.*"
     }

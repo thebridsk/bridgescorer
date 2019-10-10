@@ -29,6 +29,8 @@ import scala.scalajs.js.annotation.JSGlobal
 import com.github.thebridsk.bridge.clientcommon.rest2.AjaxResult
 import com.github.thebridsk.bridge.clientcommon.demo.BridgeDemo
 import com.github.thebridsk.bridge.clientcommon.pages.ColorThemeStorage
+import com.github.thebridsk.bridge.clientcommon.react.Tooltip
+import com.github.thebridsk.bridge.client.pages.Pixels
 
 /**
  * @author werewolf
@@ -53,6 +55,16 @@ object Bridge {   // need to figure out how to use new way to call main
 //  @JSExportTopLevel("com.github.thebridsk.bridge.client.Bridge")
 //  protected def getInstance(): this.type = this
 
+  private var loggerInitDone = false
+  private var defaultInitDone = false
+
+  def initDone() = {
+    if (loggerInitDone && defaultInitDone) startClient()
+    else logger.info(s"loggerInitDone=${loggerInitDone}, defaultInitDone=${defaultInitDone}")
+  }
+
+  def main(args: Array[String]): Unit = main()
+
   @JSExport
   def main(): Unit = Alerter.tryitWithUnit {
 
@@ -61,8 +73,10 @@ object Bridge {   // need to figure out how to use new way to call main
     }
 
     Alerter.setupError()
+    Tooltip.init()
 
-    Init( startClient _)
+    Init { () => loggerInitDone = true; initDone() }
+    Pixels.init { () => defaultInitDone = true; initDone() }
 
     ColorThemeStorage.initTheme()
 
