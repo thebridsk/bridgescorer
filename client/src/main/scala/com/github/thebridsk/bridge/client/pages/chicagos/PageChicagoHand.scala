@@ -170,7 +170,7 @@ object PageChicagoHandInternal {
                   viewHandCallbackCancel(mc.isQuintet()),
                   newhand = true,
                   allowPassedOut = false
-  //                        helppage = Some("../help/chicago/hand.html")
+                  //                        helppage = Some("../help/chicago/hand.html")
                 )
               }
 
@@ -179,7 +179,7 @@ object PageChicagoHandInternal {
             }
 
           case _ =>
-            <.div("Oops")
+            HomePage.loading
         }
       )
     }
@@ -211,11 +211,13 @@ object PageChicagoHandInternal {
 
     val storeCallback = scope.forceUpdate
 
-    val didMount = scope.props >>= { (p) => CallbackTo {
-      log.info("PageChicagoHand.didMount")
-      ChicagoStore.addChangeListener(storeCallback)
-      ChicagoController.monitor(p.page.chiid)
-    }}
+    val didMount = scope.props >>= { (p) =>
+      CallbackTo {
+        log.info("PageChicagoHand.didMount")
+        ChicagoStore.addChangeListener(storeCallback)
+        ChicagoController.monitor(p.page.chiid)
+      }
+    }
 
     val willUnmount = CallbackTo {
       log.info("PageChicagoHand.willUnmount")
@@ -225,13 +227,14 @@ object PageChicagoHandInternal {
 
   }
 
-  def didUpdate( cdu: ComponentDidUpdate[Props,State,Backend,Unit] ) = Callback {
-    val props = cdu.currentProps
-    val prevProps = cdu.prevProps
-    if (prevProps.page != props.page) {
-      ChicagoController.monitor(props.page.chiid)
+  def didUpdate(cdu: ComponentDidUpdate[Props, State, Backend, Unit]) =
+    Callback {
+      val props = cdu.currentProps
+      val prevProps = cdu.prevProps
+      if (prevProps.page != props.page) {
+        ChicagoController.monitor(props.page.chiid)
+      }
     }
-  }
 
   val component = ScalaComponent
     .builder[Props]("PageChicagoHand")
@@ -240,8 +243,8 @@ object PageChicagoHandInternal {
     }
     .backend(new Backend(_))
     .renderBackend
-    .componentDidMount( scope => scope.backend.didMount)
-    .componentWillUnmount( scope => scope.backend.willUnmount )
-    .componentDidUpdate( didUpdate )
+    .componentDidMount(scope => scope.backend.didMount)
+    .componentWillUnmount(scope => scope.backend.willUnmount)
+    .componentDidUpdate(didUpdate)
     .build
 }
