@@ -217,7 +217,7 @@ class AppRouter( modules: Module* ) {
       | staticRoute("#imports", ImportsList) ~> renderR( (routerCtl) => logit(ImportsListPage(routerCtl,ImportsList)) )
       | staticRoute("#export", Export) ~> renderR( (routerCtl) => logit(ExportPage(routerCtl)) )
       | staticRoute("#info", Info) ~> renderR( (routerCtl) => logit(InfoPage(routerCtl)) )
-      | staticRoute("#thankyou", ThankYou) ~> renderR( (routerCtl) => logit(ThankYouPage()) )
+      | staticRoute("#thankyou", ThankYou) ~> renderR( (routerCtl) => logit(ThankYouPage(routerCtl)) )
       | staticRoute("#log", LogView) ~> renderR( (routerCtl) => logit(LogPage(routerCtl)) )
       | moduleRoutes()
       ).notFound( p => logit {

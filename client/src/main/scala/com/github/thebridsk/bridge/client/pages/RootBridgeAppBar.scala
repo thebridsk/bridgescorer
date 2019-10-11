@@ -68,17 +68,21 @@ object RootBridgeAppBar {
   case class Props(
       title: Seq[VdomNode],
       helpurl: Option[String],
-      routeCtl: BridgeRouter[AppPage]
+      routeCtl: BridgeRouter[AppPage],
+      showRightButtons: Boolean,
+      showMainMenu: Boolean
   )
 
   def apply(
       title: Seq[VdomNode],
       helpurl: Option[String],
-      routeCtl: BridgeRouter[AppPage]
+      routeCtl: BridgeRouter[AppPage],
+      showRightButtons: Boolean = true,
+      showMainMenu: Boolean = true
   )() = {
     TagMod(
       ServerURLPopup(),
-      component(Props(title,helpurl,routeCtl))
+      component(Props(title,helpurl,routeCtl,showRightButtons,showMainMenu))
     )
   }
 }
@@ -181,16 +185,8 @@ object RootBridgeAppBarInternal {
           )
         )
 
-      <.div(
-          baseStyles.divAppBar,
-          BridgeAppBar(
-              handleMainClick = handleMainClick _,
-              maintitle = maintitle,
-              title = props.title,
-              helpurl = props.helpurl.getOrElse("../help/introduction.html"),
-              routeCtl = props.routeCtl,
-              showHomeButton = !props.title.isEmpty
-          )(
+      val mainMenu: List[CtorType.ChildArg] = if (props.showMainMenu) {
+        List(
 
             // main menu
             MyMenu(
@@ -299,7 +295,24 @@ object RootBridgeAppBarInternal {
                 )(
                     "Rubber"
                 )
-            ),
+            )
+        )
+      } else {
+        List()
+      }
+
+      <.div(
+          baseStyles.divAppBar,
+          BridgeAppBar(
+              handleMainClick = handleMainClick _,
+              maintitle = maintitle,
+              title = props.title,
+              helpurl = props.helpurl.getOrElse("../help/introduction.html"),
+              routeCtl = props.routeCtl,
+              showHomeButton = !props.title.isEmpty,
+              showRightButtons = props.showRightButtons
+          )(
+            mainMenu: _*
           )
       )
     }

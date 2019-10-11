@@ -76,7 +76,8 @@ object BridgeAppBar {
       title: Seq[CtorType.ChildArg],
       helpurl: String,
       routeCtl: BridgeRouter[_],
-      showHomeButton: Boolean
+      showHomeButton: Boolean,
+      showRightButtons: Boolean
   )
 
   def apply(
@@ -85,7 +86,8 @@ object BridgeAppBar {
       title: Seq[VdomNode],
       helpurl: String,
       routeCtl: BridgeRouter[_],
-      showHomeButton: Boolean = true
+      showHomeButton: Boolean = true,
+      showRightButtons: Boolean = true
   )(
       mainMenu: CtorType.ChildArg*
   ) =
@@ -97,7 +99,8 @@ object BridgeAppBar {
         title,
         helpurl,
         routeCtl,
-        showHomeButton
+        showHomeButton,
+        showRightButtons
       )
     )
 
@@ -264,7 +267,7 @@ object BridgeAppBarInternal {
       val fullscreenEnabled = isFullscreenEnabledI
       val isfullscreen = isFullscreen
 
-      val rightButton =
+      val rightButton = if (props.showRightButtons) {
         List[CtorType.ChildArg](
           MuiIconButton(
             id = "Help",
@@ -316,6 +319,9 @@ object BridgeAppBarInternal {
             MuiIcons.MoreVert()
           )
         )
+      } else {
+        List[CtorType.ChildArg]()
+      }
 
       val toolbarSuits = TitleSuits.suits
 
