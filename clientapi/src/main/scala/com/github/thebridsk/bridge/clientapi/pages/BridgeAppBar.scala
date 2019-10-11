@@ -40,6 +40,9 @@ import com.github.thebridsk.materialui.MuiButton
 import com.github.thebridsk.bridge.clientcommon.pages.TitleSuits
 import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles._
 import com.github.thebridsk.bridge.clientcommon.debug.DebugLoggerComponent
+import com.github.thebridsk.bridge.clientcommon.pages.ColorThemeStorage
+import com.github.thebridsk.bridge.clientcommon.material.icons.LightDark
+import com.github.thebridsk.bridge.clientcommon.fullscreen.Values
 
 /**
   * A simple AppBar for the Bridge client.
@@ -152,15 +155,83 @@ object BridgeAppBarInternal {
       gotoPage(uri)
     }
 
-    def startLog(event: ReactEvent) = {
+    def startLog(event: ReactEvent): Unit = {
+      logger.info(s"""BridgeAppBar start logging""")
       DebugLoggerComponent.init()
-      Dispatcher.startLogs()
+      scalajs.js.timers.setTimeout(1) {
+        Dispatcher.startLogs()
+      }
     }
-    def stopLog(event: ReactEvent) = Dispatcher.stopLogs()
+    def stopLog(event: ReactEvent): Unit = {
+      logger.info(s"""BridgeAppBar start logging""")
+      scalajs.js.timers.setTimeout(1) {
+        Dispatcher.stopLogs()
+      }
+    }
 
     def serverUrlClick(event: ReactEvent) = {
       logger.info("Requesting to show server URL popup")
       ServerURLPopup.setShowServerURLPopup(true)
+    }
+
+    // data-theme="dark"
+    def toggleLightDark(event: ReactEvent) = {
+      logger.info("toggle light dark")
+      val ntheme = ColorThemeStorage.getColorTheme() match {
+        case Some(curtheme) =>
+          LightDark.nextTheme(curtheme)
+        case None =>
+          "medium"
+      }
+      ColorThemeStorage.setColorTheme(ntheme)
+    }
+
+    def isFullscreenEnabledI = {
+      import com.github.thebridsk.bridge.clientcommon.fullscreen.Implicits._
+      val doc = document
+      logger.info(s"browser fullscreenEnabled: ${doc.fullscreenEnabled}")
+      val e = doc.fullscreenEnabled
+      if (!e) {
+        logger.info("fullscreenEnabled = false")
+      }
+      e
+    }
+
+    def isFullscreen = {
+      import com.github.thebridsk.bridge.clientcommon.fullscreen.Implicits._
+      val doc = document
+      logger.info(s"browser fullscreenEnabled: ${doc.fullscreenEnabled}")
+      if (isFullscreenEnabledI) {
+        val r = doc.fullscreenElement != null
+        logger.info(s"browser isfullscreen: $r")
+        if (r) {
+          val elem = doc.fullscreenElement
+          logger.info(s"browser fullscreen element is ${elem.nodeName}")
+        }
+        r
+      } else {
+        false
+      }
+    }
+
+    def toggleFullscreen( event: ReactEvent ): Unit = {
+      import scala.concurrent.ExecutionContext.Implicits.global
+      import com.github.thebridsk.bridge.clientcommon.fullscreen.Implicits._
+      val body = document.documentElement
+      val doc = document
+      if (isFullscreenEnabled) {
+        val isfullscreen = isFullscreen
+        if (isfullscreen) {
+          logger.info(s"browser exiting fullscreen")
+          doc.exitFullscreen()
+        } else {
+          logger.info(s"browser requesting fullscreen on body")
+          body.requestFullscreen()
+        }
+        scalajs.js.timers.setTimeout(500) { scope.withEffectsImpure.forceUpdate }
+      } else {
+        logger.info(s"fullscreen is disabled")
+      }
     }
 
     def render(props: Props, state: State) = {
@@ -175,13 +246,19 @@ object BridgeAppBarInternal {
       def callbackPage(page: AppPage)(e: ReactEvent) =
         props.routeCtl.toRootPage(page)
 
+      val buttonStyle = js.Dictionary("root" -> "toolbarIcon")
+
+      val fullscreenEnabled = isFullscreenEnabledI
+      val isfullscreen = isFullscreen
+
       val rightButton =
         List[CtorType.ChildArg](
           MuiIconButton(
             id = "Help",
             onClick = handleHelpGotoPageClick(props.helpurl) _,
             title = "Help",
-            color = ColorVariant.inherit
+            color = ColorVariant.inherit,
+            classes = buttonStyle
           )(
             MuiIcons.Help()
           ),
@@ -189,20 +266,39 @@ object BridgeAppBarInternal {
             id = "ServerURL",
             onClick = serverUrlClick _,
             title = "Show server URLs",
-            color = ColorVariant.inherit
+            color = ColorVariant.inherit,
+            classes = buttonStyle
           )(
             MuiIcons.Place()
-            // MuiTypography(
-            //   variant = TextVariant.h6,
-            // )(
-            //   "Server"
-            // )
+          ),
+          MuiIconButton(
+            id = "LightDark",
+            onClick = toggleLightDark _,
+            title = "Change color mode",
+            color = ColorVariant.inherit,
+            classes = buttonStyle
+          )(
+            LightDark()
+          ),
+          MuiIconButton(
+            id = "Fullscreen",
+            onClick = toggleFullscreen _,
+            title = if (isfullscreen) "Exit fullscreen" else "Go to fullscreen",
+            color = ColorVariant.inherit,
+            classes = buttonStyle
+          )(
+            if (isfullscreen) {
+              MuiIcons.FullscreenExit()
+            } else {
+              MuiIcons.Fullscreen()
+            }
           ),
           MuiIconButton(
             id = "MoreMenu",
             onClick = handleMoreClick _,
             title = "Developer Menu",
-            color = ColorVariant.inherit
+            color = ColorVariant.inherit,
+            classes = buttonStyle
           )(
             MuiIcons.MoreVert()
           )
@@ -233,11 +329,13 @@ object BridgeAppBarInternal {
         List(
           <.div(
             baseStyles.appBarTitle,
+            <.div( baseStyles.appBarTitleWhenFullscreen ).when(isfullscreen && Values.isIpad),
             !props.mainMenu.isEmpty ?= MuiIconButton(
               id = "MainMenu",
               onClick = props.handleMainClick,
               title = "Menu",
-              color = ColorVariant.inherit
+              color = ColorVariant.inherit,
+              classes = buttonStyle
             )(
               MuiIcons.Menu()
             ),
@@ -246,7 +344,8 @@ object BridgeAppBarInternal {
                 id = "Home",
                 onClick = gotoHomePage _,
                 title = "Home",
-                color = ColorVariant.inherit
+                color = ColorVariant.inherit,
+                classes = buttonStyle
               )(
                 MuiIcons.Home()
               )
@@ -279,7 +378,8 @@ object BridgeAppBarInternal {
         (
           (
             MuiAppBar(
-              position = Position.static
+              position = Position.static,
+              classes = js.Dictionary("root" -> "muiAppBar")
             )(
               MuiToolbar(
                 classes = js.Dictionary("root" -> "muiToolbar")

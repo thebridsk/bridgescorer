@@ -28,8 +28,8 @@ object ResourceFinder {
     val tryServerVersion =
       new FileFinder("com.github.thebridsk.bridge.server", component, Some(version), suffix)
     tryServerVersion.getResource(
-      "/bridgescorer-client-opt.js.gz",
-      "/bridgescorer-client-opt.js",
+      "/bridgescorer-client-opt-bundle.js.gz",
+      "/bridgescorer-client-opt-bundle.js",
       "/bridgescorer-client-fastopt.js.gz",
       "/bridgescorer-client-fastopt.js"
     ) match {
@@ -131,10 +131,11 @@ object ResourceFinder {
                     ac
                   }
                 } else {
-                  (Some(v.get._1), v.get._2)
+                  if (v.isDefined) (Some(v.get._1), v.get._2)
+                  else ac
                 }
               }
-            resultDir.foreach(f => logger.info(s"Using resource ${f.baseName}"))
+            resultDir.map(f => logger.info(s"Using resource ${f.baseName}")).getOrElse(logger.info(s"Did not find resources for component ${component}, suffix ${suffix}"))
             resultDir
         }
     }

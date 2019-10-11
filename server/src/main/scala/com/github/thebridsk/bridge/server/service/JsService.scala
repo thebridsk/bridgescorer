@@ -78,7 +78,7 @@ trait JsService /* extends HttpService */ {
   }
 
   {
-    val res = htmlResources.baseName + "/bridgescorer-client-opt.js"
+    val res = htmlResources.baseName + "/bridgescorer-client-opt-bundle.js"
     val url = getClass.getClassLoader.getResource(res)
     if (url != null)
       logger.info("Found resource " + res + " at " + url.toString())
