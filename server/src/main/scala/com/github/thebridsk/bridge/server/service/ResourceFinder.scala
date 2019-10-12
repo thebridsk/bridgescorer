@@ -28,8 +28,8 @@ object ResourceFinder {
     val tryServerVersion =
       new FileFinder("com.github.thebridsk.bridge.server", component, Some(version), suffix)
     tryServerVersion.getResource(
-      "/bridgescorer-client-opt-bundle.js.gz",
-      "/bridgescorer-client-opt-bundle.js",
+      "/bridgescorer-client-opt.js.gz",
+      "/bridgescorer-client-opt.js",
       "/bridgescorer-client-fastopt.js.gz",
       "/bridgescorer-client-fastopt.js"
     ) match {
