@@ -1,6 +1,6 @@
 
 -Xms2048M
--Xmx6096M
+-Xmx4096M
 -Xss6M
 -XX:ReservedCodeCacheSize=1024M
 
