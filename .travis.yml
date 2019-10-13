@@ -62,9 +62,7 @@ jobs:
           # cat travis/jvmopts.txt
           export ServerTestToRun=com.github.thebridsk.bridge.server.test.AllUnitTests
           export UseFullOpt=true
-          while sleep 5m; do echo "====== $SECONDS seconds, building ======"; done &
-          sbt distribution:travis1
-          kill %1
+          travis/cmdWithPeriodicMsg.sh sbt distribution:travis1
     - stage: systemtest
       addons:
       #  chrome: stable
@@ -92,9 +90,7 @@ jobs:
           export UseBrowser=chromeheadless
           export UseFullOpt=true
           export ServerTestToRun=com.github.thebridsk.bridge.server.test.selenium.AllSeleniumSuites
-          while sleep 5m; do echo "====== $SECONDS seconds, building ======"; done &
-          sbt distribution:travis2
-          kill %1
+          travis/cmdWithPeriodicMsg.sh sbt distribution:travis2
 
 after_failure:
 - cat server/logs/unittestTcpMonitorTimeWait.csv
