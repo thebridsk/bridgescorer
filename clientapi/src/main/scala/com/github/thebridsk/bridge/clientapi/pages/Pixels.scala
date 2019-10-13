@@ -4,6 +4,8 @@ import org.scalajs.dom
 import dom.document
 import com.github.thebridsk.utilities.logging.Logger
 import com.github.thebridsk.bridge.clientcommon.logger.Info
+import org.scalajs.dom.raw.XMLHttpRequest
+import org.scalajs.dom.raw.Event
 
 object Pixels {
 
@@ -102,6 +104,23 @@ object Pixels {
     else i+1
     log.fine(s"""Width of "${name}" using ${font} is ${w}""")
     w
+  }
+
+  def init( callback: () => Unit ) = {
+    val xhr = new XMLHttpRequest()
+
+    def initCallback( event: Event): Unit = {
+      val someElem = document.querySelector("#ForDefaultStyles")
+      val someOtherElem = xhr.responseXML.querySelector(":root > body > div")
+      someElem.innerHTML = someOtherElem.innerHTML
+      callback()
+    }
+
+    xhr.onload = initCallback _
+    xhr.open( "GET", "defaults.html")
+    xhr.responseType = "document"
+    xhr.send()
+
   }
 
 }

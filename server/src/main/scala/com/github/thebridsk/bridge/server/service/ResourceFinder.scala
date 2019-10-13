@@ -131,10 +131,11 @@ object ResourceFinder {
                     ac
                   }
                 } else {
-                  (Some(v.get._1), v.get._2)
+                  if (v.isDefined) (Some(v.get._1), v.get._2)
+                  else ac
                 }
               }
-            resultDir.foreach(f => logger.info(s"Using resource ${f.baseName}"))
+            resultDir.map(f => logger.info(s"Using resource ${f.baseName}")).getOrElse(logger.info(s"Did not find resources for component ${component}, suffix ${suffix}"))
             resultDir
         }
     }

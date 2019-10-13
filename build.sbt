@@ -30,6 +30,9 @@
 // When testing help screens, this will only run the test case that generates images for help
 //   set BUILDFORHELPONLY=true
 //   sbt webassembly
+//
+// to get times for tasks,
+//    set JAVA_OPTS=-Dsbt.task.timings=true
 
 bloopExportJarClassifiers in Global := Some(Set("sources"))
 

@@ -45,7 +45,8 @@ object BldBridgeClientApi {
       webpackCliVersion := vWebPackCli,
       version in startWebpackDevServer := vWebpackDevServer,
       version in installJsdom := vJsDom,
-//    scalaJSUseMainModuleInitializer := true,
+      mainClass := Some("com.github.thebridsk.bridge.clientapi.BridgeApi"),
+      scalaJSUseMainModuleInitializer := true,
 
       // This gets rid of the jetty check which is required for the sbt runtime
       // not the application
@@ -106,9 +107,12 @@ object BldBridgeClientApi {
       npmDevDependencies in Test ++= bridgeScorerClientApiDevNpmDeps,
       // Use a custom config file to export the JS dependencies to the global namespace,
       // as expected by the scalajs-react facade
-//    webpackConfigFile := Some(baseDirectory.value / "webpack.config.js"),
-//    webpackConfigFile in fullOptJS := Some(baseDirectory.value / "webpack.prod.config.js"),
+      // webpackConfigFile := Some(baseDirectory.value / "webpack.config.js"),
+      // webpackConfigFile in fullOptJS := Some(baseDirectory.value / "webpack.prod.config.js"),
+      // webpackBundlingMode := BundlingMode.LibraryAndApplication(),
       webpackBundlingMode := BundlingMode.LibraryOnly("bridgeLib"),
+      // webpackBundlingMode in fastOptJS := BundlingMode.LibraryOnly("bridgeLib"),
+      // webpackBundlingMode in fullOptJS := BundlingMode.LibraryOnly("bridgeLib"),
       // React.JS itself
       // Note the JS filename. Can be react.js, react.min.js, react-with-addons.js, or react-with-addons.min.js.
       // Test requires react-with-addons

@@ -266,7 +266,9 @@ object BldBridge {
           log.info("Classpath is " + cp)
           cp
         }
-        val args = "-DUseProductionPage=1" ::
+        val args =
+          "-Xmx4096M" ::
+          "-DUseProductionPage=1" ::
           "-DToMonitorFile=logs/atestTcpMonitorTimeWait.csv" ::
           "-DUseLogFilePrefix=logs/atest" ::
           "-DDefaultWebDriver=" + useBrowser ::
@@ -305,6 +307,7 @@ object BldBridge {
           baseDirectory.value + "/logs/itestServerInTest.%u.log"
         ) {
           val jvmargs = server.getTestDefine() :::
+            "-Xmx4096M" ::
             "-DUseProductionPage=1" ::
             "-DToMonitorFile=logs/itestTcpMonitorTimeWait.csv" ::
             "-DUseLogFilePrefix=logs/itest" ::
@@ -359,6 +362,7 @@ object BldBridge {
           baseDirectory.value + "/logs/itestServerInTest.%u.log"
         ) {
           val jvmargs = server.getTestDefine() :::
+            "-Xmx4096M" ::
             "-DUseProductionPage=1" ::
             "-DToMonitorFile=logs/itestTcpMonitorTimeWait.csv" ::
             "-DUseLogFilePrefix=logs/itest" ::
@@ -402,6 +406,7 @@ object BldBridge {
           baseDirectory.value + "/logs/itestServerInTest.%u.log"
         ) {
           val jvmargs = server.getTestDefine() :::
+            "-Xmx4096M" ::
             "-DUseProductionPage=1" ::
             "-DToMonitorFile=logs/itestTcpMonitorTimeWait.csv" ::
             "-DUseLogFilePrefix=logs/itest" ::

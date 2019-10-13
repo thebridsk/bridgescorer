@@ -76,7 +76,8 @@ object BridgeAppBar {
       title: Seq[CtorType.ChildArg],
       helpurl: String,
       routeCtl: BridgeRouter[_],
-      showHomeButton: Boolean
+      showHomeButton: Boolean,
+      showRightButtons: Boolean
   )
 
   def apply(
@@ -85,7 +86,8 @@ object BridgeAppBar {
       title: Seq[VdomNode],
       helpurl: String,
       routeCtl: BridgeRouter[_],
-      showHomeButton: Boolean = true
+      showHomeButton: Boolean = true,
+      showRightButtons: Boolean = true
   )(
       mainMenu: CtorType.ChildArg*
   ) =
@@ -97,7 +99,8 @@ object BridgeAppBar {
         title,
         helpurl,
         routeCtl,
-        showHomeButton
+        showHomeButton,
+        showRightButtons
       )
     )
 
@@ -121,6 +124,19 @@ object BridgeAppBarInternal {
 
     def openMoreMenu(n: Node) = copy(anchorMoreEl = n.asInstanceOf[Element])
     def closeMoreMenu() = copy(anchorMoreEl = js.undefined)
+  }
+
+  val apiPageURL = {
+    val window = document.defaultView
+    val curUrl = window.location.href
+    if (curUrl.contains("fastopt")) "/public/index-api-fastopt.html"
+    else "/public/index-api.html"
+  }
+
+  def getApiPageUrl( page: String ) = {
+    val u = s"${apiPageURL}#${page}"
+    logger.fine(s"Going to URL ${u}")
+    u
   }
 
   /**
@@ -251,7 +267,7 @@ object BridgeAppBarInternal {
       val fullscreenEnabled = isFullscreenEnabledI
       val isfullscreen = isFullscreen
 
-      val rightButton =
+      val rightButton = if (props.showRightButtons) {
         List[CtorType.ChildArg](
           MuiIconButton(
             id = "Help",
@@ -303,6 +319,9 @@ object BridgeAppBarInternal {
             MuiIcons.MoreVert()
           )
         )
+      } else {
+        List[CtorType.ChildArg]()
+      }
 
       val toolbarSuits = TitleSuits.suits
 
@@ -419,25 +438,25 @@ object BridgeAppBarInternal {
                 ),
                 MuiMenuItem(
                   id = "GraphQL",
-                  onClick = handleHelpGotoPageClick("/public/index-api.html#graphql") _  // callbackPage(GraphQLAppPage) _
+                  onClick = handleHelpGotoPageClick(getApiPageUrl("graphql")) _  // callbackPage(GraphQLAppPage) _
                 )(
                   "GraphQL"
                 ),
                 MuiMenuItem(
                   id = "GraphiQL",
-                  onClick = handleHelpGotoPageClick("/public/index-api.html#graphiql") _  // callbackPage(GraphiQLView) _
+                  onClick = handleHelpGotoPageClick(getApiPageUrl("graphiql")) _  // callbackPage(GraphiQLView) _
                 )(
                   "GraphiQL"
                 ),
                 MuiMenuItem(
                   id = "Voyager",
-                  onClick = handleHelpGotoPageClick("/public/index-api.html#voyager") _  // callbackPage(VoyagerView) _
+                  onClick = handleHelpGotoPageClick(getApiPageUrl("voyager")) _  // callbackPage(VoyagerView) _
                 )(
                   "Voyager"
                 ),
                 MuiMenuItem(
                   id = "Color",
-                  onClick = handleHelpGotoPageClick("/public/index-api.html#color") _  // callbackPage(ColorView) _
+                  onClick = handleHelpGotoPageClick(getApiPageUrl("color")) _  // callbackPage(ColorView) _
                 )(
                   "Color"
                 ),

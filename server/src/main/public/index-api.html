@@ -27,44 +27,34 @@
   </head>
   <body>
     <div id="BridgeApp">
-      <div id="BridgeApp">
-        <div style="position: fixed; top: 0; left: 0; width: 100%;
-                    padding-left: 16px; padding-right: 16px;
-                    display: flex; position: relative; align-items: center;
-                    color: #fff; background-color: rgb(64,128,64);
-                    font-size: x-large;
-                    height: 50px;
-                   " >
-          <h6 style="font-size: 1.25rem;
-                     font-family: Arial, sans-serif;
-                     font-weight: 500;
-                     line-height: 1.6;
-                     letter-spacing: 0.0075em;
-                     text-shadow: 1px 2px 3px #f00;
-              " >Bridge ScoreKeeper</h6>
-          <span style="padding-left: 30px; font-size: 2.5rem">
-              <span class="headerSuitSize" style="color: black; text-shadow: -1px 0px 0 #fff, 1px 0px 0 #fff, 0px 1px 0 #fff, 0px -1px 0 #fff;"> &spades;</span>
-              <span class="headerSuitSize" style="color: red; text-shadow: -1px 0px 0 #fff, 1px 0px 0 #fff, 0px 1px 0 #fff, 0px -1px 0 #fff;"> &hearts;</span>
-              <span class="headerSuitSize" style="color: red; text-shadow: -1px 0px 0 #fff, 1px 0px 0 #fff, 0px 1px 0 #fff, 0px -1px 0 #fff;"> &diams;</span>
-              <span class="headerSuitSize" style="color: black; text-shadow: -1px 0px 0 #fff, 1px 0px 0 #fff, 0px 1px 0 #fff, 0px -1px 0 #fff;"> &clubs;</span>
-          </span>
-        </div>
-        <h1 style="padding-left: 8px">Loading ...</h1>
+      <div style="position: fixed; top: 0; left: 0; width: 100%;
+                  padding-left: 16px; padding-right: 16px;
+                  display: flex; position: relative; align-items: center;
+                  color: #fff; background-color: rgb(64,128,64);
+                  font-size: x-large;
+                  height: 50px;
+                 " >
+        <h6 style="font-size: 1.25rem;
+                   font-family: Arial, sans-serif;
+                   font-weight: 500;
+                   line-height: 1.6;
+                   letter-spacing: 0.0075em;
+                   text-shadow: 1px 2px 3px #f00;
+            " >Bridge ScoreKeeper</h6>
+        <span style="padding-left: 30px; font-size: 2.5rem">
+            <span class="headerSuitSize" style="color: black; text-shadow: -1px 0px 0 #fff, 1px 0px 0 #fff, 0px 1px 0 #fff, 0px -1px 0 #fff;"> &spades;</span>
+            <span class="headerSuitSize" style="color: red; text-shadow: -1px 0px 0 #fff, 1px 0px 0 #fff, 0px 1px 0 #fff, 0px -1px 0 #fff;"> &hearts;</span>
+            <span class="headerSuitSize" style="color: red; text-shadow: -1px 0px 0 #fff, 1px 0px 0 #fff, 0px 1px 0 #fff, 0px -1px 0 #fff;"> &diams;</span>
+            <span class="headerSuitSize" style="color: black; text-shadow: -1px 0px 0 #fff, 1px 0px 0 #fff, 0px 1px 0 #fff, 0px -1px 0 #fff;"> &clubs;</span>
+        </span>
       </div>
-      <!-- Include Scala.js compiled code -->
-    <script type="text/javascript" src="bridgescorer-clientapi-opt-library.js.gz"></script>
-    <script type="text/javascript" src="bridgescorer-clientapi-opt-loader.js.gz"></script>
-    <script type="text/javascript" src="bridgescorer-clientapi-opt.js.gz"></script>
-    <script type="text/javascript">
-        document.body.addEventListener('touchstart', function() {
-          document.body.classList.add('touched');
-        });
-    </script>
+      <h1 style="padding-left: 8px">Loading ...</h1>
+    </div>
+    <!-- Include Scala.js compiled code -->
+    <script type="text/javascript" src="bridgescorer-clientapi-fullopt-library.js"></script>
+    <script type="text/javascript" src="bridgescorer-clientapi-fullopt-loader.js"></script>
+    <script type="text/javascript" src="bridgescorer-clientapi-fullopt.js"></script>
     <div id="ForDefaultStyles" style="visibility:hidden; position: fixed; left: 0px; top: 0px;">
-        <script src="loadfile.js" ></script>
-        <script type="text/javascript">
-            getHTMLFragment('defaults.html', '#ForDefaultStyles', function() { BridgeApi.main() } )
-        </script>
     </div>
     <audio id="audioPlayer" preload="auto">
       Your browser does not support the

@@ -4,6 +4,8 @@ import org.scalajs.dom
 import dom.document
 import com.github.thebridsk.utilities.logging.Logger
 import com.github.thebridsk.bridge.client.Bridge
+import org.scalajs.dom.raw.XMLHttpRequest
+import org.scalajs.dom.raw.Event
 
 object Pixels {
 
@@ -42,7 +44,7 @@ object Pixels {
         log.fine( s"""On element with id ${id} found ${name} of ${r}px""" )
         r.toInt
       case x =>
-        log.fine( s"""On element with id ${id} found ${name} of ${x}, using 0""" )
+        log.fine( s"""On element with id ${id} found ${name} of ${x}, using default of ${default}""" )
         default
     }
   }
@@ -104,4 +106,20 @@ object Pixels {
     w
   }
 
+  def init( callback: () => Unit ) = {
+    val xhr = new XMLHttpRequest()
+
+    def initCallback( event: Event): Unit = {
+      val someElem = document.querySelector("#ForDefaultStyles")
+      val someOtherElem = xhr.responseXML.querySelector(":root > body > div")
+      someElem.innerHTML = someOtherElem.innerHTML
+      callback()
+    }
+
+    xhr.onload = initCallback _
+    xhr.open( "GET", "defaults.html")
+    xhr.responseType = "document"
+    xhr.send()
+
+  }
 }

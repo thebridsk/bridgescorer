@@ -107,6 +107,7 @@ object BldBridgeServer {
       // },
       fork in Test := true,
       javaOptions in Test ++= Seq(
+        "-Xmx4096M",
         "-DDefaultWebDriver=" + useBrowser,
         "-DSessionComplete=" + useBrowser,
         "-DSessionDirector=" + useBrowser,

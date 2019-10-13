@@ -61,7 +61,8 @@ jobs:
           # export JVM_OPTS=@travis/jvmopts.txt
           # cat travis/jvmopts.txt
           export ServerTestToRun=com.github.thebridsk.bridge.server.test.AllUnitTests
-          sbt distribution:travis1
+          export UseFullOpt=true
+          travis/cmdWithPeriodicMsg.sh sbt distribution:travis1
     - stage: systemtest
       addons:
       #  chrome: stable
@@ -89,7 +90,7 @@ jobs:
           export UseBrowser=chromeheadless
           export UseFullOpt=true
           export ServerTestToRun=com.github.thebridsk.bridge.server.test.selenium.AllSeleniumSuites
-          sbt distribution:travis2
+          travis/cmdWithPeriodicMsg.sh sbt distribution:travis2
 
 after_failure:
 - cat server/logs/unittestTcpMonitorTimeWait.csv
