@@ -135,7 +135,7 @@ object BridgeAppBarInternal {
 
   def getApiPageUrl( page: String ) = {
     val u = s"${apiPageURL}#${page}"
-    logger.fine(s"Going to URL ${u}")
+//    logger.fine(s"Going to URL ${u}")
     u
   }
 
@@ -165,34 +165,34 @@ object BridgeAppBarInternal {
     }
 
     def handleHelpGotoPageClick(uri: String)(event: ReactEvent) = {
-      logger.info(s"""Going to page ${uri}""")
+      logger.fine(s"""Going to page ${uri}""")
 //      handleMoreClose()
 
       gotoPage(uri)
     }
 
     def startLog(event: ReactEvent): Unit = {
-      logger.info(s"""BridgeAppBar start logging""")
+      logger.fine(s"""BridgeAppBar start logging""")
       DebugLoggerComponent.init()
       scalajs.js.timers.setTimeout(1) {
         BridgeDispatcher.startLogs()
       }
     }
     def stopLog(event: ReactEvent): Unit = {
-      logger.info(s"""BridgeAppBar start logging""")
+      logger.fine(s"""BridgeAppBar start logging""")
       scalajs.js.timers.setTimeout(1) {
         BridgeDispatcher.stopLogs()
       }
     }
 
     def serverUrlClick(event: ReactEvent) = {
-      logger.info("Requesting to show server URL popup")
+      logger.fine("Requesting to show server URL popup")
       ServerURLPopup.setShowServerURLPopup(true)
     }
 
     // data-theme="dark"
     def toggleLightDark(event: ReactEvent) = {
-      logger.info("toggle light dark")
+      logger.fine("toggle light dark")
       val ntheme = ColorThemeStorage.getColorTheme() match {
         case Some(curtheme) =>
           LightDark.nextTheme(curtheme)
@@ -205,10 +205,10 @@ object BridgeAppBarInternal {
     def isFullscreenEnabledI = {
       import com.github.thebridsk.bridge.clientcommon.fullscreen.Implicits._
       val doc = document
-      logger.info(s"browser fullscreenEnabled: ${doc.fullscreenEnabled}")
+      logger.fine(s"browser fullscreenEnabled: ${doc.fullscreenEnabled}")
       val e = doc.fullscreenEnabled
       if (!e) {
-        logger.info("fullscreenEnabled = false")
+        logger.fine("fullscreenEnabled = false")
       }
       e
     }
@@ -216,13 +216,13 @@ object BridgeAppBarInternal {
     def isFullscreen = {
       import com.github.thebridsk.bridge.clientcommon.fullscreen.Implicits._
       val doc = document
-      logger.info(s"browser fullscreenEnabled: ${doc.fullscreenEnabled}")
+      logger.fine(s"browser fullscreenEnabled: ${doc.fullscreenEnabled}")
       if (isFullscreenEnabledI) {
         val r = doc.fullscreenElement != null
-        logger.info(s"browser isfullscreen: $r")
+        logger.fine(s"browser isfullscreen: $r")
         if (r) {
           val elem = doc.fullscreenElement
-          logger.info(s"browser fullscreen element is ${elem.nodeName}")
+          logger.fine(s"browser fullscreen element is ${elem.nodeName}")
         }
         r
       } else {
@@ -238,10 +238,10 @@ object BridgeAppBarInternal {
       if (isFullscreenEnabled) {
         val isfullscreen = isFullscreen
         if (isfullscreen) {
-          logger.info(s"browser exiting fullscreen")
+          logger.fine(s"browser exiting fullscreen")
           doc.exitFullscreen()
         } else {
-          logger.info(s"browser requesting fullscreen on body")
+          logger.fine(s"browser requesting fullscreen on body")
           body.requestFullscreen()
         }
         scalajs.js.timers.setTimeout(500) { scope.withEffectsImpure.forceUpdate }
@@ -255,7 +255,7 @@ object BridgeAppBarInternal {
       def gotoHomePage(e: ReactEvent) = props.routeCtl.toHome
       def gotoAboutPage(e: ReactEvent) = props.routeCtl.toAbout
       def gotoInfoPage(e: ReactEvent) = {
-        logger.info("going to infopage")
+        logger.fine("going to infopage")
         props.routeCtl.toInfo
       }
 
