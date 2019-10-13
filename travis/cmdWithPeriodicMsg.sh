@@ -18,7 +18,7 @@ if [[ "$1" == "-h" || "$1" == "--help" ]] ; then
   exit 1
 fi
 
-while sleep 5s; do echo "====== $SECONDS seconds, building ======"; done &
+while sleep 5m; do echo "====== $SECONDS seconds, building ======"; done &
 
 $*
 rc=$?
