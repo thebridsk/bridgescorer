@@ -59,7 +59,9 @@ object ComboboxComponentProperty {
             messages: Option[ComboboxComponentMessagesProperty] = None,
             busy: Option[Boolean] = None,
             value: Option[String] = None,
-            id: Option[String] = None ): ComboboxComponentProperty = {
+            id: Option[String] = None,
+            containerClassName: Option[String] = None
+  ): ComboboxComponentProperty = {
     val p = js.Dynamic.literal()
 
     defaultValue.foreach(p.updateDynamic("defaultValue")(_))
@@ -73,6 +75,7 @@ object ComboboxComponentProperty {
     busy.foreach(p.updateDynamic("busy")(_))
     value.foreach(p.updateDynamic("value")(_))
     id.foreach(p.updateDynamic("id")(_))
+    containerClassName.foreach(p.updateDynamic("containerClassName")(_))
 
     p.asInstanceOf[ComboboxComponentProperty]
   }
@@ -102,7 +105,9 @@ object Combobox {
             msgEmptyFilter: Option[String] = None,
             busy: Option[Boolean] = None,
             value: Option[String] = None,
-            id: Option[String] = None ) = {
+            id: Option[String] = None,
+            containerClassName: Option[String] = None
+  ) = {
 
 //    logger.info("Combobox: msgEmptyList="+msgEmptyList+", msgEmptyFilter="+msgEmptyFilter)
 
@@ -111,7 +116,7 @@ object Combobox {
     } else {
       None
     }
-    val props = ComboboxComponentProperty(defaultValue,onChange,data,filter,tabIndex,name,caseSensitive,messages,busy,value,id)
+    val props = ComboboxComponentProperty(defaultValue,onChange,data,filter,tabIndex,name,caseSensitive,messages,busy,value,id,containerClassName)
 
     component(props)
   }

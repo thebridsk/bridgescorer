@@ -31,6 +31,9 @@
   --color-hand-section-score: black;
   --color-weblink: rgb(85, 26, 139);
   --shadow-suit-outline: -1px 0px 0 white, 1px 0px 0 white, 0px 1px 0 white, 0px -1px 0 white;
+  --color-calendar-off-range: rgb(100,108,114);
+  --color-scrollbar-thumb: rgb(140,140,140);
+  --color-scrollbar-track: rgb(230,230,230);
 }
 
 @media screen {
@@ -66,6 +69,10 @@
     --color-hand-section-score: black;
     --color-weblink: cyan;
     --shadow-suit-outline: -1px 0px 0 white, 1px 0px 0 white, 0px 1px 0 white, 0px -1px 0 white;
+    --color-calendar-off-range: rgb(100,108,114);
+    --color-scrollbar-thumb: var(--color-fg);
+    --color-scrollbar-thumb: rgb(80,80,80);
+    --color-scrollbar-track: rgb(120,120,120);
   }
 
   [data-theme="dark"] {
@@ -98,6 +105,9 @@
     --color-hand-section-score: white;
     --color-weblink: cyan;
     --shadow-suit-outline: -1px 0px 0 white, 1px 0px 0 white, 0px 1px 0 white, 0px -1px 0 white;
+    --color-calendar-off-range: rgb(100,108,114);
+    --color-scrollbar-thumb: rgb(120,120,120);
+    --color-scrollbar-track: rgb(80,80,80);
   }
 
 }
@@ -835,3 +845,146 @@ body > div > div > div {
 .lightDarkIcon3 {
   fill: var(--color-other2-bg)
 }
+
+.comboboxLightDark
+{
+  color: var(--color-fg-default-button);
+  background-color: var(--color-default-button);
+}
+.comboboxLightDark + div
+{
+  color: var(--color-fg-default-button);
+  background-color: var(--color-default-button);
+}
+.comboboxLightDark + div li.rw-list-option
+{
+  color: var(--color-fg-default-button);
+  background-color: var(--color-default-button);
+}
+.comboboxLightDark + div li.rw-list-option:hover
+{
+  background-color: var(--color-fg-default-button);
+  color: var(--color-default-button);
+}
+.comboboxLightDark + div li.rw-list-option.rw-state-focus
+{
+  color: var(--color-fg-default-button);
+  background-color: var(--color-default-button);
+}
+.comboboxLightDark + div li.rw-list-option.rw-state-selected,
+.comboboxLightDark + div li.rw-list-option.rw-state-selected:hover
+{
+  color: var(--color-fg-default-button);
+  background-color: var(--color-button-selected);
+}
+.comboboxLightDark > input
+{
+  color: var(--color-fg-default-button);
+  background-color: var(--color-default-button);
+}
+.comboboxLightDark > span > button
+ {
+  color: var(--color-fg-default-button);
+  background-color: var(--color-default-button);
+}
+/* doesn't work
+input[type="checkbox"], input[type="radio"] {
+  color: var(--color-fg-default-button) !important;
+  background-color: var(--color-default-button) !important;
+} */
+.calendarLightDark {
+  background-color: var(--color-default-button);
+}
+.calendarLightDark > input {
+  background-color: var(--color-default-button);
+  color: var(--color-fg-default-button);
+}
+.calendarLightDark > span > button {
+  background-color: var(--color-default-button);
+  color: var(--color-fg-default-button);
+}
+
+.calendarLightDark ~ div.rw-popup-container
+{
+  color: var(--color-fg-default-button);
+  background-color: var(--color-default-button);
+}
+.calendarLightDark ~ div.rw-popup-container li.rw-list-option
+{
+  color: var(--color-fg-default-button);
+  background-color: var(--color-default-button);
+}
+.calendarLightDark ~ div.rw-popup-container li.rw-list-option:hover
+{
+  background-color: var(--color-fg-default-button);
+  color: var(--color-default-button);
+}
+.calendarLightDark ~ div.rw-popup-container li.rw-list-option.rw-state-focus
+{
+  color: var(--color-fg-default-button);
+  background-color: var(--color-default-button);
+}
+.calendarLightDark ~ div.rw-popup-container li.rw-list-option.rw-state-selected,
+.calendarLightDark ~ div.rw-popup-container li.rw-list-option.rw-state-selected:hover
+{
+  color: var(--color-fg-default-button);
+  background-color: var(--color-button-selected);
+}
+
+.calendarLightDark ~ div.rw-calendar-popup
+{
+  color: var(--color-fg-default-button);
+  background-color: var(--color-default-button);
+}
+.calendarLightDark ~ div.rw-calendar-popup table
+{
+  color: var(--color-fg-default-button);
+  background-color: var(--color-default-button);
+}
+.calendarLightDark ~ div.rw-calendar-popup th
+{
+  color: var(--color-fg-default-button);
+  background-color: var(--color-default-button);
+}
+.calendarLightDark ~ div.rw-calendar-popup td.rw-cell
+{
+  color: var(--color-fg-default-button);
+  background-color: var(--color-default-button);
+}
+.calendarLightDark ~ div.rw-calendar-popup td.rw-cell:hover
+{
+  background-color: var(--color-fg-default-button);
+  color: var(--color-default-button);
+}
+.calendarLightDark ~ div.rw-calendar-popup td.rw-cell.rw-state-focus
+{
+  color: var(--color-fg-default-button);
+  background-color: var(--color-default-button);
+}
+.calendarLightDark ~ div.rw-calendar-popup td.rw-cell.rw-state-selected,
+.calendarLightDark ~ div.rw-calendar-popup td.rw-cell.rw-state-selected:hover
+{
+  color: var(--color-fg-default-button);
+  background-color: var(--color-button-selected);
+}
+.calendarLightDark ~ div.rw-calendar-popup td.rw-cell-off-range
+{
+  color: var(--color-calendar-off-range);
+  background-color: var(--color-default-button);
+}
+
+rw-cell-off-range
+
+.calendarLightDark ~ div div.rw-calendar-header,
+.calendarLightDark ~ div div.rw-calendar-header button,
+.calendarLightDark ~ div div.rw-calendar-footer,
+.calendarLightDark ~ div div.rw-calendar-footer button
+{
+  color: var(--color-fg-default-button);
+  background-color: var(--color-default-button);
+}
+
+* {
+  scrollbar-color: var(--color-scrollbar-thumb) var(--color-scrollbar-track);
+}
+

@@ -12,7 +12,6 @@ import com.github.thebridsk.bridge.data.bridge.PlayerPosition
 import com.github.thebridsk.bridge.data.bridge.South
 import com.github.thebridsk.bridge.data.bridge.West
 import com.github.thebridsk.bridge.client.pages.info.InfoPage
-import com.github.thebridsk.bridge.clientcommon.react.Combobox
 import com.github.thebridsk.bridge.clientcommon.react.Utils.ExtendReactEventFromInput
 
 import japgolly.scalajs.react._
