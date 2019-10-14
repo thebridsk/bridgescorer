@@ -7,6 +7,7 @@ import scala.scalajs.js.UndefOr
 import com.github.thebridsk.utilities.logging.Logger
 import scala.scalajs.js.annotation.JSGlobal
 import scala.scalajs.js.Date
+import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles
 
 @js.native
 trait DateTimePickerComponentProperty extends js.Object {
@@ -34,6 +35,7 @@ trait DateTimePickerComponentProperty extends js.Object {
   val readOnly: js.UndefOr[Boolean] = js.native
   val step: js.UndefOr[Int] = js.native
   val time: js.UndefOr[Boolean] = js.native
+  val containerClassName: js.UndefOr[String] = js.native
 }
 
 object DateTimePickerComponentProperty {
@@ -60,8 +62,9 @@ object DateTimePickerComponentProperty {
             popupTransition: Option[String] = None,
             readOnly: Boolean = false,
             step: Option[Int] = None,
-            time: Boolean = true
-           ): DateTimePickerComponentProperty = {
+            time: Boolean = true,
+            containerClassName: Option[String] = None
+  ): DateTimePickerComponentProperty = {
     val p = js.Dynamic.literal()
 
     p.updateDynamic("name")(name)
@@ -89,6 +92,7 @@ object DateTimePickerComponentProperty {
     p.updateDynamic("readOnly")(readOnly)
     step.foreach(p.updateDynamic("step")(_))
     p.updateDynamic("time")(time)
+    containerClassName.foreach(p.updateDynamic("containerClassName")(_))
 
     p.asInstanceOf[DateTimePickerComponentProperty]
   }
@@ -129,7 +133,8 @@ object DateTimePicker {
             popupTransition: Option[String] = None,
             readOnly: Boolean = false,
             step: Option[Int] = None,
-            time: Boolean = true
+            time: Boolean = true,
+            containerClassName: Option[String] = Some(BaseStyles.baseStyles.calendarLightDarkClass)
            ) = {
 
 //    logger.info("DateTimePicker: msgEmptyList="+msgEmptyList+", msgEmptyFilter="+msgEmptyFilter)
@@ -158,7 +163,8 @@ object DateTimePicker {
                   popupTransition,
                   readOnly,
                   step,
-                  time
+                  time,
+                  containerClassName
                 )
 
     component(props)

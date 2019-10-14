@@ -682,6 +682,8 @@
 
 .dupDivDuplicateResultEditPage td > input {
   max-width: 70px;
+  color: var(--color-fg-default-button);
+  background-color: var(--color-default-button);
 }
 
 .dupDivDuplicateResultEditPage p:last-child {
@@ -690,6 +692,12 @@
 
 .dupDivDuplicateResultEditPage input {
   font-size: x-large;
+}
+
+.dupDivDuplicateResultEditPage > div > label > input {
+  font-size: x-large;
+  color: var(--color-fg-default-button);
+  background-color: var(--color-default-button);
 }
 
 .dupDivDuplicateResultEditPage {

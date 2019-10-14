@@ -137,6 +137,7 @@ class BaseStyles {
   val lightDarkIcon3 = cls("lightDarkIcon3")
 
   val comboboxLightDarkClass = "comboboxLightDark"
+  val calendarLightDarkClass = "calendarLightDark"
 }
 
 class RootStyles {
