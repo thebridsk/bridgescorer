@@ -81,6 +81,7 @@
 }
 .handSuitInButton {
   font-size: larger;
+  text-shadow: var(--shadow-suit-outline);
 }
 .handViewContractSuit button {
   width: 189px;
