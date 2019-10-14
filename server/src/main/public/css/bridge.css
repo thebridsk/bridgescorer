@@ -30,6 +30,7 @@
   --color-bg-hand-section-score: cyan;
   --color-hand-section-score: black;
   --color-weblink: rgb(85, 26, 139);
+  --shadow-suit-outline: -1px 0px 0 white, 1px 0px 0 white, 0px 1px 0 white, 0px -1px 0 white;
 }
 
 @media screen {
@@ -64,6 +65,7 @@
     --color-bg-hand-section-score: cyan;
     --color-hand-section-score: black;
     --color-weblink: cyan;
+    --shadow-suit-outline: -1px 0px 0 white, 1px 0px 0 white, 0px 1px 0 white, 0px -1px 0 white;
   }
 
   [data-theme="dark"] {
@@ -95,6 +97,7 @@
     --color-bg-hand-section-score: darkcyan;
     --color-hand-section-score: white;
     --color-weblink: cyan;
+    --shadow-suit-outline: -1px 0px 0 white, 1px 0px 0 white, 0px 1px 0 white, 0px -1px 0 white;
   }
 
 }
@@ -722,7 +725,7 @@ body.touched .withTooltipBox:hover {
 
 .headerSuitSize {
   font-size: 2.5rem;
-  text-shadow: -1px 0px 0 #fff, 1px 0px 0 #fff, 0px 1px 0 #fff, 0px -1px 0 #fff;
+  text-shadow: var(--shadow-suit-outline);
 }
 
 .mainMenuItem {
