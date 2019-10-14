@@ -835,3 +835,45 @@ body > div > div > div {
 .lightDarkIcon3 {
   fill: var(--color-other2-bg)
 }
+
+.comboboxLightDark
+{
+  color: var(--color-fg-default-button);
+  background-color: var(--color-default-button);
+}
+.comboboxLightDark + div
+{
+  color: var(--color-fg-default-button);
+  background-color: var(--color-default-button);
+}
+.comboboxLightDark + div li.rw-list-option
+{
+  color: var(--color-fg-default-button);
+  background-color: var(--color-default-button);
+}
+.comboboxLightDark + div li.rw-list-option:hover
+{
+  background-color: var(--color-fg-default-button);
+  color: var(--color-default-button);
+}
+.comboboxLightDark + div li.rw-list-option.rw-state-focus
+{
+  color: var(--color-fg-default-button);
+  background-color: var(--color-default-button);
+}
+.comboboxLightDark + div li.rw-list-option.rw-state-selected,
+.comboboxLightDark + div li.rw-list-option.rw-state-selected:hover
+{
+  color: var(--color-fg-default-button);
+  background-color: var(--color-button-selected);
+}
+.comboboxLightDark > input
+{
+  color: var(--color-fg-default-button);
+  background-color: var(--color-default-button);
+}
+.comboboxLightDark > span > button
+ {
+  color: var(--color-fg-default-button);
+  background-color: var(--color-default-button);
+}

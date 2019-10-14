@@ -6,6 +6,8 @@ import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react.vdom.TagMod
 import com.github.thebridsk.bridge.clientcommon.react.Utils.ExtendReactEventFromInput
+import com.github.thebridsk.bridge.clientcommon.pages.RootStyles
+import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles
 
 
 object ComboboxOrInput {
@@ -24,7 +26,8 @@ object ComboboxOrInput {
             msgEmptyFilter: String = null,
             busy: Boolean = false,
             id: String = null,
-           ): TagMod = {
+            containerClassName: String = null
+  ): TagMod = {
 
     def comboboxCB( data: js.Any ): Unit = callback(data.toString()).runNow()
 
@@ -38,16 +41,18 @@ object ComboboxOrInput {
       Combobox(None,
                Some(comboboxCB _),
                jv(data),
-               v(filter),
-               if (tabIndex== -1) None else v(tabIndex),
-               v(name),
-               v(caseSensitive),
-               v(msgOpen),
-               v(msgEmptyList),
-               v(msgEmptyFilter),
-               v(busy),
-               v(defaultvalue),
-               v(id))
+               Option(filter),
+               if (tabIndex < 0) None else Some(tabIndex),
+               Option(name),
+               Option(caseSensitive),
+               Option(msgOpen),
+               Option(msgEmptyList),
+               Option(msgEmptyFilter),
+               Option(busy),
+               Option(defaultvalue),
+               Option(id),
+               Option(containerClassName).orElse(Some(BaseStyles.baseStyles.comboboxLightDarkClass))
+      )
     }
     else {
       <.input.text(

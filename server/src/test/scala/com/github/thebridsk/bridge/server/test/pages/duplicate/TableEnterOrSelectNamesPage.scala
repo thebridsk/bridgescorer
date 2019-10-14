@@ -20,7 +20,6 @@ import com.github.thebridsk.bridge.data.bridge.PlayerPosition
 import com.github.thebridsk.browserpages.GenericPage
 import com.github.thebridsk.browserpages.Page.AnyPage
 import com.github.thebridsk.bridge.data.bridge._
-import com.github.thebridsk.browserpages.Combobox
 import com.github.thebridsk.browserpages.TextField
 import com.github.thebridsk.browserpages.PageBrowser
 import org.openqa.selenium.Keys
