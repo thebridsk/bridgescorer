@@ -10,8 +10,11 @@ import com.github.thebridsk.browserpages.PageBrowser._
 import com.github.thebridsk.bridge.server.test.selenium.TestServer
 import com.github.thebridsk.bridge.data.Id
 import com.github.thebridsk.bridge.server.test.pages.bridge.HomePage
+import com.github.thebridsk.utilities.logging.Logger
 
 object ScoreboardPage {
+
+  val log = Logger[ScoreboardPage]
 
   case class PlaceEntry( place: Int, points: String, teams: List[Team] )
 
@@ -201,15 +204,19 @@ class ScoreboardPage(
         help must fullyMatch regex (s"""Table $table Scoreboard, Round $round, Teams .+ and .+""")
     }
     did
-  }}
+  }}( Position.here )
 
-  def validate(implicit patienceConfig: PatienceConfig, pos: Position) = logMethod(s"${pos.line} ${getClass.getSimpleName}.validate") { eventually {
-    val did = validateInternal
+  def validate(implicit patienceConfig: PatienceConfig, pos: Position) = logMethod(s"${pos.line} ${getClass.getSimpleName}.validate") {
+    log.fine(s"ScoreboardPage.validate: patienceConfig=${patienceConfig}, pos=${pos}")
+    eventually {
+      log.fine(s"ScoreboardPage.validate: starting validate method, patienceConfig=${patienceConfig}, pos=${pos}")
+      val did = validateInternal
 
-    val buttons = eventually{ findButtons( Map( buttonIds(view):_* ) ) }
-    val sb = new ScoreboardPage( Option(did), view )
-    sb
-  }}
+      val buttons = eventually{ findButtons( Map( buttonIds(view):_* ) ) }
+      val sb = new ScoreboardPage( Option(did), view )
+      sb
+    }
+  }( Position.here )
 
   def validate(boards: List[Int])(implicit patienceConfig: PatienceConfig, pos: Position) = logMethod(s"${pos.line} ${getClass.getSimpleName}.validate") {
     eventually {
@@ -393,8 +400,8 @@ class ScoreboardPage(
 
   def clickDeleteOk(implicit patienceConfig: PatienceConfig, pos: Position) = {
     clickPopUpOk
-    Thread.sleep(200L)
-    ListDuplicatePage.current
+    // Thread.sleep(200L)
+    ListDuplicatePage.waitFor
   }
 
   /**

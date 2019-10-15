@@ -111,7 +111,7 @@ class TestFailurePersistent[VId,VType <: VersionedInstance[VType,VType,VId]](
                      ): Future[Result[VType]] = {
     log.fine(s"""putToPersistent failWrite=${failWrite}, failResultWrite=${failResultWrite}, id=${id}, v=${v}""")
     if (failWrite) Future {
-      Thread.sleep(1000)
+      Thread.sleep(500)
       throw new Exception("Failure writing to persistent store!")
     } else if (failResultWrite.isDefined) {
       failResultWrite.get.toFuture

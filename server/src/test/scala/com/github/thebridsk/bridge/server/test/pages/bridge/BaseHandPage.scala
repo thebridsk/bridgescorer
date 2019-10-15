@@ -75,7 +75,7 @@ object BaseHandPage {
       last = getInputStyle
       if (last == stop) return stop
       click on id("InputStyle")
-      Thread.sleep(100L)
+//      Thread.sleep(100L)
     }
     last
   }

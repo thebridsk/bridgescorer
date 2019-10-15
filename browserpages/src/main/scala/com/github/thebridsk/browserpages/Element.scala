@@ -61,7 +61,7 @@ class Element( val underlying: WebElement )(implicit pos: Position, webdriver: W
     def click = {
       PageBrowser.scrollToElement(underlying)
       underlying.click()
-      Thread.sleep( 100L )
+//      Thread.sleep( 100L )
     }
 
     /**
@@ -71,7 +71,7 @@ class Element( val underlying: WebElement )(implicit pos: Position, webdriver: W
     def enter = {
       PageBrowser.scrollToElement(underlying)
       sendKeys( Keys.ENTER.toString() )
-      Thread.sleep( 100L )
+//      Thread.sleep( 100L )
     }
 
     override def equals(other: Any): Boolean = underlying == other

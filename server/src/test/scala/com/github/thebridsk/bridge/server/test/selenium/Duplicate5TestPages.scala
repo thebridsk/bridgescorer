@@ -1061,7 +1061,7 @@ class Duplicate5TestPages
       CodeBlock {
         import SessionTable2._
         val sb1 = ScoreboardPage.current.setScoreStyle(ScoreboardPage.ScoreStyleIMP).validate
-        Thread.sleep(500L)
+//        Thread.sleep(500L)
         validateRound(sb1,2,5, true )
       }
     )
@@ -1104,10 +1104,10 @@ class Duplicate5TestPages
         peoplePage.getPlayerTableScoringStyle mustBe Some("CalcMP")
         peoplePage.checkPeopleMP( peopleResultMP:_*)
         val pp = peoplePage.clickPlayerTableScoringStyle("CalcIMP")
-        Thread.sleep(100L)
+        // Thread.sleep(100L)
         pp.checkPeopleIMP( peopleResultIMP:_*)
         val pp1 = pp.clickPlayerTableScoringStyle("CalcPlayed")
-        Thread.sleep(100L)
+        // Thread.sleep(100L)
         pp1.checkPeople( peopleResult:_*)
 
       } else {
@@ -1192,10 +1192,10 @@ class Duplicate5TestPages
         peoplePage.getPlayerTableScoringStyle mustBe Some("CalcPlayed")
         peoplePage.checkPeople( peopleResult2:_*)
         val pp = peoplePage.clickPlayerTableScoringStyle("CalcIMP")
-        Thread.sleep(100L)
+        // Thread.sleep(100L)
         pp.checkPeopleIMP( peopleResultIMP2:_*)
         val pp1 = pp.clickPlayerTableScoringStyle("CalcMP")
-        Thread.sleep(100L)
+        // Thread.sleep(100L)
         pp1.checkPeopleMP( peopleResultMP2:_*)
 
       } else {

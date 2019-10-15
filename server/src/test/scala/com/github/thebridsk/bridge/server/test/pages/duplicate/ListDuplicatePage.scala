@@ -27,6 +27,8 @@ object ListDuplicatePage {
     new ListDuplicatePage(importId)
   }
 
+  def waitFor(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = eventually { current }
+
   def goto( importId: Option[String] = None )(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
     go to urlFor(importId)
     new ListDuplicatePage(importId)

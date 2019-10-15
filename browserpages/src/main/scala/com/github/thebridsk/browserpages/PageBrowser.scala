@@ -21,6 +21,7 @@ import java.nio.file.FileSystems
 import com.github.thebridsk.utilities.file.FileIO
 import org.openqa.selenium.TakesScreenshot
 import org.openqa.selenium.OutputType
+import scala.io.Codec
 
 object PageBrowsersImplicits {
   import scala.language.implicitConversions
@@ -112,7 +113,7 @@ class ClickOn(implicit createdpos: SourcePosition) {
 
   def scrollToElement( e: WebElement )(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position): Unit = {
     PageBrowser.executeScript( """arguments[0].scrollIntoView({behavior: "auto", block: "center", inline: "center"});""", e);
-    Thread.sleep(200)
+//    Thread.sleep(200)
   }
 }
 
@@ -136,7 +137,7 @@ trait PageBrowser {
   def pressKeys(value: CharSequence )(implicit webDriver: WebDriver, pos: Position) = {
     val ae: WebElement = webDriver.switchTo.activeElement
     ae.sendKeys(value)
-    Thread.sleep( 100L )
+//    Thread.sleep( 100L )
     this
   }
 
@@ -188,6 +189,15 @@ trait PageBrowser {
       case executor: JavascriptExecutor => executor.executeScript(script, args: _*)
       case _ => throw new UnsupportedOperationException("Web driver " + webDriver.getClass.getName + " does not support javascript execution.")
     }
+
+  def saveDom( tofile: String )(implicit webDriver: WebDriver): Unit = {
+    try {
+      reflect.io.File(tofile)(Codec.UTF8).writeAll( executeScript("return document.documentElement.outerHTML")(webDriver).toString() )
+    } catch {
+      case e: Exception =>
+        PageBrowser.log.warning("Exception trying to execute a script in browser", e)
+    }
+  }
 
   def go(implicit webDriver: WebDriver, pos: Position) = new GoTo
 
@@ -356,12 +366,18 @@ trait PageBrowser {
    * @param directory The directory where the screenshot is written to
    * @param filename The name of the file where the screenshot is written to.  It it doesn't end in ".png", then ".png" will be appended.
    */
-  def takeScreenshotOnError[T]( directory: String, filename: String )(fun: => T)( implicit webDriver: WebDriver, pos: Position ): T = {
+  def takeScreenshotOnError[T]( directory: String, filename: String, savedom: Boolean = false )(fun: => T)( implicit webDriver: WebDriver, pos: Position ): T = {
     try {
       fun
     } catch {
       case x: Throwable =>
         takeScreenshot(directory, filename)
+        if (savedom) {
+          val f = if (filename.endsWith(".dom.html")) filename else filename+".dom.html"
+          val destFile = PageBrowser.getPath(directory,f)
+          saveDom(destFile.toString())
+        }
+        PageBrowser.log.severe("Error with screenshot: ", x)
         throw x
     }
   }
@@ -408,8 +424,8 @@ trait PageBrowser {
    * @param fun the function to execute
    * @throws NullArgumentException if the passed <code>clue</code> is <code>null</code>
   */
-  def withClueAndScreenShot[T]( directory: String, filenamePrefix: String, clue: Any)(fun: => T)(implicit webDriver: WebDriver, pos: Position): T = {
-    takeScreenshotOnError(directory, s"${filenamePrefix}_${pos.lineForFilename}") {
+  def withClueAndScreenShot[T]( directory: String, filenamePrefix: String, clue: Any, savedom: Boolean = false)(fun: => T)(implicit webDriver: WebDriver, pos: Position): T = {
+    takeScreenshotOnError(directory, s"${filenamePrefix}_${pos.lineForFilename}", savedom) {
       import org.scalatest.Assertions._
       withClue(clue)(fun)
     }
