@@ -11,17 +11,17 @@ trait ServerURLAddOn[+T <: Page[T]] {
   def validateServerURL(implicit patienceConfig: PatienceConfig, pos: Position) = eventually {
     val h1 = findElemByXPath("""//div[@id = 'ServerURLPopupDiv']/div/div/div/div/div/h1""").text
     h1 mustBe "Server URL"
-    this
+    this.asInstanceOf[T]
   }
 
   def clickServerURL(implicit patienceConfig: PatienceConfig, pos: Position) = {
     clickButton("ServerURL")
-    this
+    this.asInstanceOf[T]
   }
 
   def clickServerURLOK(implicit patienceConfig: PatienceConfig, pos: Position) = {
     clickButton("PopUpOk")
-    this
+    this.asInstanceOf[T]
   }
 
   def getServerURLs(implicit patienceConfig: PatienceConfig, pos: Position): List[String] = {

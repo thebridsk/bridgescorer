@@ -88,6 +88,7 @@ import play.api.libs.json.JsError
 import com.github.thebridsk.bridge.server.test.util.GraphQLUtils
 import com.github.thebridsk.browserpages.Session
 import com.github.thebridsk.bridge.server.test.pages.duplicate.StatisticsPage
+import com.github.thebridsk.bridge.server.test.pages.LightDarkAddOn
 
 object DuplicateTestPages {
 
@@ -384,7 +385,8 @@ class DuplicateTestPages extends FlatSpec
       CodeBlock {
         import SessionComplete._
         val home = HomePage.goto.validate
-        val sb = home.clickListDuplicateButton.validate(dupid.get)
+        val h2 = home.clickToLightDark(LightDarkAddOn.DarkTheme)
+        val sb = h2.clickListDuplicateButton.validate(dupid.get)
         sb.clickDuplicate(dupid.get).validate
       }
     )
