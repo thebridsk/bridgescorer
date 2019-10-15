@@ -40,6 +40,7 @@ import com.github.thebridsk.bridge.server.test.pages.bridge.HomePage
 import java.util.zip.ZipFile
 import scala.reflect.io.File
 import com.github.thebridsk.browserpages.Session
+import com.github.thebridsk.bridge.server.test.pages.LightDarkAddOn
 
 /**
  * @author werewolf
@@ -163,8 +164,8 @@ class RubberTest extends FlatSpec
     import Session1._
 
     tcpSleep(15)
-    go to (TestServer.getAppPage())
-    eventually( pageTitle mustBe ("The Bridge Score Keeper") )
+    val home = HomePage.goto.validate
+    home.clickToLightDark(LightDarkAddOn.MediumTheme)
   }
 
   it should "allow us to score a rubber match" in {

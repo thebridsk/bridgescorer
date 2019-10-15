@@ -34,6 +34,7 @@ import scala.reflect.io.File
 import java.util.zip.ZipFile
 import org.openqa.selenium.WebDriver
 import com.github.thebridsk.browserpages.Session
+import com.github.thebridsk.bridge.server.test.pages.LightDarkAddOn
 
 object ChicagoTestPages {
 
@@ -137,14 +138,14 @@ class ChicagoTestPages extends FlatSpec
     import Session1._
 
     val hp = HomePage.current
-    hp.checkIconLightMode
-    hp.checkBodyLightMode
+    hp.checkIcon( LightDarkAddOn.LightTheme)
+    hp.checkBody( LightDarkAddOn.LightTheme)
     val hp2 = hp.clickLightDark
-    hp2.checkIconMediumMode
-    hp2.checkBodyMediumMode
+    hp2.checkIcon( LightDarkAddOn.MediumTheme)
+    hp2.checkBody( LightDarkAddOn.MediumTheme)
     val hp3 = hp2.clickLightDark
-    hp3.checkIconDarkMode
-    hp3.checkBodyDarkMode
+    hp3.checkIcon( LightDarkAddOn.DarkTheme)
+    hp3.checkBody( LightDarkAddOn.DarkTheme)
   }
 
   it should "allow us to score a Chicago match" in {

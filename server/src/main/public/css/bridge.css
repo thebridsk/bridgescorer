@@ -749,6 +749,15 @@ body.touched .withTooltipBox:hover {
 .popupMenu {
   z-index: 200;
 }
+.popupMenu > div > div
+{
+  color: var(--color-fg-default-button);
+  background-color: var(--color-default-button);
+}
+.popupMenu > div > div li:hover
+{
+  background-color: rgba(0, 0, 0, 0.2);
+}
 
 .appBarTitle {
    display: flex;
