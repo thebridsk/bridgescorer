@@ -1030,7 +1030,7 @@ class DuplicateTestPages extends FlatSpec
       CodeBlock {
         import SessionTable2._
         val sb = ScoreboardPage.current.setScoreStyle(ScoreboardPage.ScoreStyleIMP).validate
-        Thread.sleep(500L)
+        // Thread.sleep(500L)
         validateRound(sb,2,6,team1,team4, true )
       }
     )
@@ -1042,7 +1042,7 @@ class DuplicateTestPages extends FlatSpec
     dupid match {
       case Some(id) =>
         val page = ScoreboardPage.current
-        Thread.sleep(100)
+        // Thread.sleep(100)
         page.takeScreenshot(docsScreenshotDir, "FinalScoreboard")
         val menu = page.clickMainMenu.validate
         eventually { menu.findElemById("Summary")}
@@ -1304,9 +1304,10 @@ class DuplicateTestPages extends FlatSpec
 
     val hp = HomePage.current
 
-    val sp = hp.clickLatestNewDuplicateButton(true).validate.asInstanceOf[ScoreboardPage]
-
-    sp.dupid mustBe dupid2
+    PageBrowser.withClueAndScreenShot(screenshotDir,"LatestNew",s"Going to latest looking for ${dupid2}",true) {
+      val sp = hp.clickLatestNewDuplicateButton(true).validate.asInstanceOf[ScoreboardPage]
+      sp.dupid mustBe dupid2
+    }
 
   }
 
@@ -1360,7 +1361,7 @@ class DuplicateTestPages extends FlatSpec
       dsb.isPopupDisplayed mustBe false
 
       val pop = dsb.clickDelete.validatePopup()
-      Thread.sleep(2000L)
+      // Thread.sleep(2000L)
       val dsb2 = pop.clickPopUpCancel.validatePopup(false)
 
       val listpage = dsb2.clickDelete.validatePopup().clickDeleteOk.validate

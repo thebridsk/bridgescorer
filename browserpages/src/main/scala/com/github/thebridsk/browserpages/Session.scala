@@ -518,14 +518,9 @@ class Session( name: String = "default" ) extends WebDriver {
     Session.maximize
   }
 
-  def saveDom( tofile: String ): Unit = {
-    import com.github.thebridsk.browserpages.PageBrowser._
-    try {
-      reflect.io.File(tofile)(Codec.UTF8).writeAll( executeScript("return document.documentElement.outerHTML")(webDriver).toString() )
-    } catch {
-      case e: Exception =>
-        testlog.warning("Exception trying to execute a script in browser", e)
-    }
+  def saveDomTree( tofile: String ): Unit = {
+    import com.github.thebridsk.browserpages.PageBrowser
+    PageBrowser.saveDom(tofile)(webDriver)
   }
 
   // from WebDriver

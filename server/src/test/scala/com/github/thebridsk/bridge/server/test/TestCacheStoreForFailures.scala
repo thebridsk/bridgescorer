@@ -265,7 +265,7 @@ object TestCacheStoreForFailures {
     val fut = store.createChild(md).test("Creating match duplicate") { tryresult =>
       tryresult match {
         case Success(Right(nmd)) =>
-          Thread.sleep(1000)
+          Thread.sleep(500)
           fun(store,per,listener,nmd)
         case Success(Left(e)) =>
           fail("fail")
@@ -394,7 +394,7 @@ class TestCacheStoreForFailures extends AsyncFlatSpec with ScalatestRouteTest wi
             listener.testEmpty()
             statuscode mustBe StatusCodes.InsufficientStorage
             msg mustBe "Oops can't read"
-            Thread.sleep(1000L)
+            Thread.sleep(500L)
             store.getCached(id) mustBe None
           case Failure(ex) =>
             listener.testEmpty()

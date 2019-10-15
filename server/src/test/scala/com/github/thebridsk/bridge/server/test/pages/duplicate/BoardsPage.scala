@@ -374,7 +374,7 @@ class BoardsPage( implicit webDriver: WebDriver, pageCreated: SourcePosition ) e
 
   def clickScoreboard(implicit patienceConfig: PatienceConfig, pos: Position) = {
     PageBrowser.scrollToTop
-    Thread.sleep(10L)
+//    Thread.sleep(10L)
     clickButton("Game")
     ScoreboardPage.waitFor
   }

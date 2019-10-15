@@ -71,9 +71,9 @@ class HomePage( implicit webDrivr: WebDriver, pageCreated: SourcePosition ) exte
   def clickLatestNewDuplicateButton(succeed: Boolean)(implicit patienceConfig: PatienceConfig, pos: Position): Page[_] = {
     clickButton("LatestNewMatch")
     if (succeed) {
-      ScoreboardPage.current
+      ScoreboardPage.waitFor
     } else {
-      new HomePage()(webDriver, pos)
+      this
     }
   }
 
