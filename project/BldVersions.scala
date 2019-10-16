@@ -28,17 +28,17 @@ object BldVersion {
 
   lazy val vAkkaHttpPlayJson="1.29.1"  // https://github.com/hseeberger/akka-http-json
 
-  lazy val vSwaggerAkkaHttp = "2.0.3"  // https://github.com/swagger-akka-http/swagger-akka-http
-  lazy val vSwaggerScalaModule="2.0.4" // https://github.com/swagger-api/swagger-scala-module
-  lazy val vSwagger="2.0.9"            // https://github.com/swagger-api/swagger-core
+  lazy val vSwaggerAkkaHttp = "2.0.4"  // https://github.com/swagger-akka-http/swagger-akka-http
+  lazy val vSwaggerScalaModule="2.0.5" // https://github.com/swagger-api/swagger-scala-module
+  lazy val vSwagger="2.0.10"           // https://github.com/swagger-api/swagger-core
   lazy val vWsRsApi="2.1.6"            // https://github.com/eclipse-ee4j/jaxrs-api
   lazy val vAkkaHttpCors = "0.4.1"     // https://github.com/lomigmegard/akka-http-cors
 
-  lazy val vSwaggerUI = "3.23.11"      // https://www.npmjs.com/package/swagger-ui-dist
+  lazy val vSwaggerUI = "3.24.0"       // https://www.npmjs.com/package/swagger-ui-dist
   lazy val vScalajsdom = "0.9.7"       // https://github.com/scala-js/scala-js-dom
   lazy val vScalaJsReact = "1.4.2"     // https://github.com/japgolly/scalajs-react
 
-  lazy val vWebJarsReact = "16.9.0"    // https://www.npmjs.com/package/react
+  lazy val vWebJarsReact = "16.10.2"   // https://www.npmjs.com/package/react
   lazy val vReactWidgets = "4.4.11"    // https://www.npmjs.com/package/react-widgets
   lazy val vWebJarsFlux = "3.1.3"      // https://www.npmjs.com/package/flux
   lazy val vCldr = "4.7.0"             // https://www.npmjs.com/package/cldr
@@ -61,17 +61,17 @@ object BldVersion {
 
   // jackson-module-scala usually updates a few days after the others are updated,
   // don't update until jackson-module-scala is updated
-  lazy val vJackson = "2.9.10"           // https://github.com/FasterXML/jackson-core
+  lazy val vJackson = "2.10.0"           // https://github.com/FasterXML/jackson-core
   // v2.9.9.2 causes NPE in getting swagger.yaml
   // https://github.com/FasterXML/jackson-databind/commit/dd4c5acb321a6aa9ca230aa505266fb2dd2f90ff
-  lazy val vJacksonDatabind = "2.9.10"   // https://github.com/FasterXML/jackson-databind
+  lazy val vJacksonDatabind = "2.10.0"   // https://github.com/FasterXML/jackson-databind
 
   // Selenium needs to be update to update to v23.0
   lazy val vGuavaJre = "28.1-jre"    // https://github.com/google/guava
 
-  lazy val vWebPack = "4.40.2"          // https://www.npmjs.com/package/webpack
+  lazy val vWebPack = "4.41.2"          // https://www.npmjs.com/package/webpack
 
-  lazy val vJsDom = "15.1.1"           // https://www.npmjs.com/package/jsdom
+  lazy val vJsDom = "15.2.0"           // https://www.npmjs.com/package/jsdom
 
   // version 0.2.3 is hardcoded in sbt-scalajs-bundler
   // current is 0.2.4
@@ -79,12 +79,12 @@ object BldVersion {
   // version 1.0.7 is hardcoded in sbt-scalajs-bundler
   // current is 1.1.0
   lazy val vConcatWithSourcemaps = "1.1.0"  // https://www.npmjs.com/package/concat-with-sourcemaps
-  lazy val vTerser = "4.3.2"               // https://www.npmjs.com/package/terser
+  lazy val vTerser = "4.3.9"               // https://www.npmjs.com/package/terser
 
   lazy val vAjv = "6.10.2"                  // https://www.npmjs.com/package/ajv
 
 
-  lazy val vWebpackDevServer = "3.8.1"   // https://www.npmjs.com/package/webpack-dev-server
+  lazy val vWebpackDevServer = "3.8.2"   // https://www.npmjs.com/package/webpack-dev-server
   lazy val vWebPackCli = "3.3.9"         // https://www.npmjs.com/package/webpack-cli
 
   lazy val vSangria = "1.4.2"           // https://github.com/sangria-graphql/sangria
@@ -93,7 +93,7 @@ object BldVersion {
   lazy val vGraphQL = "14.5.5"              // https://github.com/graphql/graphql-js
   lazy val vGraphiQL = "0.14.2"             // https://github.com/graphql/graphiql
   lazy val vGraphQLVoyager = "1.0.0-rc.27"  // https://github.com/APIs-guru/graphql-voyager
-  lazy val vMaterialUIcore = "4.4.3"        // https://www.npmjs.com/package/@material-ui/core
-  lazy val vMaterialUIicons = "4.4.3"       // https://www.npmjs.com/package/@material-ui/icons
+  lazy val vMaterialUIcore = "4.5.1"        // https://www.npmjs.com/package/@material-ui/core
+  lazy val vMaterialUIicons = "4.5.1"       // https://www.npmjs.com/package/@material-ui/icons
   lazy val vPropTypes = "15.7.2"            // https://www.npmjs.com/package/prop-types
 }
