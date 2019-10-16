@@ -180,47 +180,59 @@ trait ImportExport {
     else throw new IllegalArgumentException(s"Filename not valid: $fn")
   }
 
+  def returnMsg(
+    statuscode: StatusCode,
+    msg: String,
+    redirectUrl: String,
+    theme: Option[String] = None
+   ) = HttpResponse(
+    statuscode,
+    entity = HttpEntity(
+      ContentTypes.`text/html(UTF-8)`,
+      s"""<!DOCTYPE html>
+         |<html>
+         |<head>
+         |<meta charset="ISO-8859-1">
+         |<meta http-equiv="refresh" content="5;url=${redirectUrl}" />
+         |<link rel="stylesheet" type="text/css" href="/public/css/bridge.css" >
+         |<title>Import Store</title>
+         |</head>
+         |<body${theme.map(t => s""" data-theme="$t"""").getOrElse("")}>
+         |<div id="BridgeAppImport">
+         |  <div style="position: fixed; top: 0; left: 0; width: 100%;
+         |              padding-left: 16px; padding-right: 16px;
+         |              display: flex; position: relative; align-items: center;
+         |              font-size: x-large;
+         |              height: 64px;
+         |            " class="muiAppBar">
+         |    <h6 style="font-size: 1.25rem; font-family: Arial, sans-serif; font-weight: 500; line-height: 1.6; letter-spacing: 0.0075em;
+         |               text-shadow: 3px 3px 3px var(--color-appbar-title-shadow);
+         |        " >Bridge ScoreKeeper</h6>
+         |    <span style="padding-left: 30px; font-size: 2.5rem">
+         |        <span class="headerSuitSize" style="color: black;"> &spades;</span>
+         |        <span class="headerSuitSize" style="color: red;"> &hearts;</span>
+         |        <span class="headerSuitSize" style="color: red;"> &diams;</span>
+         |        <span class="headerSuitSize" style="color: black;"> &clubs;</span>
+         |    </span>
+         |  </div>
+         |  ${msg}
+         |</div>
+         |</body>
+         |</html>
+         |""".stripMargin
+    )
+  )
+
+
   def successhtml(
     url: String,
     filename: String,
     theme: Option[String] = None
-  ) = HttpResponse(
-    StatusCodes.OK,
-    entity = HttpEntity(
-      ContentTypes.`text/html(UTF-8)`,
-      s"""<!DOCTYPE html>
-<html>
-<head>
-<meta charset="ISO-8859-1">
-<meta http-equiv="refresh" content="5;url=${url}" />
-<link rel="stylesheet" type="text/css" href="/public/css/bridge.css" >
-<title>Import Store</title>
-</head>
-<body${theme.map(t => s""" data-theme="$t"""").getOrElse("")}>
-<div id="BridgeAppImport">
-<div style="position: fixed; top: 0; left: 0; width: 100%;
-            padding-left: 16px; padding-right: 16px;
-            display: flex; position: relative; align-items: center;
-            color: #fff; background-color: #3f51b5;
-            font-size: x-large;
-            height: 64px;
-           " >
-  <h6 style="font-size: 1.25rem; font-family: Arial, sans-serif; font-weight: 500; line-height: 1.6; letter-spacing: 0.0075em;
-      " >Bridge ScoreKeeper</h6>
-  <span style="padding-left: 30px; font-size: 2.5rem">
-      <span class="headerSuitSize" style="color: black;"> &spades;</span>
-      <span class="headerSuitSize" style="color: red;"> &hearts;</span>
-      <span class="headerSuitSize" style="color: red;"> &diams;</span>
-      <span class="headerSuitSize" style="color: black;"> &clubs;</span>
-  </span>
-</div>
-<h1>Successfully imported ${filename}</h1>
-<p><a href="${url}">Redirect</a></p>
-</div>
-</body>
-</html>
-"""
-    )
+  ) = returnMsg(
+    statuscode = StatusCodes.OK,
+    msg = s"""<h1>Successfully imported ${filename}</h1><p><a href="${url}">Redirect</a></p>""",
+    redirectUrl = url,
+    theme = None
   )
 
   def failurehtml(
@@ -229,43 +241,11 @@ trait ImportExport {
       error: String,
       statusCode: StatusCode = StatusCodes.BadRequest,
       theme: Option[String] = None
-  ) = HttpResponse(
-    statusCode,
-    entity = HttpEntity(
-      ContentTypes.`text/html(UTF-8)`,
-      s"""<!DOCTYPE html>
-<html>
-<head>
-<meta charset="ISO-8859-1">
-<link rel="stylesheet" type="text/css" href="/public/css/bridge.css" >
-<title>Error Import Store</title>
-</head>
-<body${theme.map(t => s""" data-theme="$t"""").getOrElse("")}>
-<div id="BridgeAppImport">
-<div style="position: fixed; top: 0; left: 0; width: 100%;
-            padding-left: 16px; padding-right: 16px;
-            display: flex; position: relative; align-items: center;
-            color: #fff; background-color: #3f51b5;
-            font-size: x-large;
-            height: 64px;
-           " >
-  <h6 style="font-size: 1.25rem; font-family: Arial, sans-serif; font-weight: 500; line-height: 1.6; letter-spacing: 0.0075em;
-      " >Bridge ScoreKeeper</h6>
-  <span style="padding-left: 30px; font-size: 2.5rem">
-      <span class="headerSuitSize" style="color: black;"> &spades;</span>
-      <span class="headerSuitSize" style="color: red;"> &hearts;</span>
-      <span class="headerSuitSize" style="color: red;"> &diams;</span>
-      <span class="headerSuitSize" style="color: black;"> &clubs;</span>
-  </span>
-</div>
-<h1>Error importing ${filename}</h1>
-<p>${error}</p>
-<p><a href="${url}">Return</a></p>
-</div>
-</body>
-</html>
-"""
-    )
+  ) = returnMsg(
+    statuscode = statusCode,
+    msg = s"""<h1>Error importing ${filename}</h1><p>${error}</p><p><a href="${url}">Return</a></p>""",
+    redirectUrl = url,
+    theme = None
   )
 
   import UtilsPlayJson._

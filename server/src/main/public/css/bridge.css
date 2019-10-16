@@ -22,6 +22,7 @@
   --color-popup-border: black;
   --color-tooltip-hover: orange;
   --color-bg-appbar: rgb(64,128,64);
+  --color-fg-appbar: white;
   --color-appbar-title-shadow: #f00;
   --color-table-cell-gray: rgb(151, 151, 151);
   --color-bg-vulnerable: red;
@@ -60,6 +61,7 @@
     --color-popup-border: rgb(210,210,210);
     --color-tooltip-hover: orange;
     --color-bg-appbar: rgb(64,128,64);
+    --color-fg-appbar: white;
     --color-appbar-title-shadow: #f00;
     --color-table-cell-gray: #606060;
     --color-bg-vulnerable: red;
@@ -96,6 +98,7 @@
     --color-popup-border: rgb(210,210,210);
     --color-tooltip-hover: orange;
     --color-bg-appbar: rgb(64,128,64);
+    --color-fg-appbar: white;
     --color-appbar-title-shadow: #f00;
     --color-table-cell-gray: #606060;
     --color-bg-vulnerable: darkred;
@@ -817,6 +820,7 @@ body > div > div > div {
 }
 
 .muiAppBar {
+  color: var(--color-fg-appbar) !important;
   background-color: var(--color-bg-appbar) !important;
 }
 
