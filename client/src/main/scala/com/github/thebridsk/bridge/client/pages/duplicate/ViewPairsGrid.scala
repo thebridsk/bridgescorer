@@ -137,6 +137,9 @@ object ViewPairsGridInternal {
     val (bcolor, light) = colorSt.sizeAveAsFraction(pd)
     val lightness = (1-light)*75.0+25.0
     val size = sizeSt.size(pd, state.minSize*sizeMultiplier, state.maxSize*sizeMultiplier)
+    if (size < 0) {
+      logger.warning(s"""Negative size, sizeSt=${sizeSt}, pd=${pd}""")
+    }
     val (color,scolor) = if (bcolor) {
       // above average, green
       (Color.hsl( colorAbove, 100, lightness ), f"hsl(${colorAbove},100,${lightness}%.2f)" )
@@ -153,17 +156,17 @@ object ViewPairsGridInternal {
 //                   |""".stripMargin
 
     val title = f"""Played ${pd.played},
-                   |Won ${pd.won+pd.wonImp} (${pd.winPercent}%.2f%%),
-                   |WonPoints ${pd.wonPts+pd.wonImpPts}%.2f (${pd.winPtsPercent}%.2f%%)""".stripMargin
+                    |Won ${pd.won+pd.wonImp} (${pd.winPercent}%.2f%%),
+                    |WonPoints ${pd.wonPts+pd.wonImpPts}%.2f (${pd.winPtsPercent}%.2f%%)""".stripMargin
     val titleMP = if (state.calc != CalculationIMP) {
                     f""",
-                       |Points ${pd.points}%.0f (${pd.pointsPercent}%.2f%%)""".stripMargin
+                        |Points ${pd.points}%.0f (${pd.pointsPercent}%.2f%%)""".stripMargin
     } else {
       ""
     }
     val titleIMP = if (state.calc != CalculationMP) {
                     f""",
-                       |IMP ${pd.avgIMP}%.2f""".stripMargin
+                        |IMP ${pd.avgIMP}%.2f""".stripMargin
     } else {
       ""
     }
@@ -192,7 +195,7 @@ object ViewPairsGridInternal {
           cellX
         } else {
           pds.get(rowplayer, colPlayer) match {
-            case Some(pd) =>
+            case Some(pd) if (statSize.valueInRange(pd)) =>
               val (bar,title) = getData(pd, statSize, statColor, 120, 0, state, 1)
               TagMod(
                 Tooltip(
@@ -201,7 +204,7 @@ object ViewPairsGridInternal {
                   tooltiptitle = None
                 )
               )
-            case None =>
+            case _ =>
               TagMod()
           }
         }
@@ -209,15 +212,21 @@ object ViewPairsGridInternal {
       }
       val playerTotals = summary.playerTotals.get(rowplayer).getOrElse(PairData(rowplayer,"",0,0,0,0,0,0,None,0,0,0,0,0,0))
 
-      val (totalData, totalTitle) = getData(playerTotals, statTotalSize, statTotalColor, 240, 60, state, 2)
+      val totalDataList = if (statTotalSize.valueInRange(playerTotals)) {
+        val (totalData, totalTitle) = getData(playerTotals, statTotalSize, statTotalColor, 240, 60, state, 2)
 
-      val totalDataList = List( TagMod(
-                                Tooltip(
-                                  data = totalData,
-                                  tooltipbody = <.div( totalTitle ),
-                                  tooltiptitle = None
-                                )
-                              ))
+        List(
+          TagMod(
+            Tooltip(
+              data = totalData,
+              tooltipbody = <.div( totalTitle ),
+              tooltiptitle = None
+            )
+          )
+        )
+      } else {
+        List(TagMod())
+      }
 
       TagMod(rowplayer)::data:::totalDataList
     }

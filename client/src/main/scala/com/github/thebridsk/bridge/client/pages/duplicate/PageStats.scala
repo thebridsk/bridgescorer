@@ -206,22 +206,22 @@ object PageStatsInternal {
 
     val toggleShowPlayerPlaces = scope.modState { s =>
       getPlayerPlaces(
-          s.toggle( ShowPlayerPlacesGraph ),
-          playerPlacesStats = s.stats.map( cs => cs.playerPlacesStats.isEmpty ).getOrElse(true),
+          s.toggle( ShowPlayerPlacesGraph )
       )
     }
 
     def getPlayerPlaces(
-      s: State,
-      playerPlacesStats: Boolean = false
+      s: State
     ) = {
-      if ( s.stats.isEmpty ||
-        (playerPlacesStats && s.stats.get.playerPlacesStats.isEmpty)
+      logger.fine(s"""getPlayerPlaces, playerPlaces s=${s}""")
+      if ( s.isVisible(ShowPlayerPlacesGraph)
+           && (s.stats.isEmpty || s.stats.get.playerPlacesStats.isEmpty)
       ) {
         RestClientDuplicatePlayerPlaces.get("").recordFailure().onComplete { tpp =>
           scope.withEffectsImpure.modState { ss =>
             tpp match {
               case Success(ppStats) =>
+                logger.fine(s"""Received player places stats, ${ppStats}""")
                 val ds = DuplicateStats(None,None,None,None,None,Some(ppStats))
                 ss.copy(stats = ss.stats.map( sss => sss.update(ds) ).orElse(Option(ds)))
               case _ =>
@@ -342,38 +342,50 @@ object PageStatsInternal {
                          "Show Pairs",
                          BaseStyles.highlight(selected = state.isVisible( ShowPairsGrid ) ),
                          ^.onClick-->toggleShowPairsGrid
-                       ),
-              AppButton( "ShowMadeDownGrid",
-                         "Show Made/Down",
-                         BaseStyles.highlight(selected = state.isVisible( ShowMadeDownGrid ) ),
-                         ^.onClick-->toggleShowMadeDownGrid
-                       ),
-              AppButton( "ShowPlayerContractResults",
-                         "Show Player Contracts",
-                         BaseStyles.highlight(selected = state.isVisible( ShowPlayerContractResults ) ),
-                         ^.onClick-->toggleShowPlayerContractResults
-                       ),
-              AppButton( "ShowPlayerDoubledContractResults",
-                         "Show Player Doubled Contracts",
-                         BaseStyles.highlight(selected = state.isVisible( ShowPlayerDoubledContractResults ) ),
-                         ^.onClick-->toggleShowPlayerDoubledContractResults
-                       ),
-              AppButton( "ShowContractResults",
-                         "Show Contracts",
-                         BaseStyles.highlight(selected = state.isVisible( ShowContractResults ) ),
-                         ^.onClick-->toggleShowContractResults
-                       ),
-              AppButton( "AggressiveStats",
-                         "Aggressive Stats",
-                         BaseStyles.highlight(selected = state.isVisible( ShowPlayerAggressiveness ) ),
-                         ^.onClick-->toggleShowPlayerAggressiveness
-                       )
+              ),
+              AppButton( "ShowPeopleResults",
+                         "Show Player Results",
+                         BaseStyles.highlight(selected = state.isVisible( ShowPeopleTable ) ),
+                         ^.onClick-->toggleShowPeopleTable
+              ),
+              AppButton( "ShowPairsResults",
+                         "Show Pairs Results",
+                         BaseStyles.highlight(selected = state.isVisible( ShowPairs ) ),
+                         ^.onClick-->toggleShowPairs
+              ),
             )
           ),
           <.div(
             baseStyles.divFooter,
             <.div(
               baseStyles.divFooterLeft,
+
+              AppButton( "ShowMadeDownGrid",
+                         "Show Made/Down",
+                         BaseStyles.highlight(selected = state.isVisible( ShowMadeDownGrid ) ),
+                         ^.onClick-->toggleShowMadeDownGrid
+              ),
+              AppButton( "ShowPeopleDetails",
+                         "Show Player Hand Results",
+                         BaseStyles.highlight(selected = state.isVisible( ShowPeopleTableDetail ) ),
+                         ^.onClick-->toggleShowPeopleTableDetail
+              ),
+              AppButton( "ShowPairsDetails",
+                         "Show Pairs Hand Results",
+                         BaseStyles.highlight(selected = state.isVisible( ShowPairsDetail ) ),
+                         ^.onClick-->toggleShowPairsDetail
+              )
+            )
+          ),
+          <.div(
+            baseStyles.divFooter,
+            <.div(
+              baseStyles.divFooterLeft,
+              AppButton( "ShowPlayerOpponentGrid",
+                         "Show Opponent Graph",
+                         BaseStyles.highlight(selected = state.isVisible( ShowPlayerOpponentsStatsGraph ) ),
+                         ^.onClick-->togglePlayerOpponentsStatsGraph
+                       ),
               AppButton( "ShowPlayerOpponentResults",
                          "Show Opponent Results",
                          BaseStyles.highlight(selected = state.isVisible( ShowPlayerOpponentsStatsTable ) ),
@@ -384,41 +396,42 @@ object PageStatsInternal {
                          BaseStyles.highlight(selected = state.isVisible( ShowPlayerOpponentsPairsStatsTable ) ),
                          ^.onClick-->togglePlayerOpponentsPairsStatsTable
                        ),
-              AppButton( "ShowPlayerOpponentGrid",
-                         "Show Opponent Graph",
-                         BaseStyles.highlight(selected = state.isVisible( ShowPlayerOpponentsStatsGraph ) ),
-                         ^.onClick-->togglePlayerOpponentsStatsGraph
-                       ),
             )
           ),
           <.div(
             baseStyles.divFooter,
             <.div(
               baseStyles.divFooterLeft,
-              AppButton( "ShowPeopleResults",
-                         "Show Player Results",
-                         BaseStyles.highlight(selected = state.isVisible( ShowPeopleTable ) ),
-                         ^.onClick-->toggleShowPeopleTable
-                       ),
+              AppButton( "ShowContractResults",
+                         "Show Contracts",
+                         BaseStyles.highlight(selected = state.isVisible( ShowContractResults ) ),
+                         ^.onClick-->toggleShowContractResults
+              ),
+              AppButton( "ShowPlayerContractResults",
+                         "Show Player Contracts",
+                         BaseStyles.highlight(selected = state.isVisible( ShowPlayerContractResults ) ),
+                         ^.onClick-->toggleShowPlayerContractResults
+              ),
+              AppButton( "ShowPlayerDoubledContractResults",
+                         "Show Player Doubled Contracts",
+                         BaseStyles.highlight(selected = state.isVisible( ShowPlayerDoubledContractResults ) ),
+                         ^.onClick-->toggleShowPlayerDoubledContractResults
+              ),
+            )
+          ),
+          <.div(
+            baseStyles.divFooter,
+            <.div(
+              baseStyles.divFooterLeft,
               AppButton( "ShowPlayerPlaces",
                          "Show Player Places",
                          BaseStyles.highlight(selected = state.isVisible( ShowPlayerPlacesGraph ) ),
                          ^.onClick-->toggleShowPlayerPlaces
                        ),
-              AppButton( "ShowPairsResults",
-                         "Show Pairs Results",
-                         BaseStyles.highlight(selected = state.isVisible( ShowPairs ) ),
-                         ^.onClick-->toggleShowPairs
-                       ),
-              AppButton( "ShowPeopleDetails",
-                         "Show Player Hand Results",
-                         BaseStyles.highlight(selected = state.isVisible( ShowPeopleTableDetail ) ),
-                         ^.onClick-->toggleShowPeopleTableDetail
-                       ),
-              AppButton( "ShowPairsDetails",
-                         "Show Pairs Hand Results",
-                         BaseStyles.highlight(selected = state.isVisible( ShowPairsDetail ) ),
-                         ^.onClick-->toggleShowPairsDetail
+              AppButton( "AggressiveStats",
+                         "Aggressive Stats",
+                         BaseStyles.highlight(selected = state.isVisible( ShowPlayerAggressiveness ) ),
+                         ^.onClick-->toggleShowPlayerAggressiveness
                        )
             )
           ),
