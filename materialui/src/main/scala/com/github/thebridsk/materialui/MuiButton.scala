@@ -40,16 +40,7 @@ object Variant {
   val outlined = new Variant("outlined")
   val contained = new Variant("contained")
 
-//  @deprecated("Use <Fab> element instead", "1.0")
-  val fab = new Variant("fab")
-//  @deprecated("Use <Fab variant=\"extended\"> element instead", "1.0")
-  val extendedFab = new Variant("extendedFab")
-//  @deprecated("use 'text'", "1.0")
-  val flat = new Variant("flat")
-//  @deprecated("use 'contained'", "1.0")
-  val raised = new Variant("raised")
-
-  val values = List(text, outlined, contained, fab, extendedFab, flat, raised)
+  val values = List(text, outlined, contained)
 
   implicit def toJsAny(cv: Variant): js.Any = cv.value
 }
@@ -94,25 +85,12 @@ object ButtonProps extends PropsFactory[ButtonProps] {
 
   /**
     * @param p the object that will become the properties object
-    * @param classes Override or extend the styles applied to the component.
-    *                 See [[https://material-ui.com/api/button/#css CSS API]]
-    *                 for more details.
     * @param color The color of the component. It supports those theme colors
     *               that make sense for this component.  Default: ColorVariant.default
-    * @param component The component used for the root node.
-    *                   Either a string to use a DOM element or a component.
-    *                   Default: "button"
-    * @param disabled If `true`, the button will be disabled.  Default: false
-    * @param disableFocusRipple If `true`, the  keyboard focus ripple will be disabled.
-    *                            `disableRipple` must also be true.
-    *                            Default: "button"
-    * @param disableRipple If `true`, the ripple effect will be disabled.
     * @param fullWidth If `true`, the button will take up the full width of its container.
     *                   Default: false
     * @param href The URL to link to when the button is clicked.
     *              If defined, an `a` element will be used as the root node.
-    * @param mini If `true`, and `variant` is `'fab'`, will use mini floating action button styling.
-    *              Default: false
     * @param size The size of the button. `small` is equivalent to the dense button styling.
     *              Default: ItemSize.medium
     * @param variant The variant to use. WARNING: flat and raised are deprecated.
@@ -131,7 +109,17 @@ object ButtonProps extends PropsFactory[ButtonProps] {
     * @param buttonRef Use that property to pass a ref callback to the native button component.
     * @param centerRipple If true, the ripples will be centered. They won't start at the cursor interaction position.
     *                      Default: false
-    * @param disableTouchRipple If true, the touch ripple effect will be disabled.  Default: false
+    * @param classes Override or extend the styles applied to the component.
+    *                 See [[https://material-ui.com/api/button/#css CSS API]]
+    *                 for more details.
+    * @param component The component used for the root node.
+    *                   Either a string to use a DOM element or a component.
+    *                   Default: "button"
+    * @param disabled If `true`, the button will be disabled.  Default: false
+    * @param disableFocusRipple If `true`, the  keyboard focus ripple will be disabled.
+    *                            `disableRipple` must also be true.
+    *                            Default: "button"
+    * @param disableRipple If `true`, the ripple effect will be disabled.
     * @param focusRipple If true, the base button will have a keyboard focus ripple. disableRipple must also be false
     *                     Default: false
     * @param focusVisibleClassName This property can help a person know which element has
@@ -146,29 +134,24 @@ object ButtonProps extends PropsFactory[ButtonProps] {
     *              Default: "button"
     * @param id the value of the id attribute
     * @param title the value of the title attribute
+    * @param className css class name to add to element
     * @param additionalProps a dictionary of additional properties
     */
   def apply[P <: ButtonProps](
       props: js.UndefOr[P] = js.undefined,
-      classes: js.UndefOr[js.Dictionary[String]] = js.undefined,
       color: js.UndefOr[ColorVariant] = js.undefined,
-      component: js.UndefOr[String] = js.undefined,
-      disabled: js.UndefOr[Boolean] = js.undefined,
-      disableFocusRipple: js.UndefOr[Boolean] = js.undefined,
-      disableRipple: js.UndefOr[Boolean] = js.undefined,
       fullWidth: js.UndefOr[Boolean] = js.undefined,
       href: js.UndefOr[String] = js.undefined,
-      mini: js.UndefOr[Boolean] = js.undefined,
       size: js.UndefOr[ItemSize] = js.undefined,
       variant: js.UndefOr[Variant] = js.undefined,
       // from ButtonBase
       action: js.UndefOr[js.Object => Unit] = js.undefined,
       buttonRef: js.UndefOr[js.Object] = js.undefined, // js.object or js.Function0[ref]
       centerRipple: js.UndefOr[Boolean] = js.undefined,
-//        classes: js.UndefOr[js.Dictionary[String]] = js.undefined,
-//        component: js.UndefOr[String] = js.undefined,
-//        disabled: js.UndefOr[Boolean] = js.undefined,
-//        disableRipple: js.UndefOr[Boolean] = js.undefined,
+      classes: js.UndefOr[js.Dictionary[String]] = js.undefined,
+      component: js.UndefOr[String] = js.undefined,
+      disabled: js.UndefOr[Boolean] = js.undefined,
+      disableRipple: js.UndefOr[Boolean] = js.undefined,
       disableTouchRipple: js.UndefOr[Boolean] = js.undefined,
       focusRipple: js.UndefOr[Boolean] = js.undefined,
       focusVisibleClassName: js.UndefOr[String] = js.undefined,
@@ -179,6 +162,7 @@ object ButtonProps extends PropsFactory[ButtonProps] {
       style: js.UndefOr[js.Object] = js.undefined,
       id: js.UndefOr[String] = js.undefined,
       title: js.UndefOr[String] = js.undefined,
+      className: js.UndefOr[String] = js.undefined,
       additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
   ): P = {
     val p: P = ButtonBaseProps(
@@ -200,14 +184,13 @@ object ButtonProps extends PropsFactory[ButtonProps] {
       style,
       id,
       title,
+      className,
       additionalProps
     )
 
     color.foreach(p.updateDynamic("color")(_))
-    disableFocusRipple.foreach(p.updateDynamic("disableFocusRipple")(_))
     fullWidth.foreach(p.updateDynamic("fullWidth")(_))
     href.foreach(p.updateDynamic("href")(_))
-    mini.foreach(p.updateDynamic("mini")(_))
     size.foreach(p.updateDynamic("size")(_))
     variant.foreach(p.updateDynamic("variant")(_))
 
@@ -240,8 +223,6 @@ object MuiButton extends ComponentFactory[ButtonProps] {
     *                   Default: false
     * @param href The URL to link to when the button is clicked.
     *              If defined, an `a` element will be used as the root node.
-    * @param mini If `true`, and `variant` is `'fab'`, will use mini floating action button styling.
-    *              Default: false
     * @param size The size of the button. `small` is equivalent to the dense button styling.
     *              Default: ItemSize.medium
     * @param variant The variant to use. WARNING: flat and raised are deprecated.
@@ -275,6 +256,7 @@ object MuiButton extends ComponentFactory[ButtonProps] {
     *              Default: "button"
     * @param id the value of the id attribute
     * @param title the value of the title attribute
+    * @param className css class name to add to element
     * @param additionalProps a dictionary of additional properties
     * @param children
     */
@@ -287,7 +269,6 @@ object MuiButton extends ComponentFactory[ButtonProps] {
       disableRipple: js.UndefOr[Boolean] = js.undefined,
       fullWidth: js.UndefOr[Boolean] = js.undefined,
       href: js.UndefOr[String] = js.undefined,
-      mini: js.UndefOr[Boolean] = js.undefined,
       size: js.UndefOr[ItemSize] = js.undefined,
       variant: js.UndefOr[Variant] = js.undefined,
       // from ButtonBase
@@ -308,26 +289,26 @@ object MuiButton extends ComponentFactory[ButtonProps] {
       style: js.UndefOr[js.Object] = js.undefined,
       id: js.UndefOr[String] = js.undefined,
       title: js.UndefOr[String] = js.undefined,
+      className: js.UndefOr[String] = js.undefined,
       additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
   )(
       children: CtorType.ChildArg*
   ) = {
     val p: ButtonProps = ButtonProps(
       js.undefined,
-      classes,
       color,
-      component,
-      disabled,
-      disableFocusRipple,
-      disableRipple,
       fullWidth,
       href,
-      mini,
       size,
       variant,
+      // from ButtonBase
       action,
       buttonRef,
       centerRipple,
+      classes,
+      component,
+      disabled,
+      disableRipple,
       disableTouchRipple,
       focusRipple,
       focusVisibleClassName,
@@ -338,6 +319,7 @@ object MuiButton extends ComponentFactory[ButtonProps] {
       style,
       id,
       title,
+      className,
       additionalProps
     )
     val x = f(p) _

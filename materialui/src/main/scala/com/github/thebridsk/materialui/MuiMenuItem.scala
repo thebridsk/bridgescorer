@@ -15,13 +15,15 @@ trait MenuItemProps extends ListItemProps {
 object MenuItemProps extends PropsFactory[MenuItemProps] {
 
   /**
-    * @param p the object that will become the properties object
+    * @param props the object that will become the properties object
     * @param alignItems Defines the align-items style property.
     *                    Default: center
+    * @param autoFocus If true, the list item will be focused during the first mount. Focus will also be triggered
+    *                  if the value changes from false to true.
     * @param button If true, the list item will be a button (using ButtonBase).
     *                Default: false
     * @param classes Override or extend the styles applied to the component. See CSS API below for more details.
-    * @parem component The component used for the root node. Either a string to use a DOM element or a component.
+    * @param component The component used for the root node. Either a string to use a DOM element or a component.
     *                   By default, it's a li when button is false and a div when button is true
     * @param ContainerComponent The container component used when a ListItemSecondaryAction is rendered.
     *                            Default: "li"
@@ -38,11 +40,14 @@ object MenuItemProps extends PropsFactory[MenuItemProps] {
     * @param selected Use to apply selected styling.
     *                  Default: false
     * @param id the id attribute value of the element
+    * @param className css class name to add to element
+    * @param onClick
     * @param additionalProps a dictionary of additional properties
     */
   def apply[P <: MenuItemProps](
       props: js.UndefOr[P] = js.undefined,
       alignItems: js.UndefOr[AlignItem] = js.undefined,
+      autoFocus: js.UndefOr[Boolean] = js.undefined,
       button: js.UndefOr[Boolean] = js.undefined,
       classes: js.UndefOr[js.Dictionary[String]] = js.undefined,
       component: js.UndefOr[String] = js.undefined,
@@ -53,13 +58,15 @@ object MenuItemProps extends PropsFactory[MenuItemProps] {
       disableGutters: js.UndefOr[Boolean] = js.undefined,
       divider: js.UndefOr[Boolean] = js.undefined,
       selected: js.UndefOr[Boolean] = js.undefined,
-      onClick: js.UndefOr[(ReactEvent) => Unit] = js.undefined,
       id: js.UndefOr[String] = js.undefined,
+      className: js.UndefOr[String] = js.undefined,
+      onClick: js.UndefOr[(ReactEvent) => Unit] = js.undefined,
       additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
   ): P = {
     val p: P = ListItemProps(
       props,
       alignItems,
+      autoFocus,
       button,
       classes,
       component,
@@ -71,6 +78,7 @@ object MenuItemProps extends PropsFactory[MenuItemProps] {
       divider,
       selected,
       id,
+      className,
       additionalProps
     )
 
@@ -87,12 +95,15 @@ object MuiMenuItem extends ComponentFactory[MenuItemProps] {
   protected val f = JsComponent[MenuItemProps, Children.Varargs, Null](MenuItem)
 
   /**
+    * @param props the object that will become the properties object
     * @param alignItems Defines the align-items style property.
     *                    Default: center
+    * @param autoFocus If true, the list item will be focused during the first mount. Focus will also be triggered
+    *                  if the value changes from false to true.
     * @param button If true, the list item will be a button (using ButtonBase).
     *                Default: false
     * @param classes Override or extend the styles applied to the component. See CSS API below for more details.
-    * @parem component The component used for the root node. Either a string to use a DOM element or a component.
+    * @param component The component used for the root node. Either a string to use a DOM element or a component.
     *                   By default, it's a li when button is false and a div when button is true
     * @param ContainerComponent The container component used when a ListItemSecondaryAction is rendered.
     *                            Default: "li"
@@ -109,11 +120,14 @@ object MuiMenuItem extends ComponentFactory[MenuItemProps] {
     * @param selected Use to apply selected styling.
     *                  Default: false
     * @param id the id attribute value of the element
+    * @param className css class name to add to element
+    * @param onClick
     * @param additionalProps a dictionary of additional properties
     * @param children
     */
   def apply(
       alignItems: js.UndefOr[AlignItem] = js.undefined,
+      autoFocus: js.UndefOr[Boolean] = js.undefined,
       button: js.UndefOr[Boolean] = js.undefined,
       classes: js.UndefOr[js.Dictionary[String]] = js.undefined,
       component: js.UndefOr[String] = js.undefined,
@@ -124,14 +138,16 @@ object MuiMenuItem extends ComponentFactory[MenuItemProps] {
       disableGutters: js.UndefOr[Boolean] = js.undefined,
       divider: js.UndefOr[Boolean] = js.undefined,
       selected: js.UndefOr[Boolean] = js.undefined,
-      onClick: js.UndefOr[(ReactEvent) => Unit] = js.undefined,
       id: js.UndefOr[String] = js.undefined,
+      className: js.UndefOr[String] = js.undefined,
+      onClick: js.UndefOr[(ReactEvent) => Unit] = js.undefined,
       additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
   )(
       children: CtorType.ChildArg*
   ) = {
     val p: MenuItemProps = MenuItemProps(
       alignItems = alignItems,
+      autoFocus = autoFocus,
       button = button,
       classes = classes,
       component = component,
@@ -143,6 +159,7 @@ object MuiMenuItem extends ComponentFactory[MenuItemProps] {
       divider = divider,
       selected = selected,
       onClick = onClick,
+      className = className,
       id = id,
       additionalProps = additionalProps
     )

@@ -67,6 +67,7 @@ object AppBarProps extends PropsFactory[AppBarProps] {
     *                   Default 2
     * @param square If true, rounded corners are disabled.
     *                Default: false
+    * @param className css class name to add to element
     * @param additionalProps a dictionary of additional properties
     */
   def apply[P <: AppBarProps](
@@ -77,6 +78,7 @@ object AppBarProps extends PropsFactory[AppBarProps] {
       component: js.UndefOr[String] = js.undefined,
       elevation: js.UndefOr[Double] = js.undefined,
       square: js.UndefOr[Boolean] = js.undefined,
+      className: js.UndefOr[String] = js.undefined,
       additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
   ): AppBarProps = {
     val p: P = PaperProps(
@@ -85,6 +87,7 @@ object AppBarProps extends PropsFactory[AppBarProps] {
       component = component,
       elevation = elevation,
       square = square,
+      className = className,
       additionalProps = additionalProps
     )
 
@@ -119,6 +122,7 @@ object MuiAppBar extends ComponentFactory[AppBarProps] {
     *                   Default 2
     * @param square If true, rounded corners are disabled.
     *                Default: false
+    * @param className css class name to add to element
     * @param additionalProps a dictionary of additional properties
     */
   def apply(
@@ -128,6 +132,7 @@ object MuiAppBar extends ComponentFactory[AppBarProps] {
       component: js.UndefOr[String] = js.undefined,
       elevation: js.UndefOr[Double] = js.undefined,
       square: js.UndefOr[Boolean] = js.undefined,
+      className: js.UndefOr[String] = js.undefined,
       additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
   )(
       children: CtorType.ChildArg*
@@ -139,6 +144,7 @@ object MuiAppBar extends ComponentFactory[AppBarProps] {
       component = component,
       elevation = elevation,
       square = square,
+      className = className,
       additionalProps = additionalProps
     )
     val x = f(p) _
