@@ -22,8 +22,9 @@ protected trait ToolbarPropsPrivate extends js.Any {
 }
 
 @js.native
-trait ToolbarProps extends AdditionalProps with ToolbarPropsPrivate {
+trait ToolbarProps extends AdditionalProps with ToolbarPropsPrivate with StandardProps {
   val classes: js.UndefOr[js.Dictionary[String]] = js.native
+  val component: js.UndefOr[String] = js.native
   val disableGutters: js.UndefOr[Boolean] = js.native
 //  var variant: js.UndefOr[ToolbarVariant] = js.native
 }
@@ -44,24 +45,31 @@ object ToolbarProps extends PropsFactory[ToolbarProps] {
     * @param p the object that will become the properties object
     * @param classes Override or extend the styles applied to the component.
     *                 See CSS API below for more details.
+    * @param component The component used for the root node. Either a string to use a DOM element or a component.
+    *                  default: div
     * @param disableGutters If true, disables gutter padding.
     *                        Default: false
     * @param variant The variant to use.
     *                Default: regular
+    * @param className css class name to add to element
     * @param additionalProps a dictionary of additional properties
     */
   def apply[P <: ToolbarProps](
       props: js.UndefOr[P] = js.undefined,
       classes: js.UndefOr[js.Dictionary[String]] = js.undefined,
+      component: js.UndefOr[String] = js.undefined,
       disableGutters: js.UndefOr[Boolean] = js.undefined,
       variant: js.UndefOr[ToolbarVariant] = js.undefined,
+      className: js.UndefOr[String] = js.undefined,
       additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
   ): P = {
     val p = get(props, additionalProps)
 
     classes.foreach(p.updateDynamic("classes")(_))
+    component.foreach(p.updateDynamic("component")(_))
     disableGutters.foreach(p.updateDynamic("disableGutters")(_))
     variant.foreach(v => p.updateDynamic("variant")(v.value))
+    className.foreach(p.updateDynamic("className")(_))
 
     p
   }
@@ -76,24 +84,31 @@ object MuiToolbar {
   /**
     * @param classes Override or extend the styles applied to the component.
     *                 See CSS API below for more details.
+    * @param component The component used for the root node. Either a string to use a DOM element or a component.
+    *                  default: div
     * @param disableGutters If true, disables gutter padding.
     *                        Default: false
     * @param variant The variant to use.
     *                Default: regular
+    * @param className css class name to add to element
     * @param additionalProps a dictionary of additional properties
     */
   def apply(
       classes: js.UndefOr[js.Dictionary[String]] = js.undefined,
+      component: js.UndefOr[String] = js.undefined,
       disableGutters: js.UndefOr[Boolean] = js.undefined,
       variant: js.UndefOr[ToolbarVariant] = js.undefined,
+      className: js.UndefOr[String] = js.undefined,
       additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
   )(
       children: CtorType.ChildArg*
   ) = {
     val p: ToolbarProps = ToolbarProps(
       classes = classes,
+      component = component,
       disableGutters = disableGutters,
       variant = variant,
+      className = className,
       additionalProps = additionalProps
     )
     val x = f(p) _

@@ -8,7 +8,7 @@ import scala.scalajs.js
 import scala.scalajs.js.annotation._
 
 @js.native
-trait BackdropProps extends AdditionalProps {
+trait BackdropProps extends AdditionalProps with StandardProps {
 
   /**
     * Override or extend the styles applied to the
@@ -54,6 +54,7 @@ object BackdropProps extends PropsFactory[BackdropProps] {
     *                            You may specify a single timeout for all transitions,
     *                            or individually with an object. Either a Double or a
     *                            TransitionDuration object.
+    * @param className css class name to add to element
     * @param additionalProps a dictionary of additional properties
     */
   def apply[P <: BackdropProps](
@@ -62,12 +63,14 @@ object BackdropProps extends PropsFactory[BackdropProps] {
       invisible: js.UndefOr[Boolean] = js.undefined,
       open: js.UndefOr[Boolean] = js.undefined,
       transitionDuration: js.UndefOr[js.Object] = js.undefined,
+      className: js.UndefOr[String] = js.undefined,
       additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
   ) = {
     val p: P = get(props, additionalProps)
     classes.foreach(p.updateDynamic("classes")(_))
     invisible.foreach(p.updateDynamic("invisible")(_))
     open.foreach(p.updateDynamic("open")(_))
+    className.foreach(p.updateDynamic("className")(_))
     transitionDuration.foreach(p.updateDynamic("transitionDuration")(_))
 
     p
@@ -94,6 +97,7 @@ object MuiBackdrop extends ComponentFactory[BackdropProps] {
     *                            You may specify a single timeout for all transitions,
     *                            or individually with an object. Either a Double or a
     *                            TransitionDuration object.
+    * @param className css class name to add to element
     * @param additionalProps a dictionary of additional properties
     */
   def apply(
@@ -101,6 +105,7 @@ object MuiBackdrop extends ComponentFactory[BackdropProps] {
       invisible: js.UndefOr[Boolean] = js.undefined,
       open: js.UndefOr[Boolean] = js.undefined,
       transitionDuration: js.UndefOr[js.Object] = js.undefined,
+      className: js.UndefOr[String] = js.undefined,
       additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
   )(
       children: CtorType.ChildArg*
@@ -110,6 +115,7 @@ object MuiBackdrop extends ComponentFactory[BackdropProps] {
       invisible = invisible,
       open = open,
       transitionDuration = transitionDuration,
+      className = className,
       additionalProps = additionalProps
     )
     val x = f(p) _

@@ -8,7 +8,7 @@ import scala.scalajs.js
 import scala.scalajs.js.annotation._
 
 @js.native
-trait ModalProps extends AdditionalProps {
+trait ModalProps extends AdditionalProps with StandardProps {
 
   val backdropComponent: js.UndefOr[js.Object] = js.native
   val backdropProps: js.UndefOr[BackdropProps] = js.native
@@ -84,6 +84,7 @@ object ModalProps extends PropsFactory[ModalProps] {
     * @param onRendered Callback fired once the children has been mounted into the container.
     *                    It signals that the open={true} property took effect.
     * @param open If true, the modal is open.
+    * @param className css class name to add to element
     * @param additionalProps a dictionary of additional properties
     */
   def apply[P <: ModalProps](
@@ -107,6 +108,7 @@ object ModalProps extends PropsFactory[ModalProps] {
       onEscapeKeyDown: js.UndefOr[() => Unit] = js.undefined,
       onRendered: js.UndefOr[() => Unit] = js.undefined,
       open: js.UndefOr[Boolean] = js.undefined,
+      className: js.UndefOr[String] = js.undefined,
       additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
   ): P = {
     val p = get(props, additionalProps)
@@ -129,6 +131,7 @@ object ModalProps extends PropsFactory[ModalProps] {
     onEscapeKeyDown.foreach(p.updateDynamic("onEscapeKeyDown")(_))
     onRendered.foreach(p.updateDynamic("onRendered")(_))
     open.foreach(p.updateDynamic("open")(_))
+    className.foreach(p.updateDynamic("className")(_))
 
     p
   }

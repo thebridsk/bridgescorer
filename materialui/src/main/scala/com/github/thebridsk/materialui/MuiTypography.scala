@@ -76,6 +76,16 @@ object TextColor {
   val textSecondary = new TextColor("textSecondary")
 }
 
+class TextDisplay(val value: String) extends AnyVal {
+  override def toString() = value
+}
+
+object TextDisplay {
+  val initial = new TextColor("initial")
+  val block = new TextColor("block")
+  val inline = new TextColor("inline")
+}
+
 import js._
 
 @js.native
@@ -84,23 +94,24 @@ trait TypographyPropsPrivate extends js.Any {
   val alignInternal: js.UndefOr[String] = js.native
   @JSName("color")
   val colorInternal: js.UndefOr[String] = js.native
+  @JSName("display")
+  val displayInternal: js.UndefOr[String] = js.native
   @JSName("variant")
   val variantInternal: js.UndefOr[String] = js.native
 }
 
 @js.native
-trait TypographyProps extends AdditionalProps with TypographyPropsPrivate {
-//      val align: js.UndefOr[TextAlign] = js.native
+trait TypographyProps extends AdditionalProps with TypographyPropsPrivate with StandardProps {
+  // val align: js.UndefOr[TextAlign] = js.native
   val classes: js.UndefOr[js.Any] = js.native
-  val className: js.UndefOr[String] = js.native
-//      val color: js.UndefOr[TextColor] = js.native
+  // val color: js.UndefOr[TextColor] = js.native
   val component: js.UndefOr[String] = js.native
+  // val display: js.UndefOr[TextDisplay] = js.native
   val gutterBottom: js.UndefOr[Boolean] = js.native
-  val headlineMapping: js.UndefOr[Map[String, String]] = js.native
-  val inline: js.UndefOr[Boolean] = js.native
-  val nowrap: js.UndefOr[Boolean] = js.native
+  val noWrap: js.UndefOr[Boolean] = js.native
   val paragraph: js.UndefOr[Boolean] = js.native
-//      val variant: js.UndefOr[TextVariant] = js.native
+  // val variant: js.UndefOr[TextVariant] = js.native
+  val variantMapping: js.UndefOr[Map[String, String]] = js.native
 }
 object TypographyProps extends PropsFactory[TypographyProps] {
   import js._
@@ -120,6 +131,8 @@ object TypographyProps extends PropsFactory[TypographyProps] {
 //      v.map{ vv=>p.colorInternal=vv.value; None }.
 //        orElse{ p.colorInternal=js.undefined; None }
 //    }
+
+    def display = p.displayInternal.map(s => new TextDisplay(s))
 
     def variant = p.variantInternal.map(s => new TextVariant(s))
 
@@ -143,53 +156,53 @@ object TypographyProps extends PropsFactory[TypographyProps] {
     * @param component The component used for the root node. Either a string
     *                   to use a DOM element or a component. By default, it
     *                   maps the variant to a good default headline component.
+    * @param display Controls the display type.  Default: initial
     * @param gutterBottom If true, the text will have a bottom margin.
     *                      default: false
-    * @param headlineMapping We are empirically mapping the variant property
-    *                         to a range of different DOM element types. For instance,
-    *                         subtitle1 to <h6>. If you wish to change that mapping, you
-    *                         can provide your own. Alternatively, you can use the component
-    *                         property. The default mapping is the following:
-    *                         { h1: 'h1', h2: 'h2', h3: 'h3', h4: 'h4', h5: 'h5', h6: 'h6', subtitle1: 'h6', subtitle2: 'h6', body1: 'p', body2: 'p',
-    *                         // deprecated display4: 'h1', display3: 'h1', display2: 'h1', display1: 'h1', headline: 'h1', title: 'h2', subheading: 'h3',}
-    * @param inline Controls whether the Typography is inline or not.
-    *                Default: false
-    * @param nowrap If true, the text will not wrap, but instead will truncate with an ellipsis.
+    * @param noWrap If true, the text will not wrap, but instead will truncate with an ellipsis.
     *                Default: false
     * @param paragraph If true, the text will have a bottom margin.
     *                   Default: false
     * @param variant Applies the theme typography styles. Use body1 as the default value
     *                 with the legacy implementation and body2 with the new one.
+    * @param variantMapping We are empirically mapping the variant property to a range of
+    *                       different DOM element types. For instance, subtitle1 to <h6>.
+    *                       If you wish to change that mapping, you can provide your own.
+    *                       Alternatively, you can use the component property. The default
+    *                       mapping is the following:
+    *                         { h1: 'h1', h2: 'h2', h3: 'h3', h4: 'h4', h5: 'h5', h6: 'h6', subtitle1: 'h6', subtitle2: 'h6', body1: 'p', body2: 'p',
+    * @param className css class name to add to element
     * @param additionalProps a dictionary of additional properties
     */
   def apply[P <: TypographyProps](
       props: js.UndefOr[P] = js.undefined,
       align: js.UndefOr[TextAlign] = js.undefined,
       classes: js.UndefOr[js.Any] = js.undefined,
-      className: js.UndefOr[String] = js.undefined,
       color: js.UndefOr[TextColor] = js.undefined,
       component: js.UndefOr[String] = js.undefined,
+      display: js.UndefOr[TextDisplay] = js.undefined,
       gutterBottom: js.UndefOr[Boolean] = js.undefined,
-      headlineMapping: js.UndefOr[Map[String, String]] = js.undefined,
-      inline: js.UndefOr[Boolean] = js.undefined,
-      nowrap: js.UndefOr[Boolean] = js.undefined,
+      noWrap: js.UndefOr[Boolean] = js.undefined,
       paragraph: js.UndefOr[Boolean] = js.undefined,
       variant: js.UndefOr[TextVariant] = js.undefined,
+      variantMapping: js.UndefOr[Map[String, String]] = js.undefined,
+      className: js.UndefOr[String] = js.undefined,
       additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
   ): P = {
     val p = get(props, additionalProps)
 
     align.foreach(v => p.updateDynamic("align")(v.value))
     classes.foreach(p.updateDynamic("classes")(_))
-    className.foreach(p.updateDynamic("className")(_))
     color.foreach(v => p.updateDynamic("color")(v.value))
     component.foreach(p.updateDynamic("component")(_))
+    display.foreach( v => p.updateDynamic("display")(v.value))
     gutterBottom.foreach(p.updateDynamic("gutterBottom")(_))
-    headlineMapping.foreach(p.updateDynamic("headlineMapping")(_))
-    inline.foreach(p.updateDynamic("inline")(_))
-    nowrap.foreach(p.updateDynamic("nowrap")(_))
+    noWrap.foreach(p.updateDynamic("noWrap")(_))
     paragraph.foreach(p.updateDynamic("paragraph")(_))
     variant.foreach(v => p.updateDynamic("variant")(v.value))
+    variantMapping.foreach(p.updateDynamic("headlineMapping")(_))
+
+    className.foreach(p.updateDynamic("className")(_))
 
     p
   }
@@ -213,37 +226,36 @@ object MuiTypography extends ComponentFactory[TypographyProps] {
     * @param component The component used for the root node. Either a string
     *                   to use a DOM element or a component. By default, it
     *                   maps the variant to a good default headline component.
+    * @param display Controls the display type.  Default: initial
     * @param gutterBottom If true, the text will have a bottom margin.
     *                      default: false
-    * @param headlineMapping We are empirically mapping the variant property
-    *                         to a range of different DOM element types. For instance,
-    *                         subtitle1 to <h6>. If you wish to change that mapping, you
-    *                         can provide your own. Alternatively, you can use the component
-    *                         property. The default mapping is the following:
-    *                         { h1: 'h1', h2: 'h2', h3: 'h3', h4: 'h4', h5: 'h5', h6: 'h6', subtitle1: 'h6', subtitle2: 'h6', body1: 'p', body2: 'p',
-    *                         // deprecated display4: 'h1', display3: 'h1', display2: 'h1', display1: 'h1', headline: 'h1', title: 'h2', subheading: 'h3',}
-    * @param inline Controls whether the Typography is inline or not.
-    *                Default: false
-    * @param nowrap If true, the text will not wrap, but instead will truncate with an ellipsis.
+    * @param noWrap If true, the text will not wrap, but instead will truncate with an ellipsis.
     *                Default: false
     * @param paragraph If true, the text will have a bottom margin.
     *                   Default: false
     * @param variant Applies the theme typography styles. Use body1 as the default value
     *                 with the legacy implementation and body2 with the new one.
+    * @param variantMapping We are empirically mapping the variant property to a range of
+    *                       different DOM element types. For instance, subtitle1 to <h6>.
+    *                       If you wish to change that mapping, you can provide your own.
+    *                       Alternatively, you can use the component property. The default
+    *                       mapping is the following:
+    *                         { h1: 'h1', h2: 'h2', h3: 'h3', h4: 'h4', h5: 'h5', h6: 'h6', subtitle1: 'h6', subtitle2: 'h6', body1: 'p', body2: 'p',
+    * @param className css class name to add to element
     * @param additionalProps a dictionary of additional properties
     */
   def apply(
       align: js.UndefOr[TextAlign] = js.undefined,
       classes: js.UndefOr[js.Any] = js.undefined,
-      className: js.UndefOr[String] = js.undefined,
       color: js.UndefOr[TextColor] = js.undefined,
       component: js.UndefOr[String] = js.undefined,
+      display: js.UndefOr[TextDisplay] = js.undefined,
       gutterBottom: js.UndefOr[Boolean] = js.undefined,
-      headlineMapping: js.UndefOr[Map[String, String]] = js.undefined,
-      inline: js.UndefOr[Boolean] = js.undefined,
-      nowrap: js.UndefOr[Boolean] = js.undefined,
+      noWrap: js.UndefOr[Boolean] = js.undefined,
       paragraph: js.UndefOr[Boolean] = js.undefined,
       variant: js.UndefOr[TextVariant] = js.undefined,
+      variantMapping: js.UndefOr[Map[String, String]] = js.undefined,
+      className: js.UndefOr[String] = js.undefined,
       additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
   )(
       children: CtorType.ChildArg*
@@ -251,15 +263,15 @@ object MuiTypography extends ComponentFactory[TypographyProps] {
     val p: TypographyProps = TypographyProps(
       align = align,
       classes = classes,
-      className = className,
       color = color,
       component = component,
+      display = display,
       gutterBottom = gutterBottom,
-      headlineMapping = headlineMapping,
-      inline = inline,
-      nowrap = nowrap,
+      noWrap = noWrap,
       paragraph = paragraph,
       variant = variant,
+      variantMapping = variantMapping,
+      className = className,
       additionalProps = additionalProps
     )
     val x = f(p) _

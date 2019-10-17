@@ -6,10 +6,25 @@ import japgolly.scalajs.react.vdom._
 import org.scalajs.dom
 import scala.scalajs.js
 import scala.scalajs.js.annotation._
+import scala.language.implicitConversions
+
+class ItemEdge(val value: js.Any) extends AnyVal
+object ItemEdge {
+  val start = new ItemEdge("start")
+  val end = new ItemEdge("end")
+  val False = new ItemEdge(false)
+  val values = List(start,end,False)
+
+  implicit def toJsAny(cv: ItemEdge): js.Any = cv.value
+}
+
+
 @js.native
 protected trait IconButtonPropsPrivate extends js.Any {
   @JSName("color")
   val colorInternal: js.UndefOr[String] = js.native
+  @JSName("edge")
+  val edgeInternal: js.UndefOr[js.Any] = js.native
   @JSName("size")
   val sizeInternal: js.UndefOr[String] = js.native
   @JSName("variant")
@@ -21,7 +36,6 @@ trait IconButtonProps extends ButtonBaseProps with IconButtonPropsPrivate {
   val disableFocusRipple: js.UndefOr[Boolean] = js.native
   val fullWidth: js.UndefOr[Boolean] = js.native
   val href: js.UndefOr[String] = js.native
-  val mini: js.UndefOr[Boolean] = js.native
 
 }
 object IconButtonProps extends PropsFactory[IconButtonProps] {
@@ -30,6 +44,8 @@ object IconButtonProps extends PropsFactory[IconButtonProps] {
   implicit class WrapButtonProps(val p: IconButtonProps) extends AnyVal {
 
     def color = p.colorInternal.map(s => new ColorVariant(s))
+
+    def edge = p.edgeInternal.map( s => new ItemEdge(s))
 
 //    def color_= (v: js.UndefOr[ColorVariant]) = { p.colorInternal = v.map(pp => pp.value) }
 
@@ -50,9 +66,12 @@ object IconButtonProps extends PropsFactory[IconButtonProps] {
     *                 for more details.
     * @param color The color of the component. It supports those theme colors
     *               that make sense for this component.  Default: ColorVariant.default
-    * @param disabled If `true`, the button will be disabled.  Default: false
-    * @param disableRipple If `true`, the ripple effect will be disabled.
-
+    * @param edge  If given, uses a negative margin to counteract the padding on one side
+    *              (this is often helpful for aligning the left or right side of the icon
+    *              with content above or below, without ruining the border size and shape).
+    *              Values: "start", "end", false.  default: false
+    * @param size The size of the button. `small` is equivalent to the dense button styling.
+    *              Default: ItemSize.medium
     * @param action Callback fired when the component mounts. This is useful when
     *                you want to trigger an action programmatically. It currently
     *                only supports focusVisible() action.
@@ -63,9 +82,6 @@ object IconButtonProps extends PropsFactory[IconButtonProps] {
     * @param buttonRef Use that property to pass a ref callback to the native button component.
     * @param centerRipple If true, the ripples will be centered. They won't start at the cursor interaction position.
     *                      Default: false
-    * @param component The component used for the root node.
-    *                   Either a string to use a DOM element or a component.
-    *                   Default: "button"
     * @param disableTouchRipple If true, the touch ripple effect will be disabled.  Default: false
     * @param focusRipple If true, the base button will have a keyboard focus ripple. disableRipple must also be false
     *                     Default: false
@@ -80,21 +96,23 @@ object IconButtonProps extends PropsFactory[IconButtonProps] {
     *              button component. Valid property values include button, submit, and reset.
     *              Default: "button"
     * @param id the value of the id attribute
+    * @param title the value of the title attribute
+    * @param className css class name to add to element
+    * @param additionalProps a dictionary of additional properties
     */
   def apply[P <: IconButtonProps](
       props: js.UndefOr[P] = js.undefined,
-      classes: js.UndefOr[js.Dictionary[String]] = js.undefined,
       color: js.UndefOr[ColorVariant] = js.undefined,
-      disabled: js.UndefOr[Boolean] = js.undefined,
-      disableRipple: js.UndefOr[Boolean] = js.undefined,
+      edge: js.UndefOr[ItemEdge] = js.undefined,
+      size: js.UndefOr[ItemSize] = js.undefined,
       // from ButtonBase
       action: js.UndefOr[js.Object => Unit] = js.undefined,
       buttonRef: js.UndefOr[js.Object] = js.undefined, // js.object or js.Function0[ref]
       centerRipple: js.UndefOr[Boolean] = js.undefined,
-//        classes: js.UndefOr[js.Dictionary[String]] = js.undefined,
+      classes: js.UndefOr[js.Dictionary[String]] = js.undefined,
       component: js.UndefOr[String] = js.undefined,
-//        disabled: js.UndefOr[Boolean] = js.undefined,
-//        disableRipple: js.UndefOr[Boolean] = js.undefined,
+      disabled: js.UndefOr[Boolean] = js.undefined,
+      disableRipple: js.UndefOr[Boolean] = js.undefined,
       disableTouchRipple: js.UndefOr[Boolean] = js.undefined,
       focusRipple: js.UndefOr[Boolean] = js.undefined,
       focusVisibleClassName: js.UndefOr[String] = js.undefined,
@@ -105,9 +123,10 @@ object IconButtonProps extends PropsFactory[IconButtonProps] {
       style: js.UndefOr[js.Object] = js.undefined,
       id: js.UndefOr[String] = js.undefined,
       title: js.UndefOr[String] = js.undefined,
+      className: js.UndefOr[String] = js.undefined,
       additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
   ): P = {
-    val p = ButtonBaseProps[P](
+    val p: P = ButtonBaseProps(
       props,
       action,
       buttonRef,
@@ -126,10 +145,13 @@ object IconButtonProps extends PropsFactory[IconButtonProps] {
       style,
       id,
       title,
+      className,
       additionalProps
     )
 
     color.foreach(v => p.updateDynamic("color")(v.value))
+    edge.foreach(v => p.updateDynamic("edge")(v.value))
+    size.foreach(v => p.updateDynamic("size")(v.value))
 
     p
   }
@@ -149,9 +171,12 @@ object MuiIconButton extends ComponentFactory[IconButtonProps] {
     *                 for more details.
     * @param color The color of the component. It supports those theme colors
     *               that make sense for this component.  Default: ColorVariant.default
-    * @param disabled If `true`, the button will be disabled.  Default: false
-    * @param disableRipple If `true`, the ripple effect will be disabled.
-
+    * @param edge  If given, uses a negative margin to counteract the padding on one side
+    *              (this is often helpful for aligning the left or right side of the icon
+    *              with content above or below, without ruining the border size and shape).
+    *              Values: "start", "end", false.  default: false
+    * @param size The size of the button. `small` is equivalent to the dense button styling.
+    *              Default: ItemSize.medium
     * @param action Callback fired when the component mounts. This is useful when
     *                you want to trigger an action programmatically. It currently
     *                only supports focusVisible() action.
@@ -162,9 +187,6 @@ object MuiIconButton extends ComponentFactory[IconButtonProps] {
     * @param buttonRef Use that property to pass a ref callback to the native button component.
     * @param centerRipple If true, the ripples will be centered. They won't start at the cursor interaction position.
     *                      Default: false
-    * @param component The component used for the root node.
-    *                   Either a string to use a DOM element or a component.
-    *                   Default: "button"
     * @param disableTouchRipple If true, the touch ripple effect will be disabled.  Default: false
     * @param focusRipple If true, the base button will have a keyboard focus ripple. disableRipple must also be false
     *                     Default: false
@@ -178,22 +200,23 @@ object MuiIconButton extends ComponentFactory[IconButtonProps] {
     * @param type Used to control the button's purpose. This property passes the value to the type attribute of the native
     *              button component. Valid property values include button, submit, and reset.
     *              Default: "button"
-    * @param title the value of the title attribute
     * @param id the value of the id attribute
+    * @param title the value of the title attribute
+    * @param className css class name to add to element
+    * @param additionalProps a dictionary of additional properties
     */
   def apply(
-      classes: js.UndefOr[js.Dictionary[String]] = js.undefined,
       color: js.UndefOr[ColorVariant] = js.undefined,
-      disabled: js.UndefOr[Boolean] = js.undefined,
-      disableRipple: js.UndefOr[Boolean] = js.undefined,
+      edge: js.UndefOr[ItemEdge] = js.undefined,
+      size: js.UndefOr[ItemSize] = js.undefined,
       // from ButtonBase
       action: js.UndefOr[js.Object => Unit] = js.undefined,
       buttonRef: js.UndefOr[js.Object] = js.undefined, // js.object or js.Function0[ref]
       centerRipple: js.UndefOr[Boolean] = js.undefined,
-//        classes: js.UndefOr[js.Dictionary[String]] = js.undefined,
+      classes: js.UndefOr[js.Dictionary[String]] = js.undefined,
       component: js.UndefOr[String] = js.undefined,
-//        disabled: js.UndefOr[Boolean] = js.undefined,
-//        disableRipple: js.UndefOr[Boolean] = js.undefined,
+      disabled: js.UndefOr[Boolean] = js.undefined,
+      disableRipple: js.UndefOr[Boolean] = js.undefined,
       disableTouchRipple: js.UndefOr[Boolean] = js.undefined,
       focusRipple: js.UndefOr[Boolean] = js.undefined,
       focusVisibleClassName: js.UndefOr[String] = js.undefined,
@@ -204,19 +227,23 @@ object MuiIconButton extends ComponentFactory[IconButtonProps] {
       style: js.UndefOr[js.Object] = js.undefined,
       id: js.UndefOr[String] = js.undefined,
       title: js.UndefOr[String] = js.undefined,
+      className: js.UndefOr[String] = js.undefined,
       additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
   )(
       children: CtorType.ChildArg*
   ) = {
     val p: IconButtonProps = IconButtonProps(
-      classes = classes,
       color = color,
-      disabled = disabled,
-      disableRipple = disableRipple,
+      edge = edge,
+      size = size,
+      // from ButtonBase
       action = action,
       buttonRef = buttonRef,
       centerRipple = centerRipple,
+      classes = classes,
       component = component,
+      disabled = disabled,
+      disableRipple = disableRipple,
       disableTouchRipple = disableTouchRipple,
       focusRipple = focusRipple,
       focusVisibleClassName = focusVisibleClassName,
@@ -227,6 +254,7 @@ object MuiIconButton extends ComponentFactory[IconButtonProps] {
       style = style,
       id = id,
       title = title,
+      className = className,
       additionalProps = additionalProps
     )
     val x = f(p) _

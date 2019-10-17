@@ -8,7 +8,7 @@ import scala.scalajs.js
 import scala.scalajs.js.annotation._
 
 @js.native
-trait ButtonBaseProps extends AdditionalProps {
+trait ButtonBaseProps extends AdditionalProps with StandardProps {
   val action: js.UndefOr[js.Object => Unit] = js.native
   val buttonRef
       : js.UndefOr[js.Object] = js.native // js.object or js.Function0[ref]
@@ -67,6 +67,7 @@ object ButtonBaseProps extends PropsFactory[ButtonBaseProps] {
     *              Default: "button"
     * @param id the value of the id attribute
     * @param title the value of the title attribute
+    * @param className css class name to add to element
     * @param additionalProps a dictionary of additional properties
     */
   def apply[P <: ButtonBaseProps](
@@ -88,6 +89,7 @@ object ButtonBaseProps extends PropsFactory[ButtonBaseProps] {
       style: js.UndefOr[js.Object] = js.undefined,
       id: js.UndefOr[String] = js.undefined,
       title: js.UndefOr[String] = js.undefined,
+      className: js.UndefOr[String] = js.undefined,
       additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
   ): P = {
     val p = get(props, additionalProps)
@@ -109,6 +111,7 @@ object ButtonBaseProps extends PropsFactory[ButtonBaseProps] {
     style.foreach(p.updateDynamic("style")(_))
     id.foreach(p.updateDynamic("id")(_))
     title.foreach(p.updateDynamic("title")(_))
+    className.foreach(p.updateDynamic("className")(_))
     p
   }
 

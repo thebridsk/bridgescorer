@@ -9,7 +9,7 @@ import scala.scalajs.js.annotation._
 import scala.scalajs.js.UndefOr
 
 @js.native
-trait PaperProps extends AdditionalProps {
+trait PaperProps extends AdditionalProps with StandardProps {
 
   val classes: js.UndefOr[js.Dictionary[String]] = js.native
   val component: js.UndefOr[String] = js.native
@@ -31,6 +31,7 @@ object PaperProps extends PropsFactory[PaperProps] {
     *                   Default 2
     * @param square If true, rounded corners are disabled.
     *                Default: false
+    * @param className css class name to add to element
     * @param additionalProps a dictionary of additional properties
     */
   def apply[P <: PaperProps](
@@ -40,6 +41,7 @@ object PaperProps extends PropsFactory[PaperProps] {
       elevation: js.UndefOr[Double] = js.undefined,
       square: js.UndefOr[Boolean] = js.undefined,
       onClick: js.UndefOr[ReactEvent => Unit] = js.undefined,
+      className: js.UndefOr[String] = js.undefined,
       additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
   ): P = {
     val p = get(props, additionalProps)
@@ -48,6 +50,7 @@ object PaperProps extends PropsFactory[PaperProps] {
     elevation.foreach(p.updateDynamic("elevation")(_))
     square.foreach(p.updateDynamic("square")(_))
     onClick.map(p.updateDynamic("onClick")(_))
+    className.map(p.updateDynamic("className")(_))
     p
   }
 }
@@ -69,6 +72,7 @@ object MuiPaper extends ComponentFactory[PaperProps] {
     *                   Default 2
     * @param square If true, rounded corners are disabled.
     *                Default: false
+    * @param className css class name to add to element
     * @param additionalProps a dictionary of additional properties
     */
   def apply(
@@ -77,6 +81,7 @@ object MuiPaper extends ComponentFactory[PaperProps] {
       elevation: js.UndefOr[Double] = js.undefined,
       square: js.UndefOr[Boolean] = js.undefined,
       onClick: js.UndefOr[ReactEvent => Unit] = js.undefined,
+      className: js.UndefOr[String] = js.undefined,
       additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
   )(
       children: CtorType.ChildArg*
@@ -87,6 +92,7 @@ object MuiPaper extends ComponentFactory[PaperProps] {
       elevation = elevation,
       square = square,
       onClick = onClick,
+      className = className,
       additionalProps = additionalProps
     )
     val x = f(p) _

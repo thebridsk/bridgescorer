@@ -145,12 +145,14 @@ protected trait PopoverPropsPrivate extends js.Any {
 trait PopoverProps extends ModalProps with PopoverPropsPrivate {
   import js._
   val action: js.UndefOr[js.Object => Unit] = js.native
+  // val anchorEl: js.UndefOr[AnchorElement] = js.native
   val anchorOrigin: js.UndefOr[AnchorOrigin] = js.native
   val anchorPosition: js.UndefOr[AnchorPosition] = js.native
+  // val anchorReference: js.UndefOr[AnchorReference] = js.native
   val elevation: js.UndefOr[Double] = js.native
   val getContentAnchorEl: js.UndefOr[() => js.Object] = js.native
   val marginThreshold: js.UndefOr[Double] = js.native
-  val modalClasses: js.UndefOr[ModalProps] = js.native
+  val modalClasses: js.UndefOr[js.Object] = js.native
   val onEnter: js.UndefOr[() => Unit] = js.native
   val onEntered: js.UndefOr[() => Unit] = js.native
   val onEntering: js.UndefOr[() => Unit] = js.native
@@ -161,9 +163,6 @@ trait PopoverProps extends ModalProps with PopoverPropsPrivate {
   val transformOrigin: js.UndefOr[js.Object] = js.native
   val transitionComponent: js.UndefOr[js.Object] = js.native
   val transitionProps: js.UndefOr[js.Object] = js.native
-
-//  val anchorEl: js.UndefOr[AnchorElement] = js.native
-//  val anchorReference: js.UndefOr[AnchorReference] = js.native
 //  val transitionDuration: js.UndefOr[JsNumber | TransitionDuration] = js.native
 }
 object PopoverProps extends PropsFactory[PopoverProps] {
@@ -226,7 +225,9 @@ object PopoverProps extends PropsFactory[PopoverProps] {
     *                            popover. It's used to correctly scroll and set the position
     *                            of the popover. The positioning strategy tries to make the
     *                            content anchor element just above the anchor element.
-    * @param marginThreshold classes property applied to the Modal element.
+    * @param marginThreshold Specifies how close to the edge of the window the popover can appear.
+    *                        default: 16
+    * @param ModalClasses classes property applied to the Modal element.
     * @param onEnter Callback fired before the component is entering.
     * @param onEntered Callback fired when the component has entered.
     * @param onEntering Callback fired when the component is entering.
@@ -299,6 +300,7 @@ object PopoverProps extends PropsFactory[PopoverProps] {
     * @param onRendered Callback fired once the children has been mounted into the container.
     *                    It signals that the open={true} property took effect.
     * @param open If true, the modal is open.
+    * @param className css class name to add to element
     * @param additionalProps a dictionary of additional properties
     */
   def apply[P <: PopoverProps](
@@ -311,7 +313,7 @@ object PopoverProps extends PropsFactory[PopoverProps] {
       elevation: js.UndefOr[Double] = js.undefined,
       getContentAnchorEl: js.UndefOr[() => js.Object] = js.undefined,
       marginThreshold: js.UndefOr[Double] = js.undefined,
-      modalClasses: js.UndefOr[ModalProps] = js.undefined,
+      modalClasses: js.UndefOr[js.Object] = js.undefined,
       onEnter: js.UndefOr[() => Unit] = js.undefined,
       onEntered: js.UndefOr[() => Unit] = js.undefined,
       onEntering: js.UndefOr[() => Unit] = js.undefined,
@@ -343,6 +345,7 @@ object PopoverProps extends PropsFactory[PopoverProps] {
       onEscapeKeyDown: js.UndefOr[() => Unit] = js.undefined,
       onRendered: js.UndefOr[() => Unit] = js.undefined,
       open: js.UndefOr[Boolean] = js.undefined,
+      className: js.UndefOr[String] = js.undefined,
       additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
   ) = {
     val p: P = ModalProps(
@@ -365,6 +368,7 @@ object PopoverProps extends PropsFactory[PopoverProps] {
       onEscapeKeyDown,
       onRendered,
       open,
+      className,
       additionalProps
     )
 

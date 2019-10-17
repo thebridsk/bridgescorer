@@ -22,8 +22,9 @@ protected trait ListItemPropsPrivate extends js.Any {
 }
 
 @js.native
-trait ListItemProps extends AdditionalProps with ListItemPropsPrivate {
-//        var alignItem: js.UndefOr[AlignItem] = js.native
+trait ListItemProps extends AdditionalProps with ListItemPropsPrivate with StandardProps {
+  // val alignItem: js.UndefOr[AlignItem] = js.native
+  val autoFocus: js.UndefOr[Boolean] = js.native
   val button: js.UndefOr[Boolean] = js.native
   val classes: js.UndefOr[js.Dictionary[String]] = js.native
   val component: js.UndefOr[String] = js.native
@@ -53,10 +54,12 @@ object ListItemProps extends PropsFactory[ListItemProps] {
     * @param p the object that will become the properties object
     * @param alignItems Defines the align-items style property.
     *                    Default: center
+    * @param autoFocus If true, the list item will be focused during the first mount. Focus will also be triggered
+    *                  if the value changes from false to true.
     * @param button If true, the list item will be a button (using ButtonBase).
     *                Default: false
     * @param classes Override or extend the styles applied to the component. See CSS API below for more details.
-    * @parem component The component used for the root node. Either a string to use a DOM element or a component.
+    * @param component The component used for the root node. Either a string to use a DOM element or a component.
     *                   By default, it's a li when button is false and a div when button is true
     * @param ContainerComponent The container component used when a ListItemSecondaryAction is rendered.
     *                            Default: "li"
@@ -73,11 +76,13 @@ object ListItemProps extends PropsFactory[ListItemProps] {
     * @param selected Use to apply selected styling.
     *                  Default: false
     * @param id the value of the id attribute
+    * @param className css class name to add to element
     * @param additionalProps a dictionary of additional properties
     */
   def apply[P <: ListItemProps](
       props: js.UndefOr[P] = js.undefined,
       alignItems: js.UndefOr[AlignItem] = js.undefined,
+      autoFocus: js.UndefOr[Boolean] = js.undefined,
       button: js.UndefOr[Boolean] = js.undefined,
       classes: js.UndefOr[js.Dictionary[String]] = js.undefined,
       component: js.UndefOr[String] = js.undefined,
@@ -89,11 +94,13 @@ object ListItemProps extends PropsFactory[ListItemProps] {
       divider: js.UndefOr[Boolean] = js.undefined,
       selected: js.UndefOr[Boolean] = js.undefined,
       id: js.UndefOr[String] = js.undefined,
+      className: js.UndefOr[String] = js.undefined,
       additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
   ): P = {
     val p = get(props, additionalProps)
 
     alignItems.foreach(v => p.updateDynamic("alignItems")(v.value))
+    autoFocus.foreach(p.updateDynamic("autoFocus")(_))
     button.foreach(p.updateDynamic("button")(_))
     classes.foreach(p.updateDynamic("classes")(_))
     component.foreach(p.updateDynamic("component")(_))
@@ -105,6 +112,7 @@ object ListItemProps extends PropsFactory[ListItemProps] {
     divider.foreach(p.updateDynamic("divider")(_))
     selected.foreach(p.updateDynamic("selected")(_))
     id.foreach(p.updateDynamic("id")(_))
+    className.foreach(p.updateDynamic("className")(_))
 
     p
   }
@@ -120,10 +128,12 @@ object MuiListItem extends ComponentFactory[ListItemProps] {
   /**
     * @param alignItems Defines the align-items style property.
     *                    Default: center
+    * @param autoFocus If true, the list item will be focused during the first mount. Focus will also be triggered
+    *                  if the value changes from false to true.
     * @param button If true, the list item will be a button (using ButtonBase).
     *                Default: false
     * @param classes Override or extend the styles applied to the component. See CSS API below for more details.
-    * @parem component The component used for the root node. Either a string to use a DOM element or a component.
+    * @param component The component used for the root node. Either a string to use a DOM element or a component.
     *                   By default, it's a li when button is false and a div when button is true
     * @param ContainerComponent The container component used when a ListItemSecondaryAction is rendered.
     *                            Default: "li"
@@ -140,11 +150,13 @@ object MuiListItem extends ComponentFactory[ListItemProps] {
     * @param selected Use to apply selected styling.
     *                  Default: false
     * @param id the id attribute value of the element
+    * @param className css class name to add to element
     * @param additionalProps a dictionary of additional properties
     * @param children
     */
   def apply(
       alignItems: js.UndefOr[AlignItem] = js.undefined,
+      autoFocus: js.UndefOr[Boolean] = js.undefined,
       button: js.UndefOr[Boolean] = js.undefined,
       classes: js.UndefOr[js.Dictionary[String]] = js.undefined,
       component: js.UndefOr[String] = js.undefined,
@@ -156,12 +168,14 @@ object MuiListItem extends ComponentFactory[ListItemProps] {
       divider: js.UndefOr[Boolean] = js.undefined,
       selected: js.UndefOr[Boolean] = js.undefined,
       id: js.UndefOr[String] = js.undefined,
+      className: js.UndefOr[String] = js.undefined,
       additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
   )(
       children: CtorType.ChildArg*
   ) = {
     val p: ListItemProps = ListItemProps(
       alignItems = alignItems,
+      autoFocus = autoFocus,
       button = button,
       classes = classes,
       component = component,
@@ -173,6 +187,7 @@ object MuiListItem extends ComponentFactory[ListItemProps] {
       divider = divider,
       selected = selected,
       id = id,
+      className = className,
       additionalProps = additionalProps
     )
     val x = f(p) _
