@@ -35,6 +35,13 @@ class Statistic(name: String) {
   }
 
   /**
+    * Returns true if v is between vmin and vmax
+    */
+  def inRange( v: Double ): Boolean = {
+    v >= vmin && v <= vmax
+  }
+
+  /**
     * determines the distance from ave.
     * @param v
     * @param sizemin must be greater than 0

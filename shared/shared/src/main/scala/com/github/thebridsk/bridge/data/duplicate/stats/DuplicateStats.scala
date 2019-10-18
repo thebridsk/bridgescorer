@@ -27,6 +27,7 @@ case class DuplicateStats(
       playerDoubledStats = ds.playerDoubledStats.orElse(playerDoubledStats),
       comparisonStats = ds.comparisonStats.orElse(comparisonStats),
       playersOpponentsStats =
-        ds.playersOpponentsStats.orElse(playersOpponentsStats)
+        ds.playersOpponentsStats.orElse(playersOpponentsStats),
+      playerPlacesStats = ds.playerPlacesStats.orElse(playerPlacesStats)
     )
 }

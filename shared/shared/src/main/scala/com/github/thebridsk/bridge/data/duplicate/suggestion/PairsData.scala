@@ -428,6 +428,10 @@ class Stat(val colorBy: ColorBy) extends Statistic(colorBy.name) {
     scale(colorBy.value(pd), sizemin, sizemax)
   }
 
+  def valueInRange(pd: PairData): Boolean = {
+    inRange(colorBy.value(pd))
+  }
+
   /**
     * determines the distance from ave.
     * @param pd

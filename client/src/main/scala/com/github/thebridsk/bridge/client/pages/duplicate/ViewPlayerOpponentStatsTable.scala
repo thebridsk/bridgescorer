@@ -188,10 +188,10 @@ object ViewPlayerOpponentStatsTableInternal {
   )
 
   val columns = List[StatColumn[Any]](
-      new PercentColumn( "MPPct", "% MP" ) { def getValue( pd: PlayerOpponentStat ) = pd.wonMP*100.0/pd.totalMP },
-      new PercentColumn( "BeatPts", "% Beat" ) { def getValue( pd: PlayerOpponentStat ) = pd.matchesBeat*100.0/pd.matchesPlayed },
-      new PercentColumn( "TiedPts", "% Tied" ) { def getValue( pd: PlayerOpponentStat ) = pd.matchesTied*100.0/pd.matchesPlayed },
-      new PercentColumn( "LostPts", "% Lost" ) { def getValue( pd: PlayerOpponentStat ) = (pd.matchesPlayed-pd.matchesBeat-pd.matchesTied)*100.0/pd.matchesPlayed },
+      new PercentColumn( "MPPct", "% MP" ) { def getValue( pd: PlayerOpponentStat ) = if (pd.totalMP == 0) 0.0 else pd.wonMP*100.0/pd.totalMP },
+      new PercentColumn( "BeatPts", "% Beat" ) { def getValue( pd: PlayerOpponentStat ) = if (pd.matchesPlayed == 0) 0.0 else pd.matchesBeat*100.0/pd.matchesPlayed },
+      new PercentColumn( "TiedPts", "% Tied" ) { def getValue( pd: PlayerOpponentStat ) = if (pd.matchesPlayed == 0) 0.0 else pd.matchesTied*100.0/pd.matchesPlayed },
+      new PercentColumn( "LostPts", "% Lost" ) { def getValue( pd: PlayerOpponentStat ) = if (pd.matchesPlayed == 0) 0.0 else (pd.matchesPlayed-pd.matchesBeat-pd.matchesTied)*100.0/pd.matchesPlayed },
 
       new IntColumn( "Won", "WonMP" ) {
         def getValue( pd: PlayerOpponentStat ) = pd.wonMP
