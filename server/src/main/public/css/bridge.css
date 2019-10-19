@@ -35,6 +35,7 @@
   --color-calendar-off-range: rgb(100,108,114);
   --color-scrollbar-thumb: rgb(140,140,140);
   --color-scrollbar-track: rgb(230,230,230);
+  --color-border-combobox: black solid 1px;
 }
 
 @media screen {
@@ -75,6 +76,7 @@
     --color-scrollbar-thumb: var(--color-fg);
     --color-scrollbar-thumb: rgb(80,80,80);
     --color-scrollbar-track: rgb(120,120,120);
+    --color-border-combobox: black solid 1px;
   }
 
   [data-theme="dark"] {
@@ -93,7 +95,7 @@
     --color-fg-button-required: rgb(210,210,210);
     --color-button-required-not-next: rgb(64,64,0);
     --color-fg-button-required-not-next: rgb(210,210,210);
-    --color-bg-popupoverlay: black;
+    --color-bg-popupoverlay: rgb(40,40,40);
     --color-bg-popup: black;
     --color-popup-border: rgb(210,210,210);
     --color-tooltip-hover: orange;
@@ -111,6 +113,7 @@
     --color-calendar-off-range: rgb(100,108,114);
     --color-scrollbar-thumb: rgb(120,120,120);
     --color-scrollbar-track: rgb(80,80,80);
+    --color-border-combobox: white solid 1px;
   }
 
 }
@@ -863,6 +866,11 @@ body > div > div > div {
 {
   color: var(--color-fg-default-button);
   background-color: var(--color-default-button);
+  border: var(--color-border-combobox);
+}
+.comboboxLightDark > span > button
+{
+  border-left: var(--color-border-combobox);
 }
 .comboboxLightDark + div
 {
