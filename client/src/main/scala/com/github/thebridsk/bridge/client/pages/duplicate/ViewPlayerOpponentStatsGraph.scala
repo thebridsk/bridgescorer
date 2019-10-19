@@ -17,6 +17,7 @@ import com.github.thebridsk.color.Color
 import com.github.thebridsk.bridge.clientcommon.react.CheckBox
 import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles
 import com.github.thebridsk.bridge.clientcommon.react.ColorBar
+import com.github.thebridsk.bridge.clientcommon.react.PieChart
 import com.github.thebridsk.bridge.clientcommon.react.Table
 import com.github.thebridsk.bridge.clientcommon.react.SvgRect
 import com.github.thebridsk.bridge.clientcommon.react.Tooltip
@@ -257,10 +258,20 @@ object ViewPlayerOpponentStatsGraphInternal {
                     <.td(
                       ^.colSpan:=pos.players.length+2,
                       "The first circle in a cell is the match results against the opponent.",
-                      " Green indicates the opponent was beaten, gray indicates a tie, and red indicates losing.",
+                      " Green, ",
+                      PieChart( 15, 1.0::Nil, Some(ComparisonPieChart.ColorGood::Nil), attrs=Some(^.display := "inline-block") ),
+                      ", indicates the opponent was beaten, gray, ",
+                      PieChart( 15, 1.0::Nil, Some(ComparisonPieChart.ColorNeutral::Nil), attrs=Some(^.display := "inline-block") ),
+                      ", indicates a tie, and red, ",
+                      PieChart( 15, 1.0::Nil, Some(ComparisonPieChart.ColorBad::Nil), attrs=Some(^.display := "inline-block") ),
+                      ", indicates losing.",
                       <.br,
                       "The second circle is the match point results against the opponent.",
-                      " Green indicates the match points won, while red indicates match points lost.",
+                      " Green, ",
+                      PieChart( 15, 1.0::Nil, Some(ComparisonPieChart.ColorGood::Nil), attrs=Some(^.display := "inline-block") ),
+                      ", indicates the match points won, while red, ",
+                      PieChart( 15, 1.0::Nil, Some(ComparisonPieChart.ColorBad::Nil), attrs=Some(^.display := "inline-block") ),
+                      ", indicates match points lost.",
 
                     ),
                   ),
