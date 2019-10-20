@@ -48,6 +48,7 @@ lazy val colorJS: Project = BldColor.colorJS
 lazy val colorJVM: Project = BldColor.colorJVM
 
 lazy val materialui = BldMaterialUI.materialui
+lazy val redux = BldRedux.redux
 lazy val `bridgescorer-clientcommon` = BldBridgeClientCommon.`bridgescorer-clientcommon`
 lazy val `bridgescorer-clientapi` = BldBridgeClientApi.`bridgescorer-clientapi`
 lazy val `bridgescorer-client` = BldBridgeClient.`bridgescorer-client`

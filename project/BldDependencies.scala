@@ -136,6 +136,15 @@ object BldDependencies {
       "com.github.japgolly.scalajs-react" %%% "test" % vScalaJsReact % "test" withSources()
       ))
 
+
+  val ReduxDeps = Def.setting(Seq(
+
+    "com.github.japgolly.scalajs-react" %%% "core"          % vScalaJsReact withSources(),
+    "com.github.japgolly.scalajs-react" %%% "extra"         % vScalaJsReact withSources(),
+
+    "com.github.japgolly.scalajs-react" %%% "test" % vScalaJsReact % "test" withSources()
+    ))
+
   val clientcommonDeps = Def.setting(scalatestDeps.value ++ Seq(
 
     "com.github.japgolly.scalajs-react" %%% "core"          % vScalaJsReact withSources(),
