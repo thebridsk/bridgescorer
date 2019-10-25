@@ -96,4 +96,8 @@ object BldVersion {
   lazy val vMaterialUIcore = "4.5.1"        // https://www.npmjs.com/package/@material-ui/core
   lazy val vMaterialUIicons = "4.5.1"       // https://www.npmjs.com/package/@material-ui/icons
   lazy val vPropTypes = "15.7.2"            // https://www.npmjs.com/package/prop-types
+
+  val vRedux = "4.0.4"        // https://github.com/reduxjs/redux
+  val vReduxThunk = "2.3.0"   // https://github.com/reduxjs/redux-thunk
+
 }
