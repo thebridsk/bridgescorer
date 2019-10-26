@@ -798,21 +798,9 @@ class ChicagoTestPages extends FlatSpec
 
     val initcount = ip.getImportedIds.length
 
-    ip.checkSelectedFile(None)
+    val (rp,row) = ip.selectFile(importZipFile.get).validateSuccess(importZipFile,initcount)
 
-    val rp = ip.selectFile(importZipFile.get).checkSelectedFile(importZipFile).clickImport.validate
-    rp.isSuccessful mustBe true
-
-    val ip2 = rp.clickLink.validate
-
-    val imports = ip2.getImportedIds
-    imports.length mustBe initcount+1
-
-    val foundImport = imports.find( i => i._1 == importZipFile.get.name)
-
-    assert(foundImport.isDefined)
-
-    val lp = ip2.importChicago(importZipFile.get.name, foundImport.get._2).validate
+    val lp = rp.importChicago(importZipFile.get.name, row.get).validate
 
     lp.checkImportButton(chicagoId.get)
 

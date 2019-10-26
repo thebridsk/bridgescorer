@@ -44,6 +44,14 @@ import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles._
 import com.github.thebridsk.bridge.data.ImportStoreConstants
 import com.github.thebridsk.bridge.clientcommon.pages.ColorThemeStorage
 import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles
+import com.github.thebridsk.bridge.clientcommon.react.Utils
+import org.scalajs.dom.raw.FileList
+import org.scalajs.dom.raw.FormData
+import com.github.thebridsk.bridge.clientcommon.rest2.AjaxResult
+import scala.util.Success
+import scala.util.Failure
+import com.github.thebridsk.bridge.clientcommon.rest2.AjaxDisabled
+import com.github.thebridsk.bridge.clientcommon.rest2.AjaxErrorReturn
 
 /**
  * A skeleton component.
@@ -178,7 +186,6 @@ object ImportsListPageInternal {
    */
   case class State(
       stores: Option[ImportsList] = None,
-      selectedForImport: Option[String] = None,
       error: Option[TagMod] = None
   ) {
 
@@ -189,6 +196,8 @@ object ImportsListPageInternal {
     def withError( t: TagMod ) = copy( error = Some(t) )
   }
 
+  val patternName = """(?:.*[\\/])([^\\/]+)""".r
+
   /**
    * Internal state for rendering the component.
    *
@@ -198,9 +207,11 @@ object ImportsListPageInternal {
    */
   class Backend(scope: BackendScope[Props, State]) {
 
-    val didMount = Callback {
+    val refreshCB = Callback {
       refresh()
     }
+
+    val didMount = refreshCB
 
     /**
      * called from threads
@@ -209,7 +220,7 @@ object ImportsListPageInternal {
       ImportMethods.list().foreach { rlist =>
         rlist match {
           case Right(list) =>
-            scope.withEffectsImpure.modState { s => s.copy(stores = Some(list)) }
+            scope.withEffectsImpure.modState { s => s.copy(stores = Some(list)).clearError }
           case Left(err) =>
             scope.withEffectsImpure.modState { s => s.withError(err) }
         }
@@ -220,21 +231,47 @@ object ImportsListPageInternal {
 
     val clearError = scope.modState( s => s.clearError() )
 
-    def setSelected( data: ReactEventFromInput) = data.extract(_.target.files){ files =>
-      scope.modState { s =>
-        if (files.length == 1) {
-          val full = files(0).name
-          val i = full.lastIndexOf("\\")
-          val f = if (i > 0) full.substring(i+1)
-                  else {
-                    val j = full.lastIndexOf("/")
-                    if (j > 0) full.substring(j+1)
-                    else full
-                  }
-          s.copy( selectedForImport = Some(f) )
-        } else {
-          s.copy( selectedForImport = None )
+    def getFile( filelist: FileList ) = {
+      if (filelist.length == 1) {
+        val file = filelist(0)
+        file.name match {
+          case patternName(f) => Some((f,file))
+          case f => Some((f,file))
         }
+      } else {
+        None
+      }
+  }
+
+    import Utils._
+    def doInput(returnUrl: String, theme: String)(e: ReactEventFromInput) = e.preventDefaultAction.inputFiles { filelist =>
+      getFile(filelist) match {
+        case Some((name,file)) =>
+          scope.modState(
+            s=>s.withError(s"Importing $name ..."),
+            Callback {
+              val formData = new FormData
+              formData.append("zip", file)
+              AjaxResult.post(s"/v1/import?url=${returnUrl}${theme}",formData).recordFailure().onComplete { twx =>
+                twx match {
+                  case Success(value) =>
+                    scope.withEffectsImpure.modState( s => s.withError("Import successful, retrieving information"), refreshCB)
+                  case Failure(x) =>
+                    val errmsg = x match {
+                      case ex: AjaxDisabled =>
+                        "Import failed, not connected to server"
+                      case ex: AjaxErrorReturn if ex.body.contains("already exists") =>
+                        "Import failed, import store already exists"
+                      case x: Exception =>
+                        "Import failed, error on server"
+                    }
+                    scope.withEffectsImpure.modState( s => s.withError(errmsg))
+                }
+              }
+            }
+          )
+        case None =>
+          scope.modState( s=>s.withError("No file was selected") )
       }
     }
 
@@ -253,21 +290,8 @@ object ImportsListPageInternal {
       s.withError(s"Working on deleting ${id}")
     }
 
-    def handleSubmit(e: ReactEventFromInput) = scope.state >>= { state =>
-      CallbackTo[Boolean] {
-        val valid = state.selectedForImport.isDefined
-        if (!valid) {
-          scope.withEffectsImpure.modState( _.withError("Must select a file"))
-          e.preventDefault()
-          false
-        } else {
-          true
-        }
-      }
-    }
-
     def render( props: Props, state: State ) = {
-      val importFileText = state.selectedForImport.map( f => s"Selected ${f}" ).getOrElse( "Select Bridgestore file" )
+      val importFileText = "Select Bridgestore file"
       val returnUrl = props.router.urlFor( props.page ).value.replace("#", "%23")
       val theme = ColorThemeStorage.getColorThemeFromBody().map( t => s"""&theme=$t""").getOrElse("")
       <.div(
@@ -287,61 +311,44 @@ object ImportsListPageInternal {
             props.router
         )(),
         <.div(
-          <.form(
-            ^.action:=s"/v1/import?url=${returnUrl}${theme}",
-            ^.method:="post",
-            ^.encType:="multipart/form-data",
-            ^.onSubmit ==> handleSubmit,
-            <.table(
-              <.thead(
-                <.tr(
-                  <.th( "Id" ),
-                  <.th( "Created" ),
-                  <.th( "Actions" )
-                )
-              ),
-              <.tbody(
-                <.tr(
-                  <.td(
-                    <.label(
-                      importFileText,
-                      BaseStyles.highlight(
-                        required = state.selectedForImport.isEmpty,
-                      ),
-                      <.input(
-                        ^.`type` := "file",
-                        ^.name := "zip",
-                        ^.accept := s".${ImportStoreConstants.importStoreFileExtension},application/zip",
-                        ^.onChange ==> setSelected _,
-                      )
-                    ),
-                  ),
-                  <.td(),
-                  <.td(
+          <.table(
+            <.thead(
+              <.tr(
+                <.th( "Id" ),
+                <.th( "Created" ),
+                <.th( "Actions" )
+              )
+            ),
+            <.tbody(
+              <.tr(
+                <.td(
+                  <.label(
+                    importFileText,
+                    BaseStyles.baseStyles.required,
                     <.input(
-                      ^.`type` := "submit",
-                      ^.name := "submit",
-                      ^.value := "Import",
-                      ^.disabled := state.selectedForImport.isEmpty,
-                      ^.hidden := state.selectedForImport.isEmpty,
-                      BaseStyles.highlight(
-                        required = state.selectedForImport.isDefined,
-                      ),
+                      ^.`type` := "file",
+                      ^.name := "zip",
+                      ^.accept := s".${ImportStoreConstants.importStoreFileExtension},application/zip",
+                      ^.value := "",
+                      ^.onChange ==> doInput(returnUrl,theme) _
                     )
                   ),
                 ),
-                if (state.stores.isEmpty) {
-                  <.tr(
-                    <.td( "Working" )
-                  )
-                } else {
-                  state.stores.get.imports.zipWithIndex.map { entry =>
-                    val (store,i) = entry
-                    SummaryRow.withKey( s"Import${i}" )((props,state,this,i,store))
-                  }.toTagMod
-                }
+                <.td(),
+                <.td(
+                ),
               ),
-            )
+              if (state.stores.isEmpty) {
+                <.tr(
+                  <.td( "Working" )
+                )
+              } else {
+                state.stores.get.imports.zipWithIndex.map { entry =>
+                  val (store,i) = entry
+                  SummaryRow.withKey( s"Import${i}" )((props,state,this,i,store))
+                }.toTagMod
+              }
+            ),
           )
         )
       )
