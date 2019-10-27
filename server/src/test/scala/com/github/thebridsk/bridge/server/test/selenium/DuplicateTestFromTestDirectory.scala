@@ -177,7 +177,7 @@ class DuplicateTestFromTestDirectory extends FlatSpec with MustMatchers with Bef
     }
 
 
-  def logFuture[T]( t: =>T ) = CodeBlock { logException("logFuture")( t ) }
+  def logFuture[T]( t: =>T )(implicit pos: Position) = CodeBlock { logException("logFuture")( t ) }
 
   var firstScorekeeper: PlayerPosition = North
 
