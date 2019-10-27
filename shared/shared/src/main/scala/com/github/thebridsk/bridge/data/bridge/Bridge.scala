@@ -100,6 +100,8 @@ object North extends PlayerPosition("N", "North")
 object East extends PlayerPosition("E", "East")
 object West extends PlayerPosition("W", "West")
 object South extends PlayerPosition("S", "South")
+// only valid for MatchRubber.honorsPlayer when no one had honors
+object PositionUndefined extends PlayerPosition("_", "PosUndefined")
 
 object PlayerPosition {
   def apply(pos: String) = pos match {
@@ -107,6 +109,7 @@ object PlayerPosition {
     case "E" => East
     case "W" => West
     case "S" => South
+    case "" => PositionUndefined
     case _ =>
       throw new IllegalArgumentException(
         "Unknown value for a player position: " + pos

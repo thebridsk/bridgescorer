@@ -40,6 +40,7 @@ import com.github.thebridsk.materialui.TextVariant
 import com.github.thebridsk.materialui.TextColor
 import com.github.thebridsk.materialui.MuiTypography
 import com.github.thebridsk.bridge.client.pages.HomePage
+import japgolly.scalajs.react.component.builder.Lifecycle.ComponentDidUpdate
 
 /**
   * @author werewolf
@@ -283,6 +284,7 @@ object PageChicagoListInternal {
                           s"import chicago ${id} from ${importId}, new ID ${newid}",
                           true
                         )
+                        initializeNewSummary(scope.withEffectsImpure.props)
                       case JsDefined(x) =>
                         setMessage(
                           s"expecting string on import chicago ${id} from ${importId}, got ${x}"
@@ -327,14 +329,17 @@ object PageChicagoListInternal {
         // make AJAX rest call here
         logger.finer("PageChicagoList: Sending chicagos list request to server")
         ChicagoSummaryStore.addChangeListener(storeCallback)
-        p.page match {
-          case isv: ImportListView =>
-            val importId = isv.getDecodedId
-            ChicagoController.getImportSummary(importId, summaryError _)
-          case ListView =>
-            ChicagoController.getSummary(summaryError _)
-        }
+        initializeNewSummary(p)
+      }
+    }
 
+    def initializeNewSummary( props: Props ) = {
+      props.page match {
+        case isv: ImportListView =>
+          val importId = isv.getDecodedId
+          ChicagoController.getImportSummary(importId, summaryError _)
+        case ListView =>
+          ChicagoController.getSummary(summaryError _)
       }
     }
 
@@ -342,6 +347,14 @@ object PageChicagoListInternal {
       mounted = false
     }
 
+  }
+
+  def didUpdate( cdu: ComponentDidUpdate[Props,State,Backend,Unit] ) = Callback {
+    val props = cdu.currentProps
+    val prevProps = cdu.prevProps
+    if (prevProps.page != props.page) {
+      cdu.backend.initializeNewSummary(props)
+    }
   }
 
   val ChicagoRowFirst = ScalaComponent
@@ -452,5 +465,6 @@ object PageChicagoListInternal {
 //                            .configure(LogLifecycleToServer.verbose)     // logs lifecycle events
     .componentDidMount(scope => scope.backend.didMount)
     .componentWillUnmount(scope => scope.backend.willUnmount)
+    .componentDidUpdate( didUpdate )
     .build
 }

@@ -39,6 +39,7 @@ import com.github.thebridsk.materialui.MuiTypography
 import com.github.thebridsk.materialui.TextVariant
 import com.github.thebridsk.materialui.TextColor
 import com.github.thebridsk.bridge.client.pages.HomePage
+import japgolly.scalajs.react.component.builder.Lifecycle.ComponentDidUpdate
 
 /**
  * A skeleton component.
@@ -153,6 +154,7 @@ object PageRubberListInternal {
               data \ "import" \ "importrubber" \ "id" match {
                 case JsDefined( JsString( newid ) ) =>
                   setMessage(s"import rubber ${rubid} from ${importId}, new ID ${newid}", true )
+                  initializeNewSummary(scope.withEffectsImpure.props)
                 case JsDefined( x ) =>
                   setMessage(s"expecting string on import rubber ${rubid} from ${importId}, got ${x}")
                 case _: JsUndefined =>
@@ -318,23 +320,34 @@ object PageRubberListInternal {
       // make AJAX rest call here
       logger.finer("PageRubberList: Sending rubber list request to server")
       RubberListStore.addChangeListener(storeCallback)
-      p.page match {
-        case isv: ImportListView =>
-          val importId = isv.getDecodedId
-          RubberController.getImportSummary(importId, summaryError _)
-        case ListView =>
-          RubberController.getSummary(summaryError _)
-      }
+      initializeNewSummary(p)
     }}
 
     val willUnmount = Callback {
       // TODO: release RubberListStore memory
     }
 
+    def initializeNewSummary( props: Props ) = {
+      props.page match {
+        case isv: ImportListView =>
+          val importId = isv.getDecodedId
+          RubberController.getImportSummary(importId, summaryError _)
+        case ListView =>
+          RubberController.getSummary(summaryError _)
+      }
+    }
   }
 
   implicit val loggerForReactComponents = Logger("bridge.PageChicagoList")
   implicit val defaultTraceLevelForReactComponents = Level.FINER
+
+  def didUpdate( cdu: ComponentDidUpdate[Props,State,Backend,Unit] ) = Callback {
+    val props = cdu.currentProps
+    val prevProps = cdu.prevProps
+    if (prevProps.page != props.page) {
+      cdu.backend.initializeNewSummary(props)
+    }
+  }
 
   val component = ScalaComponent.builder[Props]("PageRubberList")
                             .initialStateFromProps { props => State() }
@@ -343,6 +356,7 @@ object PageRubberListInternal {
 //                            .configure(LogLifecycleToServer.verbose)     // logs lifecycle events
                             .componentDidMount( scope => scope.backend.didMount)
                             .componentWillUnmount( scope => scope.backend.willUnmount )
+                            .componentDidUpdate( didUpdate )
                             .build
 }
 

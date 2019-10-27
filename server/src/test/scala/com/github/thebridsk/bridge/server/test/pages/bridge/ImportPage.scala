@@ -43,14 +43,16 @@ class ImportPage( implicit val webDriver: WebDriver, pageCreated: SourcePosition
     this
   }}
 
+  def validateSuccess( file: Option[File], beforeCount: Int )(implicit patienceConfig: PatienceConfig, pos: Position) = logMethod(s"${pos.line} ${getClass.getSimpleName}.validate") { eventually {
+    currentUrl mustBe urlFor
+    isPopupDisplayed mustBe false
+    checkSelectedFile(file,beforeCount)
+  }}
+
+
   def clickHome( implicit pos: Position ) = {
     clickButton("Home")
     new HomePage()(webDriver,pos)
-  }
-
-  def clickImport( implicit pos: Position ) = {
-    findInput("submit","submit").click
-    new ImportResultPage()(webDriver,pos)
   }
 
   def selectFile( file: File )( implicit pos: Position ) = {
@@ -59,15 +61,16 @@ class ImportPage( implicit val webDriver: WebDriver, pageCreated: SourcePosition
     this
   }
 
-  def checkSelectedFile( file: Option[File] )( implicit pos: Position ) = {
-    val t = findElemByXPath("//form/table/tbody/tr/td/label").text
-    file match {
-      case Some(f) =>
-        t mustBe s"Selected ${f.name}"
-      case None =>
-        t mustBe "Select Bridgestore file"
+  def checkSelectedFile( file: Option[File], beforeCount: Int )( implicit pos: Position ) = {
+    val row = file.map { f =>
+      val imports = getImportedIds
+      imports.length mustBe beforeCount+1
+      val foundImport = imports.find( i => i._1 == f.name)
+
+      assert(foundImport.isDefined)
+      foundImport.get._2
     }
-    this
+    (this, row)
   }
 
   def isWorking(implicit pos: Position) = {
