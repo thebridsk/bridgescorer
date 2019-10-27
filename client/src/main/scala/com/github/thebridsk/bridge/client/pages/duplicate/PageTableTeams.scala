@@ -97,7 +97,6 @@ object PageTableTeamsInternal {
         case South => if (playerValid(ns2)) this else copy( ns2 = name )
         case East => if (playerValid(ew1)) this else copy( ew1 = name )
         case West => if (playerValid(ew2)) this else copy( ew2 = name )
-        case PositionUndefined => this
       }
 
     def tableManeuvers = TableManeuvers(ns1,ns2,ew1,ew2)
@@ -195,13 +194,11 @@ object PageTableTeamsInternal {
     def isCurrentValid( pos: PlayerPosition ) = pos match {
       case North | South => players.areNSPlayersValid()
       case East | West => players.areEWPlayersValid()
-      case PositionUndefined => false
     }
 
     def getTeam( pos: PlayerPosition ) = pos match {
       case North | South => Id.teamIdToTeamNumber(nsTeam)
       case East | West => Id.teamIdToTeamNumber(ewTeam)
-      case PositionUndefined => Id.teamIdToTeamNumber(nsTeam)
     }
 
     def swapLeftRight = copy( players = players.swapRightAndLeftOf(scorekeeperPosition.get))

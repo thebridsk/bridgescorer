@@ -89,7 +89,7 @@ object BldDependencies {
       "ch.megard" %% "akka-http-cors" % vAkkaHttpCors withSources(),
 
       "org.sangria-graphql" %% "sangria" % vSangria withSources(),
-      "org.sangria-graphql" %% "sangria-relay" % vSangria withSources(),
+//      "org.sangria-graphql" %% "sangria-relay" % vSangria withSources(),
       "org.sangria-graphql" %% "sangria-play-json" % vSangriaPlayJson withSources(),
 
       "io.swagger.core.v3" % "swagger-core" % vSwagger withSources(),

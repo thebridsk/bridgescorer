@@ -272,8 +272,12 @@ object PageRubberListInternal {
       <.tr(
           <.td(
             AppButton( "Rubber"+id, id,
-                       baseStyles.appButton100,
-                       ^.onClick --> backend.showRubber(rubber.rubber) )
+              baseStyles.appButton100,
+              ^.onClick --> backend.showRubber(rubber.rubber),
+              importId.map { id =>
+                ^.disabled := true
+              }.whenDefined
+            )
           ),
           importId.map { iid =>
             TagMod(

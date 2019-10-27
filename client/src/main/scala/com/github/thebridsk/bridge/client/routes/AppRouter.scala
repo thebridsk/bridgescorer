@@ -132,7 +132,7 @@ class AppRouter( modules: Module* ) {
 
   def defaultHand( scoring: ScoringSystem ) = defaultContract.copy( scoringSystem = scoring )
 
-  def scoringViewWithHonorsCallbackOk( routerCtl: RouterCtl[AppPage])( contract: Contract, honors: Int, pos: PlayerPosition ) = {
+  def scoringViewWithHonorsCallbackOk( routerCtl: RouterCtl[AppPage])( contract: Contract, honors: Int, pos: Option[PlayerPosition] ) = {
     routerCtl.set(Home)  // show the Info page.
   }
 

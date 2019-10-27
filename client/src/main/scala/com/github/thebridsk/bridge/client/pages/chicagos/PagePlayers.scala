@@ -82,7 +82,6 @@ object PagePlayers {
               case South => south
               case East  => east
               case West  => west
-              case PositionUndefined => ""
             }
         )
         .getOrElse("")

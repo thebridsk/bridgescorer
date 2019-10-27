@@ -90,7 +90,6 @@ object SectionHeader {
                                   case South => props.south
                                   case East => props.east
                                   case West => props.west
-                                  case PositionUndefined => props.north
                                 }
                                 <.div( handStyles.sectionHeader,
                                     if (props.scoringSystem.isInstanceOf[Duplicate]) {

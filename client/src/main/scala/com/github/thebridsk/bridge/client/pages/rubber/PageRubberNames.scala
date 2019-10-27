@@ -11,7 +11,6 @@ import com.github.thebridsk.bridge.data.bridge.North
 import com.github.thebridsk.bridge.data.bridge.PlayerPosition
 import com.github.thebridsk.bridge.data.bridge.South
 import com.github.thebridsk.bridge.data.bridge.West
-import com.github.thebridsk.bridge.data.bridge.PositionUndefined
 import com.github.thebridsk.bridge.client.pages.info.InfoPage
 import com.github.thebridsk.bridge.clientcommon.react.Utils.ExtendReactEventFromInput
 
@@ -82,7 +81,6 @@ object PageRubberNamesInternal {
           case South => south
           case East => east
           case West => west
-          case PositionUndefined => ""
         }
       case None => ""
     }

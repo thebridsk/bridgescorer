@@ -150,7 +150,6 @@ object ViewDeclarerInternal {
           case South => getButtonPos("South", South, props.south, props.nsVul, props.teamNS)
           case East => getButtonPos("East", East, props.east, props.ewVul, props.teamEW)
           case West => getButtonPos("West", West, props.west, props.ewVul, props.teamEW)
-          case PositionUndefined => TagMod()
         }
       }
 

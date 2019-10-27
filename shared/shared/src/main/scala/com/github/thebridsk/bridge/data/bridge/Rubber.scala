@@ -144,7 +144,6 @@ object RubberBridge {
     def isDeclarerVulnerable = declarer match {
       case North | South => nsVul.vul
       case East | West   => ewVul.vul
-      case PositionUndefined => false
     }
 
     val contractAndResultAsString =
@@ -426,11 +425,13 @@ object RubberBridge {
       )
     }
 
-    def getPlayerPos(pos: String) = {
-      try {
-        Some(PlayerPosition(pos))
-      } catch {
-        case _: Exception => None
+    def getPlayerPos(pos: Option[String]) = {
+      pos.flatMap { p =>
+        try {
+          Some(PlayerPosition(p))
+        } catch {
+          case _: Exception => None
+        }
       }
     }
 
