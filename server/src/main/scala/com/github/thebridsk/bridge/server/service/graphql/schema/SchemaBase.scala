@@ -43,6 +43,7 @@ import com.github.thebridsk.bridge.data.bridge.North
 import com.github.thebridsk.bridge.data.bridge.South
 import com.github.thebridsk.bridge.data.bridge.East
 import com.github.thebridsk.bridge.data.bridge.West
+import com.github.thebridsk.bridge.data.bridge.PositionUndefined
 import com.github.thebridsk.bridge.data.RubberHand
 import com.github.thebridsk.bridge.data.Round
 import com.github.thebridsk.bridge.data.ChicagoBestMatch
@@ -111,7 +112,8 @@ object SchemaBase {
       EnumValue("N", value = North, description = Some("North player")),
       EnumValue("S", value = South, description = Some("South player")),
       EnumValue("E", value = East, description = Some("East player")),
-      EnumValue("W", value = West, description = Some("West player"))
+      EnumValue("W", value = West, description = Some("West player")),
+      EnumValue("_", value = PositionUndefined, description = Some("Undefined position")),
     )
   )
 

@@ -144,6 +144,7 @@ object RubberBridge {
     def isDeclarerVulnerable = declarer match {
       case North | South => nsVul.vul
       case East | West   => ewVul.vul
+      case PositionUndefined => false
     }
 
     val contractAndResultAsString =

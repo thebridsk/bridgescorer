@@ -91,6 +91,7 @@ object ViewRubberMatchDetailsInternal {
               case South => rub.south
               case East => rub.east
               case West => rub.west
+              case PositionUndefined => ""
             }
           }
 

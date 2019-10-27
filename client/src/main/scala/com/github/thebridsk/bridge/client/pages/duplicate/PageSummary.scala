@@ -60,6 +60,7 @@ import com.github.thebridsk.materialui.MuiMenuItem
 import com.github.thebridsk.materialui.icons.SvgColor
 import com.github.thebridsk.bridge.clientcommon.react.BeepComponent
 import com.github.thebridsk.materialui.icons.MuiIcons
+import japgolly.scalajs.react.component.builder.Lifecycle.ComponentDidUpdate
 
 /**
  * Shows a summary page of all duplicate matches from the database.
@@ -391,6 +392,7 @@ object PageSummaryInternal {
               data \ "import" \ "importduplicateresult" \ "id" match {
                 case JsDefined( JsString( newid ) ) =>
                   setMessage(s"import duplicate result ${id} from ${importId}, new ID ${newid}", true )
+                  initializeNewSummary(scope.withEffectsImpure.props)
                 case JsDefined( x ) =>
                   setMessage(s"expecting string on import duplicate result ${id} from ${importId}, got ${x}")
                 case _: JsUndefined =>
@@ -426,6 +428,7 @@ object PageSummaryInternal {
               data \ "import" \ "importduplicate" \ "id" match {
                 case JsDefined( JsString( newid ) ) =>
                   setMessage(s"import duplicate ${id} from ${importId}, new ID ${newid}", true )
+                  initializeNewSummary(scope.withEffectsImpure.props)
                 case JsDefined( x ) =>
                   setMessage(s"expecting string on import duplicate ${id} from ${importId}, got ${x}")
                 case _: JsUndefined =>
@@ -484,6 +487,7 @@ object PageSummaryInternal {
                     case JsSuccess( m, path ) =>
                       val v = m.map( e => s"${e._1}->${e._2.id}" )
                       setMessage(s"import selected from ${importId}, old IDs -> new IDs: ${v.mkString(", ")}", true )
+                      initializeNewSummary(scope.withEffectsImpure.props)
                     case JsError(err) =>
                       setMessage(s"expecting map on import selected from ${importId}, got error ${err}")
                   }
@@ -780,6 +784,14 @@ object PageSummaryInternal {
 
   }
 
+  def didUpdate( cdu: ComponentDidUpdate[Props,State,Backend,Unit] ) = Callback {
+    val props = cdu.currentProps
+    val prevProps = cdu.prevProps
+    if (prevProps.page != props.page) {
+      cdu.backend.initializeNewSummary(props)
+    }
+  }
+
   val component = ScalaComponent.builder[Props]("PageSummary")
                             .initialStateFromProps { props => State( None, false, Nil,
                                                                     if (props.defaultRows==0) None else Some(props.defaultRows),
@@ -788,6 +800,7 @@ object PageSummaryInternal {
                             .renderBackend
                             .componentDidMount( scope => scope.backend.didMount)
                             .componentWillUnmount(scope => scope.backend.willUnmount)
+                            .componentDidUpdate( didUpdate )
                             .build
 }
 
