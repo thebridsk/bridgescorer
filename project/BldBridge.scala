@@ -63,7 +63,10 @@ object BldBridge {
       BldBridgeClient.`bridgescorer-client`,
       BldBridgeClientApi.`bridgescorer-clientapi`,
       BldBridgeServer.`bridgescorer-server`,
-      BldBridgeRotation.rotationJVM
+      BldBridgeRotation.rotationJVM,
+      BldBrowserPages.browserpages,
+      BldColor.colorJS,
+      BldColor.colorJVM,
     )
     .configure( commonSettings, buildInfo("com.github.thebridsk.bridge.bridgescorer.version", "VersionBridgeScorer"))
     .dependsOn(BldBridgeServer.`bridgescorer-server` % "test->test;compile->compile")
@@ -135,6 +138,7 @@ object BldBridge {
       npmAssets := {
         helptask.value
       },
+//      includeFilter in gzip := "*.html" || "*.css" || "*.js",
       scalaJSProjects := Seq(),
       pipelineStages in Assets := (if (onlyBuildDebug) Seq()
                                    else
@@ -612,6 +616,7 @@ object BldBridge {
       mydist := Def
         .sequential(
           clean.all(bridgescorerAllProjects),
+          clean.all(utilitiesAllProjects),
           mydist in Distribution in utilities,
           fastOptJS in Compile in BldBridgeClient.`bridgescorer-client`,
           fullOptJS in Compile in BldBridgeClient.`bridgescorer-client`,
@@ -631,7 +636,8 @@ object BldBridge {
         .value,
       myclean := Def
         .sequential(
-          clean.all(bridgescorerAllProjects)
+          clean.all(bridgescorerAllProjects),
+          clean.all(utilitiesAllProjects)
         )
         .value,
       mytest := Def
