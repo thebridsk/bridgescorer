@@ -33,7 +33,7 @@ object PageHand {
   import PageHandInternal._
 
   type CallbackOk = (Contract)=>Callback
-  type CallbackWithHonors = (Contract,Int,PlayerPosition)=>Callback
+  type CallbackWithHonors = (Contract,Int,Option[PlayerPosition])=>Callback
   type CallbackCancel = Callback
 
   /**
@@ -251,7 +251,7 @@ object PageHandInternal {
     }
 
     def setHonors( chonors: Int ) = {
-      val s = copy(honors=Some(chonors))
+      val s = if (chonors != 0) copy(honors=Some(chonors)) else copy(honors=Some(chonors), honorsPlayer=None)
       s.withScoring()
     }
 
@@ -320,7 +320,7 @@ object PageHandInternal {
     val ok = scope.stateProps { (state, props) =>
       props.callbackWithHonors match {
         case Some(cb) =>
-          cb( state.currentcontract, state.honors.getOrElse(0), state.honorsPlayer.getOrElse(North) )
+          cb( state.currentcontract, state.honors.getOrElse(0), state.honorsPlayer )
         case None =>
           props.callbackOk(state.currentcontract)
       }

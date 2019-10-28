@@ -53,7 +53,6 @@ case class TableManeuvers(
       case South => south
       case East  => east
       case West  => west
-      case PositionUndefined => ""
     }
   }
 
@@ -63,7 +62,6 @@ case class TableManeuvers(
       case South => isPlayerSpecified(south)
       case East  => isPlayerSpecified(east)
       case West  => isPlayerSpecified(west)
-      case PositionUndefined => false
     }
   }
 
@@ -72,7 +70,6 @@ case class TableManeuvers(
     case South => North
     case East  => West
     case West  => East
-    case PositionUndefined => PositionUndefined
   }
 
   def leftOfPosition(l: PlayerPosition): PlayerPosition = l match {
@@ -80,7 +77,6 @@ case class TableManeuvers(
     case South => West
     case East  => South
     case West  => North
-    case PositionUndefined => PositionUndefined
   }
 
   def partnerOf(p: String): Option[String] = {
@@ -121,7 +117,6 @@ case class TableManeuvers(
     case South => East
     case East  => North
     case West  => South
-    case PositionUndefined => PositionUndefined
   }
 
   def setPlayer(l: PlayerPosition, p: String) = {
@@ -130,7 +125,6 @@ case class TableManeuvers(
       case South => copy(south = p)
       case East  => copy(east = p)
       case West  => copy(west = p)
-      case PositionUndefined => this
     }
   }
 

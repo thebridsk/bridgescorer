@@ -71,9 +71,17 @@ object SchemaRubber {
       ),
       Field(
         "honorsPlayer",
-        PositionEnum,
+        OptionType(PositionEnum),
         Some("The player that had the honor points"),
-        resolve = ctx => PlayerPosition(ctx.value.honorsPlayer)
+        resolve = ctx => ctx.value.honorsPlayer.flatMap { p =>
+          try {
+            Some(PlayerPosition(p))
+          } catch {
+            case _: IllegalArgumentException =>
+            None
+          }
+
+        }
       ),
       Field(
         "created",

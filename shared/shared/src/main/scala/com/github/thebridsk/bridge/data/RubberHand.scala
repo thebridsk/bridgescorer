@@ -20,11 +20,11 @@ case class RubberHand(
     honors: Int,
     @Schema(
       description =
-        "The player that got the honors points, ignored if honors is 0.",
+        "The player that got the honors points, Must be specified if honors not equal to 0, ignored otherwise",
       allowableValues = Array("N", "S", "E", "W"),
-      required = true
+      required = false
     )
-    honorsPlayer: String,
+    honorsPlayer: Option[String],
     @Schema(
       description =
         "When the duplicate hand was created, in milliseconds since 1/1/1970 UTC",
@@ -77,7 +77,7 @@ object RubberHand {
       id: String,
       hand: Hand,
       honors: Int,
-      honorsPlayer: String,
+      honorsPlayer: Option[String],
       created: Timestamp,
       updated: Timestamp
   ) =

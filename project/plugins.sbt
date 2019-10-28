@@ -18,7 +18,7 @@ val vSbtGit = "1.0.0"              // https://github.com/sbt/sbt-git
 val vSbtSCoverage = "1.5.1"        // https://github.com/scoverage/sbt-scoverage
 val vSbtBuildInfo = "0.9.0"        // https://github.com/sbt/sbt-buildinfo
 // v1.0.12 causes java.lang.NoSuchMethodError: sbtrelease.ReleaseStateTransformations$.commitNextVersion()Lsbtrelease/ReleasePlugin$autoImport$ReleaseStep;
-val vSbtRelease = "1.0.11"         // https://github.com/sbt/sbt-release
+val vSbtRelease = "1.0.12"         // https://github.com/sbt/sbt-release
 val vSbtDependencyGraph = "0.9.2"  // https://github.com/jrudolph/sbt-dependency-graph
 val vSbtUpdates = "0.5.0"          // https://github.com/rtimush/sbt-updates
 

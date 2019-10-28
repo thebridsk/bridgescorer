@@ -50,7 +50,7 @@ case class Contract(
       id,
       toHand,
       honor.getOrElse(0),
-      honorPlayer.getOrElse(North).pos,
+      honorPlayer.map(_.pos),
       0,
       0
     )
@@ -183,7 +183,7 @@ object Contract {
       MadeOrDown(hand.madeContract),
       hand.tricks,
       Some(rubberhand.honors),
-      getPlayerPosition(rubberhand.honorsPlayer),
+      rubberhand.honorsPlayer.flatMap(getPlayerPosition(_)),
       scoringSystem,
       scorer match {
         case Some(s) => Some(Left(s))

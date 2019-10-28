@@ -116,7 +116,6 @@ object ViewRoundTableInternal {
       case South => props.scoring.rounds(round).round.south
       case East => props.scoring.rounds(round).round.east
       case West => props.scoring.rounds(round).round.west
-      case PositionUndefined => ""
     }
 
     val c = scores.map( _.contractAsString( "Vul", "" ) ).getOrElse("")

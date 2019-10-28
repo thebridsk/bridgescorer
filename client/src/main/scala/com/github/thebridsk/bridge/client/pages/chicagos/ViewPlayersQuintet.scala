@@ -152,7 +152,6 @@ object ViewPlayersQuintetInternal {
         case South => (north,extra,east,west,south, (south,extra))
         case East => (north,south,extra,west,east, (east,extra))
         case West => (north,south,east,extra,west, (west,extra))
-        case PositionUndefined => (extra,south,east,west,north, (north,extra))
       }
 
       val state = new State(score, ex, n, s, e, w, Some(nextdealer),None,Nil)
