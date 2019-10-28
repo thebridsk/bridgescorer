@@ -23,7 +23,7 @@ object BldVersion {
 //  lazy val vScalaJsLibrary = "0.6.13" // http://mvnrepository.com/artifact/org.scala-js/scalajs-library_2.11
 
 
-  lazy val vAkka = "2.5.25"            // https://github.com/akka/akka
+  lazy val vAkka = "2.5.26"            // https://github.com/akka/akka
   lazy val vAkkaHttp = "10.1.10"       // https://github.com/akka/akka-http
 
   lazy val vAkkaHttpPlayJson="1.29.1"  // https://github.com/hseeberger/akka-http-json
@@ -38,7 +38,7 @@ object BldVersion {
   lazy val vScalajsdom = "0.9.7"       // https://github.com/scala-js/scala-js-dom
   lazy val vScalaJsReact = "1.4.2"     // https://github.com/japgolly/scalajs-react
 
-  lazy val vWebJarsReact = "16.10.2"   // https://www.npmjs.com/package/react
+  lazy val vWebJarsReact = "16.11.0"   // https://www.npmjs.com/package/react
   lazy val vReactWidgets = "4.4.11"    // https://www.npmjs.com/package/react-widgets
   lazy val vWebJarsFlux = "3.1.3"      // https://www.npmjs.com/package/flux
   lazy val vCldr = "4.7.0"             // https://www.npmjs.com/package/cldr
@@ -62,8 +62,6 @@ object BldVersion {
   // jackson-module-scala usually updates a few days after the others are updated,
   // don't update until jackson-module-scala is updated
   lazy val vJackson = "2.10.0"           // https://github.com/FasterXML/jackson-core
-  // v2.9.9.2 causes NPE in getting swagger.yaml
-  // https://github.com/FasterXML/jackson-databind/commit/dd4c5acb321a6aa9ca230aa505266fb2dd2f90ff
   lazy val vJacksonDatabind = "2.10.0"   // https://github.com/FasterXML/jackson-databind
 
   // Selenium needs to be update to update to v23.0
@@ -84,7 +82,7 @@ object BldVersion {
   lazy val vAjv = "6.10.2"                  // https://www.npmjs.com/package/ajv
 
 
-  lazy val vWebpackDevServer = "3.8.2"   // https://www.npmjs.com/package/webpack-dev-server
+  lazy val vWebpackDevServer = "3.9.0"   // https://www.npmjs.com/package/webpack-dev-server
   lazy val vWebPackCli = "3.3.9"         // https://www.npmjs.com/package/webpack-cli
 
   lazy val vSangria = "1.4.2"           // https://github.com/sangria-graphql-org/sangria             https://github.com/sangria-graphql/sangria              no 2.13 support
