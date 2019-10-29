@@ -145,7 +145,7 @@ trait RestChicago extends HasActorSystem {
   )
   def xxxgetChicago() = {}
   val getChicago = logRequest("RestChicago.getChicago", DebugLevel) {
-    logResult("RestChicago.postChicago") {
+    logResult("RestChicago.getChicago") {
       get {
         path("""[a-zA-Z0-9]+""".r) { id =>
           resource(store.select(id).read())

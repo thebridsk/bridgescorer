@@ -53,6 +53,7 @@ import scala.reflect.io.Path
 import scala.concurrent.ExecutionContext
 import com.github.thebridsk.bridge.data.duplicate.stats.PlayerPlaces
 import com.github.thebridsk.bridge.data.duplicate.stats.CalculatePlayerPlaces
+import com.github.thebridsk.bridge.data.ImportStoreData
 
 /**
   * The backend trait for our service.
@@ -79,6 +80,26 @@ abstract class BridgeService(val id: String) {
     * The import store.  Some some of the implementations support this, and will override this value.
     */
   val importStore: Option[ImportStore] = None
+
+  def importStoreData = {
+
+    def count[T]( frs: Future[Result[Set[T]]]) = frs.map { rs =>
+      rs match {
+        case Right(s) => s.size
+        case Left(value) => 0
+      }
+    }
+
+    val r = for {
+      nd <- count(duplicates.getAllIds())
+      ndr <- count(duplicateresults.getAllIds())
+      nc <- count(chicagos.getAllIds())
+      nr <- count(rubbers.getAllIds())
+    } yield {
+      ImportStoreData(id,getDate,nd,ndr,nc,nr)
+    }
+    r
+  }
 
   /**
     * Writes the store contents in export format to the output stream.
