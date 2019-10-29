@@ -52,6 +52,8 @@ import scala.util.Success
 import scala.util.Failure
 import com.github.thebridsk.bridge.clientcommon.rest2.AjaxDisabled
 import com.github.thebridsk.bridge.clientcommon.rest2.AjaxErrorReturn
+import com.github.thebridsk.bridge.data.rest.JsonSupport
+import com.github.thebridsk.bridge.data.RestMessage
 
 /**
  * A skeleton component.
@@ -241,7 +243,7 @@ object ImportsListPageInternal {
       } else {
         None
       }
-  }
+    }
 
     import Utils._
     def doInput(returnUrl: String, theme: String)(e: ReactEventFromInput) = e.preventDefaultAction.inputFiles { filelist =>
@@ -260,8 +262,10 @@ object ImportsListPageInternal {
                     val errmsg = x match {
                       case ex: AjaxDisabled =>
                         "Import failed, not connected to server"
-                      case ex: AjaxErrorReturn if ex.body.contains("already exists") =>
-                        "Import failed, import store already exists"
+                      case ex: AjaxErrorReturn =>
+                        import JsonSupport._
+                        val errmsg = readJson[RestMessage](ex.body)
+                        errmsg.msg
                       case x: Exception =>
                         "Import failed, error on server"
                     }

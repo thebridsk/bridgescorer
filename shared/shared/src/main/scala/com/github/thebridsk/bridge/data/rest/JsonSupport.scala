@@ -78,7 +78,7 @@ trait JsonSupport {
   implicit val boardInSetFormat = Json.format[BoardInSet]
   implicit val boardSetFormat = Json.format[BoardSet]
   implicit val handInTableFormat = Json.format[HandInTable]
-  implicit val MovementFormat = Json.format[Movement]
+  implicit val movementFormat = Json.format[Movement]
   implicit val loggerFormat = Json.format[LogEntryV2]
 //  implicit val boarsetsAndMovementsFormat = Json.format[BoardSetsAndMovementsV1]
   implicit val boarsetsAndMovementsV1Format =
@@ -91,17 +91,19 @@ trait JsonSupport {
   implicit val duplicatePlayerPlaceFormat = Json.format[PlayerPlace]
   implicit val duplicatePlayerPlacesFormat = Json.format[PlayerPlaces]
 
-  implicit val CounterStatFormat = Json.format[CounterStat]
-  implicit val ContractStatFormat = Json.format[ContractStat]
-  implicit val ContractStatsFormat = Json.format[ContractStats]
-  implicit val PlayerStatFormat = Json.format[PlayerStat]
-  implicit val PlayerStatsFormat = Json.format[PlayerStats]
-  implicit val PlayerComparisonStatFormat = Json.format[PlayerComparisonStat]
-  implicit val PlayerComparisonStatsFormat = Json.format[PlayerComparisonStats]
-  implicit val PlayerOpponentStatFormat = Json.format[PlayerOpponentStat]
-  implicit val PlayerOpponentsStatFormat = Json.format[PlayerOpponentsStat]
-  implicit val PlayersOpponentsStatsFormat = Json.format[PlayersOpponentsStats]
-  implicit val DuplicateStatsFormat = Json.format[DuplicateStats]
+  implicit val counterStatFormat = Json.format[CounterStat]
+  implicit val contractStatFormat = Json.format[ContractStat]
+  implicit val contractStatsFormat = Json.format[ContractStats]
+  implicit val playerStatFormat = Json.format[PlayerStat]
+  implicit val playerStatsFormat = Json.format[PlayerStats]
+  implicit val playerComparisonStatFormat = Json.format[PlayerComparisonStat]
+  implicit val playerComparisonStatsFormat = Json.format[PlayerComparisonStats]
+  implicit val playerOpponentStatFormat = Json.format[PlayerOpponentStat]
+  implicit val playerOpponentsStatFormat = Json.format[PlayerOpponentsStat]
+  implicit val playersOpponentsStatsFormat = Json.format[PlayersOpponentsStats]
+  implicit val duplicateStatsFormat = Json.format[DuplicateStats]
+
+  implicit val importStoreData = Json.format[ImportStoreData]
 
   implicit val unitFormat = new UnitFormat
 

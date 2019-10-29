@@ -105,15 +105,6 @@ class ServerService(totallyMissingHandler: RejectionHandler) {
         schema = new Schema(`type` = "string", allowableValues = Array("yes"))
       )
     ),
-    requestBody = new RequestBody(
-      description = "movement to create",
-      content = Array(
-        new Content(
-          mediaType = "text/plain",
-          schema = new Schema(`type` = "string")
-        )
-      )
-    ),
     responses = Array(
       new ApiResponse(responseCode = "204", description = "Accepted"),
       new ApiResponse(responseCode = "400", description = "Bad request")
