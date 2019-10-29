@@ -33,6 +33,11 @@ import scala.concurrent.Promise
 import com.github.thebridsk.bridge.data.websocket.DuplexProtocol.LogEntryV2
 import com.github.thebridsk.bridge.server.test.selenium.TestServer
 import akka.http.scaladsl.testkit.RouteTestTimeout
+import akka.http.scaladsl.model.headers.HttpEncodings
+import java.util.zip.GZIPInputStream
+import java.io.ByteArrayInputStream
+import java.io.InputStreamReader
+import scala.io.Source
 
 class MyServiceSpec extends FlatSpec with ScalatestRouteTest with MustMatchers with MyService {
   val restService = new BridgeServiceTesting
@@ -110,10 +115,18 @@ class MyServiceSpec extends FlatSpec with ScalatestRouteTest with MustMatchers w
     }
   }
 
+  def getGzipBody( body: Array[Byte] ) = {
+    val in = new GZIPInputStream( new ByteArrayInputStream( responseAs[Array[Byte]]))
+    Source.fromInputStream(in,"utf-8").mkString
+  }
+
+  import akka.http.scaladsl.model.headers.`Content-Encoding`
   it should "return the index.html to /public/index.html" in {
     Get("/public/index.html") ~> addHeader(remoteAddress) ~> Route.seal { myRouteWithLogging } ~> check {
       status mustBe OK
-      responseAs[String] must include regex """(?s-)(?m-)<html.*bridgescorer-client-opt\.js.*</html>"""
+      header("Content-Encoding") mustBe Some(`Content-Encoding`( HttpEncodings.gzip))
+      val sbody = getGzipBody( responseAs[Array[Byte]] )
+      sbody must include regex """(?s-)(?m-)<html.*bridgescorer-client-opt\.js.*</html>"""
     }
   }
 
@@ -122,7 +135,9 @@ class MyServiceSpec extends FlatSpec with ScalatestRouteTest with MustMatchers w
     assume(!useFullOptOnly)
     Get("/public/index-fastopt.html") ~> addHeader(remoteAddress) ~> Route.seal { myRouteWithLogging } ~> check {
       status mustBe OK
-      responseAs[String] must include regex """(?s)<html>.*bridgescorer-client-fastopt\.js.*</html>"""
+      header("Content-Encoding") mustBe Some(`Content-Encoding`( HttpEncodings.gzip))
+      val sbody = getGzipBody( responseAs[Array[Byte]] )
+      sbody must include regex """(?s)<html>.*bridgescorer-client-fastopt\.js.*</html>"""
     }
 
   }
@@ -139,7 +154,9 @@ class MyServiceSpec extends FlatSpec with ScalatestRouteTest with MustMatchers w
 
       Get("/public/bridgescorer-client-fastopt.js") ~> addHeader(remoteAddress) ~> Route.seal { myRouteWithLogging } ~> check {
         status mustBe OK
-        responseAs[String] must include regex "(?s).*function.*"
+        header("Content-Encoding") mustBe Some(`Content-Encoding`( HttpEncodings.gzip))
+        val sbody = getGzipBody( responseAs[Array[Byte]] )
+        sbody must include regex "(?s).*function.*"
       }
     }
   }
@@ -148,21 +165,21 @@ class MyServiceSpec extends FlatSpec with ScalatestRouteTest with MustMatchers w
     assume(!useFastOptOnly)
     Get("/public/bridgescorer-client-opt.js") ~> addHeader(remoteAddress) ~> Route.seal { myRouteWithLogging } ~> check {
       status mustBe OK
-      responseAs[String] must include regex "(?s).*function.*"
+      getGzipBody( responseAs[Array[Byte]] ) must include regex "(?s).*function.*"
     }
   }
 
   it should "return webjars/react-widgets/dist/css/react-widgets.css using webjars" in {
     Get("/public/react-widgets/dist/css/react-widgets.css") ~> addHeader(remoteAddress) ~> Route.seal { html } ~> check {
       status mustBe OK
-      responseAs[String] must include regex "(?s).*.rw-input.*"
+      getGzipBody( responseAs[Array[Byte]] ) must include regex "(?s).*.rw-input.*"
     }
   }
 
   it should "return webjars/react-widgets/dist/css/react-widgets.css using myRouteWithLogging" in {
     Get("/public/react-widgets/dist/css/react-widgets.css") ~> addHeader(remoteAddress) ~> Route.seal { myRouteWithLogging } ~> check {
       status mustBe OK
-      responseAs[String] must include regex "(?s).*.rw-input.*"
+      getGzipBody( responseAs[Array[Byte]] ) must include regex "(?s).*.rw-input.*"
     }
   }
 
