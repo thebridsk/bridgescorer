@@ -115,6 +115,14 @@ trait JsService /* extends HttpService */ {
     rec(if (path.startsWithSlash) path.tail else path)
   }
 
+  def reqRespLogging( name: String, level: Logging.LogLevel )( r: => Route) =
+    logRequest(name, level) {
+      logResult(name, level) {
+        r
+      }
+    }
+
+
   /**
     * The spray route for the html static files
     */
@@ -122,50 +130,65 @@ trait JsService /* extends HttpService */ {
     pathSingleSlash {
       redirect("/public/index.html", StatusCodes.PermanentRedirect)
     } ~
-      pathPrefix("public") {
-        respondWithHeaders(cacheHeaders: _*) {
-          pathEndOrSingleSlash {
-            redirect("/public/index.html", StatusCodes.PermanentRedirect)
-          } ~
-            getFromResourceDirectory(htmlResources.baseName) ~
-            extractUnmatchedPath { path =>
-              logger.info(s"Looking for file " + path)
-              safeJoinPaths(htmlResources.baseName + "/", path, separator = '/') match {
-                case "" => reject
-                case resourceName =>
+    pathPrefix("public") {
+      respondWithHeaders(cacheHeaders: _*) {
+        pathEndOrSingleSlash {
+          redirect("/public/index.html", StatusCodes.PermanentRedirect)
+        } ~
+//        reqRespLogging("public", Logging.DebugLevel) { getFromResourceDirectory(htmlResources.baseName) } ~
+//        reqRespLogging("publicgz", Logging.DebugLevel) {
+          extractUnmatchedPath { path =>
+            logger.info(s"Looking for file " + path)
+            val pa = if (path.toString.endsWith("/")) path + "index.html" else path
+            safeJoinPaths(htmlResources.baseName + "/", pa, separator = '/') match {
+              case "" => reject
+              case resourceName =>
+                if (resourceName.endsWith(".gz")) {
+                  getFromResource(resourceName)
+                } else {
                   val resname = resourceName + ".gz"
                   logger.info(
                     s"Looking for gzipped file as a resource " + resname
                   )
-                  getFromResource(resname)
-              }
+                  getFromResource(resname) ~
+                  getFromResource(resourceName)
+                }
             }
-        }
-      } ~
-      pathPrefix("help") {
-        respondWithHeaders(cacheHeaders: _*) {
-          helpResources
-            .map { helpres =>
-              extractUnmatchedPath { ap =>
-                val p = if (ap.startsWithSlash) ap.tail else ap
-                logger.info(s"Looking for help file " + p)
-                val pa = if (p.toString.endsWith("/")) p + "index.html" else p
+          }
+//        }
+      }
+    } ~
+    pathPrefix("help") {
+      respondWithHeaders(cacheHeaders: _*) {
+        helpResources
+          .map { helpres =>
+            extractUnmatchedPath { ap =>
+              val p = if (ap.startsWithSlash) ap.tail else ap
+              logger.info(s"Looking for help file " + p)
+              val pa = if (p.toString.endsWith("/")) p + "index.html" else p
 
-                safeJoinPaths(helpres.baseName + "/", pa, separator = '/') match {
-                  case "" => reject
-                  case resourceName =>
+              safeJoinPaths(helpres.baseName + "/", pa, separator = '/') match {
+                case "" => reject
+                case resourceName =>
+                  if (resourceName.endsWith(".gz")) {
+                    getFromResource(resourceName)
+                  } else {
                     val resname = resourceName + ".gz"
                     logger.info(
                       s"Looking for gzipped file as a resource " + resname
                     )
                     getFromResource(resname) ~
                       getFromResource(resourceName)
-                }
+                  }
               }
             }
-            .getOrElse(reject)
-        }
+          }
+          .getOrElse(reject)
       }
+    } ~
+    path("favicon.ico") {
+      redirect("/public/favicon.ico", StatusCodes.PermanentRedirect)
+    }
   }
 
 }

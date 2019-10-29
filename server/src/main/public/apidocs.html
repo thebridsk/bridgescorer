@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Swagger UI</title>
-  <link rel="stylesheet" type="text/css" href="swagger-ui-dist/swagger-ui.css.gz" >
+  <link rel="stylesheet" type="text/css" href="swagger-ui-dist/swagger-ui.css" >
   <link rel="icon" type="image/png" href="swagger-ui-dist/favicon-32x32.png" sizes="32x32" />
   <link rel="icon" type="image/png" href="swagger-ui-dist/favicon-16x16.png" sizes="16x16" />
   <style>
@@ -32,17 +32,17 @@
 
 <div id="swagger-ui"></div>
 
-<script src="swagger-ui-dist/swagger-ui-bundle.js.gz"> </script>
-<script src="swagger-ui-dist/swagger-ui-standalone-preset.js.gz"> </script>
-<!-- This should work with SwaggerUI, but it doesn't.  
+<script src="swagger-ui-dist/swagger-ui-bundle.js"> </script>
+<script src="swagger-ui-dist/swagger-ui-standalone-preset.js"> </script>
+<!-- This should work with SwaggerUI, but it doesn't.
      It ignores apisSorter, operationsSorter, docExpansion, showRequestHeaders, jsonEditor
  -->
 <script>
 window.onload = function() {
   // Build a system
-  
+
   // looks like apisSorter, operationsSorter, docExpansion, showRequestHeaders, jsonEditor are not implemented yet
-  
+
   const ui = SwaggerUIBundle({
     url: "/v1/api-docs/swagger.yaml",
     dom_id: '#swagger-ui',

@@ -154,7 +154,7 @@ trait MyService
         loggingRoute ~
           cors() {
             logRequest("logRouteWithIp", Logging.DebugLevel) {
-              logResult("myRoute", Logging.DebugLevel) {
+              logResult("logRouteWithIp", Logging.DebugLevel) {
 //            handleRejections(totallyMissingHandler) {
                 serverService.serverRoute
 //            }
@@ -170,9 +170,9 @@ trait MyService
     */
   val myRoute = handleRejections(totallyMissingHandler) {
     import CorsDirectives._
-    encodeResponse {
-      logRequest("myRoute", Logging.DebugLevel) {
-        logResult("myRoute", Logging.DebugLevel) {
+    logRequest("myRoute", Logging.DebugLevel) {
+      logResult("myRoute", Logging.DebugLevel) {
+        encodeResponse {
           cors() {
             graphQLRoute ~
               routeRest
