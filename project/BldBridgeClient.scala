@@ -67,6 +67,8 @@ object BldBridgeClient {
         Glob((crossTarget in npmUpdate in Test).value, "node_modules") / **
       ),
 
+      scalaJSLinkerConfig in fastOptJS ~= (_.withSourceMap(false)),
+
 //    test in assembly := {},
 
 //    testOptions in Test += Tests.Argument(TestFrameworks.ScalaTest, "-oU"),
