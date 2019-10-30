@@ -145,6 +145,43 @@ object BldBridge {
       pipelineStages in Assets := (if (onlyBuildDebug) Seq()
                                    else
                                      Seq(scalaJSProd)) ++ Seq(scalaJSDev, gzip),
+
+      assemblyOption in assembly := {
+
+        // the following is a hack.  The assembly caches the jar files,
+        // but it doesn't erase old ones.  This means for bridgescorer and
+        // bridgescorer-server we get multiple version in the cache which
+        // end up in the assembly.jar file.
+
+        println("cleanning assembly cache for bridgescorer")
+        val stream = streams.value
+        println(s"Cache directory is ${stream.cacheDirectory}")
+
+        def deleteDir( dir: File ): Unit = {
+//          println(s"Deleting ${dir}")
+          if (dir.isDirectory) {
+            dir.listFiles.foreach { f =>
+              deleteDir(f)
+            }
+          }
+          (1 to 3).find { i =>
+            val rc = dir.delete
+            if (!rc) {
+              Thread.sleep( 500L )
+            }
+            rc
+          }.getOrElse {
+            println(s"Error deleting ${dir}")
+          }
+        }
+
+        val files = ( (stream.cacheDirectory ** "webjars" / "bridgescorer") +++ (stream.cacheDirectory ** "webjars" / "bridgescorer-server")).get
+        println(s"Deleting bridgescorer cached files in assembly, directories to delete ${files.mkString("\n  ","\n  ","\n")}")
+        files.foreach { f => deleteDir(f) }
+
+        (assemblyOption in assembly).value
+      },
+
       assemblyMergeStrategy in assembly := {
         case PathList(
             "META-INF",
