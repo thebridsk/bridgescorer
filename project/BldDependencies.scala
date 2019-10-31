@@ -152,7 +152,7 @@ object BldDependencies {
       "com.github.japgolly.scalajs-react" %%% "core"          % vScalaJsReact withSources(),
       "com.github.japgolly.scalajs-react" %%% "extra"         % vScalaJsReact withSources(),
 
-      "org.querki" %%% "jquery-facade" % vJqueryFacade % "test" withSources(),
+      // "org.querki" %%% "jquery-facade" % vJqueryFacade % "test" withSources(),
 
       "com.github.japgolly.scalajs-react" %%% "test" % vScalaJsReact % "test" withSources()
       ))
@@ -165,7 +165,7 @@ object BldDependencies {
     "com.github.japgolly.scalajs-react" %%% "core"          % vScalaJsReact withSources(),
     "com.github.japgolly.scalajs-react" %%% "extra"         % vScalaJsReact withSources(),
 
-    "org.querki" %%% "jquery-facade" % vJqueryFacade % "test" withSources(),
+    // "org.querki" %%% "jquery-facade" % vJqueryFacade % "test" withSources(),
 
     "com.github.japgolly.scalajs-react" %%% "test" % vScalaJsReact % "test" withSources()
     ))

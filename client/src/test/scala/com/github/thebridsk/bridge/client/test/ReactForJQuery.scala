@@ -3,9 +3,7 @@ package com.github.thebridsk.bridge.client.test
 import org.scalajs.dom.raw.Element
 import org.scalajs.dom.raw.Node
 import org.scalajs.dom.raw.Text
-//import org.scalajs.jquery.{ jQuery => _, _ }
-import org.querki.jquery._
-import com.github.thebridsk.bridge.client.test.utils.jQuery
+import com.github.thebridsk.bridge.client.test.utils.JQuery
 import japgolly.scalajs.react.test.ReactTestUtils
 import org.scalajs.dom.raw.DocumentType
 import org.scalajs.dom.raw.ProcessingInstruction
@@ -23,6 +21,7 @@ import japgolly.scalajs.react.component.Scala.MountedRoot
 import scala.language.higherKinds
 import japgolly.scalajs.react.test.SimEvent
 import com.github.thebridsk.utilities.logging.Logger
+import com.github.thebridsk.bridge.client.test.utils.JQuery
 
 object ReactForJQuery {
   val log = Logger("bridge.ReactForJQuery")
@@ -39,7 +38,7 @@ class ReactForJQuery( val component: Element ) {
   def jqueryComponent = {
 //    if (jqueryComponentInternal == null)
     val e = component
-      jqueryComponentInternal = jQuery(e)
+      jqueryComponentInternal = JQuery(e)
     jqueryComponentInternal
   }
 
