@@ -7,11 +7,12 @@ import java.util.logging.Level
 import org.scalactic.source.Position
 import org.openqa.selenium.WebElement
 import org.openqa.selenium.By.ByName
-import scala.collection.convert.ImplicitConversionsToScala._
+import scala.jdk.CollectionConverters._
 import org.openqa.selenium.By.ByTagName
 import org.scalatest.concurrent.Eventually.eventually
 import org.scalatest.concurrent.Eventually.PatienceConfig
 import com.github.thebridsk.browserpages.PageBrowser
+import scala.jdk.CollectionConverters._
 
 object SeleniumUtilsLogger {
 
@@ -245,7 +246,7 @@ trait SeleniumUtils {
    */
   def findAllInput( itype: String, iname: String* )(implicit webDriver: WebDriver, pos: Position): Map[String,TextField] = {
     try {
-      val input = webDriver.findElements(new ByTagName("input")).
+      val input = webDriver.findElements(new ByTagName("input")).asScala.
                     filter{ we => we.getAttribute("type") == itype && iname.contains(we.getAttribute("name")) }.
                     map { we => (we.getAttribute("name"), new TextField(we)(pos)) }.
                     toMap

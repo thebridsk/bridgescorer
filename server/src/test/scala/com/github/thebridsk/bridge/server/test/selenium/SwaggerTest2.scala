@@ -21,7 +21,7 @@ import org.openqa.selenium.chrome.ChromeDriver
 import org.openqa.selenium.remote.RemoteWebDriver
 import org.openqa.selenium.firefox.FirefoxDriver
 import org.openqa.selenium.safari.SafariDriver
-import scala.collection.convert.ImplicitConversionsToScala._
+import scala.jdk.CollectionConverters._
 import com.github.thebridsk.bridge.data.MatchDuplicate
 import com.github.thebridsk.utilities.logging.Logger
 import java.util.logging.Level

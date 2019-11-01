@@ -144,7 +144,7 @@ object MemoryMonitor {
       }
     })
 
-    import scala.collection.JavaConversions._
+    import scala.jdk.CollectionConverters._
     val sortedfiles = files.toList.sorted
 //    println(s"Found ${sortedfiles.length} log files with pattern ${pat}")
     if (sortedfiles.length > fCount) {

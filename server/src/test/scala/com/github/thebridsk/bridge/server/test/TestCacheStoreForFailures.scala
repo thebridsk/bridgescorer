@@ -878,7 +878,7 @@ class TestCacheStoreForFailures extends AsyncFlatSpec with ScalatestRouteTest wi
     val id = md2.id
     persistent.add(md2)
     try {
-      store.getCached(id) mustBe 'empty
+      store.getCached(id) mustBe Symbol("empty")
       store.delete(md2.id).test("Updating match duplicate") { tnmd =>
         tnmd match {
           case Success(Right(nmd)) =>

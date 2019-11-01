@@ -21,7 +21,7 @@ import org.openqa.selenium.remote.RemoteWebDriver
 import org.openqa.selenium.firefox.FirefoxDriver
 import org.openqa.selenium.safari.SafariDriver
 import com.github.thebridsk.bridge.data.bridge._
-import scala.collection.JavaConversions._
+import scala.jdk.CollectionConverters._
 import scala.util.Failure
 import scala.concurrent._
 import ExecutionContext.Implicits.global
@@ -203,7 +203,7 @@ class DuplicateResultTest extends FlatSpec with MustMatchers with BeforeAndAfter
     }
 
     dupid = curPage.clickForResultsOnly(boardset, movement).validate.dupid
-    dupid mustBe 'defined
+    dupid mustBe Symbol("defined")
 
     testlog.info(s"Duplicate id is ${dupid.get}")
 

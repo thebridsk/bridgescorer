@@ -43,6 +43,7 @@ import java.io.FileOutputStream
 import scala.concurrent.Await
 import scala.concurrent.duration._
 import scala.language.postfixOps
+import scala.util.Using
 
 object TestGraphQL {
 
@@ -220,10 +221,9 @@ class TestGraphQL extends AsyncFlatSpec with ScalatestRouteTest with MustMatcher
   }
 
   it should "export and import the store" in {
-    import _root_.resource._
 
     val importfile = (dirTemp / "import.zip")
-    val r = managed( new FileOutputStream( importfile.toString() ) ) acquireAndGet { file =>
+    val r = Using.resource( new FileOutputStream( importfile.toString() ) ) { file =>
       val fut = store.export(file)
       Await.result(fut, 60 seconds)
     }

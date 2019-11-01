@@ -28,6 +28,7 @@ import java.nio.file.Paths
 import com.github.thebridsk.bridge.server.util.GitHub
 import com.github.thebridsk.bridge.server.version.VersionServer
 import com.github.thebridsk.bridge.server.util.Version
+import scala.util.Using
 
 /**
   * This is the update subcommand.
@@ -187,8 +188,7 @@ Copy the server jar file to the installation directory.  Then run the following 
     val outfile = tdir / fileToCopy
     Option(getClass.getClassLoader.getResourceAsStream(fileToCopy)) match {
       case Some(in) =>
-        import resource._
-        for (min <- managed(in)) {
+        Using.resource(in) { min =>
           Files.copy(
             min,
             Paths.get(outfile.toString),

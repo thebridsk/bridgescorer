@@ -82,7 +82,7 @@ trait WebJar {
           logger.fine(
             "Looking for webjars " + artifactid + " resource " + resource
           )
-          respondWithHeaders(cacheHeaders: _*) {
+          respondWithHeaders(cacheHeaders) {
             webjarsResources.find { x =>
               x.isArtifact(artifactid)
             } match {

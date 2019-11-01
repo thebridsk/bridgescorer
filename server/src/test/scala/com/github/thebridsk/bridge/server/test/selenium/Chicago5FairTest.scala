@@ -10,7 +10,7 @@ import com.github.thebridsk.bridge.data.bridge._
 import org.openqa.selenium.By
 import java.util.concurrent.TimeUnit
 import org.scalactic.source.Position
-import scala.collection.convert.ImplicitConversionsToScala._
+import scala.jdk.CollectionConverters._
 import org.openqa.selenium.Keys
 import com.github.thebridsk.bridge.server.test.util.NoResultYet
 import com.github.thebridsk.bridge.server.test.util.EventuallyUtils
@@ -139,7 +139,7 @@ class Chicago5FairTest extends FlatSpec
 
   it should "allow player names to be entered when playing Chicago" in {
 
-    find(id("Ok")) must not be 'Enabled
+    find(id("Ok")) must not be Symbol("Enabled")
 
     eventuallyFindAndClickButton("ToggleFive")
 
@@ -163,7 +163,7 @@ class Chicago5FairTest extends FlatSpec
 
     click on id("PlayerNFirstDealer")
 
-    eventually( find(id("Ok")) mustBe 'Enabled )
+    eventually( find(id("Ok")) mustBe Symbol("Enabled") )
 
     click on id("Ok")
     eventually (find(id("North")).text mustBe "Nancy vul")
@@ -214,9 +214,9 @@ class Chicago5FairTest extends FlatSpec
 
   it should "play a round" in {
     tcpSleep(30)
-    val assertScore: (Int*) => Unit = assertTotals("Nancy", "Sam", "Ellen", "Wayne", "Brian" ) _
+    val assertScore = assertTotals("Nancy", "Sam", "Ellen", "Wayne", "Brian" ) _
     enterHand(4,Spades,NotDoubled,North,Made,4, Some("Nancy"))  // NS score 420
-    assertScore( 420, 420, 0, 0, 0 )
+    assertScore( Seq( 420, 420, 0, 0, 0 ))
 
 //    val table = find(xpath("""//div/div/div/div"""))
 //    table.takeScreenshot(screenshotDir, "summarytable.png")
@@ -295,9 +295,9 @@ class Chicago5FairTest extends FlatSpec
 
     find(id("Dealer")).text mustBe "Ellen"
 
-    val assertScore: (Int*)=>Unit = assertTotals("Nancy", "Sam", "Ellen", "Wayne", "Brian" ) _
+    val assertScore = assertTotals("Nancy", "Sam", "Ellen", "Wayne", "Brian" ) _
     enterHand(3,NoTrump,NotDoubled,North,Made,3, Some("Ellen"))  // NS score 400
-    assertScore( 420, 420, 0, 400, 400 )
+    assertScore( Seq( 420, 420, 0, 400, 400 ))
 
     InputStyleHelper.hitInputStyleButton( "Prompt" )
 
@@ -327,9 +327,9 @@ class Chicago5FairTest extends FlatSpec
 
     find(id("Dealer")).text mustBe "Wayne"
 
-    val assertScore: (Int*)=>Unit = assertTotals("Nancy", "Sam", "Ellen", "Wayne", "Brian" ) _
+    val assertScore = assertTotals("Nancy", "Sam", "Ellen", "Wayne", "Brian" ) _
     enterHand(4,Spades,NotDoubled,North,Made,5, Some("Wayne"))  // NS score 450
-    assertScore( 420, 870, 0, 850, 400 )
+    assertScore( Seq( 420, 870, 0, 850, 400 ))
 
     InputStyleHelper.hitInputStyleButton( "Original" )
 
@@ -361,9 +361,9 @@ class Chicago5FairTest extends FlatSpec
 
     find(id("Dealer")).text mustBe "Brian"
 
-    val assertScore: (Int*)=>Unit = assertTotals("Nancy", "Sam", "Ellen", "Wayne", "Brian" ) _
+    val assertScore = assertTotals("Nancy", "Sam", "Ellen", "Wayne", "Brian" ) _
     enterHand(1,NoTrump,NotDoubled,North,Made,4, Some("Brian"))  // NS score 180
-    assertScore( 600, 870, 180, 850, 400 )
+    assertScore( Seq( 600, 870, 180, 850, 400 ))
 
     click on id("NewRound")
   }
@@ -388,9 +388,9 @@ class Chicago5FairTest extends FlatSpec
 
     find(id("Dealer")).text mustBe "Brian"
 
-    val assertScore: (Int*)=>Unit = assertTotals("Nancy", "Sam", "Ellen", "Wayne", "Brian" ) _
+    val assertScore = assertTotals("Nancy", "Sam", "Ellen", "Wayne", "Brian" ) _
     enterHand(6,NoTrump,NotDoubled,South,Made,6, Some("Brian"))  // NS score 990
-    assertScore( 600, 870, 1170, 850, 1390 )
+    assertScore( Seq( 600, 870, 1170, 850, 1390 ))
 
     click on id("NewRound")
   }
@@ -420,9 +420,9 @@ class Chicago5FairTest extends FlatSpec
 
     find(id("Dealer")).text mustBe "Wayne"
 
-    val assertScore: (Int*)=>Unit = assertTotals("Nancy", "Sam", "Ellen", "Wayne", "Brian" ) _
+    val assertScore = assertTotals("Nancy", "Sam", "Ellen", "Wayne", "Brian" ) _
     enterHand(5,Diamonds,NotDoubled,North,Made,7, Some("Wayne"))  // NS score 440
-    assertScore( 1040, 1310, 1170, 850, 1390 )
+    assertScore( Seq( 1040, 1310, 1170, 850, 1390 ))
 
   }
 

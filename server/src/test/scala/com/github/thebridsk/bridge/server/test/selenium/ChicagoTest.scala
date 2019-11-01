@@ -10,7 +10,7 @@ import com.github.thebridsk.bridge.data.bridge._
 import org.openqa.selenium.By
 import java.util.concurrent.TimeUnit
 import org.scalactic.source.Position
-import scala.collection.convert.ImplicitConversionsToScala._
+import scala.jdk.CollectionConverters._
 import org.openqa.selenium.Keys
 import com.github.thebridsk.bridge.server.test.util.NoResultYet
 import com.github.thebridsk.bridge.server.test.util.EventuallyUtils
@@ -28,6 +28,7 @@ import com.github.thebridsk.bridge.server.test.TestStartLogging
 import com.github.thebridsk.bridge.server.test.pages.bridge.HomePage
 import com.github.thebridsk.browserpages.Session
 import com.github.thebridsk.bridge.server.test.util.CaptureLog
+import scala.math.Ordering.Double.TotalOrdering
 
 /**
  * @author werewolf
@@ -144,8 +145,8 @@ class ChicagoTest extends FlatSpec
 
   it should "allow player names to be entered with suggestions when playing Chicago" in {
 
-    eventually( find(id("ResetNames")) mustBe 'Enabled )
-    find(id("Ok")) must not be 'Enabled
+    eventually( find(id("ResetNames")) mustBe Symbol("Enabled") )
+    find(id("Ok")) must not be Symbol("Enabled")
 
     textField("North").value = "Nancy"
     textField("South").value = "Sam"
@@ -155,7 +156,7 @@ class ChicagoTest extends FlatSpec
         val visibleDivs = findElements(By.xpath("""//input[@name='East']/parent::div/following-sibling::div/div"""))
         withClue("Must have one visible div") { visibleDivs.size() mustBe 1}
         val listitems = findElements(By.xpath("""//input[@name='East']/parent::div/following-sibling::div/div/div/ul/li"""))
-        withClue("Must have one li in visible div, found "+listitems.mkString(",")+": ") { listitems.size mustBe 1 }
+        withClue("Must have one li in visible div, found "+listitems.asScala.mkString(",")+": ") { listitems.size mustBe 1 }
         withClue("One li in visible div must show no names, found "+listitems.get(0).getText+": ") {
           listitems.get(0).getText() must fullyMatch regex ( """No suggested names""" )
         }
@@ -170,7 +171,7 @@ class ChicagoTest extends FlatSpec
 
   it should "allow player names to be reset when playing Chicago" in {
 
-    find(id("ResetNames")) mustBe 'Enabled
+    find(id("ResetNames")) mustBe Symbol("Enabled")
     click on id("ResetNames")
 
     eventually (textField("North").value mustBe "")
@@ -182,7 +183,7 @@ class ChicagoTest extends FlatSpec
 
   it should "allow player names to be entered when playing Chicago" in {
 
-    find(id("Ok")) must not be 'Enabled
+    find(id("Ok")) must not be Symbol("Enabled")
 
     textField("North").value = "Nancy"
     textField("South").value = "Sam"
@@ -236,18 +237,18 @@ class ChicagoTest extends FlatSpec
 
   it should "play a round of 4 hands" in {
     tcpSleep(40)
-    val assertScore: (Int*)=>Unit = assertTotals("Nancy", "Sam", "Ellen", "Wayne" ) _
+    val assertScore = assertTotals("Nancy", "Sam", "Ellen", "Wayne" ) _
     enterHand(4,Spades,NotDoubled,North,Made,4, Some("Nancy"))  // NS score 420
-    assertScore( 420, 420, 0, 0 )
+    assertScore( Seq( 420, 420, 0, 0 ))
     click on id("NextHand")
     enterHand(4,Hearts,NotDoubled,East,Made,4, Some("Ellen"))  // EW score 620
-    assertScore( 420, 420, 620, 620 )
+    assertScore( Seq( 420, 420, 620, 620 ))
     click on id("NextHand")
     enterHand(5,Diamonds,NotDoubled,South,Made,5, Some("Sam"))  // NS score 600
-    assertScore( 1020, 1020, 620, 620 )
+    assertScore( Seq( 1020, 1020, 620, 620 ))
     click on id("NextHand")
     enterHand(3,Clubs,NotDoubled,West,Made,4, Some("Wayne"))  // EW score 130
-    assertScore( 1020, 1020, 750, 750 )
+    assertScore( Seq( 1020, 1020, 750, 750 ))
 
     InputStyleHelper.hitInputStyleButton( "Guide" )
 
@@ -290,18 +291,18 @@ class ChicagoTest extends FlatSpec
     find(id("East")).text mustBe "Sam vul"
     find(id("West")).text mustBe "Wayne vul"
 
-    val assertScore: (Int*)=>Unit = assertTotals("Nancy", "Sam", "Ellen", "Wayne" ) _
+    val assertScore = assertTotals("Nancy", "Sam", "Ellen", "Wayne" ) _
     enterHand(4,Spades,NotDoubled,North,Made,4, Some("Sam"))  // NS score 420
-    assertScore( 1440, 1020, 1170, 750 )
+    assertScore( Seq( 1440, 1020, 1170, 750 ))
     click on id("NextHand")
     enterHand(4,Hearts,NotDoubled,East,Made,4, Some("Ellen"))  // EW score 420
-    assertScore( 1440, 1440, 1170, 1170 )
+    assertScore( Seq( 1440, 1440, 1170, 1170 ))
     click on id("NextHand")
     enterHand(5,Diamonds,NotDoubled,South,Made,5, Some("Wayne"))  // NS score 400
-    assertScore( 1840, 1440, 1570, 1170 )
+    assertScore( Seq( 1840, 1440, 1570, 1170 ))
     click on id("NextHand")
     enterHand(3,Clubs,NotDoubled,West,Made,4, Some("Nancy"))  // EW score 130
-    assertScore( 1840, 1570, 1570, 1300 )
+    assertScore( Seq( 1840, 1570, 1570, 1300 ))
 
     InputStyleHelper.hitInputStyleButton( "Prompt" )
 
@@ -311,7 +312,7 @@ class ChicagoTest extends FlatSpec
   it should "allow setting the scorekeeper and dealer for third round" in {
     tcpSleep(30)
 
-    find(id("Ok")) must not be 'enabled
+    find(id("Ok")) must not be Symbol("Enabled")
 
     click on id("PlayerWFirstDealer")
     click on id("Ok")
@@ -338,18 +339,18 @@ class ChicagoTest extends FlatSpec
     find(id("East")).text mustBe "Ellen vul"
     find(id("West")).text mustBe "Sam vul"
 
-    val assertScore: (Int*)=>Unit = assertTotals("Nancy", "Sam", "Ellen", "Wayne" ) _
+    val assertScore = assertTotals("Nancy", "Sam", "Ellen", "Wayne" ) _
     enterHand(4,Spades,NotDoubled,North,Made,4, Some("Sam"))  // NS score 420
-    assertScore( 2260, 1570, 1570, 1720 )
+    assertScore( Seq( 2260, 1570, 1570, 1720 ))
     click on id("NextHand")
     enterHand(4,Hearts,NotDoubled,East,Made,4, Some("Nancy"))  // EW score 420
-    assertScore( 2260, 1990, 1990, 1720 )
+    assertScore( Seq( 2260, 1990, 1990, 1720 ))
     click on id("NextHand")
     enterHand(5,Diamonds,NotDoubled,South,Made,5, Some("Ellen"))  // NS score 400
-    assertScore( 2660, 1990, 1990, 2120 )
+    assertScore( Seq( 2660, 1990, 1990, 2120 ))
     click on id("NextHand")
     enterHand(3,Clubs,NotDoubled,West,Made,4, Some("Wayne"))  // EW score 130
-    assertScore( 2660, 2120, 2120, 2120 )
+    assertScore( Seq( 2660, 2120, 2120, 2120 ))
 
     InputStyleHelper.hitInputStyleButton( "Original" )
 
@@ -387,18 +388,18 @@ class ChicagoTest extends FlatSpec
     find(id("East")).text mustBe "Wayne vul"
     find(id("West")).text mustBe "Sam vul"
 
-    val assertScore: (Int*)=>Unit = assertTotals("Nancy", "Sam", "Ellen", "Wayne" ) _
+    val assertScore = assertTotals("Nancy", "Sam", "Ellen", "Wayne" ) _
     enterHand(4,Spades,NotDoubled,North,Made,4, Some("Ellen"))  // NS score 420
-    assertScore( 3080, 2120, 2540, 2120 )
+    assertScore( Seq( 3080, 2120, 2540, 2120 ))
     click on id("NextHand")
     enterHand(4,Hearts,NotDoubled,East,Made,4, Some("Sam"))  // EW score 620
-    assertScore( 3080, 2740, 2540, 2740 )
+    assertScore( Seq( 3080, 2740, 2540, 2740 ))
     click on id("NextHand")
     enterHand(5,Diamonds,NotDoubled,South,Made,5, Some("Nancy"))  // NS score 600
-    assertScore( 3680, 2740, 3140, 2740 )
+    assertScore( Seq( 3680, 2740, 3140, 2740 ))
     click on id("NextHand")
     enterHand(3,Clubs,NotDoubled,West,Made,4, Some("Wayne"))  // EW score 130
-    assertScore( 3680, 2870, 3140, 2870 )
+    assertScore( Seq( 3680, 2870, 3140, 2870 ))
     click on id("NewRound")
   }
 
@@ -523,15 +524,15 @@ class ChicagoTest extends FlatSpec
 
   it should "give player suggestions when entering names" in {
 
-    eventually( find(id("ResetNames")) mustBe 'Enabled )
-    find(id("Ok")) must not be 'Enabled
+    eventually( find(id("ResetNames")) mustBe Symbol("Enabled") )
+    find(id("Ok")) must not be Symbol("Enabled")
 
     textField("North").value = "n"
     tcpSleep(2)
     val first = eventually {
       val listitems = findElements(By.xpath("""//input[@name='North']/parent::div/following-sibling::div/div/div/ul/li"""))
       assert( !listitems.isEmpty(), "list of candidate entries must not be empty" )
-      listitems.foreach ( li =>
+      listitems.asScala.foreach ( li =>
         li.getText() must startWith regex( "(?i)n" )
       )
       listitems.get(0)
@@ -546,7 +547,7 @@ class ChicagoTest extends FlatSpec
     eventually {
       val listitems = findElements(By.xpath("""//input[@name='South']/parent::div/following-sibling::div/div/div/ul/li"""))
       assert( !listitems.isEmpty(), "list of candidate entries must not be empty" )
-      listitems.foreach ( li =>
+      listitems.asScala.foreach ( li =>
         li.getText() must startWith regex( "(?i)s" )
       )
     }
@@ -555,7 +556,7 @@ class ChicagoTest extends FlatSpec
     eventually {
       val listitems = findElements(By.xpath("""//input[@name='East']/parent::div/following-sibling::div/div/div/ul/li"""))
       assert( !listitems.isEmpty(), "list of candidate entries must not be empty" )
-      listitems.foreach ( li =>
+      listitems.asScala.foreach ( li =>
         li.getText() must startWith ( "No names matched" )
       )
     }

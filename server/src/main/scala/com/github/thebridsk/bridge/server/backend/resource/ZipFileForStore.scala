@@ -2,7 +2,7 @@ package com.github.thebridsk.bridge.server.backend.resource
 
 import scala.reflect.io.File
 import java.util.zip.ZipFile
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 import java.util.zip.ZipEntry
 import scala.io.Source
 import com.github.thebridsk.utilities.logging.Logger

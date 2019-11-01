@@ -110,7 +110,7 @@ object DebugLoggerComponentInternal {
     for ( i <- 0 until args.length ) {
       val s = args(i)
 
-      val r = s"""\{${i}\}"""
+      val r = s"""{${i}}"""
       ret = ret.replaceAll(r, s.toString())
     }
     ret

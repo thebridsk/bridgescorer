@@ -9,6 +9,7 @@ import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles
 import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles.baseStyles
 import com.github.thebridsk.bridge.data.util.Strings
 import com.github.thebridsk.utilities.logging.Logger
+import scala.math.Ordering.Double.TotalOrdering
 
 /**
  * Shows a table with sort buttons has the headers of the columns.

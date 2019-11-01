@@ -33,7 +33,7 @@ trait ChicagoUtils {
 
         val entry = (players zip scores).find( e => e._1==name)
         withClue("Looking for "+name+" with total "+total) {
-          withClue("Not found") { entry mustBe 'defined }
+          withClue("Not found") { entry mustBe Symbol("defined") }
           withClue("Not correct total") { entry.get._2.toString() mustBe total }
         }
 

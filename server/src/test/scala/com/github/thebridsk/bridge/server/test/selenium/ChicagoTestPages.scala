@@ -35,6 +35,7 @@ import java.util.zip.ZipFile
 import org.openqa.selenium.WebDriver
 import com.github.thebridsk.browserpages.Session
 import com.github.thebridsk.bridge.server.test.pages.LightDarkAddOn
+import scala.util.Using
 
 object ChicagoTestPages {
 
@@ -190,8 +191,8 @@ class ChicagoTestPages extends FlatSpec
 
     val p = EnterNamesPage.current
 
-    eventually( find(id(EnterNamesPage.buttonReset)) mustBe 'Enabled )
-    find(id(EnterNamesPage.buttonOK)) must not be 'Enabled
+    eventually( find(id(EnterNamesPage.buttonReset)) mustBe Symbol("Enabled") )
+    find(id(EnterNamesPage.buttonOK)) must not be Symbol("Enabled")
 
     p.enterPlayer(North, player1).
       enterPlayer(South, player2).
@@ -218,7 +219,7 @@ class ChicagoTestPages extends FlatSpec
 
     val p = EnterNamesPage.current
 
-    find(id(EnterNamesPage.buttonReset)) mustBe 'Enabled
+    find(id(EnterNamesPage.buttonReset)) mustBe Symbol("Enabled")
     p.clickReset
 
     withClueAndScreenShot(screenshotDir, "Reset", "Error reseting names") {
@@ -780,9 +781,9 @@ class ChicagoTestPages extends FlatSpec
 
     log.info( s"Downloaded export zip: ${f}" )
 
-    import collection.JavaConverters._
-    import resource._
-    for (zip <- managed( new ZipFile(f.jfile) ) ) {
+    import scala.jdk.CollectionConverters._
+
+    Using.resource( new ZipFile(f.jfile) )  { zip =>
       zip.entries().asScala.map { ze => ze.getName }.toList must contain( s"store/MatchChicago.${chicagoId.get}.yaml" )
     }
 

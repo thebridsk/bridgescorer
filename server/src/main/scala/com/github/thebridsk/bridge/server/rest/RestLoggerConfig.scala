@@ -301,7 +301,7 @@ trait RestLoggerConfig extends HasActorSystem {
             case Success(rmv) =>
               if (rbs.isOk && rmv.isOk) {
                 val bm =
-                  List(BoardSetsAndMovements(rbs.right.get, rmv.right.get))
+                  List(BoardSetsAndMovements(rbs.getOrElse(List()), rmv.getOrElse(List())))
                 complete(StatusCodes.OK, bm)
               } else {
                 val (code, msg) = rbs.left.getOrElse(
@@ -330,7 +330,7 @@ trait RestLoggerConfig extends HasActorSystem {
 
   def serverURL(): ServerURL = {
     import java.net.NetworkInterface
-    import scala.collection.JavaConverters._
+    import scala.jdk.CollectionConverters._
     import java.net.Inet4Address
 
     val x = NetworkInterface.getNetworkInterfaces.asScala

@@ -3,6 +3,7 @@ package com.github.thebridsk.color.test
 import org.scalatest.FlatSpec
 import com.github.thebridsk.color._
 import org.scalatest.MustMatchers
+import scala.math.Ordering.Double.TotalOrdering
 
 class TestColor extends FlatSpec with MustMatchers  {
 

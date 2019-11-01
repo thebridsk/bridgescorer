@@ -15,6 +15,7 @@ import play.api.libs.json.Format
 import java.io.OutputStream
 import scala.reflect.io.File
 import java.io.FileOutputStream
+import scala.util.Using
 
 object HttpUtilsInternal {
 
@@ -195,8 +196,8 @@ trait HttpUtils {
       val ce = Option(conn.getHeaderField("Content-Encoding"))
       val cd = Option(conn.getHeaderField("Content-Disposition"))
       val outf = File.makeTemp("export", ".zip")
-      import resource._
-      for (bytesout <- managed( new FileOutputStream( outf.jfile ) ) ) {
+
+      Using.resource( new FileOutputStream( outf.jfile ) ) { bytesout =>
         readAllBytesAndCloseInputStream(ce,conn.getInputStream,bytesout)
       }
       ResponseFromHttp(status,loc,ce,outf,cd)

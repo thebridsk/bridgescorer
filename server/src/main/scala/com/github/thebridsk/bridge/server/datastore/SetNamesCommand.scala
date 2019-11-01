@@ -26,6 +26,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import com.github.thebridsk.bridge.data.VersionedInstance
 import com.github.thebridsk.bridge.data.MatchDuplicateResult
+import scala.util.Using
 
 trait SetNamesCommand
 
@@ -435,17 +436,17 @@ Sam->Norman
     * @return None if there was an error, Some(map), where map is a String->String map
     */
   def getNamesMap(mapfile: File): Map[String, String] = {
-    import resource._
     val name = mapfile.toString()
-    val m = for (s <- managed(Source.fromFile(mapfile, "UTF8"))) yield {
+    val m = Using.resource(Source.fromFile(mapfile, "UTF8")) { s =>
       getNamesMap(s, name)
     }
-    m.either.either match {
-      case Left(err) =>
-        val e = new Exception(s"Error reading ${name}")
-        err.foreach(x => e.addSuppressed(x))
-        throw e
-      case Right(om) => om
-    }
+    m
+    // m.either.either match {
+    //   case Left(err) =>
+    //     val e = new Exception(s"Error reading ${name}")
+    //     err.foreach(x => e.addSuppressed(x))
+    //     throw e
+    //   case Right(om) => om
+    // }
   }
 }

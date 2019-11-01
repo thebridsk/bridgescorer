@@ -21,7 +21,7 @@ class InMemoryPersistent[VId, VType <: VersionedInstance[VType, VType, VId]](
   self =>
 
   val valuesInPersistent = {
-    import collection.JavaConverters._
+    import scala.jdk.CollectionConverters._
     new java.util.concurrent.ConcurrentHashMap[VId, VType]().asScala
   }
 

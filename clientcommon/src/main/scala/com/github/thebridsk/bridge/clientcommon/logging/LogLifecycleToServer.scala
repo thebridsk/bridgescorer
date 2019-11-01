@@ -26,7 +26,7 @@ object LogLifecycleToServer {
   }
 
   private[this] def logc(m: js.Any, c: js.Any, ps: js.Any*)(implicit level: Level, logger: Logger) =
-    log(m + "\n ", /* c +: */ ps: _*)
+    log(s"$m\n ", /* c +: */ ps: _*)
 
   private[this] def log1(m: String)(implicit level: Level, logger: Logger) = (c: js.Any) =>
     logc(m, c)

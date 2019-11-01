@@ -29,7 +29,7 @@ object BldDependencies {
       ))
 
   val loggingDeps = Def.setting(scalatestDeps.value ++ Seq(
-      "com.jsuereth" %% "scala-arm" % vScalaArm withSources()
+      // "com.jsuereth" %% "scala-arm" % vScalaArm withSources()
       ))
 
   val utilitiesDeps = Def.setting(scalatestDeps.value ++ Seq(
@@ -99,7 +99,7 @@ object BldDependencies {
 
       "jakarta.ws.rs" % "jakarta.ws.rs-api" % vWsRsApi withSources(),
 
-      "com.jsuereth" %% "scala-arm" % vScalaArm withSources(),
+      // "com.jsuereth" %% "scala-arm" % vScalaArm withSources(),
       lScallop,
       "org.slf4j" % "slf4j-jdk14" % vSlf4j withSources(),
 

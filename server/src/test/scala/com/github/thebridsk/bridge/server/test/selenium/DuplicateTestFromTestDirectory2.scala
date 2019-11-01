@@ -22,7 +22,7 @@ import org.openqa.selenium.remote.RemoteWebDriver
 import org.openqa.selenium.firefox.FirefoxDriver
 import org.openqa.selenium.safari.SafariDriver
 import com.github.thebridsk.bridge.data.bridge._
-import scala.collection.JavaConversions._
+import scala.jdk.CollectionConverters._
 import scala.util.Failure
 import scala.concurrent._
 import ExecutionContext.Implicits.global
@@ -326,7 +326,7 @@ class DuplicateTestFromTestDirectory2 extends FlatSpec
 
         val sum = hp.clickListDuplicateButton.validate
 
-        val dc = hp.getButton("DuplicateCreate",Some("New")) mustBe 'Enabled
+        val dc = hp.getButton("DuplicateCreate",Some("New")) mustBe Symbol("Enabled")
       }
     }
 
@@ -346,7 +346,7 @@ class DuplicateTestFromTestDirectory2 extends FlatSpec
         val boardset = template.boardset
         val movement = template.movement
 
-        newd.getNewButton(boardset, movement) mustBe 'Enabled
+        newd.getNewButton(boardset, movement) mustBe Symbol("Enabled")
 
         tcpSleep(2)
 

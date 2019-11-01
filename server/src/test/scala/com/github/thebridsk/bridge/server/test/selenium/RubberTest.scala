@@ -9,7 +9,7 @@ import org.scalatest.time.Span
 import com.github.thebridsk.bridge.data.bridge._
 import java.util.concurrent.TimeUnit
 import org.scalactic.source.Position
-import scala.collection.convert.ImplicitConversionsToScala._
+import scala.jdk.CollectionConverters._
 import org.openqa.selenium.Keys
 import com.github.thebridsk.bridge.server.test.util.EventuallyUtils
 import com.github.thebridsk.bridge.server.test.util.SeleniumUtils
@@ -41,6 +41,8 @@ import java.util.zip.ZipFile
 import scala.reflect.io.File
 import com.github.thebridsk.browserpages.Session
 import com.github.thebridsk.bridge.server.test.pages.LightDarkAddOn
+import scala.util.Using
+import scala.math.Ordering.Double.TotalOrdering
 
 /**
  * @author werewolf
@@ -205,8 +207,8 @@ class RubberTest extends FlatSpec
     takeScreenshot(docsScreenshotDir, "EnterNames")
 
     withClueAndScreenShot(screenshotDir, "AllowNamesWithSug", "Enter names with suggestions") {
-      eventually( find(id("ResetNames")) mustBe 'Enabled )
-      find(id("Ok")) must not be 'Enabled
+      eventually( find(id("ResetNames")) mustBe Symbol("Enabled") )
+      find(id("Ok")) must not be Symbol("Enabled")
 
       textField("North").value = "Nancy"
       textField("South").value = "Sam"
@@ -227,7 +229,7 @@ class RubberTest extends FlatSpec
 
     withClueAndScreenShot(screenshotDir, "AllowNamesReset", "Names reset with suggestions") {
       PageBrowser.esc
-      find(id("ResetNames")) mustBe 'Enabled
+      find(id("ResetNames")) mustBe Symbol("Enabled")
       findButtonAndClick("ResetNames")
 
       val fields = eventuallyFindAllInput("text", "North", "South", "East", "West")
@@ -241,7 +243,7 @@ class RubberTest extends FlatSpec
   it should "allow player names to be entered when playing rubber match and select first dealer" in {
     import Session1._
 
-    find(id("Ok")) must not be 'Enabled
+    find(id("Ok")) must not be Symbol("Enabled")
 
     textField("North").value = "Nancy"
     textField("South").value = "Sam"
@@ -251,11 +253,11 @@ class RubberTest extends FlatSpec
     pressKeys(Keys.ESCAPE)
     tcpSleep(1)
 
-    eventually( find(id("Ok")) must not be 'Enabled )
+    eventually( find(id("Ok")) must not be Symbol("Enabled") )
 
     eventuallyFindAndClickButton("PlayerNFirstDealer")
 
-    eventually( find(id("Ok")) mustBe 'Enabled )
+    eventually( find(id("Ok")) mustBe Symbol("Enabled") )
 
     findButtonAndClick("Ok")
 
@@ -649,8 +651,8 @@ class RubberTest extends FlatSpec
   it should "give player suggestions when entering names" in {
     import Session1._
 
-    eventually( find(id("ResetNames")) mustBe 'Enabled )
-    find(id("Ok")) must not be 'Enabled
+    eventually( find(id("ResetNames")) mustBe Symbol("Enabled") )
+    find(id("Ok")) must not be Symbol("Enabled")
 
     textField("North").value = "n"
     tcpSleep(2)
@@ -745,9 +747,8 @@ class RubberTest extends FlatSpec
 
     testlog.info( s"Downloaded export zip: ${f}" )
 
-    import collection.JavaConverters._
-    import resource._
-    for (zip <- managed( new ZipFile(f.jfile) ) ) {
+    import scala.jdk.CollectionConverters._
+    Using.resource( new ZipFile(f.jfile) ) { zip =>
       zip.entries().asScala.map { ze => ze.getName }.toList must contain( s"store/MatchRubber.${rubberId}.yaml" )
     }
 

@@ -134,7 +134,7 @@ object PageMovementsInternal {
                                       t1<t2
                                     }
                                   } ).map { h =>
-                                  BoardRow.withKey( h.table+"-"+h.round )((state,htp,h,relay))
+                                  BoardRow.withKey( s"${h.table}-${h.round}" )((state,htp,h,relay))
                                 }.toTagMod
                               )
                             )

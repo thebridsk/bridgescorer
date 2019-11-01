@@ -10,7 +10,7 @@ import com.github.thebridsk.bridge.data.bridge._
 import org.openqa.selenium.By
 import java.util.concurrent.TimeUnit
 import org.scalactic.source.Position
-import scala.collection.convert.ImplicitConversionsToScala._
+import scala.jdk.CollectionConverters._
 import org.openqa.selenium.Keys
 import com.github.thebridsk.bridge.server.test.util.NoResultYet
 import com.github.thebridsk.bridge.server.test.util.EventuallyUtils
@@ -27,6 +27,7 @@ import com.github.thebridsk.bridge.server.backend.BridgeServiceFileStoreConverte
 import com.github.thebridsk.bridge.server.backend.MatchChicagoCacheStoreSupport
 import com.github.thebridsk.bridge.server.test.pages.bridge.HomePage
 import com.github.thebridsk.browserpages.Session
+import scala.math.Ordering.Double.TotalOrdering
 
 /**
  * @author werewolf
@@ -132,7 +133,7 @@ class Chicago5SimpleTest extends FlatSpec
 
   it should "allow player names to be entered when playing Chicago" in {
 
-    find(id("Ok")) must not be 'Enabled
+    find(id("Ok")) must not be Symbol("Enabled")
 
     eventuallyFindAndClickButton("ToggleFive")
 
@@ -156,7 +157,7 @@ class Chicago5SimpleTest extends FlatSpec
 
     click on id("PlayerNFirstDealer")
 
-    eventually( find(id("Ok")) mustBe 'Enabled )
+    eventually( find(id("Ok")) mustBe Symbol("Enabled") )
 
     click on id("Ok")
     eventually (find(id("North")).text mustBe "Nancy vul")
@@ -200,9 +201,9 @@ class Chicago5SimpleTest extends FlatSpec
 
   it should "play a round" in {
     tcpSleep(30)
-    val assertScore: (Int*) => Unit = assertTotals("Nancy", "Sam", "Ellen", "Wayne", "Brian" ) _
+    val assertScore = assertTotals("Nancy", "Sam", "Ellen", "Wayne", "Brian" ) _
     enterHand(4,Spades,NotDoubled,North,Made,4, Some("Nancy"))  // NS score 420
-    assertScore( 420, 420, 0, 0, 0 )
+    assertScore( Seq( 420, 420, 0, 0, 0 ))
 
     InputStyleHelper.hitInputStyleButton( "Guide" )
 
@@ -254,9 +255,9 @@ class Chicago5SimpleTest extends FlatSpec
 
     find(id("Dealer")).text mustBe "Ellen"
 
-    val assertScore: (Int*)=>Unit = assertTotals("Nancy", "Sam", "Ellen", "Wayne", "Brian" ) _
+    val assertScore = assertTotals("Nancy", "Sam", "Ellen", "Wayne", "Brian" ) _
     enterHand(4,Spades,NotDoubled,North,Made,4, Some("Ellen"))  // NS score 420
-    assertScore( 420, 840, 0, 0, 420 )
+    assertScore( Seq( 420, 840, 0, 0, 420 ))
 
     InputStyleHelper.hitInputStyleButton( "Prompt" )
 
@@ -281,9 +282,9 @@ class Chicago5SimpleTest extends FlatSpec
 
     find(id("Dealer")).text mustBe "Sam"
 
-    val assertScore: (Int*)=>Unit = assertTotals("Nancy", "Sam", "Ellen", "Wayne", "Brian" ) _
+    val assertScore = assertTotals("Nancy", "Sam", "Ellen", "Wayne", "Brian" ) _
     enterHand(4,Spades,NotDoubled,North,Made,4, Some("Sam"))  // NS score 420
-    assertScore( 420, 1260, 0, 0, 840 )
+    assertScore( Seq( 420, 1260, 0, 0, 840 ))
 
     InputStyleHelper.hitInputStyleButton( "Original" )
 
@@ -308,9 +309,9 @@ class Chicago5SimpleTest extends FlatSpec
 
     find(id("Dealer")).text mustBe "Wayne"
 
-    val assertScore: (Int*)=>Unit = assertTotals("Nancy", "Sam", "Ellen", "Wayne", "Brian" ) _
+    val assertScore = assertTotals("Nancy", "Sam", "Ellen", "Wayne", "Brian" ) _
     enterHand(4,NoTrump,NotDoubled,North,Made,4, Some("Wayne"))  // NS score 430
-    assertScore( 420, 1260, 430, 0, 1270 )
+    assertScore( Seq( 420, 1260, 430, 0, 1270 ))
 
     click on id("NewRound")
   }
@@ -333,9 +334,9 @@ class Chicago5SimpleTest extends FlatSpec
 
     find(id("Dealer")).text mustBe "Brian"
 
-    val assertScore: (Int*)=>Unit = assertTotals("Nancy", "Sam", "Ellen", "Wayne", "Brian" ) _
+    val assertScore = assertTotals("Nancy", "Sam", "Ellen", "Wayne", "Brian" ) _
     enterHand(4,Diamonds,NotDoubled,East,Made,4, Some("Brian"))  // EW score 130
-    assertScore( 550, 1390, 430, 0, 1270 )
+    assertScore( Seq( 550, 1390, 430, 0, 1270 ))
 
   }
 

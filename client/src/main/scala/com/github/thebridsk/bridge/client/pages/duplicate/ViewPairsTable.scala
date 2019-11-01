@@ -35,6 +35,7 @@ import com.github.thebridsk.bridge.clientcommon.react.Table.SortableColumn
 import com.github.thebridsk.bridge.clientcommon.react.Table.MultiColumnSort
 import com.github.thebridsk.bridge.clientcommon.react.Table.Row
 import com.github.thebridsk.bridge.client.pages.HomePage
+import scala.math.Ordering.Double.TotalOrdering
 
 /**
  * Shows a summary page of all duplicate matches from the database.

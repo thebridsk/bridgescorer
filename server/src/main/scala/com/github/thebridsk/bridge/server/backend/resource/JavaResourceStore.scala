@@ -13,6 +13,7 @@ import Implicits._
 import scala.annotation.tailrec
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext
+import scala.util.Using
 
 object JavaResourceStore {
   val log = Logger[JavaResourceStore[_, _]]
@@ -68,16 +69,15 @@ class JavaResourcePersistentSupport[VId, VType <: VersionedInstance[
 
   private var knownIds: Option[Set[VId]] = None
 
-  private def getSource(resource: String) = {
+  private def getSource[T](resource: String)( f: BufferedSource => Option[T]): Option[T] = {
     val res = resource.substring(1) // remove leading slash
     log.fine(
       s"JavaResourcePersistentSupport ${resourceURI} looking for ${res} resourceDirectory=${resourcedirectory}, masterfile=${masterfile}"
     )
     val stream: InputStream = loader.getResourceAsStream(res)
     if (stream != null) {
-      import _root_.resource._
       val bs = scala.io.Source.fromInputStream(stream)
-      Some(managed(bs))
+      Using.resource(bs)(f)
     } else {
       log.warning(s"Did not find Java resource '${resource}'")
       None
@@ -94,19 +94,16 @@ class JavaResourcePersistentSupport[VId, VType <: VersionedInstance[
   private def getFromFile(f: String) = {
     log.finest(s"Trying to read from Java resource ${f}")
     try {
-      import resource._
-      getSource(f).flatMap { d =>
-        d.map { source =>
-          val json = source.mkString
-          log.finest("JSON is " + json)
-          val (goodInStore, vt) = support.fromJSON(json)
-          if (!goodInStore) {
-            log.warning(
-              "Entry is not good in store, resource=" + f + " json is " + json
-            )
-          }
-          vt
-        }.opt
+      getSource(f) { source =>
+        val json = source.mkString
+        log.finest("JSON is " + json)
+        val (goodInStore, vt) = support.fromJSON(json)
+        if (!goodInStore) {
+          log.warning(
+            "Entry is not good in store, resource=" + f + " json is " + json
+          )
+        }
+        Some(vt)
       }
     } catch {
       case e: Exception =>
@@ -124,18 +121,15 @@ class JavaResourcePersistentSupport[VId, VType <: VersionedInstance[
         val resdir =
           if (resourcedirectory.endsWith("/")) resourcedirectory
           else (resourcedirectory + "/")
-        import resource._
-        val map = getSource(resdir + masterfile)
-          .flatMap { mf =>
-            mf.map { mfile =>
-              mfile.getLines.flatMap { line =>
-                getFilenameLine(line).flatMap { f =>
-                  getFromFile(resdir + f).map(vt => vt.id)
-                }
-              }.toList
-            }.opt
-          }
-          .map(it => it.toSet)
+        val map = getSource(resdir + masterfile) { mfile =>
+          Some(
+            mfile.getLines.flatMap { line =>
+              getFilenameLine(line).flatMap { f =>
+                getFromFile(resdir + f).map(vt => vt.id)
+              }
+            }.toSet
+          )
+        }
         knownIds = map
         log.fine(s"JavaResourcePersistentSupport ${resourceURI} Ids are $map")
         map.getOrElse(Set())

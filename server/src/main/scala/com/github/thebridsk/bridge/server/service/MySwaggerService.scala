@@ -106,7 +106,7 @@ trait MySwaggerService extends SwaggerHttpService {
   val swaggerRoute =
     get {
       cors() {
-        respondWithHeaders(swaggerCacheHeaders: _*) {
+        respondWithHeaders(swaggerCacheHeaders) {
           pathPrefix(apiVersionURISegment) {
             logRequest(("topLevel", Logging.DebugLevel)) {
               logResult(("topLevel", Logging.DebugLevel)) {

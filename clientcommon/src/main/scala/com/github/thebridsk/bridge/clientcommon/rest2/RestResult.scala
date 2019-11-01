@@ -119,7 +119,7 @@ trait Result[T] extends Cancellable[T] with Awaitable[T] {
 
   def transform[S](f: Try[T] => Try[S])(implicit executor: ExecutionContext): Result[S]
 
-  def transformWith[S](f: Try[T] ⇒ Future[S])(implicit executor: ExecutionContext): Result[S]
+  def transformWith[S](f: Try[T] => Future[S])(implicit executor: ExecutionContext): Result[S]
 
   def value: Option[Try[T]]
 
@@ -165,7 +165,7 @@ class ResultObject[T]( future: Future[T] ) extends Result[T] {
   def isCompleted: Boolean = future.isCompleted
   def onComplete[U](f: Try[T] => U)(implicit executor: ExecutionContext): Unit = future.onComplete( t => f(t) )
   def transform[S](f: Try[T] => Try[S])(implicit executor: ExecutionContext): ResultObject[S] = future.transform( t => f(t) )
-  def transformWith[S](f: Try[T] ⇒ Future[S])(implicit executor: ExecutionContext): ResultObject[S] = future.transformWith( t => f(t) )
+  def transformWith[S](f: Try[T] => Future[S])(implicit executor: ExecutionContext): ResultObject[S] = future.transformWith( t => f(t) )
   def value: Option[Try[T]] = future.value match {
     case None => None
     case Some( t ) => Some(t)
@@ -207,7 +207,7 @@ class RestResult[T]( val ajaxResult: AjaxResult[WrapperXMLHttpRequest], val futu
   def transform[S](f: Try[T] => Try[S])(implicit executor: ExecutionContext): Result[S] = {
     future.transform( t => Alerter.tryit( f(t) ) )
   }
-  def transformWith[S](f: Try[T] ⇒ Future[S])(implicit executor: ExecutionContext): Result[S] = {
+  def transformWith[S](f: Try[T] => Future[S])(implicit executor: ExecutionContext): Result[S] = {
     future.transformWith( t => Alerter.tryit( f(t) ) )
   }
   def value: Option[Try[T]] = Alerter.tryit( future.value match {
@@ -252,7 +252,7 @@ class RestResultArray[T]( ajaxResult: AjaxResult[WrapperXMLHttpRequest], result:
   def transform[S](f: Try[Array[T]] => Try[S])(implicit executor: ExecutionContext): RestResult[S] = {
     result.transform( t => Alerter.tryit( f(t) ) )
   }
-  def transformWith[S](f: Try[Array[T]] ⇒ Future[S])(implicit executor: ExecutionContext): RestResult[S] = {
+  def transformWith[S](f: Try[Array[T]] => Future[S])(implicit executor: ExecutionContext): RestResult[S] = {
     result.transformWith( t => Alerter.tryit( f(t) ) )
   }
   def value: Option[Try[Array[T]]] = Alerter.tryit( result.value match {

@@ -20,13 +20,13 @@ import java.nio.file.SimpleFileVisitor
 import java.nio.file.DirectoryNotEmptyException
 import sbt.io.IO
 import java.nio.file.StandardCopyOption
+import collection.JavaConverters._
 
 class MyProcess( logger: Option[Logger] = None ) {
 
   val counter = new AtomicInteger()
 
   def exec( cmd: List[String], cwd: File  ): Process = {
-    import scala.collection.JavaConverters._
     val i = counter.incrementAndGet()
     logger.foreach( l => l.info(s"""Executing OS command($i): ${cmd.mkString(" ")}""") )
     val pb = new ProcessBuilder().command(cmd.asJava).directory(cwd).inheritIO()
@@ -35,7 +35,6 @@ class MyProcess( logger: Option[Logger] = None ) {
   }
 
   def exec( cmd: List[String], addEnvp: Map[String,String], cwd: File  ): Process = {
-    import scala.collection.JavaConverters._
     val i = counter.incrementAndGet()
     logger.foreach( l => l.info(s"""Executing OS command($i): ${cmd.mkString(" ")}""") )
     val pb = new ProcessBuilder().command(cmd.asJava).directory(cwd).inheritIO()

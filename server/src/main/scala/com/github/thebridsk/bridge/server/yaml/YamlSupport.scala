@@ -17,6 +17,7 @@ import java.io.FileOutputStream
 import java.io.InputStream
 import java.io.OutputStream
 import com.github.thebridsk.bridge.data.rest.JsonSupport
+import scala.util.Using
 
 trait YamlSupport extends JsonSupport {
 
@@ -72,8 +73,7 @@ trait YamlSupport extends JsonSupport {
   }
 
   def writeYaml[T](outfile: File, t: T)(implicit writes: Writes[T]): Unit = {
-    import resource._
-    for (os <- managed(new FileOutputStream(outfile))) {
+    Using.resource(new FileOutputStream(outfile)) { os =>
       writeYaml(os, t)
     }
   }

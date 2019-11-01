@@ -7,6 +7,7 @@ import scala.collection.Iterator
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.media.ArraySchema
 import io.swagger.v3.oas.annotations.Hidden
+import scala.collection.View
 
 @Schema(
   name = "MatchDuplicate",
@@ -268,11 +269,10 @@ case class MatchDuplicateV3 private (
       .toList
   }
 
-  def allPlayedHands: Iterator[DuplicateHand] = {
-    import scala.collection.breakOut
-    boards.flatMap { b =>
+  def allPlayedHands: View[DuplicateHand] = {
+    boards.view.flatMap { b =>
       b.hands.filter(dh => dh.wasPlayed)
-    }(breakOut)
+    }
   }
 
   /**

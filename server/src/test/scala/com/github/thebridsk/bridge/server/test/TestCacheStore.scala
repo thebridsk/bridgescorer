@@ -214,9 +214,9 @@ class TestCacheStore extends AsyncFlatSpec with ScalatestRouteTest with MustMatc
     store.createChild(md).test("Creating match duplicate") { nmd =>
       nmd.equalsIgnoreModifyTime( md.copy(id=nmd.id), true) mustBe true
 
-      listener.changeCreate mustBe 'defined
-      listener.changeUpdate mustBe 'empty
-      listener.changeDelete mustBe 'empty
+      listener.changeCreate mustBe Symbol("defined")
+      listener.changeUpdate mustBe Symbol("empty")
+      listener.changeDelete mustBe Symbol("empty")
 
       listener.changeCreate.map { cc =>
         cc.changes.length mustBe 1
@@ -256,9 +256,9 @@ class TestCacheStore extends AsyncFlatSpec with ScalatestRouteTest with MustMatc
         t.player1 mustBe "Fred"
         t.player2 mustBe "George"
 
-        listener.changeCreate mustBe 'empty
-        listener.changeUpdate mustBe 'defined
-        listener.changeDelete mustBe 'empty
+        listener.changeCreate mustBe Symbol("empty")
+        listener.changeUpdate mustBe Symbol("defined")
+        listener.changeDelete mustBe Symbol("empty")
 
         listener.changeUpdate.map { cc =>
           cc.changes.length mustBe 2
@@ -317,9 +317,9 @@ class TestCacheStore extends AsyncFlatSpec with ScalatestRouteTest with MustMatc
       ot.player1 mustBe "Nancy"
       ot.player2 mustBe "Norman"
 
-      listener.changeCreate mustBe 'empty
-      listener.changeUpdate mustBe 'empty
-      listener.changeDelete mustBe 'defined
+      listener.changeCreate mustBe Symbol("empty")
+      listener.changeUpdate mustBe Symbol("empty")
+      listener.changeDelete mustBe Symbol("defined")
 
       listener.changeDelete.map { cc =>
         cc.changes.length mustBe 2
@@ -328,7 +328,7 @@ class TestCacheStore extends AsyncFlatSpec with ScalatestRouteTest with MustMatc
             parentfield mustBe Some("/duplicates/M1")
             newvalue match {
               case md: MatchDuplicate =>
-                md.getTeam("T1") mustBe 'empty
+                md.getTeam("T1") mustBe Symbol("empty")
               case x =>
                 fail(s"expecting MatchDuplicate, got ${x.getClass.getName}")
             }
@@ -371,9 +371,9 @@ class TestCacheStore extends AsyncFlatSpec with ScalatestRouteTest with MustMatc
         udh.id mustBe "T1"
         udh.hand.get.equalsIgnoreModifyTime(nh.hand.get) mustBe true
 
-        listener.changeCreate mustBe 'empty
-        listener.changeUpdate mustBe 'defined
-        listener.changeDelete mustBe 'empty
+        listener.changeCreate mustBe Symbol("empty")
+        listener.changeUpdate mustBe Symbol("defined")
+        listener.changeDelete mustBe Symbol("empty")
 
         listener.changeUpdate.map { cc =>
           cc.changes.length mustBe 3
@@ -446,9 +446,9 @@ class TestCacheStore extends AsyncFlatSpec with ScalatestRouteTest with MustMatc
         case Left((statuscode,msg)) =>
           fail(s"did not find match M1: ${statuscode} ${msg}")
         case Right(md) =>
-          listener.changeCreate mustBe 'empty
-          listener.changeUpdate mustBe 'empty
-          listener.changeDelete mustBe 'defined
+          listener.changeCreate mustBe Symbol("empty")
+          listener.changeUpdate mustBe Symbol("empty")
+          listener.changeDelete mustBe Symbol("defined")
 
           listener.changeDelete.map { cc =>
             cc.changes.length mustBe 1
@@ -608,7 +608,7 @@ class TestCacheStore extends AsyncFlatSpec with ScalatestRouteTest with MustMatc
           val a = processFutures(futures).flatMap { list =>
             list.length mustBe 18*3
 
-            results.errors mustBe 'empty
+            results.errors mustBe Symbol("empty")
             results.matches.length mustBe 18*3
             val sorted = results.matches.map( md => md.numberPlayedHands).sortWith((l,r)=>l<r)
             withClue(s"${dupid} Sorted number of hands played ${sorted}") {

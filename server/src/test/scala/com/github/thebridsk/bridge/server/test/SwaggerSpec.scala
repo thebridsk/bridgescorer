@@ -74,11 +74,11 @@ class SwaggerSpec extends FlatSpec with ScalatestRouteTest with MustMatchers wit
 
   def decodeResponse(response: HttpResponse): HttpResponse = {
     val decoder = response.encoding match {
-      case HttpEncodings.gzip ⇒
+      case HttpEncodings.gzip =>
         Gzip
-      case HttpEncodings.deflate ⇒
+      case HttpEncodings.deflate =>
         Deflate
-      case HttpEncodings.identity ⇒
+      case HttpEncodings.identity =>
         NoCoding
       case x =>
         fail(s"Unknown encoding ${x}")
@@ -88,7 +88,7 @@ class SwaggerSpec extends FlatSpec with ScalatestRouteTest with MustMatchers wit
 
   def httpResponseAs[T: FromResponseUnmarshaller: ClassTag]( response: HttpResponse )(implicit timeout: Duration = 1.second): T = {
     def msg(e: Throwable) = s"Could not unmarshal response to type '${implicitly[ClassTag[T]]}' for `responseAs` assertion: $e\n\nResponse was: $response"
-    Await.result(Unmarshal(response).to[T].fast.recover[T] { case error ⇒ failTest(msg(error)) }, timeout)
+    Await.result(Unmarshal(response).to[T].fast.recover[T] { case error => failTest(msg(error)) }, timeout)
   }
 
   it should "return the /public/apidocs.html" in {

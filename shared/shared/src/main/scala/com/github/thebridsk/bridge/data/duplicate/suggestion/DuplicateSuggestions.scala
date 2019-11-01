@@ -468,7 +468,7 @@ class DuplicateSuggestionsCalculation(
         }
         .toList
 
-      val x = y.groupBy(_.key).mapValues(_.head).values.toList
+      val x = y.groupBy(_.key).map(_._2.head).toList
 
       scala.util.Random.shuffle(x).zipWithIndex.map { e =>
         e._1.copy(random = e._2)

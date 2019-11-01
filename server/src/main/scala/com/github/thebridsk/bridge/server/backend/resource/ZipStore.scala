@@ -8,7 +8,7 @@ import scala.reflect.io.Directory
 import com.github.thebridsk.utilities.logging.Logger
 import scala.annotation.tailrec
 import java.io.IOException
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 import ZipStore.log
 import scala.concurrent.ExecutionContext
 import scala.concurrent.Future

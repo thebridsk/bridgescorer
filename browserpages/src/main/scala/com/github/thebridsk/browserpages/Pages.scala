@@ -13,7 +13,7 @@ import org.scalatest.MustMatchers._
 import com.github.thebridsk.utilities.logging.Logger
 import org.openqa.selenium.By.ByName
 import org.openqa.selenium.By.ByTagName
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 import scala.reflect.ClassTag
 import org.openqa.selenium.Keys
 import org.openqa.selenium.By

@@ -4,7 +4,7 @@ class PrivateMethodCaller(x: AnyRef, methodName: String) {
   def apply(_args: Any*): Any = {
     val args = _args.map(_.asInstanceOf[AnyRef])
     import scala.language.existentials
-    def _parents: Stream[Class[_]] = Stream(x.getClass) #::: _parents.map(_.getSuperclass)
+    def _parents: LazyList[Class[_]] = LazyList(x.getClass) #::: _parents.map(_.getSuperclass)
 
     val parents = _parents.takeWhile(_ != null).toList
     val methods = parents.flatMap(_.getDeclaredMethods)
