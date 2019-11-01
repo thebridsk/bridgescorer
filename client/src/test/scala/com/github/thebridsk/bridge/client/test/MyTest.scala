@@ -6,8 +6,7 @@ import com.github.thebridsk.bridge.client.pages.hand.ViewVulnerability
 import com.github.thebridsk.bridge.data.bridge.Vulnerability
 import com.github.thebridsk.bridge.data.bridge.NotVul
 import com.github.thebridsk.bridge.data.bridge.Vul
-//import org.scalajs.jquery.{ jQuery => _, _ }
-import com.github.thebridsk.bridge.client.test.utils.jQuery
+import com.github.thebridsk.bridge.client.test.utils.JQuery
 import com.github.thebridsk.bridge.data.Round
 import japgolly.scalajs.react._
 import com.github.thebridsk.bridge.data.bridge._
@@ -85,7 +84,7 @@ class MyTest extends FlatSpec with MustMatchers {
     }
   }
 
-  it should "work with jQuery" in {
+  it should "work with JQuery" in {
 
     val router = new TestPageBridgeRouter( BaseUrl("http://test.example.com/index.html") )
 
@@ -96,8 +95,8 @@ class MyTest extends FlatSpec with MustMatchers {
     log.warning("Done rendering homepage into document")
     val y = component.getDOMNode.asMounted().asElement()
     log.info("TestJQuery: ReactDOM.findDOMNode(component) is "+y)
-    val jq = jQuery
-    log.info("TestJQuery: jquery is "+jQuery)
+    val jq = JQuery
+    log.info("TestJQuery: jquery is "+JQuery)
     val xx = jq(y)
   }
 
@@ -198,7 +197,7 @@ class MyTest extends FlatSpec with MustMatchers {
 //    myassert( view.jquery("input[name=\"East\"]").attr("value"), "Ellen", "East is Ellen")
 //    myassert( view.jquery("input[name=\"West\"]").attr("value"), "Wayne", "West is Wayne")
 //
-//    myassert[Boolean](jQuery("#Ok").is(":disabled"),false, "Check for OK enabled")
+//    myassert[Boolean](JQuery("#Ok").is(":disabled"),false, "Check for OK enabled")
 //    view.assertTrue(!view.isDisabledTagById("button", "Ok"), "OK should not be disabled, players have been entered")
 //
 //    view.clickTagById("button", "Ok")
