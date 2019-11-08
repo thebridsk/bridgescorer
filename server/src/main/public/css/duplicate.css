@@ -1063,3 +1063,100 @@
   border: 1px solid var(--color-table-border);
   text-align: center;
 }
+
+.dupDivEditBoardSet {
+  display: flex;
+  flex-direction: column;
+}
+.dupDivEditBoardSet > div:first-child {
+  display: flex;
+  flex-direction: column;
+}
+.dupDivEditBoardSet > div:first-child label {
+  padding: 3px;
+}
+.dupDivEditBoardSet > div:nth-child(2) {
+  display: flex;
+  flex-direction: row;
+}
+.dupDivEditBoardSet > div:nth-child(2) > div {
+  padding: 5px;
+}
+.dupDivEditBoardSet > div:nth-child(2) table {
+  border: 1px solid var(--color-table-border);
+  border-spacing: 0px;
+}
+.dupDivEditBoardSet > div:nth-child(2) table tr > td,
+.dupDivEditBoardSet > div:nth-child(2) table tr > th {
+  border: 1px solid var(--color-table-border);
+  text-align: center;
+  padding: 2px;
+}
+
+.dupDivEditMovement {
+  display: flex;
+  flex-direction: column;
+}
+.dupDivEditMovement > div:first-child {
+  display: flex;
+  flex-direction: column;
+}
+.dupDivEditMovement > div:first-child label {
+  padding: 3px;
+}
+.dupDivEditMovement > div {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+.dupDivEditMovement > div > div {
+  padding: 5px;
+}
+.dupDivEditMovement > div table {
+  border: 1px solid var(--color-table-border);
+  border-spacing: 0px;
+}
+.dupDivEditMovement > div table >caption {
+  font-weight: bold;
+}
+.dupDivEditMovement > div table tr > td,
+.dupDivEditMovement > div table tr > th {
+  border: 1px solid var(--color-table-border);
+  text-align: center;
+  padding: 2px;
+}
+.dupDivEditMovement > div table > thead > tr > th:first-child,
+.dupDivEditMovement > div table > tbody > tr > th {
+  border-right: 2px solid var(--color-table-border);
+}
+.dupDivEditMovement > div table > thead > tr > th {
+  border-bottom: 2px solid var(--color-table-border);
+}
+.dupDivEditMovement > div table > tfoot > tr > td {
+  border: 1px solid var(--color-table-border);
+  text-align: left;
+  padding: 2px;
+}
+.dupDivEditMovement input[type="number"] {
+  width: 50px;
+}
+.dupDivEditMovement input[name="Description"] {
+  width: 500px;
+}
+.dupDivEditMovement input[name$="_NBoards"] {
+  width: 150px;
+}
+.dupDivEditMovement input,
+.dupDivEditMovement div[role="combobox"] .rw-input,
+.dupDivEditMovement div[role="combobox"] .rw-placeholder {
+  color: var(--color-fg-default-button);
+  background-color: var(--color-default-button);
+}
+.dupDivEditMovement div[role="combobox"] {
+  width: 200px;
+  display: inline-block;
+}
+.dupDivEditMovement div[role="combobox"].rw-state-focus {
+  color: var(--color-fg-default-button);
+  background-color: var(--color-default-button);
+}

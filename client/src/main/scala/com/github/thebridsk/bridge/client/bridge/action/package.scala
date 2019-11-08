@@ -51,7 +51,11 @@ package object action {
   sealed trait BoardSetAction extends BridgeAction
   sealed trait MovementAction extends BridgeAction
 
+  case class ActionCreateBoardSet( boardSet: BoardSet ) extends BoardSetAction
+  case class ActionDeleteBoardSet( id: String ) extends BoardSetAction
   case class ActionUpdateBoardSet( boardSet: BoardSet ) extends BoardSetAction
+  case class ActionCreateMovement( movement: Movement ) extends MovementAction
+  case class ActionDeleteMovement( id: String ) extends MovementAction
   case class ActionUpdateMovement( movement: Movement ) extends MovementAction
   case class ActionUpdateAllBoardSets( boardSets: List[BoardSet] ) extends BoardSetAction
   case class ActionUpdateAllMovement( movement: List[Movement] ) extends MovementAction

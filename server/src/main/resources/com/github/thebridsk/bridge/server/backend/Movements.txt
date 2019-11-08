@@ -2,6 +2,7 @@
 # any non-blank line that does not start with a # is a name of a resource
 # in the same package as this file.
 
+Movement.Armonk2Table2.yaml
 Movement.Armonk2Tables.yaml
 Movement.Howell2Table5Teams.yaml
 Movement.Howell3TableNoRelay.yaml
