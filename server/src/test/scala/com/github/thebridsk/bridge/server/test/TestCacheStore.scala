@@ -714,14 +714,14 @@ class TestCacheStore extends AsyncFlatSpec with ScalatestRouteTest with MustMatc
       val changeContext = ChangeContext()
 
       fstore.createChild(bs, changeContext).test("Writing standard boardset to a filestore") { fbs =>
-        fbs mustBe bs
+        fbs.copy(creationTime = None, updateTime = None) mustBe bs.copy(creationTime = None, updateTime = None)
 
         tempDir.list.foreach( p => testlog.fine(s"Found in tempdir: $p") )
 
         val f = tempDir/"Boardset.StandardBoards.yaml"
         val v = FileIO.readFileSafe(f.toString())
         val (goodOnDisk,vt) = fstore.support.fromJSON(v)
-        vt mustBe fbs
+        vt.copy(creationTime = None, updateTime = None) mustBe fbs.copy(creationTime = None, updateTime = None)
       }
 
     }
