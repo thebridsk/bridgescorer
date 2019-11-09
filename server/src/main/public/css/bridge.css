@@ -83,18 +83,18 @@
     --color-bg: black;                /* must match light mode --color-other2-bg */
     --color-other-bg: white;          /* must match light mode --color-bg */
     --color-other2-bg: rgb(50,54,57); /* must match light mode --color-other-bg */
-    --color-fg: rgb(210,210,210);
+    --color-fg: white;
     --color-table-border: rgb(210,210,210);
     --color-table-row-alt: rgb(40,40,40);
     --color-div-border: rgb(210,210,210);
     --color-default-button: rgb(40,40,40);
-    --color-fg-default-button: rgb(210,210,210);
+    --color-fg-default-button: white;
     --color-button-selected: darkgreen;
-    --color-fg-button-selected: rgb(210,210,210);
+    --color-fg-button-selected: white;
     --color-button-required: rgb(128,128,0);
-    --color-fg-button-required: rgb(210,210,210);
+    --color-fg-button-required: white;
     --color-button-required-not-next: rgb(64,64,0);
-    --color-fg-button-required-not-next: rgb(210,210,210);
+    --color-fg-button-required-not-next: white;
     --color-bg-popupoverlay: rgb(40,40,40);
     --color-bg-popup: black;
     --color-popup-border: rgb(210,210,210);
