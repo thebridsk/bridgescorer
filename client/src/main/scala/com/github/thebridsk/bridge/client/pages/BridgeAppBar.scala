@@ -43,6 +43,7 @@ import com.github.thebridsk.bridge.clientcommon.logger.Alerter
 import scala.util.Failure
 import com.github.thebridsk.bridge.client.pages.info.InfoPage
 import com.github.thebridsk.bridge.clientcommon.fullscreen.Values
+import com.github.thebridsk.bridge.clientcommon.fullscreen.Fullscreen
 
 /**
   * A simple AppBar for the Bridge client.
@@ -487,16 +488,18 @@ object BridgeAppBarInternal {
       bar
     }
 
+    val fullscreenCB = scope.forceUpdate
+
     private var mounted = false
 
     val didMount = Callback {
       mounted = true
-
+      Fullscreen.addListener("fullscreenchange",fullscreenCB)
     }
 
     val willUnmount = Callback {
       mounted = false
-
+      Fullscreen.removeListener("fullscreenchange",fullscreenCB)
     }
   }
 

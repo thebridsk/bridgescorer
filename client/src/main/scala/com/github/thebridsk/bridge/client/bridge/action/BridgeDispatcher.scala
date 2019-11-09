@@ -51,11 +51,15 @@ object BridgeDispatcher extends Dispatcher {
 
   def updateTeam( dupid: Id.MatchDuplicate, team: Team ) = dispatcher.dispatch( ActionUpdateTeam( dupid, team ))
 
+  def createBoardSet( boardSet: BoardSet ) = dispatcher.dispatch( ActionCreateBoardSet(boardSet))
+  def deleteBoardSet( boardSetId: String ) = dispatcher.dispatch( ActionDeleteBoardSet(boardSetId))
   def updateBoardSet( boardSet: BoardSet ) = dispatcher.dispatch( ActionUpdateBoardSet(boardSet))
   def updateAllBoardSet( boardSets: List[BoardSet] ) = dispatcher.dispatch( ActionUpdateAllBoardSets(boardSets))
 
-  def updateMovement( boardSet: Movement ) = dispatcher.dispatch( ActionUpdateMovement(boardSet))
-  def updateAllMovement( boardSets: List[Movement] ) = dispatcher.dispatch( ActionUpdateAllMovement(boardSets))
+  def createMovement( movement: Movement ) = dispatcher.dispatch( ActionCreateMovement(movement))
+  def deleteMovement( movementId: String ) = dispatcher.dispatch( ActionDeleteMovement(movementId))
+  def updateMovement( movement: Movement ) = dispatcher.dispatch( ActionUpdateMovement(movement))
+  def updateAllMovement( movements: List[Movement] ) = dispatcher.dispatch( ActionUpdateAllMovement(movements))
 
   def updateAllBoardSetAndMovements( boardSets: List[BoardSet], movements: List[Movement] ) = dispatcher.dispatch( ActionUpdateAllBoardsetsAndMovement(boardSets,movements))
 

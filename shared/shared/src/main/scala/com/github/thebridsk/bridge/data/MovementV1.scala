@@ -58,17 +58,46 @@ case class MovementV1(
         required = true
       )
     )
-    hands: List[HandInTable]
+    hands: List[HandInTable],
+    @Schema(
+      description = "true if movement can be deleted, default is false",
+      required = false
+    )
+    deletable: Option[Boolean] = None,
+    @Schema(
+      description = "true if movement definition can be reset to the default, default is false",
+      required = false
+    )
+    resetToDefault: Option[Boolean] = None,
+    @Schema(
+      description = "the creation time, default: unknown",
+      required = false
+    )
+    creationTime: Option[SystemTime.Timestamp] = None,
+    @Schema(
+      description = "the last time the movement was updated, default: unknown",
+      required = false
+    )
+    updateTime: Option[SystemTime.Timestamp] = None,
 ) extends VersionedInstance[MovementV1, MovementV1, String] {
 
   def id = name
+
+  @Schema(hidden = true)
+  private def optional( flag: Boolean, fun: Movement=>Movement) = {
+    if (flag) fun(this)
+    else this
+  }
 
   def setId(
       newId: String,
       forCreate: Boolean,
       dontUpdateTime: Boolean = false
   ) = {
-    copy(name = newId)
+    val time = SystemTime.currentTimeMillis()
+    copy(name = newId).
+      optional(forCreate, _.copy(creationTime=Some(time), updateTime=Some(time))).
+      optional(!dontUpdateTime, _.copy(updateTime=Some(time)))
   }
 
   def convertToCurrentVersion() = (true, this)
@@ -133,7 +162,26 @@ case class MovementV1(
   }
 
   @Schema(hidden = true)
-  def created: SystemTime.Timestamp = 0
+  /**
+   * Returns all the tables sorted by table number,
+   * within each table all the rounds sorted by round number
+   */
+  def getTables: List[List[HandInTable]] = {
+    hands.groupBy(_.table).toList.sortWith( (l,r)=> l._1 < r._1).
+      map(_._2.sortWith((l,r)=>l.round<r.round))
+  }
+
+  @Schema(hidden = true)
+  def created: SystemTime.Timestamp = creationTime.getOrElse(0)
+
+  @Schema(hidden = true)
+  def updated: SystemTime.Timestamp = updateTime.getOrElse(0)
+
+  @Schema(hidden = true)
+  def isDeletable = deletable.getOrElse(false)
+
+  @Schema(hidden = true)
+  def isResetToDefault = resetToDefault.getOrElse(false)
 
 }
 

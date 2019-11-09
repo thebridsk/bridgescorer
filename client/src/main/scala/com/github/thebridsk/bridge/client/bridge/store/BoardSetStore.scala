@@ -12,6 +12,10 @@ import com.github.thebridsk.bridge.client.bridge.action.ActionUpdateAllMovement
 import com.github.thebridsk.utilities.logging.Logger
 import com.github.thebridsk.bridge.clientcommon.logger.Alerter
 import com.github.thebridsk.bridge.client.bridge.action.ActionUpdateAllBoardsetsAndMovement
+import com.github.thebridsk.bridge.client.bridge.action.ActionCreateBoardSet
+import com.github.thebridsk.bridge.client.bridge.action.ActionDeleteBoardSet
+import com.github.thebridsk.bridge.client.bridge.action.ActionCreateMovement
+import com.github.thebridsk.bridge.client.bridge.action.ActionDeleteMovement
 
 object BoardSetStore extends ChangeListenable {
   val logger = Logger("bridge.BoardSetStore")
@@ -29,8 +33,16 @@ object BoardSetStore extends ChangeListenable {
         updateBoardSets(true, boardSets: _*)
       case ActionUpdateAllMovement(movement) =>
         updateMovement(true, movement: _*)
+      case ActionCreateBoardSet(boardSet) =>
+        updateBoardSets(false, boardSet)
+      case ActionDeleteBoardSet(boardSet) =>
+        deleteBoardSets(boardSet)
       case ActionUpdateBoardSet(boardSet) =>
         updateBoardSets(false, boardSet)
+      case ActionCreateMovement(movement) =>
+        updateMovement(false, movement)
+      case ActionDeleteMovement(movement) =>
+        deleteMovement(movement)
       case ActionUpdateMovement(movement) =>
         updateMovement(false, movement)
       case ActionUpdateAllBoardsetsAndMovement(newboardSets,newmovements) =>
@@ -47,10 +59,10 @@ object BoardSetStore extends ChangeListenable {
   private val movements = mutable.Map[String,Movement]()
 
   def getBoardSets() = Map( boardSets.toList: _*)
-  def getBoardSet( name: String ) = boardSets(name)
+  def getBoardSet( name: String ) = boardSets.get(name)
 
   def getMovement() = Map( movements.toList: _*)
-  def getMovement( name: String ) = movements(name)
+  def getMovement( name: String ) = movements.get(name)
 
   def updateBoardSetsNoNotify( deleteMissing: Boolean, newboardSets: BoardSet* ) = {
     val keys = mutable.Set( boardSets.keySet.toSeq: _* )
@@ -63,7 +75,13 @@ object BoardSetStore extends ChangeListenable {
   }
 
   def updateBoardSets( deleteMissing: Boolean, newboardSets: BoardSet* ) = {
+    logger.fine("updating all boardsets")
     updateBoardSetsNoNotify(deleteMissing, newboardSets: _*)
+    notifyChange()
+  }
+
+  def deleteBoardSets( id: String ) = {
+    boardSets.remove(id)
     notifyChange()
   }
 
@@ -81,4 +99,10 @@ object BoardSetStore extends ChangeListenable {
     updateMovementNoNotify(deleteMissing, newMovement: _*)
     notifyChange()
   }
+
+  def deleteMovement( id: String ) = {
+    movements.remove(id)
+    notifyChange()
+  }
+
 }
