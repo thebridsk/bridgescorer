@@ -14,6 +14,7 @@ import com.github.thebridsk.bridge.client.pages.RootBridgeAppBar
 import com.github.thebridsk.materialui.MuiTypography
 import com.github.thebridsk.materialui.TextVariant
 import com.github.thebridsk.materialui.TextColor
+import com.github.thebridsk.bridge.clientcommon.fullscreen.Values
 
 /**
  * @author werewolf
@@ -153,8 +154,7 @@ object InfoPage {
   }
 
   def isIpad() = {
-    val p = js.Dynamic.global.window.navigator.platform.asInstanceOf[String]
-    p == "iPad"
+    Values.isIpad
   }
 
   def isTouchEnabled() = {
