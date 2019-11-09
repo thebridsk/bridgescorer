@@ -4,6 +4,8 @@ import scala.scalajs.js
 import org.scalajs.dom.raw.Element
 import org.scalajs.dom.raw.Document
 import org.scalajs.dom.document
+import com.github.thebridsk.utilities.logging.Logger
+import com.github.thebridsk.bridge.clientcommon.dispatcher.Listenable
 
 
 
@@ -27,18 +29,39 @@ trait DocumentElementFullscreen extends js.Object {
 object Values {
   val isIpad = {
     val p = js.Dynamic.global.window.navigator.platform.asInstanceOf[String]
-    p == "iPad"
+    p == "MacIntel"
   }
 }
 
 object Implicits {
+  import Values._
+
+  val log = Logger("bridge.Fullscreen")
+
+  val isFullscreenEnabled = fullscreenEnabled
+
+  def fullscreenEnabled: Boolean = {
+
+    val doc = document.asInstanceOf[DocumentFullscreen]
+    if (isIpad) {
+      doc.webkitFullscreenEnabled.getOrElse {
+        val body = document.body
+        val f = js.typeOf(body.asInstanceOf[js.Dynamic].requestFullscreen) == "function"
+        log.fine(s"On iPad, found requestFullscreen function on body object: $f")
+        f
+      }
+    } else {
+      doc.fullscreenEnabled.getOrElse(false)
+    }
+  }
+
 
   implicit class DocumentFullscreenWrapper( val document: Document ) extends AnyVal {
-    import Values._
 
     def doc = document.asInstanceOf[DocumentFullscreen]
 
-    def fullscreenEnabled: Boolean = (if (isIpad) doc.webkitFullscreenEnabled else doc.fullscreenEnabled).getOrElse(false)
+    def fullscreenEnabled: Boolean = Implicits.isFullscreenEnabled
+
     def fullscreenElement: Element = {
       if (isFullscreenEnabled) if (isIpad) doc.webkitFullscreenElement else doc.fullscreenElement
       else null
@@ -63,5 +86,30 @@ object Implicits {
 
   }
 
-  val isFullscreenEnabled = document.fullscreenEnabled
+}
+
+object Fullscreen extends Listenable {
+  import Implicits._
+  var fullscreenElement: js.UndefOr[Element] = js.undefined
+
+  def init() = {
+    setFullscreenElement(
+      if (document.fullscreenEnabled) document.fullscreenElement
+      else js.undefined
+    )
+  }
+
+  init()
+
+  def setFullscreenElement( e: js.UndefOr[Element] ) = {
+    fullscreenElement = e
+  }
+
+  val onFullScreenChange: js.Function1[js.Any,Unit] = { (x) =>
+    notify("fullscreenchange")
+  }
+
+  document.addEventListener("fullscreenchange", onFullScreenChange, false);
+  document.addEventListener("webkitfullscreenchange", onFullScreenChange, false);
+  document.addEventListener("mozfullscreenchange", onFullScreenChange, false);
 }
