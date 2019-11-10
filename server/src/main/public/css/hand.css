@@ -80,13 +80,15 @@
   border-right-width: 10px;
 }
 .handSuitInButton {
-  font-size: larger;
+  font-size: 2.5rem;
   text-shadow: var(--shadow-suit-outline);
 }
 .handViewContractSuit button {
   width: 189px;
 }
-
+.handViewContractSuit button span {
+  vertical-align: middle;
+}
 .handViewContractDoubled {
   flex: 0 0 auto;
   text-align: center;
@@ -107,6 +109,7 @@
   border-style: outset;
   border-width: 2px;
   font-size: x-large;
+  font-weight: bold;
 }
 
 .handSectionHeader {
