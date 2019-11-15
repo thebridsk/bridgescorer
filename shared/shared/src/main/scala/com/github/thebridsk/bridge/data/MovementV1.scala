@@ -70,6 +70,11 @@ case class MovementV1(
     )
     resetToDefault: Option[Boolean] = None,
     @Schema(
+      description = "true if movement is disabled, default is false",
+      required = false
+    )
+    disabled: Option[Boolean] = None,
+    @Schema(
       description = "the creation time, default: unknown",
       required = false
     )
@@ -179,6 +184,9 @@ case class MovementV1(
 
   @Schema(hidden = true)
   def isDeletable = deletable.getOrElse(false)
+
+  @Schema(hidden = true)
+  def isDisabled = disabled.getOrElse(false)
 
   @Schema(hidden = true)
   def isResetToDefault = resetToDefault.getOrElse(false)

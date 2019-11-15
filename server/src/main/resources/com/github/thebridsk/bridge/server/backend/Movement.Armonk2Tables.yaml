@@ -1,8 +1,9 @@
 ---
 name: "Armonk2Tables"
-short: "xxxArmonk 2 Tables"
-description: "Don't use 2 tables, 18 hands, one winner, used by Armonk bridge group"
+short: "Armonk 2 Tables"
+description: "Old Table Movement 2 tables, 18 hands, one winner, used by Armonk bridge group"
 numberTeams: 4
+disabled: true
 hands:
 - table: 1
   round: 1

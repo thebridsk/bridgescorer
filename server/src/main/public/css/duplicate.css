@@ -1160,3 +1160,6 @@
   color: var(--color-fg-default-button);
   background-color: var(--color-default-button);
 }
+.dupDivEditMovement > div:first-child > label.baseCheckbox {
+  font-size: inherit;
+}
