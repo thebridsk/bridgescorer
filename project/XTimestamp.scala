@@ -8,7 +8,7 @@ object XTimestamp {
   private var stime = timestamp()
 
   def millis( isSnap: Boolean ) = {
-    if (gottime || isSnap) {
+    if (gottime) {
       time
     } else {
       if (isSnap) {
