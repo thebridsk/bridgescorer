@@ -104,7 +104,7 @@ object DuplicateResultTest {
 
   val allnames = teams.flatMap(t => t.one::t.two::Nil).map( n => n.trim() )
 
-  val movement = "Armonk2Tables"
+  val movement = "2TablesArmonk"
   val boardset = "ArmonkBoards"
 }
 

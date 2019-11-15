@@ -6,7 +6,7 @@ import io.swagger.v3.oas.annotations.media.ArraySchema
 /**
   * <pre><code>
   * {
-  *   "name": "Armonk2Tables",
+  *   "name": "2TablesArmonk",
   *   "short": "Armonk 2 Tables",
   *   "description": "2 tables, 18 hands, used by Armonk bridge group",
   *   "hands": [

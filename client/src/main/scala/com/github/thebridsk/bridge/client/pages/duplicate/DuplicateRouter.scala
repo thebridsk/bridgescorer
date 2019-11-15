@@ -360,9 +360,9 @@ object DuplicateRouter {
                     BoardSetNewView::
                     BoardSetEditView("ArmonkBoards")::
                     MovementSummaryView::
-                    MovementView("Armonk2Tables")::
+                    MovementView("2TablesArmonk")::
                     MovementNewView::
-                    MovementEditView("Armonk2Tables")::
+                    MovementEditView("2TablesArmonk")::
                     ImportSummaryView("import.zip")::
                     Nil
 
