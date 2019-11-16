@@ -293,7 +293,9 @@ object PageNewDuplicateInternal {
             dupStyles.tableNewDuplicate,
             Header((props,state,this)),
             <.tbody(
-              state.movementNames().map { movname => {
+              state.movementNames().filter { movname =>
+                !state.movements.get(movname).map(_.isDisabled).getOrElse(true)
+              }.map { movname => {
                 Row.withKey(movname)((movname,props,state,this))
               }}.toTagMod
             )

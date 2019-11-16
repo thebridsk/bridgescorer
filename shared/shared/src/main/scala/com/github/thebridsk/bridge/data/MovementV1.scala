@@ -6,7 +6,7 @@ import io.swagger.v3.oas.annotations.media.ArraySchema
 /**
   * <pre><code>
   * {
-  *   "name": "Armonk2Tables",
+  *   "name": "2TablesArmonk",
   *   "short": "Armonk 2 Tables",
   *   "description": "2 tables, 18 hands, used by Armonk bridge group",
   *   "hands": [
@@ -69,6 +69,11 @@ case class MovementV1(
       required = false
     )
     resetToDefault: Option[Boolean] = None,
+    @Schema(
+      description = "true if movement is disabled, default is false",
+      required = false
+    )
+    disabled: Option[Boolean] = None,
     @Schema(
       description = "the creation time, default: unknown",
       required = false
@@ -179,6 +184,9 @@ case class MovementV1(
 
   @Schema(hidden = true)
   def isDeletable = deletable.getOrElse(false)
+
+  @Schema(hidden = true)
+  def isDisabled = disabled.getOrElse(false)
 
   @Schema(hidden = true)
   def isResetToDefault = resetToDefault.getOrElse(false)

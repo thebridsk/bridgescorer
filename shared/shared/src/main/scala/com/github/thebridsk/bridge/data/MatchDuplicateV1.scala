@@ -442,7 +442,7 @@ case class MatchDuplicateV1(
           .toList
           .sortWith((b1, b2) => Id.idComparer(b1.id, b2.id) > 0),
         "ArmonkBoards",
-        "Armonk2Tables",
+        "2TablesArmonk",
         created,
         updated
       )

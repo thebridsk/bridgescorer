@@ -1,6 +1,6 @@
 ---
-name: "Armonk2Table2"
-short: "Armonk 2 Tables 2"
+name: "2TablesArmonk"
+short: "Armonk 2 Tables"
 description: "2 tables, 18 hands, one winner, used by Armonk bridge group"
 numberTeams: 4
 hands:

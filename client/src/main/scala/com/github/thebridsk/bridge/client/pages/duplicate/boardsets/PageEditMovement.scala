@@ -534,6 +534,12 @@ object PageEditMovementInternal {
       scope.modState( s => s.setBoards(table,round,boards))
     }
 
+    val toggleDisabled = scope.modState { s =>
+      val mov = s.getMovement
+      val m = mov.copy( disabled = Some(!mov.isDisabled))
+      s.copy(movement = Some(m))
+    }
+
     val clickOk = scope.modState(
       { s =>
         s.setMsg( s.movementId.map(i=>s"Updating movement $i").getOrElse("Creating new movement"))
@@ -674,6 +680,7 @@ object PageEditMovementInternal {
                     ^.value := state.nrounds.toString
                   )
                 ),
+                CheckBox( id = "Disabled", text = "Disabled", value = state.getMovement.isDisabled, toggle = toggleDisabled ),
                 <.label(
                   "Boardset for stats: ",
                   DropdownList(
