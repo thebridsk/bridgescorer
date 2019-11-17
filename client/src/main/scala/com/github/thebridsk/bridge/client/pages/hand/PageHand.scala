@@ -41,8 +41,8 @@ import org.scalajs.dom.raw.File
 object PageHand {
   import PageHandInternal._
 
-  type CallbackOk = (Contract)=>Callback
-  type CallbackWithHonors = (Contract,Int,Option[PlayerPosition])=>Callback
+  type CallbackOk = (Contract,Option[File])=>Callback
+  type CallbackWithHonors = (Contract,Option[File],Int,Option[PlayerPosition])=>Callback
   type CallbackCancel = Callback
 
   /**
@@ -332,11 +332,10 @@ object PageHandInternal {
     val kickRefresh = scope.forceUpdate
 
     val ok = scope.stateProps { (state, props) =>
-      props.callbackWithHonors match {
-        case Some(cb) =>
-          cb( state.currentcontract, state.honors.getOrElse(0), state.honorsPlayer )
-        case None =>
-          props.callbackOk(state.currentcontract)
+      props.callbackWithHonors.map { cb =>
+          cb( state.currentcontract, state.picture, state.honors.getOrElse(0), state.honorsPlayer )
+      }.getOrElse {
+          props.callbackOk(state.currentcontract, state.picture)
       }
     }
 
@@ -534,6 +533,7 @@ object PageHandInternal {
                 ^.onClick --> showPicture,
                 ^.id:="ShowPicture",
                 Photo(),
+                state.picture.isEmpty ?= ^.display.none,
                 ^.disabled := state.picture.isEmpty
               )
             ),

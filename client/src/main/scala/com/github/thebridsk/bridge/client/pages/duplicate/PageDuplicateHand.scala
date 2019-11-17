@@ -33,6 +33,7 @@ import com.github.thebridsk.materialui.TextColor
 import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles.baseStyles
 import com.github.thebridsk.bridge.client.pages.HomePage
 import japgolly.scalajs.react.component.builder.Lifecycle.ComponentDidUpdate
+import org.scalajs.dom.raw.File
 
 /**
  * Shows the team x board table and has a totals column that shows the number of points the team has.
@@ -187,7 +188,7 @@ object PageDuplicateHandInternal {
       )
     }
 
-    def viewHandCallbackOk(dup: MatchDuplicate, oldhand: DuplicateHand)( contract: Contract ) = CallbackTo {
+    def viewHandCallbackOk(dup: MatchDuplicate, oldhand: DuplicateHand)( contract: Contract, picture: Option[File] ) = CallbackTo {
       logger.info("PageDuplicateHand: new contract "+contract)
     } >> scope.props >>= { p =>
       val newhand: Hand = contract.toHand()

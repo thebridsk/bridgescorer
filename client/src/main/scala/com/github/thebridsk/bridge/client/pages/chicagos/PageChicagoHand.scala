@@ -29,6 +29,7 @@ import com.github.thebridsk.materialui.TextColor
 import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles.baseStyles
 import japgolly.scalajs.react.component.builder.Lifecycle.ComponentDidUpdate
 import com.github.thebridsk.bridge.client.pages.HomePage
+import org.scalajs.dom.raw.File
 
 /**
   * A skeleton component.
@@ -185,7 +186,7 @@ object PageChicagoHandInternal {
     }
 
     def viewHandCallbackOk(iround: Int, ihand: Int, quintet: Boolean)(
-        contract: Contract
+        contract: Contract, picture: Option[File]
     ) =
       scope.props >>= { props =>
         {
