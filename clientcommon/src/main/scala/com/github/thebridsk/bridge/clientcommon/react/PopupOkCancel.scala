@@ -16,7 +16,7 @@ object PopupOkCancel {
 
   case class Props( content: Option[TagMod], ok: Option[Callback], cancel: Option[Callback], id: Option[String] )
 
-  def apply( content: Option[TagMod], ok: Option[Callback], cancel: Option[Callback], id: Option[String] = None ) =
+  def apply( content: Option[TagMod], ok: Option[Callback], cancel: Option[Callback]=None, id: Option[String] = None ) =
     component( Props( content,ok,cancel,id ) )
 }
 

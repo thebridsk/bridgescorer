@@ -17,6 +17,15 @@ import com.github.thebridsk.bridge.clientcommon.react.Utils._
 import com.github.thebridsk.bridge.clientcommon.react.Button
 import com.github.thebridsk.bridge.client.pages.Pixels
 import com.github.thebridsk.bridge.clientcommon.react.HelpButton
+import com.github.thebridsk.materialui.icons.MuiIcons.Camera
+import org.scalajs.dom.raw.FileList
+import org.scalajs.dom.raw.FormData
+import com.github.thebridsk.bridge.clientcommon.react.Utils._
+import com.github.thebridsk.materialui.icons.MuiIcons.Photo
+import japgolly.scalajs.react.component.builder.Lifecycle.ComponentDidUpdate
+import com.github.thebridsk.bridge.clientcommon.react.PopupOkCancel
+import org.scalajs.dom.raw.FileReader
+import org.scalajs.dom.raw.File
 
 /**
  * A skeleton component.
@@ -172,7 +181,9 @@ object PageHandInternal {
                     allowHonors: Boolean,
                     honors: Option[Int],
                     honorsPlayer: Option[PlayerPosition],
-                    changeScorekeeper: Boolean = false
+                    changeScorekeeper: Boolean = false,
+                    picture: Option[File] = None,
+                    showPicture: Boolean = false
       ) {
 
     def withScoring() = {
@@ -300,6 +311,9 @@ object PageHandInternal {
    */
   class Backend(scope: BackendScope[Props, State]) {
 
+    import org.scalajs.dom.html
+    private val canvasRef = Ref[html.Canvas]
+
     def modState( f: (State) => State, cb: Callback = Callback.empty ) = scope.modState(f, cb)
 
     def setContractTricks( tricks: ContractTricks ) = modState(s => s.setContractTricks(tricks))
@@ -365,6 +379,33 @@ object PageHandInternal {
           }).toTagMod
       )
     }
+
+    val patternName = """(?:.*[\\/])([^\\/]+)""".r
+
+    def getFile( filelist: FileList ) = {
+      if (filelist.length == 1) {
+        val file = filelist(0)
+        Some(file)
+      } else {
+        None
+      }
+    }
+
+    def doPictureInput(e: ReactEventFromInput) = e.preventDefaultAction.inputFiles { filelist =>
+      scope.modState { s =>
+        getFile(filelist).map { file =>
+          // val formData = new FormData
+          // formData.append("picture", file)
+          logger.fine(s"Picture for hand taken: ${file.name}, length=${file.size}")
+          s.copy(picture = Some(file))
+        }.getOrElse( {
+          logger.fine("Picture for hand cleared")
+          s.copy(picture = None)
+        } )
+      }
+    }
+
+    val showPicture = scope.modState( s => s.copy(showPicture = true))
 
     def renderHand(props: Props,state: State) = {
       val contract = state.currentcontract
@@ -472,7 +513,29 @@ object PageHandInternal {
               baseStyles.divFooterLeft,
               Button( handStyles.footerButton, "Ok", "OK", ^.disabled := !valid,
                       HandStyles.highlight(required = valid),
-                      ^.onClick --> ok)
+                      ^.onClick --> ok),
+              <.div(
+                ^.id := "CameraInput",
+                <.label(
+                  Camera(),
+                  <.input(
+                    ^.`type` := "file",
+                    ^.name := "picture",
+                    ^.accept := "image/*",
+                    ^.capture := "environment",    // use camera in back
+                    ^.value := "",
+                    ^.onChange ==> doPictureInput _
+                  )
+                )
+              ),
+              <.button(
+                ^.`type` := "button",
+                handStyles.footerButton,
+                ^.onClick --> showPicture,
+                ^.id:="ShowPicture",
+                Photo(),
+                ^.disabled := state.picture.isEmpty
+              )
             ),
             <.div(
               baseStyles.divFooterCenter,
@@ -486,11 +549,35 @@ object PageHandInternal {
               props.helppage.whenDefined( p => HelpButton(p) )
             )
           )
+        ),
+        PopupOkCancel(
+          content = if (state.showPicture) {
+            state.picture.map( f => Picture(f) )
+          } else {
+            None
+          },
+          ok = Some(popupOk)
         )
       )
     }
 
+    val popupOk = scope.modState { s =>
+      s.copy(showPicture = false)
+    }
+
+    val didMount = scope.stateProps { (s,p) => Callback {
+      logger.fine(s"PageHand.didMount")
+    }}
+
+    val willUnmount = Callback {
+      logger.info("PageHand.willUnmount")
+    }
+
+    def didUpdate( cdu: ComponentDidUpdate[Props,State,Backend,Unit] ) = Callback {
+      logger.fine(s"PageHand.didUpdate")
+    }
   }
+
 
   val initialDoubled: Option[ContractDoubled] = None // Some(NotDoubled)
   val component = ScalaComponent.builder[Props]("PageHand")
@@ -522,6 +609,9 @@ object PageHandInternal {
                             }
                             .backend(new Backend(_))
                             .renderBackend
+                            .componentDidMount( scope => scope.backend.didMount)
+                            .componentWillUnmount( scope => scope.backend.willUnmount )
+                            .componentDidUpdate( cdu => cdu.backend.didUpdate(cdu) )
 //                            .configure(LogLifecycleToServer.verbose)     // logs lifecycle events
                             .build
 
