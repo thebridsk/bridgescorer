@@ -26,6 +26,7 @@ import japgolly.scalajs.react.component.builder.Lifecycle.ComponentDidUpdate
 import com.github.thebridsk.bridge.clientcommon.react.PopupOkCancel
 import org.scalajs.dom.raw.FileReader
 import org.scalajs.dom.raw.File
+import com.github.thebridsk.materialui.icons.MuiIcons.DeleteForever
 
 /**
  * A skeleton component.
@@ -41,8 +42,10 @@ import org.scalajs.dom.raw.File
 object PageHand {
   import PageHandInternal._
 
-  type CallbackOk = (Contract,Option[File])=>Callback
-  type CallbackWithHonors = (Contract,Option[File],Int,Option[PlayerPosition])=>Callback
+  //                          picture      removePicture
+  type CallbackOk = (Contract,Option[File],Boolean)=>Callback
+  //                                  picture      removePicture  honorPoints  honorPosition
+  type CallbackWithHonors = (Contract,Option[File],Boolean,       Int,          Option[PlayerPosition])=>Callback
   type CallbackCancel = Callback
 
   /**
@@ -68,9 +71,10 @@ object PageHand {
              callbackWithHonors: Option[CallbackWithHonors] = None,
              honors: Option[Int] = None,
              honorsPlayer: Option[PlayerPosition] = None,
-             helppage: Option[String] = None ) =
+             helppage: Option[String] = None,
+             picture: Option[String] = None ) =
         component(Props(contract.withScoring(),callbackOk,callbackCancel,
-                        teamNS,teamEW,newhand,allowPassedOut,callbackWithHonors,honors,honorsPlayer,helppage))
+                        teamNS,teamEW,newhand,allowPassedOut,callbackWithHonors,honors,honorsPlayer,helppage,picture))
 
 
   /**
@@ -110,7 +114,8 @@ object PageHand {
              callbackWithHonors: Option[CallbackWithHonors] = None,
              honors: Option[Int] = None,
              honorsPlayer: Option[PlayerPosition] = None,
-             helppage: Option[String] = None ) =
+             helppage: Option[String] = None,
+             picture: Option[String] = None ) =
                                         apply( Contract( h.id,
                                                          h.contractTricks,
                                                          h.contractSuit,
@@ -132,7 +137,7 @@ object PageHand {
                                                          west,
                                                          dealer
                                                ), callbackOk, callbackCancel, teamNS, teamEW, newhand=newhand, allowPassedOut=allowPassedOut, callbackWithHonors=callbackWithHonors,
-                                               honors=honors, honorsPlayer=honorsPlayer, helppage=helppage)
+                                               honors=honors, honorsPlayer=honorsPlayer, helppage=helppage, picture=picture)
 
   var scorekeeper: PlayerPosition = North
 
@@ -160,7 +165,8 @@ object PageHandInternal {
                     callbackWithHonors: Option[CallbackWithHonors] = None,
                     honors: Option[Int] = None,
                     honorsPlayer: Option[PlayerPosition] = None,
-                    helppage: Option[String] = None)
+                    helppage: Option[String] = None,
+                    picture: Option[String] = None )
 
   /**
    * Internal state for rendering the component.
@@ -183,8 +189,18 @@ object PageHandInternal {
                     honorsPlayer: Option[PlayerPosition],
                     changeScorekeeper: Boolean = false,
                     picture: Option[File] = None,
-                    showPicture: Boolean = false
-      ) {
+                    showPicture: Boolean = false,
+                    removePicture: Boolean = false
+  ) {
+
+    def withRemovePicture( f: Boolean ) = copy( removePicture = f )
+    def withShowPicture( f: Boolean ) = copy( showPicture = f )
+    def pictureToShow( default: Option[String] ): (Option[File],Option[String]) = {
+      if (removePicture) (None,None)
+      else {
+        (picture,default)
+      }
+    }
 
     def withScoring() = {
       val rc = if (contractTricks match {
@@ -271,7 +287,8 @@ object PageHandInternal {
     }
 
     def clear() = copy( contractTricks=None, contractSuit=None, contractDoubled=initialDoubled,
-                        declarer=None, madeOrDown=None, tricks=None, honors=None, honorsPlayer=None ).withScoring()
+                        declarer=None, madeOrDown=None, tricks=None, honors=None, honorsPlayer=None,
+                        picture=None, removePicture=false ).withScoring()
 
     def nextInput() = {
       def gotContractTricks = contractTricks.isDefined && contractTricks.get.tricks > 0
@@ -333,9 +350,9 @@ object PageHandInternal {
 
     val ok = scope.stateProps { (state, props) =>
       props.callbackWithHonors.map { cb =>
-          cb( state.currentcontract, state.picture, state.honors.getOrElse(0), state.honorsPlayer )
+          cb( state.currentcontract, state.picture, state.removePicture, state.honors.getOrElse(0), state.honorsPlayer )
       }.getOrElse {
-          props.callbackOk(state.currentcontract, state.picture)
+          props.callbackOk(state.currentcontract, state.picture, state.removePicture)
       }
     }
 
@@ -379,8 +396,6 @@ object PageHandInternal {
       )
     }
 
-    val patternName = """(?:.*[\\/])([^\\/]+)""".r
-
     def getFile( filelist: FileList ) = {
       if (filelist.length == 1) {
         val file = filelist(0)
@@ -396,12 +411,16 @@ object PageHandInternal {
           // val formData = new FormData
           // formData.append("picture", file)
           logger.fine(s"Picture for hand taken: ${file.name}, length=${file.size}")
-          s.copy(picture = Some(file))
+          s.copy(picture = Some(file), removePicture=false)
         }.getOrElse( {
           logger.fine("Picture for hand cleared")
           s.copy(picture = None)
         } )
       }
+    }
+
+    def removePicture = scope.modState { s =>
+      s.copy(removePicture=true)
     }
 
     val showPicture = scope.modState( s => s.copy(showPicture = true))
@@ -490,6 +509,11 @@ object PageHandInternal {
                         showContractHeader
                        )
 
+      val pictureShowing = {
+        val (file,default) = state.pictureToShow(props.picture)
+        file.isDefined || default.isDefined
+      }
+
       <.div( handStyles.pageHand,
         contract.scoringSystem match {
         case _ : Duplicate => handStyles.playDuplicate
@@ -533,8 +557,17 @@ object PageHandInternal {
                 ^.onClick --> showPicture,
                 ^.id:="ShowPicture",
                 Photo(),
-                state.picture.isEmpty ?= ^.display.none,
-                ^.disabled := state.picture.isEmpty
+                !pictureShowing ?= ^.display.none,
+                ^.disabled := !pictureShowing
+              ),
+              <.button(
+                ^.`type` := "button",
+                handStyles.footerButton,
+                ^.onClick --> removePicture,
+                ^.id:="RemovePicture",
+                DeleteForever(),
+                !pictureShowing ?= ^.display.none,
+                ^.disabled := !pictureShowing
               )
             ),
             <.div(
@@ -552,7 +585,7 @@ object PageHandInternal {
         ),
         PopupOkCancel(
           content = if (state.showPicture) {
-            state.picture.map( f => Picture(f) )
+            Some(Picture(state.picture,props.picture))
           } else {
             None
           },

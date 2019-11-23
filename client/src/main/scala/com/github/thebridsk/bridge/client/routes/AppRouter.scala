@@ -133,11 +133,11 @@ class AppRouter( modules: Module* ) {
 
   def defaultHand( scoring: ScoringSystem ) = defaultContract.copy( scoringSystem = scoring )
 
-  def scoringViewWithHonorsCallbackOk( routerCtl: RouterCtl[AppPage])( contract: Contract, picture: Option[File], honors: Int, pos: Option[PlayerPosition] ) = {
+  def scoringViewWithHonorsCallbackOk( routerCtl: RouterCtl[AppPage])( contract: Contract, picture: Option[File], removePicture: Boolean, honors: Int, pos: Option[PlayerPosition] ) = {
     routerCtl.set(Home)  // show the Info page.
   }
 
-  def scoringViewCallbackOk( routerCtl: RouterCtl[AppPage])( contract: Contract, picture: Option[File] ) = {
+  def scoringViewCallbackOk( routerCtl: RouterCtl[AppPage])( contract: Contract, picture: Option[File], removePicture: Boolean ) = {
     routerCtl.set(Home)  // show the Info page.
   }
 

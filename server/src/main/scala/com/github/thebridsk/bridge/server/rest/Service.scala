@@ -70,6 +70,7 @@ trait Service extends ImportExport {
     classOf[RestNestedBoard],
     classOf[RestNestedHand],
     classOf[RestNestedTeam],
+    classOf[RestNestedPicture],
     classOf[RestSuggestion],
     classOf[RestNames],
     classOf[RestBoardSet],

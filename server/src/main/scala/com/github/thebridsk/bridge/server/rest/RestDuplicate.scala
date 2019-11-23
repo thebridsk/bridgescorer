@@ -61,6 +61,7 @@ trait RestDuplicate extends HasActorSystem {
 
   val nestedBoards = new RestNestedBoard
   val nestedTeams = new RestNestedTeam
+  val nestedPictures = new RestNestedPicture(store,this)
 
   /**
     * spray route for all the methods on this resource
@@ -157,7 +158,8 @@ trait RestDuplicate extends HasActorSystem {
       pathPrefix("""[a-zA-Z0-9]+""".r) { id: Id.MatchDuplicate =>
         val selected = store.select(id)
         nestedBoards.route(selected.resourceBoards) ~
-          nestedTeams.route(selected.resourceTeams)
+          nestedTeams.route(selected.resourceTeams) ~
+          nestedPictures.route(id)
       }
     }
   }

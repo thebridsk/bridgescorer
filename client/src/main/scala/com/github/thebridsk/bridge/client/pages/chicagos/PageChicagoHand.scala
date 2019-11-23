@@ -185,8 +185,14 @@ object PageChicagoHandInternal {
       )
     }
 
-    def viewHandCallbackOk(iround: Int, ihand: Int, quintet: Boolean)(
-        contract: Contract, picture: Option[File]
+    def viewHandCallbackOk(
+        iround: Int,
+        ihand: Int,
+        quintet: Boolean
+    )(
+        contract: Contract,
+        picture: Option[File],
+        removePicture: Boolean
     ) =
       scope.props >>= { props =>
         {

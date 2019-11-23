@@ -14,6 +14,14 @@ import scala.concurrent.ExecutionContext
 import scala.concurrent.Future
 import com.github.thebridsk.bridge.data.Id
 import com.github.thebridsk.utilities.file.FileIO
+import scala.reflect.io.File
+import scala.reflect.io.Streamable.Bytes
+import scala.reflect.io.Path
+import java.io.FileInputStream
+import java.nio.file.Files
+import java.nio.file.StandardCopyOption
+import java.io.InputStream
+import com.github.thebridsk.bridge.server.backend.resource.MetaData.MetaDataFile
 
 object FileStore {
   val log = Logger[FileStore[_, _]]
@@ -215,6 +223,109 @@ class FilePersistentSupport[VId, VType <: VersionedInstance[VType, VType, VId]](
   }
 
   private def newfilename(filename: String) = FileIO.newfilename(filename)
+
+  /**
+   * Get the metadata directory.  This does not create the metadata directory.
+   */
+  private def getMetadataDir( id: VId ): Directory = {
+    (directory / (resourceName + "." + id)).toDirectory
+  }
+
+  /**
+   * Get the metadata directory, creates the directory if it doesn't exist.
+   */
+  private def alwaysGetMetadataDir( id: VId ): Directory = {
+    val dir = getMetadataDir(id)
+    if (!dir.isDirectory) dir.jfile.mkdirs()
+    dir
+  }
+
+  private def toMetadataFile( path: File, relativeTo: Directory ): MetaDataFile = {
+    val f = path.toString()
+    val d = relativeTo.toString()
+    if (f.startsWith(d)) f.substring(d.length()+1)
+    else f
+  }
+
+  /**
+   * Get the File object for the metadata file.  This does not create the metadata directory.
+   */
+  private def toFileFromMetadataFile( id: VId, file: MetaDataFile ): File = {
+    (getMetadataDir(id) / file).toFile
+  }
+
+  /**
+   * List all the files for the specified match
+   */
+  override
+  def listFiles( id: VId ): Future[Result[Iterator[MetaDataFile]]] = Future {
+    val dir = getMetadataDir(id)
+    if (dir.isDirectory) {
+      val it = dir.files.map { f => toMetadataFile(f,dir) }
+      Result(it)
+    } else {
+      Result( List().iterator)
+    }
+  }
+
+  /**
+   * List all the files for the specified match that match the filter
+   */
+  override
+  def listFilesFilter( id: VId )( filter: MetaDataFile=>Boolean ): Future[Result[Iterator[MetaDataFile]]] = Future {
+    val dir = getMetadataDir(id)
+    if (dir.isDirectory) {
+      val it = dir.files.map { f => toMetadataFile(f,dir) }.filter(filter)
+      Result(it)
+    } else {
+      Result( List().iterator)
+    }
+  }
+
+  /**
+   * Write the specified source file to the target file, the target file is relative to the store directory.
+   */
+  override
+  def write( id: VId, sourceFile: File, targetFile: MetaDataFile ): Future[Result[Unit]] = Future {
+    val f = toFileFromMetadataFile(id,targetFile)
+    f.parent.jfile.mkdirs
+    Files.copy(sourceFile.jfile.toPath(), f.jfile.toPath(), StandardCopyOption.REPLACE_EXISTING)
+    Result.unit
+  }
+
+  /**
+   * read the specified file, the file is relative to the store directory.
+   */
+  override
+  def read( id: VId, file: MetaDataFile ): Future[Result[InputStream]] = Future {
+    val f = toFileFromMetadataFile(id,file)
+    if (f.isFile) {
+      val is = new FileInputStream(f.jfile)
+      Result(is)
+    } else {
+      Result(StatusCodes.NotFound,s"metadata file $file not found in resource $id")
+    }
+  }
+
+  /**
+   * delete the specified file, the file is relative to the store directory for specified match.
+   */
+  override
+  def delete( id: VId, file: MetaDataFile ): Future[Result[Unit]] = Future {
+    val f = toFileFromMetadataFile(id,file)
+    if (f.exists) f.delete()
+    Result.unit
+  }
+
+  /**
+   * delete all the metadata files for the match
+   */
+  override
+  def deleteAll( id: VId ): Future[Result[Unit]] = Future {
+    val d = getMetadataDir(id)
+    FileIO.deleteDirectory(d.jfile.toPath(),None)
+    Result.unit
+  }
 
 }
 

@@ -34,6 +34,9 @@ import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles.baseStyles
 import com.github.thebridsk.bridge.client.pages.HomePage
 import japgolly.scalajs.react.component.builder.Lifecycle.ComponentDidUpdate
 import org.scalajs.dom.raw.File
+import com.github.thebridsk.bridge.clientcommon.rest2.RestClientDuplicate
+import scala.concurrent.ExecutionContext.Implicits.global
+import com.github.thebridsk.bridge.clientcommon.react.Utils._
 
 /**
  * Shows the team x board table and has a totals column that shows the number of points the team has.
@@ -188,11 +191,28 @@ object PageDuplicateHandInternal {
       )
     }
 
-    def viewHandCallbackOk(dup: MatchDuplicate, oldhand: DuplicateHand)( contract: Contract, picture: Option[File] ) = CallbackTo {
-      logger.info("PageDuplicateHand: new contract "+contract)
-    } >> scope.props >>= { p =>
+    def viewHandCallbackOk(
+        dup: MatchDuplicate,
+        oldhand: DuplicateHand
+    )(
+        contract: Contract,
+        picture: Option[File],
+        removePicture: Boolean
+    ) = scope.stateProps { (s,p) =>
+      logger.fine(s"PageDuplicateHand: new contract $contract for ${oldhand.board},${oldhand.id}" )
       val newhand: Hand = contract.toHand()
       Controller.updateHand(dup, oldhand.updateHand(newhand))
+      if (removePicture) {
+        RestClientDuplicate.pictureResource(dup.id).delete(oldhand.board).foreach { (x) =>
+          logger.fine(s"PageDuplicateHand: deleted picture for ${oldhand.board},${oldhand.id}")
+        }
+      } else {
+        picture.foreach{ f =>
+          RestClientDuplicate.pictureResource(dup.id).putPicture(oldhand.board,f).foreach { (x) =>
+            logger.fine(s"PageDuplicateHand: updated picture for ${oldhand.board}")
+          }
+        }
+      }
       p.routerCtl.set(p.page.toBoardView())
     }
 

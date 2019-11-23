@@ -41,9 +41,14 @@ import org.scalajs.dom.raw.File
 object Picture {
   import PictureInternal._
 
-  case class Props( imagefile: File )
+  case class Props( imagefile: Option[File], imageUrl: Option[String] )
 
-  def apply( imageFile: File ) = component(Props(imageFile))
+  /**
+   * Display an image.
+   * @param imageFile File object that contains the image to display
+   * @param imageUrl URL of image to display, only displayed if imageFile is None.
+   */
+  def apply( imageFile: Option[File], imageUrl: Option[String] ) = component(Props(imageFile,imageUrl))
 
 }
 
@@ -62,19 +67,21 @@ object PictureInternal {
     def render(props: Props,state: State) = {
       <.div(
         ^.id := "HandPicture",
-        state.fileURL.whenDefined { f =>
+        state.fileURL.orElse(props.imageUrl).whenDefined { f =>
           <.img( ^.src := f )
         }
       )
     }
 
     def readFile(p: Props) = {
-      val reader = new FileReader
-      reader.onload = (event) => {
-        val dataURL = reader.result.toString()
-        scope.withEffectsImpure.modState( s => s.copy( fileURL = Some(dataURL) ))
+      if (p.imagefile.isDefined) {
+        val reader = new FileReader
+        reader.onload = (event) => {
+          val dataURL = reader.result.toString()
+          scope.withEffectsImpure.modState( s => s.copy( fileURL = Some(dataURL) ))
+        }
+        reader.readAsDataURL(p.imagefile.get)
       }
-      reader.readAsDataURL(p.imagefile)
     }
 
     val didMount = scope.stateProps { (s,p) => Callback {
@@ -89,7 +96,9 @@ object PictureInternal {
 
     def didUpdate( cdu: ComponentDidUpdate[Props,State,Backend,Unit] ) = scope.stateProps { (state,props) => Callback {
       logger.fine(s"Picture.didUpdate")
-      if (cdu.prevProps.imagefile.name != props.imagefile.name) {
+      val changed = (cdu.prevProps.imagefile.isDefined != cdu.prevProps.imagefile.isDefined) ||
+                    (cdu.prevProps.imagefile.isDefined && cdu.prevProps.imagefile.get.name != props.imagefile.get.name )
+      if (changed) {
         scope.withEffectsImpure.setState( state.copy(fileURL = None))
         readFile(props)
       }

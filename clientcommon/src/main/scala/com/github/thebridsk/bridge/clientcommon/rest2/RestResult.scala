@@ -27,6 +27,8 @@ object RestResult {
   val classtagUnit = classtag[Unit].runtimeClass
   def returnUnit: Unit = {}
 
+  def unit: Result[Unit] = new ResultObject( Future.unit)
+
   def tryit[T]( fun: String, comment: => String)( f: => Try[T] )( implicit ct: ClassTag[T] ): Try[T] = {
     try {
       val ret = f

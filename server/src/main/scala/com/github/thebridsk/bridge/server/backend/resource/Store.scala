@@ -20,6 +20,11 @@ import com.github.thebridsk.bridge.data.VersionedInstance
 import org.scalactic.source.Position
 import com.github.thebridsk.source.SourcePosition
 import Implicits._
+import scala.reflect.io.File
+import java.io.OutputStream
+import scala.reflect.io.Streamable.Bytes
+import java.io.InputStream
+import com.github.thebridsk.bridge.server.backend.resource.MetaData.MetaDataFile
 
 object Store {
   val log = Logger[Store[_, _]]
@@ -85,6 +90,28 @@ abstract class Store[VId, VType <: VersionedInstance[VType, VType, VId]](
   val resourceURI = persistent.resourceURI
 
   implicit private val self = this
+
+  val metaData = new MetaData[VId] {
+
+    override
+    def listFiles( id: VId ): Future[Result[Iterator[MetaDataFile]]] = persistent.listFiles(id)
+
+    override
+    def listFilesFilter( id: VId )( filter: MetaDataFile=>Boolean ): Future[Result[Iterator[MetaDataFile]]] = persistent.listFilesFilter(id)(filter)
+
+    override
+    def write( id: VId, sourceFile: File, targetFile: MetaDataFile ): Future[Result[Unit]] = persistent.write(id,sourceFile,targetFile)
+
+    override
+    def read( id: VId, file: MetaDataFile ): Future[Result[InputStream]] = persistent.read(id,file)
+
+    override
+    def delete( id: VId, file: MetaDataFile ): Future[Result[Unit]] = StoreIdMeta.notSupported
+
+    override
+    def deleteAll( id: VId ): Future[Result[Unit]] = StoreIdMeta.notSupported
+
+  }
 
   private class CacheResult(
       id: VId,
