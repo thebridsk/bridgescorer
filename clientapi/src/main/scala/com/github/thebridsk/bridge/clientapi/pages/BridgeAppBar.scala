@@ -43,6 +43,7 @@ import com.github.thebridsk.bridge.clientcommon.debug.DebugLoggerComponent
 import com.github.thebridsk.bridge.clientcommon.pages.ColorThemeStorage
 import com.github.thebridsk.bridge.clientcommon.material.icons.LightDark
 import com.github.thebridsk.bridge.clientcommon.fullscreen.Values
+import com.github.thebridsk.bridge.clientcommon.fullscreen.Fullscreen
 
 /**
   * A simple AppBar for the Bridge client.
@@ -468,16 +469,18 @@ object BridgeAppBarInternal {
       bar
     }
 
+    val fullscreenCB = scope.forceUpdate
+
     private var mounted = false
 
     val didMount = Callback {
       mounted = true
-
+      Fullscreen.addListener("fullscreenchange",fullscreenCB)
     }
 
     val willUnmount = Callback {
       mounted = false
-
+      Fullscreen.removeListener("fullscreenchange",fullscreenCB)
     }
   }
 

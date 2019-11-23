@@ -23,6 +23,13 @@ import com.github.thebridsk.materialui.MuiTypography
 import com.github.thebridsk.materialui.TextVariant
 import com.github.thebridsk.materialui.TextColor
 import japgolly.scalajs.react.component.builder.Lifecycle.ComponentDidUpdate
+import com.github.thebridsk.bridge.client.pages.duplicate.DuplicateRouter.MovementEditView
+import _root_.com.github.thebridsk.bridge.client.pages.duplicate.DuplicateRouter.MovementNewView
+import com.github.thebridsk.bridge.clientcommon.react.PopupOkCancel
+import com.github.thebridsk.bridge.clientcommon.rest2.RestClientMovement
+import scala.util.Success
+import scala.util.Failure
+import scala.concurrent.ExecutionContext.Implicits.global
 
 /**
  * A skeleton component.
@@ -59,26 +66,42 @@ object PageMovementsInternal {
    *
    * @param boardSets all the boardsets
    */
-  case class State( movements: Map[String,Movement] )
+  case class State( movements: Map[String,Movement] = Map(), msg: Option[TagMod] = None ) {
+
+    def setMsg( msg: String ) = copy( msg = Some(msg))
+    def setMsg( msg: TagMod ) = copy( msg = Some(msg))
+    def clearMsg() = copy( msg = None )
+
+  }
 
   val SummaryHeader = ScalaComponent.builder[State]("PageMovements.SummaryHeader")
                     .render_P( state => {
                       <.tr(
                         <.th( "Name" ),
-                        <.th( "Description" )
+                        <.th( "Description" ),
+                        <.th( "Action" )
                       )
                     }).build
 
-  val SummaryRow = ScalaComponent.builder[(State,String,Callback,Option[String])]("PageMovements.SummaryRow")
-                    .render_P( props => {
-                      val (state,current,toggle,selected) = props
-                      val bs = state.movements(current)
+  val SummaryRow = ScalaComponent.builder[(Backend,Props,State,String,Callback,Option[String])]("PageMovements.SummaryRow")
+                    .render_P( args => {
+                      val (backend,props,state,current,toggle,selected) = args
+                      val mov = state.movements(current)
                       val sel = selected.map( s => s==current ).getOrElse(false)
+                      val disabled = mov.isDisabled
                       <.tr(
                         <.td(
-                          AppButton( bs.name, bs.short, BaseStyles.highlight(selected = sel), ^.onClick-->toggle )
+                          AppButton( mov.name, mov.short, BaseStyles.highlight(selected = sel), ^.onClick-->toggle )
                         ),
-                        <.td( bs.description)
+                        <.td(
+                          disabled ?= "Disabled, ",
+                          mov.description
+                        ),
+                        <.td(
+                          AppButton( s"${mov.name}_edit", "Edit", props.routerCtl.setOnClick(MovementEditView(mov.name)) ),
+                          mov.isDeletable ?= AppButton( s"${mov.name}_delete", "Delete", ^.onClick --> backend.deleteCB(mov.id) ),
+                          mov.isResetToDefault ?= AppButton( s"${mov.name}_reset", "Reset", ^.onClick --> backend.resetCB(mov.id) ),
+                        )
                       )
                     }).build
 
@@ -152,6 +175,10 @@ object PageMovementsInternal {
 
     private val movementTableRef = Ref.toScalaComponent(MovementTable)
 
+    val popupCancel = Callback {
+
+    } >> scope.modState( s => s.clearMsg())
+
     val okCallback = scope.forceUpdate >> scope.props >>= { props => props.routerCtl.set(props.backpage) }
 
     def toggleBoardSet( name: String ) = scope.props >>= { props =>
@@ -161,9 +188,45 @@ object PageMovementsInternal {
       }
     }
 
+    def deleteCB( id: String ) = scope.modState(
+      { s =>
+        s.setMsg(s"Deleting movement $id")
+      },
+      Callback {
+        BoardSetController.deleteMovement(id).recordFailure().onComplete { tr =>
+          logger.fine(s"movement $id deleted: $tr")
+          tr match {
+            case Success(x) =>
+              scope.withEffectsImpure.modState( _.setMsg(s"Deleted movement $id"))
+            case Failure(ex) =>
+              scope.withEffectsImpure.modState( _.setMsg(s"Error deleting movement $id"))
+          }
+        }
+      }
+    )
+
+    def resetCB( id: String ) = scope.modState(
+      { s =>
+        s.setMsg(s"Resetting movement $id to default")
+      },
+      Callback {
+        BoardSetController.deleteMovement(id).recordFailure().onComplete { tr =>
+          logger.fine(s"movement $id reset: $tr")
+          tr match {
+            case Success(x) =>
+              BoardSetController.getMovement()
+              scope.withEffectsImpure.modState( _.setMsg(s"Movement $id was reset to default"))
+            case Failure(ex) =>
+              scope.withEffectsImpure.modState( _.setMsg(s"Error resetting movement $id to default"))
+          }
+        }
+      }
+    )
+
     def render( props: Props, state: State ) = {
       logger.info("PageMovements.Backend.render: display "+props.initialDisplay)
       <.div(
+        PopupOkCancel( state.msg, None, Some(popupCancel) ),
         DuplicatePageBridgeAppBar(
           id = None,
           tableIds = List(),
@@ -189,11 +252,12 @@ object PageMovementsInternal {
             ),
             <.tbody(
               state.movements.keySet.toList.sortWith( (t1,t2)=>t1<t2 ).map { name =>
-                SummaryRow.withKey( name )((state,name,toggleBoardSet(name),props.initialDisplay))
+                SummaryRow.withKey( name )((this,props,state,name,toggleBoardSet(name),props.initialDisplay))
               }.toTagMod
             )
           ),
           AppButton( "OK", "OK", ^.onClick-->okCallback ),
+          AppButton( "New", "New", props.routerCtl.setOnClick(MovementNewView) ),
           props.initialDisplay match {
             case Some(name) =>
               state.movements.get(name) match {
@@ -218,7 +282,7 @@ object PageMovementsInternal {
       )
     }
 
-    val forceUpdate = scope.withEffectsImpure.forceUpdate
+    def forceUpdate = scope.withEffectsImpure.forceUpdate
 
     val storeCallback = scope.modState { s =>
       val boardsets = BoardSetStore.getMovement()
@@ -257,7 +321,7 @@ object PageMovementsInternal {
   val component = ScalaComponent.builder[Props]("PageMovements")
                             .initialStateFromProps { props => {
                               logger.info("PageMovements.component.initialState: initial display "+props.initialDisplay)
-                              State(Map())
+                              State()
                             }}
                             .backend(new Backend(_))
                             .renderBackend

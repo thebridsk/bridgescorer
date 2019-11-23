@@ -81,7 +81,7 @@ object ViewContractSuit {
                                                   requiredNotNext = missingNotNext
                                               ),
                                               getIcon(icon,color),
-                                              if (props.contractTricks.map(ct=>ct.tricks).getOrElse(0) == 1) text else texts
+                                              <.span( if (props.contractTricks.map(ct=>ct.tricks).getOrElse(0) == 1) text else texts )
                                             )
                                 <.div( handStyles.viewContractSuit, !props.visible ?= baseStyles.notVisible,
                                     getButton("No Trump", "No Trump", NoTrump, None, None),

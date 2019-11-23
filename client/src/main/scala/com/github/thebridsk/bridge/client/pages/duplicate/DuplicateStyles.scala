@@ -94,4 +94,6 @@ class DuplicateStyles {
 
   val divSuggestionPage = cls("dupDivSuggestionPage")
 
+  val divEditBoardSet = cls("dupDivEditBoardSet")
+  val divEditMovement = cls("dupDivEditMovement")
 }

@@ -253,9 +253,9 @@ object HomePage {
                   <.td(
                     AppButton( "NewDuplicate", "New Duplicate", rootStyles.playButton, ^.disabled:=isWorking, ^.onClick --> callbackPage(PlayDuplicate(NewDuplicateView)))
                   ),
-                  <.td(
-                    AppButton( "SelectDuplicate", "Select Match", rootStyles.playButton, ^.disabled:=isWorking, ^.onClick --> callbackPage(PlayDuplicate(SelectMatchView)))
-                  ),
+                  // <.td(
+                  //   AppButton( "SelectDuplicate", "Select Match", rootStyles.playButton, ^.disabled:=isWorking, ^.onClick --> callbackPage(PlayDuplicate(SelectMatchView)))
+                  // ),
                   <.td(
                     AppButton( "LatestNewMatch", "Latest New Match", rootStyles.playButton, ^.disabled:=isWorking, ^.onClick --> latestNewMatch)
                   )
@@ -323,8 +323,8 @@ object HomePage {
       resultDuplicateSummary.set(list)
       list.onComplete( _ match {
         case Success(req) =>
-          val oneHourAgo = SystemTime.currentTimeMillis() - 1*60*60*1000   // one hour ago
-          val sorted = req.filter( md => md.created > oneHourAgo ).sortWith { (l,r) =>
+          val fourHourAgo = SystemTime.currentTimeMillis() - 4*60*60*1000   // one hour ago
+          val sorted = req.filter( md => md.created > fourHourAgo ).sortWith { (l,r) =>
             if (l.finished == r.finished) {
               if (l.onlyresult == r.onlyresult) {
                 Id.idComparer(l.id,r.id) > 0

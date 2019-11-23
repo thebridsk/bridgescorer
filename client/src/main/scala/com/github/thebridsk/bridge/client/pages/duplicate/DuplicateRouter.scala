@@ -23,6 +23,8 @@ import japgolly.scalajs.react.vdom.TagMod
 import com.github.thebridsk.bridge.client.pages.duplicate.DuplicateRouter.BaseScoreboardView
 import scala.scalajs.js.URIUtils
 import com.github.thebridsk.bridge.client.routes.BridgeRouterBaseWithLogging
+import com.github.thebridsk.bridge.client.pages.duplicate.boardsets.PageEditBoardSet
+import com.github.thebridsk.bridge.client.pages.duplicate.boardsets.PageEditMovement
 
 object DuplicateModule extends Module {
   case class PlayDuplicate(m: DuplicatePage ) extends AppPage
@@ -307,9 +309,15 @@ object DuplicateRouter {
 
   case class BoardSetView( display: String ) extends DuplicatePage
 
+  case object BoardSetNewView extends DuplicatePage
+  case class BoardSetEditView( display: String ) extends DuplicatePage
+
   case object MovementSummaryView extends DuplicatePage
 
   case class MovementView( display: String ) extends DuplicatePage
+
+  case object MovementNewView extends DuplicatePage
+  case class MovementEditView( display: String ) extends DuplicatePage
 
   case class ImportSummaryView( importId: String ) extends SummaryViewBase {
     def getScoreboardPage(dupid: String): BaseScoreboardViewWithPerspective = CompleteScoreboardView(dupid)
@@ -349,8 +357,12 @@ object DuplicateRouter {
                     TableTeamByBoardEditView("M1","1",1,"1")::
                     BoardSetSummaryView::
                     BoardSetView("ArmonkBoards")::
+                    BoardSetNewView::
+                    BoardSetEditView("ArmonkBoards")::
                     MovementSummaryView::
-                    MovementView("Armonk2Tables")::
+                    MovementView("2TablesArmonk")::
+                    MovementNewView::
+                    MovementEditView("2TablesArmonk")::
                     ImportSummaryView("import.zip")::
                     Nil
 
@@ -364,16 +376,24 @@ object DuplicateRouter {
         ~> renderR( routerCtl => PageSuggestion(routerCtl) )
       | staticRoute( "boardsets", BoardSetSummaryView )
         ~> renderR( routerCtl => PageBoardSets(routerCtl,SummaryView,None) )
+      | staticRoute( "boardsets" / "new", BoardSetNewView )
+        ~> renderR( routerCtl => PageEditBoardSet(routerCtl,BoardSetNewView) )
       | dynamicRouteCT( ("boardsets" / string("[a-zA-Z0-9]+")).caseClass[BoardSetView])
         ~> dynRenderR( (p,routerCtl) => PageBoardSets(routerCtl,SummaryView,Some(p.display)) )
+      | dynamicRouteCT( ("boardsets" / string("[a-zA-Z0-9]+") / "edit").caseClass[BoardSetEditView])
+        ~> dynRenderR( (p,routerCtl) => PageEditBoardSet(routerCtl,p) )
       | staticRoute( "movements", MovementSummaryView )
         ~> renderR( routerCtl => PageMovements(routerCtl,SummaryView,None) )
+      | staticRoute( "movements" / "new", MovementNewView )
+        ~> renderR( routerCtl => PageEditMovement(routerCtl,MovementNewView) )
       | dynamicRouteCT( ("results" / string("[a-zA-Z0-9]+")).caseClass[DuplicateResultView])
         ~> dynRenderR( (p,routerCtl) => PageDuplicateResult(routerCtl,p) )
       | dynamicRouteCT( ("results" / string("[a-zA-Z0-9]+") / "edit").caseClass[DuplicateResultEditView])
         ~> dynRenderR( (p,routerCtl) => PageDuplicateResultEdit(routerCtl,p) )
       | dynamicRouteCT( ("movements" / string("[a-zA-Z0-9]+")).caseClass[MovementView])
         ~> dynRenderR( (p,routerCtl) => PageMovements(routerCtl,SummaryView,Some(p.display)) )
+      | dynamicRouteCT( ("movements" / string("[a-zA-Z0-9]+") / "edit").caseClass[MovementEditView])
+        ~> dynRenderR( (p,routerCtl) => PageEditMovement(routerCtl,p) )
       | staticRoute( "finished", FinishedScoreboardsView0 )
         ~> renderR( routerCtl => PageFinishedScoreboards(routerCtl,FinishedScoreboardsView("")) )
       | dynamicRouteCT( ("finished" / string("[a-zA-Z0-9,]*")).caseClass[FinishedScoreboardsView])

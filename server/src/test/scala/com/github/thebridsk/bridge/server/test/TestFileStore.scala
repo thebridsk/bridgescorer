@@ -224,7 +224,7 @@ class TestFileStore extends AsyncFlatSpec with MustMatchers with BeforeAndAfterA
           newmd.boards.map(b=>b.id->b).toMap mustBe md.boards
           newmd.teams.map(b=>b.id->b).toMap mustBe md.teams
           newmd.boardset mustBe "ArmonkBoards"
-          newmd.movement mustBe "Armonk2Tables"
+          newmd.movement mustBe "2TablesArmonk"
 
         case Left((statusCode,restMessage)) =>
           fail("Failed to get MatchDuplicate with id "+md.id+": statuscode="+statusCode+", message="+restMessage )
@@ -254,7 +254,7 @@ class TestFileStore extends AsyncFlatSpec with MustMatchers with BeforeAndAfterA
           newmd.boards.map(b=>b.id->b).toMap mustBe md.boards
           newmd.teams.map(b=>b.id->b).toMap mustBe md.teams
           newmd.boardset mustBe "ArmonkBoards"
-          newmd.movement mustBe "Armonk2Tables"
+          newmd.movement mustBe "2TablesArmonk"
 
         case Left((statusCode,restMessage)) =>
           fail("Failed to get MatchDuplicate with id "+md.id+": statuscode="+statusCode+", message="+restMessage )

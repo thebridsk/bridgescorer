@@ -47,7 +47,7 @@ trait Cancellable[T] {
  * @param promise
  * @param pos
  */
-class AjaxResult[T]( val req: WrapperXMLHttpRequest, val url: String, val reqbody: InputData, future: Future[T], promise: Promise[WrapperXMLHttpRequest], val pos: Position ) extends Future[T] with Cancellable[T] {
+class AjaxResult[T]( val req: WrapperXMLHttpRequest, val url: String, val reqbody: InputData, future: Future[T], promise: Promise[WrapperXMLHttpRequest], val pos: Position ) extends Future[T] with Result[T] {
 
   import scala.language.implicitConversions
 

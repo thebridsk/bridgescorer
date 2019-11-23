@@ -104,8 +104,8 @@ class TestWinnerSets extends FlatSpec with MustMatchers {
     }
   }
 
-  it should "have one winner set in Armonk2Tables" in {
-    val dup = getDup("Armonk2Tables")
+  it should "have one winner set in 2TablesArmonk" in {
+    val dup = getDup("2TablesArmonk")
     val ws = MatchDuplicateScore(dup, PerspectiveDirector).getWinnerSets()
 
     ws.size mustBe 1

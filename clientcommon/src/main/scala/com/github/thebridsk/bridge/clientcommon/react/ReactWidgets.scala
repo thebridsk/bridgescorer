@@ -20,6 +20,10 @@ package reactwidgets {
   @js.native
   object Combobox extends Combobox
 
+  @JSImport("react-widgets/lib/DropdownList", JSImport.Namespace, "DropdownList")
+  @js.native
+  object DropdownList extends DropdownList
+
   @JSImport("react-widgets/lib/DateTimePicker", JSImport.Namespace, "DateTimePicker")
   @js.native
   object DateTimePicker extends DateTimePicker

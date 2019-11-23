@@ -1,9 +1,8 @@
 ---
-name: "Armonk2Tables"
+name: "2TablesArmonk"
 short: "Armonk 2 Tables"
-description: "Old Table Movement 2 tables, 18 hands, one winner, used by Armonk bridge group"
+description: "2 tables, 18 hands, one winner, used by Armonk bridge group"
 numberTeams: 4
-disabled: true
 hands:
 - table: 1
   round: 1
@@ -55,49 +54,51 @@ hands:
   - 18
 - table: 2
   round: 1
-  ns: 4
-  ew: 3
+  ns: 3
+  ew: 4
   boards:
   - 4
   - 5
   - 6
 - table: 2
   round: 2
-  ns: 3
-  ew: 4
+  ns: 4
+  ew: 3
   boards:
   - 1
   - 2
   - 3
 - table: 2
   round: 3
-  ns: 4
-  ew: 2
+  ns: 2
+  ew: 4
   boards:
   - 10
   - 11
   - 12
 - table: 2
   round: 4
-  ns: 2
-  ew: 4
+  ns: 4
+  ew: 2
   boards:
   - 7
   - 8
   - 9
 - table: 2
   round: 5
-  ns: 4
-  ew: 1
+  ns: 1
+  ew: 4
   boards:
   - 16
   - 17
   - 18
 - table: 2
   round: 6
-  ns: 1
-  ew: 4
+  ns: 4
+  ew: 1
   boards:
   - 13
   - 14
   - 15
+creationTime: 1573013142973
+updateTime: 1573013142973
