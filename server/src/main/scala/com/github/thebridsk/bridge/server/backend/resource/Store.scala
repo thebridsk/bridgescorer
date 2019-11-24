@@ -106,10 +106,10 @@ abstract class Store[VId, VType <: VersionedInstance[VType, VType, VId]](
     def read( id: VId, file: MetaDataFile ): Future[Result[InputStream]] = persistent.read(id,file)
 
     override
-    def delete( id: VId, file: MetaDataFile ): Future[Result[Unit]] = StoreIdMeta.notSupported
+    def delete( id: VId, file: MetaDataFile ): Future[Result[Unit]] = persistent.delete(id,file)
 
     override
-    def deleteAll( id: VId ): Future[Result[Unit]] = StoreIdMeta.notSupported
+    def deleteAll( id: VId ): Future[Result[Unit]] = persistent.deleteAll(id)
 
   }
 
@@ -545,16 +545,41 @@ abstract class Store[VId, VType <: VersionedInstance[VType, VType, VId]](
                   )
                   rold match {
                     case Right(oldv) =>
-                      persistent.deleteFromPersistent(id, Some(oldv)).map {
-                        ro =>
-                          ro match {
-                            case Right(o) =>
-                              notify(
-                                changeContext.delete(o, s"$resourceURI/$id")
-                              )
-                              Result(o)
-                            case x => x
+                      Future.foldLeft(
+                        List(
+                          persistent.deleteFromPersistent(id, Some(oldv)).map { ro =>
+                              ro match {
+                                case Right(o) =>
+                                  notify(
+                                    changeContext.delete(o, s"$resourceURI/$id")
+                                  )
+                                  Right(Some(o))
+                                case Left(x) => Left(x)
+                              }
+                          },
+                          persistent.deleteAll(id).map { ro =>
+                            ro match {
+                              case Right(o) => Right(None)
+                              case Left(x) => Left(x)
+                            }
                           }
+                        )
+                      )( Result[VType]( (StatusCodes.InternalServerError,RestMessage("")) )) { (ac,v) =>
+                        v match {
+                          case Right(Some(vv)) => Result(vv)
+                          case Right(None) =>
+                            ac match {
+                              case Left((istatus,_)) if istatus==StatusCodes.InternalServerError => Left((istatus,RestMessage("Partial success, metadata deleted")))
+                              case Right(av) => Result(av)
+                              case Left((astatus,amsg)) => Left((astatus,RestMessage(s"Partial success, metadata deleted, ${amsg.msg}")))
+                            }
+                          case Left((status,msg)) =>
+                            ac match {
+                              case Left((istatus,_)) if istatus==StatusCodes.InternalServerError => Left((status,msg))
+                              case Right(av) => Result((status, RestMessage(s"Partial success, match deleted, failure: ${msg.msg}")))
+                              case Left((astatus,amsg)) => Result((status, RestMessage(s"${amsg.msg} and ${msg.msg}")))
+                            }
+                        }
                       }
                     case Left(e) =>
                       Result.future(e)

@@ -600,14 +600,32 @@ class RestNestedPicture( store: Store[Id.MatchDuplicate,MatchDuplicate], parent:
       val fut = store.metaData.listFiles(dupId).map { rimdf =>
         rimdf match {
           case Right(imdf) =>
-            val deletes = imdf.filter { mdf => isImageFilename(mdf,boardid) }.map { mdf =>
-              store.metaData.delete(dupId,mdf)
+            val deletes = imdf.filter { mdf =>
+              val isimage = isImageFilename(mdf,boardid)
+              log.fine(s"RestNestedPicture.delete(${mdf}): isimage=${isimage}")
+              isimage
+            }.map { mdf =>
+              store.metaData.delete(dupId,mdf).transform { tr =>
+                tr match {
+                  case Success(r) =>
+                    r match {
+                      case Right(value) =>
+                        log.fine(s"RestNestedPicture.delete(${mdf}): deleted")
+                      case Left(ex) =>
+                        log.warning(s"RestNestedPicture.delete(${mdf}): error deleting ${ex}")
+                    }
+                  case Failure(ex) =>
+                    log.warning(s"Error deleting image file ${mdf} for board: ${ex}",ex)
+                }
+                tr
+              }
             }.toList
             onComplete(Future.foldLeft(deletes)(Result.unit) { (ac,v) => ac}) {
               case Success(value) =>
+                log.fine(s"RestNestedPicture.delete(${boardid}): deleted image")
                 complete(StatusCodes.NoContent)
               case Failure(ex) =>
-                log.warning(s"Error deleting image file for board",ex)
+                log.warning(s"Error deleting image file for board: ${ex}",ex)
                 complete(StatusCodes.InternalServerError, RestMessage("Internal server error"))
             }
           case Left((code,msg)) =>

@@ -25,7 +25,7 @@ object StoreIdMeta {
   val timestampFormat = "yyyy-MM-dd-HH-mm-ss"
 
   def notSupported =
-    Result.future(StatusCodes.BadRequest, RestMessage("Metadata is not support for store"))
+    Result.future(StatusCodes.BadRequest, RestMessage("Metadata is not supported for store"))
 
 }
 
