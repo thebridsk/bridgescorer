@@ -49,10 +49,12 @@ import javax.ws.rs.GET
 import com.github.thebridsk.bridge.data.MatchDuplicate
 import com.github.thebridsk.bridge.data.MatchRubber
 import com.github.thebridsk.bridge.server.backend.StoreMonitor.NewParticipantSSERubber
+import com.github.thebridsk.bridge.server.rest.Service
 
 @Path("")
 class RubberMonitorWebservice(
-    totallyMissingResourceHandler: RejectionHandler
+    totallyMissingResourceHandler: RejectionHandler,
+    service: Service
 )(
     implicit fm: Materializer,
     system: ActorSystem,
@@ -65,7 +67,8 @@ class RubberMonitorWebservice(
     system,
     bridgeService.rubbers,
     classOf[RubberStoreMonitor],
-    NewParticipantSSERubber.apply _
+    NewParticipantSSERubber.apply _,
+    service
   )
   import system.dispatcher
 //  system.scheduler.schedule(15.second, 15.second) {

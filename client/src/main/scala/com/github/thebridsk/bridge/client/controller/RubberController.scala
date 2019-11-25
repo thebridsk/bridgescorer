@@ -260,6 +260,8 @@ object RubberController {
         case Protocol.UpdateDuplicate(matchDuplicate) =>
         case Protocol.UpdateDuplicateHand(dupid, hand) =>
         case Protocol.UpdateDuplicateTeam(dupid,team) =>
+        case _: Protocol.UpdateDuplicatePicture =>
+        case _: Protocol.UpdateDuplicatePictures =>
         case Protocol.NoData(_) =>
         case Protocol.UpdateChicago(mc) =>
         case Protocol.UpdateChicagoRound(mc,r) =>

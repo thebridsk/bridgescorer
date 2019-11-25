@@ -57,11 +57,13 @@ import java.io.{ File => JFile }
 import scala.reflect.io.Directory
 import scala.reflect.io.File
 import io.swagger.v3.oas.annotations.media.Encoding
+import com.github.thebridsk.bridge.server.backend.resource.ChangeContext
+import com.github.thebridsk.bridge.data.websocket.Protocol.UpdateDuplicatePicture
 
 object RestNestedPicture {
   val log = Logger[RestNestedPicture]
 
-  val patternImageFile = """Image\.(.+?)(\.jpg)""".r
+  val patternImageFile = """Image\.(.+?)\.(jpg)""".r
 
   /**
    * @return a Tuple2, the first entry is the the name without extension, and the second is the extension.
@@ -153,33 +155,29 @@ class RestNestedPicture( store: Store[Id.MatchDuplicate,MatchDuplicate], parent:
     }
   }
 
-  @Hidden
-  def resourceUrl(id: String)( nestedroute: String => Route ): Route = {
-    extractScheme { scheme =>
-      headerValue(Service.extractHostPort) { host =>
-        val rn = if (resName.startsWith("/")) resName else "/" + resName
-        val hn =
-          if (host.endsWith("/")) host.substring(0, host.length - 1)
-          else host
-        val ret = s"${scheme}://${hn}${rn}/${id}/pictures"
-        utilslog.fine(s"resourceUrl is $ret")
-        nestedroute(ret)
-      } ~
-        extractRequest { request =>
-          val h = request.uri.authority.host.toString()
-          val p = request.uri.authority.port
-          val sp =
-            if (scheme == "https" && p == 443) h
-            else if (scheme == "http" && p == 80) h
-            else s"${h}:${p}"
-          val rn =
-            if (resName.startsWith("/")) resName else "/" + resName
-          val ret = s"${scheme}://${sp}${rn}/${id}/pictures"
-          utilslog.fine(s"resourceUrl is $ret")
-          nestedroute(ret)
-        }
-    }
+  def getUrlPrefix( dupId: String ) = {
+    val rn = if (resName.startsWith("/")) resName else "/" + resName
+    s"/v1/rest${rn}/${dupId}/pictures"
+  }
 
+  def getAllPictures( dupId: String ) = {
+    val prefix = getUrlPrefix(dupId)
+    store.metaData.listFilesFilter(dupId) { f => getPartsMetadataFile(f).isDefined }.map { ri =>
+      ri match {
+        case Right(it) =>
+          val r = it.flatMap { mdf =>
+            mdf match {
+              case patternImageFile(id,ext) =>
+                DuplicatePicture(id, s"${prefix}/${id}")::Nil
+              case _ =>
+                Nil
+            }
+          }
+          Right(r)
+        case Left(err) =>
+          Left(err)
+      }
+    }
   }
 
   @GET
@@ -225,34 +223,17 @@ class RestNestedPicture( store: Store[Id.MatchDuplicate,MatchDuplicate], parent:
       implicit @Parameter(hidden = true) dupId: Id.MatchDuplicate
   ) = pathEndOrSingleSlash {
     get {
-      resourceUrl(dupId) { urlprefix =>
-        val f = store.metaData.listFilesFilter(dupId) { f => getPartsMetadataFile(f).isDefined }.map { ri =>
-          ri match {
-            case Right(it) =>
-              val r = it.flatMap { mdf =>
-                mdf match {
-                  case patternImageFile(id,ext) =>
-                    DuplicatePicture(id, s"${urlprefix}/${id}")::Nil
-                  case _ =>
-                    Nil
-                }
-              }
-              Right(r)
-            case Left(err) =>
-              Left(err)
+      val f = getAllPictures(dupId)
+      onComplete(f) {
+        case Success(r) =>
+          r match {
+            case Right(l) =>
+              val rl = l.toList
+              complete(StatusCodes.OK, rl)
+            case Left(r) => complete(r._1, r._2)
           }
-        }
-        onComplete(f) {
-          case Success(r) =>
-            r match {
-              case Right(l) =>
-                val rl = l.toList
-                complete(StatusCodes.OK, rl)
-              case Left(r) => complete(r._1, r._2)
-            }
-          case Failure(ex) =>
-            complete((StatusCodes.InternalServerError, s"An error occurred: ${ex.getMessage}"))
-        }
+        case Failure(ex) =>
+          complete((StatusCodes.InternalServerError, s"An error occurred: ${ex.getMessage}"))
       }
     }
   }
@@ -318,74 +299,74 @@ class RestNestedPicture( store: Store[Id.MatchDuplicate,MatchDuplicate], parent:
   ) = logRequest("getPicture", DebugLevel) {
     get {
       path("""[a-zA-Z0-9]+""".r) { bid =>
-        resourceUrl(dupId) { urlprefix =>
-          val fprefix = bid+"."
-          val fut = store.metaData.listFilesFilter(dupId) { f =>
-            isImageFilename(f) && getPartsMetadataFile(f).map { e => e._1==bid }.getOrElse(false)
-          }.map { ri =>
-            ri match {
-              case Right(it) =>
-                val filelist = it.toList
-                Right(filelist)
-              case Left(err) =>
-                Left(err)
-            }
+        val urlprefix = getUrlPrefix(dupId)
+        val fprefix = bid+"."
+        val fut = store.metaData.listFilesFilter(dupId) { f =>
+          isImageFilename(f) && getPartsMetadataFile(f).map { e => e._1==bid }.getOrElse(false)
+        }.map { ri =>
+          ri match {
+            case Right(it) =>
+              val filelist = it.toList
+              Right(filelist)
+            case Left(err) =>
+              Left(err)
           }
-          onComplete(fut) {
-            case Success(r) =>
-              r match {
-                case Right(l) =>
-                  l.headOption.map { mdf =>
-                    val (mdfid, mdfext) = getPartsMetadataFile(mdf).get
-                    acceptHeader { optionalAccept =>
-                      optionalAccept.flatMap { acc =>
-                        acc.mediaRanges.find( mr => mr.isImage )
-                      }.map { mr =>
-                        // image was requested
-                        val fr =
-                        store.metaData.read(dupId,mdf).map { ris =>
-                          ris match {
-                            case Right(is) =>
-                              val itbs = iterator(is,0)
-                              val byteSource: Source[ByteString,Any] = Source.fromIterator( ()=>itbs )
-                              val mediatype = MediaTypes.forExtension(mdfext).asInstanceOf[MediaType.Binary]
-                              val contenttype = ContentType(mediatype)
-                              val entity: HttpEntity.Chunked = HttpEntity(contenttype, byteSource)
-                              complete(
-                                HttpResponse(
-                                  entity = entity
-                                )
+        }
+        onComplete(fut) {
+          case Success(r) =>
+            r match {
+              case Right(l) =>
+                l.headOption.map { mdf =>
+                  val (mdfid, mdfext) = getPartsMetadataFile(mdf).get
+                  acceptHeader { optionalAccept =>
+                    optionalAccept.flatMap { acc =>
+                      acc.mediaRanges.find( mr => mr.isImage )
+                    }.map { mr =>
+                      // image was requested
+                      val fr =
+                      store.metaData.read(dupId,mdf).map { ris =>
+                        ris match {
+                          case Right(is) =>
+                            val itbs = iterator(is,0)
+                            val byteSource: Source[ByteString,Any] = Source.fromIterator( ()=>itbs )
+                            val mediatype = MediaTypes.forExtension(mdfext).asInstanceOf[MediaType.Binary]
+                            log.fine(s"For file with extension of ${mdfext} Responding with content-type: ${mediatype.value} ${mediatype.fileExtensions}")
+                            val contenttype = ContentType(mediatype)
+                            val entity: HttpEntity.Chunked = HttpEntity(contenttype, byteSource)
+                            complete(
+                              HttpResponse(
+                                entity = entity
                               )
-                            case Left((code,msg)) =>
-                              complete(code,msg)
-                          }
+                            )
+                          case Left((code,msg)) =>
+                            complete(code,msg)
                         }
-                        onComplete(fr) {
-                          case Success(r) => r
-                          case Failure(ex) =>
-                            log.warning(s"Error getting image file for board",ex)
-                            complete(StatusCodes.InternalServerError, RestMessage("Internal server error"))
-                        }
-                      }.getOrElse {
-                        val mdf = l.head
-                        val r =
-                        mdf match {
-                          case patternImageFile(id,ext) =>
-                            complete(StatusCodes.OK, DuplicatePicture(id, s"${urlprefix}/${id}"))
-                          case _ =>
-                            complete(StatusCodes.NotFound)
-                        }
-                        r
                       }
+                      onComplete(fr) {
+                        case Success(r) => r
+                        case Failure(ex) =>
+                          log.warning(s"Error getting image file for board",ex)
+                          complete(StatusCodes.InternalServerError, RestMessage("Internal server error"))
+                      }
+                    }.getOrElse {
+                      val mdf = l.head
+                      val r =
+                      mdf match {
+                        case patternImageFile(id,ext) =>
+                          complete(StatusCodes.OK, DuplicatePicture(id, s"${urlprefix}/${id}"))
+                        case _ =>
+                          complete(StatusCodes.NotFound)
+                      }
+                      r
                     }
-                  }.getOrElse {
-                    complete(StatusCodes.NotFound)
                   }
-                case Left(r) => complete(r._1, r._2)
-              }
-            case Failure(ex) =>
-              complete((StatusCodes.InternalServerError, s"An error occurred: ${ex.getMessage}"))
-          }
+                }.getOrElse {
+                  complete(StatusCodes.NotFound)
+                }
+              case Left(r) => complete(r._1, r._2)
+            }
+          case Failure(ex) =>
+            complete((StatusCodes.InternalServerError, s"An error occurred: ${ex.getMessage}"))
         }
       }
     }
@@ -532,19 +513,30 @@ class RestNestedPicture( store: Store[Id.MatchDuplicate,MatchDuplicate], parent:
                       }
                       onComplete(deletes) {
                         case Success(runit) =>
+                          val urlprefix = getUrlPrefix(dupId)
+                          val changeContext = ChangeContext()
+                          changeContext.update(
+                            UpdateDuplicatePicture(
+                              dupid = dupId,
+                              boardid = bid,
+                              picture = Some(DuplicatePicture(bid, s"${urlprefix}/${bid}") )
+                            )
+                          )
                           val write = store.metaData.write(dupId,new File(file),mdf).map { rw =>
                             rw match {
                               case Right(unit) =>
+                                store.notify(changeContext)
                                 complete(StatusCodes.NoContent)
                               case Left((code,msg)) =>
                                 complete(code,msg)
                             }
                           }
                           onComplete(write) {
-                            case Success(r) => r
+                            case Success(r) =>
+                              r
                             case Failure(ex) =>
-                            log.warning(s"Error writing image file for board",ex)
-                            complete(StatusCodes.InternalServerError, RestMessage("Internal server error"))
+                              log.warning(s"Error writing image file for board",ex)
+                              complete(StatusCodes.InternalServerError, RestMessage("Internal server error"))
                           }
                         case Failure(ex) =>
                           log.warning(s"Error deleting old image file for board",ex)

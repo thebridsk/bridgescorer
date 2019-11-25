@@ -37,6 +37,7 @@ import org.scalajs.dom.raw.File
 import com.github.thebridsk.bridge.clientcommon.rest2.RestClientDuplicate
 import scala.concurrent.ExecutionContext.Implicits.global
 import com.github.thebridsk.bridge.clientcommon.react.Utils._
+import com.github.thebridsk.bridge.data.DuplicatePicture
 
 /**
  * Shows the team x board table and has a totals column that shows the number of points the team has.
@@ -72,7 +73,11 @@ object PageDuplicateHandInternal {
    * will cause State to leak.
    *
    */
-  case class State( vals: Option[(MatchDuplicate,Board,DuplicateHand,Hand)], newhand: Boolean, errormsg: Option[String] )
+  case class State(
+    vals: Option[(MatchDuplicate,Board,DuplicateHand,Hand)],
+    newhand: Boolean,
+    errormsg: Option[String] = None
+  )
 
   object State {
     def create( props: Props ) = {
@@ -183,7 +188,9 @@ object PageDuplicateHandInternal {
                         Some(hand.ewTeam),
                         newhand=newhand,
                         allowPassedOut=board.timesPlayed()>0,
-                        helppage= None) // Some("../help/duplicate/enterhand.html"))
+                        helppage= None,   // Some("../help/duplicate/enterhand.html"))
+                        picture=DuplicateStore.getPicture(md.id,hand.board).map(_.url)
+                )
               case _ =>
                 HomePage.loading
             }
@@ -246,9 +253,10 @@ object PageDuplicateHandInternal {
       DuplicateStore.addChangeListener(storeCallback)
 
       Controller.monitor(p.page.dupid)
+
     }}
 
-    val willUnmount = CallbackTo {
+    val willUnmount = Callback {
       logger.info("PageDuplicateHand.willUnmount")
       DuplicateStore.removeChangeListener(storeCallback)
       Controller.delayStop()

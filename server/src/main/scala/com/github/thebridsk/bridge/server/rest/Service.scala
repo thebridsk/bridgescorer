@@ -154,11 +154,11 @@ trait Service extends ImportExport {
     implicit override lazy val restService = hasActorSystem.restService
   }
   object duplicateMonitor
-      extends DuplicateMonitorWebservice(totallyMissingResourceHandler)
+      extends DuplicateMonitorWebservice(totallyMissingResourceHandler,this)
   object chicagoMonitor
-      extends ChicagoMonitorWebservice(totallyMissingResourceHandler)
+      extends ChicagoMonitorWebservice(totallyMissingResourceHandler,this)
   object rubberMonitor
-      extends RubberMonitorWebservice(totallyMissingResourceHandler)
+      extends RubberMonitorWebservice(totallyMissingResourceHandler,this)
 
   object restLoggerConfig extends RestLoggerConfig {
     implicit override lazy val actorSystem: ActorSystem =
