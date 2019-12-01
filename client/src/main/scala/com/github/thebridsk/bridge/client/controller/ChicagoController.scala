@@ -38,6 +38,8 @@ import scala.util.Failure
 import com.github.thebridsk.bridge.data.websocket.Protocol
 import com.github.thebridsk.bridge.clientcommon.demo.BridgeDemo
 import com.github.thebridsk.bridge.clientcommon.pages.LocalStorage
+import scala.scalajs.js
+import org.scalajs.dom.raw.StorageEvent
 
 object ChicagoController {
   val logger = Logger("bridge.ChicagoController")
@@ -106,6 +108,32 @@ object ChicagoController {
   }
 
   private val lastChicagoStorageKey = "thebridsk:bridge:lastChicago"
+
+  private val localStorageListender: js.Function1[StorageEvent, js.Any] = { se =>
+    Option(se.key) match {
+      case Some(key) if key == lastChicagoStorageKey =>
+        logger.fine("Updating MatchChicago from store")
+        Option(se.newValue).map { smc =>
+          val mc = readJson[MatchChicago](smc)
+          BridgeDispatcher.updateChicago(mc)
+        }.getOrElse {
+          Option(se.oldValue).map { smc =>
+            val mc = readJson[MatchChicago](smc)
+            BridgeDispatcher.deleteChicago(mc.id)
+          }
+        }
+      case Some(key) =>
+        // ignore other keys
+      case None =>
+        // this gets invoked when the storage is cleared using the clear() method.
+        ChicagoStore.getMonitoredId.foreach { id =>
+          BridgeDispatcher.deleteChicago(id)
+        }
+    }
+    0
+  }
+
+  LocalStorage.onstorage(localStorageListender)
 
   def updateServer( chi: MatchChicago ) = {
     if (!BridgeDemo.isDemo) {

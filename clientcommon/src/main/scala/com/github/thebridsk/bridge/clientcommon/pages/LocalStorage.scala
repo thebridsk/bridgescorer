@@ -32,4 +32,14 @@ object LocalStorage {
     value
   }
 
+  def onstorage( listener: js.Function1[StorageEvent, _] ): Unit = {
+    window.onstorage = listener
+  }
+
+  def removeOnstorage( listener: js.Function1[StorageEvent, _] ): Unit = {
+    if (window.onstorage == listener) window.asInstanceOf[js.Dictionary[_]] -= "onstorage"
+
+  }
+
+
 }
