@@ -13,6 +13,7 @@ class AllSeleniumSuites extends Sequential(
   new Chicago5SimpleTest,
   new Chicago5FairTest,
   new ChicagoTestPages,
+  new ChicagoDemoTestPages,
   new Duplicate5TestPages,   // this must be first duplicate test, checks stats after playing hand
   new DuplicateTestPages,
   new DuplicateTestPages2,

@@ -74,6 +74,9 @@ object ChicagoController {
     if (BridgeDemo.isDemo) {
       currentId = currentId + 1
       val chi = MatchChicago(s"C$currentId",List("","","",""),Nil,0,false)
+      val data = writeJson(chi)
+      logger.fine(s"saving as lastChicago, id=${chi.id}: ${chi}")
+      LocalStorage.setItem(lastChicagoStorageKey,data)
       new CreateResultMatchChicago(null, Future(chi))
     } else {
       val chi = MatchChicago("",List("","","",""),Nil,0,false)
@@ -89,6 +92,10 @@ object ChicagoController {
   }
 
   def ensureMatch( chiid: String ) = {
+    monitor(chiid)
+  }
+
+  def ensureMatchOld( chiid: String ) = {
     if (!ChicagoStore.isMonitoredId(chiid)) {
       ChicagoStore.start(chiid,None)
       val result = RestClientChicago.get(chiid).recordFailure()
@@ -132,8 +139,6 @@ object ChicagoController {
     }
     0
   }
-
-  LocalStorage.onstorage(localStorageListender)
 
   def updateServer( chi: MatchChicago ) = {
     if (!BridgeDemo.isDemo) {
@@ -348,6 +353,25 @@ object ChicagoController {
           sseConnection.monitor(dupid, restart)
       }
     } else {
+
+      if (BridgeDemo.isDemo) {
+        LocalStorage.onstorage(localStorageListender)
+        val amc = ChicagoSummaryStore.getChicagoSummary() match {
+          case Some(value) =>
+            logger.fine(s"Already have latest in summary store")
+            value
+          case None =>
+            val array = getSummaryFromLocalStorage()
+            logger.fine(s"Updating chicago summary from lastChicago: ${array}")
+            BridgeDispatcher.updateChicagoSummary(None, array)
+            array.headOption.map( chi => BridgeDispatcher.updateChicago(chi) )
+            array
+        }
+        val mc = ChicagoStore.getChicago.filter( _.id==dupid ).orElse {
+          amc.find( _.id == dupid)
+        }
+        ChicagoStore.start(dupid,mc)
+      }
 
     }
 

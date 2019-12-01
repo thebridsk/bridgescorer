@@ -16,6 +16,7 @@ import com.github.thebridsk.bridge.server.test.pages.chicago.ListPage
 import com.github.thebridsk.bridge.server.test.pages.LightDarkAddOn
 import com.github.thebridsk.browserpages.Element
 import com.github.thebridsk.bridge.server.test.pages.duplicate.ScoreboardPage
+import com.github.thebridsk.bridge.server.test.pages.chicago.EnterNamesPage
 
 object HomePage {
 
@@ -27,6 +28,11 @@ object HomePage {
 
   def goto(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
     go to urlFor
+    new HomePage
+  }
+
+  def demo(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
+    go to TestServer.getAppDemoPage()
     new HomePage
   }
 
@@ -75,6 +81,11 @@ class HomePage( implicit webDrivr: WebDriver, pageCreated: SourcePosition ) exte
     } else {
       this
     }
+  }
+
+  def clickNewChicagoButton(implicit patienceConfig: PatienceConfig, pos: Position) = {
+    clickButton("Chicago2")
+    EnterNamesPage.currentWithId
   }
 
   def clickListChicagoButton(implicit patienceConfig: PatienceConfig, pos: Position) = {

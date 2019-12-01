@@ -26,6 +26,11 @@ object EnterNamesPage {
     new EnterNamesPage(chiid,roundid)
   }
 
+  def currentWithId(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = eventually {
+    val (chiid,roundid) = findMatchRoundId
+    new EnterNamesPage(chiid,roundid)
+  }
+
   /**
    * @param chiid the chicago id
    * @param roundid the round ID, zero based.

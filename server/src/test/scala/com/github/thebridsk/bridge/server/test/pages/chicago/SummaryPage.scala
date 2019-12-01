@@ -35,9 +35,19 @@ object SummaryPage {
     new SummaryPage( id, round )
   }
 
+  def demo( id: String, round: Option[Int] = None )(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
+    go to getDemoUrl(id, round)
+    new SummaryPage( id, round )
+  }
+
   def getUrl( id: String, round: Option[Int] = None ) = {
     val r = round.map( rid=> s"/rounds/${rid}" ).getOrElse("")
     TestServer.getAppPageUrl(s"chicago/${id}${r}")
+  }
+
+  def getDemoUrl( id: String, round: Option[Int] = None ) = {
+    val r = round.map( rid=> s"/rounds/${rid}" ).getOrElse("")
+    TestServer.getAppDemoPageUrl(s"chicago/${id}${r}")
   }
 
   val buttonQuit = "Quit"
