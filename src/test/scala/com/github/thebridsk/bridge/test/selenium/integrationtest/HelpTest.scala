@@ -161,11 +161,13 @@ class HelpTest extends FlatSpec with MustMatchers with BeforeAndAfterAll {
 
     val summary = duplicate.clickMenu("duplicate/summary.html").validate
 
-    val imageurl = TestServer.getHelpPage("images/gen/Duplicate/ListDuplicate.png")
+    val imageloc = "images/gen/Duplicate/ListDuplicate.png"
+    val aimageurl = TestServer.getHelpPage(imageloc)
+    val imgurl = s"../$imageloc"
 
-    HelpPage.checkImage( imageurl )
+    HelpPage.checkImage( aimageurl )
 
-    summary.findElemByXPath("//img").attribute("src") mustBe Some(imageurl)
+    summary.findElemByXPath("//img").attribute("src") mustBe Some(imgurl)
 
   }
 
