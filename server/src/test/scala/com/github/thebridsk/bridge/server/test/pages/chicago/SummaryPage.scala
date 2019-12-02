@@ -77,10 +77,17 @@ object SummaryPage {
    */
   def findChicagoIds(implicit webDriver: WebDriver, pos: Position): (String, Option[Int]) = {
     val prefix = TestServer.getAppPageUrl("chicago/")
+    val prefix2 = TestServer.getAppDemoPageUrl("chicago/")
     val cur = currentUrl
     withClueEx(s"Unable to determine chicago id in SummaryPage: ${cur}") {
-      cur must startWith (prefix)
-      cur.drop( prefix.length() ) match {
+      val rest = if (cur.startsWith(prefix)) {
+        cur.drop(prefix.length())
+      } else if (cur.startsWith(prefix2)) {
+        cur.drop(prefix2.length())
+      } else {
+        fail(s"URL does not start with $prefix2 or $prefix: $cur")
+      }
+      rest match {
         case patternComplete(cid,rid) => (cid, Option(rid).map(r=>r.toInt))
         case _ => fail(s"URL did not match pattern ${patternComplete}")
       }

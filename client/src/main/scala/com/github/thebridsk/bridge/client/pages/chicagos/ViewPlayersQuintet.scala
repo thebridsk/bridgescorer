@@ -380,7 +380,7 @@ object ViewPlayersQuintetInternal {
             baseStyles.divFooter,
             <.div(
               baseStyles.divFooterLeft,
-              AppButton("OK","OK", ^.disabled:= !valid, BaseStyles.highlight(requiredNotNext=valid), ^.onClick --> ok )
+              AppButton("OK","OK", ^.disabled:= !valid, BaseStyles.highlight(required=valid), ^.onClick --> ok )
             ),
             !state.isSimple() ?=
               <.div(

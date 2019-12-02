@@ -43,6 +43,14 @@ object EnterNamesPage {
    * @param chiid the chicago id
    * @param roundid the round ID, zero based.
    */
+  def demoUrlFor( chiid: String, roundid: Int ) = {
+    TestServer.getAppDemoPageUrl( s"chicago/${chiid}/rounds/${roundid}/names" )
+  }
+
+  /**
+   * @param chiid the chicago id
+   * @param roundid the round ID, zero based.
+   */
   def goto( chiid: String, roundid: Int )( implicit
               webDriver: WebDriver,
               patienceConfig: PatienceConfig,
@@ -64,10 +72,17 @@ object EnterNamesPage {
    */
   def findMatchRoundId(implicit webDriver: WebDriver, pos: Position): (String,Int) = {
     val prefix = TestServer.getAppPageUrl("chicago/")
+    val prefix2 = TestServer.getAppDemoPageUrl("chicago/")
     val cur = currentUrl
     withClue(s"Unable to determine chicago id in EnterNamesPage: ${cur}") {
-      cur must startWith (prefix)
-      cur.drop( prefix.length() ) match {
+      val rest = if (cur.startsWith(prefix)) {
+        cur.drop(prefix.length())
+      } else if (cur.startsWith(prefix2)) {
+        cur.drop(prefix2.length())
+      } else {
+        fail(s"URL did not start with $prefix2 or $prefix: $cur")
+      }
+      rest match {
         case patternUrl(chiid,rid) => (chiid,rid.toInt)
         case _ => fail(s"URL did not match pattern ${patternUrl}")
       }
@@ -101,7 +116,7 @@ class EnterNamesPage( val chiid: String,
 
     roundid.toString() mustBe "0"      // only valid for the first round
 
-    currentUrl mustBe urlFor(chiid,roundid)
+    Some(currentUrl) must contain oneOf( urlFor(chiid,roundid), demoUrlFor(chiid,roundid) )
 
     val dealerbuttons = (North::South::East::West::Nil).map(p=>toDealerButtonId(p))
 

@@ -211,7 +211,7 @@ object ViewPlayersFourthRound {
           "Dealer",
           baseStyles.nameButton,
           ^.onClick --> setFirstDealer(position),
-          BaseStyles.highlight(selected = state.isDealer(position)),
+          BaseStyles.highlight(selected = state.isDealer(position), required=state.dealer.isEmpty),
           ^.tabIndex := tabindex
         )
 
@@ -310,7 +310,7 @@ object ViewPlayersFourthRound {
                   "Ok",
                   "OK",
                   ^.disabled := !valid,
-                  BaseStyles.highlight(requiredNotNext = valid),
+                  BaseStyles.highlight(required = valid),
                   baseStyles.appButton,
                   ^.onClick --> ok
                 )
