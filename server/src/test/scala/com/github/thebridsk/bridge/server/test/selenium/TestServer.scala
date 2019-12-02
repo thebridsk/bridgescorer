@@ -171,14 +171,14 @@ object TestServer {
 
   def isServerStartedByTest = startingServer
 
-  def getAppPage() = if (useProductionPage) getAppDemoPageProd else  getAppDemoPageDev
-  def getAppPageUrl( uri: String ) = if (useProductionPage) getAppDemoPageProdUrl(uri) else getAppDemoPageDevUrl(uri)
+  def getAppPage() = if (useProductionPage) getAppPageProd else  getAppPageDev
+  def getAppPageUrl( uri: String ) = if (useProductionPage) getAppPageProdUrl(uri) else getAppPageDevUrl(uri)
 
-  def getAppPageProd() = pagedemoprod
-  def getAppPageProdUrl( uri: String ) = if (uri.length()==0) pagedemoprod else pagedemoprod+"#"+uri
+  def getAppPageProd() = pageprod
+  def getAppPageProdUrl( uri: String ) = if (uri.length()==0) pageprod else pageprod+"#"+uri
 
-  def getAppPageDev() = pagedemodev
-  def getAppPageDevUrl( uri: String ) = if (uri.length()==0) pagedemodev else pagedemodev+"#"+uri
+  def getAppPageDev() = pagedev
+  def getAppPageDevUrl( uri: String ) = if (uri.length()==0) pagedev else pagedev+"#"+uri
 
   def getAppDemoPage() = if (useProductionPage) getAppDemoPageProd else  getAppDemoPageDev
   def getAppDemoPageUrl( uri: String ) = if (useProductionPage) getAppDemoPageProdUrl(uri) else getAppDemoPageDevUrl(uri)
