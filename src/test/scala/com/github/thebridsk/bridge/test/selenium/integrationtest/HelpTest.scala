@@ -167,7 +167,10 @@ class HelpTest extends FlatSpec with MustMatchers with BeforeAndAfterAll {
 
     HelpPage.checkImage( aimageurl )
 
-    summary.findElemByXPath("//img").attribute("src") mustBe Some(imgurl)
+    eventually {
+      val src = summary.findElemByXPath("//img").attribute("src")
+      src must (equal( Some(aimageurl) ) or equal( Some(imgurl) ) )
+    }
 
   }
 
