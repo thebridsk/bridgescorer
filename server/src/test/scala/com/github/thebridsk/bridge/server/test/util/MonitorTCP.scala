@@ -66,7 +66,7 @@ object MonitorTCP extends Logging {
   }
 
   if (disableMonitorTCP) {
-    log.warning( s"""disableTCPSleep=${disableTCPSleep} disableMonitorTCP=${disableMonitorTCP}""")
+    log.fine( s"""disableTCPSleep=${disableTCPSleep} disableMonitorTCP=${disableMonitorTCP}""")
   }
 
   def getNumberTimeWaitConnections() = {

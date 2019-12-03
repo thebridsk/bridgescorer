@@ -190,9 +190,13 @@ trait PageBrowser {
       case _ => throw new UnsupportedOperationException("Web driver " + webDriver.getClass.getName + " does not support javascript execution.")
     }
 
-  def saveDom( tofile: String )(implicit webDriver: WebDriver): Unit = {
+  def saveDom( tofile: String, stdout: Boolean = false )(implicit webDriver: WebDriver): Unit = {
     try {
-      reflect.io.File(tofile)(Codec.UTF8).writeAll( executeScript("return document.documentElement.outerHTML")(webDriver).toString() )
+      val dom = executeScript("return document.documentElement.outerHTML")(webDriver).toString()
+      reflect.io.File(tofile)(Codec.UTF8).writeAll( dom )
+      if (stdout) {
+        println( s"Dom to file: ${tofile}:\n${dom}\n******** end of Dom ********")
+      }
     } catch {
       case e: Exception =>
         PageBrowser.log.warning("Exception trying to execute a script in browser", e)
@@ -366,7 +370,7 @@ trait PageBrowser {
    * @param directory The directory where the screenshot is written to
    * @param filename The name of the file where the screenshot is written to.  It it doesn't end in ".png", then ".png" will be appended.
    */
-  def takeScreenshotOnError[T]( directory: String, filename: String, savedom: Boolean = false )(fun: => T)( implicit webDriver: WebDriver, pos: Position ): T = {
+  def takeScreenshotOnError[T]( directory: String, filename: String, savedom: Boolean = false, domToStdout: Boolean = false )(fun: => T)( implicit webDriver: WebDriver, pos: Position ): T = {
     try {
       fun
     } catch {
@@ -375,7 +379,7 @@ trait PageBrowser {
         if (savedom) {
           val f = if (filename.endsWith(".dom.html")) filename else filename+".dom.html"
           val destFile = PageBrowser.getPath(directory,f)
-          saveDom(destFile.toString())
+          saveDom(destFile.toString(), domToStdout)
         }
         PageBrowser.log.severe("Error with screenshot: ", x)
         throw x
@@ -424,8 +428,8 @@ trait PageBrowser {
    * @param fun the function to execute
    * @throws NullArgumentException if the passed <code>clue</code> is <code>null</code>
   */
-  def withClueAndScreenShot[T]( directory: String, filenamePrefix: String, clue: Any, savedom: Boolean = false)(fun: => T)(implicit webDriver: WebDriver, pos: Position): T = {
-    takeScreenshotOnError(directory, s"${filenamePrefix}_${pos.lineForFilename}", savedom) {
+  def withClueAndScreenShot[T]( directory: String, filenamePrefix: String, clue: Any, savedom: Boolean = false, domToStdout: Boolean = false)(fun: => T)(implicit webDriver: WebDriver, pos: Position): T = {
+    takeScreenshotOnError(directory, s"${filenamePrefix}_${pos.lineForFilename}", savedom, domToStdout) {
       import org.scalatest.Assertions._
       withClue(clue)(fun)
     }
