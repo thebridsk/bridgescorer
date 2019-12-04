@@ -226,7 +226,8 @@ object BldDependencies {
 //      "source-map-loader" -> vSourceMapLoader,
 //      "concat-with-sourcemaps" -> vConcatWithSourcemaps,
       "terser" -> vTerser,
-      "ajv" -> vAjv
+      "ajv" -> vAjv,
+      "graphql-language-service-utils" -> "2.3.0"   // 2.3.2 is broken, it includes unit tests
   )
 
   def bridgeScorerNpmAssets(client: ProjectReference) = {
