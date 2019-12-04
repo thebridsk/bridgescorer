@@ -227,7 +227,8 @@ object BldDependencies {
 //      "concat-with-sourcemaps" -> vConcatWithSourcemaps,
       "terser" -> vTerser,
       "ajv" -> vAjv,
-      "graphql-language-service-utils" -> "2.3.0"   // 2.3.2 is broken, it includes unit tests
+      "graphql-language-service-utils" -> "2.3.0",   // 2.3.2 is broken, it includes unit tests
+      "graphql-language-service-interface" -> "2.3.0"
   )
 
   def bridgeScorerNpmAssets(client: ProjectReference) = {
