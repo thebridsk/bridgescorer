@@ -228,7 +228,8 @@ object BldDependencies {
       "terser" -> vTerser,
       "ajv" -> vAjv,
       "graphql-language-service-utils" -> "2.3.0",   // 2.3.2 is broken, it includes unit tests
-      "graphql-language-service-interface" -> "2.3.0"
+      "graphql-language-service-interface" -> "2.3.0",
+      "codemirror-graphql" -> "0.11.2"
   )
 
   def bridgeScorerNpmAssets(client: ProjectReference) = {
