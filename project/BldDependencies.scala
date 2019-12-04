@@ -191,7 +191,7 @@ object BldDependencies {
       "swagger-ui-dist" -> vSwaggerUI,
       "graphql-voyager" -> vGraphQLVoyager,
       "graphql" -> vGraphQL,
-      "graphiql" -> vGraphiQL,
+      // "graphiql" -> vGraphiQL,
       "@material-ui/core" -> vMaterialUIcore,
       "@material-ui/icons" -> vMaterialUIicons,
       "prop-types" -> vPropTypes
@@ -227,9 +227,6 @@ object BldDependencies {
 //      "concat-with-sourcemaps" -> vConcatWithSourcemaps,
       "terser" -> vTerser,
       "ajv" -> vAjv,
-      "graphql-language-service-utils" -> "2.3.0",   // 2.3.2 is broken, it includes unit tests
-      "graphql-language-service-interface" -> "2.3.0",
-      "codemirror-graphql" -> "0.11.2"
   )
 
   def bridgeScorerNpmAssets(client: ProjectReference) = {
