@@ -191,7 +191,7 @@ object BldDependencies {
       "swagger-ui-dist" -> vSwaggerUI,
       "graphql-voyager" -> vGraphQLVoyager,
       "graphql" -> vGraphQL,
-      // "graphiql" -> vGraphiQL,
+      "graphiql" -> vGraphiQL,
       "@material-ui/core" -> vMaterialUIcore,
       "@material-ui/icons" -> vMaterialUIicons,
       "prop-types" -> vPropTypes

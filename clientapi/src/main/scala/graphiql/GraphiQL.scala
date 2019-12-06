@@ -69,25 +69,25 @@ object GraphiQL {
 //  @js.native
 //  object ReactWidgetsGraphiQL extends js.Object
 
-  // val component = JsComponent[GraphiQLComponentProperty, Children.None, Null](GraphiQL)
+  val component = JsComponent[GraphiQLComponentProperty, Children.None, Null](GraphiQL)
 
   def apply( graphqlUrl: String ) = {
 
-//     val x = GraphiQL
+    val x = GraphiQL
 
-// //    logger.info("GraphiQL: msgEmptyList="+msgEmptyList+", msgEmptyFilter="+msgEmptyFilter)
+//    logger.info("GraphiQL: msgEmptyList="+msgEmptyList+", msgEmptyFilter="+msgEmptyFilter)
 
-//     val props = GraphiQLComponentProperty(graphqlUrl)
+    val props = GraphiQLComponentProperty(graphqlUrl)
 
-//     component(props)
+    component(props)
 
-    import japgolly.scalajs.react.vdom.html_<^._
-    <.div("Temporarily removed")
+    // import japgolly.scalajs.react.vdom.html_<^._
+    // <.div("Temporarily removed")
 
   }
 
-  // @JSImport("graphiql", JSImport.Namespace ) // "GraphiQL")
-  // @js.native
-  // object GraphiQL extends GraphiQL // GraphiQL
+  @JSImport("graphiql", JSImport.Namespace ) // "GraphiQL")
+  @js.native
+  object GraphiQL extends GraphiQL // GraphiQL
 
 }
