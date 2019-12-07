@@ -522,16 +522,18 @@ class ChicagoTest extends FlatSpec
     eventually( find(xpath("//h6[3]/span")).text mustBe "Enter players and identify first dealer" )
   }
 
+  def findNorthInputList = findElements(By.xpath("""//input[@name='North']/parent::div/following-sibling::div/div/div/ul/li"""))
+
   it should "give player suggestions when entering names" in {
-
-    eventually( find(id("ResetNames")) mustBe 'Enabled )
-    find(id("Ok")) must not be 'Enabled
-
-    textField("North").value = "n"
-    tcpSleep(2)
     withClueAndScreenShot(screenshotDir,"SuggestName","") {
+      eventually( find(id("ResetNames")) mustBe 'Enabled )
+      find(id("Ok")) must not be 'Enabled
+
+      textField("North").value = "n"
+      tcpSleep(2)
+
       val first = eventually {
-        val listitems = findElements(By.xpath("""//input[@name='North']/parent::div/following-sibling::div/div/div/ul/li"""))
+        val listitems = findNorthInputList
         assert( !listitems.isEmpty(), "list of candidate entries must not be empty" )
         listitems.foreach ( li =>
           li.getText() must startWith regex( "(?i)n" )
@@ -540,35 +542,36 @@ class ChicagoTest extends FlatSpec
       }
       val text = first.getText
       PageBrowser.scrollToElement(first)
-      first.click()
+      findNorthInputList.headOption.map ( first => first.click() ).getOrElse( fail("Did not find North input field list") )
       eventually (textField("North").value mustBe text)
+
+      textField("South").value = "s"
+      tcpSleep(2)
+      eventually {
+        val listitems = findElements(By.xpath("""//input[@name='South']/parent::div/following-sibling::div/div/div/ul/li"""))
+        assert( !listitems.isEmpty(), "list of candidate entries must not be empty" )
+        listitems.foreach ( li =>
+          li.getText() must startWith regex( "(?i)s" )
+        )
+      }
+
+      textField("East").value = "asfdfs"
+      eventually {
+        val listitems = findElements(By.xpath("""//input[@name='East']/parent::div/following-sibling::div/div/div/ul/li"""))
+        assert( !listitems.isEmpty(), "list of candidate entries must not be empty" )
+        listitems.foreach ( li =>
+          li.getText() must startWith ( "No names matched" )
+        )
+      }
+
+      esc
+
+      eventually (textField("North").value mustBe "Nancy")
+      textField("South").value mustBe "s"
+      textField("East").value mustBe "asfdfs"
+      textField("West").value mustBe ""
+
     }
-
-    textField("South").value = "s"
-    tcpSleep(2)
-    eventually {
-      val listitems = findElements(By.xpath("""//input[@name='South']/parent::div/following-sibling::div/div/div/ul/li"""))
-      assert( !listitems.isEmpty(), "list of candidate entries must not be empty" )
-      listitems.foreach ( li =>
-        li.getText() must startWith regex( "(?i)s" )
-      )
-    }
-
-    textField("East").value = "asfdfs"
-    eventually {
-      val listitems = findElements(By.xpath("""//input[@name='East']/parent::div/following-sibling::div/div/div/ul/li"""))
-      assert( !listitems.isEmpty(), "list of candidate entries must not be empty" )
-      listitems.foreach ( li =>
-        li.getText() must startWith ( "No names matched" )
-      )
-    }
-
-    esc
-
-    eventually (textField("North").value mustBe "Nancy")
-    textField("South").value mustBe "s"
-    textField("East").value mustBe "asfdfs"
-    textField("West").value mustBe ""
 
   }
 

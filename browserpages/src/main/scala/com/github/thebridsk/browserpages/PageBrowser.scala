@@ -112,7 +112,7 @@ class ClickOn(implicit createdpos: SourcePosition) {
   }
 
   def scrollToElement( e: WebElement )(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position): Unit = {
-    PageBrowser.executeScript( """arguments[0].scrollIntoView({behavior: "auto", block: "center", inline: "center"});""", e);
+    PageBrowser.executeScript( """arguments[0].scrollIntoView({behavior: "instant", block: "center", inline: "center"});""", e);
 //    Thread.sleep(200)
   }
 }
@@ -431,7 +431,7 @@ trait PageBrowser {
   def withClueAndScreenShot[T]( directory: String, filenamePrefix: String, clue: Any, savedom: Boolean = false, domToStdout: Boolean = false)(fun: => T)(implicit webDriver: WebDriver, pos: Position): T = {
     takeScreenshotOnError(directory, s"${filenamePrefix}_${pos.lineForFilename}", savedom, domToStdout) {
       import org.scalatest.Assertions._
-      withClue(clue)(fun)
+      withClue( s"${filenamePrefix}_${pos.lineForFilename}: ${clue}")(fun)
     }
   }
 
@@ -444,15 +444,15 @@ trait PageBrowser {
   }
 
   def scrollToElement( e: Element )(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position): Unit = {
-    PageBrowser.executeScript( """arguments[0].scrollIntoView({behavior: "auto", block: "center", inline: "center"});""", e.underlying);
+    PageBrowser.executeScript( """arguments[0].scrollIntoView({behavior: "instant", block: "center", inline: "center"});""", e.underlying);
   }
 
   def scrollToElement( e: WebElement )(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position): Unit = {
-    PageBrowser.executeScript( """arguments[0].scrollIntoView({behavior: "auto", block: "center", inline: "center"});""", e);
+    PageBrowser.executeScript( """arguments[0].scrollIntoView({behavior: "instant", block: "center", inline: "center"});""", e);
   }
 
   def scrollToElement( e: org.scalatestplus.selenium.WebBrowser.Element )(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position): Unit = {
-    PageBrowser.executeScript( """arguments[0].scrollIntoView({behavior: "auto", block: "center", inline: "center"});""", e.underlying)
+    PageBrowser.executeScript( """arguments[0].scrollIntoView({behavior: "instant", block: "center", inline: "center"});""", e.underlying)
   }
 
   def scrollToTop(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position): Unit = {
