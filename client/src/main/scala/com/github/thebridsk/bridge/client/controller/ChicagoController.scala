@@ -25,7 +25,7 @@ import play.api.libs.json.JsObject
 import play.api.libs.json.JsString
 import play.api.libs.json.JsDefined
 import play.api.libs.json.Json
-import com.github.thebridsk.bridge.data.rest.JsonSupport
+import com.github.thebridsk.bridge.data.rest.JsonSupport._
 import play.api.libs.json.JsSuccess
 import play.api.libs.json.JsError
 import play.api.libs.json.JsUndefined
@@ -37,6 +37,9 @@ import scala.util.Success
 import scala.util.Failure
 import com.github.thebridsk.bridge.data.websocket.Protocol
 import com.github.thebridsk.bridge.clientcommon.demo.BridgeDemo
+import com.github.thebridsk.bridge.clientcommon.pages.LocalStorage
+import scala.scalajs.js
+import org.scalajs.dom.raw.StorageEvent
 
 object ChicagoController {
   val logger = Logger("bridge.ChicagoController")
@@ -71,6 +74,9 @@ object ChicagoController {
     if (BridgeDemo.isDemo) {
       currentId = currentId + 1
       val chi = MatchChicago(s"C$currentId",List("","","",""),Nil,0,false)
+      val data = writeJson(chi)
+      logger.fine(s"saving as lastChicago, id=${chi.id}: ${chi}")
+      LocalStorage.setItem(lastChicagoStorageKey,data)
       new CreateResultMatchChicago(null, Future(chi))
     } else {
       val chi = MatchChicago("",List("","","",""),Nil,0,false)
@@ -86,6 +92,10 @@ object ChicagoController {
   }
 
   def ensureMatch( chiid: String ) = {
+    monitor(chiid)
+  }
+
+  def ensureMatchOld( chiid: String ) = {
     if (!ChicagoStore.isMonitoredId(chiid)) {
       ChicagoStore.start(chiid,None)
       val result = RestClientChicago.get(chiid).recordFailure()
@@ -104,6 +114,32 @@ object ChicagoController {
     BridgeDispatcher.updateChicago(chi, Some(updateServer))
   }
 
+  private val lastChicagoStorageKey = "thebridsk:bridge:lastChicago"
+
+  private val localStorageListender: js.Function1[StorageEvent, js.Any] = { se =>
+    Option(se.key) match {
+      case Some(key) if key == lastChicagoStorageKey =>
+        logger.fine("Updating MatchChicago from store")
+        Option(se.newValue).map { smc =>
+          val mc = readJson[MatchChicago](smc)
+          BridgeDispatcher.updateChicago(mc)
+        }.getOrElse {
+          Option(se.oldValue).map { smc =>
+            val mc = readJson[MatchChicago](smc)
+            BridgeDispatcher.deleteChicago(mc.id)
+          }
+        }
+      case Some(key) =>
+        // ignore other keys
+      case None =>
+        // this gets invoked when the storage is cleared using the clear() method.
+        ChicagoStore.getMonitoredId.foreach { id =>
+          BridgeDispatcher.deleteChicago(id)
+        }
+    }
+    0
+  }
+
   def updateServer( chi: MatchChicago ) = {
     if (!BridgeDemo.isDemo) {
       RestClientChicago.update(chi.id, chi).recordFailure().foreach( updated => {
@@ -113,6 +149,11 @@ object ChicagoController {
         // update will be lost.
   //      BridgeDispatcher.updateChicago(updated)
       })
+    } else {
+      // demo
+      val data = writeJson(chi)
+      logger.fine(s"saving as lastChicago, id=${chi.id}: ${chi}")
+      LocalStorage.setItem(lastChicagoStorageKey,data)
     }
   }
 
@@ -132,12 +173,17 @@ object ChicagoController {
     BridgeDispatcher.updateChicagoHand(chiid, roundid, handid, hand, Some( updateServer ))
   }
 
+  def getSummaryFromLocalStorage(): Array[MatchChicago] = {
+    LocalStorage.item(lastChicagoStorageKey).map{ s => readJson[MatchChicago](s)}.toArray
+  }
+
   def getSummary(error: ()=>Unit): Unit = {
     logger.finer("Sending duplicatesummaries list request to server")
     import scala.scalajs.js.timers._
     setTimeout(1) { // note the absence of () =>
       if (BridgeDemo.isDemo) {
-        val x = ChicagoSummaryStore.getChicagoSummary().getOrElse(Array())
+        val x = ChicagoSummaryStore.getChicagoSummary().getOrElse(getSummaryFromLocalStorage())
+        logger.fine(s"Updating chicago summary from lastChicago: ${x}")
         BridgeDispatcher.updateChicagoSummary(None, x)
       } else {
         RestClientChicago.list().recordFailure().onComplete { trylist =>
@@ -207,7 +253,6 @@ object ChicagoController {
               case Some(data) =>
                 data \ "import" \ "chicagos" match {
                   case JsDefined( jds ) =>
-                    import JsonSupport._
                     Json.fromJson[List[MatchChicago]](jds) match {
                       case JsSuccess(ds,path) =>
                         logger.finer(s"Import(${importId})/chicagos got ${ds.size} entries")
@@ -235,6 +280,13 @@ object ChicagoController {
   def deleteChicago( id: Id.MatchChicago) = {
     BridgeDispatcher.deleteChicago(id)
     if (!BridgeDemo.isDemo) RestClientChicago.delete(id).recordFailure()
+    else {
+      logger.fine(s"Deleting match chicago from local storage, id=${id}")
+      LocalStorage.item(lastChicagoStorageKey).map(s=>readJson[MatchChicago](s)).filter(mc=>mc.id == id).foreach { mc =>
+        logger.fine(s"Actually deleting match chicago from local storage, id=${id}")
+        LocalStorage.removeItem(lastChicagoStorageKey)
+      }
+    }
   }
 
 
@@ -303,6 +355,25 @@ object ChicagoController {
           sseConnection.monitor(dupid, restart)
       }
     } else {
+
+      if (BridgeDemo.isDemo) {
+        LocalStorage.onstorage(localStorageListender)
+        val amc = ChicagoSummaryStore.getChicagoSummary() match {
+          case Some(value) =>
+            logger.fine(s"Already have latest in summary store")
+            value
+          case None =>
+            val array = getSummaryFromLocalStorage()
+            logger.fine(s"Updating chicago summary from lastChicago: ${array}")
+            BridgeDispatcher.updateChicagoSummary(None, array)
+            array.headOption.map( chi => BridgeDispatcher.updateChicago(chi) )
+            array
+        }
+        val mc = ChicagoStore.getChicago.filter( _.id==dupid ).orElse {
+          amc.find( _.id == dupid)
+        }
+        ChicagoStore.start(dupid,mc)
+      }
 
     }
 

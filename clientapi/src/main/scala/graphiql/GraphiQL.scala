@@ -80,6 +80,10 @@ object GraphiQL {
     val props = GraphiQLComponentProperty(graphqlUrl)
 
     component(props)
+
+    // import japgolly.scalajs.react.vdom.html_<^._
+    // <.div("Temporarily removed")
+
   }
 
   @JSImport("graphiql", JSImport.Namespace ) // "GraphiQL")

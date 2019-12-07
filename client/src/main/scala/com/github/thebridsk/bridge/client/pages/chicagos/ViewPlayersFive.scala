@@ -399,7 +399,7 @@ object ViewPlayersFiveInternal {
                 "OK",
                 "OK",
                 ^.disabled := !valid,
-                BaseStyles.highlight(requiredNotNext = valid),
+                BaseStyles.highlight(required = valid),
                 ^.onClick --> ok
               )
             ),
