@@ -186,7 +186,7 @@ trait RestDuplicateResult extends HasActorSystem {
         in = ParameterIn.QUERY,
         allowEmptyValue = true,
         description =
-          "If present, indicates boards and hands should be added.  Default movements is Armonk2Tables, default boards is ArmonkBoards, value is ignored.",
+          "If present, indicates boards and hands should be added.  Default movements is 2TablesArmonk, default boards is ArmonkBoards, value is ignored.",
         required = false,
         schema = new Schema(implementation = classOf[String])
       ),
@@ -204,7 +204,7 @@ trait RestDuplicateResult extends HasActorSystem {
         in = ParameterIn.QUERY,
         allowEmptyValue = false,
         description =
-          "If present, indicates which movements to use, example values: Howell3TableNoRelay, Mitchell3Table, Howell2Table5Teams, Armonk2Tables",
+          "If present, indicates which movements to use, example values: Howell3TableNoRelay, Mitchell3Table, Howell2Table5Teams, 2TablesArmonk",
         required = false,
         schema = new Schema(implementation = classOf[String])
       )

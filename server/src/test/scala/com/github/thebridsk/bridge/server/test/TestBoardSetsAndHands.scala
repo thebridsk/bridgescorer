@@ -184,18 +184,18 @@ class TestBoardSetsAndHands extends FlatSpec with ScalatestRouteTest with MustMa
     }
   }
 
-  var MovementArmonk2Tables: Option[Movement] = None
+  var Movement2TablesArmonk: Option[Movement] = None
   var originalNumberMovement: Int = 0
 
   behavior of "MyService REST for Movement"
 
-  it should "return a table json object for Movement Armonk2Tables for GET requests to /v1/rest/movements/Armonk2Tables" in {
-    Get("/v1/rest/movements/Armonk2Tables") ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
+  it should "return a table json object for Movement 2TablesArmonk for GET requests to /v1/rest/movements/2TablesArmonk" in {
+    Get("/v1/rest/movements/2TablesArmonk") ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
       handled mustBe true
       status mustBe OK
       mediaType mustBe `application/json`
-      MovementArmonk2Tables = Some(responseAs[Movement])
-      MovementArmonk2Tables match {
+      Movement2TablesArmonk = Some(responseAs[Movement])
+      Movement2TablesArmonk match {
         case Some(bs) =>
           bs.numberTeams mustBe 4
           bs.hands.size mustBe 12
@@ -226,7 +226,7 @@ class TestBoardSetsAndHands extends FlatSpec with ScalatestRouteTest with MustMa
   }
 
   it should "return a Movement json object for POST request to /v1/rest/movements with Movement json" in {
-    Post("/v1/rest/movements", MovementArmonk2Tables.get.copy(name="change")) ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
+    Post("/v1/rest/movements", Movement2TablesArmonk.get.copy(name="change")) ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
       status mustBe Created
       mediaType mustBe `application/json`
       val resp = responseAs[Movement]
@@ -243,14 +243,14 @@ class TestBoardSetsAndHands extends FlatSpec with ScalatestRouteTest with MustMa
     }
   }
 
-  it should "return a table json object for PUT request to /v1/rest/movements/Armonk2Tables with Movement json" in {
-    Put("/v1/rest/movements/Armonk2Tables", MovementArmonk2Tables.get.copy(description="change")) ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
+  it should "return a table json object for PUT request to /v1/rest/movements/2TablesArmonk with Movement json" in {
+    Put("/v1/rest/movements/2TablesArmonk", Movement2TablesArmonk.get.copy(description="change")) ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
       status mustBe NoContent
 //      mediaType mustBe `application/json`
 //      val resp = responseAs[Movement]
 //      resp.description mustBe "change"
     }
-    Get("/v1/rest/movements/Armonk2Tables" ) ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
+    Get("/v1/rest/movements/2TablesArmonk" ) ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
       status mustBe OK
       mediaType mustBe `application/json`
       val resp = responseAs[Movement]
@@ -267,8 +267,8 @@ class TestBoardSetsAndHands extends FlatSpec with ScalatestRouteTest with MustMa
     }
   }
 
-  it should "return a Movement json object for Movement Armonk2Tables for GET requests to /v1/rest/movements/Armonk2Tables" in {
-    Get("/v1/rest/movements/Armonk2Tables") ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
+  it should "return a Movement json object for Movement 2TablesArmonk for GET requests to /v1/rest/movements/2TablesArmonk" in {
+    Get("/v1/rest/movements/2TablesArmonk") ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
       handled mustBe true
       status mustBe OK
       mediaType mustBe `application/json`
@@ -302,8 +302,8 @@ class TestBoardSetsAndHands extends FlatSpec with ScalatestRouteTest with MustMa
     }
   }
 
-  it should "return a success for DELETE request to /v1/rest/movements/Armonk2Tables, and get /v1/rest/movements returns one Movement objects, and still return an Armonk2Tables " in {
-    Delete("/v1/rest/movements/Armonk2Tables") ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
+  it should "return a success for DELETE request to /v1/rest/movements/2TablesArmonk, and get /v1/rest/movements returns one Movement objects, and still return an 2TablesArmonk " in {
+    Delete("/v1/rest/movements/2TablesArmonk") ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
       status mustBe NoContent
     }
     Get("/v1/rest/movements") ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
@@ -312,7 +312,7 @@ class TestBoardSetsAndHands extends FlatSpec with ScalatestRouteTest with MustMa
       val r = responseAs[Array[Movement]]
       r.length mustBe originalNumberMovement         // only deletes the changed one, the original is in read only storage
     }
-    Get("/v1/rest/movements/Armonk2Tables") ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
+    Get("/v1/rest/movements/2TablesArmonk") ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
       handled mustBe true
       status mustBe OK
       mediaType mustBe `application/json`
@@ -355,9 +355,9 @@ class TestBoardSetsAndHands extends FlatSpec with ScalatestRouteTest with MustMa
     }
   }
 
-  it should "return a match duplicate for POST request to /v1/rest/duplicates?boards=ArmonkBoards&movements=Armonk2Tables with 4 teams and 18 boards identical to default, except id" in {
+  it should "return a match duplicate for POST request to /v1/rest/duplicates?boards=ArmonkBoards&movements=2TablesArmonk with 4 teams and 18 boards identical to default, except id" in {
     val md = MatchDuplicate.create("")
-    Post("/v1/rest/duplicates?boards=ArmonkBoards&movements=Armonk2Tables", md) ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
+    Post("/v1/rest/duplicates?boards=ArmonkBoards&movements=2TablesArmonk", md) ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
       status mustBe Created
       mediaType mustBe `application/json`
       val resp = responseAs[MatchDuplicate]
@@ -389,9 +389,9 @@ class TestBoardSetsAndHands extends FlatSpec with ScalatestRouteTest with MustMa
     }
   }
 
-  it should "return a match duplicate for POST request to /v1/rest/duplicates?movements=Armonk2Tables with 4 teams and 18 boards identical to default, except id" in {
+  it should "return a match duplicate for POST request to /v1/rest/duplicates?movements=2TablesArmonk with 4 teams and 18 boards identical to default, except id" in {
     val md = MatchDuplicate.create("")
-    Post("/v1/rest/duplicates?movements=Armonk2Tables", md) ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
+    Post("/v1/rest/duplicates?movements=2TablesArmonk", md) ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
       status mustBe Created
       mediaType mustBe `application/json`
       val resp = responseAs[MatchDuplicate]
@@ -406,9 +406,9 @@ class TestBoardSetsAndHands extends FlatSpec with ScalatestRouteTest with MustMa
     }
   }
 
-  it should "return a match duplicate for POST request to /v1/rest/duplicates?boards=StandardBoards&movements=Armonk2Tables with 4 teams and 18 boards that is different from the default" in {
+  it should "return a match duplicate for POST request to /v1/rest/duplicates?boards=StandardBoards&movements=2TablesArmonk with 4 teams and 18 boards that is different from the default" in {
     val md = MatchDuplicate.create("")
-    Post("/v1/rest/duplicates?boards=StandardBoards&movements=Armonk2Tables", md) ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
+    Post("/v1/rest/duplicates?boards=StandardBoards&movements=2TablesArmonk", md) ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
       status mustBe Created
       mediaType mustBe `application/json`
       val resp = responseAs[MatchDuplicate]
@@ -423,9 +423,9 @@ class TestBoardSetsAndHands extends FlatSpec with ScalatestRouteTest with MustMa
     }
   }
 
-  it should "return a match duplicate for POST request to /v1/rest/duplicates?boards=xxx&movements=Armonk2Tables a bad request" in {
+  it should "return a match duplicate for POST request to /v1/rest/duplicates?boards=xxx&movements=2TablesArmonk a bad request" in {
     val md = MatchDuplicate.create("")
-    Post("/v1/rest/duplicates?boards=xxx&movements=Armonk2Tables", md) ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
+    Post("/v1/rest/duplicates?boards=xxx&movements=2TablesArmonk", md) ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
       status mustBe BadRequest
     }
   }

@@ -9,7 +9,7 @@ Syntax: $0 [-h|--help]
 
 Collects the diagnostic information and saves it in logs.zip.
 Java 8 must be on the path.
-  
+
 HELPMEHELPME
 }
 
@@ -20,14 +20,17 @@ fi
 
 cd $SCRIPTDIR
 
-jarcount=`ls -1f bridgescorer-server-assembly-*.jar bridgescorekeeper-*.jar 2>/dev/null | wc -l`
-if [[ $jarcount -ne "1" ]] ; then 
+# looking for jar files with the following file name patterns:
+#   bridgescorer-server-assembly-*.jar
+#   bridgescorekeeper-*.jar
+jarcount=`ls -1f *.jar 2>/dev/null | wc -l`
+if [[ $jarcount -ne "1" ]] ; then
   echo Did not find one bridgescorer jar file in directory, found $jarcount
-  ls bridgescorer-server-assembly-*.jar bridgescorekeeper-*.jar 2>/dev/null
+  ls *.jar 2>/dev/null
   exit 1
 fi
 
-oldjar=`ls -1f bridgescorer-server-assembly-*.jar bridgescorekeeper-*.jar 2>/dev/null`
+oldjar=`ls -1f *.jar 2>/dev/null`
 
 java -jar $oldjar collectlogs --store ./store --diagnostics ./logs --zip logs.zip
 

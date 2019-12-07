@@ -202,7 +202,7 @@ abstract class BridgeService(val id: String) {
   }
 
   val defaultBoards = "ArmonkBoards"
-  val defaultMovement = "Armonk2Tables"
+  val defaultMovement = "2TablesArmonk"
 
   def fillBoards(dup: MatchDuplicate): Future[Result[MatchDuplicate]] = {
     fillBoards(dup, defaultBoards, defaultMovement)

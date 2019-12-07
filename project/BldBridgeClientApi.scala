@@ -110,7 +110,8 @@ object BldBridgeClientApi {
       // Use a custom config file to export the JS dependencies to the global namespace,
       // as expected by the scalajs-react facade
       // webpackConfigFile := Some(baseDirectory.value / "webpack.config.js"),
-      // webpackConfigFile in fullOptJS := Some(baseDirectory.value / "webpack.prod.config.js"),
+      webpackConfigFile in fullOptJS := Some(baseDirectory.value / "webpack.prod.config.js"),
+      webpackConfigFile in fastOptJS := Some(baseDirectory.value / "webpack.prod.config.js"),
       // webpackBundlingMode := BundlingMode.LibraryAndApplication(),
       webpackBundlingMode := BundlingMode.LibraryOnly("bridgeLib"),
       // webpackBundlingMode in fastOptJS := BundlingMode.LibraryOnly("bridgeLib"),

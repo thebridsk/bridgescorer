@@ -293,7 +293,9 @@ object PageNewDuplicateInternal {
             dupStyles.tableNewDuplicate,
             Header((props,state,this)),
             <.tbody(
-              state.movementNames().map { movname => {
+              state.movementNames().filter { movname =>
+                !state.movements.get(movname).map(_.isDisabled).getOrElse(true)
+              }.map { movname => {
                 Row.withKey(movname)((movname,props,state,this))
               }}.toTagMod
             )
@@ -303,13 +305,12 @@ object PageNewDuplicateInternal {
             if (movementNames.isEmpty) {
               <.p("No movements were found")
             } else {
-              movementNames.map { movname => {
-                val movement = state.movements(movname)
-                val clickToMovement = MovementView(movname)
-                AppButton( "ShowM_"+movname, movement.short,
+              movementNames.map { movname => state.movements(movname) }.filter{ m => !m.isDisabled }.map { movement =>
+                val clickToMovement = MovementView(movement.id)
+                AppButton( "ShowM_"+movement.id, movement.short,
                            props.routerCtl.setOnClick( clickToMovement )
                 )
-              }}.toTagMod
+              }.toTagMod
             }
           ),
           <.div(

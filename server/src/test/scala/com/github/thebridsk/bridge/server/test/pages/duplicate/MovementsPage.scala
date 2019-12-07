@@ -32,7 +32,7 @@ object MovementsPage {
     new MovementsPage(mov)
   }
 
-  val movements = "Armonk2Tables"::"Howell3TableNoRelay"::"Mitchell3Table"::Nil
+  val movements = "2TablesArmonk"::"Howell3TableNoRelay"::"Mitchell3Table"::Nil
 
   def getMovement( movement: String ): Option[Movement] = {
     import com.github.thebridsk.bridge.server.rest.UtilsPlayJson._

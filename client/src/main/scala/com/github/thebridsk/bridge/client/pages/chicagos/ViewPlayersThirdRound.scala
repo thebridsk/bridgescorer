@@ -72,7 +72,7 @@ object ViewPlayersThirdRound {
           AppButton("Player"+position.pos+"FirstDealer", "Dealer",
                     baseStyles.nameButton,
                     ^.onClick --> setFirstDealer(position),
-                    BaseStyles.highlight(selected = state.isDealer(position) ),
+                    BaseStyles.highlight(selected = state.isDealer(position), required = state.dealer.isEmpty ),
                     ^.tabIndex:=tabindex
                   )
 
@@ -162,7 +162,7 @@ object ViewPlayersThirdRound {
                 baseStyles.divFooter,
                 <.div(
                   baseStyles.divFooterLeft,
-                  AppButton( "Ok", "OK" , ^.disabled := !valid, BaseStyles.highlight(requiredNotNext=valid ), baseStyles.appButton, ^.onClick --> ok )
+                  AppButton( "Ok", "OK" , ^.disabled := !valid, BaseStyles.highlight(required=valid ), baseStyles.appButton, ^.onClick --> ok )
                 ),
                 <.div(
                   baseStyles.divFooterCenter,

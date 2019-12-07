@@ -9,7 +9,7 @@ object ColorThemeStorage {
 
   val log = Logger("bridge.ColorThemeStorage")
 
-  val key = "color-theme"
+  val key = "thebridsk:bridge:color-theme"
   val bodyAttribute = "data-theme"
 
   val window = document.defaultView

@@ -95,6 +95,7 @@ object BldBridge {
       aggregate in mypublishcopy in Distribution := false,
       aggregate in server := false,
       aggregate in serverlogs := false,
+      aggregate in testClass := false,
 //    mainClass in Compile := Some("com.github.thebridsk.bridge.server.Server"),
       mainClass in (Compile, run) := Some("com.github.thebridsk.bridge.server.Server"),
       mainClass in (Compile, packageBin) := Some("com.github.thebridsk.bridge.server.Server"),
@@ -221,6 +222,12 @@ object BldBridge {
           MergeStrategy.rename
         case PathList("module-info.class") =>
           MergeStrategy.rename
+        case PathList("META-INF", "versions", "9", "module-info.class") =>
+          MergeStrategy.rename
+        case PathList("META-INF", "versions", "9") =>
+          // selenium jar files have a file with this name,
+          // that causes unzip errors with files in that directory
+          MergeStrategy.discard
 //      case PathList("akka", "http", xs @ _*) => MergeStrategy.first
         case PathList(
             "META-INF",
@@ -243,6 +250,12 @@ object BldBridge {
           MergeStrategy.first
         case PathList("JS_DEPENDENCIES")   => MergeStrategy.rename
         case PathList("module-info.class") => MergeStrategy.rename
+        case PathList("META-INF", "versions", "9", "module-info.class") =>
+          MergeStrategy.rename
+        case PathList("META-INF", "versions", "9") =>
+          // selenium jar files have a file with this name,
+          // that causes unzip errors with files in that directory
+          MergeStrategy.discard
 //      case PathList("akka", "http", xs @ _*) => MergeStrategy.first
         case PathList(
             "META-INF",

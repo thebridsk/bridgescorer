@@ -835,8 +835,8 @@ class TestDuplicateRestSpec extends FlatSpecLike with ScalatestRouteTest with Mu
     }
   })
 
-  it should "return a MatchDuplicateResult json object for a POST request to /v1/rest/duplicateresults?default=true&boards=ArmonkBoards&movements=Armonk2Tables" in withListener[Id.MatchDuplicateResult,MatchDuplicateResult]( restService.duplicateresults, listenerstatus => {
-    Post("/v1/rest/duplicateresults?default=true&boards=ArmonkBoards&movements=Armonk2Tables", MatchDuplicateResult.create("E1")) ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
+  it should "return a MatchDuplicateResult json object for a POST request to /v1/rest/duplicateresults?default=true&boards=ArmonkBoards&movements=2TablesArmonk" in withListener[Id.MatchDuplicateResult,MatchDuplicateResult]( restService.duplicateresults, listenerstatus => {
+    Post("/v1/rest/duplicateresults?default=true&boards=ArmonkBoards&movements=2TablesArmonk", MatchDuplicateResult.create("E1")) ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
       handled mustBe true
       status mustBe Created
       mediaType mustBe MediaTypes.`application/json`

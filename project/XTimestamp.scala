@@ -8,11 +8,21 @@ object XTimestamp {
   private var stime = timestamp()
 
   def millis( isSnap: Boolean ) = {
-    if (gottime || isSnap) {
+    if (gottime) {
       time
     } else {
-      time = System.currentTimeMillis()
-      stime = timestamp()
+      if (isSnap) {
+        val t = System.currentTimeMillis()
+        val dtfDate = new java.text.SimpleDateFormat("yyyy-MM-dd")
+        dtfDate.setTimeZone(java.util.TimeZone.getTimeZone("UTC"))
+        val ts = dtfDate.format(new java.util.Date(t))
+        val ti = dtfDate.parse(ts)
+        time = ti.getTime()
+        stime = ts
+      } else {
+        time = System.currentTimeMillis()
+        stime = timestamp()
+      }
       gottime = true
       time
     }

@@ -37,16 +37,19 @@ object ListPage {
 
   def getImportId( url: String ) = {
     val prefix = TestServer.getAppPage()
+    val prefix2 = TestServer.getAppDemoPage()
     val test = if (url.startsWith(prefix)) {
-      url.substring(prefix.length())
+      url.drop(prefix.length())
+    } else if (url.startsWith(prefix2)) {
+      url.drop(prefix2.length())
     } else {
-      fail(s"""Url did not start with $prefix: $url""")
+      fail(s"""Url did not start with $prefix or $prefix2: $url""")
     }
     val r = test match {
       case patternUrl(iid) if iid!=null && iid.length()>0 => Some(iid)
       case _ => None
     }
-    log.fine(s"url=$url, prefix=$prefix, test=$test, r=$r")
+    log.fine(s"url=$url, test=$test, r=$r")
     r
   }
 

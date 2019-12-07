@@ -88,11 +88,15 @@ object PageMovementsInternal {
                       val (backend,props,state,current,toggle,selected) = args
                       val mov = state.movements(current)
                       val sel = selected.map( s => s==current ).getOrElse(false)
+                      val disabled = mov.isDisabled
                       <.tr(
                         <.td(
                           AppButton( mov.name, mov.short, BaseStyles.highlight(selected = sel), ^.onClick-->toggle )
                         ),
-                        <.td( mov.description),
+                        <.td(
+                          disabled ?= "Disabled, ",
+                          mov.description
+                        ),
                         <.td(
                           AppButton( s"${mov.name}_edit", "Edit", props.routerCtl.setOnClick(MovementEditView(mov.name)) ),
                           mov.isDeletable ?= AppButton( s"${mov.name}_delete", "Delete", ^.onClick --> backend.deleteCB(mov.id) ),

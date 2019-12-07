@@ -55,6 +55,7 @@ class HelpTest extends FlatSpec with MustMatchers with BeforeAndAfterAll {
 
   val logger = Logger[HelpTest]
 
+  val screenshotDir = "target/HelpTest"
 
   import Eventually.{ patienceConfig => _, _ }
   import EventuallyUtils._
@@ -161,11 +162,18 @@ class HelpTest extends FlatSpec with MustMatchers with BeforeAndAfterAll {
 
     val summary = duplicate.clickMenu("duplicate/summary.html").validate
 
-    val imageurl = TestServer.getHelpPage("images/gen/Duplicate/ListDuplicate.png")
+    val imageloc = "images/gen/Duplicate/ListDuplicate.png"
+    val aimageurl = TestServer.getHelpPage(imageloc)
+    val imgurl = s"../$imageloc"
 
-    HelpPage.checkImage( imageurl )
+    HelpPage.checkImage( aimageurl )
 
-    summary.findElemByXPath("//img").attribute("src") mustBe Some(imageurl)
+    withClueAndScreenShot(screenshotDir,"SummaryImage",s"Looking for img tag with ${aimageurl}",true,true) {
+      eventually {
+        val src = summary.findElemByXPath("//img").attribute("src")
+        src must (equal( Some(aimageurl) ) or equal( Some(imgurl) ) )
+      }
+    }
 
   }
 

@@ -531,7 +531,7 @@ object MatchDuplicateV2 {
   def create(
       id: String = "",
       boardset: String = "ArmonkBoards",
-      movement: String = "Armonk2Tables"
+      movement: String = "2TablesArmonk"
   ) = new MatchDuplicateV2(id, Map(), Map(), boardset, movement, time, time)
 
   def createTeams(numberTeams: Int) = {

@@ -175,10 +175,12 @@ object PageChicagoHandInternal {
               }
 
             } else {
+              log.fine(s"""Round is out of bounds for ${props.page.chiid}, round=${iround}, store has ${ChicagoStore.getChicago}""")
               HomePage.loading
             }
 
           case _ =>
+            log.fine(s"""Match still loading, looking for ${props.page.chiid}, store has ${ChicagoStore.getChicago}""")
             HomePage.loading
         }
       )

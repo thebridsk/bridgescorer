@@ -87,10 +87,14 @@ class HelpPage(
   import HelpPage._
 
   def validate(implicit patienceConfig: PatienceConfig, pos: Position) = {
+
+    // <body class="" data-url="/duplicate/summary.html">
+
     eventually {
       val base = getPageUrl(helpuri)
       val url = currentUrl
       url mustBe base
+      find( xpath(s"""//body[@data-url = '/${helpuri}']""") )
     }
     this
   }

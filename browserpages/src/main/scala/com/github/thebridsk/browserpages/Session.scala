@@ -518,9 +518,9 @@ class Session( name: String = "default" ) extends WebDriver {
     Session.maximize
   }
 
-  def saveDomTree( tofile: String ): Unit = {
+  def saveDomTree( tofile: String, domToStdout: Boolean = false ): Unit = {
     import com.github.thebridsk.browserpages.PageBrowser
-    PageBrowser.saveDom(tofile)(webDriver)
+    PageBrowser.saveDom(tofile, domToStdout)(webDriver)
   }
 
   // from WebDriver

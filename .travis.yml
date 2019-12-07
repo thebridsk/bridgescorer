@@ -71,7 +71,9 @@ jobs:
             # this installs matching chrome browser
             - chromium-chromedriver
         snaps:
-          - hugo
+          - name: hugo
+            # latest/stable is 0.60.0 which is broken, doesn't render html in md files.
+            channel: extended/stable
       before_script:
         - sudo ln -s /usr/lib/chromium-browser/chromedriver /usr/local/bin/chromedriver
       script:

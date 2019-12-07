@@ -53,6 +53,7 @@ class ChicagoTest extends FlatSpec
     .orElse(sys.env.get("TRAVIS_BUILD_NUMBER"))
     .isDefined
 
+  val screenshotDir = "target/ChicagoTest"
   val docsScreenshotDir = "target/docs/Chicago"
 
   val Session1 = new Session
@@ -86,7 +87,7 @@ class ChicagoTest extends FlatSpec
 
     try {
       waitForFutures("Starting a browser or server",
-                     CodeBlock { Session1.sessionStart().setPositionRelative(0,0).setSize(1100, 800)},
+                     CodeBlock { Session1.sessionStart().setPositionRelative(0,0).setSize(1100, 900)},
                      CodeBlock { TestServer.start() } )
     } catch {
       case e: Throwable =>
@@ -522,51 +523,56 @@ class ChicagoTest extends FlatSpec
     eventually( find(xpath("//h6[3]/span")).text mustBe "Enter players and identify first dealer" )
   }
 
+  def findNorthInputList = findElements(By.xpath("""//input[@name='North']/parent::div/following-sibling::div/div/div/ul/li"""))
+
   it should "give player suggestions when entering names" in {
+    withClueAndScreenShot(screenshotDir,"SuggestName","") {
+      eventually( find(id("ResetNames")) mustBe 'Enabled )
+      find(id("Ok")) must not be 'Enabled
 
-    eventually( find(id("ResetNames")) mustBe Symbol("Enabled") )
-    find(id("Ok")) must not be Symbol("Enabled")
+      textField("North").value = "n"
+      tcpSleep(2)
 
-    textField("North").value = "n"
-    tcpSleep(2)
-    val first = eventually {
-      val listitems = findElements(By.xpath("""//input[@name='North']/parent::div/following-sibling::div/div/div/ul/li"""))
-      assert( !listitems.isEmpty(), "list of candidate entries must not be empty" )
-      listitems.asScala.foreach ( li =>
-        li.getText() must startWith regex( "(?i)n" )
-      )
-      listitems.get(0)
+      val first = eventually {
+        val listitems = findNorthInputList
+        assert( !listitems.isEmpty(), "list of candidate entries must not be empty" )
+        listitems.foreach ( li =>
+          li.getText() must startWith regex( "(?i)n" )
+        )
+        listitems.get(0)
+      }
+      val text = first.getText
+      PageBrowser.scrollToElement(first)
+      findNorthInputList.headOption.map ( first => first.click() ).getOrElse( fail("Did not find North input field list") )
+      eventually (textField("North").value mustBe text)
+
+      textField("South").value = "s"
+      tcpSleep(2)
+      eventually {
+        val listitems = findElements(By.xpath("""//input[@name='South']/parent::div/following-sibling::div/div/div/ul/li"""))
+        assert( !listitems.isEmpty(), "list of candidate entries must not be empty" )
+        listitems.foreach ( li =>
+          li.getText() must startWith regex( "(?i)s" )
+        )
+      }
+
+      textField("East").value = "asfdfs"
+      eventually {
+        val listitems = findElements(By.xpath("""//input[@name='East']/parent::div/following-sibling::div/div/div/ul/li"""))
+        assert( !listitems.isEmpty(), "list of candidate entries must not be empty" )
+        listitems.foreach ( li =>
+          li.getText() must startWith ( "No names matched" )
+        )
+      }
+
+      esc
+
+      eventually (textField("North").value mustBe "Nancy")
+      textField("South").value mustBe "s"
+      textField("East").value mustBe "asfdfs"
+      textField("West").value mustBe ""
+
     }
-    val text = first.getText
-    PageBrowser.scrollToElement(first)
-    first.click()
-    eventually (textField("North").value mustBe text)
-
-    textField("South").value = "s"
-    tcpSleep(2)
-    eventually {
-      val listitems = findElements(By.xpath("""//input[@name='South']/parent::div/following-sibling::div/div/div/ul/li"""))
-      assert( !listitems.isEmpty(), "list of candidate entries must not be empty" )
-      listitems.asScala.foreach ( li =>
-        li.getText() must startWith regex( "(?i)s" )
-      )
-    }
-
-    textField("East").value = "asfdfs"
-    eventually {
-      val listitems = findElements(By.xpath("""//input[@name='East']/parent::div/following-sibling::div/div/div/ul/li"""))
-      assert( !listitems.isEmpty(), "list of candidate entries must not be empty" )
-      listitems.asScala.foreach ( li =>
-        li.getText() must startWith ( "No names matched" )
-      )
-    }
-
-    esc
-
-    eventually (textField("North").value mustBe "Nancy")
-    textField("South").value mustBe "s"
-    textField("East").value mustBe "asfdfs"
-    textField("West").value mustBe ""
 
   }
 

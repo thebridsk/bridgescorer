@@ -48,7 +48,8 @@ object NamesStore extends ChangeListenable {
    * @param cb - callback that should be called when the names have been updated.  Will call the callback immediately if the names are cached.
    */
   def ensureNamesAreCached( cb: Option[Callback] = None ) = Alerter.tryitWithUnit {
-    if (names.isEmpty) refreshNames(cb)
-    else cb.foreach(_.runNow())
+    refreshNames(cb)
+    // if (names.isEmpty) refreshNames(cb)
+    // else cb.foreach(_.runNow())
   }
 }
