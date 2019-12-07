@@ -36,7 +36,7 @@ import org.openqa.selenium.WebDriver
 import com.github.thebridsk.browserpages.Session
 import com.github.thebridsk.bridge.server.test.pages.LightDarkAddOn
 import com.github.thebridsk.browserpages.PageBrowser
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 object ChicagoDemoTestPages {
 

@@ -527,8 +527,8 @@ class ChicagoTest extends FlatSpec
 
   it should "give player suggestions when entering names" in {
     withClueAndScreenShot(screenshotDir,"SuggestName","") {
-      eventually( find(id("ResetNames")) mustBe 'Enabled )
-      find(id("Ok")) must not be 'Enabled
+      eventually( find(id("ResetNames")) mustBe Symbol("Enabled") )
+      find(id("Ok")) must not be Symbol("Enabled")
 
       textField("North").value = "n"
       tcpSleep(2)
@@ -536,14 +536,14 @@ class ChicagoTest extends FlatSpec
       val first = eventually {
         val listitems = findNorthInputList
         assert( !listitems.isEmpty(), "list of candidate entries must not be empty" )
-        listitems.foreach ( li =>
+        listitems.forEach ( li =>
           li.getText() must startWith regex( "(?i)n" )
         )
         listitems.get(0)
       }
       val text = first.getText
       PageBrowser.scrollToElement(first)
-      findNorthInputList.headOption.map ( first => first.click() ).getOrElse( fail("Did not find North input field list") )
+      findNorthInputList.asScala.headOption.map ( first => first.click() ).getOrElse( fail("Did not find North input field list") )
       eventually (textField("North").value mustBe text)
 
       textField("South").value = "s"
@@ -551,7 +551,7 @@ class ChicagoTest extends FlatSpec
       eventually {
         val listitems = findElements(By.xpath("""//input[@name='South']/parent::div/following-sibling::div/div/div/ul/li"""))
         assert( !listitems.isEmpty(), "list of candidate entries must not be empty" )
-        listitems.foreach ( li =>
+        listitems.forEach ( li =>
           li.getText() must startWith regex( "(?i)s" )
         )
       }
@@ -560,7 +560,7 @@ class ChicagoTest extends FlatSpec
       eventually {
         val listitems = findElements(By.xpath("""//input[@name='East']/parent::div/following-sibling::div/div/div/ul/li"""))
         assert( !listitems.isEmpty(), "list of candidate entries must not be empty" )
-        listitems.foreach ( li =>
+        listitems.forEach ( li =>
           li.getText() must startWith ( "No names matched" )
         )
       }
