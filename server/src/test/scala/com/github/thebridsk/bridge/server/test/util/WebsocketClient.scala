@@ -32,6 +32,7 @@ import com.github.thebridsk.bridge.data.websocket.Protocol.UpdateChicagoHand
 import com.github.thebridsk.bridge.data.websocket.Protocol.UpdateChicagoRound
 import com.github.thebridsk.bridge.data.websocket.Protocol.UpdateRubberHand
 import com.github.thebridsk.bridge.data.websocket.Protocol.UpdateDuplicatePicture
+import com.github.thebridsk.bridge.data.websocket.Protocol.UpdateDuplicatePictures
 
 class WebsocketClient(implicit system: ActorSystem, materializer: Materializer, routetest: RouteTest) {
 
@@ -201,6 +202,9 @@ object WebsocketClientImplicits {
           case upict: UpdateDuplicatePicture =>
             testlog.debug(s"${wc.address} Ignored unexpected response from the monitor: ${upict}")
             true
+          case upict: UpdateDuplicatePictures =>
+            testlog.debug(s"${wc.address} Ignored unexpected response from the monitor: ${upict}")
+            true
           case uboard: UpdateDuplicateHand =>
             testlog.debug(s"${wc.address} Ignored unexpected response from the monitor: ${uboard}")
             true
@@ -233,6 +237,8 @@ object WebsocketClientImplicits {
             fail(s"${wc.address} Ignored unexpected response from the monitor: ${uteam}")
           case upict: UpdateDuplicatePicture =>
             fail(s"${wc.address} Ignored unexpected response from the monitor: ${upict}")
+          case upict: UpdateDuplicatePictures =>
+            fail(s"${wc.address} Ignored unexpected response from the monitor: ${upict}")
           case uboard: UpdateDuplicateHand =>
             fail(s"${wc.address} Ignored unexpected response from the monitor: ${uboard}")
           case UpdateDuplicate(mp) =>
@@ -264,6 +270,8 @@ object WebsocketClientImplicits {
             fail(s"${wc.address} Ignored unexpected response from the monitor: ${uteam}")
           case upict: UpdateDuplicatePicture =>
             fail(s"${wc.address} Ignored unexpected response from the monitor: ${upict}")
+          case upict: UpdateDuplicatePictures =>
+            fail(s"${wc.address} Ignored unexpected response from the monitor: ${upict}")
           case uboard: UpdateDuplicateHand =>
             fail(s"${wc.address} Unexpected response from the monitor: ${uboard}")
           case UpdateDuplicate(mp) =>
@@ -292,6 +300,8 @@ object WebsocketClientImplicits {
           case uteam: UpdateDuplicateTeam =>
             fail(s"${wc.address} Ignored unexpected response from the monitor: ${uteam}")
           case upict: UpdateDuplicatePicture =>
+            fail(s"${wc.address} Ignored unexpected response from the monitor: ${upict}")
+          case upict: UpdateDuplicatePictures =>
             fail(s"${wc.address} Ignored unexpected response from the monitor: ${upict}")
           case uboard: UpdateDuplicateHand =>
             fail(s"${wc.address} Unexpected response from the monitor: ${uboard}")

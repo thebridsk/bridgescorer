@@ -560,6 +560,7 @@ abstract class Store[VId, VType <: VersionedInstance[VType, VType, VId]](
                           persistent.deleteAll(id).map { ro =>
                             ro match {
                               case Right(o) => Right(None)
+                              case Left((statuscode,msg)) if statuscode == StatusCodes.BadRequest => Right(None)
                               case Left(x) => Left(x)
                             }
                           }

@@ -73,6 +73,7 @@ import com.github.thebridsk.bridge.data.websocket.Protocol.UpdateChicagoRound
 import com.github.thebridsk.bridge.data.websocket.Protocol.UpdateChicagoHand
 import com.github.thebridsk.bridge.data.websocket.Protocol.UpdateRubberHand
 import com.github.thebridsk.bridge.data.websocket.Protocol.UpdateDuplicatePicture
+import com.github.thebridsk.bridge.data.websocket.Protocol.UpdateDuplicatePictures
 
 class TestDuplicateRestSpec extends FlatSpecLike with ScalatestRouteTest with MustMatchers with MyService {
 
@@ -175,6 +176,9 @@ class TestDuplicateRestSpec extends FlatSpecLike with ScalatestRouteTest with Mu
         case upict: UpdateDuplicatePicture =>
           testlog.debug("Ignored unexpected response from the monitor: "+upict)
           true
+        case upict: UpdateDuplicatePictures =>
+          testlog.debug("Ignored unexpected response from the monitor: "+upict)
+          true
         case uboard: UpdateDuplicateHand =>
           testlog.debug("Ignored unexpected response from the monitor: "+uboard)
           true
@@ -230,6 +234,9 @@ class TestDuplicateRestSpec extends FlatSpecLike with ScalatestRouteTest with Mu
         case upict: UpdateDuplicatePicture =>
           testlog.debug("Ignored unexpected response from the monitor: "+upict)
           true
+        case upict: UpdateDuplicatePictures =>
+          testlog.debug("Ignored unexpected response from the monitor: "+upict)
+          true
         case uboard: UpdateDuplicateHand =>
           testlog.debug("Ignored unexpected response from the monitor: "+uboard)
           true
@@ -283,6 +290,9 @@ class TestDuplicateRestSpec extends FlatSpecLike with ScalatestRouteTest with Mu
         case upict: UpdateDuplicatePicture =>
           testlog.debug("Ignored unexpected response from the monitor: "+upict)
           true
+        case upict: UpdateDuplicatePictures =>
+          testlog.debug("Ignored unexpected response from the monitor: "+upict)
+          true
         case uboard: UpdateDuplicateHand =>
           fail("Unexpected response from the monitor: "+uboard)
         case UpdateDuplicate(mp) =>
@@ -331,6 +341,9 @@ class TestDuplicateRestSpec extends FlatSpecLike with ScalatestRouteTest with Mu
           testlog.debug("Ignored unexpected response from the monitor: "+uteam)
           true
         case upict: UpdateDuplicatePicture =>
+          testlog.debug("Ignored unexpected response from the monitor: "+upict)
+          true
+        case upict: UpdateDuplicatePictures =>
           testlog.debug("Ignored unexpected response from the monitor: "+upict)
           true
         case uboard: UpdateDuplicateHand =>

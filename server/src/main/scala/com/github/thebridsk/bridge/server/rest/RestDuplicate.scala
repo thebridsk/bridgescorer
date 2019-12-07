@@ -61,7 +61,7 @@ trait RestDuplicate extends HasActorSystem {
 
   val nestedBoards = new RestNestedBoard
   val nestedTeams = new RestNestedTeam
-  val nestedPictures = new RestNestedPicture(store,this)
+  lazy val nestedPictures = new RestNestedPicture(store,this)
 
   /**
     * spray route for all the methods on this resource
