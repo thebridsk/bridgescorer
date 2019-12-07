@@ -54,6 +54,17 @@ object HandPage {
     TestServer.getAppPageUrl(s"chicago/${chiid}/rounds/${round}/hands/${hand}")
   }
 
+  /**
+   * @param chiid
+   * @param round the round, zero based
+   * @param hand the hand in the round, zero based
+   * @return the URL
+   */
+  def demoUrlFor(chiid: String, round: Int, hand: Int) = {
+    // http://loopback:8080/public/index-fastopt.html#chicago/C10/rounds/0/hands/0
+    TestServer.getAppPageUrl(s"chicago/${chiid}/rounds/${round}/hands/${hand}")
+  }
+
   // http://loopback:8080/public/index-fastopt.html#chicago/C10/rounds/0/hands/0
   val patternForIds = """(C\d+)/rounds/(\d+)/hands/(\d+)""".r
 
@@ -65,12 +76,15 @@ object HandPage {
    */
   def findIds(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
     val prefix = TestServer.getAppPageUrl("chicago/")
+    val prefix2 = TestServer.getAppDemoPageUrl("chicago/")
     val cur = currentUrl
     withClue(s"Unable to determine duplicate id in HandPage: ${cur}") {
-      cur must startWith (prefix)
-      cur.drop( prefix.length() ) match {
-        case patternForIds(cid,roundid,handid) => (cid,roundid.toInt,handid.toInt)
-        case _ => fail(s"URL did not match pattern ${patternForIds}")
+      val rest = if (cur.startsWith(prefix)) Some(cur.drop(prefix.length()))
+                 else if (cur.startsWith(prefix2)) Some(cur.drop(prefix2.length()))
+                 else None
+      rest match {
+        case Some(patternForIds(cid,roundid,handid)) => (cid,roundid.toInt,handid.toInt)
+        case _ => fail(s"URL did not match pattern ${patternForIds}: $rest")
       }
     }
   }

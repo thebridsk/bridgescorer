@@ -226,7 +226,7 @@ object BldDependencies {
 //      "source-map-loader" -> vSourceMapLoader,
 //      "concat-with-sourcemaps" -> vConcatWithSourcemaps,
       "terser" -> vTerser,
-      "ajv" -> vAjv
+      "ajv" -> vAjv,
   )
 
   def bridgeScorerNpmAssets(client: ProjectReference) = {

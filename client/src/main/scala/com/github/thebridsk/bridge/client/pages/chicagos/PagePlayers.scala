@@ -169,7 +169,7 @@ object PagePlayersInternal {
         import scala.concurrent.ExecutionContext.Implicits.global
         ChicagoController
           .ensureMatch(props.page.chiid)
-          .foreach(m => scope.withEffectsImpure.forceUpdate)
+//          .foreach(m => scope.withEffectsImpure.forceUpdate)
       }
     }
 

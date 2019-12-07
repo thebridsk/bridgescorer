@@ -61,7 +61,7 @@ object ViewPlayersVeryFirstRound {
                   "Dealer",
                   baseStyles.nameButton,
                   ^.onClick --> setFirstDealer(position),
-                  BaseStyles.highlight( selected=state.isDealer(position) ),
+                  BaseStyles.highlight( selected=state.isDealer(position), required=state.dealer.isEmpty ),
                   ^.tabIndex:=tabindex
                  )
       import scala.scalajs.js.JSConverters._
@@ -149,7 +149,7 @@ object ViewPlayersVeryFirstRound {
               baseStyles.divFooter,
               <.div(
                 baseStyles.divFooterLeft,
-                AppButton( "Ok", "OK", ^.disabled := !valid, BaseStyles.highlight( requiredNotNext=valid ), ^.onClick-->ok ),
+                AppButton( "Ok", "OK", ^.disabled := !valid, BaseStyles.highlight( required=valid ), ^.onClick-->ok ),
                 AppButton(
                   "ToggleFive",
                   if (state.chicago5) "Four" else "Five",

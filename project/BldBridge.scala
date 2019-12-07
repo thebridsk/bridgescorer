@@ -95,6 +95,7 @@ object BldBridge {
       aggregate in mypublishcopy in Distribution := false,
       aggregate in server := false,
       aggregate in serverlogs := false,
+      aggregate in testClass := false,
 //    mainClass in Compile := Some("com.github.thebridsk.bridge.server.Server"),
       mainClass in (Compile, run) := Some("com.github.thebridsk.bridge.server.Server"),
       mainClass in (Compile, packageBin) := Some("com.github.thebridsk.bridge.server.Server"),
