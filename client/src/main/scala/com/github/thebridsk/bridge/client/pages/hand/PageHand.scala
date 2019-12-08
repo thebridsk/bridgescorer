@@ -72,9 +72,10 @@ object PageHand {
              honors: Option[Int] = None,
              honorsPlayer: Option[PlayerPosition] = None,
              helppage: Option[String] = None,
-             picture: Option[String] = None ) =
+             picture: Option[String] = None,
+             supportPicture: Boolean = false ) =
         component(Props(contract.withScoring(),callbackOk,callbackCancel,
-                        teamNS,teamEW,newhand,allowPassedOut,callbackWithHonors,honors,honorsPlayer,helppage,picture))
+                        teamNS,teamEW,newhand,allowPassedOut,callbackWithHonors,honors,honorsPlayer,helppage,picture,supportPicture))
 
 
   /**
@@ -115,7 +116,8 @@ object PageHand {
              honors: Option[Int] = None,
              honorsPlayer: Option[PlayerPosition] = None,
              helppage: Option[String] = None,
-             picture: Option[String] = None ) =
+             picture: Option[String] = None,
+             supportPicture: Boolean = false ) =
                                         apply( Contract( h.id,
                                                          h.contractTricks,
                                                          h.contractSuit,
@@ -137,7 +139,7 @@ object PageHand {
                                                          west,
                                                          dealer
                                                ), callbackOk, callbackCancel, teamNS, teamEW, newhand=newhand, allowPassedOut=allowPassedOut, callbackWithHonors=callbackWithHonors,
-                                               honors=honors, honorsPlayer=honorsPlayer, helppage=helppage, picture=picture)
+                                               honors=honors, honorsPlayer=honorsPlayer, helppage=helppage, picture=picture, supportPicture = supportPicture)
 
   var scorekeeper: PlayerPosition = North
 
@@ -166,7 +168,8 @@ object PageHandInternal {
                     honors: Option[Int] = None,
                     honorsPlayer: Option[PlayerPosition] = None,
                     helppage: Option[String] = None,
-                    picture: Option[String] = None )
+                    picture: Option[String] = None,
+                    supportPicture: Boolean = false )
 
   /**
    * Internal state for rendering the component.
@@ -537,37 +540,39 @@ object PageHandInternal {
               Button( handStyles.footerButton, "Ok", "OK", ^.disabled := !valid,
                       HandStyles.highlight(required = valid),
                       ^.onClick --> ok),
-              <.div(
-                ^.id := "CameraInput",
-                <.label(
-                  Camera(),
-                  <.input(
-                    ^.`type` := "file",
-                    ^.name := "picture",
-                    ^.accept := "image/*",
-                    ^.capture := "environment",    // use camera in back
-                    ^.value := "",
-                    ^.onChange ==> doPictureInput _
+              props.supportPicture ?= TagMod(
+                <.div(
+                  ^.id := "CameraInput",
+                  <.label(
+                    Camera(),
+                    <.input(
+                      ^.`type` := "file",
+                      ^.name := "picture",
+                      ^.accept := "image/*",
+                      ^.capture := "environment",    // use camera in back
+                      ^.value := "",
+                      ^.onChange ==> doPictureInput _
+                    )
                   )
+                ),
+                <.button(
+                  ^.`type` := "button",
+                  handStyles.footerButton,
+                  ^.onClick --> showPicture,
+                  ^.id:="ShowPicture",
+                  Photo(),
+                  !pictureShowing ?= ^.display.none,
+                  ^.disabled := !pictureShowing
+                ),
+                <.button(
+                  ^.`type` := "button",
+                  handStyles.footerButton,
+                  ^.onClick --> removePicture,
+                  ^.id:="RemovePicture",
+                  DeleteForever(),
+                  !pictureShowing ?= ^.display.none,
+                  ^.disabled := !pictureShowing
                 )
-              ),
-              <.button(
-                ^.`type` := "button",
-                handStyles.footerButton,
-                ^.onClick --> showPicture,
-                ^.id:="ShowPicture",
-                Photo(),
-                !pictureShowing ?= ^.display.none,
-                ^.disabled := !pictureShowing
-              ),
-              <.button(
-                ^.`type` := "button",
-                handStyles.footerButton,
-                ^.onClick --> removePicture,
-                ^.id:="RemovePicture",
-                DeleteForever(),
-                !pictureShowing ?= ^.display.none,
-                ^.disabled := !pictureShowing
               )
             ),
             <.div(

@@ -203,7 +203,7 @@ class AppRouter( modules: Module* ) {
                                                                                     scoringViewCallbackOk(routerCtl),
                                                                                     scoringViewCallbackCancel(routerCtl),
                                                                                     teamNS=Some("1"), teamEW=Some("2"),
-                                                                                    newhand=true) ))) // ScoringView(defaultContract))
+                                                                                    newhand=true, supportPicture=true) ))) // ScoringView(defaultContract))
       | staticRoute("#handchicago", ShowChicagoHand) ~> renderR( (routerCtl) => logit( appBarPage( routerCtl, "Test Chicago Hand", PageHand(defaultHand(TestChicago),
                                                                                   scoringViewCallbackOk(routerCtl),
                                                                                   scoringViewCallbackCancel(routerCtl),
