@@ -8,6 +8,9 @@ scala:
 jdk:
 - openjdk8
 
+env:
+  - NODE_VERSION="12.13.1"
+
 #addons:
 ##  chrome: stable
 #  apt:
@@ -53,6 +56,8 @@ install: # Install ChromeDriver
 jobs:
   include:
     - stage: test
+      before_install:
+        - nvm install $NODE_VERSION
       script:
         - |
           cat /proc/meminfo
@@ -74,6 +79,8 @@ jobs:
             - chromium-chromedriver
         snaps:
           - name: hugo
+      before_install:
+        - nvm install $NODE_VERSION
       before_script:
         - sudo ln -s /usr/lib/chromium-browser/chromedriver /usr/local/bin/chromedriver
       script:
