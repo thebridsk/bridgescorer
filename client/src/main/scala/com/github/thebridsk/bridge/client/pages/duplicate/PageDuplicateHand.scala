@@ -190,7 +190,8 @@ object PageDuplicateHandInternal {
                         allowPassedOut=board.timesPlayed()>0,
                         helppage= None,   // Some("../help/duplicate/enterhand.html"))
                         picture=DuplicateStore.getPicture(md.id,hand.board).map(_.url),
-                        supportPicture = true
+                        supportPicture = true,
+                        disableShowPicture = (board.timesPlayed()>0 && board.timesPlayed()<board.hands.length) && !hand.wasPlayed
                 )
               case _ =>
                 HomePage.loading
