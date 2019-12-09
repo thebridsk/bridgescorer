@@ -189,9 +189,8 @@ object PageDuplicateHandInternal {
                         newhand=newhand,
                         allowPassedOut=board.timesPlayed()>0,
                         helppage= None,   // Some("../help/duplicate/enterhand.html"))
-                        picture=DuplicateStore.getPicture(md.id,hand.board).map(_.url),
+                        picture=DuplicateStore.getPicture(md.id,hand.board,hand.id).map(_.url),
                         supportPicture = true,
-                        disableShowPicture = (board.timesPlayed()>0 && board.timesPlayed()<board.hands.length) && !hand.wasPlayed
                 )
               case _ =>
                 HomePage.loading
@@ -208,17 +207,17 @@ object PageDuplicateHandInternal {
         picture: Option[File],
         removePicture: Boolean
     ) = scope.stateProps { (s,p) =>
-      logger.fine(s"PageDuplicateHand: new contract $contract for ${oldhand.board},${oldhand.id}" )
+      logger.fine(s"PageDuplicateHand: new contract $contract for (${oldhand.board},${oldhand.id})" )
       val newhand: Hand = contract.toHand()
       Controller.updateHand(dup, oldhand.updateHand(newhand))
       if (removePicture) {
         RestClientDuplicate.pictureResource(dup.id).delete(oldhand.board).foreach { (x) =>
-          logger.fine(s"PageDuplicateHand: deleted picture for ${oldhand.board},${oldhand.id}")
+          logger.fine(s"PageDuplicateHand: deleted picture for (${oldhand.board},${oldhand.id})")
         }
       } else {
         picture.foreach{ f =>
-          RestClientDuplicate.pictureResource(dup.id).putPicture(oldhand.board,f).foreach { (x) =>
-            logger.fine(s"PageDuplicateHand: updated picture for ${oldhand.board}")
+          RestClientDuplicate.pictureResource(dup.id).handResource(oldhand.board).putPicture(oldhand.id,f).foreach { (x) =>
+            logger.fine(s"PageDuplicateHand: updated picture for (${oldhand.board},${oldhand.id})")
           }
         }
       }

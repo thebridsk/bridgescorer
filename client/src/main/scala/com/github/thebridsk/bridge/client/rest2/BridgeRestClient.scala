@@ -77,7 +77,7 @@ class RestClientDuplicateBoardHand( parent: RestClientDuplicateBoard, instance: 
 class RestClientDuplicateBoard( parent: RestClient[MatchDuplicate], instance: String ) extends RestClient[Board]("boards", Some(parent), Some(instance) ) {
   def handResource( boardid: String ) = new RestClientDuplicateBoardHand( this, boardid )
 }
-class RestClientDuplicateBoardPicture( parent: RestClient[MatchDuplicate], instance: String ) extends RestClient[DuplicatePicture]("pictures", Some(parent), Some(instance) ) {
+class RestClientDuplicateBoardHandPicture( parent: RestClientDuplicateBoardPicture, instance: String ) extends RestClient[DuplicatePicture]("hands", Some(parent), Some(instance) ) {
   /**
    * @param id
    * @param file the File object.  This must have the filename set, only the extension is important.
@@ -91,13 +91,15 @@ class RestClientDuplicateBoardPicture( parent: RestClient[MatchDuplicate], insta
       query: Map[String, String] = Map.empty,
       headers: Map[String, String] = Map.empty,
       timeout: Duration = AjaxResult.defaultTimeout
-): RestResult[Unit] = {
+  ): RestResult[Unit] = {
     val formData = new FormData
     formData.append("picture", file)
 
     AjaxResult.put(getURL(id,query), data=formData, timeout=timeout, headers=headers).recordFailure()
   }
-
+}
+class RestClientDuplicateBoardPicture( parent: RestClient[MatchDuplicate], instance: String ) extends RestClient[DuplicatePicture]("pictures", Some(parent), Some(instance) ) {
+  def handResource( boardid: String ) = new RestClientDuplicateBoardHandPicture( this, boardid )
 }
 class RestClientDuplicateTeam( parent: RestClient[MatchDuplicate], instance: String ) extends RestClient[Team]("teams", Some(parent), Some(instance) )
 

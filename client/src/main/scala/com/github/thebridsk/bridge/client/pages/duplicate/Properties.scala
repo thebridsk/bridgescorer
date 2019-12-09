@@ -34,7 +34,7 @@ object Properties {
   }
 
   def setViewportContentWidth( pixels: Int ) = {
-    val nc = viewportContent.replace("width=device-width", s"width=${pixels}px")
+    val nc = viewportContent.replace("width=device-width", s"width=${pixels}")
     val elem = Bridge.getElement("metaViewport")
     elem.setAttribute("content",nc)
   }

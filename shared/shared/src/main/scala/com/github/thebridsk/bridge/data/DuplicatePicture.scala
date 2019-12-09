@@ -7,7 +7,11 @@ import io.swagger.v3.oas.annotations.media.Schema
 )
 case class DuplicatePicture(
   @Schema(description = "The board ID", required = true)
-  id: Id.DuplicateBoard,
+  boardId: Id.DuplicateBoard,
+  @Schema(description = "The hand ID", required = true)
+  handId: Id.DuplicateHand,
   @Schema(description = "The URL relative to this servers root URL", required = true)
   url: String
-)
+) {
+  def key = (boardId,handId)
+}

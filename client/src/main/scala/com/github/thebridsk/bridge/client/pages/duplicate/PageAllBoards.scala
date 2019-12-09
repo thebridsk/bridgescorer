@@ -131,7 +131,7 @@ object PageAllBoardsInternal {
                 AppButton( "Game", "Scoreboard", props.routerCtl.setOnClick(props.page.toScoreboardView()) )
               ),
               score.sortedBoards.map { b =>
-                ViewBoard( props.routerCtl, props.page.toBoardView(b.id), score, b.id, state.isIMP )
+                ViewBoard( props.routerCtl, props.page.toBoardView(b.id), score, b.id, state.isIMP, DuplicateStore.getPicture(props.page.dupid, b.id) )
               }.toTagMod,
               <.div(
                 AppButton( "Game2", "Scoreboard", props.routerCtl.setOnClick(props.page.toScoreboardView()) ),

@@ -73,10 +73,9 @@ object PageHand {
              honorsPlayer: Option[PlayerPosition] = None,
              helppage: Option[String] = None,
              picture: Option[String] = None,
-             supportPicture: Boolean = false,
-             disableShowPicture: Boolean = false ) =
-        component(Props(contract.withScoring(),callbackOk,callbackCancel,
-                        teamNS,teamEW,newhand,allowPassedOut,callbackWithHonors,honors,honorsPlayer,helppage,picture,supportPicture,disableShowPicture))
+             supportPicture: Boolean = false
+  ) = component(Props(contract.withScoring(),callbackOk,callbackCancel,
+                      teamNS,teamEW,newhand,allowPassedOut,callbackWithHonors,honors,honorsPlayer,helppage,picture,supportPicture))
 
 
   /**
@@ -118,31 +117,29 @@ object PageHand {
              honorsPlayer: Option[PlayerPosition] = None,
              helppage: Option[String] = None,
              picture: Option[String] = None,
-             supportPicture: Boolean = false,
-             disableShowPicture: Boolean = false ) =
-                                        apply( Contract( h.id,
-                                                         h.contractTricks,
-                                                         h.contractSuit,
-                                                         h.contractDoubled,
-                                                         h.declarer,
-                                                         h.nsVul,
-                                                         h.ewVul,
-                                                         h.madeOrDown,
-                                                         h.tricks,
-                                                         honors,
-                                                         honorsPlayer,
-                                                         scoringSystem,
-                                                         None,
-                                                         table,
-                                                         board,
-                                                         north,
-                                                         south,
-                                                         east,
-                                                         west,
-                                                         dealer
-                                               ), callbackOk, callbackCancel, teamNS, teamEW, newhand=newhand, allowPassedOut=allowPassedOut, callbackWithHonors=callbackWithHonors,
-                                               honors=honors, honorsPlayer=honorsPlayer, helppage=helppage, picture=picture, supportPicture = supportPicture,
-                                               disableShowPicture = disableShowPicture )
+             supportPicture: Boolean = false
+    ) = apply( Contract( h.id,
+                        h.contractTricks,
+                        h.contractSuit,
+                        h.contractDoubled,
+                        h.declarer,
+                        h.nsVul,
+                        h.ewVul,
+                        h.madeOrDown,
+                        h.tricks,
+                        honors,
+                        honorsPlayer,
+                        scoringSystem,
+                        None,
+                        table,
+                        board,
+                        north,
+                        south,
+                        east,
+                        west,
+                        dealer
+              ), callbackOk, callbackCancel, teamNS, teamEW, newhand=newhand, allowPassedOut=allowPassedOut, callbackWithHonors=callbackWithHonors,
+              honors=honors, honorsPlayer=honorsPlayer, helppage=helppage, picture=picture, supportPicture=supportPicture )
 
   var scorekeeper: PlayerPosition = North
 
@@ -172,8 +169,8 @@ object PageHandInternal {
                     honorsPlayer: Option[PlayerPosition] = None,
                     helppage: Option[String] = None,
                     picture: Option[String] = None,
-                    supportPicture: Boolean = false,
-                    disableShowPicture: Boolean = false )
+                    supportPicture: Boolean = false
+  )
 
   /**
    * Internal state for rendering the component.
@@ -556,7 +553,6 @@ object PageHandInternal {
                       ^.capture := "environment",    // use camera in back
                       ^.value := "",
                       ^.onChange ==> doPictureInput _,
-                      ^.disabled := props.disableShowPicture && !pictureShowing
                     )
                   ),
                 ),
@@ -567,7 +563,6 @@ object PageHandInternal {
                   ^.id:="ShowPicture",
                   Photo(),
                   !pictureShowing ?= ^.display.none,
-                  ^.disabled := !pictureShowing || props.disableShowPicture
                 ),
                 <.button(
                   ^.`type` := "button",
@@ -576,7 +571,6 @@ object PageHandInternal {
                   ^.id:="RemovePicture",
                   DeleteForever(),
                   !pictureShowing ?= ^.display.none,
-                  ^.disabled := !pictureShowing || props.disableShowPicture
                 )
               )
             ),

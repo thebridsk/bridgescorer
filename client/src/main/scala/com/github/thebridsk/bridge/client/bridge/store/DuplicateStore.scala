@@ -44,7 +44,7 @@ object DuplicateStore extends ChangeListenable {
   private var completeView: Option[MatchDuplicateScore] = None
   private var teamsView = Map[(Id.Team,Id.Team),MatchDuplicateScore]()
 
-  private var pictures = Map[Id.DuplicateBoard,DuplicatePicture]()
+  private var pictures = Map[(Id.DuplicateBoard,Id.DuplicateHand),DuplicatePicture]()
 
   def getId() = monitoredId
   def getMatch() = bridgeMatch
@@ -113,11 +113,20 @@ object DuplicateStore extends ChangeListenable {
     }
   }
 
-  def getPicture( dupid: Id.MatchDuplicate, boardId: Id.DuplicateBoard ) = {
-    monitoredId.flatMap { dup =>
-      if (dup == dupid) pictures.get(boardId)
-      else None
+  def getPicture( dupid: Id.MatchDuplicate, boardId: Id.DuplicateBoard, handId: Id.DuplicateHand ): Option[DuplicatePicture] = {
+    monitoredId.filter(dup => dup == dupid).flatMap { dup =>
+      pictures.get((boardId,handId))
     }
+  }
+
+  def getPicture( dupid: Id.MatchDuplicate, boardId: Id.DuplicateBoard ): List[DuplicatePicture] = {
+    monitoredId.filter(dup => dup == dupid).map { dup =>
+      pictures.flatMap { e =>
+        val ((bid,hid),dp) = e
+        if (bid == boardId) dp::Nil
+        else Nil
+      }.toList
+    }.getOrElse(List())
   }
 
   private var dispatchToken: Option[DispatchToken] = Some(BridgeDispatcher.register(dispatch _))
@@ -221,23 +230,26 @@ object DuplicateStore extends ChangeListenable {
             case _ =>
               logger.severe("Got a team update and don't have a MatchDuplicate")
           }
-        case ActionUpdatePicture(dupid, boardid, picture) =>
+        case ActionUpdatePicture(dupid, boardid, handid, picture) =>
+          val key = (boardid,handid)
           monitoredId.foreach { monitored =>
             if (dupid == monitored ) {
               picture match {
                 case Some(p) =>
-                  pictures = pictures + (boardid -> p)
+                  pictures = pictures + (key -> p)
                 case None =>
-                  pictures = pictures - boardid
+                  pictures = pictures - key
               }
+              notifyChange()
             }
           }
         case ActionUpdatePictures(dupid, picts) =>
           monitoredId.foreach { monitored =>
             if (dupid == monitored ) {
               pictures = picts.map { p =>
-                p.id -> p
+                p.key -> p
               }.toMap
+              notifyChange()
             }
           }
         case x =>

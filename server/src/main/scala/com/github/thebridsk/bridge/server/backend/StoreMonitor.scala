@@ -491,7 +491,7 @@ class DuplicateStoreMonitor(
               seq
             )
         }
-      case UpdateDuplicatePicture(dupid, boardid, picture) =>
+      case UpdateDuplicatePicture(dupid, boardid, handid, picture) =>
         log.debug(s"UpdateDuplicatePicture ${dupid} ${boardid} ${picture}")
         futureError("Use REST API", seq)
       case UpdateDuplicatePictures(dupid, pictures) =>
@@ -622,7 +622,7 @@ class ChicagoStoreMonitor(
       case UpdateDuplicateTeam(dupid, team) =>
         log.warning("UpdateDuplicateTeam not implemented")
         futureError("Unknown request", seq)
-      case UpdateDuplicatePicture(dupid, boardid, picture) =>
+      case UpdateDuplicatePicture(dupid, boardid, handid, picture) =>
         log.warning("UpdateDuplicatePicture not implemented")
         futureError("Unknown request", seq)
       case UpdateDuplicatePictures(dupid, pictures) =>
@@ -762,7 +762,7 @@ class RubberStoreMonitor(
       case UpdateDuplicateTeam(dupid, team) =>
         log.warning("UpdateDuplicateTeam not implemented")
         futureError("Unknown request", seq)
-      case UpdateDuplicatePicture(dupid, boardid, picture) =>
+      case UpdateDuplicatePicture(dupid, boardid, handid, picture) =>
         log.warning("UpdateDuplicatePicture not implemented")
         futureError("Unknown request", seq)
       case UpdateDuplicatePictures(dupid, pictures) =>
