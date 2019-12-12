@@ -91,25 +91,25 @@ abstract class Store[VId, VType <: VersionedInstance[VType, VType, VId]](
 
   implicit private val self = this
 
-  val metaData = new MetaData[VId] {
+  val metaData = new StoreMetaData[VId] {
 
     override
-    def listFiles( id: VId ): Future[Result[Iterator[MetaDataFile]]] = persistent.listFiles(id)
+    def listFiles( id: VId ): Future[Result[Iterator[MetaDataFile]]] = Future { persistent.listFiles(id) }
 
     override
-    def listFilesFilter( id: VId )( filter: MetaDataFile=>Boolean ): Future[Result[Iterator[MetaDataFile]]] = persistent.listFilesFilter(id)(filter)
+    def listFilesFilter( id: VId )( filter: MetaDataFile=>Boolean ): Future[Result[Iterator[MetaDataFile]]] = Future { persistent.listFilesFilter(id)(filter) }
 
     override
-    def write( id: VId, sourceFile: File, targetFile: MetaDataFile ): Future[Result[Unit]] = persistent.write(id,sourceFile,targetFile)
+    def write( id: VId, sourceFile: File, targetFile: MetaDataFile ): Future[Result[Unit]] = Future { persistent.write(id,sourceFile,targetFile) }
 
     override
-    def read( id: VId, file: MetaDataFile ): Future[Result[InputStream]] = persistent.read(id,file)
+    def read( id: VId, file: MetaDataFile ): Future[Result[InputStream]] = Future { persistent.read(id,file) }
 
     override
-    def delete( id: VId, file: MetaDataFile ): Future[Result[Unit]] = persistent.delete(id,file)
+    def delete( id: VId, file: MetaDataFile ): Future[Result[Unit]] = Future { persistent.delete(id,file) }
 
     override
-    def deleteAll( id: VId ): Future[Result[Unit]] = persistent.deleteAll(id)
+    def deleteAll( id: VId ): Future[Result[Unit]] = Future { persistent.deleteAll(id) }
 
   }
 
@@ -557,8 +557,8 @@ abstract class Store[VId, VType <: VersionedInstance[VType, VType, VId]](
                                 case Left(x) => Left(x)
                               }
                           },
-                          persistent.deleteAll(id).map { ro =>
-                            ro match {
+                          Future {
+                            persistent.deleteAll(id) match {
                               case Right(o) => Right(None)
                               case Left((statuscode,msg)) if statuscode == StatusCodes.BadRequest => Right(None)
                               case Left(x) => Left(x)

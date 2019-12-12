@@ -24,8 +24,9 @@ object StoreIdMeta {
 
   val timestampFormat = "yyyy-MM-dd-HH-mm-ss"
 
-  def notSupported =
-    Result.future(StatusCodes.BadRequest, RestMessage("Metadata is not supported for store"))
+  val resultNotSupported = Result(StatusCodes.BadRequest, RestMessage("Metadata is not supported for store"))
+
+  val notSupported = Future.successful( resultNotSupported )
 
 }
 
@@ -41,6 +42,42 @@ object MetaData {
 import MetaData._
 
 trait MetaData[VId] {
+
+  /**
+   * List all the files for the specified match, all returned filenames are relative to the store directory for specified match.
+   * To read the file, the read method must be used on this object.
+   */
+  def listFiles( id: VId ): Result[Iterator[MetaDataFile]] = StoreIdMeta.resultNotSupported
+
+  /**
+   * List all the files for the specified match that match the filter, all returned filenames are relative to the store directory for specified match.
+   * To read the file, the read method must be used on this object.
+   */
+  def listFilesFilter( id: VId )( filter: MetaDataFile=>Boolean ): Result[Iterator[MetaDataFile]] = StoreIdMeta.resultNotSupported
+
+  /**
+   * Write the specified source file to the target file, the target file is relative to the store directory for specified match.
+   */
+  def write( id: VId, sourceFile: File, targetFile: MetaDataFile ): Result[Unit] = StoreIdMeta.resultNotSupported
+
+  /**
+   * read the specified file, the file is relative to the store directory for specified match.
+   */
+  def read( id: VId, file: MetaDataFile ): Result[InputStream] = StoreIdMeta.resultNotSupported
+
+  /**
+   * delete the specified file, the file is relative to the store directory for specified match.
+   */
+  def delete( id: VId, file: MetaDataFile ): Result[Unit] = StoreIdMeta.resultNotSupported
+
+  /**
+   * delete all the metadata files for the match
+   */
+  def deleteAll( id: VId ): Result[Unit] = StoreIdMeta.resultNotSupported
+
+}
+
+trait StoreMetaData[VId] {
 
   /**
    * List all the files for the specified match, all returned filenames are relative to the store directory for specified match.

@@ -258,7 +258,7 @@ class FilePersistentSupport[VId, VType <: VersionedInstance[VType, VType, VId]](
    * List all the files for the specified match
    */
   override
-  def listFiles( id: VId ): Future[Result[Iterator[MetaDataFile]]] = Future {
+  def listFiles( id: VId ): Result[Iterator[MetaDataFile]] = {
     val dir = getMetadataDir(id)
     if (dir.isDirectory) {
       val it = dir.files.map { f => toMetadataFile(f,dir) }
@@ -272,7 +272,7 @@ class FilePersistentSupport[VId, VType <: VersionedInstance[VType, VType, VId]](
    * List all the files for the specified match that match the filter
    */
   override
-  def listFilesFilter( id: VId )( filter: MetaDataFile=>Boolean ): Future[Result[Iterator[MetaDataFile]]] = Future {
+  def listFilesFilter( id: VId )( filter: MetaDataFile=>Boolean ): Result[Iterator[MetaDataFile]] = {
     val dir = getMetadataDir(id)
     if (dir.isDirectory) {
       val it = dir.files.map { f => toMetadataFile(f,dir) }.filter(filter)
@@ -286,7 +286,7 @@ class FilePersistentSupport[VId, VType <: VersionedInstance[VType, VType, VId]](
    * Write the specified source file to the target file, the target file is relative to the store directory.
    */
   override
-  def write( id: VId, sourceFile: File, targetFile: MetaDataFile ): Future[Result[Unit]] = Future {
+  def write( id: VId, sourceFile: File, targetFile: MetaDataFile ): Result[Unit] = {
     val f = toFileFromMetadataFile(id,targetFile)
     f.parent.jfile.mkdirs
     Files.copy(sourceFile.jfile.toPath(), f.jfile.toPath(), StandardCopyOption.REPLACE_EXISTING)
@@ -297,7 +297,7 @@ class FilePersistentSupport[VId, VType <: VersionedInstance[VType, VType, VId]](
    * read the specified file, the file is relative to the store directory.
    */
   override
-  def read( id: VId, file: MetaDataFile ): Future[Result[InputStream]] = Future {
+  def read( id: VId, file: MetaDataFile ): Result[InputStream] = {
     val f = toFileFromMetadataFile(id,file)
     if (f.isFile) {
       val is = new FileInputStream(f.jfile)
@@ -311,7 +311,7 @@ class FilePersistentSupport[VId, VType <: VersionedInstance[VType, VType, VId]](
    * delete the specified file, the file is relative to the store directory for specified match.
    */
   override
-  def delete( id: VId, file: MetaDataFile ): Future[Result[Unit]] = Future {
+  def delete( id: VId, file: MetaDataFile ): Result[Unit] = {
     val f = toFileFromMetadataFile(id,file)
     if (f.exists) f.delete()
     Result.unit
@@ -321,7 +321,7 @@ class FilePersistentSupport[VId, VType <: VersionedInstance[VType, VType, VId]](
    * delete all the metadata files for the match
    */
   override
-  def deleteAll( id: VId ): Future[Result[Unit]] = Future {
+  def deleteAll( id: VId ): Result[Unit] = {
     val d = getMetadataDir(id)
     FileIO.deleteDirectory(d.jfile.toPath(),None)
     Result.unit

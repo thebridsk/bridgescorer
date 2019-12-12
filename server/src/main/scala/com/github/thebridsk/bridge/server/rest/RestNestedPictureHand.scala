@@ -654,6 +654,16 @@ class RestNestedPictureHand( store: Store[Id.MatchDuplicate,MatchDuplicate], par
                     r match {
                       case Right(value) =>
                         log.fine(s"RestNestedPicture.delete(${mdf}): deleted")
+                        val changeContext = ChangeContext()
+                        changeContext.update(
+                          UpdateDuplicatePicture(
+                            dupid = dupId,
+                            boardid = boardId,
+                            handId = handId,
+                            picture = None
+                          )
+                        )
+                        store.notify(changeContext)
                       case Left(ex) =>
                         log.warning(s"RestNestedPicture.delete(${mdf}): error deleting ${ex}")
                     }

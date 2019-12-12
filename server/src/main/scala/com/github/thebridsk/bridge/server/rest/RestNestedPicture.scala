@@ -210,6 +210,7 @@ class RestNestedPicture( store: Store[Id.MatchDuplicate,MatchDuplicate], parent:
       implicit @Parameter(hidden = true) dupId: Id.MatchDuplicate
   ) = delete {
     path("""[a-zA-Z0-9]+""".r) { boardid =>
+      val changeContext = ChangeContext()
       val fut = store.metaData.listFiles(dupId).map { rimdf =>
         rimdf match {
           case Right(imdf) =>
@@ -224,6 +225,15 @@ class RestNestedPicture( store: Store[Id.MatchDuplicate,MatchDuplicate], parent:
                     r match {
                       case Right(value) =>
                         log.fine(s"RestNestedPicture.delete(${mdf}): deleted")
+                        val parts = RestNestedPictureHand.getPartsMetadataFile(mdf)
+                        parts.foreach( p => changeContext.update(
+                          UpdateDuplicatePicture(
+                            dupid = dupId,
+                            boardid = boardid,
+                            handId = p.handId,
+                            picture = None
+                          )
+                        ))
                       case Left(ex) =>
                         log.warning(s"RestNestedPicture.delete(${mdf}): error deleting ${ex}")
                     }
@@ -236,6 +246,7 @@ class RestNestedPicture( store: Store[Id.MatchDuplicate,MatchDuplicate], parent:
             onComplete(Future.foldLeft(deletes)(Result.unit) { (ac,v) => ac}) {
               case Success(value) =>
                 log.fine(s"RestNestedPicture.delete(${boardid}): deleted image")
+                store.notify(changeContext)
                 complete(StatusCodes.NoContent)
               case Failure(ex) =>
                 log.warning(s"Error deleting image file for board: ${ex}",ex)
