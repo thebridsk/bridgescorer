@@ -61,6 +61,11 @@ trait MetaData[VId] {
   def write( id: VId, sourceFile: File, targetFile: MetaDataFile ): Result[Unit] = StoreIdMeta.resultNotSupported
 
   /**
+   * Write the specified source file to the target file, the target file is relative to the store directory for specified match.
+   */
+  def write( id: VId, source: InputStream, targetFile: MetaDataFile ): Result[Unit] = StoreIdMeta.resultNotSupported
+
+  /**
    * read the specified file, the file is relative to the store directory for specified match.
    */
   def read( id: VId, file: MetaDataFile ): Result[InputStream] = StoreIdMeta.resultNotSupported

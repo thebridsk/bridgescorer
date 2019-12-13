@@ -163,7 +163,7 @@ class ZipPersistentSupport[VId, VType <: VersionedInstance[VType, VType, VId]](
     * Get all the IDs from persistent storage
     */
   def getAllIdsFromPersistent(): Set[VId] = {
-      val pattern = (s"""${storedir}${resourceName}\\.([^.]+)\\..*""").r
+      val pattern = (s"""${storedir}${resourceName}\\.([^./]+)\\..*""").r
 
     val keys = zipfile
       .entries()
@@ -313,6 +313,12 @@ class ZipPersistentSupport[VId, VType <: VersionedInstance[VType, VType, VId]](
    */
   override
   def write( id: VId, sourceFile: File, targetFile: MetaDataFile ): Result[Unit] = StoreIdMeta.resultNotSupported
+
+  /**
+   * Write the specified source file to the target file, the target file is relative to the store directory for specified match.
+   */
+  override
+  def write( id: VId, source: InputStream, targetFile: MetaDataFile ): Result[Unit] = StoreIdMeta.resultNotSupported
 
   /**
    * read the specified file, the file is relative to the store directory for specified match.

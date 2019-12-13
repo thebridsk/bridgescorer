@@ -22,6 +22,8 @@ import java.nio.file.Files
 import java.nio.file.StandardCopyOption
 import java.io.InputStream
 import com.github.thebridsk.bridge.server.backend.resource.MetaData.MetaDataFile
+import java.io.FileOutputStream
+import resource.Using
 
 object FileStore {
   val log = Logger[FileStore[_, _]]
@@ -65,15 +67,11 @@ class FilePersistentSupport[VId, VType <: VersionedInstance[VType, VType, VId]](
     * Get all the IDs from persistent storage
     */
   def getAllIdsFromPersistent(): Set[VId] = {
-    val pattern = (resourceName + "\\.([^.]+)\\..*").r
+    val pattern = (resourceName + "\\.([^./]+)\\..*").r
 //    val pattern = s"""${resourceName}\.([^.]+)\..*""".r
 
     val keys = directory.files
-      .map { path =>
-        {
-          path.name
-        }
-      }
+      .map { path => path.name }
       .flatMap {
         case pattern(sid) =>
           support.stringToId(sid)
@@ -290,6 +288,20 @@ class FilePersistentSupport[VId, VType <: VersionedInstance[VType, VType, VId]](
     val f = toFileFromMetadataFile(id,targetFile)
     f.parent.jfile.mkdirs
     Files.copy(sourceFile.jfile.toPath(), f.jfile.toPath(), StandardCopyOption.REPLACE_EXISTING)
+    Result.unit
+  }
+
+  /**
+   * Write the specified source file to the target file, the target file is relative to the store directory for specified match.
+   */
+  override
+  def write( id: VId, source: InputStream, targetFile: MetaDataFile ): Result[Unit] = {
+    val f = toFileFromMetadataFile(id,targetFile)
+    f.parent.jfile.mkdirs
+    val out = new FileOutputStream(f.jfile)
+    Using.bufferedOutputStream(new FileOutputStream(f.jfile)) { out =>
+      ZipStoreInternal.copy(source,out)
+    }
     Result.unit
   }
 
