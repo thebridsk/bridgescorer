@@ -713,6 +713,7 @@ object BldBridge {
       releaseTagName := "v" + git.baseVersion.value,
       releaseTagComment := s"Releasing ${git.baseVersion.value}",
       releaseCommitMessage := s"Setting version to ${git.baseVersion.value}",
+      releaseNextCommitMessage := s"Setting version to ${git.baseVersion.value}",
       releaseProcess := Seq[ReleaseStep](
         checkSnapshotDependencies, // : ReleaseStep
         gitMakeReleaseBranch,
