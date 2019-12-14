@@ -30,6 +30,7 @@ import sbt.SettingKey
   * releaseTagName := "v"+git.baseVersion.value
   * releaseTagComment := s"Releasing ${git.baseVersion.value}"
   * releaseCommitMessage := s"Setting version to ${git.baseVersion.value}"
+  * releaseNextCommitMessage := s"Setting version to ${git.baseVersion.value}"
   *
   * releaseProcess := Seq[ReleaseStep](
   *     checkSnapshotDependencies,
@@ -63,8 +64,7 @@ object MyReleaseVersion {
 
   private val globalVersionString = "git.baseVersion in ThisBuild := \"%s\""
   private val versionString = "git.baseVersion := \"%s\""
-  private def setVersion(selectVersion: Versions => String): ReleaseStep = {
-    st: State =>
+  private def setVersion(selectVersion: Versions => String): ReleaseStep = { st: State =>
       val vs = st
         .get(ReleaseKeys.versions)
         .getOrElse(
