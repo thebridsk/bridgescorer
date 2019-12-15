@@ -22,6 +22,16 @@ import com.github.thebridsk.utilities.file.FileIO
 import org.openqa.selenium.TakesScreenshot
 import org.openqa.selenium.OutputType
 import scala.io.Codec
+import scala.annotation.implicitNotFound
+
+@implicitNotFound("Nothing was inferred")
+sealed trait NotNothing[-T]
+
+object NotNothing {
+  implicit object notNothing extends NotNothing[Any]
+  //We do not want Nothing to be inferred, so make an ambigous implicit
+  implicit object `\n The error is because the type parameter was resolved to Nothing` extends NotNothing[Nothing]
+}
 
 object PageBrowsersImplicits {
   import scala.language.implicitConversions
@@ -280,7 +290,14 @@ trait PageBrowser {
 
   def click(implicit pos: Position) = new ClickOn
 
-  def textField( tid: String )(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position): TextField =
+  def textField(
+      tid: String
+  )(
+    implicit
+      webDriver: WebDriver,
+      patienceConfig: PatienceConfig,
+      pos: Position
+  ): TextField =
     // new TextField( find(name(tid)) )
     findElem[TextField]( name(tid) )
 
@@ -289,7 +306,8 @@ trait PageBrowser {
     )(implicit webDriver: WebDriver,
                patienceConfig: PatienceConfig,
                pos: Position,
-               classtag: ClassTag[T]
+               classtag: ClassTag[T],
+               nothing: NotNothing[T]
     ): T = {
     val el = find(by)
     getElement(el)
@@ -300,7 +318,8 @@ trait PageBrowser {
     )(implicit webDriver: WebDriver,
                 patienceConfig: PatienceConfig,
                 pos: Position,
-                classtag: ClassTag[T]
+                classtag: ClassTag[T],
+                nothing: NotNothing[T]
     ): T = {
     if (classtag.runtimeClass == classOf[Element]) elem.asInstanceOf[T]
     else {
@@ -318,7 +337,8 @@ trait PageBrowser {
     )(implicit webDriver: WebDriver,
                patienceConfig: PatienceConfig,
                pos: Position,
-               classtag: ClassTag[T]
+               classtag: ClassTag[T],
+               nothing: NotNothing[T]
     ): List[T] = {
     val el = findAll(by)
     implicit val con = PageBrowser.getConstructor[T]
@@ -330,7 +350,8 @@ trait PageBrowser {
     )(implicit patienceConfig: PatienceConfig,
                 webdriver: WebDriver,
                pos: Position,
-               classtag: ClassTag[T]
+               classtag: ClassTag[T],
+               nothing: NotNothing[T]
     ): List[T] = {
     implicit val con = PageBrowser.getConstructor[T]
     el.map( e => newInstance(e.underlying,pos,webdriver,patienceConfig))
@@ -487,8 +508,18 @@ object PageBrowser extends PageBrowser {
 
   private[browserpages] val log = Logger[PageBrowser]
 
-  private[PageBrowser] def getConstructor[T <: Element](implicit classtag: ClassTag[T]) =
-    classtag.runtimeClass.getDeclaredConstructor(classOf[WebElement],classOf[Position],classOf[WebDriver],classOf[PatienceConfig] ).asInstanceOf[Constructor[T]]
+  private[PageBrowser] def getConstructor[T <: Element](implicit classtag: ClassTag[T], nothing: NotNothing[T]) = {
+    try {
+      classtag.runtimeClass.getDeclaredConstructor(classOf[WebElement],classOf[Position],classOf[WebDriver],classOf[PatienceConfig] ).asInstanceOf[Constructor[T]]
+    } catch {
+      case x: Exception =>
+        log.warning(s"""Error finding constructor for Element subclass: $x""")
+        classtag.runtimeClass.getConstructors().foreach { c =>
+          log.warning(s"""PageBrowser for ${classtag.runtimeClass.getName()} found constructor $c""")
+        }
+        throw x
+    }
+  }
 
   private[browserpages] def getPath( filename: File ): Path = FileSystems.getDefault.getPath(filename.toString())
 
