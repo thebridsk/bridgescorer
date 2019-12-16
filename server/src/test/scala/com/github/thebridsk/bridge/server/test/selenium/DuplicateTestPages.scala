@@ -447,6 +447,12 @@ class DuplicateTestPages extends FlatSpec
 
   var nsForTable1Round1: Option[String] = None
 
+  def getSampleHandImage = {
+    val f1 = File("../testdata/SampleHand.jpg").toAbsolute.toCanonical.toFile
+    if (f1.isFile) f1
+    else File("testdata/SampleHand.jpg").toAbsolute.toCanonical.toFile
+  }
+
   it should "allow first round to be played at both tables" in {
     tcpSleep(60)
     waitForFutures(
@@ -475,7 +481,7 @@ class DuplicateTestPages extends FlatSpec
           val hand1a = hand1.validatePicture()
           hand1a.checkShowDisplayed(false)
           hand1a.checkDeleteDisplayed(false)
-          val hand1b = hand1a.selectPictureFile( File("../testdata/SampleHand.jpg").toAbsolute.toCanonical.toFile)
+          val hand1b = hand1a.selectPictureFile( getSampleHandImage )
           hand1b.checkShowDisplayed(true)
           hand1b.checkDeleteDisplayed(true)
           val hand1c = hand1b.clickShowPicture.validatePicture(true)
