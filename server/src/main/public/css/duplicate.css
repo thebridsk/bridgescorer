@@ -542,6 +542,9 @@
   align-items: center;
 }
 
+.dupDivAllBoardsPage > div {
+  padding: 5px;
+}
 .dupDivFinishedScoreboardsPage > div {
   padding: 5px;
 }
