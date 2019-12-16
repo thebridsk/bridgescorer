@@ -170,7 +170,7 @@ object ViewBoardInternal {
                                             ^.`type` := "button",
                                             handStyles.footerButton,
                                             ^.onClick --> backend.doShowPicture(dp.url),
-                                            ^.id:="ShowPicture",
+                                            ^.id:="ShowPicture_"+tbs.teamId,
                                             Photo()
                                           )
                                         }
