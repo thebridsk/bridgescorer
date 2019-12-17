@@ -23,7 +23,7 @@ import java.util.zip.ZipOutputStream
 import java.util.zip.ZipEntry
 import java.io.OutputStreamWriter
 import java.io.OutputStream
-import resource.Using
+import scala.util.Using
 
 object ZipStore {
   val log = Logger[ZipStore[_, _]]
@@ -116,7 +116,7 @@ object ZipStoreInternal {
                         case Left(value) =>
                           // ignore errors
                         case Right(input) =>
-                          Using.bufferedInputStream(input) { is =>
+                          Using.resource(input) { is =>
                             zip.putNextEntry( new ZipEntry(s"${dir}${mdf}"))
                             copy(is,zip)
                           }

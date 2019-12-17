@@ -16,8 +16,9 @@ import MetaData.MetaDataFile
 import scala.reflect.io.File
 import java.io.InputStream
 import java.io.ByteArrayInputStream
-import resource.Using
 import scala.collection.mutable
+import scala.util.Using
+import java.io.FileInputStream
 
 class InMemoryPersistent[VId, VType <: VersionedInstance[VType, VType, VId]](
     implicit
@@ -192,7 +193,7 @@ class InMemoryPersistent[VId, VType <: VersionedInstance[VType, VType, VId]](
   def write( id: VId, sourceFile: File, targetFile: MetaDataFile ): Result[Unit] = {
     val len = sourceFile.length
     val data = new Array[Byte](len.toInt)
-    Using.fileInputStream(sourceFile.jfile) { is =>
+    Using.resource( new FileInputStream(sourceFile.jfile)) { is =>
       is.read(data)
     }
     write(id,data,targetFile)
