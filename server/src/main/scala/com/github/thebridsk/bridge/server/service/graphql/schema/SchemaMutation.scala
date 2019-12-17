@@ -54,6 +54,7 @@ import SchemaDuplicate.{log => _, _}
 import SchemaRubber.{log => _, _}
 import SchemaChicago.{log => _, _}
 import SchemaService.{log => _, _}
+import resource.Using
 
 object SchemaMutation {
 
@@ -148,6 +149,32 @@ object ImportAction {
           ctx.ctx.duplicates.importChild(dup).map { rc =>
             rc match {
               case Right(cdup) =>
+                val importedId = cdup.id
+                bs.duplicates.persistent.listFiles(dup.id) match {
+                  case Left((statusCode, msg)) =>
+                    throw new Exception(
+                      s"Error importing images into store: ${dupId} from import store ${bs.id}: ${statusCode} ${msg.msg}"
+                    )
+                  case Right(mdfs) =>
+                    mdfs.foreach { mdf =>
+                      bs.duplicates.persistent.read(dup.id,mdf) match {
+                        case Left((statusCode, msg)) =>
+                          throw new Exception(
+                            s"Error importing images into store: ${dupId} from import store ${bs.id}: ${statusCode} ${msg.msg}"
+                          )
+                        case Right(data) =>
+                          Using.bufferedInputStream(data) { is =>
+                            ctx.ctx.duplicates.persistent.write(importedId,is,mdf) match {
+                              case Left((statusCode, msg)) =>
+                                throw new Exception(
+                                  s"Error importing images into store: ${dupId} from import store ${bs.getClass().getName()}(${bs.id}) to ${ctx.ctx.getClass().getName()}(${ctx.ctx.id}): ${statusCode} ${msg.msg}"
+                                )
+                              case Right(_) =>
+                            }
+                          }
+                      }
+                    }
+                }
                 cdup
               case Left((statusCode, msg)) =>
                 throw new Exception(

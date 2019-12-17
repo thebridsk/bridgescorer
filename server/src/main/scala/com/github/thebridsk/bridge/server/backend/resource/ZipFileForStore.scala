@@ -8,6 +8,7 @@ import scala.io.Source
 import com.github.thebridsk.utilities.logging.Logger
 
 import ZipFileForStore.log
+import java.io.InputStream
 
 class ZipFileForStore(
     val zipfilename: File
@@ -27,7 +28,7 @@ class ZipFileForStore(
     * @param zipentry
     * @return None if an error occurred
     */
-  def getInputStream(zipentry: ZipEntry) = {
+  def getInputStream(zipentry: ZipEntry): Option[InputStream] = {
     try {
       Option(zipfile.getInputStream(zipentry))
     } catch {
@@ -37,6 +38,19 @@ class ZipFileForStore(
           x
         )
         None
+    }
+  }
+
+  /**
+    * Returns the input stream of a zip entry
+    * @param zipentry
+    * @return None if an error occurred
+    */
+  def getInputStream(zipentry: String): Option[InputStream] = {
+    Option(zipfile.getEntry(zipentry)) match {
+      case None => None
+      case Some(ze) =>
+        getInputStream(ze)
     }
   }
 

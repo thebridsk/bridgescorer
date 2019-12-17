@@ -542,6 +542,9 @@
   align-items: center;
 }
 
+.dupDivAllBoardsPage > div {
+  padding: 5px;
+}
 .dupDivFinishedScoreboardsPage > div {
   padding: 5px;
 }
@@ -1162,4 +1165,17 @@
 }
 .dupDivEditMovement > div:first-child > label.baseCheckbox {
   font-size: inherit;
+}
+.dupDivBoardView button.handFooterButton {
+  white-space: nowrap;
+  height: 50px;
+  margin: 2px;
+  padding: 1px 6px;
+  border-radius: 20px;
+  background-color: var(--color-default-button);
+  color: var(--color-fg-default-button);
+  border-style: outset;
+  border-width: 2px;
+  font-size: x-large;
+  font-weight: bold;
 }

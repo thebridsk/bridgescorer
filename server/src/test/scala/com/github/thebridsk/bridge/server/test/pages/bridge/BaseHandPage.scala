@@ -81,8 +81,11 @@ object BaseHandPage {
   }
 }
 
-abstract class BaseHandPage( implicit webDriver: WebDriver, pageCreated: SourcePosition ) extends Page[BaseHandPage] {
+abstract class BaseHandPage[T <: Page[T]]( implicit webDriver: WebDriver, pageCreated: SourcePosition ) extends Page[T] {
+  baseself: T =>
+
   import BaseHandPage._
+
 
   def validate(implicit patienceConfig: PatienceConfig, pos: Position) = logMethod(s"${pos.line} ${getClass.getSimpleName}.validate") {
     eventually {

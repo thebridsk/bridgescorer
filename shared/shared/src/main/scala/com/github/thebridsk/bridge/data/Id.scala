@@ -42,6 +42,7 @@ object Id {
     case idpattern(bn) => bn
     case _             => id
   }
+  def teamNumberToTeamId( n: Int) = s"T${n}"
   def tableIdToTableNumber(id: Id.Table) = id match {
     case idpattern(bn) => bn
     case _             => id

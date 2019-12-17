@@ -16,6 +16,7 @@ import com.github.thebridsk.bridge.data.util.Strings
 import com.github.thebridsk.bridge.server.test.pages.duplicate.ScoreboardPage.PlaceEntry
 import com.github.thebridsk.bridge.data.BoardSet
 import com.github.thebridsk.bridge.data.Movement
+import com.github.thebridsk.bridge.server.test.pages.bridge.HandPicture
 
 object HandPage {
 
@@ -36,7 +37,7 @@ object HandPage {
   val patternForIds = """(M\d+)/table/(\d+)/round/(\d+)/boards/(B\d+)/hands/(T\d+)""".r
 }
 
-class HandPage( implicit webDriver: WebDriver, pageCreated: SourcePosition ) extends BaseHandPage {
+class HandPage( implicit val webDriver: WebDriver, pageCreated: SourcePosition ) extends BaseHandPage[HandPage] with HandPicture[HandPage] {
   import HandPage._
 
   override

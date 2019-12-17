@@ -31,6 +31,7 @@ import com.github.thebridsk.bridge.client.routes.BridgeRouter
 import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles.baseStyles
 import com.github.thebridsk.bridge.client.pages.HomePage
 import japgolly.scalajs.react.component.builder.Lifecycle.ComponentDidUpdate
+import org.scalajs.dom.raw.File
 
 /**
  * A skeleton component.
@@ -76,14 +77,14 @@ object PageRubberMatchHandInternal {
    */
   class Backend(scope: BackendScope[Props, State]) {
 
-    def viewHandCallbackOk( handid: String )( contract: Contract ) =
+    def viewHandCallbackOk( handid: String )( contract: Contract, picture: Option[File], removePicture: Boolean ) =
       scope.props >>= { props => {
         val time = SystemTime.currentTimeMillis()
         RubberController.updateRubberHand(props.page.rid, handid, RubberHand(contract.id,contract.toHand(),0,None,time,time))
         props.routerCtl.set(props.page.toRubber())
       }}
 
-    def viewHandCallbackWithHonors( handid: String )( contract: Contract, honors: Int, honorsPlayer: Option[PlayerPosition] ) =
+    def viewHandCallbackWithHonors( handid: String )( contract: Contract, picture: Option[File], removePicture: Boolean, honors: Int, honorsPlayer: Option[PlayerPosition] ) =
       scope.props >>= { props => {
         val time = SystemTime.currentTimeMillis()
         RubberController.updateRubberHand(props.page.rid, handid, RubberHand(contract.id,contract.toHand(),honors,honorsPlayer.map(_.pos),time,time))

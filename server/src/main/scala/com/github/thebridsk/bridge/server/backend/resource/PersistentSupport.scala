@@ -5,6 +5,11 @@ import com.github.thebridsk.bridge.data.RestMessage
 import com.github.thebridsk.bridge.data.VersionedInstance
 import scala.concurrent.Future
 import com.github.thebridsk.bridge.data.Id
+import scala.reflect.io.File
+import java.io.OutputStream
+import scala.io.Source
+import scala.reflect.io.Streamable.Bytes
+import java.io.InputStream
 
 
 /**
@@ -18,6 +23,99 @@ case class StoreIdMeta[VId]( id: VId, timestamp: String, persistentMeta: String,
 object StoreIdMeta {
 
   val timestampFormat = "yyyy-MM-dd-HH-mm-ss"
+
+  val resultNotSupported = Result(StatusCodes.BadRequest, RestMessage("Metadata is not supported for store"))
+
+  val notSupported = Future.successful( resultNotSupported )
+
+}
+
+object MetaData {
+
+  /**
+   * The filename
+   */
+  type MetaDataFile = String
+
+}
+
+import MetaData._
+
+trait MetaData[VId] {
+
+  /**
+   * List all the files for the specified match, all returned filenames are relative to the store directory for specified match.
+   * To read the file, the read method must be used on this object.
+   */
+  def listFiles( id: VId ): Result[Iterator[MetaDataFile]] = StoreIdMeta.resultNotSupported
+
+  /**
+   * List all the files for the specified match that match the filter, all returned filenames are relative to the store directory for specified match.
+   * To read the file, the read method must be used on this object.
+   */
+  def listFilesFilter( id: VId )( filter: MetaDataFile=>Boolean ): Result[Iterator[MetaDataFile]] = StoreIdMeta.resultNotSupported
+
+  /**
+   * Write the specified source file to the target file, the target file is relative to the store directory for specified match.
+   */
+  def write( id: VId, sourceFile: File, targetFile: MetaDataFile ): Result[Unit] = StoreIdMeta.resultNotSupported
+
+  /**
+   * Write the specified source file to the target file, the target file is relative to the store directory for specified match.
+   */
+  def write( id: VId, source: InputStream, targetFile: MetaDataFile ): Result[Unit] = StoreIdMeta.resultNotSupported
+
+  /**
+   * read the specified file, the file is relative to the store directory for specified match.
+   */
+  def read( id: VId, file: MetaDataFile ): Result[InputStream] = StoreIdMeta.resultNotSupported
+
+  /**
+   * delete the specified file, the file is relative to the store directory for specified match.
+   */
+  def delete( id: VId, file: MetaDataFile ): Result[Unit] = StoreIdMeta.resultNotSupported
+
+  /**
+   * delete all the metadata files for the match
+   */
+  def deleteAll( id: VId ): Result[Unit] = StoreIdMeta.resultNotSupported
+
+}
+
+trait StoreMetaData[VId] {
+
+  /**
+   * List all the files for the specified match, all returned filenames are relative to the store directory for specified match.
+   * To read the file, the read method must be used on this object.
+   */
+  def listFiles( id: VId ): Future[Result[Iterator[MetaDataFile]]] = StoreIdMeta.notSupported
+
+  /**
+   * List all the files for the specified match that match the filter, all returned filenames are relative to the store directory for specified match.
+   * To read the file, the read method must be used on this object.
+   */
+  def listFilesFilter( id: VId )( filter: MetaDataFile=>Boolean ): Future[Result[Iterator[MetaDataFile]]] = StoreIdMeta.notSupported
+
+  /**
+   * Write the specified source file to the target file, the target file is relative to the store directory for specified match.
+   */
+  def write( id: VId, sourceFile: File, targetFile: MetaDataFile ): Future[Result[Unit]] = StoreIdMeta.notSupported
+
+  /**
+   * read the specified file, the file is relative to the store directory for specified match.
+   */
+  def read( id: VId, file: MetaDataFile ): Future[Result[InputStream]] = StoreIdMeta.notSupported
+
+  /**
+   * delete the specified file, the file is relative to the store directory for specified match.
+   */
+  def delete( id: VId, file: MetaDataFile ): Future[Result[Unit]] = StoreIdMeta.notSupported
+
+  /**
+   * delete all the metadata files for the match
+   */
+  def deleteAll( id: VId ): Future[Result[Unit]] = StoreIdMeta.notSupported
+
 }
 
 abstract class PersistentSupport[
@@ -26,7 +124,7 @@ abstract class PersistentSupport[
 ](
     implicit
     val support: StoreSupport[VId, VType]
-) {
+) extends MetaData[VId] {
 
   val resourceURI: String = support.resourceURI
 

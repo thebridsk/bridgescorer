@@ -33,6 +33,11 @@ import com.github.thebridsk.materialui.TextColor
 import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles.baseStyles
 import com.github.thebridsk.bridge.client.pages.HomePage
 import japgolly.scalajs.react.component.builder.Lifecycle.ComponentDidUpdate
+import org.scalajs.dom.raw.File
+import com.github.thebridsk.bridge.clientcommon.rest2.RestClientDuplicate
+import scala.concurrent.ExecutionContext.Implicits.global
+import com.github.thebridsk.bridge.clientcommon.react.Utils._
+import com.github.thebridsk.bridge.data.DuplicatePicture
 
 /**
  * Shows the team x board table and has a totals column that shows the number of points the team has.
@@ -68,7 +73,11 @@ object PageDuplicateHandInternal {
    * will cause State to leak.
    *
    */
-  case class State( vals: Option[(MatchDuplicate,Board,DuplicateHand,Hand)], newhand: Boolean, errormsg: Option[String] )
+  case class State(
+    vals: Option[(MatchDuplicate,Board,DuplicateHand,Hand)],
+    newhand: Boolean,
+    errormsg: Option[String] = None
+  )
 
   object State {
     def create( props: Props ) = {
@@ -179,7 +188,10 @@ object PageDuplicateHandInternal {
                         Some(hand.ewTeam),
                         newhand=newhand,
                         allowPassedOut=board.timesPlayed()>0,
-                        helppage= None) // Some("../help/duplicate/enterhand.html"))
+                        helppage= None,   // Some("../help/duplicate/enterhand.html"))
+                        picture=DuplicateStore.getPicture(md.id,hand.board,hand.id).map(_.url),
+                        supportPicture = true,
+                )
               case _ =>
                 HomePage.loading
             }
@@ -187,11 +199,28 @@ object PageDuplicateHandInternal {
       )
     }
 
-    def viewHandCallbackOk(dup: MatchDuplicate, oldhand: DuplicateHand)( contract: Contract ) = CallbackTo {
-      logger.info("PageDuplicateHand: new contract "+contract)
-    } >> scope.props >>= { p =>
+    def viewHandCallbackOk(
+        dup: MatchDuplicate,
+        oldhand: DuplicateHand
+    )(
+        contract: Contract,
+        picture: Option[File],
+        removePicture: Boolean
+    ) = scope.stateProps { (s,p) =>
+      logger.fine(s"PageDuplicateHand: new contract $contract for (${oldhand.board},${oldhand.id})" )
       val newhand: Hand = contract.toHand()
       Controller.updateHand(dup, oldhand.updateHand(newhand))
+      if (removePicture) {
+        RestClientDuplicate.pictureResource(dup.id).delete(oldhand.board).foreach { (x) =>
+          logger.fine(s"PageDuplicateHand: deleted picture for (${oldhand.board},${oldhand.id})")
+        }
+      } else {
+        picture.foreach{ f =>
+          RestClientDuplicate.pictureResource(dup.id).handResource(oldhand.board).putPicture(oldhand.id,f).foreach { (x) =>
+            logger.fine(s"PageDuplicateHand: updated picture for (${oldhand.board},${oldhand.id})")
+          }
+        }
+      }
       p.routerCtl.set(p.page.toBoardView())
     }
 
@@ -225,9 +254,10 @@ object PageDuplicateHandInternal {
       DuplicateStore.addChangeListener(storeCallback)
 
       Controller.monitor(p.page.dupid)
+
     }}
 
-    val willUnmount = CallbackTo {
+    val willUnmount = Callback {
       logger.info("PageDuplicateHand.willUnmount")
       DuplicateStore.removeChangeListener(storeCallback)
       Controller.delayStop()

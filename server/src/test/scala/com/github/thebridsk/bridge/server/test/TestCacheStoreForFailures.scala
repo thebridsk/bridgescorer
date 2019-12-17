@@ -778,7 +778,7 @@ class TestCacheStoreForFailures extends AsyncFlatSpec with ScalatestRouteTest wi
           case Success(Left((statuscode,RestMessage(msg)))) =>
             listener.testEmpty()
             statuscode mustBe StatusCodes.InsufficientStorage
-            msg mustBe "Oops can't delete"
+            msg mustBe "Partial success, metadata deleted, Oops can't delete"
           case Failure(ex) =>
             listener.testEmpty()
             fail(s"Got failure ${ex}")
@@ -803,7 +803,7 @@ class TestCacheStoreForFailures extends AsyncFlatSpec with ScalatestRouteTest wi
           case Success(Left((statuscode,RestMessage(msg)))) =>
             listener.testEmpty()
             statuscode mustBe StatusCodes.InsufficientStorage
-            msg mustBe "Oops can't delete"
+            msg mustBe "Partial success, metadata deleted, Oops can't delete"
           case Failure(ex) =>
             listener.testEmpty()
             fail(s"Got failure ${ex}")
