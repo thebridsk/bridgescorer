@@ -91,6 +91,7 @@ import com.github.thebridsk.bridge.server.test.pages.duplicate.StatisticsPage
 import com.github.thebridsk.bridge.server.test.pages.LightDarkAddOn
 import scala.util.Using
 import scala.math.Ordering.Double.TotalOrdering
+import com.github.thebridsk.bridge.data.Id
 
 object DuplicateTestPages {
 
@@ -446,6 +447,14 @@ class DuplicateTestPages extends FlatSpec
     )
   }
 
+  var nsForTable1Round1: Option[String] = None
+
+  def getSampleHandImage = {
+    val f1 = File("../testdata/SampleHand.jpg").toAbsolute.toCanonical.toFile
+    if (f1.isFile) f1
+    else File("testdata/SampleHand.jpg").toAbsolute.toCanonical.toFile
+  }
+
   it should "allow first round to be played at both tables" in {
     tcpSleep(60)
     waitForFutures(
@@ -462,7 +471,26 @@ class DuplicateTestPages extends FlatSpec
 //          hand.clickClear
           val board = hand.enterHand( 1, 1, 1, allHands, team1original, team2)
           board.checkBoardButtons(1, true, 1).checkBoardButtons(1, false, 2, 3).checkBoardButtonSelected(1)
-          val hand2 = board.clickUnplayedBoard(2).validate
+          val board1 = board.clickPlayedBoard(1).validate
+          val nsRound1 = allHands.movement.map { mov =>
+            mov.hands.find( hit => hit.round == 1 && hit.table === 1).map { hit =>
+              hit.ns
+            }.getOrElse( fail(s"Did not find table 1 round 1"))
+          }.getOrElse( fail(s"Unable to determine NS for table 1 round 1"))
+          val teamId = Id.teamNumberToTeamId(nsRound1)
+          nsForTable1Round1 = Some(teamId)
+          val hand1 = board1.clickHand(nsRound1).validate
+          val hand1a = hand1.validatePicture()
+          hand1a.checkShowDisplayed(false)
+          hand1a.checkDeleteDisplayed(false)
+          val hand1b = hand1a.selectPictureFile( getSampleHandImage )
+          hand1b.checkShowDisplayed(true)
+          hand1b.checkDeleteDisplayed(true)
+          val hand1c = hand1b.clickShowPicture.validatePicture(true)
+          val hand1d = hand1c.clickOkPicture.validatePicture(false)
+          val board1a = hand1d.clickOk
+          board1a.validatePictures(false,List(Id.teamNumberToTeamId(nsRound1)))
+          val hand2 = board1a.clickUnplayedBoard(2).validate
           val board2 = hand2.enterHand( 1, 1, 2, allHands, team1original, team2)
           board2.checkBoardButtons(2, true,1,2).checkBoardButtons(2, false, 3).checkBoardButtonSelected(2)
           val hand3 = board2.clickUnplayedBoard(3).validate
@@ -500,7 +528,10 @@ class DuplicateTestPages extends FlatSpec
         round: Int,
         allplayed: Boolean,
         screenshot: Option[Int] = None,
-        screenshotName: Option[String] = None
+        screenshotName: Option[String] = None,
+        boardWithPicture: Option[Int] = None,
+        nsForPicture: Option[String] = None,
+        pictureButtonShowing: Boolean = true
       )( implicit
          webDriver: WebDriver
       ): ScoreboardPage = {
@@ -510,15 +541,35 @@ class DuplicateTestPages extends FlatSpec
     }
 
     val pr = boards.foldLeft( None: Option[BoardPage] ) { (progress,board) =>
+
+      def processBoard( bp: BoardPage ) = {
+        val bp1 = bp.clickPlayedBoard(board).validate
+        testlog.fine(s"table ${table}, round ${round}, current board is ${board}, checkmarks ${checkmarks}, all boards are ${boards}: board picture ${boardWithPicture}, ${nsForPicture}, ${pictureButtonShowing}")
+        boardWithPicture.filter(b=>b==board).foreach { b =>
+          nsForPicture.foreach { ns =>
+            if (pictureButtonShowing) {
+              testlog.fine(s"table ${table}, round ${round}, current board is ${board}, checkmarks ${checkmarks}, all boards are ${boards}: show picture")
+              bp.validatePictures(ids = ns::Nil)
+              val bp1 = bp.clickShowPicture(ns).validatePictures(true)
+              bp1.clickOkPicture.validatePictures(ids=ns::Nil)
+            } else {
+              testlog.fine(s"table ${table}, round ${round}, current board is ${board}, checkmarks ${checkmarks}, all boards are ${boards}: no picture")
+              bp.validatePictures(notShowingIds = ns::Nil)
+            }
+          }
+        }
+        testlog.fine(s"trying to take screen shot of board ${screenshot}, current board is ${board}, all boards are ${boards}")
+        screenshot.filter(b=>b==board).map { b =>
+          bp1.takeScreenshot(docsScreenshotDir, screenshotName.get)
+        }.getOrElse(bp1)
+      }
+
       val bb = progress match {
         case Some(bp) =>
-          val bp1 = bp.clickPlayedBoard(board).validate
-          testlog.fine(s"trying to take screen shot of board ${screenshot}, current board is ${board}, all boards are ${boards}")
-          screenshot.filter(b=>b==board).map { b =>
-            bp1.takeScreenshot(docsScreenshotDir, screenshotName.get)
-          }.getOrElse(bp1)
+          processBoard(bp)
         case None =>
-          sb.clickBoardToBoard(board).validate
+          val bp = sb.clickBoardToBoard(board).validate
+          processBoard(bp)
       }
 
       val bb1 = if (table.isDefined) {
@@ -562,7 +613,7 @@ class DuplicateTestPages extends FlatSpec
         val (ts,pes) = toOriginal(allHands.getScoreToRound(1, HandDirectorView))
         sb.checkTable( ts: _*)
         sb.checkPlaceTable( pes: _*)
-        checkPlayedBoards( sb, false, None, 1, false )
+        checkPlayedBoards( sb, false, None, 1, false, boardWithPicture = Some(1), nsForPicture = nsForTable1Round1, pictureButtonShowing = true )
       },
       CodeBlock{
         import SessionComplete._
@@ -574,7 +625,7 @@ class DuplicateTestPages extends FlatSpec
         val (ts,pes) = toOriginal(allHands.getScoreToRound(1, HandCompletedView))
         sb.checkTable( ts: _*)
         sb.checkPlaceTable( pes: _*)
-        checkPlayedBoards( sb, true, None, 1, false )
+        checkPlayedBoards( sb, true, None, 1, false, boardWithPicture = Some(1), nsForPicture = nsForTable1Round1, pictureButtonShowing = false )
       },
       CodeBlock{
         import SessionTable1._
@@ -586,7 +637,7 @@ class DuplicateTestPages extends FlatSpec
         val (ts,pes) = toOriginal(allHands.getScoreToRound(1, HandTableView( 1, 1, team1.teamid, team2.teamid )))
         sb.checkTable( ts: _*)
         sb.checkPlaceTable( pes: _*)
-        checkPlayedBoards( sb, false, Some(1), 1, false)
+        checkPlayedBoards( sb, false, Some(1), 1, false, boardWithPicture = Some(1), nsForPicture = nsForTable1Round1, pictureButtonShowing = true )
       },
       CodeBlock{
         import SessionTable2._
@@ -597,7 +648,7 @@ class DuplicateTestPages extends FlatSpec
         val (ts,pes) = toOriginal(allHands.getScoreToRound(1, HandTableView( 2, 1, team3.teamid, team4.teamid )))
         sb.checkTable( ts: _*)
         sb.checkPlaceTable( pes: _*)
-        checkPlayedBoards( sb, false, Some(2), 1, false )
+        checkPlayedBoards( sb, false, Some(2), 1, false, nsForPicture = nsForTable1Round1, pictureButtonShowing = false )
       }
     )
   }
@@ -1433,7 +1484,11 @@ class DuplicateTestPages extends FlatSpec
 
     val newId = ldpr.checkSuccessfulImport( dupid.get )
 
-    val main = ldpr.clickPopUpOk.validate.clickHome.validate.clickListDuplicateButton.validate( newId )
+    val bp = ldpr.clickPopUpOk.validate.clickHome.validate.clickListDuplicateButton.validate( newId ).clickDuplicate(newId).validate.clickBoardToBoard(1)
+    bp.validatePictures( ids = nsForTable1Round1.toList )
+    val bp1 = bp.clickShowPicture(nsForTable1Round1.get).validatePictures(true).clickOkPicture.validatePictures( ids = nsForTable1Round1.toList )
+    val sp = bp1.clickScoreboard.validate
+    sp.clickMainMenu.validateMainMenu.clickSummary.validate
   }
 
 

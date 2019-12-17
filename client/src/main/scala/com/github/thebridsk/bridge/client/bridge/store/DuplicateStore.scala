@@ -26,6 +26,9 @@ import com.github.thebridsk.bridge.clientcommon.react.BeepComponent
 import com.github.thebridsk.bridge.client.Bridge
 import com.github.thebridsk.bridge.data.DuplicateSummary
 import com.github.thebridsk.bridge.clientcommon.demo.BridgeDemo
+import com.github.thebridsk.bridge.data.DuplicatePicture
+import com.github.thebridsk.bridge.client.bridge.action.ActionUpdatePicture
+import com.github.thebridsk.bridge.client.bridge.action.ActionUpdatePictures
 
 object DuplicateStore extends ChangeListenable {
   val logger = Logger("bridge.DuplicateStore")
@@ -40,6 +43,8 @@ object DuplicateStore extends ChangeListenable {
   private var directorsView: Option[MatchDuplicateScore] = None
   private var completeView: Option[MatchDuplicateScore] = None
   private var teamsView = Map[(Id.Team,Id.Team),MatchDuplicateScore]()
+
+  private var pictures = Map[(Id.DuplicateBoard,Id.DuplicateHand),DuplicatePicture]()
 
   def getId() = monitoredId
   def getMatch() = bridgeMatch
@@ -106,6 +111,22 @@ object DuplicateStore extends ChangeListenable {
         case None => None
       }
     }
+  }
+
+  def getPicture( dupid: Id.MatchDuplicate, boardId: Id.DuplicateBoard, handId: Id.DuplicateHand ): Option[DuplicatePicture] = {
+    monitoredId.filter(dup => dup == dupid).flatMap { dup =>
+      pictures.get((boardId,handId))
+    }
+  }
+
+  def getPicture( dupid: Id.MatchDuplicate, boardId: Id.DuplicateBoard ): List[DuplicatePicture] = {
+    monitoredId.filter(dup => dup == dupid).map { dup =>
+      pictures.flatMap { e =>
+        val ((bid,hid),dp) = e
+        if (bid == boardId) dp::Nil
+        else Nil
+      }.toList
+    }.getOrElse(List())
   }
 
   private var dispatchToken: Option[DispatchToken] = Some(BridgeDispatcher.register(dispatch _))
@@ -209,6 +230,28 @@ object DuplicateStore extends ChangeListenable {
             case _ =>
               logger.severe("Got a team update and don't have a MatchDuplicate")
           }
+        case ActionUpdatePicture(dupid, boardid, handid, picture) =>
+          val key = (boardid,handid)
+          monitoredId.foreach { monitored =>
+            if (dupid == monitored ) {
+              picture match {
+                case Some(p) =>
+                  pictures = pictures + (key -> p)
+                case None =>
+                  pictures = pictures - key
+              }
+              notifyChange()
+            }
+          }
+        case ActionUpdatePictures(dupid, picts) =>
+          monitoredId.foreach { monitored =>
+            if (dupid == monitored ) {
+              pictures = picts.map { p =>
+                p.key -> p
+              }.toMap
+              notifyChange()
+            }
+          }
         case x =>
           // There are multiple stores, all the actions get sent to all stores
 //          logger.fine("Ignoring unknown action: "+action)
@@ -249,6 +292,7 @@ object DuplicateStore extends ChangeListenable {
           monitoredId = None
           bridgeMatch = None
           resetViews()
+          pictures = Map()
   //        removeAllListener(ChangeListenable.event)
           notifyChange()
         case _ =>

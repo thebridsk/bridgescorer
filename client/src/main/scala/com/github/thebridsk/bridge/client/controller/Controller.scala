@@ -174,6 +174,10 @@ object Controller extends  {
           BridgeDispatcher.updateDuplicateHand(dupid,hand)
         case Protocol.UpdateDuplicateTeam(dupid,team) =>
           BridgeDispatcher.updateTeam(dupid, team)
+        case Protocol.UpdateDuplicatePicture(dupid,boardid,handid,picture) =>
+          BridgeDispatcher.updatePicture(dupid,boardid,handid,picture)
+        case Protocol.UpdateDuplicatePictures(dupid,pictures) =>
+          BridgeDispatcher.updatePictures(dupid,pictures)
         case Protocol.NoData(_) =>
         case Protocol.UpdateChicago(_) =>
         case Protocol.UpdateChicagoRound(_,_) =>

@@ -48,23 +48,26 @@ import io.swagger.v3.oas.annotations.media.Content
 import javax.ws.rs.GET
 import com.github.thebridsk.bridge.data.MatchDuplicate
 import com.github.thebridsk.bridge.server.backend.StoreMonitor.NewParticipantSSEDuplicate
+import com.github.thebridsk.bridge.server.rest.Service
 
 @Path("")
 class DuplicateMonitorWebservice(
-    totallyMissingResourceHandler: RejectionHandler
+    totallyMissingResourceHandler: RejectionHandler,
+    service: Service
 )(
     implicit fm: Materializer,
     system: ActorSystem,
     bridgeService: BridgeService
 ) extends MonitorWebservice[Id.MatchDuplicate, MatchDuplicate](
       totallyMissingResourceHandler
-    ) {
+) {
   val log = Logging(system, classOf[DuplicateMonitorWebservice])
   val monitor = new StoreMonitorManager(
     system,
     bridgeService.duplicates,
     classOf[DuplicateStoreMonitor],
-    NewParticipantSSEDuplicate.apply _
+    NewParticipantSSEDuplicate.apply _,
+    service
   )
   import system.dispatcher
 //  system.scheduler.schedule(15.second, 15.second) {

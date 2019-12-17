@@ -48,10 +48,12 @@ import io.swagger.v3.oas.annotations.media.Content
 import javax.ws.rs.GET
 import com.github.thebridsk.bridge.data.MatchChicago
 import com.github.thebridsk.bridge.server.backend.StoreMonitor.NewParticipantSSEChicago
+import com.github.thebridsk.bridge.server.rest.Service
 
 @Path("")
 class ChicagoMonitorWebservice(
-    totallyMissingResourceHandler: RejectionHandler
+    totallyMissingResourceHandler: RejectionHandler,
+    service: Service
 )(
     implicit fm: Materializer,
     system: ActorSystem,
@@ -64,7 +66,8 @@ class ChicagoMonitorWebservice(
     system,
     bridgeService.chicagos,
     classOf[ChicagoStoreMonitor],
-    NewParticipantSSEChicago.apply _
+    NewParticipantSSEChicago.apply _,
+    service
   )
   import system.dispatcher
 //  system.scheduler.schedule(15.second, 15.second) {

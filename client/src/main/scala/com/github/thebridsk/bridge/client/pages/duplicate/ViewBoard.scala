@@ -24,6 +24,11 @@ import com.github.thebridsk.bridge.client.pages.duplicate.DuplicateRouter.BaseBo
 import com.github.thebridsk.bridge.clientcommon.react.AppButton
 import com.github.thebridsk.bridge.clientcommon.react.Utils._
 import com.github.thebridsk.bridge.client.routes.BridgeRouter
+import com.github.thebridsk.bridge.clientcommon.react.PopupOkCancel
+import com.github.thebridsk.bridge.client.pages.hand.Picture
+import _root_.com.github.thebridsk.bridge.data.DuplicatePicture
+import com.github.thebridsk.materialui.icons.MuiIcons.Photo
+import com.github.thebridsk.bridge.client.pages.hand.HandStyles.handStyles
 
 /**
  * Shows the board results
@@ -39,9 +44,23 @@ import com.github.thebridsk.bridge.client.routes.BridgeRouter
 object ViewBoard {
   import ViewBoardInternal._
 
-  case class Props( routerCtl: BridgeRouter[DuplicatePage], page: BaseBoardView, score: MatchDuplicateScore, board: Id.DuplicateBoard, useIMPs: Boolean = false )
+  case class Props(
+      routerCtl: BridgeRouter[DuplicatePage],
+      page: BaseBoardView,
+      score: MatchDuplicateScore,
+      board: Id.DuplicateBoard,
+      useIMPs: Boolean = false,
+      pictures: List[DuplicatePicture] = List()
+  )
 
-  def apply( routerCtl: BridgeRouter[DuplicatePage], page: BaseBoardView, score: MatchDuplicateScore, board: Id.DuplicateBoard, useIMPs: Boolean = true ) = component(Props(routerCtl, page, score, board, useIMPs))
+  def apply(
+      routerCtl: BridgeRouter[DuplicatePage],
+      page: BaseBoardView,
+      score: MatchDuplicateScore,
+      board: Id.DuplicateBoard,
+      useIMPs: Boolean = true,
+      pictures: List[DuplicatePicture] = List()
+  ) = component(Props(routerCtl, page, score, board, useIMPs, pictures))
 
 }
 
@@ -63,7 +82,8 @@ object ViewBoardInternal {
                             <.th( ^.rowSpan:=2, "Down"),
                             <.th( ^.rowSpan:=1, ^.colSpan:=2, "Score"),
                             <.th( ^.rowSpan:=2, "EW pair"),
-                            <.th( ^.rowSpan:=2, (if (props.useIMPs) "IMPs" else "Match Points") )
+                            <.th( ^.rowSpan:=2, (if (props.useIMPs) "IMPs" else "Match Points") ),
+                            <.th( ^.rowSpan:=2, "Picture")
                           ),
                           <.tr(
                             <.th( ^.rowSpan:=1, "NS"),
@@ -73,9 +93,9 @@ object ViewBoardInternal {
 
                       }).build
 
-  val TeamRow = ScalaComponent.builder[(Team,Option[BoardScore],Props)]("ViewBoard.TeamRow")
+  val TeamRow = ScalaComponent.builder[(Team,Option[BoardScore],Props,Backend)]("ViewBoard.TeamRow")
                       .render_P( props => {
-                        val (team, boardscore, p) = props
+                        val (team, boardscore, p, backend) = props
                         logger.fine(s"ViewBoard Team ${team} boardscore ${boardscore} page ${p.page}")
                         def teamButton( tbs: TeamBoardScore ): TagMod = {
                           logger.fine(s"ViewBoard.teamButton tbs ${tbs}")
@@ -139,7 +159,23 @@ object ViewBoardInternal {
                                       case Some(t) => Id.teamIdToTeamNumber(t)
                                       case None => "?"
                                     } ),
-                                    <.td( (if (p.useIMPs) show(tbs.showImps) else  showPoints(tbs.getPoints) ))
+                                    <.td( (if (p.useIMPs) show(tbs.showImps) else  showPoints(tbs.getPoints) )),
+                                    <.td(
+                                      ^.textAlign := "center",
+                                      if (hidden) {
+                                        Strings.checkmark
+                                      } else {
+                                        p.pictures.find( dp => dp.boardId == board.id && dp.handId == tbs.teamId ).map { dp =>
+                                          <.button(
+                                            ^.`type` := "button",
+                                            handStyles.footerButton,
+                                            ^.onClick --> backend.doShowPicture(dp.url),
+                                            ^.id:="ShowPicture_"+tbs.teamId,
+                                            Photo()
+                                          )
+                                        }
+                                      }
+                                    )
                                   )
                                 } else {
                                   <.tr(
@@ -151,12 +187,14 @@ object ViewBoardInternal {
                                     <.td( dupStyles.tableCellGray, ^.textAlign := "center", ""),
                                     <.td( show(tbs.showScore)),
                                     <.td( dupStyles.tableCellGray, ^.textAlign := "center", ""),
-                                    <.td( (if (p.useIMPs) show(tbs.showImps) else  showPoints(tbs.getPoints) ))
+                                    <.td( (if (p.useIMPs) show(tbs.showImps) else  showPoints(tbs.getPoints) )),
+                                    <.td( dupStyles.tableCellGray, ^.textAlign := "center", "")
                                   )
                                 }
                               case None =>
                                 <.tr(
                                   <.td( Id.teamIdToTeamNumber(team.id)),
+                                  <.td( dupStyles.tableCellGray, ^.textAlign := "center", ""),
                                   <.td( dupStyles.tableCellGray, ^.textAlign := "center", ""),
                                   <.td( dupStyles.tableCellGray, ^.textAlign := "center", ""),
                                   <.td( dupStyles.tableCellGray, ^.textAlign := "center", ""),
@@ -180,7 +218,9 @@ object ViewBoardInternal {
    * will cause State to leak.
    *
    */
-  case class State()
+  case class State(
+    val showPicture: Option[String] = None
+  )
 
   /**
    * Internal state for rendering the component.
@@ -190,30 +230,42 @@ object ViewBoardInternal {
    *
    */
   class Backend(scope: BackendScope[Props, State]) {
+
+    val popupOk = scope.modState( s => s.copy(showPicture = None))
+
+    def doShowPicture( url: String ) = scope.modState( s => s.copy(showPicture = Some(url)))
+
     def render( props: Props, state: State ) = {
       val board = props.score.boards.get(props.board)
+
       <.div(
-        dupStyles.divBoardView,
-        <.table(
-          ^.id:="Board_"+props.board,
-          <.caption(
-            <.span(
-              ^.float:="left",
-              "Board "+Id.boardIdToBoardNumber(props.board)
+        PopupOkCancel(
+          content = state.showPicture.map( p => Picture(None,Some(p))),
+          ok = Some(popupOk)
+        ),
+        <.div(
+          dupStyles.divBoardView,
+          <.table(
+            ^.id:="Board_"+props.board,
+            <.caption(
+              <.span(
+                ^.float:="left",
+                "Board "+Id.boardIdToBoardNumber(props.board)
+              ),
+              <.span(
+                ^.float:="right",
+                board match {
+                  case Some(b) => b.showVul
+                  case None => ""
+                }
+              )
             ),
-            <.span(
-              ^.float:="right",
-              board match {
-                case Some(b) => b.showVul
-                case None => ""
-              }
+            Header((props,board)),
+            <.tbody(
+              props.score.teams.toList.sortWith( (t1,t2)=>Id.idComparer(t1.id,t2.id)<0).map { team =>
+                TeamRow.withKey( team.id )((team,board,props,this))
+              }.toTagMod
             )
-          ),
-          Header((props,board)),
-          <.tbody(
-            props.score.teams.toList.sortWith( (t1,t2)=>Id.idComparer(t1.id,t2.id)<0).map { team =>
-              TeamRow.withKey( team.id )((team,board,props))
-            }.toTagMod
           )
         )
       )

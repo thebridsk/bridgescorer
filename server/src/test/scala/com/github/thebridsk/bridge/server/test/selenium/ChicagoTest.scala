@@ -29,6 +29,7 @@ import com.github.thebridsk.bridge.server.test.pages.bridge.HomePage
 import com.github.thebridsk.browserpages.Session
 import com.github.thebridsk.bridge.server.test.util.CaptureLog
 import scala.math.Ordering.Double.TotalOrdering
+import com.github.thebridsk.browserpages.Element
 
 /**
  * @author werewolf
@@ -523,7 +524,7 @@ class ChicagoTest extends FlatSpec
     eventually( find(xpath("//h6[3]/span")).text mustBe "Enter players and identify first dealer" )
   }
 
-  def findNorthInputList = findElements(By.xpath("""//input[@name='North']/parent::div/following-sibling::div/div/div/ul/li"""))
+  def findNorthInputList = findAllElems[Element]( xpath("""//input[@name='North']/parent::div/following-sibling::div/div/div/ul/li""") )
 
   it should "give player suggestions when entering names" in {
     withClueAndScreenShot(screenshotDir,"SuggestName","") {
@@ -535,15 +536,16 @@ class ChicagoTest extends FlatSpec
 
       val first = eventually {
         val listitems = findNorthInputList
-        assert( !listitems.isEmpty(), "list of candidate entries must not be empty" )
-        listitems.forEach ( li =>
-          li.getText() must startWith regex( "(?i)n" )
+        assert( !listitems.isEmpty, "list of candidate entries must not be empty" )
+        listitems.foreach ( li =>
+          li.text must startWith regex( "(?i)n" )
         )
-        listitems.get(0)
+        listitems(0)
       }
-      val text = first.getText
+      val text = first.text
       PageBrowser.scrollToElement(first)
-      findNorthInputList.asScala.headOption.map ( first => first.click() ).getOrElse( fail("Did not find North input field list") )
+      Thread.sleep(10)
+      findNorthInputList.headOption.map ( first => first.click ).getOrElse( fail("Did not find North input field list") )
       eventually (textField("North").value mustBe text)
 
       textField("South").value = "s"

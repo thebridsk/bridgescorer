@@ -54,6 +54,7 @@ import scala.concurrent.ExecutionContext
 import com.github.thebridsk.bridge.data.duplicate.stats.PlayerPlaces
 import com.github.thebridsk.bridge.data.duplicate.stats.CalculatePlayerPlaces
 import com.github.thebridsk.bridge.data.ImportStoreData
+import com.github.thebridsk.bridge.server.backend.resource.ZipStoreInternal
 
 /**
   * The backend trait for our service.
@@ -169,36 +170,7 @@ abstract class BridgeService(val id: String) {
       store: Store[TId, T],
       filter: Option[List[String]]
   ): Future[Result[List[String]]] = {
-    store.readAll().map { rmap =>
-      rmap match {
-        case Right(map) =>
-          Result(
-            map
-              .filter { entry =>
-                val (id, v) = entry
-                filter
-                  .map { f =>
-                    f.contains(id.toString())
-                  }
-                  .getOrElse(true)
-              }
-              .map { entry =>
-                val (id, v) = entry
-                val name =
-                  s"store/${store.support.resourceName}.${id}${store.support.getWriteExtension()}"
-                val content = store.support.toJSON(v)
-                zip.putNextEntry(new ZipEntry(name))
-                val out = new OutputStreamWriter(zip, "UTF8")
-                out.write(content)
-                out.flush
-                id.toString()
-              }
-              .toList
-          )
-        case Left((statusCode, msg)) =>
-          Result(statusCode, msg)
-      }
-    }
+    ZipStoreInternal.exportStore(zip,store,filter)
   }
 
   val defaultBoards = "ArmonkBoards"

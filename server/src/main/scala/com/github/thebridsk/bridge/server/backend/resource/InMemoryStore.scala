@@ -12,6 +12,13 @@ import scala.concurrent.ExecutionContext
 import Implicits._
 import com.github.thebridsk.bridge.data.Id
 
+import MetaData.MetaDataFile
+import scala.reflect.io.File
+import java.io.InputStream
+import java.io.ByteArrayInputStream
+import resource.Using
+import scala.collection.mutable
+
 class InMemoryPersistent[VId, VType <: VersionedInstance[VType, VType, VId]](
     implicit
     support: StoreSupport[VId, VType],
@@ -146,6 +153,123 @@ class InMemoryPersistent[VId, VType <: VersionedInstance[VType, VType, VId]](
         }
       }
     }
+  }
+
+  // Metadata support
+
+  case class MDData( name: MetaDataFile, data: Array[Byte] )
+
+  var metadataStore = Map[VId, List[MDData]]()
+
+  /**
+   * List all the files for the specified match, all returned filenames are relative to the store directory for specified match.
+   * To read the file, the read method must be used on this object.
+   */
+  override
+  def listFiles( id: VId ): Result[Iterator[MetaDataFile]] = {
+    val it = metadataStore.get(id).map { list =>
+      list.map( s => s.name ).iterator
+    }.getOrElse( List().iterator )
+
+    Result(
+      it
+    )
+  }
+
+  /**
+   * List all the files for the specified match that match the filter, all returned filenames are relative to the store directory for specified match.
+   * To read the file, the read method must be used on this object.
+   */
+  override
+  def listFilesFilter( id: VId )( filter: MetaDataFile=>Boolean ): Result[Iterator[MetaDataFile]] = {
+    listFiles(id).map( _.filter(filter) )
+  }
+
+  /**
+   * Write the specified source file to the target file, the target file is relative to the store directory for specified match.
+   */
+  override
+  def write( id: VId, sourceFile: File, targetFile: MetaDataFile ): Result[Unit] = {
+    val len = sourceFile.length
+    val data = new Array[Byte](len.toInt)
+    Using.fileInputStream(sourceFile.jfile) { is =>
+      is.read(data)
+    }
+    write(id,data,targetFile)
+  }
+
+  val maxBuff = 100000
+  /**
+   * Write the specified source file to the target file, the target file is relative to the store directory for specified match.
+   */
+  override
+  def write( id: VId, source: InputStream, targetFile: MetaDataFile ): Result[Unit] = {
+    val datalist =
+    Iterator.continually {
+      val data = new Array[Byte](maxBuff)
+      val l = source.read(data)
+      (data,l)
+    }.takeWhile( e => e._2>0 ).toList
+    val len = datalist.foldLeft(0) { (ac,v) => ac+v._2}
+    val data = new Array[Byte](len)
+    datalist.foldLeft(0) { (ac,v) =>
+      Array.copy(v._1,0,data,ac,v._2)
+      ac + v._2
+    }
+    write(id,data,targetFile)
+  }
+
+  def write( id: VId, data: Array[Byte], targetFile: MetaDataFile ): Result[Unit] = synchronized {
+    metadataStore.get(id) match {
+      case Some(old) =>
+        val n = MDData(targetFile,data) :: old.filter(d => d.name != targetFile)
+        metadataStore = metadataStore + (id->n)
+      case None =>
+        metadataStore = metadataStore + ( id -> List(MDData(targetFile,data)))
+    }
+    Result.unit
+  }
+
+  /**
+   * read the specified file, the file is relative to the store directory for specified match.
+   */
+  override
+  def read( id: VId, file: MetaDataFile ): Result[InputStream] = {
+    metadataStore.get(id).map { list =>
+      list.find { e =>
+        e.name == file
+      }.map { e =>
+        Result( new ByteArrayInputStream(e.data))
+      }.getOrElse(Result((StatusCodes.NotFound,RestMessage("Not found"))))
+    }.getOrElse( Result((StatusCodes.NotFound,RestMessage("Not found"))))
+  }
+
+  /**
+   * delete the specified file, the file is relative to the store directory for specified match.
+   */
+  override
+  def delete( id: VId, file: MetaDataFile ): Result[Unit] = synchronized {
+    metadataStore = metadataStore.map { e =>
+      val (eid,elist) = e
+      if (eid == id) {
+        (
+          eid,
+          elist.filter( d => d.name != file )
+        )
+      } else {
+        e
+      }
+    }
+    Result.unit
+  }
+
+  /**
+   * delete all the metadata files for the match
+   */
+  override
+  def deleteAll( id: VId ): Result[Unit] = synchronized {
+    metadataStore = metadataStore - id
+    Result.unit
   }
 
 }

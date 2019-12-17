@@ -14,6 +14,7 @@ import com.github.thebridsk.bridge.client.pages.ThankYouPage
 import com.github.thebridsk.bridge.client.pages.AboutPage
 import japgolly.scalajs.react.extra.router.StaticDsl.Rule
 import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles.baseStyles
+import org.scalajs.dom.raw.File
 
 object AppRouter {
 
@@ -132,11 +133,11 @@ class AppRouter( modules: Module* ) {
 
   def defaultHand( scoring: ScoringSystem ) = defaultContract.copy( scoringSystem = scoring )
 
-  def scoringViewWithHonorsCallbackOk( routerCtl: RouterCtl[AppPage])( contract: Contract, honors: Int, pos: Option[PlayerPosition] ) = {
+  def scoringViewWithHonorsCallbackOk( routerCtl: RouterCtl[AppPage])( contract: Contract, picture: Option[File], removePicture: Boolean, honors: Int, pos: Option[PlayerPosition] ) = {
     routerCtl.set(Home)  // show the Info page.
   }
 
-  def scoringViewCallbackOk( routerCtl: RouterCtl[AppPage])( contract: Contract ) = {
+  def scoringViewCallbackOk( routerCtl: RouterCtl[AppPage])( contract: Contract, picture: Option[File], removePicture: Boolean ) = {
     routerCtl.set(Home)  // show the Info page.
   }
 
@@ -202,7 +203,7 @@ class AppRouter( modules: Module* ) {
                                                                                     scoringViewCallbackOk(routerCtl),
                                                                                     scoringViewCallbackCancel(routerCtl),
                                                                                     teamNS=Some("1"), teamEW=Some("2"),
-                                                                                    newhand=true) ))) // ScoringView(defaultContract))
+                                                                                    newhand=true, supportPicture=true) ))) // ScoringView(defaultContract))
       | staticRoute("#handchicago", ShowChicagoHand) ~> renderR( (routerCtl) => logit( appBarPage( routerCtl, "Test Chicago Hand", PageHand(defaultHand(TestChicago),
                                                                                   scoringViewCallbackOk(routerCtl),
                                                                                   scoringViewCallbackCancel(routerCtl),

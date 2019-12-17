@@ -90,7 +90,7 @@ object HandPage {
   }
 }
 
-class HandPage(chiid: String, round: Int, hand: Int )( implicit webDriver: WebDriver, pageCreated: SourcePosition ) extends BaseHandPage {
+class HandPage(chiid: String, round: Int, hand: Int )( implicit webDriver: WebDriver, pageCreated: SourcePosition ) extends BaseHandPage[HandPage] {
   import HandPage._
 
   override

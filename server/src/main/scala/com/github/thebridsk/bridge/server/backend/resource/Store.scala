@@ -20,6 +20,11 @@ import com.github.thebridsk.bridge.data.VersionedInstance
 import org.scalactic.source.Position
 import com.github.thebridsk.source.SourcePosition
 import Implicits._
+import scala.reflect.io.File
+import java.io.OutputStream
+import scala.reflect.io.Streamable.Bytes
+import java.io.InputStream
+import com.github.thebridsk.bridge.server.backend.resource.MetaData.MetaDataFile
 
 object Store {
   val log = Logger[Store[_, _]]
@@ -85,6 +90,28 @@ abstract class Store[VId, VType <: VersionedInstance[VType, VType, VId]](
   val resourceURI = persistent.resourceURI
 
   implicit private val self = this
+
+  val metaData = new StoreMetaData[VId] {
+
+    override
+    def listFiles( id: VId ): Future[Result[Iterator[MetaDataFile]]] = Future { persistent.listFiles(id) }
+
+    override
+    def listFilesFilter( id: VId )( filter: MetaDataFile=>Boolean ): Future[Result[Iterator[MetaDataFile]]] = Future { persistent.listFilesFilter(id)(filter) }
+
+    override
+    def write( id: VId, sourceFile: File, targetFile: MetaDataFile ): Future[Result[Unit]] = Future { persistent.write(id,sourceFile,targetFile) }
+
+    override
+    def read( id: VId, file: MetaDataFile ): Future[Result[InputStream]] = Future { persistent.read(id,file) }
+
+    override
+    def delete( id: VId, file: MetaDataFile ): Future[Result[Unit]] = Future { persistent.delete(id,file) }
+
+    override
+    def deleteAll( id: VId ): Future[Result[Unit]] = Future { persistent.deleteAll(id) }
+
+  }
 
   private class CacheResult(
       id: VId,
@@ -518,16 +545,42 @@ abstract class Store[VId, VType <: VersionedInstance[VType, VType, VId]](
                   )
                   rold match {
                     case Right(oldv) =>
-                      persistent.deleteFromPersistent(id, Some(oldv)).map {
-                        ro =>
-                          ro match {
-                            case Right(o) =>
-                              notify(
-                                changeContext.delete(o, s"$resourceURI/$id")
-                              )
-                              Result(o)
-                            case x => x
+                      Future.foldLeft(
+                        List(
+                          persistent.deleteFromPersistent(id, Some(oldv)).map { ro =>
+                              ro match {
+                                case Right(o) =>
+                                  notify(
+                                    changeContext.delete(o, s"$resourceURI/$id")
+                                  )
+                                  Right(Some(o))
+                                case Left(x) => Left(x)
+                              }
+                          },
+                          Future {
+                            persistent.deleteAll(id) match {
+                              case Right(o) => Right(None)
+                              case Left((statuscode,msg)) if statuscode == StatusCodes.BadRequest => Right(None)
+                              case Left(x) => Left(x)
+                            }
                           }
+                        )
+                      )( Result[VType]( (StatusCodes.InternalServerError,RestMessage("")) )) { (ac,v) =>
+                        v match {
+                          case Right(Some(vv)) => Result(vv)
+                          case Right(None) =>
+                            ac match {
+                              case Left((istatus,_)) if istatus==StatusCodes.InternalServerError => Left((istatus,RestMessage("Partial success, metadata deleted")))
+                              case Right(av) => Result(av)
+                              case Left((astatus,amsg)) => Left((astatus,RestMessage(s"Partial success, metadata deleted, ${amsg.msg}")))
+                            }
+                          case Left((status,msg)) =>
+                            ac match {
+                              case Left((istatus,_)) if istatus==StatusCodes.InternalServerError => Left((status,msg))
+                              case Right(av) => Result((status, RestMessage(s"Partial success, match deleted, failure: ${msg.msg}")))
+                              case Left((astatus,amsg)) => Result((status, RestMessage(s"${amsg.msg} and ${msg.msg}")))
+                            }
+                        }
                       }
                     case Left(e) =>
                       Result.future(e)

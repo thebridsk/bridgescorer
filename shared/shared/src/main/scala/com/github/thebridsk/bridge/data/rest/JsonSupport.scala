@@ -61,6 +61,7 @@ trait JsonSupport {
   implicit val duplicateSummaryFormat = Json.format[DuplicateSummary]
   implicit val boardTeamResultsFormat = Json.format[BoardTeamResults]
   implicit val boardResultsFormat = Json.format[BoardResults]
+  implicit val duplicatePictureFormat = Json.format[DuplicatePicture]
 //  implicit val duplicateResultFormat = Json.format[MatchDuplicateResult]
   implicit val duplicateResultV1Format = Json.format[MatchDuplicateResultV1]
   implicit val duplicateResultV2Format = Json.format[MatchDuplicateResultV2]

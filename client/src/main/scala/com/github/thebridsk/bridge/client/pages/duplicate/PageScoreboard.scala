@@ -277,13 +277,14 @@ object PageScoreboardInternal {
                     Seq(
                       <.div(
                         baseStyles.divFooterLeft,
-                        AppButton( "Game", "Completed Games Scoreboard", props.routerCtl.setOnClick(CompleteScoreboardView(props.game.dupid)) )
+                        AppButton( "Game", "Completed Games Scoreboard", props.routerCtl.setOnClick(CompleteScoreboardView(props.game.dupid)) ),
+                        " ",
+                        AppButton( "AllBoards", "All Boards", props.routerCtl.setOnClick(props.game.toAllBoardsView()) ),
                       ),
                       <.div(
                         baseStyles.divFooterCenter,
-                        AppButton( "AllBoards", "All Boards", props.routerCtl.setOnClick(props.game.toAllBoardsView()) ),
-                        " ",
                         getScoringMethodButton(),
+                        " ",
                         AppButton( "SetScoringMethod", "Set Scoring Method",
                                    ^.onClick --> setScoringMethod(score.duplicate.isIMP),
                                    ^.disabled := !isSetScoringMethodEnabled(score.duplicate.isIMP)

@@ -218,7 +218,7 @@ object PageBoardInternal {
             <.div(
               dupStyles.divBoardPage,
 //              title(),
-              ViewBoard( props.routerCtl, props.page, score, props.page.boardid, state.isIMP ),
+              ViewBoard( props.routerCtl, props.page, score, props.page.boardid, state.isIMP, DuplicateStore.getPicture(props.page.dupid,props.page.boardid) ),
               <.p,
               <.div(
                 baseStyles.fontTextNormal,

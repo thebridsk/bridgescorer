@@ -20,6 +20,8 @@ object Result {
 
   def apply[T](error: (StatusCode, RestMessage)): Result[T] = Left(error)
 
+  val unit = Result(())
+
   def future[T](t: Result[T]): Future[Result[T]] =
     Promise.successful(t).future
 

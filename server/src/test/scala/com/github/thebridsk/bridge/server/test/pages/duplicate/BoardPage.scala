@@ -26,6 +26,7 @@ import com.github.thebridsk.bridge.data.bridge.Vul
 import com.github.thebridsk.bridge.data.bridge.NotVul
 import com.github.thebridsk.browserpages.Element
 import com.github.thebridsk.bridge.server.test.pages.bridge.HomePage
+import com.github.thebridsk.bridge.server.test.pages.bridge.HandPicture
 
 object BoardPage {
 
@@ -96,11 +97,10 @@ object BoardPage {
 }
 
 trait PageWithBoardButtons {
-
   def clickBoardButton( board: Int )(implicit patienceConfig: PatienceConfig, pos: Position): HandPage
 }
 
-class BoardPage( implicit webDriver: WebDriver, pageCreated: SourcePosition ) extends Page[BoardPage] with PageWithBoardButtons {
+class BoardPage( implicit val webDriver: WebDriver, pageCreated: SourcePosition ) extends Page[BoardPage] with PageWithBoardButtons with HandPicture[BoardPage] {
   import BoardPage._
 
   def getTableId(implicit patienceConfig: PatienceConfig, pos: Position) = eventually {

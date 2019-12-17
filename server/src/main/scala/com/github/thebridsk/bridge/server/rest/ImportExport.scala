@@ -61,6 +61,12 @@ import scala.util.Using
 
 object ImportExport {
   val log = Logger[ImportExport]
+
+  case class MultipartFile(
+    @Schema(`type` = "string", format = "binary", description = "Bridge store file, must have an extension of '.bridgestore' or '.zip'")
+    zip: String
+  )
+
 }
 
 @Tags(Array(new Tag(name = "Server")))
@@ -195,11 +201,6 @@ trait ImportExport {
   }
 
   import UtilsPlayJson._
-
-  case class MultipartFile(
-    @Schema(`type` = "string", format = "binary", description = "Bridge store file, must have an extension of '.bridgestore' or '.zip'")
-    zip: String
-  )
 
   @Path("/import")
   @POST

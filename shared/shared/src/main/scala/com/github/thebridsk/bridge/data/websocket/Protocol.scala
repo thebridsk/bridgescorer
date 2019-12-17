@@ -12,6 +12,7 @@ import com.github.thebridsk.bridge.data.MatchRubber
 import com.github.thebridsk.bridge.data.Round
 import com.github.thebridsk.bridge.data.Hand
 import com.github.thebridsk.bridge.data.RubberHand
+import com.github.thebridsk.bridge.data.DuplicatePicture
 
 object Protocol {
 
@@ -110,8 +111,22 @@ object Protocol {
     * Update a board in a duplicate match.
     */
   case class UpdateDuplicateTeam(dupid: Id.MatchDuplicate, team: Team)
-      extends ToServerMessage
-      with ToBrowserMessage
+    extends ToServerMessage
+    with ToBrowserMessage
+
+  /**
+    * Update a picture in a duplicate match, if None, then the picture was deleted.
+    */
+    case class UpdateDuplicatePicture(dupid: Id.MatchDuplicate, boardid: Id.DuplicateBoard, handId: Id.DuplicateHand, picture: Option[DuplicatePicture])
+    extends ToServerMessage
+    with ToBrowserMessage
+
+  /**
+    * Update a picture in a duplicate match, if None, then the picture was deleted.
+    */
+  case class UpdateDuplicatePictures(dupid: Id.MatchDuplicate, picture: List[DuplicatePicture])
+    extends ToServerMessage
+    with ToBrowserMessage
 
   /**
     * Update the MatchChicago.

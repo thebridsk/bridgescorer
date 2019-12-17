@@ -68,6 +68,8 @@ import com.github.thebridsk.bridge.data.websocket.Protocol.UpdateChicagoRound
 import com.github.thebridsk.bridge.data.Hand
 import com.github.thebridsk.bridge.data.websocket.Protocol.UpdateChicagoHand
 import com.github.thebridsk.bridge.data.websocket.Protocol.UpdateRubberHand
+import com.github.thebridsk.bridge.data.websocket.Protocol.UpdateDuplicatePicture
+import com.github.thebridsk.bridge.data.websocket.Protocol.UpdateDuplicatePictures
 
 object StoreMonitor {
   sealed trait ChatEvent
@@ -313,14 +315,15 @@ class StoreMonitorManager[VId, VType <: VersionedInstance[VType, VType, VId]](
     system: ActorSystem,
     store: Store[VId, VType],
     storeMonitorClass: Class[_],
-    newParticipant: (String, VId, ActorRef) => ChatEvent
+    newParticipant: (String, VId, ActorRef) => ChatEvent,
+    service: Service
 ) {
   val log = Logging(system, getClass)
 
   import StoreMonitor._
 
   val monitor = system.actorOf(
-    Props(storeMonitorClass, system, store),
+    Props(storeMonitorClass, system, store, service),
     name = s"${storeMonitorClass.getSimpleName}Actor"
   )
 
@@ -442,7 +445,8 @@ object TerminateFlowStage {
 
 class DuplicateStoreMonitor(
     system: ActorSystem,
-    store: Store[Id.MatchDuplicate, MatchDuplicate]
+    store: Store[Id.MatchDuplicate, MatchDuplicate],
+    service: Service
 ) extends BaseStoreMonitor[Id.MatchDuplicate, MatchDuplicate](
       system,
       store,
@@ -487,14 +491,34 @@ class DuplicateStoreMonitor(
               seq
             )
         }
+      case UpdateDuplicatePicture(dupid, boardid, handid, picture) =>
+        log.debug(s"UpdateDuplicatePicture ${dupid} ${boardid} ${picture}")
+        futureError("Use REST API", seq)
+      case UpdateDuplicatePictures(dupid, pictures) =>
+        log.debug(s"UpdateDuplicatePictures ${dupid} ${pictures}")
+        futureError("Use REST API", seq)
       case StartMonitorDuplicate(dupid: Id.MatchDuplicate) =>
         log.info(s"StartMonitorDuplicate ${dupid}")
-        get(sender) match {
+        val subid = get(sender) match {
           case Some(sub) =>
             add(new DuplicateSubscription(sub, dupid))
+            Some(sub)
           case None =>
+            None
         }
         store.read(dupid).map { rd =>
+          service.restDuplicate.nestedPictures.getAllPictures(dupid).foreach { ridp =>
+            ridp match {
+              case Right(idp) =>
+                val ldp = idp.toList
+                if (!ldp.isEmpty) {
+                  val data = UpdateDuplicatePictures( dupid, ldp )
+                  dispatchTo(DuplexProtocol.Unsolicited(data), sender)
+                }
+              case Left(err) =>
+                log.warning("Error getting all pictures in monitor: ${err}")
+            }
+          }
           rd match {
             case Right(dup) =>
               if (ack) {
@@ -572,7 +596,8 @@ class DuplicateStoreMonitor(
 
 class ChicagoStoreMonitor(
     system: ActorSystem,
-    store: Store[Id.MatchChicago, MatchChicago]
+    store: Store[Id.MatchChicago, MatchChicago],
+    service: Service
 ) extends BaseStoreMonitor[Id.MatchChicago, MatchChicago](
       system,
       store,
@@ -596,6 +621,12 @@ class ChicagoStoreMonitor(
         futureError("Unknown request", seq)
       case UpdateDuplicateTeam(dupid, team) =>
         log.warning("UpdateDuplicateTeam not implemented")
+        futureError("Unknown request", seq)
+      case UpdateDuplicatePicture(dupid, boardid, handid, picture) =>
+        log.warning("UpdateDuplicatePicture not implemented")
+        futureError("Unknown request", seq)
+      case UpdateDuplicatePictures(dupid, pictures) =>
+        log.debug(s"UpdateDuplicatePictures not implemented")
         futureError("Unknown request", seq)
       case StartMonitorDuplicate(dupid: Id.MatchDuplicate) =>
         log.warning("StartMonitorDuplicate not implemented")
@@ -703,12 +734,15 @@ class ChicagoStoreMonitor(
 
 }
 
-class RubberStoreMonitor(system: ActorSystem, store: Store[String, MatchRubber])
-    extends BaseStoreMonitor[String, MatchRubber](
-      system,
-      store,
-      Protocol.UpdateRubber(_)
-    ) {
+class RubberStoreMonitor(
+    system: ActorSystem,
+    store: Store[String, MatchRubber],
+    service: Service
+) extends BaseStoreMonitor[String, MatchRubber](
+    system,
+    store,
+    Protocol.UpdateRubber(_)
+) {
 
   def processProtocolMessage(
       sender: String,
@@ -727,6 +761,12 @@ class RubberStoreMonitor(system: ActorSystem, store: Store[String, MatchRubber])
         futureError("Unknown request", seq)
       case UpdateDuplicateTeam(dupid, team) =>
         log.warning("UpdateDuplicateTeam not implemented")
+        futureError("Unknown request", seq)
+      case UpdateDuplicatePicture(dupid, boardid, handid, picture) =>
+        log.warning("UpdateDuplicatePicture not implemented")
+        futureError("Unknown request", seq)
+      case UpdateDuplicatePictures(dupid, pictures) =>
+        log.debug(s"UpdateDuplicatePictures not implemented")
         futureError("Unknown request", seq)
       case StartMonitorDuplicate(dupid: Id.MatchDuplicate) =>
         log.warning("StartMonitorDuplicate not implemented")
@@ -835,6 +875,7 @@ class Listener(log: LoggingAdapter, actor: ActorRef) extends StoreListener {
               case md: MatchDuplicate => Some(md.id)
               case b: Board           => None
               case h: DuplicateHand   => None
+              case pict: UpdateDuplicatePicture => Some(pict.dupid)
               case mc: MatchChicago   => Some(mc.id)
               case mr: MatchRubber    => Some(mr.id)
               case _                  => None
@@ -855,6 +896,7 @@ class Listener(log: LoggingAdapter, actor: ActorRef) extends StoreListener {
                 data match {
                   case md: MatchDuplicate => actor ! UpdateDuplicate(md)
                   case b: Board           =>
+                  case pict: UpdateDuplicatePicture => actor ! pict
                   case h: DuplicateHand   => actor ! UpdateDuplicateHand(mdid, h)
                   case t: Team            => actor ! UpdateDuplicateTeam(mdid, t)
                   case mc: MatchChicago   => actor ! UpdateChicago(mc)
