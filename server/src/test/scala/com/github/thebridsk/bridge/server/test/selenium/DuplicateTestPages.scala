@@ -701,7 +701,7 @@ class DuplicateTestPages extends FlatSpec
       },
       CodeBlock{
         import SessionTable2._
-        val sb = selectScorekeeper(ScoreboardPage.current,2,2, team4, team3, East, false )
+        val sb = selectScorekeeper(ScoreboardPage.current,2,2, team4, team3, East, true )
       }
     )
   }
@@ -733,15 +733,15 @@ class DuplicateTestPages extends FlatSpec
           val sb = ScoreboardPage.current
           val hand = sb.clickBoardToHand(1).validate
           hand.setInputStyle("Original")
-          val board = hand.enterHand( 2, 2, 1, allHands, team4, team3)
+          val board = hand.enterHand( 2, 2, 1, allHands, team4.swap, team3)
           board.checkBoardButtons(1, true,1).checkBoardButtons(1, false, 2, 3).checkBoardButtonSelected(1)
           val hand2 = board.clickUnplayedBoard(2).validate
-          val board2 = hand2.enterHand( 2, 2, 2, allHands, team4, team3)
+          val board2 = hand2.enterHand( 2, 2, 2, allHands, team4.swap, team3)
           board2.checkBoardButtons(2, true,1,2).checkBoardButtons(2, false, 3).checkBoardButtonSelected(2)
           val hand3 = board2.clickUnplayedBoard(3).validate
           hand3.setInputStyle("Guide")
           hand.takeScreenshot(docsScreenshotDir, "EnterHandBefore")
-          val board3 = hand3.enterHand( 2, 2, 3, allHands, team4, team3)
+          val board3 = hand3.enterHand( 2, 2, 3, allHands, team4.swap, team3)
           board3.checkBoardButtons(3, true,1,2,3).checkBoardButtons(3, false).checkBoardButtonSelected(3)
         }
       }
@@ -814,7 +814,9 @@ class DuplicateTestPages extends FlatSpec
       ewTeam: Team,
       scorekeeper: PlayerPosition,
       mustswap: Boolean,
-      boards: List[Int]
+      boards: List[Int],
+      verifyNSteam: Team,
+      verifyEWteam: Team
     )( implicit
          webDriver: WebDriver
     ) = {
@@ -825,7 +827,7 @@ class DuplicateTestPages extends FlatSpec
       val board = withClue( s"""board ${boards.head}""" ) {
         val hand = sb.clickBoardToHand(boards.head).validate
         hand.setInputStyle("Prompt")
-        val brd = hand.enterHand( table, round, boards.head, allHands, nsTeam, ewTeam)
+        val brd = hand.enterHand( table, round, boards.head, allHands, verifyNSteam, verifyEWteam)
         brd.checkBoardButtons(boards.head,true, boards.head).checkBoardButtons(boards.head,false, boards.tail:_*).checkBoardButtonSelected(boards.head)
       }
 
@@ -840,7 +842,7 @@ class DuplicateTestPages extends FlatSpec
 
         val board = withClue( s"""board ${b}""" ) {
           val hand2 = currentBoard.clickUnplayedBoard(b).validate
-          currentBoard = hand2.enterHand( table, round, b, allHands, nsTeam, ewTeam)
+          currentBoard = hand2.enterHand( table, round, b, allHands, verifyNSteam, verifyEWteam)
           currentBoard = currentBoard.checkBoardButtons(b,true,playedBoards:_*).checkBoardButtons(b,false, unplayedBoards:_*).checkBoardButtonSelected(b)
         }
 
@@ -887,11 +889,11 @@ class DuplicateTestPages extends FlatSpec
       "Playing round 3",
       CodeBlock {
         import SessionTable1._
-        playRound(ScoreboardPage.current,1,3,team3.swap,team1,West,true,List(7,8,9) )
+        playRound(ScoreboardPage.current,1,3,team3.swap,team1,West,true,List(7,8,9),team3.swap,team1 )
       },
       CodeBlock {
         import SessionTable2._
-        playRound(ScoreboardPage.current,2,3,team2.swap,team4,East,true,List(10,11,12) )
+        playRound(ScoreboardPage.current,2,3,team2.swap,team4,East,true,List(10,11,12),team2.swap,team4 )
       }
     )
   }
@@ -992,12 +994,12 @@ class DuplicateTestPages extends FlatSpec
       CodeBlock {
         import SessionTable1._
         val sb = BoardPage.current.clickScoreboard.validate
-        playRound(sb,1,4,team3.swap,team1.swap,North,true,List(10,11,12) )
+        playRound(sb,1,4,team3.swap,team1,North,false,List(10,11,12),team3,team1 )
       },
       CodeBlock {
         import SessionTable2._
         val sb = BoardPage.current.clickScoreboard.validate
-        playRound(sb,2,4,team4.swap,team2.swap,South,true,List(7,8,9) )
+        playRound(sb,2,4,team4,team2.swap,South,true,List(7,8,9),team4.swap,team2 )
       }
     )
   }
@@ -1026,12 +1028,12 @@ class DuplicateTestPages extends FlatSpec
       CodeBlock {
         import SessionTable1._
         val sb = BoardPage.current.clickScoreboard.validate
-        playRound(sb,1,5,team2,team3,West,false,List(13,14,15) )
+        playRound(sb,1,5,team2,team3,West,false,List(13,14,15),team2,team3 )
       },
       CodeBlock {
         import SessionTable2._
         val sb = BoardPage.current.clickScoreboard.validate
-        playRound(sb,2,5,team1,team4,West,false,List(16,17,18) )
+        playRound(sb,2,5,team1,team4,West,false,List(16,17,18),team1,team4 )
       }
     )
   }
@@ -1060,12 +1062,12 @@ class DuplicateTestPages extends FlatSpec
       CodeBlock {
         import SessionTable1._
         val sb = BoardPage.current.clickScoreboard.validate
-        playRound(sb,1,6,team2,team3,West,false,List(16,17,18) )
+        playRound(sb,1,6,team2,team3,West,false,List(16,17,18),team2,team3 )
       },
       CodeBlock {
         import SessionTable2._
         val sb = BoardPage.current.clickScoreboard.validate
-        playRound(sb,2,6,team4,team1,West,false,List(13,14,15) )
+        playRound(sb,2,6,team4,team1.swap,South,false,List(13,14,15),team4.swap,team1.swap )
       }
     )
   }

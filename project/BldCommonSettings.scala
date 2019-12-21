@@ -240,7 +240,7 @@ object BldCommonSettings {
         "-feature",
 //        "-Xlog-implicits",
       ),
-      testOptions in Test += Tests.Argument(TestFrameworks.ScalaTest, "-oDFI"),
+      testOptions in Test += Tests.Argument(TestFrameworks.ScalaTest, "-oDFIK"),
       testClass in Test := (Def.inputTaskDyn {
         import complete.DefaultParsers._
         val args: Seq[String] = spaceDelimited("<arg>").parsed
@@ -268,7 +268,7 @@ object BldCommonSettings {
             log.error("Test class must be specified")
           })
         } else {
-          val ra = s""" org.scalatest.tools.Runner -oDFI ${(atests.map( t => s"-s ${t.replace('/','.')}"):::options).mkString(" ")}"""
+          val ra = s""" org.scalatest.tools.Runner -oDFIK ${(atests.map( t => s"-s ${t.replace('/','.')}"):::options).mkString(" ")}"""
           // println(s"testClass running=${ra}")
           (Def.taskDyn {
             (runMain in Test).toTask( ra )
