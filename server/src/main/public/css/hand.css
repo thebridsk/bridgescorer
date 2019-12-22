@@ -328,8 +328,9 @@
     height: 0.1px;
     opacity: 0;
     overflow: hidden;
-    position: absolute;
+    /* position: absolute; */
     z-index: -1;
+    display: none;
 }
 
 #HandPicture {
