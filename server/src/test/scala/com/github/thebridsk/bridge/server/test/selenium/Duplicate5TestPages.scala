@@ -865,7 +865,7 @@ class Duplicate5TestPages
       }
     } catch {
       case x: Exception =>
-        Thread.sleep(10*60*1000L)
+        // Thread.sleep(10*60*1000L)
         throw x
     }
   }
