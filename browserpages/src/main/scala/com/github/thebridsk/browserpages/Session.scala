@@ -164,7 +164,7 @@ class Session( name: String = "default" ) extends WebDriver {
       service.start()
       val options = new ChromeOptions
       options.addArguments("disable-infobars")
-      options.addArguments("use-gl=swiftshader")
+      // options.addArguments("use-gl=swiftshader")
       if (headless) {
         options.addArguments("headless")
         options.addArguments("window-size=1920,1080")
