@@ -360,7 +360,7 @@ object PageTableTeamsInternal {
       }
     }
 
-    def getTableManeuvers( md: MatchDuplicate, tableid: String, currentround: Int ): Option[(Id.Team,Id.Team,TableManeuvers)] = {
+    def getTableManeuvers( md: MatchDuplicate, tableid: String, currentround: Int ): Option[(Team,Team,TableManeuvers)] = {
 
       val hands = findBoardsInRound(md, tableid, currentround)
       hands.headOption.map { hand =>
@@ -399,7 +399,7 @@ object PageTableTeamsInternal {
             Some(TableManeuvers(n,s,e,w))
           }
         }
-        rtm.map( tm => (hand.nsTeam,hand.ewTeam,tm) )
+        rtm.map( tm => (ns,ew,tm) )
       }.getOrElse( None )  // no hands in round
     }
 
@@ -415,8 +415,8 @@ object PageTableTeamsInternal {
           tm match {
             case Some((nsteam,ewteam,tm)) =>
               val TableManeuvers(n,s,e,w) = tm
-              val names = Names(n,s,e,w)
-              state(names,props.page,nsteam,ewteam,Some(tm)).logState("PageTableTeams.State.create from round")
+              val names = Names(nsteam.player1,nsteam.player2,ewteam.player1,ewteam.player2)
+              state(names,props.page,nsteam.id,ewteam.id,Some(tm)).logState("PageTableTeams.State.create from round")
             case _ =>
               State.invalid(props)
           }

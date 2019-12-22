@@ -265,7 +265,7 @@ object BldCommonSettings {
         if (atests.isEmpty) {
           (Def.task {
             val log = streams.value.log
-            log.error("Test class must be specified")
+            log.error(s"Test class must be specified, test src dir is ${testdir}, args were ${args}")
           })
         } else {
           val ra = s""" org.scalatest.tools.Runner -oDFIK ${(atests.map( t => s"-s ${t.replace('/','.')}"):::options).mkString(" ")}"""
