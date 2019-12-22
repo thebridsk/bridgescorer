@@ -337,6 +337,7 @@ class Duplicate5TestPages
   import ParallelUtils._
 
   import Duplicate5TestPages._
+  import PageBrowser._
 
   import scala.concurrent.duration._
 
@@ -832,35 +833,40 @@ class Duplicate5TestPages
     val (nsTeam,ewTeam) = allHands.getNSEW(table, round)
     val boards = allHands.getBoardsInTableRound(table, round)
 
-    withClue(s"On table ${table} round ${round}") {
+    try {
+      withClueAndScreenShot( screenshotDir, s"PlayRoundT${table}R${round}", s"On table ${table} round ${round}", true) {
 
-      val board = withClue( s"""board ${boards.head}""" ) {
-        val hand = currentPage.clickBoardToHand(boards.head).validate
-        hand.setInputStyle("Prompt")
-        val brd = hand.enterHand( table, round, boards.head, allHands, nsTeam, ewTeam)
-        brd.checkBoardButtons(boards.head,true,boards.head).checkBoardButtons(boards.head,false, boards.tail:_*).checkBoardButtonSelected(boards.head)
-      }
-
-      var playedBoards = boards.head::Nil
-      var unplayedBoards = boards.tail
-
-      var currentBoard = board
-      while (!unplayedBoards.isEmpty) {
-        val b = unplayedBoards.head
-        unplayedBoards = unplayedBoards.tail
-        playedBoards = b::playedBoards
-
-        val board = withClue( s"""board ${b}""" ) {
-          val hand2 = currentBoard.clickUnplayedBoard(b).validate
-          currentBoard = hand2.enterHand( table, round, b, allHands, nsTeam, ewTeam)
-          currentBoard = currentBoard.checkBoardButtons(b,true,playedBoards:_*).checkBoardButtons(b,false, unplayedBoards:_*).checkBoardButtonSelected(b)
+        val board = withClue( s"""board ${boards.head}""" ) {
+          val hand = currentPage.clickBoardToHand(boards.head).validate
+          hand.setInputStyle("Prompt")
+          val brd = hand.enterHand( table, round, boards.head, allHands, nsTeam, ewTeam)
+          brd.checkBoardButtons(boards.head,true,boards.head).checkBoardButtons(boards.head,false, boards.tail:_*).checkBoardButtonSelected(boards.head)
         }
 
+        var playedBoards = boards.head::Nil
+        var unplayedBoards = boards.tail
+
+        var currentBoard = board
+        while (!unplayedBoards.isEmpty) {
+          val b = unplayedBoards.head
+          unplayedBoards = unplayedBoards.tail
+          playedBoards = b::playedBoards
+
+          val board = withClue( s"""board ${b}""" ) {
+            val hand2 = currentBoard.clickUnplayedBoard(b).validate
+            currentBoard = hand2.enterHand( table, round, b, allHands, nsTeam, ewTeam)
+            currentBoard = currentBoard.checkBoardButtons(b,true,playedBoards:_*).checkBoardButtons(b,false, unplayedBoards:_*).checkBoardButtonSelected(b)
+          }
+        }
+
+        val sbr = currentBoard.clickScoreboard.validate
+
+        sbr
       }
-
-      val sbr = currentBoard.clickScoreboard.validate
-
-      sbr
+    } catch {
+      case x: Exception =>
+        Thread.sleep(10*60*1000L)
+        throw x
     }
   }
 
