@@ -733,15 +733,15 @@ class DuplicateTestPages extends FlatSpec
           val sb = ScoreboardPage.current
           val hand = sb.clickBoardToHand(1).validate
           hand.setInputStyle("Original")
-          val board = hand.enterHand( 2, 2, 1, allHands, team4.swap, team3)
+          val board = hand.enterHand( 2, 2, 1, allHands, team4, team3)
           board.checkBoardButtons(1, true,1).checkBoardButtons(1, false, 2, 3).checkBoardButtonSelected(1)
           val hand2 = board.clickUnplayedBoard(2).validate
-          val board2 = hand2.enterHand( 2, 2, 2, allHands, team4.swap, team3)
+          val board2 = hand2.enterHand( 2, 2, 2, allHands, team4, team3)
           board2.checkBoardButtons(2, true,1,2).checkBoardButtons(2, false, 3).checkBoardButtonSelected(2)
           val hand3 = board2.clickUnplayedBoard(3).validate
           hand3.setInputStyle("Guide")
           hand.takeScreenshot(docsScreenshotDir, "EnterHandBefore")
-          val board3 = hand3.enterHand( 2, 2, 3, allHands, team4.swap, team3)
+          val board3 = hand3.enterHand( 2, 2, 3, allHands, team4, team3)
           board3.checkBoardButtons(3, true,1,2,3).checkBoardButtons(3, false).checkBoardButtonSelected(3)
         }
       }
@@ -994,12 +994,12 @@ class DuplicateTestPages extends FlatSpec
       CodeBlock {
         import SessionTable1._
         val sb = BoardPage.current.clickScoreboard.validate
-        playRound(sb,1,4,team3.swap,team1,North,false,List(10,11,12),team3,team1 )
+        playRound(sb,1,4,team3,team1.swap,North,false,List(10,11,12),team3,team1.swap )
       },
       CodeBlock {
         import SessionTable2._
         val sb = BoardPage.current.clickScoreboard.validate
-        playRound(sb,2,4,team4,team2.swap,South,true,List(7,8,9),team4.swap,team2 )
+        playRound(sb,2,4,team4.swap,team2,South,true,List(7,8,9),team4.swap,team2 )
       }
     )
   }
@@ -1067,7 +1067,7 @@ class DuplicateTestPages extends FlatSpec
       CodeBlock {
         import SessionTable2._
         val sb = BoardPage.current.clickScoreboard.validate
-        playRound(sb,2,6,team4,team1.swap,South,false,List(13,14,15),team4.swap,team1.swap )
+        playRound(sb,2,6,team4,team1.swap,South,false,List(13,14,15),team4,team1.swap )
       }
     )
   }
