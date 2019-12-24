@@ -703,7 +703,7 @@ class DuplicateTestPages extends FlatSpec
       },
       CodeBlock{
         import SessionTable2._
-        val sb = selectScorekeeper(ScoreboardPage.current,2,2, team4, team3, East, false )
+        val sb = selectScorekeeper(ScoreboardPage.current,2,2, team4, team3, East, true )
       }
     )
   }
@@ -816,7 +816,9 @@ class DuplicateTestPages extends FlatSpec
       ewTeam: Team,
       scorekeeper: PlayerPosition,
       mustswap: Boolean,
-      boards: List[Int]
+      boards: List[Int],
+      verifyNSteam: Team,
+      verifyEWteam: Team
     )( implicit
          webDriver: WebDriver
     ) = {
@@ -827,7 +829,7 @@ class DuplicateTestPages extends FlatSpec
       val board = withClue( s"""board ${boards.head}""" ) {
         val hand = sb.clickBoardToHand(boards.head).validate
         hand.setInputStyle("Prompt")
-        val brd = hand.enterHand( table, round, boards.head, allHands, nsTeam, ewTeam)
+        val brd = hand.enterHand( table, round, boards.head, allHands, verifyNSteam, verifyEWteam)
         brd.checkBoardButtons(boards.head,true, boards.head).checkBoardButtons(boards.head,false, boards.tail:_*).checkBoardButtonSelected(boards.head)
       }
 
@@ -842,7 +844,7 @@ class DuplicateTestPages extends FlatSpec
 
         val board = withClue( s"""board ${b}""" ) {
           val hand2 = currentBoard.clickUnplayedBoard(b).validate
-          currentBoard = hand2.enterHand( table, round, b, allHands, nsTeam, ewTeam)
+          currentBoard = hand2.enterHand( table, round, b, allHands, verifyNSteam, verifyEWteam)
           currentBoard = currentBoard.checkBoardButtons(b,true,playedBoards:_*).checkBoardButtons(b,false, unplayedBoards:_*).checkBoardButtonSelected(b)
         }
 
@@ -889,11 +891,11 @@ class DuplicateTestPages extends FlatSpec
       "Playing round 3",
       CodeBlock {
         import SessionTable1._
-        playRound(ScoreboardPage.current,1,3,team3.swap,team1,West,true,List(7,8,9) )
+        playRound(ScoreboardPage.current,1,3,team3.swap,team1,West,true,List(7,8,9),team3.swap,team1 )
       },
       CodeBlock {
         import SessionTable2._
-        playRound(ScoreboardPage.current,2,3,team2.swap,team4,East,true,List(10,11,12) )
+        playRound(ScoreboardPage.current,2,3,team2.swap,team4,East,true,List(10,11,12),team2.swap,team4 )
       }
     )
   }
@@ -994,12 +996,12 @@ class DuplicateTestPages extends FlatSpec
       CodeBlock {
         import SessionTable1._
         val sb = BoardPage.current.clickScoreboard.validate
-        playRound(sb,1,4,team3.swap,team1.swap,North,true,List(10,11,12) )
+        playRound(sb,1,4,team3,team1.swap,North,false,List(10,11,12),team3,team1.swap )
       },
       CodeBlock {
         import SessionTable2._
         val sb = BoardPage.current.clickScoreboard.validate
-        playRound(sb,2,4,team4.swap,team2.swap,South,true,List(7,8,9) )
+        playRound(sb,2,4,team4.swap,team2,South,true,List(7,8,9),team4.swap,team2 )
       }
     )
   }
@@ -1028,12 +1030,12 @@ class DuplicateTestPages extends FlatSpec
       CodeBlock {
         import SessionTable1._
         val sb = BoardPage.current.clickScoreboard.validate
-        playRound(sb,1,5,team2,team3,West,false,List(13,14,15) )
+        playRound(sb,1,5,team2,team3,West,false,List(13,14,15),team2,team3 )
       },
       CodeBlock {
         import SessionTable2._
         val sb = BoardPage.current.clickScoreboard.validate
-        playRound(sb,2,5,team1,team4,West,false,List(16,17,18) )
+        playRound(sb,2,5,team1,team4,West,false,List(16,17,18),team1,team4 )
       }
     )
   }
@@ -1062,12 +1064,12 @@ class DuplicateTestPages extends FlatSpec
       CodeBlock {
         import SessionTable1._
         val sb = BoardPage.current.clickScoreboard.validate
-        playRound(sb,1,6,team2,team3,West,false,List(16,17,18) )
+        playRound(sb,1,6,team2,team3,West,false,List(16,17,18),team2,team3 )
       },
       CodeBlock {
         import SessionTable2._
         val sb = BoardPage.current.clickScoreboard.validate
-        playRound(sb,2,6,team4,team1,West,false,List(13,14,15) )
+        playRound(sb,2,6,team4,team1.swap,South,false,List(13,14,15),team4,team1.swap )
       }
     )
   }

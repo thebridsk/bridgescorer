@@ -151,6 +151,32 @@ case class TableManeuvers(
     swap(rightOfPosition(l), leftOfPosition(l))
   }
 
+  def rotateClockwise() = {
+    TableManeuvers(
+      north = west,
+      south = east,
+      east = north,
+      west = south
+    )
+  }
+
+  def rotateCounterClockwise() = {
+    TableManeuvers(
+      north = east,
+      south = west,
+      east = south,
+      west = north
+    )
+  }
+
+  def rotate180() = {
+    TableManeuvers(
+      north = south,
+      south = north,
+      east = west,
+      west = east
+    )
+  }
 }
 
 object TableManeuvers {}
