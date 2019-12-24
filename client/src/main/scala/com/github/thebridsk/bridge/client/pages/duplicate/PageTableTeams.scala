@@ -173,7 +173,7 @@ object PageTableTeamsInternal {
       if ( scorekeeperPosition.isDefined && scorekeeperName.isDefined ) {
         if ( players.find(scorekeeperPosition.get) != scorekeeperName.get ) {
           if (players.isPlayerValid(scorekeeperPosition.get)) {
-            copy( players = players.swapWithPartner(scorekeeperPosition.get), scorekeeperSet = true )
+            copy( players = players.rotate180(), scorekeeperSet = true )
           } else {
             copy( players = players.setPlayer(scorekeeperPosition.get, scorekeeperName.get),
                   names = names.setPlayer(scorekeeperPosition.get, scorekeeperName.get),
@@ -316,7 +316,7 @@ object PageTableTeamsInternal {
       }
     }
 
-    def create( props: Props ): State = {
+    def createOld( props: Props ): State = {
       DuplicateStore.getMatch() match {
         case Some(md) =>
           props.page match {
@@ -360,6 +360,69 @@ object PageTableTeamsInternal {
       }
     }
 
+    def getTableManeuvers( md: MatchDuplicate, tableid: String, currentround: Int ): Option[(Team,Team,TableManeuvers)] = {
+
+      val hands = findBoardsInRound(md, tableid, currentround)
+      hands.headOption.map { hand =>
+        val ns = md.getTeam(hand.nsTeam).get
+        val ew = md.getTeam(hand.ewTeam).get
+        val (n,s) = if (hand.nIsPlayer1) (ns.player1,ns.player2) else (ns.player2,ns.player1)
+        val (e,w) = if (hand.eIsPlayer1) (ew.player1,ew.player2) else (ew.player2,ew.player1)
+        val rtm = if (currentround == 1) {
+          Some(TableManeuvers(n,s,e,w))
+        } else {
+          if (hands.find( dh => !dh.played.isEmpty ).isEmpty) {
+            // never played
+            val prevhands = findBoardsInRound(md, tableid, currentround-1)
+            prevhands.headOption.map { prevhand =>
+              if ( (hand.nsTeam == prevhand.nsTeam && hand.ewTeam == prevhand.ewTeam)
+                   || (hand.nsTeam == prevhand.ewTeam && hand.ewTeam == prevhand.nsTeam)
+              ) {
+                // same teams as previous round
+                val pns = md.getTeam(prevhand.nsTeam).get
+                val pew = md.getTeam(prevhand.ewTeam).get
+                val (pn,ps) = if (prevhand.nIsPlayer1) (pns.player1,pns.player2) else (pns.player2,pns.player1)
+                val (pe,pw) = if (prevhand.eIsPlayer1) (pew.player1,pew.player2) else (pew.player2,pew.player1)
+                val tm = TableManeuvers(pn,ps,pe,pw)
+                val tm2 = if (hand.nsTeam == prevhand.nsTeam) tm else tm.rotateClockwise
+                Some(tm2)
+              } else {
+                // different teams
+                Some(TableManeuvers(n,s,e,w))
+              }
+            }.getOrElse {
+              // could not find previous round on table.  This should not happen
+              Some(TableManeuvers(n,s,e,w))
+            }
+          } else {
+            // this has been played already
+            Some(TableManeuvers(n,s,e,w))
+          }
+        }
+        rtm.map( tm => (ns,ew,tm) )
+      }.getOrElse( None )  // no hands in round
+    }
+
+    def create( props: Props ): State = {
+      DuplicateStore.getMatch().map { md =>
+        (props.page match {
+          case TableTeamByBoardView( dupid, tableid, round, boardid ) => Some( dupid, tableid, round )
+          case TableTeamByRoundView( dupid, tableid, round ) => Some( dupid, tableid, round )
+          case _ => None
+        }).map { vls =>
+          val (dupid, tableid, round) = vls
+          val tm = getTableManeuvers(md,tableid,round)
+          tm match {
+            case Some((nsteam,ewteam,tm)) =>
+              val TableManeuvers(n,s,e,w) = tm
+              val names = Names(nsteam.player1,nsteam.player2,ewteam.player1,ewteam.player2)
+              state(names,props.page,nsteam.id,ewteam.id,Some(tm)).logState("PageTableTeams.State.create from round")
+            case _ =>
+              State.invalid(props)
+          }
+        }.getOrElse( State.invalid(props))
+      }.getOrElse( State.invalid(props))
+    }
   }
 
 

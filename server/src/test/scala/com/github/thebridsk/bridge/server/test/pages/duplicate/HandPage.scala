@@ -166,30 +166,32 @@ class HandPage( implicit val webDriver: WebDriver, pageCreated: SourcePosition )
         case None => None
       }
 
-      allhands.getBoardFromBoardSet(board) match {
-        case Some(bis) =>
-          b.hand.declarer match {
-            case North | South =>
-              b.hand.vul.vul mustBe bis.nsVul
-            case East | West =>
-              b.hand.vul.vul mustBe bis.ewVul
-          }
+      eventually {
+        allhands.getBoardFromBoardSet(board) match {
+          case Some(bis) =>
+            b.hand.declarer match {
+              case North | South =>
+                b.hand.vul.vul mustBe bis.nsVul
+              case East | West =>
+                b.hand.vul.vul mustBe bis.ewVul
+            }
 
-          def buttonText( player: String, team: Int, vul: Boolean, pos: String ) = {
-            val svul = if (vul) "Vul" else "vul"
-            s"""${player.trim} ($team) $svul $pos"""
-          }
+            def buttonText( player: String, team: Int, vul: Boolean, pos: String ) = {
+              val svul = if (vul) "Vul" else "vul"
+              s"""${player.trim} ($team) $svul $pos"""
+            }
 
-          getButton("DecN").text mustBe buttonText(nsTeam.one,nsTeam.teamid,bis.nsVul,"North")
-          getButton("DecS").text mustBe buttonText(nsTeam.two,nsTeam.teamid,bis.nsVul,"South")
-          getButton("DecE").text mustBe buttonText(ewTeam.one,ewTeam.teamid,bis.ewVul,"East")
-          getButton("DecW").text mustBe buttonText(ewTeam.two,ewTeam.teamid,bis.ewVul,"West")
+            getButton("DecN").text mustBe buttonText(nsTeam.one,nsTeam.teamid,bis.nsVul,"North")
+            getButton("DecS").text mustBe buttonText(nsTeam.two,nsTeam.teamid,bis.nsVul,"South")
+            getButton("DecE").text mustBe buttonText(ewTeam.one,ewTeam.teamid,bis.ewVul,"East")
+            getButton("DecW").text mustBe buttonText(ewTeam.two,ewTeam.teamid,bis.ewVul,"West")
 
-        case None =>
+          case None =>
+        }
+
+        dealerPos.foreach(dp => checkDealerPos(dp))
+        dealer.foreach(d => checkDealer(d))
       }
-
-      dealerPos.foreach(dp => checkDealerPos(dp))
-      dealer.foreach(d => checkDealer(d))
 
       onlyEnterHand(b.hand)
     }
