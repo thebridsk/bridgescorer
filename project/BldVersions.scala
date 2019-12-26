@@ -67,7 +67,7 @@ object BldVersion {
   // Selenium needs to be update to update to v23.0
   lazy val vGuavaJre = "28.1-jre"    // https://github.com/google/guava
 
-  lazy val vWebPack = "4.41.3"          // https://www.npmjs.com/package/webpack
+  lazy val vWebPack = "4.41.4"          // https://www.npmjs.com/package/webpack
 
   lazy val vJsDom = "15.2.1"           // https://www.npmjs.com/package/jsdom
 
@@ -77,21 +77,21 @@ object BldVersion {
   // version 1.0.7 is hardcoded in sbt-scalajs-bundler
   // current is 1.1.0
   lazy val vConcatWithSourcemaps = "1.1.0"  // https://www.npmjs.com/package/concat-with-sourcemaps
-  lazy val vTerser = "4.4.3"               // https://www.npmjs.com/package/terser
+  lazy val vTerser = "4.4.3"                // https://www.npmjs.com/package/terser
 
   lazy val vAjv = "6.10.2"                  // https://www.npmjs.com/package/ajv
 
 
-  lazy val vWebpackDevServer = "3.9.0"   // https://www.npmjs.com/package/webpack-dev-server
-  lazy val vWebPackCli = "3.3.10"        // https://www.npmjs.com/package/webpack-cli
+  lazy val vWebpackDevServer = "3.10.1"   // https://www.npmjs.com/package/webpack-dev-server
+  lazy val vWebPackCli = "3.3.10"         // https://www.npmjs.com/package/webpack-cli
 
   lazy val vSangria = "2.0.0-M1"           // https://github.com/sangria-graphql-org/sangria             https://github.com/sangria-graphql/sangria              no 2.13 support
-  lazy val vSangriaPlayJson = "2.0.0"   // https://github.com/sangria-graphql-org/sangria-play-json   https://github.com/sangria-graphql/sangria-playground   no 2.13 support
+  lazy val vSangriaPlayJson = "2.0.0"      // https://github.com/sangria-graphql-org/sangria-play-json   https://github.com/sangria-graphql/sangria-playground   no 2.13 support
 
   lazy val vGraphQL = "14.5.8"              // https://github.com/graphql/graphql-js
   lazy val vGraphiQL = "0.17.5"             // https://github.com/graphql/graphiql
   lazy val vGraphQLVoyager = "1.0.0-rc.28"  // https://github.com/APIs-guru/graphql-voyager
-  lazy val vMaterialUIcore = "4.8.0"        // https://www.npmjs.com/package/@material-ui/core
+  lazy val vMaterialUIcore = "4.8.1"        // https://www.npmjs.com/package/@material-ui/core
   lazy val vMaterialUIicons = "4.5.1"       // https://www.npmjs.com/package/@material-ui/icons
   lazy val vPropTypes = "15.7.2"            // https://www.npmjs.com/package/prop-types
 }
