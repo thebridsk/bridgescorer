@@ -756,4 +756,5 @@ class TestDuplicateWebsocket extends FlatSpec with ScalatestRouteTest with MustM
 
     WebsocketClient.ensureNoMessage(true,client1,client2,client3)
   }
+
 }

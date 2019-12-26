@@ -23,6 +23,7 @@ trait ToServerDuplexProtocolJsonSupport {
   implicit val errorResponseFormat = Json.format[ErrorResponse]
   implicit val logEntryV2Format = Json.format[LogEntryV2]
   implicit val logEntrySFormat = Json.format[LogEntryS]
+  implicit val completeFormat = Json.format[Complete]
 }
 
 trait DuplexProtocolJsonSupportImpl
@@ -82,6 +83,9 @@ class DuplexMessageFormat extends SealedFormat[DuplexMessage] {
       case x: ErrorResponse => Json.toJson[ErrorResponse](x)
       case x: LogEntryV2    => Json.toJson[LogEntryV2](x)
       case x: LogEntryS     => Json.toJson[LogEntryS](x)
+
+      case x: Complete      => Json.toJson[Complete](x)
+      case x: Fail          => Json.toJson[Complete]( Complete("Internal server error"))
     }
   }
 }

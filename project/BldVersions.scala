@@ -23,16 +23,16 @@ object BldVersion {
 //  lazy val vScalaJsLibrary = "0.6.13" // http://mvnrepository.com/artifact/org.scala-js/scalajs-library_2.11
 
 
-  lazy val vAkka = "2.5.26"            // https://github.com/akka/akka
-  lazy val vAkkaHttp = "10.1.10"       // https://github.com/akka/akka-http
+  lazy val vAkka = "2.6.1"            // https://github.com/akka/akka
+  lazy val vAkkaHttp = "10.1.11"       // https://github.com/akka/akka-http
 
-  lazy val vAkkaHttpPlayJson="1.29.1"  // https://github.com/hseeberger/akka-http-json
+  lazy val vAkkaHttpPlayJson="1.30.0"  // https://github.com/hseeberger/akka-http-json
 
   lazy val vSwaggerAkkaHttp = "2.0.4"  // https://github.com/swagger-akka-http/swagger-akka-http
   lazy val vSwaggerScalaModule="2.0.5" // https://github.com/swagger-api/swagger-scala-module
   lazy val vSwagger="2.1.0"            // https://github.com/swagger-api/swagger-core
   lazy val vWsRsApi="2.1.6"            // https://github.com/eclipse-ee4j/jaxrs-api
-  lazy val vAkkaHttpCors = "0.4.1"     // https://github.com/lomigmegard/akka-http-cors
+  lazy val vAkkaHttpCors = "0.4.2"     // https://github.com/lomigmegard/akka-http-cors
 
   lazy val vSwaggerUI = "3.24.3"       // https://www.npmjs.com/package/swagger-ui-dist
   lazy val vScalajsdom = "0.9.8"       // https://github.com/scala-js/scala-js-dom

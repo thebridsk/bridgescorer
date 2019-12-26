@@ -85,7 +85,7 @@ class TestRoute extends RoutingSpec {
     resetDebugMsg()
     Get("/hello") ~> logRequestDebug("1") { completeOk } ~> check {
       status mustBe StatusCodes.OK
-      debugMsg mustBe "1: HttpRequest(HttpMethod(GET),http://example.com/hello,List(),HttpEntity.Strict(none/none,ByteString()),HttpProtocol(HTTP/1.1))\n"
+      debugMsg mustBe "1: HttpRequest(HttpMethod(GET),http://example.com/hello,List(),HttpEntity.Strict(none/none,0 bytes total),HttpProtocol(HTTP/1.1))\n"
     }
   }
 
@@ -103,7 +103,7 @@ class TestRoute extends RoutingSpec {
     resetDebugMsg()
     Get("/hello") ~> logResultDebug("2") { completeOk } ~> check {
       status mustBe StatusCodes.OK
-      debugMsg mustBe "2: HttpResponse(200 OK,List(),HttpEntity.Strict(none/none,ByteString()),HttpProtocol(HTTP/1.1))\n"
+      debugMsg mustBe "2: HttpResponse(200 OK,List(),HttpEntity.Strict(none/none,0 bytes total),HttpProtocol(HTTP/1.1))\n"
     }
   }
 
@@ -122,8 +122,8 @@ class TestRoute extends RoutingSpec {
     Get("/hello") ~> logRequestResultDebug("3") { route } ~> check {
       status mustBe StatusCodes.OK
       debugMsg mustBe """|3: Response for
-                         |  Request : HttpRequest(HttpMethod(GET),http://example.com/hello,List(),HttpEntity.Strict(none/none,ByteString()),HttpProtocol(HTTP/1.1))
-                         |  Response: HttpResponse(200 OK,List(),HttpEntity.Strict(none/none,ByteString()),HttpProtocol(HTTP/1.1))
+                         |  Request : HttpRequest(HttpMethod(GET),http://example.com/hello,List(),HttpEntity.Strict(none/none,0 bytes total),HttpProtocol(HTTP/1.1))
+                         |  Response: HttpResponse(200 OK,List(),HttpEntity.Strict(none/none,0 bytes total),HttpProtocol(HTTP/1.1))
                          |""".stripMarginWithNewline("\n")
     }
   }

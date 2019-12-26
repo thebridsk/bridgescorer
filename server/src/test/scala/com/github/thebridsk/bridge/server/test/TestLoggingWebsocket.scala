@@ -22,7 +22,6 @@ import akka.http.scaladsl.server.Route
 import akka.http.scaladsl.model.StatusCodes._
 import scala.concurrent.duration._
 import akka.actor.ActorSystem
-import akka.stream.ActorMaterializer
 
 trait XXX extends MyService {
   import com.github.thebridsk.bridge.server.rest.ServerPort
@@ -34,7 +33,6 @@ trait XXX extends MyService {
   def ports = ServerPort( Option(httpport), None )
 
   implicit val actorSystem: ActorSystem
-  implicit val materializer: ActorMaterializer
 }
 
 class TestLoggingWebsocket extends FlatSpec with ScalatestRouteTest with MustMatchers {

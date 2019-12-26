@@ -131,8 +131,8 @@ class TestWebsocket extends FlatSpec with ScalatestRouteTest with MustMatchers w
           })
           setHandler(out, new OutHandler {
             override def onPull(): Unit = pull(in)
-            override def onDownstreamFinish(): Unit = {
-              testlog.info(s"WS stream finished (downstream)")
+            override def onDownstreamFinish( cause: Throwable ): Unit = {
+              testlog.info(s"WS stream finished (downstream)", cause)
               completeStage()
             }
           })

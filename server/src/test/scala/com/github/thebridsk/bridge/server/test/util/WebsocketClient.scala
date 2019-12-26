@@ -166,7 +166,7 @@ class WebsocketClient(implicit system: ActorSystem, materializer: Materializer, 
     }
   }
 
-  def terminate( max: FiniteDuration = 10 seconds ) = {
+  def terminate( max: FiniteDuration = 10 seconds )( implicit testlog: LoggingAdapter ) = {
     if (myAddress.isDefined) {
       wsClient.inProbe.within(max) {
         wsClient.sendCompletion()
