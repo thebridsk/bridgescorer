@@ -1,7 +1,6 @@
 package com.github.thebridsk.bridge.server.test
 
 import akka.http.scaladsl.testkit.ScalatestRouteTest
-import org.scalatest._
 import com.github.thebridsk.bridge.server.backend.resource.InMemoryStore
 import com.github.thebridsk.bridge.data.Id
 import com.github.thebridsk.bridge.data.MatchDuplicate
@@ -43,9 +42,14 @@ import com.github.thebridsk.utilities.file.FileIO
 import com.github.thebridsk.bridge.server.backend.resource.MultiStore
 import com.github.thebridsk.bridge.server.backend.resource.Store
 import scala.concurrent.ExecutionContext.Implicits.global
+import org.scalatest.compatible.Assertion
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.must.Matchers
+import org.scalatest.BeforeAndAfterAll
+import org.scalatest.Succeeded
 
 object TestCacheStore {
-  import MustMatchers._
+  import Matchers._
 
   val testlog = com.github.thebridsk.utilities.logging.Logger[TestCacheStore]
 
@@ -183,8 +187,11 @@ object TestCacheStore {
 /**
  * Test class to start the logging system
  */
-class TestCacheStore extends AsyncFlatSpec with ScalatestRouteTest with MustMatchers with BeforeAndAfterAll {
+class TestCacheStore extends AnyFlatSpec with ScalatestRouteTest with Matchers with BeforeAndAfterAll {
   import TestCacheStore._
+
+  import scala.language.implicitConversions
+  implicit def toFunction( r: => Future[Assertion]) = () => r
 
   import ExecutionContext.Implicits.global
 
@@ -321,7 +328,7 @@ class TestCacheStore extends AsyncFlatSpec with ScalatestRouteTest with MustMatc
       listener.changeUpdate mustBe 'empty
       listener.changeDelete mustBe 'defined
 
-      listener.changeDelete.map { cc =>
+      listener.changeDelete.map { cc => Future {
         cc.changes.length mustBe 2
         cc.changes.head match {
           case UpdateChangeContext(newvalue,parentfield) =>
@@ -348,7 +355,7 @@ class TestCacheStore extends AsyncFlatSpec with ScalatestRouteTest with MustMatc
             }
           case x =>
             fail("expecting delete, got ${x}")
-        }
+        }}
       }.getOrElse(fail("changeDelete was empty"))
     }
   }
@@ -375,7 +382,7 @@ class TestCacheStore extends AsyncFlatSpec with ScalatestRouteTest with MustMatc
         listener.changeUpdate mustBe 'defined
         listener.changeDelete mustBe 'empty
 
-        listener.changeUpdate.map { cc =>
+        listener.changeUpdate.map { cc => Future {
           cc.changes.length mustBe 3
           cc.changes.head match {
             case UpdateChangeContext(newvalue,parentfield) =>
@@ -432,7 +439,7 @@ class TestCacheStore extends AsyncFlatSpec with ScalatestRouteTest with MustMatc
             case x =>
               fail("expecting update, got ${x}")
           }
-        }.getOrElse(fail("changeUpdate was empty"))
+        }}.getOrElse(fail("changeUpdate was empty"))
 
       }
     }

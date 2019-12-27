@@ -2,7 +2,7 @@ package com.github.thebridsk.bridge.server.test.pages
 
 import org.scalactic.source.Position
 import org.scalatest.concurrent.Eventually._
-import org.scalatest.MustMatchers._
+import org.scalatest.matchers.must.Matchers._
 import com.github.thebridsk.browserpages.GenericPage
 import com.github.thebridsk.browserpages.Page
 import com.github.thebridsk.browserpages.PageBrowser._

@@ -1,22 +1,15 @@
 package com.github.thebridsk.session.test
 
-import org.scalatest.FlatSpec
-import org.scalatest.MustMatchers
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.must.Matchers
 import org.openqa.selenium.WebDriver
-import org.scalatest.selenium.Firefox
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest._
-import selenium._
 import org.openqa.selenium._
 import org.scalatest.concurrent.Eventually
 import java.util.concurrent.TimeUnit
 import org.scalatest.time.Span
 import org.scalatest.time.Millis
-import org.openqa.selenium.chrome.ChromeOptions
-import org.openqa.selenium.chrome.ChromeDriver
-import org.openqa.selenium.remote.RemoteWebDriver
-import org.openqa.selenium.firefox.FirefoxDriver
-import org.openqa.selenium.safari.SafariDriver
 import scala.collection.convert.ImplicitConversionsToScala._
 import org.scalactic.source.Position
 import com.github.thebridsk.browserpages.Session
@@ -24,7 +17,7 @@ import com.github.thebridsk.browserpages.Session
 /**
  * @author werewolf
  */
-class SessionTest extends FlatSpec with MustMatchers {
+class SessionTest extends AnyFlatSpec with Matchers {
 
   import Eventually.{ patienceConfig => _, _ }
 

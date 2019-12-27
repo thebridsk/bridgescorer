@@ -1,8 +1,7 @@
 package com.github.thebridsk.bridge.server.test
 
-import org.scalatest.FlatSpec
-import org.scalatest.MustMatchers
-import org.scalatest.Matchers
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.must.Matchers
 
 import com.github.thebridsk.bridge.data.bridge._
 import com.github.thebridsk.utilities.logging.Logger
@@ -21,7 +20,7 @@ import com.github.thebridsk.bridge.data.rest.JsonException
 import com.github.thebridsk.bridge.server.backend.BridgeServiceFileStoreConverters
 import com.github.thebridsk.bridge.server.backend.resource.Converter
 
-class TestVersionedInstance extends FlatSpec with MustMatchers {
+class TestVersionedInstance extends AnyFlatSpec with Matchers {
 
   behavior of "FileStore"
 

@@ -1,8 +1,7 @@
 package com.github.thebridsk.bridge.server.test
 
-import org.scalatest.FlatSpec
-import org.scalatest.MustMatchers
-import org.scalatest.Matchers
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.must.Matchers
 import com.github.thebridsk.utilities.logging.Logger
 import java.util.logging.Level
 import com.github.thebridsk.bridge.server.backend.BridgeServiceInMemory
@@ -31,7 +30,7 @@ class MySubscription extends Subscriptions {
 
 }
 
-class TestSubscription extends FlatSpec with MustMatchers {
+class TestSubscription extends AnyFlatSpec with Matchers {
 
   val log = Logger[TestSubscription]
 

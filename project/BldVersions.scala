@@ -49,8 +49,10 @@ object BldVersion {
 
   lazy val vJQuery = "3.4.1"         // https://www.npmjs.com/package/jquery
 
-  lazy val vScalactic = "3.0.8"      // https://github.com/scalatest/scalatest
-  lazy val vScalatest = "3.0.8"      // https://github.com/scalatest/scalatest
+  lazy val vScalactic = "3.1.0"      // https://github.com/scalatest/scalatest
+  lazy val vScalatest = "3.1.0"      // https://github.com/scalatest/scalatest
+  // lazy val vScalatestSelenium = "1.0.0-M2"  // https://github.com/scalatest/scalatestplus-selenium
+  lazy val vScalatestSelenium245 = "3.1.0.0"  // https://github.com/scalatest/scalatestplus-selenium
   lazy val vJunit = "4.12"           // https://github.com/junit-team/junit4
 
   lazy val vSelenium = "3.141.59"    // https://github.com/SeleniumHQ/selenium

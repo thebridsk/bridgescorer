@@ -6,7 +6,7 @@ import org.scalatest.concurrent.Eventually._
 import org.scalactic.source.Position
 import org.openqa.selenium.WebDriver
 import com.github.thebridsk.browserpages.PageBrowser
-import org.scalatest.MustMatchers
+import org.scalatest.matchers.must.Matchers
 import com.github.thebridsk.source.SourcePosition
 import scala.reflect.io.File
 
@@ -44,7 +44,7 @@ object HandPicture {
 trait HandPicture[ +T <: Page[T] ] extends Popup[T] {
 
   import PageBrowser._
-  import MustMatchers._
+  import Matchers._
   import HandPicture._
 
   implicit val webDriver: WebDriver

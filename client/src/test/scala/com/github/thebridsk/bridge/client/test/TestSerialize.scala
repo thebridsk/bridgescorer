@@ -2,11 +2,11 @@ package com.github.thebridsk.bridge.client.test
 
 import com.github.thebridsk.bridge.data.MatchDuplicate
 import com.github.thebridsk.bridge.data.sample.TestMatchDuplicate
-import org.scalatest.FlatSpec
-import org.scalatest.MustMatchers
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.must.Matchers
 import com.github.thebridsk.bridge.data.rest.JsonSupport._
 
-class TestSerialize extends FlatSpec with MustMatchers {
+class TestSerialize extends AnyFlatSpec with Matchers {
 
   behavior of "TestSerialize in bridgescorer-client"
 

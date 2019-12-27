@@ -1,9 +1,8 @@
 package com.github.thebridsk.bridge.server.test.selenium
 
-import org.scalatest.FlatSpec
-import org.scalatest.MustMatchers
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.must.Matchers
 import org.openqa.selenium.WebDriver
-import org.scalatest.selenium.Firefox
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest._
 import org.openqa.selenium._
@@ -15,11 +14,6 @@ import com.github.thebridsk.bridge.server.backend.BridgeServiceInMemory
 import com.github.thebridsk.bridge.server.backend.BridgeService
 import org.scalatest.time.Span
 import org.scalatest.time.Millis
-import org.openqa.selenium.chrome.ChromeOptions
-import org.openqa.selenium.chrome.ChromeDriver
-import org.openqa.selenium.remote.RemoteWebDriver
-import org.openqa.selenium.firefox.FirefoxDriver
-import org.openqa.selenium.safari.SafariDriver
 import com.github.thebridsk.bridge.data.bridge._
 import scala.collection.JavaConversions._
 import scala.util.Failure
@@ -327,8 +321,8 @@ object Duplicate5TestPages {
  * @author werewolf
  */
 class Duplicate5TestPages
-    extends FlatSpec
-    with MustMatchers
+    extends AnyFlatSpec
+    with Matchers
     with BeforeAndAfterAll
     with EventuallyUtils
     with CancelAfterFailure

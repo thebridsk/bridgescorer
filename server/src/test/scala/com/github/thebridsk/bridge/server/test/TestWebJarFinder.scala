@@ -1,12 +1,11 @@
 package com.github.thebridsk.bridge.server.test
 
-import org.scalatest.FlatSpec
-import org.scalatest.MustMatchers
-import org.scalatest.Matchers
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.must.Matchers
 import com.github.thebridsk.bridge.server.webjar.FileFinder
 import com.github.thebridsk.bridge.server.service.ResourceFinder
 
-class TestWebJarFinder extends FlatSpec with MustMatchers {
+class TestWebJarFinder extends AnyFlatSpec with Matchers {
 
   behavior of "The WebJar FileFinder class"
 

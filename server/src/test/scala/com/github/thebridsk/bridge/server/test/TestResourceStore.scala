@@ -1,7 +1,7 @@
 package com.github.thebridsk.bridge.server.test
 
-import org.scalatest.FlatSpec
-import org.scalatest.MustMatchers
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.must.Matchers
 import com.github.thebridsk.bridge.data.Board
 import com.github.thebridsk.bridge.data.Table
 import com.github.thebridsk.bridge.data.Hand
@@ -10,7 +10,6 @@ import com.github.thebridsk.bridge.data.bridge.East
 import com.github.thebridsk.bridge.data.bridge.South
 import com.github.thebridsk.bridge.server.test.backend.BridgeServiceTesting
 import com.github.thebridsk.bridge.data.MatchDuplicate
-import org.scalatest._
 import java.net.InetAddress
 import com.github.thebridsk.bridge.data.DuplicateHand
 import com.github.thebridsk.bridge.data.bridge.Spades
@@ -20,8 +19,9 @@ import akka.http.scaladsl.model.StatusCodes
 import com.github.thebridsk.bridge.server.backend.BridgeServiceInMemory
 import com.github.thebridsk.bridge.data.RestMessage
 import com.github.thebridsk.bridge.server.backend.BridgeNestedResources
+import scala.concurrent.ExecutionContext.Implicits.global
 
-class TestResourceStore extends AsyncFlatSpec with MustMatchers {
+class TestResourceStore extends AnyFlatSpec with Matchers {
 
   val bridgeService = new BridgeServiceInMemory("test")
   val store = bridgeService.duplicates

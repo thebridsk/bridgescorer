@@ -65,7 +65,8 @@ object BldDependencies {
     "org.seleniumhq.selenium" %   "selenium-java" % vSelenium withSources(),
 
     "org.scalatest" %%% "scalatest" % vScalatest withSources(),
-    // "org.scalatest" %%% "scalatestplus-selenium" % vScalatest withSources(),
+//    "org.scalatestplus" %%% "scalatestplus-selenium" % vScalatestSelenium withSources(),
+    "org.scalatestplus" %%% "selenium-2-45" % vScalatestSelenium245 withSources(),
     "org.scalactic" %%% "scalactic" % vScalactic withSources(),
 
 // Test

@@ -1,13 +1,12 @@
 package com.github.thebridsk.bridge.server.test
 
-import org.scalatest.FlatSpec
-import org.scalatest.MustMatchers
-import org.scalatest.Matchers
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.must.Matchers
 
 import com.github.thebridsk.bridge.data.bridge._
 
 
-class TestScoring extends FlatSpec with MustMatchers {
+class TestScoring extends AnyFlatSpec with Matchers {
 
   import com.github.thebridsk.bridge.data.bridge.RubberBridge.{ScoreHand => RubberScore}
   import com.github.thebridsk.bridge.data.bridge.DuplicateBridge.{ScoreHand => DuplicateScore}

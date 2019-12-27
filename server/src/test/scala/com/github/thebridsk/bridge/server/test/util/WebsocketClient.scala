@@ -12,7 +12,7 @@ import akka.actor.ActorSystem
 import akka.stream.Materializer
 import com.github.thebridsk.bridge.data.websocket.Protocol.ToServerMessage
 import com.github.thebridsk.bridge.data.websocket.DuplexProtocol.DuplexMessage
-import org.scalatest.MustMatchers
+import org.scalatest.matchers.must.Matchers
 import akka.http.scaladsl.testkit.RouteTest
 import com.github.thebridsk.bridge.data.websocket.Protocol
 import akka.http.scaladsl.server.Route
@@ -36,7 +36,7 @@ import com.github.thebridsk.bridge.data.websocket.Protocol.UpdateDuplicatePictur
 
 class WebsocketClient(implicit system: ActorSystem, materializer: Materializer, routetest: RouteTest) {
 
-  import MustMatchers._
+  import Matchers._
   import routetest._
   import WebsocketClientImplicits._
 

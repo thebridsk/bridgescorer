@@ -1,8 +1,8 @@
 package com.github.thebridsk.bridge.server.test
 
 import org.scalatest.Finders
-import org.scalatest.FlatSpec
-import org.scalatest.MustMatchers
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.must.Matchers
 import com.github.thebridsk.bridge.server.test.backend.BridgeServiceTesting
 import com.github.thebridsk.bridge.server.service.MyService
 import akka.http.scaladsl.model.StatusCodes._
@@ -45,7 +45,7 @@ object TestPlayerComparisonStats {
 /**
  * Test class to start the logging system
  */
-class TestPlayerComparisonStats extends FlatSpec with ScalatestRouteTest with MustMatchers {
+class TestPlayerComparisonStats extends AnyFlatSpec with ScalatestRouteTest with Matchers {
   import TestPlayerComparisonStats._
 
   behavior of "the player comparison stats test"

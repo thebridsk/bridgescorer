@@ -10,7 +10,6 @@ import akka.http.scaladsl.model.{HttpResponse, HttpRequest}
 import akka.http.scaladsl.model.StatusCodes._
 import akka.http.scaladsl.testkit.ScalatestRouteTest
 import akka.stream.scaladsl.Flow
-import org.scalatest._
 import akka.http.scaladsl.marshalling.ToResponseMarshallable
 import akka.http.scaladsl.unmarshalling.FromResponseUnmarshaller
 import akka.actor.ActorSystem
@@ -28,8 +27,10 @@ import org.rogach.scallop.exceptions.IncompleteBuildException
 import com.github.thebridsk.bridge.data.ServerURL
 import com.github.thebridsk.bridge.server.rest.ServerPort
 import com.github.thebridsk.bridge.data.MatchRubber
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.must.Matchers
 
-class TestRubber extends FlatSpec with ScalatestRouteTest with MustMatchers with MyService {
+class TestRubber extends AnyFlatSpec with ScalatestRouteTest with Matchers with MyService {
   val restService = new BridgeServiceTesting
 
   val httpport = 8080

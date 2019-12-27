@@ -1,7 +1,7 @@
 package com.github.thebridsk.bridge.server.test
 
-import org.scalatest.FlatSpec
-import org.scalatest.MustMatchers
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.must.Matchers
 import com.github.thebridsk.bridge.data.Board
 import com.github.thebridsk.bridge.data.Table
 import com.github.thebridsk.bridge.server.service.MyService
@@ -19,7 +19,6 @@ import akka.http.scaladsl.model.ContentTypes
 import akka.http.scaladsl.model.{HttpResponse, HttpRequest}
 import akka.http.scaladsl.testkit.ScalatestRouteTest
 import akka.stream.scaladsl.Flow
-import org.scalatest._
 import akka.http.scaladsl.marshalling.ToResponseMarshallable
 import akka.http.scaladsl.unmarshalling.FromResponseUnmarshaller
 import akka.actor.ActorSystem
@@ -75,7 +74,7 @@ import com.github.thebridsk.bridge.data.websocket.Protocol.UpdateRubberHand
 import com.github.thebridsk.bridge.data.websocket.Protocol.UpdateDuplicatePicture
 import com.github.thebridsk.bridge.data.websocket.Protocol.UpdateDuplicatePictures
 
-class TestDuplicateRestSpec extends FlatSpecLike with ScalatestRouteTest with MustMatchers with MyService {
+class TestDuplicateRestSpec extends AnyFlatSpec with ScalatestRouteTest with Matchers with MyService {
 
   import TestDuplicateRestSpecImplicits._
 

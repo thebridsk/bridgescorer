@@ -1,7 +1,7 @@
 package com.github.thebridsk.bridge.server.test
 
-import org.scalatest.FlatSpec
-import org.scalatest.MustMatchers
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.must.Matchers
 import akka.event.LoggingAdapter
 import akka.event.Logging
 import akka.http.scaladsl.testkit.ScalatestRouteTest

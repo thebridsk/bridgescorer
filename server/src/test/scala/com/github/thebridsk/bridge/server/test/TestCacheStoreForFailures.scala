@@ -1,7 +1,6 @@
 package com.github.thebridsk.bridge.server.test
 
 import akka.http.scaladsl.testkit.ScalatestRouteTest
-import org.scalatest._
 import com.github.thebridsk.bridge.server.backend.resource.InMemoryStore
 import com.github.thebridsk.bridge.data.Id
 import com.github.thebridsk.bridge.data.MatchDuplicate
@@ -52,9 +51,12 @@ import com.github.thebridsk.bridge.data.RestMessage
 import scala.concurrent.ExecutionContext.Implicits.global
 import com.github.thebridsk.bridge.server.test.backend.TestFailurePersistent
 import com.github.thebridsk.bridge.server.test.backend.TestFailureStore
+import org.scalatest.matchers.must.Matchers
+import org.scalatest.compatible.Assertion
+import org.scalatest.flatspec.AnyFlatSpec
 
 object TestCacheStoreForFailures {
-  import MustMatchers._
+  import Matchers._
 
   val testlog = com.github.thebridsk.utilities.logging.Logger[TestCacheStoreForFailures]
 
@@ -262,7 +264,7 @@ object TestCacheStoreForFailures {
     val listener = new Listener
     store.addListener(listener)
 
-    val fut = store.createChild(md).test("Creating match duplicate") { tryresult =>
+    val fut = store.createChild(md).testfuture("Creating match duplicate") { tryresult =>
       tryresult match {
         case Success(Right(nmd)) =>
           Thread.sleep(500)
@@ -279,7 +281,12 @@ object TestCacheStoreForFailures {
 
   implicit class WrapFuture[T]( val f: Future[Result[T]] ) extends AnyVal {
 
-    def test( comment: String )(block: Try[Result[T]]=>Future[Assertion])( implicit pos: SourcePosition): Future[Assertion] = {
+    def test( comment: String )(block: Try[Result[T]]=>Assertion)( implicit pos: SourcePosition): Future[Assertion] = {
+      val b: Try[Result[T]]=>Future[Assertion] = t => Future {block(t)}
+      f.transformWith(b)
+    }
+
+    def testfuture( comment: String )(block: Try[Result[T]]=>Future[Assertion])( implicit pos: SourcePosition): Future[Assertion] = {
       f.transformWith(block)
     }
 
@@ -326,12 +333,13 @@ object TestCacheStoreForFailures {
       }
     }
   }
+
 }
 
 /**
  * Test class to start the logging system
  */
-class TestCacheStoreForFailures extends AsyncFlatSpec with ScalatestRouteTest with MustMatchers {
+class TestCacheStoreForFailures extends AnyFlatSpec with ScalatestRouteTest with Matchers {
   import TestCacheStoreForFailures._
 
   import ExecutionContext.Implicits.global
@@ -345,7 +353,8 @@ class TestCacheStoreForFailures extends AsyncFlatSpec with ScalatestRouteTest wi
       tnmd match {
         case Success(Right(nmd)) =>
           nmd.equalsIgnoreModifyTime( md.copy(id=nmd.id), true) mustBe true
-          listener.testCreate( new TestCreateMatchDuplicateId( nmd.id ))
+          val a = listener.testCreate( new TestCreateMatchDuplicateId( nmd.id ))
+          a
         case Success(Left(error)) =>
           fail(s"Got error ${error}")
         case Failure(ex) =>
@@ -360,12 +369,21 @@ class TestCacheStoreForFailures extends AsyncFlatSpec with ScalatestRouteTest wi
     val id = md.id
     persistent.add(md)
     try {
-      store.read(id).test("Reading match duplicate") { tnmd =>
+      store.read(id).testfuture("Reading match duplicate") { tnmd =>
         tnmd match {
           case Success(Right(nmd)) =>
             nmd.id mustBe id
             listener.testEmpty()
-            store.getCached(id) must not be None
+            store.getCached(id).map { f =>
+              f.map { rmd =>
+                rmd match {
+                  case Left((statuscode,msg)) =>
+                    fail(s"Error getting from cache: ${statuscode} ${msg}")
+                  case Right(value) =>
+                    value.id mustBe id
+                }
+              }
+            }.getOrElse(fail(s"getCached return None"))
           case Success(Left(error)) =>
             fail(s"Got error ${error}")
           case Failure(ex) =>
@@ -415,10 +433,10 @@ class TestCacheStoreForFailures extends AsyncFlatSpec with ScalatestRouteTest wi
     val id = md.id
     persistent.add(md)
     try {
-      store.read(id).test("Reading match duplicate") { tnmd =>
+      store.read(id).testfuture("Reading match duplicate") { tnmd =>
         tnmd match {
           case Success(Right(nmd)) =>
-            fail("Expecting a failure")
+            Future { fail("Expecting a failure") }
           case Success(Left((statuscode,RestMessage(msg)))) =>
             listener.testEmpty()
             statuscode mustBe StatusCodes.InsufficientStorage
@@ -426,10 +444,10 @@ class TestCacheStoreForFailures extends AsyncFlatSpec with ScalatestRouteTest wi
 
             persistent.failResultRead = None
 
-            store.read(id).test("Reading match duplicate again") { tnmd =>
+            store.read(id).testfuture("Reading match duplicate again") { tnmd =>
               tnmd match {
                 case Success(Right(nmd)) =>
-                  nmd.id mustBe id
+                  Future { nmd.id mustBe id }
                 case Success(Left(error)) =>
                   listener.testEmpty()
 
@@ -450,13 +468,17 @@ class TestCacheStoreForFailures extends AsyncFlatSpec with ScalatestRouteTest wi
                     }
                   }
                 case Failure(ex) =>
-                  listener.testEmpty()
-                  fail(s"Got failure ${ex}")
+                  Future {
+                    listener.testEmpty()
+                    fail(s"Got failure ${ex}")
+                  }
               }
             }
           case Failure(ex) =>
-            listener.testEmpty()
-            fail(s"Got error ${ex}")
+            Future {
+              listener.testEmpty()
+              fail(s"Got error ${ex}")
+            }
         }
       }
     } catch {
@@ -499,13 +521,19 @@ class TestCacheStoreForFailures extends AsyncFlatSpec with ScalatestRouteTest wi
     val id = md.id
     persistent.add(md)
     try {
-      store.read(id).test("Reading match duplicate") { tnmd =>
+      store.read(id).testfuture("Reading match duplicate") { tnmd =>
         tnmd match {
           case Success(Right(nmd)) =>
-            fail("Expecting a failure")
+            Future {
+              withClue("Expecting a failure") {
+                nmd mustBe null
+              }
+            }
           case Success(Left(error)) =>
-            listener.testEmpty()
-            fail(s"Got error ${error}")
+            Future {
+              listener.testEmpty()
+              fail(s"Got error ${error}")
+            }
           case Failure(ex) =>
             listener.testEmpty()
             ex.toString() mustBe "java.lang.Exception: Failure reading from persistent store!"
@@ -524,7 +552,6 @@ class TestCacheStoreForFailures extends AsyncFlatSpec with ScalatestRouteTest wi
                   fail(s"Got failure ${ex}")
               }
             }
-
         }
       }
     } catch {

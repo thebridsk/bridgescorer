@@ -1,7 +1,7 @@
 package com.github.thebridsk.bridge.server.test
 
 import org.scalatest.Finders
-import org.scalatest.MustMatchers
+import org.scalatest.matchers.must.Matchers
 import com.github.thebridsk.bridge.server.test.backend.BridgeServiceTesting
 import com.github.thebridsk.bridge.server.service.MyService
 import akka.http.scaladsl.model.StatusCodes._
@@ -43,10 +43,16 @@ import java.io.FileOutputStream
 import scala.concurrent.Await
 import scala.concurrent.duration._
 import scala.language.postfixOps
+import org.scalatest.flatspec.FixtureAsyncFlatSpec
+import scala.concurrent.Future
+import org.scalatest.flatspec.AnyFlatSpec
 
 object TestGraphQL {
 
   val testlog = com.github.thebridsk.utilities.logging.Logger[TestGraphQL]
+
+  import scala.language.implicitConversions
+  implicit def toFunction( r: => Future[Assertion]) = () => r
 
   val graphQL = new Query
 
@@ -99,7 +105,7 @@ object TestGraphQL {
 /**
  * Test class to start the logging system
  */
-class TestGraphQL extends AsyncFlatSpec with ScalatestRouteTest with MustMatchers {
+class TestGraphQL extends AnyFlatSpec with ScalatestRouteTest with Matchers {
   import TestGraphQL._
 
   TestStartLogging.startLogging()

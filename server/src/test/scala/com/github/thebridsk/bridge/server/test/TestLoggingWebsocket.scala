@@ -5,8 +5,8 @@ import java.net.InetAddress
 import scala.language.postfixOps
 
 import org.scalatest._
-import org.scalatest.FlatSpec
-import org.scalatest.MustMatchers
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.must.Matchers
 
 import com.github.thebridsk.bridge.server.service.MyService
 
@@ -35,7 +35,7 @@ trait XXX extends MyService {
   implicit val actorSystem: ActorSystem
 }
 
-class TestLoggingWebsocket extends FlatSpec with ScalatestRouteTest with MustMatchers {
+class TestLoggingWebsocket extends AnyFlatSpec with ScalatestRouteTest with Matchers {
 
   implicit val actorSystem = system
   implicit val actorMaterializer = materializer

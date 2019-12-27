@@ -5,7 +5,7 @@ import org.scalactic.source.Position
 import com.github.thebridsk.browserpages.PageBrowser
 import org.scalatest.concurrent.Eventually._
 import org.openqa.selenium.WebDriver
-import org.scalatest.MustMatchers
+import org.scalatest.matchers.must.Matchers
 import com.github.thebridsk.browserpages.Page
 
 object Popup {
@@ -16,7 +16,7 @@ object Popup {
 
 trait Popup[ +T <: Page[T] ] {
   import PageBrowser._
-  import MustMatchers._
+  import Matchers._
   import Popup._
 
   implicit val webDriver: WebDriver
