@@ -16,7 +16,6 @@ import akka.http.scaladsl.model.{HttpResponse, HttpRequest}
 import akka.http.scaladsl.model.StatusCodes._
 import akka.http.scaladsl.testkit.ScalatestRouteTest
 import akka.stream.scaladsl.Flow
-import org.scalatest._
 import akka.http.scaladsl.marshalling.ToResponseMarshallable
 import akka.http.scaladsl.unmarshalling.FromResponseUnmarshaller
 import akka.actor.ActorSystem
