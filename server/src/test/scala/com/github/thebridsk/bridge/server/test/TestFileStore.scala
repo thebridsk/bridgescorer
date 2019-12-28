@@ -1,8 +1,6 @@
 package com.github.thebridsk.bridge.server.test
 
-import org.scalatest.FlatSpec
-import org.scalatest.MustMatchers
-import org.scalatest.Matchers
+import org.scalatest.matchers.must.Matchers
 
 import com.github.thebridsk.bridge.data.bridge._
 import org.scalatest.BeforeAndAfterAll
@@ -24,11 +22,13 @@ import com.github.thebridsk.bridge.server.backend.BridgeServiceFileStoreConverte
 import com.github.thebridsk.bridge.server.backend.resource.Store
 import com.github.thebridsk.bridge.server.backend.MatchRubberCacheStoreSupport
 import com.github.thebridsk.bridge.server.backend.resource.SyncStore
-import org.scalatest.AsyncFlatSpec
 import com.github.thebridsk.bridge.data.Id
 import com.github.thebridsk.bridge.server.backend.MatchDuplicateCacheStoreSupport
+import scala.concurrent.Future
+import org.scalatest.compatible.Assertion
+import org.scalatest.flatspec.AsyncFlatSpec
 
-class TestFileStore extends AsyncFlatSpec with MustMatchers with BeforeAndAfterAll {
+class TestFileStore extends AsyncFlatSpec with Matchers with BeforeAndAfterAll {
 
   var tempDir: Directory = null
   val resourceName = "MatchRubber"
@@ -123,7 +123,7 @@ class TestFileStore extends AsyncFlatSpec with MustMatchers with BeforeAndAfterA
       result match {
         case Right(t3) =>
           testlog.fine(s"Read R3, got ${t3}")
-          teamStore.select("R3").read().flatMap { resulta=>
+          teamStore.select("R3").read().map { resulta=>
             resulta match {
               case Right(t3a) =>
                 testlog.fine(s"Read R3, got ${t3a}")

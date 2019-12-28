@@ -1,8 +1,8 @@
 package com.github.thebridsk.bridge.server.test
 
 import org.scalatest.Finders
-import org.scalatest.FlatSpec
-import org.scalatest.MustMatchers
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.must.Matchers
 import com.github.thebridsk.bridge.server.test.backend.BridgeServiceTesting
 import com.github.thebridsk.bridge.server.service.MyService
 import akka.http.scaladsl.model.StatusCodes._
@@ -35,7 +35,7 @@ import com.github.thebridsk.utilities.file.FileIO
 import java.io.File
 import org.scalactic.source.Position
 
-class SwaggerSpec extends FlatSpec with ScalatestRouteTest with MustMatchers with MyService {
+class SwaggerSpec extends AnyFlatSpec with ScalatestRouteTest with Matchers with MyService {
   val restService = new BridgeServiceTesting
 
   val httpport = 8080

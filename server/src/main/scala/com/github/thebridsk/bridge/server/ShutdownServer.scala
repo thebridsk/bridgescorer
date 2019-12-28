@@ -17,7 +17,6 @@ import com.github.thebridsk.bridge.server.service.MyService
 import com.github.thebridsk.bridge.server.backend.BridgeServiceInMemory
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.Http.ServerBinding
-import akka.stream.ActorMaterializer
 import scala.util.Success
 import scala.util.Failure
 import akka.http.scaladsl.Http
@@ -172,7 +171,6 @@ private class ShutdownServerAkka {
   implicit val system = ActorSystem("bridgescorer")
   val log = Logging(system, Server.getClass)
   implicit val executor = system.dispatcher
-  implicit val myMaterializer = ActorMaterializer()
 
   implicit val timeout = Timeout(20.seconds)
 

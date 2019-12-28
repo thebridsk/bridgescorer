@@ -1,7 +1,7 @@
 package com.github.thebridsk.bridge.server.test
 
-import org.scalatest.FlatSpec
-import org.scalatest.MustMatchers
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.must.Matchers
 import com.github.thebridsk.bridge.data.Board
 import com.github.thebridsk.bridge.data.Table
 import com.github.thebridsk.bridge.server.service.MyService
@@ -51,7 +51,7 @@ import akka.stream.Attributes.Name
 import akka.event.Logging
 import com.github.thebridsk.bridge.server.rest.ServerPort
 
-class TestWebsocket extends FlatSpec with ScalatestRouteTest with MustMatchers with MyService {
+class TestWebsocket extends AnyFlatSpec with ScalatestRouteTest with Matchers with MyService {
   val restService = new BridgeServiceTesting
 
   val httpport = 8080
@@ -131,8 +131,8 @@ class TestWebsocket extends FlatSpec with ScalatestRouteTest with MustMatchers w
           })
           setHandler(out, new OutHandler {
             override def onPull(): Unit = pull(in)
-            override def onDownstreamFinish(): Unit = {
-              testlog.info(s"WS stream finished (downstream)")
+            override def onDownstreamFinish( cause: Throwable ): Unit = {
+              testlog.info(s"WS stream finished (downstream)", cause)
               completeStage()
             }
           })

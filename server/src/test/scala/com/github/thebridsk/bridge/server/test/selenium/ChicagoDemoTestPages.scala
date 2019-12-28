@@ -1,7 +1,7 @@
 package com.github.thebridsk.bridge.server.test.selenium
 
-import org.scalatest.FlatSpec
-import org.scalatest.MustMatchers
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.must.Matchers
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.concurrent.Eventually
 import com.github.thebridsk.utilities.logging.Logger
@@ -51,8 +51,8 @@ object ChicagoDemoTestPages {
 
 }
 
-class ChicagoDemoTestPages extends FlatSpec
-    with MustMatchers
+class ChicagoDemoTestPages extends AnyFlatSpec
+    with Matchers
     with BeforeAndAfterAll
     with CancelAfterFailure
 {

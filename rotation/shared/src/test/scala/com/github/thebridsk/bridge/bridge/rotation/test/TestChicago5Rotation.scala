@@ -1,7 +1,7 @@
 package com.github.thebridsk.bridge.bridge.rotation.test
 
-import org.scalatest.FlatSpec
-import org.scalatest.MustMatchers
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.must.Matchers
 import com.github.thebridsk.bridge.rotation.Table
 import com.github.thebridsk.bridge.rotation.Table._
 import com.github.thebridsk.bridge.rotation.Chicago5Rotation
@@ -54,7 +54,7 @@ object TestChicago5Rotation {
 
 }
 
-class TestChicago5Rotation extends FlatSpec with MustMatchers {
+class TestChicago5Rotation extends AnyFlatSpec with Matchers {
 
   def println( s: String = "" ) = {
     if (TestChicago5Rotation.enablePrintln) Predef.println(s)

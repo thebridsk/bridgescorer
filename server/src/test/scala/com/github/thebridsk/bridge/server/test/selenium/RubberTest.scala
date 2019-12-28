@@ -1,7 +1,7 @@
 package com.github.thebridsk.bridge.server.test.selenium
 
-import org.scalatest.FlatSpec
-import org.scalatest.MustMatchers
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.must.Matchers
 import org.scalatest._
 import org.scalatest.concurrent.Eventually
 import org.scalatest.time.Millis
@@ -47,8 +47,8 @@ import scala.math.Ordering.Double.TotalOrdering
 /**
  * @author werewolf
  */
-class RubberTest extends FlatSpec
-    with MustMatchers
+class RubberTest extends AnyFlatSpec
+    with Matchers
     with BeforeAndAfterAll
     with EventuallyUtils
     with SeleniumUtils

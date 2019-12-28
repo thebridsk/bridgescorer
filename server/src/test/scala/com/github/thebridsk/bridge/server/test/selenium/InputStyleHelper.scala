@@ -1,11 +1,8 @@
 package com.github.thebridsk.bridge.server.test.selenium
 
-import org.scalatest.MustMatchers
+import org.scalatest.matchers.must.Matchers
 import org.openqa.selenium.WebDriver
-import org.scalatest.selenium.Firefox
 import org.scalatest.BeforeAndAfterAll
-import org.scalatest._
-import selenium._
 import org.openqa.selenium._
 import org.scalatest.concurrent.Eventually._
 import org.scalactic.source.Position
@@ -20,7 +17,7 @@ import org.scalatest.time.Millis
 import org.scalatest.time.Span
 
 
-class InputStyleHelper extends MustMatchers {
+class InputStyleHelper extends Matchers {
     import InputStyleHelper._
     import com.github.thebridsk.browserpages.PageBrowser._
     import com.github.thebridsk.bridge.server.test.util.EventuallyUtils._

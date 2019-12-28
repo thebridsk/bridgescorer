@@ -10,8 +10,8 @@ import org.openqa.selenium.Point
 import org.openqa.selenium.Dimension
 import org.openqa.selenium.chrome.ChromeOptions
 import org.openqa.selenium.edge.EdgeDriver
-import org.scalatest.selenium.Firefox
-import org.scalatest.selenium.InternetExplorer
+import org.scalatestplus.selenium.Firefox
+import org.scalatestplus.selenium.InternetExplorer
 import org.openqa.selenium.ie.InternetExplorerDriver
 import com.github.thebridsk.utilities.logging.Logger
 import java.util.logging.Level

@@ -115,6 +115,15 @@ object BldBridgeServer {
         "-DSessionTable2=" + useBrowser,
         s"""-DUseProductionPage=${if (useFullOpt) "1" else "0"}"""
       ),
+      // parallelExecution in Test := false,
+
+      // The following depend on the javax.xml.bind version
+      //   "io.swagger.core.v3" % "swagger-core"
+      // This must be included to prevent assembly failure because of duplicate files
+      // the new library is "jakarta.xml.bind" % "jakarta.xml.bind-api"
+      excludeDependencies ++= Seq(
+        ExclusionRule(organization = "javax.xml.bind" ),
+      ),
       libraryDependencies ++= bridgeScorerDeps.value,
       libraryDependencies ++= bridgeScorerServerDeps.value,
       bridgeScorerNpmAssets(BldBridgeClientApi.`bridgescorer-clientapi`),

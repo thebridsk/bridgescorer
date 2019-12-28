@@ -9,7 +9,7 @@ import com.github.thebridsk.source.SourcePosition
 import org.scalactic.source.Position
 import org.scalatest.concurrent.Eventually.eventually
 import org.scalatest.concurrent.Eventually.PatienceConfig
-import org.scalatest.MustMatchers._
+import org.scalatest.matchers.must.Matchers._
 import com.github.thebridsk.utilities.logging.Logger
 import org.openqa.selenium.By.ByName
 import org.openqa.selenium.By.ByTagName

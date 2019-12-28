@@ -14,14 +14,14 @@
 //import com.github.thebridsk.bridge.rest.RestClient
 //import com.github.thebridsk.bridge.routes.AppRouter.AppPage
 //import com.github.thebridsk.bridge.pages.HomePage
-//import org.scalatest.FlatSpec
-//import org.scalatest.MustMatchers
+//import org.scalatest.flatspec.AnyFlatSpec
+//import org.scalatest.matchers.must.Matchers
 //import com.github.thebridsk.bridge.data.js.SystemTimeJs
 //
 ///**
 // * @author werewolf
 // */
-//class TestChicago extends FlatSpec with MustMatchers {
+//class TestChicago extends AnyFlatSpec with Matchers {
 //
 //  SystemTimeJs()
 //  RestClient.setEnabled(false)      // disable server communications when running this test suite

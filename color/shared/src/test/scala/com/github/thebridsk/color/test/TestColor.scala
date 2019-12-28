@@ -1,11 +1,11 @@
 package com.github.thebridsk.color.test
 
-import org.scalatest.FlatSpec
+import org.scalatest.flatspec.AnyFlatSpec
 import com.github.thebridsk.color._
-import org.scalatest.MustMatchers
 import scala.math.Ordering.Double.TotalOrdering
+import org.scalatest.matchers.must.Matchers
 
-class TestColor extends FlatSpec with MustMatchers  {
+class TestColor extends AnyFlatSpec with Matchers  {
 
   it should "convert between hsl, rgb and rgb%" in {
 

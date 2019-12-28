@@ -9,7 +9,6 @@ import akka.http.scaladsl.model.ContentTypes._
 import akka.http.scaladsl.model.{HttpResponse, HttpRequest}
 import akka.http.scaladsl.testkit.ScalatestRouteTest
 import akka.stream.scaladsl.Flow
-import org.scalatest._
 import akka.http.scaladsl.marshalling.ToResponseMarshallable
 import akka.http.scaladsl.unmarshalling.FromResponseUnmarshaller
 import akka.actor.ActorSystem
@@ -38,8 +37,10 @@ import java.util.zip.GZIPInputStream
 import java.io.ByteArrayInputStream
 import java.io.InputStreamReader
 import scala.io.Source
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.must.Matchers
 
-class MyServiceSpec extends FlatSpec with ScalatestRouteTest with MustMatchers with MyService {
+class MyServiceSpec extends AnyFlatSpec with ScalatestRouteTest with Matchers with MyService {
   val restService = new BridgeServiceTesting
 
   val httpport = 8080

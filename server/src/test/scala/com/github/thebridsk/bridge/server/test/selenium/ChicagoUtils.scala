@@ -10,7 +10,7 @@ import org.openqa.selenium.WebDriver
 import com.github.thebridsk.utilities.logging.Logger
 
 trait ChicagoUtils {
-  import org.scalatest.MustMatchers._
+  import org.scalatest.matchers.must.Matchers._
   import com.github.thebridsk.bridge.server.test.util.EventuallyUtils._
   import com.github.thebridsk.bridge.server.test.util.ParallelUtils._
   import com.github.thebridsk.browserpages.PageBrowser._

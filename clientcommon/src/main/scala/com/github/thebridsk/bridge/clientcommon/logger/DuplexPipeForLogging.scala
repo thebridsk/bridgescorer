@@ -205,6 +205,9 @@ class DuplexPipeForLogging( url: String, protocol: String = "" ) {
       case x: DuplexProtocol.Request => // ignore
       case x: DuplexProtocol.LogEntryS => // ignore
       case x: DuplexProtocol.LogEntryV2 => // ignore
+
+      case x: DuplexProtocol.Complete => // ignore
+      case x: DuplexProtocol.Fail => // ignore
     }
     log.fine("fromWebsocket pending="+pending.size+", outstanding="+outstanding.size)
 

@@ -16,10 +16,10 @@ import com.github.thebridsk.bridge.data.bridge.MatchDuplicateScore
 import com.github.thebridsk.bridge.data.bridge.PerspectiveTable
 import com.github.thebridsk.bridge.client.bridge.action.ActionUpdateDuplicateMatch
 import japgolly.scalajs.react.Callback
-import org.scalatest.FlatSpec
-import org.scalatest.MustMatchers
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.must.Matchers
 
-class TestDuplicateStore extends FlatSpec with MustMatchers {
+class TestDuplicateStore extends AnyFlatSpec with Matchers {
 
   SystemTimeJs()
 

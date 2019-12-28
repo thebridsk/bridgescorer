@@ -17,7 +17,6 @@ import com.github.thebridsk.bridge.server.service.MyService
 import com.github.thebridsk.bridge.server.backend.BridgeServiceInMemory
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.Http.ServerBinding
-import akka.stream.ActorMaterializer
 import scala.util.Success
 import scala.util.Failure
 import akka.http.scaladsl.Http
@@ -328,7 +327,6 @@ private class StartServer {
   implicit val system = ActorSystem("bridgescorer")
   val log = StartServer.logger // Logging(system, Server.getClass)
   implicit val executor = system.dispatcher
-  implicit val myMaterializer = ActorMaterializer()
 
   implicit val timeout = Timeout(20.seconds)
 
@@ -579,7 +577,6 @@ private class StartServer {
         bridge.getOrElse(new BridgeServiceInMemory("root"))
       override val diagnosticDir: Option[Directory] = optDiagnosticDir
       lazy val actorSystem: ActorSystem = system
-      lazy val materializer: ActorMaterializer = myMaterializer
 
       override lazy val cacheDuration =
         cache.getOrElse(Duration(defaultCacheFor))

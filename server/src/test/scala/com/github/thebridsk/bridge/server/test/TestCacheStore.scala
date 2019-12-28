@@ -1,7 +1,6 @@
 package com.github.thebridsk.bridge.server.test
 
 import akka.http.scaladsl.testkit.ScalatestRouteTest
-import org.scalatest._
 import com.github.thebridsk.bridge.server.backend.resource.InMemoryStore
 import com.github.thebridsk.bridge.data.Id
 import com.github.thebridsk.bridge.data.MatchDuplicate
@@ -42,10 +41,14 @@ import scala.reflect.io.Directory
 import com.github.thebridsk.utilities.file.FileIO
 import com.github.thebridsk.bridge.server.backend.resource.MultiStore
 import com.github.thebridsk.bridge.server.backend.resource.Store
-import scala.concurrent.ExecutionContext.Implicits.global
+import org.scalatest.compatible.Assertion
+import org.scalatest.matchers.must.Matchers
+import org.scalatest.BeforeAndAfterAll
+import org.scalatest.Succeeded
+import org.scalatest.flatspec.AsyncFlatSpec
 
 object TestCacheStore {
-  import MustMatchers._
+  import Matchers._
 
   val testlog = com.github.thebridsk.utilities.logging.Logger[TestCacheStore]
 
@@ -54,29 +57,27 @@ object TestCacheStore {
   val bridgeResources = BridgeResources()
   import bridgeResources._
 
-  def getStore: Store[Id.MatchDuplicate,MatchDuplicate] =
+  def getStore()( implicit ec: ExecutionContext ): Store[Id.MatchDuplicate,MatchDuplicate] =
     InMemoryStore("test")
 
-  def getMatchDuplicateFileStore( dir: Directory ): Store[Id.MatchDuplicate,MatchDuplicate] =
+  def getMatchDuplicateFileStore( dir: Directory )( implicit ec: ExecutionContext ): Store[Id.MatchDuplicate,MatchDuplicate] =
     FileStore("test",dir)
 
-  def getBoardSetStore: Store[String,BoardSet] = {
+  def getBoardSetStore()( implicit ec: ExecutionContext ): Store[String,BoardSet] = {
     JavaResourceStore("test","/com/github/thebridsk/bridge/server/backend/", "Boardsets.txt", getClass.getClassLoader)
   }
 
-  def getMovementStore: Store[String,Movement] = {
+  def getMovementStore()( implicit ec: ExecutionContext ): Store[String,Movement] = {
     JavaResourceStore("test","/com/github/thebridsk/bridge/server/backend/", "Movements.txt", getClass.getClassLoader)
   }
 
-  def getBoardSetFileStore( dir: Directory ): Store[String,BoardSet] = {
+  def getBoardSetFileStore( dir: Directory )( implicit ec: ExecutionContext ): Store[String,BoardSet] = {
     FileStore("test",dir)
   }
 
-  def getBoardSetMultiStore( dir: Directory ): Store[String,BoardSet] = {
+  def getBoardSetMultiStore( dir: Directory )( implicit ec: ExecutionContext ): Store[String,BoardSet] = {
     MultiStore.createFileAndResource("test",dir, "/com/github/thebridsk/bridge/server/backend/", "Boardsets.txt", getClass.getClassLoader)
   }
-
-  import ExecutionContext.Implicits.global
 
   class Listener extends StoreListener {
 
@@ -99,8 +100,8 @@ object TestCacheStore {
   }
 
 
-  def testWithStore( fun: (Store[Id.MatchDuplicate,MatchDuplicate], Listener)=>Future[Assertion] ) = {
-    val store = getStore
+  def testWithStore( fun: (Store[Id.MatchDuplicate,MatchDuplicate], Listener)=>Future[Assertion] )( implicit ec: ExecutionContext ) = {
+    val store = getStore()
     val md = TestMatchDuplicate.create("?")
 
     val listener = new Listener
@@ -119,19 +120,19 @@ object TestCacheStore {
   }
 
   implicit class WrapFuture[T]( val f: Future[Result[T]] ) extends AnyVal {
-    def resultFailed( comment: String )( implicit pos: SourcePosition): Future[Result[T]] = {
+    def resultFailed( comment: String )( implicit pos: SourcePosition, ec: ExecutionContext ): Future[Result[T]] = {
       f.map(r => r.resultFailed(comment)(pos))
     }
 
-    def test( comment: String )(block: T=>Assertion)( implicit pos: SourcePosition): Future[Assertion] = {
+    def test( comment: String )(block: T=>Assertion)( implicit pos: SourcePosition, ec: ExecutionContext ): Future[Assertion] = {
       f.map( r => r.test(comment)(block)(pos) )
     }
 
-    def testfuture( comment: String )(block: T=>Future[Assertion])( implicit pos: SourcePosition): Future[Assertion] = {
+    def testfuture( comment: String )(block: T=>Future[Assertion])( implicit pos: SourcePosition, ec: ExecutionContext ): Future[Assertion] = {
       f.flatMap( r => r.testfuture(comment)(block)(pos) )
     }
 
-    def expectFail( comment: String, expectStatusCode: StatusCode )( implicit pos: SourcePosition): Future[Assertion] = {
+    def expectFail( comment: String, expectStatusCode: StatusCode )( implicit pos: SourcePosition, ec: ExecutionContext ): Future[Assertion] = {
       f.map( r => r.expectFail(comment,expectStatusCode)(pos) )
     }
 
@@ -183,10 +184,8 @@ object TestCacheStore {
 /**
  * Test class to start the logging system
  */
-class TestCacheStore extends AsyncFlatSpec with ScalatestRouteTest with MustMatchers with BeforeAndAfterAll {
+class TestCacheStore extends AsyncFlatSpec with ScalatestRouteTest with Matchers with BeforeAndAfterAll {
   import TestCacheStore._
-
-  import ExecutionContext.Implicits.global
 
   var tempDir: Directory = null
 
@@ -321,7 +320,7 @@ class TestCacheStore extends AsyncFlatSpec with ScalatestRouteTest with MustMatc
       listener.changeUpdate mustBe Symbol("empty")
       listener.changeDelete mustBe Symbol("defined")
 
-      listener.changeDelete.map { cc =>
+      listener.changeDelete.map { cc => Future {
         cc.changes.length mustBe 2
         cc.changes.head match {
           case UpdateChangeContext(newvalue,parentfield) =>
@@ -348,7 +347,7 @@ class TestCacheStore extends AsyncFlatSpec with ScalatestRouteTest with MustMatc
             }
           case x =>
             fail("expecting delete, got ${x}")
-        }
+        }}
       }.getOrElse(fail("changeDelete was empty"))
     }
   }
@@ -375,7 +374,7 @@ class TestCacheStore extends AsyncFlatSpec with ScalatestRouteTest with MustMatc
         listener.changeUpdate mustBe Symbol("defined")
         listener.changeDelete mustBe Symbol("empty")
 
-        listener.changeUpdate.map { cc =>
+        listener.changeUpdate.map { cc => Future {
           cc.changes.length mustBe 3
           cc.changes.head match {
             case UpdateChangeContext(newvalue,parentfield) =>
@@ -432,7 +431,7 @@ class TestCacheStore extends AsyncFlatSpec with ScalatestRouteTest with MustMatc
             case x =>
               fail("expecting update, got ${x}")
           }
-        }.getOrElse(fail("changeUpdate was empty"))
+        }}.getOrElse(fail("changeUpdate was empty"))
 
       }
     }

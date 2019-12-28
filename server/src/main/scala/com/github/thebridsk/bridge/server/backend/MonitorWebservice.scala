@@ -99,9 +99,9 @@ abstract class MonitorWebservice[VId, VType <: VersionedInstance[
         case msg: DuplexProtocol.DuplexMessage =>
           log.debug("(" + sender + "): Sending " + msg)
           TextMessage.Strict(DuplexProtocol.toString(msg)) :: Nil // ... pack outgoing messages into WS JSON messages ...
-        case msg: Message =>
-          log.debug(s"""(${sender}): Sending message ${msg}""")
-          msg :: Nil
+        // case msg: Message =>
+        //   log.debug(s"""(${sender}): Sending message ${msg}""")
+        //   msg :: Nil
         case msg =>
           log.info(s"""(${sender}): Unknown message: ${msg.getClass} ${msg}""")
           Nil
@@ -129,7 +129,7 @@ abstract class MonitorWebservice[VId, VType <: VersionedInstance[
               }
 
               override def onUpstreamFailure(ex: Throwable): Unit = {
-                log.error(ex, "(" + sender + "): Upstream failure")
+                log.error(ex, "(" + sender + "): Upstream failure ${ex}")
                 failStage(ex)
               }
             }
@@ -138,8 +138,8 @@ abstract class MonitorWebservice[VId, VType <: VersionedInstance[
             out,
             new OutHandler {
               override def onPull(): Unit = pull(in)
-              override def onDownstreamFinish(): Unit = {
-                log.info("(" + sender + "): Downstream finished")
+              override def onDownstreamFinish( cause: Throwable ): Unit = {
+                log.info("(" + sender + "): Downstream finished",cause)
                 completeStage()
               }
             }

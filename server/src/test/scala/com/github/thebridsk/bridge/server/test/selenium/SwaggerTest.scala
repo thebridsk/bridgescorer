@@ -1,12 +1,8 @@
 package com.github.thebridsk.bridge.server.test.selenium
 
-import org.scalatest.FlatSpec
-import org.scalatest.MustMatchers
-import org.openqa.selenium.WebDriver
-import org.scalatest.selenium.Firefox
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.must.Matchers
 import org.scalatest.BeforeAndAfterAll
-import org.scalatest._
-import selenium._
 import org.openqa.selenium._
 import org.scalatest.concurrent.Eventually
 import java.util.concurrent.TimeUnit
@@ -16,11 +12,6 @@ import com.github.thebridsk.bridge.server.backend.BridgeServiceInMemory
 import com.github.thebridsk.bridge.server.backend.BridgeService
 import org.scalatest.time.Span
 import org.scalatest.time.Millis
-import org.openqa.selenium.chrome.ChromeOptions
-import org.openqa.selenium.chrome.ChromeDriver
-import org.openqa.selenium.remote.RemoteWebDriver
-import org.openqa.selenium.firefox.FirefoxDriver
-import org.openqa.selenium.safari.SafariDriver
 import scala.jdk.CollectionConverters._
 import com.github.thebridsk.bridge.data.MatchDuplicate
 import com.github.thebridsk.utilities.logging.Logger
@@ -47,7 +38,7 @@ import com.github.thebridsk.browserpages.Session
 /**
  * @author werewolf
  */
-class SwaggerTest extends FlatSpec with MustMatchers with BeforeAndAfterAll {
+class SwaggerTest extends AnyFlatSpec with Matchers with BeforeAndAfterAll {
   import com.github.thebridsk.browserpages.PageBrowser._
   import ParallelUtils._
 

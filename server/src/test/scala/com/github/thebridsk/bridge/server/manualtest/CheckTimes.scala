@@ -2,12 +2,12 @@ package com.github.thebridsk.bridge.server.manualtest
 
 import com.github.thebridsk.utilities.main.Main
 import com.github.thebridsk.utilities.file.FileIO
-import org.scalatest.MustMatchers
+import org.scalatest.matchers.must.Matchers
 import com.github.thebridsk.bridge.data.MatchDuplicate
 import com.github.thebridsk.bridge.server.backend.BridgeServiceFileStoreConverters
 import com.github.thebridsk.bridge.server.backend.MatchDuplicateCacheStoreSupport
 
-object CheckTimes extends Main with MustMatchers {
+object CheckTimes extends Main with Matchers {
 
   def execute() = {
     checkTimeFromFile("DuplicateTest.TimeError.json")

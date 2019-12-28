@@ -1,11 +1,8 @@
 package com.github.thebridsk.bridge.server.test.selenium
 
-import org.scalatest.FlatSpec
-import org.scalatest.MustMatchers
-import org.openqa.selenium.WebDriver
-import org.scalatest.selenium.Firefox
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.must.Matchers
 import org.scalatest.BeforeAndAfterAll
-import org.scalatest._
 import org.openqa.selenium._
 import org.scalatest.concurrent.Eventually
 import java.util.concurrent.TimeUnit
@@ -15,11 +12,6 @@ import com.github.thebridsk.bridge.server.backend.BridgeServiceInMemory
 import com.github.thebridsk.bridge.server.backend.BridgeService
 import org.scalatest.time.Span
 import org.scalatest.time.Millis
-import org.openqa.selenium.chrome.ChromeOptions
-import org.openqa.selenium.chrome.ChromeDriver
-import org.openqa.selenium.remote.RemoteWebDriver
-import org.openqa.selenium.firefox.FirefoxDriver
-import org.openqa.selenium.safari.SafariDriver
 import com.github.thebridsk.bridge.data.bridge._
 import scala.jdk.CollectionConverters._
 import scala.util.Failure
@@ -113,7 +105,7 @@ object DuplicateResultTest {
  * to the names view, to the hand view.
  * @author werewolf
  */
-class DuplicateResultTest extends FlatSpec with MustMatchers with BeforeAndAfterAll with EventuallyUtils {
+class DuplicateResultTest extends AnyFlatSpec with Matchers with BeforeAndAfterAll with EventuallyUtils {
   import Eventually.{ patienceConfig => _, _ }
   import ParallelUtils._
 

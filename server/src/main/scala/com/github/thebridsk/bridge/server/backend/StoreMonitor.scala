@@ -70,6 +70,7 @@ import com.github.thebridsk.bridge.data.websocket.Protocol.UpdateChicagoHand
 import com.github.thebridsk.bridge.data.websocket.Protocol.UpdateRubberHand
 import com.github.thebridsk.bridge.data.websocket.Protocol.UpdateDuplicatePicture
 import com.github.thebridsk.bridge.data.websocket.Protocol.UpdateDuplicatePictures
+import akka.stream.CompletionStrategy
 
 object StoreMonitor {
   sealed trait ChatEvent
@@ -150,6 +151,11 @@ abstract class BaseStoreMonitor[VId, VType <: VersionedInstance[
       case u: Unsolicited =>
         log.warning("Unknown request " + u)
 
+      case k: DuplexProtocol.Complete =>
+        log.warning("Unknown request " + k)
+      case k: DuplexProtocol.Fail =>
+        log.warning("Unknown request " + k)
+
 //      case _ =>
 //        log.warning("Unknown request "+msg)
 //        dispatchTo(sender, DuplexProtocol.Response(NoData(),-1))
@@ -224,8 +230,8 @@ abstract class BaseStoreMonitor[VId, VType <: VersionedInstance[
             s"""In $sec seconds will Send PoisonPill to $name $subscriber"""
           )
           Thread.sleep(sec * 1000)
-          log.info(s"""Sending PoisonPill to $name $subscriber""")
-          subscriber ! TerminateFlowStage.KillMsg
+          log.info(s"""Sending complete to $name $subscriber""")
+          subscriber ! DuplexProtocol.Complete("Testing termination")
         }
       }
     case NewParticipantSSEDuplicate(name, dupid, subscriber) =>
@@ -269,7 +275,7 @@ abstract class BaseStoreMonitor[VId, VType <: VersionedInstance[
       remove(name) match {
         case Some(sub) =>
           context.unwatch(sub.actor)
-          sub.actor ! akka.actor.Status.Success(0)
+          sub.actor ! DuplexProtocol.Complete() // akka.actor.Status.Success(0)
         case None =>
       }
       dispatchToAll(MonitorLeft(name, members))
@@ -290,9 +296,9 @@ abstract class BaseStoreMonitor[VId, VType <: VersionedInstance[
         log.info(s"""Killing connection $sub""")
         remove(sub) match {
           case Some(s) =>
-            log.info(s"""Sending PoisonPill to $sub""")
+            log.info(s"""Sending complete to $sub""")
 //            s.actor ! PoisonPill
-            s.actor ! TerminateFlowStage.KillMsg
+            s.actor ! DuplexProtocol.Complete("")
           case None =>
         }
       }
@@ -331,9 +337,18 @@ class StoreMonitorManager[VId, VType <: VersionedInstance[VType, VType, VId]](
   // it sends the `ParticipantLeft` message to the chatActor.
   // FIXME: here some rate-limiting should be applied to prevent single users flooding
   private def chatInSink(sender: String) =
-    Sink.actorRef[ChatEvent](monitor, ParticipantLeft(sender))
+    Sink.actorRef[ChatEvent](
+      monitor,
+      ParticipantLeft(sender),
+      { ex: Throwable =>
+        ParticipantLeft(sender)
+      }
+    )
 
-  def monitorFlow(sender: RemoteAddress): Flow[String, Any, NotUsed] = {
+  val completionMatcher: PartialFunction[Any, CompletionStrategy] = { case x: DuplexProtocol.Complete => CompletionStrategy.immediately }
+  val failureMatcher: PartialFunction[Any, Exception] = { case x: DuplexProtocol.Fail => x.ex }
+
+  def monitorFlow(sender: RemoteAddress): Flow[String, DuplexProtocol.DuplexMessage, NotUsed] = {
     val count = StoreMonitor.counter.incrementAndGet()
     val name = sender.toString().replaceAll("\\.", "-")
     val in =
@@ -356,7 +371,12 @@ class StoreMonitorManager[VId, VType <: VersionedInstance[VType, VType, VId]](
     // messages fast enough.
     val out =
       Source
-        .actorRef[Any](4, OverflowStrategy.fail)
+        .actorRef[DuplexProtocol.DuplexMessage](
+          completionMatcher = completionMatcher,
+          failureMatcher = failureMatcher,
+          bufferSize = 4,
+          overflowStrategy = OverflowStrategy.fail
+        )
         .addAttributes(
           Attributes(Name(s"source-monitorFlow-$count.out-${name}"))
         )
@@ -365,16 +385,21 @@ class StoreMonitorManager[VId, VType <: VersionedInstance[VType, VType, VId]](
           monitor ! NewParticipant(sender.toString, actorref)
         }
 
-    val f =
-      Flow.fromSinkAndSource(in, out).via(new TerminateFlowStage(log, false))
-    f
+    // val f =
+      Flow.fromSinkAndSource(in, out) // .via(new TerminateFlowStage(log, false))
+    // f
   }
 
   def monitorMatch(sender: RemoteAddress, id: VId) = {
     sseSource(
       sender,
       Source
-        .actorRef[DuplexProtocol.DuplexMessage](10, OverflowStrategy.fail)
+        .actorRef[DuplexProtocol.DuplexMessage](
+          completionMatcher = completionMatcher,
+          failureMatcher = failureMatcher,
+          10,
+          OverflowStrategy.fail
+        )
         .mapMaterializedValue { x =>
           monitor ! newParticipant(sender.toString(), id, x)
         }
@@ -400,48 +425,44 @@ class StoreMonitorManager[VId, VType <: VersionedInstance[VType, VType, VId]](
 
 }
 
-class TerminateFlowStage(log: LoggingAdapter, abort: Boolean = true)
-    extends GraphStage[FlowShape[Any, Any]] {
-  val in = Inlet[Any]("TerminateFlowStage.in")
-  val out = Outlet[Any]("TerminateFlowStage.out")
-  override val shape = FlowShape.of(in, out)
+// class TerminateFlowStage(log: LoggingAdapter, abort: Boolean = true)
+//     extends GraphStage[FlowShape[DuplexProtocol.DuplexMessage, DuplexProtocol.DuplexMessage]] {
+//   val in = Inlet[DuplexProtocol.DuplexMessage]("TerminateFlowStage.in")
+//   val out = Outlet[DuplexProtocol.DuplexMessage]("TerminateFlowStage.out")
+//   override val shape = FlowShape.of(in, out)
 
-  override def createLogic(inheritedAttributes: Attributes): GraphStageLogic =
-    new GraphStageLogic(shape) {
-      import TerminateFlowStage._
+//   override def createLogic(inheritedAttributes: Attributes): GraphStageLogic =
+//     new GraphStageLogic(shape) {
+//       import TerminateFlowStage._
 
-      setHandlers(
-        in,
-        out,
-        new InHandler with OutHandler {
-          override def onPull(): Unit = { pull(in) }
+//       setHandlers(
+//         in,
+//         out,
+//         new InHandler with OutHandler {
+//           override def onPull(): Unit = { pull(in) }
 
-          override def onPush(): Unit = {
-            val chunk = grab(in)
-            log.info(s"""TerminateFlowStage.onPush: ${chunk}""")
-            chunk match {
-              case dm: DuplexProtocol.DuplexMessage =>
-                push(out, dm)
-              case `KillMsg` =>
-                if (abort) {
-                  log.info(s"""Sending abort really completeStage""")
-//                push( out, Tcp.Abort )
-//                failStage(new RuntimeException("Flow terminated by TerminateFlowStage"))
-                  completeStage()
-                } else {
-                  log.info(s"""Sending completeStage""")
-                  completeStage()
-                }
-            }
-          }
-        }
-      )
-    }
-}
-
-object TerminateFlowStage {
-  val KillMsg = "Kill"
-}
+//           override def onPush(): Unit = {
+//             val chunk = grab(in)
+//             log.info(s"""TerminateFlowStage.onPush: ${chunk}""")
+//             chunk match {
+//               case k: KillMsg =>
+//                 if (abort) {
+//                   log.info(s"""Sending abort really completeStage""")
+// //                push( out, Tcp.Abort )
+// //                failStage(new RuntimeException("Flow terminated by TerminateFlowStage"))
+//                   completeStage()
+//                 } else {
+//                   log.info(s"""Sending completeStage""")
+//                   completeStage()
+//                 }
+//               case dm: DuplexProtocol.DuplexMessage =>
+//                 push(out, dm)
+//             }
+//           }
+//         }
+//       )
+//     }
+// }
 
 class DuplicateStoreMonitor(
     system: ActorSystem,

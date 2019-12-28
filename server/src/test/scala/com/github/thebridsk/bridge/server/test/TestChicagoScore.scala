@@ -1,7 +1,7 @@
 package com.github.thebridsk.bridge.server.test
 
-import org.scalatest.FlatSpec
-import org.scalatest.MustMatchers
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.must.Matchers
 import com.github.thebridsk.bridge.data.MatchChicago
 import scala.reflect.io.Directory
 import scala.reflect.io.Path
@@ -11,7 +11,7 @@ import com.github.thebridsk.utilities.file.FileIO
 import com.github.thebridsk.bridge.data.chicago.ChicagoScoring
 import com.github.thebridsk.bridge.data.Round
 
-class TestChicagoScore extends FlatSpec with MustMatchers {
+class TestChicagoScore extends AnyFlatSpec with Matchers {
 
   behavior of "Chicago scoring"
 

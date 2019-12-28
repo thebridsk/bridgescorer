@@ -1,7 +1,6 @@
 
 package com.github.thebridsk.bridge.server.manualtest
 
-import akka.stream.ActorMaterializer
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.marshallers.xml.ScalaXmlSupport._
@@ -9,7 +8,6 @@ import akka.actor.ActorSystem
 
 object TestServer extends App {
   implicit val system = ActorSystem("my-system")
-  implicit val materializer = ActorMaterializer()
 
   val route =
     path("hello") {
