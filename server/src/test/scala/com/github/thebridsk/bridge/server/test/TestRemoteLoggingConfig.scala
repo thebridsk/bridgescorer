@@ -1,8 +1,7 @@
 package com.github.thebridsk.bridge.server.test
 
-import org.scalatest.FlatSpec
-import org.scalatest.MustMatchers
-import org.scalatest.Matchers
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.must.Matchers
 
 import com.github.thebridsk.bridge.data.bridge._
 import com.github.thebridsk.bridge.server.logging.RemoteLoggingConfig
@@ -45,7 +44,7 @@ configs:
 """
 }
 
-class TestRemoteLoggingConfig extends FlatSpec with MustMatchers {
+class TestRemoteLoggingConfig extends AnyFlatSpec with Matchers {
 
   behavior of "Duplicate Bridge Scoring"
 

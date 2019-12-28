@@ -198,8 +198,8 @@ trait ClientLoggingService {
             out,
             new OutHandler {
               override def onPull(): Unit = pull(in)
-              override def onDownstreamFinish(): Unit = {
-                log.info("(" + sender + "): Downstream finished")
+              override def onDownstreamFinish( cause: Throwable ): Unit = {
+                log.info("(" + sender + "): Downstream finished",cause)
                 completeStage()
               }
             }

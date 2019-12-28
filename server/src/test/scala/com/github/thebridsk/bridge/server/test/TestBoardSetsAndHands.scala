@@ -1,7 +1,7 @@
 package com.github.thebridsk.bridge.server.test
 
-import org.scalatest.FlatSpec
-import org.scalatest.MustMatchers
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.must.Matchers
 import com.github.thebridsk.bridge.data.Board
 import com.github.thebridsk.bridge.data.Table
 import com.github.thebridsk.bridge.server.service.MyService
@@ -16,7 +16,6 @@ import akka.http.scaladsl.model.{HttpResponse, HttpRequest}
 import akka.http.scaladsl.model.StatusCodes._
 import akka.http.scaladsl.testkit.ScalatestRouteTest
 import akka.stream.scaladsl.Flow
-import org.scalatest._
 import akka.http.scaladsl.marshalling.ToResponseMarshallable
 import akka.http.scaladsl.unmarshalling.FromResponseUnmarshaller
 import akka.actor.ActorSystem
@@ -36,7 +35,7 @@ import com.github.thebridsk.bridge.data.Movement
 import com.github.thebridsk.bridge.data.MatchDuplicate
 
 
-class TestBoardSetsAndHands extends FlatSpec with ScalatestRouteTest with MustMatchers with MyService {
+class TestBoardSetsAndHands extends AnyFlatSpec with ScalatestRouteTest with Matchers with MyService {
   val restService = new BridgeServiceTesting
 
   val httpport = 8080

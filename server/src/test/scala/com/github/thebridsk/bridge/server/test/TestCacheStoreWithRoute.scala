@@ -14,7 +14,6 @@ import akka.http.scaladsl.testkit.ScalatestRouteTest
 import akka.http.scaladsl.marshalling.ToResponseMarshallable
 import akka.http.scaladsl.unmarshalling.FromResponseUnmarshaller
 import akka.stream.scaladsl.Flow
-import org.scalatest._
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import akka.event.Logging
@@ -31,7 +30,6 @@ import scala.util.Success
 import scala.util.Failure
 import scala.reflect.io.Directory
 import org.scalactic.source.Position
-import org.scalatest._
 import com.github.thebridsk.bridge.server.backend.resource.InMemoryStore
 import com.github.thebridsk.bridge.data.Id
 import com.github.thebridsk.bridge.data.MatchDuplicate
@@ -68,9 +66,13 @@ import com.github.thebridsk.bridge.server.rest.ServerPort
 import com.github.thebridsk.bridge.server.json.BridgePlayJsonSupport
 import com.github.thebridsk.bridge.server.rest.UtilsPlayJson
 import akka.http.scaladsl.testkit.RouteTestTimeout
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.must.Matchers
+import org.scalatest.BeforeAndAfterAll
+import org.scalatest.compatible.Assertion
 
 object TestCacheStoreWithRoute {
-  import MustMatchers._
+  import Matchers._
 
   val testlog = com.github.thebridsk.utilities.logging.Logger[TestCacheStoreWithRoute]
 
@@ -174,7 +176,7 @@ object TestCacheStoreWithRoute {
 /**
  * Test class to start the logging system
  */
-class TestCacheStoreWithRoute extends FlatSpec with ScalatestRouteTest with MustMatchers with BeforeAndAfterAll with MyService {
+class TestCacheStoreWithRoute extends AnyFlatSpec with ScalatestRouteTest with Matchers with BeforeAndAfterAll with MyService {
   import TestCacheStoreWithRoute._
 
   val restService = new BridgeServiceTestFailure

@@ -1,7 +1,7 @@
 package com.github.thebridsk.bridge.server.test
 
 import org.scalatest.Finders
-import org.scalatest.MustMatchers
+import org.scalatest.matchers.must.Matchers
 import com.github.thebridsk.bridge.server.test.backend.BridgeServiceTesting
 import com.github.thebridsk.bridge.server.service.MyService
 import akka.http.scaladsl.model.StatusCodes._
@@ -34,7 +34,6 @@ import com.github.thebridsk.bridge.server.service.graphql.Query
 import akka.http.scaladsl.model.StatusCodes
 import com.github.thebridsk.bridge.server.backend.FileImportStore
 import scala.reflect.io.Directory
-import scala.concurrent.ExecutionContext.Implicits.global
 import com.github.thebridsk.bridge.server.service.graphql.GraphQLRoute
 import com.github.thebridsk.bridge.data.rest.JsonSupport._
 import com.github.thebridsk.bridge.server.rest.UtilsPlayJson._
@@ -43,6 +42,9 @@ import java.io.FileOutputStream
 import scala.concurrent.Await
 import scala.concurrent.duration._
 import scala.language.postfixOps
+import scala.concurrent.Future
+import org.scalatest.flatspec.AsyncFlatSpec
+import scala.concurrent.ExecutionContext
 
 object TestGraphQL {
 
@@ -53,14 +55,14 @@ object TestGraphQL {
   val dirTemp = Directory.makeTemp()
   val dirImport = dirTemp / "store"
 
-  val store = new BridgeServiceTesting {
+  def store( implicit ec: ExecutionContext ) = new BridgeServiceTesting {
 
     override
     val importStore = Some(new FileImportStore( dirImport.toDirectory ))
 
   }
 
-  val route = new GraphQLRoute {
+  def route( implicit ec: ExecutionContext ) = new GraphQLRoute {
     val restService = store
   }
 
@@ -99,7 +101,7 @@ object TestGraphQL {
 /**
  * Test class to start the logging system
  */
-class TestGraphQL extends AsyncFlatSpec with ScalatestRouteTest with MustMatchers {
+class TestGraphQL extends AsyncFlatSpec with ScalatestRouteTest with Matchers {
   import TestGraphQL._
 
   TestStartLogging.startLogging()

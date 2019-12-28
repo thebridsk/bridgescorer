@@ -1,8 +1,7 @@
 package com.github.thebridsk.bridge.server.test
 
-import org.scalatest.FlatSpec
-import org.scalatest.MustMatchers
-import org.scalatest.Matchers
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.must.Matchers
 import com.github.thebridsk.bridge.data.Board
 import com.github.thebridsk.bridge.data.Table
 import com.github.thebridsk.bridge.data.bridge.North
@@ -20,7 +19,7 @@ import com.github.thebridsk.bridge.data.Id
 import scala.concurrent.Await
 import scala.concurrent.duration._
 
-class TestWinnerSets extends FlatSpec with MustMatchers {
+class TestWinnerSets extends AnyFlatSpec with Matchers {
 
   val testlog = Logger[TestWinnerSets]
 

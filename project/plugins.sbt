@@ -8,11 +8,11 @@ name := "project-bridgescorer"
 
 scalaVersion := "2.12.10"
 
-val vLog4j = "1.7.28"              // https://github.com/qos-ch/slf4j
-val vJGit = "5.5.1.201910021850-r" // https://github.com/eclipse/jgit
+val vLog4j = "1.7.30"              // https://github.com/qos-ch/slf4j
+val vJGit = "5.6.0.201912101111-r" // https://github.com/eclipse/jgit
 
 val vCrossProject = "0.6.1"        // https://github.com/portable-scala/sbt-crossproject
-val vScalaJSDefault = "0.6.29"     // http://www.scala-js.org/
+val vScalaJSDefault = "0.6.31"     // http://www.scala-js.org/
 val vSbtAssembly = "0.14.10"       // https://github.com/sbt/sbt-assembly
 val vSbtGit = "1.0.0"              // https://github.com/sbt/sbt-git
 val vSbtSCoverage = "1.5.1"        // https://github.com/scoverage/sbt-scoverage
@@ -39,14 +39,14 @@ val vBloop = "1.3.2"               // https://github.com/scalacenter/bloop
 //   SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".
 // when sbt is started.
 
-libraryDependencies += "org.slf4j" % "slf4j-log4j12" % vLog4j
+libraryDependencies += "org.slf4j" % "slf4j-log4j12" % vLog4j withSources()
 
 // Unfortunately this causes an exception to be logged to the console from sbt-git plugin
 // because it can't find git.
 // update jgit plugin to avoid exception
 
 libraryDependencies ++= Seq(
-  "org.eclipse.jgit" % "org.eclipse.jgit.pgm" % vJGit
+  "org.eclipse.jgit" % "org.eclipse.jgit.pgm" % vJGit withSources()
      exclude("javax.jms", "jms")
      exclude("com.sun.jdmk", "jmxtools")
      exclude("com.sun.jmx", "jmxri")

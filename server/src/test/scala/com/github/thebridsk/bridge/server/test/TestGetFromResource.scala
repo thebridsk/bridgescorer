@@ -1,8 +1,8 @@
 package com.github.thebridsk.bridge.server.test
 
 import org.scalatest.Finders
-import org.scalatest.FlatSpec
-import org.scalatest.MustMatchers
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.must.Matchers
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import com.github.thebridsk.bridge.server.test.backend.BridgeServiceTesting
@@ -20,7 +20,7 @@ import akka.event.Logging
 import com.github.thebridsk.bridge.server.rest.ServerPort
 import com.github.thebridsk.bridge.server.version.VersionServer
 
-class TestGetFromResource extends FlatSpec with ScalatestRouteTest with MustMatchers with MyService {
+class TestGetFromResource extends AnyFlatSpec with ScalatestRouteTest with Matchers with MyService {
   val restService = new BridgeServiceTesting
 
   val httpport = 8080

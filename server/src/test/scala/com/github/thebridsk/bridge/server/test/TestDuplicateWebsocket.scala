@@ -1,7 +1,7 @@
 package com.github.thebridsk.bridge.server.test
 
-import org.scalatest.FlatSpec
-import org.scalatest.MustMatchers
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.must.Matchers
 import com.github.thebridsk.bridge.data.Board
 import com.github.thebridsk.bridge.data.Table
 import com.github.thebridsk.bridge.server.service.MyService
@@ -73,7 +73,7 @@ import com.github.thebridsk.bridge.server.backend.resource.CreateChangeContext
 import com.github.thebridsk.bridge.server.backend.resource.UpdateChangeContext
 import com.github.thebridsk.bridge.server.backend.resource.DeleteChangeContext
 
-class TestDuplicateWebsocket extends FlatSpec with ScalatestRouteTest with MustMatchers with MyService with BeforeAndAfterAll {
+class TestDuplicateWebsocket extends AnyFlatSpec with ScalatestRouteTest with Matchers with MyService with BeforeAndAfterAll {
 
   implicit val me = this
 
@@ -756,4 +756,5 @@ class TestDuplicateWebsocket extends FlatSpec with ScalatestRouteTest with MustM
 
     WebsocketClient.ensureNoMessage(true,client1,client2,client3)
   }
+
 }

@@ -12,8 +12,8 @@ import japgolly.scalajs.react._
 import com.github.thebridsk.bridge.data.bridge._
 import com.github.thebridsk.bridge.client.routes.AppRouter.AppPage
 import com.github.thebridsk.bridge.client.pages.HomePage
-import org.scalatest.FlatSpec
-import org.scalatest.MustMatchers
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.must.Matchers
 import com.github.thebridsk.bridge.client.pages.chicagos.ChicagoModule.PlayChicago2
 import com.github.thebridsk.bridge.client.pages.chicagos.ChicagoRouter.ListView
 import com.github.thebridsk.bridge.data.js.SystemTimeJs
@@ -35,7 +35,7 @@ object MyTest {
 /**
  * @author werewolf
  */
-class MyTest extends FlatSpec with MustMatchers {
+class MyTest extends AnyFlatSpec with Matchers {
   import MyTest._
   com.github.thebridsk.bridge.client.modules.Loader.init
   com.github.thebridsk.bridge.client.test.utils.Loader.init

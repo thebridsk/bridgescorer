@@ -16,7 +16,6 @@ import akka.http.scaladsl.server.MalformedRequestContentRejection
 import akka.http.scaladsl.server.RejectionHandler
 import akka.http.scaladsl.server.MethodRejection
 import akka.actor.ActorSystem
-import akka.stream.ActorMaterializer
 import com.github.thebridsk.bridge.server.backend.MonitorWebservice
 import java.util.Date
 import client.LogA
@@ -86,71 +85,51 @@ trait Service extends ImportExport {
   object restMovement extends RestMovement {
     implicit override lazy val actorSystem: ActorSystem =
       hasActorSystem.actorSystem
-    implicit override lazy val materializer: ActorMaterializer =
-      hasActorSystem.materializer
     implicit override lazy val restService = hasActorSystem.restService
   }
   object restBoardSet extends RestBoardSet {
     implicit override lazy val actorSystem: ActorSystem =
       hasActorSystem.actorSystem
-    implicit override lazy val materializer: ActorMaterializer =
-      hasActorSystem.materializer
     implicit override lazy val restService = hasActorSystem.restService
   }
   object restChicago extends RestChicago {
     implicit override lazy val actorSystem: ActorSystem =
       hasActorSystem.actorSystem
-    implicit override lazy val materializer: ActorMaterializer =
-      hasActorSystem.materializer
     implicit override lazy val restService = hasActorSystem.restService
   }
   object restRubber extends RestRubber {
     implicit override lazy val actorSystem: ActorSystem =
       hasActorSystem.actorSystem
-    implicit override lazy val materializer: ActorMaterializer =
-      hasActorSystem.materializer
     implicit override lazy val restService = hasActorSystem.restService
   }
   val restDuplicate = new RestDuplicate {
     implicit override lazy val actorSystem: ActorSystem =
       hasActorSystem.actorSystem
-    implicit override lazy val materializer: ActorMaterializer =
-      hasActorSystem.materializer
     implicit override lazy val restService = hasActorSystem.restService
   }
   val restDuplicateResult = new RestDuplicateResult {
     implicit override lazy val actorSystem: ActorSystem =
       hasActorSystem.actorSystem
-    implicit override lazy val materializer: ActorMaterializer =
-      hasActorSystem.materializer
     implicit override lazy val restService = hasActorSystem.restService
   }
   val restDuplicateSummary = new RestDuplicateSummary {
     implicit override lazy val actorSystem: ActorSystem =
       hasActorSystem.actorSystem
-    implicit override lazy val materializer: ActorMaterializer =
-      hasActorSystem.materializer
     implicit override lazy val restService = hasActorSystem.restService
   }
   val restDuplicatePlaces = new RestDuplicatePlaces {
     implicit override lazy val actorSystem: ActorSystem =
       hasActorSystem.actorSystem
-    implicit override lazy val materializer: ActorMaterializer =
-      hasActorSystem.materializer
     implicit override lazy val restService = hasActorSystem.restService
   }
   val restSuggestion = new RestSuggestion {
     implicit override lazy val actorSystem: ActorSystem =
       hasActorSystem.actorSystem
-    implicit override lazy val materializer: ActorMaterializer =
-      hasActorSystem.materializer
     implicit override lazy val restService = hasActorSystem.restService
   }
   object restNames extends RestNames {
     implicit override lazy val actorSystem: ActorSystem =
       hasActorSystem.actorSystem
-    implicit override lazy val materializer: ActorMaterializer =
-      hasActorSystem.materializer
     implicit override lazy val restService = hasActorSystem.restService
   }
   object duplicateMonitor
@@ -163,8 +142,6 @@ trait Service extends ImportExport {
   object restLoggerConfig extends RestLoggerConfig {
     implicit override lazy val actorSystem: ActorSystem =
       hasActorSystem.actorSystem
-    implicit override lazy val materializer: ActorMaterializer =
-      hasActorSystem.materializer
     implicit override lazy val restService = hasActorSystem.restService
     val ports = hasActorSystem.ports
   }

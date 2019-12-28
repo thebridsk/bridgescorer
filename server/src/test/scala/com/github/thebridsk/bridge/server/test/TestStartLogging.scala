@@ -1,8 +1,8 @@
 package com.github.thebridsk.bridge.server.test
 
 import org.scalatest.Finders
-import org.scalatest.FlatSpec
-import org.scalatest.MustMatchers
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.must.Matchers
 import com.github.thebridsk.bridge.server.test.backend.BridgeServiceTesting
 import com.github.thebridsk.bridge.server.service.MyService
 import akka.http.scaladsl.model.StatusCodes._
@@ -64,7 +64,7 @@ object TestStartLogging {
 /**
  * Test class to start the logging system
  */
-class TestStartLogging extends FlatSpec with ScalatestRouteTest with MustMatchers {
+class TestStartLogging extends AnyFlatSpec with ScalatestRouteTest with Matchers {
   import TestStartLogging._
 
   behavior of "the start logging test"

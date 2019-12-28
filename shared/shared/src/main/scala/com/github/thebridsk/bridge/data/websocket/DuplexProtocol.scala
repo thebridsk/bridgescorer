@@ -59,6 +59,16 @@ object DuplexProtocol {
   case class Unsolicited(data: ToBrowserMessage) extends DuplexMessage
 
   /**
+   * Complete the stream
+   */
+  case class Complete( reason: String = "" ) extends DuplexMessage
+
+  /**
+   * The stream failed
+   */
+  case class Fail( ex: Exception ) extends DuplexMessage
+
+  /**
     * For sending log entries to the server
     */
   @Schema(

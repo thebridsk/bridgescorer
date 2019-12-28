@@ -1,7 +1,7 @@
 package com.github.thebridsk.bridge.server.test.util
 
 import org.openqa.selenium.WebDriver
-import org.scalatest.MustMatchers
+import org.scalatest.matchers.must.Matchers
 import com.github.thebridsk.utilities.logging.Logger
 import java.util.logging.Level
 import org.scalactic.source.Position
@@ -21,7 +21,7 @@ object SeleniumUtilsLogger {
 
 trait SeleniumUtils {
   import org.scalatestplus.selenium.WebBrowser._
-  import org.scalatest.MustMatchers._
+  import org.scalatest.matchers.must.Matchers._
   import EventuallyUtils._
 
   import SeleniumUtilsLogger._

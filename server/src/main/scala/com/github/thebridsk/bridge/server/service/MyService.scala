@@ -20,7 +20,6 @@ import akka.http.scaladsl.marshalling.ToResponseMarshaller
 import akka.http.scaladsl.unmarshalling.FromRequestUnmarshaller
 import com.github.thebridsk.bridge.server.util.HasActorSystem
 import com.github.swagger.akka.model._
-import akka.stream.ActorMaterializer
 import akka.event.Logging
 import akka.util.ByteString
 import akka.event.LoggingAdapter
@@ -247,8 +246,6 @@ trait MyService
     */
   val swaggerService = new MySwaggerService with HasActorSystem {
     implicit lazy val actorSystem: ActorSystem = hasActorSystem.actorSystem
-    implicit lazy val materializer: ActorMaterializer =
-      hasActorSystem.materializer
 
 //    override val apiVersionURISegment = "v1"
 

@@ -7,9 +7,9 @@ import com.github.thebridsk.bridge.data.DuplicateHand
 import com.github.thebridsk.bridge.data.Hand
 import com.github.thebridsk.bridge.data.SystemTime
 import com.github.thebridsk.bridge.data.bridge.MatchDuplicateScore
-import org.scalatest.MustMatchers
+import org.scalatest.matchers.must.Matchers
 import com.github.thebridsk.bridge.server.util.SystemTimeJVM
-import org.scalatest.FlatSpec
+import org.scalatest.flatspec.AnyFlatSpec
 import com.github.thebridsk.bridge.server.backend.BridgeService
 import com.github.thebridsk.bridge.data.bridge.PerspectiveTable
 import com.github.thebridsk.bridge.data.bridge.PerspectiveDirector
@@ -17,7 +17,7 @@ import com.github.thebridsk.bridge.server.backend.BridgeServiceInMemory
 import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext
 
-class TestDuplicateScore extends FlatSpec with MustMatchers {
+class TestDuplicateScore extends AnyFlatSpec with Matchers {
 
   SystemTimeJVM()
 

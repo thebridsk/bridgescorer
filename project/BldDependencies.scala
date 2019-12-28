@@ -65,6 +65,8 @@ object BldDependencies {
     "org.seleniumhq.selenium" %   "selenium-java" % vSelenium withSources(),
 
     "org.scalatest" %%% "scalatest" % vScalatest withSources(),
+//    "org.scalatestplus" %%% "scalatestplus-selenium" % vScalatestSelenium withSources(),
+    "org.scalatestplus" %%% "selenium-2-45" % vScalatestSelenium245 withSources(),
     "org.scalactic" %%% "scalactic" % vScalactic withSources(),
 
 // Test
@@ -74,8 +76,10 @@ object BldDependencies {
 
   val bridgeScorerServerDeps = Def.setting(morejacksons ++ jacksons ++ Seq(
 
-      "com.typesafe.akka"   %%  "akka-actor"    % vAkka withSources(),
+      "com.typesafe.akka"   %% "akka-actor"              % vAkka withSources(),
+      // "com.typesafe.akka"   %% "akka-actor-typed"        % vAkka withSources(),
       "com.typesafe.akka"   %% "akka-stream"             % vAkka withSources(),
+      "com.typesafe.akka"   %% "akka-slf4j"              % vAkka withSources(),
       "com.typesafe.akka"   %% "akka-http"               % vAkkaHttp withSources(),
       "com.typesafe.akka"   %% "akka-http-caching"       % vAkkaHttp withSources(),
       // add http2 support to test only for now.  annoying if cert from trusted CA is not used

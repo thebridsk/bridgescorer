@@ -19,6 +19,7 @@ object EventuallyUtilsInternals {
   {
     message match {
         case null => throw new NullArgumentException("message is null")
+        case None => throw new NullArgumentException("message is None")
         case Some(null) => throw new NullArgumentException("message is a Some(null)")
         case _ => { e => message }
     }
@@ -38,7 +39,7 @@ class NoResultYet(
 )( implicit pos: Position) extends
   TestFailedException(EventuallyUtilsInternals.toExceptionFunction(Some(message)),
                       cause,
-                      Left(pos),
+                      pos,
                       payload)
 
 trait EventuallyUtils {
