@@ -1,6 +1,5 @@
 package com.github.thebridsk.bridge.server.test
 
-import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.must.Matchers
 
 import com.github.thebridsk.bridge.data.bridge._
@@ -27,9 +26,9 @@ import com.github.thebridsk.bridge.data.Id
 import com.github.thebridsk.bridge.server.backend.MatchDuplicateCacheStoreSupport
 import scala.concurrent.Future
 import org.scalatest.compatible.Assertion
-import scala.concurrent.ExecutionContext.Implicits.global
+import org.scalatest.flatspec.AsyncFlatSpec
 
-class TestFileStore extends AnyFlatSpec with Matchers with BeforeAndAfterAll {
+class TestFileStore extends AsyncFlatSpec with Matchers with BeforeAndAfterAll {
 
   var tempDir: Directory = null
   val resourceName = "MatchRubber"
@@ -37,9 +36,6 @@ class TestFileStore extends AnyFlatSpec with Matchers with BeforeAndAfterAll {
   val idPrefix = "R"
 
   val testlog = Logger[TestFileStore]
-
-  import scala.language.implicitConversions
-  implicit def toFunction( r: => Future[Assertion]) = () => r
 
   TestStartLogging.startLogging()
 

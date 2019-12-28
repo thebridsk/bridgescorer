@@ -34,7 +34,6 @@ import com.github.thebridsk.bridge.server.service.graphql.Query
 import akka.http.scaladsl.model.StatusCodes
 import com.github.thebridsk.bridge.server.backend.FileImportStore
 import scala.reflect.io.Directory
-import scala.concurrent.ExecutionContext.Implicits.global
 import com.github.thebridsk.bridge.server.service.graphql.GraphQLRoute
 import com.github.thebridsk.bridge.data.rest.JsonSupport._
 import com.github.thebridsk.bridge.server.rest.UtilsPlayJson._
@@ -43,30 +42,27 @@ import java.io.FileOutputStream
 import scala.concurrent.Await
 import scala.concurrent.duration._
 import scala.language.postfixOps
-import org.scalatest.flatspec.FixtureAsyncFlatSpec
 import scala.concurrent.Future
-import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.flatspec.AsyncFlatSpec
+import scala.concurrent.ExecutionContext
 
 object TestGraphQL {
 
   val testlog = com.github.thebridsk.utilities.logging.Logger[TestGraphQL]
-
-  import scala.language.implicitConversions
-  implicit def toFunction( r: => Future[Assertion]) = () => r
 
   val graphQL = new Query
 
   val dirTemp = Directory.makeTemp()
   val dirImport = dirTemp / "store"
 
-  val store = new BridgeServiceTesting {
+  def store( implicit ec: ExecutionContext ) = new BridgeServiceTesting {
 
     override
     val importStore = Some(new FileImportStore( dirImport.toDirectory ))
 
   }
 
-  val route = new GraphQLRoute {
+  def route( implicit ec: ExecutionContext ) = new GraphQLRoute {
     val restService = store
   }
 
@@ -105,7 +101,7 @@ object TestGraphQL {
 /**
  * Test class to start the logging system
  */
-class TestGraphQL extends AnyFlatSpec with ScalatestRouteTest with Matchers {
+class TestGraphQL extends AsyncFlatSpec with ScalatestRouteTest with Matchers {
   import TestGraphQL._
 
   TestStartLogging.startLogging()

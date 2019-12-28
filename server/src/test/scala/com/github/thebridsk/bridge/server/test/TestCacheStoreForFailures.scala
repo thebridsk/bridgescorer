@@ -48,12 +48,11 @@ import com.github.thebridsk.bridge.server.backend.resource.ChangeContextData
 import com.github.thebridsk.bridge.server.backend.resource.JavaResourcePersistentSupport
 import com.github.thebridsk.bridge.server.backend.resource.Implicits._
 import com.github.thebridsk.bridge.data.RestMessage
-import scala.concurrent.ExecutionContext.Implicits.global
 import com.github.thebridsk.bridge.server.test.backend.TestFailurePersistent
 import com.github.thebridsk.bridge.server.test.backend.TestFailureStore
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.compatible.Assertion
-import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.flatspec.AsyncFlatSpec
 
 object TestCacheStoreForFailures {
   import Matchers._
@@ -65,28 +64,27 @@ object TestCacheStoreForFailures {
   val bridgeResources = BridgeResources()
   import bridgeResources._
 
-  val boardsetsPersistent = JavaResourcePersistentSupport[String,BoardSet]("/com/github/thebridsk/bridge/server/backend/", "Boardsets.txt", getClass.getClassLoader)
-  val movementsPersistent = JavaResourcePersistentSupport[String,Movement]("/com/github/thebridsk/bridge/server/backend/", "Movements.txt", getClass.getClassLoader)
+  def boardsetsPersistent( implicit ec: ExecutionContext ) = JavaResourcePersistentSupport[String,BoardSet]("/com/github/thebridsk/bridge/server/backend/", "Boardsets.txt", getClass.getClassLoader)
+  def movementsPersistent( implicit ec: ExecutionContext ) = JavaResourcePersistentSupport[String,Movement]("/com/github/thebridsk/bridge/server/backend/", "Movements.txt", getClass.getClassLoader)
 
-  def standardBoardset = boardsetsPersistent.read("StandardBoards") match {
+  def standardBoardset( implicit ec: ExecutionContext ) = boardsetsPersistent.read("StandardBoards") match {
     case Right(v) => v
     case Left( error ) =>
       throw new Exception(s"Unable to get standard boardset ${error}")
   }
 
-  def movement = movementsPersistent.read("Mitchell3Table") match {
+  def movement( implicit ec: ExecutionContext ) = movementsPersistent.read("Mitchell3Table") match {
     case Right(v) => v
     case Left( error ) =>
       throw new Exception(s"Unable to get Mitchell3Table ${error}")
   }
 
-  def getStore: (Store[Id.MatchDuplicate,MatchDuplicate],
-                 TestFailurePersistent[Id.MatchDuplicate,MatchDuplicate]) = {
+  def getStore( implicit ec: ExecutionContext ): (Store[Id.MatchDuplicate,MatchDuplicate],
+                 TestFailurePersistent[Id.MatchDuplicate,MatchDuplicate]
+  ) = {
     val s = TestFailureStore[Id.MatchDuplicate,MatchDuplicate]( "test", null, 5, 100, Duration.Inf, Duration.Inf )
     (s,s.testFailurePersistent)
   }
-
-  import ExecutionContext.Implicits.global
 
   trait Tester {
     def test( name: String, change: Option[ChangeContext] )(implicit pos: Position): Assertion
@@ -257,7 +255,7 @@ object TestCacheStoreForFailures {
                            Listener,
                            MatchDuplicate
                           )=>Future[Assertion]
-                   ) = {
+                   )( implicit ec: ExecutionContext ) = {
     val (store,per) = getStore
     val md = TestMatchDuplicate.create("?")
 
@@ -281,12 +279,12 @@ object TestCacheStoreForFailures {
 
   implicit class WrapFuture[T]( val f: Future[Result[T]] ) extends AnyVal {
 
-    def test( comment: String )(block: Try[Result[T]]=>Assertion)( implicit pos: SourcePosition): Future[Assertion] = {
+    def test( comment: String )(block: Try[Result[T]]=>Assertion)( implicit pos: SourcePosition, ec: ExecutionContext ): Future[Assertion] = {
       val b: Try[Result[T]]=>Future[Assertion] = t => Future {block(t)}
       f.transformWith(b)
     }
 
-    def testfuture( comment: String )(block: Try[Result[T]]=>Future[Assertion])( implicit pos: SourcePosition): Future[Assertion] = {
+    def testfuture( comment: String )(block: Try[Result[T]]=>Future[Assertion])( implicit pos: SourcePosition, ec: ExecutionContext ): Future[Assertion] = {
       f.transformWith(block)
     }
 
@@ -339,10 +337,8 @@ object TestCacheStoreForFailures {
 /**
  * Test class to start the logging system
  */
-class TestCacheStoreForFailures extends AnyFlatSpec with ScalatestRouteTest with Matchers {
+class TestCacheStoreForFailures extends AsyncFlatSpec with ScalatestRouteTest with Matchers {
   import TestCacheStoreForFailures._
-
-  import ExecutionContext.Implicits.global
 
   behavior of "Store with Failures"
 

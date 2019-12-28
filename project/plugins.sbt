@@ -39,14 +39,14 @@ val vBloop = "1.3.2"               // https://github.com/scalacenter/bloop
 //   SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".
 // when sbt is started.
 
-libraryDependencies += "org.slf4j" % "slf4j-log4j12" % vLog4j
+libraryDependencies += "org.slf4j" % "slf4j-log4j12" % vLog4j withSources()
 
 // Unfortunately this causes an exception to be logged to the console from sbt-git plugin
 // because it can't find git.
 // update jgit plugin to avoid exception
 
 libraryDependencies ++= Seq(
-  "org.eclipse.jgit" % "org.eclipse.jgit.pgm" % vJGit
+  "org.eclipse.jgit" % "org.eclipse.jgit.pgm" % vJGit withSources()
      exclude("javax.jms", "jms")
      exclude("com.sun.jdmk", "jmxtools")
      exclude("com.sun.jmx", "jmxri")
