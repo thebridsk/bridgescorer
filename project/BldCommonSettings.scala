@@ -109,7 +109,7 @@ object BldCommonSettings {
     "com.github.thebridsk.bridge.test.selenium.integrationtest.IntegrationTests"
   val itravisMoretestToRun =
     "com.github.thebridsk.bridge.test.selenium.integrationtest.TravisIntegrationTests"
-  val itestdataDir = "./testdata"
+  val itestdataDir = "../testdata"
 
 
   lazy val bridgescorerAllProjects = ScopeFilter(
