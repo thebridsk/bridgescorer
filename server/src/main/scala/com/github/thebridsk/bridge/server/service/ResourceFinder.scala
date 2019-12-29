@@ -150,7 +150,7 @@ object ResourceFinder {
         f
       case None =>
         searchOnVersion(
-          "bridgescorer",
+          "bridgescorekeeper",
           Some("lib/bridgescorer-server"),
           validateServerVersion
         ) match {
@@ -167,7 +167,7 @@ object ResourceFinder {
 
   def helpResources = {
 
-    searchOnVersion("bridgescorer", Some("help"), validateServerVersionWithHelp) match {
+    searchOnVersion("bridgescorekeeper", Some("help"), validateServerVersionWithHelp) match {
       case Some(f) =>
         logger.info(s"Found help at ${f.baseName}")
         f
