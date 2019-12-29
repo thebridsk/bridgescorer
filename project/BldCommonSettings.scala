@@ -113,7 +113,7 @@ object BldCommonSettings {
 
 
   lazy val bridgescorerAllProjects = ScopeFilter(
-    inAggregates(BldBridge.bridgescorer, includeRoot = true)
+    inAggregates(BldBridge.bridgescorer, includeRoot = false)
   )
 
   lazy val utilitiesAllProjects = ScopeFilter(
