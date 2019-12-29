@@ -52,6 +52,8 @@ object BldBridge {
     action = releaseStepTaskAggregated(mydist in Distribution in bridgescorer) // publish release notes
   )
 
+  val cleanAssemblyCache = taskKey[Unit]("Cleans assembly cache of old builds") in Distribution
+
   lazy val bridgescorer: Project = project
     .in(file("."))
     .aggregate(
@@ -147,41 +149,16 @@ object BldBridge {
                                    else
                                      Seq(scalaJSProd)) ++ Seq(scalaJSDev, gzip),
 
-      assemblyOption in assembly := {
-
-        // the following is a hack.  The assembly caches the jar files,
-        // but it doesn't erase old ones.  This means for bridgescorer and
-        // bridgescorer-server we get multiple version in the cache which
-        // end up in the assembly.jar file.
-
-        println("cleanning assembly cache for bridgescorer")
-        val stream = streams.value
-        println(s"Cache directory is ${stream.cacheDirectory}")
-
-        def deleteDir( dir: File ): Unit = {
-//          println(s"Deleting ${dir}")
-          if (dir.isDirectory) {
-            dir.listFiles.foreach { f =>
-              deleteDir(f)
-            }
-          }
-          (1 to 3).find { i =>
-            val rc = dir.delete
-            if (!rc) {
-              Thread.sleep( 500L )
-            }
-            rc
-          }.getOrElse {
-            println(s"Error deleting ${dir}")
-          }
-        }
-
-        val files = ( (stream.cacheDirectory ** "webjars" / "bridgescorer") +++ (stream.cacheDirectory ** "webjars" / "bridgescorer-server")).get
-        println(s"Deleting bridgescorer cached files in assembly, directories to delete ${files.mkString("\n  ","\n  ","\n")}")
-        files.foreach { f => deleteDir(f) }
-
-        (assemblyOption in assembly).value
+      cleanAssemblyCache in assembly := {
+        cleanCacheDir((streams in assemblyOption).value)
       },
+
+      cleanAssemblyCache in (Test, assembly) := {
+        cleanCacheDir((streams in (Test,assemblyOption)).value)
+      },
+
+      assembly := (assembly dependsOn (cleanAssemblyCache in assembly)).value,
+      assembly in Test := ((assembly in Test) dependsOn (cleanAssemblyCache in (Test,assembly))).value,
 
       assemblyMergeStrategy in assembly := {
         case PathList(
@@ -732,5 +709,38 @@ object BldBridge {
       )
     )
     .enablePlugins(GitVersioning, GitBranchPrompt)
+
+    def cleanCacheDir( stream: sbt.Keys.TaskStreams ) = {
+
+      // the following is a hack.  The assembly caches the jar files,
+      // but it doesn't erase old ones.  This means for bridgescorer and
+      // bridgescorer-server we get multiple version in the cache which
+      // end up in the assembly.jar file.
+
+      println(s"Cleaning assembly cache for bridgescorer, cache directory is ${stream.cacheDirectory}")
+
+      val files = ( (stream.cacheDirectory ** "webjars" / "bridgescorer") +++ (stream.cacheDirectory ** "webjars" / "bridgescorer-server")).get
+      println(s"Deleting bridgescorer cached files in assembly, directories to delete ${files.mkString("\n  ","\n  ","\n")}")
+      files.foreach { f => deleteDir(f) }
+
+    }
+
+    def deleteDir( dir: File ): Unit = {
+      //          println(s"Deleting ${dir}")
+      if (dir.isDirectory) {
+        dir.listFiles.foreach { f =>
+          deleteDir(f)
+        }
+      }
+      (1 to 3).find { i =>
+        val rc = dir.delete
+        if (!rc) {
+          Thread.sleep( 500L )
+        }
+        rc
+      }.getOrElse {
+        println(s"Error deleting ${dir}")
+      }
+    }
 
 }
