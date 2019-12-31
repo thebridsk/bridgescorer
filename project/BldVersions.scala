@@ -66,9 +66,9 @@ object BldVersion {
   lazy val vJacksonDatabind = "2.10.1"   // https://github.com/FasterXML/jackson-databind
 
   // Selenium needs to be update to update to v23.0
-  lazy val vGuavaJre = "28.1-jre"    // https://github.com/google/guava
+  lazy val vGuavaJre = "28.2-jre"    // https://github.com/google/guava
 
-  lazy val vWebPack = "4.41.4"          // https://www.npmjs.com/package/webpack
+  lazy val vWebPack = "4.41.5"          // https://www.npmjs.com/package/webpack
 
   lazy val vJsDom = "15.2.1"           // https://www.npmjs.com/package/jsdom
 
@@ -92,7 +92,7 @@ object BldVersion {
   lazy val vGraphQL = "14.5.8"              // https://github.com/graphql/graphql-js
   lazy val vGraphiQL = "0.17.5"             // https://github.com/graphql/graphiql
   lazy val vGraphQLVoyager = "1.0.0-rc.28"  // https://github.com/APIs-guru/graphql-voyager
-  lazy val vMaterialUIcore = "4.8.1"        // https://www.npmjs.com/package/@material-ui/core
+  lazy val vMaterialUIcore = "4.8.2"        // https://www.npmjs.com/package/@material-ui/core
   lazy val vMaterialUIicons = "4.5.1"       // https://www.npmjs.com/package/@material-ui/icons
   lazy val vPropTypes = "15.7.2"            // https://www.npmjs.com/package/prop-types
 }
