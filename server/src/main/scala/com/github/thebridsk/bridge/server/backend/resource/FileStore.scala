@@ -23,7 +23,7 @@ import java.nio.file.StandardCopyOption
 import java.io.InputStream
 import com.github.thebridsk.bridge.server.backend.resource.MetaData.MetaDataFile
 import java.io.FileOutputStream
-import resource.Using
+import scala.util.Using
 
 object FileStore {
   val log = Logger[FileStore[_, _]]
@@ -299,7 +299,7 @@ class FilePersistentSupport[VId, VType <: VersionedInstance[VType, VType, VId]](
     val f = toFileFromMetadataFile(id,targetFile)
     f.parent.jfile.mkdirs
     val out = new FileOutputStream(f.jfile)
-    Using.bufferedOutputStream(new FileOutputStream(f.jfile)) { out =>
+    Using.resource(new FileOutputStream(f.jfile)) { out =>
       ZipStoreInternal.copy(source,out)
     }
     Result.unit

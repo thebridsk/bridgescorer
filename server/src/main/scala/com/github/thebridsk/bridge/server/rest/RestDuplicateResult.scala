@@ -254,7 +254,7 @@ trait RestDuplicateResult extends HasActorSystem {
       logResult("RestDuplicateResult.postDuplicateResult") {
         pathEnd {
           post {
-            parameter('test.?, 'default.?, 'boards.?, 'movements.?) {
+            parameter("test".?, "default".?, "boards".?, "movements".?) {
               (test, default, boards, movements) =>
                 entity(as[MatchDuplicateResult]) { dup =>
 //                log.warning("Creating duplicate match from "+dup)

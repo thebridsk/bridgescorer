@@ -3,7 +3,7 @@ package com.github.thebridsk.bridge.server.manualtest
 import com.github.thebridsk.utilities.main.Main
 import java.net.NetworkInterface
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 import java.net.Inet4Address
 
 object GetIP extends Main {

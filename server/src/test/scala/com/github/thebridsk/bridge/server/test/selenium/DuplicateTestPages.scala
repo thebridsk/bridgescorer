@@ -14,7 +14,7 @@ import com.github.thebridsk.bridge.server.backend.BridgeService
 import org.scalatest.time.Span
 import org.scalatest.time.Millis
 import com.github.thebridsk.bridge.data.bridge._
-import scala.collection.JavaConversions._
+import scala.jdk.CollectionConverters._
 import scala.util.Failure
 import scala.concurrent._
 import ExecutionContext.Implicits.global
@@ -82,6 +82,8 @@ import com.github.thebridsk.bridge.server.test.util.GraphQLUtils
 import com.github.thebridsk.browserpages.Session
 import com.github.thebridsk.bridge.server.test.pages.duplicate.StatisticsPage
 import com.github.thebridsk.bridge.server.test.pages.LightDarkAddOn
+import scala.util.Using
+import scala.math.Ordering.Double.TotalOrdering
 import com.github.thebridsk.bridge.data.Id
 
 object DuplicateTestPages {
@@ -340,11 +342,11 @@ class DuplicateTestPages extends AnyFlatSpec
     testlog.info(s"Boards are $boards")
 
     dupid = curPage.click(boardset, movement).validate(boards).dupid
-    dupid mustBe 'defined
+    dupid mustBe Symbol("defined")
 
     testlog.info(s"Duplicate id is ${dupid.get}")
 
-    allHands.boardsets mustBe 'defined
+    allHands.boardsets mustBe Symbol("defined")
   }
 
   var rounds: List[Int] = Nil
@@ -1339,11 +1341,11 @@ class DuplicateTestPages extends AnyFlatSpec
     testlog.info(s"Boards are $boards")
 
     dupid2 = curPage.click(boardset, movement).validate(boards).dupid
-    dupid2 mustBe 'defined
+    dupid2 mustBe Symbol("defined")
 
     testlog.info(s"Duplicate id is ${dupid2.get}")
 
-    allHands.boardsets mustBe 'defined
+    allHands.boardsets mustBe Symbol("defined")
   }
 
   it should "try going to latest new match, and succeed" in {
@@ -1448,9 +1450,8 @@ class DuplicateTestPages extends AnyFlatSpec
 
     testlog.info( s"Downloaded export zip: ${f}" )
 
-    import collection.JavaConverters._
-    import resource._
-    for (zip <- managed( new ZipFile(f.jfile) ) ) {
+    import scala.jdk.CollectionConverters._
+    Using.resource( new ZipFile(f.jfile) ) { zip =>
       zip.entries().asScala.map { ze => ze.getName }.toList must contain( s"store/MatchDuplicate.${dupid.get}.yaml" )
     }
 
@@ -1564,7 +1565,7 @@ class DuplicateTestPages extends AnyFlatSpec
     val ss = sug.clickCalculate.validate
 
     eventually {
-      ss.findButton("ToggleDetails") mustBe 'displayed
+      ss.findButton("ToggleDetails") mustBe Symbol("displayed")
     }
 
     val se = SuggestionPage.current

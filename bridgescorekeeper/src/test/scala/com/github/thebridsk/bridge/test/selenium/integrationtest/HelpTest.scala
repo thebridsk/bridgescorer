@@ -10,7 +10,7 @@ import scala.concurrent.Await
 import com.github.thebridsk.bridge.data.bridge._
 import org.scalatest.time.Span
 import org.scalatest.time.Millis
-import scala.collection.convert.ImplicitConversionsToScala._
+import scala.jdk.CollectionConverters._
 import com.github.thebridsk.bridge.data.MatchDuplicate
 import com.github.thebridsk.utilities.logging.Logger
 import java.util.logging.Level
@@ -113,7 +113,7 @@ class HelpTest extends AnyFlatSpec with Matchers with BeforeAndAfterAll {
     val gp = hp.clickHelp
 
     val helppage = eventually {
-      val hh = webDriver.getWindowHandles.flatMap { h =>
+      val hh = webDriver.getWindowHandles.asScala.flatMap { h =>
         try {
           webDriver.switchTo().window(h)
           Some( HelpPage.current.checkPage("introduction.html") )
@@ -135,7 +135,7 @@ class HelpTest extends AnyFlatSpec with Matchers with BeforeAndAfterAll {
     val gp = homepage.clickHelp
 
     val helppage = eventually {
-      val hh = webDriver.getWindowHandles.flatMap { h =>
+      val hh = webDriver.getWindowHandles.asScala.flatMap { h =>
         try {
           webDriver.switchTo().window(h)
           Some( HelpPage.current.checkPage("introduction.html") )
@@ -208,7 +208,7 @@ class HelpTest extends AnyFlatSpec with Matchers with BeforeAndAfterAll {
             eventually {
               currentUrl mustBe target
               val body = findElem[Element]( xpath("//body") )
-              body.attribute("data-url") mustBe 'defined
+              body.attribute("data-url") mustBe Symbol("defined")
             }
           }
           val hrefs = HelpPage.gethrefs.filter( t => followLink(t) ).map( t => (target,t) )

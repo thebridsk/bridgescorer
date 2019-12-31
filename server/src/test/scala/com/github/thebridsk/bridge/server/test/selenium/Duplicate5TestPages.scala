@@ -15,7 +15,7 @@ import com.github.thebridsk.bridge.server.backend.BridgeService
 import org.scalatest.time.Span
 import org.scalatest.time.Millis
 import com.github.thebridsk.bridge.data.bridge._
-import scala.collection.JavaConversions._
+import scala.jdk.CollectionConverters._
 import scala.util.Failure
 import scala.concurrent._
 import ExecutionContext.Implicits.global
@@ -457,11 +457,11 @@ class Duplicate5TestPages
       testlog.info(s"Boards are $boards")
 
       dupid = curPage.click(boardset, movement).validate(boards).dupid
-      dupid mustBe 'defined
+      dupid mustBe Symbol("defined")
 
       testlog.info(s"Duplicate id is ${dupid.get}")
 
-      allHands.boardsets mustBe 'defined
+      allHands.boardsets mustBe Symbol("defined")
     } catch {
       case x: Exception =>
         testlog.severe("Error creating new duplicate match", x)

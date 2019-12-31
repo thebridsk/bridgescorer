@@ -18,6 +18,7 @@ import java.security.DigestOutputStream
 import java.io.FileOutputStream
 import java.io.File
 import java.io.StringWriter
+import scala.util.Using
 
 object HttpUtilsInternal {
 
@@ -175,9 +176,7 @@ trait HttpUtils {
       followRedirects: Boolean = false
   ): ResponseFromHttp = {
 
-    import resource._
-
-    managed(new FileOutputStream(outfile)).acquireAndGet { out =>
+    Using.resource(new FileOutputStream(outfile)) { out =>
       copyFromWeb(url, out, hashalgo, followRedirects)
     }
 

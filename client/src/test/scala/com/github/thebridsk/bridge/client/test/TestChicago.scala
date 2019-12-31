@@ -105,16 +105,16 @@
 ////
 ////    val assertScore = assertTotals("Nancy", "Sam", "Ellen", "Wayne" ) _
 ////    enterHand(4,Spades,NotDoubled,North,Made,4)  // NS score 420
-////    assertScore( 420, 420, 0, 0 )
+////    assertScore( Seq( 420, 420, 0, 0 ))
 ////    click on id("NextHand")
 ////    enterHand(4,Hearts,NotDoubled,East,Made,4)  // EW score 620
-////    assertScore( 420, 420, 620, 620 )
+////    assertScore( Seq( 420, 420, 620, 620 ))
 ////    click on id("NextHand")
 ////    enterHand(5,Diamonds,NotDoubled,South,Made,5)  // NS score 600
-////    assertScore( 1020, 1020, 620, 620 )
+////    assertScore( Seq( 1020, 1020, 620, 620 ))
 ////    click on id("NextHand")
 ////    enterHand(3,Clubs,NotDoubled,West,Made,4)  // EW score 130
-////    assertScore( 1020, 1020, 750, 750 )
+////    assertScore( Seq( 1020, 1020, 750, 750 ))
 ////    click on id("NewRound")
 ////
 ////    click on id("West2")
@@ -124,16 +124,16 @@
 ////
 //////      val assertScore = assertTotals("Nancy", "Sam", "Ellen", "Wayne" ) _
 ////    enterHand(4,Spades,NotDoubled,North,Made,4)  // NS score 420
-////    assertScore( 1440, 1020, 1170, 750 )
+////    assertScore( Seq( 1440, 1020, 1170, 750 ))
 ////    click on id("NextHand")
 ////    enterHand(4,Hearts,NotDoubled,East,Made,4)  // EW score 420
-////    assertScore( 1440, 1440, 1170, 1170 )
+////    assertScore( Seq( 1440, 1440, 1170, 1170 ))
 ////    click on id("NextHand")
 ////    enterHand(5,Diamonds,NotDoubled,South,Made,5)  // NS score 400
-////    assertScore( 1840, 1440, 1570, 1170 )
+////    assertScore( Seq( 1840, 1440, 1570, 1170 ))
 ////    click on id("NextHand")
 ////    enterHand(3,Clubs,NotDoubled,West,Made,4)  // EW score 130
-////    assertScore( 1840, 1570, 1570, 1300 )
+////    assertScore( Seq( 1840, 1570, 1570, 1300 ))
 ////    click on id("NewRound")
 ////
 ////    click on id("PlayerWFirstDealer")
@@ -146,16 +146,16 @@
 ////
 //////      val assertScore = assertTotals("Nancy", "Sam", "Ellen", "Wayne" ) _
 ////    enterHand(4,Spades,NotDoubled,North,Made,4)  // NS score 420
-////    assertScore( 2260, 1570, 1570, 1720 )
+////    assertScore( Seq( 2260, 1570, 1570, 1720 ))
 ////    click on id("NextHand")
 ////    enterHand(4,Hearts,NotDoubled,East,Made,4)  // EW score 420
-////    assertScore( 2260, 1990, 1990, 1720 )
+////    assertScore( Seq( 2260, 1990, 1990, 1720 ))
 ////    click on id("NextHand")
 ////    enterHand(5,Diamonds,NotDoubled,South,Made,5)  // NS score 400
-////    assertScore( 2660, 1990, 1990, 2120 )
+////    assertScore( Seq( 2660, 1990, 1990, 2120 ))
 ////    click on id("NextHand")
 ////    enterHand(3,Clubs,NotDoubled,West,Made,4)  // EW score 130
-////    assertScore( 2660, 2120, 2120, 2120 )
+////    assertScore( Seq( 2660, 2120, 2120, 2120 ))
 ////    click on id("NewRound")
 ////
 ////    click on id("South1")
@@ -170,16 +170,16 @@
 ////
 //////      val assertScore = assertTotals("Nancy", "Sam", "Ellen", "Wayne" ) _
 ////    enterHand(4,Spades,NotDoubled,North,Made,4)  // NS score 420
-////    assertScore( 3080, 2120, 2540, 2120 )
+////    assertScore( Seq( 3080, 2120, 2540, 2120 ))
 ////    click on id("NextHand")
 ////    enterHand(4,Hearts,NotDoubled,East,Made,4)  // EW score 620
-////    assertScore( 3080, 2740, 2540, 2740 )
+////    assertScore( Seq( 3080, 2740, 2540, 2740 ))
 ////    click on id("NextHand")
 ////    enterHand(5,Diamonds,NotDoubled,South,Made,5)  // NS score 600
-////    assertScore( 3680, 2740, 3140, 2740 )
+////    assertScore( Seq( 3680, 2740, 3140, 2740 ))
 ////    click on id("NextHand")
 ////    enterHand(3,Clubs,NotDoubled,West,Made,4)  // EW score 130
-////    assertScore( 3680, 2870, 3140, 2870 )
+////    assertScore( Seq( 3680, 2870, 3140, 2870 ))
 ////    click on id("NewRound")
 ////
 ////    println("MyTest:PageChicagoTest Done")

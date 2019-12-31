@@ -14,7 +14,7 @@ import com.github.thebridsk.bridge.server.backend.BridgeService
 import org.scalatest.time.Span
 import org.scalatest.time.Millis
 import com.github.thebridsk.bridge.data.bridge._
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 import scala.util.Failure
 import scala.concurrent._
 import ExecutionContext.Implicits.global

@@ -57,6 +57,7 @@ import com.github.thebridsk.bridge.data.ImportStoreData
 import play.api.libs.json.Writes
 import com.github.thebridsk.bridge.data.rest.JsonSupport
 import io.swagger.v3.oas.annotations.media.Encoding
+import scala.util.Using
 
 object ImportExport {
   val log = Logger[ImportExport]
@@ -131,7 +132,7 @@ trait ImportExport {
   def xxxexportStore() = {}
   val exportStore = get {
     path("export") {
-      parameter('filter.?) { (filter) =>
+      parameter("filter".?) { (filter) =>
         val filt = filter.map { f =>
           f.split("""\s*,\s*""").toList
         }
@@ -372,8 +373,7 @@ trait ImportExport {
                     .filter(f => f.extension == "log" || f.extension == "csv")
                     .foreach { f =>
                       zip.putNextEntry(new ZipEntry("logs/" + f.name))
-                      import _root_.resource._
-                      for (in <- managed(new FileInputStream(f.jfile))) {
+                      Using.resource(new FileInputStream(f.jfile)) { in =>
                         CollectLogs.copy(in, zip)
                       }
                     }

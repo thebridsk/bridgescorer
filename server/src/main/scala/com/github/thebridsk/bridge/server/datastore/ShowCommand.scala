@@ -140,7 +140,7 @@ Options:""")
   ) { (p1, p2, p3, p4, p5, p6, p7, p8) =>
     val distinct = List(p1, p2, p3, p4, p5, p6, p7, p8).distinct
     val l = distinct.length
-    if (l == 8) Right(Unit)
+    if (l == 8) Right((): Unit)
     else Left(s"Did not specify 8 distinct names: ${distinct}")
   }
 

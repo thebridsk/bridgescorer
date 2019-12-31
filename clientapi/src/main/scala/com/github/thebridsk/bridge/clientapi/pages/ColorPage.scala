@@ -17,6 +17,7 @@ import com.github.thebridsk.materialui.TextColor
 import com.github.thebridsk.bridge.clientapi.routes.BridgeRouter
 import com.github.thebridsk.bridge.clientapi.routes.AppRouter.AppPage
 import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles._
+import scala.math.Ordering.Double.TotalOrdering
 
 /**
  * A skeleton component.

@@ -311,11 +311,11 @@ trait MyService
     }
 
     private def myFilteredSwagger: OpenAPI = {
-      import scala.collection.JavaConverters._
+      import scala.jdk.CollectionConverters._
       val swagger: OpenAPI = reader.read(apiClasses.asJava)
       if (!unwantedDefinitions.isEmpty) {
         val filteredSchemas = asScala(swagger.getComponents.getSchemas)
-          .filterKeys(
+          .view.filterKeys(
             definitionName => !unwantedDefinitions.contains(definitionName)
           )
           .toMap

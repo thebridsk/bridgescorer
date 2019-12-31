@@ -70,7 +70,7 @@ class SSE[T]( urlprefix: String, listener: SECListener[T] ) extends ServerEventC
     )
   }
 
-  private def clearESTimeout() {
+  private def clearESTimeout() = {
     import scala.scalajs.js.timers._
     logger.fine(s"EventSource clearing timeout")
     currentESTimeout.foreach( clearTimeout(_))
@@ -92,7 +92,7 @@ class SSE[T]( urlprefix: String, listener: SECListener[T] ) extends ServerEventC
     )
   }
 
-  private def clearESRestartTimeout() {
+  private def clearESRestartTimeout() = {
     import scala.scalajs.js.timers._
     logger.fine(s"EventSource restart clear timeout")
     currentESRestartTimeout.foreach( clearTimeout(_))

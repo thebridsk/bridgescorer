@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
 import java.util.{List => JList, Map => JMap}
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 import com.github.thebridsk.bridge.data.LoggerConfig
 import java.io.Reader
 import java.io.File

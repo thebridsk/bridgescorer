@@ -583,7 +583,7 @@ private class StartServer {
 
       override def ports = ServerPort(httpPort, httpsPort)
       override lazy val host = if (interface == "0.0.0.0") {
-        import scala.collection.JavaConverters._
+        import scala.jdk.CollectionConverters._
         val x = NetworkInterface.getNetworkInterfaces.asScala
           .filter { x =>
             x.isUp() && !x.isLoopback()

@@ -54,7 +54,7 @@ import SchemaDuplicate.{log => _, _}
 import SchemaRubber.{log => _, _}
 import SchemaChicago.{log => _, _}
 import SchemaService.{log => _, _}
-import resource.Using
+import scala.util.Using
 
 object SchemaMutation {
 
@@ -163,7 +163,7 @@ object ImportAction {
                             s"Error importing images into store: ${dupId} from import store ${bs.id}: ${statusCode} ${msg.msg}"
                           )
                         case Right(data) =>
-                          Using.bufferedInputStream(data) { is =>
+                          Using.resource(data) { is =>
                             ctx.ctx.duplicates.persistent.write(importedId,is,mdf) match {
                               case Left((statusCode, msg)) =>
                                 throw new Exception(

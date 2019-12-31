@@ -10,6 +10,7 @@ import java.util.TimeZone
 import java.text.ParseException
 import java.io.OutputStreamWriter
 import java.io.FileOutputStream
+import scala.util.Using
 
 /**
   * @constructor
@@ -250,10 +251,9 @@ class GitHub(
         val (f, dsha) = e
         if (dsha == sha) {
           val shafile = new File(f.toString() + extSha)
-          import resource._
-          for (shaf <- managed(
-                 new OutputStreamWriter(new FileOutputStream(shafile), "UTF8")
-               )) {
+          Using.resource(
+              new OutputStreamWriter(new FileOutputStream(shafile), "UTF8")
+          ) { shaf =>
             shaf.write(shafilecontent)
             shaf.flush()
           }

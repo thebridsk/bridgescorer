@@ -14,7 +14,7 @@ import com.github.thebridsk.bridge.server.backend.BridgeService
 import org.scalatest.time.Span
 import org.scalatest.time.Millis
 import com.github.thebridsk.bridge.data.bridge._
-import scala.collection.JavaConversions._
+import scala.jdk.CollectionConverters._
 import scala.util.Failure
 import scala.concurrent._
 import ExecutionContext.Implicits.global
@@ -196,11 +196,11 @@ class DuplicateTestPages2 extends AnyFlatSpec
     testlog.info(s"Boards are $boards")
 
     dupid = curPage.click(boardset, movement).validate(boards).dupid
-    dupid mustBe 'defined
+    dupid mustBe Symbol("defined")
 
     testlog.info(s"Duplicate id is ${dupid.get}")
 
-    allHands.boardsets mustBe 'defined
+    allHands.boardsets mustBe Symbol("defined")
   }
 
   var rounds: List[Int] = Nil
@@ -304,7 +304,7 @@ class DuplicateTestPages2 extends AnyFlatSpec
   }
 
   trait Hook {
-    def hook( actor: Actor, msg: Any )
+    def hook( actor: Actor, msg: Any ): Unit
   }
 
   it should "allow entering name of team 3" in {
@@ -415,7 +415,7 @@ class DuplicateTestPages2 extends AnyFlatSpec
                   case _ =>
                 }
               case x: KillOneConnection =>
-                val res = new PrivateMethodExposer(actor.context.system)('printTree)()
+                val res = new PrivateMethodExposer(actor.context.system)( Symbol("printTree"))()
                 testlog.info("KillOneConnection was received, actors in system:\n"+res)
               case _ =>
             }

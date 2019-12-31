@@ -12,6 +12,7 @@ import scala.sys.process.Process
 import java.util.concurrent.atomic.AtomicInteger
 import scala.concurrent.Future
 import scala.reflect.io.File
+import scala.util.Using
 
 object Browser {
 
@@ -24,9 +25,8 @@ object Browser {
       i: Int,
       is: InputStream
   ) = {
-    import resource._
 
-    for (in <- managed(new BufferedReader(new InputStreamReader(is)))) {
+    Using.resource(new BufferedReader(new InputStreamReader(is))) { in =>
       var line: String = null
       while ({ line = in.readLine(); line } != null) {
         log.log(level, s"$prefix($i,$name): $line")

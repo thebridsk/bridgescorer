@@ -16,6 +16,7 @@ import com.github.thebridsk.bridge.data.Id
 import com.github.thebridsk.bridge.data.MatchDuplicate
 import com.github.thebridsk.bridge.data.duplicate.stats.PlayerStats
 import com.github.thebridsk.bridge.data.duplicate.stats.ContractStats
+import scala.util.Using
 
 object DuplicateStatsCommand extends Subcommand("stats") {
   import DataStoreCommands.optionStore
@@ -68,9 +69,7 @@ Options:""")
         override def close() = {} // don't close System.out
       })
 
-    import resource._
-
-    managed(ps).foreach { out =>
+    Using.resource(ps) { out =>
       await(bs.duplicates.readAll()) match {
         case Right(dups) =>
           PlayerStats.statsToCsv(PlayerStats.stats(dups), optionPercent())

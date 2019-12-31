@@ -145,8 +145,7 @@ object DuplicateRouter {
    * @param dupids - a comma separated list of duplicate ids
    */
   case class FinishedScoreboardsView( dupids: String ) extends DuplicatePage {
-    import collection.breakOut
-    def getIds() = dupids.split(",").map(_.trim).filter(_.length()>0) // (breakOut)
+    def getIds() = dupids.split(",").map(_.trim).filter(_.length()>0)
   }
 
   case class DuplicateBoardSetView( dupid: String ) extends DuplicatePage {

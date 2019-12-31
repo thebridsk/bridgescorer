@@ -13,7 +13,7 @@ import com.github.thebridsk.bridge.server.backend.BridgeService
 import org.scalatest.time.Span
 import org.scalatest.time.Millis
 import com.github.thebridsk.bridge.data.bridge._
-import scala.collection.JavaConversions._
+import scala.jdk.CollectionConverters._
 import scala.util.Failure
 import scala.concurrent._
 import ExecutionContext.Implicits.global
@@ -318,7 +318,7 @@ class DuplicateTestFromTestDirectory2 extends AnyFlatSpec
 
         val sum = hp.clickListDuplicateButton.validate
 
-        val dc = hp.getButton("DuplicateCreate",Some("New")) mustBe 'Enabled
+        val dc = hp.getButton("DuplicateCreate",Some("New")) mustBe Symbol("Enabled")
       }
     }
 
@@ -338,7 +338,7 @@ class DuplicateTestFromTestDirectory2 extends AnyFlatSpec
         val boardset = template.boardset
         val movement = template.movement
 
-        newd.getNewButton(boardset, movement) mustBe 'Enabled
+        newd.getNewButton(boardset, movement) mustBe Symbol("Enabled")
 
         tcpSleep(2)
 

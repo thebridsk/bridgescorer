@@ -139,7 +139,7 @@ class TestDuplicateWebsocket extends AnyFlatSpec with ScalatestRouteTest with Ma
   }
 
   trait Hook {
-    def hook( actor: Actor, msg: Any )
+    def hook( actor: Actor, msg: Any ): Unit
   }
 
   behavior of "MyService REST for duplicate"

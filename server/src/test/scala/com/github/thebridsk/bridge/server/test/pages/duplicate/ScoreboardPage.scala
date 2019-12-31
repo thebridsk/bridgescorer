@@ -309,9 +309,9 @@ class ScoreboardPage(
       case DirectorViewType =>
         fail("Must be in Completed view to hit table button")
       case CompletedViewType =>
-        getButton(s"Table_${table}", Some(s"Table ${table}") ) mustBe 'Enabled
+        getButton(s"Table_${table}", Some(s"Table ${table}") ) mustBe Symbol("Enabled")
       case TableViewType(tid,rid) =>
-        getButton("Table", Some(s"Table ${table}")) mustBe 'Enabled
+        getButton("Table", Some(s"Table ${table}")) mustBe Symbol("Enabled")
     }
   }
 

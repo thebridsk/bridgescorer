@@ -3,7 +3,7 @@ package com.github.thebridsk.browserpages
 import org.openqa.selenium.WebElement
 import org.scalactic.source.Position
 import org.openqa.selenium.By
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 import scala.reflect.ClassTag
 import org.scalatest.concurrent.Eventually.PatienceConfig
 import com.github.thebridsk.utilities.logging.Logger

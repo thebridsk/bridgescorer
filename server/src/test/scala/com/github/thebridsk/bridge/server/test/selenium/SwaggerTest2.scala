@@ -12,7 +12,7 @@ import com.github.thebridsk.bridge.server.backend.BridgeServiceInMemory
 import com.github.thebridsk.bridge.server.backend.BridgeService
 import org.scalatest.time.Span
 import org.scalatest.time.Millis
-import scala.collection.convert.ImplicitConversionsToScala._
+import scala.jdk.CollectionConverters._
 import com.github.thebridsk.bridge.data.MatchDuplicate
 import com.github.thebridsk.utilities.logging.Logger
 import java.util.logging.Level

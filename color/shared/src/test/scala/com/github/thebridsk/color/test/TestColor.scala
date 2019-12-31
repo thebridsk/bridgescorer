@@ -2,6 +2,7 @@ package com.github.thebridsk.color.test
 
 import org.scalatest.flatspec.AnyFlatSpec
 import com.github.thebridsk.color._
+import scala.math.Ordering.Double.TotalOrdering
 import org.scalatest.matchers.must.Matchers
 
 class TestColor extends AnyFlatSpec with Matchers  {

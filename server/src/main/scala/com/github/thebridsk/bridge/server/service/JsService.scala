@@ -131,7 +131,7 @@ trait JsService /* extends HttpService */ {
       redirect("/public/index.html", StatusCodes.PermanentRedirect)
     } ~
     pathPrefix("public") {
-      respondWithHeaders(cacheHeaders: _*) {
+      respondWithHeaders(cacheHeaders) {
         pathEndOrSingleSlash {
           redirect("/public/index.html", StatusCodes.PermanentRedirect)
         } ~
@@ -159,7 +159,7 @@ trait JsService /* extends HttpService */ {
       }
     } ~
     pathPrefix("help") {
-      respondWithHeaders(cacheHeaders: _*) {
+      respondWithHeaders(cacheHeaders) {
         helpResources
           .map { helpres =>
             extractUnmatchedPath { ap =>

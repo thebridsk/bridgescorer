@@ -10,7 +10,7 @@ import org.scalatest.concurrent.Eventually
 import java.util.concurrent.TimeUnit
 import org.scalatest.time.Span
 import org.scalatest.time.Millis
-import scala.collection.convert.ImplicitConversionsToScala._
+import scala.jdk.CollectionConverters._
 import org.scalactic.source.Position
 import com.github.thebridsk.browserpages.Session
 

@@ -300,7 +300,7 @@ class MyServiceSpec extends AnyFlatSpec with ScalatestRouteTest with Matchers wi
 
   def getURL( port: Int) = {
     import java.net.NetworkInterface
-    import scala.collection.JavaConverters._
+    import scala.jdk.CollectionConverters._
     import java.net.Inet4Address
 
     val x = NetworkInterface.getNetworkInterfaces.asScala.

@@ -353,7 +353,7 @@ class ReactForJQuery( val component: Element ) {
   }
 
   object click {
-    def on( element: WebElement ) {
+    def on( element: WebElement ) = {
       element.click
     }
   }

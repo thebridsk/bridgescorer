@@ -13,7 +13,7 @@ import com.github.thebridsk.bridge.server.backend.BridgeService
 import org.scalatest.time.Span
 import org.scalatest.time.Millis
 import com.github.thebridsk.bridge.data.bridge._
-import scala.collection.JavaConversions._
+import scala.jdk.CollectionConverters._
 import scala.util.Failure
 import scala.concurrent._
 import ExecutionContext.Implicits.global
@@ -195,7 +195,7 @@ class DuplicateResultTest extends AnyFlatSpec with Matchers with BeforeAndAfterA
     }
 
     dupid = curPage.clickForResultsOnly(boardset, movement).validate.dupid
-    dupid mustBe 'defined
+    dupid mustBe Symbol("defined")
 
     testlog.info(s"Duplicate id is ${dupid.get}")
 

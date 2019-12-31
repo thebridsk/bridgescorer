@@ -2,14 +2,14 @@
 
 object BldVersion {
 
-  lazy val verScalaVersion = "2.12.10"
+  lazy val verScalaVersion = "2.13.1"
   lazy val verScalaMajorMinor = {
     val i = verScalaVersion.indexOf('.')
     val i2 = verScalaVersion.indexOf('.', i+1)
     verScalaVersion.substring(0, i2)
   }
 
-  lazy val verCrossScalaVersions = Seq("2.12.10", verScalaVersion)
+  lazy val verCrossScalaVersions = Seq(verScalaVersion)
 
 // The scala.js version is NOT defined in this file.
 // It is defined in ProjectScala/project/plugins.sbt
@@ -36,7 +36,7 @@ object BldVersion {
 
   lazy val vSwaggerUI = "3.24.3"       // https://www.npmjs.com/package/swagger-ui-dist
   lazy val vScalajsdom = "0.9.8"       // https://github.com/scala-js/scala-js-dom
-  lazy val vScalaJsReact = "1.4.2"     // https://github.com/japgolly/scalajs-react
+  lazy val vScalaJsReact = "1.5.0-RC2"     // https://github.com/japgolly/scalajs-react
 
   lazy val vWebJarsReact = "16.12.0"   // https://www.npmjs.com/package/react
   lazy val vReactWidgets = "4.4.11"    // https://www.npmjs.com/package/react-widgets
@@ -45,7 +45,7 @@ object BldVersion {
   lazy val vReactWidgetsMoment = "4.0.27"  // https://www.npmjs.com/package/react-widgets-moment
   lazy val vMoment = "2.24.0"          // https://www.npmjs.com/package/moment
 
-  lazy val vJqueryFacade = "1.2"     // https://github.com/jducoeur/jquery-facade               no 2.13 support
+//  lazy val vJqueryFacade = "1.2"     // https://github.com/jducoeur/jquery-facade               no 2.13 support
 
   lazy val vJQuery = "3.4.1"         // https://www.npmjs.com/package/jquery
 
@@ -56,7 +56,6 @@ object BldVersion {
   lazy val vJunit = "4.12"           // https://github.com/junit-team/junit4
 
   lazy val vSelenium = "3.141.59"    // https://github.com/SeleniumHQ/selenium
-  lazy val vScalaArm = "2.0"         // https://github.com/jsuereth/scala-arm           need to use native scala 2.13 support
   lazy val vScallop = "3.3.2"        // https://github.com/scallop/scallop
   lazy val vSlf4j = "1.7.30"         // https://github.com/qos-ch/slf4j
   lazy val vPlayJson = "2.8.1"       // https://github.com/playframework/play-json
@@ -87,8 +86,8 @@ object BldVersion {
   lazy val vWebpackDevServer = "3.10.1"   // https://www.npmjs.com/package/webpack-dev-server
   lazy val vWebPackCli = "3.3.10"         // https://www.npmjs.com/package/webpack-cli
 
-  lazy val vSangria = "2.0.0-M1"           // https://github.com/sangria-graphql-org/sangria             https://github.com/sangria-graphql/sangria              no 2.13 support
-  lazy val vSangriaPlayJson = "2.0.0"      // https://github.com/sangria-graphql-org/sangria-play-json   https://github.com/sangria-graphql/sangria-playground   no 2.13 support
+  lazy val vSangria = "2.0.0-M1"           // https://github.com/sangria-graphql-org/sangria             https://github.com/sangria-graphql/sangria
+  lazy val vSangriaPlayJson = "2.0.0"      // https://github.com/sangria-graphql-org/sangria-play-json   https://github.com/sangria-graphql/sangria-playground
 
   lazy val vGraphQL = "14.5.8"              // https://github.com/graphql/graphql-js
   lazy val vGraphiQL = "0.17.5"             // https://github.com/graphql/graphiql

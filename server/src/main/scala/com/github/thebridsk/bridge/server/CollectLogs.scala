@@ -30,6 +30,7 @@ import java.nio.file.Paths
 import com.github.thebridsk.bridge.server.version.VersionServer
 import com.github.thebridsk.bridge.data.version.VersionShared
 import com.github.thebridsk.utilities.version.VersionUtilities
+import scala.util.Using
 
 /**
   * This is the update subcommand.
@@ -110,11 +111,10 @@ The server should NOT be running.
       logfiles: Iterator[File],
       storefiles: Iterator[File]
   ) = {
-    import resource._
 
-    for (zip <- managed(
-           new ZipOutputStream(Files.newOutputStream(Paths.get(out.toString)))
-         )) {
+    Using.resource(
+        new ZipOutputStream(Files.newOutputStream(Paths.get(out.toString)))
+    ) { zip =>
       {
         val nameInZip = "version.txt"
         val ze = new ZipEntry(nameInZip)
@@ -171,8 +171,7 @@ The server should NOT be running.
     val cl = getClass.getClassLoader
     val instream = cl.getResourceAsStream(resource)
     if (instream != null) {
-      import _root_.resource._
-      for (in <- managed(instream)) {
+      Using.resource(instream) { in =>
         val ze = new ZipEntry(nameInZip)
         logger.fine(s"Adding version info => ${ze.getName}")
         zip.putNextEntry(ze)
