@@ -112,8 +112,8 @@ deploy:
     secure: KZFkOMFKXuabrzdsh7O5B5Sq9m2Ymf4M7YLSFFFClWK2s0EhMabAbsKJqylXCqYB+Hhi1nZDv6IHH0QZvuVd2HhlPUJt6/eAsI8/9FvmDKFZQlybEFeg66ogd7N1OAr8IbFAh/bXW1k9t7YwhTQOL6VoOSrm37jrQPshrVfwgw8bgdoWiMO0oTPcpsSN5qNqlLooz0fwpA2gk49KC1ZnLrq2S4F8KOIAAnkMWYdb9hTJRBlkQqIV/r6O65IZT9ZvVxqJNYBnpPUsL558D57AcWiya0QFWPGvz2cO1GcekzYyG7T110HjyiSnJSHciSOlXjro7AS+C9iwo/T9FHmtULB0WIgnyEZrBEc/GyqIZX7PAiBeXXcPhe/ac1IHbnwiomiVcTgOqr8Fc2b3YVNqX+hQKIdWa4+LYeVoVibeusUnqM91Eun6U26ljNLucJ8e1pVuAg5kZw3DWbpX37qDeSL85Epk1JgikijvjWpBt+P+STldsvb/zadPzAfmyEJW5auHgQ4YMniaGIwUd58aQa/wH5ZLPW1wt1ONgTgs/B21Os5FSXRxpf7ZAbX9hvFEdQhHos7/4TeKw1+0z/4F8nKtFocxcg3VRjQ9OGgTCM6LhF1DhQYQcMq+Y7rMcMqpegfGrCbE2v1eYpJWJGMuL0Gxhi0RFUrhPMUtFmU5lak=
   file_glob: true
   file:
-    - bridgescorekeeper/target/scala-2.12/bridgescorekeeper-server-*.jar
-    - bridgescorekeeper/target/scala-2.12/bridgescorekeeper-server-*.jar.sha256
+    - bridgescorekeeper/target/scala-2.13/bridgescorekeeper-server-*.jar
+    - bridgescorekeeper/target/scala-2.13/bridgescorekeeper-server-*.jar.sha256
   on:
     repo: thebridsk/bridgescorer
     tags: true
