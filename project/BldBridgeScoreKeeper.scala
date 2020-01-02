@@ -31,7 +31,7 @@ object BldBridgeScoreKeeper {
   lazy val bridgescorekeeper: Project = project
     .in(file("bridgescorekeeper"))
     .configure( commonSettings, buildInfo("com.github.thebridsk.bridge.bridgescorer.version", "VersionBridgeScorer"))
-    .dependsOn(BldBridgeServer.`bridgescorer-server` % "test->test;compile->compile")
+    .dependsOn(BldBridgeFullServer.`bridgescorer-fullserver` % "test->test;compile->compile")
     .dependsOn(ProjectRef(uri("utilities"), "utilities-jvm"))
     .enablePlugins(WebScalaJSBundlerPlugin)
     .settings(
@@ -55,8 +55,18 @@ object BldBridgeScoreKeeper {
         (run in Compile).toTask(""" --logconsolelevel=ALL start --cache 0s --store ../server/store""").value
       },
 
-      test in assembly := {}, // test in (`bridgescorer-server`, Test),
+      test in assembly := {}, // test in (`bridgescorer-fullserver`, Test),
       test in (Test, assembly) := {}, // { val x = assembly.value },
+      testOptions in Test += Tests.Filter { s =>
+        if (s == "com.github.thebridsk.bridge.test.selenium.integrationtest.TravisIntegrationTests") {
+          println("Using Test:    " + s)
+          true
+        } else {
+          println(s"Ignoring Test: $s, looking for $testToRun");
+          false
+        }
+      },
+
       assemblyJarName in (assembly) := s"${name.value}-server-${version.value
         .replaceAll("[\\/]", "_")}.jar",
       assemblyJarName in (Test, assembly) := s"${name.value}-test-${version.value
@@ -117,7 +127,7 @@ object BldBridgeScoreKeeper {
             "META-INF",
             "resources",
             "webjars",
-            "bridgescorer-server",
+            "bridgescorer-fullserver",
             xs @ _*
             )
             if (!xs.isEmpty && patternFastopt.findFirstIn(xs.last).isDefined) =>
@@ -126,7 +136,7 @@ object BldBridgeScoreKeeper {
             "META-INF",
             "resources",
             "webjars",
-            "bridgescorer-server",
+            "bridgescorer-fullserver",
             ver,
             dir,
             xs @ _*
@@ -156,7 +166,7 @@ object BldBridgeScoreKeeper {
             "bridgescorer",
             version,
             "lib",
-            "bridgescorer-server",
+            "bridgescorer-fullserver",
             rest @ _*
             ) =>
           MergeStrategy.discard
@@ -184,7 +194,7 @@ object BldBridgeScoreKeeper {
             "bridgescorer",
             version,
             "lib",
-            "bridgescorer-server",
+            "bridgescorer-fullserver",
             rest @ _*
             ) =>
           MergeStrategy.discard
@@ -213,7 +223,7 @@ object BldBridgeScoreKeeper {
         val x = assembly.value
         val y = (assembly in Test).value
       },
-      // want to run bridgescorer-server/*:assembly::assembledMappings
+      // want to run bridgescorekeeper/*:assembly::assembledMappings
       webassembly := { val x = (assembledMappings in assembly).value },
       dependencyUpdates := {
         val x = dependencyUpdates.value
@@ -413,12 +423,12 @@ object BldBridgeScoreKeeper {
 
       // the following is a hack.  The assembly caches the jar files,
       // but it doesn't erase old ones.  This means for bridgescorer and
-      // bridgescorer-server we get multiple version in the cache which
+      // bridgescorer-fullserver we get multiple version in the cache which
       // end up in the assembly.jar file.
 
       println(s"Cleaning assembly cache for bridgescorer, cache directory is ${stream.cacheDirectory}")
 
-      val files = ( (stream.cacheDirectory ** "webjars" / "bridgescorer") +++ (stream.cacheDirectory ** "webjars" / "bridgescorer-server")).get
+      val files = ( (stream.cacheDirectory ** "webjars" / "bridgescorekeeper") +++ (stream.cacheDirectory ** "webjars" / "bridgescorer-fullserver")).get
       println(s"Deleting bridgescorer cached files in assembly, directories to delete ${files.mkString("\n  ","\n  ","\n")}")
       files.foreach { f => deleteDir(f) }
 

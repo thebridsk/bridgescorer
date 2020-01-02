@@ -91,61 +91,61 @@ class SwaggerSpec extends AnyFlatSpec with ScalatestRouteTest with Matchers with
     Await.result(Unmarshal(response).to[T].fast.recover[T] { case error => failTest(msg(error)) }, timeout)
   }
 
-  it should "return the /public/apidocs.html" in {
-    Get("/public/apidocs.html") ~> addHeader(`Accept-Encoding`(HttpEncodings.gzip)) ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
-      status mustBe OK
-      header("Content-Encoding") match {
-        case Some(ce) =>
-          ce.value() mustBe "gzip"
-        case None =>
-          fail("Did not get content-encoding header")
-      }
-      val decoded = decodeResponse(response)
-      httpResponseAs[String](decoded) must include regex """(?s)<html[ >].*<script[ >].*swagger-ui.*</script>.*</html>"""
-    }
-  }
+  // it should "return the /public/apidocs.html" in {
+  //   Get("/public/apidocs.html") ~> addHeader(`Accept-Encoding`(HttpEncodings.gzip)) ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
+  //     status mustBe OK
+  //     header("Content-Encoding") match {
+  //       case Some(ce) =>
+  //         ce.value() mustBe "gzip"
+  //       case None =>
+  //         fail("Did not get content-encoding header")
+  //     }
+  //     val decoded = decodeResponse(response)
+  //     httpResponseAs[String](decoded) must include regex """(?s)<html[ >].*<script[ >].*swagger-ui.*</script>.*</html>"""
+  //   }
+  // }
 
-  it should "return the /public/apidocs.html.gz" in {
-    Get("/public/apidocs.html.gz") ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
-      status mustBe OK
-      header("Content-Encoding") match {
-        case Some(ce) =>
-          ce.value() mustBe "gzip"
-        case None =>
-          fail("Did not get content-encoding header")
-      }
-      val decoded = decodeResponse(response)
-      httpResponseAs[String](decoded) must include regex """(?s)<html[ >].*<script[ >].*swagger-ui.*</script>.*</html>"""
-    }
-  }
+  // it should "return the /public/apidocs.html.gz" in {
+  //   Get("/public/apidocs.html.gz") ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
+  //     status mustBe OK
+  //     header("Content-Encoding") match {
+  //       case Some(ce) =>
+  //         ce.value() mustBe "gzip"
+  //       case None =>
+  //         fail("Did not get content-encoding header")
+  //     }
+  //     val decoded = decodeResponse(response)
+  //     httpResponseAs[String](decoded) must include regex """(?s)<html[ >].*<script[ >].*swagger-ui.*</script>.*</html>"""
+  //   }
+  // }
 
-  it should "return the /public/swagger-ui-dist/index.html" in {
-    Get("/public/swagger-ui-dist/index.html") ~> addHeader(`Accept-Encoding`(HttpEncodings.gzip)) ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
-      status mustBe OK
-      header("Content-Encoding") match {
-        case Some(ce) =>
-          ce.value() mustBe "gzip"
-        case None =>
-          fail("Did not get content-encoding header")
-      }
-      val decoded = decodeResponse(response)
-      httpResponseAs[String](decoded) must include regex """(?s)<html[ >].*<script[ >].*swagger-ui.*</script>.*</html>"""
-    }
-  }
+  // it should "return the /public/swagger-ui-dist/index.html" in {
+  //   Get("/public/swagger-ui-dist/index.html") ~> addHeader(`Accept-Encoding`(HttpEncodings.gzip)) ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
+  //     status mustBe OK
+  //     header("Content-Encoding") match {
+  //       case Some(ce) =>
+  //         ce.value() mustBe "gzip"
+  //       case None =>
+  //         fail("Did not get content-encoding header")
+  //     }
+  //     val decoded = decodeResponse(response)
+  //     httpResponseAs[String](decoded) must include regex """(?s)<html[ >].*<script[ >].*swagger-ui.*</script>.*</html>"""
+  //   }
+  // }
 
-  it should "return the /public/swagger-ui-dist/index.html.gz" in {
-    Get("/public/swagger-ui-dist/index.html.gz") ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
-      status mustBe OK
-      header("Content-Encoding") match {
-        case Some(ce) =>
-          ce.value() mustBe "gzip"
-        case None =>
-          fail("Did not get content-encoding header")
-      }
-      val decoded = decodeResponse(response)
-      httpResponseAs[String](decoded) must include regex """(?s)<html[ >].*<script[ >].*swagger-ui.*</script>.*</html>"""
-    }
-  }
+  // it should "return the /public/swagger-ui-dist/index.html.gz" in {
+  //   Get("/public/swagger-ui-dist/index.html.gz") ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
+  //     status mustBe OK
+  //     header("Content-Encoding") match {
+  //       case Some(ce) =>
+  //         ce.value() mustBe "gzip"
+  //       case None =>
+  //         fail("Did not get content-encoding header")
+  //     }
+  //     val decoded = decodeResponse(response)
+  //     httpResponseAs[String](decoded) must include regex """(?s)<html[ >].*<script[ >].*swagger-ui.*</script>.*</html>"""
+  //   }
+  // }
 
   it should "return the swagger.yaml /v1/api-docs" in {
     Get("/v1/api-docs") ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {

@@ -41,7 +41,7 @@ object BldBridgeHelp {
 
       hugosetup := {
         {
-          val testgen = new File( baseDirectory.value + "/../server/target/docs" )
+          val testgen = new File( baseDirectory.value + "/../fullserver/target/docs" )
           val gen = new File( baseDirectory.value, "docs/static/images/gen" )
           println( s"Copy ${testgen} to ${gen}" )
           MyFileUtils.copyDirectory( testgen, gen, "png", 2 )
@@ -61,7 +61,7 @@ object BldBridgeHelp {
         }
       }.value,
 
-      hugosetupWithTest := Def.sequential( test in Test in BldBridgeServer.`bridgescorer-server`, hugosetup ).value,
+      hugosetupWithTest := Def.sequential( test in Test in BldBridgeFullServer.`bridgescorer-fullserver`, hugosetup ).value,
 
       clean := {
         val targ = target.value.toPath

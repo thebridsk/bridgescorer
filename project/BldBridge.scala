@@ -63,6 +63,7 @@ object BldBridge {
       BldBridgeClient.`bridgescorer-client`,
       BldBridgeClientApi.`bridgescorer-clientapi`,
       BldBridgeServer.`bridgescorer-server`,
+      BldBridgeFullServer.`bridgescorer-fullserver`,
       BldBridgeRotation.rotationJVM,
       BldBrowserPages.browserpages,
       BldColor.colorJS,
@@ -91,7 +92,7 @@ object BldBridge {
       aggregate in serverlogs := false,
       aggregate in testClass := false,
 
-      server := { (server in BldBridgeServer.`bridgescorer-server`).value },
+      server := { (server in BldBridgeFullServer.`bridgescorer-fullserver`).value },
       serverhelp := { (serverhelp in BldBridgeScoreKeeper.bridgescorekeeper).value },
       serverlogs := { (serverlogs in BldBridgeScoreKeeper.bridgescorekeeper).value },
     ).
@@ -122,6 +123,7 @@ object BldBridge {
           test in Test in BldBridgeClient.`bridgescorer-client`,
 //          test in Test in BldBridgeClientApi.`bridgescorer-clientapi`,
           test in Test in BldBridgeServer.`bridgescorer-server`,
+          test in Test in BldBridgeFullServer.`bridgescorer-fullserver`,
 //                       hugo in help,
           disttests in Distribution in BldBridgeScoreKeeper.bridgescorekeeper,
         )
@@ -140,6 +142,7 @@ object BldBridge {
           test in Test in BldBridgeClient.`bridgescorer-client`,
 //          test in Test in BldBridgeClientApi.`bridgescorer-clientapi`,
           test in Test in BldBridgeServer.`bridgescorer-server`,
+          test in Test in BldBridgeFullServer.`bridgescorer-fullserver`,
 //                       hugo in help,
           travismoretests in Distribution in BldBridgeScoreKeeper.bridgescorekeeper,
         )
@@ -157,12 +160,13 @@ object BldBridge {
           test in Test in BldBridgeClientCommon.`bridgescorer-clientcommon`,
           test in Test in BldBridgeClient.`bridgescorer-client`,
 //          test in Test in BldBridgeClientApi.`bridgescorer-clientapi`,
-          test in Test in BldBridgeServer.`bridgescorer-server`
+          test in Test in BldBridgeServer.`bridgescorer-server`,
+          test in Test in BldBridgeFullServer.`bridgescorer-fullserver`
         )
         .value,
       travis2 := Def
         .sequential(
-          test in Test in BldBridgeServer.`bridgescorer-server`,
+          test in Test in BldBridgeFullServer.`bridgescorer-fullserver`,
           travismoretests in Distribution in BldBridgeScoreKeeper.bridgescorekeeper,
         )
         .value,
@@ -183,6 +187,7 @@ object BldBridge {
           test in Test in BldBridgeClient.`bridgescorer-client`,
 //          test in Test in BldBridgeClientApi.`bridgescorer-clientapi`,
           test in Test in BldBridgeServer.`bridgescorer-server`,
+          test in Test in BldBridgeFullServer.`bridgescorer-fullserver`,
 //                       hugo in help,
           mypublish in Distribution,
         )
@@ -204,6 +209,7 @@ object BldBridge {
           test in Test in BldBridgeClient.`bridgescorer-client`,
 //          test in Test in BldBridgeClientApi.`bridgescorer-clientapi`,
           test in Test in BldBridgeServer.`bridgescorer-server`,
+          test in Test in BldBridgeFullServer.`bridgescorer-fullserver`,
           test in Test in BldBridgeScoreKeeper.bridgescorekeeper,
         )
         .value,

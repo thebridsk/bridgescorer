@@ -1,0 +1,243 @@
+/* @CHARSET "UTF-8"; */
+
+.chiChicagoListPage {
+  font-size: x-large;
+}
+.chiChicagoListPage table {
+  border-spacing: 0px;
+  font-size: x-large;
+  white-space: nowrap;
+  border: 1px solid var(--color-table-border);
+}
+.chiChicagoListPage table tbody tr:nth-child(2n+1) {
+  background-color: var(--color-table-row-alt);
+}
+.chiChicagoListPage table td:first-child {
+  border: 1px solid var(--color-table-border);
+  padding: 4px 8px 4px 4px;
+  text-align: center;
+}
+.chiChicagoListPage table td {
+  border: 1px solid var(--color-table-border);
+  padding: 4px;
+  text-align: center;
+}
+.chiChicagoListPage table th {
+  border: 1px solid var(--color-table-border);
+  padding: 4px;
+  text-align: center;
+}
+
+.chiChicagoFastSummaryPage {
+  font-size: x-large;
+  display: flex;
+  flex-flow: wrap;
+  align-content: flex-start;
+}
+.chiChicagoFastSummaryPage > div:first-child {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+}
+.chiChicagoFastSummaryPage table {
+  border-spacing: 0px;
+  font-size: x-large;
+  white-space: nowrap;
+  border: 1px solid var(--color-table-border);
+}
+.chiChicagoFastSummaryPage table tbody tr:nth-child(2n+1) {
+  background-color: var(--color-table-row-alt);
+}
+.chiChicagoFastSummaryPage table td:first-child {
+  border: 1px solid var(--color-table-border);
+  padding: 4px 8px 4px 4px;
+  text-align: center;
+}
+.chiChicagoFastSummaryPage table td {
+  border: 1px solid var(--color-table-border);
+  padding: 4px;
+  text-align: center;
+}
+.chiChicagoFastSummaryPage table th {
+  border: 1px solid var(--color-table-border);
+  padding: 4px;
+  text-align: center;
+}
+.chiChicagoFastSummaryPage table > tfoot > tr:first-child > td {
+  border-top: 3px solid var(--color-table-border);
+}
+
+
+.chiChicagoSummaryPage {
+  font-size: x-large;
+  display: flex;
+  flex-flow: wrap;
+  justify-content: center;
+  align-items: flex-start;
+  align-content: flex-start;
+}
+.chiChicagoSummaryPage > div:not(:last-child) {
+  flex: 0 0 auto;
+  padding: 5px;
+}
+.chiChicagoSummaryPage table {
+  border-spacing: 0px;
+  font-size: x-large;
+  white-space: nowrap;
+  border: 1px solid var(--color-table-border);
+}
+.chiChicagoSummaryPage table tbody tr:nth-child(2n+1) {
+  background-color: var(--color-table-row-alt);
+}
+.chiChicagoSummaryPage table td:first-child {
+  border: 1px solid var(--color-table-border);
+  padding: 4px 8px 4px 4px;
+  text-align: center;
+}
+.chiChicagoSummaryPage table td {
+  border: 1px solid var(--color-table-border);
+  padding: 4px;
+  text-align: center;
+}
+.chiChicagoSummaryPage table th {
+  border: 1px solid var(--color-table-border);
+  padding: 4px;
+  text-align: center;
+}
+.chiChicagoSummaryPage table > tfoot > tr:first-child > td {
+  border-top: 3px solid var(--color-table-border);
+}
+
+.chiViewPlayersVeryFirstRound {
+  font-size: x-large;
+}
+
+.chiViewPlayersVeryFirstRound,
+.chiViewPlayersSecondRound,
+.chiViewPlayersThirdRound,
+.chiViewPlayersFourthRound
+{
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: flex-start;
+}
+
+.chiViewPlayersVeryFirstRound > div,
+.chiViewPlayersSecondRound > div,
+.chiViewPlayersThirdRound > div,
+.chiViewPlayersFourthRound > div
+{
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  /*
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  */
+  max-width: 768px;
+  flex: 1 0 auto;
+
+}
+
+.chiViewPlayersVeryFirstRound > div table,
+.chiViewPlayersSecondRound > div table,
+.chiViewPlayersThirdRound > div table,
+.chiViewPlayersFourthRound > div table
+{
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.chiViewPlayersSecondRound {
+  font-size: x-large;
+}
+.chiViewPlayersSecondRound td {
+  text-align: center;
+}
+.chiViewPlayersThirdRound {
+  font-size: x-large;
+}
+.chiViewPlayersThirdRound td {
+  text-align: center;
+}
+
+.chiViewPlayersFourthRound {
+  font-size: x-large;
+}
+.chiViewPlayersFourthRound td {
+  text-align: center;
+}
+
+.chiDivPageFive {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
+}
+.chiDivPageFive > div {
+  flex: 0 0 auto;
+  padding: 5px 10px 5px 10px;
+  margin: 5px;
+}
+.chiDivPageSelectSittingOut {
+  font-size: x-large;
+}
+.chiDivPageSelectSittingOut > p:first-child {
+  font-weight: bold;
+}
+.chiDivPageSelectPairs {
+  font-size: x-large;
+}
+.chiDivPageSelectPairs > p:first-child {
+  font-weight: bold;
+}
+.chiDivPageSelectPairs > div > div {
+  border: 2px solid black;
+  padding: 4px;
+  margin-top: 5px;
+}
+.chiDivPageSelectPos {
+  font-size: x-large;
+}
+.chiDivPageSelectPos > p:first-child {
+  font-weight: bold;
+}
+.chiDivPageSelectPos td {
+  text-align: center;
+  padding: 10px;
+}
+
+.chiDivPageQuintet {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
+  font-size: x-large;
+}
+.chiDivPageQuintet > div {
+  flex: 0 0 auto;
+  padding: 5px 10px 5px 10px;
+  margin: 5px;
+}
+.chiDivPageQuintet > div:nth-child(4) {
+  flex-basis: 100%;
+  text-align: center;
+}
+/*
+.chiViewShowNewPosition {
+}
+ */
+.chiViewShowNewPosition > p:first-child {
+  font-weight: bold;
+}
+.chiViewShowNewPosition td {
+  text-align: center;
+  padding: 10px;
+}
