@@ -67,7 +67,7 @@ jobs:
           npm --version
           # export JVM_OPTS=@travis/jvmopts.txt
           # cat travis/jvmopts.txt
-          export ServerTestToRun=com.github.thebridsk.bridge.server.test.AllUnitTests
+          export ServerTestToRun=com.github.thebridsk.bridge.fullserver.test.AllUnitTests
           export UseFullOpt=true
           travis/cmdWithPeriodicMsg.sh sbt distribution:travis1
     - stage: systemtest
@@ -98,7 +98,7 @@ jobs:
           sudo mv -f /usr/bin/chromium-browser /usr/bin/google-chrome
           export UseBrowser=chromeheadless
           export UseFullOpt=true
-          export ServerTestToRun=com.github.thebridsk.bridge.server.test.selenium.AllSeleniumSuites
+          export ServerTestToRun=com.github.thebridsk.bridge.fullserver.test.selenium.AllSeleniumSuites
           travis/cmdWithPeriodicMsg.sh sbt distribution:travis2
 
 after_failure:
