@@ -32,7 +32,7 @@ import com.github.thebridsk.bridge.server.test.util.ParallelUtils
 import com.github.thebridsk.browserpages.PageBrowser
 import com.github.thebridsk.browserpages.Session
 import com.github.thebridsk.bridge.server.test.selenium.TestServer
-import com.github.thebridsk.bridge.server.test.pages.bridge.HomePage
+import com.github.thebridsk.bridge.fullserver.test.pages.bridge.HomePage
 import com.github.thebridsk.bridge.test.pages.HelpPage
 import scala.annotation.tailrec
 import akka.http.scaladsl.model.StatusCodes

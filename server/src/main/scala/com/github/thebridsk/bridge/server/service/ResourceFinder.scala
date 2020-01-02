@@ -15,7 +15,7 @@ object ResourceFinder {
     *
     *   META-INF/resources/webjars/<component>/<version>[/<suffix>]
     *
-    * @param component bridgescorer or bridgescorer-server
+    * @param component bridgescorer or bridgescorer-fullserver
     * @param version the version string
     * @param suffix a suffix
     * @return an optional FileFinder.  None is return if this is not valid.
@@ -44,7 +44,7 @@ object ResourceFinder {
     *
     *   META-INF/resources/webjars/<component>/<version>[/<suffix>]
     *
-    * @param component bridgescorer or bridgescorer-server
+    * @param component bridgescorer or bridgescorer-fullserver
     * @param version the version string
     * @param suffix a suffix
     * @return an optional FileFinder.  None is return if this is not valid.
@@ -142,24 +142,30 @@ object ResourceFinder {
   }
 
   def htmlResources = {
-    // must look for bridgescorer-server resources also to find client code
+    // must look for bridgescorer-fullserver resources also to find client code
 
-    searchOnVersion("bridgescorer-server", None, validateServerVersion) match {
+    searchOnVersion("bridgescorer-fullserver", None, validateServerVersion) match {
       case Some(f) =>
         logger.info(s"Found client at ${f.baseName}")
         f
       case None =>
         searchOnVersion(
           "bridgescorekeeper",
-          Some("lib/bridgescorer-server"),
+          Some("lib/bridgescorer-fullserver"),
           validateServerVersion
         ) match {
           case Some(f) =>
             logger.info(s"Found client at ${f.baseName}")
             f
           case None =>
-            logger.warning("Unable to find client code")
-            throw new IllegalStateException("Unable to find client code")
+            val curDir = File(".").toCanonical.toAbsolute
+            val dirName = curDir.name
+            logger.warning(s"Unable to find client code, running in ${curDir}")
+            if (dirName == "server") {
+              new FileFinder("com.github.thebridsk.bridge.server", "bridgescorer-fullserver")
+            } else {
+              throw new IllegalStateException("Unable to find client code")
+            }
         }
     }
 

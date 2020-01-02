@@ -119,9 +119,23 @@ object BldDependencies {
 
       "com.typesafe.akka"       %% "akka-http-testkit" % vAkkaHttp % "test" withSources(),
 
-      "org.seleniumhq.selenium" %   "selenium-java" % vSelenium  % "test" withSources(),
-
       ))
+
+  val bridgeScorerFullServerDeps = Def.setting(morejacksons ++ jacksons ++ Seq(
+
+// Test
+    lJunit,
+
+    "com.typesafe.akka"   %% "akka-http-xml"           % vAkkaHttp % "test" withSources(),
+
+    "com.typesafe.akka"       %%  "akka-testkit"  % vAkka      % "test" withSources(),
+    "com.typesafe.akka"       %%  "akka-stream-testkit"  % vAkka      % "test" withSources(),
+
+    "com.typesafe.akka"       %% "akka-http-testkit" % vAkkaHttp % "test" withSources(),
+
+    "org.seleniumhq.selenium" %   "selenium-java" % vSelenium  % "test" withSources(),
+
+    ))
 
   val bridgeScorerSharedDeps = Def.setting(Seq(
       "com.typesafe.play" %%% "play-json" % vPlayJson withSources(),

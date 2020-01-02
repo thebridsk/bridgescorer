@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="icon" type="image/png" href="swagger-ui-dist/favicon-32x32.png" sizes="32x32" />
+    <link rel="icon" type="image/png" href="swagger-ui-dist/favicon-16x16.png" sizes="16x16" />
+    <link rel="shortcut icon" type="image/ico" href="favicon.ico"/>
+    <link href="react-widgets/dist/css/react-widgets.css" rel="stylesheet" />
+    <link rel="stylesheet" type="text/css" href="css/bridge.css" >
+    <link rel="stylesheet" type="text/css" href="css/duplicate.css" >
+    <link rel="stylesheet" type="text/css" href="css/chicago.css" >
+    <link rel="stylesheet" type="text/css" href="css/rubber.css" >
+    <link rel="stylesheet" type="text/css" href="css/hand.css" >
+    <link rel="stylesheet" type="text/css" href="graphql-voyager/dist/voyager.css" >
+    <link rel="stylesheet" type="text/css" href="graphiql/graphiql.css" >
+    <style id="allowSelect">
+    </style>
+    <meta charset="UTF-8" />
+    <meta id="metaViewport" name="viewport" content="width=device-width">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="format-detection" content="date=no">
+    <meta name="format-detection" content="address=no">
+    <meta name="format-detection" content="email=no">
+    <title>The Bridge Score Keeper</title>
+  </head>
+  <body data-theme="dark">
+    <div id="BridgeApp">
+      <div style="position: fixed; top: 0; left: 0; width: 100%;
+                  padding-left: 16px; padding-right: 16px;
+                  display: flex; position: relative; align-items: center;
+                  color: #fff; background-color: rgb(64,128,64);
+                  font-size: x-large;
+                  height: 50px;
+                 " >
+        <h6 style="font-size: 1.25rem;
+                   font-family: Arial, sans-serif;
+                   font-weight: 500;
+                   line-height: 1.6;
+                   letter-spacing: 0.0075em;
+                   text-shadow: 1px 2px 3px #f00;
+            " >Bridge ScoreKeeper</h6>
+        <span style="padding-left: 30px; font-size: 2.5rem">
+            <span class="headerSuitSize" style="color: black; text-shadow: -1px 0px 0 #fff, 1px 0px 0 #fff, 0px 1px 0 #fff, 0px -1px 0 #fff;"> &spades;</span>
+            <span class="headerSuitSize" style="color: red; text-shadow: -1px 0px 0 #fff, 1px 0px 0 #fff, 0px 1px 0 #fff, 0px -1px 0 #fff;"> &hearts;</span>
+            <span class="headerSuitSize" style="color: red; text-shadow: -1px 0px 0 #fff, 1px 0px 0 #fff, 0px 1px 0 #fff, 0px -1px 0 #fff;"> &diams;</span>
+            <span class="headerSuitSize" style="color: black; text-shadow: -1px 0px 0 #fff, 1px 0px 0 #fff, 0px 1px 0 #fff, 0px -1px 0 #fff;"> &clubs;</span>
+        </span>
+      </div>
+      <h1 style="padding-left: 8px">Loading ...</h1>
+    </div>
+    <!-- Include Scala.js compiled code -->
+    <script type="text/javascript" src="bridgescorer-client-fastopt-library.js"></script>
+    <script type="text/javascript" src="bridgescorer-client-fastopt-loader.js"></script>
+    <script type="text/javascript" src="bridgescorer-client-fastopt.js"></script>
+    <div id="ForDefaultStyles" style="visibility:hidden; position: fixed; left: 0px; top: 0px;">
+    </div>
+    <audio id="audioPlayer" preload="auto">
+      Your browser does not support the
+      <code>audio</code>
+      element.
+      <source src="beep.wav" type="audio/wav">
+    </audio>
+
+  </body>
+</html>
