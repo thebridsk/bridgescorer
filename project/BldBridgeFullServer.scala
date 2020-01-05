@@ -42,22 +42,22 @@ object BldBridgeFullServer {
       mainClass in (Compile, packageBin) := Some("com.github.thebridsk.bridge.server.Server"),
       Compile / run / fork := true,
       server := {
-        (run in Compile).toTask(""" --logfile "logs/server.sbt.%d.%u.log" start --cache 0s --store store""").value
+        (run in Compile).toTask(""" --logfile "../server/logs/server.sbt.%d.%u.log" start --cache 0s --store ../server/store""").value
       },
       serverssl := {
-        (run in Compile).toTask(""" --logfile "logs/server.sbt.%d.%u.log" start --cache 0s --store store --certificate key/example.com.p12 --certpassword abcdef --https 8443""").value
+        (run in Compile).toTask(""" --logfile "../server/logs/server.sbt.%d.%u.log" start --cache 0s --store ../server/store --certificate key/example.com.p12 --certpassword abcdef --https 8443""").value
       },
       serverhttps2 in Test := {
-        (runMain in Test).toTask(""" com.github.thebridsk.bridge.server.Server --logfile "logs/server.sbt.%d.%u.log" start --cache 0s --store store --certificate key/example.com.p12 --certpassword abcdef --https 8443 --http2""").value
+        (runMain in Test).toTask(""" com.github.thebridsk.bridge.server.Server --logfile "../server/logs/server.sbt.%d.%u.log" start --cache 0s --store ../server/store --certificate key/example.com.p12 --certpassword abcdef --https 8443 --http2""").value
       },
       serverhttp2 in Test := {
-        (runMain in Test).toTask(""" com.github.thebridsk.bridge.server.Server --logfile "logs/server.sbt.%d.%u.log" start --cache 0s --store store --http2""").value
+        (runMain in Test).toTask(""" com.github.thebridsk.bridge.server.Server --logfile "../server/logs/server.sbt.%d.%u.log" start --cache 0s --store ../server/store --http2""").value
       },
       servertemp := {
-        (run in Compile).toTask(""" --logfile "logs/server.sbt.%d.%u.log" start --cache 0s --store temp""").value
+        (run in Compile).toTask(""" --logfile "../server/logs/server.sbt.%d.%u.log" start --cache 0s --store ../server/temp""").value
       },
       serverlogs := {
-        (run in Compile).toTask(""" --logconsolelevel=ALL start --cache 0s --store store""").value
+        (run in Compile).toTask(""" --logconsolelevel=ALL start --cache 0s --store ../server/store""").value
       },
       // shebang the jar file.  7z and jar will no longer see it as a valid zip file.
       //    assemblyOption in assembly := (assemblyOption in assembly).value.copy(prependShellScript = Some(defaultShellScript)),
