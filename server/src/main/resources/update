@@ -47,11 +47,15 @@ fi
 
 files=(`ls -1f *.jar 2>/dev/null`)
 
-if [[ "${files[0]}" == "$oldjar" ]] ; then
-  newjar=${files[1]}
-else
-  newjar=${files[0]}
-fi
+determineNewJar() {
+  if [[ "$1" == "$oldjar" ]] ; then
+    newjar=$2
+  else
+    newjar=$1
+  fi
+}
+
+determineNewJar ${files}
 
 echo New bridgescorer jar file is $newjar
 
