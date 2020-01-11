@@ -38,7 +38,8 @@ object BldVersion {
   lazy val vScalajsdom = "0.9.8"       // https://github.com/scala-js/scala-js-dom
   lazy val vScalaJsReact = "1.5.0-RC2"     // https://github.com/japgolly/scalajs-react
 
-  lazy val vWebJarsReact = "16.12.0"   // https://www.npmjs.com/package/react
+  // version 16.12.0 cause react-widgets combobox to not select from dropdown list
+  lazy val vWebJarsReact = "16.11.0"   // https://www.npmjs.com/package/react
   lazy val vReactWidgets = "4.4.11"    // https://www.npmjs.com/package/react-widgets
   lazy val vWebJarsFlux = "3.1.3"      // https://www.npmjs.com/package/flux
   lazy val vCldr = "4.7.0"             // https://www.npmjs.com/package/cldr
