@@ -8,9 +8,12 @@ import japgolly.scalajs.react.vdom.TagMod
 import com.github.thebridsk.bridge.clientcommon.react.Utils.ExtendReactEventFromInput
 import com.github.thebridsk.bridge.clientcommon.pages.RootStyles
 import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles
+import com.github.thebridsk.utilities.logging.Logger
 
 
 object ComboboxOrInput {
+
+  val log = Logger["bridge.ComboboxOrInput"]
 
   var noCombobox: Boolean = false    // used by TestChicago to not use ComboBox, causes exception in phantomjs
 
@@ -29,7 +32,11 @@ object ComboboxOrInput {
             containerClassName: String = null
   ): TagMod = {
 
-    def comboboxCB( data: js.Any ): Unit = callback(data.toString()).runNow()
+    def comboboxCB( data: js.Any ): Unit = {
+      val s = data.toString()
+      log.fine(s"ComboboxOrInput.comboboxCB data=$s")
+      callback(s).runNow()
+    }
 
     def inputCB( data: ReactEventFromInput): Callback = data.inputText( text => callback(text) )
 

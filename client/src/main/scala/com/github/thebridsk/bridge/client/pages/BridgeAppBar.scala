@@ -219,7 +219,8 @@ object BridgeAppBarInternal {
       val doc = document
       logger.fine(s"browser fullscreenEnabled: ${doc.fullscreenEnabled}")
       if (isFullscreenEnabledI) {
-        val r = doc.fullscreenElement != null
+        val fe = doc.fullscreenElement
+        val r = !js.isUndefined(fe) && fe != null
         logger.fine(s"browser isfullscreen: $r")
         if (r) {
           val elem = doc.fullscreenElement

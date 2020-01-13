@@ -240,7 +240,7 @@ object PageDuplicateResultEditInternal {
     def setPlayed( value: Date ) = {
       logger.fine(s"""Setting date to ${value}: ${value.getTime()}""")
       scope.modState { s =>
-        val t = if (value == null) 0 else value.getTime()
+        val t = if (js.isUndefined(value) || value == null) 0 else value.getTime()
         val ns = s.copy( played=t)
         logger.fine(s"""New date in state is ${ns.played}""")
         ns
