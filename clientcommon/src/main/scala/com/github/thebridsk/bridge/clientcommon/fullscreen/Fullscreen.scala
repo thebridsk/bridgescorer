@@ -71,7 +71,10 @@ object Implicits {
       else js.Promise.reject("fullscreen not enabled")
     }
 
-    def isFullscreen = fullscreenElement != null
+    def isFullscreen = {
+      val fe = fullscreenElement
+      !js.isUndefined(fe) && fe != null
+    }
   }
 
   implicit class ElementFullscreenWrapper( val element: Element ) extends AnyVal {

@@ -25,6 +25,7 @@ import com.github.thebridsk.bridge.clientcommon.react.HelpButton
 import com.github.thebridsk.materialui.MuiTypography
 import com.github.thebridsk.materialui.TextVariant
 import com.github.thebridsk.materialui.TextColor
+import scala.scalajs.js.JSON
 
 object ViewPlayersVeryFirstRound {
   import PagePlayers._
@@ -35,12 +36,12 @@ object ViewPlayersVeryFirstRound {
   class Backend(scope: BackendScope[Props, PlayerState]) {
     // PlayerState.dealer contains "north", "south", "east", "west"
 
-    def setNorth( text: String ): Callback = scope.modState( ps => {traceSetname("setNorth",ps.copy(north=text))})
-    def setSouth( text: String ): Callback = scope.modState( ps => {traceSetname("setSouth",ps.copy(south=text))})
-    def setEast( text: String ): Callback =  scope.modState( ps => {traceSetname("setEast",ps.copy(east=text))})
-    def setWest( text: String ): Callback =  scope.modState( ps => {traceSetname("setWest",ps.copy(west=text))})
+    def setNorth( text: String ) = scope.modState( ps => {traceSetname("setNorth",ps.copy(north=text))})
+    def setSouth( text: String ) = scope.modState( ps => {traceSetname("setSouth",ps.copy(south=text))})
+    def setEast( text: String ) =  scope.modState( ps => {traceSetname("setEast",ps.copy(east=text))})
+    def setWest( text: String ) =  scope.modState( ps => {traceSetname("setWest",ps.copy(west=text))})
 
-    def setExtra( text: String ): Callback = scope.modState( ps => {traceSetname("setExtra",ps.copy(extra=Some(text)))})
+    def setExtra( text: String ) = scope.modState( ps => {traceSetname("setExtra",ps.copy(extra=Some(text)))})
 
     def traceSetname( pos: String, state: PlayerState ): PlayerState = {
       logger.fine("ViewPlayersVeryFirstRound: Setting player "+pos+": "+state)
@@ -74,9 +75,18 @@ object ViewPlayersVeryFirstRound {
         <.div(
           getButton(playerPosition,name,tabDealer),
           <.div(
-            ComboboxOrInput( cb, noNull(name), names, "startsWith", tabInput, playerPos,
-                             msgEmptyList="No suggested names", msgEmptyFilter="No names matched",
-                             id=s"Combo_${playerPos}" ),
+            ComboboxOrInput(
+              callback = cb,
+              defaultvalue = noNull(name),
+              data = names,
+              filter = "startsWith",
+              tabIndex = tabInput,
+              name = playerPos,
+              msgEmptyList="No suggested names",
+              msgEmptyFilter="No names matched",
+              busy = busy,
+              id=s"Combo_${playerPos}"
+            ),
             BaseStyles.highlight( requiredName = !playerValid(name) )
           )
         )
@@ -85,6 +95,12 @@ object ViewPlayersVeryFirstRound {
       def isExtraValid() = {
         state.extra.getOrElse("").length() > 0
       }
+
+      def logClick( event: ReactMouseEvent ) = event.extract( e => js.Object.assign(js.Object(),e).asInstanceOf[ReactMouseEvent])( e => Callback {
+        logger.fine(s"TD clicked event=${e.asInstanceOf[js.Dictionary[js.Any]].map { case (k,v) =>
+          (k, v.toString)
+        } }")
+      })
 
       <.div(
         ChicagoPageBridgeAppBar(
@@ -105,27 +121,38 @@ object ViewPlayersVeryFirstRound {
             <.table(
               <.tbody(
                 <.tr(
-                  !state.chicago5 ?= baseStyles.collapse,
-                  <.td( ^.colSpan := 2, tableStyles.tableCellWidth2Of7),
-                  <.td( ^.colSpan := 3, tableStyles.tableCellWidth3Of7),
-                  <.td( ^.colSpan := 2, tableStyles.tableCellWidth2Of7,
-                    "Sitting out",
-                    <.br,
-                    ComboboxOrInput( setExtra, noNull(state.extra.getOrElse("")), names, "startsWith", 9, "Extra",
-                                                 msgEmptyList="No suggested names", msgEmptyFilter="No names matched"),
-                    <.br,
-                    CheckBox( "Quintet", "Fast Rotation", state.quintet, toggleQuintet ),
-                    if (state.quintet) {
-                      Seq[TagMod](
-                        <.br,
-                        RadioButton( "Simple", "Simple Rotation", state.simpleRotation, setSimpleRotation(true) ),
-                        <.br,
-                        RadioButton( "Fair", "Fair Rotation", !state.simpleRotation, setSimpleRotation(false) )
-                      ).toTagMod
-                    } else {
-                      EmptyVdom
-                    },
-                    BaseStyles.highlight( required = !isExtraValid() )
+                  // !state.chicago5 ?= baseStyles.collapse,
+                  state.chicago5 ?= TagMod(
+                    <.td( ^.colSpan := 2, tableStyles.tableCellWidth2Of7),
+                    <.td( ^.colSpan := 3, tableStyles.tableCellWidth3Of7),
+                    <.td( ^.colSpan := 2, tableStyles.tableCellWidth2Of7,
+                      "Sitting out",
+                      <.br,
+                      ComboboxOrInput(
+                        callback = setExtra,
+                        defaultvalue = noNull(state.extra.getOrElse("")),
+                        data = names,
+                        filter = "startsWith",
+                        tabIndex = 9,
+                        name = "Extra",
+                        msgEmptyList="No suggested names",
+                        msgEmptyFilter="No names matched",
+                        busy = busy
+                      ),
+                      <.br,
+                      CheckBox( "Quintet", "Fast Rotation", state.quintet, toggleQuintet ),
+                      if (state.quintet) {
+                        Seq[TagMod](
+                          <.br,
+                          RadioButton( "Simple", "Simple Rotation", state.simpleRotation, setSimpleRotation(true) ),
+                          <.br,
+                          RadioButton( "Fair", "Fair Rotation", !state.simpleRotation, setSimpleRotation(false) )
+                        ).toTagMod
+                      } else {
+                        EmptyVdom
+                      },
+                      BaseStyles.highlight( required = !isExtraValid() )
+                    )
                   )
                 ),
                 <.tr(
@@ -139,7 +166,7 @@ object ViewPlayersVeryFirstRound {
                   <.td( ^.colSpan := 3, tableStyles.tableCellWidth3Of7, putName("West", West, state.west, false, setWest, 3, 7))
                 ),
                 <.tr(
-                  <.td( ^.colSpan := 2, tableStyles.tableCellWidth2Of7),
+                  <.td( ^.colSpan := 2, tableStyles.tableCellWidth2Of7, ^.onClick ==> logClick),
                   <.td( ^.colSpan := 3, tableStyles.tableCellWidth3Of7, putName("North", North, state.north, false, setNorth, 4, 8)),
                   <.td( ^.colSpan := 2, tableStyles.tableCellWidth2Of7)
                 )
