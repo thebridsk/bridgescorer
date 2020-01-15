@@ -24,6 +24,7 @@ import com.github.thebridsk.bridge.data.bridge.East
 import com.github.thebridsk.bridge.data.bridge.West
 import com.github.thebridsk.bridge.data.util.Strings
 import com.github.thebridsk.bridge.fullserver.test.pages.bridge.HomePage
+import com.github.thebridsk.bridge.fullserver.test.pages.bridge.ErrorMsgDiv
 
 object TableSelectNamesPage {
 
@@ -73,9 +74,9 @@ class TableSelectNamesPage( dupid: String,
                                  targetBoard: Option[String],
                                  scorekeeper: PlayerPosition
                                )( implicit
-                                   webDriver: WebDriver,
+                                   val webDriver: WebDriver,
                                    pageCreated: SourcePosition
-                               ) extends Page[TableSelectNamesPage] {
+                               ) extends Page[TableSelectNamesPage] with ErrorMsgDiv[TableSelectNamesPage] {
   import TableSelectNamesPage._
 
   def validate(implicit patienceConfig: PatienceConfig, pos: Position) = logMethod(s"${pos.line} ${getClass.getSimpleName}.validate") { eventually {

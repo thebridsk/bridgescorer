@@ -19,6 +19,7 @@ import com.github.thebridsk.bridge.data.bridge.PlayerPosition
 import com.github.thebridsk.browserpages.GenericPage
 import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.TablePage.EnterNames
 import com.github.thebridsk.bridge.data.bridge._
+import com.github.thebridsk.bridge.fullserver.test.pages.bridge.ErrorMsgDiv
 
 object TableEnterScorekeeperPage {
 
@@ -84,9 +85,9 @@ class TableEnterScorekeeperPage( dupid: String,
                                  targetBoard: Option[String],
                                  scorekeeper: Option[PlayerPosition] = None
                                )( implicit
-                                   webDriver: WebDriver,
+                                   val webDriver: WebDriver,
                                    pageCreated: SourcePosition
-                               ) extends Page[TableEnterScorekeeperPage] {
+                               ) extends Page[TableEnterScorekeeperPage] with ErrorMsgDiv[TableEnterScorekeeperPage] {
   import TableEnterScorekeeperPage._
 
   def validate(implicit patienceConfig: PatienceConfig, pos: Position) = logMethod(s"${pos.line} ${getClass.getSimpleName}.validate") { eventually {

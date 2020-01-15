@@ -44,6 +44,7 @@ import com.github.thebridsk.bridge.fullserver.test.pages.LightDarkAddOn
 import scala.util.Using
 import scala.math.Ordering.Double.TotalOrdering
 import com.github.thebridsk.bridge.server.test.selenium.TestServer
+import com.github.thebridsk.bridge.fullserver.test.pages.bridge.PageWithErrorMsg
 
 /**
  * @author werewolf
@@ -198,6 +199,7 @@ class RubberTest extends AnyFlatSpec
     import Session1._
 
     eventually( find(xpath("//h6[3]/span")).text mustBe "Enter players and identify first dealer" )
+    (new PageWithErrorMsg).checkErrorMsg("Please enter missing player name(s)")
   }
 
   val screenshotDir = "target/screenshots/RubberTest"
@@ -249,14 +251,25 @@ class RubberTest extends AnyFlatSpec
     textField("North").value = "Nancy"
     textField("South").value = "Sam"
     textField("East").value = "Ellen"
+    textField("West").value = "Ellen"
+    tcpSleep(1)
+    pressKeys(Keys.ESCAPE)
+    tcpSleep(1)
+
+    (new PageWithErrorMsg).checkErrorMsg("Please fix duplicate player names")
+
     textField("West").value = "Wayne"
     tcpSleep(1)
     pressKeys(Keys.ESCAPE)
     tcpSleep(1)
 
+    (new PageWithErrorMsg).checkErrorMsg("Please select a dealer")
+
     eventually( find(id("Ok")) must not be Symbol("Enabled") )
 
     eventuallyFindAndClickButton("PlayerNFirstDealer")
+
+    (new PageWithErrorMsg).checkErrorMsg("")
 
     eventually( find(id("Ok")) mustBe Symbol("Enabled") )
 

@@ -397,18 +397,26 @@ class DuplicateTestPages extends AnyFlatSpec
       CodeBlock {
         import SessionTable1._
         var sk = TablePage.current(EnterNames).validate(rounds).clickBoard(1,1).asInstanceOf[TableEnterScorekeeperPage].validate
+        sk.checkErrorMsg("Please enter scorekeeper's name")
         sk.isOKEnabled mustBe false
         sk.takeScreenshot(docsScreenshotDir, "TableEnterNamesSK")
-        sk = sk.enterScorekeeper(team1original.one).esc.clickPos(North)
+        sk = sk.enterScorekeeper(team1original.one).esc
+        sk.checkErrorMsg("Please select scorekeeper's position")
+        sk = sk.clickPos(North)
+        sk.checkErrorMsg("")
         sk.isOKEnabled mustBe true
         sk.findSelectedPos mustBe Some(North)
         var en = sk.clickOK.validate
         en.isOKEnabled mustBe false
+        en.checkErrorMsg("Please enter missing player name(s)")
         en.takeScreenshot(docsScreenshotDir, "TableEnterNamesOthers")
-        en = en.enterPlayer(South, team1original.two).enterPlayer(East, team2.one)
+        en = en.enterPlayer(South, team1original.two).enterPlayer(East, team2.two)
         en.isOKEnabled mustBe false
         en = en.enterPlayer(West, team2.two).esc
+        en.checkErrorMsg("Please fix duplicate player names")
+        en = en.enterPlayer(East, team2.one).esc
         en.isOKEnabled mustBe true
+        en.checkErrorMsg("")
         val hand = en.clickOK.asInstanceOf[HandPage].validate
       },
       CodeBlock {

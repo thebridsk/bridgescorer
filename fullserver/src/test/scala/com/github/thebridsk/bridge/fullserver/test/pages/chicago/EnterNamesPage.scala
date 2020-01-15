@@ -16,6 +16,7 @@ import java.net.URL
 import com.github.thebridsk.bridge.data.bridge.PlayerPosition
 import com.github.thebridsk.browserpages.GenericPage
 import com.github.thebridsk.browserpages.Page.AnyPage
+import com.github.thebridsk.bridge.fullserver.test.pages.bridge.ErrorMsgDiv
 
 object EnterNamesPage {
 
@@ -106,9 +107,9 @@ object EnterNamesPage {
 class EnterNamesPage( val chiid: String,
                       val roundid: Int,
                     )( implicit
-                         webDriver: WebDriver,
+                         val webDriver: WebDriver,
                          pageCreated: SourcePosition
-                    ) extends Page[EnterNamesPage] {
+                    ) extends Page[EnterNamesPage] with ErrorMsgDiv[EnterNamesPage] {
   import EnterNamesPage._
   import com.github.thebridsk.bridge.data.bridge._
 
