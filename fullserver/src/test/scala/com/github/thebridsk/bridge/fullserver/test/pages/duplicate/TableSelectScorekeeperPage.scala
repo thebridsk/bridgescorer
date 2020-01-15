@@ -192,7 +192,7 @@ class TableSelectScorekeeperPage( dupid: String,
     val skname = scorekeeper.player(north, south, east, west)
 
     getSelectedScorekeeper mustBe None
-    if (checkErrMsg) checkErrorMsg("Please enter scorekeeper's name")
+    if (checkErrMsg) checkErrorMsg("Please select scorekeeper")
     selectScorekeeper(skname.trim)
     getSelectedScorekeeper mustBe Some(skname.trim)
     getNames must contain allOf (north.trim,south.trim,east.trim,west.trim)

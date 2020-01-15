@@ -750,23 +750,23 @@ object PageTableTeamsInternal {
 
     def renderScorekeeper( props: Props, state: State ): (Callback, Boolean, TagMod, Option[String], Option[String]) = {
       val valid = state.scorekeeperName.isDefined && state.scorekeeperPosition.isDefined
-      val errormsg = if (valid) None
-                     else if (state.scorekeeperName.isEmpty) Some("Please enter scorekeeper's name")
-                     else if (state.scorekeeperPosition.isEmpty) Some("Please select scorekeeper's position")
-                     else Some("Unknown error")
-      val (div, helppage) = {
-        if (state.names.isAllValid) renderSelectScorekeeper(props, state)
-        else renderEnterScorekeeper(props, state)
+      val (div, helppage, errormsg) = {
+        if (state.names.isAllValid) renderSelectScorekeeper(props, state, valid)
+        else renderEnterScorekeeper(props, state, valid)
       }
 
       ( setScorekeeper, valid, div, helppage, errormsg)
     }
 
-    def renderEnterScorekeeper( props: Props, state: State ): (TagMod, Option[String]) = {
+    def renderEnterScorekeeper( props: Props, state: State, valid: Boolean ): (TagMod, Option[String], Option[String]) = {
       val names = state.getSuggestions
       val busy = state.gettingNames
       val playername = state.scorekeeperName.getOrElse("")
       val np = noNull(playername)
+      val errormsg = if (valid) None
+                     else if (state.scorekeeperName.isEmpty) Some("Please enter scorekeeper's name")
+                     else if (state.scorekeeperPosition.isEmpty) Some("Please select scorekeeper's position")
+                     else Some("Unknown error")
       ( <.div(
           <.h1( "Enter scorekeeper:" ),
           <.div(
@@ -792,16 +792,21 @@ object PageTableTeamsInternal {
                   )
           }).toTagMod
         ),
-        Some("../help/duplicate/enterscorekeepername.html")
+        Some("../help/duplicate/enterscorekeepername.html"),
+        errormsg
       )
 
     }
 
-    def renderSelectScorekeeper( props: Props, state: State ): (TagMod, Option[String]) = {
+    def renderSelectScorekeeper( props: Props, state: State, valid: Boolean ): (TagMod, Option[String], Option[String]) = {
       val extraWidth = HProperties.defaultHandButtonBorderRadius+
                        HProperties.defaultHandButtonPaddingBorder
       val width = s"${Pixels.maxLength( state.players.players(): _* )+extraWidth}px"
       val bwidth: TagMod = ^.width := width
+      val errormsg = if (valid) None
+                     else if (state.scorekeeperName.isEmpty) Some("Please select scorekeeper")
+                     else if (state.scorekeeperPosition.isEmpty) Some("Please select scorekeeper's position")
+                     else Some("Unknown error")
       ( <.div(
           <.h1( "Enter scorekeeper:" ),
           state.players.sortedPlayers().map( p => {
@@ -843,7 +848,8 @@ object PageTableTeamsInternal {
               EmptyVdom
           }
         ),
-        Some("../help/duplicate/selectscorekeepername.html")
+        Some("../help/duplicate/selectscorekeepername.html"),
+        errormsg
       )
     }
 
