@@ -84,20 +84,33 @@ object PageTableTeamsInternal {
     def isNSMissing = !playerValid(ns1) || !playerValid(ns2)
     def isEWMissing = !playerValid(ew1) || !playerValid(ew2)
 
-    def isAllValid = !isNSMissing && !isEWMissing
+    def isAllValid = !isNSMissing && !isEWMissing && areAllPlayersUnique()
     def isMissingOneTeam = isNSMissing != isEWMissing
     def isMissingAll = isNSMissing && isEWMissing
 
     /**
-     * Set a player only if it is not already set
+     * Set a player
      */
     def setPlayer( pos: PlayerPosition, name: String ) =
       pos match {
-        case North => if (playerValid(ns1)) this else copy( ns1 = name )
-        case South => if (playerValid(ns2)) this else copy( ns2 = name )
-        case East => if (playerValid(ew1)) this else copy( ew1 = name )
-        case West => if (playerValid(ew2)) this else copy( ew2 = name )
+        case North => copy( ns1 = name )
+        case South => copy( ns2 = name )
+        case East => copy( ew1 = name )
+        case West => copy( ew2 = name )
       }
+
+    def areAllPlayersUnique() = {
+      val p =
+        ns1.trim ::
+        ns2.trim ::
+        ew1.trim ::
+        ew2.trim ::
+        Nil
+      val before = p.length
+      val after = p.distinct.length
+      before == after
+    }
+
 
     def tableManeuvers = TableManeuvers(ns1,ns2,ew1,ew2)
   }
@@ -651,7 +664,7 @@ object PageTableTeamsInternal {
     }
 
     def renderInput( props: Props, state: State, score: MatchDuplicateScore, round: MatchDuplicateScore.Round ) = {
-      val ( okCB, valid, div, helppage ) = {
+      val ( okCB, valid, div, helppage, errormsg ) = {
         if (state.isEnteringMissingNames) renderEnterMissing(props, state)
         else if (state.isSelectingScorekeeper) renderScorekeeper(props, state)
         else renderNames(props, state, score, round)
@@ -665,8 +678,13 @@ object PageTableTeamsInternal {
               <.div(
                 div,
                 <.div(
+                  ^.id:="ErrorMsg",
+                  <.p(
+                    errormsg.whenDefined
+                  )
+                ),
+                <.div(
                     baseStyles.divFooter,
-                    ^.paddingTop:=40.px,
                     <.div(
                         baseStyles.divFooterLeft,
                         Button( baseStyles.footerButton,
@@ -694,7 +712,7 @@ object PageTableTeamsInternal {
 
     }
 
-    def renderEnterMissing( props: Props, state: State ): (Callback, Boolean, TagMod, Option[String]) = {
+    def renderEnterMissing( props: Props, state: State ): (Callback, Boolean, TagMod, Option[String], Option[String]) = {
       val ( ns, ew ) = (
                          (North,South,state.names.ns1,state.names.ns2,state.nsTeam),
                          (East,West,state.names.ew1,state.names.ew2,state.ewTeam)
@@ -706,7 +724,12 @@ object PageTableTeamsInternal {
           (ew,ns)
         }
       }
-      val valid = playerValid(mname1) && playerValid(mname2)
+      val valid = playerValid(mname1) && playerValid(mname2) && state.names.areAllPlayersUnique()
+
+      val errormsg = if (valid) None
+                     else if (!playerValid(mname1) || !playerValid(mname2)) Some("Please enter missing player name(s)")
+                     else if (!state.names.areAllPlayersUnique()) Some("Please fix duplicate player names")
+                     else Some("Unknown error")
 
       val div =
           <.div(
@@ -722,17 +745,21 @@ object PageTableTeamsInternal {
                   s"Playing against team ${Id.teamIdToTeamNumber(vteamid)}, ${vname1} ${vname2}"
               )
           )
-      ( setMissingNames, valid, div, None)
+      ( setMissingNames, valid, div, None, errormsg )
     }
 
-    def renderScorekeeper( props: Props, state: State ): (Callback, Boolean, TagMod, Option[String]) = {
+    def renderScorekeeper( props: Props, state: State ): (Callback, Boolean, TagMod, Option[String], Option[String]) = {
       val valid = state.scorekeeperName.isDefined && state.scorekeeperPosition.isDefined
+      val errormsg = if (valid) None
+                     else if (state.scorekeeperName.isEmpty) Some("Please enter scorekeeper's name")
+                     else if (state.scorekeeperPosition.isEmpty) Some("Please select scorekeeper's position")
+                     else Some("Unknown error")
       val (div, helppage) = {
         if (state.names.isAllValid) renderSelectScorekeeper(props, state)
         else renderEnterScorekeeper(props, state)
       }
 
-      ( setScorekeeper, valid, div, helppage)
+      ( setScorekeeper, valid, div, helppage, errormsg)
     }
 
     def renderEnterScorekeeper( props: Props, state: State ): (TagMod, Option[String]) = {
@@ -820,7 +847,7 @@ object PageTableTeamsInternal {
       )
     }
 
-    def renderNames( props: Props, state: State, score: MatchDuplicateScore, round: MatchDuplicateScore.Round ): (Callback, Boolean, TagMod, Option[String]) = {
+    def renderNames( props: Props, state: State, score: MatchDuplicateScore, round: MatchDuplicateScore.Round ): (Callback, Boolean, TagMod, Option[String], Option[String]) = {
       val scorekeeper = state.scorekeeperPosition.getOrElse(North)
       val partner = state.players.partnerOfPosition(scorekeeper)
       val left = state.players.leftOfPosition(scorekeeper)
@@ -828,6 +855,12 @@ object PageTableTeamsInternal {
 
       val readonly = !state.inputNames
       val allvalid = readonly || state.names.isAllValid
+      val errormsg = if (allvalid) None
+                     else if (state.names.isNSMissing || state.names.isEWMissing) Some("Please enter missing player name(s)")
+                     else if (!state.names.areAllPlayersUnique()) Some("Please fix duplicate player names")
+                     else Some("Unknown error")
+
+      logger.fine(s"""renderNames: allvalid=${allvalid}, readonly=${readonly} state.names=${state.names}""")
 
       /*
        * Returns the html for the player position.  This could be an input field, or just names with swap buttons.
@@ -905,7 +938,8 @@ object PageTableTeamsInternal {
         ok,
         allvalid,
         div,
-        Some(helpurl)
+        Some(helpurl),
+        errormsg
       )
     }
 

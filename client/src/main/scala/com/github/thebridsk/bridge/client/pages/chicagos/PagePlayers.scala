@@ -48,9 +48,14 @@ object PagePlayers {
          })
 
     def areAllPlayersUnique() = {
-      val p = north :: south :: east :: west :: (if (chicago5 || quintet)
-                                                   extra.toList
-                                                 else Nil)
+      val p =
+        north.trim ::
+        south.trim ::
+        east.trim ::
+        west.trim ::
+        (if (chicago5 || quintet)
+           extra.map(_.trim).toList
+         else Nil)
       val before = p.length
       val after = p.distinct.length
       before == after

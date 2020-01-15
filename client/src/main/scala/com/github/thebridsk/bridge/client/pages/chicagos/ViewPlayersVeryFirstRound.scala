@@ -57,6 +57,11 @@ object ViewPlayersVeryFirstRound {
     def render( props: Props, state: PlayerState ) = {
       import ChicagoStyles._
       val valid = state.isValid()
+      val errormsg = if (valid) ""
+                     else if (!state.areAllPlayersValid()) "Please enter missing player name(s)"
+                     else if (!state.isDealerValid()) "Please select a dealer"
+                     else if (!state.areAllPlayersUnique()) "Please fix duplicate player names"
+                     else "Unknown error"
       def getButton(position: PlayerPosition, player: String,  tabindex: Int) =
         AppButton("Player"+position.pos+"FirstDealer",
                   "Dealer",
@@ -170,6 +175,12 @@ object ViewPlayersVeryFirstRound {
                   <.td( ^.colSpan := 3, tableStyles.tableCellWidth3Of7, putName("North", North, state.north, false, setNorth, 4, 8)),
                   <.td( ^.colSpan := 2, tableStyles.tableCellWidth2Of7)
                 )
+              )
+            ),
+            <.div(
+              ^.id:="ErrorMsg",
+              <.p(
+                !valid ?= errormsg
               )
             ),
             <.div(
