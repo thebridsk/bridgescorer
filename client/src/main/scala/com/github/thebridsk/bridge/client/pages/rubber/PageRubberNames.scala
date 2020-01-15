@@ -58,7 +58,19 @@ object PageRubberNamesInternal {
     def isDealerValid() = dealer.isDefined
     def areAllPlayersValid() = playerValid(north) && playerValid(south) && playerValid(east) && playerValid(west)
 
-    def isValid() = areAllPlayersValid()&& isDealerValid()
+    def areAllPlayersUnique() = {
+      val p =
+        north.trim ::
+        south.trim ::
+        east.trim ::
+        west.trim ::
+        Nil
+      val before = p.length
+      val after = p.distinct.length
+      before == after
+    }
+
+    def isValid() = areAllPlayersValid()&& isDealerValid() && areAllPlayersUnique()
 
     def isDealer( p: PlayerPosition ) = dealer match {
       case Some(d) => d == p
@@ -107,6 +119,12 @@ object PageRubberNamesInternal {
     def render( props: Props, state: PlayerState ) = {
       import RubberStyles._
       val valid = state.isValid()
+      val errormsg =
+        if (valid) ""
+        else if (!state.areAllPlayersValid()) "Please enter missing player name(s)"
+        else if (!state.areAllPlayersUnique()) "Please fix duplicate player names"
+        else if (!state.isDealerValid()) "Please select a dealer"
+        else "Unknown error"
       def getButton(position: PlayerPosition, player: String,  tabindex: Int) =
           AppButton("Player"+position.pos+"FirstDealer",
                     "Dealer",
@@ -178,6 +196,12 @@ object PageRubberNamesInternal {
             )
           ),
           <.div( baseStyles.divFlexBreak ),
+          <.div(
+            ^.id:="ErrorMsg",
+            <.p(
+              !valid ?= errormsg
+            )
+          ),
           <.div(
             baseStyles.divFooter,
             <.div(

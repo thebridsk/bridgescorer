@@ -318,6 +318,8 @@ class DuplicateTestPages2 extends AnyFlatSpec
       val missing = page.getInputFieldNames
       missing must contain theSameElementsAs(List(North,South))
 
+      page.checkErrorMsg("Please enter missing player name(s)")
+
       page.isOKEnabled mustBe false
 
       page.enterPlayer(North, prefixThatMatchesNoOne)
@@ -346,9 +348,17 @@ class DuplicateTestPages2 extends AnyFlatSpec
         sugNames.foreach(e => e.toLowerCase().startsWith(prefixThatMatchesSomeNames))
         suggestions
       }
+      page.enterPlayer(South, team3.one)
+
+      page.esc
+
+      page.checkErrorMsg("Please fix duplicate player names")
+
       page.enterPlayer(South, team3.two)
 
       page.esc
+
+      page.checkErrorMsg("")
 
       val pg = page.clickReset.validate
       pg.enterPlayer(North, team3.one)
@@ -360,7 +370,7 @@ class DuplicateTestPages2 extends AnyFlatSpec
 
       val ss = page.clickOK.validate
 
-      val sn = ss.verifyAndSelectScorekeeper(team3.one, team3.two, team1.one, team1.two, East)
+      val sn = ss.verifyAndSelectScorekeeper(team3.one, team3.two, team1.one, team1.two, East, checkErrMsg=true)
       val handpage = sn.verifyNamesAndSelect(team3.teamid, team1.teamid, team3.one, team3.two, team1.one, team1.two, East, false).asInstanceOf[HandPage].validate
     }
 

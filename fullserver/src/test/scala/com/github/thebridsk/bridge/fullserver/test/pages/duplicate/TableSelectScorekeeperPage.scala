@@ -19,6 +19,7 @@ import com.github.thebridsk.bridge.data.bridge.PlayerPosition
 import com.github.thebridsk.browserpages.GenericPage
 import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.TablePage.EnterNames
 import com.github.thebridsk.bridge.data.bridge._
+import com.github.thebridsk.bridge.fullserver.test.pages.bridge.ErrorMsgDiv
 
 object TableSelectScorekeeperPage {
 
@@ -75,9 +76,9 @@ class TableSelectScorekeeperPage( dupid: String,
                                  targetBoard: Option[String],
                                  scorekeeper: Option[PlayerPosition] = None
                                )( implicit
-                                   webDriver: WebDriver,
+                                   val webDriver: WebDriver,
                                    pageCreated: SourcePosition
-                               ) extends Page[TableSelectScorekeeperPage] {
+                               ) extends Page[TableSelectScorekeeperPage] with ErrorMsgDiv[TableSelectScorekeeperPage] {
   import TableSelectScorekeeperPage._
 
   def validate(implicit patienceConfig: PatienceConfig, pos: Position) = logMethod(s"${pos.line} ${getClass.getSimpleName}.validate") { eventually {
@@ -182,7 +183,8 @@ class TableSelectScorekeeperPage( dupid: String,
   def verifyAndSelectScorekeeper(
                          north: String, south: String, east: String, west: String,
                          scorekeeper: PlayerPosition,
-                         screenShotDir: Option[(String,String)] = None
+                         screenShotDir: Option[(String,String)] = None,
+                         checkErrMsg: Boolean = false
                        )( implicit
                            webDriver: WebDriver
                        ) = {
@@ -190,12 +192,15 @@ class TableSelectScorekeeperPage( dupid: String,
     val skname = scorekeeper.player(north, south, east, west)
 
     getSelectedScorekeeper mustBe None
+    if (checkErrMsg) checkErrorMsg("Please select scorekeeper")
     selectScorekeeper(skname.trim)
     getSelectedScorekeeper mustBe Some(skname.trim)
     getNames must contain allOf (north.trim,south.trim,east.trim,west.trim)
     findPosButtons must contain allOf ( scorekeeper, scorekeeper.partner)
+    if (checkErrMsg) checkErrorMsg("Please select scorekeeper's position")
     val ss1 = clickPos(scorekeeper)
     eventually { ss1.findSelectedPos mustBe Some(scorekeeper) }
+    if (checkErrMsg) checkErrorMsg("")
     screenShotDir.foreach { e =>
       ss1.takeScreenshot(e._1, e._2)
     }

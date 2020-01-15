@@ -192,6 +192,8 @@ class ChicagoTestPages extends AnyFlatSpec
 
     val p = EnterNamesPage.current
 
+    p.checkErrorMsg("Please enter missing player name(s)")
+
     eventually( find(id(EnterNamesPage.buttonReset)) mustBe Symbol("Enabled") )
     find(id(EnterNamesPage.buttonOK)) must not be Symbol("Enabled")
 
@@ -247,13 +249,18 @@ class ChicagoTestPages extends AnyFlatSpec
       enterPlayer(East, player3, true).
       enterPlayer(West, player4, true)
 
+    p.checkErrorMsg("Please select a dealer")
+
     p.setDealer(North)
+
+    p.checkErrorMsg("Please fix duplicate player names")
 
     eventually( p.isOKEnabled mustBe false )
 
     p.enterPlayer(South, player2, true)
 
     eventually( p.isOKEnabled mustBe true )
+    p.checkErrorMsg("")
 
     p.clickFive
 

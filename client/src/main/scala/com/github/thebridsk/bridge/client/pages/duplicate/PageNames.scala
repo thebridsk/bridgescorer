@@ -117,6 +117,7 @@ object PageNamesInternal {
 
     def render( props: Props, state: State ) = {
       import DuplicateStyles._
+      import com.github.thebridsk.bridge.clientcommon.react.Utils._
       logger.info("Rendering "+props.page+" suggestions="+state.nameSuggestions)
       <.div(
         DuplicatePageBridgeAppBar(
@@ -138,11 +139,15 @@ object PageNamesInternal {
         ),
         DuplicateStore.getMatch() match {
           case Some(md) if md.id == props.page.dupid =>
+            val names = state.teams.flatMap( t => t._2.player1.trim::t._2.player2.trim::Nil ).toList
+            val namesvalid = names.find( p => p==null || p=="" ).isEmpty
+            val valid = namesvalid && names.length == names.distinct.length
             <.div(
               dupStyles.divNamesPage,
               //              <.h1("Edit Names"),
               <.h2("Only change the spelling of a players name"),
               <.h2("or replace a player."),
+              <.h2("Duplicate names are not allowed."),
               <.h2("Do NOT swap players."),
               <.table(
                 Header(props),
@@ -152,7 +157,11 @@ object PageNamesInternal {
                   }.toTagMod
                 )
               ),
-              AppButton( "OK", "OK", ^.onClick-->okCallback ),
+              !valid ?= <.h2(
+                  if (namesvalid) "There is a duplicate name"
+                  else "A name is missing"
+              ),
+              AppButton( "OK", "OK", ^.onClick-->okCallback, ^.disabled := !valid ),
               " ",
               AppButton( "Reset", "Reset", ^.onClick-->resetCallback ),
               " ",

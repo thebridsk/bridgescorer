@@ -23,6 +23,7 @@ import com.github.thebridsk.bridge.data.bridge._
 import com.github.thebridsk.browserpages.TextField
 import com.github.thebridsk.browserpages.PageBrowser
 import org.openqa.selenium.Keys
+import com.github.thebridsk.bridge.fullserver.test.pages.bridge.ErrorMsgDiv
 
 object TableEnterOrSelectNamesPage {
 
@@ -68,9 +69,9 @@ class TableEnterOrSelectNamesPage( dupid: String,
                                  roundid: String,
                                  targetBoard: Option[String]
                                )( implicit
-                                   webDriver: WebDriver,
+                                   val webDriver: WebDriver,
                                    pageCreated: SourcePosition
-                               ) extends Page[TableEnterOrSelectNamesPage] {
+                               ) extends Page[TableEnterOrSelectNamesPage] with ErrorMsgDiv[TableEnterOrSelectNamesPage] {
   import TableEnterOrSelectNamesPage._
 
   def validate(implicit patienceConfig: PatienceConfig, pos: Position) = logMethod(s"${pos.line} ${getClass.getSimpleName}.validate") { eventually {

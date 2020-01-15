@@ -18,6 +18,7 @@ import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.ScoreboardPag
 import com.github.thebridsk.bridge.data.bridge.PlayerPosition
 import com.github.thebridsk.browserpages.GenericPage
 import com.github.thebridsk.browserpages.Page.AnyPage
+import com.github.thebridsk.bridge.fullserver.test.pages.bridge.ErrorMsgDiv
 
 object TableEnterMissingNamesPage {
 
@@ -65,9 +66,9 @@ class TableEnterMissingNamesPage( dupid: String,
                                  roundid: String,
                                  targetBoard: Option[String]
                                )( implicit
-                                   webDriver: WebDriver,
+                                   val webDriver: WebDriver,
                                    pageCreated: SourcePosition
-                               ) extends Page[TableEnterMissingNamesPage] {
+                               ) extends Page[TableEnterMissingNamesPage] with ErrorMsgDiv[TableEnterMissingNamesPage] {
   import TableEnterMissingNamesPage._
 
   def validate(implicit patienceConfig: PatienceConfig, pos: Position) = logMethod(s"${pos.line} ${getClass.getSimpleName}.validate") { eventually {
