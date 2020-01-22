@@ -181,6 +181,15 @@ class EnterNamesPage( val chiid: String,
   }
 
   /**
+   * @param loc the location on the screen.  The scorekeeper's location is not valid.
+   */
+  def getPlayerCombobox( loc: PlayerPosition )(implicit patienceConfig: PatienceConfig, pos: Position) = {
+    eventually {
+      getCombobox(toInputName(loc))
+    }
+  }
+
+  /**
    */
   def getSittingOutPlayerSuggestions()(implicit patienceConfig: PatienceConfig, pos: Position) = {
     eventually {

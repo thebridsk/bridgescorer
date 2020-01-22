@@ -203,6 +203,10 @@ class Combobox( underlying: WebElement )(implicit pos: Position, webdriver: WebD
     underlying.findElement(By.xpath( """./parent::div/following-sibling::div/div""" ) ).isDisplayed()
   }
 
+  def clickCaret = {
+    underlying.findElement(By.xpath("./following-sibling::span/button")).click()
+  }
+
   def esc = {
     underlying.sendKeys(Keys.ESCAPE)
   }

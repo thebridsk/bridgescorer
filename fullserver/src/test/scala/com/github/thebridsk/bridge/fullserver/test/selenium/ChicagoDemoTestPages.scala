@@ -43,10 +43,10 @@ object ChicagoDemoTestPages {
 
   val log = Logger[ChicagoDemoTestPages]
 
-  val player1 = "Nancy"
-  val player2 = "Sam"
-  val player3 = "Ellen"
-  val player4 = "Wayne"
+  val player1 = "Naomi"
+  val player2 = "Sebastion"
+  val player3 = "Eloise"
+  val player4 = "Wyatt"
 
   val players = player1::player2::player3::player4::Nil
 
@@ -285,6 +285,24 @@ class ChicagoDemoTestPages extends AnyFlatSpec
     sp.checkTotalScore(0, players, roundS, totalsS)
 
     log.fine("Done with test")
+  }
+
+  it should "Start second Chicago match and see names from first match" in {
+    import Session1._
+    Session1.switchTo().window(mainTab.get)
+
+    val sp = SummaryPage.current.validate
+    val hp = sp.clickHome.validate
+
+    val np = hp.clickNewChicagoButton.validate
+
+    val combo = np.getPlayerCombobox(North)
+    combo.clickCaret
+    eventually {
+      val suggested = combo.suggestions.map(_.text)
+      suggested must contain allOf(player1,player2,player3,player4)
+    }
+
   }
 
 }
