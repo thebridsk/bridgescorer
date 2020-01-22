@@ -15,6 +15,7 @@ import com.github.thebridsk.bridge.fullserver.test.pages.BaseHandPage
 import com.github.thebridsk.browserpages.PagesAssertions._
 import com.github.thebridsk.utilities.logging.Logger
 import com.github.thebridsk.bridge.fullserver.test.pages.bridge.Popup
+import com.github.thebridsk.bridge.fullserver.test.pages.bridge.HomePage
 
 object SummaryPage {
 
@@ -496,6 +497,14 @@ class SummaryPage(
         log.severe(s"""checkTotalScore failure.\n${rt}\n""",x)
         throw x
     }
+  }
+
+  /**
+   * @param pos
+   */
+  def clickHome( implicit pos: Position ) = {
+    clickButton("Home")
+    new HomePage()(webDriver,pos)
   }
 
 }

@@ -47,7 +47,10 @@ object DuplicateStore extends ChangeListenable {
   private var pictures = Map[(Id.DuplicateBoard,Id.DuplicateHand),DuplicatePicture]()
 
   def getId() = monitoredId
-  def getMatch() = bridgeMatch
+  def getMatch() = {
+    logger.fine(s"getMatch returning bridgeMatch=$bridgeMatch")
+    bridgeMatch
+  }
 
   def getBoardsFromRound( table: String, round: Int ) = {
     bridgeMatch match {
@@ -143,8 +146,9 @@ object DuplicateStore extends ChangeListenable {
           monitoredId match {
             case Some(mid) =>
               if (mid == duplicate.id) {
-                logger.info("Updating duplicate match "+mid)
+                logger.info(s"Updating duplicate match $mid")
                 bridgeMatch = Some(duplicate)
+                logger.info(s"Updated duplicate match $mid, bridgeMatch=$bridgeMatch")
                 resetViews()
                 notifyChange()
                 if (BridgeDemo.isDemo) {
@@ -170,6 +174,7 @@ object DuplicateStore extends ChangeListenable {
                     if (!oldhand.equalsIgnoreModifyTime(hand)) {
                       logger.fine("Updating hand in DuplicateStore: "+hand)
                       bridgeMatch = Some( md.updateHand(hand) )
+                      logger.info(s"Updated hand duplicate match $dupid, bridgeMatch=$bridgeMatch")
                       resetViews()
                       notifyChange()
                       bridgeMatch
@@ -179,6 +184,7 @@ object DuplicateStore extends ChangeListenable {
                     }
                   case None =>
                     bridgeMatch = Some( md.updateHand(hand) )
+                    logger.info(s"Updated hand duplicate match $dupid, bridgeMatch=$bridgeMatch")
                     resetViews()
                     notifyChange()
                     bridgeMatch
@@ -205,6 +211,7 @@ object DuplicateStore extends ChangeListenable {
                   case Some(oldteam) =>
                     if (!oldteam.equalsIgnoreModifyTime(team)) {
                       bridgeMatch = Some( md.updateTeam(team) )
+                      logger.info(s"Updated team duplicate match $dupid, bridgeMatch=$bridgeMatch")
                       resetViews()
                       notifyChange()
                       bridgeMatch
@@ -213,6 +220,7 @@ object DuplicateStore extends ChangeListenable {
                     }
                   case None =>
                     bridgeMatch = Some( md.updateTeam(team) )
+                    logger.info(s"Updated team duplicate match $dupid, bridgeMatch=$bridgeMatch")
                     resetViews()
                     notifyChange()
                     bridgeMatch
@@ -268,10 +276,12 @@ object DuplicateStore extends ChangeListenable {
         stop()
       case _ =>
     }
-    logger.info("Starting to monitor "+dupid)
+    logger.info(s"Starting to monitor $dupid, bridgeMatch=$bridgeMatch")
     monitoredId = Some(dupid)
     if (BridgeDemo.isDemo) {
-      bridgeMatch = DuplicateSummaryStore.getDuplicateMatchSummary().flatMap( list => list.find(md => md.id == dupid))
+      if (bridgeMatch.isEmpty)
+        bridgeMatch = DuplicateSummaryStore.getDuplicateMatchSummary().flatMap( list => list.find(md => md.id == dupid))
+      logger.info(s"monitoring bridgeMatch=$bridgeMatch")
     }
     notifyChange()
   }
@@ -291,6 +301,7 @@ object DuplicateStore extends ChangeListenable {
           logger.info("Stopping monitor "+id)
           monitoredId = None
           bridgeMatch = None
+          logger.info("Stopped monitor "+id)
           resetViews()
           pictures = Map()
   //        removeAllListener(ChangeListenable.event)
@@ -298,6 +309,7 @@ object DuplicateStore extends ChangeListenable {
         case _ =>
           logger.info("Stopping monitor")
           bridgeMatch = None
+          logger.info("Stopped monitor")
       }
     }
   }

@@ -6,6 +6,20 @@ import com.github.thebridsk.utilities.logging.Logger
 import com.github.thebridsk.bridge.clientcommon.logger.Alerter
 import com.github.thebridsk.bridge.client.Bridge
 import com.github.thebridsk.bridge.clientcommon.demo.BridgeDemo
+import flux.dispatcher.DispatchToken
+import com.github.thebridsk.bridge.client.bridge.action.BridgeDispatcher
+import com.github.thebridsk.bridge.client.bridge.action.DuplicateBridgeAction
+import com.github.thebridsk.bridge.client.bridge.action.ActionUpdateDuplicateMatch
+import com.github.thebridsk.bridge.client.bridge.action.ActionUpdateTeam
+import com.github.thebridsk.bridge.data.Team
+import com.github.thebridsk.bridge.client.controller.ChicagoController
+import com.github.thebridsk.bridge.client.bridge.action.ChicagoBridgeAction
+import com.github.thebridsk.bridge.client.bridge.action.ActionUpdateChicago
+import com.github.thebridsk.bridge.client.bridge.action.ActionUpdateChicago5
+import com.github.thebridsk.bridge.client.bridge.action.ActionUpdateChicagoNames
+import com.github.thebridsk.bridge.data.MatchChicago
+import com.github.thebridsk.bridge.client.bridge.action.ActionUpdateRubber
+import com.github.thebridsk.bridge.client.bridge.action.ActionUpdateRubberNames
 
 object NamesStore extends ChangeListenable {
   val logger = Logger("bridge.ViewPlayers")
@@ -21,6 +35,73 @@ object NamesStore extends ChangeListenable {
 
   def getNames = names
 
+
+  private var dispatchToken: Option[DispatchToken] = {
+    if (BridgeDemo.isDemo) {
+      initNames
+      Some(BridgeDispatcher.register(dispatch _))
+    } else {
+      None
+    }
+  }
+
+  def updateNames( addnames: String* ) = {
+    val an = onlyValidNames(addnames.toList)
+    names = (names.filter( n => !an.contains(n) ).toList ++ an).sorted
+  }
+
+  def namesFromTeam( team: Team ) = {
+    onlyValidNames(Option(team.player1).toList ::: Option(team.player2).toList)
+  }
+
+  def namesFromChicago( mc: MatchChicago) = {
+    onlyValidNames(mc.players)
+  }
+
+  def onlyValidNames( names: List[String] ) = names.filter(p=>p!="")
+
+  /**
+    * Flux dispatcher call
+    *
+    * Only called when in demo mode
+    *
+    * @param msg
+    */
+  def dispatch( msg: Any ) = Alerter.tryitWithUnit { msg match {
+    case ActionUpdateDuplicateMatch(duplicate) =>
+      val p = duplicate.teams.flatMap( namesFromTeam(_) )
+      if (!p.isEmpty) updateNames(p:_*)
+    case ActionUpdateTeam(dupid,team) =>
+      val p = namesFromTeam(team)
+      if (!p.isEmpty) updateNames(p:_*)
+    case ActionUpdateChicago(chi, _) =>
+      updateNames( namesFromChicago(chi).distinct: _* )
+    case ActionUpdateChicago5(chiid,extra, _) =>
+      updateNames(extra)
+    case ActionUpdateChicagoNames(chiid,p1,p2,p3,p4,extra,_,_,_) =>
+      val n = (p1::p2::p3::p4::extra.toList).distinct
+      updateNames(n:_*)
+    case ActionUpdateRubber( rub, _ ) =>
+      updateNames(rub.north,rub.south,rub.east,rub.west)
+    case ActionUpdateRubberNames( rubid, north, south, east, west, _, _ ) =>
+      updateNames(north,south,east,west)
+    case action =>
+      // There are multiple stores, all the actions get sent to all stores
+//      logger.fine("Ignoring unknown action: "+action)
+  }}
+
+  def initNames = {
+    if (BridgeDemo.isDemo) {
+      val mcs = ChicagoController.getSummaryFromLocalStorage
+      if (mcs.isEmpty) {
+        names = List("Barry","Bill","Cathy","Irene","June","Kelly","Larry","Norman","Victor")
+      } else {
+        val n = mcs.flatMap( mc => namesFromChicago(mc) ).toList.distinct
+        updateNames(n:_*)
+      }
+    }
+  }
+
   /**
    * Refresh the names in the list.
    * @param cb - callback that should be called when the names have been updated
@@ -30,7 +111,6 @@ object NamesStore extends ChangeListenable {
       import scala.scalajs.js.timers._
 
       setTimeout(1) { // note the absence of () =>
-        names = List("Barry","Bill","Cathy","Irene","June","Kelly","Larry","Norman","Victor")
         cb.foreach { _.runNow() }
       }
     } else {

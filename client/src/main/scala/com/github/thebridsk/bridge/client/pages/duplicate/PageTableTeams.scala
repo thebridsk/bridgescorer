@@ -514,16 +514,12 @@ object PageTableTeamsInternal {
 
     val setScorekeeper = scope.modState{ s => s.okScorekeeper }
 
-    def getHand( page: TableTeamView ) =
-      DuplicateStore.getMatch() match {
-        case Some(md) => page match {
-          case TableTeamByBoardView( dupid, tableid, round, boardId ) =>
-            md.getHand(tableid, round, boardId)
-          case TableTeamByRoundView( dupid, tableid, round ) =>
-            md.getHandsInRound(tableid, round).headOption
-        }
-        case None => None
-      }
+    def getHand( md: MatchDuplicate, page: TableTeamView ) = page match {
+      case TableTeamByBoardView( dupid, tableid, round, boardId ) =>
+        md.getHand(tableid, round, boardId)
+      case TableTeamByRoundView( dupid, tableid, round ) =>
+        md.getHandsInRound(tableid, round).headOption
+    }
 
     def findBoardsInRound( md: MatchDuplicate, tableid: Id.Table, round: Int ) = {
       var hands: List[DuplicateHand] = Nil
@@ -555,10 +551,11 @@ object PageTableTeamsInternal {
           case Some(sk) => PageHand.scorekeeper = sk
           case None =>
         }
-        val nsid = getHand(s.page) match {
-          case Some(hand) =>
-            DuplicateStore.getMatch() match {
-              case Some(dup) =>
+        val nsid = DuplicateStore.getMatch() match {
+          case Some(dup) =>
+            logger.fine(s"OK: state=$s, dup=$dup")
+            getHand(dup,s.page) match {
+              case Some(hand) =>
                 if (s.originalNames.isNSMissing) setPlayersOnTeam(dup, hand.nsTeam, s.players.north, s.players.south)
                 if (s.originalNames.isEWMissing) setPlayersOnTeam(dup, hand.ewTeam, s.players.east, s.players.west)
 
@@ -572,10 +569,13 @@ object PageTableTeamsInternal {
                     Controller.updateHand(dup, nh)
                   }
                 }}
+                hand.nsTeam
               case None =>
+                logger.fine(s"OK: state=$s, hand not found")
+                ""
             }
-            hand.nsTeam
           case None =>
+            logger.fine(s"OK: state=$s, no duplicate match")
             ""
         }
         props.routerCtl.set(props.page.toNextView() match {
