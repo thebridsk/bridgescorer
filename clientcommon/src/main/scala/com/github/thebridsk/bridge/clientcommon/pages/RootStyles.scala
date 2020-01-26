@@ -111,6 +111,7 @@ class BaseStyles {
   val testPage = cls("baseTestPage")
 
   val piechart = cls("piechart")
+  val piechartzero = cls("piechartzero")
 
   val svgrect = cls("svgrect")
 

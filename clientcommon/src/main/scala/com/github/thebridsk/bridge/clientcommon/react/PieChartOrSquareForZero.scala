@@ -22,7 +22,9 @@ object PieChartOrSquareForZero {
 
   import ReactColor._
 
-  case class SquareProps( squareColor: Color, piechartProps: Props )
+  case class SquareProps(
+    piechartProps: Props
+  )
 
   /**
    * A pie chart.  The full circle will be used for the chart.
@@ -39,14 +41,13 @@ object PieChartOrSquareForZero {
    */
   def apply(
       size: Double,
-      squareColor: Color,
       slices: List[Double],
       colors: List[Color],
       chartTitle: Option[String] = None,
       sliceTitles: Option[List[String]] = None,
       attrs: Option[TagMod] = None
   ) = {
-    component(SquareProps( squareColor, Props(slices,Some(colors),chartTitle,sliceTitles,Some(size),attrs)))
+    component(SquareProps( Props(slices,Some(colors),chartTitle,sliceTitles,Some(size),attrs)))
   }
 
   private def getCoordinatesForPercent( fraction: Double ) = {
@@ -68,13 +69,12 @@ object PieChartOrSquareForZero {
             ^.width := f"${-props.piechartProps.size.get}%.2f",
             ^.height := f"${-props.piechartProps.size.get}%.2f",
             ^.viewBox := "-10.1 -10.1 20.2 20.2",
-            BaseStyles.baseStyles.piechart,
+            BaseStyles.baseStyles.piechartzero,
             <.rect(
               ^.x := -10,
               ^.y := -10,
               ^.width := 20,
               ^.height := 20,
-              ^.stroke := props.squareColor,
               ^.strokeWidth := 5,
               ^.fill := "transparent"
             ),
