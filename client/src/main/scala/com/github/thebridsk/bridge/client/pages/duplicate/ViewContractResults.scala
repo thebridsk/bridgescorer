@@ -171,7 +171,6 @@ object ViewContractResultsInternal {
                   }.getOrElse(
                       PieChartOrSquareForZero(
                         size = -5,
-                        squareColor = Color.Black,
                         slices = List(),
                         colors = List(),
                         chartTitle = None

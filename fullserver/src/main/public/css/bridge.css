@@ -567,6 +567,9 @@ body {
   transform: rotate(-0.25turn);
   display: block;
 }
+.piechartzero > rect {
+  stroke: var(--color-fg);
+}
 
 .svgrect {
   display: block;
