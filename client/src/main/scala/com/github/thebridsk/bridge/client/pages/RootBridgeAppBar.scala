@@ -70,7 +70,8 @@ object RootBridgeAppBar {
       helpurl: Option[String],
       routeCtl: BridgeRouter[AppPage],
       showRightButtons: Boolean,
-      showMainMenu: Boolean
+      showMainMenu: Boolean,
+      showAPI: Boolean = false
   )
 
   def apply(
@@ -78,11 +79,12 @@ object RootBridgeAppBar {
       helpurl: Option[String],
       routeCtl: BridgeRouter[AppPage],
       showRightButtons: Boolean = true,
-      showMainMenu: Boolean = true
+      showMainMenu: Boolean = true,
+      showAPI: Boolean = false
   )() = {
     TagMod(
       ServerURLPopup(),
-      component(Props(title,helpurl,routeCtl,showRightButtons,showMainMenu))
+      component(Props(title,helpurl,routeCtl,showRightButtons,showMainMenu,showAPI))
     )
   }
 }
@@ -310,7 +312,8 @@ object RootBridgeAppBarInternal {
               helpurl = props.helpurl.getOrElse("../help/introduction.html"),
               routeCtl = props.routeCtl,
               showHomeButton = !props.title.isEmpty,
-              showRightButtons = props.showRightButtons
+              showRightButtons = props.showRightButtons,
+              showAPI = props.showAPI
           )(
             mainMenu: _*
           )
