@@ -78,7 +78,8 @@ object BridgeAppBar {
       helpurl: String,
       routeCtl: BridgeRouter[_],
       showHomeButton: Boolean,
-      showRightButtons: Boolean
+      showRightButtons: Boolean,
+      showAPI: Boolean = false
   )
 
   def apply(
@@ -88,7 +89,8 @@ object BridgeAppBar {
       helpurl: String,
       routeCtl: BridgeRouter[_],
       showHomeButton: Boolean = true,
-      showRightButtons: Boolean = true
+      showRightButtons: Boolean = true,
+      showAPI: Boolean = false
   )(
       mainMenu: CtorType.ChildArg*
   ) =
@@ -101,7 +103,8 @@ object BridgeAppBar {
         helpurl,
         routeCtl,
         showHomeButton,
-        showRightButtons
+        showRightButtons,
+        showAPI
       )
     )
 
@@ -395,6 +398,82 @@ object BridgeAppBarInternal {
 
       val toolbarContent = toolbarFront ::: toolbarContentTail
 
+      val moremenu =
+        List[CtorType.ChildArg](
+          MuiMenuItem(
+            id = "About",
+            onClick = gotoAboutPage _
+          )(
+            "About"
+          ),
+          MuiMenuItem(
+            id = "Info",
+            onClick = gotoInfoPage _
+          )(
+            "Info"
+          ),
+          MuiMenuItem(
+            id = "Log",
+            onClick = callbackPage(LogView) _
+          )(
+            "Show Logs"
+          ),
+          MuiMenuItem(
+            id = "StartLog",
+            onClick = startLog _
+          )(
+            "Start Logging"
+          ),
+          MuiMenuItem(
+            id = "StopLog",
+            onClick = stopLog _
+          )(
+            "Stop Logging"
+          ),
+        ):::
+        (if (props.showAPI) {
+          List[CtorType.ChildArg](
+            MuiMenuItem(
+              id = "SwaggerDocs",
+              onClick = handleHelpGotoPageClick("/v1/docs") _
+            )(
+              "Swagger Docs"
+            ),
+            MuiMenuItem(
+              id = "SwaggerDocs2",
+              onClick = handleHelpGotoPageClick("/public/apidocs.html") _
+            )(
+              "Swagger API Docs"
+            ),
+            MuiMenuItem(
+              id = "GraphQL",
+              onClick = handleHelpGotoPageClick(getApiPageUrl("graphql")) _  // callbackPage(GraphQLAppPage) _
+            )(
+              "GraphQL"
+            ),
+            MuiMenuItem(
+              id = "GraphiQL",
+              onClick = handleHelpGotoPageClick(getApiPageUrl("graphiql")) _  // callbackPage(GraphiQLView) _
+            )(
+              "GraphiQL"
+            ),
+            MuiMenuItem(
+              id = "Voyager",
+              onClick = handleHelpGotoPageClick(getApiPageUrl("voyager")) _  // callbackPage(VoyagerView) _
+            )(
+              "Voyager"
+            ),
+            MuiMenuItem(
+              id = "Color",
+              onClick = handleHelpGotoPageClick(getApiPageUrl("color")) _  // callbackPage(ColorView) _
+            )(
+              "Color"
+            ),
+          )
+        } else {
+          Nil
+        })
+
       val bar = <.div(
         (
           (
@@ -414,72 +493,8 @@ object BridgeAppBarInternal {
                 onClickAway = handleMoreClose _,
                 onItemClick = handleMoreCloseClick _
               )(
-                MuiMenuItem(
-                  id = "About",
-                  onClick = gotoAboutPage _
-                )(
-                  "About"
-                ),
-                MuiMenuItem(
-                  id = "SwaggerDocs",
-                  onClick = handleHelpGotoPageClick("/v1/docs") _
-                )(
-                  "Swagger Docs"
-                ),
-                MuiMenuItem(
-                  id = "SwaggerDocs2",
-                  onClick = handleHelpGotoPageClick("/public/apidocs.html") _
-                )(
-                  "Swagger API Docs"
-                ),
-                MuiMenuItem(
-                  id = "Info",
-                  onClick = gotoInfoPage _
-                )(
-                  "Info"
-                ),
-                MuiMenuItem(
-                  id = "GraphQL",
-                  onClick = handleHelpGotoPageClick(getApiPageUrl("graphql")) _  // callbackPage(GraphQLAppPage) _
-                )(
-                  "GraphQL"
-                ),
-                MuiMenuItem(
-                  id = "GraphiQL",
-                  onClick = handleHelpGotoPageClick(getApiPageUrl("graphiql")) _  // callbackPage(GraphiQLView) _
-                )(
-                  "GraphiQL"
-                ),
-                MuiMenuItem(
-                  id = "Voyager",
-                  onClick = handleHelpGotoPageClick(getApiPageUrl("voyager")) _  // callbackPage(VoyagerView) _
-                )(
-                  "Voyager"
-                ),
-                MuiMenuItem(
-                  id = "Color",
-                  onClick = handleHelpGotoPageClick(getApiPageUrl("color")) _  // callbackPage(ColorView) _
-                )(
-                  "Color"
-                ),
-                MuiMenuItem(
-                  id = "Log",
-                  onClick = callbackPage(LogView) _
-                )(
-                  "Show Logs"
-                ),
-                MuiMenuItem(
-                  id = "StartLog",
-                  onClick = startLog _
-                )(
-                  "Start Logging"
-                ),
-                MuiMenuItem(
-                  id = "StopLog",
-                  onClick = stopLog _
-                )(
-                  "Stop Logging"
-                )
+                moremenu: _*
+
               ) :: Nil
           ).map(_.vdomElement) :::
             props.mainMenu.toList

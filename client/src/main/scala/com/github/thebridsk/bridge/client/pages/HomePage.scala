@@ -217,7 +217,8 @@ object HomePage {
         RootBridgeAppBar(
             title = Seq(),
             helpurl = Some("../help/introduction.html"),
-            routeCtl = props.routeCtl
+            routeCtl = props.routeCtl,
+            showAPI = true
         )(),
         <.div(
           rootStyles.homeDiv,
