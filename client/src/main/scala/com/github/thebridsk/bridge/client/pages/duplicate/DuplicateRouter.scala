@@ -126,6 +126,7 @@ object DuplicateRouter {
   trait SummaryViewBase extends DuplicatePage {
     def getScoreboardPage(dupid: String): BaseScoreboardViewWithPerspective
     def getDuplicateResultPage(dupid: String): DuplicateResultViewBase
+    def getImportId(): Option[String] = None
   }
   case object SummaryView extends SummaryViewBase {
     def getScoreboardPage(dupid: String): BaseScoreboardViewWithPerspective = CompleteScoreboardView(dupid)
@@ -322,6 +323,8 @@ object DuplicateRouter {
     def getScoreboardPage(dupid: String): BaseScoreboardViewWithPerspective = CompleteScoreboardView(dupid)
     def getDuplicateResultPage(dupid: String): DuplicateResultViewBase = DuplicateResultView(dupid)
     def getDecodedId = URIUtils.decodeURI(importId)
+    override
+    def getImportId(): Option[String] = Some(getDecodedId)
   }
 
   val verifyPages = SummaryView::
