@@ -6,3 +6,4 @@
 /.project
 /.cache-main
 /.cache-test
+/metals.sbt

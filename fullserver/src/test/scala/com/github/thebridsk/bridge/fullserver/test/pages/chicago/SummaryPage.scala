@@ -58,6 +58,7 @@ object SummaryPage {
   val button8HandRound = "8HandRound"
   val buttonAllRounds = "Summary"
   val buttonInputStyle = "InputStyle"
+  val buttonEditNames = "EditNames"
 
   def roundToButtonId( r: Int ) = s"Round${r+1}"
   def handToButtonId( h: Int ) = s"Hand_${h+1}"
@@ -320,6 +321,13 @@ class SummaryPage(
     withClueEx(s"${pos.line}: trying to click all rounds") {
       clickButton(buttonAllRounds)
       new SummaryPage(chiid)
+    }
+  }
+
+  def clickEditNames(implicit pos: Position) = {
+    withClueEx(s"${pos.line}: trying to click edit names") {
+      clickButton(buttonEditNames)
+      new EditNamesPage(chiid)
     }
   }
 
