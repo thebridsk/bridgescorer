@@ -32,4 +32,5 @@ class ChicagoStyles {
   val divPageQuintet = cls("chiDivPageQuintet")
   val viewShowNewPosition = cls("chiViewShowNewPosition")
 
+  val divEditNamesPage = cls("chiDivEditNamesPage")
 }
