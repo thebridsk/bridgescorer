@@ -48,11 +48,19 @@ object ChicagoRouter {
     def toRoundView(round: Int) = RoundView(chiid, round)
     def toNamesView(round: Int) = NamesView(chiid, round)
     def toHandView(round: Int, hand: Int) = HandView(chiid, round, hand)
+    def toEditNamesView() = EditNamesView(chiid)
+  }
+  case class EditNamesView(chiid: String) extends ChicagoPage {
+    def toSummaryView() = SummaryView(chiid)
+    def toRoundView(round: Int) = RoundView(chiid, round)
+    def toNamesView(round: Int) = NamesView(chiid, round)
+    def toHandView(round: Int, hand: Int) = HandView(chiid, round, hand)
   }
   case class RoundView(chiid: String, round: Int) extends ChicagoPage {
     def toSummaryView() = SummaryView(chiid)
     def toNamesView(round: Int) = NamesView(chiid, round)
     def toHandView(hand: Int) = HandView(chiid, round, hand)
+    def toEditNamesView() = EditNamesView(chiid)
   }
   case class NamesView(chiid: String, round: Int) extends ChicagoPage {
     def toSummaryView() = SummaryView(chiid)
@@ -98,6 +106,10 @@ object ChicagoRouter {
     (emptyRule
       | dynamicRouteCT(string("[a-zA-Z0-9]+").caseClass[SummaryView])
         ~> dynRenderR((p, routerCtl) => PageSummary(p, routerCtl))
+      | dynamicRouteCT(
+        (string("[a-zA-Z0-9]+") / "names").caseClass[EditNamesView]
+      )
+        ~> dynRenderR((p, routerCtl) => PageEditNames(p, routerCtl))
       | dynamicRouteCT(
         (string("[a-zA-Z0-9]+") / "rounds").caseClass[SummaryView]
       )

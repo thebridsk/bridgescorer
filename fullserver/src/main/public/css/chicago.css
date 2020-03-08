@@ -241,3 +241,11 @@
   text-align: center;
   padding: 10px;
 }
+
+.chiDivEditNamesPage {
+  font-size: x-large;
+}
+
+.chiDivEditNamesPage > table {
+  margin-bottom: 10px;
+}

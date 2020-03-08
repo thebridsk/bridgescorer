@@ -77,6 +77,12 @@ object PageSummaryInternal {
         case Right(roundview) => roundview.toSummaryView()
       }
 
+    def toEditNamesView(props: Props) =
+      props.page match {
+        case Left(summary)    => summary.toEditNamesView
+        case Right(roundview) => roundview.toEditNamesView
+      }
+
     def toRoundView(round: Int, props: Props) =
       props.page match {
         case Left(summary)    => summary.toRoundView(round)
@@ -241,9 +247,13 @@ object PageSummaryInternal {
                   ),
                   <.div(
                     baseStyles.divFooterRight,
-                    ComponentInputStyleButton(scope.forceUpdate)
-                    //                    HelpButton( if (scoring.chicago.isQuintet()) "../help/chicago/summaryquintet.html" else "../help/chicago/summary.html")
-                  )
+                    ComponentInputStyleButton(scope.forceUpdate),
+                    AppButton(
+                      "EditNames",
+                      "Edit Names",
+                      ^.onClick --> props.routerCtl.set(toEditNamesView(props))
+                    )
+                    )
                 )
               )
             }

@@ -564,6 +564,62 @@ class ChicagoTestPages extends AnyFlatSpec
     sum.checkTotalScore(0, players, roundS, totalsS)
   }
 
+  it should "be able to edit the names" in {
+    import SessionWatcher._
+    val sp = SummaryPage.current.validate
+
+    withClueAndScreenShot(screenshotDir,"EditNames","Edit Names test") {
+      val enp = sp.clickEditNames.validate
+      val oldnames = enp.getCurrentPlayerNames
+      val newnames = enp.getNewPlayerNames
+
+      oldnames must contain theSameElementsAs(players)
+      newnames must contain theSameElementsAs(players)
+
+      oldnames mustBe newnames
+
+      val iPlayer1 = oldnames.zipWithIndex.find( pi => pi._1==player1 ) match {
+        case Some((p,i)) => i
+        case None =>
+          fail(s"Could not find $player1 on page")
+      }
+
+      enp.enterPlayer(iPlayer1,playerOut, true)
+
+      val namesAfterChange = players.map( p => if (p==player1) playerOut else p)
+
+      val change = enp.getNewPlayerNames
+      change must contain theSameElementsAs(namesAfterChange)
+
+      val enp2 = enp.clickReset.validate
+      val newnames2 = enp2.getNewPlayerNames
+
+      eventually {
+        newnames2 must contain theSameElementsAs(players)
+      }
+
+      enp2.isOKEnabled mustBe true
+
+//      enp2.getPlayerCombobox(iPlayer1).clear()
+      enp2.enterPlayer(iPlayer1," ", true)
+
+      eventually {
+        enp2.isOKEnabled mustBe false
+      }
+
+      val sp2 = enp2.clickCancel.validate
+
+      val enp3 = sp2.clickEditNames.validate
+      enp3.enterPlayer(iPlayer1,playerOut, true)
+      val sp3 = enp3.clickOK
+
+      val roundS = List(1120,1120,620,620).map(s => s.toString())
+      val totalsS = List(1120,1120,620,620).map(s => s.toString())
+      sp3.checkTotalScore(0, namesAfterChange, roundS, totalsS)
+
+    }
+  }
+
   it should "start playing another game using the saved game using next hand with 6 hands in round" in {
     import Session1._
 
