@@ -109,10 +109,10 @@ class Chicago5FairTest extends AnyFlatSpec
 
   behavior of "Chicago test with 5 people and simple rotation of Bridge Server"
 
-  it should "return a root page that has a title of \"The Bridge Score Keeper\"" in {
+  it should "return a root page that has a title of \"The Bridge ScoreKeeper\"" in {
     tcpSleep(15)
     go to (TestServer.getAppPage())
-    eventually { pageTitle mustBe ("The Bridge Score Keeper") }
+    eventually { pageTitle mustBe ("The Bridge ScoreKeeper") }
 //    takeScreenshot(screenshotDir,"title.png")
   }
 
@@ -445,7 +445,7 @@ class Chicago5FairTest extends AnyFlatSpec
 
     if (nameAndScoreInSameCell) {
       val rows = eventually {
-        pageTitle mustBe ("The Bridge Score Keeper")
+        pageTitle mustBe ("The Bridge ScoreKeeper")
 
         val rows = findElements(By.xpath(HomePage.divBridgeAppPrefix+"//table[1]/tbody/tr[1]"))
         rows.size() mustBe 1
@@ -462,7 +462,7 @@ class Chicago5FairTest extends AnyFlatSpec
       cells.get(6).getText mustBe "Wayne - 850"
     } else {
       val rows = eventually {
-        pageTitle mustBe ("The Bridge Score Keeper")
+        pageTitle mustBe ("The Bridge ScoreKeeper")
 
         val rows = findElements(By.xpath(HomePage.divBridgeAppPrefix+"//table[1]/tbody/tr[1]"))
         rows.size() mustBe 1

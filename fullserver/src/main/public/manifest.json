@@ -1,0 +1,19 @@
+{
+  "name": "The Bridge ScoreKeeper",
+  "short_name": "Bridge Score",
+  "start_url": "/public/index.html",
+  "display": "minimal-ui",
+  "background_color": "rgb(64,128,64)",
+  "theme_color": "rgb(64,128,64)",
+  "orientation": "landscape-primary",
+  "icons": [
+    {
+      "src": "/public/swagger-ui-dist/favicon-16x16.png",
+      "type": "image/png", "sizes": "16x16"
+    },
+    {
+      "src": "/public/swagger-ui-dist/favicon-32x32.png",
+      "type": "image/png", "sizes": "32x32"
+    }
+  ]
+}
