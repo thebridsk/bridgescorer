@@ -74,6 +74,7 @@ object BldBridge {
       name := "bridgescorer",
       publish := {},
       publishLocal := {},
+      scalaVersion := verScalaVersion,
 
       aggregate in assembly := false,
       aggregate in webassembly := false,

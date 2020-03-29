@@ -34,7 +34,7 @@ object ScoreboardPage {
   }
 
   def getUrl( id: String ) = {
-    TestServer.getAppPageUrl(s"duplicate/${id}")
+    TestServer.getAppPageUrl(s"duplicate/match/${id}")
   }
 
   val buttonIdsCompleted =
@@ -79,7 +79,7 @@ object ScoreboardPage {
    *          )
    */
   def findIds(implicit webDriver: WebDriver, pos: Position): (String, String, ViewType, Option[String], Option[String]) = {
-    val prefix = TestServer.getAppPageUrl("duplicate/")
+    val prefix = TestServer.getAppPageUrl("duplicate/match/")
     val cur = currentUrl
     withClue(s"Unable to determine duplicate id: ${cur}") {
       cur must startWith (prefix)

@@ -28,7 +28,7 @@ object TablePage {
     new TablePage(dupid,tableid,target)
   }
 
-  def urlFor( dupid: String, tableid: String ) = TestServer.getAppPageUrl( s"duplicate/${dupid}/table/${tableid}" )
+  def urlFor( dupid: String, tableid: String ) = TestServer.getAppPageUrl( s"duplicate/match/${dupid}/table/${tableid}" )
 
   def goto( dupid: String, tableid: String, target: Target)(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
     go to urlFor(dupid,tableid)
@@ -44,7 +44,7 @@ object TablePage {
    * @return (dupid, tableid)
    */
   def findTableId(implicit webDriver: WebDriver, pos: Position): (String,String) = {
-    val prefix = TestServer.getAppPageUrl("duplicate/")
+    val prefix = TestServer.getAppPageUrl("duplicate/match/")
     val cur = currentUrl
     withClue(s"Unable to determine duplicate id: ${cur}") {
       cur must startWith (prefix)

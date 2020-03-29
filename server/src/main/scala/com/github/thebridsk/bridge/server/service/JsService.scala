@@ -153,7 +153,7 @@ trait JsService /* extends HttpService */ {
               val p = if (ap.startsWithSlash) ap.tail else ap
               logger.info(s"Looking for help file " + p)
               val pa = if (p.toString.endsWith("/")) p + "index.html" else p
-              getResource(pa)
+              getResource(pa, helpres)
             }
           }
           .getOrElse(reject)
@@ -168,8 +168,8 @@ trait JsService /* extends HttpService */ {
     }
   }
 
-  def getResource( res: Uri.Path ) = {
-    safeJoinPaths(htmlResources.baseName + "/", res, separator = '/') match {
+  def getResource( res: Uri.Path, fileFinder: FileFinder = htmlResources ) = {
+    safeJoinPaths(fileFinder.baseName + "/", res, separator = '/') match {
       case "" => reject
       case resourceName =>
         if (resourceName.endsWith(".gz")) {

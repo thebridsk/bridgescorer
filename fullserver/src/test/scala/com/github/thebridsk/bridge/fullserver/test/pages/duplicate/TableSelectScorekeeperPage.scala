@@ -32,7 +32,7 @@ object TableSelectScorekeeperPage {
 
   def urlFor( dupid: String, tableid: String, roundid: String, board: Option[String] ) = {
     val b = board.map(bb => s"boards/B${bb}/").getOrElse("")
-    TestServer.getAppPageUrl( s"duplicate/${dupid}/table/${tableid}/round/${roundid}/${b}teams" )
+    TestServer.getAppPageUrl( s"duplicate/match/${dupid}/table/${tableid}/round/${roundid}/${b}teams" )
   }
 
   def goto( dupid: String,

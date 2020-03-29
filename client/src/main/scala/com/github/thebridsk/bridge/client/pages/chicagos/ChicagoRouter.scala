@@ -6,7 +6,6 @@ import japgolly.scalajs.react.Callback
 import japgolly.scalajs.react.CallbackTo
 import japgolly.scalajs.react.extra.router.{RouterConfigDsl, RouterCtl, _}
 import japgolly.scalajs.react.vdom.html_<^._
-import japgolly.scalajs.react.extra.router.StaticDsl.Rule
 import com.github.thebridsk.bridge.client.routes.AppRouter.AppPage
 import com.github.thebridsk.bridge.client.routes.Module
 import com.github.thebridsk.bridge.client.routes.BridgeRouterBase
@@ -21,7 +20,7 @@ object ChicagoModule extends Module {
       .map(p => PlayChicago2(p).asInstanceOf[AppPage])
       .toList
 
-  def routes(): Rule[AppPage] =
+  def routes() =
     ChicagoRouter.routes.prefixPath_/("#chicago").pmap[AppPage](PlayChicago2) {
       case PlayChicago2(m) => m
     } |
@@ -104,35 +103,36 @@ object ChicagoRouter {
     import dsl._
 
     (emptyRule
-      | dynamicRouteCT(string("[a-zA-Z0-9]+").caseClass[SummaryView])
-        ~> dynRenderR((p, routerCtl) => PageSummary(p, routerCtl))
       | dynamicRouteCT(
         (string("[a-zA-Z0-9]+") / "names").caseClass[EditNamesView]
       )
         ~> dynRenderR((p, routerCtl) => PageEditNames(p, routerCtl))
       | dynamicRouteCT(
-        (string("[a-zA-Z0-9]+") / "rounds").caseClass[SummaryView]
-      )
-        ~> dynRenderR((p, routerCtl) => PageSummary(p, routerCtl))
-      | dynamicRouteCT(
-        (string("[a-zA-Z0-9]+") / "rounds" / int).caseClass[RoundView]
-      )
-        ~> dynRenderR((p, routerCtl) => PageSummary(p, routerCtl))
-      | dynamicRouteCT(
         (string("[a-zA-Z0-9]+") / "rounds" / int / "names").caseClass[NamesView]
       )
         ~> dynRenderR((p, routerCtl) => PagePlayers(p, routerCtl))
-      | dynamicRouteCT(
-        (string("[a-zA-Z0-9]+") / "rounds" / int / "hands").caseClass[RoundView]
-      )
-        ~> dynRenderR((p, routerCtl) => PageSummary(p, routerCtl))
       | dynamicRouteCT(
         (string("[a-zA-Z0-9]+") / "rounds" / int / "hands" / int)
           .caseClass[HandView]
       )
         ~> dynRenderR((p, routerCtl) => PageChicagoHand(p, routerCtl))
+      // | dynamicRouteCT(
+      //   (string("[a-zA-Z0-9]+") / "rounds" / int / "hands").caseClass[RoundView]
+      // )
+      //   ~> dynRenderR((p, routerCtl) => PageSummary(p, routerCtl))
+      | dynamicRouteCT(
+        (string("[a-zA-Z0-9]+") / "rounds" / int).caseClass[RoundView]
+      )
+        ~> dynRenderR((p, routerCtl) => PageSummary(p, routerCtl))
+      // | dynamicRouteCT(
+      //   (string("[a-zA-Z0-9]+") / "rounds").caseClass[SummaryView]
+      // )
+      //   ~> dynRenderR((p, routerCtl) => PageSummary(p, routerCtl))
+      | dynamicRouteCT(string("[a-zA-Z0-9]+").caseClass[SummaryView])
+        ~> dynRenderR((p, routerCtl) => PageSummary(p, routerCtl))
       | staticRoute(root, ListView)
-        ~> renderR(routerCtl => PageChicagoList(routerCtl, ListView)))
+        ~> renderR(routerCtl => PageChicagoList(routerCtl, ListView))
+    )
   }
 
   val importRoutes = RouterConfigDsl[ChicagoPage].buildRule { dsl =>

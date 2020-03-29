@@ -32,7 +32,7 @@ object HandPage {
   }
 
   // duplicate URI: #duplicate/M19/table/1/round/1/boards/B1/hands/T1
-  def urlFor(dupid: String, tableId: Int, roundId: Int, board: String, hand: String ) = TestServer.getAppPageUrl("duplicate/M19/table/1/round/1/boards/B1/hands/T1")
+  def urlFor(dupid: String, tableId: Int, roundId: Int, board: String, hand: String ) = TestServer.getAppPageUrl(s"duplicate/match/$dupid/table/$tableId/round/$roundId/boards/$board/hands/$hand")
 
   val patternForIds = """(M\d+)/table/(\d+)/round/(\d+)/boards/(B\d+)/hands/(T\d+)""".r
 }
@@ -62,7 +62,7 @@ class HandPage( implicit val webDriver: WebDriver, pageCreated: SourcePosition )
   }
 
   def findIds(implicit patienceConfig: PatienceConfig, pos: Position) = {
-    val prefix = TestServer.getAppPageUrl("duplicate/")
+    val prefix = TestServer.getAppPageUrl("duplicate/match/")
     val cur = currentUrl
     withClue(s"Unable to determine duplicate id: ${cur}") {
       cur must startWith (prefix)

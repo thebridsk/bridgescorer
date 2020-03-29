@@ -4,7 +4,6 @@ import Keys._
 import org.portablescala.sbtplatformdeps.PlatformDepsPlugin.autoImport._
 import org.scalajs.sbtplugin.ScalaJSPlugin
 import org.scalajs.sbtplugin.ScalaJSCrossVersion
-import org.scalajs.sbtplugin.ScalaJSPlugin.autoImport.{crossProject => _, CrossType => _, _}
 import scalajsbundler.sbtplugin.WebScalaJSBundlerPlugin.autoImport._
 
 import BldVersion._
