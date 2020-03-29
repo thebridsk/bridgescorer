@@ -95,8 +95,6 @@ object MyReleaseVersion {
     IO.writeLines(file, Seq(versionString))
   }
 
-  import org.scalajs.sbtplugin.ScalaJSPlugin.autoImport.isScalaJSProject
-
   val versionSetting = Seq(
     version := {
       val v = version.value

@@ -79,9 +79,6 @@ object StartServer extends Subcommand("start") with ShutdownHook {
   val defaultHttpsPort = 8443
   val defaultCertificate = "keys/example.com.p12"
 
-  implicit def dateConverter: ValueConverter[Duration] =
-    singleArgConverter[Duration](Duration(_))
-
   import com.github.thebridsk.utilities.main.Converters._
 
   descr("Start HTTP(S) server")

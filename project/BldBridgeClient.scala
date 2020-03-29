@@ -19,7 +19,9 @@ import BldVersion._
 
 object BldBridgeClient {
 
-  val clientUnitTests = "com.github.thebridsk.bridge.client.test.MyTest" ::
+  val clientUnitTests =
+    // "com.github.thebridsk.bridge.client.test.TestRouter" ::
+    "com.github.thebridsk.bridge.client.test.MyTest" ::
     "com.github.thebridsk.bridge.client.test.TestDuplicateStore" ::
     "com.github.thebridsk.bridge.client.test.TestLogFilter" ::
     "com.github.thebridsk.bridge.client.test.TestSerialize" ::
@@ -132,7 +134,7 @@ object BldBridgeClient {
 
 //    crossTarget in (Compile,npmUpdate) := crossTarget.value / "scalajs-bundler" / "main" / "js" / "js",
 //    crossTarget in (Test,npmUpdate) := crossTarget.value / "scalajs-bundler" / "test" / "js" / "js",
-      skip in packageJSDependencies := false,
+//      skip in packageJSDependencies := false,
 //    artifactPath in (Compile, fullOptJS) :=             (baseDirectory in ThisBuild).value / "client" / "target" / "js" / "js" / "bridgescorer-js-opt.js",
 //    artifactPath in (Compile, fastOptJS) :=             (baseDirectory in ThisBuild).value / "client" / "target" / "js" / "js" / "bridgescorer-js-fastopt.js",
 //    artifactPath in (Compile, packageJSDependencies) := (baseDirectory in ThisBuild).value / "client" / "target" / "js" / "js" / "bridgescorer-js-jsdeps.js",

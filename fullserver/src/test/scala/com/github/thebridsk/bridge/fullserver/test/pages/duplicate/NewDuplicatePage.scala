@@ -26,7 +26,7 @@ object NewDuplicatePage {
     new NewDuplicatePage
   }
 
-  def urlFor = TestServer.getAppPageUrl("duplicate/#new")
+  def urlFor = TestServer.getAppPageUrl("duplicate/new")
 
 }
 

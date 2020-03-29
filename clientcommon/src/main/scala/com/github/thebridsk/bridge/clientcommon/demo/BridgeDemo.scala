@@ -10,6 +10,11 @@ import scala.scalajs.js
 @JSExportTopLevel("BridgeDemo")
 object BridgeDemo {   // need to figure out how to use new way to call main
 
+  def setDemo( demo: Boolean ) = {
+    val g = js.Dynamic.global.asInstanceOf[js.Dictionary[Boolean]]
+    g("demo") = demo
+  }
+
   def isDemo: Boolean = {
     val g = js.Dynamic.global.asInstanceOf[js.Dictionary[Boolean]]
     if ( g.contains("demo") ) {

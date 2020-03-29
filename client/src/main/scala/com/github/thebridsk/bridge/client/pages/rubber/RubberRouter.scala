@@ -13,7 +13,6 @@ import japgolly.scalajs.react.CallbackTo
 import japgolly.scalajs.react.extra.router.{ RouterConfigDsl, RouterCtl, _ }
 import japgolly.scalajs.react.vdom.html_<^._
 import com.github.thebridsk.bridge.client.routes.AppRouter.AppPage
-import japgolly.scalajs.react.extra.router.StaticDsl.Rule
 import com.github.thebridsk.bridge.client.routes.Module
 import com.github.thebridsk.bridge.client.routes.BridgeRouter
 import com.github.thebridsk.bridge.client.routes.BridgeRouterBase
@@ -24,7 +23,7 @@ object RubberModule extends Module {
 
   def verifyPages(): List[AppPage] = RubberRouter.verifyPages.map( p => PlayRubber(p).asInstanceOf[AppPage]).toList
 
-  def routes(): Rule[AppPage] = RubberRouter.routes.prefixPath_/("#rubber").pmap[AppPage](PlayRubber){ case PlayRubber(m) => m } |
+  def routes() = RubberRouter.routes.prefixPath_/("#rubber").pmap[AppPage](PlayRubber){ case PlayRubber(m) => m } |
     RubberRouter.importRoutes.prefixPath_/("#import").pmap[AppPage](PlayRubber){ case PlayRubber(m) => m }
 
 }
@@ -95,19 +94,19 @@ object RubberRouter {
     import dsl._
 
     (emptyRule
-      | dynamicRouteCT( string("[a-zA-Z0-9]+").caseClass[RubberMatchView])
-        ~> dynRenderR( (p,routerCtl) => PageRubberMatch(p,routerCtl) )
-      | dynamicRouteCT( (string("[a-zA-Z0-9]+") / "details" ).caseClass[RubberMatchDetailsView])
-        ~> dynRenderR( (p,routerCtl) => PageRubberMatch(p,routerCtl) )
+      // | dynamicRouteCT( (string("[a-zA-Z0-9]+") / "details" ).caseClass[RubberMatchDetailsView])
+      //   ~> dynRenderR( (p,routerCtl) => PageRubberMatch(p,routerCtl) )
       | dynamicRouteCT( (string("[a-zA-Z0-9]+") / "names" ).caseClass[RubberMatchNamesView])
         ~> dynRenderR( (p,routerCtl) => PageRubberNames(p,routerCtl) )
-      | dynamicRouteCT( (string("[a-zA-Z0-9]+") / "hands" ).caseClass[RubberMatchDetailsView])
-        ~> dynRenderR( (p,routerCtl) => PageRubberMatch(p,routerCtl) )
       | dynamicRouteCT( (string("[a-zA-Z0-9]+") / "hands" / string("[a-zA-Z0-9]+") ).caseClass[RubberMatchHandView])
         ~> dynRenderR( (p,routerCtl) => PageRubberMatchHand(p,routerCtl) )
+      | dynamicRouteCT( (string("[a-zA-Z0-9]+") / "hands" ).caseClass[RubberMatchDetailsView])
+        ~> dynRenderR( (p,routerCtl) => PageRubberMatch(p,routerCtl) )
       | staticRoute( root, ListView )
         ~> renderR( routerCtl => PageRubberList(ListView,routerCtl) )
-      )
+      | dynamicRouteCT( string("[a-zA-Z0-9]+").caseClass[RubberMatchView])
+        ~> dynRenderR( (p,routerCtl) => PageRubberMatch(p,routerCtl) )
+    )
   }
 
   val importRoutes = RouterConfigDsl[RubberPage].buildRule { dsl =>

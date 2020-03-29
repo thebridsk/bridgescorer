@@ -15,6 +15,9 @@ import scala.scalajs.js.JSON
 import play.api.libs.json.JsValue
 import play.api.libs.json.Json
 import graphqlvoyager.VoyagerComponentProperty
+import com.github.thebridsk.bridge.clientcommon.react.reactwidgets.DateTimePicker
+import japgolly.scalajs.react.component.Js.Unmounted
+import japgolly.scalajs.react.raw.React.Element
 
 
 @js.native
@@ -69,25 +72,62 @@ object GraphiQL {
 //  @js.native
 //  object ReactWidgetsGraphiQL extends js.Object
 
-  val component = JsComponent[GraphiQLComponentProperty, Children.None, Null](GraphiQL)
+  // val component = componentFn
 
   def apply( graphqlUrl: String ) = {
-
-    val x = GraphiQL
 
 //    logger.info("GraphiQL: msgEmptyList="+msgEmptyList+", msgEmptyFilter="+msgEmptyFilter)
 
     val props = GraphiQLComponentProperty(graphqlUrl)
 
+    // val c = component
+
+    // showObject( c.asInstanceOf[js.Object], "GraphiQL.component" )
+
+    // c(props)
+
+    // val ce = React.raw.createElement[GraphiQLComponentProperty]( Raw.GraphiQL.asInstanceOf[japgolly.scalajs.react.raw.React.ComponentType[GraphiQLComponentProperty]], props )
+
+    // logger.fine(s"GraphiQL.apply: ce = $ce")
+
+    // ce.asInstanceOf[Unmounted[Null,Null]]
+
+    val x = Raw.GraphiQL
+
+    // see https://github.com/japgolly/scalajs-react/blob/master/test/src/test/scala/japgolly/scalajs/react/core/JsComponentEs6Test.scala
+    val RawComp = js.eval("window.GraphiQL")
+    val component = JsComponent[GraphiQLComponentProperty, Children.None, Null](RawComp)
     component(props)
-
-    // import japgolly.scalajs.react.vdom.html_<^._
-    // <.div("Temporarily removed")
-
   }
 
-  @JSImport("graphiql", JSImport.Namespace ) // "GraphiQL")
-  @js.native
-  object GraphiQL extends GraphiQL // GraphiQL
+  object Raw {
+    @JSImport("graphiql", JSImport.Namespace ) // "GraphiQL")
+    @js.native
+    object GraphiQL extends js.Object // GraphiQL
+  }
 
+//   def componentFn() = {
+//     logger.fine(s"RawGraphiQL = ${Raw.GraphiQL}")
+//     showObject( Raw.GraphiQL, "RawGraphiQL")
+//     logger.fine(s"DateTimePicker = ${DateTimePicker}")
+
+// //    JsFnComponent[GraphiQLComponentProperty, Children.None](RawGraphiQL)
+//     JsComponent[GraphiQLComponentProperty, Children.None, Null](Raw.GraphiQL)
+//   }
+
+  def showObject( c: js.Object, msg: String ) = {
+    if (logger.isFineLoggable()) {
+      logger.fine( s"Dumping ${msg}, ${c}")
+      val o = c.asInstanceOf[js.Dynamic]
+      js.Object.keys(o.asInstanceOf[js.Object]).foreach { k =>
+        val v = o.selectDynamic(k)
+        val s = js.typeOf(v) match {
+          case "function" => "function"
+          case _ => v.toString
+        }
+        logger.fine(s"  $k: $s")
+      }
+    }
+
+  }
 }

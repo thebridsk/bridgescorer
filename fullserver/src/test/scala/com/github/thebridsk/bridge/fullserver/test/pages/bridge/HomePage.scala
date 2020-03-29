@@ -48,7 +48,7 @@ class HomePage( implicit webDrivr: WebDriver, pageCreated: SourcePosition ) exte
 
   def validate(implicit patienceConfig: PatienceConfig, pos: Position) = logMethod(s"${pos.line} ${getClass.getSimpleName}.validate") {
     eventually {
-      pageTitle mustBe "The Bridge Score Keeper"
+      pageTitle mustBe "The Bridge ScoreKeeper"
       findButton("Duplicate",Some("Duplicate List"))
     }
     this

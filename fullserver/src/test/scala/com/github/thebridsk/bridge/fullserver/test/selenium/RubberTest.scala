@@ -164,7 +164,7 @@ class RubberTest extends AnyFlatSpec
 
   behavior of "Rubber Match test of Bridge Server"
 
-  it should "return a root page that has a title of \"The Bridge Score Keeper\"" in {
+  it should "return a root page that has a title of \"The Bridge ScoreKeeper\"" in {
     import Session1._
 
     tcpSleep(15)
@@ -650,7 +650,7 @@ class RubberTest extends AnyFlatSpec
     import Session1._
 
     go to (TestServer.getAppPage())
-    pageTitle mustBe ("The Bridge Score Keeper")
+    pageTitle mustBe ("The Bridge ScoreKeeper")
 
     findButtonAndClick("NewRubber")
     if (TestServer.isServerStartedByTest) {

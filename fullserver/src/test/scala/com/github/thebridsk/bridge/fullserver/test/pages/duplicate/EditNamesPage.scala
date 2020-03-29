@@ -22,7 +22,7 @@ object EditNamesPage {
     new EditNamesPage( getCurrentDupId )
   }
 
-  def urlFor( dupid: String ) = TestServer.getAppPageUrl(s"duplicate/${dupid}/names")
+  def urlFor( dupid: String ) = TestServer.getAppPageUrl(s"duplicate/match/${dupid}/names")
   def restUrlFor( dupid: String, teamId: String ) = TestServer.getUrl(s"/v1/rest/duplicate/${dupid}/teams/${teamId}")
 
   def goto( dupid: String )(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
@@ -39,7 +39,7 @@ object EditNamesPage {
   val patternURL = """(M\d+)/names""".r
 
   def getCurrentDupId( implicit webDriver: WebDriver, pos: Position ): String = {
-    val prefix = TestServer.getAppPageUrl("duplicate/")
+    val prefix = TestServer.getAppPageUrl("duplicate/match/")
     eventually {
       val cur = currentUrl
       cur must startWith( prefix )

@@ -140,7 +140,7 @@ class ChicagoDemoTestPages extends AnyFlatSpec
 
   behavior of "Chicago test of Bridge Server"
 
-  it should "return a root page that has a title of \"The Bridge Score Keeper\"" in {
+  it should "return a root page that has a title of \"The Bridge ScoreKeeper\"" in {
     import Session1._
 
     HomePage.demo.validate

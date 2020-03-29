@@ -11,7 +11,6 @@ import japgolly.scalajs.react.Callback
 import japgolly.scalajs.react.CallbackTo
 import com.github.thebridsk.bridge.clientapi.pages.ThankYouPage
 import com.github.thebridsk.bridge.clientapi.pages.AboutPage
-import japgolly.scalajs.react.extra.router.StaticDsl.Rule
 import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles.baseStyles
 import com.github.thebridsk.bridge.clientcommon.logger.{ Info => LogInfo }
 
@@ -119,7 +118,7 @@ class AppRouter {
       ).notFound( p => logit {
         document.defaultView.alert("Could not find path "+p)
         logger.fine("AppRouter: Unable to find path for: "+ p)
-        redirectToPage(Home)(Redirect.Replace)
+        redirectToPage(Home)(SetRouteVia.HistoryReplace)
       } )
       .verify(Home, verifyPages:_*)
       .renderWith(layout _)

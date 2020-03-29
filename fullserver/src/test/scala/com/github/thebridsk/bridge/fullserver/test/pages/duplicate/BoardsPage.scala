@@ -50,7 +50,7 @@ object BoardsPage {
 
   def urlFor(dupid: String, director: Boolean ) = {
     val dir = if (director) "director/" else ""
-    TestServer.getAppPageUrl(s"duplicate/${dupid}/${dir}boards")
+    TestServer.getAppPageUrl(s"duplicate/match/${dupid}/${dir}boards")
   }
 
   /**

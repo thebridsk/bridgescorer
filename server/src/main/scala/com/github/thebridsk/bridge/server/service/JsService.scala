@@ -140,20 +140,7 @@ trait JsService /* extends HttpService */ {
           extractUnmatchedPath { path =>
             logger.info(s"Looking for file " + path)
             val pa = if (path.toString.endsWith("/")) path + "index.html" else path
-            safeJoinPaths(htmlResources.baseName + "/", pa, separator = '/') match {
-              case "" => reject
-              case resourceName =>
-                if (resourceName.endsWith(".gz")) {
-                  getFromResource(resourceName)
-                } else {
-                  val resname = resourceName + ".gz"
-                  logger.info(
-                    s"Looking for gzipped file as a resource " + resname
-                  )
-                  getFromResource(resname) ~
-                  getFromResource(resourceName)
-                }
-            }
+            getResource(pa)
           }
 //        }
       }
@@ -166,21 +153,7 @@ trait JsService /* extends HttpService */ {
               val p = if (ap.startsWithSlash) ap.tail else ap
               logger.info(s"Looking for help file " + p)
               val pa = if (p.toString.endsWith("/")) p + "index.html" else p
-
-              safeJoinPaths(helpres.baseName + "/", pa, separator = '/') match {
-                case "" => reject
-                case resourceName =>
-                  if (resourceName.endsWith(".gz")) {
-                    getFromResource(resourceName)
-                  } else {
-                    val resname = resourceName + ".gz"
-                    logger.info(
-                      s"Looking for gzipped file as a resource " + resname
-                    )
-                    getFromResource(resname) ~
-                      getFromResource(resourceName)
-                  }
-              }
+              getResource(pa, helpres)
             }
           }
           .getOrElse(reject)
@@ -188,6 +161,27 @@ trait JsService /* extends HttpService */ {
     } ~
     path("favicon.ico") {
       redirect("/public/favicon.ico", StatusCodes.PermanentRedirect)
+    } ~
+    path("manifest.json") {
+      getResource( Uri.Path( "manifest.json" ) )
+
+    }
+  }
+
+  def getResource( res: Uri.Path, fileFinder: FileFinder = htmlResources ) = {
+    safeJoinPaths(fileFinder.baseName + "/", res, separator = '/') match {
+      case "" => reject
+      case resourceName =>
+        if (resourceName.endsWith(".gz")) {
+          getFromResource(resourceName)
+        } else {
+          val resname = resourceName + ".gz"
+          logger.info(
+            s"Looking for gzipped file as a resource " + resname
+          )
+          getFromResource(resname) ~
+          getFromResource(resourceName)
+        }
     }
   }
 

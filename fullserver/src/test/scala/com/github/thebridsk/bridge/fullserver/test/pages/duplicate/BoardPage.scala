@@ -47,11 +47,11 @@ object BoardPage {
   }
 
   def urlFor(dupid: String, tableId: Int, roundId: Int, boardId: String ) =
-    TestServer.getAppPageUrl(s"duplicate/${dupid}/table/${tableId}/round/${roundId}/boards/${boardId}")
+    TestServer.getAppPageUrl(s"duplicate/match/${dupid}/table/${tableId}/round/${roundId}/boards/${boardId}")
 
   def urlFor(dupid: String, director: Boolean, boardId: String ) = {
     val dir = if (director) "director/" else ""
-    TestServer.getAppPageUrl(s"duplicate/${dupid}/${dir}boards/${boardId}")
+    TestServer.getAppPageUrl(s"duplicate/match/${dupid}/${dir}boards/${boardId}")
   }
 
   /**

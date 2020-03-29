@@ -6,26 +6,30 @@
 
 name := "project-bridgescorer"
 
-scalaVersion := "2.12.10"
+scalaVersion := "2.12.11"
 
 val vLog4j = "1.7.30"              // https://github.com/qos-ch/slf4j
-val vJGit = "5.6.0.201912101111-r" // https://github.com/eclipse/jgit
+val vJGit = "5.7.0.202003110725-r" // https://github.com/eclipse/jgit
 
-val vCrossProject = "0.6.1"        // https://github.com/portable-scala/sbt-crossproject
-val vScalaJSDefault = "0.6.31"     // http://www.scala-js.org/
+val vCrossProject = "1.0.0"        // https://github.com/portable-scala/sbt-crossproject
+// scala-react does not compile on scalajs 1.0 yet
+val vScalaJSDefault = "0.6.32"     // http://www.scala-js.org/
+
+val sbtScalaJsBundlerSuffix = if (vScalaJSDefault.startsWith("0.6.")) "-sjs06" else ""  // "" - for ScalaJS 1.0 "-sjs06" for ScalaJS 0.6
+
 val vSbtAssembly = "0.14.10"       // https://github.com/sbt/sbt-assembly
 val vSbtGit = "1.0.0"              // https://github.com/sbt/sbt-git
 val vSbtSCoverage = "1.5.1"        // https://github.com/scoverage/sbt-scoverage
 val vSbtBuildInfo = "0.9.0"        // https://github.com/sbt/sbt-buildinfo
 // v1.0.12 causes java.lang.NoSuchMethodError: sbtrelease.ReleaseStateTransformations$.commitNextVersion()Lsbtrelease/ReleasePlugin$autoImport$ReleaseStep;
-val vSbtRelease = "1.0.12"         // https://github.com/sbt/sbt-release
+val vSbtRelease = "1.0.13"         // https://github.com/sbt/sbt-release
 val vSbtDependencyGraph = "0.9.2"  // https://github.com/jrudolph/sbt-dependency-graph
 val vSbtUpdates = "0.5.0"          // https://github.com/rtimush/sbt-updates
 
 val scalaJSVersion = Option(System.getenv("SCALAJS_VERSION")).getOrElse(vScalaJSDefault)
 
 val vSbtGzip = "1.0.2"             // https://github.com/sbt/sbt-gzip
-val vSbtScalaJsBundler = "0.15.0-0.6"  // https://github.com/scalacenter/scalajs-bundler
+val vSbtScalaJsBundler = "0.17.0"  // https://github.com/scalacenter/scalajs-bundler
 
 // not used:
 
@@ -69,7 +73,7 @@ scalacOptions ++= Seq( "-unchecked", "-feature", "-deprecation" )
 
 addSbtPlugin("com.typesafe.sbt" % "sbt-gzip" % vSbtGzip withSources())
 
-addSbtPlugin("ch.epfl.scala" % "sbt-web-scalajs-bundler" % vSbtScalaJsBundler withSources())
-addSbtPlugin("ch.epfl.scala" % "sbt-scalajs-bundler" % vSbtScalaJsBundler withSources())
+addSbtPlugin("ch.epfl.scala" % s"sbt-web-scalajs-bundler${sbtScalaJsBundlerSuffix}" % vSbtScalaJsBundler withSources())
+addSbtPlugin("ch.epfl.scala" % s"sbt-scalajs-bundler${sbtScalaJsBundlerSuffix}" % vSbtScalaJsBundler withSources())
 addSbtPlugin("org.scalameta" % "sbt-scalafmt" % vSbtScalaFmt withSources())
 addSbtPlugin("ch.epfl.scala" % "sbt-bloop" % vBloop withSources())

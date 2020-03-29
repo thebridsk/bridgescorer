@@ -32,7 +32,7 @@ object TableEnterScorekeeperPage {
 
   def urlFor( dupid: String, tableid: String, roundid: String, board: Option[String] ) = {
     val b = board.map(bb => s"boards/B${bb}/").getOrElse("")
-    TestServer.getAppPageUrl( s"duplicate/${dupid}/table/${tableid}/round/${roundid}/${b}teams" )
+    TestServer.getAppPageUrl( s"duplicate/match/${dupid}/table/${tableid}/round/${roundid}/${b}teams" )
   }
 
   def goto( dupid: String,
@@ -58,7 +58,7 @@ object TableEnterScorekeeperPage {
    * @return (dupid, tableid,roundid)
    */
   def findTableRoundId(implicit webDriver: WebDriver, pos: Position): (String,String,String,Option[String]) = {
-    val prefix = TestServer.getAppPageUrl("duplicate/")
+    val prefix = TestServer.getAppPageUrl("duplicate/match/")
     val cur = currentUrl
     withClue(s"Unable to determine duplicate id: ${cur}") {
       cur must startWith (prefix)
