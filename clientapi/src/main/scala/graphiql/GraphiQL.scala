@@ -1,10 +1,8 @@
 package graphiql
 
 import scala.scalajs.js
-import scala.scalajs.js.annotation.JSName
 import japgolly.scalajs.react._
 import com.github.thebridsk.utilities.logging.Logger
-import scala.scalajs.js.annotation.JSGlobal
 import scala.scalajs.js.Promise
 import scala.scalajs.js.annotation.JSImport
 import com.github.thebridsk.bridge.clientcommon.graphql.GraphQLBaseClient
@@ -12,12 +10,7 @@ import com.github.thebridsk.bridge.clientcommon.graphql.Query
 import com.github.thebridsk.bridge.clientcommon.rest2.AjaxResult
 import com.github.thebridsk.bridge.data.graphql.GraphQLProtocol.GraphQLResponse
 import scala.scalajs.js.JSON
-import play.api.libs.json.JsValue
-import play.api.libs.json.Json
-import graphqlvoyager.VoyagerComponentProperty
 import com.github.thebridsk.bridge.clientcommon.react.reactwidgets.DateTimePicker
-import japgolly.scalajs.react.component.Js.Unmounted
-import japgolly.scalajs.react.raw.React.Element
 
 
 @js.native
@@ -55,24 +48,10 @@ object GraphiQLComponentProperty {
   }
 }
 
-@js.native
-trait GraphiQL extends js.Object
-
 object GraphiQL {
   val logger = Logger("bridge.GraphiQL")
 
-//  val component = ScalaComponent.builder[GraphiQLComponentProperty]("bridge.GraphiQL")
-//  .stateless
-//  .render_P( props => {
-//    raw.React.createElement(GraphiQL, props )
-//  }).build
-
-
-//  @JSGlobal("ReactWidgets.GraphiQL")
-//  @js.native
-//  object ReactWidgetsGraphiQL extends js.Object
-
-  // val component = componentFn
+  val component = JsComponent[GraphiQLComponentProperty, Children.None, Null](RawGraphiQL.default)
 
   def apply( graphqlUrl: String ) = {
 
@@ -80,40 +59,24 @@ object GraphiQL {
 
     val props = GraphiQLComponentProperty(graphqlUrl)
 
-    // val c = component
-
-    // showObject( c.asInstanceOf[js.Object], "GraphiQL.component" )
-
-    // c(props)
-
-    // val ce = React.raw.createElement[GraphiQLComponentProperty]( Raw.GraphiQL.asInstanceOf[japgolly.scalajs.react.raw.React.ComponentType[GraphiQLComponentProperty]], props )
-
-    // logger.fine(s"GraphiQL.apply: ce = $ce")
-
-    // ce.asInstanceOf[Unmounted[Null,Null]]
-
-    val x = Raw.GraphiQL
-
-    // see https://github.com/japgolly/scalajs-react/blob/master/test/src/test/scala/japgolly/scalajs/react/core/JsComponentEs6Test.scala
-    val RawComp = js.eval("window.GraphiQL")
-    val component = JsComponent[GraphiQLComponentProperty, Children.None, Null](RawComp)
     component(props)
   }
 
-  object Raw {
-    @JSImport("graphiql", JSImport.Namespace ) // "GraphiQL")
-    @js.native
-    object GraphiQL extends js.Object // GraphiQL
+
+  @js.native
+  @JSImport("graphiql", JSImport.Namespace ) // "GraphiQL")
+  object RawGraphiQL extends js.Any {
+
+    val default: js.Any = js.native
   }
 
-//   def componentFn() = {
-//     logger.fine(s"RawGraphiQL = ${Raw.GraphiQL}")
-//     showObject( Raw.GraphiQL, "RawGraphiQL")
-//     logger.fine(s"DateTimePicker = ${DateTimePicker}")
-
-// //    JsFnComponent[GraphiQLComponentProperty, Children.None](RawGraphiQL)
-//     JsComponent[GraphiQLComponentProperty, Children.None, Null](Raw.GraphiQL)
-//   }
+  def showAny( c: js.Any, msg: String ) = {
+    js.typeOf(c) match {
+      case "object" => showObject(c.asInstanceOf[js.Object],msg)
+      case "function" => logger.fine(s"${msg} is a function")
+      case _ => logger.fine(s"${msg} is ${c.toString()}")
+    }
+  }
 
   def showObject( c: js.Object, msg: String ) = {
     if (logger.isFineLoggable()) {
