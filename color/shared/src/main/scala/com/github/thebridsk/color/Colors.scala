@@ -23,12 +23,14 @@ object Colors {
     if (n == 0) Nil
     else if (n == 1) Color.hsl( hue, saturation, 50.0 )::Nil
     else {
-//      val step = (maxLightness - minLightness)/(n)
-      val max = BigDecimal(maxLightness)
-      val min = BigDecimal(minLightness)
-      val step = (max - min)/n
-//      val delta = BigDecimal( 0.0001 )
-      val cols = (min until max by step).map { l =>
+      val step = (maxLightness - minLightness)/n
+
+      def loopUntil[T]( start: Double, stop: Double, step: Double )( f: Double => T ): List[T] = {
+        if (start >= stop) Nil
+        else f(start)::loopUntil(start+step,stop,step)(f)
+      }
+
+      val cols = loopUntil(minLightness, maxLightness, step) { l =>
          Color.hsl( hue, saturation, l.toDouble )
       }
       if (darkToLight1) cols
@@ -142,11 +144,14 @@ object Colors {
     if (n == 0) Nil
     else if (n == 1) Color.hsl( hue, saturation, 50.0 )::Nil
     else {
-//      val step = (maxLightness - minLightness)/(n-1)
-      val max = BigDecimal(maxLightness)
-      val min = BigDecimal(minLightness)
-      val step = (max - min)/n
-      val cols = (min to max by step).map { l =>
+      val step = (maxLightness - minLightness)/n
+
+      def loopTo[T]( start: Double, stop: Double, step: Double )( f: Double => T ): List[T] = {
+        if (start > stop) Nil
+        else f(start)::loopTo(start+step,stop,step)(f)
+      }
+
+      val cols = loopTo(minLightness, maxLightness, step) { l =>
          Color.hsl( hue, saturation, l.toDouble )
       }
       if (darkToLight1) cols
@@ -155,3 +160,4 @@ object Colors {
   }
 
 }
+
