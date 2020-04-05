@@ -194,6 +194,7 @@ object BldCommonSettings {
   val skipGenerateImageSetting = settingKey[Boolean]("if true images generation is skipped if they already exist")
 
   val hugo = taskKey[Unit]("Run Hugo")
+  val hugoserver = taskKey[Unit]("Run Hugo Server")
   val hugosetup = taskKey[Unit]("Setup to run Hugo")
   val hugoWithTest = taskKey[Unit]("Run Hugo")
   val hugosetupWithTest = taskKey[Unit]("Setup to run Hugo")
