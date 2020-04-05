@@ -39,6 +39,20 @@ object BldBridgeHelp {
         Hugo.run(log, bd, targ, helpversion, shorthelpversion)
       },
 
+      hugoserver := {
+        val setup = hugosetup.value
+        val log = streams.value.log
+        val bd = new File(baseDirectory.value, "docs" )
+
+        val helpversion = version.value
+        val shorthelpversion = helpversion match {
+          case patternVersion(v) => v
+          case _ => helpversion
+        }
+
+        Hugo.runServer(log, bd, helpversion, shorthelpversion)
+      },
+
       hugosetup := {
         {
           val testgen = new File( baseDirectory.value + "/../fullserver/target/docs" )
