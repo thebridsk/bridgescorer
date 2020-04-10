@@ -151,10 +151,8 @@ class BridgeServer( val assemblyJar: String, val port: String = "8082") {
 
 object BridgeServer {
 
-  def runjava( log: Logger, cmd: List[String], workingDirectory: Option[File] ): Unit = {
-    log.info( "Running java "+cmd.mkString(" ") )
-    val rc = Fork.java( ForkOptions().withWorkingDirectory( workingDirectory), cmd )
-    if (rc != 0) throw new Error("Failed running java "+cmd.mkString(" "))
+  def runjava( logger: Logger, cmd: List[String], workingDirectory: Option[File] ): Unit = {
+    new MyProcess(logger).java( cmd, workingDirectory )
   }
 
   /**

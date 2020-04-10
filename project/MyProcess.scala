@@ -44,7 +44,17 @@ class MyProcess( logger: Option[Logger] = None ) {
     proc
   }
 
-
+  /**
+    * Execute a command using bash shell.  This requires WSL on windows
+    * @param cwd
+    * @param addEnvp
+    * @param cmd
+    * @return Process object
+    */
+  def bash( cwd: File, addEnvp: Option[Map[String,String]], cmd: String* ) = {
+    val env = addEnvp.getOrElse(Map.empty)
+    exec( List("bash", "-c", cmd.mkString(" ")), env, cwd);
+  }
 
   def startOnWindows( cwd: File, addEnvp: Option[Map[String,String]], cmd: String* ) = {
     val env = addEnvp.getOrElse(Map.empty)
@@ -98,6 +108,30 @@ class MyProcess( logger: Option[Logger] = None ) {
     }
 
   }
+
+
+  private val keytoolPgm = new Fork("keytool", None)
+
+  def keytool(
+      cmd: List[String],
+      workingDirectory: Option[File] = None,
+      env: Option[Map[String,String]] = None,
+      printcmd: Option[List[String]] = None
+  ): Unit = {
+    val pcmd = printcmd.getOrElse(cmd).mkString(" ")
+    logger.foreach( _.info( "Running java "+pcmd ) )
+    val fo = ForkOptions().withWorkingDirectory( workingDirectory)
+    val forkOptions = env.map( e => fo.withEnvVars(e) ).getOrElse(fo)
+    val rc = keytoolPrm( forkOptions, cmd )
+    if (rc != 0) throw new Error("Failed running keytool "+pcmd)
+  }
+
+  def java( cmd: List[String], workingDirectory: Option[File] ): Unit = {
+    logger.foreach( _.info( "Running java "+cmd.mkString(" ") ))
+    val rc = Fork.java( ForkOptions().withWorkingDirectory( workingDirectory), cmd )
+    if (rc != 0) throw new Error("Failed running java "+cmd.mkString(" "))
+  }
+
 }
 
 object MyProcess {
