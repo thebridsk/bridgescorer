@@ -77,7 +77,7 @@ object StartServer extends Subcommand("start") with ShutdownHook {
   val defaultCacheFor = "6h"
 
   val defaultHttpsPort = 8443
-  val defaultCertificate = "keys/example.com.p12"
+  val defaultCertificate = "keys/examplebridgescorekeeper.p12"
 
   import com.github.thebridsk.utilities.main.Converters._
 
@@ -330,7 +330,7 @@ private class StartServer {
   val defaultRunFor = "12h"
 
   val defaultHttpsPort = 8443
-  val defaultCertificate = "keys/example.com.p12"
+  val defaultCertificate = "keys/examplebridgescorekeeper.p12"
 
   def getHttpPortOption() = {
     optionPort.toOption match {
@@ -508,15 +508,26 @@ private class StartServer {
   def serverContext = {
     val password = optionCertPassword.toOption.getOrElse("abcdef").toCharArray // default NOT SECURE
     val context = SSLContext.getInstance("TLS")
-    val ks = KeyStore.getInstance("PKCS12")
-    optionCertificate.toOption match {
+    val ks = optionCertificate.toOption match {
       case Some(cert) =>
+        val ks = if (cert.endsWith(".jks")) {
+          KeyStore.getInstance("JKS")
+        } else {
+          KeyStore.getInstance("PKCS12")
+        }
         ks.load(new FileInputStream(cert), password)
+        ks
       case None =>
+        val ks = if (defaultCertificate.endsWith(".jks")) {
+          KeyStore.getInstance("JKS")
+        } else {
+          KeyStore.getInstance("PKCS12")
+        }
         ks.load(
           getClass.getClassLoader.getResourceAsStream(defaultCertificate),
           password
         )
+        ks
     }
     val keyManagerFactory = KeyManagerFactory.getInstance("SunX509")
     keyManagerFactory.init(ks, password)

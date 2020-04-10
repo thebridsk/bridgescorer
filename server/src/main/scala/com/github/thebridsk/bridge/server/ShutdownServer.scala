@@ -67,7 +67,7 @@ object ShutdownServer extends Subcommand("shutdown") {
   val logger = Logger(ShutdownServer.getClass.getName)
 
   val defaultHttpsPort = 8443
-  val defaultCertificate = "keys/example.com.p12"
+  val defaultCertificate = "keys/examplebridgescorekeeper.p12"
 
   implicit def dateConverter: ValueConverter[Duration] =
     singleArgConverter[Duration](Duration(_))
@@ -177,7 +177,7 @@ private class ShutdownServerAkka {
   val defaultRunFor = "12h"
 
   val defaultHttpsPort = 8443
-  val defaultCertificate = "keys/example.com.p12"
+  val defaultCertificate = "keys/examplebridgescorekeeper.p12"
 
   def getHttpPortOption() = {
     optionPort.toOption match {

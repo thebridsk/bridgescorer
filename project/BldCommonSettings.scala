@@ -201,8 +201,8 @@ object BldCommonSettings {
   val helptask = taskKey[Seq[(java.io.File, String)]]("Identifies help resources")
 
   val server = taskKey[Unit]("Run server with default store and logging to server/logs directory, no help")
-  val serverssl = taskKey[Unit]("Run server with default store and logging to server/logs directory, no help, using https with example.com.p12 cert")
-  val serverhttps2 = taskKey[Unit]("Run server with default store and logging to server/logs directory, no help, using https with example.com.p12 cert, http2 support")
+  val serverssl = taskKey[Unit]("Run server with default store and logging to server/logs directory, no help, using https with examplebridgescorekeeper.p12 cert")
+  val serverhttps2 = taskKey[Unit]("Run server with default store and logging to server/logs directory, no help, using https with examplebridgescorekeeper.p12 cert, http2 support")
   val serverhttp2 = taskKey[Unit]("Run server with default store and logging to server/logs directory, no help, http2 support")
   val serverhelp = taskKey[Unit]("Run server with default store and logging to server/logs directory, with help")
   val servertemp = taskKey[Unit]("Run server with temp store and logging to server/logs directory")
