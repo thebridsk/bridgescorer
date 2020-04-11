@@ -433,7 +433,7 @@ private class StartServer {
     val http2Support = optionHttp2()
 
     val context: Option[ConnectionContext] = if (httpsPort.isDefined) {
-      Some(serverContext)
+      Some(serverSSLContext())
     } else {
       None
     }
@@ -505,10 +505,13 @@ private class StartServer {
   /**
     * Get the ssl context
     */
-  def serverContext = {
-    val password = optionCertPassword.toOption.getOrElse("abcdef").toCharArray // default NOT SECURE
+  def serverSSLContext(
+      certPassword: Option[String] = optionCertPassword.toOption,
+      certificate: Option[String] = optionCertificate.toOption
+  ) = {
+    val password = certPassword.getOrElse("abcdef").toCharArray // default NOT SECURE
     val context = SSLContext.getInstance("TLS")
-    val ks = optionCertificate.toOption match {
+    val ks = certificate match {
       case Some(cert) =>
         val ks = if (cert.endsWith(".jks")) {
           KeyStore.getInstance("JKS")
@@ -559,8 +562,8 @@ private class StartServer {
     * @param httpPort the port for http to listen on, default: Some(8080)
     * @param httpsPort the port for https to listen on, default: None
     * @param bridge the BridgeService to use, if None then BridgeServiceInMemory is used
-    * @param connectionContext the connection context, MUST be specified if httpsPort is not None.
-    *                          Default is for http communications.
+    * @param connectionContext the SSL connection context, default is serverContext
+    *                          This is only used if httpsPort is not None
     * @return A Future that completes when the server is ready and listening on the ports.
     */
   def start(
@@ -637,10 +640,6 @@ private class StartServer {
 
     }
     logger.info("Starting server")
-    httpsPort match {
-      case Some(port) =>
-      case None       =>
-    }
     val settings = ServerSettings(system)
     val httpSettings = settings.withPreviewServerSettings(
       settings.previewServerSettings.withEnableHttp2(false)
@@ -654,7 +653,7 @@ private class StartServer {
           Route.asyncHandler(myService.myRouteWithLogging),
           interface,
           httpsPort.get,
-          connectionContext = connectionContext.get,
+          connectionContext = connectionContext.getOrElse(serverSSLContext()),
           settings = httpsSettings
         )
       )
@@ -811,7 +810,7 @@ private class StartServer {
         Http().outgoingConnectionHttps(
           "loopback",
           port,
-          connectionContext = serverContext,
+          connectionContext = serverSSLContext(),
           localAddress =
             Some(new InetSocketAddress(InetAddress.getLoopbackAddress, 0))
         )
