@@ -200,6 +200,9 @@ object BldCommonSettings {
   val hugosetupWithTest = taskKey[Unit]("Setup to run Hugo")
   val helptask = taskKey[Seq[(java.io.File, String)]]("Identifies help resources")
 
+  case class SSLKeys( keystore: File, keystorepass: String, serveralias: String, keypass: String, truststore: File )
+  val generatesslkeys = taskKey[SSLKeys]("Generate SSL keys for testing HTTPS connections")
+
   val server = taskKey[Unit]("Run server with default store and logging to server/logs directory, no help")
   val serverssl = taskKey[Unit]("Run server with default store and logging to server/logs directory, no help, using https with examplebridgescorekeeper.p12 cert")
   val serverhttps2 = taskKey[Unit]("Run server with default store and logging to server/logs directory, no help, using https with examplebridgescorekeeper.p12 cert, http2 support")

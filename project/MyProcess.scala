@@ -21,6 +21,11 @@ import java.nio.file.DirectoryNotEmptyException
 import sbt.io.IO
 import java.nio.file.StandardCopyOption
 import collection.JavaConverters._
+import java.lang.ProcessBuilder.Redirect
+import java.io.BufferedWriter
+import java.io.OutputStreamWriter
+import sbt.Fork
+import sbt.ForkOptions
 
 class MyProcess( logger: Option[Logger] = None ) {
 
@@ -41,6 +46,31 @@ class MyProcess( logger: Option[Logger] = None ) {
     val env = pb.environment()
     addEnvp.foreach( e => env.put(e._1, e._2) )
     val proc = pb.start()
+    proc
+  }
+
+  /**
+    * execute a program, stdin of program gets string in stdin argument.
+    *
+    * @param cmd
+    * @param addEnvp
+    * @param cwd
+    * @param stdin the data in UTF8
+    * @return
+    */
+  def exec( cmd: List[String], addEnvp: Map[String,String], cwd: File, stdin: Option[String], pcmd: Option[List[String]] = None ): Process = {
+    val i = counter.incrementAndGet()
+    logger.foreach( l => l.info(s"""Executing OS command($i): ${pcmd.getOrElse(cmd).mkString(" ")}""") )
+    val pb = new ProcessBuilder().command(cmd.asJava).directory(cwd).redirectOutput(Redirect.INHERIT).redirectError(Redirect.INHERIT).redirectInput(Redirect.PIPE)
+    val env = pb.environment()
+    addEnvp.foreach( e => env.put(e._1, e._2) )
+    val proc = pb.start()
+    stdin.foreach { data =>
+      val pipeIn = proc.getOutputStream()
+      val in = new OutputStreamWriter( pipeIn, "UTF8" )
+      in.write(data)
+      in.flush
+    }
     proc
   }
 
@@ -109,21 +139,23 @@ class MyProcess( logger: Option[Logger] = None ) {
 
   }
 
-
-  private val keytoolPgm = new Fork("keytool", None)
-
   def keytool(
       cmd: List[String],
       workingDirectory: Option[File] = None,
       env: Option[Map[String,String]] = None,
-      printcmd: Option[List[String]] = None
+      printcmd: Option[List[String]] = None,
+      stdin: Option[String] = None
   ): Unit = {
-    val pcmd = printcmd.getOrElse(cmd).mkString(" ")
-    logger.foreach( _.info( "Running java "+pcmd ) )
-    val fo = ForkOptions().withWorkingDirectory( workingDirectory)
-    val forkOptions = env.map( e => fo.withEnvVars(e) ).getOrElse(fo)
-    val rc = keytoolPrm( forkOptions, cmd )
-    if (rc != 0) throw new Error("Failed running keytool "+pcmd)
+    val pcmd = printcmd.getOrElse(cmd)
+    val wd = workingDirectory.getOrElse( new File(".") ).getAbsolutePath()
+    logger.foreach { l =>
+      l.info( s"Working Directory is $wd")
+      l.info( s"Running: keytool ${pcmd.mkString(" ")}" )
+    }
+    val ecmd = "keytool"::cmd
+    val proc = exec(ecmd, env.getOrElse(Map()), workingDirectory.getOrElse(new File(".")), stdin, Some("keytool"::pcmd) )
+    val rc = proc.waitFor()
+    if (rc != 0) throw new Error(s"Failed, with rc=${rc} running keytool ${pcmd.mkString(" ")}")
   }
 
   def java( cmd: List[String], workingDirectory: Option[File] ): Unit = {
