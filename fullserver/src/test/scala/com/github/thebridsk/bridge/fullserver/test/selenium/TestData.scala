@@ -12,7 +12,7 @@ import com.github.thebridsk.bridge.server.backend.BridgeServiceFileStoreConverte
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.annotation.tailrec
 import java.io.FileNotFoundException
-import com.github.thebridsk.bridge.server.test.selenium.TestServer
+import com.github.thebridsk.bridge.server.test.util.TestServer
 
 object TestData {
 

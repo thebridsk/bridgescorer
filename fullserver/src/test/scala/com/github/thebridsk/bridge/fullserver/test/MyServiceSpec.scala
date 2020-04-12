@@ -31,7 +31,7 @@ import com.github.thebridsk.bridge.server.service.ShutdownHook
 import scala.concurrent.Future
 import scala.concurrent.Promise
 import com.github.thebridsk.bridge.data.websocket.DuplexProtocol.LogEntryV2
-import com.github.thebridsk.bridge.server.test.selenium.TestServer
+import com.github.thebridsk.bridge.server.test.util.TestServer
 import akka.http.scaladsl.testkit.RouteTestTimeout
 import akka.http.scaladsl.model.headers.HttpEncodings
 import java.util.zip.GZIPInputStream

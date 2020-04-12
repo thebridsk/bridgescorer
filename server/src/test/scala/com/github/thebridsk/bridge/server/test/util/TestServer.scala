@@ -1,4 +1,4 @@
-package com.github.thebridsk.bridge.server.test.selenium
+package com.github.thebridsk.bridge.server.test.util
 
 import com.github.thebridsk.bridge.server.backend.BridgeServiceInMemory
 import com.github.thebridsk.bridge.server.Server
@@ -142,19 +142,41 @@ object TestServer {
 
   def getMyService = myService.get
 
-  def start() = {
+  def getHttpsPort = port + 443 - 80
+
+  def start( https: Boolean = false ) = {
     MonitorTCP.startMonitoring()
-    onlyRunWhenStartingServer(Some("Using existing server")) { ()=>
-      synchronized {
-        if ( (getAndIncrementStartCount()) == 0 ) {
-          testlog.info(s"Starting TestServer hosturl=${hosturl}, useWebsocketLogging=${useWebsocketLogging}, backend.defaultLoggerConfig=${backend.getDefaultLoggerConfig(false)}")
-          Server.init()
-          val future = StartServer.start(interface,Some(port),None,Some(backend))
-          import scala.concurrent.ExecutionContext.Implicits.global
-          future.map( s => myService = Some(s))
-          Await.ready( future, 60 seconds )
+    try {
+      onlyRunWhenStartingServer(Some("Using existing server")) { ()=>
+        synchronized {
+          if ( (getAndIncrementStartCount()) == 0 ) {
+            testlog.info(s"Starting TestServer https=${https}, hosturl=${hosturl}, useWebsocketLogging=${useWebsocketLogging}, backend.defaultLoggerConfig=${backend.getDefaultLoggerConfig(false)}")
+            Server.init()
+            val (httpsPort, connectionContext) = if (https) {
+              val context = StartServer.serverSSLContext( Some("abcdef"), Some("../server/key/examplebridgescorekeeper.jks") )
+              val httpsport = getHttpsPort
+              testlog.info(s"HTTPS port is ${httpsport}")
+              (Some( httpsport ), Some(context))
+            } else {
+              (None,None)
+            }
+            val future = StartServer.start(
+                interface = interface,
+                httpPort = Some(port),
+                httpsPort = httpsPort,
+                bridge = Some(backend),
+                connectionContext = connectionContext
+            )
+            import scala.concurrent.ExecutionContext.Implicits.global
+            future.map( s => myService = Some(s))
+            Await.ready( future, 60 seconds )
+          }
         }
       }
+    } catch {
+      case x: Throwable =>
+        testlog.severe("TestServer.start failed", x)
+        throw x
     }
   }
 

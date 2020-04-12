@@ -37,7 +37,7 @@ import com.github.thebridsk.browserpages.Session
 import com.github.thebridsk.bridge.fullserver.test.pages.LightDarkAddOn
 import com.github.thebridsk.browserpages.PageBrowser
 import scala.jdk.CollectionConverters._
-import com.github.thebridsk.bridge.server.test.selenium.TestServer
+import com.github.thebridsk.bridge.server.test.util.TestServer
 
 object ChicagoDemoTestPages {
 

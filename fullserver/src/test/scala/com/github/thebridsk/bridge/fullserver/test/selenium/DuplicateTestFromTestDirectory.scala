@@ -62,7 +62,7 @@ import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.TableEnterOrS
 import com.github.thebridsk.bridge.data.DuplicateHandV2
 import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.BoardPage
 import com.github.thebridsk.browserpages.Session
-import com.github.thebridsk.bridge.server.test.selenium.TestServer
+import com.github.thebridsk.bridge.server.test.util.TestServer
 
 /**
  * Test playing duplicate matches.  The duplicates matches to play are in the testdata directory.

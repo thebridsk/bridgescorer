@@ -77,7 +77,7 @@ object StartServer extends Subcommand("start") with ShutdownHook {
   val defaultCacheFor = "6h"
 
   val defaultHttpsPort = 8443
-  val defaultCertificate = "keys/example.com.p12"
+  val defaultCertificate = "keys/examplebridgescorekeeper.p12"
 
   import com.github.thebridsk.utilities.main.Converters._
 
@@ -275,6 +275,50 @@ If both https and http is started, then http will be redirected to https
   }
 
   /**
+    * Get the ssl context
+    */
+  def serverSSLContext(
+      certPassword: Option[String] = optionCertPassword.toOption,
+      certificate: Option[String] = optionCertificate.toOption
+  ) = {
+    logger.info(s"Creating serverSSLContext, certificate=$certificate, workingDirectory=${new File(".").getAbsoluteFile().getCanonicalFile()}")
+    val password = certPassword.getOrElse("abcdef").toCharArray // default NOT SECURE
+    val context = SSLContext.getInstance("TLS")
+    val ks = certificate match {
+      case Some(cert) =>
+        val ks = if (cert.endsWith(".jks")) {
+          KeyStore.getInstance("JKS")
+        } else {
+          KeyStore.getInstance("PKCS12")
+        }
+        ks.load(new FileInputStream(cert), password)
+        ks
+      case None =>
+        val ks = if (defaultCertificate.endsWith(".jks")) {
+          KeyStore.getInstance("JKS")
+        } else {
+          KeyStore.getInstance("PKCS12")
+        }
+        ks.load(
+          getClass.getClassLoader.getResourceAsStream(defaultCertificate),
+          password
+        )
+        ks
+    }
+    val keyManagerFactory = KeyManagerFactory.getInstance("SunX509")
+    keyManagerFactory.init(ks, password)
+//    val trustManagerFactory = TrustManagerFactory.getInstance("SunX509")
+//    trustManagerFactory.init(ks)
+    context.init(
+      keyManagerFactory.getKeyManagers,
+      /* trustManagerFactory.getTrustManagers */ null,
+      new SecureRandom
+    )
+    // start up the web server
+    ConnectionContext.https(context)
+  }
+
+  /**
     * Start the server
     * @param interface the interface the server is listening on, default: loopback
     * @param httpPort the port for http to listen on, default: Some(8080)
@@ -330,7 +374,7 @@ private class StartServer {
   val defaultRunFor = "12h"
 
   val defaultHttpsPort = 8443
-  val defaultCertificate = "keys/example.com.p12"
+  val defaultCertificate = "keys/examplebridgescorekeeper.p12"
 
   def getHttpPortOption() = {
     optionPort.toOption match {
@@ -433,7 +477,7 @@ private class StartServer {
     val http2Support = optionHttp2()
 
     val context: Option[ConnectionContext] = if (httpsPort.isDefined) {
-      Some(serverContext)
+      Some(serverSSLContext())
     } else {
       None
     }
@@ -502,35 +546,6 @@ private class StartServer {
     terminatePromise.success("Terminate")
   }
 
-  /**
-    * Get the ssl context
-    */
-  def serverContext = {
-    val password = optionCertPassword.toOption.getOrElse("abcdef").toCharArray // default NOT SECURE
-    val context = SSLContext.getInstance("TLS")
-    val ks = KeyStore.getInstance("PKCS12")
-    optionCertificate.toOption match {
-      case Some(cert) =>
-        ks.load(new FileInputStream(cert), password)
-      case None =>
-        ks.load(
-          getClass.getClassLoader.getResourceAsStream(defaultCertificate),
-          password
-        )
-    }
-    val keyManagerFactory = KeyManagerFactory.getInstance("SunX509")
-    keyManagerFactory.init(ks, password)
-//    val trustManagerFactory = TrustManagerFactory.getInstance("SunX509")
-//    trustManagerFactory.init(ks)
-    context.init(
-      keyManagerFactory.getKeyManagers,
-      /* trustManagerFactory.getTrustManagers */ null,
-      new SecureRandom
-    )
-    // start up the web server
-    ConnectionContext.https(context)
-  }
-
   def redirectRoute(scheme: String, port: Int) =
     extractUri { uri =>
       redirect(
@@ -548,8 +563,8 @@ private class StartServer {
     * @param httpPort the port for http to listen on, default: Some(8080)
     * @param httpsPort the port for https to listen on, default: None
     * @param bridge the BridgeService to use, if None then BridgeServiceInMemory is used
-    * @param connectionContext the connection context, MUST be specified if httpsPort is not None.
-    *                          Default is for http communications.
+    * @param connectionContext the SSL connection context, default is serverContext
+    *                          This is only used if httpsPort is not None
     * @return A Future that completes when the server is ready and listening on the ports.
     */
   def start(
@@ -626,10 +641,6 @@ private class StartServer {
 
     }
     logger.info("Starting server")
-    httpsPort match {
-      case Some(port) =>
-      case None       =>
-    }
     val settings = ServerSettings(system)
     val httpSettings = settings.withPreviewServerSettings(
       settings.previewServerSettings.withEnableHttp2(false)
@@ -643,7 +654,7 @@ private class StartServer {
           Route.asyncHandler(myService.myRouteWithLogging),
           interface,
           httpsPort.get,
-          connectionContext = connectionContext.get,
+          connectionContext = connectionContext.getOrElse(serverSSLContext()),
           settings = httpsSettings
         )
       )
@@ -800,7 +811,7 @@ private class StartServer {
         Http().outgoingConnectionHttps(
           "loopback",
           port,
-          connectionContext = serverContext,
+          connectionContext = serverSSLContext(),
           localAddress =
             Some(new InetSocketAddress(InetAddress.getLoopbackAddress, 0))
         )

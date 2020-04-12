@@ -51,6 +51,10 @@ object BldBridgeScoreKeeper {
       serverhelp := {
         (run in Compile).toTask(""" --logfile "../server/logs/serverhelp.sbt.%d.%u.log" start --cache 0s --store ../server/store""").value
       },
+      serverhttps2 in Test := {
+        (runMain in Test).toTask(""" com.github.thebridsk.bridge.server.Server --logfile "../server/logs/server.sbt.%d.%u.log" start --cache 0s --store ../server/store --certificate ../server/key/examplebridgescorekeeper.p12 --certpassword abcdef --https 8443 --http2""").value
+      },
+
       serverlogs := {
         (run in Compile).toTask(""" --logconsolelevel=ALL start --cache 0s --store ../server/store""").value
       },

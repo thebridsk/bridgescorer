@@ -75,7 +75,7 @@ import com.github.thebridsk.bridge.data.Id
 import com.github.thebridsk.browserpages.PageBrowser
 import com.github.thebridsk.browserpages.Session
 import com.github.thebridsk.bridge.fullserver.test.pages.FullscreenAddOn
-import com.github.thebridsk.bridge.server.test.selenium.TestServer
+import com.github.thebridsk.bridge.server.test.util.TestServer
 
 object Duplicate5TestPages {
 
