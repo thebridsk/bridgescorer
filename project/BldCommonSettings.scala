@@ -202,6 +202,7 @@ object BldCommonSettings {
 
   case class SSLKeys( keystore: File, keystorepass: String, serveralias: String, keypass: String, truststore: File )
   val generatesslkeys = taskKey[SSLKeys]("Generate SSL keys for testing HTTPS connections")
+  val ssltests = taskKey[Unit]("Run SSL tests")
 
   val server = taskKey[Unit]("Run server with default store and logging to server/logs directory, no help")
   val serverssl = taskKey[Unit]("Run server with default store and logging to server/logs directory, no help, using https with examplebridgescorekeeper.p12 cert")
