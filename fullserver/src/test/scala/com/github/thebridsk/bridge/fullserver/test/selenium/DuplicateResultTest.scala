@@ -1,7 +1,5 @@
 package com.github.thebridsk.bridge.fullserver.test.selenium
 
-package com.github.thebridsk.bridge.fullserver.test.selenium
-
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.BeforeAndAfterAll
