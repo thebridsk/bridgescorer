@@ -66,7 +66,7 @@ import com.github.thebridsk.bridge.server.backend.StoreMonitor
 import com.github.thebridsk.bridge.server.backend.StoreMonitor.ReceivedMessage
 import com.github.thebridsk.bridge.server.backend.StoreMonitor.NewParticipant
 import akka.actor.Actor
-import com.github.thebridsk.bridge.server.test.selenium.TestServer
+import com.github.thebridsk.bridge.server.test.util.TestServer
 import com.github.thebridsk.bridge.server.backend.resource.StoreListener
 import com.github.thebridsk.bridge.server.backend.resource.ChangeContext
 import com.github.thebridsk.bridge.server.backend.resource.CreateChangeContext

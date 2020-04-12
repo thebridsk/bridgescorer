@@ -1,4 +1,4 @@
-package com.github.thebridsk.bridge.server.test.selenium
+package com.github.thebridsk.bridge.server.test.util
 
 import com.github.thebridsk.bridge.server.backend.BridgeServiceInMemory
 import com.github.thebridsk.bridge.server.Server

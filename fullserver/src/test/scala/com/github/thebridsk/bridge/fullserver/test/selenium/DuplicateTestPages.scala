@@ -85,7 +85,7 @@ import com.github.thebridsk.bridge.fullserver.test.pages.LightDarkAddOn
 import scala.util.Using
 import scala.math.Ordering.Double.TotalOrdering
 import com.github.thebridsk.bridge.data.Id
-import com.github.thebridsk.bridge.server.test.selenium.TestServer
+import com.github.thebridsk.bridge.server.test.util.TestServer
 
 object DuplicateTestPages {
 

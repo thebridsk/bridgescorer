@@ -4,7 +4,7 @@ import com.github.thebridsk.utilities.logging.Logger
 import org.openqa.selenium.WebDriver
 import org.scalatest.concurrent.Eventually._
 import org.scalactic.source.Position
-import com.github.thebridsk.bridge.server.test.selenium.TestServer
+import com.github.thebridsk.bridge.server.test.util.TestServer
 import com.github.thebridsk.browserpages.PageBrowser._
 import org.scalatest.matchers.must.Matchers._
 import com.github.thebridsk.bridge.fullserver.test.pages.bridge.HomePage
