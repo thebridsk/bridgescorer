@@ -30,7 +30,7 @@ import com.github.thebridsk.browserpages.Session
 import com.github.thebridsk.bridge.server.test.util.CaptureLog
 import scala.math.Ordering.Double.TotalOrdering
 import com.github.thebridsk.browserpages.Element
-import com.github.thebridsk.bridge.server.test.selenium.TestServer
+import com.github.thebridsk.bridge.server.test.util.TestServer
 
 /**
  * @author werewolf

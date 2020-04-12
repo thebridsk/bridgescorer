@@ -1,5 +1,7 @@
 package com.github.thebridsk.bridge.fullserver.test.selenium
 
+package com.github.thebridsk.bridge.fullserver.test.selenium
+
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.BeforeAndAfterAll
@@ -75,7 +77,7 @@ import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.DuplicateResu
 import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.DuplicateResultEditPage
 import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.DuplicateResultPage
 import com.github.thebridsk.browserpages.Session
-import com.github.thebridsk.bridge.server.test.selenium.TestServer
+import com.github.thebridsk.bridge.server.test.util.TestServer
 
 object DuplicateResultTest {
 

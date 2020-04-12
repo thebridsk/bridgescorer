@@ -275,6 +275,50 @@ If both https and http is started, then http will be redirected to https
   }
 
   /**
+    * Get the ssl context
+    */
+  def serverSSLContext(
+      certPassword: Option[String] = optionCertPassword.toOption,
+      certificate: Option[String] = optionCertificate.toOption
+  ) = {
+    logger.info(s"Creating serverSSLContext, certificate=$certificate, workingDirectory=${new File(".").getAbsoluteFile().getCanonicalFile()}")
+    val password = certPassword.getOrElse("abcdef").toCharArray // default NOT SECURE
+    val context = SSLContext.getInstance("TLS")
+    val ks = certificate match {
+      case Some(cert) =>
+        val ks = if (cert.endsWith(".jks")) {
+          KeyStore.getInstance("JKS")
+        } else {
+          KeyStore.getInstance("PKCS12")
+        }
+        ks.load(new FileInputStream(cert), password)
+        ks
+      case None =>
+        val ks = if (defaultCertificate.endsWith(".jks")) {
+          KeyStore.getInstance("JKS")
+        } else {
+          KeyStore.getInstance("PKCS12")
+        }
+        ks.load(
+          getClass.getClassLoader.getResourceAsStream(defaultCertificate),
+          password
+        )
+        ks
+    }
+    val keyManagerFactory = KeyManagerFactory.getInstance("SunX509")
+    keyManagerFactory.init(ks, password)
+//    val trustManagerFactory = TrustManagerFactory.getInstance("SunX509")
+//    trustManagerFactory.init(ks)
+    context.init(
+      keyManagerFactory.getKeyManagers,
+      /* trustManagerFactory.getTrustManagers */ null,
+      new SecureRandom
+    )
+    // start up the web server
+    ConnectionContext.https(context)
+  }
+
+  /**
     * Start the server
     * @param interface the interface the server is listening on, default: loopback
     * @param httpPort the port for http to listen on, default: Some(8080)
@@ -500,49 +544,6 @@ private class StartServer {
   def terminateServer() = {
     log.info("Shutting down server now")
     terminatePromise.success("Terminate")
-  }
-
-  /**
-    * Get the ssl context
-    */
-  def serverSSLContext(
-      certPassword: Option[String] = optionCertPassword.toOption,
-      certificate: Option[String] = optionCertificate.toOption
-  ) = {
-    val password = certPassword.getOrElse("abcdef").toCharArray // default NOT SECURE
-    val context = SSLContext.getInstance("TLS")
-    val ks = certificate match {
-      case Some(cert) =>
-        val ks = if (cert.endsWith(".jks")) {
-          KeyStore.getInstance("JKS")
-        } else {
-          KeyStore.getInstance("PKCS12")
-        }
-        ks.load(new FileInputStream(cert), password)
-        ks
-      case None =>
-        val ks = if (defaultCertificate.endsWith(".jks")) {
-          KeyStore.getInstance("JKS")
-        } else {
-          KeyStore.getInstance("PKCS12")
-        }
-        ks.load(
-          getClass.getClassLoader.getResourceAsStream(defaultCertificate),
-          password
-        )
-        ks
-    }
-    val keyManagerFactory = KeyManagerFactory.getInstance("SunX509")
-    keyManagerFactory.init(ks, password)
-//    val trustManagerFactory = TrustManagerFactory.getInstance("SunX509")
-//    trustManagerFactory.init(ks)
-    context.init(
-      keyManagerFactory.getKeyManagers,
-      /* trustManagerFactory.getTrustManagers */ null,
-      new SecureRandom
-    )
-    // start up the web server
-    ConnectionContext.https(context)
   }
 
   def redirectRoute(scheme: String, port: Int) =

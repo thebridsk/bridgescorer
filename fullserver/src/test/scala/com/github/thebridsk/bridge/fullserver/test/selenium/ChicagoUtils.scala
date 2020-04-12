@@ -8,7 +8,7 @@ import com.github.thebridsk.bridge.data.bridge.ContractDoubled
 import org.scalactic.source.Position
 import org.openqa.selenium.WebDriver
 import com.github.thebridsk.utilities.logging.Logger
-import com.github.thebridsk.bridge.server.test.selenium.TestServer
+import com.github.thebridsk.bridge.server.test.util.TestServer
 
 trait ChicagoUtils {
   import org.scalatest.matchers.must.Matchers._

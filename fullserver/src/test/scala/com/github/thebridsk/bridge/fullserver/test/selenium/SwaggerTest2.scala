@@ -34,7 +34,7 @@ import com.github.thebridsk.bridge.server.test.util.MonitorTCP
 import com.github.thebridsk.bridge.server.test.util.ParallelUtils
 import com.github.thebridsk.browserpages.PageBrowser
 import com.github.thebridsk.browserpages.Session
-import com.github.thebridsk.bridge.server.test.selenium.TestServer
+import com.github.thebridsk.bridge.server.test.util.TestServer
 
 /**
  * @author werewolf

@@ -29,7 +29,7 @@ import com.github.thebridsk.bridge.server.backend.MatchChicagoCacheStoreSupport
 import com.github.thebridsk.browserpages.PageBrowser
 import com.github.thebridsk.bridge.fullserver.test.pages.bridge.HomePage
 import com.github.thebridsk.browserpages.Session
-import com.github.thebridsk.bridge.server.test.selenium.TestServer
+import com.github.thebridsk.bridge.server.test.util.TestServer
 
 /**
  * @author werewolf

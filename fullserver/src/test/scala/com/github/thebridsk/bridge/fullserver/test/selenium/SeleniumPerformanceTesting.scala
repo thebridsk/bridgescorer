@@ -41,7 +41,7 @@ import com.github.thebridsk.bridge.server.test.TestStartLogging
 import com.github.thebridsk.source.SourcePosition
 import com.github.thebridsk.bridge.server.test.util.MonitorTCP
 import com.github.thebridsk.browserpages.Session
-import com.github.thebridsk.bridge.server.test.selenium.TestServer
+import com.github.thebridsk.bridge.server.test.util.TestServer
 
 /**
  * Test going from the table view, by hitting a board button,

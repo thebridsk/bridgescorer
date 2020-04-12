@@ -78,7 +78,7 @@ import akka.actor.Actor
 import com.github.thebridsk.bridge.server.backend.StoreMonitor.NewParticipantSSEDuplicate
 import com.github.thebridsk.browserpages.PageBrowser
 import com.github.thebridsk.browserpages.Session
-import com.github.thebridsk.bridge.server.test.selenium.TestServer
+import com.github.thebridsk.bridge.server.test.util.TestServer
 
 object DuplicateTestPages2 {
 
