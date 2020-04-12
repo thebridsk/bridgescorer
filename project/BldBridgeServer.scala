@@ -125,6 +125,16 @@ object BldBridgeServer {
             keypass = serverInfo.keypass,
             truststore = serverInfo.truststore
         )
+      },
+
+      ssltests in Test := Def.sequential(
+        generatesslkeys,
+        (Test/testClass).toTask(" com.github.thebridsk.bridge.server.test.ssl.AllSuitesSSL")
+      ).value,
+
+      test in Test := {
+        val ssl = (ssltests in Test).value
+        val t = (test in Test).value
       }
     )
 

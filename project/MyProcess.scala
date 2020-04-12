@@ -26,10 +26,32 @@ import java.io.BufferedWriter
 import java.io.OutputStreamWriter
 import sbt.Fork
 import sbt.ForkOptions
+import scala.io.Source
+import scala.concurrent.ExecutionContext
+import scala.concurrent.Await
+import scala.concurrent.duration.Duration
+
+object ProcessPrivate {
+  implicit val ec = ExecutionContext.global
+}
 
 class MyProcess( logger: Option[Logger] = None ) {
+  import ProcessPrivate._
 
   val counter = new AtomicInteger()
+
+  def logStream( log: String => Unit, in: InputStream ) = {
+    Future {
+      val buf = Source.fromInputStream( in, "UTF8" )
+      try {
+        for ( line <- buf.getLines()) {
+          log(line)
+        }
+      } finally {
+        buf.close
+      }
+    }
+  }
 
   def exec( cmd: List[String], cwd: File  ): Process = {
     val i = counter.incrementAndGet()
@@ -61,16 +83,27 @@ class MyProcess( logger: Option[Logger] = None ) {
   def exec( cmd: List[String], addEnvp: Map[String,String], cwd: File, stdin: Option[String], pcmd: Option[List[String]] = None ): Process = {
     val i = counter.incrementAndGet()
     logger.foreach( l => l.info(s"""Executing OS command($i): ${pcmd.getOrElse(cmd).mkString(" ")}""") )
-    val pb = new ProcessBuilder().command(cmd.asJava).directory(cwd).redirectOutput(Redirect.INHERIT).redirectError(Redirect.INHERIT).redirectInput(Redirect.PIPE)
+    val redirect = logger.map( l => Redirect.PIPE).getOrElse(Redirect.INHERIT)
+    val pb = new ProcessBuilder().command(cmd.asJava).directory(cwd).redirectOutput(redirect).redirectError(redirect).redirectInput(Redirect.PIPE)
     val env = pb.environment()
     addEnvp.foreach( e => env.put(e._1, e._2) )
     val proc = pb.start()
+    val outfuture = logger.map { l =>
+      val f1 = logStream( s => l.info(s), proc.getInputStream())
+      val f2 = logStream( s => l.warn(s), proc.getErrorStream())
+      Future.foldLeft(List(f1,f2))(0) { (ac,v) => ac }
+    }.getOrElse( Future(0) )
     stdin.foreach { data =>
       val pipeIn = proc.getOutputStream()
       val in = new OutputStreamWriter( pipeIn, "UTF8" )
-      in.write(data)
-      in.flush
+      try {
+        in.write(data)
+        in.flush
+      } finally {
+        in.close
+      }
     }
+    Await.ready( outfuture, Duration.Inf )
     proc
   }
 
