@@ -94,8 +94,8 @@ object GenerateSSLKey {
           "-keystore", info.keystore.toString,
           "-keyalg", "RSA",
           "-keysize", "4096",
-          "-ext", """KeyUsage:critical="keyCertSign"""",
-          "-ext", """BasicConstraints:critical="ca:true"""",
+          "-ext", "KeyUsage:critical=keyCertSign",
+          "-ext", "BasicConstraints:critical=ca:true",
           "-validity", "9999"
       )
       proc.keytool(
@@ -233,9 +233,9 @@ object GenerateSSLKey {
           "-keystore", rootcaKeyStore,
           "-infile", info.csr.toString,
           "-outfile", info.cert.toString,
-          "-ext", """KeyUsage:critical="digitalSignature,keyEncipherment"""",
-          "-ext", """EKU="serverAuth"""",
-          "-ext", """SAN="DNS:localhost,IP:127.0.0.1"""",
+          "-ext", "KeyUsage:critical=digitalSignature,keyEncipherment",
+          "-ext", "EKU=serverAuth",
+          "-ext", "SAN=DNS:localhost,IP:127.0.0.1",
           "-rfc",
           "-validity", "385"
       )
