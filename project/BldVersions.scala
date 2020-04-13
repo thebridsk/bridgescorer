@@ -47,7 +47,7 @@ object BldVersion {
 
 //  lazy val vJqueryFacade = "1.2"     // https://github.com/jducoeur/jquery-facade               no 2.13 support
 
-  lazy val vJQuery = "3.4.1"         // https://www.npmjs.com/package/jquery
+  lazy val vJQuery = "3.5.0"         // https://www.npmjs.com/package/jquery
 
   lazy val vScalactic = "3.1.1"      // https://github.com/scalatest/scalatest
   lazy val vScalatest = "3.1.1"      // https://github.com/scalatest/scalatest
@@ -78,7 +78,7 @@ object BldVersion {
   // version 1.0.7 is hardcoded in sbt-scalajs-bundler
   // current is 1.1.0
   lazy val vConcatWithSourcemaps = "1.1.0"  // https://www.npmjs.com/package/concat-with-sourcemaps
-  lazy val vTerser = "4.6.10"               // https://www.npmjs.com/package/terser
+  lazy val vTerser = "4.6.11"               // https://www.npmjs.com/package/terser
 
   lazy val vAjv = "6.12.0"                  // https://www.npmjs.com/package/ajv
 
@@ -93,7 +93,7 @@ object BldVersion {
   lazy val vGraphQL = "14.6.0"              // https://github.com/graphql/graphql-js    co-req of graphiql
   lazy val vGraphiQL = "0.17.5"             // https://github.com/graphql/graphiql
   lazy val vGraphQLVoyager = "1.0.0-rc.29"  // https://github.com/APIs-guru/graphql-voyager
-  lazy val vMaterialUIcore = "4.9.9"        // https://www.npmjs.com/package/@material-ui/core
+  lazy val vMaterialUIcore = "4.9.10"       // https://www.npmjs.com/package/@material-ui/core
   lazy val vMaterialUIicons = "4.9.1"       // https://www.npmjs.com/package/@material-ui/icons
   lazy val vPropTypes = "15.7.2"            // https://www.npmjs.com/package/prop-types
 }
