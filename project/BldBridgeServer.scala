@@ -84,25 +84,26 @@ object BldBridgeServer {
 
       generatesslkeys := {
         val log = streams.value.log
-        val workDir = baseDirectory.value
+        val workDir = new File( baseDirectory.value, "key" )
 
-        val good = GenerateSSLKey.checkKeys(log, "key", Some(workDir))
+        val good = GenerateSSLKey.checkKeys(log, ".", Some(workDir))
 
         val caInfo = GenerateSSLKey.generateRootCA(
           logger = log,
           alias = "bridgescorekeeperCA",
-          rootca = "key/examplebridgescorekeeperca",
+          rootca = "examplebridgescorekeeperca",
           dname = "CN=BridgeScoreKeeperCA, OU=BridgeScoreKeeper, O=BridgeScoreKeeper, L=New York, ST=New York, C=US",
           keypass = "abcdef",
           storepass = "abcdef",
           workingDirectory = Some(workDir),
-          good = good
+          good = good,
+          verbose = keytoolVerbose
         )
 
         val serverInfo = GenerateSSLKey.generateServer(
           logger = log,
           alias = "bridgescorekeeper",
-          server = "key/examplebridgescorekeeper",
+          server = "examplebridgescorekeeper",
           dname = "CN=BridgeScoreKeeper, OU=BridgeScoreKeeper, O=BridgeScoreKeeper, L=New York, ST=New York, C=US",
           keypass = "abcdef",
           storepass = "abcdef",
@@ -112,10 +113,11 @@ object BldBridgeServer {
           rootcaKeystorePass = caInfo.storepass,
           rootcaAlias = caInfo.alias,
           rootcaKeypass = caInfo.keypass,
-          trustStore = "key/examplebridgescorekeepertrust.jks",
+          trustStore = "examplebridgescorekeepertrust.jks",
           trustPass = "abcdef",
           workingDirectory = Some(workDir),
-          good = good
+          good = good,
+          verbose = keytoolVerbose
         )
 
         BldCommonSettings.SSLKeys(

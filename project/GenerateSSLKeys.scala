@@ -29,7 +29,7 @@ object GenerateSSLKey {
       prefix: String,
       workingDirectory: Option[File]
   ) = {
-    val d = getMarkerFile( new File(workingDirectory.getOrElse(new File(".")), prefix) )
+    val d = getMarkerFile( new File(workingDirectory.getOrElse(new File(".")), prefix).getCanonicalFile.getAbsoluteFile )
     logger.info( s"Checking for marker file ${d.toString}")
     if (!d.isFile()) {
       deleteKeys(logger,prefix,workingDirectory)
@@ -59,6 +59,9 @@ object GenerateSSLKey {
     *   ${rootca}.jks
     *   ${rootca}.crt
     *
+    * workingDirectory must be the directory that will get the newly generated keys.
+    * rootca must not have any path elements.
+    *
     * @param logger
     * @param alias the alias of the certificate in keystore
     * @param rootca the filename prefix for the generated files
@@ -67,6 +70,7 @@ object GenerateSSLKey {
     * @param storepass the password for the newly generated keystore
     * @param workingDirectory working directory to use, rootca prefix is relative to this directory.  None means use current directory.
     * @param good if true, the keys are good and won't be generated
+    * @param verbose if true add the -v option to keytool commands
     */
   def generateRootCA(
       logger: Logger,
@@ -76,7 +80,8 @@ object GenerateSSLKey {
       keypass: String,
       storepass: String,
       workingDirectory: Option[File] = None,
-      good: Boolean = false
+      good: Boolean = false,
+      verbose: Boolean = false
   ): RootCAInfo = {
     val proc = new MyProcess( Option(logger))
 
@@ -85,10 +90,11 @@ object GenerateSSLKey {
     val info = RootCAInfo( alias, dname, getFile(wd,s"${rootca}.jks"), getFile(wd,s"${rootca}.crt"), keypass, storepass )
 
     if (!good) {
+      val verb = if (verbose) List("-v") else List()
+
       // Create a self signed key pair root CA certificate
       val gencmd = List(
           "-genkeypair",
-          "-v",
           "-alias", alias,
           "-dname", dname,
           "-keystore", info.keystore.toString,
@@ -97,7 +103,7 @@ object GenerateSSLKey {
           "-ext", "KeyUsage:critical=keyCertSign",
           "-ext", "BasicConstraints:critical=ca:true",
           "-validity", "9999"
-      )
+      ):::verb
       proc.keytool(
         cmd = gencmd:::List( "-keypass", keypass, "-storepass", storepass ),
         workingDirectory = workingDirectory,
@@ -108,11 +114,10 @@ object GenerateSSLKey {
       // Export the exampleCA public certificate as exampleca.crt so that it can be used in trust stores.
       val exportcmd = List(
           "-export",
-          "-v",
           "-alias", alias,
           "-file", info.cert.toString,
           "-keystore", info.keystore.toString
-      )
+      ):::verb
       proc.keytool(
         cmd = exportcmd:::List( "-keypass", keypass, "-storepass", storepass ),
         workingDirectory = workingDirectory,
@@ -134,10 +139,11 @@ object GenerateSSLKey {
       storepass: String,
       truststore: File,
       pkcs: File,
+      keyfile: File
   ) {
     override
     def toString() = {
-      s"""ServerInfo(Alias=$alias, dname="$dname", keystore=$keystore, csr=$csr, cert=$cert, keypass=*****, storepass=*****, truststore=$truststore, pkcs=$pkcs)"""
+      s"""ServerInfo(Alias=$alias, dname="$dname", keystore=$keystore, csr=$csr, cert=$cert, keypass=*****, storepass=*****, truststore=$truststore, pkcs=$pkcs), keyfile=$keyfile"""
     }
   }
 
@@ -147,6 +153,9 @@ object GenerateSSLKey {
     *   ${server}.jks
     *   ${server}.csr
     *   ${server}.crt
+    *
+    * workingDirectory must be the directory that will get the newly generated keys.
+    * server must not have any path elements.
     *
     * @param logger
     * @param alias the alias of the certificate in keystore
@@ -164,6 +173,7 @@ object GenerateSSLKey {
     * @param trustPass the password for the newly created trust store
     * @param workingDirectory working directory to use, server prefix is relative to this directory.  None means use current directory.
     * @param good if true, the keys are good and won't be generated
+    * @param verbose if true add the -v option to keytool commands
     */
   def generateServer(
       logger: Logger,
@@ -181,26 +191,39 @@ object GenerateSSLKey {
       trustStore: String,
       trustPass: String,
       workingDirectory: Option[File] = None,
-      good: Boolean = false
+      good: Boolean = false,
+      verbose: Boolean = false
   ): ServerInfo = {
     val proc = new MyProcess( Option(logger))
 
     val wd = workingDirectory.getOrElse( new File("."))
 
-    val info = ServerInfo( alias, dname, getFile(wd,s"${server}.jks"), getFile(wd,s"${server}.csr"), getFile(wd,s"${server}.crt"), keypass, storepass, getFile(wd,trustStore), getFile(wd,s"${server}.p12") )
+    val info = ServerInfo(
+                  alias,
+                  dname,
+                  getFile(wd,s"${server}.jks"),
+                  getFile(wd,s"${server}.csr"),
+                  getFile(wd,s"${server}.crt"),
+                  keypass,
+                  storepass,
+                  getFile(wd,trustStore),
+                  getFile(wd,s"${server}.p12"),
+                  getFile(wd,s"${server}.key")
+               )
 
     if (!good) {
+      val verb = if (verbose) List("-v") else List()
+
       // Create a self signed key pair root CA certificate
       val gencmd = List(
           "-genkeypair",
-          "-v",
           "-alias", alias,
           "-dname", dname,
           "-keystore", info.keystore.toString,
           "-keyalg", "RSA",
           "-keysize", "4096",
           "-validity", "385"
-      )
+      ):::verb
       proc.keytool(
         cmd = gencmd:::List( "-keypass", keypass, "-storepass", storepass ),
         workingDirectory = workingDirectory,
@@ -211,11 +234,10 @@ object GenerateSSLKey {
       // Create a certificate signing request for example.com
       val certreqcmd = List(
           "-certreq",
-          "-v",
           "-alias", alias,
           "-file", info.csr.toString,
           "-keystore", info.keystore.toString
-      )
+      ):::verb
       proc.keytool(
         cmd = certreqcmd:::List( "-keypass", keypass, "-storepass", storepass ),
         workingDirectory = workingDirectory,
@@ -228,7 +250,6 @@ object GenerateSSLKey {
       // Technically, keyUsage should be digitalSignature for DHE or ECDHE, keyEncipherment for RSA.
       val gencertcmd = List(
           "-gencert",
-          "-v",
           "-alias", rootcaAlias,
           "-keystore", rootcaKeyStore,
           "-infile", info.csr.toString,
@@ -238,7 +259,7 @@ object GenerateSSLKey {
           "-ext", "SAN=DNS:localhost,IP:127.0.0.1",
           "-rfc",
           "-validity", "385"
-      )
+      ):::verb
       proc.keytool(
         cmd = gencertcmd:::List( "-keypass", rootcaKeypass, "-storepass", rootcaKeystorePass ),
         workingDirectory = workingDirectory,
@@ -249,12 +270,11 @@ object GenerateSSLKey {
       // Tell examplebridgescorekeeper.jks it can trust exampleca as a signer.
       val importcacmd = List(
           "-import",
-          "-v",
           "-alias", rootcaPublicAlias,
           "-keystore", info.keystore.toString,
           "-storetype", "JKS",
           "-file", rootcaPublicCert
-      )
+      ):::verb
       proc.keytool(
         cmd = importcacmd:::List( "-storepass", storepass ),
         workingDirectory = workingDirectory,
@@ -266,12 +286,11 @@ object GenerateSSLKey {
       // Import the signed certificate back into examplebridgescorekeeper.jks
       val importsignedcmd = List(
           "-import",
-          "-v",
           "-alias", alias,
           "-keystore", info.keystore.toString,
           "-storetype", "JKS",
           "-file", info.cert.toString
-      )
+      ):::verb
       proc.keytool(
         cmd = importsignedcmd:::List( "-storepass", storepass ),
         workingDirectory = workingDirectory,
@@ -282,13 +301,12 @@ object GenerateSSLKey {
       // Export bridgescorekeeper's public certificate for use with nginx.
       val exportcertcmd = List(
           "-export",
-          "-v",
           "-alias", alias,
           "-keystore", info.keystore.toString,
           "-storetype", "JKS",
           "-file", info.cert.toString,
           "-rfc"
-      )
+      ):::verb
       proc.keytool(
         cmd = exportcertcmd:::List( "-keypass", keypass, "-storepass", storepass ),
         workingDirectory = workingDirectory,
@@ -299,13 +317,12 @@ object GenerateSSLKey {
       // Create a PKCS#12 keystore containing the public and private keys.
       val pkcscmd = List(
           "-importkeystore",
-          "-v",
           "-srcalias", alias,
           "-srckeystore", info.keystore.toString,
           "-srcstoretype", "JKS",
           "-destkeystore", info.pkcs.toString,
           "-deststoretype", "PKCS12"
-      )
+      ):::verb
       proc.keytool(
         cmd = pkcscmd:::List( "-srcstorepass", storepass, "-destkeypass", keypass, "-deststorepass", storepass ),
         workingDirectory = workingDirectory,
@@ -315,17 +332,32 @@ object GenerateSSLKey {
 
 
       // Export the bridgescorekeeper private key for use in nginx.  Note this requires the use of OpenSSL.
-      // openssl pkcs12 -nocerts -nodes -passout env:PW -passin env:PW -in examplebridgescorekeeper.p12 -out bridgescorekeeper.key
+      val opensslpckscmd = List(
+          "openssl",
+          "pkcs12",
+          "-nocerts",
+          "-nodes",
+          "-in", info.pkcs.toString,
+          "-out", info.keyfile.toString
+      )
+      val printcmd = opensslpckscmd:::List( "-passout", "pass:***", "-passin", "pass:***" )
+      val process = proc.bash(
+        cmd = opensslpckscmd:::List( "-passout", s"pass:$keypass", "-passin", s"pass:$keypass" ),
+        workingDirectory = workingDirectory,
+        addEnvp = Map(),
+        printcmd = Some(printcmd),
+      )
+      val rc = process.waitFor()
+      if (rc != 0) throw new Error(s"Failed, with rc=${rc} running bash ${printcmd.mkString(" ")}")
 
       // Create a JKS keystore that trusts the example CA, with the default password.
       val trustcmd = List(
           "-import",
-          "-v",
           "-alias", rootcaAlias,
           "-file", rootcaPublicCert,
           "-storetype", "JKS",
           "-keystore", info.truststore.toString
-      )
+      ):::verb
       proc.keytool(
         cmd = trustcmd:::List( "-storepass", trustPass ),
         workingDirectory = workingDirectory,
@@ -334,7 +366,8 @@ object GenerateSSLKey {
         stdin = Some("yes\n")
       )
 
-      val marker = getMarkerFile( info.keystore.getParentFile() )
+      val marker = getMarkerFile( wd )
+      logger.info( s"Writing marker file: ${marker.toString}")
       val markerf = new FileOutputStream( marker )
       markerf.write(0)
       markerf.flush()
@@ -349,8 +382,8 @@ object GenerateSSLKey {
   }
 
   def getFile( workingDirectory: File, file: String ) = {
-    val f = new File(workingDirectory, file)
-    f.getAbsoluteFile.getCanonicalFile
+    val f = new File( file)
+    f
   }
 
 }
