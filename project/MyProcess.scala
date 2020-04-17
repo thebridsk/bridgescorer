@@ -8,7 +8,6 @@ import sbt.Logger
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.io.File
-import org.apache.tools.ant.util.FileUtils
 import java.nio.file.Path
 import java.nio.file.Files
 import java.nio.file.FileVisitor
@@ -108,15 +107,26 @@ class MyProcess( logger: Option[Logger] = None ) {
   }
 
   /**
-    * Execute a command using bash shell.  This requires WSL on windows
-    * @param cwd
-    * @param addEnvp
+    * Execute a command using bash shell on windows.  This requires WSL on windows.
+    * On linux, the command will be executed as is.
     * @param cmd
+    * @param addEnvp
+    * @param cwd
+    * @param stdin the data in UTF8
+    * @param printcmd the command to print, with pw removed
     * @return Process object
     */
-  def bash( cwd: File, addEnvp: Option[Map[String,String]], cmd: String* ) = {
-    val env = addEnvp.getOrElse(Map.empty)
-    exec( List("bash", "-c", cmd.mkString(" ")), env, cwd);
+  def bash( cmd: List[String], addEnvp: Map[String,String], workingDirectory: Option[File], stdin: Option[String] = None, printcmd: Option[List[String]] = None ) = {
+    val wd = workingDirectory.getOrElse( new File(".") ).getAbsoluteFile()
+    val c = sys.props.getOrElse("os.name", "oops").toLowerCase() match {
+      case os: String if (os.contains("win")) => List("bash", "-c", cmd.mkString(" "))
+      case os: String if (os.contains("mac")) => cmd
+      case os: String if (os.contains("nix")||os.contains("nux")) => cmd
+      case os =>
+        logger.foreach( _.error("Unknown operating system: "+os) )
+        throw new Exception("Unknown operating system: "+os)
+    }
+    exec( c, addEnvp, wd, stdin, printcmd );
   }
 
   def startOnWindows( cwd: File, addEnvp: Option[Map[String,String]], cmd: String* ) = {

@@ -48,6 +48,12 @@ object BldCommonSettings {
     .map(s => s.toBoolean)
     .getOrElse(false)
 
+  lazy val keytoolVerbose = sys.props
+    .get("keytoolVerbose")
+    .orElse(sys.env.get("keytoolVerbose"))
+    .map(s => s.toBoolean)
+    .getOrElse(false)
+
   lazy val serverTestToRun =
     sys.props.get("ServerTestToRun").orElse(sys.env.get("ServerTestToRun"))
 
