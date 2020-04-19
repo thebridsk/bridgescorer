@@ -52,11 +52,11 @@ Syntax:
   ${SSLKeyCommands.cmdName} ${name} [options]
 Options:""")
 
-  val optionForce = toggle(
-    name = "force",
+  val optionClean = toggle(
+    name = "clean",
     noshort = true,
     descrNo = "fail if keys already exist",
-    descrYes = "overwrite existing keys",
+    descrYes = "erase key files before generating keys",
     default = Some(false)
   )
 
@@ -197,12 +197,6 @@ Options:""")
 
     try {
       val workingDirectory = optionKeyDir()
-      if (optionForce()) {
-        log.warning("--force option is not supported, delete existing key files first")
-        return 1
-        // workingDirectory.deleteRecursively()
-      }
-      if (!workingDirectory.isDirectory) workingDirectory.createDirectory()
 
       val rootca = RootCAInfo(
         alias = optionRootCAAlias(),
@@ -214,12 +208,12 @@ Options:""")
         good = false,
         verbose = optionVerbose(),
         validityCA = optionValidityCA().toString,
+        truststoreprefix = optionTruststore.toOption,
+        trustpass = optionTrustPW.toOption
       )
 
-      val ca = rootca.generateRootCA()
-
       val server = ServerInfo(
-        workingDirectory = ca.workingDirectory,
+        workingDirectory = rootca.workingDirectory,
         alias = optionAlias(),
         server = optionServer(),
         dname = optionDname(),
@@ -229,6 +223,14 @@ Options:""")
         verbose = optionVerbose(),
         validityServer = optionValidityServer().toString,
       )
+
+      if (optionClean()) {
+        rootca.deleteOldServerCerts()
+        server.deleteOldServerCerts()
+      }
+      if (!workingDirectory.isDirectory) workingDirectory.createDirectory()
+
+      val ca = rootca.generateRootCA()
 
       val serv = server.
                     generateServerCSR().

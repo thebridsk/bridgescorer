@@ -72,6 +72,14 @@ case class RootCAInfo(
     else this
   }
 
+  def deleteOldServerCerts() = {
+    getFullFile(workingDirectory, keystore).delete()
+    getFullFile(workingDirectory, cert).delete()
+    truststore.foreach( f => getFullFile(workingDirectory,f).delete())
+    getMarkerFile(workingDirectory).delete()
+    this
+  }
+
   /**
     * Generates a root CA certificate.
     * Three files are generated,
@@ -193,7 +201,9 @@ object RootCAInfo {
       workingDirectory: Option[File] = None,
       good: Boolean = false,
       verbose: Boolean = false,
-      validityCA: String = "367"
+      validityCA: String = "367",
+      truststoreprefix: Option[String] = None,
+      trustpass: Option[String] = None
   ) = {
 
     val v = if (verbose) List("-v") else List()
@@ -205,8 +215,8 @@ object RootCAInfo {
         cert = getFile(workingDirectory,s"${rootca}.crt"),
         keypass = keypass,
         storepass = storepass,
-        truststore = None,
-        trustpass = None,
+        truststore = truststoreprefix.map( p => getFile(workingDirectory, s"${p}.jks")),
+        trustpass = trustpass,
         workingDirectory = workingDirectory,
         good = good,
         verbose = v,
