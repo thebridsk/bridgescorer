@@ -59,6 +59,7 @@ import com.github.thebridsk.bridge.datastore.DataStoreCommands
 import scala.annotation.tailrec
 import java.util.logging.ConsoleHandler
 import com.github.thebridsk.bridge.server.util.MemoryMonitor
+import com.github.thebridsk.bridge.sslkey.SSLKeyCommands
 
 /**
   * This is the main program for the REST server for our application.
@@ -154,6 +155,7 @@ object Server extends Main {
   addSubcommand(CollectLogs)
 
   addSubcommand(DataStoreCommands)
+  addSubcommand(SSLKeyCommands)
 
   footer(s"""
             |To get help on subcommands, use the command:

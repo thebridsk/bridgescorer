@@ -1,4 +1,4 @@
-package com.github.thebridsk.bridge.datastore
+package com.github.thebridsk.bridge.sslkey
 
 import com.github.thebridsk.utilities.main.Main
 import com.github.thebridsk.bridge.server.version.VersionServer
@@ -13,11 +13,11 @@ import com.github.thebridsk.utilities.logging.Logger
 import com.github.thebridsk.utilities.logging.Config
 import scala.reflect.io.Path
 
-trait DataStoreCommands
+trait SSLKeyCommands
 
-object DataStoreCommands extends Subcommand("datastore") {
+object SSLKeyCommands extends Subcommand("sslkey") {
 
-  val log = Logger[DataStoreCommands]
+  val log = Logger[SSLKeyCommands]
 
   private var savelevel: Level = null
 
@@ -38,12 +38,12 @@ object DataStoreCommands extends Subcommand("datastore") {
 
   import com.github.thebridsk.utilities.main.Converters._
 
-  val cmdName = s"${Server.cmdName} ${name}"
+  val cmdName = s"${Server.cmdName} sslkey"
 
-  descr("Various commands act on the datastore")
+  descr("Various commands to generate ssl keys")
 
   banner(s"""
-Commands on datastore
+Commands on sslkey
 
 Syntax:
   ${cmdName} [options] cmd
@@ -51,19 +51,16 @@ Options:""")
 
   shortSubcommandsHelp(true)
 
-  val optionStore = opt[Path](
-    "store",
-    short = 's',
-    descr = "The store directory, default=./store",
+  val optionKeyDir = opt[Path](
+    "dir",
+    short = 'd',
+    descr = "The directory that has/will get the keys, default=./key",
     argName = "dir",
-    default = Some("./store")
+    default = Some("./key"),
   )
 
-  addSubcommand(ShowCommand)
-  addSubcommand(SetNamesCommand)
-  addSubcommand(ConvertToCommand)
-  addSubcommand(ConvertBoardSetsAndMovementsCommand)
-  addSubcommand(Copy)
+  addSubcommand(GenerateSelfSigned)
+  addSubcommand(GenerateServerCert)
 
   def executeSubcommand(): Int = {
     log.severe("Unknown options specified")

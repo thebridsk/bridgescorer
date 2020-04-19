@@ -1,3 +1,4 @@
+package com.github.thebridsk.bridge.server.util
 
 import java.io.IOException
 import java.util.logging.Level
