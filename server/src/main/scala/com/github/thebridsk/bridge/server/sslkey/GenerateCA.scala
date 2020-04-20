@@ -31,22 +31,22 @@ import com.github.thebridsk.bridge.server.util.GenerateSSLKeys
 import com.github.thebridsk.bridge.server.util.RootCAInfo
 import com.github.thebridsk.bridge.server.util.ServerInfo
 
-trait GenerateSelfSigned
+trait GenerateCA
 
-object GenerateSelfSigned extends Subcommand("generateselfsigned") {
+object GenerateCA extends Subcommand("generateca") {
   import SSLKeyCommands.optionKeyDir
 
-  val log = Logger[GenerateSelfSigned]
+  val log = Logger[GenerateCA]
 
   implicit def dateConverter: ValueConverter[Duration] =
     singleArgConverter[Duration](Duration(_))
 
   import com.github.thebridsk.utilities.main.Converters._
 
-  descr("Generate a CA certificate and a Server certificate")
+  descr("Generate a CA private certificate")
 
   banner(s"""
-Generate a CA certificate and a Server certificate
+Generate a CA private certificate
 
 Syntax:
   ${SSLKeyCommands.cmdName} ${name} [options]
@@ -65,14 +65,6 @@ Options:""")
     short = 'v',
     descrNo = "Don't add verbose option to commands",
     descrYes = "add verbose option to commands",
-    default = Some(false)
-  )
-
-  val optionNginx = toggle(
-    name = "nginx",
-    noshort = true,
-    descrNo = "Don't generate certificate for nginx",
-    descrYes = "generate certificate for nginx",
     default = Some(false)
   )
 
@@ -126,41 +118,6 @@ Options:""")
     required = true,
   )
 
-  val optionServer = opt[String](
-    "server",
-    short = 's',
-    descr = "base filename for server certificate files",
-    required = true,
-  )
-
-  val optionAlias = opt[String](
-    "alias",
-    short = 'a',
-    descr = "server certificate alias in keystore",
-    required = true,
-  )
-
-  val optionDname = opt[String](
-    "dname",
-    short = 'd',
-    descr = "server dname",
-    required = true,
-  )
-
-  val optionKeypass = opt[String](
-    "keypass",
-    noshort = true,
-    descr = "password for server private certificate",
-    required = true,
-  )
-
-  val optionStorepass = opt[String](
-    "storepass",
-    noshort = true,
-    descr = "password for server keystore",
-    required = true,
-  )
-
   val optionValidityCA = opt[Int](
     "validityCA",
     noshort = true,
@@ -168,30 +125,6 @@ Options:""")
     default = Some(367),
     validate = { days => days > 0 }
   )
-
-  val optionValidityServer = opt[Int](
-    "validityServer",
-    noshort = true,
-    descr = "the validity of the server certificate in days, default 1 year",
-    default = Some(367),
-    validate = { days => days > 0 }
-  )
-
-  val patternIP = """(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})""".r
-
-  val optionIP = opt[List[String]](
-    name = "ip",
-    noshort = true,
-    descr = "list of IP addresses to add to server certificate, comma separated.  127.0.0.1 is always added",
-    default = Some(List()),
-    validate = { l =>
-      log.warning(s"Validating ip option: ${l.mkString(" ")}")
-      l.find { s => s match {
-        case patternIP(ip) => false    // this is good, but we are looking for a bad entry
-        case _ => true
-      } }.isEmpty
-    }        // empty means no bad entries were found
-  )( listArgConverter( s => s ))
 
   def executeSubcommand(): Int = {
 
@@ -212,21 +145,8 @@ Options:""")
         trustpass = optionTrustPW.toOption
       )
 
-      val server = ServerInfo(
-        workingDirectory = rootca.workingDirectory,
-        alias = optionAlias(),
-        server = optionServer(),
-        dname = optionDname(),
-        keypass = optionKeypass(),
-        storepass = optionStorepass(),
-        good = false,
-        verbose = optionVerbose(),
-        validityServer = optionValidityServer().toString,
-      )
-
       if (optionClean()) {
         rootca.deleteOldServerCerts()
-        server.deleteOldServerCerts()
       }
       if (!workingDirectory.isDirectory) workingDirectory.createDirectory()
 
@@ -234,28 +154,10 @@ Options:""")
 
       val trust = ca.trustRootCA(optionTruststore(), optionTrustPW())
 
-      val serv = server.
-                    generateServerCSR().
-                    generateServerCert(
-                      rootcaAlias = ca.alias,
-                      rootcaKeypass = ca.keypass,
-                      rootcaKeyStore = ca.keystore,
-                      rootcaKeystorePass = ca.storepass,
-                      ip = optionIP()
-                    ).
-                    importServerCert(ca.alias, ca.cert.toString).
-                    exportServerCert().
-                    generateServerPKCS()
-
-      val serv2 = if (optionNginx()) serv.generateServerKey()
-                  else serv
-
-      serv2.generateMarkerFile()
-
       0
     } catch {
       case x: Exception =>
-        log.severe("Error generating selfsigned certificate", x)
+        log.severe("Error generating CA certificate", x)
         1
     }
 

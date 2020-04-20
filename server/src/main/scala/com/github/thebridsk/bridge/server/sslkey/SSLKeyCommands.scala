@@ -61,6 +61,7 @@ Options:""")
 
   addSubcommand(GenerateSelfSigned)
   addSubcommand(GenerateServerCert)
+  addSubcommand(GenerateCA)
 
   def executeSubcommand(): Int = {
     log.severe("Unknown options specified")

@@ -49,10 +49,10 @@ object GenerateServerCert extends Subcommand("generateservercert") {
 
   import com.github.thebridsk.utilities.main.Converters._
 
-  descr("Copies a datastore, reassigning Ids")
+  descr("Generate a Server certificate")
 
   banner(s"""
-Copies a datastore, reassigning Ids
+Generate a Server certificate
 
 Syntax:
   ${SSLKeyCommands.cmdName} ${name} [options]
@@ -227,11 +227,6 @@ Options:""")
 
     try {
       val workingDirectory = optionKeyDir()
-      if (optionForce()) {
-        log.warning("--force option is not supported, delete existing key files first")
-        return 1
-        // workingDirectory.deleteRecursively()
-      }
       if (!workingDirectory.isDirectory) workingDirectory.createDirectory()
 
       val rootca = RootCAInfo(
@@ -308,7 +303,7 @@ Options:""")
       0
     } catch {
       case x: Exception =>
-        log.severe("Error generating selfsigned certificate", x)
+        log.severe("Error generating server certificate", x)
         1
     }
 
