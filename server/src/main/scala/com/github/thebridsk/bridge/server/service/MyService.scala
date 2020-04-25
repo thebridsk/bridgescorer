@@ -164,6 +164,8 @@ trait MyService
         myRoute
     }
 
+  val certhttppath: Option[Route] = None
+
   /**
     * The main spray route of the service
     */
@@ -176,9 +178,11 @@ trait MyService
             graphQLRoute ~
               routeRest
           } ~ // for REST API of the service
-            webjars ~
-            swaggerRoute ~ // for the Swagger-UI documentation pages
-            html // for the static html files for our application
+            (List(
+              webjars,
+              swaggerRoute, // for the Swagger-UI documentation pages
+              html          // for the static html files for our application
+            ):::certhttppath.toList).reduceLeft( (ac,v) => ac ~ v )
         }
       }
     } // ~

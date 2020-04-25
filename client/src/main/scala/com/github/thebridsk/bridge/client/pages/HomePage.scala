@@ -79,6 +79,7 @@ import _root_.com.github.thebridsk.bridge.data.DuplicateSummary
 import com.github.thebridsk.bridge.clientcommon.rest2.RestClientDuplicateSummary
 import com.github.thebridsk.bridge.data.Id
 import com.github.thebridsk.bridge.data.SystemTime
+import com.github.thebridsk.bridge.client.pages.info.InfoPage
 
 /**
  * @author werewolf
@@ -99,7 +100,8 @@ object HomePage {
       anchorMainEl: js.UndefOr[Element] = js.undefined,
       anchorMainTestHandEl: js.UndefOr[Element] = js.undefined,
       anchorHelpEl: js.UndefOr[Element] = js.undefined,
-      gotoDuplicateList: Boolean = false
+      gotoDuplicateList: Boolean = false,
+      serverCert: Boolean = false
   ) {
 
     def openHelpMenu( n: Node ) = copy( anchorHelpEl = n.asInstanceOf[Element] )
@@ -228,6 +230,10 @@ object HomePage {
             <.h1("Server"),
             <.ul(
               ServerURLStore.getURLItems
+            ),
+            state.serverCert ?= <.a(
+              ^.href := "/servercert",
+              if (InfoPage.isIpad()) "Install server certificate" else "Download server certificate"
             )
           ),
           <.div(
@@ -470,6 +476,18 @@ object HomePage {
       logger.info("HomePage.didMount: Sending serverurl request to server")
       ServerURLStore.addChangeListener(urlStoreListener)
       ServerURLStore.updateURLs()
+      AjaxResult.head("/servercert").onComplete { twxhr =>
+        twxhr match {
+          case Success(wxhr) =>
+            if (wxhr.status == 200) {
+              scope.withEffectsImpure.modState( s => s.copy(serverCert = true))
+            } else {
+              logger.info(s"""Error getting HEAD /servercert, status=${wxhr.status}""")
+            }
+          case Failure(exception) =>
+            logger.info(s"""Error getting HEAD /servercert, exception: ${exception}""")
+        }
+      }
     }
 
     val willUnmount = Callback {
