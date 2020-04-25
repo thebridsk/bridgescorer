@@ -90,7 +90,7 @@ object BldVersion {
   lazy val vSangriaPlayJson = "2.0.1"      // https://github.com/sangria-graphql-org/sangria-play-json   https://github.com/sangria-graphql/sangria-playground
 
   // Version 15.0.0 causes link errors with graphql-language-service-utils\esm
-  lazy val vGraphQL = "14.6.0"              // https://github.com/graphql/graphql-js    co-req of graphiql
+  lazy val vGraphQL = "14.6.0"              // https://github.com/graphql/graphql    co-req of graphql-voyager
   lazy val vGraphiQL = "0.17.5"             // https://github.com/graphql/graphiql
   lazy val vGraphQLVoyager = "1.0.0-rc.29"  // https://github.com/APIs-guru/graphql-voyager
   lazy val vMaterialUIcore = "4.9.10"       // https://www.npmjs.com/package/@material-ui/core

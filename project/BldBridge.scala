@@ -26,6 +26,74 @@ import MyReleaseVersion._
 
 object BldBridge {
 
+  def actionAppHelp( state: State ) = {
+    println(
+      """
+        |BridgeScoreKeeper sbt help
+        |
+        |Tasks on root project
+        |  server                 run server with HTTP without help pages
+        |  serverhelp             run server with HTTP with help pages
+        |  checkForUpdates        check for dependency updates, does not check sbt plugins
+        |  distribution:alltests  runs all tests
+        |  release with-defaults  does a release bumping the patch version
+        |  release release-version 1.0.99 next-version 1.2.0-SNAPSHOT    set the release version and next version for release process
+        |  standalonetests        run test cases using assembled jars, does not build jars
+        |  distribution:travis    run build that is run in travis-ci
+        |
+        |Tasks on bridgescorekeeper project, with help pages
+        |  serverlogs       run server with logs to stdout
+        |  serverssl        run server with HTTPS
+        |  serverhttps2     run server with HTTPS and HTTP 2
+        |  allassembly      build big jar and test jar
+        |
+        |Tasks on bridgescorer-fullserver project, without help pages
+        |  serverlogs       run server with logs to stdout
+        |  serverssl        run server with HTTPS
+        |  serverhttps2     run server with HTTPS and HTTP 2
+        |
+        |Tasks on bridgescorer-server project, without app or help
+        |  generatesslkeys  generate test ssl keys for https port
+        |
+        |Tasks on help project
+        |  hugo             run hugo to generate help pages
+        |  hugoserver       run hugo server on help docs
+        |
+        |Tasks in any project
+        |  testClass <clsname>...  run tests on specified class(es), wildcard * matches any number of characters
+        |
+        |Environment Variables that affect build
+        |  UseBrowser <browser>   the browser to use in selenium tests, default is "chrome"
+        |  skipGenerateImage <bool>  skip generating images in help pages, default is false
+        |  OnlyBuildDebug <bool>     only build fastOpt for scala.js code, default is false
+        |  UseFullOpt <bool>         only build fullOpt for scala.js code, default is false
+        |  ServerTestToRun <clsname> test to run in fullserver when running test task
+        |  TRAVIS_BUILD_NUMBER <n>   running in Travis-ci
+        |  BUILDFORHELPONLY          if defined only tests that generate help images are run
+        |  RELEASEFROMBRANCH <branch>  current branch when release is executed, default "master"
+        |  UseLogFilePrefix  <path>    prefix to use for logging when running tests
+        |
+        |Environment Variables when using server in tests
+        |  UseBridgeScorerURL     Override URL of server, default: http://localhost:8081
+        |  UseBridgeScorerScheme  Override schema of servr URL, default: http
+        |  UseBridgeScorerHost    Override host of server URL, default: localhost
+        |  UseBridgeScorerPort    Override port of server URL, default: 8081
+        |  UseWebsocketLogging    use websockets for client logging
+        |  UseProductionPage <bool>  use only fullopt pages during tests
+        |  OptRemoteLogger <file>    the remote logger configuration to use
+        |  OptBrowserRemoteLogging <name> the name of the configuration to use for browsers
+        |  OptIPadRemoteLogging <name>    the name of the configuration to use for iPads
+      """.stripMargin
+    )
+    state
+  }
+
+  val apphelp = Command.command(
+    "apphelp",
+    "show help for app tasks",
+    "show help for app tasks"
+  )(actionAppHelp _) // "shows help for sbt tasks for BridgeScoreKeeper"
+
   lazy val releaseCheck = { st: State =>
     Project.extract(st).runTask(publishdir, st) match {
       case (newst, Some(dir)) =>
@@ -96,6 +164,8 @@ object BldBridge {
       server := { (server in BldBridgeFullServer.`bridgescorer-fullserver`).value },
       serverhelp := { (serverhelp in BldBridgeScoreKeeper.bridgescorekeeper).value },
       serverlogs := { (serverlogs in BldBridgeScoreKeeper.bridgescorekeeper).value },
+
+      commands ++= Seq( apphelp )
     ).
     settings(
       checkForUpdates := Def

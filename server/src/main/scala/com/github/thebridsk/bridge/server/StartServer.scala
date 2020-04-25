@@ -64,6 +64,8 @@ import com.github.thebridsk.bridge.server.backend.BridgeServiceWithLogging
 import com.github.thebridsk.bridge.server.backend.BridgeServiceZipStore
 import akka.http.scaladsl.settings.ServerSettings
 import akka.http.scaladsl.server.Route
+import akka.http.scaladsl.model.ContentType
+import akka.http.scaladsl.model.MediaTypes
 
 /**
   * This is the main program for the REST server for our application.
@@ -135,6 +137,14 @@ Options:""")
     descr = "The store directory, default=./store",
     argName = "dir",
     default = Some("./store")
+  )
+  val optionCACertificate = opt[Path](
+    "cacert",
+    noshort = true,
+    descr = "The public CA certificate, in DER format",
+    argName = "crt",
+    default = None,
+    validate = { f => f.isFile }
   )
   val optionRunFor = opt[Duration](
     "runfor",
@@ -338,7 +348,8 @@ If both https and http is started, then http will be redirected to https
       optRemoteLogger: Option[Path] = None,
       optBrowserRemoteLogging: Option[String] = None,
       optIPadRemoteLogging: Option[String] = None,
-      diagnosticDir: Option[Directory] = None
+      diagnosticDir: Option[Directory] = None,
+      optCACert: Option[Path] = None,
   ): Future[MyService] = {
     getServer(true, true).start(
       interface,
@@ -350,7 +361,8 @@ If both https and http is started, then http will be redirected to https
       optRemoteLogger,
       optBrowserRemoteLogging,
       optIPadRemoteLogging,
-      diagnosticDir
+      diagnosticDir,
+      optCACert = optCACert
     )
   }
 
@@ -494,7 +506,8 @@ private class StartServer {
       optIPadRemoteLogging = optionIPadRemoteLogging.toOption,
       //         optBrowserLogger = optionBrowserLogger.toOption,
       optDiagnosticDir = optionDiagnosticDir.toOption.map(p => p.toDirectory),
-      http2Support = http2Support
+      http2Support = http2Support,
+      optCACert = optionCACertificate.toOption
     )
 
     MyService.shutdownHook = Some(StartServer)
@@ -578,7 +591,8 @@ private class StartServer {
       optBrowserRemoteLogging: Option[String] = None,
       optIPadRemoteLogging: Option[String] = None,
       optDiagnosticDir: Option[Directory] = None,
-      http2Support: Boolean = false
+      http2Support: Boolean = false,
+      optCACert: Option[Path] = None
   ): Future[MyService] = {
     val myService = new MyService {
 
@@ -641,6 +655,7 @@ private class StartServer {
 
     }
     logger.info("Starting server")
+
     val settings = ServerSettings(system)
     val httpSettings = settings.withPreviewServerSettings(
       settings.previewServerSettings.withEnableHttp2(false)
@@ -664,9 +679,20 @@ private class StartServer {
     bindingHttp = if (httpPort.isDefined) {
       if (httpsPort.isDefined) {
         // both http and https defined, redirect http to https
+        val certhttppath = optCACert.map { certfile =>
+          log.info(s"Using CA cert ${certfile}")
+          path("servercert") {
+            getFromFile(certfile.jfile, ContentType( MediaTypes.`application/x-x509-ca-cert`))
+          }
+        }
+
+        val redirectHttpToHttps = redirectRoute("https", httpsPort.get)
+        val httpToHttps = respondWithHeaders(myService.cacheHeaders) {
+          certhttppath.map( _ ~ redirectHttpToHttps ).getOrElse( redirectHttpToHttps )
+        }
         Some(
           Http().bindAndHandleAsync(
-            Route.asyncHandler(redirectRoute("https", httpsPort.get)),
+            Route.asyncHandler(httpToHttps),
             interface,
             httpPort.get,
             settings = httpSettings

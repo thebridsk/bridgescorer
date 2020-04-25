@@ -82,52 +82,62 @@ object BldBridgeServer {
 
       cleanFiles += baseDirectory.value / "key",
 
-      generatesslkeys := {
-        val log = streams.value.log
-        val workDir = new File( baseDirectory.value, "key" )
+      generatesslkeys := (Def.taskDyn {
 
-        val good = GenerateSSLKey.checkKeys(log, ".", Some(workDir))
+        val keydir = "key"
 
-        val caInfo = GenerateSSLKey.generateRootCA(
-          logger = log,
-          alias = "bridgescorekeeperCA",
-          rootca = "examplebridgescorekeeperca",
-          dname = "CN=BridgeScoreKeeperCA, OU=BridgeScoreKeeper, O=BridgeScoreKeeper, L=New York, ST=New York, C=US",
-          keypass = "abcdef",
-          storepass = "abcdef",
-          workingDirectory = Some(workDir),
-          good = good,
-          verbose = keytoolVerbose
+        val baseDir = baseDirectory.value
+
+        val dir = baseDir / keydir
+
+        val pw = "abcdef"
+
+        val serverprefix = "examplebridgescorekeeper"
+        val caprefix = "examplebridgescorekeeperca"
+        val trustprefix = "examplebridgescorekeepertrust"
+
+        val serverAlias = "bsk"
+
+        val info = BldCommonSettings.SSLKeys(
+            keystore = dir / s"${serverprefix}.jks",
+            keystorepass = pw,
+            serveralias = serverAlias,
+            keypass = pw,
+            truststore = dir / s"${trustprefix}.jks"
         )
 
-        val serverInfo = GenerateSSLKey.generateServer(
-          logger = log,
-          alias = "bridgescorekeeper",
-          server = "examplebridgescorekeeper",
-          dname = "CN=BridgeScoreKeeper, OU=BridgeScoreKeeper, O=BridgeScoreKeeper, L=New York, ST=New York, C=US",
-          keypass = "abcdef",
-          storepass = "abcdef",
-          rootcaPublicAlias = caInfo.alias,
-          rootcaPublicCert = caInfo.cert.toString,
-          rootcaKeyStore = caInfo.keystore.toString,
-          rootcaKeystorePass = caInfo.storepass,
-          rootcaAlias = caInfo.alias,
-          rootcaKeypass = caInfo.keypass,
-          trustStore = "examplebridgescorekeepertrust.jks",
-          trustPass = "abcdef",
-          workingDirectory = Some(workDir),
-          good = good,
-          verbose = keytoolVerbose
-        )
+        val marker = dir / "GenerateSSLKeys.Marker.txt"
 
-        BldCommonSettings.SSLKeys(
-            keystore = serverInfo.keystore,
-            keystorepass = serverInfo.storepass,
-            serveralias = serverInfo.alias,
-            keypass = serverInfo.keypass,
-            truststore = serverInfo.truststore
-        )
-      },
+        if (marker.isFile) {
+          Def.task {
+            info
+          }
+        } else {
+          Def.task {
+            (run in Compile).toTask(
+              """ sslkey"""+
+              s""" -d $keydir"""+
+              """ generateselfsigned"""+
+              s""" -a $serverAlias"""+
+              s""" --ca $caprefix"""+
+              """ --caalias ca"""+
+              """ --cadname "CN=BridgeScoreKeeperCA, OU=BridgeScoreKeeper, O=BridgeScoreKeeper, L=New York, ST=New York, C=US""""+
+              s""" --cakeypw $pw"""+
+              s""" --castorepw $pw"""+
+              """ --dname "CN=BridgeScoreKeeper, OU=BridgeScoreKeeper, O=BridgeScoreKeeper, L=New York, ST=New York, C=US""""+
+              s""" --keypass $pw"""+
+              s""" --server $serverprefix"""+
+              s""" --storepass $pw"""+
+              s""" --trustpw $pw"""+
+              s""" --truststore $trustprefix"""+
+              """ -v"""+
+              """ --nginx"""+
+              """ --clean"""
+            ).value
+            info
+          }
+        }
+      }).value,
 
       ssltests in Test := Def.sequential(
         generatesslkeys,

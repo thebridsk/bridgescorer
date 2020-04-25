@@ -51,7 +51,7 @@ object GraphiQLComponentProperty {
 object GraphiQL {
   val logger = Logger("bridge.GraphiQL")
 
-  val component = JsComponent[GraphiQLComponentProperty, Children.None, Null](RawGraphiQL.default)
+  val component = JsComponent[GraphiQLComponentProperty, Children.None, Null](RawGraphiQL)
 
   def apply( graphqlUrl: String ) = {
 
@@ -64,11 +64,8 @@ object GraphiQL {
 
 
   @js.native
-  @JSImport("graphiql", JSImport.Namespace ) // "GraphiQL")
-  object RawGraphiQL extends js.Any {
-
-    val default: js.Any = js.native
-  }
+  @JSImport("graphiql", JSImport.Default ) // "GraphiQL")
+  object RawGraphiQL extends js.Any
 
   def showAny( c: js.Any, msg: String ) = {
     js.typeOf(c) match {
