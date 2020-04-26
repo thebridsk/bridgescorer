@@ -31,8 +31,8 @@ object BldCommonSettings {
     .getOrElse("chrome")
 
   lazy val skipGenerateImage = sys.props
-    .get("skipGenerateImage")
-    .orElse(sys.env.get("skipGenerateImage"))
+    .get("SkipGenerateImage")
+    .orElse(sys.env.get("SkipGenerateImage"))
     .map(s => s.toBoolean)
     .getOrElse(false)
 
@@ -67,8 +67,8 @@ object BldCommonSettings {
     .isDefined
 
   val buildForHelpOnly = sys.props
-    .get("BUILDFORHELPONLY")
-    .orElse(sys.env.get("BUILDFORHELPONLY"))
+    .get("BuildForHelpOnly")
+    .orElse(sys.env.get("BuildForHelpOnly"))
     .isDefined
 
   val testCaseToRun =
