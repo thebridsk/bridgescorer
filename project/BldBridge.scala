@@ -36,53 +36,68 @@ object BldBridge {
         |  serverhelp             run server with HTTP with help pages
         |  checkForUpdates        check for dependency updates, does not check sbt plugins
         |  distribution:alltests  runs all tests
+        |  standalonetests        run test cases using assembled jars, does not build jars
+        |  distribution:travis    run build that is run in Travis-CI
+        |  distribution:travis1   run build that is run in step 1 in Travis-CI
+        |  distribution:travis2   run build that is run in step 2 in Travis-CI
         |  release with-defaults  does a release bumping the patch version
         |  release release-version 1.0.99 next-version 1.2.0-SNAPSHOT    set the release version and next version for release process
-        |  standalonetests        run test cases using assembled jars, does not build jars
-        |  distribution:travis    run build that is run in travis-ci
         |
         |Tasks on bridgescorekeeper project, with help pages
-        |  serverlogs       run server with logs to stdout
-        |  serverssl        run server with HTTPS
-        |  serverhttps2     run server with HTTPS and HTTP 2
-        |  allassembly      build big jar and test jar
+        |  serverlogs         run server with logs to stdout
+        |  serverssl          run server with HTTPS
+        |  test:serverhttps2  run server with HTTPS and HTTP 2
+        |  allassembly        build big jar and test jar
         |
         |Tasks on bridgescorer-fullserver project, without help pages
-        |  serverlogs       run server with logs to stdout
-        |  serverssl        run server with HTTPS
-        |  serverhttps2     run server with HTTPS and HTTP 2
+        |  serverlogs         run server with logs to stdout
+        |  serverssl          run server with HTTPS
+        |  test:serverhttps2  run server with HTTPS and HTTP 2
+        |  test:test          run selenium tests
         |
         |Tasks on bridgescorer-server project, without app or help
-        |  generatesslkeys  generate test ssl keys for https port
+        |  generatesslkeys    generate test ssl keys for https port
         |
         |Tasks on help project
-        |  hugo             run hugo to generate help pages
-        |  hugoserver       run hugo server on help docs
+        |  hugo               run hugo to generate help pages
+        |  hugoserver         run hugo server on help docs
         |
         |Tasks in any project
-        |  testClass <clsname>...  run tests on specified class(es), wildcard * matches any number of characters
+        |  test:testClass <clsname>...  run tests on specified class(es), wildcard * matches any number of characters
         |
         |Environment Variables that affect build
-        |  UseBrowser <browser>   the browser to use in selenium tests, default is "chrome"
-        |  skipGenerateImage <bool>  skip generating images in help pages, default is false
-        |  OnlyBuildDebug <bool>     only build fastOpt for scala.js code, default is false
-        |  UseFullOpt <bool>         only build fullOpt for scala.js code, default is false
-        |  ServerTestToRun <clsname> test to run in fullserver when running test task
-        |  TRAVIS_BUILD_NUMBER <n>   running in Travis-ci
-        |  BUILDFORHELPONLY          if defined only tests that generate help images are run
-        |  RELEASEFROMBRANCH <branch>  current branch when release is executed, default "master"
+        |  UseBrowser <browser>        the browser to use in selenium tests, default is "chrome"
+        |  SkipGenerateImage <bool>    skip generating images in help pages, default is false
+        |  OnlyBuildDebug <bool>       only build fastOpt for scala.js code, default is false
+        |  UseFullOpt <bool>           only build fullOpt for scala.js code, default is false
+        |  ServerTestToRun <clsname>   test to run in fullserver when running test task
+        |  TRAVIS_BUILD_NUMBER <n>     running in Travis-CI
+        |  BuildForHelpOnly            if defined only tests that generate help images are run
+        |  ReleaseFromBranch <branch>  current branch when release is executed, default "master"
         |  UseLogFilePrefix  <path>    prefix to use for logging when running tests
         |
         |Environment Variables when using server in tests
-        |  UseBridgeScorerURL     Override URL of server, default: http://localhost:8081
-        |  UseBridgeScorerScheme  Override schema of servr URL, default: http
-        |  UseBridgeScorerHost    Override host of server URL, default: localhost
-        |  UseBridgeScorerPort    Override port of server URL, default: 8081
-        |  UseWebsocketLogging    use websockets for client logging
-        |  UseProductionPage <bool>  use only fullopt pages during tests
-        |  OptRemoteLogger <file>    the remote logger configuration to use
-        |  OptBrowserRemoteLogging <name> the name of the configuration to use for browsers
-        |  OptIPadRemoteLogging <name>    the name of the configuration to use for iPads
+        |  UseBridgeScorerURL              Override URL of server, default: http://localhost:8081
+        |  UseBridgeScorerScheme           Override schema of servr URL, default: http
+        |  UseBridgeScorerHost             Override host of server URL, default: localhost
+        |  UseBridgeScorerPort             Override port of server URL, default: 8081
+        |  UseWebsocketLogging             use websockets for client logging
+        |  UseProductionPage <bool>        use only fullopt pages during tests
+        |  OptRemoteLogger <file>          the remote logger configuration to use
+        |  OptBrowserRemoteLogging <name>  the name of the configuration to use for browsers
+        |  OptIPadRemoteLogging <name>     the name of the configuration to use for iPads
+        |
+        |Notes:
+        |  To test the build that runs in Travis-CI first set the environment variable TRAVIS_BUILD_NUMBER to a number,
+        |  then invoke "sbt distribution:travis1" or "sbt distribution:travis2"
+        |
+        |  To make a release, checkout the master branch, be sure the submodules are at the correct commit and that
+        |  commit has been pushed to GitHub.  Then invoke "sbt release".  The release process will create a branch
+        |  called "release" from the HEAD, then modifies version.sbt, and commits this, tags it with the version number
+        |  and runs "distribution:disttest".  If the build succeeds then version.sbt is updated to the next snapshot
+        |  version, and committed.  The "release" branch and the version tag should be pushed to GitHub, and a Pull Request
+        |  should be made from the "release" branch to the "master" branch.  The commit with the version tag will be
+        |  built by Travis-CI and the bridgescorekeeper jar file is added as an artifact to the release in GitHub.
       """.stripMargin
     )
     state

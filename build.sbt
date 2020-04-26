@@ -28,7 +28,7 @@
 //   bridgescorer-server/distribution:svt
 //
 // When testing help screens, this will only run the test case that generates images for help
-//   set BUILDFORHELPONLY=true
+//   set BuildForHelpOnly=true
 //   sbt webassembly
 //
 // to get times for tasks,
