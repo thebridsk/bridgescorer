@@ -232,6 +232,12 @@ object AjaxResult {
     apply("GET", url, data, timeout, headers, withCredentials, responseType)(pos)
   }
 
+  def head(url: String, data: InputData = null, timeout: Duration = defaultTimeout,
+      headers: Map[String, String] = Map.empty,
+      withCredentials: Boolean = false, responseType: String = "")( implicit pos: Position) = {
+    apply("HEAD", url, data, timeout, headers, withCredentials, responseType)(pos)
+  }
+
   def post(url: String, data: InputData = null, timeout: Duration = defaultTimeout,
       headers: Map[String, String] = Map.empty,
       withCredentials: Boolean = false, responseType: String = "")( implicit pos: Position) = {

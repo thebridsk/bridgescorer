@@ -630,6 +630,13 @@ private class StartServer {
         interface
       }
 
+      override val certhttppath = optCACert.map { certfile =>
+        log.info(s"Using CA cert ${certfile}")
+        path("servercert") {
+          getFromFile(certfile.jfile, ContentType( MediaTypes.`application/x-x509-ca-cert`))
+        }
+      }
+
       val rlc = optRemoteLogger
         .flatMap { f =>
           Option(RemoteLoggingConfig.readConfig(f.jfile))
@@ -679,16 +686,10 @@ private class StartServer {
     bindingHttp = if (httpPort.isDefined) {
       if (httpsPort.isDefined) {
         // both http and https defined, redirect http to https
-        val certhttppath = optCACert.map { certfile =>
-          log.info(s"Using CA cert ${certfile}")
-          path("servercert") {
-            getFromFile(certfile.jfile, ContentType( MediaTypes.`application/x-x509-ca-cert`))
-          }
-        }
 
         val redirectHttpToHttps = redirectRoute("https", httpsPort.get)
         val httpToHttps = respondWithHeaders(myService.cacheHeaders) {
-          certhttppath.map( _ ~ redirectHttpToHttps ).getOrElse( redirectHttpToHttps )
+          (myService.certhttppath.toList:::List(redirectHttpToHttps)).reduceLeft( (ac,v) => ac ~ v )
         }
         Some(
           Http().bindAndHandleAsync(
