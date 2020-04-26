@@ -288,7 +288,7 @@ object ViewPlayersFiveInternal {
           name: String,
           arrow: String,
           pos: PlayerPosition,
-          swap: () => Callback
+          swap: Callback
       ) = {
         val selected = state.dealer match {
           case Some(s) => s == pos
@@ -309,7 +309,7 @@ object ViewPlayersFiveInternal {
           AppButton(
             "Swap" + pos.pos,
             arrow,
-            ^.onClick --> swap(),
+            ^.onClick --> swap,
             baseStyles.requiredNotNext
           )
         )
@@ -333,12 +333,12 @@ object ViewPlayersFiveInternal {
             <.tr(
               <.td(
                 ),
-              pos(state.south.getOrElse("south"), southArrow, South, swapNS _),
+              pos(state.south.getOrElse("south"), southArrow, South, swapNS),
               <.td(
                 )
             ),
             <.tr(
-              pos(state.east.getOrElse("east"), eastArrow, East, swapEW _),
+              pos(state.east.getOrElse("east"), eastArrow, East, swapEW),
               <.td(
                 AppButton(
                   "clockwise",
@@ -354,12 +354,12 @@ object ViewPlayersFiveInternal {
                   baseStyles.requiredNotNext
                 )
               ),
-              pos(state.west.getOrElse("west"), westArrow, West, swapEW _)
+              pos(state.west.getOrElse("west"), westArrow, West, swapEW)
             ),
             <.tr(
               <.td(
                 ),
-              pos(state.north.getOrElse("north"), northArrow, North, swapNS _),
+              pos(state.north.getOrElse("north"), northArrow, North, swapNS),
               <.td(
                 )
             )

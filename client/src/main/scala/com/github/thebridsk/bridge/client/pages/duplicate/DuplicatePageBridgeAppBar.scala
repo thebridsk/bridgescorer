@@ -139,7 +139,7 @@ object DuplicatePageBridgeAppBarInternal {
             onClick = callbackPage(TableView(dupid,tid)) _
         )(
             s"Table $tid"
-        ),
+        )
       }
 
       <.div(

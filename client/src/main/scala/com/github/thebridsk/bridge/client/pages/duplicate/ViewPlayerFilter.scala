@@ -173,7 +173,7 @@ object ViewPlayerFilterInternal {
                   CheckBox( "DisplayOnly", "Filter Display Only", props.filter.filterDisplayOnly, setFilterDisplayOnly(!props.filter.filterDisplayOnly) )
                 )
               } else {
-                AppButton( "ShowFilter", "Show Filter", ^.onClick-->showFilter(true) ),
+                AppButton( "ShowFilter", "Show Filter", ^.onClick-->showFilter(true) )
               }
             )
           )

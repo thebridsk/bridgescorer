@@ -167,7 +167,7 @@ class TestLoggingWebsocket extends AnyFlatSpec with ScalatestRouteTest with Matc
     import com.github.thebridsk.bridge.data.websocket.Protocol
 
     //  position: String, timestamp: Long, level: String, url: String, message: String, cause: String, args: List[String])
-    val dp = DuplexProtocol.LogEntryV2( position, "logger", System.currentTimeMillis(), "I", "http://example.com/test", "message: %s %s %s", "", List("hello", "world", i.toString()))
+    val dp = DuplexProtocol.LogEntryV2( position, "logger", System.currentTimeMillis().toDouble, "I", "http://example.com/test", "message: %s %s %s", "", List("hello", "world", i.toString()))
     DuplexProtocol.toString(dp)
   }
 

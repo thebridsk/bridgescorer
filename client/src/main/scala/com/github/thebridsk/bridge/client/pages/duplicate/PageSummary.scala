@@ -625,7 +625,7 @@ object PageSummaryInternal {
               take(takerows).
               map { ds =>
                     SummaryRow.withKey( ds.id )((tp,ds,props,state,this,importId))
-                  }.toTagMod,
+                  }.toTagMod
             } else {
               <.tr(
                 <.td( "Working" ),

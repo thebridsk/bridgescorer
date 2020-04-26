@@ -38,7 +38,7 @@ case class PlayerOpponentStat(
       opponent: String,
       totalMP: Int,
       wonMP: Int
-  ) {
+  ) = {
     this(player, opponent, 0, 0, 0, totalMP, wonMP)
   }
 

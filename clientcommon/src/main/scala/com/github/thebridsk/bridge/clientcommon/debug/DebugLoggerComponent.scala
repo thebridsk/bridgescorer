@@ -147,7 +147,7 @@ object DebugLoggerComponentInternal {
           Level.allLevels.filter(l => l!=Level.STDERR && l!=Level.STDOUT).map { l =>
             val styl = if (state.level != l) baseStyles.normal
                        else baseStyles.buttonSelected
-            AppButton( l.name, l.name, ^.onClick --> setLoggingLevelCB(l), styl ).when(enabled),
+            AppButton( l.name, l.name, ^.onClick --> setLoggingLevelCB(l), styl ).when(enabled)
           }.toTagMod,
         ),
         <.div(

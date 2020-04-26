@@ -436,7 +436,7 @@ object PageStatsInternal {
             )
           ),
           if (state.filter.pairsData.isDefined) {
-            ViewPlayerFilter(state.filter, onChange _),
+            ViewPlayerFilter(state.filter, onChange _)
           } else {
             working
           },

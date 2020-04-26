@@ -36,7 +36,7 @@ object Navigator {
         .build
 
   def apply( selectedPage: Resolution[AppPage], ctrl: RouterCtl[AppPage], modules: List[Module] ): VdomElement = {
-    component( Props(selectedPage, ctrl, modules)),
+    component( Props(selectedPage, ctrl, modules))
   }
 
 }

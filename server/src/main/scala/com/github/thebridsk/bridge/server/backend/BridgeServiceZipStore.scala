@@ -65,7 +65,7 @@ class BridgeServiceZipStore(
   import scala.collection.mutable.Map
 
   override def getDate: Timestamp = {
-    zipfilename.lastModified
+    zipfilename.lastModified.toDouble
   }
 
   val bridgeResources = BridgeResources(useYaml, true, false, true)

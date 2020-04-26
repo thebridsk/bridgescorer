@@ -35,7 +35,7 @@ object BridgeServiceTesting {
                      "T2"->Team.create("T2","Ellen", "Wayne"),
                      "T3"->Team.create("T3","Norman","Sally"),
                      "T4"->Team.create("T4","Ethan","Wilma"))
-    val time = System.currentTimeMillis()
+    val time = System.currentTimeMillis().toDouble
     MatchDuplicateV3("M1", teams.values.toList, List(
         Board.create("B1", false, false, North.pos, List(
             DuplicateHand.create( Hand.create("H1",7,Spades.suit, Doubled.doubled, North.pos,

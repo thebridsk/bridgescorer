@@ -6,7 +6,7 @@ object SystemTimeJVM {
 
   def apply() =
     SystemTime.setTimekeeper(new SystemTime {
-      def currentTimeMillis() = System.currentTimeMillis()
+      def currentTimeMillis() = System.currentTimeMillis().toDouble
     })
 
 }
