@@ -36,6 +36,8 @@
 
 bloopExportJarClassifiers in Global := Some(Set("sources"))
 
+suppressSbtShellNotification := true
+
 lazy val browserpages: Project = BldBrowserPages.browserpages
 
 lazy val sharedJS: Project = BldBridgeShared.sharedJS

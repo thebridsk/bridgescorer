@@ -161,8 +161,8 @@ case class BoardV2 private (
       .map(hand => {
         val otherscore = getScoreFromHand(hand)
         if (score == otherscore) 0.5f
-        else if (score > otherscore) 1
-        else 0
+        else if (score > otherscore) 1.0f
+        else 0.0f
       })
       .reduce(_ + _)
   }
