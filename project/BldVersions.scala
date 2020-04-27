@@ -93,7 +93,7 @@ object BldVersion {
   lazy val vGraphQL = "14.6.0"              // https://www.npmjs.com/package/graphql    co-req of graphql-voyager
   lazy val vGraphiQL = "0.17.5"             // https://www.npmjs.com/package/graphiql
   lazy val vGraphQLVoyager = "1.0.0-rc.29"  // https://www.npmjs.com/package/graphql-voyager
-  lazy val vMaterialUIcore = "4.9.11"       // https://www.npmjs.com/package/@material-ui/core
+  lazy val vMaterialUIcore = "4.9.12"       // https://www.npmjs.com/package/@material-ui/core
   lazy val vMaterialUIicons = "4.9.1"       // https://www.npmjs.com/package/@material-ui/icons
   lazy val vPropTypes = "15.7.2"            // https://www.npmjs.com/package/prop-types
 }
