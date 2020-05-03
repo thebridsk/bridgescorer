@@ -201,9 +201,10 @@ class MyProcess( logger: Option[Logger] = None ) {
     if (rc != 0) throw new Error(s"Failed, with rc=${rc} running keytool ${pcmd.mkString(" ")}")
   }
 
-  def java( cmd: List[String], workingDirectory: Option[File] ): Unit = {
+  def java( cmd: List[String], workingDirectory: Option[File], envVars: Option[Map[String,String]] = None ): Unit = {
     logger.foreach( _.info( "Running java "+cmd.mkString(" ") ))
-    val rc = Fork.java( ForkOptions().withWorkingDirectory( workingDirectory), cmd )
+    val fo = envVars.map( env => ForkOptions().withEnvVars(env) ).getOrElse(ForkOptions()).withWorkingDirectory( workingDirectory)
+    val rc = Fork.java( fo, cmd )
     if (rc != 0) throw new Error("Failed running java "+cmd.mkString(" "))
   }
 

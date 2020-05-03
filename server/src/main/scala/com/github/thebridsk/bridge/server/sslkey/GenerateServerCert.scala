@@ -97,14 +97,6 @@ Options:""")
     default = Some("rootCA")
   )
 
-  val optionRootCADname = opt[String](
-    "cadname",
-    noshort = true,
-    descr = "DName for CA",
-    required = true,
-    default = Some("CN=BridgeScoreKeeperCA, OU=BridgeScoreKeeper, O=BridgeScoreKeeper, L=New York, ST=New York, C=US")
-  )
-
   val optionRootCAStorePW = opt[String](
     "castorepw",
     noshort = true,
@@ -149,8 +141,8 @@ Options:""")
   val optionDname = opt[String](
     "dname",
     short = 'd',
-    descr = "server dname",
-    required = true,
+    descr = "server dname, must be specified if generating a new certificate",
+    required = false,
   )
 
   val optionKeypass = opt[String](
@@ -222,6 +214,7 @@ Options:""")
   )
 
   mutuallyExclusive(optionAddIP, optionIP, optionAddMachineIP)
+  mutuallyExclusive(optionAddIP, optionAddMachineIP, optionDname)
 
   def executeSubcommand(): Int = {
 
@@ -229,10 +222,31 @@ Options:""")
       val workingDirectory = optionKeyDir()
       if (!workingDirectory.isDirectory) workingDirectory.createDirectory()
 
+      val rootcadname = {
+        GenerateSSLKeys.getCertificatesFromKeystore(
+          optionRootCAAlias(),
+          s"${optionCA()}.jks",
+          optionRootCAStorePW(),
+          workingDirectory = Some(workingDirectory.jfile)
+        ).flatMap { list =>
+          list.head match {
+            case c: X509Certificate =>
+              Option(c.getSubjectDN().getName())
+            case _ =>
+              None
+          }
+        }
+      }
+
+      if (rootcadname.isEmpty) {
+        log.severe("Unable to find CA certificate")
+        return 1
+      }
+
       val rootca = RootCAInfo(
         alias = optionRootCAAlias(),
         rootca = optionCA(),
-        dname = optionRootCADname(),
+        dname = rootcadname.get,
         keypass = optionRootCAKeyPW(),
         storepass = optionRootCAStorePW(),
         workingDirectory = Some(workingDirectory.jfile),
@@ -241,11 +255,34 @@ Options:""")
         validityCA = optionValidityCA().toString,
       )
 
+      val dname = {
+        optionDname.toOption.orElse {
+          GenerateSSLKeys.getCertificatesFromKeystore(
+            optionAlias(),
+            s"${optionServer()}.jks",
+            optionStorepass(),
+            workingDirectory = Some(workingDirectory.jfile)
+          ).flatMap { list =>
+            list.head match {
+              case c: X509Certificate =>
+                Option(c.getSubjectDN().getName())
+              case _ =>
+                None
+            }
+          }
+        }
+      }
+
+      if (dname.isEmpty) {
+        log.severe("Unable to find Server certificate, --dname must be specified if server certificate does not exist")
+        return 1
+      }
+
       val server = ServerInfo(
         workingDirectory = rootca.workingDirectory,
         alias = optionAlias(),
         server = optionServer(),
-        dname = optionDname(),
+        dname = dname.get,
         keypass = optionKeypass(),
         storepass = optionStorepass(),
         good = false,

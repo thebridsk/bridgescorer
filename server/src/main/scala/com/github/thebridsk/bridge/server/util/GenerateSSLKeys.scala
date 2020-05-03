@@ -3,6 +3,16 @@ package com.github.thebridsk.bridge.server.util
 import java.io.File
 import java.io.FileOutputStream
 import com.github.thebridsk.utilities.logging.Logger
+import java.io.FileNotFoundException
+import java.security.KeyStore
+import scala.util.Using
+import java.io.FileInputStream
+import java.security.cert.X509Certificate
+import java.security.cert.CertificateExpiredException
+import java.security.cert.CertificateNotYetValidException
+import java.security.cert.Certificate
+import java.net.NetworkInterface
+import java.net.Inet4Address
 
 trait GenerateSSLKeys
 
@@ -18,6 +28,10 @@ object GenerateSSLKeys {
 
   def makerFileExists( dir: Option[File] = None ) = {
     getMarkerFile(dir).isFile()
+  }
+
+  def deleteMarkerFile( dir: Option[File] = None ) = {
+    getMarkerFile(dir).delete()
   }
 
   def getFile( workingDirectory: Option[File], file: String ) = {
@@ -42,6 +56,153 @@ object GenerateSSLKeys {
     MyFileUtils.deleteDirectory( d.toPath(), None )
     d.mkdirs()
   }
+
+  def showCert(
+    certChain: List[Certificate]
+  ) = {
+    import scala.jdk.CollectionConverters._
+    certChain.zipWithIndex.foreach { case (cert,i) =>
+      // return true if the certificate is NOT valid
+      cert match {
+        case c: X509Certificate =>
+          val name = c.getSubjectX500Principal().getName()
+          logger.info(
+            s"""Certificate[$i]
+                |  subject DN = ${c.getSubjectDN().getName()}
+                |  not after = ${c.getNotAfter()}
+                |  not before = ${c.getNotBefore()}
+                |  SAN = ${Option(c.getSubjectAlternativeNames()).map( _.asScala.mkString).getOrElse("")}
+                |  issuer DN = ${c.getIssuerDN()}
+              """.stripMargin
+          )
+        case c =>
+          logger.info(
+            s"""Certificate[$i]
+                |  Unknown certificate class ${c.getClass().getName()}
+              """.stripMargin
+          )
+      }
+    }
+  }
+
+  /**
+    * Validate the server private certificate.
+    * This checks the valid dates, and the IP address of the server.
+    *
+    * @param alias
+    * @param keystore
+    * @param storepass
+    * @param workingDirectory
+    * @param showCerts
+    * @return true - the certificate is valid
+    */
+  def validateCert(
+    alias: String,
+    keystore: String,
+    storepass: String,
+    workingDirectory: Option[File],
+    showCerts: Boolean
+  ): Boolean = {
+    import scala.jdk.CollectionConverters._
+    getCertificatesFromKeystore(alias,keystore,storepass,workingDirectory) match {
+      case Some( certs: List[_]) =>
+        if (showCerts) showCert(certs)
+        certs.zipWithIndex.find { case (cert,i) =>
+          // return true if the certificate is NOT valid
+          cert match {
+            case c: X509Certificate =>
+              val name = c.getSubjectX500Principal().getName()
+              try {
+                c.checkValidity()
+                if (i == 0) {
+                  val machineip = NetworkInterface.getNetworkInterfaces().asScala.filter { ni =>
+                    !ni.isLoopback() && ni.getInetAddresses().hasMoreElements()
+                  }.flatMap { ni =>
+                    ni.getInetAddresses().asScala.flatMap { ia =>
+                      if (ia.isInstanceOf[Inet4Address]) ia.getHostAddress()::Nil
+                      else Nil
+                    }
+                  }.toList.distinct
+                  logger.fine(s"Found machine IPs: ${machineip.mkString(" ")}")
+
+                  val certIPs = getSAN(c)
+                  val rc = certIPs.find { ip =>
+                    machineip.contains(ip)
+                  }.isEmpty
+                  if (rc) logger.warning(s"IPs ${machineip.mkString("[", " ", "]")} not found in certificate: ${certIPs.mkString("[", " ", "]")}")
+                  rc
+                } else {
+                  false
+                }
+              } catch {
+                case x @ (_: CertificateExpiredException | _: CertificateNotYetValidException) =>
+                  logger.warning( s"Certificate not valid today: $name" )
+                  true
+              }
+            case _ =>
+              logger.warning( s"Unknown certification class ${cert.getClass.getName}:\n${cert}")
+              true
+          }
+        }.isEmpty
+      case cert =>
+        logger.warning( s"Certificate not found: $keystore $alias")
+        false
+    }
+  }
+
+  /**
+    * Get the certificate chain for an alias
+    *
+    * @param alias
+    * @param keystore
+    * @param storepass
+    * @param workingDirectory
+    * @return None if not found or keystore does not exist.
+    */
+  def getCertificatesFromKeystore(
+    alias: String,
+    keystore: String,
+    storepass: String,
+    workingDirectory: Option[File],
+  ): Option[List[Certificate]] = {
+    val keyStore = KeyStore.getInstance("JKS");
+    val file = GenerateSSLKeys.getFullFile( workingDirectory, keystore)
+    if (file.isFile()) {
+      Using.resource(new FileInputStream( file )) { f =>
+        keyStore.load( f, storepass.toCharArray());
+      }
+      Option(keyStore.getCertificateChain( alias ).toList)
+    } else {
+      logger.warning( s"File $file does not exist or is not a file")
+      None
+    }
+  }
+
+  val SAN_IP = 7
+  val SAN_DNS = 2
+
+  /**
+    *
+    *
+    * @param cert
+    * @return a list of all IP address in the SAN, except for 127.0.0.1
+    */
+  def getSAN( cert: X509Certificate ): List[String] = {
+    val collection = cert.getSubjectAlternativeNames()
+    import scala.jdk.CollectionConverters._
+    collection.asScala.flatMap { list =>
+      val l = list.asScala.toList
+      logger.fine( s"  SAN ${l.map( o => s"${o.getClass.getSimpleName}(${o})").mkString(" ")}")
+      l match {
+        case (SAN_IP)::(s: String)::Nil if s != "127.0.0.1" =>
+          s::Nil
+        case _ =>
+          logger.fine( s"Ignoring SAN entry: ${l.mkString(" ")}")
+          Nil
+      }
+    }.toList
+  }
+
 }
 
 import GenerateSSLKeys._
