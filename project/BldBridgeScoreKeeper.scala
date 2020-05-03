@@ -422,7 +422,45 @@ object BldBridgeScoreKeeper {
         .sequential(fvt in Distribution, svt in Distribution)
         .value,
       disttests := Def
-        .sequential(integrationtests in Distribution, moretests in Distribution)
+        .sequential(integrationtests in Distribution, moretests in Distribution, ssltests in Distribution)
+        .value,
+
+      onlyssltests in Distribution := {
+        val log = streams.value.log
+        val (assemblyJar, testJar) = {
+          val cp = BridgeServer.findBridgeJars(
+                                  (crossTarget in Compile).value,
+                                  (assemblyJarName in assembly).value,
+                                  (assemblyJarName in (Test, assembly)).value
+                                 )
+          log.info("Jars are " + cp)
+          cp
+        }
+        val cp = assemblyJar + java.io.File.pathSeparator + testJar
+
+        val server = new BridgeServer(assemblyJar)
+        val jvmargs = server.getTestDefine() :::
+          "-Xmx4096M" ::
+          "-DUseProductionPage=1" ::
+          "-DToMonitorFile=logs/ssltestTcpMonitorTimeWait.csv" ::
+          "-DUseLogFilePrefix=logs/ssltest" ::
+          "-DTestDataDirectory=" + itestdataDir ::
+          "-DDefaultWebDriver=" + useBrowser ::
+          "-cp" :: cp ::
+          "org.scalatest.tools.Runner" ::
+          "-oD" ::
+          "-s" ::
+          ssltestToRun ::
+          Nil
+        val inDir = baseDirectory.value
+
+        val env = Map( "BridgeScoreKeeperJar" -> assemblyJar )
+        BridgeServer.runjava(log, jvmargs, Some(baseDirectory.value), Some(env))
+
+      },
+
+      ssltests in Distribution := Def
+        .sequential( prereqintegrationtests in Distribution, onlyssltests in Distribution )
         .value,
     )
 

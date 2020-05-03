@@ -111,6 +111,9 @@ object BldCommonSettings {
     "com.github.thebridsk.bridge.test.selenium.integrationtest.TravisIntegrationTests"
   val itestdataDir = "../testdata"
 
+  val ssltestToRun =
+    "com.github.thebridsk.bridge.test.AllSSLTests"
+
 
   lazy val bridgescorerAllProjects = ScopeFilter(
     inAggregates(BldBridge.bridgescorer, includeRoot = false)
@@ -202,6 +205,7 @@ object BldCommonSettings {
 
   case class SSLKeys( keystore: File, keystorepass: String, serveralias: String, keypass: String, truststore: File )
   val generatesslkeys = taskKey[SSLKeys]("Generate SSL keys for testing HTTPS connections")
+  val onlyssltests = taskKey[Unit]("Only run SSL tests, does not create jars")
   val ssltests = taskKey[Unit]("Run SSL tests")
 
   val server = taskKey[Unit]("Run server with default store and logging to server/logs directory, no help")

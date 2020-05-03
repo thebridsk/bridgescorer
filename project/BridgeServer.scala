@@ -151,8 +151,8 @@ class BridgeServer( val assemblyJar: String, val port: String = "8082") {
 
 object BridgeServer {
 
-  def runjava( logger: Logger, cmd: List[String], workingDirectory: Option[File] ): Unit = {
-    new MyProcess(Some(logger)).java( cmd, workingDirectory )
+  def runjava( logger: Logger, cmd: List[String], workingDirectory: Option[File], envVars: Option[Map[String,String]] = None ): Unit = {
+    new MyProcess(Some(logger)).java( cmd, workingDirectory, envVars )
   }
 
   /**
