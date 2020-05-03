@@ -51,8 +51,6 @@ class CertTest extends AnyFlatSpec with Matchers with BeforeAndAfterAll {
 
   it should "test the server certificate generation" in {
 
-    GenerateSSLKeys.deleteMarkerFile()  // this forces new keys to be generated
-
     withClue( "Creating new certificate without server IP") {
       val p = proc.exec(
         List(
@@ -75,6 +73,7 @@ class CertTest extends AnyFlatSpec with Matchers with BeforeAndAfterAll {
           "--truststore", "examplebridgescorekeepertrust",
           "-v",
           "--nginx",
+          "--clean",
         ),
         cwd
       )
