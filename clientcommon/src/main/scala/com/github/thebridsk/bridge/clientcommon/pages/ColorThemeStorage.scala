@@ -9,6 +9,7 @@ object ColorThemeStorage {
 
   val log = Logger("bridge.ColorThemeStorage")
 
+  // these values are synchronized with the colortheme.js file
   val key = "thebridsk:bridge:color-theme"
   val bodyAttribute = "data-theme"
 
