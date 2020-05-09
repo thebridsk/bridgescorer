@@ -377,7 +377,8 @@ object BldBridgeScoreKeeper {
       travismoretests := Def
         .sequential(
           prereqintegrationtests in Distribution,
-          travissvt in Distribution
+          travissvt in Distribution,
+          ssltests in Distribution
         )
         .value,
       travissvt := {
