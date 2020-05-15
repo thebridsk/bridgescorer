@@ -36,6 +36,7 @@
   --color-scrollbar-thumb: rgb(140,140,140);
   --color-scrollbar-track: rgb(230,230,230);
   --color-border-combobox: black solid 1px;
+  --color-button-border: rgb(140,140,140);
 }
 
 @media screen {
@@ -77,6 +78,7 @@
     --color-scrollbar-thumb: rgb(80,80,80);
     --color-scrollbar-track: rgb(120,120,120);
     --color-border-combobox: black solid 1px;
+    --color-button-border: rgb(140,140,140);
   }
 
   [data-theme="dark"] {
@@ -114,6 +116,7 @@
     --color-scrollbar-thumb: rgb(120,120,120);
     --color-scrollbar-track: rgb(80,80,80);
     --color-border-combobox: white solid 1px;
+    --color-button-border: rgb(140,140,140);
   }
 
 }
@@ -187,6 +190,7 @@ body {
   min-width: 37px;
   margin: 2px;
   font-weight: bold;
+  border-color: var(--color-button-border);
 }
 
 .baseNameButton {

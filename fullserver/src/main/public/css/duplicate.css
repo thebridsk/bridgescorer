@@ -43,6 +43,16 @@
   background-color: var(--color-bg);
   z-index: 10;
 }
+@media not all and (min-resolution:.001dpcm) {
+  /* See https://adrianroselli.com/2020/01/fixed-table-headers.html
+   * running on Safari, caption element is not reclaimed for when calculating sticky
+   * The value of "top" is -h-14, where h is the height of the caption element.
+   */
+  .dupDivSummary > table thead tr th,
+  .dupDivSummary > table thead tr th:first-child {
+    top: -56px;
+  }
+}
 .dupDivSummary > table tbody tr:nth-child(2n+1) {
   background-color: var(--color-table-row-alt);
 }
@@ -135,6 +145,15 @@
   z-index: 12;
   background-color: var(--color-bg);
 }
+@media not all and (min-resolution:.001dpcm) {
+  /* running on Safari, caption element is not reclaimed for when calculating sticky
+   * The value of "top" is -h-14, where h is the height of the caption element.
+   */
+  .dupDivPairsGrid > table > thead > tr > th,
+  .dupDivPairsGrid > table > thead > tr > th:first-child {
+    top: -49px;
+  }
+}
 .dupDivPairsGrid > table > tbody > tr > td:last-child {
   border-left: 3px solid var(--color-table-border);
 }
@@ -190,6 +209,15 @@
   z-index: 12;
   background-color: var(--color-bg);
 }
+@media not all and (min-resolution:.001dpcm) {
+  /* running on Safari, caption element is not reclaimed for when calculating sticky
+   * The value of "top" is -h-14, where h is the height of the caption element.
+   */
+  .dupDivPairsDetailsGrid > table > thead > tr > th,
+  .dupDivPairsDetailsGrid > table > thead > tr > th:first-child {
+    top: -42px;
+  }
+}
 .dupDivPairsDetailsGrid > table > tbody > tr > td:last-child {
   border-left: 3px solid var(--color-table-border);
 }
@@ -215,6 +243,14 @@
   top: -8px;
   background-color: var(--color-bg);
 }
+@media not all and (min-resolution:.001dpcm) {
+  /* running on Safari, caption element is not reclaimed for when calculating sticky
+   * The value of "top" is -h-14, where h is the height of the caption element.
+   */
+  .dupViewPairsDetailsTable > table > thead > tr > th {
+    top: -42px;
+  }
+}
 
 .dupViewPeopleDetailsTable {
   padding: 4px;
@@ -238,6 +274,15 @@
   left: -8px;
   background-color: var(--color-bg);
 }
+@media not all and (min-resolution:.001dpcm) {
+  /* running on Safari, caption element is not reclaimed for when calculating sticky
+   * The value of "top" is -h-14, where h is the height of the caption element.
+   */
+  .dupViewPeopleDetailsTable > table > thead > tr > th,
+  .dupViewPeopleDetailsTable > table > thead > tr > th:first-child {
+    top: -42px;
+  }
+}
 
 .dupViewPairsTable {
   padding: 4px;
@@ -248,6 +293,14 @@
   z-index: 11;
   top: -8px;
   background-color: var(--color-bg);
+}
+@media not all and (min-resolution:.001dpcm) {
+  /* running on Safari, caption element is not reclaimed for when calculating sticky
+   * The value of "top" is -h-14, where h is the height of the caption element.
+   */
+  .dupViewPairsTable > table > thead > tr > th {
+    top: -49px;
+  }
 }
 
 .dupViewPeopleTable > table > thead > tr > th {
@@ -268,6 +321,15 @@
   z-index: 10;
   left: -8px;
   background-color: var(--color-bg);
+}
+@media not all and (min-resolution:.001dpcm) {
+  /* running on Safari, caption element is not reclaimed for when calculating sticky
+   * The value of "top" is -h-14, where h is the height of the caption element.
+   */
+  .dupViewPeopleTable > table > thead > tr > th,
+  .dupViewPeopleTable > table > thead > tr > th:first-child {
+    top: -49px;
+  }
 }
 
 .dupTableNewDuplicate {
@@ -616,6 +678,14 @@
   background-color: var(--color-bg);
   z-index: 11;
 }
+@media not all and (min-resolution:.001dpcm) {
+  /* running on Safari, caption element is not reclaimed for when calculating sticky
+   * The value of "top" is -h-14, where h is the height of the caption element.
+   */
+  .dupDivMovementsPage > table thead tr th {
+    top: -42px;
+  }
+}
 .dupDivMovementsPage table {
   border-spacing: 0px;
   font-size: x-large;
@@ -778,6 +848,18 @@
   z-index: 11;
   background-color: var(--color-bg);
 }
+@media not all and (min-resolution:.001dpcm) {
+  /* running on Safari, caption element is not reclaimed for when calculating sticky
+   * The value of "top" in the first row is t1 = -hc-14, where hc is the height of the caption element.
+   * the value of "top" in the second row is t2 = t1 + h1, where h1 is the height of row 1
+   */
+  .dupViewContractResults table > thead > tr:nth-child(1) > th {
+    top: -49px;
+  }
+  .dupViewContractResults table > thead > tr:nth-child(2) > th {
+    top: -22px;
+  }
+}
 .dupViewContractResults table > thead > tr:nth-child(2) > th:first-child {
   z-index: 12;
   left: -8px;
@@ -849,6 +931,15 @@
   left: -8px;
   z-index: 12;
   background-color: var(--color-bg);
+}
+@media not all and (min-resolution:.001dpcm) {
+  /* running on Safari, caption element is not reclaimed for when calculating sticky
+   * The value of "top" is -h-14, where h is the height of the caption element.
+   */
+  .dupViewPlayerContractResults table > thead > tr > th,
+  .dupViewPlayerContractResults table > thead > tr > th:first-child {
+    top: -42px;
+  }
 }
 
 .dupViewPlayerContractResults table > thead > tr > th:first-child {
@@ -935,6 +1026,15 @@
   z-index: 12;
   background-color: var(--color-bg);
 }
+@media not all and (min-resolution:.001dpcm) {
+  /* running on Safari, caption element is not reclaimed for when calculating sticky
+   * The value of "top" is -h-14, where h is the height of the caption element.
+   */
+  .dupViewPlayerAggressiveness table > thead > tr:last-child > th,
+  .dupViewPlayerAggressiveness table > thead > tr:last-child > th:first-child {
+    top: -42px;
+  }
+}
 
 .dupDivPlayerOpponentGrid {
   font-size: x-large;
@@ -965,6 +1065,15 @@
   left: -8px;
   z-index: 12;
   background-color: var(--color-bg);
+}
+@media not all and (min-resolution:.001dpcm) {
+  /* running on Safari, caption element is not reclaimed for when calculating sticky
+   * The value of "top" is -h-14, where h is the height of the caption element.
+   */
+  .dupDivPlayerOpponentGrid > table > thead > tr > th,
+  .dupDivPlayerOpponentGrid > table > thead > tr > th:first-child {
+    top: -42px;
+  }
 }
 .dupDivPlayerOpponentGrid > table > tbody > tr > td:last-child {
   border-left: 3px solid var(--color-table-border);
