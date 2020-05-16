@@ -58,7 +58,7 @@ object BldVersion {
   lazy val vSelenium = "3.141.59"    // https://github.com/SeleniumHQ/selenium
   lazy val vScallop = "3.4.0"        // https://github.com/scallop/scallop
   lazy val vSlf4j = "1.7.30"         // https://github.com/qos-ch/slf4j
-  lazy val vPlayJson = "2.8.1"       // https://github.com/playframework/play-json
+  lazy val vPlayJson = "2.8.1+159-61afe78f+20200516-1155"       // https://github.com/playframework/play-json  from https://github.com/mliarakos/play-json/tree/feature/scalajs-1.0  local build
 
   // jackson-module-scala usually updates a few days after the others are updated,
   // don't update until jackson-module-scala is updated
