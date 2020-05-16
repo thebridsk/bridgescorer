@@ -2,7 +2,6 @@ package com.github.thebridsk.bridge.client.controller
 
 import com.github.thebridsk.bridge.client.bridge.action.BridgeDispatcher
 import com.github.thebridsk.bridge.data.MatchDuplicate
-import scala.scalajs.js.annotation.ScalaJSDefined
 import com.github.thebridsk.bridge.data.websocket.Protocol
 import com.github.thebridsk.bridge.clientcommon.rest2.RestClientDuplicate
 import com.github.thebridsk.utilities.logging.Logger

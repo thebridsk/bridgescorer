@@ -1,7 +1,6 @@
 package com.github.thebridsk.bridge.client.bridge.action
 
 import flux.dispatcher.FluxDispatcher
-import scala.scalajs.js.annotation.ScalaJSDefined
 import com.github.thebridsk.bridge.data.MatchDuplicate
 import com.github.thebridsk.bridge.data.DuplicateHand
 import com.github.thebridsk.bridge.data.Id

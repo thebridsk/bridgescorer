@@ -11,16 +11,16 @@ object DateUtils {
     val d = new js.Date(time)
 
     if (true) {
-      val month = d.getMonth()
+      val month = d.getMonth().toInt
       val mon = months(month)
-      val day = d.getDate()
-      val year = d.getFullYear()
-      val hour = d.getHours()
+      val day = d.getDate().toInt
+      val year = d.getFullYear().toInt
+      val hour = d.getHours().toInt
       val h = if (hour >= 12) hour-12 else hour
       val ampm = if (hour == h) "AM" else "PM"
       val hh = if (h==0) 12 else h
-      val min = d.getMinutes()
-      val sec = d.getSeconds()
+      val min = d.getMinutes().toInt
+      val sec = d.getSeconds().toInt
       f"$mon%s $day%d, $year%d $hh%d:$min%02d:$sec%02d $ampm%s"
     } else {
 
@@ -32,12 +32,12 @@ object DateUtils {
     val d = new js.Date(time)
 
     if (true) {
-      val hour = d.getHours()
+      val hour = d.getHours().toInt
       val h = if (hour >= 12) hour-12 else hour
       val ampm = if (hour == h) "AM" else "PM"
       val hh = if (h==0) 12 else h
-      val min = d.getMinutes()
-      val sec = d.getSeconds()
+      val min = d.getMinutes().toInt
+      val sec = d.getSeconds().toInt
       f"$hh%d:$min%02d:$sec%02d $ampm%s"
     } else {
 
@@ -49,10 +49,10 @@ object DateUtils {
     val d = new js.Date(time)
 
     if (true) {
-      val hour = d.getHours()
-      val min = d.getMinutes()
-      val sec = d.getSeconds()
-      val milli = d.getMilliseconds()
+      val hour = d.getHours().toInt
+      val min = d.getMinutes().toInt
+      val sec = d.getSeconds().toInt
+      val milli = d.getMilliseconds().toInt
       f"$hour%d:$min%02d:$sec%02d.$milli%03d"
     } else {
 
@@ -64,10 +64,10 @@ object DateUtils {
     val d = new js.Date(time)
 
     if (true) {
-      val month = d.getMonth()
+      val month = d.getMonth().toInt
       val mon = months(month)
-      val day = d.getDate()
-      val year = d.getFullYear()
+      val day = d.getDate().toInt
+      val year = d.getFullYear().toInt
       f"$mon%s $day%d, $year%d"
     } else {
 

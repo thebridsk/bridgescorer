@@ -1,7 +1,6 @@
 package com.github.thebridsk.bridge.client.pages.rubber
 
 import scala.scalajs.js
-import scala.scalajs.js.UndefOr.any2undefOrA
 
 import com.github.thebridsk.bridge.client.bridge.store.NamesStore
 import com.github.thebridsk.bridge.client.controller.RubberController
