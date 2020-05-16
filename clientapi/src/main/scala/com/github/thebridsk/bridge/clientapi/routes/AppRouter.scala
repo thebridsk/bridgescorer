@@ -146,7 +146,7 @@ class AppRouter {
   def routerWithURL( base: BaseUrl = LogInfo.baseUrl) = routerComponentAndLogic(base)._1
 
   private var fRouter: Option[ Router[AppRouter.AppPage]] = None
-  private var fRouterLogic: Option[ RouterLogic[AppRouter.AppPage] ] = None
+  private var fRouterLogic: Option[ RouterLogic[AppRouter.AppPage, Unit] ] = None
   private var fRouterCtl: Option[ RouterCtl[AppRouter.AppPage]] = None
 
   def routerComponentAndLogic( base: BaseUrl = LogInfo.baseUrl)  = {

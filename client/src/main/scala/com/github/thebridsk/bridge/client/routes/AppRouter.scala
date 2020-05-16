@@ -102,7 +102,7 @@ trait Module {
   /**
    * The routes for the module
    */
-  def routes(): RoutingRule[AppPage]
+  def routes(): RoutingRule[AppPage,Unit]
 }
 
 class AppRouter( modules: Module* ) {
@@ -253,7 +253,7 @@ class AppRouter( modules: Module* ) {
   def routerWithURL( base: BaseUrl = baseUrl) = routerComponentAndLogic(base)._1
 
   private var fRouter: Option[ Router[AppRouter.AppPage]] = None
-  private var fRouterLogic: Option[ RouterLogic[AppRouter.AppPage] ] = None
+  private var fRouterLogic: Option[ RouterLogic[AppRouter.AppPage,Unit] ] = None
   private var fRouterCtl: Option[ RouterCtl[AppRouter.AppPage]] = None
 
   def routerComponentAndLogic( base: BaseUrl = baseUrl)  = {
