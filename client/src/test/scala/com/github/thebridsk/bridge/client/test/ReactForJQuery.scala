@@ -15,7 +15,6 @@ import japgolly.scalajs.react.test.Simulation
 import org.scalajs.dom.raw.HTMLInputElement
 import scala.scalajs.js
 import japgolly.scalajs.react.ReactDOM
-import scala.scalajs.runtime.UndefinedBehaviorError
 import japgolly.scalajs.react.component.Scala.MountedRoot
 
 import scala.language.higherKinds

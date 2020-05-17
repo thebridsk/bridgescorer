@@ -249,6 +249,7 @@ object BldCommonSettings {
         "-feature",
 //        "-Xlog-implicits",
       ),
+      // useCoursier := false,
       testOptions in Test += Tests.Argument(TestFrameworks.ScalaTest, "-oDFIK"),
       testClass in Test := (Def.inputTaskDyn {
         import complete.DefaultParsers._
