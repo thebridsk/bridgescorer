@@ -20,7 +20,7 @@ import BldVersion._
 object BldBridgeClientApi {
 
   val clientUnitTests =
-    "com.github.thebridsk.bridge.clientapi.test.TestColor" ::
+//    "com.github.thebridsk.bridge.clientapi.test.TestColor" ::
     Nil
 
   lazy val `bridgescorer-clientapi` = project
@@ -71,8 +71,8 @@ object BldBridgeClientApi {
       //   https://github.com/scalacenter/scalajs-bundler/issues/83
 //    testOptions in Test += Tests.Filter(s => { println("TestOption: "+s); false}),
       testOptions in Test += Tests.Filter(s => {
-        if (s == "xxcom.github.thebridsk.bridge.clientapi.test.AllUnitTests") {
-//        if (clientUnitTests.contains(s)) {
+//        if (s == "xxcom.github.thebridsk.bridge.clientapi.test.AllUnitTests") {
+        if (clientUnitTests.contains(s)) {
           println("Using Test:    " + s)
           true
         } else {
@@ -90,7 +90,7 @@ object BldBridgeClientApi {
       // 11/18/17, 12/4/17 currently does not work, looks like JSDOM is not loaded
       // see https://github.com/scalacenter/scalajs-bundler/issues/181
       // error is navigator undefined
-      jsEnv := new org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv,
+      // jsEnv := new org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv,
 
 // Compile tests to JS using fast-optimisation
 //    scalaJSStage in Test := FastOptStage,

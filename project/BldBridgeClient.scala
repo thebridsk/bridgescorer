@@ -48,7 +48,8 @@ object BldBridgeClient {
       version in webpack := vWebPack,
       webpackCliVersion := vWebPackCli,
       version in startWebpackDevServer := vWebpackDevServer,
-      // version in installJsdom := vJsDom,
+      version in installJsdom := vJsDom,
+      requireJsDomEnv in Test := true,
       scalaJSUseMainModuleInitializer := true,
       mainClass := Some("com.github.thebridsk.bridge.client.Bridge"),
 
@@ -80,7 +81,7 @@ object BldBridgeClient {
       //   https://github.com/scalacenter/scalajs-bundler/issues/83
 //    testOptions in Test += Tests.Filter(s => { println("TestOption: "+s); false}),
       testOptions in Test += Tests.Filter(s => {
-//      if (s == "com.github.thebridsk.bridge.client.test.AllUnitTests") {
+        // if (s == "com.github.thebridsk.bridge.client.test.AllUnitTests") {
         if (clientUnitTests.contains(s)) {
           println("Using Test:    " + s)
           true
@@ -90,14 +91,11 @@ object BldBridgeClient {
         }
       }),
 
-      // need to figure out testing in sjs1
-      test in Test := {},
-
       // this is for SBT 1.0
       // 11/18/17, 12/4/17 currently does not work, looks like JSDOM is not loaded
       // see https://github.com/scalacenter/scalajs-bundler/issues/181
       // error is navigator undefined
-      jsEnv in Test := new org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv(),
+      // jsEnv in Test := new org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv(),
 
 // Compile tests to JS using fast-optimisation
 //    scalaJSStage in Test := FastOptStage,
@@ -119,7 +117,7 @@ object BldBridgeClient {
       // webpackConfigFile := Some(baseDirectory.value / "webpack.config.js"),
       // webpackConfigFile in fullOptJS := Some(baseDirectory.value / "webpack.prod.config.js"),
       // webpackBundlingMode := BundlingMode.LibraryAndApplication(),
-      webpackBundlingMode in Compile := BundlingMode.LibraryOnly("bridgeLib"),
+      webpackBundlingMode := BundlingMode.LibraryOnly("bridgeLib"),
       // webpackBundlingMode in fastOptJS := BundlingMode.LibraryOnly("bridgeLib"),
       // webpackBundlingMode in fullOptJS := BundlingMode.LibraryAndApplication(),
       // React.JS itself
