@@ -89,10 +89,10 @@ object BldVersion {
   lazy val vSangria = "2.0.0-RC2"          // https://github.com/sangria-graphql-org/sangria             https://github.com/sangria-graphql/sangria
   lazy val vSangriaPlayJson = "2.0.1"      // https://github.com/sangria-graphql-org/sangria-play-json   https://github.com/sangria-graphql/sangria-playground
 
-  // Version 15.0.0 causes link errors with graphql-language-service-utils\esm
-  lazy val vGraphQL = "14.6.0"              // https://www.npmjs.com/package/graphql    co-req of graphql-voyager
-  lazy val vGraphiQL = "0.17.5"             // https://www.npmjs.com/package/graphiql
-  lazy val vGraphQLVoyager = "1.0.0-rc.29"  // https://www.npmjs.com/package/graphql-voyager
+  // graphql, graphiql, and graphql-voyager must be updated together.
+  lazy val vGraphQL = "14.6.0" // "15.0.0"              // https://www.npmjs.com/package/graphql    co-req of graphql-voyager
+  lazy val vGraphiQL = "0.17.5" // "1.0.0-alpha.10"     // https://www.npmjs.com/package/graphiql
+  lazy val vGraphQLVoyager = "1.0.0-rc.29" // "1.0.0-rc.30"  // https://www.npmjs.com/package/graphql-voyager
   lazy val vMaterialUIcore = "4.9.14"       // https://www.npmjs.com/package/@material-ui/core
   lazy val vMaterialUIicons = "4.9.1"       // https://www.npmjs.com/package/@material-ui/icons
   lazy val vPropTypes = "15.7.2"            // https://www.npmjs.com/package/prop-types
