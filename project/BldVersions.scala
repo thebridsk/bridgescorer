@@ -34,7 +34,7 @@ object BldVersion {
   lazy val vWsRsApi="2.1.6"            // https://github.com/eclipse-ee4j/jaxrs-api
   lazy val vAkkaHttpCors = "0.4.3"     // https://github.com/lomigmegard/akka-http-cors
 
-  lazy val vSwaggerUI = "3.25.3"       // https://www.npmjs.com/package/swagger-ui-dist
+  lazy val vSwaggerUI = "3.25.4"       // https://www.npmjs.com/package/swagger-ui-dist
   lazy val vScalajsdom = "1.0.0"       // https://github.com/scala-js/scala-js-dom
   lazy val vScalaJsReact = "1.7.0"     // https://github.com/japgolly/scalajs-react
 
@@ -78,7 +78,7 @@ object BldVersion {
   // version 1.0.7 is hardcoded in sbt-scalajs-bundler
   // current is 1.1.0
   lazy val vConcatWithSourcemaps = "1.1.0"  // https://www.npmjs.com/package/concat-with-sourcemaps
-  lazy val vTerser = "4.6.13"               // https://www.npmjs.com/package/terser
+  lazy val vTerser = "4.7.0"                // https://www.npmjs.com/package/terser
 
   lazy val vAjv = "6.12.2"                  // https://www.npmjs.com/package/ajv
 
@@ -89,10 +89,10 @@ object BldVersion {
   lazy val vSangria = "2.0.0-RC2"          // https://github.com/sangria-graphql-org/sangria             https://github.com/sangria-graphql/sangria
   lazy val vSangriaPlayJson = "2.0.1"      // https://github.com/sangria-graphql-org/sangria-play-json   https://github.com/sangria-graphql/sangria-playground
 
-  // Version 15.0.0 causes link errors with graphql-language-service-utils\esm
-  lazy val vGraphQL = "14.6.0"              // https://www.npmjs.com/package/graphql    co-req of graphql-voyager
-  lazy val vGraphiQL = "0.17.5"             // https://www.npmjs.com/package/graphiql
-  lazy val vGraphQLVoyager = "1.0.0-rc.29"  // https://www.npmjs.com/package/graphql-voyager
+  // graphql, graphiql, and graphql-voyager must be updated together.
+  lazy val vGraphQL = "14.6.0" // "15.0.0"              // https://www.npmjs.com/package/graphql    co-req of graphql-voyager
+  lazy val vGraphiQL = "0.17.5" // "1.0.0-alpha.10"     // https://www.npmjs.com/package/graphiql
+  lazy val vGraphQLVoyager = "1.0.0-rc.29" // "1.0.0-rc.30"  // https://www.npmjs.com/package/graphql-voyager
   lazy val vMaterialUIcore = "4.9.14"       // https://www.npmjs.com/package/@material-ui/core
   lazy val vMaterialUIicons = "4.9.1"       // https://www.npmjs.com/package/@material-ui/icons
   lazy val vPropTypes = "15.7.2"            // https://www.npmjs.com/package/prop-types
