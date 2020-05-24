@@ -7,7 +7,6 @@ import akka.util.Timeout
 import scala.concurrent.duration._
 import scala.language.postfixOps
 import com.github.thebridsk.utilities.main.Main
-import java.util.logging.Level
 import scala.concurrent.Future
 import akka.actor.ActorRef
 import akka.io.Tcp
@@ -57,7 +56,8 @@ import com.github.thebridsk.bridge.data.version.VersionShared
 import java.net.URLClassLoader
 import com.github.thebridsk.bridge.datastore.DataStoreCommands
 import scala.annotation.tailrec
-import java.util.logging.ConsoleHandler
+import com.github.thebridsk.utilities.logging.ConsoleHandler
+import java.util.{ logging => jul }
 import com.github.thebridsk.bridge.server.util.MemoryMonitor
 import com.github.thebridsk.bridge.sslkey.SSLKeyCommands
 
@@ -170,13 +170,12 @@ object Server extends Main {
 
   lazy val isConsoleLoggingToInfo = {
 
-    import java.util.logging.{Logger => JLogger}
     @tailrec
-    def findConsoleHandler(log: JLogger): Boolean = {
-      val handlers = log.getHandlers.filter(h => h.isInstanceOf[ConsoleHandler])
+    def findConsoleHandler(log: jul.Logger): Boolean = {
+      val handlers = log.getHandlers.filter(h => h.isInstanceOf[ConsoleHandler] || h.isInstanceOf[jul.ConsoleHandler])
       if (handlers.length != 0) {
         val infohandler =
-          handlers.find(h => h.getLevel.intValue() <= Level.INFO.intValue())
+          handlers.find(h => h.getLevel.intValue() <= jul.Level.INFO.intValue())
         infohandler.isDefined
       } else {
         val parent = log.getParent
