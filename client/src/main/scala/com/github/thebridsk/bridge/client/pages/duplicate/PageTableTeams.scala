@@ -480,7 +480,7 @@ object PageTableTeamsInternal {
                         )
                       }).build
 
-  private def noNull( s: String ) = if (s == null) ""; else s
+  private def noNull( s: String ) = Option(s).getOrElse("")
   private def playerValid( s: String ) = s!=null && s.length!=0
 
 //  private val southArrow = Strings.doubleArrowDown

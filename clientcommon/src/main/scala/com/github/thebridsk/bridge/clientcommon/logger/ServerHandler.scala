@@ -52,14 +52,13 @@ trait ServerHandler {
   }
 
   def exceptionToString( x: Throwable ) = {
-    if (x==null) ""
-    else {
+    Option(x).map { e =>
       val b = new StringWriter
       val pw = new PrintWriter(b)
       x.printStackTrace(pw)
       pw.flush
       b.toString()
-    }
+    }.getOrElse("")
   }
 
 }

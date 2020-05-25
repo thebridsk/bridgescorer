@@ -397,7 +397,7 @@ object PageDuplicateResultEditInternal {
                         )
                       }).build
 
-  private def noNull( s: String ) = if (s == null) ""; else s
+  private def noNull( s: String ) = Option(s).getOrElse("")
 
   val TeamRow = ScalaComponent.builder[(Int,Id.Team,String,String,String,Boolean,Backend,Props,State,Int)]("PageDuplicateResultEdit.TeamRow")
                       .render_P( args => {

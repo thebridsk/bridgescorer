@@ -113,7 +113,7 @@ object PageRubberNamesInternal {
 
     def setFirstDealer( p: PlayerPosition ) = scope.modState(ps => ps.copy(dealer=Some(p)))
 
-    private def noNull( s: String ) = if (s == null) ""; else s
+    private def noNull( s: String ) = Option(s).getOrElse("")
 
     def render( props: Props, state: PlayerState ) = {
       import RubberStyles._

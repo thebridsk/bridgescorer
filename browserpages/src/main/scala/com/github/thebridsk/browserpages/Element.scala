@@ -50,8 +50,7 @@ class Element( val underlying: WebElement )(implicit pos: Position, webdriver: W
     }.getOrElse(false)
 
     def text: String = {
-      val txt = underlying.getText
-      if (txt != null) txt else ""
+      Option( underlying.getText ).getOrElse("")
     }
 
     def scrollToElement = {
