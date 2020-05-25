@@ -131,6 +131,16 @@ object ViewPairsTableInternal {
 
   }
 
+  abstract class MaxPtsPercentColumn(
+      id: String,
+      name: String
+    )(
+      implicit
+      sorter: Sorter[Double]
+    ) extends StatColumn( id, name, (v: Double) => f"$v%.2f%% (${v/100*36}%.1f/36)" )(sorter) {
+
+  }
+
   abstract class Float2Column(
       id: String,
       name: String,
@@ -243,7 +253,7 @@ object ViewPairsTableInternal {
       new IntColumn( "Incomplete", "Incomplete" ) {
         def getValue( pd: PairData ) = pd.incompleteGames
       },
-      new PercentColumn( "MaxMPPer" , "Max Points %") {
+      new MaxPtsPercentColumn( "MaxMPPer" , "Max Points %") {
         def getValue( pd: PairData ) = pd.maxMPPercent
         override
         val showIn: List[CalculationType] = CalculationAsPlayed::CalculationMP::Nil
