@@ -340,64 +340,32 @@ trait ImportExport {
       val byteSource: Source[ByteString, Unit] = StreamConverters
         .asOutputStream()
         .mapMaterializedValue { os =>
-          val buf = new BufferedOutputStream(os)
-          val zip = new ZipOutputStream(buf, StandardCharsets.UTF_8)
-
-          {
-            val nameInZip = "version.txt"
-            val ze = new ZipEntry(nameInZip)
-            log.fine(s"Adding version info => ${ze.getName}")
-            zip.putNextEntry(ze)
-            val v =
-              s"""${VersionServer.toString}\n${VersionShared.toString}\n${VersionUtilities.toString}"""
-            zip.write(v.getBytes("UTF8"))
-            zip.closeEntry()
-          }
-          CollectLogs.copyResourceToZip(
-            "com/github/thebridsk/bridge/bridgescorer/version/VersionBridgeScorer.properties",
-            "VersionBridgeScorer.properties",
-            zip
-          )
-
-          CollectLogs.copyResourceToZip(
-            "com/github/thebridsk/bridge/utilities/version/VersionUtilities.properties",
-            "VersionUtilities.properties",
-            zip
-          )
-
-          restService.exportToZip(zip, None).onComplete { tr =>
+          restService.export(os, None, true).onComplete { tr =>
             tr match {
               case Success(Right(list)) =>
-                diagnosticDir.foreach { dir =>
-                  dir.files
-                    .filter(f => f.extension == "log" || f.extension == "csv")
-                    .foreach { f =>
-                      zip.putNextEntry(new ZipEntry("logs/" + f.name))
-                      Using.resource(new FileInputStream(f.jfile)) { in =>
-                        CollectLogs.copy(in, zip)
-                      }
-                    }
-                }
                 try {
-                  zip.finish()
-                  buf.flush()
                   os.flush()
                   os.close()
-                  log.fine(s"Successfully export bridge store with Ids ${list}")
+                  log.fine(
+                    "Successfully export bridge store diagnostics"
+                  )
                 } catch {
                   case x: Exception =>
                     log.warning(
-                      "Exception closing stream for exporting diagnostic information",
+                      "Exception closing stream for exporting bridge store diagnostics",
                       x
                     )
                 }
               case Success(Left((statusCode, msg))) =>
                 log.warning(
-                  s"Error exporting diagnostic information: ${statusCode} ${msg.msg}"
+                  s"Error exporting bridge store diagnostics: ${statusCode} ${msg.msg}"
                 )
                 os.close()
               case Failure(err) =>
-                log.warning("Failure exporting diagnostic information", err)
+                log.warning(
+                  "Failure exporting bridge store diagnostics",
+                  err
+                )
                 os.close()
             }
           }

@@ -55,6 +55,13 @@ import com.github.thebridsk.bridge.data.duplicate.stats.PlayerPlaces
 import com.github.thebridsk.bridge.data.duplicate.stats.CalculatePlayerPlaces
 import com.github.thebridsk.bridge.data.ImportStoreData
 import com.github.thebridsk.bridge.server.backend.resource.ZipStoreInternal
+import com.github.thebridsk.bridge.server.version.VersionServer
+import com.github.thebridsk.bridge.data.version.VersionShared
+import com.github.thebridsk.utilities.version.VersionUtilities
+import com.github.thebridsk.bridge.server.CollectLogs
+import scala.util.Using
+import java.io.FileInputStream
+import java.io.InputStream
 
 /**
   * The backend trait for our service.
@@ -81,6 +88,8 @@ abstract class BridgeService(val id: String) {
     * The import store.  Some some of the implementations support this, and will override this value.
     */
   val importStore: Option[ImportStore] = None
+
+  val diagnosticDir: Option[Directory] = None
 
   def importStoreData = {
 
@@ -112,16 +121,58 @@ abstract class BridgeService(val id: String) {
     */
   def export(
       out: OutputStream,
-      filter: Option[List[String]] = None
+      filter: Option[List[String]] = None,
+      diagnostics: Boolean = false
   ): Future[Result[List[String]]] = {
+    BridgeServiceWithLogging.log.fine(s"exporting: diagnostics=$diagnostics, filter=$filter")
+
     val converters = new BridgeServiceFileStoreConverters(true)
     import converters._
 
     val buf = new BufferedOutputStream(out)
     val zip = new ZipOutputStream(buf, StandardCharsets.UTF_8)
 
-    exportToZip(zip, filter).map { r =>
-      zip.finish(); buf.flush(); r
+    Future {
+      {
+        val nameInZip = "version.txt"
+        val ze = new ZipEntry(nameInZip)
+        BridgeServiceWithLogging.log.fine(s"Adding version info => ${ze.getName}")
+        zip.putNextEntry(ze)
+        val v =
+          s"""${VersionServer.toString}\n${VersionShared.toString}\n${VersionUtilities.toString}"""
+        zip.write(v.getBytes("UTF8"))
+        zip.closeEntry()
+      }
+
+      // BridgeService.copyResourceToZip(
+      //   "com/github/thebridsk/bridge/bridgescorer/version/VersionBridgeScorer.properties",
+      //   "VersionBridgeScorer.properties",
+      //   zip
+      // )
+
+      // BridgeService.copyResourceToZip(
+      //   "com/github/thebridsk/utilities/version/VersionUtilities.properties",
+      //   "VersionUtilities.properties",
+      //   zip
+      // )
+
+      if (diagnostics) {
+        diagnosticDir.foreach { dir =>
+          BridgeServiceWithLogging.log.fine(s"Looking for logs in directory ${dir}")
+          dir.files
+            .filter(f => f.extension == "log" || f.extension == "csv")
+            .foreach { f =>
+              zip.putNextEntry(new ZipEntry("logs/" + f.name))
+              Using.resource(new FileInputStream(f.jfile)) { in =>
+                BridgeService.copy(in, zip)
+              }
+            }
+        }
+      }
+    }.flatMap { u =>
+      exportToZip(zip, filter).map { r =>
+        zip.finish(); buf.flush(); r
+      }
     }
 
   }
@@ -441,7 +492,8 @@ object BridgeService {
       useIdFromValue: Boolean = false,
       dontUpdateTime: Boolean = false,
       useYaml: Boolean = true,
-      id: Option[String] = None
+      id: Option[String] = None,
+      diagnosticDirectory: Option[Directory] = None
   )(
       implicit
       execute: ExecutionContext
@@ -452,7 +504,9 @@ object BridgeService {
           id.getOrElse(path.name),
           path.toFile,
           useYaml
-        )(execute)
+        )(execute) {
+          override val diagnosticDir: Option[Directory] = diagnosticDirectory
+        }
       } else {
         throw new IllegalArgumentException(
           "path parameter must be a zipfile or a directory"
@@ -465,9 +519,51 @@ object BridgeService {
         dontUpdateTime,
         useYaml,
         id
-      )(execute)
+      )(execute) {
+        override val diagnosticDir: Option[Directory] = diagnosticDirectory
+      }
     }
   }
+
+  /**
+    * Copy the specified resource into the zip file with the given name.
+    * If resource does not exist, then this is a noop.
+    * @param resource the resource to load
+    * @param nameInZip the name of the file in the zipfile.
+    * @param zip the zip output stream
+    */
+  def copyResourceToZip(
+      resource: String,
+      nameInZip: String,
+      zip: ZipOutputStream
+  ) = {
+    val cl = getClass.getClassLoader
+    val instream = cl.getResourceAsStream(resource)
+    if (instream != null) {
+      Using.resource(instream) { in =>
+        val ze = new ZipEntry(nameInZip)
+        BridgeServiceWithLogging.log.fine(s"Adding version info => ${ze.getName}")
+        zip.putNextEntry(ze)
+        copy(in, zip)
+        zip.closeEntry()
+      }
+    } else {
+      BridgeServiceWithLogging.log.fine(s"Did not find resource $resource")
+    }
+  }
+
+  def copy(in: InputStream, out: OutputStream) = {
+    val b = new Array[Byte](1024 * 1024)
+
+    var count: Long = 0
+    var rlen = 0
+    while ({ rlen = in.read(b); rlen } > 0) {
+      out.write(b, 0, rlen)
+      count += rlen
+    }
+    count
+  }
+
 }
 
 object BridgeServiceWithLogging {

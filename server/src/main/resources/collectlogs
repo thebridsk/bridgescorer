@@ -32,5 +32,5 @@ fi
 
 oldjar=`ls -1f *.jar 2>/dev/null`
 
-java -jar $oldjar collectlogs --store ./store --diagnostics ./logs --zip logs.zip
+java -jar $oldjar diagnostics --store ./store --diagnostics ./logs --zip logs.zip
 

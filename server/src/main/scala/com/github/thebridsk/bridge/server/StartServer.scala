@@ -454,15 +454,27 @@ private class StartServer {
       case Some(p) =>
         val d = p.toDirectory
         if (p.isFile && p.extension == "zip") {
-          Some(new BridgeServiceZipStore("root", p.toFile))
+          Some(
+            new BridgeServiceZipStore("root", p.toFile) {
+              override val diagnosticDir: Option[Directory] = optionDiagnosticDir.toOption.map( _.toDirectory )
+            }
+          )
         } else if (!d.isDirectory) {
           if (!d.createDirectory().isDirectory) {
             logger.severe("Unable to create directory for FileStore: " + d)
             return 1
           }
-          Some(new BridgeServiceFileStore(d, oid = Some("root")))
+          Some(
+            new BridgeServiceFileStore(d, oid = Some("root")) {
+              override val diagnosticDir: Option[Directory] = optionDiagnosticDir.toOption.map( _.toDirectory )
+            }
+          )
         } else {
-          Some(new BridgeServiceFileStore(d, oid = Some("root")))
+          Some(
+            new BridgeServiceFileStore(d, oid = Some("root")) {
+              override val diagnosticDir: Option[Directory] = optionDiagnosticDir.toOption.map( _.toDirectory )
+            }
+          )
         }
 
       case None => None
