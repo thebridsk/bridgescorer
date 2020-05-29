@@ -82,7 +82,7 @@ object PageEditNamesInternal {
 
                       }).build
 
-  private def noNull( s: String ) = if (s == null) ""; else s
+  private def noNull( s: String ) = Option(s).getOrElse("")
   private def playerValid( s: String ) = s!=null && s.length!=0
 
   val TeamRow = ScalaComponent.builder[(Int,String,Backend,State,Props)]("PageEditNames.TeamRow")

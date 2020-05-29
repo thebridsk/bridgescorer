@@ -54,8 +54,8 @@ case class Team(
   def setPlayers(p1: String, p2: String) = {
     val time = SystemTime.currentTimeMillis()
     copy(
-      player1 = if (p1 == null) ""; else p1,
-      player2 = if (p2 == null) ""; else p2,
+      player1 = Option(p1).getOrElse(""),
+      player2 = Option(p2).getOrElse(""),
       updated = time
     )
   }

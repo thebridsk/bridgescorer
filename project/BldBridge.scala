@@ -32,6 +32,7 @@ object BldBridge {
         |BridgeScoreKeeper sbt help
         |
         |Tasks on root project
+        |  setOptimize            turn on scalac optimization in all projects
         |  server                 run server with HTTP without help pages
         |  serverhelp             run server with HTTP with help pages
         |  checkForUpdates        check for dependency updates, does not check sbt plugins
@@ -109,6 +110,34 @@ object BldBridge {
     "show help for app tasks"
   )(actionAppHelp _) // "shows help for sbt tasks for BridgeScoreKeeper"
 
+  val setOptimize = Command.command(
+    "setOptimize",
+    "turn on scalac optimization for all projects",
+    "turn on scalac optimization for all projects"
+  )( turnOnOptimize _)
+
+  def turnOnOptimize( state: State ) = {
+    val extracted = Project extract state
+    import extracted._
+    println("Turning on optimization in all projects")
+    //append returns state with updated Foo
+    appendWithoutSession(
+      structure.allProjectRefs.map{ p =>
+        println(s"  Turning on in {${p.build}}${p.project}")
+        scalacOptions in p ++= Seq(
+          "-opt:l:method",
+          // "-opt:l:inline",
+          // "-opt-inline-from:**"
+        )
+      },
+      state
+    )
+  }
+
+  lazy val releaseOptimize = ReleaseStep(
+    action = turnOnOptimize
+  )
+
   lazy val releaseCheck = { st: State =>
     Project.extract(st).runTask(publishdir, st) match {
       case (newst, Some(dir)) =>
@@ -180,7 +209,7 @@ object BldBridge {
       serverhelp := { (serverhelp in BldBridgeScoreKeeper.bridgescorekeeper).value },
       serverlogs := { (serverlogs in BldBridgeScoreKeeper.bridgescorekeeper).value },
 
-      commands ++= Seq( apphelp )
+      commands ++= Seq( apphelp, setOptimize )
     ).
     settings(
       checkForUpdates := Def
@@ -316,6 +345,7 @@ object BldBridge {
         commitReleaseVersion, // : ReleaseStep, performs the initial git checks
         tagRelease, // : ReleaseStep
         recalculateVersion, // : ReleaseStep
+        releaseOptimize,
         publishRelease, // : ReleaseStep, custom
         setNextVersion, // : ReleaseStep
         commitNextVersion // : ReleaseStep

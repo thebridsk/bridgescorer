@@ -204,7 +204,7 @@ class Session( name: String = "default" ) extends WebDriver {
    *                then firefox is used.
    * @return this Session object
    */
-  def sessionStart( browser: String ): Session = sessionStart( if (browser==null) None; else Some(browser) )
+  def sessionStart( browser: String ): Session = sessionStart( Option(browser) )
 
   /**
    * Start a browser webdriver
@@ -215,7 +215,7 @@ class Session( name: String = "default" ) extends WebDriver {
    * @param retry the number of retries
    * @return this Session object
    */
-  def sessionStart( browser: String, retry: Int ): Session = sessionStart( if (browser==null) None; else Some(browser), retry )
+  def sessionStart( browser: String, retry: Int ): Session = sessionStart( Option(browser), retry )
 
   /**
    * The default browser when a specific browser has not been specified.
@@ -342,7 +342,7 @@ class Session( name: String = "default" ) extends WebDriver {
    *                then firefox is used.
    * @return this Session object
    */
-  def sessionStartIfNotRunning( browser: String ): Session = sessionStartIfNotRunning( if (browser==null) None; else Some(browser) )
+  def sessionStartIfNotRunning( browser: String ): Session = sessionStartIfNotRunning( Option(browser) )
 
   /**
    * Start a browser webdriver if not already running.
@@ -353,7 +353,7 @@ class Session( name: String = "default" ) extends WebDriver {
    * @param retry the number of retries
    * @return this Session object
    */
-  def sessionStartIfNotRunning( browser: String, retry: Int ): Session = sessionStartIfNotRunning( if (browser==null) None; else Some(browser), retry )
+  def sessionStartIfNotRunning( browser: String, retry: Int ): Session = sessionStartIfNotRunning( Option(browser), retry )
 
   /**
    * Start a browser webdriver if not already running.

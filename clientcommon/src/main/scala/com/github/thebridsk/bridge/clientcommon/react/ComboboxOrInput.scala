@@ -40,8 +40,6 @@ object ComboboxOrInput {
 
     def inputCB( data: ReactEventFromInput): Callback = data.inputText( text => callback(text) )
 
-    def v[T](value: T): Option[T] = if (value==null) None else Some(value)
-
     def jv[T]( value: js.UndefOr[T] ): Option[T] = if (js.isUndefined(value)) None else Some(value.get)
 
     if (!noCombobox) {

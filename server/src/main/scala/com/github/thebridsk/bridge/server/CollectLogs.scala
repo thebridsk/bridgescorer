@@ -31,13 +31,15 @@ import com.github.thebridsk.bridge.server.version.VersionServer
 import com.github.thebridsk.bridge.data.version.VersionShared
 import com.github.thebridsk.utilities.version.VersionUtilities
 import scala.util.Using
+import com.github.thebridsk.bridge.server.backend.BridgeService
+import scala.concurrent.Await
 
 /**
   * This is the update subcommand.
   *
   * This downloads the new code, then run the install command on the new code.
   */
-object CollectLogs extends Subcommand("collectlogs") {
+object CollectLogs extends Subcommand("diagnostics", "collectlogs") {
 
   val logger = Logger(CollectLogs.getClass.getName)
 
@@ -49,13 +51,15 @@ object CollectLogs extends Subcommand("collectlogs") {
   val defaultZip = Path("logs.zip")
   val defaultStore = Path("./store")
 
-  descr("Collects the logs and other diagnostic information")
+  descr(
+    "Collects the logs and other diagnostic information"
+  )
 
   banner(s"""
 Collects the logs and other diagnostic information.
 
 Syntax:
-  scala ${Server.getClass.getName} collectlogs options
+  scala ${Server.getClass.getName} ${name} options
 Options:""")
 
   footer(s"""
@@ -89,108 +93,31 @@ The server should NOT be running.
   )
 
   def executeSubcommand(): Int = {
+    implicit val ec: scala.concurrent.ExecutionContext = scala.concurrent.ExecutionContext.global
 
     val zipfile = optionZip.toOption.getOrElse(defaultZip)
     val store = optionStore.toOption.getOrElse(defaultStore)
 
     val diagDir = optionDiagnosticDir.toOption
       .map(p => p.toDirectory)
-      .getOrElse(Directory("."))
-    val logfiles =
-      diagDir.files.filter(f => f.extension == "log" || f.extension == "csv")
+      .orElse(Some(Directory(".")))
 
-    val storefiles = Directory(store).files
+    val storeservice = BridgeService(store, diagnosticDirectory = diagDir)
 
-    zip(zipfile, logfiles, storefiles)
+    val f = storeservice.export(
+      Files.newOutputStream(zipfile.jfile.toPath()),
+      None,
+      true
+    )
 
-    0
-  }
-
-  private def zip(
-      out: Path,
-      logfiles: Iterator[File],
-      storefiles: Iterator[File]
-  ) = {
-
-    Using.resource(
-        new ZipOutputStream(Files.newOutputStream(Paths.get(out.toString)))
-    ) { zip =>
-      {
-        val nameInZip = "version.txt"
-        val ze = new ZipEntry(nameInZip)
-        println(s"Adding version info => ${ze.getName}")
-        zip.putNextEntry(ze)
-        val v =
-          s"""${VersionServer.toString}\n${VersionShared.toString}\n${VersionUtilities.toString}"""
-        zip.write(v.getBytes("UTF8"))
-        zip.closeEntry()
-      }
-      CollectLogs.copyResourceToZip(
-        "com/github/thebridsk/bridge/bridgescorer/version/VersionBridgeScorer.properties",
-        "VersionBridgeScorer.properties",
-        zip
-      )
-
-      CollectLogs.copyResourceToZip(
-        "com/github/thebridsk/bridge/utilities/version/VersionUtilities.properties",
-        "VersionUtilities.properties",
-        zip
-      )
-      logfiles.foreach { file =>
-        val nameInZip = file.name.toString
-        val ze = new ZipEntry("logs/" + nameInZip)
-        println(s"Adding ${file} => ${ze.getName}")
-        zip.putNextEntry(ze)
-        Files.copy(Paths.get(file.toString), zip)
-        zip.closeEntry()
-      }
-      storefiles.foreach { file =>
-        val nameInZip = "store/" + file.name.toString
-        val ze = new ZipEntry(nameInZip)
-        println(s"Adding ${file} => ${ze.getName}")
-
-        zip.putNextEntry(ze)
-        Files.copy(Paths.get(file.toString), zip)
-        zip.closeEntry()
-      }
+    Await.result(f, Duration.Inf) match {
+      case Right(value) =>
+        0
+      case Left((statuscode,restmessage)) =>
+        logger.severe(s"Error writing diagnostics: ${restmessage.msg}")
+        1
     }
-  }
 
-  /**
-    * Copy the specified resource into the zip file with the given name.
-    * If resource does not exist, then this is a noop.
-    * @param resource the resource to load
-    * @param nameInZip the name of the file in the zipfile.
-    * @param zip the zip output stream
-    */
-  def copyResourceToZip(
-      resource: String,
-      nameInZip: String,
-      zip: ZipOutputStream
-  ) = {
-    val cl = getClass.getClassLoader
-    val instream = cl.getResourceAsStream(resource)
-    if (instream != null) {
-      Using.resource(instream) { in =>
-        val ze = new ZipEntry(nameInZip)
-        logger.fine(s"Adding version info => ${ze.getName}")
-        zip.putNextEntry(ze)
-        copy(in, zip)
-        zip.closeEntry()
-      }
-    }
-  }
-
-  def copy(in: InputStream, out: OutputStream) = {
-    val b = new Array[Byte](1024 * 1024)
-
-    var count: Long = 0
-    var rlen = 0
-    while ({ rlen = in.read(b); rlen } > 0) {
-      out.write(b, 0, rlen)
-      count += rlen
-    }
-    count
   }
 
 }
