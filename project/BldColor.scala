@@ -37,7 +37,7 @@ object BldColor {
       dependencyUpdatesFilter -= moduleFilter(organization = "org.eclipse.jetty"),
 
       testOptions in Test += {
-        if (inTravis) println("Not running JS tests in bridgescorer-rotation")
+        if (inTravis) println("Not running JS tests in colorJS")
         Tests.Filter(s => !inTravis)
       }
 

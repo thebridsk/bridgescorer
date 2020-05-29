@@ -38,7 +38,7 @@ object BldBridgeRotation {
       dependencyUpdatesFilter -= moduleFilter(organization = "org.eclipse.jetty"),
 
       testOptions in Test += {
-        if (inTravis) println("Not running JS tests in bridgescorer-rotation")
+        if (inTravis) println("Not running JS tests in bridgescorer-rotationJS")
         Tests.Filter(s => !inTravis)
       }
 

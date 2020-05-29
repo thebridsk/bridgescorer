@@ -13,7 +13,8 @@ val vJGit = "5.7.0.202003110725-r" // https://github.com/eclipse/jgit
 
 val vCrossProject = "1.0.0"        // https://github.com/portable-scala/sbt-crossproject
 // scala-react does not compile on scalajs 1.0 yet
-val vScalaJSDefault = "0.6.33"     // http://www.scala-js.org/
+val vScalaJSDefault = "1.1.0"      // http://www.scala-js.org/
+val vEnvJsDomNodejs = "1.1.0"      // https://github.com/scala-js/scala-js-env-jsdom-nodejs
 
 val sbtScalaJsBundlerSuffix = if (vScalaJSDefault.startsWith("0.6.")) "-sjs06" else ""  // "" - for ScalaJS 1.0 "-sjs06" for ScalaJS 0.6
 
@@ -29,7 +30,7 @@ val vSbtUpdates = "0.5.0"          // https://github.com/rtimush/sbt-updates
 val scalaJSVersion = Option(System.getenv("SCALAJS_VERSION")).getOrElse(vScalaJSDefault)
 
 val vSbtGzip = "1.0.2"             // https://github.com/sbt/sbt-gzip
-val vSbtScalaJsBundler = "0.17.0"  // https://github.com/scalacenter/scalajs-bundler
+val vSbtScalaJsBundler = "0.18.0"  // https://github.com/scalacenter/scalajs-bundler
 
 // not used:
 
@@ -43,7 +44,10 @@ val vBloop = "1.3.2"               // https://github.com/scalacenter/bloop
 //   SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".
 // when sbt is started.
 
-libraryDependencies += "org.slf4j" % "slf4j-log4j12" % vLog4j withSources()
+libraryDependencies ++= Seq(
+//  "org.scala-js" %% "scalajs-env-jsdom-nodejs" % vEnvJsDomNodejs withSources(),
+  "org.slf4j" % "slf4j-log4j12" % vLog4j withSources()
+)
 
 // Unfortunately this causes an exception to be logged to the console from sbt-git plugin
 // because it can't find git.

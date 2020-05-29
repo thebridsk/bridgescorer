@@ -49,6 +49,7 @@ object BldBridgeClient {
       webpackCliVersion := vWebPackCli,
       version in startWebpackDevServer := vWebpackDevServer,
       version in installJsdom := vJsDom,
+      requireJsDomEnv in Test := true,
       scalaJSUseMainModuleInitializer := true,
       mainClass := Some("com.github.thebridsk.bridge.client.Bridge"),
 
@@ -80,7 +81,7 @@ object BldBridgeClient {
       //   https://github.com/scalacenter/scalajs-bundler/issues/83
 //    testOptions in Test += Tests.Filter(s => { println("TestOption: "+s); false}),
       testOptions in Test += Tests.Filter(s => {
-//      if (s == "com.github.thebridsk.bridge.client.test.AllUnitTests") {
+        // if (s == "com.github.thebridsk.bridge.client.test.AllUnitTests") {
         if (clientUnitTests.contains(s)) {
           println("Using Test:    " + s)
           true
@@ -89,16 +90,12 @@ object BldBridgeClient {
           false
         }
       }),
-// Indicate that unit tests will access the DOM
-      version in webpack := vWebPack,
-      version in installJsdom := vJsDom,
-      requireJsDomEnv in Test := true,
 
       // this is for SBT 1.0
       // 11/18/17, 12/4/17 currently does not work, looks like JSDOM is not loaded
       // see https://github.com/scalacenter/scalajs-bundler/issues/181
       // error is navigator undefined
-//    jsEnv := new org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv,
+      // jsEnv in Test := new org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv(),
 
 // Compile tests to JS using fast-optimisation
 //    scalaJSStage in Test := FastOptStage,

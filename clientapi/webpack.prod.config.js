@@ -29,12 +29,12 @@ config.node = {
 
 // gets rid of warning
 //   (Emitted value instead of an instance of Error) Cannot find source file '../src/validateWithCustomRules.ts': Error: Can't resolve
-config.module.rules[0].exclude = [
-	root('node_modules')
-]
+// config.module.rules[0].exclude = [
+// 	root('node_modules')
+// ]
 
 // this suppresses the warning
 //    Critical dependency: the request of a dependency is an expression
-config.module.exprContextCritical = false
+// config.module.exprContextCritical = false
 
 module.exports = config;
