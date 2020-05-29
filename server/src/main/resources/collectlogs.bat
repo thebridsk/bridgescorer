@@ -1,7 +1,7 @@
 @echo off
 goto cmdline
 :help
-echo Syntax: %0 [--help] 
+echo Syntax: %0 [--help]
 echo Where:
 echo   --help      - show help
 echo Notes:
@@ -20,5 +20,5 @@ if ERRORLEVEL 1 (
 )
 
 echo on
-java.exe -jar %xxxserverjar% collectlogs --store ./store --diagnostics ./logs --zip logs.zip
+java.exe -jar %xxxserverjar% diagnostics --store ./store --diagnostics ./logs --zip logs.zip
 @echo off

@@ -49,13 +49,13 @@ object BldBridgeScoreKeeper {
       // testOptions in Test := Seq(),
 
       serverhelp := {
-        (run in Compile).toTask(""" --logfile "../server/logs/serverhelp.sbt.%d.%u.log" start --cache 0s --store ../server/store""").value
+        (run in Compile).toTask(""" --logfile "../server/logs/serverhelp.sbt.%d.%u.log" start --cache 0s --store ../server/store --diagnostics ../server/logs""").value
       },
       serverssl in Test := {
-        (run in Compile).toTask(""" --logfile "../server/logs/server.sbt.%d.%u.log" start --cache 0s --store ../server/store --certificate ../server/key/examplebridgescorekeeper.p12 --certpassword abcdef --https 8443""").value
+        (run in Compile).toTask(""" --logfile "../server/logs/server.sbt.%d.%u.log" start --cache 0s --store ../server/store --diagnostics ../server/logs --certificate ../server/key/examplebridgescorekeeper.p12 --certpassword abcdef --https 8443""").value
       },
       serverhttps2 in Test := {
-        (runMain in Test).toTask(""" com.github.thebridsk.bridge.server.Server --logfile "../server/logs/server.sbt.%d.%u.log" start --cache 0s --store ../server/store --certificate ../server/key/examplebridgescorekeeper.p12 --certpassword abcdef --https 8443 --http2""").value
+        (runMain in Test).toTask(""" com.github.thebridsk.bridge.server.Server --logfile "../server/logs/server.sbt.%d.%u.log" start --cache 0s --store ../server/store --diagnostics ../server/logs --certificate ../server/key/examplebridgescorekeeper.p12 --certpassword abcdef --https 8443 --http2""").value
       },
 
       serverlogs := {
