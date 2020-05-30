@@ -45,14 +45,11 @@ object BldVersion {
   lazy val vReactWidgetsMoment = "4.0.28"  // https://www.npmjs.com/package/react-widgets-moment
   lazy val vMoment = "2.26.0"          // https://www.npmjs.com/package/moment
 
-//  lazy val vJqueryFacade = "1.2"     // https://github.com/jducoeur/jquery-facade               no 2.13 support
-
   lazy val vJQuery = "3.5.1"         // https://www.npmjs.com/package/jquery
 
   lazy val vScalactic = "3.1.2"      // https://github.com/scalatest/scalatest
   lazy val vScalatest = "3.1.2"      // https://github.com/scalatest/scalatest
-  // lazy val vScalatestSelenium = "1.0.0-M2"  // https://github.com/scalatest/scalatestplus-selenium
-  lazy val vScalatestSelenium245 = "3.1.1.0"  // https://github.com/scalatest/scalatestplus-selenium
+  lazy val vScalatestSelenium = "3.1.2.0"  // https://github.com/scalatest/scalatestplus-selenium
   lazy val vJunit = "4.13"           // https://github.com/junit-team/junit4
 
   lazy val vSelenium = "3.141.59"    // https://github.com/SeleniumHQ/selenium
@@ -86,8 +83,8 @@ object BldVersion {
   lazy val vWebpackDevServer = "3.11.0"   // https://www.npmjs.com/package/webpack-dev-server
   lazy val vWebPackCli = "3.3.11"         // https://www.npmjs.com/package/webpack-cli
 
-  lazy val vSangria = "2.0.0-RC2"          // https://github.com/sangria-graphql-org/sangria             https://github.com/sangria-graphql/sangria
-  lazy val vSangriaPlayJson = "2.0.1"      // https://github.com/sangria-graphql-org/sangria-play-json   https://github.com/sangria-graphql/sangria-playground
+  lazy val vSangria = "2.0.0-RC2"          // https://github.com/sangria-graphql/sangria
+  lazy val vSangriaPlayJson = "2.0.1"      // https://github.com/sangria-graphql/sangria-play-json
 
   // graphql, graphiql, and graphql-voyager must be updated together.
   lazy val vGraphQL = "14.6.0" // "15.0.0"              // https://www.npmjs.com/package/graphql    co-req of graphql-voyager
