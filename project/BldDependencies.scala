@@ -64,8 +64,7 @@ object BldDependencies {
     "org.seleniumhq.selenium" %   "selenium-java" % vSelenium withSources(),
 
     "org.scalatest" %%% "scalatest" % vScalatest withSources(),
-//    "org.scalatestplus" %%% "scalatestplus-selenium" % vScalatestSelenium withSources(),
-    "org.scalatestplus" %%% "selenium-2-45" % vScalatestSelenium245 withSources(),
+    "org.scalatestplus" %%% "selenium-3-141" % vScalatestSelenium withSources(),
     "org.scalactic" %%% "scalactic" % vScalactic withSources(),
 
 // Test
@@ -85,14 +84,12 @@ object BldDependencies {
       "com.typesafe.akka"   %% "akka-http2-support"      % vAkkaHttp % "test" withSources(),
       "de.heikoseeberger"   %% "akka-http-play-json"     % vAkkaHttpPlayJson withSources(),
 
-//      (
       "com.github.swagger-akka-http" %%  "swagger-scala-module" % vSwaggerScalaModule withSources(),
-//      ).exclude("com.google.code.findbugs","jsr305"),
       "com.github.swagger-akka-http" %% "swagger-akka-http" % vSwaggerAkkaHttp withSources(),
       "ch.megard" %% "akka-http-cors" % vAkkaHttpCors withSources(),
 
       "org.sangria-graphql" %% "sangria" % vSangria withSources(),
-//      "org.sangria-graphql" %% "sangria-relay" % vSangria withSources(),
+      // "org.sangria-graphql" %% "sangria-relay" % vSangria withSources(),
       "org.sangria-graphql" %% "sangria-play-json" % vSangriaPlayJson withSources(),
 
       "io.swagger.core.v3" % "swagger-core" % vSwagger withSources(),
@@ -102,7 +99,6 @@ object BldDependencies {
 
       "jakarta.ws.rs" % "jakarta.ws.rs-api" % vWsRsApi withSources(),
 
-      // "com.jsuereth" %% "scala-arm" % vScalaArm withSources(),
       lScallop,
       "org.slf4j" % "slf4j-jdk14" % vSlf4j withSources(),
 
@@ -169,8 +165,6 @@ object BldDependencies {
       "com.github.japgolly.scalajs-react" %%% "core"          % vScalaJsReact withSources(),
       "com.github.japgolly.scalajs-react" %%% "extra"         % vScalaJsReact withSources(),
 
-      // "org.querki" %%% "jquery-facade" % vJqueryFacade % "test" withSources(),
-
       "com.github.japgolly.scalajs-react" %%% "test" % vScalaJsReact % "test" withSources()
       ))
 
@@ -181,8 +175,6 @@ object BldDependencies {
 
     "com.github.japgolly.scalajs-react" %%% "core"          % vScalaJsReact withSources(),
     "com.github.japgolly.scalajs-react" %%% "extra"         % vScalaJsReact withSources(),
-
-    // "org.querki" %%% "jquery-facade" % vJqueryFacade % "test" withSources(),
 
     "com.github.japgolly.scalajs-react" %%% "test" % vScalaJsReact % "test" withSources()
     ))

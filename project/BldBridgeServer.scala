@@ -23,8 +23,6 @@ import BldCommonSettings._
 import BldVersion._
 import MyReleaseVersion._
 
-// import MyReleaseVersion._
-
 object BldBridgeServer {
 
   lazy val `bridgescorer-server`: Project = project
@@ -54,11 +52,7 @@ object BldBridgeServer {
           false
         }
       },
-      // baseDirectory in Test := {
-      //   val x = (baseDirectory in Test).value
-      //   println(s"baseDirectory in test is ${x}")
-      //   x
-      // },
+
       fork in Test := true,
       javaOptions in Test ++= Seq(
         "-Xmx4096M",

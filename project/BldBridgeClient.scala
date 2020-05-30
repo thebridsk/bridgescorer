@@ -72,14 +72,7 @@ object BldBridgeClient {
 
       scalaJSLinkerConfig in fastOptJS ~= (_.withSourceMap(false)),
 
-//    test in assembly := {},
-
-//    testOptions in Test += Tests.Argument(TestFrameworks.ScalaTest, "-oU"),
-
-//    testOptions in Test += Tests.Filter(s => { println("TestOption: "+s); true}),
-      // no tests, npm stuff not working properly with tests
-      //   https://github.com/scalacenter/scalajs-bundler/issues/83
-//    testOptions in Test += Tests.Filter(s => { println("TestOption: "+s); false}),
+      // testOptions in Test += Tests.Filter(s => { println("Using Test: "+s); true}),
       testOptions in Test += Tests.Filter(s => {
         // if (s == "com.github.thebridsk.bridge.client.test.AllUnitTests") {
         if (clientUnitTests.contains(s)) {
@@ -97,8 +90,7 @@ object BldBridgeClient {
       // error is navigator undefined
       // jsEnv in Test := new org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv(),
 
-// Compile tests to JS using fast-optimisation
-//    scalaJSStage in Test := FastOptStage,
+      // Compile tests to JS using fast-optimisation
       if (useFullOpt) {
         scalaJSStage in Test := FullOptStage
       } else {
@@ -114,33 +106,13 @@ object BldBridgeClient {
       npmDevDependencies in Test ++= bridgeScorerDevNpmDeps,
       // Use a custom config file to export the JS dependencies to the global namespace,
       // as expected by the scalajs-react facade
-      // webpackConfigFile := Some(baseDirectory.value / "webpack.config.js"),
-
       webpackConfigFile in fullOptJS := Some(baseDirectory.value / "webpack.prod.config.js"),
       webpackConfigFile in fastOptJS := Some(baseDirectory.value / "webpack.dev.config.js"),
 
       webpackEmitSourceMaps in fullOptJS := false,
 
-      // webpackBundlingMode := BundlingMode.LibraryAndApplication(),
       webpackBundlingMode := BundlingMode.LibraryOnly("bridgeLib"),
-      // webpackBundlingMode in fastOptJS := BundlingMode.LibraryOnly("bridgeLib"),
-      // webpackBundlingMode in fullOptJS := BundlingMode.LibraryAndApplication(),
-      // React.JS itself
-      // Note the JS filename. Can be react.js, react.min.js, react-with-addons.js, or react-with-addons.min.js.
-      // Test requires react-with-addons
-//    jsDependencies ++= bridgeScorerJsDeps,
 
-//    unmanagedResources in Compile += (baseDirectory in ThisBuild).value / "BridgeScorer" / "nodejs" / "build" / "bridge" / "bridgedep.js",
-//    jsDependencies in Compile += ProvidedJS / "bridgedep.js",
-//    jsDependencies += ProvidedJS / "bridge/bridgedep.js",
-
-//    crossTarget in (Compile,npmUpdate) := crossTarget.value / "scalajs-bundler" / "main" / "js" / "js",
-//    crossTarget in (Test,npmUpdate) := crossTarget.value / "scalajs-bundler" / "test" / "js" / "js",
-//      skip in packageJSDependencies := false,
-//    artifactPath in (Compile, fullOptJS) :=             (baseDirectory in ThisBuild).value / "client" / "target" / "js" / "js" / "bridgescorer-js-opt.js",
-//    artifactPath in (Compile, fastOptJS) :=             (baseDirectory in ThisBuild).value / "client" / "target" / "js" / "js" / "bridgescorer-js-fastopt.js",
-//    artifactPath in (Compile, packageJSDependencies) := (baseDirectory in ThisBuild).value / "client" / "target" / "js" / "js" / "bridgescorer-js-jsdeps.js",
-//    artifactPath in (Compile, packageScalaJSLauncher) := (baseDirectory in ThisBuild).value / "client" / "target" / "js" / "js" / "scalajs-launcher.js",
       assemblyMergeStrategy in assembly := {
         case "JS_DEPENDENCIES" => MergeStrategy.concat
         case x =>
