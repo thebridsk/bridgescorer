@@ -75,33 +75,33 @@ object Version {
     }
   }
 
-  def main(args: Array[String]): Unit = {
-    val v05 = Version("v0.5")
-    val v10 = Version("v1.0")
-    val v101 = Version("v1.0.1")
-    val v11 = Version("v1.1")
+  // def main(args: Array[String]): Unit = {
+  //   val v05 = Version("v0.5")
+  //   val v10 = Version("v1.0")
+  //   val v101 = Version("v1.0.1")
+  //   val v11 = Version("v1.1")
 
-    test(v05, v05)
-    test(v05, v10)
-    test(v05, v101)
-    test(v05, v11)
+  //   test(v05, v05)
+  //   test(v05, v10)
+  //   test(v05, v101)
+  //   test(v05, v11)
 
-    test(v10, v05)
-    test(v10, v10)
-    test(v10, v101)
-    test(v10, v11)
+  //   test(v10, v05)
+  //   test(v10, v10)
+  //   test(v10, v101)
+  //   test(v10, v11)
 
-    test(v101, v05)
-    test(v101, v10)
-    test(v101, v101)
-    test(v101, v11)
+  //   test(v101, v05)
+  //   test(v101, v10)
+  //   test(v101, v101)
+  //   test(v101, v11)
 
-    test(v11, v05)
-    test(v11, v10)
-    test(v11, v101)
-    test(v11, v11)
+  //   test(v11, v05)
+  //   test(v11, v10)
+  //   test(v11, v101)
+  //   test(v11, v11)
 
-  }
+  // }
 
   def test(v1: Version, v2: Version) = {
     val lt = v1 < v2

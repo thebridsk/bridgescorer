@@ -51,7 +51,7 @@ object BldBridgeClient {
       version in installJsdom := vJsDom,
       requireJsDomEnv in Test := true,
       scalaJSUseMainModuleInitializer := true,
-      mainClass := Some("com.github.thebridsk.bridge.client.Bridge"),
+      mainClass in (Compile, run) := Some("com.github.thebridsk.bridge.client.Bridge"),
 
 
       // This gets rid of the jetty check which is required for the sbt runtime
@@ -115,7 +115,12 @@ object BldBridgeClient {
       // Use a custom config file to export the JS dependencies to the global namespace,
       // as expected by the scalajs-react facade
       // webpackConfigFile := Some(baseDirectory.value / "webpack.config.js"),
-      // webpackConfigFile in fullOptJS := Some(baseDirectory.value / "webpack.prod.config.js"),
+
+      webpackConfigFile in fullOptJS := Some(baseDirectory.value / "webpack.prod.config.js"),
+      webpackConfigFile in fastOptJS := Some(baseDirectory.value / "webpack.dev.config.js"),
+
+      webpackEmitSourceMaps in fullOptJS := false,
+
       // webpackBundlingMode := BundlingMode.LibraryAndApplication(),
       webpackBundlingMode := BundlingMode.LibraryOnly("bridgeLib"),
       // webpackBundlingMode in fastOptJS := BundlingMode.LibraryOnly("bridgeLib"),

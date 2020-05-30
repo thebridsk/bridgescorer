@@ -215,25 +215,25 @@ class MyProcess {
 
 object MyProcess {
 
-  def main(args: Array[String]): Unit = {
-    if (args.length < 2) {
-      println( "MyProcess cwd cmd..." )
-      System.exit(99)
-    }
-    val c = args.toList
-    val cwd = new File(c.head).getCanonicalFile
-    val cmd = c.tail
+  // def main(args: Array[String]): Unit = {
+  //   if (args.length < 2) {
+  //     println( "MyProcess cwd cmd..." )
+  //     System.exit(99)
+  //   }
+  //   val c = args.toList
+  //   val cwd = new File(c.head).getCanonicalFile
+  //   val cmd = c.tail
 
-    val proc = new MyProcess().start(cwd,cmd: _*)
-    val rc = proc.waitFor()
-    if (rc == 0) {
-      println( "Success: "+cmd.mkString(" ") )
-    } else {
-      println( s"Error ${rc}: "+cmd.mkString(" ") )
-    }
+  //   val proc = new MyProcess().start(cwd,cmd: _*)
+  //   val rc = proc.waitFor()
+  //   if (rc == 0) {
+  //     println( "Success: "+cmd.mkString(" ") )
+  //   } else {
+  //     println( s"Error ${rc}: "+cmd.mkString(" ") )
+  //   }
 
-    System.exit(rc)
-  }
+  //   System.exit(rc)
+  // }
 
 }
 

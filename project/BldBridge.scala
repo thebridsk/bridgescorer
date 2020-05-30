@@ -56,6 +56,10 @@ object BldBridge {
         |  test:serverhttps2  run server with HTTPS and HTTP 2
         |  test:test          run selenium tests
         |
+        |Tasks on bridgescorer-client and bridgescorer-clientapi
+        |  fastOptJS::webpack   build the bundle
+        |  fullOptJS::webpack   build the bundle
+        |
         |Tasks on bridgescorer-server project, without app or help
         |  generatesslkeys    generate test ssl keys for https port
         |

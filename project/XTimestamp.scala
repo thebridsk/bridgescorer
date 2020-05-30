@@ -14,7 +14,7 @@ object XTimestamp {
       if (isSnap) {
         val t = System.currentTimeMillis()
         val dtfDate = new java.text.SimpleDateFormat("yyyy-MM-dd")
-        dtfDate.setTimeZone(java.util.TimeZone.getTimeZone("UTC"))
+//        dtfDate.setTimeZone(java.util.TimeZone.getTimeZone("UTC"))
         val ts = dtfDate.format(new java.util.Date(t))
         val ti = dtfDate.parse(ts)
         time = ti.getTime()
