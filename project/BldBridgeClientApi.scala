@@ -45,7 +45,7 @@ object BldBridgeClientApi {
       webpackCliVersion := vWebPackCli,
       version in startWebpackDevServer := vWebpackDevServer,
       // version in installJsdom := vJsDom,
-      mainClass := Some("com.github.thebridsk.bridge.clientapi.BridgeApi"),
+      mainClass in (Compile, run) := Some("com.github.thebridsk.bridge.clientapi.BridgeApi"),
       scalaJSUseMainModuleInitializer := true,
 
       // This gets rid of the jetty check which is required for the sbt runtime
@@ -111,7 +111,10 @@ object BldBridgeClientApi {
       // as expected by the scalajs-react facade
       // webpackConfigFile := Some(baseDirectory.value / "webpack.config.js"),
       webpackConfigFile in fullOptJS := Some(baseDirectory.value / "webpack.prod.config.js"),
-      webpackConfigFile in fastOptJS := Some(baseDirectory.value / "webpack.prod.config.js"),
+      webpackConfigFile in fastOptJS := Some(baseDirectory.value / "webpack.dev.config.js"),
+
+      webpackEmitSourceMaps in fullOptJS := false,
+
       // webpackBundlingMode := BundlingMode.LibraryAndApplication(),
       webpackBundlingMode := BundlingMode.LibraryOnly("bridgeLib"),
       // webpackBundlingMode in fastOptJS := BundlingMode.LibraryOnly("bridgeLib"),
