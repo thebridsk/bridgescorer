@@ -31,6 +31,8 @@ import com.github.thebridsk.bridge.data.RestMessage
 import com.github.thebridsk.bridge.server.backend.DuplicateMonitorWebservice
 import com.github.thebridsk.bridge.server.backend.ChicagoMonitorWebservice
 import com.github.thebridsk.bridge.server.backend.RubberMonitorWebservice
+import java.time.Instant
+import java.time.ZoneId
 
 //import akka.event.LoggingAdapter
 
@@ -228,7 +230,7 @@ object Service {
   val log = Logger[Service]
   val clientlog = Logger[client.LogA]
 
-  private val format = new java.text.SimpleDateFormat("HH:mm:ss.SSS")
+  private val format = java.time.format.DateTimeFormatter.ofPattern("HH:mm:ss.SSS").withZone( ZoneId.systemDefault() )
 
   def logStringFromBrowser(ips: String, msg: String): Unit = {
     clientlog.info(s"ClientLog($ips) $msg")
@@ -266,8 +268,7 @@ object Service {
       src: String,
       e: DuplexProtocol.LogEntryV2
   ): Unit = {
-    val format = new java.text.SimpleDateFormat("HH:mm:ss.SSS")
-    val ts = format.format(new Date(e.timestamp.toLong))
+    val ts = format.format( Instant.ofEpochMilli(e.timestamp.toLong))
     val level = e.level
     val position = e.position
     val url = e.url

@@ -1,6 +1,5 @@
 package com.github.thebridsk.bridge.server.test.util
 
-import java.text.SimpleDateFormat
 import java.util.Date
 import scala.concurrent.duration._
 import scala.language.postfixOps
@@ -12,6 +11,8 @@ import java.io.BufferedWriter
 import java.io.OutputStreamWriter
 import java.io.FileOutputStream
 import java.util.concurrent.TimeoutException
+import java.time.format.DateTimeFormatter
+import java.time.Instant
 
 object MonitorTCP extends Logging {
 
@@ -88,9 +89,9 @@ object MonitorTCP extends Logging {
     f"$delta%10.3f"
   }
 
-  val format = new SimpleDateFormat( "hh:mm:ss" )
+  val format = DateTimeFormatter.ofPattern( "hh:mm:ss" )
   def showTime() = {
-    format.format(new Date())
+    format.format(Instant.now())
   }
 
   def getPrefix() = {

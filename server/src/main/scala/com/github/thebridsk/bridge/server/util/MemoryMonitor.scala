@@ -5,12 +5,14 @@ import java.io.OutputStreamWriter
 import java.io.FileOutputStream
 import java.io.Writer
 import java.io.BufferedWriter
-import java.text.SimpleDateFormat
 import java.util.Date
 import com.github.thebridsk.utilities.logging.FileHandler
 import java.io.File
 import java.util.regex.Pattern
 import java.io.FilenameFilter
+import java.time.format.DateTimeFormatter
+import java.time.ZonedDateTime
+import java.time.Instant
 
 object MemoryMonitor {
   val log = Logger[MemoryMonitor]
@@ -42,12 +44,11 @@ object MemoryMonitor {
 
   private var fCount = 10
 
-  private val fSDF = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss.SSS");
+  private val fSDF = DateTimeFormatter.ofPattern("yyyy.MM.dd.HH.mm.ss.SSS");
   private val dateRegex = """\d\d\d\d\.\d\d\.\d\d\.\d\d\.\d\d\.\d\d\.\d\d\d"""
 
   private def getDate() = {
-    var d = new Date();
-    fSDF.format(d)
+    fSDF.format(Instant.now())
   }
 
   /**

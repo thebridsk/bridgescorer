@@ -14,11 +14,12 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import com.github.thebridsk.bridge.data.duplicate.suggestion.DuplicateSuggestionsCalculation
 import com.github.thebridsk.bridge.data.DuplicateSummary
 import com.github.thebridsk.bridge.data.duplicate.suggestion.DuplicateSuggestions
-import java.text.SimpleDateFormat
 import java.util.Date
 import com.github.thebridsk.bridge.data.duplicate.suggestion.NeverPair
 import com.github.thebridsk.bridge.data.Id
 import com.github.thebridsk.bridge.datastore.stats.DuplicateStatsCommand
+import java.time.format.DateTimeFormatter
+import java.time.Instant
 
 trait ShowCommand
 
@@ -293,7 +294,7 @@ Options:""")
 
   def await[T](fut: Future[T]) = Await.result(fut, 30.seconds)
 
-  val sdf = new SimpleDateFormat("MM/dd/YYYY")
+  val sdf = DateTimeFormatter.ofPattern("MM/dd/YYYY")
 
   def executeSubcommand(): Int = {
     val storedir = optionStore().toDirectory
@@ -309,7 +310,7 @@ Options:""")
         case Right(summaries) =>
           summaries.sortWith((l, r) => l.created > r.created).foreach {
             summary =>
-              val date = sdf.format(new Date(summary.created.toLong))
+              val date = sdf.format(Instant.ofEpochMilli(summary.created.toLong))
               if (summary.containsPlayer(p)) {
                 val partner = summary.teams
                   .find(dse => dse.team.player1 == p || dse.team.player2 == p)
@@ -353,7 +354,7 @@ Options:""")
 
   def await[T](fut: Future[T]) = Await.result(fut, 30.seconds)
 
-  val sdf = new SimpleDateFormat("MM/dd/YYYY")
+  val sdf = DateTimeFormatter.ofPattern("MM/dd/YYYY")
 
   def executeSubcommand(): Int = {
     val storedir = optionStore().toDirectory
@@ -390,7 +391,7 @@ Options:""")
                   val (k, v) = e
                   f"${k}=${v}%2s"
                 }
-              val d = sdf.format(new Date(dup.created.toLong))
+              val d = sdf.format(Instant.ofEpochMilli(dup.created.toLong))
               log.info(f"""${dup.id}%-4s ${d} ${counts.mkString("  ")}""")
           }
         case Left((status, msg)) =>
