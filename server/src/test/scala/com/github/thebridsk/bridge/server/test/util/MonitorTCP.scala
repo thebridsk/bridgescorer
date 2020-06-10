@@ -13,6 +13,7 @@ import java.io.FileOutputStream
 import java.util.concurrent.TimeoutException
 import java.time.format.DateTimeFormatter
 import java.time.Instant
+import java.time.ZoneId
 
 object MonitorTCP extends Logging {
 
@@ -89,7 +90,7 @@ object MonitorTCP extends Logging {
     f"$delta%10.3f"
   }
 
-  val format = DateTimeFormatter.ofPattern( "hh:mm:ss" )
+  val format = DateTimeFormatter.ofPattern( "hh:mm:ss" ).withZone( ZoneId.systemDefault() )
   def showTime() = {
     format.format(Instant.now())
   }

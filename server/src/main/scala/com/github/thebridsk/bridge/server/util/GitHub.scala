@@ -317,7 +317,7 @@ object GitHub {
 
   val shaPattern = """([0-9a-zA-Z]+) ([* ])([^\n\r]*)""".r
 
-  val dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss zzz")
+  val dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss zzz").withZone( ZoneId.systemDefault() )
   def formatDate(date: Date) = {
 
     dateFormat.format( Instant.ofEpochMilli(date.getTime()))

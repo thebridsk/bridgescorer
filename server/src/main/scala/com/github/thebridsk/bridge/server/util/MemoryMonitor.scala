@@ -13,6 +13,7 @@ import java.io.FilenameFilter
 import java.time.format.DateTimeFormatter
 import java.time.ZonedDateTime
 import java.time.Instant
+import java.time.ZoneId
 
 object MemoryMonitor {
   val log = Logger[MemoryMonitor]
@@ -44,7 +45,7 @@ object MemoryMonitor {
 
   private var fCount = 10
 
-  private val fSDF = DateTimeFormatter.ofPattern("yyyy.MM.dd.HH.mm.ss.SSS");
+  private val fSDF = DateTimeFormatter.ofPattern("yyyy.MM.dd.HH.mm.ss.SSS").withZone( ZoneId.systemDefault() );
   private val dateRegex = """\d\d\d\d\.\d\d\.\d\d\.\d\d\.\d\d\.\d\d\.\d\d\d"""
 
   private def getDate() = {

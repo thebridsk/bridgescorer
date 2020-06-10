@@ -18,6 +18,7 @@ import com.github.thebridsk.bridge.server.backend.MatchRubberCacheStoreSupport
 import com.github.thebridsk.bridge.server.backend.MatchDuplicateCacheStoreSupport
 import java.time.format.DateTimeFormatter
 import java.time.Instant
+import java.time.ZoneId
 
 object ShowAllTimes extends Main {
 
@@ -105,7 +106,7 @@ object ShowAllTimes extends Main {
     timestamp(s"    ${h.id} updated: ", h.updated)
   }
 
-  val sdf = DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm:ss.SSS")
+  val sdf = DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm:ss.SSS").withZone( ZoneId.systemDefault() )
 
   def timestamp( msg: String, time: Timestamp ) = {
     if (time == 0) {

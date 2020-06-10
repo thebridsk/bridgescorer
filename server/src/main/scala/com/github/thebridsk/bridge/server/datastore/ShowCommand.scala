@@ -20,6 +20,7 @@ import com.github.thebridsk.bridge.data.Id
 import com.github.thebridsk.bridge.datastore.stats.DuplicateStatsCommand
 import java.time.format.DateTimeFormatter
 import java.time.Instant
+import java.time.ZoneId
 
 trait ShowCommand
 
@@ -294,7 +295,7 @@ Options:""")
 
   def await[T](fut: Future[T]) = Await.result(fut, 30.seconds)
 
-  val sdf = DateTimeFormatter.ofPattern("MM/dd/YYYY")
+  val sdf = DateTimeFormatter.ofPattern("MM/dd/YYYY").withZone( ZoneId.systemDefault() )
 
   def executeSubcommand(): Int = {
     val storedir = optionStore().toDirectory
@@ -354,7 +355,7 @@ Options:""")
 
   def await[T](fut: Future[T]) = Await.result(fut, 30.seconds)
 
-  val sdf = DateTimeFormatter.ofPattern("MM/dd/YYYY")
+  val sdf = DateTimeFormatter.ofPattern("MM/dd/YYYY").withZone( ZoneId.systemDefault() )
 
   def executeSubcommand(): Int = {
     val storedir = optionStore().toDirectory
