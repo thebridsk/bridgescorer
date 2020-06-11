@@ -5,12 +5,14 @@ import java.net.URL
 import java.io.File
 import play.api.libs.json._
 import java.util.Date
-import java.text.SimpleDateFormat
-import java.util.TimeZone
 import java.text.ParseException
 import java.io.OutputStreamWriter
 import java.io.FileOutputStream
 import scala.util.Using
+import java.time.format.DateTimeFormatter
+import java.time.ZoneId
+import java.time.Instant
+import java.time.ZonedDateTime
 
 /**
   * @constructor
@@ -315,10 +317,10 @@ object GitHub {
 
   val shaPattern = """([0-9a-zA-Z]+) ([* ])([^\n\r]*)""".r
 
+  val dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss zzz").withZone( ZoneId.systemDefault() )
   def formatDate(date: Date) = {
-    val dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss zzz")
 
-    dateFormat.format(date)
+    dateFormat.format( Instant.ofEpochMilli(date.getTime()))
   }
 
   case class Asset(
@@ -372,14 +374,13 @@ object GitHub {
   implicit object dateReads extends Reads[Date] {
 
     // "2018-01-17T00:47:37Z"
-    val dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
-    dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"))
+    val dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'").withZone(ZoneId.of("UTC"))
 
     def reads(json: JsValue): JsResult[Date] = {
       json match {
         case JsString(date) =>
           try {
-            JsSuccess(dateFormat.parse(date))
+            JsSuccess( new Date( ZonedDateTime.parse( date, dateFormat ).toInstant().toEpochMilli() ))
           } catch {
             case x: ParseException =>
               JsError(

@@ -4,7 +4,6 @@ import com.github.thebridsk.utilities.main.Main
 import com.github.thebridsk.utilities.file.FileIO
 import scala.language.postfixOps
 import com.github.thebridsk.bridge.data.MatchChicago
-import java.text.SimpleDateFormat
 import com.github.thebridsk.bridge.data.Round
 import com.github.thebridsk.bridge.data.Hand
 import com.github.thebridsk.bridge.data.MatchDuplicate
@@ -17,6 +16,9 @@ import com.github.thebridsk.bridge.server.backend.BridgeServiceFileStoreConverte
 import com.github.thebridsk.bridge.server.backend.MatchChicagoCacheStoreSupport
 import com.github.thebridsk.bridge.server.backend.MatchRubberCacheStoreSupport
 import com.github.thebridsk.bridge.server.backend.MatchDuplicateCacheStoreSupport
+import java.time.format.DateTimeFormatter
+import java.time.Instant
+import java.time.ZoneId
 
 object ShowAllTimes extends Main {
 
@@ -104,13 +106,13 @@ object ShowAllTimes extends Main {
     timestamp(s"    ${h.id} updated: ", h.updated)
   }
 
-  val sdf = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss.SSS")
+  val sdf = DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm:ss.SSS").withZone( ZoneId.systemDefault() )
 
   def timestamp( msg: String, time: Timestamp ) = {
     if (time == 0) {
       println(msg)
     } else {
-      println(msg+sdf.format(time.toLong))
+      println(msg+sdf.format( Instant.ofEpochMilli(time.toLong)))
     }
   }
 }
