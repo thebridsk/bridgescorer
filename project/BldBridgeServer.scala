@@ -41,6 +41,9 @@ object BldBridgeServer {
       mainClass in (Compile, run) := Some("com.github.thebridsk.bridge.server.Server"),
       mainClass in (Compile, packageBin) := Some("com.github.thebridsk.bridge.server.Server"),
       Compile / run / fork := true,
+      server := {
+        (run in Compile).toTask(""" --logfile "../server/logs/server.sbt.%d.%u.log" start --cache 0s --store ../server/store --diagnostics ../server/logs""").value
+      },
 
       mainClass in Test := Some("org.scalatest.tools.Runner"),
       testOptions in Test += Tests.Filter { s =>

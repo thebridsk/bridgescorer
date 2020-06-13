@@ -23,18 +23,18 @@ object BldVersion {
 //  lazy val vScalaJsLibrary = "0.6.13" // http://mvnrepository.com/artifact/org.scala-js/scalajs-library_2.11
 
 
-  lazy val vAkka = "2.6.5"            // https://github.com/akka/akka
+  lazy val vAkka = "2.6.6"            // https://github.com/akka/akka
   lazy val vAkkaHttp = "10.1.12"       // https://github.com/akka/akka-http
 
   lazy val vAkkaHttpPlayJson="1.32.0"  // https://github.com/hseeberger/akka-http-json
 
-  lazy val vSwaggerAkkaHttp = "2.0.5"  // https://github.com/swagger-akka-http/swagger-akka-http
-  lazy val vSwaggerScalaModule="2.1.0" // https://github.com/swagger-akka-http/swagger-scala-module
+  lazy val vSwaggerAkkaHttp = "2.1.1"  // https://github.com/swagger-akka-http/swagger-akka-http
+  lazy val vSwaggerScalaModule="2.1.2" // https://github.com/swagger-akka-http/swagger-scala-module
   lazy val vSwagger="2.1.2"            // https://github.com/swagger-api/swagger-core
   lazy val vWsRsApi="2.1.6"            // https://github.com/eclipse-ee4j/jaxrs-api
   lazy val vAkkaHttpCors = "1.0.0"     // https://github.com/lomigmegard/akka-http-cors
 
-  lazy val vSwaggerUI = "3.25.5"       // https://www.npmjs.com/package/swagger-ui-dist
+  lazy val vSwaggerUI = "3.26.0"       // https://www.npmjs.com/package/swagger-ui-dist
   lazy val vScalajsdom = "1.0.0"       // https://github.com/scala-js/scala-js-dom
   lazy val vScalaJsReact = "1.7.0"     // https://github.com/japgolly/scalajs-react
 
@@ -83,14 +83,14 @@ object BldVersion {
   lazy val vWebpackDevServer = "3.11.0"   // https://www.npmjs.com/package/webpack-dev-server
   lazy val vWebPackCli = "3.3.11"         // https://www.npmjs.com/package/webpack-cli
 
-  lazy val vSangria = "2.0.0-RC2"          // https://github.com/sangria-graphql/sangria
+  lazy val vSangria = "2.0.0"              // https://github.com/sangria-graphql/sangria
   lazy val vSangriaPlayJson = "2.0.1"      // https://github.com/sangria-graphql/sangria-play-json
 
   // graphql, graphiql, and graphql-voyager must be updated together.
-  lazy val vGraphQL = "14.6.0" // "15.0.0"              // https://www.npmjs.com/package/graphql    co-req of graphql-voyager
-  lazy val vGraphiQL = "0.17.5" // "1.0.0-alpha.11"     // https://www.npmjs.com/package/graphiql
-  lazy val vGraphQLVoyager = "1.0.0-rc.29" // "1.0.0-rc.31"  // https://www.npmjs.com/package/graphql-voyager
-  lazy val vMaterialUIcore = "4.10.0"       // https://www.npmjs.com/package/@material-ui/core
+  lazy val vGraphQL = "15.1.0"              // https://www.npmjs.com/package/graphql    co-req of graphql-voyager
+  lazy val vGraphiQL = "1.0.0"              // https://www.npmjs.com/package/graphiql
+  lazy val vGraphQLVoyager = "1.0.0-rc.31"  // https://www.npmjs.com/package/graphql-voyager
+  lazy val vMaterialUIcore = "4.10.2"       // https://www.npmjs.com/package/@material-ui/core
   lazy val vMaterialUIicons = "4.9.1"       // https://www.npmjs.com/package/@material-ui/icons
   lazy val vPropTypes = "15.7.2"            // https://www.npmjs.com/package/prop-types
 }
