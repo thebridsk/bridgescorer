@@ -159,6 +159,8 @@ object BldBridgeScoreKeeper {
           MergeStrategy.rename
         case PathList("module-info.class") =>
           MergeStrategy.rename
+        case PathList("license") =>
+          MergeStrategy.rename
         case PathList("META-INF", "versions", "9", "module-info.class") =>
           MergeStrategy.rename
         case PathList("META-INF", "versions", "9") =>
@@ -187,6 +189,7 @@ object BldBridgeScoreKeeper {
           MergeStrategy.first
         case PathList("JS_DEPENDENCIES")   => MergeStrategy.rename
         case PathList("module-info.class") => MergeStrategy.rename
+        case PathList("license", xs @ _*) => MergeStrategy.discard
         case PathList("META-INF", "versions", "9", "module-info.class") =>
           MergeStrategy.rename
         case PathList("META-INF", "versions", "9") =>
