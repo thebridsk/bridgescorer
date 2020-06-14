@@ -63,6 +63,24 @@ class Element( val underlying: WebElement )(implicit pos: Position, webdriver: W
 //      Thread.sleep( 100L )
     }
 
+    def isClickable = {
+      PageBrowser.scrollToElement(underlying)
+      isDisplayed && isEnabled
+    }
+
+    def checkClickable = {
+      PageBrowser.scrollToElement(underlying)
+      if (!isDisplayed) {
+        val disp = underlying.getCssValue("display")
+        val width = underlying.getCssValue("width")
+        val height = underlying.getCssValue("height")
+        throw new Exception(s"Not clickable, not displayed, $disp $height x $width")
+      }
+      if (!isEnabled) {
+        throw new Exception("Not clickable, disabled")
+      }
+    }
+
     /**
      * Send enter to the element.
      * Most of the time this is functionally equivalent to clicking the element.

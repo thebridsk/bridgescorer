@@ -176,12 +176,11 @@ class SuggestionPage(
   }
 
   def getNumberChecked(implicit patienceConfig: PatienceConfig, pos: Position) = {
-    findAllElems[Element]( xpath( """//div[contains(concat(' ', @class, ' '), ' dupDivSuggestionPage ')]/div[2]/ul/li/label/input""") ).
-      map( e => e.attribute("checked").map( s => s.toBoolean ).getOrElse(false) ).filter( b => b ).length
+    findAllElems[Element]( xpath( """//div[contains(concat(' ', @class, ' '), ' dupDivSuggestionPage ')]/div[2]/ul/li/div[@data-selected='true']""") ).length
   }
 
   private def getCheckboxLabels(implicit patienceConfig: PatienceConfig, pos: Position) = {
-    findAllElems[Element]( xpath( """//div[contains(concat(' ', @class, ' '), ' dupDivSuggestionPage ')]/div[2]/ul/li/label""") )
+    findAllElems[Element]( xpath( """//div[contains(concat(' ', @class, ' '), ' dupDivSuggestionPage ')]/div[2]/ul/li/div""") )
   }
 
   def getNumberKnownNames(implicit patienceConfig: PatienceConfig, pos: Position) = {
@@ -193,7 +192,7 @@ class SuggestionPage(
   }
 
   def isKnownNameChecked( n: Int )(implicit patienceConfig: PatienceConfig, pos: Position) = {
-    findElem[Element]( id( s"KP$n" ) ).attribute("checked").map( s => s.toBoolean ).getOrElse(false)
+    findElem[Element]( id( s"KP$n" ) ).attribute("data-selected").map( s => s.toBoolean ).getOrElse(false)
   }
 
 

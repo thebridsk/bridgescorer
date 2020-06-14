@@ -143,7 +143,6 @@ object ViewPlayersVeryFirstRound {
                         msgEmptyFilter="No names matched",
                         busy = busy
                       ),
-                      <.br,
                       CheckBox( "Quintet", "Fast Rotation", state.quintet, toggleQuintet ),
                       if (state.quintet) {
                         Seq[TagMod](

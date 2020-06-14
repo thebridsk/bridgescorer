@@ -262,15 +262,15 @@ class EnterNamesPage( val chiid: String,
   }
 
   def isFastRotation(implicit pos: Position) = {
-    findCheckbox(fastRotationCheckboxName).isSelected
+    isCheckboxSelected(fastRotationCheckboxName)
   }
 
   def isSimpleRotation(implicit pos: Position) = {
-    findRadioButton(simpleRotationRadioBoxName).isSelected
+    isRadioButtonSelected(simpleRotationRadioBoxName)
   }
 
   def isFairRotation(implicit pos: Position) = {
-    findRadioButton(fairRotationRadioBoxName).isSelected
+    isRadioButtonSelected(fairRotationRadioBoxName)
   }
 
   def clickFastRotation(implicit patienceConfig: PatienceConfig, pos: Position) = {

@@ -6,6 +6,7 @@ import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.TagMod
 import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles
 import japgolly.scalajs.react.vdom.HtmlStyles
+import com.github.thebridsk.materialui.icons.MuiIcons
 
 /**
  * A skeleton component.
@@ -31,27 +32,48 @@ object CheckBox {
 object CheckBoxInternal {
   import CheckBox._
 
+  def callback( cb: Callback ): js.Function1[scala.scalajs.js.Object,Unit] = ( event: js.Object ) => cb.runNow()
+
+  val dataSelected = VdomAttr[Boolean]("data-selected")
+
   val component = ScalaComponent.builder[Props]("CheckBox")
                             .stateless
                             .noBackend
-                            .render_P( props => {
+                            .render_P{ props =>
                               import BaseStyles._
-                              <.label(
-                                HtmlStyles.whiteSpace.nowrap,
-                                ^.id := "Label"+props.id,
+                              val ic = if (props.value) MuiIcons.CheckBox()
+                                       else MuiIcons.CheckBoxOutlineBlank()
+
+                              val attrs = List[TagMod](
                                 baseStyles.checkbox,
-                                <.input(
-                                  ^.name:=props.id,
-                                  ^.id:=props.id,
-                                  ^.`type`:="checkbox",
-                                  ^.checked := props.value,
-                                  ^.onClick --> props.toggle,
-                                  ^.readOnly := true,
-                                  props.attrs.toTagMod
-                                ),
-                                " "+props.text
-                              )
-                            })
+                                ^.id := props.id,
+                                ic,
+                                " ",
+                                props.text,
+                                ^.onClick --> props.toggle,
+                                HtmlStyles.whiteSpace.nowrap,
+                                dataSelected := props.value
+                              ) ::: props.attrs.toList
+
+                              <.div( attrs: _* )
+
+                              // <.label(
+                              //   HtmlStyles.whiteSpace.nowrap,
+                              //   ^.id := props.id,
+                              //   baseStyles.checkbox,
+                              //   <.input(
+                              //     ^.name:=props.id,
+                              //     ^.id:="Input_"+props.id,
+                              //     ^.`type`:="checkbox",
+                              //     ^.checked := props.value,
+                              //     ^.onClick --> props.toggle,
+                              //     ^.readOnly := true,
+                              //     props.attrs.toTagMod
+                              //   ),
+                              //   ic,
+                              //   " "+props.text
+                              // )
+                            }
                             .build
 }
 
