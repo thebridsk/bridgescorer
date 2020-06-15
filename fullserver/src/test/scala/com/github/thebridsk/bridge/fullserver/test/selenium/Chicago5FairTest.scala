@@ -144,7 +144,7 @@ class Chicago5FairTest extends AnyFlatSpec
 
     eventuallyFindAndClickButton("ToggleFive")
 
-    eventually(find(id("LabelQuintet")))
+    eventually(find(id("Quintet")))
 
     textField("Extra").value = "Brian"
     textField("East").value = "Ellen"
@@ -154,7 +154,7 @@ class Chicago5FairTest extends AnyFlatSpec
     tcpSleep(1)
     pressKeys(Keys.ESCAPE)
 
-    eventually { click on id("LabelQuintet") }
+    eventually { click on id("Quintet") }
 
     eventually(find(id("Fair")))
 

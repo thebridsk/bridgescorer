@@ -76,6 +76,7 @@ import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.DuplicateResu
 import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.DuplicateResultPage
 import com.github.thebridsk.browserpages.Session
 import com.github.thebridsk.bridge.server.test.util.TestServer
+import org.scalatest.CancelAfterFailure
 
 object DuplicateResultTest {
 
@@ -106,7 +107,13 @@ object DuplicateResultTest {
  * to the names view, to the hand view.
  * @author werewolf
  */
-class DuplicateResultTest extends AnyFlatSpec with Matchers with BeforeAndAfterAll with EventuallyUtils {
+class DuplicateResultTest
+    extends AnyFlatSpec
+    with Matchers
+    with BeforeAndAfterAll
+    with EventuallyUtils
+    with CancelAfterFailure
+{
   import Eventually.{ patienceConfig => _, _ }
   import ParallelUtils._
 
@@ -187,18 +194,20 @@ class DuplicateResultTest extends AnyFlatSpec with Matchers with BeforeAndAfterA
   it should "create a new duplicate result match" in {
     import SessionDirector._
 
-    val curPage = NewDuplicatePage.current
+    val curPage = NewDuplicatePage.current.validate
+    curPage.withClueAndScreenShot(screenshotDir, "CreateDuplicateResult", "", savedom = true) {
 
-    curPage.clickCreateResultsOnly
+      curPage.clickCreateResultsOnly
 
-    eventually {
-      curPage.isCreateResultsOnly mustBe true
+      eventually {
+        curPage.isCreateResultsOnly mustBe true
+      }
+
+      dupid = curPage.clickForResultsOnly(boardset, movement).validate.dupid
+      dupid mustBe Symbol("defined")
+
+      testlog.info(s"Duplicate id is ${dupid.get}")
     }
-
-    dupid = curPage.clickForResultsOnly(boardset, movement).validate.dupid
-    dupid mustBe Symbol("defined")
-
-    testlog.info(s"Duplicate id is ${dupid.get}")
 
   }
 

@@ -23,6 +23,8 @@ import org.openqa.selenium.TakesScreenshot
 import org.openqa.selenium.OutputType
 import scala.io.Codec
 import scala.annotation.implicitNotFound
+import org.openqa.selenium.support.ui.WebDriverWait
+import org.openqa.selenium.support.ui.ExpectedConditions
 
 @implicitNotFound("Nothing was inferred")
 sealed trait NotNothing[-T]
@@ -479,6 +481,18 @@ trait PageBrowser {
   def scrollToTop(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position): Unit = {
     PageBrowser.executeScript("window.scrollTo(0, 0)")
   }
+
+  def isClickable( e: Element )(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position): Unit = {
+    isClickable(e.underlying)
+  }
+
+  def isClickable( e: WebElement )(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position): Unit = {
+    // new WebDriverWait(webDriver,patienceConfig.timeout.toMillis).until(ExpectedConditions.elementToBeClickable(e))
+    if (!e.isDisplayed() || !e.isEnabled()) {
+      throw new Exception( "Element is not clickable")
+    }
+  }
+
   /**
    * @param e the element
    */

@@ -224,18 +224,16 @@ body {
   white-space: nowrap;
   padding: 1px 6px;
   font-size: x-large;
-}
-.baseCheckbox input {
-  transform: scale(2);
+  margin: 2px;
+  display: inline-block;
 }
 
 .baseRadioButton {
   white-space: nowrap;
   padding: 1px 6px;
   font-size: x-large;
-}
-.baseRadioButton input {
-  transform: scale(2);
+  margin: 2px;
+  display: inline-block;
 }
 
 /* .baseNormal {

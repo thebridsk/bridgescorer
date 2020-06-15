@@ -5,6 +5,8 @@ import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.TagMod
 import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles
+import com.github.thebridsk.materialui.icons.MuiIcons
+import japgolly.scalajs.react.vdom.HtmlStyles
 
 /**
  * A skeleton component.
@@ -42,21 +44,37 @@ object RadioButtonInternal {
                             .noBackend
                             .render_P( props => {
                               import BaseStyles._
-//                              val checked: TagMod = props.value ?= (^.checked := true).asInstanceOf[TagMod]
-                              <.label(
+                              val ic = if (props.value) MuiIcons.RadioButtonChecked()
+                                       else MuiIcons.RadioButtonUnchecked()
+
+                              val attrs = List[TagMod](
                                 baseStyles.radioButton,
-                                ^.id:="Label"+props.id,
-                                <.input(
-                                  ^.`type`:="radio",
-                                  ^.name:=props.id,
-                                  ^.id:=props.id,
-                                  ^.value:=props.id,
-                                  ^.checked:=props.value,
-                                  ^.onChange --> props.toggle,
-                                ),
-                                " "+props.text,
-                                props.attrs.toTagMod
-                              )
+                                ^.id := props.id,
+                                ic,
+                                " ",
+                                props.text,
+                                ^.onClick --> props.toggle,
+                                HtmlStyles.whiteSpace.nowrap,
+                                CheckBoxInternal.dataSelected := props.value
+                              ) ::: props.attrs.toList
+
+                              <.div( attrs: _* )
+
+                              // <.label(
+                              //   baseStyles.radioButton,
+                              //   ^.id:=props.id,
+                              //   <.input(
+                              //     ^.`type`:="radio",
+                              //     ^.name:=props.id,
+                              //     ^.id:="Input_"+props.id,
+                              //     ^.value:=props.id,
+                              //     ^.checked:=props.value,
+                              //     ^.onChange --> props.toggle,
+                              //   ),
+                              //   ic,
+                              //   " "+props.text,
+                              //   props.attrs.toTagMod
+                              // )
                             })
                             .build
 }

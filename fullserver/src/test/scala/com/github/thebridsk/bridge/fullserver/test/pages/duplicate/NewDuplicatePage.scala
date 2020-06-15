@@ -84,11 +84,15 @@ class NewDuplicatePage( implicit webDriver: WebDriver, pageCreated: SourcePositi
   }
 
   def isCreateResultsOnly(implicit patienceConfig: PatienceConfig, pos: Position) = {
-    findCheckbox("resultsOnly").isSelected
+    isCheckboxSelected("resultsOnly")
   }
 
   def clickCreateResultsOnly(implicit patienceConfig: PatienceConfig, pos: Position) = {
-    eventually { findCheckbox("resultsOnly").click }
+    eventually {
+      val e = findCheckbox("resultsOnly")
+      e.checkClickable
+      e.click
+    }
     this
   }
 }

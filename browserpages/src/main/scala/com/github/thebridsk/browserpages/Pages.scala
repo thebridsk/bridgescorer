@@ -514,12 +514,17 @@ abstract class Page[ +T <: Page[T] ]()( implicit webDriver: WebDriver, pageCreat
   }
 
   def findCheckbox( name: String )(implicit pos: Position) = {
-    val el = find( xpath(s"""//input[@name='${name}']""") )
+    val el = find( xpath(s"""//div[contains(concat(' ', @class, ' '), ' baseCheckbox ') and @id='${name}']""") )
     new Checkbox(el.underlying)
   }
 
   def getCheckbox( name: String )(implicit patienceConfig: PatienceConfig, pos: Position) = {
     eventually { findCheckbox(name) }
+  }
+
+  def isCheckboxSelected( name: String )(implicit pos: Position) = {
+    val c = findCheckbox(name).attribute("data-selected")
+    c.map( _ == "true" ).getOrElse(false)
   }
 
   def findDateTimePicker( name: String )(implicit pos: Position) = {
@@ -532,12 +537,17 @@ abstract class Page[ +T <: Page[T] ]()( implicit webDriver: WebDriver, pageCreat
   }
 
   def findRadioButton( name: String )(implicit pos: Position) = {
-    val el = find( xpath(s"""//input[@name='${name}']""") )
+    val el = find( xpath(s"""//div[contains(concat(' ', @class, ' '), ' baseRadioButton ') and @id='${name}']""") )
     new RadioButton(el.underlying)
   }
 
   def getRadioButton( name: String )(implicit patienceConfig: PatienceConfig, pos: Position) = {
     eventually { findRadioButton(name) }
+  }
+
+  def isRadioButtonSelected( name: String )(implicit pos: Position) = {
+    val c = findRadioButton(name).attribute("data-selected")
+    c.map( _ == "true" ).getOrElse(false)
   }
 
   def esc(implicit patienceConfig: PatienceConfig, pos: Position): this.type = {
@@ -649,8 +659,8 @@ abstract class Page[ +T <: Page[T] ]()( implicit webDriver: WebDriver, pageCreat
    * @param fun the function to execute
    * @throws NullArgumentException if the passed <code>clue</code> is <code>null</code>
   */
-  def withClueAndScreenShot[T]( directory: String, filenamePrefix: String, clue: Any)(fun: => T)(implicit pos: Position): T = {
-    takeScreenshotOnError(directory, s"${filenamePrefix}_${pos.lineForFilename}") {
+  def withClueAndScreenShot[T]( directory: String, filenamePrefix: String, clue: Any, savedom: Boolean = false, domToStdout: Boolean = false)(fun: => T)(implicit pos: Position): T = {
+    PageBrowser.takeScreenshotOnError(directory,filenamePrefix,savedom,domToStdout) {
       withClue(clue)(fun)
     }
   }
