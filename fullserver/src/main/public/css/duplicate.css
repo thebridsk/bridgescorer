@@ -815,6 +815,9 @@
   border-spacing: 0px;
   border: 1px solid var(--color-table-border);;
 }
+.dupDivSuggestionPage > div {
+  padding: 3px
+}
 .dupDivSuggestionPage {
   font-size: x-large;
   display: flex;

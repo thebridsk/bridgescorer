@@ -220,24 +220,76 @@ body {
   border-style: inset !important;
 }
 
-.baseCheckbox {
+label.baseCheckbox {
   white-space: nowrap;
-  padding: 1px 6px;
+  padding: 0px 6px;
   font-size: x-large;
-  margin: 2px;
+  margin: 0px;
+  margin-left: -11px;
   display: inline-block;
+  color: var(--color-fg);
+  background-color: inherit;
+}
+
+label.baseCheckbox > span:first-child,
+label.baseCheckbox > span:first-child > span,
+label.baseCheckbox > span:first-child > span > svg
+{
+  color: var(--color-fg);
+  background-color: inherit;
+}
+label.baseCheckbox > span:first-child {
+  padding: 0px 9px;
+}
+label.baseCheckbox > span:first-child > span > svg
+{
+  z-index: 1;
+}
+label.baseCheckbox > span:first-child > span > input
+{
+  z-index: 2;
+}
+label.baseCheckbox > span:nth-child(2) > span
+{
+  font-size: x-large;
 }
 
 .baseRadioButton {
   white-space: nowrap;
-  padding: 1px 6px;
+  padding: 0px 6px;
   font-size: x-large;
-  margin: 2px;
+  margin: 0px;
   display: inline-block;
+  color: var(--color-fg);
+  background-color: inherit;
+}
+label.baseRadioButton > span:first-child,
+label.baseRadioButton > span:first-child > span,
+label.baseRadioButton > span:first-child > span > div
+{
+  color: var(--color-fg);
+  /* background-color: inherit; */
+}
+label.baseRadioButton > span:first-child {
+  padding: 0px 9px;
+}
+label.baseRadioButton > span:first-child > span > div
+{
+  z-index: 1;
+}
+label.baseRadioButton > span:first-child > span > input
+{
+  z-index: 2;
+}
+label.baseRadioButton > span:nth-child(2) > span
+{
+  font-size: x-large;
 }
 
-/* .baseNormal {
-} */
+.baseNormal {
+  color: var(--color-fg);
+  background-color: var(--color-bg);
+}
 
 .baseRequired {
   background-color: var(--color-button-required) !important;

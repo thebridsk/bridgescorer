@@ -7,6 +7,7 @@ import japgolly.scalajs.react.vdom.TagMod
 import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles
 import japgolly.scalajs.react.vdom.HtmlStyles
 import com.github.thebridsk.materialui.icons.MuiIcons
+import com.github.thebridsk.materialui._
 
 /**
  * A skeleton component.
@@ -22,11 +23,11 @@ import com.github.thebridsk.materialui.icons.MuiIcons
 object CheckBox {
   import CheckBoxInternal._
 
-  case class Props( id: String, text: String, value: Boolean, toggle: Callback, attrs: TagMod* )
+  case class Props( id: String, text: String, value: Boolean, toggle: Callback )
 
-  def apply( id: String, text: String, value: Boolean, toggle: Callback, attrs: TagMod* ) = component(Props(id,text,value,toggle,attrs:_*))
+  def apply( id: String, text: String, value: Boolean, toggle: Callback ) = component(Props(id,text,value,toggle))
 
-  def withKey( key: String )( id: String, text: String, value: Boolean, onclick: Callback, attrs: TagMod* ) = component.withKey(key)(Props(id,text,value,onclick,attrs:_*))
+  def withKey( key: String )( id: String, text: String, value: Boolean, onclick: Callback ) = component.withKey(key)(Props(id,text,value,onclick))
 }
 
 object CheckBoxInternal {
@@ -39,23 +40,36 @@ object CheckBoxInternal {
   val component = ScalaComponent.builder[Props]("CheckBox")
                             .stateless
                             .noBackend
-                            .render_P{ props =>
+                            .render_P { props =>
                               import BaseStyles._
-                              val ic = if (props.value) MuiIcons.CheckBox()
-                                       else MuiIcons.CheckBoxOutlineBlank()
+                              // val ic = if (props.value) MuiIcons.CheckBox()
+                              //          else MuiIcons.CheckBoxOutlineBlank()
 
-                              val attrs = List[TagMod](
-                                baseStyles.checkbox,
-                                ^.id := props.id,
-                                ic,
-                                " ",
-                                props.text,
-                                ^.onClick --> props.toggle,
-                                HtmlStyles.whiteSpace.nowrap,
-                                dataSelected := props.value
-                              ) ::: props.attrs.toList
+                              // val attrs = List[TagMod](
+                              //   baseStyles.checkbox,
+                              //   ^.id := props.id,
+                              //   ic,
+                              //   " ",
+                              //   props.text,
+                              //   ^.onClick --> props.toggle,
+                              //   HtmlStyles.whiteSpace.nowrap,
+                              //   dataSelected := props.value
+                              // ) ::: props.attrs.toList
 
-                              <.div( attrs: _* )
+                              // <.div( attrs: _* ),
+
+                              MuiFormControlLabel(
+                                checked = props.value,
+                                control = MuiCheckbox(
+                                  checked = props.value,
+                                  onChange = callback( props.toggle ),
+                                  name = props.id,
+                                  id = props.id
+                                )(),
+                                label = <.span( props.text ),
+                                className = baseStyles.baseCheckbox
+                              )()
+
 
                               // <.label(
                               //   HtmlStyles.whiteSpace.nowrap,
