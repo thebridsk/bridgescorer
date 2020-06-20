@@ -73,12 +73,51 @@ class Element( val underlying: WebElement )(implicit pos: Position, webdriver: W
       PageBrowser.scrollToElement(underlying)
       if (!isDisplayed) {
         val disp = underlying.getCssValue("display")
+        val vis = underlying.getCssValue("visibility")
         val width = underlying.getCssValue("width")
         val height = underlying.getCssValue("height")
-        throw new Exception(s"Not clickable, not displayed, $disp $height x $width")
+        throw new Exception(s"""Not clickable, not displayed,
+                              |  display $disp
+                              |  visibility $vis
+                              |  height x width $height x $width
+                              |  computed css ${getComputedCssMap.map{ case (k,v) => s"$k: $v;"}.mkString("\n    ", "\n    ","")}
+                              |  style ${underlying.getAttribute("style")}
+                              |""".stripMargin
+
+                              // |  computed css ${getComputedCss}
+
+                           )
       }
       if (!isEnabled) {
         throw new Exception("Not clickable, disabled")
+      }
+    }
+
+    def getComputedCss = {
+      val script = "var s = '';" +
+                   "var o = getComputedStyle(arguments[0]);" +
+                   "for(var i = 0; i < o.length; i++){" +
+                   "s+=o[i] + ': ' + o.getPropertyValue(o[i])+'; ';}" +
+                   "return s;"
+      PageBrowser.executeScript(script, underlying) match {
+        case s: String => Right(s)
+        case x =>
+          val s = s"Unknown return: getting getComputedStyle, class = ${x}"
+          Element.log.warning(s)
+          Left(s)
+      }
+    }
+
+    def getComputedCssMap: Map[String,String] = {
+      getComputedCss match {
+        case Right(s) =>
+          s.split("; ").toList.flatMap { p =>
+            val kv = p.split(": ")
+            if (kv.length != 2) Nil
+            else List(kv.head -> kv.tail.head)
+          }.toMap
+        case Left(s) =>
+          Map()
       }
     }
 
@@ -195,58 +234,10 @@ class RadioButton( underlying: WebElement )(implicit pos: Position, webdriver: W
 
   def this( el: Element )(implicit pos1: Position, webdriver1: WebDriver, patienceConfig1: PatienceConfig ) = this(el.underlying)(pos1,webdriver1,patienceConfig1)
 
-  private lazy val input = find( PageBrowser.xpath( """.//input""" ))
-
-  override
-  def click = input.click
-
   override
   def isSelected = {
     try {
-      find( PageBrowser.xpath( s"""./span[1][contains(concat(' ', @class, ' '), ' Mui-checked ')]"""))
-      true
-    } catch {
-      case x: SelNoSuchElementException =>
-        false
-    }
-
-  }
-
-  override
-  def name = input.attribute("name")
-  override
-  def id = input.attribute("id")
-
-  def label = find( PageBrowser.xpath( """./*[2]""" ))
-}
-
-object RadioButton {
-
-  def findAll()(implicit pos: Position, webdriver: WebDriver, patienceConfig: PatienceConfig ) = {
-    val el = PageBrowser.findAll( PageBrowser.xpath(s"""//label[contains(concat(' ', @class, ' '), ' baseRadioButton ')]""") )
-    el.map( e => new RadioButton(e.underlying) )
-  }
-
-  def find( name: String )(implicit pos: Position, webdriver: WebDriver, patienceConfig: PatienceConfig ) = {
-    val el = PageBrowser.find( PageBrowser.xpath(s"""//label[contains(concat(' ', @class, ' '), ' baseRadioButton ') and .//input[@id='${name}']]""") )
-    new RadioButton(el.underlying)
-  }
-
-}
-
-class Checkbox( underlying: WebElement )(implicit pos: Position, webdriver: WebDriver, patienceConfig: PatienceConfig ) extends InputElement(underlying) {
-
-  def this( el: Element )(implicit pos1: Position, webdriver1: WebDriver, patienceConfig1: PatienceConfig ) = this(el.underlying)(pos1,webdriver1,patienceConfig1)
-
-  private lazy val input = find( PageBrowser.xpath( """.//input""" ))
-
-  override
-  def click = input.click
-
-  override
-  def isSelected = {
-    try {
-      find( PageBrowser.xpath( """./span[1][contains(concat(' ', @class, ' '), ' Mui-checked ')]""" ))
+      find( PageBrowser.xpath( """./parent::*/parent::*[contains(concat(' ', @class, ' '), ' Mui-checked ')]""" ))
       true
     } catch {
       case x: SelNoSuchElementException =>
@@ -255,29 +246,87 @@ class Checkbox( underlying: WebElement )(implicit pos: Position, webdriver: WebD
   }
   // def value: String = underlying.getAttribute("value")
 
-  override
-  def name = input.attribute("name")
-  override
-  def id = input.attribute("id")
+  def label = find( PageBrowser.xpath( """./parent::*/parent::*/following-sibling::*""" ))
 
-  def label = find( PageBrowser.xpath( """./*[2]""" ))
+}
+
+object RadioButton {
+
+  def findAll()(implicit pos: Position, webdriver: WebDriver, patienceConfig: PatienceConfig ) = {
+    val el = PageBrowser.findAll( PageBrowser.xpath(s"""//label[contains(concat(' ', @class, ' '), ' baseRadioButton ')]/span[1]/span[1]/input""") )
+    el.map( e => new Checkbox(e.underlying) )
+  }
+
+  def find( name: String )(implicit pos: Position, webdriver: WebDriver, patienceConfig: PatienceConfig ) = {
+    val el = PageBrowser.find( PageBrowser.xpath(s"""//label[contains(concat(' ', @class, ' '), ' baseRadioButton ')]/span[1]/span[1]/input[@id='${name}']""") )
+    new Checkbox(el.underlying)
+  }
+
+  def findAllChecked()(implicit pos: Position, webdriver: WebDriver, patienceConfig: PatienceConfig ) = {
+    val el = PageBrowser.findAll( PageBrowser.xpath(s"""//label[contains(concat(' ', @class, ' '), ' baseRadioButton ')]/span[1][contains(concat(' ', @class, ' '), ' Mui-checked ')]/span[1]/input""") )
+    el.map( e => new Checkbox(e.underlying) )
+  }
+
+}
+
+class Checkbox( underlying: WebElement )(implicit pos: Position, webdriver: WebDriver, patienceConfig: PatienceConfig ) extends InputElement(underlying) {
+
+  def this( el: Element )(implicit pos1: Position, webdriver1: WebDriver, patienceConfig1: PatienceConfig ) = this(el.underlying)(pos1,webdriver1,patienceConfig1)
+
+  /**
+    * the label element for the checkbox.
+    * This is needed because the input element is sometimes not clickable, but the label always seems to be.
+    */
+  private lazy val elemLabel = find( PageBrowser.xpath( """./parent::*/parent::*/parent::label""" ))
+
+  // click the label element instead, the input is not always clickable
+  override
+  def click = {
+    elemLabel.click
+  }
+
+  // click the label element instead, the input is not always clickable
+  override
+  def isClickable = {
+    elemLabel.isClickable
+  }
+
+  // click the label element instead, the input is not always clickable
+  override
+  def checkClickable = {
+    elemLabel.checkClickable
+  }
+
+  override
+  def isSelected = {
+    try {
+      find( PageBrowser.xpath( """./parent::*/parent::*[contains(concat(' ', @class, ' '), ' Mui-checked ')]""" ))
+      true
+    } catch {
+      case x: SelNoSuchElementException =>
+        false
+    }
+  }
+  // def value: String = underlying.getAttribute("value")
+
+  def label = find( PageBrowser.xpath( """./parent::*/parent::*/following-sibling::*""" ))
 
 }
 
 object Checkbox {
 
   def findAll()(implicit pos: Position, webdriver: WebDriver, patienceConfig: PatienceConfig ) = {
-    val el = PageBrowser.findAll( PageBrowser.xpath(s"""//label[contains(concat(' ', @class, ' '), ' baseCheckbox ')]""") )
+    val el = PageBrowser.findAll( PageBrowser.xpath(s"""//label[contains(concat(' ', @class, ' '), ' baseCheckbox ')]/span[1]/span[1]/input""") )
     el.map( e => new Checkbox(e.underlying) )
   }
 
   def find( name: String )(implicit pos: Position, webdriver: WebDriver, patienceConfig: PatienceConfig ) = {
-    val el = PageBrowser.find( PageBrowser.xpath(s"""//label[contains(concat(' ', @class, ' '), ' baseCheckbox ') and .//input[@id='${name}']]""") )
+    val el = PageBrowser.find( PageBrowser.xpath(s"""//label[contains(concat(' ', @class, ' '), ' baseCheckbox ')]/span[1]/span[1]/input[@id='${name}']""") )
     new Checkbox(el.underlying)
   }
 
   def findAllChecked()(implicit pos: Position, webdriver: WebDriver, patienceConfig: PatienceConfig ) = {
-    val el = PageBrowser.findAll( PageBrowser.xpath(s"""//label[contains(concat(' ', @class, ' '), ' baseCheckbox ') and ./span[1][contains(concat(' ', @class, ' '), ' Mui-checked ')]]""") )
+    val el = PageBrowser.findAll( PageBrowser.xpath(s"""//label[contains(concat(' ', @class, ' '), ' baseCheckbox ')]/span[1][contains(concat(' ', @class, ' '), ' Mui-checked ')]/span[1]/input""") )
     el.map( e => new Checkbox(e.underlying) )
   }
 
