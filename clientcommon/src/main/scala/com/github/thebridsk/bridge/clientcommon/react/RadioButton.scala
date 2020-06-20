@@ -7,6 +7,7 @@ import japgolly.scalajs.react.vdom.TagMod
 import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles
 import com.github.thebridsk.materialui.icons.MuiIcons
 import japgolly.scalajs.react.vdom.HtmlStyles
+import com.github.thebridsk.materialui._
 
 /**
  * A skeleton component.
@@ -22,7 +23,7 @@ import japgolly.scalajs.react.vdom.HtmlStyles
 object RadioButton {
   import RadioButtonInternal._
 
-  case class Props( id: String, text: String, value: Boolean, toggle: Callback, attrs: TagMod* )
+  case class Props( id: String, text: String, value: Boolean, toggle: Callback, className: Option[String] = None )
 
   /**
    * @param id
@@ -31,34 +32,48 @@ object RadioButton {
    * @param toggle
    * @param attrs attributes that are applied to the enclosing label element.
    */
-  def apply( id: String, text: String, value: Boolean, toggle: Callback, attrs: TagMod* ) = component(Props(id,text,value,toggle,attrs:_*))
+  def apply( id: String, text: String, value: Boolean, toggle: Callback, className: Option[String] = None ) = component(Props(id,text,value,toggle,className))
 
-  def withKey( key: String )( id: String, text: String, value: Boolean, onclick: Callback, attrs: TagMod* ) = component.withKey(key)(Props(id,text,value,onclick,attrs:_*))
+  def withKey( key: String )( id: String, text: String, value: Boolean, onclick: Callback, className: Option[String] = None ) = component.withKey(key)(Props(id,text,value,onclick,className))
 }
 
 object RadioButtonInternal {
   import RadioButton._
+
+  def callback( cb: Callback ): js.Function1[scala.scalajs.js.Object,Unit] = ( event: js.Object ) => cb.runNow()
 
   val component = ScalaComponent.builder[Props]("RadioButton")
                             .stateless
                             .noBackend
                             .render_P( props => {
                               import BaseStyles._
-                              val ic = if (props.value) MuiIcons.RadioButtonChecked()
-                                       else MuiIcons.RadioButtonUnchecked()
+                              // val ic = if (props.value) MuiIcons.RadioButtonChecked()
+                              //          else MuiIcons.RadioButtonUnchecked()
 
-                              val attrs = List[TagMod](
-                                baseStyles.radioButton,
-                                ^.id := props.id,
-                                ic,
-                                " ",
-                                props.text,
-                                ^.onClick --> props.toggle,
-                                HtmlStyles.whiteSpace.nowrap,
-                                CheckBoxInternal.dataSelected := props.value
-                              ) ::: props.attrs.toList
+                              // val attrs = List[TagMod](
+                              //   baseStyles.radioButton,
+                              //   ^.id := props.id,
+                              //   ic,
+                              //   " ",
+                              //   props.text,
+                              //   ^.onClick --> props.toggle,
+                              //   HtmlStyles.whiteSpace.nowrap,
+                              //   CheckBoxInternal.dataSelected := props.value
+                              // ) ::: props.attrs.toList
 
-                              <.div( attrs: _* )
+                              // <.div( attrs: _* )
+
+                              MuiFormControlLabel(
+                                checked = props.value,
+                                control = MuiRadio(
+                                  checked = props.value,
+                                  onChange = callback( props.toggle ),
+                                  name = props.id,
+                                  id = props.id
+                                )(),
+                                label = <.span( props.text ),
+                                className = s"${baseStyles.baseRadioButton}${props.className.map(c => s" $c").getOrElse("")}"
+                              )()
 
                               // <.label(
                               //   baseStyles.radioButton,

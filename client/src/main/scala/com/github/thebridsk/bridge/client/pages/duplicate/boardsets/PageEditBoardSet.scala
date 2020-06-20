@@ -210,7 +210,7 @@ object PageEditBoardSetInternal {
                       def radioDealer( pos: String ) = {
                         val isDealer = board.dealer == pos
 
-                        RadioButton(id = s"${board.id}_D_$pos", text = "", value = isDealer, toggle = setDealerCB(board.id,pos), attrs = ^.name:=s"${board.id}_D_$pos" )
+                        RadioButton(id = s"${board.id}_D_$pos", text = "", value = isDealer, toggle = setDealerCB(board.id,pos) )
                       }
 
                       <.tr(

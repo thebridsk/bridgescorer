@@ -60,18 +60,25 @@ class BaseStyles {
 
   val appButton100 = cls("baseAppButton100 baseAppButton baseDefaultButton baseFontTextLarge")
 
-  val buttonSelected = cls("baseButtonSelected")
+  val baseButtonSelected = "baseButtonSelected"
+  val buttonSelected = cls(baseButtonSelected)
 
-  val checkbox = cls("baseCheckbox")
-  val radioButton = cls("baseRadioButton")
+  val baseCheckbox = "baseCheckbox"
+  val checkbox = cls(baseCheckbox)
+  val baseRadioButton = "baseRadioButton"
+  val radioButton = cls(baseRadioButton)
 
-  val normal = cls("baseNormal")
+  val baseNormal = "baseNormal"
+  val normal = cls(baseNormal)
 
-  val required = cls("baseRequired")
+  val baseRequired = "baseRequired"
+  val required = cls(baseRequired)
 
-  val requiredName = cls("baseRequiredName")
+  val baseRequiredName = "baseRequiredName"
+  val requiredName = cls(baseRequiredName)
 
-  val requiredNotNext = cls("baseRequiredNotNext")
+  val baseRequiredNotNext = "baseRequiredNotNext"
+  val requiredNotNext = cls(baseRequiredNotNext)
 
   /**
    * to gray out the entire browser page for displaying a popup

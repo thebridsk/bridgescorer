@@ -34,6 +34,28 @@ object HandStyles {
     else styles.toTagMod
   }
 
+  /**
+   * Returns the classname with the selected classnames in the classname attribute.  If none are selected, then
+   * normal classname is returned.
+   * @param selected
+   * @param required
+   * @param requiredNotNext
+   */
+  def highlightClass(
+      selected: Boolean = false,
+      required: Boolean = false,
+      requiredNotNext: Boolean = false
+  ): String = {
+    val styles =
+      selected.toList(baseStyles.baseButtonSelected):::
+      required.toList(baseStyles.baseRequired):::
+      requiredNotNext.toList(baseStyles.baseRequiredNotNext):::
+      Nil
+
+    if (styles.isEmpty) baseStyles.baseNormal
+    else styles.mkString(" ")
+  }
+
 }
 
 class HandStyles {

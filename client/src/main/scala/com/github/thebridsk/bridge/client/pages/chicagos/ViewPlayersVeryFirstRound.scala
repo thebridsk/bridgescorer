@@ -130,30 +130,30 @@ object ViewPlayersVeryFirstRound {
                     <.td( ^.colSpan := 2, tableStyles.tableCellWidth2Of7),
                     <.td( ^.colSpan := 3, tableStyles.tableCellWidth3Of7),
                     <.td( ^.colSpan := 2, tableStyles.tableCellWidth2Of7,
-                      "Sitting out",
-                      <.br,
-                      ComboboxOrInput(
-                        callback = setExtra,
-                        defaultvalue = noNull(state.extra.getOrElse("")),
-                        data = names,
-                        filter = "startsWith",
-                        tabIndex = 9,
-                        name = "Extra",
-                        msgEmptyList="No suggested names",
-                        msgEmptyFilter="No names matched",
-                        busy = busy
+                      <.div(
+                        "Sitting out",
+                        <.br,
+                        ComboboxOrInput(
+                          callback = setExtra,
+                          defaultvalue = noNull(state.extra.getOrElse("")),
+                          data = names,
+                          filter = "startsWith",
+                          tabIndex = 9,
+                          name = "Extra",
+                          msgEmptyList="No suggested names",
+                          msgEmptyFilter="No names matched",
+                          busy = busy
+                        ),
+                        CheckBox( "Quintet", "Fast Rotation", state.quintet, toggleQuintet ),
+                        if (state.quintet) {
+                          Seq[TagMod](
+                            RadioButton( "Simple", "Simple Rotation", state.simpleRotation, setSimpleRotation(true) ),
+                            RadioButton( "Fair", "Fair Rotation", !state.simpleRotation, setSimpleRotation(false) )
+                          ).toTagMod
+                        } else {
+                          EmptyVdom
+                        },
                       ),
-                      CheckBox( "Quintet", "Fast Rotation", state.quintet, toggleQuintet ),
-                      if (state.quintet) {
-                        Seq[TagMod](
-                          <.br,
-                          RadioButton( "Simple", "Simple Rotation", state.simpleRotation, setSimpleRotation(true) ),
-                          <.br,
-                          RadioButton( "Fair", "Fair Rotation", !state.simpleRotation, setSimpleRotation(false) )
-                        ).toTagMod
-                      } else {
-                        EmptyVdom
-                      },
                       BaseStyles.highlight( required = !isExtraValid() )
                     )
                   )

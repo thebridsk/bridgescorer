@@ -112,11 +112,11 @@ object ViewHonors {
                                     RadioButton( "HonPlay"+honors.pos, name,
                                                  isPlayerSelected(honors),
                                                  props.callbackPlayer(Some(honors)),
-                                                 HandStyles.highlight(
+                                                 Option(HandStyles.highlightClass(
                                                      selected = isPlayerSelected(honors),
                                                      required = hpMissingRequired,
                                                      requiredNotNext = hpMissingNotNext
-                                                 )
+                                                 ))
                                                )
 
                                 val notrump = props.currentSuit.isDefined && props.currentSuit.get == NoTrump
@@ -131,6 +131,10 @@ object ViewHonors {
                                     ),
                                     <.div(
                                         !(props.currentHonors.getOrElse(0)>0 && showP()) ?= handStyles.notVisible,
+                                        // HandStyles.highlight(
+                                        //     required = hpMissingRequired,
+                                        //     requiredNotNext = hpMissingNotNext
+                                        // ),
                                         getPlayerButton( North, props.north ),
                                         getPlayerButton( South, props.south ),
                                         getPlayerButton( East, props.east ),
