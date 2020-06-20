@@ -38,7 +38,7 @@ val vSbtRevolver = "0.8.0"         // https://github.com/spray/sbt-revolver
 val vSbtUniDoc = "0.3.3"           // https://github.com/sbt/sbt-unidoc
 val vSbtDigest = "1.1.1"           // https://github.com/sbt/sbt-digest
 val vSbtScalaFmt="2.4.0"           // https://github.com/scalameta/sbt-scalafmt
-val vBloop = "1.4.1"               // https://github.com/scalacenter/bloop
+val vBloop = "1.4.2"               // https://github.com/scalacenter/bloop
 
 // The following is needed to get rid of the message
 //   SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".
