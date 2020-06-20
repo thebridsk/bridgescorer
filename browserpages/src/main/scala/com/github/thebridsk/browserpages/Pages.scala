@@ -505,8 +505,7 @@ abstract class Page[ +T <: Page[T] ]()( implicit webDriver: WebDriver, pageCreat
   }
 
   def findCombobox( name: String )(implicit pos: Position) = {
-    val el = find( xpath(s"""//input[@name='${name}']""") )
-    new Combobox(el.underlying)
+    Combobox.find(name)
   }
 
   def getCombobox( name: String )(implicit patienceConfig: PatienceConfig, pos: Position) = {
@@ -514,8 +513,7 @@ abstract class Page[ +T <: Page[T] ]()( implicit webDriver: WebDriver, pageCreat
   }
 
   def findCheckbox( name: String )(implicit pos: Position) = {
-    val el = find( xpath(s"""//label[contains(concat(' ', @class, ' '), ' baseCheckbox ') and .//input[@id='${name}']]""") )
-    new Checkbox(el.underlying)
+    Checkbox.find(name)
   }
 
   def getCheckbox( name: String )(implicit patienceConfig: PatienceConfig, pos: Position) = {
@@ -527,8 +525,7 @@ abstract class Page[ +T <: Page[T] ]()( implicit webDriver: WebDriver, pageCreat
   }
 
   def findDateTimePicker( name: String )(implicit pos: Position) = {
-    val el = find( xpath(s"""//input[@name='${name}']""") )
-    new DateTimePicker(el.underlying)
+    DateTimePicker.find(name)
   }
 
   def getDateTimePicker( name: String )(implicit patienceConfig: PatienceConfig, pos: Position) = {
@@ -536,8 +533,7 @@ abstract class Page[ +T <: Page[T] ]()( implicit webDriver: WebDriver, pageCreat
   }
 
   def findRadioButton( name: String )(implicit pos: Position) = {
-    val el = find( xpath(s"""//label[contains(concat(' ', @class, ' '), ' baseRadioButton ') and .//input[@id='${name}']]""") )
-    new RadioButton(el.underlying)
+    RadioButton.find(name)
   }
 
   def getRadioButton( name: String )(implicit patienceConfig: PatienceConfig, pos: Position) = {

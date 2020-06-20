@@ -16,6 +16,7 @@ import java.net.URL
 import com.github.thebridsk.bridge.server.test.util.HttpUtils.ResponseFromHttp
 import com.github.thebridsk.browserpages.Element
 import com.github.thebridsk.browserpages.TextField
+import com.github.thebridsk.browserpages.Checkbox
 
 object SuggestionPage {
 
@@ -176,29 +177,23 @@ class SuggestionPage(
   }
 
   def getNumberChecked(implicit patienceConfig: PatienceConfig, pos: Position) = {
-    findAllElems[Element]( xpath( """//div[contains(concat(' ', @class, ' '), ' dupDivSuggestionPage ')]/div[2]/ul/li/label/span[1][contains(concat(' ', @class, ' '), ' Mui-checked ')]""") ).length
+    Checkbox.findAllChecked().length
   }
 
-  private def getCheckboxLabels(implicit patienceConfig: PatienceConfig, pos: Position) = {
-    findAllElems[Element]( xpath( """//div[contains(concat(' ', @class, ' '), ' dupDivSuggestionPage ')]/div[2]/ul/li/label""") )
+  private def getCheckboxes(implicit patienceConfig: PatienceConfig, pos: Position) = {
+    Checkbox.findAll()
   }
 
   def getNumberKnownNames(implicit patienceConfig: PatienceConfig, pos: Position) = {
-    getCheckboxLabels.length
+    getCheckboxes.length
   }
 
   def getKnownNames(implicit patienceConfig: PatienceConfig, pos: Position) = {
-    getCheckboxLabels.map( e => e.text.trim )
+    getCheckboxes.map( e => e.label.text.trim )
   }
 
-  def isKnownNameChecked( n: Int )(implicit patienceConfig: PatienceConfig, pos: Position) = {
-    try {
-      findElem[Element]( xpath( """//label/span[1][contains(concat(' ', @class, ' '), ' Mui-checked ') and .//input[@id='${name}']]"""" ) )
-    } catch {
-      case x: NoSuchElementException =>
-        false
-    }
-
+  def isKnownNameChecked( name: String )(implicit patienceConfig: PatienceConfig, pos: Position) = {
+    Checkbox.find(name).isSelected
   }
 
 
