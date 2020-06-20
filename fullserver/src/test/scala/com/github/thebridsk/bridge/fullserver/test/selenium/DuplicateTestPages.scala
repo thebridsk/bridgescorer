@@ -86,6 +86,7 @@ import scala.util.Using
 import scala.math.Ordering.Double.TotalOrdering
 import com.github.thebridsk.bridge.data.Id
 import com.github.thebridsk.bridge.server.test.util.TestServer
+import com.github.thebridsk.browserpages.Checkbox
 
 object DuplicateTestPages {
 
@@ -1560,6 +1561,8 @@ class DuplicateTestPages extends AnyFlatSpec
     }
 
     val checkNames = sug.getKnownNames.drop(1).take(7)
+    val checkNames2 = Checkbox.findAllChecked().map(e => e.label.text.trim)
+    checkNames mustBe checkNames2
     val players = "Iqbal"::checkNames
 
     players must contain theSameElementsAs neverPairNames

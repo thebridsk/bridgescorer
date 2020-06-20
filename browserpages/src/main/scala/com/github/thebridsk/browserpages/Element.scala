@@ -195,7 +195,7 @@ class RadioButton( underlying: WebElement )(implicit pos: Position, webdriver: W
 
   def this( el: Element )(implicit pos1: Position, webdriver1: WebDriver, patienceConfig1: PatienceConfig ) = this(el.underlying)(pos1,webdriver1,patienceConfig1)
 
-  private def input = find( PageBrowser.xpath( """.//input""" ))
+  private lazy val input = find( PageBrowser.xpath( """.//input""" ))
 
   override
   def click = input.click
@@ -211,13 +211,34 @@ class RadioButton( underlying: WebElement )(implicit pos: Position, webdriver: W
     }
 
   }
+
+  override
+  def name = input.attribute("name")
+  override
+  def id = input.attribute("id")
+
+  def label = find( PageBrowser.xpath( """./*[2]""" ))
+}
+
+object RadioButton {
+
+  def findAll()(implicit pos: Position, webdriver: WebDriver, patienceConfig: PatienceConfig ) = {
+    val el = PageBrowser.findAll( PageBrowser.xpath(s"""//label[contains(concat(' ', @class, ' '), ' baseRadioButton ')]""") )
+    el.map( e => new RadioButton(e.underlying) )
+  }
+
+  def find( name: String )(implicit pos: Position, webdriver: WebDriver, patienceConfig: PatienceConfig ) = {
+    val el = PageBrowser.find( PageBrowser.xpath(s"""//label[contains(concat(' ', @class, ' '), ' baseRadioButton ') and .//input[@id='${name}']]""") )
+    new RadioButton(el.underlying)
+  }
+
 }
 
 class Checkbox( underlying: WebElement )(implicit pos: Position, webdriver: WebDriver, patienceConfig: PatienceConfig ) extends InputElement(underlying) {
 
   def this( el: Element )(implicit pos1: Position, webdriver1: WebDriver, patienceConfig1: PatienceConfig ) = this(el.underlying)(pos1,webdriver1,patienceConfig1)
 
-  private def input = find( PageBrowser.xpath( """.//input""" ))
+  private lazy val input = find( PageBrowser.xpath( """.//input""" ))
 
   override
   def click = input.click
@@ -233,6 +254,32 @@ class Checkbox( underlying: WebElement )(implicit pos: Position, webdriver: WebD
     }
   }
   // def value: String = underlying.getAttribute("value")
+
+  override
+  def name = input.attribute("name")
+  override
+  def id = input.attribute("id")
+
+  def label = find( PageBrowser.xpath( """./*[2]""" ))
+
+}
+
+object Checkbox {
+
+  def findAll()(implicit pos: Position, webdriver: WebDriver, patienceConfig: PatienceConfig ) = {
+    val el = PageBrowser.findAll( PageBrowser.xpath(s"""//label[contains(concat(' ', @class, ' '), ' baseCheckbox ')]""") )
+    el.map( e => new Checkbox(e.underlying) )
+  }
+
+  def find( name: String )(implicit pos: Position, webdriver: WebDriver, patienceConfig: PatienceConfig ) = {
+    val el = PageBrowser.find( PageBrowser.xpath(s"""//label[contains(concat(' ', @class, ' '), ' baseCheckbox ') and .//input[@id='${name}']]""") )
+    new Checkbox(el.underlying)
+  }
+
+  def findAllChecked()(implicit pos: Position, webdriver: WebDriver, patienceConfig: PatienceConfig ) = {
+    val el = PageBrowser.findAll( PageBrowser.xpath(s"""//label[contains(concat(' ', @class, ' '), ' baseCheckbox ') and ./span[1][contains(concat(' ', @class, ' '), ' Mui-checked ')]]""") )
+    el.map( e => new Checkbox(e.underlying) )
+  }
 
 }
 
@@ -258,6 +305,19 @@ class Combobox( underlying: WebElement )(implicit pos: Position, webdriver: WebD
 
   def esc = {
     underlying.sendKeys(Keys.ESCAPE)
+  }
+}
+
+object Combobox {
+
+  def findAll()(implicit pos: Position, webdriver: WebDriver, patienceConfig: PatienceConfig ) = {
+    val el = PageBrowser.findAll( PageBrowser.xpath(s"""//div[contains(concat(' ', @class, ' '), ' rw-combobox ')]/div/input""") )
+    el.map( e => new Combobox(e.underlying) )
+  }
+
+  def find( name: String )(implicit pos: Position, webdriver: WebDriver, patienceConfig: PatienceConfig ) = {
+    val el = PageBrowser.find( PageBrowser.xpath(s"""//div[contains(concat(' ', @class, ' '), ' rw-combobox ')]/div/input[@name='${name}']""") )
+    new Combobox(el.underlying)
   }
 }
 
@@ -333,4 +393,15 @@ class DateTimePicker( underlying: WebElement )(implicit pos: Position, webdriver
 
 }
 
+object DateTimePicker {
 
+  def findAll()(implicit pos: Position, webdriver: WebDriver, patienceConfig: PatienceConfig ) = {
+    val el = PageBrowser.findAll( PageBrowser.xpath(s"""//div[contains(concat(' ', @class, ' '), ' rw-datetime-picker ')]/div/input""") )
+    el.map( e => new DateTimePicker(e.underlying) )
+  }
+
+  def find( name: String )(implicit pos: Position, webdriver: WebDriver, patienceConfig: PatienceConfig ) = {
+    val el = PageBrowser.find( PageBrowser.xpath(s"""//div[contains(concat(' ', @class, ' '), ' rw-datetime-picker ')]/div/input[@name='${name}']""") )
+    new DateTimePicker(el.underlying)
+  }
+}
