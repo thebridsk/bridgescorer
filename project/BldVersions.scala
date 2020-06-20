@@ -26,7 +26,7 @@ object BldVersion {
   lazy val vAkka = "2.6.6"            // https://github.com/akka/akka
   lazy val vAkkaHttp = "10.1.12"       // https://github.com/akka/akka-http
 
-  lazy val vAkkaHttpPlayJson="1.32.0"  // https://github.com/hseeberger/akka-http-json
+  lazy val vAkkaHttpPlayJson="1.33.0"  // https://github.com/hseeberger/akka-http-json
 
   lazy val vSwaggerAkkaHttp = "2.1.1"  // https://github.com/swagger-akka-http/swagger-akka-http
   lazy val vSwaggerScalaModule="2.1.2" // https://github.com/swagger-akka-http/swagger-scala-module
@@ -34,21 +34,21 @@ object BldVersion {
   lazy val vWsRsApi="2.1.6"            // https://github.com/eclipse-ee4j/jaxrs-api
   lazy val vAkkaHttpCors = "1.0.0"     // https://github.com/lomigmegard/akka-http-cors
 
-  lazy val vSwaggerUI = "3.26.0"       // https://www.npmjs.com/package/swagger-ui-dist
+  lazy val vSwaggerUI = "3.27.0"       // https://www.npmjs.com/package/swagger-ui-dist
   lazy val vScalajsdom = "1.0.0"       // https://github.com/scala-js/scala-js-dom
-  lazy val vScalaJsReact = "1.7.0"     // https://github.com/japgolly/scalajs-react
+  lazy val vScalaJsReact = "1.7.1"     // https://github.com/japgolly/scalajs-react
 
   lazy val vWebJarsReact = "16.13.1"   // https://www.npmjs.com/package/react
   lazy val vReactWidgets = "4.5.0"     // https://www.npmjs.com/package/react-widgets
   lazy val vWebJarsFlux = "3.1.3"      // https://www.npmjs.com/package/flux
   lazy val vCldr = "4.7.0"             // https://www.npmjs.com/package/cldr
   lazy val vReactWidgetsMoment = "4.0.28"  // https://www.npmjs.com/package/react-widgets-moment
-  lazy val vMoment = "2.26.0"          // https://www.npmjs.com/package/moment
+  lazy val vMoment = "2.27.0"          // https://www.npmjs.com/package/moment
 
   lazy val vJQuery = "3.5.1"         // https://www.npmjs.com/package/jquery
 
-  lazy val vScalactic = "3.1.2"      // https://github.com/scalatest/scalatest
-  lazy val vScalatest = "3.1.2"      // https://github.com/scalatest/scalatest
+  lazy val vScalactic = "3.2.0"      // https://github.com/scalatest/scalatest
+  lazy val vScalatest = "3.2.0"      // https://github.com/scalatest/scalatest
   lazy val vScalatestSelenium = "3.1.2.0"  // https://github.com/scalatest/scalatestplus-selenium
   lazy val vJunit = "4.13"           // https://github.com/junit-team/junit4
 
@@ -75,20 +75,20 @@ object BldVersion {
   // version 1.0.7 is hardcoded in sbt-scalajs-bundler
   // current is 1.1.0
   lazy val vConcatWithSourcemaps = "1.1.0"  // https://www.npmjs.com/package/concat-with-sourcemaps
-  lazy val vTerser = "4.7.0"                // https://www.npmjs.com/package/terser
+  lazy val vTerser = "4.8.0"                // https://www.npmjs.com/package/terser
 
   lazy val vAjv = "6.12.2"                  // https://www.npmjs.com/package/ajv
 
 
   lazy val vWebpackDevServer = "3.11.0"   // https://www.npmjs.com/package/webpack-dev-server
-  lazy val vWebPackCli = "3.3.11"         // https://www.npmjs.com/package/webpack-cli
+  lazy val vWebPackCli = "3.3.12"         // https://www.npmjs.com/package/webpack-cli
 
   lazy val vSangria = "2.0.0"              // https://github.com/sangria-graphql/sangria
   lazy val vSangriaPlayJson = "2.0.1"      // https://github.com/sangria-graphql/sangria-play-json
 
   // graphql, graphiql, and graphql-voyager must be updated together.
   lazy val vGraphQL = "15.1.0"              // https://www.npmjs.com/package/graphql    co-req of graphql-voyager
-  lazy val vGraphiQL = "1.0.0"              // https://www.npmjs.com/package/graphiql
+  lazy val vGraphiQL = "1.0.2"              // https://www.npmjs.com/package/graphiql
   lazy val vGraphQLVoyager = "1.0.0-rc.31"  // https://www.npmjs.com/package/graphql-voyager
   lazy val vMaterialUIcore = "4.10.2"       // https://www.npmjs.com/package/@material-ui/core
   lazy val vMaterialUIicons = "4.9.1"       // https://www.npmjs.com/package/@material-ui/icons
