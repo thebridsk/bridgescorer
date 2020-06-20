@@ -12,6 +12,7 @@ import com.github.thebridsk.utilities.file.FileIO
 import com.github.thebridsk.source.SourcePosition
 import org.openqa.selenium.Keys
 import org.openqa.selenium.WebDriver
+import org.openqa.selenium.{ NoSuchElementException => SelNoSuchElementException }
 
 class Element( val underlying: WebElement )(implicit pos: Position, webdriver: WebDriver, patienceConfig: PatienceConfig ) {
 
@@ -194,13 +195,44 @@ class RadioButton( underlying: WebElement )(implicit pos: Position, webdriver: W
 
   def this( el: Element )(implicit pos1: Position, webdriver1: WebDriver, patienceConfig1: PatienceConfig ) = this(el.underlying)(pos1,webdriver1,patienceConfig1)
 
+  private def input = find( PageBrowser.xpath( """.//input""" ))
+
+  override
+  def click = input.click
+
+  override
+  def isSelected = {
+    try {
+      find( PageBrowser.xpath( s"""./span[1][contains(concat(' ', @class, ' '), ' Mui-checked ')]"""))
+      true
+    } catch {
+      case x: SelNoSuchElementException =>
+        false
+    }
+
+  }
 }
 
 class Checkbox( underlying: WebElement )(implicit pos: Position, webdriver: WebDriver, patienceConfig: PatienceConfig ) extends InputElement(underlying) {
 
   def this( el: Element )(implicit pos1: Position, webdriver1: WebDriver, patienceConfig1: PatienceConfig ) = this(el.underlying)(pos1,webdriver1,patienceConfig1)
 
-  def value: String = underlying.getAttribute("value")
+  private def input = find( PageBrowser.xpath( """.//input""" ))
+
+  override
+  def click = input.click
+
+  override
+  def isSelected = {
+    try {
+      find( PageBrowser.xpath( """./span[1][contains(concat(' ', @class, ' '), ' Mui-checked ')]""" ))
+      true
+    } catch {
+      case x: SelNoSuchElementException =>
+        false
+    }
+  }
+  // def value: String = underlying.getAttribute("value")
 
 }
 

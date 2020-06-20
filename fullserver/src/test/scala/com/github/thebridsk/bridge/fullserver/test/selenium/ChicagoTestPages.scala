@@ -187,6 +187,32 @@ class ChicagoTestPages extends AnyFlatSpec
     takeScreenshot(docsScreenshotDir, "EnterNames4")
   }
 
+  it should "test the five player checkbox and radio buttons" in {
+    import Session1._
+
+    val p = EnterNamesPage.current
+
+    val pf = p.clickFive
+    eventually { pf.isFastRotation mustBe false }
+
+    val fpf = pf.clickFastRotation
+    eventually { fpf.isFastRotation mustBe true }
+
+    eventually {
+      fpf.isFairRotation mustBe true
+      fpf.isSimpleRotation mustBe false
+    }
+
+    val ffpf = fpf.clickSimpleRotation
+    eventually {
+      ffpf.isFairRotation mustBe false
+      ffpf.isSimpleRotation mustBe true
+    }
+
+    ffpf.clickFive.validate
+
+  }
+
   it should "allow player names to be entered with suggestions when playing Chicago" in {
     import Session1._
 
