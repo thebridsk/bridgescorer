@@ -190,12 +190,16 @@ case class MatchChicagoV3(
     setPlayers(nplayers.toList)
   }
 
+  def hasPlayStarted = {
+    rounds.length > 1 || rounds.headOption.map( r => !r.hands.isEmpty ).getOrElse(false)
+  }
+
   /**
     * Change the player names.
     * @param nplayers the new player names.  Must specify the same number as in the players field.
     */
   def setPlayers(nplayers: List[String]): MatchChicagoV3 = {
-    if (nplayers.length != players.length)
+    if (nplayers.length != players.length && hasPlayStarted)
       throw new IllegalArgumentException(
         "Number of new player names must equal number of players"
       )

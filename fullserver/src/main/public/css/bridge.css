@@ -6,6 +6,10 @@
   --color-other-bg: rgb(50,54,57);  /* must match LightDarkAddOn.medium */
   --color-other2-bg: black;         /* must match LightDarkAddOn.dark */
   --color-fg: rgb(50,54,57);
+  --color2-fg: black;
+  --color2-bg: lightgreen;
+  --color3-fg: black;
+  --color3-bg: aqua;
   --color-table-border: black;
   --color-table-row-alt: #f2f2f2;
   --color-div-border: black;
@@ -47,6 +51,10 @@
     --color-other-bg: black;        /* must match light mode --color-other2-bg */
     --color-other2-bg: white;       /* must match light mode --color-bg */
     --color-fg: rgb(210,210,210);
+    --color2-fg: black;
+    --color2-bg: lightgreen;
+    --color3-fg: black;
+    --color3-bg: aqua;
     --color-table-border: rgb(210,210,210);
     --color-table-row-alt: rgb(63,67,70);
     --color-div-border: rgb(210,210,210);
@@ -86,6 +94,10 @@
     --color-other-bg: white;          /* must match light mode --color-bg */
     --color-other2-bg: rgb(50,54,57); /* must match light mode --color-other-bg */
     --color-fg: white;
+    --color2-fg: black;
+    --color2-bg: lightgreen;
+    --color3-fg: black;
+    --color3-bg: aqua;
     --color-table-border: rgb(210,210,210);
     --color-table-row-alt: rgb(40,40,40);
     --color-div-border: rgb(210,210,210);
@@ -170,6 +182,16 @@ body {
 
 .baseFontTextNormal {
   font-size: larger;
+}
+
+.baseColor2 {
+  background-color: var(--color2-bg) !important;
+  color: var(--color2-fg) !important;
+}
+
+.baseColor3 {
+  background-color: var(--color3-bg) !important;
+  color: var(--color3-fg) !important;
 }
 
 .baseDefaultButton {
@@ -288,7 +310,8 @@ label.baseRadioButton > span:nth-child(2) > span
 
 .baseNormal {
   color: var(--color-fg);
-  background-color: var(--color-bg);
+  background-color: var(--color-default-button);
+  /* background-color: var(--color-bg); */
 }
 
 .baseRequired {

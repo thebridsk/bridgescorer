@@ -208,7 +208,7 @@ class SuggestionPage(
   }
 
   def toggleKnownName( n: Int )(implicit patienceConfig: PatienceConfig, pos: Position) = {
-    findElem[Element]( id( s"KP$n" ) ).click
+    findElem( id( s"KP$n" ) ).click
     namesChanged
   }
 

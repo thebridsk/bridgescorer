@@ -21,24 +21,24 @@ object SummaryPage {
 
   val log = Logger[SummaryPage]
 
-  def current(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
+  def current( matchType: ChicagoMatchType )(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
     val (cid, round) = findChicagoIds
-    new SummaryPage( cid, round )
+    new SummaryPage( cid, matchType, round )
   }
 
-  def waitFor(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
+  def waitFor( matchType: ChicagoMatchType )(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
     val (cid, round) = eventually { findChicagoIds }
-    new SummaryPage( cid, round )
+    new SummaryPage( cid, matchType, round )
   }
 
-  def goto( id: String, round: Option[Int] = None )(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
+  def goto( id: String, matchType: ChicagoMatchType, round: Option[Int] = None )(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
     go to getUrl(id, round)
-    new SummaryPage( id, round )
+    new SummaryPage( id, matchType, round )
   }
 
-  def demo( id: String, round: Option[Int] = None )(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
+  def demo( id: String, matchType: ChicagoMatchType, round: Option[Int] = None )(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
     go to getDemoUrl(id, round)
-    new SummaryPage( id, round )
+    new SummaryPage( id, matchType, round )
   }
 
   def getUrl( id: String, round: Option[Int] = None ) = {
@@ -63,7 +63,7 @@ object SummaryPage {
   def roundToButtonId( r: Int ) = s"Round${r+1}"
   def handToButtonId( h: Int ) = s"Hand_${h+1}"
 
-  val buttonIdsAlways = List( buttonQuit, buttonInputStyle )
+  val buttonIdsAlways = List( buttonQuit )
 
   private val patternComplete = """(C\d+)(?:/rounds/(\d+))?""".r
 
@@ -100,7 +100,7 @@ object SummaryPage {
 
     def playerIndex( p: String ) = {
       val i = players.indexOf(p)
-      if (i<0) fail(s"Unable to find ${p} in table")
+      if (i<0) fail(s"Unable to find ${p} in table, table has $players")
       i
     }
 
@@ -202,10 +202,63 @@ object SummaryPage {
     }
   }
 
+  case class FastRoundTableRow(
+      round: String,
+      dealer: String,
+      contract: String,
+      by: String,
+      made: String,
+      down: String,
+      scores: List[String]
+  ) {
+
+    def checkTotal( player: Int, score: String ) = {
+      withClueEx(s"Player ${player} checking total ${score} in RoundTableRow") {
+        scores(player) mustBe score
+        this
+      }
+    }
+
+  }
+
+  /**
+   * @param round the round, 1 based
+   */
+  case class FastRoundTable(
+      players: List[String],
+      rows: List[FastRoundTableRow],
+      total: List[String]
+  ) {
+
+    def getPlayer( p: String ) = {
+      players.indexOf(p)
+    }
+
+    def checkTotal( p: String, tot: String )(implicit pos: Position) = {
+      withClueEx(s"Player ${p} total ${tot} in RoundTable") {
+        total( getPlayer(p) ) mustBe tot
+        this
+      }
+    }
+
+    /**
+     * @param p
+     * @param roundid the round, zero based
+     * @param score
+     */
+    def checkScore( p: String, round: Int, score: String ) = {
+      withClueEx(s"Player ${p} in round ${round} score ${score} in RoundTable") {
+        rows(round).checkTotal(getPlayer(p), score)
+        this
+      }
+    }
+  }
+
 }
 
 class SummaryPage(
                       val chiid: String,
+                      val matchType: ChicagoMatchType,
                       val round: Option[Int] = None
                     )( implicit
                         webDriver: WebDriver,
@@ -231,7 +284,7 @@ class SummaryPage(
   def clickQuit(implicit pos: Position) = {
     withClueEx(s"${pos.line}: trying to click quit") {
       clickButton(buttonQuit)
-      GenericPage.current
+      ListPage.current
     }
   }
 
@@ -258,7 +311,7 @@ class SummaryPage(
   def clickRound( r: Int )(implicit pos: Position) = {
     withClueEx(s"${pos.line}: trying to click round ${r}") {
       clickButton( roundToButtonId(r) )
-      new SummaryPage( chiid, Some(r) )
+      new SummaryPage( chiid, matchType, Some(r) )
     }
   }
 
@@ -271,7 +324,7 @@ class SummaryPage(
       val e = findAll(id(handToButtonId(h)))
       e.length mustBe 1
       e(0).click
-      HandPage.waitFor
+      HandPage.waitFor(matchType)
     }
   }
 
@@ -285,49 +338,95 @@ class SummaryPage(
       val e = findAll(id(handToButtonId(h)))
       e.length must be > r
       e(r).click
-      HandPage.waitFor
+      HandPage.waitFor(matchType)
     }
   }
 
   def clickNextHand(implicit pos: Position) = {
     withClueEx(s"${pos.line}: trying to click next hand") {
       clickButton(buttonNextHand)
-      HandPage.waitFor
+      HandPage.waitFor(matchType)
     }
   }
 
-  def clickNewRound(implicit pos: Position) = {
-    withClueEx(s"${pos.line}: trying to click new round") {
+  def clickNextHandFair(implicit pos: Position) = {
+    withClueEx(s"${pos.line}: trying to click next hand") {
+      clickButton(buttonNextHand)
+      FairSelectPartnersPage.current
+    }
+  }
+
+  def clickNextHandSimple(implicit pos: Position) = {
+    withClueEx(s"${pos.line}: trying to click next hand") {
+      clickButton(buttonNextHand)
+      SimpleSelectPartnersPage.current
+    }
+  }
+
+  def clickNextHandFairToEnterNames(implicit pos: Position) = {
+    withClueEx(s"${pos.line}: trying to click next hand") {
+      clickButton(buttonNextHand)
+      EnterNamesPage.current
+    }
+  }
+
+  def clickNewRound(implicit pos: Position): Page[_] = {
+
+    def generic = {
       clickButton(buttonNewRound)
       GenericPage.current
+    }
+
+    withClueEx[Page[_]](s"${pos.line}: trying to click new round") {
+      matchType match {
+        case ChicagoMatchTypeFair => generic
+        case ChicagoMatchTypeFive => clickNewRoundFive
+        case ChicagoMatchTypeFour => clickNewRoundFour
+        case ChicagoMatchTypeSimple => generic
+        case ChicagoMatchTypeUnkown => generic
+      }
+    }
+  }
+
+  def clickNewRoundFour(implicit pos: Position) = {
+    withClueEx(s"${pos.line}: trying to click new round") {
+      clickButton(buttonNewRound)
+      FourSelectPartnersPage.current
+    }
+  }
+
+  def clickNewRoundFive(implicit pos: Position) = {
+    withClueEx(s"${pos.line}: trying to click new round") {
+      clickButton(buttonNewRound)
+      FiveSelectPartnersPage.current
     }
   }
 
   def click6HandRound(implicit pos: Position) = {
     withClueEx(s"${pos.line}: trying to click 6 hand round") {
       clickButton(button6HandRound)
-      HandPage.waitFor
+      HandPage.waitFor(matchType)
     }
   }
 
   def click8HandRound(implicit pos: Position) = {
     withClueEx(s"${pos.line}: trying to click 6 hand round") {
       clickButton(button8HandRound)
-      HandPage.waitFor
+      HandPage.waitFor(matchType)
     }
   }
 
   def clickAllRounds(implicit pos: Position) = {
     withClueEx(s"${pos.line}: trying to click all rounds") {
       clickButton(buttonAllRounds)
-      new SummaryPage(chiid)
+      new SummaryPage(chiid,matchType)
     }
   }
 
   def clickEditNames(implicit pos: Position) = {
     withClueEx(s"${pos.line}: trying to click edit names") {
       clickButton(buttonEditNames)
-      new EditNamesPage(chiid)
+      new EditNamesPage(chiid,matchType)
     }
   }
 
@@ -426,6 +525,32 @@ class SummaryPage(
     }
   }
 
+  private def getFastRoundTableRow( row: Element )(implicit pos: Position): FastRoundTableRow = {
+    val cells = row.findAll(xpath("./td")).map{ e => e.text }
+    val round = cells(0)
+    val dealer = cells(1)
+    val contract = cells(2)
+    val by = cells(3)
+    val made = cells(4)
+    val down = cells(5)
+    val scores = cells.drop(6)
+
+    FastRoundTableRow( round, dealer, contract, by, made, down, scores )
+  }
+
+  private def getFastRoundTable(implicit pos: Position): FastRoundTable = {
+    val div = find( xpath( """//div[contains(concat(' ', @class, ' '), ' chiChicagoFastSummaryPage ')]/div""") )
+    withClueEx("getFastRoundTableFromElement") {
+      val header = div.findAll(xpath("./table/thead/tr[2]/th"))
+      header.length mustBe 11
+      val names = header.drop(6).map( _.text )
+      val rawrounds = div.findAll(xpath("./table/tbody/tr"))
+      val rounds = rawrounds.map(r => getFastRoundTableRow(r))
+      val rawtotals = div.findAll(xpath("./table/tfoot/tr/td")).drop(2).map(e=>e.text)
+      FastRoundTable(names,rounds,rawtotals)
+    }
+  }
+
   /**
    * Get a RoundTable from the page.  There must only be one round table
    */
@@ -481,6 +606,7 @@ class SummaryPage(
 
   /**
    * Check the hand scores when only one round table is displayed
+   * @param round the round, 0 based
    * @param players the players to check
    * @param scores the scores, index matches players
    */
@@ -503,6 +629,52 @@ class SummaryPage(
     } catch {
       case x: Exception =>
         log.severe(s"""checkTotalScore failure.\n${rt}\n""",x)
+        throw x
+    }
+  }
+
+  /**
+   * Check the hand scores when only one round table is displayed
+   * @param round the round, 0 based
+   * @param players the players to check
+   * @param scores the scores, index matches players
+   */
+  def checkTotalsScore( players: List[String], totals: List[String] )(implicit pos: Position) = {
+    val rt = getTotalsTable
+    try {
+      withClueEx( s"Checking summary totals with players ${players} totals ${totals}" ) {
+        players.zip(totals).foreach { e =>
+          val (p,s) = e
+          rt.checkTotal(p, s)
+        }
+        this
+      }
+    } catch {
+      case x: Exception =>
+        log.severe(s"""checkTotalsScore failure.\n${rt}\n""",x)
+        throw x
+    }
+  }
+
+  /**
+   * Check the hand scores when only one round table is displayed
+   * @param round the round, 0 based
+   * @param players the players to check
+   * @param scores the scores, index matches players
+   */
+  def checkFastTotalsScore( players: List[String], totals: List[String] )(implicit pos: Position) = {
+    val rt = getFastRoundTable
+    try {
+      withClueEx( s"Checking summary totals with players ${players} totals ${totals}" ) {
+        players.zip(totals).foreach { e =>
+          val (p,s) = e
+          rt.checkTotal(p, s)
+        }
+        this
+      }
+    } catch {
+      case x: Exception =>
+        log.severe(s"""checkFastTotalsScore failure.\n${rt}\n""",x)
         throw x
     }
   }

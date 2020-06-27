@@ -169,6 +169,13 @@ abstract class Page[ +T <: Page[T] ]()( implicit webDriver: WebDriver, pageCreat
   }
 
   /**
+   *
+   */
+  def findAllSelectedButtons(implicit pos: Position): Map[String,Element] = {
+    findElements(By.cssSelector("button.baseButtonSelected")).asScala.map(b => (b.getAttribute("id"),new Element(b))).toMap
+  }
+
+  /**
    * Get all the buttons, at least one button is returned.
    */
   def getAllButtons(implicit patienceConfig: PatienceConfig, pos: Position): Map[String,Element] = eventually {
@@ -432,6 +439,14 @@ abstract class Page[ +T <: Page[T] ]()( implicit webDriver: WebDriver, pageCreat
    */
   def getInputs( itype: String, iname: String* )(implicit patienceConfig: PatienceConfig, pos: Position): Map[String,Element] = {
     eventually { findInputs(itype, iname: _*) }
+  }
+
+  def findElem( by: QueryBy )(implicit pos: Position): Element = {
+    PageBrowser.find(by)
+  }
+
+  def findAllElem( by: QueryBy )(implicit pos: Position): List[Element] = {
+    PageBrowser.findAll(by)
   }
 
   /**

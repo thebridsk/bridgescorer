@@ -17,19 +17,20 @@ import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.ScoreboardPag
 import com.github.thebridsk.bridge.data.BoardSet
 import com.github.thebridsk.bridge.data.Movement
 import com.github.thebridsk.browserpages.GenericPage
+import org.scalatest.concurrent.Eventually
 
 object HandPage {
 
   val log = Logger[HandPage]
 
-  def current(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
+  def current( matchType: ChicagoMatchType )(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
     val (chiid,roundid,hand) = findIds
-    new HandPage(chiid,roundid,hand)
+    new HandPage(chiid,roundid,hand,matchType)
   }
 
-  def waitFor(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
+  def waitFor( matchType: ChicagoMatchType )(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
     val (chiid,roundid,hand) = eventually { findIds }
-    new HandPage(chiid,roundid,hand)
+    new HandPage(chiid,roundid,hand,matchType)
   }
 
   /**
@@ -38,9 +39,9 @@ object HandPage {
    * @param hand the hand in the round, zero based
    * @return a HandPage object
    */
-  def goto(chiid: String, round: Int, hand: Int )(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
+  def goto(chiid: String, round: Int, hand: Int, matchType: ChicagoMatchType )(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
     go to urlFor(chiid,round,hand)
-    new HandPage(chiid,round,hand)
+    new HandPage(chiid,round,hand,matchType)
   }
 
   /**
@@ -90,7 +91,7 @@ object HandPage {
   }
 }
 
-class HandPage(chiid: String, round: Int, hand: Int )( implicit webDriver: WebDriver, pageCreated: SourcePosition ) extends BaseHandPage[HandPage] {
+class HandPage(chiid: String, round: Int, hand: Int, matchType: ChicagoMatchType )( implicit webDriver: WebDriver, pageCreated: SourcePosition ) extends BaseHandPage[HandPage] {
   import HandPage._
 
   override
@@ -105,7 +106,7 @@ class HandPage(chiid: String, round: Int, hand: Int )( implicit webDriver: WebDr
   override
   def clickOk(implicit patienceConfig: PatienceConfig, pos: Position) = {
     super.clickOk
-    SummaryPage.current
+    SummaryPage.current(matchType)
   }
 
   /**
@@ -201,4 +202,9 @@ class HandPage(chiid: String, round: Int, hand: Int )( implicit webDriver: WebDr
     clickOk
   }
 
+  override
+  def clickCancel(implicit patienceConfig: PatienceConfig, pos: Position): SummaryPage = {
+    super.clickCancel
+    new SummaryPage( chiid, matchType, matchType.getRoundForSummary(round))
+  }
 }

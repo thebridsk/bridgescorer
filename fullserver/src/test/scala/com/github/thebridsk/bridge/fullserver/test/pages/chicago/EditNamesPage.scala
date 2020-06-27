@@ -22,9 +22,9 @@ object EditNamesPage {
 
   val log = Logger[EditNamesPage]
 
-  def current(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
+  def current( matchType: ChicagoMatchType )(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
     val chiid = findMatchId
-    new EditNamesPage(chiid)
+    new EditNamesPage(chiid, matchType)
   }
 
   /**
@@ -46,13 +46,13 @@ object EditNamesPage {
   /**
    * @param chiid the chicago id
    */
-  def goto( chiid: String )( implicit
+  def goto( chiid: String, matchType: ChicagoMatchType )( implicit
               webDriver: WebDriver,
               patienceConfig: PatienceConfig,
               pos: Position
           ) = {
     go to urlFor(chiid)
-    new EditNamesPage(chiid)
+    new EditNamesPage(chiid, matchType)
   }
 
   private val patternUrl = """(C\d+)/names""".r
@@ -91,6 +91,7 @@ object EditNamesPage {
 
 class EditNamesPage(
     val chiid: String,
+    val matchType: ChicagoMatchType
 )( implicit
     val webDriver: WebDriver,
     pageCreated: SourcePosition
@@ -170,7 +171,7 @@ class EditNamesPage(
 
   def clickOK(implicit patienceConfig: PatienceConfig, pos: Position) = {
     clickButton(buttonOK)
-    new SummaryPage(chiid)
+    new SummaryPage(chiid, matchType)
   }
 
   def clickReset(implicit patienceConfig: PatienceConfig, pos: Position) = {
@@ -180,7 +181,7 @@ class EditNamesPage(
 
   def clickCancel(implicit patienceConfig: PatienceConfig, pos: Position) = {
     clickButton(buttonCancel)
-    new SummaryPage(chiid)
+    new SummaryPage(chiid, matchType)
   }
 
   def isOKEnabled(implicit patienceConfig: PatienceConfig, pos: Position) = {

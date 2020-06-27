@@ -38,6 +38,7 @@ import com.github.thebridsk.bridge.fullserver.test.pages.LightDarkAddOn
 import com.github.thebridsk.browserpages.PageBrowser
 import scala.jdk.CollectionConverters._
 import com.github.thebridsk.bridge.server.test.util.TestServer
+import com.github.thebridsk.bridge.fullserver.test.pages.chicago.ChicagoMatchTypeFour
 
 object ChicagoDemoTestPages {
 
@@ -63,8 +64,6 @@ class ChicagoDemoTestPages extends AnyFlatSpec
   import ChicagoDemoTestPages._
 
   import scala.concurrent.duration._
-
-  import ChicagoUtils._
 
   val screenshotDir = "target/screenshots/ChicagoDemoTestPages"
 
@@ -175,8 +174,6 @@ class ChicagoDemoTestPages extends AnyFlatSpec
   it should "allow player names to be entered" in {
     import Session1._
 
-    eventually( find(xpath("//h6[4]/span")).text mustBe "Enter players and identify first dealer" )
-
     val p = EnterNamesPage.current
     p.enterPlayer(North, player1, true).
       enterPlayer(South, player2, true).
@@ -249,7 +246,7 @@ class ChicagoDemoTestPages extends AnyFlatSpec
   it should "play a round of 4 hands" in {
     import Session1._
 
-    val h = HandPage.current
+    val h = HandPage.current(ChicagoMatchTypeFour)
 
     // N player1   S player2   E player3   W player4
 
@@ -279,7 +276,7 @@ class ChicagoDemoTestPages extends AnyFlatSpec
     val roundS = roundScores.map(s => s.toString())
     val totalsS = totals.map(s => s.toString())
 
-    val sp = SummaryPage.current.validate
+    val sp = SummaryPage.current(ChicagoMatchTypeFour).validate
 
     sp.checkHandScore(0, players, scores, roundS)
     sp.checkTotalScore(0, players, roundS, totalsS)
@@ -291,7 +288,7 @@ class ChicagoDemoTestPages extends AnyFlatSpec
     import Session1._
     Session1.switchTo().window(mainTab.get)
 
-    val sp = SummaryPage.current.validate
+    val sp = SummaryPage.current(ChicagoMatchTypeFour).validate
     val hp = sp.clickHome.validate
 
     val np = hp.clickNewChicagoButton.validate
