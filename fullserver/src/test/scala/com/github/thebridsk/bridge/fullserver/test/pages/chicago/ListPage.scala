@@ -130,4 +130,77 @@ class ListPage( importId: Option[String] = None )( implicit val webDriver: WebDr
     }
   }
 
+  def getTable(implicit patienceConfig: PatienceConfig, pos: Position) = {
+    val r = ListTable()
+    log.fine(s"getTable: ${r}")
+    r
+  }
+
+  /**
+    * @param row the row, 0 based
+    * @param players the values in the player cells
+    * @param patienceConfig
+    * @param pos
+    */
+  def checkPlayers( row: Int, players: String* )(implicit patienceConfig: PatienceConfig, pos: Position) = {
+    getTable.row(row).players must contain allElementsOf(players)
+  }
+
+  /**
+    * @param row the row, 0 based
+    * @param patienceConfig
+    * @param pos
+    */
+  def clickDelete( row: Int )(implicit patienceConfig: PatienceConfig, pos: Position) = {
+    val delete = find( xpath( s"//div[contains(concat(' ', @class, ' '), ' chiChicagoListPage ')]/table/tbody/tr[${row+1}]/td[last()]" ) )
+    delete.click
+    this
+  }
+}
+
+object ListTable {
+  def apply()( implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position ) = {
+    val cells = findAll( xpath( "//div[contains(concat(' ', @class, ' '), ' chiChicagoListPage ')]/table/tbody/tr" ) ).map { row =>
+      ListRow(row.findAll( xpath( "./td" ) ).map { cell =>
+        cell.text
+      })
+    }
+    new ListTable(cells)
+  }
+}
+
+case class ListRow( cells: List[String]) {
+
+  lazy val len = cells.length
+
+  def id = cells.apply(0)
+  def createdUpdated = cells(1)
+
+  /**
+    * @param i index, 0 based
+    */
+  def player( i: Int ) = {
+    val j = i + 2
+    if (j < len - 1) cells(i)
+    else new IndexOutOfBoundsException(s"ListRow has ${cells.length-3} players, asking for index $i")
+  }
+
+  def players = {
+    cells.take(len-1).drop(2)
+  }
+
+  override
+  def toString() = {
+    s"ListRow(id=$id, cells=${cells.mkString(", ")})"
+  }
+
+}
+
+case class ListTable( rows: List[ListRow]) {
+  def row( row: Int ) = rows(row)
+
+  override
+  def toString() = {
+    s"ListTable${rows.map(_.toString()).mkString("[\n  ","\n  ","\n]")}"
+  }
 }

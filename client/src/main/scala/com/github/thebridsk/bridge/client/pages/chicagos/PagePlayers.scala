@@ -122,7 +122,9 @@ object PagePlayersInternal {
         case Some(chi) if (chi.id == props.page.chiid) =>
           val rounds = chi.rounds
 //          <.div(
-          if (rounds.length == 0) {
+          if (rounds.length == 0
+              || rounds.length == 1 && rounds.head.hands.isEmpty
+          ) {
             ViewPlayersVeryFirstRound(props.getProps(chi))
           } else {
             if (chi.players.size != 4) {

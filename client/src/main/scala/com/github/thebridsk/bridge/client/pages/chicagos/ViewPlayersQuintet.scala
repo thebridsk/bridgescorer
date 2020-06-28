@@ -89,7 +89,8 @@ object ViewPlayersQuintetInternal {
       val lastround = {
         val last = scoring.rounds.last
         if (last.hands.isEmpty) {
-          scoring.rounds( scoring.rounds.size - 2 )
+          val len = scoring.rounds.size
+          scoring.rounds( if (len<=1) 0 else len - 2 )
         } else {
           last
         }
@@ -130,7 +131,8 @@ object ViewPlayersQuintetInternal {
       val lastround = {
         val last = score.rounds.last
         if (last.hands.isEmpty) {
-          score.rounds( score.rounds.size - 2 )
+          val len = score.rounds.size
+          score.rounds( if (len<=1) 0 else len - 2 )
         } else {
           last
         }
@@ -178,7 +180,8 @@ object ViewPlayersQuintetInternal {
   private val westArrow = Strings.arrowLeftRight
 
 //  val colors = ("lightgreen", "aquamarine")::("aqua", "paleturquoise")::Nil
-  val colors = ("lightgreen", "lightgreen")::("aqua", "aqua")::Nil
+
+  val colors = ( baseStyles.baseColor2, baseStyles.baseColor2)::(baseStyles.baseColor3, baseStyles.baseColor3)::Nil
 
   /**
    * Internal state for rendering the component.
@@ -222,7 +225,7 @@ object ViewPlayersQuintetInternal {
 
       val playerColors = state.swapping.zip( colors ).flatMap(e => {
         val ((p1,p2),(c1,c2)) = e
-        (p1, ^.background:=c1)::(p2,^.background:=c2)::Nil
+        (p1, c1)::(p2, c2)::Nil
       }).toMap
 
       def getDealer( pos: PlayerPosition, dealer: PlayerPosition ) = {

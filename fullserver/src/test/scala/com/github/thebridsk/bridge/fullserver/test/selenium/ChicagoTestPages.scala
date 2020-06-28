@@ -37,6 +37,7 @@ import com.github.thebridsk.browserpages.Session
 import com.github.thebridsk.bridge.fullserver.test.pages.LightDarkAddOn
 import scala.util.Using
 import com.github.thebridsk.bridge.server.test.util.TestServer
+import com.github.thebridsk.bridge.fullserver.test.pages.chicago.ChicagoMatchTypeFour
 
 object ChicagoTestPages {
 
@@ -64,8 +65,6 @@ class ChicagoTestPages extends AnyFlatSpec
   import ChicagoTestPages._
 
   import scala.concurrent.duration._
-
-  import ChicagoUtils._
 
   val screenshotDir = "target/screenshots/ChicagoTestPages"
   val docsScreenshotDir = "target/docs/Chicago"
@@ -177,13 +176,11 @@ class ChicagoTestPages extends AnyFlatSpec
   it should "start the watcher session on the created match" in {
     import SessionWatcher._
 
-    SummaryPage.goto(chicagoId.get, None)
+    SummaryPage.goto(chicagoId.get, ChicagoMatchTypeFour, None)
   }
 
   it should "allow player names to be entered" in {
     import Session1._
-
-    eventually( find(xpath("//h6[3]/span")).text mustBe "Enter players and identify first dealer" )
     takeScreenshot(docsScreenshotDir, "EnterNames4")
   }
 
@@ -429,7 +426,7 @@ class ChicagoTestPages extends AnyFlatSpec
     import Session1._
 
     tcpSleep(30)
-    val h = HandPage.current
+    val h = HandPage.current(ChicagoMatchTypeFour)
 
     takeScreenshot(docsScreenshotDir, "EnterHandBefore")
     h.enterContract(3, Hearts, Doubled, West, Made, -1, None, None)
@@ -583,7 +580,7 @@ class ChicagoTestPages extends AnyFlatSpec
   it should "validate the 4 hands played in first session" in {
     import SessionWatcher._
 
-    val sum = SummaryPage.current.validate
+    val sum = SummaryPage.current(ChicagoMatchTypeFour).validate
 
     val roundS = List(1120,1120,620,620).map(s => s.toString())
     val totalsS = List(1120,1120,620,620).map(s => s.toString())
@@ -592,7 +589,7 @@ class ChicagoTestPages extends AnyFlatSpec
 
   it should "be able to edit the names" in {
     import SessionWatcher._
-    val sp = SummaryPage.current.validate
+    val sp = SummaryPage.current(ChicagoMatchTypeFour).validate
 
     withClueAndScreenShot(screenshotDir,"EditNames","Edit Names test") {
       val enp = sp.clickEditNames.validate
@@ -651,14 +648,14 @@ class ChicagoTestPages extends AnyFlatSpec
 
     val chiid = postChicago( savedChicago.get )
 
-    val gp = SummaryPage.current.validate.clickQuit.validate
+    val gp = SummaryPage.current(ChicagoMatchTypeFour).validate.clickQuit.validate
     tcpSleep(1)
     gp.clickButton(s"Chicago${chiid}")
 
 //    val sp = SummaryPage.goto(chiid)
 //    sp.refresh.validate
 
-    val sp = SummaryPage.current.validate
+    val sp = SummaryPage.current(ChicagoMatchTypeFour).validate
 
     sp.chiid mustBe chiid
 
@@ -695,14 +692,14 @@ class ChicagoTestPages extends AnyFlatSpec
 
     val chiid = postChicago( savedChicago.get )
 
-    val gp = SummaryPage.current.validate.clickQuit.validate
+    val gp = SummaryPage.current(ChicagoMatchTypeFour).validate.clickQuit.validate
     tcpSleep(1)
     gp.clickButton(s"Chicago${chiid}")
 
 //    val sp = SummaryPage.goto(chiid)
 //    sp.refresh.validate
 
-    val sps = SummaryPage.current.validate
+    val sps = SummaryPage.current(ChicagoMatchTypeFour).validate
 
     sps.chiid mustBe chiid
 
@@ -754,7 +751,7 @@ class ChicagoTestPages extends AnyFlatSpec
 
     val chiid = postChicago( savedChicago.get )
 
-    val gp = SummaryPage.current.validate.clickQuit.validate
+    val gp = SummaryPage.current(ChicagoMatchTypeFour).validate.clickQuit.validate
     takeScreenshot(docsScreenshotDir, "ListPage")
     tcpSleep(1)
     gp.clickButton(s"Chicago${chiid}")
@@ -762,7 +759,7 @@ class ChicagoTestPages extends AnyFlatSpec
 //    val sp = SummaryPage.goto(chiid)
 //    sp.refresh.validate
 
-    val sp = SummaryPage.current.validate
+    val sp = SummaryPage.current(ChicagoMatchTypeFour).validate
 
     sp.chiid mustBe chiid
 
@@ -802,14 +799,14 @@ class ChicagoTestPages extends AnyFlatSpec
 
     val chiid = postChicago( savedChicago.get )
 
-    val gp = SummaryPage.current.validate.clickQuit.validate
+    val gp = SummaryPage.current(ChicagoMatchTypeFour).validate.clickQuit.validate
     tcpSleep(1)
     gp.clickButton(s"Chicago${chiid}")
 
 //    val sp = SummaryPage.goto(chiid)
 //    sp.refresh.validate
 
-    val sps = SummaryPage.current.validate
+    val sps = SummaryPage.current(ChicagoMatchTypeFour).validate
 
     sps.chiid mustBe chiid
 

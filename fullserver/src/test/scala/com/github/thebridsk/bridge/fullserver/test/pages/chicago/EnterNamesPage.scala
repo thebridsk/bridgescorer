@@ -119,11 +119,18 @@ class EnterNamesPage( val chiid: String,
 
     Some(currentUrl) must contain oneOf( urlFor(chiid,roundid), demoUrlFor(chiid,roundid) )
 
+    find(xpath("//h6/span[text()='Enter players and identify first dealer']"))
+
     val dealerbuttons = (North::South::East::West::Nil).map(p=>toDealerButtonId(p))
 
     val allButtons = buttonOK::buttonReset::buttonCancel::buttonToggleFive :: dealerbuttons
 
     findButtons( allButtons: _* )
+    this
+  }}
+
+  def validateFive(implicit patienceConfig: PatienceConfig, pos: Position) = logMethod(s"${pos.line} ${getClass.getSimpleName}.validate") { eventually {
+    findCheckbox(fastRotationCheckboxName)
     this
   }}
 
@@ -224,8 +231,18 @@ class EnterNamesPage( val chiid: String,
   }
 
   def clickOK(implicit patienceConfig: PatienceConfig, pos: Position) = {
+    val matchtype = if (isFive) {
+      if (isFastRotation) {
+        if (isFairRotation) ChicagoMatchTypeFair
+        else ChicagoMatchTypeSimple
+      } else {
+        ChicagoMatchTypeFive
+      }
+    } else {
+      ChicagoMatchTypeFour
+    }
     clickButton(buttonOK)
-    new HandPage(chiid,roundid,0)
+    new HandPage(chiid,roundid,0,matchtype)
   }
 
   def clickReset(implicit patienceConfig: PatienceConfig, pos: Position) = {
@@ -235,11 +252,15 @@ class EnterNamesPage( val chiid: String,
 
   def clickCancel(implicit patienceConfig: PatienceConfig, pos: Position) = {
     clickButton(buttonCancel)
-    GenericPage.current
+    SummaryPage.current(ChicagoMatchTypeUnkown)
   }
 
   def isOKEnabled(implicit patienceConfig: PatienceConfig, pos: Position) = {
     getButton(buttonOK).isEnabled
+  }
+
+  def isResetEnabled(implicit patienceConfig: PatienceConfig, pos: Position) = {
+    getButton(buttonReset).isEnabled
   }
 
   def clickFive(implicit patienceConfig: PatienceConfig, pos: Position) = {
@@ -287,4 +308,27 @@ class EnterNamesPage( val chiid: String,
     clickButton(fairRotationRadioBoxName)
     this
   }
+}
+
+sealed trait ChicagoMatchType {
+  def getRoundForSummary( round: Int ): Option[Int] = Some(round)
+}
+
+object ChicagoMatchTypeFour extends ChicagoMatchType {
+
+}
+object ChicagoMatchTypeFive extends ChicagoMatchType {
+
+}
+object ChicagoMatchTypeFair extends ChicagoMatchType {
+  override
+  def getRoundForSummary( round: Int ): Option[Int] = None
+}
+object ChicagoMatchTypeSimple extends ChicagoMatchType {
+  override
+  def getRoundForSummary( round: Int ): Option[Int] = None
+}
+
+object ChicagoMatchTypeUnkown extends ChicagoMatchType {
+
 }

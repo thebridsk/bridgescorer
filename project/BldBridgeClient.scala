@@ -25,7 +25,7 @@ object BldBridgeClient {
     "com.github.thebridsk.bridge.client.test.TestDuplicateStore" ::
     "com.github.thebridsk.bridge.client.test.TestLogFilter" ::
     "com.github.thebridsk.bridge.client.test.TestSerialize" ::
-    "com.github.thebridsk.bridge.client.test.TestColor" ::
+    "com.github.thebridsk.bridge.client.test.TestFairRotation" ::
     Nil
 
   lazy val `bridgescorer-client` = project
@@ -76,10 +76,10 @@ object BldBridgeClient {
       testOptions in Test += Tests.Filter(s => {
         // if (s == "com.github.thebridsk.bridge.client.test.AllUnitTests") {
         if (clientUnitTests.contains(s)) {
-          println("Using Test:    " + s)
+          println(s"Using Test:    $s, looking for $clientUnitTests")
           true
         } else {
-          println("Ignoring Test: " + s);
+          println(s"Ignoring Test: $s, looking for $clientUnitTests");
           false
         }
       }),

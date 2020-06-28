@@ -511,13 +511,19 @@ abstract class BaseHandPage[T <: Page[T]]( implicit webDriver: WebDriver, pageCr
     }
   }
 
+  val buttonPlayerText = """(.*?) [vV]ul""".r
+
   def getName(
                loc: PlayerPosition
              )(implicit
                 patienceConfig: PatienceConfig,
                 pos: Position
              ) = {
-    find(xpath(s"""//span[@id = '${loc.name}']/text()[1]""")).text
+    find(xpath(s"""//span[@id = '${loc.name}']""")).text match {
+      case buttonPlayerText(name) => name
+      case s =>
+        fail(s"Player button text is bad: ${s}")
+    }
   }
 
   /**

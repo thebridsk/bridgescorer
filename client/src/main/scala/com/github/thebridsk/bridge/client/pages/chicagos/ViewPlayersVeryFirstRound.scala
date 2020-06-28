@@ -271,14 +271,22 @@ object ViewPlayersVeryFirstRound {
   val component = ScalaComponent.builder[Props]("ViewPlayersVeryFirstRound")
                             .initialStateFromProps { props => {
                               val chi = props.chicago
-                              val (n,s,e,w) =
+                              val (n,s,e,w, dealer) =
                                 if (chi.rounds.isEmpty) {
-                                  (chi.players(0),chi.players(1),chi.players(2),chi.players(3))
+                                  (chi.players(0),chi.players(1),chi.players(2),chi.players(3), None)
                                 } else {
                                   val r = chi.rounds(0)
-                                  (r.north,r.south,r.east,r.west)
+                                  (r.north,r.south,r.east,r.west, Some(PlayerPosition(r.dealerFirstRound)))
                                 }
-                              PlayerState(n,s,e,w,None, quintet=chi.isQuintet())
+                              val extra = chi.players.drop(4).headOption
+                              PlayerState(
+                                n,s,e,w,
+                                dealer = dealer,
+                                chicago5 = extra.isDefined,
+                                quintet=chi.isQuintet(),
+                                simpleRotation=chi.simpleRotation,
+                                extra = extra
+                              )
                             }}
                             .backend(new Backend(_))
                             .renderBackend

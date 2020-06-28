@@ -31,6 +31,24 @@ import com.github.thebridsk.bridge.server.test.util.CaptureLog
 import scala.math.Ordering.Double.TotalOrdering
 import com.github.thebridsk.browserpages.Element
 import com.github.thebridsk.bridge.server.test.util.TestServer
+import com.github.thebridsk.bridge.fullserver.test.pages.chicago.EnterNamesPage
+import com.github.thebridsk.bridge.fullserver.test.pages.chicago.HandPage
+import com.github.thebridsk.bridge.fullserver.test.pages.chicago.SummaryPage
+import com.github.thebridsk.bridge.fullserver.test.pages.chicago.FourSelectPartnersPage
+import com.github.thebridsk.bridge.fullserver.test.pages.chicago.ListPage
+import com.github.thebridsk.browserpages.Combobox
+import com.github.thebridsk.bridge.fullserver.test.pages.chicago.ChicagoMatchTypeFour
+
+object ChicagoTest {
+  val playerN = "Nancy"
+  val playerS = "Sam"
+  val playerE = "Ellen"
+  val playerW = "Wayne"
+
+  val allPlayers = playerN::playerS::playerE::playerW::Nil
+}
+
+import ChicagoTest._
 
 /**
  * @author werewolf
@@ -45,8 +63,6 @@ class ChicagoTest extends AnyFlatSpec
   import Eventually.{ patienceConfig => _, _ }
 
   import scala.concurrent.duration._
-
-  import ChicagoUtils._
 
   val log = Logger[ChicagoTest]
 
@@ -119,9 +135,7 @@ class ChicagoTest extends AnyFlatSpec
   behavior of "Chicago test of Bridge Server"
 
   it should "return a root page that has a title of \"The Bridge ScoreKeeper\"" in {
-    tcpSleep(15)
-    go to (TestServer.getAppPage())
-    pageTitle mustBe ("The Bridge ScoreKeeper")
+    HomePage.goto.validate
   }
 
   it should "allow us to score a Chicago match" in {
@@ -132,36 +146,38 @@ class ChicagoTest extends AnyFlatSpec
       }
     }
 
-    click on id(newChicagoButtonId)
+    val enp = HomePage.current.clickNewChicagoButton.validate
+
     if (TestServer.isServerStartedByTest) {
       eventually( backend.chicagos.syncStore.readAll() match {
         case Right(l) => l.size mustBe startingNumberOfChicagosInServer+1
         case Left((rc,msg)) => throw new NoResultYet( rc.toString()+": "+msg )
       })
     }
-    chicagoId = Some(eventuallySome{ checkForChicago() })
-  }
+    chicagoId = Some(enp.chiid)
 
-  it should "allow player names to be entered" in {
-    eventually( find(xpath("//h6[3]/span")).text mustBe "Enter players and identify first dealer" )
   }
 
   it should "allow player names to be entered with suggestions when playing Chicago" in {
 
-    eventually( find(id("ResetNames")) mustBe Symbol("Enabled") )
-    find(id("Ok")) must not be Symbol("Enabled")
+    val enp = EnterNamesPage.current
 
-    textField("North").value = "Nancy"
-    textField("South").value = "Sam"
-    textField("East").value = "asfdfs"
+    eventually( enp.isResetEnabled mustBe true )
+    enp.isOKEnabled mustBe false
+
+    enp.enterPlayer(North, playerN)
+    enp.enterPlayer(South, playerS)
+    enp.enterPlayer(East, "asfdfs")
+
     eventually {
       try {
-        val visibleDivs = findElements(By.xpath("""//input[@name='East']/parent::div/following-sibling::div/div"""))
-        withClue("Must have one visible div") { visibleDivs.size() mustBe 1}
-        val listitems = findElements(By.xpath("""//input[@name='East']/parent::div/following-sibling::div/div/div/ul/li"""))
-        withClue("Must have one li in visible div, found "+listitems.asScala.mkString(",")+": ") { listitems.size mustBe 1 }
-        withClue("One li in visible div must show no names, found "+listitems.get(0).getText+": ") {
-          listitems.get(0).getText() must fullyMatch regex ( """No suggested names""" )
+        val east = enp.getPlayerCombobox(East)
+        val sug = east.suggestions
+        withClue("Must have one suggestion in visible div, found "+sug.map(_.text).mkString(",")+": ") {
+          sug.length mustBe 1
+        }
+        withClue("One suggestion line must show no names, found "+sug(0).text+": ") {
+          sug(0).text mustBe """No suggested names"""
         }
       } catch {
         case x: Exception =>
@@ -174,49 +190,49 @@ class ChicagoTest extends AnyFlatSpec
 
   it should "allow player names to be reset when playing Chicago" in {
 
-    find(id("ResetNames")) mustBe Symbol("Enabled")
-    click on id("ResetNames")
+    val enp = EnterNamesPage.current
 
-    eventually (textField("North").value mustBe "")
-    textField("South").value mustBe ""
-    textField("East").value mustBe ""
-    textField("West").value mustBe ""
+    eventually( enp.isResetEnabled mustBe true )
+    val enp2 = enp.clickReset
+
+    eventually {
+      enp2.getPlayer(North) mustBe ""
+      enp2.getPlayer(South) mustBe ""
+      enp2.getPlayer(East) mustBe ""
+      enp2.getPlayer(West) mustBe ""
+    }
 
   }
 
   it should "allow player names to be entered when playing Chicago" in {
 
-    find(id("Ok")) must not be Symbol("Enabled")
+    val enp = EnterNamesPage.current
 
-    textField("North").value = "Nancy"
-    textField("South").value = "Sam"
-    textField("East").value = "Ellen"
-    textField("West").value = "Wayne"
-    tcpSleep(1)
-    pressKeys(Keys.ESCAPE)
-    tcpSleep(1)
+    enp.isOKEnabled mustBe false
 
-    click on id("PlayerNFirstDealer")
+    enp.enterPlayer(North, playerN)
+    enp.enterPlayer(South, playerS)
+    enp.enterPlayer(East, playerE)
+    enp.enterPlayer(West, playerW, hitEscapeAfter = true)
+
+    enp.setDealer(North)
 
     captureLog.printLogOnException {
       log.severe("testing capture log")
-      val ok = eventually {
-        val elem = find(id("Ok"))
-        elem.isEnabled mustBe true
-        elem
-      }
+      enp.isOKEnabled mustBe true
 
-      ok.click
+      val hp = enp.clickOK.validate
 
       eventually {
-        val text = find(id("North")).text
-        text mustBe "Nancy vul"
+        hp.checkVulnerable(North, NotVul)
+        hp.getName(North) mustBe playerN
+
+        hp.getNameAndVul(South) mustBe s"$playerS vul"
+        hp.getNameAndVul(East) mustBe s"$playerE vul"
+        hp.getNameAndVul(West) mustBe s"$playerW vul"
       }
 
     }
-    find(id("South")).text mustBe "Sam vul"
-    find(id("East")).text mustBe "Ellen vul"
-    find(id("West")).text mustBe "Wayne vul"
 
   }
 
@@ -232,46 +248,67 @@ class ChicagoTest extends AnyFlatSpec
     }
 
     if (TestServer.isServerStartedByTest) {
-      eventually( testPlayers("Nancy","Sam","Ellen","Wayne") mustBe true )
+      eventually {
+        testPlayers(playerN,playerS,playerE,playerW) mustBe true
+      }
     }
+  }
 
-    InputStyleHelper.hitInputStyleButton( "Original" )
+  def checkTotalScores( sp: SummaryPage, scores: Int* ) = {
+    sp.checkTotalsScore(allPlayers,scores.map(_.toString).toList)
   }
 
   it should "play a round of 4 hands" in {
-    tcpSleep(40)
-    val assertScore = assertTotals("Nancy", "Sam", "Ellen", "Wayne" ) _
-    enterHand(4,Spades,NotDoubled,North,Made,4, Some("Nancy"))  // NS score 420
-    assertScore( Seq( 420, 420, 0, 0 ))
-    click on id("NextHand")
-    enterHand(4,Hearts,NotDoubled,East,Made,4, Some("Ellen"))  // EW score 620
-    assertScore( Seq( 420, 420, 620, 620 ))
-    click on id("NextHand")
-    enterHand(5,Diamonds,NotDoubled,South,Made,5, Some("Sam"))  // NS score 600
-    assertScore( Seq( 1020, 1020, 620, 620 ))
-    click on id("NextHand")
-    enterHand(3,Clubs,NotDoubled,West,Made,4, Some("Wayne"))  // EW score 130
-    assertScore( Seq( 1020, 1020, 750, 750 ))
 
-    InputStyleHelper.hitInputStyleButton( "Guide" )
+    val hp = HandPage.current(ChicagoMatchTypeFour)
 
-    click on id("NewRound")
+    hp.setInputStyle("Original")
+
+    val sp = hp.enterHand(
+        4, Spades, NotDoubled, North, Made, 4,
+        score = Some(s"420 $playerN-$playerS"), nsVul = NotVul, ewVul = NotVul, dealer = Some(playerN)
+    ).validate
+    checkTotalScores( sp, 420, 420, 0, 0 )
+    val hp2 = sp.clickNextHand
+    val sp2 = hp2.enterHand(
+        4,Hearts,NotDoubled,East,Made,4,
+        score = Some(s"620 $playerE-$playerW"), nsVul = NotVul, ewVul = Vul, dealer = Some(playerE)
+    ).validate
+    checkTotalScores( sp2, 420, 420, 620, 620 )
+    val hp3 = sp2.clickNextHand
+    val sp3 = hp3.enterHand(
+        5,Diamonds,NotDoubled,South,Made,5,
+        score = Some(s"600 $playerN-$playerS"), nsVul = Vul, ewVul = NotVul, dealer = Some(playerS)
+    ).validate
+    checkTotalScores( sp3, 1020, 1020, 620, 620 )
+    val hp4 = sp3.clickNextHand
+    val sp4 = hp4.enterHand(
+        3,Clubs,NotDoubled,West,Made,4,
+        score = Some(s"130 $playerE-$playerW"), nsVul = Vul, ewVul = Vul, dealer = Some(playerW)
+    ).validate
+    checkTotalScores( sp4, 1020, 1020, 750, 750 )
+
+    sp4.setInputStyle("Guide")
+
+    sp4.clickNewRoundFour.validate
   }
 
   it should "allow setting the partner and dealer for second round" in {
-    tcpSleep(30)
-    eventually { find(id("Ok")) }
 
-    takeScreenshot(docsScreenshotDir, "SelectNames4")
+    val spp = FourSelectPartnersPage.current
 
-    click on id("West2")
+    spp.takeScreenshot(docsScreenshotDir, "SelectNames4")
 
-    eventually{ find(id("West2")).attribute("class").get must include ("baseButtonSelected") }
-    eventually{ find(id("South1")).attribute("class").get must include ("baseButtonSelected") }
-    eventually{ find(id("East3")).attribute("class").get must include ("baseButtonSelected") }
+    val spp2 = spp.clickPlayer(West,2)
 
-    click on id("PlayerEFirstDealer")
-    click on id("Ok")
+    eventually {
+      spp2.checkPlayer(West,2,true)
+      spp2.checkPlayer(South,1,true)
+      spp2.checkPlayer(East,3,true)
+    }
+
+    spp2.setDealer(East).clickOK.validate
+
   }
 
   it should "send to the server that there are 4 games per round" in {
@@ -289,36 +326,51 @@ class ChicagoTest extends AnyFlatSpec
   }
 
   it should "play another round of 4 hands" in {
-    find(id("North")).text mustBe "Nancy vul"
-    find(id("South")).text mustBe "Ellen vul"
-    find(id("East")).text mustBe "Sam vul"
-    find(id("West")).text mustBe "Wayne vul"
 
-    val assertScore = assertTotals("Nancy", "Sam", "Ellen", "Wayne" ) _
-    enterHand(4,Spades,NotDoubled,North,Made,4, Some("Sam"))  // NS score 420
-    assertScore( Seq( 1440, 1020, 1170, 750 ))
-    click on id("NextHand")
-    enterHand(4,Hearts,NotDoubled,East,Made,4, Some("Ellen"))  // EW score 420
-    assertScore( Seq( 1440, 1440, 1170, 1170 ))
-    click on id("NextHand")
-    enterHand(5,Diamonds,NotDoubled,South,Made,5, Some("Wayne"))  // NS score 400
-    assertScore( Seq( 1840, 1440, 1570, 1170 ))
-    click on id("NextHand")
-    enterHand(3,Clubs,NotDoubled,West,Made,4, Some("Nancy"))  // EW score 130
-    assertScore( Seq( 1840, 1570, 1570, 1300 ))
+    val hp = HandPage.current(ChicagoMatchTypeFour)
 
-    InputStyleHelper.hitInputStyleButton( "Prompt" )
+    hp.getName(North) mustBe playerN
+    hp.getName(South) mustBe playerE
+    hp.getName(East) mustBe playerS
+    hp.getName(West) mustBe playerW
 
-    click on id("NewRound")
+    val sp = hp.enterHand(
+        4, Spades, NotDoubled, North, Made, 4,
+        score = Some(s"420 $playerN-$playerE"), nsVul = NotVul, ewVul = NotVul, dealer = Some(playerS)
+    ).validate
+    checkTotalScores( sp, 1440, 1020, 1170, 750 )
+    val hp2 = sp.clickNextHand
+    val sp2 = hp2.enterHand(
+        4,Hearts,NotDoubled,East,Made,4,
+        score = Some(s"420 $playerS-$playerW"), nsVul = Vul, ewVul = NotVul, dealer = Some(playerE)
+    ).validate
+    checkTotalScores( sp2, 1440, 1440, 1170, 1170 )
+    val hp3 = sp2.clickNextHand
+    val sp3 = hp3.enterHand(
+        5,Diamonds,NotDoubled,South,Made,5,
+        score = Some(s"400 $playerN-$playerE"), nsVul = NotVul, ewVul = Vul, dealer = Some(playerW)
+    ).validate
+    checkTotalScores( sp3, 1840, 1440, 1570, 1170 )
+    val hp4 = sp3.clickNextHand
+    val sp4 = hp4.enterHand(
+        3,Clubs,NotDoubled,West,Made,4,
+        score = Some(s"130 $playerS-$playerW"), nsVul = Vul, ewVul = Vul, dealer = Some(playerN)
+    ).validate
+    checkTotalScores( sp4, 1840, 1570, 1570, 1300 )
+
+    sp4.setInputStyle("Prompt")
+    sp4.clickNewRoundFour.validate
   }
 
   it should "allow setting the scorekeeper and dealer for third round" in {
-    tcpSleep(30)
 
-    find(id("Ok")) must not be Symbol("Enabled")
+    val spp = FourSelectPartnersPage.current
+    spp.isOKEnabled mustBe false
 
-    click on id("PlayerWFirstDealer")
-    click on id("Ok")
+    val spp2 = spp.setDealer(West)
+    eventually ( spp2.isDealer(West) mustBe true )
+
+    spp2.clickOK.validate
   }
 
   it should "send to the server that there are 4 games per round once more" in {
@@ -337,37 +389,51 @@ class ChicagoTest extends AnyFlatSpec
   }
 
   it should "play third round of 4 hands" in {
-    find(id("North")).text mustBe "Nancy vul"
-    find(id("South")).text mustBe "Wayne vul"
-    find(id("East")).text mustBe "Ellen vul"
-    find(id("West")).text mustBe "Sam vul"
 
-    val assertScore = assertTotals("Nancy", "Sam", "Ellen", "Wayne" ) _
-    enterHand(4,Spades,NotDoubled,North,Made,4, Some("Sam"))  // NS score 420
-    assertScore( Seq( 2260, 1570, 1570, 1720 ))
-    click on id("NextHand")
-    enterHand(4,Hearts,NotDoubled,East,Made,4, Some("Nancy"))  // EW score 420
-    assertScore( Seq( 2260, 1990, 1990, 1720 ))
-    click on id("NextHand")
-    enterHand(5,Diamonds,NotDoubled,South,Made,5, Some("Ellen"))  // NS score 400
-    assertScore( Seq( 2660, 1990, 1990, 2120 ))
-    click on id("NextHand")
-    enterHand(3,Clubs,NotDoubled,West,Made,4, Some("Wayne"))  // EW score 130
-    assertScore( Seq( 2660, 2120, 2120, 2120 ))
+    val hp = HandPage.current(ChicagoMatchTypeFour)
 
-    InputStyleHelper.hitInputStyleButton( "Original" )
+    hp.getName(North) mustBe playerN
+    hp.getName(South) mustBe playerW
+    hp.getName(East) mustBe playerE
+    hp.getName(West) mustBe playerS
 
-    click on id("NewRound")
+    val sp = hp.enterHand(
+        4, Spades, NotDoubled, North, Made, 4,
+        score = Some(s"420 $playerN-$playerW"), nsVul = NotVul, ewVul = NotVul, dealer = Some(playerS)
+    ).validate
+    checkTotalScores( sp, 2260, 1570, 1570, 1720 )
+    val hp2 = sp.clickNextHand
+    val sp2 = hp2.enterHand(
+        4,Hearts,NotDoubled,East,Made,4,
+        score = Some(s"420 $playerE-$playerS"), nsVul = Vul, ewVul = NotVul, dealer = Some(playerN)
+    ).validate
+    checkTotalScores( sp2, 2260, 1990, 1990, 1720 )
+    val hp3 = sp2.clickNextHand
+    val sp3 = hp3.enterHand(
+        5,Diamonds,NotDoubled,South,Made,5,
+        score = Some(s"400 $playerN-$playerW"), nsVul = NotVul, ewVul = Vul, dealer = Some(playerE)
+    ).validate
+    checkTotalScores( sp3, 2660, 1990, 1990, 2120 )
+    val hp4 = sp3.clickNextHand
+    val sp4 = hp4.enterHand(
+        3,Clubs,NotDoubled,West,Made,4,
+        score = Some(s"130 $playerE-$playerS"), nsVul = Vul, ewVul = Vul, dealer = Some(playerW)
+    ).validate
+    checkTotalScores( sp4, 2660, 2120, 2120, 2120 )
+
+    sp4.setInputStyle("Original")
+    sp4.clickNewRoundFour.validate
   }
 
 
   it should "allow setting the scorekeeper, partner and dealer for fourth round" in {
-    tcpSleep(30)
 
-    click on id("South1")
-    click on id("East3")
-    click on id("PlayerSFirstDealer")
-    click on id("Ok")
+    val spp = FourSelectPartnersPage.current
+
+    spp.clickPlayer(South,1)
+    spp.clickPlayer(East,3)
+    spp.setDealer(South)
+    spp.clickOK.validate
   }
 
   it should "send to the server that there are 4 games per round once more again" in {
@@ -386,89 +452,46 @@ class ChicagoTest extends AnyFlatSpec
   }
 
   it should "play fourth round of 4 hands" in {
-    find(id("North")).text mustBe "Nancy vul"
-    find(id("South")).text mustBe "Ellen vul"
-    find(id("East")).text mustBe "Wayne vul"
-    find(id("West")).text mustBe "Sam vul"
 
-    val assertScore = assertTotals("Nancy", "Sam", "Ellen", "Wayne" ) _
-    enterHand(4,Spades,NotDoubled,North,Made,4, Some("Ellen"))  // NS score 420
-    assertScore( Seq( 3080, 2120, 2540, 2120 ))
-    click on id("NextHand")
-    enterHand(4,Hearts,NotDoubled,East,Made,4, Some("Sam"))  // EW score 620
-    assertScore( Seq( 3080, 2740, 2540, 2740 ))
-    click on id("NextHand")
-    enterHand(5,Diamonds,NotDoubled,South,Made,5, Some("Nancy"))  // NS score 600
-    assertScore( Seq( 3680, 2740, 3140, 2740 ))
-    click on id("NextHand")
-    enterHand(3,Clubs,NotDoubled,West,Made,4, Some("Wayne"))  // EW score 130
-    assertScore( Seq( 3680, 2870, 3140, 2870 ))
-    click on id("NewRound")
+    val hp = HandPage.current(ChicagoMatchTypeFour)
+
+    hp.getName(North) mustBe playerN
+    hp.getName(South) mustBe playerE
+    hp.getName(East) mustBe playerW
+    hp.getName(West) mustBe playerS
+
+    val sp = hp.enterHand(
+        4, Spades, NotDoubled, North, Made, 4,
+        score = Some(s"420 $playerN-$playerE"), nsVul = NotVul, ewVul = NotVul, dealer = Some(playerE)
+    ).validate
+    checkTotalScores( sp, 3080, 2120, 2540, 2120 )
+    val hp2 = sp.clickNextHand
+    val sp2 = hp2.enterHand(
+        4,Hearts,NotDoubled,East,Made,4,
+        score = Some(s"620 $playerW-$playerS"), nsVul = NotVul, ewVul = Vul, dealer = Some(playerS)
+    ).validate
+    checkTotalScores( sp2, 3080, 2740, 2540, 2740 )
+    val hp3 = sp2.clickNextHand
+    val sp3 = hp3.enterHand(
+        5,Diamonds,NotDoubled,South,Made,5,
+        score = Some(s"600 $playerN-$playerE"), nsVul = Vul, ewVul = NotVul, dealer = Some(playerN)
+    ).validate
+    checkTotalScores( sp3, 3680, 2740, 3140, 2740 )
+    val hp4 = sp3.clickNextHand
+    val sp4 = hp4.enterHand(
+        3,Clubs,NotDoubled,West,Made,4,
+        score = Some(s"130 $playerW-$playerS"), nsVul = Vul, ewVul = Vul, dealer = Some(playerW)
+    ).validate
+    checkTotalScores( sp4, 3680, 2870, 3140, 2870 )
+
+    sp4.clickQuit.validate
   }
 
   it should "show the correct result in the chicago list page" in {
-    tcpSleep(30)
-    val nameAndScoreInSameCell = chicagoListURL match {
-      case Some(url) =>
-        go to (TestServer.hosturl+url)
-        false
-      case None =>
-        chicagoToListId match {
-          case Some(bid) =>
-            eventually {
-              find(id("Cancel"))
-            }
-            click on id("Cancel")
-            eventually {
-              find(id(bid))
-            }
-            click on id(bid)
-            true
-          case None =>
-            fail("Must specify either chicagoListURL or chicagoToListId")
-        }
-    }
 
-    tcpSleep(4)
+    val lp = ListPage.current
 
-
-    if (nameAndScoreInSameCell) {
-      val rows = eventually {
-        pageTitle mustBe ("The Bridge ScoreKeeper")
-
-        val rows = findElements(By.xpath(HomePage.divBridgeAppPrefix+"//table[1]/tbody/tr[1]"))
-        rows.size() mustBe 1
-        rows
-      }
-      val r1 = rows.get(0)
-      val cells = r1.findElements(By.xpath("td"))
-      cells.size() mustBe 7
-
-      cells.get(2).getText mustBe "Nancy - 3680"
-      cells.get(3).getText mustBe "Ellen - 3140"
-      cells.get(4).getText mustBe "Sam - 2870"
-      cells.get(5).getText mustBe "Wayne - 2870"
-    } else {
-      val rows = eventually {
-        pageTitle mustBe ("The Bridge ScoreKeeper")
-
-        val rows = findElements(By.xpath(HomePage.divBridgeAppPrefix+"//table[1]/tbody/tr[1]"))
-        rows.size() mustBe 1
-        rows
-      }
-      val r1 = rows.get(0)
-      val cells = r1.findElements(By.xpath("td"))
-      cells.size() mustBe 10
-
-      cells.get(1).getText mustBe "Nancy"
-      cells.get(2).getText mustBe "3680"
-      cells.get(3).getText mustBe "Ellen"
-      cells.get(4).getText mustBe "3140"
-      cells.get(5).getText mustBe "Sam"
-      cells.get(6).getText mustBe "2870"
-      cells.get(7).getText mustBe "Wayne"
-      cells.get(8).getText mustBe "2870"
-    }
+    lp.checkPlayers(0, s"$playerN - 3680", s"$playerE - 3140", s"$playerS - 2870", s"$playerW - 2870" )
 
   }
 
@@ -512,31 +535,34 @@ class ChicagoTest extends AnyFlatSpec
   behavior of "Chicago test of entering names"
 
   it should "start a new Chicago game" in {
-    go to (TestServer.getAppPage())
-    pageTitle mustBe ("The Bridge ScoreKeeper")
 
-    click on id(newChicagoButtonId)
+    val hp = HomePage.goto.validate
+    val enp = hp.clickNewChicagoButton.validate
+
     if (TestServer.isServerStartedByTest) {
       eventually( backend.chicagos.syncStore.readAll() match {
         case Right(l) => l.size mustBe startingNumberOfChicagosInServer+2
         case Left((rc,msg)) => throw new NoResultYet( rc.toString()+": "+msg )
       })
     }
-    eventually( find(xpath("//h6[3]/span")).text mustBe "Enter players and identify first dealer" )
   }
 
   def findNorthInputList = findAllElems[Element]( xpath("""//input[@name='North']/parent::div/following-sibling::div/div/div/ul/li""") )
 
   it should "give player suggestions when entering names" in {
+
+    val enp = EnterNamesPage.current
+
     withClueAndScreenShot(screenshotDir,"SuggestName","") {
-      eventually( find(id("ResetNames")) mustBe Symbol("Enabled") )
-      find(id("Ok")) must not be Symbol("Enabled")
+      eventually {
+        enp.isResetEnabled mustBe true
+        enp.isOKEnabled mustBe false
+      }
 
-      textField("North").value = "n"
-      tcpSleep(2)
-
+      enp.enterPlayer(North, "n")
       val first = eventually {
-        val listitems = findNorthInputList
+        val combobox = enp.getPlayerCombobox(North)
+        val listitems = combobox.suggestions
         assert( !listitems.isEmpty, "list of candidate entries must not be empty" )
         listitems.foreach ( li =>
           li.text must startWith regex( "(?i)n" )
@@ -544,77 +570,78 @@ class ChicagoTest extends AnyFlatSpec
         listitems(0)
       }
       val text = first.text
-      PageBrowser.scrollToElement(first)
-      Thread.sleep(10)
-      findNorthInputList.headOption.map ( first => first.click ).getOrElse( fail("Did not find North input field list") )
-      eventually (textField("North").value mustBe text)
-
-      textField("South").value = "s"
-      tcpSleep(2)
+      first.click
       eventually {
-        val listitems = findElements(By.xpath("""//input[@name='South']/parent::div/following-sibling::div/div/div/ul/li"""))
-        assert( !listitems.isEmpty(), "list of candidate entries must not be empty" )
-        listitems.forEach ( li =>
-          li.getText() must startWith regex( "(?i)s" )
+        enp.getPlayer(North) mustBe text
+      }
+
+      enp.enterPlayer(South, "s")
+
+      eventually {
+        val listitems = enp.getPlayerCombobox(South).suggestions
+        assert( !listitems.isEmpty, "list of candidate entries must not be empty" )
+        listitems.foreach ( li =>
+          li.text must startWith regex( "(?i)s" )
         )
       }
 
-      textField("East").value = "asfdfs"
+      enp.enterPlayer(East, "asfdfs")
       eventually {
-        val listitems = findElements(By.xpath("""//input[@name='East']/parent::div/following-sibling::div/div/div/ul/li"""))
-        assert( !listitems.isEmpty(), "list of candidate entries must not be empty" )
-        listitems.forEach ( li =>
-          li.getText() must startWith ( "No names matched" )
+        val listitems = enp.getPlayerCombobox(East).suggestions
+        assert( !listitems.isEmpty, "list of candidate entries must not be empty" )
+        listitems.foreach ( li =>
+          li.text must startWith ( "No names matched" )
         )
       }
 
-      esc
+      enp.esc
 
-      eventually (textField("North").value mustBe "Nancy")
-      textField("South").value mustBe "s"
-      textField("East").value mustBe "asfdfs"
-      textField("West").value mustBe ""
+      eventually {
+        enp.getPlayer(North) mustBe text
+        enp.getPlayer(South) mustBe "s"
+        enp.getPlayer(East) mustBe "asfdfs"
+        enp.getPlayer(West) mustBe ""
+      }
 
     }
 
   }
 
   it should "delete the match just created" in {
-    click on id("Cancel")
 
-    eventually { find( id("Quit") ) }
+    val enp = EnterNamesPage.current
+    val sp = enp.clickCancel.validate
+    val lp = sp.clickQuit.validate
 
-    click on id("Quit")
+    lp.isPopupDisplayed mustBe false
 
-    eventually { find( id("Home") ) }
+    val idToDelete = lp.getTable.row(0).id
 
-    eventually { find( id("popup") ).isDisplayed mustBe false }
+    lp.clickDelete(0)
 
-    val buttons = eventually { findAll( xpath( HomePage.divBridgeAppPrefix+"//table/tbody/tr[1]/td/button" ) ) }
-    buttons.size mustBe 2
-    val buttontext = buttons(0).text
-    buttons(1).click
+    eventually {
+      lp.isPopupDisplayed mustBe true
+    }
+    lp.clickPopUpCancel
 
-    eventually { find( id("popup") ).isDisplayed mustBe true }
+    eventually {
+      lp.isPopupDisplayed mustBe false
+    }
 
-    click on id("PopUpCancel")
+    lp.clickDelete(0)
 
-    eventually { find( id("popup") ).isDisplayed mustBe false }
+    eventually {
+      lp.isPopupDisplayed mustBe true
+    }
 
-    val buttons2 = eventually { findAll( xpath( HomePage.divBridgeAppPrefix+"//table/tbody/tr[1]/td/button" ) ) }
-    buttons2.size mustBe 2
-    buttons2(1).click
+    lp.clickPopUpOk
 
-    eventually { find( id("popup") ).isDisplayed mustBe true }
+    eventually {
+      lp.isPopupDisplayed mustBe false
+      lp.getTable.row(0).id must not be idToDelete
 
-    click on id("PopUpOk")
+    }
 
-    eventually { find( id("popup") ).isDisplayed mustBe false }
-
-    val buttons3 = eventually { findAll( xpath( HomePage.divBridgeAppPrefix+"//table/tbody/tr[1]/td/button" ) ) }
-    val button3text = buttons3(0).text
-
-    buttontext must not be button3text
   }
 
 }

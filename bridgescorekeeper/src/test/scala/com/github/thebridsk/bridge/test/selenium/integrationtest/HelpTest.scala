@@ -178,7 +178,7 @@ class HelpTest extends AnyFlatSpec with Matchers with BeforeAndAfterAll {
     val helpUrl = TestServer.getHelpPage()
 
     def followLink( url: String ) = {
-      !( url.endsWith(".png") || url.endsWith("#") )
+      !( url.endsWith(".png") /* || url.endsWith("#") */ )
     }
 
     /*
@@ -198,12 +198,15 @@ class HelpTest extends AnyFlatSpec with Matchers with BeforeAndAfterAll {
                        |  images: ${images}""".stripMargin )
       if (!queue.isEmpty) {
         val (page,target) = queue.head
+        logger.fine(s"Checking url $target from $page")
         if (visited.contains(target) || !target.startsWith(helpUrl) || target.endsWith(".png")) {
           logger.fine( s"Ignoring ${target} from page ${page}, already visited or not on site or image" )
           visitPages( queue.tail, visited, images )
         } else {
-          logger.fine( s"Going to ${target} from page ${page}" )
-          go to target
+          logger.fine( s"Checking link from page ${page}: ${target} " )
+          withClue( s"Checking link from page ${page}: ${target} " ) {
+            go to target
+          }
           withClue(s"From page ${page} unable to get to ${target}") {
             eventually {
               currentUrl mustBe target
@@ -223,8 +226,13 @@ class HelpTest extends AnyFlatSpec with Matchers with BeforeAndAfterAll {
     }
 
     val curUrl = currentUrl
-    val visited = TestServer.hosturl+"play.html"::TestServer.hosturl+"help/play.html"::TestServer.hosturl+"help/"::Nil
+    val visited =
+        // TestServer.hosturl+"play.html"::
+        // TestServer.hosturl+"help/play.html"::
+        TestServer.hosturl+"help/"::
+        Nil
 
+    logger.fine( s"Starting to visit pages, starting at $curUrl")
     val images = visitPages( (curUrl,curUrl)::Nil, visited, Nil )
 
     /*
@@ -242,6 +250,7 @@ class HelpTest extends AnyFlatSpec with Matchers with BeforeAndAfterAll {
         if (visited.contains(target)) {
           visitImages( queue.tail, visited )
         } else {
+          logger.fine(s"Checking image from page ${page}: ${target}")
           withClue(s"From page ${page} unable to get image ${target}") {
             eventually {
               HelpPage.checkImage( target )

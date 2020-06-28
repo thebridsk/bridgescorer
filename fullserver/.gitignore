@@ -1,0 +1,17 @@
+/bin/
+/.cache-main
+/.cache-tests
+/.classpath
+/.project
+/.settings/
+/*TcpMonitorTimeWait.csv
+/*.log
+/*.log.lck
+/debugDomSuggestion.html
+/newstore/
+/namemap.txt
+/*.log1
+/*.log1.lck
+/logs.zip
+/.worksheet
+/key

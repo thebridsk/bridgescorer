@@ -110,7 +110,7 @@ class HomePage( implicit webDrivr: WebDriver, pageCreated: SourcePosition ) exte
 
   def isMoreMenuVisible( implicit pos: Position ) = {
     try {
-      val we = findElem[Element]( id("About") )
+      val we = findElem( id("About") )
       true
     } catch {
       case x: Exception => false

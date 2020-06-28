@@ -32,9 +32,13 @@ object BaseStyles {
       selected: Boolean = false,
       requiredName: Boolean = false,
       required: Boolean = false,
-      requiredNotNext: Boolean = false
+      requiredNotNext: Boolean = false,
+      color2: Boolean = false,
+      color3: Boolean = false
   ) = {
     val styles =
+      color2.toList(baseStyles.baseColor2):::
+      color3.toList(baseStyles.baseColor3):::
       selected.toList(baseStyles.buttonSelected):::
       requiredName.toList(baseStyles.requiredName):::
       required.toList(baseStyles.required):::
@@ -51,6 +55,9 @@ class BaseStyles {
 
   val fontTextLarge = cls("baseFontTextLarge")
   val fontTextNormal = cls("baseFontTextNormal")
+
+  val baseColor2 = cls("baseColor2")
+  val baseColor3 = cls("baseColor3")
 
   val defaultButton = cls("baseDefaultButton baseFontTextLarge")
   val appButton = cls("baseAppButton baseDefaultButton baseFontTextLarge")

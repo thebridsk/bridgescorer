@@ -152,7 +152,7 @@ object ViewQuintetInternal {
                 <.th( ^.colSpan:=scoring.players.size, "Totals")
                 ),
             <.tr(
-              <.th( "Round"),
+              <.th( "Hand"),
               <.th( "Dealer"),
               <.th( "Contract"),
               <.th( "By"),

@@ -149,8 +149,10 @@ object PageSummaryInternal {
               //   8 hand round (show if in round 1 hand 5)
               //
               val show68HandRound = scoring.gamesPerRound == 0 && numberRounds == 1 && lastRoundHands.length == 5
-              val showNextHand = (scoring.gamesPerRound == 0 || lastRoundHands.length < scoring.gamesPerRound) && !show68HandRound
-              val showNewRound = (numberRounds == 1 && lastRoundHands.length == 4) || (scoring.gamesPerRound != 0 && lastRoundHands.length == scoring.gamesPerRound)
+              val showNextHand = scoring.gamesPerRound == 1 || ((scoring.gamesPerRound == 0 || lastRoundHands.length < scoring.gamesPerRound) && !show68HandRound)
+              val showNewRound = ((numberRounds == 1 && lastRoundHands.length == 4) ||
+                                  (scoring.gamesPerRound != 0 && lastRoundHands.length == scoring.gamesPerRound)) &&
+                                 scoring.gamesPerRound != 1
               val showSet68HandRound = numberRounds == 1 && lastRoundHands.length == 4 && scoring.gamesPerRound == 0
               val (start, end, showRound) = props.page match {
                 case Left(_) => (0, scoring.rounds.length, None)
@@ -226,7 +228,7 @@ object PageSummaryInternal {
                           "NextHand",
                           "Next Hand",
                           baseStyles.requiredNotNext,
-                          ^.onClick --> nextHand
+                          ^.onClick --> (if (scoring.gamesPerRound ==1) nextRound else nextHand)
                         ),
                         <.span(" ")
                       )
@@ -288,7 +290,11 @@ object PageSummaryInternal {
       Callback {
         ChicagoStore.getChicago match {
           case Some(mc) =>
-            val n = mc.rounds.length
+            val n = {
+              val nn = mc.rounds.length
+              if (nn > 0 && mc.rounds.last.hands.isEmpty) nn-1
+              else nn
+            }
             if (n == 1 && mc.gamesPerRound == 0) {
               val nhands = mc.rounds(0).hands.length
               val newmc = mc.setGamesPerRound(nhands)
