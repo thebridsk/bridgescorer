@@ -157,7 +157,12 @@ object BldBridge {
       .run(checkForUpdates)
       .run("reload plugins")
       .run(dependencyUpdates)
-      .run("reload return")
+    state
+      .run( "project {utilities}utilities" )
+      .run( "reload plugins")
+      .run( dependencyUpdates )
+//      .run("reload return")
+    state
   }
 
   lazy val releaseOptimize = ReleaseStep(
