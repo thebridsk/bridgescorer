@@ -35,6 +35,7 @@ object BldBridge {
         |  setOptimize            turn on scalac optimization in all projects
         |  server                 run server with HTTP without help pages
         |  serverhelp             run server with HTTP with help pages
+        |  updateCheck            check for updates in project and plugins
         |  checkForUpdates        check for dependency updates, does not check sbt plugins
         |  distribution:alltests  runs all tests
         |  standalonetests        run test cases using assembled jars, does not build jars
@@ -138,6 +139,27 @@ object BldBridge {
     )
   }
 
+  implicit class WrapState( val state: State ) extends AnyVal {
+    def run[T]( key: TaskKey[T] ) = {
+      releaseStepTask(key)(state)
+    }
+    def run( command: String ) = {
+      releaseStepCommandAndRemaining(command)(state)
+    }
+  }
+
+  val updateCheck = Command.command(
+    "updateCheck",
+    "Check for updates",
+    "Check for updates"
+  ) { state =>
+    state
+      .run(checkForUpdates)
+      .run("reload plugins")
+      .run(dependencyUpdates)
+      .run("reload return")
+  }
+
   lazy val releaseOptimize = ReleaseStep(
     action = turnOnOptimize
   )
@@ -213,7 +235,7 @@ object BldBridge {
       serverhelp := { (serverhelp in BldBridgeScoreKeeper.bridgescorekeeper).value },
       serverlogs := { (serverlogs in BldBridgeScoreKeeper.bridgescorekeeper).value },
 
-      commands ++= Seq( apphelp, setOptimize )
+      commands ++= Seq( apphelp, setOptimize, updateCheck )
     ).
     settings(
       checkForUpdates := Def
