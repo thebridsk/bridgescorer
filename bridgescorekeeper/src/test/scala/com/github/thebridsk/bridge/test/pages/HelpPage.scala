@@ -50,13 +50,6 @@ object HelpPage {
     TestServer.getHelpPage(helppage)
   }
 
-  /**
-   * @param helppage the URI without "help/".  Example: for duplicate page use "duplicate/"
-   */
-  def getxpath( helppage: String = "" ) = {
-    "../"+helppage
-  }
-
   val hrefvals=List( "introduction.html", "home.html", "duplicate.html", "chicago.html", "rubber.html" )
   val hrefurls=hrefvals.map( v => getPageUrl(v) )
 
@@ -73,6 +66,11 @@ object HelpPage {
     resp.status mustBe 200
   }
 
+  def adjustURI( uri: String ) = {
+    val slashes = uri.length() - uri.replace("/","").length()
+    if (slashes == 0) s"./$uri"
+    else s"${"../" * slashes}$uri"
+  }
 }
 
 /**
@@ -88,13 +86,16 @@ class HelpPage(
 
   def validate(implicit patienceConfig: PatienceConfig, pos: Position) = {
 
-    // <body class="" data-url="/duplicate/summary.html">
+    // <body class="" data-url="./introduction.html">
+    // <body class="" data-url="../duplicate/summary.html">
+    // <body class="" data-url="../../chicago/fastfair/names5.html">
 
     eventually {
       val base = getPageUrl(helpuri)
       val url = currentUrl
       url mustBe base
-      find( xpath(s"""//body[@data-url = '/${helpuri}']""") )
+      // find( xpath(s"""//body[contains(@data-url, './${helpuri}')]""") )
+      find( xpath(s"""//body[@data-url='${adjustURI(helpuri)}']""") )
     }
     this
   }
