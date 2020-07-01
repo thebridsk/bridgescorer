@@ -174,6 +174,8 @@ object BldCommonSettings {
 
   val mytest = taskKey[Unit]("build and test it") in Distribution
 
+  val mydistnoclean = taskKey[Unit]("Make a build for distribution, no clean") in Distribution
+
   val mydist = taskKey[Unit]("Make a build for distribution") in Distribution
 
   val fvt = taskKey[Unit]("Run test cases using assembled jars, does not build jars") in Distribution

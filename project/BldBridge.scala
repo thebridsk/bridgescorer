@@ -42,6 +42,8 @@ object BldBridge {
         |  distribution:travis    run build that is run in Travis-CI
         |  distribution:travis1   run build that is run in step 1 in Travis-CI
         |  distribution:travis2   run build that is run in step 2 in Travis-CI
+        |  myrelease-with-defaults do a release using defaults
+        |Note, the following will fail:
         |  release with-defaults  does a release bumping the patch version
         |  release release-version 1.0.99 next-version 1.2.0-SNAPSHOT    set the release version and next version for release process
         |
@@ -240,7 +242,7 @@ object BldBridge {
       serverhelp := { (serverhelp in BldBridgeScoreKeeper.bridgescorekeeper).value },
       serverlogs := { (serverlogs in BldBridgeScoreKeeper.bridgescorekeeper).value },
 
-      commands ++= Seq( apphelp, setOptimize, updateCheck )
+      commands ++= Seq( apphelp, setOptimize, updateCheck, releaseWithDefaults )
     ).
     settings(
       checkForUpdates := Def
@@ -270,62 +272,46 @@ object BldBridge {
         .value,
       travis := Def
         .sequential(
-          travis in Distribution in utilities,
-          test in Test in BldBridgeRotation.rotationJVM,
-          test in Test in BldBridgeRotation.rotationJS,
-          test in Test in BldColor.colorJVM,
-          test in Test in BldBridgeClientCommon.`bridgescorer-clientcommon`,
-          test in Test in BldBridgeClient.`bridgescorer-client`,
-          // test in Test in BldBridgeClientApi.`bridgescorer-clientapi`,
-          test in Test in BldBridgeServer.`bridgescorer-server`,
-          test in Test in BldBridgeFullServer.`bridgescorer-fullserver`,
+          travis1,
           travismoretests in Distribution in BldBridgeScoreKeeper.bridgescorekeeper,
         )
         .value,
-      travis1 := Def
-        .sequential(
-          travis in Distribution in utilities,
-          test in Test in BldBridgeRotation.rotationJVM,
-          test in Test in BldBridgeRotation.rotationJS,
-          test in Test in BldColor.colorJVM,
-          test in Test in BldBridgeClientCommon.`bridgescorer-clientcommon`,
-          test in Test in BldBridgeClient.`bridgescorer-client`,
-          // test in Test in BldBridgeClientApi.`bridgescorer-clientapi`,
-          test in Test in BldBridgeServer.`bridgescorer-server`,
-          test in Test in BldBridgeFullServer.`bridgescorer-fullserver`
-        )
-        .value,
+      travis1 := {
+          val x1 = (travis in Distribution in utilities).value
+          val x2 = (test in Test in BldBridgeRotation.rotationJVM).value
+          val x3 = (test in Test in BldBridgeRotation.rotationJS).value
+          val x4 = (test in Test in BldColor.colorJVM).value
+          val x5 = (test in Test in BldBridgeClientCommon.`bridgescorer-clientcommon`).value
+          val x6 = (test in Test in BldBridgeClient.`bridgescorer-client`).value
+          // val x7 = (test in Test in BldBridgeClientApi.`bridgescorer-clientapi`).value
+          val x8 = (test in Test in BldBridgeServer.`bridgescorer-server`).value
+          val x9 = (test in Test in BldBridgeFullServer.`bridgescorer-fullserver`).value
+      },
       travis2 := Def
         .sequential(
           test in Test in BldBridgeFullServer.`bridgescorer-fullserver`,
           travismoretests in Distribution in BldBridgeScoreKeeper.bridgescorekeeper,
         )
         .value,
+      mydistnoclean := {
+          val x1 = (mydist in Distribution in utilities).value
+          val x2 = (test in Test in BldBrowserPages.browserpages).value
+          val x3 = (fastOptJS in Compile in BldBridgeClient.`bridgescorer-client`).value
+          val x4 = (fullOptJS in Compile in BldBridgeClient.`bridgescorer-client`).value
+          val x5 = travis1.value
+        },
       mydist := Def
         .sequential(
-          clean.all(bridgescorerAllProjects),
-          clean.all(utilitiesAllProjects),
-          mydist in Distribution in utilities,
-          test in Test in BldBrowserPages.browserpages,
-          fastOptJS in Compile in BldBridgeClient.`bridgescorer-client`,
-          fullOptJS in Compile in BldBridgeClient.`bridgescorer-client`,
-          test in Test in BldBridgeRotation.rotationJVM,
-          test in Test in BldBridgeRotation.rotationJS,
-          test in Test in BldColor.colorJVM,
-          test in Test in BldBridgeClientCommon.`bridgescorer-clientcommon`,
-          test in Test in BldBridgeClient.`bridgescorer-client`,
-          // test in Test in BldBridgeClientApi.`bridgescorer-clientapi`,
-          test in Test in BldBridgeServer.`bridgescorer-server`,
-          test in Test in BldBridgeFullServer.`bridgescorer-fullserver`,
+          myclean,
+          mydistnoclean,
           mypublish in Distribution,
         )
         .value,
-      myclean := Def
-        .sequential(
-          clean.all(bridgescorerAllProjects),
-          clean.all(utilitiesAllProjects)
-        )
-        .value,
+      myclean := {
+        val x = clean.all(bridgescorerAllProjects).value
+        val y = clean.all(utilitiesAllProjects).value
+      },
+
       mytest := Def
         .sequential(
           allassembly in BldBridgeScoreKeeper.bridgescorekeeper,
@@ -342,26 +328,27 @@ object BldBridge {
 //
 // need to update release tag and comment
 //
-      releaseTagName := "v" + git.baseVersion.value,
+      releaseTagName := getTagFromVersion( git.baseVersion.value ),
       releaseTagComment := s"Releasing ${git.baseVersion.value}",
       releaseCommitMessage := s"Setting version to ${git.baseVersion.value}",
       releaseNextCommitMessage := s"Setting version to ${git.baseVersion.value}",
+
+      // This release process will only work if the command "release with-defaults" or
+      // "myrelease-with-defaults" is used.
       releaseProcess := Seq[ReleaseStep](
-        checkSnapshotDependencies, // : ReleaseStep
+        checkSnapshotDependencies,
         gitMakeReleaseBranch,
-        inquireVersions, // : ReleaseStep
-      //  runTest,                                // : ReleaseStep
-        setReleaseVersion, // : ReleaseStep
-        commitReleaseVersion, // : ReleaseStep, performs the initial git checks
-        tagRelease, // : ReleaseStep
-        recalculateVersion, // : ReleaseStep
+        inquireVersions,
+        setReleaseVersion,
+        commitReleaseVersion,
+        tagRelease,
+        recalculateVersion,
         releaseOptimize,
-        publishRelease, // : ReleaseStep, custom
-        setNextVersion, // : ReleaseStep
-        commitNextVersion // : ReleaseStep
-      //  gitMergeReleaseMaster,
-      //  recalculateVersion,                     // : ReleaseStep
-      //  pushChanges                             // : ReleaseStep, also checks that an upstream branch is properly configured
+        publishRelease,  // runs a clean build and test
+        setNextVersion,
+        commitNextVersion,
+        gitPushReleaseBranch,
+        gitPushReleaseTag
       ),
 
       publishdir := {
