@@ -276,8 +276,8 @@ object BldBridge {
           travismoretests in Distribution in BldBridgeScoreKeeper.bridgescorekeeper,
         )
         .value,
-      travis1 := {
-          val x1 = (travis in Distribution in utilities).value
+      travis1p := {
+          // val x1 = (travis in Distribution in utilities).value
           val x2 = (test in Test in BldBridgeRotation.rotationJVM).value
           val x3 = (test in Test in BldBridgeRotation.rotationJS).value
           val x4 = (test in Test in BldColor.colorJVM).value
@@ -287,6 +287,11 @@ object BldBridge {
           val x8 = (test in Test in BldBridgeServer.`bridgescorer-server`).value
           val x9 = (test in Test in BldBridgeFullServer.`bridgescorer-fullserver`).value
       },
+      travis1 := Def
+        .sequential(
+          travis in Distribution in utilities,
+          travis1p
+        ).value,
       travis2 := Def
         .sequential(
           test in Test in BldBridgeFullServer.`bridgescorer-fullserver`,

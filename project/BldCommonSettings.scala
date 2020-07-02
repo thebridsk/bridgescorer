@@ -158,6 +158,8 @@ object BldCommonSettings {
 
   val travis = taskKey[Unit]("The build that is run in Travis CI.") in Distribution
 
+  val travis1p = taskKey[Unit]("The build that is run in Travis CI, the parallel parts") in Distribution
+
   val travis1 = taskKey[Unit]("The build that is run in Travis CI.") in Distribution
 
   val travis2 = taskKey[Unit]("The build that is run in Travis CI.") in Distribution
