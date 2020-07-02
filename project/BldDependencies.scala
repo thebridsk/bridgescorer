@@ -223,6 +223,7 @@ object BldDependencies {
 
   val bridgeScorerDevNpmDeps = Seq(
       "webpack" -> vWebPack,
+      "jquery" -> vJQuery,
 //      "source-map-loader" -> vSourceMapLoader,
 //      "concat-with-sourcemaps" -> vConcatWithSourcemaps,
       "terser" -> vTerser,
@@ -232,6 +233,7 @@ object BldDependencies {
 
   val bridgeScorerClientApiDevNpmDeps = Seq(
       "webpack" -> vWebPack,
+      "jquery" -> vJQuery,
 //      "source-map-loader" -> vSourceMapLoader,
 //      "concat-with-sourcemaps" -> vConcatWithSourcemaps,
       "terser" -> vTerser,
