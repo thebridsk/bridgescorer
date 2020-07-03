@@ -9,7 +9,7 @@ import org.scalactic.exceptions.NullArgumentException
 import com.github.thebridsk.utilities.logging.Logger
 
 object EventuallyUtilsInternals {
-  val log = Logger[EventuallyUtils]
+  val log = Logger[EventuallyUtils]()
 
   /**
    * If message or message contents are null, throw a null exception, otherwise

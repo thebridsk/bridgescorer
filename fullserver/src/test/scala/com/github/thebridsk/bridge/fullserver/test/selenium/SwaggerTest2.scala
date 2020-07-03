@@ -43,14 +43,14 @@ class SwaggerTest2 extends AnyFlatSpec with Matchers with BeforeAndAfterAll {
   import com.github.thebridsk.browserpages.PageBrowser._
   import ParallelUtils._
 
-  val logger = Logger[SwaggerTest]
+  val logger = Logger[SwaggerTest]()
 
 
   import Eventually.{ patienceConfig => _, _ }
   import EventuallyUtils._
   import HttpUtils._
 
-  val testlog = Logger[SwaggerTest]
+  val testlog = Logger[SwaggerTest]()
 
   import scala.concurrent.duration._
 

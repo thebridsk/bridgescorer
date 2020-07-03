@@ -15,7 +15,7 @@ import com.github.thebridsk.bridge.server.util.GenerateSSLKeys
 
 object CertTest {
 
-  val testlog = Logger[CertTest]
+  val testlog = Logger[CertTest]()
 }
 
 /**

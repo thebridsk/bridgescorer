@@ -13,7 +13,7 @@ import com.github.thebridsk.browserpages.Page
 
 object DuplicateResultPage {
 
-  val log = Logger[DuplicateResultPage]
+  val log = Logger[DuplicateResultPage]()
 
   case class PlaceEntry( place: Int, points: Double, teams: List[Team] ) {
     def pointsAsString = {

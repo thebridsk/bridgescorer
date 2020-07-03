@@ -48,7 +48,7 @@ import TestRoute._
  */
 class TestRoute extends RoutingSpec {
 
-  val testlog = Logger[TestRoute]
+  val testlog = Logger[TestRoute]()
 
   testlog.fine(getClass.getName+":")
 

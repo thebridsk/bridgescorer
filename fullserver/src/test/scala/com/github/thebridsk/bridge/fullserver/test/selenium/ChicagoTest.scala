@@ -64,7 +64,7 @@ class ChicagoTest extends AnyFlatSpec
 
   import scala.concurrent.duration._
 
-  val log = Logger[ChicagoTest]
+  val log = Logger[ChicagoTest]()
 
   lazy val inTravis = sys.props
     .get("TRAVIS_BUILD_NUMBER")

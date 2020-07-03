@@ -21,7 +21,7 @@ import scala.concurrent.duration._
 
 class TestWinnerSets extends AnyFlatSpec with Matchers {
 
-  val testlog = Logger[TestWinnerSets]
+  val testlog = Logger[TestWinnerSets]()
 
   val restService = new BridgeServiceTesting
 

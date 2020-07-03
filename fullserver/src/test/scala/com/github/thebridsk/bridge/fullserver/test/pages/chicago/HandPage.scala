@@ -21,7 +21,7 @@ import org.scalatest.concurrent.Eventually
 
 object HandPage {
 
-  val log = Logger[HandPage]
+  val log = Logger[HandPage]()
 
   def current( matchType: ChicagoMatchType )(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
     val (chiid,roundid,hand) = findIds

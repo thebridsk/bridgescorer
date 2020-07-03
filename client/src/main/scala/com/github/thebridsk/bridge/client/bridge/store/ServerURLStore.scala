@@ -18,8 +18,8 @@ object ServerURLStore extends ChangeListenable {
   private var updateRequested: Boolean = false
   private var urls: Option[ServerURL] = None
 
-  def hasURLs() = urls.isDefined
-  def getURLs() = urls.getOrElse( ServerURL(List()) )
+  def hasURLs = urls.isDefined
+  def getURLs = urls.getOrElse( ServerURL(List()) )
 
   /**
    * @return A TagMod that contains one or more li elements.
@@ -47,7 +47,7 @@ object ServerURLStore extends ChangeListenable {
     msg match {
       case ActionUpdateServerURLs(serverurl) =>
         urls = Some(serverurl)
-        notifyChange
+        notifyChange()
       case _ =>
     }
   }

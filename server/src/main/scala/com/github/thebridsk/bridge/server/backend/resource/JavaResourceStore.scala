@@ -16,7 +16,7 @@ import scala.concurrent.ExecutionContext
 import scala.util.Using
 
 object JavaResourceStore {
-  val log = Logger[JavaResourceStore[_, _]]
+  val log = Logger[JavaResourceStore[_, _]]()
 
   def apply[VId, VType <: VersionedInstance[VType, VType, VId]](
       name: String,

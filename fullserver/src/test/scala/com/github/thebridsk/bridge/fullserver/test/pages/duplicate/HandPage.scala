@@ -20,7 +20,7 @@ import com.github.thebridsk.bridge.fullserver.test.pages.bridge.HandPicture
 
 object HandPage {
 
-  val log = Logger[HandPage]
+  val log = Logger[HandPage]()
 
   def current(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
     new HandPage

@@ -14,7 +14,7 @@ import com.github.thebridsk.utilities.logging.Logger
 
 object ScoreboardPage {
 
-  val log = Logger[ScoreboardPage]
+  val log = Logger[ScoreboardPage]()
 
   case class PlaceEntry( place: Int, points: String, teams: List[Team] )
 

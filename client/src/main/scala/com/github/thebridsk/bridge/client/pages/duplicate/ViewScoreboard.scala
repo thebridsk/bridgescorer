@@ -79,7 +79,7 @@ object ViewScoreboardInternal {
                                 if ((p1==t1 && p2==t2)
                                     || (p1==t2 && p2==t1)) {
                                   result = h.round==currentRound
-                                  break;
+                                  break()
                                 }
                               }
                             }
@@ -104,7 +104,7 @@ object ViewScoreboardInternal {
                                     result = h.wasPlayed
                                     ns = h.nsTeam
                                   }
-                                  break;
+                                  break()
                                 }
                               }
                             }

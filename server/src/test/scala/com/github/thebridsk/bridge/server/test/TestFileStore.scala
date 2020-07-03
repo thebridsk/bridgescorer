@@ -35,7 +35,7 @@ class TestFileStore extends AsyncFlatSpec with Matchers with BeforeAndAfterAll {
   val resourceURI = "/rubbers"
   val idPrefix = "R"
 
-  val testlog = Logger[TestFileStore]
+  val testlog = Logger[TestFileStore]()
 
   TestStartLogging.startLogging()
 

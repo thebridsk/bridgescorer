@@ -18,7 +18,7 @@ import com.github.thebridsk.bridge.fullserver.test.pages.chicago.ListPage
 
 object ImportPage {
 
-  val log = Logger[ImportPage]
+  val log = Logger[ImportPage]()
 
   def current(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
     new ImportPage

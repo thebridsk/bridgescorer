@@ -4,7 +4,7 @@ import java.util.Properties
 import com.github.thebridsk.utilities.logging.Logger
 
 object FileFinder {
-  val log = Logger[FileFinder]
+  val log = Logger[FileFinder]()
 }
 
 /**

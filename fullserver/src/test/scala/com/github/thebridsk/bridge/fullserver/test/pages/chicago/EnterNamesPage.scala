@@ -20,7 +20,7 @@ import com.github.thebridsk.bridge.fullserver.test.pages.bridge.ErrorMsgDiv
 
 object EnterNamesPage {
 
-  val log = Logger[EnterNamesPage]
+  val log = Logger[EnterNamesPage]()
 
   def current(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
     val (chiid,roundid) = findMatchRoundId

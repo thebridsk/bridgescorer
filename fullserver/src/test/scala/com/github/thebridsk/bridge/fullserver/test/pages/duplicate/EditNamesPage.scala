@@ -16,7 +16,7 @@ import com.github.thebridsk.bridge.data.{ Team => PTeam }
 
 object EditNamesPage {
 
-  val log = Logger[EditNamesPage]
+  val log = Logger[EditNamesPage]()
 
   def current(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
     new EditNamesPage( getCurrentDupId )

@@ -13,7 +13,7 @@ import com.github.thebridsk.browserpages.GenericPage
 
 object SimpleSelectPartnersPage {
 
-  val log = Logger[SimpleSelectPartnersPage]
+  val log = Logger[SimpleSelectPartnersPage]()
 
   def current(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
     val (chiid,roundid) = EnterNamesPage.findMatchRoundId

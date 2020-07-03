@@ -20,7 +20,7 @@ import com.github.thebridsk.bridge.fullserver.test.pages.bridge.ErrorMsgDiv
 
 object EditNamesPage {
 
-  val log = Logger[EditNamesPage]
+  val log = Logger[EditNamesPage]()
 
   def current( matchType: ChicagoMatchType )(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
     val chiid = findMatchId

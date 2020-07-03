@@ -15,7 +15,7 @@ import javax.validation.constraints.AssertFalse
 import com.github.thebridsk.bridge.fullserver.test.pages.FullscreenAddOn
 
 object StatisticsPage {
-  val log = Logger[StatisticsPage]
+  val log = Logger[StatisticsPage]()
 
   def current(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
     new StatisticsPage

@@ -26,7 +26,7 @@ trait ShowCommand
 
 object ShowCommand extends Subcommand("show") {
 
-  val log = Logger[ShowCommand]
+  val log = Logger[ShowCommand]()
 
   implicit def dateConverter: ValueConverter[Duration] =
     singleArgConverter[Duration](Duration(_))

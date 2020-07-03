@@ -16,7 +16,7 @@ import com.github.thebridsk.bridge.data.ImportStoreConstants
 
 object ExportPage {
 
-  val log = Logger[ExportPage]
+  val log = Logger[ExportPage]()
 
   def current(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
     new ExportPage

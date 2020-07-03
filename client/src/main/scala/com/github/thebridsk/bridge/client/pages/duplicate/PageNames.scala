@@ -58,7 +58,7 @@ object PageNamesInternal {
   case class State( teams: Map[Id.Team, Team]=Map(), nameSuggestions: Option[List[String]] = None ) {
     import scala.scalajs.js.JSConverters._
 
-    def reset() =
+    def reset =
       DuplicateStore.getMatch() match {
         case Some(md) => copy(teams=md.teams.map(t=> t.id->t).toMap)
         case None => copy(teams=Map())

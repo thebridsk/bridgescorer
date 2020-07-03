@@ -32,7 +32,7 @@ class MySubscription extends Subscriptions {
 
 class TestSubscription extends AnyFlatSpec with Matchers {
 
-  val log = Logger[TestSubscription]
+  val log = Logger[TestSubscription]()
 
   behavior of "Subscription"
 

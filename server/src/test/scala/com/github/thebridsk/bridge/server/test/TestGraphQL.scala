@@ -49,7 +49,7 @@ import scala.concurrent.ExecutionContext
 
 object TestGraphQL {
 
-  val testlog = com.github.thebridsk.utilities.logging.Logger[TestGraphQL]
+  val testlog = com.github.thebridsk.utilities.logging.Logger[TestGraphQL]()
 
   val graphQL = new Query
 

@@ -78,7 +78,7 @@ class DuplicateTestFromTestDirectory2 extends AnyFlatSpec
   import com.github.thebridsk.browserpages.PageBrowser._
   import ParallelUtils._
 
-  val testlog = Logger[DuplicateTestFromTestDirectory2]
+  val testlog = Logger[DuplicateTestFromTestDirectory2]()
 
   val screenshotDir = "target/DuplicateTestFromTestDirectory2"
 

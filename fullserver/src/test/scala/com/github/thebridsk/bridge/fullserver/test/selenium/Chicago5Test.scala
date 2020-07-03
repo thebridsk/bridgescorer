@@ -60,7 +60,7 @@ class Chicago5Test extends AnyFlatSpec
 
   import Chicago5Test._
 
-  val log = Logger[Chicago5Test]
+  val log = Logger[Chicago5Test]()
 
   TestStartLogging.startLogging()
 

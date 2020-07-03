@@ -31,7 +31,7 @@ import com.github.thebridsk.utilities.logging.Logger
 object ProcessPrivate {
   implicit val ec = ExecutionContext.global
 
-  val logger = Logger[MyProcess]
+  val logger = Logger[MyProcess]()
 }
 
 class MyProcess {

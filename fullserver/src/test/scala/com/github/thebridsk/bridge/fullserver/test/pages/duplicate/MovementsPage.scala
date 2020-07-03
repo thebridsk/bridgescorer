@@ -17,7 +17,7 @@ import com.github.thebridsk.bridge.server.test.util.HttpUtils.ResponseFromHttp
 
 object MovementsPage {
 
-  val log = Logger[MovementsPage]
+  val log = Logger[MovementsPage]()
 
   def current(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
     new MovementsPage( getCurrentMovement )

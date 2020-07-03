@@ -62,7 +62,7 @@ class RubberTest extends AnyFlatSpec
   import scala.language.postfixOps
   import scala.concurrent.duration._
 
-  val testlog = Logger[RubberTest]
+  val testlog = Logger[RubberTest]()
 
   val docsScreenshotDir = "target/docs/Rubber"
 

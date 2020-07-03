@@ -74,7 +74,7 @@ import org.scalatest.compatible.Assertion
 object TestCacheStoreWithRoute {
   import Matchers._
 
-  val testlog = com.github.thebridsk.utilities.logging.Logger[TestCacheStoreWithRoute]
+  val testlog = com.github.thebridsk.utilities.logging.Logger[TestCacheStoreWithRoute]()
 
   TestStartLogging.startLogging()
 

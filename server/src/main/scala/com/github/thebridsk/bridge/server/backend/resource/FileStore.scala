@@ -26,7 +26,7 @@ import java.io.FileOutputStream
 import scala.util.Using
 
 object FileStore {
-  val log = Logger[FileStore[_, _]]
+  val log = Logger[FileStore[_, _]]()
 
   def apply[VId, VType <: VersionedInstance[VType, VType, VId]](
       name: String,

@@ -15,7 +15,7 @@ import com.github.thebridsk.bridge.fullserver.test.pages.bridge.HomePage
 
 object ListPage {
 
-  val log = Logger[ListPage]
+  val log = Logger[ListPage]()
 
   def current(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
     val url = currentUrl

@@ -141,12 +141,12 @@ case class MatchDuplicateResultV2 private (
   }
 
   @Schema(hidden = true)
-  def getTables(): Int = {
+  def getTables: Int = {
     results.flatten.length / 2
   }
 
   @Schema(hidden = true)
-  def getBoards(): Int = {
+  def getBoards: Int = {
     val nTables = getTables
     val pointsPerBoard = nTables * (nTables - 1)
     if (pointsPerBoard == 0) 0
@@ -154,7 +154,7 @@ case class MatchDuplicateResultV2 private (
   }
 
   @Schema(hidden = true)
-  def getTotalPoints(): Int = {
+  def getTotalPoints: Int = {
     results.flatten
       .map { r =>
         r.result.getOrElse(0.0)
@@ -163,7 +163,7 @@ case class MatchDuplicateResultV2 private (
       .toInt
   }
 
-  def fixPlaces() = {
+  def fixPlaces = {
     val places = results.map { winnerset =>
       val m = winnerset.groupBy(e => e.result.getOrElse(0.0)).map { e =>
         val (points, teams) = e
@@ -181,7 +181,7 @@ case class MatchDuplicateResultV2 private (
     copy(results = places)
   }
 
-  def fixPlacesImp() = {
+  def fixPlacesImp = {
     val places = results.map { winnerset =>
       val m = winnerset.groupBy(e => e.resultImp.getOrElse(0.0)).map { e =>
         val (points, teams) = e
@@ -200,7 +200,7 @@ case class MatchDuplicateResultV2 private (
   }
 
   @Schema(hidden = true)
-  def fixupSummary() = {
+  def fixupSummary = {
     boardresults match {
       case Some(l) =>
         this
@@ -210,8 +210,8 @@ case class MatchDuplicateResultV2 private (
   }
 
   @Schema(hidden = true)
-  def fixup() = {
-    fixupSummary().fixPlaces().fixPlacesImp()
+  def fixup = {
+    fixupSummary.fixPlaces.fixPlacesImp
   }
 
   @Schema(hidden = true)
@@ -326,7 +326,7 @@ object MatchDuplicateResultV2 {
       created,
       updated,
       scoringmethod
-    ).fixup()
+    ).fixup
   }
 
   def apply(
@@ -350,7 +350,7 @@ object MatchDuplicateResultV2 {
       created,
       updated,
       scoringmethod
-    ).fixup()
+    ).fixup
   }
 
   def apply(
@@ -371,7 +371,7 @@ object MatchDuplicateResultV2 {
       created,
       updated,
       scoringmethod
-    ).fixup()
+    ).fixup
   }
 
   def create(id: Id.MatchDuplicateResult = "", scoringmethod: String = "MP") = {
@@ -386,7 +386,7 @@ object MatchDuplicateResultV2 {
       time,
       time,
       scoringmethod
-    ).fixup()
+    ).fixup
   }
 
   def createFrom(
@@ -421,7 +421,7 @@ object MatchDuplicateResultV2 {
         (played, md.created, md.updated)
     }
     new MatchDuplicateResultV2("", r, None, None, None, pl, cr, up, "MP")
-      .fixup()
+      .fixup
 
   }
 }

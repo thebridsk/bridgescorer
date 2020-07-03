@@ -39,7 +39,7 @@ import javax.ws.rs.PUT
 import javax.ws.rs.DELETE
 
 object RestNestedHand {
-  val log = Logger[RestNestedHand]
+  val log = Logger[RestNestedHand]()
 }
 
 import RestNestedHand._

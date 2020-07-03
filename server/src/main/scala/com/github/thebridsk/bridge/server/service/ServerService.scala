@@ -54,7 +54,7 @@ import com.github.thebridsk.utilities.logging.Logger
 @Tags(Array(new Tag(name = "Server")))
 class ServerService(totallyMissingHandler: RejectionHandler) {
 
-  val log = Logger[ServerService]
+  val log = Logger[ServerService]()
 
   /**
     * Allow the logging level to be overridden for

@@ -26,7 +26,7 @@ import java.io.OutputStream
 import scala.util.Using
 
 object ZipStore {
-  val log = Logger[ZipStore[_, _]]
+  val log = Logger[ZipStore[_, _]]()
 
   def apply[VId, VType <: VersionedInstance[VType, VType, VId]](
       name: String,

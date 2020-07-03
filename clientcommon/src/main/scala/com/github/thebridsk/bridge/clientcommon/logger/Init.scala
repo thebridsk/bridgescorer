@@ -208,13 +208,13 @@ object Init {
         name match {
           case "con" =>
             target
-              .getHandlers()
+              .getHandlers
               .find(h => h.isInstanceOf[JsConsoleHandlerInfo]) match {
               case Some(h) => target.removeHandler(h)
               case None    =>
             }
             target
-              .getHandlers()
+              .getHandlers
               .find(h => h.isInstanceOf[JsConsoleHandler]) match {
               case Some(h) =>
                 logger.info(
@@ -236,13 +236,13 @@ object Init {
             }
           case "console" =>
             target
-              .getHandlers()
+              .getHandlers
               .find(h => h.isInstanceOf[JsConsoleHandler]) match {
               case Some(h) => target.removeHandler(h)
               case None    =>
             }
             target
-              .getHandlers()
+              .getHandlers
               .find(h => h.isInstanceOf[JsConsoleHandlerInfo]) match {
               case Some(h) =>
                 logger.info(
@@ -266,7 +266,7 @@ object Init {
             DebugLoggerComponent.init(loggername, l)
           case "server" =>
             target
-              .getHandlers()
+              .getHandlers
               .find(h => h.isInstanceOf[SendToServerHandler]) match {
               case Some(h) =>
                 logger.info(
@@ -288,7 +288,7 @@ object Init {
             }
           case "websocket" =>
             target
-              .getHandlers()
+              .getHandlers
               .find(h => h.isInstanceOf[SendToWebsocketHandler]) match {
               case Some(h) =>
                 logger.info(

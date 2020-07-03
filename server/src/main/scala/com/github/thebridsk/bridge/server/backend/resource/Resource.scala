@@ -10,7 +10,7 @@ import com.github.thebridsk.source.SourcePosition
 
 object Resource {
 
-  val log = Logger[Resource[_, _]]
+  val log = Logger[Resource[_, _]]()
 
 }
 

@@ -306,7 +306,7 @@ class InMemoryStore[VId, VType <: VersionedInstance[VType, VType, VId]](
 
 object InMemoryStore {
 
-  val log = Logger[InMemoryStore[_, _]]
+  val log = Logger[InMemoryStore[_, _]]()
 
   def apply[VId, VType <: VersionedInstance[VType, VType, VId]](
       name: String,

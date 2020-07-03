@@ -86,7 +86,7 @@ class TempPlayerPlaces(
 
 object CalculatePlayerPlaces {
 
-  val log = Logger[CalculatePlayerPlaces]
+  val log = Logger[CalculatePlayerPlaces]()
 
   /**
    * Returns an extended array

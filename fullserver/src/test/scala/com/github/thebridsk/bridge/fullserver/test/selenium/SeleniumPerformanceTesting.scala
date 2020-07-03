@@ -52,7 +52,7 @@ class SeleniumPerformanceTesting extends AnyFlatSpec with Matchers with BeforeAn
     import Eventually.{ patienceConfig => _, _ }
     import com.github.thebridsk.browserpages.PageBrowser._
 
-  val log = Logger[SeleniumPerformanceTesting]
+  val log = Logger[SeleniumPerformanceTesting]()
 
   import scala.concurrent.duration._
 

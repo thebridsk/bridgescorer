@@ -20,7 +20,7 @@ import com.github.thebridsk.bridge.fullserver.test.pages.chicago.EnterNamesPage
 
 object HomePage {
 
-  val log = Logger[HomePage]
+  val log = Logger[HomePage]()
 
   def current(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
     new HomePage

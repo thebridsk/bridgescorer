@@ -543,7 +543,7 @@ class Session( name: String = "default" ) extends WebDriver {
 
 object Session {
 
-  val testlog = Logger[Session]
+  val testlog = Logger[Session]()
 
   private var screenSize: Option[Dimension] = None
   private var origin: Option[Point] = None

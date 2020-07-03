@@ -173,7 +173,7 @@ object ChicagoController {
     BridgeDispatcher.updateChicagoHand(chiid, roundid, handid, hand, Some( updateServer ))
   }
 
-  def getSummaryFromLocalStorage(): Array[MatchChicago] = {
+  def getSummaryFromLocalStorage: Array[MatchChicago] = {
     LocalStorage.item(lastChicagoStorageKey).map{ s => readJson[MatchChicago](s)}.toArray
   }
 

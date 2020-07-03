@@ -60,7 +60,7 @@ import io.swagger.v3.oas.annotations.media.Encoding
 import scala.util.Using
 
 object ImportExport {
-  val log = Logger[ImportExport]
+  val log = Logger[ImportExport]()
 
   case class MultipartFile(
     @Schema(`type` = "string", format = "binary", description = "Bridge store file, must have an extension of '.bridgestore' or '.zip'")

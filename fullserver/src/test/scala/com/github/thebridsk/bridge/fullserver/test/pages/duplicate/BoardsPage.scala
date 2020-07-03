@@ -29,7 +29,7 @@ import com.github.thebridsk.bridge.fullserver.test.pages.bridge.HomePage
 
 object BoardsPage {
 
-  val log = Logger[BoardsPage]
+  val log = Logger[BoardsPage]()
 
   def current(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
     new BoardsPage

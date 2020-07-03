@@ -33,7 +33,7 @@ import io.swagger.v3.oas.annotations.tags.Tags
 import io.swagger.v3.oas.annotations.tags.Tag
 
 object GraphQLRoute {
-  val log = Logger[GraphQLRoute]
+  val log = Logger[GraphQLRoute]()
 }
 
 @Path("")

@@ -12,7 +12,7 @@ import com.github.thebridsk.browserpages.Page
 
 object SkeletonPage {
 
-  val log = Logger[SkeletonPage]
+  val log = Logger[SkeletonPage]()
 
   def current(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
     new SkeletonPage

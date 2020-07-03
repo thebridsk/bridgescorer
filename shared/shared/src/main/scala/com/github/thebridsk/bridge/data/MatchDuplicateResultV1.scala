@@ -150,12 +150,12 @@ case class MatchDuplicateResultV1 private (
   }
 
   @Schema(hidden = true)
-  def getTables(): Int = {
+  def getTables: Int = {
     results.flatten.length / 2
   }
 
   @Schema(hidden = true)
-  def getBoards(): Int = {
+  def getBoards: Int = {
     val nTables = getTables
     val pointsPerBoard = nTables * (nTables - 1)
     if (pointsPerBoard == 0) 0
@@ -163,7 +163,7 @@ case class MatchDuplicateResultV1 private (
   }
 
   @Schema(hidden = true)
-  def getTotalPoints(): Int = {
+  def getTotalPoints: Int = {
     results.flatten
       .map { r =>
         r.result.getOrElse(0.0)
@@ -172,7 +172,7 @@ case class MatchDuplicateResultV1 private (
       .toInt
   }
 
-  def fixPlaces() = {
+  def fixPlaces = {
     val places = results.map { winnerset =>
       val m = winnerset.groupBy(e => e.result.getOrElse(0.0)).map { e =>
         val (points, teams) = e
@@ -191,7 +191,7 @@ case class MatchDuplicateResultV1 private (
   }
 
   @Schema(hidden = true)
-  def fixupSummary() = {
+  def fixupSummary = {
     boardresults match {
       case Some(l) =>
         this
@@ -201,8 +201,8 @@ case class MatchDuplicateResultV1 private (
   }
 
   @Schema(hidden = true)
-  def fixup() = {
-    fixupSummary().fixPlaces()
+  def fixup = {
+    fixupSummary.fixPlaces
   }
 
   @Schema(hidden = true)
@@ -312,7 +312,7 @@ object MatchDuplicateResultV1 {
       played,
       created,
       updated
-    ).fixup()
+    ).fixup
   }
 
   def apply(
@@ -334,7 +334,7 @@ object MatchDuplicateResultV1 {
       played,
       created,
       updated
-    ).fixup()
+    ).fixup
   }
 
   def apply(
@@ -353,13 +353,13 @@ object MatchDuplicateResultV1 {
       played,
       created,
       updated
-    ).fixup()
+    ).fixup
   }
 
   def create(id: Id.MatchDuplicateResult = "") = {
     val time = SystemTime.currentTimeMillis()
     new MatchDuplicateResultV1(id, List(), None, None, None, time, time, time)
-      .fixup()
+      .fixup
   }
 
   def createFrom(
@@ -393,7 +393,7 @@ object MatchDuplicateResultV1 {
         val played = if (md.created == 0) time else md.created
         (played, md.created, md.updated)
     }
-    new MatchDuplicateResultV1("", r, None, None, None, pl, cr, up).fixup()
+    new MatchDuplicateResultV1("", r, None, None, None, pl, cr, up).fixup
 
   }
 }

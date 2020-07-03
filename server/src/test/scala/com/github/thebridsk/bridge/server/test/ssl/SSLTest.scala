@@ -26,7 +26,7 @@ import java.net.URL
 
 object SSLTest {
 
-  val testlog = Logger[SSLTest]
+  val testlog = Logger[SSLTest]()
 }
 
 /**

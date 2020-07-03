@@ -6,7 +6,7 @@ import com.github.thebridsk.utilities.logging.Logger
 import com.github.thebridsk.bridge.data.rest.JsonException
 
 object Converter {
-  private[resource] val log = Logger[Converter]
+  private[resource] val log = Logger[Converter]()
 
   /**
     * Returns a converter for yaml or json.

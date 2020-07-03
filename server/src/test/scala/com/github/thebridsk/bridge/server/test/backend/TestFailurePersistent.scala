@@ -25,7 +25,7 @@ object TestFailurePersistent {
     new TestFailurePersistent[VId,VType]
   }
 
-  val log = Logger[TestFailurePersistent[_,_]]
+  val log = Logger[TestFailurePersistent[_,_]]()
 }
 
 class TestFailurePersistent[VId,VType <: VersionedInstance[VType,VType,VId]](

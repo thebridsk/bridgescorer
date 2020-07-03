@@ -26,7 +26,7 @@ class UtilsPlayJson
 
 object UtilsPlayJson extends BridgePlayJsonSupport {
 
-  val utilslog = Logger[UtilsPlayJson]
+  val utilslog = Logger[UtilsPlayJson]()
 
   def resourceCreated[T](
       resName: String,

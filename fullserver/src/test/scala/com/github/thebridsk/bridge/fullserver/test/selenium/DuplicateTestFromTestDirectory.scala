@@ -73,7 +73,7 @@ class DuplicateTestFromTestDirectory extends AnyFlatSpec with Matchers with Befo
   import com.github.thebridsk.browserpages.PageBrowser._
   import ParallelUtils._
 
-  val testlog = Logger[DuplicateTestFromTestDirectory]
+  val testlog = Logger[DuplicateTestFromTestDirectory]()
 
   val screenshotDir = "target/DuplicateTestFromTestDirectory"
 

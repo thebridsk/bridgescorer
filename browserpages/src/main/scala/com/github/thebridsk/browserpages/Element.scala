@@ -196,7 +196,7 @@ class Element( val underlying: WebElement )(implicit pos: Position, webdriver: W
 }
 
 object Element {
-  val log = Logger[Element]
+  val log = Logger[Element]()
 }
 
 class InputElement( underlying: WebElement )(implicit pos: Position, webdriver: WebDriver, patienceConfig: PatienceConfig ) extends Element(underlying) {

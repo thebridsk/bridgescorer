@@ -153,7 +153,7 @@ object PageChicagoListInternal {
 //      scope.modState( s => s.copy( workingOnNew = Some("Creating new...") )) >> ChicagoController.createMatch(
 //        created=> {
 //          logger.info("Got new chicago "+created.id)
-//          scope.props.runNow.routerCtl.set(NamesView(created.id,0)).runNow()
+//          scope.props.runNow().routerCtl.set(NamesView(created.id,0)).runNow()
 //        }
 //      )
 

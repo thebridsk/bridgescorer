@@ -80,7 +80,7 @@ import org.scalatest.CancelAfterFailure
 
 object DuplicateResultTest {
 
-  val testlog = Logger[DuplicateResultTest]
+  val testlog = Logger[DuplicateResultTest]()
 
   val screenshotDir = "target/screenshots/DuplicateResultTest"
 

@@ -61,7 +61,7 @@ import com.github.thebridsk.bridge.server.backend.resource.ChangeContext
 import com.github.thebridsk.bridge.data.websocket.Protocol.UpdateDuplicatePicture
 
 object RestNestedPicture {
-  val log = Logger[RestNestedPicture]
+  val log = Logger[RestNestedPicture]()
 
 }
 

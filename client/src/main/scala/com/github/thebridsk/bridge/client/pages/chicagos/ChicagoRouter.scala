@@ -47,30 +47,30 @@ object ChicagoRouter {
     def toRoundView(round: Int) = RoundView(chiid, round)
     def toNamesView(round: Int) = NamesView(chiid, round)
     def toHandView(round: Int, hand: Int) = HandView(chiid, round, hand)
-    def toEditNamesView() = EditNamesView(chiid)
+    def toEditNamesView = EditNamesView(chiid)
   }
   case class EditNamesView(chiid: String) extends ChicagoPage {
-    def toSummaryView() = SummaryView(chiid)
+    def toSummaryView = SummaryView(chiid)
     def toRoundView(round: Int) = RoundView(chiid, round)
     def toNamesView(round: Int) = NamesView(chiid, round)
     def toHandView(round: Int, hand: Int) = HandView(chiid, round, hand)
   }
   case class RoundView(chiid: String, round: Int) extends ChicagoPage {
-    def toSummaryView() = SummaryView(chiid)
+    def toSummaryView = SummaryView(chiid)
     def toNamesView(round: Int) = NamesView(chiid, round)
     def toHandView(hand: Int) = HandView(chiid, round, hand)
-    def toEditNamesView() = EditNamesView(chiid)
+    def toEditNamesView = EditNamesView(chiid)
   }
   case class NamesView(chiid: String, round: Int) extends ChicagoPage {
-    def toSummaryView() = SummaryView(chiid)
-    def toRoundView() = RoundView(chiid, round)
+    def toSummaryView = SummaryView(chiid)
+    def toRoundView = RoundView(chiid, round)
     def toHandView(hand: Int) = HandView(chiid, round, hand)
   }
   case class HandView(chiid: String, round: Int, hand: Int)
       extends ChicagoPage {
-    def toSummaryView() = SummaryView(chiid)
-    def toNamesView() = NamesView(chiid, round)
-    def toRoundView() = RoundView(chiid, round)
+    def toSummaryView = SummaryView(chiid)
+    def toNamesView = NamesView(chiid, round)
+    def toRoundView = RoundView(chiid, round)
   }
 
   val verifyPages = ListView ::

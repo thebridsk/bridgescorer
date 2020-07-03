@@ -567,7 +567,7 @@ object BridgeService {
 }
 
 object BridgeServiceWithLogging {
-  val log = Logger[BridgeServiceWithLogging]
+  val log = Logger[BridgeServiceWithLogging]()
 
   def getDefaultRemoteLoggerConfig() = {
     RemoteLoggingConfig.getDefaultRemoteLoggerConfig()

@@ -8,7 +8,7 @@ import play.api.libs.json._
 import com.github.thebridsk.bridge.data.rest.JsonException
 
 object VersionedInstanceJson {
-  val log = Logger[VersionedInstanceJson[_, _]]
+  val log = Logger[VersionedInstanceJson[_, _]]()
 
   /**
     * Provides to/from JSON conversion of a resource object.

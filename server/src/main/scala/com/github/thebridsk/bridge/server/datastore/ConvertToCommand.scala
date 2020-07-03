@@ -28,7 +28,7 @@ trait ConvertToCommand
 object ConvertToCommand extends Subcommand("convertto") {
   import DataStoreCommands.optionStore
 
-  val log = Logger[ConvertToCommand]
+  val log = Logger[ConvertToCommand]()
 
   implicit def dateConverter: ValueConverter[Duration] =
     singleArgConverter[Duration](Duration(_))

@@ -57,7 +57,7 @@ import org.scalatest.flatspec.AsyncFlatSpec
 object TestCacheStoreForFailures {
   import Matchers._
 
-  val testlog = com.github.thebridsk.utilities.logging.Logger[TestCacheStoreForFailures]
+  val testlog = com.github.thebridsk.utilities.logging.Logger[TestCacheStoreForFailures]()
 
   TestStartLogging.startLogging()
 

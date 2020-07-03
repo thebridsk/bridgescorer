@@ -42,7 +42,7 @@ import com.github.thebridsk.bridge.fullserver.test.pages.chicago.ChicagoMatchTyp
 
 object ChicagoDemoTestPages {
 
-  val log = Logger[ChicagoDemoTestPages]
+  val log = Logger[ChicagoDemoTestPages]()
 
   val player1 = "Naomi"
   val player2 = "Sebastion"

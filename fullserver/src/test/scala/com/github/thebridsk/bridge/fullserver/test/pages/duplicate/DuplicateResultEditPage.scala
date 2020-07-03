@@ -13,7 +13,7 @@ import com.github.thebridsk.browserpages.Page
 
 object DuplicateResultEditPage {
 
-  val log = Logger[DuplicateResultEditPage]
+  val log = Logger[DuplicateResultEditPage]()
 
   def current(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
     val did = findIds

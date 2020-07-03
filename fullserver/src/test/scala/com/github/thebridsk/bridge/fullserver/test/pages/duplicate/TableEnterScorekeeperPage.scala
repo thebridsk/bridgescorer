@@ -23,7 +23,7 @@ import com.github.thebridsk.bridge.fullserver.test.pages.bridge.ErrorMsgDiv
 
 object TableEnterScorekeeperPage {
 
-  val log = Logger[TableEnterScorekeeperPage]
+  val log = Logger[TableEnterScorekeeperPage]()
 
   def current(scorekeeper: Option[PlayerPosition] = None)(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
     val (dupid,tableid,roundid,targetboard) = findTableRoundId

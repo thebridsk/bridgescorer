@@ -15,7 +15,7 @@ import com.github.thebridsk.bridge.rotation.Table
 
 object FiveSelectPartnersPage {
 
-  val log = Logger[FiveSelectPartnersPage]
+  val log = Logger[FiveSelectPartnersPage]()
 
   def current(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
     val (chiid,roundid) = EnterNamesPage.findMatchRoundId
