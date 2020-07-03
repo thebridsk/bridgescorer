@@ -75,7 +75,7 @@ class FiveSelectPartnersPage(
 
     roundid.toString() must not be "0"      // only valid for the first round
 
-    Some(currentUrl) must contain( oneOf( urlFor(chiid,roundid), demoUrlFor(chiid,roundid) ) )
+    Some(currentUrl) must (contain.oneOf( urlFor(chiid,roundid), demoUrlFor(chiid,roundid) ) )
 
 //    find( xpath( """//div[@id='BridgeApp']/div[1]/div[1]/div[3]/div[1]/h1""") ).text mustBe "Simple Rotation"
 

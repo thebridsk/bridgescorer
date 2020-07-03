@@ -117,7 +117,7 @@ class EnterNamesPage( val chiid: String,
 
     roundid.toString() mustBe "0"      // only valid for the first round
 
-    Some(currentUrl) must contain( oneOf( urlFor(chiid,roundid), demoUrlFor(chiid,roundid) ) )
+    Some(currentUrl) must (contain.oneOf( urlFor(chiid,roundid), demoUrlFor(chiid,roundid) ) )
 
     find(xpath("//h6/span[text()='Enter players and identify first dealer']"))
 

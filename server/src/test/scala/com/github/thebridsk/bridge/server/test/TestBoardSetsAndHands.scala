@@ -202,12 +202,12 @@ class TestBoardSetsAndHands extends AnyFlatSpec with ScalatestRouteTest with Mat
           bs.hands(0).round mustBe 1
           bs.hands(0).ns mustBe 1
           bs.hands(0).ew mustBe 2
-          bs.hands(0).boards must contain( allOf ( 1, 2, 3 ) )
+          bs.hands(0).boards must (contain.allOf( 1, 2, 3 ) )
           bs.hands(1).table mustBe 1
           bs.hands(1).round mustBe 2
           bs.hands(1).ns mustBe 1
           bs.hands(1).ew mustBe 2
-          bs.hands(1).boards must contain( allOf ( 4, 5, 6 ) )
+          bs.hands(1).boards must (contain.allOf( 4, 5, 6 ) )
         case None =>
           fail( "Must receive a Movement" )
       }
@@ -279,12 +279,12 @@ class TestBoardSetsAndHands extends AnyFlatSpec with ScalatestRouteTest with Mat
       bs.hands(0).round mustBe 1
       bs.hands(0).ns mustBe 1
       bs.hands(0).ew mustBe 2
-      bs.hands(0).boards must contain( allOf ( 1, 2, 3 ) )
+      bs.hands(0).boards must (contain.allOf( 1, 2, 3 ) )
       bs.hands(1).table mustBe 1
       bs.hands(1).round mustBe 2
       bs.hands(1).ns mustBe 1
       bs.hands(1).ew mustBe 2
-      bs.hands(1).boards must contain( allOf ( 4, 5, 6 ) )
+      bs.hands(1).boards must (contain.allOf( 4, 5, 6 ) )
 
     }
   }
