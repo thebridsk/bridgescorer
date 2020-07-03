@@ -147,7 +147,7 @@ class TableEnterOrSelectNamesPage( dupid: String,
     val inputs1 = eventually( {
        val map = findAllInputs(None)
        val List(a,b,c) = (North::South::East::West::Nil).filter(p=>p!=scorekeeper).map(p=>s"I_${p.pos}").toList
-       map.keySet must contain( allOf (a,b,c) )
+       map.keySet must (contain.allOf(a,b,c) )
        map
     } )
 
