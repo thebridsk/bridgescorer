@@ -50,7 +50,7 @@ class TestWinnerSets extends AnyFlatSpec with Matchers {
   it should "have two winner set in Mitchell3Table" in {
     val dup = getDup("Mitchell3Table")
     val mds = MatchDuplicateScore(dup, PerspectiveDirector)
-    val ws = mds.getWinnerSets()
+    val ws = mds.getWinnerSets
 
     ws.size mustBe 2
     ws must contain ( List("T1","T2","T3") )
@@ -92,7 +92,7 @@ class TestWinnerSets extends AnyFlatSpec with Matchers {
     }
 
     val mds = MatchDuplicateScore(ndup, PerspectiveDirector)
-    val ws = mds.getWinnerSets()
+    val ws = mds.getWinnerSets
 
 //    println( s"dup=${dup}" )
 //    println( s"ndup=${ndup}" )
@@ -105,7 +105,7 @@ class TestWinnerSets extends AnyFlatSpec with Matchers {
 
   it should "have one winner set in 2TablesArmonk" in {
     val dup = getDup("2TablesArmonk")
-    val ws = MatchDuplicateScore(dup, PerspectiveDirector).getWinnerSets()
+    val ws = MatchDuplicateScore(dup, PerspectiveDirector).getWinnerSets
 
     ws.size mustBe 1
     ws.head mustBe List("T1","T2","T3","T4")
@@ -113,7 +113,7 @@ class TestWinnerSets extends AnyFlatSpec with Matchers {
 
   it should "have one winner set in Howell3TableNoRelay" in {
     val dup = getDup("Howell3TableNoRelay")
-    val ws = MatchDuplicateScore(dup, PerspectiveDirector).getWinnerSets()
+    val ws = MatchDuplicateScore(dup, PerspectiveDirector).getWinnerSets
 
     ws.size mustBe 1
     ws.head mustBe List("T1","T2","T3","T4","T5","T6")

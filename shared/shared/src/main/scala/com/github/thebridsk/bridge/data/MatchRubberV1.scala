@@ -206,9 +206,9 @@ case class MatchRubberV1(
     }
   }
 
-  def convertToCurrentVersion() = (true, this)
+  def convertToCurrentVersion = (true, this)
 
-  def readyForWrite() = copy(bestMatch = None)
+  def readyForWrite = copy(bestMatch = None)
 
   def addBestMatch(bm: RubberBestMatch) = copy(bestMatch = Option(bm))
 }

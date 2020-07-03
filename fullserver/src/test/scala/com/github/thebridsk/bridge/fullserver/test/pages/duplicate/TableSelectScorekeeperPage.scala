@@ -195,8 +195,8 @@ class TableSelectScorekeeperPage( dupid: String,
     if (checkErrMsg) checkErrorMsg("Please select scorekeeper")
     selectScorekeeper(skname.trim)
     getSelectedScorekeeper mustBe Some(skname.trim)
-    getNames must contain allOf (north.trim,south.trim,east.trim,west.trim)
-    findPosButtons must contain allOf ( scorekeeper, scorekeeper.partner)
+    getNames must contain( allOf (north.trim,south.trim,east.trim,west.trim) )
+    findPosButtons must contain( allOf ( scorekeeper, scorekeeper.partner) )
     if (checkErrMsg) checkErrorMsg("Please select scorekeeper's position")
     val ss1 = clickPos(scorekeeper)
     eventually { ss1.findSelectedPos mustBe Some(scorekeeper) }

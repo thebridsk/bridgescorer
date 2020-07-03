@@ -57,17 +57,17 @@ object TestCacheStore {
   val bridgeResources = BridgeResources()
   import bridgeResources._
 
-  def getStore()( implicit ec: ExecutionContext ): Store[Id.MatchDuplicate,MatchDuplicate] =
+  def getStore( implicit ec: ExecutionContext ): Store[Id.MatchDuplicate,MatchDuplicate] =
     InMemoryStore("test")
 
   def getMatchDuplicateFileStore( dir: Directory )( implicit ec: ExecutionContext ): Store[Id.MatchDuplicate,MatchDuplicate] =
     FileStore("test",dir)
 
-  def getBoardSetStore()( implicit ec: ExecutionContext ): Store[String,BoardSet] = {
+  def getBoardSetStore( implicit ec: ExecutionContext ): Store[String,BoardSet] = {
     JavaResourceStore("test","/com/github/thebridsk/bridge/server/backend/", "Boardsets.txt", getClass.getClassLoader)
   }
 
-  def getMovementStore()( implicit ec: ExecutionContext ): Store[String,Movement] = {
+  def getMovementStore( implicit ec: ExecutionContext ): Store[String,Movement] = {
     JavaResourceStore("test","/com/github/thebridsk/bridge/server/backend/", "Movements.txt", getClass.getClassLoader)
   }
 
@@ -101,7 +101,7 @@ object TestCacheStore {
 
 
   def testWithStore( fun: (Store[Id.MatchDuplicate,MatchDuplicate], Listener)=>Future[Assertion] )( implicit ec: ExecutionContext ) = {
-    val store = getStore()
+    val store = getStore
     val md = TestMatchDuplicate.create("?")
 
     val listener = new Listener

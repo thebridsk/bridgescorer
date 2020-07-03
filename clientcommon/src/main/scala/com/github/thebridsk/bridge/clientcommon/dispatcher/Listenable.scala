@@ -32,7 +32,7 @@ trait Listenable {
     fListeners ::= Listener(event, autoRemoveCb, Some(cb))
   }
 
-  def noListener() = {}
+  def noListener = {}
 
   def removeListener( event: Event, cb: Callback ) = {
     loggerListener.info("Removing "+event+" callback"+", had "+fListeners.size)

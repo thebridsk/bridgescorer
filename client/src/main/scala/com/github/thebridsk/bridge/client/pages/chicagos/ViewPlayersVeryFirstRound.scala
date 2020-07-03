@@ -198,7 +198,7 @@ object ViewPlayersVeryFirstRound {
               ),
               <.div(
                 baseStyles.divFooterRight,
-                AppButton( "Cancel", "Cancel", props.router.setOnClick(props.page.toSummaryView()) ),
+                AppButton( "Cancel", "Cancel", props.router.setOnClick(props.page.toSummaryView) ),
               )
             )
           )

@@ -65,11 +65,11 @@ object ViewScoreboardHelpInternal {
       }
 
       def showBoardAndMovement() = {
-        <.p("Boards "+props.md.getBoardSet()+", movement "+props.md.getMovement())
+        <.p("Boards "+props.md.getBoardSet+", movement "+props.md.getMovement)
       }
       <.div(
         dupStyles.divScoreboardHelp,
-        props.page.getPerspective() match {
+        props.page.getPerspective match {
           case PerspectiveTable(t1, t2) =>
             val (team1,team2) = if (Id.idComparer(t1,t2)<0) (t1,t2) else (t2,t1)
             val (currentRound,currentTable) = props.page match {
@@ -91,7 +91,7 @@ object ViewScoreboardHelpInternal {
               showBoardAndMovement()
             ).toTagMod
           case PerspectiveComplete =>
-            val tableIds = props.md.getTableIds()
+            val tableIds = props.md.getTableIds
             val numberTables = tableIds.length
             Seq(
               <.h1("Completed Games Scoreboard"),

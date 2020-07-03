@@ -25,12 +25,12 @@ class ChicagoScoring(val chicago: MatchChicago) {
     * byRounds is a matrix, first index is same as rounds,
     *                       second index is same as players
     */
-  val (players, totals, byRounds) = calculate()
+  val (players, totals, byRounds) = calculate
 
   /**
     * Sorted by totals, then player names
     */
-  def sortedResults() = {
+  def sortedResults = {
     val tosort: List[Int] = (0 until players.length).toList
     tosort
       .sortWith { (left, right) =>
@@ -70,7 +70,7 @@ class ChicagoScoring(val chicago: MatchChicago) {
     * byRounds is a matrix, first index is same as rounds,
     *                       second index is same as players
     */
-  private def calculate(): (List[String], List[Int], List[List[Int]]) = {
+  private def calculate: (List[String], List[Int], List[List[Int]]) = {
     val totals = getArrayInt()
     val len = rounds.length
     var byRounds: List[List[Int]] = Nil
@@ -124,7 +124,7 @@ class ChicagoScoring(val chicago: MatchChicago) {
     * @return is a map with the index are the people sitting out,
     * and the value is list of fixtures.
     */
-  def getRemainingPossibleFixtures() = {
+  def getRemainingPossibleFixtures = {
     val fixtures = getAllFixtures.filter(f => {
       chicago.rounds
         .find(r => {
@@ -139,11 +139,11 @@ class ChicagoScoring(val chicago: MatchChicago) {
     r
   }
 
-  def getAllFixtures() = {
+  def getAllFixtures = {
     ChicagoScoring.getAllFixtures(players: _*)
   }
 
-  def getFixturesSoFar() = {
+  def getFixturesSoFar = {
     val pathSoFar = rounds.map(r => {
       val extra = players.find(p => !r.players.contains(p)).getOrElse("")
       ChicagoScoring.createFixture(
@@ -161,9 +161,9 @@ class ChicagoScoring(val chicago: MatchChicago) {
     * Get all possible next fixtures
     * @return map with index is the player sitting out and value of all possible player pairings
     */
-  def getNextPossibleFixtures(): Map[String, Set[ChicagoScoring.Fixture]] = {
+  def getNextPossibleFixtures: Map[String, Set[ChicagoScoring.Fixture]] = {
     if (players.length == 4) return Map()
-    var pathSoFar = getFixturesSoFar()
+    var pathSoFar = getFixturesSoFar
     while (pathSoFar.length >= players.length) pathSoFar =
       pathSoFar.drop(players.length)
     val allFixtures = ChicagoScoring.getAllFixtures(players: _*)

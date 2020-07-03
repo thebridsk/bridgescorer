@@ -37,7 +37,7 @@ object RubberBridge {
     val isDeclarerEastWest = !isDeclarerNorthSouth
 
     val (nsScored, above, below, isGame, explainAbove, explainBelow) =
-      calculate()
+      calculate
 
     val nsScoredHonors = honorsPlayer match {
       case Some(p) if (p == North || p == South) => true
@@ -53,7 +53,7 @@ object RubberBridge {
         "Honors " + honors
       }
 
-    def explain() = {
+    def explain = {
       def show(pos: String, list: List[String]) =
         if (list.isEmpty) "" else pos + " " + list.mkString(", ")
       val sc = scoring(nsScored)
@@ -74,7 +74,7 @@ object RubberBridge {
       }
     }
 
-    def totalScore() = {
+    def totalScore = {
       if (honors != 0) {
         if (nsScored == nsScoredHonors) {
           scoring(nsScored) + " " + (above + honors) + " / " + below
@@ -126,7 +126,7 @@ object RubberBridge {
       *         ewAbove
       *         ewBelow
       */
-    def getScores() = /* (nsAbove,nsBelow,ewAbove,ewBelow) */ {
+    def getScores = /* (nsAbove,nsBelow,ewAbove,ewBelow) */ {
       if (honors == 0) {
         if (nsScored) (above, below, 0, 0)
         else (0, 0, above, below)
@@ -195,7 +195,7 @@ object RubberBridge {
       * <li>List[String] - reason for score below line rubber
       * </ol>
       */
-    private def calculateMade()
+    private def calculateMade
         : (Boolean, Int, Int, Boolean, List[String], List[String]) = {
       def timesDoubling(
           firstTrickBonus: Int,
@@ -270,7 +270,7 @@ object RubberBridge {
       * <li>List[String] - reason for score below line rubber
       * </ol>
       */
-    private def calculateDown()
+    private def calculateDown
         : (Boolean, Int, Int, Boolean, List[String], List[String]) = {
       val (firstTrickValue, secondThirdTrickValue, remainingTrickValue) = {
         contractDoubled match {
@@ -333,23 +333,23 @@ object RubberBridge {
       * <li>List[String] - reason for score below line rubber
       * </ol>
       */
-    private def calculate()
+    private def calculate
         : (Boolean, Int, Int, Boolean, List[String], List[String]) =
       if (contractTricks.tricks == 0) {
         (true, 0, 0, false, Nil, "Passed out" :: Nil)
       } else {
         madeContract match {
           case Made =>
-            calculateMade()
+            calculateMade
           case Down => {
-            calculateDown()
+            calculateDown
           }
         }
       }
 
-    override def toString() = toStringRubber()
+    override def toString() = toStringRubber
 
-    def toStringRubber() = {
+    def toStringRubber = {
       if (contractTricks.tricks == 0) "Passed out"
       else {
         val con = "" + contractTricks.tricks + contractSuit.suit + contractDoubled.forScore + " by " + declarer.pos

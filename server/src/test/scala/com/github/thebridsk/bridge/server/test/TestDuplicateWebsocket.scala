@@ -258,7 +258,7 @@ class TestDuplicateWebsocket extends AnyFlatSpec with ScalatestRouteTest with Ma
       testlog.info("withHook starting")
       client3.connect(remoteAddress3, myRouteWithLogging)
       client1.connect(remoteAddress1, myRouteWithLogging)
-      client3.testJoin()
+      client3.testJoin
       testlog.info(s"withHook gotJoin=$gotJoin gotStartMonitor=$gotStartMonitor")
       gotJoin mustBe true
       gotStartMonitor mustBe false
@@ -322,8 +322,8 @@ class TestDuplicateWebsocket extends AnyFlatSpec with ScalatestRouteTest with Ma
           fail("Location header was not found in response")
       }
       client2.connect(remoteAddress2, myRouteWithLogging)
-      client1.within(10 seconds) { client1.testJoin() }
-      client3.within(10 seconds) { client3.testJoin() }
+      client1.within(10 seconds) { client1.testJoin }
+      client3.within(10 seconds) { client3.testJoin }
 
       client2.send(StartMonitorDuplicate(s"${md.id}"))
       client2.within(10 seconds) {

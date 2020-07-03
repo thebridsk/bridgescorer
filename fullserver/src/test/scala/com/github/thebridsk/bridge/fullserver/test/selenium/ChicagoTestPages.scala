@@ -131,7 +131,7 @@ class ChicagoTestPages extends AnyFlatSpec
     import Session1._
 
     tcpSleep(15)
-    go to (TestServer.getAppPage())
+    go to (TestServer.getAppPage)
     eventually { pageTitle mustBe ("The Bridge ScoreKeeper") }
   }
 

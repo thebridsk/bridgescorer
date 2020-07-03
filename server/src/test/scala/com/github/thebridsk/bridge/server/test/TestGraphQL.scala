@@ -334,5 +334,4 @@ class TestGraphQL extends AsyncFlatSpec with ScalatestRouteTest with Matchers {
       respjson \ "data" \ "import" \ "duplicate" \ "teams" \ 0 \ "player1" mustBe JsDefined(JsString("Nancy"))
     }
   }
-
 }

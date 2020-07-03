@@ -111,14 +111,14 @@ case class PlayerOpponentsStat(
 
   def getPlayer(name: String) = opponents.find(pos => pos.opponent == name)
 
-  def playerTotal() = {
+  def playerTotal = {
     opponents.foldLeft(PlayerOpponentStat(player, "", 0, 0, 0, 0, 0)) {
       (ac, v) =>
         ac.add(v)
     }
   }
 
-  def sort() = {
+  def sort = {
     copy(opponents = opponents.sortWith((l, r) => l.opponent < r.opponent))
   }
 
@@ -134,10 +134,10 @@ case class PlayersOpponentsStats(
 
   def getPlayer(name: String) = players.find(pos => pos.player == name)
 
-  def sort() =
+  def sort =
     copy(
       players =
-        players.sortWith((l, r) => l.player < r.player).map(s => s.sort())
+        players.sortWith((l, r) => l.player < r.player).map(s => s.sort)
     )
 
   def sum(other: PlayersOpponentsStats) = {
@@ -172,7 +172,7 @@ case class PlayersOpponentsStats(
     )
   }
 
-  def getPlayers() = {
+  def getPlayers = {
     players.map(s => s.player)
   }
 

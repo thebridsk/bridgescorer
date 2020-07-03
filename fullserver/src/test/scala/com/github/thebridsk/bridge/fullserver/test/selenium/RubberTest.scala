@@ -649,7 +649,7 @@ class RubberTest extends AnyFlatSpec
   it should "start a new rubber game" in {
     import Session1._
 
-    go to (TestServer.getAppPage())
+    go to (TestServer.getAppPage)
     pageTitle mustBe ("The Bridge ScoreKeeper")
 
     findButtonAndClick("NewRubber")

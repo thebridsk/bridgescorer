@@ -270,7 +270,7 @@ object ViewPlayersSecondRound {
               ),
               <.div(
                 baseStyles.divFooterCenter,
-                AppButton( "Cancel", "Cancel", baseStyles.appButton, props.router.setOnClick(props.page.toSummaryView()) )
+                AppButton( "Cancel", "Cancel", baseStyles.appButton, props.router.setOnClick(props.page.toSummaryView) )
               ),
               <.div(
                 baseStyles.divFooterRight,

@@ -160,9 +160,9 @@ object PageScoreboardInternal {
         rc
       }
 
-      DuplicateStore.getView( props.game.getPerspective() ) match {
+      DuplicateStore.getView( props.game.getPerspective ) match {
         case Some(score) if score.id == props.game.dupid =>
-          val winnersets = score.getWinnerSets()
+          val winnersets = score.getWinnerSets
 
           def getScoringMethodButton() = scoringMethodButton( state.useIMP, Some( score.isIMP), false, nextIMPs )
 
@@ -239,7 +239,7 @@ object PageScoreboardInternal {
               <.div( baseStyles.divFlexBreak ),
               <.div(
                 baseStyles.divFooter,
-                props.game.getPerspective() match {
+                props.game.getPerspective match {
                   case PerspectiveComplete =>
                     TagMod(
                       <.div(
@@ -256,7 +256,7 @@ object PageScoreboardInternal {
                       ),
                       <.div(
                         baseStyles.divFooterCenter,
-                        AppButton( "AllBoards", "All Boards", props.routerCtl.setOnClick(props.game.toAllBoardsView()) ),
+                        AppButton( "AllBoards", "All Boards", props.routerCtl.setOnClick(props.game.toAllBoardsView) ),
                         " ",
                         getScoringMethodButton(),
                         AppButton( "SetScoringMethod", "Set Scoring Method",
@@ -279,7 +279,7 @@ object PageScoreboardInternal {
                         baseStyles.divFooterLeft,
                         AppButton( "Game", "Completed Games Scoreboard", props.routerCtl.setOnClick(CompleteScoreboardView(props.game.dupid)) ),
                         " ",
-                        AppButton( "AllBoards", "All Boards", props.routerCtl.setOnClick(props.game.toAllBoardsView()) ),
+                        AppButton( "AllBoards", "All Boards", props.routerCtl.setOnClick(props.game.toAllBoardsView) ),
                       ),
                       <.div(
                         baseStyles.divFooterCenter,
@@ -310,7 +310,7 @@ object PageScoreboardInternal {
                             baseStyles.divFooterLeft,
                             AppButton( "Table", "Table "+tablenumber,
                                        allplayedInRound ?= baseStyles.requiredNotNext,
-                                       props.routerCtl.setOnClick(trgv.toTableView()) )
+                                       props.routerCtl.setOnClick(trgv.toTableView) )
                           ),
                           <.div(
                             baseStyles.divFooterCenter,
@@ -322,7 +322,7 @@ object PageScoreboardInternal {
                           ),
                           <.div(
                             baseStyles.divFooterRight,
-                            AppButton( "AllBoards", "All Boards", props.routerCtl.setOnClick(props.game.toAllBoardsView())  ),
+                            AppButton( "AllBoards", "All Boards", props.routerCtl.setOnClick(props.game.toAllBoardsView)  ),
                           )
                         ).toTagMod
                       case _ =>

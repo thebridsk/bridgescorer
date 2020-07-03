@@ -101,7 +101,7 @@ class EditNamesPage(
 
   def validate(implicit patienceConfig: PatienceConfig, pos: Position) = logMethod(s"${pos.line} ${getClass.getSimpleName}.validate") { eventually {
 
-    Some(currentUrl) must contain oneOf( urlFor(chiid), demoUrlFor(chiid) )
+    Some(currentUrl) must contain( oneOf( urlFor(chiid), demoUrlFor(chiid) ) )
 
     val allButtons = buttonOK::buttonReset::buttonCancel::Nil
 

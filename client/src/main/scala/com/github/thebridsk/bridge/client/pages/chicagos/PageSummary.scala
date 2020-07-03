@@ -74,7 +74,7 @@ object PageSummaryInternal {
     def toSummaryView(props: Props) =
       props.page match {
         case Left(summary)    => summary
-        case Right(roundview) => roundview.toSummaryView()
+        case Right(roundview) => roundview.toSummaryView
       }
 
     def toEditNamesView(props: Props) =

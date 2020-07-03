@@ -87,7 +87,7 @@ object PageAllBoardsInternal {
       logger.info("Rendering board "+props.page)
 
       def title() = {
-        props.page.getPerspective() match {
+        props.page.getPerspective match {
           case PerspectiveTable(team1, team2) =>
             val (currentRound,currentTable) = props.page match {
               case TableRoundAllBoardView( dupid, tableid, roundid ) => (roundid,tableid)
@@ -123,18 +123,18 @@ object PageAllBoardsInternal {
         )(
 
         ),
-        DuplicateStore.getView( props.page.getPerspective()) match {
+        DuplicateStore.getView( props.page.getPerspective) match {
           case Some(score) if score.id == props.page.dupid =>
             <.div(
               dupStyles.divAllBoardsPage,
               <.div(
-                AppButton( "Game", "Scoreboard", props.routerCtl.setOnClick(props.page.toScoreboardView()) )
+                AppButton( "Game", "Scoreboard", props.routerCtl.setOnClick(props.page.toScoreboardView) )
               ),
               score.sortedBoards.map { b =>
                 ViewBoard( props.routerCtl, props.page.toBoardView(b.id), score, b.id, state.isIMP, DuplicateStore.getPicture(props.page.dupid, b.id) )
               }.toTagMod,
               <.div(
-                AppButton( "Game2", "Scoreboard", props.routerCtl.setOnClick(props.page.toScoreboardView()) ),
+                AppButton( "Game2", "Scoreboard", props.routerCtl.setOnClick(props.page.toScoreboardView) ),
                 PageScoreboardInternal.scoringMethodButton( state.useIMP, Some( score.isIMP), false, nextIMPs )
               )
             )

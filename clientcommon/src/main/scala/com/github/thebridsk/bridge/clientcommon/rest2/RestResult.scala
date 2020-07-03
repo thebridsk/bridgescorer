@@ -139,7 +139,7 @@ trait Result[T] extends Cancellable[T] with Awaitable[T] {
 
 class ResultObject[T]( future: Future[T] ) extends Result[T] {
 
-  def this( t: T ) = this( Promise[T].success(t).future )
+  def this( t: T ) = this( Promise[T]().success(t).future )
 
   /**
    * calls Promise.failure( RequestCancelled ) if successfully cancelled

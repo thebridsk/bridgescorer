@@ -195,7 +195,7 @@ object ViewPlayerOpponentStatsGraphInternal {
           }
         }
       } :::
-      List(getData(rowPlayer.playerTotal().copy(opponent="all"),statTotalSize,statTotalSizeMP,state,1.5))
+      List(getData(rowPlayer.playerTotal.copy(opponent="all"),statTotalSize,statTotalSizeMP,state,1.5))
     }
   }
 
@@ -212,7 +212,7 @@ object ViewPlayerOpponentStatsGraphInternal {
 
       props.stats match {
         case Some(posUnsorted) if !posUnsorted.players.isEmpty =>
-          val pos = posUnsorted.sort()
+          val pos = posUnsorted.sort
 
           val statSize = new ColorStat( ColorByPlayed)
           val statSizeMP = new ColorStat( ColorByTotalMP)
@@ -225,7 +225,7 @@ object ViewPlayerOpponentStatsGraphInternal {
               statSize.add(o)
               statSizeMP.add(o)
             }
-            val t = p.playerTotal()
+            val t = p.playerTotal
             statTotalSize.add(t)
             statTotalSizeMP.add(t)
           }

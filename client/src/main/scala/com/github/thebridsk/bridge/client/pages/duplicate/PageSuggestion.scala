@@ -175,7 +175,7 @@ object PageSuggestionInternal {
 
     val calculateLocal = scope.modState { s =>
       setTimeout(0) { Alerter.tryitWithUnit {
-        val summary = DuplicateSummaryStore.getDuplicateSummary().getOrElse(List())
+        val summary = DuplicateSummaryStore.getDuplicateSummary.getOrElse(List())
 
         val input = DuplicateSuggestions(s.knownPlayersSelected:::s.newPlayers, 10, neverPair = Some(s.neverPair) )
         val suggestion = DuplicateSuggestionsCalculation.calculate(input, summary)
@@ -223,7 +223,7 @@ object PageSuggestionInternal {
                       sug.history.map{ h =>
                         s"Calculated with a history of ${h} matches"
                       }.getOrElse( s"Calculated with an unknown number of matches" )
-                    }.getOrElse( s"Have a history of ${DuplicateSummaryStore.getDuplicateSummary().map(l => l.length).getOrElse(0)} matches" )
+                    }.getOrElse( s"Have a history of ${DuplicateSummaryStore.getDuplicateSummary.map(l => l.length).getOrElse(0)} matches" )
 
       val sortedPlayers = (state.knownPlayersSelected:::state.newPlayers).sorted
 

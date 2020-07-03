@@ -190,10 +190,10 @@ object PageEditNamesInternal {
     def okCallback = doUpdate >> scope.props >>= { props => props.routerCtl.set(props.page.toSummaryView) }
 
     val resetCallback = scope.props >>= { props =>
-      scope.modState(s => s.reset())
+      scope.modState(s => s.reset)
     }
 
-    val storeCallback = scope.modState { s => s.reset() }
+    val storeCallback = scope.modState { s => s.reset }
 
     val namesCallback = scope.modState { s =>
       val sug = NamesStore.getNames

@@ -24,7 +24,7 @@ object ServerURLStore extends ChangeListenable {
   /**
    * @return A TagMod that contains one or more li elements.
    */
-  def getURLItems(): TagMod = {
+  def getURLItems: TagMod = {
     if (BridgeDemo.isDemo) {
       <.li("Demo mode, all data entered will be lost on page refresh or closing page")
     } else {

@@ -414,7 +414,7 @@ object DuplicateSummary {
       }.toList
     }.toMap
     val details = score
-      .getDetails()
+      .getDetails
       .map { d =>
         d.team -> d
       }

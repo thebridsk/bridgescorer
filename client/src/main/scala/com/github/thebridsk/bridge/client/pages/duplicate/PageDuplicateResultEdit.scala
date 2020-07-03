@@ -67,7 +67,7 @@ object PageDuplicateResultEditInternal {
 
   case class DSE( team: Team, result: String ) {
 
-    def isValid() = {
+    def isValid = {
       try {
         result.toDouble
         team.player1 != null && team.player1 != "" &&
@@ -129,7 +129,7 @@ object PageDuplicateResultEditInternal {
       }
       val nf = if (notfinished) Some(true) else None
       val sm = if (useIMP) MatchDuplicate.InternationalMatchPoints else MatchDuplicate.MatchPoints
-      original.get.copy( results=t, boardresults=boardresults, comment=c, notfinished=nf, played=played, updated=time, scoringmethod=sm ).fixup()
+      original.get.copy( results=t, boardresults=boardresults, comment=c, notfinished=nf, played=played, updated=time, scoringmethod=sm ).fixup
     }
 
     def setPlayer( iwinnerset: Int, teamid: Id.Team, iplayer: Int )( name: String ) = {
@@ -189,7 +189,7 @@ object PageDuplicateResultEditInternal {
 
     def isValid() = {
       played > 0 &&
-      teams.flatten.find( t => !t.isValid() ).isEmpty
+      teams.flatten.find( t => !t.isValid ).isEmpty
     }
 
   }

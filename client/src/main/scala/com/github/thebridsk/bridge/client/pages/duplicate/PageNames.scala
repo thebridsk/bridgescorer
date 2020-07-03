@@ -215,10 +215,10 @@ object PageNamesInternal {
     def okCallback = doUpdate >> scope.props >>= { props => props.routerCtl.set(props.returnPage) }
 
     val resetCallback = scope.props >>= { props =>
-      scope.modState(s => s.reset())
+      scope.modState(s => s.reset)
     }
 
-    val storeCallback = scope.modState { s => s.reset() }
+    val storeCallback = scope.modState { s => s.reset }
 
     val namesCallback = scope.modState { s =>
       val sug = NamesStore.getNames

@@ -35,7 +35,7 @@ object TestData {
   }
 
   def getFilenames( id: String ) = {
-    instanceJson.getReadExtensions().map { ext =>
+    instanceJson.getReadExtensions.map { ext =>
       testData.toString()+File.separator+"MatchDuplicate.M"+id+ext
     }
   }

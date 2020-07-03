@@ -202,11 +202,11 @@ object PageChicagoHandInternal {
             props.page.chiid,
             iround,
             ihand,
-            contract.toHand()
+            contract.toHand
           )
           props.routerCtl.set(
-            if (quintet) props.page.toSummaryView()
-            else props.page.toRoundView()
+            if (quintet) props.page.toSummaryView
+            else props.page.toRoundView
           )
         }
       }
@@ -214,7 +214,7 @@ object PageChicagoHandInternal {
     def viewHandCallbackCancel(quintet: Boolean) =
       scope.props >>= { props =>
         props.routerCtl.set(
-          if (quintet) props.page.toSummaryView() else props.page.toRoundView()
+          if (quintet) props.page.toSummaryView else props.page.toRoundView
         )
       }
 

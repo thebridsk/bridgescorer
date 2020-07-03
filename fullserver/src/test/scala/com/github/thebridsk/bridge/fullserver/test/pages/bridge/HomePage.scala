@@ -32,11 +32,11 @@ object HomePage {
   }
 
   def demo(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
-    go to TestServer.getAppDemoPage()
+    go to TestServer.getAppDemoPage
     new HomePage
   }
 
-  def urlFor = TestServer.getAppPage()
+  def urlFor = TestServer.getAppPage
 
   val divBridgeAppPrefix = """//div[@id="BridgeApp"]"""
 }

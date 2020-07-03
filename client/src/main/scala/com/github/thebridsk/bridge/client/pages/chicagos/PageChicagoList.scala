@@ -395,7 +395,7 @@ object PageChicagoListInternal {
       val created = DateUtils.showDate(chicago.chicago.created)
       val updated = DateUtils.showDate(chicago.chicago.updated)
 
-      val (players, scores) = chicago.sortedResults()
+      val (players, scores) = chicago.sortedResults
 
       <.tr(
         <.td(

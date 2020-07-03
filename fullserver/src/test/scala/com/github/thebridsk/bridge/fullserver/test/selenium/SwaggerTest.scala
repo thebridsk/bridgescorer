@@ -136,7 +136,7 @@ class SwaggerTest extends AnyFlatSpec with Matchers with BeforeAndAfterAll {
   it should "display the swagger docs going to /v1/docs/" in {
     implicit val webDriver = TestSession.webDriver
 
-    go to TestServer.getDocs()
+    go to TestServer.getDocs
     eventually {
       val we = find(xpath("//h2[contains(concat(' ', normalize-space(@class), ' '), ' title ')]"))
       val text = we.text

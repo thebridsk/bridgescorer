@@ -297,9 +297,9 @@ case class MatchDuplicateResultV2 private (
   @Hidden
   def isIMP = scoringmethod == InternationalMatchPoints
 
-  def convertToCurrentVersion() = (true, this)
+  def convertToCurrentVersion = (true, this)
 
-  def readyForWrite() = this
+  def readyForWrite = this
 
 }
 
@@ -394,7 +394,7 @@ object MatchDuplicateResultV2 {
       mdr: Option[MatchDuplicateResult] = None
   ) = {
     val score = MatchDuplicateScore(md, PerspectiveComplete)
-    val wss = score.getWinnerSets()
+    val wss = score.getWinnerSets
     val places = score.places.flatMap { p =>
       p.teams.map { t =>
         (t.id -> p.place)

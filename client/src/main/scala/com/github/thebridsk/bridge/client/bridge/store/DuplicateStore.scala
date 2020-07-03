@@ -280,7 +280,7 @@ object DuplicateStore extends ChangeListenable {
     monitoredId = Some(dupid)
     if (BridgeDemo.isDemo) {
       if (bridgeMatch.isEmpty)
-        bridgeMatch = DuplicateSummaryStore.getDuplicateMatchSummary().flatMap( list => list.find(md => md.id == dupid))
+        bridgeMatch = DuplicateSummaryStore.getDuplicateMatchSummary.flatMap( list => list.find(md => md.id == dupid))
       logger.info(s"monitoring bridgeMatch=$bridgeMatch")
     }
     notifyChange()

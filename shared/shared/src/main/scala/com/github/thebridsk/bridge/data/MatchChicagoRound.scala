@@ -159,7 +159,7 @@ case class Round(
     )
   }
 
-  def players() = north :: south :: east :: west :: Nil
+  def players = north :: south :: east :: west :: Nil
 }
 
 object Round {

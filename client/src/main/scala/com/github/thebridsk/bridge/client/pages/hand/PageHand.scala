@@ -74,7 +74,7 @@ object PageHand {
              helppage: Option[String] = None,
              picture: Option[String] = None,
              supportPicture: Boolean = false
-  ) = component(Props(contract.withScoring(),callbackOk,callbackCancel,
+  ) = component(Props(contract.withScoring,callbackOk,callbackCancel,
                       teamNS,teamEW,newhand,allowPassedOut,callbackWithHonors,honors,honorsPlayer,helppage,picture,supportPicture))
 
 
@@ -240,7 +240,7 @@ object PageHandInternal {
                                 honor=honors,
                                 honorPlayer=honorsPlayer )
         }
-        copy( currentcontract=cc.withScoring() )
+        copy( currentcontract=cc.withScoring )
       } else {
         copy( currentcontract=currentcontract.copy(scorer=None) )
       }
@@ -383,11 +383,11 @@ object PageHandInternal {
 
       val extraWidth = Properties.defaultHandButtonBorderRadius+
                        Properties.defaultHandButtonPaddingBorder
-      val width = s"${Pixels.maxLength( maneuvers.players(): _* )+extraWidth}px"
+      val width = s"${Pixels.maxLength( maneuvers.players: _* )+extraWidth}px"
 
       <.div(
           <.h1( "Select scorekeeper" ),
-          maneuvers.sortedPlayers().map(p => {
+          maneuvers.sortedPlayers.map(p => {
             val (pos,posname) = maneuvers.find(p) match {
               case Some(l) => (l,l.name)
               case None => (North,"Oops")

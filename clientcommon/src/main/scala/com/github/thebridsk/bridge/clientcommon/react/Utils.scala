@@ -10,7 +10,7 @@ import org.scalajs.dom.raw.FileList
 object Utils {
 
   implicit class ExtendReactEventFromInput[E <: ReactEventFromInput](val e: E) extends AnyVal {
-    def preventDefaultAction() = { e.preventDefault(); e }
+    def preventDefaultAction = { e.preventDefault(); e }
     def inputText[A]( f: String => A ): A = e.extract(_.target.value)(f)
     def inputFiles[A]( f: FileList => A ): A = e.extract(_.target.files)(f)
   }

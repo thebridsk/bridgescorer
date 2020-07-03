@@ -36,7 +36,7 @@ object ServerURLPopup {
   def setShowServerURLPopup( f: Boolean ): Unit = {
     showURL = f
     scalajs.js.timers.setTimeout(1) {
-      ServerURLStore.notifyChange
+      ServerURLStore.notifyChange()
     }
   }
 

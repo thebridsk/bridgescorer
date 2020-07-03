@@ -53,9 +53,9 @@ object DuplicateBridge {
         "Game " + gameBonus :: Nil
     })
 
-    override def explain() = explainList.mkString(", ")
+    override def explain = explainList.mkString(", ")
 
-    override def totalScore() =
+    override def totalScore =
       if (score.ns >= 0) "NS " + score.ns; else "EW " + score.ew
 
     override def totalScore(

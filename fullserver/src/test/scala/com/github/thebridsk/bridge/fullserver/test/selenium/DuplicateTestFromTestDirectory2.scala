@@ -241,8 +241,8 @@ class DuplicateTestFromTestDirectory2 extends AnyFlatSpec
                   testlog.severe(s"""The two MatchDuplicates for ${template.id} don't compare.\n  1 - Played\n  2 - Template""", e)
                   implicit val instanceJson = new BridgeServiceFileStoreConverters(true).matchDuplicateJson
                   val conv = new MatchDuplicateCacheStoreSupport(false)
-                  FileIO.writeFileSafe("MatchDuplicate.PlayedJson"+conv.getWriteExtension(), conv.toJSON(played))
-                  FileIO.writeFileSafe("MatchDuplicate.Template"+conv.getWriteExtension(), conv.toJSON(template))
+                  FileIO.writeFileSafe("MatchDuplicate.PlayedJson"+conv.getWriteExtension, conv.toJSON(played))
+                  FileIO.writeFileSafe("MatchDuplicate.Template"+conv.getWriteExtension, conv.toJSON(template))
                   throw e
               }
             case Left((statuscode,restMessage)) =>
@@ -271,8 +271,8 @@ class DuplicateTestFromTestDirectory2 extends AnyFlatSpec
               testlog.severe(s"""The two MatchDuplicates for ${template.id} don't compare.\n  1 - Played\n  2 - Template""", e)
               implicit val instanceJson = new BridgeServiceFileStoreConverters(true).matchDuplicateJson
               val conv = new MatchDuplicateCacheStoreSupport(false)
-              FileIO.writeFileSafe("MatchDuplicate.PlayedJson"+conv.getWriteExtension(), conv.toJSON(played))
-              FileIO.writeFileSafe("MatchDuplicate.Template"+conv.getWriteExtension(), conv.toJSON(template))
+              FileIO.writeFileSafe("MatchDuplicate.PlayedJson"+conv.getWriteExtension, conv.toJSON(played))
+              FileIO.writeFileSafe("MatchDuplicate.Template"+conv.getWriteExtension, conv.toJSON(template))
               throw e
           }
         } finally {
@@ -521,7 +521,7 @@ class DuplicateTestFromTestDirectory2 extends AnyFlatSpec
     var boardSet: Option[BoardSet] = None
 
     def playAllRounds(): Unit = {
-      val boardsetName = templateScore.getBoardSet()
+      val boardsetName = templateScore.getBoardSet
 
       import com.github.thebridsk.bridge.server.rest.UtilsPlayJson._
       val ResponseFromHttp(status,loc,ce,bs,cd) = HttpUtils.getHttpObject[BoardSet](TestServer.getUrl("/v1/rest/boardsets/"+boardsetName))

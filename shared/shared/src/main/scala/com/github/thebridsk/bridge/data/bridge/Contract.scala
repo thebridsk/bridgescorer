@@ -32,7 +32,7 @@ case class Contract(
     dealer: PlayerPosition
 ) {
 
-  def toBridgeHand() =
+  def toBridgeHand =
     BridgeHand(
       id,
       contractTricks,
@@ -44,8 +44,8 @@ case class Contract(
       madeOrDown,
       tricks
     )
-  def toHand(): com.github.thebridsk.bridge.data.Hand = toBridgeHand()
-  def toRubberHand() =
+  def toHand: com.github.thebridsk.bridge.data.Hand = toBridgeHand
+  def toRubberHand =
     RubberHand(
       id,
       toHand,
@@ -54,7 +54,7 @@ case class Contract(
       0,
       0
     )
-  def toDuplicate() =
+  def toDuplicate =
     com.github.thebridsk.bridge.data.bridge.DuplicateBridge.ScoreHand(
       id,
       contractTricks,
@@ -66,16 +66,16 @@ case class Contract(
       madeOrDown,
       tricks
     )
-  def toRubber() = com.github.thebridsk.bridge.data.bridge.RubberBridge.ScoreHand(toRubberHand)
-  def withScoring() = {
+  def toRubber = com.github.thebridsk.bridge.data.bridge.RubberBridge.ScoreHand(toRubberHand)
+  def withScoring = {
     try {
       val s = Some(scoringSystem match {
         case _: Duplicate =>
-          Right(toDuplicate())
+          Right(toDuplicate)
         case _: Chicago =>
-          Right(toDuplicate())
+          Right(toDuplicate)
         case _: Rubber =>
-          Left(toRubber())
+          Left(toRubber)
       })
       copy(scorer = s)
     } catch {
@@ -85,9 +85,9 @@ case class Contract(
     }
   }
 
-  def getTrickRange() = BridgeHand.getTricksRange(madeOrDown, contractTricks)
+  def getTrickRange = BridgeHand.getTricksRange(madeOrDown, contractTricks)
 
-  def clear() =
+  def clear =
     Contract(
       id,
       ContractTricks(0),
@@ -109,7 +109,7 @@ case class Contract(
       east,
       west,
       dealer
-    ).withScoring()
+    ).withScoring
 }
 
 object Contract {

@@ -123,7 +123,7 @@ class JavaResourcePersistentSupport[VId, VType <: VersionedInstance[
           else (resourcedirectory + "/")
         val map = getSource(resdir + masterfile) { mfile =>
           Some(
-            mfile.getLines.flatMap { line =>
+            mfile.getLines().flatMap { line =>
               getFilenameLine(line).flatMap { f =>
                 getFromFile(resdir + f).map(vt => vt.id)
               }
@@ -155,7 +155,7 @@ class JavaResourcePersistentSupport[VId, VType <: VersionedInstance[
 //    ).logit("JavaResourcePersistentSupport.getFromPersistent")
 
   def readFilenames(id: VId) = {
-    val r = support.getReadExtensions().map { e =>
+    val r = support.getReadExtensions.map { e =>
       s"""${resourcedirectory}${support.resourceName}.${id}${e}"""
     }
     log.fine(s"For ${resourceURI}/${id}, Java resources are ${r}")

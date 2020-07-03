@@ -14,23 +14,23 @@ case class TableManeuvers(
     s"TableManeuvers( $north-$south, $east-$west )"
   }
 
-  def players() = north :: south :: east :: west :: Nil
+  def players = north :: south :: east :: west :: Nil
 
-  def sortedPlayers() = players.sorted
+  def sortedPlayers = players.sorted
 
   def isPlayerSpecified(p: String) = p != null && p.length() > 0
 
-  def areAllPlayersValid() = {
+  def areAllPlayersValid = {
     isPlayerSpecified(north) && isPlayerSpecified(south) && isPlayerSpecified(
       east
     ) && isPlayerSpecified(west)
   }
 
-  def areNSPlayersValid() = {
+  def areNSPlayersValid = {
     isPlayerSpecified(north) && isPlayerSpecified(south)
   }
 
-  def areEWPlayersValid() = {
+  def areEWPlayersValid = {
     isPlayerSpecified(east) && isPlayerSpecified(west)
   }
 
@@ -151,7 +151,7 @@ case class TableManeuvers(
     swap(rightOfPosition(l), leftOfPosition(l))
   }
 
-  def rotateClockwise() = {
+  def rotateClockwise = {
     TableManeuvers(
       north = west,
       south = east,
@@ -160,7 +160,7 @@ case class TableManeuvers(
     )
   }
 
-  def rotateCounterClockwise() = {
+  def rotateCounterClockwise = {
     TableManeuvers(
       north = east,
       south = west,
@@ -169,7 +169,7 @@ case class TableManeuvers(
     )
   }
 
-  def rotate180() = {
+  def rotate180 = {
     TableManeuvers(
       north = south,
       south = north,

@@ -217,7 +217,7 @@ object PageNewDuplicateInternal {
             val mov = s.movements( movement.getOrElse("Howell04T2B18"))
             val md = mdraw.fillBoards(bs, mov)
             Controller.monitor(md.id)
-            val sum = DuplicateSummaryStore.getDuplicateSummary()
+            val sum = DuplicateSummaryStore.getDuplicateSummary
             val nsum = List(DuplicateSummary.create(md))
             val newsum = sum.map( l => l:::nsum).getOrElse(nsum)
             scalajs.js.timers.setTimeout(5) {

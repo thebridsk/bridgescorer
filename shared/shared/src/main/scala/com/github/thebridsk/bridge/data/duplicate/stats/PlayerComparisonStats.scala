@@ -313,7 +313,7 @@ object PlayerComparisonStats {
     val result = dups.values.flatMap { dup =>
       dup.boards.flatMap { board =>
 //        log.info(s"Working on ${dup.id} ${board.id}")
-        val hands = board.playedHands()
+        val hands = board.playedHands
         hands.map { dh =>
           dh.played.head.declarer match {
             case "N" => "NS"

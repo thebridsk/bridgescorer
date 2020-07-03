@@ -67,7 +67,7 @@ object Implicits {
       else null
     }
     def exitFullscreen(): js.Promise[Unit] = {
-      if (isFullscreenEnabled) if (isIpad) doc.webkitExitFullscreen else doc.exitFullscreen
+      if (isFullscreenEnabled) if (isIpad) doc.webkitExitFullscreen() else doc.exitFullscreen()
       else js.Promise.reject("fullscreen not enabled")
     }
 

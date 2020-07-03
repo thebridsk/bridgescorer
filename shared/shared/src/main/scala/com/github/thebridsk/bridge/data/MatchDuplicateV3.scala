@@ -575,7 +575,7 @@ case class MatchDuplicateV3 private (
   def getBoardSetObject() = {
     val bins = boards
       .map { b =>
-        b.getBoardInSet()
+        b.getBoardInSet
       }
       .toList
       .sortWith(MatchDuplicateV3.sort)
@@ -619,13 +619,13 @@ case class MatchDuplicateV3 private (
       .foldLeft(0)((ac, v) => ac + v)
   }
 
-  def convertToCurrentVersion() =
+  def convertToCurrentVersion =
     (
       true,
       MatchDuplicateV3(id, teams, boards, boardset, movement, created, updated)
     )
 
-  def readyForWrite() = this
+  def readyForWrite = this
 
 }
 

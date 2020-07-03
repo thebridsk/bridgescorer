@@ -110,9 +110,9 @@ case class BoardV2 private (
     )
   }
 
-  def playedHands() = hands.filter(dh => dh.wasPlayed)
+  def playedHands = hands.filter(dh => dh.wasPlayed)
 
-  def timesPlayed() = hands.filter(dh => dh.wasPlayed).size
+  def timesPlayed = hands.filter(dh => dh.wasPlayed).size
 
   def handPlayedByTeam(team: Id.Team) = hands.collectFirst {
     case hand: DuplicateHandV2 if hand.isTeam(team) => hand
@@ -214,17 +214,17 @@ case class BoardV2 private (
   }
 
   @Schema(hidden = true)
-  def getBoardInSet() =
+  def getBoardInSet =
     BoardInSet(Id.boardIdToBoardNumber(id).toInt, nsVul, ewVul, dealer)
 
   @Schema(hidden = true)
-  def convertToCurrentVersion() =
+  def convertToCurrentVersion =
     BoardV2(
       id,
       nsVul,
       ewVul,
       dealer,
-      hands.map(h => h.convertToCurrentVersion()),
+      hands.map(h => h.convertToCurrentVersion),
       created,
       updated
     )

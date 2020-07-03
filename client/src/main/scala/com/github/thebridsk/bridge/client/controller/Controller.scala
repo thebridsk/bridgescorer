@@ -326,7 +326,7 @@ object Controller extends  {
     import scala.scalajs.js.timers._
     setTimeout(1) { // note the absence of () =>
       if (BridgeDemo.isDemo) {
-        DuplicateSummaryStore.getDuplicateSummary() match {
+        DuplicateSummaryStore.getDuplicateSummary match {
           case Some(list) =>
             BridgeDispatcher.updateDuplicateSummary(None,list)
           case None =>

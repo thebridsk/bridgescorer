@@ -125,7 +125,7 @@ object Init {
 
               setTimeout(1000) {
                 LoggerStore.init()
-                Info.info()
+                Info.info
 
                 f()
               }
@@ -136,7 +136,7 @@ object Init {
 
       setTimeout(1000) {
         LoggerStore.init()
-        Info.info()
+        Info.info
 
         f()
       }

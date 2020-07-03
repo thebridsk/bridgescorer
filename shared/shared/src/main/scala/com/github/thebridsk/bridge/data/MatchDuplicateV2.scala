@@ -489,7 +489,7 @@ case class MatchDuplicateV2(
   def getBoardSetObject() = {
     val bins = boards.values
       .map { b =>
-        b.getBoardInSet()
+        b.getBoardInSet
       }
       .toList
       .sortWith((l, r) => l.id < r.id)
@@ -502,7 +502,7 @@ case class MatchDuplicateV2(
     )
   }
 
-  def convertToCurrentVersion() =
+  def convertToCurrentVersion =
     (
       false,
       MatchDuplicateV3(
@@ -522,7 +522,7 @@ case class MatchDuplicateV2(
       )
     )
 
-  def readyForWrite() = this
+  def readyForWrite = this
 
 }
 

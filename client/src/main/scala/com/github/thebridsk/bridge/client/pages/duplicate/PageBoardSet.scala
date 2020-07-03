@@ -105,7 +105,7 @@ object PageBoardSetInternal {
                   baseStyles.divFooter,
                   <.div(
                     baseStyles.divFooterCenter,
-                    AppButton( "Game", "Completed Games Scoreboard", props.routerCtl.setOnClick(props.page.toScoreboard())
+                    AppButton( "Game", "Completed Games Scoreboard", props.routerCtl.setOnClick(props.page.toScoreboard)
                     )
                   )
                 )

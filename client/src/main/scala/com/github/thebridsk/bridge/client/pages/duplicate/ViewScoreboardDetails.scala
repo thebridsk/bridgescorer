@@ -57,7 +57,7 @@ object ViewScoreboardDetailsInternal {
   class Backend(scope: BackendScope[Props, State]) {
     import DuplicateStyles._
     def render( props: Props, state: State ) = {
-      val details = props.md.getDetails()
+      val details = props.md.getDetails
       <.div(
         dupStyles.divScoreboardDetails,
         <.table(

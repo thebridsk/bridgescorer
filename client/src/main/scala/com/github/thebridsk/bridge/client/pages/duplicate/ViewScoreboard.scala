@@ -61,7 +61,7 @@ object ViewScoreboardInternal {
                           case TableRoundScoreboardView( dupid, tableid, roundid ) => (roundid,tableid)
                           case _ => (-1,"")
                         }
-                        val tablePerspective: Option[PerspectiveTable] = props.page.getPerspective() match {
+                        val tablePerspective: Option[PerspectiveTable] = props.page.getPerspective match {
                           case p: PerspectiveTable => Some(p)
                           case _ => None
                         }
@@ -205,7 +205,7 @@ object ViewScoreboardInternal {
       val showidbutton = props.page.isInstanceOf[FinishedScoreboardView]
       <.div(
         dupStyles.divViewScoreboard,
-        props.page.getPerspective() match {
+        props.page.getPerspective match {
           case PerspectiveDirector => dupStyles.divViewScoreboardAllButtons
           case PerspectiveComplete => dupStyles.divViewScoreboardAllButtons
           case PerspectiveTable(t1, t2) => TagMod()
@@ -216,7 +216,7 @@ object ViewScoreboardInternal {
             props.page match {
               case FinishedScoreboardView(dupid) => "Scoreboard"
               case _ =>
-                props.page.getPerspective() match {
+                props.page.getPerspective match {
                   case PerspectiveDirector => "Scoreboard from Director's view"
                   case PerspectiveComplete => "Scoreboard with completed boards only"
                   case PerspectiveTable(t1, t2) =>

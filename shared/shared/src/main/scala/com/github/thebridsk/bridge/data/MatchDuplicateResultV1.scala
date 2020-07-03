@@ -260,7 +260,7 @@ case class MatchDuplicateResultV1 private (
     }
   }
 
-  def convertToCurrentVersion() = {
+  def convertToCurrentVersion = {
     val r = results.map { list =>
       list.map { dse =>
         dse.copy(result = dse.result.map(v => v * 2))
@@ -287,7 +287,7 @@ case class MatchDuplicateResultV1 private (
     )
   }
 
-  def readyForWrite() = this
+  def readyForWrite = this
 
 }
 
@@ -367,7 +367,7 @@ object MatchDuplicateResultV1 {
       mdr: Option[MatchDuplicateResult] = None
   ) = {
     val score = MatchDuplicateScore(md, PerspectiveComplete)
-    val wss = score.getWinnerSets()
+    val wss = score.getWinnerSets
     val places = score.places.flatMap { p =>
       p.teams.map { t =>
         (t.id -> p.place)

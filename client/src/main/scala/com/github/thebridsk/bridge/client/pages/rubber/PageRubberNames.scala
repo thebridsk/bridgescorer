@@ -227,7 +227,7 @@ object PageRubberNamesInternal {
       RubberController.updateRubberNames(props.page.rid, state.north.trim, state.south.trim, state.east.trim, state.west.trim, state.dealer.get)
       props
     } >>= {
-      props => props.router.set(props.page.toRubber())
+      props => props.router.set(props.page.toRubber)
     }
 
     val storeCallback = Callback { scope.withEffectsImpure.modState(s => {

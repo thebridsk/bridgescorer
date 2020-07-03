@@ -119,7 +119,7 @@ class WrapperXMLHttpRequestImpl( val req: XMLHttpRequest ) extends WrapperXMLHtt
    *
    * MDN
    */
-  def abort(): Unit = req.abort
+  def abort(): Unit = req.abort()
 
   def responseType: String = req.responseType
 

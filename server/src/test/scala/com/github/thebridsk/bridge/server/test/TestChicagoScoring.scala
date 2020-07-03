@@ -67,7 +67,7 @@ class TestChicagoScoring extends AnyFlatSpec with Matchers {
     chi = chi.addRound(Round.create("0", "North", "South", "East", "West", "N", Nil ))
     chi = chi.playChicago5("Extra")
     val cs = ChicagoScoring(chi)
-    val possible = cs.getNextPossibleFixtures()
+    val possible = cs.getNextPossibleFixtures
     possible.size mustBe 4
     possible.keys.toSet mustBe Set("North","South","East","West")
     possible.foreach( e => {

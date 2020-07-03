@@ -101,7 +101,7 @@ object ZipStoreInternal {
                 val (id, v) = entry
                 val dir = metadataDir(id,store.support.resourceName)
                 val name =
-                  s"${storedir}${store.support.resourceName}.${id}${store.support.getWriteExtension()}"
+                  s"${storedir}${store.support.resourceName}.${id}${store.support.getWriteExtension}"
                 val content = store.support.toJSON(v)
                 zip.putNextEntry(new ZipEntry(name))
                 val out = new OutputStreamWriter(zip, "UTF8")
@@ -270,7 +270,7 @@ class ZipPersistentSupport[VId, VType <: VersionedInstance[VType, VType, VId]](
   }
 
   def readFilenames(id: VId) = {
-    support.getReadExtensions().map { e =>
+    support.getReadExtensions.map { e =>
       s"${storedir}${resourceName}.${id}${e}"
     }
   }

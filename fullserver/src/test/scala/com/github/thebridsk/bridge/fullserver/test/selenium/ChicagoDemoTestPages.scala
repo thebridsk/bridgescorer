@@ -297,7 +297,7 @@ class ChicagoDemoTestPages extends AnyFlatSpec
     combo.clickCaret
     eventually {
       val suggested = combo.suggestions.map(_.text)
-      suggested must contain allOf(player1,player2,player3,player4)
+      suggested must contain( allOf(player1,player2,player3,player4) )
     }
 
   }

@@ -141,7 +141,7 @@ case class DuplicateHandV1(
     copy(eIsPlayer1 = flag, updated = SystemTime.currentTimeMillis())
 
   @Schema(hidden = true)
-  def convertToCurrentVersion() = {
+  def convertToCurrentVersion = {
     DuplicateHandV2(
       hand.toList,
       table,

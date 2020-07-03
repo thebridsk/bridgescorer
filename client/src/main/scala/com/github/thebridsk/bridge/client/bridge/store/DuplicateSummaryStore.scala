@@ -56,12 +56,12 @@ object DuplicateSummaryStore extends ChangeListenable {
   private val maxTimeLastCalledImportId = 30000.0  // 30 seconds
 
   override
-  def noListener() = {
+  def noListener = {
     fCalled = false;
   }
 
-  def getDuplicateMatchSummary() = fMatchSummary
-  def getDuplicateSummary() = fSummary
+  def getDuplicateMatchSummary = fMatchSummary
+  def getDuplicateSummary = fSummary
   def getImportId = fImportId
 
   def updateDuplicateSummary( importId: Option[String], summary: List[DuplicateSummary] ) = {

@@ -36,7 +36,7 @@ object ListPage {
   val patternUrl = """(?:#import/([^/]+)/)?rubber""".r
 
   def getImportId( url: String ) = {
-    val prefix = TestServer.getAppPage()
+    val prefix = TestServer.getAppPage
     val test = if (url.startsWith(prefix)) {
       url.substring(prefix.length())
     } else {

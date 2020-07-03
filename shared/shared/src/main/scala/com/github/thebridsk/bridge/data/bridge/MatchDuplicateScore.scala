@@ -245,7 +245,7 @@ class MatchDuplicateScore private (
   /**
     * Get all the table Ids in sort order.
     */
-  def getTableIds() = {
+  def getTableIds = {
     tables.keys
       .map { id =>
         id.asInstanceOf[Id.Table]
@@ -257,15 +257,15 @@ class MatchDuplicateScore private (
       }
   }
 
-  def getBoardSet() = duplicate.boardset
+  def getBoardSet = duplicate.boardset
 
-  def getMovement() = duplicate.movement
+  def getMovement = duplicate.movement
 
   /**
     * Get the winner sets.  From each set a winner should be declared.
     * @return a list of the winner sets.  A winner set is a list of team Ids.
     */
-  def getWinnerSets(): List[List[Id.Team]] = {
+  def getWinnerSets: List[List[Id.Team]] = {
     // key is a team, value are the opponents of key
     val winnersets =
       scala.collection.mutable.Map[Id.DuplicateHand, List[Id.DuplicateHand]]()
@@ -318,7 +318,7 @@ class MatchDuplicateScore private (
     }
   }
 
-  def getDetails() = {
+  def getDetails = {
     duplicate.boards
       .flatMap { b =>
         b.hands.flatMap { dh =>
@@ -390,7 +390,7 @@ object MatchDuplicateScore {
     /**
       * @return a tuple 2.  The first is the played boards, the second is the unplayed boards.
       */
-    def playedAndUnplayedBoards() = {
+    def playedAndUnplayedBoards = {
       boards.partition { b =>
         b.hasTeamPlayed(ns.id)
       }
