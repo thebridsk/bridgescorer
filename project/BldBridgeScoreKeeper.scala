@@ -239,10 +239,7 @@ object BldBridgeScoreKeeper {
         val x = dependencyUpdates.value
         val z = dependencyUpdates.all(utilitiesAllProjects).value
       },
-      clean := {
-        val c = clean.value
-        val ch = (clean in BldBridgeHelp.help).value
-      },
+
       prereqintegrationtests := {
         val x = (assembly in Compile).value
         val y = (assembly in Test).value
