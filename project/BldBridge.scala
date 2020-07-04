@@ -258,15 +258,7 @@ object BldBridge {
       alltests := Def
         .sequential(
           mydist in Distribution in utilities,
-          test in Test in BldBrowserPages.browserpages,
-          test in Test in BldBridgeRotation.rotationJVM,
-          test in Test in BldBridgeRotation.rotationJS,
-          test in Test in BldColor.colorJVM,
-          test in Test in BldBridgeClientCommon.`bridgescorer-clientcommon`,
-          test in Test in BldBridgeClient.`bridgescorer-client`,
-          // test in Test in BldBridgeClientApi.`bridgescorer-clientapi`,
-          test in Test in BldBridgeServer.`bridgescorer-server`,
-          test in Test in BldBridgeFullServer.`bridgescorer-fullserver`,
+          mydistnoclean,
           disttests in Distribution in BldBridgeScoreKeeper.bridgescorekeeper,
         )
         .value,
@@ -299,16 +291,16 @@ object BldBridge {
         )
         .value,
       mydistnoclean := {
-          val x1 = (mydist in Distribution in utilities).value
+          // val x1 = (mydist in Distribution in utilities).value
           val x2 = (test in Test in BldBrowserPages.browserpages).value
           val x3 = (fastOptJS in Compile in BldBridgeClient.`bridgescorer-client`).value
           val x4 = (fullOptJS in Compile in BldBridgeClient.`bridgescorer-client`).value
-          val x5 = travis1.value
+          val x5 = travis1p.value
         },
       mydist := Def
         .sequential(
           myclean,
-          mydistnoclean,
+          alltests,
           mypublish in Distribution,
         )
         .value,
@@ -456,13 +448,7 @@ object BldBridge {
         }
 
       },
-      mypublish := Def
-        .sequential(
-          disttests in BldBridgeScoreKeeper.bridgescorekeeper in Distribution,
-          mypublishcopy in Distribution
-        )
-        .value
-
+      mypublish := (mypublishcopy in Distribution).value
 
     )
     .enablePlugins(GitVersioning, GitBranchPrompt)
