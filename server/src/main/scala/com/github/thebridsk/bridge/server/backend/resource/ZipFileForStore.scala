@@ -80,6 +80,6 @@ class ZipFileForStore(
 
 object ZipFileForStore {
 
-  val log = Logger[ZipFileForStore]
+  val log = Logger[ZipFileForStore]()
 
 }

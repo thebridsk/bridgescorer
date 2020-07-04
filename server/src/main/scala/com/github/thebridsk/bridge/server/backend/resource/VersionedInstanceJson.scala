@@ -8,7 +8,7 @@ import play.api.libs.json._
 import com.github.thebridsk.bridge.data.rest.JsonException
 
 object VersionedInstanceJson {
-  val log = Logger[VersionedInstanceJson[_, _]]
+  val log = Logger[VersionedInstanceJson[_, _]]()
 
   /**
     * Provides to/from JSON conversion of a resource object.
@@ -59,7 +59,7 @@ private class ReaderAndConvert[TId, T <: VersionedInstance[T, T, TId], R <: Vers
 
   def parse(s: String): (Boolean, T) = {
     val (primary, r) = parseOld(s)
-    val cur = r.convertToCurrentVersion()
+    val cur = r.convertToCurrentVersion
     (primary && cur._1, cur._2)
   }
 
@@ -173,11 +173,11 @@ class VersionedInstanceJson[TId, T <: VersionedInstance[T, T, TId]](
   /**
     * get the file extensions to use when reading files.  The order is the order they should be tried.
     */
-  def getReadExtensions(): List[String] = converter.getReadExtensions()
+  def getReadExtensions: List[String] = converter.getReadExtensions
 
   /**
     * get the file extension to use when writing files.
     */
-  def getWriteExtension(): String = converter.getWriteExtension()
+  def getWriteExtension: String = converter.getWriteExtension
 
 }

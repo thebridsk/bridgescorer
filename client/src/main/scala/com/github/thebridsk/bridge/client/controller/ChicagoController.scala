@@ -173,7 +173,7 @@ object ChicagoController {
     BridgeDispatcher.updateChicagoHand(chiid, roundid, handid, hand, Some( updateServer ))
   }
 
-  def getSummaryFromLocalStorage(): Array[MatchChicago] = {
+  def getSummaryFromLocalStorage: Array[MatchChicago] = {
     LocalStorage.item(lastChicagoStorageKey).map{ s => readJson[MatchChicago](s)}.toArray
   }
 
@@ -182,7 +182,7 @@ object ChicagoController {
     import scala.scalajs.js.timers._
     setTimeout(1) { // note the absence of () =>
       if (BridgeDemo.isDemo) {
-        val x = ChicagoSummaryStore.getChicagoSummary().getOrElse(getSummaryFromLocalStorage())
+        val x = ChicagoSummaryStore.getChicagoSummary().getOrElse(getSummaryFromLocalStorage)
         logger.fine(s"Updating chicago summary from lastChicago: ${x}")
         BridgeDispatcher.updateChicagoSummary(None, x)
       } else {
@@ -363,7 +363,7 @@ object ChicagoController {
             logger.fine(s"Already have latest in summary store")
             value
           case None =>
-            val array = getSummaryFromLocalStorage()
+            val array = getSummaryFromLocalStorage
             logger.fine(s"Updating chicago summary from lastChicago: ${array}")
             BridgeDispatcher.updateChicagoSummary(None, array)
             array.headOption.map( chi => BridgeDispatcher.updateChicago(chi) )

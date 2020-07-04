@@ -14,7 +14,7 @@ import com.github.thebridsk.source.SourcePosition
 import scala.util.Success
 
 object ParallelUtilsInternals {
-  val log = Logger[ParallelUtils]
+  val log = Logger[ParallelUtils]()
 
   private[util] def toExceptionMsg( msg: String, causes: (Position,Throwable)* ) = {
     msg+causes.map { e =>

@@ -15,7 +15,7 @@ import com.github.thebridsk.bridge.data.Movement
 
 object NewDuplicatePage {
 
-  val log = Logger[NewDuplicatePage]
+  val log = Logger[NewDuplicatePage]()
 
   def current(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
     new NewDuplicatePage

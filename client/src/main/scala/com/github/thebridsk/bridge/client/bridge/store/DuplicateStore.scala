@@ -68,7 +68,7 @@ object DuplicateStore extends ChangeListenable {
           for (h <- b.hands) {
             if (h.table == table && h.round == round) {
               result = Some(PerspectiveTable(h.nsTeam,h.ewTeam))
-              break;
+              break()
             }
           }
         }}
@@ -280,7 +280,7 @@ object DuplicateStore extends ChangeListenable {
     monitoredId = Some(dupid)
     if (BridgeDemo.isDemo) {
       if (bridgeMatch.isEmpty)
-        bridgeMatch = DuplicateSummaryStore.getDuplicateMatchSummary().flatMap( list => list.find(md => md.id == dupid))
+        bridgeMatch = DuplicateSummaryStore.getDuplicateMatchSummary.flatMap( list => list.find(md => md.id == dupid))
       logger.info(s"monitoring bridgeMatch=$bridgeMatch")
     }
     notifyChange()

@@ -90,7 +90,7 @@ import com.github.thebridsk.browserpages.Checkbox
 
 object DuplicateTestPages {
 
-  val testlog = Logger[DuplicateTestPages]
+  val testlog = Logger[DuplicateTestPages]()
 
   val screenshotDir = "target/DuplicateTestPages"
   val docsScreenshotDir = "target/docs/Duplicate"

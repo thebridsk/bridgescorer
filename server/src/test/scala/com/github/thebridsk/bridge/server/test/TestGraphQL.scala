@@ -49,7 +49,7 @@ import scala.concurrent.ExecutionContext
 
 object TestGraphQL {
 
-  val testlog = com.github.thebridsk.utilities.logging.Logger[TestGraphQL]
+  val testlog = com.github.thebridsk.utilities.logging.Logger[TestGraphQL]()
 
   val graphQL = new Query
 
@@ -334,5 +334,4 @@ class TestGraphQL extends AsyncFlatSpec with ScalatestRouteTest with Matchers {
       respjson \ "data" \ "import" \ "duplicate" \ "teams" \ 0 \ "player1" mustBe JsDefined(JsString("Nancy"))
     }
   }
-
 }

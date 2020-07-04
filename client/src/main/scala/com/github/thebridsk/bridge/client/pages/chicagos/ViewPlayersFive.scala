@@ -68,9 +68,9 @@ object ViewPlayersFiveInternal {
   object State {
     def apply(props: Props) = {
       val s = ChicagoScoring(props.chicago)
-      val pathSoFar = s.getFixturesSoFar()
+      val pathSoFar = s.getFixturesSoFar
       logger.info("Path So Far: " + pathSoFar)
-      val npf = s.getNextPossibleFixtures()
+      val npf = s.getNextPossibleFixtures
       logger.info("Next Fixtures: " + npf)
       val n = npf.keys.size
       val e = if (n == 1) {
@@ -412,7 +412,7 @@ object ViewPlayersFiveInternal {
               AppButton(
                 "Cancel",
                 "Cancel",
-                props.router.setOnClick(props.page.toSummaryView())
+                props.router.setOnClick(props.page.toSummaryView)
               )
               //            HelpButton("../help/chicago/five/selectnames5.html")
             )

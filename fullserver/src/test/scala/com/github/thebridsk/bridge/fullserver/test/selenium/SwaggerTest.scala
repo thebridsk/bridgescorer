@@ -43,14 +43,14 @@ class SwaggerTest extends AnyFlatSpec with Matchers with BeforeAndAfterAll {
   import com.github.thebridsk.browserpages.PageBrowser._
   import ParallelUtils._
 
-  val logger = Logger[SwaggerTest]
+  val logger = Logger[SwaggerTest]()
 
 
   import Eventually.{ patienceConfig => _, _ }
   import EventuallyUtils._
   import HttpUtils._
 
-  val testlog = Logger[SwaggerTest]
+  val testlog = Logger[SwaggerTest]()
 
   import scala.concurrent.duration._
 
@@ -136,7 +136,7 @@ class SwaggerTest extends AnyFlatSpec with Matchers with BeforeAndAfterAll {
   it should "display the swagger docs going to /v1/docs/" in {
     implicit val webDriver = TestSession.webDriver
 
-    go to TestServer.getDocs()
+    go to TestServer.getDocs
     eventually {
       val we = find(xpath("//h2[contains(concat(' ', normalize-space(@class), ' '), ' title ')]"))
       val text = we.text

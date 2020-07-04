@@ -30,7 +30,7 @@ trait ConvertBoardSetsAndMovementsCommand
 object ConvertBoardSetsAndMovementsCommand extends Subcommand("convertboards") {
   import DataStoreCommands.optionStore
 
-  val log = Logger[ConvertBoardSetsAndMovementsCommand]
+  val log = Logger[ConvertBoardSetsAndMovementsCommand]()
 
   implicit def dateConverter: ValueConverter[Duration] =
     singleArgConverter[Duration](Duration(_))

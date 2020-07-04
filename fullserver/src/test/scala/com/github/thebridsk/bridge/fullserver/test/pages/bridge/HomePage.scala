@@ -20,7 +20,7 @@ import com.github.thebridsk.bridge.fullserver.test.pages.chicago.EnterNamesPage
 
 object HomePage {
 
-  val log = Logger[HomePage]
+  val log = Logger[HomePage]()
 
   def current(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
     new HomePage
@@ -32,11 +32,11 @@ object HomePage {
   }
 
   def demo(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
-    go to TestServer.getAppDemoPage()
+    go to TestServer.getAppDemoPage
     new HomePage
   }
 
-  def urlFor = TestServer.getAppPage()
+  def urlFor = TestServer.getAppPage
 
   val divBridgeAppPrefix = """//div[@id="BridgeApp"]"""
 }

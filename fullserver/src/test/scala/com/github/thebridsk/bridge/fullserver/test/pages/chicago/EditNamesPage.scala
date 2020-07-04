@@ -20,7 +20,7 @@ import com.github.thebridsk.bridge.fullserver.test.pages.bridge.ErrorMsgDiv
 
 object EditNamesPage {
 
-  val log = Logger[EditNamesPage]
+  val log = Logger[EditNamesPage]()
 
   def current( matchType: ChicagoMatchType )(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
     val chiid = findMatchId
@@ -101,7 +101,7 @@ class EditNamesPage(
 
   def validate(implicit patienceConfig: PatienceConfig, pos: Position) = logMethod(s"${pos.line} ${getClass.getSimpleName}.validate") { eventually {
 
-    Some(currentUrl) must contain oneOf( urlFor(chiid), demoUrlFor(chiid) )
+    Some(currentUrl) must (contain.oneOf( urlFor(chiid), demoUrlFor(chiid) ) )
 
     val allButtons = buttonOK::buttonReset::buttonCancel::Nil
 

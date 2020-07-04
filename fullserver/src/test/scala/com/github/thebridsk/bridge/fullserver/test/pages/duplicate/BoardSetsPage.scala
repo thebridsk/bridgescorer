@@ -17,7 +17,7 @@ import com.github.thebridsk.bridge.server.test.util.HttpUtils.ResponseFromHttp
 
 object BoardSetsPage {
 
-  val log = Logger[BoardSetsPage]
+  val log = Logger[BoardSetsPage]()
 
   def current(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
     new BoardSetsPage( getCurrentBoard )

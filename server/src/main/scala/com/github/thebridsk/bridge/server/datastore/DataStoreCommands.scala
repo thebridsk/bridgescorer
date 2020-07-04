@@ -17,7 +17,7 @@ trait DataStoreCommands
 
 object DataStoreCommands extends Subcommand("datastore") {
 
-  val log = Logger[DataStoreCommands]
+  val log = Logger[DataStoreCommands]()
 
   private var savelevel: Level = null
 

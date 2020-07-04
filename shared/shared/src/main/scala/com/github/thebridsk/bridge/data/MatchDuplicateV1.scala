@@ -429,7 +429,7 @@ case class MatchDuplicateV1(
       }
   }
 
-  def convertToCurrentVersion() =
+  def convertToCurrentVersion =
     (
       false,
       MatchDuplicateV3(
@@ -448,7 +448,7 @@ case class MatchDuplicateV1(
       )
     )
 
-  def readyForWrite() = this
+  def readyForWrite = this
 
 }
 

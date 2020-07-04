@@ -27,7 +27,7 @@ import java.io.InputStream
 import com.github.thebridsk.bridge.server.backend.resource.MetaData.MetaDataFile
 
 object Store {
-  val log = Logger[Store[_, _]]
+  val log = Logger[Store[_, _]]()
 
 }
 

@@ -33,7 +33,7 @@ trait SetNamesCommand
 object SetNamesCommand extends Subcommand("setnames") {
   import DataStoreCommands.optionStore
 
-  val log = Logger[SetNamesCommand]
+  val log = Logger[SetNamesCommand]()
 
   implicit def dateConverter: ValueConverter[Duration] =
     singleArgConverter[Duration](Duration(_))

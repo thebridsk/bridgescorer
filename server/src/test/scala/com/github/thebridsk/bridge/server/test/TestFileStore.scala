@@ -35,7 +35,7 @@ class TestFileStore extends AsyncFlatSpec with Matchers with BeforeAndAfterAll {
   val resourceURI = "/rubbers"
   val idPrefix = "R"
 
-  val testlog = Logger[TestFileStore]
+  val testlog = Logger[TestFileStore]()
 
   TestStartLogging.startLogging()
 
@@ -61,7 +61,7 @@ class TestFileStore extends AsyncFlatSpec with Matchers with BeforeAndAfterAll {
   implicit val support = new MatchRubberCacheStoreSupport(false)
   implicit val supportD = new MatchDuplicateCacheStoreSupport(false)
 
-  def filename( id: String ) = resourceName+"."+id+support.getWriteExtension()
+  def filename( id: String ) = resourceName+"."+id+support.getWriteExtension
   def path(id: String ) = tempDir.toString()+File.separator+filename(id)
 
   it should "read a team object from the filestore" in {

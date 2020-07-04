@@ -140,7 +140,7 @@ class AppRouter( modules: Module* ) {
     routerCtl.set(Home)  // show the Info page.
   }
 
-  def scoringViewCallbackCancel( routerCtl: RouterCtl[AppPage])() = {
+  def scoringViewCallbackCancel( routerCtl: RouterCtl[AppPage]) = {
     routerCtl.set(Home)  // show the Info page.
   }
 
@@ -154,7 +154,7 @@ class AppRouter( modules: Module* ) {
   implicit def routerCtlToBridgeRouter[P]( ctl: RouterCtl[P] ): BridgeRouter[P] =
     new BridgeRouterBase[P](ctl) {
         override
-        def home: TagMod = gotoHome
+        def home: TagMod = gotoHome()
 
         override
         def toHome: Unit = self.toRootPage(Home,"")

@@ -23,7 +23,7 @@ import java.nio.file.NoSuchFileException
 
 object ImportStore {
 
-  val log = Logger[ImportStore]
+  val log = Logger[ImportStore]()
 
   val importStoreExtension = ImportStoreConstants.importStoreFileExtension
   val importStoreDotExtension = s".${importStoreExtension}"

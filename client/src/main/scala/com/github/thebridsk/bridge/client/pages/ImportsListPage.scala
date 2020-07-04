@@ -191,7 +191,7 @@ object ImportsListPageInternal {
       error: Option[TagMod] = None
   ) {
 
-    def clearError() = copy(error=None)
+    def clearError = copy(error=None)
 
     def withError( s: String ) = copy( error = Some(s) )
 
@@ -231,7 +231,7 @@ object ImportsListPageInternal {
 
     def error( err: String ) = scope.modState( s => s.withError(err) )
 
-    val clearError = scope.modState( s => s.clearError() )
+    val clearError = scope.modState( s => s.clearError )
 
     def getFile( filelist: FileList ) = {
       if (filelist.length == 1) {
@@ -285,7 +285,7 @@ object ImportsListPageInternal {
           result match {
             case Right(r) =>
               refresh()
-              state.clearError()
+              state.clearError
             case Left(err) =>
               state.withError(err)
           }

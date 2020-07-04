@@ -29,7 +29,7 @@ class TestDuplicateStore extends AnyFlatSpec with Matchers {
 
     private var changeCalled = false
 
-    private def internalChangeListener() = Callback {
+    private def internalChangeListener = Callback {
           changeCalled = true;
           changeListener()
     }

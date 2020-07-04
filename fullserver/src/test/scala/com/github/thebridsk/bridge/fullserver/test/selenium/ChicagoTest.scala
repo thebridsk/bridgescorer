@@ -64,7 +64,7 @@ class ChicagoTest extends AnyFlatSpec
 
   import scala.concurrent.duration._
 
-  val log = Logger[ChicagoTest]
+  val log = Logger[ChicagoTest]()
 
   lazy val inTravis = sys.props
     .get("TRAVIS_BUILD_NUMBER")
@@ -313,7 +313,7 @@ class ChicagoTest extends AnyFlatSpec
 
   it should "send to the server that there are 4 games per round" in {
 
-    def getGamesPerRound( ) = {
+    def getGamesPerRound = {
         backend.chicagos.syncStore.read(chicagoId.get) match {
           case Right(c) => c.gamesPerRound
           case Left(r) => -1
@@ -376,7 +376,7 @@ class ChicagoTest extends AnyFlatSpec
   it should "send to the server that there are 4 games per round once more" in {
     // keeping this for more checks
 
-    def getGamesPerRound( ) = {
+    def getGamesPerRound = {
         backend.chicagos.syncStore.read(chicagoId.get) match {
           case Right(c) => c.gamesPerRound
           case Left(r) => -1
@@ -439,7 +439,7 @@ class ChicagoTest extends AnyFlatSpec
   it should "send to the server that there are 4 games per round once more again" in {
     // keeping this for more checks
 
-    def getGamesPerRound( ) = {
+    def getGamesPerRound = {
         backend.chicagos.syncStore.read(chicagoId.get) match {
           case Right(c) => c.gamesPerRound
           case Left(r) => -1

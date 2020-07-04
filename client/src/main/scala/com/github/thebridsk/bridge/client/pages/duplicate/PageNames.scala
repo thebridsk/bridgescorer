@@ -58,7 +58,7 @@ object PageNamesInternal {
   case class State( teams: Map[Id.Team, Team]=Map(), nameSuggestions: Option[List[String]] = None ) {
     import scala.scalajs.js.JSConverters._
 
-    def reset() =
+    def reset =
       DuplicateStore.getMatch() match {
         case Some(md) => copy(teams=md.teams.map(t=> t.id->t).toMap)
         case None => copy(teams=Map())
@@ -215,10 +215,10 @@ object PageNamesInternal {
     def okCallback = doUpdate >> scope.props >>= { props => props.routerCtl.set(props.returnPage) }
 
     val resetCallback = scope.props >>= { props =>
-      scope.modState(s => s.reset())
+      scope.modState(s => s.reset)
     }
 
-    val storeCallback = scope.modState { s => s.reset() }
+    val storeCallback = scope.modState { s => s.reset }
 
     val namesCallback = scope.modState { s =>
       val sug = NamesStore.getNames

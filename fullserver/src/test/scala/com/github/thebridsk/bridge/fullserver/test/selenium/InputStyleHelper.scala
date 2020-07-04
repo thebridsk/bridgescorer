@@ -134,6 +134,6 @@ class InputStyleHelper extends Matchers {
 
 object InputStyleHelper extends InputStyleHelper {
 
-  val testlog = Logger[InputStyleHelper]
+  val testlog = Logger[InputStyleHelper]()
 
 }

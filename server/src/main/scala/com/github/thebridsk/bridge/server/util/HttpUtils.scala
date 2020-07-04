@@ -22,7 +22,7 @@ import scala.util.Using
 
 object HttpUtilsInternal {
 
-  private[util] val logger = Logger[HttpUtils]
+  private[util] val logger = Logger[HttpUtils]()
 
   private[util] val bufsize = 1024 * 1024
 }

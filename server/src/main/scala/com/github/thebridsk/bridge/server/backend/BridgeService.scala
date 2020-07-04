@@ -459,7 +459,7 @@ abstract class BridgeService(val id: String) {
         Result {
           val calc = new CalculatePlayerPlaces(scoringMethod)
           (mds ::: mdrs).map(d=>calc.add(d))
-          calc.finish
+          calc.finish()
         }
       }
     }
@@ -567,7 +567,7 @@ object BridgeService {
 }
 
 object BridgeServiceWithLogging {
-  val log = Logger[BridgeServiceWithLogging]
+  val log = Logger[BridgeServiceWithLogging]()
 
   def getDefaultRemoteLoggerConfig() = {
     RemoteLoggingConfig.getDefaultRemoteLoggerConfig()

@@ -123,7 +123,7 @@ object Bridge {   // need to figure out how to use new way to call main
     if (len > 0) {
       for (i <- 0 until len) {
         val child = children.item(i)
-        if (child.hasAttributes) {
+        if (child.hasAttributes()) {
           val unknown = child.attributes.getNamedItem("id")
           if (unknown.value == id) return child
         }

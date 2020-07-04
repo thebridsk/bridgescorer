@@ -65,7 +65,7 @@ class Chicago5FairTest extends AnyFlatSpec
 
   import scala.concurrent.duration._
 
-  val log = Logger[Chicago5FairTest]
+  val log = Logger[Chicago5FairTest]()
 
   val docsScreenshotDir = "target/docs/Chicago"
 

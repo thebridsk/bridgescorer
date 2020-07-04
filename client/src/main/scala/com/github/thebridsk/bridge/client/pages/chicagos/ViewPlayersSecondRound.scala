@@ -34,7 +34,7 @@ object ViewPlayersSecondRound {
     def isDealerValid() = dealer.isDefined
     def areAllPlayersValid() = playerValid(north) && playerValid(south) && playerValid(east) && playerValid(west)
 
-    def isValid() = areAllPlayersValid()&& isDealerValid()
+    def isValid = areAllPlayersValid()&& isDealerValid()
 
     def isDealer(p: PlayerPosition): Boolean = dealer.map( d => d == p ).getOrElse(false)
 
@@ -47,7 +47,7 @@ object ViewPlayersSecondRound {
           case _ => false
         }
 
-    def getPlayerState() = PlayerState(north,south,east,west,dealer)
+    def getPlayerState = PlayerState(north,south,east,west,dealer)
 
     def isPlayerSpecified( p: String ) = p==north || p==south || p==east || p==west
 
@@ -61,7 +61,7 @@ object ViewPlayersSecondRound {
       copy( north=n, south=s, east=e, west=w )
     }
 
-    def getDealer() = dealer.map( d => d.pos.toString() ).getOrElse("")
+    def getDealer = dealer.map( d => d.pos.toString() ).getOrElse("")
   }
 
   class Backend(scope: BackendScope[Props, State]) {
@@ -270,7 +270,7 @@ object ViewPlayersSecondRound {
               ),
               <.div(
                 baseStyles.divFooterCenter,
-                AppButton( "Cancel", "Cancel", baseStyles.appButton, props.router.setOnClick(props.page.toSummaryView()) )
+                AppButton( "Cancel", "Cancel", baseStyles.appButton, props.router.setOnClick(props.page.toSummaryView) )
               ),
               <.div(
                 baseStyles.divFooterRight,

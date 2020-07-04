@@ -233,7 +233,7 @@ object HomePage {
             ),
             state.serverCert ?= <.a(
               ^.href := "/servercert",
-              if (InfoPage.isIpad()) "Install server certificate" else "Download server certificate"
+              if (InfoPage.isIpad) "Install server certificate" else "Download server certificate"
             )
           ),
           <.div(

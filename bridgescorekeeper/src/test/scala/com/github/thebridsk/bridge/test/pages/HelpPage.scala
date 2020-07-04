@@ -16,7 +16,7 @@ import com.github.thebridsk.browserpages.Page
 
 object HelpPage {
 
-  val log = Logger[HelpPage]
+  val log = Logger[HelpPage]()
 
   val directory = "target/screenshots/HelpPage"
 

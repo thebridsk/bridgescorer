@@ -42,7 +42,7 @@ import com.github.thebridsk.bridge.fullserver.test.pages.chicago.ChicagoMatchTyp
 
 object ChicagoDemoTestPages {
 
-  val log = Logger[ChicagoDemoTestPages]
+  val log = Logger[ChicagoDemoTestPages]()
 
   val player1 = "Naomi"
   val player2 = "Sebastion"
@@ -297,7 +297,7 @@ class ChicagoDemoTestPages extends AnyFlatSpec
     combo.clickCaret
     eventually {
       val suggested = combo.suggestions.map(_.text)
-      suggested must contain allOf(player1,player2,player3,player4)
+      suggested must (contain.allOf(player1,player2,player3,player4) )
     }
 
   }

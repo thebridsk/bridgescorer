@@ -99,7 +99,7 @@ object PageBoardInternal {
 
     def render( props: Props, state: State ) = {
       logger.info(s"Rendering board ${props.page} routectl=${props.routerCtl.getClass.getName}")
-      val perspective = props.page.getPerspective()
+      val perspective = props.page.getPerspective
       val tableperspective = perspective match {
         case tp: PerspectiveTable => Some(tp)
         case _ => None
@@ -136,7 +136,7 @@ object PageBoardInternal {
           case tbpage: TableBoardView =>
             mds.getRound(tbpage.tableid, tbpage.round) match {
               case Some(round) =>
-                val (played,unplayed) = round.playedAndUnplayedBoards()
+                val (played,unplayed) = round.playedAndUnplayedBoards
                 <.span(
                   buttons("Played: ", played, round.ns.id, true),
                   <.span(^.dangerouslySetInnerHtml:="&nbsp;&nbsp;"),
@@ -173,7 +173,7 @@ object PageBoardInternal {
       }
 
       def title() = {
-        props.page.getPerspective() match {
+        props.page.getPerspective match {
           case PerspectiveTable(team1, team2) =>
             <.span(
               s"Table ${Id.tableIdToTableNumber(currentTable)} Round ${currentRound}" ,
@@ -213,8 +213,8 @@ object PageBoardInternal {
               case Some(r) => r.complete
               case _ => false
             }
-            val clickToScoreboard = props.page.toScoreboardView()
-            val clickToTableView = tableBoardView.map( tbv => tbv.toTableView() )
+            val clickToScoreboard = props.page.toScoreboardView
+            val clickToTableView = tableBoardView.map( tbv => tbv.toTableView )
             <.div(
               dupStyles.divBoardPage,
 //              title(),
@@ -239,7 +239,7 @@ object PageBoardInternal {
                                                         props.routerCtl.setOnClick(clickToTableView.get) ),
                 " ",
                 AppButton( "AllBoards", "All Boards",
-                           props.routerCtl.setOnClick(props.page.toAllBoardsView())
+                           props.routerCtl.setOnClick(props.page.toAllBoardsView)
                          ),
                 " ",
                 PageScoreboardInternal.scoringMethodButton( state.useIMP, Some( score.isIMP), false, nextIMPs ),
@@ -283,7 +283,7 @@ object PageBoardInternal {
                         .render_P( args => {
                           val (id,props,bs) = args
                           val me = props.page.boardid
-                          val clickToBoard = props.page.toScoreboardView().toBoardView(id)
+                          val clickToBoard = props.page.toScoreboardView.toBoardView(id)
                           logger.fine(s"Target for setOnClick is ${clickToBoard}")
                           <.td(
                             AppButton( "Board_"+id, "Board "+Id.boardIdToBoardNumber(id),

@@ -22,7 +22,7 @@ import com.github.thebridsk.bridge.fullserver.test.pages.bridge.ErrorMsgDiv
 
 object TableEnterNamesPage {
 
-  val log = Logger[TableEnterNamesPage]
+  val log = Logger[TableEnterNamesPage]()
 
   def current( targetBoard: Option[String], scorekeeper: PlayerPosition)(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
     val (dupid,tableid,roundid,targetboard) = findTableRoundId

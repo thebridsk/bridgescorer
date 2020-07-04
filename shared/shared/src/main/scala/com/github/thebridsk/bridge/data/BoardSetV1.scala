@@ -99,9 +99,9 @@ case class BoardSetV1(
       optional(!dontUpdateTime, _.copy(updateTime=Some(time)))
   }
 
-  def convertToCurrentVersion() = (true, this)
+  def convertToCurrentVersion = (true, this)
 
-  def readyForWrite() = this
+  def readyForWrite = this
 
   @Schema(hidden = true)
   def created: SystemTime.Timestamp = creationTime.getOrElse(0)

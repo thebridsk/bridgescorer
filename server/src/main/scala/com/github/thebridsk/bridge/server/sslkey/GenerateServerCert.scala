@@ -42,7 +42,7 @@ trait GenerateServerCert
 object GenerateServerCert extends Subcommand("generateservercert") {
   import SSLKeyCommands.optionKeyDir
 
-  val log = Logger[GenerateServerCert]
+  val log = Logger[GenerateServerCert]()
 
   implicit def dateConverter: ValueConverter[Duration] =
     singleArgConverter[Duration](Duration(_))

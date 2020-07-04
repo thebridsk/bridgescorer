@@ -13,7 +13,7 @@ import com.github.thebridsk.browserpages.GenericPage
 
 object SimpleSelectPartnersPage {
 
-  val log = Logger[SimpleSelectPartnersPage]
+  val log = Logger[SimpleSelectPartnersPage]()
 
   def current(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
     val (chiid,roundid) = EnterNamesPage.findMatchRoundId
@@ -69,7 +69,7 @@ class SimpleSelectPartnersPage(
 
     roundid.toString() must not be "0"      // only valid for the first round
 
-    Some(currentUrl) must contain oneOf( urlFor(chiid,roundid), demoUrlFor(chiid,roundid) )
+    Some(currentUrl) must (contain.oneOf( urlFor(chiid,roundid), demoUrlFor(chiid,roundid) ) )
 
     find( xpath( """//div[@id='BridgeApp']/div[1]/div[1]/div[3]/div[1]/h1""") ).text mustBe "Simple Rotation"
 

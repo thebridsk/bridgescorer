@@ -223,9 +223,9 @@ object ViewRubberMatchDetailsInternal {
       }
     }
 
-    val toRubber = scope.props >>= { props => props.routerCtl.set(props.page.toRubber()) }
+    val toRubber = scope.props >>= { props => props.routerCtl.set(props.page.toRubber) }
 
-    val tonames = scope.props >>= { props => props.routerCtl.set(props.page.toNames()) }
+    val tonames = scope.props >>= { props => props.routerCtl.set(props.page.toNames) }
 
     val quit = scope.props >>= { props => props.routerCtl.set(ListView) }
 

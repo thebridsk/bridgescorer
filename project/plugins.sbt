@@ -14,7 +14,7 @@ val vJGit = "5.8.0.202006091008-r" // https://github.com/eclipse/jgit
 val vCrossProject = "1.0.0"        // https://github.com/portable-scala/sbt-crossproject
 // scala-react does not compile on scalajs 1.0 yet
 val vScalaJSDefault = "1.1.1"      // http://www.scala-js.org/
-val vEnvJsDomNodejs = "1.1.1"      // https://github.com/scala-js/scala-js-env-jsdom-nodejs
+val vEnvJsDomNodejs = "1.1.0"      // https://github.com/scala-js/scala-js-env-jsdom-nodejs
 
 val sbtScalaJsBundlerSuffix = if (vScalaJSDefault.startsWith("0.6.")) "-sjs06" else ""  // "" - for ScalaJS 1.0 "-sjs06" for ScalaJS 0.6
 

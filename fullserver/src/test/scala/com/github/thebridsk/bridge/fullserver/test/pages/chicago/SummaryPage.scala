@@ -19,7 +19,7 @@ import com.github.thebridsk.bridge.fullserver.test.pages.bridge.HomePage
 
 object SummaryPage {
 
-  val log = Logger[SummaryPage]
+  val log = Logger[SummaryPage]()
 
   def current( matchType: ChicagoMatchType )(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
     val (cid, round) = findChicagoIds

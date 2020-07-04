@@ -321,7 +321,7 @@ object ViewPlayersFourthRound {
                   "Cancel",
                   "Cancel",
                   baseStyles.appButton,
-                  props.router.setOnClick(props.page.toSummaryView())
+                  props.router.setOnClick(props.page.toSummaryView)
                 )
               ),
               <.div(

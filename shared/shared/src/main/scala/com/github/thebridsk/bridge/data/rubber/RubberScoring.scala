@@ -14,7 +14,7 @@ class GameScoring(
     val nsVul: Boolean,
     val ewVul: Boolean
 ) {
-  val (nsAbove, nsBelow, ewAbove, ewBelow, scoredHands) = calculate()
+  val (nsAbove, nsBelow, ewAbove, ewBelow, scoredHands) = calculate
 
   val nsWon = nsBelow >= 100
   val ewWon = ewBelow >= 100
@@ -41,13 +41,13 @@ class GameScoring(
     *            scoredHands: List[com.github.thebridsk.bridge.data.bridge.RubberBridge.ScoreHand]  // same index as hands
     *
     */
-  private def calculate() = {
+  private def calculate = {
     val sh = hands.map { h =>
       ScoreHand(h)
     }
     val (nsA, nsB, ewA, ewB) = sh
       .map { h =>
-        h.getScores()
+        h.getScores
       }
       .foldLeft((0, 0, 0, 0))(
         (a, v) => (a._1 + v._1, a._2 + v._2, a._3 + v._3, a._4 + v._4)
@@ -66,7 +66,7 @@ class GameScoring(
       scoredHands.foldLeft(
         (Nil: List[Int], Nil: List[Int], Nil: List[Int], Nil: List[Int])
       )((a, v) => {
-        val sc = v.getScores()
+        val sc = v.getScores
         (
           if (sc._1 != 0) sc._1 :: a._1 else a._1,
           if (sc._2 != 0) sc._2 :: a._2 else a._2,

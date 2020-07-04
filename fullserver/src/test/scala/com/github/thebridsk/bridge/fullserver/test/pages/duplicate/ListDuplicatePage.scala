@@ -18,7 +18,7 @@ import com.github.thebridsk.bridge.fullserver.test.pages.ServerURLAddOn
 
 object ListDuplicatePage {
 
-  private[ListDuplicatePage] val log = Logger[ListDuplicatePage]
+  private[ListDuplicatePage] val log = Logger[ListDuplicatePage]()
 
   val screenshotDir = "target/screenshots/PagesDuplicate"
 

@@ -62,7 +62,7 @@ class TempPlayerPlaces(
   private var fTotal: Int = 0
   private var fMaxTeams: Int = 0
 
-  def toPlayerPlaces() = {
+  def toPlayerPlaces = {
     val p = fPlace.map(l => l.toList).toList
     PlayerPlace(name, p, fTotal, fMaxTeams)
   }
@@ -86,7 +86,7 @@ class TempPlayerPlaces(
 
 object CalculatePlayerPlaces {
 
-  val log = Logger[CalculatePlayerPlaces]
+  val log = Logger[CalculatePlayerPlaces]()
 
   /**
    * Returns an extended array

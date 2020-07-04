@@ -19,7 +19,7 @@ class TestScoring extends AnyFlatSpec with Matchers {
     hand.score.ns mustBe 400
     hand.score.ew mustBe -400
     hand.explain mustBe "Tricks(3) 100, Game 300"
-    hand.totalScore() mustBe "NS 400"
+    hand.totalScore mustBe "NS 400"
     hand.explainList mustBe "Tricks(3) 100"::"Game 300"::Nil
   }
 
@@ -28,7 +28,7 @@ class TestScoring extends AnyFlatSpec with Matchers {
 
     hand.explainList mustBe "Tricks(2) 120"::"Overtricks(2) 400"::"Insult 50"::"Game 500"::Nil
     hand.explain mustBe "Tricks(2) 120, Overtricks(2) 400, Insult 50, Game 500"
-    hand.totalScore() mustBe "EW 1070"
+    hand.totalScore mustBe "EW 1070"
 
     hand.score.ew mustBe 1070
     hand.score.ns mustBe -1070
@@ -39,7 +39,7 @@ class TestScoring extends AnyFlatSpec with Matchers {
 
     hand.score.ns mustBe 3160
     hand.score.ew mustBe -3160
-    hand.totalScore() mustBe "NS 3160"
+    hand.totalScore mustBe "NS 3160"
     hand.explainList mustBe "Tricks(1) 160"::"Overtricks(6) 2400"::"Insult 100"::"Game 500"::Nil
     hand.explain mustBe "Tricks(1) 160, Overtricks(6) 2400, Insult 100, Game 500"
   }
@@ -49,7 +49,7 @@ class TestScoring extends AnyFlatSpec with Matchers {
 
     hand.score.ns mustBe 2980
     hand.score.ew mustBe -2980
-    hand.totalScore() mustBe "NS 2980"
+    hand.totalScore mustBe "NS 2980"
     hand.explainList mustBe "Tricks(7) 880"::"Insult 100"::"GrandSlam 1500"::"Game 500"::Nil
     hand.explain mustBe "Tricks(7) 880, Insult 100, GrandSlam 1500, Game 500"
   }
@@ -61,7 +61,7 @@ class TestScoring extends AnyFlatSpec with Matchers {
     hand.explain mustBe "1 at 200"
     hand.score.ns mustBe -200
     hand.score.ew mustBe +200
-    hand.totalScore() mustBe "EW 200"
+    hand.totalScore mustBe "EW 200"
   }
 
   behavior of "Rubber Bridge Scoring"
@@ -76,9 +76,9 @@ class TestScoring extends AnyFlatSpec with Matchers {
     hand.explainAbove mustBe Nil
     hand.honors mustBe 0
 
-    hand.totalScore() mustBe "EW 0 / 100"
-    hand.explain() mustBe "EW  / Tricks(3) 100"
-    hand.getScores() mustBe (0,0,0,100)
+    hand.totalScore mustBe "EW 0 / 100"
+    hand.explain mustBe "EW  / Tricks(3) 100"
+    hand.getScores mustBe Tuple4(0,0,0,100)
   }
 
   it should "In rubber, north plays 2 spades doubled vulernable, Make 4 scores 400" in {
@@ -94,9 +94,9 @@ class TestScoring extends AnyFlatSpec with Matchers {
     hand.honors mustBe 0
     hand.explainHonor mustBe ""
 
-    hand.totalScore() mustBe "NS 450 / 120"
-    hand.explain() mustBe "NS Overtricks(2) 400, Insult 50 / Tricks(2) 120"
-    hand.getScores() mustBe (450,120,0,0)
+    hand.totalScore mustBe "NS 450 / 120"
+    hand.explain mustBe "NS Overtricks(2) 400, Insult 50 / Tricks(2) 120"
+    hand.getScores mustBe Tuple4(450,120,0,0)
   }
 
   it should "In rubber, north plays 2 spades doubled vulernable, with 100 honors, Make 4 scores 400" in {
@@ -112,9 +112,9 @@ class TestScoring extends AnyFlatSpec with Matchers {
     hand.nsScoredHonors mustBe true
     hand.explainHonor mustBe "Honors 100"
 
-    hand.totalScore() mustBe "NS 550 / 120"
-    hand.explain() mustBe "NS Overtricks(2) 400, Insult 50, Honors 100 / Tricks(2) 120"
-    hand.getScores() mustBe (550,120,0,0)
+    hand.totalScore mustBe "NS 550 / 120"
+    hand.explain mustBe "NS Overtricks(2) 400, Insult 50, Honors 100 / Tricks(2) 120"
+    hand.getScores mustBe Tuple4(550,120,0,0)
   }
 
   it should "In rubber, north plays 2 spades doubled vulernable, with East 100 honors, Make 4 scores 400" in {
@@ -130,8 +130,8 @@ class TestScoring extends AnyFlatSpec with Matchers {
     hand.nsScoredHonors mustBe false
     hand.explainHonor mustBe "Honors 100"
 
-    hand.totalScore() mustBe "NS 450 / 120, EW 100 / 0"
-    hand.explain() mustBe "NS Overtricks(2) 400, Insult 50, EW Honors 100 / NS Tricks(2) 120"
-    hand.getScores() mustBe (450,120,100,0)
+    hand.totalScore mustBe "NS 450 / 120, EW 100 / 0"
+    hand.explain mustBe "NS Overtricks(2) 400, Insult 50, EW Honors 100 / NS Tricks(2) 120"
+    hand.getScores mustBe Tuple4(450,120,100,0)
   }
 }

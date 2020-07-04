@@ -320,7 +320,7 @@ case class MatchChicagoV3(
     setGamesPerRound(1).copy(simpleRotation = simple)
   }
 
-  def convertToCurrentVersion(): (Boolean, MatchChicago) = {
+  def convertToCurrentVersion: (Boolean, MatchChicago) = {
     val (isNew, rs) = {
       rounds
         .map { r =>
@@ -348,7 +348,7 @@ case class MatchChicagoV3(
     (isNew, if (isNew) this else copy(rounds = rs))
   }
 
-  def readyForWrite() = copy(bestMatch = None)
+  def readyForWrite = copy(bestMatch = None)
 
   def addBestMatch(bm: ChicagoBestMatch) = copy(bestMatch = Option(bm))
 

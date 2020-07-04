@@ -50,7 +50,7 @@ object InfoPage {
                       <.th( ^.textAlign:="left", "Property"), <.th(^.textAlign:="left", "Value")
                   )),
                   <.tbody(
-                    info().map{ e => tablerow(e) }.toTagMod
+                    info.map{ e => tablerow(e) }.toTagMod
                   )
               ),
               <.p(
@@ -64,7 +64,7 @@ object InfoPage {
 
   }
 
-  def info() = {
+  def info = {
     val window = document.defaultView
     val nav = window.navigator
     val geoloc = nav.geolocation
@@ -81,7 +81,7 @@ object InfoPage {
       ("Navigator.standalone", js.Dynamic.global.window.navigator.standalone),
       ("window.innerWidth", window.innerWidth),
       ("window.innerHeight", window.innerHeight),
-      ("window.orientation", getOrientation()),
+      ("window.orientation", getOrientation),
       ("isPortrait", isPortrait),
       ("Screen.width", screen.width),
       ("Screen.height", screen.height),
@@ -128,7 +128,7 @@ object InfoPage {
    * -90 - landscape, clockwise
    *
    */
-  def getOrientation() = {
+  def getOrientation = {
     js.Dynamic.global.window.orientation.toString match {
       case "undefined" => None
       case s => Some(s.toInt)
@@ -142,7 +142,7 @@ object InfoPage {
 
   def isLandscape = !isPortrait
 
-  def isWindowsAsusTablet() = {
+  def isWindowsAsusTablet = {
     // HACK Alert
     // screen is 1368x768, platform is Win32
     val s = js.Dynamic.global.window.screen
@@ -152,14 +152,14 @@ object InfoPage {
     (p=="Win32") && ((w==1368 && h==768)||(w==768 && h==1368))
   }
 
-  def isTouchEnabled() = {
+  def isTouchEnabled = {
     val g = js.Dynamic.global.window
-    !js.isUndefined(g.ontouchstart) || isWindowsAsusTablet()
+    !js.isUndefined(g.ontouchstart) || isWindowsAsusTablet
   }
 
-  val touchEnabled = isTouchEnabled()
+  val touchEnabled = isTouchEnabled
 
-  def showOnlyInLandscapeOnTouch() = {
+  def showOnlyInLandscapeOnTouch = {
     if (touchEnabled) baseStyles.hideInPortrait
     else baseStyles.alwaysHide
   }

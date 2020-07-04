@@ -105,9 +105,9 @@ case class MovementV1(
       optional(!dontUpdateTime, _.copy(updateTime=Some(time)))
   }
 
-  def convertToCurrentVersion() = (true, this)
+  def convertToCurrentVersion = (true, this)
 
-  def readyForWrite() = this
+  def readyForWrite = this
 
   def wherePlayed(board: Int): List[BoardPlayed] = {
     hands.flatMap { h =>

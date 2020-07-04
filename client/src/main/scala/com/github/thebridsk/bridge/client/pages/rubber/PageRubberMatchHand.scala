@@ -80,18 +80,18 @@ object PageRubberMatchHandInternal {
     def viewHandCallbackOk( handid: String )( contract: Contract, picture: Option[File], removePicture: Boolean ) =
       scope.props >>= { props => {
         val time = SystemTime.currentTimeMillis()
-        RubberController.updateRubberHand(props.page.rid, handid, RubberHand(contract.id,contract.toHand(),0,None,time,time))
-        props.routerCtl.set(props.page.toRubber())
+        RubberController.updateRubberHand(props.page.rid, handid, RubberHand(contract.id,contract.toHand,0,None,time,time))
+        props.routerCtl.set(props.page.toRubber)
       }}
 
     def viewHandCallbackWithHonors( handid: String )( contract: Contract, picture: Option[File], removePicture: Boolean, honors: Int, honorsPlayer: Option[PlayerPosition] ) =
       scope.props >>= { props => {
         val time = SystemTime.currentTimeMillis()
-        RubberController.updateRubberHand(props.page.rid, handid, RubberHand(contract.id,contract.toHand(),honors,honorsPlayer.map(_.pos),time,time))
-        props.routerCtl.set(props.page.toRubber())
+        RubberController.updateRubberHand(props.page.rid, handid, RubberHand(contract.id,contract.toHand,honors,honorsPlayer.map(_.pos),time,time))
+        props.routerCtl.set(props.page.toRubber)
       }}
 
-    val viewHandCallbackCancel = scope.props >>= { props => props.routerCtl.set(props.page.toRubber()) }
+    val viewHandCallbackCancel = scope.props >>= { props => props.routerCtl.set(props.page.toRubber) }
 
     def getPlayerPosition( pos: Option[String] ): Option[PlayerPosition] = {
       pos.flatMap { p =>

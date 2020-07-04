@@ -21,7 +21,7 @@ import com.github.thebridsk.bridge.fullserver.test.pages.BaseHandPage
 
 object TablePage {
 
-  val log = Logger[TablePage]
+  val log = Logger[TablePage]()
 
   def current(target: Target)(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
     val (dupid,tableid) = findTableId

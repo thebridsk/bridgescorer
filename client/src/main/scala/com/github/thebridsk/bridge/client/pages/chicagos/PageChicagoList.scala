@@ -153,7 +153,7 @@ object PageChicagoListInternal {
 //      scope.modState( s => s.copy( workingOnNew = Some("Creating new...") )) >> ChicagoController.createMatch(
 //        created=> {
 //          logger.info("Got new chicago "+created.id)
-//          scope.props.runNow.routerCtl.set(NamesView(created.id,0)).runNow()
+//          scope.props.runNow().routerCtl.set(NamesView(created.id,0)).runNow()
 //        }
 //      )
 
@@ -395,7 +395,7 @@ object PageChicagoListInternal {
       val created = DateUtils.showDate(chicago.chicago.created)
       val updated = DateUtils.showDate(chicago.chicago.updated)
 
-      val (players, scores) = chicago.sortedResults()
+      val (players, scores) = chicago.sortedResults
 
       <.tr(
         <.td(

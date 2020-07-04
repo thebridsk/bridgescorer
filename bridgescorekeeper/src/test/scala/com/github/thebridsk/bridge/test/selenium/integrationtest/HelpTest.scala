@@ -44,7 +44,7 @@ class HelpTest extends AnyFlatSpec with Matchers with BeforeAndAfterAll {
   import com.github.thebridsk.browserpages.PageBrowser._
   import ParallelUtils._
 
-  val logger = Logger[HelpTest]
+  val logger = Logger[HelpTest]()
 
   val screenshotDir = "target/HelpTest"
 

@@ -374,7 +374,7 @@ object PageEditMovementInternal {
       errors.toList
     }
 
-    def stats() = new Stats(state)
+    def stats = new Stats(state)
   }
 
   val TableCaption = ScalaComponent.builder[(Props,State,Int)]("PageEditMovement.TableCaption")

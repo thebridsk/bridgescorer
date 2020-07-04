@@ -42,23 +42,23 @@ object RubberRouter {
 
   trait RubberMatchViewBase extends RubberPage {
     val rid: String
-    def toRubber() = RubberMatchDetailsView(rid)
-    def toDetails() = RubberMatchDetailsView(rid)
-    def toNames() = RubberMatchNamesView(rid)
+    def toRubber = RubberMatchDetailsView(rid)
+    def toDetails = RubberMatchDetailsView(rid)
+    def toNames = RubberMatchNamesView(rid)
     def toHand( handid: String ) = RubberMatchHandView(rid,handid)
   }
   case class RubberMatchView( rid: String ) extends RubberMatchViewBase
   case class RubberMatchDetailsView( rid: String ) extends RubberMatchViewBase
 
   case class RubberMatchNamesView( rid: String ) extends RubberPage {
-    def toRubber() = RubberMatchView(rid)
-    def toDetails() = RubberMatchDetailsView(rid)
+    def toRubber = RubberMatchView(rid)
+    def toDetails = RubberMatchDetailsView(rid)
     def toHand( handid: String ) = RubberMatchHandView(rid,handid)
   }
   case class RubberMatchHandView( rid: String, handid: String ) extends RubberPage {
-    def toRubber() = RubberMatchView(rid)
-    def toDetails() = RubberMatchDetailsView(rid)
-    def toNames() = RubberMatchNamesView(rid)
+    def toRubber = RubberMatchView(rid)
+    def toDetails = RubberMatchDetailsView(rid)
+    def toNames = RubberMatchNamesView(rid)
     def toHand( handid: String ) = RubberMatchHandView(rid,handid)
   }
 

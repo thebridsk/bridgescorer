@@ -74,4 +74,9 @@ class TestRubber extends AnyFlatSpec with ScalatestRouteTest with Matchers with 
       resp mustBe createdId.get
     }
   }
+
+  it should "test allOf from should matchers" in {
+    List(1, 2, 3, 4, 5) must (contain.allOf(2, 3, 5) )
+  }
+
 }

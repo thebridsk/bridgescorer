@@ -109,7 +109,7 @@ blank lines are used as end of stanzas.
     }
     val mov = m.copy( hands = r)
     val yaml = movementCacheStoreSupport.toJSON(mov)
-    val fname = "Movement."+m.name+movementCacheStoreSupport.getWriteExtension()
+    val fname = "Movement."+m.name+movementCacheStoreSupport.getWriteExtension
     val filename = paramOutput() / fname
     FileIO.writeFileSafe(filename.toString(), yaml)
     println( s"Movement ${m.name} to ${filename}" )

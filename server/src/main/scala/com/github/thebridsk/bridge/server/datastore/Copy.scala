@@ -33,7 +33,7 @@ trait Copy
 object Copy extends Subcommand("copy") {
   import DataStoreCommands.optionStore
 
-  val log = Logger[Copy]
+  val log = Logger[Copy]()
 
   implicit def dateConverter: ValueConverter[Duration] =
     singleArgConverter[Duration](Duration(_))

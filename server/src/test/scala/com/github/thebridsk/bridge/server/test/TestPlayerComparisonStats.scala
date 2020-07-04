@@ -39,7 +39,7 @@ import com.github.thebridsk.bridge.data.duplicate.stats.PlayerComparisonStat
 
 object TestPlayerComparisonStats {
 
-  val testlog = com.github.thebridsk.utilities.logging.Logger[TestPlayerComparisonStats]
+  val testlog = com.github.thebridsk.utilities.logging.Logger[TestPlayerComparisonStats]()
 }
 
 /**

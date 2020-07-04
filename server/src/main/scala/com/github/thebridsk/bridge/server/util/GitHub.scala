@@ -313,7 +313,7 @@ class GitHub(
 
 object GitHub {
 
-  val log = Logger[GitHub]
+  val log = Logger[GitHub]()
 
   val shaPattern = """([0-9a-zA-Z]+) ([* ])([^\n\r]*)""".r
 

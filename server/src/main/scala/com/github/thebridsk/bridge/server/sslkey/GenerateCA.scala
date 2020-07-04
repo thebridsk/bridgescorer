@@ -36,7 +36,7 @@ trait GenerateCA
 object GenerateCA extends Subcommand("generateca") {
   import SSLKeyCommands.optionKeyDir
 
-  val log = Logger[GenerateCA]
+  val log = Logger[GenerateCA]()
 
   implicit def dateConverter: ValueConverter[Duration] =
     singleArgConverter[Duration](Duration(_))

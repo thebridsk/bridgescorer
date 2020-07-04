@@ -239,7 +239,7 @@ object ViewPlayerOpponentStatsTableInternal {
       props.stats match {
         case Some(pd) =>
 
-          val sortedpd = pd.sort()
+          val sortedpd = pd.sort
 
           val allColumns: List[StatColumn[Any]] = (if (props.showPairs) pairColumns else peopleColumns):::
                                                   columns
@@ -248,7 +248,7 @@ object ViewPlayerOpponentStatsTableInternal {
             if (props.showPairs) {
               sortedpd.players.flatMap( pos => pos.opponents.map( ps => getRow(ps,allColumns) ) )
             } else {
-              sortedpd.players.map( pos => getRow( pos.playerTotal(), allColumns))
+              sortedpd.players.map( pos => getRow( pos.playerTotal, allColumns))
             }
 
           <.div(

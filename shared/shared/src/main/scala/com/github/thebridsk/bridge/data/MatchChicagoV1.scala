@@ -157,7 +157,7 @@ case class MatchChicagoV1(
     copy(id = id, updated = SystemTime.currentTimeMillis())
   }
 
-  def convertToCurrentVersion() = {
+  def convertToCurrentVersion = {
     (
       false,
       MatchChicago(
@@ -168,11 +168,11 @@ case class MatchChicagoV1(
         false,
         created,
         updated
-      ).convertToCurrentVersion()._2
+      ).convertToCurrentVersion._2
     )
   }
 
-  def readyForWrite() = this
+  def readyForWrite = this
 
 }
 

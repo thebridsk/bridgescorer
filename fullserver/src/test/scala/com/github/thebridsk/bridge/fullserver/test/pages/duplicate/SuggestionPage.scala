@@ -20,7 +20,7 @@ import com.github.thebridsk.browserpages.Checkbox
 
 object SuggestionPage {
 
-  val log = Logger[SuggestionPage]
+  val log = Logger[SuggestionPage]()
 
   def current(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
     val pt: PageType =

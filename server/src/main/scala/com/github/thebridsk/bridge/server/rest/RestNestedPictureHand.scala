@@ -61,7 +61,7 @@ import com.github.thebridsk.bridge.server.backend.resource.ChangeContext
 import com.github.thebridsk.bridge.data.websocket.Protocol.UpdateDuplicatePicture
 
 object RestNestedPictureHand {
-  val log = Logger[RestNestedPictureHand]
+  val log = Logger[RestNestedPictureHand]()
 
   val patternImageFile = """Image\.([^.]+)\.([^.]+)\.(jpg)""".r
 

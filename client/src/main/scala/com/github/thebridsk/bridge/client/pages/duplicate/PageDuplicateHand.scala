@@ -187,7 +187,7 @@ object PageDuplicateHandInternal {
                         Some(hand.nsTeam),
                         Some(hand.ewTeam),
                         newhand=newhand,
-                        allowPassedOut=board.timesPlayed()>0,
+                        allowPassedOut=board.timesPlayed>0,
                         helppage= None,   // Some("../help/duplicate/enterhand.html"))
                         picture=DuplicateStore.getPicture(md.id,hand.board,hand.id).map(_.url),
                         supportPicture = true,
@@ -208,7 +208,7 @@ object PageDuplicateHandInternal {
         removePicture: Boolean
     ) = scope.stateProps { (s,p) =>
       logger.fine(s"PageDuplicateHand: new contract $contract for (${oldhand.board},${oldhand.id})" )
-      val newhand: Hand = contract.toHand()
+      val newhand: Hand = contract.toHand
       Controller.updateHand(dup, oldhand.updateHand(newhand))
       if (removePicture) {
         RestClientDuplicate.pictureResource(dup.id).delete(oldhand.board).foreach { (x) =>
@@ -221,11 +221,11 @@ object PageDuplicateHandInternal {
           }
         }
       }
-      p.routerCtl.set(p.page.toBoardView())
+      p.routerCtl.set(p.page.toBoardView)
     }
 
     val viewHandCallbackCancel = scope.props >>= { p =>
-      p.routerCtl.set(p.page.toBoardView())
+      p.routerCtl.set(p.page.toBoardView)
     }
 
     val storeCallback = scope.modStateOption { ( s, p ) =>

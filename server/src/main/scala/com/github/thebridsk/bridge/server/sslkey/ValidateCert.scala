@@ -36,7 +36,7 @@ trait ValidateCert
 object ValidateCert extends Subcommand("validatecert") {
   import SSLKeyCommands.optionKeyDir
 
-  val log = Logger[ValidateCert]
+  val log = Logger[ValidateCert]()
 
   implicit def dateConverter: ValueConverter[Duration] =
     singleArgConverter[Duration](Duration(_))

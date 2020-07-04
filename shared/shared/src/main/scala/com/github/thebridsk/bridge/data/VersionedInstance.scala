@@ -20,7 +20,7 @@ trait VersionedInstance[CurrentVersion, ThisVersion, VID] {
     * @return a tuple, First is a boolean when true indicates input string was current version.
     *                   Second is the CurrentVersion object.
     */
-  def convertToCurrentVersion(): (Boolean, CurrentVersion)
+  def convertToCurrentVersion: (Boolean, CurrentVersion)
 
-  def readyForWrite(): ThisVersion
+  def readyForWrite: ThisVersion
 }

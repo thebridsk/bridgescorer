@@ -247,7 +247,7 @@ object PageBoardSetsInternal {
     val props = cdu.currentProps
     val prevProps = cdu.prevProps
     if (props.initialDisplay != prevProps.initialDisplay) {
-      cdu.backend.scrollToCB.runNow
+      cdu.backend.scrollToCB.runNow()
       cdu.backend.forceUpdate
     }
   }

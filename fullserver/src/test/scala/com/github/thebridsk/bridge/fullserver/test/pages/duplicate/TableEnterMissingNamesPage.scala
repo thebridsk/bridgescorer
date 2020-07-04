@@ -22,7 +22,7 @@ import com.github.thebridsk.bridge.fullserver.test.pages.bridge.ErrorMsgDiv
 
 object TableEnterMissingNamesPage {
 
-  val log = Logger[TableEnterMissingNamesPage]
+  val log = Logger[TableEnterMissingNamesPage]()
 
   def current( targetBoard: Option[String] )(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
     val (dupid,tableid,roundid,targetboard) = findTableRoundId

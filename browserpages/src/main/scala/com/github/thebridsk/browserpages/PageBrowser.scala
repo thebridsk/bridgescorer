@@ -520,7 +520,7 @@ trait PageBrowser {
 
 object PageBrowser extends PageBrowser {
 
-  private[browserpages] val log = Logger[PageBrowser]
+  private[browserpages] val log = Logger[PageBrowser]()
 
   private[PageBrowser] def getConstructor[T <: Element](implicit classtag: ClassTag[T], nothing: NotNothing[T]) = {
     try {

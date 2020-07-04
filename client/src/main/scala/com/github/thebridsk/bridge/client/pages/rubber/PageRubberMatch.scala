@@ -187,7 +187,7 @@ object PageRubberMatchInternal {
                         )
                     )
                 ),
-                ViewRubberMatchDetails(props.page.toDetails(), props.routerCtl, true ),
+                ViewRubberMatchDetails(props.page.toDetails, props.routerCtl, true ),
                 <.div( baseStyles.divFlexBreak ),
                 <.div( baseStyles.divFooter,
                     <.div(
@@ -233,9 +233,9 @@ object PageRubberMatchInternal {
       }
     }
 
-    val toDetails = scope.props >>= { props => props.routerCtl.set(props.page.toDetails()) }
+    val toDetails = scope.props >>= { props => props.routerCtl.set(props.page.toDetails) }
 
-    val tonames = scope.props >>= { props => props.routerCtl.set(props.page.toNames()) }
+    val tonames = scope.props >>= { props => props.routerCtl.set(props.page.toNames) }
 
     val quit = scope.props >>= { props => props.routerCtl.set(ListView) }
 

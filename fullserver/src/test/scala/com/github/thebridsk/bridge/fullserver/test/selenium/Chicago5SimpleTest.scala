@@ -64,7 +64,7 @@ class Chicago5SimpleTest extends AnyFlatSpec
 
   import scala.concurrent.duration._
 
-  val log = Logger[Chicago5SimpleTest]
+  val log = Logger[Chicago5SimpleTest]()
 
   TestStartLogging.startLogging()
 

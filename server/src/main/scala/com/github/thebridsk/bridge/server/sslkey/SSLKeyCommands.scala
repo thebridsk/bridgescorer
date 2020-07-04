@@ -17,7 +17,7 @@ trait SSLKeyCommands
 
 object SSLKeyCommands extends Subcommand("sslkey") {
 
-  val log = Logger[SSLKeyCommands]
+  val log = Logger[SSLKeyCommands]()
 
   private var savelevel: Level = null
 

@@ -79,7 +79,7 @@ import com.github.thebridsk.bridge.server.test.util.TestServer
 
 object Duplicate5TestPages {
 
-  val testlog = Logger[Duplicate5TestPages]
+  val testlog = Logger[Duplicate5TestPages]()
 
   val screenshotDir = "target/screenshots/Duplicate5TestPages"
 

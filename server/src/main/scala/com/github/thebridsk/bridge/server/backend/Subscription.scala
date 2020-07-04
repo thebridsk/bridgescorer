@@ -235,5 +235,5 @@ abstract class Subscriptions {
 }
 
 object Subscriptions {
-  val log = Logger[Subscriptions]
+  val log = Logger[Subscriptions]()
 }

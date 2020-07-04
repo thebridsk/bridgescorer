@@ -18,7 +18,7 @@ import com.github.thebridsk.bridge.server.test.util.NoResultYet
 
 object SeleniumUtilsLogger {
 
-  private[util] val testlog = Logger[SeleniumUtils]
+  private[util] val testlog = Logger[SeleniumUtils]()
 
 }
 

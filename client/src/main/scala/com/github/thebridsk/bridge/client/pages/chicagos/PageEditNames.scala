@@ -58,7 +58,7 @@ object PageEditNamesInternal {
   case class State( id: Id.MatchChicago, players: List[String] = List(), newnames: Map[String, String]=Map(), nameSuggestions: Option[List[String]] = None ) {
     import scala.scalajs.js.JSConverters._
 
-    def reset() = ChicagoStore.getChicago match {
+    def reset = ChicagoStore.getChicago match {
       case Some(mc) if mc.id == id =>
         copy(id,mc.players,Map(),nameSuggestions)
       case _ =>
@@ -190,10 +190,10 @@ object PageEditNamesInternal {
     def okCallback = doUpdate >> scope.props >>= { props => props.routerCtl.set(props.page.toSummaryView) }
 
     val resetCallback = scope.props >>= { props =>
-      scope.modState(s => s.reset())
+      scope.modState(s => s.reset)
     }
 
-    val storeCallback = scope.modState { s => s.reset() }
+    val storeCallback = scope.modState { s => s.reset }
 
     val namesCallback = scope.modState { s =>
       val sug = NamesStore.getNames

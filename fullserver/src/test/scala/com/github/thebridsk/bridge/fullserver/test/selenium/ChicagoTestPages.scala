@@ -41,7 +41,7 @@ import com.github.thebridsk.bridge.fullserver.test.pages.chicago.ChicagoMatchTyp
 
 object ChicagoTestPages {
 
-  val log = Logger[ChicagoTestPages]
+  val log = Logger[ChicagoTestPages]()
 
   val player1 = "Nancy"
   val player2 = "Sam"
@@ -131,7 +131,7 @@ class ChicagoTestPages extends AnyFlatSpec
     import Session1._
 
     tcpSleep(15)
-    go to (TestServer.getAppPage())
+    go to (TestServer.getAppPage)
     eventually { pageTitle mustBe ("The Bridge ScoreKeeper") }
   }
 

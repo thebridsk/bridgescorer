@@ -15,7 +15,7 @@ import com.github.thebridsk.bridge.fullserver.test.pages.bridge.HomePage
 
 object ListPage {
 
-  val log = Logger[ListPage]
+  val log = Logger[ListPage]()
 
   def current(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
     val url = currentUrl
@@ -36,7 +36,7 @@ object ListPage {
   val patternUrl = """(?:#import/([^/]+)/)?rubber""".r
 
   def getImportId( url: String ) = {
-    val prefix = TestServer.getAppPage()
+    val prefix = TestServer.getAppPage
     val test = if (url.startsWith(prefix)) {
       url.substring(prefix.length())
     } else {

@@ -43,7 +43,7 @@ object DebugLoggerComponent {
   def setLoggingLevel( loggername: String, level: Level ): Unit = {
     val (targetlog, targetdisp) = getLoggerName(false,loggername)
     val target = Logger(targetlog)
-    target.getHandlers().find(h => h.isInstanceOf[DebugLoggerHandler]) match {
+    target.getHandlers.find(h => h.isInstanceOf[DebugLoggerHandler]) match {
       case Some(h) =>
         logger.info( s"On ${targetdisp} setting debug logger trace level to ${level.name}" )
         h.level = level
@@ -59,7 +59,7 @@ object DebugLoggerComponent {
   def getLoggingLevel( loggername: String ) = {
     val (targetlog, targetdisp) = getLoggerName(false,loggername)
     val target = Logger(targetlog)
-    target.getHandlers().find(h => h.isInstanceOf[DebugLoggerHandler]) match {
+    target.getHandlers.find(h => h.isInstanceOf[DebugLoggerHandler]) match {
       case Some(h) =>
         h.level
       case None =>

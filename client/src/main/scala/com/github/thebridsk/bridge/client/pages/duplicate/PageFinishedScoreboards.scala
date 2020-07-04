@@ -216,7 +216,7 @@ object PageFinishedScoreboardsInternal {
   }
 
   val component = ScalaComponent.builder[Props]("PageFinishedScoreboards")
-                            .initialStateFromProps { props => State(Map(), Map(), props.game.getIds().toList, List() ) }
+                            .initialStateFromProps { props => State(Map(), Map(), props.game.getIds.toList, List() ) }
                             .backend(new Backend(_))
                             .renderBackend
                             .componentDidMount( scope => scope.backend.didMount)

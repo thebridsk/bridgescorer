@@ -414,7 +414,7 @@ object DuplicateSummary {
       }.toList
     }.toMap
     val details = score
-      .getDetails()
+      .getDetails
       .map { d =>
         d.team -> d
       }
@@ -444,9 +444,9 @@ object DuplicateSummary {
   }
 
   def create(md: MatchDuplicateResult): DuplicateSummary = {
-    val mdr = md.fixPlaces()
-    val boards = mdr.getBoards()
-    val tables = mdr.getTables()
+    val mdr = md.fixPlaces
+    val boards = mdr.getBoards
+    val tables = mdr.getTables
     DuplicateSummary(
       mdr.id,
       !mdr.notfinished.getOrElse(false),

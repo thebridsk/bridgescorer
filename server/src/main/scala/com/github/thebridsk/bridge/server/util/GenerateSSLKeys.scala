@@ -18,7 +18,7 @@ trait GenerateSSLKeys
 
 object GenerateSSLKeys {
 
-  val logger = Logger[GenerateSSLKeys]
+  val logger = Logger[GenerateSSLKeys]()
 
   val proc = new MyProcess()
 

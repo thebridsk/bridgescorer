@@ -186,7 +186,7 @@ object PageTableTeamsInternal {
       if ( scorekeeperPosition.isDefined && scorekeeperName.isDefined ) {
         if ( players.find(scorekeeperPosition.get) != scorekeeperName.get ) {
           if (players.isPlayerValid(scorekeeperPosition.get)) {
-            copy( players = players.rotate180(), scorekeeperSet = true )
+            copy( players = players.rotate180, scorekeeperSet = true )
           } else {
             copy( players = players.setPlayer(scorekeeperPosition.get, scorekeeperName.get),
                   names = names.setPlayer(scorekeeperPosition.get, scorekeeperName.get),
@@ -202,11 +202,11 @@ object PageTableTeamsInternal {
       }
     }
 
-    def isAllValid = players.areAllPlayersValid()
+    def isAllValid = players.areAllPlayersValid
 
     def isCurrentValid( pos: PlayerPosition ) = pos match {
-      case North | South => players.areNSPlayersValid()
-      case East | West => players.areEWPlayersValid()
+      case North | South => players.areNSPlayersValid
+      case East | West => players.areEWPlayersValid
     }
 
     def getTeam( pos: PlayerPosition ) = pos match {
@@ -578,7 +578,7 @@ object PageTableTeamsInternal {
             logger.fine(s"OK: state=$s, no duplicate match")
             ""
         }
-        props.routerCtl.set(props.page.toNextView() match {
+        props.routerCtl.set(props.page.toNextView match {
           case p: BaseBoardView =>
             if (nsid.length()>0) p.toHandView(nsid)
             else p
@@ -701,7 +701,7 @@ object PageTableTeamsInternal {
                     ),
                     <.div(
                         baseStyles.divFooterRight,
-                        Button( baseStyles.footerButton, "Cancel", "Cancel", props.routerCtl.setOnClick( props.page.toTableView() ) ),
+                        Button( baseStyles.footerButton, "Cancel", "Cancel", props.routerCtl.setOnClick( props.page.toTableView ) ),
     //                    helppage.whenDefined( p => HelpButton(p) )
                     )
                 )
@@ -718,7 +718,7 @@ object PageTableTeamsInternal {
                          (East,West,state.names.ew1,state.names.ew2,state.ewTeam)
                        )
       val ((mpos1,mpos2,mname1,mname2,mteamid),(vpos1,vpos2,vname1,vname2,vteamid)) = {
-        if (state.players.areEWPlayersValid()) {
+        if (state.players.areEWPlayersValid) {
           (ns,ew)
         } else {
           (ew,ns)
@@ -801,7 +801,7 @@ object PageTableTeamsInternal {
     def renderSelectScorekeeper( props: Props, state: State, valid: Boolean ): (TagMod, Option[String], Option[String]) = {
       val extraWidth = HProperties.defaultHandButtonBorderRadius+
                        HProperties.defaultHandButtonPaddingBorder
-      val width = s"${Pixels.maxLength( state.players.players(): _* )+extraWidth}px"
+      val width = s"${Pixels.maxLength( state.players.players: _* )+extraWidth}px"
       val bwidth: TagMod = ^.width := width
       val errormsg = if (valid) None
                      else if (state.scorekeeperName.isEmpty) Some("Please select scorekeeper")
@@ -809,7 +809,7 @@ object PageTableTeamsInternal {
                      else Some("Unknown error")
       ( <.div(
           <.h1( "Enter scorekeeper:" ),
-          state.players.sortedPlayers().map( p => {
+          state.players.sortedPlayers.map( p => {
             val selected = state.scorekeeperName match {
               case Some(sk ) => sk == p
               case None => false

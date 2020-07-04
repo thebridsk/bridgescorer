@@ -16,7 +16,7 @@ import java.time.Instant
 import java.time.ZoneId
 
 object MemoryMonitor {
-  val log = Logger[MemoryMonitor]
+  val log = Logger[MemoryMonitor]()
 
   var activeMonitor: Option[MemoryMonitor] = None
 
@@ -74,7 +74,7 @@ object MemoryMonitor {
           i += 1;
           if (i >= len) {
             // ignore an isolated % at end of string
-            break;
+            break()
           }
           c = pattern.charAt(i);
           c match {

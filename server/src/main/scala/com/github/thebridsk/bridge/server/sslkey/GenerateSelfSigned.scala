@@ -36,7 +36,7 @@ trait GenerateSelfSigned
 object GenerateSelfSigned extends Subcommand("generateselfsigned") {
   import SSLKeyCommands.optionKeyDir
 
-  val log = Logger[GenerateSelfSigned]
+  val log = Logger[GenerateSelfSigned]()
 
   implicit def dateConverter: ValueConverter[Duration] =
     singleArgConverter[Duration](Duration(_))

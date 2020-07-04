@@ -60,7 +60,7 @@ class Chicago5Test extends AnyFlatSpec
 
   import Chicago5Test._
 
-  val log = Logger[Chicago5Test]
+  val log = Logger[Chicago5Test]()
 
   TestStartLogging.startLogging()
 
@@ -285,7 +285,7 @@ class Chicago5Test extends AnyFlatSpec
 
   it should "send to the server that there are 4 games per round" in {
 
-    def getGamesPerRound( ) = {
+    def getGamesPerRound = {
         backend.chicagos.syncStore.read(chicagoId.get) match {
           case Right(c) => c.gamesPerRound
           case Left(r) => -1
@@ -344,7 +344,7 @@ class Chicago5Test extends AnyFlatSpec
   it should "send to the server that there are 4 games per round once more" in {
     // keeping this for more checks
 
-    def getGamesPerRound( ) = {
+    def getGamesPerRound = {
         backend.chicagos.syncStore.read(chicagoId.get) match {
           case Right(c) => c.gamesPerRound
           case Left(r) => -1

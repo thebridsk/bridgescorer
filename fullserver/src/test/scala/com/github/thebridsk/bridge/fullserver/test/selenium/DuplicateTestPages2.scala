@@ -82,7 +82,7 @@ import com.github.thebridsk.bridge.server.test.util.TestServer
 
 object DuplicateTestPages2 {
 
-  val testlog = Logger[DuplicateTestPages2]
+  val testlog = Logger[DuplicateTestPages2]()
 
   val team1 = Team( 1, " Nick", "Sam ")
   val team2 = Team( 2, " Ethan ", "Wayne")

@@ -60,7 +60,7 @@ class WebsocketClient(implicit system: ActorSystem, materializer: Materializer, 
           try {
             isWebSocketUpgrade mustBe true
             within(max) {
-              this.testJoin()
+              this.testJoin
             }
           } catch {
             case x: Throwable =>
@@ -264,7 +264,7 @@ object WebsocketClientImplicits {
         }
     }
 
-    def testJoin()( implicit testlog: LoggingAdapter ) = {
+    def testJoin( implicit testlog: LoggingAdapter ) = {
         wc.expectUnsolicitedMessage match {
           case uteam: UpdateDuplicateTeam =>
             fail(s"${wc.address} Ignored unexpected response from the monitor: ${uteam}")
@@ -295,7 +295,7 @@ object WebsocketClientImplicits {
         }
     }
 
-    def testLeft()( implicit testlog: LoggingAdapter ) = {
+    def testLeft( implicit testlog: LoggingAdapter ) = {
         wc.expectUnsolicitedMessage match {
           case uteam: UpdateDuplicateTeam =>
             fail(s"${wc.address} Ignored unexpected response from the monitor: ${uteam}")

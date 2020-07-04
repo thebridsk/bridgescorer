@@ -14,7 +14,7 @@ import japgolly.scalajs.react.extra.router.BaseUrl
 object Info {
   private val log = Logger("bridge.InfoPage")
 
-  def info() = {
+  def info = {
     val window = document.defaultView
     val nav = window.navigator
     val geoloc = nav.geolocation
@@ -31,7 +31,7 @@ object Info {
       ("Navigator.standalone", js.Dynamic.global.window.navigator.standalone),
       ("window.innerWidth", window.innerWidth),
       ("window.innerHeight", window.innerHeight),
-      ("window.orientation", getOrientation()),
+      ("window.orientation", getOrientation),
       ("isPortrait", isPortrait),
       ("Screen.width", screen.width),
       ("Screen.height", screen.height),
@@ -61,7 +61,7 @@ object Info {
    * -90 - landscape, clockwise
    *
    */
-  def getOrientation() = {
+  def getOrientation = {
     js.Dynamic.global.window.orientation.toString match {
       case "undefined" => None
       case s => Some(s.toInt)
@@ -75,7 +75,7 @@ object Info {
 
   def isLandscape = !isPortrait
 
-  def isWindowsAsusTablet() = {
+  def isWindowsAsusTablet = {
     // HACK Alert
     // screen is 1368x768, platform is Win32
     val s = js.Dynamic.global.window.screen
@@ -85,14 +85,14 @@ object Info {
     (p=="Win32") && ((w==1368 && h==768)||(w==768 && h==1368))
   }
 
-  def isTouchEnabled() = {
+  def isTouchEnabled = {
     val g = js.Dynamic.global.window
-    !js.isUndefined(g.ontouchstart) || isWindowsAsusTablet()
+    !js.isUndefined(g.ontouchstart) || isWindowsAsusTablet
   }
 
-  val touchEnabled = isTouchEnabled()
+  val touchEnabled = isTouchEnabled
 
-  def showOnlyInLandscapeOnTouch() = {
+  def showOnlyInLandscapeOnTouch = {
     if (touchEnabled) baseStyles.hideInPortrait
     else baseStyles.alwaysHide
   }
@@ -126,7 +126,7 @@ object Info {
     if (len > 0) {
       for (i <- 0 until len) {
         val child = children.item(i)
-        if (child.hasAttributes) {
+        if (child.hasAttributes()) {
           val unknown = child.attributes.getNamedItem("id")
           if (unknown.value == id) return child
         }

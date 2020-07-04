@@ -62,7 +62,7 @@ class RubberTest extends AnyFlatSpec
   import scala.language.postfixOps
   import scala.concurrent.duration._
 
-  val testlog = Logger[RubberTest]
+  val testlog = Logger[RubberTest]()
 
   val docsScreenshotDir = "target/docs/Rubber"
 
@@ -649,7 +649,7 @@ class RubberTest extends AnyFlatSpec
   it should "start a new rubber game" in {
     import Session1._
 
-    go to (TestServer.getAppPage())
+    go to (TestServer.getAppPage)
     pageTitle mustBe ("The Bridge ScoreKeeper")
 
     findButtonAndClick("NewRubber")

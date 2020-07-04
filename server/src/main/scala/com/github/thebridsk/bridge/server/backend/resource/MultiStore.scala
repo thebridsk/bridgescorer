@@ -188,7 +188,7 @@ class MultiPersistentSupport[VId, VType <: VersionedInstance[VType, VType, VId]]
 
 object MultiPersistentSupport {
 
-  val log = Logger[MultiPersistentSupport[_, _]]
+  val log = Logger[MultiPersistentSupport[_, _]]()
 
   /**
     * Create a persistent support object that is backed by a file persistent support and java resource persistent support.

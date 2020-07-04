@@ -54,7 +54,7 @@
 //    def ok( e: ReactEventFromHtml) = {
 //      val s = state.runNow()
 //      println("TestingState.Backend.ok: calling callback with state "+s)
-//      scope.props.runNow.ok( s )
+//      scope.props.runNow().ok( s )
 //    }
 //
 //    def newok( e: ReactEventFromHtml) = scope.props >>= { p => state >>= { s => p.ok(s) }}

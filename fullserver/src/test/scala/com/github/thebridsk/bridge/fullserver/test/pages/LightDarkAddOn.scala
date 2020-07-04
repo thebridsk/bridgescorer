@@ -55,7 +55,7 @@ trait LightDarkAddOn[+T <: Page[T]] {
 
 object LightDarkAddOn {
 
-  private val log = Logger[LightDarkAddOn[_]]
+  private val log = Logger[LightDarkAddOn[_]]()
 
   def getBodyBackgroundColor(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
     val toggleLightDark = find( xpath("//body")) // page.findElemByXPath( "//body" )

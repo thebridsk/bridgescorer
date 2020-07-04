@@ -13,7 +13,7 @@ import com.github.thebridsk.browserpages.GenericPage
 
 object FourSelectPartnersPage {
 
-  val log = Logger[FourSelectPartnersPage]
+  val log = Logger[FourSelectPartnersPage]()
 
   def current(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
     val (chiid,roundid) = EnterNamesPage.findMatchRoundId
@@ -78,7 +78,7 @@ class FourSelectPartnersPage(
 
     roundid.toString() must not be "0"      // only valid for the first round
 
-    Some(currentUrl) must contain oneOf( urlFor(chiid,roundid), demoUrlFor(chiid,roundid) )
+    Some(currentUrl) must (contain.oneOf( urlFor(chiid,roundid), demoUrlFor(chiid,roundid) ) )
 
     val dealerbuttons = (North::South::East::West::Nil).map(p=>toDealerButtonId(p))
 

@@ -193,25 +193,25 @@ object TestServer {
 
   def isServerStartedByTest = startingServer
 
-  def getAppPage() = if (useProductionPage) getAppPageProd else  getAppPageDev
+  def getAppPage = if (useProductionPage) getAppPageProd else  getAppPageDev
   def getAppPageUrl( uri: String ) = if (useProductionPage) getAppPageProdUrl(uri) else getAppPageDevUrl(uri)
 
-  def getAppPageProd() = pageprod
+  def getAppPageProd = pageprod
   def getAppPageProdUrl( uri: String ) = if (uri.length()==0) pageprod else pageprod+"#"+uri
 
-  def getAppPageDev() = pagedev
+  def getAppPageDev = pagedev
   def getAppPageDevUrl( uri: String ) = if (uri.length()==0) pagedev else pagedev+"#"+uri
 
-  def getAppDemoPage() = if (useProductionPage) getAppDemoPageProd else  getAppDemoPageDev
+  def getAppDemoPage = if (useProductionPage) getAppDemoPageProd else  getAppDemoPageDev
   def getAppDemoPageUrl( uri: String ) = if (useProductionPage) getAppDemoPageProdUrl(uri) else getAppDemoPageDevUrl(uri)
 
-  def getAppDemoPageProd() = pagedemoprod
+  def getAppDemoPageProd = pagedemoprod
   def getAppDemoPageProdUrl( uri: String ) = if (uri.length()==0) pagedemoprod else pagedemoprod+"#"+uri
 
-  def getAppDemoPageDev() = pagedemodev
+  def getAppDemoPageDev = pagedemodev
   def getAppDemoPageDevUrl( uri: String ) = if (uri.length()==0) pagedemodev else pagedemodev+"#"+uri
 
-  def getDocs() = docs
+  def getDocs = docs
   def getDocs( fragment: String ) = if (fragment.length()==0) docs else docs+"#!"+fragment
 
   def getHelpPage( page: String = "" ) = hosturl+"help/"+page

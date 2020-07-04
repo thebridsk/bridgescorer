@@ -489,7 +489,7 @@ object PageStatsInternal {
     private var mounted: Boolean = false
 
     val storeCallback = scope.modState { s =>
-      val pd = DuplicateSummaryStore.getDuplicateSummary().map { lds => new PairsData(lds) }
+      val pd = DuplicateSummaryStore.getDuplicateSummary.map { lds => new PairsData(lds) }
       s.copy( filter = s.filter.copy( pairsData=pd ) )
     }
 

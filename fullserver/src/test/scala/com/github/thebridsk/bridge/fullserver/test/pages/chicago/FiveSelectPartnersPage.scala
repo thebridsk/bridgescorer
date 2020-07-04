@@ -15,7 +15,7 @@ import com.github.thebridsk.bridge.rotation.Table
 
 object FiveSelectPartnersPage {
 
-  val log = Logger[FiveSelectPartnersPage]
+  val log = Logger[FiveSelectPartnersPage]()
 
   def current(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
     val (chiid,roundid) = EnterNamesPage.findMatchRoundId
@@ -75,7 +75,7 @@ class FiveSelectPartnersPage(
 
     roundid.toString() must not be "0"      // only valid for the first round
 
-    Some(currentUrl) must contain oneOf( urlFor(chiid,roundid), demoUrlFor(chiid,roundid) )
+    Some(currentUrl) must (contain.oneOf( urlFor(chiid,roundid), demoUrlFor(chiid,roundid) ) )
 
 //    find( xpath( """//div[@id='BridgeApp']/div[1]/div[1]/div[3]/div[1]/h1""") ).text mustBe "Simple Rotation"
 

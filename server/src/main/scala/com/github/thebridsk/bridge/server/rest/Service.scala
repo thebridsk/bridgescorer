@@ -227,8 +227,8 @@ trait Service extends ImportExport {
 
 object Service {
 
-  val log = Logger[Service]
-  val clientlog = Logger[client.LogA]
+  val log = Logger[Service]()
+  val clientlog = Logger[client.LogA]()
 
   private val format = java.time.format.DateTimeFormatter.ofPattern("HH:mm:ss.SSS").withZone( ZoneId.systemDefault() )
 

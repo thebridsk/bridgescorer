@@ -27,7 +27,7 @@ import com.github.thebridsk.bridge.fullserver.test.pages.bridge.ErrorMsgDiv
 
 object TableEnterOrSelectNamesPage {
 
-  val log = Logger[TableEnterOrSelectNamesPage]
+  val log = Logger[TableEnterOrSelectNamesPage]()
 
   def current( targetBoard: Option[String])(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
     val (dupid,tableid,roundid,targetboard) = findTableRoundId
@@ -90,7 +90,7 @@ class TableEnterOrSelectNamesPage( dupid: String,
 
     getButton("OK")
 
-    val inputs = findAllTextInputs
+    val inputs = findAllTextInputs()
     if (inputs.contains("Scorekeeper")) {
       enterNamesAndClickOk(north, south, east, west,scorekeeper)
     } else if (inputs.contains("I_N")) {
@@ -147,7 +147,7 @@ class TableEnterOrSelectNamesPage( dupid: String,
     val inputs1 = eventually( {
        val map = findAllInputs(None)
        val List(a,b,c) = (North::South::East::West::Nil).filter(p=>p!=scorekeeper).map(p=>s"I_${p.pos}").toList
-       map.keySet must contain allOf (a,b,c)
+       map.keySet must (contain.allOf(a,b,c) )
        map
     } )
 

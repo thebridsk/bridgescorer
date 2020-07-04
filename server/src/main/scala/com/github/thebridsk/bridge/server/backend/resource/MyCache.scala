@@ -7,7 +7,7 @@ import scala.concurrent.duration._
 class CreateKeyFailed[K](result: Result[K]) extends Exception
 
 object MyCache {
-  val log = Logger[MyCache[_, _]]
+  val log = Logger[MyCache[_, _]]()
 }
 
 import MyCache._

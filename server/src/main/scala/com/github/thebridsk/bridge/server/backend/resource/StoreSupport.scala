@@ -78,12 +78,12 @@ abstract class StoreSupport[VId, VType <: VersionedInstance[VType, VType, VId]](
   /**
     * Returns the file extensions to look for when reading resources.
     */
-  def getReadExtensions() = instanceJson.getReadExtensions()
+  def getReadExtensions = instanceJson.getReadExtensions
 
   /**
     * Returns the file extension to use when writing resources.
     */
-  def getWriteExtension() = instanceJson.getWriteExtension()
+  def getWriteExtension = instanceJson.getWriteExtension
 
   /**
     * Returns the Id object that the specified string identifies.

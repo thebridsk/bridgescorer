@@ -17,7 +17,7 @@ import java.time.ZoneId
 
 object MonitorTCP extends Logging {
 
-  val log = Logger[MonitorTCP]
+  val log = Logger[MonitorTCP]()
 
   val toMonitorFile = "ToMonitorFile"
   val monitorFileDefault = "logs/unittestTcpMonitorTimeWait.csv"

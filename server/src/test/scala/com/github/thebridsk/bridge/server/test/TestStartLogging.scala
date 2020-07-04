@@ -32,7 +32,7 @@ import com.github.thebridsk.utilities.logging.RedirectOutput
 
 object TestStartLogging {
 
-  val testlog = com.github.thebridsk.utilities.logging.Logger[TestStartLogging]
+  val testlog = com.github.thebridsk.utilities.logging.Logger[TestStartLogging]()
 
   private var loggingInitialized = false
 
