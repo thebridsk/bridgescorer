@@ -9,7 +9,7 @@ import com.github.thebridsk.bridge.clientcommon.react.Utils._
 import com.github.thebridsk.utilities.logging.Logger
 import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles.baseStyles
 import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles
-import com.github.thebridsk.materialui.icons.MuiIcons
+import com.github.thebridsk.materialui.icons
 import com.github.thebridsk.materialui.MuiMenuItem
 import com.github.thebridsk.materialui.icons.SvgColor
 import com.github.thebridsk.bridge.clientcommon.logger.Info
@@ -82,14 +82,14 @@ object BeepComponent {
         "Beep",
         {
 //          val color = if (playEnabled) SvgColor.inherit else SvgColor.disabled
-//          MuiIcons.Check(
+//          icons.Check(
 //              color=color,
 //              classes = js.Dictionary("root" -> "mainMenuItemIcon")
 //          )
           if (playEnabled) {
-            MuiIcons.CheckBox()
+            icons.CheckBox()
           } else {
-            MuiIcons.CheckBoxOutlineBlank()
+            icons.CheckBoxOutlineBlank()
           }
         }
     )

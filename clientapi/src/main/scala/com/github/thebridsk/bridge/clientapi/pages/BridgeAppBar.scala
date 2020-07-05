@@ -7,7 +7,7 @@ import com.github.thebridsk.materialui.MuiAppBar
 import com.github.thebridsk.materialui.Position
 import com.github.thebridsk.materialui.MuiToolbar
 import com.github.thebridsk.materialui.MuiIconButton
-import com.github.thebridsk.materialui.icons.MuiIcons
+import com.github.thebridsk.materialui.icons
 import com.github.thebridsk.materialui.MuiTypography
 import com.github.thebridsk.materialui.ColorVariant
 import com.github.thebridsk.materialui.TextVariant
@@ -262,7 +262,7 @@ object BridgeAppBarInternal {
             color = ColorVariant.inherit,
             classes = buttonStyle
           )(
-            MuiIcons.Help()
+            icons.Help()
           ),
           MuiIconButton(
             id = "ServerURL",
@@ -271,7 +271,7 @@ object BridgeAppBarInternal {
             color = ColorVariant.inherit,
             classes = buttonStyle
           )(
-            MuiIcons.Place()
+            icons.Place()
           ),
           MuiIconButton(
             id = "LightDark",
@@ -290,9 +290,9 @@ object BridgeAppBarInternal {
             classes = buttonStyle
           )(
             if (isfullscreen) {
-              MuiIcons.FullscreenExit()
+              icons.FullscreenExit()
             } else {
-              MuiIcons.Fullscreen()
+              icons.Fullscreen()
             }
           ),
           MuiIconButton(
@@ -302,7 +302,7 @@ object BridgeAppBarInternal {
             color = ColorVariant.inherit,
             classes = buttonStyle
           )(
-            MuiIcons.MoreVert()
+            icons.MoreVert()
           )
         )
 
@@ -339,7 +339,7 @@ object BridgeAppBarInternal {
               color = ColorVariant.inherit,
               classes = buttonStyle
             )(
-              MuiIcons.Menu()
+              icons.Menu()
             ),
             if (props.showHomeButton) {
               MuiIconButton(
@@ -349,7 +349,7 @@ object BridgeAppBarInternal {
                 color = ColorVariant.inherit,
                 classes = buttonStyle
               )(
-                MuiIcons.Home()
+                icons.Home()
               )
             } else {
               TagMod.empty

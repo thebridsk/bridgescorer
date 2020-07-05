@@ -6,7 +6,7 @@ import japgolly.scalajs.react._
 import com.github.thebridsk.materialui.MuiAppBar
 import com.github.thebridsk.materialui.Position
 import com.github.thebridsk.materialui.MuiToolbar
-import com.github.thebridsk.materialui.icons.MuiIcons
+import com.github.thebridsk.materialui.icons
 import com.github.thebridsk.materialui.MuiTypography
 import com.github.thebridsk.materialui.ColorVariant
 import com.github.thebridsk.materialui.TextVariant
@@ -219,7 +219,7 @@ object RootBridgeAppBarInternal {
                     classes = js.Dictionary("root" -> "mainMenuItem")
                 )(
                     "Test Hands",
-                    MuiIcons.ChevronRight(
+                    icons.ChevronRight(
                         classes = js.Dictionary("root" -> "mainMenuItemIcon")
                     )
                 ),
@@ -242,14 +242,14 @@ object RootBridgeAppBarInternal {
 
                   )(
                       "Scaling ",
-//                      MuiIcons.Check(
+//                      icons.Check(
 //                          color=color,
 //                          classes = js.Dictionary("root" -> "mainMenuItemIcon")
 //                      )
                       if (check) {
-                        MuiIcons.CheckBox()
+                        icons.CheckBox()
                       } else {
-                        MuiIcons.CheckBoxOutlineBlank()
+                        icons.CheckBoxOutlineBlank()
                       }
                   )
                 },
@@ -262,14 +262,14 @@ object RootBridgeAppBarInternal {
                     "Allow Select",
                     {
 //                      val color = if (state.userSelect) SvgColor.inherit else SvgColor.disabled
-//                      MuiIcons.Check(
+//                      icons.Check(
 //                          color=color,
 //                          classes = js.Dictionary("root" -> "mainMenuItemIcon")
 //                      )
                       if (state.userSelect) {
-                        MuiIcons.CheckBox()
+                        icons.CheckBox()
                       } else {
-                        MuiIcons.CheckBoxOutlineBlank()
+                        icons.CheckBoxOutlineBlank()
                       }
                     }
                 ),

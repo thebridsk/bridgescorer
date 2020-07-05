@@ -59,7 +59,7 @@ import com.github.thebridsk.materialui.component.MyMenu
 import com.github.thebridsk.materialui.MuiMenuItem
 import com.github.thebridsk.materialui.icons.SvgColor
 import com.github.thebridsk.bridge.clientcommon.react.BeepComponent
-import com.github.thebridsk.materialui.icons.MuiIcons
+import com.github.thebridsk.materialui.icons
 import japgolly.scalajs.react.component.builder.Lifecycle.ComponentDidUpdate
 
 /**
@@ -690,9 +690,9 @@ object PageSummaryInternal {
                     "Show All",
                     {
                       if (state.alwaysShowAll || state.showRows.isEmpty) {
-                        MuiIcons.CheckBox()
+                        icons.CheckBox()
                       } else {
-                        MuiIcons.CheckBoxOutlineBlank()
+                        icons.CheckBoxOutlineBlank()
                       }
                     }
                 ),
@@ -714,9 +714,9 @@ object PageSummaryInternal {
                     "Show All",
                     {
                       if (state.alwaysShowAll || state.showRows.isEmpty) {
-                        MuiIcons.CheckBox()
+                        icons.CheckBox()
                       } else {
-                        MuiIcons.CheckBoxOutlineBlank()
+                        icons.CheckBoxOutlineBlank()
                       }
                     }
                 ),

@@ -27,7 +27,7 @@ import com.github.thebridsk.bridge.client.routes.BridgeRouter
 import com.github.thebridsk.bridge.clientcommon.react.PopupOkCancel
 import com.github.thebridsk.bridge.client.pages.hand.Picture
 import _root_.com.github.thebridsk.bridge.data.DuplicatePicture
-import com.github.thebridsk.materialui.icons.MuiIcons.Photo
+import com.github.thebridsk.materialui.icons.Photo
 import com.github.thebridsk.bridge.client.pages.hand.HandStyles.handStyles
 
 /**

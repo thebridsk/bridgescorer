@@ -6,7 +6,7 @@ import japgolly.scalajs.react._
 import com.github.thebridsk.materialui.MuiAppBar
 import com.github.thebridsk.materialui.Position
 import com.github.thebridsk.materialui.MuiToolbar
-import com.github.thebridsk.materialui.icons.MuiIcons
+import com.github.thebridsk.materialui.icons
 import com.github.thebridsk.materialui.MuiTypography
 import com.github.thebridsk.materialui.ColorVariant
 import com.github.thebridsk.materialui.TextVariant
@@ -158,7 +158,7 @@ object ChicagoPageBridgeAppBarInternal {
 //
 //                )(
 //                    "FastClick ",
-//                    MuiIcons.Check(
+//                    icons.Check(
 //                        color= (if (HomePage.isFastclickOn) SvgColor.inherit else SvgColor.disabled),
 //                        classes = js.Dictionary("root" -> "mainMenuItemIcon").asInstanceOf[js.Object]
 //                    )
