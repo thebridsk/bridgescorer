@@ -17,11 +17,11 @@ import com.github.thebridsk.bridge.clientcommon.react.Utils._
 import com.github.thebridsk.bridge.clientcommon.react.Button
 import com.github.thebridsk.bridge.client.pages.Pixels
 import com.github.thebridsk.bridge.clientcommon.react.HelpButton
-import com.github.thebridsk.materialui.icons.MuiIcons.Camera
+import com.github.thebridsk.materialui.icons.Camera
 import org.scalajs.dom.raw.FileList
 import org.scalajs.dom.raw.FormData
 import com.github.thebridsk.bridge.clientcommon.react.Utils._
-import com.github.thebridsk.materialui.icons.MuiIcons.Photo
+import com.github.thebridsk.materialui.icons.Photo
 import japgolly.scalajs.react.component.builder.Lifecycle.ComponentDidUpdate
 import com.github.thebridsk.bridge.clientcommon.react.PopupOkCancel
 import org.scalajs.dom.raw.FileReader

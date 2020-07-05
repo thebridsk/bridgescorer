@@ -6,7 +6,7 @@ import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.TagMod
 import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles
 import japgolly.scalajs.react.vdom.HtmlStyles
-import com.github.thebridsk.materialui.icons.MuiIcons
+import com.github.thebridsk.materialui.icons
 import com.github.thebridsk.materialui._
 
 /**
@@ -42,8 +42,8 @@ object CheckBoxInternal {
                             .noBackend
                             .render_P { props =>
                               import BaseStyles._
-                              // val ic = if (props.value) MuiIcons.CheckBox()
-                              //          else MuiIcons.CheckBoxOutlineBlank()
+                              // val ic = if (props.value) icons.CheckBox()
+                              //          else icons.CheckBoxOutlineBlank()
 
                               // val attrs = List[TagMod](
                               //   baseStyles.checkbox,

@@ -33,7 +33,7 @@ import com.github.thebridsk.bridge.client.pages.duplicate.DuplicateRouter.Moveme
 import com.github.thebridsk.bridge.client.pages.duplicate.DuplicateRouter.DuplicateBoardSetView
 import com.github.thebridsk.bridge.client.pages.duplicate.DuplicateRouter.AllTableView
 import com.github.thebridsk.bridge.client.pages.BridgeAppBar
-import com.github.thebridsk.materialui.icons.MuiIcons
+import com.github.thebridsk.materialui.icons
 import com.github.thebridsk.bridge.client.pages.HomePage
 import com.github.thebridsk.materialui.icons.SvgColor
 import com.github.thebridsk.bridge.clientcommon.react.BeepComponent
@@ -220,7 +220,7 @@ object DuplicatePageBridgeAppBarInternal {
 //
 //                      )(
 //                          "FastClick ",
-//                          MuiIcons.Check(
+//                          icons.Check(
 //                              color= (if (HomePage.isFastclickOn) SvgColor.inherit else SvgColor.disabled),
 //                              classes = js.Dictionary("root" -> "mainMenuItemIcon").asInstanceOf[js.Object]
 //                          )
