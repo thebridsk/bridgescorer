@@ -172,7 +172,7 @@ object BldBridgeScoreKeeper {
             "META-INF",
             "resources",
             "webjars",
-            "bridgescorer",
+            "bridgescorekeeper",
             version,
             "lib",
             "bridgescorer-fullserver",
