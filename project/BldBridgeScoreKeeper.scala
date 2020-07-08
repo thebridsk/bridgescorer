@@ -235,10 +235,6 @@ object BldBridgeScoreKeeper {
       },
       // want to run bridgescorekeeper/*:assembly::assembledMappings
       webassembly := { val x = (assembledMappings in assembly).value },
-      dependencyUpdates := {
-        val x = dependencyUpdates.value
-        val z = dependencyUpdates.all(utilitiesAllProjects).value
-      },
 
       prereqintegrationtests := {
         val x = (assembly in Compile).value

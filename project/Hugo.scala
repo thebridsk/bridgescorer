@@ -13,7 +13,10 @@ object Hugo {
     log.info(s"In Directory ${docsDir}")
     log.info(s"Starting ${cmd.mkString(" ")}")
 
-    val addenvp = Map("HUGO_BRIDGESCORERVERSIONLONG" -> longversion, "HUGO_BRIDGESCORERVERSION" -> shortversion)
+    val addenvp = Map(
+      "HUGO_BRIDGESCORERVERSIONLONG" -> longversion,
+      "HUGO_BRIDGESCORERVERSION" -> shortversion
+    )
     val proc = myproc.start(docsDir, addenvp, cmd: _* )
     val rc = proc.waitFor()
     if (rc == 0) {
