@@ -94,8 +94,9 @@ class HelpPage(
       val base = getPageUrl(helpuri)
       val url = currentUrl
       url mustBe base
-      // find( xpath(s"""//body[contains(@data-url, './${helpuri}')]""") )
       find( xpath(s"""//body[@data-url='${adjustURI(helpuri)}']""") )
+
+      find( xpath(s"""//div[@id='header']/p/span""") ).text must not be "Unknown"
     }
     this
   }

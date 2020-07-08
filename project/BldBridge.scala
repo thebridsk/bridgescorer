@@ -251,8 +251,9 @@ object BldBridge {
           MyNpm.checkForNpmUpdates in Test in BldBridgeClient.`bridgescorer-client`,
           MyNpm.checkForNpmUpdates in Compile in BldBridgeClientApi.`bridgescorer-clientapi`,
           // MyNpm.checkForNpmUpdates in Test in BldBridgeClientApi.`bridgescorer-clientapi`,
-          dependencyUpdates.all(bridgescorerAllProjects),
-          dependencyUpdates
+          dependencyUpdates.all(allProjects),
+          dependencyUpdates,
+          dependencyUpdates in utilities
         )
         .value,
       alltests := Def
@@ -305,8 +306,7 @@ object BldBridge {
         )
         .value,
       myclean := {
-        val x = clean.all(bridgescorerAllProjects).value
-        val y = clean.all(utilitiesAllProjects).value
+        val x = clean.all(allProjects).value
       },
 
       mytest := Def

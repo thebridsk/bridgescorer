@@ -135,12 +135,14 @@ class MyProcess( logger: Option[Logger] = None ) {
   }
 
   def startOnMac( cwd: File, addEnvp: Option[Map[String,String]], cmd: String* ) = {
-    exec( "sh"::"-c"::cmd.mkString(" ")::Nil, cwd );
+    val env = addEnvp.getOrElse(Map.empty)
+    exec( "sh"::"-c"::cmd.mkString(" ")::Nil, env, cwd );
   }
 
   def startOnLinux( cwd: File, addEnvp: Option[Map[String,String]], cmd: String* ) = {
+    val env = addEnvp.getOrElse(Map.empty)
     val c = "sh"::"-c"::cmd.mkString(" ")::Nil
-    exec(c, cwd);
+    exec(c, env, cwd);
   }
 
   /**
