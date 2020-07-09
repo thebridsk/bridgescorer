@@ -57,6 +57,10 @@ object BldBridgeFullServer {
       serverlogs := {
         (run in Compile).toTask(""" --logconsolelevel=ALL start --cache 0s --store ../server/store""").value
       },
+      generateSwagger := {
+        (testClass in Test).toTask(""" *.Swagger2Spec""").value
+      },
+
       // shebang the jar file.  7z and jar will no longer see it as a valid zip file.
       //    assemblyOption in assembly := (assemblyOption in assembly).value.copy(prependShellScript = Some(defaultShellScript)),
       //    assemblyJarName in assembly := s"${name.value}-{version.value}",

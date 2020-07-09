@@ -212,6 +212,8 @@ object BldCommonSettings {
 
   val generateDemo = taskKey[Unit]("Generate demo gh-pages in target/demo")
 
+  val generateSwagger = taskKey[Unit]("Generate swagger.yaml")
+
   case class SSLKeys( keystore: File, keystorepass: String, serveralias: String, keypass: String, truststore: File )
   val generatesslkeys = taskKey[SSLKeys]("Generate SSL keys for testing HTTPS connections")
   val onlyssltests = taskKey[Unit]("Only run SSL tests, does not create jars")

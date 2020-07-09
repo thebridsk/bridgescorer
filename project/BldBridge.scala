@@ -293,6 +293,7 @@ object BldBridge {
       travis2 := Def
         .sequential(
           test in Test in BldBridgeFullServer.`bridgescorer-fullserver`,
+          generateSwagger in BldBridgeFullServer.`bridgescorer-fullserver`,
           travismoretests in Distribution in BldBridgeScoreKeeper.bridgescorekeeper,
           generateDemo in BldBridgeDemo.demo,
           test in Test in BldBridgeDemo.demo,
