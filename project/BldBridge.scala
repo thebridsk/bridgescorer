@@ -213,7 +213,8 @@ object BldBridge {
       BldBrowserPages.browserpages,
       BldColor.colorJS,
       BldColor.colorJVM,
-      BldBridgeScoreKeeper.bridgescorekeeper
+      BldBridgeScoreKeeper.bridgescorekeeper,
+      BldBridgeDemo.demo
     )
     .settings(
       name := "bridgescorer",
@@ -261,12 +262,16 @@ object BldBridge {
           mydist in Distribution in utilities,
           mydistnoclean,
           disttests in Distribution in BldBridgeScoreKeeper.bridgescorekeeper,
+          generateDemo in BldBridgeDemo.demo,
+          test in Test in BldBridgeDemo.demo,
         )
         .value,
       travis := Def
         .sequential(
           travis1,
           travismoretests in Distribution in BldBridgeScoreKeeper.bridgescorekeeper,
+          generateDemo in BldBridgeDemo.demo,
+          test in Test in BldBridgeDemo.demo,
         )
         .value,
       travis1p := {
@@ -283,12 +288,14 @@ object BldBridge {
       travis1 := Def
         .sequential(
           travis in Distribution in utilities,
-          travis1p
+          travis1p,
         ).value,
       travis2 := Def
         .sequential(
           test in Test in BldBridgeFullServer.`bridgescorer-fullserver`,
           travismoretests in Distribution in BldBridgeScoreKeeper.bridgescorekeeper,
+          generateDemo in BldBridgeDemo.demo,
+          test in Test in BldBridgeDemo.demo,
         )
         .value,
       mydistnoclean := {

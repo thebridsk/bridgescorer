@@ -210,6 +210,8 @@ object BldCommonSettings {
   val hugosetupWithTest = taskKey[Unit]("Setup to run Hugo")
   val helptask = taskKey[Seq[(java.io.File, String)]]("Identifies help resources")
 
+  val generateDemo = taskKey[Unit]("Generate demo gh-pages in target/demo")
+
   case class SSLKeys( keystore: File, keystorepass: String, serveralias: String, keypass: String, truststore: File )
   val generatesslkeys = taskKey[SSLKeys]("Generate SSL keys for testing HTTPS connections")
   val onlyssltests = taskKey[Unit]("Only run SSL tests, does not create jars")

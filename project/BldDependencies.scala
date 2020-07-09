@@ -179,6 +179,8 @@ object BldDependencies {
     "com.github.japgolly.scalajs-react" %%% "test" % vScalaJsReact % "test" withSources()
     ))
 
+  val bridgeScorerDemoDeps = Seq()
+
   val bridgeScorerNpmDeps = Seq(
       "react" -> vWebJarsReact,
       "react-dom" -> vWebJarsReact,
