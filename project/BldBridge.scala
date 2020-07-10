@@ -294,9 +294,10 @@ object BldBridge {
         .sequential(
           test in Test in BldBridgeFullServer.`bridgescorer-fullserver`,
           generateSwagger in BldBridgeFullServer.`bridgescorer-fullserver`,
-          travismoretests in Distribution in BldBridgeScoreKeeper.bridgescorekeeper,
+          prereqintegrationtests in BldBridgeScoreKeeper.bridgescorekeeper,
           generateDemo in BldBridgeDemo.demo,
           test in Test in BldBridgeDemo.demo,
+          travismoretests in Distribution in BldBridgeScoreKeeper.bridgescorekeeper,
         )
         .value,
       mydistnoclean := {
