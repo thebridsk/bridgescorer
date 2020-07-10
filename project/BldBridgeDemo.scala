@@ -37,6 +37,11 @@ object BldBridgeDemo {
 
       fork in run := true,
       fork in Test := true,
+
+      javaOptions in Test ++= Seq(
+        "-Xmx4096M",
+        "-DDefaultWebDriver=" + useBrowser,
+      )
     )
 
 }
