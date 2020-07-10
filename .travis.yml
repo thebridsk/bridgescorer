@@ -1,4 +1,5 @@
 
+os: linux
 dist: xenial
 
 language: scala
@@ -118,10 +119,11 @@ deploy:
 
 - provider: pages
   repo:  thebridsk/bridgescorerdemo
-  github_token: $GITHUB_TOKEN  # Set in the settings page of your repository, as a secure variable
+  token: $GITHUB_TOKEN  # Set in the settings page of your repository, as a secure variable
   keep_history: false
   target_branch: gh-pages
   local_dir: demo/target/demo
+  strategy: git
   on:
     repo: thebridsk/bridgescorer
     tags: true
