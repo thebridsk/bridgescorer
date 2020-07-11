@@ -29,6 +29,7 @@ import com.github.thebridsk.utilities.logging.FileHandler
 import com.github.thebridsk.utilities.logging.FileFormatter
 import java.util.logging.Level
 import com.github.thebridsk.utilities.logging.RedirectOutput
+import java.io.File
 
 object TestStartLogging {
 
@@ -51,6 +52,7 @@ object TestStartLogging {
       loggingInitialized = true
       val logfilenameprefix = Option(logFilenamePrefix).getOrElse( getProp(logFilePrefix, logFilePrefixDefault ) )
       Config.configureFromResource(Config.getPackageNameAsResource(getClass)+"logging.properties", getClass.getClassLoader)
+      // println(s"current directory for starting logging is ${(new File(".")).getAbsoluteFile.getCanonicalPath}")
       val handler = new FileHandler(s"${logfilenameprefix}.%d.%u.log")
       handler.setFormatter( new FileFormatter )
       handler.setLevel(Level.ALL)
