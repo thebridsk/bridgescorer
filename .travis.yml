@@ -101,28 +101,28 @@ jobs:
           export ServerTestToRun=com.github.thebridsk.bridge.fullserver.test.selenium.AllSeleniumSuites
           travis/cmdWithPeriodicMsg.sh sbt setOptimize distribution:travis2
 
-after_failure:
-- cat server/logs/unittestTcpMonitorTimeWait.csv
+      deploy:
+      - provider: releases
+        token: $GITHUB_TOKEN  # Set in the settings page of your repository, as a secure variable
+        file_glob: true
+        file:
+          - bridgescorekeeper/target/scala-2.13/bridgescorekeeper-server-*.jar
+          - bridgescorekeeper/target/scala-2.13/bridgescorekeeper-server-*.jar.sha256
+        on:
+          repo: thebridsk/bridgescorer
+          tags: true
+
+      - provider: pages
+        repo:  thebridsk/bridgescorerdemo
+        token: $GITHUB_TOKEN  # Set in the settings page of your repository, as a secure variable
+        keep_history: false
+        target_branch: gh-pages
+        local_dir: demo/target/demo
+        strategy: git
+        on:
+          repo: thebridsk/bridgescorer
+          tags: true
+
+# after_failure:
+# - cat server/logs/unittestTcpMonitorTimeWait.csv
 # - cat server/logs/unittest.1.log
-
-deploy:
-- provider: releases
-  token: $GITHUB_TOKEN  # Set in the settings page of your repository, as a secure variable
-  file_glob: true
-  file:
-    - bridgescorekeeper/target/scala-2.13/bridgescorekeeper-server-*.jar
-    - bridgescorekeeper/target/scala-2.13/bridgescorekeeper-server-*.jar.sha256
-  on:
-    repo: thebridsk/bridgescorer
-    tags: true
-
-- provider: pages
-  repo:  thebridsk/bridgescorerdemo
-  token: $GITHUB_TOKEN  # Set in the settings page of your repository, as a secure variable
-  keep_history: false
-  target_branch: gh-pages
-  local_dir: demo/target/demo
-  strategy: git
-  on:
-    repo: thebridsk/bridgescorer
-    tags: true
