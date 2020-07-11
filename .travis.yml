@@ -104,6 +104,7 @@ jobs:
       deploy:
       - provider: releases
         token: $GITHUB_TOKEN  # Set in the settings page of your repository, as a secure variable
+        skip_cleanup: true
         file_glob: true
         file:
           - bridgescorekeeper/target/scala-2.13/bridgescorekeeper-server-*.jar
@@ -115,6 +116,7 @@ jobs:
       - provider: pages
         repo:  thebridsk/bridgescorerdemo
         token: $GITHUB_TOKEN  # Set in the settings page of your repository, as a secure variable
+        skip_cleanup: true
         keep_history: false
         target_branch: gh-pages
         local_dir: demo/target/demo
