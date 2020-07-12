@@ -61,5 +61,5 @@ lazy val `bridgescorer-fullserver`: Project = BldBridgeFullServer.`bridgescorer-
 
 lazy val bridgescorekeeper: Project = BldBridgeScoreKeeper.bridgescorekeeper
 
-lazy val bridgeDemo: Project = BldBridgeDemo.demo
 lazy val bridgescorer: Project = BldBridge.bridgescorer
+lazy val bridgeDemo: Project = BldBridgeDemo.demo

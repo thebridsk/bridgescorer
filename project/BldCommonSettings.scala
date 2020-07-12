@@ -211,6 +211,7 @@ object BldCommonSettings {
   val helptask = taskKey[Seq[(java.io.File, String)]]("Identifies help resources")
 
   val generateDemo = taskKey[Unit]("Generate demo gh-pages in target/demo")
+  val publishDemo = taskKey[Unit]("Publish demo gh-pages in target/demo")
 
   val generateSwagger = taskKey[Unit]("Generate swagger.yaml")
 
