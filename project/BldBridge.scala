@@ -70,6 +70,12 @@ object BldBridge {
         |  hugo               run hugo to generate help pages
         |  hugoserver         run hugo server on help docs
         |
+        |Tasks on demo project
+        |  generateDemo       generates the demo website at demo/target/demo
+        |  publishDemo        publishes the demo website to thebridsk/bridgescorerdemo
+        |                     this command is normally not needed, a release will publis
+        |                     the website
+        |
         |Tasks in any project
         |  test:testClass <clsname>...  run tests on specified class(es), wildcard * matches any number of characters
         |
