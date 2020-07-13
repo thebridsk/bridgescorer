@@ -9,7 +9,7 @@ case class DuplicatePicture(
   @Schema(description = "The board ID", required = true)
   boardId: Id.DuplicateBoard,
   @Schema(description = "The hand ID", required = true)
-  handId: Id.DuplicateHand,
+  handId: Team.Id,
   @Schema(description = "The URL relative to this servers root URL", required = true)
   url: String
 ) {

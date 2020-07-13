@@ -354,7 +354,9 @@ case class MatchChicagoV3(
 
 }
 
-object MatchChicagoV3 {
+trait IdMatchChicago
+
+object MatchChicagoV3 extends HasId[IdMatchChicago]("C") {
   def apply(
       id: String,
       players: List[String],
@@ -373,6 +375,7 @@ object MatchChicagoV3 {
       time
     )
   }
+
 }
 
 @Schema(

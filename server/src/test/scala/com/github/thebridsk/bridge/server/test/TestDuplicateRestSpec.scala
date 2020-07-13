@@ -396,7 +396,7 @@ class TestDuplicateRestSpec extends AnyFlatSpec with ScalatestRouteTest with Mat
       val md = responseAs[MatchDuplicate]
       createdM1 = Some(md)
       for( id <- 1 to 4){
-        val tid = "T"+id
+        val tid = Team.id(id)
         assert( md.getTeam(tid).get.equalsIgnoreModifyTime( Team.create(tid,"","")) )
       }
       for( id <- 1 to 18){
@@ -560,7 +560,7 @@ class TestDuplicateRestSpec extends AnyFlatSpec with ScalatestRouteTest with Mat
       status mustBe OK
       mediaType mustBe MediaTypes.`application/json`
       t = responseAs[Team]
-      assert(t.equalsIgnoreModifyTime(BridgeServiceTesting.testingMatch.getTeam("T1").get))
+      assert(t.equalsIgnoreModifyTime(BridgeServiceTesting.testingMatch.getTeam(Team.id(1)).get))
     }
   }
 
@@ -593,7 +593,7 @@ class TestDuplicateRestSpec extends AnyFlatSpec with ScalatestRouteTest with Mat
       handled mustBe true
       status mustBe OK
       mediaType mustBe MediaTypes.`application/json`
-      assert(responseAs[Team].equalsIgnoreModifyTime(BridgeServiceTesting.testingMatch.getTeam("T2").get))
+      assert(responseAs[Team].equalsIgnoreModifyTime(BridgeServiceTesting.testingMatch.getTeam(Team.id(2)).get))
     }
   }
 
@@ -622,9 +622,12 @@ class TestDuplicateRestSpec extends AnyFlatSpec with ScalatestRouteTest with Mat
       handled mustBe true
       withClue( "response is "+response) { status mustBe OK }
       mediaType mustBe MediaTypes.`application/json`
-      assert(responseAs[DuplicateHand].equalsIgnoreModifyTime(DuplicateHand.create( Hand.create("H1",7,Spades.suit, Doubled.doubled, North.pos,
-                                                             false,false,true,7),
-                                                        "1", 1, "B1", "T1", "T2")))
+      assert(responseAs[DuplicateHand].equalsIgnoreModifyTime(
+        DuplicateHand.create(
+          Hand.create("H1",7,Spades.suit, Doubled.doubled, North.pos,false,false,true,7),
+          Table.id(1), 1, "B1", Team.id(1), Team.id(2)
+        )
+      ))
     }
   }
 
@@ -658,7 +661,7 @@ class TestDuplicateRestSpec extends AnyFlatSpec with ScalatestRouteTest with Mat
   it should "return a hand json object for POST requests to /v1/rest/duplicates/M1/boards/B2/hands" in withListener( listenerstatus=> {
     val hand = DuplicateHand.create( Hand.create("T3",7,Spades.suit, Doubled.doubled, North.pos,
                                                              false,false,false,1),
-                                                        "2", 2, "B2", "T3", "T4")
+                                                        Table.id(2), 2, "B2", Team.id(3), Team.id(4))
     Post("/v1/rest/duplicates/M1/boards/B2/hands", hand) ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
       handled mustBe true
       status mustBe Created
@@ -700,7 +703,7 @@ class TestDuplicateRestSpec extends AnyFlatSpec with ScalatestRouteTest with Mat
       assert( !listenerstatus.lastDelete.isEmpty )
       listenerstatus.lastDelete.get.id mustBe BridgeServiceTesting.testingMatch.id
 
-      val m1withhanddeleted = m1.get.updateBoard(m1.get.getBoard("B2").get.deleteHand("T3"))
+      val m1withhanddeleted = m1.get.updateBoard(m1.get.getBoard("B2").get.deleteHand(Team.id(3)))
       assert( listenerstatus.lastDelete.get.equalsIgnoreModifyTime( m1withhanddeleted ))
     }
   })
@@ -751,7 +754,7 @@ class TestDuplicateRestSpec extends AnyFlatSpec with ScalatestRouteTest with Mat
       mediaType mustBe MediaTypes.`application/json`
       val md = responseAs[MatchDuplicate]
       for( id <- 1 to 4){
-        val tid = "T"+id
+        val tid = Team.id(id)
         assert( md.getTeam(tid).get.equalsIgnoreModifyTime( Team.create(tid,"","")) )
       }
       for( id <- 1 to 18){
@@ -773,7 +776,7 @@ class TestDuplicateRestSpec extends AnyFlatSpec with ScalatestRouteTest with Mat
       mediaType mustBe MediaTypes.`application/json`
       val md = responseAs[MatchDuplicate]
       for( id <- 1 to 6){
-        val tid = "T"+id
+        val tid = Team.id(id)
         assert( md.getTeam(tid).get.equalsIgnoreModifyTime( Team.create(tid,"","")) )
       }
       for( id <- 1 to 18){
@@ -795,7 +798,7 @@ class TestDuplicateRestSpec extends AnyFlatSpec with ScalatestRouteTest with Mat
       mediaType mustBe MediaTypes.`application/json`
       val md = responseAs[MatchDuplicate]
       for( id <- 1 to 6){
-        val tid = "T"+id
+        val tid = Team.id(id)
         assert( md.getTeam(tid).get.equalsIgnoreModifyTime( Team.create(tid,"","")) )
       }
       for( id <- 1 to 20){

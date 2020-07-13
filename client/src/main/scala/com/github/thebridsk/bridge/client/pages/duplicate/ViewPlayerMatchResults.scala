@@ -64,9 +64,9 @@ object ViewPlayerMatchResultInternal {
       val places = props.score.sortWith( (l,r) => l.place < r.place)
       def teamColumn( teams: List[Team] ) = {
         var count = 0
-        teams.sortWith((t1,t2)=> Id.idComparer(t1.id, t2.id)<0).map { team =>
+        teams.sortWith((t1,t2)=> t1.id < t2.id).map { team =>
           count += 1
-          <.span( count!=1 ?= <.br(), Id.teamIdToTeamNumber(team.id)+" "+team.player1+" "+team.player2 )
+          <.span( count!=1 ?= <.br(), team.id.toNumber+" "+team.player1+" "+team.player2 )
         }.toTagMod
       }
       <.div(

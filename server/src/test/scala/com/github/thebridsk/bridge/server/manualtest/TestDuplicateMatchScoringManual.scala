@@ -13,20 +13,21 @@ import com.github.thebridsk.bridge.data.bridge.PerspectiveComplete
 import com.github.thebridsk.bridge.server.backend.BridgeServiceInMemory
 import scala.concurrent.Await
 import scala.concurrent.duration._
+import com.github.thebridsk.bridge.data.Team
 
 object TestDuplicateMatchScoringManual extends Main {
 
   def execute() = {
     val m = TestMatchDuplicate.getPlayedMatch("M1")
 
-    check( m, "T1", "T2" )
-    check( m, "T3", "T4" )
+    check( m, Team.id(1), Team.id(2) )
+    check( m, Team.id(3), Team.id(4) )
     println("")
-    check( m, "T1", "T3" )
-    check( m, "T2", "T4" )
+    check( m, Team.id(1), Team.id(3) )
+    check( m, Team.id(2), Team.id(4) )
     println("")
-    check( m, "T1", "T4" )
-    check( m, "T2", "T3" )
+    check( m, Team.id(1), Team.id(4) )
+    check( m, Team.id(2), Team.id(3) )
     println("")
     checkDirector(m)
     println("")
@@ -35,7 +36,7 @@ object TestDuplicateMatchScoringManual extends Main {
     println("")
     Await.result( new BridgeServiceInMemory("test").fillBoards(MatchDuplicate.create("M2")), 30.seconds) match {
       case Right(md) =>
-        check(md, "T1", "T2" )
+        check(md, Team.id(1), Team.id(2) )
         showTables(md)
         0
       case Left((code,msg)) =>
@@ -44,7 +45,7 @@ object TestDuplicateMatchScoringManual extends Main {
     }
   }
 
-  def teamScores(boards: List[BoardScore], team: Id.Team) = {
+  def teamScores(boards: List[BoardScore], team: Team.Id) = {
     boards.map( board => {
                             val ts = board.scores().get(team).get
                             if (ts.played) {
@@ -71,14 +72,14 @@ object TestDuplicateMatchScoringManual extends Main {
     check(m,score)
   }
 
-  def check( m: MatchDuplicate, team1: Id.Team, team2: Id.Team ): Unit = {
+  def check( m: MatchDuplicate, team1: Team.Id, team2: Team.Id ): Unit = {
     println("From teams "+team1+" and "+team2 )
     val score = MatchDuplicateScore(m, PerspectiveTable(team1, team2))
     check(m,score)
   }
 
   def check( m: MatchDuplicate, score: MatchDuplicateScore ): Unit = {
-    val teams = m.teams.map{t=>t.id}.toList.sortWith((one,two)=> Id.idComparer(one,two)<0)
+    val teams = m.teams.map{t=>t.id}.toList.sorted
     val boards = score.boards.values.toList.sortWith((one,two)=> Id.idComparer(one.id,two.id)<0)
 
     val header = List( List("team","total"), boards.map( b => b.id.toString ).toList ).flatten
@@ -99,7 +100,7 @@ object TestDuplicateMatchScoringManual extends Main {
     boards.foreach { b => checkBoard(b,teams) }
   }
 
-  def checkBoard( board: BoardScore, teams: List[Id.Team] ) = {
+  def checkBoard( board: BoardScore, teams: List[Team.Id] ) = {
     println("Board: "+board.id)
 
     val header = List("NS", "Contract", "By", "Made", "Down", "NSScore", "EWScore", "EW", "MatchPoints")
@@ -137,7 +138,7 @@ object TestDuplicateMatchScoringManual extends Main {
   }
 
   def showTables( md: MatchDuplicate ) = {
-    MatchDuplicateScore(md,PerspectiveTable("T1","T2")).tables.foreach{ case(table, rounds) =>
+    MatchDuplicateScore(md,PerspectiveTable(Team.id(1),Team.id(2))).tables.foreach{ case(table, rounds) =>
       println("")
       println("Table "+table)
       val header = List( "Round", "NS", "EW", "Boards" )

@@ -197,7 +197,7 @@ object PageScoreboardInternal {
               )
           }
 
-          val sortedTables = score.tables.keys.toList.sortWith((t1,t2)=>t1<t2)
+          val sortedTables = score.tables.keys.toList.sorted
 
           logger.fine( "WinnerSets: "+winnersets )
           <.div(
@@ -245,9 +245,9 @@ object PageScoreboardInternal {
                       <.div(
                         baseStyles.divFooterLeft,
                         sortedTables.map { table =>
-                          val clickToTableView = TableView(props.game.dupid,table)
+                          val clickToTableView = TableView(props.game.dupid,table.id)
                           List[TagMod](
-                            AppButton( "Table_"+table, "Table "+table,
+                            AppButton( "Table_"+table.id, "Table "+table.id,
                                        baseStyles.requiredNotNext,
                                        props.routerCtl.setOnClick(clickToTableView) ),
                             <.span(" ")
@@ -300,7 +300,7 @@ object PageScoreboardInternal {
                   case PerspectiveTable(team1, team2) =>
                     props.game match {
                       case trgv: TableRoundScoreboardView =>
-                        val tablenumber = Id.tableIdToTableNumber(trgv.tableid)
+                        val tablenumber = trgv.tableid.toNumber
                         val allplayedInRound = score.getRound(trgv.tableid, trgv.round) match {
                           case Some(r) => r.complete
                           case _ => false

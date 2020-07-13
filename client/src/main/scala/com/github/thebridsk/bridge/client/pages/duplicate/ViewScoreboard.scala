@@ -88,10 +88,10 @@ object ViewScoreboardInternal {
                         }
                         def wasPlayed( b: BoardScore ) = {
                           import scala.util.control.Breaks._
-                          if (currentRound == -1 || tablePerspective.isEmpty) (true,"")
+                          if (currentRound == -1 || tablePerspective.isEmpty) (true,Team.idNul)
                           else {
                             var result = true
-                            var ns = ""
+                            var ns = Team.idNul
                             val p1 = tablePerspective.get.teamId1
                             val p2 = tablePerspective.get.teamId2
                             breakable {
@@ -145,7 +145,7 @@ object ViewScoreboardInternal {
                         val (team, p) = props
                         val md = p.score
                         <.tr(
-                          <.td( Id.teamIdToTeamNumber(team.id) ),
+                          <.td( team.id.toNumber ),
                           <.td( team.player1, <.br(), team.player2),
                           <.td( if (p.useIMP) f"${md.teamImps(team.id)}%.1f" else Utils.toPointsString(md.teamScores(team.id))),
                           md.sortedBoards.map { b =>
@@ -197,9 +197,9 @@ object ViewScoreboardInternal {
       }
       def teamColumn( teams: List[Team] ) = {
         var count = 0
-        for (team <- teams.sortWith((t1,t2)=> Id.idComparer(t1.id, t2.id)<0)) yield {
+        for (team <- teams.sortWith((t1,t2)=> t1.id < t2.id)) yield {
           count += 1
-          <.span( count!=1 ?= <.br(), Id.teamIdToTeamNumber(team.id)+" "+team.player1+" "+team.player2 )
+          <.span( count!=1 ?= <.br(), team.id.toNumber+" "+team.player1+" "+team.player2 )
         }
       }
       val showidbutton = props.page.isInstanceOf[FinishedScoreboardView]
@@ -224,8 +224,8 @@ object ViewScoreboardInternal {
                       case TableRoundScoreboardView( dupid, tableid, roundid ) => (roundid,tableid)
                       case _ => (-1,"")
                     }
-                    val (team1,team2) = if (Id.idComparer(t1,t2)<0) (t1,t2) else (t2,t1)
-                    "Scoreboard from table "+currentTable+" round "+currentRound+" for teams "+Id.teamIdToTeamNumber(team1)+" and "+Id.teamIdToTeamNumber(team2)
+                    val (team1,team2) = if (t1<t2) (t1,t2) else (t2,t1)
+                    "Scoreboard from table "+currentTable+" round "+currentRound+" for teams "+team1.toNumber+" and "+team2.toNumber
                 }
             },
             ", ",
@@ -253,8 +253,8 @@ object ViewScoreboardInternal {
           ),
           Header(props),
           <.tbody(
-            props.score.teams.toList.sortWith( (t1,t2)=>Id.idComparer(t1.id,t2.id)<0).map { team =>
-              TeamRow.withKey( team.id )((team,props))
+            props.score.teams.toList.sortWith( (t1,t2)=>t1.id<t2.id).map { team =>
+              TeamRow.withKey( team.id.id )((team,props))
             }.toTagMod
           )
         ),

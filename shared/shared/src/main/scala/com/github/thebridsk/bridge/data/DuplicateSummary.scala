@@ -15,7 +15,7 @@ import io.swagger.v3.oas.annotations.Hidden
 )
 case class DuplicateSummaryDetails(
     @Schema(description = "The id of the team", required = true)
-    team: Id.Team,
+    team: Team.Id,
     @Schema(
       description = "The number of times the team was declarer",
       required = true,
@@ -91,15 +91,15 @@ case class DuplicateSummaryDetails(
 }
 
 object DuplicateSummaryDetails {
-  def zero(team: Id.Team) = new DuplicateSummaryDetails(team)
-  def passed(team: Id.Team) = new DuplicateSummaryDetails(team, passed = 1)
-  def made(team: Id.Team) =
+  def zero(team: Team.Id) = new DuplicateSummaryDetails(team)
+  def passed(team: Team.Id) = new DuplicateSummaryDetails(team, passed = 1)
+  def made(team: Team.Id) =
     new DuplicateSummaryDetails(team, declarer = 1, made = 1)
-  def down(team: Id.Team) =
+  def down(team: Team.Id) =
     new DuplicateSummaryDetails(team, declarer = 1, down = 1)
-  def allowedMade(team: Id.Team) =
+  def allowedMade(team: Team.Id) =
     new DuplicateSummaryDetails(team, defended = 1, allowedMade = 1)
-  def tookDown(team: Id.Team) =
+  def tookDown(team: Team.Id) =
     new DuplicateSummaryDetails(team, defended = 1, tookDown = 1)
 }
 

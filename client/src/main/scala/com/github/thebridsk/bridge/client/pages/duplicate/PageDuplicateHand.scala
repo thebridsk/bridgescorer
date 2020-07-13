@@ -90,7 +90,7 @@ object PageDuplicateHandInternal {
                   logger.fine("PageDuplicateHand.State.create: "+hand)
                   val (res, newhand) = hand.hand match {
                     case Some(h) => (h,false)
-                    case None => (Hand.create(hand.id,
+                    case None => (Hand.create(hand.id.id,
                                               0,
                                               NoTrump.suit,
                                               NotDoubled.doubled,

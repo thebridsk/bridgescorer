@@ -55,7 +55,7 @@ object PageNamesInternal {
    * will cause State to leak.
    *
    */
-  case class State( teams: Map[Id.Team, Team]=Map(), nameSuggestions: Option[List[String]] = None ) {
+  case class State( teams: Map[Team.Id, Team]=Map(), nameSuggestions: Option[List[String]] = None ) {
     import scala.scalajs.js.JSConverters._
 
     def reset =
@@ -91,15 +91,15 @@ object PageNamesInternal {
                         val names = st.getSuggestions
                         logger.fine( s"""busy=${busy}, names=${names}""")
                         <.tr(
-                          <.td( Id.teamIdToTeamNumber(team.id)),
+                          <.td( team.id.toNumber),
                           <.td(
-                              ComboboxOrInput( p => backend.setPlayer(team.id, 1)(p), noNull(team.player1), names, "startsWith", -1, "I_"+team.id+"_1",
-                                               msgEmptyList="No suggested names", msgEmptyFilter="No names matched", id="I_"+team.id+"_1",
+                              ComboboxOrInput( p => backend.setPlayer(team.id, 1)(p), noNull(team.player1), names, "startsWith", -1, "I_"+team.id.id+"_1",
+                                               msgEmptyList="No suggested names", msgEmptyFilter="No names matched", id="I_"+team.id.id+"_1",
                                                busy=busy )
                           ),
                           <.td(
-                              ComboboxOrInput( p => backend.setPlayer(team.id, 2)(p), noNull(team.player2), names, "startsWith", -1, "I_"+team.id+"_2",
-                                               msgEmptyList="No suggested names", msgEmptyFilter="No names matched", id="I_"+team.id+"_2",
+                              ComboboxOrInput( p => backend.setPlayer(team.id, 2)(p), noNull(team.player2), names, "startsWith", -1, "I_"+team.id.id+"_2",
+                                               msgEmptyList="No suggested names", msgEmptyFilter="No names matched", id="I_"+team.id.id+"_2",
                                                busy=busy )
                           )
                         )
@@ -152,8 +152,8 @@ object PageNamesInternal {
               <.table(
                 Header(props),
                 <.tbody(
-                  state.teams.values.toList.sortWith( (t1,t2)=>Id.idComparer(t1.id,t2.id)<0).map { team =>
-                    TeamRow.withKey( team.id )((team,this,state,props))
+                  state.teams.values.toList.sortWith( (t1,t2)=>t1.id<t2.id).map { team =>
+                    TeamRow.withKey( team.id.id )((team,this,state,props))
                   }.toTagMod
                 )
               ),
@@ -174,7 +174,7 @@ object PageNamesInternal {
     }
 
     import com.github.thebridsk.bridge.clientcommon.react.Utils._
-    def setPlayer(teamid: Id.Team, player: Int)( name: String ) =
+    def setPlayer(teamid: Team.Id, player: Int)( name: String ) =
       scope.modState( ps => {
         ps.teams.get(teamid) match {
           case Some(team) =>

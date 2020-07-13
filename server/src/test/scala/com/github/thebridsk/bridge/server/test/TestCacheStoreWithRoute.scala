@@ -221,7 +221,7 @@ class TestCacheStoreWithRoute extends AnyFlatSpec with ScalatestRouteTest with M
           fail(s"Unexpected error getting next ID: ${error}")
       }
 
-      val nmd = md.updateTeam(Team("T1","Fred","George",0,0))
+      val nmd = md.updateTeam(Team(Team.id(1),"Fred","George",0,0))
       Put(s"/v1/rest/duplicates/${md.id}", nmd) ~> addHeader(remoteAddress) ~>
           Route.seal { myRouteWithLogging } ~>
           check {
@@ -309,7 +309,7 @@ class TestCacheStoreWithRoute extends AnyFlatSpec with ScalatestRouteTest with M
               val boardid = board.id
               val handid = hand.id
 
-              val nhand = hand.updateHand(Hand(handid,3,"S","N","N",board.nsVul,board.ewVul,true,3,0,0))
+              val nhand = hand.updateHand(Hand(handid.id,3,"S","N","N",board.nsVul,board.ewVul,true,3,0,0))
 
               restService.persistent.failWrite = true
 

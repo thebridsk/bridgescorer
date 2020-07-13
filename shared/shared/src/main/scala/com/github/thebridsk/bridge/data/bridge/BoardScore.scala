@@ -5,6 +5,7 @@ import com.github.thebridsk.bridge.data.Id
 import com.github.thebridsk.bridge.data.bridge.DuplicateBridge.ScoreHand
 import com.github.thebridsk.utilities.logging.Logger
 import java.io.StringWriter
+import com.github.thebridsk.bridge.data.Team
 
 case class ContractForScore(
     contract: String,
@@ -23,14 +24,14 @@ case class ContractForScore(
   * @param points the duplicate points scored
   */
 case class TeamBoardScore(
-    teamId: Id.Team,
+    teamId: Team.Id,
     isNS: Boolean,
     played: Boolean,
     hidden: Boolean,
     score: Int,
     points: Double,
     contract: Option[ContractForScore],
-    opponent: Option[Id.Team],
+    opponent: Option[Team.Id],
     imps: Double
 ) {
   def showScore =
@@ -121,7 +122,7 @@ case class TeamBoardScore(
 
 object TeamBoardScore {
   def apply(
-      teamId: Id.Team,
+      teamId: Team.Id,
       played: Boolean,
       hidden: Boolean,
       score: Int,
@@ -139,12 +140,12 @@ object TeamBoardScore {
       0
     )
   def apply(
-      teamId: Id.Team,
+      teamId: Team.Id,
       played: Boolean,
       hidden: Boolean,
       score: Int,
       points: Double,
-      opponent: Id.Team
+      opponent: Team.Id
   ) =
     new TeamBoardScore(
       teamId,
@@ -158,12 +159,12 @@ object TeamBoardScore {
       0
     )
   def apply(
-      teamId: Id.Team,
+      teamId: Team.Id,
       played: Boolean,
       hidden: Boolean,
       score: Int,
       points: Double,
-      opponent: Id.Team,
+      opponent: Team.Id,
       contract: ContractForScore
   ) =
     new TeamBoardScore(
@@ -237,7 +238,7 @@ class BoardScore(val board: Board, perspective: DuplicateViewPerspective) {
   private def internalScores =
     (nsScores ::: ewScores).map(s => (s.teamId -> s)).toMap
 
-  def findOpponent(teamid: Id.Team): Option[Id.Team] = {
+  def findOpponent(teamid: Team.Id): Option[Team.Id] = {
     board.hands.find { hand =>
       hand.nsTeam == teamid || hand.ewTeam == teamid
     } match {
@@ -248,13 +249,13 @@ class BoardScore(val board: Board, perspective: DuplicateViewPerspective) {
     }
   }
 
-  def hasTeamPlayed(teamid: Id.Team): Boolean =
+  def hasTeamPlayed(teamid: Team.Id): Boolean =
     internalScores.get(teamid) match {
       case Some(score) => score.played
       case _           => false
     }
 
-  def hasTeamPlayed(teamid: Option[Id.Team]): Boolean = teamid match {
+  def hasTeamPlayed(teamid: Option[Team.Id]): Boolean = teamid match {
     case Some(tid) => hasTeamPlayed(tid)
     case None      => false
   }
@@ -271,7 +272,7 @@ class BoardScore(val board: Board, perspective: DuplicateViewPerspective) {
         rc
     })
 
-  def scores(ignoreTableSize: Boolean = true): Map[Id.Team, TeamBoardScore] =
+  def scores(ignoreTableSize: Boolean = true): Map[Team.Id, TeamBoardScore] =
     if (!isHidden(ignoreTableSize)) {
       internalScores
     } else {

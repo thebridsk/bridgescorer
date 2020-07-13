@@ -132,7 +132,7 @@ object PageDuplicateResultEditInternal {
       original.get.copy( results=t, boardresults=boardresults, comment=c, notfinished=nf, played=played, updated=time, scoringmethod=sm ).fixup
     }
 
-    def setPlayer( iwinnerset: Int, teamid: Id.Team, iplayer: Int )( name: String ) = {
+    def setPlayer( iwinnerset: Int, teamid: Team.Id, iplayer: Int )( name: String ) = {
       copy( teams=
         teams.zipWithIndex.map { e =>
           val (ws,i) = e
@@ -157,7 +157,7 @@ object PageDuplicateResultEditInternal {
       )
     }
 
-    def setPoints( iwinnerset: Int, teamid: Id.Team )( points: String ) = {
+    def setPoints( iwinnerset: Int, teamid: Team.Id )( points: String ) = {
       copy( teams=
         teams.zipWithIndex.map { e =>
           val (ws,i) = e
@@ -227,11 +227,11 @@ object PageDuplicateResultEditInternal {
 
     }}
 
-    def setPlayer( iwinnerset: Int, teamid: Id.Team, iplayer: Int )( name: String ) = scope.modState( s =>
+    def setPlayer( iwinnerset: Int, teamid: Team.Id, iplayer: Int )( name: String ) = scope.modState( s =>
       s.setPlayer(iwinnerset, teamid, iplayer)(name.trim())
     )
 
-    def setPoints( iwinnerset: Int, teamid: Id.Team )( e: ReactEventFromInput ) = e.inputText( points =>
+    def setPoints( iwinnerset: Int, teamid: Team.Id )( e: ReactEventFromInput ) = e.inputText( points =>
       scope.modState( s =>
         s.setPoints(iwinnerset, teamid)(points)
       )
@@ -264,7 +264,7 @@ object PageDuplicateResultEditInternal {
             ws.zipWithIndex.map{ entry =>
               val (dse,i) = entry
               val t = tabstart + i*3
-              TeamRow.withKey(dse.team.id)((iws,dse.team.id, dse.team.player1, dse.team.player2, dse.result, dse.isValid, this, props, state,t))
+              TeamRow.withKey(dse.team.id.id)((iws,dse.team.id, dse.team.player1, dse.team.player2, dse.result, dse.isValid, this, props, state,t))
             }.toTagMod,
             TotalRow((ws,this,props,state))
           )
@@ -399,28 +399,28 @@ object PageDuplicateResultEditInternal {
 
   private def noNull( s: String ) = Option(s).getOrElse("")
 
-  val TeamRow = ScalaComponent.builder[(Int,Id.Team,String,String,String,Boolean,Backend,Props,State,Int)]("PageDuplicateResultEdit.TeamRow")
+  val TeamRow = ScalaComponent.builder[(Int,Team.Id,String,String,String,Boolean,Backend,Props,State,Int)]("PageDuplicateResultEdit.TeamRow")
                       .render_P( args => {
                         val (iws,id,player1, player2, points, valid, backend, props, state, tabstart) = args
                         val busy = state.gettingNames
                         val names = state.getSuggestions
                         <.tr(
-                          <.td( Id.teamIdToTeamNumber(id) ),
+                          <.td( id.toNumber ),
                           <.td(
                             <.div(
-                              ComboboxOrInput( backend.setPlayer(iws, id, 1), noNull(player1), names, "startsWith", -1, s"P${iws}T${id}P1",
-                                               msgEmptyList="No suggested names", msgEmptyFilter="No names matched", id=s"P${iws}T${id}P1")
+                              ComboboxOrInput( backend.setPlayer(iws, id, 1), noNull(player1), names, "startsWith", -1, s"P${iws}T${id.id}P1",
+                                               msgEmptyList="No suggested names", msgEmptyFilter="No names matched", id=s"P${iws}T${id.id}P1")
                             )
                           ),
                           <.td(
                             <.div(
-                              ComboboxOrInput( backend.setPlayer(iws, id, 2), noNull(player2), names, "startsWith", -1, s"P${iws}T${id}P2",
-                                               msgEmptyList="No suggested names", msgEmptyFilter="No names matched", id=s"P${iws}T${id}P2")
+                              ComboboxOrInput( backend.setPlayer(iws, id, 2), noNull(player2), names, "startsWith", -1, s"P${iws}T${id.id}P2",
+                                               msgEmptyList="No suggested names", msgEmptyFilter="No names matched", id=s"P${iws}T${id.id}P2")
                             )
                           ),
                           <.td(
                             <.input( ^.`type`:="number",
-                                     ^.name:=s"P${iws}T${id}PP",
+                                     ^.name:=s"P${iws}T${id.id}PP",
                                      ^.onChange ==> backend.setPoints(iws,id),
                                      ^.value := points.toString()
                             )

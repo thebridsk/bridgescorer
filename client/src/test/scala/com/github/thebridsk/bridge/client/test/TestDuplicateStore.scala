@@ -18,6 +18,7 @@ import com.github.thebridsk.bridge.client.bridge.action.ActionUpdateDuplicateMat
 import japgolly.scalajs.react.Callback
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.must.Matchers
+import com.github.thebridsk.bridge.data.Team
 
 class TestDuplicateStore extends AnyFlatSpec with Matchers {
 
@@ -84,7 +85,7 @@ class TestDuplicateStore extends AnyFlatSpec with Matchers {
     }.run()
   }
 
-  def getHand( boardid: Id.DuplicateBoard, handid: Id.DuplicateHand,
+  def getHand( boardid: Id.DuplicateBoard, handid: Team.Id,
                contractTricks: Int,
                contractSuit: String,
                contractDoubled: String,
@@ -93,8 +94,8 @@ class TestDuplicateStore extends AnyFlatSpec with Matchers {
                tricks: Int
              ) = {
     val b = DuplicateStore.getMatch().get.getBoard("B1").get
-    val dh = b.getHand("T1").get
-    dh.updateHand(Hand.create(dh.id, contractTricks, contractSuit,contractDoubled, declarer, b.nsVul, b.ewVul, madeContract, tricks ))
+    val dh = b.getHand( Team.id(1)).get
+    dh.updateHand(Hand.create(dh.id.id, contractTricks, contractSuit,contractDoubled, declarer, b.nsVul, b.ewVul, madeContract, tricks ))
   }
 
   it should "PlayHands" in {
@@ -115,7 +116,7 @@ class TestDuplicateStore extends AnyFlatSpec with Matchers {
   }
 
   it should "Score" in {
-    val score = MatchDuplicateScore( DuplicateStore.getMatch().get, PerspectiveTable( "T1", "T2" ))
+    val score = MatchDuplicateScore( DuplicateStore.getMatch().get, PerspectiveTable( Team.id(1), Team.id(2) ))
     score.teamScores mustBe TestMatchDuplicate.getTeamScore()
   }
 }

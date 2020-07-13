@@ -103,6 +103,11 @@ class TestDuplicateWebsocket extends AnyFlatSpec with ScalatestRouteTest with Ma
   var client2: WebsocketClient = null
   var client3: WebsocketClient = null
 
+  val team1 = Team.id(1)
+  val team2 = Team.id(2)
+  val team3 = Team.id(3)
+  val team4 = Team.id(4)
+
   override
   def beforeAll() = {
     client1 = new WebsocketClient
@@ -208,7 +213,7 @@ class TestDuplicateWebsocket extends AnyFlatSpec with ScalatestRouteTest with Ma
       val md = responseAs[MatchDuplicate]
       createdM1 = Some(md)
       for( id <- 1 to 4){
-        val tid = "T"+id
+        val tid = Team.id(id)
         assert( md.getTeam(tid).get.equalsIgnoreModifyTime( Team.create(tid,"","")) )
       }
       for( id <- 1 to 18){
@@ -422,7 +427,7 @@ class TestDuplicateWebsocket extends AnyFlatSpec with ScalatestRouteTest with Ma
       status mustBe OK
       mediaType mustBe MediaTypes.`application/json`
       t = responseAs[Team]
-      assert(t.equalsIgnoreModifyTime(BridgeServiceTesting.testingMatch.getTeam("T1").get))
+      assert(t.equalsIgnoreModifyTime(BridgeServiceTesting.testingMatch.getTeam(team1).get))
     }
     WebsocketClient.ensureNoMessage(true,client1,client2,client3)
   }
@@ -477,7 +482,7 @@ class TestDuplicateWebsocket extends AnyFlatSpec with ScalatestRouteTest with Ma
       handled mustBe true
       status mustBe OK
       mediaType mustBe MediaTypes.`application/json`
-      assert(responseAs[Team].equalsIgnoreModifyTime(BridgeServiceTesting.testingMatch.getTeam("T2").get))
+      assert(responseAs[Team].equalsIgnoreModifyTime(BridgeServiceTesting.testingMatch.getTeam(team2).get))
     }
     WebsocketClient.ensureNoMessage(true,client1,client2,client3)
   }
@@ -511,7 +516,7 @@ class TestDuplicateWebsocket extends AnyFlatSpec with ScalatestRouteTest with Ma
       mediaType mustBe MediaTypes.`application/json`
       assert(responseAs[DuplicateHand].equalsIgnoreModifyTime(DuplicateHand.create( Hand.create("H1",7,Spades.suit, Doubled.doubled, North.pos,
                                                              false,false,true,7),
-                                                        "1", 1, "B1", "T1", "T2")))
+                                                        Table.id(1), 1, "B1", team1, team2)))
     }
     WebsocketClient.ensureNoMessage(true,client1,client2,client3)
   }
@@ -547,9 +552,9 @@ class TestDuplicateWebsocket extends AnyFlatSpec with ScalatestRouteTest with Ma
   }
 
   it should "return a hand json object for POST requests to /v1/rest/duplicates/M1/boards/B2/hands" in withListener( listenerstatus=> {
-    val hand = DuplicateHand.create( Hand.create("T3",7,Spades.suit, Doubled.doubled, North.pos,
+    val hand = DuplicateHand.create( Hand.create(team3.id,7,Spades.suit, Doubled.doubled, North.pos,
                                                              false,false,false,1),
-                                                        "2", 2, "B2", "T3", "T4")
+                                                        Table.id(2), 2, "B2", team3, team4)
     Post("/v1/rest/duplicates/M1/boards/B2/hands", hand) ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
       handled mustBe true
       status mustBe Created
@@ -601,7 +606,7 @@ class TestDuplicateWebsocket extends AnyFlatSpec with ScalatestRouteTest with Ma
       assert( !listenerstatus.lastDelete.isEmpty )
       listenerstatus.lastDelete.get.id mustBe BridgeServiceTesting.testingMatch.id
 
-      val m1withhanddeleted = m1.get.updateBoard(m1.get.getBoard("B2").get.deleteHand("T3"))
+      val m1withhanddeleted = m1.get.updateBoard(m1.get.getBoard("B2").get.deleteHand(team3))
       assert( listenerstatus.lastDelete.get.equalsIgnoreModifyTime( m1withhanddeleted ))
     }
     WebsocketClient.ensureNoMessage(true,client1,client2,client3)
@@ -655,7 +660,7 @@ class TestDuplicateWebsocket extends AnyFlatSpec with ScalatestRouteTest with Ma
       mediaType mustBe MediaTypes.`application/json`
       val md = responseAs[MatchDuplicate]
       for( id <- 1 to 4){
-        val tid = "T"+id
+        val tid = Team.id(id)
         assert( md.getTeam(tid).get.equalsIgnoreModifyTime( Team.create(tid,"","")) )
       }
       for( id <- 1 to 18){
@@ -678,7 +683,7 @@ class TestDuplicateWebsocket extends AnyFlatSpec with ScalatestRouteTest with Ma
       mediaType mustBe MediaTypes.`application/json`
       val md = responseAs[MatchDuplicate]
       for( id <- 1 to 6){
-        val tid = "T"+id
+        val tid = Team.id(id)
         assert( md.getTeam(tid).get.equalsIgnoreModifyTime( Team.create(tid,"","")) )
       }
       for( id <- 1 to 18){
@@ -701,7 +706,7 @@ class TestDuplicateWebsocket extends AnyFlatSpec with ScalatestRouteTest with Ma
       mediaType mustBe MediaTypes.`application/json`
       val md = responseAs[MatchDuplicate]
       for( id <- 1 to 6){
-        val tid = "T"+id
+        val tid = Team.id(id)
         assert( md.getTeam(tid).get.equalsIgnoreModifyTime( Team.create(tid,"","")) )
       }
       for( id <- 1 to 20){

@@ -8,6 +8,7 @@ import com.github.thebridsk.bridge.data.bridge._
 import com.github.thebridsk.bridge.data.Id
 import com.github.thebridsk.bridge.client.pages.hand.PageHandInternal.PageHandNextInput
 import com.github.thebridsk.bridge.client.pages.hand.ComponentInputStyleButton.InputMethod
+import com.github.thebridsk.bridge.data.Team
 
 /**
  * A skeleton component.
@@ -36,8 +37,8 @@ object SectionHeader {
                     callbackDeclarer: ViewDeclarer.CallbackPlayer,
                     callbackNSVul: Option[ViewVulnerability.CallbackVul],
                     callbackEWVul: Option[ViewVulnerability.CallbackVul],
-                    teamNS: Option[Id.Team],
-                    teamEW: Option[Id.Team],
+                    teamNS: Option[Team.Id],
+                    teamEW: Option[Team.Id],
                     currentContractTricks: Option[ContractTricks],
                     currentSuit: Option[ContractSuit],
                     nextInput: PageHandNextInput.Value,
@@ -60,8 +61,8 @@ object SectionHeader {
              dealer: PlayerPosition,
              table: Int = 0,
              board: Int = 0,
-             teamNS: Option[Id.Team] = None,
-             teamEW: Option[Id.Team] = None,
+             teamNS: Option[Team.Id] = None,
+             teamEW: Option[Team.Id] = None,
              currentContractTricks: Option[ContractTricks] = None,
              currentSuit: Option[ContractSuit] = None,
              nextInput: PageHandNextInput.Value,

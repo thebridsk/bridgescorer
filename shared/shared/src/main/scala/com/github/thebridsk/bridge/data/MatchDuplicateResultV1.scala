@@ -14,7 +14,7 @@ import io.swagger.v3.oas.annotations.media.ArraySchema
 )
 case class BoardTeamResults(
     @Schema(description = "The id of the team", required = true)
-    team: Id.Team,
+    team: Team.Id,
     @Schema(
       description = "The number of points the team got playing the board",
       required = true
@@ -206,13 +206,13 @@ case class MatchDuplicateResultV1 private (
   }
 
   @Schema(hidden = true)
-  def getWinnerSets: List[List[Id.Team]] = {
+  def getWinnerSets: List[List[Team.Id]] = {
     results.map(l => l.map(e => e.team.id))
   }
 
   @Schema(hidden = true)
   def placeByWinnerSet(
-      winnerset: List[Id.Team]
+      winnerset: List[Team.Id]
   ): List[MatchDuplicateScore.Place] = {
     results.find(ws => ws.find(e => !winnerset.contains(e.team.id)).isEmpty) match {
       case Some(rws) =>

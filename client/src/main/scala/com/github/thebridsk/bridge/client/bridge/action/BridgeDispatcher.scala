@@ -50,7 +50,7 @@ object BridgeDispatcher extends Dispatcher {
   def updateDuplicateHand( dupid: Id.MatchDuplicate, hand: DuplicateHand ) = dispatcher.dispatch( ActionUpdateDuplicateHand( dupid, hand ))
 
   def updateTeam( dupid: Id.MatchDuplicate, team: Team ) = dispatcher.dispatch( ActionUpdateTeam( dupid, team ))
-  def updatePicture( dupid: Id.MatchDuplicate, boardid: Id.DuplicateBoard, handid: Id.DuplicateHand, picture: Option[DuplicatePicture] ) = dispatcher.dispatch( ActionUpdatePicture( dupid, boardid, handid, picture ))
+  def updatePicture( dupid: Id.MatchDuplicate, boardid: Id.DuplicateBoard, handid: Team.Id, picture: Option[DuplicatePicture] ) = dispatcher.dispatch( ActionUpdatePicture( dupid, boardid, handid, picture ))
   def updatePictures( dupid: Id.MatchDuplicate, pictures: List[DuplicatePicture] ) = dispatcher.dispatch( ActionUpdatePictures( dupid, pictures ))
 
   def createBoardSet( boardSet: BoardSet ) = dispatcher.dispatch( ActionCreateBoardSet(boardSet))

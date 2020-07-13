@@ -215,13 +215,13 @@ case class MatchDuplicateResultV2 private (
   }
 
   @Schema(hidden = true)
-  def getWinnerSets: List[List[Id.Team]] = {
+  def getWinnerSets: List[List[Team.Id]] = {
     results.map(l => l.map(e => e.team.id))
   }
 
   @Schema(hidden = true)
   def placeByWinnerSet(
-      winnerset: List[Id.Team]
+      winnerset: List[Team.Id]
   ): List[MatchDuplicateScore.Place] = {
     results.find(ws => ws.find(e => !winnerset.contains(e.team.id)).isEmpty) match {
       case Some(rws) =>
@@ -243,7 +243,7 @@ case class MatchDuplicateResultV2 private (
 
   @Schema(hidden = true)
   def placeByWinnerSetIMP(
-      winnerset: List[Id.Team]
+      winnerset: List[Team.Id]
   ): List[MatchDuplicateScore.Place] = {
     results.find(ws => ws.find(e => !winnerset.contains(e.team.id)).isEmpty) match {
       case Some(rws) =>
@@ -303,7 +303,9 @@ case class MatchDuplicateResultV2 private (
 
 }
 
-object MatchDuplicateResultV2 {
+trait IdMatchDuplicateResult
+
+object MatchDuplicateResultV2 extends HasId[IdMatchDuplicateResult]("E") {
 
   def apply(
       id: Id.MatchDuplicateResult,
@@ -424,4 +426,5 @@ object MatchDuplicateResultV2 {
       .fixup
 
   }
+
 }

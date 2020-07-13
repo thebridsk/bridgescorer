@@ -8,6 +8,7 @@ import org.openqa.selenium._
 import org.scalatest.concurrent.Eventually
 import java.util.concurrent.TimeUnit
 import com.github.thebridsk.bridge.server.Server
+import com.github.thebridsk.bridge.data
 import com.github.thebridsk.bridge.data.bridge._
 import com.github.thebridsk.bridge.server.backend.BridgeServiceInMemory
 import com.github.thebridsk.bridge.server.backend.BridgeService
@@ -480,8 +481,8 @@ class DuplicateTestPages extends AnyFlatSpec
               hit.ns
             }.getOrElse( fail(s"Did not find table 1 round 1"))
           }.getOrElse( fail(s"Unable to determine NS for table 1 round 1"))
-          val teamId = Id.teamNumberToTeamId(nsRound1)
-          nsForTable1Round1 = Some(teamId)
+          val teamId = data.Team.id(nsRound1)
+          nsForTable1Round1 = Some(teamId.id)
           val hand1 = board1.clickHand(nsRound1).validate
           val hand1a = hand1.validatePicture()
           hand1a.checkShowDisplayed(false)
@@ -492,7 +493,7 @@ class DuplicateTestPages extends AnyFlatSpec
           val hand1c = hand1b.clickShowPicture.validatePicture(true)
           val hand1d = hand1c.clickOkPicture.validatePicture(false)
           val board1a = hand1d.clickOk
-          board1a.validatePictures(false,List(Id.teamNumberToTeamId(nsRound1)))
+          board1a.validatePictures(false,List(data.Team.id(nsRound1).id))
           val hand2 = board1a.clickUnplayedBoard(2).validate
           val board2 = hand2.enterHand( 1, 1, 2, allHands, team1original, team2)
           board2.checkBoardButtons(2, true,1,2).checkBoardButtons(2, false, 3).checkBoardButtonSelected(2)
@@ -508,7 +509,7 @@ class DuplicateTestPages extends AnyFlatSpec
         import SessionTable2._
         PageBrowser.withClueAndScreenShot(screenshotDir, "Round1Table2EnterHand", "Entering hands R1T2") {
           val hand = HandPage.current
-          hand.getScore mustBe ( "Missing required information", "", "Enter contract tricks" )
+          hand.getScore mustBe Tuple3( "Missing required information", "", "Enter contract tricks" )
           hand.isOkEnabled mustBe false
           hand.getInputStyle mustBe Some("Guide")
           val board = hand.enterHand( 2, 1, 4, allHands, team3, team4)
@@ -1240,7 +1241,7 @@ class DuplicateTestPages extends AnyFlatSpec
             pl match {
               case Some(played) =>
                 val j = new MatchDuplicateCacheStoreSupport(false).toJSON(played)
-                FileIO.writeFileSafe("DuplicateTestPages.QueryML.json", j)
+                FileIO.writeFileSafe(s"${screenshotDir}/DuplicateTestPages.QueryML.json", j)
               case None =>
             }
             throw x

@@ -159,7 +159,7 @@ object UtilsPlayJson extends BridgePlayJsonSupport {
         complete((InternalServerError, s"An error occurred: ${ex.getMessage}"))
     }
 
-  def resourceMap[T](f: Future[Result[Map[String, T]]])(
+  def resourceMap[T,I](f: Future[Result[Map[I, T]]])(
       implicit arrayMarshaller: ToResponseMarshaller[Array[T]],
       awriter: Writes[Array[T]],
       twriter: Writes[T],

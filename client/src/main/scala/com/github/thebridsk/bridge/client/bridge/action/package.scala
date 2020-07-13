@@ -48,7 +48,7 @@ import _root_.com.github.thebridsk.bridge.data.DuplicatePicture
   case class ActionUpdateDuplicateMatch( duplicate: MatchDuplicate) extends DuplicateBridgeAction
   case class ActionUpdateDuplicateHand( dupid: String, hand: DuplicateHand) extends DuplicateBridgeAction
   case class ActionUpdateTeam( dupid: String, team: Team) extends DuplicateBridgeAction
-  case class ActionUpdatePicture( dupid: String, boardid: String, handid: String, picture: Option[DuplicatePicture]) extends DuplicateBridgeAction
+  case class ActionUpdatePicture( dupid: String, boardid: String, handid: Team.Id, picture: Option[DuplicatePicture]) extends DuplicateBridgeAction
   case class ActionUpdatePictures( dupid: String, picture: List[DuplicatePicture]) extends DuplicateBridgeAction
 
   sealed trait BoardSetAction extends BridgeAction

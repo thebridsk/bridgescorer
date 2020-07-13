@@ -53,12 +53,14 @@ import SchemaHand.{log => _, _}
 import com.github.thebridsk.bridge.data.duplicate.stats.PlayerOpponentStat
 import com.github.thebridsk.bridge.data.duplicate.stats.PlayerOpponentsStat
 import com.github.thebridsk.bridge.data.duplicate.stats.PlayersOpponentsStats
+import com.github.thebridsk.bridge.data.Table
 
 object SchemaDuplicate {
 
   val log = Logger(SchemaDuplicate.getClass.getName)
 
-  val TeamIdType = idScalarTypeFromString[Id.Team]("TeamId")
+  val TeamIdType = idScalarType[Team.Type]("TeamId", Team)
+  val TableIdType = idScalarType[Table.Type]("TableId", Table)
   val BoardIdType = idScalarTypeFromString[Id.DuplicateBoard]("BoardId")
   val DuplicateIdType = idScalarTypeFromString[Id.MatchDuplicate]("DuplicateId")
   val DuplicateResultIdType =
@@ -114,7 +116,7 @@ object SchemaDuplicate {
       ),
       Field(
         "table",
-        StringType,
+        TableIdType,
         Some("The table the hand was played on"),
         resolve = _.value.table
       ),

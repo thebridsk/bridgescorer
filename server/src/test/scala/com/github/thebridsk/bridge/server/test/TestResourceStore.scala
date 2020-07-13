@@ -19,6 +19,7 @@ import akka.http.scaladsl.model.StatusCodes
 import com.github.thebridsk.bridge.server.backend.BridgeServiceInMemory
 import com.github.thebridsk.bridge.data.RestMessage
 import com.github.thebridsk.bridge.server.backend.BridgeNestedResources
+import com.github.thebridsk.bridge.data.Team
 
 class TestResourceStore extends AsyncFlatSpec with Matchers {
 
@@ -26,6 +27,11 @@ class TestResourceStore extends AsyncFlatSpec with Matchers {
   val store = bridgeService.duplicates
 
   val matchdup = BridgeServiceTesting.testingMatch
+
+  val team1 = Team.id(1)
+  val team2 = Team.id(2)
+  val team3 = Team.id(3)
+  val team4 = Team.id(4)
 
   behavior of "BridgeServiceAlternate for duplicate"
 
@@ -67,10 +73,10 @@ class TestResourceStore extends AsyncFlatSpec with Matchers {
           assert( l.equalsIgnoreModifyTime( Board.create("B1", false, false, North.pos, List(
                 DuplicateHand.create( Hand.create("H1",7,Spades.suit, Doubled.doubled, North.pos,
                                                   false,false,true,7),
-                                                  "1", 1, "B1", "T1", "T2"),
+                                                  Table.id(1), 1, "B1", team1, team2),
                 DuplicateHand.create( Hand.create("H2",7,Spades.suit, Doubled.doubled, North.pos,
                                                   false,false,false,1),
-                                                  "2", 2, "B1", "T3", "T4")
+                                                  Table.id(2), 2, "B1", team3, team4)
                 )) ))
         case Left(r) => fail("Unable to get Board B1 from store: "+r._2)
       }
@@ -78,13 +84,13 @@ class TestResourceStore extends AsyncFlatSpec with Matchers {
   }
 
   it should "return the hand T1 object when getting hand from board B1 from match M1 from store" in {
-    store.select(matchdup.id).resourceBoards.select("B1").resourceHands.select("T1").read().map { ret =>
+    store.select(matchdup.id).resourceBoards.select("B1").resourceHands.select(team1).read().map { ret =>
       ret match {
         case Right(l) =>
-          assert( l.id == "T1" )
+          assert( l.id == team1 )
           assert( l.equalsIgnoreModifyTime(DuplicateHand.create( Hand.create("H1",7,Spades.suit, Doubled.doubled, North.pos,
                                                                  false,false,true,7),
-                                                            "1", 1, "B1", "T1", "T2")
+                                                            Table.id(1), 1, "B1", team1, team2)
                 ))
         case Left(r) => fail("Unable to get hand T1 from MatchDuplicate,Board "+matchdup.id+",B1 to store: "+r._2)
       }
@@ -92,7 +98,7 @@ class TestResourceStore extends AsyncFlatSpec with Matchers {
   }
 
   it should "return not found when getting hand from board B1 from match M2 from store" in {
-    store.select("M2").resourceBoards.select("B1").resourceHands.select("T1").read().map { ret =>
+    store.select("M2").resourceBoards.select("B1").resourceHands.select(team1).read().map { ret =>
       ret match {
         case Right(l) =>
           fail("Unexpected response to get hand H1 from MatchDuplicate,Board M2,B1 to store: "+l)
@@ -104,7 +110,7 @@ class TestResourceStore extends AsyncFlatSpec with Matchers {
   }
 
   it should "return not found when getting hand from board B4 from match M1 from store" in {
-    store.select(matchdup.id).resourceBoards.select("B4").resourceHands.select("T1").read().map { ret =>
+    store.select(matchdup.id).resourceBoards.select("B4").resourceHands.select(team1).read().map { ret =>
       ret match {
         case Right(l) =>
           fail("Unexpected response to get hand H1 from MatchDuplicate,Board M2,B4 to store: "+l)
@@ -116,7 +122,7 @@ class TestResourceStore extends AsyncFlatSpec with Matchers {
   }
 
   it should "return not found when getting hand from board B3 from match M1 from store" in {
-    store.select(matchdup.id).resourceBoards.select("B3").resourceHands.select("T1").read().map { ret =>
+    store.select(matchdup.id).resourceBoards.select("B3").resourceHands.select(team1).read().map { ret =>
       ret match {
         case Right(l) =>
           fail("Unexpected response to get hand H1 from MatchDuplicate,Board M2,B3 to store: "+l)

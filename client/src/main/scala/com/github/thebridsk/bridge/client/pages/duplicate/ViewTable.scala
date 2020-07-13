@@ -21,6 +21,7 @@ import com.github.thebridsk.bridge.client.pages.duplicate.DuplicateRouter.TableV
 import com.github.thebridsk.bridge.clientcommon.react.AppButton
 import com.github.thebridsk.bridge.clientcommon.react.Utils._
 import com.github.thebridsk.bridge.client.routes.BridgeRouter
+import com.github.thebridsk.bridge.data.Team
 
 /**
  * Shows the team x board table and has a totals column that shows the number of points the team has.
@@ -79,14 +80,14 @@ object ViewTableInternal {
                         val (round,score,props,currentRound,relay) = cprops
                         val allUnplayed = round.allUnplayedOnTable
 
-                        def showTeamOld( teamId: String, p1: String, p2: String ) = {
-                          <.span( Id.teamIdToTeamNumber(teamId), <.br, p1, " ", p2 )
+                        def showTeamOld( teamId: Team.Id, p1: String, p2: String ) = {
+                          <.span( teamId.toNumber, <.br, p1, " ", p2 )
                         }
-                        def showTeam( teamId: String, p1: String, p2: String ) = {
+                        def showTeam( teamId: Team.Id, p1: String, p2: String ) = {
                           <.table(
                             <.tbody(
                               <.tr(
-                                <.td( Id.teamIdToTeamNumber(teamId) ),
+                                <.td( teamId.toNumber ),
                                 (p1.length>0 || p2.length>0) ?= <.td( p1, <.br, p2 )
                               )
                             )
@@ -139,7 +140,7 @@ object ViewTableInternal {
                           if (relay) {
                             val rrelay = score.tableRoundRelay(round.table, round.round)
                             <.td(
-                              rrelay.map( id => Id.tableIdToTableNumber(id)).mkString(", ")
+                              rrelay.map( id => id.toNumber).mkString(", ")
                             )
                           } else {
                             TagMod()
@@ -167,10 +168,10 @@ object ViewTableInternal {
                 <.table(
                   <.caption(
                     if (props.showTableButton) {
-                      val table = Id.tableIdToTableNumber(props.page.tableid)
+                      val table = props.page.tableid.toNumber
                       AppButton( "Table_"+table, "Table "+table, props.routerCtl.setOnClick(props.page) )
                     } else {
-                      "Table "+Id.tableIdToTableNumber(props.page.tableid)
+                      "Table "+props.page.tableid.toNumber
                     }
                   ),
                   Header((props,relay)),
@@ -186,7 +187,7 @@ object ViewTableInternal {
                 )
               )
             case None =>
-              <.div( dupStyles.divTableView, <.p("Table "+Id.tableIdToTableNumber(props.page.tableid)+" not found") )
+              <.div( dupStyles.divTableView, <.p("Table "+props.page.tableid.toNumber+" not found") )
           }
         case None =>
           <.div( dupStyles.divTableView, <.p("Waiting to load information") )

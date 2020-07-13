@@ -36,6 +36,7 @@ import com.github.thebridsk.bridge.data.DuplicateHandV2
 import com.github.thebridsk.bridge.data.Hand
 import com.github.thebridsk.bridge.data.duplicate.stats.PlayerComparisonStats
 import com.github.thebridsk.bridge.data.duplicate.stats.PlayerComparisonStat
+import com.github.thebridsk.bridge.data.Table
 
 object TestPlayerComparisonStats {
 
@@ -48,15 +49,20 @@ object TestPlayerComparisonStats {
 class TestPlayerComparisonStats extends AnyFlatSpec with ScalatestRouteTest with Matchers {
   import TestPlayerComparisonStats._
 
+  val team1 = Team.id(1)
+  val team2 = Team.id(2)
+  val team3 = Team.id(3)
+  val team4 = Team.id(4)
+
   behavior of "the player comparison stats test"
 
   val defaultMD = MatchDuplicate(
                     id = "M1",
                     teams = List(
-                           Team.create("T1", "Alice", "Alan"),
-                           Team.create("T2", "Betty", "Bob"),
-                           Team.create("T3", "Cathy", "Carl"),
-                           Team.create("T4", "Diana", "Dave")
+                           Team.create(team1, "Alice", "Alan"),
+                           Team.create(team2, "Betty", "Bob"),
+                           Team.create(team3, "Cathy", "Carl"),
+                           Team.create(team4, "Diana", "Dave")
                         ),
                     boards = List(
                                BoardV2(
@@ -67,7 +73,7 @@ class TestPlayerComparisonStats extends AnyFlatSpec with ScalatestRouteTest with
                                   hands = List(
                                         DuplicateHandV2.create(
                                              hand = Hand.create(
-                                                            id = "T1",
+                                                            id = team1.id,
                                                             contractTricks = 3,
                                                             contractSuit = "S",
                                                             contractDoubled = "N",
@@ -77,15 +83,15 @@ class TestPlayerComparisonStats extends AnyFlatSpec with ScalatestRouteTest with
                                                             madeContract = true,
                                                             tricks = 4
                                                      ),
-                                             table = "1",
+                                             table = Table.id(1),
                                              round = 1,
                                              board = "B1",
-                                             nsTeam = "T1",
-                                             ewTeam = "T2"
+                                             nsTeam = team1,
+                                             ewTeam = team2
                                         ),
                                         DuplicateHandV2.create(
                                              hand = Hand.create(
-                                                            id = "T3",
+                                                            id = team3.id,
                                                             contractTricks = 4,
                                                             contractSuit = "S",
                                                             contractDoubled = "N",
@@ -95,11 +101,11 @@ class TestPlayerComparisonStats extends AnyFlatSpec with ScalatestRouteTest with
                                                             madeContract = true,
                                                             tricks = 4
                                                      ),
-                                             table = "2",
+                                             table = Table.id(2),
                                              round = 2,
                                              board = "B1",
-                                             nsTeam = "T3",
-                                             ewTeam = "T4"
+                                             nsTeam = team3,
+                                             ewTeam = team4
                                         )
                                       ),
                                   created = 0,

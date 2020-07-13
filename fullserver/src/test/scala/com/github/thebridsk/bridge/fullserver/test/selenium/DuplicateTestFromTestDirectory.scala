@@ -413,8 +413,8 @@ class DuplicateTestFromTestDirectory extends AnyFlatSpec with Matchers with Befo
             val board = boardSet.get.boards.find( b => b.id == bid).get
             val nsvul = board.nsVul
             val ewvul = board.ewVul
-            val nsteam = Id.teamIdToTeamNumber(hand.nsTeam)
-            val ewteam = Id.teamIdToTeamNumber(hand.ewTeam)
+            val nsteam = hand.nsTeam.toNumber
+            val ewteam = hand.ewTeam.toNumber
 
             val hp = page.clickBoardButton(board.id).validate
 

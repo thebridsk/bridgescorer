@@ -185,7 +185,7 @@ object PlayersOpponentsStats {
 
   def getBothStat(
       totalMatchPoints: Int,
-      teamscores: Map[Id.Team, TeamBoardScore],
+      teamscores: Map[Team.Id, TeamBoardScore],
       team1: Team,
       team2: Team
   ) = {
@@ -199,7 +199,7 @@ object PlayersOpponentsStats {
 
   def getStat(
       totalMatchPoints: Int,
-      teamscores: Map[Id.Team, TeamBoardScore],
+      teamscores: Map[Team.Id, TeamBoardScore],
       team1: Team,
       team2: Team
   ) = {
@@ -239,7 +239,7 @@ object PlayersOpponentsStats {
   }
 
   def getBothTeamStat(
-      teamscores: Map[Id.Team, Double],
+      teamscores: Map[Team.Id, Double],
       team1: Team,
       team2: Team
   ) = {
@@ -251,7 +251,7 @@ object PlayersOpponentsStats {
   }
 
   def getTeamStat(
-      teamscores: Map[Id.Team, Double],
+      teamscores: Map[Team.Id, Double],
       team1: Team,
       team2: Team
   ) = {

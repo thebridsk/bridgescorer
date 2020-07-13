@@ -179,7 +179,7 @@ Options:""")
     log.info( s"  Taking ${toString(sug)} calcTime ${calcTime} nanos" )
     val teams = sug.players.zipWithIndex.map { e =>
       val (p,i) = e
-      DuplicateSummaryEntry( Team(s"T${i+1}",p.player1,p.player2,0,0), Some(9.0), Some(1))
+      DuplicateSummaryEntry( Team( Team.id(i+1),p.player1,p.player2,0,0), Some(9.0), Some(1))
     }
 
     (DuplicateSummary(s"M${im}",true,teams,18,2,true,im,im),calcTime)

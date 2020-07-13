@@ -71,13 +71,13 @@ class TestWinnerSets extends AnyFlatSpec with Matchers {
     hand.copy( nsTeam=hand.ewTeam, ewTeam=hand.nsTeam)
   }
 
-  def swapNSEWInBoardOnTable( board: Board, round: Int, table: Id.Table ): Board = {
+  def swapNSEWInBoardOnTable( board: Board, round: Int, table: Table.Id ): Board = {
 //    println( s"swapping NS and EW in board ${board}")
     val nhs = board.hands.map( h => if (h.table==table && h.round==round) swapNSEWInHand(h) else h)
     board.copy(hands=nhs)
   }
 
-  def swapNSEWInHandsInRoundOnTable( dup: MatchDuplicate, round: Int, table: Id.Table ): MatchDuplicate = {
+  def swapNSEWInHandsInRoundOnTable( dup: MatchDuplicate, round: Int, table: Table.Id ): MatchDuplicate = {
 //    println( s"swapping NS and EW in MatchDuplicate ${dup}")
     val nbs = dup.boards.map( b => swapNSEWInBoardOnTable(b, round, table))
     dup.copy(boards=nbs)
@@ -85,7 +85,7 @@ class TestWinnerSets extends AnyFlatSpec with Matchers {
 
   it should "have one winner set in Mitchell3Table with NS swapped with EW in one round on one table" in {
     val dup = getDup("Mitchell3Table")
-    val ndup = swapNSEWInHandsInRoundOnTable(dup, 1, "1")
+    val ndup = swapNSEWInHandsInRoundOnTable(dup, 1, Table.id(1))
 
     withClue( "dup and ndup must be different" ) {
       dup.equalsIgnoreModifyTime(ndup) mustBe false

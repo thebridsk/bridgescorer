@@ -63,6 +63,7 @@ import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.PageWithBoard
 import com.github.thebridsk.browserpages.Session
 import org.scalatest.CancelAfterFailure
 import com.github.thebridsk.bridge.server.test.util.TestServer
+import com.github.thebridsk.bridge.data.Table
 
 /**
  * Test playing duplicate matches.  The duplicates matches to play are in the testdata directory.
@@ -93,7 +94,7 @@ class DuplicateTestFromTestDirectory2 extends AnyFlatSpec
 
   val sessionDirector = new DirectorSession()
   val sessionComplete = new CompleteSession()
-  val globalSessionTables = scala.collection.mutable.Map[Id.Table,TableSession]()
+  val globalSessionTables = scala.collection.mutable.Map[Table.Id,TableSession]()
 
   def getAllGames() = TestData.getAllGames()
 
@@ -140,8 +141,8 @@ class DuplicateTestFromTestDirectory2 extends AnyFlatSpec
     tcpSleep(15)
   }
 
-  import org.scalatest.prop.TableDrivenPropertyChecks._
-  val templates = Table( "MatchDuplicate", getAllGames(): _* )
+  import org.scalatest.prop.TableDrivenPropertyChecks
+  val templates = TableDrivenPropertyChecks.Table( "MatchDuplicate", getAllGames(): _* )
 
 //  it should "play a complete match" in {
 //    forAll(templates) { md =>
@@ -152,7 +153,7 @@ class DuplicateTestFromTestDirectory2 extends AnyFlatSpec
 //    }
 //  }
 
-  forAll(templates) { md =>
+  TableDrivenPropertyChecks.forAll(templates) { md =>
     it should s"play a complete match for ${md.id}" in {
       firstScorekeeper = firstScorekeeper.nextDealer
       testlog.warning("Starting on MatchDuplicate "+md.id+", first scorekeeper "+firstScorekeeper.name)
@@ -187,7 +188,7 @@ class DuplicateTestFromTestDirectory2 extends AnyFlatSpec
     var dupid: Option[String] = None
 
     var newTableSessions = List[String]()
-    val sessionTables = scala.collection.mutable.Map[Id.Table,TableSession]()
+    val sessionTables = scala.collection.mutable.Map[Table.Id,TableSession]()
 
     val sessionCompleteRunning = sessionComplete.isSessionRunning
     val sessionDirectorRunning = sessionDirector.isSessionRunning
@@ -433,8 +434,8 @@ class DuplicateTestFromTestDirectory2 extends AnyFlatSpec
           val board = boardSet.get.boards.find( b => b.id == bid).get
           val nsvul = board.nsVul
           val ewvul = board.ewVul
-          val nsteam = Id.teamIdToTeamNumber(hand.nsTeam)
-          val ewteam = Id.teamIdToTeamNumber(hand.ewTeam)
+          val nsteam = hand.nsTeam.toNumber
+          val ewteam = hand.ewTeam.toNumber
 
           val hp = page.clickBoardButton(board.id).validate
 

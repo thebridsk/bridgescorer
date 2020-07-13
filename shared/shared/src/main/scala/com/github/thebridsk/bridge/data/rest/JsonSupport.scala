@@ -20,6 +20,7 @@ import com.github.thebridsk.bridge.data.duplicate.stats.PlayerOpponentStat
 import com.github.thebridsk.bridge.data.duplicate.stats.PlayerOpponentsStat
 import com.github.thebridsk.bridge.data.duplicate.stats.PlayerPlace
 import com.github.thebridsk.bridge.data.duplicate.stats.PlayerPlaces
+import scala.reflect.ClassTag
 
 //import com.github.thebridsk.bridge.data.websocket.DuplexProtocol.{ LogEntry => DpLogEntry, _ }
 //import com.github.thebridsk.bridge.data.websocket.Protocol._
@@ -38,6 +39,26 @@ class UnitFormat extends Format[Unit] {
 }
 
 trait JsonSupport {
+
+  implicit val idMatchChicagoKeyReads = MatchChicago.idKeyReads
+  implicit val idMatchChicagoKeyWrites = MatchChicago.idKeyWrites
+  implicit val idMatchDuplicateKeyReads = MatchDuplicate.idKeyReads
+  implicit val idMatchDuplicateKeyWrites = MatchDuplicate.idKeyWrites
+  implicit val idBoardKeyReads = Board.idKeyReads
+  implicit val idBoardKeyWrites = Board.idKeyWrites
+  implicit val idTeamKeyReads = Team.idKeyReads
+  implicit val idTeamKeyWrites = Team.idKeyWrites
+  implicit val idTableKeyReads = Table.idKeyReads
+  implicit val idTableKeyWrites = Table.idKeyWrites
+  implicit val idMatchDuplicateResultKeyReads = MatchDuplicateResult.idKeyReads
+  implicit val idMatchDuplicateResultKeyWrites = MatchDuplicateResult.idKeyWrites
+
+  implicit val idMatchChicagoFormat         = MatchChicago.jsonFormat
+  implicit val idMatchDuplicateFormat       = MatchDuplicate.jsonFormat
+  implicit val idMatchDuplicateBoardFormat  = Board.jsonFormat
+  implicit val idMatchDuplicateTeamFormat   = Team.jsonFormat
+  implicit val idMatchDuplicateTableFormat  = Table.jsonFormat
+  implicit val idMatchDuplicateResultFormat = MatchDuplicateResult.jsonFormat
 
   implicit val tableFormat = Json.format[Table]
   implicit val teamFormat = Json.format[Team]

@@ -117,7 +117,7 @@ object Protocol {
   /**
     * Update a picture in a duplicate match, if None, then the picture was deleted.
     */
-    case class UpdateDuplicatePicture(dupid: Id.MatchDuplicate, boardid: Id.DuplicateBoard, handId: Id.DuplicateHand, picture: Option[DuplicatePicture])
+    case class UpdateDuplicatePicture(dupid: Id.MatchDuplicate, boardid: Id.DuplicateBoard, handId: Team.Id, picture: Option[DuplicatePicture])
     extends ToServerMessage
     with ToBrowserMessage
 

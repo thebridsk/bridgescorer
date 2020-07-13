@@ -100,7 +100,7 @@ object ViewBoardInternal {
                         def teamButton( tbs: TeamBoardScore ): TagMod = {
                           logger.fine(s"ViewBoard.teamButton tbs ${tbs}")
                           if (tbs.hidden) {
-                            <.span(Id.teamIdToTeamNumber(tbs.teamId))
+                            <.span(tbs.teamId.toNumber)
                           } else {
                             val enabled =
                               if (boardscore.map(b=>b.allplayed).getOrElse(false)) {
@@ -124,10 +124,10 @@ object ViewBoardInternal {
                             val tbsteamId = tbs.teamId
                             if (enabled) {
                               val clickPage = p.page.toHandView(tbsteamId)
-                              AppButton( "Hand_"+tbs.teamId, Id.teamIdToTeamNumber(tbsteamId),
+                              AppButton( "Hand_"+tbs.teamId.id, tbsteamId.toNumber,
                                          p.routerCtl.setOnClick(clickPage) )
                             } else {
-                              <.span(Id.teamIdToTeamNumber(tbsteamId))
+                              <.span(tbsteamId.toNumber)
                             }
                           }
                         }
@@ -156,7 +156,7 @@ object ViewBoardInternal {
                                     <.td( show(tbs.showScore)),
                                     <.td( dupStyles.tableCellGray, ^.textAlign := "center", ""),
                                     <.td( tbs.opponent match {
-                                      case Some(t) => Id.teamIdToTeamNumber(t)
+                                      case Some(t) => t.toNumber
                                       case None => "?"
                                     } ),
                                     <.td( (if (p.useIMPs) show(tbs.showImps) else  showPoints(tbs.getPoints) )),
@@ -170,7 +170,7 @@ object ViewBoardInternal {
                                             ^.`type` := "button",
                                             handStyles.footerButton,
                                             ^.onClick --> backend.doShowPicture(dp.url),
-                                            ^.id:="ShowPicture_"+tbs.teamId,
+                                            ^.id:="ShowPicture_"+tbs.teamId.id,
                                             Photo()
                                           )
                                         }
@@ -179,7 +179,7 @@ object ViewBoardInternal {
                                   )
                                 } else {
                                   <.tr(
-                                    <.td( Id.teamIdToTeamNumber(team.id)),
+                                    <.td( team.id.toNumber),
                                     <.td( dupStyles.tableCellGray, ^.textAlign := "center", if (hidden) "played" else ""),
                                     <.td( dupStyles.tableCellGray, ^.textAlign := "center", ""),
                                     <.td( dupStyles.tableCellGray, ^.textAlign := "center", ""),
@@ -193,7 +193,7 @@ object ViewBoardInternal {
                                 }
                               case None =>
                                 <.tr(
-                                  <.td( Id.teamIdToTeamNumber(team.id)),
+                                  <.td( team.id.toNumber),
                                   <.td( dupStyles.tableCellGray, ^.textAlign := "center", ""),
                                   <.td( dupStyles.tableCellGray, ^.textAlign := "center", ""),
                                   <.td( dupStyles.tableCellGray, ^.textAlign := "center", ""),
@@ -262,8 +262,8 @@ object ViewBoardInternal {
             ),
             Header((props,board)),
             <.tbody(
-              props.score.teams.toList.sortWith( (t1,t2)=>Id.idComparer(t1.id,t2.id)<0).map { team =>
-                TeamRow.withKey( team.id )((team,board,props,this))
+              props.score.teams.toList.sortWith( (t1,t2)=>t1.id<t2.id).map { team =>
+                TeamRow.withKey( team.id.id )((team,board,props,this))
               }.toTagMod
             )
           )

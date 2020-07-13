@@ -28,6 +28,8 @@ import com.github.thebridsk.materialui.TextVariant
 import com.github.thebridsk.materialui.TextColor
 import com.github.thebridsk.bridge.client.pages.HomePage
 import japgolly.scalajs.react.component.builder.Lifecycle.ComponentDidUpdate
+import com.github.thebridsk.bridge.data.Table
+import com.github.thebridsk.bridge.data.Team
 
 /**
  * Shows the team x board table and has a totals column that shows the number of points the team has.
@@ -105,7 +107,7 @@ object PageBoardInternal {
         case _ => None
       }
 
-      def buttons( label: String, boards: List[BoardScore], ns: Id.Team, played: Boolean ) = {
+      def buttons( label: String, boards: List[BoardScore], ns: Team.Id, played: Boolean ) = {
         val bbs = boards // .filter { board => board.id!=props.page.boardid }
         <.span(
           !bbs.isEmpty ?= <.b(label),
@@ -169,16 +171,16 @@ object PageBoardInternal {
 
       val (tableBoardView,currentRound,currentTable) = props.page match {
         case tbv: TableBoardView => (Some(tbv),tbv.round,tbv.tableid)
-        case _ => (None,-1,"")
+        case _ => (None,-1,Table.idNul)
       }
 
       def title() = {
         props.page.getPerspective match {
           case PerspectiveTable(team1, team2) =>
             <.span(
-              s"Table ${Id.tableIdToTableNumber(currentTable)} Round ${currentRound}" ,
+              s"Table ${currentTable.toNumber} Round ${currentRound}" ,
               s" Board ${Id.boardIdToBoardNumber(props.page.boardid)}",
-              s" Teams ${Id.teamIdToTeamNumber(team1)} and ${Id.teamIdToTeamNumber(team2)}",
+              s" Teams ${team1.toNumber} and ${team2.toNumber}",
             )
           case PerspectiveDirector =>
             <.span(s"Director's View of Board ${Id.boardIdToBoardNumber(props.page.boardid)}")
@@ -234,7 +236,7 @@ object PageBoardInternal {
                            allplayedInRound ?= baseStyles.requiredNotNext,
                            props.routerCtl.setOnClick(clickToScoreboard) ),
                 " ",
-                clickToTableView.isDefined?= AppButton( "Table", "Table "+Id.tableIdToTableNumber(currentTable),
+                clickToTableView.isDefined?= AppButton( "Table", "Table "+currentTable.toNumber,
                                                         allplayedInRound ?= baseStyles.requiredNotNext,
                                                         props.routerCtl.setOnClick(clickToTableView.get) ),
                 " ",

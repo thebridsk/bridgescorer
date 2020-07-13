@@ -20,6 +20,7 @@ import com.github.thebridsk.bridge.data.bridge.MatchDuplicateScore.Round
 import com.github.thebridsk.bridge.data.DuplicateHand
 import com.github.thebridsk.bridge.data.MatchDuplicate
 import com.github.thebridsk.bridge.data.Team
+import com.github.thebridsk.bridge.data.Table
 import com.github.thebridsk.bridge.client.bridge.store.NamesStore
 import com.github.thebridsk.bridge.client.pages.info.InfoPage
 import com.github.thebridsk.bridge.clientcommon.react.ComboboxOrInput
@@ -154,8 +155,8 @@ object PageTableTeamsInternal {
    */
   case class State( originalNames: Names,           // the original names when this was created.
                     names: Names,                   // current set of names (different when entering one team only)
-                    nsTeam: Id.Team,
-                    ewTeam: Id.Team,
+                    nsTeam: Team.Id,
+                    ewTeam: Team.Id,
                     enteringMissingNames: Boolean,  // entering names of missing team
                     inputNames: Boolean,            // input fields when renderNames
                     page: TableTeamView,            //
@@ -210,8 +211,8 @@ object PageTableTeamsInternal {
     }
 
     def getTeam( pos: PlayerPosition ) = pos match {
-      case North | South => Id.teamIdToTeamNumber(nsTeam)
-      case East | West => Id.teamIdToTeamNumber(ewTeam)
+      case North | South => nsTeam.toNumber
+      case East | West => ewTeam.toNumber
     }
 
     def swapLeftRight = copy( players = players.swapRightAndLeftOf(scorekeeperPosition.get))
@@ -250,8 +251,8 @@ object PageTableTeamsInternal {
     private
     def state( originalNames: Names,
                page: TableTeamView,
-               nsTeam: Id.Team,
-               ewTeam: Id.Team,
+               nsTeam: Team.Id,
+               ewTeam: Team.Id,
                players: Option[TableManeuvers] = None,
                suggestions: Option[List[String]] = None
              ): State = {
@@ -272,14 +273,14 @@ object PageTableTeamsInternal {
     }
 
     private
-    def state( page: TableTeamView ): State = state( Names("","","",""), page, "","" )
+    def state( page: TableTeamView ): State = state( Names("","","",""), page, Team.idNul,Team.idNul )
 
     def invalid( props: Props ) = {
       logger.info("PageTableTeams: Invalid props "+props)
       state( props.page )
     }
 
-    def findBoardsInRound( md: MatchDuplicate, tableid: Id.Table, round: Int ) = {
+    def findBoardsInRound( md: MatchDuplicate, tableid: Table.Id, round: Int ) = {
       var hands: List[DuplicateHand] = Nil
       for (bb <- md.boards) {
         for (hh <- bb.hands) {
@@ -304,9 +305,9 @@ object PageTableTeamsInternal {
      * @param eIsPlayer1
      * @return A tuple, (nIsPlayer1, eIsPlayer1)
      */
-    def determinePosition( md: MatchDuplicate, tableid: Id.Table, currentRound: Int, nsTeam: Id.Team, ewTeam: Id.Team, nIsPlayer1: Boolean, eIsPlayer1: Boolean ) = {
+    def determinePosition( md: MatchDuplicate, tableid: Table.Id, currentRound: Int, nsTeam: Team.Id, ewTeam: Team.Id, nIsPlayer1: Boolean, eIsPlayer1: Boolean ) = {
       if (currentRound == 1) {
-        logger.fine(s"PageTableTeams.determinePosition: In round 1 table ${tableid}, returning ($nIsPlayer1, $eIsPlayer1)")
+        logger.fine(s"PageTableTeams.determinePosition: In round 1 table ${tableid.toNumber}, returning ($nIsPlayer1, $eIsPlayer1)")
         (nIsPlayer1, eIsPlayer1)  // no previous round
       }
       else {
@@ -333,7 +334,8 @@ object PageTableTeamsInternal {
       DuplicateStore.getMatch() match {
         case Some(md) =>
           props.page match {
-            case TableTeamByBoardView( dupid, tableid, round, boardid ) =>
+            case TableTeamByBoardView( dupid, stableid, round, boardid ) =>
+              val tableid = props.page.tableid
               md.getBoard(boardid) match {
                 case Some(b) =>
                   val h = b.hands.find { h => h.table==tableid && h.round==round }
@@ -352,7 +354,8 @@ object PageTableTeamsInternal {
                   }
                 case None => State.invalid(props)
               }
-            case TableTeamByRoundView( dupid, tableid, round ) =>
+            case TableTeamByRoundView( dupid, stableid, round ) =>
+              val tableid = props.page.tableid
               val hands = findBoardsInRound(md, tableid, round)
               if (hands.isEmpty) {
                 State.invalid(props)
@@ -373,7 +376,7 @@ object PageTableTeamsInternal {
       }
     }
 
-    def getTableManeuvers( md: MatchDuplicate, tableid: String, currentround: Int ): Option[(Team,Team,TableManeuvers)] = {
+    def getTableManeuvers( md: MatchDuplicate, tableid: Table.Id, currentround: Int ): Option[(Team,Team,TableManeuvers)] = {
 
       val hands = findBoardsInRound(md, tableid, currentround)
       hands.headOption.map { hand =>
@@ -419,8 +422,8 @@ object PageTableTeamsInternal {
     def create( props: Props ): State = {
       DuplicateStore.getMatch().map { md =>
         (props.page match {
-          case TableTeamByBoardView( dupid, tableid, round, boardid ) => Some( dupid, tableid, round )
-          case TableTeamByRoundView( dupid, tableid, round ) => Some( dupid, tableid, round )
+          case v @ (TableTeamByBoardView(_,_,_,_) | TableTeamByRoundView(_,_,_)) =>
+            Some( v.dupid, v.tableid, v.round )
           case _ => None
         }).map { vls =>
           val (dupid, tableid, round) = vls
@@ -515,13 +518,13 @@ object PageTableTeamsInternal {
     val setScorekeeper = scope.modState{ s => s.okScorekeeper }
 
     def getHand( md: MatchDuplicate, page: TableTeamView ) = page match {
-      case TableTeamByBoardView( dupid, tableid, round, boardId ) =>
-        md.getHand(tableid, round, boardId)
-      case TableTeamByRoundView( dupid, tableid, round ) =>
-        md.getHandsInRound(tableid, round).headOption
+      case v: TableTeamByBoardView =>
+        md.getHand(v.tableid, v.round, v.boardId)
+      case v: TableTeamByRoundView =>
+        md.getHandsInRound(v.tableid, v.round).headOption
     }
 
-    def findBoardsInRound( md: MatchDuplicate, tableid: Id.Table, round: Int ) = {
+    def findBoardsInRound( md: MatchDuplicate, tableid: Table.Id, round: Int ) = {
       var hands: List[DuplicateHand] = Nil
       for (bb <- md.boards) {
         for (hh <- bb.hands) {
@@ -535,12 +538,8 @@ object PageTableTeamsInternal {
 
     def getHandsInRound( page: TableTeamView ) =
       DuplicateStore.getMatch() match {
-        case Some(md) => page match {
-          case TableTeamByBoardView( dupid, tableid, round, boardId ) =>
-            md.getHandsInRound(tableid, round)
-          case TableTeamByRoundView( dupid, tableid, round ) =>
-            md.getHandsInRound(tableid, round)
-        }
+        case Some(md) =>
+          md.getHandsInRound(page.tableid, page.round)
         case None => List()
       }
 
@@ -572,21 +571,21 @@ object PageTableTeamsInternal {
                 hand.nsTeam
               case None =>
                 logger.fine(s"OK: state=$s, hand not found")
-                ""
+                Team.idNul
             }
           case None =>
             logger.fine(s"OK: state=$s, no duplicate match")
-            ""
+            Team.idNul
         }
         props.routerCtl.set(props.page.toNextView match {
           case p: BaseBoardView =>
-            if (nsid.length()>0) p.toHandView(nsid)
+            if (!nsid.isNul) p.toHandView(nsid)
             else p
           case p => p
         })
       }
 
-    def setPlayersOnTeam( dup: MatchDuplicate, teamid: Id.Team, player1: String, player2: String ) = {
+    def setPlayersOnTeam( dup: MatchDuplicate, teamid: Team.Id, player1: String, player2: String ) = {
       val newteam = dup.getTeam(teamid) match {
         case Some(oldteam) => oldteam.setPlayers(player1.trim, player2.trim)
         case None => Team.create(teamid, player1.trim, player2.trim)
@@ -606,7 +605,7 @@ object PageTableTeamsInternal {
                     color = TextColor.inherit,
                 )(
                     <.span(
-                      s"Players for Table ${props.page.tableid} Round ${props.page.round}",
+                      s"Players for Table ${props.page.tableid.toNumber} Round ${props.page.round}",
                     )
                 )),
           helpurl = helpurl,
@@ -733,7 +732,7 @@ object PageTableTeamsInternal {
 
       val div =
           <.div(
-              <.h1(s"Enter player names for team ${Id.teamIdToTeamNumber(mteamid)}"),
+              <.h1(s"Enter player names for team ${mteamid.toNumber}"),
               <.span(
                   s"Playing ${mpos1.name} ${mpos2.name}",
                   <.p(),
@@ -742,7 +741,7 @@ object PageTableTeamsInternal {
                   Position(state,mpos2,"","",None,setPlayer(mpos2),2,false,false),
                   <.p(),
                   <.p,
-                  s"Playing against team ${Id.teamIdToTeamNumber(vteamid)}, ${vname1} ${vname2}"
+                  s"Playing against team ${vteamid.toNumber}, ${vname1} ${vname2}"
               )
           )
       ( setMissingNames, valid, div, None, errormsg )

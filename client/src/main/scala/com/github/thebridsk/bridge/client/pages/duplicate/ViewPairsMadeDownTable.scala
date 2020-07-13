@@ -32,6 +32,7 @@ import com.github.thebridsk.bridge.clientcommon.react.Table.SortableColumn
 import com.github.thebridsk.bridge.clientcommon.react.Table.MultiColumnSort
 import com.github.thebridsk.bridge.clientcommon.react.Table.Row
 import com.github.thebridsk.bridge.client.pages.HomePage
+import com.github.thebridsk.bridge.data.Team
 
 /**
  * Shows a summary page of all duplicate matches from the database.
@@ -235,7 +236,7 @@ object ViewPairsMadeDownTableInternal {
           val totals = if (props.showPairs) {
             None
           } else {
-            val tpd = pds.map( pd => pd.details ).foldLeft( DuplicateSummaryDetails.zero("Totals")) { (ac,v) =>
+            val tpd = pds.map( pd => pd.details ).foldLeft( DuplicateSummaryDetails.zero(Team.id("Totals"))) { (ac,v) =>
               v.map( vv => ac.add(vv) ).getOrElse(ac)
             }
             val totalpd = pds.head.copy( player1="Totals", player2="", details = Some(tpd) )

@@ -9,6 +9,7 @@ import org.openqa.selenium._
 import org.scalatest.concurrent.Eventually
 import java.util.concurrent.TimeUnit
 import com.github.thebridsk.bridge.server.Server
+import com.github.thebridsk.bridge.data
 import com.github.thebridsk.bridge.data.bridge._
 import com.github.thebridsk.bridge.server.backend.BridgeServiceInMemory
 import com.github.thebridsk.bridge.server.backend.BridgeService
@@ -1141,7 +1142,7 @@ class Duplicate5TestPages
     }
   }
 
-  def getTeam( dup: MatchDuplicate, teamid: Id.Team, name1: String, name2: String ) = {
+  def getTeam( dup: MatchDuplicate, teamid: data.Team.Id, name1: String, name2: String ) = {
     val t = dup.getTeam(teamid) match {
       case Some(team) =>
         team.copy(player1 = name1, player2 = name2 )
@@ -1153,11 +1154,11 @@ class Duplicate5TestPages
   }
 
   def getTeams( dup: MatchDuplicate ) = {
-    getTeam( dup, "T1", team2.one, team3.two ) ::
-    getTeam( dup, "T2", team3.one, team4.two ) ::
-    getTeam( dup, "T3", team4.one, team5.two ) ::
-    getTeam( dup, "T4", team5.one, team1.two ) ::
-    getTeam( dup, "T5", team1.one, team2.two ) ::
+    getTeam( dup, data.Team.id(1), team2.one, team3.two ) ::
+    getTeam( dup, data.Team.id(2), team3.one, team4.two ) ::
+    getTeam( dup, data.Team.id(3), team4.one, team5.two ) ::
+    getTeam( dup, data.Team.id(4), team5.one, team1.two ) ::
+    getTeam( dup, data.Team.id(5), team1.one, team2.two ) ::
     Nil
   }
 

@@ -184,7 +184,7 @@ object TestCacheStoreForFailures {
     }
   }
 
-  class TestUpdateHandId( dupid: Id.MatchDuplicate, bid: Id.DuplicateBoard, id: Id.Team ) extends TesterExists {
+  class TestUpdateHandId( dupid: Id.MatchDuplicate, bid: Id.DuplicateBoard, id: Team.Id ) extends TesterExists {
     def testSpecific( change: ChangeContextData )(implicit pos: Position): Assertion = {
       change match {
         case UpdateChangeContext(newvalue,field) =>
@@ -635,7 +635,7 @@ class TestCacheStoreForFailures extends AsyncFlatSpec with ScalatestRouteTest wi
 
   it should "update a value in the store" in testWithStore { (store,persistent,listener,md1) =>
     listener.clear()
-    val md = md1.updateTeam(Team("T1","Fred","George",0,0))
+    val md = md1.updateTeam(Team(Team.id(1),"Fred","George",0,0))
     try {
       store.update(md.id,md).test("Updating match duplicate") { tnmd =>
         tnmd match {
@@ -661,7 +661,7 @@ class TestCacheStoreForFailures extends AsyncFlatSpec with ScalatestRouteTest wi
   it should "fail to update a value in the store with write failure" in testWithStore { (store,persistent,listener,md1) =>
     listener.clear()
     persistent.failResultWrite = Some( Result( StatusCodes.InsufficientStorage, "Oops can't write" ) )
-    val md = md1.updateTeam(Team("T1","Fred","George",0,0))
+    val md = md1.updateTeam(Team(Team.id(1),"Fred","George",0,0))
     try {
       store.update(md.id,md).test("Updating match duplicate") { tnmd =>
         tnmd match {
@@ -687,7 +687,7 @@ class TestCacheStoreForFailures extends AsyncFlatSpec with ScalatestRouteTest wi
   it should "fail to update a value in the store with write failure with exception" in testWithStore { (store,persistent,listener,md1) =>
     listener.clear()
     persistent.failWrite = true
-    val md = md1.updateTeam(Team("T1","Fred","George",0,0))
+    val md = md1.updateTeam(Team(Team.id(1),"Fred","George",0,0))
     try {
       store.update(md.id,md).test("Updating match duplicate") { tnmd =>
         tnmd match {
@@ -715,7 +715,7 @@ class TestCacheStoreForFailures extends AsyncFlatSpec with ScalatestRouteTest wi
     val md2 = MatchDuplicate.create("M2")
     val id = md2.id
     persistent.add(md2)
-    val md = md2.updateTeam(Team("T1","Fred","George",0,0))
+    val md = md2.updateTeam(Team(Team.id(1),"Fred","George",0,0))
     try {
       store.update(md.id,md).test("Updating match duplicate") { tnmd =>
         tnmd match {
@@ -744,7 +744,7 @@ class TestCacheStoreForFailures extends AsyncFlatSpec with ScalatestRouteTest wi
     val md2 = MatchDuplicate.create("M2")
     val id = md2.id
     persistent.add(md2)
-    val md = md2.updateTeam(Team("T1","Fred","George",0,0))
+    val md = md2.updateTeam(Team(Team.id(1),"Fred","George",0,0))
     try {
       store.update(md.id,md).test("Updating match duplicate") { tnmd =>
         tnmd match {
@@ -1012,9 +1012,9 @@ class TestCacheStoreForFailures extends AsyncFlatSpec with ScalatestRouteTest wi
     persistent.add(md2)
 
     val boardid = "B1"
-    val handid = "T1"
+    val handid = Team.id(1)
     val dh = md2.getBoard(boardid).map( b => b.getHand(handid) ).getOrElse( throw new Exception("Unable to get board")).getOrElse(throw new Exception("Unable to get hand"))
-    dh.updateHand(Hand(handid,3,"S","N","N",false,false,true,3,0,0))
+    dh.updateHand(Hand(handid.id,3,"S","N","N",false,false,true,3,0,0))
 
     try {
       store.select(id).
@@ -1054,9 +1054,9 @@ class TestCacheStoreForFailures extends AsyncFlatSpec with ScalatestRouteTest wi
     persistent.add(md2)
 
     val boardid = "B1"
-    val handid = "T1"
+    val handid = Team.id(1)
     val dh = md2.getBoard(boardid).map( b => b.getHand(handid) ).getOrElse( throw new Exception("Unable to get board")).getOrElse(throw new Exception("Unable to get hand"))
-    dh.updateHand(Hand(handid,3,"S","N","N",false,false,true,3,0,0))
+    dh.updateHand(Hand(handid.id,3,"S","N","N",false,false,true,3,0,0))
 
     try {
       store.select(id).
@@ -1094,9 +1094,9 @@ class TestCacheStoreForFailures extends AsyncFlatSpec with ScalatestRouteTest wi
     persistent.add(md2)
 
     val boardid = "B1"
-    val handid = "T1"
+    val handid = Team.id(1)
     val dh = md2.getBoard(boardid).map( b => b.getHand(handid) ).getOrElse( throw new Exception("Unable to get board")).getOrElse(throw new Exception("Unable to get hand"))
-    dh.updateHand(Hand(handid,3,"S","N","N",false,false,true,3,0,0))
+    dh.updateHand(Hand(handid.id,3,"S","N","N",false,false,true,3,0,0))
 
     try {
       store.select(id).
@@ -1133,9 +1133,9 @@ class TestCacheStoreForFailures extends AsyncFlatSpec with ScalatestRouteTest wi
     persistent.add(md2)
 
     val boardid = "B1"
-    val handid = "T1"
+    val handid = Team.id(1)
     val dh = md2.getBoard(boardid).map( b => b.getHand(handid) ).getOrElse( throw new Exception("Unable to get board")).getOrElse(throw new Exception("Unable to get hand"))
-    dh.updateHand(Hand(handid,3,"S","N","N",false,false,true,3,0,0))
+    dh.updateHand(Hand(handid.id,3,"S","N","N",false,false,true,3,0,0))
 
     try {
       store.select(id).
@@ -1173,9 +1173,9 @@ class TestCacheStoreForFailures extends AsyncFlatSpec with ScalatestRouteTest wi
     persistent.add(md2)
 
     val boardid = "B1"
-    val handid = "T1"
+    val handid = Team.id(1)
     val dh = md2.getBoard(boardid).map( b => b.getHand(handid) ).getOrElse( throw new Exception("Unable to get board")).getOrElse(throw new Exception("Unable to get hand"))
-    dh.updateHand(Hand(handid,3,"S","N","N",false,false,true,3,0,0))
+    dh.updateHand(Hand(handid.id,3,"S","N","N",false,false,true,3,0,0))
 
     try {
       store.select(id).

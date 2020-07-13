@@ -223,4 +223,6 @@ case class HandInTable(
       )
     )
     boards: List[Int]
-)
+) {
+  def tableid = Table.id(table)
+}

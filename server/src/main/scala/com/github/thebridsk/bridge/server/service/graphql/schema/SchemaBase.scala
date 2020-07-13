@@ -47,6 +47,7 @@ import com.github.thebridsk.bridge.data.RubberHand
 import com.github.thebridsk.bridge.data.Round
 import com.github.thebridsk.bridge.data.ChicagoBestMatch
 import com.github.thebridsk.bridge.data.RubberBestMatch
+import com.github.thebridsk.bridge.data.HasId
 
 object SchemaBase {
 
@@ -82,6 +83,29 @@ object SchemaBase {
       },
       coerceInput = {
         case ast.StringValue(s, _, _, _, _) => Right(s.asInstanceOf[T])
+        case x =>
+          Left(
+            IdCoercionViolation(
+              typename,
+              getPos(x).map(
+                p =>
+                  s"at line ${p.line} column ${p.column}, sourceId ${p.sourceId} index ${p.index}"
+              )
+            )
+          )
+      }
+    )
+
+  def idScalarType[T](typename: String, hasId: HasId[T]) =
+    ScalarType[Id[T]](
+      typename,
+      coerceOutput = (d, caps) => d.id,
+      coerceUserInput = {
+        case s: String => Right(hasId.id(s))
+        case _         => Left(IdCoercionViolation(typename))
+      },
+      coerceInput = {
+        case ast.StringValue(s, _, _, _, _) => Right(hasId.id(s))
         case x =>
           Left(
             IdCoercionViolation(

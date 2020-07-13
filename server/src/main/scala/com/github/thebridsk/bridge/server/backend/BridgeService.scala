@@ -274,7 +274,7 @@ abstract class BridgeService(val id: String) {
           val hands = TestMatchDuplicate.getHand(
             d,
             "B3",
-            "T1",
+            Team.id(1),
             3,
             "N",
             "N",
@@ -282,7 +282,7 @@ abstract class BridgeService(val id: String) {
             true,
             5
           ) ::
-            TestMatchDuplicate.getHand(d, "B3", "T3", 3, "N", "N", "N", true, 5) ::
+            TestMatchDuplicate.getHand(d, "B3", Team.id(3), 3, "N", "N", "N", true, 5) ::
             TestMatchDuplicate.getHands(d)
           for (h <- hands) {
             d = d.updateHand(h)

@@ -198,19 +198,19 @@ class MovementCacheStoreSupport(
     ) {}
 
 object DuplicateTeamsNestedResource
-    extends NestedResourceSupport[MatchDuplicate, Id.Team, Team] {
+    extends NestedResourceSupport[MatchDuplicate, Team.Id, Team] {
   val resourceURI = "teams"
 
   def getResources(
       parent: MatchDuplicate,
       parentResource: String
-  ): Result[Map[Id.Team, Team]] =
+  ): Result[Map[Team.Id, Team]] =
     Result(parent.teams.map(t => t.id -> t).toMap)
 
   def getResource(
       parent: MatchDuplicate,
       parentResource: String,
-      id: Id.Team
+      id: Team.Id
   ): Result[Team] =
     parent
       .getTeam(id)
@@ -220,14 +220,14 @@ object DuplicateTeamsNestedResource
   def updateResources(
       parent: MatchDuplicate,
       parentResource: String,
-      map: Map[Id.Team, Team]
+      map: Map[Team.Id, Team]
   ): Result[MatchDuplicate] =
     Result(parent.setTeams(map.values.toList))
 
   def updateResource(
       parent: MatchDuplicate,
       parentResource: String,
-      id: Id.Team,
+      id: Team.Id,
       value: Team
   ): Result[(MatchDuplicate, Team)] = {
     val t = value.setId(id, false)
@@ -244,7 +244,7 @@ object DuplicateTeamsNestedResource
   def deleteResource(
       parent: MatchDuplicate,
       parentResource: String,
-      id: Id.Team
+      id: Team.Id
   ): Result[(MatchDuplicate, Team)] = {
     parent
       .getTeam(id)
@@ -310,19 +310,19 @@ object DuplicateBoardsNestedResource
 }
 
 object DuplicateHandsNestedResource
-    extends NestedResourceSupport[Board, Id.Team, DuplicateHand] {
+    extends NestedResourceSupport[Board, Team.Id, DuplicateHand] {
   val resourceURI = "hands"
 
   def getResources(
       parent: Board,
       parentResource: String
-  ): Result[Map[Id.Team, DuplicateHand]] =
+  ): Result[Map[Team.Id, DuplicateHand]] =
     Result(parent.hands.map(t => t.id -> t).toMap)
 
   def getResource(
       parent: Board,
       parentResource: String,
-      id: Id.Team
+      id: Team.Id
   ): Result[DuplicateHand] =
     parent
       .getHand(id)
@@ -332,14 +332,14 @@ object DuplicateHandsNestedResource
   def updateResources(
       parent: Board,
       parentResource: String,
-      map: Map[Id.Team, DuplicateHand]
+      map: Map[Team.Id, DuplicateHand]
   ): Result[Board] =
     Result(parent.setHands(map.values.toList))
 
   def updateResource(
       parent: Board,
       parentResource: String,
-      id: Id.Team,
+      id: Team.Id,
       value: DuplicateHand
   ): Result[(Board, DuplicateHand)] = {
     val t = value.setId(id, false)
@@ -356,7 +356,7 @@ object DuplicateHandsNestedResource
   def deleteResource(
       parent: Board,
       parentResource: String,
-      id: Id.Team
+      id: Team.Id
   ): Result[(Board, DuplicateHand)] = {
     parent
       .getHand(id)

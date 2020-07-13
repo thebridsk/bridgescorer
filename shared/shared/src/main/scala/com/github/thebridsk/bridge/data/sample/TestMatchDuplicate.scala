@@ -6,13 +6,14 @@ import com.github.thebridsk.bridge.data.Team
 import com.github.thebridsk.bridge.data.Board
 import com.github.thebridsk.bridge.data.DuplicateHand
 import com.github.thebridsk.bridge.data.Hand
+import com.github.thebridsk.bridge.data.Table
 
 object TestMatchDuplicate {
 
   def getHand(
       dm: MatchDuplicate,
       boardid: Id.DuplicateBoard,
-      handid: Id.DuplicateHand,
+      handid: Team.Id,
       contractTricks: Int,
       contractSuit: String,
       contractDoubled: String,
@@ -24,7 +25,7 @@ object TestMatchDuplicate {
     val dh = b.getHand(handid).get
     dh.updateHand(
       Hand.create(
-        dh.id,
+        dh.id.id,
         contractTricks,
         contractSuit,
         contractDoubled,
@@ -37,16 +38,21 @@ object TestMatchDuplicate {
     )
   }
 
+  val team1 = Team.id(1)
+  val team2 = Team.id(2)
+  val team3 = Team.id(3)
+  val team4 = Team.id(4)
+
   def teams() =
-    Map(
-      "T1" -> Team.create("T1", "Nancy", "Norman"),
-      "T2" -> Team.create("T2", "Ellen", "Edward"),
-      "T3" -> Team.create("T3", "Susan", "Sam"),
-      "T4" -> Team.create("T4", "Wilma", "Wayne")
-    )
+    List(
+      Team.create(team1, "Nancy", "Norman"),
+      Team.create(team2, "Ellen", "Edward"),
+      Team.create(team3, "Susan", "Sam"),
+      Team.create(team4, "Wilma", "Wayne")
+    ).map( t => t.id -> t ).toMap
 
   def create(id: Id.MatchDuplicate): MatchDuplicate = {
-    val ts: Map[Id.Team, Team] = teams()
+    val ts: Map[Team.Id, Team] = teams()
 
     val boards = scala.collection.mutable.Map[Id.DuplicateBoard, Board]()
 
@@ -63,31 +69,31 @@ object TestMatchDuplicate {
       boards += (hand.board -> board.updateHand(hand))
     }
 
-    addHand(DuplicateHand.create("1", 1, "B1", "T1", "T2"))
-    addHand(DuplicateHand.create("1", 1, "B2", "T1", "T2"))
-    addHand(DuplicateHand.create("2", 2, "B1", "T3", "T4"))
-    addHand(DuplicateHand.create("2", 2, "B2", "T3", "T4"))
-    addHand(DuplicateHand.create("1", 3, "B7", "T3", "T1"))
-    addHand(DuplicateHand.create("1", 3, "B8", "T3", "T1"))
-    addHand(DuplicateHand.create("2", 4, "B7", "T2", "T4"))
-    addHand(DuplicateHand.create("2", 4, "B8", "T2", "T4"))
+    addHand(DuplicateHand.create(Table.id(1), 1, "B1", team1, team2))
+    addHand(DuplicateHand.create(Table.id(1), 1, "B2", team1, team2))
+    addHand(DuplicateHand.create(Table.id(2), 2, "B1", team3, team4))
+    addHand(DuplicateHand.create(Table.id(2), 2, "B2", team3, team4))
+    addHand(DuplicateHand.create(Table.id(1), 3, "B7", team3, team1))
+    addHand(DuplicateHand.create(Table.id(1), 3, "B8", team3, team1))
+    addHand(DuplicateHand.create(Table.id(2), 4, "B7", team2, team4))
+    addHand(DuplicateHand.create(Table.id(2), 4, "B8", team2, team4))
 
     MatchDuplicate(id, ts.values.toList, boards.values.toList, "", "", 0, 0)
   }
 
   def getHands(md: MatchDuplicate) = {
     var hands: List[DuplicateHand] = Nil
-    hands = getHand(md, "B1", "T1", 3, "N", "N", "N", true, 5) :: hands
-    hands = getHand(md, "B2", "T1", 4, "S", "N", "N", true, 5) :: hands
-    hands = getHand(md, "B1", "T3", 4, "S", "N", "N", true, 5) :: hands
-    hands = getHand(md, "B2", "T3", 4, "S", "N", "N", true, 5) :: hands
+    hands = getHand(md, "B1", team1, 3, "N", "N", "N", true, 5) :: hands
+    hands = getHand(md, "B2", team1, 4, "S", "N", "N", true, 5) :: hands
+    hands = getHand(md, "B1", team3, 4, "S", "N", "N", true, 5) :: hands
+    hands = getHand(md, "B2", team3, 4, "S", "N", "N", true, 5) :: hands
 
-    hands = getHand(md, "B7", "T3", 4, "S", "N", "N", true, 5) :: hands
-    hands = getHand(md, "B8", "T2", 4, "S", "N", "N", true, 5) :: hands
+    hands = getHand(md, "B7", team3, 4, "S", "N", "N", true, 5) :: hands
+    hands = getHand(md, "B8", team2, 4, "S", "N", "N", true, 5) :: hands
     hands.reverse
   }
 
-  def getTeamScore() = Map("T1" -> 3, "T2" -> 1, "T3" -> 1, "T4" -> 3)
+  def getTeamScore() = Map(team1 -> 3, team2 -> 1, team3 -> 1, team4 -> 3)
 
   def getPlayedMatch(dupid: Id.MatchDuplicate) = {
     var md = TestMatchDuplicate.create(dupid)

@@ -241,17 +241,17 @@ class TestCacheStore extends AsyncFlatSpec with ScalatestRouteTest with Matchers
 
   it should "change team 1" in testWithStore { (store,listener) =>
 
-    val team = store.select("M1").nestedResource(DuplicateTeamsNestedResource).select("T1").read()
+    val team = store.select("M1").nestedResource(DuplicateTeamsNestedResource).select(Team.id(1)).read()
     team.testfuture("Testing team T1 in match M1") { ot =>
-      ot.id mustBe "T1"
+      ot.id mustBe Team.id(1)
       ot.player1 mustBe "Nancy"
       ot.player2 mustBe "Norman"
 
       listener.clear()
 
-      val updatedTeam = store.select("M1").nestedResource(DuplicateTeamsNestedResource).select("T1").update(Team("T1","Fred","George",0,0))
+      val updatedTeam = store.select("M1").nestedResource(DuplicateTeamsNestedResource).select(Team.id(1)).update(Team(Team.id(1),"Fred","George",0,0))
       updatedTeam.testfuture("Testing updated team T1 in match M1") { t =>
-        t.id mustBe "T1"
+        t.id mustBe Team.id(1)
         t.player1 mustBe "Fred"
         t.player2 mustBe "George"
 
@@ -266,7 +266,7 @@ class TestCacheStore extends AsyncFlatSpec with ScalatestRouteTest with Matchers
               parentfield mustBe Some("/duplicates/M1")
               newvalue match {
                 case md: MatchDuplicate =>
-                  md.getTeam("T1") match {
+                  md.getTeam(Team.id(1)) match {
                     case Some(tt) =>
                       tt.id mustBe t.id
                       tt.player1 mustBe t.player1
@@ -296,9 +296,9 @@ class TestCacheStore extends AsyncFlatSpec with ScalatestRouteTest with Matchers
           }
         }.getOrElse(fail("changeUpdate was empty"))
 
-        val againteam = store.select("M1").nestedResource(DuplicateTeamsNestedResource).select("T1").read()
+        val againteam = store.select("M1").nestedResource(DuplicateTeamsNestedResource).select(Team.id(1)).read()
         againteam.test("Testing team T1 in match M1") { t =>
-          t.id mustBe "T1"
+          t.id mustBe Team.id(1)
           t.player1 mustBe "Fred"
           t.player2 mustBe "George"
         }
@@ -310,9 +310,9 @@ class TestCacheStore extends AsyncFlatSpec with ScalatestRouteTest with Matchers
 
     listener.clear()
 
-    val team = store.select("M1").nestedResource(DuplicateTeamsNestedResource).select("T1").delete()
+    val team = store.select("M1").nestedResource(DuplicateTeamsNestedResource).select(Team.id(1)).delete()
     team.testfuture("Testing team T1 in match M1") { ot =>
-      ot.id mustBe "T1"
+      ot.id mustBe Team.id(1)
       ot.player1 mustBe "Nancy"
       ot.player2 mustBe "Norman"
 
@@ -327,7 +327,7 @@ class TestCacheStore extends AsyncFlatSpec with ScalatestRouteTest with Matchers
             parentfield mustBe Some("/duplicates/M1")
             newvalue match {
               case md: MatchDuplicate =>
-                md.getTeam("T1") mustBe Symbol("empty")
+                md.getTeam(Team.id(1)) mustBe Symbol("empty")
               case x =>
                 fail(s"expecting MatchDuplicate, got ${x.getClass.getName}")
             }
@@ -354,20 +354,20 @@ class TestCacheStore extends AsyncFlatSpec with ScalatestRouteTest with Matchers
 
   it should "change hand T1 on board B1" in testWithStore { (store,listener) =>
 
-    val handf = store.select("M1").nestedResource(DuplicateBoardsNestedResource).select("B1").nestedResource(DuplicateHandsNestedResource).select("T1").read()
+    val handf = store.select("M1").nestedResource(DuplicateBoardsNestedResource).select("B1").nestedResource(DuplicateHandsNestedResource).select(Team.id(1)).read()
     handf.testfuture("Testing board B1 hand T1 in match M1") { dh =>
-      dh.id mustBe "T1"
+      dh.id mustBe Team.id(1)
       dh.board mustBe "B1"
-      dh.nsTeam mustBe "T1"
-      dh.ewTeam mustBe "T2"
+      dh.nsTeam mustBe Team.id(1)
+      dh.ewTeam mustBe Team.id(2)
 
       listener.clear()
 
       val nh = dh.updateHand( Hand("T1", 1, "S", "N", "N", false, false, true, 2, 0, 0) )
 
-      val uphandf = store.select("M1").nestedResource(DuplicateBoardsNestedResource).select("B1").nestedResource(DuplicateHandsNestedResource).select("T1").update(nh)
+      val uphandf = store.select("M1").nestedResource(DuplicateBoardsNestedResource).select("B1").nestedResource(DuplicateHandsNestedResource).select(Team.id(1)).update(nh)
       uphandf.testfuture("Testing updating board B1 hand T1 in match M1") { udh =>
-        udh.id mustBe "T1"
+        udh.id mustBe Team.id(1)
         udh.hand.get.equalsIgnoreModifyTime(nh.hand.get) mustBe true
 
         listener.changeCreate mustBe Symbol("empty")
@@ -384,9 +384,9 @@ class TestCacheStore extends AsyncFlatSpec with ScalatestRouteTest with Matchers
                   md.getBoard("B1") match {
                     case Some(tt) =>
                       tt.id mustBe "B1"
-                      tt.getHand("T1") match {
+                      tt.getHand(Team.id(1)) match {
                         case Some(th) =>
-                          th.id mustBe "T1"
+                          th.id mustBe Team.id(1)
                           th.hand.get.equalsIgnoreModifyTime(nh.hand.get) mustBe true
                         case None =>
                           fail(s"expecting to find hand T1 in Board B1 in MatchDuplicate")
@@ -405,9 +405,9 @@ class TestCacheStore extends AsyncFlatSpec with ScalatestRouteTest with Matchers
               parentfield mustBe Some("/duplicates/M1/boards/B1")
               newvalue match {
                 case md: Board =>
-                  md.getHand("T1") match {
+                  md.getHand(Team.id(1)) match {
                     case Some(tt) =>
-                      tt.id mustBe "T1"
+                      tt.id mustBe Team.id(1)
                       tt.hand.get.equalsIgnoreModifyTime(nh.hand.get) mustBe true
                     case None =>
                       fail(s"expecting to find Hand T1 in Board B1 in MatchDuplicate")
@@ -480,7 +480,7 @@ class TestCacheStore extends AsyncFlatSpec with ScalatestRouteTest with Matchers
                store: Store[Id.MatchDuplicate, MatchDuplicate],
                dupid: String,
                boardid: String,
-               handid: String,
+               handid: Team.Id,
                results: CollectResult
              ): (String,Future[Result[(String,DuplicateHand)]]) = {
     val x =

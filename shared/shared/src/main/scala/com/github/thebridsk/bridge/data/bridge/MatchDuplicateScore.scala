@@ -5,13 +5,14 @@ import com.github.thebridsk.bridge.data.Id
 import com.github.thebridsk.bridge.data.Team
 import com.github.thebridsk.bridge.data.DuplicateHand
 import com.github.thebridsk.bridge.data.DuplicateSummaryDetails
+import com.github.thebridsk.bridge.data.Table
 
 case class DuplicateException(message: String) extends Exception(message)
 
 sealed trait DuplicateViewPerspective
 
 case object PerspectiveDirector extends DuplicateViewPerspective
-case class PerspectiveTable(teamId1: Id.Team, teamId2: Id.Team)
+case class PerspectiveTable(teamId1: Team.Id, teamId2: Team.Id)
     extends DuplicateViewPerspective
 case object PerspectiveComplete extends DuplicateViewPerspective
 
@@ -41,7 +42,7 @@ class MatchDuplicateScore private (
 
   val teams = duplicate.teams
 
-  def getTeam(tid: Id.Team) = duplicate.getTeam(tid)
+  def getTeam(tid: Team.Id) = duplicate.getTeam(tid)
 
   val teamScores = duplicate.teams
     .map(
@@ -113,7 +114,7 @@ class MatchDuplicateScore private (
     })
   }
 
-  def placeByWinnerSet(winnerset: List[Id.Team]) = {
+  def placeByWinnerSet(winnerset: List[Team.Id]) = {
     places.flatMap(p => {
       val pteam = p.teams.filter(t => winnerset.contains(t.id))
       if (pteam.isEmpty) Nil
@@ -121,7 +122,7 @@ class MatchDuplicateScore private (
     })
   }
 
-  def placeImpByWinnerSet(winnerset: List[Id.Team]) = {
+  def placeImpByWinnerSet(winnerset: List[Team.Id]) = {
     placesImps.flatMap(p => {
       val pteam = p.teams.filter(t => winnerset.contains(t.id))
       if (pteam.isEmpty) Nil
@@ -129,9 +130,9 @@ class MatchDuplicateScore private (
     })
   }
 
-  val tables: Map[String, List[Round]] = {
+  val tables: Map[Table.Id, List[Round]] = {
     import scala.collection.mutable
-    val tables: mutable.Map[String, mutable.Map[Int, Round]] = mutable.Map()
+    val tables: mutable.Map[Table.Id, mutable.Map[Int, Round]] = mutable.Map()
 
     boards.foreach {
       case (bid, board) =>
@@ -180,7 +181,7 @@ class MatchDuplicateScore private (
     }.toMap
   }
 
-  def getRound(table: String, round: Int) = {
+  def getRound(table: Table.Id, round: Int) = {
     tables.get(table) match {
       case Some(rounds) =>
         rounds.find { r =>
@@ -221,7 +222,7 @@ class MatchDuplicateScore private (
   /**
     * @returns table IDs
     */
-  def tableRoundRelay(itable: String, iround: Int) = {
+  def tableRoundRelay(itable: Table.Id, iround: Int) = {
     val allRounds = getRoundForAllTables(iround)
     val otherRounds = allRounds.filter(r => r.table != itable)
     val otherBoards = otherRounds.flatMap(r => r.boards.map(bs => bs.board.id))
@@ -236,7 +237,7 @@ class MatchDuplicateScore private (
             }
           }
           .distinct
-          .sortWith((l, r) => Id.idComparer(l, r) < 0)
+          .sorted
         relays
       }
       .getOrElse(Nil)
@@ -248,13 +249,11 @@ class MatchDuplicateScore private (
   def getTableIds = {
     tables.keys
       .map { id =>
-        id.asInstanceOf[Id.Table]
+        id.asInstanceOf[Table.Id]
       }
       .toSet
       .toList
-      .sortWith { (l, r) =>
-        Id.idComparer(l, r) < 0
-      }
+      .sorted
   }
 
   def getBoardSet = duplicate.boardset
@@ -265,11 +264,11 @@ class MatchDuplicateScore private (
     * Get the winner sets.  From each set a winner should be declared.
     * @return a list of the winner sets.  A winner set is a list of team Ids.
     */
-  def getWinnerSets: List[List[Id.Team]] = {
+  def getWinnerSets: List[List[Team.Id]] = {
     // key is a team, value are the opponents of key
     val winnersets =
-      scala.collection.mutable.Map[Id.DuplicateHand, List[Id.DuplicateHand]]()
-    def addTeam(t1: Id.Team, t2: Id.Team) = {
+      scala.collection.mutable.Map[Team.Id, List[Team.Id]]()
+    def addTeam(t1: Team.Id, t2: Team.Id) = {
       val cur = winnersets.get(t1) match {
         case Some(l) => l
         case None    => Nil
@@ -282,11 +281,10 @@ class MatchDuplicateScore private (
       addTeam(h.ewTeam, h.nsTeam)
     }
     duplicate.boards.foreach(b => b.hands.foreach(h => add(h)))
-    def sorter(id1: Id.Team, id2: Id.Team) = Id.idComparer(id1, id2) < 0
     val sets =
-      winnersets.values.map(l => l.sortWith(sorter)).toSeq.distinct.toList
+      winnersets.values.map(l => l.sorted).toSeq.distinct.toList
     if (sets.size != 2) {
-      List(duplicate.teams.map(t => t.id).toList.sortWith(sorter))
+      List(duplicate.teams.map(t => t.id).toList.sorted)
     } else {
       val List(s1, s2) = sets
       if (s1.filter(k => s2.contains(k))
@@ -310,10 +308,10 @@ class MatchDuplicateScore private (
           .isEmpty
 
         if (allSamePos) sets
-        else List(duplicate.teams.map(t => t.id).toList.sortWith(sorter))
+        else List(duplicate.teams.map(t => t.id).toList.sorted)
       } else {
         // the two sets have at least one entry in common
-        List(duplicate.teams.map(t => t.id).toList.sortWith(sorter))
+        List(duplicate.teams.map(t => t.id).toList.sorted)
       }
     }
   }
@@ -344,7 +342,7 @@ class MatchDuplicateScore private (
           }
         }
       }
-      .foldLeft(Map[Id.Team, DuplicateSummaryDetails]()) { (ac, v) =>
+      .foldLeft(Map[Team.Id, DuplicateSummaryDetails]()) { (ac, v) =>
         val c = ac.get(v.team).getOrElse(DuplicateSummaryDetails.zero(v.team))
         ac + (v.team -> (c.add(v)))
       }
@@ -364,10 +362,10 @@ class MatchDuplicateScore private (
 
 object MatchDuplicateScore {
 
-  case class TeamScore(team: Id.Team, points: Double)
+  case class TeamScore(team: Team.Id, points: Double)
 
   case class Round(
-      table: String,
+      table: Table.Id,
       round: Int,
       ns: Team,
       ew: Team,

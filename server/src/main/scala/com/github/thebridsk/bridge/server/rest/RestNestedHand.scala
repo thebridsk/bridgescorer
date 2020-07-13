@@ -37,6 +37,7 @@ import javax.ws.rs.GET
 import javax.ws.rs.POST
 import javax.ws.rs.PUT
 import javax.ws.rs.DELETE
+import com.github.thebridsk.bridge.data.Team
 
 object RestNestedHand {
   val log = Logger[RestNestedHand]()
@@ -61,7 +62,7 @@ class RestNestedHand {
     */
   @Hidden
   def route(
-      implicit @Parameter(hidden = true) res: Resources[Id.Team, DuplicateHand]
+      implicit @Parameter(hidden = true) res: Resources[Team.Id, DuplicateHand]
   ) = pathPrefix("hands") {
     logRequestResult("route", DebugLevel) {
       getHand ~ getHands ~ postHand ~ putHand ~ deleteHand
@@ -117,7 +118,7 @@ class RestNestedHand {
   def xxxgetHands = {}
   def getHands(
       implicit @Parameter(hidden = true) res: Resources[
-        Id.DuplicateHand,
+        Team.Id,
         DuplicateHand
       ]
   ) = pathEndOrSingleSlash {
@@ -183,11 +184,11 @@ class RestNestedHand {
   )
   def xxxgetHand = {}
   def getHand(
-      implicit @Parameter(hidden = true) res: Resources[String, DuplicateHand]
+      implicit @Parameter(hidden = true) res: Resources[Team.Id, DuplicateHand]
   ) = logRequest("getHand", DebugLevel) {
     get {
       path("""[a-zA-Z0-9]+""".r) { id =>
-        resource(res.select(id).read())
+        resource(res.select(Team.id(id)).read())
       }
     }
   }
@@ -256,7 +257,7 @@ class RestNestedHand {
   )
   def xxxpostHand = {}
   def postHand(
-      implicit @Parameter(hidden = true) res: Resources[String, DuplicateHand]
+      implicit @Parameter(hidden = true) res: Resources[Team.Id, DuplicateHand]
   ) = pathEnd {
     post {
       entity(as[DuplicateHand]) { hand =>
@@ -343,13 +344,13 @@ class RestNestedHand {
   )
   def xxxputHand = {}
   def putHand(
-      implicit @Parameter(hidden = true) res: Resources[String, DuplicateHand]
+      implicit @Parameter(hidden = true) res: Resources[Team.Id, DuplicateHand]
   ) = logRequest("putHand", DebugLevel) {
     logResult("putHand", DebugLevel) {
       put {
         path("""[a-zA-Z0-9]+""".r) { id =>
           entity(as[DuplicateHand]) { hand =>
-            resourceUpdated(res.select(id).update(hand))
+            resourceUpdated(res.select(Team.id(id)).update(hand))
           }
         }
       }
@@ -394,10 +395,10 @@ class RestNestedHand {
   )
   def xxxdeleteHand = {}
   def deleteHand(
-      implicit @Parameter(hidden = true) res: Resources[String, DuplicateHand]
+      implicit @Parameter(hidden = true) res: Resources[Team.Id, DuplicateHand]
   ) = delete {
     path("""[a-zA-Z0-9]+""".r) { id =>
-      resourceDelete(res.select(id).delete())
+      resourceDelete(res.select(Team.id(id)).delete())
     }
   }
 }
