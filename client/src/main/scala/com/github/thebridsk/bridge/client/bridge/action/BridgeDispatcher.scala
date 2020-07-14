@@ -24,6 +24,7 @@ import com.github.thebridsk.bridge.data.ServerURL
 import com.github.thebridsk.bridge.clientcommon.dispatcher.Dispatcher
 import com.github.thebridsk.bridge.clientcommon.dispatcher.Action
 import com.github.thebridsk.bridge.data.DuplicatePicture
+import com.github.thebridsk.bridge.data.Board
 
 object BridgeDispatcher extends Dispatcher {
   val logger = Logger("bridge.BridgeDispatcher")
@@ -50,7 +51,7 @@ object BridgeDispatcher extends Dispatcher {
   def updateDuplicateHand( dupid: Id.MatchDuplicate, hand: DuplicateHand ) = dispatcher.dispatch( ActionUpdateDuplicateHand( dupid, hand ))
 
   def updateTeam( dupid: Id.MatchDuplicate, team: Team ) = dispatcher.dispatch( ActionUpdateTeam( dupid, team ))
-  def updatePicture( dupid: Id.MatchDuplicate, boardid: Id.DuplicateBoard, handid: Team.Id, picture: Option[DuplicatePicture] ) = dispatcher.dispatch( ActionUpdatePicture( dupid, boardid, handid, picture ))
+  def updatePicture( dupid: Id.MatchDuplicate, boardid: Board.Id, handid: Team.Id, picture: Option[DuplicatePicture] ) = dispatcher.dispatch( ActionUpdatePicture( dupid, boardid, handid, picture ))
   def updatePictures( dupid: Id.MatchDuplicate, pictures: List[DuplicatePicture] ) = dispatcher.dispatch( ActionUpdatePictures( dupid, pictures ))
 
   def createBoardSet( boardSet: BoardSet ) = dispatcher.dispatch( ActionCreateBoardSet(boardSet))

@@ -272,7 +272,7 @@ class RestNestedHand {
   ): Future[Result[(String, DuplicateHand)]] =
     f.map { r =>
       r match {
-        case Right(md) => Right((md.id.toString(), md))
+        case Right(md) => Right((md.id.id, md))
         case Left(e)   => Left(e)
       }
     }

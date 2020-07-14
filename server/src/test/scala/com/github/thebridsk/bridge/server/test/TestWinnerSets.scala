@@ -18,6 +18,7 @@ import com.github.thebridsk.bridge.data.DuplicateHand
 import com.github.thebridsk.bridge.data.Id
 import scala.concurrent.Await
 import scala.concurrent.duration._
+import com.github.thebridsk.bridge.data.Team
 
 class TestWinnerSets extends AnyFlatSpec with Matchers {
 
@@ -53,8 +54,8 @@ class TestWinnerSets extends AnyFlatSpec with Matchers {
     val ws = mds.getWinnerSets
 
     ws.size mustBe 2
-    ws must contain ( List("T1","T2","T3") )
-    ws must contain ( List("T4","T5","T6") )
+    ws must contain ( List(Team.id(1),Team.id(2),Team.id(3)) )
+    ws must contain ( List(Team.id(4),Team.id(5),Team.id(6)) )
 
     val pl1 = mds.placeByWinnerSet(ws.head)
     pl1.size mustBe 1
@@ -99,7 +100,7 @@ class TestWinnerSets extends AnyFlatSpec with Matchers {
 
     withClue(s"winner sets are ${ws}") {
       ws.size mustBe 1
-      ws.head mustBe List("T1","T2","T3", "T4","T5","T6")
+      ws.head mustBe List(Team.id(1),Team.id(2),Team.id(3), Team.id(4),Team.id(5),Team.id(6))
     }
   }
 
@@ -108,7 +109,7 @@ class TestWinnerSets extends AnyFlatSpec with Matchers {
     val ws = MatchDuplicateScore(dup, PerspectiveDirector).getWinnerSets
 
     ws.size mustBe 1
-    ws.head mustBe List("T1","T2","T3","T4")
+    ws.head mustBe List(Team.id(1),Team.id(2),Team.id(3),Team.id(4))
   }
 
   it should "have one winner set in Howell3TableNoRelay" in {
@@ -116,7 +117,7 @@ class TestWinnerSets extends AnyFlatSpec with Matchers {
     val ws = MatchDuplicateScore(dup, PerspectiveDirector).getWinnerSets
 
     ws.size mustBe 1
-    ws.head mustBe List("T1","T2","T3","T4","T5","T6")
+    ws.head mustBe List(Team.id(1),Team.id(2),Team.id(3),Team.id(4),Team.id(5),Team.id(6))
   }
 
 }

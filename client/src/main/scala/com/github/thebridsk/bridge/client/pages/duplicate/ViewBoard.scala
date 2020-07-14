@@ -29,6 +29,7 @@ import com.github.thebridsk.bridge.client.pages.hand.Picture
 import _root_.com.github.thebridsk.bridge.data.DuplicatePicture
 import com.github.thebridsk.materialui.icons.Photo
 import com.github.thebridsk.bridge.client.pages.hand.HandStyles.handStyles
+import com.github.thebridsk.bridge.data.Board
 
 /**
  * Shows the board results
@@ -36,7 +37,7 @@ import com.github.thebridsk.bridge.client.pages.hand.HandStyles.handStyles
  * To use, just code the following:
  *
  * <pre><code>
- * ViewBoard( routerCtl: BridgeRouter[DuplicatePage], score: MatchDuplicateScore, board: Id.DuplicateBoard )
+ * ViewBoard( routerCtl: BridgeRouter[DuplicatePage], score: MatchDuplicateScore, board: Board.Id )
  * </code></pre>
  *
  * @author werewolf
@@ -48,7 +49,7 @@ object ViewBoard {
       routerCtl: BridgeRouter[DuplicatePage],
       page: BaseBoardView,
       score: MatchDuplicateScore,
-      board: Id.DuplicateBoard,
+      board: Board.Id,
       useIMPs: Boolean = false,
       pictures: List[DuplicatePicture] = List()
   )
@@ -57,7 +58,7 @@ object ViewBoard {
       routerCtl: BridgeRouter[DuplicatePage],
       page: BaseBoardView,
       score: MatchDuplicateScore,
-      board: Id.DuplicateBoard,
+      board: Board.Id,
       useIMPs: Boolean = true,
       pictures: List[DuplicatePicture] = List()
   ) = component(Props(routerCtl, page, score, board, useIMPs, pictures))
@@ -246,11 +247,11 @@ object ViewBoardInternal {
         <.div(
           dupStyles.divBoardView,
           <.table(
-            ^.id:="Board_"+props.board,
+            ^.id:=s"Board_${props.board.id}",
             <.caption(
               <.span(
                 ^.float:="left",
-                "Board "+Id.boardIdToBoardNumber(props.board)
+                "Board "+props.board.toNumber
               ),
               <.span(
                 ^.float:="right",

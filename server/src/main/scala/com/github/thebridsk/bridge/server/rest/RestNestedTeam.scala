@@ -235,7 +235,7 @@ class RestNestedTeam {
   def addIdToFuture(f: Future[Result[Team]]): Future[Result[(String, Team)]] =
     f.map { r =>
       r match {
-        case Right(md) => Right((md.id.toString(), md))
+        case Right(md) => Right((md.id.id, md))
         case Left(e)   => Left(e)
       }
     }

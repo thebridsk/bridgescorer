@@ -17,6 +17,7 @@ import com.github.thebridsk.bridge.server.backend.BridgeServiceInMemory
 import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext
 import com.github.thebridsk.bridge.data.Team
+import com.github.thebridsk.bridge.data.Board
 
 class TestDuplicateScore extends AnyFlatSpec with Matchers {
 
@@ -38,7 +39,7 @@ class TestDuplicateScore extends AnyFlatSpec with Matchers {
   it should "score from T1 and T2 perspective" in {
     val score = MatchDuplicateScore( md, PerspectiveTable(team1, team2) )
     score.teamScores mustBe TestMatchDuplicate.getTeamScore()
-    val b7 = score.boards.get("B7").get
+    val b7 = score.boards.get(Board.id(7)).get
     b7.hasTeamPlayed(team1) mustBe true
     b7.hasTeamPlayed(team2) mustBe false
     b7.hasTeamPlayed(team3) mustBe true
@@ -51,7 +52,7 @@ class TestDuplicateScore extends AnyFlatSpec with Matchers {
     b7.scores(false).get(team2).get.hidden mustBe false
     b7.scores(false).get(team3).get.hidden mustBe true
     b7.scores(false).get(team4).get.hidden mustBe false
-    val b8 = score.boards.get("B8").get
+    val b8 = score.boards.get(Board.id(8)).get
     b8.hasTeamPlayed(team1) mustBe false
     b8.hasTeamPlayed(team2) mustBe true
     b8.hasTeamPlayed(team3) mustBe false
@@ -69,7 +70,7 @@ class TestDuplicateScore extends AnyFlatSpec with Matchers {
   it should "score from T3 and T4 perspective" in {
     val score = MatchDuplicateScore( md, PerspectiveTable(team3, team4 ))
     score.teamScores mustBe TestMatchDuplicate.getTeamScore()
-    val b7 = score.boards.get("B7").get
+    val b7 = score.boards.get(Board.id(7)).get
     b7.hasTeamPlayed(team1) mustBe true
     b7.hasTeamPlayed(team2) mustBe false
     b7.hasTeamPlayed(team3) mustBe true
@@ -82,7 +83,7 @@ class TestDuplicateScore extends AnyFlatSpec with Matchers {
     b7.scores(false).get(team2).get.hidden mustBe false
     b7.scores(false).get(team3).get.hidden mustBe true
     b7.scores(false).get(team4).get.hidden mustBe false
-    val b8 = score.boards.get("B8").get
+    val b8 = score.boards.get(Board.id(8)).get
     b8.hasTeamPlayed(team1) mustBe false
     b8.hasTeamPlayed(team2) mustBe true
     b8.hasTeamPlayed(team3) mustBe false
@@ -103,7 +104,7 @@ class TestDuplicateScore extends AnyFlatSpec with Matchers {
   it should "score from T1 and T3 perspective" in {
     val score = MatchDuplicateScore( md, PerspectiveTable(team1, team3 ))
     score.teamScores mustBe TestMatchDuplicate.getTeamScore()
-    val b7 = score.boards.get("B7").get
+    val b7 = score.boards.get(Board.id(7)).get
     b7.hasTeamPlayed(team1) mustBe true
     b7.hasTeamPlayed(team2) mustBe false
     b7.hasTeamPlayed(team3) mustBe true
@@ -124,7 +125,7 @@ class TestDuplicateScore extends AnyFlatSpec with Matchers {
     b7.scores(false).get(team2).get.score mustBe 0
     b7.scores(false).get(team3).get.score mustBe 650
     b7.scores(false).get(team4).get.score mustBe 0
-    val b8 = score.boards.get("B8").get
+    val b8 = score.boards.get(Board.id(8)).get
     b8.hasTeamPlayed(team1) mustBe false
     b8.hasTeamPlayed(team2) mustBe true
     b8.hasTeamPlayed(team3) mustBe false
@@ -153,7 +154,7 @@ class TestDuplicateScore extends AnyFlatSpec with Matchers {
   it should "score from T2 and T4 perspective" in {
     val score = MatchDuplicateScore( md, PerspectiveTable(team2, team4 ))
     score.teamScores mustBe TestMatchDuplicate.getTeamScore()
-    val b7 = score.boards.get("B7").get
+    val b7 = score.boards.get(Board.id(7)).get
     b7.hasTeamPlayed(team1) mustBe true
     b7.hasTeamPlayed(team2) mustBe false
     b7.hasTeamPlayed(team3) mustBe true
@@ -174,7 +175,7 @@ class TestDuplicateScore extends AnyFlatSpec with Matchers {
     b7.scores(false).get(team2).get.score mustBe 0
     b7.scores(false).get(team3).get.score mustBe 0
     b7.scores(false).get(team4).get.score mustBe 0
-    val b8 = score.boards.get("B8").get
+    val b8 = score.boards.get(Board.id(8)).get
     b8.hasTeamPlayed(team1) mustBe false
     b8.hasTeamPlayed(team2) mustBe true
     b8.hasTeamPlayed(team3) mustBe false

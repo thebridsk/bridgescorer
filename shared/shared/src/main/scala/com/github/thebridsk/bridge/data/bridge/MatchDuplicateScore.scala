@@ -31,7 +31,7 @@ class MatchDuplicateScore private (
     duplicate.boards.map(b => (b.id -> BoardScore(b, perspective))).toMap
 
   val sortedBoards =
-    boards.values.toList.sortWith((b1, b2) => Id.idComparer(b1.id, b2.id) < 0)
+    boards.values.toList.sortWith((b1, b2) => b1.id < b2.id)
 
   val alldone = !boards.values.exists(b => !b.allplayed)
 
@@ -173,7 +173,7 @@ class MatchDuplicateScore private (
         ).map { r =>
           r.copy(
             boards = r.boards.sortWith(
-              (r1, r2) => Id.idComparer(r1.id.toString, r2.id.toString) < 0
+              (r1, r2) => r1.id < r2.id
             )
           )
         })

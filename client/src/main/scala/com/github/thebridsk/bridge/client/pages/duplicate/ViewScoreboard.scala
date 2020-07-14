@@ -115,7 +115,7 @@ object ViewScoreboardInternal {
                           val id = b.id
                           val (played,ns) = wasPlayed(b)
                           val clickPage = if (played) props.page.toBoardView(id) else props.page.toBoardView(id).toHandView(ns)
-                          AppButton( "Board_"+id, Id.boardIdToBoardNumber(id),
+                          AppButton( s"Board_${id.id}", id.toNumber,
                                      !played ?= baseStyles.requiredNotNext,
                                      props.routerCtl.setOnClick(clickPage) )
                         }
@@ -132,7 +132,7 @@ object ViewScoreboardInternal {
                               if (isBoardInRound(b)) {
                                 <.th( dupStyles.cellScoreboardBoardColumn, boardButton(b))
                               } else {
-                                <.th( dupStyles.cellScoreboardBoardColumn, Id.boardIdToBoardNumber(b.id) )
+                                <.th( dupStyles.cellScoreboardBoardColumn, b.id.toNumber )
                               }
                             }.toTagMod
                           )

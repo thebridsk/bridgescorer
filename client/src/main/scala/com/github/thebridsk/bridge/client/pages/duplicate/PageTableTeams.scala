@@ -334,8 +334,9 @@ object PageTableTeamsInternal {
       DuplicateStore.getMatch() match {
         case Some(md) =>
           props.page match {
-            case TableTeamByBoardView( dupid, stableid, round, boardid ) =>
+            case view @ TableTeamByBoardView( dupid, stableid, round, sboardid ) =>
               val tableid = props.page.tableid
+              val boardid = view.boardid
               md.getBoard(boardid) match {
                 case Some(b) =>
                   val h = b.hands.find { h => h.table==tableid && h.round==round }
@@ -519,7 +520,7 @@ object PageTableTeamsInternal {
 
     def getHand( md: MatchDuplicate, page: TableTeamView ) = page match {
       case v: TableTeamByBoardView =>
-        md.getHand(v.tableid, v.round, v.boardId)
+        md.getHand(v.tableid, v.round, v.boardid)
       case v: TableTeamByRoundView =>
         md.getHandsInRound(v.tableid, v.round).headOption
     }

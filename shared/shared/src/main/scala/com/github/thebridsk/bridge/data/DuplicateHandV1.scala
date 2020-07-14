@@ -26,7 +26,7 @@ case class DuplicateHandV1(
     )
     round: Int,
     @Schema(description = "The board id", required = true)
-    board: Id.DuplicateBoard,
+    board: Board.Id,
     @Schema(
       description =
         "The team id of the team playing NS.  This is also the id of the DuplicateHand",
@@ -163,7 +163,7 @@ object DuplicateHandV1 {
       hand: Option[Hand],
       table: Table.Id,
       round: Int,
-      board: Id.DuplicateBoard,
+      board: Board.Id,
       nsTeam: Team.Id,
       ewTeam: Team.Id
   ) = {
@@ -187,7 +187,7 @@ object DuplicateHandV1 {
       hand: Hand,
       table: Table.Id,
       round: Int,
-      board: Id.DuplicateBoard,
+      board: Board.Id,
       nsTeam: Team.Id,
       ewTeam: Team.Id
   ) = {
@@ -209,7 +209,7 @@ object DuplicateHandV1 {
   def create(
       table: Table.Id,
       round: Int,
-      board: Id.DuplicateBoard,
+      board: Board.Id,
       nsTeam: Team.Id,
       ewTeam: Team.Id
   ) = {

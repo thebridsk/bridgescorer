@@ -229,7 +229,7 @@ object DifferenceWrappers {
 
   implicit class WrapBoard(val me: Board)
       extends AnyVal
-      with DifferenceComparable[Id.DuplicateBoard, Board, WrapBoard] {
+      with DifferenceComparable[Board.Id, Board, WrapBoard] {
 
     def id = me.id
 
@@ -275,7 +275,7 @@ object DifferenceWrappers {
           other.teams.map(h => WrapTeam(h)),
           prefix + ".teams"
         ),
-        compareList[Id.DuplicateBoard, Board, WrapBoard](
+        compareList[Board.Id, Board, WrapBoard](
           me.boards.map(h => WrapBoard(h)),
           other.boards.map(h => WrapBoard(h)),
           prefix + ".boards"

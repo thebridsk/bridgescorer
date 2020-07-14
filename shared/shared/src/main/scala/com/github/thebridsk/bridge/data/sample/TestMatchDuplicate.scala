@@ -12,7 +12,7 @@ object TestMatchDuplicate {
 
   def getHand(
       dm: MatchDuplicate,
-      boardid: Id.DuplicateBoard,
+      boardid: Board.Id,
       handid: Team.Id,
       contractTricks: Int,
       contractSuit: String,
@@ -54,14 +54,14 @@ object TestMatchDuplicate {
   def create(id: Id.MatchDuplicate): MatchDuplicate = {
     val ts: Map[Team.Id, Team] = teams()
 
-    val boards = scala.collection.mutable.Map[Id.DuplicateBoard, Board]()
+    val boards = scala.collection.mutable.Map[Board.Id, Board]()
 
     def addBoard(board: Board) = boards += (board.id -> board)
 
-    addBoard(Board.create("B1", false, false, "N", List()))
-    addBoard(Board.create("B2", true, false, "E", List()))
-    addBoard(Board.create("B7", true, true, "S", List()))
-    addBoard(Board.create("B8", false, false, "W", List()))
+    addBoard(Board.create(Board.id(1), false, false, "N", List()))
+    addBoard(Board.create(Board.id(2), true, false, "E", List()))
+    addBoard(Board.create(Board.id(7), true, true, "S", List()))
+    addBoard(Board.create(Board.id(8), false, false, "W", List()))
 
     def addHand(hand: DuplicateHand) = {
       val board = boards.get(hand.board).get
@@ -69,27 +69,27 @@ object TestMatchDuplicate {
       boards += (hand.board -> board.updateHand(hand))
     }
 
-    addHand(DuplicateHand.create(Table.id(1), 1, "B1", team1, team2))
-    addHand(DuplicateHand.create(Table.id(1), 1, "B2", team1, team2))
-    addHand(DuplicateHand.create(Table.id(2), 2, "B1", team3, team4))
-    addHand(DuplicateHand.create(Table.id(2), 2, "B2", team3, team4))
-    addHand(DuplicateHand.create(Table.id(1), 3, "B7", team3, team1))
-    addHand(DuplicateHand.create(Table.id(1), 3, "B8", team3, team1))
-    addHand(DuplicateHand.create(Table.id(2), 4, "B7", team2, team4))
-    addHand(DuplicateHand.create(Table.id(2), 4, "B8", team2, team4))
+    addHand(DuplicateHand.create(Table.id(1), 1, Board.id(1), team1, team2))
+    addHand(DuplicateHand.create(Table.id(1), 1, Board.id(2), team1, team2))
+    addHand(DuplicateHand.create(Table.id(2), 2, Board.id(1), team3, team4))
+    addHand(DuplicateHand.create(Table.id(2), 2, Board.id(2), team3, team4))
+    addHand(DuplicateHand.create(Table.id(1), 3, Board.id(7), team3, team1))
+    addHand(DuplicateHand.create(Table.id(1), 3, Board.id(8), team3, team1))
+    addHand(DuplicateHand.create(Table.id(2), 4, Board.id(7), team2, team4))
+    addHand(DuplicateHand.create(Table.id(2), 4, Board.id(8), team2, team4))
 
     MatchDuplicate(id, ts.values.toList, boards.values.toList, "", "", 0, 0)
   }
 
   def getHands(md: MatchDuplicate) = {
     var hands: List[DuplicateHand] = Nil
-    hands = getHand(md, "B1", team1, 3, "N", "N", "N", true, 5) :: hands
-    hands = getHand(md, "B2", team1, 4, "S", "N", "N", true, 5) :: hands
-    hands = getHand(md, "B1", team3, 4, "S", "N", "N", true, 5) :: hands
-    hands = getHand(md, "B2", team3, 4, "S", "N", "N", true, 5) :: hands
+    hands = getHand(md, Board.id(1), team1, 3, "N", "N", "N", true, 5) :: hands
+    hands = getHand(md, Board.id(2), team1, 4, "S", "N", "N", true, 5) :: hands
+    hands = getHand(md, Board.id(1), team3, 4, "S", "N", "N", true, 5) :: hands
+    hands = getHand(md, Board.id(2), team3, 4, "S", "N", "N", true, 5) :: hands
 
-    hands = getHand(md, "B7", team3, 4, "S", "N", "N", true, 5) :: hands
-    hands = getHand(md, "B8", team2, 4, "S", "N", "N", true, 5) :: hands
+    hands = getHand(md, Board.id(7), team3, 4, "S", "N", "N", true, 5) :: hands
+    hands = getHand(md, Board.id(8), team2, 4, "S", "N", "N", true, 5) :: hands
     hands.reverse
   }
 

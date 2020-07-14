@@ -31,7 +31,7 @@ import java.util.logging.Level
 import com.github.thebridsk.utilities.logging.RedirectOutput
 import com.github.thebridsk.bridge.data.MatchDuplicate
 import com.github.thebridsk.bridge.data.Team
-import com.github.thebridsk.bridge.data.BoardV2
+import com.github.thebridsk.bridge.data.Board
 import com.github.thebridsk.bridge.data.DuplicateHandV2
 import com.github.thebridsk.bridge.data.Hand
 import com.github.thebridsk.bridge.data.duplicate.stats.PlayerComparisonStats
@@ -65,8 +65,8 @@ class TestPlayerComparisonStats extends AnyFlatSpec with ScalatestRouteTest with
                            Team.create(team4, "Diana", "Dave")
                         ),
                     boards = List(
-                               BoardV2(
-                                  id = "B1",
+                               Board(
+                                  id = Board.id(1),
                                   nsVul = false,
                                   ewVul = false,
                                   dealer = "N",
@@ -85,7 +85,7 @@ class TestPlayerComparisonStats extends AnyFlatSpec with ScalatestRouteTest with
                                                      ),
                                              table = Table.id(1),
                                              round = 1,
-                                             board = "B1",
+                                             board = Board.id(1),
                                              nsTeam = team1,
                                              ewTeam = team2
                                         ),
@@ -103,7 +103,7 @@ class TestPlayerComparisonStats extends AnyFlatSpec with ScalatestRouteTest with
                                                      ),
                                              table = Table.id(2),
                                              round = 2,
-                                             board = "B1",
+                                             board = Board.id(1),
                                              nsTeam = team3,
                                              ewTeam = team4
                                         )

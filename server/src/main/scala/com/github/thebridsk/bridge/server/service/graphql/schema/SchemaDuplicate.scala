@@ -45,6 +45,7 @@ import com.github.thebridsk.bridge.data.bridge.East
 import com.github.thebridsk.bridge.data.bridge.West
 import com.github.thebridsk.bridge.data.RubberHand
 import com.github.thebridsk.bridge.data.Round
+import com.github.thebridsk.bridge.data.Board
 import com.github.thebridsk.bridge.data.ChicagoBestMatch
 import com.github.thebridsk.bridge.data.RubberBestMatch
 
@@ -61,7 +62,7 @@ object SchemaDuplicate {
 
   val TeamIdType = idScalarType[Team.Type]("TeamId", Team)
   val TableIdType = idScalarType[Table.Type]("TableId", Table)
-  val BoardIdType = idScalarTypeFromString[Id.DuplicateBoard]("BoardId")
+  val BoardIdType = idScalarType[Board.Type]("BoardId", Board)
   val DuplicateIdType = idScalarTypeFromString[Id.MatchDuplicate]("DuplicateId")
   val DuplicateResultIdType =
     idScalarTypeFromString[Id.MatchDuplicateResult]("DuplicateResultId")
@@ -126,7 +127,12 @@ object SchemaDuplicate {
         Some("The round the hand was played in"),
         resolve = _.value.round
       ),
-      Field("board", StringType, Some("The board"), resolve = _.value.board),
+      Field(
+        "board",
+        BoardIdType,
+        Some("The board"),
+        resolve = _.value.board
+      ),
       Field(
         "nsTeam",
         TeamIdType,
@@ -178,7 +184,7 @@ object SchemaDuplicate {
     fields[BridgeService, Board](
       Field(
         "id",
-        DuplicateIdType,
+        BoardIdType,
         Some("The id of the board"),
         resolve = _.value.id
       ),

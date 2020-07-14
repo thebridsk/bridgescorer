@@ -28,7 +28,7 @@ case class BoardV2 private (
       required = true,
       implementation = classOf[String]
     )
-    id: Id.DuplicateBoard,
+    id: Board.Id,
     @Schema(
       description = "True if NS is vulnerable on the board",
       required = true
@@ -101,7 +101,7 @@ case class BoardV2 private (
     }
   }
 
-  def setId(newId: Id.DuplicateBoard, forCreate: Boolean) = {
+  def setId(newId: Board.Id, forCreate: Boolean) = {
     val time = SystemTime.currentTimeMillis()
     copy(
       id = newId,
@@ -167,7 +167,7 @@ case class BoardV2 private (
       .reduce(_ + _)
   }
 
-  def copyForCreate(id: Id.DuplicateBoard) = {
+  def copyForCreate(id: Board.Id) = {
     val time = SystemTime.currentTimeMillis()
     val xhands = hands.map(e => e.copyForCreate(e.id))
     copy(
@@ -215,7 +215,7 @@ case class BoardV2 private (
 
   @Schema(hidden = true)
   def getBoardInSet =
-    BoardInSet(Id.boardIdToBoardNumber(id).toInt, nsVul, ewVul, dealer)
+    BoardInSet(id.toInt, nsVul, ewVul, dealer)
 
   @Schema(hidden = true)
   def convertToCurrentVersion =
@@ -235,7 +235,7 @@ trait IdBoard
 
 object BoardV2 extends HasId[IdBoard]("B") {
   def create(
-      id: Id.DuplicateBoard,
+      id: Board.Id,
       nsVul: Boolean,
       ewVul: Boolean,
       dealer: String,
@@ -249,7 +249,7 @@ object BoardV2 extends HasId[IdBoard]("B") {
     l.id < r.id
 
   def apply(
-      id: Id.DuplicateBoard,
+      id: Board.Id,
       nsVul: Boolean,
       ewVul: Boolean,
       dealer: String,

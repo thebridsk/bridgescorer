@@ -177,7 +177,7 @@ object PageDuplicateHandInternal {
                                               Duplicate,
                                               None,
                                               hand.table.toInt,
-                                              Id.boardIdToBoardNumber(hand.board).toInt,
+                                              hand.board.toInt,
                                               north,south,east,west,
                                               PlayerPosition(board.dealer))
 

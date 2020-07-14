@@ -59,6 +59,7 @@ import scala.reflect.io.File
 import io.swagger.v3.oas.annotations.media.Encoding
 import com.github.thebridsk.bridge.server.backend.resource.ChangeContext
 import com.github.thebridsk.bridge.data.websocket.Protocol.UpdateDuplicatePicture
+import com.github.thebridsk.bridge.data.Board
 
 object RestNestedPicture {
   val log = Logger[RestNestedPicture]()
@@ -100,12 +101,14 @@ class RestNestedPicture( store: Store[Id.MatchDuplicate,MatchDuplicate], parent:
     implicit @Parameter(hidden = true) dupId: Id.MatchDuplicate
   ) = logRequest("RestNestedPicture.nestedRoute", DebugLevel) {
     pathPrefix("""[a-zA-Z0-9]+""".r) { boardId =>
-      nestedPictureHands.route(dupId,boardId)
+      nestedPictureHands.route(dupId,Board.id(boardId))
     }
   }
 
   def getAllPictures( dupId: String ) = {
-    store.metaData.listFilesFilter(dupId) { f => RestNestedPictureHand.getPartsMetadataFile(f).isDefined }.map { ri =>
+    store.metaData.listFilesFilter(dupId) { f =>
+      RestNestedPictureHand.getPartsMetadataFile(f).isDefined
+    }.map { ri =>
       ri match {
         case Right(it) =>
           val r = it.flatMap { mdf =>
@@ -209,7 +212,8 @@ class RestNestedPicture( store: Store[Id.MatchDuplicate,MatchDuplicate], parent:
   def deletePicture(
       implicit @Parameter(hidden = true) dupId: Id.MatchDuplicate
   ) = delete {
-    path("""[a-zA-Z0-9]+""".r) { boardid =>
+    path("""[a-zA-Z0-9]+""".r) { sboardid =>
+      val boardid = Board.id(sboardid)
       val changeContext = ChangeContext()
       val fut = store.metaData.listFiles(dupId).map { rimdf =>
         rimdf match {

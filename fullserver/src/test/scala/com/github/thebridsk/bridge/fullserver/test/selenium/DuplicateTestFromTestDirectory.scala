@@ -388,28 +388,18 @@ class DuplicateTestFromTestDirectory extends AnyFlatSpec with Matchers with Befo
     }
 
     /**
-     * @param id the board id, starts with "Board_B"
-     */
-    def boardIdToNumber( id: String ) = {
-      if (id.startsWith("B")) {
-        id.drop(1).toInt
-      }
-      else 0
-    }
-
-    /**
      * Assumes on a by Scoreboard or BoardPage page with a Board_n buttons for the round being played.
      */
     def doPlayHand( sessionTable: TableSession, hand: DuplicateHand, page: PageWithBoardButtons ) = try {
       import sessionTable._
-      val boardButton = "Board_"+hand.board
+      val boardButton = s"Board_${hand.board.id}"
       val (north,south,east,west) = getPlayers(hand)
 
       withClue(s"Going to board ${hand.board}") {
         hand.hand match {
           case Some(h) =>
             val bh = BridgeHand(h)
-            val bid = boardIdToNumber(hand.board)
+            val bid = hand.board.toInt
             val board = boardSet.get.boards.find( b => b.id == bid).get
             val nsvul = board.nsVul
             val ewvul = board.ewVul

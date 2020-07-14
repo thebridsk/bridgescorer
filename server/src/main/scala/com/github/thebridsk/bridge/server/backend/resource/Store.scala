@@ -471,7 +471,7 @@ abstract class Store[VId, VType <: VersionedInstance[VType, VType, VId]](
                       rnv match {
                         case Right(nv) =>
                           updator.prepend(
-                            ChangeContext.update(nv, s"$resourceURI/$id")
+                            ChangeContext.update(nv, s"$resourceURI/${Resources.vidToString(id)}")
                           )
                           Right(nv)
                         case Left(e) =>

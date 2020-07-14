@@ -118,7 +118,7 @@ class NestedResources[PVId, PVType, NVId, NVType](
       .map { r =>
         r.flatMap(p => nested.getResource(p, parent.resourceURI, id))
       }
-      .logit(s"Read ${resourceURI}/${id}")
+      .logit(s"Read ${resourceURI}/${Resources.vidToString(id)}")
   }
 
   /**
@@ -142,7 +142,7 @@ class NestedResources[PVId, PVType, NVId, NVType](
           updator.updater(ov).flatMap { e =>
             val (nv, t) = e
             nested.updateResource(p, parent.resourceURI, id, nv).map { e =>
-              prepend(ChangeContext.update(e._2, s"${resourceURI}/$id"))
+              prepend(ChangeContext.update(e._2, s"${resourceURI}/${Resources.vidToString(id)}"))
               (e._1, t)
             }
           }
@@ -159,7 +159,7 @@ class NestedResources[PVId, PVType, NVId, NVType](
         }
       }
     }
-    parent.update(u).logit(s"Update ${resourceURI}/${id}")
+    parent.update(u).logit(s"Update ${resourceURI}/${Resources.vidToString(id)}")
   }
 
   /**
@@ -178,7 +178,7 @@ class NestedResources[PVId, PVType, NVId, NVType](
           def updater(p: PVType): Result[(PVType, NVType)] = {
             nested.deleteResource(p, parent.resourceURI, id).map { e =>
               val (np, ov) = e
-              prepend(ChangeContext.delete(ov, s"${resourceURI}/${id}"))
+              prepend(ChangeContext.delete(ov, s"${resourceURI}/${Resources.vidToString(id)}"))
               (np, ov)
             }
           }
@@ -188,7 +188,7 @@ class NestedResources[PVId, PVType, NVId, NVType](
           }
         }
       )
-      .logit(s"Delete ${resourceURI}/${id}")
+      .logit(s"Delete ${resourceURI}/${Resources.vidToString(id)}")
   }
 
 }

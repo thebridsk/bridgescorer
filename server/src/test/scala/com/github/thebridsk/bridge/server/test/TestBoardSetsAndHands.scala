@@ -321,7 +321,7 @@ class TestBoardSetsAndHands extends AnyFlatSpec with ScalatestRouteTest with Mat
   }
 
   it should "return a match duplicate for POST request to /v1/rest/duplicates that is identical to the one sent" in {
-    val boards = (Board.create( "B1", false, false, "N", List() )::Nil)
+    val boards = (Board.create( Board.id(1), false, false, "N", List() )::Nil)
     val md = MatchDuplicate.create("").copy(teams=MatchDuplicate.createTeams(4)).copy(boards=boards)
     Post("/v1/rest/duplicates", md) ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
       status mustBe Created
@@ -345,8 +345,8 @@ class TestBoardSetsAndHands extends AnyFlatSpec with ScalatestRouteTest with Mat
       val resp = responseAs[MatchDuplicate]
       resp.teams.size mustBe 4
       resp.boards.size mustBe 18
-      resp.getBoard("B2").get.dealer mustBe "W"
-      resp.getBoard("B2").get.ewVul mustBe true
+      resp.getBoard(Board.id(2)).get.dealer mustBe "W"
+      resp.getBoard(Board.id(2)).get.ewVul mustBe true
       defaultMatchDuplicate = Some(resp)
       Delete("/v1/rest/duplicates/"+resp.id) ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
         status mustBe NoContent
@@ -362,8 +362,8 @@ class TestBoardSetsAndHands extends AnyFlatSpec with ScalatestRouteTest with Mat
       val resp = responseAs[MatchDuplicate]
       resp.teams.size mustBe 4
       resp.boards.size mustBe 18
-      resp.getBoard("B2").get.dealer mustBe "W"
-      resp.getBoard("B2").get.ewVul mustBe true
+      resp.getBoard(Board.id(2)).get.dealer mustBe "W"
+      resp.getBoard(Board.id(2)).get.ewVul mustBe true
       assert(resp.equalsIgnoreModifyTime(defaultMatchDuplicate.get.copy(id=resp.id)),"Response must be identical to default response")
       Delete("/v1/rest/duplicates/"+resp.id) ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
         status mustBe NoContent
@@ -379,8 +379,8 @@ class TestBoardSetsAndHands extends AnyFlatSpec with ScalatestRouteTest with Mat
       val resp = responseAs[MatchDuplicate]
       resp.teams.size mustBe 4
       resp.boards.size mustBe 18
-      resp.getBoard("B2").get.dealer mustBe "W"
-      resp.getBoard("B2").get.ewVul mustBe true
+      resp.getBoard(Board.id(2)).get.dealer mustBe "W"
+      resp.getBoard(Board.id(2)).get.ewVul mustBe true
       assert(resp.equalsIgnoreModifyTime(defaultMatchDuplicate.get.copy(id=resp.id)),"Response must be identical to default response")
       Delete("/v1/rest/duplicates/"+resp.id) ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
         status mustBe NoContent
@@ -396,8 +396,8 @@ class TestBoardSetsAndHands extends AnyFlatSpec with ScalatestRouteTest with Mat
       val resp = responseAs[MatchDuplicate]
       resp.teams.size mustBe 4
       resp.boards.size mustBe 18
-      resp.getBoard("B2").get.dealer mustBe "W"
-      resp.getBoard("B2").get.ewVul mustBe true
+      resp.getBoard(Board.id(2)).get.dealer mustBe "W"
+      resp.getBoard(Board.id(2)).get.ewVul mustBe true
       assert(resp.equalsIgnoreModifyTime(defaultMatchDuplicate.get.copy(id=resp.id)),"Response must be identical to default response")
       Delete("/v1/rest/duplicates/"+resp.id) ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
         status mustBe NoContent
@@ -413,8 +413,8 @@ class TestBoardSetsAndHands extends AnyFlatSpec with ScalatestRouteTest with Mat
       val resp = responseAs[MatchDuplicate]
       resp.teams.size mustBe 4
       resp.boards.size mustBe 18
-      resp.getBoard("B2").get.dealer mustBe "E"
-      resp.getBoard("B2").get.ewVul mustBe false
+      resp.getBoard(Board.id(2)).get.dealer mustBe "E"
+      resp.getBoard(Board.id(2)).get.ewVul mustBe false
       assert(!resp.equalsIgnoreModifyTime(defaultMatchDuplicate.get.copy(id=resp.id)),"Response must be different from the default response")
       Delete("/v1/rest/duplicates/"+resp.id) ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
         status mustBe NoContent

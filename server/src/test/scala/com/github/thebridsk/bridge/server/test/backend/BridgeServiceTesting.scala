@@ -44,20 +44,20 @@ object BridgeServiceTesting {
                 )
     val time = System.currentTimeMillis().toDouble
     MatchDuplicateV3("M1", teams, List(
-        Board.create("B1", false, false, North.pos, List(
+        Board.create(Board.id(1), false, false, North.pos, List(
             DuplicateHand.create( Hand.create("H1",7,Spades.suit, Doubled.doubled, North.pos,
                                               false,false,true,7),
-                                 Table.id(1), 1, "B1", team1, team2),
+                                 Table.id(1), 1, Board.id(1), team1, team2),
             DuplicateHand.create( Hand.create("H2",7,Spades.suit, Doubled.doubled, North.pos,
                                               false,false,false,1),
-                                  Table.id(2), 2, "B1", team3, team4)
+                                  Table.id(2), 2, Board.id(1), team3, team4)
             )),
-        Board.create("B2", true, false, East.pos, List(
+        Board.create(Board.id(2), true, false, East.pos, List(
             DuplicateHand.create( Hand.create("H1",7,Hearts.suit, Doubled.doubled, North.pos,
                                               false,false,true,7),
-                                  Table.id(1), 1, "B2", team1, team2)
+                                  Table.id(1), 1, Board.id(2), team1, team2)
             )),
-        Board.create("B3", false, true, South.pos, List())
+        Board.create(Board.id(3), false, true, South.pos, List())
         ), "", "", time, time)
 
   }

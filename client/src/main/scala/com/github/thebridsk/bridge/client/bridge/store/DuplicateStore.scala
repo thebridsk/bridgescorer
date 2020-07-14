@@ -46,7 +46,7 @@ object DuplicateStore extends ChangeListenable {
   private var completeView: Option[MatchDuplicateScore] = None
   private var teamsView = Map[(Team.Id,Team.Id),MatchDuplicateScore]()
 
-  private var pictures = Map[(Id.DuplicateBoard,Team.Id),DuplicatePicture]()
+  private var pictures = Map[(Board.Id,Team.Id),DuplicatePicture]()
 
   def getId() = monitoredId
   def getMatch() = {
@@ -118,13 +118,13 @@ object DuplicateStore extends ChangeListenable {
     }
   }
 
-  def getPicture( dupid: Id.MatchDuplicate, boardId: Id.DuplicateBoard, handId: Team.Id ): Option[DuplicatePicture] = {
+  def getPicture( dupid: Id.MatchDuplicate, boardId: Board.Id, handId: Team.Id ): Option[DuplicatePicture] = {
     monitoredId.filter(dup => dup == dupid).flatMap { dup =>
       pictures.get((boardId,handId))
     }
   }
 
-  def getPicture( dupid: Id.MatchDuplicate, boardId: Id.DuplicateBoard ): List[DuplicatePicture] = {
+  def getPicture( dupid: Id.MatchDuplicate, boardId: Board.Id ): List[DuplicatePicture] = {
     monitoredId.filter(dup => dup == dupid).map { dup =>
       pictures.flatMap { e =>
         val ((bid,hid),dp) = e

@@ -6,10 +6,18 @@ import com.github.thebridsk.utilities.logging.Logger
 import Resources._
 import org.scalactic.source.Position
 import com.github.thebridsk.source.SourcePosition
+import com.github.thebridsk.bridge.data.Id
 
 object Resources {
 
   val log = Logger[Resources[_, _]]()
+
+  def vidToString[VId]( id: VId ): String = {
+    id match {
+      case Id(s) => s
+      case _ => id.toString
+    }
+  }
 
 }
 
@@ -75,7 +83,7 @@ abstract class Resources[VId, VType](
     * @return a Resource object for the resource
     */
   def select(id: VId): Resource[VId, VType] = {
-    new Resource(s"$resourceURI/$id", this, id)
+    new Resource(s"$resourceURI/${vidToString(id)}", this, id)
   }
 
   /**

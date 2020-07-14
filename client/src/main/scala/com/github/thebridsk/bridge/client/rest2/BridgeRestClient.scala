@@ -69,9 +69,9 @@ object RestClientBoardSetsAndMovements extends RestClient[BoardSetsAndMovements,
 
 class RestClientDuplicateBoardHand( parent: RestClientDuplicateBoard, instance: String ) extends RestClient[DuplicateHand,Team.Id]("hands", Some(parent), Some(instance) )
 class RestClientDuplicateBoard( parent: RestClient[MatchDuplicate,_], instance: String ) extends RestClient[Board,String]("boards", Some(parent), Some(instance) ) {
-  def handResource( boardid: Id.DuplicateBoard ) = new RestClientDuplicateBoardHand( this, boardid )
+  def handResource( boardid: Board.Id ) = new RestClientDuplicateBoardHand( this, boardid.id )
 }
-class RestClientDuplicateBoardHandPicture( parent: RestClientDuplicateBoardPicture, instance: Id.DuplicateBoard ) extends RestClient[DuplicatePicture,Team.Id]("hands", Some(parent), Some(instance) ) {
+class RestClientDuplicateBoardHandPicture( parent: RestClientDuplicateBoardPicture, instance: String ) extends RestClient[DuplicatePicture,Team.Id]("hands", Some(parent), Some(instance) ) {
   /**
    * @param id the north player that played the pictured hand
    * @param file the File object.  This must have the filename set, only the extension is important.
@@ -92,8 +92,8 @@ class RestClientDuplicateBoardHandPicture( parent: RestClientDuplicateBoardPictu
     AjaxResult.put(getURL(id,query), data=formData, timeout=timeout, headers=headers).recordFailure()
   }
 }
-class RestClientDuplicateBoardPicture( parent: RestClient[MatchDuplicate,_], instance: Id.MatchDuplicate ) extends RestClient[DuplicatePicture,Id.MatchDuplicate]("pictures", Some(parent), Some(instance) ) {
-  def handResource( boardid: Id.DuplicateBoard ) = new RestClientDuplicateBoardHandPicture( this, boardid )
+class RestClientDuplicateBoardPicture( parent: RestClient[MatchDuplicate,_], instance: String ) extends RestClient[DuplicatePicture,Board.Id]("pictures", Some(parent), Some(instance) ) {
+  def handResource( boardid: Board.Id ) = new RestClientDuplicateBoardHandPicture( this, boardid.id )
 }
 class RestClientDuplicateTeam( parent: RestClient[MatchDuplicate,_], instance: String ) extends RestClient[Team,Team.Id]("teams", Some(parent), Some(instance) )
 

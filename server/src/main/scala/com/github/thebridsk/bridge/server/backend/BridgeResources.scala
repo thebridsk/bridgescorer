@@ -254,19 +254,19 @@ object DuplicateTeamsNestedResource
 }
 
 object DuplicateBoardsNestedResource
-    extends NestedResourceSupport[MatchDuplicate, Id.DuplicateBoard, Board] {
+    extends NestedResourceSupport[MatchDuplicate, Board.Id, Board] {
   val resourceURI = "boards"
 
   def getResources(
       parent: MatchDuplicate,
       parentResource: String
-  ): Result[Map[Id.DuplicateBoard, Board]] =
+  ): Result[Map[Board.Id, Board]] =
     Result(parent.boards.map(t => t.id -> t).toMap)
 
   def getResource(
       parent: MatchDuplicate,
       parentResource: String,
-      id: Id.DuplicateBoard
+      id: Board.Id
   ): Result[Board] =
     parent
       .getBoard(id)
@@ -276,14 +276,14 @@ object DuplicateBoardsNestedResource
   def updateResources(
       parent: MatchDuplicate,
       parentResource: String,
-      map: Map[Id.DuplicateBoard, Board]
+      map: Map[Board.Id, Board]
   ): Result[MatchDuplicate] =
     Result(parent.setBoards(map.values.toList))
 
   def updateResource(
       parent: MatchDuplicate,
       parentResource: String,
-      id: Id.DuplicateBoard,
+      id: Board.Id,
       value: Board
   ): Result[(MatchDuplicate, Board)] = {
     val t = value.setId(id, false)
@@ -300,7 +300,7 @@ object DuplicateBoardsNestedResource
   def deleteResource(
       parent: MatchDuplicate,
       parentResource: String,
-      id: Id.DuplicateBoard
+      id: Board.Id
   ): Result[(MatchDuplicate, Board)] = {
     parent
       .getBoard(id)
@@ -619,7 +619,7 @@ object BridgeNestedResources {
       r.nestedResource(DuplicateTeamsNestedResource)
   }
 
-  implicit class WrapBoardResource(val r: Resource[Id.DuplicateBoard, Board])
+  implicit class WrapBoardResource(val r: Resource[Board.Id, Board])
       extends AnyVal {
     def resourceHands(implicit execute: ExecutionContext) =
       r.nestedResource(DuplicateHandsNestedResource)

@@ -354,10 +354,10 @@ class TestCacheStore extends AsyncFlatSpec with ScalatestRouteTest with Matchers
 
   it should "change hand T1 on board B1" in testWithStore { (store,listener) =>
 
-    val handf = store.select("M1").nestedResource(DuplicateBoardsNestedResource).select("B1").nestedResource(DuplicateHandsNestedResource).select(Team.id(1)).read()
+    val handf = store.select("M1").nestedResource(DuplicateBoardsNestedResource).select(Board.id(1)).nestedResource(DuplicateHandsNestedResource).select(Team.id(1)).read()
     handf.testfuture("Testing board B1 hand T1 in match M1") { dh =>
       dh.id mustBe Team.id(1)
-      dh.board mustBe "B1"
+      dh.board mustBe Board.id(1)
       dh.nsTeam mustBe Team.id(1)
       dh.ewTeam mustBe Team.id(2)
 
@@ -365,7 +365,7 @@ class TestCacheStore extends AsyncFlatSpec with ScalatestRouteTest with Matchers
 
       val nh = dh.updateHand( Hand("T1", 1, "S", "N", "N", false, false, true, 2, 0, 0) )
 
-      val uphandf = store.select("M1").nestedResource(DuplicateBoardsNestedResource).select("B1").nestedResource(DuplicateHandsNestedResource).select(Team.id(1)).update(nh)
+      val uphandf = store.select("M1").nestedResource(DuplicateBoardsNestedResource).select(Board.id(1)).nestedResource(DuplicateHandsNestedResource).select(Team.id(1)).update(nh)
       uphandf.testfuture("Testing updating board B1 hand T1 in match M1") { udh =>
         udh.id mustBe Team.id(1)
         udh.hand.get.equalsIgnoreModifyTime(nh.hand.get) mustBe true
@@ -381,9 +381,9 @@ class TestCacheStore extends AsyncFlatSpec with ScalatestRouteTest with Matchers
               parentfield mustBe Some("/duplicates/M1")
               newvalue match {
                 case md: MatchDuplicate =>
-                  md.getBoard("B1") match {
+                  md.getBoard(Board.id(1)) match {
                     case Some(tt) =>
-                      tt.id mustBe "B1"
+                      tt.id mustBe Board.id(1)
                       tt.getHand(Team.id(1)) match {
                         case Some(th) =>
                           th.id mustBe Team.id(1)
@@ -479,7 +479,7 @@ class TestCacheStore extends AsyncFlatSpec with ScalatestRouteTest with Matchers
   def addHand(
                store: Store[Id.MatchDuplicate, MatchDuplicate],
                dupid: String,
-               boardid: String,
+               boardid: Board.Id,
                handid: Team.Id,
                results: CollectResult
              ): (String,Future[Result[(String,DuplicateHand)]]) = {

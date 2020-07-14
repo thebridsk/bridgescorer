@@ -80,7 +80,7 @@ object TestDuplicateMatchScoringManual extends Main {
 
   def check( m: MatchDuplicate, score: MatchDuplicateScore ): Unit = {
     val teams = m.teams.map{t=>t.id}.toList.sorted
-    val boards = score.boards.values.toList.sortWith((one,two)=> Id.idComparer(one.id,two.id)<0)
+    val boards = score.boards.values.toList.sortWith((one,two)=> one.id<two.id)
 
     val header = List( List("team","total"), boards.map( b => b.id.toString ).toList ).flatten
 

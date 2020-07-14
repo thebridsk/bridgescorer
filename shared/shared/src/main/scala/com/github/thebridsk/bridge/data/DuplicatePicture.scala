@@ -7,7 +7,7 @@ import io.swagger.v3.oas.annotations.media.Schema
 )
 case class DuplicatePicture(
   @Schema(description = "The board ID", required = true)
-  boardId: Id.DuplicateBoard,
+  boardId: Board.Id,
   @Schema(description = "The hand ID", required = true)
   handId: Team.Id,
   @Schema(description = "The URL relative to this servers root URL", required = true)

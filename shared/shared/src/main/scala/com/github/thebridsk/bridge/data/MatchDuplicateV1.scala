@@ -18,7 +18,7 @@ case class MatchDuplicateV1(
       description = "The duplicate boards of the match, the key is the board ID",
       required = true
     )
-    boards: Map[Id.DuplicateBoard, BoardV1],
+    boards: Map[Board.Id, BoardV1],
     @Schema(
       description =
         "When the duplicate hand was created, in milliseconds since 1/1/1970 UTC",
@@ -133,14 +133,14 @@ case class MatchDuplicateV1(
           "Board " + hand.board + " not found"
         )
     }
-  def updateHand(boardId: String, hand: DuplicateHandV1): MatchDuplicateV1 =
+  def updateHand(boardId: Board.Id, hand: DuplicateHandV1): MatchDuplicateV1 =
     boards.get(boardId) match {
       case Some(board) => updateBoard(board.updateHand(hand))
       case None =>
         throw new IndexOutOfBoundsException("Board " + boardId + " not found")
     }
   def updateHand(
-      boardId: Id.DuplicateBoard,
+      boardId: Board.Id,
       handId: Team.Id,
       hand: Hand
   ): MatchDuplicateV1 = boards.get(boardId) match {
@@ -152,14 +152,14 @@ case class MatchDuplicateV1(
   def updateTeam(team: Team): MatchDuplicateV1 =
     copy(teams = teams + (team.id -> team))
 
-  def getHand(boardId: Id.DuplicateBoard, handId: Team.Id) = {
+  def getHand(boardId: Board.Id, handId: Team.Id) = {
     boards.get(boardId) match {
       case Some(board) => board.hands.get(handId)
       case None        => None
     }
   }
 
-  def getHand(tableid: Table.Id, round: Int, boardId: Id.DuplicateBoard) = {
+  def getHand(tableid: Table.Id, round: Int, boardId: Board.Id) = {
     boards.get(boardId) match {
       case Some(b) =>
         b.hands.values.find { h =>
@@ -259,7 +259,7 @@ case class MatchDuplicateV1(
   def determinePlayerPositionFromBoard(
       tableid: Table.Id,
       round: Int,
-      boardId: Id.DuplicateBoard
+      boardId: Board.Id
   ): (String, String, String, String, Boolean) = {
     getHand(tableid, round, boardId) match {
       case Some(hand) => determinePlayerPosition(hand)
@@ -375,11 +375,11 @@ case class MatchDuplicateV1(
       }
     }
 
-    val filledB = scala.collection.mutable.Map[Id.DuplicateBoard, BoardV1]()
+    val filledB = scala.collection.mutable.Map[Board.Id, BoardV1]()
 
     boardset.boards.foreach { board =>
       val bb = BoardV1.create(
-        "B" + board.id,
+        Board.id(board.id),
         board.nsVul,
         board.ewVul,
         board.dealer,
@@ -394,7 +394,7 @@ case class MatchDuplicateV1(
         val hand = DuplicateHandV1.create(
           htp.tableid,
           htp.round,
-          "B" + b,
+          Board.id(b),
           ns,
           ew
         )
@@ -438,7 +438,7 @@ case class MatchDuplicateV1(
             e.convertToCurrentVersion
           }
           .toList
-          .sortWith((b1, b2) => Id.idComparer(b1.id, b2.id) > 0),
+          .sortWith((b1, b2) => b1.id < b2.id),
         "ArmonkBoards",
         "2TablesArmonk",
         created,

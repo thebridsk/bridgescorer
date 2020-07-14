@@ -17,6 +17,7 @@ import com.github.thebridsk.utilities.logging.TraceMsg
 import com.github.thebridsk.bridge.data.MatchDuplicateResult
 import com.github.thebridsk.bridge.data.ServerURL
 import com.github.thebridsk.bridge.clientcommon.dispatcher.Action
+import com.github.thebridsk.bridge.data.Board
 
 package object action {
 import _root_.com.github.thebridsk.bridge.data.DuplicatePicture
@@ -48,7 +49,7 @@ import _root_.com.github.thebridsk.bridge.data.DuplicatePicture
   case class ActionUpdateDuplicateMatch( duplicate: MatchDuplicate) extends DuplicateBridgeAction
   case class ActionUpdateDuplicateHand( dupid: String, hand: DuplicateHand) extends DuplicateBridgeAction
   case class ActionUpdateTeam( dupid: String, team: Team) extends DuplicateBridgeAction
-  case class ActionUpdatePicture( dupid: String, boardid: String, handid: Team.Id, picture: Option[DuplicatePicture]) extends DuplicateBridgeAction
+  case class ActionUpdatePicture( dupid: String, boardid: Board.Id, handid: Team.Id, picture: Option[DuplicatePicture]) extends DuplicateBridgeAction
   case class ActionUpdatePictures( dupid: String, picture: List[DuplicatePicture]) extends DuplicateBridgeAction
 
   sealed trait BoardSetAction extends BridgeAction

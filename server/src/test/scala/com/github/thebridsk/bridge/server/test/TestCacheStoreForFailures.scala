@@ -184,7 +184,7 @@ object TestCacheStoreForFailures {
     }
   }
 
-  class TestUpdateHandId( dupid: Id.MatchDuplicate, bid: Id.DuplicateBoard, id: Team.Id ) extends TesterExists {
+  class TestUpdateHandId( dupid: Id.MatchDuplicate, bid: Board.Id, id: Team.Id ) extends TesterExists {
     def testSpecific( change: ChangeContextData )(implicit pos: Position): Assertion = {
       change match {
         case UpdateChangeContext(newvalue,field) =>
@@ -193,7 +193,7 @@ object TestCacheStoreForFailures {
               md.id mustBe id
               field match {
                 case Some(f) =>
-                  f mustBe s"/duplicates/${dupid}/boards/${bid}/hands/${id}"
+                  f mustBe s"/duplicates/${dupid}/boards/${bid.id}/hands/${id.id}"
                 case None =>
                   fail( "Expecting a parent field, got None" )
               }
@@ -1011,7 +1011,7 @@ class TestCacheStoreForFailures extends AsyncFlatSpec with ScalatestRouteTest wi
     val id = md2.id
     persistent.add(md2)
 
-    val boardid = "B1"
+    val boardid = Board.id(1)
     val handid = Team.id(1)
     val dh = md2.getBoard(boardid).map( b => b.getHand(handid) ).getOrElse( throw new Exception("Unable to get board")).getOrElse(throw new Exception("Unable to get hand"))
     dh.updateHand(Hand(handid.id,3,"S","N","N",false,false,true,3,0,0))
@@ -1053,7 +1053,7 @@ class TestCacheStoreForFailures extends AsyncFlatSpec with ScalatestRouteTest wi
     val id = md2.id
     persistent.add(md2)
 
-    val boardid = "B1"
+    val boardid = Board.id(1)
     val handid = Team.id(1)
     val dh = md2.getBoard(boardid).map( b => b.getHand(handid) ).getOrElse( throw new Exception("Unable to get board")).getOrElse(throw new Exception("Unable to get hand"))
     dh.updateHand(Hand(handid.id,3,"S","N","N",false,false,true,3,0,0))
@@ -1093,7 +1093,7 @@ class TestCacheStoreForFailures extends AsyncFlatSpec with ScalatestRouteTest wi
     val id = md2.id
     persistent.add(md2)
 
-    val boardid = "B1"
+    val boardid = Board.id(1)
     val handid = Team.id(1)
     val dh = md2.getBoard(boardid).map( b => b.getHand(handid) ).getOrElse( throw new Exception("Unable to get board")).getOrElse(throw new Exception("Unable to get hand"))
     dh.updateHand(Hand(handid.id,3,"S","N","N",false,false,true,3,0,0))
@@ -1132,7 +1132,7 @@ class TestCacheStoreForFailures extends AsyncFlatSpec with ScalatestRouteTest wi
     val id = md2.id
     persistent.add(md2)
 
-    val boardid = "B1"
+    val boardid = Board.id(1)
     val handid = Team.id(1)
     val dh = md2.getBoard(boardid).map( b => b.getHand(handid) ).getOrElse( throw new Exception("Unable to get board")).getOrElse(throw new Exception("Unable to get hand"))
     dh.updateHand(Hand(handid.id,3,"S","N","N",false,false,true,3,0,0))
@@ -1172,7 +1172,7 @@ class TestCacheStoreForFailures extends AsyncFlatSpec with ScalatestRouteTest wi
     val id = md2.id
     persistent.add(md2)
 
-    val boardid = "B1"
+    val boardid = Board.id(1)
     val handid = Team.id(1)
     val dh = md2.getBoard(boardid).map( b => b.getHand(handid) ).getOrElse( throw new Exception("Unable to get board")).getOrElse(throw new Exception("Unable to get hand"))
     dh.updateHand(Hand(handid.id,3,"S","N","N",false,false,true,3,0,0))

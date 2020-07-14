@@ -122,7 +122,7 @@ object Id {
   @Schema(description = "The id of a Chicago match")
   type MatchChicago = String
   @Schema(description = "The id of a duplicate board, positive integer")
-  type DuplicateBoard = String
+  type DuplicateBoard = data.Board.Id
   @Schema(description = "The id of a duplicate hand")
   type DuplicateHand = data.Team.Id
   @Schema(description = "The id of a team")
@@ -143,18 +143,9 @@ object Id {
     case _             => id
   }
 
-  def boardIdToBoardNumber(id: Id.DuplicateBoard) = id match {
-    case idpattern(bn) => bn
-    case _             => id
-  }
-
   def genericIdToNumber(id: String) = id match {
     case idpattern(bn) => bn
     case _             => id
-  }
-
-  def boardNumberToId(n: Int): Id.DuplicateBoard = {
-    "B" + n
   }
 
   def isValidIdPattern(s: String): Boolean = s match {

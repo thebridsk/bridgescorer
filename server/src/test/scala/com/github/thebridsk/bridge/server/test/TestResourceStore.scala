@@ -66,17 +66,17 @@ class TestResourceStore extends AsyncFlatSpec with Matchers {
 
   import BridgeNestedResources._
   it should "return the B1 object when getting boards from match M1 from store" in {
-    store.select(matchdup.id).resourceBoards.select("B1").read().map { ret =>
+    store.select(matchdup.id).resourceBoards.select(Board.id(1)).read().map { ret =>
       ret match {
         case Right(l) =>
-          assert( l.id == "B1" )
-          assert( l.equalsIgnoreModifyTime( Board.create("B1", false, false, North.pos, List(
+          assert( l.id == Board.id(1) )
+          assert( l.equalsIgnoreModifyTime( Board.create(Board.id(1), false, false, North.pos, List(
                 DuplicateHand.create( Hand.create("H1",7,Spades.suit, Doubled.doubled, North.pos,
                                                   false,false,true,7),
-                                                  Table.id(1), 1, "B1", team1, team2),
+                                                  Table.id(1), 1, Board.id(1), team1, team2),
                 DuplicateHand.create( Hand.create("H2",7,Spades.suit, Doubled.doubled, North.pos,
                                                   false,false,false,1),
-                                                  Table.id(2), 2, "B1", team3, team4)
+                                                  Table.id(2), 2, Board.id(1), team3, team4)
                 )) ))
         case Left(r) => fail("Unable to get Board B1 from store: "+r._2)
       }
@@ -84,13 +84,13 @@ class TestResourceStore extends AsyncFlatSpec with Matchers {
   }
 
   it should "return the hand T1 object when getting hand from board B1 from match M1 from store" in {
-    store.select(matchdup.id).resourceBoards.select("B1").resourceHands.select(team1).read().map { ret =>
+    store.select(matchdup.id).resourceBoards.select(Board.id(1)).resourceHands.select(team1).read().map { ret =>
       ret match {
         case Right(l) =>
           assert( l.id == team1 )
           assert( l.equalsIgnoreModifyTime(DuplicateHand.create( Hand.create("H1",7,Spades.suit, Doubled.doubled, North.pos,
                                                                  false,false,true,7),
-                                                            Table.id(1), 1, "B1", team1, team2)
+                                                            Table.id(1), 1, Board.id(1), team1, team2)
                 ))
         case Left(r) => fail("Unable to get hand T1 from MatchDuplicate,Board "+matchdup.id+",B1 to store: "+r._2)
       }
@@ -98,7 +98,7 @@ class TestResourceStore extends AsyncFlatSpec with Matchers {
   }
 
   it should "return not found when getting hand from board B1 from match M2 from store" in {
-    store.select("M2").resourceBoards.select("B1").resourceHands.select(team1).read().map { ret =>
+    store.select("M2").resourceBoards.select(Board.id(1)).resourceHands.select(team1).read().map { ret =>
       ret match {
         case Right(l) =>
           fail("Unexpected response to get hand H1 from MatchDuplicate,Board M2,B1 to store: "+l)
@@ -110,7 +110,7 @@ class TestResourceStore extends AsyncFlatSpec with Matchers {
   }
 
   it should "return not found when getting hand from board B4 from match M1 from store" in {
-    store.select(matchdup.id).resourceBoards.select("B4").resourceHands.select(team1).read().map { ret =>
+    store.select(matchdup.id).resourceBoards.select(Board.id(4)).resourceHands.select(team1).read().map { ret =>
       ret match {
         case Right(l) =>
           fail("Unexpected response to get hand H1 from MatchDuplicate,Board M2,B4 to store: "+l)
@@ -122,7 +122,7 @@ class TestResourceStore extends AsyncFlatSpec with Matchers {
   }
 
   it should "return not found when getting hand from board B3 from match M1 from store" in {
-    store.select(matchdup.id).resourceBoards.select("B3").resourceHands.select(team1).read().map { ret =>
+    store.select(matchdup.id).resourceBoards.select(Board.id(3)).resourceHands.select(team1).read().map { ret =>
       ret match {
         case Right(l) =>
           fail("Unexpected response to get hand H1 from MatchDuplicate,Board M2,B3 to store: "+l)

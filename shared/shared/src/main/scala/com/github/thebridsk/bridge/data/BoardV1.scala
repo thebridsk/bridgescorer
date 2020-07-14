@@ -25,7 +25,7 @@ case class BoardV1(
       required = true,
       implementation = classOf[String]
     )
-    id: Id.DuplicateBoard,
+    id: Board.Id,
     @Schema(
       description = "True if NS is vulnerable on the board",
       required = true
@@ -95,7 +95,7 @@ case class BoardV1(
     }
   }
 
-  def setId(newId: Id.DuplicateBoard, forCreate: Boolean) = {
+  def setId(newId: Board.Id, forCreate: Boolean) = {
     val time = SystemTime.currentTimeMillis()
     copy(
       id = newId,
@@ -159,7 +159,7 @@ case class BoardV1(
       .reduce(_ + _)
   }
 
-  def copyForCreate(id: Id.DuplicateBoard) = {
+  def copyForCreate(id: Board.Id) = {
     val time = SystemTime.currentTimeMillis()
     val xhands = hands.map(e => (e._1 -> e._2.copyForCreate(e._1))).toMap
     copy(id = id, created = time, updated = time, hands = xhands)
@@ -189,7 +189,7 @@ case class BoardV1(
 
   @Schema(hidden = true)
   def getBoardInSet =
-    BoardInSet(Id.boardIdToBoardNumber(id).toInt, nsVul, ewVul, dealer)
+    BoardInSet(id.toInt, nsVul, ewVul, dealer)
 
   @Schema(hidden = true)
   def convertToCurrentVersion =
@@ -207,7 +207,7 @@ case class BoardV1(
 
 object BoardV1 {
   def create(
-      id: Id.DuplicateBoard,
+      id: Board.Id,
       nsVul: Boolean,
       ewVul: Boolean,
       dealer: String,

@@ -317,7 +317,7 @@ class TestCacheStoreWithRoute extends AnyFlatSpec with ScalatestRouteTest with M
               import scala.language.postfixOps
               implicit val timeout = RouteTestTimeout(5.seconds dilated)
 
-              Put(s"/v1/rest/duplicates/${id}/boards/${boardid}/hands/${handid}", nhand) ~> addHeader(remoteAddress) ~>
+              Put(s"/v1/rest/duplicates/${id}/boards/${boardid.id}/hands/${handid.id}", nhand) ~> addHeader(remoteAddress) ~>
                   Route.seal { myRouteWithLogging } ~>
                   check {
                 status mustBe StatusCodes.InternalServerError
@@ -342,7 +342,7 @@ class TestCacheStoreWithRoute extends AnyFlatSpec with ScalatestRouteTest with M
                 }
 
                 restService.persistent.failWrite = false
-                Put(s"/v1/rest/duplicates/${id}/boards/${boardid}/hands/${handid}", nhand) ~> addHeader(remoteAddress) ~>
+                Put(s"/v1/rest/duplicates/${id}/boards/${boardid.id}/hands/${handid.id}", nhand) ~> addHeader(remoteAddress) ~>
                     Route.seal { myRouteWithLogging } ~>
                     check {
                   status mustBe StatusCodes.NoContent
