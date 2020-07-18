@@ -28,7 +28,7 @@ import scala.util.Using
 object ZipStore {
   val log = Logger[ZipStore[_, _]]()
 
-  def apply[VId, VType <: VersionedInstance[VType, VType, VId]](
+  def apply[VId <: Comparable[VId], VType <: VersionedInstance[VType, VType, VId]](
       name: String,
       zipfile: ZipFileForStore,
       cacheInitialCapacity: Int = 5,
@@ -55,7 +55,7 @@ object ZipStoreInternal {
 
   val storedir = "store/"
 
-  def metadataDir[VId]( id: VId, resourceName: String ) = {
+  def metadataDir[VId <: Comparable[VId]]( id: VId, resourceName: String ) = {
     s"${storedir}${resourceName}.${id}/"
   }
 
@@ -77,7 +77,7 @@ object ZipStoreInternal {
     * @param filter the filter, None means everything, otherwise list of Ids to export
     * @return a future to a result that has a list of all the Ids of entities that are exported.
     */
-  def exportStore[TId, T <: VersionedInstance[T, T, TId]](
+  def exportStore[TId <: Comparable[TId], T <: VersionedInstance[T, T, TId]](
       zip: ZipOutputStream,
       store: Store[TId, T],
       filter: Option[List[String]]
@@ -101,7 +101,7 @@ object ZipStoreInternal {
                 val (id, v) = entry
                 val dir = metadataDir(id,store.support.resourceName)
                 val name =
-                  s"${storedir}${store.support.resourceName}.${id}${store.support.getWriteExtension}"
+                  s"${storedir}${store.support.resourceName}.${store.support.idSupport.toString(id)}${store.support.getWriteExtension}"
                 val content = store.support.toJSON(v)
                 zip.putNextEntry(new ZipEntry(name))
                 val out = new OutputStreamWriter(zip, "UTF8")
@@ -124,7 +124,7 @@ object ZipStoreInternal {
                     }
                 }
                 zip.flush
-                id.toString()
+                store.idToString(id)
               }
               .toList
           )
@@ -147,7 +147,7 @@ object ZipStoreInternal {
 
 import ZipStoreInternal._
 
-class ZipPersistentSupport[VId, VType <: VersionedInstance[VType, VType, VId]](
+class ZipPersistentSupport[VId <: Comparable[VId], VType <: VersionedInstance[VType, VType, VId]](
     val zipfile: ZipFileForStore
 )(
     implicit
@@ -271,7 +271,7 @@ class ZipPersistentSupport[VId, VType <: VersionedInstance[VType, VType, VId]](
 
   def readFilenames(id: VId) = {
     support.getReadExtensions.map { e =>
-      s"${storedir}${resourceName}.${id}${e}"
+      s"${storedir}${resourceName}.${support.idSupport.toString(id)}${e}"
     }
   }
 
@@ -349,7 +349,7 @@ class ZipPersistentSupport[VId, VType <: VersionedInstance[VType, VType, VId]](
 }
 
 object ZipPersistentSupport {
-  def apply[VId, VType <: VersionedInstance[VType, VType, VId]](
+  def apply[VId <: Comparable[VId], VType <: VersionedInstance[VType, VType, VId]](
       zipfile: ZipFileForStore
   )(
       implicit
@@ -360,7 +360,7 @@ object ZipPersistentSupport {
   }
 }
 
-class ZipStore[VId, VType <: VersionedInstance[VType, VType, VId]](
+class ZipStore[VId <: Comparable[VId], VType <: VersionedInstance[VType, VType, VId]](
     name: String,
     val zipfile: ZipFileForStore,
     cacheInitialCapacity: Int = 5,

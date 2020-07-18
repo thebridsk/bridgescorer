@@ -36,12 +36,16 @@ import javax.ws.rs.GET
 import javax.ws.rs.POST
 import javax.ws.rs.PUT
 import javax.ws.rs.DELETE
+import com.github.thebridsk.bridge.data.BoardSet
+import com.github.thebridsk.bridge.data.Movement
+import scala.concurrent.Future
+import com.github.thebridsk.bridge.server.backend.resource.Result
 
 object RestDuplicateResult {
   implicit class OrdFoo(val x: MatchDuplicateResult)
       extends AnyVal
       with Ordered[MatchDuplicateResult] {
-    def compare(that: MatchDuplicateResult) = Id.idComparer(that.id, x.id)
+    def compare(that: MatchDuplicateResult) = that.id.compare(x.id)
   }
 }
 
@@ -161,10 +165,21 @@ trait RestDuplicateResult extends HasActorSystem {
     logRequest("RestDuplicateResult.getDuplicateResult", DebugLevel) {
       logResult("RestDuplicateResult.postDuplicateResult") {
         get {
-          path("""[a-zA-Z0-9]+""".r) { id =>
+          path("""[a-zA-Z0-9]+""".r) { sid =>
+            val id = MatchDuplicateResult.id(sid)
             resource(store.select(id).read())
           }
         }
+      }
+    }
+
+  import scala.language.implicitConversions
+  implicit
+  def addIdToFuture(f: Future[Result[MatchDuplicateResult]]): Future[Result[(String, MatchDuplicateResult)]] =
+    f.map { r =>
+      r match {
+        case Right(md) => Right((md.id.id, md))
+        case Left(e)   => Left(e)
       }
     }
 
@@ -263,8 +278,8 @@ trait RestDuplicateResult extends HasActorSystem {
                     MatchDuplicate.create(),
                     test,
                     default,
-                    boards,
-                    movements
+                    boards.map(BoardSet.id(_)),
+                    movements.map(Movement.id(_))
                   ) match {
                     case Some(fut) =>
                       onComplete(fut) {
@@ -350,7 +365,8 @@ trait RestDuplicateResult extends HasActorSystem {
   val putDuplicateResult =
     logRequest("RestDuplicateResult.putDuplicateResult") {
       logResult("RestDuplicateResult.putDuplicateResult") {
-        path("""[a-zA-Z0-9]+""".r) { id =>
+        path("""[a-zA-Z0-9]+""".r) { sid =>
+          val id = MatchDuplicateResult.id(sid)
           put {
             entity(as[MatchDuplicateResult]) { chi =>
               resourceUpdated(store.select(id).update(chi))
@@ -382,11 +398,10 @@ trait RestDuplicateResult extends HasActorSystem {
     )
   )
   def xxxdeleteDuplicateResult() = {}
-  val deleteDuplicateResult = path("""[a-zA-Z0-9]+""".r) { id =>
-    {
-      delete {
-        resourceDelete(store.select(id).delete())
-      }
+  val deleteDuplicateResult = path("""[a-zA-Z0-9]+""".r) { sid =>
+    val id = MatchDuplicateResult.id(sid)
+    delete {
+      resourceDelete(store.select(id).delete())
     }
   }
 }

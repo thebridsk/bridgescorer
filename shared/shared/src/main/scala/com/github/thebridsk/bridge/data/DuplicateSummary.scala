@@ -178,7 +178,7 @@ case class BestMatch(
         "The ID of the MatchDuplicate in the main store that is the best match, none if no match",
       required = false
     )
-    id: Option[Id.MatchDuplicate],
+    id: Option[DuplicateSummary.Id],
     @ArraySchema(
       minItems = 0,
       uniqueItems = true,
@@ -238,7 +238,7 @@ object BestMatch {
 
   def noMatch = new BestMatch(-1, None, None)
 
-  def apply(id: Id.MatchDuplicate, diff: Difference) = {
+  def apply(id: DuplicateSummary.Id, diff: Difference) = {
     new BestMatch(diff.percentSame, Some(id), Some(diff.differences))
   }
 }
@@ -253,7 +253,7 @@ case class DuplicateSummary(
       description = "The ID of the MatchDuplicate being summarized",
       required = true
     )
-    id: Id.MatchDuplicate,
+    id: DuplicateSummary.Id,
     @Schema(description = "True if the match is finished", required = true)
     finished: Boolean,
     @ArraySchema(
@@ -338,7 +338,8 @@ case class DuplicateSummary(
       .map(t => t.placeImp.isDefined && t.resultImp.isDefined)
       .getOrElse(false)
 
-  def idAsDuplicateResultId = id.asInstanceOf[Id.MatchDuplicateResult]
+  def idAsDuplicateResultId = id.toSubclass[MatchDuplicateResult.Type]
+  def idAsDuplicateId = id.toSubclass[MatchDuplicate.Type]
 
   def containsPair(p1: String, p2: String) = {
     teams.find { dse =>
@@ -400,7 +401,31 @@ case class DuplicateSummary(
 
 }
 
-object DuplicateSummary {
+trait IdDuplicateSummary
+
+object DuplicateSummary extends HasId[IdDuplicateSummary]("") {
+  override
+  def id( i: Int ): Id = {
+    throw new IllegalArgumentException("DuplicateSummary Ids can not be generated, must use MatchDuplicate.Id or MatchDuplicateResult.Id")
+  }
+
+  override
+  def id( s: String ): Id = {
+    Id.parseId(s) match {
+      case Some( (p,i) ) =>
+        p match {
+          case MatchDuplicate.prefix =>
+            MatchDuplicate.id(s).asInstanceOf[Id]
+          case MatchDuplicateResult.prefix =>
+            MatchDuplicateResult.id(s).asInstanceOf[Id]
+          case _ =>
+            throw new IllegalArgumentException(s"DuplicateSummary Id syntax is not valid: ${s}")
+        }
+      case _ =>
+        throw new IllegalArgumentException(s"DuplicateSummary Id syntax is not valid: ${s}")
+    }
+  }
+
   def create(md: MatchDuplicate): DuplicateSummary = {
     val score = MatchDuplicateScore(md, PerspectiveComplete)
     val places = score.places.flatMap { p =>
@@ -430,7 +455,7 @@ object DuplicateSummary {
       )
     }.toList
     DuplicateSummary(
-      md.id,
+      md.id.toBase,
       score.alldone,
       t,
       md.boards.size,
@@ -448,7 +473,7 @@ object DuplicateSummary {
     val boards = mdr.getBoards
     val tables = mdr.getTables
     DuplicateSummary(
-      mdr.id,
+      mdr.id.toBase,
       !mdr.notfinished.getOrElse(false),
       mdr.results.flatten,
       boards,

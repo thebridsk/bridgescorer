@@ -257,7 +257,7 @@ object DifferenceWrappers {
   implicit class WrapMatchDuplicate(val me: MatchDuplicate)
       extends AnyVal
       with DifferenceComparable[
-        Id.MatchDuplicate,
+        MatchDuplicate.Id,
         MatchDuplicate,
         WrapMatchDuplicate
       ] {
@@ -316,7 +316,7 @@ object DifferenceWrappers {
   implicit class WrapMatchDuplicateDuplicateResult(val me: MatchDuplicateResult)
       extends AnyVal
       with DifferenceComparable[
-        Id.MatchDuplicate,
+        MatchDuplicateResult.Id,
         MatchDuplicateResult,
         WrapMatchDuplicateDuplicateResult
       ] {
@@ -387,7 +387,7 @@ object DifferenceWrappers {
 
   implicit class WrapMatchChicago(val me: MatchChicago)
       extends AnyVal
-      with DifferenceComparable[Id.MatchChicago, MatchChicago, WrapMatchChicago] {
+      with DifferenceComparable[MatchChicago.Id, MatchChicago, WrapMatchChicago] {
 
     def id = me.id
 
@@ -447,7 +447,7 @@ object DifferenceWrappers {
 
   implicit class WrapMatchRubber(val me: MatchRubber)
       extends AnyVal
-      with DifferenceComparable[String, MatchRubber, WrapMatchRubber] {
+      with DifferenceComparable[MatchRubber.Id, MatchRubber, WrapMatchRubber] {
 
     def id = me.id
 

@@ -28,7 +28,6 @@ import com.github.thebridsk.bridge.server.backend.resource.MetaData.MetaDataFile
 
 object Store {
   val log = Logger[Store[_, _]]()
-
 }
 
 /**
@@ -73,7 +72,7 @@ object Store {
   * @param cacheTimeToIdle this value must be less than cacheTimeToLive
   * @param execute an execution context.
   */
-abstract class Store[VId, VType <: VersionedInstance[VType, VType, VId]](
+abstract class Store[VId <: Comparable[VId], VType <: VersionedInstance[VType, VType, VId]](
     val name: String,
     val persistent: PersistentSupport[VId, VType],
     val cacheInitialCapacity: Int = 5,
@@ -85,6 +84,8 @@ abstract class Store[VId, VType <: VersionedInstance[VType, VType, VId]](
     execute: ExecutionContext
 ) extends Resources[VId, VType]
     with StoreListenerManager {
+
+  def idToString( id: VId ) = persistent.support.idSupport.toString(id)
 
   /** The URI prefix that identifies the resources served by this store */
   val resourceURI = persistent.resourceURI
@@ -130,7 +131,7 @@ abstract class Store[VId, VType <: VersionedInstance[VType, VType, VId]](
       if (refresh) {
         cache
           .refresh(id, () => persistent.getFromPersistent(id))
-          .logit(s"Store ${name}: Refreshing resource ${resourceURI}/${id}")
+          .logit(s"Store ${name}: Refreshing resource ${resourceURI}/${idToString(id)}")
       } else if (deleted) {
         cache.remove(id)
         persistent.notFound(id).toFuture
@@ -227,7 +228,7 @@ abstract class Store[VId, VType <: VersionedInstance[VType, VType, VId]](
               t match {
                 case Right(r) =>
                   notify(
-                    changeContext.create(r, s"${support.resourceURI}/${v.id}")
+                    changeContext.create(r, s"${support.resourceURI}/${idToString(v.id)}")
                   )
                   Result(r)
                 case Left(error) =>
@@ -367,7 +368,7 @@ abstract class Store[VId, VType <: VersionedInstance[VType, VType, VId]](
       pos: SourcePosition
   ): Future[Result[VType]] = {
     log.fine(
-      s"Store ${name}: Reading resource ${resourceURI}/${id} called from ${pos.line}"
+      s"Store ${name}: Reading resource ${resourceURI}/${idToString(id)} called from ${pos.line}"
     )
     val rf = cache.read(
       id, { oldv =>
@@ -410,7 +411,7 @@ abstract class Store[VId, VType <: VersionedInstance[VType, VType, VId]](
         }
         tryR
       }
-      .logit(s"Store ${name}: Read ${resourceURI}/${id}")
+      .logit(s"Store ${name}: Read ${resourceURI}/${idToString(id)}")
 
   }
 
@@ -432,7 +433,7 @@ abstract class Store[VId, VType <: VersionedInstance[VType, VType, VId]](
   ): Future[Result[VType]] = {
     select(id)
       .update(newvalue, changeContext)
-      .logit(s"Store ${name}: Update ${resourceURI}/${id}")
+      .logit(s"Store ${name}: Update ${resourceURI}/${idToString(id)}")
   }
 
   /**
@@ -488,7 +489,7 @@ abstract class Store[VId, VType <: VersionedInstance[VType, VType, VId]](
       },
       Some({ () =>
         log.finest(
-          s"Store ${name}: in update for ${resourceURI}/${id} reading current value"
+          s"Store ${name}: in update for ${resourceURI}/${idToString(id)} reading current value"
         )
         read(id)
       })
@@ -505,7 +506,7 @@ abstract class Store[VId, VType <: VersionedInstance[VType, VType, VId]](
             Result(error)
         }
       }
-      .logit(s"Store ${name}: update ${resourceURI}/${id}")
+      .logit(s"Store ${name}: update ${resourceURI}/${idToString(id)}")
 
   }
 
@@ -522,7 +523,7 @@ abstract class Store[VId, VType <: VersionedInstance[VType, VType, VId]](
   ): Future[Result[VType]] = {
 
     log.fine(
-      s"Store ${name}: deleting resource $resourceURI/$id called from ${pos.line}"
+      s"Store ${name}: deleting resource $resourceURI/${idToString(id)} called from ${pos.line}"
     )
 
     cache
@@ -531,17 +532,17 @@ abstract class Store[VId, VType <: VersionedInstance[VType, VType, VId]](
         None, // currentValue (get from cache)
         { oldf => // do the delete and return a future to old value
           log.fine(
-            s"Store ${name}: Delete in persistent store for resource $resourceURI/$id"
+            s"Store ${name}: Delete in persistent store for resource $resourceURI/${idToString(id)}"
           )
           (oldf match {
             case Some(old) =>
               log.fine(
-                s"Store ${name}: Delete in persistent store for resource $resourceURI/$id, waiting for old value"
+                s"Store ${name}: Delete in persistent store for resource $resourceURI/${idToString(id)}, waiting for old value"
               )
               old.flatMap {
                 rold =>
                   log.fine(
-                    s"Store ${name}: Delete in persistent store for resource $resourceURI/$id, old value is ${rold}"
+                    s"Store ${name}: Delete in persistent store for resource $resourceURI/${idToString(id)}, old value is ${rold}"
                   )
                   rold match {
                     case Right(oldv) =>
@@ -551,7 +552,7 @@ abstract class Store[VId, VType <: VersionedInstance[VType, VType, VId]](
                               ro match {
                                 case Right(o) =>
                                   notify(
-                                    changeContext.delete(o, s"$resourceURI/$id")
+                                    changeContext.delete(o, s"$resourceURI/${idToString(id)}")
                                   )
                                   Right(Some(o))
                                 case Left(x) => Left(x)
@@ -588,19 +589,19 @@ abstract class Store[VId, VType <: VersionedInstance[VType, VType, VId]](
               }
             case None =>
               log.fine(
-                s"Store ${name}: Delete in persistent store for resource $resourceURI/$id, no old value"
+                s"Store ${name}: Delete in persistent store for resource $resourceURI/${idToString(id)}, no old value"
               )
               persistent.deleteFromPersistent(id, None).map { roldv =>
                 roldv match {
                   case Right(oldv) =>
-                    notify(changeContext.delete(oldv, s"$resourceURI/$id"))
+                    notify(changeContext.delete(oldv, s"$resourceURI/${idToString(id)}"))
                     Result(oldv)
                   case Left(error) =>
                     Result(error)
                 }
               }
           }).logit(
-            s"Store ${name}: deleted resource in persistent store $resourceURI/$id"
+            s"Store ${name}: deleted resource in persistent store $resourceURI/${idToString(id)}"
           )
         }, { oldf => // return the future that should be added to the cache
           oldf.map { old =>
@@ -608,7 +609,7 @@ abstract class Store[VId, VType <: VersionedInstance[VType, VType, VId]](
           }
         }
       )
-      .logit(s"Store ${name}: delete ${resourceURI}/${id}")
+      .logit(s"Store ${name}: delete ${resourceURI}/${idToString(id)}")
 
   }
 
@@ -631,32 +632,32 @@ abstract class Store[VId, VType <: VersionedInstance[VType, VType, VId]](
                 troldv match {
                   case Success(Right(v)) =>
                     log.fine(
-                      s"Store ${name}: clearError on ${resourceURI}/${id}: no error"
+                      s"Store ${name}: clearError on ${resourceURI}/${idToString(id)}: no error"
                     )
                     (false, true)
                   case Success(Left(error)) =>
                     log.fine(
-                      s"Store ${name}: clearError on ${resourceURI}/${id}: cleared ${error}"
+                      s"Store ${name}: clearError on ${resourceURI}/${idToString(id)}: cleared ${error}"
                     )
                     (true, false)
                   case Failure(ex) =>
                     log.fine(
-                      s"Store ${name}: clearError on ${resourceURI}/${id}: cleared failure ${ex}",
+                      s"Store ${name}: clearError on ${resourceURI}/${idToString(id)}: cleared failure ${ex}",
                       ex
                     )
                     (true, false)
                 }
               case None =>
                 log.fine(
-                  s"Store ${name}: clearError on ${resourceURI}/${id}: future not complete"
+                  s"Store ${name}: clearError on ${resourceURI}/${idToString(id)}: future not complete"
                 )
                 throw new StoreException(
-                  s"clearError on ${resourceURI}/${id}: future not complete"
+                  s"clearError on ${resourceURI}/${idToString(id)}: future not complete"
                 )
             }
           case None =>
             log.fine(
-              s"Store ${name}: clearError on ${resourceURI}/${id}: no value"
+              s"Store ${name}: clearError on ${resourceURI}/${idToString(id)}: no value"
             )
             (false, true)
         }

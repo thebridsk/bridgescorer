@@ -7,6 +7,8 @@ import com.github.thebridsk.bridge.data.Board
 import com.github.thebridsk.bridge.data.DuplicateHand
 import com.github.thebridsk.bridge.data.Hand
 import com.github.thebridsk.bridge.data.Table
+import com.github.thebridsk.bridge.data.BoardSet
+import com.github.thebridsk.bridge.data.Movement
 
 object TestMatchDuplicate {
 
@@ -51,7 +53,7 @@ object TestMatchDuplicate {
       Team.create(team4, "Wilma", "Wayne")
     ).map( t => t.id -> t ).toMap
 
-  def create(id: Id.MatchDuplicate): MatchDuplicate = {
+  def create(id: MatchDuplicate.Id): MatchDuplicate = {
     val ts: Map[Team.Id, Team] = teams()
 
     val boards = scala.collection.mutable.Map[Board.Id, Board]()
@@ -78,7 +80,7 @@ object TestMatchDuplicate {
     addHand(DuplicateHand.create(Table.id(2), 4, Board.id(7), team2, team4))
     addHand(DuplicateHand.create(Table.id(2), 4, Board.id(8), team2, team4))
 
-    MatchDuplicate(id, ts.values.toList, boards.values.toList, "", "", 0, 0)
+    MatchDuplicate(id, ts.values.toList, boards.values.toList, BoardSet.idNul, Movement.idNul, 0, 0)
   }
 
   def getHands(md: MatchDuplicate) = {
@@ -95,7 +97,7 @@ object TestMatchDuplicate {
 
   def getTeamScore() = Map(team1 -> 3, team2 -> 1, team3 -> 1, team4 -> 3)
 
-  def getPlayedMatch(dupid: Id.MatchDuplicate) = {
+  def getPlayedMatch(dupid: MatchDuplicate.Id) = {
     var md = TestMatchDuplicate.create(dupid)
     val hands = TestMatchDuplicate.getHands(md)
     for (hand <- hands) {

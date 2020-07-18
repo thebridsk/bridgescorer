@@ -133,9 +133,9 @@ object RestNestedPictureHand {
     picture: String
   )
 
-  def getUrlOfPicture( resName: String, dupId: String, boardId: Board.Id, handId: Team.Id ) = {
+  def getUrlOfPicture( resName: String, dupId: MatchDuplicate.Id, boardId: Board.Id, handId: Team.Id ) = {
     val rn = if (resName.startsWith("/")) resName else "/" + resName
-    s"/v1/rest${rn}/${dupId}/pictures/${boardId.id}/hands/${handId.id}"
+    s"/v1/rest${rn}/${dupId.id}/pictures/${boardId.id}/hands/${handId.id}"
   }
 
 }
@@ -150,7 +150,7 @@ import RestNestedPictureHand._
   */
 @Path("/rest/duplicates/{dupId}/pictures")
 @Tags(Array(new Tag(name = "Duplicate")))
-class RestNestedPictureHand( store: Store[Id.MatchDuplicate,MatchDuplicate], parent: RestNestedPicture ) {
+class RestNestedPictureHand( store: Store[MatchDuplicate.Id,MatchDuplicate], parent: RestNestedPicture ) {
 
   import UtilsPlayJson._
 
@@ -163,7 +163,7 @@ class RestNestedPictureHand( store: Store[Id.MatchDuplicate,MatchDuplicate], par
     */
   @Hidden
   def route( implicit
-      @Parameter(hidden = true) dupId: Id.MatchDuplicate,
+      @Parameter(hidden = true) dupId: MatchDuplicate.Id,
       @Parameter(hidden = true) boardId: Board.Id
   ) = pathPrefix("hands") {
     logRequestResult("RestNestedPictureHand.route", DebugLevel) {
@@ -171,11 +171,11 @@ class RestNestedPictureHand( store: Store[Id.MatchDuplicate,MatchDuplicate], par
     }
   }
 
-  def getPictureUrl( dupId: String, boardId: Board.Id, handId: Team.Id ) = {
+  def getPictureUrl( dupId: MatchDuplicate.Id, boardId: Board.Id, handId: Team.Id ) = {
     getUrlOfPicture(resNameWithSlash,dupId,boardId,handId)
   }
 
-  def getAllPictures( dupId: String, boardId: Board.Id ) = {
+  def getAllPictures( dupId: MatchDuplicate.Id, boardId: Board.Id ) = {
     store.metaData.listFilesFilter(dupId) { f =>
       val parts = getPartsMetadataFile(f)
       parts.isDefined && parts.get.boardId == boardId
@@ -248,7 +248,7 @@ class RestNestedPictureHand( store: Store[Id.MatchDuplicate,MatchDuplicate], par
   )
   def xxxgetPictures = {}
   def getPictures( implicit
-      @Parameter(hidden = true) dupId: Id.MatchDuplicate,
+      @Parameter(hidden = true) dupId: MatchDuplicate.Id,
       @Parameter(hidden = true) boardId: Board.Id
   ) = pathEndOrSingleSlash {
     get {
@@ -333,7 +333,7 @@ class RestNestedPictureHand( store: Store[Id.MatchDuplicate,MatchDuplicate], par
   )
   def xxxgetPicture = {}
   def getPicture( implicit
-      @Parameter(hidden = true) dupId: Id.MatchDuplicate,
+      @Parameter(hidden = true) dupId: MatchDuplicate.Id,
       @Parameter(hidden = true) boardId: Board.Id
   ) = logRequest("getPictureHand", DebugLevel) {
     get {
@@ -523,7 +523,7 @@ class RestNestedPictureHand( store: Store[Id.MatchDuplicate,MatchDuplicate], par
   )
   def xxxputPicture = {}
   def putPicture( implicit
-      @Parameter(hidden = true) dupId: Id.MatchDuplicate,
+      @Parameter(hidden = true) dupId: MatchDuplicate.Id,
       @Parameter(hidden = true) boardId: Board.Id
   ) = logRequest("putPictureHand", DebugLevel) {
     logResult("putPictureHand", DebugLevel) {
@@ -645,7 +645,7 @@ class RestNestedPictureHand( store: Store[Id.MatchDuplicate,MatchDuplicate], par
   )
   def xxxdeletePicture = {}
   def deletePicture( implicit
-      @Parameter(hidden = true) dupId: Id.MatchDuplicate,
+      @Parameter(hidden = true) dupId: MatchDuplicate.Id,
       @Parameter(hidden = true) boardId: Board.Id
   ) = delete {
     path("""[a-zA-Z0-9]+""".r) { handIds =>

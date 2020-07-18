@@ -65,7 +65,7 @@ object BldBridgeScoreKeeper {
       test in assembly := {}, // test in (`bridgescorer-fullserver`, Test),
       test in (Test, assembly) := {}, // { val x = assembly.value },
       testOptions in Test += Tests.Filter { s =>
-        if (s == "com.github.thebridsk.bridge.test.selenium.integrationtest.TravisIntegrationTests") {
+        if (s == "com.github.thebridsk.bridge.test.selenium.integrationtest.IntegrationTests") {
           println("Using Test:    " + s)
           true
         } else {

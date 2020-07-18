@@ -39,7 +39,7 @@ object BoardSetController {
     r
   }
 
-  def getBoardSet( name: String): Result[Unit] = {
+  def getBoardSet( name: BoardSet.Id): Result[Unit] = {
     val r = if (!BridgeDemo.isDemo) {
       RestClientBoardSet.get(name).recordFailure().map( item => {
         BridgeDispatcher.updateBoardSet(item)
@@ -83,7 +83,7 @@ object BoardSetController {
     r
   }
 
-  def deleteBoardSet( bs: String ): Result[Unit] = {
+  def deleteBoardSet( bs: BoardSet.Id ): Result[Unit] = {
     val r = if (!BridgeDemo.isDemo) {
       RestClientBoardSet.delete(bs).recordFailure().map { item =>
         BridgeDispatcher.deleteBoardSet(bs)
@@ -109,7 +109,7 @@ object BoardSetController {
     r
   }
 
-  def getMovement( name: String): Result[Unit] = {
+  def getMovement( name: Movement.Id): Result[Unit] = {
     val r = if (!BridgeDemo.isDemo) {
       RestClientMovement.get(name).recordFailure().map( item => {
         BridgeDispatcher.updateMovement(item)
@@ -153,7 +153,7 @@ object BoardSetController {
     r
   }
 
-  def deleteMovement( mov: String ): Result[Unit] = {
+  def deleteMovement( mov: Movement.Id ): Result[Unit] = {
     val r = if (!BridgeDemo.isDemo) {
       RestClientMovement.delete(mov).recordFailure().map { item =>
         BridgeDispatcher.deleteMovement(mov)

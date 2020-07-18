@@ -81,11 +81,11 @@ object TestCacheStoreWithRoute {
   val bridgeResources = BridgeResources()
   import bridgeResources._
 
-  def getBoardSetStore: Store[String,BoardSet] = {
+  def getBoardSetStore: Store[BoardSet.Id,BoardSet] = {
     JavaResourceStore("test","/com/github/thebridsk/bridge/server/backend/", "Boardsets.txt", getClass.getClassLoader)
   }
 
-  def getMovementStore: Store[String,Movement] = {
+  def getMovementStore: Store[Movement.Id,Movement] = {
     JavaResourceStore("test","/com/github/thebridsk/bridge/server/backend/", "Movements.txt", getClass.getClassLoader)
   }
 
@@ -99,7 +99,7 @@ object TestCacheStoreWithRoute {
    */
   class BridgeServiceTestFailure extends BridgeServiceInMemory("test") {
 
-    val persistent = TestFailurePersistent[Id.MatchDuplicate,MatchDuplicate]()
+    val persistent = TestFailurePersistent[MatchDuplicate.Id,MatchDuplicate]()
     override
     val duplicates = TestFailureStore("test",persistent)
 
@@ -197,12 +197,12 @@ class TestCacheStoreWithRoute extends AnyFlatSpec with ScalatestRouteTest with M
 
   val remoteAddress = `Remote-Address`( IP( InetAddress.getLocalHost, Some(12345) ))
 
-  var dupid: Option[Id.MatchDuplicate] = None
+  var dupid: Option[MatchDuplicate.Id] = None
 
-  var dupidNotCached: Option[Id.MatchDuplicate] = None
+  var dupidNotCached: Option[MatchDuplicate.Id] = None
 
   it should "store a value in the store" in {
-    val omd = MatchDuplicate.create("")
+    val omd = MatchDuplicate.create(MatchDuplicate.idNul)
     Post("/v1/rest/duplicates?default=true", omd) ~> addHeader(remoteAddress) ~>
         Route.seal { myRouteWithLogging } ~>
         check {
@@ -222,7 +222,7 @@ class TestCacheStoreWithRoute extends AnyFlatSpec with ScalatestRouteTest with M
       }
 
       val nmd = md.updateTeam(Team(Team.id(1),"Fred","George",0,0))
-      Put(s"/v1/rest/duplicates/${md.id}", nmd) ~> addHeader(remoteAddress) ~>
+      Put(s"/v1/rest/duplicates/${md.id.id}", nmd) ~> addHeader(remoteAddress) ~>
           Route.seal { myRouteWithLogging } ~>
           check {
         status mustBe StatusCodes.NoContent
@@ -236,7 +236,7 @@ class TestCacheStoreWithRoute extends AnyFlatSpec with ScalatestRouteTest with M
 
     val id = dupidNotCached.get
     restService.duplicates.getCached(id) mustBe None
-    Get(s"/v1/rest/duplicates/${id}") ~> addHeader(remoteAddress) ~>
+    Get(s"/v1/rest/duplicates/${id.id}") ~> addHeader(remoteAddress) ~>
         Route.seal { myRouteWithLogging } ~>
         check {
       status mustBe StatusCodes.InternalServerError
@@ -246,7 +246,7 @@ class TestCacheStoreWithRoute extends AnyFlatSpec with ScalatestRouteTest with M
 
       restService.persistent.failRead = false
 
-      Get(s"/v1/rest/duplicates/${id}") ~> addHeader(remoteAddress) ~>
+      Get(s"/v1/rest/duplicates/${id.id}") ~> addHeader(remoteAddress) ~>
           Route.seal { myRouteWithLogging } ~>
           check {
         status mustBe StatusCodes.OK
@@ -261,7 +261,7 @@ class TestCacheStoreWithRoute extends AnyFlatSpec with ScalatestRouteTest with M
     restService.persistent.failRead = false
     restService.persistent.failWrite = true
 
-    val md = MatchDuplicate.create("")
+    val md = MatchDuplicate.create(MatchDuplicate.idNul)
     Post("/v1/rest/duplicates?default=true", md) ~> addHeader(remoteAddress) ~>
         Route.seal { myRouteWithLogging } ~>
         check {
@@ -284,7 +284,7 @@ class TestCacheStoreWithRoute extends AnyFlatSpec with ScalatestRouteTest with M
     restService.persistent.failWrite = false
     restService.persistent.failGetAllIds = true
 
-    val md = MatchDuplicate.create("")
+    val md = MatchDuplicate.create(MatchDuplicate.idNul)
     Post("/v1/rest/duplicates?default=true", md) ~> addHeader(remoteAddress) ~>
         Route.seal { myRouteWithLogging } ~>
         check {
@@ -296,7 +296,7 @@ class TestCacheStoreWithRoute extends AnyFlatSpec with ScalatestRouteTest with M
   it should "fail to update a hand value in the store" in {
 
     val id = dupidNotCached.get
-    Get(s"/v1/rest/duplicates/${id}") ~> addHeader(remoteAddress) ~>
+    Get(s"/v1/rest/duplicates/${id.id}") ~> addHeader(remoteAddress) ~>
         Route.seal { myRouteWithLogging } ~>
         check {
       status mustBe StatusCodes.OK
@@ -317,7 +317,7 @@ class TestCacheStoreWithRoute extends AnyFlatSpec with ScalatestRouteTest with M
               import scala.language.postfixOps
               implicit val timeout = RouteTestTimeout(5.seconds dilated)
 
-              Put(s"/v1/rest/duplicates/${id}/boards/${boardid.id}/hands/${handid.id}", nhand) ~> addHeader(remoteAddress) ~>
+              Put(s"/v1/rest/duplicates/${id.id}/boards/${boardid.id}/hands/${handid.id}", nhand) ~> addHeader(remoteAddress) ~>
                   Route.seal { myRouteWithLogging } ~>
                   check {
                 status mustBe StatusCodes.InternalServerError
@@ -342,7 +342,7 @@ class TestCacheStoreWithRoute extends AnyFlatSpec with ScalatestRouteTest with M
                 }
 
                 restService.persistent.failWrite = false
-                Put(s"/v1/rest/duplicates/${id}/boards/${boardid.id}/hands/${handid.id}", nhand) ~> addHeader(remoteAddress) ~>
+                Put(s"/v1/rest/duplicates/${id.id}/boards/${boardid.id}/hands/${handid.id}", nhand) ~> addHeader(remoteAddress) ~>
                     Route.seal { myRouteWithLogging } ~>
                     check {
                   status mustBe StatusCodes.NoContent

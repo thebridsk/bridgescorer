@@ -20,6 +20,7 @@ import japgolly.scalajs.react.component.builder.Lifecycle.ComponentDidUpdate
 import com.github.thebridsk.bridge.client.pages.chicagos.ChicagoRouter.EditNamesView
 import com.github.thebridsk.bridge.client.bridge.store.ChicagoStore
 import com.github.thebridsk.bridge.client.controller.ChicagoController
+import com.github.thebridsk.bridge.data.MatchChicago
 
 /**
  * Shows the team x board table and has a totals column that shows the number of points the team has.
@@ -55,7 +56,7 @@ object PageEditNamesInternal {
    * will cause State to leak.
    *
    */
-  case class State( id: Id.MatchChicago, players: List[String] = List(), newnames: Map[String, String]=Map(), nameSuggestions: Option[List[String]] = None ) {
+  case class State( id: MatchChicago.Id, players: List[String] = List(), newnames: Map[String, String]=Map(), nameSuggestions: Option[List[String]] = None ) {
     import scala.scalajs.js.JSConverters._
 
     def reset = ChicagoStore.getChicago match {

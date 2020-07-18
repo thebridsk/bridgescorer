@@ -42,23 +42,23 @@ object ChicagoStore extends ChangeListenable {
   }}
 
   private var chicago: Option[MatchChicago] = None
-  private var monitoredId: Option[String] = None
+  private var monitoredId: Option[MatchChicago.Id] = None
 
   def getChicago = chicago
   def getMonitoredId = monitoredId
 
-  def isMonitoredId( chiid: String ) = monitoredId match {
+  def isMonitoredId( chiid: MatchChicago.Id ) = monitoredId match {
     case Some(id) => id == chiid
     case None => false
   }
 
-  def start( id: String, chi: Option[MatchChicago] ) = {
+  def start( id: MatchChicago.Id, chi: Option[MatchChicago] ) = {
     monitoredId = Some(id)
     chicago = chi
     notifyChange()
   }
 
-  private def update(funName: String, chiid: String, fun: (Option[MatchChicago])=>Option[MatchChicago], callback: Option[MatchChicago=>Unit]) = {
+  private def update(funName: String, chiid: MatchChicago.Id, fun: (Option[MatchChicago])=>Option[MatchChicago], callback: Option[MatchChicago=>Unit]) = {
     monitoredId match {
       case Some(id) if (id == chiid) =>
         logger.info("ChicagoStore."+funName+": updating chicagostore id="+id)
@@ -86,7 +86,7 @@ object ChicagoStore extends ChangeListenable {
     },callback)
   }
 
-  def updateChicagoNames( chiid: String, nplayer1: String, nplayer2: String, nplayer3: String, nplayer4: String, extra: Option[String], quintet: Boolean, simpleRotation: Boolean, callback: Option[MatchChicago=>Unit] ) = {
+  def updateChicagoNames( chiid: MatchChicago.Id, nplayer1: String, nplayer2: String, nplayer3: String, nplayer4: String, extra: Option[String], quintet: Boolean, simpleRotation: Boolean, callback: Option[MatchChicago=>Unit] ) = {
     update("updateChicagoNames", chiid, (chi)=>{
       chi match {
         case Some(mc) =>
@@ -119,19 +119,19 @@ object ChicagoStore extends ChangeListenable {
     },callback)
   }
 
-  def updateChicago5( chiid: String, extraPlayer: String, callback: Option[MatchChicago=>Unit] ) = {
+  def updateChicago5( chiid: MatchChicago.Id, extraPlayer: String, callback: Option[MatchChicago=>Unit] ) = {
     update("updateChicagoNames", chiid, (chi)=>{
       chi.map(_.playChicago5(extraPlayer))
     },callback)
   }
 
-  def updateChicagoRound( chiid: String, round: Round, callback: Option[MatchChicago=>Unit] ) = {
+  def updateChicagoRound( chiid: MatchChicago.Id, round: Round, callback: Option[MatchChicago=>Unit] ) = {
     update("updateChicagoRound", chiid, (chi)=>{
       chi.map(_.modifyRound(round))
     },callback)
   }
 
-  def updateChicagoHand( chiid: String, roundid: Int, handid: Int, hand: Hand, callback: Option[MatchChicago=>Unit] ) = {
+  def updateChicagoHand( chiid: MatchChicago.Id, roundid: Int, handid: Int, hand: Hand, callback: Option[MatchChicago=>Unit] ) = {
     update("updateChicagoHand", chiid, (chi)=>{
       chi.map(_.modifyHand(roundid, handid, hand))
     },callback)

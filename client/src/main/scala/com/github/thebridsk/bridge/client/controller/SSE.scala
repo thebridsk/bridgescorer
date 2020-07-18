@@ -17,6 +17,7 @@ import org.scalajs.dom.raw.Event
 import scala.scalajs.js.timers.SetTimeoutHandle
 import scala.concurrent.duration.Duration
 import com.github.thebridsk.bridge.data.websocket.Protocol.ToBrowserMessage
+import com.github.thebridsk.bridge.data.Id
 
 object SSE {
   private val logger = Logger("bridge.SSE")
@@ -33,7 +34,7 @@ import SSE.logger
  * @constructor
  * @param urlprefix - the monitoring URL without the identifier
  */
-class SSE[T]( urlprefix: String, listener: SECListener[T] ) extends ServerEventConnection[T](listener) {
+class SSE[T <: Id[_]]( urlprefix: String, listener: SECListener[T] ) extends ServerEventConnection[T](listener) {
 
   val heartbeatTimeout = 20000   // ms  20s
   val restartTimeout = 10*60*1000   // ms 10m   // TODO find good timeout for restart
@@ -158,7 +159,7 @@ class SSE[T]( urlprefix: String, listener: SECListener[T] ) extends ServerEventC
   }
 
   private def getEventSource( dupid: T ): Option[EventSource] = {
-    val es = new EventSource(s"${urlprefix}${dupid}")
+    val es = new EventSource(s"${urlprefix}${dupid.id}")
     es.onopen = esOnOpen(dupid)
     es.onmessage = esOnMessage(dupid)
     es.onerror = esOnError(dupid)

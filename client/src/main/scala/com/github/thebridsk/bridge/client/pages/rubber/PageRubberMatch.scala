@@ -172,7 +172,7 @@ object PageRubberMatchInternal {
                     <.table(
                         <.thead(
                             <.tr(
-                                <.th( score.rubber.id ),
+                                <.th( score.rubber.id.id ),
                                 <.th( rub.north, " ", rub.south ),
                                 <.th( rub.east, " ", rub.west )
                                 )
@@ -210,7 +210,7 @@ object PageRubberMatchInternal {
               )
         case Some(rub) if (rub.id == props.page.rid && !rub.gotAllPlayers()) =>
           <.div(
-            PageRubberNames( RubberMatchNamesView( props.page.rid ), props.routerCtl )
+            PageRubberNames( RubberMatchNamesView( props.page.srid ), props.routerCtl )
           )
         case _ =>
           <.div(

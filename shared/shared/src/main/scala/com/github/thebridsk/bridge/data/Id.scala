@@ -14,13 +14,14 @@ import play.api.libs.json.KeyReads
 /**
   * Represents an ID.
   *
-  * @param id the ID, Should follow the pattern "[a-zA-Z]*\d+", case sensitive.
+  * @param id the ID, Should follow the pattern "[a-zA-Z]*\d+", case sensitive if useName is false.
+  * @param useName use a name instead of the Id pattern.
   * @param classTag a ClassTag for the class which instances of are identified by this ID
 
   * @param A the ID type
   *
   */
-case class Id[A]( val id: String )(implicit val classTag: ClassTag[A]) extends Ordered[Id[A]] {
+case class Id[A]( val id: String, useName: Boolean = false )( implicit private [Id] val classTag: ClassTag[A] ) extends Ordered[Id[A]] {
   override
   def equals( other: Any ) = {
     // println(s"comparing $this and $other")
@@ -36,10 +37,19 @@ case class Id[A]( val id: String )(implicit val classTag: ClassTag[A]) extends O
   def toString() = s"Id[${classTag.runtimeClass.getSimpleName}]($id)"
 
   def compare(that: Id[A]): Int = {
-    val Id.idpattern(s1) = id
-    val Id.idpattern(s2) = that.id
+    if (useName) {
+      id.compareTo(that.id)
+    } else {
+      val Id.idpattern(p1,s1) = id
+      val Id.idpattern(p2,s2) = that.id
 
-    s1.toInt.compareTo(s2.toInt)
+      val r = p1.compareTo(p2)
+      if (r == 0) {
+        s1.toInt.compareTo(s2.toInt)
+      } else {
+        r
+      }
+    }
   }
 
   /**
@@ -47,18 +57,30 @@ case class Id[A]( val id: String )(implicit val classTag: ClassTag[A]) extends O
     *
     * @return the number as a string.
     * If the id does not match idpattern, then id is returned.
+    * @throws IllegalStateException is useName is true
     */
-  def toNumber = id match {
-    case Id.idpattern(bn) => bn
-    case _                => id
+  def toNumber = {
+    if (useName) throw new IllegalStateException
+    id match {
+      case Id.idpattern(_,bn) => bn
+      case _                => id
+    }
   }
 
   def toInt = toNumber.toInt
 
   def isNul = id == ""
+
+  import scala.language.implicitConversions
+  def toBase[B >: A] = this.asInstanceOf[Id[B]]
+  def toSubclass[S <: A]( implicit sTag: ClassTag[S] ) = {
+    val cls = classTag.runtimeClass
+    if (sTag.runtimeClass.isAssignableFrom(cls)) Some(this.asInstanceOf[Id[S]])
+    else None
+  }
 }
 
-class HasId[IdType: ClassTag]( prefix: String ) {
+class HasId[IdType: ClassTag]( val prefix: String, val useName: Boolean = false ) {
 
   import com.github.thebridsk.bridge.data
   type Id = data.Id[IdType]
@@ -67,7 +89,7 @@ class HasId[IdType: ClassTag]( prefix: String ) {
     * @param i the complete id with a syntax of "[a-zA-Z]*\d+"
     * @return the Id object
     */
-  def id( i: String ): Id = data.Id[IdType](i)
+  def id( i: String ): Id = data.Id[IdType](i, useName)
   /**
     *
     *
@@ -116,11 +138,13 @@ object Id {
     description =
       "The id of a duplicate match result, just has the points scored by a team"
   )
-  type MatchDuplicateResult = String
+  type MatchDuplicateResult = data.MatchDuplicate.Id
   @Schema(description = "The id of a duplicate match")
-  type MatchDuplicate = String
+  type MatchDuplicate = data.MatchDuplicate.Id
   @Schema(description = "The id of a Chicago match")
-  type MatchChicago = String
+  type MatchChicago = data.MatchChicago.Id
+  @Schema(description = "The id of a Rubber match")
+  type MatchRubber = data.MatchRubber.Id
   @Schema(description = "The id of a duplicate board, positive integer")
   type DuplicateBoard = data.Board.Id
   @Schema(description = "The id of a duplicate hand")
@@ -130,26 +154,17 @@ object Id {
   @Schema(description = "The id of a table")
   type Table = data.Table.Id
 
-  private val idpattern = "[a-zA-Z]*(\\d+)".r
-  def idComparer(id1: String, id2: String): Int = {
-    val idpattern(s1) = id1
-    val idpattern(s2) = id2
+  private val idpattern = "([a-zA-Z]*)(\\d+)".r
 
-    s1.toInt.compareTo(s2.toInt)
-  }
-
-  def duplicateIdToNumber(id: Id.MatchDuplicate) = id match {
-    case idpattern(bn) => bn
-    case _             => id
-  }
-
-  def genericIdToNumber(id: String) = id match {
-    case idpattern(bn) => bn
-    case _             => id
+  def parseId( s: String ) = {
+    s match {
+      case idpattern(p,i) => Some( (p,i) )
+      case _ => None
+    }
   }
 
   def isValidIdPattern(s: String): Boolean = s match {
-    case idpattern(n) => true
+    case idpattern(p,n) => true
     case _            => false
   }
 }
@@ -159,17 +174,18 @@ object IdOrdering {
   trait IdOrderingBase[T] extends Ordering[T] {
 
     def compare(x: T, y: T): Int = {
-      Id.idComparer(x.toString(), y.toString())
+      // Id.idComparer(x.toString(), y.toString())
+      0
     }
 
   }
 
   implicit object IDMatchDuplicateOrdering
-      extends IdOrderingBase[Id.MatchDuplicate]
+      extends IdOrderingBase[MatchDuplicate.Id]
 
   implicit object IDMatchDuplicateResultOrdering
-      extends IdOrderingBase[Id.MatchDuplicateResult]
+      extends IdOrderingBase[MatchDuplicateResult.Id]
 
-  implicit object IDMatchChicagoOrdering extends IdOrderingBase[Id.MatchChicago]
+  implicit object IDMatchChicagoOrdering extends IdOrderingBase[MatchChicago.Id]
 
 }

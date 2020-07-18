@@ -20,6 +20,7 @@ import com.github.thebridsk.materialui.TextColor
 import com.github.thebridsk.bridge.client.routes.BridgeRouter
 import com.github.thebridsk.bridge.client.pages.HomePage
 import japgolly.scalajs.react.component.builder.Lifecycle.ComponentDidUpdate
+import com.github.thebridsk.bridge.data.MatchChicago
 
 /**
   * A skeleton component.
@@ -86,20 +87,20 @@ object PageSummaryInternal {
     def toRoundView(round: Int, props: Props) =
       props.page match {
         case Left(summary)    => summary.toRoundView(round)
-        case Right(roundview) => ChicagoRouter.RoundView(roundview.chiid, round)
+        case Right(roundview) => ChicagoRouter.RoundView(roundview.chiid.id, round)
       }
 
     def toNamesView(round: Int, props: Props) =
       props.page match {
         case Left(summary)    => summary.toNamesView(round)
-        case Right(roundview) => ChicagoRouter.NamesView(roundview.chiid, round)
+        case Right(roundview) => ChicagoRouter.NamesView(roundview.chiid.id, round)
       }
 
     def toHandView(round: Int, hand: Int, props: Props) =
       props.page match {
         case Left(summary) => summary.toHandView(round, hand)
         case Right(roundview) =>
-          ChicagoRouter.HandView(roundview.chiid, round, hand)
+          ChicagoRouter.HandView(roundview.chiid.id, round, hand)
       }
 
     def render(props: Props, state: State) = {
@@ -341,10 +342,10 @@ object PageSummaryInternal {
       ChicagoStore.addChangeListener(storeCallback)
     } >> scope.props >>= { (p) =>
       Callback {
-        val chiid = p.page match {
+        val chiid = MatchChicago.id(p.page match {
           case Left(SummaryView(chiid))       => chiid
           case Right(RoundView(chiid, round)) => chiid
-        }
+        })
         logger.info(s"PageSummary.didMount on $chiid")
         import scala.concurrent.ExecutionContext.Implicits.global
 //      ChicagoController.ensureMatch(chiid).foreach( m => scope.withEffectsImpure.forceUpdate )
@@ -364,10 +365,10 @@ object PageSummaryInternal {
     val props = cdu.currentProps
     val prevProps = cdu.prevProps
     if (prevProps.page != props.page) {
-      val chiid = props.page match {
+      val chiid = MatchChicago.id(props.page match {
         case Left(SummaryView(chiid))       => chiid
         case Right(RoundView(chiid, round)) => chiid
-      }
+      })
       ChicagoController.monitor(chiid)
     }
   }

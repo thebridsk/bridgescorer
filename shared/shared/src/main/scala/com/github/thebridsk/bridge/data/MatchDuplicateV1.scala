@@ -8,7 +8,7 @@ import io.swagger.v3.oas.annotations.media.Schema
 @Schema(description = "A duplicate match, version 1 (old version)")
 case class MatchDuplicateV1(
     @Schema(description = "The ID of the MatchDuplicate", required = true)
-    id: Id.MatchDuplicate,
+    id: MatchDuplicate.Id,
     @Schema(
       description = "The teams playing the match, the key is the team ID",
       required = true
@@ -31,7 +31,7 @@ case class MatchDuplicateV1(
       required = true
     )
     updated: Timestamp
-) extends VersionedInstance[MatchDuplicate, MatchDuplicateV1, String] {
+) extends VersionedInstance[MatchDuplicate, MatchDuplicateV1, MatchDuplicate.Id] {
 
   def equalsIgnoreModifyTime(other: MatchDuplicateV1) =
     id == other.id &&
@@ -91,7 +91,7 @@ case class MatchDuplicateV1(
   }
 
   def setId(
-      newId: Id.MatchDuplicate,
+      newId: MatchDuplicate.Id,
       forCreate: Boolean,
       dontUpdateTime: Boolean = false
   ) = {
@@ -106,7 +106,7 @@ case class MatchDuplicateV1(
     }
   }
 
-  def copyForCreate(id: Id.MatchDuplicate) = {
+  def copyForCreate(id: MatchDuplicate.Id) = {
     val time = SystemTime.currentTimeMillis()
     val xteams = teams.map(e => (e._1 -> e._2.copyForCreate(e._1))).toMap
     val xboards = boards.map(e => (e._1 -> e._2.copyForCreate(e._1))).toMap
@@ -439,8 +439,8 @@ case class MatchDuplicateV1(
           }
           .toList
           .sortWith((b1, b2) => b1.id < b2.id),
-        "ArmonkBoards",
-        "2TablesArmonk",
+        BoardSet.default,
+        Movement.default,
         created,
         updated
       )
@@ -452,7 +452,7 @@ case class MatchDuplicateV1(
 
 object MatchDuplicateV1 {
   val time = SystemTime.currentTimeMillis()
-  def create(id: String = "") =
+  def create(id: MatchDuplicate.Id = MatchDuplicate.idNul) =
     new MatchDuplicateV1(id, Map(), Map(), time, time)
 
   def createTeams(numberTeams: Int) = {

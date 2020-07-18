@@ -25,6 +25,8 @@ import scala.concurrent.Future
 import akka.http.scaladsl.model.StatusCodes
 import com.github.thebridsk.bridge.server.backend.resource.Implicits._
 import scala.reflect.io.File
+import com.github.thebridsk.bridge.data.BoardSet
+import com.github.thebridsk.bridge.data.Movement
 
 
 object BridgeServiceTesting {
@@ -43,7 +45,7 @@ object BridgeServiceTesting {
                   Team.create(team4,"Ethan","Wilma")
                 )
     val time = System.currentTimeMillis().toDouble
-    MatchDuplicateV3("M1", teams, List(
+    MatchDuplicateV3(MatchDuplicate.id("M1"), teams, List(
         Board.create(Board.id(1), false, false, North.pos, List(
             DuplicateHand.create( Hand.create("H1",7,Spades.suit, Doubled.doubled, North.pos,
                                               false,false,true,7),
@@ -58,7 +60,7 @@ object BridgeServiceTesting {
                                   Table.id(1), 1, Board.id(2), team1, team2)
             )),
         Board.create(Board.id(3), false, true, South.pos, List())
-        ), "", "", time, time)
+        ), BoardSet.idNul, Movement.idNul, time, time)
 
   }
 }

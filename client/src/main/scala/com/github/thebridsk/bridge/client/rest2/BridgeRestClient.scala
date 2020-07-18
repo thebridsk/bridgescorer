@@ -60,11 +60,12 @@ import com.github.thebridsk.bridge.data.duplicate.suggestion.DuplicateSuggestion
 import scala.concurrent.ExecutionContext.Implicits.global
 import com.github.thebridsk.bridge.data.Round
 import com.github.thebridsk.bridge.data.Id
+import com.github.thebridsk.bridge.data.DuplicateSummary
 
 object RestClientLogEntryV2 extends RestClient[LogEntryV2,String]("/v1/logger")
 
-object RestClientMovement extends RestClient[Movement,String]("/v1/rest/movements")
-object RestClientBoardSet extends RestClient[BoardSet,String]("/v1/rest/boardsets")
+object RestClientMovement extends RestClient[Movement,Movement.Id]("/v1/rest/movements")
+object RestClientBoardSet extends RestClient[BoardSet,BoardSet.Id]("/v1/rest/boardsets")
 object RestClientBoardSetsAndMovements extends RestClient[BoardSetsAndMovements,String]("/v1/rest/boardsetsandmovements")
 
 class RestClientDuplicateBoardHand( parent: RestClientDuplicateBoard, instance: String ) extends RestClient[DuplicateHand,Team.Id]("hands", Some(parent), Some(instance) )
@@ -105,48 +106,48 @@ class RestClientChicagoRound( parent: RestClient[MatchChicago,_], instance: Stri
 class RestClientRubberHand( parent: RestClient[MatchRubber,_], instance: String ) extends RestClient[RubberHand,String]("hands", Some(parent), Some(instance) )
 
 object RestClientNames extends RestClient[String,String]("/v1/rest/names")
-object RestClientChicago extends RestClient[MatchChicago,String]("/v1/rest/chicagos") {
+object RestClientChicago extends RestClient[MatchChicago,MatchChicago.Id]("/v1/rest/chicagos") {
   def roundResource( rubid: String ) = new RestClientChicagoRound(this,rubid)
 }
-object RestClientRubber extends RestClient[MatchRubber,String]("/v1/rest/rubbers") {
+object RestClientRubber extends RestClient[MatchRubber,MatchRubber.Id]("/v1/rest/rubbers") {
   def handResource( rubid: String ) = new RestClientRubberHand(this,rubid)
 }
-object RestClientDuplicateResult extends RestClient[MatchDuplicateResult,String]("/v1/rest/duplicateresults") {
+object RestClientDuplicateResult extends RestClient[MatchDuplicateResult,MatchDuplicateResult.Id]("/v1/rest/duplicateresults") {
 
   def createDuplicateResult( hand: MatchDuplicateResult,
                              default: Boolean = true,
-                             boards: Option[String] = None,
-                             movement: Option[String] = None,
+                             boards: Option[BoardSet.Id] = None,
+                             movement: Option[Movement.Id] = None,
                              test: Boolean = false,
                              timeout: Duration = AjaxResult.defaultTimeout ): RestResult[MatchDuplicateResult] = {
     val query = Map[String,String]() ++
                   test.option( "test"->"true" ) ++
                   default.option( "default"->"true") ++
-                  boards.map(b=>"boards"->b) ++
-                  movement.map(m=>"movements"->m)
+                  boards.map(b=>"boards"->b.id) ++
+                  movement.map(m=>"movements"->m.id)
     create(hand, query=query.toMap, timeout=timeout)
   }
 }
-object RestClientDuplicate extends RestClient[MatchDuplicate,String]("/v1/rest/duplicates") {
-  def boardResource( dupid: String ) = new RestClientDuplicateBoard(this, dupid)
-  def teamResource( dupid: String ) = new RestClientDuplicateTeam(this, dupid)
-  def pictureResource( dupid: String ) = new RestClientDuplicateBoardPicture(this,dupid)
+object RestClientDuplicate extends RestClient[MatchDuplicate,MatchDuplicate.Id]("/v1/rest/duplicates") {
+  def boardResource( dupid: MatchDuplicate.Id ) = new RestClientDuplicateBoard(this, dupid.id)
+  def teamResource( dupid: MatchDuplicate.Id ) = new RestClientDuplicateTeam(this, dupid.id)
+  def pictureResource( dupid: MatchDuplicate.Id ) = new RestClientDuplicateBoardPicture(this,dupid.id)
 
   def createMatchDuplicate( hand: MatchDuplicate,
                             default: Boolean = true,
-                            boards: Option[String] = None,
-                            movement: Option[String] = None,
+                            boards: Option[BoardSet.Id] = None,
+                            movement: Option[Movement.Id] = None,
                             test: Boolean = false,
                             timeout: Duration = AjaxResult.defaultTimeout ): RestResult[MatchDuplicate] = {
     val query = Map[String,String]() ++
                   test.option( "test"->"true" ) ++
                   default.option( "default"->"true") ++
-                  boards.map(b=>"boards"->b) ++
-                  movement.map(m=>"movements"->m)
+                  boards.map(b=>"boards"->b.id) ++
+                  movement.map(m=>"movements"->m.id)
     create(hand, query=query.toMap, timeout=timeout)
   }
 }
-object RestClientDuplicateSummary extends RestClient[DuplicateSummary,String]("/v1/rest/duplicatesummaries")
+object RestClientDuplicateSummary extends RestClient[DuplicateSummary,DuplicateSummary.Id]("/v1/rest/duplicatesummaries")
 object RestClientLoggerConfig extends RestClient[LoggerConfig,String]("/v1/rest/loggerConfig")
 object RestClientServerURL extends RestClient[ServerURL,String]("/v1/rest/serverurls")
 object RestClientServerVersion extends RestClient[ServerVersion,String]("/v1/rest/serverversion")

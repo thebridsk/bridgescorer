@@ -78,7 +78,7 @@ object PageRubberListInternal {
    * @param askingToDelete The Id of rubber match being deleted.  None if not deleting.
    * @param popupMsg show message in popup if not None.
    */
-  case class State( askingToDelete: Option[String] = None,
+  case class State( askingToDelete: Option[MatchRubber.Id] = None,
                      popupMsg: Option[String] = None,
                      info: Boolean = false
                    )
@@ -94,7 +94,7 @@ object PageRubberListInternal {
 
     import scala.concurrent.ExecutionContext.Implicits.global
 
-    def delete( id: String ) = scope.modState(s => s.copy( askingToDelete = Some(id)))
+    def delete( id: MatchRubber.Id ) = scope.modState(s => s.copy( askingToDelete = Some(id)))
 
     val deleteOK = scope.modState{ s =>
         s.askingToDelete.map{ id =>
@@ -121,7 +121,7 @@ object PageRubberListInternal {
         rescre.foreach( created => {
           logger.info("Got new rubber match "+created.id)
           scope.modState( s => s.copy( popupMsg = None),
-              scope.props >>= { p => p.routerCtl.set(RubberMatchNamesView(created.id)) }
+              scope.props >>= { p => p.routerCtl.set(RubberMatchNamesView(created.id.id)) }
               ).runNow()
         })
       })
@@ -129,14 +129,14 @@ object PageRubberListInternal {
     def showRubber( chi: MatchRubber ) = Callback {
       RubberController.showMatch( chi )
     } >> {
-      scope.withEffectsImpure.props.routerCtl.set(RubberMatchView(chi.id))
+      scope.withEffectsImpure.props.routerCtl.set(RubberMatchView(chi.id.id))
     }
 
     def setMessage( msg: String, info: Boolean = false ) = scope.withEffectsImpure.modState( s => s.copy( popupMsg = Some(msg), info=info) )
 
-    def importRubber( importId: String, rubid: String) =
-      scope.modState( s => s.copy(popupMsg=Some(s"Importing Rubber Match ${rubid} from import ${importId}")), Callback {
-        val query = """mutation importChicago( $importId: ImportId!, $rubId: RubberId! ) {
+    def importRubber( importId: String, rubid: MatchRubber.Id) =
+      scope.modState( s => s.copy(popupMsg=Some(s"Importing Rubber Match ${rubid.id} from import ${importId}")), Callback {
+        val query = """mutation importRubber( $importId: ImportId!, $rubId: RubberId! ) {
                       |  import( id: $importId ) {
                       |    importrubber( id: $rubId ) {
                       |      id
@@ -144,8 +144,8 @@ object PageRubberListInternal {
                       |  }
                       |}
                       |""".stripMargin
-        val vars = JsObject( Seq( "importId" -> JsString(importId), "rubId" -> JsString(rubid) ) )
-        val op = Some("importChicago")
+        val vars = JsObject( Seq( "importId" -> JsString(importId), "rubId" -> JsString(rubid.id) ) )
+        val op = Some("importRubber")
         val result = GraphQLClient.request(query, Some(vars), op)
         resultGraphQL.set(result)
         result.map { gr =>
@@ -153,20 +153,20 @@ object PageRubberListInternal {
             case Some(data) =>
               data \ "import" \ "importrubber" \ "id" match {
                 case JsDefined( JsString( newid ) ) =>
-                  setMessage(s"import rubber ${rubid} from ${importId}, new ID ${newid}", true )
+                  setMessage(s"import rubber ${rubid.id} from ${importId}, new ID ${newid}", true )
                   initializeNewSummary(scope.withEffectsImpure.props)
                 case JsDefined( x ) =>
-                  setMessage(s"expecting string on import rubber ${rubid} from ${importId}, got ${x}")
+                  setMessage(s"expecting string on import rubber ${rubid.id} from ${importId}, got ${x}")
                 case _: JsUndefined =>
-                  setMessage(s"error import rubber ${rubid} from ${importId}, did not find import/importrubber/id field")
+                  setMessage(s"error import rubber ${rubid.id} from ${importId}, did not find import/importrubber/id field")
               }
             case None =>
-              setMessage(s"error import rubber ${rubid} from ${importId}, ${gr.getError()}")
+              setMessage(s"error import rubber ${rubid.id} from ${importId}, ${gr.getError()}")
           }
         }.recover {
           case x: Exception =>
-              logger.warning(s"exception import rubber ${rubid} from ${importId}", x)
-              setMessage(s"exception import rubber ${rubid} from ${importId}")
+              logger.warning(s"exception import rubber ${rubid.id} from ${importId}", x)
+              setMessage(s"exception import rubber ${rubid.id} from ${importId}")
         }.foreach { x => }
       })
 
@@ -208,7 +208,10 @@ object PageRubberListInternal {
             if (importId == RubberListStore.getImportId) {
               RubberListStore.getRubberSummary() match {
                 case Some(rubberlist) =>
-                  val rubbers = rubberlist.sortWith((l,r) => Id.idComparer( l.id, r.id) > 0)
+                  val rubbers = rubberlist.sortWith { (l,r) =>
+                    if (l.created == r.created) l.id > r.id
+                    else l.created > r.created
+                  }
                   <.table(
                       <.thead(
                         <.tr(
@@ -271,7 +274,7 @@ object PageRubberListInternal {
 
       <.tr(
           <.td(
-            AppButton( "Rubber"+id, id,
+            AppButton( "Rubber"+id.id, id.id,
               baseStyles.appButton100,
               ^.onClick --> backend.showRubber(rubber.rubber),
               importId.map { id =>
@@ -282,7 +285,7 @@ object PageRubberListInternal {
           importId.map { iid =>
             TagMod(
               <.td(
-                AppButton( "ImportRubber_"+id, "Import",
+                AppButton( "ImportRubber_"+id.id, "Import",
                            baseStyles.appButton100,
                            ^.onClick --> backend.importRubber(iid,id)
                          )
@@ -292,7 +295,7 @@ object PageRubberListInternal {
                   if (bm.id.isDefined && bm.sameness > 90) {
                     val title = bm.htmlTitle
                     TagMod(Tooltip(
-                      f"""${bm.id.get} ${bm.sameness}%.2f%%""",
+                      f"""${bm.id.get.id} ${bm.sameness}%.2f%%""",
                       <.div( title )
                     ))
                   } else {
@@ -309,7 +312,7 @@ object PageRubberListInternal {
           <.td( rubber.rubber.east,<.br(),rubber.rubber.west),
           <.td( rubber.ewTotal.toString()),
           <.td(
-              importId.isEmpty ?= AppButton( "Delete", "Delete", ^.onClick --> backend.delete(id) )
+              importId.isEmpty ?= AppButton( s"Delete_${id.id}", "Delete", ^.onClick --> backend.delete(id) )
           )
       )
     }

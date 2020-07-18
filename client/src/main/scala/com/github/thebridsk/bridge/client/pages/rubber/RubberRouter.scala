@@ -17,6 +17,7 @@ import com.github.thebridsk.bridge.client.routes.Module
 import com.github.thebridsk.bridge.client.routes.BridgeRouter
 import com.github.thebridsk.bridge.client.routes.BridgeRouterBase
 import scala.scalajs.js.URIUtils
+import com.github.thebridsk.bridge.data.MatchRubber
 
 object RubberModule extends Module {
   case class PlayRubber( m: RubberPage ) extends AppPage
@@ -40,26 +41,30 @@ object RubberRouter {
     def getDecodedId = URIUtils.decodeURI(importId)
   }
 
-  trait RubberMatchViewBase extends RubberPage {
-    val rid: String
-    def toRubber = RubberMatchDetailsView(rid)
-    def toDetails = RubberMatchDetailsView(rid)
-    def toNames = RubberMatchNamesView(rid)
-    def toHand( handid: String ) = RubberMatchHandView(rid,handid)
+  trait HasRubberId {
+    val srid: String
+    def rid = MatchRubber.id(srid)
   }
-  case class RubberMatchView( rid: String ) extends RubberMatchViewBase
-  case class RubberMatchDetailsView( rid: String ) extends RubberMatchViewBase
 
-  case class RubberMatchNamesView( rid: String ) extends RubberPage {
-    def toRubber = RubberMatchView(rid)
-    def toDetails = RubberMatchDetailsView(rid)
-    def toHand( handid: String ) = RubberMatchHandView(rid,handid)
+  trait RubberMatchViewBase extends RubberPage with HasRubberId {
+    def toRubber = RubberMatchDetailsView(srid)
+    def toDetails = RubberMatchDetailsView(srid)
+    def toNames = RubberMatchNamesView(srid)
+    def toHand( handid: String ) = RubberMatchHandView(srid,handid)
   }
-  case class RubberMatchHandView( rid: String, handid: String ) extends RubberPage {
-    def toRubber = RubberMatchView(rid)
-    def toDetails = RubberMatchDetailsView(rid)
-    def toNames = RubberMatchNamesView(rid)
-    def toHand( handid: String ) = RubberMatchHandView(rid,handid)
+  case class RubberMatchView( srid: String ) extends RubberMatchViewBase
+  case class RubberMatchDetailsView( srid: String ) extends RubberMatchViewBase
+
+  case class RubberMatchNamesView( srid: String ) extends RubberPage with HasRubberId {
+    def toRubber = RubberMatchView(srid)
+    def toDetails = RubberMatchDetailsView(srid)
+    def toHand( handid: String ) = RubberMatchHandView(srid,handid)
+  }
+  case class RubberMatchHandView( srid: String, handid: String ) extends RubberPage with HasRubberId {
+    def toRubber = RubberMatchView(srid)
+    def toDetails = RubberMatchDetailsView(srid)
+    def toNames = RubberMatchNamesView(srid)
+    def toHand( handid: String ) = RubberMatchHandView(srid,handid)
   }
 
   val verifyPages = ListView::

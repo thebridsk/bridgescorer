@@ -182,7 +182,7 @@ Options:""")
       DuplicateSummaryEntry( Team( Team.id(i+1),p.player1,p.player2,0,0), Some(9.0), Some(1))
     }
 
-    (DuplicateSummary(s"M${im}",true,teams,18,2,true,im,im),calcTime)
+    (DuplicateSummary(DuplicateSummary.id(s"M${im}"),true,teams,18,2,true,im,im),calcTime)
   }
 
   def analyze( players: List[String], ignore: Int ) = {

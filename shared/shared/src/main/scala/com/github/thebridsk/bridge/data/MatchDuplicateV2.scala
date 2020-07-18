@@ -18,7 +18,7 @@ case class MatchPlayerPosition(
 @Schema(description = "A duplicate match, version 2 (old version)")
 case class MatchDuplicateV2(
     @Schema(description = "The ID of the MatchDuplicate", required = true)
-    id: Id.MatchDuplicate,
+    id: MatchDuplicate.Id,
     @Schema(
       description = "The teams playing the match, the key is the team ID",
       required = true
@@ -30,9 +30,9 @@ case class MatchDuplicateV2(
     )
     boards: Map[Board.Id, BoardV1],
     @Schema(description = "The boardsets being used", required = true)
-    boardset: String,
+    boardset: BoardSet.Id,
     @Schema(description = "The movements being used", required = true)
-    movement: String,
+    movement: Movement.Id,
     @Schema(
       description =
         "When the duplicate hand was created, in milliseconds since 1/1/1970 UTC",
@@ -45,7 +45,7 @@ case class MatchDuplicateV2(
       required = true
     )
     updated: Timestamp
-) extends VersionedInstance[MatchDuplicate, MatchDuplicateV2, String] {
+) extends VersionedInstance[MatchDuplicate, MatchDuplicateV2, MatchDuplicate.Id] {
 
   def equalsIgnoreModifyTime(
       other: MatchDuplicateV2,
@@ -124,7 +124,7 @@ case class MatchDuplicateV2(
   }
 
   def setId(
-      newId: Id.MatchDuplicate,
+      newId: MatchDuplicate.Id,
       forCreate: Boolean,
       dontUpdateTime: Boolean = false
   ) = {
@@ -139,7 +139,7 @@ case class MatchDuplicateV2(
     }
   }
 
-  def copyForCreate(id: Id.MatchDuplicate) = {
+  def copyForCreate(id: MatchDuplicate.Id) = {
     val time = SystemTime.currentTimeMillis()
     val xteams = teams.map(e => (e._1 -> e._2.copyForCreate(e._1))).toMap
     val xboards = boards.map(e => (e._1 -> e._2.copyForCreate(e._1))).toMap
@@ -493,7 +493,7 @@ case class MatchDuplicateV2(
       .sortWith((l, r) => l.id < r.id)
 //     name: String, short: String, description: String, boards: List[BoardInSet]
     BoardSet(
-      boardset + "In" + id,
+      BoardSet.id( s"${boardset.id}In${id}"),
       "Used in match " + id,
       "Used in match " + id,
       bins
@@ -527,9 +527,9 @@ case class MatchDuplicateV2(
 object MatchDuplicateV2 {
   val time = SystemTime.currentTimeMillis()
   def create(
-      id: String = "",
-      boardset: String = "ArmonkBoards",
-      movement: String = "2TablesArmonk"
+      id: MatchDuplicate.Id = MatchDuplicate.idNul,
+      boardset: BoardSet.Id = BoardSet.default,
+      movement: Movement.Id = Movement.default
   ) = new MatchDuplicateV2(id, Map(), Map(), boardset, movement, time, time)
 
   def createTeams(numberTeams: Int) = {

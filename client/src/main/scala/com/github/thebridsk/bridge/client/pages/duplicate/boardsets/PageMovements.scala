@@ -45,9 +45,9 @@ import scala.concurrent.ExecutionContext.Implicits.global
 object PageMovements {
   import PageMovementsInternal._
 
-  case class Props( routerCtl: BridgeRouter[DuplicatePage], backpage: DuplicatePage, initialDisplay: Option[String] )
+  case class Props( routerCtl: BridgeRouter[DuplicatePage], backpage: DuplicatePage, initialDisplay: Option[Movement.Id] )
 
-  def apply( routerCtl: BridgeRouter[DuplicatePage], backpage: DuplicatePage, initialDisplay: Option[String] ) = component(Props(routerCtl,backpage,initialDisplay))
+  def apply( routerCtl: BridgeRouter[DuplicatePage], backpage: DuplicatePage, initialDisplay: Option[Movement.Id] ) = component(Props(routerCtl,backpage,initialDisplay))
 
 }
 
@@ -66,7 +66,7 @@ object PageMovementsInternal {
    *
    * @param boardSets all the boardsets
    */
-  case class State( movements: Map[String,Movement] = Map(), msg: Option[TagMod] = None ) {
+  case class State( movements: Map[Movement.Id,Movement] = Map(), msg: Option[TagMod] = None ) {
 
     def setMsg( msg: String ) = copy( msg = Some(msg))
     def setMsg( msg: TagMod ) = copy( msg = Some(msg))
@@ -83,7 +83,7 @@ object PageMovementsInternal {
                       )
                     }).build
 
-  val SummaryRow = ScalaComponent.builder[(Backend,Props,State,String,Callback,Option[String])]("PageMovements.SummaryRow")
+  val SummaryRow = ScalaComponent.builder[(Backend,Props,State,Movement.Id,Callback,Option[Movement.Id])]("PageMovements.SummaryRow")
                     .render_P( args => {
                       val (backend,props,state,current,toggle,selected) = args
                       val mov = state.movements(current)
@@ -91,14 +91,14 @@ object PageMovementsInternal {
                       val disabled = mov.isDisabled
                       <.tr(
                         <.td(
-                          AppButton( mov.name, mov.short, BaseStyles.highlight(selected = sel), ^.onClick-->toggle )
+                          AppButton( mov.name.id, mov.short, BaseStyles.highlight(selected = sel), ^.onClick-->toggle )
                         ),
                         <.td(
                           disabled ?= "Disabled, ",
                           mov.description
                         ),
                         <.td(
-                          AppButton( s"${mov.name}_edit", "Edit", props.routerCtl.setOnClick(MovementEditView(mov.name)) ),
+                          AppButton( s"${mov.name}_edit", "Edit", props.routerCtl.setOnClick(MovementEditView(mov.name.id)) ),
                           mov.isDeletable ?= AppButton( s"${mov.name}_delete", "Delete", ^.onClick --> backend.deleteCB(mov.id) ),
                           mov.isResetToDefault ?= AppButton( s"${mov.name}_reset", "Reset", ^.onClick --> backend.resetCB(mov.id) ),
                         )
@@ -181,14 +181,14 @@ object PageMovementsInternal {
 
     val okCallback = scope.forceUpdate >> scope.props >>= { props => props.routerCtl.set(props.backpage) }
 
-    def toggleBoardSet( name: String ) = scope.props >>= { props =>
+    def toggleBoardSet( name: Movement.Id ) = scope.props >>= { props =>
       props.initialDisplay match {
         case Some(s) if s == name => props.routerCtl.set(MovementSummaryView)
-        case _ => props.routerCtl.set(MovementView(name))
+        case _ => props.routerCtl.set(MovementView(name.id))
       }
     }
 
-    def deleteCB( id: String ) = scope.modState(
+    def deleteCB( id: Movement.Id ) = scope.modState(
       { s =>
         s.setMsg(s"Deleting movement $id")
       },
@@ -205,7 +205,7 @@ object PageMovementsInternal {
       }
     )
 
-    def resetCB( id: String ) = scope.modState(
+    def resetCB( id: Movement.Id ) = scope.modState(
       { s =>
         s.setMsg(s"Resetting movement $id to default")
       },
@@ -252,7 +252,7 @@ object PageMovementsInternal {
             ),
             <.tbody(
               state.movements.keySet.toList.sortWith( (t1,t2)=>t1<t2 ).map { name =>
-                SummaryRow.withKey( name )((this,props,state,name,toggleBoardSet(name),props.initialDisplay))
+                SummaryRow.withKey( name.id )((this,props,state,name,toggleBoardSet(name),props.initialDisplay))
               }.toTagMod
             )
           ),
@@ -285,9 +285,9 @@ object PageMovementsInternal {
     def forceUpdate = scope.withEffectsImpure.forceUpdate
 
     val storeCallback = scope.modState { s =>
-      val boardsets = BoardSetStore.getMovement()
-      logger.info("Got all boardsets, n="+boardsets.size )
-      s.copy( movements=boardsets)
+      val movements = BoardSetStore.getMovement()
+      logger.info("Got all boardsets, n="+movements.size )
+      s.copy( movements=movements)
     }
 
     val scrollToCB = movementTableRef.get.map { re =>

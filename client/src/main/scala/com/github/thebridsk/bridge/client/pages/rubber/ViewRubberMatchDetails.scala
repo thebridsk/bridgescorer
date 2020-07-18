@@ -216,7 +216,7 @@ object ViewRubberMatchDetailsInternal {
           )
         case Some(rub) if (rub.id == props.page.rid && !rub.gotAllPlayers()) =>
           <.div(
-            PageRubberNames( RubberMatchNamesView( props.page.rid ), props.routerCtl )
+            PageRubberNames( RubberMatchNamesView( props.page.srid ), props.routerCtl )
           )
         case _ =>
           <.div(<.h1("Waiting to load data"))

@@ -69,13 +69,13 @@ object RubberController {
         // enabled - Some(true)
         // mocked - None
         logger.info("Sending create rubber to server")
-        val rub = MatchRubber("","","","","","",Nil)
+        val rub = MatchRubber(MatchRubber.idNul,"","","","","",Nil)
         val r = RestClientRubber.create(rub).recordFailure()
         new CreateResultMatchRubber(r)
       case Some(false) =>
         // disabled
         currentId = currentId + 1
-        val created = MatchRubber(s"R$currentId","","","","","",Nil)
+        val created = MatchRubber(MatchRubber.id(currentId),"","","","","",Nil)
         logger.info("PageRubber: created new local rubber game: "+created.id)
         showMatch( created )
         new ResultObject(created)
@@ -88,7 +88,7 @@ object RubberController {
     BridgeDispatcher.updateRubber(rub)
   }
 
-  def ensureMatch( rubid: String ) = {
+  def ensureMatch( rubid: MatchRubber.Id ) = {
     if (!RubberStore.isMonitoredId(rubid)) {
       val result = RestClientRubber.get(rubid).recordFailure()
       result.foreach( created => {
@@ -118,11 +118,11 @@ object RubberController {
     }
   }
 
-  def updateRubberNames( rubid: String, north: String, south: String, east: String, west: String, firstDealer: PlayerPosition ) = {
+  def updateRubberNames( rubid: MatchRubber.Id, north: String, south: String, east: String, west: String, firstDealer: PlayerPosition ) = {
     BridgeDispatcher.updateRubberNames(rubid, north, south, east, west, firstDealer, Some(updateServer))
   }
 
-  def updateRubberHand( rubid: String, handid: String, hand: RubberHand ) = {
+  def updateRubberHand( rubid: MatchRubber.Id, handid: String, hand: RubberHand ) = {
     BridgeDispatcher.updateRubberHand(rubid, handid, hand, Some( updateServer ))
   }
 
@@ -225,12 +225,12 @@ object RubberController {
     }
   }
 
-  def deleteRubber( id: String) = {
+  def deleteRubber( id: MatchRubber.Id) = {
     BridgeDispatcher.deleteRubber(id)
     if (!BridgeDemo.isDemo) RestClientRubber.delete(id).recordFailure()
   }
 
-  private var sseConnection: ServerEventConnection[String] = null
+  private var sseConnection: ServerEventConnection[MatchRubber.Id] = null
 
   private var useSSEFromServer: Boolean = true;
 
@@ -244,13 +244,13 @@ object RubberController {
   setServerEventConnection()
 
   private def setServerEventConnection(): Unit = {
-    sseConnection = new SSE[String]( "/v1/sse/rubbers/", Listener)
+    sseConnection = new SSE[MatchRubber.Id]( "/v1/sse/rubbers/", Listener)
   }
 
-  object Listener extends SECListener[String] {
-    def handleStart( dupid: String) = {
+  object Listener extends SECListener[MatchRubber.Id] {
+    def handleStart( rubid: MatchRubber.Id) = {
     }
-    def handleStop( dupid: String) = {
+    def handleStop( rubid: MatchRubber.Id) = {
     }
 
     def processMessage( msg: Protocol.ToBrowserMessage ) = {
@@ -258,8 +258,8 @@ object RubberController {
         case Protocol.MonitorJoined(id,members) =>
         case Protocol.MonitorLeft(id,members) =>
         case Protocol.UpdateDuplicate(matchDuplicate) =>
-        case Protocol.UpdateDuplicateHand(dupid, hand) =>
-        case Protocol.UpdateDuplicateTeam(dupid,team) =>
+        case Protocol.UpdateDuplicateHand(rubid, hand) =>
+        case Protocol.UpdateDuplicateTeam(rubid,team) =>
         case _: Protocol.UpdateDuplicatePicture =>
         case _: Protocol.UpdateDuplicatePictures =>
         case Protocol.NoData(_) =>
@@ -274,24 +274,24 @@ object RubberController {
     }
   }
 
-  def monitor( dupid: String, restart: Boolean = false ): Unit = {
+  def monitor( rubid: MatchRubber.Id, restart: Boolean = false ): Unit = {
 
     if (AjaxResult.isEnabled.getOrElse(false)) {
       RubberStore.getMonitoredId match {
         case Some(mdid) =>
           sseConnection.cancelStop()
-          if (restart || mdid != dupid || !sseConnection.isConnected) {
-            logger.info(s"""Switching MatchChicago monitor to ${dupid} from ${mdid}""" )
-            RubberStore.start(dupid, None)
-            sseConnection.monitor(dupid, restart)
+          if (restart || mdid != rubid || !sseConnection.isConnected) {
+            logger.info(s"""Switching MatchChicago monitor to ${rubid} from ${mdid}""" )
+            RubberStore.start(rubid, None)
+            sseConnection.monitor(rubid, restart)
           } else {
             // already monitoring id
-            logger.info(s"""Already monitoring MatchChicago ${dupid}""" )
+            logger.info(s"""Already monitoring MatchChicago ${rubid}""" )
           }
         case None =>
-          logger.info(s"""Starting MatchChicago monitor to ${dupid}""" )
-          RubberStore.start(dupid, None)
-          sseConnection.monitor(dupid, restart)
+          logger.info(s"""Starting MatchChicago monitor to ${rubid}""" )
+          RubberStore.start(rubid, None)
+          sseConnection.monitor(rubid, restart)
       }
     } else {
 

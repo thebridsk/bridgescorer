@@ -25,7 +25,7 @@ class TestDuplicateScore extends AnyFlatSpec with Matchers {
 
   behavior of "a played match"
 
-  val dupid: Id.MatchDuplicate = "M1"
+  val dupid = MatchDuplicate.id(1)
   val md = TestMatchDuplicate.getPlayedMatch(dupid)
 
 //  board 7 played by 1 and 3
@@ -202,7 +202,7 @@ class TestDuplicateScore extends AnyFlatSpec with Matchers {
 
   it should "not throw any exceptions" in {
     implicit val ec = ExecutionContext.global
-    new BridgeServiceInMemory("test").fillBoards(MatchDuplicate.create("M3")).map { _ match {
+    new BridgeServiceInMemory("test").fillBoards(MatchDuplicate.create(MatchDuplicate.id(3))).map { _ match {
       case Right(m) =>
         val s = MatchDuplicateScore(m, PerspectiveDirector )
         s.tables.size mustBe 2

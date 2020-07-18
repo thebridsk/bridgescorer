@@ -29,6 +29,9 @@ import com.github.thebridsk.bridge.client.routes.BridgeRouter
 import com.github.thebridsk.materialui.MuiTypography
 import com.github.thebridsk.materialui.TextVariant
 import com.github.thebridsk.materialui.TextColor
+import com.github.thebridsk.bridge.data.DuplicateSummary
+import com.github.thebridsk.bridge.data.IdMatchDuplicate
+import com.github.thebridsk.bridge.data.IdMatchDuplicateResult
 
 /**
  * Shows the team x board table and has a totals column that shows the number of points the team has.
@@ -64,10 +67,10 @@ object PageFinishedScoreboardsInternal {
    * will cause State to leak.
    *
    */
-  case class State( games: Map[String,MatchDuplicateScore],
-                    results: Map[String,MatchDuplicateResult],
-                    ids: List[String],
-                    summaries: List[Id.MatchDuplicate]
+  case class State( games: Map[MatchDuplicate.Id,MatchDuplicateScore],
+                    results: Map[MatchDuplicateResult.Id,MatchDuplicateResult],
+                    ids: List[DuplicateSummary.Id],
+                    summaries: List[DuplicateSummary.Id]
                   ) {
     def gotall = {
       games.size+results.size == ids.length
@@ -88,28 +91,28 @@ object PageFinishedScoreboardsInternal {
         var i = 0
         state.ids.map { id =>
           val tm: TagMod =
-            state.games.get(id) match {
-              case Some(s) =>
-                ViewScoreboard(props.routerCtl, FinishedScoreboardView(s.id), s )
-              case None =>
-                state.results.get(id) match {
-                  case Some(s) =>
-                    val wss = s.getWinnerSets
-                    wss.zipWithIndex.map { arg =>
-                      val (ws,iws) = arg
-                      ViewPlayerMatchResult( s.placeByWinnerSet(ws), s, iws+1, wss.length )
-                    }.toTagMod
-                  case None =>
-                    EmptyVdom
+            id.toSubclass[IdMatchDuplicate].map { mdid =>
+              state.games.get(mdid).whenDefined { s =>
+                ViewScoreboard(props.routerCtl, FinishedScoreboardView(s.id.id), s )
+              }
+            }.getOrElse {
+              id.toSubclass[IdMatchDuplicateResult].whenDefined { mdrid =>
+                state.results.get(mdrid).whenDefined { s =>
+                  val wss = s.getWinnerSets
+                  wss.zipWithIndex.map { arg =>
+                    val (ws,iws) = arg
+                    ViewPlayerMatchResult( s.placeByWinnerSet(ws), s, iws+1, wss.length )
+                  }.toTagMod
                 }
+              }
             }
           tm
         }.toTagMod
       }
 
       def matches(add: Boolean) = {
-        state.summaries.filter(id => state.ids.contains(id)^add).sortWith((l,r)=>Id.idComparer(l, r)<0).map(id => {
-          AppButton( "Duplicate_"+id, id, baseStyles.hideInPrint, ^.onClick --> (if (add) addMatch(id) else removeMatch(id))
+        state.summaries.filter(id => state.ids.contains(id)^add).sortWith((l,r)=>l < r).map(id => {
+          AppButton( s"Duplicate_${id.id}", id.id, baseStyles.hideInPrint, ^.onClick --> (if (add) addMatch(id) else removeMatch(id))
           )
         }).toTagMod
       }
@@ -148,18 +151,23 @@ object PageFinishedScoreboardsInternal {
       )
     }
 
-    def removeMatch (id: Id.MatchDuplicate ) = scope.modState(s => s.copy(ids = s.ids.filter(s=>s!=id)) )
+    def removeMatch (id: DuplicateSummary.Id ) = scope.modState(s => s.copy(ids = s.ids.filter(s=>s!=id)) )
 
-    def addMatch( id: Id.MatchDuplicate ) =
-      scope.modState(s => s.copy(ids = (id::s.ids.reverse).reverse),
+    def addMatch( id: DuplicateSummary.Id ) =
+      scope.modState(s => s.copy(ids = s.ids:::(id::Nil)),
         Callback {
+          val state = scope.withEffectsImpure.state
           logger.finest("PageFinishedScoreboards.addMatch: getting "+id)
-          if ( id.toString.charAt(0) == 'E' ) {
-            if (scope.withEffectsImpure.state.results.get(id).isEmpty)
-              Controller.getDuplicateResult(id).recordFailure().foreach( md => gotMatchResult(md) )
-          } else {
-            if (scope.withEffectsImpure.state.games.get(id).isEmpty)
-              Controller.getMatchDuplicate(id).recordFailure().foreach( md => gotMatch(md) )
+          id.toSubclass[IdMatchDuplicate].map { mdid =>
+            state.games.get(mdid).map { _ =>  }.getOrElse {
+              Controller.getMatchDuplicate(mdid).recordFailure().foreach( md => gotMatch(md) )
+            }
+          }.getOrElse {
+            id.toSubclass[IdMatchDuplicateResult].foreach { mdrid =>
+              state.results.get(mdrid).map { _ =>  }.getOrElse {
+                Controller.getDuplicateResult(mdrid).recordFailure().foreach( md => gotMatchResult(md) )
+              }
+            }
           }
         }
       )
@@ -194,16 +202,19 @@ object PageFinishedScoreboardsInternal {
       mounted = true
       logger.finest("PageFinishedScoreboards.didMount")
     } >> scope.state >>= { s => Callback {
-      s.ids.foreach { id => {
-        if (id.toString().charAt(0) == 'E') {
-          logger.finest("PageFinishedScoreboards.didMount: getting MatchDuplicateResult "+id)
-          Controller.getDuplicateResult(id).recordFailure().foreach(md => gotMatchResult(md))
-        } else {
-          logger.finest("PageFinishedScoreboards.didMount: getting MatchDuplicate "+id)
-          Controller.getMatchDuplicate(id).recordFailure().foreach(md => gotMatch(md))
+      s.ids.foreach { id =>
+        id.toSubclass[IdMatchDuplicate].map { mdid =>
+          s.games.get(mdid).map { _ =>  }.getOrElse {
+            Controller.getMatchDuplicate(mdid).recordFailure().foreach( md => gotMatch(md) )
+          }
+        }.getOrElse {
+          id.toSubclass[IdMatchDuplicateResult].foreach { mdrid =>
+            s.results.get(mdrid).map { _ =>  }.getOrElse {
+              Controller.getDuplicateResult(mdrid).recordFailure().foreach( md => gotMatchResult(md) )
+            }
+          }
         }
-
-      }}
+      }
       RestClientDuplicateSummary.list().recordFailure().foreach(list=>
         scope.withEffectsImpure.modState( s => s.copy(summaries=list.map(ds => ds.id).toList))
       )

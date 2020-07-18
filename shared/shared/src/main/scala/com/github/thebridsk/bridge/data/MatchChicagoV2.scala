@@ -27,7 +27,7 @@ import io.swagger.v3.oas.annotations.media.ArraySchema
 @Schema(description = "A chicago match, version 2 (old version)")
 case class MatchChicagoV2(
     @Schema(description = "The chicago ID", required = true)
-    id: String,
+    id: MatchChicago.Id,
     @ArraySchema(
       minItems = 4,
       uniqueItems = true,
@@ -53,14 +53,14 @@ case class MatchChicagoV2(
     created: Timestamp,
     @Schema(description = "The last update date", required = true)
     updated: Timestamp
-) extends VersionedInstance[MatchChicago, MatchChicagoV2, String] {
+) extends VersionedInstance[MatchChicago, MatchChicagoV2, MatchChicago.Id] {
 
   if (players.length < 4 || players.length > 5) {
     throw new IllegalArgumentException("Must have 4 or 5 players")
   }
 
   def setId(
-      newId: String,
+      newId: MatchChicago.Id,
       forCreate: Boolean,
       dontUpdateTime: Boolean = false
   ) = {
@@ -75,7 +75,7 @@ case class MatchChicagoV2(
     }
   }
 
-  def copyForCreate(id: Id.MatchDuplicate) = {
+  def copyForCreate(id: MatchChicago.Id) = {
     val time = SystemTime.currentTimeMillis()
     val xrounds = rounds.map { e =>
       e.copyForCreate(e.id)
@@ -190,7 +190,7 @@ case class MatchChicagoV2(
     * Set the Id of this match
     * @param id the new ID of the match
     */
-  def setId(id: String) = {
+  def setId(id: MatchChicago.Id) = {
     copy(id = id, updated = SystemTime.currentTimeMillis())
   }
 
@@ -225,7 +225,7 @@ case class MatchChicagoV2(
 
 object MatchChicagoV2 {
   def apply(
-      id: String,
+      id: MatchChicago.Id,
       players: List[String],
       rounds: List[Round],
       gamesPerRound: Int

@@ -43,9 +43,9 @@ import scala.concurrent.ExecutionContext.Implicits.global
 object PageBoardSets {
   import PageBoardSetsInternal._
 
-  case class Props( routerCtl: BridgeRouter[DuplicatePage], backpage: DuplicatePage, initialDisplay: Option[String] )
+  case class Props( routerCtl: BridgeRouter[DuplicatePage], backpage: DuplicatePage, initialDisplay: Option[BoardSet.Id] )
 
-  def apply( routerCtl: BridgeRouter[DuplicatePage], backpage: DuplicatePage, initialDisplay: Option[String] ) = component(Props(routerCtl,backpage,initialDisplay))
+  def apply( routerCtl: BridgeRouter[DuplicatePage], backpage: DuplicatePage, initialDisplay: Option[BoardSet.Id] ) = component(Props(routerCtl,backpage,initialDisplay))
 
 }
 
@@ -64,7 +64,7 @@ object PageBoardSetsInternal {
    *
    * @param boardSets all the boardsets
    */
-  case class State( boardSets: Map[String,BoardSet] = Map(), msg: Option[TagMod] = None ) {
+  case class State( boardSets: Map[BoardSet.Id,BoardSet] = Map(), msg: Option[TagMod] = None ) {
 
     def setMsg( msg: String ) = copy( msg = Some(msg))
     def setMsg( msg: TagMod ) = copy( msg = Some(msg))
@@ -81,18 +81,18 @@ object PageBoardSetsInternal {
                       )
                     }).build
 
-  val SummaryRow = ScalaComponent.builder[(Backend,Props,State,String,Callback,Option[String])]("PageBoardSets.SummaryRow")
+  val SummaryRow = ScalaComponent.builder[(Backend,Props,State,BoardSet.Id,Callback,Option[BoardSet.Id])]("PageBoardSets.SummaryRow")
                     .render_P( args => {
                       val (backend,props,state,current,toggle,selected) = args
                       val bs = state.boardSets(current)
                       val sel = selected.map( s => s==current ).getOrElse(false)
                       <.tr(
                         <.td(
-                          AppButton( bs.name, bs.short, BaseStyles.highlight(selected = sel), ^.onClick-->toggle )
+                          AppButton( bs.name.id, bs.short, BaseStyles.highlight(selected = sel), ^.onClick-->toggle )
                         ),
                         <.td( bs.description),
                         <.td(
-                          AppButton( s"${bs.name}_edit", "Edit", props.routerCtl.setOnClick(BoardSetEditView(bs.name)) ),
+                          AppButton( s"${bs.name}_edit", "Edit", props.routerCtl.setOnClick(BoardSetEditView(bs.name.id)) ),
                           bs.isDeletable ?= AppButton( s"${bs.name}_delete", "Delete", ^.onClick --> backend.deleteCB(bs.id) ),
                           bs.isResetToDefault ?= AppButton( s"${bs.name}_reset", "Reset", ^.onClick --> backend.resetCB(bs.id) ),
                         )
@@ -116,14 +116,14 @@ object PageBoardSetsInternal {
 
     val okCallback = scope.forceUpdate >> scope.props >>= { props => props.routerCtl.set(props.backpage) }
 
-    def toggleBoardSet( name: String ) = scope.props >>= { props =>
+    def toggleBoardSet( name: BoardSet.Id ) = scope.props >>= { props =>
       props.initialDisplay match {
         case Some(s) if s == name => props.routerCtl.set(BoardSetSummaryView)
-        case _ => props.routerCtl.set(BoardSetView(name))
+        case _ => props.routerCtl.set(BoardSetView(name.id))
       }
     }
 
-    def deleteCB( id: String ) = scope.modState(
+    def deleteCB( id: BoardSet.Id ) = scope.modState(
       { s =>
         s.setMsg(s"Deleting boardset $id")
       },
@@ -140,7 +140,7 @@ object PageBoardSetsInternal {
       }
     )
 
-    def resetCB( id: String ) = scope.modState(
+    def resetCB( id: BoardSet.Id ) = scope.modState(
       { s =>
         s.setMsg(s"Resetting boardset $id to default")
       },
@@ -188,7 +188,7 @@ object PageBoardSetsInternal {
               ),
               <.tbody(
                 state.boardSets.keySet.toList.sortWith( (t1,t2)=>t1<t2 ).map { name =>
-                  SummaryRow.withKey( name )((this,props,state,name,toggleBoardSet(name),props.initialDisplay))
+                  SummaryRow.withKey( name.id )((this,props,state,name,toggleBoardSet(name),props.initialDisplay))
                 }.toTagMod
               )
             ),

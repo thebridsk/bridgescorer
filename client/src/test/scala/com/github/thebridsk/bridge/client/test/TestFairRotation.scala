@@ -69,7 +69,7 @@ class TestFairRotation extends AnyFlatSpec with Matchers {
                           pWest,
                           North.pos,
                           Nil )
-    val mc0 = MatchChicago(s"C1",List("","","",""),Nil,0,false).setPlayers(pNorth, pSouth, pEast, pWest).playChicago5(pExtra).setQuintet(false).addRound(r0)
+    val mc0 = MatchChicago(MatchChicago.id(1),List("","","",""),Nil,0,false).setPlayers(pNorth, pSouth, pEast, pWest).playChicago5(pExtra).setQuintet(false).addRound(r0)
 
     val pairs0 = (pNorth,pSouth)::(pEast,pWest)::Nil
     val notYetSittingOut0 = pNorth::pSouth::pEast::pWest::Nil

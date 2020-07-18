@@ -76,7 +76,7 @@ import RestNestedPicture._
   */
 @Path("/rest/duplicates/{dupId}/pictures")
 @Tags(Array(new Tag(name = "Duplicate")))
-class RestNestedPicture( store: Store[Id.MatchDuplicate,MatchDuplicate], parent: RestDuplicate ) {
+class RestNestedPicture( store: Store[MatchDuplicate.Id,MatchDuplicate], parent: RestDuplicate ) {
 
   import UtilsPlayJson._
 
@@ -90,7 +90,7 @@ class RestNestedPicture( store: Store[Id.MatchDuplicate,MatchDuplicate], parent:
     */
   @Hidden
   def route(
-      implicit @Parameter(hidden = true) dupid: Id.MatchDuplicate
+      implicit @Parameter(hidden = true) dupid: MatchDuplicate.Id
   ) = pathPrefix("pictures") {
     logRequestResult("RestNestedPicture.route", DebugLevel) {
       nestedRoute ~ getPictures ~ deletePicture
@@ -98,14 +98,14 @@ class RestNestedPicture( store: Store[Id.MatchDuplicate,MatchDuplicate], parent:
   }
 
   def nestedRoute(
-    implicit @Parameter(hidden = true) dupId: Id.MatchDuplicate
+    implicit @Parameter(hidden = true) dupId: MatchDuplicate.Id
   ) = logRequest("RestNestedPicture.nestedRoute", DebugLevel) {
     pathPrefix("""[a-zA-Z0-9]+""".r) { boardId =>
       nestedPictureHands.route(dupId,Board.id(boardId))
     }
   }
 
-  def getAllPictures( dupId: String ) = {
+  def getAllPictures( dupId: MatchDuplicate.Id ) = {
     store.metaData.listFilesFilter(dupId) { f =>
       RestNestedPictureHand.getPartsMetadataFile(f).isDefined
     }.map { ri =>
@@ -162,7 +162,7 @@ class RestNestedPicture( store: Store[Id.MatchDuplicate,MatchDuplicate], parent:
   )
   def xxxgetPictures = {}
   def getPictures(
-      implicit @Parameter(hidden = true) dupId: Id.MatchDuplicate
+      implicit @Parameter(hidden = true) dupId: MatchDuplicate.Id
   ) = pathEndOrSingleSlash {
     get {
       val f = getAllPictures(dupId)
@@ -210,7 +210,7 @@ class RestNestedPicture( store: Store[Id.MatchDuplicate,MatchDuplicate], parent:
   )
   def xxxdeletePicture = {}
   def deletePicture(
-      implicit @Parameter(hidden = true) dupId: Id.MatchDuplicate
+      implicit @Parameter(hidden = true) dupId: MatchDuplicate.Id
   ) = delete {
     path("""[a-zA-Z0-9]+""".r) { sboardid =>
       val boardid = Board.id(sboardid)

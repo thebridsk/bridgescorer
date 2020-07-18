@@ -217,13 +217,13 @@ object PageDuplicateResultEditInternal {
         case None =>
       }
 
-      if (mounted) props.routerCtl.set(DuplicateResultView(props.page.dupid)).runNow()
+      if (mounted) props.routerCtl.set(DuplicateResultView(props.page.sdupid)).runNow()
 
     }}
 
     val cancel = scope.props >>= { props => Callback {
 
-      if (mounted) props.routerCtl.set(DuplicateResultView(props.page.dupid)).runNow()
+      if (mounted) props.routerCtl.set(DuplicateResultView(props.page.sdupid)).runNow()
 
     }}
 
@@ -454,7 +454,7 @@ object PageDuplicateResultEditInternal {
     val props = cdu.currentProps
     val prevProps = cdu.prevProps
     if (prevProps.page != props.page) {
-      Controller.monitor(props.page.dupid)
+      Controller.monitorDuplicateResult(props.page.dupid)
     }
   }
 

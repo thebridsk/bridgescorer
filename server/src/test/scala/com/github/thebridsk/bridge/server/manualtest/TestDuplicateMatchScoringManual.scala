@@ -18,7 +18,7 @@ import com.github.thebridsk.bridge.data.Team
 object TestDuplicateMatchScoringManual extends Main {
 
   def execute() = {
-    val m = TestMatchDuplicate.getPlayedMatch("M1")
+    val m = TestMatchDuplicate.getPlayedMatch(MatchDuplicate.id("M1"))
 
     check( m, Team.id(1), Team.id(2) )
     check( m, Team.id(3), Team.id(4) )
@@ -34,7 +34,7 @@ object TestDuplicateMatchScoringManual extends Main {
     checkComplete(m)
 
     println("")
-    Await.result( new BridgeServiceInMemory("test").fillBoards(MatchDuplicate.create("M2")), 30.seconds) match {
+    Await.result( new BridgeServiceInMemory("test").fillBoards(MatchDuplicate.create(MatchDuplicate.id("M2"))), 30.seconds) match {
       case Right(md) =>
         check(md, Team.id(1), Team.id(2) )
         showTables(md)

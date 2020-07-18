@@ -198,7 +198,7 @@ class DuplicateTestFromTestDirectory2 extends AnyFlatSpec
         case Some(st) =>
           sessionTables += (id -> st)
         case None =>
-          val sid = id.toString
+          val sid = id.toNumber
           newTableSessions = sid::newTableSessions
           val st = new TableSession(sid)
           sessionTables += (id -> st)
@@ -231,7 +231,7 @@ class DuplicateTestFromTestDirectory2 extends AnyFlatSpec
 
       TestServer.onlyRunWhenStartingServer(Some("Skipping comparing to database, no access to database")) { () =>
         eventually {
-          TestServer.backend.duplicates.syncStore.read(dupid.get) match {
+          TestServer.backend.duplicates.syncStore.read(MatchDuplicate.id(dupid.get)) match {
             case Right(played) =>
               val n = played.copy(id=template.id)
               try {
@@ -340,11 +340,11 @@ class DuplicateTestFromTestDirectory2 extends AnyFlatSpec
         val boardset = template.boardset
         val movement = template.movement
 
-        newd.getNewButton(boardset, movement) mustBe Symbol("Enabled")
+        newd.getNewButton(boardset.id, movement.id) mustBe Symbol("Enabled")
 
         tcpSleep(2)
 
-        val dup = newd.click(boardset, movement).validate
+        val dup = newd.click(boardset.id, movement.id).validate
 
         dupid = dup.dupid
 
@@ -515,7 +515,7 @@ class DuplicateTestFromTestDirectory2 extends AnyFlatSpec
       val boardsetName = templateScore.getBoardSet
 
       import com.github.thebridsk.bridge.server.rest.UtilsPlayJson._
-      val ResponseFromHttp(status,loc,ce,bs,cd) = HttpUtils.getHttpObject[BoardSet](TestServer.getUrl("/v1/rest/boardsets/"+boardsetName))
+      val ResponseFromHttp(status,loc,ce,bs,cd) = HttpUtils.getHttpObject[BoardSet](TestServer.getUrl("/v1/rest/boardsets/"+boardsetName.id))
       boardSet = bs
 
       val rounds = templateScore.tables.values.toList.head.length

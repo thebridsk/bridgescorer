@@ -17,7 +17,7 @@ import io.swagger.v3.oas.annotations.Hidden
 )
 case class MatchRubberV1(
     @Schema(description = "The round ID", required = true)
-    id: String,
+    id: MatchRubber.Id,
     @Schema(description = "The north player", required = true)
     north: String,
     @Schema(description = "The south player", required = true)
@@ -66,7 +66,7 @@ case class MatchRubberV1(
       implementation = classOf[RubberBestMatch]
     )
     bestMatch: Option[RubberBestMatch] = None
-) extends VersionedInstance[MatchRubberV1, MatchRubberV1, String] {
+) extends VersionedInstance[MatchRubberV1, MatchRubberV1, MatchRubber.Id] {
 
   def equalsIgnoreModifyTime(other: MatchRubberV1) = {
     other.id == id &&
@@ -83,7 +83,7 @@ case class MatchRubberV1(
   }
 
   def setId(
-      newId: String,
+      newId: MatchRubber.Id,
       forCreate: Boolean,
       dontUpdateTime: Boolean = false
   ) = {
@@ -98,7 +98,7 @@ case class MatchRubberV1(
     }
   }
 
-  def copyForCreate(id: String) = {
+  def copyForCreate(id: MatchRubber.Id) = {
     val time = SystemTime.currentTimeMillis()
     val xhands = hands.map { e =>
       e.copyForCreate(e.id)
@@ -213,9 +213,11 @@ case class MatchRubberV1(
   def addBestMatch(bm: RubberBestMatch) = copy(bestMatch = Option(bm))
 }
 
-object MatchRubberV1 {
+trait IdMatchRubber
+
+object MatchRubberV1 extends HasId[IdMatchRubber]("R") {
   def apply(
-      id: String,
+      id: MatchRubber.Id,
       north: String,
       south: String,
       east: String,
@@ -251,7 +253,7 @@ case class RubberBestMatch(
       required = true,
       `type` = "string"
     )
-    id: Option[String],
+    id: Option[MatchRubber.Id],
     @ArraySchema(
       schema = new Schema(
         `type` = "string",
@@ -309,7 +311,7 @@ object RubberBestMatch {
 
   def noMatch = new RubberBestMatch(-1, None, None)
 
-  def apply(id: String, diff: Difference) = {
+  def apply(id: MatchRubber.Id, diff: Difference) = {
     new RubberBestMatch(diff.percentSame, Some(id), Some(diff.differences))
   }
 }

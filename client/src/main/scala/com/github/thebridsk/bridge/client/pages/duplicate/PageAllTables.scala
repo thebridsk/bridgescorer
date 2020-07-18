@@ -92,7 +92,7 @@ object PageAllTablesInternal {
           ),
           DuplicateStore.getCompleteView() match {
             case Some(score) if score.id == props.page.dupid =>
-              val clickPage = CompleteScoreboardView(props.page.dupid)
+              val clickPage = CompleteScoreboardView(props.page.sdupid)
               <.div(
                 dupStyles.divAllTablesPage,
                 score.tables.keys.toList.sortWith((t1,t2)=>t1<t2).map { table =>

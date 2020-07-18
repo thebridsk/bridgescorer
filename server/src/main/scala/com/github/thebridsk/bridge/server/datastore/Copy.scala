@@ -89,13 +89,13 @@ Options:""")
     t1.created < t2.created
 
   def sortByMDId(t1: MatchDuplicate, t2: MatchDuplicate): Boolean =
-    Id.idComparer(t1.id.toString(), t2.id.toString()) < 0
+    t1.id < t2.id
   def sortByMDRId(t1: MatchDuplicateResult, t2: MatchDuplicateResult): Boolean =
-    Id.idComparer(t1.id.toString(), t2.id.toString()) < 0
+    t1.id < t2.id
   def sortByMCId(t1: MatchChicago, t2: MatchChicago): Boolean =
-    Id.idComparer(t1.id.toString(), t2.id.toString()) < 0
+    t1.id < t2.id
   def sortByMRId(t1: MatchRubber, t2: MatchRubber): Boolean =
-    Id.idComparer(t1.id.toString(), t2.id.toString()) < 0
+    t1.id < t2.id
 
   def executeSubcommand(): Int = {
 
@@ -116,7 +116,7 @@ Options:""")
 
       val ids = optionIds.toOption
 
-      def idFilter(id: String) = ids.map(l => l.contains(id)).getOrElse(true)
+      def idFilter(id: Id[_]) = ids.map(l => l.contains(id.id)).getOrElse(true)
 
       log.info(s"""Starting to copy""")
 
@@ -183,7 +183,7 @@ Options:""")
 
   def await[T](fut: Future[T]) = Await.result(fut, 30.seconds)
 
-  def setValue[K, T <: VersionedInstance[T, T, K]](
+  def setValue[K <: Comparable[K], T <: VersionedInstance[T, T, K]](
       name: String,
       out: Store[K, T],
       id: K,
@@ -206,7 +206,7 @@ Options:""")
     * @param converter A function that changes the names in the value.
     *                  If the function returns None, than this value is not modified.  It will be copied.
     */
-  def copy[K, T <: VersionedInstance[T, T, K]](
+  def copy[K <: Comparable[K], T <: VersionedInstance[T, T, K]](
       name: String,
       in: Store[K, T],
       out: Store[K, T],
@@ -255,7 +255,7 @@ Options:""")
     * @param converter A function that changes the names in the value.
     *                  If the function returns None, than this value is not modified.  It will be copied.
     */
-  def copyIfNotExist[K, T <: VersionedInstance[T, T, K]](
+  def copyIfNotExist[K <: Comparable[K], T <: VersionedInstance[T, T, K]](
       name: String,
       in: Store[K, T],
       out: Store[K, T],

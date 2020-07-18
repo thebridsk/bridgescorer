@@ -91,11 +91,11 @@ class TestBoardSetsAndHands extends AnyFlatSpec with ScalatestRouteTest with Mat
   }
 
   it should "return a boardset json object for POST request to /v1/rest/boardsets with BoardSet json" in {
-    Post("/v1/rest/boardsets", boardsetArmonkBoards.get.copy(name="change")) ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
+    Post("/v1/rest/boardsets", boardsetArmonkBoards.get.copy(name=BoardSet.id("change"))) ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
       status mustBe Created
       mediaType mustBe `application/json`
       val resp = responseAs[BoardSet]
-      resp.name mustBe "change"
+      resp.name.id mustBe "change"
     }
   }
 
@@ -225,11 +225,11 @@ class TestBoardSetsAndHands extends AnyFlatSpec with ScalatestRouteTest with Mat
   }
 
   it should "return a Movement json object for POST request to /v1/rest/movements with Movement json" in {
-    Post("/v1/rest/movements", Movement2TablesArmonk.get.copy(name="change")) ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
+    Post("/v1/rest/movements", Movement2TablesArmonk.get.copy(name=Movement.id("change"))) ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
       status mustBe Created
       mediaType mustBe `application/json`
       val resp = responseAs[Movement]
-      resp.name mustBe "change"
+      resp.name.id mustBe "change"
     }
   }
 
@@ -322,7 +322,7 @@ class TestBoardSetsAndHands extends AnyFlatSpec with ScalatestRouteTest with Mat
 
   it should "return a match duplicate for POST request to /v1/rest/duplicates that is identical to the one sent" in {
     val boards = (Board.create( Board.id(1), false, false, "N", List() )::Nil)
-    val md = MatchDuplicate.create("").copy(teams=MatchDuplicate.createTeams(4)).copy(boards=boards)
+    val md = MatchDuplicate.create(MatchDuplicate.idNul).copy(teams=MatchDuplicate.createTeams(4)).copy(boards=boards)
     Post("/v1/rest/duplicates", md) ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
       status mustBe Created
       mediaType mustBe `application/json`
@@ -330,7 +330,7 @@ class TestBoardSetsAndHands extends AnyFlatSpec with ScalatestRouteTest with Mat
       resp.teams.size mustBe md.teams.size
       resp.boards.size mustBe md.boards.size
       assert( resp.equalsIgnoreModifyTime(md.copy(id=resp.id)),"response must be equal to what was sent" )
-      Delete("/v1/rest/duplicates/"+resp.id) ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
+      Delete("/v1/rest/duplicates/"+resp.id.id) ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
         status mustBe NoContent
       }
     }
@@ -338,7 +338,7 @@ class TestBoardSetsAndHands extends AnyFlatSpec with ScalatestRouteTest with Mat
 
   var defaultMatchDuplicate: Option[MatchDuplicate] = None
   it should "return a match duplicate for POST request to /v1/rest/duplicates?default with 4 teams and 18 boards" in {
-    val md = MatchDuplicate.create("")
+    val md = MatchDuplicate.create(MatchDuplicate.idNul)
     Post("/v1/rest/duplicates?default", md) ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
       status mustBe Created
       mediaType mustBe `application/json`
@@ -348,14 +348,14 @@ class TestBoardSetsAndHands extends AnyFlatSpec with ScalatestRouteTest with Mat
       resp.getBoard(Board.id(2)).get.dealer mustBe "W"
       resp.getBoard(Board.id(2)).get.ewVul mustBe true
       defaultMatchDuplicate = Some(resp)
-      Delete("/v1/rest/duplicates/"+resp.id) ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
+      Delete("/v1/rest/duplicates/"+resp.id.id) ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
         status mustBe NoContent
       }
     }
   }
 
   it should "return a match duplicate for POST request to /v1/rest/duplicates?boards=ArmonkBoards&movements=2TablesArmonk with 4 teams and 18 boards identical to default, except id" in {
-    val md = MatchDuplicate.create("")
+    val md = MatchDuplicate.create(MatchDuplicate.idNul)
     Post("/v1/rest/duplicates?boards=ArmonkBoards&movements=2TablesArmonk", md) ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
       status mustBe Created
       mediaType mustBe `application/json`
@@ -365,14 +365,14 @@ class TestBoardSetsAndHands extends AnyFlatSpec with ScalatestRouteTest with Mat
       resp.getBoard(Board.id(2)).get.dealer mustBe "W"
       resp.getBoard(Board.id(2)).get.ewVul mustBe true
       assert(resp.equalsIgnoreModifyTime(defaultMatchDuplicate.get.copy(id=resp.id)),"Response must be identical to default response")
-      Delete("/v1/rest/duplicates/"+resp.id) ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
+      Delete("/v1/rest/duplicates/"+resp.id.id) ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
         status mustBe NoContent
       }
     }
   }
 
   it should "return a match duplicate for POST request to /v1/rest/duplicates?boards=ArmonkBoards with 4 teams and 18 boards identical to default, except id" in {
-    val md = MatchDuplicate.create("")
+    val md = MatchDuplicate.create(MatchDuplicate.idNul)
     Post("/v1/rest/duplicates?boards=ArmonkBoards", md) ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
       status mustBe Created
       mediaType mustBe `application/json`
@@ -382,14 +382,14 @@ class TestBoardSetsAndHands extends AnyFlatSpec with ScalatestRouteTest with Mat
       resp.getBoard(Board.id(2)).get.dealer mustBe "W"
       resp.getBoard(Board.id(2)).get.ewVul mustBe true
       assert(resp.equalsIgnoreModifyTime(defaultMatchDuplicate.get.copy(id=resp.id)),"Response must be identical to default response")
-      Delete("/v1/rest/duplicates/"+resp.id) ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
+      Delete("/v1/rest/duplicates/"+resp.id.id) ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
         status mustBe NoContent
       }
     }
   }
 
   it should "return a match duplicate for POST request to /v1/rest/duplicates?movements=2TablesArmonk with 4 teams and 18 boards identical to default, except id" in {
-    val md = MatchDuplicate.create("")
+    val md = MatchDuplicate.create(MatchDuplicate.idNul)
     Post("/v1/rest/duplicates?movements=2TablesArmonk", md) ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
       status mustBe Created
       mediaType mustBe `application/json`
@@ -399,14 +399,14 @@ class TestBoardSetsAndHands extends AnyFlatSpec with ScalatestRouteTest with Mat
       resp.getBoard(Board.id(2)).get.dealer mustBe "W"
       resp.getBoard(Board.id(2)).get.ewVul mustBe true
       assert(resp.equalsIgnoreModifyTime(defaultMatchDuplicate.get.copy(id=resp.id)),"Response must be identical to default response")
-      Delete("/v1/rest/duplicates/"+resp.id) ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
+      Delete("/v1/rest/duplicates/"+resp.id.id) ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
         status mustBe NoContent
       }
     }
   }
 
   it should "return a match duplicate for POST request to /v1/rest/duplicates?boards=StandardBoards&movements=2TablesArmonk with 4 teams and 18 boards that is different from the default" in {
-    val md = MatchDuplicate.create("")
+    val md = MatchDuplicate.create(MatchDuplicate.idNul)
     Post("/v1/rest/duplicates?boards=StandardBoards&movements=2TablesArmonk", md) ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
       status mustBe Created
       mediaType mustBe `application/json`
@@ -416,21 +416,21 @@ class TestBoardSetsAndHands extends AnyFlatSpec with ScalatestRouteTest with Mat
       resp.getBoard(Board.id(2)).get.dealer mustBe "E"
       resp.getBoard(Board.id(2)).get.ewVul mustBe false
       assert(!resp.equalsIgnoreModifyTime(defaultMatchDuplicate.get.copy(id=resp.id)),"Response must be different from the default response")
-      Delete("/v1/rest/duplicates/"+resp.id) ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
+      Delete("/v1/rest/duplicates/"+resp.id.id) ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
         status mustBe NoContent
       }
     }
   }
 
   it should "return a match duplicate for POST request to /v1/rest/duplicates?boards=xxx&movements=2TablesArmonk a bad request" in {
-    val md = MatchDuplicate.create("")
+    val md = MatchDuplicate.create(MatchDuplicate.idNul)
     Post("/v1/rest/duplicates?boards=xxx&movements=2TablesArmonk", md) ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
       status mustBe BadRequest
     }
   }
 
   it should "return a match duplicate for POST request to /v1/rest/duplicates?boards=ArmonkBoards&movements=xxxx a bad request" in {
-    val md = MatchDuplicate.create("")
+    val md = MatchDuplicate.create(MatchDuplicate.idNul)
     Post("/v1/rest/duplicates?boards=StandardBoards&movements=xxx", md) ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
       status mustBe BadRequest
     }

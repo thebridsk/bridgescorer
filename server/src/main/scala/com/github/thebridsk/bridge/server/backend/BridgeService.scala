@@ -76,13 +76,13 @@ abstract class BridgeService(val id: String) {
 
   def setDefaultLoggerConfig(default: LoggerConfig, iPad: Boolean): Unit
 
-  val chicagos: Store[Id.MatchChicago, MatchChicago]
-  val duplicates: Store[Id.MatchDuplicate, MatchDuplicate]
-  val duplicateresults: Store[Id.MatchDuplicateResult, MatchDuplicateResult]
-  val rubbers: Store[String, MatchRubber]
+  val chicagos: Store[MatchChicago.Id, MatchChicago]
+  val duplicates: Store[MatchDuplicate.Id, MatchDuplicate]
+  val duplicateresults: Store[MatchDuplicateResult.Id, MatchDuplicateResult]
+  val rubbers: Store[MatchRubber.Id, MatchRubber]
 
-  val boardSets: Store[String, BoardSet]
-  val movements: Store[String, Movement]
+  val boardSets: Store[BoardSet.Id, BoardSet]
+  val movements: Store[Movement.Id, Movement]
 
   /**
     * The import store.  Some some of the implementations support this, and will override this value.
@@ -216,7 +216,7 @@ abstract class BridgeService(val id: String) {
     }
   }
 
-  def exportStore[TId, T <: VersionedInstance[T, T, TId]](
+  def exportStore[TId <: Comparable[TId], T <: VersionedInstance[T, T, TId]](
       zip: ZipOutputStream,
       store: Store[TId, T],
       filter: Option[List[String]]
@@ -224,8 +224,8 @@ abstract class BridgeService(val id: String) {
     ZipStoreInternal.exportStore(zip,store,filter)
   }
 
-  val defaultBoards = "ArmonkBoards"
-  val defaultMovement = "2TablesArmonk"
+  val defaultBoards = BoardSet.default
+  val defaultMovement = Movement.default
 
   def fillBoards(dup: MatchDuplicate): Future[Result[MatchDuplicate]] = {
     fillBoards(dup, defaultBoards, defaultMovement)
@@ -233,8 +233,8 @@ abstract class BridgeService(val id: String) {
 
   def fillBoards(
       dup: MatchDuplicate,
-      boardset: String,
-      movement: String
+      boardset: BoardSet.Id,
+      movement: Movement.Id
   ): Future[Result[MatchDuplicate]] = {
 
     val fmv = movements.read(movement)
@@ -643,28 +643,28 @@ class BridgeServiceInMemory(
   val bridgeResources = BridgeResources(useYaml)
   import bridgeResources._
 
-  val chicagos: Store[Id.MatchChicago, MatchChicago] =
-    InMemoryStore[Id.MatchChicago, MatchChicago](id)
+  val chicagos: Store[MatchChicago.Id, MatchChicago] =
+    InMemoryStore[MatchChicago.Id, MatchChicago](id)
 
-  val duplicates: Store[Id.MatchDuplicate, MatchDuplicate] =
-    InMemoryStore[Id.MatchDuplicate, MatchDuplicate](id)
+  val duplicates: Store[MatchDuplicate.Id, MatchDuplicate] =
+    InMemoryStore[MatchDuplicate.Id, MatchDuplicate](id)
 
-  val duplicateresults: Store[Id.MatchDuplicateResult, MatchDuplicateResult] =
-    InMemoryStore[Id.MatchDuplicateResult, MatchDuplicateResult](id)
+  val duplicateresults: Store[MatchDuplicateResult.Id, MatchDuplicateResult] =
+    InMemoryStore[MatchDuplicateResult.Id, MatchDuplicateResult](id)
 
-  val rubbers: Store[String, MatchRubber] =
-    InMemoryStore[String, MatchRubber](id)
+  val rubbers: Store[MatchRubber.Id, MatchRubber] =
+    InMemoryStore[MatchRubber.Id, MatchRubber](id)
 
-  val boardSets: Store[String, BoardSet] =
-    MultiStore.createInMemoryAndResource[String, BoardSet](
+  val boardSets: Store[BoardSet.Id, BoardSet] =
+    MultiStore.createInMemoryAndResource[BoardSet.Id, BoardSet](
       id,
       "/com/github/thebridsk/bridge/server/backend/",
       "Boardsets.txt",
       self.getClass.getClassLoader
     )
 
-  val movements: Store[String, Movement] =
-    MultiStore.createInMemoryAndResource[String, Movement](
+  val movements: Store[Movement.Id, Movement] =
+    MultiStore.createInMemoryAndResource[Movement.Id, Movement](
       id,
       "/com/github/thebridsk/bridge/server/backend/",
       "Movements.txt",

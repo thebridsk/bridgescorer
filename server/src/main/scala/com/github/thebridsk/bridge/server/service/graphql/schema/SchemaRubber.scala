@@ -55,7 +55,7 @@ object SchemaRubber {
 
   val log = Logger(SchemaRubber.getClass.getName)
 
-  val RubberIdType = idScalarTypeFromString[String]("RubberId")
+  val RubberIdType = idScalarType("RubberId", MatchRubber)
 
   val RubberHandType = ObjectType(
     "RubberHand",
@@ -277,7 +277,7 @@ object RubberAction {
           case SortCreatedDescending =>
             list.sortWith((l, r) => l.created > r.created)
           case SortId =>
-            list.sortWith((l, r) => Id.idComparer(l.id, r.id) < 0)
+            list.sortWith((l, r) => l.id < r.id)
         }
       }
       .getOrElse(list)

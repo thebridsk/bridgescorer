@@ -57,39 +57,39 @@ object Protocol {
     * Start monitoring a duplicate match
     * @param dupid - the id of the duplicate match to start/stop monitoring
     */
-  case class StartMonitorDuplicate(dupid: Id.MatchDuplicate)
+  case class StartMonitorDuplicate(dupid: MatchDuplicate.Id)
       extends ToServerMessage
 
   /**
     * Stop monitoring a duplicate match
     * @param dupid - the id of the duplicate match to start/stop monitoring
     */
-  case class StopMonitorDuplicate(dupid: Id.MatchDuplicate)
+  case class StopMonitorDuplicate(dupid: MatchDuplicate.Id)
       extends ToServerMessage
 
   /**
     * Start monitoring a chicago match
     * @param chiid - the id of the chicago match to start/stop monitoring
     */
-  case class StartMonitorChicago(chiid: Id.MatchChicago) extends ToServerMessage
+  case class StartMonitorChicago(chiid: MatchChicago.Id) extends ToServerMessage
 
   /**
     * Stop monitoring a chicago match
     * @param chiid - the id of the chicago match to start/stop monitoring
     */
-  case class StopMonitorChicago(chiid: Id.MatchChicago) extends ToServerMessage
+  case class StopMonitorChicago(chiid: MatchChicago.Id) extends ToServerMessage
 
   /**
     * Start monitoring a rubber match
     * @param rubid - the id of the rubber match to start/stop monitoring
     */
-  case class StartMonitorRubber(rubid: String) extends ToServerMessage
+  case class StartMonitorRubber(rubid: MatchRubber.Id) extends ToServerMessage
 
   /**
     * Stop monitoring a rubber match
     * @param rubid - the id of the rubber match to start/stop monitoring
     */
-  case class StopMonitorRubber(rubid: String) extends ToServerMessage
+  case class StopMonitorRubber(rubid: MatchRubber.Id) extends ToServerMessage
 
   // Data that can flow either way
 
@@ -103,28 +103,28 @@ object Protocol {
   /**
     * Update a board in a duplicate match.
     */
-  case class UpdateDuplicateHand(dupid: Id.MatchDuplicate, hand: DuplicateHand)
+  case class UpdateDuplicateHand(dupid: MatchDuplicate.Id, hand: DuplicateHand)
       extends ToServerMessage
       with ToBrowserMessage
 
   /**
     * Update a board in a duplicate match.
     */
-  case class UpdateDuplicateTeam(dupid: Id.MatchDuplicate, team: Team)
+  case class UpdateDuplicateTeam(dupid: MatchDuplicate.Id, team: Team)
     extends ToServerMessage
     with ToBrowserMessage
 
   /**
     * Update a picture in a duplicate match, if None, then the picture was deleted.
     */
-    case class UpdateDuplicatePicture(dupid: Id.MatchDuplicate, boardid: Board.Id, handId: Team.Id, picture: Option[DuplicatePicture])
+    case class UpdateDuplicatePicture(dupid: MatchDuplicate.Id, boardid: Board.Id, handId: Team.Id, picture: Option[DuplicatePicture])
     extends ToServerMessage
     with ToBrowserMessage
 
   /**
     * Update a picture in a duplicate match, if None, then the picture was deleted.
     */
-  case class UpdateDuplicatePictures(dupid: Id.MatchDuplicate, picture: List[DuplicatePicture])
+  case class UpdateDuplicatePictures(dupid: MatchDuplicate.Id, picture: List[DuplicatePicture])
     extends ToServerMessage
     with ToBrowserMessage
 
@@ -138,7 +138,7 @@ object Protocol {
   /**
     * Update the Chicago Round.
     */
-  case class UpdateChicagoRound(matchChicago: Id.MatchChicago, round: Round)
+  case class UpdateChicagoRound(matchChicago: MatchChicago.Id, round: Round)
       extends ToServerMessage
       with ToBrowserMessage
 
@@ -146,7 +146,7 @@ object Protocol {
     * Update the Chicago Hand.
     */
   case class UpdateChicagoHand(
-      matchChicago: Id.MatchChicago,
+      matchChicago: MatchChicago.Id,
       roundId: String,
       hand: Hand
   ) extends ToServerMessage
@@ -162,7 +162,7 @@ object Protocol {
   /**
     * Update the MatchRubber.
     */
-  case class UpdateRubberHand(matchRubberId: String, hand: RubberHand)
+  case class UpdateRubberHand(matchRubberId: MatchRubber.Id, hand: RubberHand)
       extends ToServerMessage
       with ToBrowserMessage
 

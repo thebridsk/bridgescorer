@@ -334,7 +334,7 @@ object HomePage {
           val sorted = req.filter( md => md.created > fourHourAgo ).sortWith { (l,r) =>
             if (l.finished == r.finished) {
               if (l.onlyresult == r.onlyresult) {
-                Id.idComparer(l.id,r.id) > 0
+                l.id>r.id
               } else {
                 if (l.onlyresult) false
                 else true
@@ -346,7 +346,7 @@ object HomePage {
           }
           sorted.headOption match {
             case Some(md) if !md.onlyresult && !md.finished =>
-              gotoPage( PlayDuplicate(CompleteScoreboardView(md.id)) )
+              gotoPage( PlayDuplicate(CompleteScoreboardView(md.id.id)) )
             case _ =>
               logger.severe("Did not find an unfinished duplicate match")
               setPopupText("Did not find an unfinished duplicate match", gotoDuplicateList = true )
@@ -424,7 +424,7 @@ object HomePage {
         resultChicago.set(result)
         result.foreach { created =>
           logger.info(s"Got new chicago ${created.id}.  HomePage.mounted=${mounted}")
-          if (mounted) gotoPage(PlayChicago2(NamesView(created.id,0)))
+          if (mounted) gotoPage(PlayChicago2(NamesView(created.id.id,0)))
         }
         result.failed.foreach( t => {
           t match {
@@ -441,7 +441,7 @@ object HomePage {
         val result = RubberController.createMatch()
         result.foreach { created =>
           logger.info(s"Got new rubber ${created.id}.  HomePage.mounted=${mounted}")
-          if (mounted) gotoPage(PlayRubber(RubberMatchNamesView(created.id)))
+          if (mounted) gotoPage(PlayRubber(RubberMatchNamesView(created.id.id)))
         }
         result.failed.foreach( t => {
           t match {
@@ -457,7 +457,7 @@ object HomePage {
         val result = Controller.createMatchDuplicate().recordFailure()
         result.foreach { created=>
           logger.info("Got new duplicate match ${created.id}.  HomePage.mounted=${mounted}")
-          if (mounted) gotoPage(PlayDuplicate(CompleteScoreboardView(created.id)))
+          if (mounted) gotoPage(PlayDuplicate(CompleteScoreboardView(created.id.id)))
         }
         result.failed.foreach( t => {
           t match {

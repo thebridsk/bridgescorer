@@ -16,7 +16,7 @@ import scala.collection.View
 )
 case class MatchDuplicateV3 private (
     @Schema(description = "The ID of the MatchDuplicate", required = true)
-    id: Id.MatchDuplicate,
+    id: MatchDuplicate.Id,
     @ArraySchema(
       minItems = 0,
       uniqueItems = true,
@@ -43,9 +43,9 @@ case class MatchDuplicateV3 private (
     )
     boards: List[BoardV2],
     @Schema(description = "The boardsets being used", required = true)
-    boardset: String,
+    boardset: BoardSet.Id,
     @Schema(description = "The movements being used", required = true)
-    movement: String,
+    movement: Movement.Id,
     @Schema(
       description =
         "When the duplicate hand was created, in milliseconds since 1/1/1970 UTC",
@@ -65,7 +65,7 @@ case class MatchDuplicateV3 private (
       `type` = "string"
     )
     scoringmethod: Option[String] = None
-) extends VersionedInstance[MatchDuplicate, MatchDuplicateV3, String] {
+) extends VersionedInstance[MatchDuplicate, MatchDuplicateV3, MatchDuplicate.Id] {
 
   def equalsIgnoreModifyTime(
       other: MatchDuplicateV3,
@@ -137,7 +137,7 @@ case class MatchDuplicateV3 private (
   }
 
   def setId(
-      newId: Id.MatchDuplicate,
+      newId: MatchDuplicate.Id,
       forCreate: Boolean,
       dontUpdateTime: Boolean = false
   ) = {
@@ -152,7 +152,7 @@ case class MatchDuplicateV3 private (
     }
   }
 
-  def copyForCreate(id: Id.MatchDuplicate) = {
+  def copyForCreate(id: MatchDuplicate.Id) = {
     val time = SystemTime.currentTimeMillis()
     val xteams = teams.map(e => e.copyForCreate(e.id))
     val xboards = boards.map(e => e.copyForCreate(e.id))
@@ -560,7 +560,7 @@ case class MatchDuplicateV3 private (
       .sortWith(MatchDuplicateV3.sort)
 //     name: String, short: String, description: String, boards: List[BoardInSet]
     BoardSet(
-      boardset + "In" + id,
+      BoardSet.id(s"${boardset.id}In${id}"),
       "Used in match " + id,
       "Used in match " + id,
       bins
@@ -608,23 +608,23 @@ case class MatchDuplicateV3 private (
 
 }
 
-trait IdMatchDuplicate
+trait IdMatchDuplicate extends IdDuplicateSummary
 
 object MatchDuplicateV3 extends HasId[IdMatchDuplicate]("M") {
-  def create(id: String = "") = {
+  def create(id: MatchDuplicate.Id = MatchDuplicate.idNul) = {
     val time = SystemTime.currentTimeMillis()
-    new MatchDuplicateV3(id, List(), List(), "", "", time, time)
+    new MatchDuplicateV3(id, List(), List(), BoardSet.idNul, Movement.idNul, time, time)
   }
 
   val MatchPoints = "MP"
   val InternationalMatchPoints = "IMP"
 
   def apply(
-      id: Id.MatchDuplicate,
+      id: MatchDuplicate.Id,
       teams: List[Team],
       boards: List[BoardV2],
-      boardset: String,
-      movement: String,
+      boardset: BoardSet.Id,
+      movement: Movement.Id,
       created: Timestamp,
       updated: Timestamp
   ) = {

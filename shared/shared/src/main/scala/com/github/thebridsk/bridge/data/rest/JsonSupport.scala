@@ -40,8 +40,12 @@ class UnitFormat extends Format[Unit] {
 
 trait JsonSupport {
 
+  implicit val idMatchRubberKeyReads = MatchRubber.idKeyReads
+  implicit val idMatchRubberKeyWrites = MatchRubber.idKeyWrites
   implicit val idMatchChicagoKeyReads = MatchChicago.idKeyReads
   implicit val idMatchChicagoKeyWrites = MatchChicago.idKeyWrites
+  implicit val idDuplicateMatchKeyReads = DuplicateSummary.idKeyReads
+  implicit val idDuplicateMatchKeyWrites = DuplicateSummary.idKeyWrites
   implicit val idMatchDuplicateKeyReads = MatchDuplicate.idKeyReads
   implicit val idMatchDuplicateKeyWrites = MatchDuplicate.idKeyWrites
   implicit val idBoardKeyReads = Board.idKeyReads
@@ -50,14 +54,22 @@ trait JsonSupport {
   implicit val idTeamKeyWrites = Team.idKeyWrites
   implicit val idTableKeyReads = Table.idKeyReads
   implicit val idTableKeyWrites = Table.idKeyWrites
+  implicit val idBoardSetKeyReads = BoardSet.idKeyReads
+  implicit val idBoardSetKeyWrites = BoardSet.idKeyWrites
+  implicit val idMovementKeyReads = Movement.idKeyReads
+  implicit val idMovementKeyWrites = Movement.idKeyWrites
   implicit val idMatchDuplicateResultKeyReads = MatchDuplicateResult.idKeyReads
   implicit val idMatchDuplicateResultKeyWrites = MatchDuplicateResult.idKeyWrites
 
+  implicit val idMatchRubberFormat         = MatchRubber.jsonFormat
   implicit val idMatchChicagoFormat         = MatchChicago.jsonFormat
+  implicit val idDuplicateMatchFormat       = DuplicateSummary.jsonFormat
   implicit val idMatchDuplicateFormat       = MatchDuplicate.jsonFormat
   implicit val idMatchDuplicateBoardFormat  = Board.jsonFormat
   implicit val idMatchDuplicateTeamFormat   = Team.jsonFormat
   implicit val idMatchDuplicateTableFormat  = Table.jsonFormat
+  implicit val idBoardSetFormat = BoardSet.jsonFormat
+  implicit val idMovementFormat = Movement.jsonFormat
   implicit val idMatchDuplicateResultFormat = MatchDuplicateResult.jsonFormat
 
   implicit val tableFormat = Json.format[Table]

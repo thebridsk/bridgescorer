@@ -51,7 +51,7 @@ class TestDuplicateStore extends AnyFlatSpec with Matchers {
 
   behavior of "TestDuplicateStore in bridgescorer-client"
 
-  val dupid: Id.MatchDuplicate = "M1"
+  val dupid: MatchDuplicate.Id = MatchDuplicate.id(1)
 
   it should "CreateMatchDuplicate" in {
     new Tester {

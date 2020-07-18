@@ -1436,7 +1436,7 @@ class DuplicateTestPages extends AnyFlatSpec
 
     ld.validate(dupid.get)
 
-    ld.getMatchIds must contain (dupid.get)
+    ld.getMatchIds must contain (MatchDuplicate.id(dupid.get))
 
     val sb = ld.clickDuplicate(dupid.get).validate
 

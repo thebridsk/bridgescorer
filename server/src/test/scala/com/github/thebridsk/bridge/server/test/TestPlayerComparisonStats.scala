@@ -37,6 +37,8 @@ import com.github.thebridsk.bridge.data.Hand
 import com.github.thebridsk.bridge.data.duplicate.stats.PlayerComparisonStats
 import com.github.thebridsk.bridge.data.duplicate.stats.PlayerComparisonStat
 import com.github.thebridsk.bridge.data.Table
+import com.github.thebridsk.bridge.data.BoardSet
+import com.github.thebridsk.bridge.data.Movement
 
 object TestPlayerComparisonStats {
 
@@ -57,7 +59,7 @@ class TestPlayerComparisonStats extends AnyFlatSpec with ScalatestRouteTest with
   behavior of "the player comparison stats test"
 
   val defaultMD = MatchDuplicate(
-                    id = "M1",
+                    id = MatchDuplicate.id(1),
                     teams = List(
                            Team.create(team1, "Alice", "Alan"),
                            Team.create(team2, "Betty", "Bob"),
@@ -112,8 +114,8 @@ class TestPlayerComparisonStats extends AnyFlatSpec with ScalatestRouteTest with
                                   updated = 0
                                )
                              ),
-                    boardset = "",
-                    movement = "",
+                    boardset = BoardSet.idNul,
+                    movement = Movement.idNul,
                     created = 0,
                     updated = 0
                   )
@@ -130,7 +132,7 @@ class TestPlayerComparisonStats extends AnyFlatSpec with ScalatestRouteTest with
   TestStartLogging.startLogging()
 
   it should "Stats for game" in {
-    val stats = PlayerComparisonStats.stats( Map( "M1" -> defaultMD ) )
+    val stats = PlayerComparisonStats.stats( Map( defaultMD.id -> defaultMD ) )
 
     import PlayerComparisonStat._
 

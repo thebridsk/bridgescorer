@@ -54,7 +54,7 @@ class TestResourceStore extends AsyncFlatSpec with Matchers {
   }
 
   it should "return not found when getting M2 from store" in {
-    store.select("M2").read().map { ret =>
+    store.select(MatchDuplicate.id(2)).read().map { ret =>
       ret match {
         case Right(l) => fail("did not get not found, got "+l)
         case Left(r) =>
@@ -98,7 +98,7 @@ class TestResourceStore extends AsyncFlatSpec with Matchers {
   }
 
   it should "return not found when getting hand from board B1 from match M2 from store" in {
-    store.select("M2").resourceBoards.select(Board.id(1)).resourceHands.select(team1).read().map { ret =>
+    store.select(MatchDuplicate.id(2)).resourceBoards.select(Board.id(1)).resourceHands.select(team1).read().map { ret =>
       ret match {
         case Right(l) =>
           fail("Unexpected response to get hand H1 from MatchDuplicate,Board M2,B1 to store: "+l)
@@ -116,7 +116,7 @@ class TestResourceStore extends AsyncFlatSpec with Matchers {
           fail("Unexpected response to get hand H1 from MatchDuplicate,Board M2,B4 to store: "+l)
         case Left(r) =>
           assert( r._1 == StatusCodes.NotFound )
-          assert( r._2 == RestMessage(s"Did not find resource /duplicates/${matchdup.id}/boards/B4") )
+          assert( r._2 == RestMessage(s"Did not find resource /duplicates/${matchdup.id.id}/boards/B4") )
       }
     }
   }
@@ -128,7 +128,7 @@ class TestResourceStore extends AsyncFlatSpec with Matchers {
           fail("Unexpected response to get hand H1 from MatchDuplicate,Board M2,B3 to store: "+l)
         case Left(r) =>
           assert( r._1 == StatusCodes.NotFound )
-          assert( r._2 == RestMessage(s"Did not find resource /duplicates/${matchdup.id}/boards/B3/hands/T1") )
+          assert( r._2 == RestMessage(s"Did not find resource /duplicates/${matchdup.id.id}/boards/B3/hands/T1") )
       }
     }
   }

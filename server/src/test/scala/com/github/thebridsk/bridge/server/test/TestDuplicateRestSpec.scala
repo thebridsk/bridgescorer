@@ -137,7 +137,7 @@ class TestDuplicateRestSpec extends AnyFlatSpec with ScalatestRouteTest with Mat
     withListener( restService.duplicates, f )
   }
 
-  def withListener[Id,T <: VersionedInstance[T,T,Id]]( store: Store[Id,T], f: ListenerStatus[T]=>Unit )(implicit classT: ClassTag[T]): Unit = {
+  def withListener[Id <: Comparable[Id],T <: VersionedInstance[T,T,Id]]( store: Store[Id,T], f: ListenerStatus[T]=>Unit )(implicit classT: ClassTag[T]): Unit = {
     val status = new ListenerStatus[T]
     try {
       store.addListener(status)
@@ -383,7 +383,7 @@ class TestDuplicateRestSpec extends AnyFlatSpec with ScalatestRouteTest with Mat
 
   var createdM1: Option[MatchDuplicate] = None
   it should "return a MatchDuplicate json object for match 1 for POST request to /v1/rest/duplicates" in withListener( listenerstatus=> {
-    Post("/v1/rest/duplicates?default", MatchDuplicate.create("M1")) ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
+    Post("/v1/rest/duplicates?default", MatchDuplicate.create(MatchDuplicate.id("M1"))) ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
       handled mustBe true
       status mustBe Created
       mediaType mustBe MediaTypes.`application/json`
@@ -420,13 +420,14 @@ class TestDuplicateRestSpec extends AnyFlatSpec with ScalatestRouteTest with Mat
         isWebSocketUpgrade mustBe true
         wsClient.inProbe.within(10 seconds) {
           testJoin(wsClient)
-          val cleanmd = new BridgeServiceInMemory("test").fillBoards(MatchDuplicate.create("M1"))
+          val cleanmd = new BridgeServiceInMemory("test").fillBoards(MatchDuplicate.create(MatchDuplicate.id("M1")))
 //          testUpdate(wsClient,cleanmd)
         }
-        wsClient.send(StartMonitorDuplicate("M1"))
+        wsClient.send(StartMonitorDuplicate(MatchDuplicate.id("M1")))
         wsClient.inProbe.within(10 seconds) {
           testUpdate(wsClient,createdM1.get)
         }
+        testlog.debug("TestDuplicateRestSpec: updating M1 with monitoring active")
         Put("/v1/rest/duplicates/M1", BridgeServiceTesting.testingMatch) ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
           handled mustBe true
           status mustBe NoContent
@@ -442,6 +443,7 @@ class TestDuplicateRestSpec extends AnyFlatSpec with ScalatestRouteTest with Mat
 //          testJoin(wsClient)
           testUpdate(wsClient,BridgeServiceTesting.testingMatch)
         }
+        testlog.debug("TestDuplicateRestSpec: finished updating M1 with monitoring active")
         Get("/v1/rest/duplicates/M1") ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
           handled mustBe true
           status mustBe OK
@@ -748,7 +750,7 @@ class TestDuplicateRestSpec extends AnyFlatSpec with ScalatestRouteTest with Mat
   behavior of "MyService REST for DuplicateSumary"
 
   it should "return a MatchDuplicate json object for a POST request to /v1/rest/duplicates?default" in withListener( listenerstatus=> {
-    Post("/v1/rest/duplicates?default", MatchDuplicate.create("M1")) ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
+    Post("/v1/rest/duplicates?default", MatchDuplicate.create(MatchDuplicate.id("M1"))) ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
       handled mustBe true
       status mustBe Created
       mediaType mustBe MediaTypes.`application/json`
@@ -770,7 +772,7 @@ class TestDuplicateRestSpec extends AnyFlatSpec with ScalatestRouteTest with Mat
   })
 
   it should "return a MatchDuplicate json object for a POST request to /v1/rest/duplicates?boards=StandardBoards&movements=Mitchell3Table" in withListener( listenerstatus=> {
-    Post("/v1/rest/duplicates?boards=StandardBoards&movements=Mitchell3Table", MatchDuplicate.create("M1")) ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
+    Post("/v1/rest/duplicates?boards=StandardBoards&movements=Mitchell3Table", MatchDuplicate.create(MatchDuplicate.id("M1"))) ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
       handled mustBe true
       status mustBe Created
       mediaType mustBe MediaTypes.`application/json`
@@ -792,7 +794,7 @@ class TestDuplicateRestSpec extends AnyFlatSpec with ScalatestRouteTest with Mat
   })
 
   it should "return a MatchDuplicate json object for a POST request to /v1/rest/duplicates?boards=StandardBoards&movements=Howell3TableNoRelay" in withListener( listenerstatus=> {
-    Post("/v1/rest/duplicates?boards=StandardBoards&movements=Howell3TableNoRelay", MatchDuplicate.create("M1")) ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
+    Post("/v1/rest/duplicates?boards=StandardBoards&movements=Howell3TableNoRelay", MatchDuplicate.create(MatchDuplicate.id("M1"))) ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
       handled mustBe true
       status mustBe Created
       mediaType mustBe MediaTypes.`application/json`
@@ -851,7 +853,7 @@ class TestDuplicateRestSpec extends AnyFlatSpec with ScalatestRouteTest with Mat
 
   }
 
-  it should "notify the listener when a MatchDuplicateResult is created" in withListener[Id.MatchDuplicateResult,MatchDuplicateResult]( restService.duplicateresults, listenerstatus => {
+  it should "notify the listener when a MatchDuplicateResult is created" in withListener[MatchDuplicateResult.Id,MatchDuplicateResult]( restService.duplicateresults, listenerstatus => {
     val mdr = MatchDuplicateResult.create()
     restService.duplicateresults.syncStore.createChild( mdr ) match {
       case Right(md) =>
@@ -863,8 +865,8 @@ class TestDuplicateRestSpec extends AnyFlatSpec with ScalatestRouteTest with Mat
     }
   })
 
-  it should "return a MatchDuplicateResult json object for a POST request to /v1/rest/duplicateresults?default=true&boards=ArmonkBoards&movements=2TablesArmonk" in withListener[Id.MatchDuplicateResult,MatchDuplicateResult]( restService.duplicateresults, listenerstatus => {
-    Post("/v1/rest/duplicateresults?default=true&boards=ArmonkBoards&movements=2TablesArmonk", MatchDuplicateResult.create("E1")) ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
+  it should "return a MatchDuplicateResult json object for a POST request to /v1/rest/duplicateresults?default=true&boards=ArmonkBoards&movements=2TablesArmonk" in withListener[MatchDuplicateResult.Id,MatchDuplicateResult]( restService.duplicateresults, listenerstatus => {
+    Post("/v1/rest/duplicateresults?default=true&boards=ArmonkBoards&movements=2TablesArmonk", MatchDuplicateResult.create(MatchDuplicateResult.id(1))) ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
       handled mustBe true
       status mustBe Created
       mediaType mustBe MediaTypes.`application/json`

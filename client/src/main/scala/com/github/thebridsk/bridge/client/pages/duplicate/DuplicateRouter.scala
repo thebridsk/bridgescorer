@@ -27,6 +27,11 @@ import com.github.thebridsk.bridge.client.pages.duplicate.boardsets.PageEditMove
 import com.github.thebridsk.bridge.data.Table
 import com.github.thebridsk.bridge.data.Team
 import com.github.thebridsk.bridge.data.Board
+import com.github.thebridsk.bridge.data.BoardSet
+import com.github.thebridsk.bridge.data.Movement
+import com.github.thebridsk.bridge.data.MatchDuplicate
+import com.github.thebridsk.bridge.data.MatchDuplicateResult
+import com.github.thebridsk.bridge.data.DuplicateSummary
 
 object DuplicateModule extends Module {
   case class PlayDuplicate(m: DuplicatePage ) extends AppPage
@@ -84,7 +89,8 @@ object DuplicateRouter {
     new DuplicateRouterWithLogging(ctl)
 
   trait BaseBoardView extends DuplicatePage {
-    val dupid: String
+    val sdupid: String
+    def dupid = MatchDuplicate.id(sdupid)
     val sboardid: String
     def boardid = Board.id(sboardid)
     def toScoreboardView: BaseScoreboardView
@@ -98,13 +104,15 @@ object DuplicateRouter {
   }
 
   trait BaseScoreboardView extends DuplicatePage {
-    val dupid: String
+    val sdupid: String
+    def dupid = MatchDuplicate.id(sdupid)
     def toBoardView( id: Board.Id): BaseBoardView
     def toAllBoardsView: BaseAllBoardsView
   }
 
   trait BaseAllBoardsView extends DuplicatePage {
-    val dupid: String
+    val sdupid: String
+    def dupid = MatchDuplicate.id(sdupid)
     def toBoardView( id: Board.Id): BaseBoardView
     def toScoreboardView: BaseScoreboardView
     def toHandView(  boardid: Board.Id, handid: Team.Id ): BaseHandView
@@ -119,9 +127,10 @@ object DuplicateRouter {
   }
 
   trait BaseHandView extends DuplicatePage {
-    val dupid: String
+    val sdupid: String
+    def dupid = MatchDuplicate.id(sdupid)
     val sboardid: String
-    val boardid = Board.id(sboardid)
+    def boardid = Board.id(sboardid)
     val shandid: String
     def handid = Team.id(shandid)
     def toBoardView: BaseBoardView
@@ -129,13 +138,13 @@ object DuplicateRouter {
   }
 
   trait SummaryViewBase extends DuplicatePage {
-    def getScoreboardPage(dupid: String): BaseScoreboardViewWithPerspective
-    def getDuplicateResultPage(dupid: String): DuplicateResultViewBase
+    def getScoreboardPage(dupid: MatchDuplicate.Id): BaseScoreboardViewWithPerspective
+    def getDuplicateResultPage(dupid: MatchDuplicateResult.Id): DuplicateResultViewBase
     def getImportId: Option[String] = None
   }
   case object SummaryView extends SummaryViewBase {
-    def getScoreboardPage(dupid: String): BaseScoreboardViewWithPerspective = CompleteScoreboardView(dupid)
-    def getDuplicateResultPage(dupid: String): DuplicateResultViewBase = DuplicateResultView(dupid)
+    def getScoreboardPage(dupid: MatchDuplicate.Id): BaseScoreboardViewWithPerspective = CompleteScoreboardView(dupid.id)
+    def getDuplicateResultPage(dupid: MatchDuplicateResult.Id): DuplicateResultViewBase = DuplicateResultView(dupid.id)
   }
 
   case object StatsView extends DuplicatePage
@@ -143,7 +152,9 @@ object DuplicateRouter {
   case object SelectMatchView extends DuplicatePage
   case object SuggestionView extends DuplicatePage
 
-  case class NamesView( dupid: String ) extends DuplicatePage
+  case class NamesView( sdupid: String ) extends DuplicatePage {
+    def dupid = MatchDuplicate.id(sdupid)
+  }
 
   case object FinishedScoreboardsView0 extends DuplicatePage
 
@@ -151,91 +162,96 @@ object DuplicateRouter {
    * @param dupids - a comma separated list of duplicate ids
    */
   case class FinishedScoreboardsView( dupids: String ) extends DuplicatePage {
-    def getIds = dupids.split(",").map(_.trim).filter(_.length()>0)
+    def getIds = dupids.split(",").toList.map(_.trim).filter(_.length()>0).map(DuplicateSummary.id(_))
   }
 
-  case class DuplicateBoardSetView( dupid: String ) extends DuplicatePage {
-    def toScoreboard = CompleteScoreboardView(dupid)
+  case class DuplicateBoardSetView( sdupid: String ) extends DuplicatePage {
+    def dupid = MatchDuplicate.id(sdupid)
+    def toScoreboard = CompleteScoreboardView(sdupid)
   }
 
-  case class CompleteScoreboardView( dupid: String ) extends BaseScoreboardViewWithPerspective {
-    def toBoardView( id: Board.Id) = CompleteBoardView( dupid, id.id )
-    def toAllBoardsView = CompleteAllBoardView(dupid)
+  case class CompleteScoreboardView( sdupid: String ) extends BaseScoreboardViewWithPerspective {
+    def toBoardView( id: Board.Id) = CompleteBoardView( sdupid, id.id )
+    def toAllBoardsView = CompleteAllBoardView(sdupid)
     def getPerspective: DuplicateViewPerspective = PerspectiveComplete
   }
 
-  case class FinishedScoreboardView( dupid: String ) extends BaseScoreboardViewWithPerspective {
-    def toBoardView( id: Board.Id) = CompleteBoardView( dupid, id.id )
-    def toAllBoardsView = CompleteAllBoardView(dupid)
+  case class FinishedScoreboardView( sdupid: String ) extends BaseScoreboardViewWithPerspective {
+    def toBoardView( id: Board.Id) = CompleteBoardView( sdupid, id.id )
+    def toAllBoardsView = CompleteAllBoardView(sdupid)
     def getPerspective: DuplicateViewPerspective = PerspectiveComplete
   }
 
   trait DuplicateResultViewBase extends DuplicatePage {
-    val dupid: String
+    val sdupid: String
+    def dupid = MatchDuplicateResult.id(sdupid)
   }
-  case class DuplicateResultView( dupid: String ) extends DuplicateResultViewBase
+  case class DuplicateResultView( sdupid: String ) extends DuplicateResultViewBase
 
-  case class DuplicateResultEditView( dupid: String ) extends DuplicatePage
+  case class DuplicateResultEditView( sdupid: String ) extends DuplicateResultViewBase
 
-  case class CompleteAllBoardView( dupid: String ) extends BaseAllBoardsViewWithPerspective {
-    def toBoardView( id: Board.Id) = CompleteBoardView( dupid, id.id )
-    def toScoreboardView = CompleteScoreboardView(dupid)
+  case class CompleteAllBoardView( sdupid: String ) extends BaseAllBoardsViewWithPerspective {
+    def toBoardView( id: Board.Id) = CompleteBoardView( sdupid, id.id )
+    def toScoreboardView = CompleteScoreboardView(sdupid)
     def getPerspective: DuplicateViewPerspective = PerspectiveComplete
-    def toHandView( boardid: Board.Id, handid: Team.Id ) = CompleteHandView(dupid,boardid.id,handid.id)
+    def toHandView( boardid: Board.Id, handid: Team.Id ) = CompleteHandView(sdupid,boardid.id,handid.id)
   }
-  case class CompleteBoardView( dupid: String, sboardid: String ) extends BaseBoardViewWithPerspective {
-    def toScoreboardView = CompleteScoreboardView(dupid)
+  case class CompleteBoardView( sdupid: String, sboardid: String ) extends BaseBoardViewWithPerspective {
+    def toScoreboardView = CompleteScoreboardView(sdupid)
     def getPerspective: DuplicateViewPerspective = PerspectiveComplete
-    def toHandView( handid: Team.Id ) = CompleteHandView(dupid,sboardid,handid.id)
-    def toBoardView( bid: Board.Id ) = CompleteBoardView(dupid,bid.id)
-    def toAllBoardsView = CompleteAllBoardView(dupid)
+    def toHandView( handid: Team.Id ) = CompleteHandView(sdupid,sboardid,handid.id)
+    def toBoardView( bid: Board.Id ) = CompleteBoardView(sdupid,bid.id)
+    def toAllBoardsView = CompleteAllBoardView(sdupid)
   }
-  case class CompleteHandView( dupid: String, sboardid: String, shandid: String ) extends BaseHandView {
-    def toBoardView = CompleteBoardView(dupid,sboardid)
+  case class CompleteHandView( sdupid: String, sboardid: String, shandid: String ) extends BaseHandView {
+    def toBoardView = CompleteBoardView(sdupid,sboardid)
     def getPerspective: Option[DuplicateViewPerspective] = Some(PerspectiveComplete)
   }
 
-  case class DirectorScoreboardView( dupid: String ) extends BaseScoreboardViewWithPerspective {
-    def toBoardView( id: Board.Id) = DirectorBoardView( dupid, id.id )
-    def toAllBoardsView = DirectorAllBoardView(dupid)
+  case class DirectorScoreboardView( sdupid: String ) extends BaseScoreboardViewWithPerspective {
+    def toBoardView( id: Board.Id) = DirectorBoardView( sdupid, id.id )
+    def toAllBoardsView = DirectorAllBoardView(sdupid)
     def getPerspective: DuplicateViewPerspective = PerspectiveDirector
   }
 
-  case class DirectorAllBoardView( dupid: String ) extends BaseAllBoardsViewWithPerspective {
-    def toBoardView( id: Board.Id) = DirectorBoardView( dupid, id.id )
-    def toScoreboardView = DirectorScoreboardView(dupid)
+  case class DirectorAllBoardView( sdupid: String ) extends BaseAllBoardsViewWithPerspective {
+    def toBoardView( id: Board.Id) = DirectorBoardView( sdupid, id.id )
+    def toScoreboardView = DirectorScoreboardView(sdupid)
     def getPerspective: DuplicateViewPerspective = PerspectiveDirector
-    def toHandView( boardid: Board.Id, handid: Team.Id ) = DirectorHandView(dupid,boardid.id,handid.id)
+    def toHandView( boardid: Board.Id, handid: Team.Id ) = DirectorHandView(sdupid,boardid.id,handid.id)
   }
-  case class DirectorBoardView( dupid: String, sboardid: String ) extends BaseBoardViewWithPerspective {
-    def toScoreboardView = DirectorScoreboardView(dupid)
+  case class DirectorBoardView( sdupid: String, sboardid: String ) extends BaseBoardViewWithPerspective {
+    def toScoreboardView = DirectorScoreboardView(sdupid)
     def getPerspective: DuplicateViewPerspective = PerspectiveDirector
-    def toHandView( handid: Team.Id ) = DirectorHandView(dupid,sboardid,handid.id)
-    def toBoardView( bid: Board.Id ) = DirectorBoardView(dupid,bid.id)
-    def toAllBoardsView = DirectorAllBoardView(dupid)
+    def toHandView( handid: Team.Id ) = DirectorHandView(sdupid,sboardid,handid.id)
+    def toBoardView( bid: Board.Id ) = DirectorBoardView(sdupid,bid.id)
+    def toAllBoardsView = DirectorAllBoardView(sdupid)
   }
-  case class DirectorHandView( dupid: String, sboardid: String, shandid: String ) extends BaseHandView {
-    def toBoardView = DirectorBoardView(dupid,sboardid)
+  case class DirectorHandView( sdupid: String, sboardid: String, shandid: String ) extends BaseHandView {
+    def toBoardView = DirectorBoardView(sdupid,sboardid)
     def getPerspective: Option[DuplicateViewPerspective] = Some(PerspectiveDirector)
   }
 
-  case class TableView( dupid: String, stableid: String ) extends DuplicatePage {
+  case class TableView( sdupid: String, stableid: String ) extends DuplicatePage {
+    def dupid = MatchDuplicate.id(sdupid)
     def tableid = Table.id(stableid)
-    def toBoardView( round: Int, id: Board.Id) = TableBoardView( dupid, stableid, round, id.id )
-    def toRoundView( roundid: Int ) = TableRoundScoreboardView(dupid,stableid,roundid)
+    def toBoardView( round: Int, id: Board.Id) = TableBoardView( sdupid, stableid, round, id.id )
+    def toRoundView( roundid: Int ) = TableRoundScoreboardView(sdupid,stableid,roundid)
 
-    def toTableTeamView( roundid: Int) = TableTeamByRoundView(dupid,stableid,roundid)
-    def toTableTeamView( roundid: Int, boardid: Board.Id) = TableTeamByBoardView(dupid,stableid,roundid,boardid.id)
+    def toTableTeamView( roundid: Int) = TableTeamByRoundView(sdupid,stableid,roundid)
+    def toTableTeamView( roundid: Int, boardid: Board.Id) = TableTeamByBoardView(sdupid,stableid,roundid,boardid.id)
   }
 
-  case class AllTableView( dupid: String ) extends DuplicatePage {
-    def toTableView( tableid: Table.Id ) = TableView(dupid,tableid.id)
-    def toBoardView( tableid: Table.Id, round: Int, id: Board.Id) = TableBoardView( dupid, tableid.id, round, id.id )
-    def toRoundView( tableid: Table.Id, roundid: Int ) = TableRoundScoreboardView(dupid,tableid.id,roundid)
+  case class AllTableView( sdupid: String ) extends DuplicatePage {
+    def dupid = MatchDuplicate.id(sdupid)
+    def toTableView( tableid: Table.Id ) = TableView(sdupid,tableid.id)
+    def toBoardView( tableid: Table.Id, round: Int, id: Board.Id) = TableBoardView( sdupid, tableid.id, round, id.id )
+    def toRoundView( tableid: Table.Id, roundid: Int ) = TableRoundScoreboardView(sdupid,tableid.id,roundid)
   }
 
   trait TableTeamView extends DuplicatePage {
-    val dupid: String
+    val sdupid: String
+    def dupid = MatchDuplicate.id(sdupid)
     val stableid: String
     def tableid = Table.id(stableid)
     val round: Int
@@ -248,93 +264,101 @@ object DuplicateRouter {
     def toTableView: TableView
   }
 
-  case class TableTeamByRoundView( dupid: String, stableid: String, round: Int ) extends TableTeamView {
-    def toNextView = TableRoundScoreboardView(dupid,stableid,round)
-    def toTableView = TableView(dupid, stableid)
+  case class TableTeamByRoundView( sdupid: String, stableid: String, round: Int ) extends TableTeamView {
+    def toNextView = TableRoundScoreboardView(sdupid,stableid,round)
+    def toTableView = TableView(sdupid, stableid)
 
-    def setEditPlayers( flag: Boolean ) = if (flag) TableTeamByRoundEditView( dupid, stableid, round ) else this
+    def setEditPlayers( flag: Boolean ) = if (flag) TableTeamByRoundEditView( sdupid, stableid, round ) else this
   }
 
-  case class TableTeamByRoundEditView( dupid: String, stableid: String, round: Int ) extends TableTeamView {
-    def toNextView = TableRoundScoreboardView(dupid,stableid,round)
-    def toTableView = TableView(dupid, stableid)
+  case class TableTeamByRoundEditView( sdupid: String, stableid: String, round: Int ) extends TableTeamView {
+    def toNextView = TableRoundScoreboardView(sdupid,stableid,round)
+    def toTableView = TableView(sdupid, stableid)
 
     override def editPlayers: Boolean = true
 
-    def setEditPlayers( flag: Boolean ) = if (flag) this else TableTeamByRoundEditView( dupid, stableid, round )
+    def setEditPlayers( flag: Boolean ) = if (flag) this else TableTeamByRoundEditView( sdupid, stableid, round )
   }
 
-  case class TableTeamByBoardView( dupid: String, stableid: String, round: Int, sboardid: String ) extends TableTeamView {
+  case class TableTeamByBoardView( sdupid: String, stableid: String, round: Int, sboardid: String ) extends TableTeamView {
     def boardid = Board.id(sboardid)
-    def toNextView = TableBoardView( dupid, stableid, round, sboardid )
-    def toTableView = TableView(dupid, stableid)
-    def setEditPlayers( flag: Boolean ) = if (flag) TableTeamByBoardEditView( dupid, stableid, round, sboardid ) else this
+    def toNextView = TableBoardView( sdupid, stableid, round, sboardid )
+    def toTableView = TableView(sdupid, stableid)
+    def setEditPlayers( flag: Boolean ) = if (flag) TableTeamByBoardEditView( sdupid, stableid, round, sboardid ) else this
   }
 
-  case class TableTeamByBoardEditView( dupid: String, stableid: String, round: Int, sboardid: String ) extends TableTeamView {
+  case class TableTeamByBoardEditView( sdupid: String, stableid: String, round: Int, sboardid: String ) extends TableTeamView {
     def boardid = Board.id(sboardid)
-    def toNextView = TableBoardView( dupid, stableid, round, sboardid )
-    def toTableView = TableView(dupid, stableid)
+    def toNextView = TableBoardView( sdupid, stableid, round, sboardid )
+    def toTableView = TableView(sdupid, stableid)
     override def editPlayers: Boolean = true
-    def setEditPlayers( flag: Boolean ) = if (flag) this else TableTeamByBoardEditView( dupid, stableid, round, sboardid )
+    def setEditPlayers( flag: Boolean ) = if (flag) this else TableTeamByBoardEditView( sdupid, stableid, round, sboardid )
   }
 
-  case class TableRoundScoreboardView( dupid: String, stableid: String, round: Int ) extends BaseScoreboardViewWithPerspective {
+  case class TableRoundScoreboardView( sdupid: String, stableid: String, round: Int ) extends BaseScoreboardViewWithPerspective {
     def tableid = Table.id(stableid)
-    def toBoardView( boardid: Board.Id) = TableBoardView( dupid, stableid, round, boardid.id )
-    def toAllBoardsView = TableRoundAllBoardView(dupid,stableid,round)
-    def toHandView( boardid: Board.Id, handid: Team.Id ) = TableHandView(dupid,stableid,round,boardid.id,handid.id)
-    def toTableView = TableView(dupid,stableid)
+    def toBoardView( boardid: Board.Id) = TableBoardView( sdupid, stableid, round, boardid.id )
+    def toAllBoardsView = TableRoundAllBoardView(sdupid,stableid,round)
+    def toHandView( boardid: Board.Id, handid: Team.Id ) = TableHandView(sdupid,stableid,round,boardid.id,handid.id)
+    def toTableView = TableView(sdupid,stableid)
     def getPerspective: DuplicateViewPerspective = DuplicateStore.getTablePerspectiveFromRound(tableid, round) match {
       case Some(p) => p
       case None => PerspectiveComplete
     }
   }
-  case class TableRoundAllBoardView( dupid: String, stableid: String, round: Int ) extends BaseAllBoardsViewWithPerspective {
+  case class TableRoundAllBoardView( sdupid: String, stableid: String, round: Int ) extends BaseAllBoardsViewWithPerspective {
     def tableid = Table.id(stableid)
-    def toBoardView( boardid: Board.Id) = TableBoardView( dupid, stableid, round, boardid.id )
-    def toScoreboardView = TableRoundScoreboardView(dupid,stableid,round)
+    def toBoardView( boardid: Board.Id) = TableBoardView( sdupid, stableid, round, boardid.id )
+    def toScoreboardView = TableRoundScoreboardView(sdupid,stableid,round)
     def getPerspective: DuplicateViewPerspective = DuplicateStore.getTablePerspectiveFromRound(tableid, round) match {
       case Some(p) => p
       case None => PerspectiveComplete
     }
-    def toHandView( boardid: Board.Id, handid: Team.Id ) = TableHandView(dupid,stableid,round,boardid.id,handid.id)
+    def toHandView( boardid: Board.Id, handid: Team.Id ) = TableHandView(sdupid,stableid,round,boardid.id,handid.id)
   }
-  case class TableBoardView( dupid: String, stableid: String, round: Int, sboardid: String ) extends BaseBoardViewWithPerspective {
+  case class TableBoardView( sdupid: String, stableid: String, round: Int, sboardid: String ) extends BaseBoardViewWithPerspective {
     def tableid = Table.id(stableid)
-    def toTableView = TableView( dupid, stableid )
-    def toScoreboardView = TableRoundScoreboardView(dupid,stableid,round)
-    def toHandView( handid: Team.Id ) = TableHandView(dupid,stableid,round,sboardid,handid.id)
-    def toBoardView( bid: Board.Id ) = TableBoardView(dupid,stableid,round,bid.id)
-    def toAllBoardsView = TableRoundAllBoardView(dupid,stableid,round)
+    def toTableView = TableView( sdupid, stableid )
+    def toScoreboardView = TableRoundScoreboardView(sdupid,stableid,round)
+    def toHandView( handid: Team.Id ) = TableHandView(sdupid,stableid,round,sboardid,handid.id)
+    def toBoardView( bid: Board.Id ) = TableBoardView(sdupid,stableid,round,bid.id)
+    def toAllBoardsView = TableRoundAllBoardView(sdupid,stableid,round)
     def getPerspective: DuplicateViewPerspective = DuplicateStore.getTablePerspectiveFromRound(tableid, round) match {
       case Some(p) => p
       case None => PerspectiveComplete
     }
   }
-  case class TableHandView( dupid: String, stableid: String, round: Int, sboardid: String, shandid: String ) extends BaseHandView {
+  case class TableHandView( sdupid: String, stableid: String, round: Int, sboardid: String, shandid: String ) extends BaseHandView {
     def tableid = Table.id(stableid)
-    def toBoardView = TableBoardView(dupid,stableid,round,sboardid)
+    def toBoardView = TableBoardView(sdupid,stableid,round,sboardid)
     def getPerspective: Option[DuplicateViewPerspective] = DuplicateStore.getTablePerspectiveFromRound(tableid, round)
   }
 
   case object BoardSetSummaryView extends DuplicatePage
 
-  case class BoardSetView( display: String ) extends DuplicatePage
+  case class BoardSetView( sdisplay: String ) extends DuplicatePage {
+    def display = BoardSet.id(sdisplay)
+  }
 
   case object BoardSetNewView extends DuplicatePage
-  case class BoardSetEditView( display: String ) extends DuplicatePage
+  case class BoardSetEditView( sdisplay: String ) extends DuplicatePage {
+    def display = BoardSet.id(sdisplay)
+  }
 
   case object MovementSummaryView extends DuplicatePage
 
-  case class MovementView( display: String ) extends DuplicatePage
+  case class MovementView( sdisplay: String ) extends DuplicatePage {
+    def display = Movement.id(sdisplay)
+  }
 
   case object MovementNewView extends DuplicatePage
-  case class MovementEditView( display: String ) extends DuplicatePage
+  case class MovementEditView( sdisplay: String ) extends DuplicatePage {
+    def display = Movement.id(sdisplay)
+  }
 
   case class ImportSummaryView( importId: String ) extends SummaryViewBase {
-    def getScoreboardPage(dupid: String): BaseScoreboardViewWithPerspective = CompleteScoreboardView(dupid)
-    def getDuplicateResultPage(dupid: String): DuplicateResultViewBase = DuplicateResultView(dupid)
+    def getScoreboardPage(dupid: MatchDuplicate.Id): BaseScoreboardViewWithPerspective = CompleteScoreboardView(dupid.id)
+    def getDuplicateResultPage(dupid: MatchDuplicateResult.Id): DuplicateResultViewBase = DuplicateResultView(dupid.id)
     def getDecodedId = URIUtils.decodeURI(importId)
     override
     def getImportId: Option[String] = Some(getDecodedId)
@@ -414,7 +438,7 @@ object DuplicateRouter {
       | staticRoute( "finished", FinishedScoreboardsView0 )
         ~> renderR( routerCtl => PageFinishedScoreboards(routerCtl,FinishedScoreboardsView("")) )
       | dynamicRouteCT( ("match" / string("[a-zA-Z0-9]+") / "names").caseClass[NamesView])
-        ~> dynRenderR( (p,routerCtl) => PageNames(routerCtl,p,CompleteScoreboardView(p.dupid)) )
+        ~> dynRenderR( (p,routerCtl) => PageNames(routerCtl,p,CompleteScoreboardView(p.sdupid)) )
       | dynamicRouteCT( ("match" / string("[a-zA-Z0-9]+") / "boardset").caseClass[DuplicateBoardSetView])
         ~> dynRenderR( (p,routerCtl) => PageBoardSet(routerCtl,p))
       | dynamicRouteCT( ("match" / string("[a-zA-Z0-9]+") / "boards" / string("[a-zA-Z0-9]+") / "hands" / string("[a-zA-Z0-9]+")).caseClass[CompleteHandView])

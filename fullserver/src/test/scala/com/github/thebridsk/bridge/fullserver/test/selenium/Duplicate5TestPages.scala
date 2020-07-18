@@ -1135,7 +1135,7 @@ class Duplicate5TestPages
     val url = TestServer.getUrl(s"/v1/rest/duplicates")
     val o = HttpUtils.postHttpObject(url, dup)
     o.data match {
-      case Some(r) => r.id
+      case Some(r) => r.id.id
       case None =>
         testlog.warning(s"Unable to post MatchDuplicate to rest API for ${dup.id}: ${o}")
         fail(s"Unable to post MatchDuplicate to rest API for ${dup.id}")

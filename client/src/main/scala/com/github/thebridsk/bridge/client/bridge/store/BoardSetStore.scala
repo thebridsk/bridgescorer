@@ -55,14 +55,14 @@ object BoardSetStore extends ChangeListenable {
     }
   }
 
-  private val boardSets = mutable.Map[String,BoardSet]()
-  private val movements = mutable.Map[String,Movement]()
+  private val boardSets = mutable.Map[BoardSet.Id,BoardSet]()
+  private val movements = mutable.Map[Movement.Id,Movement]()
 
   def getBoardSets() = Map( boardSets.toList: _*)
-  def getBoardSet( name: String ) = boardSets.get(name)
+  def getBoardSet( name: BoardSet.Id ) = boardSets.get(name)
 
   def getMovement() = Map( movements.toList: _*)
-  def getMovement( name: String ) = movements.get(name)
+  def getMovement( name: Movement.Id ) = movements.get(name)
 
   def updateBoardSetsNoNotify( deleteMissing: Boolean, newboardSets: BoardSet* ) = {
     val keys = mutable.Set( boardSets.keySet.toSeq: _* )
@@ -80,7 +80,7 @@ object BoardSetStore extends ChangeListenable {
     notifyChange()
   }
 
-  def deleteBoardSets( id: String ) = {
+  def deleteBoardSets( id: BoardSet.Id ) = {
     boardSets.remove(id)
     notifyChange()
   }
@@ -100,7 +100,7 @@ object BoardSetStore extends ChangeListenable {
     notifyChange()
   }
 
-  def deleteMovement( id: String ) = {
+  def deleteMovement( id: Movement.Id ) = {
     movements.remove(id)
     notifyChange()
   }

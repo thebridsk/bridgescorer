@@ -48,7 +48,7 @@ case class BoardResults(
 )
 case class MatchDuplicateResultV1 private (
     @Schema(description = "The ID of the MatchDuplicate", required = true)
-    id: Id.MatchDuplicateResult,
+    id: MatchDuplicateResult.Id,
     @Schema(
       description = "The results of the match, a list of winnersets." + "  Each winnerset is a list of DuplicateSummaryEntry objects",
       required = true
@@ -88,7 +88,7 @@ case class MatchDuplicateResultV1 private (
 ) extends VersionedInstance[
       MatchDuplicateResult,
       MatchDuplicateResultV1,
-      String
+      MatchDuplicateResult.Id
     ] {
 
   def equalsIgnoreModifyTime(
@@ -128,7 +128,7 @@ case class MatchDuplicateResultV1 private (
   }
 
   def setId(
-      newId: Id.MatchDuplicate,
+      newId: MatchDuplicateResult.Id,
       forCreate: Boolean,
       dontUpdateTime: Boolean = false
   ) = {
@@ -143,7 +143,7 @@ case class MatchDuplicateResultV1 private (
     }
   }
 
-  def copyForCreate(id: Id.MatchDuplicate) = {
+  def copyForCreate(id: MatchDuplicateResult.Id) = {
     val time = SystemTime.currentTimeMillis()
     copy(id = id, created = time, updated = time)
 
@@ -294,7 +294,7 @@ case class MatchDuplicateResultV1 private (
 object MatchDuplicateResultV1 {
 
   def apply(
-      id: Id.MatchDuplicateResult,
+      id: MatchDuplicateResult.Id,
       results: List[List[DuplicateSummaryEntry]],
       boardresults: Option[List[BoardResults]],
       comment: Option[String],
@@ -316,7 +316,7 @@ object MatchDuplicateResultV1 {
   }
 
   def apply(
-      id: Id.MatchDuplicateResult,
+      id: MatchDuplicateResult.Id,
       results: List[List[DuplicateSummaryEntry]],
       boardresults: List[BoardResults],
       comment: Option[String],
@@ -338,7 +338,7 @@ object MatchDuplicateResultV1 {
   }
 
   def apply(
-      id: Id.MatchDuplicateResult,
+      id: MatchDuplicateResult.Id,
       results: List[List[DuplicateSummaryEntry]],
       played: Timestamp,
       created: Timestamp,
@@ -356,7 +356,7 @@ object MatchDuplicateResultV1 {
     ).fixup
   }
 
-  def create(id: Id.MatchDuplicateResult = "") = {
+  def create(id: MatchDuplicateResult.Id = MatchDuplicateResult.idNul) = {
     val time = SystemTime.currentTimeMillis()
     new MatchDuplicateResultV1(id, List(), None, None, None, time, time, time)
       .fixup
@@ -393,7 +393,7 @@ object MatchDuplicateResultV1 {
         val played = if (md.created == 0) time else md.created
         (played, md.created, md.updated)
     }
-    new MatchDuplicateResultV1("", r, None, None, None, pl, cr, up).fixup
+    new MatchDuplicateResultV1(MatchDuplicateResult.idNul, r, None, None, None, pl, cr, up).fixup
 
   }
 }

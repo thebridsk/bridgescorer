@@ -5,6 +5,9 @@ import com.github.thebridsk.bridge.data.Id
 import akka.actor.Actor
 import com.github.thebridsk.bridge.data.websocket.DuplexProtocol.DuplexMessage
 import com.github.thebridsk.utilities.logging.Logger
+import com.github.thebridsk.bridge.data.MatchChicago
+import com.github.thebridsk.bridge.data.MatchDuplicate
+import com.github.thebridsk.bridge.data.MatchRubber
 
 class Subscription(val id: String, val actor: ActorRef) {
 
@@ -19,29 +22,29 @@ class Subscription(val id: String, val actor: ActorRef) {
 class DuplicateSubscription(
     id: String,
     actor: ActorRef,
-    val matchid: Id.MatchDuplicate
+    val matchid: MatchDuplicate.Id
 ) extends Subscription(id, actor) {
 
-  def this(subscription: Subscription, matchid: Id.MatchDuplicate) =
+  def this(subscription: Subscription, matchid: MatchDuplicate.Id) =
     this(subscription.id, subscription.actor, matchid)
 
-  def isMatch(mid: Id.MatchDuplicate) = matchid == mid
+  def isMatch(mid: MatchDuplicate.Id) = matchid == mid
 
   override def needsStoreMonitored = true
 }
 
 object DuplicateSubscription {
 
-  def apply(id: String, actor: ActorRef, matchid: Id.MatchDuplicate) =
+  def apply(id: String, actor: ActorRef, matchid: MatchDuplicate.Id) =
     new DuplicateSubscription(id, actor, matchid)
 
   def unapply(
       obj: DuplicateSubscription
-  ): Option[(String, ActorRef, Id.MatchDuplicate)] = {
+  ): Option[(String, ActorRef, MatchDuplicate.Id)] = {
     Some((obj.id, obj.actor, obj.matchid))
   }
 
-  def filter(id: Id.MatchDuplicate)(sub: Subscription) = {
+  def filter(id: MatchDuplicate.Id)(sub: Subscription) = {
     sub match {
       case DuplicateSubscription(sid, actor, mid) if (mid == id) => true
       case _                                                     => false
@@ -53,29 +56,29 @@ object DuplicateSubscription {
 class ChicagoSubscription(
     id: String,
     actor: ActorRef,
-    val matchid: Id.MatchChicago
+    val matchid: MatchChicago.Id
 ) extends Subscription(id, actor) {
 
-  def this(subscription: Subscription, matchid: Id.MatchDuplicate) =
+  def this(subscription: Subscription, matchid: MatchChicago.Id) =
     this(subscription.id, subscription.actor, matchid)
 
-  def isMatch(mid: Id.MatchChicago) = matchid == mid
+  def isMatch(mid: MatchChicago.Id) = matchid == mid
 
   override def needsStoreMonitored = true
 }
 
 object ChicagoSubscription {
 
-  def apply(id: String, actor: ActorRef, matchid: Id.MatchChicago) =
+  def apply(id: String, actor: ActorRef, matchid: MatchChicago.Id) =
     new ChicagoSubscription(id, actor, matchid)
 
   def unapply(
       obj: ChicagoSubscription
-  ): Option[(String, ActorRef, Id.MatchChicago)] = {
+  ): Option[(String, ActorRef, MatchChicago.Id)] = {
     Some((obj.id, obj.actor, obj.matchid))
   }
 
-  def filter(id: Id.MatchChicago)(sub: Subscription) = {
+  def filter(id: MatchChicago.Id)(sub: Subscription) = {
     sub match {
       case ChicagoSubscription(sid, actor, mid) if (mid == id) => true
       case _                                                   => false
@@ -84,10 +87,10 @@ object ChicagoSubscription {
 
 }
 
-class RubberSubscription(id: String, actor: ActorRef, val matchid: String)
+class RubberSubscription(id: String, actor: ActorRef, val matchid: MatchRubber.Id)
     extends Subscription(id, actor) {
 
-  def this(subscription: Subscription, matchid: Id.MatchDuplicate) =
+  def this(subscription: Subscription, matchid: MatchRubber.Id) =
     this(subscription.id, subscription.actor, matchid)
 
   def isMatch(mid: String) = matchid == mid
@@ -97,14 +100,14 @@ class RubberSubscription(id: String, actor: ActorRef, val matchid: String)
 
 object RubberSubscription {
 
-  def apply(id: String, actor: ActorRef, matchid: String) =
+  def apply(id: String, actor: ActorRef, matchid: MatchRubber.Id) =
     new RubberSubscription(id, actor, matchid)
 
-  def unapply(obj: RubberSubscription): Option[(String, ActorRef, String)] = {
+  def unapply(obj: RubberSubscription): Option[(String, ActorRef, MatchRubber.Id)] = {
     Some((obj.id, obj.actor, obj.matchid))
   }
 
-  def filter(id: String)(sub: Subscription) = {
+  def filter(id: MatchRubber.Id)(sub: Subscription) = {
     sub match {
       case RubberSubscription(sid, actor, mid) if (mid == id) => true
       case _                                                  => false

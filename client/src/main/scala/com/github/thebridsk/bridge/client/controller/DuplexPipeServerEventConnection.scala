@@ -17,6 +17,7 @@ import org.scalajs.dom.raw.Event
 import scala.scalajs.js.timers.SetTimeoutHandle
 import scala.concurrent.duration.Duration
 import com.github.thebridsk.bridge.data.websocket.Protocol.ToBrowserMessage
+import com.github.thebridsk.bridge.data.Id
 
 object DuplexPipeServerEventConnection {
   private val logger = Logger("bridge.DuplexPipeServerEventConnection")
@@ -37,7 +38,7 @@ import com.github.thebridsk.bridge.client.bridge.action.BridgeDispatcher
  * @constructor
  * @param urlprefix - the monitoring URL without the identifier
  */
-abstract class DuplexPipeServerEventConnection[T]( urlprefix: String, listener: SECListener[T] ) extends ServerEventConnection[T](listener) {
+abstract class DuplexPipeServerEventConnection[T <: Id[_]]( urlprefix: String, listener: SECListener[T] ) extends ServerEventConnection[T](listener) {
 
   def isConnected = duplexPipe.isDefined
 

@@ -19,11 +19,13 @@ import java.io.ByteArrayInputStream
 import scala.collection.mutable
 import scala.util.Using
 import java.io.FileInputStream
+import org.scalactic.source.Position
 
-class InMemoryPersistent[VId, VType <: VersionedInstance[VType, VType, VId]](
+class InMemoryPersistent[VId <: Comparable[VId], VType <: VersionedInstance[VType, VType, VId]](
     implicit
     support: StoreSupport[VId, VType],
-    execute: ExecutionContext
+    execute: ExecutionContext,
+    position: Position
 ) extends PersistentSupport[VId, VType] {
 
   self =>
@@ -81,9 +83,16 @@ class InMemoryPersistent[VId, VType <: VersionedInstance[VType, VType, VId]](
           case None =>
             generateNextId(v) match {
               case Right(id) =>
-                val nv = v.setId(id, true, false)
-                add(nv)
-                Result(nv)
+                try {
+                  val nv = v.setId(id, true, false)
+                  add(nv)
+                  Result(nv)
+                } catch {
+                  case x: Exception =>
+                    // println(s"Oops store created ${position} ${support.idSupport.toString(id)} ${useId}, ${v}")
+                    // x.printStackTrace(System.out)
+                    throw x
+                }
               case Left(error) =>
                 Result(error)
             }
@@ -100,7 +109,7 @@ class InMemoryPersistent[VId, VType <: VersionedInstance[VType, VType, VId]](
   override def getFromPersistent(
       id: VId
   ): Future[Result[VType]] = {
-    log.fine(s"""getFromPersistent id=${id}""")
+    log.fine(s"""getFromPersistent id=${support.idSupport.toString(id)}""")
     Future {
       get(id) match {
         case Some(v) => Result(v)
@@ -119,7 +128,7 @@ class InMemoryPersistent[VId, VType <: VersionedInstance[VType, VType, VId]](
       id: VId,
       v: VType
   ): Future[Result[VType]] = {
-    log.fine(s"""putToPersistent id=${id}, v=${v}""")
+    log.fine(s"""putToPersistent id=${support.idSupport.toString(id)}, v=${v}""")
     Future {
       val nv = v.setId(id, false, false).readyForWrite
       internalAdd(nv)
@@ -137,7 +146,7 @@ class InMemoryPersistent[VId, VType <: VersionedInstance[VType, VType, VId]](
       id: VId,
       cacheValue: Option[VType]
   ): Future[Result[VType]] = {
-    log.fine(s"""deleteFromPersistent id=${id}, cacheValue=${cacheValue}""")
+    log.fine(s"""deleteFromPersistent id=${support.idSupport.toString(id)}, cacheValue=${cacheValue}""")
     Future {
       self.synchronized {
         cacheValue match {
@@ -276,16 +285,17 @@ class InMemoryPersistent[VId, VType <: VersionedInstance[VType, VType, VId]](
 }
 
 object InMemoryPersistent {
-  def apply[VId, VType <: VersionedInstance[VType, VType, VId]](
+  def apply[VId <: Comparable[VId], VType <: VersionedInstance[VType, VType, VId]](
       implicit
       support: StoreSupport[VId, VType],
-      execute: ExecutionContext
+      execute: ExecutionContext,
+      position: Position
   ): InMemoryPersistent[VId, VType] = {
     new InMemoryPersistent
   }
 }
 
-class InMemoryStore[VId, VType <: VersionedInstance[VType, VType, VId]](
+class InMemoryStore[VId <: Comparable[VId], VType <: VersionedInstance[VType, VType, VId]](
     name: String,
     cacheInitialCapacity: Int = 5,
     cacheMaxCapacity: Int = 100,
@@ -294,7 +304,8 @@ class InMemoryStore[VId, VType <: VersionedInstance[VType, VType, VId]](
 )(
     implicit
     cachesupport: StoreSupport[VId, VType],
-    execute: ExecutionContext
+    execute: ExecutionContext,
+    position: Position
 ) extends Store[VId, VType](
       name,
       new InMemoryPersistent[VId, VType],
@@ -308,7 +319,7 @@ object InMemoryStore {
 
   val log = Logger[InMemoryStore[_, _]]()
 
-  def apply[VId, VType <: VersionedInstance[VType, VType, VId]](
+  def apply[VId <: Comparable[VId], VType <: VersionedInstance[VType, VType, VId]](
       name: String,
       cacheInitialCapacity: Int = 5,
       cacheMaxCapacity: Int = 100,
@@ -317,7 +328,8 @@ object InMemoryStore {
   )(
       implicit
       cachesupport: StoreSupport[VId, VType],
-      execute: ExecutionContext
+      execute: ExecutionContext,
+      position: Position
   ): InMemoryStore[VId, VType] = {
     new InMemoryStore(
       name,

@@ -58,7 +58,7 @@ class ChicagoMonitorWebservice(
     implicit fm: Materializer,
     system: ActorSystem,
     bridgeService: BridgeService
-) extends MonitorWebservice[Id.MatchChicago, MatchChicago](
+) extends MonitorWebservice[MatchChicago.Id, MatchChicago](
       totallyMissingResourceHandler
     ) {
   val log = Logging(system, classOf[ChicagoMonitorWebservice])
@@ -131,7 +131,7 @@ class ChicagoMonitorWebservice(
                       {
                         log.info(s"SSE from $ip for $id")
                         complete {
-                          val dupid: Id.MatchChicago = id
+                          val dupid = MatchChicago.id(id)
                           monitor.monitorMatch(ip, dupid)
                         }
                       }

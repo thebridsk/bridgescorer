@@ -11,6 +11,7 @@ import com.github.thebridsk.bridge.client.routes.Module
 import com.github.thebridsk.bridge.client.routes.BridgeRouterBase
 import com.github.thebridsk.bridge.client.routes.BridgeRouter
 import scala.scalajs.js.URIUtils
+import com.github.thebridsk.bridge.data.MatchChicago
 
 object ChicagoModule extends Module {
   case class PlayChicago2(m: ChicagoPage) extends AppPage
@@ -43,34 +44,39 @@ object ChicagoRouter {
     def getDecodedId = URIUtils.decodeURI(importId)
   }
 
-  case class SummaryView(chiid: String) extends ChicagoPage {
-    def toRoundView(round: Int) = RoundView(chiid, round)
-    def toNamesView(round: Int) = NamesView(chiid, round)
-    def toHandView(round: Int, hand: Int) = HandView(chiid, round, hand)
-    def toEditNamesView = EditNamesView(chiid)
+  case class SummaryView(schiid: String) extends ChicagoPage {
+    def chiid = MatchChicago.id(schiid)
+    def toRoundView(round: Int) = RoundView(schiid, round)
+    def toNamesView(round: Int) = NamesView(schiid, round)
+    def toHandView(round: Int, hand: Int) = HandView(schiid, round, hand)
+    def toEditNamesView = EditNamesView(schiid)
   }
-  case class EditNamesView(chiid: String) extends ChicagoPage {
-    def toSummaryView = SummaryView(chiid)
-    def toRoundView(round: Int) = RoundView(chiid, round)
-    def toNamesView(round: Int) = NamesView(chiid, round)
-    def toHandView(round: Int, hand: Int) = HandView(chiid, round, hand)
+  case class EditNamesView(schiid: String) extends ChicagoPage {
+    def chiid = MatchChicago.id(schiid)
+    def toSummaryView = SummaryView(schiid)
+    def toRoundView(round: Int) = RoundView(schiid, round)
+    def toNamesView(round: Int) = NamesView(schiid, round)
+    def toHandView(round: Int, hand: Int) = HandView(schiid, round, hand)
   }
-  case class RoundView(chiid: String, round: Int) extends ChicagoPage {
-    def toSummaryView = SummaryView(chiid)
-    def toNamesView(round: Int) = NamesView(chiid, round)
-    def toHandView(hand: Int) = HandView(chiid, round, hand)
-    def toEditNamesView = EditNamesView(chiid)
+  case class RoundView(schiid: String, round: Int) extends ChicagoPage {
+    def chiid = MatchChicago.id(schiid)
+    def toSummaryView = SummaryView(schiid)
+    def toNamesView(round: Int) = NamesView(schiid, round)
+    def toHandView(hand: Int) = HandView(schiid, round, hand)
+    def toEditNamesView = EditNamesView(schiid)
   }
-  case class NamesView(chiid: String, round: Int) extends ChicagoPage {
-    def toSummaryView = SummaryView(chiid)
-    def toRoundView = RoundView(chiid, round)
-    def toHandView(hand: Int) = HandView(chiid, round, hand)
+  case class NamesView(schiid: String, round: Int) extends ChicagoPage {
+    def chiid = MatchChicago.id(schiid)
+    def toSummaryView = SummaryView(schiid)
+    def toRoundView = RoundView(schiid, round)
+    def toHandView(hand: Int) = HandView(schiid, round, hand)
   }
-  case class HandView(chiid: String, round: Int, hand: Int)
+  case class HandView(schiid: String, round: Int, hand: Int)
       extends ChicagoPage {
-    def toSummaryView = SummaryView(chiid)
-    def toNamesView = NamesView(chiid, round)
-    def toRoundView = RoundView(chiid, round)
+    def chiid = MatchChicago.id(schiid)
+    def toSummaryView = SummaryView(schiid)
+    def toNamesView = NamesView(schiid, round)
+    def toRoundView = RoundView(schiid, round)
   }
 
   val verifyPages = ListView ::

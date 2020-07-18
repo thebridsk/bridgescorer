@@ -47,6 +47,7 @@ import com.github.thebridsk.bridge.data.RubberHand
 import com.github.thebridsk.bridge.data.Round
 import com.github.thebridsk.bridge.data.ChicagoBestMatch
 import com.github.thebridsk.bridge.data.RubberBestMatch
+import com.github.thebridsk.bridge.data.IdMatchChicago
 
 import SchemaBase.{log => _, _}
 import SchemaHand.{log => _, _}
@@ -55,7 +56,7 @@ object SchemaChicago {
 
   val log = Logger(SchemaChicago.getClass.getName)
 
-  val ChicagoIdType = idScalarTypeFromString[Id.MatchChicago]("ChicagoId")
+  val ChicagoIdType = idScalarType[IdMatchChicago]("ChicagoId", MatchChicago)
 
   val ChicagoRoundType = ObjectType(
     "ChicagoRound",
@@ -287,7 +288,7 @@ object ChicagoAction {
           case SortCreatedDescending =>
             list.sortWith((l, r) => l.created > r.created)
           case SortId =>
-            list.sortWith((l, r) => Id.idComparer(l.id, r.id) < 0)
+            list.sortWith((l, r) => l.id < r.id)
         }
       }
       .getOrElse(list)

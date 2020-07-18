@@ -57,25 +57,25 @@ object TestCacheStore {
   val bridgeResources = BridgeResources()
   import bridgeResources._
 
-  def getStore( implicit ec: ExecutionContext ): Store[Id.MatchDuplicate,MatchDuplicate] =
+  def getStore( implicit ec: ExecutionContext ): Store[MatchDuplicate.Id,MatchDuplicate] =
     InMemoryStore("test")
 
-  def getMatchDuplicateFileStore( dir: Directory )( implicit ec: ExecutionContext ): Store[Id.MatchDuplicate,MatchDuplicate] =
+  def getMatchDuplicateFileStore( dir: Directory )( implicit ec: ExecutionContext ): Store[MatchDuplicate.Id,MatchDuplicate] =
     FileStore("test",dir)
 
-  def getBoardSetStore( implicit ec: ExecutionContext ): Store[String,BoardSet] = {
+  def getBoardSetStore( implicit ec: ExecutionContext ): Store[BoardSet.Id,BoardSet] = {
     JavaResourceStore("test","/com/github/thebridsk/bridge/server/backend/", "Boardsets.txt", getClass.getClassLoader)
   }
 
-  def getMovementStore( implicit ec: ExecutionContext ): Store[String,Movement] = {
+  def getMovementStore( implicit ec: ExecutionContext ): Store[Movement.Id,Movement] = {
     JavaResourceStore("test","/com/github/thebridsk/bridge/server/backend/", "Movements.txt", getClass.getClassLoader)
   }
 
-  def getBoardSetFileStore( dir: Directory )( implicit ec: ExecutionContext ): Store[String,BoardSet] = {
+  def getBoardSetFileStore( dir: Directory )( implicit ec: ExecutionContext ): Store[BoardSet.Id,BoardSet] = {
     FileStore("test",dir)
   }
 
-  def getBoardSetMultiStore( dir: Directory )( implicit ec: ExecutionContext ): Store[String,BoardSet] = {
+  def getBoardSetMultiStore( dir: Directory )( implicit ec: ExecutionContext ): Store[BoardSet.Id,BoardSet] = {
     MultiStore.createFileAndResource("test",dir, "/com/github/thebridsk/bridge/server/backend/", "Boardsets.txt", getClass.getClassLoader)
   }
 
@@ -100,9 +100,9 @@ object TestCacheStore {
   }
 
 
-  def testWithStore( fun: (Store[Id.MatchDuplicate,MatchDuplicate], Listener)=>Future[Assertion] )( implicit ec: ExecutionContext ) = {
+  def testWithStore( fun: (Store[MatchDuplicate.Id,MatchDuplicate], Listener)=>Future[Assertion] )( implicit ec: ExecutionContext ) = {
     val store = getStore
-    val md = TestMatchDuplicate.create("?")
+    val md = TestMatchDuplicate.create(MatchDuplicate.id("?"))
 
     val listener = new Listener
     store.addListener(listener)
@@ -204,7 +204,7 @@ class TestCacheStore extends AsyncFlatSpec with ScalatestRouteTest with Matchers
   it should "store a value in the store" in {
     val store = getStore
 
-    val md = TestMatchDuplicate.create("?")
+    val md = TestMatchDuplicate.create(MatchDuplicate.id("?"))
 
     val listener = new Listener
     store.addListener(listener)
@@ -241,7 +241,7 @@ class TestCacheStore extends AsyncFlatSpec with ScalatestRouteTest with Matchers
 
   it should "change team 1" in testWithStore { (store,listener) =>
 
-    val team = store.select("M1").nestedResource(DuplicateTeamsNestedResource).select(Team.id(1)).read()
+    val team = store.select(MatchDuplicate.id(1)).nestedResource(DuplicateTeamsNestedResource).select(Team.id(1)).read()
     team.testfuture("Testing team T1 in match M1") { ot =>
       ot.id mustBe Team.id(1)
       ot.player1 mustBe "Nancy"
@@ -249,7 +249,7 @@ class TestCacheStore extends AsyncFlatSpec with ScalatestRouteTest with Matchers
 
       listener.clear()
 
-      val updatedTeam = store.select("M1").nestedResource(DuplicateTeamsNestedResource).select(Team.id(1)).update(Team(Team.id(1),"Fred","George",0,0))
+      val updatedTeam = store.select(MatchDuplicate.id(1)).nestedResource(DuplicateTeamsNestedResource).select(Team.id(1)).update(Team(Team.id(1),"Fred","George",0,0))
       updatedTeam.testfuture("Testing updated team T1 in match M1") { t =>
         t.id mustBe Team.id(1)
         t.player1 mustBe "Fred"
@@ -296,7 +296,7 @@ class TestCacheStore extends AsyncFlatSpec with ScalatestRouteTest with Matchers
           }
         }.getOrElse(fail("changeUpdate was empty"))
 
-        val againteam = store.select("M1").nestedResource(DuplicateTeamsNestedResource).select(Team.id(1)).read()
+        val againteam = store.select(MatchDuplicate.id(1)).nestedResource(DuplicateTeamsNestedResource).select(Team.id(1)).read()
         againteam.test("Testing team T1 in match M1") { t =>
           t.id mustBe Team.id(1)
           t.player1 mustBe "Fred"
@@ -310,7 +310,7 @@ class TestCacheStore extends AsyncFlatSpec with ScalatestRouteTest with Matchers
 
     listener.clear()
 
-    val team = store.select("M1").nestedResource(DuplicateTeamsNestedResource).select(Team.id(1)).delete()
+    val team = store.select(MatchDuplicate.id(1)).nestedResource(DuplicateTeamsNestedResource).select(Team.id(1)).delete()
     team.testfuture("Testing team T1 in match M1") { ot =>
       ot.id mustBe Team.id(1)
       ot.player1 mustBe "Nancy"
@@ -354,7 +354,7 @@ class TestCacheStore extends AsyncFlatSpec with ScalatestRouteTest with Matchers
 
   it should "change hand T1 on board B1" in testWithStore { (store,listener) =>
 
-    val handf = store.select("M1").nestedResource(DuplicateBoardsNestedResource).select(Board.id(1)).nestedResource(DuplicateHandsNestedResource).select(Team.id(1)).read()
+    val handf = store.select(MatchDuplicate.id(1)).nestedResource(DuplicateBoardsNestedResource).select(Board.id(1)).nestedResource(DuplicateHandsNestedResource).select(Team.id(1)).read()
     handf.testfuture("Testing board B1 hand T1 in match M1") { dh =>
       dh.id mustBe Team.id(1)
       dh.board mustBe Board.id(1)
@@ -365,7 +365,7 @@ class TestCacheStore extends AsyncFlatSpec with ScalatestRouteTest with Matchers
 
       val nh = dh.updateHand( Hand("T1", 1, "S", "N", "N", false, false, true, 2, 0, 0) )
 
-      val uphandf = store.select("M1").nestedResource(DuplicateBoardsNestedResource).select(Board.id(1)).nestedResource(DuplicateHandsNestedResource).select(Team.id(1)).update(nh)
+      val uphandf = store.select(MatchDuplicate.id(1)).nestedResource(DuplicateBoardsNestedResource).select(Board.id(1)).nestedResource(DuplicateHandsNestedResource).select(Team.id(1)).update(nh)
       uphandf.testfuture("Testing updating board B1 hand T1 in match M1") { udh =>
         udh.id mustBe Team.id(1)
         udh.hand.get.equalsIgnoreModifyTime(nh.hand.get) mustBe true
@@ -440,7 +440,7 @@ class TestCacheStore extends AsyncFlatSpec with ScalatestRouteTest with Matchers
   it should "delete match M1" in testWithStore { (store,listener) =>
     testlog.fine("Starting delete match M1")
     listener.clear()
-    store.select("M1").delete().flatMap { rmd =>
+    store.select(MatchDuplicate.id(1)).delete().flatMap { rmd =>
       rmd match {
         case Left((statuscode,msg)) =>
           fail(s"did not find match M1: ${statuscode} ${msg}")
@@ -464,7 +464,7 @@ class TestCacheStore extends AsyncFlatSpec with ScalatestRouteTest with Matchers
                 fail("expecting update, got ${x}")
             }
           }.getOrElse(fail("changeDelete was empty"))
-          store.select("M1").read().map { rfail =>
+          store.select(MatchDuplicate.id(1)).read().map { rfail =>
             rfail match {
               case Left((statuscode,msg)) =>
                 statuscode mustBe StatusCodes.NotFound
@@ -477,8 +477,8 @@ class TestCacheStore extends AsyncFlatSpec with ScalatestRouteTest with Matchers
   }
 
   def addHand(
-               store: Store[Id.MatchDuplicate, MatchDuplicate],
-               dupid: String,
+               store: Store[MatchDuplicate.Id, MatchDuplicate],
+               dupid: MatchDuplicate.Id,
                boardid: Board.Id,
                handid: Team.Id,
                results: CollectResult
@@ -525,7 +525,7 @@ class TestCacheStore extends AsyncFlatSpec with ScalatestRouteTest with Matchers
   }
 
   def getBoardset() = {
-    val fut = getBoardSetStore.select("StandardBoards").read()
+    val fut = getBoardSetStore.select(BoardSet.standard).read()
     Await.result(fut, 10.seconds) match {
       case Right(bs) => bs
       case Left(error) =>
@@ -535,7 +535,7 @@ class TestCacheStore extends AsyncFlatSpec with ScalatestRouteTest with Matchers
   }
 
   def getMovement() = {
-    val fut = getMovementStore.select("Mitchell3Table").read()
+    val fut = getMovementStore.select(Movement.id("Mitchell3Table")).read()
     Await.result(fut, 10.seconds) match {
       case Right(bs) => bs
       case Left(error) =>
@@ -567,14 +567,14 @@ class TestCacheStore extends AsyncFlatSpec with ScalatestRouteTest with Matchers
        }
   }
 
-  class CollectResult( id: Id.MatchDuplicate ) {
+  class CollectResult( id: MatchDuplicate.Id ) {
     private var ferrors: List[String] = List()
     private var fmatches: List[MatchDuplicate] = List()
 
     def add( err: String ) = synchronized { ferrors = err::ferrors }
     def add( md: MatchDuplicate ) = synchronized {
       if (md.id != id) {
-        testlog.severe(s"Ids don't match: ${id}, got ${md.id}")
+        testlog.severe(s"Ids don't match: ${id.id}, got ${md.id}")
       }
       fmatches = md::fmatches
     }
@@ -583,10 +583,10 @@ class TestCacheStore extends AsyncFlatSpec with ScalatestRouteTest with Matchers
     def matches = fmatches
   }
 
-  def playAllHands( store: Store[Id.MatchDuplicate,MatchDuplicate],
+  def playAllHands( store: Store[MatchDuplicate.Id,MatchDuplicate],
                     bs: BoardSet,
                     mov: Movement
-                  ): Future[(Assertion,Option[Id.MatchDuplicate])] = {
+                  ): Future[(Assertion,Option[MatchDuplicate.Id])] = {
 
     val md = MatchDuplicate.create().fillBoards(bs, mov)
 
@@ -651,7 +651,7 @@ class TestCacheStore extends AsyncFlatSpec with ScalatestRouteTest with Matchers
     val futures = for ( i <- 1 to n ) yield {
       playAllHands(store,bs,mov)
     }
-    val asserts = Future.foldLeft(futures)((List[Option[Id.MatchDuplicate]](),List[(Assertion,Option[Id.MatchDuplicate])]())) { (ac,v) =>
+    val asserts = Future.foldLeft(futures)((List[Option[MatchDuplicate.Id]](),List[(Assertion,Option[MatchDuplicate.Id])]())) { (ac,v) =>
       val (assert,id) = v
       assert match {
         case Succeeded =>
@@ -678,35 +678,35 @@ class TestCacheStore extends AsyncFlatSpec with ScalatestRouteTest with Matchers
 
     store.readAll().test("Reading all in boardset store") { map =>
       map.size mustBe 2
-      map.keySet must contain theSameElementsAs "StandardBoards"::"ArmonkBoards"::Nil
+      map.keySet must contain theSameElementsAs BoardSet.standard::BoardSet.default::Nil
     }
   }
 
   it should "find standard boardset, and update should get a bad request" in {
     val store = getBoardSetStore
 
-    store.select("StandardBoards").read().testfuture("Reading standard boardset") { bs =>
-      bs.name mustBe "StandardBoards"
+    store.select(BoardSet.standard).read().testfuture("Reading standard boardset") { bs =>
+      bs.name mustBe BoardSet.standard
 
-      store.select("StandardBoards").update(bs).expectFail( "Updating to read only store should fail", StatusCodes.BadRequest)
+      store.select(BoardSet.standard).update(bs).expectFail( "Updating to read only store should fail", StatusCodes.BadRequest)
     }
   }
 
   it should "find standard boardset, and delete should a bad request" in {
     val store = getBoardSetStore
 
-    store.select("StandardBoards").read().testfuture("Reading standard boardset") { bs =>
-      bs.name mustBe "StandardBoards"
+    store.select(BoardSet.standard).read().testfuture("Reading standard boardset") { bs =>
+      bs.name mustBe BoardSet.standard
 
-      store.select("StandardBoards").delete().expectFail( "deleting from a read only store should fail", StatusCodes.BadRequest)
+      store.select(BoardSet.standard).delete().expectFail( "deleting from a read only store should fail", StatusCodes.BadRequest)
     }
   }
 
   it should "write a boardset to a file store" in {
     val store = getBoardSetStore
 
-    store.select("StandardBoards").read().testfuture("Reading standard boardset") { bs =>
-      bs.name mustBe "StandardBoards"
+    store.select(BoardSet.standard).read().testfuture("Reading standard boardset") { bs =>
+      bs.name mustBe BoardSet.standard
 
       val fstore = getBoardSetFileStore(tempDir)
 
@@ -729,8 +729,8 @@ class TestCacheStore extends AsyncFlatSpec with ScalatestRouteTest with Matchers
   it should "fail to create a boardset with same name to a multi store" in {
     val store = getBoardSetMultiStore(tempDir)
 
-    store.select("StandardBoards").read().testfuture("Reading standard boardset") { bs =>
-      bs.name mustBe "StandardBoards"
+    store.select(BoardSet.standard).read().testfuture("Reading standard boardset") { bs =>
+      bs.name mustBe BoardSet.standard
 
       val changeContext = ChangeContext()
 
@@ -742,8 +742,8 @@ class TestCacheStore extends AsyncFlatSpec with ScalatestRouteTest with Matchers
   it should "write a boardset to a multi store" in {
     val store = getBoardSetMultiStore(tempDir)
 
-    store.select("StandardBoards").read().testfuture("Reading standard boardset") { bs =>
-      bs.name mustBe "StandardBoards"
+    store.select(BoardSet.standard).read().testfuture("Reading standard boardset") { bs =>
+      bs.name mustBe BoardSet.standard
 
       val changeContext = ChangeContext()
 
@@ -762,15 +762,15 @@ class TestCacheStore extends AsyncFlatSpec with ScalatestRouteTest with Matchers
   }
 
   def playOnFileStore(
-                       store: Store[Id.MatchDuplicate, MatchDuplicate],
+                       store: Store[MatchDuplicate.Id, MatchDuplicate],
                        tempDir: Directory,
                        bs: BoardSet,
                        mov: Movement
-                    ): Future[(Assertion, Option[Id.MatchDuplicate])] = {
+                    ): Future[(Assertion, Option[MatchDuplicate.Id])] = {
     playAllHands(store,bs,mov).flatMap { aid =>
       val (a,Some(id)) = aid
-      tempDir.list.foreach( p => testlog.fine(s"After playing(${id}), Found in tempdir: $p") )
-      val f = tempDir/s"MatchDuplicate.${id}.yaml"
+      tempDir.list.foreach( p => testlog.fine(s"After playing(${id.id}), Found in tempdir: $p") )
+      val f = tempDir/s"MatchDuplicate.${id.id}.yaml"
       val v = FileIO.readFileSafe(f.toString())
       val (goodOnDisk,vt) = store.support.fromJSON(v)
 
@@ -781,13 +781,13 @@ class TestCacheStore extends AsyncFlatSpec with ScalatestRouteTest with Matchers
       Future( handsPlayed mustBe 18*3 ).flatMap { assert =>
         assert match {
           case Succeeded =>
-            store.select(id).delete().test(s"Testing delete with filestore after success on ${id}") { oldv =>
-              tempDir.list.foreach( p => testlog.fine(s"After delete(${id}), found in tempdir: $p") )
+            store.select(id).delete().test(s"Testing delete with filestore after success on ${id.id}") { oldv =>
+              tempDir.list.foreach( p => testlog.fine(s"After delete(${id.id}), found in tempdir: $p") )
               f.exists mustBe false
             }
           case _ =>
-            store.select(id).delete().test(s"Testing delete with filestore after failure ${id}") { oldv =>
-              tempDir.list.foreach( p => testlog.fine(s"After delete(${id}), found in tempdir: $p") )
+            store.select(id).delete().test(s"Testing delete with filestore after failure ${id.id}") { oldv =>
+              tempDir.list.foreach( p => testlog.fine(s"After delete(${id.id}), found in tempdir: $p") )
               f.exists mustBe false
               assert
             }
@@ -811,7 +811,7 @@ class TestCacheStore extends AsyncFlatSpec with ScalatestRouteTest with Matchers
     val futures = for ( i <- 1 to n ) yield {
       playOnFileStore(store,tempDir,bs,mov)
     }
-    val asserts = Future.foldLeft(futures)(List[(Assertion,Option[Id.MatchDuplicate])]()) { (ac,v) =>
+    val asserts = Future.foldLeft(futures)(List[(Assertion,Option[MatchDuplicate.Id])]()) { (ac,v) =>
       val (assert,id) = v
       assert match {
         case Succeeded =>

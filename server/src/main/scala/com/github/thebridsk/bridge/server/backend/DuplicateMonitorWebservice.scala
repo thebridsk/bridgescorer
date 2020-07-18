@@ -58,7 +58,7 @@ class DuplicateMonitorWebservice(
     implicit fm: Materializer,
     system: ActorSystem,
     bridgeService: BridgeService
-) extends MonitorWebservice[Id.MatchDuplicate, MatchDuplicate](
+) extends MonitorWebservice[MatchDuplicate.Id, MatchDuplicate](
       totallyMissingResourceHandler
 ) {
   val log = Logging(system, classOf[DuplicateMonitorWebservice])
@@ -165,7 +165,7 @@ class DuplicateMonitorWebservice(
                       {
                         log.info(s"SSE from $ip for $id")
                         complete {
-                          val dupid: Id.MatchDuplicate = id
+                          val dupid = MatchDuplicate.id(id)
                           monitor.monitorMatch(ip, dupid)
                         }
                       }

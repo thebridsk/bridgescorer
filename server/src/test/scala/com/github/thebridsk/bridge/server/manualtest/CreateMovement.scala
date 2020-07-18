@@ -126,7 +126,7 @@ blank lines are used as end of stanzas.
       val line = reader.next()
       line match {
         case patternTablesLine(ntables,nboards,name,comment) =>
-          val na = f"Howell${ntables.toInt*2}%02dT${ntables}B${nboards}"
+          val na = Movement.id(f"Howell${ntables.toInt*2}%02dT${ntables}B${nboards}")
           val c = if (comment == null) s"Howell ${ntables.toInt*2} teams ${ntables} tables ${nboards} boards" else comment
           val d = if (comment == null) s"Howell movements, ${ntables.toInt*2} teams, ${ntables} tables, ${nboards} boards" else comment
           val m = Movement( na, c, d, ntables.toInt*2, List() )
@@ -172,7 +172,7 @@ blank lines are used as end of stanzas.
     }
 
     val short = relay.map( r => s"${m.short} relay" ).getOrElse(m.short)
-    val name = relay.map( r => s"${m.name}Relay" ).getOrElse(m.name)
+    val name = relay.map( r => Movement.id(s"${m.name.id}Relay") ).getOrElse(m.name)
     val desc = relay.map( r => s"${m.description}, relay" ).getOrElse(m.description)
 
     m.copy( name=name, hands = r, short=short, description=desc)

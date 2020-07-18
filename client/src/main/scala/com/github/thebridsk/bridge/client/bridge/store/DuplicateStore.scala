@@ -40,7 +40,7 @@ object DuplicateStore extends ChangeListenable {
    */
   def init() = {}
 
-  private var monitoredId: Option[Id.MatchDuplicate] = None
+  private var monitoredId: Option[MatchDuplicate.Id] = None
   private var bridgeMatch: Option[MatchDuplicate] = None
   private var directorsView: Option[MatchDuplicateScore] = None
   private var completeView: Option[MatchDuplicateScore] = None
@@ -118,13 +118,13 @@ object DuplicateStore extends ChangeListenable {
     }
   }
 
-  def getPicture( dupid: Id.MatchDuplicate, boardId: Board.Id, handId: Team.Id ): Option[DuplicatePicture] = {
+  def getPicture( dupid: MatchDuplicate.Id, boardId: Board.Id, handId: Team.Id ): Option[DuplicatePicture] = {
     monitoredId.filter(dup => dup == dupid).flatMap { dup =>
       pictures.get((boardId,handId))
     }
   }
 
-  def getPicture( dupid: Id.MatchDuplicate, boardId: Board.Id ): List[DuplicatePicture] = {
+  def getPicture( dupid: MatchDuplicate.Id, boardId: Board.Id ): List[DuplicatePicture] = {
     monitoredId.filter(dup => dup == dupid).map { dup =>
       pictures.flatMap { e =>
         val ((bid,hid),dp) = e
@@ -271,7 +271,7 @@ object DuplicateStore extends ChangeListenable {
 //      logger.fine("Ignoring unknown action: "+action)
   }}
 
-  def start( dupid: Id.MatchDuplicate ) = {
+  def start( dupid: MatchDuplicate.Id ) = {
     monitoredId match {
       case Some(mid) if mid!=dupid =>
         bridgeMatch = None

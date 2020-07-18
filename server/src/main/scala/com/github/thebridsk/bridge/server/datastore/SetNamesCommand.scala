@@ -118,8 +118,8 @@ Sam->Norman
 //    Id.idComparer(k1, k2) < 0
 //  }
 
-  def getidd(t: MatchDuplicate) = t.id.toString()
-  def getiddr(t: MatchDuplicateResult) = t.id.toString()
+  def getidd(t: MatchDuplicate) = t.id
+  def getiddr(t: MatchDuplicateResult) = t.id
   def getidc(t: MatchChicago) = t.id
   def getidr(t: MatchRubber) = t.id
 
@@ -135,13 +135,13 @@ Sam->Norman
     t1.created < t2.created
 
   def sortByMDId(t1: MatchDuplicate, t2: MatchDuplicate): Boolean =
-    Id.idComparer(t1.id.toString(), t2.id.toString()) < 0
+    t1.id < t2.id
   def sortByMDRId(t1: MatchDuplicateResult, t2: MatchDuplicateResult): Boolean =
-    Id.idComparer(t1.id.toString(), t2.id.toString()) < 0
+    t1.id < t2.id
   def sortByMCId(t1: MatchChicago, t2: MatchChicago): Boolean =
-    Id.idComparer(t1.id.toString(), t2.id.toString()) < 0
+    t1.id < t2.id
   def sortByMRId(t1: MatchRubber, t2: MatchRubber): Boolean =
-    Id.idComparer(t1.id.toString(), t2.id.toString()) < 0
+    t1.id < t2.id
 
   def executeSubcommand(): Int = {
 
@@ -164,7 +164,7 @@ Sam->Norman
 
       val ids = optionIds.toOption
 
-      def idFilter(id: String) = ids.map(l => l.contains(id)).getOrElse(true)
+      def idFilter(id: Id[_]) = ids.map(l => l.contains(id.id)).getOrElse(true)
 
       val allnames = datastore.getAllNames()
 
@@ -261,7 +261,7 @@ Sam->Norman
     * @param src
     * @param dest
     */
-  def copyStore[K, T <: VersionedInstance[T, T, K]](
+  def copyStore[K <: Comparable[K], T <: VersionedInstance[T, T, K]](
       name: String,
       src: Store[K, T],
       dest: Store[K, T]
@@ -283,7 +283,7 @@ Sam->Norman
     }
   }
 
-  def setValue[K, T <: VersionedInstance[T, T, K]](
+  def setValue[K <: Comparable[K], T <: VersionedInstance[T, T, K]](
       name: String,
       out: Store[K, T],
       id: K,
@@ -329,7 +329,7 @@ Sam->Norman
     * @param converter A function that changes the names in the value.
     *                  If the function returns None, than this value is not modified.  It will be copied.
     */
-  def change[K, T <: VersionedInstance[T, T, K]](
+  def change[K <: Comparable[K], T <: VersionedInstance[T, T, K]](
       name: String,
       in: Store[K, T],
       out: Store[K, T],

@@ -285,11 +285,13 @@ object BldBridge {
           val x2 = (test in Test in BldBridgeRotation.rotationJVM).value
           val x3 = (test in Test in BldBridgeRotation.rotationJS).value
           val x4 = (test in Test in BldColor.colorJVM).value
-          val x5 = (test in Test in BldBridgeClientCommon.`bridgescorer-clientcommon`).value
-          val x6 = (test in Test in BldBridgeClient.`bridgescorer-client`).value
-          // val x7 = (test in Test in BldBridgeClientApi.`bridgescorer-clientapi`).value
-          val x8 = (test in Test in BldBridgeServer.`bridgescorer-server`).value
-          val x9 = (test in Test in BldBridgeFullServer.`bridgescorer-fullserver`).value
+          val x5 = (test in Test in BldBridgeShared.sharedJVM).value
+          val x6 = (test in Test in BldBridgeShared.sharedJS).value
+          val x7 = (test in Test in BldBridgeClientCommon.`bridgescorer-clientcommon`).value
+          val x8 = (test in Test in BldBridgeClient.`bridgescorer-client`).value
+          // val x9 = (test in Test in BldBridgeClientApi.`bridgescorer-clientapi`).value
+          val x10 = (test in Test in BldBridgeServer.`bridgescorer-server`).value
+          val x11 = (test in Test in BldBridgeFullServer.`bridgescorer-fullserver`).value
       },
       travis1 := Def
         .sequential(

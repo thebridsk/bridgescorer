@@ -239,7 +239,7 @@ class ChicagoTest extends AnyFlatSpec
   it should "send the player names to the server" in {
 
     def testPlayers( players: String* ) = {
-        backend.chicagos.syncStore.read(chicagoId.get) match {
+        backend.chicagos.syncStore.read(MatchChicago.id(chicagoId.get)) match {
           case Right(c) =>
             // check if all players in MatchChicago are same as players argument
             players.zip(c.players).find( p => p._1!=p._2 ).isEmpty
@@ -314,7 +314,7 @@ class ChicagoTest extends AnyFlatSpec
   it should "send to the server that there are 4 games per round" in {
 
     def getGamesPerRound = {
-        backend.chicagos.syncStore.read(chicagoId.get) match {
+        backend.chicagos.syncStore.read(MatchChicago.id(chicagoId.get)) match {
           case Right(c) => c.gamesPerRound
           case Left(r) => -1
         }
@@ -377,7 +377,7 @@ class ChicagoTest extends AnyFlatSpec
     // keeping this for more checks
 
     def getGamesPerRound = {
-        backend.chicagos.syncStore.read(chicagoId.get) match {
+        backend.chicagos.syncStore.read(MatchChicago.id(chicagoId.get)) match {
           case Right(c) => c.gamesPerRound
           case Left(r) => -1
         }
@@ -440,7 +440,7 @@ class ChicagoTest extends AnyFlatSpec
     // keeping this for more checks
 
     def getGamesPerRound = {
-        backend.chicagos.syncStore.read(chicagoId.get) match {
+        backend.chicagos.syncStore.read(MatchChicago.id(chicagoId.get)) match {
           case Right(c) => c.gamesPerRound
           case Left(r) => -1
         }

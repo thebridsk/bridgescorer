@@ -34,7 +34,7 @@ import io.swagger.v3.oas.annotations.media.ArraySchema
 )
 case class MatchChicagoV3(
     @Schema(description = "The chicago ID", required = true)
-    id: String,
+    id: MatchChicago.Id,
     @ArraySchema(
       minItems = 4,
       uniqueItems = true,
@@ -78,14 +78,14 @@ case class MatchChicagoV3(
       implementation = classOf[ChicagoBestMatch]
     )
     bestMatch: Option[ChicagoBestMatch] = None
-) extends VersionedInstance[MatchChicago, MatchChicagoV3, String] {
+) extends VersionedInstance[MatchChicago, MatchChicagoV3, MatchChicago.Id] {
 
   if (players.length < 4 || players.length > 5) {
     throw new IllegalArgumentException("Must have 4 or 5 players")
   }
 
   def setId(
-      newId: String,
+      newId: MatchChicago.Id,
       forCreate: Boolean,
       dontUpdateTime: Boolean = false
   ) = {
@@ -100,7 +100,7 @@ case class MatchChicagoV3(
     }
   }
 
-  def copyForCreate(id: Id.MatchDuplicate) = {
+  def copyForCreate(id: MatchChicago.Id) = {
     val time = SystemTime.currentTimeMillis()
     val xrounds = rounds.map { e =>
       e.copyForCreate(e.id)
@@ -298,7 +298,7 @@ case class MatchChicagoV3(
     * Set the Id of this match
     * @param id the new ID of the match
     */
-  def setId(id: String) = {
+  def setId(id: MatchChicago.Id) = {
     copy(id = id, updated = SystemTime.currentTimeMillis())
   }
 
@@ -358,7 +358,7 @@ trait IdMatchChicago
 
 object MatchChicagoV3 extends HasId[IdMatchChicago]("C") {
   def apply(
-      id: String,
+      id: MatchChicago.Id,
       players: List[String],
       rounds: List[Round],
       gamesPerRound: Int,
@@ -395,7 +395,7 @@ case class ChicagoBestMatch(
         "The ID of the MatchChicago in the main store that is the best match, none if no match",
       required = true
     )
-    id: Option[Id.MatchChicago],
+    id: Option[MatchChicago.Id],
     @ArraySchema(
       minItems = 0,
       uniqueItems = true,
@@ -452,7 +452,7 @@ object ChicagoBestMatch {
 
   def noMatch = new ChicagoBestMatch(-1, None, None)
 
-  def apply(id: String, diff: Difference) = {
+  def apply(id: MatchChicago.Id, diff: Difference) = {
     new ChicagoBestMatch(diff.percentSame, Some(id), Some(diff.differences))
   }
 }

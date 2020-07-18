@@ -232,21 +232,21 @@ object ViewScoreboardInternal {
             DateUtils.formatDay(props.score.created),
             <.span(
               ^.float:="right",
-              <.span( showidbutton ?= baseStyles.onlyInPrint, props.score.id ),
+              <.span( showidbutton ?= baseStyles.onlyInPrint, props.score.id.id ),
               showidbutton ?= <.span(
                 baseStyles.hideInPrint,
-                AppButton( "Duplicate_"+props.score.id, props.score.id,
-                           props.routerCtl.setOnClick( CompleteScoreboardView(props.score.id) )
+                AppButton( "Duplicate_"+props.score.id.id, props.score.id.id,
+                           props.routerCtl.setOnClick( CompleteScoreboardView(props.score.id.id) )
                 )
               )
             ),
             <.span(
               ^.float:="left",
-              <.span( showidbutton ?= baseStyles.onlyInPrint, props.score.id ),
+              <.span( showidbutton ?= baseStyles.onlyInPrint, props.score.id.id ),
               showidbutton ?= <.span(
                 baseStyles.hideInPrint,
-                AppButton( "Duplicate_"+props.score.id, props.score.id,
-                           props.routerCtl.setOnClick( CompleteScoreboardView(props.score.id) )
+                AppButton( "Duplicate_"+props.score.id.id, props.score.id.id,
+                           props.routerCtl.setOnClick( CompleteScoreboardView(props.score.id.id) )
                 )
               )
             )

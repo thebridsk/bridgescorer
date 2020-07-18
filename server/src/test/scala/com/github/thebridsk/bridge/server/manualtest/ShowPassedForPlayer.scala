@@ -12,6 +12,7 @@ import com.github.thebridsk.bridge.data.bridge.South
 import com.github.thebridsk.bridge.data.duplicate.stats.PlayerComparisonStat
 import com.github.thebridsk.bridge.data.duplicate.stats.PlayerComparisonStats
 import com.github.thebridsk.bridge.data.Team
+import com.github.thebridsk.bridge.data.MatchDuplicate
 
 object ShowPassedForPlayer extends Main {
 
@@ -27,7 +28,7 @@ object ShowPassedForPlayer extends Main {
 
   val optionPlayer = trailArg[String](name="player", descr="the player involved in passed contracts", default=None, required=true)
 
-  case class PassedBoard( id: Id.MatchDuplicate, team: Team.Id, board: Board, played: Boolean, good: Boolean )
+  case class PassedBoard( id: MatchDuplicate.Id, team: Team.Id, board: Board, played: Boolean, good: Boolean )
 
   def execute() = {
 

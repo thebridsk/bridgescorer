@@ -55,17 +55,22 @@ import com.github.thebridsk.bridge.data.duplicate.stats.PlayerOpponentStat
 import com.github.thebridsk.bridge.data.duplicate.stats.PlayerOpponentsStat
 import com.github.thebridsk.bridge.data.duplicate.stats.PlayersOpponentsStats
 import com.github.thebridsk.bridge.data.Table
+import com.github.thebridsk.bridge.data.DuplicateSummary
+import com.github.thebridsk.bridge.data.BoardSet
+import com.github.thebridsk.bridge.data.Movement
 
 object SchemaDuplicate {
 
   val log = Logger(SchemaDuplicate.getClass.getName)
 
-  val TeamIdType = idScalarType[Team.Type]("TeamId", Team)
-  val TableIdType = idScalarType[Table.Type]("TableId", Table)
-  val BoardIdType = idScalarType[Board.Type]("BoardId", Board)
-  val DuplicateIdType = idScalarTypeFromString[Id.MatchDuplicate]("DuplicateId")
-  val DuplicateResultIdType =
-    idScalarTypeFromString[Id.MatchDuplicateResult]("DuplicateResultId")
+  val BoardSetIdType = idScalarType("TeamId", BoardSet)
+  val MovementIdType = idScalarType("TeamId", Movement)
+  val TeamIdType = idScalarType("TeamId", Team)
+  val TableIdType = idScalarType("TableId", Table)
+  val BoardIdType = idScalarType("BoardId", Board)
+  val DuplicateSummaryIdType = idScalarType("DuplicateSummaryId", DuplicateSummary)
+  val DuplicateIdType = idScalarType("DuplicateId", MatchDuplicate)
+  val DuplicateResultIdType = idScalarType("DuplicateResultId", MatchDuplicateResult)
 
   val DuplicateTeamType = ObjectType(
     "DuplicateTeam",
@@ -287,7 +292,7 @@ object SchemaDuplicate {
     fields[BridgeService, (Option[String], BestMatch)](
       Field(
         "id",
-        OptionType(DuplicateIdType),
+        OptionType(DuplicateSummaryIdType),
         Some("The id of the best duplicate match from the main store"),
         resolve = _.value._2.id
       ),
@@ -312,7 +317,7 @@ object SchemaDuplicate {
     fields[BridgeService, (Option[String], DuplicateSummary)](
       Field(
         "id",
-        DuplicateIdType,
+        DuplicateSummaryIdType,
         Some("The id of the duplicate match"),
         resolve = _.value._2.id
       ),
@@ -391,13 +396,13 @@ object SchemaDuplicate {
       ),
       Field(
         "boardset",
-        StringType,
+        BoardSetIdType,
         Some("The boardset that was used"),
         resolve = _.value._2.boardset
       ),
       Field(
         "movement",
-        StringType,
+        MovementIdType,
         Some("The movement that was used"),
         resolve = _.value._2.movement
       ),
@@ -831,6 +836,12 @@ object SchemaDuplicate {
     )
   )
 
+  val ArgDuplicateSummaryId = Argument(
+    "id",
+    DuplicateSummaryIdType,
+    description = "The Id of the duplicate match"
+  )
+
   val ArgDuplicateId = Argument(
     "id",
     DuplicateIdType,
@@ -980,7 +991,7 @@ object DuplicateAction {
       val sourcemd = sourcestore.flatMap { ostore =>
         ostore match {
           case Some(store) =>
-            store.duplicateresults.read(ds.id).map { rmd =>
+            store.duplicateresults.read(ds.id.toSubclass[MatchDuplicateResult.Type].get).map { rmd =>
               rmd match {
                 case Right(md) =>
                   Some(md)
@@ -1006,7 +1017,7 @@ object DuplicateAction {
                         log.fine(
                           s"Diff main(${mmd.id}) import(${importId},${md.id}): ${diff}"
                         )
-                        BestMatch(mmd.id, diff)
+                        BestMatch(mmd.id.toBase, diff)
                       }
                       .foldLeft(BestMatch.noMatch) { (ac, v) =>
                         if (ac.sameness < v.sameness) v
@@ -1025,7 +1036,7 @@ object DuplicateAction {
       val sourcemd = sourcestore.flatMap { ostore =>
         ostore match {
           case Some(store) =>
-            store.duplicates.read(ds.id).map { rmd =>
+            store.duplicates.read(ds.id.toSubclass[MatchDuplicate.Type].get).map { rmd =>
               rmd match {
                 case Right(md) =>
                   Some(md)
@@ -1051,7 +1062,7 @@ object DuplicateAction {
                         log.fine(
                           s"Diff main(${mmd.id}) import(${importId},${md.id}): ${diff}"
                         )
-                        BestMatch(mmd.id, diff)
+                        BestMatch(mmd.id.toBase, diff)
                       }
                       .foldLeft(BestMatch.noMatch) { (ac, v) =>
                         if (ac.sameness < v.sameness) v
@@ -1093,7 +1104,7 @@ object DuplicateAction {
           case SortCreatedDescending =>
             list.sortWith((l, r) => l.created > r.created)
           case SortId =>
-            list.sortWith((l, r) => Id.idComparer(l.id, r.id) < 0)
+            list.sortWith((l, r) => l.id < r.id)
         }
       }
       .getOrElse(list)
@@ -1112,7 +1123,7 @@ object DuplicateAction {
           case SortCreatedDescending =>
             list.sortWith((l, r) => l.created > r.created)
           case SortId =>
-            list.sortWith((l, r) => Id.idComparer(l.id, r.id) < 0)
+            list.sortWith((l, r) => l.id < r.id)
         }
       }
       .getOrElse(list)

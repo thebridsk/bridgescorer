@@ -634,7 +634,7 @@ object PageTableTeamsInternal {
                         dupStyles.divTableNamesPage,
                         <.p("Round "+props.page.round+" not found on Table "+props.page.tableid),
                         <.p(
-                          Button( baseStyles.footerButton, "Game", "Scoreboard", props.routerCtl.setOnClick(CompleteScoreboardView(props.page.dupid)) )
+                          Button( baseStyles.footerButton, "Game", "Scoreboard", props.routerCtl.setOnClick(CompleteScoreboardView(props.page.sdupid)) )
                         )
                       )
                     )
@@ -646,7 +646,7 @@ object PageTableTeamsInternal {
                     dupStyles.divTableNamesPage,
                     <.p("Table "+props.page.tableid+" not found"),
                     <.p(
-                      Button( baseStyles.footerButton, "Game", "Scoreboard", props.routerCtl.setOnClick(CompleteScoreboardView(props.page.dupid)) )
+                      Button( baseStyles.footerButton, "Game", "Scoreboard", props.routerCtl.setOnClick(CompleteScoreboardView(props.page.sdupid)) )
                     ) )
                 )
             }

@@ -303,7 +303,7 @@ object PlayersOpponentsStats {
   }
 
   def stats(
-      dups: Map[Id.MatchDuplicate, MatchDuplicate]
+      dups: Map[MatchDuplicate.Id, MatchDuplicate]
   ): PlayersOpponentsStats = {
     val ss = dups.values
       .flatMap { md =>

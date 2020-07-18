@@ -36,24 +36,24 @@ class BridgeServiceFileStoreConverters(yaml: Boolean) {
 
   implicit val converter = Converter.getConverter(yaml)
 
-  implicit val matchChicagoJson = VersionedInstanceJson[String, MatchChicago]
+  implicit val matchChicagoJson = VersionedInstanceJson[MatchChicago.Id, MatchChicago]
     .add[MatchChicagoV2]
     .add[MatchChicagoV1]
 
   implicit val matchDuplicateJson =
-    VersionedInstanceJson[String, MatchDuplicate]
+    VersionedInstanceJson[MatchDuplicate.Id, MatchDuplicate]
       .add[MatchDuplicateV2]
       .add[MatchDuplicateV1]
 
   implicit val matchDuplicateResultJson =
-    VersionedInstanceJson[String, MatchDuplicateResult]
+    VersionedInstanceJson[MatchDuplicateResult.Id, MatchDuplicateResult]
       .add[MatchDuplicateResultV1]
 
-  implicit val matchRubberJson = VersionedInstanceJson[String, MatchRubber]
+  implicit val matchRubberJson = VersionedInstanceJson[MatchRubber.Id, MatchRubber]
 
-  implicit val boardSetJson = VersionedInstanceJson[String, BoardSet]
+  implicit val boardSetJson = VersionedInstanceJson[BoardSet.Id, BoardSet]
 
-  implicit val movementJson = VersionedInstanceJson[String, Movement]
+  implicit val movementJson = VersionedInstanceJson[Movement.Id, Movement]
 
 }
 
@@ -91,13 +91,13 @@ class BridgeServiceFileStore(
 
   dir.createDirectory(true, false)
 
-  val chicagos = FileStore[Id.MatchDuplicate, MatchChicago](id, dir)
-  val duplicates = FileStore[Id.MatchDuplicate, MatchDuplicate](id, dir)
+  val chicagos = FileStore[MatchChicago.Id, MatchChicago](id, dir)
+  val duplicates = FileStore[MatchDuplicate.Id, MatchDuplicate](id, dir)
   val duplicateresults =
-    FileStore[Id.MatchDuplicateResult, MatchDuplicateResult](id, dir)
-  val rubbers = FileStore[String, MatchRubber](id, dir)
+    FileStore[MatchDuplicateResult.Id, MatchDuplicateResult](id, dir)
+  val rubbers = FileStore[MatchRubber.Id, MatchRubber](id, dir)
 
-  val boardSets = MultiStore.createFileAndResource[String, BoardSet](
+  val boardSets = MultiStore.createFileAndResource[BoardSet.Id, BoardSet](
     id,
     dir,
     "/com/github/thebridsk/bridge/server/backend/",
@@ -105,7 +105,7 @@ class BridgeServiceFileStore(
     self.getClass.getClassLoader
   )
 
-  val movements = MultiStore.createFileAndResource[String, Movement](
+  val movements = MultiStore.createFileAndResource[Movement.Id, Movement](
     id,
     dir,
     "/com/github/thebridsk/bridge/server/backend/",

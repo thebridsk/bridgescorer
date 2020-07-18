@@ -173,13 +173,13 @@ object PageScoreboardInternal {
                List[CtorType.ChildArg](
                  MuiMenuItem(
                      id = "Director",
-                     onClick = callbackPage(DirectorScoreboardView(props.game.dupid)) _
+                     onClick = callbackPage(DirectorScoreboardView(props.game.sdupid)) _
                  )(
                      "Director's Scoreboard"
                  ),
                  MuiMenuItem(
                      id = "ForPrint",
-                     onClick = callbackPage(FinishedScoreboardsView(props.game.dupid)) _
+                     onClick = callbackPage(FinishedScoreboardsView(props.game.sdupid)) _
                  )(
                      "For Print"
                  ),
@@ -245,7 +245,7 @@ object PageScoreboardInternal {
                       <.div(
                         baseStyles.divFooterLeft,
                         sortedTables.map { table =>
-                          val clickToTableView = TableView(props.game.dupid,table.id)
+                          val clickToTableView = TableView(props.game.sdupid,table.id)
                           List[TagMod](
                             AppButton( "Table_"+table.id, "Table "+table.id,
                                        baseStyles.requiredNotNext,
@@ -277,7 +277,7 @@ object PageScoreboardInternal {
                     Seq(
                       <.div(
                         baseStyles.divFooterLeft,
-                        AppButton( "Game", "Completed Games Scoreboard", props.routerCtl.setOnClick(CompleteScoreboardView(props.game.dupid)) ),
+                        AppButton( "Game", "Completed Games Scoreboard", props.routerCtl.setOnClick(CompleteScoreboardView(props.game.sdupid)) ),
                         " ",
                         AppButton( "AllBoards", "All Boards", props.routerCtl.setOnClick(props.game.toAllBoardsView) ),
                       ),
@@ -294,7 +294,7 @@ object PageScoreboardInternal {
                         baseStyles.divFooterRight,
                         AppButton( "Delete", "Delete", ^.onClick-->actionDelete ),
                         " ",
-                        AppButton( "EditNames", "Edit Names", props.routerCtl.setOnClick(NamesView(props.game.dupid)) )
+                        AppButton( "EditNames", "Edit Names", props.routerCtl.setOnClick(NamesView(props.game.sdupid)) )
                       )
                     ).toTagMod
                   case PerspectiveTable(team1, team2) =>
@@ -316,7 +316,7 @@ object PageScoreboardInternal {
                             baseStyles.divFooterCenter,
                             AppButton( "Game", "Completed Games Scoreboard",
                                        allplayedInRound ?= baseStyles.requiredNotNext,
-                                       props.routerCtl.setOnClick(CompleteScoreboardView(props.game.dupid)) ),
+                                       props.routerCtl.setOnClick(CompleteScoreboardView(props.game.sdupid)) ),
                             " ",
                             getScoringMethodButton(),
                           ),
@@ -328,7 +328,7 @@ object PageScoreboardInternal {
                       case _ =>
                         <.div(
                           baseStyles.divFooterLeft,
-                          AppButton( "Game", "Completed Games Scoreboard", props.routerCtl.setOnClick(CompleteScoreboardView(props.game.dupid)) )
+                          AppButton( "Game", "Completed Games Scoreboard", props.routerCtl.setOnClick(CompleteScoreboardView(props.game.sdupid)) )
                         )
                     }
                 }

@@ -40,23 +40,23 @@ object RubberStore extends ChangeListenable {
   }}
 
   private var rubber: Option[MatchRubber] = None
-  private var monitoredId: Option[String] = None
+  private var monitoredId: Option[MatchRubber.Id] = None
 
   def getRubber = rubber
   def getMonitoredId = monitoredId
 
-  def isMonitoredId( rubid: String ) = monitoredId match {
+  def isMonitoredId( rubid: MatchRubber.Id ) = monitoredId match {
     case Some(id) => id == rubid
     case None => false
   }
 
-  def start( id: String, rub: Option[MatchRubber] ) = {
+  def start( id: MatchRubber.Id, rub: Option[MatchRubber] ) = {
     monitoredId = Some(id)
     rubber = rub
     notifyChange()
   }
 
-  private def update(funName: String, rubid: String, fun: (Option[MatchRubber])=>Option[MatchRubber], callback: Option[MatchRubber=>Unit]) = {
+  private def update(funName: String, rubid: MatchRubber.Id, fun: (Option[MatchRubber])=>Option[MatchRubber], callback: Option[MatchRubber=>Unit]) = {
     monitoredId match {
       case Some(id) if (id == rubid) =>
         rubber = fun(rubber)
@@ -84,13 +84,13 @@ object RubberStore extends ChangeListenable {
     },callback)
   }
 
-  def updateRubberNames( rubid: String, north: String, south: String, east: String, west: String, firstDealer: PlayerPosition, callback: Option[MatchRubber=>Unit] ) = {
+  def updateRubberNames( rubid: MatchRubber.Id, north: String, south: String, east: String, west: String, firstDealer: PlayerPosition, callback: Option[MatchRubber=>Unit] ) = {
     update("updateRubberNames", rubid, (rub)=>{
       rub.map(_.setPlayers(north, south, east, west).setFirstDealer(firstDealer.pos))
     },callback)
   }
 
-  def updateRubberHand( rubid: String, handid: String, hand: RubberHand, callback: Option[MatchRubber=>Unit] ) = {
+  def updateRubberHand( rubid: MatchRubber.Id, handid: String, hand: RubberHand, callback: Option[MatchRubber=>Unit] ) = {
     update("updateRubberHand", rubid, (rub)=>{
       rub match {
         case Some(mr) =>

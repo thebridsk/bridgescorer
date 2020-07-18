@@ -14,7 +14,7 @@ object Resources {
 
   def vidToString[VId]( id: VId ): String = {
     id match {
-      case Id(s) => s
+      case Id(s,_) => s
       case _ => id.toString
     }
   }
