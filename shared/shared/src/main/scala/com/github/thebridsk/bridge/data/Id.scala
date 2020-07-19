@@ -21,7 +21,8 @@ import play.api.libs.json.KeyReads
   * @param A the ID type
   *
   */
-case class Id[A]( val id: String, useName: Boolean = false )( implicit private [Id] val classTag: ClassTag[A] ) extends Ordered[Id[A]] {
+@Schema(description = "The ID", `type` = "string", format = "id")
+case class Id[A] private[data] ( val id: String, useName: Boolean = false )( implicit private [Id] val classTag: ClassTag[A] ) extends Ordered[Id[A]] {
   override
   def equals( other: Any ) = {
     // println(s"comparing $this and $other")
@@ -83,13 +84,27 @@ case class Id[A]( val id: String, useName: Boolean = false )( implicit private [
 class HasId[IdType: ClassTag]( val prefix: String, val useName: Boolean = false ) {
 
   import com.github.thebridsk.bridge.data
-  type Id = data.Id[IdType]
-  type Type = IdType
+  type ItemType = IdType
+  type Id = data.Id[ItemType]
+
   /**
-    * @param i the complete id with a syntax of "[a-zA-Z]*\d+"
+    * Generate an Id from a string.
+    * @param i the complete id,
+    * if useName is false then must have a syntax of "[a-zA-Z]*\d+",
+    * where the leading characters are the prefix, that is s"$prefix$n",
+    * where $prefix is the prefix and $n is a non-negative integer
+    * if useName is true, then the string can be anything.
     * @return the Id object
     */
-  def id( i: String ): Id = data.Id[IdType](i, useName)
+  def id( s: String ): Id = {
+    if (!useName && !s.isEmpty()) {
+      val p = Id.parseId(s)
+      if (p.isEmpty || p.get._1 != prefix)
+        throw new IllegalArgumentException(s"String not valid for Ids for class ${getClass.getSimpleName}: $s")
+    }
+    Id(s, useName)
+  }
+
   /**
     *
     *
@@ -98,7 +113,7 @@ class HasId[IdType: ClassTag]( val prefix: String, val useName: Boolean = false 
     */
   def id( i: Int ): Id = id( s"$prefix$i" )
 
-  def idNul = id("")
+  def idNul = Id("", useName)
 
   val idKeyReads = new KeyReads[data.Id[IdType]] {
     def readKey(key: String ): JsResult[data.Id[IdType]] = JsSuccess( id(key) )
@@ -133,26 +148,6 @@ object Id {
   def apply[A]( id: String )(implicit classTag: ClassTag[A]) = new Id[A](id)
 
   import com.github.thebridsk.bridge.data
-
-  @Schema(
-    description =
-      "The id of a duplicate match result, just has the points scored by a team"
-  )
-  type MatchDuplicateResult = data.MatchDuplicate.Id
-  @Schema(description = "The id of a duplicate match")
-  type MatchDuplicate = data.MatchDuplicate.Id
-  @Schema(description = "The id of a Chicago match")
-  type MatchChicago = data.MatchChicago.Id
-  @Schema(description = "The id of a Rubber match")
-  type MatchRubber = data.MatchRubber.Id
-  @Schema(description = "The id of a duplicate board, positive integer")
-  type DuplicateBoard = data.Board.Id
-  @Schema(description = "The id of a duplicate hand")
-  type DuplicateHand = data.Team.Id
-  @Schema(description = "The id of a team")
-  type Team = data.Team.Id
-  @Schema(description = "The id of a table")
-  type Table = data.Table.Id
 
   private val idpattern = "([a-zA-Z]*)(\\d+)".r
 

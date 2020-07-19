@@ -991,7 +991,7 @@ object DuplicateAction {
       val sourcemd = sourcestore.flatMap { ostore =>
         ostore match {
           case Some(store) =>
-            store.duplicateresults.read(ds.id.toSubclass[MatchDuplicateResult.Type].get).map { rmd =>
+            store.duplicateresults.read(ds.id.toSubclass[MatchDuplicateResult.ItemType].get).map { rmd =>
               rmd match {
                 case Right(md) =>
                   Some(md)
@@ -1036,7 +1036,7 @@ object DuplicateAction {
       val sourcemd = sourcestore.flatMap { ostore =>
         ostore match {
           case Some(store) =>
-            store.duplicates.read(ds.id.toSubclass[MatchDuplicate.Type].get).map { rmd =>
+            store.duplicates.read(ds.id.toSubclass[MatchDuplicate.ItemType].get).map { rmd =>
               rmd match {
                 case Right(md) =>
                   Some(md)

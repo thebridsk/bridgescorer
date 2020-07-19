@@ -338,8 +338,8 @@ case class DuplicateSummary(
       .map(t => t.placeImp.isDefined && t.resultImp.isDefined)
       .getOrElse(false)
 
-  def idAsDuplicateResultId = id.toSubclass[MatchDuplicateResult.Type]
-  def idAsDuplicateId = id.toSubclass[MatchDuplicate.Type]
+  def idAsDuplicateResultId = id.toSubclass[MatchDuplicateResult.ItemType]
+  def idAsDuplicateId = id.toSubclass[MatchDuplicate.ItemType]
 
   def containsPair(p1: String, p2: String) = {
     teams.find { dse =>
