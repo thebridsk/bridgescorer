@@ -14,8 +14,6 @@ import com.github.thebridsk.bridge.server.backend.resource.Implicits._
 import com.github.thebridsk.utilities.logging.Logger
 import scala.util.Success
 import scala.util.Failure
-import akka.http.scaladsl.marshalling.ToResponseMarshallable.apply
-import akka.http.scaladsl.model.ContentType.apply
 import akka.http.scaladsl.server.Directive.addByNameNullaryApply
 import akka.http.scaladsl.server.Directive.addDirectiveApply
 import java.util.UUID

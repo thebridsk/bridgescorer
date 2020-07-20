@@ -98,6 +98,16 @@ class RestNestedBoard {
             )
           )
         )
+      ),
+      new ApiResponse(
+        responseCode = "400",
+        description = "Bad request",
+        content = Array(
+          new Content(
+            mediaType = "application/json",
+            schema = new Schema(implementation = classOf[RestMessage])
+          )
+        )
       )
     )
   )
@@ -151,6 +161,16 @@ class RestNestedBoard {
       new ApiResponse(
         responseCode = "404",
         description = "Does not exist",
+        content = Array(
+          new Content(
+            mediaType = "application/json",
+            schema = new Schema(implementation = classOf[RestMessage])
+          )
+        )
+      ),
+      new ApiResponse(
+        responseCode = "400",
+        description = "Bad request",
         content = Array(
           new Content(
             mediaType = "application/json",
@@ -358,7 +378,17 @@ class RestNestedBoard {
       )
     ),
     responses = Array(
-      new ApiResponse(responseCode = "204", description = "Board deleted.")
+      new ApiResponse(responseCode = "204", description = "Board deleted."),
+      new ApiResponse(
+        responseCode = "400",
+        description = "Bad request",
+        content = Array(
+          new Content(
+            mediaType = "application/json",
+            schema = new Schema(implementation = classOf[RestMessage])
+          )
+        )
+      )
     )
   )
   def xxxdeleteBoard = {}

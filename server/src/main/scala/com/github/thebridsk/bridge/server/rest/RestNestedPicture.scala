@@ -157,6 +157,16 @@ class RestNestedPicture( store: Store[MatchDuplicate.Id,MatchDuplicate], parent:
             )
           )
         )
+      ),
+      new ApiResponse(
+        responseCode = "400",
+        description = "Bad request",
+        content = Array(
+          new Content(
+            mediaType = "application/json",
+            schema = new Schema(implementation = classOf[RestMessage])
+          )
+        )
       )
     )
   )
@@ -205,7 +215,17 @@ class RestNestedPicture( store: Store[MatchDuplicate.Id,MatchDuplicate], parent:
       )
     ),
     responses = Array(
-      new ApiResponse(responseCode = "204", description = "Picture deleted.")
+      new ApiResponse(responseCode = "204", description = "Picture deleted."),
+      new ApiResponse(
+        responseCode = "400",
+        description = "Bad request",
+        content = Array(
+          new Content(
+            mediaType = "application/json",
+            schema = new Schema(implementation = classOf[RestMessage])
+          )
+        )
+      )
     )
   )
   def xxxdeletePicture = {}

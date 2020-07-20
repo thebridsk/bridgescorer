@@ -129,6 +129,16 @@ trait RestMovement extends HasActorSystem {
             schema = new Schema(implementation = classOf[RestMessage])
           )
         )
+      ),
+      new ApiResponse(
+        responseCode = "400",
+        description = "Bad request",
+        content = Array(
+          new Content(
+            mediaType = "application/json",
+            schema = new Schema(implementation = classOf[RestMessage])
+          )
+        )
       )
     )
   )
@@ -277,7 +287,17 @@ trait RestMovement extends HasActorSystem {
       )
     ),
     responses = Array(
-      new ApiResponse(responseCode = "204", description = "Movement deleted.")
+      new ApiResponse(responseCode = "204", description = "Movement deleted."),
+      new ApiResponse(
+        responseCode = "400",
+        description = "Bad request",
+        content = Array(
+          new Content(
+            mediaType = "application/json",
+            schema = new Schema(implementation = classOf[RestMessage])
+          )
+        )
+      )
     )
   )
   def xxxdeleteMovement() = {}

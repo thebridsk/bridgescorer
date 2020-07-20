@@ -498,7 +498,7 @@ class TestDuplicateWebsocket extends AnyFlatSpec with ScalatestRouteTest with Ma
   }
 
   it should "return a not found for match 3 for GET requests to /v1/rest/duplicates/M3/teams/B1" in {
-    Get("/v1/rest/duplicates/M3/teams/B1") ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
+    Get("/v1/rest/duplicates/M3/teams/T9") ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
       handled mustBe true
       status mustBe NotFound
       mediaType mustBe MediaTypes.`application/json`

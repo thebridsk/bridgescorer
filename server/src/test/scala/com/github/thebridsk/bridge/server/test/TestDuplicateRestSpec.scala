@@ -608,12 +608,21 @@ class TestDuplicateRestSpec extends AnyFlatSpec with ScalatestRouteTest with Mat
     }
   }
 
-  it should "return a not found for match 2 for GET requests to /v1/rest/duplicates/M2/teams/B1" in {
-    Get("/v1/rest/duplicates/M2/teams/B1") ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
+  it should "return a not found for match 2 for GET requests to /v1/rest/duplicates/M2/teams/T9" in {
+    Get("/v1/rest/duplicates/M2/teams/T9") ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
       handled mustBe true
       status mustBe NotFound
       mediaType mustBe MediaTypes.`application/json`
       responseAs[RestMessage] mustBe RestMessage("Did not find resource /duplicates/M2")
+    }
+  }
+
+  it should "return a bad request for match 2 for GET requests to /v1/rest/duplicates/K2/teams/B1" in {
+    Get("/v1/rest/duplicates/K2/teams/B1") ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
+      handled mustBe true
+      status mustBe BadRequest
+      mediaType mustBe MediaTypes.`application/json`
+      responseAs[RestMessage] mustBe RestMessage("Illegal argument in request: String not valid for Ids for class MatchDuplicateV3$: K2")
     }
   }
 

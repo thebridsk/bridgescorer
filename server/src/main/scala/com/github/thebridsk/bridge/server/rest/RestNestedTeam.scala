@@ -97,6 +97,16 @@ class RestNestedTeam {
             )
           )
         )
+      ),
+      new ApiResponse(
+        responseCode = "400",
+        description = "Bad request",
+        content = Array(
+          new Content(
+            mediaType = "application/json",
+            schema = new Schema(implementation = classOf[RestMessage])
+          )
+        )
       )
     )
   )
@@ -147,6 +157,16 @@ class RestNestedTeam {
       new ApiResponse(
         responseCode = "404",
         description = "Does not exist",
+        content = Array(
+          new Content(
+            mediaType = "application/json",
+            schema = new Schema(implementation = classOf[RestMessage])
+          )
+        )
+      ),
+      new ApiResponse(
+        responseCode = "400",
+        description = "Bad request",
         content = Array(
           new Content(
             mediaType = "application/json",
@@ -332,7 +352,17 @@ class RestNestedTeam {
       )
     ),
     responses = Array(
-      new ApiResponse(responseCode = "204", description = "Team deleted.")
+      new ApiResponse(responseCode = "204", description = "Team deleted."),
+      new ApiResponse(
+        responseCode = "400",
+        description = "Bad request",
+        content = Array(
+          new Content(
+            mediaType = "application/json",
+            schema = new Schema(implementation = classOf[RestMessage])
+          )
+        )
+      )
     )
   )
   def xxxdeleteTeams = {}

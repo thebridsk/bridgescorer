@@ -102,7 +102,7 @@ object TestCacheStore {
 
   def testWithStore( fun: (Store[MatchDuplicate.Id,MatchDuplicate], Listener)=>Future[Assertion] )( implicit ec: ExecutionContext ) = {
     val store = getStore
-    val md = TestMatchDuplicate.create(MatchDuplicate.id("?"))
+    val md = TestMatchDuplicate.create(MatchDuplicate.idNul)
 
     val listener = new Listener
     store.addListener(listener)
@@ -204,7 +204,7 @@ class TestCacheStore extends AsyncFlatSpec with ScalatestRouteTest with Matchers
   it should "store a value in the store" in {
     val store = getStore
 
-    val md = TestMatchDuplicate.create(MatchDuplicate.id("?"))
+    val md = TestMatchDuplicate.create(MatchDuplicate.idNul)
 
     val listener = new Listener
     store.addListener(listener)

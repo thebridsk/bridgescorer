@@ -257,7 +257,7 @@ object TestCacheStoreForFailures {
                           )=>Future[Assertion]
                    )( implicit ec: ExecutionContext ) = {
     val (store,per) = getStore
-    val md = TestMatchDuplicate.create(MatchDuplicate.id("?"))
+    val md = TestMatchDuplicate.create(MatchDuplicate.idNul)
 
     val listener = new Listener
     store.addListener(listener)
@@ -344,7 +344,7 @@ class TestCacheStoreForFailures extends AsyncFlatSpec with ScalatestRouteTest wi
 
   it should "store a value in the store" in testWithStore { (store,persistent,listener,md1) =>
     listener.clear()
-    val md = TestMatchDuplicate.create(MatchDuplicate.id("?"))
+    val md = TestMatchDuplicate.create(MatchDuplicate.idNul)
     store.createChild(md).test("Creating match duplicate") { tnmd =>
       tnmd match {
         case Success(Right(nmd)) =>
@@ -559,7 +559,7 @@ class TestCacheStoreForFailures extends AsyncFlatSpec with ScalatestRouteTest wi
 
   it should "create a value in the store" in testWithStore { (store,persistent,listener,md1) =>
     listener.clear()
-    val md = TestMatchDuplicate.create(MatchDuplicate.id("?"))
+    val md = TestMatchDuplicate.create(MatchDuplicate.idNul)
     try {
       store.createChild(md).test("Creating match duplicate") { tnmd =>
         tnmd match {
@@ -585,7 +585,7 @@ class TestCacheStoreForFailures extends AsyncFlatSpec with ScalatestRouteTest wi
   it should "fail to create a value in the store" in testWithStore { (store,persistent,listener,md1) =>
     listener.clear()
     persistent.failResultWrite = Some( Result( StatusCodes.InsufficientStorage, "Oops can't write" ) )
-    val md = TestMatchDuplicate.create(MatchDuplicate.id("?"))
+    val md = TestMatchDuplicate.create(MatchDuplicate.idNul)
     try {
       store.createChild(md).test("Creating match duplicate") { tnmd =>
         tnmd match {
@@ -611,7 +611,7 @@ class TestCacheStoreForFailures extends AsyncFlatSpec with ScalatestRouteTest wi
   it should "fail to create a value in the store with exception" in testWithStore { (store,persistent,listener,md1) =>
     listener.clear()
     persistent.failWrite = true
-    val md = TestMatchDuplicate.create(MatchDuplicate.id("?"))
+    val md = TestMatchDuplicate.create(MatchDuplicate.idNul)
     try {
       store.createChild(md).test("Creating match duplicate") { tnmd =>
         tnmd match {

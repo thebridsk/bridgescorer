@@ -45,6 +45,8 @@ import io.swagger.v3.core.util.Json
 import scala.util.control.NonFatal
 import io.swagger.v3.core.util.Yaml
 import io.swagger.v3.oas.models.OpenAPI
+import com.github.thebridsk.bridge.data.RestMessage
+import com.github.thebridsk.bridge.server.rest.UtilsPlayJson
 
 /**
   * The service trait.
@@ -72,13 +74,19 @@ trait MyService
   def ports = ServerPort(None, None)
 
   val excptHandler = ExceptionHandler {
+    case x: IllegalArgumentException =>
+      log.warning(s"Illegal argument in request: ${x.getMessage()}")
+      import UtilsPlayJson._
+      complete(
+          StatusCodes.BadRequest,
+          RestMessage(s"Illegal argument in request: ${x.getMessage()}")
+      )
     case x: Throwable =>
       log.error(x, "Error processing a REST request")
+      import UtilsPlayJson._
       complete(
-        (
           StatusCodes.InternalServerError,
-          "Internal Server Error, please notify the system administrator!"
-        )
+          RestMessage("Internal Server Error, please notify the system administrator!")
       )
   }
 

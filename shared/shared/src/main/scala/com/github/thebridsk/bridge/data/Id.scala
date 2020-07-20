@@ -89,12 +89,13 @@ class HasId[IdType: ClassTag]( val prefix: String, val useName: Boolean = false 
 
   /**
     * Generate an Id from a string.
-    * @param i the complete id,
+    * @param s the complete id,
     * if useName is false then must have a syntax of "[a-zA-Z]*\d+",
     * where the leading characters are the prefix, that is s"$prefix$n",
     * where $prefix is the prefix and $n is a non-negative integer
     * if useName is true, then the string can be anything.
     * @return the Id object
+    * @throws IllegalArgumentException if s is not a valid Id for this type of item.
     */
   def id( s: String ): Id = {
     if (!useName && !s.isEmpty()) {

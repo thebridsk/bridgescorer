@@ -236,7 +236,7 @@ object ViewPairsMadeDownTableInternal {
           val totals = if (props.showPairs) {
             None
           } else {
-            val tpd = pds.map( pd => pd.details ).foldLeft( DuplicateSummaryDetails.zero(Team.id("Totals"))) { (ac,v) =>
+            val tpd = pds.map( pd => pd.details ).foldLeft( DuplicateSummaryDetails.zero(Team.idNul)) { (ac,v) =>
               v.map( vv => ac.add(vv) ).getOrElse(ac)
             }
             val totalpd = pds.head.copy( player1="Totals", player2="", details = Some(tpd) )
