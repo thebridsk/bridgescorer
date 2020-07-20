@@ -23,7 +23,7 @@ object BldVersion {
 //  lazy val vScalaJsLibrary = "0.6.13" // http://mvnrepository.com/artifact/org.scala-js/scalajs-library_2.11
 
 
-  lazy val vAkka = "2.6.7"            // https://github.com/akka/akka
+  lazy val vAkka = "2.6.8"             // https://github.com/akka/akka
   lazy val vAkkaHttp = "10.1.12"       // https://github.com/akka/akka-http
 
   lazy val vAkkaHttpPlayJson="1.33.0"  // https://github.com/hseeberger/akka-http-json
@@ -34,7 +34,7 @@ object BldVersion {
   lazy val vWsRsApi="2.1.6"            // https://github.com/eclipse-ee4j/jaxrs-api
   lazy val vAkkaHttpCors = "1.0.0"     // https://github.com/lomigmegard/akka-http-cors
 
-  lazy val vSwaggerUI = "3.28.0"       // https://www.npmjs.com/package/swagger-ui-dist
+  lazy val vSwaggerUI = "3.30.0"       // https://www.npmjs.com/package/swagger-ui-dist
   lazy val vScalajsdom = "1.0.0"       // https://github.com/scala-js/scala-js-dom
   lazy val vScalaJsReact = "1.7.3"     // https://github.com/japgolly/scalajs-react
 
