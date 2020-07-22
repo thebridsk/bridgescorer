@@ -163,6 +163,10 @@ object Id {
     case idpattern(p,n) => true
     case _            => false
   }
+
+  import scala.language.implicitConversions
+  implicit def toBase[A, B >: A]( id: Id[A] ): Id[B] = id.toBase
+
 }
 
 object IdOrdering {

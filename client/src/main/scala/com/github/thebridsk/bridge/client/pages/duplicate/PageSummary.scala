@@ -131,16 +131,18 @@ object PageSummaryInternal {
                         val (tp,ds,pr,st,back,importId) = props
                         <.tr(
                           <.td(
-                            ds.idAsDuplicateId.map { id =>
-                              val t: TagMod =
-                                AppButton( s"Duplicate_${id.id}", ds.id.id,
-                                          baseStyles.appButton100,
-                                          pr.routerCtl.setOnClick(pr.page.getScoreboardPage(id) ),
-                                          importId.map { id => ^.disabled := true }.whenDefined
-                                        )
-                              t
-                            }.getOrElse {
-                              ds.idAsDuplicateResultId.map { id =>
+                            DuplicateSummary.useId(
+                              ds.id,
+                              { id =>
+                                val t: TagMod =
+                                  AppButton( s"Duplicate_${id.id}", ds.id.id,
+                                            baseStyles.appButton100,
+                                            pr.routerCtl.setOnClick(pr.page.getScoreboardPage(id) ),
+                                            importId.map { id => ^.disabled := true }.whenDefined
+                                          )
+                                t
+                              },
+                              { id =>
                                 val t: TagMod =
                                   AppButton( s"Result_${id.id}", ds.id.id,
                                             baseStyles.appButton100,
@@ -148,10 +150,9 @@ object PageSummaryInternal {
                                             importId.map { id => ^.disabled := true }.whenDefined
                                           )
                                 t
-                              }.getOrElse {
-                                TagMod()
-                              }
-                            },
+                              },
+                              TagMod()
+                            ),
                           ),
                           importId.map { iid =>
                             TagMod(
@@ -378,7 +379,7 @@ object PageSummaryInternal {
 
     val forPrintOk = CallbackTo {
       val s = scope.withEffectsImpure.state
-      val mds = s.selected.reverse.map{ id => id.toString() }.mkString(",")
+      val mds = s.selected.reverse.map{ id => id.id }.mkString(",")
       forPrint(false).runNow()
       (scope.withEffectsImpure.props,mds)
     } >>= { case (p,mds) =>
@@ -468,7 +469,7 @@ object PageSummaryInternal {
       })
 
     def importSelected( importId: String ) = scope.modState( { s =>
-        val ids = s.selected.map( id => id.toString )
+        val ids = s.selected.map( id => id.id )
         s.copy(workingOnNew=Some(s"Importing Duplicate Match ${ids.mkString(", ")} from import ${importId}"))
       },
       scope.stateProps { (s,props) => Callback {
@@ -485,11 +486,12 @@ object PageSummaryInternal {
         val sortByDate = s.selected
 
         val fragment = sortByDate.map { id =>
-          if (id.toString().startsWith("E")) {  // Hack
-            s"""${id}: importduplicateresult( id: "${id}") { id }"""
-          } else {
-            s"""${id}: importduplicate( id: "${id}") { id }"""
-          }
+          DuplicateSummary.useId(
+            id,
+            mdid => s"""${mdid.id}: importduplicate( id: "${mdid.id}") { id }""",
+            mdrid => s"""${mdrid.id}: importduplicateresult( id: "${mdrid.id}") { id }""",
+            ""
+          )
         }
         val query = s"""mutation importDuplicate( $$importId: ImportId! ) {
                        |  import( id: $$importId ) {

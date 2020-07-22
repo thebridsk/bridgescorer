@@ -259,7 +259,7 @@ class RestNestedChicagoRound {
   def addIdToFuture(f: Future[Result[Round]]): Future[Result[(String, Round)]] =
     f.map { r =>
       r match {
-        case Right(md) => Right((md.id.toString(), md))
+        case Right(md) => Right((md.id, md))
         case Left(e)   => Left(e)
       }
     }

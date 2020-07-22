@@ -97,7 +97,7 @@ class TestId extends AnyFlatSpec with Matchers {
     val id1 = MatchDuplicate.id(1)
     val id2 = MatchDuplicateResult.id(1)
 
-    val id1b: DuplicateSummary.Id = id1.toBase
+    val id1b: DuplicateSummary.Id = id1
 
     id1b mustBe id1
     id1b must not be id2
@@ -113,7 +113,7 @@ class TestId extends AnyFlatSpec with Matchers {
     val id1 = MatchDuplicate.id(1)
     val id2 = MatchDuplicateResult.id(1)
 
-    val id1b: DuplicateSummary.Id = id1.toBase
+    val id1b: DuplicateSummary.Id = id1
 
     import com.github.thebridsk.bridge.data.rest.JsonSupport._
 

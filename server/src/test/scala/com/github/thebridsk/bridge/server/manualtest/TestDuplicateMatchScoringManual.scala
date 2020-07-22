@@ -82,7 +82,7 @@ object TestDuplicateMatchScoringManual extends Main {
     val teams = m.teams.map{t=>t.id}.toList.sorted
     val boards = score.boards.values.toList.sortWith((one,two)=> one.id<two.id)
 
-    val header = List( List("team","total"), boards.map( b => b.id.toString ).toList ).flatten
+    val header = List( List("team","total"), boards.map( b => b.id.id ).toList ).flatten
 
     val body = teams.map( team =>
                   List( List(team.toString(), score.teamScores.get(team).get.toString),
@@ -143,7 +143,7 @@ object TestDuplicateMatchScoringManual extends Main {
       println("Table "+table)
       val header = List( "Round", "NS", "EW", "Boards" )
       val body = rounds.map { round => {
-        List( round.round.toString(), round.ns.id.toString, round.ew.id.toString, round.boards.map { b => b.id.toString }.mkString(", ") )
+        List( round.round.toString(), round.ns.id.id, round.ew.id.id, round.boards.map { b => b.id.id }.mkString(", ") )
       } }
       printTable( header, body )
     }

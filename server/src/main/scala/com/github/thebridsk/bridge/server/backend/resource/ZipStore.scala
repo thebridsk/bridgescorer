@@ -93,7 +93,7 @@ object ZipStoreInternal {
                 val (id, v) = entry
                 filter
                   .map { f =>
-                    f.contains(id.toString())
+                    f.contains( store.support.idSupport.toString(id) )
                   }
                   .getOrElse(true)
               }

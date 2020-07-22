@@ -987,97 +987,102 @@ object DuplicateAction {
             case Left(error) => None
           }
         }
-    if (ds.onlyresult) {
-      val sourcemd = sourcestore.flatMap { ostore =>
-        ostore match {
-          case Some(store) =>
-            store.duplicateresults.read(ds.id.toSubclass[MatchDuplicateResult.ItemType].get).map { rmd =>
-              rmd match {
-                case Right(md) =>
-                  Some(md)
-                case Left(err) =>
-                  None
+    DuplicateSummary.useId(
+      ds.id,
+      { id =>
+        val sourcemd = sourcestore.flatMap { ostore =>
+          ostore match {
+            case Some(store) =>
+              store.duplicates.read(id).map { rmd =>
+                rmd match {
+                  case Right(md) =>
+                    Some(md)
+                  case Left(err) =>
+                    None
+                }
               }
-            }
-          case None =>
-            Future.successful(None)
+            case None =>
+              Future.successful(None)
+          }
         }
-      }
-      sourcemd.flatMap { omd =>
-        omd match {
-          case Some(md) =>
-            mainStore.duplicateresults.readAll().map { rlmd =>
-              rlmd match {
-                case Right(lmd) =>
-                  val x =
-                    lmd.values
-                      .map { mmd =>
-                        import DifferenceWrappers._
-                        val diff = md.difference("", mmd)
-                        log.fine(
-                          s"Diff main(${mmd.id}) import(${importId},${md.id}): ${diff}"
-                        )
-                        BestMatch(mmd.id.toBase, diff)
-                      }
-                      .foldLeft(BestMatch.noMatch) { (ac, v) =>
-                        if (ac.sameness < v.sameness) v
-                        else ac
-                      }
-                  Some((importId, x))
-                case Left(err) =>
-                  None
+        sourcemd.flatMap { omd =>
+          omd match {
+            case Some(md) =>
+              mainStore.duplicates.readAll().map { rlmd =>
+                rlmd match {
+                  case Right(lmd) =>
+                    val x =
+                      lmd.values
+                        .map { mmd =>
+                          import DifferenceWrappers._
+                          val diff = md.difference("", mmd)
+                          log.fine(
+                            s"Diff main(${mmd.id}) import(${importId},${md.id}): ${diff}"
+                          )
+                          BestMatch(mmd.id, diff)
+                        }
+                        .foldLeft(BestMatch.noMatch) { (ac, v) =>
+                          if (ac.sameness < v.sameness) v
+                          else ac
+                        }
+                    Some((importId, x))
+                  case Left(err) =>
+                    None
+                }
               }
-            }
-          case None =>
-            Future.successful(None)
+            case None =>
+              Future.successful(None)
+          }
         }
-      }
-    } else {
-      val sourcemd = sourcestore.flatMap { ostore =>
-        ostore match {
-          case Some(store) =>
-            store.duplicates.read(ds.id.toSubclass[MatchDuplicate.ItemType].get).map { rmd =>
-              rmd match {
-                case Right(md) =>
-                  Some(md)
-                case Left(err) =>
-                  None
+      },
+      { id =>
+        val sourcemd = sourcestore.flatMap { ostore =>
+          ostore match {
+            case Some(store) =>
+              store.duplicateresults.read(id).map { rmd =>
+                rmd match {
+                  case Right(md) =>
+                    Some(md)
+                  case Left(err) =>
+                    None
+                }
               }
-            }
-          case None =>
-            Future.successful(None)
+            case None =>
+              Future.successful(None)
+          }
         }
-      }
-      sourcemd.flatMap { omd =>
-        omd match {
-          case Some(md) =>
-            mainStore.duplicates.readAll().map { rlmd =>
-              rlmd match {
-                case Right(lmd) =>
-                  val x =
-                    lmd.values
-                      .map { mmd =>
-                        import DifferenceWrappers._
-                        val diff = md.difference("", mmd)
-                        log.fine(
-                          s"Diff main(${mmd.id}) import(${importId},${md.id}): ${diff}"
-                        )
-                        BestMatch(mmd.id.toBase, diff)
-                      }
-                      .foldLeft(BestMatch.noMatch) { (ac, v) =>
-                        if (ac.sameness < v.sameness) v
-                        else ac
-                      }
-                  Some((importId, x))
-                case Left(err) =>
-                  None
+        sourcemd.flatMap { omd =>
+          omd match {
+            case Some(md) =>
+              mainStore.duplicateresults.readAll().map { rlmd =>
+                rlmd match {
+                  case Right(lmd) =>
+                    val x =
+                      lmd.values
+                        .map { mmd =>
+                          import DifferenceWrappers._
+                          val diff = md.difference("", mmd)
+                          log.fine(
+                            s"Diff main(${mmd.id}) import(${importId},${md.id}): ${diff}"
+                          )
+                          BestMatch(mmd.id, diff)
+                        }
+                        .foldLeft(BestMatch.noMatch) { (ac, v) =>
+                          if (ac.sameness < v.sameness) v
+                          else ac
+                        }
+                    Some((importId, x))
+                  case Left(err) =>
+                    None
+                }
               }
-            }
-          case None =>
-            Future.successful(None)
+            case None =>
+              Future.successful(None)
+          }
         }
-      }
-    }
+      },
+      Future.successful(None)
+    )
   }
 
   def getDuplicateFromRoot(

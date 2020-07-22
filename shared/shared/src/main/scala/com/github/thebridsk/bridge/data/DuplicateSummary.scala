@@ -8,6 +8,7 @@ import scala.annotation.meta._
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.media.ArraySchema
 import io.swagger.v3.oas.annotations.Hidden
+import scala.reflect.ClassTag
 
 @Schema(
   title = "DuplicateSummaryDetails - Team stats in a match",
@@ -426,6 +427,22 @@ object DuplicateSummary extends HasId[IdDuplicateSummary]("") {
     }
   }
 
+  def useId[T](
+    id: DuplicateSummary.Id,
+    fmd: MatchDuplicate.Id => T,
+    fmdr: MatchDuplicateResult.Id => T,
+    default: => T
+  ): T = {
+    id.toSubclass[MatchDuplicate.ItemType].map( fmd ).getOrElse {
+      id.toSubclass[MatchDuplicateResult.ItemType].map( fmdr ).getOrElse(default)
+    }
+  }
+
+  import com.github.thebridsk.bridge.data.{ Id => DId }
+  def runIf[ T <: IdDuplicateSummary: ClassTag, R ]( id: DuplicateSummary.Id, default: => R )( f: DId[T] => R ): R = {
+    id.toSubclass[T].map( sid => f(sid) ).getOrElse(default)
+  }
+
   def create(md: MatchDuplicate): DuplicateSummary = {
     val score = MatchDuplicateScore(md, PerspectiveComplete)
     val places = score.places.flatMap { p =>
@@ -455,7 +472,7 @@ object DuplicateSummary extends HasId[IdDuplicateSummary]("") {
       )
     }.toList
     DuplicateSummary(
-      md.id.toBase,
+      md.id,
       score.alldone,
       t,
       md.boards.size,
@@ -473,7 +490,7 @@ object DuplicateSummary extends HasId[IdDuplicateSummary]("") {
     val boards = mdr.getBoards
     val tables = mdr.getTables
     DuplicateSummary(
-      mdr.id.toBase,
+      mdr.id,
       !mdr.notfinished.getOrElse(false),
       mdr.results.flatten,
       boards,

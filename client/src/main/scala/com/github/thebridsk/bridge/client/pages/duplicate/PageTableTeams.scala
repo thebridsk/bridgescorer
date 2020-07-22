@@ -313,17 +313,17 @@ object PageTableTeamsInternal {
       else {
         val hands = findBoardsInRound(md, tableid, currentRound-1)
         if (hands.isEmpty) {
-          logger.fine(s"PageTableTeams.determinePosition: CurrentRound is ($currentRound) table ${tableid}, did not find hands in previous round, returning ($nIsPlayer1, $eIsPlayer1)")
+          logger.fine(s"PageTableTeams.determinePosition: CurrentRound is ($currentRound) table ${tableid.toNumber}, did not find hands in previous round, returning ($nIsPlayer1, $eIsPlayer1)")
           (nIsPlayer1, eIsPlayer1)   // could not find previous round (should never happen)
         }
         else {
           val hand = hands.head
           if (nsTeam != hand.nsTeam || ewTeam != hand.ewTeam) {
-            logger.fine(s"PageTableTeams.determinePosition: CurrentRound is ($currentRound) table ${tableid}, Not the same teams ${nsTeam}!=${hand.nsTeam} || ${ewTeam}!=${hand.ewTeam}, returning ($nIsPlayer1, $eIsPlayer1)")
+            logger.fine(s"PageTableTeams.determinePosition: CurrentRound is ($currentRound) table ${tableid.toNumber}, Not the same teams ${nsTeam.toNumber}!=${hand.nsTeam.toNumber} || ${ewTeam.toNumber}!=${hand.ewTeam.toNumber}, returning ($nIsPlayer1, $eIsPlayer1)")
             (nIsPlayer1, eIsPlayer1)   // not the same teams
           }
           else {
-            logger.fine(s"PageTableTeams.determinePosition: CurrentRound is ($currentRound) table ${tableid}, same teams $nsTeam $ewTeam returning same as previous round (${hand.nIsPlayer1}, ${hand.eIsPlayer1}) not ($nIsPlayer1, $eIsPlayer1)")
+            logger.fine(s"PageTableTeams.determinePosition: CurrentRound is ($currentRound) table ${tableid.toNumber}, same teams ${nsTeam.toNumber} ${ewTeam.toNumber} returning same as previous round (${hand.nIsPlayer1}, ${hand.eIsPlayer1}) not ($nIsPlayer1, $eIsPlayer1)")
             (hand.nIsPlayer1, hand.eIsPlayer1)
           }
         }
@@ -632,7 +632,7 @@ object PageTableTeamsInternal {
                       header(props, "../help/duplicate/enterscorekeepername.html"),
                       <.div(
                         dupStyles.divTableNamesPage,
-                        <.p("Round "+props.page.round+" not found on Table "+props.page.tableid),
+                        <.p("Round "+props.page.round+" not found on Table "+props.page.tableid.toNumber),
                         <.p(
                           Button( baseStyles.footerButton, "Game", "Scoreboard", props.routerCtl.setOnClick(CompleteScoreboardView(props.page.sdupid)) )
                         )
@@ -644,7 +644,7 @@ object PageTableTeamsInternal {
                   header(props, "../help/duplicate/enterscorekeepername.html"),
                   <.div(
                     dupStyles.divTableNamesPage,
-                    <.p("Table "+props.page.tableid+" not found"),
+                    <.p("Table "+props.page.tableid.toNumber+" not found"),
                     <.p(
                       Button( baseStyles.footerButton, "Game", "Scoreboard", props.routerCtl.setOnClick(CompleteScoreboardView(props.page.sdupid)) )
                     ) )
@@ -900,7 +900,7 @@ object PageTableTeamsInternal {
               <.tbody(
                 <.tr(
                   <.td(tableStyles.tableFloatLeft, <.b("Enter players")),
-                  <.td(tableStyles.tableFloatRight, "NS is team "+state.nsTeam+", EW is team "+state.ewTeam)
+                  <.td(tableStyles.tableFloatRight, "NS is team "+state.nsTeam.toNumber+", EW is team "+state.ewTeam.toNumber)
                 )
               )
             ),

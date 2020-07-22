@@ -66,7 +66,7 @@ object ViewScoreboardHelpInternal {
       }
 
       def showBoardAndMovement() = {
-        <.p("Boards "+props.md.getBoardSet+", movement "+props.md.getMovement)
+        <.p("Boards "+props.md.getBoardSet.id+", Movement "+props.md.getMovement.id)
       }
       <.div(
         dupStyles.divScoreboardHelp,

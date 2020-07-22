@@ -77,7 +77,7 @@ object ViewPlayerMatchResultInternal {
             props.mdr.whenDefined { mdr =>
               TagMod(
                 <.tr(
-                  <.th( mdr.id.toString),
+                  <.th( mdr.id.id),
                   <.th( DateUtils.formatDay(mdr.played), ^.colSpan:=2)
                 ),
                 mdr.comment.whenDefined { c =>

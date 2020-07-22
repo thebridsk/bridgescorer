@@ -30,8 +30,6 @@ import com.github.thebridsk.materialui.MuiTypography
 import com.github.thebridsk.materialui.TextVariant
 import com.github.thebridsk.materialui.TextColor
 import com.github.thebridsk.bridge.data.DuplicateSummary
-import com.github.thebridsk.bridge.data.IdMatchDuplicate
-import com.github.thebridsk.bridge.data.IdMatchDuplicateResult
 
 /**
  * Shows the team x board table and has a totals column that shows the number of points the team has.
@@ -90,23 +88,22 @@ object PageFinishedScoreboardsInternal {
       def scoreboards() = {
         var i = 0
         state.ids.map { id =>
-          val tm: TagMod =
-            id.toSubclass[IdMatchDuplicate].map { mdid =>
+          DuplicateSummary.useId(
+            id,
+            mdid =>
               state.games.get(mdid).whenDefined { s =>
                 ViewScoreboard(props.routerCtl, FinishedScoreboardView(s.id.id), s )
-              }
-            }.getOrElse {
-              id.toSubclass[IdMatchDuplicateResult].whenDefined { mdrid =>
-                state.results.get(mdrid).whenDefined { s =>
-                  val wss = s.getWinnerSets
-                  wss.zipWithIndex.map { arg =>
-                    val (ws,iws) = arg
-                    ViewPlayerMatchResult( s.placeByWinnerSet(ws), s, iws+1, wss.length )
-                  }.toTagMod
-                }
-              }
-            }
-          tm
+              },
+            mdrid =>
+              state.results.get(mdrid).whenDefined { s =>
+                val wss = s.getWinnerSets
+                wss.zipWithIndex.map { arg =>
+                  val (ws,iws) = arg
+                  ViewPlayerMatchResult( s.placeByWinnerSet(ws), s, iws+1, wss.length )
+                }.toTagMod
+              },
+            TagMod.empty
+          )
         }.toTagMod
       }
 
@@ -158,17 +155,18 @@ object PageFinishedScoreboardsInternal {
         Callback {
           val state = scope.withEffectsImpure.state
           logger.finest("PageFinishedScoreboards.addMatch: getting "+id)
-          id.toSubclass[IdMatchDuplicate].map { mdid =>
-            state.games.get(mdid).map { _ =>  }.getOrElse {
-              Controller.getMatchDuplicate(mdid).recordFailure().foreach( md => gotMatch(md) )
-            }
-          }.getOrElse {
-            id.toSubclass[IdMatchDuplicateResult].foreach { mdrid =>
+          DuplicateSummary.useId(
+            id,
+            mdid =>
+              state.games.get(mdid).map { _ =>  }.getOrElse {
+                Controller.getMatchDuplicate(mdid).recordFailure().foreach( md => gotMatch(md) )
+              },
+            mdrid =>
               state.results.get(mdrid).map { _ =>  }.getOrElse {
                 Controller.getDuplicateResult(mdrid).recordFailure().foreach( md => gotMatchResult(md) )
-              }
-            }
-          }
+              },
+            {}
+          )
         }
       )
 
@@ -203,17 +201,18 @@ object PageFinishedScoreboardsInternal {
       logger.finest("PageFinishedScoreboards.didMount")
     } >> scope.state >>= { s => Callback {
       s.ids.foreach { id =>
-        id.toSubclass[IdMatchDuplicate].map { mdid =>
-          s.games.get(mdid).map { _ =>  }.getOrElse {
-            Controller.getMatchDuplicate(mdid).recordFailure().foreach( md => gotMatch(md) )
-          }
-        }.getOrElse {
-          id.toSubclass[IdMatchDuplicateResult].foreach { mdrid =>
+        DuplicateSummary.useId(
+          id,
+          mdid =>
+            s.games.get(mdid).map { _ =>  }.getOrElse {
+              Controller.getMatchDuplicate(mdid).recordFailure().foreach( md => gotMatch(md) )
+            },
+          mdrid =>
             s.results.get(mdrid).map { _ =>  }.getOrElse {
               Controller.getDuplicateResult(mdrid).recordFailure().foreach( md => gotMatchResult(md) )
-            }
-          }
-        }
+            },
+          {}
+        )
       }
       RestClientDuplicateSummary.list().recordFailure().foreach(list=>
         scope.withEffectsImpure.modState( s => s.copy(summaries=list.map(ds => ds.id).toList))
