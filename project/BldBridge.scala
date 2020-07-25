@@ -148,6 +148,7 @@ object BldBridge {
     List(
       semanticdbEnabled := false,
       semanticdbVersion := scalafixSemanticdb.revision,
+      scalafixScalaBinaryVersion := CrossVersion.binaryScalaVersion(scalaVersion.value)
     )
   )
 
