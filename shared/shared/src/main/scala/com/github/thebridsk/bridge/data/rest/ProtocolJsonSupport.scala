@@ -2,7 +2,6 @@ package com.github.thebridsk.bridge.data.rest
 
 import play.api.libs.json._
 
-import com.github.thebridsk.bridge.data.websocket.DuplexProtocol._
 import com.github.thebridsk.bridge.data.websocket.Protocol._
 import scala.reflect.ClassTag
 

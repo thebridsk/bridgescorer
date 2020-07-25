@@ -1,14 +1,10 @@
 package com.github.thebridsk.bridge.client.pages.chicagos
 
-import scala.scalajs.js
 
 import com.github.thebridsk.bridge.client.controller.ChicagoController
 import com.github.thebridsk.bridge.data.MatchChicago
-import com.github.thebridsk.bridge.data.SystemTime
 import com.github.thebridsk.bridge.data.chicago.ChicagoScoring
 import com.github.thebridsk.utilities.logging.Logger
-import com.github.thebridsk.bridge.clientcommon.logging.LogLifecycleToServer
-import com.github.thebridsk.bridge.clientcommon.rest2.RestClientChicago
 import com.github.thebridsk.bridge.client.routes.BridgeRouter
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.html_<^._
@@ -20,10 +16,7 @@ import com.github.thebridsk.utilities.logging.Level
 import com.github.thebridsk.bridge.clientcommon.rest2.ResultHolder
 import com.github.thebridsk.bridge.clientcommon.rest2.RequestCancelled
 import scala.concurrent.ExecutionContext.Implicits.global
-import com.github.thebridsk.bridge.data.Id
 import com.github.thebridsk.bridge.clientcommon.react.PopupOkCancel
-import com.github.thebridsk.bridge.clientcommon.logger.Alerter
-import com.github.thebridsk.bridge.clientcommon.react.HelpButton
 import com.github.thebridsk.bridge.client.pages.chicagos.ChicagoRouter.ListViewBase
 import com.github.thebridsk.bridge.client.pages.chicagos.ChicagoRouter.ImportListView
 import com.github.thebridsk.bridge.client.bridge.store.ChicagoSummaryStore

@@ -1,9 +1,5 @@
 package com.github.thebridsk.bridge.server.backend.resource
 
-import akka.http.caching.scaladsl.Cache
-import akka.http.caching.scaladsl.CachingSettings
-import akka.http.caching.scaladsl.LfuCacheSettings
-import akka.http.caching.LfuCache
 import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext
 import scala.concurrent.Future
@@ -13,16 +9,12 @@ import scala.concurrent.Promise
 import scala.util.Success
 import scala.util.Failure
 import com.github.thebridsk.utilities.logging.Logger
-import akka.http.scaladsl.model.StatusCode
 
 import Store._
 import com.github.thebridsk.bridge.data.VersionedInstance
-import org.scalactic.source.Position
 import com.github.thebridsk.source.SourcePosition
 import Implicits._
 import scala.reflect.io.File
-import java.io.OutputStream
-import scala.reflect.io.Streamable.Bytes
 import java.io.InputStream
 import com.github.thebridsk.bridge.server.backend.resource.MetaData.MetaDataFile
 

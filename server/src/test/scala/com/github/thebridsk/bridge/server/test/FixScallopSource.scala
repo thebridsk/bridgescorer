@@ -2,8 +2,6 @@ package com.github.thebridsk.bridge.server.test
 
 import com.github.thebridsk.utilities.main.Main
 import java.io.File
-import scala.io.Source
-import java.io.FileFilter
 import com.github.thebridsk.bridge.server.util.Version
 import java.nio.file.Files
 import java.util.jar.JarOutputStream

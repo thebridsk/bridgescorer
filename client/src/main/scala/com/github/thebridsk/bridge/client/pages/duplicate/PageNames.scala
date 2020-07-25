@@ -1,12 +1,9 @@
 package com.github.thebridsk.bridge.client.pages.duplicate
 
 
-import scala.scalajs.js
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
 import com.github.thebridsk.bridge.client.routes.BridgeRouter
-import com.github.thebridsk.bridge.client.routes.AppRouter.AppPage
-import com.github.thebridsk.bridge.data.Id
 import com.github.thebridsk.utilities.logging.Logger
 import com.github.thebridsk.bridge.client.controller.Controller
 import com.github.thebridsk.bridge.client.bridge.store.DuplicateStore
@@ -173,7 +170,6 @@ object PageNamesInternal {
       )
     }
 
-    import com.github.thebridsk.bridge.clientcommon.react.Utils._
     def setPlayer(teamid: Team.Id, player: Int)( name: String ) =
       scope.modState( ps => {
         ps.teams.get(teamid) match {

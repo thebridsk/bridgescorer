@@ -3,8 +3,6 @@ package com.github.thebridsk.bridge.server.test
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.must.Matchers
 
-import com.github.thebridsk.bridge.data.bridge._
-import com.github.thebridsk.utilities.logging.Logger
 import com.github.thebridsk.bridge.data.MatchChicagoV3
 import com.github.thebridsk.bridge.data.MatchChicagoV2
 import com.github.thebridsk.bridge.data.MatchChicagoV1
@@ -13,7 +11,6 @@ import com.github.thebridsk.bridge.data.VersionedInstance
 import com.github.thebridsk.bridge.data.MatchChicago
 import com.github.thebridsk.bridge.server.backend.resource.JsonConverter
 import com.github.thebridsk.bridge.server.backend.resource.YamlConverter
-import com.github.thebridsk.bridge.server.backend.resource.JsonYamlConverter
 import play.api.libs.json._
 import com.github.thebridsk.bridge.server.yaml.YamlSupport._
 import com.github.thebridsk.bridge.data.rest.JsonException

@@ -6,11 +6,9 @@ import org.scalatest.matchers.must.Matchers
 import com.github.thebridsk.bridge.data.MatchChicago
 import com.github.thebridsk.bridge.data.Round
 import com.github.thebridsk.bridge.data.bridge.North
-import com.github.thebridsk.bridge.client.pages.chicagos.ViewPlayersQuintet
 import com.github.thebridsk.bridge.client.pages.chicagos.PagePlayers
 import com.github.thebridsk.bridge.client.pages.chicagos.ViewPlayersQuintetInternal
 import com.github.thebridsk.bridge.data.Hand
-import com.github.thebridsk.utilities.logging.Logger
 import scala.annotation.tailrec
 
 object TestFairRotation {

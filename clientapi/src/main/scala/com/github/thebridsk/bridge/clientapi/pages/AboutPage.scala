@@ -1,9 +1,7 @@
 package com.github.thebridsk.bridge.clientapi.pages
 
-import scala.scalajs.js
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
-import japgolly.scalajs.react.extra.router.RouterCtl
 import com.github.thebridsk.bridge.clientapi.routes.AppRouter.AppPage
 import com.github.thebridsk.bridge.clientcommon.rest2.RestClientServerURL
 import com.github.thebridsk.bridge.clientcommon.rest2.RestClientServerVersion
@@ -12,8 +10,6 @@ import com.github.thebridsk.bridge.data.ServerURL
 import com.github.thebridsk.bridge.data.ServerVersion
 import com.github.thebridsk.bridge.clientapi.version.VersionClient
 import com.github.thebridsk.bridge.data.version.VersionShared
-import com.github.thebridsk.bridge.clientcommon.react.AppButton
-import com.github.thebridsk.bridge.clientapi.routes.AppRouter.Home
 import com.github.thebridsk.bridge.clientapi.routes.BridgeRouter
 import com.github.thebridsk.materialui.MuiTypography
 import com.github.thebridsk.materialui.TextColor

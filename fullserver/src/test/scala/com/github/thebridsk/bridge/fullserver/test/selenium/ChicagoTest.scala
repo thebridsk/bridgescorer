@@ -3,15 +3,10 @@ package com.github.thebridsk.bridge.fullserver.test.selenium
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.must.Matchers
 import org.scalatest._
-import org.scalatest.concurrent.Eventually
 import org.scalatest.time.Millis
 import org.scalatest.time.Span
 import com.github.thebridsk.bridge.data.bridge._
-import org.openqa.selenium.By
 import java.util.concurrent.TimeUnit
-import org.scalactic.source.Position
-import scala.jdk.CollectionConverters._
-import org.openqa.selenium.Keys
 import com.github.thebridsk.bridge.server.test.util.NoResultYet
 import com.github.thebridsk.bridge.server.test.util.EventuallyUtils
 import org.scalatest.concurrent.Eventually
@@ -23,7 +18,6 @@ import com.github.thebridsk.bridge.data.MatchChicago
 import com.github.thebridsk.bridge.server.test.util.MonitorTCP
 import com.github.thebridsk.bridge.server.backend.BridgeServiceFileStoreConverters
 import com.github.thebridsk.bridge.server.backend.MatchChicagoCacheStoreSupport
-import com.github.thebridsk.browserpages.PageBrowser
 import com.github.thebridsk.bridge.server.test.TestStartLogging
 import com.github.thebridsk.bridge.fullserver.test.pages.bridge.HomePage
 import com.github.thebridsk.browserpages.Session
@@ -36,7 +30,6 @@ import com.github.thebridsk.bridge.fullserver.test.pages.chicago.HandPage
 import com.github.thebridsk.bridge.fullserver.test.pages.chicago.SummaryPage
 import com.github.thebridsk.bridge.fullserver.test.pages.chicago.FourSelectPartnersPage
 import com.github.thebridsk.bridge.fullserver.test.pages.chicago.ListPage
-import com.github.thebridsk.browserpages.Combobox
 import com.github.thebridsk.bridge.fullserver.test.pages.chicago.ChicagoMatchTypeFour
 
 object ChicagoTest {
@@ -95,8 +88,6 @@ class ChicagoTest extends AnyFlatSpec
 
   override
   def beforeAll() = {
-    import scala.concurrent._
-    import ExecutionContext.Implicits.global
     import com.github.thebridsk.bridge.server.test.util.ParallelUtils._
 
     if (true) captureLog.enable
@@ -117,8 +108,6 @@ class ChicagoTest extends AnyFlatSpec
 
   override
   def afterAll() = {
-    import scala.concurrent._
-    import ExecutionContext.Implicits.global
     import com.github.thebridsk.bridge.server.test.util.ParallelUtils._
 
     waitForFuturesIgnoreTimeouts("Stopping a browser or server",

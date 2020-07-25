@@ -1,13 +1,8 @@
 package com.github.thebridsk.materialui
 
 import japgolly.scalajs.react._
-import japgolly.scalajs.react.raw._
-import japgolly.scalajs.react.vdom._
-import org.scalajs.dom
 import scala.scalajs.js
 import scala.scalajs.js.annotation._
-import js._
-import org.scalajs.dom.raw.Element
 
 class PopperPlacement(val value: String) extends AnyVal
 object PopperPlacement {
@@ -52,7 +47,7 @@ trait PopperProps extends AdditionalProps with PopperPropsPrivate {
 }
 object PopperProps extends PropsFactory[PopperProps] {
 
-  implicit class WrapPopperProps(val p: PopperProps) extends AnyVal {
+  implicit class WrapPopperProps(private val p: PopperProps) extends AnyVal {
 
     def placement = p.placementInternal.map(s => new PopperPlacement(s))
 

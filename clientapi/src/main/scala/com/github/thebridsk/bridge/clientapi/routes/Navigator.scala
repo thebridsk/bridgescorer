@@ -4,13 +4,8 @@ import AppRouter.AppPage
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.extra.router.RouterCtl
 import japgolly.scalajs.react.vdom.html_<^._
-import scala.scalajs.js
 import japgolly.scalajs.react.extra.router.Resolution
-import com.github.thebridsk.bridge.clientcommon.logger.Init
-import com.github.thebridsk.bridge.clientcommon.debug.DebugLoggerComponent
 import japgolly.scalajs.react.vdom.VdomElement
-import com.github.thebridsk.bridge.clientcommon.react.Utils._
-import com.github.thebridsk.bridge.clientapi.pages.ServerURLPopup
 
 /**
  * @author werewolf

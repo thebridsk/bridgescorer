@@ -1,6 +1,5 @@
 package com.github.thebridsk.bridge.client.pages.duplicate
 
-import scala.scalajs.js
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
 import com.github.thebridsk.bridge.client.routes.BridgeRouter
@@ -14,11 +13,9 @@ import com.github.thebridsk.bridge.client.pages.duplicate.DuplicateRouter.Comple
 import com.github.thebridsk.bridge.client.pages.duplicate.DuplicateRouter.MovementView
 import com.github.thebridsk.bridge.client.pages.duplicate.DuplicateRouter.BoardSetView
 import com.github.thebridsk.bridge.clientcommon.react.AppButton
-import com.github.thebridsk.bridge.clientcommon.react.Popup
 import com.github.thebridsk.bridge.clientcommon.rest2.ResultHolder
 import com.github.thebridsk.bridge.data.MatchDuplicate
 import com.github.thebridsk.bridge.clientcommon.rest2.RequestCancelled
-import com.github.thebridsk.bridge.client.pages.duplicate.DuplicateModule.PlayDuplicate
 import com.github.thebridsk.bridge.clientcommon.react.PopupOkCancel
 import com.github.thebridsk.bridge.clientcommon.logger.Alerter
 import com.github.thebridsk.bridge.clientcommon.rest2.RestClientDuplicateResult
@@ -26,11 +23,9 @@ import com.github.thebridsk.bridge.data.MatchDuplicateResult
 import com.github.thebridsk.bridge.client.pages.duplicate.DuplicateRouter.DuplicateResultEditView
 import com.github.thebridsk.bridge.clientcommon.react.CheckBox
 import scala.annotation.tailrec
-import com.github.thebridsk.bridge.clientcommon.react.HelpButton
 import com.github.thebridsk.materialui.MuiTypography
 import com.github.thebridsk.materialui.TextVariant
 import com.github.thebridsk.materialui.TextColor
-import com.github.thebridsk.bridge.client.Bridge
 import com.github.thebridsk.bridge.client.bridge.action.BridgeDispatcher
 import com.github.thebridsk.bridge.client.bridge.store.DuplicateSummaryStore
 import com.github.thebridsk.bridge.data.DuplicateSummary

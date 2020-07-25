@@ -4,16 +4,11 @@ import scala.concurrent.duration._
 import akka.http.scaladsl.model.StatusCodes
 import com.github.thebridsk.bridge.data.RestMessage
 import com.github.thebridsk.bridge.data.VersionedInstance
-import scala.reflect.io.Directory
 import com.github.thebridsk.utilities.logging.Logger
 import scala.annotation.tailrec
-import java.io.IOException
-import scala.jdk.CollectionConverters._
 import ZipStore.log
 import scala.concurrent.ExecutionContext
 import scala.concurrent.Future
-import com.github.thebridsk.bridge.data.Id
-import java.util.zip.ZipFile
 import Implicits._
 import scala.reflect.io.File
 import java.io.InputStream

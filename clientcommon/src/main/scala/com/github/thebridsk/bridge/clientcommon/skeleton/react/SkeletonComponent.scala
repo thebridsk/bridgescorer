@@ -1,6 +1,5 @@
 package com.github.thebridsk.bridge.clientcommon.skeleton.react
 
-import scala.scalajs.js
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
 

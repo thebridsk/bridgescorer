@@ -9,7 +9,6 @@ import org.scalactic.source.Position
 import com.github.thebridsk.browserpages.PageBrowser._
 import org.scalatest.matchers.must.Matchers._
 import com.github.thebridsk.bridge.data.bridge._
-import com.github.thebridsk.browserpages.GenericPage
 import com.github.thebridsk.browserpages.Element
 import com.github.thebridsk.bridge.rotation.Table
 

@@ -4,13 +4,9 @@ import com.github.thebridsk.bridge.client.bridge.store.DuplicateStore
 import com.github.thebridsk.bridge.data.MatchDuplicate
 import com.github.thebridsk.bridge.data.sample.TestMatchDuplicate
 import com.github.thebridsk.bridge.client.bridge.action.ActionStartDuplicateMatch
-import com.github.thebridsk.bridge.data.Id
-import com.github.thebridsk.bridge.data.DuplicateHand
 import com.github.thebridsk.bridge.data.Hand
 import com.github.thebridsk.bridge.client.bridge.action.ActionUpdateDuplicateHand
 import com.github.thebridsk.bridge.client.bridge.store.ChangeListenable
-import com.github.thebridsk.bridge.data.SystemTime
-import scala.scalajs.js.Date
 import com.github.thebridsk.bridge.data.js.SystemTimeJs
 import com.github.thebridsk.bridge.data.bridge.MatchDuplicateScore
 import com.github.thebridsk.bridge.data.bridge.PerspectiveTable

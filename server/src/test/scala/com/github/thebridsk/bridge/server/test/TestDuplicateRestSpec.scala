@@ -7,22 +7,11 @@ import com.github.thebridsk.bridge.data.Table
 import com.github.thebridsk.bridge.server.service.MyService
 import com.github.thebridsk.bridge.data.Hand
 import com.github.thebridsk.bridge.data.bridge.North
-import com.github.thebridsk.bridge.data.bridge.East
 import com.github.thebridsk.bridge.data.bridge.South
 import com.github.thebridsk.bridge.data.MatchDuplicate
 import com.github.thebridsk.bridge.server.test.backend.BridgeServiceTesting
-import com.github.thebridsk.bridge.server.backend.BridgeService
 import akka.http.scaladsl.model.StatusCodes._
 import akka.http.scaladsl.testkit.ScalatestRouteTest
-import akka.http.scaladsl.model.HttpResponse
-import akka.http.scaladsl.model.ContentTypes
-import akka.http.scaladsl.model.{HttpResponse, HttpRequest}
-import akka.http.scaladsl.testkit.ScalatestRouteTest
-import akka.stream.scaladsl.Flow
-import akka.http.scaladsl.marshalling.ToResponseMarshallable
-import akka.http.scaladsl.unmarshalling.FromResponseUnmarshaller
-import akka.actor.ActorSystem
-import akka.stream.ActorMaterializer
 import akka.http.scaladsl.model.headers.`Remote-Address`
 import akka.http.scaladsl.model.RemoteAddress.IP
 import java.net.InetAddress
@@ -34,11 +23,6 @@ import com.github.thebridsk.bridge.server.backend.BridgeServiceInMemory
 import akka.http.scaladsl.testkit.WSProbe
 import com.github.thebridsk.bridge.data.websocket.Protocol
 import akka.http.scaladsl.model.ws.TextMessage
-import akka.testkit.TestKit
-import akka.testkit.TestKitBase
-import akka.stream.scaladsl.Source
-import akka.stream.scaladsl.Sink
-import scala.concurrent.duration._
 import akka.http.scaladsl.model.ws.BinaryMessage
 import com.github.thebridsk.bridge.data.Team
 import com.github.thebridsk.bridge.data.RestMessage
@@ -52,12 +36,10 @@ import com.github.thebridsk.bridge.data.websocket.Protocol.NoData
 import akka.event.Logging
 import com.github.thebridsk.bridge.server.rest.ServerPort
 import com.github.thebridsk.bridge.data.DuplicateSummary
-import akka.http.scaladsl.testkit.RouteTest
 import com.github.thebridsk.bridge.data.websocket.Protocol.ToServerMessage
 import com.github.thebridsk.bridge.data.websocket.DuplexProtocol.Send
 import com.github.thebridsk.bridge.data.websocket.Protocol.StartMonitorDuplicate
 import com.github.thebridsk.bridge.data.MatchDuplicateResult
-import com.github.thebridsk.bridge.data.Id
 import scala.reflect.ClassTag
 import com.github.thebridsk.bridge.server.backend.resource.ChangeContext
 import com.github.thebridsk.bridge.server.backend.resource.CreateChangeContext
@@ -893,7 +875,7 @@ class TestDuplicateRestSpec extends AnyFlatSpec with ScalatestRouteTest with Mat
 }
 
 object TestDuplicateRestSpecImplicits {
-  implicit class WebSocketSender( val wsClient: WSProbe ) extends AnyVal {
+  implicit class WebSocketSender( private val wsClient: WSProbe ) extends AnyVal {
 
     def send( msg: ToServerMessage ) = {
       val data = Send(msg)

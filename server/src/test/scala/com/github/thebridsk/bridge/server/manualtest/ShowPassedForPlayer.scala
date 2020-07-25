@@ -2,7 +2,6 @@ package com.github.thebridsk.bridge.server.manualtest
 
 import com.github.thebridsk.utilities.main.Main
 import scala.reflect.io.Path
-import com.github.thebridsk.bridge.data.Id
 import com.github.thebridsk.bridge.data.Board
 import com.github.thebridsk.bridge.server.backend.BridgeServiceFileStore
 import com.github.thebridsk.bridge.server.backend.resource.SyncStore

@@ -7,13 +7,10 @@ import scala.concurrent.duration.Duration
 import scala.reflect.io.Path
 import com.github.thebridsk.bridge.server.backend.BridgeServiceFileStore
 import java.io.File
-import java.io.Reader
-import java.io.BufferedReader
 import scala.io.Source
 import scala.io.BufferedSource
 import scala.util.Left
 import java.io.InputStream
-import com.github.thebridsk.bridge.server.backend.BridgeServiceInMemory
 import com.github.thebridsk.bridge.data.Id
 import com.github.thebridsk.bridge.data.MatchDuplicate
 import com.github.thebridsk.bridge.data.MatchChicago

@@ -10,26 +10,18 @@ import org.openqa.selenium.Point
 import org.openqa.selenium.Dimension
 import org.openqa.selenium.chrome.ChromeOptions
 import org.openqa.selenium.edge.EdgeDriver
-import org.scalatestplus.selenium.Firefox
-import org.scalatestplus.selenium.InternetExplorer
 import org.openqa.selenium.ie.InternetExplorerDriver
 import com.github.thebridsk.utilities.logging.Logger
-import java.util.logging.Level
-import org.openqa.selenium.JavascriptExecutor
 import org.openqa.selenium.chrome.ChromeDriverService
 import java.util.concurrent.atomic.AtomicLong
 import java.io.File
-import org.openqa.selenium.remote.DesiredCapabilities
 import org.openqa.selenium.remote.RemoteWebDriver
 import org.openqa.selenium.SessionNotCreatedException
 import scala.annotation.tailrec
 import org.openqa.selenium.firefox.FirefoxOptions
 import org.openqa.selenium.firefox.FirefoxDriverLogLevel
 import java.util.Base64
-import java.io.InputStreamReader
-import java.io.ByteArrayInputStream
 import java.io.StringWriter
-import java.io.BufferedReader
 import java.io.PrintWriter
 import org.openqa.selenium.WebDriverException
 import org.openqa.selenium.support.events.EventFiringWebDriver
@@ -37,7 +29,6 @@ import org.openqa.selenium.support.events.WebDriverEventListener
 import org.openqa.selenium.support.events.AbstractWebDriverEventListener
 import org.openqa.selenium.UnhandledAlertException
 import org.openqa.selenium.firefox.ProfilesIni
-import scala.io.Codec
 
 class Session( name: String = "default" ) extends WebDriver {
   import Session._

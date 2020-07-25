@@ -1,25 +1,10 @@
 package com.github.thebridsk.bridge.server.test
 
-import org.scalatest.flatspec.AnyFlatSpec
-import org.scalatest.matchers.must.Matchers
 import akka.event.LoggingAdapter
 import akka.event.Logging
-import akka.http.scaladsl.testkit.ScalatestRouteTest
-import akka.http.scaladsl.model.HttpResponse
-import akka.http.scaladsl.model.ContentTypes._
-import akka.http.scaladsl.model.{HttpResponse, HttpRequest}
+import akka.http.scaladsl.model.HttpRequest
 import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.model.headers.`Remote-Address`
-import akka.http.scaladsl.testkit.ScalatestRouteTest
-import akka.stream.scaladsl.Flow
-import org.scalatest._
-import akka.http.scaladsl.marshalling.ToResponseMarshallable
-import akka.http.scaladsl.unmarshalling.FromResponseUnmarshaller
-import akka.actor.ActorSystem
-import akka.stream.ActorMaterializer
-import akka.http.scaladsl.server.RouteResult.Rejected
-import akka.http.scaladsl.server.Directives._
-import akka.http.scaladsl.server.directives.LogEntry
 import akka.http.scaladsl.model.headers._
 import akka.http.scaladsl.server.UnacceptedResponseEncodingRejection
 import akka.http.scaladsl.server.directives.LoggingMagnet
@@ -30,11 +15,10 @@ import akka.http.scaladsl.model.HttpHeader
 import akka.http.scaladsl.model.RemoteAddress.IP
 import java.net.InetAddress
 import com.github.thebridsk.utilities.logging.Logger
-import java.util.logging.Level
 
 object TestRoute {
 
-  implicit class PimpString( val underlying: String ) extends AnyVal {
+  implicit class PimpString( private val underlying: String ) extends AnyVal {
      def stripMarginWithNewline(newline: String) = underlying.stripMargin.replace("\r\n", "\n").replace("\n", newline)
   }
 

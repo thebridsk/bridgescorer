@@ -2,7 +2,6 @@ package com.github.thebridsk.bridge.data.test
 
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.must.Matchers
-import com.github.thebridsk.bridge.data.Id
 import com.github.thebridsk.bridge.data.rest.JsonSupport._
 import play.api.libs.json.Json
 import com.github.thebridsk.bridge.data.MatchDuplicate

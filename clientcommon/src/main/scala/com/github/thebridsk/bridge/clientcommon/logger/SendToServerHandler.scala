@@ -5,7 +5,6 @@ import com.github.thebridsk.bridge.clientcommon.rest2.RestClientLogEntryV2
 import com.github.thebridsk.utilities.logging.Handler
 import com.github.thebridsk.utilities.logging.Logger
 import com.github.thebridsk.utilities.logging.TraceMsg
-import com.github.thebridsk.bridge.clientcommon.rest2.AjaxFailure
 import org.scalajs.dom.ext.AjaxException
 
 object SendToServerHandler {

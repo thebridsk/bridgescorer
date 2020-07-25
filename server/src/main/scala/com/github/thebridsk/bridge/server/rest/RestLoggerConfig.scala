@@ -1,20 +1,13 @@
 package com.github.thebridsk.bridge.server.rest
 
 import com.github.thebridsk.bridge.data.LoggerConfig
-import com.github.thebridsk.bridge.data.Ack
-import akka.event.Logging
-import akka.event.Logging._
 import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.server.Directives._
-import akka.stream.Materializer
 import com.github.thebridsk.bridge.server.util.HasActorSystem
-import java.util.Date
 import com.github.thebridsk.bridge.server.backend.BridgeService
 import javax.ws.rs.Path
 import com.github.thebridsk.bridge.data.RestMessage
 import com.github.thebridsk.bridge.data.ServerURL
-import com.github.thebridsk.bridge.server.Server
-import org.rogach.scallop.exceptions.IncompleteBuildException
 import com.github.thebridsk.bridge.data.ServerVersion
 import com.github.thebridsk.bridge.server.version.VersionServer
 import com.github.thebridsk.bridge.data.version.VersionShared
@@ -32,8 +25,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.media.ArraySchema
-import io.swagger.v3.oas.annotations.tags.Tags
-import io.swagger.v3.oas.annotations.tags.Tag
 import javax.ws.rs.GET
 
 case class ServerPort(httpPort: Option[Int], httpsPort: Option[Int])

@@ -1,19 +1,14 @@
 package com.github.thebridsk.bridge.fullserver.test.util
 
 import org.openqa.selenium.WebDriver
-import org.scalatest.matchers.must.Matchers
 import com.github.thebridsk.utilities.logging.Logger
-import java.util.logging.Level
 import org.scalactic.source.Position
-import org.openqa.selenium.WebElement
 import org.openqa.selenium.By.ByName
-import scala.jdk.CollectionConverters._
 import org.openqa.selenium.By.ByTagName
 import org.scalatest.concurrent.Eventually.eventually
 import org.scalatest.concurrent.Eventually.PatienceConfig
 import com.github.thebridsk.browserpages.PageBrowser
 import scala.jdk.CollectionConverters._
-import com.github.thebridsk.bridge.server.test.util.EventuallyUtils
 import com.github.thebridsk.bridge.server.test.util.NoResultYet
 
 object SeleniumUtilsLogger {
@@ -25,7 +20,6 @@ object SeleniumUtilsLogger {
 trait SeleniumUtils {
   import org.scalatestplus.selenium.WebBrowser._
   import org.scalatest.matchers.must.Matchers._
-  import EventuallyUtils._
 
   import SeleniumUtilsLogger._
 

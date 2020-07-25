@@ -2,12 +2,8 @@ package com.github.thebridsk.materialui
 
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.raw._
-import japgolly.scalajs.react.vdom._
-import org.scalajs.dom
 import scala.scalajs.js
 import scala.scalajs.js.annotation._
-import org.scalajs.dom.raw.Element
-import org.scalajs.dom.raw.Node
 
 case class MenuVariant( value: String )
 object MenuVariant {
@@ -31,7 +27,7 @@ trait MenuProps extends PopoverProps with MenuPropsPrivate {
 }
 object MenuProps extends PropsFactory[MenuProps] {
 
-  implicit class WrapButtonProps(val p: ButtonProps) extends AnyVal {
+  implicit class WrapButtonProps(private val p: ButtonProps) extends AnyVal {
     def variant = p.variantInternal.map(s => new MenuVariant(s))
   }
 

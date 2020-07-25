@@ -6,7 +6,6 @@ import org.scalactic.source.Position
 import com.github.thebridsk.browserpages.PageBrowser._
 import org.openqa.selenium.WebDriver
 import org.scalatest.matchers.must.Matchers._
-import com.github.thebridsk.browserpages.GenericPage
 import com.github.thebridsk.source.SourcePosition
 
 trait ErrorMsgDiv[T <: Page[T] ] {

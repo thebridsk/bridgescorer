@@ -1,6 +1,5 @@
 package com.github.thebridsk.bridge.fullserver.test.pages.bridge
 
-import com.github.thebridsk.bridge.server.test.util.EventuallyUtils
 import org.scalactic.source.Position
 import com.github.thebridsk.browserpages.PageBrowser
 import org.scalatest.concurrent.Eventually._

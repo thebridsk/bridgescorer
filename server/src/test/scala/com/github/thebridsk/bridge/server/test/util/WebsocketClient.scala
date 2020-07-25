@@ -191,7 +191,7 @@ object WebsocketClient {
 
 object WebsocketClientImplicits {
 
-  implicit class WebsocketClientTester( val wc: WebsocketClient ) extends AnyVal {
+  implicit class WebsocketClientTester( private val wc: WebsocketClient ) extends AnyVal {
     import Assertions._
 
     def testIgnoreJoinLookForUpdate( mat: MatchDuplicate )( implicit testlog: LoggingAdapter ) = {

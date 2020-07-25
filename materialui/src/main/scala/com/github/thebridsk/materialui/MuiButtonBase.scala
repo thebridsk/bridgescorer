@@ -1,11 +1,7 @@
 package com.github.thebridsk.materialui
 
 import japgolly.scalajs.react._
-import japgolly.scalajs.react.raw._
-import japgolly.scalajs.react.vdom._
-import org.scalajs.dom
 import scala.scalajs.js
-import scala.scalajs.js.annotation._
 
 @js.native
 trait ButtonBaseProps extends AdditionalProps with StandardProps {

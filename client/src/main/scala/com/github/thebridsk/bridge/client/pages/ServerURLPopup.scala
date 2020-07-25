@@ -1,16 +1,10 @@
 package com.github.thebridsk.bridge.client.pages
 
-import scala.scalajs.js
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
-import com.github.thebridsk.bridge.clientcommon.react.Popup
 import com.github.thebridsk.bridge.clientcommon.react.PopupOkCancel
-import com.github.thebridsk.bridge.data.ServerURL
-import com.github.thebridsk.bridge.clientcommon.rest2.RestClientServerURL
 import scala.concurrent.ExecutionContext
-import com.github.thebridsk.bridge.client.Bridge
 import com.github.thebridsk.utilities.logging.Logger
-import com.github.thebridsk.bridge.clientcommon.demo.BridgeDemo
 import com.github.thebridsk.bridge.client.bridge.store.ServerURLStore
 
 /**

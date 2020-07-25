@@ -1,17 +1,8 @@
 package com.github.thebridsk.bridge.server.logging
 
-import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
-import java.util.{List => JList, Map => JMap}
-import scala.jdk.CollectionConverters._
 import com.github.thebridsk.bridge.data.LoggerConfig
 import java.io.Reader
 import java.io.File
-import java.io.BufferedReader
-import java.io.FileInputStream
-import java.io.InputStreamReader
-import com.github.thebridsk.bridge.data.rest.JsonException
 import com.github.thebridsk.bridge.server.yaml.YamlSupport
 import java.io.InputStream
 

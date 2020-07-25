@@ -56,7 +56,7 @@ object Implicits {
   }
 
 
-  implicit class DocumentFullscreenWrapper( val document: Document ) extends AnyVal {
+  implicit class DocumentFullscreenWrapper( private val document: Document ) extends AnyVal {
 
     def doc = document.asInstanceOf[DocumentFullscreen]
 
@@ -77,7 +77,7 @@ object Implicits {
     }
   }
 
-  implicit class ElementFullscreenWrapper( val element: Element ) extends AnyVal {
+  implicit class ElementFullscreenWrapper( private val element: Element ) extends AnyVal {
     import Values._
 
     def elem = element.asInstanceOf[DocumentElementFullscreen]

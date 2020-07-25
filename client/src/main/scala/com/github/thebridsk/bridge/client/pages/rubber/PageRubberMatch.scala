@@ -1,13 +1,10 @@
 package com.github.thebridsk.bridge.client.pages.rubber
 
 import japgolly.scalajs.react.BackendScope
-import japgolly.scalajs.react.extra.router.RouterCtl
 import japgolly.scalajs.react.vdom.html_<^._
 import com.github.thebridsk.utilities.logging.Logger
-import com.github.thebridsk.bridge.client.bridge.store.RubberStore
 import com.github.thebridsk.bridge.client.controller.RubberController
 import japgolly.scalajs.react._
-import com.github.thebridsk.bridge.client.bridge.store.RubberStore
 import com.github.thebridsk.bridge.client.bridge.store.RubberStore
 import com.github.thebridsk.bridge.data.rubber.RubberScoring
 import com.github.thebridsk.bridge.data.rubber.GameScoring
@@ -18,7 +15,6 @@ import com.github.thebridsk.bridge.client.pages.rubber.RubberRouter.RubberMatchN
 import com.github.thebridsk.bridge.client.pages.rubber.RubberRouter.ListView
 import com.github.thebridsk.bridge.clientcommon.react.AppButton
 import com.github.thebridsk.bridge.clientcommon.react.Utils._
-import com.github.thebridsk.bridge.clientcommon.react.HelpButton
 import com.github.thebridsk.materialui.MuiTypography
 import com.github.thebridsk.materialui.TextVariant
 import com.github.thebridsk.materialui.TextColor

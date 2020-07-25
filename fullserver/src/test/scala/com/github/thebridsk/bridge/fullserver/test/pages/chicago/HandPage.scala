@@ -8,16 +8,8 @@ import org.scalatest.matchers.must.Matchers._
 import com.github.thebridsk.browserpages.PageBrowser._
 import com.github.thebridsk.bridge.server.test.util.TestServer
 import com.github.thebridsk.utilities.logging.Logger
-import com.github.thebridsk.browserpages.Page
 import com.github.thebridsk.bridge.fullserver.test.pages.BaseHandPage
 import com.github.thebridsk.bridge.data.bridge._
-import com.github.thebridsk.bridge.data.Board
-import com.github.thebridsk.bridge.data.util.Strings
-import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.ScoreboardPage.PlaceEntry
-import com.github.thebridsk.bridge.data.BoardSet
-import com.github.thebridsk.bridge.data.Movement
-import com.github.thebridsk.browserpages.GenericPage
-import org.scalatest.concurrent.Eventually
 
 object HandPage {
 

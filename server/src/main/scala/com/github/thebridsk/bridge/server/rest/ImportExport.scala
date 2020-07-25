@@ -1,6 +1,5 @@
 package com.github.thebridsk.bridge.server.rest
 
-import akka.http.scaladsl.server._
 import akka.http.scaladsl.model._
 import akka.http.scaladsl.server.Directives._
 import javax.ws.rs.Path
@@ -10,32 +9,18 @@ import akka.stream.scaladsl.Source
 import akka.util.ByteString
 import akka.stream.scaladsl.StreamConverters
 import scala.concurrent.ExecutionContext.Implicits.global
-import com.github.thebridsk.bridge.server.backend.resource.Implicits._
 import com.github.thebridsk.utilities.logging.Logger
 import scala.util.Success
 import scala.util.Failure
 import akka.http.scaladsl.server.Directive.addByNameNullaryApply
 import akka.http.scaladsl.server.Directive.addDirectiveApply
-import java.util.UUID
 import akka.http.scaladsl.server.directives.FileInfo
 import java.io.{File => JFile}
 import scala.reflect.io.Directory
 import scala.reflect.io.File
-import akka.http.scaladsl.model.headers.Location
 import akka.http.scaladsl.model.headers.`Content-Disposition`
-import java.io.BufferedOutputStream
-import java.util.zip.ZipOutputStream
-import java.nio.charset.StandardCharsets
-import java.util.zip.ZipEntry
-import java.io.FileInputStream
-import java.nio.file.Files
-import java.io.InputStream
-import java.io.OutputStream
 import scala.concurrent.Future
 import akka.http.scaladsl.model.headers.ContentDispositionTypes
-import com.github.thebridsk.bridge.server.version.VersionServer
-import com.github.thebridsk.bridge.data.version.VersionShared
-import com.github.thebridsk.utilities.version.VersionUtilities
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.enums.ParameterIn
@@ -47,15 +32,12 @@ import io.swagger.v3.oas.annotations.tags.Tags
 import io.swagger.v3.oas.annotations.tags.Tag
 import javax.ws.rs.GET
 import javax.ws.rs.POST
-import com.github.thebridsk.bridge.server.CollectLogs
-import com.github.thebridsk.bridge.server.backend.ImportStore.importStoreExtension
 import com.github.thebridsk.bridge.server.backend.ImportStore.importStoreDotExtension
 import com.github.thebridsk.bridge.data.ImportStoreConstants
 import com.github.thebridsk.bridge.data.ImportStoreData
 import play.api.libs.json.Writes
 import com.github.thebridsk.bridge.data.rest.JsonSupport
 import io.swagger.v3.oas.annotations.media.Encoding
-import scala.util.Using
 
 object ImportExport {
   val log = Logger[ImportExport]()

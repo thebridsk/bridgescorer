@@ -8,7 +8,6 @@ import scala.util.Try
 import scala.util.Success
 import scala.util.Failure
 import scala.reflect.ClassTag
-import org.scalajs.dom.ext.AjaxException
 import com.github.thebridsk.utilities.logging.Logger
 import scala.concurrent.Awaitable
 import scala.concurrent.Promise

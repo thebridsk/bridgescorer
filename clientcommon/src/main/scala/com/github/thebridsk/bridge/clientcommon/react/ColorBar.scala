@@ -1,17 +1,11 @@
 package com.github.thebridsk.bridge.clientcommon.react
 
-import scala.scalajs.js
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.TagMod
 import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles
-import japgolly.scalajs.react.vdom.HtmlStyles
-import Utils._
 import com.github.thebridsk.color.Color
 import com.github.thebridsk.color.Colors
-import com.github.thebridsk.color.RGBColor
-import com.github.thebridsk.color.HSLColor
-import com.github.thebridsk.color.RGBPercentColor
 
 /**
  * A skeleton component.
@@ -26,7 +20,6 @@ import com.github.thebridsk.color.RGBPercentColor
  */
 object ColorBar {
   import ColorBarInternal._
-  import ReactColor._
 
   /**
    * Props for ColorBar
@@ -199,7 +192,6 @@ object ColorBar {
 
 object ColorBarInternal {
   import ColorBar._
-  import Utils._
 
   import BaseStyles._
   import com.github.thebridsk.color.Colors._

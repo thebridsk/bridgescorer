@@ -2,9 +2,6 @@ package com.github.thebridsk.bridge.clientcommon.logging
 
 import scala.scalajs.js
 import japgolly.scalajs.react._
-import scala.util.Success
-import scala.util.Failure
-import scala.scalajs.js.Date
 import com.github.thebridsk.utilities.logging.Logger
 import com.github.thebridsk.utilities.logging.Level
 // import japgolly.scalajs.react.extra.LogLifecycle

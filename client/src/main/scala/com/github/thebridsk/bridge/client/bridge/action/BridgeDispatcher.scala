@@ -1,12 +1,7 @@
 package com.github.thebridsk.bridge.client.bridge.action
 
-import flux.dispatcher.FluxDispatcher
 import com.github.thebridsk.bridge.data.MatchDuplicate
 import com.github.thebridsk.bridge.data.DuplicateHand
-import com.github.thebridsk.bridge.data.Id
-import scala.scalajs.js
-import scala.scalajs.js.annotation.JSName
-import flux.dispatcher.DispatchToken
 import com.github.thebridsk.bridge.data.Team
 import com.github.thebridsk.bridge.data.BoardSet
 import com.github.thebridsk.bridge.data.Movement
@@ -18,11 +13,9 @@ import com.github.thebridsk.bridge.data.bridge.PlayerPosition
 import com.github.thebridsk.bridge.data.RubberHand
 import com.github.thebridsk.utilities.logging.Logger
 import com.github.thebridsk.bridge.data.DuplicateSummary
-import com.github.thebridsk.utilities.logging.TraceMsg
 import com.github.thebridsk.bridge.data.MatchDuplicateResult
 import com.github.thebridsk.bridge.data.ServerURL
 import com.github.thebridsk.bridge.clientcommon.dispatcher.Dispatcher
-import com.github.thebridsk.bridge.clientcommon.dispatcher.Action
 import com.github.thebridsk.bridge.data.DuplicatePicture
 import com.github.thebridsk.bridge.data.Board
 

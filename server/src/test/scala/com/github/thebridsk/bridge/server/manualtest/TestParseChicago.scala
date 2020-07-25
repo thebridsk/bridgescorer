@@ -5,15 +5,11 @@ import com.github.thebridsk.bridge.data.MatchChicagoV2
 import com.github.thebridsk.bridge.data.MatchChicagoV1
 import com.github.thebridsk.utilities.main.Main
 
-import scala.reflect.ClassTag
-import scala.language.implicitConversions
 import com.github.thebridsk.bridge.server.backend.resource.VersionedInstanceJson
 import play.api.libs.json._
 import com.github.thebridsk.bridge.server.yaml.YamlSupport._
-import com.github.thebridsk.bridge.server.backend.resource.JsonYamlConverter
 import com.github.thebridsk.bridge.server.backend.resource.JsonConverter
 import com.github.thebridsk.bridge.server.backend.resource.YamlConverter
-import com.github.thebridsk.bridge.data.rest.JsonException
 import com.github.thebridsk.bridge.server.backend.resource.Converter
 
 object TestParseChicago extends Main {

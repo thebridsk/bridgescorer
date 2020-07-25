@@ -1,11 +1,9 @@
 package com.github.thebridsk.bridge.client.pages.duplicate
 
-import scala.scalajs.js
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
 import com.github.thebridsk.bridge.data.duplicate.stats.PlayerStats
 import com.github.thebridsk.bridge.data.duplicate.stats.ContractStats
-import com.github.thebridsk.bridge.data.duplicate.stats.ContractType
 import com.github.thebridsk.bridge.data.duplicate.stats.PlayerStat
 import com.github.thebridsk.bridge.data.duplicate.stats.CounterStat
 import com.github.thebridsk.bridge.data.duplicate.stats.ContractTypePassed

@@ -1,29 +1,10 @@
 package com.github.thebridsk.bridge.client.pages.hand
 
-import scala.scalajs.js
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
-import com.github.thebridsk.bridge.data.bridge.ContractTricks
-import com.github.thebridsk.bridge.data.bridge._
-import com.github.thebridsk.bridge.clientcommon.logging.LogLifecycleToServer
 import com.github.thebridsk.utilities.logging.Logger
-import com.github.thebridsk.bridge.data.Id
-import com.github.thebridsk.bridge.client.pages.hand.ComponentInputStyleButton.MyEnumeration
-import com.github.thebridsk.bridge.client.pages.hand.ComponentInputStyleButton.InputMethod
-import com.github.thebridsk.utilities.logging.Level
-import com.github.thebridsk.bridge.data.maneuvers.TableManeuvers
-import com.github.thebridsk.bridge.clientcommon.react.AppButton
 import com.github.thebridsk.bridge.clientcommon.react.Utils._
-import com.github.thebridsk.bridge.clientcommon.react.Button
-import com.github.thebridsk.bridge.client.pages.Pixels
-import com.github.thebridsk.bridge.clientcommon.react.HelpButton
-import com.github.thebridsk.materialui.icons.Camera
-import org.scalajs.dom.raw.FileList
-import org.scalajs.dom.raw.FormData
-import com.github.thebridsk.bridge.clientcommon.react.Utils._
-import com.github.thebridsk.materialui.icons.Photo
 import japgolly.scalajs.react.component.builder.Lifecycle.ComponentDidUpdate
-import com.github.thebridsk.bridge.clientcommon.react.PopupOkCancel
 import org.scalajs.dom.raw.FileReader
 import org.scalajs.dom.raw.File
 

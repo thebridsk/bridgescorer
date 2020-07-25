@@ -8,16 +8,12 @@ import com.github.thebridsk.bridge.data.Movement
 import com.github.thebridsk.bridge.clientcommon.rest2.RestClientMovement
 import scala.concurrent.ExecutionContext.Implicits.global
 import com.github.thebridsk.bridge.clientcommon.rest2.RestClientBoardSetsAndMovements
-import com.github.thebridsk.bridge.clientcommon.rest2.AjaxResult
-import com.github.thebridsk.bridge.clientcommon.rest2.RestClientTestBoardsetsAndMovements
-import com.github.thebridsk.bridge.client.Bridge
 import com.github.thebridsk.bridge.clientcommon.rest2.AjaxCall
 import scala.concurrent.duration.Duration
 import com.github.thebridsk.bridge.data.BoardSetsAndMovements
 import com.github.thebridsk.bridge.data.rest.JsonSupport
 import com.github.thebridsk.bridge.clientcommon.demo.BridgeDemo
 import com.github.thebridsk.bridge.client.bridge.store.BoardSetStore
-import com.github.thebridsk.bridge.clientcommon.rest2.RestResult
 import com.github.thebridsk.bridge.clientcommon.rest2.Result
 import com.github.thebridsk.bridge.clientcommon.rest2.ResultObject
 import scala.concurrent.Future

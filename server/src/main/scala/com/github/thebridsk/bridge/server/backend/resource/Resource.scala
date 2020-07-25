@@ -3,7 +3,6 @@ package com.github.thebridsk.bridge.server.backend.resource
 import com.github.thebridsk.utilities.logging.Logger
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext
-import org.scalactic.source.Position
 import com.github.thebridsk.bridge.server.backend.resource.Implicits._
 import Resource._
 import com.github.thebridsk.source.SourcePosition

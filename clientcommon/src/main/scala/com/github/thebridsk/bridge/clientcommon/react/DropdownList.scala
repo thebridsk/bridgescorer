@@ -2,11 +2,8 @@ package com.github.thebridsk.bridge.clientcommon.react
 
 import scala.scalajs.js
 import scala.scalajs.js.|
-import scala.scalajs.js.annotation.JSName
 import japgolly.scalajs.react._
-import scala.scalajs.js.UndefOr
 import com.github.thebridsk.utilities.logging.Logger
-import scala.scalajs.js.annotation.JSGlobal
 
 @js.native
 trait DropdownListComponentMessagesProperty extends js.Object {

@@ -11,7 +11,6 @@ import com.github.thebridsk.browserpages.PageBrowser._
 import com.github.thebridsk.bridge.server.test.util.TestServer
 import com.github.thebridsk.bridge.fullserver.test.pages.bridge.HomePage
 import org.openqa.selenium.NoSuchElementException
-import javax.validation.constraints.AssertFalse
 import com.github.thebridsk.bridge.fullserver.test.pages.FullscreenAddOn
 
 object StatisticsPage {

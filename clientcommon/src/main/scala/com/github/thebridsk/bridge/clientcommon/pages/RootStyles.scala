@@ -4,7 +4,7 @@ import japgolly.scalajs.react.vdom.html_<^._
 
 object BaseStylesImplicits {
 
-  implicit class BooleanWrapper( val b: Boolean ) extends AnyVal {
+  implicit class BooleanWrapper( private val b: Boolean ) extends AnyVal {
     def toOption[T]( t: =>T ) = if (b) Some(t) else None
     def toList[T]( t: =>T ) = toOption(t).toList
   }

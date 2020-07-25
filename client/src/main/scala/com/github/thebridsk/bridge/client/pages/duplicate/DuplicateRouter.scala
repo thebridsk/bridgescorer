@@ -1,25 +1,17 @@
 package com.github.thebridsk.bridge.client.pages.duplicate
 
-import japgolly.scalajs.react.extra.router.{Resolution, RouterConfigDsl, RouterCtl, Router, _}
-import japgolly.scalajs.react.vdom.html_<^._
+import japgolly.scalajs.react.extra.router.{RouterConfigDsl, RouterCtl, _}
 import com.github.thebridsk.bridge.data.bridge._
-import com.github.thebridsk.bridge.client.pages.info.InfoPage
-import com.github.thebridsk.bridge.client.pages.HomePage
 import com.github.thebridsk.utilities.logging.Logger
 import japgolly.scalajs.react.Callback
-import com.github.thebridsk.bridge.data.Id
 import com.github.thebridsk.bridge.client.bridge.store.DuplicateStore
 import com.github.thebridsk.bridge.client.routes.AppRouter.AppPage
-import japgolly.scalajs.react.CallbackTo
-import japgolly.scalajs.react._
 import com.github.thebridsk.bridge.client.pages.duplicate.boardsets.PageBoardSets
 import com.github.thebridsk.bridge.client.pages.duplicate.boardsets.PageMovements
 import com.github.thebridsk.bridge.client.routes.Module
 import com.github.thebridsk.bridge.client.routes.TestBridgeRouter
-import com.github.thebridsk.bridge.client.routes.BridgeRouterBase
 import com.github.thebridsk.bridge.client.routes.BridgeRouter
 import japgolly.scalajs.react.vdom.TagMod
-import com.github.thebridsk.bridge.client.pages.duplicate.DuplicateRouter.BaseScoreboardView
 import scala.scalajs.js.URIUtils
 import com.github.thebridsk.bridge.client.routes.BridgeRouterBaseWithLogging
 import com.github.thebridsk.bridge.client.pages.duplicate.boardsets.PageEditBoardSet

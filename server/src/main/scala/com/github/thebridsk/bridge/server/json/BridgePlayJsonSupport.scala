@@ -2,8 +2,8 @@ package com.github.thebridsk.bridge.server.json
 
 import de.heikoseeberger.akkahttpplayjson.PlayJsonSupport
 import play.api.libs.json.Writes
-import akka.http.scaladsl.marshalling.{Marshaller, ToEntityMarshaller}
-import akka.http.scaladsl.unmarshalling.{FromEntityUnmarshaller, Unmarshaller}
+import akka.http.scaladsl.marshalling.ToEntityMarshaller
+import akka.http.scaladsl.unmarshalling.FromEntityUnmarshaller
 import play.api.libs.json.JsValue
 import play.api.libs.json.Json
 import scala.language.implicitConversions

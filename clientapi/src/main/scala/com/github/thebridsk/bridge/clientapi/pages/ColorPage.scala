@@ -1,6 +1,5 @@
 package com.github.thebridsk.bridge.clientapi.pages
 
-import scala.scalajs.js
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
 import com.github.thebridsk.bridge.clientcommon.react.ColorBar

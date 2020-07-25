@@ -9,11 +9,6 @@ import org.scalatest.matchers.must.Matchers._
 import com.github.thebridsk.browserpages.PageBrowser._
 import com.github.thebridsk.bridge.server.test.util.TestServer
 import com.github.thebridsk.utilities.logging.Logger
-import com.github.thebridsk.bridge.server.test.util.HttpUtils
-import com.github.thebridsk.bridge.data.BoardSet
-import com.github.thebridsk.bridge.data.Movement
-import java.net.URL
-import com.github.thebridsk.bridge.server.test.util.HttpUtils.ResponseFromHttp
 import com.github.thebridsk.browserpages.Element
 import com.github.thebridsk.browserpages.TextField
 import com.github.thebridsk.browserpages.Checkbox

@@ -1,18 +1,9 @@
 package com.github.thebridsk.bridge.server.service
 
 import com.github.swagger.akka.SwaggerHttpService
-import akka.http.scaladsl.server._
-import akka.http.scaladsl.server.Directives._
-import akka.http.scaladsl.marshalling.ToResponseMarshaller
-import akka.http.scaladsl.unmarshalling.FromRequestUnmarshaller
 import akka.http.scaladsl.model.StatusCodes
-import akka.http.scaladsl.server.RejectionHandler
 import akka.http.scaladsl.model._
-import akka.http.scaladsl.server._
 import com.github.thebridsk.bridge.server.util.HasActorSystem
-import akka.actor.ActorSystem
-import akka.stream.ActorMaterializer
-import java.util.Properties
 import akka.event.Logging
 import scala.concurrent.duration.Duration
 import ch.megard.akka.http.cors.scaladsl.CorsDirectives

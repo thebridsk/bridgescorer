@@ -5,16 +5,12 @@ import com.github.thebridsk.bridgedemo.utils.MyFileUtils
 import scala.util.Using
 import java.util.jar.JarInputStream
 import java.io.FileInputStream
-import scala.util.control.Breaks
-import java.util.zip.ZipEntry
 import java.util.jar.JarEntry
 import java.nio.file.Files
 import java.nio.file.StandardCopyOption
 import com.github.thebridsk.utilities.main.Main
 import scala.reflect.io.Path
-import akka.http.scaladsl.model.headers.LinkParams.rel
 import com.github.thebridsk.utilities.logging.Logger
-import com.github.thebridsk.utilities.classpath.ClassPath
 
 class Publish
 

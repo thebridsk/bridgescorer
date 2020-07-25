@@ -1,21 +1,17 @@
 package com.github.thebridsk.bridge.server.service
 
 import akka.NotUsed
-import akka.actor.ActorSystem
 import akka.event.Logging
 import akka.event.Logging._
-import akka.http.scaladsl.model.RemoteAddress
 import akka.http.scaladsl.model.ws.BinaryMessage
 import akka.http.scaladsl.model.ws.Message
 import akka.http.scaladsl.model.ws.TextMessage
 import akka.http.scaladsl.server.Directive.addByNameNullaryApply
 import akka.http.scaladsl.server.Directive.addDirectiveApply
-import akka.http.scaladsl.server.Directives
 import akka.stream.Attributes
 import akka.stream.Attributes.Name
 import akka.stream.FlowShape
 import akka.stream.Inlet
-import akka.stream.Materializer
 import akka.stream.Outlet
 import akka.stream.scaladsl.Flow
 import akka.stream.scaladsl.Sink
@@ -26,7 +22,6 @@ import akka.stream.stage.InHandler
 import akka.stream.stage.OutHandler
 import akka.http.scaladsl.server.Directives._
 
-import client.LogA
 import com.github.thebridsk.bridge.server.util.HasActorSystem
 import com.github.thebridsk.bridge.data.websocket.DuplexProtocol
 import scala.concurrent.Await

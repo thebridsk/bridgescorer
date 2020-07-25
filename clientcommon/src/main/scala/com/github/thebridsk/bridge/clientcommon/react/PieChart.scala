@@ -1,11 +1,9 @@
 package com.github.thebridsk.bridge.clientcommon.react
 
-import scala.scalajs.js
 import japgolly.scalajs.react.vdom.svg_<^._
 import japgolly.scalajs.react._
 import com.github.thebridsk.color.Color
 import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles
-import Utils._
 
 /**
  * A skeleton component.

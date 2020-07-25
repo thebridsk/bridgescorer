@@ -2,7 +2,6 @@ package com.github.thebridsk.bridge.server.test.util
 
 import org.scalatest.concurrent.Eventually
 import org.scalactic.source.Position
-import org.scalatest.exceptions.StackDepthException
 import org.scalatest.exceptions.TestFailedException
 import org.scalatest.exceptions.StackDepthException
 import org.scalactic.exceptions.NullArgumentException
@@ -46,8 +45,6 @@ trait EventuallyUtils {
   import Eventually.{ patienceConfig => _, _ }
 
   def tcpSleep( sec: Int = 30 ) = {
-    import scala.concurrent.duration._
-    import scala.language.postfixOps
     // MonitorTCP.waitForConnections(sec seconds)
   }
 

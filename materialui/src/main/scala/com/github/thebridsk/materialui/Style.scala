@@ -1,14 +1,10 @@
 package com.github.thebridsk.materialui
 
 import japgolly.scalajs.react._
-import japgolly.scalajs.react.raw._
 import japgolly.scalajs.react.vdom._
 import scala.scalajs.js
 import scala.scalajs.js.annotation._
-import japgolly.scalajs.react.raw.React.Component
-import japgolly.scalajs.react.component.Generic.ComponentRaw
 // import com.github.thebridsk.utilities.logging.Logger
-import japgolly.scalajs.react.component.Scala
 
 class Style(styles: (String, js.Dictionary[js.Any])*) {
 

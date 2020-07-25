@@ -1,18 +1,11 @@
 package com.github.thebridsk.bridge.client.pages.duplicate
 
-import com.github.thebridsk.bridge.data.Id
-import com.github.thebridsk.bridge.data.Team
-import com.github.thebridsk.bridge.data.bridge.PerspectiveComplete
-import com.github.thebridsk.bridge.data.bridge.PerspectiveDirector
-import com.github.thebridsk.bridge.data.bridge.PerspectiveTable
 import com.github.thebridsk.utilities.logging.Logger
 
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.html_<^._
 import com.github.thebridsk.bridge.data.bridge.MatchDuplicateScore
 import com.github.thebridsk.bridge.client.pages.duplicate.DuplicateRouter.BaseScoreboardViewWithPerspective
-import com.github.thebridsk.bridge.client.pages.duplicate.DuplicateRouter.TableRoundScoreboardView
-import com.github.thebridsk.bridge.clientcommon.react.Utils._
 import com.github.thebridsk.bridge.data.DuplicateSummaryDetails
 
 /**

@@ -11,8 +11,6 @@ import com.github.thebridsk.browserpages.Page
 import com.github.thebridsk.browserpages.PageBrowser._
 import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.ScoreboardPage.TableViewType
 import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.ScoreboardPage.ViewType
-import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.ScoreboardPage.CompletedViewType
-import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.ScoreboardPage.DirectorViewType
 import com.github.thebridsk.bridge.data.bridge.PlayerPosition
 import com.github.thebridsk.bridge.data.bridge.MadeOrDown
 import com.github.thebridsk.bridge.data.bridge.Made
@@ -77,7 +75,7 @@ object BoardPage {
     if (ipts == 0 && !fract.isEmpty()) fract else ipts.toString+fract
   }
 
-  implicit class ElementWrapper( val e: Element ) extends AnyVal {
+  implicit class ElementWrapper( private val e: Element ) extends AnyVal {
     def isGray = {
       s""" ${e.attribute("class").get} """.indexOf(" dupTableCellGray ") >= 0
     }
@@ -555,7 +553,6 @@ class BoardPage( implicit val webDriver: WebDriver, pageCreated: SourcePosition 
 
   def clickUnplayedBoard( board: Int )(implicit patienceConfig: PatienceConfig, pos: Position) = eventually {
 //    click on id(s"""Board_B${board}""")
-    import org.openqa.selenium.Keys
     val b = findElemById(s"""Board_B${board}""")
     b.scrollToElement
     b.enter

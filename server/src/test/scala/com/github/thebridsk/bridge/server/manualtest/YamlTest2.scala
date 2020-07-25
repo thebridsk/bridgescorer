@@ -2,10 +2,7 @@ package com.github.thebridsk.bridge.server.manualtest
 
 import com.github.thebridsk.utilities.main.Main
 
-import java.util.{List => JList, Map => JMap}
-import scala.jdk.CollectionConverters._
 import java.io.StringReader
-import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
 import play.api.libs.json.jackson.PlayJsonModule

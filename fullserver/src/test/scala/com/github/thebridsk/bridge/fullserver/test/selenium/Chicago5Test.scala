@@ -3,15 +3,10 @@ package com.github.thebridsk.bridge.fullserver.test.selenium
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.must.Matchers
 import org.scalatest._
-import org.scalatest.concurrent.Eventually
 import org.scalatest.time.Millis
 import org.scalatest.time.Span
 import com.github.thebridsk.bridge.data.bridge._
-import org.openqa.selenium.By
 import java.util.concurrent.TimeUnit
-import org.scalactic.source.Position
-import scala.jdk.CollectionConverters._
-import org.openqa.selenium.Keys
 import com.github.thebridsk.bridge.server.test.util.NoResultYet
 import com.github.thebridsk.bridge.server.test.util.EventuallyUtils
 import org.scalatest.concurrent.Eventually
@@ -84,8 +79,6 @@ class Chicago5Test extends AnyFlatSpec
 
   override
   def beforeAll() = {
-    import scala.concurrent._
-    import ExecutionContext.Implicits.global
     import com.github.thebridsk.bridge.server.test.util.ParallelUtils._
 
     MonitorTCP.nextTest()
@@ -104,8 +97,6 @@ class Chicago5Test extends AnyFlatSpec
 
   override
   def afterAll() = {
-    import scala.concurrent._
-    import ExecutionContext.Implicits.global
     import com.github.thebridsk.bridge.server.test.util.ParallelUtils._
 
     waitForFuturesIgnoreTimeouts("Stopping a browser or server",

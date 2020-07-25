@@ -3,7 +3,6 @@ package com.github.thebridsk.bridge.server.backend.resource
 import scala.concurrent.Future
 import scala.concurrent.Await
 import scala.concurrent.duration._
-import scala.concurrent.ExecutionContext.Implicits.global
 import com.github.thebridsk.bridge.data.VersionedInstance
 
 class SyncStore[VId <: Comparable[VId], VType <: VersionedInstance[VType, VType, VId]](

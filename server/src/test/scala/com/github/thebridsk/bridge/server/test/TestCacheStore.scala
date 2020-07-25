@@ -2,7 +2,6 @@ package com.github.thebridsk.bridge.server.test
 
 import akka.http.scaladsl.testkit.ScalatestRouteTest
 import com.github.thebridsk.bridge.server.backend.resource.InMemoryStore
-import com.github.thebridsk.bridge.data.Id
 import com.github.thebridsk.bridge.data.MatchDuplicate
 import com.github.thebridsk.bridge.server.backend.BridgeResources
 import com.github.thebridsk.bridge.data.sample.TestMatchDuplicate
@@ -12,7 +11,6 @@ import scala.util.Left
 import scala.util.Right
 import scala.concurrent.Future
 import com.github.thebridsk.bridge.server.backend.resource.Result
-import org.scalactic.source.Position
 import com.github.thebridsk.source.SourcePosition
 import com.github.thebridsk.bridge.server.backend.DuplicateTeamsNestedResource
 import com.github.thebridsk.bridge.data.Team
@@ -29,13 +27,9 @@ import com.github.thebridsk.bridge.server.backend.DuplicateHandsNestedResource
 import com.github.thebridsk.bridge.data.Hand
 import com.github.thebridsk.bridge.data.DuplicateHand
 import com.github.thebridsk.bridge.data.Board
-import com.github.thebridsk.bridge.server.backend.resource.ChangeContextData
 import scala.concurrent.Await
 import scala.concurrent.duration._
 import com.github.thebridsk.bridge.data.Movement
-import scala.concurrent.Promise
-import scala.util.Success
-import scala.util.Failure
 import com.github.thebridsk.bridge.server.backend.resource.FileStore
 import scala.reflect.io.Directory
 import com.github.thebridsk.utilities.file.FileIO
@@ -119,7 +113,7 @@ object TestCacheStore {
     fut
   }
 
-  implicit class WrapFuture[T]( val f: Future[Result[T]] ) extends AnyVal {
+  implicit class WrapFuture[T]( private val f: Future[Result[T]] ) extends AnyVal {
     def resultFailed( comment: String )( implicit pos: SourcePosition, ec: ExecutionContext ): Future[Result[T]] = {
       f.map(r => r.resultFailed(comment)(pos))
     }
@@ -138,7 +132,7 @@ object TestCacheStore {
 
   }
 
-  implicit class TestResult[T]( val r: Result[T] ) extends AnyVal {
+  implicit class TestResult[T]( private val r: Result[T] ) extends AnyVal {
     def resultFailed( comment: String )( implicit pos: SourcePosition): Result[T] = {
       r match {
         case Left((statusCode,msg)) =>

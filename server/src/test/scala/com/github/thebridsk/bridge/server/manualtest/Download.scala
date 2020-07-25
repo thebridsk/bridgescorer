@@ -4,7 +4,6 @@ import com.github.thebridsk.utilities.main.Main
 import java.net.URL
 import java.io.File
 import com.github.thebridsk.bridge.server.util.HttpUtils
-import com.github.thebridsk.bridge.server.util.HttpUtils.NullOutputStream
 import com.github.thebridsk.bridge.server.util.GitHub
 
 object Download extends Main {

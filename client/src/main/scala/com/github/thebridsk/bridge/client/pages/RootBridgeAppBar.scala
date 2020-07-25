@@ -3,28 +3,18 @@ package com.github.thebridsk.bridge.client.pages
 import scala.scalajs.js
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
-import com.github.thebridsk.materialui.MuiAppBar
-import com.github.thebridsk.materialui.Position
-import com.github.thebridsk.materialui.MuiToolbar
 import com.github.thebridsk.materialui.icons
 import com.github.thebridsk.materialui.MuiTypography
-import com.github.thebridsk.materialui.ColorVariant
 import com.github.thebridsk.materialui.TextVariant
 import com.github.thebridsk.materialui.TextColor
 import org.scalajs.dom.raw.Element
 import org.scalajs.dom.raw.Node
 import com.github.thebridsk.utilities.logging.Logger
-import japgolly.scalajs.react.vdom.HtmlStyles
 import com.github.thebridsk.materialui.component.MyMenu
 import com.github.thebridsk.materialui.MuiMenuItem
 import com.github.thebridsk.bridge.client.routes.AppRouter.AppPage
 import com.github.thebridsk.bridge.client.routes.BridgeRouter
-import com.github.thebridsk.bridge.client.routes.AppRouter.About
-import com.github.thebridsk.bridge.clientcommon.react.AppButtonLinkNewWindow
-import org.scalajs.dom.document
 import japgolly.scalajs.react.vdom.VdomNode
-import com.github.thebridsk.bridge.client.routes.AppRouter.Home
-import com.github.thebridsk.bridge.client.routes.AppRouter.Info
 import com.github.thebridsk.bridge.client.pages.chicagos.ChicagoModule.PlayChicago2
 import com.github.thebridsk.bridge.client.pages.chicagos.ChicagoRouter.{ ListView => ChicagoListView }
 import com.github.thebridsk.bridge.client.pages.rubber.RubberRouter.{ ListView => RubberListView }

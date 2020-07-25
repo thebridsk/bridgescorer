@@ -1,6 +1,5 @@
 package com.github.thebridsk.bridge.client.pages.duplicate
 
-import scala.scalajs.js
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
 import com.github.thebridsk.bridge.data.duplicate.stats.PlayerPlaces

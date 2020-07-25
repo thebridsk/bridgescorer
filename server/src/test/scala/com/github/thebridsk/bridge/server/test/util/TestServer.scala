@@ -4,7 +4,6 @@ import com.github.thebridsk.bridge.server.backend.BridgeServiceInMemory
 import com.github.thebridsk.bridge.server.Server
 import com.github.thebridsk.bridge.data.LoggerConfig
 import com.github.thebridsk.utilities.logging.Logger
-import java.util.logging.Level
 import scala.concurrent.Await
 import scala.concurrent.duration._
 import scala.language.postfixOps

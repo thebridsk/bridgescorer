@@ -1,9 +1,6 @@
 package com.github.thebridsk.materialui
 
 import japgolly.scalajs.react._
-import japgolly.scalajs.react.raw._
-import japgolly.scalajs.react.vdom._
-import org.scalajs.dom
 import scala.scalajs.js
 import scala.scalajs.js.annotation._
 import scala.language.implicitConversions
@@ -44,7 +41,7 @@ trait ClickAwayListenerProps
 }
 object ClickAwayListenerProps extends PropsFactory[ClickAwayListenerProps] {
 
-  implicit class WrapClickAwayListenerProps(val p: ClickAwayListenerProps)
+  implicit class WrapClickAwayListenerProps(private val p: ClickAwayListenerProps)
       extends AnyVal {
     def mouseEvent = p.mouseEventInternal.map(s => new CALMouseEvent(s))
 

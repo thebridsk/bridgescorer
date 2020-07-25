@@ -1,6 +1,5 @@
 package com.github.thebridsk.bridge.server.manualtest
 
-import java.util.logging.Level
 import com.github.thebridsk.utilities.main.Main
 import com.github.thebridsk.bridge.data.Hand
 import com.github.thebridsk.bridge.data.bridge._

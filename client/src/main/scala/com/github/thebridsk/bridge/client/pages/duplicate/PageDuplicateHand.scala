@@ -1,20 +1,12 @@
 package com.github.thebridsk.bridge.client.pages.duplicate
 
 
-import scala.scalajs.js
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
 import com.github.thebridsk.bridge.client.routes.BridgeRouter
-import com.github.thebridsk.bridge.client.routes.AppRouter.AppPage
-import com.github.thebridsk.bridge.data.DuplicateSummary
-import com.github.thebridsk.bridge.data.Id
 import com.github.thebridsk.utilities.logging.Logger
 import com.github.thebridsk.bridge.client.controller.Controller
-import com.github.thebridsk.bridge.data.bridge.DuplicateViewPerspective
 import com.github.thebridsk.bridge.client.bridge.store.DuplicateStore
-import com.github.thebridsk.bridge.data.bridge.MatchDuplicateScore
-import com.github.thebridsk.bridge.data.bridge.PerspectiveComplete
-import com.github.thebridsk.bridge.data.bridge.PerspectiveDirector
 import com.github.thebridsk.bridge.data.bridge.Contract
 import com.github.thebridsk.bridge.data.bridge.NoTrump
 import com.github.thebridsk.bridge.data.bridge.NotDoubled
@@ -30,14 +22,12 @@ import com.github.thebridsk.bridge.client.pages.duplicate.DuplicateRouter.BaseHa
 import com.github.thebridsk.materialui.MuiTypography
 import com.github.thebridsk.materialui.TextVariant
 import com.github.thebridsk.materialui.TextColor
-import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles.baseStyles
 import com.github.thebridsk.bridge.client.pages.HomePage
 import japgolly.scalajs.react.component.builder.Lifecycle.ComponentDidUpdate
 import org.scalajs.dom.raw.File
 import com.github.thebridsk.bridge.clientcommon.rest2.RestClientDuplicate
 import scala.concurrent.ExecutionContext.Implicits.global
 import com.github.thebridsk.bridge.clientcommon.react.Utils._
-import com.github.thebridsk.bridge.data.DuplicatePicture
 
 /**
  * Shows the team x board table and has a totals column that shows the number of points the team has.

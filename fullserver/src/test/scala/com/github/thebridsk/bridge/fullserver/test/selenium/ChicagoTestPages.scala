@@ -28,7 +28,6 @@ import java.io.OutputStreamWriter
 import scala.io.Codec
 import play.api.libs.json.JsSuccess
 import play.api.libs.json.JsError
-import com.github.thebridsk.utilities.file.FileIO
 import com.github.thebridsk.bridge.fullserver.test.pages.bridge.HomePage
 import scala.reflect.io.File
 import java.util.zip.ZipFile
@@ -90,8 +89,6 @@ class ChicagoTestPages extends AnyFlatSpec
 
   override
   def beforeAll() = {
-    import scala.concurrent._
-    import ExecutionContext.Implicits.global
     import com.github.thebridsk.bridge.server.test.util.ParallelUtils._
 
     MonitorTCP.nextTest()
@@ -111,8 +108,6 @@ class ChicagoTestPages extends AnyFlatSpec
 
   override
   def afterAll() = {
-    import scala.concurrent._
-    import ExecutionContext.Implicits.global
     import com.github.thebridsk.bridge.server.test.util.ParallelUtils._
 
     waitForFuturesIgnoreTimeouts("Stopping a browser or server",
@@ -488,7 +483,6 @@ class ChicagoTestPages extends AnyFlatSpec
   var savedChicago: Option[MatchChicago] = None
 
   it should "get the MatchChicago object using the REST API" in {
-    import Session1._
 
     savedChicago = Some( getChicago(chicagoId.get) )
   }
@@ -497,7 +491,6 @@ class ChicagoTestPages extends AnyFlatSpec
   case class QueryResponse( data: ResponseData )
 
   it should "have rest call and queryml call return the same match" in {
-    import Session1._
 
     import com.github.thebridsk.bridge.data.rest.JsonSupport._
     implicit val rdFormat = Json.format[ResponseData]

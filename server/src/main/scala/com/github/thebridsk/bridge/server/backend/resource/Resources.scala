@@ -4,7 +4,6 @@ import scala.concurrent.Future
 import scala.concurrent.ExecutionContext
 import com.github.thebridsk.utilities.logging.Logger
 import Resources._
-import org.scalactic.source.Position
 import com.github.thebridsk.source.SourcePosition
 import com.github.thebridsk.bridge.data.Id
 

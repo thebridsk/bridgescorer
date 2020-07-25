@@ -1,11 +1,8 @@
 package com.github.thebridsk.bridge.client.pages.hand
 
-import scala.scalajs.js
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
-import com.github.thebridsk.bridge.data.bridge.ContractTricks
 import com.github.thebridsk.bridge.data.bridge._
-import com.github.thebridsk.bridge.clientcommon.logging.LogLifecycleToServer
 import com.github.thebridsk.utilities.logging.Logger
 import com.github.thebridsk.utilities.logging.Level
 import com.github.thebridsk.bridge.client.pages.hand.PageHandInternal.PageHandNextInput

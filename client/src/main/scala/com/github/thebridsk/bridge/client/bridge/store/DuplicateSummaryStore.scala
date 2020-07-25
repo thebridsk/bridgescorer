@@ -1,13 +1,7 @@
 package com.github.thebridsk.bridge.client.bridge.store
 
 import flux.dispatcher.DispatchToken
-import com.github.thebridsk.bridge.data.BoardSet
-import com.github.thebridsk.bridge.data.Movement
-import com.github.thebridsk.bridge.client.bridge.action.ActionUpdateBoardSet
 import com.github.thebridsk.bridge.client.bridge.action.BridgeDispatcher
-import com.github.thebridsk.bridge.client.bridge.action.ActionUpdateMovement
-import com.github.thebridsk.bridge.client.bridge.action.ActionUpdateAllBoardSets
-import com.github.thebridsk.bridge.client.bridge.action.ActionUpdateAllMovement
 import com.github.thebridsk.utilities.logging.Logger
 import com.github.thebridsk.bridge.client.bridge.action.ActionUpdateDuplicateSummary
 import com.github.thebridsk.bridge.data.DuplicateSummary
@@ -16,9 +10,6 @@ import com.github.thebridsk.bridge.client.bridge.action.ActionUpdateDuplicateSum
 import com.github.thebridsk.bridge.client.bridge.action.ActionUpdateDuplicateSummaryDemoMatchItem
 import com.github.thebridsk.bridge.client.bridge.action.ActionUpdateDuplicateSummaryDemoMatch
 import com.github.thebridsk.bridge.data.MatchDuplicate
-import com.github.thebridsk.bridge.client.Bridge
-import japgolly.scalajs.react.Callback
-import com.github.thebridsk.bridge.data.SystemTime
 import com.github.thebridsk.bridge.clientcommon.demo.BridgeDemo
 
 object DuplicateSummaryStore extends ChangeListenable {

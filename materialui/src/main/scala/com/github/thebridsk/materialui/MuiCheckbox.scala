@@ -1,12 +1,9 @@
 package com.github.thebridsk.materialui
 
 import japgolly.scalajs.react._
-import japgolly.scalajs.react.raw._
 import japgolly.scalajs.react.vdom._
-import org.scalajs.dom
 import scala.scalajs.js
 import scala.scalajs.js.annotation._
-import scala.language.implicitConversions
 import japgolly.scalajs.react.{raw => Raw}
 
 @js.native
@@ -42,7 +39,7 @@ trait CheckboxProps extends AdditionalProps with StandardProps with CheckboxProp
 
 object CheckboxProps extends PropsFactory[CheckboxProps] {
 
-  implicit class WrapCheckboxProps(val p: CheckboxProps) extends AnyVal {
+  implicit class WrapCheckboxProps(private val p: CheckboxProps) extends AnyVal {
 
     def checkedIcon = p.checkedIconInternal.map( n => VdomNode(n))
     def icon = p.iconInternal.map( n => VdomNode(n))

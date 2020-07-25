@@ -3,21 +3,14 @@ package com.github.thebridsk.bridge.client.test
 import org.scalajs.dom.raw.Element
 import org.scalajs.dom.raw.Node
 import org.scalajs.dom.raw.Text
-import com.github.thebridsk.bridge.client.test.utils.JQuery
-import japgolly.scalajs.react.test.ReactTestUtils
 import org.scalajs.dom.raw.DocumentType
 import org.scalajs.dom.raw.ProcessingInstruction
 import org.scalajs.dom.raw.CDATASection
-import org.scalajs.dom.raw.Comment
-import org.scalajs.dom.raw.HTMLButtonElement
 import org.scalajs.dom.raw.HTMLElement
 import japgolly.scalajs.react.test.Simulation
 import org.scalajs.dom.raw.HTMLInputElement
 import scala.scalajs.js
-import japgolly.scalajs.react.ReactDOM
-import japgolly.scalajs.react.component.Scala.MountedRoot
 
-import scala.language.higherKinds
 import japgolly.scalajs.react.test.SimEvent
 import com.github.thebridsk.utilities.logging.Logger
 import com.github.thebridsk.bridge.client.test.utils.JQuery

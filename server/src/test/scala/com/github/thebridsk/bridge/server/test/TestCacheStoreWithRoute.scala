@@ -1,22 +1,11 @@
 package com.github.thebridsk.bridge.server.test
 
-import java.net.InetAddress
 
 import akka.http.scaladsl.model._
 import akka.http.scaladsl.model.RemoteAddress.IP
 import akka.http.scaladsl.model.headers.`Remote-Address`
 import akka.http.scaladsl.server.Route
-import akka.http.scaladsl.server.RejectionHandler
-import akka.http.scaladsl.server.Directives._
-import akka.http.scaladsl.server.MethodRejection
 import akka.http.scaladsl.testkit.ScalatestRouteTest
-import akka.http.scaladsl.testkit.ScalatestRouteTest
-import akka.http.scaladsl.marshalling.ToResponseMarshallable
-import akka.http.scaladsl.unmarshalling.FromResponseUnmarshaller
-import akka.stream.scaladsl.Flow
-import akka.actor.ActorSystem
-import akka.stream.ActorMaterializer
-import akka.event.Logging
 import java.net.InetAddress
 
 import scala.concurrent.ExecutionContext
@@ -25,37 +14,15 @@ import scala.util.Left
 import scala.util.Right
 import scala.concurrent.Future
 import scala.concurrent.duration._
-import scala.concurrent.Promise
-import scala.util.Success
-import scala.util.Failure
-import scala.reflect.io.Directory
-import org.scalactic.source.Position
-import com.github.thebridsk.bridge.server.backend.resource.InMemoryStore
-import com.github.thebridsk.bridge.data.Id
 import com.github.thebridsk.bridge.data.MatchDuplicate
 import com.github.thebridsk.bridge.server.backend.BridgeResources
-import com.github.thebridsk.bridge.data.sample.TestMatchDuplicate
-import com.github.thebridsk.bridge.server.backend.resource.ChangeContext
 import com.github.thebridsk.bridge.server.backend.resource.Result
 import com.github.thebridsk.source.SourcePosition
-import com.github.thebridsk.bridge.server.backend.DuplicateTeamsNestedResource
 import com.github.thebridsk.bridge.data.Team
 import com.github.thebridsk.bridge.data.BoardSet
 import com.github.thebridsk.bridge.server.backend.resource.JavaResourceStore
-import com.github.thebridsk.bridge.server.backend.resource.StoreListener
-import com.github.thebridsk.bridge.server.backend.resource.CreateChangeContext
-import com.github.thebridsk.bridge.server.backend.resource.UpdateChangeContext
-import com.github.thebridsk.bridge.server.backend.resource.DeleteChangeContext
-import com.github.thebridsk.bridge.server.backend.DuplicateBoardsNestedResource
-import com.github.thebridsk.bridge.server.backend.DuplicateHandsNestedResource
 import com.github.thebridsk.bridge.data.Hand
-import com.github.thebridsk.bridge.data.DuplicateHand
-import com.github.thebridsk.bridge.data.Board
-import com.github.thebridsk.bridge.server.backend.resource.ChangeContextData
 import com.github.thebridsk.bridge.data.Movement
-import com.github.thebridsk.bridge.server.backend.resource.FileStore
-import com.github.thebridsk.utilities.file.FileIO
-import com.github.thebridsk.bridge.server.backend.resource.MultiStore
 import com.github.thebridsk.bridge.server.backend.resource.Store
 import com.github.thebridsk.bridge.server.backend.BridgeServiceInMemory
 import com.github.thebridsk.bridge.server.test.backend.TestFailurePersistent
@@ -63,7 +30,6 @@ import com.github.thebridsk.bridge.server.test.backend.TestFailureStore
 import com.github.thebridsk.bridge.server.test.backend.BridgeServiceTesting
 import com.github.thebridsk.bridge.server.service.MyService
 import com.github.thebridsk.bridge.server.rest.ServerPort
-import com.github.thebridsk.bridge.server.json.BridgePlayJsonSupport
 import com.github.thebridsk.bridge.server.rest.UtilsPlayJson
 import akka.http.scaladsl.testkit.RouteTestTimeout
 import org.scalatest.flatspec.AnyFlatSpec
@@ -111,7 +77,7 @@ object TestCacheStoreWithRoute {
     def toString() = "BridgeServiceTestFailure"
   }
 
-  implicit class WrapFuture[T]( val f: Future[Result[T]] ) extends AnyVal {
+  implicit class WrapFuture[T]( private val f: Future[Result[T]] ) extends AnyVal {
     def resultFailed( comment: String )( implicit pos: SourcePosition): Future[Result[T]] = {
       f.map(r => r.resultFailed(comment)(pos))
     }
@@ -130,7 +96,7 @@ object TestCacheStoreWithRoute {
 
   }
 
-  implicit class TestResult[T]( val r: Result[T] ) extends AnyVal {
+  implicit class TestResult[T]( private val r: Result[T] ) extends AnyVal {
     def resultFailed( comment: String )( implicit pos: SourcePosition): Result[T] = {
       r match {
         case Left((statusCode,msg)) =>

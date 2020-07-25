@@ -1,38 +1,23 @@
 package com.github.thebridsk.bridge.server
 
-import akka.actor.{Actor, ActorSystem, Props}
-import akka.io.IO
-import akka.pattern.ask
+import akka.actor.ActorSystem
 import akka.util.Timeout
 import scala.concurrent.duration._
 import scala.language.postfixOps
-import com.github.thebridsk.utilities.main.Main
-import java.util.logging.Level
 import scala.concurrent.Future
 import scala.concurrent.Await
-import akka.actor.ActorRef
-import akka.io.Tcp
 import com.github.thebridsk.bridge.server.backend.BridgeService
-import com.github.thebridsk.bridge.server.service.MyService
 import com.github.thebridsk.bridge.server.backend.BridgeServiceInMemory
-import akka.http.scaladsl.Http
 import akka.http.scaladsl.Http.ServerBinding
-import scala.util.Success
 import scala.util.Failure
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.client.RequestBuilding
-import akka.http.scaladsl.marshalling.ToResponseMarshallable
 import akka.http.scaladsl.model.{HttpRequest, HttpResponse}
-import akka.http.scaladsl.model.StatusCodes._
 import akka.http.scaladsl.server.Directives._
-import akka.http.scaladsl.unmarshalling.Unmarshal
-import akka.stream.scaladsl.{Flow, Sink, Source}
+import akka.stream.scaladsl.{Sink, Source}
 import com.github.thebridsk.bridge.server.service.MyService
-import com.github.thebridsk.bridge.server.util.SystemTimeJVM
-import akka.event.Logging
 import akka.http.scaladsl.ConnectionContext
 import javax.net.ssl.SSLContext
-import akka.http.scaladsl.HttpExt
 import com.github.thebridsk.bridge.server.backend.BridgeServiceFileStore
 import scala.reflect.io.Directory
 import scala.reflect.io.Path
@@ -55,7 +40,6 @@ import akka.http.scaladsl.model.Uri
 import akka.http.scaladsl.model.Uri.Query
 import com.github.thebridsk.utilities.main.Subcommand
 import com.github.thebridsk.utilities.logging.Logger
-import javax.net.ssl.TrustManagerFactory
 import com.github.thebridsk.bridge.server.service.ShutdownHook
 import java.net.NetworkInterface
 import java.net.Inet4Address
@@ -396,8 +380,6 @@ private class StartServer {
   }
 
   def execute(): Int = {
-    import scala.language.postfixOps
-    import scala.concurrent.duration._
 
 //    if (optionShutdown.isSupplied) {
 //      var rc = 0

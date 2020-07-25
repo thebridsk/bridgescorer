@@ -1,7 +1,6 @@
 package com.github.thebridsk.bridge.clientcommon.debug
 
 import com.github.thebridsk.utilities.logging.Handler
-import com.github.thebridsk.utilities.logging.Logger
 import com.github.thebridsk.utilities.logging.TraceMsg
 import com.github.thebridsk.bridge.clientcommon.logger.ServerHandler
 import com.github.thebridsk.bridge.clientcommon.dispatcher.Dispatcher

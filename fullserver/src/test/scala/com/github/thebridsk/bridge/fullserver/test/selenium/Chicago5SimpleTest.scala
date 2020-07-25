@@ -3,15 +3,10 @@ package com.github.thebridsk.bridge.fullserver.test.selenium
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.must.Matchers
 import org.scalatest._
-import org.scalatest.concurrent.Eventually
 import org.scalatest.time.Millis
 import org.scalatest.time.Span
 import com.github.thebridsk.bridge.data.bridge._
-import org.openqa.selenium.By
 import java.util.concurrent.TimeUnit
-import org.scalactic.source.Position
-import scala.jdk.CollectionConverters._
-import org.openqa.selenium.Keys
 import com.github.thebridsk.bridge.server.test.util.NoResultYet
 import com.github.thebridsk.bridge.server.test.util.EventuallyUtils
 import org.scalatest.concurrent.Eventually
@@ -19,7 +14,6 @@ import com.github.thebridsk.utilities.logging.Logger
 import java.net.URL
 import scala.io.Source
 import scala.io.Codec
-import org.openqa.selenium.By.ByXPath
 import com.github.thebridsk.bridge.server.test.util.MonitorTCP
 import com.github.thebridsk.bridge.server.test.util.HttpUtils.ResponseFromHttp
 import com.github.thebridsk.bridge.server.test.util.HttpUtils
@@ -34,7 +28,6 @@ import com.github.thebridsk.bridge.fullserver.test.pages.chicago.ChicagoMatchTyp
 import com.github.thebridsk.bridge.fullserver.test.pages.chicago.HandPage
 import com.github.thebridsk.bridge.fullserver.test.pages.chicago.SummaryPage
 import com.github.thebridsk.bridge.fullserver.test.pages.chicago.SimpleSelectPartnersPage
-import com.github.thebridsk.bridge.fullserver.test.pages.chicago.ListPage
 import com.github.thebridsk.bridge.server.test.TestStartLogging
 import com.github.thebridsk.bridge.data.MatchChicago
 
@@ -88,8 +81,6 @@ class Chicago5SimpleTest extends AnyFlatSpec
 
   override
   def beforeAll() = {
-    import scala.concurrent._
-    import ExecutionContext.Implicits.global
     import com.github.thebridsk.bridge.server.test.util.ParallelUtils._
 
     MonitorTCP.nextTest()
@@ -108,8 +99,6 @@ class Chicago5SimpleTest extends AnyFlatSpec
 
   override
   def afterAll() = {
-    import scala.concurrent._
-    import ExecutionContext.Implicits.global
     import com.github.thebridsk.bridge.server.test.util.ParallelUtils._
 
     waitForFuturesIgnoreTimeouts("Stopping a browser or server",
@@ -414,7 +403,6 @@ class Chicago5SimpleTest extends AnyFlatSpec
   behavior of "Names resource"
 
   it should "show the names without leading and trailing spaces" in {
-    import com.github.thebridsk.bridge.server.rest.UtilsPlayJson._
     val rnames: ResponseFromHttp[Option[Array[String]]] = HttpUtils.getHttpObject( new URL(TestServer.hosturl+"v1/rest/names") )
 
     rnames.data match {

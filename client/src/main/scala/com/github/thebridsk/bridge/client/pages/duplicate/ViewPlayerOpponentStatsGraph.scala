@@ -1,26 +1,12 @@
 package com.github.thebridsk.bridge.client.pages.duplicate
 
 
-import scala.scalajs.js
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
-import com.github.thebridsk.bridge.client.routes.BridgeRouter
-import com.github.thebridsk.bridge.client.routes.AppRouter.AppPage
-import com.github.thebridsk.bridge.data.DuplicateSummary
-import com.github.thebridsk.bridge.data.Id
 import com.github.thebridsk.utilities.logging.Logger
-import com.github.thebridsk.bridge.client.controller.Controller
-import com.github.thebridsk.bridge.data.SystemTime
-import com.github.thebridsk.bridge.clientcommon.react.AppButton
 import com.github.thebridsk.bridge.clientcommon.react.Utils._
-import com.github.thebridsk.color.Color
-import com.github.thebridsk.bridge.clientcommon.react.CheckBox
-import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles
-import com.github.thebridsk.bridge.clientcommon.react.ColorBar
 import com.github.thebridsk.bridge.clientcommon.react.PieChart
 import com.github.thebridsk.bridge.clientcommon.react.Table
-import com.github.thebridsk.bridge.clientcommon.react.SvgRect
-import com.github.thebridsk.bridge.clientcommon.react.Tooltip
 import com.github.thebridsk.bridge.clientcommon.react.Table.Column
 import com.github.thebridsk.bridge.data.duplicate.stats.PlayersOpponentsStats
 import com.github.thebridsk.bridge.data.duplicate.stats.PlayerOpponentStat

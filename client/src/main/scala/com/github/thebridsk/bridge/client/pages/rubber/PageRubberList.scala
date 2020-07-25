@@ -2,26 +2,18 @@ package com.github.thebridsk.bridge.client.pages.rubber
 
 import com.github.thebridsk.bridge.data.MatchRubber
 import com.github.thebridsk.utilities.logging.Logger
-import com.github.thebridsk.bridge.clientcommon.logging.LogLifecycleToServer
-import com.github.thebridsk.bridge.clientcommon.rest2.RestClientRubber
 
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.html_<^._
-import japgolly.scalajs.react.extra.router.RouterCtl
-import com.github.thebridsk.bridge.client.controller.RubberController
 import com.github.thebridsk.bridge.client.controller.RubberController
 import com.github.thebridsk.bridge.data.rubber.RubberScoring
-import com.github.thebridsk.bridge.data.SystemTime
-import scala.scalajs.js
 import com.github.thebridsk.bridge.client.routes.BridgeRouter
 import com.github.thebridsk.bridge.clientcommon.react.DateUtils
 import com.github.thebridsk.bridge.clientcommon.react.AppButton
 import com.github.thebridsk.bridge.client.pages.rubber.RubberRouter.RubberMatchNamesView
 import com.github.thebridsk.bridge.client.pages.rubber.RubberRouter.RubberMatchView
 import com.github.thebridsk.utilities.logging.Level
-import com.github.thebridsk.bridge.data.Id
 import com.github.thebridsk.bridge.clientcommon.react.PopupOkCancel
-import com.github.thebridsk.bridge.clientcommon.react.HelpButton
 import com.github.thebridsk.bridge.client.pages.rubber.RubberRouter.ListViewBase
 import com.github.thebridsk.bridge.client.bridge.store.RubberListStore
 import com.github.thebridsk.bridge.client.pages.rubber.RubberRouter.ListView

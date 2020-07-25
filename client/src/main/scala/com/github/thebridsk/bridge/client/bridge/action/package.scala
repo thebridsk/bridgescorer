@@ -2,7 +2,6 @@ package com.github.thebridsk.bridge.client.bridge
 
 import com.github.thebridsk.bridge.data.DuplicateHand
 import com.github.thebridsk.bridge.data.MatchDuplicate
-import com.github.thebridsk.bridge.data.Id
 import com.github.thebridsk.bridge.data.Team
 import com.github.thebridsk.bridge.data.BoardSet
 import com.github.thebridsk.bridge.data.Movement
@@ -13,7 +12,6 @@ import com.github.thebridsk.bridge.data.MatchRubber
 import com.github.thebridsk.bridge.data.bridge.PlayerPosition
 import com.github.thebridsk.bridge.data.RubberHand
 import com.github.thebridsk.bridge.data.DuplicateSummary
-import com.github.thebridsk.utilities.logging.TraceMsg
 import com.github.thebridsk.bridge.data.MatchDuplicateResult
 import com.github.thebridsk.bridge.data.ServerURL
 import com.github.thebridsk.bridge.clientcommon.dispatcher.Action

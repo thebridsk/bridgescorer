@@ -11,14 +11,11 @@ import com.github.thebridsk.utilities.logging.Logger
 import com.github.thebridsk.browserpages.Page
 import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.ScoreboardPage.TableViewType
 import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.ScoreboardPage.ViewType
-import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.ScoreboardPage.CompletedViewType
-import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.ScoreboardPage.DirectorViewType
 import com.github.thebridsk.bridge.data.bridge.PlayerPosition
 import com.github.thebridsk.bridge.data.bridge.MadeOrDown
 import com.github.thebridsk.bridge.data.bridge.Made
 import com.github.thebridsk.bridge.data.bridge.Down
 import com.github.thebridsk.bridge.data.util.Strings
-import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.TablePage.Hands
 import com.github.thebridsk.bridge.data.bridge.ContractSuit
 import com.github.thebridsk.bridge.data.bridge.ContractDoubled
 import com.github.thebridsk.bridge.data.bridge.Vulnerability

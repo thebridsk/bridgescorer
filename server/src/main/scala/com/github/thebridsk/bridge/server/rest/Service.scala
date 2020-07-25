@@ -1,24 +1,14 @@
 package com.github.thebridsk.bridge.server.rest
 
-import akka.event.Logging
-import akka.event.Logging._
 import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.server.Directives._
-import akka.stream.Materializer
 import com.github.thebridsk.bridge.server.util.HasActorSystem
 import com.github.thebridsk.bridge.server.backend.BridgeService
-import scala.reflect.runtime.universe._
-import akka.actor.ActorRefFactory
-import akka.event.Logging._
-import com.github.thebridsk.utilities.logging.Logging
 import java.util.logging.Level
 import akka.http.scaladsl.server.MalformedRequestContentRejection
 import akka.http.scaladsl.server.RejectionHandler
 import akka.http.scaladsl.server.MethodRejection
 import akka.actor.ActorSystem
-import com.github.thebridsk.bridge.server.backend.MonitorWebservice
-import java.util.Date
-import client.LogA
 import akka.http.scaladsl.model.headers._
 import akka.http.scaladsl.model.headers.CacheDirectives._
 import akka.http.scaladsl.model.DateTime

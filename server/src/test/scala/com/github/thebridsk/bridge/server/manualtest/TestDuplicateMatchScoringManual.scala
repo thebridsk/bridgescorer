@@ -1,12 +1,10 @@
 package com.github.thebridsk.bridge.server.manualtest
 
 import com.github.thebridsk.utilities.main.Main
-import com.github.thebridsk.bridge.data.Id
 import com.github.thebridsk.bridge.data.sample.TestMatchDuplicate
 import com.github.thebridsk.bridge.data.MatchDuplicate
 import com.github.thebridsk.bridge.data.bridge.MatchDuplicateScore
 import com.github.thebridsk.bridge.data.bridge.BoardScore
-import com.github.thebridsk.bridge.server.backend.BridgeService
 import com.github.thebridsk.bridge.data.bridge.PerspectiveDirector
 import com.github.thebridsk.bridge.data.bridge.PerspectiveTable
 import com.github.thebridsk.bridge.data.bridge.PerspectiveComplete

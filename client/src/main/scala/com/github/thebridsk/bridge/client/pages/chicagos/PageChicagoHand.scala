@@ -18,7 +18,6 @@ import com.github.thebridsk.bridge.client.pages.hand.PageHand
 
 import japgolly.scalajs.react.BackendScope
 import japgolly.scalajs.react._
-import japgolly.scalajs.react.extra.router.RouterCtl
 import japgolly.scalajs.react.vdom.html_<^._
 import com.github.thebridsk.utilities.logging.Logger
 import com.github.thebridsk.bridge.client.pages.chicagos.ChicagoRouter.HandView
@@ -26,7 +25,6 @@ import com.github.thebridsk.materialui.MuiTypography
 import com.github.thebridsk.bridge.client.routes.BridgeRouter
 import com.github.thebridsk.materialui.TextVariant
 import com.github.thebridsk.materialui.TextColor
-import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles.baseStyles
 import japgolly.scalajs.react.component.builder.Lifecycle.ComponentDidUpdate
 import com.github.thebridsk.bridge.client.pages.HomePage
 import org.scalajs.dom.raw.File

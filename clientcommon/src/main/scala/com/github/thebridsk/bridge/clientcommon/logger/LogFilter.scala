@@ -1,6 +1,5 @@
 package com.github.thebridsk.bridge.clientcommon.logger
 
-import com.github.thebridsk.utilities.logging.Filter
 import com.github.thebridsk.utilities.logging.TraceMsg
 
 object LogFilter {

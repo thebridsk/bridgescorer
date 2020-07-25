@@ -3,8 +3,6 @@ package com.github.thebridsk.bridge.client.bridge.store
 import com.github.thebridsk.utilities.logging.Logger
 import flux.dispatcher.DispatchToken
 import com.github.thebridsk.bridge.client.bridge.action.BridgeDispatcher
-import com.github.thebridsk.bridge.data.Hand
-import com.github.thebridsk.bridge.client.bridge.action.ActionUpdateChicago
 import com.github.thebridsk.bridge.client.bridge.action.ActionUpdateRubberHand
 import com.github.thebridsk.bridge.client.bridge.action.ActionUpdateRubberNames
 import com.github.thebridsk.bridge.client.bridge.action.ActionUpdateRubber
@@ -13,7 +11,6 @@ import com.github.thebridsk.bridge.data.bridge.PlayerPosition
 import com.github.thebridsk.bridge.data.RubberHand
 import com.github.thebridsk.bridge.client.bridge.action.RubberBridgeAction
 import com.github.thebridsk.bridge.clientcommon.logger.Alerter
-import com.github.thebridsk.bridge.client.Bridge
 import com.github.thebridsk.bridge.clientcommon.demo.BridgeDemo
 
 object RubberStore extends ChangeListenable {

@@ -6,10 +6,6 @@ import com.github.thebridsk.bridge.data.websocket.Protocol
 import com.github.thebridsk.bridge.clientcommon.rest2.RestClientDuplicate
 import com.github.thebridsk.utilities.logging.Logger
 import com.github.thebridsk.bridge.client.bridge.store.DuplicateStore
-import com.github.thebridsk.bridge.data.Id
-import japgolly.scalajs.react.Callback
-import com.github.thebridsk.bridge.client.routes.AppRouter
-import japgolly.scalajs.react.CallbackTo
 import com.github.thebridsk.bridge.data.DuplicateHand
 import com.github.thebridsk.bridge.data.Team
 import com.github.thebridsk.bridge.clientcommon.websocket.DuplexPipe
@@ -18,7 +14,6 @@ import com.github.thebridsk.bridge.data.websocket.DuplexProtocol.LogEntryV2
 import com.github.thebridsk.bridge.clientcommon.rest2.Result
 import scala.concurrent.ExecutionContext
 import com.github.thebridsk.bridge.clientcommon.rest2.RestResult
-import com.github.thebridsk.bridge.data.RestMessage
 import com.github.thebridsk.bridge.clientcommon.rest2.RestClientDuplicateSummary
 import com.github.thebridsk.bridge.clientcommon.logger.Alerter
 import com.github.thebridsk.bridge.client.bridge.store.DuplicateResultStore
@@ -37,17 +32,11 @@ import play.api.libs.json.Json
 import com.github.thebridsk.bridge.data.DuplicateSummary
 import com.github.thebridsk.bridge.data.rest.JsonSupport
 import play.api.libs.json.JsSuccess
-import org.scalajs.dom.raw.EventSource
-import org.scalajs.dom.raw.MessageEvent
-import org.scalajs.dom.raw.Event
-import scala.scalajs.js.timers.SetTimeoutHandle
-import com.github.thebridsk.bridge.client.Bridge
 import com.github.thebridsk.bridge.client.bridge.store.DuplicateSummaryStore
 import scala.util.Success
 import scala.util.Failure
 import com.github.thebridsk.bridge.clientcommon.rest2.AjaxCall
 import scala.concurrent.duration.Duration
-import com.github.thebridsk.bridge.data.websocket.Protocol.ToBrowserMessage
 import com.github.thebridsk.bridge.data.websocket.Protocol.ToServerMessage
 import com.github.thebridsk.bridge.clientcommon.demo.BridgeDemo
 import com.github.thebridsk.bridge.data.MatchDuplicateResult

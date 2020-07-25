@@ -1,17 +1,13 @@
 package com.github.thebridsk.bridge.client.controller
 
 import com.github.thebridsk.utilities.logging.Logger
-import japgolly.scalajs.react._
 import com.github.thebridsk.bridge.data.MatchRubber
 import com.github.thebridsk.bridge.clientcommon.rest2.RestClientRubber
 import com.github.thebridsk.bridge.client.bridge.store.RubberStore
 import com.github.thebridsk.bridge.client.bridge.action.BridgeDispatcher
-import com.github.thebridsk.bridge.data.Round
-import com.github.thebridsk.bridge.data.Hand
 import com.github.thebridsk.bridge.data.bridge.PlayerPosition
 import com.github.thebridsk.bridge.data.RubberHand
 import com.github.thebridsk.bridge.clientcommon.rest2.AjaxResult
-import com.github.thebridsk.bridge.clientcommon.rest2.Result
 import scala.concurrent.ExecutionContext
 import com.github.thebridsk.bridge.clientcommon.rest2.ResultObject
 import com.github.thebridsk.bridge.clientcommon.rest2.RestResult
@@ -28,7 +24,6 @@ import play.api.libs.json.Json
 import play.api.libs.json.JsSuccess
 import play.api.libs.json.JsError
 import play.api.libs.json.JsUndefined
-import com.github.thebridsk.bridge.client.Bridge
 import com.github.thebridsk.bridge.client.bridge.store.RubberListStore
 import scala.util.Success
 import scala.util.Failure

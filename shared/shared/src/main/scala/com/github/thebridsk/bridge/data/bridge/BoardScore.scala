@@ -1,10 +1,8 @@
 package com.github.thebridsk.bridge.data.bridge
 
 import com.github.thebridsk.bridge.data.Board
-import com.github.thebridsk.bridge.data.Id
 import com.github.thebridsk.bridge.data.bridge.DuplicateBridge.ScoreHand
 import com.github.thebridsk.utilities.logging.Logger
-import java.io.StringWriter
 import com.github.thebridsk.bridge.data.Team
 
 case class ContractForScore(

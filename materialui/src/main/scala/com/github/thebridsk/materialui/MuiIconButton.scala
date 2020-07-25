@@ -1,9 +1,6 @@
 package com.github.thebridsk.materialui
 
 import japgolly.scalajs.react._
-import japgolly.scalajs.react.raw._
-import japgolly.scalajs.react.vdom._
-import org.scalajs.dom
 import scala.scalajs.js
 import scala.scalajs.js.annotation._
 import scala.language.implicitConversions
@@ -39,9 +36,8 @@ trait IconButtonProps extends ButtonBaseProps with IconButtonPropsPrivate {
 
 }
 object IconButtonProps extends PropsFactory[IconButtonProps] {
-  import js._
 
-  implicit class WrapButtonProps(val p: IconButtonProps) extends AnyVal {
+  implicit class WrapButtonProps(private val p: IconButtonProps) extends AnyVal {
 
     def color = p.colorInternal.map(s => new ColorVariant(s))
 

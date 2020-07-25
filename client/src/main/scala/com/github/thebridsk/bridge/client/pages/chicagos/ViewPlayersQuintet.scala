@@ -1,16 +1,12 @@
 package com.github.thebridsk.bridge.client.pages.chicagos
 
-import scala.scalajs.js
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
-import com.github.thebridsk.bridge.data.MatchChicago
-import com.github.thebridsk.bridge.client.routes.BridgeRouter
 import com.github.thebridsk.bridge.client.pages.chicagos.PagePlayers.Props
 import com.github.thebridsk.bridge.data.chicago.ChicagoScoring
 import com.github.thebridsk.bridge.data.Round
 import com.github.thebridsk.bridge.data.bridge.PlayerPosition
 import com.github.thebridsk.bridge.client.controller.ChicagoController
-import com.github.thebridsk.bridge.data.util.Strings._
 import com.github.thebridsk.bridge.data.bridge._
 import com.github.thebridsk.utilities.logging.Logger
 import com.github.thebridsk.bridge.data.util.Strings
@@ -18,7 +14,6 @@ import com.github.thebridsk.bridge.clientcommon.react.AppButton
 import com.github.thebridsk.bridge.rotation.Table
 import com.github.thebridsk.bridge.clientcommon.react.Utils._
 import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles
-import com.github.thebridsk.bridge.clientcommon.react.HelpButton
 import com.github.thebridsk.materialui.MuiTypography
 import com.github.thebridsk.materialui.TextVariant
 import com.github.thebridsk.materialui.TextColor
@@ -42,7 +37,6 @@ object ViewPlayersQuintet {
 }
 
 object ViewPlayersQuintetInternal {
-  import ViewPlayersQuintet._
   import ChicagoStyles._
 
   val logger = Logger( "bridge.ViewPlayersQuintet" )

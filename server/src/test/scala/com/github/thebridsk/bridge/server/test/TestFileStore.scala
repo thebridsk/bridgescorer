@@ -2,30 +2,21 @@ package com.github.thebridsk.bridge.server.test
 
 import org.scalatest.matchers.must.Matchers
 
-import com.github.thebridsk.bridge.data.bridge._
 import org.scalatest.BeforeAndAfterAll
 import scala.reflect.io.Directory
-import com.github.thebridsk.bridge.data.Team
-import com.github.thebridsk.bridge.server.backend.resource.StoreSupport
 import com.github.thebridsk.utilities.file.FileIO
 import java.io.File
 import com.github.thebridsk.bridge.server.backend.resource.FileStore
 import com.github.thebridsk.utilities.logging.Logger
-import java.util.logging.Level
 import com.github.thebridsk.bridge.data.MatchDuplicate
 import com.github.thebridsk.bridge.data.MatchDuplicateV1
 import com.github.thebridsk.bridge.data.MatchRubber
-import com.github.thebridsk.bridge.data.MatchDuplicateV3
 import com.github.thebridsk.bridge.data.MatchDuplicateV2
 import play.api.libs.json.Writes
 import com.github.thebridsk.bridge.server.backend.BridgeServiceFileStoreConverters
 import com.github.thebridsk.bridge.server.backend.resource.Store
 import com.github.thebridsk.bridge.server.backend.MatchRubberCacheStoreSupport
-import com.github.thebridsk.bridge.server.backend.resource.SyncStore
-import com.github.thebridsk.bridge.data.Id
 import com.github.thebridsk.bridge.server.backend.MatchDuplicateCacheStoreSupport
-import scala.concurrent.Future
-import org.scalatest.compatible.Assertion
 import org.scalatest.flatspec.AsyncFlatSpec
 import com.github.thebridsk.bridge.data.BoardSet
 import com.github.thebridsk.bridge.data.Movement

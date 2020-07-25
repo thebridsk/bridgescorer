@@ -2,21 +2,14 @@ package com.github.thebridsk.bridge.fullserver.test.selenium
 
 import java.net.URL
 import java.util.concurrent.TimeUnit
-import org.openqa.selenium.By
-import org.openqa.selenium.By.ByXPath
-import org.openqa.selenium.Keys
-import org.scalactic.source.Position
 import org.scalatest._
 import org.scalatest.concurrent.Eventually
-import org.scalatest.concurrent.Eventually
-import org.scalatest.exceptions.TestFailedException
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.time.Millis
 import org.scalatest.time.Span
 import scala.io.Codec
 import scala.io.Source
-import scala.jdk.CollectionConverters._
 
 import com.github.thebridsk.bridge.data.bridge._
 import com.github.thebridsk.bridge.fullserver.test.pages.bridge.HomePage
@@ -32,9 +25,7 @@ import com.github.thebridsk.bridge.server.test.util.EventuallyUtils
 import com.github.thebridsk.bridge.server.test.util.MonitorTCP
 import com.github.thebridsk.bridge.server.test.util.NoResultYet
 import com.github.thebridsk.bridge.server.test.util.TestServer
-import com.github.thebridsk.browserpages.PageBrowser
 import com.github.thebridsk.browserpages.Session
-import com.github.thebridsk.source.SourcePosition
 import com.github.thebridsk.utilities.logging.Logger
 import com.github.thebridsk.bridge.fullserver.test.pages.chicago.ChicagoMatchTypeFair
 import com.github.thebridsk.bridge.data.MatchChicago
@@ -87,8 +78,6 @@ class Chicago5FairTest extends AnyFlatSpec
 
   override
   def beforeAll() = {
-    import scala.concurrent._
-    import ExecutionContext.Implicits.global
     import com.github.thebridsk.bridge.server.test.util.ParallelUtils._
 
     MonitorTCP.nextTest()
@@ -107,8 +96,6 @@ class Chicago5FairTest extends AnyFlatSpec
 
   override
   def afterAll() = {
-    import scala.concurrent._
-    import ExecutionContext.Implicits.global
     import com.github.thebridsk.bridge.server.test.util.ParallelUtils._
 
     waitForFuturesIgnoreTimeouts("Stopping a browser or server",

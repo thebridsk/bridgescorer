@@ -2,19 +2,9 @@ package com.github.thebridsk.bridge.fullserver.test.selenium
 
 import org.scalatest.matchers.must.Matchers
 import org.openqa.selenium.WebDriver
-import org.scalatest.BeforeAndAfterAll
-import org.openqa.selenium._
 import org.scalatest.concurrent.Eventually._
-import org.scalactic.source.Position
-import scala.concurrent._
-import scala.concurrent.duration._
 import com.github.thebridsk.utilities.logging.Logger
-import java.util.logging.Level
-import com.github.thebridsk.bridge.server.test.util.NoResultYet
-import com.github.thebridsk.bridge.server.test.util.MonitorTCP
 import com.github.thebridsk.browserpages.Element
-import org.scalatest.time.Millis
-import org.scalatest.time.Span
 
 
 class InputStyleHelper extends Matchers {

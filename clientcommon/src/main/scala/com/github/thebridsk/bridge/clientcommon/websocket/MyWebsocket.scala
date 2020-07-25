@@ -1,10 +1,6 @@
 package com.github.thebridsk.bridge.clientcommon.websocket
 
 import org.scalajs.dom.raw._
-import scala.scalajs.js
-import org.scalajs.dom
-import com.github.thebridsk.bridge.data.websocket.Protocol
-import scala.scalajs.js.Array
 import com.github.thebridsk.utilities.logging.Logger
 import com.github.thebridsk.bridge.clientcommon.logger.CommAlerter
 
@@ -110,7 +106,6 @@ abstract class MyWebsocket(url: String, protocol: String = "") {
   private def isCurrentWebsocket( ws: WebSocket ) = websocket.map(w => w==ws).getOrElse(false)
 
   private def init() = {
-    import js.JSConverters._
 //    val prots = protocol.toJSArray
     closeCalled = false
     val ws = new WebSocket(url, protocol)

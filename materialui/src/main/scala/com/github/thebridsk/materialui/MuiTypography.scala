@@ -1,16 +1,10 @@
 package com.github.thebridsk.materialui
 
 import japgolly.scalajs.react._
-import japgolly.scalajs.react.raw._
-import japgolly.scalajs.react.vdom._
-import org.scalajs.dom
 import scala.scalajs.js
 import scala.scalajs.js.annotation._
-import org.scalajs.dom.raw.Element
 //import com.github.thebridsk.materialui.util.{ JsNumber => _, _ }
-import scala.language.implicitConversions
 
-import js._
 
 class TextAlign(val value: String) extends AnyVal {
   override def toString() = value
@@ -86,7 +80,6 @@ object TextDisplay {
   val inline = new TextColor("inline")
 }
 
-import js._
 
 @js.native
 trait TypographyPropsPrivate extends js.Any {
@@ -114,9 +107,8 @@ trait TypographyProps extends AdditionalProps with TypographyPropsPrivate with S
   val variantMapping: js.UndefOr[Map[String, String]] = js.native
 }
 object TypographyProps extends PropsFactory[TypographyProps] {
-  import js._
 
-  implicit class WrapTypographyProps(val p: TypographyProps) extends AnyVal {
+  implicit class WrapTypographyProps(private val p: TypographyProps) extends AnyVal {
 
     def align = p.alignInternal.map(s => new TextAlign(s))
 

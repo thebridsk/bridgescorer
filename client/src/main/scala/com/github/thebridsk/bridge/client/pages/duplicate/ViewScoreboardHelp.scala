@@ -1,6 +1,5 @@
 package com.github.thebridsk.bridge.client.pages.duplicate
 
-import com.github.thebridsk.bridge.data.Id
 import com.github.thebridsk.bridge.data.Team
 import com.github.thebridsk.bridge.data.bridge.PerspectiveComplete
 import com.github.thebridsk.bridge.data.bridge.PerspectiveDirector

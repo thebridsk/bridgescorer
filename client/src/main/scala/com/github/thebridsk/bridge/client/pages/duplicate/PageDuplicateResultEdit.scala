@@ -9,9 +9,7 @@ import com.github.thebridsk.utilities.logging.Logger
 import com.github.thebridsk.bridge.client.bridge.store.DuplicateResultStore
 import com.github.thebridsk.bridge.client.controller.Controller
 import com.github.thebridsk.bridge.clientcommon.react.AppButton
-import com.github.thebridsk.bridge.client.pages.duplicate.DuplicateRouter.SummaryView
 import com.github.thebridsk.bridge.client.pages.duplicate.DuplicateRouter.DuplicateResultEditView
-import com.github.thebridsk.bridge.data.Id
 import com.github.thebridsk.bridge.data.DuplicateSummaryEntry
 import com.github.thebridsk.bridge.data.SystemTime
 import com.github.thebridsk.bridge.client.bridge.store.NamesStore

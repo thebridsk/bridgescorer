@@ -4,7 +4,6 @@ import com.github.thebridsk.bridge.data.RestMessage
 import org.scalajs.dom.ext.Ajax.InputData
 import scala.concurrent.duration.Duration
 import scala.reflect.ClassTag
-import java.net.URI
 import org.scalactic.source.Position
 import play.api.libs.json._
 import com.github.thebridsk.bridge.data.rest.JsonSupport._
@@ -135,7 +134,7 @@ class RestClient[R,I]( val resourceURIfragment: String,
 }
 
 object RestClient {
-  implicit class RestMessages( val req: WrapperXMLHttpRequest ) extends AnyVal {
+  implicit class RestMessages( private val req: WrapperXMLHttpRequest ) extends AnyVal {
     def toRestMessage = {
       (try {
         Some(req.responseText)

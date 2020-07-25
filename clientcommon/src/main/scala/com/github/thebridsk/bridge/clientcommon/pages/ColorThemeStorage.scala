@@ -2,7 +2,6 @@
 package com.github.thebridsk.bridge.clientcommon.pages
 
 import org.scalajs.dom.document
-import org.scalajs.dom.raw.StorageEvent
 import com.github.thebridsk.utilities.logging.Logger
 
 object ColorThemeStorage {

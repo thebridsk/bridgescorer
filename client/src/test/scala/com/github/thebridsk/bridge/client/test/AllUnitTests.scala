@@ -1,8 +1,6 @@
 package com.github.thebridsk.bridge.client.test
 
 import org.scalatest.Sequential
-import scala.scalajs.js.annotation.JSExport
-import scala.scalajs.js.annotation.JSExportTopLevel
 
 /**
  * @author werewolf

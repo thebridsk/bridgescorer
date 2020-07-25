@@ -1,7 +1,6 @@
 package com.github.thebridsk.bridge.clientcommon.demo
 
 import scala.scalajs.js.annotation.JSExportTopLevel
-import scala.scalajs.js.annotation.JSExport
 import scala.scalajs.js
 
 /**

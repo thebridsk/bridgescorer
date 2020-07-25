@@ -2,16 +2,10 @@ package com.github.thebridsk.bridge.clientcommon.graphql
 
 import play.api.libs.json._
 import com.github.thebridsk.utilities.logging.Logger
-import scala.concurrent.Future
 import scala.concurrent.duration.Duration
 import com.github.thebridsk.bridge.clientcommon.rest2.AjaxResult
 import org.scalactic.source.Position
 import com.github.thebridsk.bridge.data.rest.JsonSupport._
-import scala.reflect.ClassTag
-import scala.util.Success
-import scala.util.Failure
-import com.github.thebridsk.bridge.data.rest.JsonException
-import scala.util.Try
 import scala.concurrent.ExecutionContext
 import com.github.thebridsk.source.SourcePosition
 import com.github.thebridsk.bridge.clientcommon.rest2.AjaxErrorReturn
@@ -67,7 +61,6 @@ class GraphQLBaseClient(
                         executor: ExecutionContext
                     ) {
   import GraphQLBaseClient._
-  import scala.language.implicitConversions
 
   def toGraphQLResponse( json: JsValue ) = {
     Json.fromJson[GraphQLResponse](json) match {

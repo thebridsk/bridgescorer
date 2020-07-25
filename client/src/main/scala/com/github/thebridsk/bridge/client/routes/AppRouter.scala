@@ -9,10 +9,8 @@ import com.github.thebridsk.bridge.client.pages.HomePage
 import com.github.thebridsk.bridge.client.pages.hand.PageHand
 import com.github.thebridsk.utilities.logging.Logger
 import japgolly.scalajs.react.Callback
-import japgolly.scalajs.react.CallbackTo
 import com.github.thebridsk.bridge.client.pages.ThankYouPage
 import com.github.thebridsk.bridge.client.pages.AboutPage
-import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles.baseStyles
 import org.scalajs.dom.raw.File
 import com.github.thebridsk.bridge.data.Team
 
@@ -57,7 +55,6 @@ import com.github.thebridsk.bridge.clientcommon.logger.Alerter
 import org.scalactic.source.Position
 import com.github.thebridsk.bridge.client.pages.ExportPage
 import com.github.thebridsk.bridge.client.pages.ImportsListPage
-import com.github.thebridsk.bridge.client.pages.duplicate.DuplicatePageBridgeAppBar
 import com.github.thebridsk.bridge.client.pages.RootBridgeAppBar
 import com.github.thebridsk.materialui.MuiTypography
 import com.github.thebridsk.materialui.TextVariant

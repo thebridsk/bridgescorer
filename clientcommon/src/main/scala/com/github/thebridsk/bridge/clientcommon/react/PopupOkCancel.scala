@@ -4,7 +4,6 @@ import japgolly.scalajs.react.vdom.TagMod
 import japgolly.scalajs.react.Callback
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.html_<^._
-import scala.reflect.ClassTag
 
 object PopupOkCancelImplicits {
   import scala.language.implicitConversions

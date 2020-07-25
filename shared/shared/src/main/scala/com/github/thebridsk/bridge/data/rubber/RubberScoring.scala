@@ -1,7 +1,6 @@
 package com.github.thebridsk.bridge.data.rubber
 
 import com.github.thebridsk.bridge.data.MatchRubber
-import com.github.thebridsk.bridge.data.Hand
 import com.github.thebridsk.bridge.data.bridge.RubberBridge.ScoreHand
 import com.github.thebridsk.bridge.data.RubberHand
 import com.github.thebridsk.bridge.data.bridge.PlayerPosition

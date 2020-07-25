@@ -5,24 +5,12 @@ import org.scalatest.matchers.must.Matchers
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest._
 import org.openqa.selenium._
-import org.scalatest.concurrent.Eventually
 import java.util.concurrent.TimeUnit
-import com.github.thebridsk.bridge.server.Server
-import com.github.thebridsk.bridge.data.bridge._
-import com.github.thebridsk.bridge.server.backend.BridgeServiceInMemory
-import com.github.thebridsk.bridge.server.backend.BridgeService
 import org.scalatest.time.Span
 import org.scalatest.time.Millis
 import com.github.thebridsk.bridge.data.bridge._
-import scala.jdk.CollectionConverters._
-import scala.util.Failure
-import scala.concurrent._
-import ExecutionContext.Implicits.global
 import com.github.thebridsk.utilities.logging.Logger
-import java.util.logging.Level
 import org.scalactic.source.Position
-import com.github.thebridsk.bridge.data.util.Strings
-import com.github.thebridsk.bridge.server.test.util.NoResultYet
 import com.github.thebridsk.bridge.server.test.util.EventuallyUtils
 import com.github.thebridsk.bridge.server.test.util.ParallelUtils
 import org.scalatest.concurrent.Eventually
@@ -30,37 +18,17 @@ import com.github.thebridsk.bridge.fullserver.test.pages.bridge.HomePage
 import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.ListDuplicatePage
 import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.NewDuplicatePage
 import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.MovementsPage
-import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.BoardSetsPage
 import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.ScoreboardPage
 import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.TablePage
 import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.TablePage.EnterNames
 import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.TableEnterScorekeeperPage
-import com.github.thebridsk.browserpages.GenericPage
 import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.HandPage
 import com.github.thebridsk.bridge.server.test.TestStartLogging
-import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.BoardPage
 import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.TablePage.SelectNames
-import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.TablePage.Hands
 import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.TableSelectScorekeeperPage
 import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.Team
-import com.github.thebridsk.browserpages.Page.AnyPage
 import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.EnterHand
-import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.AllHandsInMatch
-import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.HandsOnBoard
-import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.OtherHandNotPlayed
-import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.OtherHandPlayed
-import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.TeamScoreboard
-import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.HandDirectorView
-import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.HandCompletedView
-import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.HandTableView
-import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.ScoreboardPage.PlaceEntry
-import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.ScoreboardPage.PlaceEntry
 import java.net.URL
-import com.github.thebridsk.bridge.data.MatchDuplicate
-import scala.io.Source
-import scala.io.Codec
-import com.github.thebridsk.utilities.file.FileIO
-import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.PeopleRow
 import com.github.thebridsk.bridge.data.BoardSet
 import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.TablePage.MissingNames
 import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.TableEnterMissingNamesPage
@@ -462,7 +430,6 @@ class DuplicateTestPages2 extends AnyFlatSpec
   behavior of "Names resource"
 
   it should "show the names without leading and trailing spaces" in {
-    import com.github.thebridsk.bridge.server.rest.UtilsPlayJson._
     val rnames: ResponseFromHttp[Option[Array[String]]] = HttpUtils.getHttpObject( new URL(TestServer.hosturl+"v1/rest/names") )
 
     rnames.data match {

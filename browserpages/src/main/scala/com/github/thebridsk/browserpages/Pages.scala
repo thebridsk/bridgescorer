@@ -1,9 +1,6 @@
 
 package com.github.thebridsk.browserpages
 
-import scala.concurrent.Future
-import com.github.thebridsk.utilities.main.Main
-import scala.concurrent.duration.Duration
 import org.openqa.selenium.WebDriver
 import com.github.thebridsk.source.SourcePosition
 import org.scalactic.source.Position
@@ -12,15 +9,8 @@ import org.scalatest.concurrent.Eventually.PatienceConfig
 import org.scalatest.matchers.must.Matchers._
 import com.github.thebridsk.utilities.logging.Logger
 import org.openqa.selenium.By.ByName
-import org.openqa.selenium.By.ByTagName
 import scala.jdk.CollectionConverters._
-import scala.reflect.ClassTag
-import org.openqa.selenium.Keys
 import org.openqa.selenium.By
-import org.openqa.selenium.WebElement
-import org.openqa.selenium.JavascriptExecutor
-import org.scalatest.Failed
-import org.scalatest.Canceled
 
 object Page {
   val testlog = Logger( getClass.getName )

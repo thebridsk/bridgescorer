@@ -1,30 +1,14 @@
 package com.github.thebridsk.bridge.server.service
 
 import com.github.thebridsk.bridge.server.rest.Service
-import akka.event.Logging.DebugLevel
-import akka.event.Logging.ErrorLevel
-import akka.event.Logging.LogLevel
-import com.github.thebridsk.bridge.server.backend.BridgeServiceInMemory
-import akka.actor.ActorRef
-import akka.io.Tcp
-import akka.io.IO
 import akka.actor.ActorSystem
-import akka.util.Timeout
 import scala.concurrent.duration._
-import com.github.thebridsk.bridge.server.backend.BridgeService
-import java.util.Date
 import akka.http.scaladsl.model._
 import akka.http.scaladsl.server._
 import akka.http.scaladsl.server.Directives._
-import akka.http.scaladsl.marshalling.ToResponseMarshaller
-import akka.http.scaladsl.unmarshalling.FromRequestUnmarshaller
 import com.github.thebridsk.bridge.server.util.HasActorSystem
 import com.github.swagger.akka.model._
 import akka.event.Logging
-import akka.util.ByteString
-import akka.event.LoggingAdapter
-import com.github.thebridsk.bridge.server.Server
-import com.github.thebridsk.bridge.server.StartServer
 import scala.concurrent.Future
 import com.github.thebridsk.bridge.server.webjar.WebJar
 import com.github.thebridsk.bridge.server.rest.ServerPort
@@ -33,14 +17,10 @@ import io.swagger.v3.oas.models.Components
 import io.swagger.v3.oas.models.security.SecurityRequirement
 import io.swagger.v3.oas.models.security.SecurityScheme
 import io.swagger.v3.oas.models.ExternalDocumentation
-import com.github.thebridsk.bridge.server.rest.ImportExport
 import io.swagger.v3.jaxrs2.Reader
-import com.github.swagger.akka.SwaggerHttpService
 import io.swagger.v3.oas.integration.SwaggerConfiguration
-import com.github.thebridsk.bridge.server.rest.RestDuplicate
 import ch.megard.akka.http.cors.scaladsl.CorsDirectives
 import java.util.TreeMap
-import io.swagger.v3.oas.models.media.Schema
 import io.swagger.v3.core.util.Json
 import scala.util.control.NonFatal
 import io.swagger.v3.core.util.Yaml
@@ -62,7 +42,6 @@ trait MyService
     with HasActorSystem {
   hasActorSystem: HasActorSystem =>
 
-  import hasActorSystem._
 
   val addLoggingAndServerToSwagger = true
 

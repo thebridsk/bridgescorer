@@ -6,8 +6,6 @@ import org.scalatest.matchers.must.Matchers._
 import com.github.thebridsk.browserpages.Page
 import com.github.thebridsk.browserpages.PageBrowser._
 import org.openqa.selenium.WebDriver
-import com.github.thebridsk.color.Color
-import com.github.thebridsk.browserpages.GenericPage
 
 trait FullscreenAddOn[+T <: Page[T]] {
   page: Page[T] =>

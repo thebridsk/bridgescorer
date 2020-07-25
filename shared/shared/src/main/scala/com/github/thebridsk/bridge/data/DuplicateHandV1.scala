@@ -4,7 +4,6 @@ import com.github.thebridsk.bridge.data.bridge.DuplicateBridge
 import com.github.thebridsk.bridge.data.SystemTime.Timestamp
 import com.github.thebridsk.bridge.data.bridge.DuplicateBridge.DuplicateScore
 
-import scala.annotation.meta._
 import io.swagger.v3.oas.annotations.media.Schema
 
 @Schema(description = "A hand from a duplicate match")

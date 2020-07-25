@@ -1,6 +1,5 @@
 package com.github.thebridsk.bridge.data.graphql
 
-import scala.annotation.meta._
 import play.api.libs.json._
 import scala.reflect.ClassTag
 import org.scalactic.source.Position

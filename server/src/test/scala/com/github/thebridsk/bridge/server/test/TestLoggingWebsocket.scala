@@ -4,7 +4,6 @@ import java.net.InetAddress
 
 import scala.language.postfixOps
 
-import org.scalatest._
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.must.Matchers
 
@@ -13,8 +12,6 @@ import com.github.thebridsk.bridge.server.service.MyService
 import akka.event.Logging
 import akka.http.scaladsl.model.RemoteAddress.IP
 import akka.http.scaladsl.model.headers.`Remote-Address`
-import akka.http.scaladsl.model.ws.BinaryMessage
-import akka.http.scaladsl.model.ws.Message
 import akka.http.scaladsl.model.ws.TextMessage
 import akka.http.scaladsl.testkit.ScalatestRouteTest
 import akka.http.scaladsl.testkit.WSProbe
@@ -164,7 +161,6 @@ class TestLoggingWebsocket extends AnyFlatSpec with ScalatestRouteTest with Matc
 
   def getLogEntry( i: Int ) = {
     import com.github.thebridsk.bridge.data.websocket.DuplexProtocol
-    import com.github.thebridsk.bridge.data.websocket.Protocol
 
     //  position: String, timestamp: Long, level: String, url: String, message: String, cause: String, args: List[String])
     val dp = DuplexProtocol.LogEntryV2( position, "logger", System.currentTimeMillis().toDouble, "I", "http://example.com/test", "message: %s %s %s", "", List("hello", "world", i.toString()))

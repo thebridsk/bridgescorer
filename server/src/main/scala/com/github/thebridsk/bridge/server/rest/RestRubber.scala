@@ -2,18 +2,13 @@ package com.github.thebridsk.bridge.server.rest
 
 import com.github.thebridsk.bridge.server.backend.BridgeService
 import com.github.thebridsk.bridge.data.MatchRubber
-import akka.event.Logging
 import akka.event.Logging._
-import akka.http.scaladsl.model.StatusCode
 import akka.http.scaladsl.model.StatusCodes._
 import akka.http.scaladsl.server.Directives._
-import akka.stream.Materializer
 import com.github.thebridsk.bridge.server.util.HasActorSystem
 import javax.ws.rs.Path
 import com.github.thebridsk.bridge.data.RestMessage
-import com.github.thebridsk.bridge.data.Id
 import scala.util.Sorting
-import akka.http.scaladsl.model.headers.Location
 import scala.concurrent.ExecutionContext.Implicits.global
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
@@ -44,7 +39,6 @@ object RestRubber {
 
 import RestRubber._
 import com.github.thebridsk.bridge.server.backend.BridgeNestedResources
-import com.github.thebridsk.bridge.server.backend.resource.Resources
 
 /**
   * Rest API implementation for the board resource.

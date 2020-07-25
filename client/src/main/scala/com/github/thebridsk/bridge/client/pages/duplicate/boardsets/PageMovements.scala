@@ -1,15 +1,11 @@
 package com.github.thebridsk.bridge.client.pages.duplicate.boardsets
 
-import scala.scalajs.js
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
 import com.github.thebridsk.bridge.client.bridge.store.BoardSetStore
 import com.github.thebridsk.bridge.client.controller.BoardSetController
-import com.github.thebridsk.bridge.data.BoardSet
 import com.github.thebridsk.utilities.logging.Logger
-import japgolly.scalajs.react.extra.router.RouterCtl
 import com.github.thebridsk.bridge.client.routes.BridgeRouter
-import com.github.thebridsk.bridge.data.BoardInSet
 import com.github.thebridsk.bridge.data.Movement
 import com.github.thebridsk.bridge.data.HandInTable
 import com.github.thebridsk.bridge.client.pages.duplicate.DuplicatePage
@@ -26,7 +22,6 @@ import japgolly.scalajs.react.component.builder.Lifecycle.ComponentDidUpdate
 import com.github.thebridsk.bridge.client.pages.duplicate.DuplicateRouter.MovementEditView
 import _root_.com.github.thebridsk.bridge.client.pages.duplicate.DuplicateRouter.MovementNewView
 import com.github.thebridsk.bridge.clientcommon.react.PopupOkCancel
-import com.github.thebridsk.bridge.clientcommon.rest2.RestClientMovement
 import scala.util.Success
 import scala.util.Failure
 import scala.concurrent.ExecutionContext.Implicits.global

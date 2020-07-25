@@ -1,9 +1,6 @@
 package com.github.thebridsk.materialui
 
 import japgolly.scalajs.react._
-import japgolly.scalajs.react.raw._
-import japgolly.scalajs.react.vdom._
-import org.scalajs.dom
 import scala.scalajs.js
 import scala.scalajs.js.annotation._
 
@@ -40,7 +37,7 @@ trait ListItemProps extends AdditionalProps with ListItemPropsPrivate with Stand
 
 object ListItemProps extends PropsFactory[ListItemProps] {
 
-  implicit class WrapListItemProps(val p: ListItemProps) extends AnyVal {
+  implicit class WrapListItemProps(private val p: ListItemProps) extends AnyVal {
     def alignItems = p.alignItemsInternal.map(s => new AlignItem(s))
 
 //    def alignItems_= (v: js.UndefOr[AlignItem]): Unit = {

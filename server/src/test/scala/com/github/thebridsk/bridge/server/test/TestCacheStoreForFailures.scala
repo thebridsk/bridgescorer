@@ -1,8 +1,6 @@
 package com.github.thebridsk.bridge.server.test
 
 import akka.http.scaladsl.testkit.ScalatestRouteTest
-import com.github.thebridsk.bridge.server.backend.resource.InMemoryStore
-import com.github.thebridsk.bridge.data.Id
 import com.github.thebridsk.bridge.data.MatchDuplicate
 import com.github.thebridsk.bridge.server.backend.BridgeResources
 import com.github.thebridsk.bridge.data.sample.TestMatchDuplicate
@@ -14,10 +12,8 @@ import scala.concurrent.Future
 import com.github.thebridsk.bridge.server.backend.resource.Result
 import org.scalactic.source.Position
 import com.github.thebridsk.source.SourcePosition
-import com.github.thebridsk.bridge.server.backend.DuplicateTeamsNestedResource
 import com.github.thebridsk.bridge.data.Team
 import com.github.thebridsk.bridge.data.BoardSet
-import com.github.thebridsk.bridge.server.backend.resource.JavaResourceStore
 import akka.http.scaladsl.model.StatusCode
 import akka.http.scaladsl.model.StatusCodes
 import com.github.thebridsk.bridge.server.backend.resource.StoreListener
@@ -29,24 +25,14 @@ import com.github.thebridsk.bridge.server.backend.DuplicateHandsNestedResource
 import com.github.thebridsk.bridge.data.Hand
 import com.github.thebridsk.bridge.data.DuplicateHand
 import com.github.thebridsk.bridge.data.Board
-import com.github.thebridsk.bridge.server.backend.resource.ChangeContextData
 import scala.concurrent.duration._
 import com.github.thebridsk.bridge.data.Movement
-import scala.concurrent.Promise
 import scala.util.Success
 import scala.util.Failure
-import com.github.thebridsk.bridge.server.backend.resource.FileStore
-import scala.reflect.io.Directory
-import com.github.thebridsk.utilities.file.FileIO
-import com.github.thebridsk.bridge.server.backend.resource.MultiStore
 import com.github.thebridsk.bridge.server.backend.resource.Store
-import com.github.thebridsk.bridge.server.backend.resource.InMemoryPersistent
-import com.github.thebridsk.bridge.data.VersionedInstance
-import com.github.thebridsk.bridge.server.backend.resource.StoreSupport
 import scala.util.Try
 import com.github.thebridsk.bridge.server.backend.resource.ChangeContextData
 import com.github.thebridsk.bridge.server.backend.resource.JavaResourcePersistentSupport
-import com.github.thebridsk.bridge.server.backend.resource.Implicits._
 import com.github.thebridsk.bridge.data.RestMessage
 import com.github.thebridsk.bridge.server.test.backend.TestFailurePersistent
 import com.github.thebridsk.bridge.server.test.backend.TestFailureStore
@@ -277,7 +263,7 @@ object TestCacheStoreForFailures {
     fut
   }
 
-  implicit class WrapFuture[T]( val f: Future[Result[T]] ) extends AnyVal {
+  implicit class WrapFuture[T]( private val f: Future[Result[T]] ) extends AnyVal {
 
     def test( comment: String )(block: Try[Result[T]]=>Assertion)( implicit pos: SourcePosition, ec: ExecutionContext ): Future[Assertion] = {
       val b: Try[Result[T]]=>Future[Assertion] = t => Future {block(t)}
@@ -290,7 +276,7 @@ object TestCacheStoreForFailures {
 
   }
 
-  implicit class TestResult[T]( val r: Result[T] ) extends AnyVal {
+  implicit class TestResult[T]( private val r: Result[T] ) extends AnyVal {
     def resultFailed( comment: String )( implicit pos: SourcePosition): Result[T] = {
       r match {
         case Left((statusCode,msg)) =>

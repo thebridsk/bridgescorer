@@ -5,25 +5,15 @@ import org.scalatest.matchers.must.Matchers
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest._
 import org.openqa.selenium._
-import org.scalatest.concurrent.Eventually
 import java.util.concurrent.TimeUnit
-import com.github.thebridsk.bridge.server.Server
 import com.github.thebridsk.bridge.data
-import com.github.thebridsk.bridge.data.bridge._
-import com.github.thebridsk.bridge.server.backend.BridgeServiceInMemory
-import com.github.thebridsk.bridge.server.backend.BridgeService
 import org.scalatest.time.Span
 import org.scalatest.time.Millis
 import com.github.thebridsk.bridge.data.bridge._
-import scala.jdk.CollectionConverters._
-import scala.util.Failure
 import scala.concurrent._
 import ExecutionContext.Implicits.global
 import com.github.thebridsk.utilities.logging.Logger
-import java.util.logging.Level
-import org.scalactic.source.Position
 import com.github.thebridsk.bridge.data.util.Strings
-import com.github.thebridsk.bridge.server.test.util.NoResultYet
 import com.github.thebridsk.bridge.server.test.util.EventuallyUtils
 import com.github.thebridsk.bridge.server.test.util.ParallelUtils
 import org.scalatest.concurrent.Eventually
@@ -35,7 +25,6 @@ import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.ScoreboardPag
 import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.TablePage
 import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.TablePage.EnterNames
 import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.TableEnterScorekeeperPage
-import com.github.thebridsk.browserpages.GenericPage
 import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.HandPage
 import com.github.thebridsk.bridge.server.test.TestStartLogging
 import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.BoardPage
@@ -43,7 +32,6 @@ import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.TablePage.Sel
 import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.TablePage.Hands
 import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.TableSelectScorekeeperPage
 import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.Team
-import com.github.thebridsk.browserpages.Page.AnyPage
 import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.EnterHand
 import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.AllHandsInMatch
 import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.HandsOnBoard
@@ -54,13 +42,11 @@ import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.HandDirectorV
 import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.HandCompletedView
 import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.HandTableView
 import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.ScoreboardPage.PlaceEntry
-import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.ScoreboardPage.PlaceEntry
 import java.net.URL
 import com.github.thebridsk.bridge.data.MatchDuplicate
 import scala.io.Source
 import scala.io.Codec
 import com.github.thebridsk.utilities.file.FileIO
-import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.PeopleRow
 import com.github.thebridsk.bridge.data.BoardSet
 import com.github.thebridsk.bridge.server.test.util.MonitorTCP
 import com.github.thebridsk.bridge.server.backend.BridgeServiceFileStoreConverters
@@ -69,13 +55,10 @@ import com.github.thebridsk.bridge.fullserver.test.pages.bridge.HomePage
 import java.util.zip.ZipFile
 import scala.reflect.io.File
 import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.PeopleRowMP
-import com.github.thebridsk.browserpages.Page
 import com.github.thebridsk.browserpages.PageBrowser
 import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.SuggestionPage
 import java.io.OutputStreamWriter
 import java.io.InputStream
-import play.api.libs.json.JsObject
-import play.api.libs.json.JsString
 import play.api.libs.json.Json
 import play.api.libs.json.JsSuccess
 import play.api.libs.json.JsError
@@ -85,7 +68,6 @@ import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.StatisticsPag
 import com.github.thebridsk.bridge.fullserver.test.pages.LightDarkAddOn
 import scala.util.Using
 import scala.math.Ordering.Double.TotalOrdering
-import com.github.thebridsk.bridge.data.Id
 import com.github.thebridsk.bridge.server.test.util.TestServer
 import com.github.thebridsk.browserpages.Checkbox
 

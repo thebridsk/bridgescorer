@@ -6,8 +6,6 @@ import com.github.thebridsk.bridge.data.MatchDuplicate
 import com.github.thebridsk.bridge.data.Board
 import com.github.thebridsk.bridge.data.Team
 import com.github.thebridsk.bridge.data.Id
-import akka.http.scaladsl.model.StatusCodes
-import com.github.thebridsk.bridge.data.RestMessage
 import com.github.thebridsk.bridge.server.backend.resource.StoreSupport
 import com.github.thebridsk.bridge.server.backend.resource.VersionedInstanceJson
 import com.github.thebridsk.bridge.server.backend.resource.PersistentSupport
@@ -635,7 +633,7 @@ object RubberHandNestedResource
 object BridgeNestedResources {
 
   implicit class WrapMatchDuplicateResource(
-      val r: Resource[MatchDuplicate.Id, MatchDuplicate]
+      private val r: Resource[MatchDuplicate.Id, MatchDuplicate]
   ) extends AnyVal {
     def resourceBoards(implicit execute: ExecutionContext) =
       r.nestedResource(DuplicateBoardsNestedResource)
@@ -643,26 +641,26 @@ object BridgeNestedResources {
       r.nestedResource(DuplicateTeamsNestedResource)
   }
 
-  implicit class WrapBoardResource(val r: Resource[Board.Id, Board])
+  implicit class WrapBoardResource(private val r: Resource[Board.Id, Board])
       extends AnyVal {
     def resourceHands(implicit execute: ExecutionContext) =
       r.nestedResource(DuplicateHandsNestedResource)
   }
 
   implicit class WrapMatchChicagoResource(
-      val r: Resource[MatchChicago.Id, MatchChicago]
+      private val r: Resource[MatchChicago.Id, MatchChicago]
   ) extends AnyVal {
     def resourceRounds(implicit execute: ExecutionContext) =
       r.nestedResource(ChicagoRoundNestedResource)
   }
 
-  implicit class WrapMatchChicagoRoundResource(val r: Resource[String, Round])
+  implicit class WrapMatchChicagoRoundResource(private val r: Resource[String, Round])
       extends AnyVal {
     def resourceHands(implicit execute: ExecutionContext) =
       r.nestedResource(ChicagoRoundHandNestedResource)
   }
 
-  implicit class WrapMatchRubberResource(val r: Resource[MatchRubber.Id, MatchRubber])
+  implicit class WrapMatchRubberResource(private val r: Resource[MatchRubber.Id, MatchRubber])
       extends AnyVal {
     def resourceHands(implicit execute: ExecutionContext) =
       r.nestedResource(RubberHandNestedResource)

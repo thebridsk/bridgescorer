@@ -13,7 +13,6 @@ import com.github.thebridsk.bridge.client.bridge.action.ActionUpdateChicago5
 import com.github.thebridsk.bridge.client.bridge.action.ChicagoBridgeAction
 import com.github.thebridsk.utilities.logging.Logger
 import com.github.thebridsk.bridge.clientcommon.logger.Alerter
-import com.github.thebridsk.bridge.client.Bridge
 import com.github.thebridsk.bridge.clientcommon.demo.BridgeDemo
 
 object ChicagoStore extends ChangeListenable {

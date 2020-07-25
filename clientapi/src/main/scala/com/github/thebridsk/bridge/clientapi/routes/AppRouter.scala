@@ -3,15 +3,12 @@ package com.github.thebridsk.bridge.clientapi.routes
 import japgolly.scalajs.react.extra.router.{Resolution, RouterConfigDsl, RouterCtl, Router, _}
 import japgolly.scalajs.react.vdom.html_<^._
 import org.scalajs.dom.document
-import com.github.thebridsk.bridge.data.bridge._
 import com.github.thebridsk.bridge.clientapi.pages.info.InfoPage
 import com.github.thebridsk.bridge.clientapi.pages.HomePage
 import com.github.thebridsk.utilities.logging.Logger
 import japgolly.scalajs.react.Callback
-import japgolly.scalajs.react.CallbackTo
 import com.github.thebridsk.bridge.clientapi.pages.ThankYouPage
 import com.github.thebridsk.bridge.clientapi.pages.AboutPage
-import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles.baseStyles
 import com.github.thebridsk.bridge.clientcommon.logger.{ Info => LogInfo }
 
 object AppRouter {
@@ -50,10 +47,6 @@ import com.github.thebridsk.bridge.clientapi.pages.GraphQLPage
 import com.github.thebridsk.bridge.clientapi.pages.ColorPage
 import com.github.thebridsk.bridge.clientapi.pages.VoyagerPage
 import com.github.thebridsk.bridge.clientapi.pages.GraphiQLPage
-import com.github.thebridsk.bridge.clientapi.pages.RootBridgeAppBar
-import com.github.thebridsk.materialui.MuiTypography
-import com.github.thebridsk.materialui.TextVariant
-import com.github.thebridsk.materialui.TextColor
 import com.github.thebridsk.bridge.clientapi.pages.LogPage
 
 class AppRouter {

@@ -2,15 +2,10 @@ package com.github.thebridsk.bridge.server.manualtest
 
 import com.github.thebridsk.utilities.main.Main
 import scala.reflect.io.Path
-import org.rogach.scallop._
 import com.github.thebridsk.utilities.main.Converters._
-import com.github.thebridsk.utilities.logging.Logger
-import java.util.logging.Level
 import com.github.thebridsk.bridge.server.backend.BridgeServiceFileStore
-import com.github.thebridsk.bridge.server.backend.BridgeService
 import com.github.thebridsk.bridge.data.MatchDuplicate
 import com.github.thebridsk.bridge.server.backend.BridgeServiceInMemory
-import com.github.thebridsk.bridge.server.backend.resource.SyncStore
 import scala.concurrent.Await
 import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext.Implicits.global

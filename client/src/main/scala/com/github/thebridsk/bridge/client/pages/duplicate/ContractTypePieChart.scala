@@ -2,9 +2,6 @@ package com.github.thebridsk.bridge.client.pages.duplicate
 
 import japgolly.scalajs.react.vdom.html_<^._
 import com.github.thebridsk.color.Color
-import com.github.thebridsk.bridge.clientcommon.react.PieChart
-import com.github.thebridsk.bridge.data.duplicate.stats.CounterStat
-import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles.baseStyles
 import com.github.thebridsk.bridge.clientcommon.react.PieChartWithTooltip.IntLegendUtil
 import com.github.thebridsk.bridge.clientcommon.react.PieChartWithTooltip
 import com.github.thebridsk.bridge.clientcommon.react.ColorBar

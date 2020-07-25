@@ -1,27 +1,11 @@
 package com.github.thebridsk.bridge.client.pages.duplicate
 
-import scala.scalajs.js
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
-import com.github.thebridsk.bridge.data.duplicate.stats.PlayerStats
-import com.github.thebridsk.bridge.data.duplicate.stats.ContractStats
-import com.github.thebridsk.bridge.data.duplicate.stats.ContractType
-import com.github.thebridsk.bridge.data.duplicate.stats.PlayerStat
-import com.github.thebridsk.bridge.data.duplicate.stats.CounterStat
-import com.github.thebridsk.bridge.data.duplicate.stats.ContractTypePassed
-import com.github.thebridsk.bridge.data.duplicate.stats.ContractTypePartial
-import com.github.thebridsk.bridge.data.duplicate.stats.ContractTypeGame
-import com.github.thebridsk.bridge.data.duplicate.stats.ContractTypeSlam
-import com.github.thebridsk.bridge.data.duplicate.stats.ContractTypeGrandSlam
-import com.github.thebridsk.bridge.data.duplicate.stats.ContractType
-import scala.annotation.tailrec
-import com.github.thebridsk.bridge.data.duplicate.stats.ContractTypeTotal
 import com.github.thebridsk.utilities.logging.Logger
 import com.github.thebridsk.bridge.clientcommon.react.Table.Column
 import com.github.thebridsk.bridge.clientcommon.react.Table
-import com.github.thebridsk.bridge.data.duplicate.stats.ContractStat
 import DuplicateStyles._
-import com.github.thebridsk.bridge.data.duplicate.stats.ContractTypeDoubledToGame
 import com.github.thebridsk.bridge.data.duplicate.stats.PlayerComparisonStats
 import com.github.thebridsk.bridge.data.duplicate.stats.PlayerComparisonStat
 import PlayerComparisonStat.{SameSide, Competitive, PassedOut}

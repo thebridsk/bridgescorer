@@ -8,7 +8,6 @@ import org.scalatest.matchers.must.Matchers._
 import com.github.thebridsk.browserpages.PageBrowser._
 import com.github.thebridsk.bridge.server.test.util.TestServer
 import com.github.thebridsk.utilities.logging.Logger
-import com.github.thebridsk.bridge.data.{ Team => DataTeam }
 import com.github.thebridsk.browserpages.Page
 
 object DuplicateResultEditPage {

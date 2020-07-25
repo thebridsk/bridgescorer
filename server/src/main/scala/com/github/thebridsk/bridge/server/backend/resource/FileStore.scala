@@ -2,7 +2,6 @@ package com.github.thebridsk.bridge.server.backend.resource
 
 import scala.concurrent.duration._
 import akka.http.scaladsl.model.StatusCodes
-import com.github.thebridsk.bridge.data.RestMessage
 import com.github.thebridsk.bridge.data.VersionedInstance
 import scala.reflect.io.Directory
 import com.github.thebridsk.utilities.logging.Logger
@@ -12,11 +11,8 @@ import java.io.IOException
 import FileStore.log
 import scala.concurrent.ExecutionContext
 import scala.concurrent.Future
-import com.github.thebridsk.bridge.data.Id
 import com.github.thebridsk.utilities.file.FileIO
 import scala.reflect.io.File
-import scala.reflect.io.Streamable.Bytes
-import scala.reflect.io.Path
 import java.io.FileInputStream
 import java.nio.file.Files
 import java.nio.file.StandardCopyOption

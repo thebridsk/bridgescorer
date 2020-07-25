@@ -1,16 +1,13 @@
 package com.github.thebridsk.bridge.server.test.util
 
-import java.util.Date
 import scala.concurrent.duration._
 import scala.language.postfixOps
-import java.util.logging.Level
 import com.github.thebridsk.utilities.logging.Logger
 import com.github.thebridsk.utilities.logging.Logging
 import java.io.PrintWriter
 import java.io.BufferedWriter
 import java.io.OutputStreamWriter
 import java.io.FileOutputStream
-import java.util.concurrent.TimeoutException
 import java.time.format.DateTimeFormatter
 import java.time.Instant
 import java.time.ZoneId

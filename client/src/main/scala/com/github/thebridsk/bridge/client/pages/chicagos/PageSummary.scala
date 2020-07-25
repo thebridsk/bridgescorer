@@ -6,14 +6,12 @@ import com.github.thebridsk.bridge.data.chicago.ChicagoScoring
 import com.github.thebridsk.utilities.logging.Logger
 import com.github.thebridsk.bridge.client.pages.hand.ComponentInputStyleButton
 import japgolly.scalajs.react._
-import japgolly.scalajs.react.extra.router.RouterCtl
 import japgolly.scalajs.react.vdom.html_<^._
 import com.github.thebridsk.bridge.client.pages.chicagos.ChicagoRouter.RoundView
 import com.github.thebridsk.bridge.client.pages.chicagos.ChicagoRouter.SummaryView
 import com.github.thebridsk.bridge.client.pages.chicagos.ChicagoRouter.ListView
 import com.github.thebridsk.bridge.clientcommon.react.AppButton
 import com.github.thebridsk.bridge.clientcommon.react.Utils._
-import com.github.thebridsk.bridge.clientcommon.react.HelpButton
 import com.github.thebridsk.materialui.MuiTypography
 import com.github.thebridsk.materialui.TextVariant
 import com.github.thebridsk.materialui.TextColor
@@ -347,7 +345,6 @@ object PageSummaryInternal {
           case Right(RoundView(chiid, round)) => chiid
         })
         logger.info(s"PageSummary.didMount on $chiid")
-        import scala.concurrent.ExecutionContext.Implicits.global
 //      ChicagoController.ensureMatch(chiid).foreach( m => scope.withEffectsImpure.forceUpdate )
         ChicagoController.monitor(chiid)
       }

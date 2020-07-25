@@ -1,17 +1,9 @@
 package com.github.thebridsk.bridge.client
 
-import com.github.thebridsk.bridge.data.Table
 import org.scalajs.dom.document
-import japgolly.scalajs.react.vdom.html_<^._
-import japgolly.scalajs.react._
-import com.github.thebridsk.bridge.data.bridge._
-import japgolly.scalajs.react.extra.router.RouterConfigDsl
-import com.github.thebridsk.bridge.client.pages.hand._
 import com.github.thebridsk.bridge.client.routes.AppRouter
 import org.scalajs.dom.raw.HTMLElement
 import org.scalajs.dom.raw.Node
-import com.github.thebridsk.bridge.data.SystemTime
-import scala.scalajs.js.Date
 import com.github.thebridsk.bridge.data.js.SystemTimeJs
 import com.github.thebridsk.bridge.client.bridge.store.NamesStore
 import com.github.thebridsk.bridge.client.pages.chicagos.ChicagoModule
@@ -20,12 +12,8 @@ import com.github.thebridsk.bridge.client.pages.rubber.RubberModule
 import com.github.thebridsk.utilities.logging.Logger
 import com.github.thebridsk.bridge.client.modules.Loader
 import com.github.thebridsk.bridge.clientcommon.logger.Alerter
-import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles
 import scala.scalajs.js.annotation.JSExportTopLevel
 import scala.scalajs.js.annotation.JSExport
-import org.scalajs.dom.raw.Event
-import scala.scalajs.js
-import scala.scalajs.js.annotation.JSGlobal
 import com.github.thebridsk.bridge.clientcommon.rest2.AjaxResult
 import com.github.thebridsk.bridge.clientcommon.demo.BridgeDemo
 import com.github.thebridsk.bridge.clientcommon.pages.ColorThemeStorage

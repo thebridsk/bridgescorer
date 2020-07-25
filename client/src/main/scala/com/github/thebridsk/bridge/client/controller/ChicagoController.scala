@@ -1,7 +1,6 @@
 package com.github.thebridsk.bridge.client.controller
 
 import com.github.thebridsk.utilities.logging.Logger
-import japgolly.scalajs.react._
 import com.github.thebridsk.bridge.data.MatchChicago
 import com.github.thebridsk.bridge.clientcommon.rest2.RestClientChicago
 import com.github.thebridsk.bridge.client.bridge.store.ChicagoStore
@@ -9,12 +8,7 @@ import com.github.thebridsk.bridge.client.bridge.action.BridgeDispatcher
 import com.github.thebridsk.bridge.data.Round
 import com.github.thebridsk.bridge.data.Hand
 import com.github.thebridsk.bridge.clientcommon.rest2.RestResult
-import com.github.thebridsk.bridge.clientcommon.rest2.Result
-import com.github.thebridsk.bridge.clientcommon.rest2.ResultRecorder
 import scala.concurrent.ExecutionContext
-import scala.concurrent.duration.Duration
-import scala.concurrent.CanAwait
-import scala.util.Try
 import scala.concurrent.Future
 import com.github.thebridsk.bridge.clientcommon.rest2.ResultObject
 import com.github.thebridsk.bridge.clientcommon.rest2.AjaxResult
@@ -30,8 +24,6 @@ import play.api.libs.json.JsSuccess
 import play.api.libs.json.JsError
 import play.api.libs.json.JsUndefined
 import com.github.thebridsk.bridge.clientcommon.logger.Alerter
-import com.github.thebridsk.bridge.data.Id
-import com.github.thebridsk.bridge.client.Bridge
 import com.github.thebridsk.bridge.client.bridge.store.ChicagoSummaryStore
 import scala.util.Success
 import scala.util.Failure

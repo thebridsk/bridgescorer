@@ -5,13 +5,10 @@ import org.scalatest.matchers.must.Matchers
 import com.github.thebridsk.bridge.server.test.TestStartLogging
 import com.github.thebridsk.utilities.logging.Logger
 import com.github.thebridsk.bridge.server.test.util.MonitorTCP
-import java.net.URL
 import org.scalatest.BeforeAndAfterAll
 import com.github.thebridsk.bridge.server.util.MyProcess
-import com.github.thebridsk.bridge.server.Server
 import com.github.thebridsk.bridge.server.test.util.TestServer
 import java.io.File
-import com.github.thebridsk.bridge.server.util.GenerateSSLKeys
 
 object CertTest {
 
@@ -27,7 +24,6 @@ class CertTest extends AnyFlatSpec with Matchers with BeforeAndAfterAll {
 
   TestStartLogging.startLogging()
 
-  import CertTest._
 
   override
   def beforeAll() = {

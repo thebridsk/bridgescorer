@@ -11,7 +11,6 @@ import com.github.thebridsk.bridge.data.bridge.PlayerPosition
 import com.github.thebridsk.bridge.data.bridge.South
 import com.github.thebridsk.bridge.data.bridge.West
 import com.github.thebridsk.bridge.client.pages.info.InfoPage
-import com.github.thebridsk.bridge.clientcommon.react.Utils.ExtendReactEventFromInput
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.html_<^._
 import com.github.thebridsk.bridge.clientcommon.react.ComboboxOrInput
@@ -20,11 +19,9 @@ import com.github.thebridsk.bridge.clientcommon.react.CheckBox
 import com.github.thebridsk.bridge.clientcommon.react.RadioButton
 import com.github.thebridsk.bridge.clientcommon.react.Utils._
 import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles
-import com.github.thebridsk.bridge.clientcommon.react.HelpButton
 import com.github.thebridsk.materialui.MuiTypography
 import com.github.thebridsk.materialui.TextVariant
 import com.github.thebridsk.materialui.TextColor
-import scala.scalajs.js.JSON
 
 object ViewPlayersVeryFirstRound {
   import PagePlayers._

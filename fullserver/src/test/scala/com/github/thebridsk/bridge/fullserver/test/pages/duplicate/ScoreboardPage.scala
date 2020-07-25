@@ -8,7 +8,6 @@ import org.scalatest.concurrent.Eventually._
 import org.scalatest.matchers.must.Matchers._
 import com.github.thebridsk.browserpages.PageBrowser._
 import com.github.thebridsk.bridge.server.test.util.TestServer
-import com.github.thebridsk.bridge.data.Id
 import com.github.thebridsk.bridge.fullserver.test.pages.bridge.HomePage
 import com.github.thebridsk.utilities.logging.Logger
 
@@ -167,10 +166,7 @@ object ScoreboardPage {
 
 import ScoreboardPage._
 import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.TablePage.EnterNames
-import com.github.thebridsk.browserpages.GenericPage
-import org.openqa.selenium.NoSuchElementException
 import com.github.thebridsk.bridge.fullserver.test.pages.bridge.Popup
-import org.openqa.selenium.Keys
 
 class ScoreboardPage(
                       val dupid: Option[String] = None,

@@ -1,25 +1,13 @@
 package com.github.thebridsk.bridge.server.service
 
-import akka.http.scaladsl.server._
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.model.StatusCodes
-import akka.http.scaladsl.server.RejectionHandler
 import akka.http.scaladsl.model._
 import akka.http.scaladsl.server._
-import akka.http.scaladsl.model.headers.RawHeader
 import com.github.thebridsk.bridge.server.webjar.FileFinder
 import com.github.thebridsk.utilities.logging.Logger
-import java.util.logging.Level
 import akka.event.Logging
-import akka.http.scaladsl.model.headers._
-import akka.http.scaladsl.model.headers.CacheDirectives._
-import com.github.thebridsk.bridge.data.RestMessage
 import scala.concurrent.duration.Duration
-import com.github.thebridsk.bridge.server.version.VersionServer
-import scala.reflect.io.Directory
-import scala.reflect.io.File
-import scala.reflect.io.Path
-import akka.event.LoggingAdapter
 import scala.annotation.tailrec
 import java.io.{File => JFile}
 

@@ -1,11 +1,8 @@
 package com.github.thebridsk.bridge.clientcommon.react
 
-import scala.scalajs.js
-import org.scalajs.dom.document
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.TagMod
-import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles
 
 object HelpButton {
   import HelpButtonInternal._
@@ -17,7 +14,6 @@ object HelpButton {
 
 object HelpButtonInternal {
   import HelpButton._
-  import BaseStyles._
 
   val component = ScalaComponent.builder[Props]("HelpButton")
                             .stateless

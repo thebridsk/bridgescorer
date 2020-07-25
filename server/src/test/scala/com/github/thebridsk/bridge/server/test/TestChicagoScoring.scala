@@ -1,17 +1,8 @@
 package com.github.thebridsk.bridge.server.test
 
-import com.github.thebridsk.bridge.data.Id
-import com.github.thebridsk.bridge.data.DuplicateHand
-import com.github.thebridsk.bridge.data.Hand
-import com.github.thebridsk.bridge.data.SystemTime
-import com.github.thebridsk.bridge.data.bridge.MatchDuplicateScore
 import org.scalatest.matchers.must.Matchers
 import com.github.thebridsk.bridge.server.util.SystemTimeJVM
 import org.scalatest.flatspec.AnyFlatSpec
-import com.github.thebridsk.bridge.server.backend.BridgeService
-import com.github.thebridsk.bridge.data.bridge.PerspectiveTable
-import com.github.thebridsk.bridge.data.bridge.PerspectiveDirector
-import com.github.thebridsk.bridge.server.backend.BridgeServiceInMemory
 import com.github.thebridsk.bridge.data.MatchChicago
 import com.github.thebridsk.bridge.data.chicago.ChicagoScoring
 import com.github.thebridsk.bridge.data.Round

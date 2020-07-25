@@ -3,7 +3,6 @@ package com.github.thebridsk.bridge.server.util
 import java.io.File
 import java.io.FileOutputStream
 import com.github.thebridsk.utilities.logging.Logger
-import java.io.FileNotFoundException
 import java.security.KeyStore
 import scala.util.Using
 import java.io.FileInputStream

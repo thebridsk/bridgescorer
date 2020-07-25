@@ -1,7 +1,5 @@
 package com.github.thebridsk.bridge.client.modules
 
-import scala.scalajs.js
-import scala.scalajs.js.annotation.JSImport
 
 object Loader {
 

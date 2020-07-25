@@ -15,28 +15,20 @@ import com.github.thebridsk.materialui.TextColor
 import org.scalajs.dom.raw.Element
 import org.scalajs.dom.raw.Node
 import com.github.thebridsk.utilities.logging.Logger
-import japgolly.scalajs.react.vdom.HtmlStyles
 import com.github.thebridsk.materialui.component.MyMenu
 import com.github.thebridsk.materialui.MuiMenuItem
 import com.github.thebridsk.bridge.clientapi.routes.AppRouter.AppPage
 import com.github.thebridsk.bridge.clientapi.routes.BridgeRouter
-import com.github.thebridsk.bridge.clientapi.routes.AppRouter.About
-import com.github.thebridsk.bridge.clientcommon.react.AppButtonLinkNewWindow
 import org.scalajs.dom.document
 import japgolly.scalajs.react.vdom.VdomNode
-import com.github.thebridsk.bridge.clientapi.routes.AppRouter.Home
-import org.scalajs.dom.experimental.URL
 import com.github.thebridsk.bridge.clientcommon.demo.BridgeDemo
 import com.github.thebridsk.bridge.clientcommon.react.Utils._
 import com.github.thebridsk.bridge.clientapi.routes.AppRouter.GraphQLAppPage
 import com.github.thebridsk.bridge.clientapi.routes.AppRouter.GraphiQLView
 import com.github.thebridsk.bridge.clientapi.routes.AppRouter.VoyagerView
-import com.github.thebridsk.bridge.clientapi.routes.AppRouter.PageTest
 import com.github.thebridsk.bridge.clientapi.routes.AppRouter.ColorView
 import com.github.thebridsk.bridge.clientapi.routes.AppRouter.LogView
 import com.github.thebridsk.bridge.clientcommon.dispatcher.Dispatcher
-import com.github.thebridsk.bridge.clientcommon.logger.Init
-import com.github.thebridsk.materialui.MuiButton
 import com.github.thebridsk.bridge.clientcommon.pages.TitleSuits
 import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles._
 import com.github.thebridsk.bridge.clientcommon.debug.DebugLoggerComponent
@@ -217,7 +209,6 @@ object BridgeAppBarInternal {
     }
 
     def toggleFullscreen( event: ReactEvent ): Unit = {
-      import scala.concurrent.ExecutionContext.Implicits.global
       import com.github.thebridsk.bridge.clientcommon.fullscreen.Implicits._
       val body = document.documentElement
       val doc = document

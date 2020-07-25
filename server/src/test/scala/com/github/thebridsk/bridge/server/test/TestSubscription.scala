@@ -3,11 +3,8 @@ package com.github.thebridsk.bridge.server.test
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.must.Matchers
 import com.github.thebridsk.utilities.logging.Logger
-import java.util.logging.Level
-import com.github.thebridsk.bridge.server.backend.BridgeServiceInMemory
 import com.github.thebridsk.bridge.server.backend.Subscriptions
 import akka.actor.Actor
-import com.github.thebridsk.bridge.server.backend.Subscription
 import com.github.thebridsk.bridge.server.backend.DuplicateSubscription
 import com.github.thebridsk.bridge.data.MatchDuplicate
 

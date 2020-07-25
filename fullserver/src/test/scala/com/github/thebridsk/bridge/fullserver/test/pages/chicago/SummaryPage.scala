@@ -8,13 +8,11 @@ import org.scalatest.concurrent.Eventually._
 import org.scalatest.matchers.must.Matchers._
 import com.github.thebridsk.browserpages.PageBrowser._
 import com.github.thebridsk.bridge.server.test.util.TestServer
-import com.github.thebridsk.bridge.data.Id
 import com.github.thebridsk.browserpages.GenericPage
 import com.github.thebridsk.browserpages.Element
 import com.github.thebridsk.bridge.fullserver.test.pages.BaseHandPage
 import com.github.thebridsk.browserpages.PagesAssertions._
 import com.github.thebridsk.utilities.logging.Logger
-import com.github.thebridsk.bridge.fullserver.test.pages.bridge.Popup
 import com.github.thebridsk.bridge.fullserver.test.pages.bridge.HomePage
 
 object SummaryPage {

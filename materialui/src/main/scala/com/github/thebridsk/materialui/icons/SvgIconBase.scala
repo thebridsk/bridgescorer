@@ -1,12 +1,8 @@
 package com.github.thebridsk.materialui.icons
 
 import japgolly.scalajs.react._
-import japgolly.scalajs.react.raw._
-import japgolly.scalajs.react.vdom._
 import scala.scalajs.js
 import scala.scalajs.js.annotation._
-import org.scalajs.dom.raw.Element
-import org.scalajs.dom.raw.Node
 import japgolly.scalajs.react.component.Js
 import com.github.thebridsk.materialui.PropsFactory
 import com.github.thebridsk.materialui.ComponentFactory
@@ -52,7 +48,7 @@ trait SvgIconProps extends AdditionalProps with SvgIconPropsPrivate {
 
 object SvgIconProps extends PropsFactory[SvgIconProps] {
 
-  implicit class WrapTypographyProps(val p: SvgIconProps) extends AnyVal {
+  implicit class WrapTypographyProps(private val p: SvgIconProps) extends AnyVal {
 
     def color = p.colorInternal.map(s => new SvgColor(s))
 

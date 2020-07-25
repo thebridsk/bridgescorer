@@ -173,7 +173,6 @@ object PagePlayersInternal {
         logger.info("PagePlayers.didMount")
         ChicagoStore.addChangeListener(storeCallback)
 
-        import scala.concurrent.ExecutionContext.Implicits.global
         ChicagoController
           .ensureMatch(props.page.chiid)
 //          .foreach(m => scope.withEffectsImpure.forceUpdate)

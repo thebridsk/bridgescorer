@@ -2,9 +2,6 @@ package com.github.thebridsk.materialui
 
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.component.Js
-import japgolly.scalajs.react.raw._
-import japgolly.scalajs.react.vdom._
-import org.scalajs.dom
 import scala.scalajs.js
 import scala.scalajs.js.annotation._
 
@@ -23,7 +20,7 @@ trait AdditionalProps extends js.Object {
 
 object AdditionalProps {
 
-  implicit class WrapProps[T <: AdditionalProps](val props: T) extends AnyVal {
+  implicit class WrapProps[T <: AdditionalProps](private val props: T) extends AnyVal {
     def add(additionalProps: js.UndefOr[js.Dictionary[js.Any]]) = {
       additionalProps.foreach { ap =>
         ap.foreach { e =>

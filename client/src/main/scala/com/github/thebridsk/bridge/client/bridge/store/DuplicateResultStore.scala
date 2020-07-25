@@ -1,14 +1,11 @@
 package com.github.thebridsk.bridge.client.bridge.store
 
 import flux.dispatcher.DispatchToken
-import com.github.thebridsk.bridge.data.BoardSet
-import com.github.thebridsk.bridge.data.Movement
 import com.github.thebridsk.utilities.logging.Logger
 import com.github.thebridsk.bridge.data.MatchDuplicateResult
 import com.github.thebridsk.bridge.clientcommon.logger.Alerter
 import com.github.thebridsk.bridge.client.bridge.action.ActionUpdateDuplicateResult
 import com.github.thebridsk.bridge.client.bridge.action.BridgeDispatcher
-import com.github.thebridsk.bridge.data.Id
 
 object DuplicateResultStore extends ChangeListenable {
   val logger = Logger("bridge.DuplicateResultStore")

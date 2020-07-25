@@ -1,12 +1,6 @@
 package com.github.thebridsk.bridge.data.chicago
 
 import com.github.thebridsk.bridge.data._
-import com.github.thebridsk.bridge.data.bridge.DuplicateBridge.ScoreHand
-import com.github.thebridsk.bridge.data.bridge.PlayerPosition
-import com.github.thebridsk.bridge.data.bridge.North
-import com.github.thebridsk.bridge.data.bridge.East
-import com.github.thebridsk.bridge.data.bridge.South
-import com.github.thebridsk.bridge.data.bridge.West
 
 /**
   * @author werewolf

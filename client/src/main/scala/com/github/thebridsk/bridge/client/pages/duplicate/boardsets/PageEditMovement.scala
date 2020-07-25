@@ -7,15 +7,12 @@ import com.github.thebridsk.bridge.client.bridge.store.BoardSetStore
 import com.github.thebridsk.bridge.client.controller.BoardSetController
 import com.github.thebridsk.bridge.data.Movement
 import com.github.thebridsk.utilities.logging.Logger
-import japgolly.scalajs.react.extra.router.RouterCtl
 import com.github.thebridsk.bridge.client.routes.BridgeRouter
 import com.github.thebridsk.bridge.client.pages.duplicate.DuplicateStyles
 import japgolly.scalajs.react.CtorType
-import com.github.thebridsk.bridge.clientcommon.react.RadioButton
 import com.github.thebridsk.bridge.clientcommon.react.CheckBox
 import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles
 import com.github.thebridsk.bridge.clientcommon.react.AppButton
-import com.github.thebridsk.bridge.data.bridge.PlayerPosition
 import com.github.thebridsk.bridge.client.pages.duplicate.DuplicatePage
 import com.github.thebridsk.bridge.clientcommon.react.Utils._
 import com.github.thebridsk.bridge.clientcommon.react.PopupOkCancel

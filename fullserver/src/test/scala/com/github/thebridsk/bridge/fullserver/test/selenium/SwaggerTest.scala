@@ -3,33 +3,15 @@ package com.github.thebridsk.bridge.fullserver.test.selenium
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.BeforeAndAfterAll
-import org.openqa.selenium._
 import org.scalatest.concurrent.Eventually
 import java.util.concurrent.TimeUnit
-import com.github.thebridsk.bridge.server.Server
-import com.github.thebridsk.bridge.data.bridge._
-import com.github.thebridsk.bridge.server.backend.BridgeServiceInMemory
-import com.github.thebridsk.bridge.server.backend.BridgeService
 import org.scalatest.time.Span
 import org.scalatest.time.Millis
-import scala.jdk.CollectionConverters._
-import com.github.thebridsk.bridge.data.MatchDuplicate
 import com.github.thebridsk.utilities.logging.Logger
-import java.util.logging.Level
-import org.scalactic.source.Position
-import com.github.thebridsk.bridge.server.test.util.NoResultYet
 import com.github.thebridsk.bridge.server.test.util.EventuallyUtils
 import com.github.thebridsk.bridge.server.test.util.HttpUtils
-import java.net.URL
-import java.io.InputStream
-import java.io.ByteArrayInputStream
-import java.io.InputStreamReader
-import java.io.IOException
-import java.net.HttpURLConnection
 import com.github.thebridsk.bridge.server.test.TestStartLogging
 import com.github.thebridsk.bridge.data.BoardSet
-import akka.http.scaladsl.coding.GzipDecompressor
-import com.github.thebridsk.browserpages.Element
 import com.github.thebridsk.bridge.server.test.util.MonitorTCP
 import com.github.thebridsk.bridge.server.test.util.ParallelUtils
 import com.github.thebridsk.browserpages.PageBrowser
@@ -67,8 +49,6 @@ class SwaggerTest extends AnyFlatSpec with Matchers with BeforeAndAfterAll {
 
   override
   def beforeAll() = {
-    import scala.concurrent._
-    import ExecutionContext.Implicits.global
 
     MonitorTCP.nextTest()
 
@@ -82,8 +62,6 @@ class SwaggerTest extends AnyFlatSpec with Matchers with BeforeAndAfterAll {
 
   override
   def afterAll() = {
-    import scala.concurrent._
-    import ExecutionContext.Implicits.global
 
     waitForFuturesIgnoreTimeouts( "Stopping browsers and server",
                 CodeBlock { TestSession.sessionStop() },

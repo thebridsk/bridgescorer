@@ -1,8 +1,6 @@
 package com.github.thebridsk.bridge.server.backend.resource
 
 import scala.concurrent.duration._
-import akka.http.scaladsl.model.StatusCodes
-import com.github.thebridsk.bridge.data.RestMessage
 import com.github.thebridsk.bridge.data.VersionedInstance
 import java.io.InputStream
 import scala.io.BufferedSource

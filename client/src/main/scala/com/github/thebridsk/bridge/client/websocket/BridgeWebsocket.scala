@@ -1,9 +1,6 @@
 package com.github.thebridsk.bridge.client.websocket
 
-import scala.scalajs.js
 import com.github.thebridsk.bridge.data.websocket.Protocol
-import scala.scalajs.js.Array
-import com.github.thebridsk.utilities.logging.Logger
 import com.github.thebridsk.bridge.clientcommon.websocket.MyWebsocket
 import com.github.thebridsk.bridge.clientcommon.websocket.MyWebsocketCodes
 import com.github.thebridsk.bridge.clientcommon.websocket.Code

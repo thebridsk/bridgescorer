@@ -12,8 +12,6 @@ import scala.concurrent.Await
 import scala.concurrent.Future
 import scala.reflect.io.Path
 import java.io.PrintStream
-import com.github.thebridsk.bridge.data.Id
-import com.github.thebridsk.bridge.data.MatchDuplicate
 import com.github.thebridsk.bridge.data.duplicate.stats.PlayerStats
 import com.github.thebridsk.bridge.data.duplicate.stats.ContractStats
 import scala.util.Using

@@ -2,11 +2,8 @@ package com.github.thebridsk.materialui
 
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.raw._
-import japgolly.scalajs.react.vdom._
-import org.scalajs.dom
 import scala.scalajs.js
 import scala.scalajs.js.annotation._
-import org.scalajs.dom.raw.Element
 //import com.github.thebridsk.materialui.util.{ JsNumber => _, _ }
 import scala.language.implicitConversions
 
@@ -50,7 +47,7 @@ trait AnchorOrigin
 
 object AnchorOrigin {
 
-  implicit class WrapAnchorOrigin(val p: AnchorOrigin) extends AnyVal {
+  implicit class WrapAnchorOrigin(private val p: AnchorOrigin) extends AnyVal {
 
     def horizontal = p.horizontalInternal.map { v =>
       val r: JsNumber | AnchorOriginHorizontalValue =
@@ -143,7 +140,6 @@ protected trait PopoverPropsPrivate extends js.Any {
 
 @js.native
 trait PopoverProps extends ModalProps with PopoverPropsPrivate {
-  import js._
   val action: js.UndefOr[js.Object => Unit] = js.native
   // val anchorEl: js.UndefOr[AnchorElement] = js.native
   val anchorOrigin: js.UndefOr[AnchorOrigin] = js.native
@@ -168,7 +164,7 @@ trait PopoverProps extends ModalProps with PopoverPropsPrivate {
 object PopoverProps extends PropsFactory[PopoverProps] {
   import js._
 
-  implicit class WrapPopoverProps(val p: PopoverProps) extends AnyVal {
+  implicit class WrapPopoverProps(private val p: PopoverProps) extends AnyVal {
 
     def anchorReference =
       p.anchorReferenceInternal.map(s => new AnchorReference(s))

@@ -3,7 +3,6 @@ package com.github.thebridsk.bridge.clientcommon.material.icons
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.svg_<^._
 import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles._
-import com.github.thebridsk.bridge.clientcommon.pages.TitleSuits
 import com.github.thebridsk.materialui.icons.MuiSvgIcon
 import com.github.thebridsk.bridge.clientcommon.react.PieChart
 

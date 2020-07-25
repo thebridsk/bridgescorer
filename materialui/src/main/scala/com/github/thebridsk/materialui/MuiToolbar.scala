@@ -1,9 +1,6 @@
 package com.github.thebridsk.materialui
 
 import japgolly.scalajs.react._
-import japgolly.scalajs.react.raw._
-import japgolly.scalajs.react.vdom._
-import org.scalajs.dom
 import scala.scalajs.js
 import scala.scalajs.js.annotation._
 
@@ -30,7 +27,7 @@ trait ToolbarProps extends AdditionalProps with ToolbarPropsPrivate with Standar
 }
 object ToolbarProps extends PropsFactory[ToolbarProps] {
 
-  implicit class WrapToolbarProps(val p: ToolbarProps) extends AnyVal {
+  implicit class WrapToolbarProps(private val p: ToolbarProps) extends AnyVal {
 
     def variant = p.variantInternal.map(s => new ToolbarVariant(s))
 

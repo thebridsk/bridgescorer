@@ -8,7 +8,6 @@ import akka.http.scaladsl.model.RemoteAddress
 import akka.NotUsed
 import akka.event.Logging
 import com.github.thebridsk.bridge.data.MatchDuplicate
-import com.github.thebridsk.bridge.data.Id
 import com.github.thebridsk.bridge.data.websocket.Protocol.MonitorLeft
 import com.github.thebridsk.bridge.data.websocket.Protocol.MonitorJoined
 import com.github.thebridsk.bridge.data.websocket.Protocol.UpdateDuplicate
@@ -19,11 +18,9 @@ import com.github.thebridsk.bridge.data.websocket.Protocol.StartMonitorDuplicate
 import com.github.thebridsk.bridge.data.websocket.Protocol.StartMonitorChicago
 import com.github.thebridsk.bridge.data.websocket.Protocol.StartMonitorRubber
 import com.github.thebridsk.bridge.data.websocket.Protocol.NoData
-import java.util.Date
 import com.github.thebridsk.bridge.data.Board
 import com.github.thebridsk.bridge.data.DuplicateHand
 import com.github.thebridsk.bridge.data.Team
-import java.util.Formatter
 import com.github.thebridsk.bridge.server.rest.Service
 import com.github.thebridsk.bridge.data.websocket.Protocol.StartMonitorSummary
 import com.github.thebridsk.bridge.data.websocket.Protocol.StopMonitorSummary
@@ -39,14 +36,6 @@ import akka.stream.Attributes.Name
 import akka.stream.Attributes
 import java.util.concurrent.atomic.AtomicLong
 import scala.concurrent.Future
-import akka.stream.stage.GraphStage
-import akka.stream.FlowShape
-import akka.stream.Inlet
-import akka.stream.Outlet
-import akka.stream.stage.GraphStageLogic
-import akka.stream.stage.InHandler
-import akka.stream.stage.OutHandler
-import akka.io.Tcp
 import com.github.thebridsk.bridge.server.backend.resource.Store
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._

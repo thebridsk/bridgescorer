@@ -72,7 +72,6 @@ case class Id[A] private[data] ( val id: String, useName: Boolean = false )( imp
 
   def isNul = id == ""
 
-  import scala.language.implicitConversions
   def toBase[B >: A] = this.asInstanceOf[Id[B]]
   def toSubclass[S <: A]( implicit sTag: ClassTag[S] ) = {
     val cls = classTag.runtimeClass
@@ -148,7 +147,6 @@ object Id {
 
   def apply[A]( id: String )(implicit classTag: ClassTag[A]) = new Id[A](id)
 
-  import com.github.thebridsk.bridge.data
 
   private val idpattern = "([a-zA-Z]*)(\\d+)".r
 

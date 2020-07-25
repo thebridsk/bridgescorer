@@ -1,20 +1,13 @@
 package com.github.thebridsk.bridge.client.bridge.store
 
 import flux.dispatcher.DispatchToken
-import com.github.thebridsk.bridge.data.BoardSet
-import com.github.thebridsk.bridge.data.Movement
-import com.github.thebridsk.bridge.client.bridge.action.ActionUpdateBoardSet
 import com.github.thebridsk.bridge.client.bridge.action.BridgeDispatcher
-import com.github.thebridsk.bridge.client.bridge.action.ActionUpdateMovement
-import com.github.thebridsk.bridge.client.bridge.action.ActionUpdateAllBoardSets
-import com.github.thebridsk.bridge.client.bridge.action.ActionUpdateAllMovement
 import com.github.thebridsk.utilities.logging.Logger
 import com.github.thebridsk.bridge.client.bridge.action.ActionUpdateChicagoSummary
 import com.github.thebridsk.bridge.clientcommon.logger.Alerter
 import com.github.thebridsk.bridge.data.MatchChicago
 import com.github.thebridsk.bridge.client.bridge.action.ActionDeleteChicago
 import com.github.thebridsk.bridge.client.bridge.action.ActionUpdateChicago
-import com.github.thebridsk.bridge.client.Bridge
 import com.github.thebridsk.bridge.clientcommon.demo.BridgeDemo
 
 object ChicagoSummaryStore extends ChangeListenable {

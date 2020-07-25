@@ -14,7 +14,6 @@ import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.ListDuplicate
 import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.NewDuplicatePage
 import com.github.thebridsk.bridge.fullserver.test.pages.chicago.ListPage
 import com.github.thebridsk.bridge.fullserver.test.pages.LightDarkAddOn
-import com.github.thebridsk.browserpages.Element
 import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.ScoreboardPage
 import com.github.thebridsk.bridge.fullserver.test.pages.chicago.EnterNamesPage
 
@@ -42,7 +41,6 @@ object HomePage {
 }
 
 class HomePage( implicit webDrivr: WebDriver, pageCreated: SourcePosition ) extends Page[HomePage] with LightDarkAddOn[HomePage] with Popup[Page[HomePage]] {
-  import HomePage._
 
   val webDriver = webDrivr
 

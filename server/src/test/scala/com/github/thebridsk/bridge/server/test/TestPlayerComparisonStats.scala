@@ -1,34 +1,8 @@
 package com.github.thebridsk.bridge.server.test
 
-import org.scalatest.Finders
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.must.Matchers
-import com.github.thebridsk.bridge.server.test.backend.BridgeServiceTesting
-import com.github.thebridsk.bridge.server.service.MyService
-import akka.http.scaladsl.model.StatusCodes._
 import akka.http.scaladsl.testkit.ScalatestRouteTest
-import akka.http.scaladsl.model.HttpResponse
-import akka.http.scaladsl.model.ContentTypes._
-import akka.http.scaladsl.model.headers.`Remote-Address`
-import akka.http.scaladsl.model.{HttpResponse, HttpRequest}
-import akka.http.scaladsl.model.StatusCodes._
-import akka.http.scaladsl.testkit.ScalatestRouteTest
-import akka.stream.scaladsl.Flow
-import org.scalatest._
-import akka.http.scaladsl.marshalling.ToResponseMarshallable
-import akka.http.scaladsl.unmarshalling.FromResponseUnmarshaller
-import akka.actor.ActorSystem
-import akka.stream.ActorMaterializer
-import akka.http.scaladsl.model.RemoteAddress.IP
-import java.net.InetAddress
-import com.github.thebridsk.utilities.logging.Config
-import com.github.thebridsk.utilities.classpath.ClassPath
-import java.util.logging.LogManager
-import java.util.logging.Logger
-import com.github.thebridsk.utilities.logging.FileHandler
-import com.github.thebridsk.utilities.logging.FileFormatter
-import java.util.logging.Level
-import com.github.thebridsk.utilities.logging.RedirectOutput
 import com.github.thebridsk.bridge.data.MatchDuplicate
 import com.github.thebridsk.bridge.data.Team
 import com.github.thebridsk.bridge.data.Board
@@ -49,7 +23,6 @@ object TestPlayerComparisonStats {
  * Test class to start the logging system
  */
 class TestPlayerComparisonStats extends AnyFlatSpec with ScalatestRouteTest with Matchers {
-  import TestPlayerComparisonStats._
 
   val team1 = Team.id(1)
   val team2 = Team.id(2)

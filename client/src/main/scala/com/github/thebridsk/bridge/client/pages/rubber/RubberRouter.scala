@@ -7,10 +7,7 @@ import com.github.thebridsk.utilities.logging.Logger
 //import com.github.thebridsk.bridge.client.pages.rubber.PageRubberHand
 //import com.github.thebridsk.bridge.client.pages.rubber.PageRubberList
 
-import japgolly.scalajs.react._
-import japgolly.scalajs.react.Callback
-import japgolly.scalajs.react.CallbackTo
-import japgolly.scalajs.react.extra.router.{ RouterConfigDsl, RouterCtl, _ }
+import japgolly.scalajs.react.extra.router.{ RouterConfigDsl, RouterCtl }
 import japgolly.scalajs.react.vdom.html_<^._
 import com.github.thebridsk.bridge.client.routes.AppRouter.AppPage
 import com.github.thebridsk.bridge.client.routes.Module

@@ -1,15 +1,9 @@
 package com.github.thebridsk.bridge.client.pages.duplicate
 
-import scala.scalajs.js
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
-import japgolly.scalajs.react.extra.router.RouterCtl
-import com.github.thebridsk.bridge.client.routes.AppRouter.AppPage
-import com.github.thebridsk.bridge.data.DuplicateSummary
-import com.github.thebridsk.bridge.data.Id
 import com.github.thebridsk.utilities.logging.Logger
 import com.github.thebridsk.bridge.client.controller.Controller
-import com.github.thebridsk.bridge.data.bridge.DuplicateViewPerspective
 import com.github.thebridsk.bridge.client.bridge.store.DuplicateStore
 import com.github.thebridsk.bridge.data.bridge.MatchDuplicateScore
 import com.github.thebridsk.bridge.data.bridge.PerspectiveComplete
@@ -22,7 +16,6 @@ import com.github.thebridsk.bridge.client.pages.duplicate.DuplicateRouter.TableB
 import com.github.thebridsk.bridge.clientcommon.react.AppButton
 import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles
 import com.github.thebridsk.bridge.client.routes.BridgeRouter
-import com.github.thebridsk.bridge.clientcommon.react.HelpButton
 import com.github.thebridsk.materialui.MuiTypography
 import com.github.thebridsk.materialui.TextVariant
 import com.github.thebridsk.materialui.TextColor

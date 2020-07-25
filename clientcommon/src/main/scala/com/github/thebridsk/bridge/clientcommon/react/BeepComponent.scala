@@ -4,14 +4,11 @@ import scala.scalajs.js
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
 import org.scalajs.dom.raw.HTMLAudioElement
-import japgolly.scalajs.react.vdom.TagMod
 import com.github.thebridsk.bridge.clientcommon.react.Utils._
 import com.github.thebridsk.utilities.logging.Logger
-import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles.baseStyles
 import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles
 import com.github.thebridsk.materialui.icons
 import com.github.thebridsk.materialui.MuiMenuItem
-import com.github.thebridsk.materialui.icons.SvgColor
 import com.github.thebridsk.bridge.clientcommon.logger.Info
 
 /**

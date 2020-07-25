@@ -1,13 +1,11 @@
 package com.github.thebridsk.bridge.client.pages.duplicate.boardsets
 
-import scala.scalajs.js
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
 import com.github.thebridsk.bridge.client.bridge.store.BoardSetStore
 import com.github.thebridsk.bridge.client.controller.BoardSetController
 import com.github.thebridsk.bridge.data.BoardSet
 import com.github.thebridsk.utilities.logging.Logger
-import japgolly.scalajs.react.extra.router.RouterCtl
 import com.github.thebridsk.bridge.client.routes.BridgeRouter
 import com.github.thebridsk.bridge.data.BoardInSet
 import com.github.thebridsk.bridge.client.pages.duplicate.DuplicateStyles
@@ -17,7 +15,6 @@ import com.github.thebridsk.bridge.clientcommon.react.CheckBox
 import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles
 import com.github.thebridsk.bridge.clientcommon.react.AppButton
 import com.github.thebridsk.bridge.data.bridge.PlayerPosition
-import com.github.thebridsk.bridge.client.pages.duplicate.DuplicateRouter.BoardSetView
 import com.github.thebridsk.bridge.client.pages.duplicate.DuplicatePage
 import com.github.thebridsk.bridge.clientcommon.react.Utils._
 import com.github.thebridsk.bridge.clientcommon.react.PopupOkCancel

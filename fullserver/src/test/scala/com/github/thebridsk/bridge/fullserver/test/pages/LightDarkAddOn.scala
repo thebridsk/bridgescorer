@@ -3,7 +3,6 @@ package com.github.thebridsk.bridge.fullserver.test.pages
 import org.scalactic.source.Position
 import org.scalatest.concurrent.Eventually._
 import org.scalatest.matchers.must.Matchers._
-import com.github.thebridsk.browserpages.GenericPage
 import com.github.thebridsk.browserpages.Page
 import com.github.thebridsk.browserpages.PageBrowser._
 import org.openqa.selenium.WebDriver

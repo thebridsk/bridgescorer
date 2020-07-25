@@ -1,18 +1,12 @@
 package com.github.thebridsk.bridge.fullserver.test
 
-import org.scalatest.Finders
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.must.Matchers
-import akka.actor.ActorSystem
-import akka.stream.ActorMaterializer
 import com.github.thebridsk.bridge.server.test.backend.BridgeServiceTesting
 import com.github.thebridsk.bridge.server.service.MyService
 import akka.http.scaladsl.model.{HttpResponse, HttpRequest}
 import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.testkit.ScalatestRouteTest
-import org.scalatest._
-import akka.http.scaladsl.marshalling.ToResponseMarshallable
-import akka.http.scaladsl.unmarshalling.FromResponseUnmarshaller
 import akka.http.scaladsl.server.RouteResult.Rejected
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.directives.LogEntry

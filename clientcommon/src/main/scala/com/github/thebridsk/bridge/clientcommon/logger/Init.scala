@@ -1,20 +1,11 @@
 package com.github.thebridsk.bridge.clientcommon.logger
 
-import com.github.thebridsk.bridge.data.LoggerConfig
 import com.github.thebridsk.bridge.clientcommon.rest2.RestClientLoggerConfig
-import scala.scalajs.js
-import scala.scalajs.js.Object
 import com.github.thebridsk.utilities.logging.Logger
 import com.github.thebridsk.utilities.logging.impl.LoggerImplFactory
 import com.github.thebridsk.utilities.logging.js.JsConsoleHandler
 import com.github.thebridsk.utilities.logging.Level
-import scala.reflect.ClassTag
 import com.github.thebridsk.utilities.logging.Handler
-import org.scalactic.source.Position
-import com.github.thebridsk.source._
-import java.io.StringWriter
-import java.io.PrintWriter
-import com.github.thebridsk.bridge.clientcommon.debug.DebugLoggerHandler
 import com.github.thebridsk.utilities.logging.js.JsConsoleHandlerInfo
 import com.github.thebridsk.bridge.clientcommon.rest2.AjaxResult
 import com.github.thebridsk.bridge.clientcommon.demo.BridgeDemo

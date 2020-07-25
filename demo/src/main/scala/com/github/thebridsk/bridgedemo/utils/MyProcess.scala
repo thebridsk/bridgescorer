@@ -1,12 +1,9 @@
 package com.github.thebridsk.bridgedemo.utils
 
 import java.io.IOException
-import java.util.logging.Level
 import java.io.InputStream
 import java.util.concurrent.atomic.AtomicInteger
 import scala.concurrent.Future
-import java.io.BufferedReader
-import java.io.InputStreamReader
 import java.io.File
 import java.nio.file.Path
 import java.nio.file.Files
@@ -20,7 +17,6 @@ import java.nio.file.DirectoryNotEmptyException
 import java.nio.file.StandardCopyOption
 import scala.jdk.CollectionConverters._
 import java.lang.ProcessBuilder.Redirect
-import java.io.BufferedWriter
 import java.io.OutputStreamWriter
 import scala.io.Source
 import scala.concurrent.ExecutionContext

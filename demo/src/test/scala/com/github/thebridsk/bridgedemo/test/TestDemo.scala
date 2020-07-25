@@ -4,12 +4,7 @@ import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.must.Matchers
 import com.github.thebridsk.bridge.server.test.TestStartLogging
 import com.github.thebridsk.utilities.logging.Logger
-import com.github.thebridsk.bridge.server.test.util.MonitorTCP
-import java.net.URL
 import org.scalatest.BeforeAndAfterAll
-import com.github.thebridsk.bridge.server.util.MyProcess
-import com.github.thebridsk.bridge.server.Server
-import com.github.thebridsk.bridge.server.test.util.TestServer
 import java.io.File
 import scala.concurrent.duration._
 import java.util.concurrent.TimeUnit
@@ -34,7 +29,6 @@ class TestDemo extends AnyFlatSpec with Matchers with BeforeAndAfterAll {
 
   TestStartLogging.startLogging()
 
-  import TestDemo._
 
   implicit val timeoutduration = Duration( 60, TimeUnit.SECONDS )
 
@@ -47,8 +41,6 @@ class TestDemo extends AnyFlatSpec with Matchers with BeforeAndAfterAll {
 
   override
   def beforeAll() = {
-    import scala.concurrent._
-    import ExecutionContext.Implicits.global
 
     try {
       waitForFutures(
@@ -65,8 +57,6 @@ class TestDemo extends AnyFlatSpec with Matchers with BeforeAndAfterAll {
 
   override
   def afterAll() = {
-    import scala.concurrent._
-    import ExecutionContext.Implicits.global
 
     waitForFuturesIgnoreTimeouts(
       "Stopping a browser or server",

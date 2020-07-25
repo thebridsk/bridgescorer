@@ -1,11 +1,8 @@
 package com.github.thebridsk.bridge.server.backend
 
 import scala.concurrent.Await
-import scala.concurrent.duration.DurationLong
-import scala.language.postfixOps
 
 import com.github.thebridsk.bridge.data.websocket.DuplexProtocol
-import com.github.thebridsk.bridge.data.websocket.Protocol
 
 import akka.NotUsed
 import akka.actor.ActorSystem
@@ -14,8 +11,6 @@ import akka.http.scaladsl.model.RemoteAddress
 import akka.http.scaladsl.model.ws.BinaryMessage
 import akka.http.scaladsl.model.ws.Message
 import akka.http.scaladsl.model.ws.TextMessage
-import akka.http.scaladsl.server.Directive.addByNameNullaryApply
-import akka.http.scaladsl.server.Directive.addDirectiveApply
 import akka.http.scaladsl.server.Directives
 import akka.stream.Attributes
 import akka.stream.Attributes.Name
@@ -30,23 +25,7 @@ import akka.stream.stage.GraphStage
 import akka.stream.stage.GraphStageLogic
 import akka.stream.stage.InHandler
 import akka.stream.stage.OutHandler
-import akka.actor.Props
-import akka.http.scaladsl.model.sse.ServerSentEvent
-import com.github.thebridsk.bridge.data.Id
 import akka.http.scaladsl.server.RejectionHandler
-import akka.http.scaladsl.server.MalformedRequestContentRejection
-import com.github.thebridsk.bridge.data.RestMessage
-import akka.http.scaladsl.server.MethodRejection
-import akka.http.scaladsl.model.headers.Allow
-import akka.http.scaladsl.model.MediaTypes
-import javax.ws.rs.Path
-import io.swagger.v3.oas.annotations.Operation
-import io.swagger.v3.oas.annotations.responses.ApiResponse
-import io.swagger.v3.oas.annotations.Parameter
-import io.swagger.v3.oas.annotations.enums.ParameterIn
-import io.swagger.v3.oas.annotations.media.Schema
-import io.swagger.v3.oas.annotations.media.Content
-import javax.ws.rs.GET
 import com.github.thebridsk.bridge.data.VersionedInstance
 
 abstract class MonitorWebservice[VId <: Comparable[VId], VType <: VersionedInstance[
@@ -62,7 +41,6 @@ abstract class MonitorWebservice[VId <: Comparable[VId], VType <: VersionedInsta
   private val log = Logging(system, classOf[MonitorWebservice[_, _]])
   val monitor: StoreMonitorManager[VId, VType]
 
-  import system.dispatcher
 //  system.scheduler.schedule(15.second, 15.second) {
 //    theChat.injectMessage(ChatMessage(sender = "clock", s"Bling! The time is ${new Date().toString}."))
 //  }

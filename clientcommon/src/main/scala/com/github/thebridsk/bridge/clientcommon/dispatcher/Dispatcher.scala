@@ -2,9 +2,7 @@ package com.github.thebridsk.bridge.clientcommon.dispatcher
 
 import flux.dispatcher.FluxDispatcher
 import scala.scalajs.js
-import scala.scalajs.js.annotation.JSName
 import flux.dispatcher.DispatchToken
-import com.github.thebridsk.utilities.logging.Logger
 import com.github.thebridsk.utilities.logging.TraceMsg
 
 object Dispatcher extends Dispatcher {

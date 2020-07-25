@@ -4,7 +4,6 @@ import com.github.thebridsk.utilities.main.Main
 import scala.reflect.io.Path
 import com.github.thebridsk.bridge.server.backend.BridgeService
 import scala.concurrent.ExecutionContext
-import com.github.thebridsk.bridge.data.Id
 import com.github.thebridsk.bridge.data.MatchDuplicate
 import scala.concurrent.Future
 import com.github.thebridsk.bridge.server.backend.BridgeResources
@@ -45,7 +44,6 @@ object GenerateDemoMatchDuplicate extends Main {
     }
     val list = Await.result(fmds, Duration("60s"))
 
-    import play.api.libs.json._
     import JsonSupport._
 
     val json = writeJson(list)

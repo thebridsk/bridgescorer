@@ -9,7 +9,6 @@ import org.scalatest.time.Span
 import com.github.thebridsk.bridge.data.bridge._
 import java.util.concurrent.TimeUnit
 import org.scalactic.source.Position
-import scala.jdk.CollectionConverters._
 import org.openqa.selenium.Keys
 import com.github.thebridsk.bridge.server.test.util.EventuallyUtils
 import com.github.thebridsk.bridge.fullserver.test.util.SeleniumUtils
@@ -26,7 +25,6 @@ import com.github.thebridsk.bridge.server.test.TestStartLogging
 import com.github.thebridsk.source.SourcePosition
 import com.github.thebridsk.bridge.server.backend.BridgeServiceFileStoreConverters
 import com.github.thebridsk.bridge.server.backend.MatchRubberCacheStoreSupport
-import com.github.thebridsk.browserpages.Page
 import com.github.thebridsk.browserpages.PageBrowser
 import com.github.thebridsk.bridge.data.MatchRubber
 import play.api.libs.json.Json
@@ -59,7 +57,6 @@ class RubberTest extends AnyFlatSpec
   import com.github.thebridsk.browserpages.PageBrowser._
   import Eventually.{ patienceConfig => _, _ }
 
-  import scala.language.postfixOps
   import scala.concurrent.duration._
 
   val testlog = Logger[RubberTest]()
@@ -85,8 +82,6 @@ class RubberTest extends AnyFlatSpec
 
   override
   def beforeAll() = {
-    import scala.concurrent._
-    import ExecutionContext.Implicits.global
     import com.github.thebridsk.bridge.server.test.util.ParallelUtils._
 
     MonitorTCP.nextTest()
@@ -115,7 +110,6 @@ class RubberTest extends AnyFlatSpec
   override
   def afterAll() = {
     import scala.concurrent._
-    import ExecutionContext.Implicits.global
     import com.github.thebridsk.bridge.server.test.util.ParallelUtils._
 
     waitForFuturesIgnoreTimeouts( "Stopping browser and server",
@@ -279,7 +273,6 @@ class RubberTest extends AnyFlatSpec
   }
 
   it should "send the player names to the server" in {
-    import Session1._
 
     def testPlayers( north: String, south: String, east: String, west: String ) = {
         backend.rubbers.syncStore.read(MatchRubber.id(rubberId)) match {
@@ -414,7 +407,6 @@ class RubberTest extends AnyFlatSpec
   }
 
   it should "have timestamps on all objects in the MatchRubber record" in {
-    import Session1._
 
     val url: URL = new URL(TestServer.hosturl+"v1/rest/rubbers/"+rubberId)
     val connection = url.openConnection()
@@ -450,10 +442,8 @@ class RubberTest extends AnyFlatSpec
   case class QueryResponse( data: ResponseMainStore )
 
   it should "have rest call and queryml call return the same match" in {
-    import Session1._
 
     val bridgeResources = BridgeResources(false)
-    import bridgeResources._
 
     import com.github.thebridsk.bridge.data.rest.JsonSupport._
     implicit val rdFormat = Json.format[ResponseData]
@@ -624,9 +614,7 @@ class RubberTest extends AnyFlatSpec
   behavior of "Names resource"
 
   it should "show the names without leading and trailing spaces" in {
-    import Session1._
 
-    import com.github.thebridsk.bridge.server.rest.UtilsPlayJson._
     val rnames: ResponseFromHttp[Option[Array[String]]] = HttpUtils.getHttpObject( new URL(TestServer.hosturl+"v1/rest/names") )
 
     rnames.data match {

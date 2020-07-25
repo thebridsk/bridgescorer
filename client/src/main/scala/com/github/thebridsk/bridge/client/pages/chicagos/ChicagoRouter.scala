@@ -6,7 +6,6 @@ import com.github.thebridsk.bridge.client.routes.BridgeRouterBase
 import com.github.thebridsk.bridge.client.routes.Module
 import com.github.thebridsk.bridge.data.MatchChicago
 import com.github.thebridsk.utilities.logging.Logger
-import japgolly.scalajs.react._
 import japgolly.scalajs.react.extra.router.{RouterConfigDsl, RouterCtl}
 import japgolly.scalajs.react.vdom.html_<^._
 import scala.scalajs.js.URIUtils

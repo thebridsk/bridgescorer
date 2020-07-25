@@ -1,6 +1,5 @@
 package com.github.thebridsk.bridge.client.pages.duplicate
 
-import scala.scalajs.js
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
 import com.github.thebridsk.bridge.client.routes.BridgeRouter
@@ -12,7 +11,6 @@ import com.github.thebridsk.bridge.clientcommon.react.AppButton
 import com.github.thebridsk.bridge.client.pages.duplicate.DuplicateRouter.SummaryView
 import com.github.thebridsk.bridge.client.pages.duplicate.DuplicateRouter.DuplicateResultEditView
 import com.github.thebridsk.bridge.clientcommon.react.DateUtils
-import com.github.thebridsk.bridge.clientcommon.react.DateTimePicker
 import scala.scalajs.js.Date
 import com.github.thebridsk.bridge.clientcommon.react.reactwidgets.globalize.Moment
 import com.github.thebridsk.bridge.clientcommon.react.reactwidgets.globalize.ReactWidgetsMoment

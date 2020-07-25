@@ -6,17 +6,9 @@ import org.openqa.selenium.WebDriver
 import org.scalactic.source.Position
 import org.scalatest.concurrent.Eventually._
 import org.scalatest.matchers.must.Matchers._
-import com.github.thebridsk.browserpages.PageBrowser._
-import com.github.thebridsk.bridge.server.test.util.TestServer
 import com.github.thebridsk.utilities.logging.Logger
-import com.github.thebridsk.bridge.server.test.util.HttpUtils
-import com.github.thebridsk.bridge.data.BoardSet
-import com.github.thebridsk.bridge.data.Movement
-import java.net.URL
-import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.ScoreboardPage.CompletedViewType
 import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.ScoreboardPage.TableViewType
 import com.github.thebridsk.bridge.data.bridge.PlayerPosition
-import com.github.thebridsk.browserpages.GenericPage
 import com.github.thebridsk.browserpages.Page.AnyPage
 import com.github.thebridsk.bridge.fullserver.test.pages.bridge.ErrorMsgDiv
 

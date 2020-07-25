@@ -7,9 +7,7 @@ import com.github.thebridsk.bridge.data.bridge.Vulnerability
 import com.github.thebridsk.bridge.data.bridge.NotVul
 import com.github.thebridsk.bridge.data.bridge.Vul
 import com.github.thebridsk.bridge.client.test.utils.JQuery
-import com.github.thebridsk.bridge.data.Round
 import japgolly.scalajs.react._
-import com.github.thebridsk.bridge.data.bridge._
 import com.github.thebridsk.bridge.client.routes.AppRouter.AppPage
 import com.github.thebridsk.bridge.client.pages.HomePage
 import org.scalatest.flatspec.AnyFlatSpec
@@ -25,7 +23,6 @@ import japgolly.scalajs.react.extra.router.BaseUrl
 import com.github.thebridsk.bridge.client.routes.TestBridgeRouter
 import japgolly.scalajs.react.extra.router.Path
 import com.github.thebridsk.bridge.client.routes.AppRouter.Home
-import com.github.thebridsk.bridge.client.pages.duplicate.PageNewDuplicate
 import com.github.thebridsk.bridge.client.pages.duplicate.PageNewDuplicateInternal
 
 object MyTest {

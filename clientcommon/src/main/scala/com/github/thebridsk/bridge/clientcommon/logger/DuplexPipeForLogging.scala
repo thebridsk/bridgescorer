@@ -168,7 +168,6 @@ class DuplexPipeForLogging( url: String, protocol: String = "" ) {
       if (kickagain > 0) {
         // set a timer to kick again
         log.fine("Kicking again in 5 seconds")
-        import scala.scalajs.js.timers._
         kick(kickagain)
       }
       log.fine("Kick return pending="+pending.size+", outstanding="+outstanding.size+" bufferedAmount="+bufferedAmount+"("+websocket.bufferedAmount+")/"+maxBufferedAmount)

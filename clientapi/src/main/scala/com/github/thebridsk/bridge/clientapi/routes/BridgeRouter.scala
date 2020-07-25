@@ -1,13 +1,9 @@
 package com.github.thebridsk.bridge.clientapi.routes
 
-import japgolly.scalajs.react.extra.router.{Resolution, RouterConfigDsl, RouterCtl, Router, _}
+import japgolly.scalajs.react.extra.router.{RouterCtl, _}
 import japgolly.scalajs.react.vdom.html_<^._
-import com.github.thebridsk.bridge.data.bridge._
-import com.github.thebridsk.bridge.clientapi.pages.info.InfoPage
-import com.github.thebridsk.bridge.clientapi.pages.HomePage
 import com.github.thebridsk.utilities.logging.Logger
 import japgolly.scalajs.react.Callback
-import com.github.thebridsk.bridge.data.Id
 import com.github.thebridsk.bridge.clientapi.routes.AppRouter.AppPage
 import japgolly.scalajs.react.CallbackTo
 import org.scalajs.dom.html

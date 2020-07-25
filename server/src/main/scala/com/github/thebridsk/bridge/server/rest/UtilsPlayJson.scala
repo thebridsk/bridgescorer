@@ -1,25 +1,19 @@
 package com.github.thebridsk.bridge.server.rest
 
-import com.github.thebridsk.bridge.data.MatchDuplicate
-import com.github.thebridsk.bridge.data.RestMessage
 
 import akka.http.scaladsl.model._
 import akka.http.scaladsl.model.StatusCodes.{Success => _, _}
 import akka.http.scaladsl.model.headers.Location
 import akka.http.scaladsl.server.Directives._
-import scala.concurrent.ExecutionContext
 import scala.reflect.ClassTag
 import com.github.thebridsk.bridge.server.json.BridgePlayJsonSupport
 import akka.http.scaladsl.marshalling._
-import akka.http.scaladsl.unmarshalling._
 import play.api.libs.json._
 import akka.http.scaladsl.server.Route
 import com.github.thebridsk.bridge.server.backend.resource.Result
 import scala.concurrent.Future
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.util.Failure
 import scala.util.Success
-import com.github.thebridsk.bridge.data.VersionedInstance
 import com.github.thebridsk.utilities.logging.Logger
 
 class UtilsPlayJson

@@ -23,8 +23,6 @@ import org.openqa.selenium.TakesScreenshot
 import org.openqa.selenium.OutputType
 import scala.io.Codec
 import scala.annotation.implicitNotFound
-import org.openqa.selenium.support.ui.WebDriverWait
-import org.openqa.selenium.support.ui.ExpectedConditions
 
 @implicitNotFound("Nothing was inferred")
 sealed trait NotNothing[-T]
@@ -43,7 +41,6 @@ object PageBrowsersImplicits {
 }
 
 import PageBrowsersImplicits._
-import org.openqa.selenium.interactions.Action
 import org.openqa.selenium.interactions.Actions
 
 abstract class QueryBy(implicit webDriver: WebDriver) {

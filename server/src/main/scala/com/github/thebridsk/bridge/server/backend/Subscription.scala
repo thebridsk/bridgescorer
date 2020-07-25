@@ -1,7 +1,6 @@
 package com.github.thebridsk.bridge.server.backend
 
 import akka.actor.ActorRef
-import com.github.thebridsk.bridge.data.Id
 import akka.actor.Actor
 import com.github.thebridsk.bridge.data.websocket.DuplexProtocol.DuplexMessage
 import com.github.thebridsk.utilities.logging.Logger

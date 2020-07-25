@@ -1,11 +1,9 @@
 package com.github.thebridsk.bridge.clientcommon.rest2
 
 import com.github.thebridsk.bridge.data.Hand
-import com.github.thebridsk.bridge.data.LoggerConfig
 import com.github.thebridsk.bridge.data.MatchChicago
 import com.github.thebridsk.bridge.data.LoggerConfig
 import com.github.thebridsk.bridge.data.MatchDuplicate
-import com.github.thebridsk.bridge.data.DuplicateSummary
 import com.github.thebridsk.bridge.data.Board
 import com.github.thebridsk.bridge.data.DuplicateHand
 import com.github.thebridsk.bridge.data.Team
@@ -16,16 +14,13 @@ import com.github.thebridsk.bridge.data.Movement
 import com.github.thebridsk.bridge.data.MatchRubber
 import com.github.thebridsk.bridge.data.RubberHand
 import scala.concurrent.duration.Duration
-import com.github.thebridsk.bridge.data.RestMessage
 
 import com.github.thebridsk.bridge.data.rest.JsonSupport._
 import com.github.thebridsk.bridge.data.websocket.DuplexProtocol.LogEntryV2
-import com.github.thebridsk.bridge.data.BoardSetsAndMovementsV1
 import com.github.thebridsk.bridge.data.BoardSetsAndMovements
 import com.github.thebridsk.bridge.data.MatchDuplicateResult
 import com.github.thebridsk.bridge.data.duplicate.stats.PlayerPlaces
 import com.github.thebridsk.bridge.data.DuplicatePicture
-import org.scalactic.source.Position
 import org.scalajs.dom.raw.File
 import org.scalajs.dom.raw.FormData
 
@@ -59,7 +54,6 @@ import com.github.thebridsk.bridge.clientcommon.rest2.Implicits._
 import com.github.thebridsk.bridge.data.duplicate.suggestion.DuplicateSuggestions
 import scala.concurrent.ExecutionContext.Implicits.global
 import com.github.thebridsk.bridge.data.Round
-import com.github.thebridsk.bridge.data.Id
 import com.github.thebridsk.bridge.data.DuplicateSummary
 
 object RestClientLogEntryV2 extends RestClient[LogEntryV2,String]("/v1/logger")

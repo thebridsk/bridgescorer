@@ -8,7 +8,6 @@ case class TableManeuvers(
     east: String,
     west: String
 ) {
-  import TableManeuvers._
 
   override def toString() = {
     s"TableManeuvers( $north-$south, $east-$west )"

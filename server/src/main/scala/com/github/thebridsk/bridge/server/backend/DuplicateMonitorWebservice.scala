@@ -1,43 +1,15 @@
 package com.github.thebridsk.bridge.server.backend
 
-import scala.concurrent.duration.DurationLong
-import scala.language.postfixOps
 
-import com.github.thebridsk.bridge.data.websocket.DuplexProtocol
 import com.github.thebridsk.bridge.data.websocket.Protocol
 
-import akka.NotUsed
 import akka.actor.ActorSystem
 import akka.event.Logging
-import akka.http.scaladsl.model.RemoteAddress
-import akka.http.scaladsl.model.ws.BinaryMessage
-import akka.http.scaladsl.model.ws.Message
-import akka.http.scaladsl.model.ws.TextMessage
 import akka.http.scaladsl.server.Directive.addByNameNullaryApply
 import akka.http.scaladsl.server.Directive.addDirectiveApply
-import akka.http.scaladsl.server.Directives
-import akka.stream.Attributes
-import akka.stream.Attributes.Name
-import akka.stream.FlowShape
-import akka.stream.Inlet
 import akka.stream.Materializer
-import akka.stream.Outlet
-import akka.stream.scaladsl.Flow
-import akka.stream.scaladsl.Sink
-import akka.stream.scaladsl.Source
-import akka.stream.stage.GraphStage
-import akka.stream.stage.GraphStageLogic
-import akka.stream.stage.InHandler
-import akka.stream.stage.OutHandler
-import akka.actor.Props
-import akka.http.scaladsl.model.sse.ServerSentEvent
-import com.github.thebridsk.bridge.data.Id
 import akka.http.scaladsl.server.RejectionHandler
-import akka.http.scaladsl.server.MalformedRequestContentRejection
 import com.github.thebridsk.bridge.data.RestMessage
-import akka.http.scaladsl.server.MethodRejection
-import akka.http.scaladsl.model.headers.Allow
-import akka.http.scaladsl.model.MediaTypes
 import javax.ws.rs.Path
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
@@ -69,7 +41,6 @@ class DuplicateMonitorWebservice(
     NewParticipantSSEDuplicate.apply _,
     service
   )
-  import system.dispatcher
 //  system.scheduler.schedule(15.second, 15.second) {
 //    theChat.injectMessage(ChatMessage(sender = "clock", s"Bling! The time is ${new Date().toString}."))
 //  }
@@ -152,7 +123,6 @@ class DuplicateMonitorWebservice(
   def xxxroutesse = {}
   val routesse = {
     import akka.http.scaladsl.marshalling.sse.EventStreamMarshalling._
-    import akka.http.scaladsl.model.sse.ServerSentEvent
     pathPrefix("sse") {
       get {
         logRequest("sse", Logging.DebugLevel) {

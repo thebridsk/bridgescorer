@@ -2,7 +2,6 @@ package com.github.thebridsk.bridge.clientcommon.react
 
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
-import scala.language.postfixOps
 import com.github.thebridsk.color.Color
 
 object PieChartWithTooltip {

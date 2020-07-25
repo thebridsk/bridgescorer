@@ -1,6 +1,5 @@
 package com.github.thebridsk.bridge.client.pages.duplicate
 
-import scala.scalajs.js
 import scala.scalajs.js.timers._
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
@@ -13,15 +12,12 @@ import com.github.thebridsk.bridge.client.pages.duplicate.DuplicateRouter.Summar
 import com.github.thebridsk.bridge.client.bridge.store.NamesStore
 import com.github.thebridsk.bridge.clientcommon.react.CheckBox
 import com.github.thebridsk.bridge.clientcommon.react.PopupOkCancel
-import scala.annotation.tailrec
 import com.github.thebridsk.bridge.clientcommon.logger.Alerter
 import com.github.thebridsk.bridge.data.duplicate.suggestion.DuplicateSuggestionsCalculation
 import com.github.thebridsk.bridge.data.duplicate.suggestion.Suggestion
-import com.github.thebridsk.bridge.data.SystemTime
 import com.github.thebridsk.bridge.data.duplicate.suggestion.DuplicateSuggestions
 import com.github.thebridsk.bridge.clientcommon.rest2.RestClientDuplicateSuggestions
 import scala.concurrent.ExecutionContext.Implicits.global
-import org.scalactic.source.Position
 import com.github.thebridsk.bridge.clientcommon.rest2.RequestCancelled
 import com.github.thebridsk.bridge.clientcommon.react.Utils._
 import com.github.thebridsk.bridge.data.duplicate.suggestion.NeverPair
@@ -52,7 +48,6 @@ object PageSuggestion {
 object PageSuggestionInternal {
   import PageSuggestion._
   import DuplicateStyles._
-  import scala.language.postfixOps
 
   val logger = Logger("bridge.PageSuggestion")
 

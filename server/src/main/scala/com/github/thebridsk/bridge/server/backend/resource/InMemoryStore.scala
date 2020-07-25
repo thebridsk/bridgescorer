@@ -10,13 +10,11 @@ import InMemoryStore.log
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext
 import Implicits._
-import com.github.thebridsk.bridge.data.Id
 
 import MetaData.MetaDataFile
 import scala.reflect.io.File
 import java.io.InputStream
 import java.io.ByteArrayInputStream
-import scala.collection.mutable
 import scala.util.Using
 import java.io.FileInputStream
 import org.scalactic.source.Position

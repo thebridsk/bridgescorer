@@ -1,17 +1,11 @@
 package com.github.thebridsk.bridge.server.backend
 
-import com.github.thebridsk.bridge.server.backend.resource.StoreSupport
-import com.github.thebridsk.bridge.data.Team
 import com.github.thebridsk.bridge.data.MatchChicago
 import com.github.thebridsk.bridge.data.MatchDuplicate
 import com.github.thebridsk.bridge.data.MatchDuplicateResult
-import com.github.thebridsk.bridge.data.Hand
-import com.github.thebridsk.bridge.data.Board
-import com.github.thebridsk.bridge.data.Table
 import com.github.thebridsk.bridge.server.backend.resource.FileStore
 import scala.reflect.io.Directory
 import com.github.thebridsk.bridge.server.backend.resource.MultiStore
-import com.github.thebridsk.bridge.server.backend.resource.JavaResourceStore
 import com.github.thebridsk.bridge.data.BoardSet
 import com.github.thebridsk.bridge.data.Movement
 import com.github.thebridsk.bridge.data.MatchRubber
@@ -21,13 +15,7 @@ import com.github.thebridsk.bridge.data.MatchChicagoV1
 import com.github.thebridsk.bridge.data.MatchChicagoV2
 import com.github.thebridsk.bridge.server.backend.resource.VersionedInstanceJson
 import com.github.thebridsk.bridge.data.MatchDuplicateV2
-import com.github.thebridsk.utilities.file.FileIO
-import com.github.thebridsk.bridge.server.backend.resource.JsonYamlConverter
-import com.github.thebridsk.bridge.server.backend.resource.JsonConverter
-import com.github.thebridsk.bridge.server.backend.resource.YamlConverter
-import play.api.libs.json._
 import com.github.thebridsk.bridge.server.yaml.YamlSupport._
-import com.github.thebridsk.bridge.data.Id
 import scala.concurrent.ExecutionContext
 import com.github.thebridsk.bridge.data.MatchDuplicateResultV1
 import com.github.thebridsk.bridge.server.backend.resource.Converter
@@ -81,9 +69,7 @@ class BridgeServiceFileStore(
 ) extends BridgeServiceWithLogging(oid.getOrElse(dir.toString())) {
   self =>
 
-  import BridgeServiceFileStore._
 
-  import scala.collection.mutable.Map
 
   val bridgeResources =
     BridgeResources(useYaml, false, useIdFromValue, dontUpdateTime)

@@ -1,21 +1,7 @@
 package com.github.thebridsk.bridge.client.controller
 
-import com.github.thebridsk.bridge.data.websocket.Protocol
 import com.github.thebridsk.utilities.logging.Logger
-import japgolly.scalajs.react.Callback
-import com.github.thebridsk.bridge.client.routes.AppRouter
-import japgolly.scalajs.react.CallbackTo
-import scala.concurrent.ExecutionContext
-import com.github.thebridsk.bridge.clientcommon.logger.Alerter
-import scala.concurrent.Future
-import com.github.thebridsk.bridge.clientcommon.rest2.AjaxResult
-import org.scalactic.source.Position
-import com.github.thebridsk.bridge.clientcommon.rest2.WrapperXMLHttpRequest
-import org.scalajs.dom.raw.EventSource
-import org.scalajs.dom.raw.MessageEvent
-import org.scalajs.dom.raw.Event
 import scala.scalajs.js.timers.SetTimeoutHandle
-import scala.concurrent.duration.Duration
 import com.github.thebridsk.bridge.data.websocket.Protocol.ToBrowserMessage
 import com.github.thebridsk.bridge.data.Id
 

@@ -5,27 +5,13 @@ import com.github.thebridsk.bridge.server.test.backend.BridgeServiceTesting
 import com.github.thebridsk.bridge.server.service.MyService
 import akka.http.scaladsl.model.StatusCodes._
 import akka.http.scaladsl.testkit.ScalatestRouteTest
-import akka.http.scaladsl.model.HttpResponse
-import akka.http.scaladsl.model.ContentTypes._
-import akka.http.scaladsl.model.{HttpResponse, HttpRequest}
-import akka.http.scaladsl.testkit.ScalatestRouteTest
-import akka.stream.scaladsl.Flow
-import akka.http.scaladsl.marshalling.ToResponseMarshallable
-import akka.http.scaladsl.unmarshalling.FromResponseUnmarshaller
-import akka.actor.ActorSystem
-import akka.stream.ActorMaterializer
 import akka.http.scaladsl.server.Route
-import akka.http.scaladsl.server.RejectionHandler
-import akka.http.scaladsl.server.Directives._
-import akka.http.scaladsl.server.MethodRejection
 import akka.event.Logging
 import java.net.InetAddress
 import akka.http.scaladsl.model.RemoteAddress.IP
 import akka.http.scaladsl.model.headers.`Remote-Address`
-import com.github.thebridsk.bridge.server.Server
 import com.github.thebridsk.bridge.data.ServerURL
 import com.github.thebridsk.bridge.server.rest.ServerPort
-import com.github.thebridsk.bridge.server.version.VersionServer
 import com.github.thebridsk.bridge.server.service.ResourceFinder
 import com.github.thebridsk.bridge.server.service.ShutdownHook
 import scala.concurrent.Future
@@ -36,7 +22,6 @@ import akka.http.scaladsl.testkit.RouteTestTimeout
 import akka.http.scaladsl.model.headers.HttpEncodings
 import java.util.zip.GZIPInputStream
 import java.io.ByteArrayInputStream
-import java.io.InputStreamReader
 import scala.io.Source
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.must.Matchers

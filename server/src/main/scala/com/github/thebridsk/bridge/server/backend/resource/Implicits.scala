@@ -12,7 +12,7 @@ object Implicits {
 
   import Result._
 
-  implicit class WrapResult[T](val r: Result[T]) extends AnyVal {
+  implicit class WrapResult[T](private val r: Result[T]) extends AnyVal {
     def logit(
         comment: => String
     )(implicit pos: Position, caller: SourcePosition): Result[T] = {
@@ -36,7 +36,7 @@ object Implicits {
     def toFuture: Future[Result[T]] = Result.future(r)
   }
 
-  implicit class WrapOptionResult[T](val r: Option[Result[T]]) extends AnyVal {
+  implicit class WrapOptionResult[T](private val r: Option[Result[T]]) extends AnyVal {
     def logit(
         comment: => String
     )(implicit pos: Position, caller: SourcePosition): Option[Result[T]] = {
@@ -67,7 +67,7 @@ object Implicits {
     o.getClass.getName + "@" + Integer.toHexString(o.hashCode())
   }
 
-  implicit class WrapFutureResult[T](val fr: Future[Result[T]]) extends AnyVal {
+  implicit class WrapFutureResult[T](private val fr: Future[Result[T]]) extends AnyVal {
     def onError(comment: String)(
         implicit executor: ExecutionContext,
         pos: Position,
@@ -107,7 +107,7 @@ object Implicits {
     }
   }
 
-  implicit class WrapFutureOptionResult[T](val fr: Future[Option[Result[T]]])
+  implicit class WrapFutureOptionResult[T](private val fr: Future[Option[Result[T]]])
       extends AnyVal {
     def onError(comment: String)(
         implicit executor: ExecutionContext,

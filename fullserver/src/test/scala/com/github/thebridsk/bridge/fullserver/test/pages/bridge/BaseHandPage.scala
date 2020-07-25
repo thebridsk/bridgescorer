@@ -14,12 +14,7 @@ import com.github.thebridsk.bridge.data.bridge.PlayerPosition
 import com.github.thebridsk.bridge.data.bridge.Made
 import com.github.thebridsk.bridge.data.bridge.Down
 import com.github.thebridsk.bridge.data.bridge.MadeOrDown
-import org.scalatest.exceptions.TestFailedException
-import org.openqa.selenium.By
-import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.ScoreboardPage
-import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.BoardPage
 import com.github.thebridsk.bridge.data.bridge.Vulnerability
-import org.openqa.selenium.Keys
 import com.github.thebridsk.browserpages.Page
 import com.github.thebridsk.browserpages.GenericPage
 

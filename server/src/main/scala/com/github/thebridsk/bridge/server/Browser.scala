@@ -4,7 +4,6 @@ import com.github.thebridsk.utilities.logging.Logger
 import java.io.IOException
 import scala.sys.process.ProcessIO
 import java.util.logging.Level
-import java.io.OutputStream
 import java.io.InputStream
 import java.io.BufferedReader
 import java.io.InputStreamReader

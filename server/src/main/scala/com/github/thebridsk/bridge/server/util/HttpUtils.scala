@@ -9,15 +9,11 @@ import java.io.InputStreamReader
 import com.github.thebridsk.utilities.logging.Logger
 import java.io.ByteArrayOutputStream
 import java.util.zip.GZIPInputStream
-import play.api.libs.json.Reads
-import java.io.OutputStreamWriter
-import play.api.libs.json.Format
 import java.io.OutputStream
 import java.security.MessageDigest
 import java.security.DigestOutputStream
 import java.io.FileOutputStream
 import java.io.File
-import java.io.StringWriter
 import scala.util.Using
 
 object HttpUtilsInternal {

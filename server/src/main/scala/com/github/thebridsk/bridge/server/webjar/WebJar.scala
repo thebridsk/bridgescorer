@@ -1,20 +1,12 @@
 package com.github.thebridsk.bridge.server.webjar
 
-import akka.http.scaladsl.server._
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.model.StatusCodes
-import akka.http.scaladsl.server.RejectionHandler
 import akka.http.scaladsl.model._
-import akka.http.scaladsl.server._
-import akka.http.scaladsl.model.headers.RawHeader
 import com.github.thebridsk.utilities.logging.Logger
-import java.util.logging.Level
 import akka.event.Logging
-import akka.http.scaladsl.model.headers._
-import akka.http.scaladsl.model.headers.CacheDirectives._
 import com.github.thebridsk.bridge.data.RestMessage
 import scala.concurrent.duration.Duration
-import com.github.thebridsk.bridge.server.service.ResourceFinder
 
 trait WebJar {
 

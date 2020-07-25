@@ -1,9 +1,6 @@
 package com.github.thebridsk.materialui
 
 import japgolly.scalajs.react._
-import japgolly.scalajs.react.raw._
-import japgolly.scalajs.react.vdom._
-import org.scalajs.dom
 import scala.scalajs.js
 import scala.scalajs.js.annotation._
 
@@ -29,7 +26,7 @@ protected trait AppBarPropsPrivate extends js.Any {
 trait AppBarProps extends PaperProps with AppBarPropsPrivate {}
 object AppBarProps extends PropsFactory[AppBarProps] {
 
-  implicit class WrapAppBarProps(val p: AppBarProps) extends AnyVal {
+  implicit class WrapAppBarProps(private val p: AppBarProps) extends AnyVal {
     def position = p.positionInternal.map(s => new Position(s))
 
 //    def position_= (v: js.UndefOr[Position]): Unit = {

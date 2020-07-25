@@ -20,7 +20,6 @@ import com.github.thebridsk.bridge.data.duplicate.stats.PlayerOpponentStat
 import com.github.thebridsk.bridge.data.duplicate.stats.PlayerOpponentsStat
 import com.github.thebridsk.bridge.data.duplicate.stats.PlayerPlace
 import com.github.thebridsk.bridge.data.duplicate.stats.PlayerPlaces
-import scala.reflect.ClassTag
 
 //import com.github.thebridsk.bridge.data.websocket.DuplexProtocol.{ LogEntry => DpLogEntry, _ }
 //import com.github.thebridsk.bridge.data.websocket.Protocol._
@@ -172,12 +171,12 @@ trait JsonSupport {
 
 object JsonSupport extends JsonSupport {
 
-  implicit class ToJsonSupportWrapper[T](val t: T) extends AnyVal {
+  implicit class ToJsonSupportWrapper[T](private val t: T) extends AnyVal {
     def toJson(implicit writer: Writes[T]) = writeJson(t)
     def toJsonPretty(implicit writer: Writes[T]) = writePrettyJson(t)
   }
 
-  implicit class FromJsonSupportWrapper(val json: String) extends AnyVal {
+  implicit class FromJsonSupportWrapper(private val json: String) extends AnyVal {
     def parseJson[T](implicit reader: Reads[T]): T = readJson[T](json)
   }
 

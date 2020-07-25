@@ -9,32 +9,16 @@ import org.scalatest.time.Millis
 import org.scalatest.time.Span
 import java.util.concurrent.TimeUnit
 import com.github.thebridsk.bridge.server.test.util.MonitorTCP
-import com.github.thebridsk.bridge.server.test.util.NoResultYet
 import com.github.thebridsk.bridge.fullserver.test.pages.chicago.EnterNamesPage
 import com.github.thebridsk.bridge.data.bridge._
 import com.github.thebridsk.bridge.fullserver.test.pages.chicago.HandPage
 import org.scalactic.source.Position
 import com.github.thebridsk.bridge.server.test.TestStartLogging
-import com.github.thebridsk.bridge.data.MatchChicago
-import com.github.thebridsk.bridge.server.test.util.HttpUtils
 import com.github.thebridsk.bridge.fullserver.test.pages.chicago.SummaryPage
 import org.scalatest.CancelAfterFailure
-import java.io.InputStream
-import scala.io.Source
-import play.api.libs.json.Json
-import com.github.thebridsk.bridge.server.test.util.GraphQLUtils
-import java.net.URL
-import java.io.OutputStreamWriter
-import scala.io.Codec
-import play.api.libs.json.JsSuccess
-import play.api.libs.json.JsError
-import com.github.thebridsk.utilities.file.FileIO
 import com.github.thebridsk.bridge.fullserver.test.pages.bridge.HomePage
-import scala.reflect.io.File
-import java.util.zip.ZipFile
 import org.openqa.selenium.WebDriver
 import com.github.thebridsk.browserpages.Session
-import com.github.thebridsk.bridge.fullserver.test.pages.LightDarkAddOn
 import com.github.thebridsk.browserpages.PageBrowser
 import scala.jdk.CollectionConverters._
 import com.github.thebridsk.bridge.server.test.util.TestServer
@@ -59,7 +43,6 @@ class ChicagoDemoTestPages extends AnyFlatSpec
     with CancelAfterFailure
 {
   import com.github.thebridsk.browserpages.PageBrowser._
-  import com.github.thebridsk.bridge.server.test.util.EventuallyUtils._
   import Eventually.{ patienceConfig => _, _ }
   import ChicagoDemoTestPages._
 
@@ -87,8 +70,6 @@ class ChicagoDemoTestPages extends AnyFlatSpec
 
   override
   def beforeAll() = {
-    import scala.concurrent._
-    import ExecutionContext.Implicits.global
     import com.github.thebridsk.bridge.server.test.util.ParallelUtils._
 
     MonitorTCP.nextTest()
@@ -108,8 +89,6 @@ class ChicagoDemoTestPages extends AnyFlatSpec
 
   override
   def afterAll() = {
-    import scala.concurrent._
-    import ExecutionContext.Implicits.global
     import com.github.thebridsk.bridge.server.test.util.ParallelUtils._
 
     waitForFuturesIgnoreTimeouts(

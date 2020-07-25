@@ -3,7 +3,6 @@ package com.github.thebridsk.bridge.server.backend.resource
 import com.github.thebridsk.bridge.data.VersionedInstance
 import scala.reflect.ClassTag
 import com.github.thebridsk.utilities.logging.Logger
-import scala.language.reflectiveCalls
 import play.api.libs.json._
 import com.github.thebridsk.bridge.data.rest.JsonException
 

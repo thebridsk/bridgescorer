@@ -4,16 +4,13 @@ import japgolly.scalajs.react.Callback
 import com.github.thebridsk.bridge.clientcommon.rest2.RestClientNames
 import com.github.thebridsk.utilities.logging.Logger
 import com.github.thebridsk.bridge.clientcommon.logger.Alerter
-import com.github.thebridsk.bridge.client.Bridge
 import com.github.thebridsk.bridge.clientcommon.demo.BridgeDemo
 import flux.dispatcher.DispatchToken
 import com.github.thebridsk.bridge.client.bridge.action.BridgeDispatcher
-import com.github.thebridsk.bridge.client.bridge.action.DuplicateBridgeAction
 import com.github.thebridsk.bridge.client.bridge.action.ActionUpdateDuplicateMatch
 import com.github.thebridsk.bridge.client.bridge.action.ActionUpdateTeam
 import com.github.thebridsk.bridge.data.Team
 import com.github.thebridsk.bridge.client.controller.ChicagoController
-import com.github.thebridsk.bridge.client.bridge.action.ChicagoBridgeAction
 import com.github.thebridsk.bridge.client.bridge.action.ActionUpdateChicago
 import com.github.thebridsk.bridge.client.bridge.action.ActionUpdateChicago5
 import com.github.thebridsk.bridge.client.bridge.action.ActionUpdateChicagoNames

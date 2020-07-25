@@ -5,13 +5,11 @@ import java.io.OutputStreamWriter
 import java.io.FileOutputStream
 import java.io.Writer
 import java.io.BufferedWriter
-import java.util.Date
 import com.github.thebridsk.utilities.logging.FileHandler
 import java.io.File
 import java.util.regex.Pattern
 import java.io.FilenameFilter
 import java.time.format.DateTimeFormatter
-import java.time.ZonedDateTime
 import java.time.Instant
 import java.time.ZoneId
 
@@ -146,7 +144,6 @@ object MemoryMonitor {
       }
     })
 
-    import scala.jdk.CollectionConverters._
     val sortedfiles = files.toList.sorted
 //    println(s"Found ${sortedfiles.length} log files with pattern ${pat}")
     if (sortedfiles.length > fCount) {

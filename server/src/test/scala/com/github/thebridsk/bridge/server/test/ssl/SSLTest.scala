@@ -7,7 +7,6 @@ import org.scalatest.concurrent.Eventually
 import com.github.thebridsk.bridge.server.test.util.TestServer
 import java.net.HttpURLConnection
 import javax.net.ssl.HttpsURLConnection
-import javax.net.ssl.SSLSocketFactory
 import javax.net.ssl.SSLContext
 import java.security.KeyStore
 import javax.net.ssl.KeyManagerFactory
@@ -15,7 +14,6 @@ import javax.net.ssl.TrustManagerFactory
 import java.security.SecureRandom
 import java.io.FileInputStream
 import com.github.thebridsk.bridge.server.test.util.EventuallyUtils
-import com.github.thebridsk.bridge.server.test.util.ParallelUtils
 import com.github.thebridsk.bridge.server.test.TestStartLogging
 import com.github.thebridsk.utilities.logging.Logger
 import java.util.concurrent.TimeUnit
@@ -36,7 +34,6 @@ object SSLTest {
  */
 class SSLTest extends AnyFlatSpec with Matchers with BeforeAndAfterAll with EventuallyUtils {
   import Eventually.{ patienceConfig => _, _ }
-  import ParallelUtils._
 
   TestStartLogging.startLogging()
 

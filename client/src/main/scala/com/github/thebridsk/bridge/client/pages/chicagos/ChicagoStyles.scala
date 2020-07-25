@@ -1,6 +1,5 @@
 package com.github.thebridsk.bridge.client.pages.chicagos
 
-import japgolly.scalajs.react.vdom.html_<^._
 import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles
 
 object ChicagoStyles {

@@ -2,16 +2,10 @@ package com.github.thebridsk.session.test
 
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.must.Matchers
-import org.openqa.selenium.WebDriver
-import org.scalatest.BeforeAndAfterAll
-import org.scalatest._
-import org.openqa.selenium._
 import org.scalatest.concurrent.Eventually
 import java.util.concurrent.TimeUnit
 import org.scalatest.time.Span
 import org.scalatest.time.Millis
-import scala.jdk.CollectionConverters._
-import org.scalactic.source.Position
 import com.github.thebridsk.browserpages.Session
 
 /**

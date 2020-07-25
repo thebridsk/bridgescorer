@@ -4,14 +4,10 @@ import scala.scalajs.js
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
 import com.github.thebridsk.materialui.MuiPopper
-import org.scalajs.dom.raw.Element
 import com.github.thebridsk.materialui.MuiClickAwayListener
 import com.github.thebridsk.materialui.MuiPaper
 import com.github.thebridsk.materialui.PopperPlacement
 import com.github.thebridsk.materialui.AnchorElement
-import org.scalajs.dom.raw.KeyboardEvent
-import japgolly.scalajs.react.raw.SyntheticKeyboardEvent
-import org.scalajs.dom.raw.Node
 
 /**
  * A skeleton component.
@@ -27,7 +23,6 @@ import org.scalajs.dom.raw.Node
 object MyMenu {
   import MyMenuInternal._
 
-  import js._
   case class Props(
       placement: js.UndefOr[PopperPlacement],
       anchorEl: js.UndefOr[AnchorElement],

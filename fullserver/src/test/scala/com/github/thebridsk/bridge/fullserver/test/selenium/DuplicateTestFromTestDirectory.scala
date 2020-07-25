@@ -4,53 +4,31 @@ import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.must.Matchers
 import org.openqa.selenium.WebDriver
 import org.scalatest.BeforeAndAfterAll
-import org.openqa.selenium._
 import org.scalatest.concurrent.Eventually
 import java.util.concurrent.TimeUnit
-import com.github.thebridsk.bridge.server.Server
-import com.github.thebridsk.bridge.data.bridge._
-import com.github.thebridsk.bridge.server.backend.BridgeServiceInMemory
-import com.github.thebridsk.bridge.server.backend.BridgeService
 import org.scalatest.time.Span
 import org.scalatest.time.Millis
 import com.github.thebridsk.bridge.data.bridge._
-import scala.jdk.CollectionConverters._
-import scala.util.Failure
-import scala.concurrent._
-import ExecutionContext.Implicits.global
 import com.github.thebridsk.utilities.logging.Logger
-import java.util.logging.Level
 import org.scalactic.source.Position
-import com.github.thebridsk.bridge.data.util.Strings
-import com.github.thebridsk.bridge.server.test.util.NoResultYet
 import com.github.thebridsk.bridge.server.test.util.EventuallyUtils
 import com.github.thebridsk.bridge.server.test.util.ParallelUtils
 import com.github.thebridsk.bridge.data.MatchDuplicate
-import com.github.thebridsk.bridge.server.backend.BridgeServiceFileStore
 import com.github.thebridsk.utilities.file.FileIO
-import scala.reflect.io.Directory
-import java.io.File
-import scala.language.postfixOps
 import com.github.thebridsk.bridge.data.DuplicateHand
-import com.github.thebridsk.bridge.data.Team
-import com.github.thebridsk.bridge.data.Id
 import java.net.URL
-import java.io.InputStreamReader
 import scala.io.Codec
 import scala.io.Source
 import com.github.thebridsk.bridge.data.BoardSet
 import com.github.thebridsk.bridge.server.test.util.HttpUtils
 import com.github.thebridsk.bridge.server.test.TestStartLogging
 import com.github.thebridsk.bridge.data.MatchPlayerPosition
-import org.scalatest.exceptions.TestFailedException
 import com.github.thebridsk.source.SourcePosition
 import com.github.thebridsk.browserpages.GenericPage
-import com.github.thebridsk.browserpages.Element
 import com.github.thebridsk.bridge.server.test.util.MonitorTCP
 import com.github.thebridsk.bridge.server.test.util.HttpUtils.ResponseFromHttp
 import com.github.thebridsk.bridge.server.backend.BridgeServiceFileStoreConverters
 import com.github.thebridsk.bridge.server.backend.MatchDuplicateCacheStoreSupport
-import com.github.thebridsk.bridge.server.test.util.ParallelUtils.CodeBlock
 import com.github.thebridsk.browserpages.PageBrowser
 import com.github.thebridsk.bridge.fullserver.test.pages.bridge.HomePage
 import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.ListDuplicatePage
@@ -391,7 +369,6 @@ class DuplicateTestFromTestDirectory extends AnyFlatSpec with Matchers with Befo
      * Assumes on a by Scoreboard or BoardPage page with a Board_n buttons for the round being played.
      */
     def doPlayHand( sessionTable: TableSession, hand: DuplicateHand, page: PageWithBoardButtons ) = try {
-      import sessionTable._
       val boardButton = s"Board_${hand.board.id}"
       val (north,south,east,west) = getPlayers(hand)
 

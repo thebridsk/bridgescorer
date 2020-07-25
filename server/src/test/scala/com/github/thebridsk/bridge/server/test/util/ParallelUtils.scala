@@ -9,7 +9,6 @@ import org.scalactic.source.Position
 import java.util.concurrent.TimeUnit
 import java.io.StringWriter
 import java.io.PrintWriter
-import java.io.PrintStream
 import com.github.thebridsk.source.SourcePosition
 import scala.util.Success
 
@@ -105,7 +104,6 @@ trait ParallelUtils {
 }
 
 object ParallelUtils extends ParallelUtils {
-  import scala.language.implicitConversions
   import ParallelUtilsInternals._
 
   /**

@@ -1,13 +1,9 @@
 package com.github.thebridsk.bridge.clientapi.pages
 
-import scala.scalajs.js
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
 import graphiql.GraphiQL
-import japgolly.scalajs.react.extra.router.RouterCtl
 import com.github.thebridsk.bridge.clientapi.routes.AppRouter.AppPage
-import com.github.thebridsk.bridge.clientcommon.react.AppButton
-import com.github.thebridsk.bridge.clientapi.routes.AppRouter.Home
 import com.github.thebridsk.materialui.MuiTypography
 import com.github.thebridsk.materialui.TextVariant
 import com.github.thebridsk.materialui.TextColor

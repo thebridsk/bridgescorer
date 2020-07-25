@@ -1,18 +1,9 @@
 package com.github.thebridsk.bridge.server.rest
 
-import com.github.thebridsk.bridge.data.Ack
-import akka.event.Logging
-import akka.event.Logging._
-import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.server.Directives._
-import akka.stream.Materializer
 import com.github.thebridsk.bridge.server.util.HasActorSystem
-import java.util.Date
 import com.github.thebridsk.bridge.server.backend.BridgeService
 import javax.ws.rs.Path
-import com.github.thebridsk.bridge.data.RestMessage
-import scala.util.Success
-import scala.util.Failure
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.media.Content

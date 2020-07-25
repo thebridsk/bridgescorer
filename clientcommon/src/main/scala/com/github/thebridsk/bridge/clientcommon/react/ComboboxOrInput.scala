@@ -1,12 +1,10 @@
 package com.github.thebridsk.bridge.clientcommon.react
 
 import scala.scalajs.js
-import scala.scalajs.js.annotation.JSName
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react.vdom.TagMod
 import com.github.thebridsk.bridge.clientcommon.react.Utils.ExtendReactEventFromInput
-import com.github.thebridsk.bridge.clientcommon.pages.RootStyles
 import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles
 import com.github.thebridsk.utilities.logging.Logger
 

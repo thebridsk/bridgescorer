@@ -1,22 +1,11 @@
 package com.github.thebridsk.bridge.server.rest
 
-import akka.event.Logging
 import akka.event.Logging._
-import akka.http.scaladsl.model.StatusCodes._
 import akka.http.scaladsl.server.Directives._
-import akka.stream.Materializer
-import com.github.thebridsk.bridge.server.util.HasActorSystem
-import akka.actor.ActorSystem
-import akka.stream.ActorMaterializer
-import akka.http.scaladsl.model.StatusCode
-import com.github.thebridsk.bridge.server.backend.BridgeService
-import com.github.thebridsk.bridge.data.Id
 import javax.ws.rs.Path
 import com.github.thebridsk.bridge.data.RestMessage
-import akka.http.scaladsl.model.headers.Location
 import scala.concurrent.ExecutionContext.Implicits.global
 import com.github.thebridsk.bridge.server.backend.resource.Resources
-import com.github.thebridsk.bridge.server.backend.BridgeNestedResources
 import scala.concurrent.Future
 import com.github.thebridsk.bridge.server.backend.resource.Result
 import io.swagger.v3.oas.annotations.Operation
@@ -35,8 +24,6 @@ import javax.ws.rs.GET
 import javax.ws.rs.POST
 import javax.ws.rs.PUT
 import javax.ws.rs.DELETE
-import akka.http.scaladsl.model.StatusCodes
-import com.github.thebridsk.bridge.data.MatchRubber
 import com.github.thebridsk.bridge.data.RubberHand
 
 /**

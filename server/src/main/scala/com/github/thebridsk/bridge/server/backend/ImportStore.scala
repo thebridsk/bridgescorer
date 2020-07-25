@@ -8,10 +8,7 @@ import scala.reflect.io.Directory
 import scala.concurrent.Future
 import akka.http.scaladsl.model.StatusCodes
 import com.github.thebridsk.bridge.server.backend.resource.Implicits._
-import com.github.thebridsk.bridge.data.MatchDuplicate
-import java.io.InputStream
 import scala.reflect.io.File
-import java.nio.file.Files
 import com.github.thebridsk.utilities.file.FileIO
 import java.io.IOException
 import com.github.thebridsk.utilities.logging.Logger

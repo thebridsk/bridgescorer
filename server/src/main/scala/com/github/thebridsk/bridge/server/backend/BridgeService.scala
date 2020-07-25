@@ -1,27 +1,13 @@
 package com.github.thebridsk.bridge.server.backend
 
-import com.github.thebridsk.bridge.data.Board
-import com.github.thebridsk.bridge.data.Table
-import com.github.thebridsk.bridge.data.Hand
-import com.github.thebridsk.bridge.data.MatchChicago
-import com.github.thebridsk.bridge.data.MatchChicago
 import com.github.thebridsk.bridge.data.MatchChicago
 import com.github.thebridsk.bridge.data.LoggerConfig
-import com.github.thebridsk.bridge.data.bridge.North
-import com.github.thebridsk.bridge.data.bridge.East
 import com.github.thebridsk.bridge.data.MatchDuplicate
-import com.github.thebridsk.bridge.data.DuplicateHand
-import akka.http.scaladsl.model.StatusCodes._
 import com.github.thebridsk.bridge.data.SystemTime
 import com.github.thebridsk.bridge.data.Team
-import com.github.thebridsk.bridge.data.Id
 import com.github.thebridsk.bridge.data.Board
-import scala.util.parsing.json.JSON
-import scala.io.Source
-import scala.collection.immutable.Map
 import com.github.thebridsk.bridge.data.sample.TestMatchDuplicate
 import com.github.thebridsk.bridge.server.backend.resource.MultiStore
-import com.github.thebridsk.bridge.server.backend.resource.JavaResourceStore
 import akka.http.scaladsl.model.StatusCodes
 import com.github.thebridsk.bridge.data.BoardSet
 import com.github.thebridsk.bridge.data.Movement
@@ -33,8 +19,6 @@ import com.github.thebridsk.bridge.data.DuplicateSummary
 import com.github.thebridsk.bridge.server.backend.resource.Store
 import com.github.thebridsk.bridge.server.backend.resource.Result
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.duration._
-import scala.concurrent.Promise
 import scala.concurrent.Future
 import com.github.thebridsk.bridge.server.backend.resource.InMemoryStore
 import com.github.thebridsk.bridge.server.backend.resource.Implicits
@@ -42,10 +26,8 @@ import com.github.thebridsk.bridge.data.RestMessage
 import java.io.OutputStream
 import java.util.zip.ZipOutputStream
 import java.nio.charset.StandardCharsets
-import com.github.thebridsk.bridge.server.backend.resource.VersionedInstanceJson
 import com.github.thebridsk.bridge.data.VersionedInstance
 import java.util.zip.ZipEntry
-import java.io.OutputStreamWriter
 import java.io.BufferedOutputStream
 import com.github.thebridsk.bridge.data.SystemTime.Timestamp
 import scala.reflect.io.Directory
@@ -58,7 +40,6 @@ import com.github.thebridsk.bridge.server.backend.resource.ZipStoreInternal
 import com.github.thebridsk.bridge.server.version.VersionServer
 import com.github.thebridsk.bridge.data.version.VersionShared
 import com.github.thebridsk.utilities.version.VersionUtilities
-import com.github.thebridsk.bridge.server.CollectLogs
 import scala.util.Using
 import java.io.FileInputStream
 import java.io.InputStream
@@ -127,7 +108,6 @@ abstract class BridgeService(val id: String) {
     BridgeServiceWithLogging.log.fine(s"exporting: diagnostics=$diagnostics, filter=$filter")
 
     val converters = new BridgeServiceFileStoreConverters(true)
-    import converters._
 
     val buf = new BufferedOutputStream(out)
     val zip = new ZipOutputStream(buf, StandardCharsets.UTF_8)
@@ -190,7 +170,6 @@ abstract class BridgeService(val id: String) {
       filter: Option[List[String]] = None
   ): Future[Result[List[String]]] = {
     val converters = new BridgeServiceFileStoreConverters(true)
-    import converters._
 
     exportStore(zip, duplicates, filter).flatMap { rd =>
       exportStore(zip, duplicateresults, filter).flatMap { re =>

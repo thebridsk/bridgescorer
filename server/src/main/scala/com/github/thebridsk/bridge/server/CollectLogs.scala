@@ -1,7 +1,6 @@
 package com.github.thebridsk.bridge.server
 
 import scala.concurrent.duration.Duration
-import scala.language.postfixOps
 
 import org.rogach.scallop.ValueConverter
 import org.rogach.scallop.singleArgConverter
@@ -10,27 +9,7 @@ import com.github.thebridsk.utilities.logging.Logger
 import com.github.thebridsk.utilities.main.Subcommand
 import scala.reflect.io.Path
 import scala.reflect.io.Directory
-import java.net.URL
-import java.io.{File => JFile}
-import java.util.jar.JarFile
-import java.io.IOException
-import java.io.BufferedInputStream
-import java.io.InputStream
-import java.io.Writer
-import java.io.OutputStream
-import java.io.BufferedOutputStream
-import java.io.FileOutputStream
 import java.nio.file.Files
-import java.nio.file.{Path => JPath}
-import java.nio.file.StandardCopyOption
-import java.util.zip.ZipOutputStream
-import java.util.zip.ZipEntry
-import scala.reflect.io.File
-import java.nio.file.Paths
-import com.github.thebridsk.bridge.server.version.VersionServer
-import com.github.thebridsk.bridge.data.version.VersionShared
-import com.github.thebridsk.utilities.version.VersionUtilities
-import scala.util.Using
 import com.github.thebridsk.bridge.server.backend.BridgeService
 import scala.concurrent.Await
 

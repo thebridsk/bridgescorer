@@ -5,7 +5,6 @@ import scala.reflect.io.File
 import com.github.thebridsk.bridge.data.MatchDuplicate
 import com.github.thebridsk.bridge.server.backend.BridgeServiceFileStore
 import com.github.thebridsk.utilities.file.FileIO
-import com.github.thebridsk.bridge.data.Id
 import org.scalatest.Assertions._
 import com.github.thebridsk.utilities.logging.Logger
 import com.github.thebridsk.bridge.server.backend.BridgeServiceFileStoreConverters

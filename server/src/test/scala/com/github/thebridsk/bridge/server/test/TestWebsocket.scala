@@ -2,30 +2,13 @@ package com.github.thebridsk.bridge.server.test
 
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.must.Matchers
-import com.github.thebridsk.bridge.data.Board
-import com.github.thebridsk.bridge.data.Table
 import com.github.thebridsk.bridge.server.service.MyService
-import com.github.thebridsk.bridge.data.Hand
 import com.github.thebridsk.bridge.server.test.backend.BridgeServiceTesting
-import com.github.thebridsk.bridge.server.backend.BridgeService
-import akka.http.scaladsl.model.StatusCodes._
-import akka.http.scaladsl.testkit.ScalatestRouteTest
-import akka.http.scaladsl.model.HttpResponse
-import akka.http.scaladsl.model.ContentTypes._
-import akka.http.scaladsl.model.{HttpResponse, HttpRequest}
-import akka.http.scaladsl.model.StatusCodes._
 import akka.http.scaladsl.testkit.ScalatestRouteTest
 import akka.stream.scaladsl.Flow
-import org.scalatest._
-import akka.http.scaladsl.marshalling.ToResponseMarshallable
-import akka.http.scaladsl.unmarshalling.FromResponseUnmarshaller
-import akka.actor.ActorSystem
-import akka.stream.ActorMaterializer
 import akka.http.scaladsl.model.headers.`Remote-Address`
 import akka.http.scaladsl.model.RemoteAddress.IP
 import java.net.InetAddress
-import akka.http.scaladsl.model.MediaTypes
-import akka.http.scaladsl.model.MediaTypes.`application/json`
 import akka.http.scaladsl.testkit.WSProbe
 import akka.http.scaladsl.model.ws.TextMessage
 import akka.http.scaladsl.model.ws.Message
@@ -37,7 +20,6 @@ import akka.util.ByteString
 import scala.concurrent.duration._
 import scala.language.postfixOps
 import akka.NotUsed
-import akka.stream.impl.fusing.GraphStages
 import akka.stream.stage.GraphStage
 import akka.stream.Attributes
 import akka.stream.stage.GraphStageLogic
@@ -46,7 +28,6 @@ import akka.stream.Outlet
 import akka.stream.FlowShape
 import akka.stream.stage.InHandler
 import akka.stream.stage.OutHandler
-import akka.stream.Shape
 import akka.stream.Attributes.Name
 import akka.event.Logging
 import com.github.thebridsk.bridge.server.rest.ServerPort

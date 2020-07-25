@@ -1,9 +1,7 @@
 package com.github.thebridsk.bridge.data.duplicate.stats
 
 import java.io.PrintStream
-import com.github.thebridsk.bridge.data.Id
 import com.github.thebridsk.bridge.data.MatchDuplicate
-import scala.annotation.tailrec
 import com.github.thebridsk.bridge.data.Hand
 
 case class CounterStat(tricks: Int, counter: Int) {

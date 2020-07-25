@@ -3,10 +3,7 @@ package com.github.thebridsk.bridge.clientcommon.react
 import scala.scalajs.js
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
-import japgolly.scalajs.react.vdom.TagMod
 import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles
-import japgolly.scalajs.react.vdom.HtmlStyles
-import com.github.thebridsk.materialui.icons
 import com.github.thebridsk.materialui._
 
 /**

@@ -1,28 +1,15 @@
 package com.github.thebridsk.bridge.client.pages.duplicate
 
 
-import scala.scalajs.js
 import scala.util.Success
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
-import japgolly.scalajs.react.extra.router.RouterCtl
-import japgolly.scalajs.react.component.Js.Component
-import com.github.thebridsk.bridge.client.routes.AppRouter.AppPage
-import com.github.thebridsk.bridge.data.DuplicateSummary
-import com.github.thebridsk.bridge.data.Id
 import com.github.thebridsk.utilities.logging.Logger
 import com.github.thebridsk.bridge.client.controller.Controller
-import com.github.thebridsk.bridge.data.SystemTime
 import com.github.thebridsk.bridge.client.routes.BridgeRouter
 import com.github.thebridsk.bridge.clientcommon.react.AppButton
-import com.github.thebridsk.bridge.client.pages.duplicate.DuplicateRouter.CompleteScoreboardView
-import com.github.thebridsk.bridge.client.pages.duplicate.DuplicateRouter.SummaryView
-import com.github.thebridsk.bridge.client.pages.duplicate.DuplicateRouter.BoardSetSummaryView
-import com.github.thebridsk.bridge.client.pages.duplicate.DuplicateRouter.MovementSummaryView
-import com.github.thebridsk.bridge.clientcommon.rest2.RestClientDuplicateSummary
 import com.github.thebridsk.bridge.client.bridge.store.DuplicateSummaryStore
 import com.github.thebridsk.bridge.data.duplicate.suggestion.PairsData
-import com.github.thebridsk.bridge.clientcommon.react.Utils._
 import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles
 import com.github.thebridsk.bridge.data.duplicate.stats.DuplicateStats
 import com.github.thebridsk.bridge.clientcommon.react.PopupOkCancel

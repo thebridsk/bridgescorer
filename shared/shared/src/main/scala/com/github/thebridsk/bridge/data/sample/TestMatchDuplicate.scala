@@ -1,6 +1,5 @@
 package com.github.thebridsk.bridge.data.sample
 
-import com.github.thebridsk.bridge.data.Id
 import com.github.thebridsk.bridge.data.MatchDuplicate
 import com.github.thebridsk.bridge.data.Team
 import com.github.thebridsk.bridge.data.Board

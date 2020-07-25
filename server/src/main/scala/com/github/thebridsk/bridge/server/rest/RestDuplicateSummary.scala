@@ -1,25 +1,11 @@
 package com.github.thebridsk.bridge.server.rest
 
 import com.github.thebridsk.bridge.server.backend.BridgeService
-import com.github.thebridsk.bridge.data.Board
-import com.github.thebridsk.bridge.data.MatchDuplicate
 import akka.event.Logging
-import akka.event.Logging._
-import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.server.Directives._
-import akka.stream.Materializer
-import akka.actor.ActorSystem
-import akka.stream.ActorMaterializer
 import com.github.thebridsk.bridge.server.util.HasActorSystem
-import akka.http.scaladsl.model.StatusCode
-import com.github.thebridsk.bridge.data.Id
 import com.github.thebridsk.bridge.data.DuplicateSummary
 import javax.ws.rs.Path
-import com.github.thebridsk.bridge.data.RestMessage
-import com.github.thebridsk.bridge.data.SystemTime
-import akka.http.scaladsl.model.headers.Location
-import scala.util.Success
-import scala.util.Failure
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.media.Content

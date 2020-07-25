@@ -1,14 +1,10 @@
 package com.github.thebridsk.bridge.client.pages.chicagos
 
 
-import scala.scalajs.js
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
 import com.github.thebridsk.bridge.client.routes.BridgeRouter
-import com.github.thebridsk.bridge.client.routes.AppRouter.AppPage
-import com.github.thebridsk.bridge.data.Id
 import com.github.thebridsk.utilities.logging.Logger
-import com.github.thebridsk.bridge.data.Team
 import com.github.thebridsk.bridge.clientcommon.react.AppButton
 import com.github.thebridsk.bridge.clientcommon.react.ComboboxOrInput
 import com.github.thebridsk.bridge.client.bridge.store.NamesStore
@@ -169,7 +165,6 @@ object PageEditNamesInternal {
       )
     }
 
-    import com.github.thebridsk.bridge.clientcommon.react.Utils._
     def setPlayer(player: String)( name: String ) =
       scope.modState( ps => ps.copy( newnames = ps.newnames + (player -> name)) )
 

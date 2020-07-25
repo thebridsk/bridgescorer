@@ -4,11 +4,7 @@ import akka.http.scaladsl.model.StatusCodes
 import com.github.thebridsk.bridge.data.RestMessage
 import com.github.thebridsk.bridge.data.VersionedInstance
 import scala.concurrent.Future
-import com.github.thebridsk.bridge.data.Id
 import scala.reflect.io.File
-import java.io.OutputStream
-import scala.io.Source
-import scala.reflect.io.Streamable.Bytes
 import java.io.InputStream
 
 

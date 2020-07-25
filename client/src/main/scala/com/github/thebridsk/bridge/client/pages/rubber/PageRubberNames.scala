@@ -1,17 +1,14 @@
 package com.github.thebridsk.bridge.client.pages.rubber
 
-import scala.scalajs.js
 
 import com.github.thebridsk.bridge.client.bridge.store.NamesStore
 import com.github.thebridsk.bridge.client.controller.RubberController
-import com.github.thebridsk.bridge.data.Round
 import com.github.thebridsk.bridge.data.bridge.East
 import com.github.thebridsk.bridge.data.bridge.North
 import com.github.thebridsk.bridge.data.bridge.PlayerPosition
 import com.github.thebridsk.bridge.data.bridge.South
 import com.github.thebridsk.bridge.data.bridge.West
 import com.github.thebridsk.bridge.client.pages.info.InfoPage
-import com.github.thebridsk.bridge.clientcommon.react.Utils.ExtendReactEventFromInput
 
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.html_<^._
@@ -24,7 +21,6 @@ import com.github.thebridsk.bridge.clientcommon.react.AppButton
 import com.github.thebridsk.bridge.clientcommon.react.Utils._
 import com.github.thebridsk.bridge.client.pages.rubber.RubberRouter.ListView
 import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles
-import com.github.thebridsk.bridge.clientcommon.react.HelpButton
 import com.github.thebridsk.materialui.MuiTypography
 import com.github.thebridsk.materialui.TextVariant
 import com.github.thebridsk.materialui.TextColor

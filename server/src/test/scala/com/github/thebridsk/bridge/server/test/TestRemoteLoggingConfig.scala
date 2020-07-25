@@ -3,7 +3,6 @@ package com.github.thebridsk.bridge.server.test
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.must.Matchers
 
-import com.github.thebridsk.bridge.data.bridge._
 import com.github.thebridsk.bridge.server.logging.RemoteLoggingConfig
 import com.github.thebridsk.bridge.server.yaml.YamlSupport
 

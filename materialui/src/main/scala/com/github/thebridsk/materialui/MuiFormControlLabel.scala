@@ -1,14 +1,11 @@
 package com.github.thebridsk.materialui
 
 import japgolly.scalajs.react._
-import japgolly.scalajs.react.raw._
 import japgolly.scalajs.react.vdom._
-import org.scalajs.dom
 import scala.scalajs.js
 import scala.scalajs.js.annotation._
 import scala.language.implicitConversions
 import japgolly.scalajs.react.{raw => Raw}
-import japgolly.scalajs.react.component.Generic.UnmountedWithRoot
 
 class LabelPlacement(val value: String) extends AnyVal
 object LabelPlacement {
@@ -47,7 +44,7 @@ trait FormControlLabelProps extends AdditionalProps with StandardProps with Form
 
 object FormControlLabelProps extends PropsFactory[FormControlLabelProps] {
 
-  implicit class WrapFormControlLabelProps(val p: FormControlLabelProps) extends AnyVal {
+  implicit class WrapFormControlLabelProps(private val p: FormControlLabelProps) extends AnyVal {
 
     def control = p.controlInternal.map( n => VdomNode(n))
     def label = p.labelInternal.map( n => VdomNode(n))
