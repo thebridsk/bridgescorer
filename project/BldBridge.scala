@@ -19,6 +19,8 @@ import scalajsbundler.sbtplugin.WebScalaJSBundlerPlugin.autoImport._
 import org.scalajs.sbtplugin.ScalaJSPlugin
 import org.scalajs.sbtplugin.ScalaJSPlugin.autoImport._
 
+import scalafix.sbt.ScalafixPlugin.autoImport._
+
 import BldDependencies._
 import BldCommonSettings._
 import BldVersion._
@@ -33,6 +35,7 @@ object BldBridge {
         |
         |Tasks on root project
         |  setOptimize            turn on scalac optimization in all projects
+        |  setSemanticDB          turn on setSemanticDB for scalafix
         |  server                 run server with HTTP without help pages
         |  serverhelp             run server with HTTP with help pages
         |  updateCheck            check for updates in project and plugins
@@ -78,6 +81,7 @@ object BldBridge {
         |
         |Tasks in any project
         |  test:testClass <clsname>...  run tests on specified class(es), wildcard * matches any number of characters
+        |  scalafix           run scalafix, for help run scalafix --help
         |
         |Environment Variables that affect build
         |  UseBrowser <browser>        the browser to use in selenium tests, default is "chrome"
@@ -122,6 +126,27 @@ object BldBridge {
     "show help for app tasks",
     "show help for app tasks"
   )(actionAppHelp _) // "shows help for sbt tasks for BridgeScoreKeeper"
+
+  val setSemanticDB = Command.command(
+    "setSemanticDB",
+    "turn on setSemanticDB",
+    "turn on setSemanticDB"
+  ) { state: State =>
+    val extracted = Project extract state
+    import extracted._
+    println("Turning on SemanticDB")
+    appendWithoutSession(
+      semanticdbEnabled in ThisBuild := true,
+      state
+    )
+  }
+
+  inThisBuild(
+    List(
+      semanticdbEnabled := false,
+      semanticdbVersion := scalafixSemanticdb.revision,
+    )
+  )
 
   val setOptimize = Command.command(
     "setOptimize",
@@ -249,7 +274,7 @@ object BldBridge {
       serverhelp := { (serverhelp in BldBridgeScoreKeeper.bridgescorekeeper).value },
       serverlogs := { (serverlogs in BldBridgeScoreKeeper.bridgescorekeeper).value },
 
-      commands ++= Seq( apphelp, setOptimize, updateCheck, releaseWithDefaults )
+      commands ++= Seq( apphelp, setOptimize, updateCheck, releaseWithDefaults, setSemanticDB )
     ).
     settings(
       checkForUpdates := Def
