@@ -267,10 +267,16 @@ object BldCommonSettings {
         if (semanticdbEnabled.value) List("-Yrangepos")  // required by SemanticDB compiler plugin
         else List()
       },
-      libraryDependencies ++= {
-        if (semanticdbEnabled.value) List(compilerPlugin(scalafixSemanticdb))
-        else List()
+      // semanticdbEnabled := false,
+      semanticdbVersion := {
+        val v = scalafixSemanticdb.revision
+        // println(s"semanticdbVersion=$v")
+        v
       },
+      // libraryDependencies ++= {
+      //   if (semanticdbEnabled.value) List(compilerPlugin(scalafixSemanticdb))
+      //   else List()
+      // },
       // useCoursier := false,
       testOptions in Test += Tests.Argument(TestFrameworks.ScalaTest, "-oDFIK"),
       testClass in Test := (Def.inputTaskDyn {

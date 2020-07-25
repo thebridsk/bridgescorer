@@ -137,6 +137,9 @@ object BldBridge {
     println("Turning on SemanticDB")
     appendWithoutSession(
       semanticdbEnabled in ThisBuild := true,
+      // structure.allProjectRefs.map{ p =>
+      //   semanticdbEnabled in p := true
+      // },
       state
     )
   }
@@ -158,10 +161,8 @@ object BldBridge {
     val extracted = Project extract state
     import extracted._
     println("Turning on optimization in all projects")
-    //append returns state with updated Foo
     appendWithoutSession(
       structure.allProjectRefs.map{ p =>
-        println(s"  Turning on in {${p.build}}${p.project}")
         scalacOptions in p ++= Seq(
           "-opt:l:method",
           // "-opt:l:inline",
@@ -247,6 +248,7 @@ object BldBridge {
       BldBridgeScoreKeeper.bridgescorekeeper,
       BldBridgeDemo.demo
     )
+    .configure(commonSettings)
     .settings(
       name := "bridgescorer",
       publish := {},
