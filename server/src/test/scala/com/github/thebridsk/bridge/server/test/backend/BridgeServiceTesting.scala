@@ -25,33 +25,42 @@ import scala.concurrent.Future
 import akka.http.scaladsl.model.StatusCodes
 import com.github.thebridsk.bridge.server.backend.resource.Implicits._
 import scala.reflect.io.File
+import com.github.thebridsk.bridge.data.BoardSet
+import com.github.thebridsk.bridge.data.Movement
 
 
 object BridgeServiceTesting {
   val testingMatch =
   {
 
-    val teams = Map( "T1"-> Team.create("T1","Nancy","Sam"),
-                     "T2"->Team.create("T2","Ellen", "Wayne"),
-                     "T3"->Team.create("T3","Norman","Sally"),
-                     "T4"->Team.create("T4","Ethan","Wilma"))
+    val team1 = Team.id(1)
+    val team2 = Team.id(2)
+    val team3 = Team.id(3)
+    val team4 = Team.id(4)
+
+    val teams = List(
+                  Team.create(team1,"Nancy","Sam"),
+                  Team.create(team2,"Ellen", "Wayne"),
+                  Team.create(team3,"Norman","Sally"),
+                  Team.create(team4,"Ethan","Wilma")
+                )
     val time = System.currentTimeMillis().toDouble
-    MatchDuplicateV3("M1", teams.values.toList, List(
-        Board.create("B1", false, false, North.pos, List(
+    MatchDuplicateV3(MatchDuplicate.id("M1"), teams, List(
+        Board.create(Board.id(1), false, false, North.pos, List(
             DuplicateHand.create( Hand.create("H1",7,Spades.suit, Doubled.doubled, North.pos,
                                               false,false,true,7),
-                                 "1", 1, "B1", "T1", "T2"),
+                                 Table.id(1), 1, Board.id(1), team1, team2),
             DuplicateHand.create( Hand.create("H2",7,Spades.suit, Doubled.doubled, North.pos,
                                               false,false,false,1),
-                                  "2", 2, "B1", "T3", "T4")
+                                  Table.id(2), 2, Board.id(1), team3, team4)
             )),
-        Board.create("B2", true, false, East.pos, List(
+        Board.create(Board.id(2), true, false, East.pos, List(
             DuplicateHand.create( Hand.create("H1",7,Hearts.suit, Doubled.doubled, North.pos,
                                               false,false,true,7),
-                                  "1", 1, "B2", "T1", "T2")
+                                  Table.id(1), 1, Board.id(2), team1, team2)
             )),
-        Board.create("B3", false, true, South.pos, List())
-        ), "", "", time, time)
+        Board.create(Board.id(3), false, true, South.pos, List())
+        ), BoardSet.idNul, Movement.idNul, time, time)
 
   }
 }

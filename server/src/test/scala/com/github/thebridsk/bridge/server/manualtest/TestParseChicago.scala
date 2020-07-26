@@ -20,20 +20,20 @@ object TestParseChicago extends Main {
 
   val log = logger
 
-  val mc = MatchChicago("M0",
+  val mc = MatchChicago(MatchChicago.id("M0"),
                         List("player1","player2","player3","player4"),
                         Nil,
                         0,
                         true,
                         0,0
                        )
-  val mc2 = MatchChicagoV2("M2",
+  val mc2 = MatchChicagoV2(MatchChicago.id("M2"),
                            List("player1","player2","player3","player4"),
                            Nil,
                            0,
                            0,0
                           )
-  val mc1 = MatchChicagoV1("M1",
+  val mc1 = MatchChicagoV1(MatchChicago.id("M1"),
                            "player1","player2","player3","player4",
                            Nil,
                            0,
@@ -47,12 +47,12 @@ object TestParseChicago extends Main {
 
   val matchChicagoInstanceJson = {
     implicit val converter = converterJsonYaml
-    VersionedInstanceJson[String,MatchChicago].add[MatchChicagoV2].add[MatchChicagoV1]
+    VersionedInstanceJson[MatchChicago.Id,MatchChicago].add[MatchChicagoV2].add[MatchChicagoV1]
   }
 
   val matchChicagoInstanceYaml = {
     implicit val converter = converterYamlJson
-    VersionedInstanceJson[String,MatchChicago].add[MatchChicagoV2].add[MatchChicagoV1]
+    VersionedInstanceJson[MatchChicago.Id,MatchChicago].add[MatchChicagoV2].add[MatchChicagoV1]
   }
 
   def execute() = {
@@ -66,7 +66,7 @@ object TestParseChicago extends Main {
   }
 
   def test[T]( v: T,
-               instanceConverter: VersionedInstanceJson[String,MatchChicago],
+               instanceConverter: VersionedInstanceJson[MatchChicago.Id,MatchChicago],
                converter: Converter
              )(implicit format: Format[T]) = {
     println("Testing "+v)

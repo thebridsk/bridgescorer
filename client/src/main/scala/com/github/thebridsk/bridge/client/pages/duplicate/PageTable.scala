@@ -117,7 +117,7 @@ object PageTableInternal {
                     <.div(
                       baseStyles.divFooterCenter,
                       AppButton( "Game", "Completed Games Scoreboard",
-                                 props.routerCtl.setOnClick(CompleteScoreboardView(props.page.dupid))
+                                 props.routerCtl.setOnClick(CompleteScoreboardView(props.page.sdupid))
                       ),
                       ComponentInputStyleButton( Callback{} )
                     )
@@ -125,7 +125,7 @@ object PageTableInternal {
                 )
               case None =>
                 <.div( <.p("Table not found"), <.p(
-                    AppButton( "Game", "Completed Games Scoreboard", props.routerCtl.setOnClick(CompleteScoreboardView(props.page.dupid)) )
+                    AppButton( "Game", "Completed Games Scoreboard", props.routerCtl.setOnClick(CompleteScoreboardView(props.page.sdupid)) )
                     ) )
             }
           case _ =>

@@ -96,7 +96,7 @@ object ViewTotalsTableInternal {
       <.table(
           <.thead(
             <.tr(
-                <.th( scoring.chicago.id ),
+                <.th( scoring.chicago.id.id ),
                 <.th( ^.colSpan:=scoring.players.size, "Totals")
                 ),
             <.tr(

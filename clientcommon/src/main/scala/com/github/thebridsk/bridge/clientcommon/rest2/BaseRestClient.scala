@@ -23,6 +23,7 @@ import com.github.thebridsk.bridge.data.websocket.DuplexProtocol.LogEntryV2
 import com.github.thebridsk.bridge.data.BoardSetsAndMovementsV1
 import com.github.thebridsk.bridge.data.BoardSetsAndMovements
 import com.github.thebridsk.bridge.data.MatchDuplicateResult
+import play.api.libs.json.KeyWrites
 
 /**
  * @author werewolf
@@ -55,12 +56,16 @@ object Implicits {
     def option[T]( f: =>T ): Option[T] = if (b) Some(f) else None
   }
 
+  implicit val stringKeyWrites = new KeyWrites[String] {
+    def writeKey(key: String): String = key
+  }
+
 }
 
 import Implicits._
 import scala.concurrent.ExecutionContext.Implicits.global
 
-object RestClientLogEntryV2 extends RestClient[LogEntryV2]("/v1/logger")
-object RestClientLoggerConfig extends RestClient[LoggerConfig]("/v1/rest/loggerConfig")
-object RestClientServerURL extends RestClient[ServerURL]("/v1/rest/serverurls")
-object RestClientServerVersion extends RestClient[ServerVersion]("/v1/rest/serverversion")
+object RestClientLogEntryV2 extends RestClient[LogEntryV2,String]("/v1/logger")
+object RestClientLoggerConfig extends RestClient[LoggerConfig,String]("/v1/rest/loggerConfig")
+object RestClientServerURL extends RestClient[ServerURL,String]("/v1/rest/serverurls")
+object RestClientServerVersion extends RestClient[ServerVersion,String]("/v1/rest/serverversion")

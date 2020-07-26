@@ -24,6 +24,7 @@ import com.github.thebridsk.materialui.TextVariant
 import com.github.thebridsk.materialui.TextColor
 import com.github.thebridsk.bridge.client.pages.HomePage
 import japgolly.scalajs.react.component.builder.Lifecycle.ComponentDidUpdate
+import com.github.thebridsk.bridge.data.Table
 
 /**
  * Shows the team x board table and has a totals column that shows the number of points the team has.
@@ -90,12 +91,12 @@ object PageAllBoardsInternal {
         props.page.getPerspective match {
           case PerspectiveTable(team1, team2) =>
             val (currentRound,currentTable) = props.page match {
-              case TableRoundAllBoardView( dupid, tableid, roundid ) => (roundid,tableid)
-              case _ => (-1,"")
+              case trabv: TableRoundAllBoardView => (trabv.round,trabv.tableid)
+              case _ => (-1,Table.idNul)
             }
             <.span(
-              s"Table ${Id.tableIdToTableNumber(currentTable)} Round ${currentRound}" ,
-              s" Teams ${Id.teamIdToTeamNumber(team1)} and ${Id.teamIdToTeamNumber(team2)}",
+              s"Table ${currentTable.toNumber} Round ${currentRound}" ,
+              s" Teams ${team1.toNumber} and ${team2.toNumber}",
               " Board View"
             )
           case PerspectiveDirector =>

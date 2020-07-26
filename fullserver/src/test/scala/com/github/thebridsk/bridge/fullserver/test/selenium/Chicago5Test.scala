@@ -33,6 +33,7 @@ import com.github.thebridsk.bridge.fullserver.test.pages.chicago.ChicagoMatchTyp
 import com.github.thebridsk.bridge.fullserver.test.pages.chicago.FiveSelectPartnersPage
 import com.github.thebridsk.bridge.fullserver.test.pages.chicago.ChicagoMatchTypeFive
 import com.github.thebridsk.bridge.server.test.TestStartLogging
+import com.github.thebridsk.bridge.data.MatchChicago
 
 object Chicago5Test {
   val playerN = "Nancy"
@@ -181,7 +182,7 @@ class Chicago5Test extends AnyFlatSpec
   it should "send the player names to the server" in {
 
     def testPlayers( players: String* ) = {
-        backend.chicagos.syncStore.read(chicagoId.get) match {
+        backend.chicagos.syncStore.read(MatchChicago.id(chicagoId.get)) match {
           case Right(c) =>
             // check if all players in MatchChicago are same as players argument
             players.zip(c.players).find( p => p._1!=p._2 ).isEmpty
@@ -286,7 +287,7 @@ class Chicago5Test extends AnyFlatSpec
   it should "send to the server that there are 4 games per round" in {
 
     def getGamesPerRound = {
-        backend.chicagos.syncStore.read(chicagoId.get) match {
+        backend.chicagos.syncStore.read(MatchChicago.id(chicagoId.get)) match {
           case Right(c) => c.gamesPerRound
           case Left(r) => -1
         }
@@ -345,7 +346,7 @@ class Chicago5Test extends AnyFlatSpec
     // keeping this for more checks
 
     def getGamesPerRound = {
-        backend.chicagos.syncStore.read(chicagoId.get) match {
+        backend.chicagos.syncStore.read(MatchChicago.id(chicagoId.get)) match {
           case Right(c) => c.gamesPerRound
           case Left(r) => -1
         }

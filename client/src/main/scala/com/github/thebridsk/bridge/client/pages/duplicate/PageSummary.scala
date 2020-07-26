@@ -61,6 +61,8 @@ import com.github.thebridsk.materialui.icons.SvgColor
 import com.github.thebridsk.bridge.clientcommon.react.BeepComponent
 import com.github.thebridsk.materialui.icons
 import japgolly.scalajs.react.component.builder.Lifecycle.ComponentDidUpdate
+import com.github.thebridsk.bridge.data.DuplicateSummary
+import com.github.thebridsk.bridge.data.MatchDuplicateResult
 
 /**
  * Shows a summary page of all duplicate matches from the database.
@@ -129,36 +131,58 @@ object PageSummaryInternal {
                         val (tp,ds,pr,st,back,importId) = props
                         <.tr(
                           <.td(
-                            AppButton( (if (ds.onlyresult) "Result_" else "Duplicate_")+ds.id, ds.id,
-                                       baseStyles.appButton100,
-                                       if (ds.onlyresult) {
-                                         val dsidAsDuplicateResultId = ds.idAsDuplicateResultId
-                                         pr.routerCtl.setOnClick(pr.page.getDuplicateResultPage(dsidAsDuplicateResultId) )
-                                       } else {
-                                         val dsid = ds.id
-                                         pr.routerCtl.setOnClick(pr.page.getScoreboardPage(dsid) )
-                                       },
-                                       importId.map { id => ^.disabled := true }.whenDefined
-                                     )
+                            DuplicateSummary.useId(
+                              ds.id,
+                              { id =>
+                                val t: TagMod =
+                                  AppButton( s"Duplicate_${id.id}", ds.id.id,
+                                            baseStyles.appButton100,
+                                            pr.routerCtl.setOnClick(pr.page.getScoreboardPage(id) ),
+                                            importId.map { id => ^.disabled := true }.whenDefined
+                                          )
+                                t
+                              },
+                              { id =>
+                                val t: TagMod =
+                                  AppButton( s"Result_${id.id}", ds.id.id,
+                                            baseStyles.appButton100,
+                                            pr.routerCtl.setOnClick(pr.page.getDuplicateResultPage(id) ),
+                                            importId.map { id => ^.disabled := true }.whenDefined
+                                          )
+                                t
+                              },
+                              TagMod()
+                            ),
                           ),
-                          importId.map { id =>
+                          importId.map { iid =>
                             TagMod(
                               <.td(
-                                AppButton( (if (ds.onlyresult) "ImportResult_" else "ImportDuplicate_")+ds.id, "Import",
-                                           baseStyles.appButton100,
-                                           if (ds.onlyresult) {
-                                             ^.onClick --> back.importDuplicateResult(id,ds.id)
-                                           } else {
-                                             ^.onClick --> back.importDuplicateMatch(id,ds.id)
-                                           }
-                                         )
+                                ds.idAsDuplicateId.map { id =>
+                                  val t: TagMod =
+                                    AppButton( s"ImportDuplicate_${id.id}", "Import",
+                                              baseStyles.appButton100,
+                                              ^.onClick --> back.importDuplicateMatch(iid,id)
+                                            )
+                                  t
+                                }.getOrElse {
+                                  ds.idAsDuplicateResultId.map { id =>
+                                    val t: TagMod =
+                                      AppButton( s"ImportResult_${id.id}", "Import",
+                                                baseStyles.appButton100,
+                                                ^.onClick --> back.importDuplicateResult(iid,id)
+                                              )
+                                    t
+                                  }.getOrElse {
+                                    TagMod()
+                                  }
+                                },
                               ),
                               <.td(
                                 ds.bestMatch.map { bm =>
                                   if (bm.id.isDefined && bm.sameness > 90) {
                                     val title = bm.htmlTitle
                                     TagMod(Tooltip(
-                                      f"""${bm.id.get} ${bm.sameness}%.2f%%""",
+                                      f"""${bm.id.get.id} ${bm.sameness}%.2f%%""",
                                       <.div( title )
                                     ))
                                   } else {
@@ -250,7 +274,7 @@ object PageSummaryInternal {
    */
   case class State( workingOnNew: Option[String],
                      forPrint: Boolean,
-                     selected: List[Id.MatchDuplicate],
+                     selected: List[DuplicateSummary.Id],
                      showRows: Option[Int], alwaysShowAll: Boolean,
                      showEntries: ShowEntries = ShowBoth,
                      useIMP: Option[Boolean] = None,
@@ -322,7 +346,7 @@ object PageSummaryInternal {
         resultDuplicate.set(result)
         result.foreach { created=>
           logger.info(s"Got new duplicate match ${created.id}.  HomePage.mounted=${mounted}")
-          if (mounted) scope.withEffectsImpure.props.routerCtl.set(CompleteScoreboardView(created.id)).runNow()
+          if (mounted) scope.withEffectsImpure.props.routerCtl.set(CompleteScoreboardView(created.id.id)).runNow()
         }
         result.failed.foreach( t => {
           t match {
@@ -333,7 +357,7 @@ object PageSummaryInternal {
         })
       }).runNow()
 
-    def toggleSelect( dupid: Id.MatchDuplicate ) = scope.modState(s => {
+    def toggleSelect( dupid: DuplicateSummary.Id ) = scope.modState(s => {
       val sel = if (s.selected.contains(dupid)) s.selected.filter( s => s!=dupid )
                 else dupid::s.selected
       s.copy(selected = sel)
@@ -355,7 +379,7 @@ object PageSummaryInternal {
 
     val forPrintOk = CallbackTo {
       val s = scope.withEffectsImpure.state
-      val mds = s.selected.reverse.map{ id => id.toString() }.mkString(",")
+      val mds = s.selected.reverse.map{ id => id.id }.mkString(",")
       forPrint(false).runNow()
       (scope.withEffectsImpure.props,mds)
     } >>= { case (p,mds) =>
@@ -372,8 +396,8 @@ object PageSummaryInternal {
       s.copy( showRows=n)
     }
 
-    def importDuplicateResult( importId: String, id: String ) =
-      scope.modState( s => s.copy(workingOnNew=Some(s"Importing Duplicate Result ${id} from import ${importId}")), Callback {
+    def importDuplicateResult( importId: String, id: MatchDuplicateResult.Id ) =
+      scope.modState( s => s.copy(workingOnNew=Some(s"Importing Duplicate Result ${id.id} from import ${importId}")), Callback {
         val query = """mutation importDuplicate( $importId: ImportId!, $dupId: DuplicateResultId! ) {
                       |  import( id: $importId ) {
                       |    importduplicateresult( id: $dupId ) {
@@ -382,7 +406,7 @@ object PageSummaryInternal {
                       |  }
                       |}
                       |""".stripMargin
-        val vars = JsObject( Seq( "importId" -> JsString(importId), "dupId" -> JsString(id) ) )
+        val vars = JsObject( Seq( "importId" -> JsString(importId), "dupId" -> JsString(id.id) ) )
         val op = Some("importDuplicate")
         val result = GraphQLClient.request(query, Some(vars), op)
         resultGraphQL.set(result)
@@ -391,25 +415,25 @@ object PageSummaryInternal {
             case Some(data) =>
               data \ "import" \ "importduplicateresult" \ "id" match {
                 case JsDefined( JsString( newid ) ) =>
-                  setMessage(s"import duplicate result ${id} from ${importId}, new ID ${newid}", true )
+                  setMessage(s"import duplicate result ${id.id} from ${importId}, new ID ${newid}", true )
                   initializeNewSummary(scope.withEffectsImpure.props)
                 case JsDefined( x ) =>
-                  setMessage(s"expecting string on import duplicate result ${id} from ${importId}, got ${x}")
+                  setMessage(s"expecting string on import duplicate result ${id.id} from ${importId}, got ${x}")
                 case _: JsUndefined =>
-                  setMessage(s"error import duplicate result ${id} from ${importId}, did not find import/importduplicateresult/id field")
+                  setMessage(s"error import duplicate result ${id.id} from ${importId}, did not find import/importduplicateresult/id field")
               }
             case None =>
-              setMessage(s"error import duplicate result ${id} from ${importId}, ${gr.getError()}")
+              setMessage(s"error import duplicate result ${id.id} from ${importId}, ${gr.getError()}")
           }
         }.recover {
           case x: Exception =>
-              logger.warning(s"exception import duplicate result ${id} from ${importId}", x)
-              setMessage(s"exception import duplicate result ${id} from ${importId}")
+              logger.warning(s"exception import duplicate result ${id.id} from ${importId}", x)
+              setMessage(s"exception import duplicate result ${id.id} from ${importId}")
         }.foreach { x => }
       })
 
-    def importDuplicateMatch( importId: String, id: String ) =
-      scope.modState( s => s.copy(workingOnNew=Some(s"Importing Duplicate Match ${id} from import ${importId}")), Callback {
+    def importDuplicateMatch( importId: String, id: MatchDuplicate.Id ) =
+      scope.modState( s => s.copy(workingOnNew=Some(s"Importing Duplicate Match ${id.id} from import ${importId}")), Callback {
         val query = """mutation importDuplicate( $importId: ImportId!, $dupId: DuplicateId! ) {
                       |  import( id: $importId ) {
                       |    importduplicate( id: $dupId ) {
@@ -418,7 +442,7 @@ object PageSummaryInternal {
                       |  }
                       |}
                       |""".stripMargin
-        val vars = JsObject( Seq( "importId" -> JsString(importId), "dupId" -> JsString(id) ) )
+        val vars = JsObject( Seq( "importId" -> JsString(importId), "dupId" -> JsString(id.id) ) )
         val op = Some("importDuplicate")
         val result = GraphQLClient.request(query, Some(vars), op)
         resultGraphQL.set(result)
@@ -427,25 +451,25 @@ object PageSummaryInternal {
             case Some(data) =>
               data \ "import" \ "importduplicate" \ "id" match {
                 case JsDefined( JsString( newid ) ) =>
-                  setMessage(s"import duplicate ${id} from ${importId}, new ID ${newid}", true )
+                  setMessage(s"import duplicate ${id.id} from ${importId}, new ID ${newid}", true )
                   initializeNewSummary(scope.withEffectsImpure.props)
                 case JsDefined( x ) =>
-                  setMessage(s"expecting string on import duplicate ${id} from ${importId}, got ${x}")
+                  setMessage(s"expecting string on import duplicate ${id.id} from ${importId}, got ${x}")
                 case _: JsUndefined =>
-                  setMessage(s"error import duplicate ${id} from ${importId}, did not find import/importduplicate/id field")
+                  setMessage(s"error import duplicate ${id.id} from ${importId}, did not find import/importduplicate/id field")
               }
             case None =>
-              setMessage(s"error import duplicate ${id} from ${importId}, ${gr.getError()}")
+              setMessage(s"error import duplicate ${id.id} from ${importId}, ${gr.getError()}")
           }
         }.recover {
           case x: Exception =>
-              logger.warning(s"exception import duplicate ${id} from ${importId}", x)
-              setMessage(s"exception import duplicate ${id} from ${importId}")
+              logger.warning(s"exception import duplicate ${id.id} from ${importId}", x)
+              setMessage(s"exception import duplicate ${id.id} from ${importId}")
         }.foreach { x => }
       })
 
     def importSelected( importId: String ) = scope.modState( { s =>
-        val ids = s.selected.map( id => id.toString )
+        val ids = s.selected.map( id => id.id )
         s.copy(workingOnNew=Some(s"Importing Duplicate Match ${ids.mkString(", ")} from import ${importId}"))
       },
       scope.stateProps { (s,props) => Callback {
@@ -462,11 +486,12 @@ object PageSummaryInternal {
         val sortByDate = s.selected
 
         val fragment = sortByDate.map { id =>
-          if (id.toString().startsWith("E")) {  // Hack
-            s"""${id}: importduplicateresult( id: "${id}") { id }"""
-          } else {
-            s"""${id}: importduplicate( id: "${id}") { id }"""
-          }
+          DuplicateSummary.useId(
+            id,
+            mdid => s"""${mdid.id}: importduplicate( id: "${mdid.id}") { id }""",
+            mdrid => s"""${mdrid.id}: importduplicateresult( id: "${mdrid.id}") { id }""",
+            ""
+          )
         }
         val query = s"""mutation importDuplicate( $$importId: ImportId! ) {
                        |  import( id: $$importId ) {
@@ -611,7 +636,10 @@ object PageSummaryInternal {
           ),
           <.tbody(
             if (tp.isData) {
-              summaries.get.sortWith((one,two)=>one.created>two.created).
+              summaries.get.sortWith { (one,two) =>
+                if (one.created==two.created) one.id > two.id
+                else one.created>two.created
+              }.
               filter { ds =>
                 state.showEntries match {
                   case ShowMD =>
@@ -624,7 +652,7 @@ object PageSummaryInternal {
               }.
               take(takerows).
               map { ds =>
-                    SummaryRow.withKey( ds.id )((tp,ds,props,state,this,importId))
+                    SummaryRow.withKey( ds.id.id )((tp,ds,props,state,this,importId))
                   }.toTagMod
             } else {
               <.tr(

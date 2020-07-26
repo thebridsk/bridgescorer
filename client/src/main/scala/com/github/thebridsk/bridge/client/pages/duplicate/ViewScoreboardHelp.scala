@@ -13,6 +13,7 @@ import com.github.thebridsk.bridge.data.bridge.MatchDuplicateScore
 import com.github.thebridsk.bridge.client.pages.duplicate.DuplicateRouter.BaseScoreboardViewWithPerspective
 import com.github.thebridsk.bridge.client.pages.duplicate.DuplicateRouter.TableRoundScoreboardView
 import com.github.thebridsk.bridge.clientcommon.react.Utils._
+import com.github.thebridsk.bridge.data.Table
 
 /**
  * Shows the team x board table and has a totals column that shows the number of points the team has.
@@ -58,30 +59,30 @@ object ViewScoreboardHelpInternal {
     def render( props: Props, state: State ) = {
       def teamColumn( teams: List[Team] ) = {
         var count = 0
-        teams.sortWith((t1,t2)=> Id.idComparer(t1.id, t2.id)<0).map { team =>
+        teams.sortWith((t1,t2)=> t1.id < t2.id).map { team =>
           count += 1
-          <.span( count!=1 ?= <.br(), Id.teamIdToTeamNumber(team.id)+" "+team.player1+" "+team.player2 )
+          <.span( count!=1 ?= <.br(), team.id.toNumber+" "+team.player1+" "+team.player2 )
         }.toTagMod
       }
 
       def showBoardAndMovement() = {
-        <.p("Boards "+props.md.getBoardSet+", movement "+props.md.getMovement)
+        <.p("Boards "+props.md.getBoardSet.id+", Movement "+props.md.getMovement.id)
       }
       <.div(
         dupStyles.divScoreboardHelp,
         props.page.getPerspective match {
           case PerspectiveTable(t1, t2) =>
-            val (team1,team2) = if (Id.idComparer(t1,t2)<0) (t1,t2) else (t2,t1)
+            val (team1,team2) = if (t1<t2) (t1,t2) else (t2,t1)
             val (currentRound,currentTable) = props.page match {
-              case TableRoundScoreboardView( dupid, tableid, roundid ) => (roundid,tableid)
-              case _ => (-1,"")
+              case v: TableRoundScoreboardView => (v.round,v.tableid)
+              case _ => (-1,Table.idNul)
             }
             Seq(
-              <.h1(s"Table ${Id.tableIdToTableNumber(currentTable)} Scoreboard, Round ${currentRound}, Teams ${Id.teamIdToTeamNumber(team1)} and ${Id.teamIdToTeamNumber(team2)}"),
+              <.h1(s"Table ${currentTable.toNumber} Scoreboard, Round ${currentRound}, Teams ${team1.toNumber} and ${team2.toNumber}"),
               showBoardAndMovement(),
               <.ul(
                 <.li(<.b("To score a board, hit that board number above.")),
-                <.li(<.b(s"""At the end of the round, hit the "Table ${Id.tableIdToTableNumber(currentTable)}" button to continue at the same table.""" )),
+                <.li(<.b(s"""At the end of the round, hit the "Table ${currentTable.toNumber}" button to continue at the same table.""" )),
                 <.li(<.b(s"""or hit the "Completed Games Scoreboard" button to go to a different table.""" ))
               )
             ).toTagMod
@@ -98,7 +99,7 @@ object ViewScoreboardHelpInternal {
               showBoardAndMovement(),
               <.p(<.b("To enter scores while playing at your table hit ",
                   if (numberTables<4) {
-                    tableIds.map { id => "\"Table "+Id.tableIdToTableNumber(id)+"\"" }.mkString(" or ")+" below."
+                    tableIds.map { id => "\"Table "+id.toNumber+"\"" }.mkString(" or ")+" below."
                   } else {
                     "one of the table buttons below."
                   }

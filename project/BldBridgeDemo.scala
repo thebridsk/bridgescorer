@@ -57,10 +57,10 @@ object BldBridgeDemo {
 
         val remotes = rootGit.porcelain.remoteList.call
         val rootURL = (remotes.asScala.find( rc => rc.getName == "origin" ).flatMap { remoteConfig =>
-          println(s"Remote is ${remoteConfig.getName}, URIs:")
+          log.info(s"Remote is ${remoteConfig.getName}, URIs:")
           val uris = remoteConfig.getURIs.asScala
           uris.foreach { uri =>
-            println(s"  URI: ${uri}")
+            log.info(s"  URI: ${uri}")
           }
 
           if (uris.length == 1) {
@@ -72,12 +72,20 @@ object BldBridgeDemo {
         }.getOrElse {
           sys.error(s"Unable to determine the remote URL for ${rootDir}")
         }).toASCIIString
-        println( s"Root URL: ${rootURL}, class is ${rootURL.getClass.getName}")
+        log.info( s"Root URL: ${rootURL}, class is ${rootURL.getClass.getName}")
 
         val demoURL = rootURL.replace("bridgescorer.git", "bridgescorerdemo.git")
-        println( s"demoURL: ${demoURL}")
+        log.info( s"demoURL: ${demoURL}")
         val demoDir = demoTargetDir.value
-        println( s"demoDir: ${demoDir}")
+        log.info( s"demoDir: ${demoDir}")
+
+        if ( !demoDir.isDirectory
+             || !new File(demoDir,"public").isDirectory
+             || !new File(demoDir,"help").isDirectory
+             || !new File(demoDir,"index.html").isFile
+        ) {
+          sys.error("Did not find files in demo directory")
+        }
 
         try {
           import org.eclipse.jgit.api.{Git => PGit}
@@ -87,15 +95,15 @@ object BldBridgeDemo {
           import org.eclipse.jgit.transport.URIish
           val dUrl = new URIish(demoURL)
           val remote = demoGit.porcelain.remoteAdd().setName(remoteName).setUri(dUrl).call()
-          println(s"remote is ${remote.getName}, pushURIs=${remote.getPushURIs.asScala}, URIs=${remote.getURIs.asScala}")
+          log.info(s"remote is ${remote.getName}, pushURIs=${remote.getPushURIs.asScala}, URIs=${remote.getURIs.asScala}")
 
           val branch = demoGit.porcelain.checkout().setOrphan(true).setName( pagesBranch ).call()
-          println(s"branch is $branch")
+          log.info(s"branch is $branch")
           val added = demoGit.porcelain.add().addFilepattern("help").addFilepattern("public").addFilepattern("index.html").call()
-          println(s"added is $added")
+          log.info(s"added is $added")
 
           val commit = demoGit.porcelain.commit().setMessage("publish demo").call()
-          println(s"commit is $commit")
+          log.info(s"commit is $commit")
 
           // // this requires a CredentialProvider
           // val push = demoGit.porcelain.push().setRemote(remoteName).setRefSpecs(new RefSpec(pagesBranch)).call()

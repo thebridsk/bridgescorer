@@ -17,7 +17,7 @@ import io.swagger.v3.oas.annotations.Hidden
 )
 case class MatchDuplicateResultV2 private (
     @Schema(description = "The ID of the MatchDuplicate", required = true)
-    id: Id.MatchDuplicateResult,
+    id: MatchDuplicateResult.Id,
     @ArraySchema(
       minItems = 0,
       uniqueItems = true,
@@ -79,7 +79,7 @@ case class MatchDuplicateResultV2 private (
 ) extends VersionedInstance[
       MatchDuplicateResult,
       MatchDuplicateResultV2,
-      String
+      MatchDuplicateResult.Id
     ] {
 
   def equalsIgnoreModifyTime(
@@ -119,7 +119,7 @@ case class MatchDuplicateResultV2 private (
   }
 
   def setId(
-      newId: Id.MatchDuplicate,
+      newId: MatchDuplicateResult.Id,
       forCreate: Boolean,
       dontUpdateTime: Boolean = false
   ) = {
@@ -134,7 +134,7 @@ case class MatchDuplicateResultV2 private (
     }
   }
 
-  def copyForCreate(id: Id.MatchDuplicate) = {
+  def copyForCreate(id: MatchDuplicateResult.Id) = {
     val time = SystemTime.currentTimeMillis()
     copy(id = id, created = time, updated = time)
 
@@ -215,13 +215,13 @@ case class MatchDuplicateResultV2 private (
   }
 
   @Schema(hidden = true)
-  def getWinnerSets: List[List[Id.Team]] = {
+  def getWinnerSets: List[List[Team.Id]] = {
     results.map(l => l.map(e => e.team.id))
   }
 
   @Schema(hidden = true)
   def placeByWinnerSet(
-      winnerset: List[Id.Team]
+      winnerset: List[Team.Id]
   ): List[MatchDuplicateScore.Place] = {
     results.find(ws => ws.find(e => !winnerset.contains(e.team.id)).isEmpty) match {
       case Some(rws) =>
@@ -243,7 +243,7 @@ case class MatchDuplicateResultV2 private (
 
   @Schema(hidden = true)
   def placeByWinnerSetIMP(
-      winnerset: List[Id.Team]
+      winnerset: List[Team.Id]
   ): List[MatchDuplicateScore.Place] = {
     results.find(ws => ws.find(e => !winnerset.contains(e.team.id)).isEmpty) match {
       case Some(rws) =>
@@ -303,10 +303,12 @@ case class MatchDuplicateResultV2 private (
 
 }
 
-object MatchDuplicateResultV2 {
+trait IdMatchDuplicateResult extends IdDuplicateSummary
+
+object MatchDuplicateResultV2 extends HasId[IdMatchDuplicateResult]("E") {
 
   def apply(
-      id: Id.MatchDuplicateResult,
+      id: MatchDuplicateResult.Id,
       results: List[List[DuplicateSummaryEntry]],
       boardresults: Option[List[BoardResults]],
       comment: Option[String],
@@ -330,7 +332,7 @@ object MatchDuplicateResultV2 {
   }
 
   def apply(
-      id: Id.MatchDuplicateResult,
+      id: MatchDuplicateResult.Id,
       results: List[List[DuplicateSummaryEntry]],
       boardresults: List[BoardResults],
       comment: Option[String],
@@ -354,7 +356,7 @@ object MatchDuplicateResultV2 {
   }
 
   def apply(
-      id: Id.MatchDuplicateResult,
+      id: MatchDuplicateResult.Id,
       results: List[List[DuplicateSummaryEntry]],
       scoringmethod: String,
       played: Timestamp,
@@ -374,7 +376,7 @@ object MatchDuplicateResultV2 {
     ).fixup
   }
 
-  def create(id: Id.MatchDuplicateResult = "", scoringmethod: String = "MP") = {
+  def create(id: MatchDuplicateResult.Id = MatchDuplicateResult.idNul, scoringmethod: String = "MP") = {
     val time = SystemTime.currentTimeMillis()
     new MatchDuplicateResultV2(
       id,
@@ -420,8 +422,9 @@ object MatchDuplicateResultV2 {
         val played = if (md.created == 0) time else md.created
         (played, md.created, md.updated)
     }
-    new MatchDuplicateResultV2("", r, None, None, None, pl, cr, up, "MP")
+    new MatchDuplicateResultV2(MatchDuplicateResult.idNul, r, None, None, None, pl, cr, up, "MP")
       .fixup
 
   }
+
 }

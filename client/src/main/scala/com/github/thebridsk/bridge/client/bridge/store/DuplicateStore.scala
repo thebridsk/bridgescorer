@@ -29,6 +29,8 @@ import com.github.thebridsk.bridge.clientcommon.demo.BridgeDemo
 import com.github.thebridsk.bridge.data.DuplicatePicture
 import com.github.thebridsk.bridge.client.bridge.action.ActionUpdatePicture
 import com.github.thebridsk.bridge.client.bridge.action.ActionUpdatePictures
+import com.github.thebridsk.bridge.data.Table
+import com.github.thebridsk.bridge.data.Team
 
 object DuplicateStore extends ChangeListenable {
   val logger = Logger("bridge.DuplicateStore")
@@ -38,13 +40,13 @@ object DuplicateStore extends ChangeListenable {
    */
   def init() = {}
 
-  private var monitoredId: Option[Id.MatchDuplicate] = None
+  private var monitoredId: Option[MatchDuplicate.Id] = None
   private var bridgeMatch: Option[MatchDuplicate] = None
   private var directorsView: Option[MatchDuplicateScore] = None
   private var completeView: Option[MatchDuplicateScore] = None
-  private var teamsView = Map[(Id.Team,Id.Team),MatchDuplicateScore]()
+  private var teamsView = Map[(Team.Id,Team.Id),MatchDuplicateScore]()
 
-  private var pictures = Map[(Id.DuplicateBoard,Id.DuplicateHand),DuplicatePicture]()
+  private var pictures = Map[(Board.Id,Team.Id),DuplicatePicture]()
 
   def getId() = monitoredId
   def getMatch() = {
@@ -52,14 +54,14 @@ object DuplicateStore extends ChangeListenable {
     bridgeMatch
   }
 
-  def getBoardsFromRound( table: String, round: Int ) = {
+  def getBoardsFromRound( table: Table.Id, round: Int ) = {
     bridgeMatch match {
       case Some(md) => md.getHandsInRound(table, round)
       case None => Nil
     }
   }
 
-  def getTablePerspectiveFromRound( table: String, round: Int ): Option[DuplicateViewPerspective] = {
+  def getTablePerspectiveFromRound( table: Table.Id, round: Int ): Option[DuplicateViewPerspective] = {
     bridgeMatch match {
       case Some(md) =>
         import scala.util.control.Breaks._
@@ -101,7 +103,7 @@ object DuplicateStore extends ChangeListenable {
       }
       completeView
   }
-  def getTeamsView(team1: Id.Team, team2: Id.Team): Option[MatchDuplicateScore] = {
+  def getTeamsView(team1: Team.Id, team2: Team.Id): Option[MatchDuplicateScore] = {
     val teams = if (team1>team2) (team2,team1) else (team1,team2)
     teamsView.get(teams) match {
     case Some(dv) => Some(dv)
@@ -116,13 +118,13 @@ object DuplicateStore extends ChangeListenable {
     }
   }
 
-  def getPicture( dupid: Id.MatchDuplicate, boardId: Id.DuplicateBoard, handId: Id.DuplicateHand ): Option[DuplicatePicture] = {
+  def getPicture( dupid: MatchDuplicate.Id, boardId: Board.Id, handId: Team.Id ): Option[DuplicatePicture] = {
     monitoredId.filter(dup => dup == dupid).flatMap { dup =>
       pictures.get((boardId,handId))
     }
   }
 
-  def getPicture( dupid: Id.MatchDuplicate, boardId: Id.DuplicateBoard ): List[DuplicatePicture] = {
+  def getPicture( dupid: MatchDuplicate.Id, boardId: Board.Id ): List[DuplicatePicture] = {
     monitoredId.filter(dup => dup == dupid).map { dup =>
       pictures.flatMap { e =>
         val ((bid,hid),dp) = e
@@ -269,7 +271,7 @@ object DuplicateStore extends ChangeListenable {
 //      logger.fine("Ignoring unknown action: "+action)
   }}
 
-  def start( dupid: Id.MatchDuplicate ) = {
+  def start( dupid: MatchDuplicate.Id ) = {
     monitoredId match {
       case Some(mid) if mid!=dupid =>
         bridgeMatch = None

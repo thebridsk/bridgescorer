@@ -45,6 +45,7 @@ import com.github.thebridsk.bridge.data.bridge.East
 import com.github.thebridsk.bridge.data.bridge.West
 import com.github.thebridsk.bridge.data.RubberHand
 import com.github.thebridsk.bridge.data.Round
+import com.github.thebridsk.bridge.data.Board
 import com.github.thebridsk.bridge.data.ChicagoBestMatch
 import com.github.thebridsk.bridge.data.RubberBestMatch
 
@@ -53,16 +54,23 @@ import SchemaHand.{log => _, _}
 import com.github.thebridsk.bridge.data.duplicate.stats.PlayerOpponentStat
 import com.github.thebridsk.bridge.data.duplicate.stats.PlayerOpponentsStat
 import com.github.thebridsk.bridge.data.duplicate.stats.PlayersOpponentsStats
+import com.github.thebridsk.bridge.data.Table
+import com.github.thebridsk.bridge.data.DuplicateSummary
+import com.github.thebridsk.bridge.data.BoardSet
+import com.github.thebridsk.bridge.data.Movement
 
 object SchemaDuplicate {
 
   val log = Logger(SchemaDuplicate.getClass.getName)
 
-  val TeamIdType = idScalarTypeFromString[Id.Team]("TeamId")
-  val BoardIdType = idScalarTypeFromString[Id.DuplicateBoard]("BoardId")
-  val DuplicateIdType = idScalarTypeFromString[Id.MatchDuplicate]("DuplicateId")
-  val DuplicateResultIdType =
-    idScalarTypeFromString[Id.MatchDuplicateResult]("DuplicateResultId")
+  val BoardSetIdType = idScalarType("TeamId", BoardSet)
+  val MovementIdType = idScalarType("TeamId", Movement)
+  val TeamIdType = idScalarType("TeamId", Team)
+  val TableIdType = idScalarType("TableId", Table)
+  val BoardIdType = idScalarType("BoardId", Board)
+  val DuplicateSummaryIdType = idScalarType("DuplicateSummaryId", DuplicateSummary)
+  val DuplicateIdType = idScalarType("DuplicateId", MatchDuplicate)
+  val DuplicateResultIdType = idScalarType("DuplicateResultId", MatchDuplicateResult)
 
   val DuplicateTeamType = ObjectType(
     "DuplicateTeam",
@@ -114,7 +122,7 @@ object SchemaDuplicate {
       ),
       Field(
         "table",
-        StringType,
+        TableIdType,
         Some("The table the hand was played on"),
         resolve = _.value.table
       ),
@@ -124,7 +132,12 @@ object SchemaDuplicate {
         Some("The round the hand was played in"),
         resolve = _.value.round
       ),
-      Field("board", StringType, Some("The board"), resolve = _.value.board),
+      Field(
+        "board",
+        BoardIdType,
+        Some("The board"),
+        resolve = _.value.board
+      ),
       Field(
         "nsTeam",
         TeamIdType,
@@ -176,7 +189,7 @@ object SchemaDuplicate {
     fields[BridgeService, Board](
       Field(
         "id",
-        DuplicateIdType,
+        BoardIdType,
         Some("The id of the board"),
         resolve = _.value.id
       ),
@@ -279,7 +292,7 @@ object SchemaDuplicate {
     fields[BridgeService, (Option[String], BestMatch)](
       Field(
         "id",
-        OptionType(DuplicateIdType),
+        OptionType(DuplicateSummaryIdType),
         Some("The id of the best duplicate match from the main store"),
         resolve = _.value._2.id
       ),
@@ -304,7 +317,7 @@ object SchemaDuplicate {
     fields[BridgeService, (Option[String], DuplicateSummary)](
       Field(
         "id",
-        DuplicateIdType,
+        DuplicateSummaryIdType,
         Some("The id of the duplicate match"),
         resolve = _.value._2.id
       ),
@@ -383,13 +396,13 @@ object SchemaDuplicate {
       ),
       Field(
         "boardset",
-        StringType,
+        BoardSetIdType,
         Some("The boardset that was used"),
         resolve = _.value._2.boardset
       ),
       Field(
         "movement",
-        StringType,
+        MovementIdType,
         Some("The movement that was used"),
         resolve = _.value._2.movement
       ),
@@ -823,6 +836,12 @@ object SchemaDuplicate {
     )
   )
 
+  val ArgDuplicateSummaryId = Argument(
+    "id",
+    DuplicateSummaryIdType,
+    description = "The Id of the duplicate match"
+  )
+
   val ArgDuplicateId = Argument(
     "id",
     DuplicateIdType,
@@ -968,97 +987,102 @@ object DuplicateAction {
             case Left(error) => None
           }
         }
-    if (ds.onlyresult) {
-      val sourcemd = sourcestore.flatMap { ostore =>
-        ostore match {
-          case Some(store) =>
-            store.duplicateresults.read(ds.id).map { rmd =>
-              rmd match {
-                case Right(md) =>
-                  Some(md)
-                case Left(err) =>
-                  None
+    DuplicateSummary.useId(
+      ds.id,
+      { id =>
+        val sourcemd = sourcestore.flatMap { ostore =>
+          ostore match {
+            case Some(store) =>
+              store.duplicates.read(id).map { rmd =>
+                rmd match {
+                  case Right(md) =>
+                    Some(md)
+                  case Left(err) =>
+                    None
+                }
               }
-            }
-          case None =>
-            Future.successful(None)
+            case None =>
+              Future.successful(None)
+          }
         }
-      }
-      sourcemd.flatMap { omd =>
-        omd match {
-          case Some(md) =>
-            mainStore.duplicateresults.readAll().map { rlmd =>
-              rlmd match {
-                case Right(lmd) =>
-                  val x =
-                    lmd.values
-                      .map { mmd =>
-                        import DifferenceWrappers._
-                        val diff = md.difference("", mmd)
-                        log.fine(
-                          s"Diff main(${mmd.id}) import(${importId},${md.id}): ${diff}"
-                        )
-                        BestMatch(mmd.id, diff)
-                      }
-                      .foldLeft(BestMatch.noMatch) { (ac, v) =>
-                        if (ac.sameness < v.sameness) v
-                        else ac
-                      }
-                  Some((importId, x))
-                case Left(err) =>
-                  None
+        sourcemd.flatMap { omd =>
+          omd match {
+            case Some(md) =>
+              mainStore.duplicates.readAll().map { rlmd =>
+                rlmd match {
+                  case Right(lmd) =>
+                    val x =
+                      lmd.values
+                        .map { mmd =>
+                          import DifferenceWrappers._
+                          val diff = md.difference("", mmd)
+                          log.fine(
+                            s"Diff main(${mmd.id}) import(${importId},${md.id}): ${diff}"
+                          )
+                          BestMatch(mmd.id, diff)
+                        }
+                        .foldLeft(BestMatch.noMatch) { (ac, v) =>
+                          if (ac.sameness < v.sameness) v
+                          else ac
+                        }
+                    Some((importId, x))
+                  case Left(err) =>
+                    None
+                }
               }
-            }
-          case None =>
-            Future.successful(None)
+            case None =>
+              Future.successful(None)
+          }
         }
-      }
-    } else {
-      val sourcemd = sourcestore.flatMap { ostore =>
-        ostore match {
-          case Some(store) =>
-            store.duplicates.read(ds.id).map { rmd =>
-              rmd match {
-                case Right(md) =>
-                  Some(md)
-                case Left(err) =>
-                  None
+      },
+      { id =>
+        val sourcemd = sourcestore.flatMap { ostore =>
+          ostore match {
+            case Some(store) =>
+              store.duplicateresults.read(id).map { rmd =>
+                rmd match {
+                  case Right(md) =>
+                    Some(md)
+                  case Left(err) =>
+                    None
+                }
               }
-            }
-          case None =>
-            Future.successful(None)
+            case None =>
+              Future.successful(None)
+          }
         }
-      }
-      sourcemd.flatMap { omd =>
-        omd match {
-          case Some(md) =>
-            mainStore.duplicates.readAll().map { rlmd =>
-              rlmd match {
-                case Right(lmd) =>
-                  val x =
-                    lmd.values
-                      .map { mmd =>
-                        import DifferenceWrappers._
-                        val diff = md.difference("", mmd)
-                        log.fine(
-                          s"Diff main(${mmd.id}) import(${importId},${md.id}): ${diff}"
-                        )
-                        BestMatch(mmd.id, diff)
-                      }
-                      .foldLeft(BestMatch.noMatch) { (ac, v) =>
-                        if (ac.sameness < v.sameness) v
-                        else ac
-                      }
-                  Some((importId, x))
-                case Left(err) =>
-                  None
+        sourcemd.flatMap { omd =>
+          omd match {
+            case Some(md) =>
+              mainStore.duplicateresults.readAll().map { rlmd =>
+                rlmd match {
+                  case Right(lmd) =>
+                    val x =
+                      lmd.values
+                        .map { mmd =>
+                          import DifferenceWrappers._
+                          val diff = md.difference("", mmd)
+                          log.fine(
+                            s"Diff main(${mmd.id}) import(${importId},${md.id}): ${diff}"
+                          )
+                          BestMatch(mmd.id, diff)
+                        }
+                        .foldLeft(BestMatch.noMatch) { (ac, v) =>
+                          if (ac.sameness < v.sameness) v
+                          else ac
+                        }
+                    Some((importId, x))
+                  case Left(err) =>
+                    None
+                }
               }
-            }
-          case None =>
-            Future.successful(None)
+            case None =>
+              Future.successful(None)
+          }
         }
-      }
-    }
+      },
+      Future.successful(None)
+    )
   }
 
   def getDuplicateFromRoot(
@@ -1085,7 +1109,7 @@ object DuplicateAction {
           case SortCreatedDescending =>
             list.sortWith((l, r) => l.created > r.created)
           case SortId =>
-            list.sortWith((l, r) => Id.idComparer(l.id, r.id) < 0)
+            list.sortWith((l, r) => l.id < r.id)
         }
       }
       .getOrElse(list)
@@ -1104,7 +1128,7 @@ object DuplicateAction {
           case SortCreatedDescending =>
             list.sortWith((l, r) => l.created > r.created)
           case SortId =>
-            list.sortWith((l, r) => Id.idComparer(l.id, r.id) < 0)
+            list.sortWith((l, r) => l.id < r.id)
         }
       }
       .getOrElse(list)

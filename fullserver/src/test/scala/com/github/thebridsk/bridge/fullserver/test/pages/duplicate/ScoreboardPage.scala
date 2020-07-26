@@ -359,7 +359,7 @@ class ScoreboardPage(
     val table = getTable
     teams.foreach{ case TeamScoreboard( players, points, total, boardscores ) =>
       withClue(s"""checking scoreboard row for ${players} total ${total} boards ${boardscores}""") {
-        table.find( row => row(0)==players.teamid.toString() ) match {
+        table.find( row => row(0)==players.teamid.toString ) match {
           case Some(row) =>
             row(1) mustBe players.toStringForScoreboard
             row(2) mustBe total

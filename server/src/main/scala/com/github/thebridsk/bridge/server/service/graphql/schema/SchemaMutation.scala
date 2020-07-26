@@ -193,7 +193,7 @@ object ImportAction {
   def importDuplicateResult(
       ctx: Context[BridgeService, BridgeService]
   ): Future[MatchDuplicateResult] = {
-    val dupId = ctx arg ArgDuplicateId
+    val dupId = ctx arg ArgDuplicateResultId
     val bs = ctx.value
     bs.duplicateresults.read(dupId).flatMap { rdup =>
       rdup match {

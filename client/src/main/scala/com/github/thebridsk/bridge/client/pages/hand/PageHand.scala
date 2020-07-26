@@ -27,6 +27,7 @@ import com.github.thebridsk.bridge.clientcommon.react.PopupOkCancel
 import org.scalajs.dom.raw.FileReader
 import org.scalajs.dom.raw.File
 import com.github.thebridsk.materialui.icons.DeleteForever
+import com.github.thebridsk.bridge.data.Team
 
 /**
  * A skeleton component.
@@ -64,8 +65,8 @@ object PageHand {
   def apply( contract: Contract,
              callbackOk: CallbackOk,
              callbackCancel: CallbackCancel,
-             teamNS: Option[Id.Team] = None,
-             teamEW: Option[Id.Team] = None,
+             teamNS: Option[Team.Id] = None,
+             teamEW: Option[Team.Id] = None,
              newhand: Boolean=false,
              allowPassedOut: Boolean = true,
              callbackWithHonors: Option[CallbackWithHonors] = None,
@@ -108,8 +109,8 @@ object PageHand {
              dealer: PlayerPosition = North,
              callbackOk: CallbackOk,
              callbackCancel: CallbackCancel,
-             teamNS: Option[Id.Team] = None,
-             teamEW: Option[Id.Team] = None,
+             teamNS: Option[Team.Id] = None,
+             teamEW: Option[Team.Id] = None,
              newhand: Boolean = false,
              allowPassedOut: Boolean = true,
              callbackWithHonors: Option[CallbackWithHonors] = None,
@@ -160,8 +161,8 @@ object PageHandInternal {
   case class Props( contract: Contract,
                     callbackOk: CallbackOk,
                     callbackCancel: CallbackCancel,
-                    teamNS: Option[Id.Team],
-                    teamEW: Option[Id.Team],
+                    teamNS: Option[Team.Id],
+                    teamEW: Option[Team.Id],
                     newhand: Boolean,
                     allowPassedOut: Boolean,
                     callbackWithHonors: Option[CallbackWithHonors] = None,

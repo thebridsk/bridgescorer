@@ -73,13 +73,13 @@ object ChicagoController {
     logger.info("Sending create chicago to server")
     if (BridgeDemo.isDemo) {
       currentId = currentId + 1
-      val chi = MatchChicago(s"C$currentId",List("","","",""),Nil,0,false)
+      val chi = MatchChicago( MatchChicago.id(currentId),List("","","",""),Nil,0,false)
       val data = writeJson(chi)
       logger.fine(s"saving as lastChicago, id=${chi.id}: ${chi}")
       LocalStorage.setItem(lastChicagoStorageKey,data)
       new CreateResultMatchChicago(null, Future(chi))
     } else {
-      val chi = MatchChicago("",List("","","",""),Nil,0,false)
+      val chi = MatchChicago(MatchChicago.idNul,List("","","",""),Nil,0,false)
       val result = RestClientChicago.create(chi).recordFailure()
       new CreateResultMatchChicago(result)
     }
@@ -91,11 +91,11 @@ object ChicagoController {
     BridgeDispatcher.updateChicago(chi)
   }
 
-  def ensureMatch( chiid: String ) = {
+  def ensureMatch( chiid: MatchChicago.Id ) = {
     monitor(chiid)
   }
 
-  def ensureMatchOld( chiid: String ) = {
+  def ensureMatchOld( chiid: MatchChicago.Id ) = {
     if (!ChicagoStore.isMonitoredId(chiid)) {
       ChicagoStore.start(chiid,None)
       val result = RestClientChicago.get(chiid).recordFailure()
@@ -157,19 +157,19 @@ object ChicagoController {
     }
   }
 
-  def updateChicagoNames( chiid: String, nplayer1: String, nplayer2: String, nplayer3: String, nplayer4: String, extra: Option[String], quintet: Boolean, simpleRotation: Boolean ) = {
+  def updateChicagoNames( chiid: MatchChicago.Id, nplayer1: String, nplayer2: String, nplayer3: String, nplayer4: String, extra: Option[String], quintet: Boolean, simpleRotation: Boolean ) = {
     BridgeDispatcher.updateChicagoNames(chiid, nplayer1, nplayer2, nplayer3, nplayer4, extra, quintet, simpleRotation, Some(updateServer))
   }
 
-  def updateChicago5( chiid: String, extraPlayer: String ) = {
+  def updateChicago5( chiid: MatchChicago.Id, extraPlayer: String ) = {
     BridgeDispatcher.updateChicago5(chiid, extraPlayer, Some(updateServer))
   }
 
-  def updateChicagoRound( chiid: String, round: Round ) = {
+  def updateChicagoRound( chiid: MatchChicago.Id, round: Round ) = {
     BridgeDispatcher.updateChicagoRound(chiid, round, Some( updateServer ))
   }
 
-  def updateChicagoHand( chiid: String, roundid: Int, handid: Int, hand: Hand ) = {
+  def updateChicagoHand( chiid: MatchChicago.Id, roundid: Int, handid: Int, hand: Hand ) = {
     BridgeDispatcher.updateChicagoHand(chiid, roundid, handid, hand, Some( updateServer ))
   }
 
@@ -277,7 +277,7 @@ object ChicagoController {
     }
   }
 
-  def deleteChicago( id: Id.MatchChicago) = {
+  def deleteChicago( id: MatchChicago.Id) = {
     BridgeDispatcher.deleteChicago(id)
     if (!BridgeDemo.isDemo) RestClientChicago.delete(id).recordFailure()
     else {
@@ -290,7 +290,7 @@ object ChicagoController {
   }
 
 
-  private var sseConnection: ServerEventConnection[Id.MatchChicago] = null
+  private var sseConnection: ServerEventConnection[MatchChicago.Id] = null
 
   private var useSSEFromServer: Boolean = true;
 
@@ -304,13 +304,13 @@ object ChicagoController {
   setServerEventConnection()
 
   private def setServerEventConnection(): Unit = {
-    sseConnection = new SSE[Id.MatchChicago]( "/v1/sse/chicagos/", Listener)
+    sseConnection = new SSE[MatchChicago.Id]( "/v1/sse/chicagos/", Listener)
   }
 
-  object Listener extends SECListener[Id.MatchChicago] {
-    def handleStart( dupid: Id.MatchChicago) = {
+  object Listener extends SECListener[MatchChicago.Id] {
+    def handleStart( dupid: MatchChicago.Id) = {
     }
-    def handleStop( dupid: Id.MatchChicago) = {
+    def handleStop( dupid: MatchChicago.Id) = {
     }
 
     def processMessage( msg: Protocol.ToBrowserMessage ) = {
@@ -335,7 +335,7 @@ object ChicagoController {
     }
   }
 
-  def monitor( dupid: Id.MatchChicago, restart: Boolean = false ): Unit = {
+  def monitor( dupid: MatchChicago.Id, restart: Boolean = false ): Unit = {
 
     if (AjaxResult.isEnabled.getOrElse(false)) {
       ChicagoStore.getMonitoredId match {

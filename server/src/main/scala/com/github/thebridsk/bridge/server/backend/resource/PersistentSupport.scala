@@ -119,7 +119,7 @@ trait StoreMetaData[VId] {
 }
 
 abstract class PersistentSupport[
-    VId,
+    VId <: Comparable[VId],
     VType <: VersionedInstance[VType, VType, VId]
 ](
     implicit
@@ -158,19 +158,19 @@ abstract class PersistentSupport[
       val current = getAllIdsFromPersistent()
       current.foldLeft(PersistentSupport.zero[VId]) { (ac, vid) =>
         val mm = ac.map(
-          m => if (Id.idComparer(m.toString(), vid.toString()) < 0) vid else m
+          m => if (support.idSupport.compare( m, vid ) < 0) vid else m
         )
         mm.orElse(Some(vid))
       }
     }
 
     id.map { i =>
-        val n = Id.genericIdToNumber(i.toString()).toInt
-        val nid = s"${support.idprefix}${n + 1}".asInstanceOf[VId]
+        val n = support.idSupport.toNumber(i)
+        val nid = support.idSupport.toId(n+1)
         maxId = Some(nid)
         Result(nid)
       }
-      .getOrElse(Result(s"${support.idprefix}1".asInstanceOf[VId]))
+      .getOrElse(Result(support.idSupport.toId(1)))
       .logit("generateNextId")
   }
 
@@ -183,14 +183,14 @@ abstract class PersistentSupport[
       val current = getAllIdsFromPersistent()
       current.foldLeft(PersistentSupport.zero[VId]) { (ac, vid) =>
         val mm = ac.map(
-          m => if (Id.idComparer(m.toString(), vid.toString()) < 0) vid else m
+          m => if (support.idSupport.compare(m, vid) < 0) vid else m
         )
         mm.orElse(Some(vid))
       }
     }
     val newMax = curMaxId match {
       case Some(curId) =>
-        if (Id.idComparer(curId.toString(), id.toString()) < 0) id else curId
+        if (support.idSupport.compare(curId, id) < 0) id else curId
       case None =>
         id
     }
@@ -255,7 +255,7 @@ abstract class PersistentSupport[
   def readCheckForDelete(id: VId, cachedValue: Result[VType]) = false
 
   def notFound(id: VId) =
-    Result(StatusCodes.NotFound, s"Did not find resource $resourceURI/$id")
+    Result(StatusCodes.NotFound, s"Did not find resource $resourceURI/${support.idSupport.toString(id)}")
   def internalError =
     Result(StatusCodes.InternalServerError, RestMessage("Internal error"))
   def storeIsReadOnly =

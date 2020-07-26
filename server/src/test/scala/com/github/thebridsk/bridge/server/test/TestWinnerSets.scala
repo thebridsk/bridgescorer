@@ -18,6 +18,8 @@ import com.github.thebridsk.bridge.data.DuplicateHand
 import com.github.thebridsk.bridge.data.Id
 import scala.concurrent.Await
 import scala.concurrent.duration._
+import com.github.thebridsk.bridge.data.Team
+import com.github.thebridsk.bridge.data.BoardSet
 
 class TestWinnerSets extends AnyFlatSpec with Matchers {
 
@@ -31,7 +33,7 @@ class TestWinnerSets extends AnyFlatSpec with Matchers {
 
   behavior of "TestWinnerSets"
 
-  def getDup( movementid: String ) = {
+  def getDup( movementid: Movement.Id ) = {
     val move = movements.read(movementid) match {
       case Right(m) => m
       case Left((statuscode,msg)) =>
@@ -39,7 +41,7 @@ class TestWinnerSets extends AnyFlatSpec with Matchers {
         fail(s"Unable to find $movementid: (${statuscode}) ${msg.msg}")
     }
 
-    Await.result(restService.fillBoards(MatchDuplicate.create(), "StandardBoards", movementid),30.seconds) match {
+    Await.result(restService.fillBoards(MatchDuplicate.create(), BoardSet.standard, movementid),30.seconds) match {
       case Right(m) => m
       case Left((statuscode,msg)) =>
         testlog.info(s"Unable to create MatchDuplicate with movement $movementid: (${statuscode}) ${msg.msg}")
@@ -48,13 +50,13 @@ class TestWinnerSets extends AnyFlatSpec with Matchers {
   }
 
   it should "have two winner set in Mitchell3Table" in {
-    val dup = getDup("Mitchell3Table")
+    val dup = getDup(Movement.id("Mitchell3Table"))
     val mds = MatchDuplicateScore(dup, PerspectiveDirector)
     val ws = mds.getWinnerSets
 
     ws.size mustBe 2
-    ws must contain ( List("T1","T2","T3") )
-    ws must contain ( List("T4","T5","T6") )
+    ws must contain ( List(Team.id(1),Team.id(2),Team.id(3)) )
+    ws must contain ( List(Team.id(4),Team.id(5),Team.id(6)) )
 
     val pl1 = mds.placeByWinnerSet(ws.head)
     pl1.size mustBe 1
@@ -71,21 +73,21 @@ class TestWinnerSets extends AnyFlatSpec with Matchers {
     hand.copy( nsTeam=hand.ewTeam, ewTeam=hand.nsTeam)
   }
 
-  def swapNSEWInBoardOnTable( board: Board, round: Int, table: Id.Table ): Board = {
+  def swapNSEWInBoardOnTable( board: Board, round: Int, table: Table.Id ): Board = {
 //    println( s"swapping NS and EW in board ${board}")
     val nhs = board.hands.map( h => if (h.table==table && h.round==round) swapNSEWInHand(h) else h)
     board.copy(hands=nhs)
   }
 
-  def swapNSEWInHandsInRoundOnTable( dup: MatchDuplicate, round: Int, table: Id.Table ): MatchDuplicate = {
+  def swapNSEWInHandsInRoundOnTable( dup: MatchDuplicate, round: Int, table: Table.Id ): MatchDuplicate = {
 //    println( s"swapping NS and EW in MatchDuplicate ${dup}")
     val nbs = dup.boards.map( b => swapNSEWInBoardOnTable(b, round, table))
     dup.copy(boards=nbs)
   }
 
   it should "have one winner set in Mitchell3Table with NS swapped with EW in one round on one table" in {
-    val dup = getDup("Mitchell3Table")
-    val ndup = swapNSEWInHandsInRoundOnTable(dup, 1, "1")
+    val dup = getDup(Movement.id("Mitchell3Table"))
+    val ndup = swapNSEWInHandsInRoundOnTable(dup, 1, Table.id(1))
 
     withClue( "dup and ndup must be different" ) {
       dup.equalsIgnoreModifyTime(ndup) mustBe false
@@ -99,24 +101,24 @@ class TestWinnerSets extends AnyFlatSpec with Matchers {
 
     withClue(s"winner sets are ${ws}") {
       ws.size mustBe 1
-      ws.head mustBe List("T1","T2","T3", "T4","T5","T6")
+      ws.head mustBe List(Team.id(1),Team.id(2),Team.id(3), Team.id(4),Team.id(5),Team.id(6))
     }
   }
 
   it should "have one winner set in 2TablesArmonk" in {
-    val dup = getDup("2TablesArmonk")
+    val dup = getDup(Movement.default)
     val ws = MatchDuplicateScore(dup, PerspectiveDirector).getWinnerSets
 
     ws.size mustBe 1
-    ws.head mustBe List("T1","T2","T3","T4")
+    ws.head mustBe List(Team.id(1),Team.id(2),Team.id(3),Team.id(4))
   }
 
   it should "have one winner set in Howell3TableNoRelay" in {
-    val dup = getDup("Howell3TableNoRelay")
+    val dup = getDup(Movement.id("Howell3TableNoRelay"))
     val ws = MatchDuplicateScore(dup, PerspectiveDirector).getWinnerSets
 
     ws.size mustBe 1
-    ws.head mustBe List("T1","T2","T3","T4","T5","T6")
+    ws.head mustBe List(Team.id(1),Team.id(2),Team.id(3),Team.id(4),Team.id(5),Team.id(6))
   }
 
 }

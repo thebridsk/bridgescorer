@@ -1,35 +1,33 @@
 package com.github.thebridsk.bridge.client.pages.chicagos
 
-import scala.scalajs.js
-import japgolly.scalajs.react.vdom.html_<^._
-import japgolly.scalajs.react._
-import com.github.thebridsk.materialui.MuiAppBar
-import com.github.thebridsk.materialui.Position
-import com.github.thebridsk.materialui.MuiToolbar
-import com.github.thebridsk.materialui.icons
-import com.github.thebridsk.materialui.MuiTypography
-import com.github.thebridsk.materialui.ColorVariant
-import com.github.thebridsk.materialui.TextVariant
-import com.github.thebridsk.materialui.TextColor
-import org.scalajs.dom.raw.Element
-import org.scalajs.dom.raw.Node
-import com.github.thebridsk.utilities.logging.Logger
-import japgolly.scalajs.react.vdom.HtmlStyles
-import com.github.thebridsk.materialui.component.MyMenu
-import com.github.thebridsk.materialui.MuiMenuItem
-import com.github.thebridsk.bridge.client.routes.AppRouter.AppPage
-import com.github.thebridsk.bridge.client.routes.BridgeRouter
-import com.github.thebridsk.bridge.client.routes.AppRouter.About
-import com.github.thebridsk.bridge.clientcommon.react.AppButtonLinkNewWindow
-import org.scalajs.dom.document
-import japgolly.scalajs.react.vdom.VdomNode
-import com.github.thebridsk.bridge.client.routes.AppRouter.Home
-import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles
-import com.github.thebridsk.bridge.data.Id
 import com.github.thebridsk.bridge.client.pages.BridgeAppBar
 import com.github.thebridsk.bridge.client.pages.HomePage
-import com.github.thebridsk.materialui.icons.SvgColor
 import com.github.thebridsk.bridge.client.pages.ServerURLPopup
+import com.github.thebridsk.bridge.client.routes.AppRouter.About
+import com.github.thebridsk.bridge.client.routes.AppRouter.AppPage
+import com.github.thebridsk.bridge.client.routes.AppRouter.Home
+import com.github.thebridsk.bridge.client.routes.BridgeRouter
+import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles
+import com.github.thebridsk.bridge.clientcommon.react.AppButtonLinkNewWindow
+import com.github.thebridsk.bridge.data.Id
+import com.github.thebridsk.materialui.ColorVariant
+import com.github.thebridsk.materialui.component.MyMenu
+import com.github.thebridsk.materialui.MuiAppBar
+import com.github.thebridsk.materialui.MuiMenuItem
+import com.github.thebridsk.materialui.MuiToolbar
+import com.github.thebridsk.materialui.MuiTypography
+import com.github.thebridsk.materialui.Position
+import com.github.thebridsk.materialui.TextColor
+import com.github.thebridsk.materialui.TextVariant
+import com.github.thebridsk.utilities.logging.Logger
+import japgolly.scalajs.react._
+import japgolly.scalajs.react.vdom.html_<^._
+import japgolly.scalajs.react.vdom.HtmlStyles
+import japgolly.scalajs.react.vdom.VdomNode
+import org.scalajs.dom.document
+import org.scalajs.dom.raw.Element
+import org.scalajs.dom.raw.Node
+import scala.scalajs.js
 
 /**
   * A simple AppBar for the Bridge client.
@@ -151,18 +149,6 @@ object ChicagoPageBridgeAppBarInternal {
 //                  onClickAway = handleMainClose _,
 //                  onItemClick = handleMainCloseClick _,
 //              )(
-//                MuiMenuItem(
-//                    id = "FastClick",
-//                    onClick = ( (e: ReactEvent) => (HomePage.fastclickToggle>>scope.forceUpdate).runNow() ),
-//                    classes = js.Dictionary("root" -> "mainMenuItem").asInstanceOf[js.Object]
-//
-//                )(
-//                    "FastClick ",
-//                    icons.Check(
-//                        color= (if (HomePage.isFastclickOn) SvgColor.inherit else SvgColor.disabled),
-//                        classes = js.Dictionary("root" -> "mainMenuItemIcon").asInstanceOf[js.Object]
-//                    )
-//                ),
 //              )
         )
       )

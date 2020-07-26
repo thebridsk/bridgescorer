@@ -308,7 +308,7 @@ object PlayerComparisonStats {
 
   }
 
-  def stats(dups: Map[Id.MatchDuplicate, MatchDuplicate]) = {
+  def stats(dups: Map[MatchDuplicate.Id, MatchDuplicate]) = {
 
     val result = dups.values.flatMap { dup =>
       dup.boards.flatMap { board =>

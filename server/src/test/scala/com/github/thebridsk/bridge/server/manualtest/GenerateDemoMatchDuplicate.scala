@@ -33,7 +33,7 @@ object GenerateDemoMatchDuplicate extends Main {
 
     val support = BridgeResources( yaml=false )
 
-    val frmds = paramArgs.toOption.get.map{ sid => sid.asInstanceOf[Id.MatchDuplicate] }.
+    val frmds = paramArgs.toOption.get.map{ sid => sid.asInstanceOf[MatchDuplicate.Id] }.
                         map { id =>
                           store.duplicates.read(id)
                         }

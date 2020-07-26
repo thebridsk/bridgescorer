@@ -38,6 +38,8 @@ import com.github.thebridsk.bridge.client.pages.HomePage
 import com.github.thebridsk.materialui.icons.SvgColor
 import com.github.thebridsk.bridge.clientcommon.react.BeepComponent
 import com.github.thebridsk.bridge.client.pages.ServerURLPopup
+import com.github.thebridsk.bridge.data.Table
+import com.github.thebridsk.bridge.data.MatchDuplicate
 
 /**
  * A simple AppBar for the Bridge client.
@@ -65,8 +67,8 @@ object DuplicatePageBridgeAppBar {
   import DuplicatePageBridgeAppBarInternal._
 
   case class Props(
-      id: Option[Id.MatchDuplicate],
-      tableIds: List[String],
+      id: Option[MatchDuplicate.Id],
+      tableIds: List[Table.Id],
       pageMenuItems: Seq[CtorType.ChildArg],
       title: Seq[CtorType.ChildArg],
       helpurl: String,
@@ -74,8 +76,8 @@ object DuplicatePageBridgeAppBar {
   )
 
   def apply(
-      id: Option[Id.MatchDuplicate],
-      tableIds: List[String],
+      id: Option[MatchDuplicate.Id],
+      tableIds: List[Table.Id],
       title: Seq[CtorType.ChildArg],
       helpurl: String,
       routeCtl: BridgeRouter[DuplicatePage]
@@ -133,12 +135,12 @@ object DuplicatePageBridgeAppBarInternal {
 
       def callbackPage(page: DuplicatePage)(e: ReactEvent) = props.routeCtl.set(page).runNow()
 
-      def tableMenuItem( dupid: String, tid: String ): CtorType.ChildArg = {
+      def tableMenuItem( dupid: MatchDuplicate.Id, tid: Table.Id ): CtorType.ChildArg = {
         MuiMenuItem(
-            id = s"Table$tid",
-            onClick = callbackPage(TableView(dupid,tid)) _
+            id = s"Table${tid.toNumber}",
+            onClick = callbackPage(TableView(dupid.id,tid.id)) _
         )(
-            s"Table $tid"
+            s"Table ${tid.toNumber}"
         )
       }
 
@@ -173,24 +175,24 @@ object DuplicatePageBridgeAppBarInternal {
                     List[CtorType.ChildArg](
                       MuiMenuItem(
                           id = "Complete",
-                          onClick = callbackPage(CompleteScoreboardView(id)) _
+                          onClick = callbackPage(CompleteScoreboardView(id.id)) _
                       )(
                           "Scoreboard"
                       ),
                       MuiMenuItem(
                           id = "BoardSet",
-                          onClick = callbackPage(DuplicateBoardSetView(id)) _
+                          onClick = callbackPage(DuplicateBoardSetView(id.id)) _
                       )(
                           "BoardSet"
                       ),
                       MuiMenuItem(
                           id = "Tables",
-                          onClick = callbackPage(AllTableView(id)) _
+                          onClick = callbackPage(AllTableView(id.id)) _
                       )(
                           "Tables"
                       ),
                     ) :::
-                    props.tableIds.sortWith( (l,r) => l.toInt < r.toInt).map { tid => tableMenuItem(id,tid) }
+                    props.tableIds.sorted.map { tid => tableMenuItem(id,tid) }
                   }.getOrElse(
                     List[CtorType.ChildArg](
                       MuiMenuItem(

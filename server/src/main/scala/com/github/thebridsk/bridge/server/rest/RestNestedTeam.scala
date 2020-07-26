@@ -56,7 +56,7 @@ class RestNestedTeam {
     * spray route for all the methods on this resource
     */
   @Hidden
-  def route(implicit @Parameter(hidden = true) res: Resources[Id.Team, Team]) =
+  def route(implicit @Parameter(hidden = true) res: Resources[Team.Id, Team]) =
     logRequest("RestDuplicate.nestedTeam", DebugLevel) {
       logResult("RestDuplicate.nestedTeam") {
         pathPrefix(resName) {
@@ -97,12 +97,22 @@ class RestNestedTeam {
             )
           )
         )
+      ),
+      new ApiResponse(
+        responseCode = "400",
+        description = "Bad request",
+        content = Array(
+          new Content(
+            mediaType = "application/json",
+            schema = new Schema(implementation = classOf[RestMessage])
+          )
+        )
       )
     )
   )
   def xxxgetTeams = {}
   def getTeams(
-      implicit @Parameter(hidden = true) res: Resources[Id.Team, Team]
+      implicit @Parameter(hidden = true) res: Resources[Team.Id, Team]
   ) = pathEnd {
     get {
       resourceMap(res.readAll())
@@ -153,16 +163,26 @@ class RestNestedTeam {
             schema = new Schema(implementation = classOf[RestMessage])
           )
         )
+      ),
+      new ApiResponse(
+        responseCode = "400",
+        description = "Bad request",
+        content = Array(
+          new Content(
+            mediaType = "application/json",
+            schema = new Schema(implementation = classOf[RestMessage])
+          )
+        )
       )
     )
   )
   def xxxgetTeam = {}
   def getTeam(
-      implicit @Parameter(hidden = true) res: Resources[Id.Team, Team]
+      implicit @Parameter(hidden = true) res: Resources[Team.Id, Team]
   ) = logRequest("getTeam", DebugLevel) {
     get {
       path("""[a-zA-Z0-9]+""".r) { id =>
-        resource(res.select(id).read())
+        resource(res.select(Team.id(id)).read())
       }
     }
   }
@@ -223,7 +243,7 @@ class RestNestedTeam {
   )
   def xxxpostTeam = {}
   def postTeam(
-      implicit @Parameter(hidden = true) res: Resources[Id.Team, Team]
+      implicit @Parameter(hidden = true) res: Resources[Team.Id, Team]
   ) = pathEnd {
     post {
       entity(as[Team]) { hand =>
@@ -235,7 +255,7 @@ class RestNestedTeam {
   def addIdToFuture(f: Future[Result[Team]]): Future[Result[(String, Team)]] =
     f.map { r =>
       r match {
-        case Right(md) => Right((md.id.toString(), md))
+        case Right(md) => Right((md.id.id, md))
         case Left(e)   => Left(e)
       }
     }
@@ -299,11 +319,11 @@ class RestNestedTeam {
   )
   def xxxputTeam = {}
   def putTeam(
-      implicit @Parameter(hidden = true) res: Resources[Id.Team, Team]
+      implicit @Parameter(hidden = true) res: Resources[Team.Id, Team]
   ) = put {
     path("""[a-zA-Z0-9]+""".r) { id =>
       entity(as[Team]) { hand =>
-        resourceUpdated(res.select(id).update(hand))
+        resourceUpdated(res.select(Team.id(id)).update(hand))
       }
     }
   }
@@ -332,16 +352,26 @@ class RestNestedTeam {
       )
     ),
     responses = Array(
-      new ApiResponse(responseCode = "204", description = "Team deleted.")
+      new ApiResponse(responseCode = "204", description = "Team deleted."),
+      new ApiResponse(
+        responseCode = "400",
+        description = "Bad request",
+        content = Array(
+          new Content(
+            mediaType = "application/json",
+            schema = new Schema(implementation = classOf[RestMessage])
+          )
+        )
+      )
     )
   )
   def xxxdeleteTeams = {}
   def deleteTeam()(
-      implicit @Parameter(hidden = true) res: Resources[Id.Team, Team]
+      implicit @Parameter(hidden = true) res: Resources[Team.Id, Team]
   ) =
     delete {
       path("""[a-zA-Z0-9]+""".r) { id =>
-        resourceDelete(res.select(id).delete())
+        resourceDelete(res.select(Team.id(id)).delete())
       }
     }
 }

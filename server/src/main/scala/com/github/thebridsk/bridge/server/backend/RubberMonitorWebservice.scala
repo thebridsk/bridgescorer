@@ -59,7 +59,7 @@ class RubberMonitorWebservice(
     implicit fm: Materializer,
     system: ActorSystem,
     bridgeService: BridgeService
-) extends MonitorWebservice[String, MatchRubber](
+) extends MonitorWebservice[MatchRubber.Id, MatchRubber](
       totallyMissingResourceHandler
     ) {
   val log = Logging(system, classOf[RubberMonitorWebservice])
@@ -130,9 +130,9 @@ class RubberMonitorWebservice(
                   pathEndOrSingleSlash {
                     extractClientIP { ip =>
                       {
-                        log.info(s"SSE from $ip for $id")
+                        log.info(s"SSE from $ip for $id.id")
                         complete {
-                          monitor.monitorMatch(ip, id)
+                          monitor.monitorMatch(ip, MatchRubber.id(id))
                         }
                       }
                     }

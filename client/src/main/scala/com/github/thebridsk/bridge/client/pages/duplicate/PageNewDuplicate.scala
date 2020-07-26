@@ -69,8 +69,8 @@ object PageNewDuplicateInternal {
    * will cause State to leak.
    *
    */
-  case class State( boardsets: Map[String, BoardSet],
-                    movements: Map[String, Movement],
+  case class State( boardsets: Map[BoardSet.Id, BoardSet],
+                    movements: Map[Movement.Id, Movement],
                     workingOnNew: Option[String],
                     resultsOnly: Boolean = false
                   ) {
@@ -154,7 +154,7 @@ object PageNewDuplicateInternal {
                           )
                         }).build
 
-  val Row = ScalaComponent.builder[(String,Props,State,Backend)]("PageNewDuplicate.Row")
+  val Row = ScalaComponent.builder[(Movement.Id,Props,State,Backend)]("PageNewDuplicate.Row")
                         .render_P( args => {
                           val (movementid,props,state,backend) = args
                           val movement = state.movements(movementid)
@@ -165,7 +165,7 @@ object PageNewDuplicateInternal {
                               val missing = missingBoards(movement, boardset)
                               <.td(
                                 if (missing.isEmpty) {
-                                  AppButton( "New_"+movement.name+"_"+bsname, boardset.short,
+                                  AppButton( "New_"+movement.name.id+"_"+bsname.id, boardset.short,
                                             ^.onClick --> backend.newDuplicate( boards=Some(bsname),
                                                                                 movement=Some(movementid))
                                   )
@@ -203,18 +203,18 @@ object PageNewDuplicateInternal {
     import scala.concurrent.ExecutionContext.Implicits.global
     def newDuplicate(
                       default: Boolean = true,
-                      boards: Option[String] = None,
-                      movement: Option[String] = None,
+                      boards: Option[BoardSet.Id] = None,
+                      movement: Option[Movement.Id] = None,
                       fortest: Boolean = false ) =
         if (BridgeDemo.isDemo) {
           Callback {
             val s = scope.withEffectsImpure.state
             val p = scope.withEffectsImpure.props
             demoId = demoId + 1
-            val id = s"M${demoId}"
+            val id = MatchDuplicate.id(demoId)
             val mdraw = MatchDuplicate.create(id)
-            val bs = s.boardsets(boards.getOrElse("StandardBoards"))
-            val mov = s.movements( movement.getOrElse("Howell04T2B18"))
+            val bs = s.boardsets(boards.getOrElse( BoardSet.standard))
+            val mov = s.movements( movement.getOrElse(Movement.standard))
             val md = mdraw.fillBoards(bs, mov)
             Controller.monitor(md.id)
             val sum = DuplicateSummaryStore.getDuplicateSummary
@@ -224,7 +224,7 @@ object PageNewDuplicateInternal {
               BridgeDispatcher.updateDuplicateMatch(md)
               BridgeDispatcher.updateDuplicateSummary(None,newsum)
             }
-            p.routerCtl.set(CompleteScoreboardView(md.id)).runNow()
+            p.routerCtl.set(CompleteScoreboardView(md.id.id)).runNow()
           }
         } else {
           scope.modState { (s,p) =>
@@ -233,7 +233,7 @@ object PageNewDuplicateInternal {
                 val result = RestClientDuplicateResult.createDuplicateResult( MatchDuplicateResult.create(), boards=boards,movement=movement,test=fortest,default=default).recordFailure()
                 result.foreach { created=>
                   logger.info(s"Got new duplicate result ${created.id}.  PageNewDuplicate.mounted=${mounted}")
-                  if (mounted) scope.withEffectsImpure.props.routerCtl.set(DuplicateResultEditView(created.id)).runNow()
+                  if (mounted) scope.withEffectsImpure.props.routerCtl.set(DuplicateResultEditView(created.id.id)).runNow()
                 }
                 result.failed.foreach( t => {
                   t match {
@@ -246,7 +246,7 @@ object PageNewDuplicateInternal {
                 val result = Controller.createMatchDuplicate(boards=boards,movement=movement,test=fortest,default=default).recordFailure()
                 result.foreach { created=>
                   logger.info(s"Got new duplicate match ${created.id}.  PageNewDuplicate.mounted=${mounted}")
-                  if (mounted) scope.withEffectsImpure.props.routerCtl.set(CompleteScoreboardView(created.id)).runNow()
+                  if (mounted) scope.withEffectsImpure.props.routerCtl.set(CompleteScoreboardView(created.id.id)).runNow()
                 }
                 result.failed.foreach( t => {
                   t match {
@@ -296,7 +296,7 @@ object PageNewDuplicateInternal {
               state.movementNames().filter { movname =>
                 !state.movements.get(movname).map(_.isDisabled).getOrElse(true)
               }.map { movname => {
-                Row.withKey(movname)((movname,props,state,this))
+                Row.withKey(movname.id)((movname,props,state,this))
               }}.toTagMod
             )
           ),
@@ -306,8 +306,8 @@ object PageNewDuplicateInternal {
               <.p("No movements were found")
             } else {
               movementNames.map { movname => state.movements(movname) }.filter{ m => !m.isDisabled }.map { movement =>
-                val clickToMovement = MovementView(movement.id)
-                AppButton( "ShowM_"+movement.id, movement.short,
+                val clickToMovement = MovementView(movement.id.id)
+                AppButton( "ShowM_"+movement.id.id, movement.short,
                            props.routerCtl.setOnClick( clickToMovement )
                 )
               }.toTagMod
@@ -320,8 +320,8 @@ object PageNewDuplicateInternal {
             } else {
               boardsetNames.map { bsname => {
                 val boardset = state.boardsets(bsname)
-                val clickToBoardset = BoardSetView(bsname)
-                AppButton( "ShowB_"+bsname, boardset.short,
+                val clickToBoardset = BoardSetView(bsname.id)
+                AppButton( "ShowB_"+bsname.id, boardset.short,
                            props.routerCtl.setOnClick( clickToBoardset )
                 )
               }}.toTagMod

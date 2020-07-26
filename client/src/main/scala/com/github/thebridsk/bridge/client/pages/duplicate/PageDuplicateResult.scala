@@ -141,7 +141,7 @@ object PageDuplicateResultInternal {
                 <.div(
                   baseStyles.divFooterCenter,
                   AppButton( "Edit", "Edit",
-                             props.routerCtl.setOnClick( DuplicateResultEditView(props.page.dupid) )
+                             props.routerCtl.setOnClick( DuplicateResultEditView(props.page.dupid.id) )
                   )
                 ),
                 <.div(
@@ -179,7 +179,7 @@ object PageDuplicateResultInternal {
     val props = cdu.currentProps
     val prevProps = cdu.prevProps
     if (prevProps.page != props.page) {
-      Controller.monitor(props.page.dupid)
+      Controller.monitorDuplicateResult(props.page.dupid)
     }
   }
 

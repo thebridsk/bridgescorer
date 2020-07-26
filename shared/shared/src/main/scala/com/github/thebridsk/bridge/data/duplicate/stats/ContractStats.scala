@@ -146,7 +146,7 @@ object ContractStats {
   }
 
   def stats(
-      dups: Map[Id.MatchDuplicate, MatchDuplicate],
+      dups: Map[MatchDuplicate.Id, MatchDuplicate],
       aggregateDouble: Boolean = true
   ) = {
     val results = dups.values.flatMap { dup =>

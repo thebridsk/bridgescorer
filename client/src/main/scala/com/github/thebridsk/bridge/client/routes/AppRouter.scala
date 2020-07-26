@@ -14,6 +14,7 @@ import com.github.thebridsk.bridge.client.pages.ThankYouPage
 import com.github.thebridsk.bridge.client.pages.AboutPage
 import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles.baseStyles
 import org.scalajs.dom.raw.File
+import com.github.thebridsk.bridge.data.Team
 
 object AppRouter {
 
@@ -201,7 +202,7 @@ class AppRouter( modules: Module* ) {
       | staticRoute("#handduplicate", ShowDuplicateHand) ~> renderR( (routerCtl) => logit( appBarPage( routerCtl, "Test Duplicate Hand", PageHand(defaultHand(TestDuplicate),
                                                                                     scoringViewCallbackOk(routerCtl),
                                                                                     scoringViewCallbackCancel(routerCtl),
-                                                                                    teamNS=Some("1"), teamEW=Some("2"),
+                                                                                    teamNS=Some(Team.id(1)), teamEW=Some(Team.id(2)),
                                                                                     newhand=true, supportPicture=true) ))) // ScoringView(defaultContract))
       | staticRoute("#handchicago", ShowChicagoHand) ~> renderR( (routerCtl) => logit( appBarPage( routerCtl, "Test Chicago Hand", PageHand(defaultHand(TestChicago),
                                                                                   scoringViewCallbackOk(routerCtl),

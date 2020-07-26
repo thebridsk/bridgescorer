@@ -28,13 +28,13 @@ object DuplicateResultStore extends ChangeListenable {
 //      logger.warning("BoardSetStore: Unknown msg dispatched, "+x)
   }}
 
-  private var monitoringId: Option[Id.MatchDuplicateResult] = None
+  private var monitoringId: Option[MatchDuplicateResult.Id] = None
   private var duplicateResult: Option[MatchDuplicateResult] = None
 
   /**
    * @param id the id to monitor.  None means not monitoring anything, Some(x) means monitoring x
    */
-  def monitor( id: Option[Id.MatchDuplicateResult] ) = monitoringId = id
+  def monitor( id: Option[MatchDuplicateResult.Id] ) = monitoringId = id
 
   def getDuplicateResult() = duplicateResult
 

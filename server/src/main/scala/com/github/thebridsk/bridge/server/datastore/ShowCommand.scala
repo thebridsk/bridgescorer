@@ -21,6 +21,7 @@ import com.github.thebridsk.bridge.datastore.stats.DuplicateStatsCommand
 import java.time.format.DateTimeFormatter
 import java.time.Instant
 import java.time.ZoneId
+import com.github.thebridsk.bridge.data.Team
 
 trait ShowCommand
 
@@ -380,7 +381,7 @@ Options:""")
                     }
                   }
                 }
-                .foldLeft(Map[Id.Team, Int]()) { (ac, v) =>
+                .foldLeft(Map[Team.Id, Int]()) { (ac, v) =>
                   val c = ac.get(v).getOrElse(0)
                   ac + (v -> (c + 1))
                 }

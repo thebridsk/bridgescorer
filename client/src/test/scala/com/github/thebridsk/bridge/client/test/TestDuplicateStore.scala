@@ -18,6 +18,8 @@ import com.github.thebridsk.bridge.client.bridge.action.ActionUpdateDuplicateMat
 import japgolly.scalajs.react.Callback
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.must.Matchers
+import com.github.thebridsk.bridge.data.Team
+import com.github.thebridsk.bridge.data.Board
 
 class TestDuplicateStore extends AnyFlatSpec with Matchers {
 
@@ -49,7 +51,7 @@ class TestDuplicateStore extends AnyFlatSpec with Matchers {
 
   behavior of "TestDuplicateStore in bridgescorer-client"
 
-  val dupid: Id.MatchDuplicate = "M1"
+  val dupid: MatchDuplicate.Id = MatchDuplicate.id(1)
 
   it should "CreateMatchDuplicate" in {
     new Tester {
@@ -84,7 +86,7 @@ class TestDuplicateStore extends AnyFlatSpec with Matchers {
     }.run()
   }
 
-  def getHand( boardid: Id.DuplicateBoard, handid: Id.DuplicateHand,
+  def getHand( boardid: Board.Id, handid: Team.Id,
                contractTricks: Int,
                contractSuit: String,
                contractDoubled: String,
@@ -92,9 +94,9 @@ class TestDuplicateStore extends AnyFlatSpec with Matchers {
                madeContract: Boolean,
                tricks: Int
              ) = {
-    val b = DuplicateStore.getMatch().get.getBoard("B1").get
-    val dh = b.getHand("T1").get
-    dh.updateHand(Hand.create(dh.id, contractTricks, contractSuit,contractDoubled, declarer, b.nsVul, b.ewVul, madeContract, tricks ))
+    val b = DuplicateStore.getMatch().get.getBoard(Board.id(1)).get
+    val dh = b.getHand( Team.id(1)).get
+    dh.updateHand(Hand.create(dh.id.id, contractTricks, contractSuit,contractDoubled, declarer, b.nsVul, b.ewVul, madeContract, tricks ))
   }
 
   it should "PlayHands" in {
@@ -115,7 +117,7 @@ class TestDuplicateStore extends AnyFlatSpec with Matchers {
   }
 
   it should "Score" in {
-    val score = MatchDuplicateScore( DuplicateStore.getMatch().get, PerspectiveTable( "T1", "T2" ))
+    val score = MatchDuplicateScore( DuplicateStore.getMatch().get, PerspectiveTable( Team.id(1), Team.id(2) ))
     score.teamScores mustBe TestMatchDuplicate.getTeamScore()
   }
 }

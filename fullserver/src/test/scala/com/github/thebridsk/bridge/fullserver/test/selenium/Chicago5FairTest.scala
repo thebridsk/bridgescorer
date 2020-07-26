@@ -37,6 +37,7 @@ import com.github.thebridsk.browserpages.Session
 import com.github.thebridsk.source.SourcePosition
 import com.github.thebridsk.utilities.logging.Logger
 import com.github.thebridsk.bridge.fullserver.test.pages.chicago.ChicagoMatchTypeFair
+import com.github.thebridsk.bridge.data.MatchChicago
 
 object Chicago5FairTest {
   val playerN = "Nancy"
@@ -197,7 +198,7 @@ class Chicago5FairTest extends AnyFlatSpec
   it should "send the player names to the server" in {
 
     def testPlayers( players: String* ) = {
-        backend.chicagos.syncStore.read(chicagoId.get) match {
+        backend.chicagos.syncStore.read(MatchChicago.id(chicagoId.get)) match {
           case Right(c) =>
             // check if all players in MatchChicago are same as players argument
             players.zip(c.players).find( p => p._1!=p._2 ).isEmpty
@@ -207,7 +208,7 @@ class Chicago5FairTest extends AnyFlatSpec
     }
 
     def testSimple() = {
-        backend.chicagos.syncStore.read(chicagoId.get) match {
+        backend.chicagos.syncStore.read(MatchChicago.id(chicagoId.get)) match {
           case Right(c) =>
             c.gamesPerRound mustBe 1
             c.simpleRotation mustBe false

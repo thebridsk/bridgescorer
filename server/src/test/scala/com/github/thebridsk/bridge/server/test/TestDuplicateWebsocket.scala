@@ -103,6 +103,11 @@ class TestDuplicateWebsocket extends AnyFlatSpec with ScalatestRouteTest with Ma
   var client2: WebsocketClient = null
   var client3: WebsocketClient = null
 
+  val team1 = Team.id(1)
+  val team2 = Team.id(2)
+  val team3 = Team.id(3)
+  val team4 = Team.id(4)
+
   override
   def beforeAll() = {
     client1 = new WebsocketClient
@@ -195,7 +200,7 @@ class TestDuplicateWebsocket extends AnyFlatSpec with ScalatestRouteTest with Ma
 
   var createdM1: Option[MatchDuplicate] = None
   it should "return a MatchDuplicate json object for match 1 for POST request to /v1/rest/duplicates" in withListener( listenerstatus=> {
-    Post("/v1/rest/duplicates?default", MatchDuplicate.create("M1")) ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
+    Post("/v1/rest/duplicates?default", MatchDuplicate.create(MatchDuplicate.id(1))) ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
       handled mustBe true
       status mustBe Created
       mediaType mustBe MediaTypes.`application/json`
@@ -208,11 +213,11 @@ class TestDuplicateWebsocket extends AnyFlatSpec with ScalatestRouteTest with Ma
       val md = responseAs[MatchDuplicate]
       createdM1 = Some(md)
       for( id <- 1 to 4){
-        val tid = "T"+id
+        val tid = Team.id(id)
         assert( md.getTeam(tid).get.equalsIgnoreModifyTime( Team.create(tid,"","")) )
       }
       for( id <- 1 to 18){
-        val board = md.getBoard("B"+id)
+        val board = md.getBoard(Board.id(id))
         assert( board.isDefined, s"- Board $id was not found" )
         val b = board.get
         assert( b.hands.size == 2, s"- Board $id did not have 2 hands, there were ${b.hands.size}" )
@@ -262,7 +267,7 @@ class TestDuplicateWebsocket extends AnyFlatSpec with ScalatestRouteTest with Ma
       testlog.info(s"withHook gotJoin=$gotJoin gotStartMonitor=$gotStartMonitor")
       gotJoin mustBe true
       gotStartMonitor mustBe false
-      client1.send(StartMonitorDuplicate("M1"))
+      client1.send(StartMonitorDuplicate(MatchDuplicate.id(1)))
       client1.within(10 seconds) {
         client1.testUpdate(createdM1.get)
       }
@@ -310,14 +315,14 @@ class TestDuplicateWebsocket extends AnyFlatSpec with ScalatestRouteTest with Ma
   }
 
   it should "return a MatchDuplicate json object for match 2 for POST request to /v1/rest/duplicates" in withListener( listenerstatus=> {
-    Post("/v1/rest/duplicates?default", MatchDuplicate.create("M2")) ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
+    Post("/v1/rest/duplicates?default", MatchDuplicate.create(MatchDuplicate.id(2))) ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
       handled mustBe true
       status mustBe Created
       mediaType mustBe MediaTypes.`application/json`
       val md = responseAs[MatchDuplicate]
       header("Location") match {
         case Some(h) =>
-          h.value() mustBe s"http://example.com/duplicates/${md.id}"
+          h.value() mustBe s"http://example.com/duplicates/${md.id.id}"
         case None =>
           fail("Location header was not found in response")
       }
@@ -325,7 +330,7 @@ class TestDuplicateWebsocket extends AnyFlatSpec with ScalatestRouteTest with Ma
       client1.within(10 seconds) { client1.testJoin }
       client3.within(10 seconds) { client3.testJoin }
 
-      client2.send(StartMonitorDuplicate(s"${md.id}"))
+      client2.send(StartMonitorDuplicate(md.id))
       client2.within(10 seconds) {
         client2.testUpdate(md)
       }
@@ -367,7 +372,7 @@ class TestDuplicateWebsocket extends AnyFlatSpec with ScalatestRouteTest with Ma
       handled mustBe true
       status mustBe OK
       mediaType mustBe MediaTypes.`application/json`
-      assert(responseAs[Board].equalsIgnoreModifyTime(BridgeServiceTesting.testingMatch.getBoard("B1").get))
+      assert(responseAs[Board].equalsIgnoreModifyTime(BridgeServiceTesting.testingMatch.getBoard(Board.id(1)).get))
     }
     WebsocketClient.ensureNoMessage(true,client1,client2,client3)
   }
@@ -377,7 +382,7 @@ class TestDuplicateWebsocket extends AnyFlatSpec with ScalatestRouteTest with Ma
       handled mustBe true
       status mustBe OK
       mediaType mustBe MediaTypes.`application/json`
-      assert(responseAs[Board].equalsIgnoreModifyTime(BridgeServiceTesting.testingMatch.getBoard("B2").get))
+      assert(responseAs[Board].equalsIgnoreModifyTime(BridgeServiceTesting.testingMatch.getBoard(Board.id(2)).get))
     }
     WebsocketClient.ensureNoMessage(true,client1,client2,client3)
   }
@@ -387,7 +392,7 @@ class TestDuplicateWebsocket extends AnyFlatSpec with ScalatestRouteTest with Ma
       handled mustBe true
       status mustBe OK
       mediaType mustBe MediaTypes.`application/json`
-      assert(responseAs[Board].equalsIgnoreModifyTime(Board.create("B3", false, true, South.pos, List())))
+      assert(responseAs[Board].equalsIgnoreModifyTime(Board.create(Board.id(3), false, true, South.pos, List())))
     }
     WebsocketClient.ensureNoMessage(true,client1,client2,client3)
   }
@@ -422,7 +427,7 @@ class TestDuplicateWebsocket extends AnyFlatSpec with ScalatestRouteTest with Ma
       status mustBe OK
       mediaType mustBe MediaTypes.`application/json`
       t = responseAs[Team]
-      assert(t.equalsIgnoreModifyTime(BridgeServiceTesting.testingMatch.getTeam("T1").get))
+      assert(t.equalsIgnoreModifyTime(BridgeServiceTesting.testingMatch.getTeam(team1).get))
     }
     WebsocketClient.ensureNoMessage(true,client1,client2,client3)
   }
@@ -477,7 +482,7 @@ class TestDuplicateWebsocket extends AnyFlatSpec with ScalatestRouteTest with Ma
       handled mustBe true
       status mustBe OK
       mediaType mustBe MediaTypes.`application/json`
-      assert(responseAs[Team].equalsIgnoreModifyTime(BridgeServiceTesting.testingMatch.getTeam("T2").get))
+      assert(responseAs[Team].equalsIgnoreModifyTime(BridgeServiceTesting.testingMatch.getTeam(team2).get))
     }
     WebsocketClient.ensureNoMessage(true,client1,client2,client3)
   }
@@ -493,7 +498,7 @@ class TestDuplicateWebsocket extends AnyFlatSpec with ScalatestRouteTest with Ma
   }
 
   it should "return a not found for match 3 for GET requests to /v1/rest/duplicates/M3/teams/B1" in {
-    Get("/v1/rest/duplicates/M3/teams/B1") ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
+    Get("/v1/rest/duplicates/M3/teams/T9") ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
       handled mustBe true
       status mustBe NotFound
       mediaType mustBe MediaTypes.`application/json`
@@ -511,7 +516,7 @@ class TestDuplicateWebsocket extends AnyFlatSpec with ScalatestRouteTest with Ma
       mediaType mustBe MediaTypes.`application/json`
       assert(responseAs[DuplicateHand].equalsIgnoreModifyTime(DuplicateHand.create( Hand.create("H1",7,Spades.suit, Doubled.doubled, North.pos,
                                                              false,false,true,7),
-                                                        "1", 1, "B1", "T1", "T2")))
+                                                        Table.id(1), 1, Board.id(1), team1, team2)))
     }
     WebsocketClient.ensureNoMessage(true,client1,client2,client3)
   }
@@ -547,9 +552,9 @@ class TestDuplicateWebsocket extends AnyFlatSpec with ScalatestRouteTest with Ma
   }
 
   it should "return a hand json object for POST requests to /v1/rest/duplicates/M1/boards/B2/hands" in withListener( listenerstatus=> {
-    val hand = DuplicateHand.create( Hand.create("T3",7,Spades.suit, Doubled.doubled, North.pos,
+    val hand = DuplicateHand.create( Hand.create(team3.id,7,Spades.suit, Doubled.doubled, North.pos,
                                                              false,false,false,1),
-                                                        "2", 2, "B2", "T3", "T4")
+                                                        Table.id(2), 2, Board.id(2), team3, team4)
     Post("/v1/rest/duplicates/M1/boards/B2/hands", hand) ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
       handled mustBe true
       status mustBe Created
@@ -563,7 +568,7 @@ class TestDuplicateWebsocket extends AnyFlatSpec with ScalatestRouteTest with Ma
       assert( responseAs[DuplicateHand].equalsIgnoreModifyTime( hand ))
       assert( !listenerstatus.lastCreate.isEmpty )
       assert( listenerstatus.lastUpdate.isEmpty )
-      val newMatch = BridgeServiceTesting.testingMatch.updateHand("B2", hand)
+      val newMatch = BridgeServiceTesting.testingMatch.updateHand(Board.id(2), hand)
       testlog.debug("newMatch is "+newMatch)
       testlog.debug("fromList is "+listenerstatus.lastCreate.get)
       assert( listenerstatus.lastCreate.get.equalsIgnoreModifyTime( newMatch ))
@@ -601,7 +606,7 @@ class TestDuplicateWebsocket extends AnyFlatSpec with ScalatestRouteTest with Ma
       assert( !listenerstatus.lastDelete.isEmpty )
       listenerstatus.lastDelete.get.id mustBe BridgeServiceTesting.testingMatch.id
 
-      val m1withhanddeleted = m1.get.updateBoard(m1.get.getBoard("B2").get.deleteHand("T3"))
+      val m1withhanddeleted = m1.get.updateBoard(m1.get.getBoard(Board.id(2)).get.deleteHand(team3))
       assert( listenerstatus.lastDelete.get.equalsIgnoreModifyTime( m1withhanddeleted ))
     }
     WebsocketClient.ensureNoMessage(true,client1,client2,client3)
@@ -649,17 +654,17 @@ class TestDuplicateWebsocket extends AnyFlatSpec with ScalatestRouteTest with Ma
   behavior of "MyService REST for DuplicateSumary"
 
   it should "return a MatchDuplicate json object for a POST request to /v1/rest/duplicates?default" in withListener( listenerstatus=> {
-    Post("/v1/rest/duplicates?default", MatchDuplicate.create("M1")) ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
+    Post("/v1/rest/duplicates?default", MatchDuplicate.create(MatchDuplicate.id(1))) ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
       handled mustBe true
       status mustBe Created
       mediaType mustBe MediaTypes.`application/json`
       val md = responseAs[MatchDuplicate]
       for( id <- 1 to 4){
-        val tid = "T"+id
+        val tid = Team.id(id)
         assert( md.getTeam(tid).get.equalsIgnoreModifyTime( Team.create(tid,"","")) )
       }
       for( id <- 1 to 18){
-        val board = md.getBoard("B"+id)
+        val board = md.getBoard(Board.id(id))
         assert( board.isDefined, s"- Board $id was not found" )
         val b = board.get
         assert( b.hands.size == 2, s"- Board $id did not have 2 hands, there were ${b.hands.size}" )
@@ -672,17 +677,17 @@ class TestDuplicateWebsocket extends AnyFlatSpec with ScalatestRouteTest with Ma
   })
 
   it should "return a MatchDuplicate json object for a POST request to /v1/rest/duplicates?boards=StandardBoards&movements=Mitchell3Table" in withListener( listenerstatus=> {
-    Post("/v1/rest/duplicates?boards=StandardBoards&movements=Mitchell3Table", MatchDuplicate.create("M1")) ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
+    Post("/v1/rest/duplicates?boards=StandardBoards&movements=Mitchell3Table", MatchDuplicate.create(MatchDuplicate.id(1))) ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
       handled mustBe true
       status mustBe Created
       mediaType mustBe MediaTypes.`application/json`
       val md = responseAs[MatchDuplicate]
       for( id <- 1 to 6){
-        val tid = "T"+id
+        val tid = Team.id(id)
         assert( md.getTeam(tid).get.equalsIgnoreModifyTime( Team.create(tid,"","")) )
       }
       for( id <- 1 to 18){
-        val board = md.getBoard("B"+id)
+        val board = md.getBoard(Board.id(id))
         assert( board.isDefined, s"- Board $id was not found" )
         val b = board.get
         assert( b.hands.size == 3, s"- Board $id did not have 3 hands, there were ${b.hands.size}" )
@@ -695,17 +700,17 @@ class TestDuplicateWebsocket extends AnyFlatSpec with ScalatestRouteTest with Ma
   })
 
   it should "return a MatchDuplicate json object for a POST request to /v1/rest/duplicates?boards=StandardBoards&movements=Howell3TableNoRelay" in withListener( listenerstatus=> {
-    Post("/v1/rest/duplicates?boards=StandardBoards&movements=Howell3TableNoRelay", MatchDuplicate.create("M1")) ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
+    Post("/v1/rest/duplicates?boards=StandardBoards&movements=Howell3TableNoRelay", MatchDuplicate.create(MatchDuplicate.id(1))) ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
       handled mustBe true
       status mustBe Created
       mediaType mustBe MediaTypes.`application/json`
       val md = responseAs[MatchDuplicate]
       for( id <- 1 to 6){
-        val tid = "T"+id
+        val tid = Team.id(id)
         assert( md.getTeam(tid).get.equalsIgnoreModifyTime( Team.create(tid,"","")) )
       }
       for( id <- 1 to 20){
-        val board = md.getBoard("B"+id)
+        val board = md.getBoard(Board.id(id))
         assert( board.isDefined, s"- Board $id was not found" )
         val b = board.get
         assert( b.hands.size == 3, s"- Board $id did not have 3 hands, there were ${b.hands.size}" )

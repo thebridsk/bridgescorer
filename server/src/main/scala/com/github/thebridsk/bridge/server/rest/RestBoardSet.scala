@@ -131,6 +131,16 @@ trait RestBoardSet extends HasActorSystem {
             schema = new Schema(implementation = classOf[RestMessage])
           )
         )
+      ),
+      new ApiResponse(
+        responseCode = "400",
+        description = "Bad request",
+        content = Array(
+          new Content(
+            mediaType = "application/json",
+            schema = new Schema(implementation = classOf[RestMessage])
+          )
+        )
       )
     )
   )
@@ -138,10 +148,20 @@ trait RestBoardSet extends HasActorSystem {
   val getBoard = logRequest("getBoardset", DebugLevel) {
     get {
       path("""[a-zA-Z0-9]+""".r) { id =>
-        resource(store.select(id).read())
+        resource(store.select(BoardSet.id(id)).read())
       }
     }
   }
+
+  import scala.language.implicitConversions
+  implicit
+  def addIdToFuture(f: Future[Result[BoardSet]]): Future[Result[(String, BoardSet)]] =
+    f.map { r =>
+      r match {
+        case Right(md) => Right((md.name.id, md))
+        case Left(e)   => Left(e)
+      }
+    }
 
   @POST
   @Operation(
@@ -251,7 +271,8 @@ trait RestBoardSet extends HasActorSystem {
   val putBoard = logRequest("putBoardset", DebugLevel) {
     logResult("putBoardsets", DebugLevel) {
       put {
-        path("""[a-zA-Z0-9]+""".r) { id =>
+        path("""[a-zA-Z0-9]+""".r) { sid =>
+          val id = BoardSet.id(sid)
           testlog.info("putBoardset: id is " + id)
           entity(as[BoardSet]) { board =>
             testlog.info("putBoardset: board is " + board)
@@ -280,6 +301,16 @@ trait RestBoardSet extends HasActorSystem {
       new ApiResponse(
         responseCode = "204",
         description = "The boardset was deleted"
+      ),
+      new ApiResponse(
+        responseCode = "400",
+        description = "Bad request",
+        content = Array(
+          new Content(
+            mediaType = "application/json",
+            schema = new Schema(implementation = classOf[RestMessage])
+          )
+        )
       )
     )
   )
@@ -287,10 +318,9 @@ trait RestBoardSet extends HasActorSystem {
   val deleteBoard = delete {
     logRequest("boardsets.delete", DebugLevel) {
       logResult("boardsets.delete", DebugLevel) {
-        path("""[a-zA-Z0-9]+""".r) { id =>
-          {
-            resourceDelete(store.select(id).delete())
-          }
+        path("""[a-zA-Z0-9]+""".r) { sid =>
+          val id = BoardSet.id(sid)
+          resourceDelete(store.select(id).delete())
         }
       }
     }

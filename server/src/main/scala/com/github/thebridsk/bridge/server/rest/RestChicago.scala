@@ -16,12 +16,13 @@ import scala.util.Sorting
 import akka.http.scaladsl.model.headers.Location
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import com.github.thebridsk.bridge.server.backend.resource.Result
 
 object RestChicago {
   implicit class OrdFoo(val x: MatchChicago)
       extends AnyVal
       with Ordered[MatchChicago] {
-    def compare(that: MatchChicago) = Id.idComparer(that.id, x.id)
+    def compare(that: MatchChicago) = that.id.compare(x.id)
   }
 
 }
@@ -140,6 +141,16 @@ trait RestChicago extends HasActorSystem {
             schema = new Schema(implementation = classOf[RestMessage])
           )
         )
+      ),
+      new ApiResponse(
+        responseCode = "400",
+        description = "Bad request",
+        content = Array(
+          new Content(
+            mediaType = "application/json",
+            schema = new Schema(implementation = classOf[RestMessage])
+          )
+        )
       )
     )
   )
@@ -147,7 +158,8 @@ trait RestChicago extends HasActorSystem {
   val getChicago = logRequest("RestChicago.getChicago", DebugLevel) {
     logResult("RestChicago.getChicago") {
       get {
-        path("""[a-zA-Z0-9]+""".r) { id =>
+        path("""[a-zA-Z0-9]+""".r) { sid =>
+          val id = MatchChicago.id(sid)
           resource(store.select(id).read())
         }
       }
@@ -156,13 +168,24 @@ trait RestChicago extends HasActorSystem {
 
   val nested = logRequest("RestChicago.nested", DebugLevel) {
     logResult("RestChicago.nested") {
-      pathPrefix("""[a-zA-Z0-9]+""".r) { id: Id.MatchChicago =>
+      pathPrefix("""[a-zA-Z0-9]+""".r) { sid =>
+        val id = MatchChicago.id(sid)
         import BridgeNestedResources._
         val selected = store.select(id)
         nestedBoards.route(selected.resourceRounds)
       }
     }
   }
+
+  import scala.language.implicitConversions
+  implicit
+  def addIdToFuture(f: Future[Result[MatchChicago]]): Future[Result[(String, MatchChicago)]] =
+    f.map { r =>
+      r match {
+        case Right(md) => Right((md.id.id, md))
+        case Left(e)   => Left(e)
+      }
+    }
 
   @POST
   @Operation(
@@ -277,7 +300,8 @@ trait RestChicago extends HasActorSystem {
   val putChicago =
     logRequest("RestChicago.putChicago") {
       logResult("RestChicago.putChicago") {
-        path("""[a-zA-Z0-9]+""".r) { id =>
+        path("""[a-zA-Z0-9]+""".r) { sid =>
+          val id = MatchChicago.id(sid)
           put {
             entity(as[MatchChicago]) { chi =>
               resourceUpdated(store.select(id).update(chi))
@@ -305,15 +329,24 @@ trait RestChicago extends HasActorSystem {
       new ApiResponse(
         responseCode = "204",
         description = "Chicago match deleted."
+      ),
+      new ApiResponse(
+        responseCode = "400",
+        description = "Bad request",
+        content = Array(
+          new Content(
+            mediaType = "application/json",
+            schema = new Schema(implementation = classOf[RestMessage])
+          )
+        )
       )
     )
   )
   def xxxdeleteChicago() = {}
-  val deleteChicago = path("""[a-zA-Z0-9]+""".r) { id =>
-    {
-      delete {
-        resourceDelete(store.select(id).delete())
-      }
+  val deleteChicago = path("""[a-zA-Z0-9]+""".r) { sid =>
+    val id = MatchChicago.id(sid)
+    delete {
+      resourceDelete(store.select(id).delete())
     }
   }
 }

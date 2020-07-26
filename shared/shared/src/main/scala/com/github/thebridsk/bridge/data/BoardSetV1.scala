@@ -40,7 +40,7 @@ import io.swagger.v3.oas.annotations.media.ArraySchema
 )
 case class BoardSetV1(
     @Schema(description = "The name of the boardset", required = true)
-    name: String,
+    name: BoardSet.Id,
     @Schema(
       description = "A short description of the boardset",
       required = true
@@ -78,7 +78,7 @@ case class BoardSetV1(
       required = false
     )
     updateTime: Option[SystemTime.Timestamp] = None,
-) extends VersionedInstance[BoardSetV1, BoardSetV1, String] {
+) extends VersionedInstance[BoardSetV1, BoardSetV1, BoardSet.Id] {
 
   def id = name
 
@@ -89,7 +89,7 @@ case class BoardSetV1(
   }
 
   def setId(
-      newId: String,
+      newId: BoardSet.Id,
       forCreate: Boolean,
       dontUpdateTime: Boolean = false
   ) = {
@@ -115,6 +115,15 @@ case class BoardSetV1(
   @Schema(hidden = true)
   def isResetToDefault = resetToDefault.getOrElse(false)
 
+}
+
+trait IdBoardSet
+
+object BoardSetV1 extends HasId[IdBoardSet]("",true) {
+
+  def default = BoardSet.id("ArmonkBoards")
+
+  def standard = BoardSet.id("StandardBoards")
 }
 
 @Schema(

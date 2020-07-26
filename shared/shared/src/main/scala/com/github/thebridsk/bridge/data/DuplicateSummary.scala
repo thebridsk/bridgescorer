@@ -8,6 +8,7 @@ import scala.annotation.meta._
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.media.ArraySchema
 import io.swagger.v3.oas.annotations.Hidden
+import scala.reflect.ClassTag
 
 @Schema(
   title = "DuplicateSummaryDetails - Team stats in a match",
@@ -15,7 +16,7 @@ import io.swagger.v3.oas.annotations.Hidden
 )
 case class DuplicateSummaryDetails(
     @Schema(description = "The id of the team", required = true)
-    team: Id.Team,
+    team: Team.Id,
     @Schema(
       description = "The number of times the team was declarer",
       required = true,
@@ -91,15 +92,15 @@ case class DuplicateSummaryDetails(
 }
 
 object DuplicateSummaryDetails {
-  def zero(team: Id.Team) = new DuplicateSummaryDetails(team)
-  def passed(team: Id.Team) = new DuplicateSummaryDetails(team, passed = 1)
-  def made(team: Id.Team) =
+  def zero(team: Team.Id) = new DuplicateSummaryDetails(team)
+  def passed(team: Team.Id) = new DuplicateSummaryDetails(team, passed = 1)
+  def made(team: Team.Id) =
     new DuplicateSummaryDetails(team, declarer = 1, made = 1)
-  def down(team: Id.Team) =
+  def down(team: Team.Id) =
     new DuplicateSummaryDetails(team, declarer = 1, down = 1)
-  def allowedMade(team: Id.Team) =
+  def allowedMade(team: Team.Id) =
     new DuplicateSummaryDetails(team, defended = 1, allowedMade = 1)
-  def tookDown(team: Id.Team) =
+  def tookDown(team: Team.Id) =
     new DuplicateSummaryDetails(team, defended = 1, tookDown = 1)
 }
 
@@ -178,7 +179,7 @@ case class BestMatch(
         "The ID of the MatchDuplicate in the main store that is the best match, none if no match",
       required = false
     )
-    id: Option[Id.MatchDuplicate],
+    id: Option[DuplicateSummary.Id],
     @ArraySchema(
       minItems = 0,
       uniqueItems = true,
@@ -238,7 +239,7 @@ object BestMatch {
 
   def noMatch = new BestMatch(-1, None, None)
 
-  def apply(id: Id.MatchDuplicate, diff: Difference) = {
+  def apply(id: DuplicateSummary.Id, diff: Difference) = {
     new BestMatch(diff.percentSame, Some(id), Some(diff.differences))
   }
 }
@@ -253,7 +254,7 @@ case class DuplicateSummary(
       description = "The ID of the MatchDuplicate being summarized",
       required = true
     )
-    id: Id.MatchDuplicate,
+    id: DuplicateSummary.Id,
     @Schema(description = "True if the match is finished", required = true)
     finished: Boolean,
     @ArraySchema(
@@ -338,7 +339,8 @@ case class DuplicateSummary(
       .map(t => t.placeImp.isDefined && t.resultImp.isDefined)
       .getOrElse(false)
 
-  def idAsDuplicateResultId = id.asInstanceOf[Id.MatchDuplicateResult]
+  def idAsDuplicateResultId = id.toSubclass[MatchDuplicateResult.ItemType]
+  def idAsDuplicateId = id.toSubclass[MatchDuplicate.ItemType]
 
   def containsPair(p1: String, p2: String) = {
     teams.find { dse =>
@@ -400,7 +402,47 @@ case class DuplicateSummary(
 
 }
 
-object DuplicateSummary {
+trait IdDuplicateSummary
+
+object DuplicateSummary extends HasId[IdDuplicateSummary]("") {
+  override
+  def id( i: Int ): Id = {
+    throw new IllegalArgumentException("DuplicateSummary Ids can not be generated, must use MatchDuplicate.Id or MatchDuplicateResult.Id")
+  }
+
+  override
+  def id( s: String ): Id = {
+    Id.parseId(s) match {
+      case Some( (p,i) ) =>
+        p match {
+          case MatchDuplicate.prefix =>
+            MatchDuplicate.id(s).asInstanceOf[Id]
+          case MatchDuplicateResult.prefix =>
+            MatchDuplicateResult.id(s).asInstanceOf[Id]
+          case _ =>
+            throw new IllegalArgumentException(s"DuplicateSummary Id syntax is not valid: ${s}")
+        }
+      case _ =>
+        throw new IllegalArgumentException(s"DuplicateSummary Id syntax is not valid: ${s}")
+    }
+  }
+
+  def useId[T](
+    id: DuplicateSummary.Id,
+    fmd: MatchDuplicate.Id => T,
+    fmdr: MatchDuplicateResult.Id => T,
+    default: => T
+  ): T = {
+    id.toSubclass[MatchDuplicate.ItemType].map( fmd ).getOrElse {
+      id.toSubclass[MatchDuplicateResult.ItemType].map( fmdr ).getOrElse(default)
+    }
+  }
+
+  import com.github.thebridsk.bridge.data.{ Id => DId }
+  def runIf[ T <: IdDuplicateSummary: ClassTag, R ]( id: DuplicateSummary.Id, default: => R )( f: DId[T] => R ): R = {
+    id.toSubclass[T].map( sid => f(sid) ).getOrElse(default)
+  }
+
   def create(md: MatchDuplicate): DuplicateSummary = {
     val score = MatchDuplicateScore(md, PerspectiveComplete)
     val places = score.places.flatMap { p =>

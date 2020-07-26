@@ -46,7 +46,7 @@ class TestSerialize extends AnyFlatSpec with Matchers {
 
   it should "SerializeTest MatchDuplicate" in {
 
-    val md = TestMatchDuplicate.create("M1")
+    val md = TestMatchDuplicate.create(MatchDuplicate.id(1))
     val teams = md.teams.map( t => t.copy( created=0, updated=0) )
     val boards = md.boards.map { b =>
       val hands = b.hands.map { h => h.copy( created=0, updated=0) }

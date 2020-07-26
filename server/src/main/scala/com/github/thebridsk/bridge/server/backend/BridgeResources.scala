@@ -24,13 +24,15 @@ import scala.concurrent.Future
 import com.github.thebridsk.bridge.data.Round
 import com.github.thebridsk.bridge.data.Hand
 import com.github.thebridsk.bridge.data.RubberHand
+import com.github.thebridsk.bridge.server.backend.resource.IdSupport
+import com.github.thebridsk.bridge.data.HasId
 
-class GenericIdCacheStoreSupport[VId, VType <: VersionedInstance[
+class GenericIdCacheStoreSupport[TId, VType <: VersionedInstance[
   VType,
   VType,
-  VId
+  Id[TId]
 ]](
-    idprefix: String,
+    hasId: HasId[TId],
     resourceName: String,
     resourceURI: String,
     readOnly: Boolean,
@@ -38,9 +40,23 @@ class GenericIdCacheStoreSupport[VId, VType <: VersionedInstance[
     dontUpdateTime: Boolean = false
 )(
     implicit
-    instanceJson: VersionedInstanceJson[VId, VType]
-) extends StoreSupport[VId, VType](
-      idprefix,
+    instanceJson: VersionedInstanceJson[Id[TId], VType],
+) extends StoreSupport[Id[TId], VType](
+      new IdSupport[Id[TId]] {
+
+        override
+        def compare( idthis: Id[TId], idthat: Id[TId] ): Int = idthis.compareTo(idthat)
+
+        override
+        def toId( i: Int ): Id[TId] = hasId.id(i)
+
+        override
+        def toNumber( id: Id[TId] ): Int = id.toInt
+
+        override
+        def toString( id: Id[TId] ): String = id.id
+
+      },
       resourceName,
       resourceURI,
       readOnly,
@@ -48,8 +64,8 @@ class GenericIdCacheStoreSupport[VId, VType <: VersionedInstance[
       dontUpdateTime
     ) {
 
-  def stringToId(s: String): Option[VId] = {
-    Some(s.asInstanceOf[VId])
+  def stringToId(s: String): Option[Id[TId]] = {
+    Some(hasId.id(s))
   }
 
 }
@@ -60,9 +76,9 @@ class MatchDuplicateCacheStoreSupport(
     dontUpdateTime: Boolean = false
 )(
     implicit
-    instanceJson: VersionedInstanceJson[Id.MatchDuplicate, MatchDuplicate]
-) extends GenericIdCacheStoreSupport[Id.MatchDuplicate, MatchDuplicate](
-      "M",
+    instanceJson: VersionedInstanceJson[MatchDuplicate.Id, MatchDuplicate]
+) extends GenericIdCacheStoreSupport(
+      MatchDuplicate,
       "MatchDuplicate",
       "/duplicates",
       readOnly,
@@ -77,14 +93,11 @@ class MatchDuplicateResultCacheStoreSupport(
 )(
     implicit
     instanceJson: VersionedInstanceJson[
-      Id.MatchDuplicateResult,
+      MatchDuplicateResult.Id,
       MatchDuplicateResult
     ]
-) extends GenericIdCacheStoreSupport[
-      Id.MatchDuplicateResult,
-      MatchDuplicateResult
-    ](
-      "E",
+) extends GenericIdCacheStoreSupport(
+      MatchDuplicateResult,
       "MatchDuplicateResult",
       "/duplicateresults",
       readOnly,
@@ -98,9 +111,9 @@ class MatchChicagoCacheStoreSupport(
     dontUpdateTime: Boolean = false
 )(
     implicit
-    instanceJson: VersionedInstanceJson[Id.MatchChicago, MatchChicago]
-) extends GenericIdCacheStoreSupport[Id.MatchChicago, MatchChicago](
-      "C",
+    instanceJson: VersionedInstanceJson[MatchChicago.Id, MatchChicago]
+) extends GenericIdCacheStoreSupport(
+      MatchChicago,
       "MatchChicago",
       "/chicagos",
       readOnly,
@@ -114,9 +127,9 @@ class MatchRubberCacheStoreSupport(
     dontUpdateTime: Boolean = false
 )(
     implicit
-    instanceJson: VersionedInstanceJson[String, MatchRubber]
-) extends GenericIdCacheStoreSupport[String, MatchRubber](
-      "R",
+    instanceJson: VersionedInstanceJson[MatchRubber.Id, MatchRubber]
+) extends GenericIdCacheStoreSupport(
+      MatchRubber,
       "MatchRubber",
       "/rubbers",
       readOnly,
@@ -124,20 +137,29 @@ class MatchRubberCacheStoreSupport(
       dontUpdateTime
     )
 
-class GenericIdFromInstanceCacheStoreSupport[VId, VType <: VersionedInstance[
+class GenericIdFromInstanceCacheStoreSupport[TId, VType <: VersionedInstance[
   VType,
   VType,
-  VId
+  Id[TId]
 ]](
+    hasId: HasId[TId],
     resourceName: String,
     resourceURI: String,
     readOnly: Boolean,
     dontUpdateTime: Boolean = false
 )(
     implicit
-    instanceJson: VersionedInstanceJson[VId, VType]
-) extends StoreSupport[VId, VType](
-      "",
+    instanceJson: VersionedInstanceJson[Id[TId], VType]
+) extends StoreSupport[Id[TId], VType](
+      new IdSupport[Id[TId]] {
+
+        override
+        def compare( idthis: Id[TId], idthat: Id[TId] ): Int = idthis.compareTo(idthat)
+
+        override
+        def toString( id: Id[TId] ): String = id.id
+
+      },
       resourceName,
       resourceURI,
       readOnly,
@@ -152,7 +174,7 @@ class GenericIdFromInstanceCacheStoreSupport[VId, VType <: VersionedInstance[
     */
   override def createInPersistent(
       v: VType,
-      persistent: PersistentSupport[VId, VType],
+      persistent: PersistentSupport[Id[TId], VType],
       dontUpdateTimes: Boolean = false
   ): Future[Result[VType]] = {
     persistent.createInPersistent(Some(v.id), v, dontUpdateTimes)
@@ -165,8 +187,8 @@ class GenericIdFromInstanceCacheStoreSupport[VId, VType <: VersionedInstance[
     */
   override def isIdFromValue = true
 
-  def stringToId(s: String): Option[VId] = {
-    Some(s.asInstanceOf[VId])
+  def stringToId(s: String): Option[Id[TId]] = {
+    Some(hasId.id(s))
   }
 
 }
@@ -176,8 +198,9 @@ class BoardSetCacheStoreSupport(
     dontUpdateTime: Boolean = false
 )(
     implicit
-    instanceJson: VersionedInstanceJson[String, BoardSet]
-) extends GenericIdFromInstanceCacheStoreSupport[String, BoardSet](
+    instanceJson: VersionedInstanceJson[BoardSet.Id, BoardSet]
+) extends GenericIdFromInstanceCacheStoreSupport(
+      BoardSet,
       "Boardset",
       "/boardsets",
       readOnly,
@@ -189,8 +212,9 @@ class MovementCacheStoreSupport(
     dontUpdateTime: Boolean = false
 )(
     implicit
-    instanceJson: VersionedInstanceJson[String, Movement]
-) extends GenericIdFromInstanceCacheStoreSupport[String, Movement](
+    instanceJson: VersionedInstanceJson[Movement.Id, Movement]
+) extends GenericIdFromInstanceCacheStoreSupport(
+      Movement,
       "Movement",
       "/movements",
       readOnly,
@@ -198,19 +222,19 @@ class MovementCacheStoreSupport(
     ) {}
 
 object DuplicateTeamsNestedResource
-    extends NestedResourceSupport[MatchDuplicate, Id.Team, Team] {
+    extends NestedResourceSupport[MatchDuplicate, Team.Id, Team] {
   val resourceURI = "teams"
 
   def getResources(
       parent: MatchDuplicate,
       parentResource: String
-  ): Result[Map[Id.Team, Team]] =
+  ): Result[Map[Team.Id, Team]] =
     Result(parent.teams.map(t => t.id -> t).toMap)
 
   def getResource(
       parent: MatchDuplicate,
       parentResource: String,
-      id: Id.Team
+      id: Team.Id
   ): Result[Team] =
     parent
       .getTeam(id)
@@ -220,14 +244,14 @@ object DuplicateTeamsNestedResource
   def updateResources(
       parent: MatchDuplicate,
       parentResource: String,
-      map: Map[Id.Team, Team]
+      map: Map[Team.Id, Team]
   ): Result[MatchDuplicate] =
     Result(parent.setTeams(map.values.toList))
 
   def updateResource(
       parent: MatchDuplicate,
       parentResource: String,
-      id: Id.Team,
+      id: Team.Id,
       value: Team
   ): Result[(MatchDuplicate, Team)] = {
     val t = value.setId(id, false)
@@ -244,7 +268,7 @@ object DuplicateTeamsNestedResource
   def deleteResource(
       parent: MatchDuplicate,
       parentResource: String,
-      id: Id.Team
+      id: Team.Id
   ): Result[(MatchDuplicate, Team)] = {
     parent
       .getTeam(id)
@@ -254,19 +278,19 @@ object DuplicateTeamsNestedResource
 }
 
 object DuplicateBoardsNestedResource
-    extends NestedResourceSupport[MatchDuplicate, Id.DuplicateBoard, Board] {
+    extends NestedResourceSupport[MatchDuplicate, Board.Id, Board] {
   val resourceURI = "boards"
 
   def getResources(
       parent: MatchDuplicate,
       parentResource: String
-  ): Result[Map[Id.DuplicateBoard, Board]] =
+  ): Result[Map[Board.Id, Board]] =
     Result(parent.boards.map(t => t.id -> t).toMap)
 
   def getResource(
       parent: MatchDuplicate,
       parentResource: String,
-      id: Id.DuplicateBoard
+      id: Board.Id
   ): Result[Board] =
     parent
       .getBoard(id)
@@ -276,14 +300,14 @@ object DuplicateBoardsNestedResource
   def updateResources(
       parent: MatchDuplicate,
       parentResource: String,
-      map: Map[Id.DuplicateBoard, Board]
+      map: Map[Board.Id, Board]
   ): Result[MatchDuplicate] =
     Result(parent.setBoards(map.values.toList))
 
   def updateResource(
       parent: MatchDuplicate,
       parentResource: String,
-      id: Id.DuplicateBoard,
+      id: Board.Id,
       value: Board
   ): Result[(MatchDuplicate, Board)] = {
     val t = value.setId(id, false)
@@ -300,7 +324,7 @@ object DuplicateBoardsNestedResource
   def deleteResource(
       parent: MatchDuplicate,
       parentResource: String,
-      id: Id.DuplicateBoard
+      id: Board.Id
   ): Result[(MatchDuplicate, Board)] = {
     parent
       .getBoard(id)
@@ -310,19 +334,19 @@ object DuplicateBoardsNestedResource
 }
 
 object DuplicateHandsNestedResource
-    extends NestedResourceSupport[Board, Id.Team, DuplicateHand] {
+    extends NestedResourceSupport[Board, Team.Id, DuplicateHand] {
   val resourceURI = "hands"
 
   def getResources(
       parent: Board,
       parentResource: String
-  ): Result[Map[Id.Team, DuplicateHand]] =
+  ): Result[Map[Team.Id, DuplicateHand]] =
     Result(parent.hands.map(t => t.id -> t).toMap)
 
   def getResource(
       parent: Board,
       parentResource: String,
-      id: Id.Team
+      id: Team.Id
   ): Result[DuplicateHand] =
     parent
       .getHand(id)
@@ -332,14 +356,14 @@ object DuplicateHandsNestedResource
   def updateResources(
       parent: Board,
       parentResource: String,
-      map: Map[Id.Team, DuplicateHand]
+      map: Map[Team.Id, DuplicateHand]
   ): Result[Board] =
     Result(parent.setHands(map.values.toList))
 
   def updateResource(
       parent: Board,
       parentResource: String,
-      id: Id.Team,
+      id: Team.Id,
       value: DuplicateHand
   ): Result[(Board, DuplicateHand)] = {
     val t = value.setId(id, false)
@@ -356,7 +380,7 @@ object DuplicateHandsNestedResource
   def deleteResource(
       parent: Board,
       parentResource: String,
-      id: Id.Team
+      id: Team.Id
   ): Result[(Board, DuplicateHand)] = {
     parent
       .getHand(id)
@@ -611,7 +635,7 @@ object RubberHandNestedResource
 object BridgeNestedResources {
 
   implicit class WrapMatchDuplicateResource(
-      val r: Resource[Id.MatchDuplicate, MatchDuplicate]
+      val r: Resource[MatchDuplicate.Id, MatchDuplicate]
   ) extends AnyVal {
     def resourceBoards(implicit execute: ExecutionContext) =
       r.nestedResource(DuplicateBoardsNestedResource)
@@ -619,14 +643,14 @@ object BridgeNestedResources {
       r.nestedResource(DuplicateTeamsNestedResource)
   }
 
-  implicit class WrapBoardResource(val r: Resource[Id.DuplicateBoard, Board])
+  implicit class WrapBoardResource(val r: Resource[Board.Id, Board])
       extends AnyVal {
     def resourceHands(implicit execute: ExecutionContext) =
       r.nestedResource(DuplicateHandsNestedResource)
   }
 
   implicit class WrapMatchChicagoResource(
-      val r: Resource[Id.MatchChicago, MatchChicago]
+      val r: Resource[MatchChicago.Id, MatchChicago]
   ) extends AnyVal {
     def resourceRounds(implicit execute: ExecutionContext) =
       r.nestedResource(ChicagoRoundNestedResource)
@@ -638,7 +662,7 @@ object BridgeNestedResources {
       r.nestedResource(ChicagoRoundHandNestedResource)
   }
 
-  implicit class WrapMatchRubberResource(val r: Resource[String, MatchRubber])
+  implicit class WrapMatchRubberResource(val r: Resource[MatchRubber.Id, MatchRubber])
       extends AnyVal {
     def resourceHands(implicit execute: ExecutionContext) =
       r.nestedResource(RubberHandNestedResource)

@@ -50,13 +50,16 @@ import scala.concurrent.duration.Duration
 import com.github.thebridsk.bridge.data.websocket.Protocol.ToBrowserMessage
 import com.github.thebridsk.bridge.data.websocket.Protocol.ToServerMessage
 import com.github.thebridsk.bridge.clientcommon.demo.BridgeDemo
+import com.github.thebridsk.bridge.data.MatchDuplicateResult
+import com.github.thebridsk.bridge.data.BoardSet
+import com.github.thebridsk.bridge.data.Movement
 
 object Controller extends  {
   val logger = Logger("bridge.Controller")
 
   class AlreadyStarted extends Exception
 
-  private var sseConnection: ServerEventConnection[Id.MatchDuplicate] = null
+  private var sseConnection: ServerEventConnection[MatchDuplicate.Id] = null
 
   private var duplexPipe: Option[DuplexPipe] = None
 
@@ -74,14 +77,14 @@ object Controller extends  {
 
   private def setServerEventConnection(): Unit = {
     sseConnection = if (useSSEFromServer) {
-      new SSE[Id.MatchDuplicate]( "/v1/sse/duplicates/", Listener)
+      new SSE[MatchDuplicate.Id]( "/v1/sse/duplicates/", Listener)
     } else {
       new DuplexPipeServerEventConnection( "", Listener ) {
 
-        def actionStartMonitor( mdid: Id.MatchDuplicate ): ToServerMessage = {
+        def actionStartMonitor( mdid: MatchDuplicate.Id ): ToServerMessage = {
           Protocol.StartMonitorDuplicate(mdid)
         }
-        def actionStopMonitor( mdid: Id.MatchDuplicate ): ToServerMessage = {
+        def actionStopMonitor( mdid: MatchDuplicate.Id ): ToServerMessage = {
           Protocol.StopMonitorDuplicate(mdid)
         }
 
@@ -134,18 +137,18 @@ object Controller extends  {
    * @param url the base URL of the server, no trailing slash.
    */
   def createMatchDuplicate( default: Boolean = true,
-                            boards: Option[String] = None,
-                            movement: Option[String] = None,
+                            boards: Option[BoardSet.Id] = None,
+                            movement: Option[Movement.Id] = None,
                             test: Boolean = false ): Result[MatchDuplicate] = {
     val result = RestClientDuplicate.createMatchDuplicate(MatchDuplicate.create(), default=default, boards=boards, movement=movement, test=test).recordFailure()
     new CreateResultMatchDuplicate(result)
   }
 
-  def getMatchDuplicate( id: Id.MatchDuplicate ): Result[MatchDuplicate] = {
+  def getMatchDuplicate( id: MatchDuplicate.Id ): Result[MatchDuplicate] = {
     RestClientDuplicate.get(id).recordFailure()
   }
 
-  def deleteMatchDuplicate( id: Id.MatchDuplicate ): Result[Unit] = {
+  def deleteMatchDuplicate( id: MatchDuplicate.Id ): Result[Unit] = {
     logger.info("Deleting MatchDuplicate with id "+id)
     stop()
     val result = RestClientDuplicate.delete(id).recordFailure()
@@ -155,11 +158,11 @@ object Controller extends  {
     result
   }
 
-  object Listener extends SECListener[Id.MatchDuplicate] {
-    def handleStart( dupid: Id.MatchDuplicate) = {
+  object Listener extends SECListener[MatchDuplicate.Id] {
+    def handleStart( dupid: MatchDuplicate.Id) = {
       BridgeDispatcher.startDuplicateMatch(dupid)
     }
-    def handleStop( dupid: Id.MatchDuplicate) = {
+    def handleStop( dupid: MatchDuplicate.Id) = {
       BridgeDispatcher.stop()
     }
 
@@ -258,7 +261,7 @@ object Controller extends  {
     })
   }
 
-  def monitor( dupid: Id.MatchDuplicate, restart: Boolean = false ): Unit = {
+  def monitor( dupid: MatchDuplicate.Id, restart: Boolean = false ): Unit = {
 
     if (AjaxResult.isEnabled.getOrElse(false)) {
       DuplicateStore.getId() match {
@@ -415,11 +418,11 @@ object Controller extends  {
     }
   }
 
-  def getDuplicateResult( id: Id.MatchDuplicateResult ) = {
+  def getDuplicateResult( id: MatchDuplicateResult.Id ) = {
     RestClientDuplicateResult.get(id).recordFailure()
   }
 
-  def monitorDuplicateResult( id: Id.MatchDuplicateResult ): Unit = {
+  def monitorDuplicateResult( id: MatchDuplicateResult.Id ): Unit = {
     DuplicateResultStore.monitor( Some(id) )
     RestClientDuplicateResult.get(id).recordFailure().foreach { dr => Alerter.tryitWithUnit {
       BridgeDispatcher.updateDuplicateResult(dr)

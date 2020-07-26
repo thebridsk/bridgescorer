@@ -17,6 +17,7 @@ import org.scalajs.dom.raw.Event
 import scala.scalajs.js.timers.SetTimeoutHandle
 import scala.concurrent.duration.Duration
 import com.github.thebridsk.bridge.data.websocket.Protocol.ToBrowserMessage
+import com.github.thebridsk.bridge.data.Id
 
 object ServerEventConnection {
   private val logger = Logger("bridge.ServerEventConnection")
@@ -25,7 +26,7 @@ object ServerEventConnection {
 
 import ServerEventConnection.logger
 
-trait SECListener[T] {
+trait SECListener[T <: Id[_]] {
 
   /**
    * Called when the monitoring is started or restarted
@@ -46,7 +47,7 @@ trait SECListener[T] {
 
 }
 
-abstract class ServerEventConnection[T]( val listener: SECListener[T] ) {
+abstract class ServerEventConnection[T <: Id[_]]( val listener: SECListener[T] ) {
 
   /**
    * @return the monitored ID, None is returned if not monitoring anything.

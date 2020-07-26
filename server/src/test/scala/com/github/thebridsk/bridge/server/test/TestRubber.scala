@@ -58,7 +58,7 @@ class TestRubber extends AnyFlatSpec with ScalatestRouteTest with Matchers with 
 
   var createdId: Option[MatchRubber] = None
   it should "allow the creation of a rubber match" in {
-    val mr = MatchRubber("","","","","","",Nil,0,0)
+    val mr = MatchRubber(MatchRubber.idNul,"","","","","",Nil,0,0)
     Post("/v1/rest/rubbers", mr ) ~> addHeader(remoteAddress) ~> Route.seal { myRouteWithLogging } ~> check {
       status mustBe Created
       val resp = responseAs[ MatchRubber ]

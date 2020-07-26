@@ -12,6 +12,7 @@ import com.github.thebridsk.utilities.logging.Logger
 import com.github.thebridsk.bridge.data.maneuvers.TableManeuvers
 import com.github.thebridsk.bridge.clientcommon.react.Utils._
 import com.github.thebridsk.bridge.client.pages.Pixels
+import com.github.thebridsk.bridge.data.Team
 
 /**
  * A skeleton component.
@@ -30,14 +31,14 @@ object ViewDeclarer {
   type CallbackPlayer = (PlayerPosition)=>Callback
 
   case class Props( current: Option[PlayerPosition], north: String, south: String, east: String, west: String,
-                    callback: CallbackPlayer, teamNS: Option[Id.Team], teamEW: Option[Id.Team],
+                    callback: CallbackPlayer, teamNS: Option[Team.Id], teamEW: Option[Team.Id],
                     nextInput: PageHandNextInput.Value,
                     visible: Boolean,
                     nsVul: Boolean,
                     ewVul: Boolean )
 
   def apply( current: Option[PlayerPosition], north: String, south: String, east: String, west: String,
-             callback: CallbackPlayer, teamNS: Option[Id.Team], teamEW: Option[Id.Team],
+             callback: CallbackPlayer, teamNS: Option[Team.Id], teamEW: Option[Team.Id],
              nextInput: PageHandNextInput.Value,
              visible: Boolean,
              nsVul: Boolean,
@@ -86,16 +87,16 @@ object ViewDeclarerInternal {
       }
 
       def isSelected( d: PlayerPosition ) = props.current.isDefined && props.current.get == d
-      def getTeam( team: Option[Id.Team] ) = {
+      def getTeam( team: Option[Team.Id] ) = {
         team match {
-          case Some(t) => <.span( " (", Id.teamIdToTeamNumber(t), ")")
+          case Some(t) => <.span( " (", t.toNumber, ")")
           case None => EmptyVdom
         }
       }
-      def getButtonText(text: String, pos: PlayerPosition, name: String, isvul: Boolean, teamId: Option[Id.Team] ) = {
+      def getButtonText(text: String, pos: PlayerPosition, name: String, isvul: Boolean, teamId: Option[Team.Id] ) = {
         List(
           name,
-          teamId.map( t => s" (${Id.teamIdToTeamNumber(t)})" ).getOrElse("") ,
+          teamId.map( t => s" (${t.toNumber})" ).getOrElse("") ,
           " ",
           if (isvul) "Vul"
           else "vul",
@@ -115,7 +116,7 @@ object ViewDeclarerInternal {
       val bwidth = {
         s"${maxPlayerLen}px"
       }
-      def getButtonPos(text: String, pos: PlayerPosition, name: String, isvul: Boolean, teamId: Option[Id.Team] ) =
+      def getButtonPos(text: String, pos: PlayerPosition, name: String, isvul: Boolean, teamId: Option[Team.Id] ) =
         <.button(
                   ^.disabled := !props.visible,
                   ^.`type` := "button",

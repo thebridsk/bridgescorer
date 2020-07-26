@@ -112,7 +112,7 @@ class ChicagoScoring(val chicago: MatchChicago) {
     ChicagoScoring(chicago.setGamesPerRound(gamesInRound))
   }
 
-  def setId(id: String) = {
+  def setId(id: MatchChicago.Id) = {
     ChicagoScoring(chicago.setId(id))
   }
 

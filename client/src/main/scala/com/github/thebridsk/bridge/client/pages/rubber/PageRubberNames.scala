@@ -28,6 +28,7 @@ import com.github.thebridsk.bridge.clientcommon.react.HelpButton
 import com.github.thebridsk.materialui.MuiTypography
 import com.github.thebridsk.materialui.TextVariant
 import com.github.thebridsk.materialui.TextColor
+import com.github.thebridsk.bridge.data.MatchRubber
 
 object PageRubberNames {
   import PageRubberNamesInternal._
@@ -256,7 +257,7 @@ object PageRubberNamesInternal {
 
   }
 
-  def getNamesFromStore( rubid: String ): (String,String,String,String,Option[PlayerPosition]) = {
+  def getNamesFromStore( rubid: MatchRubber.Id ): (String,String,String,String,Option[PlayerPosition]) = {
     RubberStore.getRubber match {
       case Some(rub) if (rub.id == rubid) =>
         val dealer = try {

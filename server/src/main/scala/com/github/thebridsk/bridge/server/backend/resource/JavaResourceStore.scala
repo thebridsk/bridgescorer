@@ -18,7 +18,7 @@ import scala.util.Using
 object JavaResourceStore {
   val log = Logger[JavaResourceStore[_, _]]()
 
-  def apply[VId, VType <: VersionedInstance[VType, VType, VId]](
+  def apply[VId <: Comparable[VId], VType <: VersionedInstance[VType, VType, VId]](
       name: String,
       resourcedirectory: String,
       masterfile: String,
@@ -49,7 +49,7 @@ object JavaResourceStore {
   * @param resourcedirectory must start and end with a '/'
   * @param masterfile the master file that contains the names of all the resource files.  This file must be in resourcedirectory.
   */
-class JavaResourcePersistentSupport[VId, VType <: VersionedInstance[
+class JavaResourcePersistentSupport[VId <: Comparable[VId], VType <: VersionedInstance[
   VType,
   VType,
   VId
@@ -141,7 +141,7 @@ class JavaResourcePersistentSupport[VId, VType <: VersionedInstance[
   }
 
   private def getFilename(id: VId, ext: String) = {
-    s"""${support.resourceName}.${id}${ext}"""
+    s"""${support.resourceName}.${support.idSupport.toString(id)}${ext}"""
   }
 
 //  /**
@@ -156,9 +156,9 @@ class JavaResourcePersistentSupport[VId, VType <: VersionedInstance[
 
   def readFilenames(id: VId) = {
     val r = support.getReadExtensions.map { e =>
-      s"""${resourcedirectory}${support.resourceName}.${id}${e}"""
+      s"""${resourcedirectory}${support.resourceName}.${support.idSupport.toString(id)}${e}"""
     }
-    log.fine(s"For ${resourceURI}/${id}, Java resources are ${r}")
+    log.fine(s"For ${resourceURI}/${support.idSupport.toString(id)}, Java resources are ${r}")
     r
   }
 
@@ -199,7 +199,7 @@ class JavaResourcePersistentSupport[VId, VType <: VersionedInstance[
     def read(list: List[String]): Result[VType] = {
       if (list.isEmpty) {
         log.warning(
-          s"Did not find resource $resourceURI/${id}, tried Java resources ${potential}"
+          s"Did not find resource $resourceURI/${support.idSupport.toString(id)}, tried Java resources ${potential}"
         )
         notFound(id)
       } else {
@@ -207,7 +207,7 @@ class JavaResourcePersistentSupport[VId, VType <: VersionedInstance[
 
         val ovt = try {
           val v = getFromFile(f)
-          log.finest(s"For $resourceURI/${id}, found ${f}: ${v}")
+          log.finest(s"For $resourceURI/${support.idSupport.toString(id)}, found ${f}: ${v}")
           v
         } catch {
           case x: Exception =>
@@ -252,7 +252,7 @@ class JavaResourcePersistentSupport[VId, VType <: VersionedInstance[
 }
 
 object JavaResourcePersistentSupport {
-  def apply[VId, VType <: VersionedInstance[VType, VType, VId]](
+  def apply[VId <: Comparable[VId], VType <: VersionedInstance[VType, VType, VId]](
       resourcedirectory: String,
       masterfile: String,
       loader: ClassLoader
@@ -274,7 +274,7 @@ object JavaResourcePersistentSupport {
   * @param cacheTimeToLive
   * @param cacheTimeToIdle this value must be less than cacheTimeToLive
   */
-class JavaResourceStore[VId, VType <: VersionedInstance[VType, VType, VId]](
+class JavaResourceStore[VId <: Comparable[VId], VType <: VersionedInstance[VType, VType, VId]](
     name: String,
     val resourcedirectory: String,
     val masterfile: String,

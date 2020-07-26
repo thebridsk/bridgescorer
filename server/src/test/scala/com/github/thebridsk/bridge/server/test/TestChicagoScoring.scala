@@ -23,7 +23,7 @@ class TestChicagoScoring extends AnyFlatSpec with Matchers {
 
   behavior of "a chicago played match"
 
-  val chiid: Id.MatchChicago = "C1"
+  val chiid = MatchChicago.id(1)
   var mc = MatchChicago( chiid, ""::""::""::""::Nil, Nil, 0, false )
 
   it should "allow a ChicagoScoring object to be created" in {

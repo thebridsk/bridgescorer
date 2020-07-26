@@ -15,6 +15,8 @@ import com.github.thebridsk.browserpages.GenericPage
 import com.github.thebridsk.bridge.fullserver.test.pages.bridge.HomePage
 import com.github.thebridsk.bridge.fullserver.test.pages.bridge.Popup
 import com.github.thebridsk.bridge.fullserver.test.pages.ServerURLAddOn
+import com.github.thebridsk.bridge.data.MatchDuplicateResult
+import com.github.thebridsk.bridge.data.MatchDuplicate
 
 object ListDuplicatePage {
 
@@ -223,16 +225,16 @@ class ListDuplicatePage(
 
   def getMatchIds(implicit patienceConfig: PatienceConfig, pos: Position) = {
     getAllButtons.keySet.flatMap{ id => buttonIdToMatchId(id) match {
-      case Some(mid) => mid::Nil
+      case Some(mid) => MatchDuplicate.id(mid)::Nil
       case None => Nil
-    }}.toList.sortWith((l,r)=> Id.idComparer(l, r)<0)
+    }}.toList.sorted
   }
 
   def getResultIds(implicit patienceConfig: PatienceConfig, pos: Position) = {
     getAllButtons.keySet.flatMap{ id => buttonIdToResultId(id) match {
-      case Some(mid) => mid::Nil
+      case Some(mid) => MatchDuplicateResult.id(mid)::Nil
       case None => Nil
-    }}.toList.sortWith((l,r)=> Id.idComparer(l, r)<0)
+    }}.toList.sorted
   }
 
   /**

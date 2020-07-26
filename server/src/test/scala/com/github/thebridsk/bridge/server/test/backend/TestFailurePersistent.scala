@@ -17,7 +17,7 @@ import com.github.thebridsk.bridge.server.backend.resource.InMemoryPersistent
 
 object TestFailurePersistent {
 
-  def apply[VId,VType <: VersionedInstance[VType,VType,VId]]()(
+  def apply[VId <: Comparable[VId],VType <: VersionedInstance[VType,VType,VId]]()(
                     implicit
                       support: StoreSupport[VId, VType],
                       execution: ExecutionContext
@@ -28,7 +28,7 @@ object TestFailurePersistent {
   val log = Logger[TestFailurePersistent[_,_]]()
 }
 
-class TestFailurePersistent[VId,VType <: VersionedInstance[VType,VType,VId]](
+class TestFailurePersistent[VId <: Comparable[VId],VType <: VersionedInstance[VType,VType,VId]](
     implicit
       support: StoreSupport[VId, VType],
       execution: ExecutionContext
@@ -158,7 +158,7 @@ class TestFailurePersistent[VId,VType <: VersionedInstance[VType,VType,VId]](
 
 }
 
-class TestFailureStore[VId,VType <: VersionedInstance[VType,VType,VId]] private (
+class TestFailureStore[VId <: Comparable[VId],VType <: VersionedInstance[VType,VType,VId]] private (
                     name: String,
                     val testFailurePersistent: TestFailurePersistent[VId,VType],
                     cacheInitialCapacity: Int = 5,
@@ -179,7 +179,7 @@ class TestFailureStore[VId,VType <: VersionedInstance[VType,VType,VId]] private 
 }
 
 object TestFailureStore {
-  def apply[VId,VType <: VersionedInstance[VType,VType,VId]](
+  def apply[VId <: Comparable[VId],VType <: VersionedInstance[VType,VType,VId]](
                     name: String,
                     testFailurePersistent: TestFailurePersistent[VId,VType] = null,
                     cacheInitialCapacity: Int = 5,

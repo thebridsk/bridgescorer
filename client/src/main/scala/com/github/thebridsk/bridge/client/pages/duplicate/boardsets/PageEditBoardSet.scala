@@ -84,7 +84,7 @@ object PageEditBoardSetInternal {
    * @param nboards the number of boards in the set
    * @param msg a popup message
    */
-  case class State( boardSetId: Option[String] = None, boardset: Option[BoardSet] = None, nboards: Int = 0, msg: Option[TagMod] = None ) {
+  case class State( boardSetId: Option[BoardSet.Id] = None, boardset: Option[BoardSet] = None, nboards: Int = 0, msg: Option[TagMod] = None ) {
 
     def isNew = boardSetId.isEmpty
     def hasBoardSet = boardset.isDefined
@@ -92,7 +92,7 @@ object PageEditBoardSetInternal {
     def getBoardSet: BoardSet = {
       boardset.getOrElse(
         BoardSet(
-          boardSetId.getOrElse(""),
+          boardSetId.getOrElse(BoardSet.idNul),
           "",
           "",
           if (nboards > 0) (1 to nboards).map( i => BoardInSet(i, false, false, "")).toList
@@ -101,7 +101,7 @@ object PageEditBoardSetInternal {
         )
       )
     }
-    def setName( name: String ) = copy( boardset = Some(getBoardSet.copy(name = name)))
+    def setName( name: BoardSet.Id ) = copy( boardset = Some(getBoardSet.copy(name = name)))
     def setShort( description: String ) = copy( boardset = Some(getBoardSet.copy(short=description)))
     def setDescription( description: String ) = copy( boardset = Some(getBoardSet.copy(description=description)))
 
@@ -233,7 +233,7 @@ object PageEditBoardSetInternal {
    */
   class Backend(scope: BackendScope[Props, State]) {
 
-    def inputCB( data: ReactEventFromInput): Callback = data.inputText( text => scope.modState( _.setName(text)) )
+    def inputCB( data: ReactEventFromInput): Callback = data.inputText( text => scope.modState( _.setName(BoardSet.id(text))) )
     def shortCB( data: ReactEventFromInput): Callback = data.inputText( text => scope.modState( _.setShort(text)) )
     def descCB( data: ReactEventFromInput): Callback = data.inputText( text => scope.modState( _.setDescription(text)) )
     def setNboardsCB( data: ReactEventFromInput): Callback = data.inputText { text =>
@@ -334,10 +334,10 @@ object PageEditBoardSetInternal {
                     <.input(
                       ^.name := "Name",
                       ^.onChange ==> inputCB _,
-                      ^.value := state.getBoardSet.name
+                      ^.value := state.getBoardSet.name.id
                     )
                   } else {
-                    state.getBoardSet.name
+                    state.getBoardSet.name.id
                   }
                 ),
                 <.label(
@@ -413,7 +413,8 @@ object PageEditBoardSetInternal {
 
     val storeCallback = scope.modStateOption { (state,props) =>
       props.page match {
-        case BoardSetEditView(display) =>
+        case bsev: BoardSetEditView =>
+          val display = bsev.display
           BoardSetStore.getBoardSet(display) match {
             case Some(bs) =>
               val bs1 = if (bs.isDeletable) bs else bs.copy(resetToDefault = Some(true))
@@ -430,7 +431,8 @@ object PageEditBoardSetInternal {
       logger.info("PageEditBoardSet.didMount")
       BoardSetStore.addChangeListener(storeCallback)
       props.page match {
-        case BoardSetEditView(display) =>
+        case bsev: BoardSetEditView =>
+          val display = bsev.display
           BoardSetController.getBoardSet(display)
         case _ =>
       }
@@ -449,7 +451,8 @@ object PageEditBoardSetInternal {
     val prevProps = cdu.prevProps
     if (props.page != prevProps.page) {
       props.page match {
-        case BoardSetEditView(display) =>
+        case bsev: BoardSetEditView =>
+          val display = bsev.display
           BoardSetController.getBoardSet(display)
           Some( State( boardSetId = Some(display)) )
         case _ =>
@@ -463,7 +466,8 @@ object PageEditBoardSetInternal {
   val component = ScalaComponent.builder[Props]("PageEditBoardSet")
                             .initialStateFromProps { props =>
                               props.page match {
-                                case BoardSetEditView(display) =>
+                                case bsev: BoardSetEditView =>
+                                  val display = bsev.display
                                   State( Some(display) )
                                 case _ =>
                                   State()

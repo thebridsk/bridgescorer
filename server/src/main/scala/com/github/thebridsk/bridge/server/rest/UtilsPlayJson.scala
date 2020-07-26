@@ -87,17 +87,6 @@ object UtilsPlayJson extends BridgePlayJsonSupport {
         complete((InternalServerError, s"An error occurred: ${ex.getMessage}"))
     }
 
-  import scala.language.implicitConversions
-  implicit def addIdToFuture[VType <: VersionedInstance[VType, VType, _]](
-      f: Future[Result[VType]]
-  ): Future[Result[(String, VType)]] =
-    f.map { r =>
-      r match {
-        case Right(md) => Right((md.id.toString(), md))
-        case Left(e)   => Left(e)
-      }
-    }
-
   def resourceUpdated[T](
       f: Future[Result[T]],
       successStatus: StatusCode = NoContent,
@@ -159,7 +148,7 @@ object UtilsPlayJson extends BridgePlayJsonSupport {
         complete((InternalServerError, s"An error occurred: ${ex.getMessage}"))
     }
 
-  def resourceMap[T](f: Future[Result[Map[String, T]]])(
+  def resourceMap[T,I](f: Future[Result[Map[I, T]]])(
       implicit arrayMarshaller: ToResponseMarshaller[Array[T]],
       awriter: Writes[Array[T]],
       twriter: Writes[T],

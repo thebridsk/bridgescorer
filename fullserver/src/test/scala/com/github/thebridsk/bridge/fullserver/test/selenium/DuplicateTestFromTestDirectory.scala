@@ -182,7 +182,7 @@ class DuplicateTestFromTestDirectory extends AnyFlatSpec with Matchers with Befo
     val sessionDirector = new DirectorSession()
     val sessionComplete = new CompleteSession()
     val sessionTables = template.getTableIds().map { id => {
-      val sid = id.toString
+      val sid = id.toNumber
       new TableSession(sid) }
     }
 
@@ -235,7 +235,7 @@ class DuplicateTestFromTestDirectory extends AnyFlatSpec with Matchers with Befo
 
       TestServer.onlyRunWhenStartingServer(Some("Skipping comparing to database, no access to database")) { () =>
         eventually {
-          TestServer.backend.duplicates.syncStore.read(dupid.get) match {
+          TestServer.backend.duplicates.syncStore.read(MatchDuplicate.id(dupid.get)) match {
             case Right(played) =>
               val n = played.copy(id=template.id)
               try {
@@ -339,11 +339,11 @@ class DuplicateTestFromTestDirectory extends AnyFlatSpec with Matchers with Befo
         val boardset = template.boardset
         val movement = template.movement
 
-        newd.getNewButton(boardset, movement) mustBe Symbol("Enabled")
+        newd.getNewButton(boardset.id, movement.id) mustBe Symbol("Enabled")
 
         tcpSleep(2)
 
-        val dup = newd.click(boardset, movement).validate
+        val dup = newd.click(boardset.id, movement.id).validate
 
         dupid = dup.dupid
 
@@ -388,33 +388,23 @@ class DuplicateTestFromTestDirectory extends AnyFlatSpec with Matchers with Befo
     }
 
     /**
-     * @param id the board id, starts with "Board_B"
-     */
-    def boardIdToNumber( id: String ) = {
-      if (id.startsWith("B")) {
-        id.drop(1).toInt
-      }
-      else 0
-    }
-
-    /**
      * Assumes on a by Scoreboard or BoardPage page with a Board_n buttons for the round being played.
      */
     def doPlayHand( sessionTable: TableSession, hand: DuplicateHand, page: PageWithBoardButtons ) = try {
       import sessionTable._
-      val boardButton = "Board_"+hand.board
+      val boardButton = s"Board_${hand.board.id}"
       val (north,south,east,west) = getPlayers(hand)
 
       withClue(s"Going to board ${hand.board}") {
         hand.hand match {
           case Some(h) =>
             val bh = BridgeHand(h)
-            val bid = boardIdToNumber(hand.board)
+            val bid = hand.board.toInt
             val board = boardSet.get.boards.find( b => b.id == bid).get
             val nsvul = board.nsVul
             val ewvul = board.ewVul
-            val nsteam = Id.teamIdToTeamNumber(hand.nsTeam)
-            val ewteam = Id.teamIdToTeamNumber(hand.ewTeam)
+            val nsteam = hand.nsTeam.toNumber
+            val ewteam = hand.ewTeam.toNumber
 
             val hp = page.clickBoardButton(board.id).validate
 
@@ -505,7 +495,7 @@ class DuplicateTestFromTestDirectory extends AnyFlatSpec with Matchers with Befo
       val boardsetName = templateScore.getBoardSet
 
       import com.github.thebridsk.bridge.server.rest.UtilsPlayJson._
-      val ResponseFromHttp(status,loc,ce,bs,cd) = HttpUtils.getHttpObject[BoardSet](TestServer.getUrl("/v1/rest/boardsets/"+boardsetName))
+      val ResponseFromHttp(status,loc,ce,bs,cd) = HttpUtils.getHttpObject[BoardSet](TestServer.getUrl("/v1/rest/boardsets/"+boardsetName.id))
       boardSet = bs
 
       val rounds = templateScore.tables.values.toList.head.length

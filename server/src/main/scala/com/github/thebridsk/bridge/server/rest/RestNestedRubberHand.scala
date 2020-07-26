@@ -92,6 +92,16 @@ class RestNestedRubberHand {
             )
           )
         )
+      ),
+      new ApiResponse(
+        responseCode = "400",
+        description = "Bad request",
+        content = Array(
+          new Content(
+            mediaType = "application/json",
+            schema = new Schema(implementation = classOf[RestMessage])
+          )
+        )
       )
     )
   )
@@ -142,6 +152,16 @@ class RestNestedRubberHand {
       new ApiResponse(
         responseCode = "404",
         description = "Does not exist",
+        content = Array(
+          new Content(
+            mediaType = "application/json",
+            schema = new Schema(implementation = classOf[RestMessage])
+          )
+        )
+      ),
+      new ApiResponse(
+        responseCode = "400",
+        description = "Bad request",
         content = Array(
           new Content(
             mediaType = "application/json",
@@ -240,7 +260,7 @@ class RestNestedRubberHand {
   ): Future[Result[(String, RubberHand)]] =
     f.map { r =>
       r match {
-        case Right(md) => Right((md.id.toString(), md))
+        case Right(md) => Right((md.id, md))
         case Left(e)   => Left(e)
       }
     }
@@ -338,7 +358,17 @@ class RestNestedRubberHand {
       )
     ),
     responses = Array(
-      new ApiResponse(responseCode = "204", description = "RubberHand deleted.")
+      new ApiResponse(responseCode = "204", description = "RubberHand deleted."),
+      new ApiResponse(
+        responseCode = "400",
+        description = "Bad request",
+        content = Array(
+          new Content(
+            mediaType = "application/json",
+            schema = new Schema(implementation = classOf[RestMessage])
+          )
+        )
+      )
     )
   )
   def xxxdeleteHand = {}

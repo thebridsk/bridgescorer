@@ -28,6 +28,9 @@ import com.github.thebridsk.materialui.TextVariant
 import com.github.thebridsk.materialui.TextColor
 import com.github.thebridsk.bridge.client.pages.HomePage
 import japgolly.scalajs.react.component.builder.Lifecycle.ComponentDidUpdate
+import com.github.thebridsk.bridge.data.Table
+import com.github.thebridsk.bridge.data.Team
+import com.github.thebridsk.bridge.data.Board
 
 /**
  * Shows the team x board table and has a totals column that shows the number of points the team has.
@@ -105,7 +108,7 @@ object PageBoardInternal {
         case _ => None
       }
 
-      def buttons( label: String, boards: List[BoardScore], ns: Id.Team, played: Boolean ) = {
+      def buttons( label: String, boards: List[BoardScore], ns: Team.Id, played: Boolean ) = {
         val bbs = boards // .filter { board => board.id!=props.page.boardid }
         <.span(
           !bbs.isEmpty ?= <.b(label),
@@ -119,7 +122,7 @@ object PageBoardInternal {
             }
             Seq[TagMod](
               <.span(" "),
-              AppButton( "Board_"+board.id, "Board "+Id.boardIdToBoardNumber(id),
+              AppButton( s"Board_${board.id.id}", "Board "+id.toNumber,
                          BaseStyles.highlight(
                              selected=selected,
                              requiredNotNext = !played && !selected
@@ -169,21 +172,21 @@ object PageBoardInternal {
 
       val (tableBoardView,currentRound,currentTable) = props.page match {
         case tbv: TableBoardView => (Some(tbv),tbv.round,tbv.tableid)
-        case _ => (None,-1,"")
+        case _ => (None,-1,Table.idNul)
       }
 
       def title() = {
         props.page.getPerspective match {
           case PerspectiveTable(team1, team2) =>
             <.span(
-              s"Table ${Id.tableIdToTableNumber(currentTable)} Round ${currentRound}" ,
-              s" Board ${Id.boardIdToBoardNumber(props.page.boardid)}",
-              s" Teams ${Id.teamIdToTeamNumber(team1)} and ${Id.teamIdToTeamNumber(team2)}",
+              s"Table ${currentTable.toNumber} Round ${currentRound}" ,
+              s" Board ${props.page.boardid.toNumber}",
+              s" Teams ${team1.toNumber} and ${team2.toNumber}",
             )
           case PerspectiveDirector =>
-            <.span(s"Director's View of Board ${Id.boardIdToBoardNumber(props.page.boardid)}")
+            <.span(s"Director's View of Board ${props.page.boardid.toNumber}")
           case PerspectiveComplete =>
-            <.span(s"Completed View of Board ${Id.boardIdToBoardNumber(props.page.boardid)}")
+            <.span(s"Completed View of Board ${props.page.boardid.toNumber}")
         }
 
       }
@@ -234,7 +237,7 @@ object PageBoardInternal {
                            allplayedInRound ?= baseStyles.requiredNotNext,
                            props.routerCtl.setOnClick(clickToScoreboard) ),
                 " ",
-                clickToTableView.isDefined?= AppButton( "Table", "Table "+Id.tableIdToTableNumber(currentTable),
+                clickToTableView.isDefined?= AppButton( "Table", "Table "+currentTable.toNumber,
                                                         allplayedInRound ?= baseStyles.requiredNotNext,
                                                         props.routerCtl.setOnClick(clickToTableView.get) ),
                 " ",
@@ -271,7 +274,7 @@ object PageBoardInternal {
     }
   }
 
-  val BoardsRow = ScalaComponent.builder[(List[Id.DuplicateBoard],Props,MatchDuplicateScore)]("PageBoard.BoardsRow")
+  val BoardsRow = ScalaComponent.builder[(List[Board.Id],Props,MatchDuplicateScore)]("PageBoard.BoardsRow")
                         .render_P( args => {
                           val (row,props,mds) = args
                           <.tr(
@@ -279,14 +282,14 @@ object PageBoardInternal {
                           )
                         }).build
 
-  val BoardCell = ScalaComponent.builder[(Id.DuplicateBoard,Props,BoardScore)]("PageBoard.BoardCell")
+  val BoardCell = ScalaComponent.builder[(Board.Id,Props,BoardScore)]("PageBoard.BoardCell")
                         .render_P( args => {
                           val (id,props,bs) = args
                           val me = props.page.boardid
                           val clickToBoard = props.page.toScoreboardView.toBoardView(id)
                           logger.fine(s"Target for setOnClick is ${clickToBoard}")
                           <.td(
-                            AppButton( "Board_"+id, "Board "+Id.boardIdToBoardNumber(id),
+                            AppButton( s"Board_${id.id}", "Board "+id.toNumber,
                                        BaseStyles.highlight(
                                            selected = me == id,
                                            required = me != id && bs.allplayed,

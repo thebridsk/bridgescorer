@@ -11,7 +11,7 @@ import io.swagger.v3.oas.annotations.media.Schema
 )
 case class Team(
     @Schema(description = "The ID of the team.", required = true)
-    id: Id.Team,
+    id: Team.Id,
     @Schema(description = "The name of player 1 on the team", required = true)
     player1: String,
     @Schema(description = "The name of player 2 on the team", required = true)
@@ -33,7 +33,7 @@ case class Team(
   def equalsIgnoreModifyTime(other: Team) =
     this == other.copy(created = created, updated = updated)
 
-  def setId(newId: Id.Team, forCreate: Boolean) = {
+  def setId(newId: Team.Id, forCreate: Boolean) = {
     val time = SystemTime.currentTimeMillis()
     copy(
       id = newId,
@@ -42,7 +42,7 @@ case class Team(
     )
   }
 
-  def copyForCreate(id: Id.Team) = {
+  def copyForCreate(id: Team.Id) = {
     val time = SystemTime.currentTimeMillis()
     copy(id = id, created = time, updated = time)
   }
@@ -80,13 +80,16 @@ case class Team(
   }
 }
 
-object Team {
-  def create(id: Id.Team, player1: String, player2: String) = {
+trait IdTeam
+
+object Team extends HasId[IdTeam]("T") {
+  def create(id: Team.Id, player1: String, player2: String) = {
     val time = SystemTime.currentTimeMillis()
     new Team(id, player1, player2, time, time)
   }
-  def create(id: Id.Team) = {
+  def create(id: Team.Id) = {
     val time = SystemTime.currentTimeMillis()
     new Team(id, "", "", time, time)
   }
+
 }

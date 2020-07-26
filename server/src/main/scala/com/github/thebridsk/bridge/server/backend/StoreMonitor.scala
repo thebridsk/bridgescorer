@@ -83,17 +83,17 @@ object StoreMonitor {
 
   case class NewParticipantSSEDuplicate(
       name: String,
-      id: Id.MatchDuplicate,
+      id: MatchDuplicate.Id,
       subscriber: ActorRef
   ) extends ChatEvent
   case class NewParticipantSSEChicago(
       name: String,
-      id: Id.MatchChicago,
+      id: MatchChicago.Id,
       subscriber: ActorRef
   ) extends ChatEvent
   case class NewParticipantSSERubber(
       name: String,
-      id: String,
+      id: MatchRubber.Id,
       subscriber: ActorRef
   ) extends ChatEvent
 
@@ -108,7 +108,7 @@ object StoreMonitor {
 
 }
 
-abstract class BaseStoreMonitor[VId, VType <: VersionedInstance[
+abstract class BaseStoreMonitor[VId <: Comparable[VId], VType <: VersionedInstance[
   VType,
   VType,
   VId
@@ -179,7 +179,7 @@ abstract class BaseStoreMonitor[VId, VType <: VersionedInstance[
   }
 
   protected def dispatchToAllDuplicate(
-      id: Id.MatchDuplicate,
+      id: MatchDuplicate.Id,
       data: ToBrowserMessage
   ): Unit = {
     log.debug(s"BaseStoreMonitor.dispatchToAllDuplicate(${id}): ${data}")
@@ -187,7 +187,7 @@ abstract class BaseStoreMonitor[VId, VType <: VersionedInstance[
   }
 
   protected def dispatchToAllChicago(
-      id: Id.MatchChicago,
+      id: MatchChicago.Id,
       data: ToBrowserMessage
   ): Unit = {
     log.debug(s"BaseStoreMonitor.dispatchToAllChicago(${id}): ${data}")
@@ -195,7 +195,7 @@ abstract class BaseStoreMonitor[VId, VType <: VersionedInstance[
   }
 
   protected def dispatchToAllRubber(
-      id: String,
+      id: MatchRubber.Id,
       data: ToBrowserMessage
   ): Unit = {
     log.debug(s"BaseStoreMonitor.dispatchToAllRubber(${id}): ${data}")
@@ -317,7 +317,7 @@ abstract class BaseStoreMonitor[VId, VType <: VersionedInstance[
   }
 }
 
-class StoreMonitorManager[VId, VType <: VersionedInstance[VType, VType, VId]](
+class StoreMonitorManager[VId <: Comparable[VId], VType <: VersionedInstance[VType, VType, VId]](
     system: ActorSystem,
     store: Store[VId, VType],
     storeMonitorClass: Class[_],
@@ -466,9 +466,9 @@ class StoreMonitorManager[VId, VType <: VersionedInstance[VType, VType, VId]](
 
 class DuplicateStoreMonitor(
     system: ActorSystem,
-    store: Store[Id.MatchDuplicate, MatchDuplicate],
+    store: Store[MatchDuplicate.Id, MatchDuplicate],
     service: Service
-) extends BaseStoreMonitor[Id.MatchDuplicate, MatchDuplicate](
+) extends BaseStoreMonitor[MatchDuplicate.Id, MatchDuplicate](
       system,
       store,
       Protocol.UpdateDuplicate(_)
@@ -518,7 +518,7 @@ class DuplicateStoreMonitor(
       case UpdateDuplicatePictures(dupid, pictures) =>
         log.debug(s"UpdateDuplicatePictures ${dupid} ${pictures}")
         futureError("Use REST API", seq)
-      case StartMonitorDuplicate(dupid: Id.MatchDuplicate) =>
+      case StartMonitorDuplicate(dupid: MatchDuplicate.Id) =>
         log.info(s"StartMonitorDuplicate ${dupid}")
         val subid = get(sender) match {
           case Some(sub) =>
@@ -528,19 +528,7 @@ class DuplicateStoreMonitor(
             None
         }
         store.read(dupid).map { rd =>
-          service.restDuplicate.nestedPictures.getAllPictures(dupid).foreach { ridp =>
-            ridp match {
-              case Right(idp) =>
-                val ldp = idp.toList
-                if (!ldp.isEmpty) {
-                  val data = UpdateDuplicatePictures( dupid, ldp )
-                  dispatchTo(DuplexProtocol.Unsolicited(data), sender)
-                }
-              case Left(err) =>
-                log.warning("Error getting all pictures in monitor: ${err}")
-            }
-          }
-          rd match {
+          val resp = rd match {
             case Right(dup) =>
               if (ack) {
                 log.info("Sending MatchDuplicate to " + sender + ": " + dup)
@@ -555,6 +543,19 @@ class DuplicateStoreMonitor(
             case _ =>
               DuplexProtocol.Response(NoData(), seq)
           }
+          service.restDuplicate.nestedPictures.getAllPictures(dupid).foreach { ridp =>
+            ridp match {
+              case Right(idp) =>
+                val ldp = idp.toList
+                if (!ldp.isEmpty) {
+                  val data = UpdateDuplicatePictures( dupid, ldp )
+                  dispatchTo(DuplexProtocol.Unsolicited(data), sender)
+                }
+              case Left(err) =>
+                log.warning("Error getting all pictures in monitor: ${err}")
+            }
+          }
+          resp
         }
       case StopMonitorDuplicate(dupid) =>
         log.info(s"StopMonitorDuplicate ${dupid}")
@@ -617,9 +618,9 @@ class DuplicateStoreMonitor(
 
 class ChicagoStoreMonitor(
     system: ActorSystem,
-    store: Store[Id.MatchChicago, MatchChicago],
+    store: Store[MatchChicago.Id, MatchChicago],
     service: Service
-) extends BaseStoreMonitor[Id.MatchChicago, MatchChicago](
+) extends BaseStoreMonitor[MatchChicago.Id, MatchChicago](
       system,
       store,
       Protocol.UpdateChicago(_)
@@ -649,7 +650,7 @@ class ChicagoStoreMonitor(
       case UpdateDuplicatePictures(dupid, pictures) =>
         log.debug(s"UpdateDuplicatePictures not implemented")
         futureError("Unknown request", seq)
-      case StartMonitorDuplicate(dupid: Id.MatchDuplicate) =>
+      case StartMonitorDuplicate(dupid: MatchDuplicate.Id) =>
         log.warning("StartMonitorDuplicate not implemented")
         futureError("Unknown request", seq)
       case StopMonitorDuplicate(dupid) =>
@@ -665,7 +666,7 @@ class ChicagoStoreMonitor(
         log.warning("StopMonitorSummary not implemented")
         futureError("Unknown request", seq)
 
-      case StartMonitorChicago(dupid: Id.MatchChicago) =>
+      case StartMonitorChicago(dupid: MatchChicago.Id) =>
         log.info(s"StartMonitorChicago ${dupid}")
         get(sender) match {
           case Some(sub) =>
@@ -757,9 +758,9 @@ class ChicagoStoreMonitor(
 
 class RubberStoreMonitor(
     system: ActorSystem,
-    store: Store[String, MatchRubber],
+    store: Store[MatchRubber.Id, MatchRubber],
     service: Service
-) extends BaseStoreMonitor[String, MatchRubber](
+) extends BaseStoreMonitor[MatchRubber.Id, MatchRubber](
     system,
     store,
     Protocol.UpdateRubber(_)
@@ -789,7 +790,7 @@ class RubberStoreMonitor(
       case UpdateDuplicatePictures(dupid, pictures) =>
         log.debug(s"UpdateDuplicatePictures not implemented")
         futureError("Unknown request", seq)
-      case StartMonitorDuplicate(dupid: Id.MatchDuplicate) =>
+      case StartMonitorDuplicate(dupid: MatchDuplicate.Id) =>
         log.warning("StartMonitorDuplicate not implemented")
         futureError("Unknown request", seq)
       case StopMonitorDuplicate(dupid) =>
@@ -821,8 +822,8 @@ class RubberStoreMonitor(
         log.warning("UpcateChicagoHand not implemented")
         futureError("Unknown request", seq)
 
-      case StartMonitorRubber(dupid: String) =>
-        log.info(s"StartMonitorRubber ${dupid}")
+      case StartMonitorRubber(dupid) =>
+        log.info(s"StartMonitorRubber ${dupid.id}")
         get(sender) match {
           case Some(sub) =>
             add(new RubberSubscription(sub, dupid))
@@ -879,81 +880,128 @@ class RubberStoreMonitor(
 }
 
 class Listener(log: LoggingAdapter, actor: ActorRef) extends StoreListener {
+  import com.github.thebridsk.bridge.server.backend.resource.ChangeContextData
+  private def getDuplicateId( ccd: ChangeContextData ): Option[MatchDuplicate.Id] = {
+    (ccd match {
+      case cc: CreateChangeContext => Some(cc.newValue)
+      case uc: UpdateChangeContext => Some(uc.newValue)
+      case dc: DeleteChangeContext => None // can't happen here
+    }) match {
+      case Some(fdata) =>
+        fdata match {
+          case md: MatchDuplicate => Some(md.id)
+          case b: Board           => None
+          case h: DuplicateHand   => None
+          case pict: UpdateDuplicatePicture => Some(pict.dupid)
+          case _                  => None
+        }
+      case None => None
+    }
+  }
+  private def getChicagoRound( ccd: ChangeContextData ): Option[String] = {
+    (ccd match {
+      case cc: CreateChangeContext => Some(cc.newValue)
+      case uc: UpdateChangeContext => Some(uc.newValue)
+      case dc: DeleteChangeContext => None // can't happen here
+    }) match {
+      case Some(fdata) =>
+        fdata match {
+          case r: Round   => Some(r.id)
+          case _          => None
+        }
+      case None => None
+    }
+  }
+  private def getChicagoId( ccd: ChangeContextData ): Option[MatchChicago.Id] = {
+    (ccd match {
+      case cc: CreateChangeContext => Some(cc.newValue)
+      case uc: UpdateChangeContext => Some(uc.newValue)
+      case dc: DeleteChangeContext => None // can't happen here
+    }) match {
+      case Some(fdata) =>
+        fdata match {
+          case mc: MatchChicago   => Some(mc.id)
+          case _                  => None
+        }
+      case None => None
+    }
+  }
+  private def getRubberId( ccd: ChangeContextData ): Option[MatchRubber.Id] = {
+    (ccd match {
+      case cc: CreateChangeContext => Some(cc.newValue)
+      case uc: UpdateChangeContext => Some(uc.newValue)
+      case dc: DeleteChangeContext => None // can't happen here
+    }) match {
+      case Some(fdata) =>
+        fdata match {
+          case mr: MatchRubber   => Some(mr.id)
+          case _                 => None
+        }
+      case None => None
+    }
+  }
 
   override def create(context: ChangeContext): Unit = update(context)
   override def update(context: ChangeContext): Unit = {
     val changes = context.changes
     log.debug("StoreMonitor.StoreListener " + changes.mkString("\n", "\n", ""))
-    changes.headOption match {
-      case Some(fcd) =>
-        ((fcd match {
-          case cc: CreateChangeContext => Some(cc.newValue)
-          case uc: UpdateChangeContext => Some(uc.newValue)
-          case dc: DeleteChangeContext => None // can't happen here
-        }) match {
-          case Some(fdata) =>
-            fdata match {
-              case md: MatchDuplicate => Some(md.id)
-              case b: Board           => None
-              case h: DuplicateHand   => None
-              case pict: UpdateDuplicatePicture => Some(pict.dupid)
-              case mc: MatchChicago   => Some(mc.id)
-              case mr: MatchRubber    => Some(mr.id)
-              case _                  => None
-            }
-          case None => None
-        }) match {
-          case Some(mdid) =>
-            (context.getSpecificChange() match {
-              case Some(cd) =>
-                cd match {
-                  case cc: CreateChangeContext => Some(cc.newValue)
-                  case uc: UpdateChangeContext => Some(uc.newValue)
-                  case dc: DeleteChangeContext => None // can't happen here
-                }
-              case None => None
-            }) match {
-              case Some(data) =>
-                data match {
-                  case md: MatchDuplicate => actor ! UpdateDuplicate(md)
-                  case b: Board           =>
-                  case pict: UpdateDuplicatePicture => actor ! pict
-                  case h: DuplicateHand   => actor ! UpdateDuplicateHand(mdid, h)
-                  case t: Team            => actor ! UpdateDuplicateTeam(mdid, t)
-                  case mc: MatchChicago   => actor ! UpdateChicago(mc)
-                  case cr: Round          => actor ! UpdateChicagoRound(mdid, cr)
-                  case ch: Hand =>
-                    changes.tail.headOption match {
-                      case Some(fcd) =>
-                        ((fcd match {
-                          case cc: CreateChangeContext => Some(cc.newValue)
-                          case uc: UpdateChangeContext => Some(uc.newValue)
-                          case dc: DeleteChangeContext =>
-                            None // can't happen here
-                        }) match {
-                          case Some(fdata) =>
-                            fdata match {
-                              case r: Round => Some(r.id)
-                              case _        => None
-                            }
-                          case None => None
-                        }) match {
-                          case Some(rid) =>
-                            actor ! UpdateChicagoHand(mdid, rid, ch)
-                          case None =>
-                        }
-                      case None =>
-                    }
-                  case mr: MatchRubber => actor ! UpdateRubber(mr)
-                  case _               =>
+    (context.getSpecificChange() match {
+      case Some(scd) =>
+        scd match {
+          case cc: CreateChangeContext =>
+            log.debug(s"StoreMonitor.Listener.update: got a CreateChangeContext")
+            Some(cc.newValue)
+          case uc: UpdateChangeContext =>
+            log.debug(s"StoreMonitor.Listener.update: got a UpdateChangeContext")
+            Some(uc.newValue)
+          case dc: DeleteChangeContext =>
+            None // can't happen here, only create and delete
+        }
+      case None =>
+    }) match {
+      case Some(v) =>
+        v match {
+          case md: MatchDuplicate =>
+            // log.debug(s"StoreMonitor.Listener.update: notifying actor with UpdateDuplicate($md)")
+            actor ! UpdateDuplicate(md)
+          case b: Board           =>
+            // log.debug(s"StoreMonitor.Listener.update: Ignoring $b")
+          case pict: UpdateDuplicatePicture =>
+            // log.debug(s"StoreMonitor.Listener.update: notifying actor with $pict")
+            actor ! pict
+          case h: DuplicateHand   =>
+            // log.debug(s"StoreMonitor.Listener.update: notifying actor with UpdateDuplicateHand($h)")
+            getDuplicateId(changes.head).foreach { mdid => actor ! UpdateDuplicateHand(mdid, h) }
+          case t: Team            =>
+            // log.debug(s"StoreMonitor.Listener.update: notifying actor with UpdateDuplicateTeam($t)")
+            getDuplicateId(changes.head).foreach { mdid => actor ! UpdateDuplicateTeam(mdid, t) }
+          case mc: MatchChicago   =>
+            // log.debug(s"StoreMonitor.Listener.update: notifying actor with UpdateChicago($mc)")
+            actor ! UpdateChicago(mc)
+          case cr: Round          =>
+            // log.debug(s"StoreMonitor.Listener.update: notifying actor with UpdateChicagoRound($cr)")
+            getChicagoId(changes.head).foreach { mdid => actor ! UpdateChicagoRound(mdid, cr) }
+          case ch: Hand           =>
+            // log.debug(s"StoreMonitor.Listener.update: notifying actor with UpdateChicagoHand($ch)")
+            getChicagoRound(changes.tail.head) match {
+              case Some(rid) =>
+                getChicagoId(changes.head) match {
+                  case Some(mcid) =>
+                    actor ! UpdateChicagoHand(mcid, rid, ch)
+                  case None =>
                 }
               case None =>
             }
-          case None =>
+            val mcid = getChicagoId(changes.head)
+          case mr: MatchRubber =>
+            // log.debug(s"StoreMonitor.Listener.update: notifying actor with UpdateRubber($mr)")
+            actor ! UpdateRubber(mr)
+          case x               =>
         }
-
       case None =>
     }
   }
+
   override def delete(context: ChangeContext): Unit = {}
+
 }

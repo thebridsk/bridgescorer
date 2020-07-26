@@ -64,25 +64,25 @@ object TestCacheStoreForFailures {
   val bridgeResources = BridgeResources()
   import bridgeResources._
 
-  def boardsetsPersistent( implicit ec: ExecutionContext ) = JavaResourcePersistentSupport[String,BoardSet]("/com/github/thebridsk/bridge/server/backend/", "Boardsets.txt", getClass.getClassLoader)
-  def movementsPersistent( implicit ec: ExecutionContext ) = JavaResourcePersistentSupport[String,Movement]("/com/github/thebridsk/bridge/server/backend/", "Movements.txt", getClass.getClassLoader)
+  def boardsetsPersistent( implicit ec: ExecutionContext ) = JavaResourcePersistentSupport[BoardSet.Id,BoardSet]("/com/github/thebridsk/bridge/server/backend/", "Boardsets.txt", getClass.getClassLoader)
+  def movementsPersistent( implicit ec: ExecutionContext ) = JavaResourcePersistentSupport[Movement.Id,Movement]("/com/github/thebridsk/bridge/server/backend/", "Movements.txt", getClass.getClassLoader)
 
-  def standardBoardset( implicit ec: ExecutionContext ) = boardsetsPersistent.read("StandardBoards") match {
+  def standardBoardset( implicit ec: ExecutionContext ) = boardsetsPersistent.read(BoardSet.standard) match {
     case Right(v) => v
     case Left( error ) =>
       throw new Exception(s"Unable to get standard boardset ${error}")
   }
 
-  def movement( implicit ec: ExecutionContext ) = movementsPersistent.read("Mitchell3Table") match {
+  def movement( implicit ec: ExecutionContext ) = movementsPersistent.read(Movement.id("Mitchell3Table")) match {
     case Right(v) => v
     case Left( error ) =>
       throw new Exception(s"Unable to get Mitchell3Table ${error}")
   }
 
-  def getStore( implicit ec: ExecutionContext ): (Store[Id.MatchDuplicate,MatchDuplicate],
-                 TestFailurePersistent[Id.MatchDuplicate,MatchDuplicate]
+  def getStore( implicit ec: ExecutionContext ): (Store[MatchDuplicate.Id,MatchDuplicate],
+                 TestFailurePersistent[MatchDuplicate.Id,MatchDuplicate]
   ) = {
-    val s = TestFailureStore[Id.MatchDuplicate,MatchDuplicate]( "test", null, 5, 100, Duration.Inf, Duration.Inf )
+    val s = TestFailureStore[MatchDuplicate.Id,MatchDuplicate]( "test", null, 5, 100, Duration.Inf, Duration.Inf )
     (s,s.testFailurePersistent)
   }
 
@@ -162,7 +162,7 @@ object TestCacheStoreForFailures {
     }
   }
 
-  class TestCreateMatchDuplicateId( id: Id.MatchDuplicate) extends TesterExists {
+  class TestCreateMatchDuplicateId( id: MatchDuplicate.Id) extends TesterExists {
     def testSpecific( change: ChangeContextData )(implicit pos: Position): Assertion = {
       change match {
         case CreateChangeContext(newvalue,field) =>
@@ -171,7 +171,7 @@ object TestCacheStoreForFailures {
               md.id mustBe id
               field match {
                 case Some(f) =>
-                  f mustBe s"/duplicates/${id}"
+                  f mustBe s"/duplicates/${id.id}"
                 case None =>
                   fail( "Expecting a parent field, got None" )
               }
@@ -184,7 +184,7 @@ object TestCacheStoreForFailures {
     }
   }
 
-  class TestUpdateHandId( dupid: Id.MatchDuplicate, bid: Id.DuplicateBoard, id: Id.Team ) extends TesterExists {
+  class TestUpdateHandId( dupid: MatchDuplicate.Id, bid: Board.Id, id: Team.Id ) extends TesterExists {
     def testSpecific( change: ChangeContextData )(implicit pos: Position): Assertion = {
       change match {
         case UpdateChangeContext(newvalue,field) =>
@@ -193,7 +193,7 @@ object TestCacheStoreForFailures {
               md.id mustBe id
               field match {
                 case Some(f) =>
-                  f mustBe s"/duplicates/${dupid}/boards/${bid}/hands/${id}"
+                  f mustBe s"/duplicates/${dupid.id}/boards/${bid.id}/hands/${id.id}"
                 case None =>
                   fail( "Expecting a parent field, got None" )
               }
@@ -206,7 +206,7 @@ object TestCacheStoreForFailures {
     }
   }
 
-  class TestUpdateMatchDuplicateId( id: Id.MatchDuplicate) extends TesterExists {
+  class TestUpdateMatchDuplicateId( id: MatchDuplicate.Id) extends TesterExists {
     def testSpecific( change: ChangeContextData )(implicit pos: Position): Assertion = {
       change match {
         case UpdateChangeContext(newvalue,field) =>
@@ -215,7 +215,7 @@ object TestCacheStoreForFailures {
               md.id mustBe id
               field match {
                 case Some(f) =>
-                  f mustBe s"/duplicates/${id}"
+                  f mustBe s"/duplicates/${id.id}"
                 case None =>
                   fail( "Expecting a parent field, got None" )
               }
@@ -228,7 +228,7 @@ object TestCacheStoreForFailures {
     }
   }
 
-  class TestDeleteMatchDuplicateId( id: Id.MatchDuplicate) extends TesterExists {
+  class TestDeleteMatchDuplicateId( id: MatchDuplicate.Id) extends TesterExists {
     def testSpecific( change: ChangeContextData )(implicit pos: Position): Assertion = {
       change match {
         case DeleteChangeContext(oldvalue,field) =>
@@ -237,7 +237,7 @@ object TestCacheStoreForFailures {
               md.id mustBe id
               field match {
                 case Some(f) =>
-                  f mustBe s"/duplicates/${id}"
+                  f mustBe s"/duplicates/${id.id}"
                 case None =>
                   fail( "Expecting a parent field, got None" )
               }
@@ -250,14 +250,14 @@ object TestCacheStoreForFailures {
     }
   }
 
-  def testWithStore( fun: (Store[Id.MatchDuplicate,MatchDuplicate],
-                           TestFailurePersistent[Id.MatchDuplicate,MatchDuplicate],
+  def testWithStore( fun: (Store[MatchDuplicate.Id,MatchDuplicate],
+                           TestFailurePersistent[MatchDuplicate.Id,MatchDuplicate],
                            Listener,
                            MatchDuplicate
                           )=>Future[Assertion]
                    )( implicit ec: ExecutionContext ) = {
     val (store,per) = getStore
-    val md = TestMatchDuplicate.create("?")
+    val md = TestMatchDuplicate.create(MatchDuplicate.idNul)
 
     val listener = new Listener
     store.addListener(listener)
@@ -344,7 +344,7 @@ class TestCacheStoreForFailures extends AsyncFlatSpec with ScalatestRouteTest wi
 
   it should "store a value in the store" in testWithStore { (store,persistent,listener,md1) =>
     listener.clear()
-    val md = TestMatchDuplicate.create("?")
+    val md = TestMatchDuplicate.create(MatchDuplicate.idNul)
     store.createChild(md).test("Creating match duplicate") { tnmd =>
       tnmd match {
         case Success(Right(nmd)) =>
@@ -361,7 +361,7 @@ class TestCacheStoreForFailures extends AsyncFlatSpec with ScalatestRouteTest wi
 
   it should "read a value from the store" in testWithStore { (store,persistent,listener,md1) =>
     listener.clear()
-    val md = MatchDuplicate.create("M2")
+    val md = MatchDuplicate.create(MatchDuplicate.id("M2"))
     val id = md.id
     persistent.add(md)
     try {
@@ -396,7 +396,7 @@ class TestCacheStoreForFailures extends AsyncFlatSpec with ScalatestRouteTest wi
   it should "fail to read a value from the store" in testWithStore { (store,persistent,listener,md1) =>
     listener.clear()
     persistent.failResultRead = Some( Result( StatusCodes.InsufficientStorage, "Oops can't read" ) )
-    val md = MatchDuplicate.create("M2")
+    val md = MatchDuplicate.create(MatchDuplicate.id("M2"))
     val id = md.id
     persistent.add(md)
     try {
@@ -425,7 +425,7 @@ class TestCacheStoreForFailures extends AsyncFlatSpec with ScalatestRouteTest wi
   it should "fail to read a value from the store, next read works" in testWithStore { (store,persistent,listener,md1) =>
     listener.clear()
     persistent.failResultRead = Some( Result( StatusCodes.InsufficientStorage, "Oops can't read" ) )
-    val md = MatchDuplicate.create("M2")
+    val md = MatchDuplicate.create(MatchDuplicate.id("M2"))
     val id = md.id
     persistent.add(md)
     try {
@@ -447,7 +447,7 @@ class TestCacheStoreForFailures extends AsyncFlatSpec with ScalatestRouteTest wi
                 case Success(Left(error)) =>
                   listener.testEmpty()
 
-                  withClue(s"Clearing error for ${id}") {
+                  withClue(s"Clearing error for ${id.id}") {
                     store.clearError(id) mustBe false
                   }
 
@@ -487,7 +487,7 @@ class TestCacheStoreForFailures extends AsyncFlatSpec with ScalatestRouteTest wi
   it should "fail to read a value from the store with exception" in testWithStore { (store,persistent,listener,md1) =>
     listener.clear()
     persistent.failRead = true
-    val md = MatchDuplicate.create("M2")
+    val md = MatchDuplicate.create(MatchDuplicate.id("M2"))
     val id = md.id
     persistent.add(md)
     try {
@@ -513,7 +513,7 @@ class TestCacheStoreForFailures extends AsyncFlatSpec with ScalatestRouteTest wi
   it should "fail to read a value from the store with exception, next read works" in testWithStore { (store,persistent,listener,md1) =>
     listener.clear()
     persistent.failRead = true
-    val md = MatchDuplicate.create("M2")
+    val md = MatchDuplicate.create(MatchDuplicate.id("M2"))
     val id = md.id
     persistent.add(md)
     try {
@@ -559,7 +559,7 @@ class TestCacheStoreForFailures extends AsyncFlatSpec with ScalatestRouteTest wi
 
   it should "create a value in the store" in testWithStore { (store,persistent,listener,md1) =>
     listener.clear()
-    val md = TestMatchDuplicate.create("?")
+    val md = TestMatchDuplicate.create(MatchDuplicate.idNul)
     try {
       store.createChild(md).test("Creating match duplicate") { tnmd =>
         tnmd match {
@@ -585,7 +585,7 @@ class TestCacheStoreForFailures extends AsyncFlatSpec with ScalatestRouteTest wi
   it should "fail to create a value in the store" in testWithStore { (store,persistent,listener,md1) =>
     listener.clear()
     persistent.failResultWrite = Some( Result( StatusCodes.InsufficientStorage, "Oops can't write" ) )
-    val md = TestMatchDuplicate.create("?")
+    val md = TestMatchDuplicate.create(MatchDuplicate.idNul)
     try {
       store.createChild(md).test("Creating match duplicate") { tnmd =>
         tnmd match {
@@ -611,7 +611,7 @@ class TestCacheStoreForFailures extends AsyncFlatSpec with ScalatestRouteTest wi
   it should "fail to create a value in the store with exception" in testWithStore { (store,persistent,listener,md1) =>
     listener.clear()
     persistent.failWrite = true
-    val md = TestMatchDuplicate.create("?")
+    val md = TestMatchDuplicate.create(MatchDuplicate.idNul)
     try {
       store.createChild(md).test("Creating match duplicate") { tnmd =>
         tnmd match {
@@ -635,7 +635,7 @@ class TestCacheStoreForFailures extends AsyncFlatSpec with ScalatestRouteTest wi
 
   it should "update a value in the store" in testWithStore { (store,persistent,listener,md1) =>
     listener.clear()
-    val md = md1.updateTeam(Team("T1","Fred","George",0,0))
+    val md = md1.updateTeam(Team(Team.id(1),"Fred","George",0,0))
     try {
       store.update(md.id,md).test("Updating match duplicate") { tnmd =>
         tnmd match {
@@ -661,7 +661,7 @@ class TestCacheStoreForFailures extends AsyncFlatSpec with ScalatestRouteTest wi
   it should "fail to update a value in the store with write failure" in testWithStore { (store,persistent,listener,md1) =>
     listener.clear()
     persistent.failResultWrite = Some( Result( StatusCodes.InsufficientStorage, "Oops can't write" ) )
-    val md = md1.updateTeam(Team("T1","Fred","George",0,0))
+    val md = md1.updateTeam(Team(Team.id(1),"Fred","George",0,0))
     try {
       store.update(md.id,md).test("Updating match duplicate") { tnmd =>
         tnmd match {
@@ -687,7 +687,7 @@ class TestCacheStoreForFailures extends AsyncFlatSpec with ScalatestRouteTest wi
   it should "fail to update a value in the store with write failure with exception" in testWithStore { (store,persistent,listener,md1) =>
     listener.clear()
     persistent.failWrite = true
-    val md = md1.updateTeam(Team("T1","Fred","George",0,0))
+    val md = md1.updateTeam(Team(Team.id(1),"Fred","George",0,0))
     try {
       store.update(md.id,md).test("Updating match duplicate") { tnmd =>
         tnmd match {
@@ -712,10 +712,10 @@ class TestCacheStoreForFailures extends AsyncFlatSpec with ScalatestRouteTest wi
   it should "fail to update a value in the store with read failure" in testWithStore { (store,persistent,listener,md1) =>
     listener.clear()
     persistent.failResultRead = Some( Result( StatusCodes.InsufficientStorage, "Oops can't read" ) )
-    val md2 = MatchDuplicate.create("M2")
+    val md2 = MatchDuplicate.create(MatchDuplicate.id("M2"))
     val id = md2.id
     persistent.add(md2)
-    val md = md2.updateTeam(Team("T1","Fred","George",0,0))
+    val md = md2.updateTeam(Team(Team.id(1),"Fred","George",0,0))
     try {
       store.update(md.id,md).test("Updating match duplicate") { tnmd =>
         tnmd match {
@@ -741,10 +741,10 @@ class TestCacheStoreForFailures extends AsyncFlatSpec with ScalatestRouteTest wi
   it should "fail to update a value in the store with read failure with exception" in testWithStore { (store,persistent,listener,md1) =>
     listener.clear()
     persistent.failRead = true
-    val md2 = MatchDuplicate.create("M2")
+    val md2 = MatchDuplicate.create(MatchDuplicate.id("M2"))
     val id = md2.id
     persistent.add(md2)
-    val md = md2.updateTeam(Team("T1","Fred","George",0,0))
+    val md = md2.updateTeam(Team(Team.id(1),"Fred","George",0,0))
     try {
       store.update(md.id,md).test("Updating match duplicate") { tnmd =>
         tnmd match {
@@ -843,7 +843,7 @@ class TestCacheStoreForFailures extends AsyncFlatSpec with ScalatestRouteTest wi
   it should "fail to delete a value from the store with delete failure with exception" in testWithStore { (store,persistent,listener,md1) =>
     listener.clear()
     persistent.failDelete = true
-    val md2 = MatchDuplicate.create("M2")
+    val md2 = MatchDuplicate.create(MatchDuplicate.id("M2"))
     val id = md2.id
     persistent.add(md2)
     try {
@@ -870,7 +870,7 @@ class TestCacheStoreForFailures extends AsyncFlatSpec with ScalatestRouteTest wi
   it should "fail to delete a value from the store using select with delete failure with exception" in testWithStore { (store,persistent,listener,md1) =>
     listener.clear()
     persistent.failDelete = true
-    val md2 = MatchDuplicate.create("M2")
+    val md2 = MatchDuplicate.create(MatchDuplicate.id("M2"))
     val id = md2.id
     persistent.add(md2)
     try {
@@ -897,7 +897,7 @@ class TestCacheStoreForFailures extends AsyncFlatSpec with ScalatestRouteTest wi
   it should "fail to delete a value from the store with read failure" in testWithStore { (store,persistent,listener,md1) =>
     listener.clear()
     persistent.failResultRead = Some( Result( StatusCodes.InsufficientStorage, "Oops can't read" ) )
-    val md2 = MatchDuplicate.create("M2")
+    val md2 = MatchDuplicate.create(MatchDuplicate.id("M2"))
     val id = md2.id
     persistent.add(md2)
     try {
@@ -926,7 +926,7 @@ class TestCacheStoreForFailures extends AsyncFlatSpec with ScalatestRouteTest wi
   it should "fail to delete a value from the store using select with read failure" in testWithStore { (store,persistent,listener,md1) =>
     listener.clear()
     persistent.failResultRead = Some( Result( StatusCodes.InsufficientStorage, "Oops can't read" ) )
-    val md2 = MatchDuplicate.create("M2")
+    val md2 = MatchDuplicate.create(MatchDuplicate.id("M2"))
     val id = md2.id
     persistent.add(md2)
     try {
@@ -954,7 +954,7 @@ class TestCacheStoreForFailures extends AsyncFlatSpec with ScalatestRouteTest wi
   it should "fail to delete a value from the store with read failure with exception" in testWithStore { (store,persistent,listener,md1) =>
     listener.clear()
     persistent.failRead = true
-    val md2 = MatchDuplicate.create("M2")
+    val md2 = MatchDuplicate.create(MatchDuplicate.id("M2"))
     val id = md2.id
     persistent.add(md2)
     try {
@@ -981,7 +981,7 @@ class TestCacheStoreForFailures extends AsyncFlatSpec with ScalatestRouteTest wi
   it should "fail to delete a value from the store using select with read failure with exception" in testWithStore { (store,persistent,listener,md1) =>
     listener.clear()
     persistent.failRead = true
-    val md2 = MatchDuplicate.create("M2")
+    val md2 = MatchDuplicate.create(MatchDuplicate.id("M2"))
     val id = md2.id
     persistent.add(md2)
     try {
@@ -1007,14 +1007,14 @@ class TestCacheStoreForFailures extends AsyncFlatSpec with ScalatestRouteTest wi
 
   it should "update a hand value in the store" in testWithStore { (store,persistent,listener,md1) =>
     listener.clear()
-    val md2 = MatchDuplicate.create("M2").fillBoards(standardBoardset, movement)
+    val md2 = MatchDuplicate.create(MatchDuplicate.id("M2")).fillBoards(standardBoardset, movement)
     val id = md2.id
     persistent.add(md2)
 
-    val boardid = "B1"
-    val handid = "T1"
+    val boardid = Board.id(1)
+    val handid = Team.id(1)
     val dh = md2.getBoard(boardid).map( b => b.getHand(handid) ).getOrElse( throw new Exception("Unable to get board")).getOrElse(throw new Exception("Unable to get hand"))
-    dh.updateHand(Hand(handid,3,"S","N","N",false,false,true,3,0,0))
+    dh.updateHand(Hand(handid.id,3,"S","N","N",false,false,true,3,0,0))
 
     try {
       store.select(id).
@@ -1049,14 +1049,14 @@ class TestCacheStoreForFailures extends AsyncFlatSpec with ScalatestRouteTest wi
   it should "fail to update a hand value in the store with read failure" in testWithStore { (store,persistent,listener,md1) =>
     listener.clear()
     persistent.failResultRead = Some( Result( StatusCodes.InsufficientStorage, "Oops can't read" ) )
-    val md2 = MatchDuplicate.create("M2").fillBoards(standardBoardset, movement)
+    val md2 = MatchDuplicate.create(MatchDuplicate.id("M2")).fillBoards(standardBoardset, movement)
     val id = md2.id
     persistent.add(md2)
 
-    val boardid = "B1"
-    val handid = "T1"
+    val boardid = Board.id(1)
+    val handid = Team.id(1)
     val dh = md2.getBoard(boardid).map( b => b.getHand(handid) ).getOrElse( throw new Exception("Unable to get board")).getOrElse(throw new Exception("Unable to get hand"))
-    dh.updateHand(Hand(handid,3,"S","N","N",false,false,true,3,0,0))
+    dh.updateHand(Hand(handid.id,3,"S","N","N",false,false,true,3,0,0))
 
     try {
       store.select(id).
@@ -1089,14 +1089,14 @@ class TestCacheStoreForFailures extends AsyncFlatSpec with ScalatestRouteTest wi
   it should "fail to update a hand value in the store with read failure with exception" in testWithStore { (store,persistent,listener,md1) =>
     listener.clear()
     persistent.failRead = true
-    val md2 = MatchDuplicate.create("M2").fillBoards(standardBoardset, movement)
+    val md2 = MatchDuplicate.create(MatchDuplicate.id("M2")).fillBoards(standardBoardset, movement)
     val id = md2.id
     persistent.add(md2)
 
-    val boardid = "B1"
-    val handid = "T1"
+    val boardid = Board.id(1)
+    val handid = Team.id(1)
     val dh = md2.getBoard(boardid).map( b => b.getHand(handid) ).getOrElse( throw new Exception("Unable to get board")).getOrElse(throw new Exception("Unable to get hand"))
-    dh.updateHand(Hand(handid,3,"S","N","N",false,false,true,3,0,0))
+    dh.updateHand(Hand(handid.id,3,"S","N","N",false,false,true,3,0,0))
 
     try {
       store.select(id).
@@ -1128,14 +1128,14 @@ class TestCacheStoreForFailures extends AsyncFlatSpec with ScalatestRouteTest wi
   it should "fail to update a hand value in the store with write failure" in testWithStore { (store,persistent,listener,md1) =>
     listener.clear()
     persistent.failResultWrite = Some( Result( StatusCodes.InsufficientStorage, "Oops can't write" ) )
-    val md2 = MatchDuplicate.create("M2").fillBoards(standardBoardset, movement)
+    val md2 = MatchDuplicate.create(MatchDuplicate.id("M2")).fillBoards(standardBoardset, movement)
     val id = md2.id
     persistent.add(md2)
 
-    val boardid = "B1"
-    val handid = "T1"
+    val boardid = Board.id(1)
+    val handid = Team.id(1)
     val dh = md2.getBoard(boardid).map( b => b.getHand(handid) ).getOrElse( throw new Exception("Unable to get board")).getOrElse(throw new Exception("Unable to get hand"))
-    dh.updateHand(Hand(handid,3,"S","N","N",false,false,true,3,0,0))
+    dh.updateHand(Hand(handid.id,3,"S","N","N",false,false,true,3,0,0))
 
     try {
       store.select(id).
@@ -1168,14 +1168,14 @@ class TestCacheStoreForFailures extends AsyncFlatSpec with ScalatestRouteTest wi
   it should "fail to update a hand value in the store with write failure with exception" in testWithStore { (store,persistent,listener,md1) =>
     listener.clear()
     persistent.failWrite = true
-    val md2 = MatchDuplicate.create("M2").fillBoards(standardBoardset, movement)
+    val md2 = MatchDuplicate.create(MatchDuplicate.id("M2")).fillBoards(standardBoardset, movement)
     val id = md2.id
     persistent.add(md2)
 
-    val boardid = "B1"
-    val handid = "T1"
+    val boardid = Board.id(1)
+    val handid = Team.id(1)
     val dh = md2.getBoard(boardid).map( b => b.getHand(handid) ).getOrElse( throw new Exception("Unable to get board")).getOrElse(throw new Exception("Unable to get hand"))
-    dh.updateHand(Hand(handid,3,"S","N","N",false,false,true,3,0,0))
+    dh.updateHand(Hand(handid.id,3,"S","N","N",false,false,true,3,0,0))
 
     try {
       store.select(id).

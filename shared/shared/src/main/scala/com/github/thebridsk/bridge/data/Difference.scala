@@ -144,7 +144,7 @@ object DifferenceWrappers {
 
   implicit class WrapTeam(val me: Team)
       extends AnyVal
-      with DifferenceComparable[Id.Team, Team, WrapTeam] {
+      with DifferenceComparable[Team.Id, Team, WrapTeam] {
 
     def id = me.id
 
@@ -199,7 +199,7 @@ object DifferenceWrappers {
 
   implicit class WrapDupHand(val me: DuplicateHand)
       extends AnyVal
-      with DifferenceComparable[Id.DuplicateHand, DuplicateHand, WrapDupHand] {
+      with DifferenceComparable[Team.Id, DuplicateHand, WrapDupHand] {
 
     def id = me.id
 
@@ -229,7 +229,7 @@ object DifferenceWrappers {
 
   implicit class WrapBoard(val me: Board)
       extends AnyVal
-      with DifferenceComparable[Id.DuplicateBoard, Board, WrapBoard] {
+      with DifferenceComparable[Board.Id, Board, WrapBoard] {
 
     def id = me.id
 
@@ -242,7 +242,7 @@ object DifferenceWrappers {
         compare(me.nsVul, other.nsVul, prefix + ".nsVul"),
         compare(me.ewVul, other.ewVul, prefix + ".ewVul"),
         compare(me.dealer, other.dealer, prefix + ".dealer"),
-        compareList[Id.DuplicateHand, DuplicateHand, WrapDupHand](
+        compareList[Team.Id, DuplicateHand, WrapDupHand](
           me.hands.map(h => WrapDupHand(h)),
           other.hands.map(h => WrapDupHand(h)),
           prefix + ".hands"
@@ -257,7 +257,7 @@ object DifferenceWrappers {
   implicit class WrapMatchDuplicate(val me: MatchDuplicate)
       extends AnyVal
       with DifferenceComparable[
-        Id.MatchDuplicate,
+        MatchDuplicate.Id,
         MatchDuplicate,
         WrapMatchDuplicate
       ] {
@@ -270,12 +270,12 @@ object DifferenceWrappers {
     def difference(prefix: String, other: MatchDuplicate): Difference = {
       fold(
         compare(me.id, other.id, prefix + ".id"),
-        compareList[Id.Team, Team, WrapTeam](
+        compareList[Team.Id, Team, WrapTeam](
           me.teams.map(h => WrapTeam(h)),
           other.teams.map(h => WrapTeam(h)),
           prefix + ".teams"
         ),
-        compareList[Id.DuplicateBoard, Board, WrapBoard](
+        compareList[Board.Id, Board, WrapBoard](
           me.boards.map(h => WrapBoard(h)),
           other.boards.map(h => WrapBoard(h)),
           prefix + ".boards"
@@ -292,7 +292,7 @@ object DifferenceWrappers {
   implicit class WrapDuplicateSummaryEntry(val me: DuplicateSummaryEntry)
       extends AnyVal
       with DifferenceComparable[
-        Id.Team,
+        Team.Id,
         DuplicateSummaryEntry,
         WrapDuplicateSummaryEntry
       ] {
@@ -316,7 +316,7 @@ object DifferenceWrappers {
   implicit class WrapMatchDuplicateDuplicateResult(val me: MatchDuplicateResult)
       extends AnyVal
       with DifferenceComparable[
-        Id.MatchDuplicate,
+        MatchDuplicateResult.Id,
         MatchDuplicateResult,
         WrapMatchDuplicateDuplicateResult
       ] {
@@ -334,7 +334,7 @@ object DifferenceWrappers {
           .map { entry =>
             val (mer, or) = entry
             compareList[
-              Id.Team,
+              Team.Id,
               DuplicateSummaryEntry,
               WrapDuplicateSummaryEntry
             ](
@@ -387,7 +387,7 @@ object DifferenceWrappers {
 
   implicit class WrapMatchChicago(val me: MatchChicago)
       extends AnyVal
-      with DifferenceComparable[Id.MatchChicago, MatchChicago, WrapMatchChicago] {
+      with DifferenceComparable[MatchChicago.Id, MatchChicago, WrapMatchChicago] {
 
     def id = me.id
 
@@ -447,7 +447,7 @@ object DifferenceWrappers {
 
   implicit class WrapMatchRubber(val me: MatchRubber)
       extends AnyVal
-      with DifferenceComparable[String, MatchRubber, WrapMatchRubber] {
+      with DifferenceComparable[MatchRubber.Id, MatchRubber, WrapMatchRubber] {
 
     def id = me.id
 

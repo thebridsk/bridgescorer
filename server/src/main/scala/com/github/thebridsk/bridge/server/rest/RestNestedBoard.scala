@@ -59,7 +59,7 @@ class RestNestedBoard {
   @Hidden
   def route(
       implicit @Parameter(hidden = true) res: Resources[
-        Id.DuplicateBoard,
+        Board.Id,
         Board
       ]
   ) = pathPrefix("boards") {
@@ -98,13 +98,23 @@ class RestNestedBoard {
             )
           )
         )
+      ),
+      new ApiResponse(
+        responseCode = "400",
+        description = "Bad request",
+        content = Array(
+          new Content(
+            mediaType = "application/json",
+            schema = new Schema(implementation = classOf[RestMessage])
+          )
+        )
       )
     )
   )
   def xxxgetBoards = {}
   def getBoards(
       implicit @Parameter(hidden = true) res: Resources[
-        Id.DuplicateBoard,
+        Board.Id,
         Board
       ]
   ) = pathEndOrSingleSlash {
@@ -157,32 +167,42 @@ class RestNestedBoard {
             schema = new Schema(implementation = classOf[RestMessage])
           )
         )
+      ),
+      new ApiResponse(
+        responseCode = "400",
+        description = "Bad request",
+        content = Array(
+          new Content(
+            mediaType = "application/json",
+            schema = new Schema(implementation = classOf[RestMessage])
+          )
+        )
       )
     )
   )
   def xxxgetBoard = {}
   def getBoard(
       implicit @Parameter(hidden = true) res: Resources[
-        Id.DuplicateBoard,
+        Board.Id,
         Board
       ]
   ) = logRequest("getBoard", DebugLevel) {
     get {
       path("""[a-zA-Z0-9]+""".r) { id =>
-        resource(res.select(id).read())
+        resource(res.select(Board.id(id)).read())
       }
     }
   }
 
   def restNestedHands(
       implicit @Parameter(hidden = true) res: Resources[
-        Id.DuplicateBoard,
+        Board.Id,
         Board
       ]
   ) = logRequestResult("RestNestedBoard.restNestedHand", DebugLevel) {
     pathPrefix("""[a-zA-Z0-9]+""".r) { id =>
       import BridgeNestedResources._
-      nestedHands.route(res.select(id).resourceHands)
+      nestedHands.route(res.select(Board.id(id)).resourceHands)
     }
   }
 
@@ -243,7 +263,7 @@ class RestNestedBoard {
   def xxxpostBoard = {}
   def postBoard(
       implicit @Parameter(hidden = true) res: Resources[
-        Id.DuplicateBoard,
+        Board.Id,
         Board
       ]
   ) = pathEnd {
@@ -257,7 +277,7 @@ class RestNestedBoard {
   def addIdToFuture(f: Future[Result[Board]]): Future[Result[(String, Board)]] =
     f.map { r =>
       r match {
-        case Right(md) => Right((md.id.toString(), md))
+        case Right(md) => Right((md.id.id, md))
         case Left(e)   => Left(e)
       }
     }
@@ -322,14 +342,14 @@ class RestNestedBoard {
   def xxxputBoard = {}
   def putBoard(
       implicit @Parameter(hidden = true) res: Resources[
-        Id.DuplicateBoard,
+        Board.Id,
         Board
       ]
   ) =
     put {
       path("""[a-zA-Z0-9]+""".r) { id =>
         entity(as[Board]) { board =>
-          resourceUpdated(res.select(id).update(board))
+          resourceUpdated(res.select(Board.id(id)).update(board))
         }
       }
     }
@@ -358,18 +378,28 @@ class RestNestedBoard {
       )
     ),
     responses = Array(
-      new ApiResponse(responseCode = "204", description = "Board deleted.")
+      new ApiResponse(responseCode = "204", description = "Board deleted."),
+      new ApiResponse(
+        responseCode = "400",
+        description = "Bad request",
+        content = Array(
+          new Content(
+            mediaType = "application/json",
+            schema = new Schema(implementation = classOf[RestMessage])
+          )
+        )
+      )
     )
   )
   def xxxdeleteBoard = {}
   def deleteBoard(
       implicit @Parameter(hidden = true) res: Resources[
-        Id.DuplicateBoard,
+        Board.Id,
         Board
       ]
   ) = delete {
     path("""[a-zA-Z0-9]+""".r) { id =>
-      resourceDelete(res.select(id).delete())
+      resourceDelete(res.select(Board.id(id)).delete())
     }
   }
 }

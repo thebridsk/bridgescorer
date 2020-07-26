@@ -8,17 +8,17 @@ import io.swagger.v3.oas.annotations.media.Schema
 @Schema(description = "A duplicate match, version 1 (old version)")
 case class MatchDuplicateV1(
     @Schema(description = "The ID of the MatchDuplicate", required = true)
-    id: Id.MatchDuplicate,
+    id: MatchDuplicate.Id,
     @Schema(
       description = "The teams playing the match, the key is the team ID",
       required = true
     )
-    teams: Map[Id.Team, Team],
+    teams: Map[Team.Id, Team],
     @Schema(
       description = "The duplicate boards of the match, the key is the board ID",
       required = true
     )
-    boards: Map[Id.DuplicateBoard, BoardV1],
+    boards: Map[Board.Id, BoardV1],
     @Schema(
       description =
         "When the duplicate hand was created, in milliseconds since 1/1/1970 UTC",
@@ -31,7 +31,7 @@ case class MatchDuplicateV1(
       required = true
     )
     updated: Timestamp
-) extends VersionedInstance[MatchDuplicate, MatchDuplicateV1, String] {
+) extends VersionedInstance[MatchDuplicate, MatchDuplicateV1, MatchDuplicate.Id] {
 
   def equalsIgnoreModifyTime(other: MatchDuplicateV1) =
     id == other.id &&
@@ -91,7 +91,7 @@ case class MatchDuplicateV1(
   }
 
   def setId(
-      newId: Id.MatchDuplicate,
+      newId: MatchDuplicate.Id,
       forCreate: Boolean,
       dontUpdateTime: Boolean = false
   ) = {
@@ -106,7 +106,7 @@ case class MatchDuplicateV1(
     }
   }
 
-  def copyForCreate(id: Id.MatchDuplicate) = {
+  def copyForCreate(id: MatchDuplicate.Id) = {
     val time = SystemTime.currentTimeMillis()
     val xteams = teams.map(e => (e._1 -> e._2.copyForCreate(e._1))).toMap
     val xboards = boards.map(e => (e._1 -> e._2.copyForCreate(e._1))).toMap
@@ -133,15 +133,15 @@ case class MatchDuplicateV1(
           "Board " + hand.board + " not found"
         )
     }
-  def updateHand(boardId: String, hand: DuplicateHandV1): MatchDuplicateV1 =
+  def updateHand(boardId: Board.Id, hand: DuplicateHandV1): MatchDuplicateV1 =
     boards.get(boardId) match {
       case Some(board) => updateBoard(board.updateHand(hand))
       case None =>
         throw new IndexOutOfBoundsException("Board " + boardId + " not found")
     }
   def updateHand(
-      boardId: Id.DuplicateBoard,
-      handId: String,
+      boardId: Board.Id,
+      handId: Team.Id,
       hand: Hand
   ): MatchDuplicateV1 = boards.get(boardId) match {
     case Some(board) => updateBoard(board.updateHand(handId, hand))
@@ -152,14 +152,14 @@ case class MatchDuplicateV1(
   def updateTeam(team: Team): MatchDuplicateV1 =
     copy(teams = teams + (team.id -> team))
 
-  def getHand(boardId: Id.DuplicateBoard, handId: String) = {
+  def getHand(boardId: Board.Id, handId: Team.Id) = {
     boards.get(boardId) match {
       case Some(board) => board.hands.get(handId)
       case None        => None
     }
   }
 
-  def getHand(tableid: Id.Table, round: Int, boardId: Id.DuplicateBoard) = {
+  def getHand(tableid: Table.Id, round: Int, boardId: Board.Id) = {
     boards.get(boardId) match {
       case Some(b) =>
         b.hands.values.find { h =>
@@ -169,7 +169,7 @@ case class MatchDuplicateV1(
     }
   }
 
-  def getHandsInRound(tableid: Id.Table, round: Int) = {
+  def getHandsInRound(tableid: Table.Id, round: Int) = {
     boards.values
       .map { b =>
         b.hands.values.filter { h =>
@@ -241,7 +241,7 @@ case class MatchDuplicateV1(
     * @return (north,south,east,west, allspecified)
     */
   def determinePlayerPositionFromRound(
-      tableid: Id.Table,
+      tableid: Table.Id,
       round: Int
   ): (String, String, String, String, Boolean) = {
     getHandsInRound(tableid, round).headOption match {
@@ -257,9 +257,9 @@ case class MatchDuplicateV1(
     * @return (north,south,east,west, allspecified)
     */
   def determinePlayerPositionFromBoard(
-      tableid: Id.Table,
+      tableid: Table.Id,
       round: Int,
-      boardId: Id.DuplicateBoard
+      boardId: Board.Id
   ): (String, String, String, String, Boolean) = {
     getHand(tableid, round, boardId) match {
       case Some(hand) => determinePlayerPosition(hand)
@@ -278,7 +278,7 @@ case class MatchDuplicateV1(
     * or if there are no hands for the specified table and round
     */
   def setPlayerPositionForRound(
-      tableid: Id.Table,
+      tableid: Table.Id,
       round: Int,
       north: String,
       south: String,
@@ -367,7 +367,7 @@ case class MatchDuplicateV1(
   }
 
   def fillBoards(boardset: BoardSet, Movement: Movement): MatchDuplicateV1 = {
-    val useteams: Map[Id.Team, Team] = {
+    val useteams: Map[Team.Id, Team] = {
       if (teams.size != Movement.numberTeams) {
         MatchDuplicateV1.createTeams(Movement.numberTeams)
       } else {
@@ -375,11 +375,11 @@ case class MatchDuplicateV1(
       }
     }
 
-    val filledB = scala.collection.mutable.Map[Id.DuplicateBoard, BoardV1]()
+    val filledB = scala.collection.mutable.Map[Board.Id, BoardV1]()
 
     boardset.boards.foreach { board =>
       val bb = BoardV1.create(
-        "B" + board.id,
+        Board.id(board.id),
         board.nsVul,
         board.ewVul,
         board.dealer,
@@ -388,13 +388,13 @@ case class MatchDuplicateV1(
       filledB += (bb.id -> bb)
     }
     Movement.hands.foreach { htp =>
-      val ew = ("T" + htp.ew).asInstanceOf[Id.Team]
-      val ns = ("T" + htp.ns).asInstanceOf[Id.Team]
+      val ew = Team.id(htp.ew)
+      val ns = Team.id(htp.ns)
       htp.boards.foreach { b =>
         val hand = DuplicateHandV1.create(
-          htp.table.toString(),
+          htp.tableid,
           htp.round,
-          "B" + b,
+          Board.id(b),
           ns,
           ew
         )
@@ -420,13 +420,11 @@ case class MatchDuplicateV1(
       .flatMap(b => b.hands.values)
       .map(h => h.table)
       .map { id =>
-        id.asInstanceOf[Id.Table]
+        id.asInstanceOf[Table.Id]
       }
       .toSet
       .toList
-      .sortWith { (l, r) =>
-        Id.idComparer(l, r) < 0
-      }
+      .sorted
   }
 
   def convertToCurrentVersion =
@@ -440,9 +438,9 @@ case class MatchDuplicateV1(
             e.convertToCurrentVersion
           }
           .toList
-          .sortWith((b1, b2) => Id.idComparer(b1.id, b2.id) > 0),
-        "ArmonkBoards",
-        "2TablesArmonk",
+          .sortWith((b1, b2) => b1.id < b2.id),
+        BoardSet.default,
+        Movement.default,
         created,
         updated
       )
@@ -454,12 +452,12 @@ case class MatchDuplicateV1(
 
 object MatchDuplicateV1 {
   val time = SystemTime.currentTimeMillis()
-  def create(id: String = "") =
+  def create(id: MatchDuplicate.Id = MatchDuplicate.idNul) =
     new MatchDuplicateV1(id, Map(), Map(), time, time)
 
   def createTeams(numberTeams: Int) = {
     (1 to numberTeams)
-      .map(t => "T" + t)
+      .map(t => Team.id(t))
       .map(id => id -> Team.create(id, "", ""))
       .toMap
   }

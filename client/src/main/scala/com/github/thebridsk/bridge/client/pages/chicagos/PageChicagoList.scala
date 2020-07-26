@@ -76,7 +76,7 @@ object PageChicagoListInternal {
     * @param popupMsg show message in popup if not None.
     */
   case class State(
-      askingToDelete: Option[String] = None,
+      askingToDelete: Option[MatchChicago.Id] = None,
       popupMsg: Option[String] = None,
       info: Boolean = false
   )
@@ -90,13 +90,13 @@ object PageChicagoListInternal {
     */
   class Backend(scope: BackendScope[Props, State]) {
 
-    def delete(id: String) =
+    def delete(id: MatchChicago.Id) =
       scope.modState(s => s.copy(askingToDelete = Some(id)))
 
     val deleteOK = scope.modState { s =>
       s.askingToDelete
         .map { ids =>
-          val id = ids.asInstanceOf[Id.MatchChicago]
+          val id = ids.asInstanceOf[MatchChicago.Id]
           ChicagoController.deleteChicago(id)
           s.copy(askingToDelete = None)
         }
@@ -130,7 +130,7 @@ object PageChicagoListInternal {
             )
             if (mounted) {
               scope.withEffectsImpure.props.routerCtl
-                .set(NamesView(created.id, 0))
+                .set(NamesView(created.id.id, 0))
                 .runNow()
             }
           }
@@ -161,7 +161,7 @@ object PageChicagoListInternal {
       Callback {
         ChicagoController.showMatch(chi)
       } >> scope.props >>= { props =>
-        props.routerCtl.set(SummaryView(chi.id))
+        props.routerCtl.set(SummaryView(chi.id.id))
       }
 
     def render(props: Props, state: State) = {
@@ -205,7 +205,10 @@ object PageChicagoListInternal {
                 case _                   => None
               }
               val chicagos =
-                chicagosRaw.sortWith((l, r) => Id.idComparer(l.id, r.id) > 0)
+                chicagosRaw.sortWith { (l, r) =>
+                  if (l.created == r.created) l.id > r.id
+                  else l.created > r.created
+                }
               val maxplayers =
                 chicagos.map(mc => mc.players.length).foldLeft(4) {
                   case (m, i) => math.max(m, i)
@@ -250,7 +253,7 @@ object PageChicagoListInternal {
         s => s.copy(popupMsg = Some(msg), info = info)
       )
 
-    def importChicago(importId: String, id: String) =
+    def importChicago(importId: String, id: MatchChicago.Id) =
       scope.modState(
         s =>
           s.copy(
@@ -268,7 +271,7 @@ object PageChicagoListInternal {
               |}
               |""".stripMargin
           val vars = JsObject(
-            Seq("importId" -> JsString(importId), "chiId" -> JsString(id))
+            Seq("importId" -> JsString(importId), "chiId" -> JsString(id.id))
           )
           val op = Some("importChicago")
           val result = GraphQLClient.request(query, Some(vars), op)
@@ -281,32 +284,32 @@ object PageChicagoListInternal {
                     data \ "import" \ "importchicago" \ "id" match {
                       case JsDefined(JsString(newid)) =>
                         setMessage(
-                          s"import chicago ${id} from ${importId}, new ID ${newid}",
+                          s"import chicago ${id.id} from ${importId}, new ID ${newid}",
                           true
                         )
                         initializeNewSummary(scope.withEffectsImpure.props)
                       case JsDefined(x) =>
                         setMessage(
-                          s"expecting string on import chicago ${id} from ${importId}, got ${x}"
+                          s"expecting string on import chicago ${id.id} from ${importId}, got ${x}"
                         )
                       case _: JsUndefined =>
                         setMessage(
-                          s"error import chicago ${id} from ${importId}, did not find import/importchicago/id field"
+                          s"error import chicago ${id.id} from ${importId}, did not find import/importchicago/id field"
                         )
                     }
                   case None =>
                     setMessage(
-                      s"error import chicago ${id} from ${importId}, ${gr.getError()}"
+                      s"error import chicago ${id.id} from ${importId}, ${gr.getError()}"
                     )
                 }
             }
             .recover {
               case x: Exception =>
                 logger.warning(
-                  s"exception import chicago ${id} from ${importId}",
+                  s"exception import chicago ${id.id} from ${importId}",
                   x
                 )
-                setMessage(s"exception import chicago ${id} from ${importId}")
+                setMessage(s"exception import chicago ${id.id} from ${importId}")
             }
             .foreach { x =>
             }
@@ -400,8 +403,8 @@ object PageChicagoListInternal {
       <.tr(
         <.td(
           AppButton(
-            "Chicago" + id,
-            id,
+            s"Chicago${id.id}",
+            id.id,
             baseStyles.appButton100,
             ^.onClick --> backend.showChicago(chicago.chicago),
             importId.map { id =>
@@ -414,7 +417,7 @@ object PageChicagoListInternal {
             TagMod(
               <.td(
                 AppButton(
-                  "ImportChicago_" + id,
+                  s"ImportChicago_${id.id}",
                   "Import",
                   baseStyles.appButton100,
                   ^.onClick --> backend.importChicago(iid, id)
@@ -426,7 +429,7 @@ object PageChicagoListInternal {
                     val title = bm.htmlTitle
                     TagMod(
                       Tooltip(
-                        f"""${bm.id.get} ${bm.sameness}%.2f%%""",
+                        f"""${bm.id.get.id} ${bm.sameness}%.2f%%""",
                         <.div(title)
                       )
                     )

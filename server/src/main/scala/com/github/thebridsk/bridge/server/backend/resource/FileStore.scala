@@ -28,7 +28,7 @@ import scala.util.Using
 object FileStore {
   val log = Logger[FileStore[_, _]]()
 
-  def apply[VId, VType <: VersionedInstance[VType, VType, VId]](
+  def apply[VId <: Comparable[VId], VType <: VersionedInstance[VType, VType, VId]](
       name: String,
       directory: Directory,
       cacheInitialCapacity: Int = 5,
@@ -51,7 +51,7 @@ object FileStore {
   }
 }
 
-class FilePersistentSupport[VId, VType <: VersionedInstance[VType, VType, VId]](
+class FilePersistentSupport[VId <: Comparable[VId], VType <: VersionedInstance[VType, VType, VId]](
     val directory: Directory
 )(
     implicit
@@ -185,7 +185,7 @@ class FilePersistentSupport[VId, VType <: VersionedInstance[VType, VType, VId]](
       Result(v)
     } catch {
       case e: IOException =>
-        log.severe(s"Error writing ${id} to disk", e)
+        log.severe(s"Error writing ${support.idSupport.toString(id)} to disk", e)
         internalError
     }
   }
@@ -211,12 +211,12 @@ class FilePersistentSupport[VId, VType <: VersionedInstance[VType, VType, VId]](
 
   def readFilenames(id: VId) = {
     support.getReadExtensions.map { e =>
-      (directory / (resourceName + "." + id + e)).toString()
+      (directory / (resourceName + "." + support.idSupport.toString(id) + e)).toString()
     }
   }
 
   def writeFilename(id: VId) = {
-    (directory / (resourceName + "." + id + support.getWriteExtension))
+    (directory / (resourceName + "." + support.idSupport.toString(id) + support.getWriteExtension))
       .toString()
   }
 
@@ -226,7 +226,7 @@ class FilePersistentSupport[VId, VType <: VersionedInstance[VType, VType, VId]](
    * Get the metadata directory.  This does not create the metadata directory.
    */
   private def getMetadataDir( id: VId ): Directory = {
-    (directory / (resourceName + "." + id)).toDirectory
+    (directory / (resourceName + "." + support.idSupport.toString(id))).toDirectory
   }
 
   /**
@@ -342,7 +342,7 @@ class FilePersistentSupport[VId, VType <: VersionedInstance[VType, VType, VId]](
 }
 
 object FilePersistentSupport {
-  def apply[VId, VType <: VersionedInstance[VType, VType, VId]](
+  def apply[VId <: Comparable[VId], VType <: VersionedInstance[VType, VType, VId]](
       directory: Directory
   )(
       implicit
@@ -353,7 +353,7 @@ object FilePersistentSupport {
   }
 }
 
-class FileStore[VId, VType <: VersionedInstance[VType, VType, VId]](
+class FileStore[VId <: Comparable[VId], VType <: VersionedInstance[VType, VType, VId]](
     name: String,
     val directory: Directory,
     cacheInitialCapacity: Int = 5,

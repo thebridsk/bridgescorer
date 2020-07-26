@@ -74,7 +74,7 @@ object PlayerDoubledStats {
     }
   }
 
-  def stats(dups: Map[Id.MatchDuplicate, MatchDuplicate]) = {
+  def stats(dups: Map[MatchDuplicate.Id, MatchDuplicate]) = {
     val results = dups.values.flatMap { dup =>
       dup.allPlayedHands.flatMap { dh =>
         val nsTeam = dup.getTeam(dh.nsTeam).get

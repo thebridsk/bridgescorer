@@ -18,23 +18,30 @@ import scala.concurrent.ExecutionContext
  *                            if it is a root resource, it should start with "/".
  *                            if it is a nested resource, it should NOT start with "/"
  * @param parentClient the RestClient for the parent resource, None if root resource
- * @param parentInstance the id of the parent resource, None if root resource
+ * @param parentInstance the id of the parent resource, None if root resource.
+ *                       Must not be None if parentClient is not None.
  */
-class RestClient[R]( val resourceURIfragment: String,
-                     parentClient: Option[RestClient[_]] = None,
-                     parentInstance: Option[String]=None
-                   )( implicit reader: Reads[R],
-                               writer: Writes[R],
-                               classtag: ClassTag[R],
-                               executor: ExecutionContext
-                   ) {
+class RestClient[R,I]( val resourceURIfragment: String,
+                       parentClient: Option[RestClient[_,_]] = None,
+                       parentInstance: Option[String]=None
+                     )( implicit
+                          reader: Reads[R],
+                          writer: Writes[R],
+                          keywriter: KeyWrites[I],
+                          classtag: ClassTag[R],
+                          executor: ExecutionContext
+                     ) {
 
-  def getURI( id: String ): String = {
-    resourceURI+"/"+id
+  def getURI( id: I ): String = {
+    s"${resourceURI}/${keywriter.writeKey(id)}"
+  }
+
+  def getURIfromString( id: String ): String = {
+    s"${resourceURI}/${id}"
   }
 
   def resourceURI: String = parentClient match {
-    case Some(parent) => parent.getURI(parentInstance.get)+"/"+resourceURIfragment
+    case Some(parent) => s"${parent.getURIfromString(parentInstance.get)}/$resourceURIfragment"
     case None => resourceURIfragment
   }
 
@@ -70,7 +77,7 @@ class RestClient[R]( val resourceURIfragment: String,
     }
   }
 
-  def getURL( id: String, query: Map[String,String] = Map() ): String = {
+  def getURL( id: I, query: Map[String,String] = Map() ): String = {
     getURI(id)+getQueryString(query)
   }
 
@@ -98,7 +105,7 @@ class RestClient[R]( val resourceURIfragment: String,
     r
   }
 
-  def get( id: String,
+  def get( id: I,
            query: Map[String, String] = Map.empty,
            headers: Map[String, String] = headersForGet,
            timeout: Duration = AjaxResult.defaultTimeout
@@ -108,7 +115,7 @@ class RestClient[R]( val resourceURIfragment: String,
 
 
 
-  def update( id: String,
+  def update( id: I,
               obj: R,
               query: Map[String, String] = Map.empty,
               headers: Map[String, String] = headersForPost,
@@ -117,7 +124,7 @@ class RestClient[R]( val resourceURIfragment: String,
     AjaxResult.put(getURL(id,query), data=obj, timeout=timeout, headers=headers)
   }
 
-  def delete( id: String,
+  def delete( id: I,
               query: Map[String, String] = Map.empty,
               headers: Map[String, String] = headersForGet,
               timeout: Duration = AjaxResult.defaultTimeout

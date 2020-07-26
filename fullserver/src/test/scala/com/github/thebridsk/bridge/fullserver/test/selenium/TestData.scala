@@ -76,7 +76,7 @@ object TestData {
     val store = new BridgeServiceFileStore( testData )
     store.duplicates.syncStore.readAll() match {
       case Right(map) =>
-        map.values.toList.sortWith((l,r) => Id.idComparer(l.id, r.id) < 0)
+        map.values.toList.sortWith((l,r) => l.id < r.id)
       case Left((statuscode,restmessage)) =>
         fail("Failed to get MatchDuplicates from testdata")
     }

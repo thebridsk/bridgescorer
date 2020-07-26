@@ -282,7 +282,7 @@ class RubberTest extends AnyFlatSpec
     import Session1._
 
     def testPlayers( north: String, south: String, east: String, west: String ) = {
-        backend.rubbers.syncStore.read(rubberId) match {
+        backend.rubbers.syncStore.read(MatchRubber.id(rubberId)) match {
           case Right(c) => north==c.north && south == c.south && east==c.east && west == c.west
           case Left(r) => false
         }

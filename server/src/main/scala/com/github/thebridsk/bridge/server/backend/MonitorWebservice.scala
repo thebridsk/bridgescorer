@@ -49,7 +49,7 @@ import io.swagger.v3.oas.annotations.media.Content
 import javax.ws.rs.GET
 import com.github.thebridsk.bridge.data.VersionedInstance
 
-abstract class MonitorWebservice[VId, VType <: VersionedInstance[
+abstract class MonitorWebservice[VId <: Comparable[VId], VType <: VersionedInstance[
   VType,
   VType,
   VId

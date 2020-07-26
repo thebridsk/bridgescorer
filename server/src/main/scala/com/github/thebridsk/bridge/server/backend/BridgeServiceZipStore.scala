@@ -73,13 +73,13 @@ class BridgeServiceZipStore(
 
   val zipfile = new ZipFileForStore(zipfilename)
 
-  val chicagos = ZipStore[Id.MatchDuplicate, MatchChicago](id, zipfile)
-  val duplicates = ZipStore[Id.MatchDuplicate, MatchDuplicate](id, zipfile)
+  val chicagos = ZipStore[MatchChicago.Id, MatchChicago](id, zipfile)
+  val duplicates = ZipStore[MatchDuplicate.Id, MatchDuplicate](id, zipfile)
   val duplicateresults =
-    ZipStore[Id.MatchDuplicateResult, MatchDuplicateResult](id, zipfile)
-  val rubbers = ZipStore[String, MatchRubber](id, zipfile)
+    ZipStore[MatchDuplicateResult.Id, MatchDuplicateResult](id, zipfile)
+  val rubbers = ZipStore[MatchRubber.Id, MatchRubber](id, zipfile)
 
-  val boardSets = MultiStore[String, BoardSet](
+  val boardSets = MultiStore[BoardSet.Id, BoardSet](
     id,
     List(
       new ZipPersistentSupport(zipfile),
@@ -91,7 +91,7 @@ class BridgeServiceZipStore(
     )
   )
 
-  val movements = MultiStore[String, Movement](
+  val movements = MultiStore[Movement.Id, Movement](
     id,
     List(
       new ZipPersistentSupport(zipfile),

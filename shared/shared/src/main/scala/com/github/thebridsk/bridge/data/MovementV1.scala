@@ -29,7 +29,7 @@ import io.swagger.v3.oas.annotations.media.ArraySchema
 )
 case class MovementV1(
     @Schema(description = "The name of the movement", required = true)
-    name: String,
+    name: MovementV1.Id,
     @Schema(
       description = "A short description of the movement",
       required = true
@@ -84,7 +84,7 @@ case class MovementV1(
       required = false
     )
     updateTime: Option[SystemTime.Timestamp] = None,
-) extends VersionedInstance[MovementV1, MovementV1, String] {
+) extends VersionedInstance[MovementV1, MovementV1, MovementV1.Id] {
 
   def id = name
 
@@ -95,7 +95,7 @@ case class MovementV1(
   }
 
   def setId(
-      newId: String,
+      newId: MovementV1.Id,
       forCreate: Boolean,
       dontUpdateTime: Boolean = false
   ) = {
@@ -193,6 +193,14 @@ case class MovementV1(
 
 }
 
+trait IdMovement
+
+object MovementV1 extends HasId[IdMovement]("",true) {
+  def default = Movement.id("2TablesArmonk")
+
+  def standard = Movement.id("Howell04T2B18")
+}
+
 case class BoardPlayed(board: Int, table: Int, round: Int, ns: Int, ew: Int)
 
 @Schema(
@@ -223,4 +231,6 @@ case class HandInTable(
       )
     )
     boards: List[Int]
-)
+) {
+  def tableid = Table.id(table)
+}

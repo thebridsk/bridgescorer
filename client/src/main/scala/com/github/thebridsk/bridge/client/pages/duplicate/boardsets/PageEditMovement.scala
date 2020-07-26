@@ -87,7 +87,7 @@ object PageEditMovementInternal {
    * @param msg a popup message
    */
   case class State(
-    movementId: Option[String] = None,
+    movementId: Option[Movement.Id] = None,
     movement: Option[Movement] = None,
     /**
      * Map[table,round] =: boards
@@ -108,7 +108,7 @@ object PageEditMovementInternal {
     def getMovement: Movement = {
       movement.getOrElse(
         Movement(
-          movementId.getOrElse(""),
+          movementId.getOrElse(Movement.idNul),
           "",
           "",
           nteams,
@@ -125,7 +125,7 @@ object PageEditMovementInternal {
         )
       )
     }
-    def setName( name: String ) = copy( movement = Some(getMovement.copy(name = name)))
+    def setName( name: Movement.Id ) = copy( movement = Some(getMovement.copy(name = name)))
     def setShort( description: String ) = copy( movement = Some(getMovement.copy(short=description)))
     def setDescription( description: String ) = copy( movement = Some(getMovement.copy(description=description)))
 
@@ -453,7 +453,7 @@ object PageEditMovementInternal {
    */
   class Backend(scope: BackendScope[Props, State]) {
 
-    def inputCB( data: ReactEventFromInput): Callback = data.inputText( text => scope.modState( _.setName(text)) )
+    def inputCB( data: ReactEventFromInput): Callback = data.inputText( text => scope.modState( _.setName(Movement.id(text))) )
     def shortCB( data: ReactEventFromInput): Callback = data.inputText( text => scope.modState( _.setShort(text)) )
     def descCB( data: ReactEventFromInput): Callback = data.inputText( text => scope.modState( _.setDescription(text)) )
     def setNTeamsCB( data: ReactEventFromInput): Callback = data.inputText { text =>
@@ -622,10 +622,10 @@ object PageEditMovementInternal {
                     <.input(
                       ^.name := "Name",
                       ^.onChange ==> inputCB _,
-                      ^.value := state.getMovement.name
+                      ^.value := state.getMovement.name.id
                     )
                   } else {
-                    state.getMovement.name
+                    state.getMovement.name.id
                   }
                 ),
                 <.label(
@@ -872,7 +872,8 @@ object PageEditMovementInternal {
 
     val storeCallback = scope.modStateOption { (state,props) =>
       props.page match {
-        case MovementEditView(display) =>
+        case mev: MovementEditView =>
+          val display = mev.display
           BoardSetStore.getMovement(display) match {
             case Some(mov) =>
               val mov1 = if (mov.isDeletable) mov else mov.copy(resetToDefault = Some(true))
@@ -908,7 +909,8 @@ object PageEditMovementInternal {
         }
       }
       props.page match {
-        case MovementEditView(display) =>
+        case mev: MovementEditView =>
+          val display = mev.display
           BoardSetController.getMovement(display)
         case _ =>
       }
@@ -926,7 +928,8 @@ object PageEditMovementInternal {
     val prevProps = cdu.prevProps
     if (props.page != prevProps.page) {
       props.page match {
-        case MovementEditView(display) =>
+        case mev: MovementEditView =>
+          val display = mev.display
           BoardSetController.getMovement(display)
           Some( State( movementId = Some(display)) )
         case _ =>
@@ -940,7 +943,8 @@ object PageEditMovementInternal {
   val component = ScalaComponent.builder[Props]("PageEditMovement")
                             .initialStateFromProps { props =>
                               props.page match {
-                                case MovementEditView(display) =>
+                                case mev: MovementEditView =>
+                                  val display = mev.display
                                   State( Some(display) )
                                 case _ =>
                                   State()

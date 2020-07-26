@@ -38,6 +38,10 @@ import javax.ws.rs.GET
 import javax.ws.rs.POST
 import javax.ws.rs.PUT
 import javax.ws.rs.DELETE
+import com.github.thebridsk.bridge.data.BoardSet
+import com.github.thebridsk.bridge.data.Movement
+import scala.concurrent.Future
+import com.github.thebridsk.bridge.server.backend.resource.Result
 
 /**
   * Rest API implementation for the board resource.
@@ -137,6 +141,16 @@ trait RestDuplicate extends HasActorSystem {
             schema = new Schema(implementation = classOf[RestMessage])
           )
         )
+      ),
+      new ApiResponse(
+        responseCode = "400",
+        description = "Bad request",
+        content = Array(
+          new Content(
+            mediaType = "application/json",
+            schema = new Schema(implementation = classOf[RestMessage])
+          )
+        )
       )
     )
   )
@@ -144,7 +158,8 @@ trait RestDuplicate extends HasActorSystem {
   val getDuplicate = logRequest("RestDuplicate.getDuplicate", DebugLevel) {
     logResult("RestDuplicate.getDuplicate") {
       get {
-        pathPrefix("""[a-zA-Z0-9]+""".r) { id: Id.MatchDuplicate =>
+        pathPrefix("""[a-zA-Z0-9]+""".r) { sid =>
+          val id = MatchDuplicate.id(sid)
           pathEndOrSingleSlash {
             resource(store.select(id).read())
           }
@@ -155,7 +170,8 @@ trait RestDuplicate extends HasActorSystem {
 
   val nested = logRequest("RestDuplicate.nested", DebugLevel) {
     logResult("RestDuplicate.nested") {
-      pathPrefix("""[a-zA-Z0-9]+""".r) { id: Id.MatchDuplicate =>
+      pathPrefix("""[a-zA-Z0-9]+""".r) { sid =>
+        val id = MatchDuplicate.id(sid)
         val selected = store.select(id)
         nestedBoards.route(selected.resourceBoards) ~
           nestedTeams.route(selected.resourceTeams) ~
@@ -163,6 +179,16 @@ trait RestDuplicate extends HasActorSystem {
       }
     }
   }
+
+  import scala.language.implicitConversions
+  implicit
+  def addIdToFuture(f: Future[Result[MatchDuplicate]]): Future[Result[(String, MatchDuplicate)]] =
+    f.map { r =>
+      r match {
+        case Right(md) => Right((md.id.id, md))
+        case Left(e)   => Left(e)
+      }
+    }
 
   @POST
   @Operation(
@@ -259,8 +285,8 @@ trait RestDuplicate extends HasActorSystem {
                     dup,
                     test,
                     default,
-                    boards,
-                    movements
+                    boards.map( BoardSet.id(_)),
+                    movements.map( Movement.id(_))
                   ) match {
                     case Some(fut) =>
                       onComplete(fut) {
@@ -344,7 +370,8 @@ trait RestDuplicate extends HasActorSystem {
     logRequest("RestDuplicate.putDuplicate") {
       logResult("RestDuplicate.putDuplicate") {
         put {
-          path("""[a-zA-Z0-9]+""".r) { id: Id.MatchDuplicate =>
+          path("""[a-zA-Z0-9]+""".r) { sid =>
+            val id = MatchDuplicate.id(sid)
             entity(as[MatchDuplicate]) { dup =>
               resourceUpdated(store.select(id).update(dup))
             }
@@ -368,15 +395,24 @@ trait RestDuplicate extends HasActorSystem {
       )
     ),
     responses = Array(
-      new ApiResponse(responseCode = "204", description = "duplicate deleted.")
+      new ApiResponse(responseCode = "204", description = "duplicate deleted."),
+      new ApiResponse(
+        responseCode = "400",
+        description = "Bad request",
+        content = Array(
+          new Content(
+            mediaType = "application/json",
+            schema = new Schema(implementation = classOf[RestMessage])
+          )
+        )
+      )
     )
   )
   def xxxdeleteDuplicate() = {}
   val deleteDuplicate = delete {
-    path("""[a-zA-Z0-9]+""".r) { id: Id.MatchDuplicate =>
-      {
-        resourceDelete(store.select(id).delete())
-      }
+    path("""[a-zA-Z0-9]+""".r) { sid =>
+      val id = MatchDuplicate.id(sid)
+      resourceDelete(store.select(id).delete())
     }
   }
 }
@@ -387,8 +423,8 @@ object RestDuplicate {
       dup: MatchDuplicate,
       test: Option[String],
       default: Option[String],
-      boards: Option[String],
-      movements: Option[String]
+      boards: Option[BoardSet.Id],
+      movements: Option[Movement.Id]
   ) = {
     test match {
       case None =>

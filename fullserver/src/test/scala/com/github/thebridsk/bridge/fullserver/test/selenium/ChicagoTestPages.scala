@@ -349,7 +349,7 @@ class ChicagoTestPages extends AnyFlatSpec
     import Session1._
 
     def testPlayers( players: String* ) = {
-        backend.chicagos.syncStore.read(chicagoId.get) match {
+        backend.chicagos.syncStore.read(MatchChicago.id(chicagoId.get)) match {
           case Right(c) =>
             // check if all players in MatchChicago are same as players argument
             players.zip(c.players).find( p => p._1!=p._2 ).isEmpty
@@ -478,7 +478,7 @@ class ChicagoTestPages extends AnyFlatSpec
     val url = TestServer.getUrl(s"/v1/rest/chicagos")
     val o = HttpUtils.postHttpObject[MatchChicago](url, chi)
     o.data match {
-      case Some(r) => r.id
+      case Some(r) => r.id.id
       case None =>
         log.warning(s"Unable to post MatchChicago to rest API for ${chi.id}: ${o}")
         fail(s"Unable to post MatchChicago to rest API for ${chi.id}")

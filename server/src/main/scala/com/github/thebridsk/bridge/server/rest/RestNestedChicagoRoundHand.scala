@@ -98,6 +98,16 @@ class RestNestedChicagoRoundHand {
             )
           )
         )
+      ),
+      new ApiResponse(
+        responseCode = "400",
+        description = "Bad request",
+        content = Array(
+          new Content(
+            mediaType = "application/json",
+            schema = new Schema(implementation = classOf[RestMessage])
+          )
+        )
       )
     )
   )
@@ -156,6 +166,16 @@ class RestNestedChicagoRoundHand {
       new ApiResponse(
         responseCode = "404",
         description = "Does not exist",
+        content = Array(
+          new Content(
+            mediaType = "application/json",
+            schema = new Schema(implementation = classOf[RestMessage])
+          )
+        )
+      ),
+      new ApiResponse(
+        responseCode = "400",
+        description = "Bad request",
         content = Array(
           new Content(
             mediaType = "application/json",
@@ -251,7 +271,7 @@ class RestNestedChicagoRoundHand {
   def addIdToFuture(f: Future[Result[Hand]]): Future[Result[(String, Hand)]] =
     f.map { r =>
       r match {
-        case Right(md) => Right((md.id.toString(), md))
+        case Right(md) => Right((md.id, md))
         case Left(e)   => Left(e)
       }
     }
@@ -363,7 +383,17 @@ class RestNestedChicagoRoundHand {
       )
     ),
     responses = Array(
-      new ApiResponse(responseCode = "204", description = "Hand deleted.")
+      new ApiResponse(responseCode = "204", description = "Hand deleted."),
+      new ApiResponse(
+        responseCode = "400",
+        description = "Bad request",
+        content = Array(
+          new Content(
+            mediaType = "application/json",
+            schema = new Schema(implementation = classOf[RestMessage])
+          )
+        )
+      )
     )
   )
   def xxxdeleteHand = {}
