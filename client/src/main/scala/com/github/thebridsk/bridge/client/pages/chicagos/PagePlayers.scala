@@ -15,13 +15,14 @@ import com.github.thebridsk.materialui.TextVariant
 import com.github.thebridsk.materialui.TextColor
 import com.github.thebridsk.bridge.client.pages.HomePage
 
+
 /**
   * @author werewolf
   */
 object PagePlayers {
   import PagePlayersInternal._
 
-  val logger = Logger("bridge.PagePlayers")
+  val logger: Logger = Logger("bridge.PagePlayers")
 
   case class PlayerState(
       north: String,
@@ -37,7 +38,7 @@ object PagePlayers {
       extra: Option[String] = None
   ) {
     def isDealerValid() = dealer.isDefined
-    def areAllPlayersValid() =
+    def areAllPlayersValid(): Boolean =
       playerValid(north) && playerValid(south) && playerValid(east) && playerValid(
         west
       ) &&
@@ -47,7 +48,7 @@ object PagePlayers {
            true
          })
 
-    def areAllPlayersUnique() = {
+    def areAllPlayersUnique(): Boolean = {
       val p =
         north.trim ::
         south.trim ::
@@ -61,7 +62,7 @@ object PagePlayers {
       before == after
     }
 
-    def isValid() =
+    def isValid(): Boolean =
       areAllPlayersValid() && isDealerValid() && areAllPlayersUnique()
 
     def isDealer(p: PlayerPosition): Boolean =
@@ -76,9 +77,9 @@ object PagePlayers {
         case _       => false
       }
 
-    def getDealer = dealer.map(d => d.pos.toString).getOrElse("")
+    def getDealer: String = dealer.map(d => d.pos.toString).getOrElse("")
 
-    def getDealerName() =
+    def getDealerName(): String =
       dealer
         .map(
           d =>
@@ -97,7 +98,7 @@ object PagePlayers {
   type CallbackOk = (PlayerState) => Callback
   type CallbackCancel = Callback
 
-  def apply(page: NamesView, router: BridgeRouter[ChicagoPage]) =
+  def apply(page: NamesView, router: BridgeRouter[ChicagoPage]) =  // scalafix:ok ExplicitResultTypes; ReactComponent
     component(MyProps(page, router))
 
   case class Props(
@@ -107,14 +108,14 @@ object PagePlayers {
   )
 
   case class MyProps(page: NamesView, router: BridgeRouter[ChicagoPage]) {
-    def getProps(chicago: MatchChicago) = Props(page, chicago, router)
+    def getProps(chicago: MatchChicago): Props = Props(page, chicago, router)
   }
 }
 
 object PagePlayersInternal {
   import PagePlayers._
 
-  def playerValid(s: String) = s.length != 0
+  def playerValid(s: String): Boolean = s.length != 0
 
   class Backend(scope: BackendScope[MyProps, State]) {
     def render(props: MyProps, state: State): VdomElement = {
@@ -168,7 +169,7 @@ object PagePlayersInternal {
 
     val storeCallback = scope.forceUpdate
 
-    val didMount = scope.props >>= { props =>
+    val didMount: Callback = scope.props >>= { props =>
       Callback {
         logger.info("PagePlayers.didMount")
         ChicagoStore.addChangeListener(storeCallback)
@@ -179,13 +180,14 @@ object PagePlayersInternal {
       }
     }
 
-    val willUnmount = Callback {
+    val willUnmount: Callback = Callback {
       logger.info("PagePlayers.willUnmount")
       ChicagoStore.removeChangeListener(storeCallback)
     }
 
   }
 
+  private[chicagos]
   val component = ScalaComponent
     .builder[MyProps]("PagePlayers")
     .initialStateFromProps { props =>

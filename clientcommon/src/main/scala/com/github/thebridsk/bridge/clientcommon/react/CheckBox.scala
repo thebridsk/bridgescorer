@@ -6,6 +6,8 @@ import japgolly.scalajs.react._
 import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles
 import com.github.thebridsk.materialui._
 
+import japgolly.scalajs.react.vdom.Attr
+
 /**
  * A skeleton component.
  *
@@ -22,9 +24,9 @@ object CheckBox {
 
   case class Props( id: String, text: String, value: Boolean, toggle: Callback )
 
-  def apply( id: String, text: String, value: Boolean, toggle: Callback ) = component(Props(id,text,value,toggle))
+  def apply( id: String, text: String, value: Boolean, toggle: Callback ) = component(Props(id,text,value,toggle))  // scalafix:ok ExplicitResultTypes; ReactComponent
 
-  def withKey( key: String )( id: String, text: String, value: Boolean, onclick: Callback ) = component.withKey(key)(Props(id,text,value,onclick))
+  def withKey( key: String )( id: String, text: String, value: Boolean, onclick: Callback ) = component.withKey(key)(Props(id,text,value,onclick))  // scalafix:ok ExplicitResultTypes; ReactComponent
 }
 
 object CheckBoxInternal {
@@ -32,8 +34,9 @@ object CheckBoxInternal {
 
   def callback( cb: Callback ): js.Function1[scala.scalajs.js.Object,Unit] = ( event: js.Object ) => cb.runNow()
 
-  val dataSelected = VdomAttr[Boolean]("data-selected")
+  val dataSelected: Attr[Boolean] = VdomAttr[Boolean]("data-selected")
 
+  private[react]
   val component = ScalaComponent.builder[Props]("CheckBox")
                             .stateless
                             .noBackend

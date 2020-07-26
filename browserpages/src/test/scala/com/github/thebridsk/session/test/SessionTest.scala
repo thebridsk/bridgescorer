@@ -24,10 +24,10 @@ class SessionTest extends AnyFlatSpec with Matchers {
 
   type MyDuration = Duration
   val MyDuration = Duration
-  implicit val timeoutduration = MyDuration( 60, TimeUnit.SECONDS )
+  implicit val timeoutduration: FiniteDuration = MyDuration( 60, TimeUnit.SECONDS )
 
-  lazy val defaultPatienceConfig = PatienceConfig(timeout=scaled(Span(timeoutMillis, Millis)), interval=scaled(Span(intervalMillis,Millis)))
-  implicit def patienceConfig = defaultPatienceConfig
+  lazy val defaultPatienceConfig: PatienceConfig = PatienceConfig(timeout=scaled(Span(timeoutMillis, Millis)), interval=scaled(Span(intervalMillis,Millis)))
+  implicit def patienceConfig: PatienceConfig = defaultPatienceConfig
 
   behavior of "Session"
 

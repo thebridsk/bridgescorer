@@ -27,7 +27,7 @@ import SSE.logger
 class SSE[T <: Id[_]]( urlprefix: String, listener: SECListener[T] ) extends ServerEventConnection[T](listener) {
 
   val heartbeatTimeout = 20000   // ms  20s
-  val restartTimeout = 10*60*1000   // ms 10m   // TODO find good timeout for restart
+  val restartTimeout: Int = 10*60*1000   // ms 10m   // TODO find good timeout for restart
   val defaultErrorBackoff = 1000   // ms  1s
   val limitErrorBackoff = 60000 // ms  1m
 
@@ -194,7 +194,7 @@ class SSE[T <: Id[_]]( urlprefix: String, listener: SECListener[T] ) extends Ser
   /**
    * Immediately stop monitoring a match
    */
-  def stop() = {
+  def stop(): Unit = {
     logger.fine(s"Controller.stop ${monitoredId}")
     monitoredId match {
       case Some(id) =>

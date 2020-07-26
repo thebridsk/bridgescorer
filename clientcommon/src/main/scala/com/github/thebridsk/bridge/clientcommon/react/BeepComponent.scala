@@ -11,6 +11,7 @@ import com.github.thebridsk.materialui.icons
 import com.github.thebridsk.materialui.MuiMenuItem
 import com.github.thebridsk.bridge.clientcommon.logger.Info
 
+
 /**
  * A skeleton component.
  *
@@ -29,7 +30,7 @@ object BeepComponent {
 
   private var playEnabled: Boolean = false
 
-  def apply( alwaysShow: ()=>Boolean ) = component(new Props(alwaysShow))
+  def apply( alwaysShow: ()=>Boolean ) = component(new Props(alwaysShow))  // scalafix:ok ExplicitResultTypes; ReactComponent
 
   private[react] def enableBeep() = {
     playEnabled = true
@@ -42,7 +43,7 @@ object BeepComponent {
     log.info("Beep disabled")
   }
 
-  def toggleBeep() = {
+  def toggleBeep(): Unit = {
     playEnabled = !playEnabled
     log.info(s"Beep playEnabled=$playEnabled")
     if (playEnabled) beep()
@@ -50,7 +51,7 @@ object BeepComponent {
 
   def isPlayEnabled = playEnabled
 
-  def beep() = {
+  def beep(): Unit = {
     if (playEnabled) {
       try {
         val audio = Info.getElement("audioPlayer").asInstanceOf[HTMLAudioElement]
@@ -96,7 +97,7 @@ object BeepComponent {
 object BeepComponentInternal {
   import BeepComponent._
 
-  val log = Logger("bridge.BeepComponent")
+  val log: Logger = Logger("bridge.BeepComponent")
 
   /**
    * Internal state for rendering the component.
@@ -116,17 +117,17 @@ object BeepComponentInternal {
    */
   class Backend(scope: BackendScope[Props, State]) {
 
-    val enablePlay = scope.modState(s => {
+    val enablePlay: Callback = scope.modState(s => {
       enableBeep()
       s.copy(displayButtons = false)
     })
 
-    val hideButtons = scope.modState(s => {
+    val hideButtons: Callback = scope.modState(s => {
       disableBeep()
       s.copy(displayButtons = false)
     })
 
-    def render( props: Props, state: State ) = {
+    def render( props: Props, state: State ) = { // scalafix:ok ExplicitResultTypes; React
       <.div(
         (props.alwaysShow()||state.displayButtons) ?= <.span(
           AppButton("enableBeep","Enable Beeps", ^.onClick --> enablePlay, BaseStyles.highlight(selected = isPlayEnabled ) ),
@@ -136,6 +137,7 @@ object BeepComponentInternal {
     }
   }
 
+  private[react]
   val component = ScalaComponent.builder[Props]("BeepComponent")
                             .initialStateFromProps { props => State() }
                             .backend(new Backend(_))

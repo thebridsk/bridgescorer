@@ -7,6 +7,7 @@ import com.github.thebridsk.bridge.data.MatchChicago
 import com.github.thebridsk.bridge.data.chicago.ChicagoScoring
 import com.github.thebridsk.bridge.data.Round
 import com.github.thebridsk.bridge.data.chicago.ChicagoScoring.Fixture
+import com.github.thebridsk.bridge.data.MatchChicagoV3
 
 class TestChicagoScoring extends AnyFlatSpec with Matchers {
 
@@ -14,8 +15,8 @@ class TestChicagoScoring extends AnyFlatSpec with Matchers {
 
   behavior of "a chicago played match"
 
-  val chiid = MatchChicago.id(1)
-  var mc = MatchChicago( chiid, ""::""::""::""::Nil, Nil, 0, false )
+  val chiid: MatchChicago.Id = MatchChicago.id(1)
+  var mc: MatchChicagoV3 = MatchChicago( chiid, ""::""::""::""::Nil, Nil, 0, false )
 
   it should "allow a ChicagoScoring object to be created" in {
     val cs = ChicagoScoring(mc)

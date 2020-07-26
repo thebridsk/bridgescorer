@@ -38,7 +38,7 @@ object ChicagoTest {
   val playerE = "Ellen"
   val playerW = "Wayne"
 
-  val allPlayers = playerN::playerS::playerE::playerW::Nil
+  val allPlayers: List[String] = playerN::playerS::playerE::playerW::Nil
 }
 
 import ChicagoTest._
@@ -57,9 +57,9 @@ class ChicagoTest extends AnyFlatSpec
 
   import scala.concurrent.duration._
 
-  val log = Logger[ChicagoTest]()
+  val log: Logger = Logger[ChicagoTest]()
 
-  lazy val inTravis = sys.props
+  lazy val inTravis: Boolean = sys.props
     .get("TRAVIS_BUILD_NUMBER")
     .orElse(sys.env.get("TRAVIS_BUILD_NUMBER"))
     .isDefined
@@ -74,7 +74,7 @@ class ChicagoTest extends AnyFlatSpec
 
   val backend = TestServer.backend
 
-  implicit val itimeout = PatienceConfig(timeout=scaled(Span(timeoutMillis, Millis)), interval=scaled(Span(intervalMillis,Millis)))
+  implicit val itimeout: PatienceConfig = PatienceConfig(timeout=scaled(Span(timeoutMillis, Millis)), interval=scaled(Span(intervalMillis,Millis)))
 
   val newChicagoButtonId = "Chicago2"
   val chicagoListURL: Option[String] = None
@@ -82,12 +82,12 @@ class ChicagoTest extends AnyFlatSpec
 
   val captureLog = new CaptureLog
 
-  implicit val timeoutduration = Duration( 60, TimeUnit.SECONDS )
+  implicit val timeoutduration: FiniteDuration = Duration( 60, TimeUnit.SECONDS )
 
   TestStartLogging.startLogging()
 
   override
-  def beforeAll() = {
+  def beforeAll(): Unit = {
     import com.github.thebridsk.bridge.server.test.util.ParallelUtils._
 
     if (true) captureLog.enable
@@ -107,7 +107,7 @@ class ChicagoTest extends AnyFlatSpec
   }
 
   override
-  def afterAll() = {
+  def afterAll(): Unit = {
     import com.github.thebridsk.bridge.server.test.util.ParallelUtils._
 
     waitForFuturesIgnoreTimeouts("Stopping a browser or server",
@@ -170,7 +170,7 @@ class ChicagoTest extends AnyFlatSpec
         }
       } catch {
         case x: Exception =>
-          saveDom("debugDomSuggestion.html")
+          saveDom(s"${screenshotDir}/debugDomSuggestion.html")
           throw x
       }
     }
@@ -243,7 +243,7 @@ class ChicagoTest extends AnyFlatSpec
     }
   }
 
-  def checkTotalScores( sp: SummaryPage, scores: Int* ) = {
+  def checkTotalScores( sp: SummaryPage, scores: Int* ): SummaryPage = {
     sp.checkTotalsScore(allPlayers,scores.map(_.toString).toList)
   }
 
@@ -536,7 +536,7 @@ class ChicagoTest extends AnyFlatSpec
     }
   }
 
-  def findNorthInputList = findAllElems[Element]( xpath("""//input[@name='North']/parent::div/following-sibling::div/div/div/ul/li""") )
+  def findNorthInputList: List[Element] = findAllElems[Element]( xpath("""//input[@name='North']/parent::div/following-sibling::div/div/div/ul/li""") )
 
   it should "give player suggestions when entering names" in {
 

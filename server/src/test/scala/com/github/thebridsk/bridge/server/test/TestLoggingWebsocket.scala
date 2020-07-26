@@ -19,6 +19,8 @@ import akka.http.scaladsl.server.Route
 import akka.http.scaladsl.model.StatusCodes._
 import scala.concurrent.duration._
 import akka.actor.ActorSystem
+import akka.event.LoggingAdapter
+import org.scalatest.Assertion
 
 trait XXX extends MyService {
   import com.github.thebridsk.bridge.server.rest.ServerPort
@@ -27,29 +29,30 @@ trait XXX extends MyService {
 
   val httpport = 8080
   override
-  def ports = ServerPort( Option(httpport), None )
+  def ports: ServerPort = ServerPort( Option(httpport), None )
 
   implicit val actorSystem: ActorSystem
 }
 
 class TestLoggingWebsocket extends AnyFlatSpec with ScalatestRouteTest with Matchers {
 
-  implicit val actorSystem = system
-  implicit val actorMaterializer = materializer
-  implicit val actorExecutor = executor
+  implicit lazy val actorSystem = system  //scalafix:ok ExplicitResultTypes
+  implicit lazy val actorExecutor = executor  //scalafix:ok ExplicitResultTypes
+  implicit lazy val actorMaterializer = materializer  //scalafix:ok ExplicitResultTypes
 
-  lazy val myService = new XXX {
-    implicit val actorSystem = system
-    implicit val materializer = actorMaterializer
+  lazy val myService: myService = new myService
+  class myService extends XXX {
+    implicit val actorSystem = system  //scalafix:ok ExplicitResultTypes
+    implicit val materializer = actorMaterializer  //scalafix:ok ExplicitResultTypes
   }
 
-  lazy val testlog = Logging(actorSystem, classOf[TestLoggingWebsocket])
+  lazy val testlog: LoggingAdapter = Logging(actorSystem, classOf[TestLoggingWebsocket])
 
   TestStartLogging.startLogging()
 
   behavior of "Test Websocket again"
 
-  val remoteAddress = `Remote-Address`( IP( InetAddress.getLocalHost, Some(12345) ))
+  val remoteAddress = `Remote-Address`( IP( InetAddress.getLocalHost, Some(12345) ))  // scalafix:ok ; Remote-Address
 
   it should "Fail to open a Websocket" in {
     val wsClient = WSProbe()
@@ -159,7 +162,7 @@ class TestLoggingWebsocket extends AnyFlatSpec with ScalatestRouteTest with Matc
       }
   }
 
-  def getLogEntry( i: Int ) = {
+  def getLogEntry( i: Int ): String = {
     import com.github.thebridsk.bridge.data.websocket.DuplexProtocol
 
     //  position: String, timestamp: Long, level: String, url: String, message: String, cause: String, args: List[String])
@@ -168,11 +171,11 @@ class TestLoggingWebsocket extends AnyFlatSpec with ScalatestRouteTest with Matc
   }
 
   import org.scalactic.source.Position
-  def position( implicit pos: Position ) = {
+  def position( implicit pos: Position ): String = {
     pos.fileName+":"+pos.lineNumber
   }
 
-  def process( msg: String ) = {
+  def process( msg: String ): Assertion = {
     import com.github.thebridsk.bridge.data.websocket.DuplexProtocol
     val r = DuplexProtocol.fromString(msg)
     r match {

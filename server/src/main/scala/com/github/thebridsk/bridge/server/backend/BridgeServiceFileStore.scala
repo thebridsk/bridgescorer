@@ -22,32 +22,32 @@ import com.github.thebridsk.bridge.server.backend.resource.Converter
 
 class BridgeServiceFileStoreConverters(yaml: Boolean) {
 
-  implicit val converter = Converter.getConverter(yaml)
+  implicit val converter: Converter = Converter.getConverter(yaml)
 
-  implicit val matchChicagoJson = VersionedInstanceJson[MatchChicago.Id, MatchChicago]
+  implicit val matchChicagoJson: VersionedInstanceJson[MatchChicago.Id,MatchChicago] = VersionedInstanceJson[MatchChicago.Id, MatchChicago]
     .add[MatchChicagoV2]
     .add[MatchChicagoV1]
 
-  implicit val matchDuplicateJson =
+  implicit val matchDuplicateJson: VersionedInstanceJson[MatchDuplicate.Id,MatchDuplicate] =
     VersionedInstanceJson[MatchDuplicate.Id, MatchDuplicate]
       .add[MatchDuplicateV2]
       .add[MatchDuplicateV1]
 
-  implicit val matchDuplicateResultJson =
+  implicit val matchDuplicateResultJson: VersionedInstanceJson[MatchDuplicateResult.Id,MatchDuplicateResult] =
     VersionedInstanceJson[MatchDuplicateResult.Id, MatchDuplicateResult]
       .add[MatchDuplicateResultV1]
 
-  implicit val matchRubberJson = VersionedInstanceJson[MatchRubber.Id, MatchRubber]
+  implicit val matchRubberJson: VersionedInstanceJson[MatchRubber.Id,MatchRubber] = VersionedInstanceJson[MatchRubber.Id, MatchRubber]
 
-  implicit val boardSetJson = VersionedInstanceJson[BoardSet.Id, BoardSet]
+  implicit val boardSetJson: VersionedInstanceJson[BoardSet.Id,BoardSet] = VersionedInstanceJson[BoardSet.Id, BoardSet]
 
-  implicit val movementJson = VersionedInstanceJson[Movement.Id, Movement]
+  implicit val movementJson: VersionedInstanceJson[Movement.Id,Movement] = VersionedInstanceJson[Movement.Id, Movement]
 
 }
 
 object BridgeServiceFileStore {
 
-  val log = Logger(getClass().getName)
+  val log: Logger = Logger(getClass().getName)
 
 }
 
@@ -71,19 +71,19 @@ class BridgeServiceFileStore(
 
 
 
-  val bridgeResources =
+  val bridgeResources: BridgeResources =
     BridgeResources(useYaml, false, useIdFromValue, dontUpdateTime)
   import bridgeResources._
 
   dir.createDirectory(true, false)
 
-  val chicagos = FileStore[MatchChicago.Id, MatchChicago](id, dir)
-  val duplicates = FileStore[MatchDuplicate.Id, MatchDuplicate](id, dir)
-  val duplicateresults =
+  val chicagos: FileStore[MatchChicago.Id,MatchChicago] = FileStore[MatchChicago.Id, MatchChicago](id, dir)
+  val duplicates: FileStore[MatchDuplicate.Id,MatchDuplicate] = FileStore[MatchDuplicate.Id, MatchDuplicate](id, dir)
+  val duplicateresults: FileStore[MatchDuplicateResult.Id,MatchDuplicateResult] =
     FileStore[MatchDuplicateResult.Id, MatchDuplicateResult](id, dir)
-  val rubbers = FileStore[MatchRubber.Id, MatchRubber](id, dir)
+  val rubbers: FileStore[MatchRubber.Id,MatchRubber] = FileStore[MatchRubber.Id, MatchRubber](id, dir)
 
-  val boardSets = MultiStore.createFileAndResource[BoardSet.Id, BoardSet](
+  val boardSets: MultiStore[BoardSet.Id,BoardSet] = MultiStore.createFileAndResource[BoardSet.Id, BoardSet](
     id,
     dir,
     "/com/github/thebridsk/bridge/server/backend/",
@@ -91,7 +91,7 @@ class BridgeServiceFileStore(
     self.getClass.getClassLoader
   )
 
-  val movements = MultiStore.createFileAndResource[Movement.Id, Movement](
+  val movements: MultiStore[Movement.Id,Movement] = MultiStore.createFileAndResource[Movement.Id, Movement](
     id,
     dir,
     "/com/github/thebridsk/bridge/server/backend/",
@@ -99,7 +99,7 @@ class BridgeServiceFileStore(
     self.getClass.getClassLoader
   )
 
-  override val importStore = {
+  override val importStore: Some[FileImportStore] = {
     val importdir = (dir / "import").toDirectory
     Some(new FileImportStore(importdir))
   }

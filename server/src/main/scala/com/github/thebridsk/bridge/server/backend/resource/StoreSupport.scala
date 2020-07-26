@@ -6,7 +6,7 @@ import com.github.thebridsk.bridge.data.RestMessage
 import scala.concurrent.Future
 
 object StoreSupport {
-  val readOnlyStoreError =
+  val readOnlyStoreError: Result[Nothing] =
     Result(StatusCodes.BadRequest, RestMessage("Store is read only"))
 }
 

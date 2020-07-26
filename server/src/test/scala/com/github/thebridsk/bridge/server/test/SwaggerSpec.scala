@@ -30,11 +30,11 @@ class SwaggerSpec extends AnyFlatSpec with ScalatestRouteTest with Matchers with
 
   val httpport = 8080
   override
-  def ports = ServerPort( Option(httpport), None )
+  def ports: ServerPort = ServerPort( Option(httpport), None )
 
-  implicit lazy val actorSystem = system
-  implicit lazy val actorExecutor = executor
-  implicit lazy val actorMaterializer = materializer
+  implicit lazy val actorSystem = system  //scalafix:ok ExplicitResultTypes
+  implicit lazy val actorExecutor = executor  //scalafix:ok ExplicitResultTypes
+  implicit lazy val actorMaterializer = materializer  //scalafix:ok ExplicitResultTypes
 
   TestStartLogging.startLogging()
 
@@ -48,7 +48,7 @@ class SwaggerSpec extends AnyFlatSpec with ScalatestRouteTest with Matchers with
 
   behavior of "the Swagger Server api"
 
-  val remoteAddress = `Remote-Address`( IP( InetAddress.getLocalHost, Some(12345) ))
+  val remoteAddress = `Remote-Address`( IP( InetAddress.getLocalHost, Some(12345) ))  // scalafix:ok ; Remote-Address
 
   it should "return the /v1/docs/ should be a redirect" in {
     Get("/v1/docs/") ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
@@ -152,7 +152,7 @@ class SwaggerSpec extends AnyFlatSpec with ScalatestRouteTest with Matchers with
   /**
    * @return (timeInNanos, result)
    */
-  def time[R](block: => R) = {
+  def time[R](block: => R): (Long, R) = {
     val t0 = System.nanoTime()
     val result = block    // call-by-name
     val t1 = System.nanoTime()

@@ -13,17 +13,18 @@ import com.github.thebridsk.bridge.data.bridge.PlayerPosition
 import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.TablePage.EnterNames
 import com.github.thebridsk.bridge.data.bridge._
 import com.github.thebridsk.bridge.fullserver.test.pages.bridge.ErrorMsgDiv
+import com.github.thebridsk.browserpages.Element
 
 object TableEnterScorekeeperPage {
 
-  val log = Logger[TableEnterScorekeeperPage]()
+  val log: Logger = Logger[TableEnterScorekeeperPage]()
 
-  def current(scorekeeper: Option[PlayerPosition] = None)(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
+  def current(scorekeeper: Option[PlayerPosition] = None)(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position): TableEnterScorekeeperPage = {
     val (dupid,tableid,roundid,targetboard) = findTableRoundId
     new TableEnterScorekeeperPage(dupid,tableid,roundid,targetboard,scorekeeper)
   }
 
-  def urlFor( dupid: String, tableid: String, roundid: String, board: Option[String] ) = {
+  def urlFor( dupid: String, tableid: String, roundid: String, board: Option[String] ): String = {
     val b = board.map(bb => s"boards/B${bb}/").getOrElse("")
     TestServer.getAppPageUrl( s"duplicate/match/${dupid}/table/${tableid}/round/${roundid}/${b}teams" )
   }
@@ -37,7 +38,7 @@ object TableEnterScorekeeperPage {
               webDriver: WebDriver,
               patienceConfig: PatienceConfig,
               pos: Position
-          ) = {
+          ): TableEnterScorekeeperPage = {
     go to urlFor(dupid,tableid,roundid, board)
     new TableEnterScorekeeperPage(dupid,tableid,roundid,board,scorekeeper)
   }
@@ -83,7 +84,7 @@ class TableEnterScorekeeperPage( dupid: String,
                                ) extends Page[TableEnterScorekeeperPage] with ErrorMsgDiv[TableEnterScorekeeperPage] {
   import TableEnterScorekeeperPage._
 
-  def validate(implicit patienceConfig: PatienceConfig, pos: Position) = logMethod(s"${pos.line} ${getClass.getSimpleName}.validate") { eventually {
+  def validate(implicit patienceConfig: PatienceConfig, pos: Position): TableEnterScorekeeperPage = logMethod(s"${pos.line} ${getClass.getSimpleName}.validate") { eventually {
 
     currentUrl mustBe urlFor(dupid,tableid,roundid,targetBoard)
 
@@ -91,7 +92,7 @@ class TableEnterScorekeeperPage( dupid: String,
     this
   }}
 
-  def enterScorekeeper( name: String )(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def enterScorekeeper( name: String )(implicit patienceConfig: PatienceConfig, pos: Position): TableEnterScorekeeperPage = {
     val text = eventually {
       getTextInput("Scorekeeper")
     }
@@ -99,25 +100,25 @@ class TableEnterScorekeeperPage( dupid: String,
     this
   }
 
-  def getScorekeeper(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def getScorekeeper(implicit patienceConfig: PatienceConfig, pos: Position): String = {
     eventually {
       getTextInput("Scorekeeper").value
     }
   }
 
-  def getScorekeeperSuggestions(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def getScorekeeperSuggestions(implicit patienceConfig: PatienceConfig, pos: Position): List[Element] = {
     eventually {
       getCombobox("Scorekeeper").suggestions
     }
   }
 
-  def isScorekeeperSuggestionsVisible(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def isScorekeeperSuggestionsVisible(implicit patienceConfig: PatienceConfig, pos: Position): Boolean = {
     eventually {
       getCombobox("Scorekeeper").isSuggestionVisible
     }
   }
 
-  def clickPos( sk: PlayerPosition )(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def clickPos( sk: PlayerPosition )(implicit patienceConfig: PatienceConfig, pos: Position): TableEnterScorekeeperPage = {
     clickButton(toScorekeeperButton(sk))
     new TableEnterScorekeeperPage(dupid,tableid,roundid,targetBoard,Some(sk))
   }
@@ -136,17 +137,17 @@ class TableEnterScorekeeperPage( dupid: String,
     }
   }
 
-  def clickOK(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def clickOK(implicit patienceConfig: PatienceConfig, pos: Position): TableEnterNamesPage = {
     clickButton(buttonOK)
     new TableEnterNamesPage(dupid,tableid,roundid,targetBoard,scorekeeper.get)
   }
 
-  def clickCancel(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def clickCancel(implicit patienceConfig: PatienceConfig, pos: Position): TablePage = {
     clickButton(buttonCancel)
     new TablePage(dupid,tableid,EnterNames)
   }
 
-  def isOKEnabled(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def isOKEnabled(implicit patienceConfig: PatienceConfig, pos: Position): Boolean = {
     getButton(buttonOK).isEnabled
   }
 }

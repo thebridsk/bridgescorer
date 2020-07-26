@@ -13,6 +13,7 @@ import com.github.thebridsk.bridge.data.duplicate.stats.PlayerOpponentStat
 import com.github.thebridsk.bridge.data.duplicate.stats.Statistic
 import com.github.thebridsk.bridge.client.pages.HomePage
 
+
 /**
  * Shows a pairs summary page.
  * Each match has a button that that shows that match, by going to the ScoreboardView(id) page.
@@ -34,7 +35,7 @@ object ViewPlayerOpponentStatsGraph {
   case class Props( stats: Option[PlayersOpponentsStats], showNoDataMsg: Boolean = false) {
   }
 
-  def apply( stats: Option[PlayersOpponentsStats], showNoDataMsg: Boolean = false ) =
+  def apply( stats: Option[PlayersOpponentsStats], showNoDataMsg: Boolean = false ) = // scalafix:ok ExplicitResultTypes; ReactComponent
     component(Props( stats, showNoDataMsg))
 
 }
@@ -43,14 +44,14 @@ object ViewPlayerOpponentStatsGraphInternal {
   import ViewPlayerOpponentStatsGraph._
   import DuplicateStyles._
 
-  val logger = Logger("bridge.ViewPlayerOpponentStatsGraph")
+  val logger: Logger = Logger("bridge.ViewPlayerOpponentStatsGraph")
 
   sealed abstract class ColorBy( val name: String ) {
     def value(po: PlayerOpponentStat): Double
   }
 
   object ColorByPctMP extends ColorBy("PctMP") {
-    def value(po: PlayerOpponentStat) = po.wonMP*100.0/po.totalMP
+    def value(po: PlayerOpponentStat): Double = po.wonMP*100.0/po.totalMP
   }
 
   object ColorByTotalMP extends ColorBy("TotalMP") {
@@ -62,15 +63,15 @@ object ViewPlayerOpponentStatsGraphInternal {
   }
 
   object ColorByPctBeat extends ColorBy("PctBeat") {
-    def value(po: PlayerOpponentStat) = po.matchesBeat*100.0/po.matchesPlayed
+    def value(po: PlayerOpponentStat): Double = po.matchesBeat*100.0/po.matchesPlayed
   }
 
   object ColorByPctTied extends ColorBy("PctTied") {
-    def value(po: PlayerOpponentStat) = po.matchesTied*100.0/po.matchesPlayed
+    def value(po: PlayerOpponentStat): Double = po.matchesTied*100.0/po.matchesPlayed
   }
 
   object ColorByPctLost extends ColorBy("PctLost") {
-    def value(po: PlayerOpponentStat) = (po.matchesPlayed-po.matchesTied-po.matchesBeat)*100.0/po.matchesPlayed
+    def value(po: PlayerOpponentStat): Double = (po.matchesPlayed-po.matchesTied-po.matchesBeat)*100.0/po.matchesPlayed
   }
 
   class ColorStat( colorBy: ColorBy ) extends Statistic(colorBy.name) {
@@ -98,7 +99,7 @@ object ViewPlayerOpponentStatsGraphInternal {
    * @param n the number of steps
    * @return Tuple3( titlesBelow, titleMiddle, titlesAbove )
    */
-  def stepTitles( stat: ColorStat, n: Int ) = {
+  def stepTitles( stat: ColorStat, n: Int ): (List[TagMod], TagMod, List[TagMod]) = {
     val min = stat.min
     val ave = stat.ave
     val max = stat.max
@@ -157,7 +158,7 @@ object ViewPlayerOpponentStatsGraphInternal {
     }
   }
 
-  val cellX = TagMod( "X" )
+  val cellX: TagMod = TagMod( "X" )
 
   def getRows(
       playersOpponentsStats: PlayersOpponentsStats,
@@ -166,7 +167,7 @@ object ViewPlayerOpponentStatsGraphInternal {
       statTotalSize: ColorStat,
       statTotalSizeMP: ColorStat,
       state: State
-  ) = {
+  ): List[List[TagMod]] = {
     playersOpponentsStats.players.map { rowPlayer =>
       TagMod(rowPlayer.player) ::
       playersOpponentsStats.players.map { colPlayer =>
@@ -194,7 +195,7 @@ object ViewPlayerOpponentStatsGraphInternal {
    */
   class Backend(scope: BackendScope[Props, State]) {
 
-    def render( props: Props, state: State ) = {
+    def render( props: Props, state: State ) = { // scalafix:ok ExplicitResultTypes; React
 
       props.stats match {
         case Some(posUnsorted) if !posUnsorted.players.isEmpty =>
@@ -285,6 +286,7 @@ object ViewPlayerOpponentStatsGraphInternal {
     }
   }
 
+  private[duplicate]
   val component = ScalaComponent.builder[Props]("ViewPlayerOpponentStatsGraph")
                             .initialStateFromProps { props => State() }
                             .backend(new Backend(_))

@@ -4,6 +4,7 @@ import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
 import com.github.thebridsk.bridge.data.bridge._
 
+
 /**
  * A skeleton component.
  *
@@ -19,7 +20,7 @@ object ViewTableBoard {
 
   case class Props( table: Int, board: Int, dealer: PlayerPosition, dealerName: String )
 
-  def apply( table: Int, board: Int, dealer: PlayerPosition, dealerName: String ) =
+  def apply( table: Int, board: Int, dealer: PlayerPosition, dealerName: String ) = // scalafix:ok ExplicitResultTypes; ReactComponent
     component(Props(table,board,dealer,dealerName))
 
   private val component = ScalaComponent.builder[Props]("ViewTableBoard")

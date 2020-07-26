@@ -8,7 +8,7 @@ import java.net.Inet4Address
 
 object GetIP extends Main {
 
-  def execute() = {
+  def execute(): Int = {
     NetworkInterface.getNetworkInterfaces.asScala.filter { x => x.isUp() && !x.isLoopback() }.foreach { x =>
       println( "Name: "+x.getName )
       println( "Display: "+x.getDisplayName )

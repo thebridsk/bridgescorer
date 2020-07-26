@@ -7,16 +7,17 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import com.github.thebridsk.bridge.data.duplicate.stats.PlayersOpponentsStats
 import com.github.thebridsk.bridge.server.backend.resource.SyncStore
 import scala.concurrent.duration._
+import org.rogach.scallop.ScallopOption
 
 object OpponentStats extends Main {
 
   import com.github.thebridsk.utilities.main.Converters._
 
-  val optionStore = opt[Path]("store", short='s', descr="The store directory, default=./store", argName="dir", default=Some("./store"))
+  val optionStore: ScallopOption[Path] = opt[Path]("store", short='s', descr="The store directory, default=./store", argName="dir", default=Some("./store"))
 
   val timeout = 120
 
-  def execute() = {
+  def execute(): Int = {
 
     val bs = BridgeService(optionStore.toOption.get)
     val dupstore = new SyncStore(bs.duplicates)

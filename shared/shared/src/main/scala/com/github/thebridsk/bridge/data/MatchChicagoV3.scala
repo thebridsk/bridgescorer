@@ -86,7 +86,7 @@ case class MatchChicagoV3(
       newId: MatchChicago.Id,
       forCreate: Boolean,
       dontUpdateTime: Boolean = false
-  ) = {
+  ): MatchChicagoV3 = {
     if (dontUpdateTime) {
       copy(id = newId)
     } else {
@@ -98,7 +98,7 @@ case class MatchChicagoV3(
     }
   }
 
-  def copyForCreate(id: MatchChicago.Id) = {
+  def copyForCreate(id: MatchChicago.Id): MatchChicagoV3 = {
     val time = SystemTime.currentTimeMillis()
     val xrounds = rounds.map { e =>
       e.copyForCreate(e.id)
@@ -107,11 +107,11 @@ case class MatchChicagoV3(
 
   }
 
-  def getRound(id: String) = {
+  def getRound(id: String): Option[Round] = {
     rounds.find(r => r.id == id)
   }
 
-  def addRound(r: Round) = {
+  def addRound(r: Round): MatchChicagoV3 = {
     if (r.id.toInt != rounds.length) {
       throw new IllegalArgumentException(
         s"Can only add next round, ${rounds.length}, trying to add ${r.id}"
@@ -148,7 +148,7 @@ case class MatchChicagoV3(
     }
   }
 
-  def deleteRound(id: String) = {
+  def deleteRound(id: String): MatchChicagoV3 = {
     val last = rounds.length - 1
     if (id.toInt != last) {
       throw new IllegalArgumentException(
@@ -159,7 +159,7 @@ case class MatchChicagoV3(
     copy(rounds = newrs)
   }
 
-  def modifyRound(r: Round) = {
+  def modifyRound(r: Round): MatchChicagoV3 = {
     if (rounds.isEmpty) addRound(r)
     else {
       var mod = false
@@ -188,7 +188,7 @@ case class MatchChicagoV3(
     setPlayers(nplayers.toList)
   }
 
-  def hasPlayStarted = {
+  def hasPlayStarted: Boolean = {
     rounds.length > 1 || rounds.headOption.map( r => !r.hands.isEmpty ).getOrElse(false)
   }
 
@@ -216,7 +216,7 @@ case class MatchChicagoV3(
     * Modify the player names according to the specified name map.
     * The timestamp is not changed.
     */
-  def modifyPlayers(nameMap: Map[String, String]) = {
+  def modifyPlayers(nameMap: Map[String, String]): Option[MatchChicagoV3] = {
 
     def getName(n: String) = nameMap.get(n).getOrElse(n)
 
@@ -247,22 +247,22 @@ case class MatchChicagoV3(
   }
 
   @Schema(hidden = true)
-  def isConvertableToChicago5 = players.length == 4 && rounds.length < 2
+  def isConvertableToChicago5: Boolean = players.length == 4 && rounds.length < 2
 
-  def playChicago5(extraPlayer: String) = {
+  def playChicago5(extraPlayer: String): MatchChicagoV3 = {
     if (!isConvertableToChicago5)
       throw new IllegalArgumentException("Number of players must be 4")
     val np = players ::: List(extraPlayer)
     copy(players = np)
   }
 
-  def setGamesPerRound(ngamesPerRound: Int) =
+  def setGamesPerRound(ngamesPerRound: Int): MatchChicagoV3 =
     copy(
       gamesPerRound = ngamesPerRound,
       updated = SystemTime.currentTimeMillis()
     )
 
-  def addHandToLastRound(h: Hand) = {
+  def addHandToLastRound(h: Hand): MatchChicagoV3 = {
     val revrounds = rounds.reverse
     val last = revrounds.head
     val revbefore = revrounds.tail
@@ -278,7 +278,7 @@ case class MatchChicagoV3(
     * @param ih - the hand, if the hand doesn't exist, then it will addHandToLastRound. values are 0, 1, ...
     * @param h - the new hand
     */
-  def modifyHand(ir: Int, ih: Int, h: Hand) = {
+  def modifyHand(ir: Int, ih: Int, h: Hand): MatchChicagoV3 = {
     val rs = rounds.toArray
     val round = rs(ir)
     val hs = round.hands.toArray
@@ -296,7 +296,7 @@ case class MatchChicagoV3(
     * Set the Id of this match
     * @param id the new ID of the match
     */
-  def setId(id: MatchChicago.Id) = {
+  def setId(id: MatchChicago.Id): MatchChicagoV3 = {
     copy(id = id, updated = SystemTime.currentTimeMillis())
   }
 
@@ -304,7 +304,7 @@ case class MatchChicagoV3(
     * Is this a quintet match
     */
   @Schema(hidden = true)
-  def isQuintet() = {
+  def isQuintet(): Boolean = {
     gamesPerRound == 1
   }
 
@@ -313,7 +313,7 @@ case class MatchChicagoV3(
     * This can only be done if gamesPerRound is still 0 AND no rounds have been started.
     */
   @Schema(hidden = true)
-  def setQuintet(simple: Boolean) = {
+  def setQuintet(simple: Boolean): MatchChicagoV3 = {
     if (gamesPerRound != 0 || !rounds.isEmpty) this
     setGamesPerRound(1).copy(simpleRotation = simple)
   }
@@ -346,9 +346,9 @@ case class MatchChicagoV3(
     (isNew, if (isNew) this else copy(rounds = rs))
   }
 
-  def readyForWrite = copy(bestMatch = None)
+  def readyForWrite: MatchChicagoV3 = copy(bestMatch = None)
 
-  def addBestMatch(bm: ChicagoBestMatch) = copy(bestMatch = Option(bm))
+  def addBestMatch(bm: ChicagoBestMatch): MatchChicagoV3 = copy(bestMatch = Option(bm))
 
 }
 
@@ -361,7 +361,7 @@ object MatchChicagoV3 extends HasId[IdMatchChicago]("C") {
       rounds: List[Round],
       gamesPerRound: Int,
       simpleRotation: Boolean
-  ) = {
+  ): MatchChicagoV3 = {
     val time = SystemTime.currentTimeMillis()
     new MatchChicagoV3(
       id,
@@ -407,7 +407,7 @@ case class ChicagoBestMatch(
     differences: Option[List[String]]
 ) {
 
-  def determineDifferences(l: List[String]) = {
+  def determineDifferences(l: List[String]): List[String] = {
     val list = l
       .map { s =>
         val i = s.lastIndexOf(".")
@@ -438,7 +438,7 @@ case class ChicagoBestMatch(
       .sorted
   }
 
-  def htmlTitle = {
+  def htmlTitle: Option[String] = {
     differences.map { l =>
       if (l.isEmpty) "Same"
       else determineDifferences(l).mkString("Differences:\n", "\n", "")
@@ -450,7 +450,7 @@ object ChicagoBestMatch {
 
   def noMatch = new ChicagoBestMatch(-1, None, None)
 
-  def apply(id: MatchChicago.Id, diff: Difference) = {
+  def apply(id: MatchChicago.Id, diff: Difference): ChicagoBestMatch = {
     new ChicagoBestMatch(diff.percentSame, Some(id), Some(diff.differences))
   }
 }

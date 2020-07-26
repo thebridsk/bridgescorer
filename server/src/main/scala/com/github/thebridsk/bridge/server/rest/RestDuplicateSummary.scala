@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.tags.Tags
 import io.swagger.v3.oas.annotations.tags.Tag
 import javax.ws.rs.GET
+import akka.http.scaladsl.server.Route
 
 /**
   * Rest API implementation for the board resource.
@@ -36,7 +37,7 @@ trait RestDuplicateSummary extends HasActorSystem {
   /**
     * spray route for all the methods on this resource
     */
-  val route = pathPrefix(resName) {
+  val route: Route = pathPrefix(resName) {
 //    logRequest("route", DebugLevel) {
     getDuplicateSummaries
 //      }
@@ -64,8 +65,8 @@ trait RestDuplicateSummary extends HasActorSystem {
       )
     )
   )
-  def xxxgetDuplicateSummaries() = {}
-  val getDuplicateSummaries =
+  def xxxgetDuplicateSummaries(): Unit = {}
+  val getDuplicateSummaries: Route =
 //    logRequest("routeDuplicateSummaries", DebugLevel ) { logResult("routeDuplicateSummaries", DebugLevel ) {
     get {
       pathEndOrSingleSlash {

@@ -27,9 +27,10 @@ import javax.ws.rs.POST
 import javax.ws.rs.PUT
 import javax.ws.rs.DELETE
 import com.github.thebridsk.bridge.data.Team
+import akka.http.scaladsl.server.Route
 
 object RestNestedHand {
-  val log = Logger[RestNestedHand]()
+  val log: Logger = Logger[RestNestedHand]()
 }
 
 import RestNestedHand._
@@ -52,7 +53,7 @@ class RestNestedHand {
   @Hidden
   def route(
       implicit @Parameter(hidden = true) res: Resources[Team.Id, DuplicateHand]
-  ) = pathPrefix("hands") {
+  ): Route = pathPrefix("hands") {
     logRequestResult("route", DebugLevel) {
       getHand ~ getHands ~ postHand ~ putHand ~ deleteHand
     }
@@ -114,13 +115,13 @@ class RestNestedHand {
       )
     )
   )
-  def xxxgetHands = {}
+  def xxxgetHands: Unit = {}
   def getHands(
       implicit @Parameter(hidden = true) res: Resources[
         Team.Id,
         DuplicateHand
       ]
-  ) = pathEndOrSingleSlash {
+  ): Route = pathEndOrSingleSlash {
     get {
       resourceMap(res.readAll())
     }
@@ -191,10 +192,10 @@ class RestNestedHand {
       )
     )
   )
-  def xxxgetHand = {}
+  def xxxgetHand: Unit = {}
   def getHand(
       implicit @Parameter(hidden = true) res: Resources[Team.Id, DuplicateHand]
-  ) = logRequest("getHand", DebugLevel) {
+  ): Route = logRequest("getHand", DebugLevel) {
     get {
       path("""[a-zA-Z0-9]+""".r) { id =>
         resource(res.select(Team.id(id)).read())
@@ -264,10 +265,10 @@ class RestNestedHand {
       )
     )
   )
-  def xxxpostHand = {}
+  def xxxpostHand: Unit = {}
   def postHand(
       implicit @Parameter(hidden = true) res: Resources[Team.Id, DuplicateHand]
-  ) = pathEnd {
+  ): Route = pathEnd {
     post {
       entity(as[DuplicateHand]) { hand =>
         log.fine(s"Creating new hand ${hand} in ${res.resourceURI}")
@@ -351,10 +352,10 @@ class RestNestedHand {
       )
     )
   )
-  def xxxputHand = {}
+  def xxxputHand: Unit = {}
   def putHand(
       implicit @Parameter(hidden = true) res: Resources[Team.Id, DuplicateHand]
-  ) = logRequest("putHand", DebugLevel) {
+  ): Route = logRequest("putHand", DebugLevel) {
     logResult("putHand", DebugLevel) {
       put {
         path("""[a-zA-Z0-9]+""".r) { id =>
@@ -412,10 +413,10 @@ class RestNestedHand {
       )
     )
   )
-  def xxxdeleteHand = {}
+  def xxxdeleteHand: Unit = {}
   def deleteHand(
       implicit @Parameter(hidden = true) res: Resources[Team.Id, DuplicateHand]
-  ) = delete {
+  ): Route = delete {
     path("""[a-zA-Z0-9]+""".r) { id =>
       resourceDelete(res.select(Team.id(id)).delete())
     }

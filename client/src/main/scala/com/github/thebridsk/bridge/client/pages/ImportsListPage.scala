@@ -43,6 +43,10 @@ import com.github.thebridsk.bridge.clientcommon.rest2.AjaxErrorReturn
 import com.github.thebridsk.bridge.data.rest.JsonSupport
 import com.github.thebridsk.bridge.data.RestMessage
 
+import org.scalajs.dom.raw.File
+import play.api.libs.json.Reads
+import scala.util.matching.Regex
+
 /**
  * A skeleton component.
  *
@@ -59,7 +63,7 @@ object ImportsListPage {
 
   case class Props( router: BridgeRouter[AppPage], page: AppPage )
 
-  def apply( router: BridgeRouter[AppPage], page: AppPage ) = component( Props(router,page))
+  def apply( router: BridgeRouter[AppPage], page: AppPage ) = component( Props(router,page))  // scalafix:ok ExplicitResultTypes; ReactComponent
 
 }
 
@@ -75,7 +79,7 @@ object ImportMethods {
 //    "import" : null     // import store not found
 //  }
 
-  def delete( id: String ) = {
+  def delete( id: String ): AjaxResult[Either[String,Boolean]] = {
 
     val vars = JsObject( Seq("mdid" -> JsString(id)))
     val query =
@@ -116,10 +120,10 @@ object ImportMethods {
   case class ImportStore( id: String, date: Timestamp, duplicatesCount: Int, duplicateresultsCount: Int, chicagosCount: Int, rubbersCount: Int )
   case class ImportsList( imports: List[ImportStore] )
 
-  implicit val readsImportStore = Json.reads[ImportStore]
-  implicit val readsImportsList = Json.reads[ImportsList]
+  implicit val readsImportStore: Reads[ImportStore] = Json.reads[ImportStore]
+  implicit val readsImportsList: Reads[ImportsList] = Json.reads[ImportsList]
 
-  def list() = {
+  def list(): AjaxResult[Either[String,ImportsList]] = {
 
 
     val vars = None
@@ -165,7 +169,7 @@ object ImportsListPageInternal {
   import ImportsListPage._
   import ImportMethods.ImportsList
 
-  val logger = Logger("bridge.ImportsListPage")
+  val logger: Logger = Logger("bridge.ImportsListPage")
 
   /**
    * Internal state for rendering the component.
@@ -179,14 +183,14 @@ object ImportsListPageInternal {
       error: Option[TagMod] = None
   ) {
 
-    def clearError = copy(error=None)
+    def clearError: State = copy(error=None)
 
-    def withError( s: String ) = copy( error = Some(s) )
+    def withError( s: String ): State = copy( error = Some(s) )
 
-    def withError( t: TagMod ) = copy( error = Some(t) )
+    def withError( t: TagMod ): State = copy( error = Some(t) )
   }
 
-  val patternName = """(?:.*[\\/])([^\\/]+)""".r
+  val patternName: Regex = """(?:.*[\\/])([^\\/]+)""".r
 
   /**
    * Internal state for rendering the component.
@@ -197,7 +201,7 @@ object ImportsListPageInternal {
    */
   class Backend(scope: BackendScope[Props, State]) {
 
-    val refreshCB = Callback {
+    val refreshCB: Callback = Callback {
       refresh()
     }
 
@@ -206,7 +210,7 @@ object ImportsListPageInternal {
     /**
      * called from threads
      */
-    def refresh() = {
+    def refresh(): Unit = {
       ImportMethods.list().foreach { rlist =>
         rlist match {
           case Right(list) =>
@@ -217,11 +221,11 @@ object ImportsListPageInternal {
       }
     }
 
-    def error( err: String ) = scope.modState( s => s.withError(err) )
+    def error( err: String ): Callback = scope.modState( s => s.withError(err) )
 
-    val clearError = scope.modState( s => s.clearError )
+    val clearError: Callback = scope.modState( s => s.clearError )
 
-    def getFile( filelist: FileList ) = {
+    def getFile( filelist: FileList ): Option[(String, File)] = {
       if (filelist.length == 1) {
         val file = filelist(0)
         file.name match {
@@ -234,7 +238,7 @@ object ImportsListPageInternal {
     }
 
     import Utils._
-    def doInput(returnUrl: String, theme: String)(e: ReactEventFromInput) = e.preventDefaultAction.inputFiles { filelist =>
+    def doInput(returnUrl: String, theme: String)(e: ReactEventFromInput): Callback = e.preventDefaultAction.inputFiles { filelist =>
       getFile(filelist) match {
         case Some((name,file)) =>
           scope.modState(
@@ -267,7 +271,7 @@ object ImportsListPageInternal {
       }
     }
 
-    def delete( id: String ) = scope.modState { s =>
+    def delete( id: String ): Callback = scope.modState { s =>
       ImportMethods.delete(id).foreach { result =>
         scope.withEffectsImpure.modState { state =>
           result match {
@@ -282,7 +286,7 @@ object ImportsListPageInternal {
       s.withError(s"Working on deleting ${id}")
     }
 
-    def render( props: Props, state: State ) = {
+    def render( props: Props, state: State ) = { // scalafix:ok ExplicitResultTypes; React
       val importFileText = "Select Bridgestore file"
       val returnUrl = props.router.urlFor( props.page ).value.replace("#", "%23")
       val theme = ColorThemeStorage.getColorThemeFromBody().map( t => s"""&theme=$t""").getOrElse("")
@@ -347,6 +351,7 @@ object ImportsListPageInternal {
     }
   }
 
+  private[pages]
   val SummaryRow = ScalaComponent.builder[(Props,State,Backend,Int,ImportMethods.ImportStore)]("SuggestionRow")
                       .render_P( args => {
                         // row is zero based
@@ -364,6 +369,7 @@ object ImportsListPageInternal {
                         )
                       }).build
 
+  private[pages]
   val component = ScalaComponent.builder[Props]("ImportsListPage")
                             .initialStateFromProps { props => State() }
                             .backend(new Backend(_))

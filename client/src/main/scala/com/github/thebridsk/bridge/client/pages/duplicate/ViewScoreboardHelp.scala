@@ -14,6 +14,7 @@ import com.github.thebridsk.bridge.client.pages.duplicate.DuplicateRouter.TableR
 import com.github.thebridsk.bridge.clientcommon.react.Utils._
 import com.github.thebridsk.bridge.data.Table
 
+
 /**
  * Shows the team x board table and has a totals column that shows the number of points the team has.
  *
@@ -28,14 +29,14 @@ import com.github.thebridsk.bridge.data.Table
 object ViewScoreboardHelp {
  case class Props( page: BaseScoreboardViewWithPerspective, md: MatchDuplicateScore )
 
-  def apply( page: BaseScoreboardViewWithPerspective, md: MatchDuplicateScore  ) = ViewScoreboardHelpInternal.component(Props(page,md))
+  def apply( page: BaseScoreboardViewWithPerspective, md: MatchDuplicateScore  ) = ViewScoreboardHelpInternal.component(Props(page,md))  // scalafix:ok ExplicitResultTypes; ReactComponent
 
 }
 
 object ViewScoreboardHelpInternal {
   import ViewScoreboardHelp._
 
-  val logger = Logger("bridge.ViewScoreboardHelp")
+  val logger: Logger = Logger("bridge.ViewScoreboardHelp")
 
   /**
    * Internal state for rendering the component.
@@ -55,7 +56,7 @@ object ViewScoreboardHelpInternal {
    */
   class Backend(scope: BackendScope[Props, State]) {
     import DuplicateStyles._
-    def render( props: Props, state: State ) = {
+    def render( props: Props, state: State ) = { // scalafix:ok ExplicitResultTypes; React
       def teamColumn( teams: List[Team] ) = {
         var count = 0
         teams.sortWith((t1,t2)=> t1.id < t2.id).map { team =>
@@ -111,6 +112,7 @@ object ViewScoreboardHelpInternal {
 
   }
 
+  private[duplicate]
   val component = ScalaComponent.builder[Props]("ViewScoreboardHelp")
                             .initialStateFromProps { props => State() }
                             .backend(new Backend(_))

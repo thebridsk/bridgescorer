@@ -25,6 +25,7 @@ import javax.ws.rs.GET
 import javax.ws.rs.POST
 import javax.ws.rs.PUT
 import javax.ws.rs.DELETE
+import akka.http.scaladsl.server.Route
 
 /**
   * Rest API implementation for the board resource.
@@ -44,7 +45,7 @@ class RestNestedTeam {
     * spray route for all the methods on this resource
     */
   @Hidden
-  def route(implicit @Parameter(hidden = true) res: Resources[Team.Id, Team]) =
+  def route(implicit @Parameter(hidden = true) res: Resources[Team.Id, Team]): Route =
     logRequest("RestDuplicate.nestedTeam", DebugLevel) {
       logResult("RestDuplicate.nestedTeam") {
         pathPrefix(resName) {
@@ -98,10 +99,10 @@ class RestNestedTeam {
       )
     )
   )
-  def xxxgetTeams = {}
+  def xxxgetTeams: Unit = {}
   def getTeams(
       implicit @Parameter(hidden = true) res: Resources[Team.Id, Team]
-  ) = pathEnd {
+  ): Route = pathEnd {
     get {
       resourceMap(res.readAll())
     }
@@ -164,10 +165,10 @@ class RestNestedTeam {
       )
     )
   )
-  def xxxgetTeam = {}
+  def xxxgetTeam: Unit = {}
   def getTeam(
       implicit @Parameter(hidden = true) res: Resources[Team.Id, Team]
-  ) = logRequest("getTeam", DebugLevel) {
+  ): Route = logRequest("getTeam", DebugLevel) {
     get {
       path("""[a-zA-Z0-9]+""".r) { id =>
         resource(res.select(Team.id(id)).read())
@@ -229,10 +230,10 @@ class RestNestedTeam {
       )
     )
   )
-  def xxxpostTeam = {}
+  def xxxpostTeam: Unit = {}
   def postTeam(
       implicit @Parameter(hidden = true) res: Resources[Team.Id, Team]
-  ) = pathEnd {
+  ): Route = pathEnd {
     post {
       entity(as[Team]) { hand =>
         resourceCreated(res.resourceURI, addIdToFuture(res.createChild(hand)))
@@ -305,10 +306,10 @@ class RestNestedTeam {
       )
     )
   )
-  def xxxputTeam = {}
+  def xxxputTeam: Unit = {}
   def putTeam(
       implicit @Parameter(hidden = true) res: Resources[Team.Id, Team]
-  ) = put {
+  ): Route = put {
     path("""[a-zA-Z0-9]+""".r) { id =>
       entity(as[Team]) { hand =>
         resourceUpdated(res.select(Team.id(id)).update(hand))
@@ -353,10 +354,10 @@ class RestNestedTeam {
       )
     )
   )
-  def xxxdeleteTeams = {}
+  def xxxdeleteTeams: Unit = {}
   def deleteTeam()(
       implicit @Parameter(hidden = true) res: Resources[Team.Id, Team]
-  ) =
+  ): Route =
     delete {
       path("""[a-zA-Z0-9]+""".r) { id =>
         resourceDelete(res.select(Team.id(id)).delete())

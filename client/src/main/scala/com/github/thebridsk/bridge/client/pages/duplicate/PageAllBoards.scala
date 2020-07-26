@@ -19,6 +19,7 @@ import com.github.thebridsk.bridge.client.pages.HomePage
 import japgolly.scalajs.react.component.builder.Lifecycle.ComponentDidUpdate
 import com.github.thebridsk.bridge.data.Table
 
+
 /**
  * Shows the team x board table and has a totals column that shows the number of points the team has.
  *
@@ -37,14 +38,14 @@ object PageAllBoards {
 
   case class Props( routerCtl: BridgeRouter[DuplicatePage], page: BaseAllBoardsViewWithPerspective )
 
-  def apply( routerCtl: BridgeRouter[DuplicatePage], page: BaseAllBoardsViewWithPerspective ) = component(Props(routerCtl,page))
+  def apply( routerCtl: BridgeRouter[DuplicatePage], page: BaseAllBoardsViewWithPerspective ) = component(Props(routerCtl,page))  // scalafix:ok ExplicitResultTypes; ReactComponent
 
 }
 
 object PageAllBoardsInternal {
   import PageAllBoards._
 
-  val logger = Logger("bridge.PageAllBoards")
+  val logger: Logger = Logger("bridge.PageAllBoards")
 
   /**
    * Internal state for rendering the component.
@@ -55,14 +56,14 @@ object PageAllBoardsInternal {
    */
   case class State( useIMP: Option[Boolean] = None ) {
 
-    def isMP = !useIMP.getOrElse(false)
-    def isIMP = useIMP.getOrElse(false)
+    def isMP: Boolean = !useIMP.getOrElse(false)
+    def isIMP: Boolean = useIMP.getOrElse(false)
 
-    def toggleIMP = {
+    def toggleIMP: State = {
       copy( useIMP = Some(!isIMP) )
     }
 
-    def nextIMPs = {
+    def nextIMPs: State = {
       val n = useIMP match {
         case None => Some(false)
         case Some(false) => Some(true)
@@ -74,9 +75,9 @@ object PageAllBoardsInternal {
 
   class Backend(scope: BackendScope[Props, State]) {
 
-    val nextIMPs = scope.modState { s => s.nextIMPs }
+    val nextIMPs: Callback = scope.modState { s => s.nextIMPs }
 
-    def render( props: Props, state: State ) = {
+    def render( props: Props, state: State ) = { // scalafix:ok ExplicitResultTypes; React
       import DuplicateStyles._
       logger.info("Rendering board "+props.page)
 
@@ -138,24 +139,24 @@ object PageAllBoardsInternal {
       )
     }
 
-    val storeCallback = scope.modStateOption { s =>
+    val storeCallback: Callback = scope.modStateOption { s =>
       DuplicateStore.getMatch().map( md => s.copy( useIMP = Some(md.isIMP) ) )
     }
 
-    val didMount = scope.props >>= { (p) => CallbackTo {
+    val didMount: Callback = scope.props >>= { (p) => CallbackTo {
       logger.info("PageAllBoards.didMount")
       DuplicateStore.addChangeListener(storeCallback)
       Controller.monitor(p.page.dupid)
     }}
 
-    val willUnmount = CallbackTo {
+    val willUnmount: Callback = CallbackTo {
       logger.info("PageAllBoards.willUnmount")
       DuplicateStore.removeChangeListener(storeCallback)
       Controller.delayStop()
     }
   }
 
-  def didUpdate( cdu: ComponentDidUpdate[Props,State,Backend,Unit] ) = Callback {
+  def didUpdate( cdu: ComponentDidUpdate[Props,State,Backend,Unit] ): Callback = Callback {
     val props = cdu.currentProps
     val prevProps = cdu.prevProps
     if (prevProps.page != props.page) {
@@ -163,6 +164,7 @@ object PageAllBoardsInternal {
     }
   }
 
+  private[duplicate]
   val component = ScalaComponent.builder[Props]("PageAllBoards")
                             .initialStateFromProps { props => State() }
                             .backend(new Backend(_))

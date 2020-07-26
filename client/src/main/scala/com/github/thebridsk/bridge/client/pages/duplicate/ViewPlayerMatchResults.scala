@@ -10,6 +10,7 @@ import japgolly.scalajs.react.vdom.html_<^._
 import com.github.thebridsk.bridge.data.MatchDuplicateResult
 import com.github.thebridsk.bridge.clientcommon.react.DateUtils
 
+
 /**
  * Shows the team x board table and has a totals column that shows the number of points the team has.
  *
@@ -24,13 +25,13 @@ import com.github.thebridsk.bridge.clientcommon.react.DateUtils
 object ViewPlayerMatchResult {
   case class Props( score: List[MatchDuplicateScore.Place], mdr: Option[MatchDuplicateResult], iws: Int, nws: Int, useIMPs: Boolean = false )
 
-  def apply( score: List[MatchDuplicateScore.Place] ) =
+  def apply( score: List[MatchDuplicateScore.Place] ) = // scalafix:ok ExplicitResultTypes; ReactComponent
     ViewPlayerMatchResultInternal.component(Props(score,None,0,0,false))
 
-  def apply( score: List[MatchDuplicateScore.Place], useIMPs: Boolean ) =
+  def apply( score: List[MatchDuplicateScore.Place], useIMPs: Boolean ) = // scalafix:ok ExplicitResultTypes; ReactComponent
     ViewPlayerMatchResultInternal.component(Props(score,None,0,0,useIMPs))
 
-  def apply( score: List[MatchDuplicateScore.Place], mdr: MatchDuplicateResult, iws: Int, nws: Int, useIMPs: Boolean = false ) =
+  def apply( score: List[MatchDuplicateScore.Place], mdr: MatchDuplicateResult, iws: Int, nws: Int, useIMPs: Boolean = false ) = // scalafix:ok ExplicitResultTypes; ReactComponent
     ViewPlayerMatchResultInternal.component(Props(score,Some(mdr),iws,nws,useIMPs))
 
 }
@@ -38,7 +39,7 @@ object ViewPlayerMatchResult {
 object ViewPlayerMatchResultInternal {
   import ViewPlayerMatchResult._
 
-  val logger = Logger("bridge.ViewPlayerMatchResult")
+  val logger: Logger = Logger("bridge.ViewPlayerMatchResult")
 
   /**
    * Internal state for rendering the component.
@@ -58,7 +59,7 @@ object ViewPlayerMatchResultInternal {
    */
   class Backend(scope: BackendScope[Props, State]) {
     import DuplicateStyles._
-    def render( props: Props, state: State ) = {
+    def render( props: Props, state: State ) = { // scalafix:ok ExplicitResultTypes; React
       val places = props.score.sortWith( (l,r) => l.place < r.place)
       def teamColumn( teams: List[Team] ) = {
         var count = 0
@@ -113,6 +114,7 @@ object ViewPlayerMatchResultInternal {
 
   }
 
+  private[duplicate]
   val component = ScalaComponent.builder[Props]("ViewPlayerMatchResults")
                             .initialStateFromProps { props => State() }
                             .backend(new Backend(_))

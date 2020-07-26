@@ -7,6 +7,7 @@ import scala.concurrent.ExecutionContext
 import com.github.thebridsk.utilities.logging.Logger
 import com.github.thebridsk.bridge.client.bridge.store.ServerURLStore
 
+
 /**
  * A skeleton component.
  *
@@ -23,7 +24,7 @@ object ServerURLPopup {
 
   case class Props( )
 
-  def apply( ) = component(Props())
+  def apply( ) = component(Props())  // scalafix:ok ExplicitResultTypes; ReactComponent
 
   private var showURL = false
 
@@ -67,7 +68,7 @@ object ServerURLPopupInternal {
     })
     val cancel: Option[Callback] = None
 
-    def render( props: Props, state: State ) = {
+    def render( props: Props, state: State ) = {  // scalafix:ok ExplicitResultTypes; ReactComponent
       val content: Option[TagMod] = if (isShowServerURLPopup) {
         implicit val ec = ExecutionContext.global
         Some(
@@ -86,19 +87,20 @@ object ServerURLPopupInternal {
 
     val urlStoreListener = scope.forceUpdate
 
-    val didMount = Callback {
+    val didMount: Callback = Callback {
       mounted = true
       ServerURLStore.addChangeListener(urlStoreListener)
       ServerURLStore.updateURLs()
     }
 
-    val willUnmount = Callback {
+    val willUnmount: Callback = Callback {
       mounted = false
       ServerURLStore.removeChangeListener(urlStoreListener)
     }
 
   }
 
+  private[pages]
   val component = ScalaComponent.builder[Props]("ServerURLPopup")
                             .initialStateFromProps { props => State() }
                             .backend(new Backend(_))

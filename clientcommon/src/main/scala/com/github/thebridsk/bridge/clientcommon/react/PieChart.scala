@@ -5,6 +5,7 @@ import japgolly.scalajs.react._
 import com.github.thebridsk.color.Color
 import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles
 
+
 /**
  * A skeleton component.
  *
@@ -60,7 +61,7 @@ object PieChart {
       size: Option[Double] = None,
       attrs: Option[TagMod] = None,
       sliceAttrs: Option[List[TagMod]] = None
-  ) = {
+  ) = {  // scalafix:ok ExplicitResultTypes; ReactComponent
     component(Props(slices,colors,chartTitle,sliceTitles,size,attrs,sliceAttrs))
   }
 
@@ -84,11 +85,11 @@ object PieChart {
       sliceTitles: Option[List[String]] = None,
       attrs: Option[TagMod] = None,
       sliceAttrs: Option[List[TagMod]] = None
-  ) = {
+  ) = {  // scalafix:ok ExplicitResultTypes; ReactComponent
     component(Props(slices,colors,chartTitle,sliceTitles,Some(size),attrs,sliceAttrs))
   }
 
-  def apply( props: Props ) = component(props)
+  def apply( props: Props ) = component(props)  // scalafix:ok ExplicitResultTypes; ReactComponent
 
   private def getCoordinatesForPercent( fraction: Double ) = {
     val x = Math.cos(2 * Math.PI * fraction);

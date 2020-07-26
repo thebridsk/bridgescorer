@@ -5,7 +5,7 @@ import com.github.thebridsk.bridge.data.bridge.BoardScore
 
 object TestIMPs extends Main {
 
-  def execute() = {
+  def execute(): Int = {
 
     for ( i <- 0 to 5000 by 10) {
       val imps = BoardScore.getIMPs(i)

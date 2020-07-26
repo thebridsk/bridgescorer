@@ -20,10 +20,10 @@ import scala.language.implicitConversions
 
 object RestResult {
 
-  val log = Logger("bridge.RestResult")
+  val log: Logger = Logger("bridge.RestResult")
 
   def classtag[T]( implicit ct: ClassTag[T] ) = ct
-  val classtagUnit = classtag[Unit].runtimeClass
+  val classtagUnit: Class[_] = classtag[Unit].runtimeClass
   def returnUnit: Unit = {}
 
   def unit: Result[Unit] = new ResultObject( Future.unit)
@@ -78,7 +78,7 @@ object RestResult {
                              classtag: ClassTag[T],
                              reader: Reads[T],
                              executor: ExecutionContext
-                         ) = {
+                         ): RestResult[T] = {
     new RestResult[T](ajaxResult, ajaxResult.transform( t => transformToT(t) ) )
   }
 
@@ -103,7 +103,7 @@ object RestResult {
                                            classtag: ClassTag[T],
                                            reader: Reads[T],
                                            executor: ExecutionContext
-                                       ) = {
+                                       ): RestResultArray[T] = {
     new RestResultArray[T](ajaxResult, ajaxResult.transform( t => transformToArrayT(t)) )
   }
 
@@ -147,7 +147,7 @@ class ResultObject[T]( future: Future[T] ) extends Result[T] {
   def cancel(): Boolean = false
 
   // Members declared in scala.concurrent.Awaitable
-  def ready(atMost: Duration)(implicit permit: CanAwait) = {
+  def ready(atMost: Duration)(implicit permit: CanAwait): this.type = {
     future.ready(atMost)
     this
   }
@@ -172,7 +172,7 @@ class ResultObject[T]( future: Future[T] ) extends Result[T] {
     case Some( t ) => Some(t)
   }
 
-  def recordFailure( rec: ResultRecorder = ResultRecorder )(implicit executor: ExecutionContext, pos: Position) = {
+  def recordFailure( rec: ResultRecorder = ResultRecorder )(implicit executor: ExecutionContext, pos: Position): ResultObject[T] = {
     this
   }
 }
@@ -185,7 +185,7 @@ class RestResult[T]( val ajaxResult: AjaxResult[WrapperXMLHttpRequest], val futu
   def cancel(): Boolean = ajaxResult.cancel()
 
   // Members declared in scala.concurrent.Awaitable
-  def ready(atMost: Duration)(implicit permit: CanAwait) = {
+  def ready(atMost: Duration)(implicit permit: CanAwait): this.type = {
     future.ready(atMost)
     this
   }
@@ -216,7 +216,7 @@ class RestResult[T]( val ajaxResult: AjaxResult[WrapperXMLHttpRequest], val futu
     case Some( t ) => Some(t)
   } )
 
-  def recordFailure( rec: ResultRecorder = ResultRecorder )(implicit executor: ExecutionContext, pos: Position) = {
+  def recordFailure( rec: ResultRecorder = ResultRecorder )(implicit executor: ExecutionContext, pos: Position): RestResult[T] = {
     ajaxResult.recordFailure(rec)
     this
   }
@@ -237,7 +237,7 @@ class RestResultArray[T]( ajaxResult: AjaxResult[WrapperXMLHttpRequest], result:
   def failed: RestResult[Throwable] = result.failed
 
   // Members declared in scala.concurrent.Awaitable
-  def ready(atMost: Duration)(implicit permit: CanAwait) = {
+  def ready(atMost: Duration)(implicit permit: CanAwait): this.type = {
     result.ready(atMost)
     this
   }
@@ -261,7 +261,7 @@ class RestResultArray[T]( ajaxResult: AjaxResult[WrapperXMLHttpRequest], result:
     case Some( t ) => Some(t)
   } )
 
-  def recordFailure( rec: ResultRecorder = ResultRecorder )(implicit executor: ExecutionContext, pos: Position) = {
+  def recordFailure( rec: ResultRecorder = ResultRecorder )(implicit executor: ExecutionContext, pos: Position): RestResultArray[T] = {
     ajaxResult.recordFailure(rec)
     this
   }

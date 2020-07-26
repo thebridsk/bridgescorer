@@ -18,13 +18,13 @@ trait ConvertBoardSetsAndMovementsCommand
 object ConvertBoardSetsAndMovementsCommand extends Subcommand("convertboards") {
   import DataStoreCommands.optionStore
 
-  val log = Logger[ConvertBoardSetsAndMovementsCommand]()
+  val log: Logger = Logger[ConvertBoardSetsAndMovementsCommand]()
 
   implicit def dateConverter: ValueConverter[Duration] =
     singleArgConverter[Duration](Duration(_))
 
 
-  val validValues = List("yaml", "json")
+  val validValues: List[String] = List("yaml", "json")
 
   descr("converts a database to use yaml or json")
 
@@ -35,7 +35,7 @@ Syntax:
   ${DataStoreCommands.cmdName} convertboards type
 Options:""")
 
-  val paramType = trailArg[String](
+  val paramType: ScallopOption[String] = trailArg[String](
     name = "type",
     required = true,
     validate = (s) => validValues.contains(s),

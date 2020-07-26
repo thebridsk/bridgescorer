@@ -19,28 +19,28 @@ import com.github.thebridsk.bridge.server.backend.BridgeServiceWithLogging
 
 object TestServer {
 
-  val testlog = Logger(TestServer.getClass.getName)
+  val testlog: Logger = Logger(TestServer.getClass.getName)
 
-  val useTestServerURL = getProp("UseBridgeScorerURL")
-  val useTestServerScheme = getProp("UseBridgeScorerScheme")
-  val useTestServerHost = getProp("UseBridgeScorerHost")
-  val useTestServerPort = getProp("UseBridgeScorerPort")
-  val useWebsocketLogging = getProp("UseWebsocketLogging")
-  val envUseProductionPage = getBooleanProp("UseProductionPage",false)
+  val useTestServerURL: Option[String] = getProp("UseBridgeScorerURL")
+  val useTestServerScheme: Option[String] = getProp("UseBridgeScorerScheme")
+  val useTestServerHost: Option[String] = getProp("UseBridgeScorerHost")
+  val useTestServerPort: Option[String] = getProp("UseBridgeScorerPort")
+  val useWebsocketLogging: Option[String] = getProp("UseWebsocketLogging")
+  val envUseProductionPage: Boolean = getBooleanProp("UseProductionPage",false)
 
-  val useFastOptOnly = getBooleanProp("OnlyBuildDebug",false)
+  val useFastOptOnly: Boolean = getBooleanProp("OnlyBuildDebug",false)
 
-  val useFullOptOnly = getBooleanProp("UseFullOpt",false)
+  val useFullOptOnly: Boolean = getBooleanProp("UseFullOpt",false)
 
-  val optRemoteLogger = getProp("OptRemoteLogger")
-  val optBrowserRemoteLogging = getProp("OptBrowserRemoteLogging")
-  val optIPadRemoteLogging = getProp("OptIPadRemoteLogging")
+  val optRemoteLogger: Option[String] = getProp("OptRemoteLogger")
+  val optBrowserRemoteLogging: Option[String] = getProp("OptBrowserRemoteLogging")
+  val optIPadRemoteLogging: Option[String] = getProp("OptIPadRemoteLogging")
 
-  val useProductionPage = useFullOptOnly || (envUseProductionPage && !useFastOptOnly)
+  val useProductionPage: Boolean = useFullOptOnly || (envUseProductionPage && !useFastOptOnly)
 
-  def loggingConfig(l: List[String]) = LoggerConfig( "[root]=ALL"::Nil, "console=INFO"::l)
+  def loggingConfig(l: List[String]): LoggerConfig = LoggerConfig( "[root]=ALL"::Nil, "console=INFO"::l)
 
-  val backend = {
+  val backend: BridgeServiceInMemory = {
     val bs = new BridgeServiceInMemory("root") {
 
       override
@@ -94,23 +94,23 @@ object TestServer {
     bs
   }
 
-  val startingServer = useTestServerHost.isEmpty && useTestServerPort.isEmpty && useTestServerURL.isEmpty
+  val startingServer: Boolean = useTestServerHost.isEmpty && useTestServerPort.isEmpty && useTestServerURL.isEmpty
 
-  val scheme = useTestServerScheme.getOrElse("http")
+  val scheme: String = useTestServerScheme.getOrElse("http")
   val interface = "localhost"          // the interface to start the server on
-  val hostname = useTestServerHost.getOrElse(interface)   // the hostname for URLs
-  val port = useTestServerPort match {
+  val hostname: String = useTestServerHost.getOrElse(interface)   // the hostname for URLs
+  val port: Int = useTestServerPort match {
     case None => 8081
     case Some(sport) => sport.toInt
   }
-  val schemeport = if (scheme=="http") 80 else 443
-  val portuse = if (port==schemeport) "" else { ":"+port }
-  val hosturl = useTestServerURL.getOrElse( scheme+"://"+hostname+portuse ) +"/"
-  val pageprod = hosturl+"public/index.html"
-  val pagedev = hosturl+"public/index-fastopt.html"
-  val pagedemoprod = hosturl+"public/demo.html"
-  val pagedemodev = hosturl+"public/demo-fastopt.html"
-  val docs = hosturl+"v1/docs/"
+  val schemeport: Int = if (scheme=="http") 80 else 443
+  val portuse: String = if (port==schemeport) "" else { ":"+port }
+  val hosturl: String = useTestServerURL.getOrElse( scheme+"://"+hostname+portuse ) +"/"
+  val pageprod: String = hosturl+"public/index.html"
+  val pagedev: String = hosturl+"public/index-fastopt.html"
+  val pagedemoprod: String = hosturl+"public/demo.html"
+  val pagedemodev: String = hosturl+"public/demo-fastopt.html"
+  val docs: String = hosturl+"v1/docs/"
 
   testlog.info( s"""Testing ${if (useProductionPage) "Prod" else "Dev"} pages""" )
 
@@ -126,7 +126,7 @@ object TestServer {
   }
 
   def onlyRunWhenStartingServer(notRunMsg: Option[String] = None )
-                               ( runWhenStarting: ()=>Unit ) = {
+                               ( runWhenStarting: ()=>Unit ): Unit = {
     if (startingServer) {
       runWhenStarting()
     } else {
@@ -141,9 +141,9 @@ object TestServer {
 
   def getMyService = myService.get
 
-  def getHttpsPort = port + 443 - 80
+  def getHttpsPort: Int = port + 443 - 80
 
-  def start( https: Boolean = false ) = {
+  def start( https: Boolean = false ): Unit = {
     MonitorTCP.startMonitoring()
     try {
       onlyRunWhenStartingServer(Some("Using existing server")) { ()=>
@@ -179,7 +179,7 @@ object TestServer {
     }
   }
 
-  def stop() = {
+  def stop(): Unit = {
     MonitorTCP.stopMonitoring()
     onlyRunWhenStartingServer() { ()=>
       synchronized {
@@ -192,44 +192,44 @@ object TestServer {
 
   def isServerStartedByTest = startingServer
 
-  def getAppPage = if (useProductionPage) getAppPageProd else  getAppPageDev
-  def getAppPageUrl( uri: String ) = if (useProductionPage) getAppPageProdUrl(uri) else getAppPageDevUrl(uri)
+  def getAppPage: String = if (useProductionPage) getAppPageProd else  getAppPageDev
+  def getAppPageUrl( uri: String ): String = if (useProductionPage) getAppPageProdUrl(uri) else getAppPageDevUrl(uri)
 
   def getAppPageProd = pageprod
-  def getAppPageProdUrl( uri: String ) = if (uri.length()==0) pageprod else pageprod+"#"+uri
+  def getAppPageProdUrl( uri: String ): String = if (uri.length()==0) pageprod else pageprod+"#"+uri
 
   def getAppPageDev = pagedev
-  def getAppPageDevUrl( uri: String ) = if (uri.length()==0) pagedev else pagedev+"#"+uri
+  def getAppPageDevUrl( uri: String ): String = if (uri.length()==0) pagedev else pagedev+"#"+uri
 
-  def getAppDemoPage = if (useProductionPage) getAppDemoPageProd else  getAppDemoPageDev
-  def getAppDemoPageUrl( uri: String ) = if (useProductionPage) getAppDemoPageProdUrl(uri) else getAppDemoPageDevUrl(uri)
+  def getAppDemoPage: String = if (useProductionPage) getAppDemoPageProd else  getAppDemoPageDev
+  def getAppDemoPageUrl( uri: String ): String = if (useProductionPage) getAppDemoPageProdUrl(uri) else getAppDemoPageDevUrl(uri)
 
   def getAppDemoPageProd = pagedemoprod
-  def getAppDemoPageProdUrl( uri: String ) = if (uri.length()==0) pagedemoprod else pagedemoprod+"#"+uri
+  def getAppDemoPageProdUrl( uri: String ): String = if (uri.length()==0) pagedemoprod else pagedemoprod+"#"+uri
 
   def getAppDemoPageDev = pagedemodev
-  def getAppDemoPageDevUrl( uri: String ) = if (uri.length()==0) pagedemodev else pagedemodev+"#"+uri
+  def getAppDemoPageDevUrl( uri: String ): String = if (uri.length()==0) pagedemodev else pagedemodev+"#"+uri
 
   def getDocs = docs
-  def getDocs( fragment: String ) = if (fragment.length()==0) docs else docs+"#!"+fragment
+  def getDocs( fragment: String ): String = if (fragment.length()==0) docs else docs+"#!"+fragment
 
-  def getHelpPage( page: String = "" ) = hosturl+"help/"+page
+  def getHelpPage( page: String = "" ): String = hosturl+"help/"+page
 
   /**
    * Returns the URL for the given URI.
    * @param uri the URI.  Must start with a '/'
    * @throws IllegalArgumentException if the uri does not start with a '/'
    */
-  def getUrl( uri: String ) = {
+  def getUrl( uri: String ): URL = {
     if (uri.charAt(0) != '/') throw new IllegalArgumentException("uri must start with a '/'")
     new URL(hosturl+uri.substring(1))
   }
 
-  def getBooleanProp( name: String, default: Boolean ) = {
+  def getBooleanProp( name: String, default: Boolean ): Boolean = {
     getProp(name).map(s => s.equalsIgnoreCase("true") || s.equals("1")).getOrElse(default)
   }
 
-  def getProp( name: String ) = {
+  def getProp( name: String ): Option[String] = {
     sys.props.get(name) match {
       case Some(s) => Some(s)
       case None => sys.env.get(name)

@@ -49,11 +49,13 @@ import com.github.thebridsk.bridge.server.backend.resource.ChangeContext
 import com.github.thebridsk.bridge.data.websocket.Protocol.UpdateDuplicatePicture
 import com.github.thebridsk.bridge.data.Team
 import com.github.thebridsk.bridge.data.Board
+import akka.http.scaladsl.model.StatusCode
+import scala.util.matching.Regex
 
 object RestNestedPictureHand {
-  val log = Logger[RestNestedPictureHand]()
+  val log: Logger = Logger[RestNestedPictureHand]()
 
-  val patternImageFile = """Image\.([^.]+)\.([^.]+)\.(jpg)""".r
+  val patternImageFile: Regex = """Image\.([^.]+)\.([^.]+)\.(jpg)""".r
 
   case class PictureFilenameParts( boardId: Board.Id, handId: Team.Id, ext: String )
 
@@ -71,23 +73,23 @@ object RestNestedPictureHand {
    * @param boardId
    * @param ext the extension of the image file without the "."
    */
-  def makeImageFilename( boardId: String, handId: String, ext: String) = {
+  def makeImageFilename( boardId: String, handId: String, ext: String): String = {
     s"Image.${boardId}.${handId}.${ext}"
   }
 
-  def isImageFilename( file: MetaDataFile ) = {
+  def isImageFilename( file: MetaDataFile ): Boolean = {
     file.startsWith("Image.")
   }
 
-  def isImageFilename( file: MetaDataFile, boardId: Board.Id ) = {
+  def isImageFilename( file: MetaDataFile, boardId: Board.Id ): Boolean = {
     file.startsWith(s"Image.${boardId.id}.")
   }
 
-  def isImageFilename( file: MetaDataFile, boardId: Board.Id, handId: Team.Id ) = {
+  def isImageFilename( file: MetaDataFile, boardId: Board.Id, handId: Team.Id ): Boolean = {
     file.startsWith(s"Image.${boardId.id}.${handId.id}.")
   }
 
-  def isImageExtension( file: String ) = {
+  def isImageExtension( file: String ): (Boolean, String) = {
     val ext = File(file).extension
     val isImage = ext=="jpg"
     (isImage,ext)
@@ -104,7 +106,7 @@ object RestNestedPictureHand {
     }
   }
 
-  lazy val tempDir = Directory.makeTemp("tempImportStore", ".dir", null)
+  lazy val tempDir: Directory = Directory.makeTemp("tempImportStore", ".dir", null)
 
   def tempDestination(boardId: Board.Id, handId: Team.Id)( fileInfo: FileInfo): JFile = {
     val fn = fileInfo.fileName
@@ -121,7 +123,7 @@ object RestNestedPictureHand {
     picture: String
   )
 
-  def getUrlOfPicture( resName: String, dupId: MatchDuplicate.Id, boardId: Board.Id, handId: Team.Id ) = {
+  def getUrlOfPicture( resName: String, dupId: MatchDuplicate.Id, boardId: Board.Id, handId: Team.Id ): String = {
     val rn = if (resName.startsWith("/")) resName else "/" + resName
     s"/v1/rest${rn}/${dupId.id}/pictures/${boardId.id}/hands/${handId.id}"
   }
@@ -144,7 +146,7 @@ class RestNestedPictureHand( store: Store[MatchDuplicate.Id,MatchDuplicate], par
 
   val resName = parent.resName
 
-  val resNameWithSlash = if (resName.startsWith("/")) resName else "/" + resName
+  val resNameWithSlash: String = if (resName.startsWith("/")) resName else "/" + resName
 
   /**
     * spray route for all the methods on this resource
@@ -153,17 +155,17 @@ class RestNestedPictureHand( store: Store[MatchDuplicate.Id,MatchDuplicate], par
   def route( implicit
       @Parameter(hidden = true) dupId: MatchDuplicate.Id,
       @Parameter(hidden = true) boardId: Board.Id
-  ) = pathPrefix("hands") {
+  ): Route = pathPrefix("hands") {
     logRequestResult("RestNestedPictureHand.route", DebugLevel) {
       getPicture(dupId,boardId) ~ getPictures(dupId,boardId) ~ putPicture(dupId,boardId) ~ deletePicture(dupId,boardId)
     }
   }
 
-  def getPictureUrl( dupId: MatchDuplicate.Id, boardId: Board.Id, handId: Team.Id ) = {
+  def getPictureUrl( dupId: MatchDuplicate.Id, boardId: Board.Id, handId: Team.Id ): String = {
     getUrlOfPicture(resNameWithSlash,dupId,boardId,handId)
   }
 
-  def getAllPictures( dupId: MatchDuplicate.Id, boardId: Board.Id ) = {
+  def getAllPictures( dupId: MatchDuplicate.Id, boardId: Board.Id ): Future[Either[(StatusCode, RestMessage),Iterator[DuplicatePicture]]] = {
     store.metaData.listFilesFilter(dupId) { f =>
       val parts = getPartsMetadataFile(f)
       parts.isDefined && parts.get.boardId == boardId
@@ -244,11 +246,11 @@ class RestNestedPictureHand( store: Store[MatchDuplicate.Id,MatchDuplicate], par
       )
     )
   )
-  def xxxgetPictures = {}
+  def xxxgetPictures: Unit = {}
   def getPictures( implicit
       @Parameter(hidden = true) dupId: MatchDuplicate.Id,
       @Parameter(hidden = true) boardId: Board.Id
-  ) = pathEndOrSingleSlash {
+  ): Route = pathEndOrSingleSlash {
     get {
       val f = getAllPictures(dupId,boardId)
       onComplete(f) {
@@ -339,11 +341,11 @@ class RestNestedPictureHand( store: Store[MatchDuplicate.Id,MatchDuplicate], par
       )
     )
   )
-  def xxxgetPicture = {}
+  def xxxgetPicture: Unit = {}
   def getPicture( implicit
       @Parameter(hidden = true) dupId: MatchDuplicate.Id,
       @Parameter(hidden = true) boardId: Board.Id
-  ) = logRequest("getPictureHand", DebugLevel) {
+  ): Route = logRequest("getPictureHand", DebugLevel) {
     get {
       path("""[a-zA-Z0-9]+""".r) { hids =>
         val hid = Team.id(hids)
@@ -529,11 +531,11 @@ class RestNestedPictureHand( store: Store[MatchDuplicate.Id,MatchDuplicate], par
       )
     )
   )
-  def xxxputPicture = {}
+  def xxxputPicture: Unit = {}
   def putPicture( implicit
       @Parameter(hidden = true) dupId: MatchDuplicate.Id,
       @Parameter(hidden = true) boardId: Board.Id
-  ) = logRequest("putPictureHand", DebugLevel) {
+  ): Route = logRequest("putPictureHand", DebugLevel) {
     logResult("putPictureHand", DebugLevel) {
       put {
         path("""[a-zA-Z0-9]+""".r) { hids =>
@@ -661,11 +663,11 @@ class RestNestedPictureHand( store: Store[MatchDuplicate.Id,MatchDuplicate], par
       )
     )
   )
-  def xxxdeletePicture = {}
+  def xxxdeletePicture: Unit = {}
   def deletePicture( implicit
       @Parameter(hidden = true) dupId: MatchDuplicate.Id,
       @Parameter(hidden = true) boardId: Board.Id
-  ) = delete {
+  ): Route = delete {
     path("""[a-zA-Z0-9]+""".r) { handIds =>
       val handId = Team.id(handIds)
       val fut = store.metaData.listFiles(dupId).map { rimdf =>

@@ -24,6 +24,7 @@ import com.github.thebridsk.bridge.data.Hand
 import com.github.thebridsk.bridge.data.RubberHand
 import com.github.thebridsk.bridge.server.backend.resource.IdSupport
 import com.github.thebridsk.bridge.data.HasId
+import com.github.thebridsk.bridge.server.backend.resource.NestedResources
 
 class GenericIdCacheStoreSupport[TId, VType <: VersionedInstance[
   VType,
@@ -635,34 +636,34 @@ object BridgeNestedResources {
   implicit class WrapMatchDuplicateResource(
       private val r: Resource[MatchDuplicate.Id, MatchDuplicate]
   ) extends AnyVal {
-    def resourceBoards(implicit execute: ExecutionContext) =
+    def resourceBoards(implicit execute: ExecutionContext): NestedResources[MatchDuplicate.Id,MatchDuplicate,Board.Id,Board] =
       r.nestedResource(DuplicateBoardsNestedResource)
-    def resourceTeams(implicit execute: ExecutionContext) =
+    def resourceTeams(implicit execute: ExecutionContext): NestedResources[MatchDuplicate.Id,MatchDuplicate,Team.Id,Team] =
       r.nestedResource(DuplicateTeamsNestedResource)
   }
 
   implicit class WrapBoardResource(private val r: Resource[Board.Id, Board])
       extends AnyVal {
-    def resourceHands(implicit execute: ExecutionContext) =
+    def resourceHands(implicit execute: ExecutionContext): NestedResources[Board.Id,Board,Team.Id,DuplicateHand] =
       r.nestedResource(DuplicateHandsNestedResource)
   }
 
   implicit class WrapMatchChicagoResource(
       private val r: Resource[MatchChicago.Id, MatchChicago]
   ) extends AnyVal {
-    def resourceRounds(implicit execute: ExecutionContext) =
+    def resourceRounds(implicit execute: ExecutionContext): NestedResources[MatchChicago.Id,MatchChicago,String,Round] =
       r.nestedResource(ChicagoRoundNestedResource)
   }
 
   implicit class WrapMatchChicagoRoundResource(private val r: Resource[String, Round])
       extends AnyVal {
-    def resourceHands(implicit execute: ExecutionContext) =
+    def resourceHands(implicit execute: ExecutionContext): NestedResources[String,Round,String,Hand] =
       r.nestedResource(ChicagoRoundHandNestedResource)
   }
 
   implicit class WrapMatchRubberResource(private val r: Resource[MatchRubber.Id, MatchRubber])
       extends AnyVal {
-    def resourceHands(implicit execute: ExecutionContext) =
+    def resourceHands(implicit execute: ExecutionContext): NestedResources[MatchRubber.Id,MatchRubber,String,RubberHand] =
       r.nestedResource(RubberHandNestedResource)
   }
 
@@ -678,25 +679,25 @@ class BridgeResources(
   val converters = new BridgeServiceFileStoreConverters(yaml)
   import converters._
 
-  implicit val matchDuplicateCacheStoreSupport =
+  implicit val matchDuplicateCacheStoreSupport: MatchDuplicateCacheStoreSupport =
     new MatchDuplicateCacheStoreSupport(
       readOnly,
       useIdFromValue,
       dontUpdateTime
     )
-  implicit val matchDuplicateResultCacheStoreSupport =
+  implicit val matchDuplicateResultCacheStoreSupport: MatchDuplicateResultCacheStoreSupport =
     new MatchDuplicateResultCacheStoreSupport(
       readOnly,
       useIdFromValue,
       dontUpdateTime
     )
-  implicit val matchChicagoCacheStoreSupport =
+  implicit val matchChicagoCacheStoreSupport: MatchChicagoCacheStoreSupport =
     new MatchChicagoCacheStoreSupport(readOnly, useIdFromValue, dontUpdateTime)
-  implicit val matchRubberCacheStoreSupport =
+  implicit val matchRubberCacheStoreSupport: MatchRubberCacheStoreSupport =
     new MatchRubberCacheStoreSupport(readOnly, useIdFromValue, dontUpdateTime)
-  implicit val boardSetCacheStoreSupport =
+  implicit val boardSetCacheStoreSupport: BoardSetCacheStoreSupport =
     new BoardSetCacheStoreSupport(readOnly, dontUpdateTime)
-  implicit val movementCacheStoreSupport =
+  implicit val movementCacheStoreSupport: MovementCacheStoreSupport =
     new MovementCacheStoreSupport(readOnly, dontUpdateTime)
 
 }

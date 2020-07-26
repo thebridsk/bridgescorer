@@ -29,6 +29,7 @@ import japgolly.scalajs.react.component.builder.Lifecycle.ComponentDidUpdate
 import com.github.thebridsk.bridge.client.pages.HomePage
 import org.scalajs.dom.raw.File
 
+
 /**
   * A skeleton component.
   *
@@ -45,7 +46,7 @@ object PageChicagoHand {
 
   case class Props(page: HandView, routerCtl: BridgeRouter[ChicagoPage])
 
-  def apply(page: HandView, routerCtl: BridgeRouter[ChicagoPage]) =
+  def apply(page: HandView, routerCtl: BridgeRouter[ChicagoPage]) =  // scalafix:ok ExplicitResultTypes; ReactComponent
     component(Props(page, routerCtl))
 
 }
@@ -53,7 +54,7 @@ object PageChicagoHand {
 object PageChicagoHandInternal {
   import PageChicagoHand._
 
-  val log = Logger("bridge.PageChicagoHandInternal")
+  val log: Logger = Logger("bridge.PageChicagoHandInternal")
 
   /**
     * Internal state for rendering the component.
@@ -72,7 +73,7 @@ object PageChicagoHandInternal {
     *
     */
   class Backend(scope: BackendScope[Props, State]) {
-    def render(props: Props, state: State) = {
+    def render(props: Props, state: State) = { // scalafix:ok ExplicitResultTypes; React
       <.div(
         ChicagoPageBridgeAppBar(
           title = Seq[CtorType.ChildArg](
@@ -193,7 +194,7 @@ object PageChicagoHandInternal {
         contract: Contract,
         picture: Option[File],
         removePicture: Boolean
-    ) =
+    ): Callback =
       scope.props >>= { props =>
         {
           ChicagoController.updateChicagoHand(
@@ -209,7 +210,7 @@ object PageChicagoHandInternal {
         }
       }
 
-    def viewHandCallbackCancel(quintet: Boolean) =
+    def viewHandCallbackCancel(quintet: Boolean): Callback =
       scope.props >>= { props =>
         props.routerCtl.set(
           if (quintet) props.page.toSummaryView else props.page.toRoundView
@@ -218,7 +219,7 @@ object PageChicagoHandInternal {
 
     val storeCallback = scope.forceUpdate
 
-    val didMount = scope.props >>= { (p) =>
+    val didMount: Callback = scope.props >>= { (p) =>
       CallbackTo {
         log.info("PageChicagoHand.didMount")
         ChicagoStore.addChangeListener(storeCallback)
@@ -226,7 +227,7 @@ object PageChicagoHandInternal {
       }
     }
 
-    val willUnmount = CallbackTo {
+    val willUnmount: Callback = CallbackTo {
       log.info("PageChicagoHand.willUnmount")
       ChicagoStore.removeChangeListener(storeCallback)
       ChicagoController.delayStop()
@@ -234,7 +235,7 @@ object PageChicagoHandInternal {
 
   }
 
-  def didUpdate(cdu: ComponentDidUpdate[Props, State, Backend, Unit]) =
+  def didUpdate(cdu: ComponentDidUpdate[Props, State, Backend, Unit]): Callback =
     Callback {
       val props = cdu.currentProps
       val prevProps = cdu.prevProps
@@ -243,6 +244,7 @@ object PageChicagoHandInternal {
       }
     }
 
+  private[chicagos]
   val component = ScalaComponent
     .builder[Props]("PageChicagoHand")
     .initialStateFromProps { props =>

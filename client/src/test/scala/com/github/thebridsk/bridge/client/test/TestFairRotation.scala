@@ -19,7 +19,7 @@ object TestFairRotation {
   val pWest = "West"
   val pExtra = "Extra"
 
-  val allPlayers = pNorth::pSouth::pEast::pWest::pExtra::Nil
+  val allPlayers: List[String] = pNorth::pSouth::pEast::pWest::pExtra::Nil
 }
 
 class TestFairRotation extends AnyFlatSpec with Matchers {

@@ -14,7 +14,7 @@ import scala.concurrent.ExecutionContext
 import scala.util.Using
 
 object JavaResourceStore {
-  val log = Logger[JavaResourceStore[_, _]]()
+  val log: Logger = Logger[JavaResourceStore[_, _]]()
 
   def apply[VId <: Comparable[VId], VType <: VersionedInstance[VType, VType, VId]](
       name: String,
@@ -152,7 +152,7 @@ class JavaResourcePersistentSupport[VId <: Comparable[VId], VType <: VersionedIn
 //      Result(StatusCodes.NotFound,RestMessage(s"Did not find resource $resourceURI/$id"))
 //    ).logit("JavaResourcePersistentSupport.getFromPersistent")
 
-  def readFilenames(id: VId) = {
+  def readFilenames(id: VId): List[String] = {
     val r = support.getReadExtensions.map { e =>
       s"""${resourcedirectory}${support.resourceName}.${support.idSupport.toString(id)}${e}"""
     }

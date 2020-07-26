@@ -13,7 +13,7 @@ class MySubscription extends Subscriptions {
   var registerCalled = false
   var unregisterCalled = false
 
-  def clear = {
+  def clear: Unit = {
     registerCalled = false
     unregisterCalled = false
   }
@@ -30,7 +30,7 @@ class MySubscription extends Subscriptions {
 
 class TestSubscription extends AnyFlatSpec with Matchers {
 
-  val log = Logger[TestSubscription]()
+  val log: Logger = Logger[TestSubscription]()
 
   behavior of "Subscription"
 

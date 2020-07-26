@@ -39,7 +39,7 @@ object Implicits {
     def option[T]( f: =>T ): Option[T] = if (b) Some(f) else None
   }
 
-  implicit val stringKeyWrites = new KeyWrites[String] {
+  implicit val stringKeyWrites: KeyWrites[String] = new KeyWrites[String] {
     def writeKey(key: String): String = key
   }
 

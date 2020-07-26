@@ -10,6 +10,7 @@ import com.github.thebridsk.materialui.TextVariant
 import com.github.thebridsk.materialui.TextColor
 import com.github.thebridsk.bridge.clientcommon.debug.DebugLoggerComponent
 
+
 /**
  * @author werewolf
  */
@@ -25,7 +26,7 @@ object LogPage {
 
   class Backend( scope: BackendScope[Props, State]) {
 
-    def render( props: Props, state: State ) = {
+    def render( props: Props, state: State ) = { // scalafix:ok ExplicitResultTypes; React
       <.div(
         RootBridgeAppBar(
             title = Seq(MuiTypography(
@@ -45,12 +46,12 @@ object LogPage {
 
     private var mounted = false
 
-    val didMount = Callback {
+    val didMount: Callback = Callback {
       mounted = true
       // make AJAX rest call here
     }
 
-    val willUnmount = Callback {
+    val willUnmount: Callback = Callback {
       mounted = false
     }
 
@@ -64,6 +65,6 @@ object LogPage {
         .componentWillUnmount( scope => scope.backend.willUnmount )
         .build
 
-  def apply( routeCtl: BridgeRouter[AppPage] ) = component(Props(routeCtl))
+  def apply( routeCtl: BridgeRouter[AppPage] ) = component(Props(routeCtl))  // scalafix:ok ExplicitResultTypes; ReactComponent
 
 }

@@ -16,7 +16,7 @@ import com.github.thebridsk.bridge.data.Team
 
 object AppRouter {
 
-  val logger = Logger("bridge.Router")
+  val logger: Logger = Logger("bridge.Router")
 
   trait AppPage
 
@@ -33,7 +33,7 @@ object AppRouter {
 
   private var instance: Option[AppRouter] = None
 
-  def apply( modules: Module* ) = {
+  def apply( modules: Module* ): AppRouter = {
     instance match {
       case Some(i) => throw new IllegalStateException("Only one AppRouter can be created")
       case None =>
@@ -44,7 +44,7 @@ object AppRouter {
   }
 
   val location = document.location
-  val hostUrl = location.protocol+"//"+location.host
+  val hostUrl: String = location.protocol+"//"+location.host
   val baseUrl = new BaseUrl(hostUrl+location.pathname)
 
 }
@@ -75,7 +75,7 @@ trait Module {
    * Get an ^.onClick-->Callback TagMod that goes to the home page when invoked.
    * If setGotoAppHome has not been called the returned TagMod does nothing when invoked.
    */
-  def gotoAppHome() = varGotoAppHome match {
+  def gotoAppHome(): TagMod = varGotoAppHome match {
     case Some(f) =>
       logger.info("DuplicateRouter: going to App home page")
       f()
@@ -126,27 +126,27 @@ class AppRouter( modules: Module* ) {
     root:::modulepages
   }
 
-  val defaultContract = Contract( "0", ContractTricks(0), NoTrump, NotDoubled, North, Vul, NotVul, Made, 1, None, None, TestRubber, None, 1, 3, "North Player", "South Player", "East Player", "West Player", North )
+  val defaultContract: Contract = Contract( "0", ContractTricks(0), NoTrump, NotDoubled, North, Vul, NotVul, Made, 1, None, None, TestRubber, None, 1, 3, "North Player", "South Player", "East Player", "West Player", North )
 
-  def defaultHand( scoring: ScoringSystem ) = defaultContract.copy( scoringSystem = scoring )
+  def defaultHand( scoring: ScoringSystem ): Contract = defaultContract.copy( scoringSystem = scoring )
 
-  def scoringViewWithHonorsCallbackOk( routerCtl: RouterCtl[AppPage])( contract: Contract, picture: Option[File], removePicture: Boolean, honors: Int, pos: Option[PlayerPosition] ) = {
+  def scoringViewWithHonorsCallbackOk( routerCtl: RouterCtl[AppPage])( contract: Contract, picture: Option[File], removePicture: Boolean, honors: Int, pos: Option[PlayerPosition] ): Callback = {
     routerCtl.set(Home)  // show the Info page.
   }
 
-  def scoringViewCallbackOk( routerCtl: RouterCtl[AppPage])( contract: Contract, picture: Option[File], removePicture: Boolean ) = {
+  def scoringViewCallbackOk( routerCtl: RouterCtl[AppPage])( contract: Contract, picture: Option[File], removePicture: Boolean ): Callback = {
     routerCtl.set(Home)  // show the Info page.
   }
 
-  def scoringViewCallbackCancel( routerCtl: RouterCtl[AppPage]) = {
+  def scoringViewCallbackCancel( routerCtl: RouterCtl[AppPage]): Callback = {
     routerCtl.set(Home)  // show the Info page.
   }
 
   def logToServer: RouterConfig.Logger =
     s => Callback { logger.fine(s"AppRouter: "+s) }
 
-  val moduleAllRoutes = modules.map(_.routes())
-  def moduleRoutes() = moduleAllRoutes.reduce(_ | _)
+  val moduleAllRoutes: Seq[RoutingRule[AppPage,Unit]] = modules.map(_.routes())
+  def moduleRoutes(): RoutingRule[AppPage,Unit] = moduleAllRoutes.reduce(_ | _)
 
   import scala.language.implicitConversions
   implicit def routerCtlToBridgeRouter[P]( ctl: RouterCtl[P] ): BridgeRouter[P] =
@@ -170,7 +170,7 @@ class AppRouter( modules: Module* ) {
 
   def logit[T]( f: => T )(implicit pos: Position): T = Alerter.tryit(f)
 
-  def appBarPage( router: BridgeRouter[AppPage], title: String, page: TagMod, mainStyle: TagMod = TagMod() ) = {
+  def appBarPage( router: BridgeRouter[AppPage], title: String, page: TagMod, mainStyle: TagMod = TagMod() ) = { // scalafix:ok ExplicitResultTypes; React
     <.div(
       mainStyle,
       RootBridgeAppBar(
@@ -190,7 +190,7 @@ class AppRouter( modules: Module* ) {
     )
   }
 
-  val config = RouterConfigDsl[AppPage].buildConfig { dsl =>
+  val config: RouterWithPropsConfig[AppPage,Unit] = RouterConfigDsl[AppPage].buildConfig { dsl =>
     import dsl._
 
     (emptyRule // trimSlashes
@@ -230,12 +230,12 @@ class AppRouter( modules: Module* ) {
 
   val modulesWithDefault = modules.toList // ::: (ModuleRenderer::Nil)
 
-  def layout(c: RouterCtl[AppPage], r: Resolution[AppPage]) = {
+  def layout(c: RouterCtl[AppPage], r: Resolution[AppPage]): VdomElement = {
     logger.fine("AppRouter: Rendering page "+ r.page)
     Navigator(r,c,modulesWithDefault)
   }
 
-  val isFromServer = {
+  val isFromServer: Boolean = {
     val prot = location.protocol
     val r = (prot=="http:" || prot=="https:")
     logger.info("Page was loaded with "+prot+", isFromServer "+r)
@@ -246,15 +246,15 @@ class AppRouter( modules: Module* ) {
   // if not in demo mode, isEnabled is None
   AjaxResult.setEnabled(AjaxResult.isEnabled.getOrElse( isFromServer ))
 
-  def router = routerComponentAndLogic()._1
+  def router: Router[AppPage] = routerComponentAndLogic()._1
 
-  def routerWithURL( base: BaseUrl = baseUrl) = routerComponentAndLogic(base)._1
+  def routerWithURL( base: BaseUrl = baseUrl): Router[AppPage] = routerComponentAndLogic(base)._1
 
   private var fRouter: Option[ Router[AppRouter.AppPage]] = None
   private var fRouterLogic: Option[ RouterLogic[AppRouter.AppPage,Unit] ] = None
   private var fRouterCtl: Option[ RouterCtl[AppRouter.AppPage]] = None
 
-  def routerComponentAndLogic( base: BaseUrl = baseUrl)  = {
+  def routerComponentAndLogic( base: BaseUrl = baseUrl): (Router[AppPage], RouterLogic[AppPage,Unit])  = {
 
     val (r,c) = Router.componentAndLogic( base, config)
     fRouter = Some(r)
@@ -264,7 +264,7 @@ class AppRouter( modules: Module* ) {
     (r,c)
   }
 
-  def gotoHome() = {
+  def gotoHome(): TagMod = {
     logger.info("AppRouter: setting up onClick for going home")
     fRouterCtl match {
       case Some(ctl) =>
@@ -277,7 +277,7 @@ class AppRouter( modules: Module* ) {
     }
   }
 
-  def toRootPage( page: AppPage, suffix: String ) = {
+  def toRootPage( page: AppPage, suffix: String ): Unit = {
     logger.info(s"""toRootPage going to $page, suffix="$suffix".""")
     fRouterCtl match {
       case Some(ctl) =>

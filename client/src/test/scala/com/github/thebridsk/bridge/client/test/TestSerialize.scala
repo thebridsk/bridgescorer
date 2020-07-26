@@ -21,7 +21,7 @@ class TestSerialize extends AnyFlatSpec with Matchers {
 
   }
 
-  val serializedData = """{"id":"M1","""+
+  val serializedData: String = """{"id":"M1","""+
                        """"teams":[{"id":"T1","player1":"Nancy","player2":"Norman","created":0,"updated":0},"""+
                        """{"id":"T2","player1":"Ellen","player2":"Edward","created":0,"updated":0},"""+
                        """{"id":"T3","player1":"Susan","player2":"Sam","created":0,"updated":0},"""+

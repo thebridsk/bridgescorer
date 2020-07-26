@@ -12,25 +12,26 @@ import com.github.thebridsk.utilities.logging.Logger
 import com.github.thebridsk.bridge.server.test.util.HttpUtils
 import com.github.thebridsk.bridge.data.Movement
 import com.github.thebridsk.bridge.server.test.util.HttpUtils.ResponseFromHttp
+import java.net.URL
 
 object MovementsPage {
 
-  val log = Logger[MovementsPage]()
+  val log: Logger = Logger[MovementsPage]()
 
-  def current(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
+  def current(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position): MovementsPage = {
     new MovementsPage( getCurrentMovement )
   }
 
-  def urlFor( movement: Option[String] = None ) = TestServer.getAppPageUrl("duplicate/movements"+movement.map{ m => s"/${m}"}.getOrElse(""))
-  def restUrlFor( movement: String ) = TestServer.getUrl(s"/v1/rest/movements/${movement}")
+  def urlFor( movement: Option[String] = None ): String = TestServer.getAppPageUrl("duplicate/movements"+movement.map{ m => s"/${m}"}.getOrElse(""))
+  def restUrlFor( movement: String ): URL = TestServer.getUrl(s"/v1/rest/movements/${movement}")
 
-  def goto( movement: String = null )(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
+  def goto( movement: String = null )(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position): MovementsPage = {
     val mov = Option(movement)
     go to urlFor(Option(movement))
     new MovementsPage(mov)
   }
 
-  val movements = "2TablesArmonk"::"Howell3TableNoRelay"::"Mitchell3Table"::Nil
+  val movements: List[String] = "2TablesArmonk"::"Howell3TableNoRelay"::"Mitchell3Table"::Nil
 
   def getMovement( movement: String ): Option[Movement] = {
     import com.github.thebridsk.bridge.server.rest.UtilsPlayJson._
@@ -79,21 +80,21 @@ class MovementsPage(
                    ) extends Page[MovementsPage] {
   import MovementsPage._
 
-  def validate(implicit patienceConfig: PatienceConfig, pos: Position) = logMethod(s"${pos.line} ${getClass.getSimpleName}.validate") { eventually {
+  def validate(implicit patienceConfig: PatienceConfig, pos: Position): MovementsPage = logMethod(s"${pos.line} ${getClass.getSimpleName}.validate") { eventually {
     currentUrl mustBe urlFor( movement )
 
     findButtons( "OK"::movements: _* )
     this
   }}
 
-  def click( mov: String )(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def click( mov: String )(implicit patienceConfig: PatienceConfig, pos: Position): MovementsPage = {
     if (!movements.contains(mov)) log.warning(s"Unknown movement mov")
 
     clickButton( mov )
     new MovementsPage(Option(mov))
   }
 
-  def clickOK(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def clickOK(implicit patienceConfig: PatienceConfig, pos: Position): ListDuplicatePage = {
     clickButton("OK")
     new ListDuplicatePage(None)
   }

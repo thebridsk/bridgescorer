@@ -1,15 +1,15 @@
 package com.github.thebridsk.bridge.clientcommon.rest2
 
 import org.scalajs.dom.ext.Ajax.InputData
+import org.scalajs.dom
 import scala.concurrent.duration.Duration
 import com.github.thebridsk.source.SourcePosition
 import org.scalactic.source.Position
 import scala.concurrent.Promise
 import com.github.thebridsk.bridge.data.RestMessage
-import org.scalajs.dom
 import com.github.thebridsk.utilities.logging.Logger
-import com.github.thebridsk.bridge.clientcommon.logger.CommAlerter
 import com.github.thebridsk.bridge.clientcommon.logger.Init
+import com.github.thebridsk.bridge.clientcommon.logger.CommAlerter
 
 trait IAjaxCall {
   def send(method: String, url: String, data: InputData, timeout: Duration,
@@ -18,7 +18,7 @@ trait IAjaxCall {
 }
 
 object AjaxCall extends IAjaxCall {
-  val log = Logger("comm.AjaxCall")
+  val log: Logger = Logger("comm.AjaxCall")
 
   val Done = dom.raw.XMLHttpRequest.DONE
   val Loading = dom.raw.XMLHttpRequest.LOADING
@@ -26,7 +26,7 @@ object AjaxCall extends IAjaxCall {
   val Opened = dom.raw.XMLHttpRequest.OPENED
   val HeadersReceived = dom.raw.XMLHttpRequest.HEADERS_RECEIVED
 
-  def readyStateToString( readyState: Int ) = {
+  def readyStateToString( readyState: Int ): String = {
     val s = readyState match {
       case Done => "done"
       case Loading => "loading"
@@ -39,7 +39,7 @@ object AjaxCall extends IAjaxCall {
   }
 
   import play.api.libs.json._
-  def processError( statusCode: Int, resp: JsValue ) = {
+  def processError( statusCode: Int, resp: JsValue ): RestMessage = {
     resp match {
       case _: JsObject =>
         resp \ "errors" match {

@@ -10,11 +10,11 @@ trait ResultRecorder {
 }
 
 object ResultRecorder extends ResultRecorder {
-  val log = Logger("bridge.ResultRecorder")
+  val log: Logger = Logger("bridge.ResultRecorder")
 
   import com.github.thebridsk.source._
 
-  def logException( x: Exception, url: Option[String] = None, reqbody: Option[InputData] = None ) = {
+  def logException( x: Exception, url: Option[String] = None, reqbody: Option[InputData] = None ): Unit = {
     x match {
       case ex: AjaxDisabled =>
         log.info(s"ResultRecorder.logException: Ajax is disabled, called from ${ex.pos.line}")

@@ -5,6 +5,7 @@ import com.github.thebridsk.bridge.data.Team
 import com.github.thebridsk.bridge.data.DuplicateHand
 import com.github.thebridsk.bridge.data.DuplicateSummaryDetails
 import com.github.thebridsk.bridge.data.Table
+import com.github.thebridsk.bridge.data.Board
 
 case class DuplicateException(message: String) extends Exception(message)
 
@@ -26,24 +27,24 @@ class MatchDuplicateScore private (
   val created = duplicate.created
   val updated = duplicate.updated
 
-  val boards =
+  val boards: Map[Board.Id,BoardScore] =
     duplicate.boards.map(b => (b.id -> BoardScore(b, perspective))).toMap
 
-  val sortedBoards =
+  val sortedBoards: List[BoardScore] =
     boards.values.toList.sortWith((b1, b2) => b1.id < b2.id)
 
-  val alldone = !boards.values.exists(b => !b.allplayed)
+  val alldone: Boolean = !boards.values.exists(b => !b.allplayed)
 
-  def isStarted = {
+  def isStarted: Boolean = {
     val ts = duplicate.teams.exists(t => t.areBothPlayersSet())
     ts || boards.values.exists(bb => bb.anyplayed)
   }
 
   val teams = duplicate.teams
 
-  def getTeam(tid: Team.Id) = duplicate.getTeam(tid)
+  def getTeam(tid: Team.Id): Option[Team] = duplicate.getTeam(tid)
 
-  val teamScores = duplicate.teams
+  val teamScores: Map[Team.Id,Double] = duplicate.teams
     .map(
       team =>
         (team.id -> {
@@ -63,7 +64,7 @@ class MatchDuplicateScore private (
     )
     .toMap
 
-  val teamImps = duplicate.teams
+  val teamImps: Map[Team.Id,Double] = duplicate.teams
     .map(
       team =>
         (team.id -> {
@@ -83,7 +84,7 @@ class MatchDuplicateScore private (
     )
     .toMap
 
-  val places = {
+  val places: List[Place] = {
     val m = teamScores.groupBy(e => e._2).map { e =>
       val (points, teams) = e
       points -> teams.keys.map(tid => getTeam(tid).get).toList
@@ -98,7 +99,7 @@ class MatchDuplicateScore private (
     })
   }
 
-  val placesImps = {
+  val placesImps: List[Place] = {
     val m = teamImps.groupBy(e => e._2).map { e =>
       val (points, teams) = e
       points -> teams.keys.map(tid => getTeam(tid).get).toList
@@ -113,7 +114,7 @@ class MatchDuplicateScore private (
     })
   }
 
-  def placeByWinnerSet(winnerset: List[Team.Id]) = {
+  def placeByWinnerSet(winnerset: List[Team.Id]): List[Place] = {
     places.flatMap(p => {
       val pteam = p.teams.filter(t => winnerset.contains(t.id))
       if (pteam.isEmpty) Nil
@@ -121,7 +122,7 @@ class MatchDuplicateScore private (
     })
   }
 
-  def placeImpByWinnerSet(winnerset: List[Team.Id]) = {
+  def placeImpByWinnerSet(winnerset: List[Team.Id]): List[Place] = {
     placesImps.flatMap(p => {
       val pteam = p.teams.filter(t => winnerset.contains(t.id))
       if (pteam.isEmpty) Nil
@@ -180,7 +181,7 @@ class MatchDuplicateScore private (
     }.toMap
   }
 
-  def getRound(table: Table.Id, round: Int) = {
+  def getRound(table: Table.Id, round: Int): Option[Round] = {
     tables.get(table) match {
       case Some(rounds) =>
         rounds.find { r =>
@@ -190,7 +191,7 @@ class MatchDuplicateScore private (
     }
   }
 
-  def getRoundForAllTables(round: Int) = {
+  def getRoundForAllTables(round: Int): List[Round] = {
     tables.flatMap { entry =>
       val (table, rounds) = entry
       rounds.find { r =>
@@ -199,7 +200,7 @@ class MatchDuplicateScore private (
     }.toList
   }
 
-  def allRounds = {
+  def allRounds: List[Int] = {
     tables
       .flatMap { entry =>
         val (table, rounds) = entry
@@ -209,7 +210,7 @@ class MatchDuplicateScore private (
       .distinct
   }
 
-  def matchHasRelay = {
+  def matchHasRelay: Boolean = {
     allRounds.find { ir =>
       val all =
         getRoundForAllTables(ir).flatMap(r => r.boards.map(bs => bs.board.id))
@@ -221,7 +222,7 @@ class MatchDuplicateScore private (
   /**
     * @returns table IDs
     */
-  def tableRoundRelay(itable: Table.Id, iround: Int) = {
+  def tableRoundRelay(itable: Table.Id, iround: Int): List[Table.Id] = {
     val allRounds = getRoundForAllTables(iround)
     val otherRounds = allRounds.filter(r => r.table != itable)
     val otherBoards = otherRounds.flatMap(r => r.boards.map(bs => bs.board.id))
@@ -245,7 +246,7 @@ class MatchDuplicateScore private (
   /**
     * Get all the table Ids in sort order.
     */
-  def getTableIds = {
+  def getTableIds: List[Table.Id] = {
     tables.keys
       .map { id =>
         id.asInstanceOf[Table.Id]
@@ -315,7 +316,7 @@ class MatchDuplicateScore private (
     }
   }
 
-  def getDetails = {
+  def getDetails: List[DuplicateSummaryDetails] = {
     duplicate.boards
       .flatMap { b =>
         b.hands.flatMap { dh =>
@@ -370,11 +371,11 @@ object MatchDuplicateScore {
       ew: Team,
       boards: List[BoardScore]
   ) {
-    def allUnplayedOnTable =
+    def allUnplayedOnTable: Boolean =
       boards.find { bs =>
         bs.hasTeamPlayed(ns.id)
       }.isEmpty
-    def complete =
+    def complete: Boolean =
       boards
         .filter { bs =>
           bs.board.getHand(ns.id).isDefined
@@ -387,13 +388,13 @@ object MatchDuplicateScore {
     /**
       * @return a tuple 2.  The first is the played boards, the second is the unplayed boards.
       */
-    def playedAndUnplayedBoards = {
+    def playedAndUnplayedBoards: (List[BoardScore], List[BoardScore]) = {
       boards.partition { b =>
         b.hasTeamPlayed(ns.id)
       }
     }
 
-    override def toString() =
+    override def toString(): String =
       s"""[Round table=${table}, round=${round}, ns=${ns.id}, ew=${ew.id}, boards=${boards
         .mkString("\n  ", "\n  ", "")}]"""
   }

@@ -19,7 +19,7 @@ import java.io.InputStream
 import com.github.thebridsk.bridge.server.backend.resource.MetaData.MetaDataFile
 
 object Store {
-  val log = Logger[Store[_, _]]()
+  val log: Logger = Logger[Store[_, _]]()
 }
 
 /**
@@ -77,14 +77,14 @@ abstract class Store[VId <: Comparable[VId], VType <: VersionedInstance[VType, V
 ) extends Resources[VId, VType]
     with StoreListenerManager {
 
-  def idToString( id: VId ) = persistent.support.idSupport.toString(id)
+  def idToString( id: VId ): String = persistent.support.idSupport.toString(id)
 
   /** The URI prefix that identifies the resources served by this store */
   val resourceURI = persistent.resourceURI
 
-  implicit private val self = this
+  implicit private val self: Store[VId,VType] = this
 
-  val metaData = new StoreMetaData[VId] {
+  val metaData: StoreMetaData[VId] = new StoreMetaData[VId] {
 
     override
     def listFiles( id: VId ): Future[Result[Iterator[MetaDataFile]]] = Future { persistent.listFiles(id) }

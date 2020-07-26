@@ -42,11 +42,11 @@ class Element( val underlying: WebElement )(implicit pos: Position, webdriver: W
      * @param propertyName - the css property name of the element
      * @return The current, computed value of the property.
      */
-    def cssValue( name: String ) = underlying.getCssValue(name)
+    def cssValue( name: String ): String = underlying.getCssValue(name)
 
-    def id = attribute("id")
+    def id: Option[String] = attribute("id")
 
-    def containsClass( cls: String ) = attribute("class").map{ clses =>
+    def containsClass( cls: String ): Boolean = attribute("class").map{ clses =>
       clses.split(" ").contains(cls)
     }.getOrElse(false)
 
@@ -54,22 +54,22 @@ class Element( val underlying: WebElement )(implicit pos: Position, webdriver: W
       Option( underlying.getText ).getOrElse("")
     }
 
-    def scrollToElement = {
+    def scrollToElement: Unit = {
       PageBrowser.scrollToElement(underlying)
     }
 
-    def click = {
+    def click: Unit = {
       PageBrowser.scrollToElement(underlying)
       underlying.click()
 //      Thread.sleep( 100L )
     }
 
-    def isClickable = {
+    def isClickable: Boolean = {
       PageBrowser.scrollToElement(underlying)
       isDisplayed && isEnabled
     }
 
-    def checkClickable = {
+    def checkClickable: Unit = {
       PageBrowser.scrollToElement(underlying)
       if (!isDisplayed) {
         val disp = underlying.getCssValue("display")
@@ -93,7 +93,7 @@ class Element( val underlying: WebElement )(implicit pos: Position, webdriver: W
       }
     }
 
-    def getComputedCss = {
+    def getComputedCss: Either[String,String] = {
       val script = "var s = '';" +
                    "var o = getComputedStyle(arguments[0]);" +
                    "for(var i = 0; i < o.length; i++){" +
@@ -125,7 +125,7 @@ class Element( val underlying: WebElement )(implicit pos: Position, webdriver: W
      * Send enter to the element.
      * Most of the time this is functionally equivalent to clicking the element.
      */
-    def enter = {
+    def enter: Unit = {
       PageBrowser.scrollToElement(underlying)
       sendKeys( Keys.ENTER.toString() )
 //      Thread.sleep( 100L )
@@ -140,14 +140,14 @@ class Element( val underlying: WebElement )(implicit pos: Position, webdriver: W
     def find(
         by: QueryBy
       )(implicit patienceConfig: PatienceConfig,
-                 pos: Position) = {
+                 pos: Position): Element = {
       by.queryElement(this)
     }
 
     def findAll(
         by: QueryBy
       )(implicit patienceConfig: PatienceConfig,
-                 pos: Position) = {
+                 pos: Position): List[Element] = {
       by.queryElements(this)
     }
 
@@ -177,7 +177,7 @@ class Element( val underlying: WebElement )(implicit pos: Position, webdriver: W
     PageBrowser.getElement(this)
   }
 
-  def takeScreenshot( directory: String, filename: String )( implicit pos: Position ) = {
+  def takeScreenshot( directory: String, filename: String )( implicit pos: Position ): Element = {
     try {
       val scrFile = underlying.getScreenshotAs(OutputType.FILE);
       val destFile = PageBrowser.getPath(directory,filename)
@@ -190,22 +190,22 @@ class Element( val underlying: WebElement )(implicit pos: Position, webdriver: W
     this
   }
 
-  def sendKeys( keys: String ) = {
+  def sendKeys( keys: String ): Unit = {
     underlying.sendKeys(keys)
   }
 }
 
 object Element {
-  val log = Logger[Element]()
+  val log: Logger = Logger[Element]()
 }
 
 class InputElement( underlying: WebElement )(implicit pos: Position, webdriver: WebDriver, patienceConfig: PatienceConfig ) extends Element(underlying) {
 
   def this( el: Element )(implicit pos1: Position, webdriver1: WebDriver, patienceConfig1: PatienceConfig ) = this(el.underlying)(pos1,webdriver1,patienceConfig1)
 
-  def `type` = attribute("type")
+  def `type`: Option[String] = attribute("type")
 
-  def name = attribute("name")
+  def name: Option[String] = attribute("name")
 
 }
 
@@ -235,7 +235,7 @@ class RadioButton( underlying: WebElement )(implicit pos: Position, webdriver: W
   def this( el: Element )(implicit pos1: Position, webdriver1: WebDriver, patienceConfig1: PatienceConfig ) = this(el.underlying)(pos1,webdriver1,patienceConfig1)
 
   override
-  def isSelected = {
+  def isSelected: Boolean = {
     try {
       find( PageBrowser.xpath( """./parent::*/parent::*[contains(concat(' ', @class, ' '), ' Mui-checked ')]""" ))
       true
@@ -246,23 +246,23 @@ class RadioButton( underlying: WebElement )(implicit pos: Position, webdriver: W
   }
   // def value: String = underlying.getAttribute("value")
 
-  def label = find( PageBrowser.xpath( """./parent::*/parent::*/following-sibling::*""" ))
+  def label: Element = find( PageBrowser.xpath( """./parent::*/parent::*/following-sibling::*""" ))
 
 }
 
 object RadioButton {
 
-  def findAll()(implicit pos: Position, webdriver: WebDriver, patienceConfig: PatienceConfig ) = {
+  def findAll()(implicit pos: Position, webdriver: WebDriver, patienceConfig: PatienceConfig ): List[Checkbox] = {
     val el = PageBrowser.findAll( PageBrowser.xpath(s"""//label[contains(concat(' ', @class, ' '), ' baseRadioButton ')]/span[1]/span[1]/input""") )
     el.map( e => new Checkbox(e.underlying) )
   }
 
-  def find( name: String )(implicit pos: Position, webdriver: WebDriver, patienceConfig: PatienceConfig ) = {
+  def find( name: String )(implicit pos: Position, webdriver: WebDriver, patienceConfig: PatienceConfig ): Checkbox = {
     val el = PageBrowser.find( PageBrowser.xpath(s"""//label[contains(concat(' ', @class, ' '), ' baseRadioButton ')]/span[1]/span[1]/input[@id='${name}']""") )
     new Checkbox(el.underlying)
   }
 
-  def findAllChecked()(implicit pos: Position, webdriver: WebDriver, patienceConfig: PatienceConfig ) = {
+  def findAllChecked()(implicit pos: Position, webdriver: WebDriver, patienceConfig: PatienceConfig ): List[Checkbox] = {
     val el = PageBrowser.findAll( PageBrowser.xpath(s"""//label[contains(concat(' ', @class, ' '), ' baseRadioButton ')]/span[1][contains(concat(' ', @class, ' '), ' Mui-checked ')]/span[1]/input""") )
     el.map( e => new Checkbox(e.underlying) )
   }
@@ -281,24 +281,24 @@ class Checkbox( underlying: WebElement )(implicit pos: Position, webdriver: WebD
 
   // click the label element instead, the input is not always clickable
   override
-  def click = {
+  def click: Unit = {
     elemLabel.click
   }
 
   // click the label element instead, the input is not always clickable
   override
-  def isClickable = {
+  def isClickable: Boolean = {
     elemLabel.isClickable
   }
 
   // click the label element instead, the input is not always clickable
   override
-  def checkClickable = {
+  def checkClickable: Unit = {
     elemLabel.checkClickable
   }
 
   override
-  def isSelected = {
+  def isSelected: Boolean = {
     try {
       find( PageBrowser.xpath( """./parent::*/parent::*[contains(concat(' ', @class, ' '), ' Mui-checked ')]""" ))
       true
@@ -309,23 +309,23 @@ class Checkbox( underlying: WebElement )(implicit pos: Position, webdriver: WebD
   }
   // def value: String = underlying.getAttribute("value")
 
-  def label = find( PageBrowser.xpath( """./parent::*/parent::*/following-sibling::*""" ))
+  def label: Element = find( PageBrowser.xpath( """./parent::*/parent::*/following-sibling::*""" ))
 
 }
 
 object Checkbox {
 
-  def findAll()(implicit pos: Position, webdriver: WebDriver, patienceConfig: PatienceConfig ) = {
+  def findAll()(implicit pos: Position, webdriver: WebDriver, patienceConfig: PatienceConfig ): List[Checkbox] = {
     val el = PageBrowser.findAll( PageBrowser.xpath(s"""//label[contains(concat(' ', @class, ' '), ' baseCheckbox ')]/span[1]/span[1]/input""") )
     el.map( e => new Checkbox(e.underlying) )
   }
 
-  def find( name: String )(implicit pos: Position, webdriver: WebDriver, patienceConfig: PatienceConfig ) = {
+  def find( name: String )(implicit pos: Position, webdriver: WebDriver, patienceConfig: PatienceConfig ): Checkbox = {
     val el = PageBrowser.find( PageBrowser.xpath(s"""//label[contains(concat(' ', @class, ' '), ' baseCheckbox ')]/span[1]/span[1]/input[@id='${name}']""") )
     new Checkbox(el.underlying)
   }
 
-  def findAllChecked()(implicit pos: Position, webdriver: WebDriver, patienceConfig: PatienceConfig ) = {
+  def findAllChecked()(implicit pos: Position, webdriver: WebDriver, patienceConfig: PatienceConfig ): List[Checkbox] = {
     val el = PageBrowser.findAll( PageBrowser.xpath(s"""//label[contains(concat(' ', @class, ' '), ' baseCheckbox ')]/span[1][contains(concat(' ', @class, ' '), ' Mui-checked ')]/span[1]/input""") )
     el.map( e => new Checkbox(e.underlying) )
   }
@@ -344,27 +344,27 @@ class Combobox( underlying: WebElement )(implicit pos: Position, webdriver: WebD
     underlying.findElements(By.xpath( """./parent::div/following-sibling::div/div/div/ul/li""" ) ).asScala.map(e => new Element(e)).toList
   }
 
-  def isSuggestionVisible = {
+  def isSuggestionVisible: Boolean = {
     underlying.findElement(By.xpath( """./parent::div/following-sibling::div/div""" ) ).isDisplayed()
   }
 
-  def clickCaret = {
+  def clickCaret: Unit = {
     underlying.findElement(By.xpath("./following-sibling::span/button")).click()
   }
 
-  def esc = {
+  def esc: Unit = {
     underlying.sendKeys(Keys.ESCAPE)
   }
 }
 
 object Combobox {
 
-  def findAll()(implicit pos: Position, webdriver: WebDriver, patienceConfig: PatienceConfig ) = {
+  def findAll()(implicit pos: Position, webdriver: WebDriver, patienceConfig: PatienceConfig ): List[Combobox] = {
     val el = PageBrowser.findAll( PageBrowser.xpath(s"""//div[contains(concat(' ', @class, ' '), ' rw-combobox ')]/div/input""") )
     el.map( e => new Combobox(e.underlying) )
   }
 
-  def find( name: String )(implicit pos: Position, webdriver: WebDriver, patienceConfig: PatienceConfig ) = {
+  def find( name: String )(implicit pos: Position, webdriver: WebDriver, patienceConfig: PatienceConfig ): Combobox = {
     val el = PageBrowser.find( PageBrowser.xpath(s"""//div[contains(concat(' ', @class, ' '), ' rw-combobox ')]/div/input[@name='${name}']""") )
     new Combobox(el.underlying)
   }
@@ -378,22 +378,22 @@ class DateTimePicker( underlying: WebElement )(implicit pos: Position, webdriver
 
   def this( el: Element )(implicit pos1: Position, webdriver1: WebDriver, patienceConfig1: PatienceConfig ) = this(el.underlying)(pos1,webdriver1,patienceConfig1)
 
-  def clickSelectDate(implicit pos1: Position ) = {
+  def clickSelectDate(implicit pos1: Position ): Unit = {
     val b = underlying.findElement(By.xpath( """./following-sibling::span/button[1]""" ) )
     b.click
   }
 
-  def isSelectDatePopupVisible(implicit pos1: Position, webdriver: WebDriver, patienceConfig: PatienceConfig ) = {
+  def isSelectDatePopupVisible(implicit pos1: Position, webdriver: WebDriver, patienceConfig: PatienceConfig ): Boolean = {
     val b = new Element( underlying.findElement(By.xpath( """./parent::div/parent::div/div[2]""" ) ) )(pos1,webdriver,patienceConfig)
     !b.containsClass("rw-popup-transition-exited")
   }
 
-  def clickPreviousMonth(implicit pos1: Position, webdriver: WebDriver, patienceConfig: PatienceConfig ) = {
+  def clickPreviousMonth(implicit pos1: Position, webdriver: WebDriver, patienceConfig: PatienceConfig ): Unit = {
     val b = new Element( underlying.findElement(By.xpath( """./parent::div/parent::div/div[2]/div/div/div/button[1]""" ) ) )(pos1,webdriver,patienceConfig)
     b.click
   }
 
-  def clickNextMonth(implicit pos1: Position, webdriver: WebDriver, patienceConfig: PatienceConfig ) = {
+  def clickNextMonth(implicit pos1: Position, webdriver: WebDriver, patienceConfig: PatienceConfig ): Unit = {
     val b = new Element( underlying.findElement(By.xpath( """./parent::div/parent::div/div[2]/div/div/div/button[2]""" ) ) )(pos1,webdriver,patienceConfig)
     b.click
   }
@@ -409,17 +409,17 @@ class DateTimePicker( underlying: WebElement )(implicit pos: Position, webdriver
     }.toList
   }
 
-  def clickDay( d: String)(implicit pos1: Position, webdriver: WebDriver, patienceConfig: PatienceConfig ) = {
+  def clickDay( d: String)(implicit pos1: Position, webdriver: WebDriver, patienceConfig: PatienceConfig ): Unit = {
     val b = new Element( underlying.findElement(By.xpath( s"""./parent::div/parent::div/div[3]/div/div/div[2]/table/tbody/tr/td[@aria-label='${d}']""" ) ) )(pos1,webdriver,patienceConfig)
     b.click
   }
 
-  def clickSelectTime(implicit pos1: Position ) = {
+  def clickSelectTime(implicit pos1: Position ): Unit = {
     val b = underlying.findElement(By.xpath( """./following-sibling::span/button[2]""" ) )
     b.clear()
   }
 
-  def isSelectTimePopupVisible(implicit pos1: Position, webdriver: WebDriver, patienceConfig: PatienceConfig ) = {
+  def isSelectTimePopupVisible(implicit pos1: Position, webdriver: WebDriver, patienceConfig: PatienceConfig ): Boolean = {
     val b = new Element( underlying.findElement(By.xpath( """./parent::div/parent::div/div[3]""" ) ) )(pos1,webdriver,patienceConfig)
     !b.containsClass("rw-popup-transition-exited")
   }
@@ -435,7 +435,7 @@ class DateTimePicker( underlying: WebElement )(implicit pos: Position, webdriver
     }.toList
   }
 
-  def clickTime( d: String)(implicit pos1: Position, webdriver: WebDriver, patienceConfig: PatienceConfig ) = {
+  def clickTime( d: String)(implicit pos1: Position, webdriver: WebDriver, patienceConfig: PatienceConfig ): Unit = {
     val b = new Element( underlying.findElement(By.xpath( s"""./parent::div/parent::div/div[2]/div/div/div/ul/li[text()='${d}']""" ) ) )(pos1,webdriver,patienceConfig)
     b.click
   }
@@ -444,12 +444,12 @@ class DateTimePicker( underlying: WebElement )(implicit pos: Position, webdriver
 
 object DateTimePicker {
 
-  def findAll()(implicit pos: Position, webdriver: WebDriver, patienceConfig: PatienceConfig ) = {
+  def findAll()(implicit pos: Position, webdriver: WebDriver, patienceConfig: PatienceConfig ): List[DateTimePicker] = {
     val el = PageBrowser.findAll( PageBrowser.xpath(s"""//div[contains(concat(' ', @class, ' '), ' rw-datetime-picker ')]/div/input""") )
     el.map( e => new DateTimePicker(e.underlying) )
   }
 
-  def find( name: String )(implicit pos: Position, webdriver: WebDriver, patienceConfig: PatienceConfig ) = {
+  def find( name: String )(implicit pos: Position, webdriver: WebDriver, patienceConfig: PatienceConfig ): DateTimePicker = {
     val el = PageBrowser.find( PageBrowser.xpath(s"""//div[contains(concat(' ', @class, ' '), ' rw-datetime-picker ')]/div/input[@name='${name}']""") )
     new DateTimePicker(el.underlying)
   }

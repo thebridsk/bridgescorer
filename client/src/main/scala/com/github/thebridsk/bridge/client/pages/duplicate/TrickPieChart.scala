@@ -7,19 +7,20 @@ import com.github.thebridsk.bridge.clientcommon.react.PieChartWithTooltip.IntLeg
 import com.github.thebridsk.bridge.clientcommon.react.PieChartWithTooltip
 import com.github.thebridsk.bridge.clientcommon.react.ColorBar
 import com.github.thebridsk.bridge.clientcommon.react.Utils._
+import com.github.thebridsk.color.HSLColor
 
 object TrickPieChart {
 
   val colorTypePassed = Color.Blue
 
-  val allMadeColors = for (
+  val allMadeColors: List[HSLColor] = for (
                          hue <- 120::150::180::Nil;
                          lightness <- 75::50::25::Nil
                       ) yield {
                         Color.hsl(hue,100,lightness)
                       }
 
-  val allDownColors = for (
+  val allDownColors: List[HSLColor] = for (
                          hue <- 0::330::30::300::60::Nil;
                          lightness <- 25::50::75::Nil
                       ) yield {
@@ -28,7 +29,7 @@ object TrickPieChart {
 
   object TrickLegendUtil extends IntLegendUtil[Int] {
 
-    def nameToTitle( tricks: Int ) = {
+    def nameToTitle( tricks: Int ): String = {
       if (tricks < 0) s"Down $tricks"
       else if (tricks == 0) "Made   "
       else if (tricks == 10) "Passed"
@@ -42,7 +43,7 @@ object TrickPieChart {
      *        >=0 made contract, number of tricks made
      *        10 - passed out
      */
-    def colorMap( i: Int ) = {
+    def colorMap( i: Int ): Color = {
       if (i == 10) colorTypePassed
       else if (i < 0) allDownColors( -i-1 )
       else allMadeColors( i )
@@ -68,7 +69,7 @@ object TrickPieChart {
       size: Int,
       sizeInLegend: Int,
       minSize: Int
-  ) = {
+  ) = {  // scalafix:ok ExplicitResultTypes; ReactComponent
     val bytype = histogram.groupBy { cs =>
       if (cs.tricks < 0) 2
       else if (cs.tricks == 10) 10
@@ -99,7 +100,7 @@ object TrickPieChart {
    * @param maxMade a non-negative number indicating the maximum made result
    * @param nopassedout
    */
-  def description( maxDown: Int, maxMade: Int, nopassedout: Boolean = false ) = {
+  def description( maxDown: Int, maxMade: Int, nopassedout: Boolean = false ): TagMod = {
     val p = if (nopassedout) (maxDown to maxMade).toList
             else (maxDown to maxMade).toList:::List( 10 )
     val colors = p.map( i => TrickLegendUtil.colorMap(i))

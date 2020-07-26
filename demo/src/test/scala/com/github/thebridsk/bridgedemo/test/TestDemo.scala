@@ -15,7 +15,7 @@ import org.scalatest.time.Span
 import org.scalatest.time.Millis
 
 object TestDemo {
-  val testlog = Logger[TestDemo]()
+  val testlog: Logger = Logger[TestDemo]()
 }
 
 /**
@@ -25,22 +25,22 @@ object TestDemo {
  */
 class TestDemo extends AnyFlatSpec with Matchers with BeforeAndAfterAll {
 
-  val log = Logger[TestDemo]()
+  val log: Logger = Logger[TestDemo]()
 
   TestStartLogging.startLogging()
 
 
-  implicit val timeoutduration = Duration( 60, TimeUnit.SECONDS )
+  implicit val timeoutduration: FiniteDuration = Duration( 60, TimeUnit.SECONDS )
 
   val timeoutMillis = 15000
   val intervalMillis = 500
 
-  implicit val itimeout = PatienceConfig(timeout=scaled(Span(timeoutMillis, Millis)), interval=scaled(Span(intervalMillis,Millis)))
+  implicit val itimeout: PatienceConfig = PatienceConfig(timeout=scaled(Span(timeoutMillis, Millis)), interval=scaled(Span(intervalMillis,Millis)))
 
   val Session1 = new Session
 
   override
-  def beforeAll() = {
+  def beforeAll(): Unit = {
 
     try {
       waitForFutures(
@@ -56,7 +56,7 @@ class TestDemo extends AnyFlatSpec with Matchers with BeforeAndAfterAll {
   }
 
   override
-  def afterAll() = {
+  def afterAll(): Unit = {
 
     waitForFuturesIgnoreTimeouts(
       "Stopping a browser or server",

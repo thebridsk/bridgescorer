@@ -5,7 +5,7 @@ import scala.concurrent.ExecutionContext
 class ResultHolder[T] {
   private var result: Option[Cancellable[T]] = None
 
-  def set( r: Cancellable[T] )(implicit executor: ExecutionContext) = {
+  def set( r: Cancellable[T] )(implicit executor: ExecutionContext): Unit = {
     result=Some(r)
     r.onComplete { t =>
       result match {
@@ -17,7 +17,7 @@ class ResultHolder[T] {
 
   def isRunning = result.isDefined
 
-  def cancel() = result match {
+  def cancel(): Boolean = result match {
     case Some(r) =>
       result = None
       r.cancel()

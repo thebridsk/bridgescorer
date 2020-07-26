@@ -10,18 +10,19 @@ import com.github.thebridsk.browserpages.PageBrowser._
 import org.scalatest.matchers.must.Matchers._
 import com.github.thebridsk.bridge.data.bridge._
 import com.github.thebridsk.browserpages.GenericPage
+import org.scalatest.Assertion
 
 object FourSelectPartnersPage {
 
-  val log = Logger[FourSelectPartnersPage]()
+  val log: Logger = Logger[FourSelectPartnersPage]()
 
-  def current(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
+  def current(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position): FourSelectPartnersPage = {
     val (chiid,roundid) = EnterNamesPage.findMatchRoundId
     new FourSelectPartnersPage(chiid,roundid)
   }
 
-  def urlFor( chiid: String, roundid: Int ) = EnterNamesPage.urlFor(chiid,roundid)
-  def demoUrlFor( chiid: String, roundid: Int ) = EnterNamesPage.demoUrlFor(chiid,roundid)
+  def urlFor( chiid: String, roundid: Int ): String = EnterNamesPage.urlFor(chiid,roundid)
+  def demoUrlFor( chiid: String, roundid: Int ): String = EnterNamesPage.demoUrlFor(chiid,roundid)
 
   /**
    * @param chiid the chicago id
@@ -31,7 +32,7 @@ object FourSelectPartnersPage {
               webDriver: WebDriver,
               patienceConfig: PatienceConfig,
               pos: Position
-          ) = {
+          ): FourSelectPartnersPage = {
     go to urlFor(chiid,roundid)
     new FourSelectPartnersPage(chiid,roundid)
   }
@@ -74,7 +75,7 @@ class FourSelectPartnersPage(
                         ) extends Page[FourSelectPartnersPage] {
   import FourSelectPartnersPage._
 
-  def validate(implicit patienceConfig: PatienceConfig, pos: Position) = logMethod(s"${pos.line} ${getClass.getSimpleName}.validate") { eventually {
+  def validate(implicit patienceConfig: PatienceConfig, pos: Position): FourSelectPartnersPage = logMethod(s"${pos.line} ${getClass.getSimpleName}.validate") { eventually {
 
     roundid.toString() must not be "0"      // only valid for the first round
 
@@ -88,49 +89,49 @@ class FourSelectPartnersPage(
     this
   }}
 
-  def isDealer( loc: PlayerPosition )(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def isDealer( loc: PlayerPosition )(implicit patienceConfig: PatienceConfig, pos: Position): Boolean = {
     getButton( toDealerButtonId(loc)).containsClass("baseButtonSelected")
   }
 
-  def setDealer( loc: PlayerPosition )(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def setDealer( loc: PlayerPosition )(implicit patienceConfig: PatienceConfig, pos: Position): FourSelectPartnersPage = {
     clickButton( toDealerButtonId(loc) )
     this
   }
 
-  def clickChangeScorekeeper(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def clickChangeScorekeeper(implicit patienceConfig: PatienceConfig, pos: Position): GenericPage = {
     clickButton(buttonChangeScorekeeper)
     new GenericPage
   }
 
-  def clickOK(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def clickOK(implicit patienceConfig: PatienceConfig, pos: Position): HandPage = {
     clickButton(buttonOK)
     new HandPage(chiid,roundid,0,ChicagoMatchTypeFour)
   }
 
-  def clickResetNames(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def clickResetNames(implicit patienceConfig: PatienceConfig, pos: Position): FourSelectPartnersPage = {
     clickButton(buttonResetNames)
     this
   }
 
-  def clickReset(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def clickReset(implicit patienceConfig: PatienceConfig, pos: Position): FourSelectPartnersPage = {
     clickButton(buttonReset)
     this
   }
 
-  def clickCancel(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def clickCancel(implicit patienceConfig: PatienceConfig, pos: Position): SummaryPage = {
     clickButton(buttonCancel)
     SummaryPage.current(ChicagoMatchTypeFour)
   }
 
-  def isOKEnabled(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def isOKEnabled(implicit patienceConfig: PatienceConfig, pos: Position): Boolean = {
     getButton(buttonOK).isEnabled
   }
 
-  def isResetEnabled(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def isResetEnabled(implicit patienceConfig: PatienceConfig, pos: Position): Boolean = {
     getButton(buttonReset).isEnabled
   }
 
-  def isResetNamesEnabled(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def isResetNamesEnabled(implicit patienceConfig: PatienceConfig, pos: Position): Boolean = {
     getButton(buttonResetNames).isEnabled
   }
 
@@ -146,17 +147,17 @@ class FourSelectPartnersPage(
     * @param pos
     * @return
     */
-  def clickPlayer( loc: PlayerPosition, i: Int )(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def clickPlayer( loc: PlayerPosition, i: Int )(implicit patienceConfig: PatienceConfig, pos: Position): FourSelectPartnersPage = {
     clickButton( toPlayerButtonId(loc,i) )
     this
   }
 
-  def getPlayerName( loc: PlayerPosition, i: Int )(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def getPlayerName( loc: PlayerPosition, i: Int )(implicit patienceConfig: PatienceConfig, pos: Position): String = {
     val but = findButton( toPlayerButtonId(loc,i) )
     but.text
   }
 
-  def checkPlayerNames( loc: PlayerPosition, players: String* )(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def checkPlayerNames( loc: PlayerPosition, players: String* )(implicit patienceConfig: PatienceConfig, pos: Position): Assertion = {
     val buttonPlayers = players.zipWithIndex.map { case (p,i) =>
       findButton( toPlayerButtonId(loc,i+1) ).text
     }
@@ -176,13 +177,13 @@ class FourSelectPartnersPage(
     * @param pos
     * @return
     */
-  def clickPlayer( loc: PlayerPosition, name: String )(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def clickPlayer( loc: PlayerPosition, name: String )(implicit patienceConfig: PatienceConfig, pos: Position): FourSelectPartnersPage = {
     val but = findElem( xpath( s"""//button[contains(@id, '${loc.name}') and text()='$name']""" ) )
     but.click
     this
   }
 
-  def checkPlayer( loc: PlayerPosition, name: String, selected: Boolean )(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def checkPlayer( loc: PlayerPosition, name: String, selected: Boolean )(implicit patienceConfig: PatienceConfig, pos: Position): FourSelectPartnersPage = {
     withClue(s"Checking if $loc, $name, selected $selected") {
       val but = findElem( xpath( s"""//button[contains(@id, '${loc.name}') and text()='$name']""" ) )
       but.attribute("class") match {
@@ -195,7 +196,7 @@ class FourSelectPartnersPage(
     this
   }
 
-  def checkPlayer( loc: PlayerPosition, i: Int, selected: Boolean )(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def checkPlayer( loc: PlayerPosition, i: Int, selected: Boolean )(implicit patienceConfig: PatienceConfig, pos: Position): FourSelectPartnersPage = {
     withClue(s"Checking if $loc, $i, selected $selected") {
       val but = findElem( xpath( s"""//button[@id='${toPlayerButtonId(loc,i)}']""" ) )
       but.attribute("class") match {

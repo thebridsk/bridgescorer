@@ -15,7 +15,7 @@ import com.github.thebridsk.utilities.logging.Logger
 
 
 object DuplexPipeForLogging {
-  val log = Logger("comm.DuplexPipeForLogging")
+  val log: Logger = Logger("comm.DuplexPipeForLogging")
 
   class TimeoutException extends Exception
   class ServerException( msg: String) extends Exception(msg)
@@ -36,7 +36,7 @@ object DuplexPipeForLogging {
   def ignore(ack: Option[Exception] ): Unit = {}
 
   import scala.language.implicitConversions
-  implicit def ackToResponse( ack: Ack ) = (resp: Either[Protocol.ToBrowserMessage,Exception] ) => resp match {
+  implicit def ackToResponse( ack: Ack ): Either[Protocol.ToBrowserMessage,Exception] => Unit = (resp: Either[Protocol.ToBrowserMessage,Exception] ) => resp match {
     case Left(d) => ack(None)
     case Right(e) => ack(Some(e))
   }
@@ -64,12 +64,12 @@ class DuplexPipeForLogging( url: String, protocol: String = "" ) {
   /**
    * Add a listener for unsolicited messages from the server
    */
-  def addListener( l: Listener ) = listeners ::= l
+  def addListener( l: Listener ): Unit = listeners ::= l
 
   /**
    * Remove a listener for unsolicited messages from the server
    */
-  def removeListener( l: Listener ) = listeners.filter { listener => listener != l }
+  def removeListener( l: Listener ): List[Listener] = listeners.filter { listener => listener != l }
 
   def sendlog( data: LogEntryV2 ): Unit = {
     prepareForSending(data)

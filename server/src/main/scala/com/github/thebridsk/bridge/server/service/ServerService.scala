@@ -16,6 +16,8 @@ import io.swagger.v3.oas.annotations.tags.Tags
 import io.swagger.v3.oas.annotations.tags.Tag
 import javax.ws.rs.POST
 import com.github.thebridsk.utilities.logging.Logger
+import akka.http.scaladsl.server.{ RequestContext, Route, RouteResult }
+import scala.concurrent.Future
 
 /**
   * <p>
@@ -25,7 +27,7 @@ import com.github.thebridsk.utilities.logging.Logger
 @Tags(Array(new Tag(name = "Server")))
 class ServerService(totallyMissingHandler: RejectionHandler) {
 
-  val log = Logger[ServerService]()
+  val log: Logger = Logger[ServerService]()
 
   /**
     * Allow the logging level to be overridden for
@@ -38,7 +40,7 @@ class ServerService(totallyMissingHandler: RejectionHandler) {
   /**
     * spray route for all the methods on this resource
     */
-  val serverRoute = {
+  val serverRoute: RequestContext => Future[RouteResult] = {
     extractClientIP { ip =>
       {
         pathPrefix(serverUrlPrefix) {
@@ -80,8 +82,8 @@ class ServerService(totallyMissingHandler: RejectionHandler) {
       new ApiResponse(responseCode = "400", description = "Bad request")
     )
   )
-  def xxxshutdown = {}
-  def shutdown(@Parameter(hidden = true) ip: RemoteAddress) =
+  def xxxshutdown: Unit = {}
+  def shutdown(@Parameter(hidden = true) ip: RemoteAddress): Route =
     logRequestResult(ip.toString(), logLevelForTracingRequestResponse) {
       post {
         parameterMap { params =>

@@ -27,6 +27,7 @@ import com.github.thebridsk.bridge.client.pages.ServerURLPopup
 import com.github.thebridsk.bridge.data.Table
 import com.github.thebridsk.bridge.data.MatchDuplicate
 
+
 /**
  * A simple AppBar for the Bridge client.
  *
@@ -69,7 +70,7 @@ object DuplicatePageBridgeAppBar {
       routeCtl: BridgeRouter[DuplicatePage]
   )(
       mainMenuItems: CtorType.ChildArg*,
-  ) = {
+  ): TagMod = {
     TagMod(
       ServerURLPopup(),
       component(Props(id,tableIds,mainMenuItems,title,helpurl,routeCtl))
@@ -80,7 +81,7 @@ object DuplicatePageBridgeAppBar {
 object DuplicatePageBridgeAppBarInternal {
   import DuplicatePageBridgeAppBar._
 
-  val logger = Logger("bridge.DuplicatePageBridgeAppBar")
+  val logger: Logger = Logger("bridge.DuplicatePageBridgeAppBar")
 
   /**
    * Internal state for rendering the component.
@@ -93,8 +94,8 @@ object DuplicatePageBridgeAppBarInternal {
       anchorMainEl: js.UndefOr[Element] = js.undefined
   ) {
 
-    def openMainMenu( n: Node ) = copy( anchorMainEl = n.asInstanceOf[Element] )
-    def closeMainMenu() = copy( anchorMainEl = js.undefined )
+    def openMainMenu( n: Node ): State = copy( anchorMainEl = n.asInstanceOf[Element] )
+    def closeMainMenu(): State = copy( anchorMainEl = js.undefined )
   }
 
   /**
@@ -106,14 +107,14 @@ object DuplicatePageBridgeAppBarInternal {
    */
   class Backend(scope: BackendScope[Props, State]) {
 
-    def handleMainClick( event: ReactEvent ) = event.extract(_.currentTarget)(currentTarget => scope.modState(s => s.openMainMenu(currentTarget)).runNow() )
-    def handleMainCloseClick( event: ReactEvent ) = scope.modState(s => s.closeMainMenu()).runNow()
-    def handleMainClose( /* event: js.Object, reason: String */ ) = {
+    def handleMainClick( event: ReactEvent ): Unit = event.extract(_.currentTarget)(currentTarget => scope.modState(s => s.openMainMenu(currentTarget)).runNow() )
+    def handleMainCloseClick( event: ReactEvent ): Unit = scope.modState(s => s.closeMainMenu()).runNow()
+    def handleMainClose( /* event: js.Object, reason: String */ ): Unit = {
       logger.fine("MainClose called")
       scope.modState(s => s.closeMainMenu()).runNow()
     }
 
-    def render( props: Props, state: State ) = {
+    def render( props: Props, state: State ) = { // scalafix:ok ExplicitResultTypes; React
       import BaseStyles._
 
       def handleGotoHome(e: ReactEvent) = props.routeCtl.toHome
@@ -223,17 +224,18 @@ object DuplicatePageBridgeAppBarInternal {
 
     private var mounted = false
 
-    val didMount = Callback {
+    val didMount: Callback = Callback {
       mounted = true
 
     }
 
-    val willUnmount = Callback {
+    val willUnmount: Callback = Callback {
       mounted = false
 
     }
   }
 
+  private[duplicate]
   val component = ScalaComponent.builder[Props]("DuplicatePageBridgeAppBar")
                             .initialStateFromProps { props => State() }
                             .backend(new Backend(_))

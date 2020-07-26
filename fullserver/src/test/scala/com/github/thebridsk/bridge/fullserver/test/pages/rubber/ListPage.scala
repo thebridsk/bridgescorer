@@ -12,30 +12,31 @@ import com.github.thebridsk.browserpages.Page
 import com.github.thebridsk.browserpages.PagesAssertions
 import com.github.thebridsk.bridge.fullserver.test.pages.bridge.Popup
 import com.github.thebridsk.bridge.fullserver.test.pages.bridge.HomePage
+import scala.util.matching.Regex
 
 object ListPage {
 
-  val log = Logger[ListPage]()
+  val log: Logger = Logger[ListPage]()
 
-  def current(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
+  def current(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position): ListPage = {
     val url = currentUrl
     val id = getImportId(url)
     new ListPage(id)
   }
 
-  def goto( importId: Option[String] = None )(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
+  def goto( importId: Option[String] = None )(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position): ListPage = {
     go to urlFor(importId)
     new ListPage(importId)
   }
 
   //http://localhost:8080/v1/import?url=http://localhost:8080/public/index-fastopt.html%23imports
-  def urlFor( importId: Option[String] = None ) = {
+  def urlFor( importId: Option[String] = None ): String = {
     TestServer.getAppPageUrl( s"""${importId.map( iid => s"imports/${iid}/").getOrElse("")}rubber""" )
   }
 
-  val patternUrl = """(?:#import/([^/]+)/)?rubber""".r
+  val patternUrl: Regex = """(?:#import/([^/]+)/)?rubber""".r
 
-  def getImportId( url: String ) = {
+  def getImportId( url: String ): Option[String] = {
     val prefix = TestServer.getAppPage
     val test = if (url.startsWith(prefix)) {
       url.substring(prefix.length())
@@ -50,7 +51,7 @@ object ListPage {
     r
   }
 
-  val importSuccessPattern = """import rubber (R\d+) from ([^,]+), new ID (R\d+)""".r
+  val importSuccessPattern: Regex = """import rubber (R\d+) from ([^,]+), new ID (R\d+)""".r
 
 }
 
@@ -77,30 +78,30 @@ class ListPage( importId: Option[String] = None )( implicit val webDriver: WebDr
     this
   }
 
-  def getMatchButtons()(implicit pos: Position) = {
+  def getMatchButtons()(implicit pos: Position): List[String] = {
     getElemsByXPath(HomePage.divBridgeAppPrefix+"""//div/table/tbody/tr/td[1]/button""").map(e => e.text)
   }
 
-  def getImportButtons()(implicit pos: Position) = {
+  def getImportButtons()(implicit pos: Position): List[String] = {
     getElemsByXPath(HomePage.divBridgeAppPrefix+"""//div/table/tbody/tr/td[2]/button""").flatMap(e => e.id.toList)
   }
 
-  def checkMatchButton( id: String )(implicit pos: Position) = {
+  def checkMatchButton( id: String )(implicit pos: Position): ListPage = {
     val e = findButton(s"""Rubber${id}""")
     this
   }
 
-  def checkImportButton( id: String )(implicit pos: Position) = {
+  def checkImportButton( id: String )(implicit pos: Position): ListPage = {
     val e = findButton(s"""ImportRubber_${id}""")
     this
   }
 
-  def clickHome(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def clickHome(implicit patienceConfig: PatienceConfig, pos: Position): HomePage = {
     clickButton("Home")
     new HomePage()(webDriver, pos)
   }
 
-  def clickImport( id: String )(implicit pos: Position) = {
+  def clickImport( id: String )(implicit pos: Position): ListPage = {
     withClueEx(s"${pos.line}: trying to import ${id}") {
       clickButton(s"ImportRubber_$id")
     }
@@ -111,7 +112,7 @@ class ListPage( importId: Option[String] = None )( implicit val webDriver: WebDr
    * @return the Id of the imported match in the main store.
    * The call fails if the import was not successful
    */
-  def checkSuccessfulImport( id: String )(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def checkSuccessfulImport( id: String )(implicit patienceConfig: PatienceConfig, pos: Position): String = {
     if (importId.isEmpty) fail( s"Not on import rubber summary page: ${currentUrl}" )
     eventually {
       validatePopup(true)

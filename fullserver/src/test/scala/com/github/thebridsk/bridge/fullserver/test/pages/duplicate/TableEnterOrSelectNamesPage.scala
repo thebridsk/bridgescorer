@@ -17,17 +17,18 @@ import com.github.thebridsk.browserpages.TextField
 import com.github.thebridsk.browserpages.PageBrowser
 import org.openqa.selenium.Keys
 import com.github.thebridsk.bridge.fullserver.test.pages.bridge.ErrorMsgDiv
+import com.github.thebridsk.browserpages.Element
 
 object TableEnterOrSelectNamesPage {
 
-  val log = Logger[TableEnterOrSelectNamesPage]()
+  val log: Logger = Logger[TableEnterOrSelectNamesPage]()
 
-  def current( targetBoard: Option[String])(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
+  def current( targetBoard: Option[String])(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position): TableEnterOrSelectNamesPage = {
     val (dupid,tableid,roundid,targetboard) = findTableRoundId
     new TableEnterOrSelectNamesPage(dupid,tableid,roundid,targetBoard)
   }
 
-  def urlFor( dupid: String, tableid: String, roundid: String, board: Option[String] ) =
+  def urlFor( dupid: String, tableid: String, roundid: String, board: Option[String] ): String =
     TableEnterScorekeeperPage.urlFor(dupid, tableid, roundid, board)
 
   def goto( dupid: String,
@@ -38,7 +39,7 @@ object TableEnterOrSelectNamesPage {
               webDriver: WebDriver,
               patienceConfig: PatienceConfig,
               pos: Position
-          ) =
+          ): TableEnterScorekeeperPage =
       TableEnterScorekeeperPage.goto(dupid, tableid, roundid, board)
 
   /**
@@ -67,7 +68,7 @@ class TableEnterOrSelectNamesPage( dupid: String,
                                ) extends Page[TableEnterOrSelectNamesPage] with ErrorMsgDiv[TableEnterOrSelectNamesPage] {
   import TableEnterOrSelectNamesPage._
 
-  def validate(implicit patienceConfig: PatienceConfig, pos: Position) = logMethod(s"${pos.line} ${getClass.getSimpleName}.validate") { eventually {
+  def validate(implicit patienceConfig: PatienceConfig, pos: Position): TableEnterOrSelectNamesPage = logMethod(s"${pos.line} ${getClass.getSimpleName}.validate") { eventually {
 
     currentUrl mustBe urlFor(dupid,tableid,roundid,targetBoard)
 
@@ -75,7 +76,7 @@ class TableEnterOrSelectNamesPage( dupid: String,
     this
   }}
 
-  val x = getButton("OK")
+  val x: Element = getButton("OK")
 
   def playEnterNames(north: String, south: String, east: String, west: String,
                      scorekeeper: PlayerPosition

@@ -44,7 +44,7 @@ import com.github.thebridsk.bridge.data.BoardSet
 import com.github.thebridsk.bridge.data.Movement
 
 object Controller extends  {
-  val logger = Logger("bridge.Controller")
+  val logger: Logger = Logger("bridge.Controller")
 
   class AlreadyStarted extends Exception
 
@@ -55,7 +55,7 @@ object Controller extends  {
   var useRestToServer: Boolean = true;
   private var useSSEFromServer: Boolean = true;
 
-  def setUseSSEFromServer( b: Boolean ) = {
+  def setUseSSEFromServer( b: Boolean ): Unit = {
     if (b != useSSEFromServer) {
       useSSEFromServer = b
       setServerEventConnection()
@@ -81,7 +81,7 @@ object Controller extends  {
     }
   }
 
-  def log( entry: LogEntryS ) = {
+  def log( entry: LogEntryS ): Unit = {
     // This can't create a duplexPipe, we haven't setup all the info
     duplexPipe match {
       case Some(dp) => dp.sendlog(entry)
@@ -89,7 +89,7 @@ object Controller extends  {
     }
   }
 
-  def log( entry: LogEntryV2 ) = {
+  def log( entry: LogEntryV2 ): Unit = {
     // This can't create a duplexPipe, we haven't setup all the info
     duplexPipe match {
       case Some(dp) => dp.sendlog(entry)
@@ -148,14 +148,14 @@ object Controller extends  {
   }
 
   object Listener extends SECListener[MatchDuplicate.Id] {
-    def handleStart( dupid: MatchDuplicate.Id) = {
+    def handleStart( dupid: MatchDuplicate.Id): Unit = {
       BridgeDispatcher.startDuplicateMatch(dupid)
     }
-    def handleStop( dupid: MatchDuplicate.Id) = {
+    def handleStop( dupid: MatchDuplicate.Id): Unit = {
       BridgeDispatcher.stop()
     }
 
-    def processMessage( msg: Protocol.ToBrowserMessage ) = {
+    def processMessage( msg: Protocol.ToBrowserMessage ): Unit = {
       msg match {
         case Protocol.MonitorJoined(id,members) =>
         case Protocol.MonitorLeft(id,members) =>
@@ -183,7 +183,7 @@ object Controller extends  {
     sseConnection.getDuplexPipeServerEventConnection().map( c => c.send(msg))
   }
 
-  def updateMatch( dup: MatchDuplicate ) = {
+  def updateMatch( dup: MatchDuplicate ): Unit = {
     BridgeDispatcher.updateDuplicateMatch(dup)
     if (!BridgeDemo.isDemo) {
       if (useRestToServer) {
@@ -200,7 +200,7 @@ object Controller extends  {
     logger.info("Update hand ("+dup.id+","+dup+")")
   }
 
-  def updateHand( dup: MatchDuplicate, hand: DuplicateHand ) = {
+  def updateHand( dup: MatchDuplicate, hand: DuplicateHand ): Unit = {
     BridgeDispatcher.updateDuplicateHand(dup.id, hand)
     if (!BridgeDemo.isDemo) {
       if (useRestToServer) {
@@ -218,14 +218,14 @@ object Controller extends  {
     logger.info("Update hand ("+dup.id+","+hand.board+","+hand.id+")")
   }
 
-  def updateHandOld( dup: MatchDuplicate, hand: DuplicateHand ) = {
+  def updateHandOld( dup: MatchDuplicate, hand: DuplicateHand ): Unit = {
     BridgeDispatcher.updateDuplicateHand(dup.id, hand)
     RestClientDuplicate.boardResource(dup.id).handResource(hand.board).update(hand.id, hand).recordFailure().foreach( h => {
       logger.info("Update hand ("+dup.id+","+hand.board+","+hand.id+")")
     })
   }
 
-  def updateTeam( dup: MatchDuplicate, team: Team ) = {
+  def updateTeam( dup: MatchDuplicate, team: Team ): Unit = {
     BridgeDispatcher.updateTeam(dup.id, team)
     if (!BridgeDemo.isDemo) {
       if (useRestToServer) {
@@ -243,7 +243,7 @@ object Controller extends  {
     logger.info("Update team ("+dup.id+","+team+")")
   }
 
-  def updateTeamOld( dup: MatchDuplicate, team: Team ) = {
+  def updateTeamOld( dup: MatchDuplicate, team: Team ): Unit = {
     BridgeDispatcher.updateTeam(dup.id, team)
     RestClientDuplicate.teamResource(dup.id).update(team.id, team).recordFailure().foreach( t => {
       logger.info("Update team ("+dup.id+","+team.id+")")
@@ -276,7 +276,7 @@ object Controller extends  {
   /**
    * Stop monitoring a duplicate match
    */
-  def delayStop() = {
+  def delayStop(): Unit = {
     logger.fine(s"Controller.delayStop ${DuplicateStore.getId()}")
     sseConnection.delayStop()
   }
@@ -284,7 +284,7 @@ object Controller extends  {
   /**
    * Stop monitoring a duplicate match
    */
-  def stop() = {
+  def stop(): Unit = {
     logger.fine(s"Controller.stop ${DuplicateStore.getId()}")
     sseConnection.stop()
   }
@@ -407,7 +407,7 @@ object Controller extends  {
     }
   }
 
-  def getDuplicateResult( id: MatchDuplicateResult.Id ) = {
+  def getDuplicateResult( id: MatchDuplicateResult.Id ): RestResult[MatchDuplicateResult] = {
     RestClientDuplicateResult.get(id).recordFailure()
   }
 
@@ -418,7 +418,7 @@ object Controller extends  {
     }}
   }
 
-  def stopMonitoringDuplicateResult() = {
+  def stopMonitoringDuplicateResult(): Unit = {
     DuplicateResultStore.monitor( None )
   }
 }

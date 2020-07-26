@@ -26,14 +26,14 @@ import com.github.thebridsk.bridge.fullserver.test.pages.chicago.ChicagoMatchTyp
 
 object ChicagoDemoTestPages {
 
-  val log = Logger[ChicagoDemoTestPages]()
+  val log: Logger = Logger[ChicagoDemoTestPages]()
 
   val player1 = "Naomi"
   val player2 = "Sebastion"
   val player3 = "Eloise"
   val player4 = "Wyatt"
 
-  val players = player1::player2::player3::player4::Nil
+  val players: List[String] = player1::player2::player3::player4::Nil
 
 }
 
@@ -61,15 +61,15 @@ class ChicagoDemoTestPages extends AnyFlatSpec
 
   val backend = TestServer.backend
 
-  implicit val itimeout = PatienceConfig(timeout=scaled(Span(timeoutMillis, Millis)), interval=scaled(Span(intervalMillis,Millis)))
+  implicit val itimeout: PatienceConfig = PatienceConfig(timeout=scaled(Span(timeoutMillis, Millis)), interval=scaled(Span(intervalMillis,Millis)))
 
   val chicagoListURL: Option[String] = None
   val chicagoToListId: Option[String] = Some("Quit")
 
-  implicit val timeoutduration = Duration( 60, TimeUnit.SECONDS )
+  implicit val timeoutduration: FiniteDuration = Duration( 60, TimeUnit.SECONDS )
 
   override
-  def beforeAll() = {
+  def beforeAll(): Unit = {
     import com.github.thebridsk.bridge.server.test.util.ParallelUtils._
 
     MonitorTCP.nextTest()
@@ -88,7 +88,7 @@ class ChicagoDemoTestPages extends AnyFlatSpec
   }
 
   override
-  def afterAll() = {
+  def afterAll(): Unit = {
     import com.github.thebridsk.bridge.server.test.util.ParallelUtils._
 
     waitForFuturesIgnoreTimeouts(
@@ -199,7 +199,7 @@ class ChicagoDemoTestPages extends AnyFlatSpec
       )(implicit
           webDriver: WebDriver,
           pos: Position
-      ) = {
+      ): SummaryPage = {
 
     withClueAndScreenShot(screenshotDir, s"EnterHandRound${round}Hand${hand}", s"round ${round} hand ${hand}") {
       h.validate

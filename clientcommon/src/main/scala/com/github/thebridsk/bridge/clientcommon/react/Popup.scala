@@ -4,6 +4,7 @@ import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
 import com.github.thebridsk.utilities.logging.Logger
 
+
 /**
  * A skeleton Popup.
  *
@@ -20,14 +21,14 @@ object Popup {
 
   case class Props( display: Boolean, content: TagMod, id: Option[String] )
 
-  def apply( display: Boolean, content: TagMod, id: Option[String] = None ) = component(Props(display,content,id))
+  def apply( display: Boolean, content: TagMod, id: Option[String] = None ) = component(Props(display,content,id))  // scalafix:ok ExplicitResultTypes; ReactComponent
 
 }
 
 object PopupInternal {
   import Popup._
 
-  val logger = Logger("bridge.Popup")
+  val logger: Logger = Logger("bridge.Popup")
 
   /**
    * Internal state for rendering the Popup.
@@ -46,7 +47,7 @@ object PopupInternal {
    *
    */
   class Backend(scope: BackendScope[Props, State]) {
-    def render( props: Props, state: State ) = {
+    def render( props: Props, state: State ) = { // scalafix:ok ExplicitResultTypes; React
       import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles._
       val disp = ^.display.none.when(!props.display)
       <.div(
@@ -71,6 +72,7 @@ object PopupInternal {
     }
   }
 
+  private[react]
   val component = ScalaComponent.builder[Props]("PopupComponent")
                             .initialStateFromProps { props => State() }
                             .backend(new Backend(_))

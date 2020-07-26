@@ -154,7 +154,7 @@ trait HttpUtils {
     httpResp.copy(hash = Some(toHexString(md.digest())))
   }
 
-  def toHexString(hash: Array[Byte]) = {
+  def toHexString(hash: Array[Byte]): String = {
     hash.map(b => f"${b}%02x").mkString
   }
 
@@ -192,12 +192,12 @@ object HttpUtils extends HttpUtils {
 
   object NullOutputStream extends OutputStream {
 
-    def write(i: Int) = {}
-    override def write(b: Array[Byte]) = {}
-    override def write(b: Array[Byte], off: Int, len: Int) = {}
+    def write(i: Int): Unit = {}
+    override def write(b: Array[Byte]): Unit = {}
+    override def write(b: Array[Byte], off: Int, len: Int): Unit = {}
 
-    override def close() = {}
-    override def flush() = {}
+    override def close(): Unit = {}
+    override def flush(): Unit = {}
 
   }
 }

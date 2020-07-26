@@ -17,11 +17,12 @@ import com.github.thebridsk.materialui.MuiTypography
 import com.github.thebridsk.materialui.TextVariant
 import com.github.thebridsk.materialui.TextColor
 
+
 object ViewPlayersSecondRound {
   import PagePlayers._
   import PagePlayersInternal._
 
-  def apply( props: Props ) = component(props)
+  def apply( props: Props ) = component(props)  // scalafix:ok ExplicitResultTypes; ReactComponent
 
   case class State( val north: String,
                     val south: String,
@@ -31,9 +32,9 @@ object ViewPlayersSecondRound {
                     val changingScoreKeeper: Boolean
                   ) {
     def isDealerValid() = dealer.isDefined
-    def areAllPlayersValid() = playerValid(north) && playerValid(south) && playerValid(east) && playerValid(west)
+    def areAllPlayersValid(): Boolean = playerValid(north) && playerValid(south) && playerValid(east) && playerValid(west)
 
-    def isValid = areAllPlayersValid()&& isDealerValid()
+    def isValid: Boolean = areAllPlayersValid()&& isDealerValid()
 
     def isDealer(p: PlayerPosition): Boolean = dealer.map( d => d == p ).getOrElse(false)
 
@@ -46,13 +47,13 @@ object ViewPlayersSecondRound {
           case _ => false
         }
 
-    def getPlayerState = PlayerState(north,south,east,west,dealer)
+    def getPlayerState: PlayerState = PlayerState(north,south,east,west,dealer)
 
-    def isPlayerSpecified( p: String ) = p==north || p==south || p==east || p==west
+    def isPlayerSpecified( p: String ): Boolean = p==north || p==south || p==east || p==west
 
-    def allPlayers = (north::south::east::west::Nil).filter(p => p!="")
+    def allPlayers: List[String] = (north::south::east::west::Nil).filter(p => p!="")
 
-    def removePlayer( p: String ) = {
+    def removePlayer( p: String ): State = {
       val n = Some(north).filter { x => p!=x }.getOrElse("")
       val s = Some(south).filter { x => p!=x }.getOrElse("")
       val e = Some(east).filter { x => p!=x }.getOrElse("")
@@ -60,28 +61,28 @@ object ViewPlayersSecondRound {
       copy( north=n, south=s, east=e, west=w )
     }
 
-    def getDealer = dealer.map( d => d.pos.toString() ).getOrElse("")
+    def getDealer: String = dealer.map( d => d.pos.toString() ).getOrElse("")
   }
 
   class Backend(scope: BackendScope[Props, State]) {
 
     def show( desc: String, ps: State ) = ps
 
-    def setNorth(p: String)( e: ReactEventFromInput ) = scope.modState( ps => {show("setNorth",ps.copy(north=p, south="", east="", west="", changingScoreKeeper = false))})
-    def setSouth(p: String)( e: ReactEventFromInput ) = scope.modState( ps => {show("setSouth",complete(ps.removePlayer(p).copy(south=p)))})
-    def setEast(p: String)( e: ReactEventFromInput ) = scope.modState( ps => {show("setEast",complete(ps.removePlayer(p).copy(east=p)))})
-    def setWest(p: String)( e: ReactEventFromInput ) = scope.modState( ps => {show("setWest",complete(ps.removePlayer(p).copy(west=p)))})
+    def setNorth(p: String)( e: ReactEventFromInput ): Callback = scope.modState( ps => {show("setNorth",ps.copy(north=p, south="", east="", west="", changingScoreKeeper = false))})
+    def setSouth(p: String)( e: ReactEventFromInput ): Callback = scope.modState( ps => {show("setSouth",complete(ps.removePlayer(p).copy(south=p)))})
+    def setEast(p: String)( e: ReactEventFromInput ): Callback = scope.modState( ps => {show("setEast",complete(ps.removePlayer(p).copy(east=p)))})
+    def setWest(p: String)( e: ReactEventFromInput ): Callback = scope.modState( ps => {show("setWest",complete(ps.removePlayer(p).copy(west=p)))})
 
-    def setFirstDealer( p: PlayerPosition ) = scope.modState(ps => ps.copy(dealer=Some(p)))
+    def setFirstDealer( p: PlayerPosition ): Callback = scope.modState(ps => ps.copy(dealer=Some(p)))
 
-    val changeScoreKeeper = scope.modState(s => s.copy(changingScoreKeeper = true))
+    val changeScoreKeeper: Callback = scope.modState(s => s.copy(changingScoreKeeper = true))
 
-    val reset = scope.modState(s=> s.copy(north=s.north, south="", east="", west="", changingScoreKeeper = false) )
+    val reset: Callback = scope.modState(s=> s.copy(north=s.north, south="", east="", west="", changingScoreKeeper = false) )
 
     /**
      * Only call from within a scope.modState()
      */
-    def complete( state: State ) = {
+    def complete( state: State ): State = {
       val props = scope.withEffectsImpure.props
 
       val lastRound = props.chicago.rounds( props.chicago.rounds.size-1 )
@@ -129,7 +130,7 @@ object ViewPlayersSecondRound {
       state.copy(south=south, east=east, west=west)
     }
 
-    def render( props: Props, state: State ) = {
+    def render( props: Props, state: State ) = { // scalafix:ok ExplicitResultTypes; React
       import ChicagoStyles._
       val lastRound = props.chicago.rounds( props.chicago.rounds.size-1 )
 
@@ -282,7 +283,7 @@ object ViewPlayersSecondRound {
       )
     }
 
-    val ok = scope.stateProps { (state,props) =>
+    val ok: Callback = scope.stateProps { (state,props) =>
       val r = if (props.chicago.rounds.size <= props.page.round) {
         Round.create(props.page.round.toString(),
              state.north,
@@ -300,6 +301,7 @@ object ViewPlayersSecondRound {
     }
   }
 
+  private[chicagos]
   val component = ScalaComponent.builder[Props]("ViewPlayersSecondRound")
                             .initialStateFromProps { props => {
                               val lr = props.chicago.rounds( props.chicago.rounds.size-1 )

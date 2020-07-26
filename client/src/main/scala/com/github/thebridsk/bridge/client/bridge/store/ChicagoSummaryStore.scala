@@ -11,18 +11,18 @@ import com.github.thebridsk.bridge.client.bridge.action.ActionUpdateChicago
 import com.github.thebridsk.bridge.clientcommon.demo.BridgeDemo
 
 object ChicagoSummaryStore extends ChangeListenable {
-  val logger = Logger("bridge.ChicagoSummaryStore")
+  val logger: Logger = Logger("bridge.ChicagoSummaryStore")
 
   /**
    * Required to instantiate the store.
    */
-  def init() = {}
+  def init(): Unit = {}
 
 //  logger.warning("ChicagoSummaryStore initialized")
 
   private var dispatchToken: Option[DispatchToken] = Some(BridgeDispatcher.register(dispatch _))
 
-  def dispatch( msg: Any ) = Alerter.tryitWithUnit {
+  def dispatch( msg: Any ): Unit = Alerter.tryitWithUnit {
 //    logger.info(s"Received $msg")
     msg match {
       case ActionUpdateChicagoSummary(importId,summary) =>
@@ -56,7 +56,7 @@ object ChicagoSummaryStore extends ChangeListenable {
   def getChicagoSummary() = fSummary
   def getImportId = fImportId
 
-  def updateChicagoSummary( importId: Option[String], summary: Array[MatchChicago] ) = {
+  def updateChicagoSummary( importId: Option[String], summary: Array[MatchChicago] ): Unit = {
     fSummary = Option( summary )
     fImportId = importId
     notifyChange()

@@ -21,20 +21,20 @@ class TestVersionedInstance extends AnyFlatSpec with Matchers {
 
   behavior of "FileStore"
 
-  val mc3 = MatchChicagoV3(MatchChicago.id(0),
+  val mc3: MatchChicagoV3 = MatchChicagoV3(MatchChicago.id(0),
                            List("player1","player2","player3","player4"),
                            Nil,
                            0,
                            true,
                            0,0
                           )
-  val mc2 = MatchChicagoV2(MatchChicago.id(2),
+  val mc2: MatchChicagoV2 = MatchChicagoV2(MatchChicago.id(2),
                            List("player1","player2","player3","player4"),
                            Nil,
                            0,
                            0,0
                           )
-  val mc1 = MatchChicagoV1(MatchChicago.id(1),
+  val mc1: MatchChicagoV1 = MatchChicagoV1(MatchChicago.id(1),
                            "player1","player2","player3","player4",
                            Nil,
                            0,
@@ -43,19 +43,19 @@ class TestVersionedInstance extends AnyFlatSpec with Matchers {
 
   val jsonConverter = JsonConverter
   val yamlConverter = YamlConverter
-  implicit val converterYamlJson = Converter.getConverter(true)
+  implicit val converterYamlJson: Converter = Converter.getConverter(true)
 
   val converters = new BridgeServiceFileStoreConverters(true)
   import converters.matchChicagoJson
 
-  val matchChicagoJsonV1Only = VersionedInstanceJson[MatchChicago.Id,MatchChicago].add[MatchChicagoV1]
+  val matchChicagoJsonV1Only: VersionedInstanceJson[MatchChicago.Id,MatchChicago] = VersionedInstanceJson[MatchChicago.Id,MatchChicago].add[MatchChicagoV1]
 
   def test[C <: VersionedInstance[C,C,MatchChicago.Id],T <: VersionedInstance[C,T,MatchChicago.Id]](
       v: T,
       good: Boolean,
       converter: VersionedInstanceJson[MatchChicago.Id,C],
       writeConverter: Converter
-  )(implicit writer: Writes[T]) = {
+  )(implicit writer: Writes[T]): C = {
     val j = writeConverter.write(v)
     val vc = converter.parse( j )
     if (vc._1) {

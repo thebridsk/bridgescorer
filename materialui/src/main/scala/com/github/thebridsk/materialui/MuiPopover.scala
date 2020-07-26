@@ -15,7 +15,7 @@ object AnchorOriginHorizontalValue {
 
   val default = left
 
-  implicit def wrapHorizontal(v: AnchorOriginHorizontalValue) = v.value
+  implicit def wrapHorizontal(v: AnchorOriginHorizontalValue): String = v.value
 }
 
 class AnchorOriginVerticalValue(val value: String) extends AnyVal
@@ -26,7 +26,7 @@ object AnchorOriginVerticalValue {
 
   val default = top
 
-  implicit def wrapVertical(v: AnchorOriginVerticalValue) = v.value
+  implicit def wrapVertical(v: AnchorOriginVerticalValue): String = v.value
 }
 
 import js._
@@ -49,7 +49,7 @@ object AnchorOrigin {
 
   implicit class WrapAnchorOrigin(private val p: AnchorOrigin) extends AnyVal {
 
-    def horizontal = p.horizontalInternal.map { v =>
+    def horizontal: UndefOr[JsNumber | AnchorOriginHorizontalValue] = p.horizontalInternal.map { v =>
       val r: JsNumber | AnchorOriginHorizontalValue =
         if (js.typeOf(v.asInstanceOf[js.Any]) == "string") {
           val s: String = v.asInstanceOf[String]
@@ -68,7 +68,7 @@ object AnchorOrigin {
 //      p.horizontalInternal = v.value
 //    }
 
-    def vertical = p.verticalInternal.map { v =>
+    def vertical: UndefOr[JsNumber | AnchorOriginVerticalValue] = p.verticalInternal.map { v =>
       val r: JsNumber | AnchorOriginVerticalValue =
         if (js.typeOf(v.asInstanceOf[js.Any]) == "string") {
           val s: String = v.asInstanceOf[String]
@@ -92,7 +92,7 @@ object AnchorOrigin {
   def apply(
       horizontal: js.UndefOr[JsNumber | AnchorOriginHorizontalValue],
       vertical: js.UndefOr[JsNumber | AnchorOriginVerticalValue]
-  ) = {
+  ): AnchorOrigin = {
     val p = new js.Object().asInstanceOf[AnchorOrigin]
 
     horizontal.foreach(
@@ -113,7 +113,7 @@ object AnchorPosition {
   def apply(
       left: js.UndefOr[Double],
       right: js.UndefOr[Double]
-  ) = {
+  ): AnchorPosition = {
     val p = js.Dynamic.literal()
 
     left.foreach(p.dynamicUpdate("left")(_))
@@ -166,7 +166,7 @@ object PopoverProps extends PropsFactory[PopoverProps] {
 
   implicit class WrapPopoverProps(private val p: PopoverProps) extends AnyVal {
 
-    def anchorReference =
+    def anchorReference: UndefOr[AnchorReference] =
       p.anchorReferenceInternal.map(s => new AnchorReference(s))
 
 //    def anchorReference_= (v: js.UndefOr[AnchorReference]): Unit = {
@@ -174,7 +174,7 @@ object PopoverProps extends PropsFactory[PopoverProps] {
 //        orElse{ p.anchorReferenceInternal=js.undefined; None }
 //    }
 
-    def anchorEl = p.anchorElInternal.map { v =>
+    def anchorEl: UndefOr[AnchorElement] = p.anchorElInternal.map { v =>
       v.asInstanceOf[AnchorElement]
     }
 
@@ -183,7 +183,7 @@ object PopoverProps extends PropsFactory[PopoverProps] {
 //        orElse{ p.anchorElInternal=js.undefined; None }
 //    }
 
-    def transitionDuration = p.transitionDurationInternal.map { v =>
+    def transitionDuration: UndefOr[JsNumber | TransitionDuration] = p.transitionDurationInternal.map { v =>
       v.asInstanceOf[JsNumber | TransitionDuration]
     }
 
@@ -343,7 +343,7 @@ object PopoverProps extends PropsFactory[PopoverProps] {
       open: js.UndefOr[Boolean] = js.undefined,
       className: js.UndefOr[String] = js.undefined,
       additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
-  ) = {
+  ): P = {
     val p: P = ModalProps(
       props,
       backdropComponent,
@@ -399,7 +399,7 @@ object MuiPopover extends ComponentFactory[PopoverProps] {
   @js.native @JSImport("@material-ui/core/Popover", JSImport.Default) private object Popover
       extends js.Any
 
-      protected val f = JsComponent[PopoverProps, Children.Varargs, Null](Popover)
+      protected val f = JsComponent[PopoverProps, Children.Varargs, Null](Popover)  // scalafix:ok ExplicitResultTypes; ReactComponent
 
       // protected val f = JsFnComponent[PopoverProps, Children.Varargs](Popover)
 
@@ -501,7 +501,7 @@ object MuiPopover extends ComponentFactory[PopoverProps] {
       additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
   )(
       children: CtorType.ChildArg*
-  ) = {
+  ) = {  // scalafix:ok ExplicitResultTypes; ReactComponent
     val p: PopoverProps = PopoverProps(
       action = action,
       anchorEl = anchorEl,

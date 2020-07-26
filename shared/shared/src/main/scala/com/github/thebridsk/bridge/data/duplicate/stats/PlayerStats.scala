@@ -6,14 +6,14 @@ import com.github.thebridsk.bridge.data.Hand
 
 case class CounterStat(tricks: Int, counter: Int) {
 
-  def add(other: CounterStat) = {
+  def add(other: CounterStat): CounterStat = {
     copy(counter = counter + other.counter)
   }
 }
 
 object CounterStat {
 
-  def addTo(cs: CounterStat, list: List[CounterStat]) = {
+  def addTo(cs: CounterStat, list: List[CounterStat]): List[CounterStat] = {
     val i = list.indexWhere(x => x.tricks == cs.tricks)
     if (i < 0) {
       // not found
@@ -50,7 +50,7 @@ object ContractType {
     else ContractTypePartial
   }
 
-  def getRank(ct: ContractType) = {
+  def getRank(ct: ContractType): Int = {
     ct match {
       case ContractTypePassed        => 0
       case ContractTypePartial       => 1
@@ -107,7 +107,7 @@ case class PlayerStat(
     histogram: List[CounterStat] = List(),
     handsPlayed: Int = 0
 ) {
-  def add(other: PlayerStat) = {
+  def add(other: PlayerStat): PlayerStat = {
     if (player != other.player || declarer != other.declarer || contractType != other.contractType) {
       throw new Exception("player or declarer is not the same")
     }
@@ -120,7 +120,7 @@ case class PlayerStat(
     copy(histogram = h, handsPlayed = np)
   }
 
-  def csvHeader(min: Int = -13, max: Int = 6) = {
+  def csvHeader(min: Int = -13, max: Int = 6): String = {
     val r = (min to max).map { i =>
       if (i < 0) s"Down ${-i}"
       else if (i == 0) "Made"
@@ -129,7 +129,7 @@ case class PlayerStat(
     s"""Player,Declarer,ContractType,handsPlayed,${r.mkString(",")}"""
   }
 
-  def toCsv(min: Int = -13, max: Int = 6, percent: Boolean = false) = {
+  def toCsv(min: Int = -13, max: Int = 6, percent: Boolean = false): String = {
     val h = histogram.map(cs => (cs.tricks -> cs.counter)).toMap
     val r = (min to max).map { i =>
       val c = h.get(i).getOrElse(0)
@@ -140,13 +140,13 @@ case class PlayerStat(
     s""""${player}",${declarer},${contractType},${handsPlayed},${r.mkString(",")}"""
   }
 
-  def toCsvPercent(min: Int = -13, max: Int = 6) = {
+  def toCsvPercent(min: Int = -13, max: Int = 6): String = {
     toCsv(min, max, true)
   }
 
-  def normalize = copy(histogram = histogram.sortBy(x => x.tricks))
+  def normalize: PlayerStat = copy(histogram = histogram.sortBy(x => x.tricks))
 
-  def getCounter(tricks: Int) =
+  def getCounter(tricks: Int): Option[Int] =
     histogram.find(h => h.tricks == tricks).map(h => h.counter)
 }
 
@@ -184,12 +184,12 @@ object PlayerStats {
       result: Int
   )
 
-  def csvHeader(min: Int = -13, max: Int = 6) =
+  def csvHeader(min: Int = -13, max: Int = 6): String =
     PlayerStat("", true, "").csvHeader(min, max)
 
   def statsToCsv(stats: PlayerStats, percent: Boolean = false)(
       implicit out: PrintStream
-  ) = {
+  ): Unit = {
     val tocsv: (PlayerStat, Int, Int) => String =
       if (percent)(ds, min, max) => ds.toCsvPercent(min, max)
       else (ds, min, max) => ds.toCsv(min, max)
@@ -203,11 +203,11 @@ object PlayerStats {
     out.flush()
   }
 
-  def statsToCsvPercent(stats: PlayerStats)(implicit out: PrintStream) = {
+  def statsToCsvPercent(stats: PlayerStats)(implicit out: PrintStream): Unit = {
     statsToCsv(stats, true)
   }
 
-  def stats(dups: Map[MatchDuplicate.Id, MatchDuplicate]) = {
+  def stats(dups: Map[MatchDuplicate.Id, MatchDuplicate]): PlayerStats = {
     val results = dups.values.flatMap { dup =>
       dup.allPlayedHands.flatMap { dh =>
         val nsTeam = dup.getTeam(dh.nsTeam).get

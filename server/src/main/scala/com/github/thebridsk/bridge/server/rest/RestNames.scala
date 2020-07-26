@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.tags.Tags
 import io.swagger.v3.oas.annotations.tags.Tag
 import javax.ws.rs.GET
+import akka.http.scaladsl.server.Route
 
 /**
   * Rest API implementation for the logger config
@@ -33,7 +34,7 @@ trait RestNames extends HasActorSystem {
   /**
     * spray route for all the methods on this resource
     */
-  val route = pathPrefix("names") {
+  val route: Route = pathPrefix("names") {
     getNames
   }
 
@@ -58,8 +59,8 @@ trait RestNames extends HasActorSystem {
       )
     )
   )
-  def xxxgetNames() = {}
-  val getNames = pathEndOrSingleSlash {
+  def xxxgetNames(): Unit = {}
+  val getNames: Route = pathEndOrSingleSlash {
     get {
       resourceList(restService.getAllNames())
     }

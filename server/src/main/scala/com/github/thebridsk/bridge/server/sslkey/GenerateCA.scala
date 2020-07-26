@@ -11,7 +11,7 @@ trait GenerateCA
 object GenerateCA extends Subcommand("generateca") {
   import SSLKeyCommands.optionKeyDir
 
-  val log = Logger[GenerateCA]()
+  val log: Logger = Logger[GenerateCA]()
 
   implicit def dateConverter: ValueConverter[Duration] =
     singleArgConverter[Duration](Duration(_))
@@ -26,7 +26,7 @@ Syntax:
   ${SSLKeyCommands.cmdName} ${name} [options]
 Options:""")
 
-  val optionClean = toggle(
+  val optionClean: ScallopOption[Boolean] = toggle(
     name = "clean",
     noshort = true,
     descrNo = "fail if keys already exist",
@@ -34,7 +34,7 @@ Options:""")
     default = Some(false)
   )
 
-  val optionVerbose = toggle(
+  val optionVerbose: ScallopOption[Boolean] = toggle(
     name = "verbose",
     short = 'v',
     descrNo = "Don't add verbose option to commands",
@@ -42,14 +42,14 @@ Options:""")
     default = Some(false)
   )
 
-  val optionCA = opt[String](
+  val optionCA: ScallopOption[String] = opt[String](
     "ca",
     noshort = true,
     descr = "base filename for CA certificate files",
     required = true,
   )
 
-  val optionRootCAAlias = opt[String](
+  val optionRootCAAlias: ScallopOption[String] = opt[String](
     "caalias",
     noshort = true,
     descr = "alias for CA private certificate in CA keystore",
@@ -57,7 +57,7 @@ Options:""")
     default = Some("rootCA")
   )
 
-  val optionRootCADname = opt[String](
+  val optionRootCADname: ScallopOption[String] = opt[String](
     "cadname",
     noshort = true,
     descr = "DName for CA",
@@ -65,34 +65,34 @@ Options:""")
     default = Some("CN=BridgeScoreKeeperCA, OU=BridgeScoreKeeper, O=BridgeScoreKeeper, L=New York, ST=New York, C=US")
   )
 
-  val optionRootCAStorePW = opt[String](
+  val optionRootCAStorePW: ScallopOption[String] = opt[String](
     "castorepw",
     noshort = true,
     descr = "Store PW for CA keystore",
     required = true,
   )
 
-  val optionRootCAKeyPW = opt[String](
+  val optionRootCAKeyPW: ScallopOption[String] = opt[String](
     "cakeypw",
     noshort = true,
     descr = "Private key PW",
     required = true,
   )
 
-  val optionTruststore = opt[String](
+  val optionTruststore: ScallopOption[String] = opt[String](
     "truststore",
     noshort = true,
     descr = "base filename for truststore",
     required = true,
   )
-  val optionTrustPW = opt[String](
+  val optionTrustPW: ScallopOption[String] = opt[String](
     "trustpw",
     noshort = true,
     descr = "password for truststore",
     required = true,
   )
 
-  val optionValidityCA = opt[Int](
+  val optionValidityCA: ScallopOption[Int] = opt[Int](
     "validityCA",
     noshort = true,
     descr = "the validity of the CA certificate in days, default 1 year",

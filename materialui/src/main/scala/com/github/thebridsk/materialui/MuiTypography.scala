@@ -3,6 +3,7 @@ package com.github.thebridsk.materialui
 import japgolly.scalajs.react._
 import scala.scalajs.js
 import scala.scalajs.js.annotation._
+import scala.scalajs.js.UndefOr
 //import com.github.thebridsk.materialui.util.{ JsNumber => _, _ }
 
 
@@ -110,23 +111,23 @@ object TypographyProps extends PropsFactory[TypographyProps] {
 
   implicit class WrapTypographyProps(private val p: TypographyProps) extends AnyVal {
 
-    def align = p.alignInternal.map(s => new TextAlign(s))
+    def align: UndefOr[TextAlign] = p.alignInternal.map(s => new TextAlign(s))
 
 //    def align_= (v: js.UndefOr[TextAlign]): Unit = {
 //      v.map{ vv=>p.alignInternal=vv.value; None }.
 //        orElse{ p.alignInternal=js.undefined; None }
 //    }
 
-    def color = p.colorInternal.map(s => new TextColor(s))
+    def color: UndefOr[TextColor] = p.colorInternal.map(s => new TextColor(s))
 
 //    def color_= (v: js.UndefOr[TextColor]): Unit = {
 //      v.map{ vv=>p.colorInternal=vv.value; None }.
 //        orElse{ p.colorInternal=js.undefined; None }
 //    }
 
-    def display = p.displayInternal.map(s => new TextDisplay(s))
+    def display: UndefOr[TextDisplay] = p.displayInternal.map(s => new TextDisplay(s))
 
-    def variant = p.variantInternal.map(s => new TextVariant(s))
+    def variant: UndefOr[TextVariant] = p.variantInternal.map(s => new TextVariant(s))
 
 //    def variant_= (v: js.UndefOr[TextVariant]): Unit = {
 //      v.map{ vv=>p.variantInternal=vv.value; None }.
@@ -204,8 +205,7 @@ object MuiTypography extends ComponentFactory[TypographyProps] {
   @js.native @JSImport("@material-ui/core/Typography", JSImport.Default) private object Typography
       extends js.Any
 
-  protected val f =
-    JsComponent[TypographyProps, Children.Varargs, Null](Typography)
+  protected val f = JsComponent[TypographyProps, Children.Varargs, Null](Typography)  // scalafix:ok ExplicitResultTypes; ReactComponent
 
   /**
     * @param align Set the text-align on the component.
@@ -251,7 +251,7 @@ object MuiTypography extends ComponentFactory[TypographyProps] {
       additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
   )(
       children: CtorType.ChildArg*
-  ) = {
+  ) = {  // scalafix:ok ExplicitResultTypes; ReactComponent
     val p: TypographyProps = TypographyProps(
       align = align,
       classes = classes,

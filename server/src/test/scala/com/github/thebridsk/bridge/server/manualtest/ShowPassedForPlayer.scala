@@ -12,12 +12,13 @@ import com.github.thebridsk.bridge.data.duplicate.stats.PlayerComparisonStat
 import com.github.thebridsk.bridge.data.duplicate.stats.PlayerComparisonStats
 import com.github.thebridsk.bridge.data.Team
 import com.github.thebridsk.bridge.data.MatchDuplicate
+import org.rogach.scallop.ScallopOption
 
 object ShowPassedForPlayer extends Main {
 
   import com.github.thebridsk.utilities.main.Converters._
 
-  val optionStore = opt[Path](
+  val optionStore: ScallopOption[Path] = opt[Path](
     "store",
     short = 's',
     descr = "The store directory, default=./store",
@@ -25,11 +26,11 @@ object ShowPassedForPlayer extends Main {
     default = Some("./store")
   )
 
-  val optionPlayer = trailArg[String](name="player", descr="the player involved in passed contracts", default=None, required=true)
+  val optionPlayer: ScallopOption[String] = trailArg[String](name="player", descr="the player involved in passed contracts", default=None, required=true)
 
   case class PassedBoard( id: MatchDuplicate.Id, team: Team.Id, board: Board, played: Boolean, good: Boolean )
 
-  def execute() = {
+  def execute(): Int = {
 
     val storedir = optionStore().toDirectory
     logger.info(s"Using datastore ${storedir}")
@@ -109,6 +110,6 @@ object ShowPassedForPlayer extends Main {
     0
   }
 
-  def playerStats() = {
+  def playerStats(): Unit = {
   }
 }

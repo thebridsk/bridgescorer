@@ -222,7 +222,7 @@ trait HttpUtils {
     }
   }
 
-  def postHttp( url: URL, data: String, contentEncoding: String ) = {
+  def postHttp( url: URL, data: String, contentEncoding: String ): ResponseFromHttp[String] = {
     var conn: HttpURLConnection = null
     try {
       conn = url.openConnection().asInstanceOf[HttpURLConnection]

@@ -6,14 +6,14 @@ import com.github.thebridsk.utilities.logging.TraceMsg
 import com.github.thebridsk.bridge.data.websocket.DuplexProtocol
 
 object SendToWebsocketHandler {
-  val log = Logger("comm.SendToWebsocketHandler")
+  val log: Logger = Logger("comm.SendToWebsocketHandler")
 }
 
 class SendToWebsocketHandler extends Handler with ServerHandler {
 
   var duplexPipe: Option[DuplexPipeForLogging] = None
 
-  def getDuplexPipe() = duplexPipe match {
+  def getDuplexPipe(): DuplexPipeForLogging = duplexPipe match {
     case Some(d) => d
     case None =>
       val url = Info.hostUrl.replaceFirst("http", "ws") + "/v1/logger/ws"

@@ -11,7 +11,7 @@ class NestedResources[PVId, PVType, NVId, NVType](
 )(
     implicit execute: ExecutionContext
 ) extends Resources[NVId, NVType] {
-  val resourceURI = s"${parent.resourceURI}/${nested.resourceURI}"
+  val resourceURI: String = s"${parent.resourceURI}/${nested.resourceURI}"
 
   /**
     * Create a new value in the collection

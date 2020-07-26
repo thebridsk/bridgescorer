@@ -16,7 +16,7 @@ trait Dispatcher {
 
   val dispatcher: FluxDispatcher[Action] = InternalDispatcher.fluxdispatcher
 
-  def log( msg: TraceMsg ) = {
+  def log( msg: TraceMsg ): Any = {
     if (dispatcher.isDispatching()) {
       import scala.scalajs.js.timers._
 
@@ -27,9 +27,9 @@ trait Dispatcher {
       dispatcher.dispatch( PostLogEntry(msg) )
     }
   }
-  def stopLogs() = dispatcher.dispatch(StopLogs())
-  def startLogs() = dispatcher.dispatch(StartLogs())
-  def clearLogs() = dispatcher.dispatch(ClearLogs())
+  def stopLogs(): Unit = dispatcher.dispatch(StopLogs())
+  def startLogs(): Unit = dispatcher.dispatch(StartLogs())
+  def clearLogs(): Unit = dispatcher.dispatch(ClearLogs())
 
   /**
    * Waits for the callbacks specified to be invoked before continuing execution of the current callback.

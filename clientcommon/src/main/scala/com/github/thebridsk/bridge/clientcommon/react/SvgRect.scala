@@ -2,8 +2,8 @@ package com.github.thebridsk.bridge.clientcommon.react
 
 import japgolly.scalajs.react.vdom.svg_<^._
 import japgolly.scalajs.react._
-import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles
 import com.github.thebridsk.color.Color
+import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles
 
 /**
  * A skeleton component.
@@ -67,11 +67,11 @@ object SvgRect {
       chartTitle: Option[String] = None,
       sliceTitles: Option[List[String]] = None,
       attrs: Option[TagMod] = None
-  ) = {
+  ) = {  // scalafix:ok ExplicitResultTypes; ReactComponent
     component(Props(height,width,borderColor,slices,colors,chartTitle,sliceTitles,attrs))
   }
 
-  def apply( props: Props ) = component(props)
+  def apply( props: Props ) = component(props)  // scalafix:ok ExplicitResultTypes; ReactComponent
 
   private val component =
     ScalaComponent.builder[Props]("SvgRect")

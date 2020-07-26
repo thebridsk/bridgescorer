@@ -22,6 +22,7 @@ import com.github.thebridsk.materialui.TextColor
 import com.github.thebridsk.bridge.client.pages.HomePage
 import japgolly.scalajs.react.component.builder.Lifecycle.ComponentDidUpdate
 
+
 /**
  * A skeleton component.
  *
@@ -36,18 +37,16 @@ import japgolly.scalajs.react.component.builder.Lifecycle.ComponentDidUpdate
 object PageDuplicateResult {
   import PageDuplicateResultInternal._
 
-  type Callback = ()=>Unit
-
   case class Props( routerCtl: BridgeRouter[DuplicatePage], page: DuplicateResultView )
 
-  def apply( routerCtl: BridgeRouter[DuplicatePage], page: DuplicateResultView ) = component(Props(routerCtl,page))
+  def apply( routerCtl: BridgeRouter[DuplicatePage], page: DuplicateResultView ) = component(Props(routerCtl,page))  // scalafix:ok ExplicitResultTypes; ReactComponent
 
 }
 
 object PageDuplicateResultInternal {
   import PageDuplicateResult._
 
-  val logger = Logger("bridge.PageDuplicateResult")
+  val logger: Logger = Logger("bridge.PageDuplicateResult")
 
   /**
    * Internal state for rendering the component.
@@ -68,20 +67,20 @@ object PageDuplicateResultInternal {
   class Backend(scope: BackendScope[Props, State]) {
 
     // ignore changes to DateTimePicker
-    def setPlayedIgnore( value: Date ) = Callback {}
+    def setPlayedIgnore( value: Date ): japgolly.scalajs.react.Callback = Callback {}
 
-    val delete = scope.modState( s => s.copy(deletePopup=true) )
+    val delete: Callback = scope.modState( s => s.copy(deletePopup=true) )
 
-    val actionDeleteCancel = scope.modState( s => s.copy(deletePopup=false) )
+    val actionDeleteCancel: Callback = scope.modState( s => s.copy(deletePopup=false) )
 
-    val actionDeleteOk = scope.props >>= { props => Callback {
+    val actionDeleteOk: Callback = scope.props >>= { props => Callback {
       import scala.concurrent.ExecutionContext.Implicits.global
       RestClientDuplicateResult.delete( props.page.dupid ).recordFailure().foreach { f =>
         logger.info(s"Deleted Match duplicate result ${props.page.dupid}")
       }
     } >> props.routerCtl.set( SummaryView ) }
 
-    def render( props: Props, state: State ) = {
+    def render( props: Props, state: State ) = { // scalafix:ok ExplicitResultTypes; React
       import DuplicateStyles._
 
       Moment.locale("en")
@@ -158,14 +157,14 @@ object PageDuplicateResultInternal {
 
     val storeCallback = scope.forceUpdate
 
-    val didMount = scope.props >>= { (p) => Callback {
+    val didMount: Callback = scope.props >>= { (p) => Callback {
       logger.info("PageDuplicateResult.didMount")
       DuplicateResultStore.addChangeListener(storeCallback)
 
       Controller.monitorDuplicateResult(p.page.dupid)
     }}
 
-    val willUnmount = Callback {
+    val willUnmount: japgolly.scalajs.react.Callback = Callback {
       logger.info("PageDuplicateResult.willUnmount")
       DuplicateResultStore.removeChangeListener(storeCallback)
       Controller.stopMonitoringDuplicateResult()
@@ -173,7 +172,7 @@ object PageDuplicateResultInternal {
 
   }
 
-  def didUpdate( cdu: ComponentDidUpdate[Props,State,Backend,Unit] ) = Callback {
+  def didUpdate( cdu: ComponentDidUpdate[Props,State,Backend,Unit] ): japgolly.scalajs.react.Callback = Callback {
     val props = cdu.currentProps
     val prevProps = cdu.prevProps
     if (prevProps.page != props.page) {
@@ -181,6 +180,7 @@ object PageDuplicateResultInternal {
     }
   }
 
+  private[duplicate]
   val component = ScalaComponent.builder[Props]("PageDuplicateResult")
                             .initialStateFromProps { props => State() }
                             .backend(new Backend(_))

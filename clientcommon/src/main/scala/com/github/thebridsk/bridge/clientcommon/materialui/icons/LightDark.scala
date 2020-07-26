@@ -6,22 +6,23 @@ import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles._
 import com.github.thebridsk.materialui.icons.MuiSvgIcon
 import com.github.thebridsk.bridge.clientcommon.react.PieChart
 
+
 object LightDark {
   import LightDarkInternal._
 
   case class Props()
 
-  def apply(  ) = component(Props())
+  def apply(  ) = component(Props())  // scalafix:ok ExplicitResultTypes; ReactComponent
 
-  val themes = List("white","medium","dark")
+  val themes: List[String] = List("white","medium","dark")
 
-  val colors = List(
+  val colors: List[TagMod] = List(
                      baseStyles.lightDarkIcon3,  // prev
                      baseStyles.lightDarkIcon1,  // current theme
                      baseStyles.lightDarkIcon2   // next
                    )
 
-  def nextTheme( current: String ) = {
+  def nextTheme( current: String ): String = {
     val i = (themes.indexOf(current)+1)%themes.length
     themes(i)
   }
@@ -31,6 +32,7 @@ object LightDark {
 object LightDarkInternal {
   import LightDark._
 
+  private[icons]
   val componentold = ScalaComponent.builder[Props]("LightDark")
                             .stateless
                             .noBackend
@@ -55,6 +57,7 @@ object LightDarkInternal {
                             )
                             .build
 
+  private[icons]
   val component = ScalaComponent.builder[Props]("LightMediumDark")
                             .stateless
                             .noBackend

@@ -5,7 +5,7 @@ import scala.scalajs.js
 
 object DateUtils {
 
-  val months = Array( "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" )
+  val months: Array[String] = Array( "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" )
 
   def formatDate( time: SystemTime.Timestamp ): String = {
     val d = new js.Date(time)

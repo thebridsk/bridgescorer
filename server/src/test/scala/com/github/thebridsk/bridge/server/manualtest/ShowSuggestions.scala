@@ -12,14 +12,16 @@ import scala.concurrent.Await
 import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext.Implicits.global
 import com.github.thebridsk.bridge.data.duplicate.suggestion.NeverPair
+import org.rogach.scallop.ScallopOption
+import scala.util.matching.Regex
 
 object ShowSuggestions extends Main {
 
   import com.github.thebridsk.utilities.main.Converters._
 
-  val log = Logger( ShowSuggestions.getClass.getName )
+  val log: Logger = Logger( ShowSuggestions.getClass.getName )
 
-  val cmdName = {
+  val cmdName: String = {
         val x = ShowSuggestions.getClass.getName
         "scala "+x.substring(0, x.length()-1)
   }
@@ -31,27 +33,27 @@ Syntax:
   ${cmdName} [options] names...
 Options:""")
 
-  val optionStore = opt[Path]("store",
+  val optionStore: ScallopOption[Path] = opt[Path]("store",
                               short='s',
                               descr="The store directory, default=./store",
                               argName="dir",
                               default=Some("./store"))
 
-  val optionNeverPair = opt[List[String]]("neverpair",
+  val optionNeverPair: ScallopOption[List[String]] = opt[List[String]]("neverpair",
                                   short='n',
                                   descr="never pair players.  Value is player1,player2",
                                   argName="pair",
                                   default=None)
 
-  val names = trailArg[List[String]]( name="names",
+  val names: ScallopOption[List[String]] = trailArg[List[String]]( name="names",
                                       required=true,
                                       descr="the players that are playing next game")
 
-  def namesFilter(n: List[String])( pd: PairData ) = {
+  def namesFilter(n: List[String])( pd: PairData ): Boolean = {
     n.contains(pd.player1) && n.contains(pd.player2)
   }
 
-  val patternPair = """([^,]+),([^,]+)""".r
+  val patternPair: Regex = """([^,]+),([^,]+)""".r
 
   def execute(): Int = {
     val storedir = optionStore().toDirectory
@@ -85,7 +87,7 @@ Options:""")
 
   }
 
-  def showPairData( lpd: List[PairData], msg: String ) = {
+  def showPairData( lpd: List[PairData], msg: String ): Unit = {
     log.info(
       lpd.map { pd =>
         f"""${pd.player1}%10s ${pd.player2}%10s: ${pd.played}%2d ${pd.pointsPercent}%.2f ${pd.winPercent}%.2f"""
@@ -93,7 +95,7 @@ Options:""")
     )
   }
 
-  def showPairMatrix( pd: PairsData, nn: Option[List[String]] = None ) = {
+  def showPairMatrix( pd: PairsData, nn: Option[List[String]] = None ): Unit = {
     val players = pd.players.filter( p => nn.map(l => l.contains(p)).getOrElse(true))
     log.info( s"           ${players.map(s=>f"${"          ".take((21-s.length())/2)+s}%-21s").mkString(" ")}")
     for ( r <- players) {
@@ -115,7 +117,7 @@ Options:""")
     }
   }
 
-  def showSuggestions( summaries: List[DuplicateSummary], n: List[String], neverPair: Option[List[NeverPair]] ) = {
+  def showSuggestions( summaries: List[DuplicateSummary], n: List[String], neverPair: Option[List[NeverPair]] ): Unit = {
     val ds = new DuplicateSuggestionsCalculation( summaries, n, neverPair )
     log.info(s"Suggestions:")
     ds.suggest.zipWithIndex.foreach { e =>

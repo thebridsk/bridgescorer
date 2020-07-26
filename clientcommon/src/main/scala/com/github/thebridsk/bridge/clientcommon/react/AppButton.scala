@@ -26,27 +26,27 @@ object AppButton {
 
   case class Props( id: String, text: TagMod, style: Option[TagMod], attrs: TagMod* )
 
-  def apply( id: String, text: TagMod, attrs: TagMod* ) = component(Props(id,text,None,attrs:_*))
+  def apply( id: String, text: TagMod, attrs: TagMod* ) = component(Props(id,text,None,attrs:_*))  // scalafix:ok ExplicitResultTypes; ReactComponent
 
-  def withKeyTagMod( key: String )( id: String, text: TagMod, attrs: TagMod* ) = component.withKey(key)(Props(id,text,None,attrs:_*))
+  def withKeyTagMod( key: String )( id: String, text: TagMod, attrs: TagMod* ) = component.withKey(key)(Props(id,text,None,attrs:_*))  // scalafix:ok ExplicitResultTypes; ReactComponent
 
-  def apply( id: String, text: String, attrs: TagMod* ) = component(Props(id,text,None,attrs:_*))
+  def apply( id: String, text: String, attrs: TagMod* ) = component(Props(id,text,None,attrs:_*))  // scalafix:ok ExplicitResultTypes; ReactComponent
 
-  def withKey( key: String )( id: String, text: String, attrs: TagMod* ) = component.withKey(key)(Props(id,text,None,attrs:_*))
+  def withKey( key: String )( id: String, text: String, attrs: TagMod* ) = component.withKey(key)(Props(id,text,None,attrs:_*))  // scalafix:ok ExplicitResultTypes; ReactComponent
 }
 
 object AppButtonLink {
   import AppButtonInternal._
   import AppButton._
 
-  def apply( id: String, text: String, target: String, attrs: TagMod* ) = {
+  def apply( id: String, text: String, target: String, attrs: TagMod* ) = {  // scalafix:ok ExplicitResultTypes; ReactComponent
     val at = ^.onClick --> Callback {
       GotoPage.inSameWindow(target)
     }::attrs.toList
     component(Props(id,text,None,at:_*))
   }
 
-  def withKey( key: String )( id: String, text: String, target: String, attrs: TagMod* ) = {
+  def withKey( key: String )( id: String, text: String, target: String, attrs: TagMod* ) = {  // scalafix:ok ExplicitResultTypes; ReactComponent
     val at = ^.onClick --> Callback {
       GotoPage.inSameWindow(target)
     }::attrs.toList
@@ -63,7 +63,7 @@ object AppButtonLinkNewWindow {
 
   private var helpWindow: Option[Window] = None
 
-  def topage( page: String ) = {
+  def topage( page: String ): Unit = {
     helpWindow match {
       case Some(w) =>
         val closed = w.asInstanceOf[Dynamic].closed
@@ -81,49 +81,49 @@ object AppButtonLinkNewWindow {
     logger.fine(s"""helpWindow helpWindow=${helpWindow}""")
   }
 
-  def apply( id: String, text: String, target: String, attrs: TagMod* ) = {
+  def apply( id: String, text: String, target: String, attrs: TagMod* ) = {  // scalafix:ok ExplicitResultTypes; ReactComponent
     val at = ^.onClick --> Callback {
       window.open(target, "_blank" )
     }::attrs.toList
     component(Props(id,text,None,at:_*))
   }
 
-  def apply( id: String, text: String, target: String, style: TagMod, attrs: TagMod* ) = {
+  def apply( id: String, text: String, target: String, style: TagMod, attrs: TagMod* ) = {  // scalafix:ok ExplicitResultTypes; ReactComponent
     val at = ^.onClick --> Callback {
       window.open(target, "_blank" )
     }::attrs.toList
     component(Props(id,text,Some(style),at:_*))
   }
 
-  def apply( id: String, text: String, target: String, style: Option[TagMod], attrs: TagMod* ) = {
+  def apply( id: String, text: String, target: String, style: Option[TagMod], attrs: TagMod* ) = {  // scalafix:ok ExplicitResultTypes; ReactComponent
     val at = ^.onClick --> Callback {
       topage(target)
     }::attrs.toList
     component(Props(id,text,style,at:_*))
   }
 
-  def apply( id: String, text: String, target: String, samepage: Boolean, attrs: TagMod* ) = {
+  def apply( id: String, text: String, target: String, samepage: Boolean, attrs: TagMod* ) = {  // scalafix:ok ExplicitResultTypes; ReactComponent
     val at = ^.onClick --> Callback {
       topage(target)
     }::attrs.toList
     component(Props(id,text,None,at:_*))
   }
 
-  def apply( id: String, text: String, target: String, samepage: Boolean, style: TagMod, attrs: TagMod* ) = {
+  def apply( id: String, text: String, target: String, samepage: Boolean, style: TagMod, attrs: TagMod* ) = {  // scalafix:ok ExplicitResultTypes; ReactComponent
     val at = ^.onClick --> Callback {
       topage(target)
     }::attrs.toList
     component(Props(id,text,Some(style),at:_*))
   }
 
-  def apply( id: String, text: String, target: String, samepage: Boolean, style: Option[TagMod], attrs: TagMod* ) = {
+  def apply( id: String, text: String, target: String, samepage: Boolean, style: Option[TagMod], attrs: TagMod* ) = {  // scalafix:ok ExplicitResultTypes; ReactComponent
     val at = ^.onClick --> Callback {
       topage(target)
     }::attrs.toList
     component(Props(id,text,style,at:_*))
   }
 
-  def withKey( key: String )( id: String, text: String, target: String, attrs: TagMod* ) = {
+  def withKey( key: String )( id: String, text: String, target: String, attrs: TagMod* ) = {  // scalafix:ok ExplicitResultTypes; ReactComponent
     val at = ^.onClick --> Callback {
       window.open(target, "_blank" )
     }::attrs.toList
@@ -136,17 +136,18 @@ object Button {
   import AppButtonInternal._
   import AppButton._
 
-  def apply( style: TagMod, id: String, text: String, attrs: TagMod* ) = component(Props(id,text,Some(style),attrs:_*))
+  def apply( style: TagMod, id: String, text: String, attrs: TagMod* ) = component(Props(id,text,Some(style),attrs:_*))  // scalafix:ok ExplicitResultTypes; ReactComponent
 
-  def withKey( key: String )( style: TagMod, id: String, text: String, attrs: TagMod* ) = component.withKey(key)(Props(id,text,Some(style),attrs:_*))
+  def withKey( key: String )( style: TagMod, id: String, text: String, attrs: TagMod* ) = component.withKey(key)(Props(id,text,Some(style),attrs:_*))  // scalafix:ok ExplicitResultTypes; ReactComponent
 }
 
 object AppButtonInternal {
   import AppButton._
   import BaseStyles._
 
-  val logger = Logger("bridge.AppButton")
+  val logger: Logger = Logger("bridge.AppButton")
 
+  private[react]
   val component = ScalaComponent.builder[Props]("AppButton")
                             .stateless
                             .noBackend

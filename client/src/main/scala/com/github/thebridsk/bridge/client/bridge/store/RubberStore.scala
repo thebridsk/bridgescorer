@@ -14,16 +14,16 @@ import com.github.thebridsk.bridge.clientcommon.logger.Alerter
 import com.github.thebridsk.bridge.clientcommon.demo.BridgeDemo
 
 object RubberStore extends ChangeListenable {
-  val logger = Logger("bridge.RubberStore")
+  val logger: Logger = Logger("bridge.RubberStore")
 
   /**
    * Required to instantiate the store.
    */
-  def init() = {}
+  def init(): Unit = {}
 
   private var dispatchToken: Option[DispatchToken] = Some(BridgeDispatcher.register(dispatch _))
 
-  def dispatch( msg: Any ) = Alerter.tryitWithUnit { msg match {
+  def dispatch( msg: Any ): Unit = Alerter.tryitWithUnit { msg match {
     case m: RubberBridgeAction =>
       m match {
         case ActionUpdateRubberHand(rubid,handid,hand,cb) => updateRubberHand(rubid, handid, hand,cb)
@@ -42,12 +42,12 @@ object RubberStore extends ChangeListenable {
   def getRubber = rubber
   def getMonitoredId = monitoredId
 
-  def isMonitoredId( rubid: MatchRubber.Id ) = monitoredId match {
+  def isMonitoredId( rubid: MatchRubber.Id ): Boolean = monitoredId match {
     case Some(id) => id == rubid
     case None => false
   }
 
-  def start( id: MatchRubber.Id, rub: Option[MatchRubber] ) = {
+  def start( id: MatchRubber.Id, rub: Option[MatchRubber] ): Unit = {
     monitoredId = Some(id)
     rubber = rub
     notifyChange()
@@ -75,19 +75,19 @@ object RubberStore extends ChangeListenable {
     }
   }
 
-  def updateRubber( rub: MatchRubber, callback: Option[MatchRubber=>Unit] ) = {
+  def updateRubber( rub: MatchRubber, callback: Option[MatchRubber=>Unit] ): Any = {
     update("updateRubber", rub.id, (oldrub)=>{
       Some(rub)
     },callback)
   }
 
-  def updateRubberNames( rubid: MatchRubber.Id, north: String, south: String, east: String, west: String, firstDealer: PlayerPosition, callback: Option[MatchRubber=>Unit] ) = {
+  def updateRubberNames( rubid: MatchRubber.Id, north: String, south: String, east: String, west: String, firstDealer: PlayerPosition, callback: Option[MatchRubber=>Unit] ): Any = {
     update("updateRubberNames", rubid, (rub)=>{
       rub.map(_.setPlayers(north, south, east, west).setFirstDealer(firstDealer.pos))
     },callback)
   }
 
-  def updateRubberHand( rubid: MatchRubber.Id, handid: String, hand: RubberHand, callback: Option[MatchRubber=>Unit] ) = {
+  def updateRubberHand( rubid: MatchRubber.Id, handid: String, hand: RubberHand, callback: Option[MatchRubber=>Unit] ): Any = {
     update("updateRubberHand", rubid, (rub)=>{
       rub match {
         case Some(mr) =>

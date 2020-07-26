@@ -29,6 +29,7 @@ import com.github.thebridsk.bridge.clientcommon.rest2.RestClientDuplicate
 import scala.concurrent.ExecutionContext.Implicits.global
 import com.github.thebridsk.bridge.clientcommon.react.Utils._
 
+
 /**
  * Shows the team x board table and has a totals column that shows the number of points the team has.
  *
@@ -47,14 +48,14 @@ object PageDuplicateHand {
 
   case class Props( routerCtl: BridgeRouter[DuplicatePage], page: BaseHandView )
 
-  def apply( routerCtl: BridgeRouter[DuplicatePage], page: BaseHandView ) = component(Props(routerCtl,page))
+  def apply( routerCtl: BridgeRouter[DuplicatePage], page: BaseHandView ) = component(Props(routerCtl,page))  // scalafix:ok ExplicitResultTypes; ReactComponent
 
 }
 
 object PageDuplicateHandInternal {
   import PageDuplicateHand._
 
-  val logger = Logger("bridge.PageDuplicateHand")
+  val logger: Logger = Logger("bridge.PageDuplicateHand")
 
   /**
    * Internal state for rendering the component.
@@ -70,7 +71,7 @@ object PageDuplicateHandInternal {
   )
 
   object State {
-    def create( props: Props ) = {
+    def create( props: Props ): State = {
       DuplicateStore.getMatch() match {
         case Some(md) =>
           md.getBoard(props.page.boardid) match {
@@ -108,7 +109,7 @@ object PageDuplicateHandInternal {
    *
    */
   class Backend(scope: BackendScope[Props, State]) {
-    def render( props: Props, state: State ) = {
+    def render( props: Props, state: State ) = { // scalafix:ok ExplicitResultTypes; React
       logger.fine(s"""PageDuplicateHand.render( ${props.page} )""")
       <.div(
         DuplicatePageBridgeAppBar(
@@ -196,7 +197,7 @@ object PageDuplicateHandInternal {
         contract: Contract,
         picture: Option[File],
         removePicture: Boolean
-    ) = scope.stateProps { (s,p) =>
+    ): Callback = scope.stateProps { (s,p) =>
       logger.fine(s"PageDuplicateHand: new contract $contract for (${oldhand.board},${oldhand.id})" )
       val newhand: Hand = contract.toHand
       Controller.updateHand(dup, oldhand.updateHand(newhand))
@@ -214,11 +215,11 @@ object PageDuplicateHandInternal {
       p.routerCtl.set(p.page.toBoardView)
     }
 
-    val viewHandCallbackCancel = scope.props >>= { p =>
+    val viewHandCallbackCancel: Callback = scope.props >>= { p =>
       p.routerCtl.set(p.page.toBoardView)
     }
 
-    val storeCallback = scope.modStateOption { ( s, p ) =>
+    val storeCallback: Callback = scope.modStateOption { ( s, p ) =>
       val newstate = State.create(p)
       if (newstate.vals.isDefined == s.vals.isDefined) {
         newstate.vals match {
@@ -239,7 +240,7 @@ object PageDuplicateHandInternal {
       }
    }
 
-    val didMount = scope.props >>= { (p) => Callback {
+    val didMount: Callback = scope.props >>= { (p) => Callback {
       logger.info("PageDuplicateHand.didMount")
       DuplicateStore.addChangeListener(storeCallback)
 
@@ -247,14 +248,14 @@ object PageDuplicateHandInternal {
 
     }}
 
-    val willUnmount = Callback {
+    val willUnmount: Callback = Callback {
       logger.info("PageDuplicateHand.willUnmount")
       DuplicateStore.removeChangeListener(storeCallback)
       Controller.delayStop()
     }
   }
 
-  def didUpdate( cdu: ComponentDidUpdate[Props,State,Backend,Unit] ) = Callback {
+  def didUpdate( cdu: ComponentDidUpdate[Props,State,Backend,Unit] ): Callback = Callback {
     val props = cdu.currentProps
     val prevProps = cdu.prevProps
     if (prevProps.page != props.page) {
@@ -262,6 +263,7 @@ object PageDuplicateHandInternal {
     }
   }
 
+  private[duplicate]
   val component = ScalaComponent.builder[Props]("PageDuplicateHand")
                             .initialStateFromProps { props => State.create(props) }
                             .backend(new Backend(_))

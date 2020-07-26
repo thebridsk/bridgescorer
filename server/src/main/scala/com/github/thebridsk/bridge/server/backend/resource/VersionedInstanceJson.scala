@@ -7,7 +7,7 @@ import play.api.libs.json._
 import com.github.thebridsk.bridge.data.rest.JsonException
 
 object VersionedInstanceJson {
-  val log = Logger[VersionedInstanceJson[_, _]]()
+  val log: Logger = Logger[VersionedInstanceJson[_, _]]()
 
   /**
     * Provides to/from JSON conversion of a resource object.
@@ -69,15 +69,15 @@ private class ReaderAndConvert[TId, T <: VersionedInstance[T, T, TId], R <: Vers
     */
   def parseOld(s: String): (Boolean, R) = converter.read[R](s)
 
-  def toJsonOld(r: R) = converter.write(r)
+  def toJsonOld(r: R): String = converter.write(r)
 
-  def getOldClass = classtag.runtimeClass.asInstanceOf[Class[R]]
-  def getCurrentClass = classtagCurrent.runtimeClass.asInstanceOf[Class[T]]
+  def getOldClass: Class[R] = classtag.runtimeClass.asInstanceOf[Class[R]]
+  def getCurrentClass: Class[T] = classtagCurrent.runtimeClass.asInstanceOf[Class[T]]
 
   def nameOld = getOldClass.getName
   def nameCurrent = getCurrentClass.getName
 
-  override def toString() = s"Convert(${nameOld} -> ${nameCurrent})"
+  override def toString(): String = s"Convert(${nameOld} -> ${nameCurrent})"
 
 }
 
@@ -165,7 +165,7 @@ class VersionedInstanceJson[TId, T <: VersionedInstance[T, T, TId]](
     * @param t the object to convert.  Only the latest version can be written.
     * @return the string representation.
     */
-  def toJson(t: T) = {
+  def toJson(t: T): String = {
     converter.write(t)
   }
 

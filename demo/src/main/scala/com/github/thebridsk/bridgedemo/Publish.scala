@@ -11,6 +11,9 @@ import java.nio.file.StandardCopyOption
 import com.github.thebridsk.utilities.main.Main
 import scala.reflect.io.Path
 import com.github.thebridsk.utilities.logging.Logger
+import java.nio.file
+import org.rogach.scallop.ScallopOption
+import scala.util.matching.Regex
 
 class Publish
 
@@ -18,10 +21,10 @@ object Publish extends Main {
 
   import com.github.thebridsk.utilities.main.Converters._
 
-  val log = Logger[Publish]()
+  val log: Logger = Logger[Publish]()
 
-  val optionJar = trailArg[Path](name="jar", descr="Jar file", default=None, required=true)
-  val optionTarget = trailArg[Path](name="target", descr="target directory, will delete and create directory", default=Some("target/demo"))
+  val optionJar: ScallopOption[Path] = trailArg[Path](name="jar", descr="Jar file", default=None, required=true)
+  val optionTarget: ScallopOption[Path] = trailArg[Path](name="target", descr="target directory, will delete and create directory", default=Some("target/demo"))
 
   class Exit( msg: String ) extends Exception(msg)
 
@@ -37,7 +40,7 @@ object Publish extends Main {
     0
   }
 
-  val patternJarFileName = """bridgescorekeeper-server-(\d+\.\d+(?:\.\d+)?-(?:SNAPSHOT-)?[0-9a-f]{40}(?:-SNAPSHOT)?(?:-.+?)?)\.jar""".r
+  val patternJarFileName: Regex = """bridgescorekeeper-server-(\d+\.\d+(?:\.\d+)?-(?:SNAPSHOT-)?[0-9a-f]{40}(?:-SNAPSHOT)?(?:-.+?)?)\.jar""".r
   def getVersionFromJar( jarfile: File ): String = {
     jarfile.getName.toString match {
       case patternJarFileName(version) =>
@@ -69,8 +72,8 @@ object Publish extends Main {
     }
   }
 
-  val patternBridgeScoreKeeper = """META-INF/resources/webjars/bridgescorekeeper/([^/]+)/(.*)""".r
-  val patternFullServer = """META-INF/resources/webjars/bridgescorer-fullserver/([^/]+)/(.*)""".r
+  val patternBridgeScoreKeeper: Regex = """META-INF/resources/webjars/bridgescorekeeper/([^/]+)/(.*)""".r
+  val patternFullServer: Regex = """META-INF/resources/webjars/bridgescorer-fullserver/([^/]+)/(.*)""".r
 
   def extract( jarfile: File, version: String, targetdir: File ): Int = {
 
@@ -110,7 +113,7 @@ object Publish extends Main {
     }
   }
 
-  def writeFile( jarfile: JarInputStream, targetFile: File ) = {
+  def writeFile( jarfile: JarInputStream, targetFile: File ): Long = {
     targetFile.getParentFile.mkdirs()
 
     log.info(s"Writing ${targetFile} from Jar file")
@@ -119,7 +122,7 @@ object Publish extends Main {
 
   }
 
-  def writeFile( source: File, targetFile: File ) = {
+  def writeFile( source: File, targetFile: File ): file.Path = {
     targetFile.getParentFile.mkdirs()
 
     log.info(s"Writing ${targetFile} from file ${source}")

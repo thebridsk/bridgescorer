@@ -9,6 +9,7 @@ import com.github.thebridsk.bridge.client.pages.hand.PageHandInternal.PageHandNe
 import com.github.thebridsk.bridge.clientcommon.react.Utils._
 import com.github.thebridsk.bridge.clientcommon.react.RadioButton
 
+
 /**
  * A skeleton component.
  *
@@ -45,7 +46,8 @@ object ViewHonors {
              west: String,
              callback: CallbackHonors,
              callbackPlayer: CallbackHonorsPlayer,
-             nextInput: PageHandNextInput.Value ) = component(Props(currentHonors,currentPlayer,currentContractTricks,currentSuit,
+             nextInput: PageHandNextInput.Value ) =  // scalafix:ok ExplicitResultTypes; ReactComponent
+                                                    component(Props(currentHonors,currentPlayer,currentContractTricks,currentSuit,
                                                                     north,south,east,west,
                                                                     callback,callbackPlayer,nextInput))
 

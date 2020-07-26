@@ -20,6 +20,7 @@ import com.github.thebridsk.bridge.clientcommon.react.AppButton
 import com.github.thebridsk.bridge.clientcommon.react.Utils._
 import com.github.thebridsk.bridge.client.routes.BridgeRouter
 
+
 /**
  * Shows the team x board table and has a totals column that shows the number of points the team has.
  *
@@ -36,7 +37,7 @@ object ViewScoreboard {
 
   case class Props( routerCtl: BridgeRouter[DuplicatePage], page: BaseScoreboardViewWithPerspective, score: MatchDuplicateScore, useIMP: Boolean = false )
 
-  def apply( routerCtl: BridgeRouter[DuplicatePage], page: BaseScoreboardViewWithPerspective, score: MatchDuplicateScore, useIMP: Boolean = false ) =
+  def apply( routerCtl: BridgeRouter[DuplicatePage], page: BaseScoreboardViewWithPerspective, score: MatchDuplicateScore, useIMP: Boolean = false ) = // scalafix:ok ExplicitResultTypes; ReactComponent
     component(Props(routerCtl,page,score,useIMP))
 
 }
@@ -45,8 +46,9 @@ object ViewScoreboardInternal {
   import ViewScoreboard._
   import DuplicateStyles._
 
-  val logger = Logger("bridge.ViewScoreboard")
+  val logger: Logger = Logger("bridge.ViewScoreboard")
 
+  private[duplicate]
   val Header = ScalaComponent.builder[Props]("ViewScoreboard.Header")
                       .render_P( props => {
                         val (currentRound,currentTable) = props.page match {
@@ -132,6 +134,7 @@ object ViewScoreboardInternal {
 
                       }).build
 
+  private[duplicate]
   val TeamRow = ScalaComponent.builder[(Team,Props)]("ViewScoreboard.TeamRow")
                       .render_P( props => {
                         val (team, p) = props
@@ -181,7 +184,7 @@ object ViewScoreboardInternal {
    *
    */
   class Backend(scope: BackendScope[Props, State]) {
-    def render( props: Props, state: State ) = {
+    def render( props: Props, state: State ) = { // scalafix:ok ExplicitResultTypes; React
       {
         val names = props.score.teams.flatMap( t => t.player1::t.player2::Nil)
         val boards = props.score.boards.size
@@ -253,13 +256,14 @@ object ViewScoreboardInternal {
       )
     }
 
-    val willUnmount = CallbackTo {
+    val willUnmount: Callback = CallbackTo {
       logger.info("ViewScoreboard.willUnmount")
       Properties.restoreViewportContentWidth()
     }
 
   }
 
+  private[duplicate]
   val component = ScalaComponent.builder[Props]("ViewScoreboard")
                             .initialStateFromProps { props => State() }
                             .backend(new Backend(_))

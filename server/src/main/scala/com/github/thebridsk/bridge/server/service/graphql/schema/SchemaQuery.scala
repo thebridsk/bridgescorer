@@ -15,9 +15,9 @@ import SchemaService.{log => _, _}
 
 object SchemaQuery {
 
-  val log = Logger(SchemaQuery.getClass.getName)
+  val log: Logger = Logger(SchemaQuery.getClass.getName)
 
-  val QueryType = ObjectType(
+  val QueryType: ObjectType[BridgeService,BridgeService] = ObjectType(
     "Query",
     fields[BridgeService, BridgeService](
       Field(

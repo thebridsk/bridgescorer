@@ -6,7 +6,7 @@ import com.github.thebridsk.utilities.logging.Logger
 
 object ColorThemeStorage {
 
-  val log = Logger("bridge.ColorThemeStorage")
+  val log: Logger = Logger("bridge.ColorThemeStorage")
 
   // these values are synchronized with the colortheme.js file
   val key = "thebridsk:bridge:color-theme"
@@ -25,7 +25,7 @@ object ColorThemeStorage {
   //   }
   // }
 
-  def applyTheme( theme: String ) = {
+  def applyTheme( theme: String ): Unit = {
     log.info(s"ColorThemeStorage.applyTheme: ${theme}")
     document.body.setAttribute(bodyAttribute,theme)
   }
@@ -37,7 +37,7 @@ object ColorThemeStorage {
     theme
   }
 
-  def initTheme() = {
+  def initTheme(): Unit = {
     log.info(s"ColorThemeStorage.initTheme")
     // window.onstorage = handler
     getColorTheme() match {
@@ -51,13 +51,13 @@ object ColorThemeStorage {
     }
   }
 
-  def setColorTheme( theme: String ) = {
+  def setColorTheme( theme: String ): Unit = {
     log.info(s"ColorThemeStorage.setColorTheme: ${theme}")
     applyTheme(theme)
     storage.setItem(key,theme)
   }
 
-  def getColorThemeFromBody() = {
+  def getColorThemeFromBody(): Option[String] = {
     val body = document.body
     val theme = if (body.hasAttribute(bodyAttribute)) {
       Some(body.getAttribute(bodyAttribute))

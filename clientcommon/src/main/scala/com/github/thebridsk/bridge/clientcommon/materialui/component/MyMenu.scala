@@ -9,6 +9,7 @@ import com.github.thebridsk.materialui.MuiPaper
 import com.github.thebridsk.materialui.PopperPlacement
 import com.github.thebridsk.materialui.AnchorElement
 
+
 /**
  * A skeleton component.
  *
@@ -40,7 +41,7 @@ object MyMenu {
 //      additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
   )(
       children: CtorType.ChildArg*
-  ) = component(Props(placement,anchorEl,onClickAway,onItemClick,children))
+  ) = component(Props(placement,anchorEl,onClickAway,onItemClick,children))  // scalafix:ok ExplicitResultTypes; ReactComponent
 
 }
 
@@ -64,7 +65,7 @@ object MyMenuInternal {
    */
   class Backend(scope: BackendScope[Props, State]) {
 
-    def render( props: Props, state: State ) = {
+    def render( props: Props, state: State ) = { // scalafix:ok ExplicitResultTypes; React
 
 //      val additionalProps = js.Dictionary[js.Any]()
 //      var foundClasses = false
@@ -107,17 +108,18 @@ object MyMenuInternal {
 
     private var mounted = false
 
-    val didMount = Callback {
+    val didMount: Callback = Callback {
       mounted = true
 
     }
 
-    val willUnmount = Callback {
+    val willUnmount: Callback = Callback {
       mounted = false
 
     }
   }
 
+  private[component]
   val component = ScalaComponent.builder[Props]("MyMenu")
                             .initialStateFromProps { props => State() }
                             .backend(new Backend(_))
@@ -126,4 +128,3 @@ object MyMenuInternal {
                             .componentWillUnmount( scope => scope.backend.willUnmount )
                             .build
 }
-

@@ -7,12 +7,12 @@ object TestMixing extends Main {
 
   case class Entry( a: Int, b: Int, mix: Double ) {
     override
-    def toString() = {
+    def toString(): String = {
       f"""$a%2d, $b%2d, $mix%.4f"""
     }
   }
 
-  def execute() = {
+  def execute(): Int = {
 
     val mina = 2
     val maxa = 10

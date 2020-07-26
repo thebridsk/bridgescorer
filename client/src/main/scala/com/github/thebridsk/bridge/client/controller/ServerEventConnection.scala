@@ -48,7 +48,7 @@ abstract class ServerEventConnection[T <: Id[_]]( val listener: SECListener[T] )
 
   private var delayHandle: Option[SetTimeoutHandle] = None
 
-  def cancelStop() = {
+  def cancelStop(): Unit = {
       import scala.scalajs.js.timers._
 
       logger.fine(s"CancelStop: Cancelling stop: ${monitoredId}")
@@ -60,7 +60,7 @@ abstract class ServerEventConnection[T <: Id[_]]( val listener: SECListener[T] )
   /**
    * In 30 seconds stop monitoring a match
    */
-  def delayStop() = {
+  def delayStop(): Unit = {
       import scala.scalajs.js.timers._
 
       logger.fine(s"DelayStop: Requesting stop monitoring duplicate match on server in 30 seconds: ${monitoredId}")

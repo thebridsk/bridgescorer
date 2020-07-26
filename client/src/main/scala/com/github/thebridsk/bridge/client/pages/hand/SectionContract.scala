@@ -8,6 +8,7 @@ import com.github.thebridsk.bridge.client.pages.hand.PageHandInternal.PageHandNe
 import com.github.thebridsk.bridge.client.pages.hand.ComponentInputStyleButton.InputMethod
 import com.github.thebridsk.bridge.clientcommon.react.Utils._
 
+
 /**
  * A skeleton component.
  *
@@ -50,7 +51,7 @@ object SectionContract {
              callbackDoubled: ViewContractDoubled.CallbackDoubled,
              nextInput: PageHandNextInput.Value,
              showContractHeader: Boolean
-  ) =
+  ) = // scalafix:ok ExplicitResultTypes; ReactComponent
     component(Props(currentTricks,currentSuit,currentDoubled,allowPassedOut,callbackTricks,callbackSuit,callbackDoubled,nextInput,showContractHeader))
 
   private val header = ScalaComponent.builder[Props]("SectionHeader")

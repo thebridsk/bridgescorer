@@ -4,6 +4,7 @@ import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
 import com.github.thebridsk.color.Color
 
+
 object PieChartWithTooltip {
 
   /**
@@ -61,7 +62,7 @@ object PieChartWithTooltip {
         total: V,
         total2: Option[V],
         colors: Color*
-    ) = {
+    ) = { // scalafix:ok ExplicitResultTypes; React
       val l2 = total2.map( t => f", ${100.0*divideValue(n,t)}%.2f%%" ).getOrElse("")
       val l = f": ${formatValue(n)} (${100.0*divideValue(n,total)}%.2f%%${l2})"
       <.li(
@@ -84,7 +85,7 @@ object PieChartWithTooltip {
         title: String,
         total: V,
         detail: List[(N,V)],
-    ) = {
+    ): TagMod = {
       if (detail.isEmpty) {
         TagMod()
       } else if (detail.length == 1) {
@@ -112,7 +113,7 @@ object PieChartWithTooltip {
     def legend(
       histogram: List[(String,List[(N,V)])],
       title: Either[Boolean,TagMod]
-    ) = {
+    ): TagMod = {
       if (histogram.isEmpty) TagMod()
       else {
         val total = histogram.flatMap( l => l._2).foldLeft(zeroValue) { (ac,v) => addValue(ac,v._2) }
@@ -140,9 +141,9 @@ object PieChartWithTooltip {
 
     def zeroValue = 0
 
-    def addValue( l: Int, r: Int ) = l+r
+    def addValue( l: Int, r: Int ): Int = l+r
 
-    def divideValue( n: Int, d: Int ) = n.toDouble/d
+    def divideValue( n: Int, d: Int ): Double = n.toDouble/d
 
     def valueToDouble( v: Int ) = v.toDouble
 
@@ -157,9 +158,9 @@ object PieChartWithTooltip {
 
     def zeroValue = 0.0
 
-    def addValue( l: Double, r: Double ) = l+r
+    def addValue( l: Double, r: Double ): Double = l+r
 
-    def divideValue( n: Double, d: Double ) = n/d
+    def divideValue( n: Double, d: Double ): Double = n/d
 
     def valueToDouble( v: Double ) = v
 
@@ -202,14 +203,14 @@ object PieChartWithTooltip {
       size: Int,
       sizeInLegend: Int,
       minSize: Int
-  ) = PieChartWithTooltipInternal.component(Props(histogram,title,legendtitle,util.asInstanceOf[LegendUtil[Any,Any]],size,sizeInLegend, minSize))
+  ) = PieChartWithTooltipInternal.component(Props(histogram,title,legendtitle,util.asInstanceOf[LegendUtil[Any,Any]],size,sizeInLegend, minSize))  // scalafix:ok ExplicitResultTypes; ReactComponent
 }
 
 object PieChartWithTooltipInternal {
   import PieChartWithTooltip._
 
   class Backend[N,V](scope: BackendScope[Props[N,V], Unit]) {
-    def render( props: Props[N,V] ) = {
+    def render( props: Props[N,V] ) = {  // scalafix:ok ExplicitResultTypes; ReactComponent
       val (slices,colors) = props.histogram.flatMap { entry => entry._2.map { entry =>
         val (name, value) = entry
         ( props.util.valueToDouble(value), props.util.colorMap(name) )
@@ -231,6 +232,7 @@ object PieChartWithTooltipInternal {
 
   }
 
+  private[react]
   val component = ScalaComponent.builder[Props[Any,Any]]("PieChartWithTooltip")
                             .stateless
                             .backend(new Backend[Any,Any](_))

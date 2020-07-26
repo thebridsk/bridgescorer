@@ -8,7 +8,7 @@ import org.scalactic.exceptions.NullArgumentException
 import com.github.thebridsk.utilities.logging.Logger
 
 object EventuallyUtilsInternals {
-  val log = Logger[EventuallyUtils]()
+  val log: Logger = Logger[EventuallyUtils]()
 
   /**
    * If message or message contents are null, throw a null exception, otherwise
@@ -44,7 +44,7 @@ class NoResultYet(
 trait EventuallyUtils {
   import Eventually.{ patienceConfig => _, _ }
 
-  def tcpSleep( sec: Int = 30 ) = {
+  def tcpSleep( sec: Int = 30 ): Unit = {
     // MonitorTCP.waitForConnections(sec seconds)
   }
 

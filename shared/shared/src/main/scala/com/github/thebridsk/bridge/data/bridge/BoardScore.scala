@@ -32,7 +32,7 @@ case class TeamBoardScore(
     opponent: Option[Team.Id],
     imps: Double
 ) {
-  def showScore =
+  def showScore: String =
     if (played) {
       if (hidden) "?"
       else score.toString
@@ -40,7 +40,7 @@ case class TeamBoardScore(
       ""
     }
 
-  def showPoints =
+  def showPoints: String =
     if (played) {
       if (hidden) "?"
       else points.toString
@@ -48,7 +48,7 @@ case class TeamBoardScore(
       ""
     }
 
-  def showImps =
+  def showImps: String =
     if (played) {
       if (hidden) "?"
       else f"${imps}%.1f"
@@ -72,7 +72,7 @@ case class TeamBoardScore(
       Left("")
     }
 
-  def showContract =
+  def showContract: String =
     if (played) {
       if (hidden) "?"
       else
@@ -83,7 +83,7 @@ case class TeamBoardScore(
     } else {
       ""
     }
-  def showDeclarer =
+  def showDeclarer: String =
     if (played) {
       if (hidden) "?"
       else
@@ -94,7 +94,7 @@ case class TeamBoardScore(
     } else {
       ""
     }
-  def showMade =
+  def showMade: String =
     if (played) {
       if (hidden) "?"
       else
@@ -105,7 +105,7 @@ case class TeamBoardScore(
     } else {
       ""
     }
-  def showDown =
+  def showDown: String =
     if (played) {
       if (hidden) "?"
       else
@@ -258,7 +258,7 @@ class BoardScore(val board: Board, perspective: DuplicateViewPerspective) {
     case None      => false
   }
 
-  def isHidden(ignoreTableSize: Boolean = true) =
+  def isHidden(ignoreTableSize: Boolean = true): Boolean =
     !allplayed && (perspective match {
       case PerspectiveComplete => true
       case PerspectiveDirector => false
@@ -287,7 +287,7 @@ class BoardScore(val board: Board, perspective: DuplicateViewPerspective) {
 
   def id = board.id
 
-  override def toString() = {
+  override def toString(): String = {
     scores(false).values
       .map(tbs => tbs.toString())
       .mkString(
@@ -328,7 +328,7 @@ class BoardScore(val board: Board, perspective: DuplicateViewPerspective) {
     })
   }
 
-  def showVul =
+  def showVul: String =
     if (board.nsVul) {
       if (board.ewVul) {
         "Both Vul"
@@ -348,7 +348,7 @@ object BoardScore {
   def apply(board: Board, perspective: DuplicateViewPerspective) =
     new BoardScore(board, perspective)
 
-  val log = Logger("bridge.BoardScore")
+  val log: Logger = Logger("bridge.BoardScore")
 
 //  https://www.bridgehands.com/I/IMP.htm
 //
@@ -381,7 +381,7 @@ object BoardScore {
 
   case class IMPEntry(min: Int, max: Int, IMP: Int)
 
-  val IMPTable = List(
+  val IMPTable: List[IMPEntry] = List(
     IMPEntry(0, 10, 0),
     IMPEntry(20, 40, 1),
     IMPEntry(50, 80, 2),
@@ -409,7 +409,7 @@ object BoardScore {
     IMPEntry(4000, 100000, 24)
   )
 
-  def getIMPs(points: Int) = {
+  def getIMPs(points: Int): Int = {
     IMPTable
       .find { entry =>
         entry.min <= points && entry.max >= points

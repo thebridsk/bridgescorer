@@ -13,13 +13,13 @@ import com.github.thebridsk.bridge.clientcommon.demo.BridgeDemo
 import japgolly.scalajs.react.vdom.html_<^._
 
 object ServerURLStore extends ChangeListenable {
-  val logger = Logger("bridge.ServerURLStore")
+  val logger: Logger = Logger("bridge.ServerURLStore")
 
   private var updateRequested: Boolean = false
   private var urls: Option[ServerURL] = None
 
   def hasURLs = urls.isDefined
-  def getURLs = urls.getOrElse( ServerURL(List()) )
+  def getURLs: ServerURL = urls.getOrElse( ServerURL(List()) )
 
   /**
    * @return A TagMod that contains one or more li elements.
@@ -43,7 +43,7 @@ object ServerURLStore extends ChangeListenable {
 
   private var dispatchToken: Option[DispatchToken] = Some(BridgeDispatcher.register(dispatch _))
 
-  def dispatch( msg: Any ) = Alerter.tryitWithUnit {
+  def dispatch( msg: Any ): Unit = Alerter.tryitWithUnit {
     msg match {
       case ActionUpdateServerURLs(serverurl) =>
         urls = Some(serverurl)
@@ -52,7 +52,7 @@ object ServerURLStore extends ChangeListenable {
     }
   }
 
-  def updateURLs( force: Boolean = false ) = {
+  def updateURLs( force: Boolean = false ): Unit = {
     if (force || !hasURLs) {
       if (!BridgeDemo.isDemo) {
         updateRequested = true

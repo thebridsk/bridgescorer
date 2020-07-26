@@ -13,21 +13,25 @@ import akka.http.scaladsl.server.directives.LogEntry
 import akka.event.Logging
 import com.github.thebridsk.bridge.server.rest.ServerPort
 import com.github.thebridsk.bridge.server.version.VersionServer
+import akka.event.LoggingAdapter
+import akka.http.scaladsl.server.Route
 
 class TestGetFromResource extends AnyFlatSpec with ScalatestRouteTest with Matchers with MyService {
   val restService = new BridgeServiceTesting
 
   val httpport = 8080
   override
-  def ports = ServerPort( Option(httpport), None )
+  def ports: ServerPort = ServerPort( Option(httpport), None )
 
   val webJarLocationForServer = "META-INF/resources/webjars/bridgescorer-fullserver/"
 
+  // scalafix:off
   implicit lazy val actorSystem = system
   implicit lazy val actorExecutor = executor
   implicit lazy val actorMaterializer = materializer
+  // scalafix:on
 
-  lazy val testlog = Logging(actorSystem, classOf[TestGetFromResource])
+  lazy val testlog: LoggingAdapter = Logging(actorSystem, classOf[TestGetFromResource])
 
   behavior of "Server"
 
@@ -69,7 +73,7 @@ class TestGetFromResource extends AnyFlatSpec with ScalatestRouteTest with Match
       None
   }
 
-  val logroute = {
+  val logroute: Route = {
     logRequestResult(myTestLog _) {
       // route
       get {
@@ -82,7 +86,7 @@ class TestGetFromResource extends AnyFlatSpec with ScalatestRouteTest with Match
     }
   }
 
-  val route = {
+  val route: Route = {
     get {
       pathPrefix("public") {
         pathEnd {

@@ -15,6 +15,7 @@ import com.github.thebridsk.materialui.TextVariant
 import com.github.thebridsk.materialui.TextColor
 import com.github.thebridsk.bridge.clientcommon.fullscreen.Values
 
+
 /**
  * @author werewolf
  */
@@ -26,7 +27,7 @@ object InfoPage {
   case class Props( routeCtl: BridgeRouter[AppPage] )
 
   class Backend( scope: BackendScope[Props, Unit] ) {
-    def render( props: Props ) = {
+    def render( props: Props ) = { // scalafix:ok ExplicitResultTypes; React
           val gotoPage = props.routeCtl.set _
           <.div(
             RootBridgeAppBar(
@@ -64,7 +65,7 @@ object InfoPage {
 
   }
 
-  def info = {
+  def info: List[(String, String)] = {
     val window = document.defaultView
     val nav = window.navigator
     val geoloc = nav.geolocation
@@ -118,7 +119,7 @@ object InfoPage {
         .renderBackend[Backend]
         .build
 
-  def apply( routeCtl: BridgeRouter[AppPage] ) = component(Props(routeCtl))
+  def apply( routeCtl: BridgeRouter[AppPage] ) = component(Props(routeCtl))  // scalafix:ok ExplicitResultTypes; ReactComponent
 
   /**
    * window.orientation: (from http://www.williammalone.com/articles/html5-javascript-ios-orientation/)
@@ -128,21 +129,21 @@ object InfoPage {
    * -90 - landscape, clockwise
    *
    */
-  def getOrientation = {
+  def getOrientation: Option[Int] = {
     js.Dynamic.global.window.orientation.toString match {
       case "undefined" => None
       case s => Some(s.toInt)
     }
   }
 
-  def isPortrait = {
+  def isPortrait: Boolean = {
     val window = document.defaultView // js.Dynamic.global.window
     window.innerHeight / window.innerWidth > 1
   };
 
-  def isLandscape = !isPortrait
+  def isLandscape: Boolean = !isPortrait
 
-  def isWindowsAsusTablet = {
+  def isWindowsAsusTablet: Boolean = {
     // HACK Alert
     // screen is 1368x768, platform is Win32
     val s = js.Dynamic.global.window.screen
@@ -152,18 +153,18 @@ object InfoPage {
     (p=="Win32") && ((w==1368 && h==768)||(w==768 && h==1368))
   }
 
-  def isIpad = {
+  def isIpad: Boolean = {
     Values.isIpad
   }
 
-  def isTouchEnabled = {
+  def isTouchEnabled: Boolean = {
     val g = js.Dynamic.global.window
     !js.isUndefined(g.ontouchstart) || isWindowsAsusTablet
   }
 
   val touchEnabled = isTouchEnabled
 
-  def showOnlyInLandscapeOnTouch() = {
+  def showOnlyInLandscapeOnTouch(): TagMod = {
     if (touchEnabled) baseStyles.hideInPortrait
     else baseStyles.alwaysHide
   }

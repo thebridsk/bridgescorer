@@ -22,13 +22,13 @@ class TestBoardSetsAndHands extends AnyFlatSpec with ScalatestRouteTest with Mat
 
   val httpport = 8080
   override
-  def ports = ServerPort( Option(httpport), None )
+  def ports: ServerPort = ServerPort( Option(httpport), None )
 
-  implicit lazy val actorSystem = system
-  implicit lazy val actorExecutor = executor
-  implicit lazy val actorMaterializer = materializer
+  implicit lazy val actorSystem = system  //scalafix:ok ExplicitResultTypes
+  implicit lazy val actorExecutor = executor  //scalafix:ok ExplicitResultTypes
+  implicit lazy val actorMaterializer = materializer  //scalafix:ok ExplicitResultTypes
 
-  val remoteAddress = `Remote-Address`( IP( InetAddress.getLocalHost, Some(12345) ))
+  val remoteAddress = `Remote-Address`( IP( InetAddress.getLocalHost, Some(12345) ))  //scalafix:ok
 
   var boardsetArmonkBoards: Option[BoardSet] = None
   var originalNumberBoardSets: Int = 0

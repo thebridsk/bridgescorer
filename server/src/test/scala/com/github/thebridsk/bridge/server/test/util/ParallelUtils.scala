@@ -13,7 +13,7 @@ import com.github.thebridsk.source.SourcePosition
 import scala.util.Success
 
 object ParallelUtilsInternals {
-  val log = Logger[ParallelUtils]()
+  val log: Logger = Logger[ParallelUtils]()
 
   private[util] def toExceptionMsg( msg: String, causes: (Position,Throwable)* ) = {
     msg+causes.map { e =>
@@ -57,7 +57,7 @@ trait ParallelUtils {
     }
   }
 
-  def waitForFutures( name: String, cbs: CodeBlock[_]* )( implicit timeoutduration: Duration ) = {
+  def waitForFutures( name: String, cbs: CodeBlock[_]* )( implicit timeoutduration: Duration ): Unit = {
     try {
       if (useSerial) executeSerial(name, cbs:_*)
       else waitForFuturesImpl(name, cbs:_*)
@@ -68,7 +68,7 @@ trait ParallelUtils {
     }
   }
 
-  def waitForFuturesImpl( name: String, cbs: CodeBlock[_]* )( implicit timeoutduration: Duration ) = {
+  def waitForFuturesImpl( name: String, cbs: CodeBlock[_]* )( implicit timeoutduration: Duration ): Unit = {
     val futurefailures = Future.foldLeft(
                          cbs.map { cb =>
                            cb.toFuture.transform { t =>
@@ -133,7 +133,7 @@ object ParallelUtils extends ParallelUtils {
    * to "true" or "false".
    * If this property is not set, then the os.name system property is used, on windows or unknown parallel, otherwise serial.
    */
-  val useSerial = {
+  val useSerial: Boolean = {
     getPropOrEnv("ParallelUtilsUseSerial") match {
       case Some(v) =>
         v.toBoolean
@@ -155,7 +155,7 @@ object ParallelUtils extends ParallelUtils {
 
     def execute = body
 
-    def toFuture = {
+    def toFuture: Future[T] = {
       Future {
         try {
           log.fine(s"CodeBlock ${pos.line} starting")
@@ -172,12 +172,12 @@ object ParallelUtils extends ParallelUtils {
   }
 
   object CodeBlock {
-    def apply[T]( body: => T )(implicit pos: Position) = {
+    def apply[T]( body: => T )(implicit pos: Position): CodeBlock[T] = {
       new CodeBlock(body)
     }
   }
 
-  def ignoreTimeoutExceptions( name: String, t: Throwable )( implicit pos: Position ) = {
+  def ignoreTimeoutExceptions( name: String, t: Throwable )( implicit pos: Position ): Unit = {
     t match {
       case x: ParallelException =>
         if (x.getSuppressed.find{ s =>
@@ -207,7 +207,7 @@ object Test {
   import ParallelUtils._
   import ParallelUtilsInternals.log
 
-  implicit val timeoutduration = Duration( 60, TimeUnit.SECONDS )
+  implicit val timeoutduration: FiniteDuration = Duration( 60, TimeUnit.SECONDS )
 
   def main( args: Array[String] ): Unit = {
     waitForFutures( "hello",

@@ -38,14 +38,14 @@ case class RubberHand(
     updated: Timestamp
 ) {
 
-  def equalsIgnoreModifyTime(other: RubberHand) = {
+  def equalsIgnoreModifyTime(other: RubberHand): Boolean = {
     other.id == id &&
     other.honors == honors &&
     other.honorsPlayer == honorsPlayer &&
     other.hand.equalsIgnoreModifyTime(hand)
   }
 
-  def setId(newId: String, forCreate: Boolean) = {
+  def setId(newId: String, forCreate: Boolean): RubberHand = {
     val time = SystemTime.currentTimeMillis()
     copy(
       id = newId,
@@ -55,7 +55,7 @@ case class RubberHand(
     )
   }
 
-  def copyForCreate(id: String) = {
+  def copyForCreate(id: String): RubberHand = {
     val time = SystemTime.currentTimeMillis()
     copy(id = id, hand = hand.copyForCreate(id), created = time, updated = time)
   }

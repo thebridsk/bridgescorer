@@ -14,14 +14,15 @@ import com.github.thebridsk.bridge.data.RubberBestMatch
 
 import SchemaBase.{log => _, _}
 import SchemaHand.{log => _, _}
+import com.github.thebridsk.bridge.data.{ Id, IdMatchRubber }
 
 object SchemaRubber {
 
-  val log = Logger(SchemaRubber.getClass.getName)
+  val log: Logger = Logger(SchemaRubber.getClass.getName)
 
-  val RubberIdType = idScalarType("RubberId", MatchRubber)
+  val RubberIdType: ScalarType[Id[IdMatchRubber]] = idScalarType("RubberId", MatchRubber)
 
-  val RubberHandType = ObjectType(
+  val RubberHandType: ObjectType[BridgeService,RubberHand] = ObjectType(
     "RubberHand",
     "A rubber hand",
     fields[BridgeService, RubberHand](
@@ -62,7 +63,7 @@ object SchemaRubber {
     )
   )
 
-  val RubberBestMatchType = ObjectType(
+  val RubberBestMatchType: ObjectType[BridgeService,(Option[String], RubberBestMatch)] = ObjectType(
     "RubberBestMatch",
     "Identifies the best match",
     fields[BridgeService, (Option[String], RubberBestMatch)](
@@ -87,7 +88,7 @@ object SchemaRubber {
     )
   )
 
-  val MatchRubberType = ObjectType(
+  val MatchRubberType: ObjectType[BridgeService,(Option[String], MatchRubber)] = ObjectType(
     "MatchRubber",
     "A rubber match",
     // Option string is the import ID, None for main store
@@ -155,7 +156,7 @@ object SchemaRubber {
     )
   )
 
-  val ArgRubberId =
+  val ArgRubberId: Argument[Id[IdMatchRubber]] =
     Argument("id", RubberIdType, description = "The Id of the rubber match")
 
 }
@@ -232,7 +233,7 @@ object RubberAction {
     }
   }
 
-  def sortR(list: List[MatchRubber], sort: Option[Sort]) = {
+  def sortR(list: List[MatchRubber], sort: Option[Sort]): List[MatchRubber] = {
     val l = sort
       .map { s =>
         s match {

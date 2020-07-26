@@ -20,6 +20,8 @@ import javax.ws.rs.GET
 import com.github.thebridsk.bridge.data.MatchChicago
 import com.github.thebridsk.bridge.server.backend.StoreMonitor.NewParticipantSSEChicago
 import com.github.thebridsk.bridge.server.rest.Service
+import akka.event.LoggingAdapter
+import akka.http.scaladsl.server.Route
 
 @Path("")
 class ChicagoMonitorWebservice(
@@ -32,7 +34,7 @@ class ChicagoMonitorWebservice(
 ) extends MonitorWebservice[MatchChicago.Id, MatchChicago](
       totallyMissingResourceHandler
     ) {
-  val log = Logging(system, classOf[ChicagoMonitorWebservice])
+  val log: LoggingAdapter = Logging(system, classOf[ChicagoMonitorWebservice])
   val monitor = new StoreMonitorManager(
     system,
     bridgeService.chicagos,
@@ -85,8 +87,8 @@ class ChicagoMonitorWebservice(
       )
     )
   )
-  def xxxroutesse = {}
-  val routesse = {
+  def xxxroutesse: Unit = {}
+  val routesse: Route = {
     import akka.http.scaladsl.marshalling.sse.EventStreamMarshalling._
     pathPrefix("sse") {
       get {

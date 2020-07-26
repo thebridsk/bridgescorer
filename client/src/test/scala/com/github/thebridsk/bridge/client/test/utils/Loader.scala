@@ -3,7 +3,7 @@ package com.github.thebridsk.bridge.client.test.utils
 
 object Loader {
 
-  def init = {}
+  def init: Unit = {}
 
 //  @JSImport("expose-loader?React.addons.TestUtils!react-dom/test-utils", JSImport.Namespace)
 //  @js.native

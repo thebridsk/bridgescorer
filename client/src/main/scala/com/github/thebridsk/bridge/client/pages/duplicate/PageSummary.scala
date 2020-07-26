@@ -43,6 +43,8 @@ import com.github.thebridsk.materialui.icons
 import japgolly.scalajs.react.component.builder.Lifecycle.ComponentDidUpdate
 import com.github.thebridsk.bridge.data.DuplicateSummary
 import com.github.thebridsk.bridge.data.MatchDuplicateResult
+import japgolly.scalajs.react.internal.Effect
+import play.api.libs.json.Reads
 
 /**
  * Shows a summary page of all duplicate matches from the database.
@@ -64,7 +66,7 @@ object PageSummary {
 
   case class Props( routerCtl: BridgeRouter[DuplicatePage], page: SummaryViewBase, defaultRows: Int = 10 )
 
-  def apply( routerCtl: BridgeRouter[DuplicatePage], page: SummaryViewBase, defaultRows: Int = 10 ) = component(Props(routerCtl, page, defaultRows))
+  def apply( routerCtl: BridgeRouter[DuplicatePage], page: SummaryViewBase, defaultRows: Int = 10 ) = component(Props(routerCtl, page, defaultRows))  // scalafix:ok ExplicitResultTypes; ReactComponent
 
 }
 
@@ -72,8 +74,9 @@ object PageSummaryInternal {
   import PageSummary._
   import DuplicateStyles._
 
-  val logger = Logger("bridge.PageSummary")
+  val logger: Logger = Logger("bridge.PageSummary")
 
+  private[duplicate]
   val SummaryHeader = ScalaComponent.builder[(SummaryPeople,Props,State,Backend,Option[String])]("SummaryRow")
                         .render_P( props => {
                           val (tp,pr,state,backend,importId) = props
@@ -106,6 +109,7 @@ object PageSummaryInternal {
                           )
                         }).build
 
+  private[duplicate]
   val SummaryRow = ScalaComponent.builder[(SummaryPeople,DuplicateSummary,Props,State,Backend,Option[String])]("SummaryRow")
                       .render_P( props => {
                         val (tp,ds,pr,st,back,importId) = props
@@ -265,17 +269,17 @@ object PageSummaryInternal {
 //    def openMainMenu( n: Node ) = copy( anchorMainEl = n.asInstanceOf[Element] )
 //    def closeMainMenu() = copy( anchorMainEl = js.undefined )
 
-    def withError( err: String, info: Boolean ) = copy( workingOnNew = Some(err), info=info )
-    def clearError() = copy( workingOnNew = None )
+    def withError( err: String, info: Boolean ): State = copy( workingOnNew = Some(err), info=info )
+    def clearError(): State = copy( workingOnNew = None )
 
-    def isMP = useIMP.getOrElse(true)
-    def isIMP = useIMP.getOrElse(false)
+    def isMP: Boolean = useIMP.getOrElse(true)
+    def isIMP: Boolean = useIMP.getOrElse(false)
 
-    def toggleIMP = {
+    def toggleIMP: State = {
       copy( useIMP = Some(!isIMP) )
     }
 
-    def nextIMPs = {
+    def nextIMPs: State = {
       val n = useIMP match {
         case None => Some(false)
         case Some(false) => Some(true)
@@ -288,7 +292,7 @@ object PageSummaryInternal {
 
   case class ImportReturn( id: String )
 
-  implicit val importReturnReader = Json.reads[ImportReturn]
+  implicit val importReturnReader: Reads[ImportReturn] = Json.reads[ImportReturn]
 
   /**
    * Internal state for rendering the component.
@@ -306,19 +310,19 @@ object PageSummaryInternal {
 //      scope.modState(s => s.closeMainMenu()).runNow()
 //    }
 
-    val resultDuplicate = ResultHolder[MatchDuplicate]()
-    val resultGraphQL = ResultHolder[GraphQLResponse]()
+    val resultDuplicate: ResultHolder[MatchDuplicate] = ResultHolder[MatchDuplicate]()
+    val resultGraphQL: ResultHolder[GraphQLResponse] = ResultHolder[GraphQLResponse]()
 
-    def show( what: ShowEntries ) = scope.modState( s => s.copy( showEntries = what ) )
+    def show( what: ShowEntries ): Callback = scope.modState( s => s.copy( showEntries = what ) )
 
-    val cancel = Callback {
+    val cancel: Callback = Callback {
       resultDuplicate.cancel()
       resultGraphQL.cancel()
     } >> scope.modState( s => s.clearError())
 
-    def setMessage( msg: String, info: Boolean = false ) = scope.withEffectsImpure.modState( s => s.withError(msg,info) )
+    def setMessage( msg: String, info: Boolean = false ): Effect.Id[Unit] = scope.withEffectsImpure.modState( s => s.withError(msg,info) )
 
-    def setMessageCB( msg: String ) = scope.modState( s => s.withError(msg,false) )
+    def setMessageCB( msg: String ): Callback = scope.modState( s => s.withError(msg,false) )
 
     def newDuplicateTest( e: ReactEvent): Unit =
       scope.modState( s => s.copy(workingOnNew=Some("Working on creating a new duplicate match")), Callback {
@@ -337,15 +341,15 @@ object PageSummaryInternal {
         })
       }).runNow()
 
-    def toggleSelect( dupid: DuplicateSummary.Id ) = scope.modState(s => {
+    def toggleSelect( dupid: DuplicateSummary.Id ): Callback = scope.modState(s => {
       val sel = if (s.selected.contains(dupid)) s.selected.filter( s => s!=dupid )
                 else dupid::s.selected
       s.copy(selected = sel)
     })
 
-    val clearAllSelected = scope.modState( s => s.copy(selected=List()) )
+    val clearAllSelected: Callback = scope.modState( s => s.copy(selected=List()) )
 
-    val selectedAll = scope.modState { (s,props) =>
+    val selectedAll: Callback = scope.modState { (s,props) =>
       val (importid,summaries) = getDuplicateSummaries(props)
       val allIds = summaries.map { list =>
         list.map( sum => sum.id )
@@ -353,11 +357,11 @@ object PageSummaryInternal {
       s.copy(selected=allIds)
     }
 
-    def forPrint(flagForPrint: Boolean) = scope.modState(s => s.copy(forPrint = flagForPrint))
+    def forPrint(flagForPrint: Boolean): Callback = scope.modState(s => s.copy(forPrint = flagForPrint))
 
-    def clickForPrint(flagForPrint: Boolean)( event: ReactEvent ) = forPrint(flagForPrint).runNow()
+    def clickForPrint(flagForPrint: Boolean)( event: ReactEvent ): Unit = forPrint(flagForPrint).runNow()
 
-    val forPrintOk = CallbackTo {
+    val forPrintOk: Callback = CallbackTo {
       val s = scope.withEffectsImpure.state
       val mds = s.selected.reverse.map{ id => id.id }.mkString(",")
       forPrint(false).runNow()
@@ -366,9 +370,9 @@ object PageSummaryInternal {
       p.routerCtl.set(FinishedScoreboardsView(mds))
     }
 
-    val forPrintCancel = forPrint(false)
+    val forPrintCancel: Callback = forPrint(false)
 
-    def toggleRows(e: ReactEvent) = scope.withEffectsImpure.modState{ (s,props) =>
+    def toggleRows(e: ReactEvent): Effect.Id[Unit] = scope.withEffectsImpure.modState{ (s,props) =>
       val n = s.showRows match {
         case Some(r) => None
         case None => Some( props.defaultRows )
@@ -376,7 +380,7 @@ object PageSummaryInternal {
       s.copy( showRows=n)
     }
 
-    def importDuplicateResult( importId: String, id: MatchDuplicateResult.Id ) =
+    def importDuplicateResult( importId: String, id: MatchDuplicateResult.Id ): Callback =
       scope.modState( s => s.copy(workingOnNew=Some(s"Importing Duplicate Result ${id.id} from import ${importId}")), Callback {
         val query = """mutation importDuplicate( $importId: ImportId!, $dupId: DuplicateResultId! ) {
                       |  import( id: $importId ) {
@@ -412,7 +416,7 @@ object PageSummaryInternal {
         }.foreach { x => }
       })
 
-    def importDuplicateMatch( importId: String, id: MatchDuplicate.Id ) =
+    def importDuplicateMatch( importId: String, id: MatchDuplicate.Id ): Callback =
       scope.modState( s => s.copy(workingOnNew=Some(s"Importing Duplicate Match ${id.id} from import ${importId}")), Callback {
         val query = """mutation importDuplicate( $importId: ImportId!, $dupId: DuplicateId! ) {
                       |  import( id: $importId ) {
@@ -448,7 +452,7 @@ object PageSummaryInternal {
         }.foreach { x => }
       })
 
-    def importSelected( importId: String ) = scope.modState( { s =>
+    def importSelected( importId: String ): Callback = scope.modState( { s =>
         val ids = s.selected.map( id => id.id )
         s.copy(workingOnNew=Some(s"Importing Duplicate Match ${ids.mkString(", ")} from import ${importId}"))
       },
@@ -521,9 +525,9 @@ object PageSummaryInternal {
       else (wanted, None)
     }
 
-    val nextIMPs = scope.modState { s => s.nextIMPs }
+    val nextIMPs: Callback = scope.modState { s => s.nextIMPs }
 
-    def render( props: Props, state: State ) = {
+    def render( props: Props, state: State ) = { // scalafix:ok ExplicitResultTypes; React
       val (importId,summaries) = getDuplicateSummaries( props )
 
       logger.finer(s"PageSummary.render called, importId=${importId}, summaries=${summaries}")
@@ -761,15 +765,15 @@ object PageSummaryInternal {
 
     private var mounted = false
 
-    val storeCallback = Callback {
+    val storeCallback: Callback = Callback {
       logger.fine("PageSummary.Backend.storeCallback called")
     } >>
       scope.forceUpdate
 
 
-    def summaryError() = scope.withEffectsImpure.modState( s => s.copy(workingOnNew=Some("Error getting duplicate summary")))
+    def summaryError(): Effect.Id[Unit] = scope.withEffectsImpure.modState( s => s.copy(workingOnNew=Some("Error getting duplicate summary")))
 
-    def initializeNewSummary(p: Props) = {
+    def initializeNewSummary(p: Props): Unit = {
       logger.fine("PageSummary.initializeNewSummary")
       p.page match {
         case isv: ImportSummaryView =>
@@ -780,14 +784,14 @@ object PageSummaryInternal {
       }
     }
 
-    val didMount = scope.props >>= { (p) => Callback {
+    val didMount: Callback = scope.props >>= { (p) => Callback {
       logger.fine("PageSummary.didMount")
       mounted = true
       DuplicateSummaryStore.addChangeListener(storeCallback)
       initializeNewSummary(p)
     }}
 
-    val willUnmount = Callback {
+    val willUnmount: Callback = Callback {
       logger.finer("PageSummary.willUnmount")
       mounted = false
       DuplicateSummaryStore.removeChangeListener(storeCallback)
@@ -795,7 +799,7 @@ object PageSummaryInternal {
 
   }
 
-  def didUpdate( cdu: ComponentDidUpdate[Props,State,Backend,Unit] ) = Callback {
+  def didUpdate( cdu: ComponentDidUpdate[Props,State,Backend,Unit] ): Callback = Callback {
     val props = cdu.currentProps
     val prevProps = cdu.prevProps
     if (prevProps.page != props.page) {
@@ -803,6 +807,7 @@ object PageSummaryInternal {
     }
   }
 
+  private[duplicate]
   val component = ScalaComponent.builder[Props]("PageSummary")
                             .initialStateFromProps { props => State( None, false, Nil,
                                                                     if (props.defaultRows==0) None else Some(props.defaultRows),

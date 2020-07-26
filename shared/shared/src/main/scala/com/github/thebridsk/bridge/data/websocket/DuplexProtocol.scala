@@ -112,6 +112,6 @@ object DuplexProtocol {
 
   def toString(msg: DuplexMessage) = msg.toJson
 
-  def fromString(str: String) = str.parseJson[DuplexMessage]
+  def fromString(str: String): DuplexMessage = str.parseJson[DuplexMessage]
 
 }

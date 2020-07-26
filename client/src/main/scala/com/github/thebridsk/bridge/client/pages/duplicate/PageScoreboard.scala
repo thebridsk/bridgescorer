@@ -31,6 +31,7 @@ import com.github.thebridsk.bridge.data.MatchDuplicate
 import com.github.thebridsk.bridge.client.pages.HomePage
 import japgolly.scalajs.react.component.builder.Lifecycle.ComponentDidUpdate
 
+
 /**
  * Shows the team x board table and has a totals column that shows the number of points the team has.
  *
@@ -49,14 +50,14 @@ object PageScoreboard {
 
   case class Props( routerCtl: BridgeRouter[DuplicatePage], game: BaseScoreboardViewWithPerspective )
 
-  def apply( routerCtl: BridgeRouter[DuplicatePage], game: BaseScoreboardViewWithPerspective ) = component(Props(routerCtl,game))
+  def apply( routerCtl: BridgeRouter[DuplicatePage], game: BaseScoreboardViewWithPerspective ) = component(Props(routerCtl,game))  // scalafix:ok ExplicitResultTypes; ReactComponent
 
 }
 
 object PageScoreboardInternal {
   import PageScoreboard._
 
-  val logger = Logger("bridge.PageScoreboard")
+  val logger: Logger = Logger("bridge.PageScoreboard")
 
   /**
    * Internal state for rendering the component.
@@ -70,17 +71,17 @@ object PageScoreboardInternal {
     /**
      * whether the current display should show MP scoring
      */
-    def isMP(md: MatchDuplicate) = !useIMP.getOrElse(md.isIMP)
+    def isMP(md: MatchDuplicate): Boolean = !useIMP.getOrElse(md.isIMP)
     /**
      * whether the current display should show IMP scoring
      */
-    def isIMP(md: MatchDuplicate) = useIMP.getOrElse(md.isIMP)
+    def isIMP(md: MatchDuplicate): Boolean = useIMP.getOrElse(md.isIMP)
 
-    def toggleIMP(md: MatchDuplicate) = {
+    def toggleIMP(md: MatchDuplicate): State = {
       copy( useIMP = Some(!isIMP(md)) )
     }
 
-    def nextIMPs = {
+    def nextIMPs: State = {
       val n = useIMP match {
         case None => Some(false)
         case Some(false) => Some(true)
@@ -91,7 +92,7 @@ object PageScoreboardInternal {
 
   }
 
-  def scoringMethodButton( useIMP: Option[Boolean], default: Option[Boolean], unknown: Boolean, cb: Callback ) = {
+  def scoringMethodButton( useIMP: Option[Boolean], default: Option[Boolean], unknown: Boolean, cb: Callback ) = {  // scalafix:ok ExplicitResultTypes; ReactComponent
     AppButton(
       "ScoreStyle",
       useIMP match {
@@ -118,7 +119,7 @@ object PageScoreboardInternal {
   class Backend(scope: BackendScope[Props, State]) {
     import DuplicateStyles._
 
-    def setScoringMethod(currentInMatchIsIMP: Boolean) = scope.state >>= { state => Callback {
+    def setScoringMethod(currentInMatchIsIMP: Boolean): Callback = scope.state >>= { state => Callback {
       state.useIMP match {
         case Some(next) if currentInMatchIsIMP!=next =>
           // switch to next
@@ -133,7 +134,7 @@ object PageScoreboardInternal {
       }
     } }
 
-    def render( props: Props, state: State ) = {
+    def render( props: Props, state: State ) = { // scalafix:ok ExplicitResultTypes; React
 
       def callbackPage(page: DuplicatePage)(e: ReactEvent) = props.routerCtl.set(page).runNow()
 
@@ -355,40 +356,40 @@ object PageScoreboardInternal {
 
     import scala.concurrent.ExecutionContext.Implicits.global
 
-    val actionDelete = scope.modState(s => s.copy(deletePopup=true) )
+    val actionDelete: Callback = scope.modState(s => s.copy(deletePopup=true) )
 
-    val actionDeleteOk = scope.props >>= { props => Callback {
+    val actionDeleteOk: Callback = scope.props >>= { props => Callback {
       Controller.deleteMatchDuplicate(props.game.dupid).foreach( msg => {
         logger.info("Deleted duplicate match, going to summary view")
         props.routerCtl.set(SummaryView).runNow()
       })
     }}
 
-    val actionDeleteCancel = scope.modState(s => s.copy(deletePopup=false) )
+    val actionDeleteCancel: Callback = scope.modState(s => s.copy(deletePopup=false) )
 
-    val toggleShowDetails = scope.modState( s => s.copy( showdetails = !s.showdetails) )
+    val toggleShowDetails: Callback = scope.modState( s => s.copy( showdetails = !s.showdetails) )
 
-    val nextIMPs = scope.modState { s => s.nextIMPs }
+    val nextIMPs: Callback = scope.modState { s => s.nextIMPs }
 
-    val storeCallback = scope.modStateOption { s =>
+    val storeCallback: Callback = scope.modStateOption { s =>
       DuplicateStore.getMatch().map( md => s.copy( useIMP = Some(md.isIMP) ) )
     }
 
-    val didMount = scope.props >>= { (p) => Callback {
+    val didMount: Callback = scope.props >>= { (p) => Callback {
       logger.info("PageScoreboard.didMount")
       DuplicateStore.addChangeListener(storeCallback)
 
       Controller.monitor(p.game.dupid)
     }}
 
-    val willUnmount = CallbackTo {
+    val willUnmount: Callback = CallbackTo {
       logger.info("PageScoreboard.willUnmount")
       DuplicateStore.removeChangeListener(storeCallback)
       Controller.delayStop()
     }
   }
 
-  def didUpdate( cdu: ComponentDidUpdate[Props,State,Backend,Unit] ) = Callback {
+  def didUpdate( cdu: ComponentDidUpdate[Props,State,Backend,Unit] ): Callback = Callback {
     val props = cdu.currentProps
     val prevProps = cdu.prevProps
     if (prevProps.game != props.game) {
@@ -396,6 +397,7 @@ object PageScoreboardInternal {
     }
   }
 
+  private[duplicate]
   val component = ScalaComponent.builder[Props]("PageScoreboard")
                             .initialStateFromProps { props => State() }
                             .backend(new Backend(_))

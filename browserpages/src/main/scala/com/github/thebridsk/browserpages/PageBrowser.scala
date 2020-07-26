@@ -36,7 +36,7 @@ object NotNothing {
 object PageBrowsersImplicits {
   import scala.language.implicitConversions
 
-  implicit def convertWebElementToElement( webElement: WebElement )(implicit pos: Position, webdriver: WebDriver, patienceConfig: PatienceConfig) = new Element(webElement)
+  implicit def convertWebElementToElement( webElement: WebElement )(implicit pos: Position, webdriver: WebDriver, patienceConfig: PatienceConfig): Element = new Element(webElement)
 
 }
 
@@ -62,7 +62,7 @@ abstract class QueryBy(implicit webDriver: WebDriver) {
    * Query the page with the query
    * @return the elements, empty list is returned if nothing matches
    */
-  def queryElements(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
+  def queryElements(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position): List[Element] = {
     webDriver.findElements(query).asScala.map(e => new Element(e)).toList
   }
 
@@ -82,18 +82,18 @@ abstract class QueryBy(implicit webDriver: WebDriver) {
    * @param searchFrom the starting element for the search
    * @return the elements, empty list is returned if nothing matches
    */
-  def queryElements( searchFrom: Element )(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def queryElements( searchFrom: Element )(implicit patienceConfig: PatienceConfig, pos: Position): List[Element] = {
     searchFrom.underlying.findElements(query).asScala.map(e => new Element(e)).toList
   }
 }
 
 class GoTo(implicit createdpos: SourcePosition) {
   import PageBrowser.log
-  def to( url: String )(implicit webDriver: WebDriver, pos: Position) = {
+  def to( url: String )(implicit webDriver: WebDriver, pos: Position): Unit = {
     log.fine( s"Going to ${url} from ${pos.line}" )
     webDriver.get(url)
   }
-  def to( url: URL )(implicit webDriver: WebDriver, pos: Position) = {
+  def to( url: URL )(implicit webDriver: WebDriver, pos: Position): Unit = {
     log.fine( s"Going to ${url} from ${pos.line}" )
     webDriver.get(url.toString())
   }
@@ -143,18 +143,18 @@ trait PageBrowser {
     this
   }
 
-  def pressKeys(value: CharSequence )(implicit webDriver: WebDriver, pos: Position) = {
+  def pressKeys(value: CharSequence )(implicit webDriver: WebDriver, pos: Position): PageBrowser = {
     val ae: WebElement = webDriver.switchTo.activeElement
     ae.sendKeys(value)
 //    Thread.sleep( 100L )
     this
   }
 
-  def currentUrl(implicit webDriver: WebDriver, pos: Position) = {
+  def currentUrl(implicit webDriver: WebDriver, pos: Position): String = {
     webDriver.getCurrentUrl
   }
 
-  def pageTitle(implicit webDriver: WebDriver, pos: Position) = {
+  def pageTitle(implicit webDriver: WebDriver, pos: Position): String = {
     webDriver.getTitle
   }
 
@@ -214,7 +214,7 @@ trait PageBrowser {
 
   def go(implicit webDriver: WebDriver, pos: Position) = new GoTo
 
-  def id( s: String )(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = new QueryBy {
+  def id( s: String )(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position): QueryBy = new QueryBy {
     def query = By.id(s)
     override
     def toString() = {
@@ -222,7 +222,7 @@ trait PageBrowser {
     }
   }
 
-  def name( s: String )(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = new QueryBy {
+  def name( s: String )(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position): QueryBy = new QueryBy {
     def query = By.name(s)
     override
     def toString() = {
@@ -230,7 +230,7 @@ trait PageBrowser {
     }
   }
 
-  def xpath( s: String )(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = new QueryBy {
+  def xpath( s: String )(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position): QueryBy = new QueryBy {
     def query = By.xpath(s)
     override
     def toString() = {
@@ -238,7 +238,7 @@ trait PageBrowser {
     }
   }
 
-  def cssSelector( s: String )(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = new QueryBy {
+  def cssSelector( s: String )(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position): QueryBy = new QueryBy {
     def query = By.cssSelector(s)
     override
     def toString() = {
@@ -246,7 +246,7 @@ trait PageBrowser {
     }
   }
 
-  def className( s: String )(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = new QueryBy {
+  def className( s: String )(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position): QueryBy = new QueryBy {
     def query = By.className(s)
     override
     def toString() = {
@@ -254,7 +254,7 @@ trait PageBrowser {
     }
   }
 
-  def tagName( s: String )(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = new QueryBy {
+  def tagName( s: String )(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position): QueryBy = new QueryBy {
     def query = By.tagName(s)
     override
     def toString() = {
@@ -271,19 +271,19 @@ trait PageBrowser {
     }
   }
 
-  def find( by: QueryBy )(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
+  def find( by: QueryBy )(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position): Element = {
     by.queryElement
   }
 
-  def findAll( by: QueryBy )(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
+  def findAll( by: QueryBy )(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position): List[Element] = {
     by.queryElements
   }
 
-  def findAllTextInputs(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
+  def findAllTextInputs(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position): Map[String,TextField] = {
     GenericPage.current.findAllTextInputs()
   }
 
-  def findAllInputs(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
+  def findAllInputs(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position): Map[String,Element] = {
     GenericPage.current.findAllInputs()
   }
 

@@ -31,6 +31,7 @@ import com.github.thebridsk.bridge.client.bridge.store.DuplicateSummaryStore
 import com.github.thebridsk.bridge.data.DuplicateSummary
 import com.github.thebridsk.bridge.clientcommon.demo.BridgeDemo
 
+
 /**
  * PageNewDuplicate.
  *
@@ -47,7 +48,7 @@ object PageNewDuplicate {
 
   case class Props( routerCtl: BridgeRouter[DuplicatePage], page: DuplicatePage )
 
-  def apply( routerCtl: BridgeRouter[DuplicatePage], page: DuplicatePage ) = component(Props(routerCtl,page))
+  def apply( routerCtl: BridgeRouter[DuplicatePage], page: DuplicatePage ) = component(Props(routerCtl,page))  // scalafix:ok ExplicitResultTypes; ReactComponent
 
 }
 
@@ -55,7 +56,7 @@ object PageNewDuplicateInternal {
   import PageNewDuplicate._
   import com.github.thebridsk.bridge.clientcommon.react.PopupOkCancelImplicits._
 
-  val logger = Logger("bridge.PageNewDuplicate")
+  val logger: Logger = Logger("bridge.PageNewDuplicate")
 
   /**
    * Internal state for rendering the component.
@@ -73,19 +74,19 @@ object PageNewDuplicateInternal {
     def movementNames() = movements.keySet.toList.sorted
   }
 
-  def canPlay( movement: Movement, boardset: BoardSet ) = {
+  def canPlay( movement: Movement, boardset: BoardSet ): Boolean = {
     val movboards = movement.getBoards
     val boards = boardset.boards.map(b => b.id)
     movboards.find( b => !boards.contains(b) ).isEmpty
   }
 
-  def missingBoards( movement: Movement, boardset: BoardSet ) = {
+  def missingBoards( movement: Movement, boardset: BoardSet ): List[Int] = {
     val movboards = movement.getBoards
     val boards = boardset.boards.map(b => b.id)
     movboards.filter( b => !boards.contains(b) )
   }
 
-  def intToString( list: List[Int] ) = {
+  def intToString( list: List[Int] ): String = {
 
     def appendNext( s: String, n: Int ) = {
       if (s.isEmpty()) s"$n"
@@ -128,6 +129,7 @@ object PageNewDuplicateInternal {
     else next( "",false,list.head,list.tail)
   }
 
+  private[duplicate]
   val Header = ScalaComponent.builder[(Props,State,Backend)]("PageNewDuplicate.Header")
                         .render_P( args => {
                           val (props,state,backend) = args
@@ -149,6 +151,7 @@ object PageNewDuplicateInternal {
                           )
                         }).build
 
+  private[duplicate]
   val Row = ScalaComponent.builder[(Movement.Id,Props,State,Backend)]("PageNewDuplicate.Row")
                         .render_P( args => {
                           val (movementid,props,state,backend) = args
@@ -189,9 +192,9 @@ object PageNewDuplicateInternal {
 
     private var mounted = false
 
-    val resultDuplicate = ResultHolder[MatchDuplicate]()
+    val resultDuplicate: ResultHolder[MatchDuplicate] = ResultHolder[MatchDuplicate]()
 
-    val cancel = Callback {
+    val cancel: Callback = Callback {
       resultDuplicate.cancel()
     } >> scope.modState( s => s.copy(workingOnNew=None))
 
@@ -200,7 +203,7 @@ object PageNewDuplicateInternal {
                       default: Boolean = true,
                       boards: Option[BoardSet.Id] = None,
                       movement: Option[Movement.Id] = None,
-                      fortest: Boolean = false ) =
+                      fortest: Boolean = false ): Callback =
         if (BridgeDemo.isDemo) {
           Callback {
             val s = scope.withEffectsImpure.state
@@ -256,9 +259,9 @@ object PageNewDuplicateInternal {
           }
         }
 
-    val resultsOnlyToggle = scope.modState( s => s.copy( resultsOnly = !s.resultsOnly ) )
+    val resultsOnlyToggle: Callback = scope.modState( s => s.copy( resultsOnly = !s.resultsOnly ) )
 
-    def render( props: Props, state: State ) = {
+    def render( props: Props, state: State ) = { // scalafix:ok ExplicitResultTypes; React
       import DuplicateStyles._
       val movementNames = state.movementNames()
       val boardsetNames = state.boardsetNames()
@@ -326,14 +329,14 @@ object PageNewDuplicateInternal {
       )
     }
 
-    val storeCallback = Callback {
+    val storeCallback: Callback = Callback {
       val boardsets = BoardSetStore.getBoardSets()
       val movements = BoardSetStore.getMovement()
       logger.info(s"Got boardsets=${boardsets.size} movements=${movements.size}" )
       scope.withEffectsImpure.modState(s => s.copy( boardsets=boardsets, movements=movements))
     }
 
-    val didMount = Callback {
+    val didMount: Callback = Callback {
       mounted = true
       logger.info("PageNewDuplicate.didMount")
       BoardSetStore.addChangeListener(storeCallback)
@@ -343,13 +346,14 @@ object PageNewDuplicateInternal {
       BoardSetController.getBoardsetsAndMovements()
     }
 
-    val willUnmount = Callback {
+    val willUnmount: Callback = Callback {
       mounted = false
       logger.info("PageNewDuplicate.willUnmount")
       BoardSetStore.removeChangeListener(storeCallback)
     }
   }
 
+  private[duplicate]
   val component = ScalaComponent.builder[Props]("PageNewDuplicate")
                             .initialStateFromProps { props => State(Map(),Map(), None) }
                             .backend(new Backend(_))

@@ -17,7 +17,7 @@ object Navigator {
   case class State()
 
   class Backend( me: BackendScope[Props, State]) {
-    def render(props: Props, state: State) = {
+    def render(props: Props, state: State) = { // scalafix:ok ExplicitResultTypes; React
       val p = props.selectedPage.render()
 
       <.div(

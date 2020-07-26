@@ -21,7 +21,7 @@ abstract class BridgeWebsocket(url: String, protocol: String) extends MyWebsocke
 
 object BridgeWebsocket extends MyWebsocketCodes {
 
-  override def getMsgFromCode( code: Code ) = reasons.getOrElse(code.code, MyWebsocket.getMsgFromCode(code))
+  override def getMsgFromCode( code: Code ): String = reasons.getOrElse(code.code, MyWebsocket.getMsgFromCode(code))
 
   val BRIDGE_CLOSE_NORMAL = 4000
 

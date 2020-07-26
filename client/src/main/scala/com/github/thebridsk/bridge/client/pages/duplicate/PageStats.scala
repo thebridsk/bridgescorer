@@ -22,6 +22,7 @@ import com.github.thebridsk.bridge.data.duplicate.stats.PlayerComparisonStats
 import com.github.thebridsk.bridge.data.duplicate.stats.PlayerStats
 import com.github.thebridsk.bridge.client.pages.HomePage
 
+
 /**
  * Shows a summary page of all duplicate matches from the database.
  * Each match has a button that that shows that match, by going to the ScoreboardView(id) page.
@@ -42,7 +43,7 @@ object PageStats {
 
   case class Props( routerCtl: BridgeRouter[DuplicatePage] )
 
-  def apply( routerCtl: BridgeRouter[DuplicatePage] ) = component(Props(routerCtl))
+  def apply( routerCtl: BridgeRouter[DuplicatePage] ) = component(Props(routerCtl))  // scalafix:ok ExplicitResultTypes; ReactComponent
 
 }
 
@@ -50,7 +51,7 @@ object PageStatsInternal {
   import PageStats._
   import DuplicateStyles._
 
-  val logger = Logger("bridge.PageStats")
+  val logger: Logger = Logger("bridge.PageStats")
 
   sealed trait ShowView
 
@@ -89,14 +90,14 @@ object PageStatsInternal {
                     msg: Option[TagMod] = None
   ) {
 
-    def toggle( view: ShowView ) = {
+    def toggle( view: ShowView ): State = {
       val r = showViews.filter( sv => sv != view )
       val newsv = if (r.length == showViews.length) view::showViews
       else r
       copy(showViews = newsv)
     }
 
-    def isVisible( view: ShowView ) = {
+    def isVisible( view: ShowView ): Boolean = {
       showViews.find( sv => sv==view ).isDefined
     }
   }
@@ -112,42 +113,42 @@ object PageStatsInternal {
 
     import scala.concurrent.ExecutionContext.Implicits.global
 
-    def onChange( filter: ViewPlayerFilter.Filter ) = scope.modState( s => s.copy( filter = filter ) )
+    def onChange( filter: ViewPlayerFilter.Filter ): Callback = scope.modState( s => s.copy( filter = filter ) )
 
-    val toggleShowPeopleTable = scope.modState( s => s.toggle( ShowPeopleTable ) )
+    val toggleShowPeopleTable: Callback = scope.modState( s => s.toggle( ShowPeopleTable ) )
 
-    val toggleShowPairs = scope.modState( s => s.toggle( ShowPairs ) )
+    val toggleShowPairs: Callback = scope.modState( s => s.toggle( ShowPairs ) )
 
-    val toggleShowPeopleTableDetail = scope.modState( s => s.toggle( ShowPeopleTableDetail ) )
+    val toggleShowPeopleTableDetail: Callback = scope.modState( s => s.toggle( ShowPeopleTableDetail ) )
 
-    val toggleShowPairsDetail = scope.modState( s => s.toggle( ShowPairsDetail ) )
+    val toggleShowPairsDetail: Callback = scope.modState( s => s.toggle( ShowPairsDetail ) )
 
-    val toggleShowPairsGrid = scope.modState( s => s.toggle( ShowPairsGrid ) )
+    val toggleShowPairsGrid: Callback = scope.modState( s => s.toggle( ShowPairsGrid ) )
 
-    val toggleShowMadeDownGrid = scope.modState( s => s.toggle( ShowMadeDownGrid ) )
+    val toggleShowMadeDownGrid: Callback = scope.modState( s => s.toggle( ShowMadeDownGrid ) )
 
-    val togglePlayerOpponentsStatsTable = scope.modState { s =>
+    val togglePlayerOpponentsStatsTable: Callback = scope.modState { s =>
       getDuplicateStats(
           s.toggle( ShowPlayerOpponentsStatsTable ),
           playersOpponentsStats = s.stats.map( cs => cs.playersOpponentsStats.isEmpty ).getOrElse(true),
       )
     }
 
-    val togglePlayerOpponentsPairsStatsTable = scope.modState { s =>
+    val togglePlayerOpponentsPairsStatsTable: Callback = scope.modState { s =>
       getDuplicateStats(
           s.toggle( ShowPlayerOpponentsPairsStatsTable ),
           playersOpponentsStats = s.stats.map( cs => cs.playersOpponentsStats.isEmpty ).getOrElse(true),
       )
     }
 
-    val togglePlayerOpponentsStatsGraph = scope.modState { s =>
+    val togglePlayerOpponentsStatsGraph: Callback = scope.modState { s =>
       getDuplicateStats(
           s.toggle( ShowPlayerOpponentsStatsGraph ),
           playersOpponentsStats = s.stats.map( cs => cs.playersOpponentsStats.isEmpty ).getOrElse(true),
       )
     }
 
-    val toggleShowPlayerContractResults = scope.modState { s =>
+    val toggleShowPlayerContractResults: Callback = scope.modState { s =>
       getDuplicateStats(
           s.toggle( ShowPlayerContractResults ),
           playerStats = s.stats.map( cs => cs.playerStats.isEmpty ).getOrElse(true),
@@ -155,7 +156,7 @@ object PageStatsInternal {
       )
     }
 
-    val toggleShowPlayerDoubledContractResults = scope.modState { s =>
+    val toggleShowPlayerDoubledContractResults: Callback = scope.modState { s =>
       getDuplicateStats(
           s.toggle( ShowPlayerDoubledContractResults ),
           playerDoubledStats = s.stats.map( cs => cs.playerDoubledStats.isEmpty ).getOrElse(true),
@@ -163,35 +164,35 @@ object PageStatsInternal {
       )
     }
 
-    val toggleShowContractResults = scope.modState { s =>
+    val toggleShowContractResults: Callback = scope.modState { s =>
       getDuplicateStats(
           s.toggle( ShowContractResults ),
           contractStats = s.stats.map( cs => cs.contractStats.isEmpty ).getOrElse(true)
       )
     }
 
-    val toggleShowPlayerOpponentsStatsTable = scope.modState { s =>
+    val toggleShowPlayerOpponentsStatsTable: Callback = scope.modState { s =>
       getDuplicateStats(
           s.toggle( ShowPlayerOpponentsStatsTable ),
           playersOpponentsStats = s.stats.map( cs => cs.playersOpponentsStats.isEmpty ).getOrElse(true)
       )
     }
 
-    val toggleShowPlayerOpponentsStatsGraph = scope.modState { s =>
+    val toggleShowPlayerOpponentsStatsGraph: Callback = scope.modState { s =>
       getDuplicateStats(
           s.toggle( ShowPlayerOpponentsStatsGraph ),
           playersOpponentsStats = s.stats.map( cs => cs.playersOpponentsStats.isEmpty ).getOrElse(true)
       )
     }
 
-    val toggleShowPlayerAggressiveness = scope.modState { s =>
+    val toggleShowPlayerAggressiveness: Callback = scope.modState { s =>
       getDuplicateStats(
           s.toggle( ShowPlayerAggressiveness ),
           comparisonStats = s.stats.map( cs => cs.comparisonStats.isEmpty ).getOrElse(true),
       )
     }
 
-    val toggleShowPlayerPlaces = scope.modState { s =>
+    val toggleShowPlayerPlaces: Callback = scope.modState { s =>
       getPlayerPlaces(
           s.toggle( ShowPlayerPlacesGraph )
       )
@@ -199,7 +200,7 @@ object PageStatsInternal {
 
     def getPlayerPlaces(
       s: State
-    ) = {
+    ): State = {
       logger.fine(s"""getPlayerPlaces, playerPlaces s=${s}""")
       if ( s.isVisible(ShowPlayerPlacesGraph)
            && (s.stats.isEmpty || s.stats.get.playerPlacesStats.isEmpty)
@@ -229,7 +230,7 @@ object PageStatsInternal {
         playerDoubledStats: Boolean = false,
         comparisonStats: Boolean = false,
         playersOpponentsStats: Boolean = false,
-    ) = {
+    ): State = {
       if ( s.stats.isEmpty ||
            (playerStats && s.stats.get.playerStats.isEmpty) ||
            (contractStats && s.stats.get.contractStats.isEmpty) ||
@@ -258,7 +259,7 @@ object PageStatsInternal {
       }
     }
 
-    val cancel = scope.modState( s => s.copy(msg = None) )
+    val cancel: Callback = scope.modState( s => s.copy(msg = None) )
 
     val working = HomePage.loading
 
@@ -270,7 +271,7 @@ object PageStatsInternal {
       }
     }
 
-    def render( props: Props, state: State ) = {
+    def render( props: Props, state: State ) = { // scalafix:ok ExplicitResultTypes; React
 
       def optionalStatsView( view: DuplicateStats => TagMod ): TagMod = {
         state.stats.map { cs =>
@@ -475,12 +476,12 @@ object PageStatsInternal {
 
     private var mounted: Boolean = false
 
-    val storeCallback = scope.modState { s =>
+    val storeCallback: Callback = scope.modState { s =>
       val pd = DuplicateSummaryStore.getDuplicateSummary.map { lds => new PairsData(lds) }
       s.copy( filter = s.filter.copy( pairsData=pd ) )
     }
 
-    val didMount = Callback {
+    val didMount: Callback = Callback {
       logger.info("PageSummary.didMount")
       DuplicateSummaryStore.addChangeListener(storeCallback)
       Controller.getSummary(
@@ -488,12 +489,13 @@ object PageStatsInternal {
       )
     }
 
-    val willUnmount = Callback {
+    val willUnmount: Callback = Callback {
       logger.finer("PageSummary.willUnmount")
       DuplicateSummaryStore.removeChangeListener(storeCallback)
     }
   }
 
+  private[duplicate]
   val component = ScalaComponent.builder[Props]("PageStats")
                             .initialStateFromProps { props => State() }
                             .backend(new Backend(_))

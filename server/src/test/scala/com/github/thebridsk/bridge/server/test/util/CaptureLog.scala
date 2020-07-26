@@ -9,20 +9,20 @@ class CaptureLog( private var enabled: Boolean = false, level: Level = Level.ALL
 
   private var handler: Option[InMemoryHandler] = None
 
-  def enable = enabled = true
-  def disable = enabled = false
+  def enable: Unit = enabled = true
+  def disable: Unit = enabled = false
 
   private def getRootLogger(): Logger = {
     LogManager.getLogManager().getLogger("")
   }
 
-  def startCapture() = if (enabled) synchronized {
+  def startCapture(): Unit = if (enabled) synchronized {
     handler = Some( new InMemoryHandler)
     handler.get.setLevel(level)
     getRootLogger().addHandler(handler.get)
   }
 
-  def stopCapture() = synchronized {
+  def stopCapture(): Unit = synchronized {
     handler.foreach( getRootLogger().removeHandler(_) )
     handler = None
   }

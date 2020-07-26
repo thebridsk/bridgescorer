@@ -10,6 +10,7 @@ import com.github.thebridsk.bridge.data.util.Strings
 import com.github.thebridsk.utilities.logging.Logger
 import scala.math.Ordering.Double.TotalOrdering
 
+
 /**
  * Shows a table with sort buttons has the headers of the columns.
  *
@@ -43,7 +44,7 @@ object Table {
     ) extends Sorter[T] {
 
     override
-    def compare( cols: List[ColumnBase], row1: Row, row2: Row, index: Int ) = {
+    def compare( cols: List[ColumnBase], row1: Row, row2: Row, index: Int ): Int = {
       val cs = columns.toList.asInstanceOf[List[(String,Option[Ordering[Any]], Boolean)]]
 
       @tailrec
@@ -170,7 +171,7 @@ object Table {
       caption: Option[TagMod] = None
     ) {
 
-    def shownColumns = columns.filter(c => !c.hidden )
+    def shownColumns: List[ColumnBase] = columns.filter(c => !c.hidden )
   }
 
   /**
@@ -198,7 +199,7 @@ object Table {
       additionalRows: Option[()=>List[Row]] = None,
       totalRows: Option[List[Row]] = None,
       caption: Option[TagMod] = None
-    ) = component( Props(columns,rows,initialSort,header,footer,additionalRows,totalRows,caption))
+    ) = component( Props(columns,rows,initialSort,header,footer,additionalRows,totalRows,caption))  // scalafix:ok ExplicitResultTypes; ReactComponent
 
 }
 
@@ -206,7 +207,7 @@ object TableInternal {
   import Table._
   import Utils._
 
-  val log = Logger("bridge.Table")
+  val log: Logger = Logger("bridge.Table")
 
   /**
    * Internal state for rendering the component.
@@ -221,7 +222,7 @@ object TableInternal {
      * If a new column is selected, then the sorting is set and ascending is set to the value in the column object.
      * If the same column is selected, then the ascending is toggled or sorting is turned off.
      */
-    def setOrToggleSort( col: SortableColumn[_] ) = {
+    def setOrToggleSort( col: SortableColumn[_] ): State = {
       val ( newcs, newas ) =
         if (col.initialSortOnSelectAscending) {
           currentSort match {
@@ -244,9 +245,10 @@ object TableInternal {
       copy( currentSort = newcs, ascending=newas )
     }
 
-    def isCurrentSort( i: Int ) = currentSort.map( b => b==i ).getOrElse(false)
+    def isCurrentSort( i: Int ): Boolean = currentSort.map( b => b==i ).getOrElse(false)
   }
 
+  private[react]
   val TableHeader = ScalaComponent.builder[(Props,State,Backend)]("TableHeader")
                           .render_P { args =>
                             val (props,state,backend) = args
@@ -282,6 +284,7 @@ object TableInternal {
                             )
                           }.build
 
+  private[react]
   val TableRow = ScalaComponent.builder[(Props,State,Backend, Row)]("TableRow")
                         .render_P { args =>
                           val (props,state,backend,row) = args
@@ -294,11 +297,11 @@ object TableInternal {
                         }.build
 
   class SortOrder( col: Int, cols: List[ColumnBase] )( implicit sorter: Sorter[_]) extends Ordering[Row] {
-    def compare( l: Row, r: Row ) = sorter.compare(cols, l, r, col)
+    def compare( l: Row, r: Row ): Int = sorter.compare(cols, l, r, col)
   }
 
   class ReverseSortOrder( col: Int, cols: List[ColumnBase] )( implicit sorter: Sorter[_]) extends Ordering[Row] {
-    def compare( l: Row, r: Row ) = sorter.compare(cols, r, l, col)
+    def compare( l: Row, r: Row ): Int = sorter.compare(cols, r, l, col)
   }
 
   /**
@@ -310,9 +313,9 @@ object TableInternal {
    */
   class Backend(scope: BackendScope[Props, State]) {
 
-    def setOrToggleSort(col: SortableColumn[_] ) = scope.modState( s => s.setOrToggleSort(col) )
+    def setOrToggleSort(col: SortableColumn[_] ): Callback = scope.modState( s => s.setOrToggleSort(col) )
 
-    def render( props: Props, state: State ) = {
+    def render( props: Props, state: State ) = { // scalafix:ok ExplicitResultTypes; React
       log.fine( s"Table columns=${props.columns}" )
       val rows = state.currentSort.map { sortid =>
                    props.columns.indexWhere { c =>
@@ -362,6 +365,7 @@ object TableInternal {
     }
   }
 
+  private[react]
   val component = ScalaComponent.builder[Props]("Table")
                             .initialStateFromProps { props => State(props.initialSort) }
                             .backend(new Backend(_))

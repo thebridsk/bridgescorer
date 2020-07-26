@@ -18,10 +18,11 @@ import com.github.thebridsk.materialui.TextVariant
 import com.github.thebridsk.materialui.TextColor
 import com.github.thebridsk.bridge.data.util.Strings
 
+
 object ViewPlayersThirdRound {
   import PagePlayers._
 
-  def apply( props: Props ) = component(props)
+  def apply( props: Props ) = component(props)  // scalafix:ok ExplicitResultTypes; ReactComponent
 
   private val eastArrow = Strings.arrowRightLeft
   private val westArrow = Strings.arrowLeftRight
@@ -30,7 +31,7 @@ object ViewPlayersThirdRound {
 
     def show( desc: String, ps: ViewPlayersSecondRound.State ) = ps
 
-    def setNorth( p: String )( e: ReactEventFromInput ) =
+    def setNorth( p: String )( e: ReactEventFromInput ): Callback =
       scope.modState(s => {
         if (s.north == p) {
           s.copy(changingScoreKeeper = false)
@@ -43,15 +44,15 @@ object ViewPlayersThirdRound {
         }
       })
 
-    val swapEW = scope.modState(s =>
+    val swapEW: Callback = scope.modState(s =>
           s.copy(north=s.north, south=s.south, east=s.west, west=s.east, changingScoreKeeper = false)
           )
 
-    def setFirstDealer( p: PlayerPosition ) = scope.modState(ps => ps.copy(dealer=Some(p)))
+    def setFirstDealer( p: PlayerPosition ): Callback = scope.modState(ps => ps.copy(dealer=Some(p)))
 
-    val changeScoreKeeper = scope.modState(s => s.copy(changingScoreKeeper = true))
+    val changeScoreKeeper: Callback = scope.modState(s => s.copy(changingScoreKeeper = true))
 
-    def render( props: Props, state: ViewPlayersSecondRound.State ) = {
+    def render( props: Props, state: ViewPlayersSecondRound.State ) = { // scalafix:ok ExplicitResultTypes; React
       import ChicagoStyles._
       val numberRounds = props.chicago.rounds.length
       val lr = props.chicago.rounds(numberRounds-1)
@@ -178,7 +179,7 @@ object ViewPlayersThirdRound {
       )
     }
 
-    val ok = scope.stateProps { (state,props) =>
+    val ok: Callback = scope.stateProps { (state,props) =>
       val r = if (props.chicago.rounds.size <= props.page.round) {
         Round.create(props.page.round.toString(),
              state.north,
@@ -196,6 +197,7 @@ object ViewPlayersThirdRound {
 
   }
 
+  private[chicagos]
   val component = ScalaComponent.builder[Props]("ViewPlayersThirdRound")
                             .initialStateFromProps { props => {
                               val numberRounds = props.chicago.rounds.length

@@ -33,7 +33,11 @@ import com.github.thebridsk.bridge.data.websocket.Protocol.UpdateChicagoRound
 import com.github.thebridsk.bridge.data.websocket.Protocol.UpdateRubberHand
 import com.github.thebridsk.bridge.data.websocket.Protocol.UpdateDuplicatePicture
 import com.github.thebridsk.bridge.data.websocket.Protocol.UpdateDuplicatePictures
+import org.scalatest.Assertion
 
+@SuppressWarnings(Array(          // Get really weird errors on missing implicits in WS() call
+  "scalafix:ExplicitResultTypes"
+))
 class WebsocketClient(implicit system: ActorSystem, materializer: Materializer, routetest: RouteTest) {
 
   import Matchers._
@@ -78,6 +82,7 @@ class WebsocketClient(implicit system: ActorSystem, materializer: Materializer, 
   }
 
   def expectProtocolMessage = {
+    val r =
     wsClient.expectMessage() match {
       case TextMessage.Strict(s) =>
         DuplexProtocol.fromString(s)
@@ -88,6 +93,7 @@ class WebsocketClient(implicit system: ActorSystem, materializer: Materializer, 
         val data = collect(x.dataStream)(_ ++ _)
         fail(s"${address} Unexpected response from the monitor, expecting TextMessage: ${x.getClass.getName}")
     }
+    r
   }
 
   def expectUnsolicitedMessage = {
@@ -179,7 +185,7 @@ class WebsocketClient(implicit system: ActorSystem, materializer: Materializer, 
 
 object WebsocketClient {
 
-  def ensureNoMessage( failOnMessage: Boolean, clients: WebsocketClient* )( implicit testlog: LoggingAdapter ) = {
+  def ensureNoMessage( failOnMessage: Boolean, clients: WebsocketClient* )( implicit testlog: LoggingAdapter ): Boolean = {
     val rc = clients.map( wc => wc.ensureNoExpected(false)).foldLeft(true)((ac,b) => ac && b)
     if (!rc && failOnMessage) {
       testlog.info("There were messages on some of the clients, "+clients.map(wc => wc.address).mkString(", "))
@@ -194,7 +200,7 @@ object WebsocketClientImplicits {
   implicit class WebsocketClientTester( private val wc: WebsocketClient ) extends AnyVal {
     import Assertions._
 
-    def testIgnoreJoinLookForUpdate( mat: MatchDuplicate )( implicit testlog: LoggingAdapter ) = {
+    def testIgnoreJoinLookForUpdate( mat: MatchDuplicate )( implicit testlog: LoggingAdapter ): Unit = {
         while (wc.expectUnsolicitedMessage match {
           case uteam: UpdateDuplicateTeam =>
             testlog.debug(s"${wc.address} Ignored unexpected response from the monitor: ${uteam}")
@@ -231,7 +237,7 @@ object WebsocketClientImplicits {
         }) {}
     }
 
-    def testUpdate( mat: MatchDuplicate )( implicit testlog: LoggingAdapter ) = {
+    def testUpdate( mat: MatchDuplicate )( implicit testlog: LoggingAdapter ): Assertion = {
         wc.expectUnsolicitedMessage match {
           case uteam: UpdateDuplicateTeam =>
             fail(s"${wc.address} Ignored unexpected response from the monitor: ${uteam}")
@@ -264,7 +270,7 @@ object WebsocketClientImplicits {
         }
     }
 
-    def testJoin( implicit testlog: LoggingAdapter ) = {
+    def testJoin( implicit testlog: LoggingAdapter ): Unit = {
         wc.expectUnsolicitedMessage match {
           case uteam: UpdateDuplicateTeam =>
             fail(s"${wc.address} Ignored unexpected response from the monitor: ${uteam}")
@@ -295,7 +301,7 @@ object WebsocketClientImplicits {
         }
     }
 
-    def testLeft( implicit testlog: LoggingAdapter ) = {
+    def testLeft( implicit testlog: LoggingAdapter ): Unit = {
         wc.expectUnsolicitedMessage match {
           case uteam: UpdateDuplicateTeam =>
             fail(s"${wc.address} Ignored unexpected response from the monitor: ${uteam}")

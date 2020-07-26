@@ -8,6 +8,7 @@ import com.github.thebridsk.bridge.client.pages.hand.PageHandInternal.PageHandNe
 import com.github.thebridsk.bridge.client.pages.hand.ComponentInputStyleButton.InputMethod
 import com.github.thebridsk.bridge.clientcommon.react.Utils._
 
+
 /**
  * A skeleton component.
  *
@@ -29,7 +30,7 @@ object ViewTricks {
                     callback: CallbackTricks,
                     nextInput: PageHandNextInput.Value,
                     visible: Boolean ) {
-    def missingRequired = {
+    def missingRequired: Boolean = {
       contractTricks match {
         case Some(ct) =>
           if (ct.tricks == 0) false
@@ -46,7 +47,7 @@ object ViewTricks {
              madeOrDown: Option[MadeOrDown],
              callback: CallbackTricks,
              nextInput: PageHandNextInput.Value,
-             visible: Boolean ) =
+             visible: Boolean ) = // scalafix:ok ExplicitResultTypes; ReactComponent
     component(Props(current,contractTricks,madeOrDown,callback,nextInput,visible))
 
   private val component = ScalaComponent.builder[Props]("ViewTricks")

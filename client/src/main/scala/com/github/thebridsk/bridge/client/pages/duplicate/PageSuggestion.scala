@@ -25,6 +25,7 @@ import com.github.thebridsk.materialui.MuiTypography
 import com.github.thebridsk.materialui.TextVariant
 import com.github.thebridsk.materialui.TextColor
 
+
 /**
  * A skeleton component.
  *
@@ -41,7 +42,7 @@ object PageSuggestion {
 
   case class Props( routerCtl: BridgeRouter[DuplicatePage] )
 
-  def apply( routerCtl: BridgeRouter[DuplicatePage] ) = component(Props(routerCtl))
+  def apply( routerCtl: BridgeRouter[DuplicatePage] ) = component(Props(routerCtl))  // scalafix:ok ExplicitResultTypes; ReactComponent
 
 }
 
@@ -49,7 +50,7 @@ object PageSuggestionInternal {
   import PageSuggestion._
   import DuplicateStyles._
 
-  val logger = Logger("bridge.PageSuggestion")
+  val logger: Logger = Logger("bridge.PageSuggestion")
 
   /**
    * Internal state for rendering the component.
@@ -68,35 +69,35 @@ object PageSuggestionInternal {
                     neverPair: List[NeverPair] = List(),
                     showDetails: Boolean = false
                   ) {
-    def isValid = {
+    def isValid: Boolean = {
       val nkp = knownPlayersSelected.length
       val nnp = newPlayers.filter(p => p!="").length
       numberPlayers.getOrElse(-1) == nkp+nnp
     }
 
-    def getSelected = knownPlayersSelected:::newPlayers
+    def getSelected: List[String] = knownPlayersSelected:::newPlayers
 
-    def trace( msg: String ) = {
+    def trace( msg: String ): State = {
       logger.fine( s"""${msg}: ${this}""" )
       this
     }
 
-    def neverPairKey( p1: String, p2: String ) = {
+    def neverPairKey( p1: String, p2: String ): NeverPair = {
       if (p1 < p2) NeverPair(p1,p2)
       else NeverPair(p2,p1)
     }
 
-    def isNeverPair( p1: String, p2: String ) = {
+    def isNeverPair( p1: String, p2: String ): Boolean = {
       neverPair.contains(neverPairKey(p1,p2))
     }
 
-    def removeNeverPair( p1: String, p2: String ) = {
+    def removeNeverPair( p1: String, p2: String ): State = {
       val key = neverPairKey(p1,p2)
       if (!neverPair.contains(key)) this
       else copy( neverPair = neverPair.filter( p => p!=key) )
     }
 
-    def addNeverPair( p1: String, p2: String ) = {
+    def addNeverPair( p1: String, p2: String ): State = {
       val key = neverPairKey(p1,p2)
       if (neverPair.contains(key)) this
       else copy( neverPair = key::neverPair )
@@ -112,20 +113,20 @@ object PageSuggestionInternal {
    */
   class Backend(scope: BackendScope[Props, State]) {
 
-    def toggleNeverPairPlayers( p1: String, p2: String ) = scope.modState { s =>
+    def toggleNeverPairPlayers( p1: String, p2: String ): Callback = scope.modState { s =>
       if ( s.isNeverPair(p1, p2) ) s.removeNeverPair(p1, p2)
       else s.addNeverPair(p1, p2)
     }
 
-    val toggleNeverPair = scope.modState { s => s.copy( showNeverPair = !s.showNeverPair ) }
+    val toggleNeverPair: Callback = scope.modState { s => s.copy( showNeverPair = !s.showNeverPair ) }
 
-    val cancelNeverPair = scope.modState { s => s.copy( showNeverPair = false, neverPair=List() ) }
+    val cancelNeverPair: Callback = scope.modState { s => s.copy( showNeverPair = false, neverPair=List() ) }
 
-    val clearNeverPair = scope.modState { s => s.copy( neverPair=List() ) }
+    val clearNeverPair: Callback = scope.modState { s => s.copy( neverPair=List() ) }
 
-    val toggleDetails = scope.modState { s => s.copy( showDetails = !s.showDetails ) }
+    val toggleDetails: Callback = scope.modState { s => s.copy( showDetails = !s.showDetails ) }
 
-    def toggleKnownPlayer( p: String ) = scope.modState { s =>
+    def toggleKnownPlayer( p: String ): Callback = scope.modState { s =>
       val kps = if (s.knownPlayersSelected.contains(p)) s.knownPlayersSelected.filter(pp => pp!=p)
                 else p::s.knownPlayersSelected
       val error = if (kps.length > s.numberPlayers.getOrElse(0)) Some("Too many players are selected")
@@ -140,7 +141,7 @@ object PageSuggestionInternal {
     }
 
     import com.github.thebridsk.bridge.clientcommon.react.Utils._
-    def setNumberPlayers( e: ReactEventFromInput ) =  e.inputText { number =>
+    def setNumberPlayers( e: ReactEventFromInput ): Callback =  e.inputText { number =>
       scope.modState { s =>
         val error = if (s.knownPlayersSelected.length > s.numberPlayers.getOrElse(0)) Some("Too many players are selected")
                     else None
@@ -148,7 +149,7 @@ object PageSuggestionInternal {
       }
     }
 
-    def setNewPlayers(i: Int)( e: ReactEventFromInput ) =  e.inputText { p =>
+    def setNewPlayers(i: Int)( e: ReactEventFromInput ): Callback =  e.inputText { p =>
       scope.modState { s =>
         logger.fine(s"""Setting new player ${i} to ${p}""")
         def setListLength( list: List[String], n: Int ): List[String] = {
@@ -164,11 +165,11 @@ object PageSuggestionInternal {
       }
     }
 
-    val clear = scope.modState { s => s.copy( knownPlayersSelected=List(), newPlayers=List(), suggestion=None ) }
+    val clear: Callback = scope.modState { s => s.copy( knownPlayersSelected=List(), newPlayers=List(), suggestion=None ) }
 
-    val clearError = scope.modState( s => s.copy(error=None))
+    val clearError: Callback = scope.modState( s => s.copy(error=None))
 
-    val calculateLocal = scope.modState { s =>
+    val calculateLocal: Callback = scope.modState { s =>
       setTimeout(0) { Alerter.tryitWithUnit {
         val summary = DuplicateSummaryStore.getDuplicateSummary.getOrElse(List())
 
@@ -189,7 +190,7 @@ object PageSuggestionInternal {
       s.copy(error=Some(s"Calculating best pairing for ${s.getSelected.mkString(", ")}"))
     }
 
-    val calculateServer = scope.modState { s =>
+    val calculateServer: Callback = scope.modState { s =>
       val input = DuplicateSuggestions(s.knownPlayersSelected:::s.newPlayers, 10, neverPair = Some(s.neverPair) )
       val result = RestClientDuplicateSuggestions.create(input).recordFailure()
       result.foreach { suggestion =>
@@ -211,7 +212,7 @@ object PageSuggestionInternal {
       s.copy(error=Some(s"Calculating best pairing for ${s.getSelected.mkString(", ")}"))
     }
 
-    def render( props: Props, state: State ) = {
+    def render( props: Props, state: State ) = { // scalafix:ok ExplicitResultTypes; React
 
       val nplayer = state.numberPlayers.getOrElse(0)
       val history = state.suggestion.map { sug =>
@@ -357,14 +358,14 @@ object PageSuggestionInternal {
 
     private var mounted = false
 
-    val namesCallback = scope.modState(s => {
+    val namesCallback: Callback = scope.modState(s => {
       val sug = NamesStore.getNames
       s.copy( knownPlayers=Some(sug))
     })
 
     val storeCallback = scope.forceUpdate
 
-    val didMount = Callback {
+    val didMount: Callback = Callback {
       mounted = true
       logger.info("PageSummary.didMount")
       DuplicateSummaryStore.addChangeListener(storeCallback)
@@ -374,7 +375,7 @@ object PageSuggestionInternal {
       )
     }
 
-    val willUnmount = Callback {
+    val willUnmount: Callback = Callback {
       mounted = false
       logger.finer("PageSummary.willUnmount")
       DuplicateSummaryStore.removeChangeListener(storeCallback)
@@ -382,6 +383,7 @@ object PageSuggestionInternal {
 
   }
 
+  private[duplicate]
   val SummaryHeader = ScalaComponent.builder[(Props,State,Backend)]("SuggestionHeader")
                         .render_P( args => {
                           val (props,state,backend) = args
@@ -422,6 +424,7 @@ object PageSuggestionInternal {
                         }).build
 
 
+  private[duplicate]
   val SummaryRow = ScalaComponent.builder[(Props,State,Backend,Int,Suggestion)]("SuggestionRow")
                       .render_P( args => {
                         // row is zero based
@@ -446,6 +449,7 @@ object PageSuggestionInternal {
                         )
                       }).build
 
+  private[duplicate]
   val NeverPairHeader = ScalaComponent.builder[(Props,State,Backend,List[String])]("SuggestionHeader")
                         .render_P( args => {
                           val (props,state,backend,allplayers) = args
@@ -459,6 +463,7 @@ object PageSuggestionInternal {
                         }).build
 
 
+  private[duplicate]
   val NeverPairRow = ScalaComponent.builder[(Props,State,Backend,String,List[String])]("SuggestionRow")
                       .render_P( args => {
                         // row is zero based
@@ -475,6 +480,7 @@ object PageSuggestionInternal {
                         )
                       }).build
 
+  private[duplicate]
   val component = ScalaComponent.builder[Props]("PageSuggestion")
                             .initialStateFromProps { props => State() }
                             .backend(new Backend(_))

@@ -158,7 +158,7 @@ class MultiPersistentSupport[VId <: Comparable[VId], VType <: VersionedInstance[
       }
   }
 
-  def retryAfterDeleteMsg(id: VId) =
+  def retryAfterDeleteMsg(id: VId): String =
     s"Resource $resourceURI/${support.idSupport.toString(id)} not found, retry"
 
   /**
@@ -174,7 +174,7 @@ class MultiPersistentSupport[VId <: Comparable[VId], VType <: VersionedInstance[
     * @param cachedValue the value in the cache at the start of the operation
     * @return true means read it again.  false means value is ok
     */
-  override def readCheckForDelete(id: VId, cachedValue: Result[VType]) =
+  override def readCheckForDelete(id: VId, cachedValue: Result[VType]): Boolean =
     cachedValue match {
       case Left((statuscode, RestMessage(msg)))
           if statuscode == StatusCodes.RetryWith && msg == retryAfterDeleteMsg(
@@ -188,7 +188,7 @@ class MultiPersistentSupport[VId <: Comparable[VId], VType <: VersionedInstance[
 
 object MultiPersistentSupport {
 
-  val log = Logger[MultiPersistentSupport[_, _]]()
+  val log: Logger = Logger[MultiPersistentSupport[_, _]]()
 
   /**
     * Create a persistent support object that is backed by a file persistent support and java resource persistent support.

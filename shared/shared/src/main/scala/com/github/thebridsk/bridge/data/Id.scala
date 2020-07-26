@@ -24,7 +24,7 @@ import play.api.libs.json.KeyReads
 @Schema(description = "The ID", `type` = "string", format = "id")
 case class Id[A] private[data] ( val id: String, useName: Boolean = false )( implicit private [Id] val classTag: ClassTag[A] ) extends Ordered[Id[A]] {
   override
-  def equals( other: Any ) = {
+  def equals( other: Any ): Boolean = {
     // println(s"comparing $this and $other")
     other match {
       case o: Id[A] => o.id == id && (o.classTag.runtimeClass eq classTag.runtimeClass)
@@ -32,10 +32,10 @@ case class Id[A] private[data] ( val id: String, useName: Boolean = false )( imp
     }
   }
   override
-  def hashCode() = id.hashCode() + classTag.runtimeClass.hashCode()
+  def hashCode(): Int = id.hashCode() + classTag.runtimeClass.hashCode()
 
   override
-  def toString() = s"Id[${classTag.runtimeClass.getSimpleName}]($id)"
+  def toString(): String = s"Id[${classTag.runtimeClass.getSimpleName}]($id)"
 
   def compare(that: Id[A]): Int = {
     if (useName) {
@@ -60,7 +60,7 @@ case class Id[A] private[data] ( val id: String, useName: Boolean = false )( imp
     * If the id does not match idpattern, then id is returned.
     * @throws IllegalStateException is useName is true
     */
-  def toNumber = {
+  def toNumber: String = {
     if (useName) throw new IllegalStateException
     id match {
       case Id.idpattern(_,bn) => bn
@@ -70,10 +70,10 @@ case class Id[A] private[data] ( val id: String, useName: Boolean = false )( imp
 
   def toInt = toNumber.toInt
 
-  def isNul = id == ""
+  def isNul: Boolean = id == ""
 
-  def toBase[B >: A] = this.asInstanceOf[Id[B]]
-  def toSubclass[S <: A]( implicit sTag: ClassTag[S] ) = {
+  def toBase[B >: A]: Id[B] = this.asInstanceOf[Id[B]]
+  def toSubclass[S <: A]( implicit sTag: ClassTag[S] ): Option[Id[S]] = {
     val cls = classTag.runtimeClass
     if (sTag.runtimeClass.isAssignableFrom(cls)) Some(this.asInstanceOf[Id[S]])
     else None
@@ -113,18 +113,19 @@ class HasId[IdType: ClassTag]( val prefix: String, val useName: Boolean = false 
     */
   def id( i: Int ): Id = id( s"$prefix$i" )
 
-  def idNul = Id("", useName)
+  def idNul: data.Id[IdType] = Id("", useName)
 
-  val idKeyReads = new KeyReads[data.Id[IdType]] {
+  val idKeyReads: KeyReads[data.Id[IdType]] = new KeyReads[data.Id[IdType]] {
     def readKey(key: String ): JsResult[data.Id[IdType]] = JsSuccess( id(key) )
   }
 
-  val idKeyWrites = new KeyWrites[data.Id[IdType]] {
+  val idKeyWrites: KeyWrites[data.Id[IdType]] = new KeyWrites[data.Id[IdType]] {
     def writeKey(key: data.Id[IdType]): String = key.id
   }
 
-  val jsonFormat = new Format[data.Id[IdType]] {
-    val classTag = implicitly[ClassTag[IdType]]
+  val jsonFormat: jsonFormat = new jsonFormat
+  class jsonFormat extends Format[data.Id[IdType]] {
+    val classTag: ClassTag[IdType] = implicitly[ClassTag[IdType]]
 
     def reads(json: JsValue): JsResult[data.Id[IdType]] = {
       json match {
@@ -150,7 +151,7 @@ object Id {
 
   private val idpattern = "([a-zA-Z]*)(\\d+)".r
 
-  def parseId( s: String ) = {
+  def parseId( s: String ): Option[(String, String)] = {
     s match {
       case idpattern(p,i) => Some( (p,i) )
       case _ => None

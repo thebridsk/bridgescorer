@@ -3,13 +3,14 @@ package com.github.thebridsk.materialui
 import japgolly.scalajs.react._
 import scala.scalajs.js
 import scala.scalajs.js.annotation._
+import scala.scalajs.js.UndefOr
 
 class AlignItem(val value: String) extends AnyVal
 object AlignItem {
   val flexStart = new AlignItem("flex-start")
   val center = new AlignItem("center")
 
-  val values = List(flexStart, center)
+  val values: List[AlignItem] = List(flexStart, center)
 }
 
 @js.native
@@ -38,7 +39,7 @@ trait ListItemProps extends AdditionalProps with ListItemPropsPrivate with Stand
 object ListItemProps extends PropsFactory[ListItemProps] {
 
   implicit class WrapListItemProps(private val p: ListItemProps) extends AnyVal {
-    def alignItems = p.alignItemsInternal.map(s => new AlignItem(s))
+    def alignItems: UndefOr[AlignItem] = p.alignItemsInternal.map(s => new AlignItem(s))
 
 //    def alignItems_= (v: js.UndefOr[AlignItem]): Unit = {
 //      v.map{ vv=>p.alignItemsInternal=vv.value; None }.
@@ -120,7 +121,7 @@ object MuiListItem extends ComponentFactory[ListItemProps] {
   @js.native @JSImport("@material-ui/core/ListItem", JSImport.Default) private object ListItem
       extends js.Any
 
-  protected val f = JsComponent[ListItemProps, Children.Varargs, Null](ListItem)
+  protected val f = JsComponent[ListItemProps, Children.Varargs, Null](ListItem)  // scalafix:ok ExplicitResultTypes; ReactComponent
 
   /**
     * @param alignItems Defines the align-items style property.
@@ -169,7 +170,7 @@ object MuiListItem extends ComponentFactory[ListItemProps] {
       additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
   )(
       children: CtorType.ChildArg*
-  ) = {
+  ) = {  // scalafix:ok ExplicitResultTypes; ReactComponent
     val p: ListItemProps = ListItemProps(
       alignItems = alignItems,
       autoFocus = autoFocus,

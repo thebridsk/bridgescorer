@@ -14,7 +14,7 @@ object GotoPage {
    * then the contents of the window is replaced by this URI.
    * @param uri the URI, can be relative or absolute
    */
-  def inNewWindow( uri: String ) = {
+  def inNewWindow( uri: String ): Unit = {
 
     AppButtonLinkNewWindow.topage( getURL(uri) )
   }
@@ -23,7 +23,7 @@ object GotoPage {
    * Open the specified uri in the same window
    * @param uri the URI, can be relative or absolute
    */
-  def inSameWindow( uri: String ) = {
+  def inSameWindow( uri: String ): Unit = {
     location.href = getURL(uri)
   }
 
@@ -31,17 +31,17 @@ object GotoPage {
    * returns the full URL given a relative or absolute URI
    * @param uri the URI, can be relative or absolute
    */
-  def getURL( uri: String ) = {
+  def getURL( uri: String ): String = {
     val origin = location.href
     val url = new URL(uri,origin).href
     url
   }
 
-  def currentURL = {
+  def currentURL: String = {
     location.href
   }
 
-  def hostname = {
+  def hostname: String = {
     location.hostname
   }
 }

@@ -50,14 +50,14 @@ import com.github.thebridsk.bridge.server.test.util.TestServer
 
 object DuplicateTestPages2 {
 
-  val testlog = Logger[DuplicateTestPages2]()
+  val testlog: Logger = Logger[DuplicateTestPages2]()
 
-  val team1 = Team( 1, " Nick", "Sam ")
-  val team2 = Team( 2, " Ethan ", "Wayne")
-  val team3 = Team( 3, "Ellen", "Wilma")
-  val team4 = Team( 4, "Nora", "Sally")
+  val team1: Team = Team( 1, " Nick", "Sam ")
+  val team2: Team = Team( 2, " Ethan ", "Wayne")
+  val team3: Team = Team( 3, "Ellen", "Wilma")
+  val team4: Team = Team( 4, "Nora", "Sally")
 
-  val allnames = (team1::team2::team3::team4::Nil).flatMap(t => t.one::t.two::Nil).map( n => n.trim() )
+  val allnames: List[String] = (team1::team2::team3::team4::Nil).flatMap(t => t.one::t.two::Nil).map( n => n.trim() )
 }
 
 /**
@@ -97,13 +97,13 @@ class DuplicateTestPages2 extends AnyFlatSpec
   type MyDuration = Duration
   val MyDuration = Duration
 
-  implicit val timeoutduration = MyDuration( 60, TimeUnit.SECONDS )
+  implicit val timeoutduration: FiniteDuration = MyDuration( 60, TimeUnit.SECONDS )
 
-  val defaultPatienceConfig = PatienceConfig(timeout=scaled(Span(timeoutMillis, Millis)), interval=scaled(Span(intervalMillis,Millis)))
-  implicit def patienceConfig = defaultPatienceConfig
+  val defaultPatienceConfig: PatienceConfig = PatienceConfig(timeout=scaled(Span(timeoutMillis, Millis)), interval=scaled(Span(intervalMillis,Millis)))
+  implicit def patienceConfig: PatienceConfig = defaultPatienceConfig
 
   override
-  def beforeAll() = {
+  def beforeAll(): Unit = {
 
     MonitorTCP.nextTest()
     try {
@@ -121,7 +121,7 @@ class DuplicateTestPages2 extends AnyFlatSpec
   }
 
   override
-  def afterAll() = {
+  def afterAll(): Unit = {
     waitForFuturesIgnoreTimeouts( "Stopping browsers and server",
                     CodeBlock { SessionDirector.sessionStop() },
                     CodeBlock { TestServer.stop() }
@@ -224,7 +224,7 @@ class DuplicateTestPages2 extends AnyFlatSpec
                          mustswap: Boolean
                        )( implicit
                            webDriver: WebDriver
-                       ) = {
+                       ): ScoreboardPage = {
 
     val tp = currentPage.clickTableButton(table).validate.setTarget(SelectNames)
     val ss = tp.clickRound(round).asInstanceOf[TableSelectScorekeeperPage].validate

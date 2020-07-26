@@ -9,10 +9,11 @@ import com.github.thebridsk.bridge.server.backend.BridgeServiceInMemory
 import scala.concurrent.Await
 import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext.Implicits.global
+import org.rogach.scallop.ScallopOption
 
 object CheckAndFixBoardsInMatches extends Main {
 
-  val optionStore = opt[Path]("store", short='s', descr="The store directory, default=./store", argName="dir", default=Some("./store"))
+  val optionStore: ScallopOption[Path] = opt[Path]("store", short='s', descr="The store directory, default=./store", argName="dir", default=Some("./store"))
 
   def execute(): Int = {
     val bs = optionStore.toOption match {

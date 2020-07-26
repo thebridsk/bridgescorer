@@ -24,10 +24,10 @@ case class Table(
     updated: Timestamp
 ) {
 
-  def equalsIgnoreModifyTime(other: Table) =
+  def equalsIgnoreModifyTime(other: Table): Boolean =
     this == other.copy(created = created, updated = updated)
 
-  def setId(newId: Table.Id, forCreate: Boolean) = {
+  def setId(newId: Table.Id, forCreate: Boolean): Table = {
     val time = SystemTime.currentTimeMillis()
     copy(
       id = newId,

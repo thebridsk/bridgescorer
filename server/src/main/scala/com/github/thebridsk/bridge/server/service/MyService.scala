@@ -27,6 +27,7 @@ import io.swagger.v3.core.util.Yaml
 import io.swagger.v3.oas.models.OpenAPI
 import com.github.thebridsk.bridge.data.RestMessage
 import com.github.thebridsk.bridge.server.rest.UtilsPlayJson
+import akka.event.LoggingAdapter
 
 /**
   * The service trait.
@@ -45,14 +46,14 @@ trait MyService
 
   val addLoggingAndServerToSwagger = true
 
-  lazy val log = Logging(actorSystem, classOf[MyService])
+  lazy val log: LoggingAdapter = Logging(actorSystem, classOf[MyService])
 
-  override lazy val cacheDuration = Duration("0s")
+  override lazy val cacheDuration: Duration = Duration("0s")
 
   def host = "loopback"
-  def ports = ServerPort(None, None)
+  def ports: ServerPort = ServerPort(None, None)
 
-  val excptHandler = ExceptionHandler {
+  val excptHandler: ExceptionHandler = ExceptionHandler {
     case x: IllegalArgumentException =>
       log.warning(s"Illegal argument in request: ${x.getMessage()}")
       import UtilsPlayJson._
@@ -72,7 +73,7 @@ trait MyService
   /**
     * Handler for converting rejections into HttpResponse
     */
-  val totallyMissingHandler = RejectionHandler
+  val totallyMissingHandler: RejectionHandler = RejectionHandler
     .newBuilder()
     .handle {
       case MissingCookieRejection(cookieName) =>
@@ -105,7 +106,7 @@ trait MyService
 
   val serverService = new ServerService(totallyMissingHandler)
 
-  val myRouteWithLoggingDebugging =
+  val myRouteWithLoggingDebugging: RequestContext => Future[RouteResult] =
 //    logRequest(("topLevel", Logging.DebugLevel)) {
 //      logResult(("topLevel", Logging.DebugLevel)) {
 //        extractClientIP { ip =>
@@ -120,7 +121,7 @@ trait MyService
   /**
     * Spray routing which logs all requests and responses at the Debug level.
     */
-  val myRouteWithLogging = handleExceptions(excptHandler) {
+  val myRouteWithLogging: Route = handleExceptions(excptHandler) {
     handleRejections(totallyMissingHandler) {
 //    logRequest(("topLevel", Logging.DebugLevel)) {
 //      logResult(("topLevel", Logging.DebugLevel)) {
@@ -133,7 +134,7 @@ trait MyService
   /**
     * Spray routing with logging of incoming IP address.
     */
-  val logRouteWithIp =
+  val logRouteWithIp: RequestContext => Future[RouteResult] =
     extractClientIP { ip =>
       import CorsDirectives._
       pathPrefix("v1") {
@@ -156,7 +157,7 @@ trait MyService
   /**
     * The main spray route of the service
     */
-  val myRoute = handleRejections(totallyMissingHandler) {
+  val myRoute: Route = handleRejections(totallyMissingHandler) {
     import CorsDirectives._
     logRequest("myRoute", Logging.DebugLevel) {
       logResult("myRoute", Logging.DebugLevel) {
@@ -194,7 +195,7 @@ trait MyService
 //  implicit val mysystem: ActorSystem = actorSystem
 //  implicit val xxMaterializer: ActorMaterializer = materializer
 
-  def getHostPort = {
+  def getHostPort: String = {
     val httpsURL = ports.httpsPort match {
       case Some(port) => Some(host + ":" + port)
       case None       => None
@@ -208,19 +209,19 @@ trait MyService
     httpsURL.getOrElse(httpURL.get)
   }
 
-  def getScheme = ports.httpsPort.map(p => "HTTPS").getOrElse("HTTP")
+  def getScheme: String = ports.httpsPort.map(p => "HTTPS").getOrElse("HTTP")
 
-  def getSchemeWS = ports.httpsPort.map(p => "WSS").getOrElse("WS")
+  def getSchemeWS: String = ports.httpsPort.map(p => "WSS").getOrElse("WS")
 
-  def getSchemes =
+  def getSchemes: List[String] =
     ports.httpsPort.map(p => List("HTTPS")).getOrElse(Nil) :::
       ports.httpPort.map(p => List("HTTP")).getOrElse(Nil)
 
-  def getSchemesWS = ports.httpsPort.map(p => List("WSS")).getOrElse(List("WS"))
+  def getSchemesWS: List[String] = ports.httpsPort.map(p => List("WSS")).getOrElse(List("WS"))
 
-  val x = classOf[LoggingService]
+  val x: Class[LoggingService] = classOf[LoggingService]
 
-  val serverRestTypes = {
+  val serverRestTypes: Set[Class[_]] = {
     (classOf[GraphQLRoute] :: restTypes.toList :::
       (if (addLoggingAndServerToSwagger) {
          List(
@@ -235,7 +236,8 @@ trait MyService
   /**
     * The Swagger-UI HttpService
     */
-  val swaggerService = new MySwaggerService with HasActorSystem {
+  val swaggerService: swaggerService = new swaggerService
+  class swaggerService extends MySwaggerService with HasActorSystem {
     implicit lazy val actorSystem: ActorSystem = hasActorSystem.actorSystem
 
 //    override val apiVersionURISegment = "v1"
@@ -249,7 +251,7 @@ trait MyService
 
     override def apiDocsPath: String = "api-docs"
 
-    override def info =
+    override def info: Info =
       Info(
         description =
           "Scorekeeper for a Duplicate bridge, Chicago bridge, and Rubber bridge.",
@@ -269,7 +271,7 @@ trait MyService
 
     override def components: Option[Components] = None
 
-    override def schemes =
+    override def schemes: List[String] =
       getSchemes ::: (if (addLoggingAndServerToSwagger) getSchemesWS else Nil)
 
     override def security: List[SecurityRequirement] = List()
@@ -288,7 +290,7 @@ trait MyService
 //          "Function1RequestContextFutureRouteResult",
       )
 
-    def readerConfig = {
+    def readerConfig: SwaggerConfiguration = {
       val rc = new SwaggerConfiguration()
       rc.setCacheTTL(300000L)
       rc.setReadAllResources(false)
@@ -296,7 +298,7 @@ trait MyService
       rc
     }
 
-    override def reader = {
+    override def reader: Reader = {
       val r = new Reader(readerConfig.openAPI(swaggerConfig))
       r
     }
@@ -346,7 +348,7 @@ trait MyService
       * Add the ws scheme to the swagger config.
       * The SwaggerHttpService only supports setting one scheme
       */
-    override def swaggerConfig = {
+    override def swaggerConfig: OpenAPI = {
       import io.swagger.v3.oas.models.tags.Tag
 
       var s = super.swaggerConfig

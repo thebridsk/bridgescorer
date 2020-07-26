@@ -10,20 +10,22 @@ import com.github.thebridsk.bridge.server.test.util.TestServer
 import com.github.thebridsk.utilities.logging.Logger
 import com.github.thebridsk.bridge.data.util.Strings
 import com.github.thebridsk.browserpages.Page
+import com.github.thebridsk.browserpages.DateTimePicker
+import scala.util.matching.Regex
 
 object DuplicateResultPage {
 
-  val log = Logger[DuplicateResultPage]()
+  val log: Logger = Logger[DuplicateResultPage]()
 
   case class PlaceEntry( place: Int, points: Double, teams: List[Team] ) {
-    def pointsAsString = {
+    def pointsAsString: String = {
       BoardPage.toPointsString(points)
     }
   }
 
-  val patternPoints = s"""(\\d+)(${Strings.half})?""".r
+  val patternPoints: Regex = s"""(\\d+)(${Strings.half})?""".r
 
-  def parsePoints( s: String ) = {
+  def parsePoints( s: String ): Double = {
     s match {
       case patternPoints( n, f ) =>
         n.toDouble + (if (f==Strings.half) 0.5 else 0.0)
@@ -32,26 +34,26 @@ object DuplicateResultPage {
     }
   }
 
-  def current(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
+  def current(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position): DuplicateResultPage = {
     val did = findIds
     new DuplicateResultPage( Option( did ) )
   }
 
-  def waitFor(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
+  def waitFor(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position): DuplicateResultPage = {
     val did = eventually { findIds }
     new DuplicateResultPage( Option( did ) )
   }
 
-  def goto( id: String )(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
+  def goto( id: String )(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position): DuplicateResultPage = {
     go to getUrl(id)
     new DuplicateResultPage( Option(id) )
   }
 
-  def getUrl( id: String ) = {
+  def getUrl( id: String ): String = {
     TestServer.getAppPageUrl(s"duplicate/results/${id}")
   }
 
-  val buttonIds =
+  val buttonIds: List[(String, String)] =
                  ("Summary", "Summary") ::
                  ("Edit", "Edit") ::
                  Nil
@@ -81,7 +83,7 @@ object DuplicateResultPage {
     }
   }
 
-  val patternPlaceTablePlayersColumn = """(\d+) (.*?) (.*)""".r
+  val patternPlaceTablePlayersColumn: Regex = """(\d+) (.*?) (.*)""".r
 }
 
 class DuplicateResultPage(
@@ -92,7 +94,7 @@ class DuplicateResultPage(
                          ) extends Page[DuplicateResultPage] {
   import DuplicateResultPage._
 
-  def validate(implicit patienceConfig: PatienceConfig, pos: Position) = logMethod(s"${pos.line} ${getClass.getSimpleName}.validate") { eventually {
+  def validate(implicit patienceConfig: PatienceConfig, pos: Position): DuplicateResultPage = logMethod(s"${pos.line} ${getClass.getSimpleName}.validate") { eventually {
 
     val did = eventually { findIds }
 
@@ -112,14 +114,14 @@ class DuplicateResultPage(
 
   }}
 
-  def findPlayed( implicit pos: Position ) = findDateTimePicker("played")
+  def findPlayed( implicit pos: Position ): DateTimePicker = findDateTimePicker("played")
 
-  def clickSummary( implicit pos: Position ) = {
+  def clickSummary( implicit pos: Position ): ListDuplicatePage = {
     clickButton("Summary")
     ListDuplicatePage.current
   }
 
-  def clickEdit( implicit pos: Position ) = {
+  def clickEdit( implicit pos: Position ): DuplicateResultEditPage = {
     clickButton("Edit")
     DuplicateResultEditPage.current
   }
@@ -132,7 +134,7 @@ class DuplicateResultPage(
    * @return a List of List of Lists.  The outer list is the winner set, the middle list is the rows (place) in the table, the inner list are the columns.
    * The columns are: place, points, players
    */
-  def getPlaceTable(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def getPlaceTable(implicit patienceConfig: PatienceConfig, pos: Position): List[List[List[String]]] = {
     getWinnerSetTableElements.map { ws =>
       ws.findAll( xpath("""./tbody/tr/td""")).map(c=>c.text).grouped(3).toList
     }
@@ -143,7 +145,7 @@ class DuplicateResultPage(
    * @return a List of Lists.  The outer list is the rows (place) in the table, the inner list are the columns.
    * The columns are: place, points, players
    */
-  def getPlaceTable(ws: Int)(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def getPlaceTable(ws: Int)(implicit patienceConfig: PatienceConfig, pos: Position): List[List[String]] = {
     val all = getWinnerSetTableElements
     all(ws).findAll( xpath("""./tbody/tr/td""")).map(c=>c.text).grouped(3).toList
 
@@ -172,7 +174,7 @@ class DuplicateResultPage(
    * @param ws the winner set, zero based
    * @param team a Tuple4( teamnumber, players, points, boardscores )
    */
-  def checkPlaceTable( places: PlaceEntry* )(implicit pos: Position) = {
+  def checkPlaceTable( places: PlaceEntry* )(implicit pos: Position): Unit = {
     val table = getPlaceTable
     val mapping = getWinnerSetMappings(table)
     places.foreach{ pe =>

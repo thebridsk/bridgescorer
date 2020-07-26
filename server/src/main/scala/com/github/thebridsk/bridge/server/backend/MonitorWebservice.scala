@@ -87,11 +87,12 @@ abstract class MonitorWebservice[VId <: Comparable[VId], VType <: VersionedInsta
       .withAttributes(Attributes.inputBuffer(initial = 32, max = 128))
       .via(reportErrorsFlow(sender)) // ... then log any processing errors on stdin
 
-  def reportErrorsFlow[T](sender: RemoteAddress) =
-    new GraphStage[FlowShape[T, T]] {
-      val in = Inlet[T]("reportErrorsFlow.in")
-      val out = Outlet[T]("reportErrorsFlow.out")
-      override val shape = FlowShape(in, out)
+  def reportErrorsFlow[T](sender: RemoteAddress): reportErrorsFlow[T] =
+    new reportErrorsFlow[T](sender)
+  class reportErrorsFlow[T](sender: RemoteAddress) extends GraphStage[FlowShape[T, T]] {
+      val in: Inlet[T] = Inlet[T]("reportErrorsFlow.in")
+      val out: Outlet[T] = Outlet[T]("reportErrorsFlow.out")
+      override val shape: FlowShape[T,T] = FlowShape(in, out)
       override def initialAttributes: Attributes =
         Attributes(List(Name("reportErrorsFlow")))
       def createLogic(inheritedAttributes: Attributes): GraphStageLogic = {

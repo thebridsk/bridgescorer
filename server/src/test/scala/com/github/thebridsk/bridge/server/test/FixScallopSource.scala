@@ -9,6 +9,7 @@ import java.util.jar.JarInputStream
 import java.util.zip.ZipEntry
 import java.io.FileOutputStream
 import java.io.FileInputStream
+import scala.util.matching.Regex
 
 object FixScallopSource extends Main {
   // C:\Users\werewolf\.ivy2\cache\org.rogach\scallop_2.12\srcs
@@ -17,7 +18,7 @@ object FixScallopSource extends Main {
 //  scallop_2.12-3.1.1-sources.jar
 
 
-  val patternScallop = """scallop_(\d+\.\d+-\d+\.\d+\.\d+)-sources(\.original)?.jar""".r
+  val patternScallop: Regex = """scallop_(\d+\.\d+-\d+\.\d+\.\d+)-sources(\.original)?.jar""".r
 
   case class ScallopVersion( scalaVersion: Version, scallopVersion: Version ) extends Ordered[ScallopVersion] {
 
@@ -33,7 +34,7 @@ object FixScallopSource extends Main {
     }
 
     override
-    def equals( other: Any ) = {
+    def equals( other: Any ): Boolean = {
       other match {
         case sv: ScallopVersion => compare(sv) == 0
         case _ => false
@@ -41,15 +42,15 @@ object FixScallopSource extends Main {
     }
 
     override
-    def hashCode() = {
+    def hashCode(): Int = {
       scalaVersion.hashCode()+scallopVersion.hashCode()
     }
   }
 
   object ScallopVersion {
-    val patternVersion = """(\d+\.\d+)-(\d+\.\d+\.\d+)""".r
+    val patternVersion: Regex = """(\d+\.\d+)-(\d+\.\d+\.\d+)""".r
 
-    def apply( ver: String ) = {
+    def apply( ver: String ): ScallopVersion = {
       ver match {
         case patternVersion( scalav, scallopv ) =>
           new ScallopVersion( Version(scalav), Version(scallopv) )
@@ -57,7 +58,7 @@ object FixScallopSource extends Main {
     }
   }
 
-  def execute() = {
+  def execute(): Int = {
 
     val homedir = sys.props.get("user.home").getOrElse( throw new IllegalStateException("Unable to determine home directory"))
 
@@ -97,7 +98,7 @@ object FixScallopSource extends Main {
     0
   }
 
-  def copyZE( e: ZipEntry ) = {
+  def copyZE( e: ZipEntry ): ZipEntry = {
     val i = e.getName.lastIndexOf(".")
     val fixedname = if (i < 0) e.getName
     else {
@@ -126,7 +127,7 @@ object FixScallopSource extends Main {
     n
   }
 
-  def fixJar( input: File, output: File ) = {
+  def fixJar( input: File, output: File ): Unit = {
     val out = new JarOutputStream( new FileOutputStream( output ) )
     val in = new JarInputStream( new FileInputStream(input) )
 

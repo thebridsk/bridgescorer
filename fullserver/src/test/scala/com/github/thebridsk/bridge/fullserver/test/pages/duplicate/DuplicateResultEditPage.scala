@@ -9,31 +9,33 @@ import com.github.thebridsk.browserpages.PageBrowser._
 import com.github.thebridsk.bridge.server.test.util.TestServer
 import com.github.thebridsk.utilities.logging.Logger
 import com.github.thebridsk.browserpages.Page
+import com.github.thebridsk.browserpages.DateTimePicker
+import scala.util.matching.Regex
 
 object DuplicateResultEditPage {
 
-  val log = Logger[DuplicateResultEditPage]()
+  val log: Logger = Logger[DuplicateResultEditPage]()
 
-  def current(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
+  def current(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position): DuplicateResultEditPage = {
     val did = findIds
     new DuplicateResultEditPage( Option( did ) )
   }
 
-  def waitFor(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
+  def waitFor(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position): DuplicateResultEditPage = {
     val did = eventually { findIds }
     new DuplicateResultEditPage( Option( did ) )
   }
 
-  def goto( id: String )(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
+  def goto( id: String )(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position): DuplicateResultEditPage = {
     go to getUrl(id)
     new DuplicateResultEditPage( Option(id) )
   }
 
-  def getUrl( id: String ) = {
+  def getUrl( id: String ): String = {
     TestServer.getAppPageUrl(s"duplicate/results/${id}/edit")
   }
 
-  val buttonIds =
+  val buttonIds: List[(String, String)] =
                  ("OK", "OK") ::
                  ("Cancel", "Cancel") ::
                  Nil
@@ -64,7 +66,7 @@ object DuplicateResultEditPage {
   }
 
 
-  val patternName = """P(\d+)T(T\d+)P(.)""".r
+  val patternName: Regex = """P(\d+)T(T\d+)P(.)""".r
   /**
    * @param name the name attribute of an input field.
    * @return determine the winner set and team id and whether it is player 1 or 2 or the points.
@@ -96,7 +98,7 @@ class DuplicateResultEditPage(
                          ) extends Page[DuplicateResultEditPage] {
   import DuplicateResultEditPage._
 
-  def validate(implicit patienceConfig: PatienceConfig, pos: Position) = logMethod(s"${pos.line} ${getClass.getSimpleName}.validate") { eventually {
+  def validate(implicit patienceConfig: PatienceConfig, pos: Position): DuplicateResultEditPage = logMethod(s"${pos.line} ${getClass.getSimpleName}.validate") { eventually {
 
     val did = eventually { findIds }
 
@@ -115,17 +117,17 @@ class DuplicateResultEditPage(
     new DuplicateResultEditPage( Some(did) )
   }}
 
-  def findPlayed( implicit pos: Position ) = findDateTimePicker("played")
+  def findPlayed( implicit pos: Position ): DateTimePicker = findDateTimePicker("played")
 
-  def getWinnerSets( implicit pos: Position ) = {
+  def getWinnerSets( implicit pos: Position ): List[Int] = {
     findAllInputs(Some("text")).keys.flatMap { name => getInputIds(name).map( e => e._1 ) }.toList.distinct
   }
 
-  def getAllTeams( implicit pos: Position ) = {
+  def getAllTeams( implicit pos: Position ): List[String] = {
     findAllInputs(Some("text")).keys.flatMap { name => getInputIds(name).map( e => e._2 ) }.toList.distinct
   }
 
-  def getTeams( ws: Int )( implicit pos: Position ) = {
+  def getTeams( ws: Int )( implicit pos: Position ): List[String] = {
     findAllInputs(Some("text")).keys.flatMap { name => getInputIds(name).filter(e => e._1==ws).map( e => e._2 ) }.toList.distinct
   }
 
@@ -134,7 +136,7 @@ class DuplicateResultEditPage(
    * @param teamid
    * @param player the player, one based
    */
-  def getName( ws: Int, teamid: Int, player: Int )( implicit pos: Position ) = {
+  def getName( ws: Int, teamid: Int, player: Int )( implicit pos: Position ): String = {
     getTextInput(getInputName(ws,teamid,player.toString())).value
   }
 
@@ -144,7 +146,7 @@ class DuplicateResultEditPage(
    * @param player the player, one based
    * @param name
    */
-  def setName( ws: Int, teamid: Int, player: Int, name: String )( implicit pos: Position ) = {
+  def setName( ws: Int, teamid: Int, player: Int, name: String )( implicit pos: Position ): DuplicateResultEditPage = {
     getTextInput(getInputName(ws,teamid,player.toString())).value = name
     this
   }
@@ -153,7 +155,7 @@ class DuplicateResultEditPage(
    * @param ws the winner set, zero based
    * @param teamid
    */
-  def getPoints( ws: Int, teamid: Int )( implicit pos: Position ) = {
+  def getPoints( ws: Int, teamid: Int )( implicit pos: Position ): Double = {
     val pts = getNumberInput(getInputName(ws,teamid,"P")).value
     try {
       pts.toDouble
@@ -169,20 +171,20 @@ class DuplicateResultEditPage(
    * @param teamid
    * @param points
    */
-  def setPoints( ws: Int, teamid: Int, points: Double )( implicit pos: Position ) = {
+  def setPoints( ws: Int, teamid: Int, points: Double )( implicit pos: Position ): Unit = {
     getNumberInput(getInputName(ws,teamid,"P")).value = points.toString()
   }
 
-  def isOKEnabled( implicit pos: Position ) = {
+  def isOKEnabled( implicit pos: Position ): Boolean = {
     findButton("OK").isEnabled
   }
 
-  def clickOK( implicit pos: Position ) = {
+  def clickOK( implicit pos: Position ): DuplicateResultPage = {
     clickButton("OK")
     DuplicateResultPage.current
   }
 
-  def clickCancel( implicit pos: Position ) = {
+  def clickCancel( implicit pos: Position ): DuplicateResultPage = {
     clickButton("Cancel")
     DuplicateResultPage.current
   }

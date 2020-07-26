@@ -12,12 +12,12 @@ class IntegrationTests extends Sequential(
   new HelpTest
 ) with BeforeAndAfterAll {
   override
-  def beforeAll() = {
+  def beforeAll(): Unit = {
     TestServer.start()
   }
 
   override
-  def afterAll() = {
+  def afterAll(): Unit = {
     TestServer.stop()
   }
 

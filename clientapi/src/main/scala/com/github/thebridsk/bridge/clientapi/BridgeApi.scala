@@ -26,7 +26,7 @@ object BridgeApi {   // need to figure out how to use new way to call main
 
   SystemTimeJs()
 
-  def logger = Logger("bridge.BridgeApi")
+  def logger: Logger = Logger("bridge.BridgeApi")
 
   //  def main(args: Array[String]): Unit = main()
 
@@ -36,7 +36,7 @@ object BridgeApi {   // need to figure out how to use new way to call main
   private var loggerInitDone = false
   private var defaultInitDone = false
 
-  def initDone() = {
+  def initDone(): Unit = {
     if (loggerInitDone && defaultInitDone) startClient()
     else logger.info(s"loggerInitDone=${loggerInitDone}, defaultInitDone=${defaultInitDone}")
   }
@@ -58,7 +58,7 @@ object BridgeApi {   // need to figure out how to use new way to call main
 
   }
 
-  def startClient() = Alerter.tryitWithUnit {
+  def startClient(): Unit = Alerter.tryitWithUnit {
     logger.info("Bridge Scorer Starting" )
 
     try {

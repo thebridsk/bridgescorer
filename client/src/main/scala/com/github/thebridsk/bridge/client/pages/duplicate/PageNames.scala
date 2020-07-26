@@ -18,6 +18,8 @@ import com.github.thebridsk.materialui.TextColor
 import com.github.thebridsk.bridge.client.pages.HomePage
 import japgolly.scalajs.react.component.builder.Lifecycle.ComponentDidUpdate
 
+import scala.scalajs.js
+
 /**
  * Shows the team x board table and has a totals column that shows the number of points the team has.
  *
@@ -36,14 +38,14 @@ object PageNames {
 
   case class Props( routerCtl: BridgeRouter[DuplicatePage], page: NamesView, returnPage: DuplicatePage )
 
-  def apply( routerCtl: BridgeRouter[DuplicatePage], page: NamesView, returnPage: DuplicatePage ) = component(Props(routerCtl,page,returnPage))
+  def apply( routerCtl: BridgeRouter[DuplicatePage], page: NamesView, returnPage: DuplicatePage ) = component(Props(routerCtl,page,returnPage))  // scalafix:ok ExplicitResultTypes; ReactComponent
 
 }
 
 object PageNamesInternal {
   import PageNames._
 
-  val logger = Logger("bridge.PageNames")
+  val logger: Logger = Logger("bridge.PageNames")
 
   /**
    * Internal state for rendering the component.
@@ -55,17 +57,18 @@ object PageNamesInternal {
   case class State( teams: Map[Team.Id, Team]=Map(), nameSuggestions: Option[List[String]] = None ) {
     import scala.scalajs.js.JSConverters._
 
-    def reset =
+    def reset: State =
       DuplicateStore.getMatch() match {
         case Some(md) => copy(teams=md.teams.map(t=> t.id->t).toMap)
         case None => copy(teams=Map())
       }
 
-    def getSuggestions = nameSuggestions.getOrElse(List()).toJSArray
+    def getSuggestions: js.Array[String] = nameSuggestions.getOrElse(List()).toJSArray
     def gettingNames = nameSuggestions.isEmpty
 
   }
 
+  private[duplicate]
   val Header = ScalaComponent.builder[Props]("PageNames.Header")
                       .render_P( props => {
                         <.thead(
@@ -81,6 +84,7 @@ object PageNamesInternal {
   private def noNull( s: String ) = Option(s).getOrElse("")
   private def playerValid( s: String ) = s!=null && s.length!=0
 
+  private[duplicate]
   val TeamRow = ScalaComponent.builder[(Team,Backend,State,Props)]("PageNames.TeamRow")
                       .render_P( args => {
                         val (team, backend, st, p) = args
@@ -112,7 +116,7 @@ object PageNamesInternal {
    */
   class Backend(scope: BackendScope[Props, State]) {
 
-    def render( props: Props, state: State ) = {
+    def render( props: Props, state: State ) = { // scalafix:ok ExplicitResultTypes; React
       import DuplicateStyles._
       import com.github.thebridsk.bridge.clientcommon.react.Utils._
       logger.info("Rendering "+props.page+" suggestions="+state.nameSuggestions)
@@ -170,7 +174,7 @@ object PageNamesInternal {
       )
     }
 
-    def setPlayer(teamid: Team.Id, player: Int)( name: String ) =
+    def setPlayer(teamid: Team.Id, player: Int)( name: String ): Callback =
       scope.modState( ps => {
         ps.teams.get(teamid) match {
           case Some(team) =>
@@ -186,7 +190,7 @@ object PageNamesInternal {
         }
       })
 
-    val doUpdate = scope.state >>= { state => Callback {
+    val doUpdate: Callback = scope.state >>= { state => Callback {
       DuplicateStore.getMatch() match {
         case Some(md) =>
           state.teams.values.foreach { team => {
@@ -208,21 +212,21 @@ object PageNamesInternal {
       }
     }}
 
-    def okCallback = doUpdate >> scope.props >>= { props => props.routerCtl.set(props.returnPage) }
+    def okCallback: Callback = doUpdate >> scope.props >>= { props => props.routerCtl.set(props.returnPage) }
 
-    val resetCallback = scope.props >>= { props =>
+    val resetCallback: Callback = scope.props >>= { props =>
       scope.modState(s => s.reset)
     }
 
-    val storeCallback = scope.modState { s => s.reset }
+    val storeCallback: Callback = scope.modState { s => s.reset }
 
-    val namesCallback = scope.modState { s =>
+    val namesCallback: Callback = scope.modState { s =>
       val sug = NamesStore.getNames
       logger.fine( s"""Got names ${sug}""" )
       s.copy( nameSuggestions=Some(sug))
     }
 
-    val didMount =scope.props >>= { props =>  Callback {
+    val didMount: Callback =scope.props >>= { props =>  Callback {
       logger.info("PageNames.didMount")
       NamesStore.ensureNamesAreCached(Some(namesCallback))
       DuplicateStore.addChangeListener(storeCallback)
@@ -230,14 +234,14 @@ object PageNamesInternal {
       Controller.monitor(props.page.dupid)
     }}
 
-    val willUnmount = Callback {
+    val willUnmount: Callback = Callback {
       logger.info("PageNames.willUnmount")
       DuplicateStore.removeChangeListener(storeCallback)
       Controller.delayStop()
     }
   }
 
-  def didUpdate( cdu: ComponentDidUpdate[Props,State,Backend,Unit] ) = Callback {
+  def didUpdate( cdu: ComponentDidUpdate[Props,State,Backend,Unit] ): Callback = Callback {
     val props = cdu.currentProps
     val prevProps = cdu.prevProps
     if (prevProps.page != props.page) {
@@ -245,6 +249,7 @@ object PageNamesInternal {
     }
   }
 
+  private[duplicate]
   val component = ScalaComponent.builder[Props]("PageNames")
                             .initialStateFromProps { props => State().reset }
                             .backend(new Backend(_))

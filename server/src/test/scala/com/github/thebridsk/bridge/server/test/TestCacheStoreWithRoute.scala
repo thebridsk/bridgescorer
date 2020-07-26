@@ -36,15 +36,16 @@ import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.compatible.Assertion
+import com.github.thebridsk.utilities.logging.Logger
 
 object TestCacheStoreWithRoute {
   import Matchers._
 
-  val testlog = com.github.thebridsk.utilities.logging.Logger[TestCacheStoreWithRoute]()
+  val testlog: Logger = com.github.thebridsk.utilities.logging.Logger[TestCacheStoreWithRoute]()
 
   TestStartLogging.startLogging()
 
-  val bridgeResources = BridgeResources()
+  val bridgeResources: BridgeResources = BridgeResources()
   import bridgeResources._
 
   def getBoardSetStore: Store[BoardSet.Id,BoardSet] = {
@@ -65,9 +66,9 @@ object TestCacheStoreWithRoute {
    */
   class BridgeServiceTestFailure extends BridgeServiceInMemory("test") {
 
-    val persistent = TestFailurePersistent[MatchDuplicate.Id,MatchDuplicate]()
+    val persistent: TestFailurePersistent[MatchDuplicate.Id,MatchDuplicate] = TestFailurePersistent[MatchDuplicate.Id,MatchDuplicate]()
     override
-    val duplicates = TestFailureStore("test",persistent)
+    val duplicates: TestFailureStore[MatchDuplicate.Id,MatchDuplicate] = TestFailureStore("test",persistent)
 
     val syncDuplicates = duplicates.syncStore
 
@@ -149,11 +150,11 @@ class TestCacheStoreWithRoute extends AnyFlatSpec with ScalatestRouteTest with M
 
   val httpport = 8080
   override
-  def ports = ServerPort( Option(httpport), None )
+  def ports: ServerPort = ServerPort( Option(httpport), None )
 
-  implicit lazy val actorSystem = system
-  implicit lazy val actorExecutor = executor
-  implicit lazy val actorMaterializer = materializer
+  implicit lazy val actorSystem = system  //scalafix:ok ExplicitResultTypes
+  implicit lazy val actorExecutor = executor  //scalafix:ok ExplicitResultTypes
+  implicit lazy val actorMaterializer = materializer  //scalafix:ok ExplicitResultTypes
 
   TestStartLogging.startLogging()
 
@@ -161,7 +162,7 @@ class TestCacheStoreWithRoute extends AnyFlatSpec with ScalatestRouteTest with M
 
   behavior of "Store"
 
-  val remoteAddress = `Remote-Address`( IP( InetAddress.getLocalHost, Some(12345) ))
+  val remoteAddress = `Remote-Address`( IP( InetAddress.getLocalHost, Some(12345) ))  // scalafix:ok ; Remote-Address
 
   var dupid: Option[MatchDuplicate.Id] = None
 

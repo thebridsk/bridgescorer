@@ -20,6 +20,7 @@ import com.github.thebridsk.bridge.clientcommon.react.Table
 import com.github.thebridsk.bridge.data.duplicate.stats.ContractStat
 import DuplicateStyles._
 
+
 /**
  * A skeleton component.
  *
@@ -36,7 +37,7 @@ object ViewPlayerContractResults {
 
   case class Props( playerStats: PlayerStats, contractStats: ContractStats )
 
-  def apply( playerStats: PlayerStats, contractStats: ContractStats ) =
+  def apply( playerStats: PlayerStats, contractStats: ContractStats ) = // scalafix:ok ExplicitResultTypes; ReactComponent
     component(Props(playerStats,contractStats))
 
 }
@@ -44,7 +45,7 @@ object ViewPlayerContractResults {
 object ViewPlayerContractResultsInternal {
   import ViewPlayerContractResults._
 
-  val logger = Logger("bridge.ViewPlayerContractResults")
+  val logger: Logger = Logger("bridge.ViewPlayerContractResults")
 
   /**
    * Internal state for rendering the component.
@@ -58,11 +59,11 @@ object ViewPlayerContractResultsInternal {
   val pieChartMaxSize = 100
   val tooltipPieChartSize = 150
 
-  def calcSize(max: Int)( handsPlayed: Int ) = {
+  def calcSize(max: Int)( handsPlayed: Int ): Int = {
     (handsPlayed.toDouble/max*(pieChartMaxSize-5)).toInt + 5
   }
 
-  def getPlayerStatByContractType( ct: ContractType, list: List[PlayerStat] ) = {
+  def getPlayerStatByContractType( ct: ContractType, list: List[PlayerStat] ): Option[PlayerStat] = {
 
     // ignore passed hands in total
     def fix( h: PlayerStat ) = {
@@ -181,7 +182,7 @@ object ViewPlayerContractResultsInternal {
       total: Option[List[PlayerStat]],
       calcSizeCT: Int=>Int,
       calcSizeTotal: Int=>Int
-  ) = {
+  ): List[TagMod] = {
 
     def asPlaying( b: Option[Boolean] ) = b.map( dec => if (dec) "Declarer" else "Defender" ).getOrElse("Total")
 
@@ -237,7 +238,7 @@ object ViewPlayerContractResultsInternal {
   /**
    * @return Tuple3(totalStats, maxHandsPlayed, maxHandsPlayedTotal)
    */
-  def genTotalStats( stats: ContractStats ) = {
+  def genTotalStats( stats: ContractStats ): (List[ContractStat], Int, Int) = {
 
     def fix2( h: ContractStat ) = {
       if (h.contractType == ContractTypePassed.value) {
@@ -336,7 +337,7 @@ object ViewPlayerContractResultsInternal {
    *
    */
   class Backend(scope: BackendScope[Props, State]) {
-    def render( props: Props, state: State ) = {
+    def render( props: Props, state: State ) = { // scalafix:ok ExplicitResultTypes; React
       val maxDown = Math.min( 0, props.playerStats.min )
       val maxMade = Math.max( 0, props.playerStats.max )
 
@@ -412,6 +413,7 @@ object ViewPlayerContractResultsInternal {
 
   }
 
+  private[duplicate]
   val component = ScalaComponent.builder[Props]("ViewPlayerContractResults")
                             .initialStateFromProps { props => State() }
                             .backend(new Backend(_))

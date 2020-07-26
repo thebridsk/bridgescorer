@@ -20,9 +20,9 @@ object StoreIdMeta {
 
   val timestampFormat = "yyyy-MM-dd-HH-mm-ss"
 
-  val resultNotSupported = Result(StatusCodes.BadRequest, RestMessage("Metadata is not supported for store"))
+  val resultNotSupported: Result[Nothing] = Result(StatusCodes.BadRequest, RestMessage("Metadata is not supported for store"))
 
-  val notSupported = Future.successful( resultNotSupported )
+  val notSupported: Future[Result[Nothing]] = Future.successful( resultNotSupported )
 
 }
 
@@ -250,13 +250,13 @@ abstract class PersistentSupport[
     */
   def readCheckForDelete(id: VId, cachedValue: Result[VType]) = false
 
-  def notFound(id: VId) =
+  def notFound(id: VId): Result[Nothing] =
     Result(StatusCodes.NotFound, s"Did not find resource $resourceURI/${support.idSupport.toString(id)}")
-  def internalError =
+  def internalError: Result[Nothing] =
     Result(StatusCodes.InternalServerError, RestMessage("Internal error"))
-  def storeIsReadOnly =
+  def storeIsReadOnly: Future[Result[Nothing]] =
     Result.future(StatusCodes.BadRequest, RestMessage("Store is read only"))
-  def alreadyExists(id: VId) =
+  def alreadyExists(id: VId): Future[Result[Nothing]] =
     Result.future(
       StatusCodes.BadRequest,
       s"Resource already exists ${resourceURI}/${id}"

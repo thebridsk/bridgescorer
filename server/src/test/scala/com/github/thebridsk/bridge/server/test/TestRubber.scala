@@ -13,23 +13,24 @@ import com.github.thebridsk.bridge.server.rest.ServerPort
 import com.github.thebridsk.bridge.data.MatchRubber
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.must.Matchers
+import akka.event.LoggingAdapter
 
 class TestRubber extends AnyFlatSpec with ScalatestRouteTest with Matchers with MyService {
   val restService = new BridgeServiceTesting
 
   val httpport = 8080
   override
-  def ports = ServerPort( Option(httpport), None )
+  def ports: ServerPort = ServerPort( Option(httpport), None )
 
-  implicit val actorSystem = system
-  implicit val actorExecutor = executor
-  implicit val actorMaterializer = materializer
+  implicit lazy val actorSystem = system  //scalafix:ok ExplicitResultTypes
+  implicit lazy val actorExecutor = executor  //scalafix:ok ExplicitResultTypes
+  implicit lazy val actorMaterializer = materializer  //scalafix:ok ExplicitResultTypes
 
-  val testlog = Logging(system, "TestRubber")
+  val testlog: LoggingAdapter = Logging(system, "TestRubber")
 
   behavior of "MyService for rubber rest resource"
 
-  val remoteAddress = `Remote-Address`( IP( InetAddress.getLocalHost, Some(12345) ))
+  val remoteAddress = `Remote-Address`( IP( InetAddress.getLocalHost, Some(12345) ))  // scalafix:ok ; Remote-Address
 
   import com.github.thebridsk.bridge.server.rest.UtilsPlayJson._
 

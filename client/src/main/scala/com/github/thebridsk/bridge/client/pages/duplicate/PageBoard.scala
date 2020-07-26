@@ -25,6 +25,7 @@ import com.github.thebridsk.bridge.data.Table
 import com.github.thebridsk.bridge.data.Team
 import com.github.thebridsk.bridge.data.Board
 
+
 /**
  * Shows the team x board table and has a totals column that shows the number of points the team has.
  *
@@ -43,7 +44,7 @@ object PageBoard {
 
   case class Props( routerCtl: BridgeRouter[DuplicatePage], page: BaseBoardViewWithPerspective )
 
-  def apply( routerCtl: BridgeRouter[DuplicatePage], page: BaseBoardViewWithPerspective ) = {
+  def apply( routerCtl: BridgeRouter[DuplicatePage], page: BaseBoardViewWithPerspective ) = {  // scalafix:ok ExplicitResultTypes; ReactComponent
     logger.info(s"PageBoard with page = ${page}")
     component(Props(routerCtl,page))
   }
@@ -54,7 +55,7 @@ object PageBoardInternal {
   import PageBoard._
   import DuplicateStyles._
 
-  val logger = Logger("bridge.PageBoard")
+  val logger: Logger = Logger("bridge.PageBoard")
 
   /**
    * Internal state for rendering the component.
@@ -65,14 +66,14 @@ object PageBoardInternal {
    */
   case class State( useIMP: Option[Boolean] = None ) {
 
-    def isMP = !useIMP.getOrElse(false)
-    def isIMP = useIMP.getOrElse(false)
+    def isMP: Boolean = !useIMP.getOrElse(false)
+    def isIMP: Boolean = useIMP.getOrElse(false)
 
-    def toggleIMP = {
+    def toggleIMP: State = {
       copy( useIMP = Some(!isIMP) )
     }
 
-    def nextIMPs = {
+    def nextIMPs: State = {
       val n = useIMP match {
         case None => Some(false)
         case Some(false) => Some(true)
@@ -91,9 +92,9 @@ object PageBoardInternal {
    */
   class Backend(scope: BackendScope[Props, State]) {
 
-    val nextIMPs = scope.modState { s => s.nextIMPs }
+    val nextIMPs: Callback = scope.modState { s => s.nextIMPs }
 
-    def render( props: Props, state: State ) = {
+    def render( props: Props, state: State ) = { // scalafix:ok ExplicitResultTypes; React
       logger.info(s"Rendering board ${props.page} routectl=${props.routerCtl.getClass.getName}")
       val perspective = props.page.getPerspective
       val tableperspective = perspective match {
@@ -249,24 +250,25 @@ object PageBoardInternal {
       )
     }
 
-    val storeCallback = scope.modStateOption { s =>
+    val storeCallback: Callback = scope.modStateOption { s =>
       DuplicateStore.getMatch().map( md => s.copy( useIMP = Some(md.isIMP) ) )
     }
 
-    val didMount = scope.props >>= { (p) => Callback {
+    val didMount: Callback = scope.props >>= { (p) => Callback {
       logger.info("PageBoard.didMount")
       DuplicateStore.addChangeListener(storeCallback)
 
       Controller.monitor(p.page.dupid)
     }}
 
-    val willUnmount = Callback {
+    val willUnmount: Callback = Callback {
       logger.info("PageBoard.willUnmount")
       DuplicateStore.removeChangeListener(storeCallback)
       Controller.delayStop()
     }
   }
 
+  private[duplicate]
   val BoardsRow = ScalaComponent.builder[(List[Board.Id],Props,MatchDuplicateScore)]("PageBoard.BoardsRow")
                         .render_P( args => {
                           val (row,props,mds) = args
@@ -275,6 +277,7 @@ object PageBoardInternal {
                           )
                         }).build
 
+  private[duplicate]
   val BoardCell = ScalaComponent.builder[(Board.Id,Props,BoardScore)]("PageBoard.BoardCell")
                         .render_P( args => {
                           val (id,props,bs) = args
@@ -294,7 +297,7 @@ object PageBoardInternal {
                           )
                         }).build
 
-  def didUpdate( cdu: ComponentDidUpdate[Props,State,Backend,Unit] ) = Callback {
+  def didUpdate( cdu: ComponentDidUpdate[Props,State,Backend,Unit] ): Callback = Callback {
     val props = cdu.currentProps
     val prevProps = cdu.prevProps
     if (prevProps.page != props.page) {
@@ -302,6 +305,7 @@ object PageBoardInternal {
     }
   }
 
+  private[duplicate]
   val component = ScalaComponent.builder[Props]("PageBoard")
                             .initialStateFromProps { props => State() }
                             .backend(new Backend(_))

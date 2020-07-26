@@ -7,7 +7,7 @@ import com.github.thebridsk.bridge.clientcommon.logger.CommAlerter
 class WebsocketClosed extends Exception
 
 object MyWebsocket extends MyWebsocketCodes {
-  val log = Logger("comm.MyWebsocket")
+  val log: Logger = Logger("comm.MyWebsocket")
 
 }
 
@@ -69,7 +69,7 @@ abstract class MyWebsocket(url: String, protocol: String = "") {
 
   def wasCloseCalled = closeCalled
 
-  def close(code: Code, reason: String) = {
+  def close(code: Code, reason: String): Unit = {
     closeCalled = true
     websocket match {
       case Some(ws) =>
@@ -79,7 +79,7 @@ abstract class MyWebsocket(url: String, protocol: String = "") {
     }
   }
 
-  def start( force: Boolean ) = {
+  def start( force: Boolean ): Unit = {
     websocket match {
       case Some(ws) =>
         if (force) {
@@ -187,7 +187,7 @@ case class Code( val code: Int ) {
 
 trait MyWebsocketCodes {
 
-  def getMsgFromCode( code: Code ) = reasons.getOrElse(code.code, "Reason code "+code.code)
+  def getMsgFromCode( code: Code ): String = reasons.getOrElse(code.code, "Reason code "+code.code)
 
   val CLOSE_NORMAL = 1000
   val CLOSE_GOING_AWAY = 1001

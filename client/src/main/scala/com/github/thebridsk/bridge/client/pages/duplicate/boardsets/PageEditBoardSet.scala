@@ -30,6 +30,7 @@ import scala.util.Success
 import scala.util.Failure
 import scala.concurrent.ExecutionContext.Implicits.global
 
+
 /**
  * Shows all the boards of a boardset.
  *
@@ -61,14 +62,14 @@ object PageEditBoardSet {
 
   case class Props( routerCtl: BridgeRouter[DuplicatePage], page: DuplicatePage )
 
-  def apply( routerCtl: BridgeRouter[DuplicatePage], page: DuplicatePage ) = component(Props(routerCtl,page))
+  def apply( routerCtl: BridgeRouter[DuplicatePage], page: DuplicatePage ) = component(Props(routerCtl,page))  // scalafix:ok ExplicitResultTypes; ReactComponent
 
 }
 
 object PageEditBoardSetInternal {
   import PageEditBoardSet._
 
-  val logger = Logger("bridge.PageEditBoardSet")
+  val logger: Logger = Logger("bridge.PageEditBoardSet")
 
   /**
    * Internal state for rendering the component.
@@ -98,11 +99,11 @@ object PageEditBoardSetInternal {
         )
       )
     }
-    def setName( name: BoardSet.Id ) = copy( boardset = Some(getBoardSet.copy(name = name)))
-    def setShort( description: String ) = copy( boardset = Some(getBoardSet.copy(short=description)))
-    def setDescription( description: String ) = copy( boardset = Some(getBoardSet.copy(description=description)))
+    def setName( name: BoardSet.Id ): State = copy( boardset = Some(getBoardSet.copy(name = name)))
+    def setShort( description: String ): State = copy( boardset = Some(getBoardSet.copy(short=description)))
+    def setDescription( description: String ): State = copy( boardset = Some(getBoardSet.copy(description=description)))
 
-    def setNBoards( n: Int ) = {
+    def setNBoards( n: Int ): State = {
       if ( n < nboards ) {
         val curbs = getBoardSet
         val nb = curbs.copy( boards = curbs.boards.take(n))
@@ -132,23 +133,23 @@ object PageEditBoardSetInternal {
       }
     }
 
-    def setDealer( id: Int, dealer: String ) = {
+    def setDealer( id: Int, dealer: String ): State = {
       set(id, bs => bs.copy(dealer = dealer))
     }
-    def setNSVul( id: Int, nsVul: Boolean ) = {
+    def setNSVul( id: Int, nsVul: Boolean ): State = {
       set(id, bs => bs.copy(nsVul = nsVul))
     }
-    def setEWVul( id: Int, ewVul: Boolean ) = {
+    def setEWVul( id: Int, ewVul: Boolean ): State = {
       set(id, bs => bs.copy(ewVul = ewVul))
     }
-    def toggleNSVul( id: Int ) = {
+    def toggleNSVul( id: Int ): State = {
       set(id, bs => bs.copy(nsVul = !bs.nsVul))
     }
-    def toggleEWVul( id: Int ) = {
+    def toggleEWVul( id: Int ): State = {
       set(id, bs => bs.copy(ewVul = !bs.ewVul))
     }
 
-    def isValid() = {
+    def isValid(): Boolean = {
       boardset.flatMap { bs =>
         if (bs.name != null && bs.name != "") {
           if (bs.short != null && bs.short != "") {
@@ -171,12 +172,13 @@ object PageEditBoardSetInternal {
       }.isDefined
     }
 
-    def setMsg( msg: String ) = copy( msg = Some(msg))
-    def setMsg( msg: TagMod ) = copy( msg = Some(msg))
-    def clearMsg() = copy( msg = None )
+    def setMsg( msg: String ): State = copy( msg = Some(msg))
+    def setMsg( msg: TagMod ): State = copy( msg = Some(msg))
+    def clearMsg(): State = copy( msg = None )
   }
 
 
+  private[boardsets]
   val BoardHeader = ScalaComponent.builder[Props]("PageEditBoardSet.BoardHeader")
                     .render_P( props => {
                       <.thead(
@@ -200,6 +202,7 @@ object PageEditBoardSetInternal {
   // prop._3 is setDealer( boardId: String, dealerPos: String ) => Callback
   // prop._4 is toggleNSVul( boardId: String ) => Callback
   // prop._5 is toggleEWVul( boardId: String ) => Callback
+  private[boardsets]
   val BoardRow = ScalaComponent.builder[(Props,BoardInSet,(Int,String)=>Callback,Int=>Callback,Int=>Callback)]("PageEditBoardSet.BoardRow")
                     .render_P( args => {
                       val (props,board,setDealerCB,toggleNSVul,toggleEWVul) = args
@@ -249,12 +252,12 @@ object PageEditBoardSetInternal {
       }
     }
 
-    def setDealer( boardId: Int, dealerPos: String ) = scope.modState( s => s.setDealer(boardId, dealerPos))
+    def setDealer( boardId: Int, dealerPos: String ): Callback = scope.modState( s => s.setDealer(boardId, dealerPos))
 
-    def toggleNSVul( boardId: Int ) = scope.modState( s => s.toggleNSVul(boardId))
-    def toggleEWVul( boardId: Int ) = scope.modState( s => s.toggleEWVul(boardId))
+    def toggleNSVul( boardId: Int ): Callback = scope.modState( s => s.toggleNSVul(boardId))
+    def toggleEWVul( boardId: Int ): Callback = scope.modState( s => s.toggleEWVul(boardId))
 
-    val clickOk = scope.modState(
+    val clickOk: Callback = scope.modState(
       { s =>
         s.setMsg( s.boardSetId.map(i=>s"Updating boardset $i").getOrElse("Creating new boardset"))
       },
@@ -289,11 +292,11 @@ object PageEditBoardSetInternal {
       }
     )
 
-    val popupCancel = Callback {
+    val popupCancel: Callback = Callback {
 
     } >> scope.modState( s => s.clearMsg())
 
-    def render( props: Props, state: State ) = {
+    def render( props: Props, state: State ) = { // scalafix:ok ExplicitResultTypes; React
       import DuplicateStyles._
       val columns = if (state.nboards <= 10) 1 else if (state.nboards <= 20) 2 else 3
       val boardset = state.getBoardSet
@@ -408,7 +411,7 @@ object PageEditBoardSetInternal {
 
     def forceUpdate = scope.withEffectsImpure.forceUpdate
 
-    val storeCallback = scope.modStateOption { (state,props) =>
+    val storeCallback: Callback = scope.modStateOption { (state,props) =>
       props.page match {
         case bsev: BoardSetEditView =>
           val display = bsev.display
@@ -424,7 +427,7 @@ object PageEditBoardSetInternal {
       }
     }
 
-    val didMount = scope.modStateOption { (state,props) =>
+    val didMount: Callback = scope.modStateOption { (state,props) =>
       logger.info("PageEditBoardSet.didMount")
       BoardSetStore.addChangeListener(storeCallback)
       props.page match {
@@ -436,14 +439,14 @@ object PageEditBoardSetInternal {
       None
     }
 
-    val willUnmount = Callback {
+    val willUnmount: Callback = Callback {
       logger.info("PageEditBoardSet.willUnmount")
       BoardSetStore.removeChangeListener(storeCallback)
     }
 
   }
 
-  def didUpdate( cdu: ComponentDidUpdate[Props,State,Backend,Unit] ) = cdu.modStateOption { state =>
+  def didUpdate( cdu: ComponentDidUpdate[Props,State,Backend,Unit] ): Callback = cdu.modStateOption { state =>
     val props = cdu.currentProps
     val prevProps = cdu.prevProps
     if (props.page != prevProps.page) {
@@ -460,6 +463,7 @@ object PageEditBoardSetInternal {
     }
   }
 
+  private[boardsets]
   val component = ScalaComponent.builder[Props]("PageEditBoardSet")
                             .initialStateFromProps { props =>
                               props.page match {

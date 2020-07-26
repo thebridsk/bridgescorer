@@ -12,17 +12,17 @@ class Difference(
       same: Int = same,
       changes: Int = changes,
       differences: List[String] = differences
-  ) = {
+  ): Difference = {
     new Difference(same, changes, differences)
   }
 
-  def percentSame = {
+  def percentSame: Double = {
     val sum = same + changes
     if (sum == 0) 0
     else same * 100.0 / sum
   }
 
-  def add(v: Difference) = {
+  def add(v: Difference): Difference = {
     copy(
       same = same + v.same,
       changes = changes + v.changes,
@@ -30,13 +30,13 @@ class Difference(
     )
   }
 
-  def incChange(diff: String) =
+  def incChange(diff: String): Difference =
     copy(changes = changes + 1, differences = diff :: differences)
-  def incSame = copy(same = same + 1)
+  def incSame: Difference = copy(same = same + 1)
 
-  def withChanges(change: Int) = copy(changes = change)
+  def withChanges(change: Int): Difference = copy(changes = change)
 
-  override def toString() = {
+  override def toString(): String = {
     s"""Difference(same=$same,changes=$changes,%=${percentSame},differences=${differences
       .mkString("[", ",", "]")}"""
   }
@@ -56,18 +56,18 @@ object Difference {
       same: Int = 0,
       changes: Int = 0,
       differences: List[String] = List()
-  ) = {
+  ): Difference = {
     new Difference(same, changes, differences)
   }
 
-  def unapply(v: Difference) = (v.same, v.changes, v.differences)
+  def unapply(v: Difference): (Int, Int, List[String]) = (v.same, v.changes, v.differences)
 
-  def compare[T](me: T, other: T, diff: String) = {
+  def compare[T](me: T, other: T, diff: String): Difference = {
     if (me == other) SameDifference
     else new ChangeDifference(diff)
   }
 
-  def fold(v: Difference*) = {
+  def fold(v: Difference*): Difference = {
     v.foldLeft(Difference())((ac, v) => ac.add(v))
   }
 
@@ -85,7 +85,7 @@ object Difference {
   )(
       implicit
       ordering: Ordering[I]
-  ) = {
+  ): Difference = {
     import ordering._
     val sortedMe = me.sortWith((m, o) => m.id < o.id)
     val sortedOther = other.sortWith((m, o) => m.id < o.id)
@@ -148,7 +148,7 @@ object DifferenceWrappers {
 
     def id = me.id
 
-    def differenceW(prefix: String, other: WrapTeam) =
+    def differenceW(prefix: String, other: WrapTeam): Difference =
       difference(prefix, other.me)
 
     def difference(prefix: String, other: Team): Difference = {
@@ -169,7 +169,7 @@ object DifferenceWrappers {
 
     def id = me.id
 
-    def differenceW(prefix: String, other: WrapHand) =
+    def differenceW(prefix: String, other: WrapHand): Difference =
       difference(prefix, other.me)
 
     def difference(prefix: String, other: Hand): Difference = {
@@ -203,7 +203,7 @@ object DifferenceWrappers {
 
     def id = me.id
 
-    def differenceW(prefix: String, other: WrapDupHand) =
+    def differenceW(prefix: String, other: WrapDupHand): Difference =
       difference(prefix, other.me)
 
     def difference(prefix: String, other: DuplicateHand): Difference = {
@@ -233,7 +233,7 @@ object DifferenceWrappers {
 
     def id = me.id
 
-    def differenceW(prefix: String, other: WrapBoard) =
+    def differenceW(prefix: String, other: WrapBoard): Difference =
       difference(prefix, other.me)
 
     def difference(prefix: String, other: Board): Difference = {
@@ -264,7 +264,7 @@ object DifferenceWrappers {
 
     def id = me.id
 
-    def differenceW(prefix: String, other: WrapMatchDuplicate) =
+    def differenceW(prefix: String, other: WrapMatchDuplicate): Difference =
       difference(prefix, other.me)
 
     def difference(prefix: String, other: MatchDuplicate): Difference = {
@@ -299,7 +299,7 @@ object DifferenceWrappers {
 
     def id = me.id
 
-    def differenceW(prefix: String, other: WrapDuplicateSummaryEntry) =
+    def differenceW(prefix: String, other: WrapDuplicateSummaryEntry): Difference =
       difference(prefix, other.me)
 
     def difference(prefix: String, other: DuplicateSummaryEntry): Difference = {
@@ -323,7 +323,7 @@ object DifferenceWrappers {
 
     def id = me.id
 
-    def differenceW(prefix: String, other: WrapMatchDuplicateDuplicateResult) =
+    def differenceW(prefix: String, other: WrapMatchDuplicateDuplicateResult): Difference =
       difference(prefix, other.me)
 
     def difference(prefix: String, other: MatchDuplicateResult): Difference = {
@@ -359,7 +359,7 @@ object DifferenceWrappers {
 
     def id = me.id
 
-    def differenceW(prefix: String, other: WrapChicagoRound) =
+    def differenceW(prefix: String, other: WrapChicagoRound): Difference =
       difference(prefix, other.me)
 
     def difference(prefix: String, other: Round): Difference = {
@@ -391,7 +391,7 @@ object DifferenceWrappers {
 
     def id = me.id
 
-    def differenceW(prefix: String, other: WrapMatchChicago) =
+    def differenceW(prefix: String, other: WrapMatchChicago): Difference =
       difference(prefix, other.me)
 
     def difference(prefix: String, other: MatchChicago): Difference = {
@@ -426,7 +426,7 @@ object DifferenceWrappers {
 
     def id = me.id
 
-    def differenceW(prefix: String, other: WrapRubberHand) =
+    def differenceW(prefix: String, other: WrapRubberHand): Difference =
       difference(prefix, other.me)
 
     def difference(prefix: String, other: RubberHand): Difference = {
@@ -451,7 +451,7 @@ object DifferenceWrappers {
 
     def id = me.id
 
-    def differenceW(prefix: String, other: WrapMatchRubber) =
+    def differenceW(prefix: String, other: WrapMatchRubber): Difference =
       difference(prefix, other.me)
 
     def difference(prefix: String, other: MatchRubber): Difference = {

@@ -8,7 +8,7 @@ import scala.scalajs.js.annotation._
 
 class Style(styles: (String, js.Dictionary[js.Any])*) {
 
-  def asJS = {
+  def asJS: js.Dictionary[js.Dictionary[js.Any]] = {
     val r = js.Dictionary[js.Dictionary[js.Any]](styles: _*)
     r
   }
@@ -18,7 +18,7 @@ object Style {
 
 //  private val log = Logger("bridge.mui.Style")
 
-  def apply(styles: (String, js.Dictionary[js.Any])*) = {
+  def apply(styles: (String, js.Dictionary[js.Any])*): Style = {
     new Style(styles: _*)
   }
 
@@ -43,7 +43,7 @@ object Style {
       options: js.Object = js.Object()
   )(
       child: js.Object => CtorType.ChildArg
-  ) = {
+  ): VdomNode = {
 //    val p = js.Dynamic.literal()
 //    p.updateDynamic("styles")(styles.asJS)
 //    p.updateDynamic("options")(options)

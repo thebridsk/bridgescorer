@@ -22,7 +22,7 @@ trait FullscreenAddOn[+T <: Page[T]] {
     }
   }
 
-  def clickFullscreen(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
+  def clickFullscreen(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position): T = {
     clickButton("Fullscreen")
     this.asInstanceOf[T]
   }

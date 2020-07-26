@@ -9,7 +9,7 @@ trait StoreListener {
 }
 
 object StoreListenerManager {
-  val log = Logger[StoreListenerManager]()
+  val log: Logger = Logger[StoreListenerManager]()
 }
 
 import StoreListenerManager._

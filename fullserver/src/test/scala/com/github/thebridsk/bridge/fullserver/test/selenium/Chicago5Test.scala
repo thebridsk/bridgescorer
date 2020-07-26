@@ -37,7 +37,7 @@ object Chicago5Test {
   val playerW = "Wayne"
   val playerO = "Brian"
 
-  val allPlayers = playerN::playerS::playerE::playerW::playerO::Nil
+  val allPlayers: List[String] = playerN::playerS::playerE::playerW::playerO::Nil
 }
 
 /**
@@ -56,7 +56,7 @@ class Chicago5Test extends AnyFlatSpec
 
   import Chicago5Test._
 
-  val log = Logger[Chicago5Test]()
+  val log: Logger = Logger[Chicago5Test]()
 
   TestStartLogging.startLogging()
 
@@ -69,16 +69,16 @@ class Chicago5Test extends AnyFlatSpec
 
   val backend = TestServer.backend
 
-  implicit val itimeout = PatienceConfig(timeout=scaled(Span(timeoutMillis, Millis)), interval=scaled(Span(intervalMillis,Millis)))
+  implicit val itimeout: PatienceConfig = PatienceConfig(timeout=scaled(Span(timeoutMillis, Millis)), interval=scaled(Span(intervalMillis,Millis)))
 
   val newChicagoButtonId = "Chicago2"
   val chicagoListURL: Option[String] = None
   val chicagoToListId: Option[String] = Some("Quit")
 
-  implicit val timeoutduration = Duration( 60, TimeUnit.SECONDS )
+  implicit val timeoutduration: FiniteDuration = Duration( 60, TimeUnit.SECONDS )
 
   override
-  def beforeAll() = {
+  def beforeAll(): Unit = {
     import com.github.thebridsk.bridge.server.test.util.ParallelUtils._
 
     MonitorTCP.nextTest()
@@ -96,7 +96,7 @@ class Chicago5Test extends AnyFlatSpec
   }
 
   override
-  def afterAll() = {
+  def afterAll(): Unit = {
     import com.github.thebridsk.bridge.server.test.util.ParallelUtils._
 
     waitForFuturesIgnoreTimeouts("Stopping a browser or server",
@@ -187,7 +187,7 @@ class Chicago5Test extends AnyFlatSpec
 
   }
 
-  def checkTotalScores( sp: SummaryPage, scores: Int* ) = {
+  def checkTotalScores( sp: SummaryPage, scores: Int* ): SummaryPage = {
     sp.checkTotalsScore(allPlayers,scores.map(_.toString).toList)
   }
 

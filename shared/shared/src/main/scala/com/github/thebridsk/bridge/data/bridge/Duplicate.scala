@@ -38,13 +38,13 @@ object DuplicateBridge {
         if (isGame) if (isDeclarerVulnerable) 500; else 300; else 50;
       else 0;
 
-    val score = {
+    val score: DuplicateScore = {
       val nsscore = (above + below + gameBonus) * (if (nsScored) 1; else -1)
       val ewscore = -nsscore
       DuplicateScore(nsscore, ewscore)
     }
 
-    val explainList = explainBelow ::: explainAbove ::: (gameBonus match {
+    val explainList: List[String] = explainBelow ::: explainAbove ::: (gameBonus match {
       case 0 =>
         Nil
       case 50 =>
@@ -53,9 +53,9 @@ object DuplicateBridge {
         "Game " + gameBonus :: Nil
     })
 
-    override def explain = explainList.mkString(", ")
+    override def explain: String = explainList.mkString(", ")
 
-    override def totalScore =
+    override def totalScore: String =
       if (score.ns >= 0) "NS " + score.ns; else "EW " + score.ew
 
     override def totalScore(
@@ -63,7 +63,7 @@ object DuplicateBridge {
         south: String,
         east: String,
         west: String
-    ) = {
+    ): String = {
       if (score.ns == 0) "0"
       else if (score.ns >= 0) s"NS ${score.ns} $north-$south"
       else s"EW ${score.ew} $east-$west"
@@ -74,7 +74,7 @@ object DuplicateBridge {
         south: String,
         east: String,
         west: String
-    ) = {
+    ): String = {
       if (score.ns == 0) "0"
       else if (score.ns >= 0) s"${score.ns} $north-$south"
       else s"${score.ew} $east-$west"
@@ -92,7 +92,7 @@ object DuplicateBridge {
         ewvul: Vulnerability,
         madeContract: MadeOrDown,
         tricks: Int
-    ) = {
+    ): ScoreHand = {
       new ScoreHand(
         id,
         contractTricks,
@@ -106,7 +106,7 @@ object DuplicateBridge {
       )
     }
 
-    def apply(hand: BridgeHand) = {
+    def apply(hand: BridgeHand): ScoreHand = {
       new ScoreHand(
         hand.id,
         hand.contractTricks,
@@ -120,7 +120,7 @@ object DuplicateBridge {
       )
     }
 
-    def apply(hand: Hand) = {
+    def apply(hand: Hand): ScoreHand = {
       new ScoreHand(
         hand.id,
         ContractTricks(hand.contractTricks),
@@ -136,7 +136,7 @@ object DuplicateBridge {
 
   }
 
-  implicit def handToScoreHand(hand: Hand) = ScoreHand(hand)
-  implicit def scoreHandToHand(hand: ScoreHand) = hand.asHand()
+  implicit def handToScoreHand(hand: Hand): ScoreHand = ScoreHand(hand)
+  implicit def scoreHandToHand(hand: ScoreHand): Hand = hand.asHand()
 
 }

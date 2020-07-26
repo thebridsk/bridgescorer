@@ -106,7 +106,7 @@ class TestColor extends AnyFlatSpec with Matchers  {
     orangergb.toNamedColor mustBe NamedColor("orange")
   }
 
-  def testRgbHslRgb( rgb: RGBColor ) = {
+  def testRgbHslRgb( rgb: RGBColor ): Unit = {
     val hsl = rgb.toRGBPercentColor
     val back = hsl.toRGBColor
 
@@ -117,7 +117,7 @@ class TestColor extends AnyFlatSpec with Matchers  {
     }
   }
 
-  def testRgbPerRgb( rgb: RGBColor ) = {
+  def testRgbPerRgb( rgb: RGBColor ): Unit = {
     val per = rgb.toRGBPercentColor
     val back = per.toRGBColor
 
@@ -128,7 +128,7 @@ class TestColor extends AnyFlatSpec with Matchers  {
     }
   }
 
-  def testRgbHslPerRgb( rgb: RGBColor ) = {
+  def testRgbHslPerRgb( rgb: RGBColor ): Unit = {
     val hsl = rgb.toHSLColor
     val per = hsl.toRGBPercentColor
     val back = per.toRGBColor
@@ -140,7 +140,7 @@ class TestColor extends AnyFlatSpec with Matchers  {
     }
   }
 
-  def testRgbPerHslRgb( rgb: RGBColor ) = {
+  def testRgbPerHslRgb( rgb: RGBColor ): Unit = {
     val per = rgb.toRGBPercentColor
     val hsl = per.toHSLColor
     val back = hsl.toRGBColor

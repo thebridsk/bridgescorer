@@ -30,12 +30,13 @@ import com.github.thebridsk.bridge.data.BoardSet
 import com.github.thebridsk.bridge.data.Movement
 import scala.concurrent.Future
 import com.github.thebridsk.bridge.server.backend.resource.Result
+import akka.http.scaladsl.server.{ RequestContext, Route, RouteResult }
 
 object RestDuplicateResult {
   implicit class OrdFoo(val x: MatchDuplicateResult)
       extends AnyVal
       with Ordered[MatchDuplicateResult] {
-    def compare(that: MatchDuplicateResult) = that.id.compare(x.id)
+    def compare(that: MatchDuplicateResult): Int = that.id.compare(x.id)
   }
 }
 
@@ -66,7 +67,7 @@ trait RestDuplicateResult extends HasActorSystem {
 
   import UtilsPlayJson._
 
-  def sort(a: Array[MatchDuplicateResult]) = {
+  def sort(a: Array[MatchDuplicateResult]): Array[MatchDuplicateResult] = {
 
     Sorting.quickSort(a)
     a
@@ -75,7 +76,7 @@ trait RestDuplicateResult extends HasActorSystem {
   /**
     * spray route for all the methods on this resource
     */
-  val route = pathPrefix(resName) {
+  val route: Route = pathPrefix(resName) {
 //    logRequest("route", DebugLevel) {
     getDuplicateResult ~ getDuplicateResults ~ postDuplicateResult ~ putDuplicateResult ~ deleteDuplicateResult
 //      }
@@ -104,8 +105,8 @@ trait RestDuplicateResult extends HasActorSystem {
       )
     )
   )
-  def xxxgetDuplicateResults() = {}
-  val getDuplicateResults = pathEnd {
+  def xxxgetDuplicateResults(): Unit = {}
+  val getDuplicateResults: Route = pathEnd {
     get {
       resourceMap(store.readAll())
     }
@@ -160,8 +161,8 @@ trait RestDuplicateResult extends HasActorSystem {
       )
     )
   )
-  def xxxgetDuplicateResult() = {}
-  val getDuplicateResult =
+  def xxxgetDuplicateResult(): Unit = {}
+  val getDuplicateResult: Route =
     logRequest("RestDuplicateResult.getDuplicateResult", DebugLevel) {
       logResult("RestDuplicateResult.postDuplicateResult") {
         get {
@@ -263,8 +264,8 @@ trait RestDuplicateResult extends HasActorSystem {
       )
     )
   )
-  def xxxpostDuplicateResult() = {}
-  val postDuplicateResult =
+  def xxxpostDuplicateResult(): Unit = {}
+  val postDuplicateResult: Route =
     logRequest("RestDuplicateResult.postDuplicateResult") {
       logResult("RestDuplicateResult.postDuplicateResult") {
         pathEnd {
@@ -361,8 +362,8 @@ trait RestDuplicateResult extends HasActorSystem {
       )
     )
   )
-  def xxxputDuplicateResult() = {}
-  val putDuplicateResult =
+  def xxxputDuplicateResult(): Unit = {}
+  val putDuplicateResult: Route =
     logRequest("RestDuplicateResult.putDuplicateResult") {
       logResult("RestDuplicateResult.putDuplicateResult") {
         path("""[a-zA-Z0-9]+""".r) { sid =>
@@ -407,8 +408,8 @@ trait RestDuplicateResult extends HasActorSystem {
       )
     )
   )
-  def xxxdeleteDuplicateResult() = {}
-  val deleteDuplicateResult = path("""[a-zA-Z0-9]+""".r) { sid =>
+  def xxxdeleteDuplicateResult(): Unit = {}
+  val deleteDuplicateResult: RequestContext => Future[RouteResult] = path("""[a-zA-Z0-9]+""".r) { sid =>
     val id = MatchDuplicateResult.id(sid)
     delete {
       resourceDelete(store.select(id).delete())

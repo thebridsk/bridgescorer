@@ -29,9 +29,10 @@ import scala.util.Success
 import scala.util.Failure
 import com.github.thebridsk.bridge.data.websocket.Protocol
 import com.github.thebridsk.bridge.clientcommon.demo.BridgeDemo
+import com.github.thebridsk.bridge.clientcommon.rest2.Result
 
 object RubberController {
-  val logger = Logger("bridge.RubberController")
+  val logger: Logger = Logger("bridge.RubberController")
 
   class CreateResultMatchRubber(
                                 ajaxResult: AjaxResult[WrapperXMLHttpRequest],
@@ -58,7 +59,7 @@ object RubberController {
 
   private var currentId = 0
 
-  def createMatch() = {
+  def createMatch(): Result[MatchRubber] = {
     AjaxResult.isEnabled.orElse(Some(true)).map( e => e && !BridgeDemo.isDemo ) match {
       case Some(true) | None =>
         // enabled - Some(true)
@@ -77,13 +78,13 @@ object RubberController {
     }
   }
 
-  def showMatch( rub: MatchRubber ) = {
+  def showMatch( rub: MatchRubber ): Unit = {
     RubberStore.start(rub.id, Some(rub))
     logger.fine("calling callback with "+rub.id)
     BridgeDispatcher.updateRubber(rub)
   }
 
-  def ensureMatch( rubid: MatchRubber.Id ) = {
+  def ensureMatch( rubid: MatchRubber.Id ): Result[MatchRubber] = {
     if (!RubberStore.isMonitoredId(rubid)) {
       val result = RestClientRubber.get(rubid).recordFailure()
       result.foreach( created => {
@@ -96,12 +97,12 @@ object RubberController {
     }
   }
 
-  def updateMatch( rub: MatchRubber ) = {
+  def updateMatch( rub: MatchRubber ): Unit = {
     logger.info("dispatrubng an update to MatchRubber "+rub.id )
     BridgeDispatcher.updateRubber(rub, Some(updateServer))
   }
 
-  def updateServer( rub: MatchRubber ) = {
+  def updateServer( rub: MatchRubber ): Unit = {
     if (!BridgeDemo.isDemo) {
       RestClientRubber.update(rub.id, rub).recordFailure().foreach( updated => {
         logger.fine("PageRubber: Updated rubber game: "+rub.id)
@@ -113,11 +114,11 @@ object RubberController {
     }
   }
 
-  def updateRubberNames( rubid: MatchRubber.Id, north: String, south: String, east: String, west: String, firstDealer: PlayerPosition ) = {
+  def updateRubberNames( rubid: MatchRubber.Id, north: String, south: String, east: String, west: String, firstDealer: PlayerPosition ): Unit = {
     BridgeDispatcher.updateRubberNames(rubid, north, south, east, west, firstDealer, Some(updateServer))
   }
 
-  def updateRubberHand( rubid: MatchRubber.Id, handid: String, hand: RubberHand ) = {
+  def updateRubberHand( rubid: MatchRubber.Id, handid: String, hand: RubberHand ): Unit = {
     BridgeDispatcher.updateRubberHand(rubid, handid, hand, Some( updateServer ))
   }
 
@@ -220,7 +221,7 @@ object RubberController {
     }
   }
 
-  def deleteRubber( id: MatchRubber.Id) = {
+  def deleteRubber( id: MatchRubber.Id): Any = {
     BridgeDispatcher.deleteRubber(id)
     if (!BridgeDemo.isDemo) RestClientRubber.delete(id).recordFailure()
   }
@@ -229,7 +230,7 @@ object RubberController {
 
   private var useSSEFromServer: Boolean = true;
 
-  def setUseSSEFromServer( b: Boolean ) = {
+  def setUseSSEFromServer( b: Boolean ): Unit = {
     if (b != useSSEFromServer) {
       useSSEFromServer = b
       setServerEventConnection()
@@ -243,12 +244,12 @@ object RubberController {
   }
 
   object Listener extends SECListener[MatchRubber.Id] {
-    def handleStart( rubid: MatchRubber.Id) = {
+    def handleStart( rubid: MatchRubber.Id): Unit = {
     }
-    def handleStop( rubid: MatchRubber.Id) = {
+    def handleStop( rubid: MatchRubber.Id): Unit = {
     }
 
-    def processMessage( msg: Protocol.ToBrowserMessage ) = {
+    def processMessage( msg: Protocol.ToBrowserMessage ): Unit = {
       msg match {
         case Protocol.MonitorJoined(id,members) =>
         case Protocol.MonitorLeft(id,members) =>
@@ -297,7 +298,7 @@ object RubberController {
   /**
    * Stop monitoring a duplicate match
    */
-  def delayStop() = {
+  def delayStop(): Unit = {
     logger.fine(s"Controller.delayStop ${RubberStore.getMonitoredId}")
     sseConnection.delayStop()
   }
@@ -305,7 +306,7 @@ object RubberController {
   /**
    * Stop monitoring a duplicate match
    */
-  def stop() = {
+  def stop(): Unit = {
     logger.fine(s"Controller.stop ${RubberStore.getMonitoredId}")
     sseConnection.stop()
   }

@@ -16,7 +16,7 @@ import com.github.thebridsk.utilities.logging.Logger
 import com.github.thebridsk.bridge.client.test.utils.JQuery
 
 object ReactForJQuery {
-  val log = Logger("bridge.ReactForJQuery")
+  val log: Logger = Logger("bridge.ReactForJQuery")
 }
 
 /**
@@ -27,14 +27,14 @@ class ReactForJQuery( val component: Element ) {
 
   private var jqueryComponentInternal: JQuery = null
 
-  def jqueryComponent = {
+  def jqueryComponent: JQuery = {
 //    if (jqueryComponentInternal == null)
     val e = component
       jqueryComponentInternal = JQuery(e)
     jqueryComponentInternal
   }
 
-  def jquery( selector: String ) = {
+  def jquery( selector: String ): JQuery = {
     jqueryComponent.find(selector)
   }
 
@@ -137,28 +137,28 @@ class ReactForJQuery( val component: Element ) {
     r
   }
 
-  def findTagById( tag: String, id: String ) = {
+  def findTagById( tag: String, id: String ): Element = {
     val r = jquery( tag+"#"+id )
     assert( r.length == 1, "Did not find only one element named "+tag+" with id "+id)
     r(0)
   }
 
-  def isElementDisabled( e: Element ) = {
+  def isElementDisabled( e: Element ): Boolean = {
     e.hasAttribute("disabled") && e.getAttribute("disabled") == "true"
   }
 
-  def isDisabledTagById( tag: String, id: String ) = {
+  def isDisabledTagById( tag: String, id: String ): Boolean = {
     val c = findTagById(tag, id)
     isElementDisabled(c)
   }
 
-  def clickTagById( tag: String, id: String ) = {
+  def clickTagById( tag: String, id: String ): Unit = {
     val c = findTagById(tag, id)
     assertFalse(isElementDisabled(c), "Tag "+tag+" with id "+id+" is disabled")
     Simulation.click run c
   }
 
-  def setInputFieldById( id: String, value: String ) = {
+  def setInputFieldById( id: String, value: String ): Unit = {
     val c = findTagById("input", id)
     val i = c.asInstanceOf[HTMLInputElement]
     assertFalse(isElementDisabled(c), "Tag input with id "+id+" is disabled")
@@ -166,19 +166,19 @@ class ReactForJQuery( val component: Element ) {
     SimEvent.Change(value) simulate c
   }
 
-  def findTagByName( tag: String, name: String ) = {
+  def findTagByName( tag: String, name: String ): Element = {
     val r = jquery( tag+"[name="+name+"]" )
     assert( r.length == 1, "Did not find only one element named "+tag+" with name "+name)
     r(0)
   }
 
-  def clickTagByName( tag: String, name: String ) = {
+  def clickTagByName( tag: String, name: String ): Unit = {
     val c = findTagByName(tag, name)
     assertFalse(isElementDisabled(c), "Tag "+tag+" with name "+name+" is disabled")
     Simulation.click run c
   }
 
-  def setInputFieldByName( name: String, value: String ) = {
+  def setInputFieldByName( name: String, value: String ): Unit = {
     val c = findTagByName("input", name)
     val n = c
     val i = n.asInstanceOf[HTMLInputElement]
@@ -187,19 +187,19 @@ class ReactForJQuery( val component: Element ) {
     SimEvent.Change(value) simulate c
   }
 
-  def isComponent(id: String)(c: Element) = {
+  def isComponent(id: String)(c: Element): Boolean = {
       c.hasOwnProperty("id") && c.id == id
   }
 
-  def isComponentName(name: String)(c: Element) = {
+  def isComponentName(name: String)(c: Element): Boolean = {
       c.hasAttribute("name") && c.getAttribute("name") == name
   }
 
-  def isComponentTag(name: String)(c: Element) = {
+  def isComponentTag(name: String)(c: Element): Boolean = {
       c.nodeName == name
   }
 
-  def findAllById( id: String ) = {
+  def findAllById( id: String ): Array[HTMLElement] = {
 //    ReactTestUtils.findAllInRenderedTree(component, isComponent(id) _)
     val r = jquery( "#"+id )
 
@@ -210,7 +210,7 @@ class ReactForJQuery( val component: Element ) {
     z
   }
 
-  def findAllByName( name: String ) = {
+  def findAllByName( name: String ): Array[HTMLElement] = {
     show(component, "looking for "+name)
 //    ReactTestUtils.findAllInRenderedTree(component, isComponentName(name) _)
     val r = jquery( "*[name="+name+"]" )
@@ -222,7 +222,7 @@ class ReactForJQuery( val component: Element ) {
     z
   }
 
-  def findAllByTag( name: String ) = {
+  def findAllByTag( name: String ): Array[HTMLElement] = {
     show( component, "looking for "+name)
 //    ReactTestUtils.findAllInRenderedTree(component, isComponentTag(name) _)
     val r = jquery( name )
@@ -234,7 +234,7 @@ class ReactForJQuery( val component: Element ) {
     z
   }
 
-  def clickById( id: String ) = {
+  def clickById( id: String ): Unit = {
     val comps = findAllById(id)
     if (comps.length == 0) fail("Did not find element with id "+id+" to click")
     if (comps.length > 1) fail("Find multiple elements with id "+id+" to click")
@@ -263,7 +263,7 @@ class ReactForJQuery( val component: Element ) {
     def name: String
     def components: Array[HTMLElement]
 
-    def click = {
+    def click: Unit = {
       val comps = components
       if (comps.length == 0) fail("Did not find element with "+name+" to click")
       else if (comps.length > 1) {
@@ -282,7 +282,7 @@ class ReactForJQuery( val component: Element ) {
       Simulation.click run b
     }
 
-    def findElement = {
+    def findElement: Some[HTMLElement] = {
       val comps = components
       var i = 0
       if (comps.length == 0) {
@@ -312,13 +312,13 @@ class ReactForJQuery( val component: Element ) {
       Some(c) //(n.asInstanceOf[HTMLElement])
     }
 
-    def findField = findElement.get.asInstanceOf[HTMLInputElement]
+    def findField: HTMLInputElement = findElement.get.asInstanceOf[HTMLInputElement]
 
-    def getField = {
+    def getField: String = {
       findField.value
     }
 
-    def setField( v: String ) = {
+    def setField( v: String ): Unit = {
       val f = findField
       f.value = v
       val dis = isElementDisabled(f)
@@ -345,7 +345,7 @@ class ReactForJQuery( val component: Element ) {
   }
 
   object click {
-    def on( element: WebElement ) = {
+    def on( element: WebElement ): Unit = {
       element.click
     }
   }
@@ -363,7 +363,7 @@ class ReactForJQuery( val component: Element ) {
   class MyElement( e: HTMLElement ) {
     def text = e.textContent
 
-    def isEnabled = !isElementDisabled(e)
+    def isEnabled: Boolean = !isElementDisabled(e)
   }
 
   def find( query: String ): Option[MyElement] = {
@@ -393,8 +393,8 @@ class ReactForJQuery( val component: Element ) {
    *
    */
   class MustMatcher[A]( left: A ) {
-    def mustBe(right: A) = if (left != right) fail("Left "+left+" does not equal right "+right)
+    def mustBe(right: A): Unit = if (left != right) fail("Left "+left+" does not equal right "+right)
   }
-  implicit def toMustMatchers[A](left: A) = new MustMatcher(left)
+  implicit def toMustMatchers[A](left: A): MustMatcher[A] = new MustMatcher(left)
 
 }

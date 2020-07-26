@@ -5,9 +5,10 @@ import org.scalatest.matchers.must.Matchers
 import akka.http.scaladsl.testkit.ScalatestRouteTest
 import akka.http.scaladsl.server.Directives
 import akka.http.scaladsl.model.HttpResponse
+import akka.http.scaladsl.server.StandardRoute
 
 abstract class RoutingSpec extends AnyFlatSpec with ScalatestRouteTest with Matchers with Directives {
 
-  val Ok = HttpResponse()
-  val completeOk = complete(Ok)
+  val Ok: HttpResponse = HttpResponse()
+  val completeOk: StandardRoute = complete(Ok)
 }

@@ -6,15 +6,16 @@ import java.io.PrintWriter
 import org.scalactic.source.Position
 import com.github.thebridsk.source._
 import org.scalajs.dom.raw.Event
+import org.scalajs.dom
 
 trait Alerter {
 
   val log: Logger
 
-  def isAlertToConsoleEnabled = log.isFineLoggable()
-  def isThrowEnabled = log.isFinestLoggable()
+  def isAlertToConsoleEnabled: Boolean = log.isFineLoggable()
+  def isThrowEnabled: Boolean = log.isFinestLoggable()
 
-  def tryit[T]( f: => T )( implicit pos: Position ) = {
+  def tryit[T]( f: => T )( implicit pos: Position ): T = {
     try {
       f
     } catch {
@@ -26,7 +27,7 @@ trait Alerter {
     }
   }
 
-  def maybeThrow( x: Throwable ) = {
+  def maybeThrow( x: Throwable ): Unit = {
     if (isThrowEnabled) throw x
   }
 
@@ -57,23 +58,23 @@ trait Alerter {
 
   def tryitfun[A]( f: A=>Unit )( implicit pos: Position ): A=>Unit = (a:A)=> tryitWithUnit { f(a) }
 
-  def tryitfunr[A,R]( defaultValue: => R)( f: A=>R )( implicit pos: Position ) = (a:A)=> {
+  def tryitfunr[A,R]( defaultValue: => R)( f: A=>R )( implicit pos: Position ): A => R = (a:A)=> {
     tryitWithDefault[R](defaultValue) { f(a) }
   }
 
-  def tryit[A,R]( f: A=>R )( implicit pos: Position ) = (a:A)=> {
+  def tryit[A,R]( f: A=>R )( implicit pos: Position ): A => R = (a:A)=> {
     tryit[R] { f(a) }
   }
 
-  def tryAlert( msg: String )( implicit pos: Position ) = {
+  def tryAlert( msg: String )( implicit pos: Position ): Unit = {
     if (isAlertToConsoleEnabled) alert( s"Alerter(${pos.line}): msg" )
   }
 
-  def tryAlert( msg: String, ex: Throwable )( implicit pos: Position ) = {
+  def tryAlert( msg: String, ex: Throwable )( implicit pos: Position ): Unit = {
     if (isAlertToConsoleEnabled) alert( s"Alerter(${pos.line}): ${msg}\n${exceptionToString(ex)}" )
   }
 
-  def exceptionToString( ex: Throwable ) = {
+  def exceptionToString( ex: Throwable ): String = {
     val sw = new StringWriter
     val pw = new PrintWriter(sw)
     pw.append(ex.getClass.getName).append(": ")
@@ -82,15 +83,14 @@ trait Alerter {
     sw.toString()
   }
 
-  def alert( msg: String ) = {
-    import org.scalajs.dom
-    dom.window.alert( msg )
+  def alert( msg: String ): Unit = {
+        dom.window.alert( msg )
   }
 }
 
 object Alerter extends Alerter {
 
-  lazy val log = Logger("bridge.logger.Alerter")
+  lazy val log: Logger = Logger("bridge.logger.Alerter")
 
 
   /**
@@ -121,7 +121,7 @@ object Alerter extends Alerter {
     false
   }
 
-  def setupError() = {
+  def setupError(): Unit = {
     val window = org.scalajs.dom.window
 //    val window = org.scalajs.dom.document.defaultView
     window.onerror = onError5
@@ -131,5 +131,5 @@ object Alerter extends Alerter {
 
 object CommAlerter extends Alerter {
 
-  lazy val log = Logger("comm.logger.Alerter")
+  lazy val log: Logger = Logger("comm.logger.Alerter")
 }

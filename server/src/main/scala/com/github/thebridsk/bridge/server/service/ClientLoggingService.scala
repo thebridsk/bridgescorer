@@ -33,6 +33,7 @@ import java.io.PrintWriter
 import com.github.thebridsk.bridge.data.rest.JsonException
 import com.fasterxml.jackson.core.JsonParseException
 import io.swagger.v3.oas.annotations.Hidden
+import akka.http.scaladsl.server.Route
 
 class Counter(max: Long) {
   private var counter: Long = 0
@@ -41,7 +42,7 @@ class Counter(max: Long) {
     * Increment the counter
     * @return true if max has been hit, in which case the counter is reset to 0
     */
-  def inc() = synchronized {
+  def inc(): Boolean = synchronized {
     counter = counter + 1;
     if (counter > max) {
       counter = 0
@@ -59,7 +60,7 @@ trait ClientLoggingService {
     Logging(hasActorSystem.actorSystem, classOf[ClientLoggingService])
 
   @Hidden
-  def routeLogging(ip: String) =
+  def routeLogging(ip: String): Route =
     get {
       pathEndOrSingleSlash {
         logRequest("ClientLoggingService.routeLogging pathend", DebugLevel) {
@@ -164,11 +165,12 @@ trait ClientLoggingService {
     a.reduce(reduce)
   }
 
-  def reportErrorsFlow[T](sender: String) =
-    new GraphStage[FlowShape[T, T]] {
-      val in = Inlet[T]("reportErrorsFlow.in")
-      val out = Outlet[T]("reportErrorsFlow.out")
-      override val shape = FlowShape(in, out)
+  def reportErrorsFlow[T](sender: String): GraphStage[FlowShape[T,T]] =
+    new ReportErrorsFlow[T](sender)
+  class ReportErrorsFlow[T](sender: String) extends GraphStage[FlowShape[T, T]] {
+      val in: Inlet[T] = Inlet[T]("reportErrorsFlow.in")
+      val out: Outlet[T] = Outlet[T]("reportErrorsFlow.out")
+      override val shape: FlowShape[T,T] = FlowShape(in, out)
       override def initialAttributes: Attributes =
         Attributes(List(Name("reportErrorsFlow")))
       def createLogic(inheritedAttributes: Attributes): GraphStageLogic = {
@@ -211,7 +213,11 @@ object ClientLoggingService {
   val maxChunkCollectionMills: Long = 5000
   def collect[T](
       stream: Source[T, Any]
-  )(reduce: (T, T) => T)(implicit materializer: akka.stream.Materializer): T = {
+  )(
+      reduce: (T, T) => T
+  )(
+      implicit materializer: akka.stream.Materializer
+  ): T = {
     import scala.language.postfixOps
     import scala.concurrent.duration._
     val g = stream.grouped(maxChunks)

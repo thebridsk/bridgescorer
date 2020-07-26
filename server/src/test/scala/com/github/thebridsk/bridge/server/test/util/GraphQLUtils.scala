@@ -5,7 +5,7 @@ import play.api.libs.json.JsString
 
 object GraphQLUtils {
 
-  def queryToJson( query: String, variables: Option[JsObject]= None, operation: Option[String] = None ) = {
+  def queryToJson( query: String, variables: Option[JsObject]= None, operation: Option[String] = None ): String = {
     JsObject(
         operation.map( v => "operationName" -> JsString(v) ).toList :::
         variables.map( v => "variables" -> v ).toList :::

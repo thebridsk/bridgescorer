@@ -18,7 +18,7 @@ import com.github.thebridsk.bridge.data.BoardSet
 
 class TestWinnerSets extends AnyFlatSpec with Matchers {
 
-  val testlog = Logger[TestWinnerSets]()
+  val testlog: Logger = Logger[TestWinnerSets]()
 
   val restService = new BridgeServiceTesting
 
@@ -28,7 +28,7 @@ class TestWinnerSets extends AnyFlatSpec with Matchers {
 
   behavior of "TestWinnerSets"
 
-  def getDup( movementid: Movement.Id ) = {
+  def getDup( movementid: Movement.Id ): MatchDuplicate = {
     val move = movements.read(movementid) match {
       case Right(m) => m
       case Left((statuscode,msg)) =>

@@ -18,6 +18,7 @@ import japgolly.scalajs.react.vdom.VdomNode
 import com.github.thebridsk.bridge.clientcommon.logger.Info
 import com.github.thebridsk.materialui.icons.SvgColor
 import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles._
+import japgolly.scalajs.react.internal.Effect
 
 /**
  * A simple AppBar for the Bridge client.
@@ -54,7 +55,7 @@ object RootBridgeAppBar {
       title: Seq[VdomNode],
       helpurl: Option[String],
       routeCtl: BridgeRouter[AppPage]
-  )() = {
+  )(): TagMod = {
     TagMod(
       ServerURLPopup(),
       component(Props(title,helpurl,routeCtl))
@@ -65,7 +66,7 @@ object RootBridgeAppBar {
 object RootBridgeAppBarInternal {
   import RootBridgeAppBar._
 
-  val logger = Logger("bridge.RootBridgeAppBar")
+  val logger: Logger = Logger("bridge.RootBridgeAppBar")
 
   /**
    * Internal state for rendering the component.
@@ -80,11 +81,11 @@ object RootBridgeAppBarInternal {
       anchorMainTestHandEl: js.UndefOr[Element] = js.undefined,
   ) {
 
-    def openMainMenu( n: Node ) = copy( anchorMainEl = n.asInstanceOf[Element] )
-    def closeMainMenu() = copy( anchorMainEl = js.undefined )
+    def openMainMenu( n: Node ): State = copy( anchorMainEl = n.asInstanceOf[Element] )
+    def closeMainMenu(): State = copy( anchorMainEl = js.undefined )
 
-    def openMainTestHandMenu( n: Node ) = copy( anchorMainTestHandEl = n.asInstanceOf[Element] )
-    def closeMainTestHandMenu() = copy( anchorMainTestHandEl = js.undefined )
+    def openMainTestHandMenu( n: Node ): State = copy( anchorMainTestHandEl = n.asInstanceOf[Element] )
+    def closeMainTestHandMenu(): State = copy( anchorMainTestHandEl = js.undefined )
   }
 
   /**
@@ -96,24 +97,24 @@ object RootBridgeAppBarInternal {
    */
   class Backend(scope: BackendScope[Props, State]) {
 
-    def handleMainClick( event: ReactEvent ) = event.extract(_.currentTarget)(currentTarget => scope.modState(s => s.openMainMenu(currentTarget)).runNow() )
-    def handleMainCloseClick( event: ReactEvent ) = scope.modState(s => s.closeMainMenu()).runNow()
-    def handleMainClose( /* event: js.Object, reason: String */ ) = {
+    def handleMainClick( event: ReactEvent ): Unit = event.extract(_.currentTarget)(currentTarget => scope.modState(s => s.openMainMenu(currentTarget)).runNow() )
+    def handleMainCloseClick( event: ReactEvent ): Unit = scope.modState(s => s.closeMainMenu()).runNow()
+    def handleMainClose( /* event: js.Object, reason: String */ ): Unit = {
       logger.fine("MainClose called")
       scope.modState { s => s.closeMainMenu() }.runNow()
     }
 
-    def gotoPage( uri: String ) = {
+    def gotoPage( uri: String ): Unit = {
       GotoPage.inSameWindow(uri)
     }
 
-    def handleGotoPageClick(uri: String)( event: ReactEvent ) = {
+    def handleGotoPageClick(uri: String)( event: ReactEvent ): Unit = {
       logger.info(s"""Going to page ${uri}""")
       handleMainClose()
       gotoPage(uri)
     }
 
-    val toggleUserSelect = { (event: ReactEvent) => scope.withEffectsImpure.modState { s =>
+    val toggleUserSelect: ReactEvent => Effect.Id[Unit] = { (event: ReactEvent) => scope.withEffectsImpure.modState { s =>
       val newstate = s.copy( userSelect = !s.userSelect )
       val style = Info.getElement("allowSelect")
       if (newstate.userSelect) {
@@ -128,7 +129,7 @@ object RootBridgeAppBarInternal {
       newstate
     }}
 
-    def render( props: Props, state: State ) = {
+    def render( props: Props, state: State ) = { // scalafix:ok ExplicitResultTypes; React
 
       def callbackPage(page: AppPage)(e: ReactEvent) = {
         logger.info(s"""Goto page $page""")
@@ -222,17 +223,18 @@ object RootBridgeAppBarInternal {
 
     private var mounted = false
 
-    val didMount = Callback {
+    val didMount: Callback = Callback {
       mounted = true
 
     }
 
-    val willUnmount = Callback {
+    val willUnmount: Callback = Callback {
       mounted = false
 
     }
   }
 
+  private[pages]
   val component = ScalaComponent.builder[Props]("RootBridgeAppBar")
                             .initialStateFromProps { props => State() }
                             .backend(new Backend(_))

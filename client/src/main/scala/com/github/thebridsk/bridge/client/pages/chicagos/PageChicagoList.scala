@@ -34,6 +34,7 @@ import com.github.thebridsk.materialui.TextColor
 import com.github.thebridsk.materialui.MuiTypography
 import com.github.thebridsk.bridge.client.pages.HomePage
 import japgolly.scalajs.react.component.builder.Lifecycle.ComponentDidUpdate
+import japgolly.scalajs.react.internal.Effect
 
 /**
   * @author werewolf
@@ -46,7 +47,7 @@ object PageChicagoList {
 
   case class Props(routerCtl: BridgeRouter[ChicagoPage], page: ListViewBase)
 
-  def apply(routerCtl: BridgeRouter[ChicagoPage], page: ListViewBase) =
+  def apply(routerCtl: BridgeRouter[ChicagoPage], page: ListViewBase) =  // scalafix:ok ExplicitResultTypes; ReactComponent
     component(Props(routerCtl, page))
 
 }
@@ -55,8 +56,8 @@ object PageChicagoListInternal {
   import PageChicagoList._
   import ChicagoStyles._
 
-  implicit val logger = Logger("bridge.PageChicagoList")
-  implicit val defaultTraceLevelForReactComponents = Level.FINER
+  implicit val logger: Logger = Logger("bridge.PageChicagoList")
+  implicit val defaultTraceLevelForReactComponents: Level = Level.FINER
 
   /**
     * Internal state for rendering the component.
@@ -83,10 +84,10 @@ object PageChicagoListInternal {
     */
   class Backend(scope: BackendScope[Props, State]) {
 
-    def delete(id: MatchChicago.Id) =
+    def delete(id: MatchChicago.Id): Callback =
       scope.modState(s => s.copy(askingToDelete = Some(id)))
 
-    val deleteOK = scope.modState { s =>
+    val deleteOK: Callback = scope.modState { s =>
       s.askingToDelete
         .map { ids =>
           val id = ids.asInstanceOf[MatchChicago.Id]
@@ -99,17 +100,17 @@ object PageChicagoListInternal {
 
     }
 
-    val deleteCancel = scope.modState(s => s.copy(askingToDelete = None))
+    val deleteCancel: Callback = scope.modState(s => s.copy(askingToDelete = None))
 
-    val resultChicago = ResultHolder[MatchChicago]()
-    val resultGraphQL = ResultHolder[GraphQLResponse]()
+    val resultChicago: ResultHolder[MatchChicago] = ResultHolder[MatchChicago]()
+    val resultGraphQL: ResultHolder[GraphQLResponse] = ResultHolder[GraphQLResponse]()
 
-    val cancel = Callback {
+    val cancel: Callback = Callback {
       resultChicago.cancel()
       resultGraphQL.cancel()
     } >> scope.modState(s => s.copy(popupMsg = None))
 
-    val newChicago = {
+    val newChicago: Callback = {
       import scala.concurrent.ExecutionContext.Implicits.global
       scope.modState(
         s => s.copy(popupMsg = Some("Creating a new Chicago match...")),
@@ -150,14 +151,14 @@ object PageChicagoListInternal {
 //        }
 //      )
 
-    def showChicago(chi: MatchChicago) =
+    def showChicago(chi: MatchChicago): Callback =
       Callback {
         ChicagoController.showMatch(chi)
       } >> scope.props >>= { props =>
         props.routerCtl.set(SummaryView(chi.id.id))
       }
 
-    def render(props: Props, state: State) = {
+    def render(props: Props, state: State) = { // scalafix:ok ExplicitResultTypes; React
 
       val (bok, bcancel) = if (state.info) {
         (Some(cancel), None)
@@ -241,12 +242,12 @@ object PageChicagoListInternal {
       )
     }
 
-    def setMessage(msg: String, info: Boolean = false) =
+    def setMessage(msg: String, info: Boolean = false): Effect.Id[Unit] =
       scope.withEffectsImpure.modState(
         s => s.copy(popupMsg = Some(msg), info = info)
       )
 
-    def importChicago(importId: String, id: MatchChicago.Id) =
+    def importChicago(importId: String, id: MatchChicago.Id): Callback =
       scope.modState(
         s =>
           s.copy(
@@ -313,12 +314,12 @@ object PageChicagoListInternal {
 
     val storeCallback = scope.forceUpdate
 
-    def summaryError() =
+    def summaryError(): Effect.Id[Unit] =
       scope.withEffectsImpure.modState(
         s => s.copy(popupMsg = Some("Error getting duplicate summary"))
       )
 
-    val didMount = scope.props >>= { (p) =>
+    val didMount: Callback = scope.props >>= { (p) =>
       Callback {
         mounted = true
 
@@ -329,7 +330,7 @@ object PageChicagoListInternal {
       }
     }
 
-    def initializeNewSummary( props: Props ) = {
+    def initializeNewSummary( props: Props ): Unit = {
       props.page match {
         case isv: ImportListView =>
           val importId = isv.getDecodedId
@@ -339,13 +340,13 @@ object PageChicagoListInternal {
       }
     }
 
-    val willUnmount = Callback {
+    val willUnmount: Callback = Callback {
       mounted = false
     }
 
   }
 
-  def didUpdate( cdu: ComponentDidUpdate[Props,State,Backend,Unit] ) = Callback {
+  def didUpdate( cdu: ComponentDidUpdate[Props,State,Backend,Unit] ): Callback = Callback {
     val props = cdu.currentProps
     val prevProps = cdu.prevProps
     if (prevProps.page != props.page) {
@@ -353,6 +354,7 @@ object PageChicagoListInternal {
     }
   }
 
+  private[chicagos]
   val ChicagoRowFirst = ScalaComponent
     .builder[(Backend, Props, State, Int, Option[String])]("ChicagoRowFirst")
     .stateless
@@ -379,6 +381,7 @@ object PageChicagoListInternal {
     }
     .build
 
+  private[chicagos]
   val ChicagoRow = ScalaComponent
     .builder[(Backend, Props, State, Int, Int, ChicagoScoring, Option[String])](
       "ChicagoRow"
@@ -451,6 +454,7 @@ object PageChicagoListInternal {
     })
     .build
 
+  private[chicagos]
   val component = ScalaComponent
     .builder[Props]("PageChicagoList")
     .initialStateFromProps { props =>

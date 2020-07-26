@@ -12,36 +12,37 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.annotation.tailrec
 import java.io.FileNotFoundException
 import com.github.thebridsk.bridge.server.test.util.TestServer
+import com.github.thebridsk.bridge.server.backend.resource.VersionedInstanceJson
 
 object TestData {
 
-  val log = Logger( TestData.getClass.getName )
+  val log: Logger = Logger( TestData.getClass.getName )
 
   /**
    * The matches to replay.  The value is obtained from the system property or environment variable MatchToTest.
    * If None, then all games are replayed,
    * if Some(List(id,...)) where id is just the digits of the MatchDuplicate ID
    */
-  val matchToTest = TestServer.getProp("MatchToTest").map{ ms =>
+  val matchToTest: Option[List[String]] = TestServer.getProp("MatchToTest").map{ ms =>
       ms.split("[ ,]+").flatMap(s => if (s==null || s.length() == 0) Nil else s::Nil ).toList
     }
 
-  val testData = {
+  val testData: Directory = {
     val rawdir = TestServer.getProp("TestDataDirectory").map { dir => Directory(dir) }.getOrElse( Directory("../testdata") )
     val dir = Directory(rawdir.toAbsolute.jfile.getCanonicalFile)
     log.info(s"Using directory ${dir}")
     dir
   }
 
-  def getFilenames( id: String ) = {
+  def getFilenames( id: String ): List[String] = {
     instanceJson.getReadExtensions.map { ext =>
       testData.toString()+File.separator+"MatchDuplicate.M"+id+ext
     }
   }
 
-  val instanceJson = new BridgeServiceFileStoreConverters(true).matchDuplicateJson
+  val instanceJson: VersionedInstanceJson[MatchDuplicate.Id,MatchDuplicate] = new BridgeServiceFileStoreConverters(true).matchDuplicateJson
 
-  def getOneGame( g: String ) = {
+  def getOneGame( g: String ): List[MatchDuplicate] = {
     def toMD( s: String ): (MatchDuplicate) = {
       (instanceJson.parse(s)._2)
     }
@@ -71,7 +72,7 @@ object TestData {
     read(files)
   }
 
-  def getAllGamesFromDisk() = {
+  def getAllGamesFromDisk(): List[MatchDuplicate] = {
     val store = new BridgeServiceFileStore( testData )
     store.duplicates.syncStore.readAll() match {
       case Right(map) =>
@@ -81,7 +82,7 @@ object TestData {
     }
   }
 
-  def getAllGames() = {
+  def getAllGames(): List[MatchDuplicate] = {
     val r = matchToTest match {
       case Some(g) => g.flatMap( g1 => getOneGame(g1) )
       case None => getAllGamesFromDisk()

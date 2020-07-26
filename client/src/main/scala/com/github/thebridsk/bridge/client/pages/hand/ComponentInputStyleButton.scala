@@ -5,6 +5,7 @@ import japgolly.scalajs.react._
 import com.github.thebridsk.utilities.logging.Logger
 import com.github.thebridsk.bridge.clientcommon.react.Button
 
+
 /**
  * A skeleton component.
  *
@@ -23,7 +24,7 @@ object ComponentInputStyleButton {
   /**
    * @param callback called when the button is hit
    */
-  def apply( callback: Callback, useHandStyle: Boolean = false ) =
+  def apply( callback: Callback, useHandStyle: Boolean = false ) = // scalafix:ok ExplicitResultTypes; ReactComponent
     component( Props( callback, useHandStyle ) )
 
   abstract class MyEnumeration extends Enumeration {
@@ -71,9 +72,9 @@ object ComponentInputStyleButton {
 
   import InputMethod._
 
-  def setInputMethod( method: InputMethod ) = pInputMethod=method
+  def setInputMethod( method: InputMethod ): Unit = pInputMethod=method
 
-  def inputMethodAsString = {
+  def inputMethodAsString: String = {
         pInputMethod match {
           case Original => "Original"
           case Prompt => "Prompt"
@@ -81,7 +82,7 @@ object ComponentInputStyleButton {
         }
       }
 
-  val logger = Logger("bridge.ComponentInputStyleButton")
+  val logger: Logger = Logger("bridge.ComponentInputStyleButton")
 
   /**
    * Internal state for rendering the component.
@@ -100,7 +101,7 @@ object ComponentInputStyleButton {
    *
    */
   class Backend(scope: BackendScope[Props, State]) {
-    def render( props: Props ) = {
+    def render( props: Props ) = {  // scalafix:ok ExplicitResultTypes; ReactComponent
       import HandStyles._
       Button( if (props.useHandStyle) handStyles.footerButton else baseStyles.appButton,
               "InputStyle",
@@ -108,12 +109,13 @@ object ComponentInputStyleButton {
               ^.onClick --> nextInputStyle)
     }
 
-    val nextInputStyle = Callback {
+    val nextInputStyle: Callback = Callback {
       pInputMethod = InputMethod.next(pInputMethod)
       logger.fine("InputMethod is "+pInputMethod)
     } >> scope.forceUpdate >> scope.props >>= { props => props.callback }
   }
 
+  private[hand]
   val component = ScalaComponent.builder[Props]("ComponentInputStyleButton")
                             .initialStateFromProps { props => State() }
                             .backend(new Backend(_))

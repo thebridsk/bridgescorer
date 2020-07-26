@@ -30,6 +30,7 @@ import com.github.thebridsk.bridge.data.MatchRubber
 import play.api.libs.json.JsSuccess
 import play.api.libs.json.JsError
 
+
 /**
  * A skeleton component.
  *
@@ -46,14 +47,14 @@ object ExportPage {
 
   case class Props( router: BridgeRouter[AppPage] )
 
-  def apply( router: BridgeRouter[AppPage] ) = component( Props(router))
+  def apply( router: BridgeRouter[AppPage] ) = component( Props(router))  // scalafix:ok ExplicitResultTypes; ReactComponent
 
 }
 
 object ExportPageInternal {
   import ExportPage._
 
-  val logger = Logger("bridge.ExportPage")
+  val logger: Logger = Logger("bridge.ExportPage")
 
   /**
    * Internal state for rendering the component.
@@ -68,7 +69,7 @@ object ExportPageInternal {
                     rubids: Option[List[MatchRubber.Id]] = None,
                     selectedIds: Option[List[Id[_]]] = None
                   ) {
-    def isExportingAll() = {
+    def isExportingAll(): Boolean = {
       selectedIds match {
         case Some(selected) =>
           dupids.map( l => l.forall( id => selected contains id )).getOrElse(true) &&
@@ -81,7 +82,7 @@ object ExportPageInternal {
     }
   }
 
-  def jsValueToString( jsV: JsValue ) = {
+  def jsValueToString( jsV: JsValue ): String = {
     jsV match {
       case JsString(s) => s
       case _ => jsV.toString()
@@ -97,7 +98,7 @@ object ExportPageInternal {
    */
   class Backend(scope: BackendScope[Props, State]) {
 
-    val didMount = Callback {
+    val didMount: Callback = Callback {
       import com.github.thebridsk.bridge.data.rest.JsonSupport._
       GraphQLClient.request("""{ duplicateIds, duplicateResultIds, chicagoIds, rubberIds }""").foreach { resp =>
         scope.withEffectsImpure.modState { s0 =>
@@ -171,7 +172,7 @@ object ExportPageInternal {
       }
     }
 
-    def toggleSelectedId( id: Id[_] ) = scope.modState { s =>
+    def toggleSelectedId( id: Id[_] ): Callback = scope.modState { s =>
       val current = s.selectedIds.getOrElse(List())
       val trydelete = current.filter( i => i!=id )
       val add: List[Id[_]] = if (current.size == trydelete.size) id::trydelete
@@ -189,7 +190,7 @@ object ExportPageInternal {
       s.copy(selectedIds = None)
     }
 
-    def selectAll( list: Option[List[Id[_]]] ) = scope.modState { s =>
+    def selectAll( list: Option[List[Id[_]]] ): Callback = scope.modState { s =>
       list.map { l =>
         l.foldLeft(s){(ac,v) =>
           ac.selectedIds match {
@@ -203,7 +204,7 @@ object ExportPageInternal {
       }.getOrElse(s)
     }
 
-    def selectClearAll( list: Option[List[Id[_]]] ) = scope.modState { s =>
+    def selectClearAll( list: Option[List[Id[_]]] ): Callback = scope.modState { s =>
       list.map { l =>
         s.selectedIds match {
           case Some(selected) =>
@@ -215,9 +216,9 @@ object ExportPageInternal {
       }.getOrElse(s)
     }
 
-    val indent = <.span( ^.dangerouslySetInnerHtml := "&nbsp;&nbsp;&nbsp;" )
+    val indent = <.span( ^.dangerouslySetInnerHtml := "&nbsp;&nbsp;&nbsp;" )  // scalafix:ok ExplicitResultTypes; React
 
-    def render( props: Props, state: State ) = {
+    def render( props: Props, state: State ) = { // scalafix:ok ExplicitResultTypes; React
 
       def showList( tid: String, header: String, list: Option[List[Id[_]]] ) = {
         <.div(
@@ -305,6 +306,7 @@ object ExportPageInternal {
     }
   }
 
+  private[pages]
   val component = ScalaComponent.builder[Props]("ExportPage")
                             .initialStateFromProps { props => State() }
                             .backend(new Backend(_))

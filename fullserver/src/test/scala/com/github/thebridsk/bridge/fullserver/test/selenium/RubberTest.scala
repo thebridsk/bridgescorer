@@ -43,6 +43,8 @@ import scala.util.Using
 import scala.math.Ordering.Double.TotalOrdering
 import com.github.thebridsk.bridge.server.test.util.TestServer
 import com.github.thebridsk.bridge.fullserver.test.pages.bridge.PageWithErrorMsg
+import com.github.thebridsk.browserpages.Element
+import scala.util.matching.Regex
 
 /**
  * @author werewolf
@@ -59,7 +61,7 @@ class RubberTest extends AnyFlatSpec
 
   import scala.concurrent.duration._
 
-  val testlog = Logger[RubberTest]()
+  val testlog: Logger = Logger[RubberTest]()
 
   val docsScreenshotDir = "target/docs/Rubber"
 
@@ -71,17 +73,17 @@ class RubberTest extends AnyFlatSpec
 
   val backend = TestServer.backend
 
-  implicit val itimeout = PatienceConfig(timeout=scaled(Span(timeoutMillis, Millis)), interval=scaled(Span(intervalMillis,Millis)))
+  implicit val itimeout: PatienceConfig = PatienceConfig(timeout=scaled(Span(timeoutMillis, Millis)), interval=scaled(Span(intervalMillis,Millis)))
 
   type MyDuration = Duration
   val MyDuration = Duration
 
-  implicit val timeoutduration = MyDuration( 60, TimeUnit.SECONDS )
+  implicit val timeoutduration: FiniteDuration = MyDuration( 60, TimeUnit.SECONDS )
 
   TestStartLogging.startLogging()
 
   override
-  def beforeAll() = {
+  def beforeAll(): Unit = {
     import com.github.thebridsk.bridge.server.test.util.ParallelUtils._
 
     MonitorTCP.nextTest()
@@ -108,7 +110,7 @@ class RubberTest extends AnyFlatSpec
   }
 
   override
-  def afterAll() = {
+  def afterAll(): Unit = {
     import scala.concurrent._
     import com.github.thebridsk.bridge.server.test.util.ParallelUtils._
 
@@ -781,17 +783,17 @@ class RubberTest extends AnyFlatSpec
   }
 
 
-  def getDivByClass( clss: String ) = "div[contains(concat(' ', @class, ' '), ' "+clss+" ')]"
+  def getDivByClass( clss: String ): String = "div[contains(concat(' ', @class, ' '), ' "+clss+" ')]"
 
   def assertTotals( north: String, south: String, east: String, west: String)
                   ( nsScore: Int, ewScore: Int)
-                  (implicit webDriver: WebDriver)= {
+                  (implicit webDriver: WebDriver): Assertion= {
     assertRubberTotals( north, south, east, west )(nsScore, ewScore)
     assertDetailsTotals( north, south, east, west )(nsScore, ewScore)
   }
 
   def assertRubberTotals( north: String, south: String, east: String, west: String)
-                        ( nsScore: Int, ewScore: Int)(implicit webDriver: WebDriver) = {
+                        ( nsScore: Int, ewScore: Int)(implicit webDriver: WebDriver): Assertion = {
 
     val header = findAll( xpath("//"+getDivByClass("rubDivRubberMatchView")+"/table/thead/tr/th")).toList.drop(1)
     header.size mustBe 2
@@ -809,7 +811,7 @@ class RubberTest extends AnyFlatSpec
 
   def assertDetailsTotals( north: String, south: String, east: String, west: String)
                          ( nsScore: Int, ewScore: Int)
-                         (implicit webDriver: WebDriver) = {
+                         (implicit webDriver: WebDriver): Assertion = {
 
     val header = findAll( xpath("//"+getDivByClass("rubDivDetailsView")+"/div/table/thead/tr/th")).toList.drop(5)
     header.size mustBe 2
@@ -826,7 +828,7 @@ class RubberTest extends AnyFlatSpec
   }
 
   def assertRowDetails( irow: Int, nsScore: String, ewScore: String)
-                       (implicit webDriver: WebDriver)= {
+                       (implicit webDriver: WebDriver): Assertion= {
 
     val totals = findAll( xpath("//"+getDivByClass("rubDivDetailsView")+"/div/table/tbody/tr["+irow+"]/td")).toList
     totals.size mustBe 7
@@ -836,7 +838,7 @@ class RubberTest extends AnyFlatSpec
 
   }
 
-  def verifyVul( nsVul: Boolean, ewVul: Boolean )(implicit webDriver: WebDriver) = {
+  def verifyVul( nsVul: Boolean, ewVul: Boolean )(implicit webDriver: WebDriver): Assertion = {
     eventually { find(xpath("//h6[3]/span")).text mustBe "Enter Hand" }
 
     val nsVulT = if (nsVul) "Vul" else "vul"
@@ -856,13 +858,13 @@ class RubberTest extends AnyFlatSpec
 //    ewVul mustBe ewClass
   }
 
-  def getHonorsButtons()(implicit webDriver: WebDriver) = {
+  def getHonorsButtons()(implicit webDriver: WebDriver): Map[String,Element] = {
     val div = find(xpath("//"+getDivByClass("handViewHonors")+"/div/div[1]" ))
     div.findAll(tagName("button")).toList.map( e => (e.id.get, e) ).toMap
   }
 
   def checkHonorPoints( contractTricks: ContractTricks, contractSuit: ContractSuit )
-                      (implicit webDriver: WebDriver) = {
+                      (implicit webDriver: WebDriver): Assertion = {
     val buttons = getHonorsButtons()
     contractTricks match {
       case PassedOut =>
@@ -878,7 +880,7 @@ class RubberTest extends AnyFlatSpec
   }
 
   def checkHonorPos( contractTricks: ContractTricks, honorPoints: Int )
-                    (implicit webDriver: WebDriver)= {
+                    (implicit webDriver: WebDriver): Assertion= {
     val div = find(xpath("//"+getDivByClass("handViewHonors")+"/div/div[2]"))
     contractTricks match {
       case PassedOut =>
@@ -904,7 +906,7 @@ class RubberTest extends AnyFlatSpec
                  testHonorsButtons: Boolean = true,
                  dealer: Option[String] = None,
                  screenshot: Option[String] = None
-               )(implicit webDriver: WebDriver) = {
+               )(implicit webDriver: WebDriver): Unit = {
     eventually { find(xpath("//h6[3]/span")).text mustBe "Enter Hand" }
 
     dealer.foreach( dealerName => eventually { find(id("Dealer")).text } mustBe dealerName )
@@ -932,15 +934,15 @@ class RubberTest extends AnyFlatSpec
     findButtonAndClick("Ok")
   }
 
-  val regSplitter = """\s""".r
+  val regSplitter: Regex = """\s""".r
 
   case class Game( label: String, ns: List[Int] = Nil, ew: List[Int] = Nil ) {
 
-    def getInts( list: String ) = {
+    def getInts( list: String ): List[Int] = {
       regSplitter.split(list).map(s => s.toInt).toList
     }
 
-    def add( vns: String, vew: String ) = {
+    def add( vns: String, vew: String ): Game = {
       val nsn = if (vns.length()>0) getInts(vns):::ns else ns
       val ewn = if (vew.length()>0) getInts(vew):::ew else ew
       copy( ns=nsn, ew=ewn )
@@ -948,26 +950,26 @@ class RubberTest extends AnyFlatSpec
   }
 
   case class ListGames( list: List[Game] ) {
-    def add( r: List[String] ) = r match {
+    def add( r: List[String] ): ListGames = r match {
       case label::ns::ew::Nil => copy( list= Game(label).add(ns,ew)::list )
       case ns::ew::Nil => copy( list= list.head.add(ns, ew)::list.tail )
       case _ => fail("Rubber table rows must have 2 or 3 cells")
     }
 
-    def toMap = list.map { g => (g.label,g) }.toMap
+    def toMap: Map[String,Game] = list.map { g => (g.label,g) }.toMap
   }
 
   /**
    * Gets the rows of the rubber table, PageRubberMatchInternal.component
    */
-  def getRubberTable()(implicit webDriver: WebDriver) = {
+  def getRubberTable()(implicit webDriver: WebDriver): Map[String,Game] = {
     val rows = findAll(xpath("//"+getDivByClass("rubDivRubberMatchView")+"/table/tbody/tr"))
     rows.map { r => {
       r.findAll(tagName("td")).map { e => e.text }.toList
     }}.foldLeft( ListGames(Nil) )( (a,r)=> a.add(r) ).toMap
   }
 
-  def checkRubberTable( checker: (String, List[Int], List[Int])* )( implicit pos: Position, webDriver: WebDriver ) = {
+  def checkRubberTable( checker: (String, List[Int], List[Int])* )( implicit pos: Position, webDriver: WebDriver ): Unit = {
     checker.foreach( c => {
       val (label, ns, ew) = c
       getRubberTable().get(label) match {

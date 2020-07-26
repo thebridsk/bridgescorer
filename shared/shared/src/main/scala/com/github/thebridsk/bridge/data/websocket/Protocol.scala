@@ -169,22 +169,22 @@ object Protocol {
 
   import com.github.thebridsk.bridge.data.rest.JsonSupport._
 
-  def toStringToBrowserMessage(msg: ToBrowserMessage) = {
+  def toStringToBrowserMessage(msg: ToBrowserMessage): String = {
     import com.github.thebridsk.bridge.data.rest.ToBrowserProtocolJsonSupport._
     msg.toJson
   }
 
-  def fromStringToBrowserMessage(str: String) = {
+  def fromStringToBrowserMessage(str: String): ToBrowserMessage = {
     import com.github.thebridsk.bridge.data.rest.ToBrowserProtocolJsonSupport._
     str.parseJson[ToBrowserMessage]
   }
 
-  def toStringToServerMessage(msg: ToServerMessage) = {
+  def toStringToServerMessage(msg: ToServerMessage): String = {
     import com.github.thebridsk.bridge.data.rest.ToServerProtocolJsonSupport._
     msg.toJson
   }
 
-  def fromStringToServerMessage(str: String) = {
+  def fromStringToServerMessage(str: String): ToServerMessage = {
     import com.github.thebridsk.bridge.data.rest.ToServerProtocolJsonSupport._
     str.parseJson[ToServerMessage]
   }

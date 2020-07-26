@@ -19,6 +19,7 @@ import com.github.thebridsk.materialui.TextColor
 import com.github.thebridsk.bridge.clientapi.routes.BridgeRouter
 import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles._
 
+
 /**
  * A skeleton component.
  *
@@ -35,13 +36,13 @@ object GraphQLPage {
 
   case class Props( router: BridgeRouter[AppPage] )
 
-  def apply( router: BridgeRouter[AppPage] ) = component( Props(router))
+  def apply( router: BridgeRouter[AppPage] ) = component( Props(router))  // scalafix:ok ExplicitResultTypes; ReactComponent
 }
 
 object GraphQLPageInternal {
   import GraphQLPage._
 
-  val logger = Logger("bridge.GraphQLPage")
+  val logger: Logger = Logger("bridge.GraphQLPage")
 
   /**
    * Internal state for rendering the component.
@@ -52,9 +53,9 @@ object GraphQLPageInternal {
    */
   case class State( query: Option[String]=None, response: Option[String]=None, error: Option[TagMod]=None ) {
 
-    def clearError() = copy( error = None )
+    def clearError(): State = copy( error = None )
 
-    def withError( err: String ) = {
+    def withError( err: String ): State = {
       val c = err.split("\n").zipWithIndex.map { e =>
         val (line,i) = e
         if (i==0) TagMod(line)
@@ -73,20 +74,20 @@ object GraphQLPageInternal {
    */
   class Backend(scope: BackendScope[Props, State]) {
 
-    val didMount = Callback {
+    val didMount: Callback = Callback {
     }
 
     import com.github.thebridsk.bridge.clientcommon.react.Utils._
-    def setQuery( e: ReactEventFromInput ) = e.inputText( q =>
+    def setQuery( e: ReactEventFromInput ): Callback = e.inputText( q =>
       scope.modState( s => s.copy(query = Some(q)))
     )
 
-    val cancelError = scope.modState( s => s.copy(error=None))
+    val cancelError: Callback = scope.modState( s => s.copy(error=None))
 
-    val clearQuery = scope.modState( s => s.copy(query=None))
-    val clearResponse = scope.modState( s => s.copy(response=None))
+    val clearQuery: Callback = scope.modState( s => s.copy(query=None))
+    val clearResponse: Callback = scope.modState( s => s.copy(response=None))
 
-    val execute = scope.state >>= { state => Callback {
+    val execute: Callback = scope.state >>= { state => Callback {
       state.query match {
         case Some(q) =>
           val x =
@@ -119,7 +120,7 @@ object GraphQLPageInternal {
 
     }
 
-    def render( props: Props, state: State ) = {
+    def render( props: Props, state: State ) = { // scalafix:ok ExplicitResultTypes; React
       <.div(
         rootStyles.graphqlPageDiv,
         PopupOkCancel( state.error, None, Some(cancelError) ),
@@ -173,6 +174,7 @@ object GraphQLPageInternal {
     }
   }
 
+  private[pages]
   val component = ScalaComponent.builder[Props]("GraphQLPage")
                             .initialStateFromProps { props => State() }
                             .backend(new Backend(_))

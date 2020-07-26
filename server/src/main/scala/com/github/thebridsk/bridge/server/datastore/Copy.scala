@@ -25,7 +25,7 @@ trait Copy
 object Copy extends Subcommand("copy") {
   import DataStoreCommands.optionStore
 
-  val log = Logger[Copy]()
+  val log: Logger = Logger[Copy]()
 
   implicit def dateConverter: ValueConverter[Duration] =
     singleArgConverter[Duration](Duration(_))
@@ -41,7 +41,7 @@ Syntax:
   ${DataStoreCommands.cmdName} copy [options]
 Options:""")
 
-  val optionIds = opt[List[String]](
+  val optionIds: ScallopOption[List[String]] = opt[List[String]](
     "ids",
     short = 'i',
     descr = "the ids to map",
@@ -49,7 +49,7 @@ Options:""")
     default = None
   )
 
-  val optionSort = opt[String](
+  val optionSort: ScallopOption[String] = opt[String](
     "sort",
     short = 's',
     descr =
@@ -59,7 +59,7 @@ Options:""")
     default = Some("created")
   )
 
-  val paramTarget = trailArg[Path](
+  val paramTarget: ScallopOption[Path] = trailArg[Path](
     name = "target",
     descr = "directory for new datastore",
     required = true
@@ -173,7 +173,7 @@ Options:""")
 
   }
 
-  def await[T](fut: Future[T]) = Await.result(fut, 30.seconds)
+  def await[T](fut: Future[T]): T = Await.result(fut, 30.seconds)
 
   def setValue[K <: Comparable[K], T <: VersionedInstance[T, T, K]](
       name: String,
@@ -205,7 +205,7 @@ Options:""")
       keyComparer: (T, T) => Boolean,
       dateComparer: (T, T) => Boolean,
       idfilter: K => Boolean
-  ) = {
+  ): Unit = {
     val comparer = optionSort() match {
       case "id" =>
         log.info("Sorting by ID")
@@ -252,7 +252,7 @@ Options:""")
       in: Store[K, T],
       out: Store[K, T],
       idfilter: K => Boolean
-  ) = {
+  ): Unit = {
     await(in.readAll()) match {
       case Right(dups) =>
         val keys = dups.keys.toList

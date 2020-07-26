@@ -34,14 +34,14 @@ Syntax:
   ${DataStoreCommands.cmdName} show stats options
 Options:""")
 
-  val optionOut = opt[Path](
+  val optionOut: ScallopOption[Path] = opt[Path](
     "out",
     short = 'o',
     descr = "The output csv file, default output to stdout",
     argName = "csv",
     default = None
   )
-  val optionPercent = toggle(
+  val optionPercent: ScallopOption[Boolean] = toggle(
     "percent",
     default = Some(false),
     short = 'p',
@@ -51,7 +51,7 @@ Options:""")
 
 //  footer(s""" """)
 
-  def await[T](fut: Future[T]) = Await.result(fut, 30.seconds)
+  def await[T](fut: Future[T]): T = Await.result(fut, 30.seconds)
 
   def executeSubcommand(): Int = {
     val store = optionStore()

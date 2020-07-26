@@ -15,14 +15,14 @@ import SchemaChicago.{log => _, _}
 
 object SchemaService {
 
-  val log = Logger(SchemaService.getClass.getName)
+  val log: Logger = Logger(SchemaService.getClass.getName)
 
-  val ImportIdType = idScalarTypeFromString[String]("ImportId")
+  val ImportIdType: ScalarType[String] = idScalarTypeFromString[String]("ImportId")
 
-  val ArgImportId =
+  val ArgImportId: Argument[String] =
     Argument("id", ImportIdType, description = "The Id of the import")
 
-  val BridgeServiceFields = fields[BridgeService, BridgeService](
+  val BridgeServiceFields: List[Field[BridgeService,BridgeService]] = fields[BridgeService, BridgeService](
     Field(
       "id",
       ImportIdType,
@@ -245,7 +245,7 @@ object SchemaService {
     )
   )
 
-  val BridgeServiceType = ObjectType(
+  val BridgeServiceType: ObjectType[BridgeService,BridgeService] = ObjectType(
     "BridgeService",
     BridgeServiceFields
   )

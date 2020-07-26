@@ -8,6 +8,7 @@ import com.github.thebridsk.bridge.client.pages.hand.PageHandInternal.PageHandNe
 import com.github.thebridsk.bridge.client.pages.hand.ComponentInputStyleButton.InputMethod
 import com.github.thebridsk.bridge.clientcommon.react.Utils._
 
+
 /**
  * A skeleton component.
  *
@@ -40,7 +41,7 @@ object SectionResult {
                     nextInput: PageHandNextInput.Value,
                     contract: Contract
   ) {
-    def missingRequired = {
+    def missingRequired: Boolean = {
       contractTricks match {
         case Some(ct) =>
           if (ct.tricks == 0) false
@@ -69,7 +70,7 @@ object SectionResult {
              callbackHonorsPlayer: Option[ViewHonors.CallbackHonorsPlayer],
              nextInput: PageHandNextInput.Value,
              contract: Contract
-           ) =
+           ) = // scalafix:ok ExplicitResultTypes; ReactComponent
     component(Props(madeOrDown,tricks,contractTricks,contractSuit,contractDoubled,declarer,
                     currentHonors, currentHonorsPlayer,
 //                    north,south,east,west,
@@ -77,7 +78,8 @@ object SectionResult {
                     callbackHonors, callbackHonorsPlayer,
                     nextInput, contract))
 
-  def header = ScalaComponent.builder[Unit]("SectionHeader")
+  private
+  val header = ScalaComponent.builder[Unit]("SectionHeader")
                  .render( _ =>
                    <.div(
                      <.span( "Result:")

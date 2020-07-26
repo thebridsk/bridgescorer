@@ -23,6 +23,7 @@ import com.github.thebridsk.bridge.server.backend.ChicagoMonitorWebservice
 import com.github.thebridsk.bridge.server.backend.RubberMonitorWebservice
 import java.time.Instant
 import java.time.ZoneId
+import akka.http.scaladsl.server.Route
 
 //import akka.event.LoggingAdapter
 
@@ -77,44 +78,44 @@ trait Service extends ImportExport {
   object restMovement extends RestMovement {
     implicit override lazy val actorSystem: ActorSystem =
       hasActorSystem.actorSystem
-    implicit override lazy val restService = hasActorSystem.restService
+    implicit override lazy val restService: BridgeService = hasActorSystem.restService
   }
   object restBoardSet extends RestBoardSet {
     implicit override lazy val actorSystem: ActorSystem =
       hasActorSystem.actorSystem
-    implicit override lazy val restService = hasActorSystem.restService
+    implicit override lazy val restService: BridgeService = hasActorSystem.restService
   }
   object restChicago extends RestChicago {
     implicit override lazy val actorSystem: ActorSystem =
       hasActorSystem.actorSystem
-    implicit override lazy val restService = hasActorSystem.restService
+    implicit override lazy val restService: BridgeService = hasActorSystem.restService
   }
   object restRubber extends RestRubber {
     implicit override lazy val actorSystem: ActorSystem =
       hasActorSystem.actorSystem
-    implicit override lazy val restService = hasActorSystem.restService
+    implicit override lazy val restService: BridgeService = hasActorSystem.restService
   }
-  val restDuplicate = new RestDuplicate {
+  val restDuplicate: RestDuplicate = new RestDuplicate {
     implicit override lazy val actorSystem: ActorSystem =
       hasActorSystem.actorSystem
     implicit override lazy val restService = hasActorSystem.restService
   }
-  val restDuplicateResult = new RestDuplicateResult {
+  val restDuplicateResult: RestDuplicateResult = new RestDuplicateResult {
     implicit override lazy val actorSystem: ActorSystem =
       hasActorSystem.actorSystem
     implicit override lazy val restService = hasActorSystem.restService
   }
-  val restDuplicateSummary = new RestDuplicateSummary {
+  val restDuplicateSummary: RestDuplicateSummary = new RestDuplicateSummary {
     implicit override lazy val actorSystem: ActorSystem =
       hasActorSystem.actorSystem
     implicit override lazy val restService = hasActorSystem.restService
   }
-  val restDuplicatePlaces = new RestDuplicatePlaces {
+  val restDuplicatePlaces: RestDuplicatePlaces = new RestDuplicatePlaces {
     implicit override lazy val actorSystem: ActorSystem =
       hasActorSystem.actorSystem
     implicit override lazy val restService = hasActorSystem.restService
   }
-  val restSuggestion = new RestSuggestion {
+  val restSuggestion: RestSuggestion = new RestSuggestion {
     implicit override lazy val actorSystem: ActorSystem =
       hasActorSystem.actorSystem
     implicit override lazy val restService = hasActorSystem.restService
@@ -122,7 +123,7 @@ trait Service extends ImportExport {
   object restNames extends RestNames {
     implicit override lazy val actorSystem: ActorSystem =
       hasActorSystem.actorSystem
-    implicit override lazy val restService = hasActorSystem.restService
+    implicit override lazy val restService: BridgeService = hasActorSystem.restService
   }
   object duplicateMonitor
       extends DuplicateMonitorWebservice(totallyMissingResourceHandler,this)
@@ -134,7 +135,7 @@ trait Service extends ImportExport {
   object restLoggerConfig extends RestLoggerConfig {
     implicit override lazy val actorSystem: ActorSystem =
       hasActorSystem.actorSystem
-    implicit override lazy val restService = hasActorSystem.restService
+    implicit override lazy val restService: BridgeService = hasActorSystem.restService
     val ports = hasActorSystem.ports
   }
 
@@ -143,7 +144,7 @@ trait Service extends ImportExport {
   /**
     * Handler for converting rejections into HttpResponse
     */
-  def totallyMissingResourceHandler =
+  def totallyMissingResourceHandler: RejectionHandler =
     RejectionHandler
       .newBuilder()
       .handle {
@@ -170,7 +171,7 @@ trait Service extends ImportExport {
       }
       .result()
 
-  def rejectionHandler =
+  def rejectionHandler: RejectionHandler =
     RejectionHandler
       .newBuilder()
       .handleAll[MethodRejection] { rejections =>
@@ -189,7 +190,7 @@ trait Service extends ImportExport {
       }
       .result()
 
-  val routeRest =
+  val routeRest: Route =
     respondWithHeaders(
       `Cache-Control`(`no-cache`, `no-store`, `must-revalidate`),
       RawHeader("Pragma", "no-cache"),
@@ -217,8 +218,8 @@ trait Service extends ImportExport {
 
 object Service {
 
-  val log = Logger[Service]()
-  val clientlog = Logger[client.LogA]()
+  val log: Logger = Logger[Service]()
+  val clientlog: Logger = Logger[client.LogA]()
 
   private val format = java.time.format.DateTimeFormatter.ofPattern("HH:mm:ss.SSS").withZone( ZoneId.systemDefault() )
 
@@ -226,7 +227,7 @@ object Service {
     clientlog.info(s"ClientLog($ips) $msg")
   }
 
-  def formatMsg(msg: String, args: String*) = {
+  def formatMsg(msg: String, args: String*): String = {
     if (args.length == 0) msg
     else {
       val b = new java.lang.StringBuilder()
@@ -237,7 +238,7 @@ object Service {
     }
   }
 
-  def toLevel(level: String) = {
+  def toLevel(level: String): Level = {
     level match {
       case "E" => Level.SEVERE
       case "W" => Level.WARNING

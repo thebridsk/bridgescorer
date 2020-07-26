@@ -26,12 +26,13 @@ import com.github.thebridsk.materialui.TextVariant
 import com.github.thebridsk.materialui.TextColor
 import com.github.thebridsk.bridge.data.MatchRubber
 
+
 object PageRubberNames {
   import PageRubberNamesInternal._
 
   case class Props(page: RubberMatchNamesView, router: BridgeRouter[RubberPage])
 
-  def apply(page: RubberMatchNamesView, router: BridgeRouter[RubberPage]) =
+  def apply(page: RubberMatchNamesView, router: BridgeRouter[RubberPage]) = // scalafix:ok ExplicitResultTypes; ReactComponent
     component(Props(page,router))
 
 }
@@ -39,9 +40,9 @@ object PageRubberNames {
 object PageRubberNamesInternal {
   import PageRubberNames._
 
-  val logger = Logger("bridge.PageRubberNames")
+  val logger: Logger = Logger("bridge.PageRubberNames")
 
-  def playerValid( s: String ) = s.length!=0
+  def playerValid( s: String ): Boolean = s.length!=0
 
   case class PlayerState( north: String,
                           south: String,
@@ -52,9 +53,9 @@ object PageRubberNamesInternal {
                           names: List[String] = Nil
                         ) {
     def isDealerValid() = dealer.isDefined
-    def areAllPlayersValid() = playerValid(north) && playerValid(south) && playerValid(east) && playerValid(west)
+    def areAllPlayersValid(): Boolean = playerValid(north) && playerValid(south) && playerValid(east) && playerValid(west)
 
-    def areAllPlayersUnique() = {
+    def areAllPlayersUnique(): Boolean = {
       val p =
         north.trim ::
         south.trim ::
@@ -66,14 +67,14 @@ object PageRubberNamesInternal {
       before == after
     }
 
-    def isValid() = areAllPlayersValid()&& isDealerValid() && areAllPlayersUnique()
+    def isValid(): Boolean = areAllPlayersValid()&& isDealerValid() && areAllPlayersUnique()
 
-    def isDealer( p: PlayerPosition ) = dealer match {
+    def isDealer( p: PlayerPosition ): Boolean = dealer match {
       case Some(d) => d == p
       case None => false
     }
 
-    def isDealer(p: String) =
+    def isDealer(p: String): Boolean =
         p match {
           case `north` => dealer == North
           case `south` => dealer == South
@@ -82,7 +83,7 @@ object PageRubberNamesInternal {
           case _ => false
         }
 
-    def getDealerName() = dealer match {
+    def getDealerName(): String = dealer match {
       case Some(d) =>
         d match {
           case North => north
@@ -106,13 +107,13 @@ object PageRubberNamesInternal {
     def setEast( text: String ): Callback =  scope.modState( ps => {traceSetname("East",ps.copy(east=text))})
     def setWest( text: String ): Callback =  scope.modState( ps => {traceSetname("West",ps.copy(west=text))})
 
-    val reset = scope.modState( ps => PlayerState("","","","",None, gotNames = ps.gotNames, names=ps.names))
+    val reset: Callback = scope.modState( ps => PlayerState("","","","",None, gotNames = ps.gotNames, names=ps.names))
 
-    def setFirstDealer( p: PlayerPosition ) = scope.modState(ps => ps.copy(dealer=Some(p)))
+    def setFirstDealer( p: PlayerPosition ): Callback = scope.modState(ps => ps.copy(dealer=Some(p)))
 
     private def noNull( s: String ) = Option(s).getOrElse("")
 
-    def render( props: Props, state: PlayerState ) = {
+    def render( props: Props, state: PlayerState ) = { // scalafix:ok ExplicitResultTypes; React
       import RubberStyles._
       val valid = state.isValid()
       val errormsg =
@@ -218,7 +219,7 @@ object PageRubberNamesInternal {
       )
     }
 
-    val ok = CallbackTo {
+    val ok: Callback = CallbackTo {
       val state = scope.withEffectsImpure.state
       val props = scope.withEffectsImpure.props
       RubberController.updateRubberNames(props.page.rid, state.north.trim, state.south.trim, state.east.trim, state.west.trim, state.dealer.get)
@@ -227,18 +228,18 @@ object PageRubberNamesInternal {
       props => props.router.set(props.page.toRubber)
     }
 
-    val storeCallback = Callback { scope.withEffectsImpure.modState(s => {
+    val storeCallback: Callback = Callback { scope.withEffectsImpure.modState(s => {
       val rubid = scope.withEffectsImpure.props.page.rid
       val (north,south,east,west,dealer) = getNamesFromStore(rubid)
       s.copy(north, south, east, west, dealer)
     })}
 
-    val namesCallback = scope.modState(s => {
+    val namesCallback: Callback = scope.modState(s => {
       val names = NamesStore.getNames
       s.copy(gotNames=true, names=names)
     })
 
-    val didMount = CallbackTo {
+    val didMount: Callback = CallbackTo {
       logger.info("PageRubberNames.didMount")
       NamesStore.ensureNamesAreCached(Some(namesCallback))
       RubberStore.addChangeListener(storeCallback)
@@ -246,7 +247,7 @@ object PageRubberNamesInternal {
       RubberController.ensureMatch(p.page.rid))
     }
 
-    val willUnmount = CallbackTo {
+    val willUnmount: Callback = CallbackTo {
       logger.info("PageRubberNames.willUnmount")
       RubberStore.removeChangeListener(storeCallback)
     }
@@ -266,6 +267,7 @@ object PageRubberNamesInternal {
     }
   }
 
+  private[rubber]
   val component = ScalaComponent.builder[Props]("PageRubberNames")
                             .initialStateFromProps { props => {
                               val rubid = props.page.rid

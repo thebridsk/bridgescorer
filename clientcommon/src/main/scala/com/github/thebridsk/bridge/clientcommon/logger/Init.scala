@@ -14,6 +14,7 @@ import com.github.thebridsk.utilities.logging.TraceMsg
 import org.scalajs.dom.raw.XMLHttpRequest
 import com.github.thebridsk.bridge.clientcommon.debug.DebugLoggerComponent
 import com.github.thebridsk.bridge.clientcommon.debug.LoggerStore
+import scala.util.matching.Regex
 
 trait InitController {
 
@@ -69,7 +70,7 @@ object Init {
       if (level != "") setLoggerLevel("[root]",level)
     }
   }
-  lazy val logger = Logger("comm.logger.Init")
+  lazy val logger: Logger = Logger("comm.logger.Init")
 
   private var pclientid: Option[String] = None
 
@@ -77,9 +78,9 @@ object Init {
 
   val defaultLoggerForRemoteHandlers = "bridge"
 
-  def noop() = {}
+  def noop(): Unit = {}
 
-  def setLoggerLevel(name: String, level: String) = {
+  def setLoggerLevel(name: String, level: String): Unit = {
     val n = if (name == "[root]") "" else name
     Level.toLevel(level) match {
       case Some(l) => Logger(n).setLevel(l)
@@ -137,10 +138,10 @@ object Init {
 
   import scala.language.postfixOps
 
-  val loggerSpec = """([^=]+)=(.*)""" r
+  val loggerSpec: Regex = """([^=]+)=(.*)""" r
 
   // LoggerConfig( "[root]=ALL"::Nil, "console=INFO"::"server=ALL"::Nil)
-  def processLoggers(spec: List[String]) = {
+  def processLoggers(spec: List[String]): Unit = {
     spec.foreach(s => {
       s match {
         case loggerSpec(name, level) => setLoggerLevel(name,level)
@@ -149,11 +150,11 @@ object Init {
     })
   }
 
-  val handlerSpec = """([^=]+)=([^,]*),(.*)""" r
-  val handler2Spec = """([^=]+)=([^,]*)""" r
+  val handlerSpec: Regex = """([^=]+)=([^,]*),(.*)""" r
+  val handler2Spec: Regex = """([^=]+)=([^,]*)""" r
 
   // LoggerConfig( "[root]=ALL"::Nil, "console=INFO"::"server=ALL"::Nil)
-  def processHandlers(spec: List[String]) = {
+  def processHandlers(spec: List[String]): Unit = {
     spec.foreach(s => {
       s match {
         case handlerSpec(name, level, loggername) =>
@@ -174,7 +175,7 @@ object Init {
     h.filter = f
   }
 
-  def getLoggerName(forRemoteHandler: Boolean, loggername: String = "") =
+  def getLoggerName(forRemoteHandler: Boolean, loggername: String = ""): String =
     if (loggername.length() == 0) {
       if (forRemoteHandler) "bridge" else "[root]"
     } else {
@@ -186,7 +187,7 @@ object Init {
       name: String,
       level: String,
       loggername: String
-  ) = {
+  ): Unit = {
     val target = Logger(loggername)
     def getLoggerName(forRemoteHandler: Boolean) =
       if (loggername.length() == 0) {

@@ -20,7 +20,7 @@ trait Popup[ +T <: Page[T] ] {
 
   implicit val webDriver: WebDriver
 
-  def isPopupDisplayed(implicit pos: Position) = {
+  def isPopupDisplayed(implicit pos: Position): Boolean = {
     try {
       find( id("popup") ).isDisplayed
     } catch {
@@ -47,7 +47,7 @@ trait Popup[ +T <: Page[T] ] {
     this.asInstanceOf[T]
   }
 
-  def getPopUpText(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def getPopUpText(implicit patienceConfig: PatienceConfig, pos: Position): String = {
     find( className("baseDivPopupOKCancelBody")).text
   }
 

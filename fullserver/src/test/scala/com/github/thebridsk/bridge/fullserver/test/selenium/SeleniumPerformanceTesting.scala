@@ -26,7 +26,7 @@ class SeleniumPerformanceTesting extends AnyFlatSpec with Matchers with BeforeAn
     import Eventually.{ patienceConfig => _, _ }
     import com.github.thebridsk.browserpages.PageBrowser._
 
-  val log = Logger[SeleniumPerformanceTesting]()
+  val log: Logger = Logger[SeleniumPerformanceTesting]()
 
   import scala.concurrent.duration._
 
@@ -43,13 +43,13 @@ class SeleniumPerformanceTesting extends AnyFlatSpec with Matchers with BeforeAn
   type MyDuration = Duration
   val MyDuration = Duration
 
-  implicit val timeoutduration = MyDuration( 60, TimeUnit.SECONDS )
+  implicit val timeoutduration: FiniteDuration = MyDuration( 60, TimeUnit.SECONDS )
 
-  val defaultPatienceConfig = PatienceConfig(timeout=scaled(Span(timeoutMillis, Millis)), interval=scaled(Span(intervalMillis,Millis)))
-  implicit def patienceConfig = defaultPatienceConfig
+  val defaultPatienceConfig: PatienceConfig = PatienceConfig(timeout=scaled(Span(timeoutMillis, Millis)), interval=scaled(Span(intervalMillis,Millis)))
+  implicit def patienceConfig: PatienceConfig = defaultPatienceConfig
 
   override
-  def beforeAll() = {
+  def beforeAll(): Unit = {
     import Session._
 
     MonitorTCP.nextTest()
@@ -61,7 +61,7 @@ class SeleniumPerformanceTesting extends AnyFlatSpec with Matchers with BeforeAn
   }
 
   override
-  def afterAll() = {
+  def afterAll(): Unit = {
     SessionDirector.sessionStop()
     TestServer.stop()
   }

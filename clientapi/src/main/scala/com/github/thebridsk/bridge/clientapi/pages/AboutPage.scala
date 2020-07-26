@@ -16,6 +16,7 @@ import com.github.thebridsk.materialui.TextColor
 import com.github.thebridsk.materialui.TextVariant
 import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles._
 
+
 /**
  * A skeleton component.
  *
@@ -32,14 +33,14 @@ object AboutPage {
 
   case class Props( router: BridgeRouter[AppPage] )
 
-  def apply( router: BridgeRouter[AppPage] ) = component( Props(router))
+  def apply( router: BridgeRouter[AppPage] ) = component( Props(router))  // scalafix:ok ExplicitResultTypes; ReactComponent
 
 }
 
 object AboutPageInternal {
   import AboutPage._
 
-  val logger = Logger("bridge.AboutPage")
+  val logger: Logger = Logger("bridge.AboutPage")
 
   /**
    * Internal state for rendering the component.
@@ -59,7 +60,7 @@ object AboutPageInternal {
    */
   class Backend(scope: BackendScope[Props, State]) {
 
-    val didMount = Callback {
+    val didMount: Callback = Callback {
       import scala.concurrent.ExecutionContext.Implicits.global
       // make AJAX rest call here
       logger.finer("HomePage: Sending serverurl request to server")
@@ -67,9 +68,9 @@ object AboutPageInternal {
       RestClientServerVersion.list().recordFailure().foreach( serverVersion => scope.withEffectsImpure.modState( s => s.copy(serverVersion=serverVersion.toList)) )
     }
 
-    val indent = <.span( ^.dangerouslySetInnerHtml := "&nbsp;&nbsp;&nbsp;" )
+    val indent = <.span( ^.dangerouslySetInnerHtml := "&nbsp;&nbsp;&nbsp;" )  // scalafix:ok ExplicitResultTypes; React
 
-    def render( props: Props, state: State ) = {
+    def render( props: Props, state: State ) = { // scalafix:ok ExplicitResultTypes; React
       <.div(
         RootBridgeAppBar(
             Seq(MuiTypography(
@@ -126,6 +127,7 @@ object AboutPageInternal {
     }
   }
 
+  private[pages]
   val component = ScalaComponent.builder[Props]("AboutPage")
                             .initialStateFromProps { props => State(ServerURL(Nil), List(ServerVersion("?","?","?"))) }
                             .backend(new Backend(_))

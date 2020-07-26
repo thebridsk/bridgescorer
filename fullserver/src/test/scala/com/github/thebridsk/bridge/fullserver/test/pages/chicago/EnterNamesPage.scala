@@ -11,17 +11,18 @@ import com.github.thebridsk.bridge.server.test.util.TestServer
 import com.github.thebridsk.utilities.logging.Logger
 import com.github.thebridsk.bridge.data.bridge.PlayerPosition
 import com.github.thebridsk.bridge.fullserver.test.pages.bridge.ErrorMsgDiv
+import com.github.thebridsk.browserpages.{ Combobox, Element }
 
 object EnterNamesPage {
 
-  val log = Logger[EnterNamesPage]()
+  val log: Logger = Logger[EnterNamesPage]()
 
-  def current(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
+  def current(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position): EnterNamesPage = {
     val (chiid,roundid) = findMatchRoundId
     new EnterNamesPage(chiid,roundid)
   }
 
-  def currentWithId(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = eventually {
+  def currentWithId(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position): EnterNamesPage = eventually {
     val (chiid,roundid) = findMatchRoundId
     new EnterNamesPage(chiid,roundid)
   }
@@ -30,7 +31,7 @@ object EnterNamesPage {
    * @param chiid the chicago id
    * @param roundid the round ID, zero based.
    */
-  def urlFor( chiid: String, roundid: Int ) = {
+  def urlFor( chiid: String, roundid: Int ): String = {
     TestServer.getAppPageUrl( s"chicago/${chiid}/rounds/${roundid}/names" )
   }
 
@@ -38,7 +39,7 @@ object EnterNamesPage {
    * @param chiid the chicago id
    * @param roundid the round ID, zero based.
    */
-  def demoUrlFor( chiid: String, roundid: Int ) = {
+  def demoUrlFor( chiid: String, roundid: Int ): String = {
     TestServer.getAppDemoPageUrl( s"chicago/${chiid}/rounds/${roundid}/names" )
   }
 
@@ -50,7 +51,7 @@ object EnterNamesPage {
               webDriver: WebDriver,
               patienceConfig: PatienceConfig,
               pos: Position
-          ) = {
+          ): EnterNamesPage = {
     go to urlFor(chiid,roundid)
     new EnterNamesPage(chiid,roundid)
   }
@@ -107,7 +108,7 @@ class EnterNamesPage( val chiid: String,
   import EnterNamesPage._
   import com.github.thebridsk.bridge.data.bridge._
 
-  def validate(implicit patienceConfig: PatienceConfig, pos: Position) = logMethod(s"${pos.line} ${getClass.getSimpleName}.validate") { eventually {
+  def validate(implicit patienceConfig: PatienceConfig, pos: Position): EnterNamesPage = logMethod(s"${pos.line} ${getClass.getSimpleName}.validate") { eventually {
 
     roundid.toString() mustBe "0"      // only valid for the first round
 
@@ -123,7 +124,7 @@ class EnterNamesPage( val chiid: String,
     this
   }}
 
-  def validateFive(implicit patienceConfig: PatienceConfig, pos: Position) = logMethod(s"${pos.line} ${getClass.getSimpleName}.validate") { eventually {
+  def validateFive(implicit patienceConfig: PatienceConfig, pos: Position): EnterNamesPage = logMethod(s"${pos.line} ${getClass.getSimpleName}.validate") { eventually {
     findCheckbox(fastRotationCheckboxName)
     this
   }}
@@ -133,7 +134,7 @@ class EnterNamesPage( val chiid: String,
    * @param loc the location on the screen.
    * @param name
    */
-  def enterPlayer( loc: PlayerPosition, name: String, hitEscapeAfter: Boolean = false )(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def enterPlayer( loc: PlayerPosition, name: String, hitEscapeAfter: Boolean = false )(implicit patienceConfig: PatienceConfig, pos: Position): EnterNamesPage = {
     val text = eventually {
       getCombobox(toInputName(loc))
     }
@@ -146,7 +147,7 @@ class EnterNamesPage( val chiid: String,
    * Enter sitting out player's name.
    * @param name
    */
-  def enterSittingOutPlayer( name: String, hitEscapeAfter: Boolean = false )(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def enterSittingOutPlayer( name: String, hitEscapeAfter: Boolean = false )(implicit patienceConfig: PatienceConfig, pos: Position): EnterNamesPage = {
     val text = eventually {
       getCombobox(sittingOutInputName)
     }
@@ -158,7 +159,7 @@ class EnterNamesPage( val chiid: String,
   /**
    * @param loc the location on the screen.  The scorekeeper's location is not valid.
    */
-  def getPlayer( loc: PlayerPosition )(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def getPlayer( loc: PlayerPosition )(implicit patienceConfig: PatienceConfig, pos: Position): String = {
     eventually {
       getCombobox(toInputName(loc)).value
     }
@@ -166,7 +167,7 @@ class EnterNamesPage( val chiid: String,
 
   /**
    */
-  def getSittingOutPlayer()(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def getSittingOutPlayer()(implicit patienceConfig: PatienceConfig, pos: Position): String = {
     eventually {
       getCombobox(sittingOutInputName).value
     }
@@ -175,7 +176,7 @@ class EnterNamesPage( val chiid: String,
   /**
    * @param loc the location on the screen.  The scorekeeper's location is not valid.
    */
-  def getPlayerSuggestions( loc: PlayerPosition )(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def getPlayerSuggestions( loc: PlayerPosition )(implicit patienceConfig: PatienceConfig, pos: Position): List[Element] = {
     eventually {
       getCombobox(toInputName(loc)).suggestions
     }
@@ -184,7 +185,7 @@ class EnterNamesPage( val chiid: String,
   /**
    * @param loc the location on the screen.  The scorekeeper's location is not valid.
    */
-  def getPlayerCombobox( loc: PlayerPosition )(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def getPlayerCombobox( loc: PlayerPosition )(implicit patienceConfig: PatienceConfig, pos: Position): Combobox = {
     eventually {
       getCombobox(toInputName(loc))
     }
@@ -192,7 +193,7 @@ class EnterNamesPage( val chiid: String,
 
   /**
    */
-  def getSittingOutPlayerSuggestions()(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def getSittingOutPlayerSuggestions()(implicit patienceConfig: PatienceConfig, pos: Position): List[Element] = {
     eventually {
       getCombobox(sittingOutInputName).suggestions
     }
@@ -201,7 +202,7 @@ class EnterNamesPage( val chiid: String,
   /**
    * @param loc the location on the screen.  The scorekeeper's location is not valid.
    */
-  def isPlayerSuggestionsVisible( loc: PlayerPosition )(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def isPlayerSuggestionsVisible( loc: PlayerPosition )(implicit patienceConfig: PatienceConfig, pos: Position): Boolean = {
     eventually {
       getCombobox(toInputName(loc)).isSuggestionVisible
     }
@@ -209,22 +210,22 @@ class EnterNamesPage( val chiid: String,
 
   /**
    */
-  def isSittingOutPlayerSuggestionsVisible()(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def isSittingOutPlayerSuggestionsVisible()(implicit patienceConfig: PatienceConfig, pos: Position): Boolean = {
     eventually {
       getCombobox(sittingOutInputName).isSuggestionVisible
     }
   }
 
-  def isDealer( loc: PlayerPosition )(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def isDealer( loc: PlayerPosition )(implicit patienceConfig: PatienceConfig, pos: Position): Boolean = {
     getButton( toDealerButtonId(loc)).containsClass("baseButtonSelected")
   }
 
-  def setDealer( loc: PlayerPosition )(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def setDealer( loc: PlayerPosition )(implicit patienceConfig: PatienceConfig, pos: Position): EnterNamesPage = {
     clickButton( toDealerButtonId(loc) )
     this
   }
 
-  def clickOK(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def clickOK(implicit patienceConfig: PatienceConfig, pos: Position): HandPage = {
     val matchtype = if (isFive) {
       if (isFastRotation) {
         if (isFairRotation) ChicagoMatchTypeFair
@@ -239,34 +240,34 @@ class EnterNamesPage( val chiid: String,
     new HandPage(chiid,roundid,0,matchtype)
   }
 
-  def clickReset(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def clickReset(implicit patienceConfig: PatienceConfig, pos: Position): EnterNamesPage = {
     clickButton(buttonReset)
     this
   }
 
-  def clickCancel(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def clickCancel(implicit patienceConfig: PatienceConfig, pos: Position): SummaryPage = {
     clickButton(buttonCancel)
     SummaryPage.current(ChicagoMatchTypeUnkown)
   }
 
-  def isOKEnabled(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def isOKEnabled(implicit patienceConfig: PatienceConfig, pos: Position): Boolean = {
     getButton(buttonOK).isEnabled
   }
 
-  def isResetEnabled(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def isResetEnabled(implicit patienceConfig: PatienceConfig, pos: Position): Boolean = {
     getButton(buttonReset).isEnabled
   }
 
-  def clickFive(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def clickFive(implicit patienceConfig: PatienceConfig, pos: Position): EnterNamesPage = {
     clickButton(buttonToggleFive)
     this
   }
 
-  def isFive(implicit pos: Position) = {
+  def isFive(implicit pos: Position): Boolean = {
     findButton(buttonToggleFive).text == "Four"    // the button shows target, not what is showing
   }
 
-  def isSittingOutVisible(implicit pos: Position) = {
+  def isSittingOutVisible(implicit pos: Position): Boolean = {
     val tr = findElemByXPath("//div[contains(concat(' ', @class, ' '), ' chiViewPlayersVeryFirstRound ')]/table/tbody/tr[1]")
     tr.attribute("class") match {
       case Some(cls) =>
@@ -276,29 +277,29 @@ class EnterNamesPage( val chiid: String,
     }
   }
 
-  def isFastRotation(implicit pos: Position) = {
+  def isFastRotation(implicit pos: Position): Boolean = {
     isCheckboxSelected(fastRotationCheckboxName)
   }
 
-  def isSimpleRotation(implicit pos: Position) = {
+  def isSimpleRotation(implicit pos: Position): Boolean = {
     isRadioButtonSelected(simpleRotationRadioBoxName)
   }
 
-  def isFairRotation(implicit pos: Position) = {
+  def isFairRotation(implicit pos: Position): Boolean = {
     isRadioButtonSelected(fairRotationRadioBoxName)
   }
 
-  def clickFastRotation(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def clickFastRotation(implicit patienceConfig: PatienceConfig, pos: Position): EnterNamesPage = {
     clickButton(fastRotationCheckboxName)
     this
   }
 
-  def clickSimpleRotation(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def clickSimpleRotation(implicit patienceConfig: PatienceConfig, pos: Position): EnterNamesPage = {
     clickButton(simpleRotationRadioBoxName)
     this
   }
 
-  def clickFairRotation(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def clickFairRotation(implicit patienceConfig: PatienceConfig, pos: Position): EnterNamesPage = {
     clickButton(fairRotationRadioBoxName)
     this
   }

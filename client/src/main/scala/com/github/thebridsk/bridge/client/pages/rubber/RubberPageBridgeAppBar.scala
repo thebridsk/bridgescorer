@@ -15,6 +15,7 @@ import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles
 import com.github.thebridsk.bridge.client.pages.BridgeAppBar
 import com.github.thebridsk.bridge.client.pages.ServerURLPopup
 
+
 /**
  * A simple AppBar for the Bridge client.
  *
@@ -53,7 +54,7 @@ object RubberPageBridgeAppBar {
       routeCtl: BridgeRouter[RubberPage]
   )(
       mainMenuItems: CtorType.ChildArg*,
-  ) = {
+  ): TagMod = {
     TagMod(
       ServerURLPopup(),
       component(Props(mainMenuItems,title,helpurl,routeCtl))
@@ -64,7 +65,7 @@ object RubberPageBridgeAppBar {
 object RubberPageBridgeAppBarInternal {
   import RubberPageBridgeAppBar._
 
-  val logger = Logger("bridge.RubberPageBridgeAppBar")
+  val logger: Logger = Logger("bridge.RubberPageBridgeAppBar")
 
   /**
    * Internal state for rendering the component.
@@ -77,8 +78,8 @@ object RubberPageBridgeAppBarInternal {
       anchorMainEl: js.UndefOr[Element] = js.undefined
   ) {
 
-    def openMainMenu( n: Node ) = copy( anchorMainEl = n.asInstanceOf[Element] )
-    def closeMainMenu() = copy( anchorMainEl = js.undefined )
+    def openMainMenu( n: Node ): State = copy( anchorMainEl = n.asInstanceOf[Element] )
+    def closeMainMenu(): State = copy( anchorMainEl = js.undefined )
   }
 
   /**
@@ -90,14 +91,14 @@ object RubberPageBridgeAppBarInternal {
    */
   class Backend(scope: BackendScope[Props, State]) {
 
-    def handleMainClick( event: ReactEvent ) = event.extract(_.currentTarget)(currentTarget => scope.modState(s => s.openMainMenu(currentTarget)).runNow() )
-    def handleMainCloseClick( event: ReactEvent ) = scope.modState(s => s.closeMainMenu()).runNow()
-    def handleMainClose( /* event: js.Object, reason: String */ ) = {
+    def handleMainClick( event: ReactEvent ): Unit = event.extract(_.currentTarget)(currentTarget => scope.modState(s => s.openMainMenu(currentTarget)).runNow() )
+    def handleMainCloseClick( event: ReactEvent ): Unit = scope.modState(s => s.closeMainMenu()).runNow()
+    def handleMainClose( /* event: js.Object, reason: String */ ): Unit = {
       logger.fine("MainClose called")
       scope.modState(s => s.closeMainMenu()).runNow()
     }
 
-    def render( props: Props, state: State ) = {
+    def render( props: Props, state: State ) = { // scalafix:ok ExplicitResultTypes; React
       import BaseStyles._
 
       def handleGotoHome(e: ReactEvent) = props.routeCtl.toHome
@@ -149,17 +150,18 @@ object RubberPageBridgeAppBarInternal {
 
     private var mounted = false
 
-    val didMount = Callback {
+    val didMount: Callback = Callback {
       mounted = true
 
     }
 
-    val willUnmount = Callback {
+    val willUnmount: Callback = Callback {
       mounted = false
 
     }
   }
 
+  private[rubber]
   val component = ScalaComponent.builder[Props]("RubberPageBridgeAppBar")
                             .initialStateFromProps { props => State() }
                             .backend(new Backend(_))

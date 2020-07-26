@@ -11,18 +11,20 @@ import com.github.thebridsk.bridge.data.rest.JsonSupport
 import com.github.thebridsk.bridge.clientcommon.rest2.Result
 import com.github.thebridsk.bridge.clientcommon.rest2.RestClientDuplicatePlayerPlaces
 import com.github.thebridsk.bridge.data.duplicate.stats.PlayerPlaces
+import com.github.thebridsk.bridge.clientcommon.rest2.AjaxResult
+import play.api.libs.json.Reads
 
 object QueryDuplicateStats {
   import JsonSupport._
   import scala.concurrent.ExecutionContext.Implicits.global
 
-  val logger = Logger("bridge.QueryDuplicateStats")
+  val logger: Logger = Logger("bridge.QueryDuplicateStats")
 
   case class StatResult( duplicatestats: DuplicateStats )
 
-  implicit val StatResultReads = Json.reads[StatResult]
+  implicit val StatResultReads: Reads[StatResult] = Json.reads[StatResult]
 
-  val fragComparisonStats = """
+  val fragComparisonStats: String = """
     |fragment comparisonFields on PlayerComparisonStats {
     |  data {
     |    player
@@ -37,7 +39,7 @@ object QueryDuplicateStats {
     |}
     """.stripMargin
 
-  val fragContractStats = """
+  val fragContractStats: String = """
     |fragment contractFields on DuplicateContractStats {
     |  data {
     |    contract
@@ -52,7 +54,7 @@ object QueryDuplicateStats {
     |}
     """.stripMargin
 
-  val fragPlayerStats = """
+  val fragPlayerStats: String = """
     |fragment playerFields on DuplicatePlayerStats {
     |  declarer {
     |    player
@@ -129,7 +131,7 @@ object QueryDuplicateStats {
       playerDoubledStats: Boolean = false,
       comparisonStats: Boolean = false,
       playersOpponentsStats: Boolean = false,
-  ) = {
+  ): AjaxResult[Either[String,StatResult]] = {
     val query =
        """{
          |  duplicatestats {
@@ -149,9 +151,9 @@ object QueryDuplicateStats {
     makeQuery(query)
   }
 
-  def duplicateStats() = getDuplicateStats(true,true,true,true)
+  def duplicateStats(): AjaxResult[Either[String,StatResult]] = getDuplicateStats(true,true,true,true)
 
-  def makeQuery( query: String ) = {
+  def makeQuery( query: String ): AjaxResult[Either[String,StatResult]] = {
 
     val vars = None
     val operation = None

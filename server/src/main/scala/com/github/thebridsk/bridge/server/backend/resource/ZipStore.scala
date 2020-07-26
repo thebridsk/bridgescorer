@@ -21,7 +21,7 @@ import java.io.OutputStream
 import scala.util.Using
 
 object ZipStore {
-  val log = Logger[ZipStore[_, _]]()
+  val log: Logger = Logger[ZipStore[_, _]]()
 
   def apply[VId <: Comparable[VId], VType <: VersionedInstance[VType, VType, VId]](
       name: String,
@@ -50,7 +50,7 @@ object ZipStoreInternal {
 
   val storedir = "store/"
 
-  def metadataDir[VId <: Comparable[VId]]( id: VId, resourceName: String ) = {
+  def metadataDir[VId <: Comparable[VId]]( id: VId, resourceName: String ): String = {
     s"${storedir}${resourceName}.${id}/"
   }
 
@@ -264,7 +264,7 @@ class ZipPersistentSupport[VId <: Comparable[VId], VType <: VersionedInstance[VT
     storeIsReadOnly.logit("ZipPersistentSupport.deleteFromPersistent")
   }
 
-  def readFilenames(id: VId) = {
+  def readFilenames(id: VId): List[String] = {
     support.getReadExtensions.map { e =>
       s"${storedir}${resourceName}.${support.idSupport.toString(id)}${e}"
     }

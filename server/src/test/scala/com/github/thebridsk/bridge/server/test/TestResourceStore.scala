@@ -24,10 +24,10 @@ class TestResourceStore extends AsyncFlatSpec with Matchers {
 
   val matchdup = BridgeServiceTesting.testingMatch
 
-  val team1 = Team.id(1)
-  val team2 = Team.id(2)
-  val team3 = Team.id(3)
-  val team4 = Team.id(4)
+  val team1: Team.Id = Team.id(1)
+  val team2: Team.Id = Team.id(2)
+  val team3: Team.Id = Team.id(3)
+  val team4: Team.Id = Team.id(4)
 
   behavior of "BridgeServiceAlternate for duplicate"
 

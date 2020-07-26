@@ -10,17 +10,18 @@ import com.github.thebridsk.bridge.server.test.util.TestServer
 import com.github.thebridsk.utilities.logging.Logger
 import com.github.thebridsk.bridge.fullserver.test.pages.BaseHandPage
 import com.github.thebridsk.bridge.data.bridge._
+import scala.util.matching.Regex
 
 object HandPage {
 
-  val log = Logger[HandPage]()
+  val log: Logger = Logger[HandPage]()
 
-  def current( matchType: ChicagoMatchType )(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
+  def current( matchType: ChicagoMatchType )(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position): HandPage = {
     val (chiid,roundid,hand) = findIds
     new HandPage(chiid,roundid,hand,matchType)
   }
 
-  def waitFor( matchType: ChicagoMatchType )(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
+  def waitFor( matchType: ChicagoMatchType )(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position): HandPage = {
     val (chiid,roundid,hand) = eventually { findIds }
     new HandPage(chiid,roundid,hand,matchType)
   }
@@ -31,7 +32,7 @@ object HandPage {
    * @param hand the hand in the round, zero based
    * @return a HandPage object
    */
-  def goto(chiid: String, round: Int, hand: Int, matchType: ChicagoMatchType )(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
+  def goto(chiid: String, round: Int, hand: Int, matchType: ChicagoMatchType )(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position): HandPage = {
     go to urlFor(chiid,round,hand)
     new HandPage(chiid,round,hand,matchType)
   }
@@ -42,7 +43,7 @@ object HandPage {
    * @param hand the hand in the round, zero based
    * @return the URL
    */
-  def urlFor(chiid: String, round: Int, hand: Int) = {
+  def urlFor(chiid: String, round: Int, hand: Int): String = {
     // http://loopback:8080/public/index-fastopt.html#chicago/C10/rounds/0/hands/0
     TestServer.getAppPageUrl(s"chicago/${chiid}/rounds/${round}/hands/${hand}")
   }
@@ -53,13 +54,13 @@ object HandPage {
    * @param hand the hand in the round, zero based
    * @return the URL
    */
-  def demoUrlFor(chiid: String, round: Int, hand: Int) = {
+  def demoUrlFor(chiid: String, round: Int, hand: Int): String = {
     // http://loopback:8080/public/index-fastopt.html#chicago/C10/rounds/0/hands/0
     TestServer.getAppPageUrl(s"chicago/${chiid}/rounds/${round}/hands/${hand}")
   }
 
   // http://loopback:8080/public/index-fastopt.html#chicago/C10/rounds/0/hands/0
-  val patternForIds = """(C\d+)/rounds/(\d+)/hands/(\d+)""".r
+  val patternForIds: Regex = """(C\d+)/rounds/(\d+)/hands/(\d+)""".r
 
   /**
    * @return Tuple with 3 elements.  (chiid,round,hand)
@@ -67,7 +68,7 @@ object HandPage {
    *       round (Int) the round, zero based
    *       hand  (Int) the hand in the round, zero based
    */
-  def findIds(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
+  def findIds(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position): (String, Int, Int) = {
     val prefix = TestServer.getAppPageUrl("chicago/")
     val prefix2 = TestServer.getAppDemoPageUrl("chicago/")
     val cur = currentUrl
@@ -87,7 +88,7 @@ class HandPage(chiid: String, round: Int, hand: Int, matchType: ChicagoMatchType
   import HandPage._
 
   override
-  def validate(implicit patienceConfig: PatienceConfig, pos: Position) = logMethod(s"${pos.line} ${getClass.getSimpleName}.validate") {
+  def validate(implicit patienceConfig: PatienceConfig, pos: Position): HandPage = logMethod(s"${pos.line} ${getClass.getSimpleName}.validate") {
     eventually {
       findIds mustBe (chiid,round,hand)
     }
@@ -96,7 +97,7 @@ class HandPage(chiid: String, round: Int, hand: Int, matchType: ChicagoMatchType
   }
 
   override
-  def clickOk(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def clickOk(implicit patienceConfig: PatienceConfig, pos: Position): SummaryPage = {
     super.clickOk
     SummaryPage.current(matchType)
   }
@@ -182,7 +183,7 @@ class HandPage(chiid: String, round: Int, hand: Int, matchType: ChicagoMatchType
       )(implicit
           patienceConfig: PatienceConfig,
           pos: Position
-      ) = {
+      ): SummaryPage = {
     dealer.foreach { d => checkDealer(d) }
     checkVulnerable(North, nsVul)
     checkVulnerable(East, ewVul)

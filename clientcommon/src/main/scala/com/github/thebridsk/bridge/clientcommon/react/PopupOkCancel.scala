@@ -5,6 +5,7 @@ import japgolly.scalajs.react.Callback
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.html_<^._
 
+
 object PopupOkCancelImplicits {
   import scala.language.implicitConversions
   implicit def optionStringToTagMod( os: Option[String] ): Option[TagMod] = os.map(s=>s)
@@ -15,7 +16,7 @@ object PopupOkCancel {
 
   case class Props( content: Option[TagMod], ok: Option[Callback], cancel: Option[Callback], id: Option[String] )
 
-  def apply( content: Option[TagMod], ok: Option[Callback], cancel: Option[Callback]=None, id: Option[String] = None ) =
+  def apply( content: Option[TagMod], ok: Option[Callback], cancel: Option[Callback]=None, id: Option[String] = None ) = // scalafix:ok ExplicitResultTypes; ReactComponent
     component( Props( content,ok,cancel,id ) )
 }
 
@@ -39,7 +40,7 @@ object PopupOkCancelInternal {
    *
    */
   class Backend(scope: BackendScope[Props, State]) {
-    def render( props: Props, state: State ) = {
+    def render( props: Props, state: State ) = {  // scalafix:ok ExplicitResultTypes; ReactComponent
       import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles._
       Popup(
         props.content.isDefined,
@@ -62,6 +63,7 @@ object PopupOkCancelInternal {
     }
   }
 
+  private[react]
   val component = ScalaComponent.builder[Props]("PopupComponent")
                             .initialStateFromProps { props => State() }
                             .backend(new Backend(_))

@@ -17,7 +17,7 @@ object ContractTypePieChart {
 
   object TrickLegendUtil extends IntLegendUtil[Color] {
 
-    def nameToTitle( name: Color ) = {
+    def nameToTitle( name: Color ): String = {
       if (name eq ColorTypePartial)             "Partial"
       else if (name eq ColorTypeGame)           "Game"
       else if (name eq ColorTypeDoubledToGame)  "Doubled To Game"
@@ -58,7 +58,7 @@ object ContractTypePieChart {
       sizeInLegend: Int,
       minSize: Int,
       doubledToGame: Int = 0
-  ) = {
+  ) = {  // scalafix:ok ExplicitResultTypes; ReactComponent
     val bytype: List[(String,List[(Color,Int)])] = List(
           ("Passed out", List( (ColorTypePassed,passed) ) ),
           ("Partial", List( (ColorTypePartial,partial) ) ),
@@ -85,7 +85,7 @@ object ContractTypePieChart {
 
   }
 
-  def description( withDoubled: Boolean = false ) = {
+  def description( withDoubled: Boolean = false ): TagMod = {
     val cs = ColorTypePassed::ColorTypePartial::ColorTypeDoubledToGame::ColorTypeGame::ColorTypeSlam::ColorTypeGrandSlam::Nil
     val colors = if (withDoubled) cs
     else cs.filter( c => c != ColorTypeDoubledToGame )

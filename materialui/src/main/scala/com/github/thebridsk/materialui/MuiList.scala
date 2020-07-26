@@ -57,7 +57,7 @@ object MuiList extends ComponentFactory[ListProps] {
   @js.native @JSImport("@material-ui/core/List", JSImport.Default) private object MList
       extends js.Any
 
-  protected val f = JsComponent[ListProps, Children.Varargs, Null](MList)
+  protected val f = JsComponent[ListProps, Children.Varargs, Null](MList)  // scalafix:ok ExplicitResultTypes; ReactComponent
 
   /**
     * @param classes Override or extend the styles applied to the component. See CSS API below for more details.
@@ -82,7 +82,7 @@ object MuiList extends ComponentFactory[ListProps] {
       additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
   )(
       children: CtorType.ChildArg*
-  ) = {
+  ) = {  // scalafix:ok ExplicitResultTypes; ReactComponent
     val p: ListProps = ListProps(
       classes = classes,
       component = component,

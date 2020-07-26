@@ -8,6 +8,7 @@ import com.github.thebridsk.bridge.data.BoardInSet
 import com.github.thebridsk.bridge.client.pages.duplicate.DuplicateStyles
 import japgolly.scalajs.react.CtorType
 
+
 /**
  * Shows all the boards of a boardset.
  *
@@ -39,21 +40,21 @@ object ViewBoardSet {
 
   case class Props( boardset: BoardSet, columns: Int )
 
-  def apply( boardset: BoardSet, columns: Int = 1 ) = component(Props(boardset,columns))
+  def apply( boardset: BoardSet, columns: Int = 1 ) = component(Props(boardset,columns))  // scalafix:ok ExplicitResultTypes; ReactComponent
 
   def withRef(
       ref: RefType
   )(
       boardset: BoardSet,
       columns: Int = 1
-  ) = component.withRef(ref)(Props(boardset,columns))
+  ): ScalaComponent.Unmounted[Props,State,Backend] = component.withRef(ref)(Props(boardset,columns))
 
 }
 
 object ViewBoardSetInternal {
   import ViewBoardSet._
 
-  val logger = Logger("bridge.ViewBoardSet")
+  val logger: Logger = Logger("bridge.ViewBoardSet")
 
   /**
    * Internal state for rendering the component.
@@ -66,6 +67,7 @@ object ViewBoardSetInternal {
    */
   case class State()
 
+  private[boardsets]
   val BoardHeader = ScalaComponent.builder[Props]("ViewBoardSet.BoardHeader")
                     .render_P( props => {
                       <.tr(
@@ -75,7 +77,7 @@ object ViewBoardSetInternal {
                       )
                     }).build
 
-  def showVul( b: BoardInSet ) = {
+  def showVul( b: BoardInSet ): String = {
     if (b.nsVul) {
       if (b.ewVul) {
         "Both Vul"
@@ -91,6 +93,7 @@ object ViewBoardSetInternal {
     }
   }
 
+  private[boardsets]
   val BoardRow = ScalaComponent.builder[(Props,BoardInSet)]("ViewBoardSet.BoardRow")
                     .render_P( args => {
                       val (props,board) = args
@@ -110,7 +113,7 @@ object ViewBoardSetInternal {
    */
   class Backend(scope: BackendScope[Props, State]) {
 
-    def render( props: Props, state: State ) = {
+    def render( props: Props, state: State ) = { // scalafix:ok ExplicitResultTypes; React
       import DuplicateStyles._
       val columns = props.columns
       val entriespercolumn = (props.boardset.boards.length+columns-1)/columns
@@ -135,6 +138,7 @@ object ViewBoardSetInternal {
     }
   }
 
+  private[boardsets]
   val component = ScalaComponent.builder[Props]("ViewBoardSet")
                             .initialStateFromProps { props => {
                               State()

@@ -18,6 +18,7 @@ import com.github.thebridsk.materialui.MuiTypography
 import com.github.thebridsk.materialui.TextVariant
 import com.github.thebridsk.materialui.TextColor
 
+
 /**
  * A skeleton component.
  *
@@ -32,14 +33,14 @@ import com.github.thebridsk.materialui.TextColor
 object ViewPlayersQuintet {
   import ViewPlayersQuintetInternal._
 
-  def apply( props: Props ) = component(props)
+  def apply( props: Props ) = component(props)  // scalafix:ok ExplicitResultTypes; ReactComponent
 
 }
 
 object ViewPlayersQuintetInternal {
   import ChicagoStyles._
 
-  val logger = Logger( "bridge.ViewPlayersQuintet" )
+  val logger: Logger = Logger( "bridge.ViewPlayersQuintet" )
 
   /**
    * Internal state for rendering the component.
@@ -78,7 +79,7 @@ object ViewPlayersQuintetInternal {
 
     def isSimple() = scoring.chicago.simpleRotation
 
-    def getTable() = {
+    def getTable(): Table = {
       val players = scoring.players
       val lastround = {
         val last = scoring.rounds.last
@@ -102,13 +103,13 @@ object ViewPlayersQuintetInternal {
       t
     }
 
-    def getDealer = dealer.map( d => d.pos.toString ).getOrElse("")
+    def getDealer: String = dealer.map( d => d.pos.toString ).getOrElse("")
 
-    def getLastDealer() = {
+    def getLastDealer(): PlayerPosition = {
       scoring.rounds.last.dealerFirstRound
     }
 
-    def fairRotation( nextSittingOut: String ) = {
+    def fairRotation( nextSittingOut: String ): State = {
       val t = getTable()
       val l = t.find(nextSittingOut).get
       val n = t.rotateSwapRightPartnerOf(l)
@@ -118,7 +119,7 @@ object ViewPlayersQuintetInternal {
   }
 
   object State {
-    def apply( props: Props ) = {
+    def apply( props: Props ): State = {
       val score = ChicagoScoring(props.chicago)
 
       val players = score.players
@@ -175,7 +176,7 @@ object ViewPlayersQuintetInternal {
 
 //  val colors = ("lightgreen", "aquamarine")::("aqua", "paleturquoise")::Nil
 
-  val colors = ( baseStyles.baseColor2, baseStyles.baseColor2)::(baseStyles.baseColor3, baseStyles.baseColor3)::Nil
+  val colors: List[(TagMod, TagMod)] = ( baseStyles.baseColor2, baseStyles.baseColor2)::(baseStyles.baseColor3, baseStyles.baseColor3)::Nil
 
   /**
    * Internal state for rendering the component.
@@ -186,9 +187,9 @@ object ViewPlayersQuintetInternal {
    */
   class Backend(scope: BackendScope[Props, State]) {
 
-    val reset = scope.props >>= { props => scope.modState( s => State(props) ) }
+    val reset: Callback = scope.props >>= { props => scope.modState( s => State(props) ) }
 
-    val ok = scope.stateProps { (state,props) =>
+    val ok: Callback = scope.stateProps { (state,props) =>
         val r = if (props.chicago.rounds.size <= props.page.round) {
           Round.create(props.page.round.toString(),
                state.north,
@@ -210,11 +211,11 @@ object ViewPlayersQuintetInternal {
       }
 
 
-    def setDealer( pos: PlayerPosition ) = scope.modState(s => s.copy(dealer = Some(pos)))
+    def setDealer( pos: PlayerPosition ): Callback = scope.modState(s => s.copy(dealer = Some(pos)))
 
-    def setPlayerSittingOut( p: String ) = scope.modState(s => s.fairRotation(p))
+    def setPlayerSittingOut( p: String ): Callback = scope.modState(s => s.fairRotation(p))
 
-    def render( props: Props, state: State ) = {
+    def render( props: Props, state: State ) = { // scalafix:ok ExplicitResultTypes; React
       val valid = state.isSimple() || state.nextSittingOut.isDefined
 
       val playerColors = state.swapping.zip( colors ).flatMap(e => {
@@ -395,6 +396,7 @@ object ViewPlayersQuintetInternal {
     }
   }
 
+  private[chicagos]
   val component = ScalaComponent.builder[Props]("ViewPlayersQuintet")
                             .initialStateFromProps { props => State(props) }
                             .backend(new Backend(_))

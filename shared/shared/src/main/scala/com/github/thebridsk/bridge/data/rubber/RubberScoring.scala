@@ -15,10 +15,10 @@ class GameScoring(
 ) {
   val (nsAbove, nsBelow, ewAbove, ewBelow, scoredHands) = calculate
 
-  val nsWon = nsBelow >= 100
-  val ewWon = ewBelow >= 100
+  val nsWon: Boolean = nsBelow >= 100
+  val ewWon: Boolean = ewBelow >= 100
 
-  val done = nsWon || ewWon
+  val done: Boolean = nsWon || ewWon
 
   /**
     * Add another hand to the game.
@@ -26,7 +26,7 @@ class GameScoring(
     * returns the new GameScoring object
     * throws GameDone if the game is already done
     */
-  def add(h: RubberHand) = {
+  def add(h: RubberHand): GameScoring = {
     if (done) throw new GameDone()
     new GameScoring((h :: hands.reverse).reverse, nsVul, ewVul)
   }
@@ -80,10 +80,10 @@ class GameScoring(
 class RubberScoring(val rubber: MatchRubber) {
   val (games, nsGamesWon, ewGamesWon) = calculate()
 
-  val nsVul = nsGamesWon > 0
-  val ewVul = ewGamesWon > 0
+  val nsVul: Boolean = nsGamesWon > 0
+  val ewVul: Boolean = ewGamesWon > 0
 
-  val done = nsGamesWon == 2 || ewGamesWon == 2
+  val done: Boolean = nsGamesWon == 2 || ewGamesWon == 2
 
   val (nsBelow, ewBelow, nsAbove, ewAbove) = {
     games
@@ -127,13 +127,13 @@ class RubberScoring(val rubber: MatchRubber) {
     }
   }
 
-  val nsTotal = nsBelow + nsAbove + nsBonus
-  val ewTotal = ewBelow + ewAbove + ewBonus
+  val nsTotal: Int = nsBelow + nsAbove + nsBonus
+  val ewTotal: Int = ewBelow + ewAbove + ewBonus
 
-  val nsWon = nsTotal > ewTotal
-  val ewWon = ewTotal > nsTotal
+  val nsWon: Boolean = nsTotal > ewTotal
+  val ewWon: Boolean = ewTotal > nsTotal
 
-  val isTie = !nsWon && !ewWon
+  val isTie: Boolean = !nsWon && !ewWon
 
   private def calculate() = {
     var gs: List[GameScoring] = Nil
@@ -173,7 +173,7 @@ class RubberScoring(val rubber: MatchRubber) {
     *    ewAbove: List[Int]
     *    ewBelow: List[List[Int]]
     */
-  def totals = {
+  def totals: (List[Int], List[List[Int]], List[Int], List[List[Int]]) = {
     val x = games.foldLeft(
       (
         Nil: List[Int],
@@ -197,7 +197,7 @@ class RubberScoring(val rubber: MatchRubber) {
   def setFirstDealer(pos: String) =
     new RubberScoring(rubber.setFirstDealer(pos))
 
-  def getDealerForHand(id: String) = {
+  def getDealerForHand(id: String): PlayerPosition = {
     var dealer = PlayerPosition(rubber.dealerFirstHand)
     var hands = rubber.hands
     while (hands.headOption.isDefined && hands.head.id != id) {

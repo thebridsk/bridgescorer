@@ -42,10 +42,11 @@ import com.github.thebridsk.bridge.server.backend.resource.ChangeContext
 import com.github.thebridsk.bridge.server.backend.resource.CreateChangeContext
 import com.github.thebridsk.bridge.server.backend.resource.UpdateChangeContext
 import com.github.thebridsk.bridge.server.backend.resource.DeleteChangeContext
+import akka.event.LoggingAdapter
 
 class TestDuplicateWebsocket extends AnyFlatSpec with ScalatestRouteTest with Matchers with MyService with BeforeAndAfterAll {
 
-  implicit val me = this
+  implicit val me: TestDuplicateWebsocket = this
 
   import WebsocketClientImplicits._
   import scala.concurrent.duration._
@@ -57,37 +58,37 @@ class TestDuplicateWebsocket extends AnyFlatSpec with ScalatestRouteTest with Ma
 
   val httpport = 8080
   override
-  def ports = ServerPort( Option(httpport), None )
+  def ports: ServerPort = ServerPort( Option(httpport), None )
 
-  implicit lazy val actorSystem = system
-  implicit lazy val actorExecutor = executor
-  implicit lazy val actorMaterializer = materializer
+  implicit lazy val actorSystem = system  //scalafix:ok ExplicitResultTypes
+  implicit lazy val actorExecutor = executor  //scalafix:ok ExplicitResultTypes
+  implicit lazy val actorMaterializer = materializer  //scalafix:ok ExplicitResultTypes
 
-  implicit lazy val testlog = Logging(actorSystem, classOf[TestDuplicateWebsocket])
+  implicit lazy val testlog: LoggingAdapter = Logging(actorSystem, classOf[TestDuplicateWebsocket])
 
-  val remoteAddress  = `Remote-Address`( IP( InetAddress.getLocalHost, Some(12345) ))
-  val remoteAddress1 = `Remote-Address`( IP( InetAddress.getLocalHost, Some(11111) ))
-  val remoteAddress2 = `Remote-Address`( IP( InetAddress.getLocalHost, Some(22222) ))
-  val remoteAddress3 = `Remote-Address`( IP( InetAddress.getLocalHost, Some(33333) ))
+  val remoteAddress  = `Remote-Address`( IP( InetAddress.getLocalHost, Some(12345) ))  // scalafix:ok ; Remote-Address
+  val remoteAddress1 = `Remote-Address`( IP( InetAddress.getLocalHost, Some(11111) ))  // scalafix:ok ; Remote-Address
+  val remoteAddress2 = `Remote-Address`( IP( InetAddress.getLocalHost, Some(22222) ))  // scalafix:ok ; Remote-Address
+  val remoteAddress3 = `Remote-Address`( IP( InetAddress.getLocalHost, Some(33333) ))  // scalafix:ok ; Remote-Address
 
   var client1: WebsocketClient = null
   var client2: WebsocketClient = null
   var client3: WebsocketClient = null
 
-  val team1 = Team.id(1)
-  val team2 = Team.id(2)
-  val team3 = Team.id(3)
-  val team4 = Team.id(4)
+  val team1: Team.Id = Team.id(1)
+  val team2: Team.Id = Team.id(2)
+  val team3: Team.Id = Team.id(3)
+  val team4: Team.Id = Team.id(4)
 
   override
-  def beforeAll() = {
+  def beforeAll(): Unit = {
     client1 = new WebsocketClient
     client2 = new WebsocketClient
     client3 = new WebsocketClient
   }
 
   override
-  def afterAll() = {
+  def afterAll(): Unit = {
     client1.terminate()
     client1 = null
     client2.terminate()
@@ -125,13 +126,13 @@ class TestDuplicateWebsocket extends AnyFlatSpec with ScalatestRouteTest with Ma
     var lastUpdate: Option[MatchDuplicate] = None
     var lastDelete: Option[MatchDuplicate] = None
 
-    def reset() = {
+    def reset(): Unit = {
       lastCreate = None
       lastUpdate = None
       lastDelete = None
     }
 
-    def getMatchDuplicate( context: ChangeContext ) = {
+    def getMatchDuplicate( context: ChangeContext ): Option[MatchDuplicate] = {
       log
       testlog.debug("Got a change: "+context)
       val d = context.changes.headOption match {
@@ -156,7 +157,7 @@ class TestDuplicateWebsocket extends AnyFlatSpec with ScalatestRouteTest with Ma
 
   }
 
-  def withListener( f: ListenerStatus=>Unit ) = {
+  def withListener( f: ListenerStatus=>Unit ): Unit = {
     val status = new ListenerStatus
     try {
       restService.duplicates.addListener(status)

@@ -25,14 +25,14 @@ class SwaggerTest extends AnyFlatSpec with Matchers with BeforeAndAfterAll {
   import com.github.thebridsk.browserpages.PageBrowser._
   import ParallelUtils._
 
-  val logger = Logger[SwaggerTest]()
+  val logger: Logger = Logger[SwaggerTest]()
 
 
   import Eventually.{ patienceConfig => _, _ }
   import EventuallyUtils._
   import HttpUtils._
 
-  val testlog = Logger[SwaggerTest]()
+  val testlog: Logger = Logger[SwaggerTest]()
 
   import scala.concurrent.duration._
 
@@ -45,10 +45,10 @@ class SwaggerTest extends AnyFlatSpec with Matchers with BeforeAndAfterAll {
 
   type MyDuration = Duration
   val MyDuration = Duration
-  implicit val timeoutduration = MyDuration( 60, TimeUnit.SECONDS )
+  implicit val timeoutduration: FiniteDuration = MyDuration( 60, TimeUnit.SECONDS )
 
   override
-  def beforeAll() = {
+  def beforeAll(): Unit = {
 
     MonitorTCP.nextTest()
 
@@ -61,7 +61,7 @@ class SwaggerTest extends AnyFlatSpec with Matchers with BeforeAndAfterAll {
   }
 
   override
-  def afterAll() = {
+  def afterAll(): Unit = {
 
     waitForFuturesIgnoreTimeouts( "Stopping browsers and server",
                 CodeBlock { TestSession.sessionStop() },
@@ -71,8 +71,8 @@ class SwaggerTest extends AnyFlatSpec with Matchers with BeforeAndAfterAll {
 
   var dupid: Option[String] = None
 
-  lazy val defaultPatienceConfig = PatienceConfig(timeout=scaled(Span(timeoutMillis, Millis)), interval=scaled(Span(intervalMillis,Millis)))
-  implicit def patienceConfig = defaultPatienceConfig
+  lazy val defaultPatienceConfig: PatienceConfig = PatienceConfig(timeout=scaled(Span(timeoutMillis, Millis)), interval=scaled(Span(intervalMillis,Millis)))
+  implicit def patienceConfig: PatienceConfig = defaultPatienceConfig
 
   behavior of "Swagger test of Bridge Server"
 

@@ -18,6 +18,7 @@ import com.github.thebridsk.materialui.MuiTypography
 import com.github.thebridsk.materialui.TextVariant
 import com.github.thebridsk.materialui.TextColor
 
+
 /**
   * A skeleton component.
   *
@@ -32,14 +33,14 @@ import com.github.thebridsk.materialui.TextColor
 object ViewPlayersFive {
   import ViewPlayersFiveInternal._
 
-  def apply(props: Props) = component(props)
+  def apply(props: Props) = component(props)  // scalafix:ok ExplicitResultTypes; ReactComponent
 
 }
 
 object ViewPlayersFiveInternal {
   import ChicagoStyles._
 
-  val logger = Logger("bridge.ViewPlayersFive")
+  val logger: Logger = Logger("bridge.ViewPlayersFive")
 
   /**
     * Internal state for rendering the component.
@@ -61,7 +62,7 @@ object ViewPlayersFiveInternal {
   )
 
   object State {
-    def apply(props: Props) = {
+    def apply(props: Props): State = {
       val s = ChicagoScoring(props.chicago)
       val pathSoFar = s.getFixturesSoFar
       logger.info("Path So Far: " + pathSoFar)
@@ -107,11 +108,11 @@ object ViewPlayersFiveInternal {
     */
   class Backend(scope: BackendScope[Props, State]) {
 
-    val reset = scope.props >>= { props =>
+    val reset: Callback = scope.props >>= { props =>
       scope.modState(s => State(props))
     }
 
-    def setPlayerSittingOut(p: String) =
+    def setPlayerSittingOut(p: String): Callback =
       scope.modState(s => {
         val fix = s.possibleNext.get(p)
         (fix match {
@@ -134,7 +135,7 @@ object ViewPlayersFiveInternal {
         }
       })
 
-    def renderSelectSittingOut(props: Props, state: State) = {
+    def renderSelectSittingOut(props: Props, state: State) = { // scalafix:ok ExplicitResultTypes; React
       <.div(
         chiStyles.divPageSelectSittingOut,
         <.p("Sitting out"),
@@ -167,7 +168,7 @@ object ViewPlayersFiveInternal {
       )
     }
 
-    def setFixture(f: ChicagoScoring.Fixture) =
+    def setFixture(f: ChicagoScoring.Fixture): Callback =
       scope.modState(
         s =>
           s.copy(
@@ -179,7 +180,7 @@ object ViewPlayersFiveInternal {
           )
       )
 
-    def renderSelectFixture(props: Props, state: State) = {
+    def renderSelectFixture(props: Props, state: State) = { // scalafix:ok ExplicitResultTypes; React
 
       def renderSelectFixtureSittingOut(
           props: Props,
@@ -232,21 +233,21 @@ object ViewPlayersFiveInternal {
       }
     }
 
-    val rotateClockwise = scope.modState(
+    val rotateClockwise: Callback = scope.modState(
       s =>
         s.copy(north = s.west, south = s.east, east = s.north, west = s.south)
     )
 
-    val rotateCounterClockwise = scope.modState(
+    val rotateCounterClockwise: Callback = scope.modState(
       s =>
         s.copy(north = s.east, south = s.west, east = s.south, west = s.north)
     )
 
-    val swapEW = scope.modState(s => s.copy(east = s.west, west = s.east))
+    val swapEW: Callback = scope.modState(s => s.copy(east = s.west, west = s.east))
 
-    val swapNS = scope.modState(s => s.copy(north = s.south, south = s.north))
+    val swapNS: Callback = scope.modState(s => s.copy(north = s.south, south = s.north))
 
-    val ok = scope.stateProps { (state, props) =>
+    val ok: Callback = scope.stateProps { (state, props) =>
       val r = if (props.chicago.rounds.size <= props.page.round) {
         Round.create(
           props.page.round.toString(),
@@ -273,10 +274,10 @@ object ViewPlayersFiveInternal {
       props.router.set(props.page.toHandView(0))
     }
 
-    def setDealer(pos: PlayerPosition) =
+    def setDealer(pos: PlayerPosition): Callback =
       scope.modState(s => s.copy(dealer = Some(pos)))
 
-    def renderSelectPos(props: Props, state: State) = {
+    def renderSelectPos(props: Props, state: State) = { // scalafix:ok ExplicitResultTypes; React
       val valid = state.fixture.isDefined
 
       def pos(
@@ -364,7 +365,7 @@ object ViewPlayersFiveInternal {
       )
     }
 
-    def render(props: Props, state: State) = {
+    def render(props: Props, state: State) = { // scalafix:ok ExplicitResultTypes; React
       val valid = state.north.isDefined && state.south.isDefined && state.east.isDefined && state.west.isDefined && state.dealer.isDefined
       <.div(
         ChicagoPageBridgeAppBar(
@@ -417,6 +418,7 @@ object ViewPlayersFiveInternal {
     }
   }
 
+  private[chicagos]
   val component = ScalaComponent
     .builder[Props]("ViewPlayersFive")
     .initialStateFromProps { props =>

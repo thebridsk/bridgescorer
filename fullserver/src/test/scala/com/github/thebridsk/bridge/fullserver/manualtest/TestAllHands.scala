@@ -8,9 +8,9 @@ import com.github.thebridsk.utilities.logging.Logger
 
 object TestAllHands extends Main {
 
-  val log = Logger("TestAllHands")
+  val log: Logger = Logger("TestAllHands")
 
-  def execute() = {
+  def execute(): Int = {
 
     try {
       val allHands = Duplicate5TestPages.allHands

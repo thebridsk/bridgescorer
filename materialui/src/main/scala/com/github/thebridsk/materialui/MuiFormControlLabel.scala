@@ -6,6 +6,7 @@ import scala.scalajs.js
 import scala.scalajs.js.annotation._
 import scala.language.implicitConversions
 import japgolly.scalajs.react.{raw => Raw}
+import scala.scalajs.js.UndefOr
 
 class LabelPlacement(val value: String) extends AnyVal
 object LabelPlacement {
@@ -46,13 +47,13 @@ object FormControlLabelProps extends PropsFactory[FormControlLabelProps] {
 
   implicit class WrapFormControlLabelProps(private val p: FormControlLabelProps) extends AnyVal {
 
-    def control = p.controlInternal.map( n => VdomNode(n))
-    def label = p.labelInternal.map( n => VdomNode(n))
-    def labelPlacement = p.labelPlacementInternal.map(s => new LabelPlacement(s))
+    def control: UndefOr[VdomNode] = p.controlInternal.map( n => VdomNode(n))
+    def label: UndefOr[VdomNode] = p.labelInternal.map( n => VdomNode(n))
+    def labelPlacement: UndefOr[LabelPlacement] = p.labelPlacementInternal.map(s => new LabelPlacement(s))
 
   }
 
-  def toRaw( v: VdomNode ) = v.rawNode.asInstanceOf[js.Any]
+  def toRaw( v: VdomNode ): js.Any = v.rawNode.asInstanceOf[js.Any]
 
   /**
     * @param p the object that will become the properties object
@@ -108,7 +109,7 @@ object MuiFormControlLabel extends ComponentFactory[FormControlLabelProps] {
   @js.native @JSImport("@material-ui/core/FormControlLabel", JSImport.Default) private object MList
       extends js.Any
 
-  protected val f = JsComponent[FormControlLabelProps, Children.Varargs, Null](MList)
+  protected val f = JsComponent[FormControlLabelProps, Children.Varargs, Null](MList)  // scalafix:ok ExplicitResultTypes; ReactComponent
 
   /**
     * @param checked If true, the component appears selected.
@@ -139,7 +140,7 @@ object MuiFormControlLabel extends ComponentFactory[FormControlLabelProps] {
       additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
   )(
       children: CtorType.ChildArg*
-  ) = {
+  ) = {  // scalafix:ok ExplicitResultTypes; ReactComponent
     val p: FormControlLabelProps = FormControlLabelProps(
       checked = checked,
       classes = classes,

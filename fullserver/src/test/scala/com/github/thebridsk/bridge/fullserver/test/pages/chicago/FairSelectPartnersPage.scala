@@ -9,18 +9,19 @@ import org.scalactic.source.Position
 import com.github.thebridsk.browserpages.PageBrowser._
 import org.scalatest.matchers.must.Matchers._
 import com.github.thebridsk.bridge.data.bridge._
+import org.scalatest.Assertion
 
 object FairSelectPartnersPage {
 
-  val log = Logger[FairSelectPartnersPage]()
+  val log: Logger = Logger[FairSelectPartnersPage]()
 
-  def current(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
+  def current(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position): FairSelectPartnersPage = {
     val (chiid,roundid) = EnterNamesPage.findMatchRoundId
     new FairSelectPartnersPage(chiid,roundid)
   }
 
-  def urlFor( chiid: String, roundid: Int ) = EnterNamesPage.urlFor(chiid,roundid)
-  def demoUrlFor( chiid: String, roundid: Int ) = EnterNamesPage.demoUrlFor(chiid,roundid)
+  def urlFor( chiid: String, roundid: Int ): String = EnterNamesPage.urlFor(chiid,roundid)
+  def demoUrlFor( chiid: String, roundid: Int ): String = EnterNamesPage.demoUrlFor(chiid,roundid)
 
   /**
    * @param chiid the chicago id
@@ -30,7 +31,7 @@ object FairSelectPartnersPage {
               webDriver: WebDriver,
               patienceConfig: PatienceConfig,
               pos: Position
-          ) = {
+          ): FairSelectPartnersPage = {
     go to urlFor(chiid,roundid)
     new FairSelectPartnersPage(chiid,roundid)
   }
@@ -65,7 +66,7 @@ class FairSelectPartnersPage(
 ) extends Page[FairSelectPartnersPage] {
   import FairSelectPartnersPage._
 
-  def validate(implicit patienceConfig: PatienceConfig, pos: Position) = logMethod(s"${pos.line} ${getClass.getSimpleName}.validate") { eventually {
+  def validate(implicit patienceConfig: PatienceConfig, pos: Position): FairSelectPartnersPage = logMethod(s"${pos.line} ${getClass.getSimpleName}.validate") { eventually {
 
     roundid.toString() must not be "0"      // only valid for the first round
 
@@ -79,26 +80,26 @@ class FairSelectPartnersPage(
     this
   }}
 
-  def clickOK(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def clickOK(implicit patienceConfig: PatienceConfig, pos: Position): HandPage = {
     clickButton(buttonOK)
     new HandPage(chiid,roundid,0,ChicagoMatchTypeFair)
   }
 
-  def clickReset(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def clickReset(implicit patienceConfig: PatienceConfig, pos: Position): FairSelectPartnersPage = {
     clickButton(buttonReset)
     this
   }
 
-  def clickCancel(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def clickCancel(implicit patienceConfig: PatienceConfig, pos: Position): SummaryPage = {
     clickButton(buttonCancel)
     SummaryPage.current(ChicagoMatchTypeFair)
   }
 
-  def isOKEnabled(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def isOKEnabled(implicit patienceConfig: PatienceConfig, pos: Position): Boolean = {
     getButton(buttonOK).isEnabled
   }
 
-  def isResetEnabled(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def isResetEnabled(implicit patienceConfig: PatienceConfig, pos: Position): Boolean = {
     getButton(buttonReset).isEnabled
   }
 
@@ -114,12 +115,12 @@ class FairSelectPartnersPage(
     * @param pos
     * @return
     */
-  def clickSittingOutPlayer( player: String )(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def clickSittingOutPlayer( player: String )(implicit patienceConfig: PatienceConfig, pos: Position): FairSelectPartnersPage = {
     clickButton( toPlayerButtonId(player) )
     this
   }
 
-  def checkSittingOutPlayerNames( sittingOut: Option[String], notSittingOut: String* )(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def checkSittingOutPlayerNames( sittingOut: Option[String], notSittingOut: String* )(implicit patienceConfig: PatienceConfig, pos: Position): Unit = {
     val result = sittingOut.map( _ => true ).toList:::notSittingOut.map( _ => false ).toList
     val players = sittingOut.toList:::notSittingOut.toList
 
@@ -136,7 +137,7 @@ class FairSelectPartnersPage(
 
   }
 
-  def checkNotFoundPlayersForSittingOut( notfound: String* )(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def checkNotFoundPlayersForSittingOut( notfound: String* )(implicit patienceConfig: PatienceConfig, pos: Position): Assertion = {
     withClue(s"""Checking for next sitting out player, should not see $notfound""") {
       val allbuttons = findAllButtons.keySet
       allbuttons.intersect( notfound.map(toPlayerButtonId(_)).toSet) mustBe empty
@@ -157,7 +158,7 @@ class FairSelectPartnersPage(
     *
     */
   def checkPositions( table: String, dealer: PlayerPosition,
-                      north: String, south: String, east: String, west: String, extra: String ) = {
+                      north: String, south: String, east: String, west: String, extra: String ): Assertion = {
 
     //  <div>
     //    <h1>Prior hand</h1>    or Next hand

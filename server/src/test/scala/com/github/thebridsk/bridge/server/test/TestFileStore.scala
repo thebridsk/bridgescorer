@@ -20,6 +20,7 @@ import com.github.thebridsk.bridge.server.backend.MatchDuplicateCacheStoreSuppor
 import org.scalatest.flatspec.AsyncFlatSpec
 import com.github.thebridsk.bridge.data.BoardSet
 import com.github.thebridsk.bridge.data.Movement
+import com.github.thebridsk.bridge.data.MatchRubberV1
 
 class TestFileStore extends AsyncFlatSpec with Matchers with BeforeAndAfterAll {
 
@@ -27,34 +28,34 @@ class TestFileStore extends AsyncFlatSpec with Matchers with BeforeAndAfterAll {
   val resourceName = "MatchRubber"
   val resourceURI = "/rubbers"
 
-  val testlog = Logger[TestFileStore]()
+  val testlog: Logger = Logger[TestFileStore]()
 
   TestStartLogging.startLogging()
 
   val converters = new BridgeServiceFileStoreConverters(true)
   import converters._
 
-  override def beforeAll() = {
+  override def beforeAll(): Unit = {
     tempDir = Directory.makeTemp( "TestFileStore", ".teststore" )
     testlog.fine( "Using temporary directory "+tempDir)
   }
 
-  override def afterAll() = {
+  override def afterAll(): Unit = {
     testlog.fine( "Deleting temporary directory "+tempDir)
     tempDir.deleteRecursively()
   }
 
   behavior of "FileStore"
 
-  val team = MatchRubber(MatchRubber.id(1), "Fred", "Barney", "", "", "N", Nil)
-  val team2 = MatchRubber(MatchRubber.id(2), "Wilma", "Betty", "", "", "N", Nil)
+  val team: MatchRubberV1 = MatchRubber(MatchRubber.id(1), "Fred", "Barney", "", "", "N", Nil)
+  val team2: MatchRubberV1 = MatchRubber(MatchRubber.id(2), "Wilma", "Betty", "", "", "N", Nil)
   var teamStore: Store[MatchRubber.Id,MatchRubber] = null
 
-  implicit val support = new MatchRubberCacheStoreSupport(false)
-  implicit val supportD = new MatchDuplicateCacheStoreSupport(false)
+  implicit val support: MatchRubberCacheStoreSupport = new MatchRubberCacheStoreSupport(false)
+  implicit val supportD: MatchDuplicateCacheStoreSupport = new MatchDuplicateCacheStoreSupport(false)
 
-  def filename( id: String ) = resourceName+"."+id+support.getWriteExtension
-  def path(id: String ) = tempDir.toString()+File.separator+filename(id)
+  def filename( id: String ): String = resourceName+"."+id+support.getWriteExtension
+  def path(id: String ): String = tempDir.toString()+File.separator+filename(id)
 
   it should "read a team object from the filestore" in {
     val steam = support.toJSON(team)
@@ -191,7 +192,7 @@ class TestFileStore extends AsyncFlatSpec with Matchers with BeforeAndAfterAll {
 
   import com.github.thebridsk.bridge.server.rest.UtilsPlayJson._
 
-  def toString[T]( md: T )(implicit writer: Writes[T]) = {
+  def toString[T]( md: T )(implicit writer: Writes[T]): String = {
     writePrettyJson(md)
   }
 

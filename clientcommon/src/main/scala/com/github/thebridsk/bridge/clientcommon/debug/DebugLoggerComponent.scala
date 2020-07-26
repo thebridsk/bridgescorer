@@ -14,6 +14,7 @@ import com.github.thebridsk.bridge.clientcommon.logger.Init
 import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles.baseStyles
 
 
+
 /**
  * A skeleton component.
  *
@@ -30,9 +31,9 @@ object DebugLoggerComponent {
 
   case class Props()
 
-  def apply( ) = component( Props() )
+  def apply( ) = component( Props() )  // scalafix:ok ExplicitResultTypes; ReactComponent
 
-  def getLoggerName(forRemoteHandler: Boolean, loggername: String = "") =
+  def getLoggerName(forRemoteHandler: Boolean, loggername: String = ""): (String, String) =
     if (loggername.length() == 0) {
       if (forRemoteHandler) ("bridge","bridge") else ("","[root]")
     } else {
@@ -55,7 +56,7 @@ object DebugLoggerComponent {
     }
   }
 
-  def getLoggingLevel( loggername: String ) = {
+  def getLoggingLevel( loggername: String ): Level = {
     val (targetlog, targetdisp) = getLoggerName(false,loggername)
     val target = Logger(targetlog)
     target.getHandlers.find(h => h.isInstanceOf[DebugLoggerHandler]) match {
@@ -69,7 +70,7 @@ object DebugLoggerComponent {
   def init(
       loggername: String = "",
       l: Level = Level.FINEST
-  ) = {
+  ): Unit = {
     setLoggingLevel(loggername,l)
   }
 
@@ -81,7 +82,7 @@ object DebugLoggerComponentInternal {
   val rootlogger = ""
 
   /** logger for use only in setting up the component, NOT for handling log messages */
-  val logger = Logger("bridge.DebugLoggerComponent")
+  val logger: Logger = Logger("bridge.DebugLoggerComponent")
 
   /**
    * Internal state for rendering the component.
@@ -93,7 +94,7 @@ object DebugLoggerComponentInternal {
   case class State(
     level: Level =  DebugLoggerComponent.getLoggingLevel(DebugLoggerComponentInternal.rootlogger)
   ) {
-    def withLevel( l: Level ) = copy( level = l )
+    def withLevel( l: Level ): State = copy( level = l )
   }
 
   def format( msg: TraceMsg ): String = {
@@ -104,7 +105,7 @@ object DebugLoggerComponentInternal {
     ret
   }
 
-  def substitute(str: String, args: Any*) = {
+  def substitute(str: String, args: Any*): String = {
     var ret = str
     for ( i <- 0 until args.length ) {
       val s = args(i)
@@ -124,16 +125,16 @@ object DebugLoggerComponentInternal {
    */
   class Backend(scope: BackendScope[Props, State]) {
 
-    def clearLogs() = Callback { Dispatcher.clearLogs() }
-    def startLogs() = Callback { Dispatcher.startLogs() }
-    def stopLogs() = Callback { Dispatcher.stopLogs() }
+    def clearLogs(): Callback = Callback { Dispatcher.clearLogs() }
+    def startLogs(): Callback = Callback { Dispatcher.startLogs() }
+    def stopLogs(): Callback = Callback { Dispatcher.stopLogs() }
 
-    def setLoggingLevelCB( level: Level ) = scope.modState { s =>
+    def setLoggingLevelCB( level: Level ): Callback = scope.modState { s =>
       setLoggingLevel(rootlogger,level)
       s.withLevel(level)
     }
 
-    def render( props: Props, state: State ) = {
+    def render( props: Props, state: State ) = { // scalafix:ok ExplicitResultTypes; React
       val txt = LoggerStore.getMessages().map(m => m.i.toString+": "+format(m.traceMsg)).mkString("\n")
       val enabled = LoggerStore.isEnabled()
       <.div(
@@ -157,17 +158,18 @@ object DebugLoggerComponentInternal {
 
     val storeCallback = scope.forceUpdate
 
-    def didMount() = Callback {
+    def didMount(): Callback = Callback {
       LoggerStore.addChangeListener(storeCallback)
       setLoggingLevel(rootlogger,getLoggingLevel(rootlogger))
     }
 
-    def willUnmount() = Callback {
+    def willUnmount(): Callback = Callback {
       LoggerStore.removeChangeListener(storeCallback)
     }
 
   }
 
+  private[debug]
   val component = ScalaComponent.builder[Props]("DebugLoggerComponent")
                             .initialStateFromProps { props => State() }
                             .backend(new Backend(_))

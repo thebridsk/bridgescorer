@@ -6,7 +6,7 @@ object StartLogging {
 
   var initialized = false
 
-  def start( level: String = "ALL" ) = {
+  def start( level: String = "ALL" ): Unit = {
     if (!initialized) {
       initialized = true
       Init.processHandlers( List( s"console=${level}" ) )

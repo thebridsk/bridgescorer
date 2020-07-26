@@ -7,7 +7,7 @@ class AjaxFailureException( val exmsg: String, val result: AjaxResult[_] )(impli
 
 class AjaxFailure( val msg: RestMessage, result: AjaxResult[_] )(implicit pos: Position) extends AjaxFailureException(msg.msg, result) {
   override
-  def toString() = {
+  def toString(): String = {
     getClass.getName+" "+msg.msg
   }
 }

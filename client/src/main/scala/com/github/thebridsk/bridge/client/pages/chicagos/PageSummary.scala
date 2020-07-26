@@ -20,6 +20,7 @@ import com.github.thebridsk.bridge.client.pages.HomePage
 import japgolly.scalajs.react.component.builder.Lifecycle.ComponentDidUpdate
 import com.github.thebridsk.bridge.data.MatchChicago
 
+
 /**
   * A skeleton component.
   *
@@ -39,10 +40,10 @@ object PageSummary {
       routerCtl: BridgeRouter[ChicagoPage]
   )
 
-  def apply(page: SummaryView, routerCtl: BridgeRouter[ChicagoPage]) =
+  def apply(page: SummaryView, routerCtl: BridgeRouter[ChicagoPage]) = // scalafix:ok ExplicitResultTypes; ReactComponent
     component(Props(Left(page), routerCtl))
 
-  def apply(page: RoundView, routerCtl: BridgeRouter[ChicagoPage]) =
+  def apply(page: RoundView, routerCtl: BridgeRouter[ChicagoPage]) = // scalafix:ok ExplicitResultTypes; ReactComponent
     component(Props(Right(page), routerCtl))
 
 }
@@ -50,7 +51,7 @@ object PageSummary {
 object PageSummaryInternal {
   import PageSummary._
 
-  val logger = Logger("bridge.PageSummary")
+  val logger: Logger = Logger("bridge.PageSummary")
 
   /**
     * Internal state for rendering the component.
@@ -70,38 +71,38 @@ object PageSummaryInternal {
     */
   class Backend(scope: BackendScope[Props, State]) {
 
-    def toSummaryView(props: Props) =
+    def toSummaryView(props: Props): SummaryView =
       props.page match {
         case Left(summary)    => summary
         case Right(roundview) => roundview.toSummaryView
       }
 
-    def toEditNamesView(props: Props) =
+    def toEditNamesView(props: Props): ChicagoRouter.EditNamesView =
       props.page match {
         case Left(summary)    => summary.toEditNamesView
         case Right(roundview) => roundview.toEditNamesView
       }
 
-    def toRoundView(round: Int, props: Props) =
+    def toRoundView(round: Int, props: Props): RoundView =
       props.page match {
         case Left(summary)    => summary.toRoundView(round)
         case Right(roundview) => ChicagoRouter.RoundView(roundview.chiid.id, round)
       }
 
-    def toNamesView(round: Int, props: Props) =
+    def toNamesView(round: Int, props: Props): ChicagoRouter.NamesView =
       props.page match {
         case Left(summary)    => summary.toNamesView(round)
         case Right(roundview) => ChicagoRouter.NamesView(roundview.chiid.id, round)
       }
 
-    def toHandView(round: Int, hand: Int, props: Props) =
+    def toHandView(round: Int, hand: Int, props: Props): ChicagoRouter.HandView =
       props.page match {
         case Left(summary) => summary.toHandView(round, hand)
         case Right(roundview) =>
           ChicagoRouter.HandView(roundview.chiid.id, round, hand)
       }
 
-    def render(props: Props, state: State) = {
+    def render(props: Props, state: State) = { // scalafix:ok ExplicitResultTypes; React
       import ChicagoStyles._
       val smc = ChicagoStore.getChicago
       logger.fine(s"Render with $smc")
@@ -264,7 +265,7 @@ object PageSummaryInternal {
       )
     }
 
-    def do68Callback(gamesInRound: Int) = scope.props >>= { props =>
+    def do68Callback(gamesInRound: Int): Callback = scope.props >>= { props =>
       Callback {
         ChicagoStore.getChicago match {
           case Some(mc) =>
@@ -285,7 +286,7 @@ object PageSummaryInternal {
       }
     }
 
-    val nextRound = scope.props >>= { props =>
+    val nextRound: Callback = scope.props >>= { props =>
       Callback {
         ChicagoStore.getChicago match {
           case Some(mc) =>
@@ -315,7 +316,7 @@ object PageSummaryInternal {
       }
     }
 
-    val nextHand = scope.props >>= { props =>
+    val nextHand: Callback = scope.props >>= { props =>
       {
         ChicagoStore.getChicago match {
           case Some(mc) =>
@@ -336,7 +337,7 @@ object PageSummaryInternal {
 
     val forceUpdate = scope.forceUpdate
 
-    val didMount = Callback {
+    val didMount: Callback = Callback {
       ChicagoStore.addChangeListener(storeCallback)
     } >> scope.props >>= { (p) =>
       Callback {
@@ -350,7 +351,7 @@ object PageSummaryInternal {
       }
     }
 
-    val willUnmount = Callback {
+    val willUnmount: Callback = Callback {
       logger.info("PageSummary.willUnmount")
       ChicagoStore.removeChangeListener(storeCallback)
       ChicagoController.delayStop()
@@ -358,7 +359,7 @@ object PageSummaryInternal {
 
   }
 
-  def didUpdate( cdu: ComponentDidUpdate[Props,State,Backend,Unit] ) = Callback {
+  def didUpdate( cdu: ComponentDidUpdate[Props,State,Backend,Unit] ): Callback = Callback {
     val props = cdu.currentProps
     val prevProps = cdu.prevProps
     if (prevProps.page != props.page) {
@@ -370,6 +371,7 @@ object PageSummaryInternal {
     }
   }
 
+  private[chicagos]
   val component = ScalaComponent
     .builder[Props]("PageSummary")
     .initialStateFromProps { props =>

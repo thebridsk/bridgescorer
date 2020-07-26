@@ -20,14 +20,14 @@ import com.github.thebridsk.bridge.fullserver.test.pages.bridge.ErrorMsgDiv
 
 object TableSelectNamesPage {
 
-  val log = Logger[TableSelectNamesPage]()
+  val log: Logger = Logger[TableSelectNamesPage]()
 
-  def current( targetBoard: Option[String], scorekeeper: PlayerPosition)(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
+  def current( targetBoard: Option[String], scorekeeper: PlayerPosition)(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position): TableSelectNamesPage = {
     val (dupid,tableid,roundid,targetboard) = findTableRoundId
     new TableSelectNamesPage(dupid,tableid,roundid,targetBoard,scorekeeper)
   }
 
-  def urlFor( dupid: String, tableid: String, roundid: String, board: Option[String] ) =
+  def urlFor( dupid: String, tableid: String, roundid: String, board: Option[String] ): String =
     TableEnterScorekeeperPage.urlFor(dupid, tableid, roundid, board)
 
   def goto( dupid: String,
@@ -38,7 +38,7 @@ object TableSelectNamesPage {
               webDriver: WebDriver,
               patienceConfig: PatienceConfig,
               pos: Position
-          ) =
+          ): TableEnterScorekeeperPage =
       TableEnterScorekeeperPage.goto(dupid, tableid, roundid, board)
 
   /**
@@ -71,7 +71,7 @@ class TableSelectNamesPage( dupid: String,
                                ) extends Page[TableSelectNamesPage] with ErrorMsgDiv[TableSelectNamesPage] {
   import TableSelectNamesPage._
 
-  def validate(implicit patienceConfig: PatienceConfig, pos: Position) = logMethod(s"${pos.line} ${getClass.getSimpleName}.validate") { eventually {
+  def validate(implicit patienceConfig: PatienceConfig, pos: Position): TableSelectNamesPage = logMethod(s"${pos.line} ${getClass.getSimpleName}.validate") { eventually {
 
     currentUrl mustBe urlFor(dupid,tableid,roundid,targetBoard)
 
@@ -79,7 +79,7 @@ class TableSelectNamesPage( dupid: String,
     this
   }}
 
-  def checkPlayers( north: String, south: String, east: String, west: String )(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def checkPlayers( north: String, south: String, east: String, west: String )(implicit patienceConfig: PatienceConfig, pos: Position): TableSelectNamesPage = {
     eventually {
       getPlayer(North) mustBe north
       getPlayer(South) mustBe south
@@ -93,20 +93,20 @@ class TableSelectNamesPage( dupid: String,
    * @param loc the location on the screen.  The scorekeeper's location is not valid.
    * @return the name of the player
    */
-  def getPlayer( loc: PlayerPosition )(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def getPlayer( loc: PlayerPosition )(implicit patienceConfig: PatienceConfig, pos: Position): String = {
     getElemById(toPlayerNameText(loc)).text
   }
 
-  def getScorekeeperPos(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def getScorekeeperPos(implicit patienceConfig: PatienceConfig, pos: Position): PlayerPosition = {
     PlayerPosition.fromDisplay( getElemByXPath("""//table/tbody/tr[3]/td[2]/span/b[1]""").text )
   }
 
-  def clickSwapLeft(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def clickSwapLeft(implicit patienceConfig: PatienceConfig, pos: Position): TableSelectNamesPage = {
     clickButton(buttonSwapLeft)
     this
   }
 
-  def clickSwapRight(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def clickSwapRight(implicit patienceConfig: PatienceConfig, pos: Position): TableSelectNamesPage = {
     clickButton(buttonSwapRight)
     this
   }
@@ -128,12 +128,12 @@ class TableSelectNamesPage( dupid: String,
     ret
   }
 
-  def clickReset(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def clickReset(implicit patienceConfig: PatienceConfig, pos: Position): TableEnterScorekeeperPage = {
     clickButton(buttonReset)
     new TableEnterScorekeeperPage(dupid,tableid,roundid,targetBoard,None)
   }
 
-  def isOKEnabled(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def isOKEnabled(implicit patienceConfig: PatienceConfig, pos: Position): Boolean = {
     getButton(buttonOK).isEnabled
   }
 

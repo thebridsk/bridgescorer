@@ -31,6 +31,7 @@ import com.github.thebridsk.bridge.data.HandInTable
 import com.github.thebridsk.bridge.data.BoardSet
 import com.github.thebridsk.bridge.clientcommon.react.DropdownList
 
+
 /**
  * Shows all the boards of a boardset.
  *
@@ -62,14 +63,14 @@ object PageEditMovement {
 
   case class Props( routerCtl: BridgeRouter[DuplicatePage], page: DuplicatePage )
 
-  def apply( routerCtl: BridgeRouter[DuplicatePage], page: DuplicatePage ) = component(Props(routerCtl,page))
+  def apply( routerCtl: BridgeRouter[DuplicatePage], page: DuplicatePage ) = component(Props(routerCtl,page))  // scalafix:ok ExplicitResultTypes; ReactComponent
 
 }
 
 object PageEditMovementInternal {
   import PageEditMovement._
 
-  val logger = Logger("bridge.PageEditMovement")
+  val logger: Logger = Logger("bridge.PageEditMovement")
 
   /**
    * Internal state for rendering the component.
@@ -122,11 +123,11 @@ object PageEditMovementInternal {
         )
       )
     }
-    def setName( name: Movement.Id ) = copy( movement = Some(getMovement.copy(name = name)))
-    def setShort( description: String ) = copy( movement = Some(getMovement.copy(short=description)))
-    def setDescription( description: String ) = copy( movement = Some(getMovement.copy(description=description)))
+    def setName( name: Movement.Id ): State = copy( movement = Some(getMovement.copy(name = name)))
+    def setShort( description: String ): State = copy( movement = Some(getMovement.copy(short=description)))
+    def setDescription( description: String ): State = copy( movement = Some(getMovement.copy(description=description)))
 
-    def logState( msg: String, nstate: State ) = {
+    def logState( msg: String, nstate: State ): State = {
       logger.fine(s"$msg: $nstate")
       nstate
     }
@@ -183,21 +184,21 @@ object PageEditMovementInternal {
       }
     }
 
-    def setNTeams( n: Int ) = {
+    def setNTeams( n: Int ): State = {
       val mov = getMovement
       val newmov = mov.copy(numberTeams = n)
       logState("setNTeams", copy(nteams = n, movement = Some(newmov)) )
     }
 
-    def setNBoards( n: Int ) = {
+    def setNBoards( n: Int ): State = {
       logState("setNBoards", copy(nboards = n) )
     }
 
-    def setNTables( n: Int ) = {
+    def setNTables( n: Int ): State = {
       logState("setNTables", adjustHands(n,nrounds) )
     }
 
-    def setNRounds( n: Int ) = {
+    def setNRounds( n: Int ): State = {
       logState("setNRounds", adjustHands(ntables,n) )
     }
 
@@ -210,13 +211,13 @@ object PageEditMovementInternal {
       copy(movement = Some(curmov.copy(hands=nl)))
     }
 
-    def setNSTeam( table: Int, round: Int, team: Int ) = {
+    def setNSTeam( table: Int, round: Int, team: Int ): State = {
       set(table,round, hit => hit.copy(ns = team))
     }
-    def setEWTeam( table: Int, round: Int, team: Int ) = {
+    def setEWTeam( table: Int, round: Int, team: Int ): State = {
       set(table,round, hit => hit.copy(ew = team))
     }
-    def setBoards( table: Int, round: Int, boards: String ) = {
+    def setBoards( table: Int, round: Int, boards: String ): State = {
       logger.fine(s"setBoards table=$table, round=$round, boards=$boards")
       val ns = try {
         val b = boards.split("[, ]+").map( sb => sb.trim.toInt).toList
@@ -229,7 +230,7 @@ object PageEditMovementInternal {
       logState("setBoards", ns)
     }
 
-    def isValid() = {
+    def isValid(): Boolean = {
       movement.flatMap { mov =>
         if (mov.name != null && mov.name != "") {
           if (mov.short != null && mov.short != "") {
@@ -246,23 +247,23 @@ object PageEditMovementInternal {
       }.isDefined
     }
 
-    def setMsg( msg: String ) = copy( msg = Some(msg))
-    def setMsg( msg: TagMod ) = copy( msg = Some(msg))
-    def clearMsg() = copy( msg = None )
+    def setMsg( msg: String ): State = copy( msg = Some(msg))
+    def setMsg( msg: TagMod ): State = copy( msg = Some(msg))
+    def clearMsg(): State = copy( msg = None )
   }
 
   case class VulStat( me: Int, opp: Int, bothVul: Int = 0, meVul: Int = 0, oppVul: Int = 0, neitherVul: Int = 0) {
-    def key = (me,opp)
-    def incBothVul = copy(bothVul = bothVul+1)
-    def incMeVul = copy(meVul = meVul+1)
-    def incOppVul = copy(oppVul = oppVul+1)
-    def incNeitherVul = copy(neitherVul = neitherVul+1)
+    def key: (Int, Int) = (me,opp)
+    def incBothVul: VulStat = copy(bothVul = bothVul+1)
+    def incMeVul: VulStat = copy(meVul = meVul+1)
+    def incOppVul: VulStat = copy(oppVul = oppVul+1)
+    def incNeitherVul: VulStat = copy(neitherVul = neitherVul+1)
 
-    def add( v: VulStat ) = copy( bothVul=bothVul+v.bothVul, meVul=meVul+v.meVul, oppVul=oppVul+v.oppVul, neitherVul=neitherVul+v.neitherVul)
+    def add( v: VulStat ): VulStat = copy( bothVul=bothVul+v.bothVul, meVul=meVul+v.meVul, oppVul=oppVul+v.oppVul, neitherVul=neitherVul+v.neitherVul)
 
-    def swapTeams = copy(me=opp,opp=me,meVul=oppVul,oppVul=meVul)
+    def swapTeams: VulStat = copy(me=opp,opp=me,meVul=oppVul,oppVul=meVul)
 
-    def normalize = if (me < opp) this else swapTeams
+    def normalize: VulStat = if (me < opp) this else swapTeams
   }
 
   class Stats( state: State ) {
@@ -271,7 +272,7 @@ object PageEditMovementInternal {
      * @return Map[(t1,t2),v].  t1 is team 1, t2 is team 2,
      *         v is number of boards played between the two.  t1 < t2
      */
-    def boardsPlayed = {
+    def boardsPlayed: Map[(Int, Int),Int] = {
       val played = scala.collection.mutable.Map[(Int,Int),Int]()
 
       def add( team1: Int, team2: Int, n: Int ) = {
@@ -374,6 +375,7 @@ object PageEditMovementInternal {
     def stats = new Stats(state)
   }
 
+  private[boardsets]
   val TableCaption = ScalaComponent.builder[(Props,State,Int)]("PageEditMovement.TableCaption")
                     .render_P { args =>
                       val (props,state,table) = args
@@ -382,6 +384,7 @@ object PageEditMovementInternal {
                       )
                     }.build
 
+  private[boardsets]
   val TableHeader = ScalaComponent.builder[(Props,State)]("PageEditMovement.TableHeader")
                     .render_P { args =>
                       val (props,state) = args
@@ -399,6 +402,7 @@ object PageEditMovementInternal {
   // prop._3 is setNSTeam( nsTeam: ReactEventFromInput ) => Callback
   // prop._4 is setEWTeam( ewTeam: ReactEventFromInput ) => Callback
   // prop._5 is setBoards( boards: ReactEventFromInput ) => Callback
+  private[boardsets]
   val TableRow = ScalaComponent.builder[(Props,HandInTable,String,(ReactEventFromInput)=>Callback,(ReactEventFromInput)=>Callback,(ReactEventFromInput)=>Callback)]("PageEditMovement.TableRow")
                     .render_P { args =>
                       val (props,movement,boards,setNSTeam,setEWTeam,setBoards) = args
@@ -433,11 +437,11 @@ object PageEditMovementInternal {
                       )
                     }.build
 
-  def boardsetToDropdownListValue( bs: BoardSet ) = {
+  def boardsetToDropdownListValue( bs: BoardSet ): js.Object = {
     js.Dictionary( "short"->bs.short, "obj"->bs).asInstanceOf[js.Object]
   }
 
-  val nullboardsetToDropdownListValue = {
+  val nullboardsetToDropdownListValue: js.Object = {
     js.Dictionary( "short"->"none").asInstanceOf[js.Object]
   }
 
@@ -514,30 +518,30 @@ object PageEditMovementInternal {
       }
     }
 
-    def stringToInt( text: String ) = {
+    def stringToInt( text: String ): Int = {
       val t = text.trim
       if (t=="") 0 else t.toInt
     }
 
-    def setNSTeam( table: Int, round: Int )( data: ReactEventFromInput) = data.inputText { text =>
+    def setNSTeam( table: Int, round: Int )( data: ReactEventFromInput): Callback = data.inputText { text =>
       val nsTeam = stringToInt(text)
       scope.modState( s => s.setNSTeam(table,round,nsTeam))
     }
-    def setEWTeam( table: Int, round: Int )( data: ReactEventFromInput) = data.inputText { text =>
+    def setEWTeam( table: Int, round: Int )( data: ReactEventFromInput): Callback = data.inputText { text =>
       val ewTeam = stringToInt(text)
       scope.modState( s => s.setEWTeam(table,round,ewTeam))
     }
-    def setBoards( table: Int, round: Int )( data: ReactEventFromInput) = data.inputText { boards =>
+    def setBoards( table: Int, round: Int )( data: ReactEventFromInput): Callback = data.inputText { boards =>
       scope.modState( s => s.setBoards(table,round,boards))
     }
 
-    val toggleDisabled = scope.modState { s =>
+    val toggleDisabled: Callback = scope.modState { s =>
       val mov = s.getMovement
       val m = mov.copy( disabled = Some(!mov.isDisabled))
       s.copy(movement = Some(m))
     }
 
-    val clickOk = scope.modState(
+    val clickOk: Callback = scope.modState(
       { s =>
         s.setMsg( s.movementId.map(i=>s"Updating movement $i").getOrElse("Creating new movement"))
       },
@@ -572,7 +576,7 @@ object PageEditMovementInternal {
       }
     )
 
-    val popupCancel = Callback {
+    val popupCancel: Callback = Callback {
 
     } >> scope.modState( s => s.clearMsg())
 
@@ -581,7 +585,7 @@ object PageEditMovementInternal {
       scope.withEffectsImpure.modState(_.copy(boardset = bs))
     }
 
-    def render( props: Props, state: State ) = {
+    def render( props: Props, state: State ) = { // scalafix:ok ExplicitResultTypes; React
       import DuplicateStyles._
       val movement = state.getMovement
       val vlistoftables = movement.getTables
@@ -867,7 +871,7 @@ object PageEditMovementInternal {
 
     def forceUpdate = scope.withEffectsImpure.forceUpdate
 
-    val storeCallback = scope.modStateOption { (state,props) =>
+    val storeCallback: Callback = scope.modStateOption { (state,props) =>
       props.page match {
         case mev: MovementEditView =>
           val display = mev.display
@@ -893,7 +897,7 @@ object PageEditMovementInternal {
       }
     }
 
-    val didMount = scope.stateProps { (state,props) => Callback {
+    val didMount: Callback = scope.stateProps { (state,props) => Callback {
       logger.info("PageEditMovement.didMount")
       BoardSetStore.addChangeListener(storeCallback)
       BoardSetController.getBoardSets().onComplete { tr =>
@@ -913,14 +917,14 @@ object PageEditMovementInternal {
       }
     }}
 
-    val willUnmount = Callback {
+    val willUnmount: Callback = Callback {
       logger.info("PageEditMovement.willUnmount")
       BoardSetStore.removeChangeListener(storeCallback)
     }
 
   }
 
-  def didUpdate( cdu: ComponentDidUpdate[Props,State,Backend,Unit] ) = cdu.modStateOption { state =>
+  def didUpdate( cdu: ComponentDidUpdate[Props,State,Backend,Unit] ): Callback = cdu.modStateOption { state =>
     val props = cdu.currentProps
     val prevProps = cdu.prevProps
     if (props.page != prevProps.page) {
@@ -937,6 +941,7 @@ object PageEditMovementInternal {
     }
   }
 
+  private[boardsets]
   val component = ScalaComponent.builder[Props]("PageEditMovement")
                             .initialStateFromProps { props =>
                               props.page match {

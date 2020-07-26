@@ -15,12 +15,13 @@ import scala.concurrent.Future
 import scala.util.Failure
 import scala.util.Success
 import com.github.thebridsk.utilities.logging.Logger
+import akka.http.scaladsl.server.{ RequestContext, RouteResult }
 
 class UtilsPlayJson
 
 object UtilsPlayJson extends BridgePlayJsonSupport {
 
-  val utilslog = Logger[UtilsPlayJson]()
+  val utilslog: Logger = Logger[UtilsPlayJson]()
 
   def resourceCreated[T](
       resName: String,
@@ -85,7 +86,7 @@ object UtilsPlayJson extends BridgePlayJsonSupport {
       f: Future[Result[T]],
       successStatus: StatusCode = NoContent,
       msg: Option[String] = None
-  )(implicit marshaller: ToResponseMarshaller[T], writer: Writes[T]) =
+  )(implicit marshaller: ToResponseMarshaller[T], writer: Writes[T]): RequestContext => Future[RouteResult] =
     onComplete(f) {
       case Success(r) =>
         r match {
@@ -104,7 +105,7 @@ object UtilsPlayJson extends BridgePlayJsonSupport {
   def resource[T](
       f: Future[Result[T]],
       successStatus: StatusCode = OK
-  )(implicit marshaller: ToResponseMarshaller[T], writer: Writes[T]) =
+  )(implicit marshaller: ToResponseMarshaller[T], writer: Writes[T]): RequestContext => Future[RouteResult] =
     onComplete(f) {
       case Success(r) =>
         r match {
@@ -119,7 +120,7 @@ object UtilsPlayJson extends BridgePlayJsonSupport {
       f: Future[Result[T]],
       successStatus: StatusCode = NoContent,
       msg: Option[String] = None
-  ) =
+  ): RequestContext => Future[RouteResult] =
     onComplete(f) {
       case Success(r) =>
         r match {
@@ -147,7 +148,7 @@ object UtilsPlayJson extends BridgePlayJsonSupport {
       awriter: Writes[Array[T]],
       twriter: Writes[T],
       classtag: ClassTag[T]
-  ) =
+  ): RequestContext => Future[RouteResult] =
     onComplete(f) {
       case Success(r) =>
         r match {
@@ -165,7 +166,7 @@ object UtilsPlayJson extends BridgePlayJsonSupport {
       awriter: Writes[Array[T]],
       twriter: Writes[T],
       classtag: ClassTag[T]
-  ) =
+  ): RequestContext => Future[RouteResult] =
     onComplete(f) {
       case Success(r) =>
         r match {

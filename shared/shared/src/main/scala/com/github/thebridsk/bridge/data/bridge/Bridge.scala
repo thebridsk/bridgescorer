@@ -14,7 +14,7 @@ object Diamonds extends ContractSuit("D")
 object Clubs extends ContractSuit("C")
 
 object ContractSuit {
-  def apply(suit: String) = suit match {
+  def apply(suit: String): ContractSuit = suit match {
     case "N" => NoTrump
     case "S" => Spades
     case "H" => Hearts
@@ -26,7 +26,7 @@ object ContractSuit {
       )
   }
 
-  def getRank(suit: String) = suit match {
+  def getRank(suit: String): Int = suit match {
     case "N" => 5
     case "S" => 4
     case "H" => 3
@@ -52,8 +52,8 @@ case class ContractTricks(tricks: Int) {
 }
 
 object ContractTricks {
-  implicit def contractTricksToInt(tricks: ContractTricks) = tricks.tricks
-  implicit def intToContractTricks(tricks: Int) = ContractTricks(tricks)
+  implicit def contractTricksToInt(tricks: ContractTricks): Int = tricks.tricks
+  implicit def intToContractTricks(tricks: Int): ContractTricks = ContractTricks(tricks)
 }
 
 object PassedOut extends ContractTricks(0)
@@ -65,7 +65,7 @@ object Doubled extends ContractDoubled("D", "*")
 object Redoubled extends ContractDoubled("R", "**")
 
 object ContractDoubled {
-  def apply(doubled: String) = doubled match {
+  def apply(doubled: String): ContractDoubled = doubled match {
     case "N" => NotDoubled
     case "D" => Doubled
     case "R" => Redoubled
@@ -77,13 +77,13 @@ object ContractDoubled {
 }
 
 sealed abstract case class PlayerPosition(pos: String, name: String) {
-  def nextDealer = PlayerPosition.nextDealer(this)
-  def forDisplay = PlayerPosition.forDisplay(this)
-  def left = PlayerPosition.left(this)
-  def right = PlayerPosition.right(this)
-  def partner = PlayerPosition.partner(this)
+  def nextDealer: PlayerPosition = PlayerPosition.nextDealer(this)
+  def forDisplay: String = PlayerPosition.forDisplay(this)
+  def left: PlayerPosition = PlayerPosition.left(this)
+  def right: PlayerPosition = PlayerPosition.right(this)
+  def partner: PlayerPosition = PlayerPosition.partner(this)
 
-  def player(north: String, south: String, east: String, west: String) =
+  def player(north: String, south: String, east: String, west: String): String =
     this match {
       case North => north
       case East  => east
@@ -102,7 +102,7 @@ object West extends PlayerPosition("W", "West")
 object South extends PlayerPosition("S", "South")
 
 object PlayerPosition {
-  def apply(pos: String) = pos match {
+  def apply(pos: String): PlayerPosition = pos match {
     case "N" => North
     case "E" => East
     case "W" => West
@@ -113,10 +113,10 @@ object PlayerPosition {
       )
   }
 
-  def nextDealer(current: PlayerPosition) = left(current)
-  def prevDealer(current: PlayerPosition) = right(current)
+  def nextDealer(current: PlayerPosition): PlayerPosition = left(current)
+  def prevDealer(current: PlayerPosition): PlayerPosition = right(current)
 
-  def left(current: PlayerPosition) = current match {
+  def left(current: PlayerPosition): PlayerPosition = current match {
     case North => East
     case East  => South
     case West  => North
@@ -127,7 +127,7 @@ object PlayerPosition {
       )
   }
 
-  def right(current: PlayerPosition) = current match {
+  def right(current: PlayerPosition): PlayerPosition = current match {
     case North => West
     case East  => North
     case West  => South
@@ -138,7 +138,7 @@ object PlayerPosition {
       )
   }
 
-  def partner(current: PlayerPosition) = current match {
+  def partner(current: PlayerPosition): PlayerPosition = current match {
     case North => South
     case East  => West
     case West  => East
@@ -149,7 +149,7 @@ object PlayerPosition {
       )
   }
 
-  def forDisplay(current: PlayerPosition) = current match {
+  def forDisplay(current: PlayerPosition): String = current match {
     case North => "North"
     case East  => "East"
     case West  => "West"
@@ -160,7 +160,7 @@ object PlayerPosition {
       )
   }
 
-  def fromDisplay(pos: String) = pos match {
+  def fromDisplay(pos: String): PlayerPosition = pos match {
     case "North" => North
     case "East"  => East
     case "West"  => West
@@ -178,7 +178,7 @@ object Made extends MadeOrDown(true, "made")
 object Down extends MadeOrDown(false, "down")
 
 object MadeOrDown {
-  def apply(made: Boolean) = if (made) Made; else Down
+  def apply(made: Boolean): MadeOrDown = if (made) Made; else Down
 }
 
 sealed abstract case class Vulnerability(vul: Boolean)
@@ -187,7 +187,7 @@ object Vul extends Vulnerability(true)
 object NotVul extends Vulnerability(false)
 
 object Vulnerability {
-  def apply(vul: Boolean) = if (vul) Vul; else NotVul
+  def apply(vul: Boolean): Vulnerability = if (vul) Vul; else NotVul
 }
 
 abstract trait ScoringSystem
@@ -229,7 +229,7 @@ class BridgeHand(
       }
   }
 
-  def asHand() =
+  def asHand(): Hand =
     Hand.create(
       id,
       contractTricks.tricks,
@@ -244,7 +244,7 @@ class BridgeHand(
       SystemTime.currentTimeMillis()
     )
 
-  def getTricksRange() = BridgeHand.getTricksRange(madeOrDown, contractTricks)
+  def getTricksRange(): Range = BridgeHand.getTricksRange(madeOrDown, contractTricks)
 }
 
 object BridgeHand {
@@ -258,7 +258,7 @@ object BridgeHand {
       ewVul: Vulnerability,
       madeContract: MadeOrDown,
       tricks: Int
-  ) = {
+  ): BridgeHand = {
     new BridgeHand(
       id,
       contractTricks,
@@ -272,7 +272,7 @@ object BridgeHand {
     )
   }
 
-  def apply(hand: Hand) = {
+  def apply(hand: Hand): BridgeHand = {
     new BridgeHand(
       hand.id,
       ContractTricks(hand.contractTricks),
@@ -286,7 +286,7 @@ object BridgeHand {
     )
   }
 
-  def getTricksRange(madeOrDown: MadeOrDown, contractTricks: ContractTricks) = {
+  def getTricksRange(madeOrDown: MadeOrDown, contractTricks: ContractTricks): Range = {
     if (contractTricks.tricks == 0) {
       0 until 0
     } else {

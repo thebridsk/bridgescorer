@@ -6,7 +6,7 @@ import com.github.thebridsk.bridge.clientcommon.logger.ServerHandler
 import com.github.thebridsk.bridge.clientcommon.dispatcher.Dispatcher
 
 object DebugLoggerHandler {
-  val exclude = "bridge.Listenable"::
+  val exclude: List[String] = "bridge.Listenable"::
                 "bridge.AjaxResult"::
                 Nil
 }

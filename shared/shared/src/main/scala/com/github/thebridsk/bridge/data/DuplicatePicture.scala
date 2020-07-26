@@ -13,5 +13,5 @@ case class DuplicatePicture(
   @Schema(description = "The URL relative to this servers root URL", required = true)
   url: String
 ) {
-  def key = (boardId,handId)
+  def key: (Board.Id, Team.Id) = (boardId,handId)
 }

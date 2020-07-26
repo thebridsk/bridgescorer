@@ -18,7 +18,7 @@ import sangria.parser.SyntaxError
 
 object Query {
 
-  val log = Logger[Query]()
+  val log: Logger = Logger[Query]()
 }
 
 class Query {

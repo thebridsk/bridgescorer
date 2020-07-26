@@ -20,6 +20,8 @@ import javax.ws.rs.GET
 import com.github.thebridsk.bridge.data.MatchRubber
 import com.github.thebridsk.bridge.server.backend.StoreMonitor.NewParticipantSSERubber
 import com.github.thebridsk.bridge.server.rest.Service
+import akka.event.LoggingAdapter
+import akka.http.scaladsl.server.Route
 
 @Path("")
 class RubberMonitorWebservice(
@@ -32,7 +34,7 @@ class RubberMonitorWebservice(
 ) extends MonitorWebservice[MatchRubber.Id, MatchRubber](
       totallyMissingResourceHandler
     ) {
-  val log = Logging(system, classOf[RubberMonitorWebservice])
+  val log: LoggingAdapter = Logging(system, classOf[RubberMonitorWebservice])
   val monitor = new StoreMonitorManager(
     system,
     bridgeService.rubbers,
@@ -85,8 +87,8 @@ class RubberMonitorWebservice(
       )
     )
   )
-  def xxxroutesse = {}
-  val routesse = {
+  def xxxroutesse: Unit = {}
+  val routesse: Route = {
     import akka.http.scaladsl.marshalling.sse.EventStreamMarshalling._
     pathPrefix("sse") {
       get {

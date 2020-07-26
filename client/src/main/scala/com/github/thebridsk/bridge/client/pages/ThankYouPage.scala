@@ -7,6 +7,7 @@ import com.github.thebridsk.bridge.clientcommon.pages.TitleSuits
 import com.github.thebridsk.bridge.client.routes.BridgeRouter
 import com.github.thebridsk.bridge.client.routes.AppRouter.AppPage
 
+
 object ThankYouPage {
   import ThankYouPageInternal._
 
@@ -16,20 +17,21 @@ object ThankYouPage {
 
   def apply(
     routeCtl: BridgeRouter[AppPage],
-  ) = component(Props(routeCtl))
+  ) = component(Props(routeCtl)) // scalafix:ok ExplicitResultTypes; ReactComponent
 
 }
 
 object ThankYouPageInternal {
   import ThankYouPage._
 
-  def exitFullscreen() = Callback {
+  def exitFullscreen(): Callback = Callback {
     import org.scalajs.dom.document
     import com.github.thebridsk.bridge.clientcommon.fullscreen.Implicits._
 
     if (document.isFullscreen) document.exitFullscreen()
   }
 
+  private[pages]
   val component = ScalaComponent.builder[Props]("ThankYouPage")
                             .stateless
                             .noBackend

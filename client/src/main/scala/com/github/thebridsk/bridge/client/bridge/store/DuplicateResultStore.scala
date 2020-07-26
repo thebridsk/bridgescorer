@@ -8,16 +8,16 @@ import com.github.thebridsk.bridge.client.bridge.action.ActionUpdateDuplicateRes
 import com.github.thebridsk.bridge.client.bridge.action.BridgeDispatcher
 
 object DuplicateResultStore extends ChangeListenable {
-  val logger = Logger("bridge.DuplicateResultStore")
+  val logger: Logger = Logger("bridge.DuplicateResultStore")
 
   /**
    * Required to instantiate the store.
    */
-  def init() = {}
+  def init(): Unit = {}
 
   private var dispatchToken: Option[DispatchToken] = Some(BridgeDispatcher.register(dispatch _))
 
-  def dispatch( msg: Any ) = Alerter.tryitWithUnit { msg match {
+  def dispatch( msg: Any ): Unit = Alerter.tryitWithUnit { msg match {
     case ActionUpdateDuplicateResult(dr) =>
       update(dr)
     case x =>
@@ -31,11 +31,11 @@ object DuplicateResultStore extends ChangeListenable {
   /**
    * @param id the id to monitor.  None means not monitoring anything, Some(x) means monitoring x
    */
-  def monitor( id: Option[MatchDuplicateResult.Id] ) = monitoringId = id
+  def monitor( id: Option[MatchDuplicateResult.Id] ): Unit = monitoringId = id
 
   def getDuplicateResult() = duplicateResult
 
-  def update( dr: MatchDuplicateResult ) = {
+  def update( dr: MatchDuplicateResult ): Unit = {
     monitoringId match {
       case Some(id) =>
         if (id == dr.id) {

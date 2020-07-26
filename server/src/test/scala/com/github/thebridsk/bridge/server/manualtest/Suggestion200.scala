@@ -16,18 +16,21 @@ import java.net.URLClassLoader
 import java.io.File
 import com.github.thebridsk.bridge.data.duplicate.suggestion.DuplicateSuggestions
 import com.github.thebridsk.bridge.data.duplicate.suggestion.NeverPair
+import org.rogach.scallop.ScallopOption
+import scala.collection.mutable
+import scala.util.matching.Regex
 
 object Suggestion200 extends Main {
 
-  val log = Logger(Suggestion200.getClass.getName)
+  val log: Logger = Logger(Suggestion200.getClass.getName)
 
-  val defaultPlayers = List("A","B","C","D","E","F","G","H")
+  val defaultPlayers: List[String] = List("A","B","C","D","E","F","G","H")
 
-  val playedMatches = collection.mutable.ArrayBuffer[DuplicateSummary]()
+  val playedMatches: mutable.ArrayBuffer[DuplicateSummary] = collection.mutable.ArrayBuffer[DuplicateSummary]()
 
   import com.github.thebridsk.utilities.main.Converters._
 
-  val cmdName = {
+  val cmdName: String = {
     ((getClass.getClassLoader match {
       case loader: URLClassLoader =>
         // This doesn't work anymore.  In Java 9 with the modules classloader, the URLClassLoader is not used as
@@ -67,32 +70,32 @@ Syntax:
   ${cmdName} options
 Options:""")
 
-  val optionStore = opt[Path]("store",
+  val optionStore: ScallopOption[Path] = opt[Path]("store",
                               short='s',
                               descr="The store directory, default is none",
                               argName="dir",
                               default=None)
-  val optionRounds = opt[Int]("rounds",
+  val optionRounds: ScallopOption[Int] = opt[Int]("rounds",
                               short='r',
                               descr="The number of 105 match rounds to evaluate, default is 2",
                               argName="rounds",
                               default=Some(2))
 
-  val optionNeverPair = opt[List[String]]("neverpair",
+  val optionNeverPair: ScallopOption[List[String]] = opt[List[String]]("neverpair",
                                   short='n',
                                   descr="never pair players.  Value is player1,player2",
                                   argName="pair",
                                   default=None)
 
-  val optionNames = trailArg[List[String]]("names",
+  val optionNames: ScallopOption[List[String]] = trailArg[List[String]]("names",
                                            descr=s"The 8 names to use, default ${defaultPlayers.mkString(",")}",
                                            validate= _.length==8,
                                            required=false,
                                            default=Some(defaultPlayers))
 
-  val patternPair = """([^,]+),([^,]+)""".r
+  val patternPair: Regex = """([^,]+),([^,]+)""".r
 
-  def execute() = {
+  def execute(): Int = {
     val neverPair = optionNeverPair.toOption.map( lnp => lnp.flatMap { pair =>
       pair match {
         case patternPair(p1,p2) =>
@@ -134,7 +137,7 @@ Options:""")
     0
   }
 
-  def toString( s: Suggestion ) = {
+  def toString( s: Suggestion ): String = {
     val x = s.players.sortWith{ (l,r) =>
       val lastPlayed = l.lastPlayed.compare(r.lastPlayed)
       if (lastPlayed == 0) {
@@ -147,13 +150,13 @@ Options:""")
     x.mkString("",", ",s"  lastPlayedAllTeams=${s.lastPlayedAllTeams}")
   }
 
-  def toStringDetail( s: Suggestion ) = {
+  def toStringDetail( s: Suggestion ): String = {
     val x = s.players.map( p => f"${p.player1}-${p.player2} (${p.lastPlayed}%2d ${p.timesPlayed}%2d)")
     val wghts = s.weights.map { v => f"$v%.5f" }.mkString("[", ", ", "]")
     x.mkString("",", ",f"  lastPlayedAllTeams=${s.lastPlayedAllTeams} minLastPlayed=${s.minLastPlayed}, maxLastPlayed=${s.maxLastPlayed}, maxTimesPlayed=${s.maxTimesPlayed}, avgLastPlayed=${s.avgLastPlayed}, avgTimesPlayed=${s.avgTimesPlayed}, lastPlayedAllTeams=${s.lastPlayedAllTeams}, weight=${s.weight}%.5f, weights=${wghts}, random=${s.random}")
   }
 
-  def nextSuggestion( i: Int, players: List[String], neverPair: Option[List[NeverPair]] ) = {
+  def nextSuggestion( i: Int, players: List[String], neverPair: Option[List[NeverPair]] ): (DuplicateSummary, Long) = {
     log.info( s"Calculating $i with ${playedMatches.length} games" )
 
     val input = DuplicateSuggestions(players, numberSuggestion=105, neverPair=neverPair)
@@ -175,7 +178,7 @@ Options:""")
     toDuplicateSummary(i,sug.suggestions.get.head, diff)
   }
 
-  def toDuplicateSummary( im: Int, sug: Suggestion, calcTime: Long ) = {
+  def toDuplicateSummary( im: Int, sug: Suggestion, calcTime: Long ): (DuplicateSummary, Long) = {
     log.info( s"  Taking ${toString(sug)} calcTime ${calcTime} nanos" )
     val teams = sug.players.zipWithIndex.map { e =>
       val (p,i) = e
@@ -185,7 +188,7 @@ Options:""")
     (DuplicateSummary(DuplicateSummary.id(s"M${im}"),true,teams,18,2,true,im,im),calcTime)
   }
 
-  def analyze( players: List[String], ignore: Int ) = {
+  def analyze( players: List[String], ignore: Int ): Unit = {
     val pm = playedMatches.toList.drop(ignore)
     val res = for (p1 <- 0 until 8;
          p2 <- p1+1 until 8
@@ -199,17 +202,17 @@ Options:""")
     analyzePermutations(pm)
   }
 
-  def getKey( l: DuplicateSummaryEntry ) = {
+  def getKey( l: DuplicateSummaryEntry ): (String, String) = {
     if (l.team.player1 < l.team.player2) (l.team.player1,l.team.player2) else (l.team.player2,l.team.player1)
   }
 
-  def sortDSE( l: DuplicateSummaryEntry, r: DuplicateSummaryEntry ) = {
+  def sortDSE( l: DuplicateSummaryEntry, r: DuplicateSummaryEntry ): Boolean = {
     val (lp,_) = getKey(l)
     val (rp,_) = getKey(r)
     lp < rp
   }
 
-  def analyzePermutations(pm: List[DuplicateSummary]) = {
+  def analyzePermutations(pm: List[DuplicateSummary]): Unit = {
     val keys = pm.map { ds =>
       ds.teams.sortWith(sortDSE).map { dse =>
         val (l,r) = getKey(dse)
@@ -226,12 +229,12 @@ Options:""")
 
   case class Pair( player1: String, player2: String, gamesPlayed: Int, minGamesBetween: Int, maxGamesBetween: Int ) {
     override
-    def toString() = {
+    def toString(): String = {
       f"""$player1%s-$player2%s $gamesPlayed%3d $minGamesBetween%3d $maxGamesBetween%3d"""
     }
   }
 
-  def analyzePair( pm: List[DuplicateSummary], p1: String, p2: String ) = {
+  def analyzePair( pm: List[DuplicateSummary], p1: String, p2: String ): Pair = {
 
     val playedGames = pm.zipWithIndex.filter { e =>
       val (m,i) = e

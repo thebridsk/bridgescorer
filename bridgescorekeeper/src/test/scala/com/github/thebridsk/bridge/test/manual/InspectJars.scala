@@ -9,7 +9,7 @@ object InspectJars extends Main {
   class EnumerationIterator[A](e : java.util.Enumeration[A])
       extends Iterator[A] {
     def hasNext = e.hasMoreElements
-    def next() = e.nextElement()
+    def next(): A = e.nextElement()
   }
 
   def execute(): Int = {

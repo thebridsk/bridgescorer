@@ -6,9 +6,7 @@ import com.github.thebridsk.utilities.logging.Logger
 import japgolly.scalajs.react.Callback
 import com.github.thebridsk.bridge.clientapi.routes.AppRouter.AppPage
 import japgolly.scalajs.react.CallbackTo
-import org.scalajs.dom.html
 import japgolly.scalajs.react._
-import japgolly.scalajs.react.vdom.TagOf
 
 trait BridgeRouter[Page] {
   def baseUrl: BaseUrl
@@ -19,7 +17,7 @@ trait BridgeRouter[Page] {
   def setEH( page: Page ): ReactEvent => Callback
   def setOnClick( page: Page ): TagMod
   def setOnLinkClick( page: Page ): TagMod
-  def link(page: Page): TagOf[html.Anchor] =
+  def link(page: Page) =  // scalafix:ok ExplicitResultTypes; React
     <.a(^.href := urlFor(page).value, setOnLinkClick(page))
 
   def home: TagMod
@@ -45,20 +43,20 @@ class BridgeRouterBase[Page]( ctl: RouterCtl[Page] ) extends BridgeRouter[Page] 
   def urlFor(page: Page): AbsUrl = ctl.urlFor(page)
   def set( page: Page ): Callback = ctl.set(page)
   def setEH( page: Page ): ReactEvent => Callback = ctl.setEH(page)
-  def setOnClick( page: Page ) = ctl.setOnClick(page)
+  def setOnClick( page: Page ): TagMod = ctl.setOnClick(page)
   def setOnLinkClick( page: Page ): TagMod = ctl.setOnLinkClick(page)
-  def home = ^.onClick-->CallbackTo {}
+  def home: TagMod = ^.onClick-->CallbackTo {}
   override
   def routerCtl: Option[RouterCtl[Page]] = Some(ctl)
 }
 
 object BridgeRouterBaseWithLogging {
-  val logger = Logger("bridge.BridgeRouterBaseWithLogging")
+  val logger: Logger = Logger("bridge.BridgeRouterBaseWithLogging")
 }
 
 class BridgeRouterBaseWithLogging[Page]( ctl: RouterCtl[Page] ) extends BridgeRouter[Page] {
   import BridgeRouterBaseWithLogging._
-  def log( msg: =>String ) = Callback {
+  def log( msg: =>String ): Callback = Callback {
     logger.fine(msg)
   }
   def baseUrl: BaseUrl = ctl.baseUrl
@@ -81,7 +79,7 @@ class BridgeRouterBaseWithLogging[Page]( ctl: RouterCtl[Page] ) extends BridgeRo
   }
 
   def setOnLinkClick( page: Page ): TagMod = ctl.setOnLinkClick(page)
-  def home = ^.onClick-->CallbackTo {}
+  def home: TagMod = ^.onClick-->CallbackTo {}
 
 }
 
@@ -98,7 +96,7 @@ abstract class TestBridgeRouter[Page]( base: BaseUrl ) extends BridgeRouter[Page
   def baseUrl: BaseUrl = base
   def urlFor(page: Page): AbsUrl = pathFor(page).abs(baseUrl)
   def setEH( page: Page ): ReactEvent => Callback = e => set(page).asEventDefault(e).void
-  def setOnClick( page: Page ) = ^.onClick ==> setEH(page)
+  def setOnClick( page: Page ): TagMod = ^.onClick ==> setEH(page)
   def setOnLinkClick( page: Page ): TagMod = {
     def go(e: ReactMouseEvent): Callback =
       CallbackOption.unless(ReactMouseEvent targetsNewTab_? e) >>

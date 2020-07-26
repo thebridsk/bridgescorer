@@ -55,6 +55,7 @@ import com.github.thebridsk.bridge.data.websocket.Protocol.UpdateChicagoHand
 import com.github.thebridsk.bridge.data.websocket.Protocol.UpdateRubberHand
 import com.github.thebridsk.bridge.data.websocket.Protocol.UpdateDuplicatePicture
 import com.github.thebridsk.bridge.data.websocket.Protocol.UpdateDuplicatePictures
+import akka.event.LoggingAdapter
 
 class TestDuplicateRestSpec extends AnyFlatSpec with ScalatestRouteTest with Matchers with MyService {
 
@@ -66,15 +67,15 @@ class TestDuplicateRestSpec extends AnyFlatSpec with ScalatestRouteTest with Mat
 
   val httpport = 8080
   override
-  def ports = ServerPort( Option(httpport), None )
+  def ports: ServerPort = ServerPort( Option(httpport), None )
 
-  implicit lazy val actorSystem = system
-  implicit lazy val actorExecutor = executor
-  implicit lazy val actorMaterializer = materializer
+  implicit lazy val actorSystem = system  //scalafix:ok ExplicitResultTypes
+  implicit lazy val actorExecutor = executor  //scalafix:ok ExplicitResultTypes
+  implicit lazy val actorMaterializer = materializer  //scalafix:ok ExplicitResultTypes
 
-  lazy val testlog = Logging(actorSystem, classOf[TestDuplicateRestSpec])
+  lazy val testlog: LoggingAdapter = Logging(actorSystem, classOf[TestDuplicateRestSpec])
 
-  val remoteAddress = `Remote-Address`( IP( InetAddress.getLocalHost, Some(12345) ))
+  val remoteAddress = `Remote-Address`( IP( InetAddress.getLocalHost, Some(12345) ))  // scalafix:ok ; Remote-Address
 
   behavior of "MyService REST for duplicate"
 
@@ -84,7 +85,7 @@ class TestDuplicateRestSpec extends AnyFlatSpec with ScalatestRouteTest with Mat
     var lastUpdate: Option[T] = None
     var lastDelete: Option[T] = None
 
-    def reset() = {
+    def reset(): Unit = {
       lastCreate = None
       lastUpdate = None
       lastDelete = None
@@ -130,7 +131,7 @@ class TestDuplicateRestSpec extends AnyFlatSpec with ScalatestRouteTest with Mat
     }
   }
 
-  def testIgnoreJoinLookForUpdate( wsClient: WSProbe, mat: MatchDuplicate ) = {
+  def testIgnoreJoinLookForUpdate( wsClient: WSProbe, mat: MatchDuplicate ): Unit = {
       while ((wsClient.expectMessage() match {
         case TextMessage.Strict(s) =>
           val dp = DuplexProtocol.fromString(s)
@@ -188,7 +189,7 @@ class TestDuplicateRestSpec extends AnyFlatSpec with ScalatestRouteTest with Mat
       }) {}
   }
 
-  def testUpdate( wsClient: WSProbe, mat: MatchDuplicate ) = {
+  def testUpdate( wsClient: WSProbe, mat: MatchDuplicate ): Any = {
       (wsClient.expectMessage() match {
         case TextMessage.Strict(s) =>
           val dp = DuplexProtocol.fromString(s)
@@ -244,7 +245,7 @@ class TestDuplicateRestSpec extends AnyFlatSpec with ScalatestRouteTest with Mat
       }
   }
 
-  def testJoin( wsClient: WSProbe ) = {
+  def testJoin( wsClient: WSProbe ): AnyVal = {
       (wsClient.expectMessage() match {
         case TextMessage.Strict(s) =>
           val dp = DuplexProtocol.fromString(s)
@@ -297,7 +298,7 @@ class TestDuplicateRestSpec extends AnyFlatSpec with ScalatestRouteTest with Mat
       }
   }
 
-  def testLeft( wsClient: WSProbe ) = {
+  def testLeft( wsClient: WSProbe ): AnyVal = {
       (wsClient.expectMessage() match {
         case TextMessage.Strict(s) =>
           val dp = DuplexProtocol.fromString(s)
@@ -350,7 +351,7 @@ class TestDuplicateRestSpec extends AnyFlatSpec with ScalatestRouteTest with Mat
       }
   }
 
-  def terminateWebsocket( wsClient: WSProbe ) = {
+  def terminateWebsocket( wsClient: WSProbe ): Unit = {
     import scala.concurrent.duration._
     import scala.language.postfixOps
     wsClient.inProbe.within(10 seconds) {
@@ -877,7 +878,7 @@ class TestDuplicateRestSpec extends AnyFlatSpec with ScalatestRouteTest with Mat
 object TestDuplicateRestSpecImplicits {
   implicit class WebSocketSender( private val wsClient: WSProbe ) extends AnyVal {
 
-    def send( msg: ToServerMessage ) = {
+    def send( msg: ToServerMessage ): Unit = {
       val data = Send(msg)
       wsClient.sendMessage(DuplexProtocol.toString(data))
     }

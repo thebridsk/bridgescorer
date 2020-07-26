@@ -73,7 +73,7 @@ import com.github.thebridsk.browserpages.Checkbox
 
 object DuplicateTestPages {
 
-  val testlog = Logger[DuplicateTestPages]()
+  val testlog: Logger = Logger[DuplicateTestPages]()
 
   val screenshotDir = "target/DuplicateTestPages"
   val docsScreenshotDir = "target/docs/Duplicate"
@@ -85,21 +85,21 @@ object DuplicateTestPages {
   val bl = ""
   val zr = "0"
 
-  val team1original = Team( 1, "Fred", "Sam")
+  val team1original: Team = Team( 1, "Fred", "Sam")
 
-  val team1 = Team( 1, "Nick", "Sam")
-  val team2 = Team( 2, "Ethan", "Wayne")
-  val team3 = Team( 3, "Ellen", "Wilma")
-  val team4 = Team( 4, "Nora", "Sally")
+  val team1: Team = Team( 1, "Nick", "Sam")
+  val team2: Team = Team( 2, "Ethan", "Wayne")
+  val team3: Team = Team( 3, "Ellen", "Wilma")
+  val team4: Team = Team( 4, "Nora", "Sally")
 
   val prefixThatMatchesSomeNames = "e"
-  lazy val matchedNames = allHands.teams.flatMap{ t => List(t.one,t.two).filter(n=> n.toLowerCase().startsWith(prefixThatMatchesSomeNames))}
+  lazy val matchedNames: List[String] = allHands.teams.flatMap{ t => List(t.one,t.two).filter(n=> n.toLowerCase().startsWith(prefixThatMatchesSomeNames))}
   val prefixThatMatchesNoOne = "asdf"
 
   val movement = "2TablesArmonk"
   val boardset = "ArmonkBoards"
 
-  lazy val allHands = new AllHandsInMatch( List(
+  lazy val allHands: AllHandsInMatch = new AllHandsInMatch( List(
       HandsOnBoard( 1, 1, 1, EnterHand( 1,110,0,  2,0,  0,  1,Spades,NotDoubled,North,Made,2,NotVul), OtherHandNotPlayed(2,2,1)),
       HandsOnBoard( 2, 2, 1, EnterHand( 4, 80,0,  3,2, -1,  1,Spades,NotDoubled,North,Made,1,NotVul), OtherHandPlayed(1,1,1, 2, 0, 1, -1)),
       HandsOnBoard( 1, 1, 2, EnterHand( 1,110,0,  2,0,  0,  2,Spades,NotDoubled,North,Made,2,Vul), OtherHandNotPlayed(2,2,2)),
@@ -148,7 +148,7 @@ object DuplicateTestPages {
   ).checkFixHands
 
 
-  val listDuplicateResult = List(
+  val listDuplicateResult: List[String] = List(
         team1.one+"\n1\n20",
         team1.two+"\n1\n20",
         team2.one+"\n2\n18",
@@ -159,7 +159,7 @@ object DuplicateTestPages {
         team4.two+"\n4\n16"
       )
 
-  val peopleResult = List(
+  val peopleResult: List[PeopleRowMP] = List(
         PeopleRowMP(team1.one,"100.00%","100.00%","55.56%","1","1.00","1","0","55.56% (20.0/36)","20","36"),
         PeopleRowMP(team1.two,"100.00%","100.00%","55.56%","1","1.00","1","0","55.56% (20.0/36)","20","36"),
         PeopleRowMP(team2.one,"0.00%","0.00%","50.00%","0","0.00","1","0","50.00% (18.0/36)","18","36"),
@@ -171,14 +171,14 @@ object DuplicateTestPages {
       )
 
   // this is here to validate the AllHandsInMatch.getScoreToRound call
-  val resultAfterOneRoundCheckMark = List(
+  val resultAfterOneRoundCheckMark: List[TeamScoreboard] = List(
         TeamScoreboard(team1original, 0, "0", List(cm,cm,cm,bl,bl,bl,bl,bl,bl,bl,bl,bl,bl,bl,bl,bl,bl,bl)),
         TeamScoreboard(team2, 0, "0", List(cm,cm,cm,bl,bl,bl,bl,bl,bl,bl,bl,bl,bl,bl,bl,bl,bl,bl)),
         TeamScoreboard(team3, 0, "0", List(bl,bl,bl,cm,cm,cm,bl,bl,bl,bl,bl,bl,bl,bl,bl,bl,bl,bl)),
         TeamScoreboard(team4, 0, "0", List(bl,bl,bl,cm,cm,cm,bl,bl,bl,bl,bl,bl,bl,bl,bl,bl,bl,bl))
       )
 
-  val resultAfterOneRoundZero = List(
+  val resultAfterOneRoundZero: List[TeamScoreboard] = List(
         TeamScoreboard(team1original, 0, "0", List(zr,zr,zr,bl,bl,bl,bl,bl,bl,bl,bl,bl,bl,bl,bl,bl,bl,bl)),
         TeamScoreboard(team2, 0, "0", List(zr,zr,zr,bl,bl,bl,bl,bl,bl,bl,bl,bl,bl,bl,bl,bl,bl,bl)),
         TeamScoreboard(team3, 0, "0", List(bl,bl,bl,zr,zr,zr,bl,bl,bl,bl,bl,bl,bl,bl,bl,bl,bl,bl)),
@@ -219,13 +219,13 @@ class DuplicateTestPages extends AnyFlatSpec
   type MyDuration = Duration
   val MyDuration = Duration
 
-  implicit val timeoutduration = MyDuration( 60, TimeUnit.SECONDS )
+  implicit val timeoutduration: FiniteDuration = MyDuration( 60, TimeUnit.SECONDS )
 
-  val defaultPatienceConfig = PatienceConfig(timeout=scaled(Span(timeoutMillis, Millis)), interval=scaled(Span(intervalMillis,Millis)))
-  implicit def patienceConfig = defaultPatienceConfig
+  val defaultPatienceConfig: PatienceConfig = PatienceConfig(timeout=scaled(Span(timeoutMillis, Millis)), interval=scaled(Span(intervalMillis,Millis)))
+  implicit def patienceConfig: PatienceConfig = defaultPatienceConfig
 
   override
-  def beforeAll() = {
+  def beforeAll(): Unit = {
 
     testlog.fine( s"DuplicateTestPages patienceConfig=${patienceConfig}" )
 
@@ -246,7 +246,7 @@ class DuplicateTestPages extends AnyFlatSpec
   }
 
   override
-  def afterAll() = {
+  def afterAll(): Unit = {
     waitForFuturesIgnoreTimeouts( "Stopping browsers and server",
                     CodeBlock { SessionTable1.sessionStop() },
                     CodeBlock { SessionTable2.sessionStop() },
@@ -435,7 +435,7 @@ class DuplicateTestPages extends AnyFlatSpec
 
   var nsForTable1Round1: Option[String] = None
 
-  def getSampleHandImage = {
+  def getSampleHandImage: File = {
     val f1 = File("../testdata/SampleHand.jpg").toAbsolute.toCanonical.toFile
     if (f1.isFile) f1
     else File("testdata/SampleHand.jpg").toAbsolute.toCanonical.toFile
@@ -575,7 +575,7 @@ class DuplicateTestPages extends AnyFlatSpec
     pr.map(bp=>bp.clickScoreboard).getOrElse(sb)
   }
 
-  def toOriginal( data: (List[TeamScoreboard], List[PlaceEntry]) ) = {
+  def toOriginal( data: (List[TeamScoreboard], List[PlaceEntry]) ): (List[TeamScoreboard], List[PlaceEntry]) = {
     val (tsf,pesf) = data
     val ts = tsf.map { t =>
       if (t.team == team1) t.copy(team=team1original)
@@ -647,7 +647,7 @@ class DuplicateTestPages extends AnyFlatSpec
                          takeScreenshot: Boolean = false
                        )( implicit
                            webDriver: WebDriver
-                       ) = {
+                       ): ScoreboardPage = {
 
     val tp = currentPage.clickTableButton(table).validate.setTarget(SelectNames)
     val ss = tp.clickRound(round).asInstanceOf[TableSelectScorekeeperPage].validate
@@ -807,7 +807,7 @@ class DuplicateTestPages extends AnyFlatSpec
       verifyEWteam: Team
     )( implicit
          webDriver: WebDriver
-    ) = {
+    ): Unit = {
 
     PageBrowser.withClueAndScreenShot(screenshotDir, s"Round${round}Table${table}EnterHand", s"Enter Hand R${round}T${table}") {
       val sb = selectScorekeeper(currentPage,table,round, nsTeam, ewTeam, scorekeeper, mustswap )
@@ -858,7 +858,7 @@ class DuplicateTestPages extends AnyFlatSpec
       imp: Boolean = false
     )( implicit
          webDriver: WebDriver
-    ) = {
+    ): ScoreboardPage = {
 
     PageBrowser.withClueAndScreenShot(screenshotDir, s"Round${round}Table${table}Validate", "Validate R${round}T${table}") {
 

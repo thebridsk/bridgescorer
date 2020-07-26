@@ -19,12 +19,12 @@ import com.github.thebridsk.bridge.client.bridge.action.ActionUpdateRubber
 import com.github.thebridsk.bridge.client.bridge.action.ActionUpdateRubberNames
 
 object NamesStore extends ChangeListenable {
-  val logger = Logger("bridge.ViewPlayers")
+  val logger: Logger = Logger("bridge.ViewPlayers")
 
   /**
    * Required to instantiate the store.
    */
-  def init() = {
+  def init(): Unit = {
 //    refreshNames()
   }
 
@@ -42,20 +42,20 @@ object NamesStore extends ChangeListenable {
     }
   }
 
-  def updateNames( addnames: String* ) = {
+  def updateNames( addnames: String* ): Unit = {
     val an = onlyValidNames(addnames.toList)
     names = (names.filter( n => !an.contains(n) ).toList ++ an).sorted
   }
 
-  def namesFromTeam( team: Team ) = {
+  def namesFromTeam( team: Team ): List[String] = {
     onlyValidNames(Option(team.player1).toList ::: Option(team.player2).toList)
   }
 
-  def namesFromChicago( mc: MatchChicago) = {
+  def namesFromChicago( mc: MatchChicago): List[String] = {
     onlyValidNames(mc.players)
   }
 
-  def onlyValidNames( names: List[String] ) = names.filter(p=>p!="")
+  def onlyValidNames( names: List[String] ): List[String] = names.filter(p=>p!="")
 
   /**
     * Flux dispatcher call
@@ -64,7 +64,7 @@ object NamesStore extends ChangeListenable {
     *
     * @param msg
     */
-  def dispatch( msg: Any ) = Alerter.tryitWithUnit { msg match {
+  def dispatch( msg: Any ): Unit = Alerter.tryitWithUnit { msg match {
     case ActionUpdateDuplicateMatch(duplicate) =>
       val p = duplicate.teams.flatMap( namesFromTeam(_) )
       if (!p.isEmpty) updateNames(p:_*)
@@ -87,7 +87,7 @@ object NamesStore extends ChangeListenable {
 //      logger.fine("Ignoring unknown action: "+action)
   }}
 
-  def initNames = {
+  def initNames: Unit = {
     if (BridgeDemo.isDemo) {
       val mcs = ChicagoController.getSummaryFromLocalStorage
       if (mcs.isEmpty) {
@@ -103,7 +103,7 @@ object NamesStore extends ChangeListenable {
    * Refresh the names in the list.
    * @param cb - callback that should be called when the names have been updated
    */
-  def refreshNames( cb: Option[Callback] = None ) = {
+  def refreshNames( cb: Option[Callback] = None ): Any = {
     if (BridgeDemo.isDemo) {
       import scala.scalajs.js.timers._
 
@@ -124,7 +124,7 @@ object NamesStore extends ChangeListenable {
    * Ensure names are cached, get names from server if they are not.
    * @param cb - callback that should be called when the names have been updated.  Will call the callback immediately if the names are cached.
    */
-  def ensureNamesAreCached( cb: Option[Callback] = None ) = Alerter.tryitWithUnit {
+  def ensureNamesAreCached( cb: Option[Callback] = None ): Unit = Alerter.tryitWithUnit {
     refreshNames(cb)
     // if (names.isEmpty) refreshNames(cb)
     // else cb.foreach(_.runNow())

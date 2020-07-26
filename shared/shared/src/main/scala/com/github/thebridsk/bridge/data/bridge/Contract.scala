@@ -32,7 +32,7 @@ case class Contract(
     dealer: PlayerPosition
 ) {
 
-  def toBridgeHand =
+  def toBridgeHand: BridgeHand =
     BridgeHand(
       id,
       contractTricks,
@@ -45,7 +45,7 @@ case class Contract(
       tricks
     )
   def toHand: com.github.thebridsk.bridge.data.Hand = toBridgeHand
-  def toRubberHand =
+  def toRubberHand: RubberHand =
     RubberHand(
       id,
       toHand,
@@ -54,7 +54,7 @@ case class Contract(
       0,
       0
     )
-  def toDuplicate =
+  def toDuplicate: DuplicateBridge.ScoreHand =
     com.github.thebridsk.bridge.data.bridge.DuplicateBridge.ScoreHand(
       id,
       contractTricks,
@@ -66,8 +66,8 @@ case class Contract(
       madeOrDown,
       tricks
     )
-  def toRubber = com.github.thebridsk.bridge.data.bridge.RubberBridge.ScoreHand(toRubberHand)
-  def withScoring = {
+  def toRubber: RubberBridge.ScoreHand = com.github.thebridsk.bridge.data.bridge.RubberBridge.ScoreHand(toRubberHand)
+  def withScoring: Contract = {
     try {
       val s = Some(scoringSystem match {
         case _: Duplicate =>
@@ -85,9 +85,9 @@ case class Contract(
     }
   }
 
-  def getTrickRange = BridgeHand.getTricksRange(madeOrDown, contractTricks)
+  def getTrickRange: Range = BridgeHand.getTricksRange(madeOrDown, contractTricks)
 
-  def clear =
+  def clear: Contract =
     Contract(
       id,
       ContractTricks(0),
@@ -127,7 +127,7 @@ object Contract {
       east: String = "ewPlayer1",
       west: String = "ewPlayer2",
       dealer: PlayerPosition = North
-  ) = {
+  ): Contract = {
     new Contract(
       hand.id,
       ContractTricks(hand.contractTricks),
@@ -152,7 +152,7 @@ object Contract {
     )
   }
 
-  def getPlayerPosition(pos: String) =
+  def getPlayerPosition(pos: String): Option[PlayerPosition] =
     try {
       Some(PlayerPosition(pos))
     } catch {
@@ -170,7 +170,7 @@ object Contract {
       east: String = "ewPlayer1",
       west: String = "ewPlayer2",
       dealer: PlayerPosition = North
-  ) = {
+  ): Contract = {
     val hand = rubberhand.hand
     new Contract(
       hand.id,

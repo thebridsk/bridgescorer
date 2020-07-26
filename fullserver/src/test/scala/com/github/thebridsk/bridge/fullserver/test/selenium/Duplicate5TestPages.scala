@@ -51,7 +51,7 @@ import com.github.thebridsk.bridge.server.test.util.TestServer
 
 object Duplicate5TestPages {
 
-  val testlog = Logger[Duplicate5TestPages]()
+  val testlog: Logger = Logger[Duplicate5TestPages]()
 
   val screenshotDir = "target/screenshots/Duplicate5TestPages"
 
@@ -61,13 +61,13 @@ object Duplicate5TestPages {
   val xx = Strings.xmark
   val half = Strings.half
 
-  val team1 = Team( 1, "Nick", "Sam")
-  val team2 = Team( 2, "Ethan", "Wayne")
-  val team3 = Team( 3, "Ellen", "Wilma")
-  val team4 = Team( 4, "Nora", "Sally")
-  val team5 = Team( 5, "Alice", "Andy" )
+  val team1: Team = Team( 1, "Nick", "Sam")
+  val team2: Team = Team( 2, "Ethan", "Wayne")
+  val team3: Team = Team( 3, "Ellen", "Wilma")
+  val team4: Team = Team( 4, "Nora", "Sally")
+  val team5: Team = Team( 5, "Alice", "Andy" )
 
-  val peopleResult2 = List(
+  val peopleResult2: List[PeopleRow] = List(
                         PeopleRow(team5.one,"50.00%","25.00%","56.25%","100.00","14.0","0","0.00","1","0.50","2","1","1","0","56.25% (20.3/36)","18","32"),
                         PeopleRow(team5.two,"0.00%","0.00%","56.25%","16.67","-11.0","0","0.00","0","0.00","2","1","1","0","56.25% (20.3/36)","18","32"),
                         PeopleRow(team3.one,"0.00%","0.00%","46.88%","50.00","-1.0","0","0.00","0","0.00","2","1","1","0","46.88% (16.9/36)","15","32"),
@@ -80,7 +80,7 @@ object Duplicate5TestPages {
                         PeopleRow(team3.two,"0.00%","0.00%","46.88%","0.00","-16.0","0","0.00","0","0.00","2","1","1","0","46.88% (16.9/36)","15","32")
       )
 
-  val peopleResultMP2 = List(
+  val peopleResultMP2: List[PeopleRowMP] = List(
                         PeopleRowMP(team5.one,"50.00%","50.00%","57.81%","1","1.00","2","0","59.38% (21.4/36)","37","64"),
                         PeopleRowMP(team5.two,"0.00%","0.00%","51.56%","0","0.00","2","0","56.25% (20.3/36)","33","64"),
                         PeopleRowMP(team3.one,"0.00%","0.00%","48.44%","0","0.00","2","0","50.00% (18.0/36)","31","64"),
@@ -92,7 +92,7 @@ object Duplicate5TestPages {
                         PeopleRowMP(team2.two,"0.00%","0.00%","53.13%","0","0.00","2","0","56.25% (20.3/36)","34","64"),
                         PeopleRowMP(team3.two,"0.00%","0.00%","42.19%","0","0.00","2","0","46.88% (16.9/36)","27","64")
       )
-  val peopleResultIMP2 = List(
+  val peopleResultIMP2: List[PeopleRowIMP] = List(
                         PeopleRowIMP(team5.one,"100.00%","50.00%","100.00","14.0","2","1.00","2","0"),
                         PeopleRowIMP(team5.two,"50.00%","25.00%","54.55","1.5","1","0.50","2","0"),
                         PeopleRowIMP(team3.one,"0.00%","0.00%","27.27","-6.0","0","0.00","2","0"),
@@ -105,7 +105,7 @@ object Duplicate5TestPages {
                         PeopleRowIMP(team3.two,"0.00%","0.00%","0.00","-13.5","0","0.00","2","0")
       )
 
-  val peopleResult = List(
+  val peopleResult: List[PeopleRow] = List(
                         PeopleRow(team4.one,"100.00%","100.00%","59.38%","0.00","0.0","1","1.00","0","0.00","1","1","0","0","59.38% (21.4/36)","19","32"),
                         PeopleRow(team4.two,"100.00%","100.00%","59.38%","0.00","0.0","1","1.00","0","0.00","1","1","0","0","59.38% (21.4/36)","19","32"),
                         PeopleRow(team5.one,"0.00%","0.00%","56.25%","0.00","0.0","0","0.00","0","0.00","1","1","0","0","56.25% (20.3/36)","18","32"),
@@ -118,7 +118,7 @@ object Duplicate5TestPages {
                         PeopleRow(team1.two,"0.00%","0.00%","37.50%","0.00","0.0","0","0.00","0","0.00","1","1","0","0","37.50% (13.5/36)","12","32")
       )
 
-  val peopleResultMP = List(
+  val peopleResultMP: List[PeopleRowMP] = List(
                         PeopleRowMP(team4.one,"100.00%","100.00%","59.38%","1","1.00","1","0","59.38% (21.4/36)","19","32"),
                         PeopleRowMP(team4.two,"100.00%","100.00%","59.38%","1","1.00","1","0","59.38% (21.4/36)","19","32"),
                         PeopleRowMP(team5.one,"0.00%","0.00%","56.25%","0","0.00","1","0","56.25% (20.3/36)","18","32"),
@@ -130,7 +130,7 @@ object Duplicate5TestPages {
                         PeopleRowMP(team1.one,"0.00%","0.00%","37.50%","0","0.00","1","0","37.50% (13.5/36)","12","32"),
                         PeopleRowMP(team1.two,"0.00%","0.00%","37.50%","0","0.00","1","0","37.50% (13.5/36)","12","32")
       )
-  val peopleResultIMP = List(
+  val peopleResultIMP: List[PeopleRowIMP] = List(
                         PeopleRowIMP(team4.one,"100.00%","50.00%","100.00","14.0","1","0.50","1","0"),
                         PeopleRowIMP(team4.two,"100.00%","50.00%","100.00","14.0","1","0.50","1","0"),
                         PeopleRowIMP(team5.one,"100.00%","50.00%","100.00","14.0","1","0.50","1","0"),
@@ -143,7 +143,7 @@ object Duplicate5TestPages {
                         PeopleRowIMP(team1.two,"0.00%","0.00%","0.00","-16.0","0","0.00","1","0")
       )
 
-  val listDuplicateResult = List(
+  val listDuplicateResult: List[String] = List(
         team4.one+"\n1\n19",
         team4.two+"\n1\n19",
         team5.one+"\n2\n18",
@@ -157,13 +157,13 @@ object Duplicate5TestPages {
       )
 
   val prefixThatMatchesSomeNames = "e"
-  lazy val matchedNames = allHands.teams.flatMap{ t => List(t.one,t.two).filter(n=> n.toLowerCase().startsWith(prefixThatMatchesSomeNames))}
+  lazy val matchedNames: List[String] = allHands.teams.flatMap{ t => List(t.one,t.two).filter(n=> n.toLowerCase().startsWith(prefixThatMatchesSomeNames))}
   val prefixThatMatchesNoOne = "asdf"
 
   val movement = "Howell2Table5Teams"
   val boardset = "StandardBoards"
 
-  lazy val allHands = AllHandsInMatch(
+  lazy val allHands: AllHandsInMatch = AllHandsInMatch(
       List(team1,team2,team3,team4,team5),
       BoardSetsPage.getBoardSet(boardset).get,
       MovementsPage.getMovement(movement).get,
@@ -270,7 +270,7 @@ object Duplicate5TestPages {
   )
 
   // this is here to validate the AllHandsInMatch.getScoreToRound call
-  val resultAfterOneRoundCheckMark = List(
+  val resultAfterOneRoundCheckMark: List[TeamScoreboard] = List(
         TeamScoreboard(team1.blankNames, 0, "0", List(xx,xx,xx,xx,bl,bl,bl,bl,bl,bl,bl,bl,bl,bl,bl,bl,bl,bl,bl,bl)),
         TeamScoreboard(team2, 0, "0", List(bl,bl,bl,bl,xx,xx,xx,xx,bl,bl,cm,cm,cm,cm,bl,bl,bl,bl,bl,bl)),
         TeamScoreboard(team3, 0, "0", List(bl,bl,bl,bl,cm,cm,bl,bl,xx,xx,xx,xx,bl,bl,bl,bl,cm,cm,bl,bl)),
@@ -278,7 +278,7 @@ object Duplicate5TestPages {
         TeamScoreboard(team5, 0, "0", List(bl,bl,bl,bl,bl,bl,bl,bl,bl,bl,cm,cm,cm,cm,bl,bl,xx,xx,xx,xx))
       )
 
-  val resultAfterOneRoundZero = List(
+  val resultAfterOneRoundZero: List[TeamScoreboard] = List(
         TeamScoreboard(team1.blankNames, 0, "0", List(xx,xx,xx,xx,bl,bl,bl,bl,bl,bl,bl,bl,bl,bl,bl,bl,bl,bl,bl,bl)),
         TeamScoreboard(team2, 0, "0", List(bl,bl,bl,bl,xx,xx,xx,xx,bl,bl,zr,zr,zr,zr,bl,bl,bl,bl,bl,bl)),
         TeamScoreboard(team3, 0, "0", List(bl,bl,bl,bl,zr,zr,bl,bl,xx,xx,xx,xx,bl,bl,bl,bl,zr,zr,bl,bl)),
@@ -326,13 +326,13 @@ class Duplicate5TestPages
   type MyDuration = Duration
   val MyDuration = Duration
 
-  implicit val timeoutduration = MyDuration( 60, TimeUnit.SECONDS )
+  implicit val timeoutduration: FiniteDuration = MyDuration( 60, TimeUnit.SECONDS )
 
-  val defaultPatienceConfig = PatienceConfig(timeout=scaled(Span(timeoutMillis, Millis)), interval=scaled(Span(intervalMillis,Millis)))
-  implicit def patienceConfig = defaultPatienceConfig
+  val defaultPatienceConfig: PatienceConfig = PatienceConfig(timeout=scaled(Span(timeoutMillis, Millis)), interval=scaled(Span(intervalMillis,Millis)))
+  implicit def patienceConfig: PatienceConfig = defaultPatienceConfig
 
   override
-  def beforeAll() = {
+  def beforeAll(): Unit = {
 
     MonitorTCP.nextTest()
     TestStartLogging.startLogging()
@@ -351,7 +351,7 @@ class Duplicate5TestPages
   }
 
   override
-  def afterAll() = {
+  def afterAll(): Unit = {
     waitForFuturesIgnoreTimeouts( "Stopping browsers and server",
                     CodeBlock { SessionTable1.sessionStop() },
                     CodeBlock { SessionTable2.sessionStop() },
@@ -630,7 +630,7 @@ class Duplicate5TestPages
                          mustswap: Boolean
                        )( implicit
                            webDriver: WebDriver
-                       ) = {
+                       ): ScoreboardPage = {
     val (ns,ew) = allHands.getNSEW(table, round)
     val tp = currentPage.clickTableButton(table).validate.setTarget(SelectNames)
     val ss = tp.clickRound(round).asInstanceOf[TableSelectScorekeeperPage].validate
@@ -794,7 +794,7 @@ class Duplicate5TestPages
       mustswap: Boolean
     )( implicit
          webDriver: WebDriver
-    ) = {
+    ): ScoreboardPage = {
 
     val (nsTeam,ewTeam) = allHands.getNSEW(table, round)
     val boards = allHands.getBoardsInTableRound(table, round)
@@ -852,7 +852,7 @@ class Duplicate5TestPages
       imp: Boolean = false
     )( implicit
          webDriver: WebDriver
-    ) = {
+    ): ScoreboardPage = {
 
     val (nsTeam,ewTeam) = allHands.getNSEW(table, round)
 
@@ -1113,7 +1113,7 @@ class Duplicate5TestPages
     }
   }
 
-  def getTeam( dup: MatchDuplicate, teamid: data.Team.Id, name1: String, name2: String ) = {
+  def getTeam( dup: MatchDuplicate, teamid: data.Team.Id, name1: String, name2: String ): data.Team = {
     val t = dup.getTeam(teamid) match {
       case Some(team) =>
         team.copy(player1 = name1, player2 = name2 )
@@ -1124,7 +1124,7 @@ class Duplicate5TestPages
     t
   }
 
-  def getTeams( dup: MatchDuplicate ) = {
+  def getTeams( dup: MatchDuplicate ): List[data.Team] = {
     getTeam( dup, data.Team.id(1), team2.one, team3.two ) ::
     getTeam( dup, data.Team.id(2), team3.one, team4.two ) ::
     getTeam( dup, data.Team.id(3), team4.one, team5.two ) ::

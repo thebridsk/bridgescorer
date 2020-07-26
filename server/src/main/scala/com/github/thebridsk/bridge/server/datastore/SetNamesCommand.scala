@@ -24,13 +24,14 @@ import scala.concurrent.Future
 import com.github.thebridsk.bridge.data.VersionedInstance
 import com.github.thebridsk.bridge.data.MatchDuplicateResult
 import scala.util.Using
+import scala.util.matching.Regex
 
 trait SetNamesCommand
 
 object SetNamesCommand extends Subcommand("setnames") {
   import DataStoreCommands.optionStore
 
-  val log = Logger[SetNamesCommand]()
+  val log: Logger = Logger[SetNamesCommand]()
 
   implicit def dateConverter: ValueConverter[Duration] =
     singleArgConverter[Duration](Duration(_))
@@ -46,7 +47,7 @@ Syntax:
   ${DataStoreCommands.cmdName} setnames [options]
 Options:""")
 
-  val optionMapFileName = opt[String](
+  val optionMapFileName: ScallopOption[String] = opt[String](
     "mapfile",
     short = 'm',
     descr = "the name mapping file",
@@ -54,7 +55,7 @@ Options:""")
     default = None
   )
 
-  val optionIds = opt[List[String]](
+  val optionIds: ScallopOption[List[String]] = opt[List[String]](
     "ids",
     short = 'i',
     descr = "the ids to map",
@@ -62,7 +63,7 @@ Options:""")
     default = None
   )
 
-  val optionSort = opt[String](
+  val optionSort: ScallopOption[String] = opt[String](
     "sort",
     noshort = true,
     descr =
@@ -72,7 +73,7 @@ Options:""")
     default = Some("id")
   )
 
-  val optionTarget = opt[Path](
+  val optionTarget: ScallopOption[Path] = opt[Path](
     "target",
     short = 't',
     descr = "directory for new datastore, default is to overwrite existing",
@@ -80,7 +81,7 @@ Options:""")
     default = None
   )
 
-  val optionAdd = toggle(
+  val optionAdd: ScallopOption[Boolean] = toggle(
     "add",
     default = Some(false),
     noshort = true,
@@ -250,7 +251,7 @@ Sam->Norman
 
   }
 
-  def await[T](fut: Future[T]) = Await.result(fut, 30.seconds)
+  def await[T](fut: Future[T]): T = Await.result(fut, 30.seconds)
 
   /**
     * Copy all values from src store to dest store
@@ -262,7 +263,7 @@ Sam->Norman
       name: String,
       src: Store[K, T],
       dest: Store[K, T]
-  ) = {
+  ): Unit = {
     await(src.readAll()) match {
       case Right(dups) =>
         dups.foreach { e =>
@@ -336,7 +337,7 @@ Sam->Norman
       getid: T => K,
       add: Boolean,
       idfilter: K => Boolean
-  )(converter: (K, T) => Option[T]) = {
+  )(converter: (K, T) => Option[T]): Unit = {
     val comparer = optionSort() match {
       case "id" =>
         log.info("Sorting by ID")
@@ -385,9 +386,9 @@ Sam->Norman
     }
   }
 
-  val patternName = """\s*(.*?)\s*\-\>\s*(.*?)\s*""".r
-  val patternComment = """\s*\#.*""".r
-  val patternBlankLine = """\s*""".r
+  val patternName: Regex = """\s*(.*?)\s*\-\>\s*(.*?)\s*""".r
+  val patternComment: Regex = """\s*\#.*""".r
+  val patternBlankLine: Regex = """\s*""".r
 
   /**
     * Parse the names in the specified reader (a mapfile)

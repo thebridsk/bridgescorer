@@ -18,6 +18,7 @@ import java.io.ByteArrayInputStream
 import scala.util.Using
 import java.io.FileInputStream
 import org.scalactic.source.Position
+import scala.collection.mutable
 
 class InMemoryPersistent[VId <: Comparable[VId], VType <: VersionedInstance[VType, VType, VId]](
     implicit
@@ -28,23 +29,23 @@ class InMemoryPersistent[VId <: Comparable[VId], VType <: VersionedInstance[VTyp
 
   self =>
 
-  val valuesInPersistent = {
+  val valuesInPersistent: scala.collection.concurrent.Map[VId,VType] = {
     import scala.jdk.CollectionConverters._
     new java.util.concurrent.ConcurrentHashMap[VId, VType]().asScala
   }
 
-  val deletedKeys = collection.mutable.Set[VId]()
+  val deletedKeys: mutable.Set[VId] = collection.mutable.Set[VId]()
 
-  def clearPersistent = valuesInPersistent.clear()
-  def add(v: VType) = {
+  def clearPersistent: Unit = valuesInPersistent.clear()
+  def add(v: VType): scala.collection.concurrent.Map[VId,VType] = {
     if (!support.isIdFromValue) addId(v.id)
     valuesInPersistent += v.id -> v
   }
-  def internalAdd(v: VType) = {
+  def internalAdd(v: VType): scala.collection.concurrent.Map[VId,VType] = {
     valuesInPersistent += v.id -> v
   }
-  def get(id: VId) = valuesInPersistent.get(id)
-  def remove(id: VId) = {
+  def get(id: VId): Option[VType] = valuesInPersistent.get(id)
+  def remove(id: VId): Option[VType] = {
     deletedKeys += id
     valuesInPersistent.remove(id)
   }
@@ -167,7 +168,7 @@ class InMemoryPersistent[VId <: Comparable[VId], VType <: VersionedInstance[VTyp
 
   case class MDData( name: MetaDataFile, data: Array[Byte] )
 
-  var metadataStore = Map[VId, List[MDData]]()
+  var metadataStore: Map[VId,List[MDData]] = Map[VId, List[MDData]]()
 
   /**
    * List all the files for the specified match, all returned filenames are relative to the store directory for specified match.
@@ -315,7 +316,7 @@ class InMemoryStore[VId <: Comparable[VId], VType <: VersionedInstance[VType, VT
 
 object InMemoryStore {
 
-  val log = Logger[InMemoryStore[_, _]]()
+  val log: Logger = Logger[InMemoryStore[_, _]]()
 
   def apply[VId <: Comparable[VId], VType <: VersionedInstance[VType, VType, VId]](
       name: String,

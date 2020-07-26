@@ -6,6 +6,7 @@ import japgolly.scalajs.react._
 import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles
 import com.github.thebridsk.materialui._
 
+
 /**
  * A skeleton component.
  *
@@ -29,9 +30,9 @@ object RadioButton {
    * @param toggle
    * @param attrs attributes that are applied to the enclosing label element.
    */
-  def apply( id: String, text: String, value: Boolean, toggle: Callback, className: Option[String] = None ) = component(Props(id,text,value,toggle,className))
+  def apply( id: String, text: String, value: Boolean, toggle: Callback, className: Option[String] = None ) = component(Props(id,text,value,toggle,className))  // scalafix:ok ExplicitResultTypes; ReactComponent
 
-  def withKey( key: String )( id: String, text: String, value: Boolean, onclick: Callback, className: Option[String] = None ) = component.withKey(key)(Props(id,text,value,onclick,className))
+  def withKey( key: String )( id: String, text: String, value: Boolean, onclick: Callback, className: Option[String] = None ) = component.withKey(key)(Props(id,text,value,onclick,className))  // scalafix:ok ExplicitResultTypes; ReactComponent
 }
 
 object RadioButtonInternal {
@@ -39,6 +40,7 @@ object RadioButtonInternal {
 
   def callback( cb: Callback ): js.Function1[scala.scalajs.js.Object,Unit] = ( event: js.Object ) => cb.runNow()
 
+  private[react]
   val component = ScalaComponent.builder[Props]("RadioButton")
                             .stateless
                             .noBackend

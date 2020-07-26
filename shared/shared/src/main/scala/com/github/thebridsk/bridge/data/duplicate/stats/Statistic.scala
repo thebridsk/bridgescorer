@@ -6,7 +6,7 @@ class Statistic(name: String) {
   private var vmax: Double = Double.MinValue
   private var vmin: Double = Double.MaxValue
 
-  override def toString() = {
+  override def toString(): String = {
     f"""Stat(${name}: ${total}%.2f/${number}, ave=${ave}%.2f, min=${vmin}%.2f, max=${vmax}%.2f)"""
   }
 
@@ -21,7 +21,7 @@ class Statistic(name: String) {
 
   def max = vmax
   def min = vmin
-  def ave = if (number == 0) 0.0 else total / number
+  def ave: Double = if (number == 0) 0.0 else total / number
   def n = number
 
   /**

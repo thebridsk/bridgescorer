@@ -22,6 +22,7 @@ import com.github.thebridsk.materialui.icons.Photo
 import com.github.thebridsk.bridge.client.pages.hand.HandStyles.handStyles
 import com.github.thebridsk.bridge.data.Board
 
+
 /**
  * Shows the board results
  *
@@ -52,7 +53,7 @@ object ViewBoard {
       board: Board.Id,
       useIMPs: Boolean = true,
       pictures: List[DuplicatePicture] = List()
-  ) = component(Props(routerCtl, page, score, board, useIMPs, pictures))
+  ) = component(Props(routerCtl, page, score, board, useIMPs, pictures))  // scalafix:ok ExplicitResultTypes; ReactComponent
 
 }
 
@@ -60,8 +61,9 @@ object ViewBoardInternal {
   import ViewBoard._
   import DuplicateStyles._
 
-  val logger = Logger("bridge.ViewBoard")
+  val logger: Logger = Logger("bridge.ViewBoard")
 
+  private[duplicate]
   val Header = ScalaComponent.builder[(Props,Option[BoardScore])]("ViewBoard.Header")
                       .render_P( cprops => {
                         val (props,board) = cprops
@@ -85,6 +87,7 @@ object ViewBoardInternal {
 
                       }).build
 
+  private[duplicate]
   val TeamRow = ScalaComponent.builder[(Team,Option[BoardScore],Props,Backend)]("ViewBoard.TeamRow")
                       .render_P( props => {
                         val (team, boardscore, p, backend) = props
@@ -223,11 +226,11 @@ object ViewBoardInternal {
    */
   class Backend(scope: BackendScope[Props, State]) {
 
-    val popupOk = scope.modState( s => s.copy(showPicture = None))
+    val popupOk: Callback = scope.modState( s => s.copy(showPicture = None))
 
-    def doShowPicture( url: String ) = scope.modState( s => s.copy(showPicture = Some(url)))
+    def doShowPicture( url: String ): Callback = scope.modState( s => s.copy(showPicture = Some(url)))
 
-    def render( props: Props, state: State ) = {
+    def render( props: Props, state: State ) = { // scalafix:ok ExplicitResultTypes; React
       val board = props.score.boards.get(props.board)
 
       <.div(
@@ -265,6 +268,7 @@ object ViewBoardInternal {
 
   }
 
+  private[duplicate]
   val component = ScalaComponent.builder[Props]("ViewBoard")
                             .initialStateFromProps { props => State() }
                             .backend(new Backend(_))

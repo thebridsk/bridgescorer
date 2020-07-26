@@ -15,6 +15,7 @@ import com.github.thebridsk.bridge.fullserver.test.pages.bridge.Popup
 import com.github.thebridsk.bridge.fullserver.test.pages.ServerURLAddOn
 import com.github.thebridsk.bridge.data.MatchDuplicateResult
 import com.github.thebridsk.bridge.data.MatchDuplicate
+import scala.util.matching.Regex
 
 object ListDuplicatePage {
 
@@ -22,19 +23,19 @@ object ListDuplicatePage {
 
   val screenshotDir = "target/screenshots/PagesDuplicate"
 
-  def current(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
+  def current(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position): ListDuplicatePage = {
     val importId = findUrlInfo
     new ListDuplicatePage(importId)
   }
 
-  def waitFor(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = eventually { current }
+  def waitFor(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position): ListDuplicatePage = eventually { current }
 
-  def goto( importId: Option[String] = None )(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
+  def goto( importId: Option[String] = None )(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position): ListDuplicatePage = {
     go to urlFor(importId)
     new ListDuplicatePage(importId)
   }
 
-  def urlFor( importId: Option[String] = None ) = TestServer.getAppPageUrl( importId.map(id=>s"import/${id}/").getOrElse("")+"duplicate")
+  def urlFor( importId: Option[String] = None ): String = TestServer.getAppPageUrl( importId.map(id=>s"import/${id}/").getOrElse("")+"duplicate")
 
   private val patternImport = """#(?:import/([^/]+)/)?duplicate""".r
 
@@ -51,18 +52,18 @@ object ListDuplicatePage {
     }
   }
 
-  val buttons =
+  val buttons: List[String] =
 //          "PopUpCancel"::
 //          "Home2"::
           "Home"::
           Nil
 
-  val importButtons =
+  val importButtons: List[String] =
           "ForImport"::
           Nil
 
 //          PopUpCancel,Home,DuplicateCreate,ForPrint
-  val mainButtons =
+  val mainButtons: List[String] =
           "DuplicateCreate"::
 //          "BoardSets2"::
 //          "Movements2"::
@@ -73,33 +74,33 @@ object ListDuplicatePage {
 //          "Statistics"::
           Nil
 
-  val patternMatchButton = """Duplicate_(M\d+)""".r
+  val patternMatchButton: Regex = """Duplicate_(M\d+)""".r
 
   /**
    * @return None if unable to determine the match ID,
    *          Some(mid) if match id was found.
    */
-  def buttonIdToMatchId( id: String ) = id match {
+  def buttonIdToMatchId( id: String ): Option[String] = id match {
     case patternMatchButton(mid) => Some(mid)
     case _ => None
   }
 
-  def matchIdToButtonId( id: String ) = s"""Duplicate_${id}"""
+  def matchIdToButtonId( id: String ): String = s"""Duplicate_${id}"""
 
-  val patternResultButton = """Result_(E\d+)""".r
+  val patternResultButton: Regex = """Result_(E\d+)""".r
 
   /**
    * @return None if unable to determine the match ID,
    *          Some(mid) if match id was found.
    */
-  def buttonIdToResultId( id: String ) = id match {
+  def buttonIdToResultId( id: String ): Option[String] = id match {
     case patternMatchButton(mid) => Some(mid)
     case _ => None
   }
 
-  def resultIdToButtonId( id: String ) = s"""Result_${id}"""
+  def resultIdToButtonId( id: String ): String = s"""Result_${id}"""
 
-  val importSuccessPattern = """import duplicate (M\d+) from ([^,]+), new ID (M\d+)""".r
+  val importSuccessPattern: Regex = """import duplicate (M\d+) from ([^,]+), new ID (M\d+)""".r
 
 }
 
@@ -112,7 +113,7 @@ class ListDuplicatePage(
 ) extends Page[ListDuplicatePage] with Popup[ListDuplicatePage] with ServerURLAddOn[ListDuplicatePage] {
   import ListDuplicatePage._
 
-  val importColumns = importId.map( id => 2 ).getOrElse(0)
+  val importColumns: Int = importId.map( id => 2 ).getOrElse(0)
 
   def validate(implicit patienceConfig: PatienceConfig, pos: Position): ListDuplicatePage = logMethod(s"${pos.line} ${getClass.getSimpleName}.validate ${patienceConfig}") {
     val b = importId.map( id => buttons:::importButtons ).getOrElse( buttons:::mainButtons)
@@ -152,7 +153,7 @@ class ListDuplicatePage(
     }
   }
 
-  def isForPrintActive( implicit pos: Position ) = {
+  def isForPrintActive( implicit pos: Position ): Boolean = {
     // importId.isEmpty && findAll(id("ForPrint")).isEmpty
     if (importId.isEmpty) {
       val els = getElemsByXPath(HomePage.divBridgeAppPrefix+s"""//div/table/thead/tr[1]/th[2]""")
@@ -166,69 +167,69 @@ class ListDuplicatePage(
     }
   }
 
-  def clickMainMenu(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def clickMainMenu(implicit patienceConfig: PatienceConfig, pos: Position): ListDuplicatePage = {
     clickButton("MainMenu")
     this
   }
 
-  def clickHelpMenu(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def clickHelpMenu(implicit patienceConfig: PatienceConfig, pos: Position): ListDuplicatePage = {
     clickButton("HelpMenu")
     this
   }
 
-  def clickHome(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def clickHome(implicit patienceConfig: PatienceConfig, pos: Position): HomePage = {
     clickButton("Home")
     new HomePage()(webDriver, pos)
   }
 
-  def clickNewDuplicateButton(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def clickNewDuplicateButton(implicit patienceConfig: PatienceConfig, pos: Position): NewDuplicatePage = {
     clickButton("DuplicateCreate")
     new NewDuplicatePage()(webDriver, pos)
   }
 
-  def clickBoardSets(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def clickBoardSets(implicit patienceConfig: PatienceConfig, pos: Position): BoardSetsPage = {
     clickButton("BoardSets")
     new BoardSetsPage()(webDriver, pos)
   }
 
-  def clickMovements(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def clickMovements(implicit patienceConfig: PatienceConfig, pos: Position): MovementsPage = {
     clickButton("Movements")
     new MovementsPage()(webDriver, pos)
   }
 
-  def clickStatistics(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def clickStatistics(implicit patienceConfig: PatienceConfig, pos: Position): StatisticsPage = {
     clickButton("Statistics")
     new StatisticsPage()(webDriver, pos)
   }
 
-  def clickSuggestion(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def clickSuggestion(implicit patienceConfig: PatienceConfig, pos: Position): SuggestionPage = {
     clickButton("Suggest")
     new SuggestionPage()(webDriver, pos)
   }
 
-  def clickForPrint(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def clickForPrint(implicit patienceConfig: PatienceConfig, pos: Position): ListDuplicatePage = {
     clickButton("ForPrint")
     new ListDuplicatePage(importId)( webDriver, pos )
   }
 
-  def clickDuplicate( id: String )(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def clickDuplicate( id: String )(implicit patienceConfig: PatienceConfig, pos: Position): ScoreboardPage = {
     clickButton(matchIdToButtonId(id))
     new ScoreboardPage(Some(id))(webDriver, pos)
   }
 
-  def clickResult( id: String )(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def clickResult( id: String )(implicit patienceConfig: PatienceConfig, pos: Position): DuplicateResultPage = {
     clickButton(resultIdToButtonId(id))
     new DuplicateResultPage( Some(id) )
   }
 
-  def getMatchIds(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def getMatchIds(implicit patienceConfig: PatienceConfig, pos: Position): List[MatchDuplicate.Id] = {
     getAllButtons.keySet.flatMap{ id => buttonIdToMatchId(id) match {
       case Some(mid) => MatchDuplicate.id(mid)::Nil
       case None => Nil
     }}.toList.sorted
   }
 
-  def getResultIds(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def getResultIds(implicit patienceConfig: PatienceConfig, pos: Position): List[MatchDuplicateResult.Id] = {
     getAllButtons.keySet.flatMap{ id => buttonIdToResultId(id) match {
       case Some(mid) => MatchDuplicateResult.id(mid)::Nil
       case None => Nil
@@ -238,7 +239,7 @@ class ListDuplicatePage(
   /**
    * @return a sorted list of all the names that appear on the page
    */
-  def getNames( forPrintActive: Boolean )(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def getNames( forPrintActive: Boolean )(implicit patienceConfig: PatienceConfig, pos: Position): List[String] = {
     // 3 = Id, Created, Finished
     // Note the scoring method header does not show up in this row.
     val dr = 4+importColumns+(if (forPrintActive) 1 else 0)
@@ -246,7 +247,7 @@ class ListDuplicatePage(
     names.dropRight(1).map(e => e.text)
   }
 
-  def getResults( id: String )(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def getResults( id: String )(implicit patienceConfig: PatienceConfig, pos: Position): List[String] = {
 
     withClueAndScreenShot(screenshotDir, "getResults", s"""working on results from match ${id}, ${pos.line}""") {
       eventually {
@@ -263,7 +264,7 @@ class ListDuplicatePage(
     }
   }
 
-  def checkResults( id: String, results: String* )(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def checkResults( id: String, results: String* )(implicit patienceConfig: PatienceConfig, pos: Position): ListDuplicatePage = {
     withClueAndScreenShot(screenshotDir, "checkResults", s"""working on results from match ${id}, ${pos.line}, looking for ${results.mkString("[", "],[", "]")}""") {
       eventually {
         val res = getResults(id)
@@ -273,7 +274,7 @@ class ListDuplicatePage(
     }
   }
 
-  def clickImportDuplicate( id: String )(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def clickImportDuplicate( id: String )(implicit patienceConfig: PatienceConfig, pos: Position): ListDuplicatePage = {
     if (importId.isEmpty) fail( s"Not on import list duplicate page: ${currentUrl}" )
     clickButton( s"ImportDuplicate_${id}" )
   }
@@ -283,7 +284,7 @@ class ListDuplicatePage(
    * @return the Id of the imported match in the main store.
    * The call fails if the import was not successful
    */
-  def checkSuccessfulImport( id: String )(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def checkSuccessfulImport( id: String )(implicit patienceConfig: PatienceConfig, pos: Position): String = {
     if (importId.isEmpty) fail( s"Not on import list duplicate page: ${currentUrl}" )
     validatePopup(true)
     eventually {

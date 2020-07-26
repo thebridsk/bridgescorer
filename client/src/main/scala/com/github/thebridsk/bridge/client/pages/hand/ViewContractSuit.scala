@@ -8,6 +8,7 @@ import com.github.thebridsk.bridge.client.pages.hand.PageHandInternal.PageHandNe
 import com.github.thebridsk.bridge.client.pages.hand.ComponentInputStyleButton.InputMethod
 import com.github.thebridsk.bridge.clientcommon.react.Utils._
 
+
 /**
  * A skeleton component.
  *
@@ -33,7 +34,7 @@ object ViewContractSuit {
              contractTricks: Option[ContractTricks],
              callback: CallbackSuit,
              nextInput: PageHandNextInput.Value,
-             visible: Boolean ) = component(Props(current,contractTricks,callback,nextInput,visible))
+             visible: Boolean ) = component(Props(current,contractTricks,callback,nextInput,visible))  // scalafix:ok ExplicitResultTypes; ReactComponent
 
   private val component = ScalaComponent.builder[Props]("ViewContractSuit")
                             .render_P(props => {

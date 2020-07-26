@@ -11,21 +11,21 @@ class TestLogFilter extends AnyFlatSpec with Matchers {
 
   behavior of "TestLogFilter in bridgescorer-client"
 
-  val filterlist = LogFilter.filterlist:::WLogFilter.filterlist
+  val filterlist: List[String] = LogFilter.filterlist:::WLogFilter.filterlist
 
-  val goodFilterlist = "Bridge.scala"::
+  val goodFilterlist: List[String] = "Bridge.scala"::
                        "Duplicate.scala"::
                        Nil
 
-  val loggerlist = "comm.xxxx"::
+  val loggerlist: List[String] = "comm.xxxx"::
                    "comm.yyyy"::
                    Nil
 
-  val goodLoggerlist = "xx.xxxx"::
+  val goodLoggerlist: List[String] = "xx.xxxx"::
                        "bridge.yyyy"::
                        Nil
 
-  def combos( filters: List[String], loggernames: List[String] ) = {
+  def combos( filters: List[String], loggernames: List[String] ): List[(String, String)] = {
     for ( f <- filters;
           l <- loggernames ) yield {
       (f,l)

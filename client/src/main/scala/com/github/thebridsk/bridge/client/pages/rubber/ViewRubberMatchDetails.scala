@@ -16,6 +16,7 @@ import com.github.thebridsk.bridge.client.pages.rubber.RubberRouter.RubberMatchN
 import com.github.thebridsk.bridge.client.pages.rubber.RubberRouter.ListView
 import com.github.thebridsk.bridge.clientcommon.react.Utils._
 
+
 /**
  * A skeleton component.
  *
@@ -32,7 +33,7 @@ object ViewRubberMatchDetails {
 
   case class Props( page: RubberMatchViewBase, routerCtl: BridgeRouter[RubberPage], noFooter: Boolean )
 
-  def apply( page: RubberMatchViewBase, routerCtl: BridgeRouter[RubberPage], noFooter: Boolean = false ) =
+  def apply( page: RubberMatchViewBase, routerCtl: BridgeRouter[RubberPage], noFooter: Boolean = false ) = // scalafix:ok ExplicitResultTypes; ReactComponent
     component( Props( page, routerCtl, noFooter ) )
 
 }
@@ -41,7 +42,7 @@ object ViewRubberMatchDetailsInternal {
   import ViewRubberMatchDetails._
   import RubberStyles._
 
-  val logger = Logger("bridge.ViewRubberMatchDetails")
+  val logger: Logger = Logger("bridge.ViewRubberMatchDetails")
 
   /**
    * Internal state for rendering the component.
@@ -61,7 +62,7 @@ object ViewRubberMatchDetailsInternal {
    */
   class Backend(scope: BackendScope[Props, State]) {
 
-    def render( props: Props, state: State ) = {
+    def render( props: Props, state: State ) = { // scalafix:ok ExplicitResultTypes; React
       RubberStore.getRubber match {
         case Some(rub) if (rub.id == props.page.rid && rub.gotAllPlayers()) =>
           val score = RubberScoring(rub)
@@ -220,13 +221,13 @@ object ViewRubberMatchDetailsInternal {
       }
     }
 
-    val toRubber = scope.props >>= { props => props.routerCtl.set(props.page.toRubber) }
+    val toRubber: Callback = scope.props >>= { props => props.routerCtl.set(props.page.toRubber) }
 
-    val tonames = scope.props >>= { props => props.routerCtl.set(props.page.toNames) }
+    val tonames: Callback = scope.props >>= { props => props.routerCtl.set(props.page.toNames) }
 
-    val quit = scope.props >>= { props => props.routerCtl.set(ListView) }
+    val quit: Callback = scope.props >>= { props => props.routerCtl.set(ListView) }
 
-    val nextHand = {
+    val nextHand: Callback = {
       RubberStore.getRubber match {
         case Some(rub) =>
           val handid = "new"
@@ -236,9 +237,9 @@ object ViewRubberMatchDetailsInternal {
       }
     }
 
-    val storeCallback = Callback { scope.withEffectsImpure.forceUpdate }
+    val storeCallback: Callback = Callback { scope.withEffectsImpure.forceUpdate }
 
-    val didMount = CallbackTo {
+    val didMount: Callback = CallbackTo {
       logger.info("PageRubberNames.didMount")
       RubberStore.addChangeListener(storeCallback)
     } >> scope.props >>= { (p) => Callback {
@@ -246,12 +247,13 @@ object ViewRubberMatchDetailsInternal {
     }
     }
 
-    val willUnmount = CallbackTo {
+    val willUnmount: Callback = CallbackTo {
       logger.info("PageRubberNames.willUnmount")
       RubberStore.removeChangeListener(storeCallback)
     }
   }
 
+  private[rubber]
   val component = ScalaComponent.builder[Props]("ViewRubberMatchDetails")
                             .initialStateFromProps { props => State() }
                             .backend(new Backend(_))

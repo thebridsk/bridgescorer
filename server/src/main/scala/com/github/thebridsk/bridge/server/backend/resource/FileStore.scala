@@ -22,7 +22,7 @@ import java.io.FileOutputStream
 import scala.util.Using
 
 object FileStore {
-  val log = Logger[FileStore[_, _]]()
+  val log: Logger = Logger[FileStore[_, _]]()
 
   def apply[VId <: Comparable[VId], VType <: VersionedInstance[VType, VType, VId]](
       name: String,
@@ -205,13 +205,13 @@ class FilePersistentSupport[VId <: Comparable[VId], VType <: VersionedInstance[V
     }
   }
 
-  def readFilenames(id: VId) = {
+  def readFilenames(id: VId): List[String] = {
     support.getReadExtensions.map { e =>
       (directory / (resourceName + "." + support.idSupport.toString(id) + e)).toString()
     }
   }
 
-  def writeFilename(id: VId) = {
+  def writeFilename(id: VId): String = {
     (directory / (resourceName + "." + support.idSupport.toString(id) + support.getWriteExtension))
       .toString()
   }

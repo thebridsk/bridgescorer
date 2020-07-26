@@ -6,7 +6,7 @@ import com.github.thebridsk.bridge.data._
   * @author werewolf
   */
 class ChicagoScoring(val chicago: MatchChicago) {
-  val rounds = chicago.rounds.map { r =>
+  val rounds: List[RoundScoring] = chicago.rounds.map { r =>
     RoundScoring(r)
   }
 
@@ -24,7 +24,7 @@ class ChicagoScoring(val chicago: MatchChicago) {
   /**
     * Sorted by totals, then player names
     */
-  def sortedResults = {
+  def sortedResults: (List[String], List[Int]) = {
     val tosort: List[Int] = (0 until players.length).toList
     tosort
       .sortWith { (left, right) =>
@@ -41,7 +41,7 @@ class ChicagoScoring(val chicago: MatchChicago) {
       .unzip
   }
 
-  override def toString() = {
+  override def toString(): String = {
     "ChicagoScoring( chicago=" + chicago +
       "\n                players=" + players.mkString(", ") +
       "\n                totals =" + totals.mkString(", ") +
@@ -90,7 +90,7 @@ class ChicagoScoring(val chicago: MatchChicago) {
     (players.toList, totals.toList, byRounds.reverse)
   }
 
-  def addRound(r: Round) = ChicagoScoring(chicago.addRound(r))
+  def addRound(r: Round): ChicagoScoring = ChicagoScoring(chicago.addRound(r))
 
   /**
     * modify an existing hand
@@ -98,15 +98,15 @@ class ChicagoScoring(val chicago: MatchChicago) {
     * @param ih - the hand, if the hand doesn't exist, then it will addHandToLastRound. values are 0, 1, ...
     * @param h - the new hand
     */
-  def modifyHand(ir: Int, ih: Int, h: Hand) = {
+  def modifyHand(ir: Int, ih: Int, h: Hand): ChicagoScoring = {
     ChicagoScoring(chicago.modifyHand(ir, ih, h))
   }
 
-  def setGamesPerRound(gamesInRound: Int) = {
+  def setGamesPerRound(gamesInRound: Int): ChicagoScoring = {
     ChicagoScoring(chicago.setGamesPerRound(gamesInRound))
   }
 
-  def setId(id: MatchChicago.Id) = {
+  def setId(id: MatchChicago.Id): ChicagoScoring = {
     ChicagoScoring(chicago.setId(id))
   }
 
@@ -118,7 +118,7 @@ class ChicagoScoring(val chicago: MatchChicago) {
     * @return is a map with the index are the people sitting out,
     * and the value is list of fixtures.
     */
-  def getRemainingPossibleFixtures = {
+  def getRemainingPossibleFixtures: Map[String,List[ChicagoScoring.Fixture]] = {
     val fixtures = getAllFixtures.filter(f => {
       chicago.rounds
         .find(r => {
@@ -133,11 +133,11 @@ class ChicagoScoring(val chicago: MatchChicago) {
     r
   }
 
-  def getAllFixtures = {
+  def getAllFixtures: IndexedSeq[ChicagoScoring.Fixture] = {
     ChicagoScoring.getAllFixtures(players: _*)
   }
 
-  def getFixturesSoFar = {
+  def getFixturesSoFar: List[ChicagoScoring.Fixture] = {
     val pathSoFar = rounds.map(r => {
       val extra = players.find(p => !r.players.contains(p)).getOrElse("")
       ChicagoScoring.createFixture(
@@ -178,7 +178,7 @@ class ChicagoScoring(val chicago: MatchChicago) {
 object ChicagoScoring {
   def apply(chicago: MatchChicago) = new ChicagoScoring(chicago)
 
-  def getAllFixtures(players: String*) = {
+  def getAllFixtures(players: String*): IndexedSeq[Fixture] = {
     val len = players.length
 
     val all =
@@ -203,7 +203,7 @@ object ChicagoScoring {
       east: String,
       west: String,
       extra: String
-  ) = {
+  ): Seq[Fixture] = {
     val x: Seq[Fixture] = Seq(
       createFixture(north, south, east, west, extra),
       createFixture(north, east, south, west, extra),
@@ -218,7 +218,7 @@ object ChicagoScoring {
       east: String,
       west: String,
       extra: String
-  ) = {
+  ): Fixture = {
     var n = north
     var s = south
     var e = east
@@ -254,7 +254,7 @@ object ChicagoScoring {
       extra: String
   ) {
 
-    def hasPair(p1: String, p2: String) = {
+    def hasPair(p1: String, p2: String): Boolean = {
       (p1 == north && p2 == south) || (p2 == north && p1 == south) ||
       (p1 == east && p2 == west) || (p2 == east && p1 == west)
     }
@@ -262,7 +262,7 @@ object ChicagoScoring {
     /**
       * True if there is a player mentioned in both players and extra
       */
-    def extraOverlap(player: String) = {
+    def extraOverlap(player: String): Boolean = {
       extra == player
     }
   }
@@ -286,7 +286,7 @@ object ChicagoScoring {
     * @param pathSoFar the fixtures that have been played
     * @return true if it can be used
     */
-  def canUseFixture(candidate: Fixture, pathSoFar: Seq[Fixture]) = {
+  def canUseFixture(candidate: Fixture, pathSoFar: Seq[Fixture]): Boolean = {
     val r =
       if (pathSoFar.isEmpty) true
       else if (pathSoFar.head.extraOverlap(candidate.extra)) false
@@ -316,7 +316,7 @@ object ChicagoScoring {
       allFixtures: Seq[Fixture],
       pathSoFar: List[Fixture],
       nextOut: String
-  ) = {
+  ): List[List[Fixture]] = {
     if (pathSoFar.find(f => f.extra == nextOut).isEmpty) {
       val s = allFixtures.head
       val n = 5

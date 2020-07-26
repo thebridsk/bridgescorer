@@ -7,7 +7,7 @@ import scala.scalajs.js.annotation.JSImport
 trait DispatchToken extends js.Object
 
 object FluxDispatcher {
-  def apply[X]() = {
+  def apply[X](): FluxDispatcher[X] = {
     new FluxDispatcher[X]()
   }
 }

@@ -82,13 +82,13 @@ object ComboboxComponentProperty {
 trait Combobox extends js.Object
 
 object Combobox {
-  val logger = Logger("bridge.Combobox")
+  val logger: Logger = Logger("bridge.Combobox")
 
 //  @JSGlobal("ReactWidgets.Combobox")
 //  @js.native
 //  object ReactWidgetsCombobox extends js.Object
 
-  val component = JsComponent[ComboboxComponentProperty, Children.None, Null](reactwidgets.Combobox)
+  val component = JsComponent[ComboboxComponentProperty, Children.None, Null](reactwidgets.Combobox)  // scalafix:ok ExplicitResultTypes; ReactComponent
 
   def apply(defaultValue: Option[String] = None,
             onChange: Option[js.Any=>Unit] = None,
@@ -104,7 +104,7 @@ object Combobox {
             value: Option[String] = None,
             id: Option[String] = None,
             containerClassName: Option[String] = None
-  ) = {
+  ) = {  // scalafix:ok ExplicitResultTypes; ReactComponent
 
 //    logger.info("Combobox: msgEmptyList="+msgEmptyList+", msgEmptyFilter="+msgEmptyFilter)
 

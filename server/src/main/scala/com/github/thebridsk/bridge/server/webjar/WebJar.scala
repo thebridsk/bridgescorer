@@ -7,12 +7,13 @@ import com.github.thebridsk.utilities.logging.Logger
 import akka.event.Logging
 import com.github.thebridsk.bridge.data.RestMessage
 import scala.concurrent.duration.Duration
+import akka.http.scaladsl.server.Route
 
 trait WebJar {
 
   private val logger = Logger(getClass.getName, null)
 
-  lazy val cacheDuration = Duration("0s")
+  lazy val cacheDuration: Duration = Duration("0s")
 
   private lazy val cacheHeaders = {
     import akka.http.scaladsl.model.headers._
@@ -57,7 +58,7 @@ trait WebJar {
   /**
     * The spray route for the js static files
     */
-  val webjars = logRequest("webjars", Logging.InfoLevel) {
+  val webjars: Route = logRequest("webjars", Logging.InfoLevel) {
     logResult("webjars", Logging.InfoLevel) {
       pathPrefix("libs") {
 //      pathPrefix("public") {

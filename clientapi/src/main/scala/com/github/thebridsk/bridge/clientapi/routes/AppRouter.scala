@@ -15,7 +15,7 @@ object AppRouter {
 
   def apply() = new AppRouter
 
-  val logger = Logger("bridge.Router")
+  val logger: Logger = Logger("bridge.Router")
 
   trait AppPage
 
@@ -94,7 +94,7 @@ class AppRouter {
 
   def logit[T]( f: => T )(implicit pos: Position): T = Alerter.tryit(f)
 
-  val config = RouterConfigDsl[AppPage].buildConfig { dsl =>
+  val config: RouterWithPropsConfig[AppPage,Unit] = RouterConfigDsl[AppPage].buildConfig { dsl =>
     import dsl._
 
     (emptyRule // trimSlashes
@@ -118,12 +118,12 @@ class AppRouter {
       .logWith(logToServer)
   }
 
-  def layout(c: RouterCtl[AppPage], r: Resolution[AppPage]) = {
+  def layout(c: RouterCtl[AppPage], r: Resolution[AppPage]): VdomElement = {
     logger.fine("AppRouter: Rendering page "+ r.page)
     Navigator(r,c)
   }
 
-  val isFromServer = {
+  val isFromServer: Boolean = {
     val prot = LogInfo.location.protocol
     val r = (prot=="http:" || prot=="https:")
     logger.info("Page was loaded with "+prot+", isFromServer "+r)
@@ -134,15 +134,15 @@ class AppRouter {
   // if not in demo mode, isEnabled is None
   AjaxResult.setEnabled(AjaxResult.isEnabled.getOrElse( isFromServer ))
 
-  def router = routerComponentAndLogic()._1
+  def router: Router[AppPage] = routerComponentAndLogic()._1
 
-  def routerWithURL( base: BaseUrl = LogInfo.baseUrl) = routerComponentAndLogic(base)._1
+  def routerWithURL( base: BaseUrl = LogInfo.baseUrl): Router[AppPage] = routerComponentAndLogic(base)._1
 
   private var fRouter: Option[ Router[AppRouter.AppPage]] = None
   private var fRouterLogic: Option[ RouterLogic[AppRouter.AppPage, Unit] ] = None
   private var fRouterCtl: Option[ RouterCtl[AppRouter.AppPage]] = None
 
-  def routerComponentAndLogic( base: BaseUrl = LogInfo.baseUrl)  = {
+  def routerComponentAndLogic( base: BaseUrl = LogInfo.baseUrl): (Router[AppPage], RouterLogic[AppPage,Unit])  = {
 
     val (r,c) = Router.componentAndLogic( base, config)
     fRouter = Some(r)
@@ -151,7 +151,7 @@ class AppRouter {
     (r,c)
   }
 
-  def gotoHome() = {
+  def gotoHome(): TagMod = {
     logger.info("AppRouter: setting up onClick for going home")
     fRouterCtl match {
       case Some(ctl) =>
@@ -164,7 +164,7 @@ class AppRouter {
     }
   }
 
-  def toRootPage( page: AppPage, suffix: String ) = {
+  def toRootPage( page: AppPage, suffix: String ): Unit = {
     logger.info(s"""toRootPage going to $page, suffix="$suffix".""")
     fRouterCtl match {
       case Some(ctl) =>

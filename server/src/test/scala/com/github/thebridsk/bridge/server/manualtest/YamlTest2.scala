@@ -12,7 +12,7 @@ case class Thing2( colour: String,
                    priority: Int) {
 
   override
-  def toString() = s"<Thing colour=${colour} priority=${priority}>"
+  def toString(): String = s"<Thing colour=${colour} priority=${priority}>"
 }
 
 case class Sample2( name: String,
@@ -20,7 +20,7 @@ case class Sample2( name: String,
                     things: List[Thing2]) {
 
   override
-  def toString() = s"<Sample name=${name} parameters=${parameters} things=${things}>"
+  def toString(): String = s"<Sample name=${name} parameters=${parameters} things=${things}>"
 
 }
 
@@ -38,7 +38,7 @@ things:
     priority: 64
 """
 
-  def execute() = {
+  def execute(): Int = {
 
     val reader = new StringReader(test)
     val mapper = new ObjectMapper(new YAMLFactory()).registerModule(new PlayJsonModule(JsonParserSettings()))

@@ -32,12 +32,12 @@ case class MatchDuplicateV1(
     updated: Timestamp
 ) extends VersionedInstance[MatchDuplicate, MatchDuplicateV1, MatchDuplicate.Id] {
 
-  def equalsIgnoreModifyTime(other: MatchDuplicateV1) =
+  def equalsIgnoreModifyTime(other: MatchDuplicateV1): Boolean =
     id == other.id &&
       equalsInTeams(other) &&
       equalsInBoards(other)
 
-  def equalsInTeams(other: MatchDuplicateV1) = {
+  def equalsInTeams(other: MatchDuplicateV1): Boolean = {
     if (teams.keySet == other.teams.keySet) {
       // this function returns true if the values in the two maps are not equal
       teams.keys.find { key =>
@@ -63,7 +63,7 @@ case class MatchDuplicateV1(
     }
   }
 
-  def equalsInBoards(other: MatchDuplicateV1) = {
+  def equalsInBoards(other: MatchDuplicateV1): Boolean = {
     if (boards.keySet == other.boards.keySet) {
       boards.keys.find { key =>
         {
@@ -93,7 +93,7 @@ case class MatchDuplicateV1(
       newId: MatchDuplicate.Id,
       forCreate: Boolean,
       dontUpdateTime: Boolean = false
-  ) = {
+  ): MatchDuplicateV1 = {
     if (dontUpdateTime) {
       copy(id = newId)
     } else {
@@ -105,7 +105,7 @@ case class MatchDuplicateV1(
     }
   }
 
-  def copyForCreate(id: MatchDuplicate.Id) = {
+  def copyForCreate(id: MatchDuplicate.Id): MatchDuplicateV1 = {
     val time = SystemTime.currentTimeMillis()
     val xteams = teams.map(e => (e._1 -> e._2.copyForCreate(e._1))).toMap
     val xboards = boards.map(e => (e._1 -> e._2.copyForCreate(e._1))).toMap
@@ -151,14 +151,14 @@ case class MatchDuplicateV1(
   def updateTeam(team: Team): MatchDuplicateV1 =
     copy(teams = teams + (team.id -> team))
 
-  def getHand(boardId: Board.Id, handId: Team.Id) = {
+  def getHand(boardId: Board.Id, handId: Team.Id): Option[DuplicateHandV1] = {
     boards.get(boardId) match {
       case Some(board) => board.hands.get(handId)
       case None        => None
     }
   }
 
-  def getHand(tableid: Table.Id, round: Int, boardId: Board.Id) = {
+  def getHand(tableid: Table.Id, round: Int, boardId: Board.Id): Option[DuplicateHandV1] = {
     boards.get(boardId) match {
       case Some(b) =>
         b.hands.values.find { h =>
@@ -168,7 +168,7 @@ case class MatchDuplicateV1(
     }
   }
 
-  def getHandsInRound(tableid: Table.Id, round: Int) = {
+  def getHandsInRound(tableid: Table.Id, round: Int): List[DuplicateHandV1] = {
     boards.values
       .map { b =>
         b.hands.values.filter { h =>
@@ -283,7 +283,7 @@ case class MatchDuplicateV1(
       south: String,
       east: String,
       west: String
-  ) =
+  ): MatchDuplicateV1 =
     getHandsInRound(tableid, round).headOption match {
       case Some(hand) =>
         val (cn, cs, ce, cw, allplayed) = determinePlayerPosition(hand)
@@ -414,7 +414,7 @@ case class MatchDuplicateV1(
   /**
     * Get all the table Ids in sort order.
     */
-  def getTableIds() = {
+  def getTableIds(): List[Table.Id] = {
     boards.values
       .flatMap(b => b.hands.values)
       .map(h => h.table)
@@ -426,7 +426,7 @@ case class MatchDuplicateV1(
       .sorted
   }
 
-  def convertToCurrentVersion =
+  def convertToCurrentVersion: (Boolean, MatchDuplicateV3) =
     (
       false,
       MatchDuplicateV3(
@@ -445,16 +445,16 @@ case class MatchDuplicateV1(
       )
     )
 
-  def readyForWrite = this
+  def readyForWrite: MatchDuplicateV1 = this
 
 }
 
 object MatchDuplicateV1 {
-  val time = SystemTime.currentTimeMillis()
+  val time: Timestamp = SystemTime.currentTimeMillis()
   def create(id: MatchDuplicate.Id = MatchDuplicate.idNul) =
     new MatchDuplicateV1(id, Map(), Map(), time, time)
 
-  def createTeams(numberTeams: Int) = {
+  def createTeams(numberTeams: Int): Map[Team.Id,Team] = {
     (1 to numberTeams)
       .map(t => Team.id(t))
       .map(id => id -> Team.create(id, "", ""))

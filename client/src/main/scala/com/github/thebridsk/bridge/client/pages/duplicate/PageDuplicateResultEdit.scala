@@ -36,6 +36,7 @@ import japgolly.scalajs.react.vdom.TagMod
 import com.github.thebridsk.bridge.client.pages.HomePage
 import japgolly.scalajs.react.component.builder.Lifecycle.ComponentDidUpdate
 
+
 /**
  * A skeleton component.
  *
@@ -50,22 +51,20 @@ import japgolly.scalajs.react.component.builder.Lifecycle.ComponentDidUpdate
 object PageDuplicateResultEdit {
   import PageDuplicateResultEditInternal._
 
-  type Callback = ()=>Unit
-
   case class Props( routerCtl: BridgeRouter[DuplicatePage], page: DuplicateResultEditView )
 
-  def apply( routerCtl: BridgeRouter[DuplicatePage], page: DuplicateResultEditView ) = component(Props(routerCtl,page))
+  def apply( routerCtl: BridgeRouter[DuplicatePage], page: DuplicateResultEditView ) = component(Props(routerCtl,page))  // scalafix:ok ExplicitResultTypes; ReactComponent
 
 }
 
 object PageDuplicateResultEditInternal {
   import PageDuplicateResultEdit._
 
-  val logger = Logger("bridge.PageDuplicateResultEdit")
+  val logger: Logger = Logger("bridge.PageDuplicateResultEdit")
 
   case class DSE( team: Team, result: String ) {
 
-    def isValid = {
+    def isValid: Boolean = {
       try {
         result.toDouble
         team.player1 != null && team.player1 != "" &&
@@ -75,7 +74,7 @@ object PageDuplicateResultEditInternal {
       }
     }
 
-    def toDuplicateSummaryEntry(useIMP: Boolean) = {
+    def toDuplicateSummaryEntry(useIMP: Boolean): DuplicateSummaryEntry = {
       if (useIMP) {
         DuplicateSummaryEntry( team, None, None, None, Some(result.toDouble), Some(0) )
       } else {
@@ -84,13 +83,13 @@ object PageDuplicateResultEditInternal {
     }
   }
 
-  def toDSE( dupS: DuplicateSummaryEntry, imp: Boolean ) = {
+  def toDSE( dupS: DuplicateSummaryEntry, imp: Boolean ): DSE = {
     val v = if (imp) dupS.resultImp.getOrElse(0.0).toString()
             else dupS.result.getOrElse(0.0).toString()
     DSE(dupS.team, v )
   }
 
-  def toTeams( teams: List[List[DSE]] ) = {
+  def toTeams( teams: List[List[DSE]] ): Unit = {
 
   }
 
@@ -112,10 +111,10 @@ object PageDuplicateResultEditInternal {
                     useIMP: Boolean = false
                   ) {
     import scala.scalajs.js.JSConverters._
-    def getSuggestions = nameSuggestions.getOrElse(List()).toJSArray
+    def getSuggestions: js.Array[String] = nameSuggestions.getOrElse(List()).toJSArray
     def gettingNames = nameSuggestions.isEmpty
 
-    def updateNames( list: List[String] ) = copy( nameSuggestions = Some(list) )
+    def updateNames( list: List[String] ): State = copy( nameSuggestions = Some(list) )
 
     def getMDR(): MatchDuplicateResult = {
 
@@ -130,7 +129,7 @@ object PageDuplicateResultEditInternal {
       original.get.copy( results=t, boardresults=boardresults, comment=c, notfinished=nf, played=played, updated=time, scoringmethod=sm ).fixup
     }
 
-    def setPlayer( iwinnerset: Int, teamid: Team.Id, iplayer: Int )( name: String ) = {
+    def setPlayer( iwinnerset: Int, teamid: Team.Id, iplayer: Int )( name: String ): State = {
       copy( teams=
         teams.zipWithIndex.map { e =>
           val (ws,i) = e
@@ -155,7 +154,7 @@ object PageDuplicateResultEditInternal {
       )
     }
 
-    def setPoints( iwinnerset: Int, teamid: Team.Id )( points: String ) = {
+    def setPoints( iwinnerset: Int, teamid: Team.Id )( points: String ): State = {
       copy( teams=
         teams.zipWithIndex.map { e =>
           val (ws,i) = e
@@ -175,7 +174,7 @@ object PageDuplicateResultEditInternal {
       )
     }
 
-    def updateOriginal( mdr: Option[MatchDuplicateResult] ) = {
+    def updateOriginal( mdr: Option[MatchDuplicateResult] ): State = {
       val imp = mdr.map( m => m.isIMP ).getOrElse(false)
       val t = mdr.map( m => m.results.map( l => l.map( e => toDSE(e,imp)) ) ).getOrElse(List())
       val b = mdr.map( m => m.boardresults ).getOrElse(None)
@@ -185,7 +184,7 @@ object PageDuplicateResultEditInternal {
       copy( original=mdr, teams=t, boardresults=b, comment=c, notfinished=f, played=p, useIMP=imp )
     }
 
-    def isValid() = {
+    def isValid(): Boolean = {
       played > 0 &&
       teams.flatten.find( t => !t.isValid ).isEmpty
     }
@@ -201,7 +200,7 @@ object PageDuplicateResultEditInternal {
    */
   class Backend(scope: BackendScope[Props, State]) {
 
-    val ok = scope.state >>= { state => Callback {
+    val ok: Callback = scope.state >>= { state => Callback {
       val props = scope.withEffectsImpure.props
       state.original match {
         case Some(mdr) =>
@@ -219,23 +218,23 @@ object PageDuplicateResultEditInternal {
 
     }}
 
-    val cancel = scope.props >>= { props => Callback {
+    val cancel: Callback = scope.props >>= { props => Callback {
 
       if (mounted) props.routerCtl.set(DuplicateResultView(props.page.sdupid)).runNow()
 
     }}
 
-    def setPlayer( iwinnerset: Int, teamid: Team.Id, iplayer: Int )( name: String ) = scope.modState( s =>
+    def setPlayer( iwinnerset: Int, teamid: Team.Id, iplayer: Int )( name: String ): Callback = scope.modState( s =>
       s.setPlayer(iwinnerset, teamid, iplayer)(name.trim())
     )
 
-    def setPoints( iwinnerset: Int, teamid: Team.Id )( e: ReactEventFromInput ) = e.inputText( points =>
+    def setPoints( iwinnerset: Int, teamid: Team.Id )( e: ReactEventFromInput ): Callback = e.inputText( points =>
       scope.modState( s =>
         s.setPoints(iwinnerset, teamid)(points)
       )
     )
 
-    def setPlayed( value: Date ) = {
+    def setPlayed( value: Date ): Unit = {
       logger.fine(s"""Setting date to ${value}: ${value.getTime()}""")
       scope.modState { s =>
         val t = if (js.isUndefined(value) || value == null) 0 else value.getTime()
@@ -245,15 +244,15 @@ object PageDuplicateResultEditInternal {
       }.runNow()
     }
 
-    val toggleComplete = scope.modState( s=>s.copy( notfinished = !s.notfinished ))
+    val toggleComplete: Callback = scope.modState( s=>s.copy( notfinished = !s.notfinished ))
 
-    val toggleIMP = scope.modState( s=>s.copy( useIMP = !s.useIMP ))
+    val toggleIMP: Callback = scope.modState( s=>s.copy( useIMP = !s.useIMP ))
 
-    def setComment( e: ReactEventFromInput ) =  e.inputText { comment =>
+    def setComment( e: ReactEventFromInput ): Callback =  e.inputText { comment =>
       scope.modState( s=>s.copy( comment = if (comment == null || comment == "") None else Some(comment) ))
     }
 
-    def render( props: Props, state: State ) = {
+    def render( props: Props, state: State ) = { // scalafix:ok ExplicitResultTypes; React
 
       def getWinnerSet( iws: Int, ws: List[DSE], tabstart: Int ) = {
         <.table(
@@ -355,17 +354,17 @@ object PageDuplicateResultEditInternal {
     }
 
     var mounted = false
-    val storeCallback = scope.modState { s =>
+    val storeCallback: Callback = scope.modState { s =>
       val mdr = DuplicateResultStore.getDuplicateResult()
       s.updateOriginal(mdr)
     }
 
-    val namesCallback = scope.modState(s => {
+    val namesCallback: Callback = scope.modState(s => {
       val sug = NamesStore.getNames
       s.copy( nameSuggestions=Some(sug))
     })
 
-    val didMount = scope.props >>= { (p) => Callback {
+    val didMount: Callback = scope.props >>= { (p) => Callback {
       mounted = true
       logger.info("PageDuplicateResultEdit.didMount")
       NamesStore.ensureNamesAreCached(Some(namesCallback))
@@ -374,7 +373,7 @@ object PageDuplicateResultEditInternal {
       Controller.monitorDuplicateResult(p.page.dupid)
     }}
 
-    val willUnmount = Callback {
+    val willUnmount: japgolly.scalajs.react.Callback = Callback {
       mounted = false
       logger.info("PageDuplicateResultEdit.willUnmount")
       DuplicateResultStore.removeChangeListener(storeCallback)
@@ -383,6 +382,7 @@ object PageDuplicateResultEditInternal {
 
   }
 
+  private[duplicate]
   val Header = ScalaComponent.builder[Props]("PageDuplicateResultEdit.Header")
                       .render_P( props => {
                         <.thead(
@@ -397,6 +397,7 @@ object PageDuplicateResultEditInternal {
 
   private def noNull( s: String ) = Option(s).getOrElse("")
 
+  private[duplicate]
   val TeamRow = ScalaComponent.builder[(Int,Team.Id,String,String,String,Boolean,Backend,Props,State,Int)]("PageDuplicateResultEdit.TeamRow")
                       .render_P( args => {
                         val (iws,id,player1, player2, points, valid, backend, props, state, tabstart) = args
@@ -427,6 +428,7 @@ object PageDuplicateResultEditInternal {
                         )
                       }).build
 
+  private[duplicate]
   val TotalRow = ScalaComponent.builder[(List[DSE],Backend,Props,State)]("PageDuplicateResultEdit.TotalRow")
                       .render_P( args => {
                         val (ws, backend, props, state) = args
@@ -448,7 +450,7 @@ object PageDuplicateResultEditInternal {
                       }).build
 
 
-  def didUpdate( cdu: ComponentDidUpdate[Props,State,Backend,Unit] ) = Callback {
+  def didUpdate( cdu: ComponentDidUpdate[Props,State,Backend,Unit] ): japgolly.scalajs.react.Callback = Callback {
     val props = cdu.currentProps
     val prevProps = cdu.prevProps
     if (prevProps.page != props.page) {
@@ -456,6 +458,7 @@ object PageDuplicateResultEditInternal {
     }
   }
 
+  private[duplicate]
   val component = ScalaComponent.builder[Props]("PageDuplicateResultEdit")
                             .initialStateFromProps { props => State() }
                             .backend(new Backend(_))

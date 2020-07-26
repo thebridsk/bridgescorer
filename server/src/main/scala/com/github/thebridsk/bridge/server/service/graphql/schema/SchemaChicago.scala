@@ -15,14 +15,15 @@ import com.github.thebridsk.bridge.data.IdMatchChicago
 
 import SchemaBase.{log => _, _}
 import SchemaHand.{log => _, _}
+import com.github.thebridsk.bridge.data.Id
 
 object SchemaChicago {
 
-  val log = Logger(SchemaChicago.getClass.getName)
+  val log: Logger = Logger(SchemaChicago.getClass.getName)
 
-  val ChicagoIdType = idScalarType[IdMatchChicago]("ChicagoId", MatchChicago)
+  val ChicagoIdType: ScalarType[Id[IdMatchChicago]] = idScalarType[IdMatchChicago]("ChicagoId", MatchChicago)
 
-  val ChicagoRoundType = ObjectType(
+  val ChicagoRoundType: ObjectType[BridgeService,Round] = ObjectType(
     "ChicagoRound",
     "A chicago round",
     fields[BridgeService, Round](
@@ -83,7 +84,7 @@ object SchemaChicago {
     )
   )
 
-  val ChicagoBestMatchType = ObjectType(
+  val ChicagoBestMatchType: ObjectType[BridgeService,(Option[String], ChicagoBestMatch)] = ObjectType(
     "ChicagoBestMatch",
     "Identifies the best match",
     fields[BridgeService, (Option[String], ChicagoBestMatch)](
@@ -108,7 +109,7 @@ object SchemaChicago {
     )
   )
 
-  val MatchChicagoType = ObjectType(
+  val MatchChicagoType: ObjectType[BridgeService,(Option[String], MatchChicago)] = ObjectType(
     "MatchChicago",
     "A rubber match",
     // Option string is the import ID, None for main store
@@ -166,7 +167,7 @@ object SchemaChicago {
     )
   )
 
-  val ArgChicagoId =
+  val ArgChicagoId: Argument[Id[IdMatchChicago]] =
     Argument("id", ChicagoIdType, description = "The Id of the chicago match")
 
 }
@@ -243,7 +244,7 @@ object ChicagoAction {
     }
   }
 
-  def sortC(list: List[MatchChicago], sort: Option[Sort]) = {
+  def sortC(list: List[MatchChicago], sort: Option[Sort]): List[MatchChicago] = {
     val l = sort
       .map { s =>
         s match {

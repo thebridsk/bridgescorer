@@ -20,6 +20,7 @@ import com.github.thebridsk.materialui.MuiTypography
 import com.github.thebridsk.materialui.TextVariant
 import com.github.thebridsk.materialui.TextColor
 import com.github.thebridsk.bridge.data.DuplicateSummary
+import japgolly.scalajs.react.internal.Effect
 
 /**
  * Shows the team x board table and has a totals column that shows the number of points the team has.
@@ -39,14 +40,14 @@ object PageFinishedScoreboards {
 
   case class Props( routerCtl: BridgeRouter[DuplicatePage], game: FinishedScoreboardsView )
 
-  def apply( routerCtl: BridgeRouter[DuplicatePage], game: FinishedScoreboardsView ) = component(Props(routerCtl,game))
+  def apply( routerCtl: BridgeRouter[DuplicatePage], game: FinishedScoreboardsView ) = component(Props(routerCtl,game))  // scalafix:ok ExplicitResultTypes; ReactComponent
 
 }
 
 object PageFinishedScoreboardsInternal {
   import PageFinishedScoreboards._
 
-  val logger = Logger("bridge.PageFinishedScoreboards")
+  val logger: Logger = Logger("bridge.PageFinishedScoreboards")
 
   /**
    * Internal state for rendering the component.
@@ -60,7 +61,7 @@ object PageFinishedScoreboardsInternal {
                     ids: List[DuplicateSummary.Id],
                     summaries: List[DuplicateSummary.Id]
                   ) {
-    def gotall = {
+    def gotall: Boolean = {
       games.size+results.size == ids.length
     }
   }
@@ -73,7 +74,7 @@ object PageFinishedScoreboardsInternal {
    *
    */
   class Backend(scope: BackendScope[Props, State]) {
-    def render( props: Props, state: State ) = {
+    def render( props: Props, state: State ) = { // scalafix:ok ExplicitResultTypes; React
       import DuplicateStyles._
       def scoreboards() = {
         var i = 0
@@ -138,9 +139,9 @@ object PageFinishedScoreboardsInternal {
       )
     }
 
-    def removeMatch (id: DuplicateSummary.Id ) = scope.modState(s => s.copy(ids = s.ids.filter(s=>s!=id)) )
+    def removeMatch (id: DuplicateSummary.Id ): Callback = scope.modState(s => s.copy(ids = s.ids.filter(s=>s!=id)) )
 
-    def addMatch( id: DuplicateSummary.Id ) =
+    def addMatch( id: DuplicateSummary.Id ): Callback =
       scope.modState(s => s.copy(ids = s.ids:::(id::Nil)),
         Callback {
           val state = scope.withEffectsImpure.state
@@ -160,7 +161,7 @@ object PageFinishedScoreboardsInternal {
         }
       )
 
-    def gotMatch( md: MatchDuplicate ) = {
+    def gotMatch( md: MatchDuplicate ): Effect.Id[Unit] = {
       logger.info("PageFinishedScoreboards.gotMatch: got "+md.id)
       if (mounted) {
         logger.finest("PageFinishedScoreboards.gotMatch: Is mounted ")
@@ -172,7 +173,7 @@ object PageFinishedScoreboardsInternal {
       }
     }
 
-    def gotMatchResult( md: MatchDuplicateResult ) = {
+    def gotMatchResult( md: MatchDuplicateResult ): Effect.Id[Unit] = {
       logger.info("PageFinishedScoreboards.gotMatchResult: got "+md.id)
       if (mounted) {
         logger.finest("PageFinishedScoreboards.gotMatch: Is mounted ")
@@ -186,7 +187,7 @@ object PageFinishedScoreboardsInternal {
 
     var mounted = false
 
-    val didMount = Callback {
+    val didMount: Callback = Callback {
       mounted = true
       logger.finest("PageFinishedScoreboards.didMount")
     } >> scope.state >>= { s => Callback {
@@ -209,12 +210,13 @@ object PageFinishedScoreboardsInternal {
       )
     }}
 
-    val willUnmount = Callback {
+    val willUnmount: Callback = Callback {
       mounted = false
       logger.info("PageFinishedScoreboards.willUnmount")
     }
   }
 
+  private[duplicate]
   val component = ScalaComponent.builder[Props]("PageFinishedScoreboards")
                             .initialStateFromProps { props => State(Map(), Map(), props.game.getIds.toList, List() ) }
                             .backend(new Backend(_))

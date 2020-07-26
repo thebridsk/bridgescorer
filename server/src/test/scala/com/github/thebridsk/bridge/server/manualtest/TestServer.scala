@@ -5,11 +5,13 @@ import akka.http.scaladsl.Http
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.marshallers.xml.ScalaXmlSupport._
 import akka.actor.ActorSystem
+import akka.http.scaladsl.server.Route
+import scala.concurrent.Future
 
 object TestServer extends App {
-  implicit val system = ActorSystem("my-system")
+  implicit val system: ActorSystem = ActorSystem("my-system")
 
-  val route =
+  val route: Route =
     path("hello") {
       get {
         complete {
@@ -18,7 +20,7 @@ object TestServer extends App {
       }
     }
 
-  val bindingFuture = Http().bindAndHandle(route, "localhost", 8080)
+  val bindingFuture: Future[Http.ServerBinding] = Http().bindAndHandle(route, "localhost", 8080)
 
   println(s"Server online at http://localhost:8080/\nPress RETURN to stop...")
   scala.io.StdIn.readLine()

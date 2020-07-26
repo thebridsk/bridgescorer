@@ -25,37 +25,40 @@ import java.io.ByteArrayInputStream
 import scala.io.Source
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.must.Matchers
+import akka.event.LoggingAdapter
 
 class MyServiceSpec extends AnyFlatSpec with ScalatestRouteTest with Matchers with MyService {
   val restService = new BridgeServiceTesting
 
   val httpport = 8080
   override
-  def ports = ServerPort( Option(httpport), None )
+  def ports: ServerPort = ServerPort( Option(httpport), None )
 
   val webJarLocationForServer = "META-INF/resources/webjars/bridgescorer-fullserver/"
 
+  // scalafix:off
   implicit lazy val actorSystem = system
   implicit lazy val actorExecutor = executor
   implicit lazy val actorMaterializer = materializer
+  // scalafix:on
 
-  val useFastOptOnly = TestServer.getProp("OnlyBuildDebug").
+  val useFastOptOnly: Boolean = TestServer.getProp("OnlyBuildDebug").
                        map( s => s.toBoolean ).
                        getOrElse(false)
 
-  val useFullOptOnly = TestServer.getProp("UseFullOpt").
+  val useFullOptOnly: Boolean = TestServer.getProp("UseFullOpt").
                        map( s => s.toBoolean ).
                        getOrElse(false)
 
   TestStartLogging.startLogging()
 
-  val testlog = Logging(system, "MyServiceSpec")
+  val testlog: LoggingAdapter = Logging(system, "MyServiceSpec")
 
   behavior of "Server"
 
   val version = ResourceFinder.htmlResources.version
 
-  val itOrIgnore = if (TestServer.useProductionPage) ignore else it
+  val itOrIgnore: Object = if (TestServer.useProductionPage) ignore else it
 
   it should "find index.html as a resource" in {
     val theClassLoader = getClass.getClassLoader
@@ -80,7 +83,7 @@ class MyServiceSpec extends AnyFlatSpec with ScalatestRouteTest with Matchers wi
 
   behavior of "MyService for static pages"
 
-  val remoteAddress = `Remote-Address`( IP( InetAddress.getLocalHost, Some(12345) ))
+  val remoteAddress = `Remote-Address`( IP( InetAddress.getLocalHost, Some(12345) ))  // scalafix:ok ; Remote-Address
 
   it should "return a redirect to /public/index.html for /" in {
     Get("/") ~> addHeader(remoteAddress) ~> Route.seal { myRouteWithLogging } ~> check {
@@ -104,7 +107,7 @@ class MyServiceSpec extends AnyFlatSpec with ScalatestRouteTest with Matchers wi
     }
   }
 
-  def getGzipBody( body: Array[Byte] ) = {
+  def getGzipBody( body: Array[Byte] ): String = {
     val in = new GZIPInputStream( new ByteArrayInputStream( responseAs[Array[Byte]]))
     Source.fromInputStream(in,"utf-8").mkString
   }
@@ -210,7 +213,7 @@ class MyServiceSpec extends AnyFlatSpec with ScalatestRouteTest with Matchers wi
 //    .handleNotFound { complete(NotFound, "Not here!x") }
 //    .result()
 
-  val logentry = LogEntryV2("MyServiceSpec:100",
+  val logentry: LogEntryV2 = LogEntryV2("MyServiceSpec:100",
                             "logger",
                             1000000,
                             "I",
@@ -286,7 +289,7 @@ class MyServiceSpec extends AnyFlatSpec with ScalatestRouteTest with Matchers wi
     }
   }
 
-  def getURL( port: Int) = {
+  def getURL( port: Int): ServerURL = {
     import java.net.NetworkInterface
     import scala.jdk.CollectionConverters._
     import java.net.Inet4Address

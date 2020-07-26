@@ -11,12 +11,12 @@ class TravisIntegrationTests extends Sequential(
   new DuplicateTestFromTestDirectory2
 ) with BeforeAndAfterAll {
   override
-  def beforeAll() = {
+  def beforeAll(): Unit = {
     TestServer.start()
   }
 
   override
-  def afterAll() = {
+  def afterAll(): Unit = {
     TestServer.stop()
   }
 

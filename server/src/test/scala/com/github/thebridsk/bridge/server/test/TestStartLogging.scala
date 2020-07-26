@@ -10,24 +10,25 @@ import com.github.thebridsk.utilities.logging.FileHandler
 import com.github.thebridsk.utilities.logging.FileFormatter
 import java.util.logging.Level
 import com.github.thebridsk.utilities.logging.RedirectOutput
+import com.github.thebridsk.utilities.logging
 
 object TestStartLogging {
 
-  val testlog = com.github.thebridsk.utilities.logging.Logger[TestStartLogging]()
+  val testlog: logging.Logger = com.github.thebridsk.utilities.logging.Logger[TestStartLogging]()
 
   private var loggingInitialized = false
 
   val logFilePrefix = "UseLogFilePrefix"
   val logFilePrefixDefault = "logs/unittest"
 
-  def getProp( name: String, default: String ) = {
+  def getProp( name: String, default: String ): String = {
     sys.props.get(name) match {
       case Some(s) => s
       case None => sys.env.get(name).getOrElse(default)
     }
   }
 
-  def startLogging( logFilenamePrefix: String = null) = {
+  def startLogging( logFilenamePrefix: String = null): Unit = {
     if (!loggingInitialized) {
       loggingInitialized = true
       val logfilenameprefix = Option(logFilenamePrefix).getOrElse( getProp(logFilePrefix, logFilePrefixDefault ) )

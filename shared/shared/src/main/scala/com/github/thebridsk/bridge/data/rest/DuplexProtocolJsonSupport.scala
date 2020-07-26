@@ -7,21 +7,21 @@ import com.github.thebridsk.bridge.data.websocket.DuplexProtocol._
 trait ToBrowserDuplexProtocolJsonSupport {
   import ToBrowserProtocolJsonSupport.toBrowserMessageFormat
 
-  implicit val responseFormat = Json.format[Response]
-  implicit val unsolicitedFormat = Json.format[Unsolicited]
+  implicit val responseFormat: OFormat[Response] = Json.format[Response]
+  implicit val unsolicitedFormat: OFormat[Unsolicited] = Json.format[Unsolicited]
 
 }
 
 trait ToServerDuplexProtocolJsonSupport {
   import ToServerProtocolJsonSupport._
 
-  implicit val sendFormat = Json.format[Send]
-  implicit val requestFormat = Json.format[Request]
+  implicit val sendFormat: OFormat[Send] = Json.format[Send]
+  implicit val requestFormat: OFormat[Request] = Json.format[Request]
 
-  implicit val errorResponseFormat = Json.format[ErrorResponse]
-  implicit val logEntryV2Format = Json.format[LogEntryV2]
-  implicit val logEntrySFormat = Json.format[LogEntryS]
-  implicit val completeFormat = Json.format[Complete]
+  implicit val errorResponseFormat: OFormat[ErrorResponse] = Json.format[ErrorResponse]
+  implicit val logEntryV2Format: OFormat[LogEntryV2] = Json.format[LogEntryV2]
+  implicit val logEntrySFormat: OFormat[LogEntryS] = Json.format[LogEntryS]
+  implicit val completeFormat: OFormat[Complete] = Json.format[Complete]
 }
 
 trait DuplexProtocolJsonSupportImpl
@@ -89,7 +89,7 @@ class DuplexMessageFormat extends SealedFormat[DuplexMessage] {
 }
 
 trait DuplexProtocolJsonSupport {
-  implicit val duplexMessageFormat = new DuplexMessageFormat
+  implicit val duplexMessageFormat: DuplexMessageFormat = new DuplexMessageFormat
 }
 object DuplexProtocolJsonSupport extends DuplexProtocolJsonSupport
 //object Test {

@@ -41,6 +41,8 @@ import com.github.thebridsk.bridge.data.DuplicateHandV2
 import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.BoardPage
 import com.github.thebridsk.browserpages.Session
 import com.github.thebridsk.bridge.server.test.util.TestServer
+import org.scalatest.Assertion
+import org.scalatest.prop.TableFor1
 
 /**
  * Test playing duplicate matches.  The duplicates matches to play are in the testdata directory.
@@ -51,7 +53,7 @@ class DuplicateTestFromTestDirectory extends AnyFlatSpec with Matchers with Befo
   import com.github.thebridsk.browserpages.PageBrowser._
   import ParallelUtils._
 
-  val testlog = Logger[DuplicateTestFromTestDirectory]()
+  val testlog: Logger = Logger[DuplicateTestFromTestDirectory]()
 
   val screenshotDir = "target/DuplicateTestFromTestDirectory"
 
@@ -60,14 +62,14 @@ class DuplicateTestFromTestDirectory extends AnyFlatSpec with Matchers with Befo
   val timeoutMillis = 20000
   val intervalMillis = 1000
 
-  implicit val timeoutduration = Duration( 60, TimeUnit.SECONDS )
+  implicit val timeoutduration: FiniteDuration = Duration( 60, TimeUnit.SECONDS )
 
-  implicit val patienceConfig = PatienceConfig(timeout=scaled(Span(timeoutMillis, Millis)), interval=scaled(Span(intervalMillis,Millis)))
+  implicit val patienceConfig: PatienceConfig = PatienceConfig(timeout=scaled(Span(timeoutMillis, Millis)), interval=scaled(Span(intervalMillis,Millis)))
 
-  def getAllGames() = TestData.getAllGames()
+  def getAllGames(): List[MatchDuplicate] = TestData.getAllGames()
 
   override
-  def beforeAll() = {
+  def beforeAll(): Unit = {
 
     MonitorTCP.nextTest()
     try {
@@ -80,7 +82,7 @@ class DuplicateTestFromTestDirectory extends AnyFlatSpec with Matchers with Befo
   }
 
   override
-  def afterAll() = {
+  def afterAll(): Unit = {
     try {
       TestServer.stop()
     } catch {
@@ -94,7 +96,7 @@ class DuplicateTestFromTestDirectory extends AnyFlatSpec with Matchers with Befo
     testlog.warning("DOM:" + doc)
   }
 
-  def genericPage( implicit webDriver: WebDriver, createdPos: SourcePosition ) = {
+  def genericPage( implicit webDriver: WebDriver, createdPos: SourcePosition ): GenericPage = {
     GenericPage.current
   }
 
@@ -106,7 +108,7 @@ class DuplicateTestFromTestDirectory extends AnyFlatSpec with Matchers with Befo
   }
 
   import org.scalatest.prop.TableDrivenPropertyChecks._
-  val templates = Table( "MatchDuplicate", getAllGames(): _* )
+  val templates: TableFor1[MatchDuplicate] = Table( "MatchDuplicate", getAllGames(): _* )
 
 //  it should "play a complete match" in {
 //    forAll(templates) { md =>
@@ -148,18 +150,18 @@ class DuplicateTestFromTestDirectory extends AnyFlatSpec with Matchers with Befo
     }
 
 
-  def logFuture[T]( t: =>T )(implicit pos: Position) = CodeBlock { logException("logFuture")( t ) }
+  def logFuture[T]( t: =>T )(implicit pos: Position): CodeBlock[T] = CodeBlock { logException("logFuture")( t ) }
 
   var firstScorekeeper: PlayerPosition = North
 
   class MatchPlay( template: MatchDuplicate) {
-    val numbertables = template.getTableIds().size
+    val numbertables: Int = template.getTableIds().size
 
-    val templateScore = MatchDuplicateScore(template,PerspectiveDirector)
+    val templateScore: MatchDuplicateScore = MatchDuplicateScore(template,PerspectiveDirector)
 
     val sessionDirector = new DirectorSession()
     val sessionComplete = new CompleteSession()
-    val sessionTables = template.getTableIds().map { id => {
+    val sessionTables: List[TableSession] = template.getTableIds().map { id => {
       val sid = id.toNumber
       new TableSession(sid) }
     }
@@ -180,7 +182,7 @@ class DuplicateTestFromTestDirectory extends AnyFlatSpec with Matchers with Befo
       }
     }
 
-    def play() = {
+    def play(): Unit = {
       gotoRootPage()
       gotoSummaryPage()
       newDuplicate()
@@ -193,7 +195,7 @@ class DuplicateTestFromTestDirectory extends AnyFlatSpec with Matchers with Befo
       compareResultRest()
     }
 
-    def tearDown() = {
+    def tearDown(): Unit = {
       try {
         waitForFutures( "tearDown",
                         logFuture { sessionComplete.sessionStop() }::
@@ -265,7 +267,7 @@ class DuplicateTestFromTestDirectory extends AnyFlatSpec with Matchers with Befo
       }
     }
 
-    def gotoRootPage() = {
+    def gotoRootPage(): Unit = {
       import Session._
       val envSessionTable = getPropOrEnv("SessionTable")
       val sessions = sessionTables.toList
@@ -284,7 +286,7 @@ class DuplicateTestFromTestDirectory extends AnyFlatSpec with Matchers with Befo
       )
     }
 
-    def gotoSummaryPage() = {
+    def gotoSummaryPage(): Unit = {
       import sessionDirector._
 
       PageBrowser.withClueAndScreenShot(
@@ -301,7 +303,7 @@ class DuplicateTestFromTestDirectory extends AnyFlatSpec with Matchers with Befo
       }
     }
 
-    def newDuplicate() = {
+    def newDuplicate(): Assertion = {
       import sessionDirector._
 
       PageBrowser.withClueAndScreenShot(
@@ -329,7 +331,7 @@ class DuplicateTestFromTestDirectory extends AnyFlatSpec with Matchers with Befo
       }
     }
 
-    def gotoDirectorsPage() = {
+    def gotoDirectorsPage(): Unit = {
       import sessionDirector._
 
       val sbp = ScoreboardPage.current
@@ -340,7 +342,7 @@ class DuplicateTestFromTestDirectory extends AnyFlatSpec with Matchers with Befo
 
     }
 
-    def startCompleteAndTables() = {
+    def startCompleteAndTables(): Unit = {
     waitForFutures(
         "startCompleteAndTables",
         logFuture {
@@ -368,7 +370,7 @@ class DuplicateTestFromTestDirectory extends AnyFlatSpec with Matchers with Befo
     /**
      * Assumes on a by Scoreboard or BoardPage page with a Board_n buttons for the round being played.
      */
-    def doPlayHand( sessionTable: TableSession, hand: DuplicateHand, page: PageWithBoardButtons ) = try {
+    def doPlayHand( sessionTable: TableSession, hand: DuplicateHand, page: PageWithBoardButtons ): PageWithBoardButtons = try {
       val boardButton = s"Board_${hand.board.id}"
       val (north,south,east,west) = getPlayers(hand)
 

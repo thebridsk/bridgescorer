@@ -11,7 +11,7 @@ import com.github.thebridsk.utilities.logging.Logger
 
 object ComboboxOrInput {
 
-  val log = Logger["bridge.ComboboxOrInput"]()
+  val log: Logger = Logger["bridge.ComboboxOrInput"]()
 
   var noCombobox: Boolean = false    // used by TestChicago to not use ComboBox, causes exception in phantomjs
 

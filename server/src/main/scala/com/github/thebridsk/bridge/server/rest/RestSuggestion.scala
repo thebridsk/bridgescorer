@@ -18,6 +18,7 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody
 import io.swagger.v3.oas.annotations.tags.Tags
 import io.swagger.v3.oas.annotations.tags.Tag
 import javax.ws.rs.POST
+import akka.http.scaladsl.server.Route
 
 /**
   * Rest API implementation for the logger config
@@ -39,7 +40,7 @@ trait RestSuggestion extends HasActorSystem {
   /**
     * spray route for all the methods on this resource
     */
-  val route = pathPrefix("suggestions") {
+  val route: Route = pathPrefix("suggestions") {
     suggestion
   }
 
@@ -80,8 +81,8 @@ trait RestSuggestion extends HasActorSystem {
       )
     )
   )
-  def xxxsuggestion() = {}
-  val suggestion = pathEndOrSingleSlash {
+  def xxxsuggestion(): Unit = {}
+  val suggestion: Route = pathEndOrSingleSlash {
     post {
       entity(as[DuplicateSuggestions]) { input =>
         val f = restService.getDuplicateSummaries().map { rds =>

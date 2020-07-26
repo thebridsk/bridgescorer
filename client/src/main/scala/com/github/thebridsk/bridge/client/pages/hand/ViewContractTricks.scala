@@ -7,6 +7,7 @@ import com.github.thebridsk.bridge.client.pages.hand.ComponentInputStyleButton.I
 import com.github.thebridsk.bridge.client.pages.hand.PageHandInternal.PageHandNextInput
 import com.github.thebridsk.bridge.clientcommon.react.Utils._
 
+
 /**
  * A skeleton component.
  *
@@ -32,7 +33,7 @@ object ViewContractTricks {
              current: Option[ContractTricks],
              callback: CallbackTricks,
              nextInput: PageHandNextInput.Value,
-             visible: Boolean ) =
+             visible: Boolean ) = // scalafix:ok ExplicitResultTypes; ReactComponent
     component(Props(allowPassedOut,current,callback,nextInput,visible))
 
   private val component = ScalaComponent.builder[Props]("ViewContractTricks")

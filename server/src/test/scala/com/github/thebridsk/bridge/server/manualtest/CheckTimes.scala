@@ -9,15 +9,15 @@ import com.github.thebridsk.bridge.server.backend.MatchDuplicateCacheStoreSuppor
 
 object CheckTimes extends Main with Matchers {
 
-  def execute() = {
+  def execute(): Int = {
     checkTimeFromFile("DuplicateTest.TimeError.json")
   }
 
-  def readFromFile( file: String ) = {
+  def readFromFile( file: String ): String = {
     FileIO.readFileSafe(file)
   }
 
-  def checkTimeFromFile( file: String ) = {
+  def checkTimeFromFile( file: String ): Int = {
     val json = readFromFile(file)
     val md = convertToMatch(json)
     checkTimeMatch(md)
@@ -26,13 +26,13 @@ object CheckTimes extends Main with Matchers {
   val converters = new BridgeServiceFileStoreConverters(true)
   import converters._
 
-  def convertToMatch( json: String ) = {
+  def convertToMatch( json: String ): MatchDuplicate = {
 
     val (id,played) = new MatchDuplicateCacheStoreSupport(false).fromJSON(json)
     played
   }
 
-  def checkTimeMatch( played: MatchDuplicate ) = {
+  def checkTimeMatch( played: MatchDuplicate ): Int = {
 
     val created = played.created
     val updated = played.updated

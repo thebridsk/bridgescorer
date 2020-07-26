@@ -7,6 +7,7 @@ import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles._
 import org.scalajs.dom.raw.Event
 import org.scalajs.dom.raw.EventListenerOptions
 
+
 /**
  * Creates a tooltip that will show up when a mouse enters the element,
  * or when the element is touched on a touch screen.
@@ -117,7 +118,7 @@ object Tooltip {
   def apply(
       data: TagMod,
       tooltipbody: TagMod
-  ) = component( Props(data,Some(tooltipbody),None) )
+  ) = component( Props(data,Some(tooltipbody),None) )  // scalafix:ok ExplicitResultTypes; ReactComponent
 
   /**
    * Returns a tooltip component with tooltiptitle and tooltipbody as the tooltip for the data.
@@ -129,7 +130,7 @@ object Tooltip {
       data: TagMod,
       tooltipbody: TagMod,
       tooltiptitle: TagMod
-  ) = component( Props(data,Some(tooltipbody),Some(tooltiptitle) ))
+  ) = component( Props(data,Some(tooltipbody),Some(tooltiptitle) ))  // scalafix:ok ExplicitResultTypes; ReactComponent
 
   /**
    * @param data the data to display.
@@ -140,7 +141,7 @@ object Tooltip {
       data: TagMod,
       tooltipbody: TagMod,
       tooltiptitle: Option[TagMod]
-  ) = component( Props(data,Some(tooltipbody),tooltiptitle ))
+  ) = component( Props(data,Some(tooltipbody),tooltiptitle ))  // scalafix:ok ExplicitResultTypes; ReactComponent
 
   /**
    * @param data the data to display.
@@ -151,11 +152,11 @@ object Tooltip {
       data: TagMod,
       tooltipbody: Option[TagMod] = None,
       tooltiptitle: Option[TagMod] = None
-  ) = component( Props(data,tooltipbody,tooltiptitle) )
+  ) = component( Props(data,tooltipbody,tooltiptitle) )  // scalafix:ok ExplicitResultTypes; ReactComponent
 
   private var initialized: Boolean = false
 
-  def init() = {
+  def init(): Unit = {
     import org.scalajs.dom.document
 
     val options = js.Object().asInstanceOf[EventListenerOptions]

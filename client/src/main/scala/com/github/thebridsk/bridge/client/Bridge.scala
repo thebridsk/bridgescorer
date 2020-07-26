@@ -34,7 +34,7 @@ object Bridge {   // need to figure out how to use new way to call main
 
   SystemTimeJs()
 
-  def logger = Logger("bridge.Bridge")
+  def logger: Logger = Logger("bridge.Bridge")
 
   Loader.init
 
@@ -46,7 +46,7 @@ object Bridge {   // need to figure out how to use new way to call main
   private var loggerInitDone = false
   private var defaultInitDone = false
 
-  def initDone() = {
+  def initDone(): Unit = {
     if (loggerInitDone && defaultInitDone) startClient()
     else logger.info(s"loggerInitDone=${loggerInitDone}, defaultInitDone=${defaultInitDone}")
   }
@@ -70,7 +70,7 @@ object Bridge {   // need to figure out how to use new way to call main
 
   }
 
-  def startClient() = Alerter.tryitWithUnit {
+  def startClient(): Unit = Alerter.tryitWithUnit {
     logger.info("Bridge Scorer Starting" )
 
     try {
@@ -92,7 +92,7 @@ object Bridge {   // need to figure out how to use new way to call main
    * @return the HTMLElement object
    * @throws IllegalStateException if the element was not found.
    */
-  def getElement( id: String = "BridgeApp" ) = {
+  def getElement( id: String = "BridgeApp" ): HTMLElement = {
 
     val div = document.getElementById(id)
     if (div == null) {
@@ -120,7 +120,7 @@ object Bridge {   // need to figure out how to use new way to call main
     root
   }
 
-  def getBody() = {
+  def getBody(): HTMLElement = {
     document.body
   }
 

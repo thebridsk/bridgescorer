@@ -11,22 +11,23 @@ import scala.concurrent.Await
 import scala.concurrent.duration.Duration
 import com.github.thebridsk.bridge.data.rest.JsonSupport
 import com.github.thebridsk.utilities.file.FileIO
+import org.rogach.scallop.ScallopOption
 
 object GenerateDemoMatchDuplicate extends Main {
 
   import com.github.thebridsk.utilities.main.Converters._
 
-  val optionStore = opt[Path]("store", short='s', descr="The store directory, default=./store", argName="dir", default=Some("../testdata"))
+  val optionStore: ScallopOption[Path] = opt[Path]("store", short='s', descr="The store directory, default=./store", argName="dir", default=Some("../testdata"))
 
-  val optionOut = opt[Path]("out", short='o', descr="The output file, default=src/main/public/demo/demoMatchDuplicates.json", argName="outfile", default=Some("src/main/public/demo/demoMatchDuplicates.json"))
+  val optionOut: ScallopOption[Path] = opt[Path]("out", short='o', descr="The output file, default=src/main/public/demo/demoMatchDuplicates.json", argName="outfile", default=Some("src/main/public/demo/demoMatchDuplicates.json"))
 
-  val paramArgs = trailArg[List[String]](
+  val paramArgs: ScallopOption[List[String]] = trailArg[List[String]](
       name = "ids",
       descr = "Ids of matches to add to demo",
       required = true
       )
 
-  def execute() = {
+  def execute(): Int = {
     implicit val ec = ExecutionContext.global
     val store = BridgeService(optionStore.toOption.get)
 

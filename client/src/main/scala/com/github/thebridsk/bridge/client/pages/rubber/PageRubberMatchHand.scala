@@ -29,6 +29,7 @@ import com.github.thebridsk.bridge.client.pages.HomePage
 import japgolly.scalajs.react.component.builder.Lifecycle.ComponentDidUpdate
 import org.scalajs.dom.raw.File
 
+
 /**
  * A skeleton component.
  *
@@ -45,7 +46,7 @@ object PageRubberMatchHand {
 
   case class Props( page: RubberMatchHandView, routerCtl: BridgeRouter[RubberPage] )
 
-  def apply( page: RubberMatchHandView, routerCtl: BridgeRouter[RubberPage] ) =
+  def apply( page: RubberMatchHandView, routerCtl: BridgeRouter[RubberPage] ) = // scalafix:ok ExplicitResultTypes; ReactComponent
     component( Props( page, routerCtl ) )
 
 }
@@ -53,7 +54,7 @@ object PageRubberMatchHand {
 object PageRubberMatchHandInternal {
   import PageRubberMatchHand._
 
-  val logger = Logger("bridge.PageRubberMatchHand")
+  val logger: Logger = Logger("bridge.PageRubberMatchHand")
 
   /**
    * Internal state for rendering the component.
@@ -73,21 +74,21 @@ object PageRubberMatchHandInternal {
    */
   class Backend(scope: BackendScope[Props, State]) {
 
-    def viewHandCallbackOk( handid: String )( contract: Contract, picture: Option[File], removePicture: Boolean ) =
+    def viewHandCallbackOk( handid: String )( contract: Contract, picture: Option[File], removePicture: Boolean ): Callback =
       scope.props >>= { props => {
         val time = SystemTime.currentTimeMillis()
         RubberController.updateRubberHand(props.page.rid, handid, RubberHand(contract.id,contract.toHand,0,None,time,time))
         props.routerCtl.set(props.page.toRubber)
       }}
 
-    def viewHandCallbackWithHonors( handid: String )( contract: Contract, picture: Option[File], removePicture: Boolean, honors: Int, honorsPlayer: Option[PlayerPosition] ) =
+    def viewHandCallbackWithHonors( handid: String )( contract: Contract, picture: Option[File], removePicture: Boolean, honors: Int, honorsPlayer: Option[PlayerPosition] ): Callback =
       scope.props >>= { props => {
         val time = SystemTime.currentTimeMillis()
         RubberController.updateRubberHand(props.page.rid, handid, RubberHand(contract.id,contract.toHand,honors,honorsPlayer.map(_.pos),time,time))
         props.routerCtl.set(props.page.toRubber)
       }}
 
-    val viewHandCallbackCancel = scope.props >>= { props => props.routerCtl.set(props.page.toRubber) }
+    val viewHandCallbackCancel: Callback = scope.props >>= { props => props.routerCtl.set(props.page.toRubber) }
 
     def getPlayerPosition( pos: Option[String] ): Option[PlayerPosition] = {
       pos.flatMap { p =>
@@ -99,7 +100,7 @@ object PageRubberMatchHandInternal {
       }
     }
 
-    def render( props: Props, state: State ) = {
+    def render( props: Props, state: State ) = { // scalafix:ok ExplicitResultTypes; React
       <.div(
         RubberPageBridgeAppBar(
           title = Seq[CtorType.ChildArg](
@@ -165,23 +166,23 @@ object PageRubberMatchHandInternal {
       )
     }
 
-    val storeCallback = Callback { scope.withEffectsImpure.forceUpdate }
+    val storeCallback: Callback = Callback { scope.withEffectsImpure.forceUpdate }
 
-    val didMount = CallbackTo {
+    val didMount: Callback = CallbackTo {
       logger.info("PageRubberMatchHand.didMount")
       RubberStore.addChangeListener(storeCallback)
     } >> scope.props >>= { (p) => Callback(
       RubberController.ensureMatch(p.page.rid))
     }
 
-    val willUnmount = CallbackTo {
+    val willUnmount: Callback = CallbackTo {
       logger.info("PageRubberMatchHand.willUnmount")
       RubberStore.removeChangeListener(storeCallback)
     }
 
   }
 
-  def didUpdate( cdu: ComponentDidUpdate[Props,State,Backend,Unit] ) = Callback {
+  def didUpdate( cdu: ComponentDidUpdate[Props,State,Backend,Unit] ): Callback = Callback {
     val props = cdu.currentProps
     val prevProps = cdu.prevProps
     if (prevProps.page != props.page) {
@@ -189,6 +190,7 @@ object PageRubberMatchHandInternal {
     }
   }
 
+  private[rubber]
   val component = ScalaComponent.builder[Props]("PageRubberMatchHand")
                             .initialStateFromProps { props => State() }
                             .backend(new Backend(_))

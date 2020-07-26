@@ -20,7 +20,7 @@ import com.github.thebridsk.bridge.data.SystemTime.Timestamp
 
 object BridgeServiceZipStore {
 
-  val log = Logger(getClass().getName)
+  val log: Logger = Logger(getClass().getName)
 
 }
 
@@ -46,18 +46,18 @@ class BridgeServiceZipStore(
     zipfilename.lastModified.toDouble
   }
 
-  val bridgeResources = BridgeResources(useYaml, true, false, true)
+  val bridgeResources: BridgeResources = BridgeResources(useYaml, true, false, true)
   import bridgeResources._
 
   val zipfile = new ZipFileForStore(zipfilename)
 
-  val chicagos = ZipStore[MatchChicago.Id, MatchChicago](id, zipfile)
-  val duplicates = ZipStore[MatchDuplicate.Id, MatchDuplicate](id, zipfile)
-  val duplicateresults =
+  val chicagos: ZipStore[MatchChicago.Id,MatchChicago] = ZipStore[MatchChicago.Id, MatchChicago](id, zipfile)
+  val duplicates: ZipStore[MatchDuplicate.Id,MatchDuplicate] = ZipStore[MatchDuplicate.Id, MatchDuplicate](id, zipfile)
+  val duplicateresults: ZipStore[MatchDuplicateResult.Id,MatchDuplicateResult] =
     ZipStore[MatchDuplicateResult.Id, MatchDuplicateResult](id, zipfile)
-  val rubbers = ZipStore[MatchRubber.Id, MatchRubber](id, zipfile)
+  val rubbers: ZipStore[MatchRubber.Id,MatchRubber] = ZipStore[MatchRubber.Id, MatchRubber](id, zipfile)
 
-  val boardSets = MultiStore[BoardSet.Id, BoardSet](
+  val boardSets: MultiStore[BoardSet.Id,BoardSet] = MultiStore[BoardSet.Id, BoardSet](
     id,
     List(
       new ZipPersistentSupport(zipfile),
@@ -69,7 +69,7 @@ class BridgeServiceZipStore(
     )
   )
 
-  val movements = MultiStore[Movement.Id, Movement](
+  val movements: MultiStore[Movement.Id,Movement] = MultiStore[Movement.Id, Movement](
     id,
     List(
       new ZipPersistentSupport(zipfile),
@@ -84,7 +84,7 @@ class BridgeServiceZipStore(
   /**
     * closes the store.  Do not call other methods after calling this method.
     */
-  def close() = {
+  def close(): Unit = {
     zipfile.close()
   }
 
@@ -92,7 +92,7 @@ class BridgeServiceZipStore(
     * closes and deletes the zip file.  Do not call other methods after calling this method.
     * @return  <code>true</code> if zip file is successfully deleted; <code>false</code> otherwise
     */
-  override def delete() = Future {
+  override def delete(): Future[Result[String]] = Future {
     zipfile.close()
     zipfilename.delete()
     Result(zipfilename.name)

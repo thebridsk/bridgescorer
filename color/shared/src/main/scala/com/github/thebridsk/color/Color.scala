@@ -1,5 +1,7 @@
 package com.github.thebridsk.color
 
+import scala.util.matching.Regex
+
 trait Color {
   def toAttrValue: String
 
@@ -17,27 +19,27 @@ object ColorInternal {
   val pHex = "[0-9a-fA-F]"
   val pFloat = """[-+]?[0-9]*\.?[0-9]+(?:[eE][-+]?[0-9]+)?"""
   val pInt = """\d+"""
-  val patternRGB = s""" *rgba?\\( *(${pInt}) *, *(${pInt}) *, *(${pInt}) *(?:, *(${pFloat})(%?) *)?\\) *""".r
-  val patternRGBs = s""" *rgba?\\( *(${pInt}) +(${pInt}) +(${pInt}) *(?:/ *(${pFloat})(%?) *)?\\) *""".r
+  val patternRGB: Regex = s""" *rgba?\\( *(${pInt}) *, *(${pInt}) *, *(${pInt}) *(?:, *(${pFloat})(%?) *)?\\) *""".r
+  val patternRGBs: Regex = s""" *rgba?\\( *(${pInt}) +(${pInt}) +(${pInt}) *(?:/ *(${pFloat})(%?) *)?\\) *""".r
 
-  val patternRGBp = s"""rgba?\\( *(${pFloat})% *, *(${pFloat})% *, *(${pFloat})% *(?:, *(${pFloat})(%?) *)?\\) *""".r
-  val patternRGBps = s"""rgba?\\( *(${pFloat})% +(${pFloat})% +(${pFloat})% *(?:/ *(${pFloat})(%?) *)?\\) *""".r
+  val patternRGBp: Regex = s"""rgba?\\( *(${pFloat})% *, *(${pFloat})% *, *(${pFloat})% *(?:, *(${pFloat})(%?) *)?\\) *""".r
+  val patternRGBps: Regex = s"""rgba?\\( *(${pFloat})% +(${pFloat})% +(${pFloat})% *(?:/ *(${pFloat})(%?) *)?\\) *""".r
 
-  val patternLongHex = s"""#(${pHex}${pHex})(${pHex}${pHex})(${pHex}${pHex})(${pHex}${pHex})?""".r
-  val patternShortHex = s"""#(${pHex})(${pHex})(${pHex})(${pHex})?""".r
+  val patternLongHex: Regex = s"""#(${pHex}${pHex})(${pHex}${pHex})(${pHex}${pHex})(${pHex}${pHex})?""".r
+  val patternShortHex: Regex = s"""#(${pHex})(${pHex})(${pHex})(${pHex})?""".r
 
   // deg grad rad turn    https://drafts.csswg.org/css-values-3/#angle-value
 
-  val patternHSL = s"""hsla?\\( *(${pFloat})(deg|grad|rad|turn)? *, *(${pFloat})% *, *(${pFloat})% *(?:, *(${pFloat})(%?) *)?\\) *""".r
-  val patternHSLs = s"""hsla?\\( *(${pFloat})(deg|grad|rad|turn)? +(${pFloat})% +(${pFloat})% *(?:/ *(${pFloat})(%?) *)?\\) *""".r
+  val patternHSL: Regex = s"""hsla?\\( *(${pFloat})(deg|grad|rad|turn)? *, *(${pFloat})% *, *(${pFloat})% *(?:, *(${pFloat})(%?) *)?\\) *""".r
+  val patternHSLs: Regex = s"""hsla?\\( *(${pFloat})(deg|grad|rad|turn)? +(${pFloat})% +(${pFloat})% *(?:/ *(${pFloat})(%?) *)?\\) *""".r
 
-  def processA( a: String, p: String ) = {
+  def processA( a: String, p: String ): Double = {
     if (a == null) 100
     else if (p == null || p == "") a.toDouble*100
     else a.toDouble
   }
 
-  def processAngle( h: String, d: String ) = {
+  def processAngle( h: String, d: String ): Double = {
     val hue = h.toDouble
     d match {
       case "deg" | "" | null => hue
@@ -48,11 +50,11 @@ object ColorInternal {
     }
   }
 
-  def hex( v: String ) = {
+  def hex( v: String ): Int = {
     Integer.parseInt( v, 16 )
   }
 
-  def processHexA( v: String ) = {
+  def processHexA( v: String ): Double = {
     if (v == null) 100
     else hex(v)/2.55
   }
@@ -61,7 +63,7 @@ object ColorInternal {
    * returns a string that represents the alpha value in rgb and hsl functions.
    * @param a the alpha value as a percent
    */
-  def aToString( a: Double ) = {
+  def aToString( a: Double ): String = {
     if (a == 100.0) ""
     else f",$a%.2f%%"
   }
@@ -70,7 +72,7 @@ object ColorInternal {
    * returns a string that represents the alpha value in rgb and hsl functions.
    * @param a the alpha value as a percent
    */
-  def aToStringForSpace( a: Double ) = {
+  def aToStringForSpace( a: Double ): String = {
     if (a == 100.0) ""
     else f"/$a%.2f%%"
   }
@@ -79,7 +81,7 @@ object ColorInternal {
    * returns a string that represents the alpha value in rgb and hsl functions.
    * @param a the alpha value as a percent
    */
-  def aToHex( a: Double ) = {
+  def aToHex( a: Double ): String = {
     if (a == 100.0) ""
     else {
       val b = Math.round( a/100*255 )
@@ -153,7 +155,7 @@ trait ColorObj {
    * @param b  The blue, in the range [0,255]
    * @param a  The alpha as a percent.  0 - transparent and 100 full opacity
    */
-  def rgb( r: Int, g: Int, b: Int, a: Double = 100 ) = {
+  def rgb( r: Int, g: Int, b: Int, a: Double = 100 ): RGBColor = {
     new RGBColor(r,g,b,a)
   }
 
@@ -165,7 +167,7 @@ trait ColorObj {
    * @param b  The blue as a percent, in the range [0,100]
    * @param a  The alpha as a percent.  0 - transparent and 100 full opacity
    */
-  def rgbPercent( r: Double, g: Double, b: Double, a: Double = 100 ) = {
+  def rgbPercent( r: Double, g: Double, b: Double, a: Double = 100 ): RGBPercentColor = {
     new RGBPercentColor(r,g,b,a)
   }
 
@@ -180,7 +182,7 @@ trait ColorObj {
    *           0 is black, 100 is white.
    * @param a  The alpha as a percent.  0 - transparent and 100 full opacity
    */
-  def hsl( h: Double, s: Double, l: Double, a: Double = 100 ) = {
+  def hsl( h: Double, s: Double, l: Double, a: Double = 100 ): HSLColor = {
     new HSLColor(h,s,l,a)
   }
 
@@ -192,39 +194,39 @@ trait ColorObj {
  *
  * @param s the name, the name is not validated.
  */
-  def named( s: String ) = NamedColor(s)
+  def named( s: String ): NamedColor = NamedColor(s)
 
   /**
    * @param gray 0 is black, 100 is white
    * @param alpha the alpha channel value as a percent, 0 is transparent, 100 is opaque
    */
-  def grayscale( v: Double, a: Double = 100 ) = rgbPercent( v, v, v, a )
+  def grayscale( v: Double, a: Double = 100 ): RGBPercentColor = rgbPercent( v, v, v, a )
 
-  val CurrentColor = NamedColor("currentColor")
-  val Transparent = NamedColor("transparent")
+  val CurrentColor: NamedColor = NamedColor("currentColor")
+  val Transparent: NamedColor = NamedColor("transparent")
 
-  val Black = Color("black")
-  val Silver = Color("silver")
-  val Gray = Color("gray")
-  val White = Color("white")
-  val Maroon = Color("maroon")
-  val Red = Color("red")
-  val Purple = Color("purple")
-  val Fuchsia = Color("fuchsia")
-  val Green = Color("green")
-  val Lime = Color("lime")
-  val Olive = Color("olive")
-  val Yellow = Color("yellow")
-  val Navy = Color("navy")
-  val Blue = Color("blue")
-  val Teal = Color("teal")
-  val Aqua = Color("aqua")
-  val Orange = Color("orange")
-  val Cyan = Color("cyan")        // same as aqua
-  val Magenta = Color("magenta")  // same as fuchsia
-  val Grey = Color("grey")        // same as grey
+  val Black: Color = Color("black")
+  val Silver: Color = Color("silver")
+  val Gray: Color = Color("gray")
+  val White: Color = Color("white")
+  val Maroon: Color = Color("maroon")
+  val Red: Color = Color("red")
+  val Purple: Color = Color("purple")
+  val Fuchsia: Color = Color("fuchsia")
+  val Green: Color = Color("green")
+  val Lime: Color = Color("lime")
+  val Olive: Color = Color("olive")
+  val Yellow: Color = Color("yellow")
+  val Navy: Color = Color("navy")
+  val Blue: Color = Color("blue")
+  val Teal: Color = Color("teal")
+  val Aqua: Color = Color("aqua")
+  val Orange: Color = Color("orange")
+  val Cyan: Color = Color("cyan")        // same as aqua
+  val Magenta: Color = Color("magenta")  // same as fuchsia
+  val Grey: Color = Color("grey")        // same as grey
 
-  val all = Seq(
+  val all: Seq[Color] = Seq(
       Black,
       Silver,
       Gray,
@@ -267,13 +269,13 @@ case class NamedColor( name: String ) extends Color {
 
   def toAttrValue = name
 
-  def toRGBColor = NamedColor.toRGB(name)
+  def toRGBColor: RGBColor = NamedColor.toRGB(name)
 
   def toRGBPercentColor = toRGBColor.toRGBPercentColor
 
   def toHSLColor = toRGBColor.toHSLColor
 
-  def toNamedColor = this
+  def toNamedColor: NamedColor = this
 }
 
 object NamedColor {
@@ -305,12 +307,12 @@ object NamedColor {
     }
   }
 
-  def isNameValid( name: String ) = {
+  def isNameValid( name: String ): Boolean = {
     val n = name.toLowerCase
     namedColors.contains(n) || n == "transparent" || n == "currentcolor"
   }
 
-  val namedColors = Map(
+  val namedColors: Map[String,String] = Map(
     // CSS Level 1
     "black" -> "#000000",
     "silver" -> "#c0c0c0",
@@ -479,27 +481,27 @@ object NamedColor {
  * @param a  The alpha as a percent.  0 - transparent and 100 full opacity
  */
 case class RGBColor( r: Int, g: Int, b: Int, a: Double = 100 ) extends Color {
-  def toAttrValue = f"""rgb($r,$g,$b${ColorInternal.aToString(a)})"""
+  def toAttrValue: String = f"""rgb($r,$g,$b${ColorInternal.aToString(a)})"""
 
-  def toAttrValueHex = f"""#$r%02X$g%02X$b%02X${ColorInternal.aToHex(a)}"""
+  def toAttrValueHex: String = f"""#$r%02X$g%02X$b%02X${ColorInternal.aToHex(a)}"""
 
-  def toRGBColor = this
+  def toRGBColor: RGBColor = this
 
-  def toRGBPercentColor = {
+  def toRGBPercentColor: RGBPercentColor = {
     val rr = r/2.55
     val gg = g/2.55
     val bb = b/2.55
     new RGBPercentColor(rr,gg,bb,a)
   }
 
-  def toHSLColor = {
+  def toHSLColor: HSLColor = {
     val rr = r/255.0
     val gg = g/255.0
     val bb = b/255.0
     HSLColor.rgbToHSLColor(rr, gg, bb, a)
   }
 
-  def toNamedColor = NamedColor.toNamed(this)
+  def toNamedColor: NamedColor = NamedColor.toNamed(this)
 }
 
 /**
@@ -511,11 +513,11 @@ case class RGBColor( r: Int, g: Int, b: Int, a: Double = 100 ) extends Color {
  * @param a  The alpha as a percent.  0 - transparent and 100 full opacity
  */
 case class RGBPercentColor( r: Double, g: Double, b: Double, a: Double = 100 ) extends Color {
-  def toAttrValue = f"""rgb($r%.2f%%,$g%.2f%%,$b%.2f%%${ColorInternal.aToString(a)})"""
+  def toAttrValue: String = f"""rgb($r%.2f%%,$g%.2f%%,$b%.2f%%${ColorInternal.aToString(a)})"""
 
-  def toRGBPercentColor = this
+  def toRGBPercentColor: RGBPercentColor = this
 
-  def toRGBColor = {
+  def toRGBColor: RGBColor = {
     val rr = r*2.55
     val gg = g*2.55
     val bb = b*2.55
@@ -523,14 +525,14 @@ case class RGBPercentColor( r: Double, g: Double, b: Double, a: Double = 100 ) e
     new RGBColor(round(rr),round(gg),round(bb),a)
   }
 
-  def toHSLColor = {
+  def toHSLColor: HSLColor = {
     val rr = r/100
     val gg = g/100
     val bb = b/100
     HSLColor.rgbToHSLColor(rr, gg, bb, a)
   }
 
-  def toNamedColor = NamedColor.toNamed(this)
+  def toNamedColor: NamedColor = NamedColor.toNamed(this)
 }
 
 /**
@@ -550,30 +552,30 @@ case class HSLColor( hue: Double, saturation: Double, lightness: Double, a: Doub
 
   import HSLColor._
 
-  def toAttrValue = f"""hsl($hue%.2f,$saturation%.2f%%,$lightness%.2f%%${ColorInternal.aToString(a)})"""
+  def toAttrValue: String = f"""hsl($hue%.2f,$saturation%.2f%%,$lightness%.2f%%${ColorInternal.aToString(a)})"""
 
-  def toRGBPercentColor = {
+  def toRGBPercentColor: RGBPercentColor = {
     val (r,g,b) = toRGB(hue,saturation,lightness)
     new RGBPercentColor( r*100.0, g*100.0, b*100.0, a )
   }
 
-  def toRGBColor =  {
+  def toRGBColor: RGBColor =  {
     val (r,g,b) = toRGB(hue,saturation,lightness)
     new RGBColor( Math.round(r*255).toInt, Math.round(g*255).toInt, Math.round(b*255).toInt, a )
   }
 
-  def toHSLColor = this
+  def toHSLColor: HSLColor = this
 
-  def toNamedColor = NamedColor.toNamed(this)
+  def toNamedColor: NamedColor = NamedColor.toNamed(this)
 }
 
 object HSLColor {
 
-  def toRange( v: Double, min: Double, max: Double ) = {
+  def toRange( v: Double, min: Double, max: Double ): Double = {
     Math.max( min, Math.min( v, max ) )
   }
 
-  def modulo( v: Double, m: Double ) = {
+  def modulo( v: Double, m: Double ): Double = {
     val r = v%m;
     if (r<0) r+m
     else r
@@ -585,7 +587,7 @@ object HSLColor {
    * @param bb the blue - [0,1]
    * @param a the alpha - [0,100]
    */
-  def rgbToHSLColor( rr: Double, gg: Double, bb: Double, a: Double ) = {
+  def rgbToHSLColor( rr: Double, gg: Double, bb: Double, a: Double ): HSLColor = {
 
     val max = Math.max(rr, Math.max(gg, bb))
     val min = Math.min(rr, Math.min(gg, bb))

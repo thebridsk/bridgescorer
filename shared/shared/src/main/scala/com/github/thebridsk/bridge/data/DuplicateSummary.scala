@@ -62,7 +62,7 @@ case class DuplicateSummaryDetails(
     passed: Int = 0
 ) {
 
-  def add(v: DuplicateSummaryDetails) = {
+  def add(v: DuplicateSummaryDetails): DuplicateSummaryDetails = {
     copy(
       declarer = declarer + v.declarer,
       made = made + v.made,
@@ -74,20 +74,20 @@ case class DuplicateSummaryDetails(
     )
   }
 
-  def percentMade = if (declarer == 0) 0.0 else made * 100.0 / declarer
-  def percentDown = if (declarer == 0) 0.0 else down * 100.0 / declarer
-  def percentAllowedMade =
+  def percentMade: Double = if (declarer == 0) 0.0 else made * 100.0 / declarer
+  def percentDown: Double = if (declarer == 0) 0.0 else down * 100.0 / declarer
+  def percentAllowedMade: Double =
     if (defended == 0) 0.0 else allowedMade * 100.0 / defended
-  def percentTookDown = if (defended == 0) 0.0 else tookDown * 100.0 / defended
+  def percentTookDown: Double = if (defended == 0) 0.0 else tookDown * 100.0 / defended
 
-  def percentDeclared = if (total == 0) 0.0 else declarer * 100.0 / total
-  def percentDefended = if (total == 0) 0.0 else defended * 100.0 / total
-  def percentPassed = if (total == 0) 0.0 else passed * 100.0 / total
+  def percentDeclared: Double = if (total == 0) 0.0 else declarer * 100.0 / total
+  def percentDefended: Double = if (total == 0) 0.0 else defended * 100.0 / total
+  def percentPassed: Double = if (total == 0) 0.0 else passed * 100.0 / total
 
   /**
     * Returns the total number of hands played by the team.
     */
-  def total = declarer + defended + passed
+  def total: Int = declarer + defended + passed
 }
 
 object DuplicateSummaryDetails {
@@ -148,15 +148,15 @@ case class DuplicateSummaryEntry(
   def id = team.id
 
   @Hidden
-  def getResultMp = result.getOrElse(0.0)
+  def getResultMp: Double = result.getOrElse(0.0)
   @Hidden
-  def getPlaceMp = place.getOrElse(1)
+  def getPlaceMp: Int = place.getOrElse(1)
 
-  def getResultImp = resultImp.getOrElse(0.0)
-  def getPlaceImp = placeImp.getOrElse(1)
+  def getResultImp: Double = resultImp.getOrElse(0.0)
+  def getPlaceImp: Int = placeImp.getOrElse(1)
 
-  def hasImp = resultImp.isDefined && placeImp.isDefined
-  def hasMp = result.isDefined && place.isDefined
+  def hasImp: Boolean = resultImp.isDefined && placeImp.isDefined
+  def hasMp: Boolean = result.isDefined && place.isDefined
 }
 
 @Schema(
@@ -194,7 +194,7 @@ case class BestMatch(
     differences: Option[List[String]]
 ) {
 
-  def determineDifferences(l: List[String]) = {
+  def determineDifferences(l: List[String]): List[String] = {
     val list = l
       .map { s =>
         val i = s.lastIndexOf(".")
@@ -225,7 +225,7 @@ case class BestMatch(
       .sorted
   }
 
-  def htmlTitle = {
+  def htmlTitle: Option[String] = {
     differences.map { l =>
       if (l.isEmpty) "Same"
       else determineDifferences(l).mkString("Differences:\n", "\n", "")
@@ -238,7 +238,7 @@ object BestMatch {
 
   def noMatch = new BestMatch(-1, None, None)
 
-  def apply(id: DuplicateSummary.Id, diff: Difference) = {
+  def apply(id: DuplicateSummary.Id, diff: Difference): BestMatch = {
     new BestMatch(diff.percentSame, Some(id), Some(diff.differences))
   }
 }
@@ -305,23 +305,23 @@ case class DuplicateSummary(
     scoringmethod: Option[String] = None
 ) {
 
-  def players() =
+  def players(): List[String] =
     teams.flatMap { t =>
       Seq(t.team.player1, t.team.player2)
     }.toList
-  def playerPlaces() =
+  def playerPlaces(): Map[String,Int] =
     teams.flatMap { t =>
       Seq((t.team.player1 -> t.getPlaceMp), (t.team.player2 -> t.getPlaceMp))
     }.toMap
-  def playerScores() =
+  def playerScores(): Map[String,Double] =
     teams.flatMap { t =>
       Seq((t.team.player1 -> t.getResultMp), (t.team.player2 -> t.getResultMp))
     }.toMap
-  def playerPlacesImp() =
+  def playerPlacesImp(): Map[String,Int] =
     teams.flatMap { t =>
       Seq((t.team.player1 -> t.getPlaceImp), (t.team.player2 -> t.getPlaceImp))
     }.toMap
-  def playerScoresImp() =
+  def playerScoresImp(): Map[String,Double] =
     teams.flatMap { t =>
       Seq(
         (t.team.player1 -> t.getResultImp),
@@ -329,19 +329,19 @@ case class DuplicateSummary(
       )
     }.toMap
 
-  def hasMpScores =
+  def hasMpScores: Boolean =
     teams.headOption
       .map(t => t.place.isDefined && t.result.isDefined)
       .getOrElse(false)
-  def hasImpScores =
+  def hasImpScores: Boolean =
     teams.headOption
       .map(t => t.placeImp.isDefined && t.resultImp.isDefined)
       .getOrElse(false)
 
-  def idAsDuplicateResultId = id.toSubclass[MatchDuplicateResult.ItemType]
-  def idAsDuplicateId = id.toSubclass[MatchDuplicate.ItemType]
+  def idAsDuplicateResultId: Option[Id[MatchDuplicateResult.ItemType]] = id.toSubclass[MatchDuplicateResult.ItemType]
+  def idAsDuplicateId: Option[Id[MatchDuplicate.ItemType]] = id.toSubclass[MatchDuplicate.ItemType]
 
-  def containsPair(p1: String, p2: String) = {
+  def containsPair(p1: String, p2: String): Boolean = {
     teams.find { dse =>
       (dse.team.player1 == p1 && dse.team.player2 == p2) || (dse.team.player1 == p2 && dse.team.player2 == p1)
     }.isDefined
@@ -350,7 +350,7 @@ case class DuplicateSummary(
   /**
     * @return true if all players played in game
     */
-  def containsPlayer(name: String*) = {
+  def containsPlayer(name: String*): Boolean = {
     name.find { p =>
       // return true if player did not play
       teams.find { dse =>
@@ -365,7 +365,7 @@ case class DuplicateSummary(
     * The timestamp is not changed.
     * @return None if the names were not changed.  Some() with the modified object
     */
-  def modifyPlayers(nameMap: Map[String, String]) = {
+  def modifyPlayers(nameMap: Map[String, String]): Option[DuplicateSummary] = {
     val (nteams, modified) = teams
       .map { t =>
         t.team.modifyPlayers(nameMap) match {
@@ -385,14 +385,14 @@ case class DuplicateSummary(
 
   import MatchDuplicateV3._
   @Hidden
-  def isMP =
+  def isMP: Boolean =
     scoringmethod
       .map { sm =>
         sm == MatchPoints
       }
       .getOrElse(true)
   @Hidden
-  def isIMP =
+  def isIMP: Boolean =
     scoringmethod
       .map { sm =>
         sm == InternationalMatchPoints

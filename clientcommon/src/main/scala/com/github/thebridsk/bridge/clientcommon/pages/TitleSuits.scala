@@ -10,7 +10,7 @@ import BaseStyles._
 
 object TitleSuits {
 
-  val suitspan =
+  val suitspan =  // scalafix:ok ExplicitResultTypes; React
       <.span(
         <.span(
             HtmlStyles.color.black,
@@ -34,7 +34,7 @@ object TitleSuits {
         ),
       )
 
-  val suits = {
+  val suits = {  // scalafix:ok ExplicitResultTypes; ReactComponent
     MuiTypography(
         variant = TextVariant.h6,
         color = TextColor.inherit,

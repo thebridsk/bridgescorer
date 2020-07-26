@@ -26,11 +26,11 @@ object ServerURLPopup {
 
   case class Props( )
 
-  def apply( ) = component(Props())
+  def apply( ) = component(Props())  // scalafix:ok ExplicitResultTypes; ReactComponent
 
   private var showURL = false
 
-  def setShowServerURLPopup( f: Boolean ) = {
+  def setShowServerURLPopup( f: Boolean ): Unit = {
     showURL = f
     notifyListeners
   }
@@ -49,15 +49,15 @@ object ServerURLPopupInternal {
     def showChanged( f: Boolean ): Unit
   }
 
-  def addListener( l: Listener ) = {
+  def addListener( l: Listener ): Unit = {
     listeners = l::listeners
   }
 
-  def removeListener( l: Listener ) = {
+  def removeListener( l: Listener ): Unit = {
     listeners = listeners.filter( f => f!=l )
   }
 
-  def notifyListeners = {
+  def notifyListeners: Unit = {
     listeners.foreach(l => l.showChanged(isShowServerURLPopup))
   }
 
@@ -85,7 +85,7 @@ object ServerURLPopupInternal {
   })
   val cancel: Option[Callback] = None
 
-  def render( props: Props, state: State ) = {
+  def render( props: Props, state: State ) = {  // scalafix:ok ExplicitResultTypes; ReactComponent
       val content: Option[TagMod] = if (isShowServerURLPopup) {
         implicit val ec = ExecutionContext.global
         val item = if (BridgeDemo.isDemo) {
@@ -130,17 +130,17 @@ object ServerURLPopupInternal {
 
     private var mounted = false
 
-    val didMount = Callback {
+    val didMount: Callback = Callback {
       mounted = true
       addListener(listener)
     }
 
-    val willUnmount = Callback {
+    val willUnmount: Callback = Callback {
       mounted = false
       removeListener(listener)
     }
 
-    val listener = new Listener {
+    val listener: Listener = new Listener {
       def showChanged( f: Boolean ): Unit = {
         logger.info("In showChanged listener: Forcing ServerURLPopup update")
         scope.withEffectsImpure.forceUpdate
@@ -150,6 +150,7 @@ object ServerURLPopupInternal {
 
   }
 
+  private[pages]
   val component = ScalaComponent.builder[Props]("ServerURLPopup")
                             .initialStateFromProps { props => State() }
                             .backend(new Backend(_))

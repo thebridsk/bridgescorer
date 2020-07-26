@@ -9,7 +9,7 @@ import scala.scalajs.js
 @JSExportTopLevel("BridgeDemo")
 object BridgeDemo {   // need to figure out how to use new way to call main
 
-  def setDemo( demo: Boolean ) = {
+  def setDemo( demo: Boolean ): Unit = {
     // val g = js.Dynamic.global.asInstanceOf[js.Dictionary[Boolean]]
     // g("demo") = demo
     js.Dynamic.global.demo = demo

@@ -16,25 +16,25 @@ import com.github.thebridsk.bridge.data.ImportStoreConstants
 
 object ExportPage {
 
-  val log = Logger[ExportPage]()
+  val log: Logger = Logger[ExportPage]()
 
-  def current(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
+  def current(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position): ExportPage = {
     new ExportPage
   }
 
-  def goto(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
+  def goto(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position): ExportPage = {
     go to urlFor
     new ExportPage
   }
 
-  def urlFor = TestServer.getAppPageUrl("export")
+  def urlFor: String = TestServer.getAppPageUrl("export")
 
 }
 
 class ExportPage( implicit webDriver: WebDriver, pageCreated: SourcePosition ) extends Page[ExportPage] {
   import ExportPage._
 
-  def validate(implicit patienceConfig: PatienceConfig, pos: Position) = logMethod(s"${pos.line} ${getClass.getSimpleName}.validate") { eventually {
+  def validate(implicit patienceConfig: PatienceConfig, pos: Position): ExportPage = logMethod(s"${pos.line} ${getClass.getSimpleName}.validate") { eventually {
 
     currentUrl mustBe urlFor
 
@@ -44,7 +44,7 @@ class ExportPage( implicit webDriver: WebDriver, pageCreated: SourcePosition ) e
   /**
    * @param pos
    */
-  def clickHome( implicit pos: Position ) = {
+  def clickHome( implicit pos: Position ): HomePage = {
     clickButton("Home")
     new HomePage()(webDriver,pos)
   }
@@ -53,7 +53,7 @@ class ExportPage( implicit webDriver: WebDriver, pageCreated: SourcePosition ) e
   /**
    * @param pos
    */
-  def clickExport( implicit pos: Position ) = {
+  def clickExport( implicit pos: Position ): GenericPage = {
     clickButton("Export")
     new GenericPage()(webDriver,pos)
   }

@@ -25,6 +25,7 @@ import scala.util.Success
 import scala.util.Failure
 import scala.concurrent.ExecutionContext.Implicits.global
 
+
 /**
  * A skeleton component.
  *
@@ -41,7 +42,7 @@ object PageBoardSets {
 
   case class Props( routerCtl: BridgeRouter[DuplicatePage], backpage: DuplicatePage, initialDisplay: Option[BoardSet.Id] )
 
-  def apply( routerCtl: BridgeRouter[DuplicatePage], backpage: DuplicatePage, initialDisplay: Option[BoardSet.Id] ) = component(Props(routerCtl,backpage,initialDisplay))
+  def apply( routerCtl: BridgeRouter[DuplicatePage], backpage: DuplicatePage, initialDisplay: Option[BoardSet.Id] ) = component(Props(routerCtl,backpage,initialDisplay))  // scalafix:ok ExplicitResultTypes; ReactComponent
 
 }
 
@@ -50,7 +51,7 @@ object PageBoardSetsInternal {
   import com.github.thebridsk.bridge.clientcommon.react.Utils._
   import DuplicateStyles._
 
-  val logger = Logger("bridge.PageBoardSets")
+  val logger: Logger = Logger("bridge.PageBoardSets")
 
   /**
    * Internal state for rendering the component.
@@ -62,12 +63,13 @@ object PageBoardSetsInternal {
    */
   case class State( boardSets: Map[BoardSet.Id,BoardSet] = Map(), msg: Option[TagMod] = None ) {
 
-    def setMsg( msg: String ) = copy( msg = Some(msg))
-    def setMsg( msg: TagMod ) = copy( msg = Some(msg))
-    def clearMsg() = copy( msg = None )
+    def setMsg( msg: String ): State = copy( msg = Some(msg))
+    def setMsg( msg: TagMod ): State = copy( msg = Some(msg))
+    def clearMsg(): State = copy( msg = None )
 
   }
 
+  private[boardsets]
   val SummaryHeader = ScalaComponent.builder[State]("PageBoardSets.SummaryHeader")
                     .render_P( state => {
                       <.tr(
@@ -77,6 +79,7 @@ object PageBoardSetsInternal {
                       )
                     }).build
 
+  private[boardsets]
   val SummaryRow = ScalaComponent.builder[(Backend,Props,State,BoardSet.Id,Callback,Option[BoardSet.Id])]("PageBoardSets.SummaryRow")
                     .render_P( args => {
                       val (backend,props,state,current,toggle,selected) = args
@@ -106,20 +109,20 @@ object PageBoardSetsInternal {
 
     private val boardSetViewRef = ViewBoardSet.getRef()
 
-    val popupCancel = Callback {
+    val popupCancel: Callback = Callback {
 
     } >> scope.modState( s => s.clearMsg())
 
-    val okCallback = scope.forceUpdate >> scope.props >>= { props => props.routerCtl.set(props.backpage) }
+    val okCallback: Callback = scope.forceUpdate >> scope.props >>= { props => props.routerCtl.set(props.backpage) }
 
-    def toggleBoardSet( name: BoardSet.Id ) = scope.props >>= { props =>
+    def toggleBoardSet( name: BoardSet.Id ): Callback = scope.props >>= { props =>
       props.initialDisplay match {
         case Some(s) if s == name => props.routerCtl.set(BoardSetSummaryView)
         case _ => props.routerCtl.set(BoardSetView(name.id))
       }
     }
 
-    def deleteCB( id: BoardSet.Id ) = scope.modState(
+    def deleteCB( id: BoardSet.Id ): Callback = scope.modState(
       { s =>
         s.setMsg(s"Deleting boardset $id")
       },
@@ -136,7 +139,7 @@ object PageBoardSetsInternal {
       }
     )
 
-    def resetCB( id: BoardSet.Id ) = scope.modState(
+    def resetCB( id: BoardSet.Id ): Callback = scope.modState(
       { s =>
         s.setMsg(s"Resetting boardset $id to default")
       },
@@ -154,7 +157,7 @@ object PageBoardSetsInternal {
       }
     )
 
-    def render( props: Props, state: State ) = {
+    def render( props: Props, state: State ) = { // scalafix:ok ExplicitResultTypes; React
       logger.info("PageBoardSets.Backend.render: display "+props.initialDisplay)
       <.div(
         PopupOkCancel( state.msg, None, Some(popupCancel) ),
@@ -214,32 +217,32 @@ object PageBoardSetsInternal {
 
     def forceUpdate = scope.withEffectsImpure.forceUpdate
 
-    val storeCallback = scope.modState { s =>
+    val storeCallback: Callback = scope.modState { s =>
       val boardsets = BoardSetStore.getBoardSets()
       logger.info("Got all boardsets, n="+boardsets.size )
       s.copy( boardSets=boardsets)
     }
 
-    val scrollToCB = boardSetViewRef.get.map { re =>
+    val scrollToCB: Callback = boardSetViewRef.get.map { re =>
       re.getDOMNode.toElement.map { el =>
         el.scrollIntoView(false)
       }
     }.asCallback.void
 
-    val didMount = Callback {
+    val didMount: Callback = Callback {
       logger.info("PageBoardSets.didMount")
       BoardSetStore.addChangeListener(storeCallback)
     } >> scope.props >>= { (p) => Callback(
       BoardSetController.getBoardSets()
     )}
 
-    val willUnmount = Callback {
+    val willUnmount: Callback = Callback {
       logger.info("PageBoardSets.willUnmount")
       BoardSetStore.removeChangeListener(storeCallback)
     }
   }
 
-  def didUpdate( cdu: ComponentDidUpdate[Props,State,Backend,Unit] ) = Callback {
+  def didUpdate( cdu: ComponentDidUpdate[Props,State,Backend,Unit] ): Callback = Callback {
     val props = cdu.currentProps
     val prevProps = cdu.prevProps
     if (props.initialDisplay != prevProps.initialDisplay) {
@@ -248,6 +251,7 @@ object PageBoardSetsInternal {
     }
   }
 
+  private[boardsets]
   val component = ScalaComponent.builder[Props]("PageBoardSets")
                             .initialStateFromProps { props => {
                               logger.info("PageBoardSets.component.initialState: initial display "+props.initialDisplay)

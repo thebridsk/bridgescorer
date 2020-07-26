@@ -18,6 +18,7 @@ import com.github.thebridsk.bridge.data.duplicate.stats.PlayersOpponentsStats
 import com.github.thebridsk.bridge.data.duplicate.stats.PlayerOpponentStat
 import com.github.thebridsk.bridge.client.pages.HomePage
 
+
 /**
  * Shows a summary page of all duplicate matches from the database.
  * Each match has a button that that shows that match, by going to the ScoreboardView(id) page.
@@ -38,7 +39,7 @@ object ViewPlayerOpponentStatsTable {
 
   case class Props( stats: Option[PlayersOpponentsStats], showPairs: Boolean = false, showNoDataMsg: Boolean = false)
 
-  def apply( stats: Option[PlayersOpponentsStats], showPairs: Boolean = false, showNoDataMsg: Boolean = false ) =
+  def apply( stats: Option[PlayersOpponentsStats], showPairs: Boolean = false, showNoDataMsg: Boolean = false ) = // scalafix:ok ExplicitResultTypes; ReactComponent
     component(Props(stats,showPairs,showNoDataMsg))
 
 }
@@ -48,7 +49,7 @@ object ViewPlayerOpponentStatsTableInternal {
   import DuplicateStyles._
   import Table.Sorter._
 
-  val logger = Logger("bridge.ViewPlayerOpponentStatsTable")
+  val logger: Logger = Logger("bridge.ViewPlayerOpponentStatsTable")
 
   /**
    * Internal state for rendering the component.
@@ -73,7 +74,7 @@ object ViewPlayerOpponentStatsTableInternal {
 
     val showIn: List[CalculationType] = CalculationAsPlayed::CalculationMP::CalculationIMP::Nil
 
-    def isUsed( c: CalculationType ) = showIn.contains(c)
+    def isUsed( c: CalculationType ): Boolean = showIn.contains(c)
 
     def getValue( pd: PlayerOpponentStat ): T
   }
@@ -146,11 +147,11 @@ object ViewPlayerOpponentStatsTableInternal {
     sc.asInstanceOf[StatColumn[Any]]
   }
 
-  val ostring = Ordering[String]
+  val ostring: Ordering[String] = Ordering[String]
 
   class PlayerSorter( cols: String* ) extends MultiColumnSort( cols.map(c=>(c,None,false)): _* )(ostring)
 
-  val pairColumns = List[StatColumn[Any]](
+  val pairColumns: List[StatColumn[Any]] = List[StatColumn[Any]](
     new StringColumn( "Player", "Player" )(new PlayerSorter("Player","Opponent")) {
       def getValue( pd: PlayerOpponentStat ) = pd.player
       override
@@ -163,11 +164,11 @@ object ViewPlayerOpponentStatsTableInternal {
     }
   )
 
-  val peopleColumns = List[StatColumn[Any]](
+  val peopleColumns: List[StatColumn[Any]] = List[StatColumn[Any]](
     new StringColumn( "Player", "Player" ) { def getValue( pd: PlayerOpponentStat ) = pd.player }
   )
 
-  val columns = List[StatColumn[Any]](
+  val columns: List[StatColumn[Any]] = List[StatColumn[Any]](
       new PercentColumn( "MPPct", "% MP" ) { def getValue( pd: PlayerOpponentStat ) = if (pd.totalMP == 0) 0.0 else pd.wonMP*100.0/pd.totalMP },
       new PercentColumn( "BeatPts", "% Beat" ) { def getValue( pd: PlayerOpponentStat ) = if (pd.matchesPlayed == 0) 0.0 else pd.matchesBeat*100.0/pd.matchesPlayed },
       new PercentColumn( "TiedPts", "% Tied" ) { def getValue( pd: PlayerOpponentStat ) = if (pd.matchesPlayed == 0) 0.0 else pd.matchesTied*100.0/pd.matchesPlayed },
@@ -213,9 +214,9 @@ object ViewPlayerOpponentStatsTableInternal {
    */
   class Backend(scope: BackendScope[Props, State]) {
 
-    val toggleShowHidden = scope.modState { s => s.copy( showHidden = !s.showHidden ) }
+    val toggleShowHidden: Callback = scope.modState { s => s.copy( showHidden = !s.showHidden ) }
 
-    def render( props: Props, state: State ) = {
+    def render( props: Props, state: State ) = { // scalafix:ok ExplicitResultTypes; React
       props.stats match {
         case Some(pd) =>
 
@@ -259,6 +260,7 @@ object ViewPlayerOpponentStatsTableInternal {
     }
   }
 
+  private[duplicate]
   val component = ScalaComponent.builder[Props]("ViewPlayerOpponentStatsTable")
                             .initialStateFromProps { props => State() }
                             .backend(new Backend(_))

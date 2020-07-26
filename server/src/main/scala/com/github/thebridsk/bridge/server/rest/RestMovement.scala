@@ -27,6 +27,8 @@ import javax.ws.rs.PUT
 import javax.ws.rs.DELETE
 import scala.concurrent.Future
 import com.github.thebridsk.bridge.server.backend.resource.Result
+import akka.event.LoggingAdapter
+import akka.http.scaladsl.server.Route
 
 /**
   * Rest API implementation for the movement resource.
@@ -38,7 +40,7 @@ import com.github.thebridsk.bridge.server.backend.resource.Result
 @Tags(Array(new Tag(name = "Duplicate")))
 trait RestMovement extends HasActorSystem {
 
-  lazy val testlog = Logging(actorSystem, classOf[RestMovement])
+  lazy val testlog: LoggingAdapter = Logging(actorSystem, classOf[RestMovement])
 
   val resName = "movements"
 
@@ -54,7 +56,7 @@ trait RestMovement extends HasActorSystem {
   /**
     * spray route for all the methods on this resource
     */
-  val route = pathPrefix(resName) {
+  val route: Route = pathPrefix(resName) {
     logRequest("movements", DebugLevel) {
       logResult("movements", DebugLevel) {
         getMovement ~ getMovements ~ postMovement ~ putMovement ~ deleteMovement
@@ -84,8 +86,8 @@ trait RestMovement extends HasActorSystem {
       )
     )
   )
-  def xxxgetMovements() = {}
-  val getMovements = pathEnd {
+  def xxxgetMovements(): Unit = {}
+  val getMovements: Route = pathEnd {
     get {
       resourceMap(store.readAll())
     }
@@ -139,8 +141,8 @@ trait RestMovement extends HasActorSystem {
       )
     )
   )
-  def xxxgetMovement() = {}
-  val getMovement = logRequest("getMovement", DebugLevel) {
+  def xxxgetMovement(): Unit = {}
+  val getMovement: Route = logRequest("getMovement", DebugLevel) {
     get {
       path("""[a-zA-Z0-9]+""".r) { sid =>
         val id = Movement.id(sid)
@@ -202,8 +204,8 @@ trait RestMovement extends HasActorSystem {
       )
     )
   )
-  def xxxpostMovement() = {}
-  val postMovement = pathEnd {
+  def xxxpostMovement(): Unit = {}
+  val postMovement: Route = pathEnd {
     post {
       entity(as[Movement]) { movement =>
         resourceCreated(resName, store.createChild(movement), Created)
@@ -258,8 +260,8 @@ trait RestMovement extends HasActorSystem {
       )
     )
   )
-  def xxxputMovement() = {}
-  val putMovement =
+  def xxxputMovement(): Unit = {}
+  val putMovement: Route =
     put {
       path("""[a-zA-Z0-9]+""".r) { sid =>
         entity(as[Movement]) { movement =>
@@ -297,8 +299,8 @@ trait RestMovement extends HasActorSystem {
       )
     )
   )
-  def xxxdeleteMovement() = {}
-  val deleteMovement = delete {
+  def xxxdeleteMovement(): Unit = {}
+  val deleteMovement: Route = delete {
     logRequest("movement.delete", DebugLevel) {
       logResult("movement.delete", DebugLevel) {
         path("""[a-zA-Z0-9]+""".r) { sid =>

@@ -20,10 +20,10 @@ import java.nio.file.NoSuchFileException
 
 object ImportStore {
 
-  val log = Logger[ImportStore]()
+  val log: Logger = Logger[ImportStore]()
 
   val importStoreExtension = ImportStoreConstants.importStoreFileExtension
-  val importStoreDotExtension = s".${importStoreExtension}"
+  val importStoreDotExtension: String = s".${importStoreExtension}"
 }
 
 abstract class ImportStore()(
@@ -69,7 +69,7 @@ class FileImportStore(
     cacheTimeToIdle
   )
 
-  lazy val dir = {
+  lazy val dir: Directory = {
     directory.createDirectory(true, false)
     directory
   }

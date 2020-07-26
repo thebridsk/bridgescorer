@@ -9,7 +9,7 @@ import org.scalajs.dom.ext.AjaxException
 
 object SendToServerHandler {
 
-  val logger = Logger("comm.SendToServerHandler")
+  val logger: Logger = Logger("comm.SendToServerHandler")
 
 }
 

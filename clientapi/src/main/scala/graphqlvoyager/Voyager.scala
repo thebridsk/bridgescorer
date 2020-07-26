@@ -53,15 +53,15 @@ object VoyagerComponentProperty {
 trait Voyager extends js.Object
 
 object Voyager {
-  val logger = Logger("bridge.Voyager")
+  val logger: Logger = Logger("bridge.Voyager")
 
 //  @JSGlobal("ReactWidgets.Voyager")
 //  @js.native
 //  object ReactWidgetsVoyager extends js.Object
 
-  val component = JsComponent[VoyagerComponentProperty, Children.None, Null](JSVoyager)
+  val component = JsComponent[VoyagerComponentProperty, Children.None, Null](JSVoyager)  // scalafix:ok ExplicitResultTypes; ReactComponent
 
-  def apply( graphqlUrl: String ) = {
+  def apply( graphqlUrl: String ) = {  // scalafix:ok ExplicitResultTypes; ReactComponent
 
 //    logger.info("Voyager: msgEmptyList="+msgEmptyList+", msgEmptyFilter="+msgEmptyFilter)
 

@@ -9,25 +9,25 @@ object SummaryPeople {
   def apply( summaries: Option[List[DuplicateSummary]] ) = new SummaryPeople(summaries)
 
   case class FirstPlaces( firstPlace: Int, total: Int ) {
-    override def toString() = firstPlace.toString()+"/"+total.toString()
+    override def toString(): String = firstPlace.toString()+"/"+total.toString()
 
-    def pct = if (total == 0) 0 else firstPlace.toDouble / total * 100
-    def pctToString() = if (total == 0) "" else Utils.toPctString(pct)
+    def pct: Double = if (total == 0) 0 else firstPlace.toDouble / total * 100
+    def pctToString(): String = if (total == 0) "" else Utils.toPctString(pct)
   }
 
   case class FirstPlacePoints( firstPlace: Double, total: Int ) {
-    override def toString() = firstPlace.toString()+"/"+total.toString()
+    override def toString(): String = firstPlace.toString()+"/"+total.toString()
 
-    def firstPlaceAsString = Utils.toString(firstPlace)
-    def pct = if (total == 0) 0 else firstPlace.toDouble / total * 100
-    def pctToString() = if (total == 0) "" else Utils.toPctString(pct)
+    def firstPlaceAsString: String = Utils.toString(firstPlace)
+    def pct: Double = if (total == 0) 0 else firstPlace.toDouble / total * 100
+    def pctToString(): String = if (total == 0) "" else Utils.toPctString(pct)
   }
 
   case class PlayerScores( score: Double, total: Double ) {
-    override def toString() = Utils.toPointsString(score)+"/"+total.toString()
-    def pct = if (total == 0) 0 else score / total * 100
-    def scoreToString() = Utils.toPointsString(score)
-    def pctToString() = if (total == 0) "" else Utils.toPctString(pct)
+    override def toString(): String = Utils.toPointsString(score)+"/"+total.toString()
+    def pct: Double = if (total == 0) 0 else score / total * 100
+    def scoreToString(): String = Utils.toPointsString(score)
+    def pctToString(): String = if (total == 0) "" else Utils.toPctString(pct)
   }
 
 }
@@ -35,12 +35,12 @@ object SummaryPeople {
 class SummaryPeople( osummaries: Option[List[DuplicateSummary]] ) {
   import SummaryPeople._
 
-  def summaries = osummaries.getOrElse(List())
+  def summaries: List[DuplicateSummary] = osummaries.getOrElse(List())
 
   def isData = osummaries.isDefined
 
-  val allPlayers = summaries.flatMap(_.players()).toSet.toList.sortWith((p1,p2)=>p1<p2)
-  val firstPlaces = allPlayers.map { p => (p-> {
+  val allPlayers: List[String] = summaries.flatMap(_.players()).toSet.toList.sortWith((p1,p2)=>p1<p2)
+  val firstPlaces: Map[String,FirstPlaces] = allPlayers.map { p => (p-> {
     var total = 0
     val fp = summaries.filter { ds =>
       ds.finished && (ds.playerPlaces().get(p) match {
@@ -51,7 +51,7 @@ class SummaryPeople( osummaries: Option[List[DuplicateSummary]] ) {
     })}.length
     FirstPlaces(fp,total)
   })}.toMap
-  val playerScores = allPlayers.map { p => (p-> {
+  val playerScores: Map[String,PlayerScores] = allPlayers.map { p => (p-> {
     var total = 0.0
     val fp = summaries.filter {_.finished}.map { ds =>
       ds.playerScores().get(p) match {
@@ -62,7 +62,7 @@ class SummaryPeople( osummaries: Option[List[DuplicateSummary]] ) {
     }}.foldLeft(0.0)(_ + _)
     PlayerScores(fp,total)
   })}.toMap
-  val firstPlacePoints = allPlayers.map { p => (p-> {
+  val firstPlacePoints: Map[String,FirstPlacePoints] = allPlayers.map { p => (p-> {
     var total = 0
     val fp = summaries.flatMap { ds =>
       if (ds.finished) {

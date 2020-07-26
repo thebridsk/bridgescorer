@@ -7,6 +7,7 @@ import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles
 import com.github.thebridsk.color.Color
 import com.github.thebridsk.color.Colors
 
+
 /**
  * A skeleton component.
  *
@@ -66,7 +67,7 @@ object ColorBar {
         titles1: Option[Seq[TagMod]] = None,
         titles2: Option[Seq[TagMod]] = None,
         whiteTitle: Option[TagMod] = None
-    ) = {
+    ): Props = {
       new Props(
           Colors.colorsExcludeEnd(hue1,minLightness1,n1,darkToLight1),
           Colors.colorsExcludeEnd(hue2,minLightness2,n2,darkToLight2),
@@ -87,7 +88,7 @@ object ColorBar {
    * @param minLightness2 the minimum lightness [0 - 100]
    * @param n the number of boxes for hue1 and hue2
    */
-  def apply( hue1: Double, minLightness1: Double, hue2: Double, minLightness2: Double, n: Int ) = {
+  def apply( hue1: Double, minLightness1: Double, hue2: Double, minLightness2: Double, n: Int ) = {  // scalafix:ok ExplicitResultTypes; ReactComponent
     component(Props.create(hue1,minLightness1,n,true,hue2,minLightness2,n,false,Some(Color.White), None, None, None))
   }
 
@@ -105,7 +106,7 @@ object ColorBar {
   def apply( hue1: Double, minLightness1: Double, hue2: Double, minLightness2: Double, n: Int,
              titles1: Seq[TagMod],
              titles2: Seq[TagMod]
-  ) = {
+  ) = {  // scalafix:ok ExplicitResultTypes; ReactComponent
     component(Props.create(hue1,minLightness1,n,true,hue2,minLightness2,n,false,Some(Color.White), Option(titles1), Option(titles2), None))
   }
 
@@ -125,7 +126,7 @@ object ColorBar {
              titles1: Seq[TagMod],
              titles2: Seq[TagMod],
              whiteTitle: TagMod
-  ) = {
+  ) = {  // scalafix:ok ExplicitResultTypes; ReactComponent
     component(Props.create(hue1,minLightness1,n,true,hue2,minLightness2,n,false,Some(Color.White), Option(titles1), Option(titles2), Option(whiteTitle)))
   }
 
@@ -151,7 +152,7 @@ object ColorBar {
              titles1: Option[Seq[TagMod]] = None,
              titles2: Option[Seq[TagMod]] = None,
              whiteTitle: Option[TagMod] = None
-  ) = {
+  ) = {  // scalafix:ok ExplicitResultTypes; ReactComponent
     component( Props.create(hue1,minLightness1,n1,darkToLight1,hue2,minLightness2,n2,darkToLight2,middle, titles1, titles2, whiteTitle ) )
   }
 
@@ -172,7 +173,7 @@ object ColorBar {
       leftTitles: Option[Seq[TagMod]] = None,
       rightTitles: Option[Seq[TagMod]] = None,
       whiteTitle: Option[TagMod] = None
-  ) = {
+  ) = {  // scalafix:ok ExplicitResultTypes; ReactComponent
     component( Props( leftColors, rightColors, middle, leftTitles, rightTitles, whiteTitle ) )
   }
 
@@ -184,7 +185,7 @@ object ColorBar {
   def simple(
       colors: Seq[Color],
       titles: Option[Seq[TagMod]] = None
-  ) = {
+  ) = {  // scalafix:ok ExplicitResultTypes; ReactComponent
     component(Props(colors, Nil, None, titles, None, None))
   }
 
@@ -223,6 +224,7 @@ object ColorBarInternal {
     }.toTagMod
   }
 
+  private[react]
   val component = ScalaComponent.builder[Props]("ColorBar")
                     .stateless
                     .noBackend

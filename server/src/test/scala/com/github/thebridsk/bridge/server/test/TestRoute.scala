@@ -15,11 +15,12 @@ import akka.http.scaladsl.model.HttpHeader
 import akka.http.scaladsl.model.RemoteAddress.IP
 import java.net.InetAddress
 import com.github.thebridsk.utilities.logging.Logger
+import akka.http.scaladsl.server.{ Directive0, StandardRoute }
 
 object TestRoute {
 
   implicit class PimpString( private val underlying: String ) extends AnyVal {
-     def stripMarginWithNewline(newline: String) = underlying.stripMargin.replace("\r\n", "\n").replace("\n", newline)
+     def stripMarginWithNewline(newline: String): String = underlying.stripMargin.replace("\r\n", "\n").replace("\n", newline)
   }
 
 }
@@ -32,7 +33,7 @@ import TestRoute._
  */
 class TestRoute extends RoutingSpec {
 
-  val testlog = Logger[TestRoute]()
+  val testlog: Logger = Logger[TestRoute]()
 
   testlog.fine(getClass.getName+":")
 
@@ -40,7 +41,7 @@ class TestRoute extends RoutingSpec {
 
   def resetDebugMsg(): Unit = { debugMsg = "" }
 
-  implicit val log = new LoggingAdapter {
+  implicit val log: LoggingAdapter = new LoggingAdapter {
     def isErrorEnabled = true
     def isWarningEnabled = true
     def isInfoEnabled = true
@@ -61,7 +62,7 @@ class TestRoute extends RoutingSpec {
     debugMsg += s+'\n'
   }
 
-  def logRequestDebug(s: String) = DebuggingDirectives.logRequest(LoggingMagnet(_ => logToDebug(s) _))
+  def logRequestDebug(s: String): Directive0 = DebuggingDirectives.logRequest(LoggingMagnet(_ => logToDebug(s) _))
 
   behavior of "The 'logRequest' directive"
 
@@ -79,7 +80,7 @@ class TestRoute extends RoutingSpec {
   }
 
   def logResultToDebug(s: String)(res: Any): Unit = toLog(s+": "+respToString(res))
-  def logResultDebug(s: String) = DebuggingDirectives.logResult(LoggingMagnet(_ => logResultToDebug(s) _))
+  def logResultDebug(s: String): Directive0 = DebuggingDirectives.logResult(LoggingMagnet(_ => logResultToDebug(s) _))
 
   behavior of "The 'logResult' directive"
 
@@ -97,7 +98,7 @@ class TestRoute extends RoutingSpec {
           +"  Response: "+respToString(res)
         )
   }
-  def logRequestResultDebug(s: String) = DebuggingDirectives.logRequestResult(LoggingMagnet(_ => logReqRespToDebug(s)))
+  def logRequestResultDebug(s: String): Directive0 = DebuggingDirectives.logRequestResult(LoggingMagnet(_ => logReqRespToDebug(s)))
 
   behavior of "The 'logRequestResponse' directive"
 
@@ -112,7 +113,7 @@ class TestRoute extends RoutingSpec {
     }
   }
 
-  def route = {
+  def route: StandardRoute = {
     completeOk
   }
 
@@ -179,7 +180,7 @@ class TestRoute extends RoutingSpec {
     case h: `Remote-Address` => h.toString()
     case x => x.getClass().toString()
   }
-  def myExtractClientIP =
+  def myExtractClientIP: Route =
     logRequest(("myExtractClientIP", Logging.InfoLevel)) {
 //      headerValueByName("Remote-Address") { ip =>
       headerValuePF(extractRemote) { ip =>
@@ -189,7 +190,7 @@ class TestRoute extends RoutingSpec {
 
     }
 
-  val remoteAddress = `Remote-Address`( IP( InetAddress.getLocalHost, Some(12345) ))
+  val remoteAddress = `Remote-Address`( IP( InetAddress.getLocalHost, Some(12345) ))  // scalafix:ok ; Remote-Address
 
   it should "return an OK for /" in {
     Get("/") ~> addHeader(remoteAddress) ~> Route.seal { myExtractClientIP } ~> check {
@@ -234,10 +235,10 @@ class TestRoute extends RoutingSpec {
   }
 
   import akka.http.scaladsl.coding._
-  val compressRoute = encodeResponseWith(Gzip) { complete("content") }
-  val compressGzipRoute = encodeResponseWith(Gzip) { complete("content") }
-  val compressDeflateRoute = encodeResponseWith(Deflate) { complete("content") }
+  val compressRoute: Route = encodeResponseWith(Gzip) { complete("content") }
+  val compressGzipRoute: Route = encodeResponseWith(Gzip) { complete("content") }
+  val compressDeflateRoute: Route = encodeResponseWith(Deflate) { complete("content") }
 
-  val compress = encodeResponseWith(Deflate, Gzip, NoCoding) { complete("content")}
+  val compress: Route = encodeResponseWith(Deflate, Gzip, NoCoding) { complete("content")}
 
 }

@@ -11,7 +11,7 @@ trait ValidateCert
 object ValidateCert extends Subcommand("validatecert") {
   import SSLKeyCommands.optionKeyDir
 
-  val log = Logger[ValidateCert]()
+  val log: Logger = Logger[ValidateCert]()
 
   implicit def dateConverter: ValueConverter[Duration] =
     singleArgConverter[Duration](Duration(_))
@@ -26,7 +26,7 @@ Syntax:
   ${SSLKeyCommands.cmdName} ${name} [options]
 Options:""")
 
-  val optionVerbose = toggle(
+  val optionVerbose: ScallopOption[Boolean] = toggle(
     name = "verbose",
     short = 'v',
     descrNo = "Don't add verbose option to commands",
@@ -34,7 +34,7 @@ Options:""")
     default = Some(false)
   )
 
-  val optionAlias = opt[String](
+  val optionAlias: ScallopOption[String] = opt[String](
     "alias",
     short = 'a',
     descr = "Alias for private certificate of server in keystore",
@@ -42,21 +42,21 @@ Options:""")
     default = None
   )
 
-  val optionStorePW = opt[String](
+  val optionStorePW: ScallopOption[String] = opt[String](
     "storepw",
     short = 'p',
     descr = "Store PW for keystore",
     required = true,
   )
 
-  val optionKeystore = opt[String](
+  val optionKeystore: ScallopOption[String] = opt[String](
     "keystore",
     short = 'k',
     descr = "Keystore filename",
     required = true,
   )
 
-  val optionShow = toggle(
+  val optionShow: ScallopOption[Boolean] = toggle(
     name = "show",
     short = 's',
     descrNo = "do not show the certificate chain",

@@ -11,18 +11,20 @@ import org.scalatest.matchers.must.Matchers._
 import com.github.thebridsk.bridge.data.bridge._
 import com.github.thebridsk.browserpages.Element
 import com.github.thebridsk.bridge.rotation.Table
+import org.scalatest.Assertion
+import scala.util.matching.Regex
 
 object FiveSelectPartnersPage {
 
-  val log = Logger[FiveSelectPartnersPage]()
+  val log: Logger = Logger[FiveSelectPartnersPage]()
 
-  def current(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
+  def current(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position): FiveSelectPartnersPage = {
     val (chiid,roundid) = EnterNamesPage.findMatchRoundId
     new FiveSelectPartnersPage(chiid,roundid)
   }
 
-  def urlFor( chiid: String, roundid: Int ) = EnterNamesPage.urlFor(chiid,roundid)
-  def demoUrlFor( chiid: String, roundid: Int ) = EnterNamesPage.demoUrlFor(chiid,roundid)
+  def urlFor( chiid: String, roundid: Int ): String = EnterNamesPage.urlFor(chiid,roundid)
+  def demoUrlFor( chiid: String, roundid: Int ): String = EnterNamesPage.demoUrlFor(chiid,roundid)
 
   /**
    * @param chiid the chicago id
@@ -32,7 +34,7 @@ object FiveSelectPartnersPage {
               webDriver: WebDriver,
               patienceConfig: PatienceConfig,
               pos: Position
-          ) = {
+          ): FiveSelectPartnersPage = {
     go to urlFor(chiid,roundid)
     new FiveSelectPartnersPage(chiid,roundid)
   }
@@ -48,9 +50,9 @@ object FiveSelectPartnersPage {
     * @return the id
     */
   private def toPlayerButtonId( player: String ) = s"Player_$player"
-  val playerIdPattern = "Player_(.+)".r
+  val playerIdPattern: Regex = "Player_(.+)".r
 
-  val selectPairingPattern = "([^-]+)-(.+)".r
+  val selectPairingPattern: Regex = "([^-]+)-(.+)".r
 }
 
 /**
@@ -70,7 +72,7 @@ class FiveSelectPartnersPage(
 ) extends Page[FiveSelectPartnersPage] {
   import FiveSelectPartnersPage._
 
-  def validate(implicit patienceConfig: PatienceConfig, pos: Position) = logMethod(s"${pos.line} ${getClass.getSimpleName}.validate") { eventually {
+  def validate(implicit patienceConfig: PatienceConfig, pos: Position): FiveSelectPartnersPage = logMethod(s"${pos.line} ${getClass.getSimpleName}.validate") { eventually {
 
     roundid.toString() must not be "0"      // only valid for the first round
 
@@ -84,22 +86,22 @@ class FiveSelectPartnersPage(
     this
   }}
 
-  def clickOK(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def clickOK(implicit patienceConfig: PatienceConfig, pos: Position): HandPage = {
     clickButton(buttonOK)
     new HandPage(chiid,roundid,0,ChicagoMatchTypeSimple)
   }
 
-  def clickCancel(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def clickCancel(implicit patienceConfig: PatienceConfig, pos: Position): SummaryPage = {
     clickButton(buttonCancel)
     SummaryPage.current(ChicagoMatchTypeSimple)
   }
 
-  def clickReset(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def clickReset(implicit patienceConfig: PatienceConfig, pos: Position): FiveSelectPartnersPage = {
     clickButton(buttonReset)
     this
   }
 
-  def isOKEnabled(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def isOKEnabled(implicit patienceConfig: PatienceConfig, pos: Position): Boolean = {
     getButton(buttonOK).isEnabled
   }
 
@@ -109,12 +111,12 @@ class FiveSelectPartnersPage(
     * @param player the name
     * @return this
     */
-  def clickPlayerSittingOut( player: String )(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def clickPlayerSittingOut( player: String )(implicit patienceConfig: PatienceConfig, pos: Position): FiveSelectPartnersPage = {
     clickButton(toPlayerButtonId(player))
     this
   }
 
-  def checkSittingOutPlayerNames( sittingOut: Option[String], notSittingOut: String* )(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def checkSittingOutPlayerNames( sittingOut: Option[String], notSittingOut: String* )(implicit patienceConfig: PatienceConfig, pos: Position): Unit = {
     val result = sittingOut.map( _ => true ).toList:::notSittingOut.map( _ => false ).toList
     val players = sittingOut.toList:::notSittingOut.toList
 
@@ -131,7 +133,7 @@ class FiveSelectPartnersPage(
 
   }
 
-  def getSittingOutPlayer(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def getSittingOutPlayer(implicit patienceConfig: PatienceConfig, pos: Position): Option[String] = {
     val possible = findAllSelectedButtons.toList.flatMap { case (id,e) =>
       id match {
         case playerIdPattern(player) => player::Nil
@@ -142,14 +144,14 @@ class FiveSelectPartnersPage(
     possible.headOption
   }
 
-  def checkNotFoundPlayersForSittingOut( notfound: String* )(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def checkNotFoundPlayersForSittingOut( notfound: String* )(implicit patienceConfig: PatienceConfig, pos: Position): Assertion = {
     withClue(s"""Checking for next sitting out player, should not see $notfound""") {
       val allbuttons = findAllButtons.keySet
       allbuttons.intersect( notfound.map(toPlayerButtonId(_)).toSet) mustBe empty
     }
   }
 
-  def getPairings(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def getPairings(implicit patienceConfig: PatienceConfig, pos: Position): List[Pairings] = {
     val pairs = findAll( xpath( """//div[contains(concat(' ', @class, ' '), ' chiDivPageSelectPairs ')]/div[1]/div/p"""))
 
     pairs.length%2 mustBe 0
@@ -184,33 +186,33 @@ class FiveSelectPartnersPage(
     * @param patienceConfig
     * @param pos
     */
-  def clickPairing( index: Int )(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def clickPairing( index: Int )(implicit patienceConfig: PatienceConfig, pos: Position): FiveSelectPartnersPage = {
     clickButton( s"Fixture$index")
     this
   }
 
-  def clickSwap(loc: PlayerPosition)(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def clickSwap(loc: PlayerPosition)(implicit patienceConfig: PatienceConfig, pos: Position): FiveSelectPartnersPage = {
     clickButton(s"Swap${loc.pos}")
     this
   }
 
-  def clickClockwise(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def clickClockwise(implicit patienceConfig: PatienceConfig, pos: Position): FiveSelectPartnersPage = {
     clickButton("clockwise")
     this
   }
 
-  def clickAntiClockwise(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def clickAntiClockwise(implicit patienceConfig: PatienceConfig, pos: Position): FiveSelectPartnersPage = {
     clickButton("anticlockwise")
     this
   }
 
 
-  def clickDealer(loc: PlayerPosition)(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def clickDealer(loc: PlayerPosition)(implicit patienceConfig: PatienceConfig, pos: Position): FiveSelectPartnersPage = {
     clickButton(s"Dealer${loc.pos}")
     this
   }
 
-  def checkDealer( dealer: Option[String], notDealer: String*)(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def checkDealer( dealer: Option[String], notDealer: String*)(implicit patienceConfig: PatienceConfig, pos: Position): Unit = {
     val result = dealer.map( _ => true ).toList:::notDealer.map( _ => false ).toList
     val players = dealer.toList:::notDealer.toList
 
@@ -226,7 +228,7 @@ class FiveSelectPartnersPage(
     }
   }
 
-  def getSeats(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def getSeats(implicit patienceConfig: PatienceConfig, pos: Position): Table = {
     val players = findAll( xpath( """//div[contains(concat(' ', @class, ' '), ' chiDivPageSelectPos ')]/table/tbody/tr/td/b""")).map(_.text)
     Table(players(3),players(0),players(1),players(2), getSittingOutPlayer.getOrElse(""))
   }
@@ -241,11 +243,11 @@ class FiveSelectPartnersPage(
   */
 case class Pairings( index: Int, pair1: (String,String), pair2: (String,String) ) {
 
-  def compare( player1: String, player2: String, pair: (String, String) ) = {
+  def compare( player1: String, player2: String, pair: (String, String) ): Boolean = {
     (player1 == pair._1 && player2 == pair._2) || (player1 == pair._2 && player2 == pair._1)
   }
 
-  def containsPair( player1: String, player2: String ) = {
+  def containsPair( player1: String, player2: String ): Boolean = {
     compare(player1,player2,pair1) || compare(player1,player2,pair2)
   }
 }

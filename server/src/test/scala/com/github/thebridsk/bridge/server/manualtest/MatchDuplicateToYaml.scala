@@ -8,7 +8,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 object MatchDuplicateToYaml extends Main {
 
-  def execute() = {
+  def execute(): Int = {
     val dir = Directory("./store")
     val store = new BridgeServiceFileStore( dir )
 

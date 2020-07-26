@@ -32,6 +32,7 @@ import com.github.thebridsk.bridge.data.BoardSet
 import com.github.thebridsk.bridge.data.Movement
 import scala.concurrent.Future
 import com.github.thebridsk.bridge.server.backend.resource.Result
+import akka.http.scaladsl.server.Route
 
 /**
   * Rest API implementation for the board resource.
@@ -60,7 +61,7 @@ trait RestDuplicate extends HasActorSystem {
   /**
     * spray route for all the methods on this resource
     */
-  val route = pathPrefix(resName) {
+  val route: Route = pathPrefix(resName) {
 //    logRequest("route", DebugLevel) {
     getDuplicate ~ getDuplicates ~ postDuplicate ~ putDuplicate ~ deleteDuplicate ~ nested
 //      }
@@ -88,8 +89,8 @@ trait RestDuplicate extends HasActorSystem {
       )
     )
   )
-  def xxxgetDuplicates() = {}
-  val getDuplicates = pathEnd {
+  def xxxgetDuplicates(): Unit = {}
+  val getDuplicates: Route = pathEnd {
     get {
       resourceMap(store.readAll())
     }
@@ -144,8 +145,8 @@ trait RestDuplicate extends HasActorSystem {
       )
     )
   )
-  def xxxgetDuplicate() = {}
-  val getDuplicate = logRequest("RestDuplicate.getDuplicate", DebugLevel) {
+  def xxxgetDuplicate(): Unit = {}
+  val getDuplicate: Route = logRequest("RestDuplicate.getDuplicate", DebugLevel) {
     logResult("RestDuplicate.getDuplicate") {
       get {
         pathPrefix("""[a-zA-Z0-9]+""".r) { sid =>
@@ -158,7 +159,7 @@ trait RestDuplicate extends HasActorSystem {
     }
   }
 
-  val nested = logRequest("RestDuplicate.nested", DebugLevel) {
+  val nested: Route = logRequest("RestDuplicate.nested", DebugLevel) {
     logResult("RestDuplicate.nested") {
       pathPrefix("""[a-zA-Z0-9]+""".r) { sid =>
         val id = MatchDuplicate.id(sid)
@@ -260,8 +261,8 @@ trait RestDuplicate extends HasActorSystem {
       )
     )
   )
-  def xxxpostDuplicate() = {}
-  val postDuplicate =
+  def xxxpostDuplicate(): Unit = {}
+  val postDuplicate: Route =
     logRequest("RestDuplicate.postDuplicate") {
       logResult("RestDuplicate.postDuplicate") {
         pathEnd {
@@ -355,8 +356,8 @@ trait RestDuplicate extends HasActorSystem {
       )
     )
   )
-  def xxxputDuplicate() = {}
-  val putDuplicate =
+  def xxxputDuplicate(): Unit = {}
+  val putDuplicate: Route =
     logRequest("RestDuplicate.putDuplicate") {
       logResult("RestDuplicate.putDuplicate") {
         put {
@@ -398,8 +399,8 @@ trait RestDuplicate extends HasActorSystem {
       )
     )
   )
-  def xxxdeleteDuplicate() = {}
-  val deleteDuplicate = delete {
+  def xxxdeleteDuplicate(): Unit = {}
+  val deleteDuplicate: Route = delete {
     path("""[a-zA-Z0-9]+""".r) { sid =>
       val id = MatchDuplicate.id(sid)
       resourceDelete(store.select(id).delete())
@@ -415,7 +416,7 @@ object RestDuplicate {
       default: Option[String],
       boards: Option[BoardSet.Id],
       movements: Option[Movement.Id]
-  ) = {
+  ): Option[Future[Result[MatchDuplicate]]] = {
     test match {
       case None =>
         if (default.isDefined || boards.isDefined || movements.isDefined) {

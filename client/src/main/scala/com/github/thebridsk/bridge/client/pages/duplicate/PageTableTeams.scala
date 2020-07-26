@@ -38,6 +38,9 @@ import com.github.thebridsk.materialui.TextVariant
 import com.github.thebridsk.materialui.TextColor
 import com.github.thebridsk.bridge.client.pages.HomePage
 import japgolly.scalajs.react.component.builder.Lifecycle.ComponentDidUpdate
+import com.github.thebridsk.bridge.data.DuplicateHandV2
+
+import scala.scalajs.js
 
 /**
  * Shows the team x board table and has a totals column that shows the number of points the team has.
@@ -58,7 +61,7 @@ object PageTableTeams {
   case class Props( routerCtl: BridgeRouter[DuplicatePage], page: TableTeamView ) {
   }
 
-  def apply( routerCtl: BridgeRouter[DuplicatePage], page: TableTeamView ) = component(Props(routerCtl,page))
+  def apply( routerCtl: BridgeRouter[DuplicatePage], page: TableTeamView ) = component(Props(routerCtl,page))  // scalafix:ok ExplicitResultTypes; ReactComponent
 
 }
 
@@ -66,24 +69,24 @@ object PageTableTeamsInternal {
   import PageTableTeams._
   import DuplicateStyles._
 
-  val logger = Logger("bridge.PageTableTeams")
+  val logger: Logger = Logger("bridge.PageTableTeams")
 
   /**
    * The names as they are stored in the Team class.
    */
   case class Names( ns1: String, ns2: String, ew1: String, ew2: String ) {
-    def playerValid( p: String ) = p!=null && p.length()>0
-    def isNSMissing = !playerValid(ns1) || !playerValid(ns2)
-    def isEWMissing = !playerValid(ew1) || !playerValid(ew2)
+    def playerValid( p: String ): Boolean = p!=null && p.length()>0
+    def isNSMissing: Boolean = !playerValid(ns1) || !playerValid(ns2)
+    def isEWMissing: Boolean = !playerValid(ew1) || !playerValid(ew2)
 
-    def isAllValid = !isNSMissing && !isEWMissing && areAllPlayersUnique()
-    def isMissingOneTeam = isNSMissing != isEWMissing
-    def isMissingAll = isNSMissing && isEWMissing
+    def isAllValid: Boolean = !isNSMissing && !isEWMissing && areAllPlayersUnique()
+    def isMissingOneTeam: Boolean = isNSMissing != isEWMissing
+    def isMissingAll: Boolean = isNSMissing && isEWMissing
 
     /**
      * Set a player
      */
-    def setPlayer( pos: PlayerPosition, name: String ) =
+    def setPlayer( pos: PlayerPosition, name: String ): Names =
       pos match {
         case North => copy( ns1 = name )
         case South => copy( ns2 = name )
@@ -91,7 +94,7 @@ object PageTableTeamsInternal {
         case West => copy( ew2 = name )
       }
 
-    def areAllPlayersUnique() = {
+    def areAllPlayersUnique(): Boolean = {
       val p =
         ns1.trim ::
         ns2.trim ::
@@ -104,7 +107,7 @@ object PageTableTeamsInternal {
     }
 
 
-    def tableManeuvers = TableManeuvers(ns1,ns2,ew1,ew2)
+    def tableManeuvers: TableManeuvers = TableManeuvers(ns1,ns2,ew1,ew2)
   }
 
   /**
@@ -160,21 +163,21 @@ object PageTableTeamsInternal {
                     nameSuggestions: Option[List[String]] = None         // known names from server
   ) {
 
-    def getSuggestions = nameSuggestions.getOrElse(List()).toJSArray
+    def getSuggestions: js.Array[String] = nameSuggestions.getOrElse(List()).toJSArray
     def gettingNames = nameSuggestions.isEmpty
 
     def isEnteringMissingNames = enteringMissingNames // ( players.areNSPlayersValid != players.areEWPlayersValid )
-    def isSelectingScorekeeper = !scorekeeperSet || scorekeeperName.isEmpty || scorekeeperPosition.isEmpty
+    def isSelectingScorekeeper: Boolean = !scorekeeperSet || scorekeeperName.isEmpty || scorekeeperPosition.isEmpty
 
-    def setPlayer( pos: PlayerPosition, name: String ) = {
+    def setPlayer( pos: PlayerPosition, name: String ): State = {
       copy( players = players.setPlayer(pos, name), names=names.setPlayer(pos,name))
     }
 
-    def setMissingNames = copy( enteringMissingNames = false, inputNames = false )
+    def setMissingNames: State = copy( enteringMissingNames = false, inputNames = false )
 
-    def setScorekeeperPosition( pos: PlayerPosition ) = copy( scorekeeperPosition=Some(pos) )
-    def setScorekeeperName( name: String ) = copy( scorekeeperName=Some(name) )
-    def okScorekeeper = {
+    def setScorekeeperPosition( pos: PlayerPosition ): State = copy( scorekeeperPosition=Some(pos) )
+    def setScorekeeperName( name: String ): State = copy( scorekeeperName=Some(name) )
+    def okScorekeeper: State = {
       if ( scorekeeperPosition.isDefined && scorekeeperName.isDefined ) {
         if ( players.find(scorekeeperPosition.get) != scorekeeperName.get ) {
           if (players.isPlayerValid(scorekeeperPosition.get)) {
@@ -196,24 +199,24 @@ object PageTableTeamsInternal {
 
     def isAllValid = players.areAllPlayersValid
 
-    def isCurrentValid( pos: PlayerPosition ) = pos match {
+    def isCurrentValid( pos: PlayerPosition ): Boolean = pos match {
       case North | South => players.areNSPlayersValid
       case East | West => players.areEWPlayersValid
     }
 
-    def getTeam( pos: PlayerPosition ) = pos match {
+    def getTeam( pos: PlayerPosition ): String = pos match {
       case North | South => nsTeam.toNumber
       case East | West => ewTeam.toNumber
     }
 
-    def swapLeftRight = copy( players = players.swapRightAndLeftOf(scorekeeperPosition.get))
+    def swapLeftRight: State = copy( players = players.swapRightAndLeftOf(scorekeeperPosition.get))
 
-    def swapWithPartner(pos: PlayerPosition) = copy( players = players.swapWithPartner(pos) )
+    def swapWithPartner(pos: PlayerPosition): State = copy( players = players.swapWithPartner(pos) )
 
     /**
      * @return true if original is not set, or if original and name are equal
      */
-    def compare( original: String, name: String ) = {
+    def compare( original: String, name: String ): Boolean = {
       if (playerValid(original)) {
         original == name
       } else {
@@ -229,9 +232,9 @@ object PageTableTeamsInternal {
       ( compare( originalNames.ns1, players.north ), compare( originalNames.ew1, players.east) )
     }
 
-    def updateNames( list: List[String] ) = copy( nameSuggestions = Some(list) )
+    def updateNames( list: List[String] ): State = copy( nameSuggestions = Some(list) )
 
-    def logState( comment: String ) = {
+    def logState( comment: String ): State = {
       logger.fine( s"""${comment}: ${this}""")
       this
     }
@@ -266,12 +269,12 @@ object PageTableTeamsInternal {
     private
     def state( page: TableTeamView ): State = state( Names("","","",""), page, Team.idNul,Team.idNul )
 
-    def invalid( props: Props ) = {
+    def invalid( props: Props ): State = {
       logger.info("PageTableTeams: Invalid props "+props)
       state( props.page )
     }
 
-    def findBoardsInRound( md: MatchDuplicate, tableid: Table.Id, round: Int ) = {
+    def findBoardsInRound( md: MatchDuplicate, tableid: Table.Id, round: Int ): List[DuplicateHand] = {
       var hands: List[DuplicateHand] = Nil
       for (bb <- md.boards) {
         for (hh <- bb.hands) {
@@ -296,7 +299,7 @@ object PageTableTeamsInternal {
      * @param eIsPlayer1
      * @return A tuple, (nIsPlayer1, eIsPlayer1)
      */
-    def determinePosition( md: MatchDuplicate, tableid: Table.Id, currentRound: Int, nsTeam: Team.Id, ewTeam: Team.Id, nIsPlayer1: Boolean, eIsPlayer1: Boolean ) = {
+    def determinePosition( md: MatchDuplicate, tableid: Table.Id, currentRound: Int, nsTeam: Team.Id, ewTeam: Team.Id, nIsPlayer1: Boolean, eIsPlayer1: Boolean ): (Boolean, Boolean) = {
       if (currentRound == 1) {
         logger.fine(s"PageTableTeams.determinePosition: In round 1 table ${tableid.toNumber}, returning ($nIsPlayer1, $eIsPlayer1)")
         (nIsPlayer1, eIsPlayer1)  // no previous round
@@ -435,6 +438,7 @@ object PageTableTeamsInternal {
 
 
                                  //            nsew           swapid arrow  swap             setPlayer(l)(p)  tabindex readonly showpos
+  private[duplicate]
   val Position = ScalaComponent.builder[(State,PlayerPosition,String,String,Option[Callback],String=>Callback,Int,     Boolean, Boolean)]("Position")
                       .render_P( args => {
                         val (state,nsew,swapid,arrow,swap,setPlayer,tabindex,readonly,showpos) = args
@@ -497,26 +501,26 @@ object PageTableTeamsInternal {
    */
   class Backend(scope: BackendScope[Props, State]) {
 
-    def setPlayer( pos: PlayerPosition )( name: String ) = scope.modState { s => s.setPlayer(pos, name) }
+    def setPlayer( pos: PlayerPosition )( name: String ): Callback = scope.modState { s => s.setPlayer(pos, name) }
 
-    def swapWithPartner( pos: PlayerPosition ) = scope.modState { s => s.swapWithPartner(pos) }
+    def swapWithPartner( pos: PlayerPosition ): Callback = scope.modState { s => s.swapWithPartner(pos) }
 
-    val setMissingNames = scope.modState{ s => s.setMissingNames }
+    val setMissingNames: Callback = scope.modState{ s => s.setMissingNames }
 
-    def setScorekeeperPosition( pos: PlayerPosition ) = scope.modState{ s => s.setScorekeeperPosition(pos) }
+    def setScorekeeperPosition( pos: PlayerPosition ): Callback = scope.modState{ s => s.setScorekeeperPosition(pos) }
 
-    def setScorekeeperName( name: String ) = scope.modState{ s => s.setScorekeeperName(name) }
+    def setScorekeeperName( name: String ): Callback = scope.modState{ s => s.setScorekeeperName(name) }
 
-    val setScorekeeper = scope.modState{ s => s.okScorekeeper }
+    val setScorekeeper: Callback = scope.modState{ s => s.okScorekeeper }
 
-    def getHand( md: MatchDuplicate, page: TableTeamView ) = page match {
+    def getHand( md: MatchDuplicate, page: TableTeamView ): Option[DuplicateHandV2] = page match {
       case v: TableTeamByBoardView =>
         md.getHand(v.tableid, v.round, v.boardid)
       case v: TableTeamByRoundView =>
         md.getHandsInRound(v.tableid, v.round).headOption
     }
 
-    def findBoardsInRound( md: MatchDuplicate, tableid: Table.Id, round: Int ) = {
+    def findBoardsInRound( md: MatchDuplicate, tableid: Table.Id, round: Int ): List[DuplicateHand] = {
       var hands: List[DuplicateHand] = Nil
       for (bb <- md.boards) {
         for (hh <- bb.hands) {
@@ -528,14 +532,14 @@ object PageTableTeamsInternal {
       hands
     }
 
-    def getHandsInRound( page: TableTeamView ) =
+    def getHandsInRound( page: TableTeamView ): List[DuplicateHandV2] =
       DuplicateStore.getMatch() match {
         case Some(md) =>
           md.getHandsInRound(page.tableid, page.round)
         case None => List()
       }
 
-    val ok =
+    val ok: Callback =
       // update the team players if they were entered, and/or update position of players.
       scope.stateProps { (s,props) =>
         s.scorekeeperPosition match {
@@ -577,7 +581,7 @@ object PageTableTeamsInternal {
         })
       }
 
-    def setPlayersOnTeam( dup: MatchDuplicate, teamid: Team.Id, player1: String, player2: String ) = {
+    def setPlayersOnTeam( dup: MatchDuplicate, teamid: Team.Id, player1: String, player2: String ): Unit = {
       val newteam = dup.getTeam(teamid) match {
         case Some(oldteam) => oldteam.setPlayers(player1.trim, player2.trim)
         case None => Team.create(teamid, player1.trim, player2.trim)
@@ -585,9 +589,9 @@ object PageTableTeamsInternal {
       Controller.updateTeam(dup, newteam)
     }
 
-    val reset = scope.modState((s,props)=> State.create(props).copy( nameSuggestions = s.nameSuggestions).logState("PageTableTeams.Backend.reset"))
+    val reset: Callback = scope.modState((s,props)=> State.create(props).copy( nameSuggestions = s.nameSuggestions).logState("PageTableTeams.Backend.reset"))
 
-    def header( props: Props, helpurl: String ) = {
+    def header( props: Props, helpurl: String ): TagMod = {
         DuplicatePageBridgeAppBar(
           id = Some(props.page.dupid),
           tableIds = List(),
@@ -607,7 +611,7 @@ object PageTableTeamsInternal {
         )
     }
 
-    def render( props: Props, state: State ) = {
+    def render( props: Props, state: State ) = { // scalafix:ok ExplicitResultTypes; React
       logger.fine("PageTableTeams.Backend.render state="+state )
       <.div(
         DuplicateStore.getCompleteView() match {
@@ -654,7 +658,7 @@ object PageTableTeamsInternal {
 
     }
 
-    def renderInput( props: Props, state: State, score: MatchDuplicateScore, round: MatchDuplicateScore.Round ) = {
+    def renderInput( props: Props, state: State, score: MatchDuplicateScore, round: MatchDuplicateScore.Round ): TagMod = {
       val ( okCB, valid, div, helppage, errormsg ) = {
         if (state.isEnteringMissingNames) renderEnterMissing(props, state)
         else if (state.isSelectingScorekeeper) renderScorekeeper(props, state)
@@ -940,7 +944,7 @@ object PageTableTeamsInternal {
       )
     }
 
-    val storeCallback =
+    val storeCallback: Callback =
       scope.modState( (s, props) => {
         val newState = State.create(props)
         if (newState.originalNames == s.originalNames) {
@@ -950,26 +954,26 @@ object PageTableTeamsInternal {
         }
       })
 
-    val namesCallback = scope.modState(s => {
+    val namesCallback: Callback = scope.modState(s => {
       val sug = NamesStore.getNames
       s.copy( nameSuggestions=Some(sug))
     })
 
-    val didMount = scope.props >>= { (p) => Callback {
+    val didMount: Callback = scope.props >>= { (p) => Callback {
       logger.info("PageTableTeams.didMount")
       NamesStore.ensureNamesAreCached(Some(namesCallback))
       DuplicateStore.addChangeListener(storeCallback)
       Controller.monitor(p.page.dupid)
     }}
 
-    val willUnmount = Callback {
+    val willUnmount: Callback = Callback {
       logger.info("PageTableTeams.willUnmount")
       DuplicateStore.removeChangeListener(storeCallback)
       Controller.delayStop()
     }
   }
 
-  def didUpdate( cdu: ComponentDidUpdate[Props,State,Backend,Unit] ) = Callback {
+  def didUpdate( cdu: ComponentDidUpdate[Props,State,Backend,Unit] ): Callback = Callback {
     val props = cdu.currentProps
     val prevProps = cdu.prevProps
     if (prevProps.page != props.page) {
@@ -977,6 +981,7 @@ object PageTableTeamsInternal {
     }
   }
 
+  private[duplicate]
   val component = ScalaComponent.builder[Props]("PageTableTeams")
                             .initialStateFromProps { props => State.create(props) }
                             .backend(new Backend(_))

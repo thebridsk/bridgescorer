@@ -26,15 +26,16 @@ import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.media.ArraySchema
 import javax.ws.rs.GET
+import akka.http.scaladsl.server.Route
 
 case class ServerPort(httpPort: Option[Int], httpsPort: Option[Int])
 
 object RestLoggerConfig {
-  val log = Logger(getClass.getName)
+  val log: Logger = Logger(getClass.getName)
 
   private val pclientid = new AtomicInteger()
 
-  def nextClientId = Some(pclientid.incrementAndGet().toString())
+  def nextClientId: Some[String] = Some(pclientid.incrementAndGet().toString())
 }
 
 /**
@@ -58,7 +59,7 @@ trait RestLoggerConfig extends HasActorSystem {
   /**
     * spray route for all the methods on this resource
     */
-  val route = pathPrefix("loggerConfig") {
+  val route: Route = pathPrefix("loggerConfig") {
     getLoggerConfig
   } ~
     pathPrefix("serverurls") {
@@ -100,8 +101,8 @@ trait RestLoggerConfig extends HasActorSystem {
       )
     )
   )
-  def xxxgetLoggerConfig() = {}
-  val getLoggerConfig = pathEndOrSingleSlash {
+  def xxxgetLoggerConfig(): Unit = {}
+  val getLoggerConfig: Route = pathEndOrSingleSlash {
     get {
       extractClientIP { ip =>
         {
@@ -169,8 +170,8 @@ trait RestLoggerConfig extends HasActorSystem {
       )
     )
   )
-  def xxxgetServerVersion() = {}
-  val getServerVersion = pathEndOrSingleSlash {
+  def xxxgetServerVersion(): Unit = {}
+  val getServerVersion: Route = pathEndOrSingleSlash {
     get {
       val serverversion = List(
         ServerVersion(
@@ -226,8 +227,8 @@ trait RestLoggerConfig extends HasActorSystem {
       )
     )
   )
-  def xxxgetServerURL() = {}
-  val getServerURL = pathEndOrSingleSlash {
+  def xxxgetServerURL(): Unit = {}
+  val getServerURL: Route = pathEndOrSingleSlash {
     get {
       val serverurl = List(serverURL())
       complete(StatusCodes.OK, serverurl)
@@ -268,8 +269,8 @@ trait RestLoggerConfig extends HasActorSystem {
       )
     )
   )
-  def xxxgetBoardSetsAndMovements() = {}
-  val getBoardSetsAndMovements = pathEndOrSingleSlash {
+  def xxxgetBoardSetsAndMovements(): Unit = {}
+  val getBoardSetsAndMovements: Route = pathEndOrSingleSlash {
     get {
       val fbs = restService.boardSets.readAll().map { r =>
         r match {
@@ -349,7 +350,7 @@ trait RestLoggerConfig extends HasActorSystem {
     * @param interface the interface IP address for the URLs
     * @return A list of URLs
     */
-  def getURLs(interface: String) = {
+  def getURLs(interface: String): Iterable[String] = {
     val httpsURL = ports.httpsPort match {
       case Some(port) =>
         if (port == 443) Some("https://" + interface + "/")

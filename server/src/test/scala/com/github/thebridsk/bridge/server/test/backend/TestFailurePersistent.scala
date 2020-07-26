@@ -18,11 +18,11 @@ object TestFailurePersistent {
                     implicit
                       support: StoreSupport[VId, VType],
                       execution: ExecutionContext
-                  ) = {
+                  ): TestFailurePersistent[VId,VType] = {
     new TestFailurePersistent[VId,VType]
   }
 
-  val log = Logger[TestFailurePersistent[_,_]]()
+  val log: Logger = Logger[TestFailurePersistent[_,_]]()
 }
 
 class TestFailurePersistent[VId <: Comparable[VId],VType <: VersionedInstance[VType,VType,VId]](
@@ -187,7 +187,7 @@ object TestFailureStore {
                     implicit
                       cachesupport: StoreSupport[VId,VType],
                       execute: ExecutionContext
-                  ) = {
+                  ): TestFailureStore[VId,VType] = {
     new TestFailureStore(name, Option(testFailurePersistent).getOrElse( TestFailurePersistent[VId,VType]()), cacheInitialCapacity, cacheMaxCapacity, cacheTimeToLive, cacheTimeToIdle )
   }
 }

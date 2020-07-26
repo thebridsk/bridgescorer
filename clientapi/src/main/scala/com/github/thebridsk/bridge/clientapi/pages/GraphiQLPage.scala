@@ -10,6 +10,7 @@ import com.github.thebridsk.materialui.TextColor
 import com.github.thebridsk.bridge.clientapi.routes.BridgeRouter
 import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles._
 
+
 /**
  * A skeleton component.
  *
@@ -26,7 +27,7 @@ object GraphiQLPage {
 
   case class Props(  router: BridgeRouter[AppPage] )
 
-  def apply( router: BridgeRouter[AppPage] ) = component(Props(router))
+  def apply( router: BridgeRouter[AppPage] ) = component(Props(router))  // scalafix:ok ExplicitResultTypes; ReactComponent
 
 }
 
@@ -49,7 +50,7 @@ object GraphiQLPageInternal {
    *
    */
   class Backend(scope: BackendScope[Props, State]) {
-    def render( props: Props, state: State ) = {
+    def render( props: Props, state: State ) = { // scalafix:ok ExplicitResultTypes; React
       <.div( baseStyles.divGraphiql,
         RootBridgeAppBar(
             Seq(MuiTypography(
@@ -74,17 +75,18 @@ object GraphiQLPageInternal {
 
     private var mounted = false
 
-    val didMount = Callback {
+    val didMount: Callback = Callback {
       mounted = true
 
     }
 
-    val willUnmount = Callback {
+    val willUnmount: Callback = Callback {
       mounted = false
 
     }
   }
 
+  private[pages]
   val component = ScalaComponent.builder[Props]("GraphiQLPage")
                             .initialStateFromProps { props => State() }
                             .backend(new Backend(_))

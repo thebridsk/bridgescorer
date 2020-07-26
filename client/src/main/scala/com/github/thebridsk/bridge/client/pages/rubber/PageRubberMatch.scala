@@ -20,6 +20,7 @@ import com.github.thebridsk.materialui.TextVariant
 import com.github.thebridsk.materialui.TextColor
 import japgolly.scalajs.react.component.builder.Lifecycle.ComponentDidUpdate
 
+
 /**
  * A skeleton component.
  *
@@ -36,7 +37,7 @@ object PageRubberMatch {
 
   case class Props( page: RubberMatchViewBase, routerCtl: BridgeRouter[RubberPage] )
 
-  def apply( page: RubberMatchViewBase, routerCtl: BridgeRouter[RubberPage] ) =
+  def apply( page: RubberMatchViewBase, routerCtl: BridgeRouter[RubberPage] ) = // scalafix:ok ExplicitResultTypes; ReactComponent
     component( Props( page, routerCtl ) )
 
 }
@@ -44,7 +45,7 @@ object PageRubberMatch {
 object PageRubberMatchInternal {
   import PageRubberMatch._
 
-  val logger = Logger("bridge.PageRubberMatch")
+  val logger: Logger = Logger("bridge.PageRubberMatch")
 
   /**
    * Internal state for rendering the component.
@@ -62,7 +63,7 @@ object PageRubberMatchInternal {
    *     the diff of the length of the first list from the longer list length
    *     the diff of the length of the second list from the longer list length
    */
-  def getSizeDiff[A]( l1: List[A], l2: List[A] ) = {
+  def getSizeDiff[A]( l1: List[A], l2: List[A] ): (Int, Int, Int) = {
     val s1 = l1.size
     val s2 = l2.size
     if (s1 == s2) (s1,0,0)
@@ -70,13 +71,13 @@ object PageRubberMatchInternal {
     else (s1,0,s1-s2)
   }
 
-  def getFromList[A]( l: List[A], i: Int, diff: Int ) = {
+  def getFromList[A]( l: List[A], i: Int, diff: Int ): Option[A] = {
     val index = i-diff
     if (index < 0) None
     else Some(l(index))
   }
 
-  def toTagMod[A]( l: List[A] ) = {
+  def toTagMod[A]( l: List[A] ): TagMod = {
     if (l.isEmpty) EmptyVdom
     else {
       TagMod( l.flatMap{ i =>
@@ -93,7 +94,7 @@ object PageRubberMatchInternal {
    *
    */
   class Backend(scope: BackendScope[Props, State]) {
-    def render( props: Props, state: State ) = {
+    def render( props: Props, state: State ) = { // scalafix:ok ExplicitResultTypes; React
       import RubberStyles._
       RubberStore.getRubber match {
         case Some(rub) if (rub.id == props.page.rid && rub.gotAllPlayers()) =>
@@ -229,13 +230,13 @@ object PageRubberMatchInternal {
       }
     }
 
-    val toDetails = scope.props >>= { props => props.routerCtl.set(props.page.toDetails) }
+    val toDetails: Callback = scope.props >>= { props => props.routerCtl.set(props.page.toDetails) }
 
-    val tonames = scope.props >>= { props => props.routerCtl.set(props.page.toNames) }
+    val tonames: Callback = scope.props >>= { props => props.routerCtl.set(props.page.toNames) }
 
-    val quit = scope.props >>= { props => props.routerCtl.set(ListView) }
+    val quit: Callback = scope.props >>= { props => props.routerCtl.set(ListView) }
 
-    val nextHand = {
+    val nextHand: Callback = {
       RubberStore.getRubber match {
         case Some(rub) =>
           val handid = "new"
@@ -245,9 +246,9 @@ object PageRubberMatchInternal {
       }
     }
 
-    val storeCallback = Callback { scope.withEffectsImpure.forceUpdate }
+    val storeCallback: Callback = Callback { scope.withEffectsImpure.forceUpdate }
 
-    val didMount = Callback {
+    val didMount: Callback = Callback {
       logger.info("PageRubberMatch.didMount")
       RubberStore.addChangeListener(storeCallback)
     } >> scope.props >>= { (p) => Callback {
@@ -255,14 +256,14 @@ object PageRubberMatchInternal {
       RubberController.monitor(p.page.rid)
     }}
 
-    val willUnmount = Callback {
+    val willUnmount: Callback = Callback {
       logger.info("PageRubberMatch.willUnmount")
       RubberStore.removeChangeListener(storeCallback)
       RubberController.delayStop()
     }
   }
 
-  def didUpdate( cdu: ComponentDidUpdate[Props,State,Backend,Unit] ) = Callback {
+  def didUpdate( cdu: ComponentDidUpdate[Props,State,Backend,Unit] ): Callback = Callback {
     val props = cdu.currentProps
     val prevProps = cdu.prevProps
     if (prevProps.page != props.page) {
@@ -270,6 +271,7 @@ object PageRubberMatchInternal {
     }
   }
 
+  private[rubber]
   val component = ScalaComponent.builder[Props]("PageRubberMatch")
                             .initialStateFromProps { props => State() }
                             .backend(new Backend(_))

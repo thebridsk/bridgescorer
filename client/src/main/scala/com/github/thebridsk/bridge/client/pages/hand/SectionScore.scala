@@ -7,6 +7,7 @@ import com.github.thebridsk.utilities.logging.Logger
 import com.github.thebridsk.utilities.logging.Level
 import com.github.thebridsk.bridge.client.pages.hand.PageHandInternal.PageHandNextInput
 
+
 /**
  * A skeleton component.
  *
@@ -20,12 +21,12 @@ import com.github.thebridsk.bridge.client.pages.hand.PageHandInternal.PageHandNe
  */
 object SectionScore {
 
-  implicit val loggerForReactComponents = Logger("bridge.SectionScore")
-  implicit val defaultTraceLevelForReactComponents = Level.FINER
+  implicit val loggerForReactComponents: Logger = Logger("bridge.SectionScore")
+  implicit val defaultTraceLevelForReactComponents: Level = Level.FINER
 
   case class Props( contract: Contract, nextInput: PageHandNextInput.Value )
 
-  def apply( contract: Contract, nextInput: PageHandNextInput.Value ) = component(Props(contract,nextInput))
+  def apply( contract: Contract, nextInput: PageHandNextInput.Value ) = component(Props(contract,nextInput))  // scalafix:ok ExplicitResultTypes; ReactComponent
 
   private val component = ScalaComponent.builder[Props]("SectionScore")
                             .render_P( props => {

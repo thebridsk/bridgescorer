@@ -63,7 +63,7 @@ object Implicits {
 
   private val counter = new AtomicInteger
 
-  def toObjectId[T](o: T) = {
+  def toObjectId[T](o: T): String = {
     o.getClass.getName + "@" + Integer.toHexString(o.hashCode())
   }
 
@@ -72,7 +72,7 @@ object Implicits {
         implicit executor: ExecutionContext,
         pos: Position,
         caller: SourcePosition
-    ) = {
+    ): Future[Result[T]] = {
       fr.failed.foreach { ex =>
         log.warning(
           s"${comment}: ${pos.line} returning to caller ${caller.line} got exception",
@@ -113,7 +113,7 @@ object Implicits {
         implicit executor: ExecutionContext,
         pos: Position,
         caller: SourcePosition
-    ) = {
+    ): Future[Option[Result[T]]] = {
       fr.failed.foreach { ex =>
         log.warning(s"${comment}: ${pos.line} got exception", ex)
       }

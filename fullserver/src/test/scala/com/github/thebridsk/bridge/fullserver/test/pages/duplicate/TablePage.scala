@@ -16,16 +16,16 @@ import com.github.thebridsk.bridge.fullserver.test.pages.BaseHandPage
 
 object TablePage {
 
-  val log = Logger[TablePage]()
+  val log: Logger = Logger[TablePage]()
 
-  def current(target: Target)(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
+  def current(target: Target)(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position): TablePage = {
     val (dupid,tableid) = findTableId
     new TablePage(dupid,tableid,target)
   }
 
-  def urlFor( dupid: String, tableid: String ) = TestServer.getAppPageUrl( s"duplicate/match/${dupid}/table/${tableid}" )
+  def urlFor( dupid: String, tableid: String ): String = TestServer.getAppPageUrl( s"duplicate/match/${dupid}/table/${tableid}" )
 
-  def goto( dupid: String, tableid: String, target: Target)(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
+  def goto( dupid: String, tableid: String, target: Target)(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position): TablePage = {
     go to urlFor(dupid,tableid)
     new TablePage(dupid,tableid,target)
   }
@@ -71,7 +71,7 @@ class TablePage( dupid: String,
                ) extends Page[TablePage] {
   import TablePage._
 
-  def validate(implicit patienceConfig: PatienceConfig, pos: Position) = logMethod(s"${pos.line} ${getClass.getSimpleName}.validate") { eventually {
+  def validate(implicit patienceConfig: PatienceConfig, pos: Position): TablePage = logMethod(s"${pos.line} ${getClass.getSimpleName}.validate") { eventually {
 
     currentUrl mustBe urlFor(dupid,tableid)
 
@@ -79,7 +79,7 @@ class TablePage( dupid: String,
     this
   }}
 
-  def validate( rounds: List[Int])(implicit patienceConfig: PatienceConfig, pos: Position) = logMethod(s"${pos.line} ${getClass.getSimpleName}.validate") { eventually {
+  def validate( rounds: List[Int])(implicit patienceConfig: PatienceConfig, pos: Position): TablePage = logMethod(s"${pos.line} ${getClass.getSimpleName}.validate") { eventually {
 
     currentUrl mustBe urlFor(dupid,tableid)
 
@@ -123,12 +123,12 @@ class TablePage( dupid: String,
     }
   }
 
-  def clickCompletedScoreboard(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def clickCompletedScoreboard(implicit patienceConfig: PatienceConfig, pos: Position): ScoreboardPage = {
     clickButton("Game")
     new ScoreboardPage( Some(dupid), CompletedViewType )
   }
 
-  def clickInputStyle(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def clickInputStyle(implicit patienceConfig: PatienceConfig, pos: Position): TablePage = {
     clickButton("InputStyle")
     this
   }

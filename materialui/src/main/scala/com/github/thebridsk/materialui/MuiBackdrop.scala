@@ -62,7 +62,7 @@ object BackdropProps extends PropsFactory[BackdropProps] {
       transitionDuration: js.UndefOr[js.Object] = js.undefined,
       className: js.UndefOr[String] = js.undefined,
       additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
-  ) = {
+  ): P = {
     val p: P = get(props, additionalProps)
     classes.foreach(p.updateDynamic("classes")(_))
     invisible.foreach(p.updateDynamic("invisible")(_))
@@ -78,7 +78,7 @@ object MuiBackdrop extends ComponentFactory[BackdropProps] {
   @js.native @JSImport("@material-ui/core/Backdrop", JSImport.Default) private object Backdrop
       extends js.Any
 
-  protected val f = JsComponent[BackdropProps, Children.Varargs, Null](Backdrop)
+  protected val f = JsComponent[BackdropProps, Children.Varargs, Null](Backdrop)  // scalafix:ok ExplicitResultTypes; ReactComponent
 
   /**
     *
@@ -106,7 +106,7 @@ object MuiBackdrop extends ComponentFactory[BackdropProps] {
       additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
   )(
       children: CtorType.ChildArg*
-  ) = {
+  ) = {  // scalafix:ok ExplicitResultTypes; ReactComponent
     val p: BackdropProps = BackdropProps(
       classes = classes,
       invisible = invisible,

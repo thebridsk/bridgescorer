@@ -30,7 +30,7 @@ abstract class DuplexPipeServerEventConnection[T <: Id[_]]( urlprefix: String, l
 
   private var duplexPipe: Option[DuplexPipe] = None
 
-  def getDuplexPipe() = duplexPipe match {
+  def getDuplexPipe(): DuplexPipe = duplexPipe match {
     case Some(d) => d
     case None =>
       val url = AppRouter.hostUrl.replaceFirst("http", "ws") + "/v1/ws/"
@@ -89,7 +89,7 @@ abstract class DuplexPipeServerEventConnection[T <: Id[_]]( urlprefix: String, l
   /**
    * Immediately stop monitoring a match
    */
-  def stop() = {
+  def stop(): Unit = {
     logger.fine(s"Controller.stop ${monitoredId}")
     monitoredId match {
       case Some(id) =>
@@ -110,7 +110,7 @@ abstract class DuplexPipeServerEventConnection[T <: Id[_]]( urlprefix: String, l
     }
   }
 
-  def send( msg: ToServerMessage ) = getDuplexPipe().send(msg)
+  def send( msg: ToServerMessage ): Unit = getDuplexPipe().send(msg)
 
   def getDuplexPipeServerEventConnection(): Option[DuplexPipeServerEventConnection[T]] = Some(this)
 

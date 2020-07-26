@@ -6,6 +6,7 @@ import com.github.thebridsk.color.Color
 import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles
 import com.github.thebridsk.bridge.clientcommon.react.PieChart.Props
 
+
 /**
  * A skeleton component.
  *
@@ -44,7 +45,7 @@ object PieChartOrSquareForZero {
       chartTitle: Option[String] = None,
       sliceTitles: Option[List[String]] = None,
       attrs: Option[TagMod] = None
-  ) = {
+  ) = {  // scalafix:ok ExplicitResultTypes; ReactComponent
     component(SquareProps( Props(slices,Some(colors),chartTitle,sliceTitles,Some(size),attrs)))
   }
 

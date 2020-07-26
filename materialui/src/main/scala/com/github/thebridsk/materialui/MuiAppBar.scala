@@ -3,6 +3,7 @@ package com.github.thebridsk.materialui
 import japgolly.scalajs.react._
 import scala.scalajs.js
 import scala.scalajs.js.annotation._
+import scala.scalajs.js.UndefOr
 
 class Position(val value: String) extends AnyVal
 object Position {
@@ -11,7 +12,7 @@ object Position {
   val sticky = new Position("sticky")
   val static = new Position("static")
   val relative = new Position("relative")
-  val values = List(fixed, absolute, sticky, static, relative)
+  val values: List[Position] = List(fixed, absolute, sticky, static, relative)
 }
 
 @js.native
@@ -27,7 +28,7 @@ trait AppBarProps extends PaperProps with AppBarPropsPrivate {}
 object AppBarProps extends PropsFactory[AppBarProps] {
 
   implicit class WrapAppBarProps(private val p: AppBarProps) extends AnyVal {
-    def position = p.positionInternal.map(s => new Position(s))
+    def position: UndefOr[Position] = p.positionInternal.map(s => new Position(s))
 
 //    def position_= (v: js.UndefOr[Position]): Unit = {
 //      v.map{ vv=>p.positionInternal=vv.value; None }.
@@ -36,7 +37,7 @@ object AppBarProps extends PropsFactory[AppBarProps] {
 
 //    def position_= (v: Position) = { p.positionInternal = v.value }
 
-    def color = p.colorInternal.map(s => new ColorVariant(s))
+    def color: UndefOr[ColorVariant] = p.colorInternal.map(s => new ColorVariant(s))
 
 //    def color_= (v: js.UndefOr[ColorVariant]): Unit = {
 //      v.map{ vv=>p.colorInternal=vv.value; None }.
@@ -99,7 +100,7 @@ object MuiAppBar extends ComponentFactory[AppBarProps] {
   @js.native @JSImport("@material-ui/core/AppBar", JSImport.Default) private object AppBar
       extends js.Any
 
-  protected val f = JsComponent[AppBarProps, Children.Varargs, Null](AppBar)
+  protected val f = JsComponent[AppBarProps, Children.Varargs, Null](AppBar)  // scalafix:ok ExplicitResultTypes; ReactComponent
 
   /**
     * @param color The color of the component. It supports those theme colors
@@ -133,7 +134,7 @@ object MuiAppBar extends ComponentFactory[AppBarProps] {
       additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
   )(
       children: CtorType.ChildArg*
-  ) = {
+  ) = {  // scalafix:ok ExplicitResultTypes; ReactComponent
     val p: AppBarProps = AppBarProps(
       color = color,
       position = position,

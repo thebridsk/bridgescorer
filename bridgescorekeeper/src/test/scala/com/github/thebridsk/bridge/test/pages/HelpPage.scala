@@ -12,22 +12,23 @@ import com.github.thebridsk.bridge.server.test.util.HttpUtils
 import java.net.URL
 import com.github.thebridsk.browserpages.Element
 import com.github.thebridsk.browserpages.Page
+import org.scalatest.Assertion
 
 object HelpPage {
 
-  val log = Logger[HelpPage]()
+  val log: Logger = Logger[HelpPage]()
 
   val directory = "target/screenshots/HelpPage"
 
-  def current(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
+  def current(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position): HelpPage = {
     val cp = getCurrentPage
     log.fine(s"""Current help page is ${cp}""" )
     new HelpPage( cp )
   }
 
-  def urlFor( helppage: String = "" ) = TestServer.getHelpPage(helppage)
+  def urlFor( helppage: String = "" ): String = TestServer.getHelpPage(helppage)
 
-  def goto( helppage: String = "" )(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
+  def goto( helppage: String = "" )(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position): HelpPage = {
     go to urlFor(helppage)
     new HelpPage(helppage)
   }
@@ -45,27 +46,27 @@ object HelpPage {
   /**
    * @param helppage the URI without "help/".  Example: for duplicate page use "duplicate/"
    */
-  def getPageUrl( helppage: String = "" ) = {
+  def getPageUrl( helppage: String = "" ): String = {
     TestServer.getHelpPage(helppage)
   }
 
-  val hrefvals=List( "introduction.html", "home.html", "duplicate.html", "chicago.html", "rubber.html" )
-  val hrefurls=hrefvals.map( v => getPageUrl(v) )
+  val hrefvals: List[String]=List( "introduction.html", "home.html", "duplicate.html", "chicago.html", "rubber.html" )
+  val hrefurls: List[String]=hrefvals.map( v => getPageUrl(v) )
 
-  def gethrefs( implicit webDriver: WebDriver, pos: Position ) = {
+  def gethrefs( implicit webDriver: WebDriver, pos: Position ): List[String] = {
     findAllElems[Element]( xpath("//a") ).flatMap( e => e.attribute("href") )
   }
 
-  def getImages( implicit webDriver: WebDriver, pos: Position ) = {
+  def getImages( implicit webDriver: WebDriver, pos: Position ): List[String] = {
     findAllElems[Element]( xpath("//img") ).flatMap( e => e.attribute("src"))
   }
 
-  def checkImage( url: String ) = {
+  def checkImage( url: String ): Assertion = {
     val resp = HttpUtils.getHttpAllBytes( new URL(url) )
     resp.status mustBe 200
   }
 
-  def adjustURI( uri: String ) = {
+  def adjustURI( uri: String ): String = {
     val slashes = uri.length() - uri.replace("/","").length()
     if (slashes == 0) s"./$uri"
     else s"${"../" * slashes}$uri"
@@ -83,7 +84,7 @@ class HelpPage(
               ) extends Page[HelpPage] {
   import HelpPage._
 
-  def validate(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def validate(implicit patienceConfig: PatienceConfig, pos: Position): HelpPage = {
 
     // <body class="" data-url="./introduction.html">
     // <body class="" data-url="../duplicate/summary.html">
@@ -100,7 +101,7 @@ class HelpPage(
     this
   }
 
-  def checkMainMenu(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
+  def checkMainMenu(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position): HelpPage = {
 
     withClueAndScreenShot(directory, "checkMainMenu", "checking main menu") {
       eventually {
@@ -116,20 +117,20 @@ class HelpPage(
   /**
    * @param item the URI without "help/".  Example: for duplicate page use "duplicate/"
    */
-  def clickMenu( item: String )(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
+  def clickMenu( item: String )(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position): HelpPage = {
     val b = find( xpath(s"""//ul[contains(concat(' ', @class, ' '), ' topics ')]//li[@data-nav-id = '/${item}']/a""") )
     click on b
     new HelpPage(item)
   }
 
-  def clickDuplicate(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
+  def clickDuplicate(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position): HelpPage = {
     clickMenu( "duplicate.html" )
   }
 
   /**
    * @param helppage the URI without "help/".  Example: for duplicate page use "duplicate/"
    */
-  def checkPage( helppage: String )(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
+  def checkPage( helppage: String )(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position): HelpPage = {
     val url = getPageUrl(helppage)
     val curl = currentUrl
     log.fine( s"""Current URL ${curl}, looking for ${url}""" )

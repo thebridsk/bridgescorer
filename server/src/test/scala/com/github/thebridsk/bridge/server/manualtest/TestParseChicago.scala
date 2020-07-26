@@ -11,25 +11,26 @@ import com.github.thebridsk.bridge.server.yaml.YamlSupport._
 import com.github.thebridsk.bridge.server.backend.resource.JsonConverter
 import com.github.thebridsk.bridge.server.backend.resource.YamlConverter
 import com.github.thebridsk.bridge.server.backend.resource.Converter
+import com.github.thebridsk.bridge.data.MatchChicagoV3
 
 object TestParseChicago extends Main {
 
   val log = logger
 
-  val mc = MatchChicago(MatchChicago.id("M0"),
+  val mc: MatchChicagoV3 = MatchChicago(MatchChicago.id("M0"),
                         List("player1","player2","player3","player4"),
                         Nil,
                         0,
                         true,
                         0,0
                        )
-  val mc2 = MatchChicagoV2(MatchChicago.id("M2"),
+  val mc2: MatchChicagoV2 = MatchChicagoV2(MatchChicago.id("M2"),
                            List("player1","player2","player3","player4"),
                            Nil,
                            0,
                            0,0
                           )
-  val mc1 = MatchChicagoV1(MatchChicago.id("M1"),
+  val mc1: MatchChicagoV1 = MatchChicagoV1(MatchChicago.id("M1"),
                            "player1","player2","player3","player4",
                            Nil,
                            0,
@@ -38,20 +39,20 @@ object TestParseChicago extends Main {
 
   val jsonConverter = JsonConverter
   val yamlConverter = YamlConverter
-  val converterJsonYaml = Converter.getConverter(false)
-  val converterYamlJson = Converter.getConverter(true)
+  val converterJsonYaml: Converter = Converter.getConverter(false)
+  val converterYamlJson: Converter = Converter.getConverter(true)
 
-  val matchChicagoInstanceJson = {
+  val matchChicagoInstanceJson: VersionedInstanceJson[MatchChicago.Id,MatchChicago] = {
     implicit val converter = converterJsonYaml
     VersionedInstanceJson[MatchChicago.Id,MatchChicago].add[MatchChicagoV2].add[MatchChicagoV1]
   }
 
-  val matchChicagoInstanceYaml = {
+  val matchChicagoInstanceYaml: VersionedInstanceJson[MatchChicago.Id,MatchChicago] = {
     implicit val converter = converterYamlJson
     VersionedInstanceJson[MatchChicago.Id,MatchChicago].add[MatchChicagoV2].add[MatchChicagoV1]
   }
 
-  def execute() = {
+  def execute(): Int = {
     test(mc, matchChicagoInstanceJson, converterJsonYaml)
     test(mc1, matchChicagoInstanceJson, converterJsonYaml)
     test(mc2, matchChicagoInstanceJson, converterJsonYaml)
@@ -64,7 +65,7 @@ object TestParseChicago extends Main {
   def test[T]( v: T,
                instanceConverter: VersionedInstanceJson[MatchChicago.Id,MatchChicago],
                converter: Converter
-             )(implicit format: Format[T]) = {
+             )(implicit format: Format[T]): Unit = {
     println("Testing "+v)
     val j = converter.write(v)
     val old = converter.read[T](j)

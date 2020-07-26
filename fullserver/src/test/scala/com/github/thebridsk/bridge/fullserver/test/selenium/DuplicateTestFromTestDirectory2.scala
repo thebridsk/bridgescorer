@@ -41,6 +41,9 @@ import com.github.thebridsk.browserpages.Session
 import org.scalatest.CancelAfterFailure
 import com.github.thebridsk.bridge.server.test.util.TestServer
 import com.github.thebridsk.bridge.data.Table
+import org.scalatest.Assertion
+import org.scalatest.prop.TableFor1
+import scala.collection.mutable
 
 /**
  * Test playing duplicate matches.  The duplicates matches to play are in the testdata directory.
@@ -56,7 +59,7 @@ class DuplicateTestFromTestDirectory2 extends AnyFlatSpec
   import com.github.thebridsk.browserpages.PageBrowser._
   import ParallelUtils._
 
-  val testlog = Logger[DuplicateTestFromTestDirectory2]()
+  val testlog: Logger = Logger[DuplicateTestFromTestDirectory2]()
 
   val screenshotDir = "target/DuplicateTestFromTestDirectory2"
 
@@ -65,18 +68,18 @@ class DuplicateTestFromTestDirectory2 extends AnyFlatSpec
   val timeoutMillis = 20000
   val intervalMillis = 750
 
-  implicit val timeoutduration = Duration( 60, TimeUnit.SECONDS )
+  implicit val timeoutduration: FiniteDuration = Duration( 60, TimeUnit.SECONDS )
 
-  implicit def patienceConfig = PatienceConfig(timeout=scaled(Span(timeoutMillis, Millis)), interval=scaled(Span(intervalMillis,Millis)))
+  implicit def patienceConfig: PatienceConfig = PatienceConfig(timeout=scaled(Span(timeoutMillis, Millis)), interval=scaled(Span(intervalMillis,Millis)))
 
   val sessionDirector = new DirectorSession()
   val sessionComplete = new CompleteSession()
-  val globalSessionTables = scala.collection.mutable.Map[Table.Id,TableSession]()
+  val globalSessionTables: mutable.Map[Table.Id,TableSession] = scala.collection.mutable.Map[Table.Id,TableSession]()
 
-  def getAllGames() = TestData.getAllGames()
+  def getAllGames(): List[MatchDuplicate] = TestData.getAllGames()
 
   override
-  def beforeAll() = {
+  def beforeAll(): Unit = {
 
     MonitorTCP.nextTest()
     try {
@@ -92,7 +95,7 @@ class DuplicateTestFromTestDirectory2 extends AnyFlatSpec
   }
 
   override
-  def afterAll() = {
+  def afterAll(): Unit = {
     val sessions =
           logMyFuture { sessionComplete.sessionStop() }::
           logMyFuture { sessionDirector.sessionStop() }::
@@ -106,7 +109,7 @@ class DuplicateTestFromTestDirectory2 extends AnyFlatSpec
     testlog.warning("DOM:" + doc)
   }
 
-  def genericPage( implicit webDriver: WebDriver, createdPos: SourcePosition ) = {
+  def genericPage( implicit webDriver: WebDriver, createdPos: SourcePosition ): GenericPage = {
     GenericPage.current
   }
 
@@ -118,7 +121,7 @@ class DuplicateTestFromTestDirectory2 extends AnyFlatSpec
   }
 
   import org.scalatest.prop.TableDrivenPropertyChecks
-  val templates = TableDrivenPropertyChecks.Table( "MatchDuplicate", getAllGames(): _* )
+  val templates: TableFor1[MatchDuplicate] = TableDrivenPropertyChecks.Table( "MatchDuplicate", getAllGames(): _* )
 
 //  it should "play a complete match" in {
 //    forAll(templates) { md =>
@@ -150,21 +153,21 @@ class DuplicateTestFromTestDirectory2 extends AnyFlatSpec
     }
 
 
-  def logFuture[T]( t: =>T ) = CodeBlock { logException("logFuture")( t ) }
+  def logFuture[T]( t: =>T ): CodeBlock[T] = CodeBlock { logException("logFuture")( t ) }
 
-  def logMyFuture[T]( t: =>T ) = CodeBlock { logException("logFuture")( t ) }
+  def logMyFuture[T]( t: =>T ): CodeBlock[T] = CodeBlock { logException("logFuture")( t ) }
 
   var firstScorekeeper: PlayerPosition = North
 
   class MatchPlay( template: MatchDuplicate) {
-    val numbertables = template.getTableIds().size
+    val numbertables: Int = template.getTableIds().size
 
-    val templateScore = MatchDuplicateScore(template,PerspectiveDirector)
+    val templateScore: MatchDuplicateScore = MatchDuplicateScore(template,PerspectiveDirector)
 
     var dupid: Option[String] = None
 
-    var newTableSessions = List[String]()
-    val sessionTables = scala.collection.mutable.Map[Table.Id,TableSession]()
+    var newTableSessions: List[String] = List[String]()
+    val sessionTables: mutable.Map[Table.Id,TableSession] = scala.collection.mutable.Map[Table.Id,TableSession]()
 
     val sessionCompleteRunning = sessionComplete.isSessionRunning
     val sessionDirectorRunning = sessionDirector.isSessionRunning
@@ -182,7 +185,7 @@ class DuplicateTestFromTestDirectory2 extends AnyFlatSpec
       }
     }
 
-    def startup() = {
+    def startup(): Unit = {
       import sessionDirector._
       withClueAndScreenShot(screenshotDir, "play", s"In startup for template match ${template.id}") {
         gotoSummaryPage()
@@ -191,7 +194,7 @@ class DuplicateTestFromTestDirectory2 extends AnyFlatSpec
       }
     }
 
-    def play() = {
+    def play(): Unit = {
       gotoRootPage()
       startup()
       startCompleteAndTables()
@@ -258,7 +261,7 @@ class DuplicateTestFromTestDirectory2 extends AnyFlatSpec
       }
     }
 
-    def gotoRootPage() = {
+    def gotoRootPage(): Unit = {
       import Session._
       val envSessionTable = getPropOrEnv("SessionTable")
       val sessions = sessionTables.values.toList.sortWith((l,r)=> l.number < r.number)
@@ -283,7 +286,7 @@ class DuplicateTestFromTestDirectory2 extends AnyFlatSpec
       )
     }
 
-    def gotoSummaryPage() = {
+    def gotoSummaryPage(): Unit = {
       import sessionDirector._
 
       withClueAndScreenShot(
@@ -300,7 +303,7 @@ class DuplicateTestFromTestDirectory2 extends AnyFlatSpec
       }
     }
 
-    def newDuplicate() = {
+    def newDuplicate(): Assertion = {
       import sessionDirector._
 
       withClueAndScreenShot(
@@ -329,7 +332,7 @@ class DuplicateTestFromTestDirectory2 extends AnyFlatSpec
 
     }
 
-    def gotoDirectorsPage() = {
+    def gotoDirectorsPage(): Unit = {
       import sessionDirector._
 
       val sbp = ScoreboardPage.current
@@ -340,7 +343,7 @@ class DuplicateTestFromTestDirectory2 extends AnyFlatSpec
 
     }
 
-    def startCompleteAndTables() = {
+    def startCompleteAndTables(): Unit = {
     waitForFutures(
         "startCompleteAndTables",
         logFuture {
@@ -388,7 +391,7 @@ class DuplicateTestFromTestDirectory2 extends AnyFlatSpec
     /**
      * Assumes on a by Scoreboard or BoardPage page with a Board_n buttons for the round being played.
      */
-    def doPlayHand( sessionTable: TableSession, hand: DuplicateHand, page: PageWithBoardButtons ) = try {
+    def doPlayHand( sessionTable: TableSession, hand: DuplicateHand, page: PageWithBoardButtons ): PageWithBoardButtons = try {
       val boardButton = s"Board_${hand.board.id}"
       val (north,south,east,west) = getPlayers(hand)
 

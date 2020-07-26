@@ -21,17 +21,17 @@ import com.github.thebridsk.bridge.sslkey.SSLKeyCommands
   */
 object Server extends Main {
 
-  override def init() = {
+  override def init(): Int = {
     SystemTimeJVM()
     0
   }
 
-  override def setup() = {
+  override def setup(): Int = {
     memoryfile.foreach(f => MemoryMonitor.start(f.toString()))
     0
   }
 
-  override def cleanup() = {
+  override def cleanup(): Unit = {
     MemoryMonitor.stop()
   }
 
@@ -40,7 +40,7 @@ object Server extends Main {
 
   import com.github.thebridsk.utilities.main.Converters._
 
-  val cmdName = {
+  val cmdName: String = {
     ((getClass.getClassLoader match {
       case loader: URLClassLoader =>
         // This doesn't work anymore.  In Java 9 with the modules classloader, the URLClassLoader is not used as
@@ -73,7 +73,7 @@ object Server extends Main {
     }
   }
 
-  val serverVersion =
+  val serverVersion: String =
     s"""BridgeScorer Server version ${VersionServer.version}
        |Build date ${VersionServer.builtAtString} UTC
        |Scala ${VersionServer.scalaVersion}, SBT ${VersionServer.sbtVersion}
@@ -94,7 +94,7 @@ object Server extends Main {
 
   shortSubcommandsHelp(true)
 
-  val memoryfile = opt[Path](
+  val memoryfile: ScallopOption[Path] = opt[Path](
     "memoryfile",
     noshort = true,
     descr =
@@ -123,7 +123,7 @@ object Server extends Main {
     1
   }
 
-  lazy val isConsoleLoggingToInfo = {
+  lazy val isConsoleLoggingToInfo: Boolean = {
 
     @tailrec
     def findConsoleHandler(log: jul.Logger): Boolean = {
@@ -142,7 +142,7 @@ object Server extends Main {
     findConsoleHandler(logger.logger)
   }
 
-  def output(s: String) = {
+  def output(s: String): Unit = {
     logger.info(s)
     if (!isConsoleLoggingToInfo) println(s)
   }

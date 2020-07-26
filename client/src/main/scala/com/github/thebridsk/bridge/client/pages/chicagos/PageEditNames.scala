@@ -18,6 +18,8 @@ import com.github.thebridsk.bridge.client.bridge.store.ChicagoStore
 import com.github.thebridsk.bridge.client.controller.ChicagoController
 import com.github.thebridsk.bridge.data.MatchChicago
 
+import scala.scalajs.js
+
 /**
  * Shows the team x board table and has a totals column that shows the number of points the team has.
  *
@@ -36,14 +38,14 @@ object PageEditNames {
 
   case class Props( page: EditNamesView, routerCtl: BridgeRouter[ChicagoPage] )
 
-  def apply( page: EditNamesView, routerCtl: BridgeRouter[ChicagoPage] ) = component(Props(page,routerCtl))
+  def apply( page: EditNamesView, routerCtl: BridgeRouter[ChicagoPage] ) = component(Props(page,routerCtl))  // scalafix:ok ExplicitResultTypes; ReactComponent
 
 }
 
 object PageEditNamesInternal {
   import PageEditNames._
 
-  val logger = Logger("bridge.PageEditNames")
+  val logger: Logger = Logger("bridge.PageEditNames")
 
   /**
    * Internal state for rendering the component.
@@ -55,19 +57,20 @@ object PageEditNamesInternal {
   case class State( id: MatchChicago.Id, players: List[String] = List(), newnames: Map[String, String]=Map(), nameSuggestions: Option[List[String]] = None ) {
     import scala.scalajs.js.JSConverters._
 
-    def reset = ChicagoStore.getChicago match {
+    def reset: State = ChicagoStore.getChicago match {
       case Some(mc) if mc.id == id =>
         copy(id,mc.players,Map(),nameSuggestions)
       case _ =>
         copy(id,Nil,Map(),nameSuggestions)
     }
-    def getSuggestions = nameSuggestions.getOrElse(List()).toJSArray
+    def getSuggestions: js.Array[String] = nameSuggestions.getOrElse(List()).toJSArray
     def gettingNames = nameSuggestions.isEmpty
 
-    def getName( p: String ) = newnames.getOrElse(p,p)
+    def getName( p: String ): String = newnames.getOrElse(p,p)
 
   }
 
+  private[chicagos]
   val Header = ScalaComponent.builder[Props]("PageEditNames.Header")
                       .render_P( props => {
                         <.thead(
@@ -82,6 +85,7 @@ object PageEditNamesInternal {
   private def noNull( s: String ) = Option(s).getOrElse("")
   private def playerValid( s: String ) = s!=null && s.length!=0
 
+  private[chicagos]
   val TeamRow = ScalaComponent.builder[(Int,String,Backend,State,Props)]("PageEditNames.TeamRow")
                       .render_P( args => {
                         val (row, player, backend, st, pr) = args
@@ -108,7 +112,7 @@ object PageEditNamesInternal {
    */
   class Backend(scope: BackendScope[Props, State]) {
 
-    def render( props: Props, state: State ) = {
+    def render( props: Props, state: State ) = { // scalafix:ok ExplicitResultTypes; React
       import ChicagoStyles._
       import com.github.thebridsk.bridge.clientcommon.react.Utils._
       logger.info("Rendering "+props.page+" suggestions="+state.nameSuggestions)
@@ -165,10 +169,10 @@ object PageEditNamesInternal {
       )
     }
 
-    def setPlayer(player: String)( name: String ) =
+    def setPlayer(player: String)( name: String ): Callback =
       scope.modState( ps => ps.copy( newnames = ps.newnames + (player -> name)) )
 
-    val doUpdate = scope.state >>= { state => Callback {
+    val doUpdate: Callback = scope.state >>= { state => Callback {
       ChicagoStore.getChicago match {
         case Some(mc) =>
           mc.modifyPlayers( state.newnames.map { e => (e._1,e._2.trim()) } ) match {
@@ -183,21 +187,21 @@ object PageEditNamesInternal {
       }
     }}
 
-    def okCallback = doUpdate >> scope.props >>= { props => props.routerCtl.set(props.page.toSummaryView) }
+    def okCallback: Callback = doUpdate >> scope.props >>= { props => props.routerCtl.set(props.page.toSummaryView) }
 
-    val resetCallback = scope.props >>= { props =>
+    val resetCallback: Callback = scope.props >>= { props =>
       scope.modState(s => s.reset)
     }
 
-    val storeCallback = scope.modState { s => s.reset }
+    val storeCallback: Callback = scope.modState { s => s.reset }
 
-    val namesCallback = scope.modState { s =>
+    val namesCallback: Callback = scope.modState { s =>
       val sug = NamesStore.getNames
       logger.fine( s"""Got names ${sug}""" )
       s.copy( nameSuggestions=Some(sug))
     }
 
-    val didMount =scope.props >>= { props =>  Callback {
+    val didMount: Callback =scope.props >>= { props =>  Callback {
       logger.info("PageEditNames.didMount")
       NamesStore.ensureNamesAreCached(Some(namesCallback))
       ChicagoStore.addChangeListener(storeCallback)
@@ -205,14 +209,14 @@ object PageEditNamesInternal {
       ChicagoController.monitor(props.page.chiid)
     }}
 
-    val willUnmount = Callback {
+    val willUnmount: Callback = Callback {
       logger.info("PageEditNames.willUnmount")
       ChicagoStore.removeChangeListener(storeCallback)
       ChicagoController.delayStop()
     }
   }
 
-  def didUpdate( cdu: ComponentDidUpdate[Props,State,Backend,Unit] ) = Callback {
+  def didUpdate( cdu: ComponentDidUpdate[Props,State,Backend,Unit] ): Callback = Callback {
     val props = cdu.currentProps
     val prevProps = cdu.prevProps
     if (prevProps.page != props.page) {
@@ -220,6 +224,7 @@ object PageEditNamesInternal {
     }
   }
 
+  private[chicagos]
   val component = ScalaComponent.builder[Props]("PageEditNames")
                             .initialStateFromProps { props => State(props.page.chiid).reset }
                             .backend(new Backend(_))

@@ -24,7 +24,7 @@ import scala.util.Using
   */
 object UpdateInstall extends Subcommand("update") {
 
-  val logger = Logger(UpdateInstall.getClass.getName)
+  val logger: Logger = Logger(UpdateInstall.getClass.getName)
 
   implicit def dateConverter: ValueConverter[Duration] =
     singleArgConverter[Duration](Duration(_))
@@ -96,12 +96,12 @@ Options:""")
   */
 object Install extends Subcommand("install") {
 
-  val logger = Logger(Install.getClass.getName)
+  val logger: Logger = Logger(Install.getClass.getName)
 
-  val filesForWindows = "server.bat" :: "serverMemory.bat" ::
+  val filesForWindows: List[String] = "server.bat" :: "serverMemory.bat" ::
     "collectlogs.bat" :: "update.bat" ::
     "findServerJar.bat" :: Nil
-  val filesForLinux = "server" :: "serverMemory" :: "collectlogs" :: "update" :: Nil
+  val filesForLinux: List[String] = "server" :: "serverMemory" :: "collectlogs" :: "update" :: Nil
 
   implicit def dateConverter: ValueConverter[Duration] =
     singleArgConverter[Duration](Duration(_))
@@ -147,18 +147,18 @@ Copy the server jar file to the installation directory.  Then run the following 
     }
   }
 
-  def getOsName() = {
+  def getOsName(): String = {
     sys.env.get("OS_OVERRIDE") match {
       case Some(s) => s
       case None    => sys.props.getOrElse("os.name", "oops").toLowerCase()
     }
   }
 
-  def isWindows() = getOsName().contains("win")
+  def isWindows(): Boolean = getOsName().contains("win")
 
-  def isMac() = getOsName().contains("mac")
+  def isMac(): Boolean = getOsName().contains("mac")
 
-  def isLinux() = {
+  def isLinux(): Boolean = {
     val x = getOsName()
     x.contains("nix") || x.contains("nux")
   }
@@ -169,7 +169,7 @@ Copy the server jar file to the installation directory.  Then run the following 
     * @param f - the jar file that contains the file to copy
     * @param fileToCopy - the file to be copied out of the jar file into the tdir
     */
-  def writeFile(tdir: Directory, fileToCopy: String) = {
+  def writeFile(tdir: Directory, fileToCopy: String): AnyVal = {
 
     val outfile = tdir / fileToCopy
     Option(getClass.getClassLoader.getResourceAsStream(fileToCopy)) match {

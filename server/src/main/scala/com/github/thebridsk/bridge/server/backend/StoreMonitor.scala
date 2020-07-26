@@ -88,8 +88,8 @@ object StoreMonitor {
 
   var testHook: Option[(akka.actor.Actor, Any) => Unit] = None
 
-  def setTestHook(hook: (akka.actor.Actor, Any) => Unit) = testHook = Some(hook)
-  def unsetTestHook() = testHook = None
+  def setTestHook(hook: (akka.actor.Actor, Any) => Unit): Unit = testHook = Some(hook)
+  def unsetTestHook(): Unit = testHook = None
 
   case class KillOneConnection()
 
@@ -109,9 +109,9 @@ abstract class BaseStoreMonitor[VId <: Comparable[VId], VType <: VersionedInstan
     with Actor {
   import StoreMonitor._
 
-  val log = Logging(system, getClass)
+  val log: LoggingAdapter = Logging(system, getClass)
 
-  def process(sender: String, msg: DuplexProtocol.DuplexMessage) = {
+  def process(sender: String, msg: DuplexProtocol.DuplexMessage): Any = {
     msg match {
       case DuplexProtocol.Send(data) =>
         log.info("Processing " + msg)
@@ -295,8 +295,8 @@ abstract class BaseStoreMonitor[VId <: Comparable[VId], VType <: VersionedInstan
 
   val listener = new Listener(log, self)
 
-  override def register() = store.addListener(listener)
-  override def unregister() = store.removeListener(listener)
+  override def register(): Unit = store.addListener(listener)
+  override def unregister(): Unit = store.removeListener(listener)
 
   protected def futureError(
       msg: String,
@@ -313,11 +313,11 @@ class StoreMonitorManager[VId <: Comparable[VId], VType <: VersionedInstance[VTy
     newParticipant: (String, VId, ActorRef) => ChatEvent,
     service: Service
 ) {
-  val log = Logging(system, getClass)
+  val log: LoggingAdapter = Logging(system, getClass)
 
   import StoreMonitor._
 
-  val monitor = system.actorOf(
+  val monitor: ActorRef = system.actorOf(
     Props(storeMonitorClass, system, store, service),
     name = s"${storeMonitorClass.getSimpleName}Actor"
   )
@@ -379,7 +379,7 @@ class StoreMonitorManager[VId <: Comparable[VId], VType <: VersionedInstance[VTy
     // f
   }
 
-  def monitorMatch(sender: RemoteAddress, id: VId) = {
+  def monitorMatch(sender: RemoteAddress, id: VId): Source[ServerSentEvent,Any] = {
     sseSource(
       sender,
       Source
@@ -398,7 +398,7 @@ class StoreMonitorManager[VId <: Comparable[VId], VType <: VersionedInstance[VTy
   def sseSource(
       sender: RemoteAddress,
       source: Source[DuplexProtocol.DuplexMessage, _]
-  ) = {
+  ): Source[ServerSentEvent,Any] = {
     source
       .map(msg => ServerSentEvent(DuplexProtocol.toString(msg)))
       .keepAlive(10.second, () => ServerSentEvent.heartbeat)

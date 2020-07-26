@@ -22,6 +22,7 @@ import com.github.thebridsk.bridge.clientcommon.react.Table.Row
 import com.github.thebridsk.bridge.client.pages.HomePage
 import com.github.thebridsk.bridge.data.Team
 
+
 /**
  * Shows a summary page of all duplicate matches from the database.
  * Each match has a button that that shows that match, by going to the ScoreboardView(id) page.
@@ -42,7 +43,7 @@ object ViewPairsMadeDownTable {
 
   case class Props( filter: ViewPlayerFilter.Filter, showPairs: Boolean = false, showNoDataMsg: Boolean = false)
 
-  def apply( filter: ViewPlayerFilter.Filter, showPairs: Boolean = false, showNoDataMsg: Boolean = false ) =
+  def apply( filter: ViewPlayerFilter.Filter, showPairs: Boolean = false, showNoDataMsg: Boolean = false ) = // scalafix:ok ExplicitResultTypes; ReactComponent
     component(Props(filter,showPairs,showNoDataMsg))
 
 }
@@ -52,7 +53,7 @@ object ViewPairsMadeDownTableInternal {
   import DuplicateStyles._
   import Table.Sorter._
 
-  val logger = Logger("bridge.ViewPairsMadeDownTable")
+  val logger: Logger = Logger("bridge.ViewPairsMadeDownTable")
 
   /**
    * Internal state for rendering the component.
@@ -142,11 +143,11 @@ object ViewPairsMadeDownTableInternal {
     sc.asInstanceOf[StatColumn[Any]]
   }
 
-  val ostring = Ordering[String]
+  val ostring: Ordering[String] = Ordering[String]
 
   class PlayerSorter( cols: String* ) extends MultiColumnSort( cols.map(c=>(c,None,false)): _* )(ostring)
 
-  val pairColumns = List[StatColumn[Any]](
+  val pairColumns: List[StatColumn[Any]] = List[StatColumn[Any]](
     new StringColumn( "Player1", "Player 1" )(new PlayerSorter("Player1","Player2")) {
       def getValue( pd: PairData ) = pd.player1
       override
@@ -159,11 +160,11 @@ object ViewPairsMadeDownTableInternal {
     }
   )
 
-  val peopleColumns = List[StatColumn[Any]](
+  val peopleColumns: List[StatColumn[Any]] = List[StatColumn[Any]](
     new StringColumn( "Player", "Player" ) { def getValue( pd: PairData ) = pd.player1 }
   )
 
-  val columns = List[StatColumn[Any]](
+  val columns: List[StatColumn[Any]] = List[StatColumn[Any]](
       new PercentColumn( "DeclarerPct", "% Declarer" ) {
         def getValue( pd: PairData ) = pd.details.map( d => d.percentDeclared ).getOrElse(0.0)
       },
@@ -208,7 +209,7 @@ object ViewPairsMadeDownTableInternal {
    */
   class Backend(scope: BackendScope[Props, State]) {
 
-    def render( props: Props, state: State ) = {
+    def render( props: Props, state: State ) = { // scalafix:ok ExplicitResultTypes; React
       props.filter.pairsData match {
         case Some(pd) =>
           val cols = (if (props.showPairs) pairColumns else peopleColumns):::columns
@@ -255,6 +256,7 @@ object ViewPairsMadeDownTableInternal {
     }
   }
 
+  private[duplicate]
   val component = ScalaComponent.builder[Props]("ViewPairsMadeDownTable")
                             .initialStateFromProps { props =>
                               props.filter.pairsData match {

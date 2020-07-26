@@ -3,11 +3,12 @@ package com.github.thebridsk.bridge.server.backend.resource
 import scala.concurrent.Future
 import com.github.thebridsk.utilities.logging.Logger
 import scala.concurrent.duration._
+import akka.http.caching.scaladsl.LfuCacheSettings
 
 class CreateKeyFailed[K](result: Result[K]) extends Exception
 
 object MyCache {
-  val log = Logger[MyCache[_, _]]()
+  val log: Logger = Logger[MyCache[_, _]]()
 }
 
 import MyCache._
@@ -28,14 +29,14 @@ class MyCache[K, V](
     val cacheTimeToIdle: Duration = Duration.Inf
 ) {
 
-  val defaultCachingSettings = CachingSettings("{}")
-  val lfuCacheSettings =
+  val defaultCachingSettings: CachingSettings = CachingSettings("{}")
+  val lfuCacheSettings: LfuCacheSettings =
     defaultCachingSettings.lfuCacheSettings
       .withInitialCapacity(cacheInitialCapacity)
       .withMaxCapacity(cacheMaxCapacity)
       .withTimeToLive(cacheTimeToLive)
       .withTimeToIdle(cacheTimeToIdle)
-  val cachingSettings =
+  val cachingSettings: CachingSettings =
     defaultCachingSettings.withLfuCacheSettings(lfuCacheSettings)
 
   val lfuCache: Cache[K, V] = LfuCache(cachingSettings)

@@ -62,7 +62,7 @@ class TempPlayerPlaces(
   private var fTotal: Int = 0
   private var fMaxTeams: Int = 0
 
-  def toPlayerPlaces = {
+  def toPlayerPlaces: PlayerPlace = {
     val p = fPlace.map(l => l.toList).toList
     PlayerPlace(name, p, fTotal, fMaxTeams)
   }
@@ -86,7 +86,7 @@ class TempPlayerPlaces(
 
 object CalculatePlayerPlaces {
 
-  val log = Logger[CalculatePlayerPlaces]()
+  val log: Logger = Logger[CalculatePlayerPlaces]()
 
   /**
    * Returns an extended array
@@ -116,12 +116,12 @@ object CalculatePlayerPlaces {
   }
 
   object MPScoring extends ScoringMethod {
-    def isValid( d: DuplicateSummary ) = d.isMP || d.hasMpScores
+    def isValid( d: DuplicateSummary ): Boolean = d.isMP || d.hasMpScores
     def getPlace( d: DuplicateSummaryEntry ): Option[Int] = d.place
   }
 
   object IMPScoring extends ScoringMethod {
-    def isValid( d: DuplicateSummary ) = d.isIMP || d.hasImpScores
+    def isValid( d: DuplicateSummary ): Boolean = d.isIMP || d.hasImpScores
     def getPlace( d: DuplicateSummaryEntry ): Option[Int] = d.placeImp
   }
 
@@ -185,7 +185,7 @@ class CalculatePlayerPlaces( scoringmethod: ScoringMethod ) {
     }
   }
 
-  def finish() = {
+  def finish(): PlayerPlaces = {
     val p = results.values.map( t => t.toPlayerPlaces ).toList.sortWith( (l,r) => l.name.compare(r.name) < 0)
     val r = PlayerPlaces(maxTeams,p)
     log.fine(s"Finish, result ${r}")

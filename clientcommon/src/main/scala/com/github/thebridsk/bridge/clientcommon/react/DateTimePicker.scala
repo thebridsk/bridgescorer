@@ -99,13 +99,13 @@ object DateTimePickerComponentProperty {
 trait DateTimePicker extends js.Object
 
 object DateTimePicker {
-  val logger = Logger("bridge.DateTimePicker")
+  val logger: Logger = Logger("bridge.DateTimePicker")
 
 //  @JSGlobal("ReactWidgets.DateTimePicker")
 //  @js.native
 //  object ReactWidgetsDateTimePicker extends js.Object
 
-  val component = JsComponent[DateTimePickerComponentProperty, Children.None, Null](reactwidgets.DateTimePicker)
+  val component = JsComponent[DateTimePickerComponentProperty, Children.None, Null](reactwidgets.DateTimePicker)  // scalafix:ok ExplicitResultTypes; ReactComponent
 
   def apply(name: String,
             value: Option[Date] = None,
@@ -132,7 +132,7 @@ object DateTimePicker {
             step: Option[Int] = None,
             time: Boolean = true,
             containerClassName: Option[String] = Some(BaseStyles.baseStyles.calendarLightDarkClass)
-           ) = {
+           ) = {  // scalafix:ok ExplicitResultTypes; ReactComponent
 
 //    logger.info("DateTimePicker: msgEmptyList="+msgEmptyList+", msgEmptyFilter="+msgEmptyFilter)
 

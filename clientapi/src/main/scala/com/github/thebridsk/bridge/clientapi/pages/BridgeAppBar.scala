@@ -37,6 +37,7 @@ import com.github.thebridsk.bridge.clientcommon.material.icons.LightDark
 import com.github.thebridsk.bridge.clientcommon.fullscreen.Values
 import com.github.thebridsk.bridge.clientcommon.fullscreen.Fullscreen
 
+
 /**
   * A simple AppBar for the Bridge client.
   *
@@ -81,7 +82,7 @@ object BridgeAppBar {
       showHomeButton: Boolean = true
   )(
       mainMenu: CtorType.ChildArg*
-  ) =
+  ) = // scalafix:ok ExplicitResultTypes; ReactComponent
     component(
       Props(
         mainMenu,
@@ -99,7 +100,7 @@ object BridgeAppBar {
 object BridgeAppBarInternal {
   import BridgeAppBar._
 
-  val logger = Logger("bridge.BridgeAppBar")
+  val logger: Logger = Logger("bridge.BridgeAppBar")
 
   /**
     * Internal state for rendering the component.
@@ -112,8 +113,8 @@ object BridgeAppBarInternal {
       anchorMoreEl: js.UndefOr[Element] = js.undefined
   ) {
 
-    def openMoreMenu(n: Node) = copy(anchorMoreEl = n.asInstanceOf[Element])
-    def closeMoreMenu() = copy(anchorMoreEl = js.undefined)
+    def openMoreMenu(n: Node): State = copy(anchorMoreEl = n.asInstanceOf[Element])
+    def closeMoreMenu(): State = copy(anchorMoreEl = js.undefined)
   }
 
   /**
@@ -125,23 +126,23 @@ object BridgeAppBarInternal {
     */
   class Backend(scope: BackendScope[Props, State]) {
 
-    def handleMoreClick(event: ReactEvent) =
+    def handleMoreClick(event: ReactEvent): Unit =
       event.extract(_.currentTarget)(
         currentTarget =>
           scope.modState(s => s.openMoreMenu(currentTarget)).runNow()
       )
-    def handleMoreCloseClick(event: ReactEvent) =
+    def handleMoreCloseClick(event: ReactEvent): Unit =
       scope.modState(s => s.closeMoreMenu()).runNow()
-    def handleMoreClose( /* event: js.Object, reason: String */ ) = {
+    def handleMoreClose( /* event: js.Object, reason: String */ ): Unit = {
       logger.fine("MoreClose called")
       scope.modState(s => s.closeMoreMenu()).runNow()
     }
 
-    def gotoPage(uri: String) = {
+    def gotoPage(uri: String): Unit = {
       GotoPage.inNewWindow(uri)
     }
 
-    def handleHelpGotoPageClick(uri: String)(event: ReactEvent) = {
+    def handleHelpGotoPageClick(uri: String)(event: ReactEvent): Unit = {
       logger.info(s"""Going to page ${uri}""")
 //      handleMoreClose()
 
@@ -162,13 +163,13 @@ object BridgeAppBarInternal {
       }
     }
 
-    def serverUrlClick(event: ReactEvent) = {
+    def serverUrlClick(event: ReactEvent): Unit = {
       logger.info("Requesting to show server URL popup")
       ServerURLPopup.setShowServerURLPopup(true)
     }
 
     // data-theme="dark"
-    def toggleLightDark(event: ReactEvent) = {
+    def toggleLightDark(event: ReactEvent): Unit = {
       logger.info("toggle light dark")
       val ntheme = ColorThemeStorage.getColorTheme() match {
         case Some(curtheme) =>
@@ -179,7 +180,7 @@ object BridgeAppBarInternal {
       ColorThemeStorage.setColorTheme(ntheme)
     }
 
-    def isFullscreenEnabledI = {
+    def isFullscreenEnabledI: Boolean = {
       import com.github.thebridsk.bridge.clientcommon.fullscreen.Implicits._
       val doc = document
       logger.info(s"browser fullscreenEnabled: ${doc.fullscreenEnabled}")
@@ -190,7 +191,7 @@ object BridgeAppBarInternal {
       e
     }
 
-    def isFullscreen = {
+    def isFullscreen: Boolean = {
       import com.github.thebridsk.bridge.clientcommon.fullscreen.Implicits._
       val doc = document
       logger.info(s"browser fullscreenEnabled: ${doc.fullscreenEnabled}")
@@ -227,7 +228,7 @@ object BridgeAppBarInternal {
       }
     }
 
-    def render(props: Props, state: State) = {
+    def render(props: Props, state: State) = { // scalafix:ok ExplicitResultTypes; React
 
       def gotoHomePage(e: ReactEvent) = props.routeCtl.toHome
       def gotoAboutPage(e: ReactEvent) = props.routeCtl.toAbout
@@ -465,17 +466,18 @@ object BridgeAppBarInternal {
 
     private var mounted = false
 
-    val didMount = Callback {
+    val didMount: Callback = Callback {
       mounted = true
       Fullscreen.addListener("fullscreenchange",fullscreenCB)
     }
 
-    val willUnmount = Callback {
+    val willUnmount: Callback = Callback {
       mounted = false
       Fullscreen.removeListener("fullscreenchange",fullscreenCB)
     }
   }
 
+  private[pages]
   val component = ScalaComponent
     .builder[Props]("BridgeAppBar")
     .initialStateFromProps { props =>

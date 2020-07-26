@@ -24,9 +24,10 @@ import com.github.thebridsk.bridge.client.routes.TestBridgeRouter
 import japgolly.scalajs.react.extra.router.Path
 import com.github.thebridsk.bridge.client.routes.AppRouter.Home
 import com.github.thebridsk.bridge.client.pages.duplicate.PageNewDuplicateInternal
+import org.scalatest.Assertion
 
 object MyTest {
-  val log = Logger("bridge.MyTest")
+  val log: Logger = Logger("bridge.MyTest")
 }
 
 /**
@@ -60,7 +61,7 @@ class MyTest extends AnyFlatSpec with Matchers {
     def isRefreshCalled = callRefresh
     def getSetPage = callSet
 
-    def resetRouter = {
+    def resetRouter: Unit = {
       callRefresh = false
       callSet = None
     }
@@ -207,7 +208,7 @@ class MyTest extends AnyFlatSpec with Matchers {
 //
 //  }
 
-  def myassert[T]( got: T, expect: T, msg: String)( implicit pos: SourcePosition ) = {
+  def myassert[T]( got: T, expect: T, msg: String)( implicit pos: SourcePosition ): Assertion = {
     withClue(msg+" called from "+pos.line) {
       got mustBe expect
     }

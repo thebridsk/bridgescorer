@@ -13,7 +13,7 @@ import scala.jdk.CollectionConverters._
 import org.openqa.selenium.By
 
 object Page {
-  val testlog = Logger( getClass.getName )
+  val testlog: Logger = Logger( getClass.getName )
 
   type AnyPage = Page[_]
 }
@@ -509,43 +509,43 @@ abstract class Page[ +T <: Page[T] ]()( implicit webDriver: WebDriver, pageCreat
     eventually { findElemsByXPath(xp) }
   }
 
-  def findCombobox( name: String )(implicit pos: Position) = {
+  def findCombobox( name: String )(implicit pos: Position): Combobox = {
     Combobox.find(name)
   }
 
-  def getCombobox( name: String )(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def getCombobox( name: String )(implicit patienceConfig: PatienceConfig, pos: Position): Combobox = {
     eventually { findCombobox(name) }
   }
 
-  def findCheckbox( name: String )(implicit pos: Position) = {
+  def findCheckbox( name: String )(implicit pos: Position): Checkbox = {
     Checkbox.find(name)
   }
 
-  def getCheckbox( name: String )(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def getCheckbox( name: String )(implicit patienceConfig: PatienceConfig, pos: Position): Checkbox = {
     eventually { findCheckbox(name) }
   }
 
-  def isCheckboxSelected( name: String )(implicit pos: Position) = {
+  def isCheckboxSelected( name: String )(implicit pos: Position): Boolean = {
     findCheckbox(name).isSelected
   }
 
-  def findDateTimePicker( name: String )(implicit pos: Position) = {
+  def findDateTimePicker( name: String )(implicit pos: Position): DateTimePicker = {
     DateTimePicker.find(name)
   }
 
-  def getDateTimePicker( name: String )(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def getDateTimePicker( name: String )(implicit patienceConfig: PatienceConfig, pos: Position): DateTimePicker = {
     eventually { findDateTimePicker(name) }
   }
 
-  def findRadioButton( name: String )(implicit pos: Position) = {
+  def findRadioButton( name: String )(implicit pos: Position): Checkbox = {
     RadioButton.find(name)
   }
 
-  def getRadioButton( name: String )(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def getRadioButton( name: String )(implicit patienceConfig: PatienceConfig, pos: Position): Checkbox = {
     eventually { findRadioButton(name) }
   }
 
-  def isRadioButtonSelected( name: String )(implicit pos: Position) = {
+  def isRadioButtonSelected( name: String )(implicit pos: Position): Boolean = {
     findRadioButton(name).isSelected
   }
 
@@ -570,7 +570,7 @@ abstract class Page[ +T <: Page[T] ]()( implicit webDriver: WebDriver, pageCreat
 
   def go(implicit pos: Position) = PageBrowser.go
 
-  def pressKeys(value: String)(implicit pos: Position) = PageBrowser.pressKeys(value)
+  def pressKeys(value: String)(implicit pos: Position): PageBrowser = PageBrowser.pressKeys(value)
 
   def executeScript[T](script: String, args: AnyRef*): AnyRef = PageBrowser.executeScript(script, args:_*)
 
@@ -579,7 +579,7 @@ abstract class Page[ +T <: Page[T] ]()( implicit webDriver: WebDriver, pageCreat
    * @param directory The directory where the screenshot is written to
    * @param filename The name of the file where the screenshot is written to.  It it doesn't end in ".png", then ".png" will be appended.
    */
-  def takeScreenshot( directory: String, filename: String )( implicit pos: Position ) = {
+  def takeScreenshot( directory: String, filename: String )( implicit pos: Position ): T = {
     PageBrowser.takeScreenshot(directory, filename)
     this
   }
@@ -589,7 +589,7 @@ abstract class Page[ +T <: Page[T] ]()( implicit webDriver: WebDriver, pageCreat
    * The filename of the screenshot file will be generated from the position object.  filename-linenumber.png
    * @param directory The directory where the screenshot is written to
    */
-  def takeScreenshot( directory: String )( implicit pos: Position ) = {
+  def takeScreenshot( directory: String )( implicit pos: Position ): T = {
     val filename = pos.lineForFilename
     PageBrowser.takeScreenshot(directory, filename)
     this
@@ -664,7 +664,7 @@ abstract class Page[ +T <: Page[T] ]()( implicit webDriver: WebDriver, pageCreat
     }
   }
 
-  def getTextNode( e: Element, i: Int ) = {
+  def getTextNode( e: Element, i: Int ): String = {
     val script = """
 var parent = arguments[0];
 var child = parent.childNodes.item(arguments[1]);
@@ -675,7 +675,7 @@ return ret;
     r.asInstanceOf[String]
   }
 
-  def getAllTextNodes( e: Element ) = {
+  def getAllTextNodes( e: Element ): List[String] = {
     val script = """
 var parent = arguments[0];
 var child = parent.firstChild;

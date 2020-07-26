@@ -15,13 +15,14 @@ import com.github.thebridsk.bridge.client.routes.BridgeRouter
 import com.github.thebridsk.bridge.client.routes.BridgeRouterBase
 import scala.scalajs.js.URIUtils
 import com.github.thebridsk.bridge.data.MatchRubber
+import japgolly.scalajs.react.extra.router.RoutingRule
 
 object RubberModule extends Module {
   case class PlayRubber( m: RubberPage ) extends AppPage
 
   def verifyPages(): List[AppPage] = RubberRouter.verifyPages.map( p => PlayRubber(p).asInstanceOf[AppPage]).toList
 
-  def routes() = RubberRouter.routes.prefixPath_/("#rubber").pmap[AppPage](PlayRubber){ case PlayRubber(m) => m } |
+  def routes(): RoutingRule[AppPage,Unit] = RubberRouter.routes.prefixPath_/("#rubber").pmap[AppPage](PlayRubber){ case PlayRubber(m) => m } |
     RubberRouter.importRoutes.prefixPath_/("#import").pmap[AppPage](PlayRubber){ case PlayRubber(m) => m }
 
 }
@@ -29,42 +30,42 @@ object RubberModule extends Module {
 sealed trait RubberPage
 object RubberRouter {
 
-  val logger = Logger("bridge.RubberRouter")
+  val logger: Logger = Logger("bridge.RubberRouter")
 
   trait ListViewBase extends RubberPage
 
   object ListView extends ListViewBase
   case class ImportListView( importId: String ) extends ListViewBase {
-    def getDecodedId = URIUtils.decodeURI(importId)
+    def getDecodedId: String = URIUtils.decodeURI(importId)
   }
 
   trait HasRubberId {
     val srid: String
-    def rid = MatchRubber.id(srid)
+    def rid: MatchRubber.Id = MatchRubber.id(srid)
   }
 
   trait RubberMatchViewBase extends RubberPage with HasRubberId {
-    def toRubber = RubberMatchDetailsView(srid)
-    def toDetails = RubberMatchDetailsView(srid)
-    def toNames = RubberMatchNamesView(srid)
-    def toHand( handid: String ) = RubberMatchHandView(srid,handid)
+    def toRubber: RubberMatchDetailsView = RubberMatchDetailsView(srid)
+    def toDetails: RubberMatchDetailsView = RubberMatchDetailsView(srid)
+    def toNames: RubberMatchNamesView = RubberMatchNamesView(srid)
+    def toHand( handid: String ): RubberMatchHandView = RubberMatchHandView(srid,handid)
   }
   case class RubberMatchView( srid: String ) extends RubberMatchViewBase
   case class RubberMatchDetailsView( srid: String ) extends RubberMatchViewBase
 
   case class RubberMatchNamesView( srid: String ) extends RubberPage with HasRubberId {
-    def toRubber = RubberMatchView(srid)
-    def toDetails = RubberMatchDetailsView(srid)
-    def toHand( handid: String ) = RubberMatchHandView(srid,handid)
+    def toRubber: RubberMatchView = RubberMatchView(srid)
+    def toDetails: RubberMatchDetailsView = RubberMatchDetailsView(srid)
+    def toHand( handid: String ): RubberMatchHandView = RubberMatchHandView(srid,handid)
   }
   case class RubberMatchHandView( srid: String, handid: String ) extends RubberPage with HasRubberId {
-    def toRubber = RubberMatchView(srid)
-    def toDetails = RubberMatchDetailsView(srid)
-    def toNames = RubberMatchNamesView(srid)
-    def toHand( handid: String ) = RubberMatchHandView(srid,handid)
+    def toRubber: RubberMatchView = RubberMatchView(srid)
+    def toDetails: RubberMatchDetailsView = RubberMatchDetailsView(srid)
+    def toNames: RubberMatchNamesView = RubberMatchNamesView(srid)
+    def toHand( handid: String ): RubberMatchHandView = RubberMatchHandView(srid,handid)
   }
 
-  val verifyPages = ListView::
+  val verifyPages: List[RubberPage] = ListView::
                     ImportListView("import.zip")::
                     RubberMatchView("R1")::
                     RubberMatchDetailsView("R1")::
@@ -92,7 +93,7 @@ object RubberRouter {
         def toRootPage( page: AppPage ): Unit = RubberModule.toRootPage(page)
     }
 
-  val routes = RouterConfigDsl[RubberPage].buildRule { dsl =>
+  val routes: RoutingRule[RubberPage,Unit] = RouterConfigDsl[RubberPage].buildRule { dsl =>
     import dsl._
 
     (emptyRule
@@ -111,7 +112,7 @@ object RubberRouter {
     )
   }
 
-  val importRoutes = RouterConfigDsl[RubberPage].buildRule { dsl =>
+  val importRoutes: RoutingRule[RubberPage,Unit] = RouterConfigDsl[RubberPage].buildRule { dsl =>
     import dsl._
 
     (emptyRule

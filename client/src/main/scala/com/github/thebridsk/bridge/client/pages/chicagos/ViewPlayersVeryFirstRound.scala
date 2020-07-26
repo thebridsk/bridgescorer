@@ -23,34 +23,35 @@ import com.github.thebridsk.materialui.MuiTypography
 import com.github.thebridsk.materialui.TextVariant
 import com.github.thebridsk.materialui.TextColor
 
+
 object ViewPlayersVeryFirstRound {
   import PagePlayers._
   import PagePlayersInternal._
 
-  def apply( props: Props ) = component(props)
+  def apply( props: Props ) = component(props)  // scalafix:ok ExplicitResultTypes; ReactComponent
 
   class Backend(scope: BackendScope[Props, PlayerState]) {
     // PlayerState.dealer contains "north", "south", "east", "west"
 
-    def setNorth( text: String ) = scope.modState( ps => {traceSetname("setNorth",ps.copy(north=text))})
-    def setSouth( text: String ) = scope.modState( ps => {traceSetname("setSouth",ps.copy(south=text))})
-    def setEast( text: String ) =  scope.modState( ps => {traceSetname("setEast",ps.copy(east=text))})
-    def setWest( text: String ) =  scope.modState( ps => {traceSetname("setWest",ps.copy(west=text))})
+    def setNorth( text: String ): Callback = scope.modState( ps => {traceSetname("setNorth",ps.copy(north=text))})
+    def setSouth( text: String ): Callback = scope.modState( ps => {traceSetname("setSouth",ps.copy(south=text))})
+    def setEast( text: String ): Callback =  scope.modState( ps => {traceSetname("setEast",ps.copy(east=text))})
+    def setWest( text: String ): Callback =  scope.modState( ps => {traceSetname("setWest",ps.copy(west=text))})
 
-    def setExtra( text: String ) = scope.modState( ps => {traceSetname("setExtra",ps.copy(extra=Some(text)))})
+    def setExtra( text: String ): Callback = scope.modState( ps => {traceSetname("setExtra",ps.copy(extra=Some(text)))})
 
     def traceSetname( pos: String, state: PlayerState ): PlayerState = {
       logger.fine("ViewPlayersVeryFirstRound: Setting player "+pos+": "+state)
       state
     }
 
-    val reset = scope.modState( ps => PlayerState("","","","",None, gotNames = ps.gotNames, names=ps.names))
+    val reset: Callback = scope.modState( ps => PlayerState("","","","",None, gotNames = ps.gotNames, names=ps.names))
 
-    def setFirstDealer( p: PlayerPosition ) = scope.modState(ps => ps.copy(dealer=Some(p)))
+    def setFirstDealer( p: PlayerPosition ): Callback = scope.modState(ps => ps.copy(dealer=Some(p)))
 
     private def noNull( s: String ) = Option(s).getOrElse("")
 
-    def render( props: Props, state: PlayerState ) = {
+    def render( props: Props, state: PlayerState ) = { // scalafix:ok ExplicitResultTypes; React
       import ChicagoStyles._
       val valid = state.isValid()
       val errormsg = if (valid) ""
@@ -203,15 +204,15 @@ object ViewPlayersVeryFirstRound {
       )
     }
 
-    val toggleQuintet = scope.modState( s=> s.copy( quintet = !s.quintet))
+    val toggleQuintet: Callback = scope.modState( s=> s.copy( quintet = !s.quintet))
 
-    val toggleSimpleRotation = scope.modState( s=> s.copy( simpleRotation = !s.simpleRotation))
+    val toggleSimpleRotation: Callback = scope.modState( s=> s.copy( simpleRotation = !s.simpleRotation))
 
-    def setSimpleRotation( simple: Boolean ) = scope.modState( s=> s.copy( simpleRotation = simple))
+    def setSimpleRotation( simple: Boolean ): Callback = scope.modState( s=> s.copy( simpleRotation = simple))
 
-    val doChicagoFive = scope.modState({ ps => ps.copy(chicago5 = !ps.chicago5) } )
+    val doChicagoFive: Callback = scope.modState({ ps => ps.copy(chicago5 = !ps.chicago5) } )
 
-    val ok = scope.stateProps { (state,props) =>
+    val ok: Callback = scope.stateProps { (state,props) =>
       val e = if (state.chicago5 && state.extra.isDefined) {
         val ex = state.extra.get
         if (ex == "") None
@@ -249,22 +250,23 @@ object ViewPlayersVeryFirstRound {
       props.router.set(props.page.toHandView(0))
     }
 
-    val namesCallback = scope.modState(s => {
+    val namesCallback: Callback = scope.modState(s => {
       val names = NamesStore.getNames
       s.copy(gotNames=true, names=names)
     })
 
-    val didMount = CallbackTo {
+    val didMount: Callback = CallbackTo {
       logger.info("ViewPlayersVeryFirstRound.didMount")
       NamesStore.ensureNamesAreCached(Some(namesCallback))
     }
 
-    val willUnmount = CallbackTo {
+    val willUnmount: Callback = CallbackTo {
       logger.info("ViewPlayersVeryFirstRound.willUnmount")
     }
 
   }
 
+  private[chicagos]
   val component = ScalaComponent.builder[Props]("ViewPlayersVeryFirstRound")
                             .initialStateFromProps { props => {
                               val chi = props.chicago

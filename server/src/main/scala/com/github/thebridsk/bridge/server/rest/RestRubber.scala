@@ -27,12 +27,13 @@ import javax.ws.rs.PUT
 import javax.ws.rs.DELETE
 import scala.concurrent.Future
 import com.github.thebridsk.bridge.server.backend.resource.Result
+import akka.http.scaladsl.server.Route
 
 object RestRubber {
   implicit class OrdFoo(val x: MatchRubber)
       extends AnyVal
       with Ordered[MatchRubber] {
-    def compare(that: MatchRubber) = that.id.compare(x.id)
+    def compare(that: MatchRubber): Int = that.id.compare(x.id)
   }
 
 }
@@ -62,7 +63,7 @@ trait RestRubber extends HasActorSystem {
 
   import UtilsPlayJson._
 
-  def sort(a: Array[MatchRubber]) = {
+  def sort(a: Array[MatchRubber]): Array[MatchRubber] = {
 
     Sorting.quickSort(a)
     a
@@ -71,7 +72,7 @@ trait RestRubber extends HasActorSystem {
   /**
     * spray route for all the methods on this resource
     */
-  val route = pathPrefix(resName) {
+  val route: Route = pathPrefix(resName) {
 //    logRequest("route", DebugLevel) {
     getRubber ~ getRubbers ~ postRubber ~ putRubber ~ deleteRubber ~ restNestedHands
 //      }
@@ -99,8 +100,8 @@ trait RestRubber extends HasActorSystem {
       )
     )
   )
-  def xxxgetRubbers() = {}
-  val getRubbers = pathEnd {
+  def xxxgetRubbers(): Unit = {}
+  val getRubbers: Route = pathEnd {
     get {
       resourceMap(store.readAll())
     }
@@ -155,8 +156,8 @@ trait RestRubber extends HasActorSystem {
       )
     )
   )
-  def xxxgetRubber() = {}
-  val getRubber = logRequest("RestRubber.getRubber", DebugLevel) {
+  def xxxgetRubber(): Unit = {}
+  val getRubber: Route = logRequest("RestRubber.getRubber", DebugLevel) {
     logResult("RestRubber.postRubber") {
       get {
         path("""[a-zA-Z0-9]+""".r) { sid =>
@@ -167,7 +168,7 @@ trait RestRubber extends HasActorSystem {
     }
   }
 
-  val restNestedHands =
+  val restNestedHands: Route =
     logRequestResult("RestNestedRubberHand.restNestedHand", DebugLevel) {
       pathPrefix("""[a-zA-Z0-9]+""".r) { sid =>
         val id = MatchRubber.id(sid)
@@ -229,8 +230,8 @@ trait RestRubber extends HasActorSystem {
       )
     )
   )
-  def xxxpostRubber() = {}
-  val postRubber =
+  def xxxpostRubber(): Unit = {}
+  val postRubber: Route =
     logRequest("RestRubber.postRubber") {
       logResult("RestRubber.postRubber") {
         pathEnd {
@@ -304,8 +305,8 @@ trait RestRubber extends HasActorSystem {
       )
     )
   )
-  def xxxputRubber() = {}
-  val putRubber =
+  def xxxputRubber(): Unit = {}
+  val putRubber: Route =
     logRequest("RestRubber.putRubber") {
       logResult("RestRubber.putRubber") {
         path("""[a-zA-Z0-9]+""".r) { sid =>
@@ -350,8 +351,8 @@ trait RestRubber extends HasActorSystem {
       )
     )
   )
-  def xxxdeleteRubber() = {}
-  val deleteRubber = delete {
+  def xxxdeleteRubber(): Unit = {}
+  val deleteRubber: Route = delete {
     path("""[a-zA-Z0-9]+""".r) { sid =>
       val id = MatchRubber.id(sid)
       resourceDelete(store.select(id).delete())

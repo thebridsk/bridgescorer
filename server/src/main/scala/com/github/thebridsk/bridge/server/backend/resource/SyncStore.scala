@@ -16,7 +16,7 @@ class SyncStore[VId <: Comparable[VId], VType <: VersionedInstance[VType, VType,
   private def await[T](timeout: Duration)(fut: Future[T]) =
     Await.result(fut, timeout)
 
-  val defaultTimeout = 30.seconds
+  val defaultTimeout: FiniteDuration = 30.seconds
 
   /**
     * Create a new value in the collection

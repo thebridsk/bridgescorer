@@ -15,31 +15,34 @@ import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.ScoreboardPag
 import com.github.thebridsk.bridge.data.BoardSet
 import com.github.thebridsk.bridge.data.Movement
 import com.github.thebridsk.bridge.fullserver.test.pages.bridge.HandPicture
+import com.github.thebridsk.bridge.data.BoardInSet
+import com.github.thebridsk.browserpages.Element
+import scala.util.matching.Regex
 
 object HandPage {
 
-  val log = Logger[HandPage]()
+  val log: Logger = Logger[HandPage]()
 
-  def current(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
+  def current(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position): HandPage = {
     new HandPage
   }
 
-  def goto(dupid: String, tableId: Int, roundId: Int, board: String, hand: String )(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
+  def goto(dupid: String, tableId: Int, roundId: Int, board: String, hand: String )(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position): HandPage = {
     go to urlFor(dupid, tableId, roundId, board, hand )
     new HandPage
   }
 
   // duplicate URI: #duplicate/M19/table/1/round/1/boards/B1/hands/T1
-  def urlFor(dupid: String, tableId: Int, roundId: Int, board: String, hand: String ) = TestServer.getAppPageUrl(s"duplicate/match/$dupid/table/$tableId/round/$roundId/boards/$board/hands/$hand")
+  def urlFor(dupid: String, tableId: Int, roundId: Int, board: String, hand: String ): String = TestServer.getAppPageUrl(s"duplicate/match/$dupid/table/$tableId/round/$roundId/boards/$board/hands/$hand")
 
-  val patternForIds = """(M\d+)/table/(\d+)/round/(\d+)/boards/(B\d+)/hands/(T\d+)""".r
+  val patternForIds: Regex = """(M\d+)/table/(\d+)/round/(\d+)/boards/(B\d+)/hands/(T\d+)""".r
 }
 
 class HandPage( implicit val webDriver: WebDriver, pageCreated: SourcePosition ) extends BaseHandPage[HandPage] with HandPicture[HandPage] {
   import HandPage._
 
   override
-  def validate(implicit patienceConfig: PatienceConfig, pos: Position) = logMethod(s"${pos.line} ${getClass.getSimpleName}.validate, patienceConfig=${patienceConfig}") {
+  def validate(implicit patienceConfig: PatienceConfig, pos: Position): HandPage = logMethod(s"${pos.line} ${getClass.getSimpleName}.validate, patienceConfig=${patienceConfig}") {
     eventually {
       findIds
     }
@@ -48,18 +51,18 @@ class HandPage( implicit val webDriver: WebDriver, pageCreated: SourcePosition )
   }
 
   override
-  def clickOk(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def clickOk(implicit patienceConfig: PatienceConfig, pos: Position): BoardPage = {
     super.clickOk
     new BoardPage
   }
 
   override
-  def clickCancel(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def clickCancel(implicit patienceConfig: PatienceConfig, pos: Position): BoardPage = {
     super.clickCancel
     new BoardPage
   }
 
-  def findIds(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def findIds(implicit patienceConfig: PatienceConfig, pos: Position): (String, String, String, String, String) = {
     val prefix = TestServer.getAppPageUrl("duplicate/match/")
     val cur = currentUrl
     withClue(s"Unable to determine duplicate id: ${cur}") {
@@ -71,7 +74,7 @@ class HandPage( implicit val webDriver: WebDriver, pageCreated: SourcePosition )
     }
   }
 
-  def checkDealerPos( pos: PlayerPosition )(implicit patienceConfig: PatienceConfig, spos: Position) = {
+  def checkDealerPos( pos: PlayerPosition )(implicit patienceConfig: PatienceConfig, spos: Position): HandPage = {
     val t = getElemByXPath(s"""//div[contains(concat(' ', @class, ' '), ' handViewTableBoard ')]/table/tbody/tr[3]/td[1]""").text
     t must fullyMatch regex s"""Dealer ${pos.name}\n.*"""
     this
@@ -201,19 +204,19 @@ class HandPage( implicit val webDriver: WebDriver, pageCreated: SourcePosition )
                   )(implicit
                      patienceConfig: PatienceConfig,
                      pos: Position
-                  ) = {
+                  ): Element = {
     val e = find(xpath(s"""//span[@id = '${loc.name}']/span"""))
     e
   }
 
-  val patternTeamNumber = """ \((\d+)\)""".r
+  val patternTeamNumber: Regex = """ \((\d+)\)""".r
 
   def getTeamNumber(
                     loc: PlayerPosition
                   )(implicit
                      patienceConfig: PatienceConfig,
                      pos: Position
-                  ) = {
+                  ): String = {
     eventually {
       findTeamNumberElement(loc).text match {
         case patternTeamNumber( team ) => team
@@ -240,11 +243,11 @@ case class EnterHand(
       tricks: Int,
       vul: Vulnerability
     )(implicit patienceConfig: PatienceConfig, pos: Position) {
-  def ewScore = -nsScore
+  def ewScore: Int = -nsScore
 
-  def didTeamPlay( team: Int ) = team==nsTeam||team==ewTeam
+  def didTeamPlay( team: Int ): Boolean = team==nsTeam||team==ewTeam
 
-  def ewIMP = if (nsIMP == 0.0) 0.0 else -nsIMP    // I don't want -0.0
+  def ewIMP: Double = if (nsIMP == 0.0) 0.0 else -nsIMP    // I don't want -0.0
 }
 
 sealed trait HandViewType
@@ -259,11 +262,11 @@ case class TeamNotPlayingHand( board: Int, team: Team ) extends OtherHand
 
 case class HandsOnBoard( table: Int, round: Int, board: Int, hand: EnterHand, other: OtherHand* ) {
 
-  def addTeamNotPlayed( tnp: TeamNotPlayingHand* ) = {
+  def addTeamNotPlayed( tnp: TeamNotPlayingHand* ): HandsOnBoard = {
     HandsOnBoard( table, round, board, hand, (other.toList ::: (tnp.toList)): _* )
   }
 
-  def doesTeamPlay( team: Int ) = {
+  def doesTeamPlay( team: Int ): Boolean = {
     other.find(oh => oh match {
       case TeamNotPlayingHand( b, t ) if (team==t.teamid) => true
       case _ => false
@@ -337,7 +340,7 @@ case class HandsOnBoard( table: Int, round: Int, board: Int, hand: EnterHand, ot
     }
   }
 
-  def numberUnplayed = other.filter(oh => oh.isInstanceOf[OtherHandNotPlayed]).size
+  def numberUnplayed: Int = other.filter(oh => oh.isInstanceOf[OtherHandNotPlayed]).size
 
   /**
    * @param hands all the hands that have been played.
@@ -380,19 +383,19 @@ class AllHandsInMatch( val hands: List[HandsOnBoard],
                        val movement: Option[Movement]
                      ) {
 
-  val boards = hands.map(h => h.board).distinct.sorted
+  val boards: List[Int] = hands.map(h => h.board).distinct.sorted
 
-  val rounds = hands.map(h => h.round).distinct.sorted
+  val rounds: List[Int] = hands.map(h => h.round).distinct.sorted
 
-  def getBoardsInRound( round: Int ) = {
+  def getBoardsInRound( round: Int ): List[Int] = {
     hands.filter(h=>h.round==round).map(h=>h.board).distinct.sorted
   }
 
-  def getBoardsInTableRound( table: Int, round: Int ) = {
+  def getBoardsInTableRound( table: Int, round: Int ): List[Int] = {
     hands.filter(h=>h.round==round&&h.table==table).map(h=>h.board).distinct.sorted
   }
 
-  def getBoard( table: Int, round: Int, board: Int ) = hands.find(hob=> hob.board==board && hob.table==table && hob.round==round) match {
+  def getBoard( table: Int, round: Int, board: Int ): HandsOnBoard = hands.find(hob=> hob.board==board && hob.table==table && hob.round==round) match {
     case Some(b) => b
     case None =>
       import org.scalatest.Assertions._
@@ -419,7 +422,7 @@ class AllHandsInMatch( val hands: List[HandsOnBoard],
     }
   }
 
-  def getTeamScoreToRound( team: Team, toRound: Int, viewtype: HandViewType, imp: Boolean = false ) = {
+  def getTeamScoreToRound( team: Team, toRound: Int, viewtype: HandViewType, imp: Boolean = false ): TeamScoreboard = {
     var total = 0.0
     val bs = boards.map{b =>
       getBoardToRound(toRound, b) match {
@@ -453,7 +456,7 @@ class AllHandsInMatch( val hands: List[HandsOnBoard],
     (ts, pes._2)
   }
 
-  def getBoardFromBoardSet( board: Int ) = {
+  def getBoardFromBoardSet( board: Int ): Option[BoardInSet] = {
     boardsets match {
       case Some(bs) =>
         bs.boards.find(b=>b.id == board)
@@ -461,28 +464,28 @@ class AllHandsInMatch( val hands: List[HandsOnBoard],
     }
   }
 
-  def getHandsOnBoards( board: Int ) = {
+  def getHandsOnBoards( board: Int ): List[HandsOnBoard] = {
     hands.filter( h => h.board == board )
   }
 
-  def getTeamsThatPlayBoard( board: Int ) = {
+  def getTeamsThatPlayBoard( board: Int ): List[Int] = {
     getHandsOnBoards(board).flatMap(hob => hob.hand.nsTeam::hob.hand.ewTeam::Nil)
   }
 
-  val teamNumber = teams.map( t => t.teamid)
+  val teamNumber: List[Int] = teams.map( t => t.teamid)
 
-  def getTeamsThatDontPlayBoard( board: Int ) = {
+  def getTeamsThatDontPlayBoard( board: Int ): List[Int] = {
     val played = getTeamsThatPlayBoard(board)
     teamNumber.filter( t => !played.contains(t) )
   }
 
-  val teamsById = teams.map( t => (t.teamid, t)).toMap
+  val teamsById: Map[Int,Team] = teams.map( t => (t.teamid, t)).toMap
 
 
   /**
    * Add in all the TeamNotPlayingHand for all hands where a team does not play the board.
    */
-  def addTeamsNotPlayingBoards = {
+  def addTeamsNotPlayingBoards: AllHandsInMatch = {
     val h = hands.map { hob =>
       hob.addTeamNotPlayed( getTeamsThatDontPlayBoard(hob.board).map(t => TeamNotPlayingHand(hob.board, teamsById(t))): _* )
     }
@@ -496,7 +499,7 @@ class AllHandsInMatch( val hands: List[HandsOnBoard],
    *  Also calculates the match points in the OtherHandPlayed objects.
    *  It will also add TeamNotPlayingHand object if any team does not play the board.
    */
-  def fixHands = {
+  def fixHands: AllHandsInMatch = {
     val nh = hands.map { hob =>
       val (played,notplayed) = getHandsOnBoards( hob.board ).filterNot( h => h.table == hob.table && h.round == hob.round).
                                   foldLeft((List[HandsOnBoard](),List[HandsOnBoard]())) { (ac,h) =>
@@ -526,7 +529,7 @@ class AllHandsInMatch( val hands: List[HandsOnBoard],
     new AllHandsInMatch( nh, teams, boardsets, movement ).addTeamsNotPlayingBoards
   }
 
-  def checkFixHands = {
+  def checkFixHands: AllHandsInMatch = {
     val calc = fixHands
 
     hands.foreach { hob =>
@@ -543,13 +546,13 @@ class AllHandsInMatch( val hands: List[HandsOnBoard],
   /**
    * @return Tuple2( ns, ew )
    */
-  def getNSEW( table: Int, round: Int ) = {
+  def getNSEW( table: Int, round: Int ): (Team, Team) = {
     val boards = getBoardsInTableRound(table, round)
     val b = getBoard(table, round, boards.head)
     ( teamsById(b.hand.nsTeam), teamsById(b.hand.ewTeam) )
   }
 
-  def getTeamThatDidNotPlay( table: Int, round: Int ) = {
+  def getTeamThatDidNotPlay( table: Int, round: Int ): Option[Int] = {
     val boards = getBoardsInTableRound(table, round)
     val played = boards.flatMap { b =>
       val bb = getBoard(table, round, b)
@@ -558,7 +561,7 @@ class AllHandsInMatch( val hands: List[HandsOnBoard],
     teamNumber.find( t => !played.contains(t))
   }
 
-  def getTeamThatDidNotPlay( round: Int ) = {
+  def getTeamThatDidNotPlay( round: Int ): Option[Int] = {
     val boards = getBoardsInRound(round)
     val played = boards.flatMap { b =>
       val bb = getBoardToRound(round, b).get

@@ -17,38 +17,41 @@ import com.github.thebridsk.bridge.data.bridge.MadeOrDown
 import com.github.thebridsk.bridge.data.bridge.Vulnerability
 import com.github.thebridsk.browserpages.Page
 import com.github.thebridsk.browserpages.GenericPage
+import com.github.thebridsk.browserpages.Element
+import org.scalatest.Assertion
+import scala.util.matching.Regex
 
 object BaseHandPage {
 
-  val log = Logger(getClass.getName)
+  val log: Logger = Logger(getClass.getName)
 
-  def urlFor = TestServer.getAppPageUrl("duplicate/#new")
+  def urlFor: String = TestServer.getAppPageUrl("duplicate/#new")
 
-  val patternContractTricksToInt = """CT(\d)""".r
-  val patternTricksToInt = """T(\d+)""".r
+  val patternContractTricksToInt: Regex = """CT(\d)""".r
+  val patternTricksToInt: Regex = """T(\d+)""".r
 
   val passedOutButton = "CTPassed"
-  val nContractTricksButtons = (1 to 7).map( i => i->s"CT$i" ).toMap
-  val contractTricksButtons = nContractTricksButtons + (0->passedOutButton)
-  val contractSuitButtons = "NSHDC".map( c => (ContractSuit( c.toString ),s"CS$c") ).toMap
-  val doubledButtons = "NDR".map( c => (ContractDoubled(c.toString), s"Doubled$c") ).toMap
-  val declarerButtons = "NEWS".map( c => (PlayerPosition(c.toString), s"Dec$c") ).toMap
-  val madeDownButtons = Map( Made-> "made", Down->"down")
-  val tricksButtons = (1 to 13).map( i => i->s"T$i" ).toMap
+  val nContractTricksButtons: Map[Int,String] = (1 to 7).map( i => i->s"CT$i" ).toMap
+  val contractTricksButtons: Map[Int,String] = nContractTricksButtons + (0->passedOutButton)
+  val contractSuitButtons: Map[ContractSuit,String] = "NSHDC".map( c => (ContractSuit( c.toString ),s"CS$c") ).toMap
+  val doubledButtons: Map[ContractDoubled,String] = "NDR".map( c => (ContractDoubled(c.toString), s"Doubled$c") ).toMap
+  val declarerButtons: Map[PlayerPosition,String] = "NEWS".map( c => (PlayerPosition(c.toString), s"Dec$c") ).toMap
+  val madeDownButtons: Map[MadeOrDown,String] = Map( Made-> "made", Down->"down")
+  val tricksButtons: Map[Int,String] = (1 to 13).map( i => i->s"T$i" ).toMap
 
-  val honorsPoints = Map( 0 ->"Honors0", 100->"Honors100", 150->"Honors150")
-  val honPlayButtons = "NEWS".map( c => (PlayerPosition(c.toString), s"HonPlay$c") ).toMap
+  val honorsPoints: Map[Int,String] = Map( 0 ->"Honors0", 100->"Honors100", 150->"Honors150")
+  val honPlayButtons: Map[PlayerPosition,String] = "NEWS".map( c => (PlayerPosition(c.toString), s"HonPlay$c") ).toMap
 
-  val alwaysButtons =
+  val alwaysButtons: List[String] =
       "Ok"::"Cancel"::"ChangeSK"::"InputStyle"::"Clear"::
       nContractTricksButtons.values.toList:::    // Passed out is not always there
       contractSuitButtons.values.toList:::
       doubledButtons.values.toList:::
       declarerButtons.values.toList
 
-  val patternInputStyle = """Input Style: (.*)""".r
+  val patternInputStyle: Regex = """Input Style: (.*)""".r
 
-  val validInputStyles = "Guide"::"Prompt"::"Original"::Nil
+  val validInputStyles: List[String] = "Guide"::"Prompt"::"Original"::Nil
 
   import com.github.thebridsk.browserpages.PageBrowser._
   def getInputStyle(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position): Option[String] = {
@@ -82,7 +85,7 @@ abstract class BaseHandPage[T <: Page[T]]( implicit webDriver: WebDriver, pageCr
   import BaseHandPage._
 
 
-  def validate(implicit patienceConfig: PatienceConfig, pos: Position) = logMethod(s"${pos.line} ${getClass.getSimpleName}.validate") {
+  def validate(implicit patienceConfig: PatienceConfig, pos: Position): BaseHandPage[T] with T = logMethod(s"${pos.line} ${getClass.getSimpleName}.validate") {
     eventually {
 //      val but = findButton("Ok")
       val but = findButtons(alwaysButtons: _*)
@@ -272,7 +275,7 @@ abstract class BaseHandPage[T <: Page[T]]( implicit webDriver: WebDriver, pageCr
    * @return None if nothing is selected, Some(n) if n is selected
    * @throws TestFailedException if more than one is selected
    */
-  def getSelectedDeclarer(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def getSelectedDeclarer(implicit patienceConfig: PatienceConfig, pos: Position): Option[PlayerPosition] = {
     getSelected( "Declarer", declarerButtons, "Dec" )
   }
 
@@ -281,7 +284,7 @@ abstract class BaseHandPage[T <: Page[T]]( implicit webDriver: WebDriver, pageCr
    * @return None if nothing is selected, Some(n) if n is selected
    * @throws TestFailedException if more than one is selected
    */
-  def getSelectedMadeOrDown(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def getSelectedMadeOrDown(implicit patienceConfig: PatienceConfig, pos: Position): Option[MadeOrDown] = {
     val x = """//button[@id='made' or @id='down'][contains(concat(' ', @class, ' '), ' baseButtonSelected ')]"""
     val selected = findElemsByXPath(x)
     selected.size mustBe 1
@@ -312,7 +315,7 @@ abstract class BaseHandPage[T <: Page[T]]( implicit webDriver: WebDriver, pageCr
    * @return None if nothing is selected, Some(n) if n is selected
    * @throws TestFailedException if more than one is selected
    */
-  def getSelectedTricks(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def getSelectedTricks(implicit patienceConfig: PatienceConfig, pos: Position): Option[Int] = {
     getSelected("Tricks", tricksButtons, "T" )
 //    val selected = findElemsByXPath("//button").flatMap(b => b.attribute("id") match {
 //      case Some(patternTricksToInt(i)) if (b.attribute("class").map{ s => s.indexOf("baseButtonSelected")>0 }.getOrElse(false)) =>
@@ -329,7 +332,7 @@ abstract class BaseHandPage[T <: Page[T]]( implicit webDriver: WebDriver, pageCr
    * @return None if nothing is selected, Some(n) if n is selected
    * @throws TestFailedException if more than one is selected
    */
-  def getSelectedHonors(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def getSelectedHonors(implicit patienceConfig: PatienceConfig, pos: Position): Option[Int] = {
     getSelected( "Honors", honorsPoints, "Honors" )
   }
 
@@ -338,7 +341,7 @@ abstract class BaseHandPage[T <: Page[T]]( implicit webDriver: WebDriver, pageCr
    * @return None if nothing is selected, Some(n) if n is selected
    * @throws TestFailedException if more than one is selected
    */
-  def getSelectedHonorsPlayer(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def getSelectedHonorsPlayer(implicit patienceConfig: PatienceConfig, pos: Position): Option[PlayerPosition] = {
     getSelected( "HonorsPlayer", honPlayButtons, "HonPlay" )
   }
 
@@ -479,7 +482,7 @@ abstract class BaseHandPage[T <: Page[T]]( implicit webDriver: WebDriver, pageCr
                   )(implicit
                      patienceConfig: PatienceConfig,
                      pos: Position
-                  ) = {
+                  ): Element = {
     val e = find(xpath(s"""//span[@id = '${loc.name}']/span[translate(text(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz')]"""))
     e
   }
@@ -489,7 +492,7 @@ abstract class BaseHandPage[T <: Page[T]]( implicit webDriver: WebDriver, pageCr
                   )(implicit
                      patienceConfig: PatienceConfig,
                      pos: Position
-                  ) = {
+                  ): Boolean = {
     val e = findVulnerableElement(loc)
     e.containsClass("handVulnerable")
   }
@@ -499,21 +502,21 @@ abstract class BaseHandPage[T <: Page[T]]( implicit webDriver: WebDriver, pageCr
                   )(implicit
                      patienceConfig: PatienceConfig,
                      pos: Position
-                  ) = {
+                  ): Boolean = {
     eventually {
       val e = findVulnerableElement(loc)
       e.containsClass("handVulnerable")
     }
   }
 
-  val buttonPlayerText = """(.*?) [vV]ul""".r
+  val buttonPlayerText: Regex = """(.*?) [vV]ul""".r
 
   def getName(
                loc: PlayerPosition
              )(implicit
                 patienceConfig: PatienceConfig,
                 pos: Position
-             ) = {
+             ): String = {
     find(xpath(s"""//span[@id = '${loc.name}']""")).text match {
       case buttonPlayerText(name) => name
       case s =>
@@ -538,16 +541,16 @@ abstract class BaseHandPage[T <: Page[T]]( implicit webDriver: WebDriver, pageCr
                    )(implicit
                       patienceConfig: PatienceConfig,
                       pos: Position
-                   ) = {
+                   ): String = {
     find(xpath(s"""//span[@id = '${loc.name}']""")).text
   }
 
-  def checkDealer( name: String )(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def checkDealer( name: String )(implicit patienceConfig: PatienceConfig, pos: Position): BaseHandPage[T] with T = {
     getElemById("Dealer").text mustBe name.trim
     this
   }
 
-  def checkVulnerable( loc: PlayerPosition, vul: Vulnerability )(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def checkVulnerable( loc: PlayerPosition, vul: Vulnerability )(implicit patienceConfig: PatienceConfig, pos: Position): Assertion = {
     withClue(s"Checking vulnerability of ${loc} for ${vul}") {
       getVulnerable(loc) mustBe vul.vul
     }

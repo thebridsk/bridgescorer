@@ -49,9 +49,9 @@ class RestClient[R,I]( val resourceURIfragment: String,
   implicit def RToInputData( r: R ): InputData = writeJson(r)
 
   @inline
-  implicit def StringToR( data: String ) = readJson[R](data)
+  implicit def StringToR( data: String ): R = readJson[R](data)
 
-  implicit def ajaxToRestResult( ajaxResult: AjaxResult[WrapperXMLHttpRequest] ) = {
+  implicit def ajaxToRestResult( ajaxResult: AjaxResult[WrapperXMLHttpRequest] ): RestResult[R] = {
     RestResult.ajaxToRestResult(ajaxResult)
   }
 
@@ -59,14 +59,14 @@ class RestClient[R,I]( val resourceURIfragment: String,
     RestResult.ajaxToRestResult(ajaxResult)
   }
 
-  implicit def ajaxToRestResultArray( ajaxResult: AjaxResult[WrapperXMLHttpRequest] ) = {
+  implicit def ajaxToRestResultArray( ajaxResult: AjaxResult[WrapperXMLHttpRequest] ): RestResultArray[R] = {
     RestResult.ajaxToRestResultArray(ajaxResult)
   }
 
-  val headersForPost=Map("Content-Type" -> "application/json; charset=UTF-8",
+  val headersForPost: Map[String,String]=Map("Content-Type" -> "application/json; charset=UTF-8",
                          "Accept" -> "application/json")
 
-  val headersForGet=Map( "Accept" -> "application/json")
+  val headersForGet: Map[String,String]=Map( "Accept" -> "application/json")
 
   def getQueryString( query: Map[String,String] ): String = {
     if (query.isEmpty) {
@@ -135,7 +135,7 @@ class RestClient[R,I]( val resourceURIfragment: String,
 
 object RestClient {
   implicit class RestMessages( private val req: WrapperXMLHttpRequest ) extends AnyVal {
-    def toRestMessage = {
+    def toRestMessage: String = {
       (try {
         Some(req.responseText)
       } catch {

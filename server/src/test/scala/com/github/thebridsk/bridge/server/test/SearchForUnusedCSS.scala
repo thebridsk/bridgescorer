@@ -5,19 +5,21 @@ import scala.reflect.io.Directory
 import scala.io.Source
 import com.github.thebridsk.source.SourcePosition
 import org.scalactic.source.Position
+import org.rogach.scallop.ScallopOption
+import scala.util.matching.Regex
 
 object SearchForUnusedCSS extends Main {
 
   import com.github.thebridsk.utilities.main.Converters._
 
-  val cssDir = trailArg[Directory](
+  val cssDir: ScallopOption[Directory] = trailArg[Directory](
       name = "cssdir",
       descr = "Directory that contains the css files",
       required = true,
       default = Some( Directory("./src/main/public/css") ),
       hidden = false)
 
-  val scalaDir = trailArg[Directory](
+  val scalaDir: ScallopOption[Directory] = trailArg[Directory](
       name = "scaladir",
       descr = "Directory that contains the scala files",
       required = true,
@@ -25,21 +27,21 @@ object SearchForUnusedCSS extends Main {
       hidden = false)
 
   case class Entry( cssClass: String, styleName: List[String] = List(), styleDef: List[SourcePosition] = List(), sourceUse: List[SourcePosition] = List() ) {
-    def addStyleName( s: String ) = {
+    def addStyleName( s: String ): Entry = {
       if (styleName.contains(s)) this
       else copy(styleName = s::styleName )
     }
-    def addStyleDef( f: SourcePosition) = {
+    def addStyleDef( f: SourcePosition): Entry = {
       if (styleDef.contains(f)) this
       else copy( styleDef = f::styleDef )
     }
-    def addSource( f: SourcePosition) = {
+    def addSource( f: SourcePosition): Entry = {
       if (sourceUse.contains(f)) this
       else copy( sourceUse = f::sourceUse )
     }
   }
 
-  def execute() = {
+  def execute(): Int = {
 
     val classes = getCssClasses( cssDir() )
     logger.info( s"""Found the following CSS classes:${classes.mkString("\n  ", "\n  ", "")}""" )
@@ -93,8 +95,8 @@ object SearchForUnusedCSS extends Main {
     0
   }
 
-  val patternClassname = """\.([a-zA-Z][a-zA-Z0-9]+)""".r
-  def getCssClasses( dir: Directory ) = {
+  val patternClassname: Regex = """\.([a-zA-Z][a-zA-Z0-9]+)""".r
+  def getCssClasses( dir: Directory ): List[Entry] = {
     dir.files.flatMap { f =>
       Source.fromFile(f.jfile, "UTF-8").getLines().flatMap { line =>
         patternClassname.findAllIn(line).matchData.map { matcher => matcher.group(1) }

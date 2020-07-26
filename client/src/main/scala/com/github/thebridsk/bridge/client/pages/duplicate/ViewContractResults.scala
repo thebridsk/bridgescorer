@@ -14,6 +14,7 @@ import com.github.thebridsk.bridge.clientcommon.react.AppButton
 import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles
 import DuplicateStyles._
 
+
 /**
  * A skeleton component.
  *
@@ -30,7 +31,7 @@ object ViewContractResults {
 
   case class Props( contractStats: ContractStats )
 
-  def apply( contractStats: ContractStats ) =
+  def apply( contractStats: ContractStats ) = // scalafix:ok ExplicitResultTypes; ReactComponent
     component(Props( contractStats ))
 
 }
@@ -38,7 +39,7 @@ object ViewContractResults {
 object ViewContractResultsInternal {
   import ViewContractResults._
 
-  val logger = Logger("bridge.ViewContractResults")
+  val logger: Logger = Logger("bridge.ViewContractResults")
 
   /**
    * Internal state for rendering the component.
@@ -52,7 +53,7 @@ object ViewContractResultsInternal {
   val pieChartMaxSize = 100
   val tooltipPieChartSize = 150
 
-  def calcSize(max: Int)( handsPlayed: Int ) = {
+  def calcSize(max: Int)( handsPlayed: Int ): Int = {
     (handsPlayed.toDouble/max*(pieChartMaxSize-5)).toInt + 5
   }
 
@@ -184,9 +185,9 @@ object ViewContractResultsInternal {
    */
   class Backend(scope: BackendScope[Props, State]) {
 
-    val toggleAggregateDouble = scope.modState( s => s.copy( aggregateDouble = !s.aggregateDouble ) )
+    val toggleAggregateDouble: Callback = scope.modState( s => s.copy( aggregateDouble = !s.aggregateDouble ) )
 
-    def render( props: Props, state: State ) = {
+    def render( props: Props, state: State ) = { // scalafix:ok ExplicitResultTypes; React
 
       val maxDown = Math.min( 0, props.contractStats.min )
       val maxMade = Math.max( 0, props.contractStats.max )
@@ -276,6 +277,7 @@ object ViewContractResultsInternal {
 
   }
 
+  private[duplicate]
   val component = ScalaComponent.builder[Props]("ViewContractResults")
                             .initialStateFromProps { props => State() }
                             .backend(new Backend(_))

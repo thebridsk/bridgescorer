@@ -17,7 +17,7 @@ import com.github.thebridsk.bridge.data.HasId
 
 object SchemaBase {
 
-  val log = Logger(SchemaBase.getClass.getName)
+  val log: Logger = Logger(SchemaBase.getClass.getName)
 
   def getPos(v: ast.Value): Option[AstLocation] = v match {
     case ast.IntValue(value, comments, position)        => position
@@ -39,7 +39,7 @@ object SchemaBase {
         .map(s => ": " + s)
         .getOrElse("")}""")
 
-  def idScalarTypeFromString[T](typename: String) =
+  def idScalarTypeFromString[T](typename: String): ScalarType[T] =
     ScalarType[T](
       typename,
       coerceOutput = (d, caps) => d.toString,
@@ -62,7 +62,7 @@ object SchemaBase {
       }
     )
 
-  def idScalarType[T](typename: String, hasId: HasId[T]) =
+  def idScalarType[T](typename: String, hasId: HasId[T]): ScalarType[Id[T]] =
     ScalarType[Id[T]](
       typename,
       coerceOutput = (d, caps) => d.id,
@@ -85,7 +85,7 @@ object SchemaBase {
       }
     )
 
-  val DateTimeType = ScalarType[Timestamp](
+  val DateTimeType: ScalarType[Timestamp] = ScalarType[Timestamp](
     "Timestamp",
     description = Some("Timestamp, milliseconds since 1/1/1970."),
     coerceOutput = FloatType.coerceOutput(_, _),
@@ -94,7 +94,7 @@ object SchemaBase {
     coerceInput = FloatType.coerceInput(_).map(v => v.asInstanceOf[Timestamp])
   )
 
-  val PositionEnum = EnumType[PlayerPosition](
+  val PositionEnum: EnumType[PlayerPosition] = EnumType[PlayerPosition](
     "Position",
     Some("Player position at table"),
     List(
@@ -110,7 +110,7 @@ object SchemaBase {
   case object SortCreatedDescending extends Sort
   case object SortId extends Sort
 
-  val SortEnum = EnumType[Sort](
+  val SortEnum: EnumType[Sort] = EnumType[Sort](
     "Sort",
     Some("how the result should be sorted"),
     List(
@@ -128,7 +128,7 @@ object SchemaBase {
     )
   )
 
-  val ArgSort = Argument(
+  val ArgSort: Argument[Option[Sort]] = Argument(
     "sort",
     OptionInputType(SortEnum),
     description =

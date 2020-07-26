@@ -78,10 +78,10 @@ case class Hand(
   )
   require(declarer.length() == 1 && 0 <= "NEWS".indexOf(declarer.charAt(0)))
 
-  def equalsIgnoreModifyTime(other: Hand) =
+  def equalsIgnoreModifyTime(other: Hand): Boolean =
     this == other.copy(created = created, updated = updated)
 
-  def setId(newId: String, forCreate: Boolean) = {
+  def setId(newId: String, forCreate: Boolean): Hand = {
     val time = SystemTime.currentTimeMillis()
     copy(
       id = newId,
@@ -102,12 +102,12 @@ case class Hand(
 
   }
 
-  def copyForCreate(id: String) = {
+  def copyForCreate(id: String): Hand = {
     val time = SystemTime.currentTimeMillis()
     copy(id = id, created = time, updated = time)
   }
 
-  def contract = {
+  def contract: String = {
     if (contractTricks == 0) {
       "PassedOut"
     } else {

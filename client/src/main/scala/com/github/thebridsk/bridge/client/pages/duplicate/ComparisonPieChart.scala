@@ -14,7 +14,7 @@ object ComparisonPieChart {
 
   object TrickLegendUtil extends IntLegendUtil[Color] {
 
-    def nameToTitle( name: Color ) = {
+    def nameToTitle( name: Color ): String = {
       if (name eq ColorGood)          "Good"
       else if (name eq ColorBad)      "Bad"
       else if (name eq ColorNeutral)  "Neutral"
@@ -48,7 +48,7 @@ object ComparisonPieChart {
       size: Int,
       sizeInLegend: Int,
       minSize: Int
-  ) = {
+  ) = {  // scalafix:ok ExplicitResultTypes; ReactComponent
     val bytype: List[(String,List[(Color,Int)])] = List(
           ("Good", List( (ColorGood,good) ) ),
           ("Neutral", List( (ColorNeutral,neutral) ) ),
@@ -72,7 +72,7 @@ object ComparisonPieChart {
 
   }
 
-  def description = {
+  def description: TagMod = {
     TagMod(
       "The ",<.b("Aggressive")," and ",<.b("Passive")," columns are when the same side is declarer at both tables.",
       <.br,

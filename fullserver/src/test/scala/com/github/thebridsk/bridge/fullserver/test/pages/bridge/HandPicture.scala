@@ -9,10 +9,13 @@ import com.github.thebridsk.browserpages.PageBrowser
 import org.scalatest.matchers.must.Matchers
 import com.github.thebridsk.source.SourcePosition
 import scala.reflect.io.File
+import com.github.thebridsk.browserpages.Element
+import org.scalatest.Assertion
+import scala.util.matching.Regex
 
 
 object HandPicture {
-  val log = Logger[HandPicture[_]]()
+  val log: Logger = Logger[HandPicture[_]]()
 
   /** the input field for take picture button */
   val namePicture = "picture"
@@ -36,8 +39,8 @@ object HandPicture {
   //
   //   src="<img src="data:image/jpeg;base64,/9j/4TicRX...agds+asasdf=="
   //
-  val patternImageSrcServer = """(?:https?://[^/]+)?/v1/rest(/.*)""".r
-  val patternImageSrcBrowser = """data:image/([^;]+);base64,[a-zA-z0-9/+]+=?=?""".r
+  val patternImageSrcServer: Regex = """(?:https?://[^/]+)?/v1/rest(/.*)""".r
+  val patternImageSrcBrowser: Regex = """data:image/([^;]+);base64,[a-zA-z0-9/+]+=?=?""".r
 
 }
 
@@ -49,9 +52,9 @@ trait HandPicture[ +T <: Page[T] ] extends Popup[T] {
 
   implicit val webDriver: WebDriver
 
-  val page = this.asInstanceOf[T]
+  val page: T = this.asInstanceOf[T]
 
-  def getOkButton = findOption( cssSelector(okPicture) ).getOrElse( find(cssSelector(okPicture2)))
+  def getOkButton: Element = findOption( cssSelector(okPicture) ).getOrElse( find(cssSelector(okPicture2)))
 
   /**
    * Validate a page with only one show picture button
@@ -102,7 +105,7 @@ trait HandPicture[ +T <: Page[T] ] extends Popup[T] {
     page
   }
 
-  def getImageUrl( implicit pos: Position ) = {
+  def getImageUrl( implicit pos: Position ): Option[String] = {
     val img = find( cssSelector("""div#HandPicture > img"""))
     img.attribute("src")
   }
@@ -111,7 +114,7 @@ trait HandPicture[ +T <: Page[T] ] extends Popup[T] {
    * Check to see if the image src is valid.
    * Should only be called when the popup is visible
    */
-  def checkImageUrl( serverUrl: Boolean )( implicit patienceConfig: PatienceConfig, pos: Position ) = eventually {
+  def checkImageUrl( serverUrl: Boolean )( implicit patienceConfig: PatienceConfig, pos: Position ): T = eventually {
     getImageUrl match {
         case Some(url) =>
           if (serverUrl) {
@@ -137,7 +140,7 @@ trait HandPicture[ +T <: Page[T] ] extends Popup[T] {
    * Check to see if the image src is valid.
    * Should only be called when the popup is visible
    */
-  def validateImageUrl( implicit patienceConfig: PatienceConfig, pos: Position ) = eventually {
+  def validateImageUrl( implicit patienceConfig: PatienceConfig, pos: Position ): T = eventually {
     getImageUrl match {
         case Some(url) =>
           url match {
@@ -156,7 +159,7 @@ trait HandPicture[ +T <: Page[T] ] extends Popup[T] {
    * @param serverUri the server URI to look for.  Syntax: /duplicates/M15/pictures/B1/hands/T1
    *
    */
-  def checkDuplicateServerUrl( serverUri: String )( implicit patienceConfig: PatienceConfig, pos: Position ) = eventually {
+  def checkDuplicateServerUrl( serverUri: String )( implicit patienceConfig: PatienceConfig, pos: Position ): T = eventually {
     getImageUrl.map { url =>
       url match {
         case patternImageSrcServer(rest) =>
@@ -170,7 +173,7 @@ trait HandPicture[ +T <: Page[T] ] extends Popup[T] {
     page
   }
 
-  def clickTakePicture( implicit pos: Position ) = {
+  def clickTakePicture( implicit pos: Position ): T = {
     find( name(namePicture) ).click
     page
   }
@@ -181,7 +184,7 @@ trait HandPicture[ +T <: Page[T] ] extends Popup[T] {
     page
   }
 
-  def clickShowPicture( implicit pos: Position ) = {
+  def clickShowPicture( implicit pos: Position ): T = {
     find( id(showPicture) ).click
     page
   }
@@ -189,38 +192,38 @@ trait HandPicture[ +T <: Page[T] ] extends Popup[T] {
   /**
    * @param bid the id of the button.  The bid will be prefixed with "ShowPicture_"
    */
-  def clickShowPicture( bid: String )( implicit pos: Position ) = {
+  def clickShowPicture( bid: String )( implicit pos: Position ): T = {
     find( id(s"${showPicture}_${bid}") ).click
     page
   }
 
-  def clickDeletePicture( implicit pos: Position ) = {
+  def clickDeletePicture( implicit pos: Position ): T = {
     find( id(deletePicture) ).click
     page
   }
 
-  def clickOkPicture( implicit pos: Position ) = {
+  def clickOkPicture( implicit pos: Position ): T = {
     getOkButton.click
     page
   }
 
-  def isPictureDisplayed( implicit pos: Position ) = {
+  def isPictureDisplayed( implicit pos: Position ): Boolean = {
     getOkButton.isDisplayed
   }
 
-  def isShowDisplayed( implicit pos: Position ) = {
+  def isShowDisplayed( implicit pos: Position ): Boolean = {
     find( id(showPicture)).isDisplayed
   }
 
-  def isDeleteDisplayed( implicit pos: Position ) = {
+  def isDeleteDisplayed( implicit pos: Position ): Boolean = {
     find( id(deletePicture)).isDisplayed
   }
 
-  def checkShowDisplayed( displayed: Boolean )( implicit patienceConfig: PatienceConfig, pos: Position ) = eventually {
+  def checkShowDisplayed( displayed: Boolean )( implicit patienceConfig: PatienceConfig, pos: Position ): Assertion = eventually {
     isShowDisplayed mustBe displayed
   }
 
-  def checkDeleteDisplayed( displayed: Boolean )( implicit patienceConfig: PatienceConfig, pos: Position ) = eventually {
+  def checkDeleteDisplayed( displayed: Boolean )( implicit patienceConfig: PatienceConfig, pos: Position ): Assertion = eventually {
     isDeleteDisplayed mustBe displayed
   }
 

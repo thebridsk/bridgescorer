@@ -14,7 +14,7 @@ import java.time.ZoneId
 
 object MonitorTCP extends Logging {
 
-  val log = Logger[MonitorTCP]()
+  val log: Logger = Logger[MonitorTCP]()
 
   val toMonitorFile = "ToMonitorFile"
   val monitorFileDefault = "logs/unittestTcpMonitorTimeWait.csv"
@@ -26,7 +26,7 @@ object MonitorTCP extends Logging {
    * If this property is not set, then the os.name system property is used, disabled on all systems.
    * Setting this to false implies disableMonitorTCP is false.
    */
-  val disableTCPSleep = {
+  val disableTCPSleep: Boolean = {
     ParallelUtils.getPropOrEnv("DisableTCPSleep") match {
       case Some(v) =>
         v.toBoolean
@@ -48,7 +48,7 @@ object MonitorTCP extends Logging {
    * to "true" or "false".
    * If this property is not set, then the os.name system property is used, disabled on all systems.
    */
-  val disableMonitorTCP = disableTCPSleep && {
+  val disableMonitorTCP: Boolean = disableTCPSleep && {
     ParallelUtils.getPropOrEnv("DisableMonitorTCP") match {
       case Some(v) =>
         v.toBoolean
@@ -68,7 +68,7 @@ object MonitorTCP extends Logging {
     log.fine( s"""disableTCPSleep=${disableTCPSleep} disableMonitorTCP=${disableMonitorTCP}""")
   }
 
-  def getNumberTimeWaitConnections() = {
+  def getNumberTimeWaitConnections(): Int = {
 
     import sys.process._
     import scala.language.postfixOps
@@ -79,24 +79,24 @@ object MonitorTCP extends Logging {
 
   }
 
-  val starttime = System.currentTimeMillis()
+  val starttime: Long = System.currentTimeMillis()
 
-  def timeSinceStart() = {
+  def timeSinceStart(): String = {
     val cur = System.currentTimeMillis()
     val delta = (cur-starttime)/1000.0
     f"$delta%10.3f"
   }
 
-  val format = DateTimeFormatter.ofPattern( "hh:mm:ss" ).withZone( ZoneId.systemDefault() )
-  def showTime() = {
+  val format: DateTimeFormatter = DateTimeFormatter.ofPattern( "hh:mm:ss" ).withZone( ZoneId.systemDefault() )
+  def showTime(): String = {
     format.format(Instant.now())
   }
 
-  def getPrefix() = {
+  def getPrefix(): String = {
     timeSinceStart()
   }
 
-  def showNumberConnectionsInTimeWait() = {
+  def showNumberConnectionsInTimeWait(): Unit = {
 
     logger.fine( getPrefix() + " " + getNumberTimeWaitConnections())
   }
@@ -115,9 +115,9 @@ object MonitorTCP extends Logging {
 
   var connectionsThreshold = 7000
 
-  val period = 5 seconds
+  val period: FiniteDuration = 5 seconds
 
-  val defaultMaxWait = 30 seconds
+  val defaultMaxWait: FiniteDuration = 30 seconds
 
 
   class TimeoutException extends Exception
@@ -148,7 +148,7 @@ object MonitorTCP extends Logging {
      * Test against the threshold.
      * @return true if the number of connections is less than threshold
      */
-    def testThreshold() = synchronized {
+    def testThreshold(): Boolean = synchronized {
       connectionsWhileActive <= connectionsThreshold
     }
 
@@ -158,7 +158,7 @@ object MonitorTCP extends Logging {
      * @param stop the stop time in milliseconds since 1/1/1970
      * @return true if past stop time.
      */
-    def sleepFor( stop: Long ) = {
+    def sleepFor( stop: Long ): Option[Boolean] = {
       try {
         val cur = System.currentTimeMillis()
         val delta = stop - cur
@@ -178,7 +178,7 @@ object MonitorTCP extends Logging {
     /**
      * @return Some(false) if done waiting, None if continue to wait
      */
-    def testForDoneWait( stop: Long ) = {
+    def testForDoneWait( stop: Long ): Option[Boolean] = {
       if ( stop < System.currentTimeMillis() ) Some(false)
       else None
     }
@@ -192,7 +192,7 @@ object MonitorTCP extends Logging {
      *            Some(false) - done, above threshold
      *            None - continue polling
      */
-    def waitUntil( stop: Long ) = synchronized {
+    def waitUntil( stop: Long ): Option[Boolean] = synchronized {
       val currentThread = Thread.currentThread()
       numberWaiting = numberWaiting + 1
       if (numberWaiting == 1) startedWaiting = System.currentTimeMillis()
@@ -284,7 +284,7 @@ object MonitorTCP extends Logging {
   var currentMonitor: Option[MonitorTCP] = None
   var currentMonitorUsage = 0
 
-  def startMonitoring( tofilename: Option[String] = None) = synchronized {
+  def startMonitoring( tofilename: Option[String] = None): Unit = synchronized {
     if (!disableMonitorTCP) {
       currentMonitor match {
         case Some(m) =>
@@ -299,7 +299,7 @@ object MonitorTCP extends Logging {
     }
   }
 
-  def stopMonitoring() = synchronized {
+  def stopMonitoring(): Unit = synchronized {
     if (!disableMonitorTCP) {
       currentMonitorUsage-=1
       if (currentMonitorUsage == 0) {
@@ -313,7 +313,7 @@ object MonitorTCP extends Logging {
     }
   }
 
-  def nextTest() = {
+  def nextTest(): Unit = {
     if (!disableMonitorTCP) {
       currentMonitor match {
         case Some(m) => m.nextTest()
@@ -322,7 +322,7 @@ object MonitorTCP extends Logging {
     }
   }
 
-  def getProp( name: String ) = {
+  def getProp( name: String ): Option[String] = {
     sys.props.get(name) match {
       case Some(s) => Some(s)
       case None => sys.env.get(name)
@@ -336,18 +336,18 @@ object MonitorTCP extends Logging {
  * @param period
  */
 class MonitorTCP( pw: PrintWriter, period: Duration ) extends Thread {
-  val starttime = System.currentTimeMillis()
+  val starttime: Long = System.currentTimeMillis()
 
-  def formatToSec( millis: Long ) = {
+  def formatToSec( millis: Long ): String = {
     f"${millis/1000.0}%5.3f"
   }
 
-  def getPrefix() = {
+  def getPrefix(): String = {
     val cur = System.currentTimeMillis()
     formatToSec(cur-starttime)
   }
 
-  def nextTest() = synchronized {
+  def nextTest(): Unit = synchronized {
     testNumber = testNumber + 1
   }
 
@@ -355,11 +355,11 @@ class MonitorTCP( pw: PrintWriter, period: Duration ) extends Thread {
   @volatile var lastTotalTime: Long = 0
   @volatile var testNumber = 0
 
-  def getNextTest() = synchronized {
+  def getNextTest(): Int = synchronized {
     testNumber
   }
 
-  def writeNumberConnectionsInTimeWait() = {
+  def writeNumberConnectionsInTimeWait(): Unit = {
     val curCon = MonitorTCP.getNumberTimeWaitConnections()
     val totWait = MonitorTCP.lock.totalWait
     val tn = getNextTest()
@@ -371,7 +371,7 @@ class MonitorTCP( pw: PrintWriter, period: Duration ) extends Thread {
     pw.println(s)
   }
 
-  def writeHeader() = {
+  def writeHeader(): Unit = {
     pw.println("time ms,numberTimeWaitConnections,totalWaitInMillis,testNumber,,time ms,diffConnections,DifftotalWait,testNumber")
   }
 
@@ -393,7 +393,7 @@ class MonitorTCP( pw: PrintWriter, period: Duration ) extends Thread {
     }
   }
 
-  def stopMonitor() = {
+  def stopMonitor(): Unit = {
     interrupt()
   }
 

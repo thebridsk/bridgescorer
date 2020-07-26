@@ -11,6 +11,7 @@ import com.github.thebridsk.bridge.clientcommon.react.Utils._
 import com.github.thebridsk.bridge.client.pages.Pixels
 import com.github.thebridsk.bridge.data.Team
 
+
 /**
  * A skeleton component.
  *
@@ -39,7 +40,7 @@ object ViewDeclarer {
              nextInput: PageHandNextInput.Value,
              visible: Boolean,
              nsVul: Boolean,
-             ewVul: Boolean ) =
+             ewVul: Boolean ) = // scalafix:ok ExplicitResultTypes; ReactComponent
     component(Props(current,north,south,east,west,callback,teamNS,teamEW,nextInput,visible,nsVul,ewVul))
 
 }
@@ -47,7 +48,7 @@ object ViewDeclarer {
 object ViewDeclarerInternal {
   import ViewDeclarer._
 
-  val logger = Logger("bridge.ViewDeclarer")
+  val logger: Logger = Logger("bridge.ViewDeclarer")
 
   /**
    * Internal state for rendering the component.
@@ -66,7 +67,7 @@ object ViewDeclarerInternal {
    *
    */
   class Backend(scope: BackendScope[Props, State]) {
-    def render( props: Props, state: State ) = {
+    def render( props: Props, state: State ) = { // scalafix:ok ExplicitResultTypes; React
       import HandStyles._
       val playingDuplicate = props.teamEW.isDefined || props.teamNS.isDefined
       val (missingRequired,missingNotNext) = {
@@ -178,6 +179,7 @@ object ViewDeclarerInternal {
     }
   }
 
+  private[hand]
   val component = ScalaComponent.builder[Props]("ViewDeclarer")
                             .initialStateFromProps { props => State() }
                             .backend(new Backend(_))

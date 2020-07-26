@@ -13,16 +13,16 @@ import com.github.thebridsk.bridge.data.MatchDuplicate
 import com.github.thebridsk.bridge.clientcommon.demo.BridgeDemo
 
 object DuplicateSummaryStore extends ChangeListenable {
-  val logger = Logger("bridge.DuplicateSummaryStore")
+  val logger: Logger = Logger("bridge.DuplicateSummaryStore")
 
   /**
    * Required to instantiate the store.
    */
-  def init() = {}
+  def init(): Unit = {}
 
   private var dispatchToken: Option[DispatchToken] = Some(BridgeDispatcher.register(dispatch _))
 
-  def dispatch( msg: Any ) = Alerter.tryitWithUnit {
+  def dispatch( msg: Any ): Unit = Alerter.tryitWithUnit {
 //    logger.info(s"DuplicateSummaryStore.dispatch $msg")
     msg match {
       case ActionUpdateDuplicateSummary(importId,summary) =>
@@ -47,7 +47,7 @@ object DuplicateSummaryStore extends ChangeListenable {
   private val maxTimeLastCalledImportId = 30000.0  // 30 seconds
 
   override
-  def noListener = {
+  def noListener: Unit = {
     fCalled = false;
   }
 
@@ -55,7 +55,7 @@ object DuplicateSummaryStore extends ChangeListenable {
   def getDuplicateSummary = fSummary
   def getImportId = fImportId
 
-  def updateDuplicateSummary( importId: Option[String], summary: List[DuplicateSummary] ) = {
+  def updateDuplicateSummary( importId: Option[String], summary: List[DuplicateSummary] ): Unit = {
     logger.fine(s"""Update DuplicateSummaryStore from ${importId}: ${summary}""")
     fSummary = Option( summary )
     fImportId = importId
@@ -63,7 +63,7 @@ object DuplicateSummaryStore extends ChangeListenable {
     notifyChange()
   }
 
-  def updateDuplicateSummaryItem( importId: Option[String], summary: DuplicateSummary ) = {
+  def updateDuplicateSummaryItem( importId: Option[String], summary: DuplicateSummary ): Unit = {
     logger.fine(s"""Update DuplicateSummaryStore from ${importId}: ${summary}""")
     if (importId == fImportId) {
       fSummary = fSummary.map { list =>
@@ -80,7 +80,7 @@ object DuplicateSummaryStore extends ChangeListenable {
     notifyChange()
   }
 
-  def updateDuplicateSummaryDemoMatch( importId: Option[String], summary: List[MatchDuplicate] ) = {
+  def updateDuplicateSummaryDemoMatch( importId: Option[String], summary: List[MatchDuplicate] ): Unit = {
     if (BridgeDemo.isDemo) {
 //      logger.info(s"""Update DuplicateSummaryStore from ${importId}: ${summary}""")
       if (importId == fImportId) {
@@ -93,7 +93,7 @@ object DuplicateSummaryStore extends ChangeListenable {
     }
   }
 
-  def updateDuplicateSummaryDemoMatchItem( importId: Option[String], summary: MatchDuplicate ) = {
+  def updateDuplicateSummaryDemoMatchItem( importId: Option[String], summary: MatchDuplicate ): Unit = {
     if (BridgeDemo.isDemo) {
       logger.fine(s"""Update DuplicateSummaryStore from ${importId}: ${summary}""")
       if (importId == fImportId) {

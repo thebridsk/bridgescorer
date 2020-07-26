@@ -3,7 +3,7 @@ package com.github.thebridsk.bridge.client.modules
 
 object Loader {
 
-  def init = {}
+  def init: Unit = {}
 
 //  @JSImport("expose-loader?React!react", JSImport.Namespace)
 //  @js.native

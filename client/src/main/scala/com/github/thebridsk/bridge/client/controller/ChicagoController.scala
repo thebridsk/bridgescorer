@@ -32,9 +32,10 @@ import com.github.thebridsk.bridge.clientcommon.demo.BridgeDemo
 import com.github.thebridsk.bridge.clientcommon.pages.LocalStorage
 import scala.scalajs.js
 import org.scalajs.dom.raw.StorageEvent
+import com.github.thebridsk.bridge.clientcommon.rest2.Result
 
 object ChicagoController {
-  val logger = Logger("bridge.ChicagoController")
+  val logger: Logger = Logger("bridge.ChicagoController")
 
   class CreateResultMatchChicago(
                                   ajaxResult: AjaxResult[WrapperXMLHttpRequest],
@@ -61,7 +62,7 @@ object ChicagoController {
 
   private var currentId = 0
 
-  def createMatch() = {
+  def createMatch(): CreateResultMatchChicago = {
     logger.info("Sending create chicago to server")
     if (BridgeDemo.isDemo) {
       currentId = currentId + 1
@@ -77,17 +78,17 @@ object ChicagoController {
     }
   }
 
-  def showMatch( chi: MatchChicago ) = {
+  def showMatch( chi: MatchChicago ): Unit = {
     ChicagoStore.start(chi.id, Some(chi))
     logger.fine("calling callback with "+chi.id)
     BridgeDispatcher.updateChicago(chi)
   }
 
-  def ensureMatch( chiid: MatchChicago.Id ) = {
+  def ensureMatch( chiid: MatchChicago.Id ): Unit = {
     monitor(chiid)
   }
 
-  def ensureMatchOld( chiid: MatchChicago.Id ) = {
+  def ensureMatchOld( chiid: MatchChicago.Id ): Result[MatchChicago] = {
     if (!ChicagoStore.isMonitoredId(chiid)) {
       ChicagoStore.start(chiid,None)
       val result = RestClientChicago.get(chiid).recordFailure()
@@ -101,7 +102,7 @@ object ChicagoController {
     }
   }
 
-  def updateMatch( chi: MatchChicago ) = {
+  def updateMatch( chi: MatchChicago ): Unit = {
     logger.info("dispatching an update to MatchChicago "+chi.id )
     BridgeDispatcher.updateChicago(chi, Some(updateServer))
   }
@@ -132,7 +133,7 @@ object ChicagoController {
     0
   }
 
-  def updateServer( chi: MatchChicago ) = {
+  def updateServer( chi: MatchChicago ): Unit = {
     if (!BridgeDemo.isDemo) {
       RestClientChicago.update(chi.id, chi).recordFailure().foreach( updated => {
         logger.fine(s"PageChicago: Updated chicago game: ${chi.id}")
@@ -149,19 +150,19 @@ object ChicagoController {
     }
   }
 
-  def updateChicagoNames( chiid: MatchChicago.Id, nplayer1: String, nplayer2: String, nplayer3: String, nplayer4: String, extra: Option[String], quintet: Boolean, simpleRotation: Boolean ) = {
+  def updateChicagoNames( chiid: MatchChicago.Id, nplayer1: String, nplayer2: String, nplayer3: String, nplayer4: String, extra: Option[String], quintet: Boolean, simpleRotation: Boolean ): Unit = {
     BridgeDispatcher.updateChicagoNames(chiid, nplayer1, nplayer2, nplayer3, nplayer4, extra, quintet, simpleRotation, Some(updateServer))
   }
 
-  def updateChicago5( chiid: MatchChicago.Id, extraPlayer: String ) = {
+  def updateChicago5( chiid: MatchChicago.Id, extraPlayer: String ): Unit = {
     BridgeDispatcher.updateChicago5(chiid, extraPlayer, Some(updateServer))
   }
 
-  def updateChicagoRound( chiid: MatchChicago.Id, round: Round ) = {
+  def updateChicagoRound( chiid: MatchChicago.Id, round: Round ): Unit = {
     BridgeDispatcher.updateChicagoRound(chiid, round, Some( updateServer ))
   }
 
-  def updateChicagoHand( chiid: MatchChicago.Id, roundid: Int, handid: Int, hand: Hand ) = {
+  def updateChicagoHand( chiid: MatchChicago.Id, roundid: Int, handid: Int, hand: Hand ): Unit = {
     BridgeDispatcher.updateChicagoHand(chiid, roundid, handid, hand, Some( updateServer ))
   }
 
@@ -269,7 +270,7 @@ object ChicagoController {
     }
   }
 
-  def deleteChicago( id: MatchChicago.Id) = {
+  def deleteChicago( id: MatchChicago.Id): Any = {
     BridgeDispatcher.deleteChicago(id)
     if (!BridgeDemo.isDemo) RestClientChicago.delete(id).recordFailure()
     else {
@@ -286,7 +287,7 @@ object ChicagoController {
 
   private var useSSEFromServer: Boolean = true;
 
-  def setUseSSEFromServer( b: Boolean ) = {
+  def setUseSSEFromServer( b: Boolean ): Unit = {
     if (b != useSSEFromServer) {
       useSSEFromServer = b
       setServerEventConnection()
@@ -300,12 +301,12 @@ object ChicagoController {
   }
 
   object Listener extends SECListener[MatchChicago.Id] {
-    def handleStart( dupid: MatchChicago.Id) = {
+    def handleStart( dupid: MatchChicago.Id): Unit = {
     }
-    def handleStop( dupid: MatchChicago.Id) = {
+    def handleStop( dupid: MatchChicago.Id): Unit = {
     }
 
-    def processMessage( msg: Protocol.ToBrowserMessage ) = {
+    def processMessage( msg: Protocol.ToBrowserMessage ): Unit = {
       msg match {
         case Protocol.MonitorJoined(id,members) =>
         case Protocol.MonitorLeft(id,members) =>
@@ -374,7 +375,7 @@ object ChicagoController {
   /**
    * Stop monitoring a duplicate match
    */
-  def delayStop() = {
+  def delayStop(): Unit = {
     logger.fine(s"Controller.delayStop ${ChicagoStore.getMonitoredId}")
     sseConnection.delayStop()
   }
@@ -382,7 +383,7 @@ object ChicagoController {
   /**
    * Stop monitoring a duplicate match
    */
-  def stop() = {
+  def stop(): Unit = {
     logger.fine(s"Controller.stop ${ChicagoStore.getMonitoredId}")
     sseConnection.stop()
   }

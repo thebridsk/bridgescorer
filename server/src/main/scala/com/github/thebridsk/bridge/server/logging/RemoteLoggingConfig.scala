@@ -15,7 +15,7 @@ case class RemoteLoggingConfig(
 
   def browserNames() = configs.keySet
 
-  def browserConfigs(browser: String) = {
+  def browserConfigs(browser: String): Set[String] = {
     configs.get(browser).map(bc => bc.keySet).getOrElse(Set[String]())
   }
 
@@ -59,10 +59,10 @@ case class RemoteLoggingConfig(
 object RemoteLoggingConfig {
   import play.api.libs.json._
 
-  implicit val loggerConfigFormat = Json.format[LoggerConfig]
-  implicit val remoteLoggerConfigFormat = Json.format[RemoteLoggingConfig]
+  implicit val loggerConfigFormat: OFormat[LoggerConfig] = Json.format[LoggerConfig]
+  implicit val remoteLoggerConfigFormat: OFormat[RemoteLoggingConfig] = Json.format[RemoteLoggingConfig]
 
-  def getDefaultRemoteLoggerConfig() = {
+  def getDefaultRemoteLoggerConfig(): Option[RemoteLoggingConfig] = {
     readFromResource("com/github/thebridsk/bridge/server/remoteLogging.yaml")
   }
 

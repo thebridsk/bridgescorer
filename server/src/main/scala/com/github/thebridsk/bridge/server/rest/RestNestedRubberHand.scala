@@ -25,6 +25,7 @@ import javax.ws.rs.POST
 import javax.ws.rs.PUT
 import javax.ws.rs.DELETE
 import com.github.thebridsk.bridge.data.RubberHand
+import akka.http.scaladsl.server.Route
 
 /**
   * Rest API implementation for the hand resource.
@@ -44,7 +45,7 @@ class RestNestedRubberHand {
   @Hidden
   def route(
       implicit @Parameter(hidden = true) res: Resources[String, RubberHand]
-  ) = pathPrefix("hands") {
+  ): Route = pathPrefix("hands") {
 //    logRequest("route", DebugLevel) {
     getHand ~ getHands ~ postHand ~ putHand ~ deleteHand
 //      }
@@ -92,10 +93,10 @@ class RestNestedRubberHand {
       )
     )
   )
-  def xxxgetHands = {}
+  def xxxgetHands: Unit = {}
   def getHands(
       implicit @Parameter(hidden = true) res: Resources[String, RubberHand]
-  ) = pathEndOrSingleSlash {
+  ): Route = pathEndOrSingleSlash {
     get {
       resourceMap(res.readAll())
     }
@@ -158,10 +159,10 @@ class RestNestedRubberHand {
       )
     )
   )
-  def xxxgetHand = {}
+  def xxxgetHand: Unit = {}
   def getHand(
       implicit @Parameter(hidden = true) res: Resources[String, RubberHand]
-  ) = logRequest("getHand", DebugLevel) {
+  ): Route = logRequest("getHand", DebugLevel) {
     get {
       path("""[a-zA-Z0-9]+""".r) { id =>
         resource(res.select(id).read())
@@ -231,10 +232,10 @@ class RestNestedRubberHand {
       )
     )
   )
-  def xxxpostHand = {}
+  def xxxpostHand: Unit = {}
   def postHand(
       implicit @Parameter(hidden = true) res: Resources[String, RubberHand]
-  ) = pathEnd {
+  ): Route = pathEnd {
     post {
       entity(as[RubberHand]) { hand =>
         resourceCreated(res.resourceURI, addIdToFuture(res.createChild(hand)))
@@ -309,10 +310,10 @@ class RestNestedRubberHand {
       )
     )
   )
-  def xxxputHand = {}
+  def xxxputHand: Unit = {}
   def putHand(
       implicit @Parameter(hidden = true) res: Resources[String, RubberHand]
-  ) =
+  ): Route =
     put {
       path("""[a-zA-Z0-9]+""".r) { id =>
         entity(as[RubberHand]) { hand =>
@@ -358,10 +359,10 @@ class RestNestedRubberHand {
       )
     )
   )
-  def xxxdeleteHand = {}
+  def xxxdeleteHand: Unit = {}
   def deleteHand(
       implicit @Parameter(hidden = true) res: Resources[String, RubberHand]
-  ) = delete {
+  ): Route = delete {
     path("""[a-zA-Z0-9]+""".r) { id =>
       resourceDelete(res.select(id).delete())
     }

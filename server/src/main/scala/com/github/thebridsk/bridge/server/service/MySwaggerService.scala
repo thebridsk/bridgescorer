@@ -7,6 +7,8 @@ import com.github.thebridsk.bridge.server.util.HasActorSystem
 import akka.event.Logging
 import scala.concurrent.duration.Duration
 import ch.megard.akka.http.cors.scaladsl.CorsDirectives
+import akka.event.LoggingAdapter
+import akka.http.scaladsl.server.Route
 
 //import io.swagger.util.Json
 //import com.fasterxml.jackson.databind.SerializationConfig
@@ -31,7 +33,7 @@ trait MySwaggerService extends SwaggerHttpService {
   // does not work.  Trying to alphabetize swagger.yaml properties
   // Json.mapper().configure(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY, true)
 
-  lazy val log = Logging(actorSystem, classOf[MySwaggerService])
+  lazy val log: LoggingAdapter = Logging(actorSystem, classOf[MySwaggerService])
 
   val apiVersionURISegment = "v1"
 
@@ -66,7 +68,7 @@ trait MySwaggerService extends SwaggerHttpService {
   //    validatorUrl=    - (null) to not validate the swagger against
   //                           https://online.swagger.io/validator/debug?url=/v1/api-docs/swagger.yaml
   //    url=xxx          - URL to swagger.yaml
-  def swaggerURL =
+  def swaggerURL: String =
     swaggergui + "?url=/" + apiVersionURISegment + "/" + apiDocsPath + "/swagger.yaml&validatorUrl="
 
   def getSwaggerURL(): String = {
@@ -74,9 +76,9 @@ trait MySwaggerService extends SwaggerHttpService {
     swaggerURL
   }
 
-  lazy val swaggerCacheDuration = Duration("5min")
+  lazy val swaggerCacheDuration: Duration = Duration("5min")
 
-  lazy val swaggerCacheHeaders = {
+  lazy val swaggerCacheHeaders: Seq[HttpHeader] = {
     import akka.http.scaladsl.model.headers._
     import akka.http.scaladsl.model.headers.CacheDirectives._
     val sec = swaggerCacheDuration.toSeconds
@@ -94,7 +96,7 @@ trait MySwaggerService extends SwaggerHttpService {
   }
 
   import CorsDirectives._
-  val swaggerRoute =
+  val swaggerRoute: Route =
     get {
       cors() {
         respondWithHeaders(swaggerCacheHeaders) {

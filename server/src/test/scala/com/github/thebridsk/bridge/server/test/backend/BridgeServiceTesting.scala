@@ -29,7 +29,7 @@ import com.github.thebridsk.bridge.data.Movement
 
 
 object BridgeServiceTesting {
-  val testingMatch =
+  val testingMatch: MatchDuplicateV3 =
   {
 
     val team1 = Team.id(1)
@@ -124,7 +124,7 @@ class ImportStoreTesting(
     Result.future( StatusCodes.BadRequest, "Not allowed" ).logit(s"delete /imports/${id}")
   }
 
-  def addBridgeService( id: String, bs: BridgeService ) = {
+  def addBridgeService( id: String, bs: BridgeService ): Future[Result[BridgeService]] = {
     cache.create(id, ()=>Result.future(bs) ).logit(s"addBridgeService /imports/${id}")
   }
 }

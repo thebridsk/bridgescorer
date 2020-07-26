@@ -3,6 +3,7 @@ package com.github.thebridsk.bridge.clientcommon.skeleton.react
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
 
+
 /**
  * A skeleton component.
  *
@@ -19,7 +20,7 @@ object SkeletonComponent {
 
   case class Props( )
 
-  def apply( ) = component(Props())
+  def apply( ) = component(Props())  // scalafix:ok ExplicitResultTypes; ReactComponent
 
 }
 
@@ -42,23 +43,24 @@ object SkeletonComponentInternal {
    *
    */
   class Backend(scope: BackendScope[Props, State]) {
-    def render( props: Props, state: State ) = {
+    def render( props: Props, state: State ) = { // scalafix:ok ExplicitResultTypes; React
       <.div()
     }
 
     private var mounted = false
 
-    val didMount = Callback {
+    val didMount: Callback = Callback {
       mounted = true
 
     }
 
-    val willUnmount = Callback {
+    val willUnmount: Callback = Callback {
       mounted = false
 
     }
   }
 
+  private[react]
   val component = ScalaComponent.builder[Props]("SkeletonComponent")
                             .initialStateFromProps { props => State() }
                             .backend(new Backend(_))

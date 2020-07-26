@@ -13,7 +13,7 @@ import com.github.thebridsk.bridge.data.websocket.DuplexProtocol.LogEntryV2
 
 
 object DuplexPipe {
-  val log = Logger("comm.DuplexPipe")
+  val log: Logger = Logger("comm.DuplexPipe")
 
   class TimeoutException extends Exception
   class ServerException( msg: String) extends Exception
@@ -34,7 +34,7 @@ object DuplexPipe {
   def ignore(ack: Option[Exception] ): Unit = {}
 
   import scala.language.implicitConversions
-  implicit def ackToResponse( ack: Ack ) = (resp: Either[Protocol.ToBrowserMessage,Exception] ) => resp match {
+  implicit def ackToResponse( ack: Ack ): Either[Protocol.ToBrowserMessage,Exception] => Unit = (resp: Either[Protocol.ToBrowserMessage,Exception] ) => resp match {
     case Left(d) => ack(None)
     case Right(e) => ack(Some(e))
   }
@@ -63,19 +63,19 @@ class DuplexPipe( url: String,
   /**
    * Add a listener for unsolicited messages from the server
    */
-  def addListener( l: Listener ) = listeners ::= l
+  def addListener( l: Listener ): Unit = listeners ::= l
 
   /**
    * Remove a listener for unsolicited messages from the server
    */
-  def removeListener( l: Listener ) = listeners.filter { listener => listener != l }
+  def removeListener( l: Listener ): List[Listener] = listeners.filter { listener => listener != l }
 
-  def setSession( session: Session ) = {
+  def setSession( session: Session ): Unit = {
     fSession = Some(session)
     session(this)
   }
 
-  def clearSession( stop: Protocol.ToServerMessage) = {
+  def clearSession( stop: Protocol.ToServerMessage): Unit = {
     fSession = None
     send(stop)
   }
@@ -239,11 +239,11 @@ class DuplexPipe( url: String,
 
   }
 
-  def onNormalClose() = {}
+  def onNormalClose(): Unit = {}
 
-  def start( force: Boolean ) = websocket.start(force)
+  def start( force: Boolean ): Unit = websocket.start(force)
 
-  def close(code: Code, reason: String) = websocket.close(code, reason)
+  def close(code: Code, reason: String): Unit = websocket.close(code, reason)
 
   private var seqCounter = 0
 

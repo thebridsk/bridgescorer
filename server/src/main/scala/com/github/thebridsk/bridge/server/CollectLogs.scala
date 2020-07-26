@@ -12,6 +12,7 @@ import scala.reflect.io.Directory
 import java.nio.file.Files
 import com.github.thebridsk.bridge.server.backend.BridgeService
 import scala.concurrent.Await
+import org.rogach.scallop.ScallopOption
 
 /**
   * This is the update subcommand.
@@ -20,15 +21,15 @@ import scala.concurrent.Await
   */
 object CollectLogs extends Subcommand("diagnostics", "collectlogs") {
 
-  val logger = Logger(CollectLogs.getClass.getName)
+  val logger: Logger = Logger(CollectLogs.getClass.getName)
 
   implicit def dateConverter: ValueConverter[Duration] =
     singleArgConverter[Duration](Duration(_))
 
   import com.github.thebridsk.utilities.main.Converters._
 
-  val defaultZip = Path("logs.zip")
-  val defaultStore = Path("./store")
+  val defaultZip: Path = Path("logs.zip")
+  val defaultStore: Path = Path("./store")
 
   descr(
     "Collects the logs and other diagnostic information"
@@ -45,7 +46,7 @@ Options:""")
 The server should NOT be running.
 """)
 
-  val optionZip = opt[Path](
+  val optionZip: ScallopOption[Path] = opt[Path](
     "zip",
     short = 'z',
     descr =
@@ -53,7 +54,7 @@ The server should NOT be running.
     argName = "zipfilename",
     default = Some(defaultZip)
   )
-  val optionStore = opt[Path](
+  val optionStore: ScallopOption[Path] = opt[Path](
     "store",
     short = 's',
     descr = s"The store directory, default=${defaultStore}",
@@ -61,7 +62,7 @@ The server should NOT be running.
     default = Some(defaultStore)
   )
 
-  val optionDiagnosticDir = opt[Path](
+  val optionDiagnosticDir: ScallopOption[Path] = opt[Path](
     "diagnostics",
     short = 'd',
     required = true,

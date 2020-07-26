@@ -29,6 +29,7 @@ import com.github.thebridsk.bridge.clientcommon.react.Tooltip
 import com.github.thebridsk.bridge.clientcommon.react.Table.Column
 import com.github.thebridsk.bridge.client.pages.HomePage
 
+
 /**
  * Shows a pairs summary page.
  * Each match has a button that that shows that match, by going to the ScoreboardView(id) page.
@@ -52,7 +53,7 @@ object ViewPairsGrid {
     def getNames = filter.getNames
   }
 
-  def apply( filter: ViewPlayerFilter.Filter, showNoDataMsg: Boolean = false ) =
+  def apply( filter: ViewPlayerFilter.Filter, showNoDataMsg: Boolean = false ) = // scalafix:ok ExplicitResultTypes; ReactComponent
     component(Props( filter, showNoDataMsg))
 
 }
@@ -61,7 +62,7 @@ object ViewPairsGridInternal {
   import ViewPairsGrid._
   import DuplicateStyles._
 
-  val logger = Logger("bridge.ViewPairsGrid")
+  val logger: Logger = Logger("bridge.ViewPairsGrid")
 
   /**
    * Internal state for rendering the component.
@@ -83,7 +84,7 @@ object ViewPairsGridInternal {
    * @param n the number of steps
    * @return Tuple3( titlesBelow, titleMiddle, titlesAbove )
    */
-  def stepTitles( stat: Stat, n: Int ) = {
+  def stepTitles( stat: Stat, n: Int ): (List[TagMod], TagMod, List[TagMod]) = {
     val min = stat.min
     val ave = stat.ave
     val max = stat.max
@@ -175,9 +176,9 @@ object ViewPairsGridInternal {
 
   }
 
-  val cellX = TagMod( "X" )
+  val cellX: TagMod = TagMod( "X" )
 
-  def getRows( players: List[String], pds: PairsData, summary: PairsDataSummary, statColor: Stat, statSize: Stat, statTotalColor: Stat, statTotalSize: Stat, state: State ) = {
+  def getRows( players: List[String], pds: PairsData, summary: PairsDataSummary, statColor: Stat, statSize: Stat, statTotalColor: Stat, statTotalSize: Stat, state: State ): List[List[TagMod]] = {
     players.map { rowplayer =>
       val data = players.map { colPlayer =>
         val d = if (rowplayer == colPlayer) {
@@ -230,9 +231,9 @@ object ViewPairsGridInternal {
    */
   class Backend(scope: BackendScope[Props, State]) {
 
-    def setColorBy( colorBy: ColorBy ) = scope.modState { s => s.copy(colorBy=colorBy) }
+    def setColorBy( colorBy: ColorBy ): Callback = scope.modState { s => s.copy(colorBy=colorBy) }
 
-    def setCalc( calc: CalculationType ) = scope.modState { s =>
+    def setCalc( calc: CalculationType ): Callback = scope.modState { s =>
       val colorBy = calc match {
         case CalculationAsPlayed =>
           s.colorBy
@@ -246,7 +247,7 @@ object ViewPairsGridInternal {
       s.copy(colorBy=colorBy, calc=calc)
     }
 
-    def render( props: Props, state: State ) = {
+    def render( props: Props, state: State ) = { // scalafix:ok ExplicitResultTypes; React
 
       props.filter.pairsData match {
         case Some(rawpds) if !rawpds.players.isEmpty =>
@@ -361,6 +362,7 @@ object ViewPairsGridInternal {
     }
   }
 
+  private[duplicate]
   val component = ScalaComponent.builder[Props]("ViewPairsGrid")
                             .initialStateFromProps { props =>
                               props.filter.pairsData match {

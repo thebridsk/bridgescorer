@@ -38,9 +38,10 @@ import com.github.thebridsk.bridge.data.ImportStoreData
 import play.api.libs.json.Writes
 import com.github.thebridsk.bridge.data.rest.JsonSupport
 import io.swagger.v3.oas.annotations.media.Encoding
+import akka.http.scaladsl.server.Route
 
 object ImportExport {
-  val log = Logger[ImportExport]()
+  val log: Logger = Logger[ImportExport]()
 
   case class MultipartFile(
     @Schema(`type` = "string", format = "binary", description = "Bridge store file, must have an extension of '.bridgestore' or '.zip'")
@@ -59,7 +60,7 @@ trait ImportExport {
 
   val diagnosticDir: Option[Directory] = None
 
-  lazy val importExportRoute = {
+  lazy val importExportRoute: Route = {
     exportStore ~ importStore ~ diagnostics
   }
 
@@ -109,8 +110,8 @@ trait ImportExport {
       )
     )
   )
-  def xxxexportStore() = {}
-  val exportStore = get {
+  def xxxexportStore(): Unit = {}
+  val exportStore: Route = get {
     path("export") {
       parameter("filter".?) { (filter) =>
         val filt = filter.map { f =>
@@ -163,7 +164,7 @@ trait ImportExport {
     }
   }
 
-  lazy val tempDir = Directory.makeTemp("tempImportStore", ".dir", null)
+  lazy val tempDir: Directory = Directory.makeTemp("tempImportStore", ".dir", null)
 
   def tempDestination(fileInfo: FileInfo): JFile = {
     val fn = fileInfo.fileName
@@ -176,7 +177,7 @@ trait ImportExport {
     t: T
   )(
     implicit writer: Writes[T]
-  ) = {
+  ): HttpResponse = {
     HttpResponse( statuscode, entity = HttpEntity( ContentTypes.`application/json`, JsonSupport.writeJson(t)) )
   }
 
@@ -229,8 +230,8 @@ trait ImportExport {
       )
     )
   )
-  def xxximportStore() = {}
-  val importStore = post {
+  def xxximportStore(): Unit = {}
+  val importStore: Route = post {
     path("import") {
       restService.importStore.map { is =>
         storeUploadedFiles("zip", tempDestination) { files =>
@@ -313,8 +314,8 @@ trait ImportExport {
       )
     )
   )
-  def xxxdiagnostics() = {}
-  val diagnostics = get {
+  def xxxdiagnostics(): Unit = {}
+  val diagnostics: Route = get {
     path("diagnostics") {
       log.fine(s"starting to export of diagnostic information")
       val byteSource: Source[ByteString, Unit] = StreamConverters

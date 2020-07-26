@@ -16,16 +16,16 @@ import com.github.thebridsk.bridge.clientcommon.logger.Alerter
 import com.github.thebridsk.bridge.clientcommon.demo.BridgeDemo
 
 object ChicagoStore extends ChangeListenable {
-  val logger = Logger("bridge.ChicagoStore")
+  val logger: Logger = Logger("bridge.ChicagoStore")
 
   /**
    * Required to instantiate the store.
    */
-  def init() = {}
+  def init(): Unit = {}
 
   private var dispatchToken: Option[DispatchToken] = Some(BridgeDispatcher.register(dispatch _))
 
-  def dispatch( msg: Any ) = Alerter.tryitWithUnit { msg match {
+  def dispatch( msg: Any ): Unit = Alerter.tryitWithUnit { msg match {
     case m: ChicagoBridgeAction =>
       m match {
         case ActionUpdateChicagoHand(chiid,roundid,handid,hand,cb) => updateChicagoHand(chiid, roundid, handid, hand,cb)
@@ -46,12 +46,12 @@ object ChicagoStore extends ChangeListenable {
   def getChicago = chicago
   def getMonitoredId = monitoredId
 
-  def isMonitoredId( chiid: MatchChicago.Id ) = monitoredId match {
+  def isMonitoredId( chiid: MatchChicago.Id ): Boolean = monitoredId match {
     case Some(id) => id == chiid
     case None => false
   }
 
-  def start( id: MatchChicago.Id, chi: Option[MatchChicago] ) = {
+  def start( id: MatchChicago.Id, chi: Option[MatchChicago] ): Unit = {
     monitoredId = Some(id)
     chicago = chi
     notifyChange()
@@ -79,13 +79,13 @@ object ChicagoStore extends ChangeListenable {
     }
   }
 
-  def updateChicago( chi: MatchChicago, callback: Option[MatchChicago=>Unit] ) = {
+  def updateChicago( chi: MatchChicago, callback: Option[MatchChicago=>Unit] ): Any = {
     update("updateChicago", chi.id, (oldchi)=>{
       Some(chi)
     },callback)
   }
 
-  def updateChicagoNames( chiid: MatchChicago.Id, nplayer1: String, nplayer2: String, nplayer3: String, nplayer4: String, extra: Option[String], quintet: Boolean, simpleRotation: Boolean, callback: Option[MatchChicago=>Unit] ) = {
+  def updateChicagoNames( chiid: MatchChicago.Id, nplayer1: String, nplayer2: String, nplayer3: String, nplayer4: String, extra: Option[String], quintet: Boolean, simpleRotation: Boolean, callback: Option[MatchChicago=>Unit] ): Any = {
     update("updateChicagoNames", chiid, (chi)=>{
       chi match {
         case Some(mc) =>
@@ -118,19 +118,19 @@ object ChicagoStore extends ChangeListenable {
     },callback)
   }
 
-  def updateChicago5( chiid: MatchChicago.Id, extraPlayer: String, callback: Option[MatchChicago=>Unit] ) = {
+  def updateChicago5( chiid: MatchChicago.Id, extraPlayer: String, callback: Option[MatchChicago=>Unit] ): Any = {
     update("updateChicagoNames", chiid, (chi)=>{
       chi.map(_.playChicago5(extraPlayer))
     },callback)
   }
 
-  def updateChicagoRound( chiid: MatchChicago.Id, round: Round, callback: Option[MatchChicago=>Unit] ) = {
+  def updateChicagoRound( chiid: MatchChicago.Id, round: Round, callback: Option[MatchChicago=>Unit] ): Any = {
     update("updateChicagoRound", chiid, (chi)=>{
       chi.map(_.modifyRound(round))
     },callback)
   }
 
-  def updateChicagoHand( chiid: MatchChicago.Id, roundid: Int, handid: Int, hand: Hand, callback: Option[MatchChicago=>Unit] ) = {
+  def updateChicagoHand( chiid: MatchChicago.Id, roundid: Int, handid: Int, hand: Hand, callback: Option[MatchChicago=>Unit] ): Any = {
     update("updateChicagoHand", chiid, (chi)=>{
       chi.map(_.modifyHand(roundid, handid, hand))
     },callback)

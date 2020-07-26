@@ -16,6 +16,7 @@ import com.github.thebridsk.bridge.client.routes.BridgeRouter
 import com.github.thebridsk.bridge.client.pages.HomePage
 import japgolly.scalajs.react.component.builder.Lifecycle.ComponentDidUpdate
 
+
 /**
  * Shows the team x board table and has a totals column that shows the number of points the team has.
  *
@@ -34,14 +35,14 @@ object PageAllTables {
 
   case class Props( routerCtl: BridgeRouter[DuplicatePage], page: AllTableView )
 
-  def apply( routerCtl: BridgeRouter[DuplicatePage], page: AllTableView ) = component(Props(routerCtl,page))
+  def apply( routerCtl: BridgeRouter[DuplicatePage], page: AllTableView ) = component(Props(routerCtl,page))  // scalafix:ok ExplicitResultTypes; ReactComponent
 
 }
 
 object PageAllTablesInternal {
   import PageAllTables._
 
-  val logger = Logger("bridge.PageAllTables")
+  val logger: Logger = Logger("bridge.PageAllTables")
 
   /**
    * Internal state for rendering the component.
@@ -60,7 +61,7 @@ object PageAllTablesInternal {
    *
    */
   class Backend(scope: BackendScope[Props, State]) {
-    def render( props: Props, state: State ) = {
+    def render( props: Props, state: State ) = { // scalafix:ok ExplicitResultTypes; React
       import DuplicateStyles._
       <.div(
           DuplicatePageBridgeAppBar(
@@ -109,21 +110,21 @@ object PageAllTablesInternal {
 
     val storeCallback = scope.forceUpdate
 
-    val didMount = scope.props >>= { (p) => Callback {
+    val didMount: Callback = scope.props >>= { (p) => Callback {
       logger.info("PageAllTables.didMount")
       DuplicateStore.addChangeListener(storeCallback)
 
       Controller.monitor(p.page.dupid)
     }}
 
-    val willUnmount = Callback {
+    val willUnmount: Callback = Callback {
       logger.info("PageAllTables.willUnmount")
       DuplicateStore.removeChangeListener(storeCallback)
       Controller.delayStop()
     }
   }
 
-  def didUpdate( cdu: ComponentDidUpdate[Props,State,Backend,Unit] ) = Callback {
+  def didUpdate( cdu: ComponentDidUpdate[Props,State,Backend,Unit] ): Callback = Callback {
     val props = cdu.currentProps
     val prevProps = cdu.prevProps
     if (prevProps.page != props.page) {
@@ -131,6 +132,7 @@ object PageAllTablesInternal {
     }
   }
 
+  private[duplicate]
   val component = ScalaComponent.builder[Props]("PageAllTables")
                             .initialStateFromProps { props => State() }
                             .backend(new Backend(_))

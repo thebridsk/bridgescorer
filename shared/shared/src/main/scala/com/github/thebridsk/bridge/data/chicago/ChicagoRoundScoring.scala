@@ -9,14 +9,14 @@ import com.github.thebridsk.bridge.data.bridge.South
 import com.github.thebridsk.bridge.data.bridge.West
 
 class RoundScoring(val round: Round) {
-  val hands = round.hands.map { h =>
+  val hands: Array[ScoreHand] = round.hands.map { h =>
     ScoreHand(h)
   }.toArray
-  val dealerFirstRound = PlayerPosition(round.dealerFirstRound)
+  val dealerFirstRound: PlayerPosition = PlayerPosition(round.dealerFirstRound)
 
-  val players = Array(round.north, round.south, round.east, round.west)
+  val players: Array[String] = Array(round.north, round.south, round.east, round.west)
 
-  val dealerOrder = {
+  val dealerOrder: Array[PlayerPosition] = {
     var before: List[PlayerPosition] = Nil
     var after = RoundScoring.definedDealerOrder
 
@@ -29,7 +29,7 @@ class RoundScoring(val round: Round) {
     (after ::: before).toArray
   }
 
-  def dealerForHand(hand: Int) = {
+  def dealerForHand(hand: Int): PlayerPosition = {
     val h = (hand - 1) % 4
     dealerOrder(h)
   }
@@ -66,5 +66,5 @@ class RoundScoring(val round: Round) {
 object RoundScoring {
   def apply(round: Round) = new RoundScoring(round)
 
-  val definedDealerOrder = North :: East :: South :: West :: Nil
+  val definedDealerOrder: List[PlayerPosition] = North :: East :: South :: West :: Nil
 }

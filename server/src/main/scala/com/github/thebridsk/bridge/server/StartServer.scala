@@ -50,13 +50,16 @@ import akka.http.scaladsl.settings.ServerSettings
 import akka.http.scaladsl.server.Route
 import akka.http.scaladsl.model.ContentType
 import akka.http.scaladsl.model.MediaTypes
+import akka.http.scaladsl.HttpsConnectionContext
+import akka.http.scaladsl.server.{ RequestContext, RouteResult }
+import scala.concurrent.ExecutionContextExecutor
 
 /**
   * This is the main program for the REST server for our application.
   */
 object StartServer extends Subcommand("start") with ShutdownHook {
 
-  val logger = Logger(StartServer.getClass.getName)
+  val logger: Logger = Logger(StartServer.getClass.getName)
 
   val defaultRunFor = "12h"
 
@@ -75,14 +78,14 @@ Start HTTP server for scoring duplicate and chicago bridge
 Syntax:
   ${Server.cmdName} start options
 Options:""")
-  val optionInterface = opt[String](
+  val optionInterface: ScallopOption[String] = opt[String](
     "interface",
     short = 'i',
     descr = "the port the server listens on, default=0.0.0.0",
     argName = "ip",
     default = Some("0.0.0.0")
   )
-  val optionPort = opt[Int](
+  val optionPort: ScallopOption[Int] = opt[Int](
     "port",
     short = 'p',
     descr = "the port the server listens on, use 0 for no http, default=8080",
@@ -92,20 +95,20 @@ Options:""")
       p >= 0 && p <= 65535
     }
   )
-  val optionCertificate = opt[String](
+  val optionCertificate: ScallopOption[String] = opt[String](
     "certificate",
     short = 'c',
     descr = "the private certificate for the server, default=None",
     argName = "p12",
     default = None
   )
-  val optionCertPassword = opt[String](
+  val optionCertPassword: ScallopOption[String] = opt[String](
     "certpassword",
     descr = "the password for the private certificate, default=None",
     argName = "pw",
     default = None
   )
-  val optionHttps = opt[Int](
+  val optionHttps: ScallopOption[Int] = opt[Int](
     "https",
     short = 'h',
     descr = "https port to use",
@@ -115,14 +118,14 @@ Options:""")
       p > 0 && p <= 65535
     }
   );
-  val optionStore = opt[Path](
+  val optionStore: ScallopOption[Path] = opt[Path](
     "store",
     short = 's',
     descr = "The store directory, default=./store",
     argName = "dir",
     default = Some("./store")
   )
-  val optionCACertificate = opt[Path](
+  val optionCACertificate: ScallopOption[Path] = opt[Path](
     "cacert",
     noshort = true,
     descr = "The public CA certificate, in DER format",
@@ -130,7 +133,7 @@ Options:""")
     default = None,
     validate = { f => f.isFile }
   )
-  val optionRunFor = opt[Duration](
+  val optionRunFor: ScallopOption[Duration] = opt[Duration](
     "runfor",
     short = 'r',
     descr = s"Run for specified as a duration, default ${defaultRunFor}",
@@ -143,14 +146,14 @@ Options:""")
 //  val optionShutdown = toggle("shutdown", default = Some(false), noshort = true,
 //                              descrYes = "Shutdown a server running on the same machine, other options should be the same as when starting server",
 //                              descrNo = "Start the server." )
-  val optionBrowser = toggle(
+  val optionBrowser: ScallopOption[Boolean] = toggle(
     "browser",
     default = Some(false),
     noshort = true,
     descrYes = "Start a browser on the home page of the server",
     descrNo = "Do not start the browser"
   )
-  val optionChrome = toggle(
+  val optionChrome: ScallopOption[Boolean] = toggle(
     "chrome",
     default = Some(false),
     noshort = true,
@@ -158,21 +161,21 @@ Options:""")
       "Start the browser on the home page of the server in fullscreen mode",
     descrNo = "Do not start the chrome browser"
   )
-  val optionLoopback = toggle(
+  val optionLoopback: ScallopOption[Boolean] = toggle(
     "loopback",
     default = Some(false),
     noshort = true,
     descrYes = "Use loopback as host name when starting browser",
     descrNo = "Use localhost as host name when starting browser"
   )
-  val optionHttp2 = toggle(
+  val optionHttp2: ScallopOption[Boolean] = toggle(
     "http2",
     default = Some(false),
     noshort = true,
     descrYes = "Enable http2 support",
     descrNo = "Disable http2 support"
   )
-  val optionCache = opt[Duration](
+  val optionCache: ScallopOption[Duration] = opt[Duration](
     "cache",
     descr =
       s"time to set in cache-control header of responses.  0s for no-cache. default ${defaultCacheFor}",
@@ -183,7 +186,7 @@ Options:""")
     }
   )
 
-  val optionRemoteLogger =
+  val optionRemoteLogger: ScallopOption[Path] =
     opt[Path](
       "remotelogging",
       short = 'l',
@@ -193,7 +196,7 @@ Options:""")
       default = None
     )
 
-  val optionIPadRemoteLogging = opt[String](
+  val optionIPadRemoteLogging: ScallopOption[String] = opt[String](
     "ipad",
     noshort = true,
     descr = "The remote logging profile to use for the iPad, default: off",
@@ -201,7 +204,7 @@ Options:""")
     default = Some("default")
   )
 
-  val optionBrowserRemoteLogging = opt[String](
+  val optionBrowserRemoteLogging: ScallopOption[String] = opt[String](
     "browserlogging",
     noshort = true,
     descr = "The remote logging profile to use for browsers, default: default",
@@ -209,7 +212,7 @@ Options:""")
     default = Some("default")
   )
 
-  val optionDiagnosticDir = opt[Path](
+  val optionDiagnosticDir: ScallopOption[Path] = opt[Path](
     "diagnostics",
     noshort = true,
     descr =
@@ -260,11 +263,11 @@ If both https and http is started, then http will be redirected to https
     getServer(true, true).execute()
   }
 
-  def terminateServer() = {
+  def terminateServer(): Promise[String] = {
     getServer(true, false).terminateServer()
   }
 
-  def terminateServerIn(duration: Duration = 10 seconds) = {
+  def terminateServerIn(duration: Duration = 10 seconds): Future[Promise[String]] = {
     getServer(true, false).terminateServerIn(duration)
   }
 
@@ -274,7 +277,7 @@ If both https and http is started, then http will be redirected to https
   def serverSSLContext(
       certPassword: Option[String] = optionCertPassword.toOption,
       certificate: Option[String] = optionCertificate.toOption
-  ) = {
+  ): HttpsConnectionContext = {
     logger.info(s"Creating serverSSLContext, certificate=$certificate, workingDirectory=${new File(".").getAbsoluteFile().getCanonicalFile()}")
     val password = certPassword.getOrElse("abcdef").toCharArray // default NOT SECURE
     val context = SSLContext.getInstance("TLS")
@@ -361,18 +364,18 @@ If both https and http is started, then http will be redirected to https
 private class StartServer {
   import StartServer._
   // we need an ActorSystem to host our application in
-  implicit val system = ActorSystem("bridgescorer")
+  implicit val system: ActorSystem = ActorSystem("bridgescorer")
   val log = StartServer.logger // Logging(system, Server.getClass)
-  implicit val executor = system.dispatcher
+  implicit val executor: ExecutionContextExecutor = system.dispatcher
 
-  implicit val timeout = Timeout(20.seconds)
+  implicit val timeout: Timeout = Timeout(20.seconds)
 
   val defaultRunFor = "12h"
 
   val defaultHttpsPort = 8443
   val defaultCertificate = "keys/examplebridgescorekeeper.p12"
 
-  def getHttpPortOption() = {
+  def getHttpPortOption(): Option[Int] = {
     optionPort.toOption match {
       case Some(0) => None
       case x       => x
@@ -398,7 +401,7 @@ private class StartServer {
 //    }
   }
 
-  def getURL(interface: String) = {
+  def getURL(interface: String): String = {
     val httpsURL = optionHttps.toOption match {
       case Some(port) =>
         if (port == 443) Some("https://" + interface + "/")
@@ -416,7 +419,7 @@ private class StartServer {
     httpsURL.getOrElse(httpURL.get)
   }
 
-  def getHostPort(interface: String) = {
+  def getHostPort(interface: String): String = {
     val httpsURL = optionHttps.toOption match {
       case Some(port) => Some("https://" + interface + ":" + port + "/")
       case None       => None
@@ -538,9 +541,9 @@ private class StartServer {
   }
 
   // This will complete if the server fails to start
-  val terminatePromise = Promise[String]()
+  val terminatePromise: Promise[String] = Promise[String]()
 
-  def terminateServerIn(duration: Duration = 10 seconds) = {
+  def terminateServerIn(duration: Duration = 10 seconds): Future[Promise[String]] = {
     Future {
       log.info("Shutting down server in " + duration)
       Thread.sleep(duration.toMillis)
@@ -548,12 +551,12 @@ private class StartServer {
     }
   }
 
-  def terminateServer() = {
+  def terminateServer(): Promise[String] = {
     log.info("Shutting down server now")
     terminatePromise.success("Terminate")
   }
 
-  def redirectRoute(scheme: String, port: Int) =
+  def redirectRoute(scheme: String, port: Int): RequestContext => Future[RouteResult] =
     extractUri { uri =>
       redirect(
         uri.withScheme(scheme).withPort(port),

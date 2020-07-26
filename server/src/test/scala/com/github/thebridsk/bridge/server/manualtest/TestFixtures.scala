@@ -28,16 +28,16 @@ object TestFixtures extends Main {
     0
   }
 
-  def showFixtures( allFixtures: Seq[Fixture], description: String = "Showing all Fixtures" ) = {
+  def showFixtures( allFixtures: Seq[Fixture], description: String = "Showing all Fixtures" ): Unit = {
     logger.info(description+": found "+allFixtures.length)
     allFixtures.foreach(f=>logger.info("  "+fixtureToString(f)))
   }
 
-  def fixtureToString( f: Fixture ) = {
+  def fixtureToString( f: Fixture ): String = {
      f.north+"-"+f.south+" " + f.east+"-"+f.west + " Sit out: "+f.extra
   }
 
-  def showPaths( paths: List[List[Fixture]], desc: String = "" ) = {
+  def showPaths( paths: List[List[Fixture]], desc: String = "" ): Unit = {
     if (paths.isEmpty) {
       logger.info(desc+"Did not find any paths")
     } else {

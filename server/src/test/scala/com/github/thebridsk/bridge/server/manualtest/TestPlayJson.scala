@@ -7,9 +7,9 @@ object TestPlayJson extends Main {
 
   case class XX( y: Option[String] = Some("yy") )
 
-  implicit val formatXX = Json.format[XX]
+  implicit val formatXX: OFormat[XX] = Json.format[XX]
 
-  def execute() = {
+  def execute(): Int = {
 
     test( XX( Some("goodbye")) )
     test( XX( None ) )
@@ -18,7 +18,7 @@ object TestPlayJson extends Main {
     0
   }
 
-  def test( x: XX ) = {
+  def test( x: XX ): Unit = {
     val jsv = Json.toJson(x)
     val sv = Json.prettyPrint(jsv)
     println(s"JSON of ${x} is:\n${sv}" )

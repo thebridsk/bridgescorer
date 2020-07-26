@@ -19,16 +19,16 @@ class TestDuplicateScore extends AnyFlatSpec with Matchers {
 
   behavior of "a played match"
 
-  val dupid = MatchDuplicate.id(1)
-  val md = TestMatchDuplicate.getPlayedMatch(dupid)
+  val dupid: MatchDuplicate.Id = MatchDuplicate.id(1)
+  val md: MatchDuplicate = TestMatchDuplicate.getPlayedMatch(dupid)
 
 //  board 7 played by 1 and 3
 //  board 8 played by 2 and 4
 
-  val team1 = Team.id(1)
-  val team2 = Team.id(2)
-  val team3 = Team.id(3)
-  val team4 = Team.id(4)
+  val team1: Team.Id = Team.id(1)
+  val team2: Team.Id = Team.id(2)
+  val team3: Team.Id = Team.id(3)
+  val team4: Team.Id = Team.id(4)
 
   it should "score from T1 and T2 perspective" in {
     val score = MatchDuplicateScore( md, PerspectiveTable(team1, team2) )

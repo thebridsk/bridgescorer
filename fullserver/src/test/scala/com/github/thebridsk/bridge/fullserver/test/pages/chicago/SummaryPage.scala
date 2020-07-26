@@ -14,37 +14,39 @@ import com.github.thebridsk.bridge.fullserver.test.pages.BaseHandPage
 import com.github.thebridsk.browserpages.PagesAssertions._
 import com.github.thebridsk.utilities.logging.Logger
 import com.github.thebridsk.bridge.fullserver.test.pages.bridge.HomePage
+import org.scalatest.Assertion
+import scala.util.matching.Regex
 
 object SummaryPage {
 
-  val log = Logger[SummaryPage]()
+  val log: Logger = Logger[SummaryPage]()
 
-  def current( matchType: ChicagoMatchType )(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
+  def current( matchType: ChicagoMatchType )(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position): SummaryPage = {
     val (cid, round) = findChicagoIds
     new SummaryPage( cid, matchType, round )
   }
 
-  def waitFor( matchType: ChicagoMatchType )(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
+  def waitFor( matchType: ChicagoMatchType )(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position): SummaryPage = {
     val (cid, round) = eventually { findChicagoIds }
     new SummaryPage( cid, matchType, round )
   }
 
-  def goto( id: String, matchType: ChicagoMatchType, round: Option[Int] = None )(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
+  def goto( id: String, matchType: ChicagoMatchType, round: Option[Int] = None )(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position): SummaryPage = {
     go to getUrl(id, round)
     new SummaryPage( id, matchType, round )
   }
 
-  def demo( id: String, matchType: ChicagoMatchType, round: Option[Int] = None )(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
+  def demo( id: String, matchType: ChicagoMatchType, round: Option[Int] = None )(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position): SummaryPage = {
     go to getDemoUrl(id, round)
     new SummaryPage( id, matchType, round )
   }
 
-  def getUrl( id: String, round: Option[Int] = None ) = {
+  def getUrl( id: String, round: Option[Int] = None ): String = {
     val r = round.map( rid=> s"/rounds/${rid}" ).getOrElse("")
     TestServer.getAppPageUrl(s"chicago/${id}${r}")
   }
 
-  def getDemoUrl( id: String, round: Option[Int] = None ) = {
+  def getDemoUrl( id: String, round: Option[Int] = None ): String = {
     val r = round.map( rid=> s"/rounds/${rid}" ).getOrElse("")
     TestServer.getAppDemoPageUrl(s"chicago/${id}${r}")
   }
@@ -58,10 +60,10 @@ object SummaryPage {
   val buttonInputStyle = "InputStyle"
   val buttonEditNames = "EditNames"
 
-  def roundToButtonId( r: Int ) = s"Round${r+1}"
-  def handToButtonId( h: Int ) = s"Hand_${h+1}"
+  def roundToButtonId( r: Int ): String = s"Round${r+1}"
+  def handToButtonId( h: Int ): String = s"Hand_${h+1}"
 
-  val buttonIdsAlways = List( buttonQuit )
+  val buttonIdsAlways: List[String] = List( buttonQuit )
 
   private val patternComplete = """(C\d+)(?:/rounds/(\d+))?""".r
 
@@ -96,31 +98,31 @@ object SummaryPage {
 
   case class TotalsTable( players: List[String], rounds: List[List[String]], totals: List[String] ) {
 
-    def playerIndex( p: String ) = {
+    def playerIndex( p: String ): Int = {
       val i = players.indexOf(p)
       if (i<0) fail(s"Unable to find ${p} in table, table has $players")
       i
     }
 
-    def getRound( r: Int ) = rounds(r)
+    def getRound( r: Int ): List[String] = rounds(r)
 
     /**
      * @param p the player
      * @param r the round id, 0 based
      */
-    def getScore( p: String, r: Int ) = {
+    def getScore( p: String, r: Int ): String = {
       withClueEx(s"Looking for player ${p} in round ${r} in TotalsTable.getScore") {
         getRound(r)( playerIndex(p) )
       }
     }
 
-    def getTotal( p: String ) = {
+    def getTotal( p: String ): String = {
       withClueEx(s"Looking for player ${p} in TotalsTable.getTotal") {
         totals( playerIndex(p) )
       }
     }
 
-    def checkNumberRounds( n: Int ) = {
+    def checkNumberRounds( n: Int ): Assertion = {
       withClueEx(s"Must have ${n} rounds in TotalsTable") {
         rounds.length mustBe n
       }
@@ -131,7 +133,7 @@ object SummaryPage {
      * @param tot the total
      * @return this
      */
-    def checkTotal( p: String, tot: String ) = {
+    def checkTotal( p: String, tot: String ): TotalsTable = {
       withClueEx(s"Player ${p} total ${tot} in TotalsTable") {
         getTotal(p) mustBe tot
         this
@@ -144,7 +146,7 @@ object SummaryPage {
      * @param score
      * @return this
      */
-    def checkScore( p: String, r: Int, score: String ) = {
+    def checkScore( p: String, r: Int, score: String ): TotalsTable = {
       withClueEx(s"Player ${p} in round ${r} score ${score} in TotalsTable") {
         getScore(p,r) mustBe score
         this
@@ -154,7 +156,7 @@ object SummaryPage {
 
   case class RoundTableRow( hand: String, contract: String, by: String, made: String, tricks: String, Dealer: String, scores: List[String] ) {
 
-    def checkTotal( team: Int, score: String ) = {
+    def checkTotal( team: Int, score: String ): RoundTableRow = {
       withClueEx(s"Team ${team} checking total ${score} in RoundTableRow") {
         scores(team) mustBe score
         this
@@ -163,7 +165,7 @@ object SummaryPage {
 
   }
 
-  val patternRoundInRoundTable = """Round (\d+)""".r
+  val patternRoundInRoundTable: Regex = """Round (\d+)""".r
 
   /**
    * @param round the round, 1 based
@@ -173,14 +175,14 @@ object SummaryPage {
                          rows: List[RoundTableRow],
                          total: List[String] ) {
 
-    def getTeam( p: String )(implicit pos: Position) = {
+    def getTeam( p: String )(implicit pos: Position): Int = {
       teams.zipWithIndex.find{ e =>
         val ((p1,p2),i) = e
         p1==p || p2==p
       }.map{ _._2 }.getOrElse(fail( s"Did not find player ${p} from ${pos.line}" ))
     }
 
-    def checkTotal( p: String, tot: String )(implicit pos: Position) = {
+    def checkTotal( p: String, tot: String )(implicit pos: Position): RoundTable = {
       withClueEx(s"Player ${p} total ${tot} in RoundTable") {
         total( getTeam(p) ) mustBe tot
         this
@@ -192,7 +194,7 @@ object SummaryPage {
      * @param roundid the round, zero based
      * @param score
      */
-    def checkScore( p: String, hand: Int, score: String ) = {
+    def checkScore( p: String, hand: Int, score: String ): RoundTable = {
       withClueEx(s"Player ${p} in hand ${hand} score ${score} in RoundTable") {
         rows(hand).checkTotal(getTeam(p), score)
         this
@@ -210,7 +212,7 @@ object SummaryPage {
       scores: List[String]
   ) {
 
-    def checkTotal( player: Int, score: String ) = {
+    def checkTotal( player: Int, score: String ): FastRoundTableRow = {
       withClueEx(s"Player ${player} checking total ${score} in RoundTableRow") {
         scores(player) mustBe score
         this
@@ -228,11 +230,11 @@ object SummaryPage {
       total: List[String]
   ) {
 
-    def getPlayer( p: String ) = {
+    def getPlayer( p: String ): Int = {
       players.indexOf(p)
     }
 
-    def checkTotal( p: String, tot: String )(implicit pos: Position) = {
+    def checkTotal( p: String, tot: String )(implicit pos: Position): FastRoundTable = {
       withClueEx(s"Player ${p} total ${tot} in RoundTable") {
         total( getPlayer(p) ) mustBe tot
         this
@@ -244,7 +246,7 @@ object SummaryPage {
      * @param roundid the round, zero based
      * @param score
      */
-    def checkScore( p: String, round: Int, score: String ) = {
+    def checkScore( p: String, round: Int, score: String ): FastRoundTable = {
       withClueEx(s"Player ${p} in round ${round} score ${score} in RoundTable") {
         rows(round).checkTotal(getPlayer(p), score)
         this
@@ -265,7 +267,7 @@ class SummaryPage(
 
   import SummaryPage._
 
-  def validate(implicit patienceConfig: PatienceConfig, pos: Position) = logMethod(s"${pos.line} ${getClass.getSimpleName}.validate") { eventually {
+  def validate(implicit patienceConfig: PatienceConfig, pos: Position): SummaryPage = logMethod(s"${pos.line} ${getClass.getSimpleName}.validate") { eventually {
 
     eventually {
       val (cid,roundid) = findChicagoIds
@@ -279,14 +281,14 @@ class SummaryPage(
     this
   }}
 
-  def clickQuit(implicit pos: Position) = {
+  def clickQuit(implicit pos: Position): ListPage = {
     withClueEx(s"${pos.line}: trying to click quit") {
       clickButton(buttonQuit)
       ListPage.current
     }
   }
 
-  def clickInputStyle(implicit pos: Position) = {
+  def clickInputStyle(implicit pos: Position): SummaryPage = {
     withClueEx(s"${pos.line}: trying to click input style") {
       clickButton(buttonInputStyle)
       this
@@ -306,7 +308,7 @@ class SummaryPage(
   /**
    * @param r the round, 0 based
    */
-  def clickRound( r: Int )(implicit pos: Position) = {
+  def clickRound( r: Int )(implicit pos: Position): SummaryPage = {
     withClueEx(s"${pos.line}: trying to click round ${r}") {
       clickButton( roundToButtonId(r) )
       new SummaryPage( chiid, matchType, Some(r) )
@@ -317,7 +319,7 @@ class SummaryPage(
    * Click a hand button.  There must only be one round table on page.
    * @param h the hand, 0 based
    */
-  def clickHand( h: Int )(implicit pos: Position) = {
+  def clickHand( h: Int )(implicit pos: Position): HandPage = {
     withClueEx(s"${pos.line}: trying to click hand ${h}") {
       val e = findAll(id(handToButtonId(h)))
       e.length mustBe 1
@@ -331,7 +333,7 @@ class SummaryPage(
    * @param h the hand, 0 based
    * @param r the round, 0 based
    */
-  def clickHand( h: Int, r: Int )(implicit pos: Position) = {
+  def clickHand( h: Int, r: Int )(implicit pos: Position): HandPage = {
     withClueEx(s"${pos.line}: trying to click hand ${h} in round ${r}") {
       val e = findAll(id(handToButtonId(h)))
       e.length must be > r
@@ -340,28 +342,28 @@ class SummaryPage(
     }
   }
 
-  def clickNextHand(implicit pos: Position) = {
+  def clickNextHand(implicit pos: Position): HandPage = {
     withClueEx(s"${pos.line}: trying to click next hand") {
       clickButton(buttonNextHand)
       HandPage.waitFor(matchType)
     }
   }
 
-  def clickNextHandFair(implicit pos: Position) = {
+  def clickNextHandFair(implicit pos: Position): FairSelectPartnersPage = {
     withClueEx(s"${pos.line}: trying to click next hand") {
       clickButton(buttonNextHand)
       FairSelectPartnersPage.current
     }
   }
 
-  def clickNextHandSimple(implicit pos: Position) = {
+  def clickNextHandSimple(implicit pos: Position): SimpleSelectPartnersPage = {
     withClueEx(s"${pos.line}: trying to click next hand") {
       clickButton(buttonNextHand)
       SimpleSelectPartnersPage.current
     }
   }
 
-  def clickNextHandFairToEnterNames(implicit pos: Position) = {
+  def clickNextHandFairToEnterNames(implicit pos: Position): EnterNamesPage = {
     withClueEx(s"${pos.line}: trying to click next hand") {
       clickButton(buttonNextHand)
       EnterNamesPage.current
@@ -386,53 +388,53 @@ class SummaryPage(
     }
   }
 
-  def clickNewRoundFour(implicit pos: Position) = {
+  def clickNewRoundFour(implicit pos: Position): FourSelectPartnersPage = {
     withClueEx(s"${pos.line}: trying to click new round") {
       clickButton(buttonNewRound)
       FourSelectPartnersPage.current
     }
   }
 
-  def clickNewRoundFive(implicit pos: Position) = {
+  def clickNewRoundFive(implicit pos: Position): FiveSelectPartnersPage = {
     withClueEx(s"${pos.line}: trying to click new round") {
       clickButton(buttonNewRound)
       FiveSelectPartnersPage.current
     }
   }
 
-  def click6HandRound(implicit pos: Position) = {
+  def click6HandRound(implicit pos: Position): HandPage = {
     withClueEx(s"${pos.line}: trying to click 6 hand round") {
       clickButton(button6HandRound)
       HandPage.waitFor(matchType)
     }
   }
 
-  def click8HandRound(implicit pos: Position) = {
+  def click8HandRound(implicit pos: Position): HandPage = {
     withClueEx(s"${pos.line}: trying to click 6 hand round") {
       clickButton(button8HandRound)
       HandPage.waitFor(matchType)
     }
   }
 
-  def clickAllRounds(implicit pos: Position) = {
+  def clickAllRounds(implicit pos: Position): SummaryPage = {
     withClueEx(s"${pos.line}: trying to click all rounds") {
       clickButton(buttonAllRounds)
       new SummaryPage(chiid,matchType)
     }
   }
 
-  def clickEditNames(implicit pos: Position) = {
+  def clickEditNames(implicit pos: Position): EditNamesPage = {
     withClueEx(s"${pos.line}: trying to click edit names") {
       clickButton(buttonEditNames)
       new EditNamesPage(chiid,matchType)
     }
   }
 
-  def getAllButtons(implicit pos: Position) = {
+  def getAllButtons(implicit pos: Position): Map[String,Element] = {
     findAllButtons
   }
 
-  def checkButtons(visible: List[String], notvisible: List[String] = Nil)(implicit pos: Position) = {
+  def checkButtons(visible: List[String], notvisible: List[String] = Nil)(implicit pos: Position): SummaryPage = {
     val buttons = getAllButtons.keys.toList
     if (visible.find { v => !buttons.contains(v) }.isDefined) {
       fail( s"Did not find all buttons (${visible}) in ${buttons}" )
@@ -443,18 +445,18 @@ class SummaryPage(
     this
   }
 
-  def is6HandRoundButtonVisible(implicit pos: Position) = {
+  def is6HandRoundButtonVisible(implicit pos: Position): Boolean = {
     getAllButtons.keys.find(k => k==button6HandRound).isDefined
   }
 
-  def is8HandRoundButtonVisible(implicit pos: Position) = {
+  def is8HandRoundButtonVisible(implicit pos: Position): Boolean = {
     getAllButtons.keys.find(k => k==button8HandRound).isDefined
   }
 
   /**
    * @return a TotalsTable object
    */
-  def getTotalsTable(implicit pos: Position) = {
+  def getTotalsTable(implicit pos: Position): TotalsTable = {
     withClueEx("getTotalsTable") {
       val names = getElemsByXPath("""//div[contains(concat(' ', @class, ' '), ' chiChicagoSummaryPage ')]/div[1]/table/thead/tr[2]/th""").drop(1).map(e => e.text)
       val rows = getElemsByXPath("""//div[contains(concat(' ', @class, ' '), ' chiChicagoSummaryPage ')]/div[1]/table/tbody/tr""")
@@ -579,7 +581,7 @@ class SummaryPage(
    * @param players the players to check
    * @param scores the scores, index matches players
    */
-  def checkHandScore( hand: Int, players: List[String], scores: List[String], totals: List[String] )(implicit pos: Position) = {
+  def checkHandScore( hand: Int, players: List[String], scores: List[String], totals: List[String] )(implicit pos: Position): SummaryPage = {
     val rt = getOnlyRoundTable()
     try {
       withClueEx( s"Checking hand ${hand} with players ${players} scores ${scores}" ) {
@@ -608,7 +610,7 @@ class SummaryPage(
    * @param players the players to check
    * @param scores the scores, index matches players
    */
-  def checkTotalScore( round: Int, players: List[String], scores: List[String], totals: List[String] )(implicit pos: Position) = {
+  def checkTotalScore( round: Int, players: List[String], scores: List[String], totals: List[String] )(implicit pos: Position): SummaryPage = {
     val rt = getTotalsTable
     try {
       withClueEx( s"Checking summary for round ${round} with players ${players} scores ${scores}" ) {
@@ -637,7 +639,7 @@ class SummaryPage(
    * @param players the players to check
    * @param scores the scores, index matches players
    */
-  def checkTotalsScore( players: List[String], totals: List[String] )(implicit pos: Position) = {
+  def checkTotalsScore( players: List[String], totals: List[String] )(implicit pos: Position): SummaryPage = {
     val rt = getTotalsTable
     try {
       withClueEx( s"Checking summary totals with players ${players} totals ${totals}" ) {
@@ -660,7 +662,7 @@ class SummaryPage(
    * @param players the players to check
    * @param scores the scores, index matches players
    */
-  def checkFastTotalsScore( players: List[String], totals: List[String] )(implicit pos: Position) = {
+  def checkFastTotalsScore( players: List[String], totals: List[String] )(implicit pos: Position): SummaryPage = {
     val rt = getFastRoundTable
     try {
       withClueEx( s"Checking summary totals with players ${players} totals ${totals}" ) {
@@ -680,7 +682,7 @@ class SummaryPage(
   /**
    * @param pos
    */
-  def clickHome( implicit pos: Position ) = {
+  def clickHome( implicit pos: Position ): HomePage = {
     clickButton("Home")
     new HomePage()(webDriver,pos)
   }

@@ -10,12 +10,13 @@ import com.github.thebridsk.browserpages.PageBrowser._
 import com.github.thebridsk.bridge.server.test.util.TestServer
 import com.github.thebridsk.utilities.logging.Logger
 import com.github.thebridsk.bridge.fullserver.test.pages.bridge.ErrorMsgDiv
+import com.github.thebridsk.browserpages.{ Combobox, Element }
 
 object EditNamesPage {
 
-  val log = Logger[EditNamesPage]()
+  val log: Logger = Logger[EditNamesPage]()
 
-  def current( matchType: ChicagoMatchType )(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
+  def current( matchType: ChicagoMatchType )(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position): EditNamesPage = {
     val chiid = findMatchId
     new EditNamesPage(chiid, matchType)
   }
@@ -24,7 +25,7 @@ object EditNamesPage {
    * @param chiid the chicago id
    * @param roundid the round ID, zero based.
    */
-  def urlFor( chiid: String ) = {
+  def urlFor( chiid: String ): String = {
     TestServer.getAppPageUrl( s"chicago/${chiid}/names" )
   }
 
@@ -32,7 +33,7 @@ object EditNamesPage {
    * @param chiid the chicago id
    * @param roundid the round ID, zero based.
    */
-  def demoUrlFor( chiid: String ) = {
+  def demoUrlFor( chiid: String ): String = {
     TestServer.getAppDemoPageUrl( s"chicago/${chiid}/names" )
   }
 
@@ -43,7 +44,7 @@ object EditNamesPage {
               webDriver: WebDriver,
               patienceConfig: PatienceConfig,
               pos: Position
-          ) = {
+          ): EditNamesPage = {
     go to urlFor(chiid)
     new EditNamesPage(chiid, matchType)
   }
@@ -79,7 +80,7 @@ object EditNamesPage {
   val buttonReset = "Reset"
   val buttonCancel = "Cancel"
 
-  def toInputName( row: Int ) = s"I_$row"
+  def toInputName( row: Int ): String = s"I_$row"
 }
 
 class EditNamesPage(
@@ -91,7 +92,7 @@ class EditNamesPage(
 ) extends Page[EditNamesPage] with ErrorMsgDiv[EditNamesPage] {
   import EditNamesPage._
 
-  def validate(implicit patienceConfig: PatienceConfig, pos: Position) = logMethod(s"${pos.line} ${getClass.getSimpleName}.validate") { eventually {
+  def validate(implicit patienceConfig: PatienceConfig, pos: Position): EditNamesPage = logMethod(s"${pos.line} ${getClass.getSimpleName}.validate") { eventually {
 
     Some(currentUrl) must (contain.oneOf( urlFor(chiid), demoUrlFor(chiid) ) )
 
@@ -106,7 +107,7 @@ class EditNamesPage(
    * @param row the location on the screen, 0 based.
    * @param name
    */
-  def enterPlayer( row: Int, name: String, hitEscapeAfter: Boolean = false )(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def enterPlayer( row: Int, name: String, hitEscapeAfter: Boolean = false )(implicit patienceConfig: PatienceConfig, pos: Position): EditNamesPage = {
     val text = eventually {
       getCombobox(toInputName(row))
     }
@@ -119,7 +120,7 @@ class EditNamesPage(
    * Get the player's new name value
    * @param row the location on the screen, 0 based.
    */
-  def getPlayer( row: Int )(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def getPlayer( row: Int )(implicit patienceConfig: PatienceConfig, pos: Position): String = {
     eventually {
       getCombobox(toInputName(row)).value
     }
@@ -129,24 +130,24 @@ class EditNamesPage(
    * Get the suggestions for names
    * @param row the location on the screen, 0 based.
    */
-  def getPlayerSuggestions( row: Int )(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def getPlayerSuggestions( row: Int )(implicit patienceConfig: PatienceConfig, pos: Position): List[Element] = {
     eventually {
       getCombobox(toInputName(row)).suggestions
     }
   }
 
-  def getCurrentPlayerNames(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def getCurrentPlayerNames(implicit patienceConfig: PatienceConfig, pos: Position): List[String] = {
     getElemsByXPath("""//div[contains(concat(' ', @class, ' '), ' chiDivEditNamesPage ')]/table/tbody/tr/td[1]""").map(e => e.text)
   }
 
-  def getNewPlayerNames(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def getNewPlayerNames(implicit patienceConfig: PatienceConfig, pos: Position): List[String] = {
     getElemsByXPath("""//div[contains(concat(' ', @class, ' '), ' chiDivEditNamesPage ')]/table/tbody/tr/td[2]/div/div/input""").map(e => e.attribute("value").getOrElse(""))
   }
 
   /**
    * @param row the location on the screen, 0 based.
    */
-  def getPlayerCombobox( row: Int )(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def getPlayerCombobox( row: Int )(implicit patienceConfig: PatienceConfig, pos: Position): Combobox = {
     eventually {
       getCombobox(toInputName(row))
     }
@@ -155,28 +156,28 @@ class EditNamesPage(
   /**
    * @param row the location on the screen, 0 based.
    */
-  def isPlayerSuggestionsVisible( row: Int )(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def isPlayerSuggestionsVisible( row: Int )(implicit patienceConfig: PatienceConfig, pos: Position): Boolean = {
     eventually {
       getCombobox(toInputName(row)).isSuggestionVisible
     }
   }
 
-  def clickOK(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def clickOK(implicit patienceConfig: PatienceConfig, pos: Position): SummaryPage = {
     clickButton(buttonOK)
     new SummaryPage(chiid, matchType)
   }
 
-  def clickReset(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def clickReset(implicit patienceConfig: PatienceConfig, pos: Position): EditNamesPage = {
     clickButton(buttonReset)
     this
   }
 
-  def clickCancel(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def clickCancel(implicit patienceConfig: PatienceConfig, pos: Position): SummaryPage = {
     clickButton(buttonCancel)
     new SummaryPage(chiid, matchType)
   }
 
-  def isOKEnabled(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def isOKEnabled(implicit patienceConfig: PatienceConfig, pos: Position): Boolean = {
     getButton(buttonOK).isEnabled
   }
 }

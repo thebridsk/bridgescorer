@@ -23,6 +23,7 @@ import org.scalajs.dom.raw.File
 import com.github.thebridsk.materialui.icons.DeleteForever
 import com.github.thebridsk.bridge.data.Team
 
+
 /**
  * A skeleton component.
  *
@@ -69,7 +70,8 @@ object PageHand {
              helppage: Option[String] = None,
              picture: Option[String] = None,
              supportPicture: Boolean = false
-  ) = component(Props(contract.withScoring,callbackOk,callbackCancel,
+  ) =  // scalafix:ok ExplicitResultTypes; ReactComponent
+      component(Props(contract.withScoring,callbackOk,callbackCancel,
                       teamNS,teamEW,newhand,allowPassedOut,callbackWithHonors,honors,honorsPlayer,helppage,picture,supportPicture))
 
 
@@ -113,7 +115,8 @@ object PageHand {
              helppage: Option[String] = None,
              picture: Option[String] = None,
              supportPicture: Boolean = false
-    ) = apply( Contract( h.id,
+    ) =   // scalafix:ok ExplicitResultTypes; ReactComponent
+       apply( Contract( h.id,
                         h.contractTricks,
                         h.contractSuit,
                         h.contractDoubled,
@@ -144,10 +147,10 @@ object PageHandInternal {
   import PageHand._
   import HandStyles._
 
-  val logger = Logger("bridge.PageHand")
+  val logger: Logger = Logger("bridge.PageHand")
 
-  implicit val loggerForReactComponents = Logger("bridge.PageHand")
-  implicit val defaultTraceLevelForReactComponents = Level.FINER
+  implicit val loggerForReactComponents: Logger = Logger("bridge.PageHand")
+  implicit val defaultTraceLevelForReactComponents: Level = Level.FINER
 
   /**
    * The properties for rendering the component.
@@ -192,8 +195,8 @@ object PageHandInternal {
                     removePicture: Boolean = false
   ) {
 
-    def withRemovePicture( f: Boolean ) = copy( removePicture = f )
-    def withShowPicture( f: Boolean ) = copy( showPicture = f )
+    def withRemovePicture( f: Boolean ): State = copy( removePicture = f )
+    def withShowPicture( f: Boolean ): State = copy( showPicture = f )
     def pictureToShow( default: Option[String] ): (Option[File],Option[String]) = {
       if (removePicture) (None,None)
       else {
@@ -201,7 +204,7 @@ object PageHandInternal {
       }
     }
 
-    def withScoring() = {
+    def withScoring(): State = {
       val rc = if (contractTricks match {
         case Some(ct) if (ct.tricks == 0) && (allowPassedOut) => true
         case _ =>
@@ -244,52 +247,52 @@ object PageHandInternal {
       rc
     }
 
-    def setContractTricks( cTricks: ContractTricks ) = {
+    def setContractTricks( cTricks: ContractTricks ): State = {
       copy(contractTricks=Some(cTricks)).withScoring()
     }
 
-    def setContractSuit( cSuit: ContractSuit ) = {
+    def setContractSuit( cSuit: ContractSuit ): State = {
       copy(contractSuit=Some(cSuit)).withScoring()
     }
 
-    def setContractDoubled( cDoubled: ContractDoubled ) = {
+    def setContractDoubled( cDoubled: ContractDoubled ): State = {
       copy(contractDoubled=Some(cDoubled)).withScoring()
     }
 
-    def setNSVul( vul: Vulnerability ) = {
+    def setNSVul( vul: Vulnerability ): State = {
       copy( currentcontract=currentcontract.copy(nsVul=vul) ).withScoring()
     }
 
-    def setEWVul( vul: Vulnerability ) = {
+    def setEWVul( vul: Vulnerability ): State = {
       copy( currentcontract=currentcontract.copy(ewVul=vul) ).withScoring()
     }
 
-    def setDeclarer( decl: PlayerPosition ) = {
+    def setDeclarer( decl: PlayerPosition ): State = {
       copy(declarer=Some(decl)).withScoring()
     }
 
-    def setMadeOrDown( mord: MadeOrDown ) = {
+    def setMadeOrDown( mord: MadeOrDown ): State = {
       copy(madeOrDown=Some(mord)).withScoring()
     }
 
-    def setTricks( cTricks: Int ) = {
+    def setTricks( cTricks: Int ): State = {
       copy(tricks=Some(cTricks)).withScoring()
     }
 
-    def setHonors( chonors: Int ) = {
+    def setHonors( chonors: Int ): State = {
       val s = if (chonors != 0) copy(honors=Some(chonors)) else copy(honors=Some(chonors), honorsPlayer=None)
       s.withScoring()
     }
 
-    def setHonorsPlayer( chonorsPlayer: Option[PlayerPosition] ) = {
+    def setHonorsPlayer( chonorsPlayer: Option[PlayerPosition] ): State = {
       copy(honorsPlayer=chonorsPlayer).withScoring()
     }
 
-    def clear() = copy( contractTricks=None, contractSuit=None, contractDoubled=initialDoubled,
+    def clear(): State = copy( contractTricks=None, contractSuit=None, contractDoubled=initialDoubled,
                         declarer=None, madeOrDown=None, tricks=None, honors=None, honorsPlayer=None,
                         picture=None, removePicture=false ).withScoring()
 
-    def nextInput() = {
+    def nextInput(): PageHandNextInput.Value = {
       def gotContractTricks = contractTricks.isDefined && contractTricks.get.tricks > 0
       import PageHandNextInput._
       PageHandNextInput.values.find { x => x match {
@@ -307,7 +310,7 @@ object PageHandInternal {
       }.get
     }
 
-    def allowVulChange() = currentcontract.scoringSystem.isInstanceOf[Test]
+    def allowVulChange(): Boolean = currentcontract.scoringSystem.isInstanceOf[Test]
   }
 
   object PageHandNextInput extends MyEnumeration {
@@ -330,24 +333,24 @@ object PageHandInternal {
     import org.scalajs.dom.html
     private val canvasRef = Ref[html.Canvas]
 
-    def modState( f: (State) => State, cb: Callback = Callback.empty ) = scope.modState(f, cb)
+    def modState( f: (State) => State, cb: Callback = Callback.empty ): Callback = scope.modState(f, cb)
 
-    def setContractTricks( tricks: ContractTricks ) = modState(s => s.setContractTricks(tricks))
-    def setContractSuit( suit: ContractSuit ) = modState(s => s.setContractSuit(suit))
-    def setContractDoubled( doubled: ContractDoubled ) = modState(s => s.setContractDoubled(doubled))
-    def setDeclarer( declarer: PlayerPosition ) = modState(s => s.setDeclarer(declarer))
+    def setContractTricks( tricks: ContractTricks ): Callback = modState(s => s.setContractTricks(tricks))
+    def setContractSuit( suit: ContractSuit ): Callback = modState(s => s.setContractSuit(suit))
+    def setContractDoubled( doubled: ContractDoubled ): Callback = modState(s => s.setContractDoubled(doubled))
+    def setDeclarer( declarer: PlayerPosition ): Callback = modState(s => s.setDeclarer(declarer))
     def setNSVul( nsVul: Vulnerability ): Callback = modState(s => s.setNSVul(nsVul))
     def setEWVul( ewVul: Vulnerability ): Callback = modState(s => s.setEWVul(ewVul))
-    def setMadeOrDown( madeOrDown: MadeOrDown ) = modState(s => s.setMadeOrDown(madeOrDown))
-    def setTricks( tricks: Int ) = modState(s => s.setTricks(tricks))
-    def setHonors( honors: Int ) = modState(s => s.setHonors(honors))
-    def setHonorsPlayer( honorsPlayer: Option[PlayerPosition] ) = modState(s => s.setHonorsPlayer(honorsPlayer) )
+    def setMadeOrDown( madeOrDown: MadeOrDown ): Callback = modState(s => s.setMadeOrDown(madeOrDown))
+    def setTricks( tricks: Int ): Callback = modState(s => s.setTricks(tricks))
+    def setHonors( honors: Int ): Callback = modState(s => s.setHonors(honors))
+    def setHonorsPlayer( honorsPlayer: Option[PlayerPosition] ): Callback = modState(s => s.setHonorsPlayer(honorsPlayer) )
 
-    val clear = modState( s => s.clear() )
+    val clear: Callback = modState( s => s.clear() )
 
     val kickRefresh = scope.forceUpdate
 
-    val ok = scope.stateProps { (state, props) =>
+    val ok: Callback = scope.stateProps { (state, props) =>
       props.callbackWithHonors.map { cb =>
           cb( state.currentcontract, state.picture, state.removePicture, state.honors.getOrElse(0), state.honorsPlayer )
       }.getOrElse {
@@ -355,25 +358,25 @@ object PageHandInternal {
       }
     }
 
-    def render(props: Props,state: State) = {
+    def render(props: Props,state: State) = { // scalafix:ok ExplicitResultTypes; React
       if (state.changeScorekeeper) renderChangeScorekeeper(props, state)
       else renderHand(props, state)
     }
 
-    def setScorekeeper( pos: PlayerPosition ) = scope.modState(s => {
+    def setScorekeeper( pos: PlayerPosition ): Callback = scope.modState(s => {
       scorekeeper = pos
       s.copy(changeScorekeeper=false)
     })
 
-    val cancelSetScorekeeper = scope.modState(s => {
+    val cancelSetScorekeeper: Callback = scope.modState(s => {
       s.copy(changeScorekeeper=false)
     })
 
-    val changeScorekeeper = scope.modState(s => {
+    val changeScorekeeper: Callback = scope.modState(s => {
       s.copy(changeScorekeeper=true)
     })
 
-    def renderChangeScorekeeper(props: Props,state: State) = {
+    def renderChangeScorekeeper(props: Props,state: State) = { // scalafix:ok ExplicitResultTypes; React
       val maneuvers = TableManeuvers( props.contract.north, props.contract.south, props.contract.east, props.contract.west )
 
       val extraWidth = Properties.defaultHandButtonBorderRadius+
@@ -395,7 +398,7 @@ object PageHandInternal {
       )
     }
 
-    def getFile( filelist: FileList ) = {
+    def getFile( filelist: FileList ): Option[File] = {
       if (filelist.length == 1) {
         val file = filelist(0)
         Some(file)
@@ -404,7 +407,7 @@ object PageHandInternal {
       }
     }
 
-    def doPictureInput(e: ReactEventFromInput) = e.preventDefaultAction.inputFiles { filelist =>
+    def doPictureInput(e: ReactEventFromInput): Callback = e.preventDefaultAction.inputFiles { filelist =>
       scope.modState { s =>
         getFile(filelist).map { file =>
           // val formData = new FormData
@@ -418,13 +421,13 @@ object PageHandInternal {
       }
     }
 
-    def removePicture = scope.modState { s =>
+    def removePicture: Callback = scope.modState { s =>
       s.copy(removePicture=true)
     }
 
-    val showPicture = scope.modState( s => s.copy(showPicture = true))
+    val showPicture: Callback = scope.modState( s => s.copy(showPicture = true))
 
-    def renderHand(props: Props,state: State) = {
+    def renderHand(props: Props,state: State) = { // scalafix:ok ExplicitResultTypes; React
       val contract = state.currentcontract
       val valid = contract.scorer.isDefined
 
@@ -593,25 +596,26 @@ object PageHandInternal {
       )
     }
 
-    val popupOk = scope.modState { s =>
+    val popupOk: Callback = scope.modState { s =>
       s.copy(showPicture = false)
     }
 
-    val didMount = scope.stateProps { (s,p) => Callback {
+    val didMount: Callback = scope.stateProps { (s,p) => Callback {
       logger.fine(s"PageHand.didMount")
     }}
 
-    val willUnmount = Callback {
+    val willUnmount: Callback = Callback {
       logger.info("PageHand.willUnmount")
     }
 
-    def didUpdate( cdu: ComponentDidUpdate[Props,State,Backend,Unit] ) = Callback {
+    def didUpdate( cdu: ComponentDidUpdate[Props,State,Backend,Unit] ): Callback = Callback {
       logger.fine(s"PageHand.didUpdate")
     }
   }
 
 
   val initialDoubled: Option[ContractDoubled] = None // Some(NotDoubled)
+  private[hand]
   val component = ScalaComponent.builder[Props]("PageHand")
                             .initialStateFromProps { props =>
                               if (props.newhand) State( props.contract,

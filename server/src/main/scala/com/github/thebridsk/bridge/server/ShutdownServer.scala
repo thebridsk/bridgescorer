@@ -30,13 +30,16 @@ import java.net.URL
 import java.io.InputStream
 import java.net.HttpURLConnection
 import java.io.IOException
+import akka.event.LoggingAdapter
+import akka.http.scaladsl.HttpsConnectionContext
+import scala.concurrent.ExecutionContextExecutor
 
 /**
   * This is the main program for the REST server for our application.
   */
 object ShutdownServer extends Subcommand("shutdown") {
 
-  val logger = Logger(ShutdownServer.getClass.getName)
+  val logger: Logger = Logger(ShutdownServer.getClass.getName)
 
   val defaultHttpsPort = 8443
   val defaultCertificate = "keys/examplebridgescorekeeper.p12"
@@ -53,7 +56,7 @@ Stops the HTTP server
 Syntax:
   ${Server.cmdName} shutdown options
 Options:""")
-  val optionPort = opt[Int](
+  val optionPort: ScallopOption[Int] = opt[Int](
     "port",
     short = 'p',
     descr = "the port the server listens on, use 0 for no http, default=8080",
@@ -63,7 +66,7 @@ Options:""")
       p >= 0 && p <= 65535
     }
   )
-  val optionHttps = opt[Int](
+  val optionHttps: ScallopOption[Int] = opt[Int](
     "https",
     short = 'h',
     descr = "https port to use",
@@ -73,14 +76,14 @@ Options:""")
       p > 0 && p <= 65535
     }
   );
-  val optionCertificate = opt[String](
+  val optionCertificate: ScallopOption[String] = opt[String](
     "certificate",
     short = 'c',
     descr = "the private certificate for the server, default=None",
     argName = "p12",
     default = None
   )
-  val optionCertPassword = opt[String](
+  val optionCertPassword: ScallopOption[String] = opt[String](
     "certpassword",
     descr = "the password for the private certificate, default=None",
     argName = "pw",
@@ -139,18 +142,18 @@ private class ShutdownServer {
 private class ShutdownServerAkka {
   import ShutdownServer._
   // we need an ActorSystem to host our application in
-  implicit val system = ActorSystem("bridgescorer")
-  val log = Logging(system, Server.getClass)
-  implicit val executor = system.dispatcher
+  implicit val system: ActorSystem = ActorSystem("bridgescorer")
+  val log: LoggingAdapter = Logging(system, Server.getClass)
+  implicit val executor: ExecutionContextExecutor = system.dispatcher
 
-  implicit val timeout = Timeout(20.seconds)
+  implicit val timeout: Timeout = Timeout(20.seconds)
 
   val defaultRunFor = "12h"
 
   val defaultHttpsPort = 8443
   val defaultCertificate = "keys/examplebridgescorekeeper.p12"
 
-  def getHttpPortOption() = {
+  def getHttpPortOption(): Option[Int] = {
     optionPort.toOption match {
       case Some(0) => None
       case x       => x
@@ -176,7 +179,7 @@ private class ShutdownServerAkka {
   /**
     * Get the ssl context
     */
-  def serverContext = {
+  def serverContext: HttpsConnectionContext = {
     val password = optionCertPassword.toOption.getOrElse("abcdef").toCharArray // default NOT SECURE
     val context = SSLContext.getInstance("TLS")
     val ks = KeyStore.getInstance("PKCS12")

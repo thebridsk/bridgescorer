@@ -39,27 +39,28 @@ import com.github.thebridsk.bridge.server.test.backend.TestFailureStore
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.compatible.Assertion
 import org.scalatest.flatspec.AsyncFlatSpec
+import com.github.thebridsk.utilities.logging.Logger
 
 object TestCacheStoreForFailures {
   import Matchers._
 
-  val testlog = com.github.thebridsk.utilities.logging.Logger[TestCacheStoreForFailures]()
+  val testlog: Logger = com.github.thebridsk.utilities.logging.Logger[TestCacheStoreForFailures]()
 
   TestStartLogging.startLogging()
 
-  val bridgeResources = BridgeResources()
+  val bridgeResources: BridgeResources = BridgeResources()
   import bridgeResources._
 
-  def boardsetsPersistent( implicit ec: ExecutionContext ) = JavaResourcePersistentSupport[BoardSet.Id,BoardSet]("/com/github/thebridsk/bridge/server/backend/", "Boardsets.txt", getClass.getClassLoader)
-  def movementsPersistent( implicit ec: ExecutionContext ) = JavaResourcePersistentSupport[Movement.Id,Movement]("/com/github/thebridsk/bridge/server/backend/", "Movements.txt", getClass.getClassLoader)
+  def boardsetsPersistent( implicit ec: ExecutionContext ): JavaResourcePersistentSupport[BoardSet.Id,BoardSet] = JavaResourcePersistentSupport[BoardSet.Id,BoardSet]("/com/github/thebridsk/bridge/server/backend/", "Boardsets.txt", getClass.getClassLoader)
+  def movementsPersistent( implicit ec: ExecutionContext ): JavaResourcePersistentSupport[Movement.Id,Movement] = JavaResourcePersistentSupport[Movement.Id,Movement]("/com/github/thebridsk/bridge/server/backend/", "Movements.txt", getClass.getClassLoader)
 
-  def standardBoardset( implicit ec: ExecutionContext ) = boardsetsPersistent.read(BoardSet.standard) match {
+  def standardBoardset( implicit ec: ExecutionContext ): BoardSet = boardsetsPersistent.read(BoardSet.standard) match {
     case Right(v) => v
     case Left( error ) =>
       throw new Exception(s"Unable to get standard boardset ${error}")
   }
 
-  def movement( implicit ec: ExecutionContext ) = movementsPersistent.read(Movement.id("Mitchell3Table")) match {
+  def movement( implicit ec: ExecutionContext ): Movement = movementsPersistent.read(Movement.id("Mitchell3Table")) match {
     case Right(v) => v
     case Left( error ) =>
       throw new Exception(s"Unable to get Mitchell3Table ${error}")
@@ -117,7 +118,7 @@ object TestCacheStoreForFailures {
     override
     def delete( change: ChangeContext ): Unit = { changeDelete = Some(change) }
 
-    def clear() = {
+    def clear(): Unit = {
       changeCreate = None
       changeUpdate = None
       changeDelete = None
@@ -241,7 +242,7 @@ object TestCacheStoreForFailures {
                            Listener,
                            MatchDuplicate
                           )=>Future[Assertion]
-                   )( implicit ec: ExecutionContext ) = {
+                   )( implicit ec: ExecutionContext ): Future[Assertion] = {
     val (store,per) = getStore
     val md = TestMatchDuplicate.create(MatchDuplicate.idNul)
 

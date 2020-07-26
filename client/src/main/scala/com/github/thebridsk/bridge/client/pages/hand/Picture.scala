@@ -8,6 +8,7 @@ import japgolly.scalajs.react.component.builder.Lifecycle.ComponentDidUpdate
 import org.scalajs.dom.raw.FileReader
 import org.scalajs.dom.raw.File
 
+
 /**
  * A skeleton component.
  *
@@ -29,14 +30,14 @@ object Picture {
    * @param imageFile File object that contains the image to display
    * @param imageUrl URL of image to display, only displayed if imageFile is None.
    */
-  def apply( imageFile: Option[File], imageUrl: Option[String] ) = component(Props(imageFile,imageUrl))
+  def apply( imageFile: Option[File], imageUrl: Option[String] ) = component(Props(imageFile,imageUrl))  // scalafix:ok ExplicitResultTypes; ReactComponent
 
 }
 
 object PictureInternal {
   import Picture._
 
-  val logger = Logger("bridge.Picture")
+  val logger: Logger = Logger("bridge.Picture")
 
   case class State( fileURL: Option[String] = None )
 
@@ -45,7 +46,7 @@ object PictureInternal {
     import org.scalajs.dom.html
     private val canvasRef = Ref[html.Canvas]
 
-    def render(props: Props,state: State) = {
+    def render(props: Props,state: State) = { // scalafix:ok ExplicitResultTypes; React
       <.div(
         ^.id := "HandPicture",
         state.fileURL.orElse(props.imageUrl).whenDefined { f =>
@@ -54,7 +55,7 @@ object PictureInternal {
       )
     }
 
-    def readFile(p: Props) = {
+    def readFile(p: Props): Unit = {
       if (p.imagefile.isDefined) {
         val reader = new FileReader
         reader.onload = (event) => {
@@ -65,17 +66,17 @@ object PictureInternal {
       }
     }
 
-    val didMount = scope.stateProps { (s,p) => Callback {
+    val didMount: Callback = scope.stateProps { (s,p) => Callback {
       logger.fine(s"Picture.didMount")
       readFile(p)
     }}
 
-    val willUnmount = Callback {
+    val willUnmount: Callback = Callback {
       logger.info("Picture.willUnmount")
 
     }
 
-    def didUpdate( cdu: ComponentDidUpdate[Props,State,Backend,Unit] ) = scope.stateProps { (state,props) => Callback {
+    def didUpdate( cdu: ComponentDidUpdate[Props,State,Backend,Unit] ): Callback = scope.stateProps { (state,props) => Callback {
       logger.fine(s"Picture.didUpdate")
       val changed = (cdu.prevProps.imagefile.isDefined != cdu.prevProps.imagefile.isDefined) ||
                     (cdu.prevProps.imagefile.isDefined && cdu.prevProps.imagefile.get.name != props.imagefile.get.name )
@@ -88,6 +89,7 @@ object PictureInternal {
 
   }
 
+  private[hand]
   val component = ScalaComponent.builder[Props]("Picture")
     .initialStateFromProps { props => State() }
     .backend(new Backend(_))

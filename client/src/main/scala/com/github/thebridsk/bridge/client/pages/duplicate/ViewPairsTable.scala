@@ -27,6 +27,7 @@ import com.github.thebridsk.bridge.clientcommon.react.Table.Row
 import com.github.thebridsk.bridge.client.pages.HomePage
 import scala.math.Ordering.Double.TotalOrdering
 
+
 /**
  * Shows a summary page of all duplicate matches from the database.
  * Each match has a button that that shows that match, by going to the ScoreboardView(id) page.
@@ -47,7 +48,7 @@ object ViewPairsTable {
 
   case class Props( filter: ViewPlayerFilter.Filter, showPairs: Boolean = false, showNoDataMsg: Boolean = false)
 
-  def apply( filter: ViewPlayerFilter.Filter, showPairs: Boolean = false, showNoDataMsg: Boolean = false ) =
+  def apply( filter: ViewPlayerFilter.Filter, showPairs: Boolean = false, showNoDataMsg: Boolean = false ) = // scalafix:ok ExplicitResultTypes; ReactComponent
     component(Props(filter,showPairs,showNoDataMsg))
 
 }
@@ -57,7 +58,7 @@ object ViewPairsTableInternal {
   import DuplicateStyles._
   import Table.Sorter._
 
-  val logger = Logger("bridge.ViewPairsTable")
+  val logger: Logger = Logger("bridge.ViewPairsTable")
 
   /**
    * Internal state for rendering the component.
@@ -84,7 +85,7 @@ object ViewPairsTableInternal {
 
     val showIn: List[CalculationType] = CalculationAsPlayed::CalculationMP::CalculationIMP::Nil
 
-    def isUsed( c: CalculationType ) = showIn.contains(c)
+    def isUsed( c: CalculationType ): Boolean = showIn.contains(c)
 
     def getValue( pd: PairData ): T
   }
@@ -167,11 +168,11 @@ object ViewPairsTableInternal {
     sc.asInstanceOf[StatColumn[Any]]
   }
 
-  val ostring = Ordering[String]
+  val ostring: Ordering[String] = Ordering[String]
 
   class PlayerSorter( cols: String* ) extends MultiColumnSort( cols.map(c=>(c,None,false)): _* )(ostring)
 
-  val pairColumns = List[StatColumn[Any]](
+  val pairColumns: List[StatColumn[Any]] = List[StatColumn[Any]](
     new StringColumn( "Player1", "Player 1" )(new PlayerSorter("Player1","Player2")) {
       def getValue( pd: PairData ) = pd.player1
       override
@@ -184,11 +185,11 @@ object ViewPairsTableInternal {
     }
   )
 
-  val peopleColumns = List[StatColumn[Any]](
+  val peopleColumns: List[StatColumn[Any]] = List[StatColumn[Any]](
     new StringColumn( "Player", "Player" ) { def getValue( pd: PairData ) = pd.player1 }
   )
 
-  val columns = List[StatColumn[Any]](
+  val columns: List[StatColumn[Any]] = List[StatColumn[Any]](
       new PercentColumn( "WonPct", "% Won" )(MultiColumnSort.create2(("WonPct",false),("Hidden1",false),("WonPts",false),("Player",true),("Player1",true),("Player2",true))) { def getValue( pd: PairData ) = pd.winPercent },
       new PercentColumn( "WonPts", "% WonPoints" )(MultiColumnSort.create2(("WonPts",false),("Hidden1",false),("WonPct",false),("Player",true),("Player1",true),("Player2",true))) { def getValue( pd: PairData ) = pd.winPtsPercent },
       new PercentColumn( "ScorePct", "% MP" )(MultiColumnSort.create("ScorePct","WonPct")) {
@@ -275,11 +276,11 @@ object ViewPairsTableInternal {
    */
   class Backend(scope: BackendScope[Props, State]) {
 
-    val toggleShowHidden = scope.modState { s => s.copy( showHidden = !s.showHidden ) }
+    val toggleShowHidden: Callback = scope.modState { s => s.copy( showHidden = !s.showHidden ) }
 
-    def setCalc( calc: CalculationType ) = scope.modState { s => s.copy( calc = calc ) }
+    def setCalc( calc: CalculationType ): Callback = scope.modState { s => s.copy( calc = calc ) }
 
-    def render( props: Props, state: State ) = {
+    def render( props: Props, state: State ) = { // scalafix:ok ExplicitResultTypes; React
       props.filter.pairsData match {
         case Some(fpd) =>
 
@@ -404,6 +405,7 @@ object ViewPairsTableInternal {
     }
   }
 
+  private[duplicate]
   val component = ScalaComponent.builder[Props]("ViewPairsTable")
                             .initialStateFromProps { props =>
                               props.filter.pairsData match {

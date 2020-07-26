@@ -32,6 +32,7 @@ import com.github.thebridsk.materialui.TextVariant
 import com.github.thebridsk.materialui.TextColor
 import com.github.thebridsk.bridge.client.pages.HomePage
 import japgolly.scalajs.react.component.builder.Lifecycle.ComponentDidUpdate
+import japgolly.scalajs.react.internal.Effect
 
 /**
  * A skeleton component.
@@ -49,7 +50,7 @@ object PageRubberList {
 
   case class Props( page: ListViewBase, routerCtl: BridgeRouter[RubberPage] )
 
-  def apply( page: ListViewBase, routerCtl: BridgeRouter[RubberPage] ) =
+  def apply( page: ListViewBase, routerCtl: BridgeRouter[RubberPage] ) = // scalafix:ok ExplicitResultTypes; ReactComponent
     component( Props( page, routerCtl ) )
 
 }
@@ -58,7 +59,7 @@ object PageRubberListInternal {
   import PageRubberList._
   import RubberStyles._
 
-  val logger = Logger("bridge.PageRubberList")
+  val logger: Logger = Logger("bridge.PageRubberList")
 
   /**
    * Internal state for rendering the component.
@@ -86,9 +87,9 @@ object PageRubberListInternal {
 
     import scala.concurrent.ExecutionContext.Implicits.global
 
-    def delete( id: MatchRubber.Id ) = scope.modState(s => s.copy( askingToDelete = Some(id)))
+    def delete( id: MatchRubber.Id ): Callback = scope.modState(s => s.copy( askingToDelete = Some(id)))
 
-    val deleteOK = scope.modState{ s =>
+    val deleteOK: Callback = scope.modState{ s =>
         s.askingToDelete.map{ id =>
           RubberController.deleteRubber(id)
           val ns = s.copy( askingToDelete = None)
@@ -96,17 +97,17 @@ object PageRubberListInternal {
         }.getOrElse(s)
       }
 
-    val deleteCancel = scope.modState(s => s.copy( askingToDelete = None))
+    val deleteCancel: Callback = scope.modState(s => s.copy( askingToDelete = None))
 
-    val resultRubber = ResultHolder[MatchRubber]()
-    val resultGraphQL = ResultHolder[GraphQLResponse]()
+    val resultRubber: ResultHolder[MatchRubber] = ResultHolder[MatchRubber]()
+    val resultGraphQL: ResultHolder[GraphQLResponse] = ResultHolder[GraphQLResponse]()
 
-    val cancel = Callback {
+    val cancel: Callback = Callback {
       resultRubber.cancel()
       resultGraphQL.cancel()
     } >> scope.modState( s => s.copy(popupMsg=None))
 
-    val newRubber =
+    val newRubber: Callback =
       scope.modState( s => s.copy( popupMsg=Some("Creating new rubber match")), Callback {
         val rescre = RubberController.createMatch()
         resultRubber.set(rescre)
@@ -118,15 +119,15 @@ object PageRubberListInternal {
         })
       })
 
-    def showRubber( chi: MatchRubber ) = Callback {
+    def showRubber( chi: MatchRubber ): Callback = Callback {
       RubberController.showMatch( chi )
     } >> {
       scope.withEffectsImpure.props.routerCtl.set(RubberMatchView(chi.id.id))
     }
 
-    def setMessage( msg: String, info: Boolean = false ) = scope.withEffectsImpure.modState( s => s.copy( popupMsg = Some(msg), info=info) )
+    def setMessage( msg: String, info: Boolean = false ): Effect.Id[Unit] = scope.withEffectsImpure.modState( s => s.copy( popupMsg = Some(msg), info=info) )
 
-    def importRubber( importId: String, rubid: MatchRubber.Id) =
+    def importRubber( importId: String, rubid: MatchRubber.Id): Callback =
       scope.modState( s => s.copy(popupMsg=Some(s"Importing Rubber Match ${rubid.id} from import ${importId}")), Callback {
         val query = """mutation importRubber( $importId: ImportId!, $rubId: RubberId! ) {
                       |  import( id: $importId ) {
@@ -162,7 +163,7 @@ object PageRubberListInternal {
         }.foreach { x => }
       })
 
-    def render( props: Props, state: State ) = {
+    def render( props: Props, state: State ) = { // scalafix:ok ExplicitResultTypes; React
       val importId = props.page match {
         case ilv: ImportListView => Some(ilv.getDecodedId)
         case _ => None
@@ -258,7 +259,7 @@ object PageRubberListInternal {
 
     }
 
-    def RubberRow(backend: Backend, props: Props, state: State, game: Int, rubber: RubberScoring, importId: Option[String]) = {
+    def RubberRow(backend: Backend, props: Props, state: State, game: Int, rubber: RubberScoring, importId: Option[String]) = { // scalafix:ok ExplicitResultTypes; React
       val id = rubber.rubber.id
       val date = id
       val created = DateUtils.formatDate(rubber.rubber.created)
@@ -309,24 +310,24 @@ object PageRubberListInternal {
       )
     }
 
-    val storeCallback = scope.props >>= { (p) => Callback {
+    val storeCallback: Callback = scope.props >>= { (p) => Callback {
       logger.fine(s"Got rubberlist update, importid=${p.page}")
     } >> scope.forceUpdate }
 
-    def summaryError() = scope.withEffectsImpure.modState( s => s.copy(popupMsg=Some("Error getting duplicate summary")))
+    def summaryError(): Effect.Id[Unit] = scope.withEffectsImpure.modState( s => s.copy(popupMsg=Some("Error getting duplicate summary")))
 
-    val didMount = scope.props >>= { (p) => Callback {
+    val didMount: Callback = scope.props >>= { (p) => Callback {
       // make AJAX rest call here
       logger.finer("PageRubberList: Sending rubber list request to server")
       RubberListStore.addChangeListener(storeCallback)
       initializeNewSummary(p)
     }}
 
-    val willUnmount = Callback {
+    val willUnmount: Callback = Callback {
       // TODO: release RubberListStore memory
     }
 
-    def initializeNewSummary( props: Props ) = {
+    def initializeNewSummary( props: Props ): Unit = {
       props.page match {
         case isv: ImportListView =>
           val importId = isv.getDecodedId
@@ -337,10 +338,10 @@ object PageRubberListInternal {
     }
   }
 
-  implicit val loggerForReactComponents = Logger("bridge.PageChicagoList")
-  implicit val defaultTraceLevelForReactComponents = Level.FINER
+  implicit val loggerForReactComponents: Logger = Logger("bridge.PageChicagoList")
+  implicit val defaultTraceLevelForReactComponents: Level = Level.FINER
 
-  def didUpdate( cdu: ComponentDidUpdate[Props,State,Backend,Unit] ) = Callback {
+  def didUpdate( cdu: ComponentDidUpdate[Props,State,Backend,Unit] ): Callback = Callback {
     val props = cdu.currentProps
     val prevProps = cdu.prevProps
     if (prevProps.page != props.page) {
@@ -348,6 +349,7 @@ object PageRubberListInternal {
     }
   }
 
+  private[rubber]
   val component = ScalaComponent.builder[Props]("PageRubberList")
                             .initialStateFromProps { props => State() }
                             .backend(new Backend(_))

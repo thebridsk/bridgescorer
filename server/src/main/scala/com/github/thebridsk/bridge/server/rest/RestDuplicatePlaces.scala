@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.tags.Tags
 import io.swagger.v3.oas.annotations.tags.Tag
 import javax.ws.rs.GET
 import com.github.thebridsk.bridge.data.duplicate.stats.PlayerPlaces
+import akka.http.scaladsl.server.Route
 
 /**
   * Rest API implementation for the board resource.
@@ -35,7 +36,7 @@ trait RestDuplicatePlaces extends HasActorSystem {
   /**
     * spray route for all the methods on this resource
     */
-  val route = pathPrefix(resName) {
+  val route: Route = pathPrefix(resName) {
 //    logRequest("route", DebugLevel) {
     getDuplicatePlaces
 //      }
@@ -59,8 +60,8 @@ trait RestDuplicatePlaces extends HasActorSystem {
       )
     )
   )
-  def xxxgetDuplicatePlaces() = {}
-  val getDuplicatePlaces =
+  def xxxgetDuplicatePlaces(): Unit = {}
+  val getDuplicatePlaces: Route =
 //    logRequest("getDuplicatePlaces", DebugLevel ) { logResult("getDuplicatePlaces", DebugLevel ) {
     get {
       pathEndOrSingleSlash {

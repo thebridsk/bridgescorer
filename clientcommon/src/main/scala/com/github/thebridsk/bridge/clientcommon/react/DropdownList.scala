@@ -99,13 +99,13 @@ object DropdownListComponentProperty {
 trait DropdownList extends js.Object
 
 object DropdownList {
-  val logger = Logger("bridge.DropdownList")
+  val logger: Logger = Logger("bridge.DropdownList")
 
 //  @JSGlobal("ReactWidgets.DropdownList")
 //  @js.native
 //  object ReactWidgetsDropdownList extends js.Object
 
-  val component = JsComponent[DropdownListComponentProperty, Children.None, Null](reactwidgets.DropdownList)
+  val component = JsComponent[DropdownListComponentProperty, Children.None, Null](reactwidgets.DropdownList)  // scalafix:ok ExplicitResultTypes; ReactComponent
 
   def apply(defaultValue: Option[String|js.Object] = None,
             onChange: Option[js.Any=>Unit] = None,
@@ -122,7 +122,7 @@ object DropdownList {
             placeholder: Option[String] = None,
             valueField: Option[String] = None,
             textField: Option[String] = None
-  ) = {
+  ) = {  // scalafix:ok ExplicitResultTypes; ReactComponent
 
 //    logger.info("DropdownList: msgEmptyList="+msgEmptyList+", msgEmptyFilter="+msgEmptyFilter)
 

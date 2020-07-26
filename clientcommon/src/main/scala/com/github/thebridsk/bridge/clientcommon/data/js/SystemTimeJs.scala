@@ -8,7 +8,7 @@ import com.github.thebridsk.utilities.logging.impl.LoggerImplFactory
 import com.github.thebridsk.bridge.clientcommon.react.DateUtils
 
 class SystemTimeJs extends SystemTime with LogSystemTime {
-  def currentTimeMillis() = {
+  def currentTimeMillis(): Double = {
     val d = new Date
     d.getTime()
   }
@@ -24,7 +24,7 @@ class SystemTimeJs extends SystemTime with LogSystemTime {
 
 object SystemTimeJs extends SystemTimeJs {
 
-  def apply() = {
+  def apply(): Unit = {
 
     SystemTime.setTimekeeper(this)
     LoggerImplFactory.setSystemTimeObject(this)

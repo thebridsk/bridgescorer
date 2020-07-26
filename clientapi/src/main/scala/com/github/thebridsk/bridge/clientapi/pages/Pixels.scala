@@ -6,20 +6,22 @@ import com.github.thebridsk.utilities.logging.Logger
 import com.github.thebridsk.bridge.clientcommon.logger.Info
 import org.scalajs.dom.raw.XMLHttpRequest
 import org.scalajs.dom.raw.Event
+import org.scalajs.dom.raw.{ CSSStyleDeclaration, HTMLElement }
+import scala.util.matching.Regex
 
 object Pixels {
 
-  val log = Logger("bridge.Pixels")
+  val log: Logger = Logger("bridge.Pixels")
 
-  lazy val defaultFont = Pixels.getFont("DefaultHandButton")
+  lazy val defaultFont: String = Pixels.getFont("DefaultHandButton")
 
-  def getComputedProperties( id: String ) = {
+  def getComputedProperties( id: String ): CSSStyleDeclaration = {
     val elem = Info.getElement(id)
     val window = document.defaultView
     window.getComputedStyle(elem)
   }
 
-  def getElementAndComputedProperties( id: String ) = {
+  def getElementAndComputedProperties( id: String ): (HTMLElement, CSSStyleDeclaration) = {
     val elem = Info.getElement(id)
     val window = document.defaultView
     (elem,window.getComputedStyle(elem))
@@ -30,15 +32,15 @@ object Pixels {
    * @param id
    * @return the font-size and font-family
    */
-  def getFont( id: String ) = {
+  def getFont( id: String ): String = {
     val computed = getComputedProperties(id)
     val r = computed.fontSize+" "+computed.fontFamily
     log.fine( s"""On element with id ${id} found font of ${r}""" )
     r
   }
 
-  val patternRadius = """(\d+)px""".r
-  def getPixels( name: String, value: String, id: String, default: Int = 0 ) = {
+  val patternRadius: Regex = """(\d+)px""".r
+  def getPixels( name: String, value: String, id: String, default: Int = 0 ): Int = {
     value match {
       case patternRadius( r ) =>
         log.fine( s"""On element with id ${id} found ${name} of ${r}px""" )
@@ -49,14 +51,14 @@ object Pixels {
     }
   }
 
-  def getBorderRadius( id: String ) = {
+  def getBorderRadius( id: String ): Int = {
     val computed = getComputedProperties(id)
     val r = getPixels( "borderRadius", computed.borderRadius, id, -1 )
     if (r == -1) getPixels( "borderRadius", computed.borderTopLeftRadius, id )   // firefox doesn't return borderRadius property
     else r
   }
 
-  def getPaddingBorder( id: String ) = {
+  def getPaddingBorder( id: String ): Int = {
     val computed = getComputedProperties(id)
     val pl = getPixels( "paddingLeft", computed.paddingLeft, id )
     val pr = getPixels( "paddingRight", computed.paddingRight, id )
@@ -65,7 +67,7 @@ object Pixels {
     pl+pr+ml+mr
   }
 
-  def getWidthWithBoarder( id: String ) = {
+  def getWidthWithBoarder( id: String ): Int = {
     val (elem,computed) = getElementAndComputedProperties(id)
     val ml = getPixels( "borderLeft", computed.borderLeft, id )
     val mr = getPixels( "borderRight", computed.borderRight, id )
@@ -106,7 +108,7 @@ object Pixels {
     w
   }
 
-  def init( callback: () => Unit ) = {
+  def init( callback: () => Unit ): Unit = {
     val xhr = new XMLHttpRequest()
 
     def initCallback( event: Event): Unit = {

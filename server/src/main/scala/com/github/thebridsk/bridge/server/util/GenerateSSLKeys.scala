@@ -17,23 +17,23 @@ trait GenerateSSLKeys
 
 object GenerateSSLKeys {
 
-  val logger = Logger[GenerateSSLKeys]()
+  val logger: Logger = Logger[GenerateSSLKeys]()
 
   val proc = new MyProcess()
 
-  def getMarkerFile( dir: Option[File] = None ) = {
+  def getMarkerFile( dir: Option[File] = None ): File = {
     getFullFile( dir, "GenerateSSLKeys.Marker.txt" )
   }
 
-  def makerFileExists( dir: Option[File] = None ) = {
+  def makerFileExists( dir: Option[File] = None ): Boolean = {
     getMarkerFile(dir).isFile()
   }
 
-  def deleteMarkerFile( dir: Option[File] = None ) = {
+  def deleteMarkerFile( dir: Option[File] = None ): Boolean = {
     getMarkerFile(dir).delete()
   }
 
-  def getFile( workingDirectory: Option[File], file: String ) = {
+  def getFile( workingDirectory: Option[File], file: String ): File = {
     new File( new File(file).getName )
   }
 
@@ -49,7 +49,7 @@ object GenerateSSLKeys {
 
   def deleteKeys(
       workingDirectory: Option[File] = None
-  ) = {
+  ): Boolean = {
     val d = workingDirectory.getOrElse(new File("."))
     logger.info( s"Deleting keys directory ${d.toString}")
     MyFileUtils.deleteDirectory( d.toPath(), None )
@@ -58,7 +58,7 @@ object GenerateSSLKeys {
 
   def showCert(
     certChain: List[Certificate]
-  ) = {
+  ): Unit = {
     import scala.jdk.CollectionConverters._
     certChain.zipWithIndex.foreach { case (cert,i) =>
       // return true if the certificate is NOT valid
@@ -221,18 +221,18 @@ case class RootCAInfo(
     validityCA: String
 ) {
   override
-  def toString() = {
+  def toString(): String = {
     s"""RootCA(Alias=$alias, dname="$dname", keystore=$keystore, cert=$cert,"""+
       s""" truststore=$truststore, keypass=*****, storepass=*****, trustpass=${trustpass.map( p => "***").getOrElse("<None>")}),"""+
       s""" workingDirectory=${workingDirectory}, good=${good}, verbose=${verbose}, validityCA=$validityCA"""
   }
 
-  def checkMarkerFile() = {
+  def checkMarkerFile(): RootCAInfo = {
     if (makerFileExists( workingDirectory )) copy( good = true )
     else this
   }
 
-  def deleteOldServerCerts() = {
+  def deleteOldServerCerts(): RootCAInfo = {
     getFullFile(workingDirectory, keystore).delete()
     getFullFile(workingDirectory, cert).delete()
     truststore.foreach( f => getFullFile(workingDirectory,f).delete())
@@ -307,7 +307,7 @@ case class RootCAInfo(
   def trustRootCA(
     truststore: String,
     trustpass: String,
-  ) = {
+  ): RootCAInfo = {
 
     val info = copy( truststore = Some(getFile(workingDirectory,s"${truststore}.jks")), trustpass = Some(trustpass))
 
@@ -364,7 +364,7 @@ object RootCAInfo {
       validityCA: String = "367",
       truststoreprefix: Option[String] = None,
       trustpass: Option[String] = None
-  ) = {
+  ): RootCAInfo = {
 
     val v = if (verbose) List("-v") else List()
 
@@ -421,18 +421,18 @@ case class ServerInfo(
 ) {
 
   override
-  def toString() = {
+  def toString(): String = {
     s"""ServerInfo(Alias=$alias, dname="$dname", keystore=$keystore, csr=$csr, cert=$cert,"""+
     s""" keypass=*****, storepass=*****, pkcs=$pkcs), keyfile=$keyfile, workingDirectory=${workingDirectory}"""+
     s""" good=$good, verbose=$verbose, validityServer=$validityServer"""
   }
 
-  def checkMarkerFile() = {
+  def checkMarkerFile(): ServerInfo = {
     if (makerFileExists( workingDirectory )) copy( good = true )
     else this
   }
 
-  def deleteOldServerCerts() = {
+  def deleteOldServerCerts(): ServerInfo = {
     getFullFile(workingDirectory, keystore).delete()
     getFullFile(workingDirectory, csr).delete()
     getFullFile(workingDirectory, cert).delete()
@@ -447,7 +447,7 @@ case class ServerInfo(
     *
     * @return the server info object
     */
-  def generateServerCSR(  ) = {
+  def generateServerCSR(  ): ServerInfo = {
 
     if (!good) {
 
@@ -500,7 +500,7 @@ case class ServerInfo(
       rootcaAlias: String,
       rootcaKeypass: String,
       ip: List[String] = Nil,
-  ) = {
+  ): ServerInfo = {
 
     if (!good) {
 
@@ -541,7 +541,7 @@ case class ServerInfo(
   def importServerCert(
       rootcaPublicAlias: String,
       rootcaPublicCert: String,
-  ) = {
+  ): ServerInfo = {
 
     if (!good) {
 
@@ -585,7 +585,7 @@ case class ServerInfo(
     *
     * @return the server info object
     */
-  def exportServerCert() = {
+  def exportServerCert(): ServerInfo = {
 
     if (!good) {
 
@@ -612,7 +612,7 @@ case class ServerInfo(
     *
     * @return the server info object
     */
-  def generateServerPKCS() = {
+  def generateServerPKCS(): ServerInfo = {
 
     if (!good) {
 
@@ -642,7 +642,7 @@ case class ServerInfo(
     *
     * @return the server info object
     */
-  def generateServerKey() = {
+  def generateServerKey(): ServerInfo = {
 
     if (!good) {
 
@@ -678,7 +678,7 @@ case class ServerInfo(
     * @param verbose if true add the -v option to keytool commands, default is false
     * @return the server info object
     */
-  def generateMarkerFile() = {
+  def generateMarkerFile(): ServerInfo = {
 
     if (!good) {
       val marker = getMarkerFile( workingDirectory )

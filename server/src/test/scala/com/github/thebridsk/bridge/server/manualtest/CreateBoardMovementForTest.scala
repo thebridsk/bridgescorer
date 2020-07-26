@@ -9,12 +9,13 @@ import scala.concurrent.duration._
 import com.github.thebridsk.bridge.data.rest.JsonSupport._
 import com.github.thebridsk.bridge.data.rest.JsonSupport
 import com.github.thebridsk.utilities.file.FileIO
+import scala.concurrent.ExecutionContextExecutor
 
 object CreateBoardMovementForTest extends Main {
 
-  implicit val ec = ExecutionContext.global
+  implicit val ec: ExecutionContextExecutor = ExecutionContext.global
 
-  def execute() = {
+  def execute(): Int = {
     val bs = new BridgeServiceInMemory("test")
 
     val bf = bs.boardSets.readAll().map{ r =>

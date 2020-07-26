@@ -8,6 +8,7 @@ import com.github.thebridsk.bridge.client.pages.hand.PageHandInternal.PageHandNe
 import com.github.thebridsk.bridge.client.pages.hand.ComponentInputStyleButton.InputMethod
 import com.github.thebridsk.bridge.data.Team
 
+
 /**
  * A skeleton component.
  *
@@ -67,7 +68,7 @@ object SectionHeader {
              callbackHonors: Option[ViewHonors.CallbackHonors],
              callbackHonorsPlayer: Option[ViewHonors.CallbackHonorsPlayer],
              currentHonors: Option[Int],
-             currentHonorsPlayer: Option[PlayerPosition]) =
+             currentHonorsPlayer: Option[PlayerPosition]) = // scalafix:ok ExplicitResultTypes; ReactComponent
                component(Props(scoringSystem,table,board,dealer,currentDeclarer,north,south,east,west,
                                currentNSVul,currentEWVul,callbackDeclarer,callbackNSVul,callbackEWVul,
                                teamNS,teamEW,currentContractTricks,currentSuit,nextInput,

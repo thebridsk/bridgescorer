@@ -1,6 +1,5 @@
 package com.github.thebridsk.bridge.client.pages.duplicate
 
-
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
 import com.github.thebridsk.utilities.logging.Logger
@@ -13,6 +12,7 @@ import com.github.thebridsk.bridge.clientcommon.react.AppButton
 import com.github.thebridsk.bridge.clientcommon.react.Utils._
 import com.github.thebridsk.bridge.client.routes.BridgeRouter
 import com.github.thebridsk.bridge.data.Team
+
 
 /**
  * Shows the team x board table and has a totals column that shows the number of points the team has.
@@ -32,7 +32,7 @@ object ViewTable {
 
   case class Props( routerCtl: BridgeRouter[DuplicatePage], page: TableView, showTableButton: Boolean )
 
-  def apply( routerCtl: BridgeRouter[DuplicatePage], page: TableView, showTableButton: Boolean = false ) = component(Props(routerCtl,page,showTableButton))
+  def apply( routerCtl: BridgeRouter[DuplicatePage], page: TableView, showTableButton: Boolean = false ) = component(Props(routerCtl,page,showTableButton))  // scalafix:ok ExplicitResultTypes; ReactComponent
 
 }
 
@@ -40,7 +40,7 @@ object ViewTableInternal {
   import ViewTable._
   import DuplicateStyles._
 
-  val logger = Logger("bridge.ViewTable")
+  val logger: Logger = Logger("bridge.ViewTable")
 
   /**
    * Internal state for rendering the component.
@@ -51,6 +51,7 @@ object ViewTableInternal {
    */
   case class State()
 
+  private[duplicate]
   val Header = ScalaComponent.builder[(Props,Boolean)]("ComponentBoard.Header")
                       .render_P { args =>
                         val (props, relay) = args
@@ -66,6 +67,7 @@ object ViewTableInternal {
 
                       }.build
 
+  private[duplicate]
   val RoundRow = ScalaComponent.builder[(Round,MatchDuplicateScore,Props,Int,Boolean)]("ComponentBoard.TeamRow")
                       .render_P( cprops => {
                         val (round,score,props,currentRound,relay) = cprops
@@ -148,7 +150,7 @@ object ViewTableInternal {
    *
    */
   class Backend(scope: BackendScope[Props, State]) {
-    def render( props: Props, state: State ) = {
+    def render( props: Props, state: State ) = { // scalafix:ok ExplicitResultTypes; React
       DuplicateStore.getCompleteView() match {
         case Some(score) =>
           val relay = score.matchHasRelay
@@ -187,19 +189,20 @@ object ViewTableInternal {
 
     val storeCallback = scope.forceUpdate
 
-    val didMount = scope.props >>= { (p) => Callback {
+    val didMount: Callback = scope.props >>= { (p) => Callback {
       logger.info("ViewTable.didMount")
       DuplicateStore.addChangeListener(storeCallback)
       Controller.monitor(p.page.dupid)
     }}
 
-    val willUnmount = Callback {
+    val willUnmount: Callback = Callback {
       logger.info("ViewTable.willUnmount")
       DuplicateStore.removeChangeListener(storeCallback)
       Controller.delayStop()
     }
   }
 
+  private[duplicate]
   val component = ScalaComponent.builder[Props]("ViewTable")
                             .initialStateFromProps { props => State() }
                             .backend(new Backend(_))

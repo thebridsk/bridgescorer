@@ -10,17 +10,18 @@ import com.github.thebridsk.utilities.logging.Logger
 import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.ScoreboardPage.TableViewType
 import com.github.thebridsk.bridge.data.bridge.PlayerPosition
 import com.github.thebridsk.bridge.fullserver.test.pages.bridge.ErrorMsgDiv
+import com.github.thebridsk.browserpages.Element
 
 object TableEnterMissingNamesPage {
 
-  val log = Logger[TableEnterMissingNamesPage]()
+  val log: Logger = Logger[TableEnterMissingNamesPage]()
 
-  def current( targetBoard: Option[String] )(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
+  def current( targetBoard: Option[String] )(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position): TableEnterMissingNamesPage = {
     val (dupid,tableid,roundid,targetboard) = findTableRoundId
     new TableEnterMissingNamesPage(dupid,tableid,roundid,targetBoard)
   }
 
-  def urlFor( dupid: String, tableid: String, roundid: String, board: Option[String] ) =
+  def urlFor( dupid: String, tableid: String, roundid: String, board: Option[String] ): String =
     TableEnterScorekeeperPage.urlFor(dupid, tableid, roundid, board)
 
   def goto( dupid: String,
@@ -31,7 +32,7 @@ object TableEnterMissingNamesPage {
               webDriver: WebDriver,
               patienceConfig: PatienceConfig,
               pos: Position
-          ) =
+          ): TableEnterScorekeeperPage =
       TableEnterScorekeeperPage.goto(dupid, tableid, roundid, board)
 
   /**
@@ -62,7 +63,7 @@ class TableEnterMissingNamesPage( dupid: String,
                                ) extends Page[TableEnterMissingNamesPage] with ErrorMsgDiv[TableEnterMissingNamesPage] {
   import TableEnterMissingNamesPage._
 
-  def validate(implicit patienceConfig: PatienceConfig, pos: Position) = logMethod(s"${pos.line} ${getClass.getSimpleName}.validate") { eventually {
+  def validate(implicit patienceConfig: PatienceConfig, pos: Position): TableEnterMissingNamesPage = logMethod(s"${pos.line} ${getClass.getSimpleName}.validate") { eventually {
 
     currentUrl mustBe urlFor(dupid,tableid,roundid,targetBoard)
 
@@ -72,7 +73,7 @@ class TableEnterMissingNamesPage( dupid: String,
     this
   }}
 
-  def getInputFieldNames(implicit patienceConfig: PatienceConfig, pos: Position) = logMethod(s"${pos.line} ${getClass.getSimpleName}.getInputFieldNames") {
+  def getInputFieldNames(implicit patienceConfig: PatienceConfig, pos: Position): List[PlayerPosition] = logMethod(s"${pos.line} ${getClass.getSimpleName}.getInputFieldNames") {
     val inputs = getAllInputs( Some("text"))
     log.fine(s"${pos.line} ${getClass.getSimpleName}.getInputFieldNames: found keys ${inputs.keySet}")
     if (inputs.isEmpty) log.fine(s"${pos.line} ${getClass.getSimpleName}.getInputFieldNames: current URL is ${currentUrl}")
@@ -88,7 +89,7 @@ class TableEnterMissingNamesPage( dupid: String,
    * has already been entered on the previous screen.
    * @param loc the location on the screen.  The scorekeeper's location is not valid.
    */
-  def enterPlayer( loc: PlayerPosition, name: String )(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def enterPlayer( loc: PlayerPosition, name: String )(implicit patienceConfig: PatienceConfig, pos: Position): TableEnterMissingNamesPage = {
     val text = eventually {
       getTextInput(toInputName(loc))
     }
@@ -99,7 +100,7 @@ class TableEnterMissingNamesPage( dupid: String,
   /**
    * @param loc the location on the screen.  The scorekeeper's location is not valid.
    */
-  def getPlayer( loc: PlayerPosition )(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def getPlayer( loc: PlayerPosition )(implicit patienceConfig: PatienceConfig, pos: Position): String = {
     eventually {
       getTextInput(toInputName(loc)).value
     }
@@ -108,7 +109,7 @@ class TableEnterMissingNamesPage( dupid: String,
   /**
    * @param loc the location on the screen.  The scorekeeper's location is not valid.
    */
-  def getPlayerSuggestions( loc: PlayerPosition )(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def getPlayerSuggestions( loc: PlayerPosition )(implicit patienceConfig: PatienceConfig, pos: Position): List[Element] = {
     eventually {
       getCombobox(toInputName(loc)).suggestions
     }
@@ -117,28 +118,28 @@ class TableEnterMissingNamesPage( dupid: String,
   /**
    * @param loc the location on the screen.  The scorekeeper's location is not valid.
    */
-  def isPlayerSuggestionsVisible( loc: PlayerPosition )(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def isPlayerSuggestionsVisible( loc: PlayerPosition )(implicit patienceConfig: PatienceConfig, pos: Position): Boolean = {
     eventually {
       getCombobox(toInputName(loc)).isSuggestionVisible
     }
   }
 
-  def clickOK(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def clickOK(implicit patienceConfig: PatienceConfig, pos: Position): TableSelectScorekeeperPage = {
     clickButton(buttonOK)
     new TableSelectScorekeeperPage( dupid, tableid, roundid, targetBoard )
   }
 
-  def clickReset(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def clickReset(implicit patienceConfig: PatienceConfig, pos: Position): TableEnterMissingNamesPage = {
     clickButton(buttonReset)
     this
   }
 
-  def clickCancel(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def clickCancel(implicit patienceConfig: PatienceConfig, pos: Position): ScoreboardPage = {
     clickButton(buttonCancel)
     new ScoreboardPage(Some(dupid), TableViewType(tableid,roundid))
   }
 
-  def isOKEnabled(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def isOKEnabled(implicit patienceConfig: PatienceConfig, pos: Position): Boolean = {
     getButton(buttonOK).isEnabled
   }
 }

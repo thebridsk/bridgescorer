@@ -23,7 +23,7 @@ object HandStyles {
       selected: Boolean = false,
       required: Boolean = false,
       requiredNotNext: Boolean = false
-  ) = {
+  ): TagMod = {
     val styles =
       selected.toList(handStyles.buttonSelected):::
       required.toList(handStyles.required):::
@@ -66,41 +66,41 @@ class HandStyles {
   val buttonSelected = baseStyles.buttonSelected
   val notVisible = baseStyles.notVisible
 
-  val footerButton = cls("handFooterButton")
+  val footerButton: TagMod = cls("handFooterButton")
 
-  val pageHand = cls("handPageHand")
+  val pageHand: TagMod = cls("handPageHand")
 
-  val sectionContract = cls("handSectionContract")
-  val viewContractTricks = cls("handViewContractTricks")
-  val contractTricksButton0 = cls("handContractTricksButton0")
+  val sectionContract: TagMod = cls("handSectionContract")
+  val viewContractTricks: TagMod = cls("handViewContractTricks")
+  val contractTricksButton0: TagMod = cls("handContractTricksButton0")
 
-  val viewContractSuit = cls("handViewContractSuit")
-  val suitInButton = cls("handSuitInButton")
-  val viewContractDoubled = cls("handViewContractDoubled")
+  val viewContractSuit: TagMod = cls("handViewContractSuit")
+  val suitInButton: TagMod = cls("handSuitInButton")
+  val viewContractDoubled: TagMod = cls("handViewContractDoubled")
 
-  val sectionHeader = cls("handSectionHeader")
-  val viewDealer = cls("handViewDealer")
-  val viewDeclarer = cls("handViewDeclarer")
-  val viewTableBoard = cls("handViewTableBoard")
-  val vulnerable = cls("handVulnerable")
-  val notVulnerable = cls("handNotVulnerable")
+  val sectionHeader: TagMod = cls("handSectionHeader")
+  val viewDealer: TagMod = cls("handViewDealer")
+  val viewDeclarer: TagMod = cls("handViewDeclarer")
+  val viewTableBoard: TagMod = cls("handViewTableBoard")
+  val vulnerable: TagMod = cls("handVulnerable")
+  val notVulnerable: TagMod = cls("handNotVulnerable")
 
-  val sectionResult = cls("handSectionResult")
-  val sectionResultInner = cls("handSectionResultInner")
-  val viewHonors = cls("handViewHonors")
-  val viewMadeOrDown = cls("handViewMadeOrDown")
-  val viewTricks = cls("handViewTricks")
+  val sectionResult: TagMod = cls("handSectionResult")
+  val sectionResultInner: TagMod = cls("handSectionResultInner")
+  val viewHonors: TagMod = cls("handViewHonors")
+  val viewMadeOrDown: TagMod = cls("handViewMadeOrDown")
+  val viewTricks: TagMod = cls("handViewTricks")
 
-  val viewVulnerability = cls("handViewVulnerability")
+  val viewVulnerability: TagMod = cls("handViewVulnerability")
 
-  val sectionScore = cls("handSectionScore")
+  val sectionScore: TagMod = cls("handSectionScore")
 
-  val titleDeclarerDup = cls("titleDeclarerDup")
-  val contractAndResult = cls("contractAndResult")
+  val titleDeclarerDup: TagMod = cls("titleDeclarerDup")
+  val contractAndResult: TagMod = cls("contractAndResult")
 
-  val playDuplicate = cls("playDuplicate")
-  val playChicago = cls("playChicago")
-  val playRubber = cls("playRubber")
+  val playDuplicate: TagMod = cls("playDuplicate")
+  val playChicago: TagMod = cls("playChicago")
+  val playRubber: TagMod = cls("playRubber")
 
 }
 

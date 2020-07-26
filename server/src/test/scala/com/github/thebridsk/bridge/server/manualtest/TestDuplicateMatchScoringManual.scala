@@ -15,7 +15,7 @@ import com.github.thebridsk.bridge.data.Team
 
 object TestDuplicateMatchScoringManual extends Main {
 
-  def execute() = {
+  def execute(): Int = {
     val m = TestMatchDuplicate.getPlayedMatch(MatchDuplicate.id("M1"))
 
     check( m, Team.id(1), Team.id(2) )
@@ -43,7 +43,7 @@ object TestDuplicateMatchScoringManual extends Main {
     }
   }
 
-  def teamScores(boards: List[BoardScore], team: Team.Id) = {
+  def teamScores(boards: List[BoardScore], team: Team.Id): List[String] = {
     boards.map( board => {
                             val ts = board.scores().get(team).get
                             if (ts.played) {
@@ -58,13 +58,13 @@ object TestDuplicateMatchScoringManual extends Main {
                         }  )
   }
 
-  def checkDirector( m: MatchDuplicate ) = {
+  def checkDirector( m: MatchDuplicate ): Unit = {
     println("From Director" )
     val score = MatchDuplicateScore(m, PerspectiveDirector)
     check(m,score)
   }
 
-  def checkComplete( m: MatchDuplicate ) = {
+  def checkComplete( m: MatchDuplicate ): Unit = {
     println("From Complete" )
     val score = MatchDuplicateScore(m, PerspectiveComplete)
     check(m,score)
@@ -98,7 +98,7 @@ object TestDuplicateMatchScoringManual extends Main {
     boards.foreach { b => checkBoard(b,teams) }
   }
 
-  def checkBoard( board: BoardScore, teams: List[Team.Id] ) = {
+  def checkBoard( board: BoardScore, teams: List[Team.Id] ): Unit = {
     println("Board: "+board.id)
 
     val header = List("NS", "Contract", "By", "Made", "Down", "NSScore", "EWScore", "EW", "MatchPoints")
@@ -135,7 +135,7 @@ object TestDuplicateMatchScoringManual extends Main {
     println("")
   }
 
-  def showTables( md: MatchDuplicate ) = {
+  def showTables( md: MatchDuplicate ): Unit = {
     MatchDuplicateScore(md,PerspectiveTable(Team.id(1),Team.id(2))).tables.foreach{ case(table, rounds) =>
       println("")
       println("Table "+table)
@@ -147,7 +147,7 @@ object TestDuplicateMatchScoringManual extends Main {
     }
   }
 
-  def printTable( header: List[String], body: List[List[String]], format: String = "%7s " ) = {
+  def printTable( header: List[String], body: List[List[String]], format: String = "%7s " ): Unit = {
     List(List(header),body).flatten.foreach { row => {
       row.foreach { cell => print( format.format(cell) ) }
       println("")

@@ -23,29 +23,30 @@ import com.github.thebridsk.bridge.data.bridge.Vul
 import com.github.thebridsk.bridge.data.bridge.NotVul
 import com.github.thebridsk.browserpages.PageBrowser
 import com.github.thebridsk.bridge.fullserver.test.pages.bridge.HomePage
+import scala.util.matching.Regex
 
 object BoardsPage {
 
-  val log = Logger[BoardsPage]()
+  val log: Logger = Logger[BoardsPage]()
 
-  def current(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
+  def current(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position): BoardsPage = {
     new BoardsPage
   }
 
-  def goto(dupid: String, director: Boolean )(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
+  def goto(dupid: String, director: Boolean )(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position): BoardsPage = {
     go to urlFor(dupid, director)
     new BoardsPage
   }
 
-  def goto(dupid: String, tableId: Int, roundId: Int )(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
+  def goto(dupid: String, tableId: Int, roundId: Int )(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position): BoardsPage = {
     go to urlFor(dupid, tableId, roundId)
     new BoardsPage
   }
 
-  def urlFor(dupid: String, tableId: Int, roundId: Int ) =
+  def urlFor(dupid: String, tableId: Int, roundId: Int ): String =
     TestServer.getAppPageUrl(s"duplicate/${dupid}/table/${tableId}/round/${roundId}/boards")
 
-  def urlFor(dupid: String, director: Boolean ) = {
+  def urlFor(dupid: String, director: Boolean ): String = {
     val dir = if (director) "director/" else ""
     TestServer.getAppPageUrl(s"duplicate/match/${dupid}/${dir}boards")
   }
@@ -66,16 +67,16 @@ object BoardsPage {
     }
   }
 
-  def toPointsString( pts: Double ) = {
+  def toPointsString( pts: Double ): String = {
     val ipts = pts.floor.toInt
     val fpts = pts - ipts
     val fract = if (fpts < 0.01) "" else Strings.half   // 1/2
     if (ipts == 0 && !fract.isEmpty()) fract else ipts.toString+fract
   }
 
-  val patternToBoardId = """Board_B(\d+)""".r
+  val patternToBoardId: Regex = """Board_B(\d+)""".r
 
-  def elemIdToBoardId( elemid: String ) = elemid match {
+  def elemIdToBoardId( elemid: String ): Option[Int] = elemid match {
     case patternToBoardId(bid) => Some( bid.toInt )
     case _ => None
   }
@@ -84,7 +85,7 @@ object BoardsPage {
 class BoardsPage( implicit webDriver: WebDriver, pageCreated: SourcePosition ) extends Page[BoardsPage] {
   import BoardsPage._
 
-  def getTableId(implicit patienceConfig: PatienceConfig, pos: Position) = eventually {
+  def getTableId(implicit patienceConfig: PatienceConfig, pos: Position): Option[String] = eventually {
     val (dupid, viewtype) = findIds
     viewtype match {
       case TableViewType(tid,rid) =>
@@ -94,7 +95,7 @@ class BoardsPage( implicit webDriver: WebDriver, pageCreated: SourcePosition ) e
     }
   }
 
-  def validate(implicit patienceConfig: PatienceConfig, pos: Position) = eventually {
+  def validate(implicit patienceConfig: PatienceConfig, pos: Position): BoardsPage = eventually {
     findButtons("Game", "Game2")
     this
   }
@@ -120,7 +121,7 @@ class BoardsPage( implicit webDriver: WebDriver, pageCreated: SourcePosition ) e
                         nsScore: Int,
                         ewTeam: Int,
                         matchPoints: Double
-                      )(implicit pos: Position) = {
+                      )(implicit pos: Position): BoardsPage = {
     withClue(s"checking NS score on board ${board} for team ${team}") {
       val row = getTeamRow(board,team)
       row(0).text mustBe team.toString()
@@ -148,7 +149,7 @@ class BoardsPage( implicit webDriver: WebDriver, pageCreated: SourcePosition ) e
     }
   }
 
-  def checkTeamEWScore( board: Int, team: Int, ewScore: Int, matchPoints: Double )(implicit pos: Position) = {
+  def checkTeamEWScore( board: Int, team: Int, ewScore: Int, matchPoints: Double )(implicit pos: Position): BoardsPage = {
     withClue(s"checking EW score on board ${board} for team ${team}") {
       val row = getTeamRow(board,team)
       row(0).text mustBe team.toString()
@@ -198,7 +199,7 @@ class BoardsPage( implicit webDriver: WebDriver, pageCreated: SourcePosition ) e
     checkTeamScores(board,nsTeam, nsScore, nsMP, ewTeam, ewMP, contractTricks, contractSuit, contractDoubled, declarer, madeOrDown, tricks, vul)
   }
 
-  def checkTeamNSPlayed( board: Int, team: Int, ewTeam: Int )(implicit pos: Position) = {
+  def checkTeamNSPlayed( board: Int, team: Int, ewTeam: Int )(implicit pos: Position): BoardsPage = {
     withClue(s"checking NS score on board ${board} for played for team ${team}") {
       val row = getTeamRow(board,team)
       row(0).text mustBe team.toString()
@@ -214,7 +215,7 @@ class BoardsPage( implicit webDriver: WebDriver, pageCreated: SourcePosition ) e
     }
   }
 
-  def checkTeamEWPlayed( board: Int, team: Int )(implicit pos: Position) = {
+  def checkTeamEWPlayed( board: Int, team: Int )(implicit pos: Position): BoardsPage = {
     withClue(s"checking EW score on board ${board} for played for team ${team}") {
       val row = getTeamRow(board,team)
       row(0).text mustBe team.toString()
@@ -230,17 +231,17 @@ class BoardsPage( implicit webDriver: WebDriver, pageCreated: SourcePosition ) e
     }
   }
 
-  def checkTeamNotPlayed( board: Int, nsTeam: Int, ewTeam: Int )(implicit pos: Position) = {
+  def checkTeamNotPlayed( board: Int, nsTeam: Int, ewTeam: Int )(implicit pos: Position): BoardsPage = {
     checkTeamNSNotPlayed(board,nsTeam, ewTeam)
     checkTeamEWNotPlayed(board,ewTeam)
   }
 
-  def checkTeamPlayed( board: Int, nsTeam: Int, ewTeam: Int )(implicit pos: Position) = {
+  def checkTeamPlayed( board: Int, nsTeam: Int, ewTeam: Int )(implicit pos: Position): BoardsPage = {
     checkTeamNSPlayed(board,nsTeam, ewTeam)
     checkTeamEWPlayed(board,ewTeam)
   }
 
-  def checkTeamNSNotPlayed( board: Int, team: Int, ewTeam: Int )(implicit pos: Position) = {
+  def checkTeamNSNotPlayed( board: Int, team: Int, ewTeam: Int )(implicit pos: Position): BoardsPage = {
     withClue(s"checking NS score on board ${board} for not played for team ${team}") {
       val row = getTeamRow(board,team)
       row(0).text mustBe team.toString()
@@ -256,7 +257,7 @@ class BoardsPage( implicit webDriver: WebDriver, pageCreated: SourcePosition ) e
     }
   }
 
-  def checkTeamNeverPlays( board: Int, team: Int )(implicit pos: Position) = {
+  def checkTeamNeverPlays( board: Int, team: Int )(implicit pos: Position): BoardsPage = {
     import BoardPage._
     withClue(s"checking for never play for team ${team}") {
       val row = getTeamRow(board,team)
@@ -275,7 +276,7 @@ class BoardsPage( implicit webDriver: WebDriver, pageCreated: SourcePosition ) e
     }
   }
 
-  def checkTeamEWNotPlayed( board: Int, team: Int )(implicit pos: Position) = {
+  def checkTeamEWNotPlayed( board: Int, team: Int )(implicit pos: Position): BoardsPage = {
     withClue(s"checking EW score on board ${board} for not played for team ${team}") {
       val row = getTeamRow(board,team)
       row(0).text mustBe team.toString()
@@ -291,7 +292,7 @@ class BoardsPage( implicit webDriver: WebDriver, pageCreated: SourcePosition ) e
     }
   }
 
-  def checkOthers( b: HandsOnBoard, allhands: AllHandsInMatch, checkmarks: Boolean = false )(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def checkOthers( b: HandsOnBoard, allhands: AllHandsInMatch, checkmarks: Boolean = false )(implicit patienceConfig: PatienceConfig, pos: Position): BoardsPage = {
     val allplayed = b.other.find(oh => oh.isInstanceOf[OtherHandNotPlayed]).isEmpty
     b.other.foreach{ oh =>
       oh match {
@@ -320,7 +321,7 @@ class BoardsPage( implicit webDriver: WebDriver, pageCreated: SourcePosition ) e
                )(implicit
                    patienceConfig: PatienceConfig,
                    pos: Position
-               ) = {
+               ): BoardsPage = {
     withClue( s"""${pos.line} BoardsPage.checkHand round ${round} board ${board} checkmarks ${checkmarks}""" ) {
       allhands.getBoardToRound(round, board) match {
         case Some(b) =>
@@ -357,19 +358,19 @@ class BoardsPage( implicit webDriver: WebDriver, pageCreated: SourcePosition ) e
     }
   }
 
-  def getBoardIds(implicit patienceConfig: PatienceConfig, pos: Position) = eventually {
+  def getBoardIds(implicit patienceConfig: PatienceConfig, pos: Position): List[Int] = eventually {
     findElemsByXPath(HomePage.divBridgeAppPrefix+"""//table""").flatMap(e => elemIdToBoardId(e.attribute("id").get) match {
       case Some(id) => id::Nil
       case None => Nil
     } ).sorted
   }
 
-  def clickHand( board: Int, hand: Int )(implicit patienceConfig: PatienceConfig, pos: Position) = eventually {
+  def clickHand( board: Int, hand: Int )(implicit patienceConfig: PatienceConfig, pos: Position): HandPage = eventually {
     findElemByXPath(s"""//table[@id='Board_B${board}']//button[@id='Hand_T${hand}']""").click
     new HandPage
   }
 
-  def clickScoreboard(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def clickScoreboard(implicit patienceConfig: PatienceConfig, pos: Position): ScoreboardPage = {
     PageBrowser.scrollToTop
 //    Thread.sleep(10L)
     clickButton("Game")

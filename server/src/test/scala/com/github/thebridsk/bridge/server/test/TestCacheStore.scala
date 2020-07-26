@@ -40,15 +40,16 @@ import org.scalatest.matchers.must.Matchers
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.Succeeded
 import org.scalatest.flatspec.AsyncFlatSpec
+import com.github.thebridsk.utilities.logging.Logger
 
 object TestCacheStore {
   import Matchers._
 
-  val testlog = com.github.thebridsk.utilities.logging.Logger[TestCacheStore]()
+  val testlog: Logger = com.github.thebridsk.utilities.logging.Logger[TestCacheStore]()
 
   TestStartLogging.startLogging()
 
-  val bridgeResources = BridgeResources()
+  val bridgeResources: BridgeResources = BridgeResources()
   import bridgeResources._
 
   def getStore( implicit ec: ExecutionContext ): Store[MatchDuplicate.Id,MatchDuplicate] =
@@ -86,7 +87,7 @@ object TestCacheStore {
     override
     def delete( change: ChangeContext ): Unit = { changeDelete = Some(change) }
 
-    def clear() = {
+    def clear(): Unit = {
       changeCreate = None
       changeUpdate = None
       changeDelete = None
@@ -94,7 +95,7 @@ object TestCacheStore {
   }
 
 
-  def testWithStore( fun: (Store[MatchDuplicate.Id,MatchDuplicate], Listener)=>Future[Assertion] )( implicit ec: ExecutionContext ) = {
+  def testWithStore( fun: (Store[MatchDuplicate.Id,MatchDuplicate], Listener)=>Future[Assertion] )( implicit ec: ExecutionContext ): Future[Assertion] = {
     val store = getStore
     val md = TestMatchDuplicate.create(MatchDuplicate.idNul)
 
@@ -183,12 +184,12 @@ class TestCacheStore extends AsyncFlatSpec with ScalatestRouteTest with Matchers
 
   var tempDir: Directory = null
 
-  override def beforeAll() = {
+  override def beforeAll(): Unit = {
     tempDir = Directory.makeTemp( "TestFileStore", ".teststore" )
     testlog.fine( "Using temporary directory "+tempDir)
   }
 
-  override def afterAll() = {
+  override def afterAll(): Unit = {
     testlog.fine( "Deleting temporary directory "+tempDir)
     tempDir.deleteRecursively()
   }
@@ -518,7 +519,7 @@ class TestCacheStore extends AsyncFlatSpec with ScalatestRouteTest with Matchers
     (s"$dupid-${boardid}-${handid}",x)
   }
 
-  def getBoardset() = {
+  def getBoardset(): BoardSet = {
     val fut = getBoardSetStore.select(BoardSet.standard).read()
     Await.result(fut, 10.seconds) match {
       case Right(bs) => bs
@@ -528,7 +529,7 @@ class TestCacheStore extends AsyncFlatSpec with ScalatestRouteTest with Matchers
     }
   }
 
-  def getMovement() = {
+  def getMovement(): Movement = {
     val fut = getMovementStore.select(Movement.id("Mitchell3Table")).read()
     Await.result(fut, 10.seconds) match {
       case Right(bs) => bs
@@ -565,8 +566,8 @@ class TestCacheStore extends AsyncFlatSpec with ScalatestRouteTest with Matchers
     private var ferrors: List[String] = List()
     private var fmatches: List[MatchDuplicate] = List()
 
-    def add( err: String ) = synchronized { ferrors = err::ferrors }
-    def add( md: MatchDuplicate ) = synchronized {
+    def add( err: String ): Unit = synchronized { ferrors = err::ferrors }
+    def add( md: MatchDuplicate ): Unit = synchronized {
       if (md.id != id) {
         testlog.severe(s"Ids don't match: ${id.id}, got ${md.id}")
       }

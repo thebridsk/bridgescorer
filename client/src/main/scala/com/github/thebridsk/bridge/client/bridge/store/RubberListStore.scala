@@ -11,16 +11,16 @@ import com.github.thebridsk.bridge.client.bridge.action.ActionUpdateRubber
 import com.github.thebridsk.bridge.clientcommon.demo.BridgeDemo
 
 object RubberListStore extends ChangeListenable {
-  val logger = Logger("bridge.RubberListStore")
+  val logger: Logger = Logger("bridge.RubberListStore")
 
   /**
    * Required to instantiate the store.
    */
-  def init() = {}
+  def init(): Unit = {}
 
   private var dispatchToken: Option[DispatchToken] = Some(BridgeDispatcher.register(dispatch _))
 
-  def dispatch( msg: Any ) = Alerter.tryitWithUnit { msg match {
+  def dispatch( msg: Any ): Unit = Alerter.tryitWithUnit { msg match {
     case ActionUpdateRubberList(importId,summary) =>
       updateRubberList(importId,summary)
     case ActionDeleteRubber(id) =>
@@ -49,7 +49,7 @@ object RubberListStore extends ChangeListenable {
   def getRubberSummary() = fSummary
   def getImportId = fImportId
 
-  def updateRubberList( importId: Option[String], summary: Array[MatchRubber] ) = {
+  def updateRubberList( importId: Option[String], summary: Array[MatchRubber] ): Unit = {
     fSummary = Option( summary )
     fImportId = importId
     logger.fine(s"Got ${summary.length} entries from import $importId")

@@ -18,12 +18,13 @@ import java.time.format.DateTimeFormatter
 import java.time.Instant
 import java.time.ZoneId
 import com.github.thebridsk.bridge.data.Team
+import scala.util.matching.Regex
 
 trait ShowCommand
 
 object ShowCommand extends Subcommand("show") {
 
-  val log = Logger[ShowCommand]()
+  val log: Logger = Logger[ShowCommand]()
 
   implicit def dateConverter: ValueConverter[Duration] =
     singleArgConverter[Duration](Duration(_))
@@ -75,7 +76,7 @@ Options:""")
 
 //  footer(s""" """)
 
-  def await[T](fut: Future[T]) = Await.result(fut, 30.seconds)
+  def await[T](fut: Future[T]): T = Await.result(fut, 30.seconds)
 
   def executeSubcommand(): Int = {
     val storedir = optionStore().toDirectory
@@ -106,7 +107,7 @@ Syntax:
   ${DataStoreCommands.cmdName} show suggestion args
 Options:""")
 
-  val optionNeverPair = opt[List[String]](
+  val optionNeverPair: ScallopOption[List[String]] = opt[List[String]](
     "neverpair",
     short = 'n',
     descr = "never pair players.  Value is player1,player2",
@@ -114,7 +115,7 @@ Options:""")
     default = None
   )
 
-  val players = (1 to 8).map { i =>
+  val players: List[ScallopOption[String]] = (1 to 8).map { i =>
     trailArg[String](
       s"player${i}",
       descr = s"player ${i}",
@@ -142,9 +143,9 @@ Options:""")
 
 //  footer(s""" """)
 
-  def await[T](fut: Future[T]) = Await.result(fut, 30.seconds)
+  def await[T](fut: Future[T]): T = Await.result(fut, 30.seconds)
 
-  val patternPair = """([^,]+),([^,]+)""".r
+  val patternPair: Regex = """([^,]+),([^,]+)""".r
 
   def executeSubcommand(): Int = {
     val storedir = optionStore().toDirectory
@@ -223,7 +224,7 @@ Options:""")
 
 //  footer(s""" """)
 
-  def await[T](fut: Future[T]) = Await.result(fut, 30.seconds)
+  def await[T](fut: Future[T]): T = Await.result(fut, 30.seconds)
 
   def executeSubcommand(): Int = {
     val storedir = optionStore().toDirectory
@@ -275,7 +276,7 @@ Syntax:
   ${DataStoreCommands.cmdName} show partnersof
 Options:""")
 
-  val player = trailArg[String](
+  val player: ScallopOption[String] = trailArg[String](
     "player",
     descr = "player",
     required = true,
@@ -285,9 +286,9 @@ Options:""")
 
 //  footer(s""" """)
 
-  def await[T](fut: Future[T]) = Await.result(fut, 30.seconds)
+  def await[T](fut: Future[T]): T = Await.result(fut, 30.seconds)
 
-  val sdf = DateTimeFormatter.ofPattern("MM/dd/YYYY").withZone( ZoneId.systemDefault() )
+  val sdf: DateTimeFormatter = DateTimeFormatter.ofPattern("MM/dd/YYYY").withZone( ZoneId.systemDefault() )
 
   def executeSubcommand(): Int = {
     val storedir = optionStore().toDirectory
@@ -344,9 +345,9 @@ Options:""")
 
 //  footer(s""" """)
 
-  def await[T](fut: Future[T]) = Await.result(fut, 30.seconds)
+  def await[T](fut: Future[T]): T = Await.result(fut, 30.seconds)
 
-  val sdf = DateTimeFormatter.ofPattern("MM/dd/YYYY").withZone( ZoneId.systemDefault() )
+  val sdf: DateTimeFormatter = DateTimeFormatter.ofPattern("MM/dd/YYYY").withZone( ZoneId.systemDefault() )
 
   def executeSubcommand(): Int = {
     val storedir = optionStore().toDirectory
@@ -411,7 +412,7 @@ Syntax:
   ${DataStoreCommands.cmdName} show declarer
 Options:""")
 
-  val paramScoringMethod = trailArg[String](
+  val paramScoringMethod: ScallopOption[String] = trailArg[String](
     name = "scoringMethod",
     descr = "The scoring method, if omitted the played scoring method is used.  Valid values: mp, imp.",
     required = false,
@@ -423,7 +424,7 @@ Options:""")
 
   import com.github.thebridsk.bridge.data.duplicate.stats.CalculatePlayerPlaces
 
-  def await[T](fut: Future[T]) = Await.result(fut, 30.seconds)
+  def await[T](fut: Future[T]): T = Await.result(fut, 30.seconds)
 
   def executeSubcommand(): Int = {
     val storedir = optionStore().toDirectory

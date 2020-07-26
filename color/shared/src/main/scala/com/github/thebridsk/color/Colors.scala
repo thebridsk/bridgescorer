@@ -19,7 +19,7 @@ object Colors {
       darkToLight1: Boolean = true,
       maxLightness: Double = 100.0,
       saturation: Double = 100.0
-  ) = {
+  ): List[HSLColor] = {
     if (n == 0) Nil
     else if (n == 1) Color.hsl( hue, saturation, 50.0 )::Nil
     else {
@@ -49,7 +49,7 @@ object Colors {
       color1: Color,
       color2: Color,
       n: Int
-  ) = {
+  ): List[HSLColor] = {
     colorsHSL(color1.toHSLColor,color2.toHSLColor,n)
   }
 
@@ -66,7 +66,7 @@ object Colors {
       color2: Color,
       n: Int,
       byRGB: Boolean
-  ) = {
+  ): List[Color] = {
     if (byRGB) colorsRGB(color1.toRGBPercentColor,color2.toRGBPercentColor,n)
     else colorsHSL(color1.toHSLColor,color2.toHSLColor,n)
   }
@@ -81,7 +81,7 @@ object Colors {
       color1: RGBPercentColor,
       color2: RGBPercentColor,
       n: Int
-  ) = {
+  ): List[RGBPercentColor] = {
     if (n == 1) Color.rgbPercent( (color1.r+color2.r)/2, (color1.g+color2.g)/2, (color1.b+color2.b)/2, (color1.a+color2.a)/2 )::Nil
     else if (n == 2) color1::color2::Nil
     else {
@@ -107,7 +107,7 @@ object Colors {
       color1: HSLColor,
       color2: HSLColor,
       n: Int
-  ) = {
+  ): List[HSLColor] = {
     if (n == 1) Color.hsl( (color1.hue+color2.hue)/2, (color1.saturation+color2.saturation)/2, (color1.lightness+color2.lightness)/2, (color1.a+color2.a)/2 )::Nil
     else if (n == 2) color1::color2::Nil
     else {
@@ -140,7 +140,7 @@ object Colors {
       darkToLight1: Boolean = true,
       maxLightness: Double = 100.0,
       saturation: Double = 100.0
-  ) = {
+  ): List[HSLColor] = {
     if (n == 0) Nil
     else if (n == 1) Color.hsl( hue, saturation, 50.0 )::Nil
     else {

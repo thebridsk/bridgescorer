@@ -11,6 +11,7 @@ import com.github.thebridsk.bridge.data.duplicate.stats.PlayerComparisonStat
 import PlayerComparisonStat.{SameSide, Competitive, PassedOut}
 import com.github.thebridsk.bridge.data.duplicate.stats.PlayerComparisonStat.StatType
 
+
 /**
  * A skeleton component.
  *
@@ -27,7 +28,7 @@ object ViewPlayerAggressiveness {
 
   case class Props( stats: PlayerComparisonStats )
 
-  def apply( stats: PlayerComparisonStats ) =
+  def apply( stats: PlayerComparisonStats ) = // scalafix:ok ExplicitResultTypes; ReactComponent
     component(Props(stats))
 
 }
@@ -35,7 +36,7 @@ object ViewPlayerAggressiveness {
 object ViewPlayerAggressivenessInternal {
   import ViewPlayerAggressiveness._
 
-  val logger = Logger("bridge.ViewPlayerAggressiveness")
+  val logger: Logger = Logger("bridge.ViewPlayerAggressiveness")
 
   /**
    * Internal state for rendering the component.
@@ -49,7 +50,7 @@ object ViewPlayerAggressivenessInternal {
   val pieChartMaxSize = 100
   val tooltipPieChartSize = 150
 
-  def calcSize(max: Int)( handsPlayed: Int ) = {
+  def calcSize(max: Int)( handsPlayed: Int ): Int = {
     (handsPlayed.toDouble/max*(pieChartMaxSize-5)).toInt + 5
   }
 
@@ -89,7 +90,7 @@ object ViewPlayerAggressivenessInternal {
    *
    */
   class Backend(scope: BackendScope[Props, State]) {
-    def render( props: Props, state: State ) = {
+    def render( props: Props, state: State ) = { // scalafix:ok ExplicitResultTypes; React
 
       val columns = Column("Player")::
                     Column("Aggressive")::Column("Passive")::
@@ -239,6 +240,7 @@ object ViewPlayerAggressivenessInternal {
 
   }
 
+  private[duplicate]
   val component = ScalaComponent.builder[Props]("ViewPlayerAggressiveness")
                             .initialStateFromProps { props => State() }
                             .backend(new Backend(_))

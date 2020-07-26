@@ -5,12 +5,14 @@ import java.net.URL
 import java.io.File
 import com.github.thebridsk.bridge.server.util.HttpUtils
 import com.github.thebridsk.bridge.server.util.GitHub
+import org.rogach.scallop.ScallopOption
+import scala.util.matching.Regex
 
 object Download extends Main {
 
   val defaultAlgo = "SHA-256"
 
-  val cmdname = {
+  val cmdname: String = {
     val x = Download.getClass.getName
     "scala "+x.substring(0, x.length()-1)
   }
@@ -22,21 +24,21 @@ Syntax:
   ${cmdname} options
 Options:""")
 
-  val optionProject = opt[String](
+  val optionProject: ScallopOption[String] = opt[String](
                     "project",
                     short='p',
                     descr="The GitHub project that has the file in a release.",
                     argName="project",
                     default=None)
 
-  val optionFile = opt[String](
+  val optionFile: ScallopOption[String] = opt[String](
                     "file",
                     short='f',
                     descr="The file in the GitHub release to download.",
                     argName="file",
                     default=None)
 
-  val optionAlgo = opt[String](
+  val optionAlgo: ScallopOption[String] = opt[String](
                     "algorithm",
                     short='a',
                     descr=s"The hash algorithm to use, default is ${defaultAlgo}.",
@@ -44,7 +46,7 @@ Options:""")
                     default=Some(defaultAlgo))
 
 
-  def execute() = {
+  def execute(): Int = {
     val project = optionProject()
     val fileToDownload = optionFile()
     val algo = optionAlgo()
@@ -69,7 +71,7 @@ Options:""")
 //                <strong class="pl-1">utilities-jvm_2.12-1.0.5-ef28b25b1ca26d6f52dbda1f1d676927ba95203b.jar</strong>
 //              </a>
 
-  def oldExecute() = {
+  def oldExecute(): Int = {
     val project = optionProject()
     val fileToDownload = optionFile()
     val algo = optionAlgo()
@@ -117,7 +119,7 @@ Options:""")
     0
   }
 
-  val shaPattern = """([0-9a-zA-Z]+) ([* ])(.*)\s*""".r
+  val shaPattern: Regex = """([0-9a-zA-Z]+) ([* ])(.*)\s*""".r
   def getSha256File( filename: String ): Option[String] = {
     val f = filename+".sha256"
     val r = HttpUtils.getHttpAsString(new URL(f), followRedirects=true)

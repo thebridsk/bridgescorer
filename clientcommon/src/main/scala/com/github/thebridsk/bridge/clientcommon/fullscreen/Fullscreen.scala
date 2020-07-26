@@ -27,7 +27,7 @@ trait DocumentElementFullscreen extends js.Object {
 }
 
 object Values {
-  val isIpad = {
+  val isIpad: Boolean = {
     val p = js.Dynamic.global.window.navigator.platform.asInstanceOf[String]
     p == "MacIntel"
   }
@@ -36,7 +36,7 @@ object Values {
 object Implicits {
   import Values._
 
-  val log = Logger("bridge.Fullscreen")
+  val log: Logger = Logger("bridge.Fullscreen")
 
   val isFullscreenEnabled = fullscreenEnabled
 
@@ -58,7 +58,7 @@ object Implicits {
 
   implicit class DocumentFullscreenWrapper( private val document: Document ) extends AnyVal {
 
-    def doc = document.asInstanceOf[DocumentFullscreen]
+    def doc: DocumentFullscreen = document.asInstanceOf[DocumentFullscreen]
 
     def fullscreenEnabled: Boolean = Implicits.isFullscreenEnabled
 
@@ -71,7 +71,7 @@ object Implicits {
       else js.Promise.reject("fullscreen not enabled")
     }
 
-    def isFullscreen = {
+    def isFullscreen: Boolean = {
       val fe = fullscreenElement
       !js.isUndefined(fe) && fe != null
     }
@@ -80,7 +80,7 @@ object Implicits {
   implicit class ElementFullscreenWrapper( private val element: Element ) extends AnyVal {
     import Values._
 
-    def elem = element.asInstanceOf[DocumentElementFullscreen]
+    def elem: DocumentElementFullscreen = element.asInstanceOf[DocumentElementFullscreen]
 
     def requestFullscreen(): js.Promise[Unit] = {
       if (isFullscreenEnabled) if (isIpad) elem.webkitRequestFullscreen() else elem.requestFullscreen()
@@ -95,7 +95,7 @@ object Fullscreen extends Listenable {
   import Implicits._
   var fullscreenElement: js.UndefOr[Element] = js.undefined
 
-  def init() = {
+  def init(): Unit = {
     setFullscreenElement(
       if (document.fullscreenEnabled) document.fullscreenElement
       else js.undefined
@@ -104,7 +104,7 @@ object Fullscreen extends Listenable {
 
   init()
 
-  def setFullscreenElement( e: js.UndefOr[Element] ) = {
+  def setFullscreenElement( e: js.UndefOr[Element] ): Unit = {
     fullscreenElement = e
   }
 

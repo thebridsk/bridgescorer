@@ -61,10 +61,10 @@ object TextDecoder {
   /**
    * For setting the fatal property in the options parameter in the constructor.
    */
-  def fatal = js.Dictionary[js.Any]("fatal"->true)
+  def fatal: js.Dictionary[js.Any] = js.Dictionary[js.Any]("fatal"->true)
 
   /**
    * For setting the stream property in the options parameter in the decode method.
    */
-  def stream = js.Dictionary[js.Any]("stream"->true)
+  def stream: js.Dictionary[js.Any] = js.Dictionary[js.Any]("stream"->true)
 }

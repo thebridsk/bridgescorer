@@ -13,10 +13,13 @@ import com.github.thebridsk.bridge.data.duplicate.stats.PlayerComparisonStat
 import com.github.thebridsk.bridge.data.Table
 import com.github.thebridsk.bridge.data.BoardSet
 import com.github.thebridsk.bridge.data.Movement
+import com.github.thebridsk.bridge.data.MatchDuplicateV3
+import com.github.thebridsk.utilities.logging.Logger
+import org.scalatest.Assertion
 
 object TestPlayerComparisonStats {
 
-  val testlog = com.github.thebridsk.utilities.logging.Logger[TestPlayerComparisonStats]()
+  val testlog: Logger = com.github.thebridsk.utilities.logging.Logger[TestPlayerComparisonStats]()
 }
 
 /**
@@ -24,14 +27,14 @@ object TestPlayerComparisonStats {
  */
 class TestPlayerComparisonStats extends AnyFlatSpec with ScalatestRouteTest with Matchers {
 
-  val team1 = Team.id(1)
-  val team2 = Team.id(2)
-  val team3 = Team.id(3)
-  val team4 = Team.id(4)
+  val team1: Team.Id = Team.id(1)
+  val team2: Team.Id = Team.id(2)
+  val team3: Team.Id = Team.id(3)
+  val team4: Team.Id = Team.id(4)
 
   behavior of "the player comparison stats test"
 
-  val defaultMD = MatchDuplicate(
+  val defaultMD: MatchDuplicateV3 = MatchDuplicate(
                     id = MatchDuplicate.id(1),
                     teams = List(
                            Team.create(team1, "Alice", "Alan"),
@@ -93,7 +96,7 @@ class TestPlayerComparisonStats extends AnyFlatSpec with ScalatestRouteTest with
                     updated = 0
                   )
 
-  def testStat( stats: PlayerComparisonStats, player: String, stattype: PlayerComparisonStat.StatType, good: Int, bad: Int, neutral: Int ) = {
+  def testStat( stats: PlayerComparisonStats, player: String, stattype: PlayerComparisonStat.StatType, good: Int, bad: Int, neutral: Int ): Assertion = {
     stats.data.find( s => s.player == player ).map { s =>
       s.stattype mustBe stattype
       s.aggressivegood mustBe good

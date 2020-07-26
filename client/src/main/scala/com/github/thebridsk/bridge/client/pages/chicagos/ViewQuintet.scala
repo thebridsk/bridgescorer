@@ -9,6 +9,7 @@ import com.github.thebridsk.bridge.clientcommon.react.AppButton
 import com.github.thebridsk.bridge.data.bridge._
 import com.github.thebridsk.bridge.client.routes.BridgeRouter
 
+
 /**
  * A skeleton component.
  *
@@ -25,7 +26,7 @@ object ViewQuintet {
 
   case class Props( chicagoScoring: ChicagoScoring, page: SummaryView, routerCtl: BridgeRouter[ChicagoPage] )
 
-  def apply( chicagoScoring: ChicagoScoring, page: SummaryView, routerCtl: BridgeRouter[ChicagoPage] ) =
+  def apply( chicagoScoring: ChicagoScoring, page: SummaryView, routerCtl: BridgeRouter[ChicagoPage] ) = // scalafix:ok ExplicitResultTypes; ReactComponent
     component( Props( chicagoScoring, page, routerCtl ) )
 
 }
@@ -33,7 +34,7 @@ object ViewQuintet {
 object ViewQuintetInternal {
   import ViewQuintet._
 
-  val logger = Logger("bridge.ViewQuintet")
+  val logger: Logger = Logger("bridge.ViewQuintet")
 
   /**
    * Internal state for rendering the component.
@@ -44,12 +45,14 @@ object ViewQuintetInternal {
    */
   case class State()
 
+  private[chicagos]
   val playerName = ScalaComponent.builder[(String,String)]("PlayerName")
     .render_P( props => {
       val (name,key) = props
       <.th( ^.id:=key, ^.textAlign := "center", name )
     }).build
 
+  private[chicagos]
   val playerScore = ScalaComponent.builder[(Int,String)]("PlayerScore")
     .render_P( props => {
       val (score,key) = props
@@ -57,6 +60,7 @@ object ViewQuintetInternal {
       <.td( ^.id:=key, ^.textAlign := "right", s )
     }).build
 
+  private[chicagos]
   val summaryRoundRow = ScalaComponent.builder[(Props,Int,List[Int],List[Int])]("SummaryRoundRow")
     .render_P( rowprops => {
       val (props,round,scores,order) = rowprops
@@ -135,7 +139,7 @@ object ViewQuintetInternal {
    *
    */
   class Backend(scope: BackendScope[Props, State]) {
-    def render( props: Props, state: State ) = {
+    def render( props: Props, state: State ) = { // scalafix:ok ExplicitResultTypes; React
       val scoring = props.chicagoScoring
       logger.finer("ViewRounds.totalsTable "+scoring)
       val players = scoring.players
@@ -188,6 +192,7 @@ object ViewQuintetInternal {
     }
   }
 
+  private[chicagos]
   val component = ScalaComponent.builder[Props]("ViewQuintet")
                             .initialStateFromProps { props => State() }
                             .backend(new Backend(_))

@@ -13,13 +13,14 @@ import java.io.FileInputStream
 import scala.util.Using
 import java.net.NetworkInterface
 import java.net.Inet4Address
+import scala.util.matching.Regex
 
 trait GenerateServerCert
 
 object GenerateServerCert extends Subcommand("generateservercert") {
   import SSLKeyCommands.optionKeyDir
 
-  val log = Logger[GenerateServerCert]()
+  val log: Logger = Logger[GenerateServerCert]()
 
   implicit def dateConverter: ValueConverter[Duration] =
     singleArgConverter[Duration](Duration(_))
@@ -34,7 +35,7 @@ Syntax:
   ${SSLKeyCommands.cmdName} ${name} [options]
 Options:""")
 
-  val optionForce = toggle(
+  val optionForce: ScallopOption[Boolean] = toggle(
     name = "force",
     noshort = true,
     descrNo = "fail if keys already exist",
@@ -42,7 +43,7 @@ Options:""")
     default = Some(false)
   )
 
-  val optionVerbose = toggle(
+  val optionVerbose: ScallopOption[Boolean] = toggle(
     name = "verbose",
     short = 'v',
     descrNo = "Don't add verbose option to commands",
@@ -50,7 +51,7 @@ Options:""")
     default = Some(false)
   )
 
-  val optionNginx = toggle(
+  val optionNginx: ScallopOption[Boolean] = toggle(
     name = "nginx",
     noshort = true,
     descrNo = "Don't generate certificate for nginx",
@@ -58,14 +59,14 @@ Options:""")
     default = Some(false)
   )
 
-  val optionCA = opt[String](
+  val optionCA: ScallopOption[String] = opt[String](
     "ca",
     noshort = true,
     descr = "base filename for CA certificate files",
     required = true,
   )
 
-  val optionRootCAAlias = opt[String](
+  val optionRootCAAlias: ScallopOption[String] = opt[String](
     "caalias",
     noshort = true,
     descr = "alias for CA private certificate in CA keystore",
@@ -73,69 +74,69 @@ Options:""")
     default = Some("rootCA")
   )
 
-  val optionRootCAStorePW = opt[String](
+  val optionRootCAStorePW: ScallopOption[String] = opt[String](
     "castorepw",
     noshort = true,
     descr = "Store PW for CA keystore",
     required = true,
   )
 
-  val optionRootCAKeyPW = opt[String](
+  val optionRootCAKeyPW: ScallopOption[String] = opt[String](
     "cakeypw",
     noshort = true,
     descr = "Private key PW",
     required = true,
   )
 
-  val optionTruststore = opt[String](
+  val optionTruststore: ScallopOption[String] = opt[String](
     "truststore",
     noshort = true,
     descr = "base filename for truststore",
     required = true,
   )
-  val optionTrustPW = opt[String](
+  val optionTrustPW: ScallopOption[String] = opt[String](
     "trustpw",
     noshort = true,
     descr = "password for truststore",
     required = true,
   )
 
-  val optionServer = opt[String](
+  val optionServer: ScallopOption[String] = opt[String](
     "server",
     short = 's',
     descr = "base filename for server certificate files",
     required = true,
   )
 
-  val optionAlias = opt[String](
+  val optionAlias: ScallopOption[String] = opt[String](
     "alias",
     short = 'a',
     descr = "server certificate alias in keystore",
     required = true,
   )
 
-  val optionDname = opt[String](
+  val optionDname: ScallopOption[String] = opt[String](
     "dname",
     short = 'd',
     descr = "server dname, must be specified if generating a new certificate",
     required = false,
   )
 
-  val optionKeypass = opt[String](
+  val optionKeypass: ScallopOption[String] = opt[String](
     "keypass",
     noshort = true,
     descr = "password for server private certificate",
     required = true,
   )
 
-  val optionStorepass = opt[String](
+  val optionStorepass: ScallopOption[String] = opt[String](
     "storepass",
     noshort = true,
     descr = "password for server keystore",
     required = true,
   )
 
-  val optionValidityCA = opt[Int](
+  val optionValidityCA: ScallopOption[Int] = opt[Int](
     "validityCA",
     noshort = true,
     descr = "the validity of the CA certificate in days, default 1 year",
@@ -143,7 +144,7 @@ Options:""")
     validate = { days => days > 0 }
   )
 
-  val optionValidityServer = opt[Int](
+  val optionValidityServer: ScallopOption[Int] = opt[Int](
     "validityServer",
     noshort = true,
     descr = "the validity of the server certificate in days, default 1 year",
@@ -151,9 +152,9 @@ Options:""")
     validate = { days => days > 0 }
   )
 
-  val patternIP = """(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})""".r
+  val patternIP: Regex = """(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})""".r
 
-  val optionIP = opt[List[String]](
+  val optionIP: ScallopOption[List[String]] = opt[List[String]](
     name = "ip",
     noshort = true,
     descr = "list of IP addresses to add to server certificate, may be specified multiple times.  127.0.0.1 and localhost is always added",
@@ -167,7 +168,7 @@ Options:""")
     }        // empty means no bad entries were found
   )( listArgConverter( s => s ))
 
-  val optionAddIP = opt[List[String]](
+  val optionAddIP: ScallopOption[List[String]] = opt[List[String]](
     name = "addip",
     noshort = true,
     descr = "list of IP addresses to add to existing server certificate, may be specified multiple times.",
@@ -181,7 +182,7 @@ Options:""")
     }        // empty means no bad entries were found
   )( listArgConverter( s => s ))
 
-  val optionAddMachineIP = toggle(
+  val optionAddMachineIP: ScallopOption[Boolean] = toggle(
     name = "addmachineip",
     noshort = true,
     descrNo = "Don't add the machine IP address, default",
@@ -322,7 +323,7 @@ Options:""")
 
   }
 
-  def getSANFromCertificate( server: ServerInfo ) = {
+  def getSANFromCertificate( server: ServerInfo ): List[String] = {
     val keyStore = KeyStore.getInstance("JKS");
     val file = GenerateSSLKeys.getFullFile( server.workingDirectory, server.keystore)
     if (file.isFile()) {

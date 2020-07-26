@@ -11,6 +11,7 @@ import com.github.thebridsk.bridge.client.pages.chicagos.ChicagoRouter.RoundView
 import com.github.thebridsk.bridge.clientcommon.react.AppButton
 import com.github.thebridsk.bridge.client.routes.BridgeRouter
 
+
 /**
  * A skeleton component.
  *
@@ -27,17 +28,17 @@ object ViewRoundTable {
 
   case class Props( scoring: ChicagoScoring, roundid: Int, page: RoundView, routerCtl: BridgeRouter[ChicagoPage] )
 
-  def apply( scoring: ChicagoScoring, roundid: Int, page: RoundView, routerCtl: BridgeRouter[ChicagoPage] ) =
+  def apply( scoring: ChicagoScoring, roundid: Int, page: RoundView, routerCtl: BridgeRouter[ChicagoPage] ) = // scalafix:ok ExplicitResultTypes; ReactComponent
     component( Props( scoring, roundid, page, routerCtl ) )
 
-  def withKey( key: String )( scoring: ChicagoScoring, roundid: Int, page: RoundView, routerCtl: BridgeRouter[ChicagoPage] ) =
+  def withKey( key: String )( scoring: ChicagoScoring, roundid: Int, page: RoundView, routerCtl: BridgeRouter[ChicagoPage] ) = // scalafix:ok ExplicitResultTypes; ReactComponent
     component.withKey(key)(Props(scoring, roundid, page, routerCtl))
 }
 
 object ViewRoundTableInternal {
   import ViewRoundTable._
 
-  val logger = Logger("bridge.ViewRoundTable")
+  val logger: Logger = Logger("bridge.ViewRoundTable")
 
   /**
    * Internal state for rendering the component.
@@ -56,7 +57,7 @@ object ViewRoundTableInternal {
    *
    */
   class Backend(scope: BackendScope[Props, State]) {
-    def render( props: Props, state: State ) = {
+    def render( props: Props, state: State ) = { // scalafix:ok ExplicitResultTypes; React
       val roundNumber = props.roundid
       val scoring = props.scoring.rounds(roundNumber)
 
@@ -105,6 +106,7 @@ object ViewRoundTableInternal {
     }
   }
 
+  private[chicagos]
   val summaryHandRow = ScalaComponent.builder[(Int,Int,Option[DuplicateBridge.ScoreHand],PlayerPosition,Props)]("SummaryHandRow")
   .render_P(myprops => {
     val (round,hand, scores, dealer, props) = myprops
@@ -142,6 +144,7 @@ object ViewRoundTableInternal {
     )
   }).build
 
+  private[chicagos]
   val component = ScalaComponent.builder[Props]("ViewRoundTable")
                             .initialStateFromProps { props => State() }
                             .backend(new Backend(_))

@@ -37,13 +37,13 @@ trait ServerHandler {
               )
   }
 
-  def posToString( pos: Position ) = pos.fileName+":"+pos.lineNumber
+  def posToString( pos: Position ): String = pos.fileName+":"+pos.lineNumber
 
-  def timestamp() = {
+  def timestamp(): Long = {
     SystemTime.currentTimeMillis().toLong
   }
 
-  def url() = {
+  def url(): String = {
     try {
       Info.baseUrl.toString()
     } catch {
@@ -51,7 +51,7 @@ trait ServerHandler {
     }
   }
 
-  def exceptionToString( x: Throwable ) = {
+  def exceptionToString( x: Throwable ): String = {
     Option(x).map { e =>
       val b = new StringWriter
       val pw = new PrintWriter(b)

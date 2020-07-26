@@ -10,7 +10,7 @@ import com.github.thebridsk.bridge.data.bridge.DuplicateBridge._
  */
 object TestScoringManual extends Main {
 
-  def execute() = {
+  def execute(): Int = {
     showHand( Hand.create("1",4,"N","R","N",true,false,true,5) )
     simpleTest()
     checkallmade()
@@ -29,7 +29,7 @@ object TestScoringManual extends Main {
     showHand( Hand.create("1",4,"N","D","N",true,false,false,5) )
   }
 
-  def checkallmade() = {
+  def checkallmade(): Unit = {
     println();
     println("made")
     for (suit <- contractSuits;
@@ -52,7 +52,7 @@ object TestScoringManual extends Main {
     }
   }
 
-  def checkMajorMinor() = {
+  def checkMajorMinor(): Unit = {
     println("Starting to check majors and minors")
     for ((suit1,suit2) <- (Spades,Hearts)::(Diamonds,Clubs)::Nil;
          ctricks <- 1 to 7) {
@@ -74,7 +74,7 @@ object TestScoringManual extends Main {
   }
 
 
-  def checkalldown() = {
+  def checkalldown(): Unit = {
     println()
     println("down")
     for (ctricks <- 7 to 7) {
@@ -112,7 +112,7 @@ object TestScoringManual extends Main {
     }
   }
 
-  def checkalldownwithcontract() = {
+  def checkalldownwithcontract(): Unit = {
     println("Checking for down equals")
     for (tricks <- 1 to 13) {
       var didsuit = false

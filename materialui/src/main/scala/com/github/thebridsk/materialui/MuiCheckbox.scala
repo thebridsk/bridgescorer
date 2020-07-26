@@ -5,6 +5,7 @@ import japgolly.scalajs.react.vdom._
 import scala.scalajs.js
 import scala.scalajs.js.annotation._
 import japgolly.scalajs.react.{raw => Raw}
+import scala.scalajs.js.UndefOr
 
 @js.native
 protected trait CheckboxPropsPrivate extends js.Any {
@@ -41,13 +42,13 @@ object CheckboxProps extends PropsFactory[CheckboxProps] {
 
   implicit class WrapCheckboxProps(private val p: CheckboxProps) extends AnyVal {
 
-    def checkedIcon = p.checkedIconInternal.map( n => VdomNode(n))
-    def icon = p.iconInternal.map( n => VdomNode(n))
-    def indeterminateIcon = p.indeterminateIconInternal.map( n => VdomNode(n))
+    def checkedIcon: UndefOr[VdomNode] = p.checkedIconInternal.map( n => VdomNode(n))
+    def icon: UndefOr[VdomNode] = p.iconInternal.map( n => VdomNode(n))
+    def indeterminateIcon: UndefOr[VdomNode] = p.indeterminateIconInternal.map( n => VdomNode(n))
 
   }
 
-  def toRaw( v: VdomNode ) = v.rawNode.asInstanceOf[js.Any]
+  def toRaw( v: VdomNode ): js.Any = v.rawNode.asInstanceOf[js.Any]
 
   /**
     * @param p the object that will become the properties object
@@ -135,7 +136,7 @@ object MuiCheckbox extends ComponentFactory[CheckboxProps] {
   @js.native @JSImport("@material-ui/core/Checkbox", JSImport.Default) private object MList
       extends js.Any
 
-  protected val f = JsComponent[CheckboxProps, Children.Varargs, Null](MList)
+  protected val f = JsComponent[CheckboxProps, Children.Varargs, Null](MList)  // scalafix:ok ExplicitResultTypes; ReactComponent
 
   /**
     * @param checked If true, the component is checked.
@@ -189,7 +190,7 @@ object MuiCheckbox extends ComponentFactory[CheckboxProps] {
       additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
   )(
       children: CtorType.ChildArg*
-  ) = {
+  ) = {  // scalafix:ok ExplicitResultTypes; ReactComponent
     val p: CheckboxProps = CheckboxProps(
       checked = checked,
       checkedIcon = checkedIcon,

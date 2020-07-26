@@ -29,9 +29,11 @@ import scala.util.Failure
 import com.github.thebridsk.bridge.server.backend.resource.ChangeContext
 import com.github.thebridsk.bridge.data.websocket.Protocol.UpdateDuplicatePicture
 import com.github.thebridsk.bridge.data.Board
+import akka.http.scaladsl.model.StatusCode
+import akka.http.scaladsl.server.Route
 
 object RestNestedPicture {
-  val log = Logger[RestNestedPicture]()
+  val log: Logger = Logger[RestNestedPicture]()
 
 }
 
@@ -50,7 +52,7 @@ class RestNestedPicture( store: Store[MatchDuplicate.Id,MatchDuplicate], parent:
   import UtilsPlayJson._
 
   val resName = parent.resName
-  val resNameWithSlash = if (resName.startsWith("/")) resName else "/" + resName
+  val resNameWithSlash: String = if (resName.startsWith("/")) resName else "/" + resName
 
   lazy val nestedPictureHands = new RestNestedPictureHand(store,this)
 
@@ -60,7 +62,7 @@ class RestNestedPicture( store: Store[MatchDuplicate.Id,MatchDuplicate], parent:
   @Hidden
   def route(
       implicit @Parameter(hidden = true) dupid: MatchDuplicate.Id
-  ) = pathPrefix("pictures") {
+  ): Route = pathPrefix("pictures") {
     logRequestResult("RestNestedPicture.route", DebugLevel) {
       nestedRoute ~ getPictures ~ deletePicture
     }
@@ -68,13 +70,13 @@ class RestNestedPicture( store: Store[MatchDuplicate.Id,MatchDuplicate], parent:
 
   def nestedRoute(
     implicit @Parameter(hidden = true) dupId: MatchDuplicate.Id
-  ) = logRequest("RestNestedPicture.nestedRoute", DebugLevel) {
+  ): Route = logRequest("RestNestedPicture.nestedRoute", DebugLevel) {
     pathPrefix("""[a-zA-Z0-9]+""".r) { boardId =>
       nestedPictureHands.route(dupId,Board.id(boardId))
     }
   }
 
-  def getAllPictures( dupId: MatchDuplicate.Id ) = {
+  def getAllPictures( dupId: MatchDuplicate.Id ): Future[Either[(StatusCode, RestMessage),Iterator[DuplicatePicture]]] = {
     store.metaData.listFilesFilter(dupId) { f =>
       RestNestedPictureHand.getPartsMetadataFile(f).isDefined
     }.map { ri =>
@@ -139,10 +141,10 @@ class RestNestedPicture( store: Store[MatchDuplicate.Id,MatchDuplicate], parent:
       )
     )
   )
-  def xxxgetPictures = {}
+  def xxxgetPictures: Unit = {}
   def getPictures(
       implicit @Parameter(hidden = true) dupId: MatchDuplicate.Id
-  ) = pathEndOrSingleSlash {
+  ): Route = pathEndOrSingleSlash {
     get {
       val f = getAllPictures(dupId)
       onComplete(f) {
@@ -197,10 +199,10 @@ class RestNestedPicture( store: Store[MatchDuplicate.Id,MatchDuplicate], parent:
       )
     )
   )
-  def xxxdeletePicture = {}
+  def xxxdeletePicture: Unit = {}
   def deletePicture(
       implicit @Parameter(hidden = true) dupId: MatchDuplicate.Id
-  ) = delete {
+  ): Route = delete {
     path("""[a-zA-Z0-9]+""".r) { sboardid =>
       val boardid = Board.id(sboardid)
       val changeContext = ChangeContext()

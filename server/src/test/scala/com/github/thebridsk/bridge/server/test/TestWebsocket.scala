@@ -31,23 +31,27 @@ import akka.stream.stage.OutHandler
 import akka.stream.Attributes.Name
 import akka.event.Logging
 import com.github.thebridsk.bridge.server.rest.ServerPort
+import akka.event.LoggingAdapter
+import akka.http.scaladsl.server.Route
 
 class TestWebsocket extends AnyFlatSpec with ScalatestRouteTest with Matchers with MyService {
   val restService = new BridgeServiceTesting
 
   val httpport = 8080
   override
-  def ports = ServerPort( Option(httpport), None )
+  def ports: ServerPort = ServerPort( Option(httpport), None )
 
-  implicit val actorSystem = system
-  implicit val actorExecutor = executor
-  implicit val actorMaterializer = materializer
+  // scalafix:off
+  implicit lazy val actorSystem = system
+  implicit lazy val actorExecutor = executor
+  implicit lazy val actorMaterializer = materializer
+  // scalafix:on
 
-  lazy val testlog = Logging(actorSystem, classOf[TestWebsocket])
+  lazy val testlog: LoggingAdapter = Logging(actorSystem, classOf[TestWebsocket])
 
   behavior of "Test Websocket"
 
-  val remoteAddress = `Remote-Address`( IP( InetAddress.getLocalHost, Some(12345) ))
+  val remoteAddress = `Remote-Address`( IP( InetAddress.getLocalHost, Some(12345) ))  // scalafix:ok ; Remote-Address
 
   def greeter: Flow[Message, Message, Any] =
     Flow[Message].mapConcat {
@@ -89,11 +93,12 @@ class TestWebsocket extends AnyFlatSpec with ScalatestRouteTest with Matchers wi
 //        }
 //      })
 
-  def reportErrorsFlow[T] =
-    new GraphStage[FlowShape[T,T]] {
-      val in = Inlet[T]("reportErrorsFlow.in")
-      val out = Outlet[T]("reportErrorsFlow.out")
-      override val shape = FlowShape(in, out)
+  def reportErrorsFlow[T]: GraphStage[FlowShape[T,T]] =
+    new WSReportErrorsFlow[T]()
+  class WSReportErrorsFlow[T]() extends GraphStage[FlowShape[T,T]] {
+      val in: Inlet[T] = Inlet[T]("reportErrorsFlow.in")
+      val out: Outlet[T] = Outlet[T]("reportErrorsFlow.out")
+      override val shape: FlowShape[T,T] = FlowShape(in, out)
       override def initialAttributes: Attributes = Attributes( List(Name("reportErrorsFlow")))
       def createLogic(inheritedAttributes: Attributes): GraphStageLogic = {
         new GraphStageLogic(shape) {
@@ -122,7 +127,7 @@ class TestWebsocket extends AnyFlatSpec with ScalatestRouteTest with Matchers wi
     }
 
 
-  val websocketRoute = akka.http.scaladsl.server.Directives.path("greeter") {
+  val websocketRoute: Route = akka.http.scaladsl.server.Directives.path("greeter") {
     handleWebSocketMessages( websocketMonitor /*greeter*/)
   }
 

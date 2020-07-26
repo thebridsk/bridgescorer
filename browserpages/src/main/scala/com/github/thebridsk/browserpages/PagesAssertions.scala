@@ -8,7 +8,7 @@ import org.scalatest.Assertions._
 
 trait PagesAssertions {
 
-  def exceptionToFail[T]( fun: => T )(implicit pos: Position) = {
+  def exceptionToFail[T]( fun: => T )(implicit pos: Position): T = {
     try {
       fun
     } catch {
@@ -19,7 +19,7 @@ trait PagesAssertions {
     }
   }
 
-  def withClueEx[T]( clue: Any )( fun: => T )(implicit pos: Position) = {
+  def withClueEx[T]( clue: Any )( fun: => T )(implicit pos: Position): T = {
     withClue(clue) {
       exceptionToFail( fun )
     }

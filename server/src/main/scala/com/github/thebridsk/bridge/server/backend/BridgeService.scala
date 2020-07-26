@@ -72,7 +72,7 @@ abstract class BridgeService(val id: String) {
 
   val diagnosticDir: Option[Directory] = None
 
-  def importStoreData = {
+  def importStoreData: Future[ImportStoreData] = {
 
     def count[T]( frs: Future[Result[Set[T]]]) = frs.map { rs =>
       rs match {
@@ -476,7 +476,7 @@ object BridgeService {
   )(
       implicit
       execute: ExecutionContext
-  ) = {
+  ): BridgeServiceWithLogging = {
     if (path.isFile) {
       if (path.extension == "zip") {
         new BridgeServiceZipStore(
@@ -515,7 +515,7 @@ object BridgeService {
       resource: String,
       nameInZip: String,
       zip: ZipOutputStream
-  ) = {
+  ): Unit = {
     val cl = getClass.getClassLoader
     val instream = cl.getResourceAsStream(resource)
     if (instream != null) {
@@ -531,7 +531,7 @@ object BridgeService {
     }
   }
 
-  def copy(in: InputStream, out: OutputStream) = {
+  def copy(in: InputStream, out: OutputStream): Long = {
     val b = new Array[Byte](1024 * 1024)
 
     var count: Long = 0
@@ -546,9 +546,9 @@ object BridgeService {
 }
 
 object BridgeServiceWithLogging {
-  val log = Logger[BridgeServiceWithLogging]()
+  val log: Logger = Logger[BridgeServiceWithLogging]()
 
-  def getDefaultRemoteLoggerConfig() = {
+  def getDefaultRemoteLoggerConfig(): Option[RemoteLoggingConfig] = {
     RemoteLoggingConfig.getDefaultRemoteLoggerConfig()
   }
 }
@@ -558,10 +558,10 @@ abstract class BridgeServiceWithLogging(id: String) extends BridgeService(id) {
 
   import scala.collection.mutable.Map
 
-  protected val fLoggerConfigs = Map[String, LoggerConfig]()
+  protected val fLoggerConfigs: Map[String,LoggerConfig] = Map[String, LoggerConfig]()
 
-  protected var defaultLoggerConfig = LoggerConfig(Nil, Nil)
-  protected var defaultLoggerConfigIPad = LoggerConfig(Nil, Nil)
+  protected var defaultLoggerConfig: LoggerConfig = LoggerConfig(Nil, Nil)
+  protected var defaultLoggerConfigIPad: LoggerConfig = LoggerConfig(Nil, Nil)
 
   init()
 
@@ -581,14 +581,14 @@ abstract class BridgeServiceWithLogging(id: String) extends BridgeService(id) {
     }
   }
 
-  def loggerConfig(ip: String, iPad: Boolean) = {
+  def loggerConfig(ip: String, iPad: Boolean): LoggerConfig = {
     fLoggerConfigs.getOrElse(
       ip,
       if (iPad) defaultLoggerConfigIPad else defaultLoggerConfig
     )
   }
 
-  def setDefaultLoggerConfig(default: LoggerConfig, iPad: Boolean) =
+  def setDefaultLoggerConfig(default: LoggerConfig, iPad: Boolean): Unit =
     if (iPad) {
       log.fine(s"Setting default iPad logging to ${default}")
       defaultLoggerConfigIPad = default
@@ -597,7 +597,7 @@ abstract class BridgeServiceWithLogging(id: String) extends BridgeService(id) {
       defaultLoggerConfig = default
     }
 
-  def getDefaultLoggerConfig(iPad: Boolean) =
+  def getDefaultLoggerConfig(iPad: Boolean): LoggerConfig =
     if (iPad) {
       defaultLoggerConfigIPad
     } else {
@@ -619,7 +619,7 @@ class BridgeServiceInMemory(
 
   self =>
 
-  val bridgeResources = BridgeResources(useYaml)
+  val bridgeResources: BridgeResources = BridgeResources(useYaml)
   import bridgeResources._
 
   val chicagos: Store[MatchChicago.Id, MatchChicago] =

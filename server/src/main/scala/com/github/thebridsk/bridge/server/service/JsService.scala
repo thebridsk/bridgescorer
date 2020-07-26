@@ -20,11 +20,11 @@ import java.io.{File => JFile}
   */
 trait JsService /* extends HttpService */ {
 
-  val logger = Logger(getClass.getName, null)
+  val logger: Logger = Logger(getClass.getName, null)
 
-  lazy val cacheDuration = Duration("0s")
+  lazy val cacheDuration: Duration = Duration("0s")
 
-  lazy val cacheHeaders = {
+  lazy val cacheHeaders: Seq[HttpHeader] = {
     import akka.http.scaladsl.model.headers._
     import akka.http.scaladsl.model.headers.CacheDirectives._
     val sec = cacheDuration.toSeconds
@@ -57,7 +57,7 @@ trait JsService /* extends HttpService */ {
 
   val htmlResources = ResourceFinder.htmlResources
 
-  val helpResources = try {
+  val helpResources: Option[FileFinder] = try {
     Some(ResourceFinder.helpResources)
   } catch {
     case x: Exception =>
@@ -103,7 +103,7 @@ trait JsService /* extends HttpService */ {
     rec(if (path.startsWithSlash) path.tail else path)
   }
 
-  def reqRespLogging( name: String, level: Logging.LogLevel )( r: => Route) =
+  def reqRespLogging( name: String, level: Logging.LogLevel )( r: => Route): Route =
     logRequest(name, level) {
       logResult(name, level) {
         r
@@ -114,7 +114,7 @@ trait JsService /* extends HttpService */ {
   /**
     * The spray route for the html static files
     */
-  val html = {
+  val html: Route = {
     pathSingleSlash {
       redirect("/public/index.html", StatusCodes.PermanentRedirect)
     } ~
@@ -156,7 +156,7 @@ trait JsService /* extends HttpService */ {
     }
   }
 
-  def getResource( res: Uri.Path, fileFinder: FileFinder = htmlResources ) = {
+  def getResource( res: Uri.Path, fileFinder: FileFinder = htmlResources ): Route = {
     safeJoinPaths(fileFinder.baseName + "/", res, separator = '/') match {
       case "" => reject
       case resourceName =>

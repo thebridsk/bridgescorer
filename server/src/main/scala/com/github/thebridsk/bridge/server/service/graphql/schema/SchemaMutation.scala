@@ -21,9 +21,9 @@ import scala.util.Using
 
 object SchemaMutation {
 
-  val log = Logger(SchemaMutation.getClass.getName)
+  val log: Logger = Logger(SchemaMutation.getClass.getName)
 
-  val MutationImportType = ObjectType(
+  val MutationImportType: ObjectType[BridgeService,BridgeService] = ObjectType(
     "MutationImport",
     fields[BridgeService, BridgeService](
       Field(
@@ -81,7 +81,7 @@ object SchemaMutation {
     )
   )
 
-  val MutationType = ObjectType(
+  val MutationType: ObjectType[BridgeService,BridgeService] = ObjectType(
     "Mutation",
     fields[BridgeService, BridgeService](
       Field(

@@ -7,7 +7,7 @@ import com.github.thebridsk.utilities.logging.Logger
 import scala.reflect.io.File
 
 object ResourceFinder {
-  val logger = Logger(getClass.getName)
+  val logger: Logger = Logger(getClass.getName)
 
   /**
     * Validate if the component, version, and suffix contains the client code.
@@ -65,7 +65,7 @@ object ResourceFinder {
   }
 
   private val patternVersion = """(.*?)-[0-9a-fA-F]+""".r
-  def baseVersion(ver: String) = {
+  def baseVersion(ver: String): Option[String] = {
     ver match {
       case patternVersion(version) => Some(version)
       case _                       => None
@@ -141,7 +141,7 @@ object ResourceFinder {
     }
   }
 
-  def htmlResources = {
+  def htmlResources: FileFinder = {
     // must look for bridgescorer-fullserver resources also to find client code
 
     searchOnVersion("bridgescorer-fullserver", None, validateServerVersion) match {
@@ -171,7 +171,7 @@ object ResourceFinder {
 
   }
 
-  def helpResources = {
+  def helpResources: FileFinder = {
 
     searchOnVersion("bridgescorekeeper", Some("help"), validateServerVersionWithHelp) match {
       case Some(f) =>

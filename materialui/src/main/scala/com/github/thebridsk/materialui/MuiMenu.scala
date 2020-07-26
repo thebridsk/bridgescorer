@@ -4,11 +4,12 @@ import japgolly.scalajs.react._
 import japgolly.scalajs.react.raw._
 import scala.scalajs.js
 import scala.scalajs.js.annotation._
+import scala.scalajs.js.UndefOr
 
 case class MenuVariant( value: String )
 object MenuVariant {
-  val menu = MenuVariant("menu")
-  val selectedMenu = MenuVariant("selectedMenu")
+  val menu: MenuVariant = MenuVariant("menu")
+  val selectedMenu: MenuVariant = MenuVariant("selectedMenu")
 }
 
 @js.native
@@ -28,7 +29,7 @@ trait MenuProps extends PopoverProps with MenuPropsPrivate {
 object MenuProps extends PropsFactory[MenuProps] {
 
   implicit class WrapButtonProps(private val p: ButtonProps) extends AnyVal {
-    def variant = p.variantInternal.map(s => new MenuVariant(s))
+    def variant: UndefOr[MenuVariant] = p.variantInternal.map(s => new MenuVariant(s))
   }
 
   import js._
@@ -142,7 +143,7 @@ object MuiMenu extends PropsFactory[MenuProps] {
   @js.native @JSImport("@material-ui/core/Menu", JSImport.Default) private object Menu
       extends js.Any
 
-  protected val f = JsComponent[MenuProps, Children.Varargs, Null](Menu)
+  protected val f = JsComponent[MenuProps, Children.Varargs, Null](Menu)  // scalafix:ok ExplicitResultTypes; ReactComponent
 
   import js._
 
@@ -219,7 +220,7 @@ object MuiMenu extends PropsFactory[MenuProps] {
     additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
 )(
       children: CtorType.ChildArg*
-  ) = {
+) = {  // scalafix:ok ExplicitResultTypes; ReactComponent
 
     val p: MenuProps = MenuProps(
       autoFocus = autoFocus,

@@ -36,7 +36,7 @@ object TestChicago5Rotation {
    * to "true" or "false".
    * If this property is not set, then the os.name system property is used, on windows or unknown parallel, otherwise serial.
    */
-  val enablePrintln = {
+  val enablePrintln: Boolean = {
     getPropOrEnv("TestChicago5RotationPrintln") match {
       case Some(v) =>
         v.toBoolean
@@ -56,7 +56,7 @@ object TestChicago5Rotation {
 
 class TestChicago5Rotation extends AnyFlatSpec with Matchers {
 
-  def println( s: String = "" ) = {
+  def println( s: String = "" ): Unit = {
     if (TestChicago5Rotation.enablePrintln) Predef.println(s)
   }
 
@@ -66,7 +66,7 @@ class TestChicago5Rotation extends AnyFlatSpec with Matchers {
   //    A
   //  D   B
   //    C
-  val defaultTable = Table( north="A", south="C", east="B", west="D", sittingOut="E" )
+  val defaultTable: Table = Table( north="A", south="C", east="B", west="D", sittingOut="E" )
 
   it should "return A as the player at north" in {
     defaultTable.find(North) mustBe "A"
@@ -480,7 +480,7 @@ class TestChicago5Rotation extends AnyFlatSpec with Matchers {
     }
   }
 
-  def checkResult( result: List[Table], expectedCount: Int ) = {
+  def checkResult( result: List[Table], expectedCount: Int ): Unit = {
     val players = result.head.players()
     val r = players.flatMap( p1 => {
       players.filter( p2 => p1<p2 ).flatMap( p2 => {

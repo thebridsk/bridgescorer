@@ -22,12 +22,12 @@ class TravisSeleniumSuites extends Sequential(
 //  new SwaggerTest2
 ) with BeforeAndAfterAll {
   override
-  def beforeAll() = {
+  def beforeAll(): Unit = {
     TestServer.start()
   }
 
   override
-  def afterAll() = {
+  def afterAll(): Unit = {
     TestServer.stop()
   }
 

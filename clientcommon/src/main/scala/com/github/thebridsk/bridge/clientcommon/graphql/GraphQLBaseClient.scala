@@ -38,12 +38,12 @@ class GraphQLException( val error: GraphQLResponse, cause: Throwable = null ) ex
 
 object GraphQLBaseClient {
 
-  val log = Logger("bridge.GraphQLBaseClient")
+  val log: Logger = Logger("bridge.GraphQLBaseClient")
 
-  val headersForPost=Map("Content-Type" -> "application/json; charset=UTF-8",
+  val headersForPost: Map[String,String]=Map("Content-Type" -> "application/json; charset=UTF-8",
                          "Accept" -> "application/json")
 
-  def queryToJson( query: String, variables: Option[JsObject]= None, operation: Option[String] = None ) = {
+  def queryToJson( query: String, variables: Option[JsObject]= None, operation: Option[String] = None ): JsObject = {
     JsObject(
         operation.map( v => "operationName" -> JsString(v) ).toList :::
         variables.map( v => "variables" -> v ).toList :::
@@ -62,7 +62,7 @@ class GraphQLBaseClient(
                     ) {
   import GraphQLBaseClient._
 
-  def toGraphQLResponse( json: JsValue ) = {
+  def toGraphQLResponse( json: JsValue ): GraphQLResponse = {
     Json.fromJson[GraphQLResponse](json) match {
       case JsSuccess(r,path) => r
       case JsError(error) =>

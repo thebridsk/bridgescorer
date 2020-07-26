@@ -9,6 +9,7 @@ import com.github.thebridsk.materialui.MuiTypography
 import com.github.thebridsk.materialui.TextVariant
 import com.github.thebridsk.materialui.TextColor
 
+
 /**
  * A skeleton component.
  *
@@ -25,7 +26,7 @@ object VoyagerPage {
 
   case class Props(  router: BridgeRouter[AppPage] )
 
-  def apply( router: BridgeRouter[AppPage] ) = component(Props(router))
+  def apply( router: BridgeRouter[AppPage] ) = component(Props(router))  // scalafix:ok ExplicitResultTypes; ReactComponent
 
 }
 
@@ -48,7 +49,7 @@ object VoyagerPageInternal {
    *
    */
   class Backend(scope: BackendScope[Props, State]) {
-    def render( props: Props, state: State ) = {
+    def render( props: Props, state: State ) = { // scalafix:ok ExplicitResultTypes; React
       <.div(
         RootBridgeAppBar(
             Seq(MuiTypography(
@@ -75,17 +76,18 @@ object VoyagerPageInternal {
 
     private var mounted = false
 
-    val didMount = Callback {
+    val didMount: Callback = Callback {
       mounted = true
 
     }
 
-    val willUnmount = Callback {
+    val willUnmount: Callback = Callback {
       mounted = false
 
     }
   }
 
+  private[pages]
   val component = ScalaComponent.builder[Props]("VoyagerPage")
                             .initialStateFromProps { props => State() }
                             .backend(new Backend(_))

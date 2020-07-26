@@ -26,6 +26,8 @@ import javax.ws.rs.PUT
 import javax.ws.rs.DELETE
 import io.swagger.v3.oas.annotations.tags.Tags
 import io.swagger.v3.oas.annotations.tags.Tag
+import akka.event.LoggingAdapter
+import akka.http.scaladsl.server.Route
 
 /**
   * Rest API implementation for the board resource.
@@ -37,7 +39,7 @@ import io.swagger.v3.oas.annotations.tags.Tag
 @Tags(Array(new Tag(name = "Duplicate")))
 trait RestBoardSet extends HasActorSystem {
 
-  lazy val testlog = Logging(actorSystem, classOf[RestBoardSet])
+  lazy val testlog: LoggingAdapter = Logging(actorSystem, classOf[RestBoardSet])
 
   val resName = "boardsets"
 
@@ -53,7 +55,7 @@ trait RestBoardSet extends HasActorSystem {
   /**
     * spray route for all the methods on this resource
     */
-  val route = pathPrefix(resName) {
+  val route: Route = pathPrefix(resName) {
     logRequest("boardsets", DebugLevel) {
       logResult("boardsets", DebugLevel) {
         getBoard ~ getBoards ~ postBoard ~ putBoard ~ deleteBoard
@@ -83,8 +85,8 @@ trait RestBoardSet extends HasActorSystem {
       )
     )
   )
-  def xxxgetBoards() = {}
-  val getBoards = pathEnd {
+  def xxxgetBoards(): Unit = {}
+  val getBoards: Route = pathEnd {
     get {
       resourceMap(store.readAll())
     }
@@ -139,8 +141,8 @@ trait RestBoardSet extends HasActorSystem {
       )
     )
   )
-  def xxxgetBoard() = {}
-  val getBoard = logRequest("getBoardset", DebugLevel) {
+  def xxxgetBoard(): Unit = {}
+  val getBoard: Route = logRequest("getBoardset", DebugLevel) {
     get {
       path("""[a-zA-Z0-9]+""".r) { id =>
         resource(store.select(BoardSet.id(id)).read())
@@ -201,8 +203,8 @@ trait RestBoardSet extends HasActorSystem {
       )
     )
   )
-  def xxxpostBoard() = {}
-  val postBoard = pathEnd {
+  def xxxpostBoard(): Unit = {}
+  val postBoard: Route = pathEnd {
     post {
       entity(as[BoardSet]) { board =>
         resourceCreated(resName, store.createChild(board))
@@ -262,8 +264,8 @@ trait RestBoardSet extends HasActorSystem {
       )
     )
   )
-  def xxxputBoard() = {}
-  val putBoard = logRequest("putBoardset", DebugLevel) {
+  def xxxputBoard(): Unit = {}
+  val putBoard: Route = logRequest("putBoardset", DebugLevel) {
     logResult("putBoardsets", DebugLevel) {
       put {
         path("""[a-zA-Z0-9]+""".r) { sid =>
@@ -309,8 +311,8 @@ trait RestBoardSet extends HasActorSystem {
       )
     )
   )
-  def xxxdeleteBoard() = {}
-  val deleteBoard = delete {
+  def xxxdeleteBoard(): Unit = {}
+  val deleteBoard: Route = delete {
     logRequest("boardsets.delete", DebugLevel) {
       logResult("boardsets.delete", DebugLevel) {
         path("""[a-zA-Z0-9]+""".r) { sid =>

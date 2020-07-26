@@ -12,11 +12,11 @@ class InputStyleHelper extends Matchers {
     import com.github.thebridsk.browserpages.PageBrowser._
     import com.github.thebridsk.bridge.server.test.util.EventuallyUtils._
 
-  def getButton( id: String )(implicit webDriver: WebDriver, patienceConfig: PatienceConfig) = {
+  def getButton( id: String )(implicit webDriver: WebDriver, patienceConfig: PatienceConfig): Element = {
      eventuallySome{ findButton(id) }
   }
 
-  def isButton( button: String, text: String ) = {
+  def isButton( button: String, text: String ): Boolean = {
     "Input Style: "+text == button
   }
 
@@ -124,6 +124,6 @@ class InputStyleHelper extends Matchers {
 
 object InputStyleHelper extends InputStyleHelper {
 
-  val testlog = Logger[InputStyleHelper]()
+  val testlog: Logger = Logger[InputStyleHelper]()
 
 }

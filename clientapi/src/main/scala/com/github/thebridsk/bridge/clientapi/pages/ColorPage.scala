@@ -18,6 +18,7 @@ import com.github.thebridsk.bridge.clientapi.routes.AppRouter.AppPage
 import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles._
 import scala.math.Ordering.Double.TotalOrdering
 
+
 /**
  * A skeleton component.
  *
@@ -34,14 +35,14 @@ object ColorPage {
 
   case class Props( router: BridgeRouter[AppPage])
 
-  def apply( router: BridgeRouter[AppPage]) = component(Props(router))
+  def apply( router: BridgeRouter[AppPage]) = component(Props(router))  // scalafix:ok ExplicitResultTypes; ReactComponent
 
 }
 
 object ColorPageInternal {
   import ColorPage._
 
-  val log = Logger("bridge.ColorPage")
+  val log: Logger = Logger("bridge.ColorPage")
 
   val defaultColor1 = "rgb(255,0,0,100%)"
   val defaultColor2 = "hsl(240,100%,50%,100%)"
@@ -73,19 +74,19 @@ object ColorPageInternal {
       ng: String = "11"
   ) {
 
-    def withN( v: String ) = copy(n=v)
-    def withHueStep( v: String ) = copy(huestep=v)
-    def withMinLightness( v: String ) = copy(minLightness=v)
-    def withMaxLightness( v: String ) = copy(maxLightness=v)
-    def withSaturation( v: String ) = copy(saturation=v)
+    def withN( v: String ): State = copy(n=v)
+    def withHueStep( v: String ): State = copy(huestep=v)
+    def withMinLightness( v: String ): State = copy(minLightness=v)
+    def withMaxLightness( v: String ): State = copy(maxLightness=v)
+    def withSaturation( v: String ): State = copy(saturation=v)
 
-    def withColor1( v: String ) = copy(color1=v)
-    def withColor2( v: String ) = copy(color2=v)
-    def withN2( v: String ) = copy(n2=v)
-    def withNG( v: String ) = copy(ng=v)
+    def withColor1( v: String ): State = copy(color1=v)
+    def withColor2( v: String ): State = copy(color2=v)
+    def withN2( v: String ): State = copy(n2=v)
+    def withNG( v: String ): State = copy(ng=v)
   }
 
-  def parseInt( s: String, default: Int, min: Int = 0 ) = {
+  def parseInt( s: String, default: Int, min: Int = 0 ): Int = {
     try {
       val v = s.toInt
       Math.max(v,min)
@@ -95,7 +96,7 @@ object ColorPageInternal {
     }
   }
 
-  def parseDouble( s: String, default: Double ) = {
+  def parseDouble( s: String, default: Double ): Double = {
     try {
       s.toDouble
     } catch {
@@ -104,7 +105,7 @@ object ColorPageInternal {
     }
   }
 
-  def parseColor( s: String, default: String ) = {
+  def parseColor( s: String, default: String ): Color = {
     try {
       Color(s)
     } catch {
@@ -127,43 +128,43 @@ object ColorPageInternal {
    */
   class Backend(scope: BackendScope[Props, State]) {
 
-    def setSaturation( e: ReactEventFromInput ) = e.inputText { s =>
+    def setSaturation( e: ReactEventFromInput ): Callback = e.inputText { s =>
       scope.modState { state => state.withSaturation(s) }
     }
 
-    def setHueStep( e: ReactEventFromInput ) = e.inputText { s =>
+    def setHueStep( e: ReactEventFromInput ): Callback = e.inputText { s =>
       scope.modState { state => state.withHueStep(s) }
     }
 
-    def setN( e: ReactEventFromInput ) = e.inputText { s =>
+    def setN( e: ReactEventFromInput ): Callback = e.inputText { s =>
       scope.modState { state => state.withN(s) }
     }
 
-    def setN2( e: ReactEventFromInput ) = e.inputText { s =>
+    def setN2( e: ReactEventFromInput ): Callback = e.inputText { s =>
       scope.modState { state => state.withN2(s) }
     }
 
-    def setNG( e: ReactEventFromInput ) = e.inputText { s =>
+    def setNG( e: ReactEventFromInput ): Callback = e.inputText { s =>
       scope.modState { state => state.withNG(s) }
     }
 
-    def setColor1( e: ReactEventFromInput ) = e.inputText { s =>
+    def setColor1( e: ReactEventFromInput ): Callback = e.inputText { s =>
       scope.modState { state => state.withColor1(s) }
     }
 
-    def setColor2( e: ReactEventFromInput ) = e.inputText { s =>
+    def setColor2( e: ReactEventFromInput ): Callback = e.inputText { s =>
       scope.modState { state => state.withColor2(s) }
     }
 
-    def setMinLightness( e: ReactEventFromInput ) = e.inputText { s =>
+    def setMinLightness( e: ReactEventFromInput ): Callback = e.inputText { s =>
       scope.modState { state => state.withMinLightness(s) }
     }
 
-    def setMaxLightness( e: ReactEventFromInput ) = e.inputText { s =>
+    def setMaxLightness( e: ReactEventFromInput ): Callback = e.inputText { s =>
       scope.modState { state => state.withMaxLightness(s) }
     }
 
-    def render( props: Props, state: State ) = {
+    def render( props: Props, state: State ) = { // scalafix:ok ExplicitResultTypes; React
       try {
         <.div(
           baseStyles.divColorPage,
@@ -457,6 +458,7 @@ object ColorPageInternal {
     }
   }
 
+  private[pages]
   val component = ScalaComponent.builder[Props]("ColorPage")
                             .initialStateFromProps { props => State() }
                             .backend(new Backend(_))

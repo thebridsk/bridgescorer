@@ -20,12 +20,12 @@ object PlayerDoubledStats {
       result: Int
   )
 
-  def csvHeader(min: Int = -13, max: Int = 6) =
+  def csvHeader(min: Int = -13, max: Int = 6): String =
     PlayerStat("", true, "").csvHeader(min, max)
 
   def statsToCsv(stats: PlayerStats, percent: Boolean = false)(
       implicit out: PrintStream
-  ) = {
+  ): Unit = {
     val tocsv: (PlayerStat, Int, Int) => String =
       if (percent)(ds, min, max) => ds.toCsvPercent(min, max)
       else (ds, min, max) => ds.toCsv(min, max)
@@ -39,7 +39,7 @@ object PlayerDoubledStats {
     out.flush()
   }
 
-  def statsToCsvPercent(stats: PlayerStats)(implicit out: PrintStream) = {
+  def statsToCsvPercent(stats: PlayerStats)(implicit out: PrintStream): Unit = {
     statsToCsv(stats, true)
   }
 
@@ -71,7 +71,7 @@ object PlayerDoubledStats {
     }
   }
 
-  def stats(dups: Map[MatchDuplicate.Id, MatchDuplicate]) = {
+  def stats(dups: Map[MatchDuplicate.Id, MatchDuplicate]): PlayerStats = {
     val results = dups.values.flatMap { dup =>
       dup.allPlayedHands.flatMap { dh =>
         val nsTeam = dup.getTeam(dh.nsTeam).get

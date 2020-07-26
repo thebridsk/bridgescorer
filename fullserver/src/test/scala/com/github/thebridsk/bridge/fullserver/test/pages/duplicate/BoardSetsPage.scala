@@ -12,25 +12,26 @@ import com.github.thebridsk.utilities.logging.Logger
 import com.github.thebridsk.bridge.server.test.util.HttpUtils
 import com.github.thebridsk.bridge.data.BoardSet
 import com.github.thebridsk.bridge.server.test.util.HttpUtils.ResponseFromHttp
+import java.net.URL
 
 object BoardSetsPage {
 
-  val log = Logger[BoardSetsPage]()
+  val log: Logger = Logger[BoardSetsPage]()
 
-  def current(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
+  def current(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position): BoardSetsPage = {
     new BoardSetsPage( getCurrentBoard )
   }
 
-  def urlFor( boardset: Option[String] = None ) = TestServer.getAppPageUrl("duplicate/boardsets"+boardset.map{ bs => s"/${bs}"}.getOrElse(""))
-  def restUrlFor( boardset: String ) = TestServer.getUrl(s"/v1/rest/boardsets/${boardset}")
+  def urlFor( boardset: Option[String] = None ): String = TestServer.getAppPageUrl("duplicate/boardsets"+boardset.map{ bs => s"/${bs}"}.getOrElse(""))
+  def restUrlFor( boardset: String ): URL = TestServer.getUrl(s"/v1/rest/boardsets/${boardset}")
 
-  def goto(boardset: String = null)(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
+  def goto(boardset: String = null)(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position): BoardSetsPage = {
     val bs = Option(boardset)
     go to urlFor(bs)
     new BoardSetsPage(bs)
   }
 
-  val boardsets = "ArmonkBoards"::"StandardBoards"::Nil
+  val boardsets: List[String] = "ArmonkBoards"::"StandardBoards"::Nil
 
   def getBoardSet( boardset: String ): Option[BoardSet] = {
     import com.github.thebridsk.bridge.server.rest.UtilsPlayJson._
@@ -62,7 +63,7 @@ class BoardSetsPage(
                    ) extends Page[BoardSetsPage] {
   import BoardSetsPage._
 
-  def validate(implicit patienceConfig: PatienceConfig, pos: Position) = logMethod(s"${pos.line} ${getClass.getSimpleName}.validate") { eventually {
+  def validate(implicit patienceConfig: PatienceConfig, pos: Position): BoardSetsPage = logMethod(s"${pos.line} ${getClass.getSimpleName}.validate") { eventually {
 
     currentUrl mustBe urlFor(boardset)
 
@@ -70,14 +71,14 @@ class BoardSetsPage(
     this
   }}
 
-  def click( bs: String )(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def click( bs: String )(implicit patienceConfig: PatienceConfig, pos: Position): BoardSetsPage = {
     if (!boardsets.contains(bs)) log.warning(s"Unknown boardset bs")
 
     clickButton(bs)
     new BoardSetsPage(Option(bs))
   }
 
-  def clickOK(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def clickOK(implicit patienceConfig: PatienceConfig, pos: Position): ListDuplicatePage = {
     clickButton("OK")
     new ListDuplicatePage(None)
   }

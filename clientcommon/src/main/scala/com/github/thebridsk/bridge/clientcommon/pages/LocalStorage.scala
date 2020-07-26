@@ -7,7 +7,7 @@ import scala.scalajs.js
 
 object LocalStorage {
 
-  val log = Logger("bridge.LocalStorage")
+  val log: Logger = Logger("bridge.LocalStorage")
 
   val window = document.defaultView
   val storage = window.localStorage

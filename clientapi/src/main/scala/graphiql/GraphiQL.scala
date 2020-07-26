@@ -45,11 +45,11 @@ object GraphiQLComponentProperty {
 }
 
 object GraphiQL {
-  val logger = Logger("bridge.GraphiQL")
+  val logger: Logger = Logger("bridge.GraphiQL")
 
-  val component = JsComponent[GraphiQLComponentProperty, Children.None, Null](RawGraphiQL)
+  val component = JsComponent[GraphiQLComponentProperty, Children.None, Null](RawGraphiQL)  // scalafix:ok ExplicitResultTypes; ReactComponent
 
-  def apply( graphqlUrl: String ) = {
+  def apply( graphqlUrl: String ) = {  // scalafix:ok ExplicitResultTypes; ReactComponent
 
 //    logger.info("GraphiQL: msgEmptyList="+msgEmptyList+", msgEmptyFilter="+msgEmptyFilter)
 
@@ -63,7 +63,7 @@ object GraphiQL {
   @JSImport("graphiql", JSImport.Default ) // "GraphiQL")
   object RawGraphiQL extends js.Any
 
-  def showAny( c: js.Any, msg: String ) = {
+  def showAny( c: js.Any, msg: String ): Unit = {
     js.typeOf(c) match {
       case "object" => showObject(c.asInstanceOf[js.Object],msg)
       case "function" => logger.fine(s"${msg} is a function")
@@ -71,7 +71,7 @@ object GraphiQL {
     }
   }
 
-  def showObject( c: js.Object, msg: String ) = {
+  def showObject( c: js.Object, msg: String ): Unit = {
     if (logger.isFineLoggable()) {
       logger.fine( s"Dumping ${msg}, ${c}")
       val o = c.asInstanceOf[js.Dynamic]

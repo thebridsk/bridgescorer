@@ -14,11 +14,11 @@ import java.time.Instant
 import java.time.ZoneId
 
 object MemoryMonitor {
-  val log = Logger[MemoryMonitor]()
+  val log: Logger = Logger[MemoryMonitor]()
 
   var activeMonitor: Option[MemoryMonitor] = None
 
-  def start(outfile: String = "MemoryMonitor.csv") = synchronized {
+  def start(outfile: String = "MemoryMonitor.csv"): Unit = synchronized {
     log.info(s"Starting Memory Monitor with $outfile")
     activeMonitor match {
       case Some(am) =>
@@ -30,7 +30,7 @@ object MemoryMonitor {
     }
   }
 
-  def stop() = synchronized {
+  def stop(): Unit = synchronized {
     activeMonitor match {
       case Some(am) =>
         log.info("Stopping Memory Monitor")
@@ -163,7 +163,7 @@ import MemoryMonitor._
 
 class MemoryMonitor(pattern: String) {
 
-  val outfile = getFileName(pattern, getDate())
+  val outfile: String = getFileName(pattern, getDate())
 
   private class Monitor(name: String) extends Thread(name) {
 
@@ -176,7 +176,7 @@ class MemoryMonitor(pattern: String) {
 
     private var interval = 15000
 
-    override def run() = {
+    override def run(): Unit = {
       val out = new BufferedWriter(
         new OutputStreamWriter(new FileOutputStream(outfile))
       )
@@ -204,21 +204,21 @@ class MemoryMonitor(pattern: String) {
 
     val rt = Runtime.getRuntime
 
-    def writeRow(out: Writer) = {
+    def writeRow(out: Writer): Unit = {
       val free = rt.freeMemory()
       val total = rt.totalMemory()
       val max = rt.maxMemory()
       row(out, free, total, max)
     }
 
-    def header(out: Writer) = {
+    def header(out: Writer): Unit = {
       val head = "time,used,free,total,max"
       log.fine(head)
       out.write(head)
       out.write("\n")
     }
 
-    def row(out: Writer, free: Long, total: Long, max: Long) = {
+    def row(out: Writer, free: Long, total: Long, max: Long): Unit = {
       val dt = System.currentTimeMillis() - startTime
       val r = s"""$dt,${total - free},$free,$total,$max"""
       log.fine(r)
@@ -227,7 +227,7 @@ class MemoryMonitor(pattern: String) {
       out.flush()
     }
 
-    def stopMonitor() = sleepLock.synchronized {
+    def stopMonitor(): Unit = sleepLock.synchronized {
       active = false
       sleepLock.notify()
     }
@@ -235,7 +235,7 @@ class MemoryMonitor(pattern: String) {
 
   private var activeMonitor: Option[Monitor] = None
 
-  def start() = synchronized {
+  def start(): Unit = synchronized {
     activeMonitor match {
       case Some(am) =>
         log.warning("Memory monitor is already running")
@@ -250,7 +250,7 @@ class MemoryMonitor(pattern: String) {
     }
   }
 
-  def stop() = synchronized {
+  def stop(): Unit = synchronized {
     activeMonitor match {
       case Some(am) =>
         am.stopMonitor()

@@ -13,6 +13,7 @@ import com.github.thebridsk.bridge.clientcommon.react.PieChartWithTooltip.IntLeg
 import com.github.thebridsk.bridge.client.pages.HomePage
 
 
+
 /**
  * A skeleton component.
  *
@@ -29,14 +30,14 @@ object ViewPlayerPlacesGraph {
 
   case class Props( stats: Option[PlayerPlaces] )
 
-  def apply( stats: Option[PlayerPlaces] ) = component(Props(stats))
+  def apply( stats: Option[PlayerPlaces] ) = component(Props(stats))  // scalafix:ok ExplicitResultTypes; ReactComponent
 
 }
 
 object ViewPlayerPlacesGraphInternal {
   import ViewPlayerPlacesGraph._
 
-  val log = Logger("bridge.ViewPlayerPlacesGraph")
+  val log: Logger = Logger("bridge.ViewPlayerPlacesGraph")
 
   /**
    * Internal state for rendering the component.
@@ -55,7 +56,7 @@ object ViewPlayerPlacesGraphInternal {
    * @param place the place, zero based, 0 is first
    * @param teams the number of teams
    */
-  def getColorForPlace( place: Int, teams: Int ) = {
+  def getColorForPlace( place: Int, teams: Int ): Int = {
     val h = (last-first)*place/(teams-1) + first
     if (h<0) h+360
     else h
@@ -70,17 +71,18 @@ object ViewPlayerPlacesGraphInternal {
    * @param other the number of other teams tied with player
    * @param maxOther the max number of other teams tied with player
    */
-  def getLightness( other: Int, maxOther: Int ) = {
+  def getLightness( other: Int, maxOther: Int ): Int = {
     (maxLightness-minLightness)*other/(maxOther-1) + minLightness
   }
 
-  val sPlaces = "First"::"Second"::"Third"::"Fourth"::Nil
+  val sPlaces: List[String] = "First"::"Second"::"Third"::"Fourth"::Nil
   /**
    * @param place the place, zero based.  0 = first
    */
-  def getPlaceString( place: Int ) = sPlaces.drop(place).headOption.getOrElse(s"${place+1} place")
+  def getPlaceString( place: Int ): String = sPlaces.drop(place).headOption.getOrElse(s"${place+1} place")
 
   //                                                        cols                         getSize
+  private[duplicate]
   val Row = ScalaComponent.builder[(Props,List[PlayerPlace],Int,IntLegendUtil[(Int,Int)],Int=>Int)]("ComponentBoard.TeamRow")
               .render_P( cprops => {
                 val (props,playerlist,cols,legendUtil,getSize) = cprops
@@ -126,6 +128,7 @@ object ViewPlayerPlacesGraphInternal {
               }).build
 
   //
+  private[duplicate]
   val Legend = ScalaComponent.builder[(Props,IntLegendUtil[(Int,Int)],Int,Int)]("ComponentBoard.TeamRow")
               .render_P( cprops => {
                 val (props,legendUtil,maxTeams,maxOthers) = cprops
@@ -182,7 +185,7 @@ object ViewPlayerPlacesGraphInternal {
    *
    */
   class Backend(scope: BackendScope[Props, State]) {
-    def render( props: Props, state: State ) = {
+    def render( props: Props, state: State ) = { // scalafix:ok ExplicitResultTypes; React
       props.stats match {
         case Some(pps) =>
           val maxTeams = pps.maxTeams
@@ -262,17 +265,18 @@ object ViewPlayerPlacesGraphInternal {
 
     private var mounted = false
 
-    val didMount = Callback {
+    val didMount: Callback = Callback {
       mounted = true
 
     }
 
-    val willUnmount = Callback {
+    val willUnmount: Callback = Callback {
       mounted = false
 
     }
   }
 
+  private[duplicate]
   val component = ScalaComponent.builder[Props]("ViewPlayerPlacesGraph")
                             .initialStateFromProps { props => State() }
                             .backend(new Backend(_))

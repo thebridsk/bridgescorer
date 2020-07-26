@@ -12,7 +12,7 @@ import java.io.File
 
 object CertTest {
 
-  val testlog = Logger[CertTest]()
+  val testlog: Logger = Logger[CertTest]()
 }
 
 /**
@@ -26,16 +26,16 @@ class CertTest extends AnyFlatSpec with Matchers with BeforeAndAfterAll {
 
 
   override
-  def beforeAll() = {
+  def beforeAll(): Unit = {
 
     MonitorTCP.nextTest()
   }
 
-  lazy val jar = {
+  lazy val jar: String = {
     TestServer.getProp("BridgeScoreKeeperJar").getOrElse( fail("Property BridgeScoreKeeperJar must be specified"))
   }
 
-  lazy val keydir = {
+  lazy val keydir: String = {
     TestServer.getProp("BridgeScoreKeeperKeyDir").getOrElse( "key" )
   }
 

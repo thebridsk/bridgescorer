@@ -24,7 +24,7 @@ import java.net.URL
 
 object SSLTest {
 
-  val testlog = Logger[SSLTest]()
+  val testlog: Logger = Logger[SSLTest]()
 }
 
 /**
@@ -48,13 +48,13 @@ class SSLTest extends AnyFlatSpec with Matchers with BeforeAndAfterAll with Even
   type MyDuration = Duration
   val MyDuration = Duration
 
-  implicit val timeoutduration = MyDuration( 60, TimeUnit.SECONDS )
+  implicit val timeoutduration: FiniteDuration = MyDuration( 60, TimeUnit.SECONDS )
 
-  val defaultPatienceConfig = PatienceConfig(timeout=scaled(Span(timeoutMillis, Millis)), interval=scaled(Span(intervalMillis,Millis)))
-  implicit def patienceConfig = defaultPatienceConfig
+  val defaultPatienceConfig: PatienceConfig = PatienceConfig(timeout=scaled(Span(timeoutMillis, Millis)), interval=scaled(Span(intervalMillis,Millis)))
+  implicit def patienceConfig: PatienceConfig = defaultPatienceConfig
 
   override
-  def beforeAll() = {
+  def beforeAll(): Unit = {
 
     MonitorTCP.nextTest()
     try {
@@ -68,7 +68,7 @@ class SSLTest extends AnyFlatSpec with Matchers with BeforeAndAfterAll with Even
   }
 
   override
-  def afterAll() = {
+  def afterAll(): Unit = {
     TestServer.stop()
   }
 
@@ -78,7 +78,7 @@ class SSLTest extends AnyFlatSpec with Matchers with BeforeAndAfterAll with Even
   def trustSSLContext(
       certPassword: Option[String] = None,
       certificate: Option[String] = None
-  ) = {
+  ): SSLContext = {
     val password = certPassword.getOrElse("abcdef").toCharArray // default NOT SECURE
     val context = SSLContext.getInstance("TLS")
     val ks = certificate match {

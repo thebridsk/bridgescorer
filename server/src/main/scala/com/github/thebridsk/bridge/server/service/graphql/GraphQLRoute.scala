@@ -22,7 +22,7 @@ import io.swagger.v3.oas.annotations.tags.Tags
 import io.swagger.v3.oas.annotations.tags.Tag
 
 object GraphQLRoute {
-  val log = Logger[GraphQLRoute]()
+  val log: Logger = Logger[GraphQLRoute]()
 }
 
 @Path("")
@@ -34,7 +34,7 @@ trait GraphQLRoute {
 
   val query = new Query()
 
-  implicit val jsObjectReads = Reads.JsObjectReads
+  implicit val jsObjectReads: Reads.JsObjectReads.type = Reads.JsObjectReads
   @Path("graphql")
   @POST
   @Operation(
@@ -83,7 +83,7 @@ trait GraphQLRoute {
       )
     )
   )
-  def xxxgraphQLRoute = {}
+  def xxxgraphQLRoute: Unit = {}
   val graphQLRoute: Route =
     pathPrefix("v1") {
       logRequestResult("GraphQLRoute") {

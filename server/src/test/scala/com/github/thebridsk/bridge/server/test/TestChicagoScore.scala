@@ -8,14 +8,16 @@ import scala.reflect.io.File
 import com.github.thebridsk.bridge.server.backend.BridgeServiceFileStoreConverters
 import com.github.thebridsk.utilities.file.FileIO
 import com.github.thebridsk.bridge.data.chicago.ChicagoScoring
+import org.scalatest.prop.TableFor1
+import scala.reflect.io.Directory
 
 class TestChicagoScore extends AnyFlatSpec with Matchers {
 
   behavior of "Chicago scoring"
 
-  val testdir = Path("../testdata").toDirectory;
+  val testdir: Directory = Path("../testdata").toDirectory;
 
-  val prefix = (testdir / "MatchChicago.").toString()
+  val prefix: String = (testdir / "MatchChicago.").toString()
 
   def getAllGames(): List[File] = {
 
@@ -37,7 +39,7 @@ class TestChicagoScore extends AnyFlatSpec with Matchers {
   }
 
   import org.scalatest.prop.TableDrivenPropertyChecks._
-  val templates = Table( "MatchChicago", getAllGames(): _* )
+  val templates: TableFor1[File] = Table( "MatchChicago", getAllGames(): _* )
 
   forAll(templates) { filename =>
 

@@ -4,6 +4,7 @@ import japgolly.scalajs.react.vdom.svg_<^._
 import japgolly.scalajs.react._
 import com.github.thebridsk.color.Color
 
+
 /**
  * A skeleton component.
  *
@@ -55,7 +56,7 @@ object PieChartDonut {
       colors: List[Color],
       chartTitle: Option[String] = None,
       sliceTitles: Option[List[String]] = None
-  ) = {
+  ) = {  // scalafix:ok ExplicitResultTypes; ReactComponent
     component(Props(size,slices,colors,chartTitle,sliceTitles))
   }
 

@@ -8,6 +8,7 @@ import com.github.thebridsk.bridge.data.bridge.MatchDuplicateScore
 import com.github.thebridsk.bridge.client.pages.duplicate.DuplicateRouter.BaseScoreboardViewWithPerspective
 import com.github.thebridsk.bridge.data.DuplicateSummaryDetails
 
+
 /**
  * Shows the team x board table and has a totals column that shows the number of points the team has.
  *
@@ -22,14 +23,14 @@ import com.github.thebridsk.bridge.data.DuplicateSummaryDetails
 object ViewScoreboardDetails {
  case class Props( page: BaseScoreboardViewWithPerspective, md: MatchDuplicateScore )
 
-  def apply( page: BaseScoreboardViewWithPerspective, md: MatchDuplicateScore  ) = ViewScoreboardDetailsInternal.component(Props(page,md))
+  def apply( page: BaseScoreboardViewWithPerspective, md: MatchDuplicateScore  ) = ViewScoreboardDetailsInternal.component(Props(page,md))  // scalafix:ok ExplicitResultTypes; ReactComponent
 
 }
 
 object ViewScoreboardDetailsInternal {
   import ViewScoreboardDetails._
 
-  val logger = Logger("bridge.ViewScoreboardDetails")
+  val logger: Logger = Logger("bridge.ViewScoreboardDetails")
 
   /**
    * Internal state for rendering the component.
@@ -49,7 +50,7 @@ object ViewScoreboardDetailsInternal {
    */
   class Backend(scope: BackendScope[Props, State]) {
     import DuplicateStyles._
-    def render( props: Props, state: State ) = {
+    def render( props: Props, state: State ) = { // scalafix:ok ExplicitResultTypes; React
       val details = props.md.getDetails
       <.div(
         dupStyles.divScoreboardDetails,
@@ -67,6 +68,7 @@ object ViewScoreboardDetailsInternal {
 
   }
 
+  private[duplicate]
   val Header = ScalaComponent.builder[Props]("ViewScoreboardDetails.Header")
                       .render_P { props =>
                         <.thead(
@@ -88,6 +90,7 @@ object ViewScoreboardDetailsInternal {
                         )
                       }.build
 
+  private[duplicate]
   val Row = ScalaComponent.builder[(Props, DuplicateSummaryDetails)]("ViewScoreboardDetails.Row")
                       .render_P { args =>
                         val (props,detail) = args
@@ -105,6 +108,7 @@ object ViewScoreboardDetailsInternal {
                         )
                       }.build
 
+  private[duplicate]
   val component = ScalaComponent.builder[Props]("ViewScoreboardDetails")
                             .initialStateFromProps { props => State() }
                             .backend(new Backend(_))

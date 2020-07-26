@@ -21,28 +21,30 @@ import scala.language.postfixOps
 import scala.util.Using
 import org.scalatest.flatspec.AsyncFlatSpec
 import scala.concurrent.ExecutionContext
+import com.github.thebridsk.utilities.logging.Logger
+import scala.reflect.io.Path
 
 object TestGraphQL {
 
-  val testlog = com.github.thebridsk.utilities.logging.Logger[TestGraphQL]()
+  val testlog: Logger = com.github.thebridsk.utilities.logging.Logger[TestGraphQL]()
 
   val graphQL = new Query
 
-  val dirTemp = Directory.makeTemp()
-  val dirImport = dirTemp / "store"
+  val dirTemp: Directory = Directory.makeTemp()
+  val dirImport: Path = dirTemp / "store"
 
-  def store( implicit ec: ExecutionContext ) = new BridgeServiceTesting {
+  def store( implicit ec: ExecutionContext ): BridgeServiceTesting = new BridgeServiceTesting {
 
     override
     val importStore = Some(new FileImportStore( dirImport.toDirectory ))
 
   }
 
-  def route( implicit ec: ExecutionContext ) = new GraphQLRoute {
+  def route( implicit ec: ExecutionContext ): GraphQLRoute = new GraphQLRoute {
     val restService = store
   }
 
-  def queryToJson( query: String, variables: Option[Map[String,JsValue]]= None, operation: Option[String] = None ) = {
+  def queryToJson( query: String, variables: Option[Map[String,JsValue]]= None, operation: Option[String] = None ): JsObject = {
     JsObject(
         operation.map( v => "operationName" -> JsString(v) ).toList :::
         variables.map( v => "variables" -> JsObject( v.toSeq ) ).toList :::
@@ -51,7 +53,7 @@ object TestGraphQL {
 
   }
 
-  def processError( resp: JsValue, comment: String = "Errors" ) = {
+  def processError( resp: JsValue, comment: String = "Errors" ): Unit = {
     resp match {
       case obj: JsObject =>
         obj \ "errors" match {
@@ -280,7 +282,7 @@ class TestGraphQL extends AsyncFlatSpec with ScalatestRouteTest with Matchers {
   }
 
 
-  val remoteAddress = `Remote-Address`( IP( InetAddress.getLocalHost, Some(12345) ))
+  val remoteAddress = `Remote-Address`( IP( InetAddress.getLocalHost, Some(12345) ))  // scalafix:ok ; Remote-Address
 
   it should "make a graphql query" in {
     val vars = Map("mdid" -> JsString("M1"), "iid" -> JsString("import.zip"))

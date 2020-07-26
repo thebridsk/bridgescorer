@@ -11,12 +11,12 @@ trait TransitionDuration extends js.Object {
 }
 object TransitionDuration {
 
-  def apply() = new js.Object().asInstanceOf[TransitionDuration]
+  def apply(): TransitionDuration = new js.Object().asInstanceOf[TransitionDuration]
 
   def apply(
       enter: js.UndefOr[Double] = js.undefined,
       exit: js.UndefOr[Double] = js.undefined
-  ) = {
+  ): TransitionDuration = {
     val p = js.Dynamic.literal()
 
     enter.foreach(p.updateDynamic("enter")(_))

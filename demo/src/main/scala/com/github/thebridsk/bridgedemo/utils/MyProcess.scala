@@ -23,9 +23,10 @@ import scala.concurrent.ExecutionContext
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
 import com.github.thebridsk.utilities.logging.Logger
+import scala.concurrent.ExecutionContextExecutor
 
 object ProcessPrivate {
-  implicit val ec = ExecutionContext.global
+  implicit val ec: ExecutionContextExecutor = ExecutionContext.global
 
   val logger: Option[Logger] = Some( Logger[MyProcess]() )
 
@@ -36,7 +37,7 @@ class MyProcess {
 
   val counter = new AtomicInteger()
 
-  def logStream( log: String => Unit, in: InputStream ) = {
+  def logStream( log: String => Unit, in: InputStream ): Future[Unit] = {
     Future {
       val buf = Source.fromInputStream( in, "UTF8" )
       try {
@@ -113,7 +114,7 @@ class MyProcess {
     * @param printcmd the command to print, with pw removed
     * @return Process object
     */
-  def bash( cmd: List[String], addEnvp: Map[String,String], workingDirectory: Option[File], stdin: Option[String] = None, printcmd: Option[List[String]] = None ) = {
+  def bash( cmd: List[String], addEnvp: Map[String,String], workingDirectory: Option[File], stdin: Option[String] = None, printcmd: Option[List[String]] = None ): Process = {
     val wd = workingDirectory.getOrElse( new File(".") ).getAbsoluteFile()
     val c = sys.props.getOrElse("os.name", "oops").toLowerCase() match {
       case os: String if (os.contains("win")) => List("bash", "-c", cmd.mkString(" "))
@@ -126,16 +127,16 @@ class MyProcess {
     exec( c, addEnvp, wd, stdin, printcmd );
   }
 
-  def startOnWindows( cwd: File, addEnvp: Option[Map[String,String]], cmd: String* ) = {
+  def startOnWindows( cwd: File, addEnvp: Option[Map[String,String]], cmd: String* ): Process = {
     val env = addEnvp.getOrElse(Map.empty)
     exec( List("cmd", "/c", cmd.mkString(" ")), env, cwd);
   }
 
-  def startOnMac( cwd: File, addEnvp: Option[Map[String,String]], cmd: String* ) = {
+  def startOnMac( cwd: File, addEnvp: Option[Map[String,String]], cmd: String* ): Process = {
     exec( "sh"::"-c"::cmd.mkString(" ")::Nil, cwd );
   }
 
-  def startOnLinux( cwd: File, addEnvp: Option[Map[String,String]], cmd: String* ) = {
+  def startOnLinux( cwd: File, addEnvp: Option[Map[String,String]], cmd: String* ): Process = {
     val c = "sh"::"-c"::cmd.mkString(" ")::Nil
     exec(c, cwd);
   }
@@ -185,7 +186,7 @@ class MyProcess {
       env: Option[Map[String,String]] = None,
       printcmd: Option[List[String]] = None,
       stdin: Option[String] = None
-  ) = {
+  ): Unit = {
     runProgram("keytool",cmd,workingDirectory,env,printcmd,stdin)
   }
 
@@ -215,7 +216,7 @@ class MyProcess {
       env: Option[Map[String,String]] = None,
       printcmd: Option[List[String]] = None,
       stdin: Option[String] = None
-  ) = {
+  ): Unit = {
     runProgram("java",cmd,workingDirectory,env,printcmd,stdin)
   }
 
@@ -249,7 +250,7 @@ class CopyFileVisitor( destDir: Path, srcDir: Path, onlyExt: String ) extends Fi
 
     Files.createDirectories(destDir)
 
-    val ext = "."+onlyExt
+    val ext: String = "."+onlyExt
 
     /**
      * Invoked for a directory before entries in the directory are visited.
@@ -348,7 +349,7 @@ object MyFileUtils {
    * @param maxDepth max directory depth, default is 1, copy only files in src
    *
    */
-  def copyDirectory( src: File, dest: File, onlyExt: String, maxDepth: Int = 1 ) = {
+  def copyDirectory( src: File, dest: File, onlyExt: String, maxDepth: Int = 1 ): Path = {
     val srcPath = src.toPath()
     val destPath = dest.toPath()
 
@@ -363,7 +364,7 @@ object MyFileUtils {
    * @param directory the base directory
    * @param ext an optional extension of files to delete.  MUST NOT start with ".".
    */
-  def deleteDirectory( directory: Path, ext: Option[String] ) = {
+  def deleteDirectory( directory: Path, ext: Option[String] ): Any = {
     val extension = ext.map( e => "."+e )
     if (directory.toFile().exists()) {
       if (directory.toFile().isDirectory()) {

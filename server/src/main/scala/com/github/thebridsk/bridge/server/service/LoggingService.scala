@@ -19,6 +19,8 @@ import io.swagger.v3.oas.annotations.tags.Tag
 import javax.ws.rs.GET
 import javax.ws.rs.POST
 import io.swagger.v3.oas.annotations.Parameter
+import akka.http.scaladsl.server.{ RequestContext, Route, RouteResult }
+import scala.concurrent.Future
 
 /**
   * <p>
@@ -36,7 +38,7 @@ trait LoggingService extends HasActorSystem with ClientLoggingService {
   /**
     * spray route for all the methods on this resource
     */
-  val loggingRoute = {
+  val loggingRoute: RequestContext => Future[RouteResult] = {
     extractClientIP { ip =>
       {
 //        log.debug(s"In loggingRoute from ${ip.toString()}")
@@ -78,8 +80,8 @@ trait LoggingService extends HasActorSystem with ClientLoggingService {
       new ApiResponse(responseCode = "204", description = "Accepted")
     )
   )
-  def xxxcallRemoteLogging = {}
-  def callRemoteLogging(@Parameter(hidden = true) ips: String) =
+  def xxxcallRemoteLogging: Unit = {}
+  def callRemoteLogging(@Parameter(hidden = true) ips: String): Route =
     path("entry") {
       (post | put) {
         import com.github.thebridsk.bridge.server.rest.UtilsPlayJson._
@@ -132,8 +134,8 @@ trait LoggingService extends HasActorSystem with ClientLoggingService {
       )
     )
   )
-  def xxxcallRemoteLoggingWS = {}
-  def callRemoteLoggingWS(@Parameter(hidden = true) ips: String) =
+  def xxxcallRemoteLoggingWS: Unit = {}
+  def callRemoteLoggingWS(@Parameter(hidden = true) ips: String): Route =
     pathPrefix("ws") {
 //      logRequest(ips, logLevelForTracingRequestResponse) {
       routeLogging(ips)

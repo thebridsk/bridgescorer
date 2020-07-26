@@ -12,6 +12,8 @@ import com.github.thebridsk.bridge.data.duplicate.suggestion.PairsDataSummary
 import com.github.thebridsk.bridge.clientcommon.react.Table.Column
 import com.github.thebridsk.bridge.clientcommon.react.Table
 import com.github.thebridsk.bridge.client.pages.HomePage
+import com.github.thebridsk.color.RGBColor
+
 
 /**
  * Shows a pairs summary page.
@@ -36,7 +38,7 @@ object ViewPairsMadeDownGrid {
     def getNames = filter.getNames
   }
 
-  def apply( filter: ViewPlayerFilter.Filter, showNoDataMsg: Boolean = false ) =
+  def apply( filter: ViewPlayerFilter.Filter, showNoDataMsg: Boolean = false ) = // scalafix:ok ExplicitResultTypes; ReactComponent
     component(Props( filter, showNoDataMsg))
 
 }
@@ -45,14 +47,14 @@ object ViewPairsMadeDownGridInternal {
   import ViewPairsMadeDownGrid._
   import DuplicateStyles._
 
-  val logger = Logger("bridge.ViewPairsMadeDownGrid")
+  val logger: Logger = Logger("bridge.ViewPairsMadeDownGrid")
 
   def size( v: Int, vmin: Double, vmax: Double, sizemin: Int, sizemax: Int ): Int = {
     if (vmax == vmin) sizemax
     else ((v.toDouble-vmin)*(sizemax-sizemin)/(vmax-vmin) + sizemin).toInt
   }
 
-  val Black = Color.rgb( 0, 0, 0 )
+  val Black: RGBColor = Color.rgb( 0, 0, 0 )
 
   /**
    * Internal state for rendering the component.
@@ -102,8 +104,8 @@ object ViewPairsMadeDownGridInternal {
     def n( pd: PairData ): Int = pd.details.map { d => d.declarer+d.defended+d.passed }.getOrElse(0)
   }
 
-  val cellX = TagMod("X")
-  val cellEmpty = TagMod()
+  val cellX: TagMod = TagMod("X")
+  val cellEmpty: TagMod = TagMod()
 
   /**
    * Internal state for rendering the component.
@@ -114,7 +116,7 @@ object ViewPairsMadeDownGridInternal {
    */
   class Backend(scope: BackendScope[Props, State]) {
 
-    def render( props: Props, state: State ) = {
+    def render( props: Props, state: State ) = { // scalafix:ok ExplicitResultTypes; React
 
       props.filter.pairsData match {
         case Some(pds) if !pds.players.isEmpty =>
@@ -220,6 +222,7 @@ object ViewPairsMadeDownGridInternal {
     }
   }
 
+  private[duplicate]
   val component = ScalaComponent.builder[Props]("ViewPairsMadeDownGrid")
                             .initialStateFromProps { props => State() }
                             .backend(new Backend(_))

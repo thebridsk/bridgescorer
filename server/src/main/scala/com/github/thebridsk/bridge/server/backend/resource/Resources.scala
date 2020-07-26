@@ -9,7 +9,7 @@ import com.github.thebridsk.bridge.data.Id
 
 object Resources {
 
-  val log = Logger[Resources[_, _]]()
+  val log: Logger = Logger[Resources[_, _]]()
 
   def vidToString[VId]( id: VId ): String = {
     id match {

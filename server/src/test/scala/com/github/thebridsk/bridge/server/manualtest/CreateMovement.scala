@@ -10,6 +10,9 @@ import scala.annotation.tailrec
 import com.github.thebridsk.bridge.server.backend.MovementCacheStoreSupport
 import com.github.thebridsk.bridge.server.backend.BridgeServiceFileStoreConverters
 import com.github.thebridsk.utilities.file.FileIO
+import com.github.thebridsk.bridge.data.MovementV1
+import org.rogach.scallop.ScallopOption
+import scala.util.matching.Regex
 
 class CreateMovement
 
@@ -17,7 +20,7 @@ object CreateMovement extends Main {
 
   import com.github.thebridsk.utilities.main.Converters._
 
-  val cmdName = s"scala ${classOf[CreateMovement].getName}"
+  val cmdName: String = s"scala ${classOf[CreateMovement].getName}"
 
   banner(s"""
 HTTP server for scoring duplicate and chicago bridge
@@ -27,8 +30,8 @@ Syntax:
   ${cmdName} --help
 Options:""")
 
-  val paramInput = trailArg[Path](name="input", descr="Input file", default=None, required=true)
-  val paramOutput = trailArg[Path](name="output", descr="Output directory, default is current directory", default=Some(Path(".")), required=false)
+  val paramInput: ScallopOption[Path] = trailArg[Path](name="input", descr="Input file", default=None, required=true)
+  val paramOutput: ScallopOption[Path] = trailArg[Path](name="output", descr="Output directory, default is current directory", default=Some(Path(".")), required=false)
 
   footer(s"""
 The input file has the following syntax:
@@ -96,12 +99,12 @@ blank lines are used as end of stanzas.
     }
   }
 
-  val movementCacheStoreSupport = {
+  val movementCacheStoreSupport: MovementCacheStoreSupport = {
     val converters = new BridgeServiceFileStoreConverters(true)
     import converters._
     new MovementCacheStoreSupport(false,false)
   }
-  def write( m: Movement ) = {
+  def write( m: Movement ): Unit = {
     val rounds = m.hands
     val r = rounds.sortWith { (l,r) =>
       if (l.table != r.table) l.table < r.table
@@ -115,7 +118,7 @@ blank lines are used as end of stanzas.
     println( s"Movement ${m.name} to ${filename}" )
   }
 
-  val patternTablesLine = """tables +(\d+) +boards +(\d+) +([^ ]+)(?: +(.*))? *""".r
+  val patternTablesLine: Regex = """tables +(\d+) +boards +(\d+) +([^ ]+)(?: +(.*))? *""".r
   /**
    * @param reader
    * @return An Either.  If Left, then an RC object, error was encountered
@@ -153,7 +156,7 @@ blank lines are used as end of stanzas.
     }
   }
 
-  def checkForRelay( m: Movement ) = {
+  def checkForRelay( m: Movement ): MovementV1 = {
     val r = m.hands.sortWith { (l,r) =>
       if (l.table != r.table) l.table < r.table
       else l.round < r.round
@@ -179,7 +182,7 @@ blank lines are used as end of stanzas.
   }
 
 //  it ir ins iew iboards
-  val patternTableShort = """ *(\d+) *(\d+) *(\d+) *(\d+) *(.*)""".r
+  val patternTableShort: Regex = """ *(\d+) *(\d+) *(\d+) *(\d+) *(.*)""".r
   /**
    * @param reader
    * @return An Either.  If Left, then an RC object, error was encountered
@@ -214,8 +217,8 @@ blank lines are used as end of stanzas.
     procShort(m,0)
   }
 
-  val patternTableLine = """table +(\d+) *""".r
-  val patternInt = """ *(\d+) *""".r
+  val patternTableLine: Regex = """table +(\d+) *""".r
+  val patternInt: Regex = """ *(\d+) *""".r
 
   def getInt( line: String ): Either[RC,Int] = {
     line match {
@@ -269,7 +272,7 @@ blank lines are used as end of stanzas.
     }
   }
 
-  val patternBoards = """ *(\d+)(?: *- *(\d+))?""".r
+  val patternBoards: Regex = """ *(\d+)(?: *- *(\d+))?""".r
   def getBoards( value: String ): Either[RC,List[Int]] = {
     val xx = patternBoards.findAllMatchIn(value).map { m =>
       m.subgroups
@@ -380,12 +383,12 @@ class PushbackReader( src: Source ) extends Closeable {
 
   private val iterator = src.getLines()
 
-  def close() = {
+  def close(): Unit = {
     src.close()
     pushedback = List()
   }
 
-  def pushback( line: String ) = synchronized {
+  def pushback( line: String ): Unit = synchronized {
     pushedback = line::pushedback
   }
 

@@ -16,14 +16,14 @@ import com.github.thebridsk.bridge.fullserver.test.pages.bridge.ErrorMsgDiv
 
 object TableSelectScorekeeperPage {
 
-  val log = Logger[TableSelectScorekeeperPage]()
+  val log: Logger = Logger[TableSelectScorekeeperPage]()
 
-  def current(scorekeeper: Option[PlayerPosition] = None)(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
+  def current(scorekeeper: Option[PlayerPosition] = None)(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position): TableEnterScorekeeperPage = {
     val (dupid,tableid,roundid,targetboard) = findTableRoundId
     new TableEnterScorekeeperPage(dupid,tableid,roundid,targetboard,scorekeeper)
   }
 
-  def urlFor( dupid: String, tableid: String, roundid: String, board: Option[String] ) = {
+  def urlFor( dupid: String, tableid: String, roundid: String, board: Option[String] ): String = {
     val b = board.map(bb => s"boards/B${bb}/").getOrElse("")
     TestServer.getAppPageUrl( s"duplicate/match/${dupid}/table/${tableid}/round/${roundid}/${b}teams" )
   }
@@ -37,7 +37,7 @@ object TableSelectScorekeeperPage {
               webDriver: WebDriver,
               patienceConfig: PatienceConfig,
               pos: Position
-          ) = {
+          ): TableSelectScorekeeperPage = {
     go to urlFor(dupid,tableid,roundid, board)
     new TableSelectScorekeeperPage(dupid,tableid,roundid,board,scorekeeper)
   }
@@ -74,7 +74,7 @@ class TableSelectScorekeeperPage( dupid: String,
                                ) extends Page[TableSelectScorekeeperPage] with ErrorMsgDiv[TableSelectScorekeeperPage] {
   import TableSelectScorekeeperPage._
 
-  def validate(implicit patienceConfig: PatienceConfig, pos: Position) = logMethod(s"${pos.line} ${getClass.getSimpleName}.validate") { eventually {
+  def validate(implicit patienceConfig: PatienceConfig, pos: Position): TableSelectScorekeeperPage = logMethod(s"${pos.line} ${getClass.getSimpleName}.validate") { eventually {
 
     currentUrl mustBe urlFor(dupid,tableid,roundid,targetBoard)
 
@@ -87,7 +87,7 @@ class TableSelectScorekeeperPage( dupid: String,
    * @return None if nothing is selected, Some(n) if n is selected
    * @throws TestFailedException if more than one is selected
    */
-  def getSelectedScorekeeper(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def getSelectedScorekeeper(implicit patienceConfig: PatienceConfig, pos: Position): Option[String] = {
 
     val x = s"""//button[starts-with( @id, 'P_' ) and contains(concat(' ', @class, ' '), ' baseButtonSelected ')]"""
 
@@ -105,7 +105,7 @@ class TableSelectScorekeeperPage( dupid: String,
    * @return None if nothing is selected, Some(n) if n is selected
    * @throws TestFailedException if more than one is selected
    */
-  def getNames(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def getNames(implicit patienceConfig: PatienceConfig, pos: Position): List[String] = {
 
     val x = s"""//button[starts-with( @id, 'P_' )]"""
 
@@ -115,12 +115,12 @@ class TableSelectScorekeeperPage( dupid: String,
     elems.map(e => e.text)
   }
 
-  def selectScorekeeper( name: String )(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def selectScorekeeper( name: String )(implicit patienceConfig: PatienceConfig, pos: Position): TableSelectScorekeeperPage = {
     clickButton(toNameButton(name))
     this
   }
 
-  def findPosButtons(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def findPosButtons(implicit patienceConfig: PatienceConfig, pos: Position): List[PlayerPosition] = {
     val x = s"""//button[starts-with( @id, 'SK_' )]"""
 
     val elems = findElemsByXPath(x)
@@ -132,7 +132,7 @@ class TableSelectScorekeeperPage( dupid: String,
     }
   }
 
-  def clickPos( sk: PlayerPosition )(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def clickPos( sk: PlayerPosition )(implicit patienceConfig: PatienceConfig, pos: Position): TableSelectScorekeeperPage = {
     clickButton(toScorekeeperButton(sk))
     new TableSelectScorekeeperPage(dupid,tableid,roundid,targetBoard,Some(sk))
   }
@@ -151,17 +151,17 @@ class TableSelectScorekeeperPage( dupid: String,
     }
   }
 
-  def clickOK(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def clickOK(implicit patienceConfig: PatienceConfig, pos: Position): TableSelectNamesPage = {
     clickButton(buttonOK)
     new TableSelectNamesPage(dupid,tableid,roundid,targetBoard,scorekeeper.get)
   }
 
-  def clickCancel(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def clickCancel(implicit patienceConfig: PatienceConfig, pos: Position): TablePage = {
     clickButton(buttonCancel)
     new TablePage(dupid,tableid,EnterNames)
   }
 
-  def isOKEnabled(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def isOKEnabled(implicit patienceConfig: PatienceConfig, pos: Position): Boolean = {
     getButton(buttonOK).isEnabled
   }
 
@@ -180,7 +180,7 @@ class TableSelectScorekeeperPage( dupid: String,
                          checkErrMsg: Boolean = false
                        )( implicit
                            webDriver: WebDriver
-                       ) = {
+                       ): TableSelectNamesPage = {
 
     val skname = scorekeeper.player(north, south, east, west)
 

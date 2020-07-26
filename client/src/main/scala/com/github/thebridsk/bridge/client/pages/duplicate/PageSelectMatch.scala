@@ -12,6 +12,8 @@ import com.github.thebridsk.materialui.MuiTypography
 import com.github.thebridsk.materialui.TextVariant
 import com.github.thebridsk.materialui.TextColor
 
+import scala.util.matching.Regex
+
 /**
  * PageSelectMatch.
  *
@@ -28,14 +30,14 @@ object PageSelectMatch {
 
   case class Props( routerCtl: BridgeRouter[DuplicatePage], page: DuplicatePage )
 
-  def apply( routerCtl: BridgeRouter[DuplicatePage], page: DuplicatePage ) = component(Props(routerCtl,page))
+  def apply( routerCtl: BridgeRouter[DuplicatePage], page: DuplicatePage ) = component(Props(routerCtl,page))  // scalafix:ok ExplicitResultTypes; ReactComponent
 
 }
 
 object PageSelectMatchInternal {
   import PageSelectMatch._
 
-  val logger = Logger("bridge.PageSelectMatch")
+  val logger: Logger = Logger("bridge.PageSelectMatch")
 
   /**
    * Internal state for rendering the component.
@@ -46,14 +48,14 @@ object PageSelectMatchInternal {
    */
   case class State( selection: Option[String] = None, error: Option[String] = None ) {
 
-    def clear = copy( selection = None )
+    def clear: State = copy( selection = None )
 
-    def setSelection( s: String ) = copy( selection=if (s=="") None else Some(s) )
+    def setSelection( s: String ): State = copy( selection=if (s=="") None else Some(s) )
 
-    def isValid = selection.filter( s => s!="" ).map( s => true ).getOrElse(false)
+    def isValid: Boolean = selection.filter( s => s!="" ).map( s => true ).getOrElse(false)
   }
 
-  val patternValidInput = """ ?(\d+) ?""".r
+  val patternValidInput: Regex = """ ?(\d+) ?""".r
 
   /**
    * Internal state for rendering the component.
@@ -66,7 +68,7 @@ object PageSelectMatchInternal {
 
     private var mounted = false
 
-    val ok = scope.modStateOption { ( state, props) =>
+    val ok: Callback = scope.modStateOption { ( state, props) =>
       state.selection match {
         case Some(s) =>
           val id = s"M${s}"
@@ -89,9 +91,9 @@ object PageSelectMatchInternal {
       }
     }
 
-    val popupOk = scope.modState { s => s.copy(error = None) }
+    val popupOk: Callback = scope.modState { s => s.copy(error = None) }
 
-    def render( props: Props, state: State ) = {
+    def render( props: Props, state: State ) = { // scalafix:ok ExplicitResultTypes; React
       import DuplicateStyles._
 
       <.div(
@@ -141,17 +143,18 @@ object PageSelectMatchInternal {
       )
     }
 
-    val didMount = Callback {
+    val didMount: Callback = Callback {
       mounted = true
       logger.info("PageSelectMatch.didMount")
     }
 
-    val willUnmount = Callback {
+    val willUnmount: Callback = Callback {
       mounted = false
       logger.info("PageSelectMatch.willUnmount")
     }
   }
 
+  private[duplicate]
   val component = ScalaComponent.builder[Props]("PageSelectMatch")
                             .initialStateFromProps { props => State() }
                             .backend(new Backend(_))

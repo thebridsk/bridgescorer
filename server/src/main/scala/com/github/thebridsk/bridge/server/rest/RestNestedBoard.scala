@@ -26,6 +26,7 @@ import javax.ws.rs.GET
 import javax.ws.rs.POST
 import javax.ws.rs.PUT
 import javax.ws.rs.DELETE
+import akka.http.scaladsl.server.Route
 
 /**
   * Rest API implementation for the board resource.
@@ -50,7 +51,7 @@ class RestNestedBoard {
         Board.Id,
         Board
       ]
-  ) = pathPrefix("boards") {
+  ): Route = pathPrefix("boards") {
 //    logRequest("route", DebugLevel) {
     getBoard ~ getBoards ~ postBoard ~ putBoard ~ deleteBoard ~ restNestedHands
 //      }
@@ -99,13 +100,13 @@ class RestNestedBoard {
       )
     )
   )
-  def xxxgetBoards = {}
+  def xxxgetBoards: Unit = {}
   def getBoards(
       implicit @Parameter(hidden = true) res: Resources[
         Board.Id,
         Board
       ]
-  ) = pathEndOrSingleSlash {
+  ): Route = pathEndOrSingleSlash {
     get {
       resourceMap(res.readAll())
     }
@@ -168,13 +169,13 @@ class RestNestedBoard {
       )
     )
   )
-  def xxxgetBoard = {}
+  def xxxgetBoard: Unit = {}
   def getBoard(
       implicit @Parameter(hidden = true) res: Resources[
         Board.Id,
         Board
       ]
-  ) = logRequest("getBoard", DebugLevel) {
+  ): Route = logRequest("getBoard", DebugLevel) {
     get {
       path("""[a-zA-Z0-9]+""".r) { id =>
         resource(res.select(Board.id(id)).read())
@@ -187,7 +188,7 @@ class RestNestedBoard {
         Board.Id,
         Board
       ]
-  ) = logRequestResult("RestNestedBoard.restNestedHand", DebugLevel) {
+  ): Route = logRequestResult("RestNestedBoard.restNestedHand", DebugLevel) {
     pathPrefix("""[a-zA-Z0-9]+""".r) { id =>
       import BridgeNestedResources._
       nestedHands.route(res.select(Board.id(id)).resourceHands)
@@ -248,13 +249,13 @@ class RestNestedBoard {
       )
     )
   )
-  def xxxpostBoard = {}
+  def xxxpostBoard: Unit = {}
   def postBoard(
       implicit @Parameter(hidden = true) res: Resources[
         Board.Id,
         Board
       ]
-  ) = pathEnd {
+  ): Route = pathEnd {
     post {
       entity(as[Board]) { board =>
         resourceCreated(res.resourceURI, addIdToFuture(res.createChild(board)))
@@ -327,13 +328,13 @@ class RestNestedBoard {
       )
     )
   )
-  def xxxputBoard = {}
+  def xxxputBoard: Unit = {}
   def putBoard(
       implicit @Parameter(hidden = true) res: Resources[
         Board.Id,
         Board
       ]
-  ) =
+  ): Route =
     put {
       path("""[a-zA-Z0-9]+""".r) { id =>
         entity(as[Board]) { board =>
@@ -379,13 +380,13 @@ class RestNestedBoard {
       )
     )
   )
-  def xxxdeleteBoard = {}
+  def xxxdeleteBoard: Unit = {}
   def deleteBoard(
       implicit @Parameter(hidden = true) res: Resources[
         Board.Id,
         Board
       ]
-  ) = delete {
+  ): Route = delete {
     path("""[a-zA-Z0-9]+""".r) { id =>
       resourceDelete(res.select(Board.id(id)).delete())
     }

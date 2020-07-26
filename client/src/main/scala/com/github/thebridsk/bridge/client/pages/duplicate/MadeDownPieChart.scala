@@ -5,18 +5,19 @@ import com.github.thebridsk.color.Color
 import com.github.thebridsk.bridge.clientcommon.react.PieChart
 import com.github.thebridsk.bridge.clientcommon.react.PieChartWithTooltip.IntLegendUtil
 import com.github.thebridsk.bridge.clientcommon.react.PieChartWithTooltip
+import com.github.thebridsk.color.RGBColor
 
 object MadeDownPieChart {
 
-  val ColorAllowedMade = Color.rgb( 164, 0, 0)
-  val ColorTookDown = Color.rgb( 0, 164, 0)
-  val ColorDown = Color.rgb( 255, 0, 0 )
-  val ColorMade = Color.rgb( 0, 255, 0 )
+  val ColorAllowedMade: RGBColor = Color.rgb( 164, 0, 0)
+  val ColorTookDown: RGBColor = Color.rgb( 0, 164, 0)
+  val ColorDown: RGBColor = Color.rgb( 255, 0, 0 )
+  val ColorMade: RGBColor = Color.rgb( 0, 255, 0 )
   val ColorPassedOut = TrickPieChart.colorTypePassed
 
   object TrickLegendUtil extends IntLegendUtil[Color] {
 
-    def nameToTitle( name: Color ) = {
+    def nameToTitle( name: Color ): String = {
       if (name eq ColorAllowedMade)        "Allowed made"
       else if (name eq ColorTookDown) "Took down"
       else if (name eq ColorDown)   "Down"
@@ -38,7 +39,7 @@ object MadeDownPieChart {
       size: Int,
       sizeInLegend: Int,
       minSize: Int
-  ) = {
+  ) = {  // scalafix:ok ExplicitResultTypes; ReactComponent
     val bytype: List[(String,List[(Color,Int)])] = List(
           ("Declarer", List( (ColorMade,made), (ColorDown,down) ) ),
           ("Defender", List( (ColorAllowedMade,allowedMade), (ColorTookDown,tookDown) ) ),
@@ -62,7 +63,7 @@ object MadeDownPieChart {
 
   }
 
-  def description = TagMod(
+  def description: TagMod = TagMod(
     "The size of the circle is proportional to the number of hands played by the pair/player. ",
     <.br,
     "Green, ",

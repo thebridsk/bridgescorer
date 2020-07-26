@@ -33,10 +33,10 @@ case class Pairing(
     timesPlayed: Int
 ) {
 
-  def normalize =
+  def normalize: Pairing =
     if (player1 < player2) this else copy(player1 = player2, player2 = player1)
 
-  def key = (player1, player2)
+  def key: (String, String) = (player1, player2)
 }
 
 /**
@@ -195,7 +195,7 @@ object DuplicateSuggestions {
       calcTimeMillis: Option[Double] = None,
       history: Option[Int] = None,
       neverPair: Option[List[NeverPair]] = None
-  ) = {
+  ): DuplicateSuggestions = {
     new DuplicateSuggestions(
       players,
       numberSuggestion,
@@ -209,15 +209,15 @@ object DuplicateSuggestions {
 }
 
 object DuplicateSuggestionsCalculation {
-  val log = Logger("bridge.DuplicateSuggestionsCalculation")
+  val log: Logger = Logger("bridge.DuplicateSuggestionsCalculation")
 
-  def getKey(player1: String, player2: String) =
+  def getKey(player1: String, player2: String): (String, String) =
     if (player1 < player2) (player1, player2) else (player2, player1)
 
   def calculate(
       input: DuplicateSuggestions,
       pastgames: List[DuplicateSummary]
-  ) = {
+  ): DuplicateSuggestions = {
     val start = SystemTime.currentTimeMillis()
     val calc = new DuplicateSuggestionsCalculation(
       pastgames,
@@ -238,12 +238,12 @@ class Stats {
   var sum: Double = 0.0
   var n: Int = 0
 
-  def avg = if (n == 0) 0 else sum / n
+  def avg: Double = if (n == 0) 0 else sum / n
 
   var min: Double = Double.MaxValue
   var max: Double = Double.MinValue
 
-  def add(value: Double) = {
+  def add(value: Double): Unit = {
     sum += value
     n += 1
     min = Math.min(min, value)
@@ -253,7 +253,7 @@ class Stats {
   /**
     * Normalize for optimizing the max of value
     */
-  def normalizeForMax(value: Double) = {
+  def normalizeForMax(value: Double): Double = {
     if (max == min) 0
     else (value - min) / (max - min)
   }
@@ -261,7 +261,7 @@ class Stats {
   /**
     * Normalize for optimizing the min of value
     */
-  def normalizeForMin(value: Double) = {
+  def normalizeForMin(value: Double): Double = {
     if (max == min) 0
     else (max - value) / (max - min)
   }
@@ -290,7 +290,7 @@ trait Weights {
   val wLastAll = 0 // weight for maximizing last time same teams played
   val wLastAll10 = 40 // minimum last time same teams played that it can repeat
 
-  def weightTotal =
+  def weightTotal: Int =
     wMinLastPlayed + wMaxLastPlayed + wMaxTimesPlayed + wAve + wAvePlayed + wLastAll + wLastAll10
 
 }
@@ -309,7 +309,7 @@ class DuplicateSuggestionsCalculation(
 
   val wTotal = weights.weightTotal;
 
-  def isNeverPair(p1: String, p2: String) = {
+  def isNeverPair(p1: String, p2: String): Boolean = {
     val np1 = NeverPair(p1, p2)
     val np2 = NeverPair(p2, p1)
     neverPair.map(np => np.contains(np1) || np.contains(np2)).getOrElse(false)

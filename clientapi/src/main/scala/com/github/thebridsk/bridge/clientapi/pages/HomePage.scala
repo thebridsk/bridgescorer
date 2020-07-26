@@ -46,14 +46,14 @@ object HomePage {
       anchorHelpEl: js.UndefOr[Element] = js.undefined
   ) {
 
-    def openHelpMenu( n: Node ) = copy( anchorHelpEl = n.asInstanceOf[Element] )
-    def closeHelpMenu() = copy( anchorHelpEl = js.undefined )
+    def openHelpMenu( n: Node ): State = copy( anchorHelpEl = n.asInstanceOf[Element] )
+    def closeHelpMenu(): State = copy( anchorHelpEl = js.undefined )
 
-    def openMainMenu( n: Node ) = copy( anchorMainEl = n.asInstanceOf[Element] )
-    def closeMainMenu() = copy( anchorMainEl = js.undefined, anchorMainTestHandEl = js.undefined )
+    def openMainMenu( n: Node ): State = copy( anchorMainEl = n.asInstanceOf[Element] )
+    def closeMainMenu(): State = copy( anchorMainEl = js.undefined, anchorMainTestHandEl = js.undefined )
 
-    def openMainTestHandMenu( n: Node ) = copy( anchorMainTestHandEl = n.asInstanceOf[Element] )
-    def closeMainTestHandMenu() = copy( anchorMainTestHandEl = js.undefined )
+    def openMainTestHandMenu( n: Node ): State = copy( anchorMainTestHandEl = n.asInstanceOf[Element] )
+    def closeMainTestHandMenu(): State = copy( anchorMainTestHandEl = js.undefined )
 
   }
 
@@ -63,14 +63,14 @@ object HomePage {
 
 //    val toggleFastclick = fastclickToggle >> scope.forceUpdate
 
-    val toggleDebug = scope.modState { s =>
+    val toggleDebug: Callback = scope.modState { s =>
       val newstate = s.copy(debugging = !s.debugging)
       debugging = newstate.debugging
 
       newstate.copy(debugging = false, working=Some("Debugging not enabled"))
     }
 
-    val toggleUserSelect = { (event: ReactEvent) => scope.withEffectsImpure.modState { s =>
+    val toggleUserSelect: ReactEvent => js.Any = { (event: ReactEvent) => scope.withEffectsImpure.modState { s =>
       val newstate = s.copy( userSelect = !s.userSelect )
       val style = Info.getElement("allowSelect")
       if (newstate.userSelect) {
@@ -85,9 +85,9 @@ object HomePage {
       newstate
     }}
 
-    def handleMainClick( event: ReactEvent ) = event.extract(_.currentTarget)(currentTarget => scope.modState(s => s.openMainMenu(currentTarget)).runNow() )
-    def handleMainCloseClick( event: ReactEvent ) = scope.modState(s => s.closeMainMenu()).runNow()
-    def handleMainClose( /* event: js.Object, reason: String */ ) = {
+    def handleMainClick( event: ReactEvent ): Unit = event.extract(_.currentTarget)(currentTarget => scope.modState(s => s.openMainMenu(currentTarget)).runNow() )
+    def handleMainCloseClick( event: ReactEvent ): Unit = scope.modState(s => s.closeMainMenu()).runNow()
+    def handleMainClose( /* event: js.Object, reason: String */ ): Unit = {
       logger.fine(s"""Closing main menu""")
       scope.modStateOption { s =>
         if (s.anchorMainTestHandEl.isDefined) {
@@ -98,17 +98,17 @@ object HomePage {
       }.runNow()
     }
 
-    def handleHelpClick( event: ReactEvent ) = event.extract(_.currentTarget)(currentTarget => scope.modState(s => s.openHelpMenu(currentTarget)).runNow() )
-    def handleHelpClose( /* event: js.Object, reason: String */ ) = {
+    def handleHelpClick( event: ReactEvent ): Unit = event.extract(_.currentTarget)(currentTarget => scope.modState(s => s.openHelpMenu(currentTarget)).runNow() )
+    def handleHelpClose( /* event: js.Object, reason: String */ ): Unit = {
       logger.fine("HelpClose called")
       scope.modState(s => s.closeHelpMenu()).runNow()
     }
 
-    def gotoPage( uri: String ) = {
+    def gotoPage( uri: String ): Unit = {
       GotoPage.inNewWindow(uri)
     }
 
-    def gotoView( page: AppRouter.AppPage ) = { (event: ReactEvent) =>
+    def gotoView( page: AppRouter.AppPage ): ReactEvent => Unit = { (event: ReactEvent) =>
       logger.fine(s"""GotoView $page""")
       scope.withEffectsImpure.modState { (s,p) =>
         s.closeMainMenu()
@@ -116,21 +116,21 @@ object HomePage {
       scope.withEffectsImpure.props.routeCtl.set(page).runNow()
     }
 
-    def handleMainGotoPageClick(uri: String)( event: ReactEvent ) = {
+    def handleMainGotoPageClick(uri: String)( event: ReactEvent ): Unit = {
       logger.info(s"""Going to page ${uri}""")
       handleMainClose()
 
       gotoPage(uri)
     }
 
-    def handleHelpGotoPageClick(uri: String)( event: ReactEvent ) = {
+    def handleHelpGotoPageClick(uri: String)( event: ReactEvent ): Unit = {
       logger.info(s"""Going to page ${uri}""")
       handleHelpClose()
 
       gotoPage(uri)
     }
 
-    def handleHelpGotoPageClickSwaggerAPI( event: ReactEvent ) = {
+    def handleHelpGotoPageClickSwaggerAPI( event: ReactEvent ): Unit = {
       val uri = "/public/apidocs.html"
       logger.info(s"""Going to page ${uri}""")
       handleHelpClose()
@@ -138,23 +138,22 @@ object HomePage {
       gotoPage(uri)
     }
 
-    def handleTestHandClick( event: ReactEvent ) = event.extract(
+    def handleTestHandClick( event: ReactEvent ): Unit = event.extract(
                                                        _.currentTarget
                                                    )(
                                                        currentTarget => scope.modState( s =>
                                                          s.openMainTestHandMenu(currentTarget)).runNow()
                                                    )
-    def handleMainTestHandClose( /* event: js.Object, reason: String */ ) = scope.modState(s => s.closeMainTestHandMenu()).runNow()
-    def handleMainTestHandCloseClick( event: ReactEvent ) = scope.modState(s => s.closeMainTestHandMenu()).runNow()
+    def handleMainTestHandClose( /* event: js.Object, reason: String */ ): Unit = scope.modState(s => s.closeMainTestHandMenu()).runNow()
+    def handleMainTestHandCloseClick( event: ReactEvent ): Unit = scope.modState(s => s.closeMainTestHandMenu()).runNow()
 
-    def render( props: Props, state: State ) = {
+    def render( props: Props, state: State ) = { // scalafix:ok ExplicitResultTypes; React
 
       def callbackPage(page: AppPage) = props.routeCtl.set(page)
 
       val doingWork = state.working.getOrElse("")
       val isWorking = state.working.isDefined
 
-      import japgolly.scalajs.react.vdom.VdomNode
       <.div(
         PopupOkCancel( if (isWorking) Some(doingWork) else None, None, Some(cancel) ),
         RootBridgeAppBar(
@@ -238,22 +237,22 @@ object HomePage {
       )
     }
 
-    def gotoPage( page: AppPage ) = scope.withEffectsImpure.props.routeCtl.set(page).runNow()
+    def gotoPage( page: AppPage ): Unit = scope.withEffectsImpure.props.routeCtl.set(page).runNow()
 
     /**
      * Sets the text in the working field.
      * Only call when not doing another modState or from a callback from a non GUI item.
      * @param text string to show as an error
      */
-    def setPopupText( text: String, cb: Callback = Callback.empty ) = scope.withEffectsImpure.modState( s => s.copy( working = Some(text) ), cb )
+    def setPopupText( text: String, cb: Callback = Callback.empty ): Unit = scope.withEffectsImpure.modState( s => s.copy( working = Some(text) ), cb )
 
     /**
      * Sets the text in the working field.
      * @param text string to show as an error
      */
-    def setPopupTextCB( text: String, cb: Callback = Callback.empty ) = scope.modState( s => s.copy( working = Some(text) ), cb )
+    def setPopupTextCB( text: String, cb: Callback = Callback.empty ): Callback = scope.modState( s => s.copy( working = Some(text) ), cb )
 
-    val doShutdown = scope.modState( s => s.copy(working = Some("Sending shutdown command to server")), Callback {
+    val doShutdown: Callback = scope.modState( s => s.copy(working = Some("Sending shutdown command to server")), Callback {
 
       import com.github.thebridsk.bridge.clientcommon.rest2.RestClient._
 
@@ -281,9 +280,9 @@ object HomePage {
       })
     })
 
-    val resultShutdown = ResultHolder[WrapperXMLHttpRequest]()
+    val resultShutdown: ResultHolder[WrapperXMLHttpRequest] = ResultHolder[WrapperXMLHttpRequest]()
 
-    val cancel = Callback {
+    val cancel: Callback = Callback {
       resultShutdown.cancel()
     } >> scope.modState( s => s.copy(working=None))
 
@@ -291,7 +290,7 @@ object HomePage {
 
     private var mounted = false
 
-    val didMount = Callback {
+    val didMount: Callback = Callback {
       mounted = true
       // make AJAX rest call here
       logger.info("HomePage.didMount: Sending serverurl request to server")
@@ -302,22 +301,21 @@ object HomePage {
       })
     }
 
-    val willUnmount = Callback {
+    val willUnmount: Callback = Callback {
       mounted = false
       logger.finer("HomePage.willUnmount")
     }
 
   }
 
-  def isPageFromLocalHost() = {
-    import org.scalajs.dom.document
+  def isPageFromLocalHost(): Boolean = {
 
     val hostname = GotoPage.hostname
     hostname == "localhost" || hostname == "loopback" || hostname == "127.0.0.1"
 
   }
 
-  val logger = Logger("bridge.HomePage")
+  val logger: Logger = Logger("bridge.HomePage")
 
   private val component = ScalaComponent.builder[Props]("HomePage")
         .initialStateFromProps { props =>
@@ -330,6 +328,6 @@ object HomePage {
         .componentWillUnmount( scope => scope.backend.willUnmount )
         .build
 
-  def apply( routeCtl: BridgeRouter[AppPage] ) = component(Props(routeCtl))
+  def apply( routeCtl: BridgeRouter[AppPage] ) = component(Props(routeCtl))  // scalafix:ok ExplicitResultTypes; ReactComponent
 
 }

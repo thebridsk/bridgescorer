@@ -73,13 +73,13 @@ class ZipFileForStore(
     }
   }
 
-  def close() = {
+  def close(): Unit = {
     zipfile.close()
   }
 }
 
 object ZipFileForStore {
 
-  val log = Logger[ZipFileForStore]()
+  val log: Logger = Logger[ZipFileForStore]()
 
 }

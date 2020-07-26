@@ -26,14 +26,15 @@ import com.github.thebridsk.bridge.client.bridge.action.ActionUpdatePicture
 import com.github.thebridsk.bridge.client.bridge.action.ActionUpdatePictures
 import com.github.thebridsk.bridge.data.Table
 import com.github.thebridsk.bridge.data.Team
+import com.github.thebridsk.bridge.data.DuplicateHandV2
 
 object DuplicateStore extends ChangeListenable {
-  val logger = Logger("bridge.DuplicateStore")
+  val logger: Logger = Logger("bridge.DuplicateStore")
 
   /**
    * Required to instantiate the store.
    */
-  def init() = {}
+  def init(): Unit = {}
 
   private var monitoredId: Option[MatchDuplicate.Id] = None
   private var bridgeMatch: Option[MatchDuplicate] = None
@@ -44,12 +45,12 @@ object DuplicateStore extends ChangeListenable {
   private var pictures = Map[(Board.Id,Team.Id),DuplicatePicture]()
 
   def getId() = monitoredId
-  def getMatch() = {
+  def getMatch(): Option[MatchDuplicate] = {
     logger.fine(s"getMatch returning bridgeMatch=$bridgeMatch")
     bridgeMatch
   }
 
-  def getBoardsFromRound( table: Table.Id, round: Int ) = {
+  def getBoardsFromRound( table: Table.Id, round: Int ): List[DuplicateHandV2] = {
     bridgeMatch match {
       case Some(md) => md.getHandsInRound(table, round)
       case None => Nil
@@ -74,7 +75,7 @@ object DuplicateStore extends ChangeListenable {
     }
   }
 
-  def getView( perspective: DuplicateViewPerspective ) = perspective match {
+  def getView( perspective: DuplicateViewPerspective ): Option[MatchDuplicateScore] = perspective match {
     case PerspectiveDirector => getDirectorsView()
     case PerspectiveComplete => getCompleteView()
     case PerspectiveTable(t1,t2) => getTeamsView(t1, t2)
@@ -131,7 +132,7 @@ object DuplicateStore extends ChangeListenable {
 
   private var dispatchToken: Option[DispatchToken] = Some(BridgeDispatcher.register(dispatch _))
 
-  def dispatch( msg: Any ) = Alerter.tryitWithUnit { msg match {
+  def dispatch( msg: Any ): Unit = Alerter.tryitWithUnit { msg match {
     case m: DuplicateBridgeAction =>
       m match {
         case ActionStartDuplicateMatch(dupid) =>
@@ -266,7 +267,7 @@ object DuplicateStore extends ChangeListenable {
 //      logger.fine("Ignoring unknown action: "+action)
   }}
 
-  def start( dupid: MatchDuplicate.Id ) = {
+  def start( dupid: MatchDuplicate.Id ): Unit = {
     monitoredId match {
       case Some(mid) if mid!=dupid =>
         bridgeMatch = None
@@ -289,7 +290,7 @@ object DuplicateStore extends ChangeListenable {
     teamsView = Map()
   }
 
-  def stop() = {
+  def stop(): Unit = {
     if (BridgeDemo.isDemo) {
       // keep the match
     } else {
@@ -313,7 +314,7 @@ object DuplicateStore extends ChangeListenable {
 
   private var lastRoundComplete: Boolean = false
 
-  val monitorRoundEnd = Callback {
+  val monitorRoundEnd: Callback = Callback {
     lastRoundComplete = getCompleteView() match {
       case Some(cv) =>
         val last = cv.tables.values.map( rounds => rounds.filter(r => !r.allUnplayedOnTable).lastOption)
@@ -331,18 +332,18 @@ object DuplicateStore extends ChangeListenable {
     }
   }
 
-  def startMonitorRoundEnd() = {
+  def startMonitorRoundEnd(): Unit = {
     addChangeListener(monitorRoundEnd)
   }
 
-  def stopMonitorRoundEnd() = {
+  def stopMonitorRoundEnd(): Unit = {
     removeChangeListener(monitorRoundEnd)
   }
 
   startMonitorRoundEnd()
 
   override
-  def addChangeListener( cb: Callback ) = {
+  def addChangeListener( cb: Callback ): Unit = {
     super.addChangeListener(cb)
     if (BridgeDemo.isDemo) {
       scalajs.js.timers.setTimeout(1) {

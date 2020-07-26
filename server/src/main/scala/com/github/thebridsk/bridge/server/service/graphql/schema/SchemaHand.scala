@@ -11,9 +11,9 @@ import SchemaBase.{log => _, _}
 
 object SchemaHand {
 
-  val log = Logger(SchemaHand.getClass.getName)
+  val log: Logger = Logger(SchemaHand.getClass.getName)
 
-  val HandType = ObjectType(
+  val HandType: ObjectType[BridgeService,Hand] = ObjectType(
     "Hand",
     "Result of a bridge hand",
     fields[BridgeService, Hand](

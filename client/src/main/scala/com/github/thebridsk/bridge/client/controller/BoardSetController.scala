@@ -19,7 +19,7 @@ import com.github.thebridsk.bridge.clientcommon.rest2.ResultObject
 import scala.concurrent.Future
 
 object BoardSetController {
-  val logger = Logger("bridge.BoardSetController")
+  val logger: Logger = Logger("bridge.BoardSetController")
 
   def getBoardSets(): Result[Unit] = {
     val r = if (!BridgeDemo.isDemo) {

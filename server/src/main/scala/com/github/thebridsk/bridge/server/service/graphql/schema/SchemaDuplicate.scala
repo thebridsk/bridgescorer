@@ -34,21 +34,22 @@ import com.github.thebridsk.bridge.data.Table
 import com.github.thebridsk.bridge.data.DuplicateSummary
 import com.github.thebridsk.bridge.data.BoardSet
 import com.github.thebridsk.bridge.data.Movement
+import com.github.thebridsk.bridge.data.{ Id, IdBoard, IdBoardSet, IdDuplicateSummary, IdMatchDuplicate, IdMatchDuplicateResult, IdMovement, IdTable, IdTeam }
 
 object SchemaDuplicate {
 
-  val log = Logger(SchemaDuplicate.getClass.getName)
+  val log: Logger = Logger(SchemaDuplicate.getClass.getName)
 
-  val BoardSetIdType = idScalarType("TeamId", BoardSet)
-  val MovementIdType = idScalarType("TeamId", Movement)
-  val TeamIdType = idScalarType("TeamId", Team)
-  val TableIdType = idScalarType("TableId", Table)
-  val BoardIdType = idScalarType("BoardId", Board)
-  val DuplicateSummaryIdType = idScalarType("DuplicateSummaryId", DuplicateSummary)
-  val DuplicateIdType = idScalarType("DuplicateId", MatchDuplicate)
-  val DuplicateResultIdType = idScalarType("DuplicateResultId", MatchDuplicateResult)
+  val BoardSetIdType: ScalarType[Id[IdBoardSet]] = idScalarType("TeamId", BoardSet)
+  val MovementIdType: ScalarType[Id[IdMovement]] = idScalarType("TeamId", Movement)
+  val TeamIdType: ScalarType[Id[IdTeam]] = idScalarType("TeamId", Team)
+  val TableIdType: ScalarType[Id[IdTable]] = idScalarType("TableId", Table)
+  val BoardIdType: ScalarType[Id[IdBoard]] = idScalarType("BoardId", Board)
+  val DuplicateSummaryIdType: ScalarType[Id[IdDuplicateSummary]] = idScalarType("DuplicateSummaryId", DuplicateSummary)
+  val DuplicateIdType: ScalarType[Id[IdMatchDuplicate]] = idScalarType("DuplicateId", MatchDuplicate)
+  val DuplicateResultIdType: ScalarType[Id[IdMatchDuplicateResult]] = idScalarType("DuplicateResultId", MatchDuplicateResult)
 
-  val DuplicateTeamType = ObjectType(
+  val DuplicateTeamType: ObjectType[BridgeService,Team] = ObjectType(
     "DuplicateTeam",
     "A duplicate team",
     fields[BridgeService, Team](
@@ -80,7 +81,7 @@ object SchemaDuplicate {
     )
   )
 
-  val DuplicateHandType = ObjectType(
+  val DuplicateHandType: ObjectType[BridgeService,DuplicateHand] = ObjectType(
     "DuplicateHand",
     "A duplicate hand",
     fields[BridgeService, DuplicateHand](
@@ -153,13 +154,13 @@ object SchemaDuplicate {
     )
   )
 
-  val ArgHandId = Argument(
+  val ArgHandId: Argument[Id[IdTeam]] = Argument(
     "id",
     TeamIdType,
     description = "The Id of the hand.  This the team id of the NS team."
   )
 
-  val DuplicateBoardType = ObjectType(
+  val DuplicateBoardType: ObjectType[BridgeService,Board] = ObjectType(
     "DuplicateBoard",
     "A duplicate board",
     fields[BridgeService, Board](
@@ -213,13 +214,13 @@ object SchemaDuplicate {
     )
   )
 
-  val ArgTeamId =
+  val ArgTeamId: Argument[Id[IdTeam]] =
     Argument("id", TeamIdType, description = "The Id of the team.")
 
-  val ArgBoardId =
+  val ArgBoardId: Argument[Id[IdBoard]] =
     Argument("id", BoardIdType, description = "The Id of the board.")
 
-  val DuplicateSummaryTeamType = ObjectType(
+  val DuplicateSummaryTeamType: ObjectType[BridgeService,DuplicateSummaryEntry] = ObjectType(
     "DuplicateSummaryTeam",
     "A team result in a DuplicateSummary",
     fields[BridgeService, DuplicateSummaryEntry](
@@ -262,7 +263,7 @@ object SchemaDuplicate {
     )
   )
 
-  val BestMatchType = ObjectType(
+  val BestMatchType: ObjectType[BridgeService,(Option[String], BestMatch)] = ObjectType(
     "BestMatch",
     "Identifies the best match",
     fields[BridgeService, (Option[String], BestMatch)](
@@ -287,7 +288,7 @@ object SchemaDuplicate {
     )
   )
 
-  val DuplicateSummaryType = ObjectType(
+  val DuplicateSummaryType: ObjectType[BridgeService,(Option[String], DuplicateSummary)] = ObjectType(
     "DuplicateSummary",
     "A duplicate match",
     fields[BridgeService, (Option[String], DuplicateSummary)](
@@ -348,7 +349,7 @@ object SchemaDuplicate {
     )
   )
 
-  val MatchDuplicateType = ObjectType(
+  val MatchDuplicateType: ObjectType[BridgeService,(Option[String], MatchDuplicate)] = ObjectType(
     "MatchDuplicate",
     "A duplicate match",
     fields[BridgeService, (Option[String], MatchDuplicate)](
@@ -403,7 +404,7 @@ object SchemaDuplicate {
     )
   )
 
-  val BoardTeamResultsType = ObjectType(
+  val BoardTeamResultsType: ObjectType[BridgeService,(Option[String], BoardTeamResults)] = ObjectType(
     "BoardTeamResults",
     "The results on a board in a match",
     fields[BridgeService, (Option[String], BoardTeamResults)](
@@ -412,7 +413,7 @@ object SchemaDuplicate {
     )
   )
 
-  val BoardResultsType = ObjectType(
+  val BoardResultsType: ObjectType[BridgeService,(Option[String], BoardResults)] = ObjectType(
     "BoardResults",
     "The results on a board in a match",
     fields[BridgeService, (Option[String], BoardResults)](
@@ -426,7 +427,7 @@ object SchemaDuplicate {
     )
   )
 
-  val MatchDuplicateResultType = ObjectType(
+  val MatchDuplicateResultType: ObjectType[BridgeService,(Option[String], MatchDuplicateResult)] = ObjectType(
     "MatchDuplicateResult",
     "A duplicate match",
     fields[BridgeService, (Option[String], MatchDuplicateResult)](
@@ -488,7 +489,7 @@ object SchemaDuplicate {
     )
   )
 
-  val CounterStatType = ObjectType(
+  val CounterStatType: ObjectType[BridgeService,CounterStat] = ObjectType(
     "CounterStat",
     "a counter",
     fields[BridgeService, CounterStat](
@@ -508,7 +509,7 @@ object SchemaDuplicate {
     )
   )
 
-  val DuplicatePlayerStatType = ObjectType(
+  val DuplicatePlayerStatType: ObjectType[BridgeService,PlayerStat] = ObjectType(
     "DuplicatePlayerStat",
     "A duplicate player stat",
     fields[BridgeService, PlayerStat](
@@ -551,7 +552,7 @@ object SchemaDuplicate {
     )
   )
 
-  val DuplicateContractStatType = ObjectType(
+  val DuplicateContractStatType: ObjectType[BridgeService,ContractStat] = ObjectType(
     "DuplicateContractStat",
     "A duplicate contract stat",
     fields[BridgeService, ContractStat](
@@ -588,7 +589,7 @@ object SchemaDuplicate {
     )
   )
 
-  val DuplicatePlayerStatsType = ObjectType(
+  val DuplicatePlayerStatsType: ObjectType[BridgeService,PlayerStats] = ObjectType(
     "DuplicatePlayerStats",
     "A duplicate player stats",
     fields[BridgeService, PlayerStats](
@@ -625,7 +626,7 @@ object SchemaDuplicate {
     )
   )
 
-  val PlayerComparisonStatType = ObjectType(
+  val PlayerComparisonStatType: ObjectType[BridgeService,PlayerComparisonStat] = ObjectType(
     "PlayerComparisonStat",
     "A duplicate player stats",
     fields[BridgeService, PlayerComparisonStat](
@@ -681,7 +682,7 @@ object SchemaDuplicate {
     )
   )
 
-  val PlayerComparisonStatsType = ObjectType(
+  val PlayerComparisonStatsType: ObjectType[BridgeService,PlayerComparisonStats] = ObjectType(
     "PlayerComparisonStats",
     "A duplicate player stats",
     fields[BridgeService, PlayerComparisonStats](
@@ -700,7 +701,7 @@ object SchemaDuplicate {
     )
   )
 
-  val DuplicateContractStatsType = ObjectType(
+  val DuplicateContractStatsType: ObjectType[BridgeService,ContractStats] = ObjectType(
     "DuplicateContractStats",
     "A duplicate contract stats",
     fields[BridgeService, ContractStats](
@@ -731,7 +732,7 @@ object SchemaDuplicate {
     )
   )
 
-  val PlayerOpponentStatType = ObjectType(
+  val PlayerOpponentStatType: ObjectType[BridgeService,PlayerOpponentStat] = ObjectType(
     "PlayerOpponentStatType",
     "player stats against an opponent in duplicate matches",
     fields[BridgeService, PlayerOpponentStat](
@@ -778,7 +779,7 @@ object SchemaDuplicate {
     )
   )
 
-  val PlayerOpponentsStatType = ObjectType(
+  val PlayerOpponentsStatType: ObjectType[BridgeService,PlayerOpponentsStat] = ObjectType(
     "PlayerOpponentsStatType",
     "player stats against all opponent in duplicate matches",
     fields[BridgeService, PlayerOpponentsStat](
@@ -800,7 +801,7 @@ object SchemaDuplicate {
     )
   )
 
-  val PlayersOpponentsStatsType = ObjectType(
+  val PlayersOpponentsStatsType: ObjectType[BridgeService,PlayersOpponentsStats] = ObjectType(
     "PlayersOpponentsStatsType",
     "all player stats against all opponent in duplicate matches",
     fields[BridgeService, PlayersOpponentsStats](
@@ -812,25 +813,25 @@ object SchemaDuplicate {
     )
   )
 
-  val ArgDuplicateSummaryId = Argument(
+  val ArgDuplicateSummaryId: Argument[Id[IdDuplicateSummary]] = Argument(
     "id",
     DuplicateSummaryIdType,
     description = "The Id of the duplicate match"
   )
 
-  val ArgDuplicateId = Argument(
+  val ArgDuplicateId: Argument[Id[IdMatchDuplicate]] = Argument(
     "id",
     DuplicateIdType,
     description = "The Id of the duplicate match"
   )
 
-  val ArgDuplicateResultId = Argument(
+  val ArgDuplicateResultId: Argument[Id[IdMatchDuplicateResult]] = Argument(
     "id",
     DuplicateResultIdType,
     description = "The Id of the duplicate match"
   )
 
-  val DuplicateStatsType = ObjectType(
+  val DuplicateStatsType: ObjectType[BridgeService,BridgeService] = ObjectType(
     "DuplicateStatsType",
     "stats about duplicate matches",
     fields[BridgeService, BridgeService](
@@ -1076,7 +1077,7 @@ object DuplicateAction {
     }
   }
 
-  def sort(list: List[MatchDuplicate], sort: Option[Sort]) = {
+  def sort(list: List[MatchDuplicate], sort: Option[Sort]): List[MatchDuplicate] = {
     val l = sort
       .map { s =>
         s match {
@@ -1095,7 +1096,7 @@ object DuplicateAction {
     l
   }
 
-  def sortSummary(list: List[DuplicateSummary], sort: Option[Sort]) = {
+  def sortSummary(list: List[DuplicateSummary], sort: Option[Sort]): List[DuplicateSummary] = {
     val l = sort
       .map { s =>
         s match {

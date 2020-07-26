@@ -51,19 +51,19 @@ object PlayerComparisonStat {
   val Competitive: StatType = 2
   val PassedOut: StatType = 3
 
-  def zero(player: String, stattype: StatType) =
+  def zero(player: String, stattype: StatType): PlayerComparisonStat =
     PlayerComparisonStat(player, stattype)
-  def aggressivegood(player: String, stattype: StatType) =
+  def aggressivegood(player: String, stattype: StatType): PlayerComparisonStat =
     PlayerComparisonStat(player, stattype, aggressivegood = 1)
-  def aggressivebad(player: String, stattype: StatType) =
+  def aggressivebad(player: String, stattype: StatType): PlayerComparisonStat =
     PlayerComparisonStat(player, stattype, aggressivebad = 1)
-  def aggressiveneutral(player: String, stattype: StatType) =
+  def aggressiveneutral(player: String, stattype: StatType): PlayerComparisonStat =
     PlayerComparisonStat(player, stattype, aggressiveneutral = 1)
-  def passivegood(player: String, stattype: StatType) =
+  def passivegood(player: String, stattype: StatType): PlayerComparisonStat =
     PlayerComparisonStat(player, stattype, passivegood = 1)
-  def passivebad(player: String, stattype: StatType) =
+  def passivebad(player: String, stattype: StatType): PlayerComparisonStat =
     PlayerComparisonStat(player, stattype, passivebad = 1)
-  def passiveneutral(player: String, stattype: StatType) =
+  def passiveneutral(player: String, stattype: StatType): PlayerComparisonStat =
     PlayerComparisonStat(player, stattype, passiveneutral = 1)
 
 }
@@ -81,7 +81,7 @@ case class PlayerComparisonStat(
     passiveneutral: Int = 0
 ) {
 
-  def add(stat: PlayerComparisonStat) = {
+  def add(stat: PlayerComparisonStat): PlayerComparisonStat = {
     if (player != stat.player || stattype != stat.stattype)
       throw new IllegalArgumentException("Player and/or sameside not the same")
     copy(
@@ -94,14 +94,14 @@ case class PlayerComparisonStat(
     )
   }
 
-  def forTotals = copy(player = "Totals")
+  def forTotals: PlayerComparisonStat = copy(player = "Totals")
 }
 
 case class PlayerComparisonStats(data: List[PlayerComparisonStat])
 
 object PlayerComparisonStats {
 
-  val log = Logger("bridge.PlayerComparisonStats")
+  val log: Logger = Logger("bridge.PlayerComparisonStats")
 
   implicit class WrapperCompareContractHand(val hand: Hand)
       extends AnyVal
@@ -164,7 +164,7 @@ object PlayerComparisonStats {
       passiveDealer: String, // "NS" or "EW"
       passiveHand: Hand,
       passiveDefender: Team
-  ) = {
+  ): List[PlayerComparisonStat] = {
     // 1 is lower contract, 2 is higher
     if (aggressiveHand.madeContract) {
       // 2 good, 1 bad
@@ -265,7 +265,7 @@ object PlayerComparisonStats {
       passiveSameAsDefender: Team,
       dup: MatchDuplicate,
       board: Board
-  ) = {
+  ): List[PlayerComparisonStat] = {
     val scoreAggressive = if (aggressiveDec == "NS") {
       ScoreHand(aggressiveHand).score.ns
     } else {
@@ -307,7 +307,7 @@ object PlayerComparisonStats {
 
   }
 
-  def stats(dups: Map[MatchDuplicate.Id, MatchDuplicate]) = {
+  def stats(dups: Map[MatchDuplicate.Id, MatchDuplicate]): PlayerComparisonStats = {
 
     val result = dups.values.flatMap { dup =>
       dup.boards.flatMap { board =>

@@ -12,28 +12,28 @@ object ProtocolJsonSupportImpl {
 
   import JsonSupport._
 
-  implicit val monitorJoinedFormat = Json.format[MonitorJoined]
-  implicit val monitorLeftFormat = Json.format[MonitorLeft]
-  implicit val updateDuplicateFormat = Json.format[UpdateDuplicate]
-  implicit val updateDuplicateHandFormat = Json.format[UpdateDuplicateHand]
-  implicit val updateDuplicateTeamFormat = Json.format[UpdateDuplicateTeam]
-  implicit val updateDuplicatePictureFormat = Json.format[UpdateDuplicatePicture]
-  implicit val updateDuplicatePicturesFormat = Json.format[UpdateDuplicatePictures]
-  implicit val noDataFormat = Json.format[NoData]
-  implicit val updateChicagoFormat = Json.format[UpdateChicago]
-  implicit val updateChicagoRoundFormat = Json.format[UpdateChicagoRound]
-  implicit val updateChicagoHandFormat = Json.format[UpdateChicagoHand]
-  implicit val updateRubberFormat = Json.format[UpdateRubber]
-  implicit val updateRubberHandFormat = Json.format[UpdateRubberHand]
+  implicit val monitorJoinedFormat: OFormat[MonitorJoined] = Json.format[MonitorJoined]
+  implicit val monitorLeftFormat: OFormat[MonitorLeft] = Json.format[MonitorLeft]
+  implicit val updateDuplicateFormat: OFormat[UpdateDuplicate] = Json.format[UpdateDuplicate]
+  implicit val updateDuplicateHandFormat: OFormat[UpdateDuplicateHand] = Json.format[UpdateDuplicateHand]
+  implicit val updateDuplicateTeamFormat: OFormat[UpdateDuplicateTeam] = Json.format[UpdateDuplicateTeam]
+  implicit val updateDuplicatePictureFormat: OFormat[UpdateDuplicatePicture] = Json.format[UpdateDuplicatePicture]
+  implicit val updateDuplicatePicturesFormat: OFormat[UpdateDuplicatePictures] = Json.format[UpdateDuplicatePictures]
+  implicit val noDataFormat: OFormat[NoData] = Json.format[NoData]
+  implicit val updateChicagoFormat: OFormat[UpdateChicago] = Json.format[UpdateChicago]
+  implicit val updateChicagoRoundFormat: OFormat[UpdateChicagoRound] = Json.format[UpdateChicagoRound]
+  implicit val updateChicagoHandFormat: OFormat[UpdateChicagoHand] = Json.format[UpdateChicagoHand]
+  implicit val updateRubberFormat: OFormat[UpdateRubber] = Json.format[UpdateRubber]
+  implicit val updateRubberHandFormat: OFormat[UpdateRubberHand] = Json.format[UpdateRubberHand]
 
-  implicit val StartMonitorSummaryFormat = Json.format[StartMonitorSummary]
-  implicit val StopMonitorSummaryFormat = Json.format[StopMonitorSummary]
-  implicit val StartMonitorDuplicateFormat = Json.format[StartMonitorDuplicate]
-  implicit val StopMonitorDuplicateFormat = Json.format[StopMonitorDuplicate]
-  implicit val StartMonitorChicagoFormat = Json.format[StartMonitorChicago]
-  implicit val StopMonitorChicagoFormat = Json.format[StopMonitorChicago]
-  implicit val StartMonitorRubberFormat = Json.format[StartMonitorRubber]
-  implicit val StopMonitorRubberFormat = Json.format[StopMonitorRubber]
+  implicit val StartMonitorSummaryFormat: OFormat[StartMonitorSummary] = Json.format[StartMonitorSummary]
+  implicit val StopMonitorSummaryFormat: OFormat[StopMonitorSummary] = Json.format[StopMonitorSummary]
+  implicit val StartMonitorDuplicateFormat: OFormat[StartMonitorDuplicate] = Json.format[StartMonitorDuplicate]
+  implicit val StopMonitorDuplicateFormat: OFormat[StopMonitorDuplicate] = Json.format[StopMonitorDuplicate]
+  implicit val StartMonitorChicagoFormat: OFormat[StartMonitorChicago] = Json.format[StartMonitorChicago]
+  implicit val StopMonitorChicagoFormat: OFormat[StopMonitorChicago] = Json.format[StopMonitorChicago]
+  implicit val StartMonitorRubberFormat: OFormat[StartMonitorRubber] = Json.format[StartMonitorRubber]
+  implicit val StopMonitorRubberFormat: OFormat[StopMonitorRubber] = Json.format[StopMonitorRubber]
 
 }
 
@@ -328,11 +328,11 @@ class ToBrowserMessageFormat extends SealedFormat[ToBrowserMessage] {
 }
 
 trait ToBrowserProtocolJsonSupport {
-  implicit val toBrowserMessageFormat = new ToBrowserMessageFormat // Json.format[ToBrowserMessage]
+  implicit val toBrowserMessageFormat: ToBrowserMessageFormat = new ToBrowserMessageFormat // Json.format[ToBrowserMessage]
 }
 
 trait ToServerProtocolJsonSupport {
-  implicit val toServerMessageFormat = new ToServerMessageFormat // Json.format[ToServerMessage]
+  implicit val toServerMessageFormat: ToServerMessageFormat = new ToServerMessageFormat // Json.format[ToServerMessage]
 }
 
 object ToBrowserProtocolJsonSupport extends ToBrowserProtocolJsonSupport

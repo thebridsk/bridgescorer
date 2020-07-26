@@ -7,6 +7,7 @@ import com.github.thebridsk.bridge.client.pages.hand.ComponentInputStyleButton.I
 import com.github.thebridsk.bridge.client.pages.hand.PageHandInternal.PageHandNextInput
 import com.github.thebridsk.bridge.clientcommon.react.Utils._
 
+
 /**
  * A skeleton component.
  *
@@ -28,7 +29,7 @@ object ViewContractDoubled {
 
   def apply( current: Option[ContractDoubled], callback: CallbackDoubled,
              nextInput: PageHandNextInput.Value,
-             visible: Boolean ) = component(Props(current,callback,nextInput,visible))
+             visible: Boolean ) = component(Props(current,callback,nextInput,visible))  // scalafix:ok ExplicitResultTypes; ReactComponent
 
   private val component = ScalaComponent.builder[Props]("ViewContractDoubled")
                             .render_P( props /* (props,state,backend) */ => {

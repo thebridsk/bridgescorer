@@ -16,6 +16,7 @@ import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.must.Matchers
 import com.github.thebridsk.bridge.data.Team
 import com.github.thebridsk.bridge.data.Board
+import com.github.thebridsk.bridge.data.DuplicateHandV2
 
 class TestDuplicateStore extends AnyFlatSpec with Matchers {
 
@@ -89,7 +90,7 @@ class TestDuplicateStore extends AnyFlatSpec with Matchers {
                declarer: String,
                madeContract: Boolean,
                tricks: Int
-             ) = {
+             ): DuplicateHandV2 = {
     val b = DuplicateStore.getMatch().get.getBoard(Board.id(1)).get
     val dh = b.getHand( Team.id(1)).get
     dh.updateHand(Hand.create(dh.id.id, contractTricks, contractSuit,contractDoubled, declarer, b.nsVul, b.ewVul, madeContract, tricks ))

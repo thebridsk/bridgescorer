@@ -37,7 +37,7 @@ class Session( name: String = "default" ) extends WebDriver {
 
   private var eventListener: WebDriverEventListener = null
 
-  val debug = {
+  val debug: Boolean = {
     val f = getPropOrEnv("WebDriverDebug").getOrElse("")
     f.equalsIgnoreCase("true") || f.equals("1")
   }
@@ -211,7 +211,7 @@ class Session( name: String = "default" ) extends WebDriver {
   /**
    * The default browser when a specific browser has not been specified.
    */
-  def defaultBrowser = chrome(false)
+  def defaultBrowser: ChromeDriver = chrome(false)
 
   /**
    * Start a browser webdriver
@@ -360,9 +360,9 @@ class Session( name: String = "default" ) extends WebDriver {
     else this
   }
 
-  def isSessionRunning = synchronized { webDriver!=null }
+  def isSessionRunning: Boolean = synchronized { webDriver!=null }
 
-  def sessionImplicitlyWait(time: Long, unit: TimeUnit = TimeUnit.SECONDS) = webDriver.manage().timeouts().implicitlyWait(time,unit);
+  def sessionImplicitlyWait(time: Long, unit: TimeUnit = TimeUnit.SECONDS): WebDriver.Timeouts = webDriver.manage().timeouts().implicitlyWait(time,unit);
 
   /**
    * Stop the browser webdriver
@@ -393,7 +393,7 @@ class Session( name: String = "default" ) extends WebDriver {
    * @param q the quadrant, values are 1,2,3,4.
    *          quadrant 1 is top left, goes around clockwise.
    */
-  def setQuadrant( q: Int ) = {
+  def setQuadrant( q: Int ): Session = {
     import Session._
     if (getScreenInfo) {
       val originx = origin.get.getX
@@ -428,7 +428,7 @@ class Session( name: String = "default" ) extends WebDriver {
    * @param width
    * @param height
    */
-  def setQuadrant( q: Int, width: Int, height: Int ) = {
+  def setQuadrant( q: Int, width: Int, height: Int ): Session = {
     import Session._
     if (getScreenInfo) {
       val originx = origin.get.getX
@@ -462,7 +462,7 @@ class Session( name: String = "default" ) extends WebDriver {
    * @param x
    * @param y
    */
-  def setPositionRelative( x: Int, y: Int ) = {
+  def setPositionRelative( x: Int, y: Int ): Session = {
     import Session._
     if (getScreenInfo) {
       val originx = origin.get.getX
@@ -479,7 +479,7 @@ class Session( name: String = "default" ) extends WebDriver {
    * @param x
    * @param y
    */
-  def setPosition( x: Int, y: Int ) = {
+  def setPosition( x: Int, y: Int ): Session = {
     if (getScreenInfo) {
       testlog.fine(s"Setting position to ${x},${y}")
       webDriver.manage().window().setPosition(new Point(x,y))
@@ -495,7 +495,7 @@ class Session( name: String = "default" ) extends WebDriver {
    * @param width
    * @param height
    */
-  def setSize( width: Int, height: Int ) = {
+  def setSize( width: Int, height: Int ): Session = {
     if (getScreenInfo) {
       testlog.fine(s"Setting size to ${width},${height}")
       webDriver.manage().window().setSize(new Dimension(width,height))
@@ -506,7 +506,7 @@ class Session( name: String = "default" ) extends WebDriver {
     this
   }
 
-  def maximize() = {
+  def maximize(): Unit = {
     Session.maximize
   }
 
@@ -534,7 +534,7 @@ class Session( name: String = "default" ) extends WebDriver {
 
 object Session {
 
-  val testlog = Logger[Session]()
+  val testlog: Logger = Logger[Session]()
 
   private var screenSize: Option[Dimension] = None
   private var origin: Option[Point] = None
@@ -544,7 +544,7 @@ object Session {
   /**
    * @return false if screenInfo is NOT supported, true if it is supported
    */
-  def getScreenInfo( implicit webDriver: WebDriver ) = {
+  def getScreenInfo( implicit webDriver: WebDriver ): Boolean = {
     if (screenSize.isEmpty || origin.isEmpty) {
       if (!screenInfoNotSupported) {
         synchronized {
@@ -577,7 +577,7 @@ object Session {
   /**
    * Maximize the browser window
    */
-  def maximize( implicit webDriver: WebDriver ) = {
+  def maximize( implicit webDriver: WebDriver ): Unit = {
     try {
       val window = webDriver.manage().window()
       window.maximize()

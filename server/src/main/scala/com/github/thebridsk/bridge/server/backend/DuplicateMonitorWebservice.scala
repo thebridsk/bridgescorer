@@ -21,6 +21,8 @@ import javax.ws.rs.GET
 import com.github.thebridsk.bridge.data.MatchDuplicate
 import com.github.thebridsk.bridge.server.backend.StoreMonitor.NewParticipantSSEDuplicate
 import com.github.thebridsk.bridge.server.rest.Service
+import akka.event.LoggingAdapter
+import akka.http.scaladsl.server.Route
 
 @Path("")
 class DuplicateMonitorWebservice(
@@ -33,7 +35,7 @@ class DuplicateMonitorWebservice(
 ) extends MonitorWebservice[MatchDuplicate.Id, MatchDuplicate](
       totallyMissingResourceHandler
 ) {
-  val log = Logging(system, classOf[DuplicateMonitorWebservice])
+  val log: LoggingAdapter = Logging(system, classOf[DuplicateMonitorWebservice])
   val monitor = new StoreMonitorManager(
     system,
     bridgeService.duplicates,
@@ -45,7 +47,7 @@ class DuplicateMonitorWebservice(
 //    theChat.injectMessage(ChatMessage(sender = "clock", s"Bling! The time is ${new Date().toString}."))
 //  }
 
-  def route = routews ~ routesse
+  def route: Route = routews ~ routesse
   @Path("/ws")
   @GET
   @Operation(
@@ -59,8 +61,8 @@ class DuplicateMonitorWebservice(
       )
     )
   )
-  def xxxroutews = {}
-  val routews =
+  def xxxroutews: Unit = {}
+  val routews: Route =
     get {
       pathPrefix("ws") {
         handleRejections(totallyMissingResourceHandler) {
@@ -120,8 +122,8 @@ class DuplicateMonitorWebservice(
       )
     )
   )
-  def xxxroutesse = {}
-  val routesse = {
+  def xxxroutesse: Unit = {}
+  val routesse: Route = {
     import akka.http.scaladsl.marshalling.sse.EventStreamMarshalling._
     pathPrefix("sse") {
       get {

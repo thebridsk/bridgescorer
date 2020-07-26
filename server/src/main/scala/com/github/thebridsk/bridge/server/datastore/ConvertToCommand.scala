@@ -14,13 +14,13 @@ trait ConvertToCommand
 object ConvertToCommand extends Subcommand("convertto") {
   import DataStoreCommands.optionStore
 
-  val log = Logger[ConvertToCommand]()
+  val log: Logger = Logger[ConvertToCommand]()
 
   implicit def dateConverter: ValueConverter[Duration] =
     singleArgConverter[Duration](Duration(_))
 
 
-  val validValues = List("yaml", "json")
+  val validValues: List[String] = List("yaml", "json")
 
   descr("converts a database to use yaml or json")
 
@@ -31,7 +31,7 @@ Syntax:
   ${DataStoreCommands.cmdName} convertto type
 Options:""")
 
-  val paramType = trailArg[String](
+  val paramType: ScallopOption[String] = trailArg[String](
     name = "type",
     required = true,
     validate = (s) => validValues.contains(s),

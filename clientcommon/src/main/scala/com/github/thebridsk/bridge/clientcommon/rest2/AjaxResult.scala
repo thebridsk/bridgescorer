@@ -52,7 +52,7 @@ class AjaxResult[T]( val req: WrapperXMLHttpRequest, val url: String, val reqbod
   import scala.language.implicitConversions
 
   implicit
-  private def withFuture[U]( newfuture: Future[U] ) = new AjaxResult(req,url,reqbody,newfuture,promise,pos)
+  private def withFuture[U]( newfuture: Future[U] ): AjaxResult[U] = new AjaxResult(req,url,reqbody,newfuture,promise,pos)
 
   /**
    * calls Promise.failure( RequestCancelled ) if successfully cancelled
@@ -177,7 +177,7 @@ class AjaxResult[T]( val req: WrapperXMLHttpRequest, val url: String, val reqbod
     p.future
   }
 
-  def recordFailure( rec: ResultRecorder = ResultRecorder )(implicit executor: ExecutionContext, pos: Position) = {
+  def recordFailure( rec: ResultRecorder = ResultRecorder )(implicit executor: ExecutionContext, pos: Position): AjaxResult[T] = {
     future.failed.foreach( Alerter.tryit { rec.record(_) })
     this
   }
@@ -190,15 +190,15 @@ class AjaxResult[T]( val req: WrapperXMLHttpRequest, val url: String, val reqbod
  */
 object AjaxResult {
 
-  val log = Logger("bridge.AjaxResult")
+  val log: Logger = Logger("bridge.AjaxResult")
 
   import scala.concurrent.duration._
   import scala.language.postfixOps
-  val defaultTimeout = 30 seconds
+  val defaultTimeout: FiniteDuration = 30 seconds
 
   private var fAjaxCall: IAjaxCall = AjaxCall
 
-  def setEnabled( f: Boolean ) = {
+  def setEnabled( f: Boolean ): Unit = {
     if (f) {
       fAjaxCall = AjaxCall
     } else {
@@ -207,7 +207,7 @@ object AjaxResult {
     log.info("Setting RestClient.enabled to "+f)
   }
 
-  def setAjaxCall( ac: IAjaxCall ) = {
+  def setAjaxCall( ac: IAjaxCall ): Unit = {
     fAjaxCall = ac
   }
 
@@ -228,31 +228,31 @@ object AjaxResult {
 
   def get(url: String, data: InputData = null, timeout: Duration = defaultTimeout,
       headers: Map[String, String] = Map.empty,
-      withCredentials: Boolean = false, responseType: String = "")( implicit pos: Position) = {
+      withCredentials: Boolean = false, responseType: String = "")( implicit pos: Position): AjaxResult[WrapperXMLHttpRequest] = {
     apply("GET", url, data, timeout, headers, withCredentials, responseType)(pos)
   }
 
   def head(url: String, data: InputData = null, timeout: Duration = defaultTimeout,
       headers: Map[String, String] = Map.empty,
-      withCredentials: Boolean = false, responseType: String = "")( implicit pos: Position) = {
+      withCredentials: Boolean = false, responseType: String = "")( implicit pos: Position): AjaxResult[WrapperXMLHttpRequest] = {
     apply("HEAD", url, data, timeout, headers, withCredentials, responseType)(pos)
   }
 
   def post(url: String, data: InputData = null, timeout: Duration = defaultTimeout,
       headers: Map[String, String] = Map.empty,
-      withCredentials: Boolean = false, responseType: String = "")( implicit pos: Position) = {
+      withCredentials: Boolean = false, responseType: String = "")( implicit pos: Position): AjaxResult[WrapperXMLHttpRequest] = {
     apply("POST", url, data, timeout, headers, withCredentials, responseType)(pos)
   }
 
   def put(url: String, data: InputData = null, timeout: Duration = defaultTimeout,
       headers: Map[String, String] = Map.empty,
-      withCredentials: Boolean = false, responseType: String = "")( implicit pos: Position) = {
+      withCredentials: Boolean = false, responseType: String = "")( implicit pos: Position): AjaxResult[WrapperXMLHttpRequest] = {
     apply("PUT", url, data, timeout, headers, withCredentials, responseType)(pos)
   }
 
   def delete(url: String, data: InputData = null, timeout: Duration = defaultTimeout,
       headers: Map[String, String] = Map.empty,
-      withCredentials: Boolean = false, responseType: String = "")( implicit pos: Position) = {
+      withCredentials: Boolean = false, responseType: String = "")( implicit pos: Position): AjaxResult[WrapperXMLHttpRequest] = {
     apply("DELETE", url, data, timeout, headers, withCredentials, responseType)(pos)
   }
 

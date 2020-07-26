@@ -4,6 +4,7 @@ import japgolly.scalajs.react._
 import scala.scalajs.js
 import scala.scalajs.js.annotation._
 import scala.language.implicitConversions
+import scala.scalajs.js.UndefOr
 
 class CALMouseEvent(val value: js.Any) extends AnyVal
 object CALMouseEvent {
@@ -43,11 +44,11 @@ object ClickAwayListenerProps extends PropsFactory[ClickAwayListenerProps] {
 
   implicit class WrapClickAwayListenerProps(private val p: ClickAwayListenerProps)
       extends AnyVal {
-    def mouseEvent = p.mouseEventInternal.map(s => new CALMouseEvent(s))
+    def mouseEvent: UndefOr[CALMouseEvent] = p.mouseEventInternal.map(s => new CALMouseEvent(s))
 
 //    def mouseEvent_= (v: js.UndefOr[CALMouseEvent]) = { p.mouseEventInternal = v.map(pp => pp.value) }
 
-    def touchEvent = p.touchEventInternal.map(s => new CALTouchEvent(s))
+    def touchEvent: UndefOr[CALTouchEvent] = p.touchEventInternal.map(s => new CALTouchEvent(s))
 
 //    def touchEvent_= (v: js.UndefOr[CALTouchEvent]) = { p.touchEventInternal = v.map(pp => pp.value) }
 
@@ -85,9 +86,7 @@ object MuiClickAwayListener {
   @js.native @JSImport("@material-ui/core/ClickAwayListener", JSImport.Default) private object ClickAwayListener
       extends js.Any
 
-  private val f = JsComponent[ClickAwayListenerProps, Children.Varargs, Null](
-    ClickAwayListener
-  )
+  protected val f = JsComponent[ClickAwayListenerProps, Children.Varargs, Null](ClickAwayListener)  // scalafix:ok ExplicitResultTypes; ReactComponent
 
   /**
     * @param mouseEvent The mouse event to listen to. You can disable
@@ -106,7 +105,7 @@ object MuiClickAwayListener {
       additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
   )(
       children: CtorType.ChildArg*
-  ) = {
+  ) = {  // scalafix:ok ExplicitResultTypes; ReactComponent
     val p: ClickAwayListenerProps = ClickAwayListenerProps(
       mouseEvent = mouseEvent,
       onClickAway = onClickAway,

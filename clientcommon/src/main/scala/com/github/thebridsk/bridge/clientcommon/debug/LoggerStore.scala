@@ -9,6 +9,8 @@ import scala.collection.mutable.ListBuffer
 import com.github.thebridsk.bridge.clientcommon.dispatcher.ClearLogs
 import com.github.thebridsk.bridge.clientcommon.dispatcher.StopLogs
 import com.github.thebridsk.bridge.clientcommon.dispatcher.StartLogs
+import scala.scalajs.js.timers.SetTimeoutHandle
+import org.scalajs.dom
 
 object LoggerStore extends ChangeListenable {
 
@@ -19,7 +21,7 @@ object LoggerStore extends ChangeListenable {
   /**
    * Required to instantiate the store.
    */
-  def init() = {
+  def init(): Option[Unit] = {
     dispatchToken.map { x =>
       toConsole("LoggerStore registered")
     }
@@ -45,7 +47,7 @@ object LoggerStore extends ChangeListenable {
 
   def isEnabled() = enabled
 
-  def dispatch( msg: Any ) = msg match {
+  def dispatch( msg: Any ): Any = msg match {
     case PostLogEntry(tracemsg) =>
       counter = counter + 1
       if (enabled) {
@@ -70,7 +72,7 @@ object LoggerStore extends ChangeListenable {
 //      logger.warning("BoardSetStore: Unknown msg dispatched, "+x)
   }
 
-  def notifyLogChange() = {
+  def notifyLogChange(): SetTimeoutHandle = {
     import scala.scalajs.js.timers._
 
     setTimeout(0) { // note the absence of () =>
@@ -82,15 +84,13 @@ object LoggerStore extends ChangeListenable {
 
   def logToConsole( msg: => TraceMsg ): Unit = {
     if (debug) {
-      import org.scalajs.dom
-      dom.window.console.log( msg.toString )
+            dom.window.console.log( msg.toString )
     }
   }
 
   def toConsole( msg: => String ): Unit = {
     if (debug) {
-      import org.scalajs.dom
-      dom.window.console.log( msg )
+            dom.window.console.log( msg )
     }
   }
 }
