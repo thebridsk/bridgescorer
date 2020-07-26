@@ -144,11 +144,12 @@ object BldBridge {
     )
   }
 
-  inThisBuild(
+  def init = inThisBuild(
     List(
+      scalaVersion := verScalaVersion,
+      scalafixScalaBinaryVersion := CrossVersion.binaryScalaVersion(verScalaVersion),
       semanticdbEnabled := false,
       semanticdbVersion := scalafixSemanticdb.revision,
-      scalafixScalaBinaryVersion := CrossVersion.binaryScalaVersion(scalaVersion.value)
     )
   )
 

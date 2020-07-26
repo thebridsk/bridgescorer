@@ -273,10 +273,7 @@ object BldCommonSettings {
         // println(s"semanticdbVersion=$v")
         v
       },
-      // libraryDependencies ++= {
-      //   if (semanticdbEnabled.value) List(compilerPlugin(scalafixSemanticdb))
-      //   else List()
-      // },
+
       // useCoursier := false,
       testOptions in Test += Tests.Argument(TestFrameworks.ScalaTest, "-oDFIK"),
       testClass in Test := (Def.inputTaskDyn {

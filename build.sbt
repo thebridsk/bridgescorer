@@ -63,3 +63,5 @@ lazy val bridgescorekeeper: Project = BldBridgeScoreKeeper.bridgescorekeeper
 
 lazy val bridgescorer: Project = BldBridge.bridgescorer
 lazy val bridgeDemo: Project = BldBridgeDemo.demo
+
+BldBridge.init
