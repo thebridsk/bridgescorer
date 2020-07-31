@@ -27,7 +27,7 @@ class MatchDuplicateScore private (
   val created = duplicate.created
   val updated = duplicate.updated
 
-  val boards: Map[Board.Id,BoardScore] =
+  val boards: Map[Board.Id, BoardScore] =
     duplicate.boards.map(b => (b.id -> BoardScore(b, perspective))).toMap
 
   val sortedBoards: List[BoardScore] =
@@ -44,7 +44,7 @@ class MatchDuplicateScore private (
 
   def getTeam(tid: Team.Id): Option[Team] = duplicate.getTeam(tid)
 
-  val teamScores: Map[Team.Id,Double] = duplicate.teams
+  val teamScores: Map[Team.Id, Double] = duplicate.teams
     .map(
       team =>
         (team.id -> {
@@ -64,7 +64,7 @@ class MatchDuplicateScore private (
     )
     .toMap
 
-  val teamImps: Map[Team.Id,Double] = duplicate.teams
+  val teamImps: Map[Team.Id, Double] = duplicate.teams
     .map(
       team =>
         (team.id -> {

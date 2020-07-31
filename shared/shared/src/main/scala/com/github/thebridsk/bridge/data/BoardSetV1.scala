@@ -64,7 +64,8 @@ case class BoardSetV1(
     )
     deletable: Option[Boolean] = None,
     @Schema(
-      description = "true if boardset definition can be reset to the default, default is false",
+      description =
+        "true if boardset definition can be reset to the default, default is false",
       required = false
     )
     resetToDefault: Option[Boolean] = None,
@@ -77,13 +78,13 @@ case class BoardSetV1(
       description = "the last time the boardset was updated, default: unknown",
       required = false
     )
-    updateTime: Option[SystemTime.Timestamp] = None,
+    updateTime: Option[SystemTime.Timestamp] = None
 ) extends VersionedInstance[BoardSetV1, BoardSetV1, BoardSet.Id] {
 
   def id = name
 
   @Schema(hidden = true)
-  private def optional( flag: Boolean, fun: BoardSet=>BoardSet) = {
+  private def optional(flag: Boolean, fun: BoardSet => BoardSet) = {
     if (flag) fun(this)
     else this
   }
@@ -94,9 +95,12 @@ case class BoardSetV1(
       dontUpdateTime: Boolean = false
   ): BoardSet = {
     val time = SystemTime.currentTimeMillis()
-    copy(name = newId).
-      optional(forCreate, _.copy(creationTime=Some(time), updateTime=Some(time))).
-      optional(!dontUpdateTime, _.copy(updateTime=Some(time)))
+    copy(name = newId)
+      .optional(
+        forCreate,
+        _.copy(creationTime = Some(time), updateTime = Some(time))
+      )
+      .optional(!dontUpdateTime, _.copy(updateTime = Some(time)))
   }
 
   def convertToCurrentVersion: (Boolean, BoardSetV1) = (true, this)
@@ -119,7 +123,7 @@ case class BoardSetV1(
 
 trait IdBoardSet
 
-object BoardSetV1 extends HasId[IdBoardSet]("",true) {
+object BoardSetV1 extends HasId[IdBoardSet]("", true) {
 
   def default: Id = BoardSet.id("ArmonkBoards")
 

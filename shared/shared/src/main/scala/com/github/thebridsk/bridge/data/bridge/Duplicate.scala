@@ -44,14 +44,15 @@ object DuplicateBridge {
       DuplicateScore(nsscore, ewscore)
     }
 
-    val explainList: List[String] = explainBelow ::: explainAbove ::: (gameBonus match {
-      case 0 =>
-        Nil
-      case 50 =>
-        "Partial " + gameBonus :: Nil
-      case _ =>
-        "Game " + gameBonus :: Nil
-    })
+    val explainList: List[String] =
+      explainBelow ::: explainAbove ::: (gameBonus match {
+        case 0 =>
+          Nil
+        case 50 =>
+          "Partial " + gameBonus :: Nil
+        case _ =>
+          "Game " + gameBonus :: Nil
+      })
 
     override def explain: String = explainList.mkString(", ")
 

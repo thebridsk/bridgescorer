@@ -60,7 +60,8 @@ object Difference {
     new Difference(same, changes, differences)
   }
 
-  def unapply(v: Difference): (Int, Int, List[String]) = (v.same, v.changes, v.differences)
+  def unapply(v: Difference): (Int, Int, List[String]) =
+    (v.same, v.changes, v.differences)
 
   def compare[T](me: T, other: T, diff: String): Difference = {
     if (me == other) SameDifference
@@ -299,7 +300,10 @@ object DifferenceWrappers {
 
     def id = me.id
 
-    def differenceW(prefix: String, other: WrapDuplicateSummaryEntry): Difference =
+    def differenceW(
+        prefix: String,
+        other: WrapDuplicateSummaryEntry
+    ): Difference =
       difference(prefix, other.me)
 
     def difference(prefix: String, other: DuplicateSummaryEntry): Difference = {
@@ -323,7 +327,10 @@ object DifferenceWrappers {
 
     def id = me.id
 
-    def differenceW(prefix: String, other: WrapMatchDuplicateDuplicateResult): Difference =
+    def differenceW(
+        prefix: String,
+        other: WrapMatchDuplicateDuplicateResult
+    ): Difference =
       difference(prefix, other.me)
 
     def difference(prefix: String, other: MatchDuplicateResult): Difference = {

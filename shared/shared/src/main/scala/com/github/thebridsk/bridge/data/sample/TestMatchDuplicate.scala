@@ -45,13 +45,13 @@ object TestMatchDuplicate {
   val team3: Team.Id = Team.id(3)
   val team4: Team.Id = Team.id(4)
 
-  def teams(): Map[Team.Id,Team] =
+  def teams(): Map[Team.Id, Team] =
     List(
       Team.create(team1, "Nancy", "Norman"),
       Team.create(team2, "Ellen", "Edward"),
       Team.create(team3, "Susan", "Sam"),
       Team.create(team4, "Wilma", "Wayne")
-    ).map( t => t.id -> t ).toMap
+    ).map(t => t.id -> t).toMap
 
   def create(id: MatchDuplicate.Id): MatchDuplicate = {
     val ts: Map[Team.Id, Team] = teams()
@@ -80,7 +80,15 @@ object TestMatchDuplicate {
     addHand(DuplicateHand.create(Table.id(2), 4, Board.id(7), team2, team4))
     addHand(DuplicateHand.create(Table.id(2), 4, Board.id(8), team2, team4))
 
-    MatchDuplicate(id, ts.values.toList, boards.values.toList, BoardSet.idNul, Movement.idNul, 0, 0)
+    MatchDuplicate(
+      id,
+      ts.values.toList,
+      boards.values.toList,
+      BoardSet.idNul,
+      Movement.idNul,
+      0,
+      0
+    )
   }
 
   def getHands(md: MatchDuplicate): List[DuplicateHand] = {
@@ -95,7 +103,8 @@ object TestMatchDuplicate {
     hands.reverse
   }
 
-  def getTeamScore(): Map[Team.Id,Int] = Map(team1 -> 3, team2 -> 1, team3 -> 1, team4 -> 3)
+  def getTeamScore(): Map[Team.Id, Int] =
+    Map(team1 -> 3, team2 -> 1, team3 -> 1, team4 -> 3)
 
   def getPlayedMatch(dupid: MatchDuplicate.Id): MatchDuplicate = {
     var md = TestMatchDuplicate.create(dupid)

@@ -1,6 +1,5 @@
 package com.github.thebridsk.bridge.data
 
-
 import com.github.thebridsk.bridge.data.SystemTime.Timestamp
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.media.ArraySchema
@@ -189,7 +188,9 @@ case class MatchChicagoV3(
   }
 
   def hasPlayStarted: Boolean = {
-    rounds.length > 1 || rounds.headOption.map( r => !r.hands.isEmpty ).getOrElse(false)
+    rounds.length > 1 || rounds.headOption
+      .map(r => !r.hands.isEmpty)
+      .getOrElse(false)
   }
 
   /**
@@ -247,7 +248,8 @@ case class MatchChicagoV3(
   }
 
   @Schema(hidden = true)
-  def isConvertableToChicago5: Boolean = players.length == 4 && rounds.length < 2
+  def isConvertableToChicago5: Boolean =
+    players.length == 4 && rounds.length < 2
 
   def playChicago5(extraPlayer: String): MatchChicagoV3 = {
     if (!isConvertableToChicago5)
@@ -348,7 +350,8 @@ case class MatchChicagoV3(
 
   def readyForWrite: MatchChicagoV3 = copy(bestMatch = None)
 
-  def addBestMatch(bm: ChicagoBestMatch): MatchChicagoV3 = copy(bestMatch = Option(bm))
+  def addBestMatch(bm: ChicagoBestMatch): MatchChicagoV3 =
+    copy(bestMatch = Option(bm))
 
 }
 

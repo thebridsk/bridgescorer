@@ -44,7 +44,11 @@ case class MatchDuplicateV2(
       required = true
     )
     updated: Timestamp
-) extends VersionedInstance[MatchDuplicate, MatchDuplicateV2, MatchDuplicate.Id] {
+) extends VersionedInstance[
+      MatchDuplicate,
+      MatchDuplicateV2,
+      MatchDuplicate.Id
+    ] {
 
   def equalsIgnoreModifyTime(
       other: MatchDuplicateV2,
@@ -54,7 +58,10 @@ case class MatchDuplicateV2(
       equalsInTeams(other, throwit) &&
       equalsInBoards(other, throwit)
 
-  def equalsInTeams(other: MatchDuplicateV2, throwit: Boolean = false): Boolean = {
+  def equalsInTeams(
+      other: MatchDuplicateV2,
+      throwit: Boolean = false
+  ): Boolean = {
     if (teams.keySet == other.teams.keySet) {
       // this function returns true if the values in the two maps are not equal
       teams.keys.find { key =>
@@ -84,7 +91,10 @@ case class MatchDuplicateV2(
     }
   }
 
-  def equalsInBoards(other: MatchDuplicateV2, throwit: Boolean = false): Boolean = {
+  def equalsInBoards(
+      other: MatchDuplicateV2,
+      throwit: Boolean = false
+  ): Boolean = {
     if (boards.keySet == other.boards.keySet) {
       val notequalboard = boards.keys.find { key =>
         {
@@ -209,7 +219,11 @@ case class MatchDuplicateV2(
     }
   }
 
-  def getHand(tableid: Table.Id, round: Int, boardId: Board.Id): Option[DuplicateHandV1] = {
+  def getHand(
+      tableid: Table.Id,
+      round: Int,
+      boardId: Board.Id
+  ): Option[DuplicateHandV1] = {
     boards.get(boardId) match {
       case Some(b) =>
         b.hands.values.find { h =>
@@ -492,7 +506,7 @@ case class MatchDuplicateV2(
       .sortWith((l, r) => l.id < r.id)
 //     name: String, short: String, description: String, boards: List[BoardInSet]
     BoardSet(
-      BoardSet.id( s"${boardset.id}In${id}"),
+      BoardSet.id(s"${boardset.id}In${id}"),
       "Used in match " + id,
       "Used in match " + id,
       bins
@@ -531,7 +545,7 @@ object MatchDuplicateV2 {
       movement: Movement.Id = Movement.default
   ) = new MatchDuplicateV2(id, Map(), Map(), boardset, movement, time, time)
 
-  def createTeams(numberTeams: Int): Map[Team.Id,Team] = {
+  def createTeams(numberTeams: Int): Map[Team.Id, Team] = {
     (1 to numberTeams)
       .map(t => Team.id(t))
       .map(id => id -> Team.create(id, "", ""))

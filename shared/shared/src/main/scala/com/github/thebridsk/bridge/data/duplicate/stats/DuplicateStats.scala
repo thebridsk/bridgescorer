@@ -9,8 +9,10 @@ case class DuplicateStats(
     playerPlacesStats: Option[PlayerPlaces]
 ) {
 
-  def withPlayerStats(ps: PlayerStats): DuplicateStats = copy(playerStats = Some(ps))
-  def withContractStats(cs: ContractStats): DuplicateStats = copy(contractStats = Some(cs))
+  def withPlayerStats(ps: PlayerStats): DuplicateStats =
+    copy(playerStats = Some(ps))
+  def withContractStats(cs: ContractStats): DuplicateStats =
+    copy(contractStats = Some(cs))
   def withPlayerDoubledStats(pds: PlayerStats): DuplicateStats =
     copy(playerDoubledStats = Some(pds))
   def withComparisonStats(cs: PlayerComparisonStats): DuplicateStats =

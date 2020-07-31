@@ -14,7 +14,8 @@ class RoundScoring(val round: Round) {
   }.toArray
   val dealerFirstRound: PlayerPosition = PlayerPosition(round.dealerFirstRound)
 
-  val players: Array[String] = Array(round.north, round.south, round.east, round.west)
+  val players: Array[String] =
+    Array(round.north, round.south, round.east, round.west)
 
   val dealerOrder: Array[PlayerPosition] = {
     var before: List[PlayerPosition] = Nil
@@ -66,5 +67,6 @@ class RoundScoring(val round: Round) {
 object RoundScoring {
   def apply(round: Round) = new RoundScoring(round)
 
-  val definedDealerOrder: List[PlayerPosition] = North :: East :: South :: West :: Nil
+  val definedDealerOrder: List[PlayerPosition] =
+    North :: East :: South :: West :: Nil
 }

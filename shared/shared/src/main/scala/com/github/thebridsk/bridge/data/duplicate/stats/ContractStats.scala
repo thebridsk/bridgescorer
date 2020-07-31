@@ -52,9 +52,11 @@ case class ContractStat(
     toCsv(min, max, true)
   }
 
-  def normalize: ContractStat = copy(histogram = histogram.sortBy(x => x.tricks))
+  def normalize: ContractStat =
+    copy(histogram = histogram.sortBy(x => x.tricks))
 
-  def parseContract: ContractStats.Contract = ContractStats.parseContract(contract)
+  def parseContract: ContractStats.Contract =
+    ContractStats.parseContract(contract)
 
   def isTotal: Boolean = contract.startsWith("T")
 }
@@ -139,7 +141,9 @@ object ContractStats {
     out.flush()
   }
 
-  def statsToCsvPercent(stats: ContractStats)(implicit out: PrintStream): Unit = {
+  def statsToCsvPercent(
+      stats: ContractStats
+  )(implicit out: PrintStream): Unit = {
     statsToCsv(stats, true)
   }
 

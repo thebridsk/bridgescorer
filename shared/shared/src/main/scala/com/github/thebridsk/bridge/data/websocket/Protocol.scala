@@ -108,22 +108,28 @@ object Protocol {
     * Update a board in a duplicate match.
     */
   case class UpdateDuplicateTeam(dupid: MatchDuplicate.Id, team: Team)
-    extends ToServerMessage
-    with ToBrowserMessage
+      extends ToServerMessage
+      with ToBrowserMessage
 
   /**
     * Update a picture in a duplicate match, if None, then the picture was deleted.
     */
-    case class UpdateDuplicatePicture(dupid: MatchDuplicate.Id, boardid: Board.Id, handId: Team.Id, picture: Option[DuplicatePicture])
-    extends ToServerMessage
-    with ToBrowserMessage
+  case class UpdateDuplicatePicture(
+      dupid: MatchDuplicate.Id,
+      boardid: Board.Id,
+      handId: Team.Id,
+      picture: Option[DuplicatePicture]
+  ) extends ToServerMessage
+      with ToBrowserMessage
 
   /**
     * Update a picture in a duplicate match, if None, then the picture was deleted.
     */
-  case class UpdateDuplicatePictures(dupid: MatchDuplicate.Id, picture: List[DuplicatePicture])
-    extends ToServerMessage
-    with ToBrowserMessage
+  case class UpdateDuplicatePictures(
+      dupid: MatchDuplicate.Id,
+      picture: List[DuplicatePicture]
+  ) extends ToServerMessage
+      with ToBrowserMessage
 
   /**
     * Update the MatchChicago.

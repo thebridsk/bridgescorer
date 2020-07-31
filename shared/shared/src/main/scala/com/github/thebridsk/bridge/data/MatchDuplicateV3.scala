@@ -63,7 +63,11 @@ case class MatchDuplicateV3 private (
       `type` = "string"
     )
     scoringmethod: Option[String] = None
-) extends VersionedInstance[MatchDuplicate, MatchDuplicateV3, MatchDuplicate.Id] {
+) extends VersionedInstance[
+      MatchDuplicate,
+      MatchDuplicateV3,
+      MatchDuplicate.Id
+    ] {
 
   def equalsIgnoreModifyTime(
       other: MatchDuplicateV3,
@@ -82,7 +86,10 @@ case class MatchDuplicateV3 private (
     rc
   }
 
-  def equalsInTeams(other: MatchDuplicateV3, throwit: Boolean = false): Boolean = {
+  def equalsInTeams(
+      other: MatchDuplicateV3,
+      throwit: Boolean = false
+  ): Boolean = {
     if (teams.length == other.teams.length) {
       teams.find { t1 =>
         // this function must return true if t1 is NOT in other.team
@@ -108,7 +115,10 @@ case class MatchDuplicateV3 private (
     }
   }
 
-  def equalsInBoards(other: MatchDuplicateV3, throwit: Boolean = false): Boolean = {
+  def equalsInBoards(
+      other: MatchDuplicateV3,
+      throwit: Boolean = false
+  ): Boolean = {
     if (boards.length == other.boards.length) {
       boards.find { t1 =>
         // this function must return true if t1 is NOT in other.team
@@ -246,7 +256,11 @@ case class MatchDuplicateV3 private (
     }
   }
 
-  def getHand(tableid: Table.Id, round: Int, boardId: Board.Id): Option[DuplicateHandV2] = {
+  def getHand(
+      tableid: Table.Id,
+      round: Int,
+      boardId: Board.Id
+  ): Option[DuplicateHandV2] = {
     getBoard(boardId) match {
       case Some(b) =>
         b.hands.find { h =>
@@ -530,7 +544,8 @@ case class MatchDuplicateV3 private (
   }
 
   @Schema(hidden = true)
-  def getScoringMethod: String = scoringmethod.getOrElse(MatchDuplicateV3.MatchPoints)
+  def getScoringMethod: String =
+    scoringmethod.getOrElse(MatchDuplicateV3.MatchPoints)
 
   /**
     * Get all the table Ids in sort order.
@@ -611,7 +626,15 @@ trait IdMatchDuplicate extends IdDuplicateSummary
 object MatchDuplicateV3 extends HasId[IdMatchDuplicate]("M") {
   def create(id: MatchDuplicate.Id = MatchDuplicate.idNul): MatchDuplicateV3 = {
     val time = SystemTime.currentTimeMillis()
-    new MatchDuplicateV3(id, List(), List(), BoardSet.idNul, Movement.idNul, time, time)
+    new MatchDuplicateV3(
+      id,
+      List(),
+      List(),
+      BoardSet.idNul,
+      Movement.idNul,
+      time,
+      time
+    )
   }
 
   val MatchPoints = "MP"

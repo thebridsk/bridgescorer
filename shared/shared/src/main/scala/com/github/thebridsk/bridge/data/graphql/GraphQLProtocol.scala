@@ -233,8 +233,11 @@ object GraphQLProtocol {
     def hasData = data.isDefined
   }
 
-  implicit val errorLocationFormat: OFormat[ErrorLocation] = Json.format[ErrorLocation]
-  implicit val ErrorMessageFormat: OFormat[ErrorMessage] = Json.format[ErrorMessage]
-  implicit val graphQLResponseFormat: OFormat[GraphQLResponse] = Json.format[GraphQLResponse]
+  implicit val errorLocationFormat: OFormat[ErrorLocation] =
+    Json.format[ErrorLocation]
+  implicit val ErrorMessageFormat: OFormat[ErrorMessage] =
+    Json.format[ErrorMessage]
+  implicit val graphQLResponseFormat: OFormat[GraphQLResponse] =
+    Json.format[GraphQLResponse]
 
 }

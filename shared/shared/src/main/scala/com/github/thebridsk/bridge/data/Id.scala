@@ -22,27 +22,29 @@ import play.api.libs.json.KeyReads
   *
   */
 @Schema(description = "The ID", `type` = "string", format = "id")
-case class Id[A] private[data] ( val id: String, useName: Boolean = false )( implicit private [Id] val classTag: ClassTag[A] ) extends Ordered[Id[A]] {
-  override
-  def equals( other: Any ): Boolean = {
+case class Id[A] private[data] (val id: String, useName: Boolean = false)(
+    implicit private[Id] val classTag: ClassTag[A]
+) extends Ordered[Id[A]] {
+  override def equals(other: Any): Boolean = {
     // println(s"comparing $this and $other")
     other match {
-      case o: Id[A] => o.id == id && (o.classTag.runtimeClass eq classTag.runtimeClass)
+      case o: Id[A] =>
+        o.id == id && (o.classTag.runtimeClass eq classTag.runtimeClass)
       case _ => false
     }
   }
-  override
-  def hashCode(): Int = id.hashCode() + classTag.runtimeClass.hashCode()
+  override def hashCode(): Int =
+    id.hashCode() + classTag.runtimeClass.hashCode()
 
-  override
-  def toString(): String = s"Id[${classTag.runtimeClass.getSimpleName}]($id)"
+  override def toString(): String =
+    s"Id[${classTag.runtimeClass.getSimpleName}]($id)"
 
   def compare(that: Id[A]): Int = {
     if (useName) {
       id.compareTo(that.id)
     } else {
-      val Id.idpattern(p1,s1) = id
-      val Id.idpattern(p2,s2) = that.id
+      val Id.idpattern(p1, s1) = id
+      val Id.idpattern(p2, s2) = that.id
 
       val r = p1.compareTo(p2)
       if (r == 0) {
@@ -63,8 +65,8 @@ case class Id[A] private[data] ( val id: String, useName: Boolean = false )( imp
   def toNumber: String = {
     if (useName) throw new IllegalStateException
     id match {
-      case Id.idpattern(_,bn) => bn
-      case _                => id
+      case Id.idpattern(_, bn) => bn
+      case _                   => id
     }
   }
 
@@ -73,14 +75,17 @@ case class Id[A] private[data] ( val id: String, useName: Boolean = false )( imp
   def isNul: Boolean = id == ""
 
   def toBase[B >: A]: Id[B] = this.asInstanceOf[Id[B]]
-  def toSubclass[S <: A]( implicit sTag: ClassTag[S] ): Option[Id[S]] = {
+  def toSubclass[S <: A](implicit sTag: ClassTag[S]): Option[Id[S]] = {
     val cls = classTag.runtimeClass
     if (sTag.runtimeClass.isAssignableFrom(cls)) Some(this.asInstanceOf[Id[S]])
     else None
   }
 }
 
-class HasId[IdType: ClassTag]( val prefix: String, val useName: Boolean = false ) {
+class HasId[IdType: ClassTag](
+    val prefix: String,
+    val useName: Boolean = false
+) {
 
   import com.github.thebridsk.bridge.data
   type ItemType = IdType
@@ -96,11 +101,13 @@ class HasId[IdType: ClassTag]( val prefix: String, val useName: Boolean = false 
     * @return the Id object
     * @throws IllegalArgumentException if s is not a valid Id for this type of item.
     */
-  def id( s: String ): Id = {
+  def id(s: String): Id = {
     if (!useName && !s.isEmpty()) {
       val p = Id.parseId(s)
       if (p.isEmpty || p.get._1 != prefix)
-        throw new IllegalArgumentException(s"String not valid for Ids for class ${getClass.getSimpleName}: $s")
+        throw new IllegalArgumentException(
+          s"String not valid for Ids for class ${getClass.getSimpleName}: $s"
+        )
     }
     Id(s, useName)
   }
@@ -111,12 +118,12 @@ class HasId[IdType: ClassTag]( val prefix: String, val useName: Boolean = false 
     * @param i the Id number
     * @return the Id object with and id of s"$prefix$i"
     */
-  def id( i: Int ): Id = id( s"$prefix$i" )
+  def id(i: Int): Id = id(s"$prefix$i")
 
   def idNul: data.Id[IdType] = Id("", useName)
 
   val idKeyReads: KeyReads[data.Id[IdType]] = new KeyReads[data.Id[IdType]] {
-    def readKey(key: String ): JsResult[data.Id[IdType]] = JsSuccess( id(key) )
+    def readKey(key: String): JsResult[data.Id[IdType]] = JsSuccess(id(key))
   }
 
   val idKeyWrites: KeyWrites[data.Id[IdType]] = new KeyWrites[data.Id[IdType]] {
@@ -130,14 +137,14 @@ class HasId[IdType: ClassTag]( val prefix: String, val useName: Boolean = false 
     def reads(json: JsValue): JsResult[data.Id[IdType]] = {
       json match {
         case s: JsString =>
-          JsSuccess( id(s.value) )
+          JsSuccess(id(s.value))
         case e =>
-          JsError( Seq() )
+          JsError(Seq())
       }
     }
 
     def writes(o: data.Id[IdType]): JsValue = {
-      JsString( o.id )
+      JsString(o.id)
     }
 
   }
@@ -146,25 +153,24 @@ class HasId[IdType: ClassTag]( val prefix: String, val useName: Boolean = false 
 
 object Id {
 
-  def apply[A]( id: String )(implicit classTag: ClassTag[A]) = new Id[A](id)
-
+  def apply[A](id: String)(implicit classTag: ClassTag[A]) = new Id[A](id)
 
   private val idpattern = "([a-zA-Z]*)(\\d+)".r
 
-  def parseId( s: String ): Option[(String, String)] = {
+  def parseId(s: String): Option[(String, String)] = {
     s match {
-      case idpattern(p,i) => Some( (p,i) )
-      case _ => None
+      case idpattern(p, i) => Some((p, i))
+      case _               => None
     }
   }
 
   def isValidIdPattern(s: String): Boolean = s match {
-    case idpattern(p,n) => true
-    case _            => false
+    case idpattern(p, n) => true
+    case _               => false
   }
 
   import scala.language.implicitConversions
-  implicit def toBase[A, B >: A]( id: Id[A] ): Id[B] = id.toBase
+  implicit def toBase[A, B >: A](id: Id[A]): Id[B] = id.toBase
 
 }
 

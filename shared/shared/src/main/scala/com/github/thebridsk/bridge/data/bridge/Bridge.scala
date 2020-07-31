@@ -53,7 +53,8 @@ case class ContractTricks(tricks: Int) {
 
 object ContractTricks {
   implicit def contractTricksToInt(tricks: ContractTricks): Int = tricks.tricks
-  implicit def intToContractTricks(tricks: Int): ContractTricks = ContractTricks(tricks)
+  implicit def intToContractTricks(tricks: Int): ContractTricks =
+    ContractTricks(tricks)
 }
 
 object PassedOut extends ContractTricks(0)
@@ -244,7 +245,8 @@ class BridgeHand(
       SystemTime.currentTimeMillis()
     )
 
-  def getTricksRange(): Range = BridgeHand.getTricksRange(madeOrDown, contractTricks)
+  def getTricksRange(): Range =
+    BridgeHand.getTricksRange(madeOrDown, contractTricks)
 }
 
 object BridgeHand {
@@ -286,7 +288,10 @@ object BridgeHand {
     )
   }
 
-  def getTricksRange(madeOrDown: MadeOrDown, contractTricks: ContractTricks): Range = {
+  def getTricksRange(
+      madeOrDown: MadeOrDown,
+      contractTricks: ContractTricks
+  ): Range = {
     if (contractTricks.tricks == 0) {
       0 until 0
     } else {

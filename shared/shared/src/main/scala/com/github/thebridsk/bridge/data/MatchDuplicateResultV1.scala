@@ -236,7 +236,9 @@ case class MatchDuplicateResultV1 private (
     * The timestamp is not changed.
     * @return None if the names were not changed.  Some() with the modified object
     */
-  def modifyPlayers(nameMap: Map[String, String]): Option[MatchDuplicateResultV1] = {
+  def modifyPlayers(
+      nameMap: Map[String, String]
+  ): Option[MatchDuplicateResultV1] = {
     val (nresults, modified) = results
       .map { ws =>
         ws.map { t =>
@@ -355,10 +357,11 @@ object MatchDuplicateResultV1 {
     ).fixup
   }
 
-  def create(id: MatchDuplicateResult.Id = MatchDuplicateResult.idNul): MatchDuplicateResultV1 = {
+  def create(
+      id: MatchDuplicateResult.Id = MatchDuplicateResult.idNul
+  ): MatchDuplicateResultV1 = {
     val time = SystemTime.currentTimeMillis()
-    new MatchDuplicateResultV1(id, List(), None, None, None, time, time, time)
-      .fixup
+    new MatchDuplicateResultV1(id, List(), None, None, None, time, time, time).fixup
   }
 
   def createFrom(
@@ -392,7 +395,16 @@ object MatchDuplicateResultV1 {
         val played = if (md.created == 0) time else md.created
         (played, md.created, md.updated)
     }
-    new MatchDuplicateResultV1(MatchDuplicateResult.idNul, r, None, None, None, pl, cr, up).fixup
+    new MatchDuplicateResultV1(
+      MatchDuplicateResult.idNul,
+      r,
+      None,
+      None,
+      None,
+      pl,
+      cr,
+      up
+    ).fixup
 
   }
 }

@@ -516,7 +516,7 @@ class PairsDataSummary(
   val players = pds.players
   val playerFilter: List[String] = filter.getOrElse(players)
 
-  val playerTotals: Map[String,PairData] = playerFilter.map { player =>
+  val playerTotals: Map[String, PairData] = playerFilter.map { player =>
     player -> pds.get(player, if (displayOnly) None else filter)
   }.toMap
 
@@ -533,7 +533,8 @@ class PairsDataSummary(
     }
   }
 
-  val extraStatsPlayerTotals: List[Stat] = extraColorBy.map(e => new Stat(e)).toList
+  val extraStatsPlayerTotals: List[Stat] =
+    extraColorBy.map(e => new Stat(e)).toList
   val colorStatPlayerTotals = new Stat(colorBy)
 
   Stat.addPairsPlayer1(

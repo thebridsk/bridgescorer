@@ -30,7 +30,11 @@ case class MatchDuplicateV1(
       required = true
     )
     updated: Timestamp
-) extends VersionedInstance[MatchDuplicate, MatchDuplicateV1, MatchDuplicate.Id] {
+) extends VersionedInstance[
+      MatchDuplicate,
+      MatchDuplicateV1,
+      MatchDuplicate.Id
+    ] {
 
   def equalsIgnoreModifyTime(other: MatchDuplicateV1): Boolean =
     id == other.id &&
@@ -158,7 +162,11 @@ case class MatchDuplicateV1(
     }
   }
 
-  def getHand(tableid: Table.Id, round: Int, boardId: Board.Id): Option[DuplicateHandV1] = {
+  def getHand(
+      tableid: Table.Id,
+      round: Int,
+      boardId: Board.Id
+  ): Option[DuplicateHandV1] = {
     boards.get(boardId) match {
       case Some(b) =>
         b.hands.values.find { h =>
@@ -454,7 +462,7 @@ object MatchDuplicateV1 {
   def create(id: MatchDuplicate.Id = MatchDuplicate.idNul) =
     new MatchDuplicateV1(id, Map(), Map(), time, time)
 
-  def createTeams(numberTeams: Int): Map[Team.Id,Team] = {
+  def createTeams(numberTeams: Int): Map[Team.Id, Team] = {
     (1 to numberTeams)
       .map(t => Team.id(t))
       .map(id => id -> Team.create(id, "", ""))

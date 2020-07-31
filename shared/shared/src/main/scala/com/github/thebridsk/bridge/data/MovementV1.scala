@@ -65,7 +65,8 @@ case class MovementV1(
     )
     deletable: Option[Boolean] = None,
     @Schema(
-      description = "true if movement definition can be reset to the default, default is false",
+      description =
+        "true if movement definition can be reset to the default, default is false",
       required = false
     )
     resetToDefault: Option[Boolean] = None,
@@ -83,13 +84,13 @@ case class MovementV1(
       description = "the last time the movement was updated, default: unknown",
       required = false
     )
-    updateTime: Option[SystemTime.Timestamp] = None,
+    updateTime: Option[SystemTime.Timestamp] = None
 ) extends VersionedInstance[MovementV1, MovementV1, MovementV1.Id] {
 
   def id = name
 
   @Schema(hidden = true)
-  private def optional( flag: Boolean, fun: Movement=>Movement) = {
+  private def optional(flag: Boolean, fun: Movement => Movement) = {
     if (flag) fun(this)
     else this
   }
@@ -100,9 +101,12 @@ case class MovementV1(
       dontUpdateTime: Boolean = false
   ): Movement = {
     val time = SystemTime.currentTimeMillis()
-    copy(name = newId).
-      optional(forCreate, _.copy(creationTime=Some(time), updateTime=Some(time))).
-      optional(!dontUpdateTime, _.copy(updateTime=Some(time)))
+    copy(name = newId)
+      .optional(
+        forCreate,
+        _.copy(creationTime = Some(time), updateTime = Some(time))
+      )
+      .optional(!dontUpdateTime, _.copy(updateTime = Some(time)))
   }
 
   def convertToCurrentVersion: (Boolean, MovementV1) = (true, this)
@@ -168,12 +172,15 @@ case class MovementV1(
 
   @Schema(hidden = true)
   /**
-   * Returns all the tables sorted by table number,
-   * within each table all the rounds sorted by round number
-   */
+    * Returns all the tables sorted by table number,
+    * within each table all the rounds sorted by round number
+    */
   def getTables: List[List[HandInTable]] = {
-    hands.groupBy(_.table).toList.sortWith( (l,r)=> l._1 < r._1).
-      map(_._2.sortWith((l,r)=>l.round<r.round))
+    hands
+      .groupBy(_.table)
+      .toList
+      .sortWith((l, r) => l._1 < r._1)
+      .map(_._2.sortWith((l, r) => l.round < r.round))
   }
 
   @Schema(hidden = true)
@@ -195,7 +202,7 @@ case class MovementV1(
 
 trait IdMovement
 
-object MovementV1 extends HasId[IdMovement]("",true) {
+object MovementV1 extends HasId[IdMovement]("", true) {
   def default: Id = Movement.id("2TablesArmonk")
 
   def standard: Id = Movement.id("Howell04T2B18")

@@ -112,21 +112,24 @@ case class BoardV2 private (
 
   def timesPlayed: Int = hands.filter(dh => dh.wasPlayed).size
 
-  def handPlayedByTeam(team: Team.Id): Option[DuplicateHandV2] = hands.collectFirst {
-    case hand: DuplicateHandV2 if hand.isTeam(team) => hand
-  }
+  def handPlayedByTeam(team: Team.Id): Option[DuplicateHandV2] =
+    hands.collectFirst {
+      case hand: DuplicateHandV2 if hand.isTeam(team) => hand
+    }
 
   def wasPlayedByTeam(team: Team.Id): Boolean = !handPlayedByTeam(team).isEmpty
 
-  def handTeamPlayNS(team: Team.Id): Option[DuplicateHandV2] = hands.collectFirst {
-    case hand: DuplicateHandV2 if hand.isNSTeam(team) => hand
-  }
+  def handTeamPlayNS(team: Team.Id): Option[DuplicateHandV2] =
+    hands.collectFirst {
+      case hand: DuplicateHandV2 if hand.isNSTeam(team) => hand
+    }
 
   def didTeamPlayNS(team: Team.Id): Boolean = !handTeamPlayNS(team).isEmpty
 
-  def handTeamPlayEW(team: Team.Id): Option[DuplicateHandV2] = hands.collectFirst {
-    case hand: DuplicateHandV2 if hand.isEWTeam(team) => hand
-  }
+  def handTeamPlayEW(team: Team.Id): Option[DuplicateHandV2] =
+    hands.collectFirst {
+      case hand: DuplicateHandV2 if hand.isEWTeam(team) => hand
+    }
 
   def didTeamPlayEW(team: Team.Id): Boolean = !handTeamPlayEW(team).isEmpty
 

@@ -1,6 +1,5 @@
 package com.github.thebridsk.bridge.data
 
-
 import com.github.thebridsk.bridge.data.SystemTime.Timestamp
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.media.ArraySchema
@@ -139,7 +138,8 @@ case class MatchChicagoV2(
     )
   }
 
-  def isConvertableToChicago5: Boolean = players.length == 4 && rounds.length < 2
+  def isConvertableToChicago5: Boolean =
+    players.length == 4 && rounds.length < 2
 
   def playChicago5(extraPlayer: String): MatchChicagoV2 = {
     if (!isConvertableToChicago5)
@@ -211,9 +211,7 @@ case class MatchChicagoV2(
   def convertToCurrentVersion: (Boolean, MatchChicago) = {
     (
       false,
-      MatchChicago(id, players, rounds, gamesPerRound, false, created, updated)
-        .convertToCurrentVersion
-        ._2
+      MatchChicago(id, players, rounds, gamesPerRound, false, created, updated).convertToCurrentVersion._2
     )
   }
 

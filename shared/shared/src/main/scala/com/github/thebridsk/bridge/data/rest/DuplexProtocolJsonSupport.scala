@@ -8,7 +8,8 @@ trait ToBrowserDuplexProtocolJsonSupport {
   import ToBrowserProtocolJsonSupport.toBrowserMessageFormat
 
   implicit val responseFormat: OFormat[Response] = Json.format[Response]
-  implicit val unsolicitedFormat: OFormat[Unsolicited] = Json.format[Unsolicited]
+  implicit val unsolicitedFormat: OFormat[Unsolicited] =
+    Json.format[Unsolicited]
 
 }
 
@@ -18,7 +19,8 @@ trait ToServerDuplexProtocolJsonSupport {
   implicit val sendFormat: OFormat[Send] = Json.format[Send]
   implicit val requestFormat: OFormat[Request] = Json.format[Request]
 
-  implicit val errorResponseFormat: OFormat[ErrorResponse] = Json.format[ErrorResponse]
+  implicit val errorResponseFormat: OFormat[ErrorResponse] =
+    Json.format[ErrorResponse]
   implicit val logEntryV2Format: OFormat[LogEntryV2] = Json.format[LogEntryV2]
   implicit val logEntrySFormat: OFormat[LogEntryS] = Json.format[LogEntryS]
   implicit val completeFormat: OFormat[Complete] = Json.format[Complete]
@@ -82,14 +84,15 @@ class DuplexMessageFormat extends SealedFormat[DuplexMessage] {
       case x: LogEntryV2    => Json.toJson[LogEntryV2](x)
       case x: LogEntryS     => Json.toJson[LogEntryS](x)
 
-      case x: Complete      => Json.toJson[Complete](x)
-      case x: Fail          => Json.toJson[Complete]( Complete("Internal server error"))
+      case x: Complete => Json.toJson[Complete](x)
+      case x: Fail     => Json.toJson[Complete](Complete("Internal server error"))
     }
   }
 }
 
 trait DuplexProtocolJsonSupport {
-  implicit val duplexMessageFormat: DuplexMessageFormat = new DuplexMessageFormat
+  implicit val duplexMessageFormat: DuplexMessageFormat =
+    new DuplexMessageFormat
 }
 object DuplexProtocolJsonSupport extends DuplexProtocolJsonSupport
 //object Test {

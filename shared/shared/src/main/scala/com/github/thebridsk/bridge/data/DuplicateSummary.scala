@@ -78,10 +78,13 @@ case class DuplicateSummaryDetails(
   def percentDown: Double = if (declarer == 0) 0.0 else down * 100.0 / declarer
   def percentAllowedMade: Double =
     if (defended == 0) 0.0 else allowedMade * 100.0 / defended
-  def percentTookDown: Double = if (defended == 0) 0.0 else tookDown * 100.0 / defended
+  def percentTookDown: Double =
+    if (defended == 0) 0.0 else tookDown * 100.0 / defended
 
-  def percentDeclared: Double = if (total == 0) 0.0 else declarer * 100.0 / total
-  def percentDefended: Double = if (total == 0) 0.0 else defended * 100.0 / total
+  def percentDeclared: Double =
+    if (total == 0) 0.0 else declarer * 100.0 / total
+  def percentDefended: Double =
+    if (total == 0) 0.0 else defended * 100.0 / total
   def percentPassed: Double = if (total == 0) 0.0 else passed * 100.0 / total
 
   /**
@@ -309,19 +312,19 @@ case class DuplicateSummary(
     teams.flatMap { t =>
       Seq(t.team.player1, t.team.player2)
     }.toList
-  def playerPlaces(): Map[String,Int] =
+  def playerPlaces(): Map[String, Int] =
     teams.flatMap { t =>
       Seq((t.team.player1 -> t.getPlaceMp), (t.team.player2 -> t.getPlaceMp))
     }.toMap
-  def playerScores(): Map[String,Double] =
+  def playerScores(): Map[String, Double] =
     teams.flatMap { t =>
       Seq((t.team.player1 -> t.getResultMp), (t.team.player2 -> t.getResultMp))
     }.toMap
-  def playerPlacesImp(): Map[String,Int] =
+  def playerPlacesImp(): Map[String, Int] =
     teams.flatMap { t =>
       Seq((t.team.player1 -> t.getPlaceImp), (t.team.player2 -> t.getPlaceImp))
     }.toMap
-  def playerScoresImp(): Map[String,Double] =
+  def playerScoresImp(): Map[String, Double] =
     teams.flatMap { t =>
       Seq(
         (t.team.player1 -> t.getResultImp),
@@ -338,8 +341,10 @@ case class DuplicateSummary(
       .map(t => t.placeImp.isDefined && t.resultImp.isDefined)
       .getOrElse(false)
 
-  def idAsDuplicateResultId: Option[Id[MatchDuplicateResult.ItemType]] = id.toSubclass[MatchDuplicateResult.ItemType]
-  def idAsDuplicateId: Option[Id[MatchDuplicate.ItemType]] = id.toSubclass[MatchDuplicate.ItemType]
+  def idAsDuplicateResultId: Option[Id[MatchDuplicateResult.ItemType]] =
+    id.toSubclass[MatchDuplicateResult.ItemType]
+  def idAsDuplicateId: Option[Id[MatchDuplicate.ItemType]] =
+    id.toSubclass[MatchDuplicate.ItemType]
 
   def containsPair(p1: String, p2: String): Boolean = {
     teams.find { dse =>
@@ -404,42 +409,49 @@ case class DuplicateSummary(
 trait IdDuplicateSummary
 
 object DuplicateSummary extends HasId[IdDuplicateSummary]("") {
-  override
-  def id( i: Int ): Id = {
-    throw new IllegalArgumentException("DuplicateSummary Ids can not be generated, must use MatchDuplicate.Id or MatchDuplicateResult.Id")
+  override def id(i: Int): Id = {
+    throw new IllegalArgumentException(
+      "DuplicateSummary Ids can not be generated, must use MatchDuplicate.Id or MatchDuplicateResult.Id"
+    )
   }
 
-  override
-  def id( s: String ): Id = {
+  override def id(s: String): Id = {
     Id.parseId(s) match {
-      case Some( (p,i) ) =>
+      case Some((p, i)) =>
         p match {
           case MatchDuplicate.prefix =>
             MatchDuplicate.id(s).asInstanceOf[Id]
           case MatchDuplicateResult.prefix =>
             MatchDuplicateResult.id(s).asInstanceOf[Id]
           case _ =>
-            throw new IllegalArgumentException(s"DuplicateSummary Id syntax is not valid: ${s}")
+            throw new IllegalArgumentException(
+              s"DuplicateSummary Id syntax is not valid: ${s}"
+            )
         }
       case _ =>
-        throw new IllegalArgumentException(s"DuplicateSummary Id syntax is not valid: ${s}")
+        throw new IllegalArgumentException(
+          s"DuplicateSummary Id syntax is not valid: ${s}"
+        )
     }
   }
 
   def useId[T](
-    id: DuplicateSummary.Id,
-    fmd: MatchDuplicate.Id => T,
-    fmdr: MatchDuplicateResult.Id => T,
-    default: => T
+      id: DuplicateSummary.Id,
+      fmd: MatchDuplicate.Id => T,
+      fmdr: MatchDuplicateResult.Id => T,
+      default: => T
   ): T = {
-    id.toSubclass[MatchDuplicate.ItemType].map( fmd ).getOrElse {
-      id.toSubclass[MatchDuplicateResult.ItemType].map( fmdr ).getOrElse(default)
+    id.toSubclass[MatchDuplicate.ItemType].map(fmd).getOrElse {
+      id.toSubclass[MatchDuplicateResult.ItemType].map(fmdr).getOrElse(default)
     }
   }
 
-  import com.github.thebridsk.bridge.data.{ Id => DId }
-  def runIf[ T <: IdDuplicateSummary: ClassTag, R ]( id: DuplicateSummary.Id, default: => R )( f: DId[T] => R ): R = {
-    id.toSubclass[T].map( sid => f(sid) ).getOrElse(default)
+  import com.github.thebridsk.bridge.data.{Id => DId}
+  def runIf[T <: IdDuplicateSummary: ClassTag, R](
+      id: DuplicateSummary.Id,
+      default: => R
+  )(f: DId[T] => R): R = {
+    id.toSubclass[T].map(sid => f(sid)).getOrElse(default)
   }
 
   def create(md: MatchDuplicate): DuplicateSummary = {
@@ -454,12 +466,9 @@ object DuplicateSummary extends HasId[IdDuplicateSummary]("") {
         (t.id -> p.place)
       }.toList
     }.toMap
-    val details = score
-      .getDetails
-      .map { d =>
-        d.team -> d
-      }
-      .toMap
+    val details = score.getDetails.map { d =>
+      d.team -> d
+    }.toMap
     val t = md.teams.map { team =>
       DuplicateSummaryEntry(
         team,

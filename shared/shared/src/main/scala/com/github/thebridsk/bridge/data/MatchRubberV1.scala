@@ -1,6 +1,5 @@
 package com.github.thebridsk.bridge.data
 
-
 import com.github.thebridsk.bridge.data.SystemTime.Timestamp
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.media.ArraySchema
@@ -106,7 +105,12 @@ case class MatchRubberV1(
 
   }
 
-  def setPlayers(north: String, south: String, east: String, west: String): MatchRubberV1 =
+  def setPlayers(
+      north: String,
+      south: String,
+      east: String,
+      west: String
+  ): MatchRubberV1 =
     copy(
       north = north,
       south = south,
@@ -209,7 +213,8 @@ case class MatchRubberV1(
 
   def readyForWrite: MatchRubberV1 = copy(bestMatch = None)
 
-  def addBestMatch(bm: RubberBestMatch): MatchRubberV1 = copy(bestMatch = Option(bm))
+  def addBestMatch(bm: RubberBestMatch): MatchRubberV1 =
+    copy(bestMatch = Option(bm))
 }
 
 trait IdMatchRubber

@@ -97,7 +97,12 @@ object RubberBridge {
       if (ns) s"$north-$south" else s"$east-$west"
     }
 
-    def totalScore(north: String, south: String, east: String, west: String): String = {
+    def totalScore(
+        north: String,
+        south: String,
+        east: String,
+        west: String
+    ): String = {
       if (honors != 0) {
         if (nsScored == nsScoredHonors) {
           scoring(nsScored, north, south, east, west) + " " + (above + honors) + " / " + below
@@ -126,20 +131,21 @@ object RubberBridge {
       *         ewAbove
       *         ewBelow
       */
-    def getScores: (Int, Int, Int, Int) = /* (nsAbove,nsBelow,ewAbove,ewBelow) */ {
-      if (honors == 0) {
-        if (nsScored) (above, below, 0, 0)
-        else (0, 0, above, below)
-      } else {
-        if (nsScored == nsScoredHonors) {
-          if (nsScored) (above + honors, below, 0, 0)
-          else (0, 0, above + honors, below)
+    def getScores: (Int, Int, Int, Int) =
+      /* (nsAbove,nsBelow,ewAbove,ewBelow) */ {
+        if (honors == 0) {
+          if (nsScored) (above, below, 0, 0)
+          else (0, 0, above, below)
         } else {
-          if (nsScored) (above, below, honors, 0)
-          else (honors, 0, above, below)
+          if (nsScored == nsScoredHonors) {
+            if (nsScored) (above + honors, below, 0, 0)
+            else (0, 0, above + honors, below)
+          } else {
+            if (nsScored) (above, below, honors, 0)
+            else (honors, 0, above, below)
+          }
         }
       }
-    }
 
     def isDeclarerVulnerable: Boolean = declarer match {
       case North | South => nsVul.vul
@@ -153,7 +159,10 @@ object RubberBridge {
           .toString() + contractSuit.suit + contractDoubled.forScore + " " +
           (if (isDeclarerVulnerable) "Vul"; else "NotVul") + "   " + madeOrDown.forScore + " " + tricks
 
-    def contractAsString(vul: String = "Vul", notvul: String = "NotVul"): String = {
+    def contractAsString(
+        vul: String = "Vul",
+        notvul: String = "NotVul"
+    ): String = {
       if (contractTricks.tricks == 0) "Passed Out";
       else
         contractTricks.tricks

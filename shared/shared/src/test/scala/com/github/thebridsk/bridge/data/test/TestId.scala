@@ -24,7 +24,7 @@ class TestId extends AnyFlatSpec with Matchers {
 
     val idFromString = Json.parse(stringId)
     val idFromJson = Json.fromJson[MatchDuplicate.Id](idFromString) match {
-      case JsSuccess(x,_) =>
+      case JsSuccess(x, _) =>
         x mustBe id
         x
       case JsError(e) =>
@@ -36,7 +36,7 @@ class TestId extends AnyFlatSpec with Matchers {
 
     stringId2 mustBe stringId
 
-    println( s"Id = ${id} ==> json = ${stringId2}")
+    println(s"Id = ${id} ==> json = ${stringId2}")
 
   }
 

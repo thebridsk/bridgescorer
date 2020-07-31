@@ -37,7 +37,7 @@ class Statistic(name: String) {
   /**
     * Returns true if v is between vmin and vmax
     */
-  def inRange( v: Double ): Boolean = {
+  def inRange(v: Double): Boolean = {
     v >= vmin && v <= vmax
   }
 

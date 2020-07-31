@@ -118,7 +118,8 @@ class ChicagoScoring(val chicago: MatchChicago) {
     * @return is a map with the index are the people sitting out,
     * and the value is list of fixtures.
     */
-  def getRemainingPossibleFixtures: Map[String,List[ChicagoScoring.Fixture]] = {
+  def getRemainingPossibleFixtures
+      : Map[String, List[ChicagoScoring.Fixture]] = {
     val fixtures = getAllFixtures.filter(f => {
       chicago.rounds
         .find(r => {
