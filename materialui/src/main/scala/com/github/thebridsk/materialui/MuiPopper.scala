@@ -50,7 +50,8 @@ object PopperProps extends PropsFactory[PopperProps] {
 
   implicit class WrapPopperProps(private val p: PopperProps) extends AnyVal {
 
-    def placement: UndefOr[PopperPlacement] = p.placementInternal.map(s => new PopperPlacement(s))
+    def placement: UndefOr[PopperPlacement] =
+      p.placementInternal.map(s => new PopperPlacement(s))
 
 //    def placement_= (v: js.UndefOr[PopperPlacement]): Unit = {
 //      v.map{ vv=>p.placementInternal=vv.value; None }.
@@ -129,9 +130,9 @@ object MuiPopper extends ComponentFactory[PopperProps] {
   @js.native @JSImport("@material-ui/core/Popper", JSImport.Default) private object Popper
       extends js.Any
 
-      protected val f = JsComponent[PopperProps, Children.Varargs, Null](Popper)  // scalafix:ok ExplicitResultTypes; ReactComponent
+  protected val f = JsComponent[PopperProps, Children.Varargs, Null](Popper) // scalafix:ok ExplicitResultTypes; ReactComponent
 
-      // protected val f = JsFnComponent[PopperProps, Children.Varargs](Popper)
+  // protected val f = JsFnComponent[PopperProps, Children.Varargs](Popper)
 
   /**
     * @param anchorEl This is the DOM element, or a function that returns the DOM element,
@@ -174,7 +175,7 @@ object MuiPopper extends ComponentFactory[PopperProps] {
       additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
   )(
       children: CtorType.ChildArg*
-  ) = {  // scalafix:ok ExplicitResultTypes; ReactComponent
+  ) = { // scalafix:ok ExplicitResultTypes; ReactComponent
     val p: PopperProps = PopperProps(
       anchorEl = anchorEl,
       container = container,

@@ -66,7 +66,8 @@ object ButtonProps extends PropsFactory[ButtonProps] {
 
   implicit class WrapButtonProps(private val p: ButtonProps) extends AnyVal {
 
-    def color: UndefOr[ColorVariant] = p.colorInternal.map(s => new ColorVariant(s))
+    def color: UndefOr[ColorVariant] =
+      p.colorInternal.map(s => new ColorVariant(s))
 
 //    def color_= (v: js.UndefOr[ColorVariant]) = { p.colorInternal = v.map(pp => pp.value) }
 
@@ -200,7 +201,7 @@ object MuiButton extends ComponentFactory[ButtonProps] {
   @js.native @JSImport("@material-ui/core/Button", JSImport.Default) private object Button
       extends js.Any
 
-  protected val f = JsComponent[ButtonProps, Children.Varargs, Null](Button)  // scalafix:ok ExplicitResultTypes; ReactComponent
+  protected val f = JsComponent[ButtonProps, Children.Varargs, Null](Button) // scalafix:ok ExplicitResultTypes; ReactComponent
 
   /**
     * @param classes Override or extend the styles applied to the component.
@@ -290,7 +291,7 @@ object MuiButton extends ComponentFactory[ButtonProps] {
       additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
   )(
       children: CtorType.ChildArg*
-  ) = {  // scalafix:ok ExplicitResultTypes; ReactComponent
+  ) = { // scalafix:ok ExplicitResultTypes; ReactComponent
     val p: ButtonProps = ButtonProps(
       js.undefined,
       color,

@@ -20,7 +20,10 @@ protected trait ToolbarPropsPrivate extends js.Any {
 }
 
 @js.native
-trait ToolbarProps extends AdditionalProps with ToolbarPropsPrivate with StandardProps {
+trait ToolbarProps
+    extends AdditionalProps
+    with ToolbarPropsPrivate
+    with StandardProps {
   val classes: js.UndefOr[js.Dictionary[String]] = js.native
   val component: js.UndefOr[String] = js.native
   val disableGutters: js.UndefOr[Boolean] = js.native
@@ -30,7 +33,8 @@ object ToolbarProps extends PropsFactory[ToolbarProps] {
 
   implicit class WrapToolbarProps(private val p: ToolbarProps) extends AnyVal {
 
-    def variant: UndefOr[ToolbarVariant] = p.variantInternal.map(s => new ToolbarVariant(s))
+    def variant: UndefOr[ToolbarVariant] =
+      p.variantInternal.map(s => new ToolbarVariant(s))
 
 //    def variant_= (v: js.UndefOr[ToolbarVariant]): Unit = {
 //      v.map{ vv=>p.variantInternal=vv.value; None }.
@@ -100,7 +104,7 @@ object MuiToolbar {
       additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
   )(
       children: CtorType.ChildArg*
-  ) = {  // scalafix:ok ExplicitResultTypes; ReactComponent
+  ) = { // scalafix:ok ExplicitResultTypes; ReactComponent
     val p: ToolbarProps = ToolbarProps(
       classes = classes,
       component = component,

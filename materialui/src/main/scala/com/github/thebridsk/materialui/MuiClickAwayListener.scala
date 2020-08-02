@@ -42,13 +42,16 @@ trait ClickAwayListenerProps
 }
 object ClickAwayListenerProps extends PropsFactory[ClickAwayListenerProps] {
 
-  implicit class WrapClickAwayListenerProps(private val p: ClickAwayListenerProps)
-      extends AnyVal {
-    def mouseEvent: UndefOr[CALMouseEvent] = p.mouseEventInternal.map(s => new CALMouseEvent(s))
+  implicit class WrapClickAwayListenerProps(
+      private val p: ClickAwayListenerProps
+  ) extends AnyVal {
+    def mouseEvent: UndefOr[CALMouseEvent] =
+      p.mouseEventInternal.map(s => new CALMouseEvent(s))
 
 //    def mouseEvent_= (v: js.UndefOr[CALMouseEvent]) = { p.mouseEventInternal = v.map(pp => pp.value) }
 
-    def touchEvent: UndefOr[CALTouchEvent] = p.touchEventInternal.map(s => new CALTouchEvent(s))
+    def touchEvent: UndefOr[CALTouchEvent] =
+      p.touchEventInternal.map(s => new CALTouchEvent(s))
 
 //    def touchEvent_= (v: js.UndefOr[CALTouchEvent]) = { p.touchEventInternal = v.map(pp => pp.value) }
 
@@ -86,7 +89,9 @@ object MuiClickAwayListener {
   @js.native @JSImport("@material-ui/core/ClickAwayListener", JSImport.Default) private object ClickAwayListener
       extends js.Any
 
-  protected val f = JsComponent[ClickAwayListenerProps, Children.Varargs, Null](ClickAwayListener)  // scalafix:ok ExplicitResultTypes; ReactComponent
+  protected val f = JsComponent[ClickAwayListenerProps, Children.Varargs, Null](
+    ClickAwayListener
+  ) // scalafix:ok ExplicitResultTypes; ReactComponent
 
   /**
     * @param mouseEvent The mouse event to listen to. You can disable
@@ -105,7 +110,7 @@ object MuiClickAwayListener {
       additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
   )(
       children: CtorType.ChildArg*
-  ) = {  // scalafix:ok ExplicitResultTypes; ReactComponent
+  ) = { // scalafix:ok ExplicitResultTypes; ReactComponent
     val p: ClickAwayListenerProps = ClickAwayListenerProps(
       mouseEvent = mouseEvent,
       onClickAway = onClickAway,

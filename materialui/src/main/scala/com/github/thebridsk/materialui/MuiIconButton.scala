@@ -11,12 +11,10 @@ object ItemEdge {
   val start = new ItemEdge("start")
   val end = new ItemEdge("end")
   val False = new ItemEdge(false)
-  val values: List[ItemEdge] = List(start,end,False)
+  val values: List[ItemEdge] = List(start, end, False)
 
   implicit def toJsAny(cv: ItemEdge): js.Any = cv.value
 }
-
-
 @js.native
 protected trait IconButtonPropsPrivate extends js.Any {
   @JSName("color")
@@ -38,11 +36,13 @@ trait IconButtonProps extends ButtonBaseProps with IconButtonPropsPrivate {
 }
 object IconButtonProps extends PropsFactory[IconButtonProps] {
 
-  implicit class WrapButtonProps(private val p: IconButtonProps) extends AnyVal {
+  implicit class WrapButtonProps(private val p: IconButtonProps)
+      extends AnyVal {
 
-    def color: UndefOr[ColorVariant] = p.colorInternal.map(s => new ColorVariant(s))
+    def color: UndefOr[ColorVariant] =
+      p.colorInternal.map(s => new ColorVariant(s))
 
-    def edge: UndefOr[ItemEdge] = p.edgeInternal.map( s => new ItemEdge(s))
+    def edge: UndefOr[ItemEdge] = p.edgeInternal.map(s => new ItemEdge(s))
 
 //    def color_= (v: js.UndefOr[ColorVariant]) = { p.colorInternal = v.map(pp => pp.value) }
 
@@ -159,7 +159,9 @@ object MuiIconButton extends ComponentFactory[IconButtonProps] {
   @js.native @JSImport("@material-ui/core/IconButton", JSImport.Default) private object IconButton
       extends js.Any
 
-  protected val f = JsComponent[IconButtonProps, Children.Varargs, Null](IconButton)  // scalafix:ok ExplicitResultTypes; ReactComponent
+  protected val f = JsComponent[IconButtonProps, Children.Varargs, Null](
+    IconButton
+  ) // scalafix:ok ExplicitResultTypes; ReactComponent
 
   /**
     * @param classes Override or extend the styles applied to the component.
@@ -227,7 +229,7 @@ object MuiIconButton extends ComponentFactory[IconButtonProps] {
       additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
   )(
       children: CtorType.ChildArg*
-  ) = {  // scalafix:ok ExplicitResultTypes; ReactComponent
+  ) = { // scalafix:ok ExplicitResultTypes; ReactComponent
     val p: IconButtonProps = IconButtonProps(
       color = color,
       edge = edge,

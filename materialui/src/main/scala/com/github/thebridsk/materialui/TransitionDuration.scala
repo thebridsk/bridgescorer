@@ -11,7 +11,8 @@ trait TransitionDuration extends js.Object {
 }
 object TransitionDuration {
 
-  def apply(): TransitionDuration = new js.Object().asInstanceOf[TransitionDuration]
+  def apply(): TransitionDuration =
+    new js.Object().asInstanceOf[TransitionDuration]
 
   def apply(
       enter: js.UndefOr[Double] = js.undefined,

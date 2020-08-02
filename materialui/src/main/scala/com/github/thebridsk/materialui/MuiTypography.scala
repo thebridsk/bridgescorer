@@ -6,7 +6,6 @@ import scala.scalajs.js.annotation._
 import scala.scalajs.js.UndefOr
 //import com.github.thebridsk.materialui.util.{ JsNumber => _, _ }
 
-
 class TextAlign(val value: String) extends AnyVal {
   override def toString() = value
 }
@@ -80,8 +79,6 @@ object TextDisplay {
   val block = new TextColor("block")
   val inline = new TextColor("inline")
 }
-
-
 @js.native
 trait TypographyPropsPrivate extends js.Any {
   @JSName("align")
@@ -95,7 +92,10 @@ trait TypographyPropsPrivate extends js.Any {
 }
 
 @js.native
-trait TypographyProps extends AdditionalProps with TypographyPropsPrivate with StandardProps {
+trait TypographyProps
+    extends AdditionalProps
+    with TypographyPropsPrivate
+    with StandardProps {
   // val align: js.UndefOr[TextAlign] = js.native
   val classes: js.UndefOr[js.Any] = js.native
   // val color: js.UndefOr[TextColor] = js.native
@@ -109,7 +109,8 @@ trait TypographyProps extends AdditionalProps with TypographyPropsPrivate with S
 }
 object TypographyProps extends PropsFactory[TypographyProps] {
 
-  implicit class WrapTypographyProps(private val p: TypographyProps) extends AnyVal {
+  implicit class WrapTypographyProps(private val p: TypographyProps)
+      extends AnyVal {
 
     def align: UndefOr[TextAlign] = p.alignInternal.map(s => new TextAlign(s))
 
@@ -125,9 +126,11 @@ object TypographyProps extends PropsFactory[TypographyProps] {
 //        orElse{ p.colorInternal=js.undefined; None }
 //    }
 
-    def display: UndefOr[TextDisplay] = p.displayInternal.map(s => new TextDisplay(s))
+    def display: UndefOr[TextDisplay] =
+      p.displayInternal.map(s => new TextDisplay(s))
 
-    def variant: UndefOr[TextVariant] = p.variantInternal.map(s => new TextVariant(s))
+    def variant: UndefOr[TextVariant] =
+      p.variantInternal.map(s => new TextVariant(s))
 
 //    def variant_= (v: js.UndefOr[TextVariant]): Unit = {
 //      v.map{ vv=>p.variantInternal=vv.value; None }.
@@ -188,7 +191,7 @@ object TypographyProps extends PropsFactory[TypographyProps] {
     classes.foreach(p.updateDynamic("classes")(_))
     color.foreach(v => p.updateDynamic("color")(v.value))
     component.foreach(p.updateDynamic("component")(_))
-    display.foreach( v => p.updateDynamic("display")(v.value))
+    display.foreach(v => p.updateDynamic("display")(v.value))
     gutterBottom.foreach(p.updateDynamic("gutterBottom")(_))
     noWrap.foreach(p.updateDynamic("noWrap")(_))
     paragraph.foreach(p.updateDynamic("paragraph")(_))
@@ -205,7 +208,9 @@ object MuiTypography extends ComponentFactory[TypographyProps] {
   @js.native @JSImport("@material-ui/core/Typography", JSImport.Default) private object Typography
       extends js.Any
 
-  protected val f = JsComponent[TypographyProps, Children.Varargs, Null](Typography)  // scalafix:ok ExplicitResultTypes; ReactComponent
+  protected val f = JsComponent[TypographyProps, Children.Varargs, Null](
+    Typography
+  ) // scalafix:ok ExplicitResultTypes; ReactComponent
 
   /**
     * @param align Set the text-align on the component.
@@ -251,7 +256,7 @@ object MuiTypography extends ComponentFactory[TypographyProps] {
       additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
   )(
       children: CtorType.ChildArg*
-  ) = {  // scalafix:ok ExplicitResultTypes; ReactComponent
+  ) = { // scalafix:ok ExplicitResultTypes; ReactComponent
     val p: TypographyProps = TypographyProps(
       align = align,
       classes = classes,

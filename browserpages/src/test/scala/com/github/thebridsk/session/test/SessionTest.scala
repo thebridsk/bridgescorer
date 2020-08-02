@@ -9,11 +9,11 @@ import org.scalatest.time.Millis
 import com.github.thebridsk.browserpages.Session
 
 /**
- * @author werewolf
- */
+  * @author werewolf
+  */
 class SessionTest extends AnyFlatSpec with Matchers {
 
-  import Eventually.{ patienceConfig => _, _ }
+  import Eventually.{patienceConfig => _, _}
 
   import scala.concurrent.duration._
 
@@ -24,15 +24,19 @@ class SessionTest extends AnyFlatSpec with Matchers {
 
   type MyDuration = Duration
   val MyDuration = Duration
-  implicit val timeoutduration: FiniteDuration = MyDuration( 60, TimeUnit.SECONDS )
+  implicit val timeoutduration: FiniteDuration =
+    MyDuration(60, TimeUnit.SECONDS)
 
-  lazy val defaultPatienceConfig: PatienceConfig = PatienceConfig(timeout=scaled(Span(timeoutMillis, Millis)), interval=scaled(Span(intervalMillis,Millis)))
+  lazy val defaultPatienceConfig: PatienceConfig = PatienceConfig(
+    timeout = scaled(Span(timeoutMillis, Millis)),
+    interval = scaled(Span(intervalMillis, Millis))
+  )
   implicit def patienceConfig: PatienceConfig = defaultPatienceConfig
 
   behavior of "Session"
 
   it should "create a browser" in {
-    TestSession.sessionStart().setPositionRelative(0,0).setSize(1100, 900)
+    TestSession.sessionStart().setPositionRelative(0, 0).setSize(1100, 900)
 
     TestSession.sessionStop()
   }

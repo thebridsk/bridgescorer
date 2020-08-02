@@ -20,7 +20,10 @@ protected trait ListItemPropsPrivate extends js.Any {
 }
 
 @js.native
-trait ListItemProps extends AdditionalProps with ListItemPropsPrivate with StandardProps {
+trait ListItemProps
+    extends AdditionalProps
+    with ListItemPropsPrivate
+    with StandardProps {
   // val alignItem: js.UndefOr[AlignItem] = js.native
   val autoFocus: js.UndefOr[Boolean] = js.native
   val button: js.UndefOr[Boolean] = js.native
@@ -38,8 +41,10 @@ trait ListItemProps extends AdditionalProps with ListItemPropsPrivate with Stand
 
 object ListItemProps extends PropsFactory[ListItemProps] {
 
-  implicit class WrapListItemProps(private val p: ListItemProps) extends AnyVal {
-    def alignItems: UndefOr[AlignItem] = p.alignItemsInternal.map(s => new AlignItem(s))
+  implicit class WrapListItemProps(private val p: ListItemProps)
+      extends AnyVal {
+    def alignItems: UndefOr[AlignItem] =
+      p.alignItemsInternal.map(s => new AlignItem(s))
 
 //    def alignItems_= (v: js.UndefOr[AlignItem]): Unit = {
 //      v.map{ vv=>p.alignItemsInternal=vv.value; None }.
@@ -121,7 +126,7 @@ object MuiListItem extends ComponentFactory[ListItemProps] {
   @js.native @JSImport("@material-ui/core/ListItem", JSImport.Default) private object ListItem
       extends js.Any
 
-  protected val f = JsComponent[ListItemProps, Children.Varargs, Null](ListItem)  // scalafix:ok ExplicitResultTypes; ReactComponent
+  protected val f = JsComponent[ListItemProps, Children.Varargs, Null](ListItem) // scalafix:ok ExplicitResultTypes; ReactComponent
 
   /**
     * @param alignItems Defines the align-items style property.
@@ -170,7 +175,7 @@ object MuiListItem extends ComponentFactory[ListItemProps] {
       additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
   )(
       children: CtorType.ChildArg*
-  ) = {  // scalafix:ok ExplicitResultTypes; ReactComponent
+  ) = { // scalafix:ok ExplicitResultTypes; ReactComponent
     val p: ListItemProps = ListItemProps(
       alignItems = alignItems,
       autoFocus = autoFocus,

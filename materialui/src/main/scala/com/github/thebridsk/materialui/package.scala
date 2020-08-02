@@ -17,11 +17,13 @@ package object materialui {
   type Container = Node | Component[_, _] | ContainerFnNode | ContainerFnComp
 
   import scala.language.implicitConversions
-  implicit def toUndef( v: UnmountedRaw ): js.UndefOr[VdomNode] = {
+  implicit def toUndef(v: UnmountedRaw): js.UndefOr[VdomNode] = {
     val r: VdomNode = v
     r
   }
 
-  implicit def toFunction1( f: js.Object => Unit ): js.UndefOr[js.Function1[js.Object,Unit]] = f
+  implicit def toFunction1(
+      f: js.Object => Unit
+  ): js.UndefOr[js.Function1[js.Object, Unit]] = f
 
 }

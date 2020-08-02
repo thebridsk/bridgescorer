@@ -30,7 +30,10 @@ protected trait FormControlLabelPropsPrivate extends js.Any {
 }
 
 @js.native
-trait FormControlLabelProps extends AdditionalProps with StandardProps with FormControlLabelPropsPrivate {
+trait FormControlLabelProps
+    extends AdditionalProps
+    with StandardProps
+    with FormControlLabelPropsPrivate {
   val checked: js.UndefOr[Boolean] = js.native
   val classes: js.UndefOr[js.Dictionary[String]] = js.native
   // val control: js.UndefOr[Raw.React.Element] = js.native
@@ -38,22 +41,24 @@ trait FormControlLabelProps extends AdditionalProps with StandardProps with Form
   val inputRef: js.UndefOr[js.Object] = js.native
   // val label: js.UndefOr[Raw.React.Element] = js.native
 //  val labelPlacement: js.UndefOr[String] = js.native
-  val onChange: js.UndefOr[js.Function1[js.Object,Unit]] = js.native
+  val onChange: js.UndefOr[js.Function1[js.Object, Unit]] = js.native
   val value: js.UndefOr[js.Any] = js.native
 
 }
 
 object FormControlLabelProps extends PropsFactory[FormControlLabelProps] {
 
-  implicit class WrapFormControlLabelProps(private val p: FormControlLabelProps) extends AnyVal {
+  implicit class WrapFormControlLabelProps(private val p: FormControlLabelProps)
+      extends AnyVal {
 
-    def control: UndefOr[VdomNode] = p.controlInternal.map( n => VdomNode(n))
-    def label: UndefOr[VdomNode] = p.labelInternal.map( n => VdomNode(n))
-    def labelPlacement: UndefOr[LabelPlacement] = p.labelPlacementInternal.map(s => new LabelPlacement(s))
+    def control: UndefOr[VdomNode] = p.controlInternal.map(n => VdomNode(n))
+    def label: UndefOr[VdomNode] = p.labelInternal.map(n => VdomNode(n))
+    def labelPlacement: UndefOr[LabelPlacement] =
+      p.labelPlacementInternal.map(s => new LabelPlacement(s))
 
   }
 
-  def toRaw( v: VdomNode ): js.Any = v.rawNode.asInstanceOf[js.Any]
+  def toRaw(v: VdomNode): js.Any = v.rawNode.asInstanceOf[js.Any]
 
   /**
     * @param p the object that will become the properties object
@@ -81,7 +86,7 @@ object FormControlLabelProps extends PropsFactory[FormControlLabelProps] {
       inputRef: js.UndefOr[js.Object] = js.undefined,
       label: js.UndefOr[VdomNode] = js.undefined,
       labelPlacement: js.UndefOr[LabelPlacement] = js.undefined,
-      onChange: js.UndefOr[js.Function1[js.Object,Unit]] = js.undefined,
+      onChange: js.UndefOr[js.Function1[js.Object, Unit]] = js.undefined,
       value: js.UndefOr[js.Any] = js.undefined,
       className: js.UndefOr[String] = js.undefined,
       additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
@@ -91,10 +96,10 @@ object FormControlLabelProps extends PropsFactory[FormControlLabelProps] {
     props.foreach(p.updateDynamic("props")(_))
     checked.foreach(p.updateDynamic("checked")(_))
     classes.foreach(p.updateDynamic("classes")(_))
-    control.foreach( v => p.updateDynamic("control")(toRaw(v)))
+    control.foreach(v => p.updateDynamic("control")(toRaw(v)))
     disable.foreach(p.updateDynamic("disable")(_))
     inputRef.foreach(p.updateDynamic("inputRef")(_))
-    label.foreach( v => p.updateDynamic("label")(toRaw(v)))
+    label.foreach(v => p.updateDynamic("label")(toRaw(v)))
     labelPlacement.foreach(v => p.updateDynamic("labelPlacement")(v.value))
     onChange.foreach(p.updateDynamic("onChange")(_))
     value.foreach(p.updateDynamic("value")(_))
@@ -109,7 +114,9 @@ object MuiFormControlLabel extends ComponentFactory[FormControlLabelProps] {
   @js.native @JSImport("@material-ui/core/FormControlLabel", JSImport.Default) private object MList
       extends js.Any
 
-  protected val f = JsComponent[FormControlLabelProps, Children.Varargs, Null](MList)  // scalafix:ok ExplicitResultTypes; ReactComponent
+  protected val f = JsComponent[FormControlLabelProps, Children.Varargs, Null](
+    MList
+  ) // scalafix:ok ExplicitResultTypes; ReactComponent
 
   /**
     * @param checked If true, the component appears selected.
@@ -134,13 +141,13 @@ object MuiFormControlLabel extends ComponentFactory[FormControlLabelProps] {
       inputRef: js.UndefOr[js.Object] = js.undefined,
       label: js.UndefOr[VdomNode] = js.undefined,
       labelPlacement: js.UndefOr[LabelPlacement] = js.undefined,
-      onChange: js.UndefOr[js.Function1[js.Object,Unit]] = js.undefined,
+      onChange: js.UndefOr[js.Function1[js.Object, Unit]] = js.undefined,
       value: js.UndefOr[js.Any] = js.undefined,
       className: js.UndefOr[String] = js.undefined,
       additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
   )(
       children: CtorType.ChildArg*
-  ) = {  // scalafix:ok ExplicitResultTypes; ReactComponent
+  ) = { // scalafix:ok ExplicitResultTypes; ReactComponent
     val p: FormControlLabelProps = FormControlLabelProps(
       checked = checked,
       classes = classes,

@@ -89,7 +89,7 @@ object MuiMenuItem extends ComponentFactory[MenuItemProps] {
   @js.native @JSImport("@material-ui/core/MenuItem", JSImport.Default) private object MenuItem
       extends js.Any
 
-  protected val f = JsComponent[MenuItemProps, Children.Varargs, Null](MenuItem)  // scalafix:ok ExplicitResultTypes; ReactComponent
+  protected val f = JsComponent[MenuItemProps, Children.Varargs, Null](MenuItem) // scalafix:ok ExplicitResultTypes; ReactComponent
 
   /**
     * @param props the object that will become the properties object
@@ -141,7 +141,7 @@ object MuiMenuItem extends ComponentFactory[MenuItemProps] {
       additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
   )(
       children: CtorType.ChildArg*
-  ) = {  // scalafix:ok ExplicitResultTypes; ReactComponent
+  ) = { // scalafix:ok ExplicitResultTypes; ReactComponent
     val p: MenuItemProps = MenuItemProps(
       alignItems = alignItems,
       autoFocus = autoFocus,

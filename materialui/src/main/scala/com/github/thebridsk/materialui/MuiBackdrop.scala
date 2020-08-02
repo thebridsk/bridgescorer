@@ -78,7 +78,7 @@ object MuiBackdrop extends ComponentFactory[BackdropProps] {
   @js.native @JSImport("@material-ui/core/Backdrop", JSImport.Default) private object Backdrop
       extends js.Any
 
-  protected val f = JsComponent[BackdropProps, Children.Varargs, Null](Backdrop)  // scalafix:ok ExplicitResultTypes; ReactComponent
+  protected val f = JsComponent[BackdropProps, Children.Varargs, Null](Backdrop) // scalafix:ok ExplicitResultTypes; ReactComponent
 
   /**
     *
@@ -106,7 +106,7 @@ object MuiBackdrop extends ComponentFactory[BackdropProps] {
       additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
   )(
       children: CtorType.ChildArg*
-  ) = {  // scalafix:ok ExplicitResultTypes; ReactComponent
+  ) = { // scalafix:ok ExplicitResultTypes; ReactComponent
     val p: BackdropProps = BackdropProps(
       classes = classes,
       invisible = invisible,
