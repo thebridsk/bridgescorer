@@ -20,8 +20,8 @@ import com.github.thebridsk.bridge.test.pages.HelpPage
 import scala.annotation.tailrec
 
 /**
- * @author werewolf
- */
+  * @author werewolf
+  */
 class HelpTest extends AnyFlatSpec with Matchers with BeforeAndAfterAll {
   import com.github.thebridsk.browserpages.PageBrowser._
   import ParallelUtils._
@@ -30,7 +30,7 @@ class HelpTest extends AnyFlatSpec with Matchers with BeforeAndAfterAll {
 
   val screenshotDir = "target/HelpTest"
 
-  import Eventually.{ patienceConfig => _, _ }
+  import Eventually.{patienceConfig => _, _}
 
   import scala.concurrent.duration._
 
@@ -41,33 +41,39 @@ class HelpTest extends AnyFlatSpec with Matchers with BeforeAndAfterAll {
 
   type MyDuration = Duration
   val MyDuration = Duration
-  implicit val timeoutduration: FiniteDuration = MyDuration( 60, TimeUnit.SECONDS )
+  implicit val timeoutduration: FiniteDuration =
+    MyDuration(60, TimeUnit.SECONDS)
 
-  override
-  def beforeAll(): Unit = {
+  override def beforeAll(): Unit = {
 
     MonitorTCP.nextTest()
 
     TestStartLogging.startLogging()
 
-    waitForFutures( "Stopping browsers and server",
-                    CodeBlock { TestSession.sessionStart().setPositionRelative(0,0).setSize(1100, 900)},
-                    CodeBlock { TestServer.start() }
-                  )
+    waitForFutures(
+      "Stopping browsers and server",
+      CodeBlock {
+        TestSession.sessionStart().setPositionRelative(0, 0).setSize(1100, 900)
+      },
+      CodeBlock { TestServer.start() }
+    )
   }
 
-  override
-  def afterAll(): Unit = {
+  override def afterAll(): Unit = {
 
-    waitForFuturesIgnoreTimeouts( "Stopping browsers and server",
-                CodeBlock { TestSession.sessionStop() },
-                CodeBlock { TestServer.stop() }
-               )
+    waitForFuturesIgnoreTimeouts(
+      "Stopping browsers and server",
+      CodeBlock { TestSession.sessionStop() },
+      CodeBlock { TestServer.stop() }
+    )
   }
 
   var dupid: Option[String] = None
 
-  lazy val defaultPatienceConfig: PatienceConfig = PatienceConfig(timeout=scaled(Span(timeoutMillis, Millis)), interval=scaled(Span(intervalMillis,Millis)))
+  lazy val defaultPatienceConfig: PatienceConfig = PatienceConfig(
+    timeout = scaled(Span(timeoutMillis, Millis)),
+    interval = scaled(Span(intervalMillis, Millis))
+  )
   implicit def patienceConfig: PatienceConfig = defaultPatienceConfig
 
   behavior of "Help test of Bridge Server"
@@ -92,7 +98,7 @@ class HelpTest extends AnyFlatSpec with Matchers with BeforeAndAfterAll {
       val hh = webDriver.getWindowHandles.asScala.flatMap { h =>
         try {
           webDriver.switchTo().window(h)
-          Some( HelpPage.current.checkPage("introduction.html") )
+          Some(HelpPage.current.checkPage("introduction.html"))
         } catch {
           case x: Exception =>
             None
@@ -114,7 +120,7 @@ class HelpTest extends AnyFlatSpec with Matchers with BeforeAndAfterAll {
       val hh = webDriver.getWindowHandles.asScala.flatMap { h =>
         try {
           webDriver.switchTo().window(h)
-          Some( HelpPage.current.checkPage("introduction.html") )
+          Some(HelpPage.current.checkPage("introduction.html"))
         } catch {
           case x: Exception =>
             None
@@ -133,12 +139,18 @@ class HelpTest extends AnyFlatSpec with Matchers with BeforeAndAfterAll {
     val aimageurl = TestServer.getHelpPage(imageloc)
     val imgurl = s"../$imageloc"
 
-    HelpPage.checkImage( aimageurl )
+    HelpPage.checkImage(aimageurl)
 
-    withClueAndScreenShot(screenshotDir,"SummaryImage",s"Looking for img tag with ${aimageurl}",true,true) {
+    withClueAndScreenShot(
+      screenshotDir,
+      "SummaryImage",
+      s"Looking for img tag with ${aimageurl}",
+      true,
+      true
+    ) {
       eventually {
         val src = summary.findElemByXPath("//img").attribute("src")
-        src must (equal( Some(aimageurl) ) or equal( Some(imgurl) ) )
+        src must (equal(Some(aimageurl)) or equal(Some(imgurl)))
       }
     }
 
@@ -153,8 +165,8 @@ class HelpTest extends AnyFlatSpec with Matchers with BeforeAndAfterAll {
 
     val helpUrl = TestServer.getHelpPage()
 
-    def followLink( url: String ) = {
-      !( url.endsWith(".png") /* || url.endsWith("#") */ )
+    def followLink(url: String) = {
+      !(url.endsWith(".png") /* || url.endsWith("#") */ )
     }
 
     /*
@@ -164,37 +176,47 @@ class HelpTest extends AnyFlatSpec with Matchers with BeforeAndAfterAll {
      */
     @tailrec
     def visitPages(
-        queue: List[(String,String)],
+        queue: List[(String, String)],
         visited: List[String],
-        images: List[(String,String)]
-    ): List[(String,String)] = {
-      logger.finer( s"""visitPages:
-                       |  queue: ${queue}
-                       |  visited: ${visited}
-                       |  images: ${images}""".stripMargin )
+        images: List[(String, String)]
+    ): List[(String, String)] = {
+      logger.finer(s"""visitPages:
+                      |  queue: ${queue}
+                      |  visited: ${visited}
+                      |  images: ${images}""".stripMargin)
       if (!queue.isEmpty) {
-        val (page,target) = queue.head
+        val (page, target) = queue.head
         logger.fine(s"Checking url $target from $page")
-        if (visited.contains(target) || !target.startsWith(helpUrl) || target.endsWith(".png")) {
-          logger.fine( s"Ignoring ${target} from page ${page}, already visited or not on site or image" )
-          visitPages( queue.tail, visited, images )
+        if (
+          visited.contains(target) || !target.startsWith(helpUrl) || target
+            .endsWith(".png")
+        ) {
+          logger.fine(
+            s"Ignoring ${target} from page ${page}, already visited or not on site or image"
+          )
+          visitPages(queue.tail, visited, images)
         } else {
-          logger.fine( s"Checking link from page ${page}: ${target} " )
-          withClue( s"Checking link from page ${page}: ${target} " ) {
+          logger.fine(s"Checking link from page ${page}: ${target} ")
+          withClue(s"Checking link from page ${page}: ${target} ") {
             go to target
           }
           withClue(s"From page ${page} unable to get to ${target}") {
             eventually {
               currentUrl mustBe target
-              val body = findElem[Element]( xpath("//body") )
+              val body = findElem[Element](xpath("//body"))
               body.attribute("data-url") mustBe Symbol("defined")
             }
           }
-          val hrefs = HelpPage.gethrefs.filter( t => followLink(t) ).map( t => (target,t) )
-          val imagesOnPage = HelpPage.getImages.map( i => (target,i) )
+          val hrefs =
+            HelpPage.gethrefs.filter(t => followLink(t)).map(t => (target, t))
+          val imagesOnPage = HelpPage.getImages.map(i => (target, i))
           val ihrefs = hrefs.filter { href => !visited.contains(href._2) }
 
-          visitPages( queue.tail:::ihrefs, target::visited, imagesOnPage:::images )
+          visitPages(
+            queue.tail ::: ihrefs,
+            target :: visited,
+            imagesOnPage ::: images
+          )
         }
       } else {
         images
@@ -203,13 +225,13 @@ class HelpTest extends AnyFlatSpec with Matchers with BeforeAndAfterAll {
 
     val curUrl = currentUrl
     val visited =
-        // TestServer.hosturl+"play.html"::
-        // TestServer.hosturl+"help/play.html"::
-        TestServer.hosturl+"help/"::
+      // TestServer.hosturl+"play.html"::
+      // TestServer.hosturl+"help/play.html"::
+      TestServer.hosturl + "help/" ::
         Nil
 
-    logger.fine( s"Starting to visit pages, starting at $curUrl")
-    val images = visitPages( (curUrl,curUrl)::Nil, visited, Nil )
+    logger.fine(s"Starting to visit pages, starting at $curUrl")
+    val images = visitPages((curUrl, curUrl) :: Nil, visited, Nil)
 
     /*
      * @param queue the queue of pages to check, tuple2( page, target )
@@ -218,27 +240,27 @@ class HelpTest extends AnyFlatSpec with Matchers with BeforeAndAfterAll {
      */
     @tailrec
     def visitImages(
-        queue: List[(String,String)],
+        queue: List[(String, String)],
         visited: List[String]
     ): Unit = {
       if (!queue.isEmpty) {
-        val (page,target) = queue.head
+        val (page, target) = queue.head
         if (visited.contains(target)) {
-          visitImages( queue.tail, visited )
+          visitImages(queue.tail, visited)
         } else {
           logger.fine(s"Checking image from page ${page}: ${target}")
           withClue(s"From page ${page} unable to get image ${target}") {
             eventually {
-              HelpPage.checkImage( target )
+              HelpPage.checkImage(target)
             }
           }
 
-          visitImages( queue.tail, target::visited )
+          visitImages(queue.tail, target :: visited)
         }
       }
     }
 
-    visitImages( images, Nil )
+    visitImages(images, Nil)
   }
 
 }

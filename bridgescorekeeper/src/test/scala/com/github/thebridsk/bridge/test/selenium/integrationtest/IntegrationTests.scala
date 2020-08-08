@@ -5,19 +5,19 @@ import org.scalatest.Sequential
 import com.github.thebridsk.bridge.server.test.util.TestServer
 
 /**
- * @author werewolf
- */
-class IntegrationTests extends Sequential(
-  new com.github.thebridsk.bridge.fullserver.test.selenium.IntegrationTests,
-  new HelpTest
-) with BeforeAndAfterAll {
-  override
-  def beforeAll(): Unit = {
+  * @author werewolf
+  */
+class IntegrationTests
+    extends Sequential(
+      new com.github.thebridsk.bridge.fullserver.test.selenium.IntegrationTests,
+      new HelpTest
+    )
+    with BeforeAndAfterAll {
+  override def beforeAll(): Unit = {
     TestServer.start()
   }
 
-  override
-  def afterAll(): Unit = {
+  override def afterAll(): Unit = {
     TestServer.stop()
   }
 

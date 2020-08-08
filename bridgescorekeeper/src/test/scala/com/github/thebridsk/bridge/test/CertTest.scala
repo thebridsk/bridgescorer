@@ -16,27 +16,27 @@ object CertTest {
 }
 
 /**
- * Test going from the table view, by hitting a board button,
- * to the names view, to the hand view.
- * @author werewolf
- */
+  * Test going from the table view, by hitting a board button,
+  * to the names view, to the hand view.
+  * @author werewolf
+  */
 class CertTest extends AnyFlatSpec with Matchers with BeforeAndAfterAll {
 
   TestStartLogging.startLogging()
 
-
-  override
-  def beforeAll(): Unit = {
+  override def beforeAll(): Unit = {
 
     MonitorTCP.nextTest()
   }
 
   lazy val jar: String = {
-    TestServer.getProp("BridgeScoreKeeperJar").getOrElse( fail("Property BridgeScoreKeeperJar must be specified"))
+    TestServer
+      .getProp("BridgeScoreKeeperJar")
+      .getOrElse(fail("Property BridgeScoreKeeperJar must be specified"))
   }
 
   lazy val keydir: String = {
-    TestServer.getProp("BridgeScoreKeeperKeyDir").getOrElse( "key" )
+    TestServer.getProp("BridgeScoreKeeperKeyDir").getOrElse("key")
   }
 
   val proc = new MyProcess
@@ -47,29 +47,43 @@ class CertTest extends AnyFlatSpec with Matchers with BeforeAndAfterAll {
 
   it should "test the server certificate generation" in {
 
-    withClue( "Creating new certificate without server IP") {
+    withClue("Creating new certificate without server IP") {
       val p = proc.exec(
         List(
           "java",
-          "-jar", jar,
+          "-jar",
+          jar,
           "sslkey",
-          "-d", keydir,
+          "-d",
+          keydir,
           "generateselfsigned",
-          "-a", "bsk",
-          "--ca", "examplebridgescorekeeperca",
-          "--caalias", "ca",
-          "--cadname", "CN=BridgeScoreKeeperCA, OU=BridgeScoreKeeper, O=BridgeScoreKeeper, L=New York, ST=New York, C=US",
-          "--cakeypw", "abcdef",
-          "--castorepw", "abcdef",
-          "--dname", "CN=BridgeScoreKeeper, OU=BridgeScoreKeeper, O=BridgeScoreKeeper, L=New York, ST=New York, C=US",
-          "--keypass", "abcdef",
-          "--server", "examplebridgescorekeeper",
-          "--storepass", "abcdef",
-          "--trustpw", "abcdef",
-          "--truststore", "examplebridgescorekeepertrust",
+          "-a",
+          "bsk",
+          "--ca",
+          "examplebridgescorekeeperca",
+          "--caalias",
+          "ca",
+          "--cadname",
+          "CN=BridgeScoreKeeperCA, OU=BridgeScoreKeeper, O=BridgeScoreKeeper, L=New York, ST=New York, C=US",
+          "--cakeypw",
+          "abcdef",
+          "--castorepw",
+          "abcdef",
+          "--dname",
+          "CN=BridgeScoreKeeper, OU=BridgeScoreKeeper, O=BridgeScoreKeeper, L=New York, ST=New York, C=US",
+          "--keypass",
+          "abcdef",
+          "--server",
+          "examplebridgescorekeeper",
+          "--storepass",
+          "abcdef",
+          "--trustpw",
+          "abcdef",
+          "--truststore",
+          "examplebridgescorekeepertrust",
           "-v",
           "--nginx",
-          "--clean",
+          "--clean"
         ),
         cwd
       )
@@ -78,18 +92,23 @@ class CertTest extends AnyFlatSpec with Matchers with BeforeAndAfterAll {
       rc mustBe 0
     }
 
-    withClue( "First validity check must fail, server IP not in certificate") {
+    withClue("First validity check must fail, server IP not in certificate") {
 
       val p = proc.exec(
         List(
           "java",
-          "-jar", jar,
+          "-jar",
+          jar,
           "sslkey",
-          "-d", keydir,
+          "-d",
+          keydir,
           "validatecert",
-          "-a", "bsk",
-          "-k", "examplebridgescorekeeper.jks",
-          "-p", "abcdef",
+          "-a",
+          "bsk",
+          "-k",
+          "examplebridgescorekeeper.jks",
+          "-p",
+          "abcdef",
           "-s"
         ),
         cwd
@@ -99,24 +118,36 @@ class CertTest extends AnyFlatSpec with Matchers with BeforeAndAfterAll {
       rc mustBe 1
     }
 
-    withClue( "Adding server IP to new certificate") {
+    withClue("Adding server IP to new certificate") {
       val p = proc.exec(
         List(
           "java",
-          "-jar", jar,
+          "-jar",
+          jar,
           "sslkey",
-          "-d", keydir,
+          "-d",
+          keydir,
           "generateservercert",
-          "-a", "bsk",
-          "--ca", "examplebridgescorekeeperca",
-          "--caalias", "ca",
-          "--cakeypw", "abcdef",
-          "--castorepw", "abcdef",
-          "--keypass", "abcdef",
-          "--server", "examplebridgescorekeeper",
-          "--storepass", "abcdef",
-          "--trustpw", "abcdef",
-          "--truststore", "examplebridgescorekeepertrust",
+          "-a",
+          "bsk",
+          "--ca",
+          "examplebridgescorekeeperca",
+          "--caalias",
+          "ca",
+          "--cakeypw",
+          "abcdef",
+          "--castorepw",
+          "abcdef",
+          "--keypass",
+          "abcdef",
+          "--server",
+          "examplebridgescorekeeper",
+          "--storepass",
+          "abcdef",
+          "--trustpw",
+          "abcdef",
+          "--truststore",
+          "examplebridgescorekeepertrust",
           "-v",
           "--nginx",
           "--addmachineip"
@@ -128,17 +159,22 @@ class CertTest extends AnyFlatSpec with Matchers with BeforeAndAfterAll {
       rc mustBe 0
     }
 
-    withClue( "Second validity check must pass, server IP is in certificate") {
+    withClue("Second validity check must pass, server IP is in certificate") {
       val p = proc.exec(
         List(
           "java",
-          "-jar", jar,
+          "-jar",
+          jar,
           "sslkey",
-          "-d", keydir,
+          "-d",
+          keydir,
           "validatecert",
-          "-a", "bsk",
-          "-k", "examplebridgescorekeeper.jks",
-          "-p", "abcdef",
+          "-a",
+          "bsk",
+          "-k",
+          "examplebridgescorekeeper.jks",
+          "-p",
+          "abcdef",
           "-s"
         ),
         cwd
