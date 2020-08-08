@@ -45,29 +45,32 @@ case class Table(
     }
   }
 
-  def partnerLocOf(l: Location): Option[Location] = l match {
-    case North      => Some(South)
-    case South      => Some(North)
-    case East       => Some(West)
-    case West       => Some(East)
-    case SittingOut => None
-  }
+  def partnerLocOf(l: Location): Option[Location] =
+    l match {
+      case North      => Some(South)
+      case South      => Some(North)
+      case East       => Some(West)
+      case West       => Some(East)
+      case SittingOut => None
+    }
 
-  def leftLocOf(l: Location): Option[Location] = l match {
-    case North      => Some(East)
-    case South      => Some(West)
-    case East       => Some(South)
-    case West       => Some(North)
-    case SittingOut => None
-  }
+  def leftLocOf(l: Location): Option[Location] =
+    l match {
+      case North      => Some(East)
+      case South      => Some(West)
+      case East       => Some(South)
+      case West       => Some(North)
+      case SittingOut => None
+    }
 
-  def rightLocOf(l: Location): Option[Location] = l match {
-    case North      => Some(West)
-    case South      => Some(East)
-    case East       => Some(North)
-    case West       => Some(South)
-    case SittingOut => None
-  }
+  def rightLocOf(l: Location): Option[Location] =
+    l match {
+      case North      => Some(West)
+      case South      => Some(East)
+      case East       => Some(North)
+      case West       => Some(South)
+      case SittingOut => None
+    }
 
   def partnerOf(p: String): Option[String] = {
     find(p) match {
@@ -76,10 +79,11 @@ case class Table(
     }
   }
 
-  def partnerOf(l: Location): Option[String] = partnerLocOf(l) match {
-    case Some(p) => Some(p.player(this))
-    case None    => None
-  }
+  def partnerOf(l: Location): Option[String] =
+    partnerLocOf(l) match {
+      case Some(p) => Some(p.player(this))
+      case None    => None
+    }
 
   def leftOf(p: String): Option[String] = {
     find(p) match {
@@ -88,10 +92,11 @@ case class Table(
     }
   }
 
-  def leftOf(l: Location): Option[String] = leftLocOf(l) match {
-    case Some(p) => Some(p.player(this))
-    case None    => None
-  }
+  def leftOf(l: Location): Option[String] =
+    leftLocOf(l) match {
+      case Some(p) => Some(p.player(this))
+      case None    => None
+    }
 
   def rightOf(p: String): Option[String] = {
     find(p) match {
@@ -100,10 +105,11 @@ case class Table(
     }
   }
 
-  def rightOf(l: Location): Option[String] = rightLocOf(l) match {
-    case Some(p) => Some(p.player(this))
-    case None    => None
-  }
+  def rightOf(l: Location): Option[String] =
+    rightLocOf(l) match {
+      case Some(p) => Some(p.player(this))
+      case None    => None
+    }
 
   def setPlayer(l: Location, p: String): Table = {
     l match {

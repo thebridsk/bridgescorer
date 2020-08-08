@@ -15,20 +15,21 @@ object TestChicago5Rotation {
     * @param name the property name
     * @return the property value wrapped in a Some object.  None property not set.
     */
-  def getPropOrEnv(name: String): Option[String] = sys.props.get(name) match {
-    case v: Some[String] =>
+  def getPropOrEnv(name: String): Option[String] =
+    sys.props.get(name) match {
+      case v: Some[String] =>
 //      log.fine("getPropOrEnv: found system property: "+name+"="+v.get)
-      v
-    case None =>
-      sys.env.get(name) match {
-        case v: Some[String] =>
+        v
+      case None =>
+        sys.env.get(name) match {
+          case v: Some[String] =>
 //          log.fine("getPropOrEnv: found env var: "+name+"="+v.get)
-          v
-        case None =>
+            v
+          case None =>
 //          log.fine("getPropOrEnv: did not find system property or env var: "+name)
-          None
-      }
-  }
+            None
+        }
+    }
 
   /**
     * flag to determine if println is enabled in test cases
@@ -371,8 +372,10 @@ class TestChicago5Rotation extends AnyFlatSpec with Matchers {
     val players = s.sittingOut :: s.north :: s.south :: s.west :: s.east :: Nil
 
     var count = 0
-    val failed = (for (round1 <- players.tail.permutations;
-                       round2 <- players.permutations) yield {
+    val failed = (for (
+      round1 <- players.tail.permutations;
+      round2 <- players.permutations
+    ) yield {
       if (round1.last != round2.head) {
         try {
           count = count + 1
