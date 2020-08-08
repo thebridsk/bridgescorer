@@ -45,42 +45,40 @@ class MatchDuplicateScore private (
   def getTeam(tid: Team.Id): Option[Team] = duplicate.getTeam(tid)
 
   val teamScores: Map[Team.Id, Double] = duplicate.teams
-    .map(
-      team =>
-        (team.id -> {
-          var points: Double = 0
-          boards.values.foreach { b =>
-            {
-              points += {
-                b.scores().get(team.id) match {
-                  case Some(tbs) => tbs.points
-                  case None      => 0
-                }
+    .map(team =>
+      (team.id -> {
+        var points: Double = 0
+        boards.values.foreach { b =>
+          {
+            points += {
+              b.scores().get(team.id) match {
+                case Some(tbs) => tbs.points
+                case None      => 0
               }
             }
           }
-          points
-        })
+        }
+        points
+      })
     )
     .toMap
 
   val teamImps: Map[Team.Id, Double] = duplicate.teams
-    .map(
-      team =>
-        (team.id -> {
-          var points: Double = 0
-          boards.values.foreach { b =>
-            {
-              points += {
-                b.scores().get(team.id) match {
-                  case Some(tbs) => tbs.imps
-                  case None      => 0
-                }
+    .map(team =>
+      (team.id -> {
+        var points: Double = 0
+        boards.values.foreach { b =>
+          {
+            points += {
+              b.scores().get(team.id) match {
+                case Some(tbs) => tbs.imps
+                case None      => 0
               }
             }
           }
-          points
-        })
+        }
+        points
+      })
     )
     .toMap
 
@@ -172,9 +170,7 @@ class MatchDuplicateScore private (
             .toList: _*
         ).map { r =>
           r.copy(
-            boards = r.boards.sortWith(
-              (r1, r2) => r1.id < r2.id
-            )
+            boards = r.boards.sortWith((r1, r2) => r1.id < r2.id)
           )
         })
       }
@@ -287,8 +283,11 @@ class MatchDuplicateScore private (
       List(duplicate.teams.map(t => t.id).toList.sorted)
     } else {
       val List(s1, s2) = sets
-      if (s1.filter(k => s2.contains(k))
-            .isEmpty && s2.filter(k => s1.contains(k)).isEmpty) {
+      if (
+        s1.filter(k => s2.contains(k)).isEmpty && s2
+          .filter(k => s1.contains(k))
+          .isEmpty
+      ) {
         // the two lists don't have any common entries
         // check if everyone in a set was at the same position
         val allSamePos = duplicate.boards
@@ -328,14 +327,20 @@ class MatchDuplicateScore private (
                 (dh.ewTeam, dh.nsTeam)
             }
             if (h.contractTricks == 0) {
-              DuplicateSummaryDetails.passed(declarer) :: DuplicateSummaryDetails
+              DuplicateSummaryDetails.passed(
+                declarer
+              ) :: DuplicateSummaryDetails
                 .passed(defender) :: Nil
             } else {
               if (h.madeContract) {
-                DuplicateSummaryDetails.made(declarer) :: DuplicateSummaryDetails
+                DuplicateSummaryDetails.made(
+                  declarer
+                ) :: DuplicateSummaryDetails
                   .allowedMade(defender) :: Nil
               } else {
-                DuplicateSummaryDetails.down(declarer) :: DuplicateSummaryDetails
+                DuplicateSummaryDetails.down(
+                  declarer
+                ) :: DuplicateSummaryDetails
                   .tookDown(defender) :: Nil
               }
             }

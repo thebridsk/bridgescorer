@@ -14,29 +14,31 @@ object Diamonds extends ContractSuit("D")
 object Clubs extends ContractSuit("C")
 
 object ContractSuit {
-  def apply(suit: String): ContractSuit = suit match {
-    case "N" => NoTrump
-    case "S" => Spades
-    case "H" => Hearts
-    case "D" => Diamonds
-    case "C" => Clubs
-    case _ =>
-      throw new IllegalArgumentException(
-        "Unknown value for a contract suit: " + suit
-      )
-  }
+  def apply(suit: String): ContractSuit =
+    suit match {
+      case "N" => NoTrump
+      case "S" => Spades
+      case "H" => Hearts
+      case "D" => Diamonds
+      case "C" => Clubs
+      case _ =>
+        throw new IllegalArgumentException(
+          "Unknown value for a contract suit: " + suit
+        )
+    }
 
-  def getRank(suit: String): Int = suit match {
-    case "N" => 5
-    case "S" => 4
-    case "H" => 3
-    case "D" => 2
-    case "C" => 1
-    case _ =>
-      throw new IllegalArgumentException(
-        "Unknown value for a contract suit: " + suit
-      )
-  }
+  def getRank(suit: String): Int =
+    suit match {
+      case "N" => 5
+      case "S" => 4
+      case "H" => 3
+      case "D" => 2
+      case "C" => 1
+      case _ =>
+        throw new IllegalArgumentException(
+          "Unknown value for a contract suit: " + suit
+        )
+    }
 
   def compare(suit1: String, suit2: String): Int = {
     getRank(suit1).compare(getRank(suit2))
@@ -66,15 +68,16 @@ object Doubled extends ContractDoubled("D", "*")
 object Redoubled extends ContractDoubled("R", "**")
 
 object ContractDoubled {
-  def apply(doubled: String): ContractDoubled = doubled match {
-    case "N" => NotDoubled
-    case "D" => Doubled
-    case "R" => Redoubled
-    case _ =>
-      throw new IllegalArgumentException(
-        "Unknown value for a contract doubled: " + doubled
-      )
-  }
+  def apply(doubled: String): ContractDoubled =
+    doubled match {
+      case "N" => NotDoubled
+      case "D" => Doubled
+      case "R" => Redoubled
+      case _ =>
+        throw new IllegalArgumentException(
+          "Unknown value for a contract doubled: " + doubled
+        )
+    }
 }
 
 sealed abstract case class PlayerPosition(pos: String, name: String) {
@@ -103,74 +106,80 @@ object West extends PlayerPosition("W", "West")
 object South extends PlayerPosition("S", "South")
 
 object PlayerPosition {
-  def apply(pos: String): PlayerPosition = pos match {
-    case "N" => North
-    case "E" => East
-    case "W" => West
-    case "S" => South
-    case _ =>
-      throw new IllegalArgumentException(
-        "Unknown value for a player position: " + pos
-      )
-  }
+  def apply(pos: String): PlayerPosition =
+    pos match {
+      case "N" => North
+      case "E" => East
+      case "W" => West
+      case "S" => South
+      case _ =>
+        throw new IllegalArgumentException(
+          "Unknown value for a player position: " + pos
+        )
+    }
 
   def nextDealer(current: PlayerPosition): PlayerPosition = left(current)
   def prevDealer(current: PlayerPosition): PlayerPosition = right(current)
 
-  def left(current: PlayerPosition): PlayerPosition = current match {
-    case North => East
-    case East  => South
-    case West  => North
-    case South => West
-    case _ =>
-      throw new IllegalArgumentException(
-        "Unknown value for a player position: " + current
-      )
-  }
+  def left(current: PlayerPosition): PlayerPosition =
+    current match {
+      case North => East
+      case East  => South
+      case West  => North
+      case South => West
+      case _ =>
+        throw new IllegalArgumentException(
+          "Unknown value for a player position: " + current
+        )
+    }
 
-  def right(current: PlayerPosition): PlayerPosition = current match {
-    case North => West
-    case East  => North
-    case West  => South
-    case South => East
-    case _ =>
-      throw new IllegalArgumentException(
-        "Unknown value for a player position: " + current
-      )
-  }
+  def right(current: PlayerPosition): PlayerPosition =
+    current match {
+      case North => West
+      case East  => North
+      case West  => South
+      case South => East
+      case _ =>
+        throw new IllegalArgumentException(
+          "Unknown value for a player position: " + current
+        )
+    }
 
-  def partner(current: PlayerPosition): PlayerPosition = current match {
-    case North => South
-    case East  => West
-    case West  => East
-    case South => North
-    case _ =>
-      throw new IllegalArgumentException(
-        "Unknown value for a player position: " + current
-      )
-  }
+  def partner(current: PlayerPosition): PlayerPosition =
+    current match {
+      case North => South
+      case East  => West
+      case West  => East
+      case South => North
+      case _ =>
+        throw new IllegalArgumentException(
+          "Unknown value for a player position: " + current
+        )
+    }
 
-  def forDisplay(current: PlayerPosition): String = current match {
-    case North => "North"
-    case East  => "East"
-    case West  => "West"
-    case South => "South"
-    case _ =>
-      throw new IllegalArgumentException(
-        "Unknown value for a player position: " + current
-      )
-  }
+  def forDisplay(current: PlayerPosition): String =
+    current match {
+      case North => "North"
+      case East  => "East"
+      case West  => "West"
+      case South => "South"
+      case _ =>
+        throw new IllegalArgumentException(
+          "Unknown value for a player position: " + current
+        )
+    }
 
-  def fromDisplay(pos: String): PlayerPosition = pos match {
-    case "North" => North
-    case "East"  => East
-    case "West"  => West
-    case "South" => South
-    case _ =>
-      throw new IllegalArgumentException(
-        "Unknown value for a player position: " + pos
-      )
-  }
+  def fromDisplay(pos: String): PlayerPosition =
+    pos match {
+      case "North" => North
+      case "East"  => East
+      case "West"  => West
+      case "South" => South
+      case _ =>
+        throw new IllegalArgumentException(
+          "Unknown value for a player position: " + pos
+        )
+    }
 }
 
 sealed abstract case class MadeOrDown(made: Boolean, forScore: String)

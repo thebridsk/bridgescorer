@@ -23,7 +23,8 @@ case class DuplicateSummaryDetails(
     )
     declarer: Int = 0,
     @Schema(
-      description = "The number of times the team made the contract as declarer",
+      description =
+        "The number of times the team made the contract as declarer",
       required = true,
       minimum = "0"
     )

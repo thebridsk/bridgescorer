@@ -117,7 +117,6 @@ object PlayerComparisonStats {
       *   - `x < 0` when `hand < other`
       *   - `x == 0` when `hand == other`
       *   - `x > 0` when  `hand > other`
-      *
       */
     def compare(other: Hand): Int = {
       val t = hand.contractTricks.compare(other.contractTricks)
@@ -155,8 +154,14 @@ object PlayerComparisonStats {
       // neutral
       PlayerComparisonStat.passiveneutral(passiveTeam.player1, SameSide) ::
         PlayerComparisonStat.passiveneutral(passiveTeam.player2, SameSide) ::
-        PlayerComparisonStat.aggressiveneutral(aggressiveTeam.player1, SameSide) ::
-        PlayerComparisonStat.aggressiveneutral(aggressiveTeam.player2, SameSide) ::
+        PlayerComparisonStat.aggressiveneutral(
+          aggressiveTeam.player1,
+          SameSide
+        ) ::
+        PlayerComparisonStat.aggressiveneutral(
+          aggressiveTeam.player2,
+          SameSide
+        ) ::
         Nil
     }
   }
@@ -185,7 +190,10 @@ object PlayerComparisonStats {
     } else if (!passiveHand.madeContract) {
       // 1 good, 2 bad
       PlayerComparisonStat.passivegood(passiveDefender.player1, Competitive) ::
-        PlayerComparisonStat.passivegood(passiveDefender.player2, Competitive) ::
+        PlayerComparisonStat.passivegood(
+          passiveDefender.player2,
+          Competitive
+        ) ::
         PlayerComparisonStat.aggressivebad(
           aggressiveDeclarer.player1,
           Competitive
@@ -205,7 +213,10 @@ object PlayerComparisonStats {
       if (scoreAggressive > scorePassive) {
         // 2 good, 1 bad
         PlayerComparisonStat.passivebad(passiveDefender.player1, Competitive) ::
-          PlayerComparisonStat.passivebad(passiveDefender.player2, Competitive) ::
+          PlayerComparisonStat.passivebad(
+            passiveDefender.player2,
+            Competitive
+          ) ::
           PlayerComparisonStat.aggressivegood(
             aggressiveDeclarer.player1,
             Competitive
@@ -217,8 +228,14 @@ object PlayerComparisonStats {
           Nil
       } else if (scoreAggressive < scorePassive) {
         // 1 good, 2 bad
-        PlayerComparisonStat.passivegood(passiveDefender.player1, Competitive) ::
-          PlayerComparisonStat.passivegood(passiveDefender.player2, Competitive) ::
+        PlayerComparisonStat.passivegood(
+          passiveDefender.player1,
+          Competitive
+        ) ::
+          PlayerComparisonStat.passivegood(
+            passiveDefender.player2,
+            Competitive
+          ) ::
           PlayerComparisonStat.aggressivebad(
             aggressiveDeclarer.player1,
             Competitive

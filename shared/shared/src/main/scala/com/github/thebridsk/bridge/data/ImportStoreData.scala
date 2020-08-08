@@ -12,7 +12,8 @@ case class ImportStoreData(
     @Schema(description = "The ID", required = true)
     id: String,
     @Schema(
-      description = "The last modified time, in milliseconds since 1/1/1970 UTC",
+      description =
+        "The last modified time, in milliseconds since 1/1/1970 UTC",
       required = true
     )
     date: Timestamp,

@@ -38,7 +38,6 @@ class GameScoring(
     *            ewAbove: Int
     *            ewBelow: Int
     *            scoredHands: List[com.github.thebridsk.bridge.data.bridge.RubberBridge.ScoreHand]  // same index as hands
-    *
     */
   private def calculate = {
     val sh = hands.map { h =>
@@ -48,8 +47,8 @@ class GameScoring(
       .map { h =>
         h.getScores
       }
-      .foldLeft((0, 0, 0, 0))(
-        (a, v) => (a._1 + v._1, a._2 + v._2, a._3 + v._3, a._4 + v._4)
+      .foldLeft((0, 0, 0, 0))((a, v) =>
+        (a._1 + v._1, a._2 + v._2, a._3 + v._3, a._4 + v._4)
       )
     (nsA, nsB, ewA, ewB, sh)
   }
@@ -90,8 +89,8 @@ class RubberScoring(val rubber: MatchRubber) {
       .map { g =>
         (g.nsBelow, g.ewBelow, g.nsAbove, g.ewAbove)
       }
-      .foldLeft((0, 0, 0, 0))(
-        (a, v) => (a._1 + v._1, a._2 + v._2, a._3 + v._3, a._4 + v._4)
+      .foldLeft((0, 0, 0, 0))((a, v) =>
+        (a._1 + v._1, a._2 + v._2, a._3 + v._3, a._4 + v._4)
       )
   }
 

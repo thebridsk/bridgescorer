@@ -31,7 +31,6 @@ import io.swagger.v3.oas.annotations.media.ArraySchema
   *   ]
   * }
   * </code></pre>
-  *
   */
 @Schema(
   name = "BoardSet",

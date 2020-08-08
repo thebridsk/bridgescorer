@@ -74,7 +74,6 @@ case class PlayerOpponentStat(
 }
 
 /**
-  *
   * @constructor
   * @param player the primary player, PP, name for these stats
   * @param opponents the stats for a given opponent
@@ -264,7 +263,15 @@ object PlayersOpponentsStats {
     PlayerOpponentsStat(
       team1.player1,
 //                                              played,beat,tied
-      new PlayerOpponentStat(team1.player1, team2.player1, 1, t1won, tied, 0, 0) ::
+      new PlayerOpponentStat(
+        team1.player1,
+        team2.player1,
+        1,
+        t1won,
+        tied,
+        0,
+        0
+      ) ::
         new PlayerOpponentStat(
           team1.player1,
           team2.player2,

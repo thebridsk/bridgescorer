@@ -45,7 +45,6 @@ case class Pairing(
   * @param min the min of lastPlayed
   * @param max the max of lastPlayed
   * @param random a random number
-  *
   */
 
 @Schema(
@@ -89,7 +88,8 @@ case class Suggestion(
     )
     avgLastPlayed: Double,
     @Schema(
-      description = "The average number of times that the pairs played together",
+      description =
+        "The average number of times that the pairs played together",
       required = true
     )
     avgTimesPlayed: Double,
@@ -282,9 +282,12 @@ trait Weights {
 
   val minLastAll = 40
 
-  val wMinLastPlayed = 5 // weight for maximizing min last played of the four teams
-  val wMaxLastPlayed = 4 // weight for maximizing max last played of the four teams
-  val wMaxTimesPlayed = 6 // weight for minimizing max time played of the four teams
+  val wMinLastPlayed =
+    5 // weight for maximizing min last played of the four teams
+  val wMaxLastPlayed =
+    4 // weight for maximizing max last played of the four teams
+  val wMaxTimesPlayed =
+    6 // weight for minimizing max time played of the four teams
   val wAve = 2 // weight for maximizing ave last played of the four teams
   val wAvePlayed = 3 // weight for minimizing ave times played of the four teams
   val wLastAll = 0 // weight for maximizing last time same teams played
@@ -353,8 +356,10 @@ class DuplicateSuggestionsCalculation(
     log.fine("Sorted Games")
     sortedgames.foreach(ds => log.fine((s"""  ${ds}""")))
 
-    for (i1 <- 0 until len;
-         i2 <- i1 + 1 until len) {
+    for (
+      i1 <- 0 until len;
+      i2 <- i1 + 1 until len
+    ) {
       val p1 = sortedPlayers(i1)
       val p2 = sortedPlayers(i2)
 
@@ -420,8 +425,10 @@ class DuplicateSuggestionsCalculation(
           val max = pairs.foldLeft(0)((ac, p) => Math.max(ac, p.lastPlayed))
           val maxPlayed =
             pairs.foldLeft(0)((ac, p) => Math.max(ac, p.timesPlayed))
-          val avg = pairs.foldLeft(0.0)((ac, p) => ac + p.lastPlayed) / pairs.length
-          val avgPlayed = pairs.foldLeft(0.0)((ac, p) => ac + p.timesPlayed) / pairs.length
+          val avg =
+            pairs.foldLeft(0.0)((ac, p) => ac + p.lastPlayed) / pairs.length
+          val avgPlayed =
+            pairs.foldLeft(0.0)((ac, p) => ac + p.timesPlayed) / pairs.length
 
           statAveLastPlayed.add(avg)
           statAveTimesPlayed.add(avgPlayed)
@@ -497,7 +504,9 @@ class DuplicateSuggestionsCalculation(
           .normalizeForMin(s.avgTimesPlayed) * weights.wAvePlayed / wTotal,
         statLastAll
           .normalizeForMax(s.lastPlayedAllTeams) * weights.wLastAll / wTotal,
-        (if (s.lastPlayedAllTeams < weights.minLastAll && pastgames.length > weights.minLastAll)
+        (if (
+           s.lastPlayedAllTeams < weights.minLastAll && pastgames.length > weights.minLastAll
+         )
            0.0
          else
            statLastAll
@@ -593,9 +602,8 @@ class DuplicateSuggestionsCalculation(
           if (l.lastPlayed == r.lastPlayed) l.timesPlayed < r.timesPlayed
           else l.lastPlayed < r.lastPlayed
         }
-        .map(
-          p =>
-            f"${p.player1}%8s-${p.player2}%-8s (${p.lastPlayed}%2d,${p.timesPlayed}%2d)"
+        .map(p =>
+          f"${p.player1}%8s-${p.player2}%-8s (${p.lastPlayed}%2d,${p.timesPlayed}%2d)"
         )
         .mkString(", ")
       val wts = sg.weights.map(w => f"${w}%6.4f").mkString(" ")

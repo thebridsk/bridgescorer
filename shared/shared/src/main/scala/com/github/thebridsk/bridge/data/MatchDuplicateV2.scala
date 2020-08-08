@@ -24,7 +24,8 @@ case class MatchDuplicateV2(
     )
     teams: Map[Team.Id, Team],
     @Schema(
-      description = "The duplicate boards of the match, the key is the board ID",
+      description =
+        "The duplicate boards of the match, the key is the board ID",
       required = true
     )
     boards: Map[Board.Id, BoardV1],
@@ -194,11 +195,12 @@ case class MatchDuplicateV2(
       boardId: Board.Id,
       handId: Team.Id,
       hand: Hand
-  ): MatchDuplicateV2 = boards.get(boardId) match {
-    case Some(board) => updateBoard(board.updateHand(handId, hand))
-    case None =>
-      throw new IndexOutOfBoundsException("Board " + boardId + " not found")
-  }
+  ): MatchDuplicateV2 =
+    boards.get(boardId) match {
+      case Some(board) => updateBoard(board.updateHand(handId, hand))
+      case None =>
+        throw new IndexOutOfBoundsException("Board " + boardId + " not found")
+    }
 
   def updateTeam(team: Team): MatchDuplicateV2 =
     copy(
@@ -401,7 +403,9 @@ case class MatchDuplicateV2(
     val md: MatchDuplicateV2 = copy(boards = boards.map {
       case (id, board) =>
         val correctBoard = correctVulnerability.boards(id)
-        if (correctBoard.ewVul == board.ewVul && correctBoard.nsVul == board.nsVul) {
+        if (
+          correctBoard.ewVul == board.ewVul && correctBoard.nsVul == board.nsVul
+        ) {
           (id, board)
         } else {
           msgs = "Fixed board " + id :: msgs

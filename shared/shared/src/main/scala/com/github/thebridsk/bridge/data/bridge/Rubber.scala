@@ -66,7 +66,9 @@ object RubberBridge {
           val e = (explainHonor :: (explainAbove.reverse)).reverse
           sc + " " + e.mkString(", ") + " / " + explainBelow.mkString(", ")
         } else {
-          show(sc, explainAbove) + ", " + scoring(nsScoredHonors) + " " + explainHonor + " / " + show(
+          show(sc, explainAbove) + ", " + scoring(
+            nsScoredHonors
+          ) + " " + explainHonor + " / " + show(
             sc,
             explainBelow
           )
@@ -105,13 +107,37 @@ object RubberBridge {
     ): String = {
       if (honors != 0) {
         if (nsScored == nsScoredHonors) {
-          scoring(nsScored, north, south, east, west) + " " + (above + honors) + " / " + below
+          scoring(
+            nsScored,
+            north,
+            south,
+            east,
+            west
+          ) + " " + (above + honors) + " / " + below
         } else {
-          scoring(nsScored, north, south, east, west) + " " + above + " / " + below +
-            ", " + scoring(nsScoredHonors, north, south, east, west) + " " + honors + " / 0"
+          scoring(
+            nsScored,
+            north,
+            south,
+            east,
+            west
+          ) + " " + above + " / " + below +
+            ", " + scoring(
+            nsScoredHonors,
+            north,
+            south,
+            east,
+            west
+          ) + " " + honors + " / 0"
         }
       } else {
-        scoring(nsScored, north, south, east, west) + " " + above + " / " + below
+        scoring(
+          nsScored,
+          north,
+          south,
+          east,
+          west
+        ) + " " + above + " / " + below
       }
     }
 
@@ -147,17 +173,19 @@ object RubberBridge {
         }
       }
 
-    def isDeclarerVulnerable: Boolean = declarer match {
-      case North | South => nsVul.vul
-      case East | West   => ewVul.vul
-    }
+    def isDeclarerVulnerable: Boolean =
+      declarer match {
+        case North | South => nsVul.vul
+        case East | West   => ewVul.vul
+      }
 
     val contractAndResultAsString: String =
       if (contractTricks.tricks == 0) "Passed Out";
       else
         contractTricks.tricks
           .toString() + contractSuit.suit + contractDoubled.forScore + " " +
-          (if (isDeclarerVulnerable) "Vul"; else "NotVul") + "   " + madeOrDown.forScore + " " + tricks
+          (if (isDeclarerVulnerable) "Vul";
+           else "NotVul") + "   " + madeOrDown.forScore + " " + tricks
 
     def contractAsString(
         vul: String = "Vul",
@@ -209,23 +237,24 @@ object RubberBridge {
       def timesDoubling(
           firstTrickBonus: Int,
           trickValue: Int
-      ): (Int, Int, Int, Int) = contractDoubled match {
-        case NotDoubled => (firstTrickBonus, trickValue, trickValue, 0)
-        case Doubled =>
-          (
-            firstTrickBonus * 2,
-            trickValue * 2,
-            if (isDeclarerVulnerable) 200; else 100,
-            50
-          )
-        case Redoubled =>
-          (
-            firstTrickBonus * 4,
-            trickValue * 4,
-            if (isDeclarerVulnerable) 400; else 200,
-            100
-          )
-      }
+      ): (Int, Int, Int, Int) =
+        contractDoubled match {
+          case NotDoubled => (firstTrickBonus, trickValue, trickValue, 0)
+          case Doubled =>
+            (
+              firstTrickBonus * 2,
+              trickValue * 2,
+              if (isDeclarerVulnerable) 200; else 100,
+              50
+            )
+          case Redoubled =>
+            (
+              firstTrickBonus * 4,
+              trickValue * 4,
+              if (isDeclarerVulnerable) 400; else 200,
+              100
+            )
+        }
 
       val (firstTrickBonus, trickValue, overTricksValue, insultBonus) =
         contractSuit match {
@@ -235,7 +264,8 @@ object RubberBridge {
         }
       val tricksInContract = Math.min(tricks, contractTricks.tricks)
       val overTricks = tricks - tricksInContract
-      val valFromContractTricks = firstTrickBonus + tricksInContract * trickValue
+      val valFromContractTricks =
+        firstTrickBonus + tricksInContract * trickValue
       val valFromOverTricks = overTricks * overTricksValue
       val game = valFromContractTricks >= 100
       val slamBonus = contractTricks.tricks match {
@@ -244,7 +274,8 @@ object RubberBridge {
         case _ => 0
       }
 
-      val reasonTricks = "Tricks(" + tricksInContract + ") " + valFromContractTricks :: Nil
+      val reasonTricks =
+        "Tricks(" + tricksInContract + ") " + valFromContractTricks :: Nil
 
       var reason: List[String] = Nil
       if (slamBonus > 0) {
@@ -361,7 +392,8 @@ object RubberBridge {
     def toStringRubber: String = {
       if (contractTricks.tricks == 0) "Passed out"
       else {
-        val con = "" + contractTricks.tricks + contractSuit.suit + contractDoubled.forScore + " by " + declarer.pos
+        val con =
+          "" + contractTricks.tricks + contractSuit.suit + contractDoubled.forScore + " by " + declarer.pos
         val scoring = {
           if (nsScored) "NS " + above + "/" + below
           else "EW " + above + "/" + below

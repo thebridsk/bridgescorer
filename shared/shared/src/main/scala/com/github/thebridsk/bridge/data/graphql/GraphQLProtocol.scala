@@ -205,8 +205,8 @@ object GraphQLProtocol {
     }
 
     @Schema(hidden = true)
-    def getResponse[T](url: String)(
-        implicit reads: Reads[T],
+    def getResponse[T](url: String)(implicit
+        reads: Reads[T],
         classtag: ClassTag[T],
         xpos: Position
     ): Option[T] = {

@@ -83,8 +83,7 @@ object Difference {
       me: List[W],
       other: List[W],
       prefix: String
-  )(
-      implicit
+  )(implicit
       ordering: Ordering[I]
   ): Difference = {
     import ordering._
@@ -394,7 +393,11 @@ object DifferenceWrappers {
 
   implicit class WrapMatchChicago(val me: MatchChicago)
       extends AnyVal
-      with DifferenceComparable[MatchChicago.Id, MatchChicago, WrapMatchChicago] {
+      with DifferenceComparable[
+        MatchChicago.Id,
+        MatchChicago,
+        WrapMatchChicago
+      ] {
 
     def id = me.id
 

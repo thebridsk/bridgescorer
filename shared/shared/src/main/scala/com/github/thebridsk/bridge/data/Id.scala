@@ -17,9 +17,8 @@ import play.api.libs.json.KeyReads
   * @param id the ID, Should follow the pattern "[a-zA-Z]*\d+", case sensitive if useName is false.
   * @param useName use a name instead of the Id pattern.
   * @param classTag a ClassTag for the class which instances of are identified by this ID
-
-  * @param A the ID type
   *
+  * @param A the ID type
   */
 @Schema(description = "The ID", `type` = "string", format = "id")
 case class Id[A] private[data] (val id: String, useName: Boolean = false)(
@@ -113,8 +112,6 @@ class HasId[IdType: ClassTag](
   }
 
   /**
-    *
-    *
     * @param i the Id number
     * @return the Id object with and id of s"$prefix$i"
     */
@@ -164,10 +161,11 @@ object Id {
     }
   }
 
-  def isValidIdPattern(s: String): Boolean = s match {
-    case idpattern(p, n) => true
-    case _               => false
-  }
+  def isValidIdPattern(s: String): Boolean =
+    s match {
+      case idpattern(p, n) => true
+      case _               => false
+    }
 
   import scala.language.implicitConversions
   implicit def toBase[A, B >: A](id: Id[A]): Id[B] = id.toBase

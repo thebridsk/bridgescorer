@@ -211,7 +211,15 @@ case class MatchChicagoV2(
   def convertToCurrentVersion: (Boolean, MatchChicago) = {
     (
       false,
-      MatchChicago(id, players, rounds, gamesPerRound, false, created, updated).convertToCurrentVersion._2
+      MatchChicago(
+        id,
+        players,
+        rounds,
+        gamesPerRound,
+        false,
+        created,
+        updated
+      ).convertToCurrentVersion._2
     )
   }
 

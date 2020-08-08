@@ -183,8 +183,8 @@ case class BoardV2 private (
     val nb = hands.map { b =>
       if (b.id == hand.id) (true, hand) else (false, b)
     }
-    val nb1 = nb.foldLeft((false, List[DuplicateHandV2]()))(
-      (ag, b) => (ag._1 || b._1, b._2 :: ag._2)
+    val nb1 = nb.foldLeft((false, List[DuplicateHandV2]()))((ag, b) =>
+      (ag._1 || b._1, b._2 :: ag._2)
     )
     val nb2 = if (nb1._1) nb1._2 else hand :: nb1._2
     copy(

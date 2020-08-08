@@ -95,11 +95,10 @@ case class Round(
     */
   def updateHand(h: Hand): Round = {
     var found = false
-    val newh = hands.map(
-      hh =>
-        if (hh.id == h.id) {
-          found = true; h
-        } else hh
+    val newh = hands.map(hh =>
+      if (hh.id == h.id) {
+        found = true; h
+      } else hh
     )
     if (found) {
       copy(hands = newh)
@@ -121,20 +120,23 @@ case class Round(
     }
   }
 
-  def partnerOf(p: String): String = p match {
-    case `north` => south
-    case `south` => north
-    case `east`  => west
-    case `west`  => east
-    case _       => null
-  }
+  def partnerOf(p: String): String =
+    p match {
+      case `north` => south
+      case `south` => north
+      case `east`  => west
+      case `west`  => east
+      case _       => null
+    }
 
   def modifyPlayersNoTime(map: Map[String, String]): Option[Round] = {
     val n = map.get(north).getOrElse(north)
     val s = map.get(south).getOrElse(south)
     val e = map.get(east).getOrElse(east)
     val w = map.get(west).getOrElse(west)
-    if (n.equals(north) && s.equals(south) && e.equals(east) && w.equals(west)) {
+    if (
+      n.equals(north) && s.equals(south) && e.equals(east) && w.equals(west)
+    ) {
       None
     } else {
       Some(copy(north = n, south = s, east = e, west = w))

@@ -92,8 +92,8 @@ object CalculatePlayerPlaces {
     * @param pad the padding value to be applied to the extended array
     * @return an array of length newlen.
     */
-  def extendArray[T](old: Array[T], newlen: Int, pad: => T)(
-      implicit tag: ClassTag[T]
+  def extendArray[T](old: Array[T], newlen: Int, pad: => T)(implicit
+      tag: ClassTag[T]
   ): Array[T] = {
     if (old.length < newlen) {
       val p = new Array[T](newlen)

@@ -43,7 +43,9 @@ object ContractType {
     else if (hand.contractTricks == 7) ContractTypeGrandSlam
     else if (hand.contractTricks == 6) ContractTypeSlam
     else if (hand.contractTricks == 5) ContractTypeGame
-    else if (hand.contractTricks == 4 && hand.contractSuit != "C" && hand.contractSuit != "D")
+    else if (
+      hand.contractTricks == 4 && hand.contractSuit != "C" && hand.contractSuit != "D"
+    )
       ContractTypeGame
     else if (hand.contractTricks == 3 && hand.contractSuit == "N")
       ContractTypeGame
@@ -108,7 +110,9 @@ case class PlayerStat(
     handsPlayed: Int = 0
 ) {
   def add(other: PlayerStat): PlayerStat = {
-    if (player != other.player || declarer != other.declarer || contractType != other.contractType) {
+    if (
+      player != other.player || declarer != other.declarer || contractType != other.contractType
+    ) {
       throw new Exception("player or declarer is not the same")
     }
     val np = handsPlayed + other.handsPlayed
@@ -137,7 +141,9 @@ case class PlayerStat(
       else c.toString()
     }
 
-    s""""${player}",${declarer},${contractType},${handsPlayed},${r.mkString(",")}"""
+    s""""${player}",${declarer},${contractType},${handsPlayed},${r.mkString(
+      ","
+    )}"""
   }
 
   def toCsvPercent(min: Int = -13, max: Int = 6): String = {
@@ -187,11 +193,11 @@ object PlayerStats {
   def csvHeader(min: Int = -13, max: Int = 6): String =
     PlayerStat("", true, "").csvHeader(min, max)
 
-  def statsToCsv(stats: PlayerStats, percent: Boolean = false)(
-      implicit out: PrintStream
+  def statsToCsv(stats: PlayerStats, percent: Boolean = false)(implicit
+      out: PrintStream
   ): Unit = {
     val tocsv: (PlayerStat, Int, Int) => String =
-      if (percent)(ds, min, max) => ds.toCsvPercent(min, max)
+      if (percent) (ds, min, max) => ds.toCsvPercent(min, max)
       else (ds, min, max) => ds.toCsv(min, max)
     (stats.declarer :: stats.defender :: Nil).foreach { sts =>
       out.println(PlayerStats.csvHeader(stats.min, stats.max))

@@ -127,11 +127,11 @@ object ContractStats {
     else lc.doubled < rc.doubled
   }
 
-  def statsToCsv(stats: ContractStats, percent: Boolean = false)(
-      implicit out: PrintStream
+  def statsToCsv(stats: ContractStats, percent: Boolean = false)(implicit
+      out: PrintStream
   ): Unit = {
     val tocsv: (ContractStat, Int, Int) => String =
-      if (percent)(ds, min, max) => ds.toCsvPercent(min, max)
+      if (percent) (ds, min, max) => ds.toCsvPercent(min, max)
       else (ds, min, max) => ds.toCsv(min, max)
     val sts = stats.data
     out.println(ContractStats.csvHeader(stats.min, stats.max))

@@ -253,10 +253,11 @@ class BoardScore(val board: Board, perspective: DuplicateViewPerspective) {
       case _           => false
     }
 
-  def hasTeamPlayed(teamid: Option[Team.Id]): Boolean = teamid match {
-    case Some(tid) => hasTeamPlayed(tid)
-    case None      => false
-  }
+  def hasTeamPlayed(teamid: Option[Team.Id]): Boolean =
+    teamid match {
+      case Some(tid) => hasTeamPlayed(tid)
+      case None      => false
+    }
 
   def isHidden(ignoreTableSize: Boolean = true): Boolean =
     !allplayed && (perspective match {

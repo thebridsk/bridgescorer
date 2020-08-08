@@ -105,10 +105,11 @@ case class DuplicateHandV1(
 
   def isTeam(team: Team.Id): Boolean = isNSTeam(team) || isEWTeam(team)
 
-  def score: DuplicateScore = hand match {
-    case Some(h) => DuplicateBridge.ScoreHand(h).score
-    case _       => DuplicateScore(0, 0)
-  }
+  def score: DuplicateScore =
+    hand match {
+      case Some(h) => DuplicateBridge.ScoreHand(h).score
+      case _       => DuplicateScore(0, 0)
+    }
 
   def id: Team.Id = nsTeam
 

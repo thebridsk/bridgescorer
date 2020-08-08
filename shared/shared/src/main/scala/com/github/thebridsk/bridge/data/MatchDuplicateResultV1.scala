@@ -49,7 +49,8 @@ case class MatchDuplicateResultV1 private (
     @Schema(description = "The ID of the MatchDuplicate", required = true)
     id: MatchDuplicateResult.Id,
     @Schema(
-      description = "The results of the match, a list of winnersets." + "  Each winnerset is a list of DuplicateSummaryEntry objects",
+      description =
+        "The results of the match, a list of winnersets." + "  Each winnerset is a list of DuplicateSummaryEntry objects",
       required = true
     )
     results: List[List[DuplicateSummaryEntry]],
@@ -213,7 +214,9 @@ case class MatchDuplicateResultV1 private (
   def placeByWinnerSet(
       winnerset: List[Team.Id]
   ): List[MatchDuplicateScore.Place] = {
-    results.find(ws => ws.find(e => !winnerset.contains(e.team.id)).isEmpty) match {
+    results.find(ws =>
+      ws.find(e => !winnerset.contains(e.team.id)).isEmpty
+    ) match {
       case Some(rws) =>
         rws
           .groupBy(e => e.place.getOrElse(0))
@@ -242,14 +245,13 @@ case class MatchDuplicateResultV1 private (
     val (nresults, modified) = results
       .map { ws =>
         ws.map { t =>
-            t.team.modifyPlayers(nameMap) match {
-              case Some(nt) => (t.copy(team = nt), true)
-              case None     => (t, false)
-            }
+          t.team.modifyPlayers(nameMap) match {
+            case Some(nt) => (t.copy(team = nt), true)
+            case None     => (t, false)
           }
-          .foldLeft((List[DuplicateSummaryEntry](), false)) { (ac, v) =>
-            (ac._1 ::: List(v._1), ac._2 || v._2)
-          }
+        }.foldLeft((List[DuplicateSummaryEntry](), false)) { (ac, v) =>
+          (ac._1 ::: List(v._1), ac._2 || v._2)
+        }
       }
       .foldLeft((List[List[DuplicateSummaryEntry]](), false)) { (ac, v) =>
         (ac._1 ::: List(v._1), ac._2 || v._2)
@@ -361,7 +363,16 @@ object MatchDuplicateResultV1 {
       id: MatchDuplicateResult.Id = MatchDuplicateResult.idNul
   ): MatchDuplicateResultV1 = {
     val time = SystemTime.currentTimeMillis()
-    new MatchDuplicateResultV1(id, List(), None, None, None, time, time, time).fixup
+    new MatchDuplicateResultV1(
+      id,
+      List(),
+      None,
+      None,
+      None,
+      time,
+      time,
+      time
+    ).fixup
   }
 
   def createFrom(
@@ -377,15 +388,14 @@ object MatchDuplicateResultV1 {
     }.toMap
     val r = wss.map { ws =>
       ws.map { tid =>
-          score.getTeam(tid).get
-        }
-        .map { team =>
-          DuplicateSummaryEntry(
-            team,
-            score.teamScores.get(team.id),
-            places.get(team.id)
-          )
-        }
+        score.getTeam(tid).get
+      }.map { team =>
+        DuplicateSummaryEntry(
+          team,
+          score.teamScores.get(team.id),
+          places.get(team.id)
+        )
+      }
     }
 
     val (pl, cr, up) = mdr match {

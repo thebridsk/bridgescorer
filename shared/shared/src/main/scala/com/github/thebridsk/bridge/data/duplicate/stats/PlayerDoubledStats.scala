@@ -23,11 +23,11 @@ object PlayerDoubledStats {
   def csvHeader(min: Int = -13, max: Int = 6): String =
     PlayerStat("", true, "").csvHeader(min, max)
 
-  def statsToCsv(stats: PlayerStats, percent: Boolean = false)(
-      implicit out: PrintStream
+  def statsToCsv(stats: PlayerStats, percent: Boolean = false)(implicit
+      out: PrintStream
   ): Unit = {
     val tocsv: (PlayerStat, Int, Int) => String =
-      if (percent)(ds, min, max) => ds.toCsvPercent(min, max)
+      if (percent) (ds, min, max) => ds.toCsvPercent(min, max)
       else (ds, min, max) => ds.toCsv(min, max)
     (stats.declarer :: stats.defender :: Nil).foreach { sts =>
       out.println(PlayerStats.csvHeader(stats.min, stats.max))

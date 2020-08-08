@@ -202,7 +202,23 @@ class PairsData(
       val newpd = tdata
         .get(pp)
         .getOrElse(
-          PairData(pp._1, pp._2, 0, 0, 0, 0, 0, 0, None, 0, 0, 0, 0, 0, 0.0).normalize
+          PairData(
+            pp._1,
+            pp._2,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            None,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0.0
+          ).normalize
         )
       val reallynewpd = if (incomplete) {
         newpd.addIncomplete
@@ -469,9 +485,11 @@ object Stat {
       stats: Stat*
   ): Unit = {
     pds.foreach { pd =>
-      if (filter
-            .map(f => f.contains(pd.player1) && f.contains(pd.player2))
-            .getOrElse(true)) {
+      if (
+        filter
+          .map(f => f.contains(pd.player1) && f.contains(pd.player2))
+          .getOrElse(true)
+      ) {
         stats.foreach { s =>
           s.add(s.colorBy.value(pd), s.colorBy.n(pd))
         }

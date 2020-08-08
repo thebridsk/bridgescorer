@@ -27,7 +27,6 @@ class Statistic(name: String) {
   /**
     * Returns the specified value v in the range [min,max]
     * into the range [sizemin,sizemax].
-    *
     */
   def scale(v: Double, sizemin: Int, sizemax: Int): Int = {
     if (max == min) sizemax

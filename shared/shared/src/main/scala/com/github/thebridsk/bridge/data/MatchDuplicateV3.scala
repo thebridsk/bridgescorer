@@ -178,8 +178,8 @@ case class MatchDuplicateV3 private (
     val nb = boards.map { b =>
       if (b.id == board.id) (true, board) else (false, b)
     }
-    val nb1 = nb.foldLeft((false, List[BoardV2]()))(
-      (ag, b) => (ag._1 || b._1, b._2 :: ag._2)
+    val nb1 = nb.foldLeft((false, List[BoardV2]()))((ag, b) =>
+      (ag._1 || b._1, b._2 :: ag._2)
     )
     val nb2 = if (nb1._1) nb1._2 else board :: nb1._2
     copy(
@@ -196,9 +196,12 @@ case class MatchDuplicateV3 private (
   }
 
   def deleteBoard(boardid: Board.Id): MatchDuplicateV3 = {
-    copy(boards = boards.filter { b =>
-      b.id != boardid
-    }, updated = SystemTime.currentTimeMillis())
+    copy(
+      boards = boards.filter { b =>
+        b.id != boardid
+      },
+      updated = SystemTime.currentTimeMillis()
+    )
   }
 
   def getBoard(boardid: Board.Id): Option[BoardV2] = {
@@ -225,16 +228,20 @@ case class MatchDuplicateV3 private (
       boardId: Board.Id,
       handId: Team.Id,
       hand: Hand
-  ): MatchDuplicateV3 = getBoard(boardId) match {
-    case Some(board) => updateBoard(board.updateHand(handId, hand))
-    case None =>
-      throw new IndexOutOfBoundsException("Board " + boardId + " not found")
-  }
+  ): MatchDuplicateV3 =
+    getBoard(boardId) match {
+      case Some(board) => updateBoard(board.updateHand(handId, hand))
+      case None =>
+        throw new IndexOutOfBoundsException("Board " + boardId + " not found")
+    }
 
   def updateTeam(team: Team): MatchDuplicateV3 = {
-    copy(teams = teams.map { t =>
-      if (t.id == team.id) team else t
-    }, updated = SystemTime.currentTimeMillis())
+    copy(
+      teams = teams.map { t =>
+        if (t.id == team.id) team else t
+      },
+      updated = SystemTime.currentTimeMillis()
+    )
   }
 
   def setTeams(nteams: List[Team]): MatchDuplicateV3 =
@@ -458,7 +465,9 @@ case class MatchDuplicateV3 private (
     val md: MatchDuplicateV3 = copy(boards = boards.map { board =>
       val id = board.id
       val correctBoard = correctVulnerability.getBoard(id).get
-      if (correctBoard.ewVul == board.ewVul && correctBoard.nsVul == board.nsVul) {
+      if (
+        correctBoard.ewVul == board.ewVul && correctBoard.nsVul == board.nsVul
+      ) {
         board
       } else {
         msgs = "Fixed board " + id :: msgs

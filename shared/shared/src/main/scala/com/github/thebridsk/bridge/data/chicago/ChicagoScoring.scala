@@ -159,8 +159,8 @@ class ChicagoScoring(val chicago: MatchChicago) {
   def getNextPossibleFixtures: Map[String, Set[ChicagoScoring.Fixture]] = {
     if (players.length == 4) return Map()
     var pathSoFar = getFixturesSoFar
-    while (pathSoFar.length >= players.length) pathSoFar =
-      pathSoFar.drop(players.length)
+    while (pathSoFar.length >= players.length)
+      pathSoFar = pathSoFar.drop(players.length)
     val allFixtures = ChicagoScoring.getAllFixtures(players: _*)
     val ret = players
       .flatMap(p => {
@@ -183,10 +183,12 @@ object ChicagoScoring {
     val len = players.length
 
     val all =
-      for (n <- 0 until len;
-           s <- n + 1 until len;
-           e <- s + 1 until len;
-           w <- e + 1 until len) yield {
+      for (
+        n <- 0 until len;
+        s <- n + 1 until len;
+        e <- s + 1 until len;
+        w <- e + 1 until len
+      ) yield {
         val north = players(n)
         val south = players(s)
         val east = players(e)

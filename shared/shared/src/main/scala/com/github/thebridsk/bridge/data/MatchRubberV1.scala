@@ -170,13 +170,14 @@ case class MatchRubberV1(
     copy(hands = hands.take(last))
   }
 
-  def partnerOf(p: String): String = p match {
-    case `north` => south
-    case `south` => north
-    case `east`  => west
-    case `west`  => east
-    case _       => null
-  }
+  def partnerOf(p: String): String =
+    p match {
+      case `north` => south
+      case `south` => north
+      case `east`  => west
+      case `west`  => east
+      case _       => null
+    }
 
   /**
     * The hand with the same id as the specified hand will get updated
@@ -202,7 +203,9 @@ case class MatchRubberV1(
     val e = getName(east)
     val w = getName(west)
 
-    if (n.equals(north) && s.equals(south) && e.equals(east) && w.equals(west)) {
+    if (
+      n.equals(north) && s.equals(south) && e.equals(east) && w.equals(west)
+    ) {
       None
     } else {
       Some(copy(north = n, south = s, east = e, west = w))

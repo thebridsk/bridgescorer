@@ -64,19 +64,21 @@ case class TableManeuvers(
     }
   }
 
-  def partnerOfPosition(l: PlayerPosition): PlayerPosition = l match {
-    case North => South
-    case South => North
-    case East  => West
-    case West  => East
-  }
+  def partnerOfPosition(l: PlayerPosition): PlayerPosition =
+    l match {
+      case North => South
+      case South => North
+      case East  => West
+      case West  => East
+    }
 
-  def leftOfPosition(l: PlayerPosition): PlayerPosition = l match {
-    case North => East
-    case South => West
-    case East  => South
-    case West  => North
-  }
+  def leftOfPosition(l: PlayerPosition): PlayerPosition =
+    l match {
+      case North => East
+      case South => West
+      case East  => South
+      case West  => North
+    }
 
   def partnerOf(p: String): Option[String] = {
     find(p) match {
@@ -111,12 +113,13 @@ case class TableManeuvers(
     find(rightOfPosition(l))
   }
 
-  def rightOfPosition(l: PlayerPosition): PlayerPosition = l match {
-    case North => West
-    case South => East
-    case East  => North
-    case West  => South
-  }
+  def rightOfPosition(l: PlayerPosition): PlayerPosition =
+    l match {
+      case North => West
+      case South => East
+      case East  => North
+      case West  => South
+    }
 
   def setPlayer(l: PlayerPosition, p: String): TableManeuvers = {
     l match {
