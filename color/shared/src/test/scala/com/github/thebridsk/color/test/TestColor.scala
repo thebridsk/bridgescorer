@@ -9,9 +9,11 @@ class TestColor extends AnyFlatSpec with Matchers {
 
   it should "convert between hsl, rgb and rgb%" in {
 
-    for (r <- 0 to 255 by 25;
-         g <- 0 to 255 by 25;
-         b <- 0 to 255 by 25) {
+    for (
+      r <- 0 to 255 by 25;
+      g <- 0 to 255 by 25;
+      b <- 0 to 255 by 25
+    ) {
       val rgb = Color.rgb(r, g, b)
 
       testRgbHslRgb(rgb)
@@ -24,10 +26,12 @@ class TestColor extends AnyFlatSpec with Matchers {
 
   it should "Convert rgb to attribute value and back" in {
 
-    for (r <- 0 to 255 by 25;
-         g <- 0 to 255 by 25;
-         b <- 0 to 255 by 25;
-         a <- 0 to 100 by 10) {
+    for (
+      r <- 0 to 255 by 25;
+      g <- 0 to 255 by 25;
+      b <- 0 to 255 by 25;
+      a <- 0 to 100 by 10
+    ) {
       val rgb = Color.rgb(r, g, b, a)
 
       val s = rgb.toAttrValue
@@ -39,10 +43,12 @@ class TestColor extends AnyFlatSpec with Matchers {
 
   it should "Convert rgb percent to attribute value and back" in {
 
-    for (r <- 0 to 100 by 25;
-         g <- 0 to 100 by 25;
-         b <- 0 to 100 by 25;
-         a <- 0 to 100 by 25) {
+    for (
+      r <- 0 to 100 by 25;
+      g <- 0 to 100 by 25;
+      b <- 0 to 100 by 25;
+      a <- 0 to 100 by 25
+    ) {
       val rgb = Color.rgbPercent(r, g, b, a)
 
       val s = rgb.toAttrValue
@@ -54,10 +60,12 @@ class TestColor extends AnyFlatSpec with Matchers {
 
   it should "Convert hsl to attribute value and back" in {
 
-    for (h <- 0 to 360 by 60;
-         s <- 0 to 100 by 25;
-         l <- 0 to 100 by 25;
-         a <- 0 to 100 by 25) {
+    for (
+      h <- 0 to 360 by 60;
+      s <- 0 to 100 by 25;
+      l <- 0 to 100 by 25;
+      a <- 0 to 100 by 25
+    ) {
       val rgb = Color.hsl(h, s, l, a)
 
       val attr = rgb.toAttrValue

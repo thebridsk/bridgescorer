@@ -100,7 +100,12 @@ object Colors {
 
       (1 until n).foldLeft(color2 :: Nil) { (ac, v) =>
         val c = ac.head
-        Color.rgbPercent(c.r + rstep, c.g + gstep, c.b + bstep, c.a + astep) :: ac
+        Color.rgbPercent(
+          c.r + rstep,
+          c.g + gstep,
+          c.b + bstep,
+          c.a + astep
+        ) :: ac
       }
     }
   }

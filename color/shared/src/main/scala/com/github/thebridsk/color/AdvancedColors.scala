@@ -35,7 +35,6 @@ case class Gray(gray: Double, alpha: Double = 100) extends Color {
   * @param a
   * @param b
   * @param alpha the alpha channel value as a percent, 0 is transparent, 100 is opaque
-  *
   */
 case class Lab(cieLightness: Double, a: Double, b: Double, alpha: Double = 100)
     extends Color {
@@ -72,8 +71,8 @@ case class Lab(cieLightness: Double, a: Double, b: Double, alpha: Double = 100)
 object Lab {
   val k: Double = 24389.0 / 27 // 29^3/3^3
   val e: Double = 216.0 / 24389 // 6^3/29^3
-  val white
-      : Array[Double] = Array(0.9642, 1.0000, 0.8249) // D50 reference white
+  val white: Array[Double] =
+    Array(0.9642, 1.0000, 0.8249) // D50 reference white
 }
 
 /**
@@ -82,7 +81,6 @@ object Lab {
   * @param y
   * @param z
   * @param alpha the alpha channel value as a percent, 0 is transparent, 100 is opaque
-  *
   */
 case class XYZ(x: Double, y: Double, z: Double, alpha: Double = 100)
     extends Color {
@@ -112,7 +110,6 @@ case class XYZ(x: Double, y: Double, z: Double, alpha: Double = 100)
   * @param y
   * @param z
   * @param alpha the alpha channel value as a percent, 0 is transparent, 100 is opaque
-  *
   */
 case class XYZD65(x: Double, y: Double, z: Double, alpha: Double = 100)
     extends Color {
@@ -156,7 +153,6 @@ object XYZ {
   * @param g  between 0 and 1
   * @param b  between 0 and 1
   * @param alpha the alpha channel value as a percent, 0 is transparent, 100 is opaque
-  *
   */
 case class SRGB(r: Double, g: Double, b: Double, alpha: Double = 100) {
 
