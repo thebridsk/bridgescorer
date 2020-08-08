@@ -135,10 +135,15 @@ object ModalProps extends PropsFactory[ModalProps] {
 }
 
 object MuiModal extends ComponentFactory[ModalProps] {
-  @js.native @JSImport("@material-ui/core/Modal", JSImport.Default) private object Modal
-      extends js.Any
+  @js.native @JSImport(
+    "@material-ui/core/Modal",
+    JSImport.Default
+  ) private object Modal extends js.Any
 
-  protected val f = JsComponent[ModalProps, Children.Varargs, Null](Modal) // scalafix:ok ExplicitResultTypes; ReactComponent
+  protected val f =
+    JsComponent[ModalProps, Children.Varargs, Null](
+      Modal
+    ) // scalafix:ok ExplicitResultTypes; ReactComponent
 
   /**
     * @param BackdropComponent A backdrop component. This property enables custom

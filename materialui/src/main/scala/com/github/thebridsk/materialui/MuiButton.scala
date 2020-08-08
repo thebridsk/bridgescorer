@@ -144,7 +144,8 @@ object ButtonProps extends PropsFactory[ButtonProps] {
       variant: js.UndefOr[Variant] = js.undefined,
       // from ButtonBase
       action: js.UndefOr[js.Object => Unit] = js.undefined,
-      buttonRef: js.UndefOr[js.Object] = js.undefined, // js.object or js.Function0[ref]
+      buttonRef: js.UndefOr[js.Object] =
+        js.undefined, // js.object or js.Function0[ref]
       centerRipple: js.UndefOr[Boolean] = js.undefined,
       classes: js.UndefOr[js.Dictionary[String]] = js.undefined,
       component: js.UndefOr[String] = js.undefined,
@@ -198,10 +199,15 @@ object ButtonProps extends PropsFactory[ButtonProps] {
 }
 
 object MuiButton extends ComponentFactory[ButtonProps] {
-  @js.native @JSImport("@material-ui/core/Button", JSImport.Default) private object Button
-      extends js.Any
+  @js.native @JSImport(
+    "@material-ui/core/Button",
+    JSImport.Default
+  ) private object Button extends js.Any
 
-  protected val f = JsComponent[ButtonProps, Children.Varargs, Null](Button) // scalafix:ok ExplicitResultTypes; ReactComponent
+  protected val f =
+    JsComponent[ButtonProps, Children.Varargs, Null](
+      Button
+    ) // scalafix:ok ExplicitResultTypes; ReactComponent
 
   /**
     * @param classes Override or extend the styles applied to the component.
@@ -271,7 +277,8 @@ object MuiButton extends ComponentFactory[ButtonProps] {
       variant: js.UndefOr[Variant] = js.undefined,
       // from ButtonBase
       action: js.UndefOr[js.Object => Unit] = js.undefined,
-      buttonRef: js.UndefOr[js.Object] = js.undefined, // js.object or js.Function0[ref]
+      buttonRef: js.UndefOr[js.Object] =
+        js.undefined, // js.object or js.Function0[ref]
       centerRipple: js.UndefOr[Boolean] = js.undefined,
 //        classes: js.UndefOr[js.Dictionary[String]] = js.undefined,
 //        component: js.UndefOr[String] = js.undefined,

@@ -97,8 +97,8 @@ object AnchorOrigin {
   ): AnchorOrigin = {
     val p = new js.Object().asInstanceOf[AnchorOrigin]
 
-    horizontal.foreach(
-      v => p.updateDynamic("horizontal")(v.asInstanceOf[js.Any])
+    horizontal.foreach(v =>
+      p.updateDynamic("horizontal")(v.asInstanceOf[js.Any])
     )
     vertical.foreach(v => p.updateDynamic("vertical")(v.asInstanceOf[js.Any]))
 
@@ -176,9 +176,10 @@ object PopoverProps extends PropsFactory[PopoverProps] {
 //        orElse{ p.anchorReferenceInternal=js.undefined; None }
 //    }
 
-    def anchorEl: UndefOr[AnchorElement] = p.anchorElInternal.map { v =>
-      v.asInstanceOf[AnchorElement]
-    }
+    def anchorEl: UndefOr[AnchorElement] =
+      p.anchorElInternal.map { v =>
+        v.asInstanceOf[AnchorElement]
+      }
 
 //    def anchorEl_= (v: js.UndefOr[AnchorElement]): Unit = {
 //      v.map{ vv=>p.anchorElInternal=vv.asInstanceOf[js.Any]; None }.
@@ -390,8 +391,8 @@ object PopoverProps extends PropsFactory[PopoverProps] {
     transitionComponent.foreach(p.updateDynamic("transitionComponent")(_))
     transitionProps.foreach(p.updateDynamic("transitionProps")(_))
 
-    transitionDuration.foreach(
-      v => p.updateDynamic("transitionDuration")(v.asInstanceOf[js.Any])
+    transitionDuration.foreach(v =>
+      p.updateDynamic("transitionDuration")(v.asInstanceOf[js.Any])
     )
 
     p
@@ -399,10 +400,15 @@ object PopoverProps extends PropsFactory[PopoverProps] {
 }
 
 object MuiPopover extends ComponentFactory[PopoverProps] {
-  @js.native @JSImport("@material-ui/core/Popover", JSImport.Default) private object Popover
-      extends js.Any
+  @js.native @JSImport(
+    "@material-ui/core/Popover",
+    JSImport.Default
+  ) private object Popover extends js.Any
 
-  protected val f = JsComponent[PopoverProps, Children.Varargs, Null](Popover) // scalafix:ok ExplicitResultTypes; ReactComponent
+  protected val f =
+    JsComponent[PopoverProps, Children.Varargs, Null](
+      Popover
+    ) // scalafix:ok ExplicitResultTypes; ReactComponent
 
   // protected val f = JsFnComponent[PopoverProps, Children.Varargs](Popover)
 

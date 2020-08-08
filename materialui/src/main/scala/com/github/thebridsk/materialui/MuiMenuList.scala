@@ -59,10 +59,15 @@ object MenuListProps extends PropsFactory[MenuListProps] {
 }
 
 object MuiMenuList extends ComponentFactory[MenuListProps] {
-  @js.native @JSImport("@material-ui/core/MenuList", JSImport.Default) private object MenuList
-      extends js.Any
+  @js.native @JSImport(
+    "@material-ui/core/MenuList",
+    JSImport.Default
+  ) private object MenuList extends js.Any
 
-  protected val f = JsComponent[MenuListProps, Children.Varargs, Null](MenuList) // scalafix:ok ExplicitResultTypes; ReactComponent
+  protected val f =
+    JsComponent[MenuListProps, Children.Varargs, Null](
+      MenuList
+    ) // scalafix:ok ExplicitResultTypes; ReactComponent
 
   /**
     * @param autoFocus If true, the list will be focused during the first mount.

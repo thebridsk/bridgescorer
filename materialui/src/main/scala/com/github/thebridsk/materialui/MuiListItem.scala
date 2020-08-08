@@ -123,10 +123,15 @@ object ListItemProps extends PropsFactory[ListItemProps] {
 }
 
 object MuiListItem extends ComponentFactory[ListItemProps] {
-  @js.native @JSImport("@material-ui/core/ListItem", JSImport.Default) private object ListItem
-      extends js.Any
+  @js.native @JSImport(
+    "@material-ui/core/ListItem",
+    JSImport.Default
+  ) private object ListItem extends js.Any
 
-  protected val f = JsComponent[ListItemProps, Children.Varargs, Null](ListItem) // scalafix:ok ExplicitResultTypes; ReactComponent
+  protected val f =
+    JsComponent[ListItemProps, Children.Varargs, Null](
+      ListItem
+    ) // scalafix:ok ExplicitResultTypes; ReactComponent
 
   /**
     * @param alignItems Defines the align-items style property.

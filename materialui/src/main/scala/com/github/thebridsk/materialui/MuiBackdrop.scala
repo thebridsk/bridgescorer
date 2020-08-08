@@ -75,13 +75,17 @@ object BackdropProps extends PropsFactory[BackdropProps] {
 }
 
 object MuiBackdrop extends ComponentFactory[BackdropProps] {
-  @js.native @JSImport("@material-ui/core/Backdrop", JSImport.Default) private object Backdrop
-      extends js.Any
+  @js.native @JSImport(
+    "@material-ui/core/Backdrop",
+    JSImport.Default
+  ) private object Backdrop extends js.Any
 
-  protected val f = JsComponent[BackdropProps, Children.Varargs, Null](Backdrop) // scalafix:ok ExplicitResultTypes; ReactComponent
+  protected val f =
+    JsComponent[BackdropProps, Children.Varargs, Null](
+      Backdrop
+    ) // scalafix:ok ExplicitResultTypes; ReactComponent
 
   /**
-    *
     * @param classes Override or extend the styles applied to the
     *                component. See CSS API below for more details.
     * @param center If true, the ripple starts at the center of the

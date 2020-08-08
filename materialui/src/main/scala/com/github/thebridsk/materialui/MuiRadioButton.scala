@@ -122,10 +122,15 @@ object RadioProps extends PropsFactory[RadioProps] {
 }
 
 object MuiRadio extends ComponentFactory[RadioProps] {
-  @js.native @JSImport("@material-ui/core/Radio", JSImport.Default) private object MList
-      extends js.Any
+  @js.native @JSImport(
+    "@material-ui/core/Radio",
+    JSImport.Default
+  ) private object MList extends js.Any
 
-  protected val f = JsComponent[RadioProps, Children.Varargs, Null](MList) // scalafix:ok ExplicitResultTypes; ReactComponent
+  protected val f =
+    JsComponent[RadioProps, Children.Varargs, Null](
+      MList
+    ) // scalafix:ok ExplicitResultTypes; ReactComponent
 
   /**
     * @param checked If true, the component is checked.

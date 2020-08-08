@@ -140,10 +140,15 @@ object MenuProps extends PropsFactory[MenuProps] {
 
 object MuiMenu extends PropsFactory[MenuProps] {
 
-  @js.native @JSImport("@material-ui/core/Menu", JSImport.Default) private object Menu
-      extends js.Any
+  @js.native @JSImport(
+    "@material-ui/core/Menu",
+    JSImport.Default
+  ) private object Menu extends js.Any
 
-  protected val f = JsComponent[MenuProps, Children.Varargs, Null](Menu) // scalafix:ok ExplicitResultTypes; ReactComponent
+  protected val f =
+    JsComponent[MenuProps, Children.Varargs, Null](
+      Menu
+    ) // scalafix:ok ExplicitResultTypes; ReactComponent
 
   import js._
 

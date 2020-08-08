@@ -52,10 +52,15 @@ object PaperProps extends PropsFactory[PaperProps] {
 }
 
 object MuiPaper extends ComponentFactory[PaperProps] {
-  @js.native @JSImport("@material-ui/core/Paper", JSImport.Default) private object Paper
-      extends js.Any
+  @js.native @JSImport(
+    "@material-ui/core/Paper",
+    JSImport.Default
+  ) private object Paper extends js.Any
 
-  protected val f = JsComponent[PaperProps, Children.Varargs, Null](Paper) // scalafix:ok ExplicitResultTypes; ReactComponent
+  protected val f =
+    JsComponent[PaperProps, Children.Varargs, Null](
+      Paper
+    ) // scalafix:ok ExplicitResultTypes; ReactComponent
 
   /**
     * @param classes Override or extend the styles applied to the component.

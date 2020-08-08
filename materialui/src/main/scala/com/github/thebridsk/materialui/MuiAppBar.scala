@@ -99,10 +99,15 @@ object AppBarProps extends PropsFactory[AppBarProps] {
 }
 
 object MuiAppBar extends ComponentFactory[AppBarProps] {
-  @js.native @JSImport("@material-ui/core/AppBar", JSImport.Default) private object AppBar
-      extends js.Any
+  @js.native @JSImport(
+    "@material-ui/core/AppBar",
+    JSImport.Default
+  ) private object AppBar extends js.Any
 
-  protected val f = JsComponent[AppBarProps, Children.Varargs, Null](AppBar) // scalafix:ok ExplicitResultTypes; ReactComponent
+  protected val f =
+    JsComponent[AppBarProps, Children.Varargs, Null](
+      AppBar
+    ) // scalafix:ok ExplicitResultTypes; ReactComponent
 
   /**
     * @param color The color of the component. It supports those theme colors

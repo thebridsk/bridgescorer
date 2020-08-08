@@ -217,10 +217,15 @@ trait SvgIconBase extends ComponentFactory[SvgIconProps] {
 }
 
 object MuiSvgIcon extends ComponentFactory[SvgIconProps] {
-  @js.native @JSImport("@material-ui/core/SvgIcon", JSImport.Default) private object SvgIcon
-      extends js.Any
+  @js.native @JSImport(
+    "@material-ui/core/SvgIcon",
+    JSImport.Default
+  ) private object SvgIcon extends js.Any
 
-  protected val f = JsComponent[SvgIconProps, Children.Varargs, Null](SvgIcon) // scalafix:ok ExplicitResultTypes; ReactComponent
+  protected val f =
+    JsComponent[SvgIconProps, Children.Varargs, Null](
+      SvgIcon
+    ) // scalafix:ok ExplicitResultTypes; ReactComponent
 
   /**
     * @param classes Node passed into the SVG element.

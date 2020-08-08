@@ -78,10 +78,15 @@ object ToolbarProps extends PropsFactory[ToolbarProps] {
 }
 
 object MuiToolbar {
-  @js.native @JSImport("@material-ui/core/Toolbar", JSImport.Default) private object Toolbar
-      extends js.Any
+  @js.native @JSImport(
+    "@material-ui/core/Toolbar",
+    JSImport.Default
+  ) private object Toolbar extends js.Any
 
-  protected val f = JsComponent[ToolbarProps, Children.Varargs, Null](Toolbar) // scalafix:ok ExplicitResultTypes; ReactComponent
+  protected val f =
+    JsComponent[ToolbarProps, Children.Varargs, Null](
+      Toolbar
+    ) // scalafix:ok ExplicitResultTypes; ReactComponent
 
   /**
     * @param classes Override or extend the styles applied to the component.

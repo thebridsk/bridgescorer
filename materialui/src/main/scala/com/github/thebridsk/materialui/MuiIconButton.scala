@@ -104,7 +104,8 @@ object IconButtonProps extends PropsFactory[IconButtonProps] {
       size: js.UndefOr[ItemSize] = js.undefined,
       // from ButtonBase
       action: js.UndefOr[js.Object => Unit] = js.undefined,
-      buttonRef: js.UndefOr[js.Object] = js.undefined, // js.object or js.Function0[ref]
+      buttonRef: js.UndefOr[js.Object] =
+        js.undefined, // js.object or js.Function0[ref]
       centerRipple: js.UndefOr[Boolean] = js.undefined,
       classes: js.UndefOr[js.Dictionary[String]] = js.undefined,
       component: js.UndefOr[String] = js.undefined,
@@ -156,8 +157,10 @@ object IconButtonProps extends PropsFactory[IconButtonProps] {
 }
 
 object MuiIconButton extends ComponentFactory[IconButtonProps] {
-  @js.native @JSImport("@material-ui/core/IconButton", JSImport.Default) private object IconButton
-      extends js.Any
+  @js.native @JSImport(
+    "@material-ui/core/IconButton",
+    JSImport.Default
+  ) private object IconButton extends js.Any
 
   protected val f = JsComponent[IconButtonProps, Children.Varargs, Null](
     IconButton
@@ -209,7 +212,8 @@ object MuiIconButton extends ComponentFactory[IconButtonProps] {
       size: js.UndefOr[ItemSize] = js.undefined,
       // from ButtonBase
       action: js.UndefOr[js.Object => Unit] = js.undefined,
-      buttonRef: js.UndefOr[js.Object] = js.undefined, // js.object or js.Function0[ref]
+      buttonRef: js.UndefOr[js.Object] =
+        js.undefined, // js.object or js.Function0[ref]
       centerRipple: js.UndefOr[Boolean] = js.undefined,
       classes: js.UndefOr[js.Dictionary[String]] = js.undefined,
       component: js.UndefOr[String] = js.undefined,

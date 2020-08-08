@@ -123,8 +123,8 @@ object CheckboxProps extends PropsFactory[CheckboxProps] {
     icon.foreach(v => p.updateDynamic("icon")(toRaw(v)))
     id.foreach(p.updateDynamic("id")(_))
     indeterminate.foreach(p.updateDynamic("indeterminate")(_))
-    indeterminateIcon.foreach(
-      v => p.updateDynamic("indeterminateIcon")(toRaw(v))
+    indeterminateIcon.foreach(v =>
+      p.updateDynamic("indeterminateIcon")(toRaw(v))
     )
     inputProps.foreach(p.updateDynamic("inputProps")(_))
     inputRef.foreach(p.updateDynamic("inputRef")(_))
@@ -141,10 +141,15 @@ object CheckboxProps extends PropsFactory[CheckboxProps] {
 }
 
 object MuiCheckbox extends ComponentFactory[CheckboxProps] {
-  @js.native @JSImport("@material-ui/core/Checkbox", JSImport.Default) private object MList
-      extends js.Any
+  @js.native @JSImport(
+    "@material-ui/core/Checkbox",
+    JSImport.Default
+  ) private object MList extends js.Any
 
-  protected val f = JsComponent[CheckboxProps, Children.Varargs, Null](MList) // scalafix:ok ExplicitResultTypes; ReactComponent
+  protected val f =
+    JsComponent[CheckboxProps, Children.Varargs, Null](
+      MList
+    ) // scalafix:ok ExplicitResultTypes; ReactComponent
 
   /**
     * @param checked If true, the component is checked.

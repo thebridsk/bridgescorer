@@ -58,9 +58,10 @@ object PopperProps extends PropsFactory[PopperProps] {
 //        orElse{ p.placementInternal=js.undefined; None }
 //    }
 
-    def anchorEl: UndefOr[AnchorElement] = p.anchorElInternal.map { v =>
-      v.asInstanceOf[AnchorElement]
-    }
+    def anchorEl: UndefOr[AnchorElement] =
+      p.anchorElInternal.map { v =>
+        v.asInstanceOf[AnchorElement]
+      }
 
 //    def anchorEl_= (v: js.UndefOr[AnchorElement]): Unit = {
 //      v.map{ vv=>p.anchorElInternal=vv.asInstanceOf[js.Any]; None }.
@@ -127,10 +128,15 @@ object PopperProps extends PropsFactory[PopperProps] {
 }
 
 object MuiPopper extends ComponentFactory[PopperProps] {
-  @js.native @JSImport("@material-ui/core/Popper", JSImport.Default) private object Popper
-      extends js.Any
+  @js.native @JSImport(
+    "@material-ui/core/Popper",
+    JSImport.Default
+  ) private object Popper extends js.Any
 
-  protected val f = JsComponent[PopperProps, Children.Varargs, Null](Popper) // scalafix:ok ExplicitResultTypes; ReactComponent
+  protected val f =
+    JsComponent[PopperProps, Children.Varargs, Null](
+      Popper
+    ) // scalafix:ok ExplicitResultTypes; ReactComponent
 
   // protected val f = JsFnComponent[PopperProps, Children.Varargs](Popper)
 

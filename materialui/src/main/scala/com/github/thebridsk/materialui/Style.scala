@@ -25,7 +25,8 @@ object Style {
 //  import { withStyles } from '@material-ui/styles'
 
   @js.native @JSImport("@material-ui/core/styles/withStyles", JSImport.Default)
-  private object WithStyle extends js.Any // with Function2[js.Object,js.Object,Function1[js.Any,VdomNode]]
+  private object WithStyle
+      extends js.Any // with Function2[js.Object,js.Object,Function1[js.Any,VdomNode]]
 
 //  log.fine("WithStyle: "+WithStyle)
 

@@ -205,8 +205,10 @@ object TypographyProps extends PropsFactory[TypographyProps] {
 }
 
 object MuiTypography extends ComponentFactory[TypographyProps] {
-  @js.native @JSImport("@material-ui/core/Typography", JSImport.Default) private object Typography
-      extends js.Any
+  @js.native @JSImport(
+    "@material-ui/core/Typography",
+    JSImport.Default
+  ) private object Typography extends js.Any
 
   protected val f = JsComponent[TypographyProps, Children.Varargs, Null](
     Typography
