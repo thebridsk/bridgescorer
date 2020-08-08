@@ -52,8 +52,8 @@ class MyProcess {
 
   def exec(cmd: List[String], cwd: File): Process = {
     val i = counter.incrementAndGet()
-    logger.foreach(
-      l => l.info(s"""Executing OS command($i): ${cmd.mkString(" ")}""")
+    logger.foreach(l =>
+      l.info(s"""Executing OS command($i): ${cmd.mkString(" ")}""")
     )
     val pb = new ProcessBuilder().command(cmd.asJava).directory(cwd).inheritIO()
     val proc = pb.start()
@@ -66,8 +66,8 @@ class MyProcess {
       cwd: File
   ): Process = {
     val i = counter.incrementAndGet()
-    logger.foreach(
-      l => l.info(s"""Executing OS command($i): ${cmd.mkString(" ")}""")
+    logger.foreach(l =>
+      l.info(s"""Executing OS command($i): ${cmd.mkString(" ")}""")
     )
     val pb = new ProcessBuilder().command(cmd.asJava).directory(cwd).inheritIO()
     val env = pb.environment()
@@ -93,11 +93,10 @@ class MyProcess {
       pcmd: Option[List[String]] = None
   ): Process = {
     val i = counter.incrementAndGet()
-    logger.foreach(
-      l =>
-        l.info(s"""Executing OS command($i): ${pcmd
-          .getOrElse(cmd)
-          .mkString(" ")}""")
+    logger.foreach(l =>
+      l.info(s"""Executing OS command($i): ${pcmd
+        .getOrElse(cmd)
+        .mkString(" ")}""")
     )
     val redirect = logger.map(l => Redirect.PIPE).getOrElse(Redirect.INHERIT)
     val pb = new ProcessBuilder()
@@ -227,11 +226,10 @@ class MyProcess {
       }
     } catch {
       case x: IOException =>
-        logger.foreach(
-          l =>
-            l.severe(
-              "Unable to run command: " + cmd.mkString(" ") + ", error=" + x
-            )
+        logger.foreach(l =>
+          l.severe(
+            "Unable to run command: " + cmd.mkString(" ") + ", error=" + x
+          )
         )
         throw new Exception(
           "Unable to run command: " + cmd.mkString(" ") + ", error=" + x
@@ -426,7 +424,6 @@ object MyFileUtils {
     * @param dest the destination directory
     * @param onlyExt only files with this extension
     * @param maxDepth max directory depth, default is 1, copy only files in src
-    *
     */
   def copyDirectory(
       src: File,

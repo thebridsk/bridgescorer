@@ -117,9 +117,11 @@ object Publish extends Main {
 
               case patternFullServer(fileversion, relativePath)
                   if fileversion == version =>
-                if (!relativePath.endsWith(".js.map") && !relativePath.endsWith(
-                      ".css.map"
-                    )) {
+                if (
+                  !relativePath.endsWith(".js.map") && !relativePath.endsWith(
+                    ".css.map"
+                  )
+                ) {
                   val targetFile = new File(publicdir, relativePath)
                   writeFile(jar, targetFile)
                   count + 1
