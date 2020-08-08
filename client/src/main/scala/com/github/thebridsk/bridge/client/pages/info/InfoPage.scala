@@ -15,53 +15,56 @@ import com.github.thebridsk.materialui.TextVariant
 import com.github.thebridsk.materialui.TextColor
 import com.github.thebridsk.bridge.clientcommon.fullscreen.Values
 
-
 /**
- * @author werewolf
- */
+  * @author werewolf
+  */
 object InfoPage {
   import BaseStyles._
 
   private val log = Logger("bridge.InfoPage")
 
-  case class Props( routeCtl: BridgeRouter[AppPage] )
+  case class Props(routeCtl: BridgeRouter[AppPage])
 
-  class Backend( scope: BackendScope[Props, Unit] ) {
-    def render( props: Props ) = { // scalafix:ok ExplicitResultTypes; React
-          val gotoPage = props.routeCtl.set _
-          <.div(
-            RootBridgeAppBar(
-                Seq(MuiTypography(
-                        variant = TextVariant.h6,
-                        color = TextColor.inherit,
-                    )(
-                        <.span(
-                          " Info",
-                        )
-                    )
-                ),
-                None,
-                props.routeCtl
-            )(),
-            <.div(
-              rootStyles.infoPageDiv,
-              <.table( ^.width := "100%",
-                  <.thead(
-                    <.tr(
-                      <.th( ^.textAlign:="left", "Property"), <.th(^.textAlign:="left", "Value")
-                  )),
-                  <.tbody(
-                    info.map{ e => tablerow(e) }.toTagMod
-                  )
-              ),
-              <.p(
-  //              AppButton( "Cancel", "Cancel", ^.onClick --> gotoPage(Home)),
-  //              " ",
-                AppButton( "Refresh", "Refresh", ^.onClick --> scope.forceUpdate )
+  class Backend(scope: BackendScope[Props, Unit]) {
+    def render(props: Props) = { // scalafix:ok ExplicitResultTypes; React
+      val gotoPage = props.routeCtl.set _
+      <.div(
+        RootBridgeAppBar(
+          Seq(
+            MuiTypography(
+              variant = TextVariant.h6,
+              color = TextColor.inherit
+            )(
+              <.span(
+                " Info"
               )
             )
+          ),
+          None,
+          props.routeCtl
+        )(),
+        <.div(
+          rootStyles.infoPageDiv,
+          <.table(
+            ^.width := "100%",
+            <.thead(
+              <.tr(
+                <.th(^.textAlign := "left", "Property"),
+                <.th(^.textAlign := "left", "Value")
+              )
+            ),
+            <.tbody(
+              info.map { e => tablerow(e) }.toTagMod
+            )
+          ),
+          <.p(
+            //              AppButton( "Cancel", "Cancel", ^.onClick --> gotoPage(Home)),
+            //              " ",
+            AppButton("Refresh", "Refresh", ^.onClick --> scope.forceUpdate)
           )
-        }
+        )
+      )
+    }
 
   }
 
@@ -91,48 +94,59 @@ object InfoPage {
       ("Screen.colorDepth", screen.colorDepth),
       ("Screen.pixelDepth", screen.pixelDepth),
       ("typeOf(StyleMedia)", js.typeOf(window.styleMedia)),
-      ("StyleMedia.type", (if (styleMediaDefined) styleMedia.`type`; else "???")),
+      (
+        "StyleMedia.type",
+        (if (styleMediaDefined) styleMedia.`type`; else "???")
+      ),
       ("isTouchEnabled", isTouchEnabled),
       ("closed", window.asInstanceOf[js.Dynamic].closed)
 //      ("", "")
-    ).map{ case (key,value) =>
-      val v=value.toString()
+    ).map {
+      case (key, value) =>
+        val v = value.toString()
 //      log.info(s"""  ${key} = ${v}""")
-      (key,v)
+        (key, v)
     }
-    log.info(s"InfoPage\n  ${i.map{ e => s"${e._1} = ${e._2}" }.mkString("\n  ")}")
+    log.info(
+      s"InfoPage\n  ${i.map { e => s"${e._1} = ${e._2}" }.mkString("\n  ")}"
+    )
     i
   }
 
-  private val tablerow = ScalaComponent.builder[(String,String)]("InfoViewRow")
-        .render_P{ props =>
-          val (name,value) = props
+  private val tablerow = ScalaComponent
+    .builder[(String, String)]("InfoViewRow")
+    .render_P { props =>
+      val (name, value) = props
 //          log.info(s"""  ${name} = ${value}""")
-          <.tr(
-            <.td( name ),
-            <.td( value )
-          )
-        }.build
+      <.tr(
+        <.td(name),
+        <.td(value)
+      )
+    }
+    .build
 
-  private val component = ScalaComponent.builder[Props]("InfoView")
-        .stateless
-        .renderBackend[Backend]
-        .build
+  private val component = ScalaComponent
+    .builder[Props]("InfoView")
+    .stateless
+    .renderBackend[Backend]
+    .build
 
-  def apply( routeCtl: BridgeRouter[AppPage] ) = component(Props(routeCtl))  // scalafix:ok ExplicitResultTypes; ReactComponent
+  def apply(routeCtl: BridgeRouter[AppPage]) =
+    component(
+      Props(routeCtl)
+    ) // scalafix:ok ExplicitResultTypes; ReactComponent
 
   /**
-   * window.orientation: (from http://www.williammalone.com/articles/html5-javascript-ios-orientation/)
-   *   0 - portrait
-   * 180 - portrait, upsidedown
-   *  90 - landscape, counterclockwise
-   * -90 - landscape, clockwise
-   *
-   */
+    * window.orientation: (from http://www.williammalone.com/articles/html5-javascript-ios-orientation/)
+    *   0 - portrait
+    * 180 - portrait, upsidedown
+    *  90 - landscape, counterclockwise
+    * -90 - landscape, clockwise
+    */
   def getOrientation: Option[Int] = {
     js.Dynamic.global.window.orientation.toString match {
       case "undefined" => None
-      case s => Some(s.toInt)
+      case s           => Some(s.toInt)
     }
   }
 
@@ -150,7 +164,7 @@ object InfoPage {
     val h = s.height.asInstanceOf[Int]
     val w = s.width.asInstanceOf[Int]
     val p = js.Dynamic.global.window.navigator.platform.asInstanceOf[String]
-    (p=="Win32") && ((w==1368 && h==768)||(w==768 && h==1368))
+    (p == "Win32") && ((w == 1368 && h == 768) || (w == 768 && h == 1368))
   }
 
   def isIpad: Boolean = {

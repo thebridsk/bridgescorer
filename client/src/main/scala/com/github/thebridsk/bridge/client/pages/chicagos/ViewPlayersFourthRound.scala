@@ -18,11 +18,11 @@ import com.github.thebridsk.materialui.MuiTypography
 import com.github.thebridsk.materialui.TextVariant
 import com.github.thebridsk.materialui.TextColor
 
-
 object ViewPlayersFourthRound {
   import PagePlayers._
 
-  def apply(props: Props) = component(props)  // scalafix:ok ExplicitResultTypes; ReactComponent
+  def apply(props: Props) =
+    component(props) // scalafix:ok ExplicitResultTypes; ReactComponent
 
   class Backend(scope: BackendScope[Props, ViewPlayersSecondRound.State]) {
 
@@ -60,21 +60,22 @@ object ViewPlayersFourthRound {
     val changeScoreKeeper: Callback =
       scope.modState(s => s.copy(changingScoreKeeper = true))
 
-    val reset: Callback = scope.modState(
-      s =>
-        s.copy(
-          north = s.north,
-          south = "",
-          east = "",
-          west = "",
-          changingScoreKeeper = false
-        )
+    val reset: Callback = scope.modState(s =>
+      s.copy(
+        north = s.north,
+        south = "",
+        east = "",
+        west = "",
+        changingScoreKeeper = false
+      )
     )
 
     /**
       * Only call from within a scope.modState()
       */
-    def complete(state: ViewPlayersSecondRound.State): ViewPlayersSecondRound.State = {
+    def complete(
+        state: ViewPlayersSecondRound.State
+    ): ViewPlayersSecondRound.State = {
       val props = scope.withEffectsImpure.props
 
       val lastRound = props.chicago.rounds(props.chicago.rounds.size - 1)
@@ -211,7 +212,10 @@ object ViewPlayersFourthRound {
           "Dealer",
           baseStyles.nameButton,
           ^.onClick --> setFirstDealer(position),
-          BaseStyles.highlight(selected = state.isDealer(position), required=state.dealer.isEmpty),
+          BaseStyles.highlight(
+            selected = state.isDealer(position),
+            required = state.dealer.isEmpty
+          ),
           ^.tabIndex := tabindex
         )
 
@@ -369,8 +373,7 @@ object ViewPlayersFourthRound {
 
   }
 
-  private[chicagos]
-  val component = ScalaComponent
+  private[chicagos] val component = ScalaComponent
     .builder[Props]("ViewPlayersFourthRound")
     .initialStateFromProps { props =>
       {

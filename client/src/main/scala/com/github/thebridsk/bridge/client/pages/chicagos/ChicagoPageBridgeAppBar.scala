@@ -15,7 +15,6 @@ import org.scalajs.dom.raw.Element
 import org.scalajs.dom.raw.Node
 import scala.scalajs.js
 
-
 /**
   * A simple AppBar for the Bridge client.
   *
@@ -72,13 +71,13 @@ object ChicagoPageBridgeAppBarInternal {
     *
     * I'd like this class to be private, but the instantiation of component
     * will cause State to leak.
-    *
     */
   case class State(
       anchorMainEl: js.UndefOr[Element] = js.undefined
   ) {
 
-    def openMainMenu(n: Node): State = copy(anchorMainEl = n.asInstanceOf[Element])
+    def openMainMenu(n: Node): State =
+      copy(anchorMainEl = n.asInstanceOf[Element])
     def closeMainMenu(): State = copy(anchorMainEl = js.undefined)
   }
 
@@ -87,14 +86,12 @@ object ChicagoPageBridgeAppBarInternal {
     *
     * I'd like this class to be private, but the instantiation of component
     * will cause Backend to leak.
-    *
     */
   class Backend(scope: BackendScope[Props, State]) {
 
     def handleMainClick(event: ReactEvent): Unit =
-      event.extract(_.currentTarget)(
-        currentTarget =>
-          scope.modState(s => s.openMainMenu(currentTarget)).runNow()
+      event.extract(_.currentTarget)(currentTarget =>
+        scope.modState(s => s.openMainMenu(currentTarget)).runNow()
       )
     def handleMainCloseClick(event: ReactEvent): Unit =
       scope.modState(s => s.closeMainMenu()).runNow()
@@ -154,8 +151,7 @@ object ChicagoPageBridgeAppBarInternal {
     }
   }
 
-  private[chicagos]
-  val component = ScalaComponent
+  private[chicagos] val component = ScalaComponent
     .builder[Props]("ChicagoPageBridgeAppBar")
     .initialStateFromProps { props =>
       State()

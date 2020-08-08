@@ -28,23 +28,23 @@ class TestDuplicateStore extends AnyFlatSpec with Matchers {
 
     private var changeCalled = false
 
-    private def internalChangeListener = Callback {
-          changeCalled = true;
-          changeListener()
-    }
+    private def internalChangeListener =
+      Callback {
+        changeCalled = true;
+        changeListener()
+      }
 
     def run(): Unit = {
       try {
         DuplicateStore.addChangeListener(internalChangeListener)
         doAction()
-        assert( changeCalled, "change must be called")
+        assert(changeCalled, "change must be called")
       } finally {
         DuplicateStore.removeChangeListener(internalChangeListener)
         DuplicateStore.removeAllListener(ChangeListenable.event)
       }
     }
   }
-
 
   behavior of "TestDuplicateStore in bridgescorer-client"
 
@@ -55,15 +55,15 @@ class TestDuplicateStore extends AnyFlatSpec with Matchers {
       def changeListener(): Unit = {
         DuplicateStore.getId() match {
           case Some(id) => id mustBe dupid
-          case _ => fail("Did not get an ID from DuplicateStore")
+          case _        => fail("Did not get an ID from DuplicateStore")
         }
         DuplicateStore.getMatch() match {
           case Some(dm) => fail("should not see a matchduplicate")
-          case _ =>
+          case _        =>
         }
       }
       def doAction(): Unit = {
-        DuplicateStore.dispatch( ActionStartDuplicateMatch( dupid ) )
+        DuplicateStore.dispatch(ActionStartDuplicateMatch(dupid))
       }
     }.run()
   }
@@ -74,26 +74,40 @@ class TestDuplicateStore extends AnyFlatSpec with Matchers {
       def changeListener(): Unit = {
         DuplicateStore.getMatch() match {
           case Some(dm) => dm mustBe startMatch
-          case _ => fail("Did not update store")
+          case _        => fail("Did not update store")
         }
       }
       def doAction(): Unit = {
-        DuplicateStore.dispatch( ActionUpdateDuplicateMatch(startMatch) )
+        DuplicateStore.dispatch(ActionUpdateDuplicateMatch(startMatch))
       }
     }.run()
   }
 
-  def getHand( boardid: Board.Id, handid: Team.Id,
-               contractTricks: Int,
-               contractSuit: String,
-               contractDoubled: String,
-               declarer: String,
-               madeContract: Boolean,
-               tricks: Int
-             ): DuplicateHandV2 = {
+  def getHand(
+      boardid: Board.Id,
+      handid: Team.Id,
+      contractTricks: Int,
+      contractSuit: String,
+      contractDoubled: String,
+      declarer: String,
+      madeContract: Boolean,
+      tricks: Int
+  ): DuplicateHandV2 = {
     val b = DuplicateStore.getMatch().get.getBoard(Board.id(1)).get
-    val dh = b.getHand( Team.id(1)).get
-    dh.updateHand(Hand.create(dh.id.id, contractTricks, contractSuit,contractDoubled, declarer, b.nsVul, b.ewVul, madeContract, tricks ))
+    val dh = b.getHand(Team.id(1)).get
+    dh.updateHand(
+      Hand.create(
+        dh.id.id,
+        contractTricks,
+        contractSuit,
+        contractDoubled,
+        declarer,
+        b.nsVul,
+        b.ewVul,
+        madeContract,
+        tricks
+      )
+    )
   }
 
   it should "PlayHands" in {
@@ -102,19 +116,30 @@ class TestDuplicateStore extends AnyFlatSpec with Matchers {
       new Tester {
         def changeListener(): Unit = {
           DuplicateStore.getMatch() match {
-            case Some(dm) => if ( !dm.getBoard(hand.board).get.getHand(hand.id).get.equalsIgnoreModifyTime(hand) ) fail("hands must be equal")
+            case Some(dm) =>
+              if (
+                !dm
+                  .getBoard(hand.board)
+                  .get
+                  .getHand(hand.id)
+                  .get
+                  .equalsIgnoreModifyTime(hand)
+              ) fail("hands must be equal")
             case _ => fail("Did not update store")
           }
         }
         def doAction(): Unit = {
-          DuplicateStore.dispatch( ActionUpdateDuplicateHand( dupid, hand) )
+          DuplicateStore.dispatch(ActionUpdateDuplicateHand(dupid, hand))
         }
       }.run()
     }
   }
 
   it should "Score" in {
-    val score = MatchDuplicateScore( DuplicateStore.getMatch().get, PerspectiveTable( Team.id(1), Team.id(2) ))
+    val score = MatchDuplicateScore(
+      DuplicateStore.getMatch().get,
+      PerspectiveTable(Team.id(1), Team.id(2))
+    )
     score.teamScores mustBe TestMatchDuplicate.getTeamScore()
   }
 }

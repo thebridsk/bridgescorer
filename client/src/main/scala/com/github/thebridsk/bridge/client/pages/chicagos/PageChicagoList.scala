@@ -1,6 +1,5 @@
 package com.github.thebridsk.bridge.client.pages.chicagos
 
-
 import com.github.thebridsk.bridge.client.controller.ChicagoController
 import com.github.thebridsk.bridge.data.MatchChicago
 import com.github.thebridsk.bridge.data.chicago.ChicagoScoring
@@ -47,7 +46,10 @@ object PageChicagoList {
 
   case class Props(routerCtl: BridgeRouter[ChicagoPage], page: ListViewBase)
 
-  def apply(routerCtl: BridgeRouter[ChicagoPage], page: ListViewBase) =  // scalafix:ok ExplicitResultTypes; ReactComponent
+  def apply(
+      routerCtl: BridgeRouter[ChicagoPage],
+      page: ListViewBase
+  ) = // scalafix:ok ExplicitResultTypes; ReactComponent
     component(Props(routerCtl, page))
 
 }
@@ -80,7 +82,6 @@ object PageChicagoListInternal {
     *
     * I'd like this class to be private, but the instantiation of component
     * will cause Backend to leak.
-    *
     */
   class Backend(scope: BackendScope[Props, State]) {
 
@@ -100,10 +101,12 @@ object PageChicagoListInternal {
 
     }
 
-    val deleteCancel: Callback = scope.modState(s => s.copy(askingToDelete = None))
+    val deleteCancel: Callback =
+      scope.modState(s => s.copy(askingToDelete = None))
 
     val resultChicago: ResultHolder[MatchChicago] = ResultHolder[MatchChicago]()
-    val resultGraphQL: ResultHolder[GraphQLResponse] = ResultHolder[GraphQLResponse]()
+    val resultGraphQL: ResultHolder[GraphQLResponse] =
+      ResultHolder[GraphQLResponse]()
 
     val cancel: Callback = Callback {
       resultChicago.cancel()
@@ -132,11 +135,10 @@ object PageChicagoListInternal {
             t match {
               case x: RequestCancelled =>
               case _ =>
-                scope.withEffectsImpure.modState(
-                  s =>
-                    s.copy(
-                      popupMsg = Some("Failed to create a new Chicago match")
-                    )
+                scope.withEffectsImpure.modState(s =>
+                  s.copy(
+                    popupMsg = Some("Failed to create a new Chicago match")
+                  )
                 )
             }
           })
@@ -169,8 +171,8 @@ object PageChicagoListInternal {
         .map(msg => (Some(msg), bok, bcancel))
         .getOrElse(
           (
-            state.askingToDelete.map(
-              id => s"Are you sure you want to delete Chicago match ${id}"
+            state.askingToDelete.map(id =>
+              s"Are you sure you want to delete Chicago match ${id}"
             ),
             Some(deleteOK),
             Some(deleteCancel)
@@ -243,8 +245,8 @@ object PageChicagoListInternal {
     }
 
     def setMessage(msg: String, info: Boolean = false): Effect.Id[Unit] =
-      scope.withEffectsImpure.modState(
-        s => s.copy(popupMsg = Some(msg), info = info)
+      scope.withEffectsImpure.modState(s =>
+        s.copy(popupMsg = Some(msg), info = info)
       )
 
     def importChicago(importId: String, id: MatchChicago.Id): Callback =
@@ -271,31 +273,30 @@ object PageChicagoListInternal {
           val result = GraphQLClient.request(query, Some(vars), op)
           resultGraphQL.set(result)
           result
-            .map {
-              gr =>
-                gr.data match {
-                  case Some(data) =>
-                    data \ "import" \ "importchicago" \ "id" match {
-                      case JsDefined(JsString(newid)) =>
-                        setMessage(
-                          s"import chicago ${id.id} from ${importId}, new ID ${newid}",
-                          true
-                        )
-                        initializeNewSummary(scope.withEffectsImpure.props)
-                      case JsDefined(x) =>
-                        setMessage(
-                          s"expecting string on import chicago ${id.id} from ${importId}, got ${x}"
-                        )
-                      case _: JsUndefined =>
-                        setMessage(
-                          s"error import chicago ${id.id} from ${importId}, did not find import/importchicago/id field"
-                        )
-                    }
-                  case None =>
-                    setMessage(
-                      s"error import chicago ${id.id} from ${importId}, ${gr.getError()}"
-                    )
-                }
+            .map { gr =>
+              gr.data match {
+                case Some(data) =>
+                  data \ "import" \ "importchicago" \ "id" match {
+                    case JsDefined(JsString(newid)) =>
+                      setMessage(
+                        s"import chicago ${id.id} from ${importId}, new ID ${newid}",
+                        true
+                      )
+                      initializeNewSummary(scope.withEffectsImpure.props)
+                    case JsDefined(x) =>
+                      setMessage(
+                        s"expecting string on import chicago ${id.id} from ${importId}, got ${x}"
+                      )
+                    case _: JsUndefined =>
+                      setMessage(
+                        s"error import chicago ${id.id} from ${importId}, did not find import/importchicago/id field"
+                      )
+                  }
+                case None =>
+                  setMessage(
+                    s"error import chicago ${id.id} from ${importId}, ${gr.getError()}"
+                  )
+              }
             }
             .recover {
               case x: Exception =>
@@ -303,10 +304,11 @@ object PageChicagoListInternal {
                   s"exception import chicago ${id.id} from ${importId}",
                   x
                 )
-                setMessage(s"exception import chicago ${id.id} from ${importId}")
+                setMessage(
+                  s"exception import chicago ${id.id} from ${importId}"
+                )
             }
-            .foreach { x =>
-            }
+            .foreach { x => }
         }
       )
 
@@ -315,8 +317,8 @@ object PageChicagoListInternal {
     val storeCallback = scope.forceUpdate
 
     def summaryError(): Effect.Id[Unit] =
-      scope.withEffectsImpure.modState(
-        s => s.copy(popupMsg = Some("Error getting duplicate summary"))
+      scope.withEffectsImpure.modState(s =>
+        s.copy(popupMsg = Some("Error getting duplicate summary"))
       )
 
     val didMount: Callback = scope.props >>= { (p) =>
@@ -330,7 +332,7 @@ object PageChicagoListInternal {
       }
     }
 
-    def initializeNewSummary( props: Props ): Unit = {
+    def initializeNewSummary(props: Props): Unit = {
       props.page match {
         case isv: ImportListView =>
           val importId = isv.getDecodedId
@@ -346,16 +348,18 @@ object PageChicagoListInternal {
 
   }
 
-  def didUpdate( cdu: ComponentDidUpdate[Props,State,Backend,Unit] ): Callback = Callback {
-    val props = cdu.currentProps
-    val prevProps = cdu.prevProps
-    if (prevProps.page != props.page) {
-      cdu.backend.initializeNewSummary(props)
+  def didUpdate(
+      cdu: ComponentDidUpdate[Props, State, Backend, Unit]
+  ): Callback =
+    Callback {
+      val props = cdu.currentProps
+      val prevProps = cdu.prevProps
+      if (prevProps.page != props.page) {
+        cdu.backend.initializeNewSummary(props)
+      }
     }
-  }
 
-  private[chicagos]
-  val ChicagoRowFirst = ScalaComponent
+  private[chicagos] val ChicagoRowFirst = ScalaComponent
     .builder[(Backend, Props, State, Int, Option[String])]("ChicagoRowFirst")
     .stateless
     .render_P { args =>
@@ -381,8 +385,7 @@ object PageChicagoListInternal {
     }
     .build
 
-  private[chicagos]
-  val ChicagoRow = ScalaComponent
+  private[chicagos] val ChicagoRow = ScalaComponent
     .builder[(Backend, Props, State, Int, Int, ChicagoScoring, Option[String])](
       "ChicagoRow"
     )
@@ -408,33 +411,32 @@ object PageChicagoListInternal {
             }.whenDefined
           )
         ),
-        importId.whenDefined {
-          iid =>
-            TagMod(
-              <.td(
-                AppButton(
-                  s"ImportChicago_${id.id}",
-                  "Import",
-                  baseStyles.appButton100,
-                  ^.onClick --> backend.importChicago(iid, id)
-                )
-              ),
-              <.td(
-                chicago.chicago.bestMatch.map { bm =>
-                  if (bm.id.isDefined && bm.sameness > 90) {
-                    val title = bm.htmlTitle
-                    TagMod(
-                      Tooltip(
-                        f"""${bm.id.get.id} ${bm.sameness}%.2f%%""",
-                        <.div(title)
-                      )
-                    )
-                  } else {
-                    TagMod()
-                  }
-                }.whenDefined
+        importId.whenDefined { iid =>
+          TagMod(
+            <.td(
+              AppButton(
+                s"ImportChicago_${id.id}",
+                "Import",
+                baseStyles.appButton100,
+                ^.onClick --> backend.importChicago(iid, id)
               )
+            ),
+            <.td(
+              chicago.chicago.bestMatch.map { bm =>
+                if (bm.id.isDefined && bm.sameness > 90) {
+                  val title = bm.htmlTitle
+                  TagMod(
+                    Tooltip(
+                      f"""${bm.id.get.id} ${bm.sameness}%.2f%%""",
+                      <.div(title)
+                    )
+                  )
+                } else {
+                  TagMod()
+                }
+              }.whenDefined
             )
+          )
         },
         <.td(created, <.br(), updated),
         (0 until players.length).map { i =>
@@ -454,8 +456,7 @@ object PageChicagoListInternal {
     })
     .build
 
-  private[chicagos]
-  val component = ScalaComponent
+  private[chicagos] val component = ScalaComponent
     .builder[Props]("PageChicagoList")
     .initialStateFromProps { props =>
       State()
@@ -465,6 +466,6 @@ object PageChicagoListInternal {
 //                            .configure(LogLifecycleToServer.verbose)     // logs lifecycle events
     .componentDidMount(scope => scope.backend.didMount)
     .componentWillUnmount(scope => scope.backend.willUnmount)
-    .componentDidUpdate( didUpdate )
+    .componentDidUpdate(didUpdate)
     .build
 }

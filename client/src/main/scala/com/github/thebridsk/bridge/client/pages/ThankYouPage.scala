@@ -7,52 +7,55 @@ import com.github.thebridsk.bridge.clientcommon.pages.TitleSuits
 import com.github.thebridsk.bridge.client.routes.BridgeRouter
 import com.github.thebridsk.bridge.client.routes.AppRouter.AppPage
 
-
 object ThankYouPage {
   import ThankYouPageInternal._
 
   case class Props(
-    routeCtl: BridgeRouter[AppPage],
+      routeCtl: BridgeRouter[AppPage]
   )
 
   def apply(
-    routeCtl: BridgeRouter[AppPage],
-  ) = component(Props(routeCtl)) // scalafix:ok ExplicitResultTypes; ReactComponent
+      routeCtl: BridgeRouter[AppPage]
+  ) =
+    component(
+      Props(routeCtl)
+    ) // scalafix:ok ExplicitResultTypes; ReactComponent
 
 }
 
 object ThankYouPageInternal {
   import ThankYouPage._
 
-  def exitFullscreen(): Callback = Callback {
-    import org.scalajs.dom.document
-    import com.github.thebridsk.bridge.clientcommon.fullscreen.Implicits._
+  def exitFullscreen(): Callback =
+    Callback {
+      import org.scalajs.dom.document
+      import com.github.thebridsk.bridge.clientcommon.fullscreen.Implicits._
 
-    if (document.isFullscreen) document.exitFullscreen()
-  }
+      if (document.isFullscreen) document.exitFullscreen()
+    }
 
-  private[pages]
-  val component = ScalaComponent.builder[Props]("ThankYouPage")
-                            .stateless
-                            .noBackend
-                            .render_P( props =>
-                              <.div(
-                                RootBridgeAppBar(
-                                  title = Seq(),
-                                  helpurl = Some("../help/introduction.html"),
-                                  routeCtl = props.routeCtl,
-                                  showRightButtons = false,
-                                  showMainMenu = false
-                                )(),
-                                <.div(
-                                  rootStyles.thankYouDiv,
-                                  <.h1("Thank you for using the Bridge Scorer"),
-                                  <.p("You can now close this window"),
-                                  <.p( TitleSuits.suitspan)
-                                )
-                              )
-                            )
-                            .componentDidMount( scope => exitFullscreen() )
-                            .componentDidUpdate( scope => exitFullscreen() )
-                            .build
+  private[pages] val component = ScalaComponent
+    .builder[Props]("ThankYouPage")
+    .stateless
+    .noBackend
+    .render_P(props =>
+      <.div(
+        RootBridgeAppBar(
+          title = Seq(),
+          helpurl = Some("../help/introduction.html"),
+          routeCtl = props.routeCtl,
+          showRightButtons = false,
+          showMainMenu = false
+        )(),
+        <.div(
+          rootStyles.thankYouDiv,
+          <.h1("Thank you for using the Bridge Scorer"),
+          <.p("You can now close this window"),
+          <.p(TitleSuits.suitspan)
+        )
+      )
+    )
+    .componentDidMount(scope => exitFullscreen())
+    .componentDidUpdate(scope => exitFullscreen())
+    .build
 }

@@ -1,6 +1,5 @@
 package com.github.thebridsk.bridge.client.test.utils
 
-
 object Loader {
 
   def init: Unit = {}

@@ -15,7 +15,6 @@ import com.github.thebridsk.materialui.TextVariant
 import com.github.thebridsk.materialui.TextColor
 import com.github.thebridsk.bridge.client.pages.HomePage
 
-
 /**
   * @author werewolf
   */
@@ -39,7 +38,9 @@ object PagePlayers {
   ) {
     def isDealerValid() = dealer.isDefined
     def areAllPlayersValid(): Boolean =
-      playerValid(north) && playerValid(south) && playerValid(east) && playerValid(
+      playerValid(north) && playerValid(south) && playerValid(
+        east
+      ) && playerValid(
         west
       ) &&
         (if (chicago5 || quintet) {
@@ -51,12 +52,12 @@ object PagePlayers {
     def areAllPlayersUnique(): Boolean = {
       val p =
         north.trim ::
-        south.trim ::
-        east.trim ::
-        west.trim ::
-        (if (chicago5 || quintet)
-           extra.map(_.trim).toList
-         else Nil)
+          south.trim ::
+          east.trim ::
+          west.trim ::
+          (if (chicago5 || quintet)
+             extra.map(_.trim).toList
+           else Nil)
       val before = p.length
       val after = p.distinct.length
       before == after
@@ -81,14 +82,13 @@ object PagePlayers {
 
     def getDealerName(): String =
       dealer
-        .map(
-          d =>
-            d match {
-              case North => north
-              case South => south
-              case East  => east
-              case West  => west
-            }
+        .map(d =>
+          d match {
+            case North => north
+            case South => south
+            case East  => east
+            case West  => west
+          }
         )
         .getOrElse("")
   }
@@ -98,7 +98,10 @@ object PagePlayers {
   type CallbackOk = (PlayerState) => Callback
   type CallbackCancel = Callback
 
-  def apply(page: NamesView, router: BridgeRouter[ChicagoPage]) =  // scalafix:ok ExplicitResultTypes; ReactComponent
+  def apply(
+      page: NamesView,
+      router: BridgeRouter[ChicagoPage]
+  ) = // scalafix:ok ExplicitResultTypes; ReactComponent
     component(MyProps(page, router))
 
   case class Props(
@@ -123,8 +126,9 @@ object PagePlayersInternal {
         case Some(chi) if (chi.id == props.page.chiid) =>
           val rounds = chi.rounds
 //          <.div(
-          if (rounds.length == 0
-              || rounds.length == 1 && rounds.head.hands.isEmpty
+          if (
+            rounds.length == 0
+            || rounds.length == 1 && rounds.head.hands.isEmpty
           ) {
             ViewPlayersVeryFirstRound(props.getProps(chi))
           } else {
@@ -187,8 +191,7 @@ object PagePlayersInternal {
 
   }
 
-  private[chicagos]
-  val component = ScalaComponent
+  private[chicagos] val component = ScalaComponent
     .builder[MyProps]("PagePlayers")
     .initialStateFromProps { props =>
       State()

@@ -22,8 +22,8 @@ object NamesStore extends ChangeListenable {
   val logger: Logger = Logger("bridge.ViewPlayers")
 
   /**
-   * Required to instantiate the store.
-   */
+    * Required to instantiate the store.
+    */
   def init(): Unit = {
 //    refreshNames()
   }
@@ -31,7 +31,6 @@ object NamesStore extends ChangeListenable {
   private var names: List[String] = Nil
 
   def getNames = names
-
 
   private var dispatchToken: Option[DispatchToken] = {
     if (BridgeDemo.isDemo) {
@@ -42,20 +41,21 @@ object NamesStore extends ChangeListenable {
     }
   }
 
-  def updateNames( addnames: String* ): Unit = {
+  def updateNames(addnames: String*): Unit = {
     val an = onlyValidNames(addnames.toList)
-    names = (names.filter( n => !an.contains(n) ).toList ++ an).sorted
+    names = (names.filter(n => !an.contains(n)).toList ++ an).sorted
   }
 
-  def namesFromTeam( team: Team ): List[String] = {
+  def namesFromTeam(team: Team): List[String] = {
     onlyValidNames(Option(team.player1).toList ::: Option(team.player2).toList)
   }
 
-  def namesFromChicago( mc: MatchChicago): List[String] = {
+  def namesFromChicago(mc: MatchChicago): List[String] = {
     onlyValidNames(mc.players)
   }
 
-  def onlyValidNames( names: List[String] ): List[String] = names.filter(p=>p!="")
+  def onlyValidNames(names: List[String]): List[String] =
+    names.filter(p => p != "")
 
   /**
     * Flux dispatcher call
@@ -64,46 +64,59 @@ object NamesStore extends ChangeListenable {
     *
     * @param msg
     */
-  def dispatch( msg: Any ): Unit = Alerter.tryitWithUnit { msg match {
-    case ActionUpdateDuplicateMatch(duplicate) =>
-      val p = duplicate.teams.flatMap( namesFromTeam(_) )
-      if (!p.isEmpty) updateNames(p:_*)
-    case ActionUpdateTeam(dupid,team) =>
-      val p = namesFromTeam(team)
-      if (!p.isEmpty) updateNames(p:_*)
-    case ActionUpdateChicago(chi, _) =>
-      updateNames( namesFromChicago(chi).distinct: _* )
-    case ActionUpdateChicago5(chiid,extra, _) =>
-      updateNames(extra)
-    case ActionUpdateChicagoNames(chiid,p1,p2,p3,p4,extra,_,_,_) =>
-      val n = (p1::p2::p3::p4::extra.toList).distinct
-      updateNames(n:_*)
-    case ActionUpdateRubber( rub, _ ) =>
-      updateNames(rub.north,rub.south,rub.east,rub.west)
-    case ActionUpdateRubberNames( rubid, north, south, east, west, _, _ ) =>
-      updateNames(north,south,east,west)
-    case action =>
-      // There are multiple stores, all the actions get sent to all stores
+  def dispatch(msg: Any): Unit =
+    Alerter.tryitWithUnit {
+      msg match {
+        case ActionUpdateDuplicateMatch(duplicate) =>
+          val p = duplicate.teams.flatMap(namesFromTeam(_))
+          if (!p.isEmpty) updateNames(p: _*)
+        case ActionUpdateTeam(dupid, team) =>
+          val p = namesFromTeam(team)
+          if (!p.isEmpty) updateNames(p: _*)
+        case ActionUpdateChicago(chi, _) =>
+          updateNames(namesFromChicago(chi).distinct: _*)
+        case ActionUpdateChicago5(chiid, extra, _) =>
+          updateNames(extra)
+        case ActionUpdateChicagoNames(chiid, p1, p2, p3, p4, extra, _, _, _) =>
+          val n = (p1 :: p2 :: p3 :: p4 :: extra.toList).distinct
+          updateNames(n: _*)
+        case ActionUpdateRubber(rub, _) =>
+          updateNames(rub.north, rub.south, rub.east, rub.west)
+        case ActionUpdateRubberNames(rubid, north, south, east, west, _, _) =>
+          updateNames(north, south, east, west)
+        case action =>
+        // There are multiple stores, all the actions get sent to all stores
 //      logger.fine("Ignoring unknown action: "+action)
-  }}
+      }
+    }
 
   def initNames: Unit = {
     if (BridgeDemo.isDemo) {
       val mcs = ChicagoController.getSummaryFromLocalStorage
       if (mcs.isEmpty) {
-        names = List("Barry","Bill","Cathy","Irene","June","Kelly","Larry","Norman","Victor")
+        names = List(
+          "Barry",
+          "Bill",
+          "Cathy",
+          "Irene",
+          "June",
+          "Kelly",
+          "Larry",
+          "Norman",
+          "Victor"
+        )
       } else {
-        val n = mcs.flatMap( mc => namesFromChicago(mc) ).toList.distinct
-        updateNames(n:_*)
+        val n = mcs.flatMap(mc => namesFromChicago(mc)).toList.distinct
+        updateNames(n: _*)
       }
     }
   }
 
   /**
-   * Refresh the names in the list.
-   * @param cb - callback that should be called when the names have been updated
-   */
-  def refreshNames( cb: Option[Callback] = None ): Any = {
+    * Refresh the names in the list.
+    * @param cb - callback that should be called when the names have been updated
+    */
+  def refreshNames(cb: Option[Callback] = None): Any = {
     if (BridgeDemo.isDemo) {
       import scala.scalajs.js.timers._
 
@@ -112,21 +125,26 @@ object NamesStore extends ChangeListenable {
       }
     } else {
       import scala.concurrent.ExecutionContext.Implicits.global
-      RestClientNames.list().recordFailure().foreach( list => Alerter.tryitWithUnit {
-        names = list.toList
-        cb.foreach { _.runNow() }
-      })
+      RestClientNames
+        .list()
+        .recordFailure()
+        .foreach(list =>
+          Alerter.tryitWithUnit {
+            names = list.toList
+            cb.foreach { _.runNow() }
+          }
+        )
     }
   }
 
-
   /**
-   * Ensure names are cached, get names from server if they are not.
-   * @param cb - callback that should be called when the names have been updated.  Will call the callback immediately if the names are cached.
-   */
-  def ensureNamesAreCached( cb: Option[Callback] = None ): Unit = Alerter.tryitWithUnit {
-    refreshNames(cb)
-    // if (names.isEmpty) refreshNames(cb)
-    // else cb.foreach(_.runNow())
-  }
+    * Ensure names are cached, get names from server if they are not.
+    * @param cb - callback that should be called when the names have been updated.  Will call the callback immediately if the names are cached.
+    */
+  def ensureNamesAreCached(cb: Option[Callback] = None): Unit =
+    Alerter.tryitWithUnit {
+      refreshNames(cb)
+      // if (names.isEmpty) refreshNames(cb)
+      // else cb.foreach(_.runNow())
+    }
 }

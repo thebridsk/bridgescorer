@@ -17,66 +17,74 @@ import com.github.thebridsk.bridge.data.websocket.Protocol.ToServerMessage
 import com.github.thebridsk.bridge.client.bridge.action.BridgeDispatcher
 
 /**
- *
- * @tparam T the type of the identifier of the monitored object.
- *            The toString method must generate the string for the identifies
- *            used in a URL.
- * @constructor
- * @param urlprefix - the monitoring URL without the identifier
- */
-abstract class DuplexPipeServerEventConnection[T <: Id[_]]( urlprefix: String, listener: SECListener[T] ) extends ServerEventConnection[T](listener) {
+  * @tparam T the type of the identifier of the monitored object.
+  *            The toString method must generate the string for the identifies
+  *            used in a URL.
+  * @constructor
+  * @param urlprefix - the monitoring URL without the identifier
+  */
+abstract class DuplexPipeServerEventConnection[T <: Id[_]](
+    urlprefix: String,
+    listener: SECListener[T]
+) extends ServerEventConnection[T](listener) {
 
   def isConnected = duplexPipe.isDefined
 
   private var duplexPipe: Option[DuplexPipe] = None
 
-  def getDuplexPipe(): DuplexPipe = duplexPipe match {
-    case Some(d) => d
-    case None =>
-      val url = AppRouter.hostUrl.replaceFirst("http", "ws") + "/v1/ws/"
-      val d = new DuplexPipe( url, Protocol.DuplicateBridge ) {
-        override
-        def onNormalClose() = {
-          start(true)
+  def getDuplexPipe(): DuplexPipe =
+    duplexPipe match {
+      case Some(d) => d
+      case None =>
+        val url = AppRouter.hostUrl.replaceFirst("http", "ws") + "/v1/ws/"
+        val d = new DuplexPipe(url, Protocol.DuplicateBridge) {
+          override def onNormalClose() = {
+            start(true)
+          }
         }
-      }
-      d.addListener(new DuplexPipe.Listener {
-        def onMessage( msg: Protocol.ToBrowserMessage ) = {
-          listener.processMessage(msg)
-        }
-      })
-      duplexPipe = Some(d)
-      d
-  }
+        d.addListener(new DuplexPipe.Listener {
+          def onMessage(msg: Protocol.ToBrowserMessage) = {
+            listener.processMessage(msg)
+          }
+        })
+        duplexPipe = Some(d)
+        d
+    }
 
-  def actionStartMonitor( mdid: T ): ToServerMessage
-  def actionStopMonitor( mdid: T ): ToServerMessage
+  def actionStartMonitor(mdid: T): ToServerMessage
+  def actionStopMonitor(mdid: T): ToServerMessage
 
-  def monitor( dupid: T, restart: Boolean = false ): Unit = {
+  def monitor(dupid: T, restart: Boolean = false): Unit = {
 
     if (AjaxResult.isEnabled.getOrElse(false)) {
       monitoredId match {
         case Some(mdid) =>
           cancelStop()
           if (restart || mdid != dupid) {
-            logger.info(s"""Switching MatchDuplicate monitor to ${dupid} from ${mdid}""" )
+            logger.info(
+              s"""Switching MatchDuplicate monitor to ${dupid} from ${mdid}"""
+            )
             listener.handleStart(dupid)
             getDuplexPipe().clearSession(actionStopMonitor(mdid))
             listener.handleStart(dupid)
             getDuplexPipe().setSession { dp =>
-              logger.info(s"""In Session: Switching MatchDuplicate monitor to ${dupid} from ${mdid}""" )
+              logger.info(
+                s"""In Session: Switching MatchDuplicate monitor to ${dupid} from ${mdid}"""
+              )
               dp.send(actionStartMonitor(dupid))
             }
           } else {
             // already monitoring id
-            logger.info(s"""Already monitoring ${dupid}""" )
+            logger.info(s"""Already monitoring ${dupid}""")
           }
         case None =>
-          logger.info(s"""Starting MatchDuplicate monitor to ${dupid}""" )
+          logger.info(s"""Starting MatchDuplicate monitor to ${dupid}""")
           listener.handleStart(dupid)
           listener.handleStart(dupid)
           getDuplexPipe().setSession { dp =>
-            logger.info(s"""In Session: Starting MatchDuplicate monitor to ${dupid}""" )
+            logger.info(
+              s"""In Session: Starting MatchDuplicate monitor to ${dupid}"""
+            )
             dp.send(actionStartMonitor(dupid))
           }
       }
@@ -87,8 +95,8 @@ abstract class DuplexPipeServerEventConnection[T <: Id[_]]( urlprefix: String, l
   }
 
   /**
-   * Immediately stop monitoring a match
-   */
+    * Immediately stop monitoring a match
+    */
   def stop(): Unit = {
     logger.fine(s"Controller.stop ${monitoredId}")
     monitoredId match {
@@ -110,8 +118,9 @@ abstract class DuplexPipeServerEventConnection[T <: Id[_]]( urlprefix: String, l
     }
   }
 
-  def send( msg: ToServerMessage ): Unit = getDuplexPipe().send(msg)
+  def send(msg: ToServerMessage): Unit = getDuplexPipe().send(msg)
 
-  def getDuplexPipeServerEventConnection(): Option[DuplexPipeServerEventConnection[T]] = Some(this)
+  def getDuplexPipeServerEventConnection()
+      : Option[DuplexPipeServerEventConnection[T]] = Some(this)
 
 }

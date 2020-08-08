@@ -18,7 +18,7 @@ class DuplicateStyles {
 
   val divSummary: TagMod = cls("dupDivSummary")
 
-  val divPageStats: TagMod = cls("dupDivPageStats" )
+  val divPageStats: TagMod = cls("dupDivPageStats")
 
   val divPlayerFilter: TagMod = cls("dupDivPlayerFilter")
 
@@ -54,7 +54,9 @@ class DuplicateStyles {
 
   val divScoreboardPage: TagMod = cls("dupDivScoreboardPage")
   val divViewScoreboard: TagMod = cls("dupDivViewScoreboard")
-  val divViewScoreboardAllButtons: TagMod = cls("dupDivViewScoreboardAllButtons")
+  val divViewScoreboardAllButtons: TagMod = cls(
+    "dupDivViewScoreboardAllButtons"
+  )
 
   val tableViewScoreboard: TagMod = cls("dupTableViewScoreboard")
   val cellScoreboardBoardColumn: TagMod = cls("dupCellScoreboardBoardColumn")

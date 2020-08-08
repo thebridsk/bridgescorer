@@ -18,7 +18,6 @@ import com.github.thebridsk.materialui.MuiTypography
 import com.github.thebridsk.materialui.TextVariant
 import com.github.thebridsk.materialui.TextColor
 
-
 /**
   * A skeleton component.
   *
@@ -33,7 +32,8 @@ import com.github.thebridsk.materialui.TextColor
 object ViewPlayersFive {
   import ViewPlayersFiveInternal._
 
-  def apply(props: Props) = component(props)  // scalafix:ok ExplicitResultTypes; ReactComponent
+  def apply(props: Props) =
+    component(props) // scalafix:ok ExplicitResultTypes; ReactComponent
 
 }
 
@@ -47,7 +47,6 @@ object ViewPlayersFiveInternal {
     *
     * I'd like this class to be private, but the instantiation of component
     * will cause State to leak.
-    *
     */
   case class State(
       scoring: ChicagoScoring,
@@ -104,7 +103,6 @@ object ViewPlayersFiveInternal {
     *
     * I'd like this class to be private, but the instantiation of component
     * will cause Backend to leak.
-    *
     */
   class Backend(scope: BackendScope[Props, State]) {
 
@@ -169,15 +167,14 @@ object ViewPlayersFiveInternal {
     }
 
     def setFixture(f: ChicagoScoring.Fixture): Callback =
-      scope.modState(
-        s =>
-          s.copy(
-            fixture = Some(f),
-            north = Some(f.north),
-            south = Some(f.south),
-            east = Some(f.east),
-            west = Some(f.west)
-          )
+      scope.modState(s =>
+        s.copy(
+          fixture = Some(f),
+          north = Some(f.north),
+          south = Some(f.south),
+          east = Some(f.east),
+          west = Some(f.west)
+        )
       )
 
     def renderSelectFixture(props: Props, state: State) = { // scalafix:ok ExplicitResultTypes; React
@@ -233,19 +230,19 @@ object ViewPlayersFiveInternal {
       }
     }
 
-    val rotateClockwise: Callback = scope.modState(
-      s =>
-        s.copy(north = s.west, south = s.east, east = s.north, west = s.south)
+    val rotateClockwise: Callback = scope.modState(s =>
+      s.copy(north = s.west, south = s.east, east = s.north, west = s.south)
     )
 
-    val rotateCounterClockwise: Callback = scope.modState(
-      s =>
-        s.copy(north = s.east, south = s.west, east = s.south, west = s.north)
+    val rotateCounterClockwise: Callback = scope.modState(s =>
+      s.copy(north = s.east, south = s.west, east = s.south, west = s.north)
     )
 
-    val swapEW: Callback = scope.modState(s => s.copy(east = s.west, west = s.east))
+    val swapEW: Callback =
+      scope.modState(s => s.copy(east = s.west, west = s.east))
 
-    val swapNS: Callback = scope.modState(s => s.copy(north = s.south, south = s.north))
+    val swapNS: Callback =
+      scope.modState(s => s.copy(north = s.south, south = s.north))
 
     val ok: Callback = scope.stateProps { (state, props) =>
       val r = if (props.chicago.rounds.size <= props.page.round) {
@@ -328,10 +325,10 @@ object ViewPlayersFiveInternal {
           <.tbody(
             <.tr(
               <.td(
-                ),
+              ),
               pos(state.south.getOrElse("south"), southArrow, South, swapNS),
               <.td(
-                )
+              )
             ),
             <.tr(
               pos(state.east.getOrElse("east"), eastArrow, East, swapEW),
@@ -354,10 +351,10 @@ object ViewPlayersFiveInternal {
             ),
             <.tr(
               <.td(
-                ),
+              ),
               pos(state.north.getOrElse("north"), northArrow, North, swapNS),
               <.td(
-                )
+              )
             )
           )
         ),
@@ -366,7 +363,8 @@ object ViewPlayersFiveInternal {
     }
 
     def render(props: Props, state: State) = { // scalafix:ok ExplicitResultTypes; React
-      val valid = state.north.isDefined && state.south.isDefined && state.east.isDefined && state.west.isDefined && state.dealer.isDefined
+      val valid =
+        state.north.isDefined && state.south.isDefined && state.east.isDefined && state.west.isDefined && state.dealer.isDefined
       <.div(
         ChicagoPageBridgeAppBar(
           title = Seq[CtorType.ChildArg](
@@ -418,8 +416,7 @@ object ViewPlayersFiveInternal {
     }
   }
 
-  private[chicagos]
-  val component = ScalaComponent
+  private[chicagos] val component = ScalaComponent
     .builder[Props]("ViewPlayersFive")
     .initialStateFromProps { props =>
       State(props)

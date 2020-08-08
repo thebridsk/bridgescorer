@@ -15,29 +15,28 @@ import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles
 import com.github.thebridsk.bridge.client.pages.BridgeAppBar
 import com.github.thebridsk.bridge.client.pages.ServerURLPopup
 
-
 /**
- * A simple AppBar for the Bridge client.
- *
- * It can be used for all pages but the home page.
- *
- * The AppBar has in the banner from left to right:
- *
- * <ol>
- * <li>Page Menu button
- * <li>Home button
- * <li>title
- * <li>Help button
- * </ol>
- *
- * To use, just code the following:
- *
- * <pre><code>
- * RubberPageBridgeAppBar( RubberPageBridgeAppBar.Props( ... ) )
- * </code></pre>
- *
- * @author werewolf
- */
+  * A simple AppBar for the Bridge client.
+  *
+  * It can be used for all pages but the home page.
+  *
+  * The AppBar has in the banner from left to right:
+  *
+  * <ol>
+  * <li>Page Menu button
+  * <li>Home button
+  * <li>title
+  * <li>Help button
+  * </ol>
+  *
+  * To use, just code the following:
+  *
+  * <pre><code>
+  * RubberPageBridgeAppBar( RubberPageBridgeAppBar.Props( ... ) )
+  * </code></pre>
+  *
+  * @author werewolf
+  */
 object RubberPageBridgeAppBar {
   import RubberPageBridgeAppBarInternal._
 
@@ -53,11 +52,11 @@ object RubberPageBridgeAppBar {
       helpurl: String,
       routeCtl: BridgeRouter[RubberPage]
   )(
-      mainMenuItems: CtorType.ChildArg*,
+      mainMenuItems: CtorType.ChildArg*
   ): TagMod = {
     TagMod(
       ServerURLPopup(),
-      component(Props(mainMenuItems,title,helpurl,routeCtl))
+      component(Props(mainMenuItems, title, helpurl, routeCtl))
     )
   }
 }
@@ -68,64 +67,67 @@ object RubberPageBridgeAppBarInternal {
   val logger: Logger = Logger("bridge.RubberPageBridgeAppBar")
 
   /**
-   * Internal state for rendering the component.
-   *
-   * I'd like this class to be private, but the instantiation of component
-   * will cause State to leak.
-   *
-   */
+    * Internal state for rendering the component.
+    *
+    * I'd like this class to be private, but the instantiation of component
+    * will cause State to leak.
+    */
   case class State(
       anchorMainEl: js.UndefOr[Element] = js.undefined
   ) {
 
-    def openMainMenu( n: Node ): State = copy( anchorMainEl = n.asInstanceOf[Element] )
-    def closeMainMenu(): State = copy( anchorMainEl = js.undefined )
+    def openMainMenu(n: Node): State =
+      copy(anchorMainEl = n.asInstanceOf[Element])
+    def closeMainMenu(): State = copy(anchorMainEl = js.undefined)
   }
 
   /**
-   * Internal state for rendering the component.
-   *
-   * I'd like this class to be private, but the instantiation of component
-   * will cause Backend to leak.
-   *
-   */
+    * Internal state for rendering the component.
+    *
+    * I'd like this class to be private, but the instantiation of component
+    * will cause Backend to leak.
+    */
   class Backend(scope: BackendScope[Props, State]) {
 
-    def handleMainClick( event: ReactEvent ): Unit = event.extract(_.currentTarget)(currentTarget => scope.modState(s => s.openMainMenu(currentTarget)).runNow() )
-    def handleMainCloseClick( event: ReactEvent ): Unit = scope.modState(s => s.closeMainMenu()).runNow()
+    def handleMainClick(event: ReactEvent): Unit =
+      event.extract(_.currentTarget)(currentTarget =>
+        scope.modState(s => s.openMainMenu(currentTarget)).runNow()
+      )
+    def handleMainCloseClick(event: ReactEvent): Unit =
+      scope.modState(s => s.closeMainMenu()).runNow()
     def handleMainClose( /* event: js.Object, reason: String */ ): Unit = {
       logger.fine("MainClose called")
       scope.modState(s => s.closeMainMenu()).runNow()
     }
 
-    def render( props: Props, state: State ) = { // scalafix:ok ExplicitResultTypes; React
+    def render(props: Props, state: State) = { // scalafix:ok ExplicitResultTypes; React
       import BaseStyles._
 
       def handleGotoHome(e: ReactEvent) = props.routeCtl.toHome
       def handleGotoAbout(e: ReactEvent) = props.routeCtl.toAbout
 
-      def callbackPage(page: RubberPage)(e: ReactEvent) = props.routeCtl.set(page).runNow()
+      def callbackPage(page: RubberPage)(e: ReactEvent) =
+        props.routeCtl.set(page).runNow()
 
       <.div(
-          baseStyles.divAppBar,
-          BridgeAppBar(
-            handleMainClick = handleMainClick _,
-            maintitle =
-              List[VdomNode](
-                MuiTypography(
-                    variant = TextVariant.h6,
-                    color = TextColor.inherit,
-                )(
-                    <.span(
-                      "Rubber Bridge",
-                    )
-                )
-              ),
-            title = props.title,
-            helpurl = props.helpurl,
-            routeCtl = props.routeCtl
-          )(
-              // main menu
+        baseStyles.divAppBar,
+        BridgeAppBar(
+          handleMainClick = handleMainClick _,
+          maintitle = List[VdomNode](
+            MuiTypography(
+              variant = TextVariant.h6,
+              color = TextColor.inherit
+            )(
+              <.span(
+                "Rubber Bridge"
+              )
+            )
+          ),
+          title = props.title,
+          helpurl = props.helpurl,
+          routeCtl = props.routeCtl
+        )(
+          // main menu
 //              MyMenu(
 //                  anchorEl=state.anchorMainEl,
 //                  onClickAway = handleMainClose _,
@@ -144,7 +146,7 @@ object RubberPageBridgeAppBarInternal {
 //                    )()
 //                ),
 //              )
-          )
+        )
       )
     }
 
@@ -161,13 +163,14 @@ object RubberPageBridgeAppBarInternal {
     }
   }
 
-  private[rubber]
-  val component = ScalaComponent.builder[Props]("RubberPageBridgeAppBar")
-                            .initialStateFromProps { props => State() }
-                            .backend(new Backend(_))
-                            .renderBackend
-                            .componentDidMount( scope => scope.backend.didMount)
-                            .componentWillUnmount( scope => scope.backend.willUnmount )
-                            .build
+  private[rubber] val component = ScalaComponent
+    .builder[Props]("RubberPageBridgeAppBar")
+    .initialStateFromProps { props =>
+      State()
+    }
+    .backend(new Backend(_))
+    .renderBackend
+    .componentDidMount(scope => scope.backend.didMount)
+    .componentWillUnmount(scope => scope.backend.willUnmount)
+    .build
 }
-

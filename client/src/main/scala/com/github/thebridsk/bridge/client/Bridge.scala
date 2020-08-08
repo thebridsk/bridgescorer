@@ -21,10 +21,10 @@ import com.github.thebridsk.bridge.clientcommon.react.Tooltip
 import com.github.thebridsk.bridge.client.pages.Pixels
 
 /**
- * @author werewolf
- */
+  * @author werewolf
+  */
 @JSExportTopLevel("Bridge")
-object Bridge {   // need to figure out how to use new way to call main
+object Bridge { // need to figure out how to use new way to call main
 
   sealed trait MyPages
   case object Home extends MyPages
@@ -48,63 +48,74 @@ object Bridge {   // need to figure out how to use new way to call main
 
   def initDone(): Unit = {
     if (loggerInitDone && defaultInitDone) startClient()
-    else logger.info(s"loggerInitDone=${loggerInitDone}, defaultInitDone=${defaultInitDone}")
+    else
+      logger.info(
+        s"loggerInitDone=${loggerInitDone}, defaultInitDone=${defaultInitDone}"
+      )
   }
 
   def main(args: Array[String]): Unit = main()
 
   @JSExport
-  def main(): Unit = Alerter.tryitWithUnit {
+  def main(): Unit =
+    Alerter.tryitWithUnit {
 
-    if (BridgeDemo.isDemo) {
-      AjaxResult.setEnabled(false)
+      if (BridgeDemo.isDemo) {
+        AjaxResult.setEnabled(false)
+      }
+
+      Alerter.setupError()
+      Tooltip.init()
+
+      Init { () =>
+        loggerInitDone = true; initDone()
+      }
+      Pixels.init { () =>
+        defaultInitDone = true; initDone()
+      }
+
+      ColorThemeStorage.initTheme()
+
     }
 
-    Alerter.setupError()
-    Tooltip.init()
+  def startClient(): Unit =
+    Alerter.tryitWithUnit {
+      logger.info("Bridge Scorer Starting")
 
-    Init { () => loggerInitDone = true; initDone() }
-    Pixels.init { () => defaultInitDone = true; initDone() }
-
-    ColorThemeStorage.initTheme()
-
-  }
-
-  def startClient(): Unit = Alerter.tryitWithUnit {
-    logger.info("Bridge Scorer Starting" )
-
-    try {
-      val div = getElement()
-      val sdiv = div.nodeName
-      logger.info("Bridge Scorer Starting, rendering into "+sdiv )
-      NamesStore.init()
-      AppRouter(ChicagoModule, DuplicateModule, RubberModule).router().renderIntoDOM(div)
-    } catch {
-      case t: Throwable =>
-        logger.info("Uncaught exception starting up: "+t.toString(),t)
-        t.printStackTrace()
+      try {
+        val div = getElement()
+        val sdiv = div.nodeName
+        logger.info("Bridge Scorer Starting, rendering into " + sdiv)
+        NamesStore.init()
+        AppRouter(ChicagoModule, DuplicateModule, RubberModule)
+          .router()
+          .renderIntoDOM(div)
+      } catch {
+        case t: Throwable =>
+          logger.info("Uncaught exception starting up: " + t.toString(), t)
+          t.printStackTrace()
+      }
     }
-  }
 
   /**
-   * Get the element with the specified ID
-   * @param id
-   * @return the HTMLElement object
-   * @throws IllegalStateException if the element was not found.
-   */
-  def getElement( id: String = "BridgeApp" ): HTMLElement = {
+    * Get the element with the specified ID
+    * @param id
+    * @return the HTMLElement object
+    * @throws IllegalStateException if the element was not found.
+    */
+  def getElement(id: String = "BridgeApp"): HTMLElement = {
 
     val div = document.getElementById(id)
     if (div == null) {
-      logger.warning("Did not find element with id "+id)
-      throw new IllegalStateException("Did not find a element with id "+id)
+      logger.warning("Did not find element with id " + id)
+      throw new IllegalStateException("Did not find a element with id " + id)
     } else {
       div.asInstanceOf[HTMLElement]
     }
 
   }
 
-  def findDiv( root: HTMLElement, id: String ) : Node = {
+  def findDiv(root: HTMLElement, id: String): Node = {
     val children = root.childNodes
     val len = children.length
 

@@ -25,28 +25,33 @@ import com.github.thebridsk.bridge.data.Table
 import com.github.thebridsk.bridge.data.Team
 import com.github.thebridsk.bridge.data.Board
 
-
 /**
- * Shows the team x board table and has a totals column that shows the number of points the team has.
- *
- * The ScoreboardView object will identify which MatchDuplicate to look at.
- *
- * To use, just code the following:
- *
- * <pre><code>
- * PageBoard( routerCtl: BridgeRouter[DuplicatePage], page: BaseBoardViewWithPerspective )
- * </code></pre>
- *
- * @author werewolf
- */
+  * Shows the team x board table and has a totals column that shows the number of points the team has.
+  *
+  * The ScoreboardView object will identify which MatchDuplicate to look at.
+  *
+  * To use, just code the following:
+  *
+  * <pre><code>
+  * PageBoard( routerCtl: BridgeRouter[DuplicatePage], page: BaseBoardViewWithPerspective )
+  * </code></pre>
+  *
+  * @author werewolf
+  */
 object PageBoard {
   import PageBoardInternal._
 
-  case class Props( routerCtl: BridgeRouter[DuplicatePage], page: BaseBoardViewWithPerspective )
+  case class Props(
+      routerCtl: BridgeRouter[DuplicatePage],
+      page: BaseBoardViewWithPerspective
+  )
 
-  def apply( routerCtl: BridgeRouter[DuplicatePage], page: BaseBoardViewWithPerspective ) = {  // scalafix:ok ExplicitResultTypes; ReactComponent
+  def apply(
+      routerCtl: BridgeRouter[DuplicatePage],
+      page: BaseBoardViewWithPerspective
+  ) = { // scalafix:ok ExplicitResultTypes; ReactComponent
     logger.info(s"PageBoard with page = ${page}")
-    component(Props(routerCtl,page))
+    component(Props(routerCtl, page))
   }
 
 }
@@ -58,51 +63,58 @@ object PageBoardInternal {
   val logger: Logger = Logger("bridge.PageBoard")
 
   /**
-   * Internal state for rendering the component.
-   *
-   * I'd like this class to be private, but the instantiation of component
-   * will cause State to leak.
-   *
-   */
-  case class State( useIMP: Option[Boolean] = None ) {
+    * Internal state for rendering the component.
+    *
+    * I'd like this class to be private, but the instantiation of component
+    * will cause State to leak.
+    */
+  case class State(useIMP: Option[Boolean] = None) {
 
     def isMP: Boolean = !useIMP.getOrElse(false)
     def isIMP: Boolean = useIMP.getOrElse(false)
 
     def toggleIMP: State = {
-      copy( useIMP = Some(!isIMP) )
+      copy(useIMP = Some(!isIMP))
     }
 
     def nextIMPs: State = {
       val n = useIMP match {
-        case None => Some(false)
+        case None        => Some(false)
         case Some(false) => Some(true)
-        case Some(true) => None
+        case Some(true)  => None
       }
-      copy(useIMP=n)
+      copy(useIMP = n)
     }
   }
 
   /**
-   * Internal state for rendering the component.
-   *
-   * I'd like this class to be private, but the instantiation of component
-   * will cause Backend to leak.
-   *
-   */
+    * Internal state for rendering the component.
+    *
+    * I'd like this class to be private, but the instantiation of component
+    * will cause Backend to leak.
+    */
   class Backend(scope: BackendScope[Props, State]) {
 
-    val nextIMPs: Callback = scope.modState { s => s.nextIMPs }
+    val nextIMPs: Callback = scope.modState { s =>
+      s.nextIMPs
+    }
 
-    def render( props: Props, state: State ) = { // scalafix:ok ExplicitResultTypes; React
-      logger.info(s"Rendering board ${props.page} routectl=${props.routerCtl.getClass.getName}")
+    def render(props: Props, state: State) = { // scalafix:ok ExplicitResultTypes; React
+      logger.info(
+        s"Rendering board ${props.page} routectl=${props.routerCtl.getClass.getName}"
+      )
       val perspective = props.page.getPerspective
       val tableperspective = perspective match {
         case tp: PerspectiveTable => Some(tp)
-        case _ => None
+        case _                    => None
       }
 
-      def buttons( label: String, boards: List[BoardScore], ns: Team.Id, played: Boolean ) = {
+      def buttons(
+          label: String,
+          boards: List[BoardScore],
+          ns: Team.Id,
+          played: Boolean
+      ) = {
         val bbs = boards // .filter { board => board.id!=props.page.boardid }
         <.span(
           !bbs.isEmpty ?= <.b(label),
@@ -116,66 +128,75 @@ object PageBoardInternal {
             }
             Seq[TagMod](
               <.span(" "),
-              AppButton( s"Board_${board.id.id}", "Board "+id.toNumber,
-                         BaseStyles.highlight(
-                             selected=selected,
-                             requiredNotNext = !played && !selected
-                         ),
-                         props.routerCtl.setOnClick(clickPage)
+              AppButton(
+                s"Board_${board.id.id}",
+                "Board " + id.toNumber,
+                BaseStyles.highlight(
+                  selected = selected,
+                  requiredNotNext = !played && !selected
+                ),
+                props.routerCtl.setOnClick(clickPage)
               )
             ).toTagMod
           }.toTagMod
         )
       }
 
-      def boardsFromTable( mds: MatchDuplicateScore ) = {
+      def boardsFromTable(mds: MatchDuplicateScore) = {
         props.page match {
           case tbpage: TableBoardView =>
             mds.getRound(tbpage.tableid, tbpage.round) match {
               case Some(round) =>
-                val (played,unplayed) = round.playedAndUnplayedBoards
+                val (played, unplayed) = round.playedAndUnplayedBoards
                 <.span(
                   buttons("Played: ", played, round.ns.id, true),
-                  <.span(^.dangerouslySetInnerHtml:="&nbsp;&nbsp;"),
+                  <.span(^.dangerouslySetInnerHtml := "&nbsp;&nbsp;"),
                   buttons("Unplayed: ", unplayed, round.ns.id, false)
                 )
               case _ =>
                 <.span()
             }
-          case _ => None
+          case _ =>
+            None
             <.span()
         }
       }
 
-      def boards( mds: MatchDuplicateScore ) = {
+      def boards(mds: MatchDuplicateScore) = {
         var counter = 0
         def getKey() = {
-          counter = counter+1
-          "KeyBoardsRow_"+counter
+          counter = counter + 1
+          "KeyBoardsRow_" + counter
         }
         <.div(
           <.table(
             <.tbody(
-              mds.sortedBoards.map { board => board.id }.grouped(6).map { row =>
-                BoardsRow.withKey(getKey())((row,props,mds))
-              }.toTagMod
+              mds.sortedBoards
+                .map { board =>
+                  board.id
+                }
+                .grouped(6)
+                .map { row =>
+                  BoardsRow.withKey(getKey())((row, props, mds))
+                }
+                .toTagMod
             )
           )
         )
       }
 
-      val (tableBoardView,currentRound,currentTable) = props.page match {
-        case tbv: TableBoardView => (Some(tbv),tbv.round,tbv.tableid)
-        case _ => (None,-1,Table.idNul)
+      val (tableBoardView, currentRound, currentTable) = props.page match {
+        case tbv: TableBoardView => (Some(tbv), tbv.round, tbv.tableid)
+        case _                   => (None, -1, Table.idNul)
       }
 
       def title() = {
         props.page.getPerspective match {
           case PerspectiveTable(team1, team2) =>
             <.span(
-              s"Table ${currentTable.toNumber} Round ${currentRound}" ,
+              s"Table ${currentTable.toNumber} Round ${currentRound}",
               s" Board ${props.page.boardid.toNumber}",
-              s" Teams ${team1.toNumber} and ${team2.toNumber}",
+              s" Teams ${team1.toNumber} and ${team2.toNumber}"
             )
           case PerspectiveDirector =>
             <.span(s"Director's View of Board ${props.page.boardid.toNumber}")
@@ -185,37 +206,44 @@ object PageBoardInternal {
 
       }
 
-
       <.div(
         DuplicatePageBridgeAppBar(
           id = Some(props.page.dupid),
           tableIds = List(),
           title = Seq[CtorType.ChildArg](
-                MuiTypography(
-                    variant = TextVariant.h6,
-                    color = TextColor.inherit,
-                )(
-                    <.span(
-                      title(),
-                    )
-                )),
+            MuiTypography(
+              variant = TextVariant.h6,
+              color = TextColor.inherit
+            )(
+              <.span(
+                title()
+              )
+            )
+          ),
           helpurl = "../help/duplicate/boardcomplete.html",
           routeCtl = props.routerCtl
         )(
-
         ),
-        DuplicateStore.getView( perspective ) match {
+        DuplicateStore.getView(perspective) match {
           case Some(score) if score.id == props.page.dupid =>
-            val allplayedInRound = score.getRound(currentTable, currentRound) match {
-              case Some(r) => r.complete
-              case _ => false
-            }
+            val allplayedInRound =
+              score.getRound(currentTable, currentRound) match {
+                case Some(r) => r.complete
+                case _       => false
+              }
             val clickToScoreboard = props.page.toScoreboardView
-            val clickToTableView = tableBoardView.map( tbv => tbv.toTableView )
+            val clickToTableView = tableBoardView.map(tbv => tbv.toTableView)
             <.div(
               dupStyles.divBoardPage,
 //              title(),
-              ViewBoard( props.routerCtl, props.page, score, props.page.boardid, state.isIMP, DuplicateStore.getPicture(props.page.dupid,props.page.boardid) ),
+              ViewBoard(
+                props.routerCtl,
+                props.page,
+                score,
+                props.page.boardid,
+                state.isIMP,
+                DuplicateStore.getPicture(props.page.dupid, props.page.boardid)
+              ),
               <.p,
               <.div(
                 baseStyles.fontTextNormal,
@@ -227,19 +255,32 @@ object PageBoardInternal {
                 } else {
                   TagMod()
                 },
-                AppButton( "Game", "Scoreboard",
-                           allplayedInRound ?= baseStyles.requiredNotNext,
-                           props.routerCtl.setOnClick(clickToScoreboard) ),
+                AppButton(
+                  "Game",
+                  "Scoreboard",
+                  allplayedInRound ?= baseStyles.requiredNotNext,
+                  props.routerCtl.setOnClick(clickToScoreboard)
+                ),
                 " ",
-                clickToTableView.isDefined?= AppButton( "Table", "Table "+currentTable.toNumber,
-                                                        allplayedInRound ?= baseStyles.requiredNotNext,
-                                                        props.routerCtl.setOnClick(clickToTableView.get) ),
+                clickToTableView.isDefined ?= AppButton(
+                  "Table",
+                  "Table " + currentTable.toNumber,
+                  allplayedInRound ?= baseStyles.requiredNotNext,
+                  props.routerCtl.setOnClick(clickToTableView.get)
+                ),
                 " ",
-                AppButton( "AllBoards", "All Boards",
-                           props.routerCtl.setOnClick(props.page.toAllBoardsView)
-                         ),
+                AppButton(
+                  "AllBoards",
+                  "All Boards",
+                  props.routerCtl.setOnClick(props.page.toAllBoardsView)
+                ),
                 " ",
-                PageScoreboardInternal.scoringMethodButton( state.useIMP, Some( score.isIMP), false, nextIMPs ),
+                PageScoreboardInternal.scoringMethodButton(
+                  state.useIMP,
+                  Some(score.isIMP),
+                  false,
+                  nextIMPs
+                ),
                 if (tableperspective.isEmpty) boards(score)
                 else TagMod()
               )
@@ -251,15 +292,17 @@ object PageBoardInternal {
     }
 
     val storeCallback: Callback = scope.modStateOption { s =>
-      DuplicateStore.getMatch().map( md => s.copy( useIMP = Some(md.isIMP) ) )
+      DuplicateStore.getMatch().map(md => s.copy(useIMP = Some(md.isIMP)))
     }
 
-    val didMount: Callback = scope.props >>= { (p) => Callback {
-      logger.info("PageBoard.didMount")
-      DuplicateStore.addChangeListener(storeCallback)
+    val didMount: Callback = scope.props >>= { (p) =>
+      Callback {
+        logger.info("PageBoard.didMount")
+        DuplicateStore.addChangeListener(storeCallback)
 
-      Controller.monitor(p.page.dupid)
-    }}
+        Controller.monitor(p.page.dupid)
+      }
+    }
 
     val willUnmount: Callback = Callback {
       logger.info("PageBoard.willUnmount")
@@ -268,51 +311,63 @@ object PageBoardInternal {
     }
   }
 
-  private[duplicate]
-  val BoardsRow = ScalaComponent.builder[(List[Board.Id],Props,MatchDuplicateScore)]("PageBoard.BoardsRow")
-                        .render_P( args => {
-                          val (row,props,mds) = args
-                          <.tr(
-                            row.map { id => BoardCell.withKey("KeyBoard_"+id)((id,props,mds.boards(id))) }.toTagMod
-                          )
-                        }).build
+  private[duplicate] val BoardsRow = ScalaComponent
+    .builder[(List[Board.Id], Props, MatchDuplicateScore)](
+      "PageBoard.BoardsRow"
+    )
+    .render_P(args => {
+      val (row, props, mds) = args
+      <.tr(
+        row.map { id =>
+          BoardCell.withKey("KeyBoard_" + id)((id, props, mds.boards(id)))
+        }.toTagMod
+      )
+    })
+    .build
 
-  private[duplicate]
-  val BoardCell = ScalaComponent.builder[(Board.Id,Props,BoardScore)]("PageBoard.BoardCell")
-                        .render_P( args => {
-                          val (id,props,bs) = args
-                          val me = props.page.boardid
-                          val clickToBoard = props.page.toScoreboardView.toBoardView(id)
-                          logger.fine(s"Target for setOnClick is ${clickToBoard}")
-                          <.td(
-                            AppButton( s"Board_${id.id}", "Board "+id.toNumber,
-                                       BaseStyles.highlight(
-                                           selected = me == id,
-                                           required = me != id && bs.allplayed,
-                                           requiredNotNext = me != id && bs.anyplayed
-                                       ),
-                                       baseStyles.appButton100,
-                                       props.routerCtl.setOnClick(clickToBoard)
-                            )
-                          )
-                        }).build
+  private[duplicate] val BoardCell = ScalaComponent
+    .builder[(Board.Id, Props, BoardScore)]("PageBoard.BoardCell")
+    .render_P(args => {
+      val (id, props, bs) = args
+      val me = props.page.boardid
+      val clickToBoard = props.page.toScoreboardView.toBoardView(id)
+      logger.fine(s"Target for setOnClick is ${clickToBoard}")
+      <.td(
+        AppButton(
+          s"Board_${id.id}",
+          "Board " + id.toNumber,
+          BaseStyles.highlight(
+            selected = me == id,
+            required = me != id && bs.allplayed,
+            requiredNotNext = me != id && bs.anyplayed
+          ),
+          baseStyles.appButton100,
+          props.routerCtl.setOnClick(clickToBoard)
+        )
+      )
+    })
+    .build
 
-  def didUpdate( cdu: ComponentDidUpdate[Props,State,Backend,Unit] ): Callback = Callback {
-    val props = cdu.currentProps
-    val prevProps = cdu.prevProps
-    if (prevProps.page != props.page) {
-      Controller.monitor(props.page.dupid)
+  def didUpdate(
+      cdu: ComponentDidUpdate[Props, State, Backend, Unit]
+  ): Callback =
+    Callback {
+      val props = cdu.currentProps
+      val prevProps = cdu.prevProps
+      if (prevProps.page != props.page) {
+        Controller.monitor(props.page.dupid)
+      }
     }
-  }
 
-  private[duplicate]
-  val component = ScalaComponent.builder[Props]("PageBoard")
-                            .initialStateFromProps { props => State() }
-                            .backend(new Backend(_))
-                            .renderBackend
-                            .componentDidMount( scope => scope.backend.didMount)
-                            .componentWillUnmount( scope => scope.backend.willUnmount )
-                            .componentDidUpdate( didUpdate )
-                            .build
+  private[duplicate] val component = ScalaComponent
+    .builder[Props]("PageBoard")
+    .initialStateFromProps { props =>
+      State()
+    }
+    .backend(new Backend(_))
+    .renderBackend
+    .componentDidMount(scope => scope.backend.didMount)
+    .componentWillUnmount(scope => scope.backend.willUnmount)
+    .componentDidUpdate(didUpdate)
+    .build
 }
-

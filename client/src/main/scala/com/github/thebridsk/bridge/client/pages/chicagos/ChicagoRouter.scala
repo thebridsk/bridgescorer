@@ -19,7 +19,7 @@ object ChicagoModule extends Module {
       .map(p => PlayChicago2(p).asInstanceOf[AppPage])
       .toList
 
-  def routes(): RoutingRule[AppPage,Unit] =
+  def routes(): RoutingRule[AppPage, Unit] =
     ChicagoRouter.routes.prefixPath_/("#chicago").pmap[AppPage](PlayChicago2) {
       case PlayChicago2(m) => m
     } |
@@ -44,52 +44,62 @@ object ChicagoRouter {
 
   case class SummaryView(schiid: String) extends ChicagoPage {
     def chiid: MatchChicago.Id = MatchChicago.id(schiid)
+
     /**
       * @param round 0 based
       * @return
       */
     def toRoundView(round: Int): RoundView = RoundView(schiid, round)
+
     /**
       * @param round 0 based
       * @return
       */
     def toNamesView(round: Int): NamesView = NamesView(schiid, round)
+
     /**
       * @param round 0 based
       * @param hand 0 based
       * @return
       */
-    def toHandView(round: Int, hand: Int): HandView = HandView(schiid, round, hand)
+    def toHandView(round: Int, hand: Int): HandView =
+      HandView(schiid, round, hand)
     def toEditNamesView: EditNamesView = EditNamesView(schiid)
   }
   case class EditNamesView(schiid: String) extends ChicagoPage {
     def chiid: MatchChicago.Id = MatchChicago.id(schiid)
     def toSummaryView: SummaryView = SummaryView(schiid)
+
     /**
       * @param round 0 based
       * @param hand 0 based
       * @return
       */
     def toRoundView(round: Int): RoundView = RoundView(schiid, round)
+
     /**
       * @param round 0 based
       * @return
       */
     def toNamesView(round: Int): NamesView = NamesView(schiid, round)
+
     /**
       * @param round 0 based
       * @return
       */
-    def toHandView(round: Int, hand: Int): HandView = HandView(schiid, round, hand)
+    def toHandView(round: Int, hand: Int): HandView =
+      HandView(schiid, round, hand)
   }
   case class RoundView(schiid: String, round: Int) extends ChicagoPage {
     def chiid: MatchChicago.Id = MatchChicago.id(schiid)
     def toSummaryView: SummaryView = SummaryView(schiid)
+
     /**
       * @param round 0 based
       * @return
       */
     def toNamesView(round: Int): NamesView = NamesView(schiid, round)
+
     /**
       * @param hand 0 based
       * @return
@@ -101,6 +111,7 @@ object ChicagoRouter {
     def chiid: MatchChicago.Id = MatchChicago.id(schiid)
     def toSummaryView: SummaryView = SummaryView(schiid)
     def toRoundView: RoundView = RoundView(schiid, round)
+
     /**
       * @param hand 0 based
       * @return
@@ -141,48 +152,50 @@ object ChicagoRouter {
         ChicagoModule.toRootPage(page)
     }
 
-  val routes: RoutingRule[ChicagoPage,Unit] = RouterConfigDsl[ChicagoPage].buildRule { dsl =>
-    import dsl._
+  val routes: RoutingRule[ChicagoPage, Unit] =
+    RouterConfigDsl[ChicagoPage].buildRule { dsl =>
+      import dsl._
 
-    (emptyRule
-      | dynamicRouteCT(
-        (string("[a-zA-Z0-9]+") / "names").caseClass[EditNamesView]
-      )
-        ~> dynRenderR((p, routerCtl) => PageEditNames(p, routerCtl))
-      | dynamicRouteCT(
-        (string("[a-zA-Z0-9]+") / "rounds" / int / "names").caseClass[NamesView]
-      )
-        ~> dynRenderR((p, routerCtl) => PagePlayers(p, routerCtl))
-      | dynamicRouteCT(
-        (string("[a-zA-Z0-9]+") / "rounds" / int / "hands" / int)
-          .caseClass[HandView]
-      )
-        ~> dynRenderR((p, routerCtl) => PageChicagoHand(p, routerCtl))
+      (emptyRule
+        | dynamicRouteCT(
+          (string("[a-zA-Z0-9]+") / "names").caseClass[EditNamesView]
+        )
+          ~> dynRenderR((p, routerCtl) => PageEditNames(p, routerCtl))
+        | dynamicRouteCT(
+          (string("[a-zA-Z0-9]+") / "rounds" / int / "names")
+            .caseClass[NamesView]
+        )
+          ~> dynRenderR((p, routerCtl) => PagePlayers(p, routerCtl))
+        | dynamicRouteCT(
+          (string("[a-zA-Z0-9]+") / "rounds" / int / "hands" / int)
+            .caseClass[HandView]
+        )
+          ~> dynRenderR((p, routerCtl) => PageChicagoHand(p, routerCtl))
       // | dynamicRouteCT(
       //   (string("[a-zA-Z0-9]+") / "rounds" / int / "hands").caseClass[RoundView]
       // )
       //   ~> dynRenderR((p, routerCtl) => PageSummary(p, routerCtl))
-      | dynamicRouteCT(
-        (string("[a-zA-Z0-9]+") / "rounds" / int).caseClass[RoundView]
-      )
-        ~> dynRenderR((p, routerCtl) => PageSummary(p, routerCtl))
+        | dynamicRouteCT(
+          (string("[a-zA-Z0-9]+") / "rounds" / int).caseClass[RoundView]
+        )
+          ~> dynRenderR((p, routerCtl) => PageSummary(p, routerCtl))
       // | dynamicRouteCT(
       //   (string("[a-zA-Z0-9]+") / "rounds").caseClass[SummaryView]
       // )
       //   ~> dynRenderR((p, routerCtl) => PageSummary(p, routerCtl))
-      | dynamicRouteCT(string("[a-zA-Z0-9]+").caseClass[SummaryView])
-        ~> dynRenderR((p, routerCtl) => PageSummary(p, routerCtl))
-      | staticRoute(root, ListView)
-        ~> renderR(routerCtl => PageChicagoList(routerCtl, ListView))
-    )
-  }
+        | dynamicRouteCT(string("[a-zA-Z0-9]+").caseClass[SummaryView])
+          ~> dynRenderR((p, routerCtl) => PageSummary(p, routerCtl))
+        | staticRoute(root, ListView)
+          ~> renderR(routerCtl => PageChicagoList(routerCtl, ListView)))
+    }
 
-  val importRoutes: RoutingRule[ChicagoPage,Unit] = RouterConfigDsl[ChicagoPage].buildRule { dsl =>
-    import dsl._
+  val importRoutes: RoutingRule[ChicagoPage, Unit] =
+    RouterConfigDsl[ChicagoPage].buildRule { dsl =>
+      import dsl._
 
-    (emptyRule
-      | dynamicRouteCT((string(".+") / "chicago").caseClass[ImportListView])
-        ~> dynRenderR((p, routerCtl) => PageChicagoList(routerCtl, p)))
-  }
+      (emptyRule
+        | dynamicRouteCT((string(".+") / "chicago").caseClass[ImportListView])
+          ~> dynRenderR((p, routerCtl) => PageChicagoList(routerCtl, p)))
+    }
 
 }

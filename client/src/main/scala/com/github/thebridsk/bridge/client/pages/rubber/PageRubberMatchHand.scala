@@ -29,25 +29,30 @@ import com.github.thebridsk.bridge.client.pages.HomePage
 import japgolly.scalajs.react.component.builder.Lifecycle.ComponentDidUpdate
 import org.scalajs.dom.raw.File
 
-
 /**
- * A skeleton component.
- *
- * To use, just code the following:
- *
- * <pre><code>
- * PageRubberMatchHand( PageRubberMatchHand.Props( ... ) )
- * </code></pre>
- *
- * @author werewolf
- */
+  * A skeleton component.
+  *
+  * To use, just code the following:
+  *
+  * <pre><code>
+  * PageRubberMatchHand( PageRubberMatchHand.Props( ... ) )
+  * </code></pre>
+  *
+  * @author werewolf
+  */
 object PageRubberMatchHand {
   import PageRubberMatchHandInternal._
 
-  case class Props( page: RubberMatchHandView, routerCtl: BridgeRouter[RubberPage] )
+  case class Props(
+      page: RubberMatchHandView,
+      routerCtl: BridgeRouter[RubberPage]
+  )
 
-  def apply( page: RubberMatchHandView, routerCtl: BridgeRouter[RubberPage] ) = // scalafix:ok ExplicitResultTypes; ReactComponent
-    component( Props( page, routerCtl ) )
+  def apply(
+      page: RubberMatchHandView,
+      routerCtl: BridgeRouter[RubberPage]
+  ) = // scalafix:ok ExplicitResultTypes; ReactComponent
+    component(Props(page, routerCtl))
 
 }
 
@@ -57,59 +62,89 @@ object PageRubberMatchHandInternal {
   val logger: Logger = Logger("bridge.PageRubberMatchHand")
 
   /**
-   * Internal state for rendering the component.
-   *
-   * I'd like this class to be private, but the instantiation of component
-   * will cause State to leak.
-   *
-   */
+    * Internal state for rendering the component.
+    *
+    * I'd like this class to be private, but the instantiation of component
+    * will cause State to leak.
+    */
   case class State()
 
   /**
-   * Internal state for rendering the component.
-   *
-   * I'd like this class to be private, but the instantiation of component
-   * will cause Backend to leak.
-   *
-   */
+    * Internal state for rendering the component.
+    *
+    * I'd like this class to be private, but the instantiation of component
+    * will cause Backend to leak.
+    */
   class Backend(scope: BackendScope[Props, State]) {
 
-    def viewHandCallbackOk( handid: String )( contract: Contract, picture: Option[File], removePicture: Boolean ): Callback =
-      scope.props >>= { props => {
-        val time = SystemTime.currentTimeMillis()
-        RubberController.updateRubberHand(props.page.rid, handid, RubberHand(contract.id,contract.toHand,0,None,time,time))
-        props.routerCtl.set(props.page.toRubber)
-      }}
+    def viewHandCallbackOk(handid: String)(
+        contract: Contract,
+        picture: Option[File],
+        removePicture: Boolean
+    ): Callback =
+      scope.props >>= { props =>
+        {
+          val time = SystemTime.currentTimeMillis()
+          RubberController.updateRubberHand(
+            props.page.rid,
+            handid,
+            RubberHand(contract.id, contract.toHand, 0, None, time, time)
+          )
+          props.routerCtl.set(props.page.toRubber)
+        }
+      }
 
-    def viewHandCallbackWithHonors( handid: String )( contract: Contract, picture: Option[File], removePicture: Boolean, honors: Int, honorsPlayer: Option[PlayerPosition] ): Callback =
-      scope.props >>= { props => {
-        val time = SystemTime.currentTimeMillis()
-        RubberController.updateRubberHand(props.page.rid, handid, RubberHand(contract.id,contract.toHand,honors,honorsPlayer.map(_.pos),time,time))
-        props.routerCtl.set(props.page.toRubber)
-      }}
+    def viewHandCallbackWithHonors(handid: String)(
+        contract: Contract,
+        picture: Option[File],
+        removePicture: Boolean,
+        honors: Int,
+        honorsPlayer: Option[PlayerPosition]
+    ): Callback =
+      scope.props >>= { props =>
+        {
+          val time = SystemTime.currentTimeMillis()
+          RubberController.updateRubberHand(
+            props.page.rid,
+            handid,
+            RubberHand(
+              contract.id,
+              contract.toHand,
+              honors,
+              honorsPlayer.map(_.pos),
+              time,
+              time
+            )
+          )
+          props.routerCtl.set(props.page.toRubber)
+        }
+      }
 
-    val viewHandCallbackCancel: Callback = scope.props >>= { props => props.routerCtl.set(props.page.toRubber) }
+    val viewHandCallbackCancel: Callback = scope.props >>= { props =>
+      props.routerCtl.set(props.page.toRubber)
+    }
 
-    def getPlayerPosition( pos: Option[String] ): Option[PlayerPosition] = {
+    def getPlayerPosition(pos: Option[String]): Option[PlayerPosition] = {
       pos.flatMap { p =>
         try {
           Some(PlayerPosition(p))
         } catch {
-          case _ : Exception => None
+          case _: Exception => None
         }
       }
     }
 
-    def render( props: Props, state: State ) = { // scalafix:ok ExplicitResultTypes; React
+    def render(props: Props, state: State) = { // scalafix:ok ExplicitResultTypes; React
       <.div(
         RubberPageBridgeAppBar(
           title = Seq[CtorType.ChildArg](
             MuiTypography(
-                variant = TextVariant.h6,
-                color = TextColor.inherit,
+              variant = TextVariant.h6,
+              color = TextColor.inherit
             )(
-                <.span( "Enter Hand" )
-            )),
+              <.span("Enter Hand")
+            )
+          ),
           helpurl = "../help/rubber/hand.html",
           routeCtl = props.routerCtl
         )(),
@@ -119,45 +154,62 @@ object PageRubberMatchHandInternal {
             rub.getHand(props.page.handid) match {
               case Some(h) =>
                 val scorehand = ScoreHand(h)
-                PageHand.create(scorehand, Rubber, 0, 0,
-                                rub.north, rub.south, rub.east, rub.west,
-                                rubberScoring.getDealerForHand(props.page.handid),
-                                viewHandCallbackOk(props.page.handid), viewHandCallbackCancel, allowPassedOut=false,
-                                callbackWithHonors = Some(viewHandCallbackWithHonors(h.id) _),
-                                honors = Some(h.honors),
-                                honorsPlayer = getPlayerPosition(h.honorsPlayer) )
+                PageHand.create(
+                  scorehand,
+                  Rubber,
+                  0,
+                  0,
+                  rub.north,
+                  rub.south,
+                  rub.east,
+                  rub.west,
+                  rubberScoring.getDealerForHand(props.page.handid),
+                  viewHandCallbackOk(props.page.handid),
+                  viewHandCallbackCancel,
+                  allowPassedOut = false,
+                  callbackWithHonors = Some(viewHandCallbackWithHonors(h.id) _),
+                  honors = Some(h.honors),
+                  honorsPlayer = getPlayerPosition(h.honorsPlayer)
+                )
               case None =>
                 val score = RubberScoring(rub)
                 val (nsVul, ewVul) = {
-                  def getVul( vul: Boolean ) = if (vul) Vul else NotVul
-                  ( getVul(score.nsVul), getVul(score.ewVul) )
+                  def getVul(vul: Boolean) = if (vul) Vul else NotVul
+                  (getVul(score.nsVul), getVul(score.ewVul))
                 }
-                val contract = Contract( "0",
-                                         PassedOut,
-                                         NoTrump,
-                                         NotDoubled,
-                                         North,
-                                         nsVul,
-                                         ewVul,
-                                         Made,
-                                         0,
-                                         None,
-                                         None,
-                                         Rubber,
-                                         None,
-                                         0,
-                                         0,
-                                         rub.north,
-                                         rub.south,
-                                         rub.east,
-                                         rub.west,
-                                         rubberScoring.getDealerForHand(props.page.handid))
-                PageHand( contract , viewHandCallbackOk(""), viewHandCallbackCancel, newhand=true, allowPassedOut=false,
-                          callbackWithHonors = Some(viewHandCallbackWithHonors("") _),
-                          honors = None,
-                          honorsPlayer = None,
+                val contract = Contract(
+                  "0",
+                  PassedOut,
+                  NoTrump,
+                  NotDoubled,
+                  North,
+                  nsVul,
+                  ewVul,
+                  Made,
+                  0,
+                  None,
+                  None,
+                  Rubber,
+                  None,
+                  0,
+                  0,
+                  rub.north,
+                  rub.south,
+                  rub.east,
+                  rub.west,
+                  rubberScoring.getDealerForHand(props.page.handid)
+                )
+                PageHand(
+                  contract,
+                  viewHandCallbackOk(""),
+                  viewHandCallbackCancel,
+                  newhand = true,
+                  allowPassedOut = false,
+                  callbackWithHonors = Some(viewHandCallbackWithHonors("") _),
+                  honors = None,
+                  honorsPlayer = None
 //                          helppage = Some("../help/rubber/hand.html")
-                        )
+                )
             }
 
           case _ =>
@@ -166,13 +218,15 @@ object PageRubberMatchHandInternal {
       )
     }
 
-    val storeCallback: Callback = Callback { scope.withEffectsImpure.forceUpdate }
+    val storeCallback: Callback = Callback {
+      scope.withEffectsImpure.forceUpdate
+    }
 
     val didMount: Callback = CallbackTo {
       logger.info("PageRubberMatchHand.didMount")
       RubberStore.addChangeListener(storeCallback)
-    } >> scope.props >>= { (p) => Callback(
-      RubberController.ensureMatch(p.page.rid))
+    } >> scope.props >>= { (p) =>
+      Callback(RubberController.ensureMatch(p.page.rid))
     }
 
     val willUnmount: Callback = CallbackTo {
@@ -182,22 +236,24 @@ object PageRubberMatchHandInternal {
 
   }
 
-  def didUpdate( cdu: ComponentDidUpdate[Props,State,Backend,Unit] ): Callback = Callback {
-    val props = cdu.currentProps
-    val prevProps = cdu.prevProps
-    if (prevProps.page != props.page) {
-      RubberController.monitor(props.page.rid)
+  def didUpdate(
+      cdu: ComponentDidUpdate[Props, State, Backend, Unit]
+  ): Callback =
+    Callback {
+      val props = cdu.currentProps
+      val prevProps = cdu.prevProps
+      if (prevProps.page != props.page) {
+        RubberController.monitor(props.page.rid)
+      }
     }
-  }
 
-  private[rubber]
-  val component = ScalaComponent.builder[Props]("PageRubberMatchHand")
-                            .initialStateFromProps { props => State() }
-                            .backend(new Backend(_))
-                            .renderBackend
-                            .componentDidMount( scope => scope.backend.didMount)
-                            .componentWillUnmount( scope => scope.backend.willUnmount )
-                            .componentDidUpdate( didUpdate )
-                            .build
+  private[rubber] val component = ScalaComponent
+    .builder[Props]("PageRubberMatchHand")
+    .initialStateFromProps { props => State() }
+    .backend(new Backend(_))
+    .renderBackend
+    .componentDidMount(scope => scope.backend.didMount)
+    .componentWillUnmount(scope => scope.backend.willUnmount)
+    .componentDidUpdate(didUpdate)
+    .build
 }
-

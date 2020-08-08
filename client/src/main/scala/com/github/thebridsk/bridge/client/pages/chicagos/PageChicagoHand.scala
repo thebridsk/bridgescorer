@@ -29,7 +29,6 @@ import japgolly.scalajs.react.component.builder.Lifecycle.ComponentDidUpdate
 import com.github.thebridsk.bridge.client.pages.HomePage
 import org.scalajs.dom.raw.File
 
-
 /**
   * A skeleton component.
   *
@@ -46,7 +45,10 @@ object PageChicagoHand {
 
   case class Props(page: HandView, routerCtl: BridgeRouter[ChicagoPage])
 
-  def apply(page: HandView, routerCtl: BridgeRouter[ChicagoPage]) =  // scalafix:ok ExplicitResultTypes; ReactComponent
+  def apply(
+      page: HandView,
+      routerCtl: BridgeRouter[ChicagoPage]
+  ) = // scalafix:ok ExplicitResultTypes; ReactComponent
     component(Props(page, routerCtl))
 
 }
@@ -61,7 +63,6 @@ object PageChicagoHandInternal {
     *
     * I'd like this class to be private, but the instantiation of component
     * will cause State to leak.
-    *
     */
   case class State()
 
@@ -70,7 +71,6 @@ object PageChicagoHandInternal {
     *
     * I'd like this class to be private, but the instantiation of component
     * will cause Backend to leak.
-    *
     */
   class Backend(scope: BackendScope[Props, State]) {
     def render(props: Props, state: State) = { // scalafix:ok ExplicitResultTypes; React
@@ -119,7 +119,8 @@ object PageChicagoHandInternal {
                   } else {
                     val dealerInFirstGame =
                       scoring.rounds(iround).dealerFirstRound
-                    val nsDealer = dealerInFirstGame == North || dealerInFirstGame == South
+                    val nsDealer =
+                      dealerInFirstGame == North || dealerInFirstGame == South
                     def vulIfNSDealer(nsdealer: Boolean): Vulnerability = {
                       if (nsdealer) Vul; else NotVul
                     }
@@ -175,12 +176,16 @@ object PageChicagoHandInternal {
               }
 
             } else {
-              log.fine(s"""Round is out of bounds for ${props.page.chiid}, round=${iround}, store has ${ChicagoStore.getChicago}""")
+              log.fine(
+                s"""Round is out of bounds for ${props.page.chiid}, round=${iround}, store has ${ChicagoStore.getChicago}"""
+              )
               HomePage.loading
             }
 
           case _ =>
-            log.fine(s"""Match still loading, looking for ${props.page.chiid}, store has ${ChicagoStore.getChicago}""")
+            log.fine(
+              s"""Match still loading, looking for ${props.page.chiid}, store has ${ChicagoStore.getChicago}"""
+            )
             HomePage.loading
         }
       )
@@ -235,7 +240,9 @@ object PageChicagoHandInternal {
 
   }
 
-  def didUpdate(cdu: ComponentDidUpdate[Props, State, Backend, Unit]): Callback =
+  def didUpdate(
+      cdu: ComponentDidUpdate[Props, State, Backend, Unit]
+  ): Callback =
     Callback {
       val props = cdu.currentProps
       val prevProps = cdu.prevProps
@@ -244,8 +251,7 @@ object PageChicagoHandInternal {
       }
     }
 
-  private[chicagos]
-  val component = ScalaComponent
+  private[chicagos] val component = ScalaComponent
     .builder[Props]("PageChicagoHand")
     .initialStateFromProps { props =>
       State()

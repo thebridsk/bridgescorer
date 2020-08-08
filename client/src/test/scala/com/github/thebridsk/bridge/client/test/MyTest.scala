@@ -31,15 +31,17 @@ object MyTest {
 }
 
 /**
- * @author werewolf
- */
+  * @author werewolf
+  */
 class MyTest extends AnyFlatSpec with Matchers {
   import MyTest._
   com.github.thebridsk.bridge.client.modules.Loader.init
   com.github.thebridsk.bridge.client.test.utils.Loader.init
 
   SystemTimeJs()
-  AjaxResult.setEnabled(false)      // disable server communications when running this test suite
+  AjaxResult.setEnabled(
+    false
+  ) // disable server communications when running this test suite
 
   StartLogging.start()
 
@@ -50,10 +52,11 @@ class MyTest extends AnyFlatSpec with Matchers {
   }
 
   /**
-   * A BridgeRouter for testing
-   * @param base the base url, example: http://localhost:8080/html/index-fastopt.html
-   */
-  class TestPageBridgeRouter( base: BaseUrl ) extends TestBridgeRouter[AppPage](base) {
+    * A BridgeRouter for testing
+    * @param base the base url, example: http://localhost:8080/html/index-fastopt.html
+    */
+  class TestPageBridgeRouter(base: BaseUrl)
+      extends TestBridgeRouter[AppPage](base) {
 
     private var callRefresh: Boolean = false
     private var callSet: Option[AppPage] = None
@@ -68,23 +71,27 @@ class MyTest extends AnyFlatSpec with Matchers {
 
     def home: TagMod = setOnClick(Home)
 
-    def refresh: Callback = Callback {
-      callRefresh = true
-    }
-    def set( page: AppPage ): Callback = Callback {
-      callSet = Some(page)
-    }
+    def refresh: Callback =
+      Callback {
+        callRefresh = true
+      }
+    def set(page: AppPage): Callback =
+      Callback {
+        callSet = Some(page)
+      }
 
-    def pathFor(target: AppPage): Path = target match {
-      case Home => Path("")
-      // TODO implement other pages
-      case _ => ???
-    }
+    def pathFor(target: AppPage): Path =
+      target match {
+        case Home => Path("")
+        // TODO implement other pages
+        case _ => ???
+      }
   }
 
   it should "work with JQuery" in {
 
-    val router = new TestPageBridgeRouter( BaseUrl("http://test.example.com/index.html") )
+    val router =
+      new TestPageBridgeRouter(BaseUrl("http://test.example.com/index.html"))
 
     def selectedPage = router.getSetPage
 
@@ -92,32 +99,37 @@ class MyTest extends AnyFlatSpec with Matchers {
     val component = ReactTestUtils renderIntoDocument HomePage(router)
     log.warning("Done rendering homepage into document")
     val y = component.getDOMNode.asMounted().asElement()
-    log.info("TestJQuery: ReactDOM.findDOMNode(component) is "+y)
+    log.info("TestJQuery: ReactDOM.findDOMNode(component) is " + y)
     val jq = JQuery
-    log.info("TestJQuery: jquery is "+JQuery)
+    log.info("TestJQuery: jquery is " + JQuery)
     val xx = jq(y)
   }
 
   it should "work with HomePage" in {
 
-    val router = new TestPageBridgeRouter( BaseUrl("http://test.example.com/index.html") )
+    val router =
+      new TestPageBridgeRouter(BaseUrl("http://test.example.com/index.html"))
 
     def selectedPage = router.getSetPage
 
-    ReactTestUtils.withRenderedIntoDocument(HomePage( router ) ) { m =>
+    ReactTestUtils.withRenderedIntoDocument(HomePage(router)) { m =>
       val e = m.getDOMNode.asMounted().asElement()
 
       val jv = new ReactForJQuery(e)
 
-      jv.show()  // (view.jqueryComponent.context)
+      jv.show() // (view.jqueryComponent.context)
 
       val buttons = jv.jquery("#ChicagoList2")
-      assert( buttons.length == 1 )
+      assert(buttons.length == 1)
 
       val b = buttons(0)
       Simulation.click run b
 
-      myassert( selectedPage.get, PlayChicago2(ListView), "Chicago button was not hit")
+      myassert(
+        selectedPage.get,
+        PlayChicago2(ListView),
+        "Chicago button was not hit"
+      )
 
     }
   }
@@ -127,35 +139,50 @@ class MyTest extends AnyFlatSpec with Matchers {
       var nsVul: Vulnerability = NotVul
       var ewVul: Vulnerability = Vul
 
-      def setNS( vul: Vulnerability ) = Callback {nsVul = vul}
-      def setEW( vul: Vulnerability ) = Callback {ewVul = vul}
+      def setNS(vul: Vulnerability) = Callback { nsVul = vul }
+      def setEW(vul: Vulnerability) = Callback { ewVul = vul }
     }
 
-    ReactTestUtils.withRenderedIntoDocument( ViewVulnerability( view.nsVul, view.ewVul, Some(view.setNS), Some(view.setEW) ) ) { m =>
+    ReactTestUtils.withRenderedIntoDocument(
+      ViewVulnerability(
+        view.nsVul,
+        view.ewVul,
+        Some(view.setNS),
+        Some(view.setEW)
+      )
+    ) { m =>
       val jv = new ReactForJQuery(m.getDOMNode.asMounted().asElement())
 
       jv.show() // view.jqueryComponent.context)
 
-      myassert( jv.jquery("#nsVul").text(), "Not Vul", "NS is not vulnerable")
-      myassert( jv.jquery("#ewVul").text(), "Vul", "EW is vulnerable")
+      myassert(jv.jquery("#nsVul").text(), "Not Vul", "NS is not vulnerable")
+      myassert(jv.jquery("#ewVul").text(), "Vul", "EW is vulnerable")
 
-      myassert( jv.jquery("#nsVul").attr("class").getOrElse(""), "", "NS vulnerable button is not highlighted")
-      myassert( jv.jquery("#ewVul").attr("class").getOrElse(""), "handVulnerable", "EW vulnerable button is highlighted")
+      myassert(
+        jv.jquery("#nsVul").attr("class").getOrElse(""),
+        "",
+        "NS vulnerable button is not highlighted"
+      )
+      myassert(
+        jv.jquery("#ewVul").attr("class").getOrElse(""),
+        "handVulnerable",
+        "EW vulnerable button is highlighted"
+      )
 
       val buttons = jv.jquery("button")
-      assert( buttons.length == 2 )
+      assert(buttons.length == 2)
 
-      myassert( buttons(0).innerHTML , "Not Vul", "first test for button 0")
-      myassert( buttons(1).innerHTML , "Vul", "first test for button 1")
+      myassert(buttons(0).innerHTML, "Not Vul", "first test for button 0")
+      myassert(buttons(1).innerHTML, "Vul", "first test for button 1")
 
-      myassert( view.nsVul, NotVul, "Initial state of nsVul is NotVul")
-      myassert( view.ewVul, Vul, "Initial state of ewVul is Vul")
+      myassert(view.nsVul, NotVul, "Initial state of nsVul is NotVul")
+      myassert(view.ewVul, Vul, "Initial state of ewVul is Vul")
 
       val b = buttons(0)
       Simulation.click run b
 
-      myassert( view.nsVul, Vul, "Final state of nsVul is Vul")
-      myassert( view.ewVul, Vul, "Final state of ewVul is Vul")
+      myassert(view.nsVul, Vul, "Final state of nsVul is Vul")
+      myassert(view.ewVul, Vul, "Final state of ewVul is Vul")
 
     }
   }
@@ -208,8 +235,10 @@ class MyTest extends AnyFlatSpec with Matchers {
 //
 //  }
 
-  def myassert[T]( got: T, expect: T, msg: String)( implicit pos: SourcePosition ): Assertion = {
-    withClue(msg+" called from "+pos.line) {
+  def myassert[T](got: T, expect: T, msg: String)(implicit
+      pos: SourcePosition
+  ): Assertion = {
+    withClue(msg + " called from " + pos.line) {
       got mustBe expect
     }
 //    try {
@@ -223,13 +252,16 @@ class MyTest extends AnyFlatSpec with Matchers {
   }
 
   it should "convert a list of int to a string with ranges" in {
-    val list = 2::3::4::Nil
+    val list = 2 :: 3 :: 4 :: Nil
     PageNewDuplicateInternal.intToString(list) mustBe "2-4"
   }
 
   it should "convert another list of int to a string with ranges" in {
-    val list2 = 1::2::3::4::7::9::10::12::14::16::17::19::20::Nil
-    PageNewDuplicateInternal.intToString(list2) mustBe "1-4, 7, 9-10, 12, 14, 16-17, 19-20"
+    val list2 =
+      1 :: 2 :: 3 :: 4 :: 7 :: 9 :: 10 :: 12 :: 14 :: 16 :: 17 :: 19 :: 20 :: Nil
+    PageNewDuplicateInternal.intToString(
+      list2
+    ) mustBe "1-4, 7, 9-10, 12, 14, 16-17, 19-20"
 
   }
 }

@@ -20,7 +20,6 @@ import com.github.thebridsk.bridge.client.pages.HomePage
 import japgolly.scalajs.react.component.builder.Lifecycle.ComponentDidUpdate
 import com.github.thebridsk.bridge.data.MatchChicago
 
-
 /**
   * A skeleton component.
   *
@@ -40,10 +39,16 @@ object PageSummary {
       routerCtl: BridgeRouter[ChicagoPage]
   )
 
-  def apply(page: SummaryView, routerCtl: BridgeRouter[ChicagoPage]) = // scalafix:ok ExplicitResultTypes; ReactComponent
+  def apply(
+      page: SummaryView,
+      routerCtl: BridgeRouter[ChicagoPage]
+  ) = // scalafix:ok ExplicitResultTypes; ReactComponent
     component(Props(Left(page), routerCtl))
 
-  def apply(page: RoundView, routerCtl: BridgeRouter[ChicagoPage]) = // scalafix:ok ExplicitResultTypes; ReactComponent
+  def apply(
+      page: RoundView,
+      routerCtl: BridgeRouter[ChicagoPage]
+  ) = // scalafix:ok ExplicitResultTypes; ReactComponent
     component(Props(Right(page), routerCtl))
 
 }
@@ -58,7 +63,6 @@ object PageSummaryInternal {
     *
     * I'd like this class to be private, but the instantiation of component
     * will cause State to leak.
-    *
     */
   case class State()
 
@@ -67,7 +71,6 @@ object PageSummaryInternal {
     *
     * I'd like this class to be private, but the instantiation of component
     * will cause Backend to leak.
-    *
     */
   class Backend(scope: BackendScope[Props, State]) {
 
@@ -85,17 +88,23 @@ object PageSummaryInternal {
 
     def toRoundView(round: Int, props: Props): RoundView =
       props.page match {
-        case Left(summary)    => summary.toRoundView(round)
-        case Right(roundview) => ChicagoRouter.RoundView(roundview.chiid.id, round)
+        case Left(summary) => summary.toRoundView(round)
+        case Right(roundview) =>
+          ChicagoRouter.RoundView(roundview.chiid.id, round)
       }
 
     def toNamesView(round: Int, props: Props): ChicagoRouter.NamesView =
       props.page match {
-        case Left(summary)    => summary.toNamesView(round)
-        case Right(roundview) => ChicagoRouter.NamesView(roundview.chiid.id, round)
+        case Left(summary) => summary.toNamesView(round)
+        case Right(roundview) =>
+          ChicagoRouter.NamesView(roundview.chiid.id, round)
       }
 
-    def toHandView(round: Int, hand: Int, props: Props): ChicagoRouter.HandView =
+    def toHandView(
+        round: Int,
+        hand: Int,
+        props: Props
+    ): ChicagoRouter.HandView =
       props.page match {
         case Left(summary) => summary.toHandView(round, hand)
         case Right(roundview) =>
@@ -148,12 +157,16 @@ object PageSummaryInternal {
               //   6 hand round (show if in round 1 hand 5)
               //   8 hand round (show if in round 1 hand 5)
               //
-              val show68HandRound = scoring.gamesPerRound == 0 && numberRounds == 1 && lastRoundHands.length == 5
-              val showNextHand = scoring.gamesPerRound == 1 || ((scoring.gamesPerRound == 0 || lastRoundHands.length < scoring.gamesPerRound) && !show68HandRound)
-              val showNewRound = ((numberRounds == 1 && lastRoundHands.length == 4) ||
-                                  (scoring.gamesPerRound != 0 && lastRoundHands.length == scoring.gamesPerRound)) &&
-                                 scoring.gamesPerRound != 1
-              val showSet68HandRound = numberRounds == 1 && lastRoundHands.length == 4 && scoring.gamesPerRound == 0
+              val show68HandRound =
+                scoring.gamesPerRound == 0 && numberRounds == 1 && lastRoundHands.length == 5
+              val showNextHand =
+                scoring.gamesPerRound == 1 || ((scoring.gamesPerRound == 0 || lastRoundHands.length < scoring.gamesPerRound) && !show68HandRound)
+              val showNewRound =
+                ((numberRounds == 1 && lastRoundHands.length == 4) ||
+                  (scoring.gamesPerRound != 0 && lastRoundHands.length == scoring.gamesPerRound)) &&
+                  scoring.gamesPerRound != 1
+              val showSet68HandRound =
+                numberRounds == 1 && lastRoundHands.length == 4 && scoring.gamesPerRound == 0
               val (start, end, showRound) = props.page match {
                 case Left(_) => (0, scoring.rounds.length, None)
                 case Right(RoundView(chiid, round)) =>
@@ -228,7 +241,9 @@ object PageSummaryInternal {
                           "NextHand",
                           "Next Hand",
                           baseStyles.requiredNotNext,
-                          ^.onClick --> (if (scoring.gamesPerRound ==1) nextRound else nextHand)
+                          ^.onClick --> (if (scoring.gamesPerRound == 1)
+                                           nextRound
+                                         else nextHand)
                         ),
                         <.span(" ")
                       )
@@ -255,7 +270,7 @@ object PageSummaryInternal {
                       "Edit Names",
                       ^.onClick --> props.routerCtl.set(toEditNamesView(props))
                     )
-                    )
+                  )
                 )
               )
             }
@@ -265,26 +280,27 @@ object PageSummaryInternal {
       )
     }
 
-    def do68Callback(gamesInRound: Int): Callback = scope.props >>= { props =>
-      Callback {
-        ChicagoStore.getChicago match {
-          case Some(mc) =>
-            if (mc.rounds.length == 1 && mc.gamesPerRound == 0) {
-              val newmc = mc.setGamesPerRound(gamesInRound)
-              ChicagoController.updateMatch(newmc)
-              props.routerCtl
-                .set(toHandView(0, mc.rounds(0).hands.length, props))
-                .runNow()
-            } else {
-              logger.warning(
-                "PageSummary: 68 not in first round, or already set"
-              )
-            }
-          case _ =>
-            logger.warning("PageSummary: 68 MatchChicago not found")
+    def do68Callback(gamesInRound: Int): Callback =
+      scope.props >>= { props =>
+        Callback {
+          ChicagoStore.getChicago match {
+            case Some(mc) =>
+              if (mc.rounds.length == 1 && mc.gamesPerRound == 0) {
+                val newmc = mc.setGamesPerRound(gamesInRound)
+                ChicagoController.updateMatch(newmc)
+                props.routerCtl
+                  .set(toHandView(0, mc.rounds(0).hands.length, props))
+                  .runNow()
+              } else {
+                logger.warning(
+                  "PageSummary: 68 not in first round, or already set"
+                )
+              }
+            case _ =>
+              logger.warning("PageSummary: 68 MatchChicago not found")
+          }
         }
       }
-    }
 
     val nextRound: Callback = scope.props >>= { props =>
       Callback {
@@ -292,7 +308,7 @@ object PageSummaryInternal {
           case Some(mc) =>
             val n = {
               val nn = mc.rounds.length
-              if (nn > 0 && mc.rounds.last.hands.isEmpty) nn-1
+              if (nn > 0 && mc.rounds.last.hands.isEmpty) nn - 1
               else nn
             }
             if (n == 1 && mc.gamesPerRound == 0) {
@@ -359,20 +375,22 @@ object PageSummaryInternal {
 
   }
 
-  def didUpdate( cdu: ComponentDidUpdate[Props,State,Backend,Unit] ): Callback = Callback {
-    val props = cdu.currentProps
-    val prevProps = cdu.prevProps
-    if (prevProps.page != props.page) {
-      val chiid = MatchChicago.id(props.page match {
-        case Left(SummaryView(chiid))       => chiid
-        case Right(RoundView(chiid, round)) => chiid
-      })
-      ChicagoController.monitor(chiid)
+  def didUpdate(
+      cdu: ComponentDidUpdate[Props, State, Backend, Unit]
+  ): Callback =
+    Callback {
+      val props = cdu.currentProps
+      val prevProps = cdu.prevProps
+      if (prevProps.page != props.page) {
+        val chiid = MatchChicago.id(props.page match {
+          case Left(SummaryView(chiid))       => chiid
+          case Right(RoundView(chiid, round)) => chiid
+        })
+        ChicagoController.monitor(chiid)
+      }
     }
-  }
 
-  private[chicagos]
-  val component = ScalaComponent
+  private[chicagos] val component = ScalaComponent
     .builder[Props]("PageSummary")
     .initialStateFromProps { props =>
       State()
@@ -381,6 +399,6 @@ object PageSummaryInternal {
     .renderBackend
     .componentDidMount(scope => scope.backend.didMount)
     .componentWillUnmount(scope => scope.backend.willUnmount)
-    .componentDidUpdate( didUpdate )
+    .componentDidUpdate(didUpdate)
     .build
 }
