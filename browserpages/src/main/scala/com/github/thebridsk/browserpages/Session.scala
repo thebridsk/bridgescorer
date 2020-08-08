@@ -379,10 +379,11 @@ class Session(name: String = "default") extends WebDriver {
   def sessionStartIfNotRunning(
       browser: Option[String] = None,
       retry: Int = 2
-  ): Session = synchronized {
-    if (webDriver == null) sessionStart(browser, retry)
-    else this
-  }
+  ): Session =
+    synchronized {
+      if (webDriver == null) sessionStart(browser, retry)
+      else this
+    }
 
   def isSessionRunning: Boolean = synchronized { webDriver != null }
 
@@ -395,26 +396,27 @@ class Session(name: String = "default") extends WebDriver {
   /**
     * Stop the browser webdriver
     */
-  def sessionStop(): Unit = synchronized {
-    if (webDriver != null) {
-      if (eventListener != null) {
-        val el = eventListener
-        eventListener = null
-        webDriver.unregister(el)
+  def sessionStop(): Unit =
+    synchronized {
+      if (webDriver != null) {
+        if (eventListener != null) {
+          val el = eventListener
+          eventListener = null
+          webDriver.unregister(el)
+        }
+        webDriver.close()
+        try {
+          webDriver.quit()
+        } catch {
+          case t: Throwable =>
+            testlog.fine("Ignoring " + t.toString())
+        }
+        webDriver = null
       }
-      webDriver.close()
-      try {
-        webDriver.quit()
-      } catch {
-        case t: Throwable =>
-          testlog.fine("Ignoring " + t.toString())
-      }
-      webDriver = null
-    }
 
-    chromeDriverService.map(cds => cds.stop())
-    chromeDriverService = None
-  }
+      chromeDriverService.map(cds => cds.stop())
+      chromeDriverService = None
+    }
 
   /**
     * Set the quadrant for the window.
@@ -629,22 +631,25 @@ object Session {
     * @param name the property name
     * @return the property value wrapped in a Some object.  None property not set.
     */
-  def getPropOrEnv(name: String): Option[String] = sys.props.get(name) match {
-    case v: Some[String] =>
-      testlog.fine("getPropOrEnv: found system property: " + name + "=" + v.get)
-      v
-    case None =>
-      sys.env.get(name) match {
-        case v: Some[String] =>
-          testlog.fine("getPropOrEnv: found env var: " + name + "=" + v.get)
-          v
-        case None =>
-          testlog.fine(
-            "getPropOrEnv: did not find system property or env var: " + name
-          )
-          None
-      }
-  }
+  def getPropOrEnv(name: String): Option[String] =
+    sys.props.get(name) match {
+      case v: Some[String] =>
+        testlog.fine(
+          "getPropOrEnv: found system property: " + name + "=" + v.get
+        )
+        v
+      case None =>
+        sys.env.get(name) match {
+          case v: Some[String] =>
+            testlog.fine("getPropOrEnv: found env var: " + name + "=" + v.get)
+            v
+          case None =>
+            testlog.fine(
+              "getPropOrEnv: did not find system property or env var: " + name
+            )
+            None
+        }
+    }
 
   val sessionCounter = new AtomicLong()
 }

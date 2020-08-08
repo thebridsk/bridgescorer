@@ -37,8 +37,8 @@ object NotNothing {
 object PageBrowsersImplicits {
   import scala.language.implicitConversions
 
-  implicit def convertWebElementToElement(webElement: WebElement)(
-      implicit pos: Position,
+  implicit def convertWebElementToElement(webElement: WebElement)(implicit
+      pos: Position,
       webdriver: WebDriver,
       patienceConfig: PatienceConfig
   ): Element = new Element(webElement)
@@ -60,8 +60,8 @@ abstract class QueryBy(implicit webDriver: WebDriver) {
     * @return the element
     * @throws org.openqa.selenium.NoSuchElement if not found
     */
-  def queryElement(
-      implicit webDriver: WebDriver,
+  def queryElement(implicit
+      webDriver: WebDriver,
       patienceConfig: PatienceConfig,
       pos: Position
   ): Element = {
@@ -72,8 +72,8 @@ abstract class QueryBy(implicit webDriver: WebDriver) {
     * Query the page with the query
     * @return the elements, empty list is returned if nothing matches
     */
-  def queryElements(
-      implicit webDriver: WebDriver,
+  def queryElements(implicit
+      webDriver: WebDriver,
       patienceConfig: PatienceConfig,
       pos: Position
   ): List[Element] = {
@@ -121,31 +121,32 @@ class GoTo(implicit createdpos: SourcePosition) {
 }
 
 class ClickOn(implicit createdpos: SourcePosition) {
-  def on(e: WebBrowser.Element)(
-      implicit webDriver: WebDriver,
+  def on(e: WebBrowser.Element)(implicit
+      webDriver: WebDriver,
       patienceConfig: PatienceConfig,
       pos: Position
   ): Unit = on(e.underlying)
-  def on(e: Element)(
-      implicit webDriver: WebDriver,
+  def on(e: Element)(implicit
+      webDriver: WebDriver,
       patienceConfig: PatienceConfig,
       pos: Position
   ): Unit = on(e.underlying)
-  def on(e: WebElement)(
-      implicit webDriver: WebDriver,
+  def on(e: WebElement)(implicit
+      webDriver: WebDriver,
       patienceConfig: PatienceConfig,
       pos: Position
-  ): Unit = eventually {
-    PageBrowser.log.fine(
-      s"Clicking on ${e}: patienceConfig=${patienceConfig}, pos=${pos.line}"
-    )
+  ): Unit =
+    eventually {
+      PageBrowser.log.fine(
+        s"Clicking on ${e}: patienceConfig=${patienceConfig}, pos=${pos.line}"
+      )
 //    moveToElement(e)
-    scrollToElement(e)
+      scrollToElement(e)
 //    PageBrowser.log.fine( s"""Clicking on ${e}: text = ${e.text}""" )
-    e.click()
-  }
-  def on(query: QueryBy)(
-      implicit webDriver: WebDriver,
+      e.click()
+    }
+  def on(query: QueryBy)(implicit
+      webDriver: WebDriver,
       patienceConfig: PatienceConfig,
       pos: Position
   ): Unit = {
@@ -159,16 +160,16 @@ class ClickOn(implicit createdpos: SourcePosition) {
     on(e)
   }
 
-  def moveToElement(e: WebElement)(
-      implicit webDriver: WebDriver,
+  def moveToElement(e: WebElement)(implicit
+      webDriver: WebDriver,
       patienceConfig: PatienceConfig,
       pos: Position
   ): Unit = {
     new Actions(webDriver).moveToElement(e).perform()
   }
 
-  def scrollToElement(e: WebElement)(
-      implicit webDriver: WebDriver,
+  def scrollToElement(e: WebElement)(implicit
+      webDriver: WebDriver,
       patienceConfig: PatienceConfig,
       pos: Position
   ): Unit = {
@@ -182,8 +183,8 @@ class ClickOn(implicit createdpos: SourcePosition) {
 
 trait PageBrowser {
 
-  def esc(
-      implicit webDriver: WebDriver,
+  def esc(implicit
+      webDriver: WebDriver,
       patienceConfig: PatienceConfig,
       pos: Position
   ): this.type = {
@@ -191,8 +192,8 @@ trait PageBrowser {
     this
   }
 
-  def refresh(
-      implicit webDriver: WebDriver,
+  def refresh(implicit
+      webDriver: WebDriver,
       patienceConfig: PatienceConfig,
       pos: Position
   ): this.type = {
@@ -200,8 +201,8 @@ trait PageBrowser {
     this
   }
 
-  def enter(
-      implicit webDriver: WebDriver,
+  def enter(implicit
+      webDriver: WebDriver,
       patienceConfig: PatienceConfig,
       pos: Position
   ): this.type = {
@@ -261,8 +262,8 @@ trait PageBrowser {
     * @param args the arguments to the script, may be empty
     * @return One of Boolean, Long, String, List or WebElement. Or null (following <a href="http://selenium.googlecode.com/git/docs/api/java/org/openqa/selenium/JavascriptExecutor.html">Selenium's JavascriptExecutor Javadoc</a>)
     */
-  def executeScript[T](script: String, args: AnyRef*)(
-      implicit webDriver: WebDriver
+  def executeScript[T](script: String, args: AnyRef*)(implicit
+      webDriver: WebDriver
   ): AnyRef =
     webDriver match {
       case executor: JavascriptExecutor =>
@@ -273,8 +274,8 @@ trait PageBrowser {
         )
     }
 
-  def saveDom(tofile: String, stdout: Boolean = false)(
-      implicit webDriver: WebDriver
+  def saveDom(tofile: String, stdout: Boolean = false)(implicit
+      webDriver: WebDriver
   ): Unit = {
     try {
       val dom = executeScript("return document.documentElement.outerHTML")(
@@ -295,74 +296,80 @@ trait PageBrowser {
 
   def go(implicit webDriver: WebDriver, pos: Position) = new GoTo
 
-  def id(s: String)(
-      implicit webDriver: WebDriver,
+  def id(s: String)(implicit
+      webDriver: WebDriver,
       patienceConfig: PatienceConfig,
       pos: Position
-  ): QueryBy = new QueryBy {
-    def query = By.id(s)
-    override def toString() = {
-      s"""QueryBy id ${s}"""
+  ): QueryBy =
+    new QueryBy {
+      def query = By.id(s)
+      override def toString() = {
+        s"""QueryBy id ${s}"""
+      }
     }
-  }
 
-  def name(s: String)(
-      implicit webDriver: WebDriver,
+  def name(s: String)(implicit
+      webDriver: WebDriver,
       patienceConfig: PatienceConfig,
       pos: Position
-  ): QueryBy = new QueryBy {
-    def query = By.name(s)
-    override def toString() = {
-      s"""QueryBy name ${s}"""
+  ): QueryBy =
+    new QueryBy {
+      def query = By.name(s)
+      override def toString() = {
+        s"""QueryBy name ${s}"""
+      }
     }
-  }
 
-  def xpath(s: String)(
-      implicit webDriver: WebDriver,
+  def xpath(s: String)(implicit
+      webDriver: WebDriver,
       patienceConfig: PatienceConfig,
       pos: Position
-  ): QueryBy = new QueryBy {
-    def query = By.xpath(s)
-    override def toString() = {
-      s"""QueryBy xpath ${s}"""
+  ): QueryBy =
+    new QueryBy {
+      def query = By.xpath(s)
+      override def toString() = {
+        s"""QueryBy xpath ${s}"""
+      }
     }
-  }
 
-  def cssSelector(s: String)(
-      implicit webDriver: WebDriver,
+  def cssSelector(s: String)(implicit
+      webDriver: WebDriver,
       patienceConfig: PatienceConfig,
       pos: Position
-  ): QueryBy = new QueryBy {
-    def query = By.cssSelector(s)
-    override def toString() = {
-      s"""QueryBy cssSelector ${s}"""
+  ): QueryBy =
+    new QueryBy {
+      def query = By.cssSelector(s)
+      override def toString() = {
+        s"""QueryBy cssSelector ${s}"""
+      }
     }
-  }
 
-  def className(s: String)(
-      implicit webDriver: WebDriver,
+  def className(s: String)(implicit
+      webDriver: WebDriver,
       patienceConfig: PatienceConfig,
       pos: Position
-  ): QueryBy = new QueryBy {
-    def query = By.className(s)
-    override def toString() = {
-      s"""QueryBy className ${s}"""
+  ): QueryBy =
+    new QueryBy {
+      def query = By.className(s)
+      override def toString() = {
+        s"""QueryBy className ${s}"""
+      }
     }
-  }
 
-  def tagName(s: String)(
-      implicit webDriver: WebDriver,
+  def tagName(s: String)(implicit
+      webDriver: WebDriver,
       patienceConfig: PatienceConfig,
       pos: Position
-  ): QueryBy = new QueryBy {
-    def query = By.tagName(s)
-    override def toString() = {
-      s"""QueryBy tagName ${s}"""
+  ): QueryBy =
+    new QueryBy {
+      def query = By.tagName(s)
+      override def toString() = {
+        s"""QueryBy tagName ${s}"""
+      }
     }
-  }
 
-  def findOption(by: QueryBy)(
-      implicit webDriver: WebDriver,
+  def findOption(by: QueryBy)(implicit
+      webDriver: WebDriver,
       patienceConfig: PatienceConfig,
       pos: Position
   ): Option[Element] = {
@@ -374,32 +381,32 @@ trait PageBrowser {
     }
   }
 
-  def find(by: QueryBy)(
-      implicit webDriver: WebDriver,
+  def find(by: QueryBy)(implicit
+      webDriver: WebDriver,
       patienceConfig: PatienceConfig,
       pos: Position
   ): Element = {
     by.queryElement
   }
 
-  def findAll(by: QueryBy)(
-      implicit webDriver: WebDriver,
+  def findAll(by: QueryBy)(implicit
+      webDriver: WebDriver,
       patienceConfig: PatienceConfig,
       pos: Position
   ): List[Element] = {
     by.queryElements
   }
 
-  def findAllTextInputs(
-      implicit webDriver: WebDriver,
+  def findAllTextInputs(implicit
+      webDriver: WebDriver,
       patienceConfig: PatienceConfig,
       pos: Position
   ): Map[String, TextField] = {
     GenericPage.current.findAllTextInputs()
   }
 
-  def findAllInputs(
-      implicit webDriver: WebDriver,
+  def findAllInputs(implicit
+      webDriver: WebDriver,
       patienceConfig: PatienceConfig,
       pos: Position
   ): Map[String, Element] = {
@@ -410,8 +417,7 @@ trait PageBrowser {
 
   def textField(
       tid: String
-  )(
-      implicit
+  )(implicit
       webDriver: WebDriver,
       patienceConfig: PatienceConfig,
       pos: Position
@@ -421,8 +427,8 @@ trait PageBrowser {
 
   def findElem[T <: Element](
       by: QueryBy
-  )(
-      implicit webDriver: WebDriver,
+  )(implicit
+      webDriver: WebDriver,
       patienceConfig: PatienceConfig,
       pos: Position,
       classtag: ClassTag[T],
@@ -434,8 +440,8 @@ trait PageBrowser {
 
   def getElement[T <: Element](
       elem: Element
-  )(
-      implicit webDriver: WebDriver,
+  )(implicit
+      webDriver: WebDriver,
       patienceConfig: PatienceConfig,
       pos: Position,
       classtag: ClassTag[T],
@@ -459,8 +465,8 @@ trait PageBrowser {
 
   def findAllElems[T <: Element](
       by: QueryBy
-  )(
-      implicit webDriver: WebDriver,
+  )(implicit
+      webDriver: WebDriver,
       patienceConfig: PatienceConfig,
       pos: Position,
       classtag: ClassTag[T],
@@ -473,8 +479,8 @@ trait PageBrowser {
 
   def getAllElements[T <: Element](
       el: List[Element]
-  )(
-      implicit patienceConfig: PatienceConfig,
+  )(implicit
+      patienceConfig: PatienceConfig,
       webdriver: WebDriver,
       pos: Position,
       classtag: ClassTag[T],
@@ -616,24 +622,24 @@ trait PageBrowser {
     }
   }
 
-  def moveToElement(e: Element)(
-      implicit webDriver: WebDriver,
+  def moveToElement(e: Element)(implicit
+      webDriver: WebDriver,
       patienceConfig: PatienceConfig,
       pos: Position
   ): Unit = {
     new Actions(webDriver).moveToElement(e.underlying).perform()
   }
 
-  def moveToElement(e: WebElement)(
-      implicit webDriver: WebDriver,
+  def moveToElement(e: WebElement)(implicit
+      webDriver: WebDriver,
       patienceConfig: PatienceConfig,
       pos: Position
   ): Unit = {
     new Actions(webDriver).moveToElement(e).perform()
   }
 
-  def scrollToElement(e: Element)(
-      implicit webDriver: WebDriver,
+  def scrollToElement(e: Element)(implicit
+      webDriver: WebDriver,
       patienceConfig: PatienceConfig,
       pos: Position
   ): Unit = {
@@ -643,8 +649,8 @@ trait PageBrowser {
     );
   }
 
-  def scrollToElement(e: WebElement)(
-      implicit webDriver: WebDriver,
+  def scrollToElement(e: WebElement)(implicit
+      webDriver: WebDriver,
       patienceConfig: PatienceConfig,
       pos: Position
   ): Unit = {
@@ -654,8 +660,8 @@ trait PageBrowser {
     );
   }
 
-  def scrollToElement(e: org.scalatestplus.selenium.WebBrowser.Element)(
-      implicit webDriver: WebDriver,
+  def scrollToElement(e: org.scalatestplus.selenium.WebBrowser.Element)(implicit
+      webDriver: WebDriver,
       patienceConfig: PatienceConfig,
       pos: Position
   ): Unit = {
@@ -665,24 +671,24 @@ trait PageBrowser {
     )
   }
 
-  def scrollToTop(
-      implicit webDriver: WebDriver,
+  def scrollToTop(implicit
+      webDriver: WebDriver,
       patienceConfig: PatienceConfig,
       pos: Position
   ): Unit = {
     PageBrowser.executeScript("window.scrollTo(0, 0)")
   }
 
-  def isClickable(e: Element)(
-      implicit webDriver: WebDriver,
+  def isClickable(e: Element)(implicit
+      webDriver: WebDriver,
       patienceConfig: PatienceConfig,
       pos: Position
   ): Unit = {
     isClickable(e.underlying)
   }
 
-  def isClickable(e: WebElement)(
-      implicit webDriver: WebDriver,
+  def isClickable(e: WebElement)(implicit
+      webDriver: WebDriver,
       patienceConfig: PatienceConfig,
       pos: Position
   ): Unit = {
@@ -695,8 +701,8 @@ trait PageBrowser {
   /**
     * @param e the element
     */
-  def isSoundPlaying(e: WebElement)(
-      implicit webDriver: WebDriver,
+  def isSoundPlaying(e: WebElement)(implicit
+      webDriver: WebDriver,
       patienceConfig: PatienceConfig,
       pos: Position
   ): Boolean = {
@@ -708,8 +714,8 @@ trait PageBrowser {
   /**
     * @param e the element
     */
-  def isSoundPlaying(e: Element)(
-      implicit webDriver: WebDriver,
+  def isSoundPlaying(e: Element)(implicit
+      webDriver: WebDriver,
       patienceConfig: PatienceConfig,
       pos: Position
   ): Boolean = {
@@ -720,8 +726,8 @@ trait PageBrowser {
     * @param id the id of the element
     * @throws org.openqa.selenium.NoSuchElement if element with specified id is not found
     */
-  def isSoundPlaying(ida: String)(
-      implicit webDriver: WebDriver,
+  def isSoundPlaying(ida: String)(implicit
+      webDriver: WebDriver,
       patienceConfig: PatienceConfig,
       pos: Position
   ): Boolean = {
@@ -735,8 +741,8 @@ object PageBrowser extends PageBrowser {
 
   private[browserpages] val log = Logger[PageBrowser]()
 
-  private[PageBrowser] def getConstructor[T <: Element](
-      implicit classtag: ClassTag[T],
+  private[PageBrowser] def getConstructor[T <: Element](implicit
+      classtag: ClassTag[T],
       nothing: NotNothing[T]
   ) = {
     try {

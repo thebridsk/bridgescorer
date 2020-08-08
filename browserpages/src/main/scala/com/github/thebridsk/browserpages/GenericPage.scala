@@ -7,8 +7,8 @@ import org.scalatest.concurrent.Eventually._
 
 object GenericPage {
 
-  def current(
-      implicit webDriver: WebDriver,
+  def current(implicit
+      webDriver: WebDriver,
       pageCreated: SourcePosition
   ): GenericPage = {
     new GenericPage
@@ -25,8 +25,8 @@ object GenericPage {
 class GenericPage(implicit webDriver: WebDriver, pageCreated: SourcePosition)
     extends Page[GenericPage] {
 
-  def validate(
-      implicit patienceConfig: PatienceConfig,
+  def validate(implicit
+      patienceConfig: PatienceConfig,
       pos: Position
   ): GenericPage = this
 

@@ -14,8 +14,10 @@ import org.openqa.selenium.Keys
 import org.openqa.selenium.WebDriver
 import org.openqa.selenium.{NoSuchElementException => SelNoSuchElementException}
 
-class Element(val underlying: WebElement)(
-    implicit pos: Position,
+class Element(
+    val underlying: WebElement
+)(implicit
+    pos: Position,
     webdriver: WebDriver,
     patienceConfig: PatienceConfig
 ) {
@@ -90,8 +92,8 @@ class Element(val underlying: WebElement)(
            |  visibility $vis
            |  height x width $height x $width
            |  computed css ${getComputedCssMap
-             .map { case (k, v) => s"$k: $v;" }
-             .mkString("\n    ", "\n    ", "")}
+          .map { case (k, v) => s"$k: $v;" }
+          .mkString("\n    ", "\n    ", "")}
            |  style ${underlying.getAttribute("style")}
            |""".stripMargin
 
@@ -164,8 +166,8 @@ class Element(val underlying: WebElement)(
 
   def findElem[T <: Element](
       by: QueryBy
-  )(
-      implicit patienceConfig: PatienceConfig,
+  )(implicit
+      patienceConfig: PatienceConfig,
       pos: Position,
       classtag: ClassTag[T]
   ): T = {
@@ -175,8 +177,8 @@ class Element(val underlying: WebElement)(
 
   def findAllElem[T <: Element](
       by: QueryBy
-  )(
-      implicit patienceConfig: PatienceConfig,
+  )(implicit
+      patienceConfig: PatienceConfig,
       pos: Position,
       classtag: ClassTag[T]
   ): List[T] = {
@@ -184,15 +186,15 @@ class Element(val underlying: WebElement)(
     PageBrowser.getAllElements(el)
   }
 
-  def getElement[T <: Element](
-      implicit pos: Position,
+  def getElement[T <: Element](implicit
+      pos: Position,
       classtag: ClassTag[T]
   ): T = {
     PageBrowser.getElement(this)
   }
 
-  def takeScreenshot(directory: String, filename: String)(
-      implicit pos: Position
+  def takeScreenshot(directory: String, filename: String)(implicit
+      pos: Position
   ): Element = {
     try {
       val scrFile = underlying.getScreenshotAs(OutputType.FILE);
@@ -216,14 +218,16 @@ object Element {
   val log: Logger = Logger[Element]()
 }
 
-class InputElement(underlying: WebElement)(
-    implicit pos: Position,
+class InputElement(
+    underlying: WebElement
+)(implicit
+    pos: Position,
     webdriver: WebDriver,
     patienceConfig: PatienceConfig
 ) extends Element(underlying) {
 
-  def this(el: Element)(
-      implicit pos1: Position,
+  def this(el: Element)(implicit
+      pos1: Position,
       webdriver1: WebDriver,
       patienceConfig1: PatienceConfig
   ) = this(el.underlying)(pos1, webdriver1, patienceConfig1)
@@ -234,14 +238,16 @@ class InputElement(underlying: WebElement)(
 
 }
 
-class TextField(underlying: WebElement)(
-    implicit pos: Position,
+class TextField(
+    underlying: WebElement
+)(implicit
+    pos: Position,
     webdriver: WebDriver,
     patienceConfig1: PatienceConfig
 ) extends InputElement(underlying) {
 
-  def this(el: Element)(
-      implicit pos1: Position,
+  def this(el: Element)(implicit
+      pos1: Position,
       webdriver1: WebDriver,
       patienceConfig1: PatienceConfig
   ) = this(el.underlying)(pos1, webdriver1, patienceConfig1)
@@ -259,26 +265,30 @@ class TextField(underlying: WebElement)(
 
 }
 
-class NumberField(underlying: WebElement)(
-    implicit pos: Position,
+class NumberField(
+    underlying: WebElement
+)(implicit
+    pos: Position,
     webdriver: WebDriver,
     patienceConfig: PatienceConfig
 ) extends TextField(underlying) {
-  def this(el: Element)(
-      implicit pos1: Position,
+  def this(el: Element)(implicit
+      pos1: Position,
       webdriver1: WebDriver,
       patienceConfig1: PatienceConfig
   ) = this(el.underlying)(pos1, webdriver1, patienceConfig1)
 }
 
-class RadioButton(underlying: WebElement)(
-    implicit pos: Position,
+class RadioButton(
+    underlying: WebElement
+)(implicit
+    pos: Position,
     webdriver: WebDriver,
     patienceConfig: PatienceConfig
 ) extends InputElement(underlying) {
 
-  def this(el: Element)(
-      implicit pos1: Position,
+  def this(el: Element)(implicit
+      pos1: Position,
       webdriver1: WebDriver,
       patienceConfig1: PatienceConfig
   ) = this(el.underlying)(pos1, webdriver1, patienceConfig1)
@@ -305,8 +315,8 @@ class RadioButton(underlying: WebElement)(
 
 object RadioButton {
 
-  def findAll()(
-      implicit pos: Position,
+  def findAll()(implicit
+      pos: Position,
       webdriver: WebDriver,
       patienceConfig: PatienceConfig
   ): List[Checkbox] = {
@@ -318,8 +328,8 @@ object RadioButton {
     el.map(e => new Checkbox(e.underlying))
   }
 
-  def find(name: String)(
-      implicit pos: Position,
+  def find(name: String)(implicit
+      pos: Position,
       webdriver: WebDriver,
       patienceConfig: PatienceConfig
   ): Checkbox = {
@@ -331,8 +341,8 @@ object RadioButton {
     new Checkbox(el.underlying)
   }
 
-  def findAllChecked()(
-      implicit pos: Position,
+  def findAllChecked()(implicit
+      pos: Position,
       webdriver: WebDriver,
       patienceConfig: PatienceConfig
   ): List[Checkbox] = {
@@ -346,14 +356,16 @@ object RadioButton {
 
 }
 
-class Checkbox(underlying: WebElement)(
-    implicit pos: Position,
+class Checkbox(
+    underlying: WebElement
+)(implicit
+    pos: Position,
     webdriver: WebDriver,
     patienceConfig: PatienceConfig
 ) extends InputElement(underlying) {
 
-  def this(el: Element)(
-      implicit pos1: Position,
+  def this(el: Element)(implicit
+      pos1: Position,
       webdriver1: WebDriver,
       patienceConfig1: PatienceConfig
   ) = this(el.underlying)(pos1, webdriver1, patienceConfig1)
@@ -403,8 +415,8 @@ class Checkbox(underlying: WebElement)(
 
 object Checkbox {
 
-  def findAll()(
-      implicit pos: Position,
+  def findAll()(implicit
+      pos: Position,
       webdriver: WebDriver,
       patienceConfig: PatienceConfig
   ): List[Checkbox] = {
@@ -416,8 +428,8 @@ object Checkbox {
     el.map(e => new Checkbox(e.underlying))
   }
 
-  def find(name: String)(
-      implicit pos: Position,
+  def find(name: String)(implicit
+      pos: Position,
       webdriver: WebDriver,
       patienceConfig: PatienceConfig
   ): Checkbox = {
@@ -429,8 +441,8 @@ object Checkbox {
     new Checkbox(el.underlying)
   }
 
-  def findAllChecked()(
-      implicit pos: Position,
+  def findAllChecked()(implicit
+      pos: Position,
       webdriver: WebDriver,
       patienceConfig: PatienceConfig
   ): List[Checkbox] = {
@@ -448,14 +460,16 @@ object Checkbox {
   * @constructor
   * @param underlying - the input element of the combobox
   */
-class Combobox(underlying: WebElement)(
-    implicit pos: Position,
+class Combobox(
+    underlying: WebElement
+)(implicit
+    pos: Position,
     webdriver: WebDriver,
     patienceConfig: PatienceConfig
 ) extends TextField(underlying) {
 
-  def this(el: Element)(
-      implicit pos1: Position,
+  def this(el: Element)(implicit
+      pos1: Position,
       webdriver1: WebDriver,
       patienceConfig1: PatienceConfig
   ) = this(el.underlying)(pos1, webdriver1, patienceConfig1)
@@ -487,8 +501,8 @@ class Combobox(underlying: WebElement)(
 
 object Combobox {
 
-  def findAll()(
-      implicit pos: Position,
+  def findAll()(implicit
+      pos: Position,
       webdriver: WebDriver,
       patienceConfig: PatienceConfig
   ): List[Combobox] = {
@@ -500,8 +514,8 @@ object Combobox {
     el.map(e => new Combobox(e.underlying))
   }
 
-  def find(name: String)(
-      implicit pos: Position,
+  def find(name: String)(implicit
+      pos: Position,
       webdriver: WebDriver,
       patienceConfig: PatienceConfig
   ): Combobox = {
@@ -518,14 +532,16 @@ object Combobox {
   * @constructor
   * @param underlying - the input element of the combobox
   */
-class DateTimePicker(underlying: WebElement)(
-    implicit pos: Position,
+class DateTimePicker(
+    underlying: WebElement
+)(implicit
+    pos: Position,
     webdriver: WebDriver,
     patienceConfig: PatienceConfig
 ) extends TextField(underlying) {
 
-  def this(el: Element)(
-      implicit pos1: Position,
+  def this(el: Element)(implicit
+      pos1: Position,
       webdriver1: WebDriver,
       patienceConfig1: PatienceConfig
   ) = this(el.underlying)(pos1, webdriver1, patienceConfig1)
@@ -537,8 +553,8 @@ class DateTimePicker(underlying: WebElement)(
     b.click
   }
 
-  def isSelectDatePopupVisible(
-      implicit pos1: Position,
+  def isSelectDatePopupVisible(implicit
+      pos1: Position,
       webdriver: WebDriver,
       patienceConfig: PatienceConfig
   ): Boolean = {
@@ -548,8 +564,8 @@ class DateTimePicker(underlying: WebElement)(
     !b.containsClass("rw-popup-transition-exited")
   }
 
-  def clickPreviousMonth(
-      implicit pos1: Position,
+  def clickPreviousMonth(implicit
+      pos1: Position,
       webdriver: WebDriver,
       patienceConfig: PatienceConfig
   ): Unit = {
@@ -561,8 +577,8 @@ class DateTimePicker(underlying: WebElement)(
     b.click
   }
 
-  def clickNextMonth(
-      implicit pos1: Position,
+  def clickNextMonth(implicit
+      pos1: Position,
       webdriver: WebDriver,
       patienceConfig: PatienceConfig
   ): Unit = {
@@ -578,8 +594,8 @@ class DateTimePicker(underlying: WebElement)(
     * @return get all the days that are visible in calendar popup.
     * if the popup is not visible, then the empty list is returned.
     */
-  def getDays(
-      implicit pos1: Position,
+  def getDays(implicit
+      pos1: Position,
       webdriver: WebDriver,
       patienceConfig: PatienceConfig
   ): List[String] = {
@@ -595,8 +611,8 @@ class DateTimePicker(underlying: WebElement)(
     }.toList
   }
 
-  def clickDay(d: String)(
-      implicit pos1: Position,
+  def clickDay(d: String)(implicit
+      pos1: Position,
       webdriver: WebDriver,
       patienceConfig: PatienceConfig
   ): Unit = {
@@ -617,8 +633,8 @@ class DateTimePicker(underlying: WebElement)(
     b.clear()
   }
 
-  def isSelectTimePopupVisible(
-      implicit pos1: Position,
+  def isSelectTimePopupVisible(implicit
+      pos1: Position,
       webdriver: WebDriver,
       patienceConfig: PatienceConfig
   ): Boolean = {
@@ -632,8 +648,8 @@ class DateTimePicker(underlying: WebElement)(
     * @return get all the days that are visible in calendar popup.
     * if the popup is not visible, then the empty list is returned.
     */
-  def getTimes(
-      implicit pos1: Position,
+  def getTimes(implicit
+      pos1: Position,
       webdriver: WebDriver,
       patienceConfig: PatienceConfig
   ): List[String] = {
@@ -647,8 +663,8 @@ class DateTimePicker(underlying: WebElement)(
     }.toList
   }
 
-  def clickTime(d: String)(
-      implicit pos1: Position,
+  def clickTime(d: String)(implicit
+      pos1: Position,
       webdriver: WebDriver,
       patienceConfig: PatienceConfig
   ): Unit = {
@@ -666,8 +682,8 @@ class DateTimePicker(underlying: WebElement)(
 
 object DateTimePicker {
 
-  def findAll()(
-      implicit pos: Position,
+  def findAll()(implicit
+      pos: Position,
       webdriver: WebDriver,
       patienceConfig: PatienceConfig
   ): List[DateTimePicker] = {
@@ -679,8 +695,8 @@ object DateTimePicker {
     el.map(e => new DateTimePicker(e.underlying))
   }
 
-  def find(name: String)(
-      implicit pos: Position,
+  def find(name: String)(implicit
+      pos: Position,
       webdriver: WebDriver,
       patienceConfig: PatienceConfig
   ): DateTimePicker = {

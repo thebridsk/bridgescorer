@@ -17,8 +17,8 @@ object Page {
   type AnyPage = Page[_]
 }
 
-abstract class Page[+T <: Page[T]]()(
-    implicit webDriver: WebDriver,
+abstract class Page[+T <: Page[T]]()(implicit
+    webDriver: WebDriver,
     pageCreated: SourcePosition
 ) {
   self: T =>
@@ -164,15 +164,14 @@ abstract class Page[+T <: Page[T]]()(
     * @return a map of id -> Element
     * @throws TestFailedException if all the buttons are not found
     */
-  def getButtons(ids: String*)(
-      implicit patienceConfig: PatienceConfig,
+  def getButtons(ids: String*)(implicit
+      patienceConfig: PatienceConfig,
       pos: Position
   ): Map[String, Element] = {
     eventually { findButtons(ids: _*) }
   }
 
   /**
-    *
     */
   def findAllButtons(implicit pos: Position): Map[String, Element] = {
     findElements(By.cssSelector("button")).asScala
@@ -181,7 +180,6 @@ abstract class Page[+T <: Page[T]]()(
   }
 
   /**
-    *
     */
   def findAllSelectedButtons(implicit pos: Position): Map[String, Element] = {
     findElements(By.cssSelector("button.baseButtonSelected")).asScala
@@ -192,14 +190,15 @@ abstract class Page[+T <: Page[T]]()(
   /**
     * Get all the buttons, at least one button is returned.
     */
-  def getAllButtons(
-      implicit patienceConfig: PatienceConfig,
+  def getAllButtons(implicit
+      patienceConfig: PatienceConfig,
       pos: Position
-  ): Map[String, Element] = eventually {
-    val bs = findAllButtons
-    bs.size must not be (0)
-    bs
-  }
+  ): Map[String, Element] =
+    eventually {
+      val bs = findAllButtons
+      bs.size must not be (0)
+      bs
+    }
 
   def clickButton(
       bid: String
@@ -277,8 +276,8 @@ abstract class Page[+T <: Page[T]]()(
     * @return the <code>Element</code> selected by this query
     * @throws TestFailedException if the input was not found or if the specified <code>itype</code> don't match or if the element tag is not <code>input</code>
     */
-  def findInput(iname: String, itype: String)(
-      implicit pos: Position
+  def findInput(iname: String, itype: String)(implicit
+      pos: Position
   ): Element = {
     try {
       val input = webDriver.findElement(new ByName(iname))
@@ -393,8 +392,11 @@ abstract class Page[+T <: Page[T]]()(
       input
     } catch {
       case x: Throwable =>
-        testlog.fine(s"${pos.line} findAllInput(${itype}): exception ${x
-          .toString()}, page created ${pageCreated.line}", x)
+        testlog.fine(
+          s"${pos.line} findAllInput(${itype}): exception ${x
+            .toString()}, page created ${pageCreated.line}",
+          x
+        )
 //        x.printStackTrace(System.out)
         throw x
     }
@@ -403,24 +405,26 @@ abstract class Page[+T <: Page[T]]()(
   /**
     * Get all the input fields of the specified type
     */
-  def getAllTextInputs()(
-      implicit patienceConfig: PatienceConfig,
+  def getAllTextInputs()(implicit
+      patienceConfig: PatienceConfig,
       pos: Position
-  ): Map[String, TextField] = eventually {
-    val bs = findAllTextInputs()
-    bs
-  }
+  ): Map[String, TextField] =
+    eventually {
+      val bs = findAllTextInputs()
+      bs
+    }
 
   /**
     * Get all the input fields of the specified type
     */
-  def getAllInputs(itype: Option[String] = None)(
-      implicit patienceConfig: PatienceConfig,
+  def getAllInputs(itype: Option[String] = None)(implicit
+      patienceConfig: PatienceConfig,
       pos: Position
-  ): Map[String, Element] = eventually {
-    val bs = findAllInputs(itype)
-    bs
-  }
+  ): Map[String, Element] =
+    eventually {
+      val bs = findAllInputs(itype)
+      bs
+    }
 
   /**
     * Find all input field
@@ -443,8 +447,8 @@ abstract class Page[+T <: Page[T]]()(
     * @return the <code>Element</code> selected by this query
     * @throws TestFailedException if any of the input fields were not found
     */
-  def findInputs(itype: String, iname: String*)(
-      implicit pos: Position,
+  def findInputs(itype: String, iname: String*)(implicit
+      pos: Position,
       patienceConfig: PatienceConfig
   ): Map[String, Element] = {
     try {
@@ -487,8 +491,8 @@ abstract class Page[+T <: Page[T]]()(
     * @return the <code>Element</code> selected by this query
     * @throws TestFailedException if any of the input fields were not found
     */
-  def getTextInputs(iname: String*)(
-      implicit patienceConfig: PatienceConfig,
+  def getTextInputs(iname: String*)(implicit
+      patienceConfig: PatienceConfig,
       pos: Position
   ): Map[String, TextField] = {
     eventually { findTextInputs(iname: _*) }
@@ -503,8 +507,8 @@ abstract class Page[+T <: Page[T]]()(
     * @return the <code>Element</code> selected by this query
     * @throws TestFailedException if any of the input fields were not found
     */
-  def getInputs(itype: String, iname: String*)(
-      implicit patienceConfig: PatienceConfig,
+  def getInputs(itype: String, iname: String*)(implicit
+      patienceConfig: PatienceConfig,
       pos: Position
   ): Map[String, Element] = {
     eventually { findInputs(itype, iname: _*) }
@@ -656,16 +660,16 @@ abstract class Page[+T <: Page[T]]()(
     this
   }
 
-  def refresh(
-      implicit patienceConfig: PatienceConfig,
+  def refresh(implicit
+      patienceConfig: PatienceConfig,
       pos: Position
   ): this.type = {
     PageBrowser.refresh
     this
   }
 
-  def enter(
-      implicit patienceConfig: PatienceConfig,
+  def enter(implicit
+      patienceConfig: PatienceConfig,
       pos: Position
   ): this.type = {
     PageBrowser.enter
@@ -691,8 +695,8 @@ abstract class Page[+T <: Page[T]]()(
     * @param directory The directory where the screenshot is written to
     * @param filename The name of the file where the screenshot is written to.  It it doesn't end in ".png", then ".png" will be appended.
     */
-  def takeScreenshot(directory: String, filename: String)(
-      implicit pos: Position
+  def takeScreenshot(directory: String, filename: String)(implicit
+      pos: Position
   ): T = {
     PageBrowser.takeScreenshot(directory, filename)
     this
