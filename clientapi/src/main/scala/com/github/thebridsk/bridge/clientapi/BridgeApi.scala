@@ -13,10 +13,10 @@ import com.github.thebridsk.bridge.clientcommon.react.Tooltip
 import com.github.thebridsk.bridge.clientapi.pages.Pixels
 
 /**
- * @author werewolf
- */
+  * @author werewolf
+  */
 @JSExportTopLevel("BridgeApi")
-object BridgeApi {   // need to figure out how to use new way to call main
+object BridgeApi { // need to figure out how to use new way to call main
 
   sealed trait MyPages
   case object Home extends MyPages
@@ -38,38 +38,43 @@ object BridgeApi {   // need to figure out how to use new way to call main
 
   def initDone(): Unit = {
     if (loggerInitDone && defaultInitDone) startClient()
-    else logger.info(s"loggerInitDone=${loggerInitDone}, defaultInitDone=${defaultInitDone}")
+    else
+      logger.info(
+        s"loggerInitDone=${loggerInitDone}, defaultInitDone=${defaultInitDone}"
+      )
   }
 
   def main(args: Array[String]): Unit = main()
 
   @JSExport
-  def main(): Unit = Alerter.tryitWithUnit {
+  def main(): Unit =
+    Alerter.tryitWithUnit {
 
-    if (BridgeDemo.isDemo) {
-      AjaxResult.setEnabled(false)
+      if (BridgeDemo.isDemo) {
+        AjaxResult.setEnabled(false)
+      }
+
+      Alerter.setupError()
+      Tooltip.init()
+
+      Init { () => loggerInitDone = true; initDone() }
+      Pixels.init { () => defaultInitDone = true; initDone() }
+
     }
 
-    Alerter.setupError()
-    Tooltip.init()
+  def startClient(): Unit =
+    Alerter.tryitWithUnit {
+      logger.info("Bridge Scorer Starting")
 
-    Init { () => loggerInitDone = true; initDone() }
-    Pixels.init { () => defaultInitDone = true; initDone() }
-
-  }
-
-  def startClient(): Unit = Alerter.tryitWithUnit {
-    logger.info("Bridge Scorer Starting" )
-
-    try {
-      val div = Info.getElement()
-      val sdiv = div.nodeName
-      logger.info("Bridge Scorer Starting, rendering into "+sdiv )
-      AppRouter().router().renderIntoDOM(div)
-    } catch {
-      case t: Throwable =>
-        logger.info("Uncaught exception starting up: "+t.toString(),t)
-        t.printStackTrace()
+      try {
+        val div = Info.getElement()
+        val sdiv = div.nodeName
+        logger.info("Bridge Scorer Starting, rendering into " + sdiv)
+        AppRouter().router().renderIntoDOM(div)
+      } catch {
+        case t: Throwable =>
+          logger.info("Uncaught exception starting up: " + t.toString(), t)
+          t.printStackTrace()
+      }
     }
-  }
 }

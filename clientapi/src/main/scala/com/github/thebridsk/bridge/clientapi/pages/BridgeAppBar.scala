@@ -37,7 +37,6 @@ import com.github.thebridsk.bridge.clientcommon.material.icons.LightDark
 import com.github.thebridsk.bridge.clientcommon.fullscreen.Values
 import com.github.thebridsk.bridge.clientcommon.fullscreen.Fullscreen
 
-
 /**
   * A simple AppBar for the Bridge client.
   *
@@ -107,13 +106,13 @@ object BridgeAppBarInternal {
     *
     * I'd like this class to be private, but the instantiation of component
     * will cause State to leak.
-    *
     */
   case class State(
       anchorMoreEl: js.UndefOr[Element] = js.undefined
   ) {
 
-    def openMoreMenu(n: Node): State = copy(anchorMoreEl = n.asInstanceOf[Element])
+    def openMoreMenu(n: Node): State =
+      copy(anchorMoreEl = n.asInstanceOf[Element])
     def closeMoreMenu(): State = copy(anchorMoreEl = js.undefined)
   }
 
@@ -122,14 +121,12 @@ object BridgeAppBarInternal {
     *
     * I'd like this class to be private, but the instantiation of component
     * will cause Backend to leak.
-    *
     */
   class Backend(scope: BackendScope[Props, State]) {
 
     def handleMoreClick(event: ReactEvent): Unit =
-      event.extract(_.currentTarget)(
-        currentTarget =>
-          scope.modState(s => s.openMoreMenu(currentTarget)).runNow()
+      event.extract(_.currentTarget)(currentTarget =>
+        scope.modState(s => s.openMoreMenu(currentTarget)).runNow()
       )
     def handleMoreCloseClick(event: ReactEvent): Unit =
       scope.modState(s => s.closeMoreMenu()).runNow()
@@ -209,7 +206,7 @@ object BridgeAppBarInternal {
       }
     }
 
-    def toggleFullscreen( event: ReactEvent ): Unit = {
+    def toggleFullscreen(event: ReactEvent): Unit = {
       import com.github.thebridsk.bridge.clientcommon.fullscreen.Implicits._
       val body = document.documentElement
       val doc = document
@@ -222,7 +219,9 @@ object BridgeAppBarInternal {
           logger.info(s"browser requesting fullscreen on body")
           body.requestFullscreen()
         }
-        scalajs.js.timers.setTimeout(500) { scope.withEffectsImpure.forceUpdate }
+        scalajs.js.timers.setTimeout(500) {
+          scope.withEffectsImpure.forceUpdate
+        }
       } else {
         logger.info(s"fullscreen is disabled")
       }
@@ -323,7 +322,8 @@ object BridgeAppBarInternal {
         List(
           <.div(
             baseStyles.appBarTitle,
-            <.div( baseStyles.appBarTitleWhenFullscreen ).when(isfullscreen && Values.isIpad),
+            <.div(baseStyles.appBarTitleWhenFullscreen)
+              .when(isfullscreen && Values.isIpad),
             !props.mainMenu.isEmpty ?= MuiIconButton(
               id = "MainMenu",
               onClick = props.handleMainClick,
@@ -468,17 +468,16 @@ object BridgeAppBarInternal {
 
     val didMount: Callback = Callback {
       mounted = true
-      Fullscreen.addListener("fullscreenchange",fullscreenCB)
+      Fullscreen.addListener("fullscreenchange", fullscreenCB)
     }
 
     val willUnmount: Callback = Callback {
       mounted = false
-      Fullscreen.removeListener("fullscreenchange",fullscreenCB)
+      Fullscreen.removeListener("fullscreenchange", fullscreenCB)
     }
   }
 
-  private[pages]
-  val component = ScalaComponent
+  private[pages] val component = ScalaComponent
     .builder[Props]("BridgeAppBar")
     .initialStateFromProps { props =>
       State()
