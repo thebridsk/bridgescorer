@@ -11,26 +11,28 @@ import com.github.thebridsk.materialui.icons
 import com.github.thebridsk.materialui.MuiMenuItem
 import com.github.thebridsk.bridge.clientcommon.logger.Info
 
-
 /**
- * A skeleton component.
- *
- * To use, just code the following:
- *
- * <pre><code>
- * BeepComponent( BeepComponent.Props( ... ) )
- * </code></pre>
- *
- * @author werewolf
- */
+  * A skeleton component.
+  *
+  * To use, just code the following:
+  *
+  * <pre><code>
+  * BeepComponent( BeepComponent.Props( ... ) )
+  * </code></pre>
+  *
+  * @author werewolf
+  */
 object BeepComponent {
   import BeepComponentInternal._
 
-  case class Props( alwaysShow: ()=>Boolean )
+  case class Props(alwaysShow: () => Boolean)
 
   private var playEnabled: Boolean = false
 
-  def apply( alwaysShow: ()=>Boolean ) = component(new Props(alwaysShow))  // scalafix:ok ExplicitResultTypes; ReactComponent
+  def apply(alwaysShow: () => Boolean) =
+    component(
+      new Props(alwaysShow)
+    ) // scalafix:ok ExplicitResultTypes; ReactComponent
 
   private[react] def enableBeep() = {
     playEnabled = true
@@ -54,7 +56,8 @@ object BeepComponent {
   def beep(): Unit = {
     if (playEnabled) {
       try {
-        val audio = Info.getElement("audioPlayer").asInstanceOf[HTMLAudioElement]
+        val audio =
+          Info.getElement("audioPlayer").asInstanceOf[HTMLAudioElement]
         audio.play()
         log.info("beep")
       } catch {
@@ -66,30 +69,29 @@ object BeepComponent {
     }
   }
 
-  def toggle(cb: ()=>Unit)( e: ReactEvent ): Unit = {
+  def toggle(cb: () => Unit)(e: ReactEvent): Unit = {
     toggleBeep()
     cb()
   }
 
-  def getMenuItem(cb: ()=>Unit): VdomNode = {
+  def getMenuItem(cb: () => Unit): VdomNode = {
     MuiMenuItem(
-        id = "Beep",
-        onClick = toggle(cb) _,
-        classes = js.Dictionary("root" -> "mainMenuItem")
+      id = "Beep",
+      onClick = toggle(cb) _,
+      classes = js.Dictionary("root" -> "mainMenuItem")
     )(
-        "Beep",
-        {
+      "Beep", {
 //          val color = if (playEnabled) SvgColor.inherit else SvgColor.disabled
 //          icons.Check(
 //              color=color,
 //              classes = js.Dictionary("root" -> "mainMenuItemIcon")
 //          )
-          if (playEnabled) {
-            icons.CheckBox()
-          } else {
-            icons.CheckBoxOutlineBlank()
-          }
+        if (playEnabled) {
+          icons.CheckBox()
+        } else {
+          icons.CheckBoxOutlineBlank()
         }
+      }
     )
   }
 }
@@ -100,21 +102,19 @@ object BeepComponentInternal {
   val log: Logger = Logger("bridge.BeepComponent")
 
   /**
-   * Internal state for rendering the component.
-   *
-   * I'd like this class to be private, but the instantiation of component
-   * will cause State to leak.
-   *
-   */
-  case class State( displayButtons: Boolean = true )
+    * Internal state for rendering the component.
+    *
+    * I'd like this class to be private, but the instantiation of component
+    * will cause State to leak.
+    */
+  case class State(displayButtons: Boolean = true)
 
   /**
-   * Internal state for rendering the component.
-   *
-   * I'd like this class to be private, but the instantiation of component
-   * will cause Backend to leak.
-   *
-   */
+    * Internal state for rendering the component.
+    *
+    * I'd like this class to be private, but the instantiation of component
+    * will cause Backend to leak.
+    */
   class Backend(scope: BackendScope[Props, State]) {
 
     val enablePlay: Callback = scope.modState(s => {
@@ -127,22 +127,26 @@ object BeepComponentInternal {
       s.copy(displayButtons = false)
     })
 
-    def render( props: Props, state: State ) = { // scalafix:ok ExplicitResultTypes; React
+    def render(props: Props, state: State) = { // scalafix:ok ExplicitResultTypes; React
       <.div(
-        (props.alwaysShow()||state.displayButtons) ?= <.span(
-          AppButton("enableBeep","Enable Beeps", ^.onClick --> enablePlay, BaseStyles.highlight(selected = isPlayEnabled ) ),
-          AppButton("disableBeep","Disable Beeps", ^.onClick --> hideButtons)
+        (props.alwaysShow() || state.displayButtons) ?= <.span(
+          AppButton(
+            "enableBeep",
+            "Enable Beeps",
+            ^.onClick --> enablePlay,
+            BaseStyles.highlight(selected = isPlayEnabled)
+          ),
+          AppButton("disableBeep", "Disable Beeps", ^.onClick --> hideButtons)
         )
       )
     }
   }
 
-  private[react]
-  val component = ScalaComponent.builder[Props]("BeepComponent")
-                            .initialStateFromProps { props => State() }
-                            .backend(new Backend(_))
-                            .renderBackend
-                            .build
+  private[react] val component = ScalaComponent
+    .builder[Props]("BeepComponent")
+    .initialStateFromProps { props => State() }
+    .backend(new Backend(_))
+    .renderBackend
+    .build
 
 }
-

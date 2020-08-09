@@ -7,8 +7,6 @@ import org.scalajs.dom.document
 import com.github.thebridsk.utilities.logging.Logger
 import com.github.thebridsk.bridge.clientcommon.dispatcher.Listenable
 
-
-
 @js.native
 trait DocumentFullscreen extends js.Object {
   val fullscreenEnabled: js.UndefOr[Boolean] = js.native
@@ -46,8 +44,12 @@ object Implicits {
     if (isIpad) {
       doc.webkitFullscreenEnabled.getOrElse {
         val body = document.body
-        val f = js.typeOf(body.asInstanceOf[js.Dynamic].requestFullscreen) == "function"
-        log.fine(s"On iPad, found requestFullscreen function on body object: $f")
+        val f = js.typeOf(
+          body.asInstanceOf[js.Dynamic].requestFullscreen
+        ) == "function"
+        log.fine(
+          s"On iPad, found requestFullscreen function on body object: $f"
+        )
         f
       }
     } else {
@@ -55,19 +57,21 @@ object Implicits {
     }
   }
 
-
-  implicit class DocumentFullscreenWrapper( private val document: Document ) extends AnyVal {
+  implicit class DocumentFullscreenWrapper(private val document: Document)
+      extends AnyVal {
 
     def doc: DocumentFullscreen = document.asInstanceOf[DocumentFullscreen]
 
     def fullscreenEnabled: Boolean = Implicits.isFullscreenEnabled
 
     def fullscreenElement: Element = {
-      if (isFullscreenEnabled) if (isIpad) doc.webkitFullscreenElement else doc.fullscreenElement
+      if (isFullscreenEnabled)
+        if (isIpad) doc.webkitFullscreenElement else doc.fullscreenElement
       else null
     }
     def exitFullscreen(): js.Promise[Unit] = {
-      if (isFullscreenEnabled) if (isIpad) doc.webkitExitFullscreen() else doc.exitFullscreen()
+      if (isFullscreenEnabled)
+        if (isIpad) doc.webkitExitFullscreen() else doc.exitFullscreen()
       else js.Promise.reject("fullscreen not enabled")
     }
 
@@ -77,13 +81,16 @@ object Implicits {
     }
   }
 
-  implicit class ElementFullscreenWrapper( private val element: Element ) extends AnyVal {
+  implicit class ElementFullscreenWrapper(private val element: Element)
+      extends AnyVal {
     import Values._
 
-    def elem: DocumentElementFullscreen = element.asInstanceOf[DocumentElementFullscreen]
+    def elem: DocumentElementFullscreen =
+      element.asInstanceOf[DocumentElementFullscreen]
 
     def requestFullscreen(): js.Promise[Unit] = {
-      if (isFullscreenEnabled) if (isIpad) elem.webkitRequestFullscreen() else elem.requestFullscreen()
+      if (isFullscreenEnabled)
+        if (isIpad) elem.webkitRequestFullscreen() else elem.requestFullscreen()
       else js.Promise.reject("fullscreen not enabled")
     }
 
@@ -104,15 +111,19 @@ object Fullscreen extends Listenable {
 
   init()
 
-  def setFullscreenElement( e: js.UndefOr[Element] ): Unit = {
+  def setFullscreenElement(e: js.UndefOr[Element]): Unit = {
     fullscreenElement = e
   }
 
-  val onFullScreenChange: js.Function1[js.Any,Unit] = { (x) =>
+  val onFullScreenChange: js.Function1[js.Any, Unit] = { (x) =>
     notify("fullscreenchange")
   }
 
   document.addEventListener("fullscreenchange", onFullScreenChange, false);
-  document.addEventListener("webkitfullscreenchange", onFullScreenChange, false);
+  document.addEventListener(
+    "webkitfullscreenchange",
+    onFullScreenChange,
+    false
+  );
   document.addEventListener("mozfullscreenchange", onFullScreenChange, false);
 }

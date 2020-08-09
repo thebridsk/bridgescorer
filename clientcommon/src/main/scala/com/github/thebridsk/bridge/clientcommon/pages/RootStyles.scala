@@ -4,9 +4,9 @@ import japgolly.scalajs.react.vdom.html_<^._
 
 object BaseStylesImplicits {
 
-  implicit class BooleanWrapper( private val b: Boolean ) extends AnyVal {
-    def toOption[T]( t: =>T ): Option[T] = if (b) Some(t) else None
-    def toList[T]( t: =>T ): List[T] = toOption(t).toList
+  implicit class BooleanWrapper(private val b: Boolean) extends AnyVal {
+    def toOption[T](t: => T): Option[T] = if (b) Some(t) else None
+    def toList[T](t: => T): List[T] = toOption(t).toList
   }
 
 }
@@ -18,16 +18,16 @@ object BaseStyles {
   val rootStyles = new RootStyles
   val tableStyles = new TableStyles
 
-  def cls( clsname: String ): TagMod = ^.className:=clsname
+  def cls(clsname: String): TagMod = ^.className := clsname
 
   /**
-   * Returns a TagMod with the selected classnames in the classname attribute.  If none are selected, then
-   * normal classname is returned.
-   * @param selected
-   * @param requiredName
-   * @param required
-   * @param requiredNotNext
-   */
+    * Returns a TagMod with the selected classnames in the classname attribute.  If none are selected, then
+    * normal classname is returned.
+    * @param selected
+    * @param requiredName
+    * @param required
+    * @param requiredNotNext
+    */
   def highlight(
       selected: Boolean = false,
       requiredName: Boolean = false,
@@ -37,13 +37,13 @@ object BaseStyles {
       color3: Boolean = false
   ): TagMod = {
     val styles =
-      color2.toList(baseStyles.baseColor2):::
-      color3.toList(baseStyles.baseColor3):::
-      selected.toList(baseStyles.buttonSelected):::
-      requiredName.toList(baseStyles.requiredName):::
-      required.toList(baseStyles.required):::
-      requiredNotNext.toList(baseStyles.requiredNotNext):::
-      Nil
+      color2.toList(baseStyles.baseColor2) :::
+        color3.toList(baseStyles.baseColor3) :::
+        selected.toList(baseStyles.buttonSelected) :::
+        requiredName.toList(baseStyles.requiredName) :::
+        required.toList(baseStyles.required) :::
+        requiredNotNext.toList(baseStyles.requiredNotNext) :::
+        Nil
 
     if (styles.isEmpty) baseStyles.normal
     else styles.toTagMod
@@ -60,12 +60,18 @@ class BaseStyles {
   val baseColor3: TagMod = cls("baseColor3")
 
   val defaultButton: TagMod = cls("baseDefaultButton baseFontTextLarge")
-  val appButton: TagMod = cls("baseAppButton baseDefaultButton baseFontTextLarge")
+  val appButton: TagMod = cls(
+    "baseAppButton baseDefaultButton baseFontTextLarge"
+  )
   val nameButton: TagMod = cls("baseNameButton")
 
-  val footerButton: TagMod = cls("baseFooterButton baseDefaultButton baseFontTextLarge")
+  val footerButton: TagMod = cls(
+    "baseFooterButton baseDefaultButton baseFontTextLarge"
+  )
 
-  val appButton100: TagMod = cls("baseAppButton100 baseAppButton baseDefaultButton baseFontTextLarge")
+  val appButton100: TagMod = cls(
+    "baseAppButton100 baseAppButton baseDefaultButton baseFontTextLarge"
+  )
 
   val baseButtonSelected = "baseButtonSelected"
   val buttonSelected: TagMod = cls(baseButtonSelected)
@@ -88,16 +94,18 @@ class BaseStyles {
   val requiredNotNext: TagMod = cls(baseRequiredNotNext)
 
   /**
-   * to gray out the entire browser page for displaying a popup
-   */
+    * to gray out the entire browser page for displaying a popup
+    */
   val divPopupOverlay: TagMod = cls("baseDivPopupOverlay")
 
   /**
-   * The div of the popup
-   */
+    * The div of the popup
+    */
   val divPopup: TagMod = cls("baseDivPopup baseFontTextLarge")
 
-  val divPopupOKCancelDiv: TagMod = cls("baseDivPopupOKCancelDiv baseFontTextLarge")
+  val divPopupOKCancelDiv: TagMod = cls(
+    "baseDivPopupOKCancelDiv baseFontTextLarge"
+  )
 
   val divPopupOKCancelBody: TagMod = cls("baseDivPopupOKCancelBody")
 
@@ -166,7 +174,9 @@ class RootStyles {
 
   val gameDiv: TagMod = cls("rootGameDiv")
 
-  val playButton: TagMod = cls("rootPlayButton baseAppButton100 baseAppButton baseDefaultButton baseFontTextLarge")
+  val playButton: TagMod = cls(
+    "rootPlayButton baseAppButton100 baseAppButton baseDefaultButton baseFontTextLarge"
+  )
 
   val testHandsDiv: TagMod = cls("rootTestHandsDiv")
 

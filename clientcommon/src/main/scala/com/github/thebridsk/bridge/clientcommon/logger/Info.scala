@@ -10,8 +10,8 @@ import japgolly.scalajs.react.extra.router.BaseUrl
 import japgolly.scalajs.react.vdom.TagMod
 
 /**
- * @author werewolf
- */
+  * @author werewolf
+  */
 object Info {
   private val log = Logger("bridge.InfoPage")
 
@@ -41,31 +41,36 @@ object Info {
       ("Screen.colorDepth", screen.colorDepth),
       ("Screen.pixelDepth", screen.pixelDepth),
       ("typeOf(StyleMedia)", js.typeOf(window.styleMedia)),
-      ("StyleMedia.type", (if (styleMediaDefined) styleMedia.`type`; else "???")),
+      (
+        "StyleMedia.type",
+        (if (styleMediaDefined) styleMedia.`type`; else "???")
+      ),
       ("isTouchEnabled", isTouchEnabled),
       ("closed", window.asInstanceOf[js.Dynamic].closed)
 //      ("", "")
-    ).map{ case (key,value) =>
-      val v=value.toString()
+    ).map {
+      case (key, value) =>
+        val v = value.toString()
 //      log.info(s"""  ${key} = ${v}""")
-      (key,v)
+        (key, v)
     }
-    log.info(s"InfoPage\n  ${i.map{ e => s"${e._1} = ${e._2}" }.mkString("\n  ")}")
+    log.info(
+      s"InfoPage\n  ${i.map { e => s"${e._1} = ${e._2}" }.mkString("\n  ")}"
+    )
     i
   }
 
   /**
-   * window.orientation: (from http://www.williammalone.com/articles/html5-javascript-ios-orientation/)
-   *   0 - portrait
-   * 180 - portrait, upsidedown
-   *  90 - landscape, counterclockwise
-   * -90 - landscape, clockwise
-   *
-   */
+    * window.orientation: (from http://www.williammalone.com/articles/html5-javascript-ios-orientation/)
+    *   0 - portrait
+    * 180 - portrait, upsidedown
+    *  90 - landscape, counterclockwise
+    * -90 - landscape, clockwise
+    */
   def getOrientation: Option[Int] = {
     js.Dynamic.global.window.orientation.toString match {
       case "undefined" => None
-      case s => Some(s.toInt)
+      case s           => Some(s.toInt)
     }
   }
 
@@ -83,7 +88,7 @@ object Info {
     val h = s.height.asInstanceOf[Int]
     val w = s.width.asInstanceOf[Int]
     val p = js.Dynamic.global.window.navigator.platform.asInstanceOf[String]
-    (p=="Win32") && ((w==1368 && h==768)||(w==768 && h==1368))
+    (p == "Win32") && ((w == 1368 && h == 768) || (w == 768 && h == 1368))
   }
 
   def isTouchEnabled: Boolean = {
@@ -99,28 +104,28 @@ object Info {
   }
 
   val location = document.location
-  val hostUrl: String = location.protocol+"//"+location.host
-  val baseUrl = new BaseUrl(hostUrl+location.pathname)
+  val hostUrl: String = location.protocol + "//" + location.host
+  val baseUrl = new BaseUrl(hostUrl + location.pathname)
 
   /**
-   * Get the element with the specified ID
-   * @param id
-   * @return the HTMLElement object
-   * @throws IllegalStateException if the element was not found.
-   */
-  def getElement( id: String = "BridgeApp" ): HTMLElement = {
+    * Get the element with the specified ID
+    * @param id
+    * @return the HTMLElement object
+    * @throws IllegalStateException if the element was not found.
+    */
+  def getElement(id: String = "BridgeApp"): HTMLElement = {
 
     val div = document.getElementById(id)
     if (div == null) {
-      log.warning("Did not find element with id "+id)
-      throw new IllegalStateException("Did not find a element with id "+id)
+      log.warning("Did not find element with id " + id)
+      throw new IllegalStateException("Did not find a element with id " + id)
     } else {
       div.asInstanceOf[HTMLElement]
     }
 
   }
 
-  def findDiv( root: HTMLElement, id: String ) : Node = {
+  def findDiv(root: HTMLElement, id: String): Node = {
     val children = root.childNodes
     val len = children.length
 

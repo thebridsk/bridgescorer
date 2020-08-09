@@ -11,10 +11,10 @@ trait DateTimePickerComponentProperty extends js.Object {
   val name: js.UndefOr[String] = js.native
   val value: js.UndefOr[Date] = js.native
   val defaultValue: js.UndefOr[Date] = js.native
-  val onChange: js.UndefOr[Date=>Unit] = js.native
+  val onChange: js.UndefOr[Date => Unit] = js.native
   val currentDate: js.UndefOr[Date] = js.native
   val defaultCurrentDate: js.UndefOr[Date] = js.native
-  val onCurrentDateChange: js.UndefOr[Date=>Unit] = js.native
+  val onCurrentDateChange: js.UndefOr[Date => Unit] = js.native
   val autoFocus: js.UndefOr[Boolean] = js.native
   val culture: js.UndefOr[String] = js.native
   val date: js.UndefOr[Boolean] = js.native
@@ -36,31 +36,32 @@ trait DateTimePickerComponentProperty extends js.Object {
 }
 
 object DateTimePickerComponentProperty {
-  def apply(name: String,
-            value: Option[Date] = None,
-            defaultValue: Option[Date] = None,
-            onChange: Option[Date=>Unit] = None,
-            currentDate: Option[Date] = None,
-            defaultCurrentDate: Option[Date] = None,
-            onCurrentDateChange: Option[Date=>Unit] = None,
-            autoFocus: Boolean = false,
-            culture: Option[String] = None,
-            date: Boolean = true,
-            disabled: Boolean = false,
-            dropUp: Boolean = false,
-            editFormat: Option[String] = None,
-            format: Option[String] = None,
-            max: Option[Date] = None,
-            min: Option[Date] = None,
-            messages: Option[js.Object] = None,
-            open: Option[js.Any] = None,
-            parse: Option[js.Any] = None,
-            placeHolder: Option[String] = None,
-            popupTransition: Option[String] = None,
-            readOnly: Boolean = false,
-            step: Option[Int] = None,
-            time: Boolean = true,
-            containerClassName: Option[String] = None
+  def apply(
+      name: String,
+      value: Option[Date] = None,
+      defaultValue: Option[Date] = None,
+      onChange: Option[Date => Unit] = None,
+      currentDate: Option[Date] = None,
+      defaultCurrentDate: Option[Date] = None,
+      onCurrentDateChange: Option[Date => Unit] = None,
+      autoFocus: Boolean = false,
+      culture: Option[String] = None,
+      date: Boolean = true,
+      disabled: Boolean = false,
+      dropUp: Boolean = false,
+      editFormat: Option[String] = None,
+      format: Option[String] = None,
+      max: Option[Date] = None,
+      min: Option[Date] = None,
+      messages: Option[js.Object] = None,
+      open: Option[js.Any] = None,
+      parse: Option[js.Any] = None,
+      placeHolder: Option[String] = None,
+      popupTransition: Option[String] = None,
+      readOnly: Boolean = false,
+      step: Option[Int] = None,
+      time: Boolean = true,
+      containerClassName: Option[String] = None
   ): DateTimePickerComponentProperty = {
     val p = js.Dynamic.literal()
 
@@ -105,64 +106,70 @@ object DateTimePicker {
 //  @js.native
 //  object ReactWidgetsDateTimePicker extends js.Object
 
-  val component = JsComponent[DateTimePickerComponentProperty, Children.None, Null](reactwidgets.DateTimePicker)  // scalafix:ok ExplicitResultTypes; ReactComponent
+  val component =
+    JsComponent[DateTimePickerComponentProperty, Children.None, Null](
+      reactwidgets.DateTimePicker
+    ) // scalafix:ok ExplicitResultTypes; ReactComponent
 
-  def apply(name: String,
-            value: Option[Date] = None,
-            defaultValue: Option[Date] = None,
-            onChange: Option[Date=>Unit] = None,
-            currentDate: Option[Date] = None,
-            defaultCurrentDate: Option[Date] = None,
-            onCurrentDateChange: Option[Date=>Unit] = None,
-            autoFocus: Boolean = false,
-            culture: Option[String] = None,
-            date: Boolean = true,
-            disabled: Boolean = false,
-            dropUp: Boolean = false,
-            editFormat: Option[String] = None,
-            format: Option[String] = None,
-            max: Option[Date] = None,
-            min: Option[Date] = None,
-            messages: Option[js.Object] = None,
-            open: Option[js.Any] = None,
-            parse: Option[js.Any] = None,
-            placeHolder: Option[String] = None,
-            popupTransition: Option[String] = None,
-            readOnly: Boolean = false,
-            step: Option[Int] = None,
-            time: Boolean = true,
-            containerClassName: Option[String] = Some(BaseStyles.baseStyles.calendarLightDarkClass)
-           ) = {  // scalafix:ok ExplicitResultTypes; ReactComponent
+  def apply(
+      name: String,
+      value: Option[Date] = None,
+      defaultValue: Option[Date] = None,
+      onChange: Option[Date => Unit] = None,
+      currentDate: Option[Date] = None,
+      defaultCurrentDate: Option[Date] = None,
+      onCurrentDateChange: Option[Date => Unit] = None,
+      autoFocus: Boolean = false,
+      culture: Option[String] = None,
+      date: Boolean = true,
+      disabled: Boolean = false,
+      dropUp: Boolean = false,
+      editFormat: Option[String] = None,
+      format: Option[String] = None,
+      max: Option[Date] = None,
+      min: Option[Date] = None,
+      messages: Option[js.Object] = None,
+      open: Option[js.Any] = None,
+      parse: Option[js.Any] = None,
+      placeHolder: Option[String] = None,
+      popupTransition: Option[String] = None,
+      readOnly: Boolean = false,
+      step: Option[Int] = None,
+      time: Boolean = true,
+      containerClassName: Option[String] = Some(
+        BaseStyles.baseStyles.calendarLightDarkClass
+      )
+  ) = { // scalafix:ok ExplicitResultTypes; ReactComponent
 
 //    logger.info("DateTimePicker: msgEmptyList="+msgEmptyList+", msgEmptyFilter="+msgEmptyFilter)
 
     val props = DateTimePickerComponentProperty(
-                  name,
-                  value,
-                  defaultValue,
-                  onChange,
-                  currentDate,
-                  defaultCurrentDate,
-                  onCurrentDateChange,
-                  autoFocus,
-                  culture,
-                  date,
-                  disabled,
-                  dropUp,
-                  editFormat,
-                  format,
-                  max,
-                  min,
-                  messages,
-                  open,
-                  parse,
-                  placeHolder,
-                  popupTransition,
-                  readOnly,
-                  step,
-                  time,
-                  containerClassName
-                )
+      name,
+      value,
+      defaultValue,
+      onChange,
+      currentDate,
+      defaultCurrentDate,
+      onCurrentDateChange,
+      autoFocus,
+      culture,
+      date,
+      disabled,
+      dropUp,
+      editFormat,
+      format,
+      max,
+      min,
+      messages,
+      open,
+      parse,
+      placeHolder,
+      popupTransition,
+      readOnly,
+      step,
+      time,
+      containerClassName
+    )
 
     component(props)
   }

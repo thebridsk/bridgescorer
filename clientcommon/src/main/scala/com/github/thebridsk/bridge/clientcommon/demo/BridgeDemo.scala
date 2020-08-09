@@ -4,12 +4,12 @@ import scala.scalajs.js.annotation.JSExportTopLevel
 import scala.scalajs.js
 
 /**
- * @author werewolf
- */
+  * @author werewolf
+  */
 @JSExportTopLevel("BridgeDemo")
-object BridgeDemo {   // need to figure out how to use new way to call main
+object BridgeDemo { // need to figure out how to use new way to call main
 
-  def setDemo( demo: Boolean ): Unit = {
+  def setDemo(demo: Boolean): Unit = {
     // val g = js.Dynamic.global.asInstanceOf[js.Dictionary[Boolean]]
     // g("demo") = demo
     js.Dynamic.global.demo = demo

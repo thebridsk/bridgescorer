@@ -9,8 +9,8 @@ import com.github.thebridsk.bridge.data.websocket.DuplexProtocol.LogEntryV2
 import play.api.libs.json.KeyWrites
 
 /**
- * @author werewolf
- */
+  * @author werewolf
+  */
 
 //private object BridgeRestClientImplicitsPrickle {
 //  import prickle._
@@ -35,8 +35,8 @@ import play.api.libs.json.KeyWrites
 
 object Implicits {
 
-  implicit class BooleanStream( private val b: Boolean ) extends AnyVal {
-    def option[T]( f: =>T ): Option[T] = if (b) Some(f) else None
+  implicit class BooleanStream(private val b: Boolean) extends AnyVal {
+    def option[T](f: => T): Option[T] = if (b) Some(f) else None
   }
 
   implicit val stringKeyWrites: KeyWrites[String] = new KeyWrites[String] {
@@ -48,7 +48,10 @@ object Implicits {
 import Implicits._
 import scala.concurrent.ExecutionContext.Implicits.global
 
-object RestClientLogEntryV2 extends RestClient[LogEntryV2,String]("/v1/logger")
-object RestClientLoggerConfig extends RestClient[LoggerConfig,String]("/v1/rest/loggerConfig")
-object RestClientServerURL extends RestClient[ServerURL,String]("/v1/rest/serverurls")
-object RestClientServerVersion extends RestClient[ServerVersion,String]("/v1/rest/serverversion")
+object RestClientLogEntryV2 extends RestClient[LogEntryV2, String]("/v1/logger")
+object RestClientLoggerConfig
+    extends RestClient[LoggerConfig, String]("/v1/rest/loggerConfig")
+object RestClientServerURL
+    extends RestClient[ServerURL, String]("/v1/rest/serverurls")
+object RestClientServerVersion
+    extends RestClient[ServerVersion, String]("/v1/rest/serverversion")

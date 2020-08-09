@@ -13,27 +13,32 @@ class SendToWebsocketHandler extends Handler with ServerHandler {
 
   var duplexPipe: Option[DuplexPipeForLogging] = None
 
-  def getDuplexPipe(): DuplexPipeForLogging = duplexPipe match {
-    case Some(d) => d
-    case None =>
-      val url = Info.hostUrl.replaceFirst("http", "ws") + "/v1/logger/ws"
-      val d = DuplexPipeForLogging( url );
-      d.addListener(new DuplexPipeForLogging.Listener {
-        def onMessage( msg: DuplexProtocol.DuplexMessage ) = {
-          msg match {
-            case DuplexProtocol.ErrorResponse(data, seq ) =>
-              SendToWebsocketHandler.log.severe("Unexpected data on logger websocket: "+data)
-            case x =>
-              SendToWebsocketHandler.log.severe("Unexpected data on logger websocket: "+x)
+  def getDuplexPipe(): DuplexPipeForLogging =
+    duplexPipe match {
+      case Some(d) => d
+      case None =>
+        val url = Info.hostUrl.replaceFirst("http", "ws") + "/v1/logger/ws"
+        val d = DuplexPipeForLogging(url);
+        d.addListener(new DuplexPipeForLogging.Listener {
+          def onMessage(msg: DuplexProtocol.DuplexMessage) = {
+            msg match {
+              case DuplexProtocol.ErrorResponse(data, seq) =>
+                SendToWebsocketHandler.log.severe(
+                  "Unexpected data on logger websocket: " + data
+                )
+              case x =>
+                SendToWebsocketHandler.log.severe(
+                  "Unexpected data on logger websocket: " + x
+                )
+            }
           }
-        }
-      })
-      duplexPipe = Some(d)
-      d
-  }
+        })
+        duplexPipe = Some(d)
+        d
+    }
 
-  def logIt( traceMsg: TraceMsg ): Unit = {
-    getDuplexPipe().sendlog( traceMsgToLogEntryV2(traceMsg))
+  def logIt(traceMsg: TraceMsg): Unit = {
+    getDuplexPipe().sendlog(traceMsgToLogEntryV2(traceMsg))
   }
 
 }

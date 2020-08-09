@@ -18,8 +18,8 @@ import scala.util.matching.Regex
 
 trait InitController {
 
-  def setUseRestToServer( b: Boolean ): Unit = {}
-  def setUseSSEFromServer( b: Boolean ): Unit = {}
+  def setUseRestToServer(b: Boolean): Unit = {}
+  def setUseSSEFromServer(b: Boolean): Unit = {}
 
 }
 
@@ -51,7 +51,6 @@ trait InitController {
   * loggername    :=   // the loggername
   * </pre></code>
   *
-  *
   * @author werewolf
   */
 object Init {
@@ -67,7 +66,7 @@ object Init {
         }
       }
       val level = BridgeDemo.demoLogLevel
-      if (level != "") setLoggerLevel("[root]",level)
+      if (level != "") setLoggerLevel("[root]", level)
     }
   }
   lazy val logger: Logger = Logger("comm.logger.Init")
@@ -85,43 +84,45 @@ object Init {
     Level.toLevel(level) match {
       case Some(l) => Logger(n).setLevel(l)
       case None =>
-        logger.warning("Unknown logger level: %s=%s", name,level)
+        logger.warning("Unknown logger level: %s=%s", name, level)
     }
   }
 
-  def apply( f: () => Unit = noop _, controller: InitController = new InitController {}): Unit = {
+  def apply(
+      f: () => Unit = noop _,
+      controller: InitController = new InitController {}
+  ): Unit = {
     import scala.concurrent.ExecutionContext.Implicits.global
 
     if (AjaxResult.isEnabled.getOrElse(false)) {
       RestClientLoggerConfig
         .get("")
-        .foreach(
-          config =>
-            CommAlerter.tryit {
-              logger.info("Got " + config)
-              pclientid = config.clientid
-              config.useRestToServer.map(b => controller.setUseRestToServer(b))
-              config.useSSEFromServer
-                .map(b => controller.setUseSSEFromServer(b))
-              if (config.loggers.length > 0) {
-                // set trace levels in loggers to config.loggers
-                processLoggers(config.loggers)
-              }
-
-              if (config.appenders.length > 0) {
-                // set handler levels in handlers to config.appenders
-                processHandlers(config.appenders)
-              }
-
-              import scala.scalajs.js.timers._
-
-              setTimeout(1000) {
-                LoggerStore.init()
-                Info.info
-
-                f()
-              }
+        .foreach(config =>
+          CommAlerter.tryit {
+            logger.info("Got " + config)
+            pclientid = config.clientid
+            config.useRestToServer.map(b => controller.setUseRestToServer(b))
+            config.useSSEFromServer
+              .map(b => controller.setUseSSEFromServer(b))
+            if (config.loggers.length > 0) {
+              // set trace levels in loggers to config.loggers
+              processLoggers(config.loggers)
             }
+
+            if (config.appenders.length > 0) {
+              // set handler levels in handlers to config.appenders
+              processHandlers(config.appenders)
+            }
+
+            import scala.scalajs.js.timers._
+
+            setTimeout(1000) {
+              LoggerStore.init()
+              Info.info
+
+              f()
+            }
+          }
         )
     } else {
       import scala.scalajs.js.timers._
@@ -144,8 +145,8 @@ object Init {
   def processLoggers(spec: List[String]): Unit = {
     spec.foreach(s => {
       s match {
-        case loggerSpec(name, level) => setLoggerLevel(name,level)
-        case _ => logger.warning("Unknown logger specification: %s", s)
+        case loggerSpec(name, level) => setLoggerLevel(name, level)
+        case _                       => logger.warning("Unknown logger specification: %s", s)
       }
     })
   }
@@ -175,7 +176,10 @@ object Init {
     h.filter = f
   }
 
-  def getLoggerName(forRemoteHandler: Boolean, loggername: String = ""): String =
+  def getLoggerName(
+      forRemoteHandler: Boolean,
+      loggername: String = ""
+  ): String =
     if (loggername.length() == 0) {
       if (forRemoteHandler) "bridge" else "[root]"
     } else {
@@ -199,14 +203,12 @@ object Init {
       case Some(l) =>
         name match {
           case "con" =>
-            target
-              .getHandlers
+            target.getHandlers
               .find(h => h.isInstanceOf[JsConsoleHandlerInfo]) match {
               case Some(h) => target.removeHandler(h)
               case None    =>
             }
-            target
-              .getHandlers
+            target.getHandlers
               .find(h => h.isInstanceOf[JsConsoleHandler]) match {
               case Some(h) =>
                 logger.info(
@@ -227,14 +229,12 @@ object Init {
                 target.addHandler(h)
             }
           case "console" =>
-            target
-              .getHandlers
+            target.getHandlers
               .find(h => h.isInstanceOf[JsConsoleHandler]) match {
               case Some(h) => target.removeHandler(h)
               case None    =>
             }
-            target
-              .getHandlers
+            target.getHandlers
               .find(h => h.isInstanceOf[JsConsoleHandlerInfo]) match {
               case Some(h) =>
                 logger.info(
@@ -257,8 +257,7 @@ object Init {
           case "debug" =>
             DebugLoggerComponent.init(loggername, l)
           case "server" =>
-            target
-              .getHandlers
+            target.getHandlers
               .find(h => h.isInstanceOf[SendToServerHandler]) match {
               case Some(h) =>
                 logger.info(
@@ -279,8 +278,7 @@ object Init {
                 target.addHandler(h)
             }
           case "websocket" =>
-            target
-              .getHandlers
+            target.getHandlers
               .find(h => h.isInstanceOf[SendToWebsocketHandler]) match {
               case Some(h) =>
                 logger.info(

@@ -9,26 +9,25 @@ import com.github.thebridsk.materialui.MuiPaper
 import com.github.thebridsk.materialui.PopperPlacement
 import com.github.thebridsk.materialui.AnchorElement
 
-
 /**
- * A skeleton component.
- *
- * To use, just code the following:
- *
- * <pre><code>
- * SkeletonComponent( SkeletonComponent.Props( ... ) )
- * </code></pre>
- *
- * @author werewolf
- */
+  * A skeleton component.
+  *
+  * To use, just code the following:
+  *
+  * <pre><code>
+  * SkeletonComponent( SkeletonComponent.Props( ... ) )
+  * </code></pre>
+  *
+  * @author werewolf
+  */
 object MyMenu {
   import MyMenuInternal._
 
   case class Props(
       placement: js.UndefOr[PopperPlacement],
       anchorEl: js.UndefOr[AnchorElement],
-      onClickAway: js.UndefOr[ ()=>Unit ],
-      onItemClick: js.UndefOr[ReactEvent=>Unit],
+      onClickAway: js.UndefOr[() => Unit],
+      onItemClick: js.UndefOr[ReactEvent => Unit],
 //      additionalProps: js.UndefOr[js.Dictionary[js.Any]],
       children: Seq[CtorType.ChildArg]
   )
@@ -36,36 +35,38 @@ object MyMenu {
   def apply(
       placement: js.UndefOr[PopperPlacement] = js.undefined,
       anchorEl: js.UndefOr[AnchorElement] = js.undefined,
-      onClickAway: js.UndefOr[ ()=>Unit ] = js.undefined,
-      onItemClick: js.UndefOr[ReactEvent=>Unit] = js.undefined,
+      onClickAway: js.UndefOr[() => Unit] = js.undefined,
+      onItemClick: js.UndefOr[ReactEvent => Unit] = js.undefined
 //      additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
   )(
       children: CtorType.ChildArg*
-  ) = component(Props(placement,anchorEl,onClickAway,onItemClick,children))  // scalafix:ok ExplicitResultTypes; ReactComponent
+  ) =
+    component(
+      Props(placement, anchorEl, onClickAway, onItemClick, children)
+    ) // scalafix:ok ExplicitResultTypes; ReactComponent
 
 }
 
 object MyMenuInternal {
   import MyMenu._
+
   /**
-   * Internal state for rendering the component.
-   *
-   * I'd like this class to be private, but the instantiation of component
-   * will cause State to leak.
-   *
-   */
+    * Internal state for rendering the component.
+    *
+    * I'd like this class to be private, but the instantiation of component
+    * will cause State to leak.
+    */
   case class State()
 
   /**
-   * Internal state for rendering the component.
-   *
-   * I'd like this class to be private, but the instantiation of component
-   * will cause Backend to leak.
-   *
-   */
+    * Internal state for rendering the component.
+    *
+    * I'd like this class to be private, but the instantiation of component
+    * will cause Backend to leak.
+    */
   class Backend(scope: BackendScope[Props, State]) {
 
-    def render( props: Props, state: State ) = { // scalafix:ok ExplicitResultTypes; React
+    def render(props: Props, state: State) = { // scalafix:ok ExplicitResultTypes; React
 
 //      val additionalProps = js.Dictionary[js.Any]()
 //      var foundClasses = false
@@ -83,26 +84,26 @@ object MyMenuInternal {
 //      }
 
       <.div(
-          ^.cls := "popupMenu",
-          MuiPopper(
-              placement = props.placement,
-              open=props.anchorEl.isDefined,
-              anchorEl=props.anchorEl,
+        ^.cls := "popupMenu",
+        MuiPopper(
+          placement = props.placement,
+          open = props.anchorEl.isDefined,
+          anchorEl = props.anchorEl,
 //              additionalProps = props.additionalProps,
-              disablePortal = true
+          disablePortal = true
+        )(
+          MuiPaper(
+            onClick = props.onItemClick
           )(
-              MuiPaper(
-                  onClick = props.onItemClick,
-              )(
-                  MuiClickAwayListener(
-                      onClickAway = props.onClickAway
-                  )(
-                      <.div(
-                          props.children:_*
-                      )
-                  )
+            MuiClickAwayListener(
+              onClickAway = props.onClickAway
+            )(
+              <.div(
+                props.children: _*
               )
+            )
           )
+        )
       )
     }
 
@@ -119,12 +120,12 @@ object MyMenuInternal {
     }
   }
 
-  private[component]
-  val component = ScalaComponent.builder[Props]("MyMenu")
-                            .initialStateFromProps { props => State() }
-                            .backend(new Backend(_))
-                            .renderBackend
-                            .componentDidMount( scope => scope.backend.didMount)
-                            .componentWillUnmount( scope => scope.backend.willUnmount )
-                            .build
+  private[component] val component = ScalaComponent
+    .builder[Props]("MyMenu")
+    .initialStateFromProps { props => State() }
+    .backend(new Backend(_))
+    .renderBackend
+    .componentDidMount(scope => scope.backend.didMount)
+    .componentWillUnmount(scope => scope.backend.willUnmount)
+    .build
 }

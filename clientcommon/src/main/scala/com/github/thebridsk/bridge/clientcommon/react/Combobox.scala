@@ -12,9 +12,11 @@ trait ComboboxComponentMessagesProperty extends js.Object {
 }
 
 object ComboboxComponentMessagesProperty {
-  def apply( msgOpen: Option[String] = None,
-             msgEmptyList: Option[String] = None,
-             msgEmptyFilter: Option[String] = None): ComboboxComponentMessagesProperty = {
+  def apply(
+      msgOpen: Option[String] = None,
+      msgEmptyList: Option[String] = None,
+      msgEmptyFilter: Option[String] = None
+  ): ComboboxComponentMessagesProperty = {
     val p = js.Dynamic.literal()
 
     msgOpen.foreach(p.updateDynamic("open")(_))
@@ -32,7 +34,7 @@ trait ComboboxComponentProperty extends js.Object {
   val propOne: js.UndefOr[String] = js.native
   val defaultvalue: js.UndefOr[String] = js.native
   val value: js.UndefOr[String] = js.native
-  val onChange: js.UndefOr[js.Any=>Unit] = js.native
+  val onChange: js.UndefOr[js.Any => Unit] = js.native
   val data: js.UndefOr[js.Array[String]] = js.native
   val filter: js.UndefOr[String] = js.native
   val tabIndex: js.UndefOr[String] = js.native
@@ -46,18 +48,19 @@ trait ComboboxComponentProperty extends js.Object {
 }
 
 object ComboboxComponentProperty {
-  def apply(defaultValue: Option[String] = None,
-            onChange: Option[js.Any=>Unit] = None,
-            data: Option[js.Array[String]] = None,
-            filter: Option[String] = None,
-            tabIndex: Option[Int] = None,
-            name: Option[String] = None,
-            caseSensitive: Option[Boolean] = None,
-            messages: Option[ComboboxComponentMessagesProperty] = None,
-            busy: Option[Boolean] = None,
-            value: Option[String] = None,
-            id: Option[String] = None,
-            containerClassName: Option[String] = None
+  def apply(
+      defaultValue: Option[String] = None,
+      onChange: Option[js.Any => Unit] = None,
+      data: Option[js.Array[String]] = None,
+      filter: Option[String] = None,
+      tabIndex: Option[Int] = None,
+      name: Option[String] = None,
+      caseSensitive: Option[Boolean] = None,
+      messages: Option[ComboboxComponentMessagesProperty] = None,
+      busy: Option[Boolean] = None,
+      value: Option[String] = None,
+      id: Option[String] = None,
+      containerClassName: Option[String] = None
   ): ComboboxComponentProperty = {
     val p = js.Dynamic.literal()
 
@@ -65,7 +68,7 @@ object ComboboxComponentProperty {
     onChange.foreach(p.updateDynamic("onChange")(_))
     data.foreach(p.updateDynamic("data")(_))
     filter.foreach(p.updateDynamic("filter")(_))
-    tabIndex.foreach( ti => p.updateDynamic("tabIndex")(ti.toString))
+    tabIndex.foreach(ti => p.updateDynamic("tabIndex")(ti.toString))
     name.foreach(p.updateDynamic("name")(_))
     caseSensitive.foreach(p.updateDynamic("caseSensitive")(_))
     messages.foreach(p.updateDynamic("messages")(_))
@@ -88,32 +91,57 @@ object Combobox {
 //  @js.native
 //  object ReactWidgetsCombobox extends js.Object
 
-  val component = JsComponent[ComboboxComponentProperty, Children.None, Null](reactwidgets.Combobox)  // scalafix:ok ExplicitResultTypes; ReactComponent
+  val component = JsComponent[ComboboxComponentProperty, Children.None, Null](
+    reactwidgets.Combobox
+  ) // scalafix:ok ExplicitResultTypes; ReactComponent
 
-  def apply(defaultValue: Option[String] = None,
-            onChange: Option[js.Any=>Unit] = None,
-            data: Option[js.Array[String]] = None,
-            filter: Option[String] = None,
-            tabIndex: Option[Int] = None,
-            name: Option[String] = None,
-            caseSensitive: Option[Boolean] = None,
-            msgOpen: Option[String] = None,
-            msgEmptyList: Option[String] = None,
-            msgEmptyFilter: Option[String] = None,
-            busy: Option[Boolean] = None,
-            value: Option[String] = None,
-            id: Option[String] = None,
-            containerClassName: Option[String] = None
-  ) = {  // scalafix:ok ExplicitResultTypes; ReactComponent
+  def apply(
+      defaultValue: Option[String] = None,
+      onChange: Option[js.Any => Unit] = None,
+      data: Option[js.Array[String]] = None,
+      filter: Option[String] = None,
+      tabIndex: Option[Int] = None,
+      name: Option[String] = None,
+      caseSensitive: Option[Boolean] = None,
+      msgOpen: Option[String] = None,
+      msgEmptyList: Option[String] = None,
+      msgEmptyFilter: Option[String] = None,
+      busy: Option[Boolean] = None,
+      value: Option[String] = None,
+      id: Option[String] = None,
+      containerClassName: Option[String] = None
+  ) = { // scalafix:ok ExplicitResultTypes; ReactComponent
 
 //    logger.info("Combobox: msgEmptyList="+msgEmptyList+", msgEmptyFilter="+msgEmptyFilter)
 
-    val messages = if (msgOpen.isDefined || msgEmptyList.isDefined || msgEmptyFilter.isDefined) {
-      Some(ComboboxComponentMessagesProperty(msgOpen,msgEmptyList,msgEmptyFilter))
-    } else {
-      None
-    }
-    val props = ComboboxComponentProperty(defaultValue,onChange,data,filter,tabIndex,name,caseSensitive,messages,busy,value,id,containerClassName)
+    val messages =
+      if (
+        msgOpen.isDefined || msgEmptyList.isDefined || msgEmptyFilter.isDefined
+      ) {
+        Some(
+          ComboboxComponentMessagesProperty(
+            msgOpen,
+            msgEmptyList,
+            msgEmptyFilter
+          )
+        )
+      } else {
+        None
+      }
+    val props = ComboboxComponentProperty(
+      defaultValue,
+      onChange,
+      data,
+      filter,
+      tabIndex,
+      name,
+      caseSensitive,
+      messages,
+      busy,
+      value,
+      id,
+      containerClassName
+    )
 
     component(props)
   }

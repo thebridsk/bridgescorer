@@ -10,35 +10,35 @@ import BaseStyles._
 
 object TitleSuits {
 
-  val suitspan =  // scalafix:ok ExplicitResultTypes; React
+  val suitspan = // scalafix:ok ExplicitResultTypes; React
+    <.span(
       <.span(
-        <.span(
-            HtmlStyles.color.black,
-            rootStyles.headerSuitSize,
-            ^.dangerouslySetInnerHtml := " &spades;"
-        ),
-        <.span(
-            HtmlStyles.color.red,
-            rootStyles.headerSuitSize,
-            ^.dangerouslySetInnerHtml := " &hearts;"
-        ),
-        <.span(
-            HtmlStyles.color.red,
-            rootStyles.headerSuitSize,
-            ^.dangerouslySetInnerHtml := " &diams;"
-        ),
-        <.span(
-            HtmlStyles.color.black,
-            rootStyles.headerSuitSize,
-            ^.dangerouslySetInnerHtml := " &clubs;"
-        ),
+        HtmlStyles.color.black,
+        rootStyles.headerSuitSize,
+        ^.dangerouslySetInnerHtml := " &spades;"
+      ),
+      <.span(
+        HtmlStyles.color.red,
+        rootStyles.headerSuitSize,
+        ^.dangerouslySetInnerHtml := " &hearts;"
+      ),
+      <.span(
+        HtmlStyles.color.red,
+        rootStyles.headerSuitSize,
+        ^.dangerouslySetInnerHtml := " &diams;"
+      ),
+      <.span(
+        HtmlStyles.color.black,
+        rootStyles.headerSuitSize,
+        ^.dangerouslySetInnerHtml := " &clubs;"
       )
+    )
 
-  val suits = {  // scalafix:ok ExplicitResultTypes; ReactComponent
+  val suits = { // scalafix:ok ExplicitResultTypes; ReactComponent
     MuiTypography(
-        variant = TextVariant.h6,
-        color = TextColor.inherit,
-        classes = js.Dictionary( "root" -> "homePageTitle")
+      variant = TextVariant.h6,
+      color = TextColor.inherit,
+      classes = js.Dictionary("root" -> "homePageTitle")
     )(
       suitspan
     )

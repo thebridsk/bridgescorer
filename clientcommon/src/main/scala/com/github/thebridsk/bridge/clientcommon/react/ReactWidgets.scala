@@ -20,42 +20,48 @@ package reactwidgets {
   @js.native
   object Combobox extends Combobox
 
-  @JSImport("react-widgets/lib/DropdownList", JSImport.Namespace, "DropdownList")
+  @JSImport(
+    "react-widgets/lib/DropdownList",
+    JSImport.Namespace,
+    "DropdownList"
+  )
   @js.native
   object DropdownList extends DropdownList
 
-  @JSImport("react-widgets/lib/DateTimePicker", JSImport.Namespace, "DateTimePicker")
+  @JSImport(
+    "react-widgets/lib/DateTimePicker",
+    JSImport.Namespace,
+    "DateTimePicker"
+  )
   @js.native
   object DateTimePicker extends DateTimePicker
 
-
   package globalize {
 
-  //  @js.native
-  //  trait Globalize extends js.Object {
-  //    def locale( loc: String ): Unit = js.native
-  //  }
-  //
-  //  @JSImport("globalize", JSImport.Namespace, "Globalize")
-  //  @js.native
-  //  object Globalize extends Globalize
+    //  @js.native
+    //  trait Globalize extends js.Object {
+    //    def locale( loc: String ): Unit = js.native
+    //  }
+    //
+    //  @JSImport("globalize", JSImport.Namespace, "Globalize")
+    //  @js.native
+    //  object Globalize extends Globalize
 
-
-  //  @js.native
-  //  trait ReactWidgetsGlobalize extends js.Object {
-  //    def globalizeLocalizer(): Unit = js.native
-  //  }
-  //
-  //  @JSImport("react-widgets-globalize", JSImport.Namespace)
-  //  @js.native
-  //  object ReactWidgetsGlobalize extends ReactWidgetsGlobalize
+    //  @js.native
+    //  trait ReactWidgetsGlobalize extends js.Object {
+    //    def globalizeLocalizer(): Unit = js.native
+    //  }
+    //
+    //  @JSImport("react-widgets-globalize", JSImport.Namespace)
+    //  @js.native
+    //  object ReactWidgetsGlobalize extends ReactWidgetsGlobalize
 
     @js.native
     trait Moment extends js.Object {
-      def locale( loc: String ): Unit = js.native
+      def locale(loc: String): Unit = js.native
     }
 
-    @JSImport("moment", JSImport.Namespace )
+    @JSImport("moment", JSImport.Namespace)
     @js.native
     object Moment extends Moment
 
@@ -66,6 +72,5 @@ package reactwidgets {
     }
 
   }
-
 
 }

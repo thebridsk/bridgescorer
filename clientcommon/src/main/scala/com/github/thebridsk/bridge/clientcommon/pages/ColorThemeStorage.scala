@@ -1,4 +1,3 @@
-
 package com.github.thebridsk.bridge.clientcommon.pages
 
 import org.scalajs.dom.document
@@ -25,14 +24,16 @@ object ColorThemeStorage {
   //   }
   // }
 
-  def applyTheme( theme: String ): Unit = {
+  def applyTheme(theme: String): Unit = {
     log.info(s"ColorThemeStorage.applyTheme: ${theme}")
-    document.body.setAttribute(bodyAttribute,theme)
+    document.body.setAttribute(bodyAttribute, theme)
   }
 
   def getColorTheme(): Option[String] = {
     val nkeys = storage.length
-    val theme = (0 until nkeys).find( i => storage.key(i) == key).map( i => storage.getItem(key) )
+    val theme = (0 until nkeys)
+      .find(i => storage.key(i) == key)
+      .map(i => storage.getItem(key))
     log.info(s"ColorThemeStorage.getColorTheme: ${theme}")
     theme
   }
@@ -46,15 +47,15 @@ object ColorThemeStorage {
       case None =>
         getColorThemeFromBody() match {
           case Some(theme) => setColorTheme(theme)
-          case None =>
+          case None        =>
         }
     }
   }
 
-  def setColorTheme( theme: String ): Unit = {
+  def setColorTheme(theme: String): Unit = {
     log.info(s"ColorThemeStorage.setColorTheme: ${theme}")
     applyTheme(theme)
-    storage.setItem(key,theme)
+    storage.setItem(key, theme)
   }
 
   def getColorThemeFromBody(): Option[String] = {
