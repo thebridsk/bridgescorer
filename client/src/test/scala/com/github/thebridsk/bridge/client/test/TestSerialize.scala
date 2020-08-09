@@ -61,7 +61,7 @@ class TestSerialize extends AnyFlatSpec with Matchers {
 
     println("s is " + s)
 
-    s mustBe serializedData.replace("[\n\r ]", "")
+    s mustBe serializedData.replaceAll("[\n\r ]", "")
 
   }
 
