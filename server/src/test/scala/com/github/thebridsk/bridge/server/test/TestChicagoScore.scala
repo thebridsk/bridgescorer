@@ -21,28 +21,29 @@ class TestChicagoScore extends AnyFlatSpec with Matchers {
 
   def getAllGames(): List[File] = {
 
-    testdir.files.map{ f => System.out.println(s"Considering $f"); f}.filter{ f =>
-      f.toString().startsWith(prefix)
-    }.toList
+    testdir.files
+      .map { f => System.out.println(s"Considering $f"); f }
+      .filter { f =>
+        f.toString().startsWith(prefix)
+      }
+      .toList
   }
 
   val converter = new BridgeServiceFileStoreConverters(true)
 
-
   /**
-   * Read a resource from the persistent store
-   * @param filename
-   * @return the result containing the resource or an error
-   */
-  def read( filename: File ): String = {
-    FileIO.readFileSafe( filename.toString() )
+    * Read a resource from the persistent store
+    * @param filename
+    * @return the result containing the resource or an error
+    */
+  def read(filename: File): String = {
+    FileIO.readFileSafe(filename.toString())
   }
 
   import org.scalatest.prop.TableDrivenPropertyChecks._
-  val templates: TableFor1[File] = Table( "MatchChicago", getAllGames(): _* )
+  val templates: TableFor1[File] = Table("MatchChicago", getAllGames(): _*)
 
   forAll(templates) { filename =>
-
     var mc: Option[MatchChicago] = None
 
     it should s"read $filename and convert it to a MatchChicago object" in {
@@ -55,8 +56,10 @@ class TestChicagoScore extends AnyFlatSpec with Matchers {
       if (mc.isEmpty) fail("Unable to read and convert file")
 
       mc.get.rounds.zipWithIndex.foreach { e =>
-        val (r,i) = e
-        System.out.println( s"  Dealer in first hand in $filename in round $i is ${r.dealerFirstRound}" )
+        val (r, i) = e
+        System.out.println(
+          s"  Dealer in first hand in $filename in round $i is ${r.dealerFirstRound}"
+        )
       }
 
       val chicago = ChicagoScoring(mc.get)

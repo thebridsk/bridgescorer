@@ -178,8 +178,9 @@ trait RestRubber extends HasActorSystem {
     }
 
   import scala.language.implicitConversions
-  implicit
-  def addIdToFuture(f: Future[Result[MatchRubber]]): Future[Result[(String, MatchRubber)]] =
+  implicit def addIdToFuture(
+      f: Future[Result[MatchRubber]]
+  ): Future[Result[(String, MatchRubber)]] =
     f.map { r =>
       r match {
         case Right(md) => Right((md.id.id, md))

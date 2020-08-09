@@ -43,8 +43,10 @@ class FileFinder(
     */
   def isArtifact(art: String): Boolean = artifactid == art
 
-  val baseName1: String = "META-INF/resources/webjars/" + artifactid + "/" + version
-  val baseName: String = suffix.map(s => baseName1 + "/" + s).getOrElse(baseName1)
+  val baseName1: String =
+    "META-INF/resources/webjars/" + artifactid + "/" + version
+  val baseName: String =
+    suffix.map(s => baseName1 + "/" + s).getOrElse(baseName1)
 
   def resourceName(res: String): String =
     baseName + (if (res.startsWith("/")) res; else "/" + res)
@@ -77,7 +79,9 @@ class FileFinder(
 
   def checkName(res: String): Boolean = {
     val i = res.indexOf("/../")
-    if (res.startsWith("../") || res.endsWith("/..") || res.indexOf("/../") >= 0)
+    if (
+      res.startsWith("../") || res.endsWith("/..") || res.indexOf("/../") >= 0
+    )
       false
     else true
   }

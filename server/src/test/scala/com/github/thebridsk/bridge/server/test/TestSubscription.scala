@@ -34,18 +34,16 @@ class TestSubscription extends AnyFlatSpec with Matchers {
 
   behavior of "Subscription"
 
-
-
   it should "register and unregister" in {
     val ms = new MySubscription
 
-    ms.add(new DuplicateSubscription( "1", Actor.noSender, MatchDuplicate.id(1) ) )
+    ms.add(new DuplicateSubscription("1", Actor.noSender, MatchDuplicate.id(1)))
     ms.registerCalled mustBe true
     ms.unregisterCalled mustBe false
 
     ms.clear
 
-    ms.add(new DuplicateSubscription( "2", Actor.noSender, MatchDuplicate.id(2) ) )
+    ms.add(new DuplicateSubscription("2", Actor.noSender, MatchDuplicate.id(2)))
     ms.registerCalled mustBe false
     ms.unregisterCalled mustBe false
 
@@ -57,19 +55,19 @@ class TestSubscription extends AnyFlatSpec with Matchers {
 
     ms.clear
 
-    ms.add(new DuplicateSubscription( "2", Actor.noSender, MatchDuplicate.id(3) ) )
+    ms.add(new DuplicateSubscription("2", Actor.noSender, MatchDuplicate.id(3)))
     ms.registerCalled mustBe false
     ms.unregisterCalled mustBe false
 
     ms.clear
 
-    ms.add( ms.get("2").get.getSubscription() )
+    ms.add(ms.get("2").get.getSubscription())
     ms.registerCalled mustBe false
     ms.unregisterCalled mustBe true
 
     ms.clear
 
-    ms.add(new DuplicateSubscription( "2", Actor.noSender, MatchDuplicate.id(3) ) )
+    ms.add(new DuplicateSubscription("2", Actor.noSender, MatchDuplicate.id(3)))
     ms.registerCalled mustBe true
     ms.unregisterCalled mustBe false
 

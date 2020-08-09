@@ -74,12 +74,13 @@ abstract class BridgeService(val id: String) {
 
   def importStoreData: Future[ImportStoreData] = {
 
-    def count[T]( frs: Future[Result[Set[T]]]) = frs.map { rs =>
-      rs match {
-        case Right(s) => s.size
-        case Left(value) => 0
+    def count[T](frs: Future[Result[Set[T]]]) =
+      frs.map { rs =>
+        rs match {
+          case Right(s)    => s.size
+          case Left(value) => 0
+        }
       }
-    }
 
     val r = for {
       nd <- count(duplicates.getAllIds())
@@ -87,7 +88,7 @@ abstract class BridgeService(val id: String) {
       nc <- count(chicagos.getAllIds())
       nr <- count(rubbers.getAllIds())
     } yield {
-      ImportStoreData(id,getDate,nd,ndr,nc,nr)
+      ImportStoreData(id, getDate, nd, ndr, nc, nr)
     }
     r
   }
@@ -105,7 +106,9 @@ abstract class BridgeService(val id: String) {
       filter: Option[List[String]] = None,
       diagnostics: Boolean = false
   ): Future[Result[List[String]]] = {
-    BridgeServiceWithLogging.log.fine(s"exporting: diagnostics=$diagnostics, filter=$filter")
+    BridgeServiceWithLogging.log.fine(
+      s"exporting: diagnostics=$diagnostics, filter=$filter"
+    )
 
     val converters = new BridgeServiceFileStoreConverters(true)
 
@@ -116,7 +119,9 @@ abstract class BridgeService(val id: String) {
       {
         val nameInZip = "version.txt"
         val ze = new ZipEntry(nameInZip)
-        BridgeServiceWithLogging.log.fine(s"Adding version info => ${ze.getName}")
+        BridgeServiceWithLogging.log.fine(
+          s"Adding version info => ${ze.getName}"
+        )
         zip.putNextEntry(ze)
         val v =
           s"""${VersionServer.toString}\n${VersionShared.toString}\n${VersionUtilities.toString}"""
@@ -138,7 +143,9 @@ abstract class BridgeService(val id: String) {
 
       if (diagnostics) {
         diagnosticDir.foreach { dir =>
-          BridgeServiceWithLogging.log.fine(s"Looking for logs in directory ${dir}")
+          BridgeServiceWithLogging.log.fine(
+            s"Looking for logs in directory ${dir}"
+          )
           dir.files
             .filter(f => f.extension == "log" || f.extension == "csv")
             .foreach { f =>
@@ -200,7 +207,7 @@ abstract class BridgeService(val id: String) {
       store: Store[TId, T],
       filter: Option[List[String]]
   ): Future[Result[List[String]]] = {
-    ZipStoreInternal.exportStore(zip,store,filter)
+    ZipStoreInternal.exportStore(zip, store, filter)
   }
 
   val defaultBoards = BoardSet.default
@@ -261,7 +268,17 @@ abstract class BridgeService(val id: String) {
             true,
             5
           ) ::
-            TestMatchDuplicate.getHand(d, Board.id(3), Team.id(3), 3, "N", "N", "N", true, 5) ::
+            TestMatchDuplicate.getHand(
+              d,
+              Board.id(3),
+              Team.id(3),
+              3,
+              "N",
+              "N",
+              "N",
+              true,
+              5
+            ) ::
             TestMatchDuplicate.getHands(d)
           for (h <- hands) {
             d = d.updateHand(h)
@@ -415,7 +432,10 @@ abstract class BridgeService(val id: String) {
     }
   }
 
-  def getDuplicatePlaceResults( scoringMethod: CalculatePlayerPlaces.ScoringMethod = CalculatePlayerPlaces.AsPlayedScoring ): Future[Result[PlayerPlaces]] = {
+  def getDuplicatePlaceResults(
+      scoringMethod: CalculatePlayerPlaces.ScoringMethod =
+        CalculatePlayerPlaces.AsPlayedScoring
+  ): Future[Result[PlayerPlaces]] = {
     val fmds = duplicates.readAll().map { fmds =>
       fmds match {
         case Right(m) =>
@@ -437,7 +457,7 @@ abstract class BridgeService(val id: String) {
       fmdrs.map { mdrs =>
         Result {
           val calc = new CalculatePlayerPlaces(scoringMethod)
-          (mds ::: mdrs).map(d=>calc.add(d))
+          (mds ::: mdrs).map(d => calc.add(d))
           calc.finish()
         }
       }
@@ -473,8 +493,7 @@ object BridgeService {
       useYaml: Boolean = true,
       id: Option[String] = None,
       diagnosticDirectory: Option[Directory] = None
-  )(
-      implicit
+  )(implicit
       execute: ExecutionContext
   ): BridgeServiceWithLogging = {
     if (path.isFile) {
@@ -521,7 +540,9 @@ object BridgeService {
     if (instream != null) {
       Using.resource(instream) { in =>
         val ze = new ZipEntry(nameInZip)
-        BridgeServiceWithLogging.log.fine(s"Adding version info => ${ze.getName}")
+        BridgeServiceWithLogging.log.fine(
+          s"Adding version info => ${ze.getName}"
+        )
         zip.putNextEntry(ze)
         copy(in, zip)
         zip.closeEntry()
@@ -558,7 +579,8 @@ abstract class BridgeServiceWithLogging(id: String) extends BridgeService(id) {
 
   import scala.collection.mutable.Map
 
-  protected val fLoggerConfigs: Map[String,LoggerConfig] = Map[String, LoggerConfig]()
+  protected val fLoggerConfigs: Map[String, LoggerConfig] =
+    Map[String, LoggerConfig]()
 
   protected var defaultLoggerConfig: LoggerConfig = LoggerConfig(Nil, Nil)
   protected var defaultLoggerConfigIPad: LoggerConfig = LoggerConfig(Nil, Nil)

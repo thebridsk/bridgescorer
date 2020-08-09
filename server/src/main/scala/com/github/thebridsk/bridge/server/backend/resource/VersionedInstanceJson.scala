@@ -23,8 +23,8 @@ object VersionedInstanceJson {
     * @param writer a Writes object to convert an object to JSON/YAML representation.
     * @param classtag ClassTag object of the type of the latest version.
     */
-  def apply[TId, T <: VersionedInstance[T, T, TId]](
-      implicit converter: Converter,
+  def apply[TId, T <: VersionedInstance[T, T, TId]](implicit
+      converter: Converter,
       reader: Reads[T],
       writer: Writes[T],
       classtag: ClassTag[T]
@@ -44,12 +44,16 @@ object VersionedInstanceJson {
   * @param classtag ClassTag object of the type of the old version.
   * @param classtagCurrent ClassTag object of the type of the latest version.
   */
-private class ReaderAndConvert[TId, T <: VersionedInstance[T, T, TId], R <: VersionedInstance[
+private class ReaderAndConvert[TId, T <: VersionedInstance[
+  T,
+  T,
+  TId
+], R <: VersionedInstance[
   T,
   R,
   TId
-]](
-    implicit converter: Converter,
+]](implicit
+    converter: Converter,
     reader: Reads[R],
     writer: Writes[R],
     classtag: ClassTag[R],
@@ -72,7 +76,8 @@ private class ReaderAndConvert[TId, T <: VersionedInstance[T, T, TId], R <: Vers
   def toJsonOld(r: R): String = converter.write(r)
 
   def getOldClass: Class[R] = classtag.runtimeClass.asInstanceOf[Class[R]]
-  def getCurrentClass: Class[T] = classtagCurrent.runtimeClass.asInstanceOf[Class[T]]
+  def getCurrentClass: Class[T] =
+    classtagCurrent.runtimeClass.asInstanceOf[Class[T]]
 
   def nameOld = getOldClass.getName
   def nameCurrent = getCurrentClass.getName
@@ -95,8 +100,7 @@ private class ReaderAndConvert[TId, T <: VersionedInstance[T, T, TId], R <: Vers
   * @param writer a Writes object to convert an object to JSON/YAML representation.
   * @param classtagCurrent ClassTag object of the type of the latest version.
   */
-class VersionedInstanceJson[TId, T <: VersionedInstance[T, T, TId]](
-    implicit
+class VersionedInstanceJson[TId, T <: VersionedInstance[T, T, TId]](implicit
     converter: Converter,
     reader: Reads[T],
     writer: Writes[T],
@@ -122,8 +126,8 @@ class VersionedInstanceJson[TId, T <: VersionedInstance[T, T, TId]](
     * @param classtag ClassTag object of the type of the older version.
     * @return this.  allowing chaining all the old versions in one statement.
     */
-  def add[R <: VersionedInstance[T, R, TId]](
-      implicit reader: Reads[R],
+  def add[R <: VersionedInstance[T, R, TId]](implicit
+      reader: Reads[R],
       writer: Writes[R],
       classtag: ClassTag[R]
   ): VersionedInstanceJson[TId, T] = {

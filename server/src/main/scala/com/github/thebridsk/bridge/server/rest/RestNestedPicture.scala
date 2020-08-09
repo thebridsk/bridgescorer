@@ -47,50 +47,69 @@ import RestNestedPicture._
   */
 @Path("/rest/duplicates/{dupId}/pictures")
 @Tags(Array(new Tag(name = "Duplicate")))
-class RestNestedPicture( store: Store[MatchDuplicate.Id,MatchDuplicate], parent: RestDuplicate ) {
+class RestNestedPicture(
+    store: Store[MatchDuplicate.Id, MatchDuplicate],
+    parent: RestDuplicate
+) {
 
   import UtilsPlayJson._
 
   val resName = parent.resName
-  val resNameWithSlash: String = if (resName.startsWith("/")) resName else "/" + resName
+  val resNameWithSlash: String =
+    if (resName.startsWith("/")) resName else "/" + resName
 
-  lazy val nestedPictureHands = new RestNestedPictureHand(store,this)
+  lazy val nestedPictureHands = new RestNestedPictureHand(store, this)
 
   /**
     * spray route for all the methods on this resource
     */
   @Hidden
-  def route(
-      implicit @Parameter(hidden = true) dupid: MatchDuplicate.Id
-  ): Route = pathPrefix("pictures") {
-    logRequestResult("RestNestedPicture.route", DebugLevel) {
-      nestedRoute ~ getPictures ~ deletePicture
-    }
-  }
-
-  def nestedRoute(
-    implicit @Parameter(hidden = true) dupId: MatchDuplicate.Id
-  ): Route = logRequest("RestNestedPicture.nestedRoute", DebugLevel) {
-    pathPrefix("""[a-zA-Z0-9]+""".r) { boardId =>
-      nestedPictureHands.route(dupId,Board.id(boardId))
-    }
-  }
-
-  def getAllPictures( dupId: MatchDuplicate.Id ): Future[Either[(StatusCode, RestMessage),Iterator[DuplicatePicture]]] = {
-    store.metaData.listFilesFilter(dupId) { f =>
-      RestNestedPictureHand.getPartsMetadataFile(f).isDefined
-    }.map { ri =>
-      ri match {
-        case Right(it) =>
-          val r = it.flatMap { mdf =>
-            val parts = RestNestedPictureHand.getPartsMetadataFile(mdf).get
-            DuplicatePicture(parts.boardId,parts.handId,RestNestedPictureHand.getUrlOfPicture(resNameWithSlash,dupId,parts.boardId,parts.handId))::Nil
-          }
-          Right(r)
-        case Left(err) =>
-          Left(err)
+  def route(implicit
+      @Parameter(hidden = true) dupid: MatchDuplicate.Id
+  ): Route =
+    pathPrefix("pictures") {
+      logRequestResult("RestNestedPicture.route", DebugLevel) {
+        nestedRoute ~ getPictures ~ deletePicture
       }
     }
+
+  def nestedRoute(implicit
+      @Parameter(hidden = true) dupId: MatchDuplicate.Id
+  ): Route =
+    logRequest("RestNestedPicture.nestedRoute", DebugLevel) {
+      pathPrefix("""[a-zA-Z0-9]+""".r) { boardId =>
+        nestedPictureHands.route(dupId, Board.id(boardId))
+      }
+    }
+
+  def getAllPictures(
+      dupId: MatchDuplicate.Id
+  ): Future[Either[(StatusCode, RestMessage), Iterator[DuplicatePicture]]] = {
+    store.metaData
+      .listFilesFilter(dupId) { f =>
+        RestNestedPictureHand.getPartsMetadataFile(f).isDefined
+      }
+      .map { ri =>
+        ri match {
+          case Right(it) =>
+            val r = it.flatMap { mdf =>
+              val parts = RestNestedPictureHand.getPartsMetadataFile(mdf).get
+              DuplicatePicture(
+                parts.boardId,
+                parts.handId,
+                RestNestedPictureHand.getUrlOfPicture(
+                  resNameWithSlash,
+                  dupId,
+                  parts.boardId,
+                  parts.handId
+                )
+              ) :: Nil
+            }
+            Right(r)
+          case Left(err) =>
+            Left(err)
+        }
+      }
   }
 
   @GET
@@ -107,7 +126,7 @@ class RestNestedPicture( store: Store[MatchDuplicate.Id,MatchDuplicate], parent:
         name = "dupId",
         required = true,
         schema = new Schema(`type` = "string")
-      ),
+      )
     ),
     responses = Array(
       new ApiResponse(
@@ -121,7 +140,8 @@ class RestNestedPicture( store: Store[MatchDuplicate.Id,MatchDuplicate], parent:
               uniqueItems = true,
               schema = new Schema(
                 implementation = classOf[DuplicatePicture],
-                description = "Information about a picture of the cards for the board."
+                description =
+                  "Information about a picture of the cards for the board."
               ),
               arraySchema =
                 new Schema(description = "All the pictures from the match.")
@@ -142,24 +162,30 @@ class RestNestedPicture( store: Store[MatchDuplicate.Id,MatchDuplicate], parent:
     )
   )
   def xxxgetPictures: Unit = {}
-  def getPictures(
-      implicit @Parameter(hidden = true) dupId: MatchDuplicate.Id
-  ): Route = pathEndOrSingleSlash {
-    get {
-      val f = getAllPictures(dupId)
-      onComplete(f) {
-        case Success(r) =>
-          r match {
-            case Right(l) =>
-              val rl = l.toList
-              complete(StatusCodes.OK, rl)
-            case Left(r) => complete(r._1, r._2)
-          }
-        case Failure(ex) =>
-          complete((StatusCodes.InternalServerError, s"An error occurred: ${ex.getMessage}"))
+  def getPictures(implicit
+      @Parameter(hidden = true) dupId: MatchDuplicate.Id
+  ): Route =
+    pathEndOrSingleSlash {
+      get {
+        val f = getAllPictures(dupId)
+        onComplete(f) {
+          case Success(r) =>
+            r match {
+              case Right(l) =>
+                val rl = l.toList
+                complete(StatusCodes.OK, rl)
+              case Left(r) => complete(r._1, r._2)
+            }
+          case Failure(ex) =>
+            complete(
+              (
+                StatusCodes.InternalServerError,
+                s"An error occurred: ${ex.getMessage}"
+              )
+            )
+        }
       }
     }
-  }
 
   @Path("/{boardId}")
   @DELETE
@@ -200,64 +226,91 @@ class RestNestedPicture( store: Store[MatchDuplicate.Id,MatchDuplicate], parent:
     )
   )
   def xxxdeletePicture: Unit = {}
-  def deletePicture(
-      implicit @Parameter(hidden = true) dupId: MatchDuplicate.Id
-  ): Route = delete {
-    path("""[a-zA-Z0-9]+""".r) { sboardid =>
-      val boardid = Board.id(sboardid)
-      val changeContext = ChangeContext()
-      val fut = store.metaData.listFiles(dupId).map { rimdf =>
-        rimdf match {
-          case Right(imdf) =>
-            val deletes = imdf.filter { mdf =>
-              val isimage = RestNestedPictureHand.isImageFilename(mdf,boardid)
-              log.fine(s"RestNestedPicture.delete(${mdf}): isimage=${isimage}")
-              isimage
-            }.map { mdf =>
-              store.metaData.delete(dupId,mdf).transform { tr =>
-                tr match {
-                  case Success(r) =>
-                    r match {
-                      case Right(value) =>
-                        log.fine(s"RestNestedPicture.delete(${mdf}): deleted")
-                        val parts = RestNestedPictureHand.getPartsMetadataFile(mdf)
-                        parts.foreach( p => changeContext.update(
-                          UpdateDuplicatePicture(
-                            dupid = dupId,
-                            boardid = boardid,
-                            handId = p.handId,
-                            picture = None
-                          )
-                        ))
-                      case Left(ex) =>
-                        log.warning(s"RestNestedPicture.delete(${mdf}): error deleting ${ex}")
-                    }
-                  case Failure(ex) =>
-                    log.warning(s"Error deleting image file ${mdf} for board: ${ex}",ex)
+  def deletePicture(implicit
+      @Parameter(hidden = true) dupId: MatchDuplicate.Id
+  ): Route =
+    delete {
+      path("""[a-zA-Z0-9]+""".r) { sboardid =>
+        val boardid = Board.id(sboardid)
+        val changeContext = ChangeContext()
+        val fut = store.metaData.listFiles(dupId).map { rimdf =>
+          rimdf match {
+            case Right(imdf) =>
+              val deletes = imdf
+                .filter { mdf =>
+                  val isimage =
+                    RestNestedPictureHand.isImageFilename(mdf, boardid)
+                  log.fine(
+                    s"RestNestedPicture.delete(${mdf}): isimage=${isimage}"
+                  )
+                  isimage
                 }
-                tr
+                .map { mdf =>
+                  store.metaData.delete(dupId, mdf).transform { tr =>
+                    tr match {
+                      case Success(r) =>
+                        r match {
+                          case Right(value) =>
+                            log.fine(
+                              s"RestNestedPicture.delete(${mdf}): deleted"
+                            )
+                            val parts =
+                              RestNestedPictureHand.getPartsMetadataFile(mdf)
+                            parts.foreach(p =>
+                              changeContext.update(
+                                UpdateDuplicatePicture(
+                                  dupid = dupId,
+                                  boardid = boardid,
+                                  handId = p.handId,
+                                  picture = None
+                                )
+                              )
+                            )
+                          case Left(ex) =>
+                            log.warning(
+                              s"RestNestedPicture.delete(${mdf}): error deleting ${ex}"
+                            )
+                        }
+                      case Failure(ex) =>
+                        log.warning(
+                          s"Error deleting image file ${mdf} for board: ${ex}",
+                          ex
+                        )
+                    }
+                    tr
+                  }
+                }
+                .toList
+              onComplete(Future.foldLeft(deletes)(Result.unit) { (ac, v) =>
+                ac
+              }) {
+                case Success(value) =>
+                  log.fine(
+                    s"RestNestedPicture.delete(${boardid}): deleted image"
+                  )
+                  store.notify(changeContext)
+                  complete(StatusCodes.NoContent)
+                case Failure(ex) =>
+                  log.warning(s"Error deleting image file for board: ${ex}", ex)
+                  complete(
+                    StatusCodes.InternalServerError,
+                    RestMessage("Internal server error")
+                  )
               }
-            }.toList
-            onComplete(Future.foldLeft(deletes)(Result.unit) { (ac,v) => ac}) {
-              case Success(value) =>
-                log.fine(s"RestNestedPicture.delete(${boardid}): deleted image")
-                store.notify(changeContext)
-                complete(StatusCodes.NoContent)
-              case Failure(ex) =>
-                log.warning(s"Error deleting image file for board: ${ex}",ex)
-                complete(StatusCodes.InternalServerError, RestMessage("Internal server error"))
-            }
-          case Left((code,msg)) =>
-            complete(code,msg)
+            case Left((code, msg)) =>
+              complete(code, msg)
+          }
+        }
+        onComplete(fut) {
+          case Success(value) =>
+            value
+          case Failure(ex) =>
+            log.warning(s"Error deleting image file for board", ex)
+            complete(
+              StatusCodes.InternalServerError,
+              RestMessage("Internal server error")
+            )
         }
       }
-      onComplete(fut) {
-        case Success(value) =>
-          value
-        case Failure(ex) =>
-          log.warning(s"Error deleting image file for board",ex)
-          complete(StatusCodes.InternalServerError, RestMessage("Internal server error"))
-      }
     }
-  }
 }

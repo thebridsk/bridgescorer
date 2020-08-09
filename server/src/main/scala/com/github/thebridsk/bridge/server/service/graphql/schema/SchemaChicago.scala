@@ -21,9 +21,10 @@ object SchemaChicago {
 
   val log: Logger = Logger(SchemaChicago.getClass.getName)
 
-  val ChicagoIdType: ScalarType[Id[IdMatchChicago]] = idScalarType[IdMatchChicago]("ChicagoId", MatchChicago)
+  val ChicagoIdType: ScalarType[Id[IdMatchChicago]] =
+    idScalarType[IdMatchChicago]("ChicagoId", MatchChicago)
 
-  val ChicagoRoundType: ObjectType[BridgeService,Round] = ObjectType(
+  val ChicagoRoundType: ObjectType[BridgeService, Round] = ObjectType(
     "ChicagoRound",
     "A chicago round",
     fields[BridgeService, Round](
@@ -84,32 +85,35 @@ object SchemaChicago {
     )
   )
 
-  val ChicagoBestMatchType: ObjectType[BridgeService,(Option[String], ChicagoBestMatch)] = ObjectType(
-    "ChicagoBestMatch",
-    "Identifies the best match",
-    fields[BridgeService, (Option[String], ChicagoBestMatch)](
-      Field(
-        "id",
-        OptionType(ChicagoIdType),
-        Some("The id of the best duplicate match from the main store"),
-        resolve = _.value._2.id
-      ),
-      Field(
-        "sameness",
-        FloatType,
-        Some("A percentage of similarity."),
-        resolve = _.value._2.sameness
-      ),
-      Field(
-        "differences",
-        OptionType(ListType(StringType)),
-        Some("The fields that are different"),
-        resolve = _.value._2.differences
+  val ChicagoBestMatchType
+      : ObjectType[BridgeService, (Option[String], ChicagoBestMatch)] =
+    ObjectType(
+      "ChicagoBestMatch",
+      "Identifies the best match",
+      fields[BridgeService, (Option[String], ChicagoBestMatch)](
+        Field(
+          "id",
+          OptionType(ChicagoIdType),
+          Some("The id of the best duplicate match from the main store"),
+          resolve = _.value._2.id
+        ),
+        Field(
+          "sameness",
+          FloatType,
+          Some("A percentage of similarity."),
+          resolve = _.value._2.sameness
+        ),
+        Field(
+          "differences",
+          OptionType(ListType(StringType)),
+          Some("The fields that are different"),
+          resolve = _.value._2.differences
+        )
       )
     )
-  )
 
-  val MatchChicagoType: ObjectType[BridgeService,(Option[String], MatchChicago)] = ObjectType(
+  val MatchChicagoType
+      : ObjectType[BridgeService, (Option[String], MatchChicago)] = ObjectType(
     "MatchChicago",
     "A rubber match",
     // Option string is the import ID, None for main store
@@ -244,7 +248,10 @@ object ChicagoAction {
     }
   }
 
-  def sortC(list: List[MatchChicago], sort: Option[Sort]): List[MatchChicago] = {
+  def sortC(
+      list: List[MatchChicago],
+      sort: Option[Sort]
+  ): List[MatchChicago] = {
     val l = sort
       .map { s =>
         s match {

@@ -28,14 +28,16 @@ import akka.stream.stage.OutHandler
 import akka.http.scaladsl.server.RejectionHandler
 import com.github.thebridsk.bridge.data.VersionedInstance
 
-abstract class MonitorWebservice[VId <: Comparable[VId], VType <: VersionedInstance[
+abstract class MonitorWebservice[VId <: Comparable[
+  VId
+], VType <: VersionedInstance[
   VType,
   VType,
   VId
 ]](
     totallyMissingResourceHandler: RejectionHandler
-)(
-    implicit fm: Materializer,
+)(implicit
+    fm: Materializer,
     system: ActorSystem
 ) extends Directives {
   private val log = Logging(system, classOf[MonitorWebservice[_, _]])
@@ -72,11 +74,15 @@ abstract class MonitorWebservice[VId <: Comparable[VId], VType <: VersionedInsta
           bm.dataStream.runWith(Sink.ignore)
           Nil
       }
-      .via(monitor.monitorFlow(sender)) // ... and route them through the chatFlow ...
+      .via(
+        monitor.monitorFlow(sender)
+      ) // ... and route them through the chatFlow ...
       .mapConcat {
         case msg: DuplexProtocol.DuplexMessage =>
           log.debug("(" + sender + "): Sending " + msg)
-          TextMessage.Strict(DuplexProtocol.toString(msg)) :: Nil // ... pack outgoing messages into WS JSON messages ...
+          TextMessage.Strict(
+            DuplexProtocol.toString(msg)
+          ) :: Nil // ... pack outgoing messages into WS JSON messages ...
         // case msg: Message =>
         //   log.debug(s"""(${sender}): Sending message ${msg}""")
         //   msg :: Nil
@@ -85,47 +91,50 @@ abstract class MonitorWebservice[VId <: Comparable[VId], VType <: VersionedInsta
           Nil
       }
       .withAttributes(Attributes.inputBuffer(initial = 32, max = 128))
-      .via(reportErrorsFlow(sender)) // ... then log any processing errors on stdin
+      .via(
+        reportErrorsFlow(sender)
+      ) // ... then log any processing errors on stdin
 
   def reportErrorsFlow[T](sender: RemoteAddress): reportErrorsFlow[T] =
     new reportErrorsFlow[T](sender)
-  class reportErrorsFlow[T](sender: RemoteAddress) extends GraphStage[FlowShape[T, T]] {
-      val in: Inlet[T] = Inlet[T]("reportErrorsFlow.in")
-      val out: Outlet[T] = Outlet[T]("reportErrorsFlow.out")
-      override val shape: FlowShape[T,T] = FlowShape(in, out)
-      override def initialAttributes: Attributes =
-        Attributes(List(Name("reportErrorsFlow")))
-      def createLogic(inheritedAttributes: Attributes): GraphStageLogic = {
-        new GraphStageLogic(shape) {
-          setHandler(
-            in,
-            new InHandler {
-              override def onPush(): Unit = push(out, grab(in))
+  class reportErrorsFlow[T](sender: RemoteAddress)
+      extends GraphStage[FlowShape[T, T]] {
+    val in: Inlet[T] = Inlet[T]("reportErrorsFlow.in")
+    val out: Outlet[T] = Outlet[T]("reportErrorsFlow.out")
+    override val shape: FlowShape[T, T] = FlowShape(in, out)
+    override def initialAttributes: Attributes =
+      Attributes(List(Name("reportErrorsFlow")))
+    def createLogic(inheritedAttributes: Attributes): GraphStageLogic = {
+      new GraphStageLogic(shape) {
+        setHandler(
+          in,
+          new InHandler {
+            override def onPush(): Unit = push(out, grab(in))
 
-              override def onUpstreamFinish(): Unit = {
-                log.info("(" + sender + "): Upstream finished")
-                completeStage()
-              }
+            override def onUpstreamFinish(): Unit = {
+              log.info("(" + sender + "): Upstream finished")
+              completeStage()
+            }
 
-              override def onUpstreamFailure(ex: Throwable): Unit = {
-                log.error(ex, "(" + sender + "): Upstream failure ${ex}")
-                failStage(ex)
-              }
+            override def onUpstreamFailure(ex: Throwable): Unit = {
+              log.error(ex, "(" + sender + "): Upstream failure ${ex}")
+              failStage(ex)
             }
-          )
-          setHandler(
-            out,
-            new OutHandler {
-              override def onPull(): Unit = pull(in)
-              override def onDownstreamFinish( cause: Throwable ): Unit = {
-                log.info("(" + sender + "): Downstream finished",cause)
-                completeStage()
-              }
+          }
+        )
+        setHandler(
+          out,
+          new OutHandler {
+            override def onPull(): Unit = pull(in)
+            override def onDownstreamFinish(cause: Throwable): Unit = {
+              log.info("(" + sender + "): Downstream finished", cause)
+              completeStage()
             }
-          )
-        }
+          }
+        )
       }
     }
+  }
 
 //  def reportErrorsFlow[T]: Flow[T, T, NotUsed] =
 //    Flow[T]

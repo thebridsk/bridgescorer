@@ -52,7 +52,7 @@ Options:""")
     short = 'd',
     descr = "The directory that has/will get the keys, default=./key",
     argName = "dir",
-    default = Some("./key"),
+    default = Some("./key")
   )
 
   addSubcommand(GenerateSelfSigned)

@@ -13,7 +13,13 @@ object OpponentStats extends Main {
 
   import com.github.thebridsk.utilities.main.Converters._
 
-  val optionStore: ScallopOption[Path] = opt[Path]("store", short='s', descr="The store directory, default=./store", argName="dir", default=Some("./store"))
+  val optionStore: ScallopOption[Path] = opt[Path](
+    "store",
+    short = 's',
+    descr = "The store directory, default=./store",
+    argName = "dir",
+    default = Some("./store")
+  )
 
   val timeout = 120
 
@@ -24,7 +30,7 @@ object OpponentStats extends Main {
 
     dupstore.readAll(timeout.second) match {
       case Right(dups) =>
-        val stats = PlayersOpponentsStats.stats( dups )
+        val stats = PlayersOpponentsStats.stats(dups)
 
         System.out.println(stats)
 

@@ -43,13 +43,14 @@ class RestNestedRubberHand {
     * spray route for all the methods on this resource
     */
   @Hidden
-  def route(
-      implicit @Parameter(hidden = true) res: Resources[String, RubberHand]
-  ): Route = pathPrefix("hands") {
+  def route(implicit
+      @Parameter(hidden = true) res: Resources[String, RubberHand]
+  ): Route =
+    pathPrefix("hands") {
 //    logRequest("route", DebugLevel) {
-    getHand ~ getHands ~ postHand ~ putHand ~ deleteHand
+      getHand ~ getHands ~ postHand ~ putHand ~ deleteHand
 //      }
-  }
+    }
 
   @GET
   @Operation(
@@ -94,13 +95,14 @@ class RestNestedRubberHand {
     )
   )
   def xxxgetHands: Unit = {}
-  def getHands(
-      implicit @Parameter(hidden = true) res: Resources[String, RubberHand]
-  ): Route = pathEndOrSingleSlash {
-    get {
-      resourceMap(res.readAll())
+  def getHands(implicit
+      @Parameter(hidden = true) res: Resources[String, RubberHand]
+  ): Route =
+    pathEndOrSingleSlash {
+      get {
+        resourceMap(res.readAll())
+      }
     }
-  }
 
   @Path("/{handId}")
   @GET
@@ -160,15 +162,16 @@ class RestNestedRubberHand {
     )
   )
   def xxxgetHand: Unit = {}
-  def getHand(
-      implicit @Parameter(hidden = true) res: Resources[String, RubberHand]
-  ): Route = logRequest("getHand", DebugLevel) {
-    get {
-      path("""[a-zA-Z0-9]+""".r) { id =>
-        resource(res.select(id).read())
+  def getHand(implicit
+      @Parameter(hidden = true) res: Resources[String, RubberHand]
+  ): Route =
+    logRequest("getHand", DebugLevel) {
+      get {
+        path("""[a-zA-Z0-9]+""".r) { id =>
+          resource(res.select(id).read())
+        }
       }
     }
-  }
 
   @POST
   @Operation(
@@ -233,15 +236,16 @@ class RestNestedRubberHand {
     )
   )
   def xxxpostHand: Unit = {}
-  def postHand(
-      implicit @Parameter(hidden = true) res: Resources[String, RubberHand]
-  ): Route = pathEnd {
-    post {
-      entity(as[RubberHand]) { hand =>
-        resourceCreated(res.resourceURI, addIdToFuture(res.createChild(hand)))
+  def postHand(implicit
+      @Parameter(hidden = true) res: Resources[String, RubberHand]
+  ): Route =
+    pathEnd {
+      post {
+        entity(as[RubberHand]) { hand =>
+          resourceCreated(res.resourceURI, addIdToFuture(res.createChild(hand)))
+        }
       }
     }
-  }
 
   def addIdToFuture(
       f: Future[Result[RubberHand]]
@@ -311,8 +315,8 @@ class RestNestedRubberHand {
     )
   )
   def xxxputHand: Unit = {}
-  def putHand(
-      implicit @Parameter(hidden = true) res: Resources[String, RubberHand]
+  def putHand(implicit
+      @Parameter(hidden = true) res: Resources[String, RubberHand]
   ): Route =
     put {
       path("""[a-zA-Z0-9]+""".r) { id =>
@@ -346,7 +350,10 @@ class RestNestedRubberHand {
       )
     ),
     responses = Array(
-      new ApiResponse(responseCode = "204", description = "RubberHand deleted."),
+      new ApiResponse(
+        responseCode = "204",
+        description = "RubberHand deleted."
+      ),
       new ApiResponse(
         responseCode = "400",
         description = "Bad request",
@@ -360,11 +367,12 @@ class RestNestedRubberHand {
     )
   )
   def xxxdeleteHand: Unit = {}
-  def deleteHand(
-      implicit @Parameter(hidden = true) res: Resources[String, RubberHand]
-  ): Route = delete {
-    path("""[a-zA-Z0-9]+""".r) { id =>
-      resourceDelete(res.select(id).delete())
+  def deleteHand(implicit
+      @Parameter(hidden = true) res: Resources[String, RubberHand]
+  ): Route =
+    delete {
+      path("""[a-zA-Z0-9]+""".r) { id =>
+        resourceDelete(res.select(id).delete())
+      }
     }
-  }
 }

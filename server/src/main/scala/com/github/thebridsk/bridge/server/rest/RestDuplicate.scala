@@ -56,7 +56,7 @@ trait RestDuplicate extends HasActorSystem {
 
   val nestedBoards = new RestNestedBoard
   val nestedTeams = new RestNestedTeam
-  lazy val nestedPictures = new RestNestedPicture(store,this)
+  lazy val nestedPictures = new RestNestedPicture(store, this)
 
   /**
     * spray route for all the methods on this resource
@@ -146,18 +146,19 @@ trait RestDuplicate extends HasActorSystem {
     )
   )
   def xxxgetDuplicate(): Unit = {}
-  val getDuplicate: Route = logRequest("RestDuplicate.getDuplicate", DebugLevel) {
-    logResult("RestDuplicate.getDuplicate") {
-      get {
-        pathPrefix("""[a-zA-Z0-9]+""".r) { sid =>
-          val id = MatchDuplicate.id(sid)
-          pathEndOrSingleSlash {
-            resource(store.select(id).read())
+  val getDuplicate: Route =
+    logRequest("RestDuplicate.getDuplicate", DebugLevel) {
+      logResult("RestDuplicate.getDuplicate") {
+        get {
+          pathPrefix("""[a-zA-Z0-9]+""".r) { sid =>
+            val id = MatchDuplicate.id(sid)
+            pathEndOrSingleSlash {
+              resource(store.select(id).read())
+            }
           }
         }
       }
     }
-  }
 
   val nested: Route = logRequest("RestDuplicate.nested", DebugLevel) {
     logResult("RestDuplicate.nested") {
@@ -172,8 +173,9 @@ trait RestDuplicate extends HasActorSystem {
   }
 
   import scala.language.implicitConversions
-  implicit
-  def addIdToFuture(f: Future[Result[MatchDuplicate]]): Future[Result[(String, MatchDuplicate)]] =
+  implicit def addIdToFuture(
+      f: Future[Result[MatchDuplicate]]
+  ): Future[Result[(String, MatchDuplicate)]] =
     f.map { r =>
       r match {
         case Right(md) => Right((md.id.id, md))
@@ -276,8 +278,8 @@ trait RestDuplicate extends HasActorSystem {
                     dup,
                     test,
                     default,
-                    boards.map( BoardSet.id(_)),
-                    movements.map( Movement.id(_))
+                    boards.map(BoardSet.id(_)),
+                    movements.map(Movement.id(_))
                   ) match {
                     case Some(fut) =>
                       onComplete(fut) {

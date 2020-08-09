@@ -17,8 +17,7 @@ class Resource[VId, VType](
     val resourceURI: String,
     val resources: Resources[VId, VType],
     val id: VId
-)(
-    implicit
+)(implicit
     execute: ExecutionContext
 ) {
 
@@ -38,8 +37,7 @@ class Resource[VId, VType](
     */
   def update[T, R](
       updator: Updator[VType, T, R]
-  )(
-      implicit
+  )(implicit
       pos: SourcePosition
   ): Future[Result[R]] =
     resources.update(id, updator).logit(s"update with updator ${resourceURI}")
@@ -53,8 +51,7 @@ class Resource[VId, VType](
   def update(
       newvalue: VType,
       context: ChangeContext = ChangeContext()
-  )(
-      implicit
+  )(implicit
       pos: SourcePosition
   ): Future[Result[VType]] = {
     log.fine(s"Updating resource ${resourceURI}: ${newvalue}")
@@ -82,8 +79,7 @@ class Resource[VId, VType](
     * @param context the change context for this operation
     * @return a future to the old values
     */
-  def delete(changeContext: ChangeContext = ChangeContext())(
-      implicit
+  def delete(changeContext: ChangeContext = ChangeContext())(implicit
       pos: SourcePosition
   ): Future[Result[VType]] =
     resources.delete(id, changeContext).logit(s"Delete ${resourceURI}")

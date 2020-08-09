@@ -23,7 +23,6 @@ object ConvertBoardSetsAndMovementsCommand extends Subcommand("convertboards") {
   implicit def dateConverter: ValueConverter[Duration] =
     singleArgConverter[Duration](Duration(_))
 
-
   val validValues: List[String] = List("yaml", "json")
 
   descr("converts a database to use yaml or json")

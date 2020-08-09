@@ -21,28 +21,28 @@ object GenerateSSLKeys {
 
   val proc = new MyProcess()
 
-  def getMarkerFile( dir: Option[File] = None ): File = {
-    getFullFile( dir, "GenerateSSLKeys.Marker.txt" )
+  def getMarkerFile(dir: Option[File] = None): File = {
+    getFullFile(dir, "GenerateSSLKeys.Marker.txt")
   }
 
-  def makerFileExists( dir: Option[File] = None ): Boolean = {
+  def makerFileExists(dir: Option[File] = None): Boolean = {
     getMarkerFile(dir).isFile()
   }
 
-  def deleteMarkerFile( dir: Option[File] = None ): Boolean = {
+  def deleteMarkerFile(dir: Option[File] = None): Boolean = {
     getMarkerFile(dir).delete()
   }
 
-  def getFile( workingDirectory: Option[File], file: String ): File = {
-    new File( new File(file).getName )
+  def getFile(workingDirectory: Option[File], file: String): File = {
+    new File(new File(file).getName)
   }
 
-  def getFullFile( workingDirectory: Option[File], file: String ): File = {
+  def getFullFile(workingDirectory: Option[File], file: String): File = {
     val f = new File(workingDirectory.getOrElse(new File(".")), file)
     f.getAbsoluteFile.getCanonicalFile
   }
 
-  def getFullFile( workingDirectory: Option[File], file: File ): File = {
+  def getFullFile(workingDirectory: Option[File], file: File): File = {
     val f = new File(workingDirectory.getOrElse(new File(".")), file.toString)
     f.getAbsoluteFile.getCanonicalFile
   }
@@ -51,36 +51,39 @@ object GenerateSSLKeys {
       workingDirectory: Option[File] = None
   ): Boolean = {
     val d = workingDirectory.getOrElse(new File("."))
-    logger.info( s"Deleting keys directory ${d.toString}")
-    MyFileUtils.deleteDirectory( d.toPath(), None )
+    logger.info(s"Deleting keys directory ${d.toString}")
+    MyFileUtils.deleteDirectory(d.toPath(), None)
     d.mkdirs()
   }
 
   def showCert(
-    certChain: List[Certificate]
+      certChain: List[Certificate]
   ): Unit = {
     import scala.jdk.CollectionConverters._
-    certChain.zipWithIndex.foreach { case (cert,i) =>
-      // return true if the certificate is NOT valid
-      cert match {
-        case c: X509Certificate =>
-          val name = c.getSubjectX500Principal().getName()
-          logger.info(
-            s"""Certificate[$i]
-                |  subject DN = ${c.getSubjectDN().getName()}
-                |  not after = ${c.getNotAfter()}
-                |  not before = ${c.getNotBefore()}
-                |  SAN = ${Option(c.getSubjectAlternativeNames()).map( _.asScala.mkString).getOrElse("")}
-                |  issuer DN = ${c.getIssuerDN()}
+    certChain.zipWithIndex.foreach {
+      case (cert, i) =>
+        // return true if the certificate is NOT valid
+        cert match {
+          case c: X509Certificate =>
+            val name = c.getSubjectX500Principal().getName()
+            logger.info(
+              s"""Certificate[$i]
+                 |  subject DN = ${c.getSubjectDN().getName()}
+                 |  not after = ${c.getNotAfter()}
+                 |  not before = ${c.getNotBefore()}
+                 |  SAN = ${Option(c.getSubjectAlternativeNames())
+                .map(_.asScala.mkString)
+                .getOrElse("")}
+                 |  issuer DN = ${c.getIssuerDN()}
               """.stripMargin
-          )
-        case c =>
-          logger.info(
-            s"""Certificate[$i]
-                |  Unknown certificate class ${c.getClass().getName()}
+            )
+          case c =>
+            logger.info(
+              s"""Certificate[$i]
+                 |  Unknown certificate class ${c.getClass().getName()}
               """.stripMargin
-          )
-      }
+            )
+        }
     }
   }
 
@@ -96,55 +99,79 @@ object GenerateSSLKeys {
     * @return true - the certificate is valid
     */
   def validateCert(
-    alias: String,
-    keystore: String,
-    storepass: String,
-    workingDirectory: Option[File],
-    showCerts: Boolean
+      alias: String,
+      keystore: String,
+      storepass: String,
+      workingDirectory: Option[File],
+      showCerts: Boolean
   ): Boolean = {
     import scala.jdk.CollectionConverters._
-    getCertificatesFromKeystore(alias,keystore,storepass,workingDirectory) match {
-      case Some( certs: List[_]) =>
+    getCertificatesFromKeystore(
+      alias,
+      keystore,
+      storepass,
+      workingDirectory
+    ) match {
+      case Some(certs: List[_]) =>
         if (showCerts) showCert(certs)
-        certs.zipWithIndex.find { case (cert,i) =>
-          // return true if the certificate is NOT valid
-          cert match {
-            case c: X509Certificate =>
-              val name = c.getSubjectX500Principal().getName()
-              try {
-                c.checkValidity()
-                if (i == 0) {
-                  val machineip = NetworkInterface.getNetworkInterfaces().asScala.filter { ni =>
-                    !ni.isLoopback() && ni.getInetAddresses().hasMoreElements()
-                  }.flatMap { ni =>
-                    ni.getInetAddresses().asScala.flatMap { ia =>
-                      if (ia.isInstanceOf[Inet4Address]) ia.getHostAddress()::Nil
-                      else Nil
-                    }
-                  }.toList.distinct
-                  logger.fine(s"Found machine IPs: ${machineip.mkString(" ")}")
+        certs.zipWithIndex.find {
+          case (cert, i) =>
+            // return true if the certificate is NOT valid
+            cert match {
+              case c: X509Certificate =>
+                val name = c.getSubjectX500Principal().getName()
+                try {
+                  c.checkValidity()
+                  if (i == 0) {
+                    val machineip = NetworkInterface
+                      .getNetworkInterfaces()
+                      .asScala
+                      .filter { ni =>
+                        !ni.isLoopback() && ni
+                          .getInetAddresses()
+                          .hasMoreElements()
+                      }
+                      .flatMap { ni =>
+                        ni.getInetAddresses().asScala.flatMap { ia =>
+                          if (ia.isInstanceOf[Inet4Address])
+                            ia.getHostAddress() :: Nil
+                          else Nil
+                        }
+                      }
+                      .toList
+                      .distinct
+                    logger.fine(
+                      s"Found machine IPs: ${machineip.mkString(" ")}"
+                    )
 
-                  val certIPs = getSAN(c)
-                  val rc = certIPs.find { ip =>
-                    machineip.contains(ip)
-                  }.isEmpty
-                  if (rc) logger.warning(s"IPs ${machineip.mkString("[", " ", "]")} not found in certificate: ${certIPs.mkString("[", " ", "]")}")
-                  rc
-                } else {
-                  false
+                    val certIPs = getSAN(c)
+                    val rc = certIPs.find { ip =>
+                      machineip.contains(ip)
+                    }.isEmpty
+                    if (rc)
+                      logger.warning(
+                        s"IPs ${machineip.mkString("[", " ", "]")} not found in certificate: ${certIPs
+                          .mkString("[", " ", "]")}"
+                      )
+                    rc
+                  } else {
+                    false
+                  }
+                } catch {
+                  case x @ (_: CertificateExpiredException |
+                      _: CertificateNotYetValidException) =>
+                    logger.warning(s"Certificate not valid today: $name")
+                    true
                 }
-              } catch {
-                case x @ (_: CertificateExpiredException | _: CertificateNotYetValidException) =>
-                  logger.warning( s"Certificate not valid today: $name" )
-                  true
-              }
-            case _ =>
-              logger.warning( s"Unknown certification class ${cert.getClass.getName}:\n${cert}")
-              true
-          }
+              case _ =>
+                logger.warning(
+                  s"Unknown certification class ${cert.getClass.getName}:\n${cert}"
+                )
+                true
+            }
         }.isEmpty
       case cert =>
-        logger.warning( s"Certificate not found: $keystore $alias")
+        logger.warning(s"Certificate not found: $keystore $alias")
         false
     }
   }
@@ -159,20 +186,20 @@ object GenerateSSLKeys {
     * @return None if not found or keystore does not exist.
     */
   def getCertificatesFromKeystore(
-    alias: String,
-    keystore: String,
-    storepass: String,
-    workingDirectory: Option[File],
+      alias: String,
+      keystore: String,
+      storepass: String,
+      workingDirectory: Option[File]
   ): Option[List[Certificate]] = {
     val keyStore = KeyStore.getInstance("JKS");
-    val file = GenerateSSLKeys.getFullFile( workingDirectory, keystore)
+    val file = GenerateSSLKeys.getFullFile(workingDirectory, keystore)
     if (file.isFile()) {
-      Using.resource(new FileInputStream( file )) { f =>
-        keyStore.load( f, storepass.toCharArray());
+      Using.resource(new FileInputStream(file)) { f =>
+        keyStore.load(f, storepass.toCharArray());
       }
-      Option(keyStore.getCertificateChain( alias ).toList)
+      Option(keyStore.getCertificateChain(alias).toList)
     } else {
-      logger.warning( s"File $file does not exist or is not a file")
+      logger.warning(s"File $file does not exist or is not a file")
       None
     }
   }
@@ -181,22 +208,22 @@ object GenerateSSLKeys {
   val SAN_DNS = 2
 
   /**
-    *
-    *
     * @param cert
     * @return a list of all IP address in the SAN, except for 127.0.0.1
     */
-  def getSAN( cert: X509Certificate ): List[String] = {
+  def getSAN(cert: X509Certificate): List[String] = {
     val collection = cert.getSubjectAlternativeNames()
     import scala.jdk.CollectionConverters._
     collection.asScala.flatMap { list =>
       val l = list.asScala.toList
-      logger.fine( s"  SAN ${l.map( o => s"${o.getClass.getSimpleName}(${o})").mkString(" ")}")
+      logger.fine(
+        s"  SAN ${l.map(o => s"${o.getClass.getSimpleName}(${o})").mkString(" ")}"
+      )
       l match {
-        case (SAN_IP)::(s: String)::Nil if s != "127.0.0.1" =>
-          s::Nil
+        case (SAN_IP) :: (s: String) :: Nil if s != "127.0.0.1" =>
+          s :: Nil
         case _ =>
-          logger.fine( s"Ignoring SAN entry: ${l.mkString(" ")}")
+          logger.fine(s"Ignoring SAN entry: ${l.mkString(" ")}")
           Nil
       }
     }.toList
@@ -220,22 +247,23 @@ case class RootCAInfo(
     verbose: List[String],
     validityCA: String
 ) {
-  override
-  def toString(): String = {
-    s"""RootCA(Alias=$alias, dname="$dname", keystore=$keystore, cert=$cert,"""+
-      s""" truststore=$truststore, keypass=*****, storepass=*****, trustpass=${trustpass.map( p => "***").getOrElse("<None>")}),"""+
+  override def toString(): String = {
+    s"""RootCA(Alias=$alias, dname="$dname", keystore=$keystore, cert=$cert,""" +
+      s""" truststore=$truststore, keypass=*****, storepass=*****, trustpass=${trustpass
+        .map(p => "***")
+        .getOrElse("<None>")}),""" +
       s""" workingDirectory=${workingDirectory}, good=${good}, verbose=${verbose}, validityCA=$validityCA"""
   }
 
   def checkMarkerFile(): RootCAInfo = {
-    if (makerFileExists( workingDirectory )) copy( good = true )
+    if (makerFileExists(workingDirectory)) copy(good = true)
     else this
   }
 
   def deleteOldServerCerts(): RootCAInfo = {
     getFullFile(workingDirectory, keystore).delete()
     getFullFile(workingDirectory, cert).delete()
-    truststore.foreach( f => getFullFile(workingDirectory,f).delete())
+    truststore.foreach(f => getFullFile(workingDirectory, f).delete())
     getMarkerFile(workingDirectory).delete()
     this
   }
@@ -251,7 +279,6 @@ case class RootCAInfo(
     * rootca must not have any path elements.
     *
     * @param validityCA the number of days the server certificate is valid for
-    *
     */
   def generateRootCA(): RootCAInfo = {
 
@@ -259,35 +286,47 @@ case class RootCAInfo(
 
       // Create a self signed key pair root CA certificate
       val gencmd = List(
-          "-genkeypair",
-          "-alias", alias,
-          "-dname", dname,
-          "-keystore", keystore.toString,
-          "-keyalg", "RSA",
-          "-keysize", "4096",
-          "-ext", "KeyUsage:critical=keyCertSign",
-          "-ext", "BasicConstraints:critical=ca:true",
-          "-validity", s"$validityCA"
-      ):::verbose
+        "-genkeypair",
+        "-alias",
+        alias,
+        "-dname",
+        dname,
+        "-keystore",
+        keystore.toString,
+        "-keyalg",
+        "RSA",
+        "-keysize",
+        "4096",
+        "-ext",
+        "KeyUsage:critical=keyCertSign",
+        "-ext",
+        "BasicConstraints:critical=ca:true",
+        "-validity",
+        s"$validityCA"
+      ) ::: verbose
       proc.keytool(
-        cmd = gencmd:::List( "-keypass", keypass, "-storepass", storepass ),
+        cmd = gencmd ::: List("-keypass", keypass, "-storepass", storepass),
         workingDirectory = workingDirectory,
         env = None,
-        printcmd = Some(gencmd:::List( "-keypass", "***", "-storepass", "***" )),
+        printcmd = Some(gencmd ::: List("-keypass", "***", "-storepass", "***"))
       )
 
       // Export the exampleCA public certificate as exampleca.crt so that it can be used in trust stores.
       val exportcmd = List(
-          "-export",
-          "-alias", alias,
-          "-file", cert.toString,
-          "-keystore", keystore.toString
-      ):::verbose
+        "-export",
+        "-alias",
+        alias,
+        "-file",
+        cert.toString,
+        "-keystore",
+        keystore.toString
+      ) ::: verbose
       proc.keytool(
-        cmd = exportcmd:::List( "-keypass", keypass, "-storepass", storepass ),
+        cmd = exportcmd ::: List("-keypass", keypass, "-storepass", storepass),
         workingDirectory = workingDirectory,
         env = None,
-        printcmd = Some(exportcmd:::List( "-keypass", "***", "-storepass", "***" )),
+        printcmd =
+          Some(exportcmd ::: List("-keypass", "***", "-storepass", "***"))
       )
     }
 
@@ -305,27 +344,34 @@ case class RootCAInfo(
     * @return updated root CA info object
     */
   def trustRootCA(
-    truststore: String,
-    trustpass: String,
+      truststore: String,
+      trustpass: String
   ): RootCAInfo = {
 
-    val info = copy( truststore = Some(getFile(workingDirectory,s"${truststore}.jks")), trustpass = Some(trustpass))
+    val info = copy(
+      truststore = Some(getFile(workingDirectory, s"${truststore}.jks")),
+      trustpass = Some(trustpass)
+    )
 
     if (!good) {
 
       // Create a JKS keystore that trusts the example CA, with the default password.
       val trustcmd = List(
-          "-import",
-          "-alias", info.alias,
-          "-file", info.cert.toString,
-          "-storetype", "JKS",
-          "-keystore", info.truststore.get.toString
-      ):::info.verbose
+        "-import",
+        "-alias",
+        info.alias,
+        "-file",
+        info.cert.toString,
+        "-storetype",
+        "JKS",
+        "-keystore",
+        info.truststore.get.toString
+      ) ::: info.verbose
       proc.keytool(
-        cmd = trustcmd:::List( "-storepass", info.trustpass.get ),
+        cmd = trustcmd ::: List("-storepass", info.trustpass.get),
         workingDirectory = workingDirectory,
         env = None,
-        printcmd = Some(trustcmd:::List( "-storepass", "***" )),
+        printcmd = Some(trustcmd ::: List("-storepass", "***")),
         stdin = Some("yes\n")
       )
     }
@@ -338,7 +384,6 @@ case class RootCAInfo(
 object RootCAInfo {
 
   /**
-    *
     * workingDirectory must be the directory that will get the newly generated keys.
     * rootca must not have any path elements.
     *
@@ -369,18 +414,19 @@ object RootCAInfo {
     val v = if (verbose) List("-v") else List()
 
     new RootCAInfo(
-        alias = alias,
-        dname = dname,
-        keystore = getFile(workingDirectory,s"${rootca}.jks"),
-        cert = getFile(workingDirectory,s"${rootca}.crt"),
-        keypass = keypass,
-        storepass = storepass,
-        truststore = truststoreprefix.map( p => getFile(workingDirectory, s"${p}.jks")),
-        trustpass = trustpass,
-        workingDirectory = workingDirectory,
-        good = good,
-        verbose = v,
-        validityCA = validityCA
+      alias = alias,
+      dname = dname,
+      keystore = getFile(workingDirectory, s"${rootca}.jks"),
+      cert = getFile(workingDirectory, s"${rootca}.crt"),
+      keypass = keypass,
+      storepass = storepass,
+      truststore =
+        truststoreprefix.map(p => getFile(workingDirectory, s"${p}.jks")),
+      trustpass = trustpass,
+      workingDirectory = workingDirectory,
+      good = good,
+      verbose = v,
+      validityCA = validityCA
     )
 
   }
@@ -388,7 +434,6 @@ object RootCAInfo {
 }
 
 /**
-  *
   * @constructor
   * @param alias the alias of the certificate in keystore
   * @param keystore the filename for the keystore for server private certificate
@@ -420,15 +465,14 @@ case class ServerInfo(
     validityServer: String
 ) {
 
-  override
-  def toString(): String = {
-    s"""ServerInfo(Alias=$alias, dname="$dname", keystore=$keystore, csr=$csr, cert=$cert,"""+
-    s""" keypass=*****, storepass=*****, pkcs=$pkcs), keyfile=$keyfile, workingDirectory=${workingDirectory}"""+
-    s""" good=$good, verbose=$verbose, validityServer=$validityServer"""
+  override def toString(): String = {
+    s"""ServerInfo(Alias=$alias, dname="$dname", keystore=$keystore, csr=$csr, cert=$cert,""" +
+      s""" keypass=*****, storepass=*****, pkcs=$pkcs), keyfile=$keyfile, workingDirectory=${workingDirectory}""" +
+      s""" good=$good, verbose=$verbose, validityServer=$validityServer"""
   }
 
   def checkMarkerFile(): ServerInfo = {
-    if (makerFileExists( workingDirectory )) copy( good = true )
+    if (makerFileExists(workingDirectory)) copy(good = true)
     else this
   }
 
@@ -447,39 +491,49 @@ case class ServerInfo(
     *
     * @return the server info object
     */
-  def generateServerCSR(  ): ServerInfo = {
+  def generateServerCSR(): ServerInfo = {
 
     if (!good) {
 
       // Create a self signed key pair root CA certificate
       val gencmd = List(
-          "-genkeypair",
-          "-alias", alias,
-          "-dname", dname,
-          "-keystore", keystore.toString,
-          "-keyalg", "RSA",
-          "-keysize", "4096",
-          "-validity", s"$validityServer",
-      ):::verbose
+        "-genkeypair",
+        "-alias",
+        alias,
+        "-dname",
+        dname,
+        "-keystore",
+        keystore.toString,
+        "-keyalg",
+        "RSA",
+        "-keysize",
+        "4096",
+        "-validity",
+        s"$validityServer"
+      ) ::: verbose
       proc.keytool(
-        cmd = gencmd:::List( "-keypass", keypass, "-storepass", storepass ),
+        cmd = gencmd ::: List("-keypass", keypass, "-storepass", storepass),
         workingDirectory = workingDirectory,
         env = None,
-        printcmd = Some(gencmd:::List( "-keypass", "***", "-storepass", "***" )),
+        printcmd = Some(gencmd ::: List("-keypass", "***", "-storepass", "***"))
       )
 
       // Create a certificate signing request for example.com
       val certreqcmd = List(
-          "-certreq",
-          "-alias", alias,
-          "-file", csr.toString,
-          "-keystore", keystore.toString,
-      ):::verbose
+        "-certreq",
+        "-alias",
+        alias,
+        "-file",
+        csr.toString,
+        "-keystore",
+        keystore.toString
+      ) ::: verbose
       proc.keytool(
-        cmd = certreqcmd:::List( "-keypass", keypass, "-storepass", storepass ),
+        cmd = certreqcmd ::: List("-keypass", keypass, "-storepass", storepass),
         workingDirectory = workingDirectory,
         env = None,
-        printcmd = Some(certreqcmd:::List( "-keypass", "***", "-storepass", "***" )),
+        printcmd =
+          Some(certreqcmd ::: List("-keypass", "***", "-storepass", "***"))
       )
     }
     this
@@ -499,7 +553,7 @@ case class ServerInfo(
       rootcaKeystorePass: String,
       rootcaAlias: String,
       rootcaKeypass: String,
-      ip: List[String] = Nil,
+      ip: List[String] = Nil
   ): ServerInfo = {
 
     if (!good) {
@@ -508,23 +562,37 @@ case class ServerInfo(
       // original certificate.
       // Technically, keyUsage should be digitalSignature for DHE or ECDHE, keyEncipherment for RSA.
       val gencertcmd = List(
-          "-gencert",
-          "-alias", rootcaAlias,
-          "-keystore", rootcaKeyStore.toString,
-          "-infile", csr.toString,
-          "-outfile", cert.toString,
-          "-ext", "KeyUsage:critical=digitalSignature,keyEncipherment",
-          "-ext", "EKU=serverAuth",
-          // "-ext", "SAN=DNS:localhost,IP:127.0.0.1",
-          "-ext", s"SAN=DNS:localhost,IP:127.0.0.1${ip.map( i => s"IP:$i" ).mkString(",",",","")}",
-          "-rfc",
-          "-validity", "385"
-      ):::verbose
+        "-gencert",
+        "-alias",
+        rootcaAlias,
+        "-keystore",
+        rootcaKeyStore.toString,
+        "-infile",
+        csr.toString,
+        "-outfile",
+        cert.toString,
+        "-ext",
+        "KeyUsage:critical=digitalSignature,keyEncipherment",
+        "-ext",
+        "EKU=serverAuth",
+        // "-ext", "SAN=DNS:localhost,IP:127.0.0.1",
+        "-ext",
+        s"SAN=DNS:localhost,IP:127.0.0.1${ip.map(i => s"IP:$i").mkString(",", ",", "")}",
+        "-rfc",
+        "-validity",
+        "385"
+      ) ::: verbose
       proc.keytool(
-        cmd = gencertcmd:::List( "-keypass", rootcaKeypass, "-storepass", rootcaKeystorePass ),
+        cmd = gencertcmd ::: List(
+          "-keypass",
+          rootcaKeypass,
+          "-storepass",
+          rootcaKeystorePass
+        ),
         workingDirectory = workingDirectory,
         env = None,
-        printcmd = Some(gencertcmd:::List( "-keypass", "***", "-storepass", "***" )),
+        printcmd =
+          Some(gencertcmd ::: List("-keypass", "***", "-storepass", "***"))
       )
 
     }
@@ -540,40 +608,48 @@ case class ServerInfo(
     */
   def importServerCert(
       rootcaPublicAlias: String,
-      rootcaPublicCert: String,
+      rootcaPublicCert: String
   ): ServerInfo = {
 
     if (!good) {
 
       // Tell examplebridgescorekeeper.jks it can trust exampleca as a signer.
       val importcacmd = List(
-          "-import",
-          "-alias", rootcaPublicAlias,
-          "-keystore", keystore.toString,
-          "-storetype", "JKS",
-          "-file", rootcaPublicCert
-      ):::verbose
+        "-import",
+        "-alias",
+        rootcaPublicAlias,
+        "-keystore",
+        keystore.toString,
+        "-storetype",
+        "JKS",
+        "-file",
+        rootcaPublicCert
+      ) ::: verbose
       proc.keytool(
-        cmd = importcacmd:::List( "-storepass", storepass ),
+        cmd = importcacmd ::: List("-storepass", storepass),
         workingDirectory = workingDirectory,
         env = None,
-        printcmd = Some(importcacmd:::List( "-storepass", "***" )),
+        printcmd = Some(importcacmd ::: List("-storepass", "***")),
         stdin = Some("yes\n")
       )
 
       // Import the signed certificate back into examplebridgescorekeeper.jks
       val importsignedcmd = List(
-          "-import",
-          "-alias", alias,
-          "-keystore", keystore.toString,
-          "-storetype", "JKS",
-          "-file", cert.toString
-      ):::verbose
+        "-import",
+        "-alias",
+        alias,
+        "-keystore",
+        keystore.toString,
+        "-storetype",
+        "JKS",
+        "-file",
+        cert.toString
+      ) ::: verbose
       proc.keytool(
-        cmd = importsignedcmd:::List( "-storepass", storepass ),
+        cmd = importsignedcmd ::: List("-storepass", storepass),
         workingDirectory = workingDirectory,
         env = None,
-        printcmd = Some(importsignedcmd:::List( "-storepass", "***" ))
+        printcmd = Some(importsignedcmd ::: List("-storepass", "***"))
       )
 
     }
@@ -590,18 +666,24 @@ case class ServerInfo(
     if (!good) {
 
       val exportcertcmd = List(
-          "-export",
-          "-alias", alias,
-          "-keystore", keystore.toString,
-          "-storetype", "JKS",
-          "-file", cert.toString,
-          "-rfc"
-      ):::verbose
+        "-export",
+        "-alias",
+        alias,
+        "-keystore",
+        keystore.toString,
+        "-storetype",
+        "JKS",
+        "-file",
+        cert.toString,
+        "-rfc"
+      ) ::: verbose
       proc.keytool(
-        cmd = exportcertcmd:::List( "-keypass", keypass, "-storepass", storepass ),
+        cmd =
+          exportcertcmd ::: List("-keypass", keypass, "-storepass", storepass),
         workingDirectory = workingDirectory,
         env = None,
-        printcmd = Some(exportcertcmd:::List( "-keypass", "***", "-storepass", "***" )),
+        printcmd =
+          Some(exportcertcmd ::: List("-keypass", "***", "-storepass", "***"))
       )
     }
     this
@@ -618,18 +700,39 @@ case class ServerInfo(
 
       // Create a PKCS#12 keystore containing the public and private keys.
       val pkcscmd = List(
-          "-importkeystore",
-          "-srcalias", alias,
-          "-srckeystore", keystore.toString,
-          "-srcstoretype", "JKS",
-          "-destkeystore", pkcs.toString,
-          "-deststoretype", "PKCS12"
-      ):::verbose
+        "-importkeystore",
+        "-srcalias",
+        alias,
+        "-srckeystore",
+        keystore.toString,
+        "-srcstoretype",
+        "JKS",
+        "-destkeystore",
+        pkcs.toString,
+        "-deststoretype",
+        "PKCS12"
+      ) ::: verbose
       proc.keytool(
-        cmd = pkcscmd:::List( "-srcstorepass", storepass, "-destkeypass", keypass, "-deststorepass", storepass ),
+        cmd = pkcscmd ::: List(
+          "-srcstorepass",
+          storepass,
+          "-destkeypass",
+          keypass,
+          "-deststorepass",
+          storepass
+        ),
         workingDirectory = workingDirectory,
         env = None,
-        printcmd = Some(pkcscmd:::List( "-srcstorepass", "***", "-destkeypass", "***", "-deststorepass", "***" )),
+        printcmd = Some(
+          pkcscmd ::: List(
+            "-srcstorepass",
+            "***",
+            "-destkeypass",
+            "***",
+            "-deststorepass",
+            "***"
+          )
+        )
       )
 
     }
@@ -648,22 +751,33 @@ case class ServerInfo(
 
       // Export the bridgescorekeeper private key for use in nginx.  Note this requires the use of OpenSSL.
       val opensslpckscmd = List(
-          "openssl",
-          "pkcs12",
-          "-nocerts",
-          "-nodes",
-          "-in", pkcs.getName.toString,
-          "-out", keyfile.getName.toString
+        "openssl",
+        "pkcs12",
+        "-nocerts",
+        "-nodes",
+        "-in",
+        pkcs.getName.toString,
+        "-out",
+        keyfile.getName.toString
       )
-      val printcmd = opensslpckscmd:::List( "-passout", "pass:***", "-passin", "pass:***" )
+      val printcmd =
+        opensslpckscmd ::: List("-passout", "pass:***", "-passin", "pass:***")
       val process = proc.bash(
-        cmd = opensslpckscmd:::List( "-passout", s"pass:${keypass}", "-passin", s"pass:${keypass}" ),
+        cmd = opensslpckscmd ::: List(
+          "-passout",
+          s"pass:${keypass}",
+          "-passin",
+          s"pass:${keypass}"
+        ),
         workingDirectory = workingDirectory,
         addEnvp = Map(),
-        printcmd = Some(printcmd),
+        printcmd = Some(printcmd)
       )
       val rc = process.waitFor()
-      if (rc != 0) throw new Error(s"Failed, with rc=${rc} running bash ${printcmd.mkString(" ")}")
+      if (rc != 0)
+        throw new Error(
+          s"Failed, with rc=${rc} running bash ${printcmd.mkString(" ")}"
+        )
 
     }
     this
@@ -681,8 +795,8 @@ case class ServerInfo(
   def generateMarkerFile(): ServerInfo = {
 
     if (!good) {
-      val marker = getMarkerFile( workingDirectory )
-      val markerf = new FileOutputStream( marker )
+      val marker = getMarkerFile(workingDirectory)
+      val markerf = new FileOutputStream(marker)
       try {
         markerf.write(0)
         markerf.flush()
@@ -692,7 +806,6 @@ case class ServerInfo(
     }
     this
   }
-
 
 }
 
@@ -737,13 +850,13 @@ object ServerInfo {
     new ServerInfo(
       alias = alias,
       dname = dname,
-      keystore = getFile(workingDirectory,s"${server}.jks"),
-      csr = getFile(workingDirectory,s"${server}.csr"),
-      cert = getFile(workingDirectory,s"${server}.crt"),
+      keystore = getFile(workingDirectory, s"${server}.jks"),
+      csr = getFile(workingDirectory, s"${server}.csr"),
+      cert = getFile(workingDirectory, s"${server}.crt"),
       keypass = keypass,
       storepass = storepass,
-      pkcs = getFile(workingDirectory,s"${server}.p12"),
-      keyfile = getFile(workingDirectory,s"${server}.key"),
+      pkcs = getFile(workingDirectory, s"${server}.p12"),
+      keyfile = getFile(workingDirectory, s"${server}.key"),
       workingDirectory = workingDirectory,
       good = good,
       verbose = v,

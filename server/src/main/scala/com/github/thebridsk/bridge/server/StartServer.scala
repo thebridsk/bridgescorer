@@ -51,7 +51,7 @@ import akka.http.scaladsl.server.Route
 import akka.http.scaladsl.model.ContentType
 import akka.http.scaladsl.model.MediaTypes
 import akka.http.scaladsl.HttpsConnectionContext
-import akka.http.scaladsl.server.{ RequestContext, RouteResult }
+import akka.http.scaladsl.server.{RequestContext, RouteResult}
 import scala.concurrent.ExecutionContextExecutor
 
 /**
@@ -267,7 +267,9 @@ If both https and http is started, then http will be redirected to https
     getServer(true, false).terminateServer()
   }
 
-  def terminateServerIn(duration: Duration = 10 seconds): Future[Promise[String]] = {
+  def terminateServerIn(
+      duration: Duration = 10 seconds
+  ): Future[Promise[String]] = {
     getServer(true, false).terminateServerIn(duration)
   }
 
@@ -278,8 +280,11 @@ If both https and http is started, then http will be redirected to https
       certPassword: Option[String] = optionCertPassword.toOption,
       certificate: Option[String] = optionCertificate.toOption
   ): HttpsConnectionContext = {
-    logger.info(s"Creating serverSSLContext, certificate=$certificate, workingDirectory=${new File(".").getAbsoluteFile().getCanonicalFile()}")
-    val password = certPassword.getOrElse("abcdef").toCharArray // default NOT SECURE
+    logger.info(
+      s"Creating serverSSLContext, certificate=$certificate, workingDirectory=${new File(".").getAbsoluteFile().getCanonicalFile()}"
+    )
+    val password =
+      certPassword.getOrElse("abcdef").toCharArray // default NOT SECURE
     val context = SSLContext.getInstance("TLS")
     val ks = certificate match {
       case Some(cert) =>
@@ -336,7 +341,7 @@ If both https and http is started, then http will be redirected to https
       optBrowserRemoteLogging: Option[String] = None,
       optIPadRemoteLogging: Option[String] = None,
       diagnosticDir: Option[Directory] = None,
-      optCACert: Option[Path] = None,
+      optCACert: Option[Path] = None
   ): Future[MyService] = {
     getServer(true, true).start(
       interface,
@@ -441,7 +446,8 @@ private class StartServer {
         if (p.isFile && p.extension == "zip") {
           Some(
             new BridgeServiceZipStore("root", p.toFile) {
-              override val diagnosticDir: Option[Directory] = optionDiagnosticDir.toOption.map( _.toDirectory )
+              override val diagnosticDir: Option[Directory] =
+                optionDiagnosticDir.toOption.map(_.toDirectory)
             }
           )
         } else if (!d.isDirectory) {
@@ -451,13 +457,15 @@ private class StartServer {
           }
           Some(
             new BridgeServiceFileStore(d, oid = Some("root")) {
-              override val diagnosticDir: Option[Directory] = optionDiagnosticDir.toOption.map( _.toDirectory )
+              override val diagnosticDir: Option[Directory] =
+                optionDiagnosticDir.toOption.map(_.toDirectory)
             }
           )
         } else {
           Some(
             new BridgeServiceFileStore(d, oid = Some("root")) {
-              override val diagnosticDir: Option[Directory] = optionDiagnosticDir.toOption.map( _.toDirectory )
+              override val diagnosticDir: Option[Directory] =
+                optionDiagnosticDir.toOption.map(_.toDirectory)
             }
           )
         }
@@ -543,7 +551,9 @@ private class StartServer {
   // This will complete if the server fails to start
   val terminatePromise: Promise[String] = Promise[String]()
 
-  def terminateServerIn(duration: Duration = 10 seconds): Future[Promise[String]] = {
+  def terminateServerIn(
+      duration: Duration = 10 seconds
+  ): Future[Promise[String]] = {
     Future {
       log.info("Shutting down server in " + duration)
       Thread.sleep(duration.toMillis)
@@ -556,7 +566,10 @@ private class StartServer {
     terminatePromise.success("Terminate")
   }
 
-  def redirectRoute(scheme: String, port: Int): RequestContext => Future[RouteResult] =
+  def redirectRoute(
+      scheme: String,
+      port: Int
+  ): RequestContext => Future[RouteResult] =
     extractUri { uri =>
       redirect(
         uri.withScheme(scheme).withPort(port),
@@ -630,7 +643,10 @@ private class StartServer {
       override val certhttppath = optCACert.map { certfile =>
         log.info(s"Using CA cert ${certfile}")
         path("servercert") {
-          getFromFile(certfile.jfile, ContentType( MediaTypes.`application/x-x509-ca-cert`))
+          getFromFile(
+            certfile.jfile,
+            ContentType(MediaTypes.`application/x-x509-ca-cert`)
+          )
         }
       }
 
@@ -686,7 +702,8 @@ private class StartServer {
 
         val redirectHttpToHttps = redirectRoute("https", httpsPort.get)
         val httpToHttps = respondWithHeaders(myService.cacheHeaders) {
-          (myService.certhttppath.toList:::List(redirectHttpToHttps)).reduceLeft( (ac,v) => ac ~ v )
+          (myService.certhttppath.toList ::: List(redirectHttpToHttps))
+            .reduceLeft((ac, v) => ac ~ v)
         }
         Some(
           Http().bindAndHandleAsync(
@@ -755,7 +772,9 @@ private class StartServer {
     val f = waitfor(60 seconds, bindingHttp, bindingHttps)
     f.onComplete(_ match {
       case Success(_) =>
-        log.info(s"ClassPath:\n${ClassPath.show("  ", getClass.getClassLoader)}")
+        log.info(
+          s"ClassPath:\n${ClassPath.show("  ", getClass.getClassLoader)}"
+        )
         log.info(s"System Properties:\n${ClassPath.showProperties("  ")}")
       case Failure(e) =>
         log.severe(

@@ -78,22 +78,26 @@ trait Service extends ImportExport {
   object restMovement extends RestMovement {
     implicit override lazy val actorSystem: ActorSystem =
       hasActorSystem.actorSystem
-    implicit override lazy val restService: BridgeService = hasActorSystem.restService
+    implicit override lazy val restService: BridgeService =
+      hasActorSystem.restService
   }
   object restBoardSet extends RestBoardSet {
     implicit override lazy val actorSystem: ActorSystem =
       hasActorSystem.actorSystem
-    implicit override lazy val restService: BridgeService = hasActorSystem.restService
+    implicit override lazy val restService: BridgeService =
+      hasActorSystem.restService
   }
   object restChicago extends RestChicago {
     implicit override lazy val actorSystem: ActorSystem =
       hasActorSystem.actorSystem
-    implicit override lazy val restService: BridgeService = hasActorSystem.restService
+    implicit override lazy val restService: BridgeService =
+      hasActorSystem.restService
   }
   object restRubber extends RestRubber {
     implicit override lazy val actorSystem: ActorSystem =
       hasActorSystem.actorSystem
-    implicit override lazy val restService: BridgeService = hasActorSystem.restService
+    implicit override lazy val restService: BridgeService =
+      hasActorSystem.restService
   }
   val restDuplicate: RestDuplicate = new RestDuplicate {
     implicit override lazy val actorSystem: ActorSystem =
@@ -123,19 +127,21 @@ trait Service extends ImportExport {
   object restNames extends RestNames {
     implicit override lazy val actorSystem: ActorSystem =
       hasActorSystem.actorSystem
-    implicit override lazy val restService: BridgeService = hasActorSystem.restService
+    implicit override lazy val restService: BridgeService =
+      hasActorSystem.restService
   }
   object duplicateMonitor
-      extends DuplicateMonitorWebservice(totallyMissingResourceHandler,this)
+      extends DuplicateMonitorWebservice(totallyMissingResourceHandler, this)
   object chicagoMonitor
-      extends ChicagoMonitorWebservice(totallyMissingResourceHandler,this)
+      extends ChicagoMonitorWebservice(totallyMissingResourceHandler, this)
   object rubberMonitor
-      extends RubberMonitorWebservice(totallyMissingResourceHandler,this)
+      extends RubberMonitorWebservice(totallyMissingResourceHandler, this)
 
   object restLoggerConfig extends RestLoggerConfig {
     implicit override lazy val actorSystem: ActorSystem =
       hasActorSystem.actorSystem
-    implicit override lazy val restService: BridgeService = hasActorSystem.restService
+    implicit override lazy val restService: BridgeService =
+      hasActorSystem.restService
     val ports = hasActorSystem.ports
   }
 
@@ -221,7 +227,9 @@ object Service {
   val log: Logger = Logger[Service]()
   val clientlog: Logger = Logger[client.LogA]()
 
-  private val format = java.time.format.DateTimeFormatter.ofPattern("HH:mm:ss.SSS").withZone( ZoneId.systemDefault() )
+  private val format = java.time.format.DateTimeFormatter
+    .ofPattern("HH:mm:ss.SSS")
+    .withZone(ZoneId.systemDefault())
 
   def logStringFromBrowser(ips: String, msg: String): Unit = {
     clientlog.info(s"ClientLog($ips) $msg")
@@ -259,7 +267,7 @@ object Service {
       src: String,
       e: DuplexProtocol.LogEntryV2
   ): Unit = {
-    val ts = format.format( Instant.ofEpochMilli(e.timestamp.toLong))
+    val ts = format.format(Instant.ofEpochMilli(e.timestamp.toLong))
     val level = e.level
     val position = e.position
     val url = e.url

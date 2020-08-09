@@ -31,7 +31,7 @@ class TestDuplicateScore extends AnyFlatSpec with Matchers {
   val team4: Team.Id = Team.id(4)
 
   it should "score from T1 and T2 perspective" in {
-    val score = MatchDuplicateScore( md, PerspectiveTable(team1, team2) )
+    val score = MatchDuplicateScore(md, PerspectiveTable(team1, team2))
     score.teamScores mustBe TestMatchDuplicate.getTeamScore()
     val b7 = score.boards.get(Board.id(7)).get
     b7.hasTeamPlayed(team1) mustBe true
@@ -62,7 +62,7 @@ class TestDuplicateScore extends AnyFlatSpec with Matchers {
   }
 
   it should "score from T3 and T4 perspective" in {
-    val score = MatchDuplicateScore( md, PerspectiveTable(team3, team4 ))
+    val score = MatchDuplicateScore(md, PerspectiveTable(team3, team4))
     score.teamScores mustBe TestMatchDuplicate.getTeamScore()
     val b7 = score.boards.get(Board.id(7)).get
     b7.hasTeamPlayed(team1) mustBe true
@@ -96,7 +96,7 @@ class TestDuplicateScore extends AnyFlatSpec with Matchers {
 //  board 8 played by 2 and 4
 
   it should "score from T1 and T3 perspective" in {
-    val score = MatchDuplicateScore( md, PerspectiveTable(team1, team3 ))
+    val score = MatchDuplicateScore(md, PerspectiveTable(team1, team3))
     score.teamScores mustBe TestMatchDuplicate.getTeamScore()
     val b7 = score.boards.get(Board.id(7)).get
     b7.hasTeamPlayed(team1) mustBe true
@@ -146,7 +146,7 @@ class TestDuplicateScore extends AnyFlatSpec with Matchers {
 //  board 8 played by 2 and 4
 
   it should "score from T2 and T4 perspective" in {
-    val score = MatchDuplicateScore( md, PerspectiveTable(team2, team4 ))
+    val score = MatchDuplicateScore(md, PerspectiveTable(team2, team4))
     score.teamScores mustBe TestMatchDuplicate.getTeamScore()
     val b7 = score.boards.get(Board.id(7)).get
     b7.hasTeamPlayed(team1) mustBe true
@@ -196,12 +196,16 @@ class TestDuplicateScore extends AnyFlatSpec with Matchers {
 
   it should "not throw any exceptions" in {
     implicit val ec = ExecutionContext.global
-    new BridgeServiceInMemory("test").fillBoards(MatchDuplicate.create(MatchDuplicate.id(3))).map { _ match {
-      case Right(m) =>
-        val s = MatchDuplicateScore(m, PerspectiveDirector )
-        s.tables.size mustBe 2
-      case Left((code,msg)) =>
-        fail( "Did not fill boards: "+code+" "+msg.msg )
-    }}
+    new BridgeServiceInMemory("test")
+      .fillBoards(MatchDuplicate.create(MatchDuplicate.id(3)))
+      .map {
+        _ match {
+          case Right(m) =>
+            val s = MatchDuplicateScore(m, PerspectiveDirector)
+            s.tables.size mustBe 2
+          case Left((code, msg)) =>
+            fail("Did not fill boards: " + code + " " + msg.msg)
+        }
+      }
   }
 }

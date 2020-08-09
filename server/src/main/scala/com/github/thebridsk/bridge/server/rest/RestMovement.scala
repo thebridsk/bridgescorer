@@ -152,8 +152,9 @@ trait RestMovement extends HasActorSystem {
   }
 
   import scala.language.implicitConversions
-  implicit
-  def addIdToFuture(f: Future[Result[Movement]]): Future[Result[(String, Movement)]] =
+  implicit def addIdToFuture(
+      f: Future[Result[Movement]]
+  ): Future[Result[(String, Movement)]] =
     f.map { r =>
       r match {
         case Right(md) => Right((md.id.id, md))

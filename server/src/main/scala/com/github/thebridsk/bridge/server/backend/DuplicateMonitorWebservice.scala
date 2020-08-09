@@ -1,6 +1,5 @@
 package com.github.thebridsk.bridge.server.backend
 
-
 import com.github.thebridsk.bridge.data.websocket.Protocol
 
 import akka.actor.ActorSystem
@@ -28,13 +27,13 @@ import akka.http.scaladsl.server.Route
 class DuplicateMonitorWebservice(
     totallyMissingResourceHandler: RejectionHandler,
     service: Service
-)(
-    implicit fm: Materializer,
+)(implicit
+    fm: Materializer,
     system: ActorSystem,
     bridgeService: BridgeService
 ) extends MonitorWebservice[MatchDuplicate.Id, MatchDuplicate](
       totallyMissingResourceHandler
-) {
+    ) {
   val log: LoggingAdapter = Logging(system, classOf[DuplicateMonitorWebservice])
   val monitor = new StoreMonitorManager(
     system,

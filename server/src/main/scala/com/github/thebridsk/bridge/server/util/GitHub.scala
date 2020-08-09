@@ -255,7 +255,7 @@ class GitHub(
         if (dsha == sha) {
           val shafile = new File(f.toString() + extSha)
           Using.resource(
-              new OutputStreamWriter(new FileOutputStream(shafile), "UTF8")
+            new OutputStreamWriter(new FileOutputStream(shafile), "UTF8")
           ) { shaf =>
             shaf.write(shafilecontent)
             shaf.flush()
@@ -318,10 +318,12 @@ object GitHub {
 
   val shaPattern: Regex = """([0-9a-zA-Z]+) ([* ])([^\n\r]*)""".r
 
-  val dateFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss zzz").withZone( ZoneId.systemDefault() )
+  val dateFormat: DateTimeFormatter = DateTimeFormatter
+    .ofPattern("yyyy-MM-dd HH:mm:ss zzz")
+    .withZone(ZoneId.systemDefault())
   def formatDate(date: Date): String = {
 
-    dateFormat.format( Instant.ofEpochMilli(date.getTime()))
+    dateFormat.format(Instant.ofEpochMilli(date.getTime()))
   }
 
   case class Asset(
@@ -375,13 +377,19 @@ object GitHub {
   implicit object dateReads extends Reads[Date] {
 
     // "2018-01-17T00:47:37Z"
-    val dateFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'").withZone(ZoneId.of("UTC"))
+    val dateFormat: DateTimeFormatter = DateTimeFormatter
+      .ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'")
+      .withZone(ZoneId.of("UTC"))
 
     def reads(json: JsValue): JsResult[Date] = {
       json match {
         case JsString(date) =>
           try {
-            JsSuccess( new Date( ZonedDateTime.parse( date, dateFormat ).toInstant().toEpochMilli() ))
+            JsSuccess(
+              new Date(
+                ZonedDateTime.parse(date, dateFormat).toInstant().toEpochMilli()
+              )
+            )
           } catch {
             case x: ParseException =>
               JsError(

@@ -27,7 +27,6 @@ class Version(val version: String) extends Ordered[Version] {
     *   - `x == 0` when `this == that`
     *
     *   - `x > 0` when  `this > that`
-    *
     */
   def compare(that: Version): Int = {
 

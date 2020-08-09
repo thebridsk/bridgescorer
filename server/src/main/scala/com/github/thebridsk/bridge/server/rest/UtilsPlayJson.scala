@@ -1,6 +1,5 @@
 package com.github.thebridsk.bridge.server.rest
 
-
 import akka.http.scaladsl.model._
 import akka.http.scaladsl.model.StatusCodes.{Success => _, _}
 import akka.http.scaladsl.model.headers.Location
@@ -15,7 +14,7 @@ import scala.concurrent.Future
 import scala.util.Failure
 import scala.util.Success
 import com.github.thebridsk.utilities.logging.Logger
-import akka.http.scaladsl.server.{ RequestContext, RouteResult }
+import akka.http.scaladsl.server.{RequestContext, RouteResult}
 
 class UtilsPlayJson
 
@@ -86,7 +85,10 @@ object UtilsPlayJson extends BridgePlayJsonSupport {
       f: Future[Result[T]],
       successStatus: StatusCode = NoContent,
       msg: Option[String] = None
-  )(implicit marshaller: ToResponseMarshaller[T], writer: Writes[T]): RequestContext => Future[RouteResult] =
+  )(implicit
+      marshaller: ToResponseMarshaller[T],
+      writer: Writes[T]
+  ): RequestContext => Future[RouteResult] =
     onComplete(f) {
       case Success(r) =>
         r match {
@@ -105,7 +107,10 @@ object UtilsPlayJson extends BridgePlayJsonSupport {
   def resource[T](
       f: Future[Result[T]],
       successStatus: StatusCode = OK
-  )(implicit marshaller: ToResponseMarshaller[T], writer: Writes[T]): RequestContext => Future[RouteResult] =
+  )(implicit
+      marshaller: ToResponseMarshaller[T],
+      writer: Writes[T]
+  ): RequestContext => Future[RouteResult] =
     onComplete(f) {
       case Success(r) =>
         r match {
@@ -143,8 +148,8 @@ object UtilsPlayJson extends BridgePlayJsonSupport {
         complete((InternalServerError, s"An error occurred: ${ex.getMessage}"))
     }
 
-  def resourceMap[T,I](f: Future[Result[Map[I, T]]])(
-      implicit arrayMarshaller: ToResponseMarshaller[Array[T]],
+  def resourceMap[T, I](f: Future[Result[Map[I, T]]])(implicit
+      arrayMarshaller: ToResponseMarshaller[Array[T]],
       awriter: Writes[Array[T]],
       twriter: Writes[T],
       classtag: ClassTag[T]
@@ -161,8 +166,8 @@ object UtilsPlayJson extends BridgePlayJsonSupport {
         complete((InternalServerError, s"An error occurred: ${ex.getMessage}"))
     }
 
-  def resourceList[T](f: Future[Result[List[T]]])(
-      implicit arrayMarshaller: ToResponseMarshaller[Array[T]],
+  def resourceList[T](f: Future[Result[List[T]]])(implicit
+      arrayMarshaller: ToResponseMarshaller[Array[T]],
       awriter: Writes[Array[T]],
       twriter: Writes[T],
       classtag: ClassTag[T]

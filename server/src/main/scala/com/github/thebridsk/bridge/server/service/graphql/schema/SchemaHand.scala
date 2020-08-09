@@ -13,7 +13,7 @@ object SchemaHand {
 
   val log: Logger = Logger(SchemaHand.getClass.getName)
 
-  val HandType: ObjectType[BridgeService,Hand] = ObjectType(
+  val HandType: ObjectType[BridgeService, Hand] = ObjectType(
     "Hand",
     "Result of a bridge hand",
     fields[BridgeService, Hand](

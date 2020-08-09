@@ -7,7 +7,6 @@ import com.github.thebridsk.bridge.server.yaml.YamlSupport
 import java.io.InputStream
 
 /**
-  *
   */
 case class RemoteLoggingConfig(
     configs: Map[String, Map[String, LoggerConfig]]
@@ -54,13 +53,14 @@ case class RemoteLoggingConfig(
   * giving each client a unique id
   * The useRestToServer is optional, default is true.  if true, use REST calls to update server, otherwise use WebSockets
   * The useSSEFromServer is optional, default is true.  if true, use SSE to receive updates from server, otherwise use WebSockets
-  *
   */
 object RemoteLoggingConfig {
   import play.api.libs.json._
 
-  implicit val loggerConfigFormat: OFormat[LoggerConfig] = Json.format[LoggerConfig]
-  implicit val remoteLoggerConfigFormat: OFormat[RemoteLoggingConfig] = Json.format[RemoteLoggingConfig]
+  implicit val loggerConfigFormat: OFormat[LoggerConfig] =
+    Json.format[LoggerConfig]
+  implicit val remoteLoggerConfigFormat: OFormat[RemoteLoggingConfig] =
+    Json.format[RemoteLoggingConfig]
 
   def getDefaultRemoteLoggerConfig(): Option[RemoteLoggingConfig] = {
     readFromResource("com/github/thebridsk/bridge/server/remoteLogging.yaml")

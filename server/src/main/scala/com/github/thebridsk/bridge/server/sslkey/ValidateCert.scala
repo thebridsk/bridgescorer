@@ -16,7 +16,6 @@ object ValidateCert extends Subcommand("validatecert") {
   implicit def dateConverter: ValueConverter[Duration] =
     singleArgConverter[Duration](Duration(_))
 
-
   descr("Validate the private certificate on the server")
 
   banner(s"""
@@ -46,14 +45,14 @@ Options:""")
     "storepw",
     short = 'p',
     descr = "Store PW for keystore",
-    required = true,
+    required = true
   )
 
   val optionKeystore: ScallopOption[String] = opt[String](
     "keystore",
     short = 'k',
     descr = "Keystore filename",
-    required = true,
+    required = true
   )
 
   val optionShow: ScallopOption[Boolean] = toggle(
@@ -67,12 +66,20 @@ Options:""")
   def executeSubcommand(): Int = {
 
     try {
-      val workingDirectory = optionKeyDir.toOption.map( _.jfile )
+      val workingDirectory = optionKeyDir.toOption.map(_.jfile)
       val alias = optionAlias()
       val keystore = optionKeystore()
       val storepass = optionStorePW()
 
-      if (GenerateSSLKeys.validateCert( alias, keystore, storepass, workingDirectory, optionShow.getOrElse(false) )) {
+      if (
+        GenerateSSLKeys.validateCert(
+          alias,
+          keystore,
+          storepass,
+          workingDirectory,
+          optionShow.getOrElse(false)
+        )
+      ) {
         log.info("Certificate is valid")
         0
       } else {

@@ -16,7 +16,7 @@ import io.swagger.v3.oas.annotations.tags.Tags
 import io.swagger.v3.oas.annotations.tags.Tag
 import javax.ws.rs.POST
 import com.github.thebridsk.utilities.logging.Logger
-import akka.http.scaladsl.server.{ RequestContext, Route, RouteResult }
+import akka.http.scaladsl.server.{RequestContext, Route, RouteResult}
 import scala.concurrent.Future
 
 /**
@@ -58,7 +58,6 @@ class ServerService(totallyMissingHandler: RejectionHandler) {
     * Handler for converting rejections into HttpResponse
     */
 //  def totallyMissingHandler: RejectionHandler
-
 
   @Path("/shutdown")
   @POST

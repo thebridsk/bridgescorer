@@ -46,8 +46,8 @@ trait WebJar {
 //    .handleNotFound { complete(StatusCodes.NotFound, "Not here!"+where) }
 //    .result()
 
-  val webjarsResources
-      : List[FileFinder] = Nil // new FileFinder( "org.webjars", "swagger-ui" ) :: Nil
+  val webjarsResources: List[FileFinder] =
+    Nil // new FileFinder( "org.webjars", "swagger-ui" ) :: Nil
 
 //  val faviconResources = ResourceFinder.htmlResources
 

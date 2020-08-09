@@ -1,7 +1,5 @@
 package com.github.thebridsk.bridge.server.backend
 
-
-
 import akka.actor.ActorSystem
 import akka.event.Logging
 import akka.http.scaladsl.server.Directive.addByNameNullaryApply
@@ -27,8 +25,8 @@ import akka.http.scaladsl.server.Route
 class ChicagoMonitorWebservice(
     totallyMissingResourceHandler: RejectionHandler,
     service: Service
-)(
-    implicit fm: Materializer,
+)(implicit
+    fm: Materializer,
     system: ActorSystem,
     bridgeService: BridgeService
 ) extends MonitorWebservice[MatchChicago.Id, MatchChicago](

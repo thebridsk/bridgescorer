@@ -43,7 +43,6 @@ trait MyService
     with HasActorSystem {
   hasActorSystem: HasActorSystem =>
 
-
   val addLoggingAndServerToSwagger = true
 
   lazy val log: LoggingAdapter = Logging(actorSystem, classOf[MyService])
@@ -58,15 +57,17 @@ trait MyService
       log.warning(s"Illegal argument in request: ${x.getMessage()}")
       import UtilsPlayJson._
       complete(
-          StatusCodes.BadRequest,
-          RestMessage(s"Illegal argument in request: ${x.getMessage()}")
+        StatusCodes.BadRequest,
+        RestMessage(s"Illegal argument in request: ${x.getMessage()}")
       )
     case x: Throwable =>
       log.error(x, "Error processing a REST request")
       import UtilsPlayJson._
       complete(
-          StatusCodes.InternalServerError,
-          RestMessage("Internal Server Error, please notify the system administrator!")
+        StatusCodes.InternalServerError,
+        RestMessage(
+          "Internal Server Error, please notify the system administrator!"
+        )
       )
   }
 
@@ -169,8 +170,8 @@ trait MyService
             (List(
               webjars,
               swaggerRoute, // for the Swagger-UI documentation pages
-              html          // for the static html files for our application
-            ):::certhttppath.toList).reduceLeft( (ac,v) => ac ~ v )
+              html // for the static html files for our application
+            ) ::: certhttppath.toList).reduceLeft((ac, v) => ac ~ v)
         }
       }
     } // ~
@@ -217,7 +218,8 @@ trait MyService
     ports.httpsPort.map(p => List("HTTPS")).getOrElse(Nil) :::
       ports.httpPort.map(p => List("HTTP")).getOrElse(Nil)
 
-  def getSchemesWS: List[String] = ports.httpsPort.map(p => List("WSS")).getOrElse(List("WS"))
+  def getSchemesWS: List[String] =
+    ports.httpsPort.map(p => List("WSS")).getOrElse(List("WS"))
 
   val x: Class[LoggingService] = classOf[LoggingService]
 
@@ -307,9 +309,9 @@ trait MyService
       import scala.jdk.CollectionConverters._
       val swagger: OpenAPI = reader.read(apiClasses.asJava)
       if (!unwantedDefinitions.isEmpty) {
-        val filteredSchemas = asScala(swagger.getComponents.getSchemas)
-          .view.filterKeys(
-            definitionName => !unwantedDefinitions.contains(definitionName)
+        val filteredSchemas = asScala(swagger.getComponents.getSchemas).view
+          .filterKeys(definitionName =>
+            !unwantedDefinitions.contains(definitionName)
           )
           .toMap
           .asJava

@@ -36,7 +36,8 @@ object Implicits {
     def toFuture: Future[Result[T]] = Result.future(r)
   }
 
-  implicit class WrapOptionResult[T](private val r: Option[Result[T]]) extends AnyVal {
+  implicit class WrapOptionResult[T](private val r: Option[Result[T]])
+      extends AnyVal {
     def logit(
         comment: => String
     )(implicit pos: Position, caller: SourcePosition): Option[Result[T]] = {
@@ -67,9 +68,10 @@ object Implicits {
     o.getClass.getName + "@" + Integer.toHexString(o.hashCode())
   }
 
-  implicit class WrapFutureResult[T](private val fr: Future[Result[T]]) extends AnyVal {
-    def onError(comment: String)(
-        implicit executor: ExecutionContext,
+  implicit class WrapFutureResult[T](private val fr: Future[Result[T]])
+      extends AnyVal {
+    def onError(comment: String)(implicit
+        executor: ExecutionContext,
         pos: Position,
         caller: SourcePosition
     ): Future[Result[T]] = {
@@ -82,8 +84,8 @@ object Implicits {
       fr
     }
 
-    def logit(comment: String)(
-        implicit execute: ExecutionContext,
+    def logit(comment: String)(implicit
+        execute: ExecutionContext,
         pos: Position,
         caller: SourcePosition
     ): Future[Result[T]] = {
@@ -107,10 +109,11 @@ object Implicits {
     }
   }
 
-  implicit class WrapFutureOptionResult[T](private val fr: Future[Option[Result[T]]])
-      extends AnyVal {
-    def onError(comment: String)(
-        implicit executor: ExecutionContext,
+  implicit class WrapFutureOptionResult[T](
+      private val fr: Future[Option[Result[T]]]
+  ) extends AnyVal {
+    def onError(comment: String)(implicit
+        executor: ExecutionContext,
         pos: Position,
         caller: SourcePosition
     ): Future[Option[Result[T]]] = {
@@ -120,8 +123,8 @@ object Implicits {
       fr
     }
 
-    def logit(comment: String)(
-        implicit execute: ExecutionContext,
+    def logit(comment: String)(implicit
+        execute: ExecutionContext,
         pos: Position,
         caller: SourcePosition
     ): Future[Option[Result[T]]] = {

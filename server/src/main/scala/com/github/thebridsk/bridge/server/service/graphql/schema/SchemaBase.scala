@@ -19,20 +19,21 @@ object SchemaBase {
 
   val log: Logger = Logger(SchemaBase.getClass.getName)
 
-  def getPos(v: ast.Value): Option[AstLocation] = v match {
-    case ast.IntValue(value, comments, position)        => position
-    case ast.BigIntValue(value, comments, position)     => position
-    case ast.FloatValue(value, comments, position)      => position
-    case ast.BigDecimalValue(value, comments, position) => position
-    case ast.StringValue(value, block, blockRawValue, comments, position) =>
-      position
-    case ast.BooleanValue(value, comments, position) => position
-    case ast.EnumValue(value, comments, position)    => position
-    case ast.ListValue(values, comments, position)   => position
-    case ast.VariableValue(name, comments, position) => position
-    case ast.NullValue(comments, position)           => position
-    case ast.ObjectValue(fields, comments, position) => position
-  }
+  def getPos(v: ast.Value): Option[AstLocation] =
+    v match {
+      case ast.IntValue(value, comments, position)        => position
+      case ast.BigIntValue(value, comments, position)     => position
+      case ast.FloatValue(value, comments, position)      => position
+      case ast.BigDecimalValue(value, comments, position) => position
+      case ast.StringValue(value, block, blockRawValue, comments, position) =>
+        position
+      case ast.BooleanValue(value, comments, position) => position
+      case ast.EnumValue(value, comments, position)    => position
+      case ast.ListValue(values, comments, position)   => position
+      case ast.VariableValue(name, comments, position) => position
+      case ast.NullValue(comments, position)           => position
+      case ast.ObjectValue(fields, comments, position) => position
+    }
 
   case class IdCoercionViolation(typename: String, extra: Option[String] = None)
       extends ValueCoercionViolation(s"""${typename} string expected ${extra
@@ -53,9 +54,8 @@ object SchemaBase {
           Left(
             IdCoercionViolation(
               typename,
-              getPos(x).map(
-                p =>
-                  s"at line ${p.line} column ${p.column}, sourceId ${p.sourceId} index ${p.index}"
+              getPos(x).map(p =>
+                s"at line ${p.line} column ${p.column}, sourceId ${p.sourceId} index ${p.index}"
               )
             )
           )
@@ -76,9 +76,8 @@ object SchemaBase {
           Left(
             IdCoercionViolation(
               typename,
-              getPos(x).map(
-                p =>
-                  s"at line ${p.line} column ${p.column}, sourceId ${p.sourceId} index ${p.index}"
+              getPos(x).map(p =>
+                s"at line ${p.line} column ${p.column}, sourceId ${p.sourceId} index ${p.index}"
               )
             )
           )
@@ -101,7 +100,7 @@ object SchemaBase {
       EnumValue("N", value = North, description = Some("North player")),
       EnumValue("S", value = South, description = Some("South player")),
       EnumValue("E", value = East, description = Some("East player")),
-      EnumValue("W", value = West, description = Some("West player")),
+      EnumValue("W", value = West, description = Some("West player"))
     )
   )
 

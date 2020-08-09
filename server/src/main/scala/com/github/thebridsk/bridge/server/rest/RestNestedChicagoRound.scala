@@ -46,7 +46,9 @@ class RestNestedChicagoRound {
     * spray route for all the methods on this resource
     */
   @Hidden
-  def route(implicit @Parameter(hidden = true) res: Resources[String, Round]): Route =
+  def route(implicit
+      @Parameter(hidden = true) res: Resources[String, Round]
+  ): Route =
     pathPrefix("rounds") {
       logRequest("route", DebugLevel) {
         getRound ~ getRounds ~ postRound ~ putRound ~ deleteRound ~ restNestedHands
@@ -96,13 +98,14 @@ class RestNestedChicagoRound {
     )
   )
   def xxxgetRounds: Unit = {}
-  def getRounds(
-      implicit @Parameter(hidden = true) res: Resources[String, Round]
-  ): Route = pathEndOrSingleSlash {
-    get {
-      resourceMap(res.readAll())
+  def getRounds(implicit
+      @Parameter(hidden = true) res: Resources[String, Round]
+  ): Route =
+    pathEndOrSingleSlash {
+      get {
+        resourceMap(res.readAll())
+      }
     }
-  }
 
   @Path("/{roundId}")
   @GET
@@ -162,24 +165,26 @@ class RestNestedChicagoRound {
     )
   )
   def xxxgetRound: Unit = {}
-  def getRound(
-      implicit @Parameter(hidden = true) res: Resources[String, Round]
-  ): Route = logRequest("getRound", DebugLevel) {
-    get {
-      path("""[a-zA-Z0-9]+""".r) { id =>
-        resource(res.select(id).read())
+  def getRound(implicit
+      @Parameter(hidden = true) res: Resources[String, Round]
+  ): Route =
+    logRequest("getRound", DebugLevel) {
+      get {
+        path("""[a-zA-Z0-9]+""".r) { id =>
+          resource(res.select(id).read())
+        }
       }
     }
-  }
 
-  def restNestedHands(
-      implicit @Parameter(hidden = true) res: Resources[String, Round]
-  ): Route = logRequestResult("RestNestedRound.restNestedHand", DebugLevel) {
-    pathPrefix("""[a-zA-Z0-9]+""".r) { id =>
-      import BridgeNestedResources._
-      nestedHands.route(res.select(id).resourceHands)
+  def restNestedHands(implicit
+      @Parameter(hidden = true) res: Resources[String, Round]
+  ): Route =
+    logRequestResult("RestNestedRound.restNestedHand", DebugLevel) {
+      pathPrefix("""[a-zA-Z0-9]+""".r) { id =>
+        import BridgeNestedResources._
+        nestedHands.route(res.select(id).resourceHands)
+      }
     }
-  }
 
   @POST
   @Operation(
@@ -236,15 +241,19 @@ class RestNestedChicagoRound {
     )
   )
   def xxxpostRound: Unit = {}
-  def postRound(
-      implicit @Parameter(hidden = true) res: Resources[String, Round]
-  ): Route = pathEnd {
-    post {
-      entity(as[Round]) { round =>
-        resourceCreated(res.resourceURI, addIdToFuture(res.createChild(round)))
+  def postRound(implicit
+      @Parameter(hidden = true) res: Resources[String, Round]
+  ): Route =
+    pathEnd {
+      post {
+        entity(as[Round]) { round =>
+          resourceCreated(
+            res.resourceURI,
+            addIdToFuture(res.createChild(round))
+          )
+        }
       }
     }
-  }
 
   def addIdToFuture(f: Future[Result[Round]]): Future[Result[(String, Round)]] =
     f.map { r =>
@@ -312,8 +321,8 @@ class RestNestedChicagoRound {
     )
   )
   def xxxputRound: Unit = {}
-  def putRound(
-      implicit @Parameter(hidden = true) res: Resources[String, Round]
+  def putRound(implicit
+      @Parameter(hidden = true) res: Resources[String, Round]
   ): Route =
     put {
       path("""[a-zA-Z0-9]+""".r) { id =>
@@ -361,11 +370,12 @@ class RestNestedChicagoRound {
     )
   )
   def xxxdeleteRound: Unit = {}
-  def deleteRound(
-      implicit @Parameter(hidden = true) res: Resources[String, Round]
-  ): Route = delete {
-    path("""[a-zA-Z0-9]+""".r) { id =>
-      resourceDelete(res.select(id).delete())
+  def deleteRound(implicit
+      @Parameter(hidden = true) res: Resources[String, Round]
+  ): Route =
+    delete {
+      path("""[a-zA-Z0-9]+""".r) { id =>
+        resourceDelete(res.select(id).delete())
+      }
     }
-  }
 }

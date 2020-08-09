@@ -42,15 +42,16 @@ class Counter(max: Long) {
     * Increment the counter
     * @return true if max has been hit, in which case the counter is reset to 0
     */
-  def inc(): Boolean = synchronized {
-    counter = counter + 1;
-    if (counter > max) {
-      counter = 0
-      true
-    } else {
-      false
+  def inc(): Boolean =
+    synchronized {
+      counter = counter + 1;
+      if (counter > max) {
+        counter = 0
+        true
+      } else {
+        false
+      }
     }
-  }
 }
 
 trait ClientLoggingService {
@@ -147,10 +148,14 @@ trait ClientLoggingService {
       .map {
         case msg: DuplexProtocol.DuplexMessage =>
           log.debug("(" + sender + "): Sending " + msg)
-          TextMessage.Strict(DuplexProtocol.toString(msg)) // ... pack outgoing messages into WS JSON messages ...
+          TextMessage.Strict(
+            DuplexProtocol.toString(msg)
+          ) // ... pack outgoing messages into WS JSON messages ...
       }
       .withAttributes(Attributes.inputBuffer(initial = 32, max = 128))
-      .via(reportErrorsFlow(sender)) // ... then log any processing errors on stdin
+      .via(
+        reportErrorsFlow(sender)
+      ) // ... then log any processing errors on stdin
   }
 
   val maxChunks: Int = 1000
@@ -165,45 +170,46 @@ trait ClientLoggingService {
     a.reduce(reduce)
   }
 
-  def reportErrorsFlow[T](sender: String): GraphStage[FlowShape[T,T]] =
+  def reportErrorsFlow[T](sender: String): GraphStage[FlowShape[T, T]] =
     new ReportErrorsFlow[T](sender)
-  class ReportErrorsFlow[T](sender: String) extends GraphStage[FlowShape[T, T]] {
-      val in: Inlet[T] = Inlet[T]("reportErrorsFlow.in")
-      val out: Outlet[T] = Outlet[T]("reportErrorsFlow.out")
-      override val shape: FlowShape[T,T] = FlowShape(in, out)
-      override def initialAttributes: Attributes =
-        Attributes(List(Name("reportErrorsFlow")))
-      def createLogic(inheritedAttributes: Attributes): GraphStageLogic = {
-        new GraphStageLogic(shape) {
-          setHandler(
-            in,
-            new InHandler {
-              override def onPush(): Unit = push(out, grab(in))
+  class ReportErrorsFlow[T](sender: String)
+      extends GraphStage[FlowShape[T, T]] {
+    val in: Inlet[T] = Inlet[T]("reportErrorsFlow.in")
+    val out: Outlet[T] = Outlet[T]("reportErrorsFlow.out")
+    override val shape: FlowShape[T, T] = FlowShape(in, out)
+    override def initialAttributes: Attributes =
+      Attributes(List(Name("reportErrorsFlow")))
+    def createLogic(inheritedAttributes: Attributes): GraphStageLogic = {
+      new GraphStageLogic(shape) {
+        setHandler(
+          in,
+          new InHandler {
+            override def onPush(): Unit = push(out, grab(in))
 
-              override def onUpstreamFinish(): Unit = {
-                log.info("(" + sender + "): Upstream finished")
-                completeStage()
-              }
+            override def onUpstreamFinish(): Unit = {
+              log.info("(" + sender + "): Upstream finished")
+              completeStage()
+            }
 
-              override def onUpstreamFailure(ex: Throwable): Unit = {
-                log.error(ex, "(" + sender + "): Upstream failure")
-                failStage(ex)
-              }
+            override def onUpstreamFailure(ex: Throwable): Unit = {
+              log.error(ex, "(" + sender + "): Upstream failure")
+              failStage(ex)
             }
-          )
-          setHandler(
-            out,
-            new OutHandler {
-              override def onPull(): Unit = pull(in)
-              override def onDownstreamFinish( cause: Throwable ): Unit = {
-                log.info("(" + sender + "): Downstream finished",cause)
-                completeStage()
-              }
+          }
+        )
+        setHandler(
+          out,
+          new OutHandler {
+            override def onPull(): Unit = pull(in)
+            override def onDownstreamFinish(cause: Throwable): Unit = {
+              log.info("(" + sender + "): Downstream finished", cause)
+              completeStage()
             }
-          )
-        }
+          }
+        )
       }
     }
+  }
 
 }
 
@@ -215,8 +221,8 @@ object ClientLoggingService {
       stream: Source[T, Any]
   )(
       reduce: (T, T) => T
-  )(
-      implicit materializer: akka.stream.Materializer
+  )(implicit
+      materializer: akka.stream.Materializer
   ): T = {
     import scala.language.postfixOps
     import scala.concurrent.duration._

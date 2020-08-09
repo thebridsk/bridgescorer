@@ -65,7 +65,10 @@ Options:""")
         .flatMap { release =>
           release.assets.find(a => a.name.endsWith(".jar")) match {
             case Some(asset) =>
-              github.downloadFileAndCheckSHA(asset.browser_download_url, ".") match {
+              github.downloadFileAndCheckSHA(
+                asset.browser_download_url,
+                "."
+              ) match {
                 case Right((file, sha)) =>
                   output(
                     s"Downloaded new version: ${file} ${github.shaAlgorithm} ${sha}"
@@ -101,11 +104,11 @@ object Install extends Subcommand("install") {
   val filesForWindows: List[String] = "server.bat" :: "serverMemory.bat" ::
     "collectlogs.bat" :: "update.bat" ::
     "findServerJar.bat" :: Nil
-  val filesForLinux: List[String] = "server" :: "serverMemory" :: "collectlogs" :: "update" :: Nil
+  val filesForLinux: List[String] =
+    "server" :: "serverMemory" :: "collectlogs" :: "update" :: Nil
 
   implicit def dateConverter: ValueConverter[Duration] =
     singleArgConverter[Duration](Duration(_))
-
 
   descr("Install the jar used to run this command")
 

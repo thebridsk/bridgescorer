@@ -5,7 +5,11 @@ import scala.concurrent.Await
 import scala.concurrent.duration._
 import com.github.thebridsk.bridge.data.VersionedInstance
 
-class SyncStore[VId <: Comparable[VId], VType <: VersionedInstance[VType, VType, VId]](
+class SyncStore[VId <: Comparable[VId], VType <: VersionedInstance[
+  VType,
+  VType,
+  VId
+]](
     store: Store[VId, VType]
 ) {
 

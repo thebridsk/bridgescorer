@@ -12,7 +12,7 @@ import java.net.URLClassLoader
 import com.github.thebridsk.bridge.datastore.DataStoreCommands
 import scala.annotation.tailrec
 import com.github.thebridsk.utilities.logging.ConsoleHandler
-import java.util.{ logging => jul }
+import java.util.{logging => jul}
 import com.github.thebridsk.bridge.server.util.MemoryMonitor
 import com.github.thebridsk.bridge.sslkey.SSLKeyCommands
 
@@ -127,7 +127,9 @@ object Server extends Main {
 
     @tailrec
     def findConsoleHandler(log: jul.Logger): Boolean = {
-      val handlers = log.getHandlers.filter(h => h.isInstanceOf[ConsoleHandler] || h.isInstanceOf[jul.ConsoleHandler])
+      val handlers = log.getHandlers.filter(h =>
+        h.isInstanceOf[ConsoleHandler] || h.isInstanceOf[jul.ConsoleHandler]
+      )
       if (handlers.length != 0) {
         val infohandler =
           handlers.find(h => h.getLevel.intValue() <= jul.Level.INFO.intValue())

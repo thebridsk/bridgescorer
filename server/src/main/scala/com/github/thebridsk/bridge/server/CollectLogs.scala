@@ -73,7 +73,8 @@ The server should NOT be running.
   )
 
   def executeSubcommand(): Int = {
-    implicit val ec: scala.concurrent.ExecutionContext = scala.concurrent.ExecutionContext.global
+    implicit val ec: scala.concurrent.ExecutionContext =
+      scala.concurrent.ExecutionContext.global
 
     val zipfile = optionZip.toOption.getOrElse(defaultZip)
     val store = optionStore.toOption.getOrElse(defaultStore)
@@ -93,7 +94,7 @@ The server should NOT be running.
     Await.result(f, Duration.Inf) match {
       case Right(value) =>
         0
-      case Left((statuscode,restmessage)) =>
+      case Left((statuscode, restmessage)) =>
         logger.severe(s"Error writing diagnostics: ${restmessage.msg}")
         1
     }

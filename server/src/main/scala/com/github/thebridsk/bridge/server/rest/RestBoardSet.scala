@@ -151,8 +151,9 @@ trait RestBoardSet extends HasActorSystem {
   }
 
   import scala.language.implicitConversions
-  implicit
-  def addIdToFuture(f: Future[Result[BoardSet]]): Future[Result[(String, BoardSet)]] =
+  implicit def addIdToFuture(
+      f: Future[Result[BoardSet]]
+  ): Future[Result[(String, BoardSet)]] =
     f.map { r =>
       r match {
         case Right(md) => Right((md.name.id, md))

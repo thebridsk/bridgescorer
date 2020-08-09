@@ -50,9 +50,11 @@ class TestRemoteLoggingConfig extends AnyFlatSpec with Matchers {
   it should "parse the yaml file" in {
     val config = RemoteLoggingConfig.read(TestRemoteLoggingConfig.testdata)
 
-    config.browserNames() must equal ( Set("ipad","default") )
-    config.browserConfigs("ipad") must equal ( Set("all","info","noserver","nologging") )
-    config.browserConfigs("default") must equal ( Set("all") )
+    config.browserNames() must equal(Set("ipad", "default"))
+    config.browserConfigs("ipad") must equal(
+      Set("all", "info", "noserver", "nologging")
+    )
+    config.browserConfigs("default") must equal(Set("all"))
 
     config.browserConfig("xxx", "all") mustBe None
 
@@ -62,7 +64,7 @@ class TestRemoteLoggingConfig extends AnyFlatSpec with Matchers {
     allipad must not be None
 
     allipad.foreach { c =>
-      c.appenders mustBe List("console=ALL","server=ALL,bridge")
+      c.appenders mustBe List("console=ALL", "server=ALL,bridge")
       c.loggers mustBe List("[root]=ALL")
     }
 

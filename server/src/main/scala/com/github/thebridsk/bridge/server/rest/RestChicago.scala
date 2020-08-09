@@ -10,7 +10,7 @@ import com.github.thebridsk.bridge.data.RestMessage
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 import com.github.thebridsk.bridge.server.backend.resource.Result
-import akka.http.scaladsl.server.{ RequestContext, Route, RouteResult }
+import akka.http.scaladsl.server.{RequestContext, Route, RouteResult}
 
 object RestChicago {
   implicit class OrdFoo(val x: MatchChicago)
@@ -171,8 +171,9 @@ trait RestChicago extends HasActorSystem {
   }
 
   import scala.language.implicitConversions
-  implicit
-  def addIdToFuture(f: Future[Result[MatchChicago]]): Future[Result[(String, MatchChicago)]] =
+  implicit def addIdToFuture(
+      f: Future[Result[MatchChicago]]
+  ): Future[Result[(String, MatchChicago)]] =
     f.map { r =>
       r match {
         case Right(md) => Right((md.id.id, md))
@@ -336,10 +337,11 @@ trait RestChicago extends HasActorSystem {
     )
   )
   def xxxdeleteChicago(): Unit = {}
-  val deleteChicago: RequestContext => Future[RouteResult] = path("""[a-zA-Z0-9]+""".r) { sid =>
-    val id = MatchChicago.id(sid)
-    delete {
-      resourceDelete(store.select(id).delete())
+  val deleteChicago: RequestContext => Future[RouteResult] =
+    path("""[a-zA-Z0-9]+""".r) { sid =>
+      val id = MatchChicago.id(sid)
+      delete {
+        resourceDelete(store.select(id).delete())
+      }
     }
-  }
 }

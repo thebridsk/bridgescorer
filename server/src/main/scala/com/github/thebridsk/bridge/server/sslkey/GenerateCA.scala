@@ -16,7 +16,6 @@ object GenerateCA extends Subcommand("generateca") {
   implicit def dateConverter: ValueConverter[Duration] =
     singleArgConverter[Duration](Duration(_))
 
-
   descr("Generate a CA private certificate")
 
   banner(s"""
@@ -46,7 +45,7 @@ Options:""")
     "ca",
     noshort = true,
     descr = "base filename for CA certificate files",
-    required = true,
+    required = true
   )
 
   val optionRootCAAlias: ScallopOption[String] = opt[String](
@@ -62,34 +61,36 @@ Options:""")
     noshort = true,
     descr = "DName for CA",
     required = true,
-    default = Some("CN=BridgeScoreKeeperCA, OU=BridgeScoreKeeper, O=BridgeScoreKeeper, L=New York, ST=New York, C=US")
+    default = Some(
+      "CN=BridgeScoreKeeperCA, OU=BridgeScoreKeeper, O=BridgeScoreKeeper, L=New York, ST=New York, C=US"
+    )
   )
 
   val optionRootCAStorePW: ScallopOption[String] = opt[String](
     "castorepw",
     noshort = true,
     descr = "Store PW for CA keystore",
-    required = true,
+    required = true
   )
 
   val optionRootCAKeyPW: ScallopOption[String] = opt[String](
     "cakeypw",
     noshort = true,
     descr = "Private key PW",
-    required = true,
+    required = true
   )
 
   val optionTruststore: ScallopOption[String] = opt[String](
     "truststore",
     noshort = true,
     descr = "base filename for truststore",
-    required = true,
+    required = true
   )
   val optionTrustPW: ScallopOption[String] = opt[String](
     "trustpw",
     noshort = true,
     descr = "password for truststore",
-    required = true,
+    required = true
   )
 
   val optionValidityCA: ScallopOption[Int] = opt[Int](

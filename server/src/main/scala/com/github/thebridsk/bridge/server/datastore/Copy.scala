@@ -259,19 +259,21 @@ Options:""")
         log.info(s"${name} found ${keys.mkString(", ")}")
         keys.filter(id => idfilter(id)).foreach { id =>
           val md = dups(id)
-          if (await(out.read(id)) match {
-                case Left(err) =>
+          if (
+            await(out.read(id)) match {
+              case Left(err) =>
+                true
+              case Right(v) =>
+                if (md == v) {
+                  log.info(
+                    s"Not copying ${name} ${id}, already in the target store"
+                  )
+                  false
+                } else {
                   true
-                case Right(v) =>
-                  if (md == v) {
-                    log.info(
-                      s"Not copying ${name} ${id}, already in the target store"
-                    )
-                    false
-                  } else {
-                    true
-                  }
-              }) {
+                }
+            }
+          ) {
             log.fine(s"Working on ${name} ${id}")
             setValue(name, out, id, md) match {
               case Some(newid) =>

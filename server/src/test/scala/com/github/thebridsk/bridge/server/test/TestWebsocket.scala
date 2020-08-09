@@ -34,12 +34,15 @@ import com.github.thebridsk.bridge.server.rest.ServerPort
 import akka.event.LoggingAdapter
 import akka.http.scaladsl.server.Route
 
-class TestWebsocket extends AnyFlatSpec with ScalatestRouteTest with Matchers with MyService {
+class TestWebsocket
+    extends AnyFlatSpec
+    with ScalatestRouteTest
+    with Matchers
+    with MyService {
   val restService = new BridgeServiceTesting
 
   val httpport = 8080
-  override
-  def ports: ServerPort = ServerPort( Option(httpport), None )
+  override def ports: ServerPort = ServerPort(Option(httpport), None)
 
   // scalafix:off
   implicit lazy val actorSystem = system
@@ -47,38 +50,45 @@ class TestWebsocket extends AnyFlatSpec with ScalatestRouteTest with Matchers wi
   implicit lazy val actorMaterializer = materializer
   // scalafix:on
 
-  lazy val testlog: LoggingAdapter = Logging(actorSystem, classOf[TestWebsocket])
+  lazy val testlog: LoggingAdapter =
+    Logging(actorSystem, classOf[TestWebsocket])
 
   behavior of "Test Websocket"
 
-  val remoteAddress = `Remote-Address`( IP( InetAddress.getLocalHost, Some(12345) ))  // scalafix:ok ; Remote-Address
+  val remoteAddress = `Remote-Address`(
+    IP(InetAddress.getLocalHost, Some(12345))
+  ) // scalafix:ok ; Remote-Address
 
   def greeter: Flow[Message, Message, Any] =
     Flow[Message].mapConcat {
-    case tm: TextMessage =>
-      testlog.debug ("got TextMessage")
-      TextMessage(Source.single("Hello ") ++ tm.textStream ++ Source.single("!")) :: Nil
-    case bm: BinaryMessage =>
-      testlog.debug ("got BinaryMessage")
-      // ignore binary messages
-      bm.dataStream.runWith(Sink.ignore)
-      Nil
-  }
+      case tm: TextMessage =>
+        testlog.debug("got TextMessage")
+        TextMessage(
+          Source.single("Hello ") ++ tm.textStream ++ Source.single("!")
+        ) :: Nil
+      case bm: BinaryMessage =>
+        testlog.debug("got BinaryMessage")
+        // ignore binary messages
+        bm.dataStream.runWith(Sink.ignore)
+        Nil
+    }
 
   def websocketMonitor: Flow[Message, Message, NotUsed] =
     Flow[Message]
       .mapConcat {
-      case TextMessage.Strict(s) =>
-        testlog.info("got strict textmessage: "+s)
-        TextMessage.Strict( "Hello "+s+"!" ) :: Nil
-      case tm: TextMessage =>
-        testlog.info ("got TextMessage")
-        TextMessage(Source.single("Hello ") ++ tm.textStream ++ Source.single("!")) :: Nil
-      case bm: BinaryMessage =>
-        testlog.info ("got BinaryMessage")
-        // ignore binary messages
-        bm.dataStream.runWith(Sink.ignore)
-        Nil
+        case TextMessage.Strict(s) =>
+          testlog.info("got strict textmessage: " + s)
+          TextMessage.Strict("Hello " + s + "!") :: Nil
+        case tm: TextMessage =>
+          testlog.info("got TextMessage")
+          TextMessage(
+            Source.single("Hello ") ++ tm.textStream ++ Source.single("!")
+          ) :: Nil
+        case bm: BinaryMessage =>
+          testlog.info("got BinaryMessage")
+          // ignore binary messages
+          bm.dataStream.runWith(Sink.ignore)
+          Nil
       }
       .via(reportErrorsFlow) // ... then log any processing errors on stdin
 
@@ -93,16 +103,19 @@ class TestWebsocket extends AnyFlatSpec with ScalatestRouteTest with Matchers wi
 //        }
 //      })
 
-  def reportErrorsFlow[T]: GraphStage[FlowShape[T,T]] =
+  def reportErrorsFlow[T]: GraphStage[FlowShape[T, T]] =
     new WSReportErrorsFlow[T]()
-  class WSReportErrorsFlow[T]() extends GraphStage[FlowShape[T,T]] {
-      val in: Inlet[T] = Inlet[T]("reportErrorsFlow.in")
-      val out: Outlet[T] = Outlet[T]("reportErrorsFlow.out")
-      override val shape: FlowShape[T,T] = FlowShape(in, out)
-      override def initialAttributes: Attributes = Attributes( List(Name("reportErrorsFlow")))
-      def createLogic(inheritedAttributes: Attributes): GraphStageLogic = {
-        new GraphStageLogic(shape) {
-          setHandler(in, new InHandler {
+  class WSReportErrorsFlow[T]() extends GraphStage[FlowShape[T, T]] {
+    val in: Inlet[T] = Inlet[T]("reportErrorsFlow.in")
+    val out: Outlet[T] = Outlet[T]("reportErrorsFlow.out")
+    override val shape: FlowShape[T, T] = FlowShape(in, out)
+    override def initialAttributes: Attributes =
+      Attributes(List(Name("reportErrorsFlow")))
+    def createLogic(inheritedAttributes: Attributes): GraphStageLogic = {
+      new GraphStageLogic(shape) {
+        setHandler(
+          in,
+          new InHandler {
             override def onPush(): Unit = push(out, grab(in))
 
             override def onUpstreamFinish(): Unit = {
@@ -114,22 +127,26 @@ class TestWebsocket extends AnyFlatSpec with ScalatestRouteTest with Matchers wi
               testlog.info(s"WS stream failed with $ex")
               failStage(ex)
             }
-          })
-          setHandler(out, new OutHandler {
+          }
+        )
+        setHandler(
+          out,
+          new OutHandler {
             override def onPull(): Unit = pull(in)
-            override def onDownstreamFinish( cause: Throwable ): Unit = {
+            override def onDownstreamFinish(cause: Throwable): Unit = {
               testlog.info(s"WS stream finished (downstream)", cause)
               completeStage()
             }
-          })
-        }
+          }
+        )
       }
     }
-
-
-  val websocketRoute: Route = akka.http.scaladsl.server.Directives.path("greeter") {
-    handleWebSocketMessages( websocketMonitor /*greeter*/)
   }
+
+  val websocketRoute: Route =
+    akka.http.scaladsl.server.Directives.path("greeter") {
+      handleWebSocketMessages(websocketMonitor /*greeter*/ )
+    }
 
   it should "Open a Websocket" in {
     val wsClient = WSProbe()
@@ -150,7 +167,6 @@ class TestWebsocket extends AnyFlatSpec with ScalatestRouteTest with Matchers wi
           wsClient.sendCompletion()
           wsClient.expectCompletion()
         }
-
 
       }
   }

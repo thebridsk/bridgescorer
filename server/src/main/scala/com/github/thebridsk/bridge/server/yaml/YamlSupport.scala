@@ -27,13 +27,14 @@ trait YamlSupport extends JsonSupport {
   }
 
   def fromYaml[T](config: String)(implicit reads: Reads[T]): T = {
-    val jsvalue = try {
-      mapper.readValue(config, classOf[JsValue])
-    } catch {
-      // IOException, JsonParseException, JsonMappingException
-      case x: Exception =>
-        throw new JsonException("Error reading data", x)
-    }
+    val jsvalue =
+      try {
+        mapper.readValue(config, classOf[JsValue])
+      } catch {
+        // IOException, JsonParseException, JsonMappingException
+        case x: Exception =>
+          throw new JsonException("Error reading data", x)
+      }
     convertJson[T](jsvalue)
   }
 
@@ -46,13 +47,14 @@ trait YamlSupport extends JsonSupport {
   }
 
   def readYaml[T](reader: Reader)(implicit reads: Reads[T]): T = {
-    val jsvalue = try {
-      mapper.readValue(reader, classOf[JsValue])
-    } catch {
-      // IOException, JsonParseException, JsonMappingException
-      case x: Exception =>
-        throw new JsonException("Error reading data", x)
-    }
+    val jsvalue =
+      try {
+        mapper.readValue(reader, classOf[JsValue])
+      } catch {
+        // IOException, JsonParseException, JsonMappingException
+        case x: Exception =>
+          throw new JsonException("Error reading data", x)
+      }
     convertJson[T](jsvalue)
   }
 

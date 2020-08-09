@@ -17,29 +17,43 @@ object GenerateDemoMatchDuplicate extends Main {
 
   import com.github.thebridsk.utilities.main.Converters._
 
-  val optionStore: ScallopOption[Path] = opt[Path]("store", short='s', descr="The store directory, default=./store", argName="dir", default=Some("../testdata"))
+  val optionStore: ScallopOption[Path] = opt[Path](
+    "store",
+    short = 's',
+    descr = "The store directory, default=./store",
+    argName = "dir",
+    default = Some("../testdata")
+  )
 
-  val optionOut: ScallopOption[Path] = opt[Path]("out", short='o', descr="The output file, default=src/main/public/demo/demoMatchDuplicates.json", argName="outfile", default=Some("src/main/public/demo/demoMatchDuplicates.json"))
+  val optionOut: ScallopOption[Path] = opt[Path](
+    "out",
+    short = 'o',
+    descr =
+      "The output file, default=src/main/public/demo/demoMatchDuplicates.json",
+    argName = "outfile",
+    default = Some("src/main/public/demo/demoMatchDuplicates.json")
+  )
 
   val paramArgs: ScallopOption[List[String]] = trailArg[List[String]](
-      name = "ids",
-      descr = "Ids of matches to add to demo",
-      required = true
-      )
+    name = "ids",
+    descr = "Ids of matches to add to demo",
+    required = true
+  )
 
   def execute(): Int = {
     implicit val ec = ExecutionContext.global
     val store = BridgeService(optionStore.toOption.get)
 
-    val support = BridgeResources( yaml=false )
+    val support = BridgeResources(yaml = false)
 
-    val frmds = paramArgs.toOption.get.map{ sid => sid.asInstanceOf[MatchDuplicate.Id] }.
-                        map { id =>
-                          store.duplicates.read(id)
-                        }
-    val fmds = Future.foldLeft(frmds)(List[MatchDuplicate]()) { (ac,v) =>
+    val frmds = paramArgs.toOption.get
+      .map { sid => sid.asInstanceOf[MatchDuplicate.Id] }
+      .map { id =>
+        store.duplicates.read(id)
+      }
+    val fmds = Future.foldLeft(frmds)(List[MatchDuplicate]()) { (ac, v) =>
       v match {
-        case Right(md) => md::ac
+        case Right(md) => md :: ac
         case Left(err) => ac
       }
     }

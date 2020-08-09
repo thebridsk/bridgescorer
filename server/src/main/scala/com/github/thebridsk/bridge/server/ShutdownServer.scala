@@ -47,7 +47,6 @@ object ShutdownServer extends Subcommand("shutdown") {
   implicit def dateConverter: ValueConverter[Duration] =
     singleArgConverter[Duration](Duration(_))
 
-
   descr("Shutdown a running bridge server")
 
   banner(s"""
@@ -180,7 +179,10 @@ private class ShutdownServerAkka {
     * Get the ssl context
     */
   def serverContext: HttpsConnectionContext = {
-    val password = optionCertPassword.toOption.getOrElse("abcdef").toCharArray // default NOT SECURE
+    val password =
+      optionCertPassword.toOption
+        .getOrElse("abcdef")
+        .toCharArray // default NOT SECURE
     val context = SSLContext.getInstance("TLS")
     val ks = KeyStore.getInstance("PKCS12")
     optionCertificate.toOption match {

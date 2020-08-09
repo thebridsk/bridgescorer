@@ -23,7 +23,7 @@ object SchemaMutation {
 
   val log: Logger = Logger(SchemaMutation.getClass.getName)
 
-  val MutationImportType: ObjectType[BridgeService,BridgeService] = ObjectType(
+  val MutationImportType: ObjectType[BridgeService, BridgeService] = ObjectType(
     "MutationImport",
     fields[BridgeService, BridgeService](
       Field(
@@ -81,7 +81,7 @@ object SchemaMutation {
     )
   )
 
-  val MutationType: ObjectType[BridgeService,BridgeService] = ObjectType(
+  val MutationType: ObjectType[BridgeService, BridgeService] = ObjectType(
     "Mutation",
     fields[BridgeService, BridgeService](
       Field(
@@ -120,17 +120,22 @@ object ImportAction {
                     )
                   case Right(mdfs) =>
                     mdfs.foreach { mdf =>
-                      bs.duplicates.persistent.read(dup.id,mdf) match {
+                      bs.duplicates.persistent.read(dup.id, mdf) match {
                         case Left((statusCode, msg)) =>
                           throw new Exception(
                             s"Error importing images into store: ${dupId} from import store ${bs.id}: ${statusCode} ${msg.msg}"
                           )
                         case Right(data) =>
                           Using.resource(data) { is =>
-                            ctx.ctx.duplicates.persistent.write(importedId,is,mdf) match {
+                            ctx.ctx.duplicates.persistent
+                              .write(importedId, is, mdf) match {
                               case Left((statusCode, msg)) =>
                                 throw new Exception(
-                                  s"Error importing images into store: ${dupId} from import store ${bs.getClass().getName()}(${bs.id}) to ${ctx.ctx.getClass().getName()}(${ctx.ctx.id}): ${statusCode} ${msg.msg}"
+                                  s"Error importing images into store: ${dupId} from import store ${bs
+                                    .getClass()
+                                    .getName()}(${bs.id}) to ${ctx.ctx
+                                    .getClass()
+                                    .getName()}(${ctx.ctx.id}): ${statusCode} ${msg.msg}"
                                 )
                               case Right(_) =>
                             }

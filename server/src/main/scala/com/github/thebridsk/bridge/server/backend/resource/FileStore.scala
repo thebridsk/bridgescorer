@@ -24,15 +24,18 @@ import scala.util.Using
 object FileStore {
   val log: Logger = Logger[FileStore[_, _]]()
 
-  def apply[VId <: Comparable[VId], VType <: VersionedInstance[VType, VType, VId]](
+  def apply[VId <: Comparable[VId], VType <: VersionedInstance[
+    VType,
+    VType,
+    VId
+  ]](
       name: String,
       directory: Directory,
       cacheInitialCapacity: Int = 5,
       cacheMaxCapacity: Int = 100,
       cacheTimeToLive: Duration = 10.minutes,
       cacheTimeToIdle: Duration = 9.minutes
-  )(
-      implicit
+  )(implicit
       cachesupport: StoreSupport[VId, VType],
       execute: ExecutionContext
   ): FileStore[VId, VType] = {
@@ -47,10 +50,13 @@ object FileStore {
   }
 }
 
-class FilePersistentSupport[VId <: Comparable[VId], VType <: VersionedInstance[VType, VType, VId]](
+class FilePersistentSupport[VId <: Comparable[VId], VType <: VersionedInstance[
+  VType,
+  VType,
+  VId
+]](
     val directory: Directory
-)(
-    implicit
+)(implicit
     support: StoreSupport[VId, VType],
     execute: ExecutionContext
 ) extends PersistentSupport[VId, VType] {
@@ -124,42 +130,46 @@ class FilePersistentSupport[VId <: Comparable[VId], VType <: VersionedInstance[V
     * @param id
     * @return the result containing the resource or an error
     */
-  def read(id: VId): Result[VType] = self.synchronized {
+  def read(id: VId): Result[VType] =
+    self.synchronized {
 
-    @tailrec
-    def read(list: List[String]): Result[VType] = {
-      if (list.isEmpty) notFound(id)
-      else {
-        val f = list.head
+      @tailrec
+      def read(list: List[String]): Result[VType] = {
+        if (list.isEmpty) notFound(id)
+        else {
+          val f = list.head
 
-        val ovt = try {
-          val v = FileIO.readFileSafe(f)
-          val (goodOnDisk, vt) = support.fromJSON(v)
-          if (!goodOnDisk) {
-            val nf = writeFilename(id)
-            log.warning(
-              s"Writing current version to disk for file=${f} -> ${nf}"
-            )
-            write(id, vt)
-            if (nf != f) { // did the extension change?
-              FileIO.deleteFileSafe(f) // delete old file if extension changed
+          val ovt =
+            try {
+              val v = FileIO.readFileSafe(f)
+              val (goodOnDisk, vt) = support.fromJSON(v)
+              if (!goodOnDisk) {
+                val nf = writeFilename(id)
+                log.warning(
+                  s"Writing current version to disk for file=${f} -> ${nf}"
+                )
+                write(id, vt)
+                if (nf != f) { // did the extension change?
+                  FileIO.deleteFileSafe(
+                    f
+                  ) // delete old file if extension changed
+                }
+              }
+              Option(vt)
+            } catch {
+              case x: Exception =>
+                log.info(s"Unable to read ${f}: ${x}")
+                None
             }
+          ovt match {
+            case Some(vt) => Result(vt)
+            case None     => read(list.tail)
           }
-          Option(vt)
-        } catch {
-          case x: Exception =>
-            log.info(s"Unable to read ${f}: ${x}")
-            None
-        }
-        ovt match {
-          case Some(vt) => Result(vt)
-          case None     => read(list.tail)
         }
       }
-    }
 
-    read(readFilenames(id))
-  }
+      read(readFilenames(id))
+    }
 
   /**
     * Write a resource to the persistent store
@@ -181,7 +191,10 @@ class FilePersistentSupport[VId <: Comparable[VId], VType <: VersionedInstance[V
       Result(v)
     } catch {
       case e: IOException =>
-        log.severe(s"Error writing ${support.idSupport.toString(id)} to disk", e)
+        log.severe(
+          s"Error writing ${support.idSupport.toString(id)} to disk",
+          e
+        )
         internalError
     }
   }
@@ -207,141 +220,162 @@ class FilePersistentSupport[VId <: Comparable[VId], VType <: VersionedInstance[V
 
   def readFilenames(id: VId): List[String] = {
     support.getReadExtensions.map { e =>
-      (directory / (resourceName + "." + support.idSupport.toString(id) + e)).toString()
+      (directory / (resourceName + "." + support.idSupport.toString(id) + e))
+        .toString()
     }
   }
 
   def writeFilename(id: VId): String = {
-    (directory / (resourceName + "." + support.idSupport.toString(id) + support.getWriteExtension))
+    (directory / (resourceName + "." + support.idSupport.toString(
+      id
+    ) + support.getWriteExtension))
       .toString()
   }
 
   private def newfilename(filename: String) = FileIO.newfilename(filename)
 
   /**
-   * Get the metadata directory.  This does not create the metadata directory.
-   */
-  private def getMetadataDir( id: VId ): Directory = {
-    (directory / (resourceName + "." + support.idSupport.toString(id))).toDirectory
+    * Get the metadata directory.  This does not create the metadata directory.
+    */
+  private def getMetadataDir(id: VId): Directory = {
+    (directory / (resourceName + "." + support.idSupport.toString(
+      id
+    ))).toDirectory
   }
 
   /**
-   * Get the metadata directory, creates the directory if it doesn't exist.
-   */
-  private def alwaysGetMetadataDir( id: VId ): Directory = {
+    * Get the metadata directory, creates the directory if it doesn't exist.
+    */
+  private def alwaysGetMetadataDir(id: VId): Directory = {
     val dir = getMetadataDir(id)
     if (!dir.isDirectory) dir.jfile.mkdirs()
     dir
   }
 
-  private def toMetadataFile( path: File, relativeTo: Directory ): MetaDataFile = {
+  private def toMetadataFile(
+      path: File,
+      relativeTo: Directory
+  ): MetaDataFile = {
     val f = path.toString()
     val d = relativeTo.toString()
-    if (f.startsWith(d)) f.substring(d.length()+1)
+    if (f.startsWith(d)) f.substring(d.length() + 1)
     else f
   }
 
   /**
-   * Get the File object for the metadata file.  This does not create the metadata directory.
-   */
-  private def toFileFromMetadataFile( id: VId, file: MetaDataFile ): File = {
+    * Get the File object for the metadata file.  This does not create the metadata directory.
+    */
+  private def toFileFromMetadataFile(id: VId, file: MetaDataFile): File = {
     (getMetadataDir(id) / file).toFile
   }
 
   /**
-   * List all the files for the specified match
-   */
-  override
-  def listFiles( id: VId ): Result[Iterator[MetaDataFile]] = {
+    * List all the files for the specified match
+    */
+  override def listFiles(id: VId): Result[Iterator[MetaDataFile]] = {
     val dir = getMetadataDir(id)
     if (dir.isDirectory) {
-      val it = dir.files.map { f => toMetadataFile(f,dir) }
+      val it = dir.files.map { f => toMetadataFile(f, dir) }
       Result(it)
     } else {
-      Result( List().iterator)
+      Result(List().iterator)
     }
   }
 
   /**
-   * List all the files for the specified match that match the filter
-   */
-  override
-  def listFilesFilter( id: VId )( filter: MetaDataFile=>Boolean ): Result[Iterator[MetaDataFile]] = {
+    * List all the files for the specified match that match the filter
+    */
+  override def listFilesFilter(
+      id: VId
+  )(filter: MetaDataFile => Boolean): Result[Iterator[MetaDataFile]] = {
     val dir = getMetadataDir(id)
     if (dir.isDirectory) {
-      val it = dir.files.map { f => toMetadataFile(f,dir) }.filter(filter)
+      val it = dir.files.map { f => toMetadataFile(f, dir) }.filter(filter)
       Result(it)
     } else {
-      Result( List().iterator)
+      Result(List().iterator)
     }
   }
 
   /**
-   * Write the specified source file to the target file, the target file is relative to the store directory.
-   */
-  override
-  def write( id: VId, sourceFile: File, targetFile: MetaDataFile ): Result[Unit] = {
-    val f = toFileFromMetadataFile(id,targetFile)
+    * Write the specified source file to the target file, the target file is relative to the store directory.
+    */
+  override def write(
+      id: VId,
+      sourceFile: File,
+      targetFile: MetaDataFile
+  ): Result[Unit] = {
+    val f = toFileFromMetadataFile(id, targetFile)
     f.parent.jfile.mkdirs
-    Files.copy(sourceFile.jfile.toPath(), f.jfile.toPath(), StandardCopyOption.REPLACE_EXISTING)
+    Files.copy(
+      sourceFile.jfile.toPath(),
+      f.jfile.toPath(),
+      StandardCopyOption.REPLACE_EXISTING
+    )
     Result.unit
   }
 
   /**
-   * Write the specified source file to the target file, the target file is relative to the store directory for specified match.
-   */
-  override
-  def write( id: VId, source: InputStream, targetFile: MetaDataFile ): Result[Unit] = {
-    val f = toFileFromMetadataFile(id,targetFile)
+    * Write the specified source file to the target file, the target file is relative to the store directory for specified match.
+    */
+  override def write(
+      id: VId,
+      source: InputStream,
+      targetFile: MetaDataFile
+  ): Result[Unit] = {
+    val f = toFileFromMetadataFile(id, targetFile)
     f.parent.jfile.mkdirs
     val out = new FileOutputStream(f.jfile)
     Using.resource(new FileOutputStream(f.jfile)) { out =>
-      ZipStoreInternal.copy(source,out)
+      ZipStoreInternal.copy(source, out)
     }
     Result.unit
   }
 
   /**
-   * read the specified file, the file is relative to the store directory.
-   */
-  override
-  def read( id: VId, file: MetaDataFile ): Result[InputStream] = {
-    val f = toFileFromMetadataFile(id,file)
+    * read the specified file, the file is relative to the store directory.
+    */
+  override def read(id: VId, file: MetaDataFile): Result[InputStream] = {
+    val f = toFileFromMetadataFile(id, file)
     if (f.isFile) {
       val is = new FileInputStream(f.jfile)
       Result(is)
     } else {
-      Result(StatusCodes.NotFound,s"metadata file $file not found in resource $id")
+      Result(
+        StatusCodes.NotFound,
+        s"metadata file $file not found in resource $id"
+      )
     }
   }
 
   /**
-   * delete the specified file, the file is relative to the store directory for specified match.
-   */
-  override
-  def delete( id: VId, file: MetaDataFile ): Result[Unit] = {
-    val f = toFileFromMetadataFile(id,file)
+    * delete the specified file, the file is relative to the store directory for specified match.
+    */
+  override def delete(id: VId, file: MetaDataFile): Result[Unit] = {
+    val f = toFileFromMetadataFile(id, file)
     if (f.exists) f.delete()
     Result.unit
   }
 
   /**
-   * delete all the metadata files for the match
-   */
-  override
-  def deleteAll( id: VId ): Result[Unit] = {
+    * delete all the metadata files for the match
+    */
+  override def deleteAll(id: VId): Result[Unit] = {
     val d = getMetadataDir(id)
-    FileIO.deleteDirectory(d.jfile.toPath(),None)
+    FileIO.deleteDirectory(d.jfile.toPath(), None)
     Result.unit
   }
 
 }
 
 object FilePersistentSupport {
-  def apply[VId <: Comparable[VId], VType <: VersionedInstance[VType, VType, VId]](
+  def apply[VId <: Comparable[VId], VType <: VersionedInstance[
+    VType,
+    VType,
+    VId
+  ]](
       directory: Directory
-  )(
-      implicit
+  )(implicit
       support: StoreSupport[VId, VType],
       execute: ExecutionContext
   ): FilePersistentSupport[VId, VType] = {
@@ -349,15 +383,18 @@ object FilePersistentSupport {
   }
 }
 
-class FileStore[VId <: Comparable[VId], VType <: VersionedInstance[VType, VType, VId]](
+class FileStore[VId <: Comparable[VId], VType <: VersionedInstance[
+  VType,
+  VType,
+  VId
+]](
     name: String,
     val directory: Directory,
     cacheInitialCapacity: Int = 5,
     cacheMaxCapacity: Int = 100,
     cacheTimeToLive: Duration = 10.minutes,
     cacheTimeToIdle: Duration = 9.minutes
-)(
-    implicit
+)(implicit
     cachesupport: StoreSupport[VId, VType],
     execute: ExecutionContext
 ) extends Store[VId, VType](

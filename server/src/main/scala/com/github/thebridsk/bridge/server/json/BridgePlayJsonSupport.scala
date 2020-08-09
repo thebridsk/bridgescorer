@@ -20,13 +20,13 @@ trait BridgePlayJsonSupport extends JsonSupport {
   implicit def unmarshaller[A: Reads]: FromEntityUnmarshaller[A] =
     PlayJsonSupport.unmarshaller
 
-  implicit def playJsonMarshallerConverter[T](writer: Writes[T])(
-      implicit printer: JsValue => String = Json.stringify
+  implicit def playJsonMarshallerConverter[T](writer: Writes[T])(implicit
+      printer: JsValue => String = Json.stringify
   ): ToEntityMarshaller[T] =
     playJsonMarshaller[T](writer, printer)
 
-  implicit def playJsonMarshaller[T](
-      implicit writer: Writes[T],
+  implicit def playJsonMarshaller[T](implicit
+      writer: Writes[T],
       printer: JsValue => String = Json.stringify
   ): ToEntityMarshaller[T] =
     PlayJsonSupport.marshaller // compose writer.writes

@@ -45,7 +45,9 @@ class RestNestedTeam {
     * spray route for all the methods on this resource
     */
   @Hidden
-  def route(implicit @Parameter(hidden = true) res: Resources[Team.Id, Team]): Route =
+  def route(implicit
+      @Parameter(hidden = true) res: Resources[Team.Id, Team]
+  ): Route =
     logRequest("RestDuplicate.nestedTeam", DebugLevel) {
       logResult("RestDuplicate.nestedTeam") {
         pathPrefix(resName) {
@@ -100,13 +102,14 @@ class RestNestedTeam {
     )
   )
   def xxxgetTeams: Unit = {}
-  def getTeams(
-      implicit @Parameter(hidden = true) res: Resources[Team.Id, Team]
-  ): Route = pathEnd {
-    get {
-      resourceMap(res.readAll())
+  def getTeams(implicit
+      @Parameter(hidden = true) res: Resources[Team.Id, Team]
+  ): Route =
+    pathEnd {
+      get {
+        resourceMap(res.readAll())
+      }
     }
-  }
 
   @Path("/{teamId}")
   @GET
@@ -166,15 +169,16 @@ class RestNestedTeam {
     )
   )
   def xxxgetTeam: Unit = {}
-  def getTeam(
-      implicit @Parameter(hidden = true) res: Resources[Team.Id, Team]
-  ): Route = logRequest("getTeam", DebugLevel) {
-    get {
-      path("""[a-zA-Z0-9]+""".r) { id =>
-        resource(res.select(Team.id(id)).read())
+  def getTeam(implicit
+      @Parameter(hidden = true) res: Resources[Team.Id, Team]
+  ): Route =
+    logRequest("getTeam", DebugLevel) {
+      get {
+        path("""[a-zA-Z0-9]+""".r) { id =>
+          resource(res.select(Team.id(id)).read())
+        }
       }
     }
-  }
 
   @POST
   @Operation(
@@ -231,15 +235,16 @@ class RestNestedTeam {
     )
   )
   def xxxpostTeam: Unit = {}
-  def postTeam(
-      implicit @Parameter(hidden = true) res: Resources[Team.Id, Team]
-  ): Route = pathEnd {
-    post {
-      entity(as[Team]) { hand =>
-        resourceCreated(res.resourceURI, addIdToFuture(res.createChild(hand)))
+  def postTeam(implicit
+      @Parameter(hidden = true) res: Resources[Team.Id, Team]
+  ): Route =
+    pathEnd {
+      post {
+        entity(as[Team]) { hand =>
+          resourceCreated(res.resourceURI, addIdToFuture(res.createChild(hand)))
+        }
       }
     }
-  }
 
   def addIdToFuture(f: Future[Result[Team]]): Future[Result[(String, Team)]] =
     f.map { r =>
@@ -307,15 +312,16 @@ class RestNestedTeam {
     )
   )
   def xxxputTeam: Unit = {}
-  def putTeam(
-      implicit @Parameter(hidden = true) res: Resources[Team.Id, Team]
-  ): Route = put {
-    path("""[a-zA-Z0-9]+""".r) { id =>
-      entity(as[Team]) { hand =>
-        resourceUpdated(res.select(Team.id(id)).update(hand))
+  def putTeam(implicit
+      @Parameter(hidden = true) res: Resources[Team.Id, Team]
+  ): Route =
+    put {
+      path("""[a-zA-Z0-9]+""".r) { id =>
+        entity(as[Team]) { hand =>
+          resourceUpdated(res.select(Team.id(id)).update(hand))
+        }
       }
     }
-  }
 
   @Path("/{teamId}")
   @DELETE
@@ -325,7 +331,8 @@ class RestNestedTeam {
     parameters = Array(
       new Parameter(
         allowEmptyValue = false,
-        description = "ID of the duplicate that contains the team to manipulate",
+        description =
+          "ID of the duplicate that contains the team to manipulate",
         in = ParameterIn.PATH,
         name = "dupId",
         required = true,
@@ -355,8 +362,8 @@ class RestNestedTeam {
     )
   )
   def xxxdeleteTeams: Unit = {}
-  def deleteTeam()(
-      implicit @Parameter(hidden = true) res: Resources[Team.Id, Team]
+  def deleteTeam()(implicit
+      @Parameter(hidden = true) res: Resources[Team.Id, Team]
   ): Route =
     delete {
       path("""[a-zA-Z0-9]+""".r) { id =>

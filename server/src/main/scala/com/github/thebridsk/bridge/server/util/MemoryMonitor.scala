@@ -18,32 +18,36 @@ object MemoryMonitor {
 
   var activeMonitor: Option[MemoryMonitor] = None
 
-  def start(outfile: String = "MemoryMonitor.csv"): Unit = synchronized {
-    log.info(s"Starting Memory Monitor with $outfile")
-    activeMonitor match {
-      case Some(am) =>
-        log.warning("Memory monitor is already running")
-      case None =>
-        val m = new MemoryMonitor(outfile)
-        activeMonitor = Some(m)
-        m.start()
+  def start(outfile: String = "MemoryMonitor.csv"): Unit =
+    synchronized {
+      log.info(s"Starting Memory Monitor with $outfile")
+      activeMonitor match {
+        case Some(am) =>
+          log.warning("Memory monitor is already running")
+        case None =>
+          val m = new MemoryMonitor(outfile)
+          activeMonitor = Some(m)
+          m.start()
+      }
     }
-  }
 
-  def stop(): Unit = synchronized {
-    activeMonitor match {
-      case Some(am) =>
-        log.info("Stopping Memory Monitor")
-        am.stop()
-        activeMonitor = None
-      case None =>
+  def stop(): Unit =
+    synchronized {
+      activeMonitor match {
+        case Some(am) =>
+          log.info("Stopping Memory Monitor")
+          am.stop()
+          activeMonitor = None
+        case None =>
 //        log.warning( "Memory monitor is not running" )
+      }
     }
-  }
 
   private var fCount = 10
 
-  private val fSDF = DateTimeFormatter.ofPattern("yyyy.MM.dd.HH.mm.ss.SSS").withZone( ZoneId.systemDefault() );
+  private val fSDF = DateTimeFormatter
+    .ofPattern("yyyy.MM.dd.HH.mm.ss.SSS")
+    .withZone(ZoneId.systemDefault());
   private val dateRegex = """\d\d\d\d\.\d\d\.\d\d\.\d\d\.\d\d\.\d\d\.\d\d\d"""
 
   private def getDate() = {
@@ -227,37 +231,40 @@ class MemoryMonitor(pattern: String) {
       out.flush()
     }
 
-    def stopMonitor(): Unit = sleepLock.synchronized {
-      active = false
-      sleepLock.notify()
-    }
+    def stopMonitor(): Unit =
+      sleepLock.synchronized {
+        active = false
+        sleepLock.notify()
+      }
   }
 
   private var activeMonitor: Option[Monitor] = None
 
-  def start(): Unit = synchronized {
-    activeMonitor match {
-      case Some(am) =>
-        log.warning("Memory monitor is already running")
-      case None =>
-        log.info(
-          s"MemoryMonitor out file pattern is: $pattern, outfile: $outfile"
-        )
-        cleanupExistingFiles(pattern)
-        val m = new Monitor(outfile)
-        activeMonitor = Some(m)
-        m.start()
+  def start(): Unit =
+    synchronized {
+      activeMonitor match {
+        case Some(am) =>
+          log.warning("Memory monitor is already running")
+        case None =>
+          log.info(
+            s"MemoryMonitor out file pattern is: $pattern, outfile: $outfile"
+          )
+          cleanupExistingFiles(pattern)
+          val m = new Monitor(outfile)
+          activeMonitor = Some(m)
+          m.start()
+      }
     }
-  }
 
-  def stop(): Unit = synchronized {
-    activeMonitor match {
-      case Some(am) =>
-        am.stopMonitor()
-        activeMonitor = None
-      case None =>
-        log.warning("Memory monitor is not running")
+  def stop(): Unit =
+    synchronized {
+      activeMonitor match {
+        case Some(am) =>
+          am.stopMonitor()
+          activeMonitor = None
+        case None =>
+          log.warning("Memory monitor is not running")
+      }
     }
-  }
 
 }

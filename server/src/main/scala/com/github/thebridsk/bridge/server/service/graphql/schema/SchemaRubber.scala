@@ -14,15 +14,16 @@ import com.github.thebridsk.bridge.data.RubberBestMatch
 
 import SchemaBase.{log => _, _}
 import SchemaHand.{log => _, _}
-import com.github.thebridsk.bridge.data.{ Id, IdMatchRubber }
+import com.github.thebridsk.bridge.data.{Id, IdMatchRubber}
 
 object SchemaRubber {
 
   val log: Logger = Logger(SchemaRubber.getClass.getName)
 
-  val RubberIdType: ScalarType[Id[IdMatchRubber]] = idScalarType("RubberId", MatchRubber)
+  val RubberIdType: ScalarType[Id[IdMatchRubber]] =
+    idScalarType("RubberId", MatchRubber)
 
-  val RubberHandType: ObjectType[BridgeService,RubberHand] = ObjectType(
+  val RubberHandType: ObjectType[BridgeService, RubberHand] = ObjectType(
     "RubberHand",
     "A rubber hand",
     fields[BridgeService, RubberHand](
@@ -38,15 +39,16 @@ object SchemaRubber {
         "honorsPlayer",
         OptionType(PositionEnum),
         Some("The player that had the honor points"),
-        resolve = ctx => ctx.value.honorsPlayer.flatMap { p =>
-          try {
-            Some(PlayerPosition(p))
-          } catch {
-            case _: IllegalArgumentException =>
-            None
-          }
+        resolve = ctx =>
+          ctx.value.honorsPlayer.flatMap { p =>
+            try {
+              Some(PlayerPosition(p))
+            } catch {
+              case _: IllegalArgumentException =>
+                None
+            }
 
-        }
+          }
       ),
       Field(
         "created",
@@ -63,32 +65,35 @@ object SchemaRubber {
     )
   )
 
-  val RubberBestMatchType: ObjectType[BridgeService,(Option[String], RubberBestMatch)] = ObjectType(
-    "RubberBestMatch",
-    "Identifies the best match",
-    fields[BridgeService, (Option[String], RubberBestMatch)](
-      Field(
-        "id",
-        OptionType(RubberIdType),
-        Some("The id of the best duplicate match from the main store"),
-        resolve = _.value._2.id
-      ),
-      Field(
-        "sameness",
-        FloatType,
-        Some("A percentage of similarity."),
-        resolve = _.value._2.sameness
-      ),
-      Field(
-        "differences",
-        OptionType(ListType(StringType)),
-        Some("The fields that are different"),
-        resolve = _.value._2.differences
+  val RubberBestMatchType
+      : ObjectType[BridgeService, (Option[String], RubberBestMatch)] =
+    ObjectType(
+      "RubberBestMatch",
+      "Identifies the best match",
+      fields[BridgeService, (Option[String], RubberBestMatch)](
+        Field(
+          "id",
+          OptionType(RubberIdType),
+          Some("The id of the best duplicate match from the main store"),
+          resolve = _.value._2.id
+        ),
+        Field(
+          "sameness",
+          FloatType,
+          Some("A percentage of similarity."),
+          resolve = _.value._2.sameness
+        ),
+        Field(
+          "differences",
+          OptionType(ListType(StringType)),
+          Some("The fields that are different"),
+          resolve = _.value._2.differences
+        )
       )
     )
-  )
 
-  val MatchRubberType: ObjectType[BridgeService,(Option[String], MatchRubber)] = ObjectType(
+  val MatchRubberType
+      : ObjectType[BridgeService, (Option[String], MatchRubber)] = ObjectType(
     "MatchRubber",
     "A rubber match",
     // Option string is the import ID, None for main store

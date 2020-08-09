@@ -30,7 +30,7 @@ import com.github.thebridsk.bridge.data.BoardSet
 import com.github.thebridsk.bridge.data.Movement
 import scala.concurrent.Future
 import com.github.thebridsk.bridge.server.backend.resource.Result
-import akka.http.scaladsl.server.{ RequestContext, Route, RouteResult }
+import akka.http.scaladsl.server.{RequestContext, Route, RouteResult}
 
 object RestDuplicateResult {
   implicit class OrdFoo(val x: MatchDuplicateResult)
@@ -175,8 +175,9 @@ trait RestDuplicateResult extends HasActorSystem {
     }
 
   import scala.language.implicitConversions
-  implicit
-  def addIdToFuture(f: Future[Result[MatchDuplicateResult]]): Future[Result[(String, MatchDuplicateResult)]] =
+  implicit def addIdToFuture(
+      f: Future[Result[MatchDuplicateResult]]
+  ): Future[Result[(String, MatchDuplicateResult)]] =
     f.map { r =>
       r match {
         case Right(md) => Right((md.id.id, md))
@@ -409,10 +410,11 @@ trait RestDuplicateResult extends HasActorSystem {
     )
   )
   def xxxdeleteDuplicateResult(): Unit = {}
-  val deleteDuplicateResult: RequestContext => Future[RouteResult] = path("""[a-zA-Z0-9]+""".r) { sid =>
-    val id = MatchDuplicateResult.id(sid)
-    delete {
-      resourceDelete(store.select(id).delete())
+  val deleteDuplicateResult: RequestContext => Future[RouteResult] =
+    path("""[a-zA-Z0-9]+""".r) { sid =>
+      val id = MatchDuplicateResult.id(sid)
+      delete {
+        resourceDelete(store.select(id).delete())
+      }
     }
-  }
 }

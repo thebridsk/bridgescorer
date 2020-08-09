@@ -26,8 +26,7 @@ object ImportStore {
   val importStoreDotExtension: String = s".${importStoreExtension}"
 }
 
-abstract class ImportStore()(
-    implicit
+abstract class ImportStore()(implicit
     execute: ExecutionContext
 ) {
 
@@ -57,8 +56,7 @@ class FileImportStore(
     val cacheMaxCapacity: Int = 100,
     val cacheTimeToLive: Duration = 61 minutes,
     val cacheTimeToIdle: Duration = 60 minutes
-)(
-    implicit
+)(implicit
     execute: ExecutionContext
 ) extends ImportStore {
 
@@ -83,7 +81,9 @@ class FileImportStore(
       Result(
         dir.dirs.map(dir => dir.name).toList :::
           dir.files
-            .filter(file => file.extension == "zip" || file.extension == importStoreExtension)
+            .filter(file =>
+              file.extension == "zip" || file.extension == importStoreExtension
+            )
             .map(file => file.name)
             .toList
       )
@@ -97,11 +97,13 @@ class FileImportStore(
           val path = dir / id
           if (path.isDirectory) {
             Result(new BridgeServiceFileStore(path.toDirectory, false, true))
-          } else if (path.extension == "zip" || path.extension == importStoreExtension) {
+          } else if (
+            path.extension == "zip" || path.extension == importStoreExtension
+          ) {
             try {
               Result(new BridgeServiceZipStore(path.name, path.toFile))
             } catch {
-              case e @ (_ : FileNotFoundException | _ : NoSuchFileException) =>
+              case e @ (_: FileNotFoundException | _: NoSuchFileException) =>
                 Result(StatusCodes.NotFound, "Not found")
               case x: IOException =>
                 Result(StatusCodes.NotFound, "IO Error")
@@ -137,7 +139,8 @@ class FileImportStore(
             case None =>
               Result(StatusCodes.NotFound, "Not found").toFuture
           }
-        }, { frbs => // future calls to get(id) get this   returns Future[Result[BridgeService]]
+        },
+        { frbs => // future calls to get(id) get this   returns Future[Result[BridgeService]]
           Result(StatusCodes.NotFound, "Not found").toFuture
         }
       )
@@ -159,7 +162,10 @@ class FileImportStore(
         .flatMap { rold =>
           rold match {
             case Right(old) =>
-              Result(StatusCodes.BadRequest, s"Id /imports/$id already exists").toFuture
+              Result(
+                StatusCodes.BadRequest,
+                s"Id /imports/$id already exists"
+              ).toFuture
             case Left((statusCode, msg)) =>
               cache.update(
                 id,

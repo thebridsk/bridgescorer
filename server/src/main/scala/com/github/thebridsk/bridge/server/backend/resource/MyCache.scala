@@ -68,19 +68,21 @@ class MyCache[K, V](
     }
   }
 
-  def read(key: K, genValue: => V): Future[V] = synchronized {
-    lfuCache.get(key, () => genValue)
-  }
+  def read(key: K, genValue: => V): Future[V] =
+    synchronized {
+      lfuCache.get(key, () => genValue)
+    }
 
   /**
     * Refresh the value in the cache
     * @param key
     * @param block to obtain the new value
     */
-  def refresh(key: K, block: () => Future[V]): Future[V] = synchronized {
-    lfuCache.remove(key)
-    lfuCache.apply(key, block)
-  }
+  def refresh(key: K, block: () => Future[V]): Future[V] =
+    synchronized {
+      lfuCache.remove(key)
+      lfuCache.apply(key, block)
+    }
 
   def keys: Set[K] = lfuCache.keys
 
@@ -96,11 +98,12 @@ class MyCache[K, V](
   def conditionalRemove(
       key: K,
       condition: Option[Future[V]] => (Boolean, Boolean)
-  ): Boolean = synchronized {
-    val (delete, ret) = condition(lfuCache.get(key))
-    if (delete) lfuCache.remove(key)
-    ret
-  }
+  ): Boolean =
+    synchronized {
+      val (delete, ret) = condition(lfuCache.get(key))
+      if (delete) lfuCache.remove(key)
+      ret
+    }
 
   /**
     * Update the cache with a new value

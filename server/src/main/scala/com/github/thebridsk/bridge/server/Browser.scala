@@ -35,12 +35,13 @@ object Browser {
 
   }
 
-  def logOutput(name: String, i: Int) = new ProcessIO(
-    in => { in.close },
-    out => { logStream(Level.INFO, name, "out", i, out) },
-    err => { logStream(Level.WARNING, name, "err", i, err) },
-    false
-  )
+  def logOutput(name: String, i: Int) =
+    new ProcessIO(
+      in => { in.close },
+      out => { logStream(Level.INFO, name, "out", i, out) },
+      err => { logStream(Level.WARNING, name, "err", i, err) },
+      false
+    )
 
   def logExitCode(name: String, i: Int, p: Process): Process = {
     import scala.concurrent.ExecutionContext.Implicits.global

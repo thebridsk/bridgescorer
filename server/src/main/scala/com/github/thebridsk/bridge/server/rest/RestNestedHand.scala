@@ -51,13 +51,14 @@ class RestNestedHand {
     * spray route for all the methods on this resource
     */
   @Hidden
-  def route(
-      implicit @Parameter(hidden = true) res: Resources[Team.Id, DuplicateHand]
-  ): Route = pathPrefix("hands") {
-    logRequestResult("route", DebugLevel) {
-      getHand ~ getHands ~ postHand ~ putHand ~ deleteHand
+  def route(implicit
+      @Parameter(hidden = true) res: Resources[Team.Id, DuplicateHand]
+  ): Route =
+    pathPrefix("hands") {
+      logRequestResult("route", DebugLevel) {
+        getHand ~ getHands ~ postHand ~ putHand ~ deleteHand
+      }
     }
-  }
 
   @GET
   @Operation(
@@ -116,16 +117,17 @@ class RestNestedHand {
     )
   )
   def xxxgetHands: Unit = {}
-  def getHands(
-      implicit @Parameter(hidden = true) res: Resources[
+  def getHands(implicit
+      @Parameter(hidden = true) res: Resources[
         Team.Id,
         DuplicateHand
       ]
-  ): Route = pathEndOrSingleSlash {
-    get {
-      resourceMap(res.readAll())
+  ): Route =
+    pathEndOrSingleSlash {
+      get {
+        resourceMap(res.readAll())
+      }
     }
-  }
 
   @Path("/{handId}")
   @GET
@@ -193,15 +195,16 @@ class RestNestedHand {
     )
   )
   def xxxgetHand: Unit = {}
-  def getHand(
-      implicit @Parameter(hidden = true) res: Resources[Team.Id, DuplicateHand]
-  ): Route = logRequest("getHand", DebugLevel) {
-    get {
-      path("""[a-zA-Z0-9]+""".r) { id =>
-        resource(res.select(Team.id(id)).read())
+  def getHand(implicit
+      @Parameter(hidden = true) res: Resources[Team.Id, DuplicateHand]
+  ): Route =
+    logRequest("getHand", DebugLevel) {
+      get {
+        path("""[a-zA-Z0-9]+""".r) { id =>
+          resource(res.select(Team.id(id)).read())
+        }
       }
     }
-  }
 
   @POST
   @Operation(
@@ -266,16 +269,17 @@ class RestNestedHand {
     )
   )
   def xxxpostHand: Unit = {}
-  def postHand(
-      implicit @Parameter(hidden = true) res: Resources[Team.Id, DuplicateHand]
-  ): Route = pathEnd {
-    post {
-      entity(as[DuplicateHand]) { hand =>
-        log.fine(s"Creating new hand ${hand} in ${res.resourceURI}")
-        resourceCreated(res.resourceURI, addIdToFuture(res.createChild(hand)))
+  def postHand(implicit
+      @Parameter(hidden = true) res: Resources[Team.Id, DuplicateHand]
+  ): Route =
+    pathEnd {
+      post {
+        entity(as[DuplicateHand]) { hand =>
+          log.fine(s"Creating new hand ${hand} in ${res.resourceURI}")
+          resourceCreated(res.resourceURI, addIdToFuture(res.createChild(hand)))
+        }
       }
     }
-  }
 
   def addIdToFuture(
       f: Future[Result[DuplicateHand]]
@@ -353,19 +357,20 @@ class RestNestedHand {
     )
   )
   def xxxputHand: Unit = {}
-  def putHand(
-      implicit @Parameter(hidden = true) res: Resources[Team.Id, DuplicateHand]
-  ): Route = logRequest("putHand", DebugLevel) {
-    logResult("putHand", DebugLevel) {
-      put {
-        path("""[a-zA-Z0-9]+""".r) { id =>
-          entity(as[DuplicateHand]) { hand =>
-            resourceUpdated(res.select(Team.id(id)).update(hand))
+  def putHand(implicit
+      @Parameter(hidden = true) res: Resources[Team.Id, DuplicateHand]
+  ): Route =
+    logRequest("putHand", DebugLevel) {
+      logResult("putHand", DebugLevel) {
+        put {
+          path("""[a-zA-Z0-9]+""".r) { id =>
+            entity(as[DuplicateHand]) { hand =>
+              resourceUpdated(res.select(Team.id(id)).update(hand))
+            }
           }
         }
       }
     }
-  }
 
   @Path("/{handId}")
   @DELETE
@@ -414,11 +419,12 @@ class RestNestedHand {
     )
   )
   def xxxdeleteHand: Unit = {}
-  def deleteHand(
-      implicit @Parameter(hidden = true) res: Resources[Team.Id, DuplicateHand]
-  ): Route = delete {
-    path("""[a-zA-Z0-9]+""".r) { id =>
-      resourceDelete(res.select(Team.id(id)).delete())
+  def deleteHand(implicit
+      @Parameter(hidden = true) res: Resources[Team.Id, DuplicateHand]
+  ): Route =
+    delete {
+      path("""[a-zA-Z0-9]+""".r) { id =>
+        resourceDelete(res.select(Team.id(id)).delete())
+      }
     }
-  }
 }

@@ -86,8 +86,11 @@ object ChicagoSubscription {
 
 }
 
-class RubberSubscription(id: String, actor: ActorRef, val matchid: MatchRubber.Id)
-    extends Subscription(id, actor) {
+class RubberSubscription(
+    id: String,
+    actor: ActorRef,
+    val matchid: MatchRubber.Id
+) extends Subscription(id, actor) {
 
   def this(subscription: Subscription, matchid: MatchRubber.Id) =
     this(subscription.id, subscription.actor, matchid)
@@ -102,7 +105,9 @@ object RubberSubscription {
   def apply(id: String, actor: ActorRef, matchid: MatchRubber.Id) =
     new RubberSubscription(id, actor, matchid)
 
-  def unapply(obj: RubberSubscription): Option[(String, ActorRef, MatchRubber.Id)] = {
+  def unapply(
+      obj: RubberSubscription
+  ): Option[(String, ActorRef, MatchRubber.Id)] = {
     Some((obj.id, obj.actor, obj.matchid))
   }
 
@@ -142,31 +147,33 @@ abstract class Subscriptions {
     * Add a new subscription.  This will replace an existing subscription with the same ID.
     * @return the old subscription or None if there was no old
     */
-  def add(sub: Subscription): Option[Subscription] = checkRegister {
-    val old = subscriptions.get(sub.id)
-    subscriptions += (sub.id -> sub)
-    old match {
-      case Some(oldsub) =>
-        if (oldsub.needsStoreMonitored) storeCounter = storeCounter - 1
-      case None =>
+  def add(sub: Subscription): Option[Subscription] =
+    checkRegister {
+      val old = subscriptions.get(sub.id)
+      subscriptions += (sub.id -> sub)
+      old match {
+        case Some(oldsub) =>
+          if (oldsub.needsStoreMonitored) storeCounter = storeCounter - 1
+        case None =>
+      }
+      if (sub.needsStoreMonitored) storeCounter = storeCounter + 1
+      old
     }
-    if (sub.needsStoreMonitored) storeCounter = storeCounter + 1
-    old
-  }
 
   /**
     * @return the old subscription or None if there was no old
     */
-  def remove(id: String): Option[Subscription] = checkRegister {
-    val old = subscriptions.get(id)
-    subscriptions -= id
-    old match {
-      case Some(oldsub) =>
-        if (oldsub.needsStoreMonitored) storeCounter = storeCounter - 1
-      case None =>
+  def remove(id: String): Option[Subscription] =
+    checkRegister {
+      val old = subscriptions.get(id)
+      subscriptions -= id
+      old match {
+        case Some(oldsub) =>
+          if (oldsub.needsStoreMonitored) storeCounter = storeCounter - 1
+        case None =>
+      }
+      old
     }
-    old
-  }
 
   def remove(actor: ActorRef): Iterable[Subscription] = {
     val removed = subscriptions.values.filter(s => s.actor == actor)
@@ -182,8 +189,8 @@ abstract class Subscriptions {
 
   def get(id: String): Option[Subscription] = subscriptions.get(id)
 
-  def dispatchTo(message: DuplexMessage, id: String)(
-      implicit sender: ActorRef = Actor.noSender
+  def dispatchTo(message: DuplexMessage, id: String)(implicit
+      sender: ActorRef = Actor.noSender
   ): Unit = {
     get(id) match {
       case Some(sub) => sub ! message
@@ -214,26 +221,29 @@ abstract class Subscriptions {
     subscriptions.values.filter(filt)
   }
 
-  def getDuplicate: Iterable[DuplicateSubscription] = subscriptions.values.flatMap { sub =>
-    sub match {
-      case s: DuplicateSubscription => s :: Nil
-      case _                        => Nil
+  def getDuplicate: Iterable[DuplicateSubscription] =
+    subscriptions.values.flatMap { sub =>
+      sub match {
+        case s: DuplicateSubscription => s :: Nil
+        case _                        => Nil
+      }
     }
-  }
 
-  def getChicago: Iterable[ChicagoSubscription] = subscriptions.values.flatMap { sub =>
-    sub match {
-      case s: ChicagoSubscription => s :: Nil
-      case _                      => Nil
+  def getChicago: Iterable[ChicagoSubscription] =
+    subscriptions.values.flatMap { sub =>
+      sub match {
+        case s: ChicagoSubscription => s :: Nil
+        case _                      => Nil
+      }
     }
-  }
 
-  def getRubber: Iterable[RubberSubscription] = subscriptions.values.flatMap { sub =>
-    sub match {
-      case s: RubberSubscription => s :: Nil
-      case _                     => Nil
+  def getRubber: Iterable[RubberSubscription] =
+    subscriptions.values.flatMap { sub =>
+      sub match {
+        case s: RubberSubscription => s :: Nil
+        case _                     => Nil
+      }
     }
-  }
 }
 
 object Subscriptions {

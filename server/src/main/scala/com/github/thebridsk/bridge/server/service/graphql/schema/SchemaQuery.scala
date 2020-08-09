@@ -17,7 +17,7 @@ object SchemaQuery {
 
   val log: Logger = Logger(SchemaQuery.getClass.getName)
 
-  val QueryType: ObjectType[BridgeService,BridgeService] = ObjectType(
+  val QueryType: ObjectType[BridgeService, BridgeService] = ObjectType(
     "Query",
     fields[BridgeService, BridgeService](
       Field(
@@ -26,16 +26,15 @@ object SchemaQuery {
         resolve = _.ctx.importStore match {
           case Some(is) =>
             is.getAllIds()
-              .map(
-                rlist =>
-                  rlist match {
-                    case Right(list) =>
-                      list
-                    case Left((statusCode, msg)) =>
-                      throw new Exception(
-                        s"Error getting import store ids: ${statusCode} ${msg.msg}"
-                      )
-                  }
+              .map(rlist =>
+                rlist match {
+                  case Right(list) =>
+                    list
+                  case Left((statusCode, msg)) =>
+                    throw new Exception(
+                      s"Error getting import store ids: ${statusCode} ${msg.msg}"
+                    )
+                }
               )
           case None =>
             throw new Exception("Did not find the import store")
@@ -47,16 +46,15 @@ object SchemaQuery {
         resolve = _.ctx.importStore match {
           case Some(is) =>
             is.getAllIds()
-              .map(
-                rlist =>
-                  rlist match {
-                    case Right(list) =>
-                      list.size
-                    case Left((statusCode, msg)) =>
-                      throw new Exception(
-                        s"Error getting number of imports: ${statusCode} ${msg.msg}"
-                      )
-                  }
+              .map(rlist =>
+                rlist match {
+                  case Right(list) =>
+                    list.size
+                  case Left((statusCode, msg)) =>
+                    throw new Exception(
+                      s"Error getting number of imports: ${statusCode} ${msg.msg}"
+                    )
+                }
               )
           case None =>
             throw new Exception("Did not find the import store")

@@ -293,7 +293,12 @@ trait RestLoggerConfig extends HasActorSystem {
             case Success(rmv) =>
               if (rbs.isOk && rmv.isOk) {
                 val bm =
-                  List(BoardSetsAndMovements(rbs.getOrElse(List()), rmv.getOrElse(List())))
+                  List(
+                    BoardSetsAndMovements(
+                      rbs.getOrElse(List()),
+                      rmv.getOrElse(List())
+                    )
+                  )
                 complete(StatusCodes.OK, bm)
               } else {
                 val (code, msg) = rbs.left.getOrElse(

@@ -57,13 +57,14 @@ trait JsService /* extends HttpService */ {
 
   val htmlResources = ResourceFinder.htmlResources
 
-  val helpResources: Option[FileFinder] = try {
-    Some(ResourceFinder.helpResources)
-  } catch {
-    case x: Exception =>
-      logger.warning("Unable to find help resources, ignoring help.")
-      None
-  }
+  val helpResources: Option[FileFinder] =
+    try {
+      Some(ResourceFinder.helpResources)
+    } catch {
+      case x: Exception =>
+        logger.warning("Unable to find help resources, ignoring help.")
+        None
+    }
 
   {
     val res = htmlResources.baseName + "/bridgescorer-client-opt.js.gz"
@@ -92,7 +93,9 @@ trait JsService /* extends HttpService */ {
         case Uri.Path.Empty       => result.toString
         case Uri.Path.Slash(tail) => rec(tail, result.append(separator))
         case Uri.Path.Segment(head, tail) =>
-          if (head.indexOf('/') >= 0 || head.indexOf('\\') >= 0 || head == "..") {
+          if (
+            head.indexOf('/') >= 0 || head.indexOf('\\') >= 0 || head == ".."
+          ) {
             logger.warning(
               s"File-system path for base [${base}] and Uri.Path [${path}] contains suspicious path segment [${head}], " +
                 "GET access was disallowed"
@@ -103,13 +106,14 @@ trait JsService /* extends HttpService */ {
     rec(if (path.startsWithSlash) path.tail else path)
   }
 
-  def reqRespLogging( name: String, level: Logging.LogLevel )( r: => Route): Route =
+  def reqRespLogging(name: String, level: Logging.LogLevel)(
+      r: => Route
+  ): Route =
     logRequest(name, level) {
       logResult(name, level) {
         r
       }
     }
-
 
   /**
     * The spray route for the html static files
@@ -118,45 +122,49 @@ trait JsService /* extends HttpService */ {
     pathSingleSlash {
       redirect("/public/index.html", StatusCodes.PermanentRedirect)
     } ~
-    pathPrefix("public") {
-      respondWithHeaders(cacheHeaders) {
-        pathEndOrSingleSlash {
-          redirect("/public/index.html", StatusCodes.PermanentRedirect)
-        } ~
+      pathPrefix("public") {
+        respondWithHeaders(cacheHeaders) {
+          pathEndOrSingleSlash {
+            redirect("/public/index.html", StatusCodes.PermanentRedirect)
+          } ~
 //        reqRespLogging("public", Logging.DebugLevel) { getFromResourceDirectory(htmlResources.baseName) } ~
 //        reqRespLogging("publicgz", Logging.DebugLevel) {
-          extractUnmatchedPath { path =>
-            logger.info(s"Looking for file " + path)
-            val pa = if (path.toString.endsWith("/")) path + "index.html" else path
-            getResource(pa)
-          }
-//        }
-      }
-    } ~
-    pathPrefix("help") {
-      respondWithHeaders(cacheHeaders) {
-        helpResources
-          .map { helpres =>
-            extractUnmatchedPath { ap =>
-              val p = if (ap.startsWithSlash) ap.tail else ap
-              logger.info(s"Looking for help file " + p)
-              val pa = if (p.toString.endsWith("/")) p + "index.html" else p
-              getResource(pa, helpres)
+            extractUnmatchedPath { path =>
+              logger.info(s"Looking for file " + path)
+              val pa =
+                if (path.toString.endsWith("/")) path + "index.html" else path
+              getResource(pa)
             }
-          }
-          .getOrElse(reject)
-      }
-    } ~
-    path("favicon.ico") {
-      redirect("/public/favicon.ico", StatusCodes.PermanentRedirect)
-    } ~
-    path("manifest.json") {
-      getResource( Uri.Path( "manifest.json" ) )
+//        }
+        }
+      } ~
+      pathPrefix("help") {
+        respondWithHeaders(cacheHeaders) {
+          helpResources
+            .map { helpres =>
+              extractUnmatchedPath { ap =>
+                val p = if (ap.startsWithSlash) ap.tail else ap
+                logger.info(s"Looking for help file " + p)
+                val pa = if (p.toString.endsWith("/")) p + "index.html" else p
+                getResource(pa, helpres)
+              }
+            }
+            .getOrElse(reject)
+        }
+      } ~
+      path("favicon.ico") {
+        redirect("/public/favicon.ico", StatusCodes.PermanentRedirect)
+      } ~
+      path("manifest.json") {
+        getResource(Uri.Path("manifest.json"))
 
-    }
+      }
   }
 
-  def getResource( res: Uri.Path, fileFinder: FileFinder = htmlResources ): Route = {
+  def getResource(
+      res: Uri.Path,
+      fileFinder: FileFinder = htmlResources
+  ): Route = {
     safeJoinPaths(fileFinder.baseName + "/", res, separator = '/') match {
       case "" => reject
       case resourceName =>
@@ -168,7 +176,7 @@ trait JsService /* extends HttpService */ {
             s"Looking for gzipped file as a resource " + resname
           )
           getFromResource(resname) ~
-          getFromResource(resourceName)
+            getFromResource(resourceName)
         }
     }
   }

@@ -43,7 +43,9 @@ class RestNestedChicagoRoundHand {
     * spray route for all the methods on this resource
     */
   @Hidden
-  def route(implicit @Parameter(hidden = true) res: Resources[String, Hand]): Route =
+  def route(implicit
+      @Parameter(hidden = true) res: Resources[String, Hand]
+  ): Route =
     pathPrefix("hands") {
 //    logRequest("route", DebugLevel) {
       getHand ~ getHands ~ postHand ~ putHand ~ deleteHand
@@ -101,13 +103,14 @@ class RestNestedChicagoRoundHand {
     )
   )
   def xxxgetHands: Unit = {}
-  def getHands(
-      implicit @Parameter(hidden = true) res: Resources[String, Hand]
-  ): Route = pathEndOrSingleSlash {
-    get {
-      resourceMap(res.readAll())
+  def getHands(implicit
+      @Parameter(hidden = true) res: Resources[String, Hand]
+  ): Route =
+    pathEndOrSingleSlash {
+      get {
+        resourceMap(res.readAll())
+      }
     }
-  }
 
   @Path("/{handId}")
   @GET
@@ -175,7 +178,9 @@ class RestNestedChicagoRoundHand {
     )
   )
   def xxxgetHand: Unit = {}
-  def getHand(implicit @Parameter(hidden = true) res: Resources[String, Hand]): Route =
+  def getHand(implicit
+      @Parameter(hidden = true) res: Resources[String, Hand]
+  ): Route =
     logRequest("getHand", DebugLevel) {
       get {
         path("""[a-zA-Z0-9]+""".r) { id =>
@@ -247,15 +252,16 @@ class RestNestedChicagoRoundHand {
     )
   )
   def xxxpostHand: Unit = {}
-  def postHand(
-      implicit @Parameter(hidden = true) res: Resources[String, Hand]
-  ): Route = pathEnd {
-    post {
-      entity(as[Hand]) { hand =>
-        resourceCreated(res.resourceURI, addIdToFuture(res.createChild(hand)))
+  def postHand(implicit
+      @Parameter(hidden = true) res: Resources[String, Hand]
+  ): Route =
+    pathEnd {
+      post {
+        entity(as[Hand]) { hand =>
+          resourceCreated(res.resourceURI, addIdToFuture(res.createChild(hand)))
+        }
       }
     }
-  }
 
   def addIdToFuture(f: Future[Result[Hand]]): Future[Result[(String, Hand)]] =
     f.map { r =>
@@ -331,7 +337,9 @@ class RestNestedChicagoRoundHand {
     )
   )
   def xxxputHand: Unit = {}
-  def putHand(implicit @Parameter(hidden = true) res: Resources[String, Hand]): Route =
+  def putHand(implicit
+      @Parameter(hidden = true) res: Resources[String, Hand]
+  ): Route =
     put {
       path("""[a-zA-Z0-9]+""".r) { id =>
         entity(as[Hand]) { hand =>
@@ -386,11 +394,12 @@ class RestNestedChicagoRoundHand {
     )
   )
   def xxxdeleteHand: Unit = {}
-  def deleteHand(
-      implicit @Parameter(hidden = true) res: Resources[String, Hand]
-  ): Route = delete {
-    path("""[a-zA-Z0-9]+""".r) { id =>
-      resourceDelete(res.select(id).delete())
+  def deleteHand(implicit
+      @Parameter(hidden = true) res: Resources[String, Hand]
+  ): Route =
+    delete {
+      path("""[a-zA-Z0-9]+""".r) { id =>
+        resourceDelete(res.select(id).delete())
+      }
     }
-  }
 }

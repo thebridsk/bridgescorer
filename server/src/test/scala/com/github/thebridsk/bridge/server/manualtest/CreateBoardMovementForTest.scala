@@ -18,25 +18,25 @@ object CreateBoardMovementForTest extends Main {
   def execute(): Int = {
     val bs = new BridgeServiceInMemory("test")
 
-    val bf = bs.boardSets.readAll().map{ r =>
+    val bf = bs.boardSets.readAll().map { r =>
       r match {
         case Right(boardsets) => boardsets.values.toList
-        case Left(err) => List()
+        case Left(err)        => List()
       }
     }
 
     val b = Await.result(bf, Duration("30s"))
 
-    val mf = bs.movements.readAll().map{ r =>
+    val mf = bs.movements.readAll().map { r =>
       r match {
         case Right(movements) => movements.values.toList
-        case Left(err) => List()
+        case Left(err)        => List()
       }
     }
 
     val m = Await.result(mf, Duration("30s"))
 
-    val bsm = BoardSetsAndMovements(b,m)
+    val bsm = BoardSetsAndMovements(b, m)
 
     val json = JsonSupport.writeJson(bsm)
 

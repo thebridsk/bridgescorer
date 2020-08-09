@@ -46,16 +46,17 @@ class RestNestedBoard {
     * spray route for all the methods on this resource
     */
   @Hidden
-  def route(
-      implicit @Parameter(hidden = true) res: Resources[
+  def route(implicit
+      @Parameter(hidden = true) res: Resources[
         Board.Id,
         Board
       ]
-  ): Route = pathPrefix("boards") {
+  ): Route =
+    pathPrefix("boards") {
 //    logRequest("route", DebugLevel) {
-    getBoard ~ getBoards ~ postBoard ~ putBoard ~ deleteBoard ~ restNestedHands
+      getBoard ~ getBoards ~ postBoard ~ putBoard ~ deleteBoard ~ restNestedHands
 //      }
-  }
+    }
 
   @GET
   @Operation(
@@ -101,16 +102,17 @@ class RestNestedBoard {
     )
   )
   def xxxgetBoards: Unit = {}
-  def getBoards(
-      implicit @Parameter(hidden = true) res: Resources[
+  def getBoards(implicit
+      @Parameter(hidden = true) res: Resources[
         Board.Id,
         Board
       ]
-  ): Route = pathEndOrSingleSlash {
-    get {
-      resourceMap(res.readAll())
+  ): Route =
+    pathEndOrSingleSlash {
+      get {
+        resourceMap(res.readAll())
+      }
     }
-  }
 
   @Path("/{boardId}")
   @GET
@@ -170,30 +172,32 @@ class RestNestedBoard {
     )
   )
   def xxxgetBoard: Unit = {}
-  def getBoard(
-      implicit @Parameter(hidden = true) res: Resources[
+  def getBoard(implicit
+      @Parameter(hidden = true) res: Resources[
         Board.Id,
         Board
       ]
-  ): Route = logRequest("getBoard", DebugLevel) {
-    get {
-      path("""[a-zA-Z0-9]+""".r) { id =>
-        resource(res.select(Board.id(id)).read())
+  ): Route =
+    logRequest("getBoard", DebugLevel) {
+      get {
+        path("""[a-zA-Z0-9]+""".r) { id =>
+          resource(res.select(Board.id(id)).read())
+        }
       }
     }
-  }
 
-  def restNestedHands(
-      implicit @Parameter(hidden = true) res: Resources[
+  def restNestedHands(implicit
+      @Parameter(hidden = true) res: Resources[
         Board.Id,
         Board
       ]
-  ): Route = logRequestResult("RestNestedBoard.restNestedHand", DebugLevel) {
-    pathPrefix("""[a-zA-Z0-9]+""".r) { id =>
-      import BridgeNestedResources._
-      nestedHands.route(res.select(Board.id(id)).resourceHands)
+  ): Route =
+    logRequestResult("RestNestedBoard.restNestedHand", DebugLevel) {
+      pathPrefix("""[a-zA-Z0-9]+""".r) { id =>
+        import BridgeNestedResources._
+        nestedHands.route(res.select(Board.id(id)).resourceHands)
+      }
     }
-  }
 
   @POST
   @Operation(
@@ -250,18 +254,22 @@ class RestNestedBoard {
     )
   )
   def xxxpostBoard: Unit = {}
-  def postBoard(
-      implicit @Parameter(hidden = true) res: Resources[
+  def postBoard(implicit
+      @Parameter(hidden = true) res: Resources[
         Board.Id,
         Board
       ]
-  ): Route = pathEnd {
-    post {
-      entity(as[Board]) { board =>
-        resourceCreated(res.resourceURI, addIdToFuture(res.createChild(board)))
+  ): Route =
+    pathEnd {
+      post {
+        entity(as[Board]) { board =>
+          resourceCreated(
+            res.resourceURI,
+            addIdToFuture(res.createChild(board))
+          )
+        }
       }
     }
-  }
 
   def addIdToFuture(f: Future[Result[Board]]): Future[Result[(String, Board)]] =
     f.map { r =>
@@ -329,8 +337,8 @@ class RestNestedBoard {
     )
   )
   def xxxputBoard: Unit = {}
-  def putBoard(
-      implicit @Parameter(hidden = true) res: Resources[
+  def putBoard(implicit
+      @Parameter(hidden = true) res: Resources[
         Board.Id,
         Board
       ]
@@ -381,14 +389,15 @@ class RestNestedBoard {
     )
   )
   def xxxdeleteBoard: Unit = {}
-  def deleteBoard(
-      implicit @Parameter(hidden = true) res: Resources[
+  def deleteBoard(implicit
+      @Parameter(hidden = true) res: Resources[
         Board.Id,
         Board
       ]
-  ): Route = delete {
-    path("""[a-zA-Z0-9]+""".r) { id =>
-      resourceDelete(res.select(Board.id(id)).delete())
+  ): Route =
+    delete {
+      path("""[a-zA-Z0-9]+""".r) { id =>
+        resourceDelete(res.select(Board.id(id)).delete())
+      }
     }
-  }
 }

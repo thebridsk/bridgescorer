@@ -5,17 +5,15 @@ import org.rogach.scallop.ScallopOption
 
 object TestOptionList extends Main {
 
-
-  val optionA: ScallopOption[List[String]] = opt[List[String]]( "a" )
-  val optionB: ScallopOption[String] = opt[String]( "b" )
+  val optionA: ScallopOption[List[String]] = opt[List[String]]("a")
+  val optionB: ScallopOption[String] = opt[String]("b")
 
   def execute(): Int = {
 
-    println( s"a is ${optionA.toOption}" )
-    println( s"b is ${optionB.toOption}" )
+    println(s"a is ${optionA.toOption}")
+    println(s"b is ${optionB.toOption}")
 
     0
   }
-
 
 }

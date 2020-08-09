@@ -19,7 +19,7 @@ import io.swagger.v3.oas.annotations.tags.Tag
 import javax.ws.rs.GET
 import javax.ws.rs.POST
 import io.swagger.v3.oas.annotations.Parameter
-import akka.http.scaladsl.server.{ RequestContext, Route, RouteResult }
+import akka.http.scaladsl.server.{RequestContext, Route, RouteResult}
 import scala.concurrent.Future
 
 /**
@@ -59,7 +59,6 @@ trait LoggingService extends HasActorSystem with ClientLoggingService {
     * Handler for converting rejections into HttpResponse
     */
   def totallyMissingHandler: RejectionHandler
-
 
   @Path("/logger/entry")
   @POST
