@@ -27,14 +27,18 @@ import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.must.Matchers
 import akka.event.LoggingAdapter
 
-class MyServiceSpec extends AnyFlatSpec with ScalatestRouteTest with Matchers with MyService {
+class MyServiceSpec
+    extends AnyFlatSpec
+    with ScalatestRouteTest
+    with Matchers
+    with MyService {
   val restService = new BridgeServiceTesting
 
   val httpport = 8080
-  override
-  def ports: ServerPort = ServerPort( Option(httpport), None )
+  override def ports: ServerPort = ServerPort(Option(httpport), None)
 
-  val webJarLocationForServer = "META-INF/resources/webjars/bridgescorer-fullserver/"
+  val webJarLocationForServer =
+    "META-INF/resources/webjars/bridgescorer-fullserver/"
 
   // scalafix:off
   implicit lazy val actorSystem = system
@@ -42,13 +46,11 @@ class MyServiceSpec extends AnyFlatSpec with ScalatestRouteTest with Matchers wi
   implicit lazy val actorMaterializer = materializer
   // scalafix:on
 
-  val useFastOptOnly: Boolean = TestServer.getProp("OnlyBuildDebug").
-                       map( s => s.toBoolean ).
-                       getOrElse(false)
+  val useFastOptOnly: Boolean =
+    TestServer.getProp("OnlyBuildDebug").map(s => s.toBoolean).getOrElse(false)
 
-  val useFullOptOnly: Boolean = TestServer.getProp("UseFullOpt").
-                       map( s => s.toBoolean ).
-                       getOrElse(false)
+  val useFullOptOnly: Boolean =
+    TestServer.getProp("UseFullOpt").map(s => s.toBoolean).getOrElse(false)
 
   TestStartLogging.startLogging()
 
@@ -62,14 +64,18 @@ class MyServiceSpec extends AnyFlatSpec with ScalatestRouteTest with Matchers wi
 
   it should "find index.html as a resource" in {
     val theClassLoader = getClass.getClassLoader
-    val theResource = theClassLoader.getResource(webJarLocationForServer+version+"/index.html")
+    val theResource = theClassLoader.getResource(
+      webJarLocationForServer + version + "/index.html"
+    )
     theResource must not be null
   }
 
   it should "find bridgescorer-client-opt.js as a resource" in {
     assume(!useFastOptOnly)
     val theClassLoader = getClass.getClassLoader
-    val theResource = theClassLoader.getResource(webJarLocationForServer+version+"/bridgescorer-client-opt.js")
+    val theResource = theClassLoader.getResource(
+      webJarLocationForServer + version + "/bridgescorer-client-opt.js"
+    )
     theResource must not be null
   }
 
@@ -77,47 +83,61 @@ class MyServiceSpec extends AnyFlatSpec with ScalatestRouteTest with Matchers wi
     assume(!useFullOptOnly)
     assume(!TestServer.useProductionPage)
     val theClassLoader = getClass.getClassLoader
-    val theResource = theClassLoader.getResource(webJarLocationForServer+version+"/bridgescorer-client-fastopt.js")
+    val theResource = theClassLoader.getResource(
+      webJarLocationForServer + version + "/bridgescorer-client-fastopt.js"
+    )
     theResource must not be null
   }
 
   behavior of "MyService for static pages"
 
-  val remoteAddress = `Remote-Address`( IP( InetAddress.getLocalHost, Some(12345) ))  // scalafix:ok ; Remote-Address
+  val remoteAddress = `Remote-Address`(
+    IP(InetAddress.getLocalHost, Some(12345))
+  ) // scalafix:ok ; Remote-Address
 
   it should "return a redirect to /public/index.html for /" in {
-    Get("/") ~> addHeader(remoteAddress) ~> Route.seal { myRouteWithLogging } ~> check {
+    Get("/") ~> addHeader(remoteAddress) ~> Route.seal {
+      myRouteWithLogging
+    } ~> check {
       status mustBe PermanentRedirect
       header("Location") match {
         case Some(x) =>
-          x.value mustBe  "/public/index.html"
-        case None => fail("Did not get a location header"+headers)
+          x.value mustBe "/public/index.html"
+        case None => fail("Did not get a location header" + headers)
       }
     }
   }
 
   it should "return a redirect to /public/index.html for /public" in {
-    Get("/public") ~> addHeader(remoteAddress) ~> Route.seal { myRouteWithLogging } ~> check {
+    Get("/public") ~> addHeader(remoteAddress) ~> Route.seal {
+      myRouteWithLogging
+    } ~> check {
       status mustBe PermanentRedirect
       header("Location") match {
         case Some(x) =>
-          x.value mustBe  "/public/index.html"
-        case None => fail("Did not get a location header"+headers)
+          x.value mustBe "/public/index.html"
+        case None => fail("Did not get a location header" + headers)
       }
     }
   }
 
-  def getGzipBody( body: Array[Byte] ): String = {
-    val in = new GZIPInputStream( new ByteArrayInputStream( responseAs[Array[Byte]]))
-    Source.fromInputStream(in,"utf-8").mkString
+  def getGzipBody(body: Array[Byte]): String = {
+    val in = new GZIPInputStream(
+      new ByteArrayInputStream(responseAs[Array[Byte]])
+    )
+    Source.fromInputStream(in, "utf-8").mkString
   }
 
   import akka.http.scaladsl.model.headers.`Content-Encoding`
   it should "return the index.html to /public/index.html" in {
-    Get("/public/index.html") ~> addHeader(remoteAddress) ~> Route.seal { myRouteWithLogging } ~> check {
+    Get("/public/index.html") ~> addHeader(remoteAddress) ~> Route.seal {
+      myRouteWithLogging
+    } ~> check {
       status mustBe OK
-      header("Content-Encoding") mustBe Some(`Content-Encoding`( HttpEncodings.gzip))
-      val sbody = getGzipBody( responseAs[Array[Byte]] )
+      header("Content-Encoding") mustBe Some(
+        `Content-Encoding`(HttpEncodings.gzip)
+      )
+      val sbody = getGzipBody(responseAs[Array[Byte]])
       sbody must include regex """(?s-)(?m-)<html.*bridgescorer-client-opt\.js.*</html>"""
     }
   }
@@ -125,10 +145,13 @@ class MyServiceSpec extends AnyFlatSpec with ScalatestRouteTest with Matchers wi
   it should "return the index-fastopt.html to /html/index-fastopt.html" in {
     assume(!TestServer.useProductionPage)
     assume(!useFullOptOnly)
-    Get("/public/index-fastopt.html") ~> addHeader(remoteAddress) ~> Route.seal { myRouteWithLogging } ~> check {
+    Get("/public/index-fastopt.html") ~> addHeader(remoteAddress) ~> Route
+      .seal { myRouteWithLogging } ~> check {
       status mustBe OK
-      header("Content-Encoding") mustBe Some(`Content-Encoding`( HttpEncodings.gzip))
-      val sbody = getGzipBody( responseAs[Array[Byte]] )
+      header("Content-Encoding") mustBe Some(
+        `Content-Encoding`(HttpEncodings.gzip)
+      )
+      val sbody = getGzipBody(responseAs[Array[Byte]])
       sbody must include regex """(?s)<html>.*bridgescorer-client-fastopt\.js.*</html>"""
     }
 
@@ -144,10 +167,14 @@ class MyServiceSpec extends AnyFlatSpec with ScalatestRouteTest with Matchers wi
       assume(!TestServer.useProductionPage)
       assume(!useFullOptOnly)
 
-      Get("/public/bridgescorer-client-fastopt.js") ~> addHeader(remoteAddress) ~> Route.seal { myRouteWithLogging } ~> check {
+      Get("/public/bridgescorer-client-fastopt.js") ~> addHeader(
+        remoteAddress
+      ) ~> Route.seal { myRouteWithLogging } ~> check {
         status mustBe OK
-        header("Content-Encoding") mustBe Some(`Content-Encoding`( HttpEncodings.gzip))
-        val sbody = getGzipBody( responseAs[Array[Byte]] )
+        header("Content-Encoding") mustBe Some(
+          `Content-Encoding`(HttpEncodings.gzip)
+        )
+        val sbody = getGzipBody(responseAs[Array[Byte]])
         sbody must include regex "(?s).*function.*"
       }
     }
@@ -155,23 +182,33 @@ class MyServiceSpec extends AnyFlatSpec with ScalatestRouteTest with Matchers wi
 
   it should "return bridgescorer-client-opt.js to /public/bridgescorer-client-opt.js" in {
     assume(!useFastOptOnly)
-    Get("/public/bridgescorer-client-opt.js") ~> addHeader(remoteAddress) ~> Route.seal { myRouteWithLogging } ~> check {
+    Get("/public/bridgescorer-client-opt.js") ~> addHeader(
+      remoteAddress
+    ) ~> Route.seal { myRouteWithLogging } ~> check {
       status mustBe OK
-      getGzipBody( responseAs[Array[Byte]] ) must include regex "(?s).*function.*"
+      getGzipBody(responseAs[Array[Byte]]) must include regex "(?s).*function.*"
     }
   }
 
   it should "return webjars/react-widgets/dist/css/react-widgets.css using webjars" in {
-    Get("/public/react-widgets/dist/css/react-widgets.css") ~> addHeader(remoteAddress) ~> Route.seal { html } ~> check {
+    Get("/public/react-widgets/dist/css/react-widgets.css") ~> addHeader(
+      remoteAddress
+    ) ~> Route.seal { html } ~> check {
       status mustBe OK
-      getGzipBody( responseAs[Array[Byte]] ) must include regex "(?s).*.rw-input.*"
+      getGzipBody(
+        responseAs[Array[Byte]]
+      ) must include regex "(?s).*.rw-input.*"
     }
   }
 
   it should "return webjars/react-widgets/dist/css/react-widgets.css using myRouteWithLogging" in {
-    Get("/public/react-widgets/dist/css/react-widgets.css") ~> addHeader(remoteAddress) ~> Route.seal { myRouteWithLogging } ~> check {
+    Get("/public/react-widgets/dist/css/react-widgets.css") ~> addHeader(
+      remoteAddress
+    ) ~> Route.seal { myRouteWithLogging } ~> check {
       status mustBe OK
-      getGzipBody( responseAs[Array[Byte]] ) must include regex "(?s).*.rw-input.*"
+      getGzipBody(
+        responseAs[Array[Byte]]
+      ) must include regex "(?s).*.rw-input.*"
     }
   }
 
@@ -185,14 +222,16 @@ class MyServiceSpec extends AnyFlatSpec with ScalatestRouteTest with Matchers wi
   }
 
   it should "return NotFound for requests to /html/../com/..." in {
-    Get("/html/../com/github/thebridsk/bridge/server/Server.class") ~> Route.seal { myRoute } ~> check {
+    Get("/html/../com/github/thebridsk/bridge/server/Server.class") ~> Route
+      .seal { myRoute } ~> check {
       handled mustBe true
       status mustBe NotFound
     }
   }
 
   it should "return NotFound for requests to /js/../com/..." in {
-    Get("/js/../com/github/thebridsk/bridge/server/Server.class") ~> Route.seal { myRoute } ~> check {
+    Get("/js/../com/github/thebridsk/bridge/server/Server.class") ~> Route
+      .seal { myRoute } ~> check {
       handled mustBe true
       status mustBe NotFound
     }
@@ -213,20 +252,22 @@ class MyServiceSpec extends AnyFlatSpec with ScalatestRouteTest with Matchers wi
 //    .handleNotFound { complete(NotFound, "Not here!x") }
 //    .result()
 
-  val logentry: LogEntryV2 = LogEntryV2("MyServiceSpec:100",
-                            "logger",
-                            1000000,
-                            "I",
-                            "http://example.com/index.html",
-                            "A detailed message %s, %s",
-                            "",
-                            List("Hello", "World")
-                         )
-
+  val logentry: LogEntryV2 = LogEntryV2(
+    "MyServiceSpec:100",
+    "logger",
+    1000000,
+    "I",
+    "http://example.com/index.html",
+    "A detailed message %s, %s",
+    "",
+    List("Hello", "World")
+  )
 
   it should "return OK for POST request to /v1/logging/entry" in {
     import com.github.thebridsk.bridge.server.rest.UtilsPlayJson._
-    Post("/v1/logger/entry", logentry) ~> addHeader(remoteAddress) ~> /* handleRejections(myRejectionHandler) { */ myRouteWithLogging /* } */ ~> check {
+    Post("/v1/logger/entry", logentry) ~> addHeader(
+      remoteAddress
+    ) ~> /* handleRejections(myRejectionHandler) { */ myRouteWithLogging /* } */ ~> check {
       status mustBe NoContent
 //      responseAs[String] mustBe "OK"
     }
@@ -247,8 +288,10 @@ class MyServiceSpec extends AnyFlatSpec with ScalatestRouteTest with Matchers wi
 
       val urlpattern = """http://([^:]+):(\d+)/""".r
       resp(0).serverUrl(0) match {
-        case urlpattern(h,p) =>
-          testlog.debug("Host is "+h+", port is "+p+", URL="+resp(0).serverUrl(0))
+        case urlpattern(h, p) =>
+          testlog.debug(
+            "Host is " + h + ", port is " + p + ", URL=" + resp(0).serverUrl(0)
+          )
           p mustBe httpport.toString
         case _ => fail("Returned URL is not expected URL syntax")
       }
@@ -261,17 +304,20 @@ class MyServiceSpec extends AnyFlatSpec with ScalatestRouteTest with Matchers wi
       import scala.language.postfixOps
 
       var called = false
-      def terminateServerIn( duration: Duration = 10 seconds ): Future[_] = {
+      def terminateServerIn(duration: Duration = 10 seconds): Future[_] = {
         called = true
         val terminatePromise = Promise[String]()
-        Future {terminatePromise.success("Terminate")}
+        Future { terminatePromise.success("Terminate") }
       }
 
     }
     val shutdownHook = new Hook
-    val remoteAddress = `Remote-Address`( IP( InetAddress.getLoopbackAddress, Some(12345) ))
+    val remoteAddress =
+      `Remote-Address`(IP(InetAddress.getLoopbackAddress, Some(12345)))
     MyService.shutdownHook = Some(shutdownHook)
-    Post("/v1/shutdown") ~> addHeader(remoteAddress) ~> Route.seal { logRouteWithIp } ~> check {
+    Post("/v1/shutdown") ~> addHeader(remoteAddress) ~> Route.seal {
+      logRouteWithIp
+    } ~> check {
       status mustBe BadRequest
       shutdownHook.called mustBe false
     }
@@ -279,28 +325,33 @@ class MyServiceSpec extends AnyFlatSpec with ScalatestRouteTest with Matchers wi
       status mustBe BadRequest
       shutdownHook.called mustBe false
     }
-    Get("/v1/shutdown") ~> addHeader(remoteAddress) ~> Route.seal { logRouteWithIp } ~> check {
+    Get("/v1/shutdown") ~> addHeader(remoteAddress) ~> Route.seal {
+      logRouteWithIp
+    } ~> check {
       status mustBe MethodNotAllowed
       shutdownHook.called mustBe false
     }
-    Post("/v1/shutdown?doit=yes") ~> addHeader(remoteAddress) ~> Route.seal { logRouteWithIp } ~> check {
+    Post("/v1/shutdown?doit=yes") ~> addHeader(remoteAddress) ~> Route.seal {
+      logRouteWithIp
+    } ~> check {
       status mustBe NoContent
       shutdownHook.called mustBe true
     }
   }
 
-  def getURL( port: Int): ServerURL = {
+  def getURL(port: Int): ServerURL = {
     import java.net.NetworkInterface
     import scala.jdk.CollectionConverters._
     import java.net.Inet4Address
 
-    val x = NetworkInterface.getNetworkInterfaces.asScala.
-      filter { x => x.isUp() && !x.isLoopback() }.
-      flatMap { ni => ni.getInetAddresses.asScala }.
-      filter { x => x.isInstanceOf[Inet4Address] }.map { x => "http://"+x.getHostAddress+":" + port + "/" }.
-      toList
+    val x = NetworkInterface.getNetworkInterfaces.asScala
+      .filter { x => x.isUp() && !x.isLoopback() }
+      .flatMap { ni => ni.getInetAddresses.asScala }
+      .filter { x => x.isInstanceOf[Inet4Address] }
+      .map { x => "http://" + x.getHostAddress + ":" + port + "/" }
+      .toList
 
-    ServerURL( x )
+    ServerURL(x)
 
   }
 }

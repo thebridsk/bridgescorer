@@ -10,19 +10,27 @@ import org.openqa.selenium.WebDriver
 trait FullscreenAddOn[+T <: Page[T]] {
   page: Page[T] =>
 
-  def hasFullscreenButton(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position): Boolean = {
+  def hasFullscreenButton(implicit
+      webDriver: WebDriver,
+      patienceConfig: PatienceConfig,
+      pos: Position
+  ): Boolean = {
     try {
-      webDriver.findElement( id("Fullscreen").query )
+      webDriver.findElement(id("Fullscreen").query)
       true
     } catch {
       case x: org.openqa.selenium.NoSuchElementException =>
         false
       case x: Exception =>
-        fail("Unknown error finding button Fullscreen",x)
+        fail("Unknown error finding button Fullscreen", x)
     }
   }
 
-  def clickFullscreen(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position): T = {
+  def clickFullscreen(implicit
+      webDriver: WebDriver,
+      patienceConfig: PatienceConfig,
+      pos: Position
+  ): T = {
     clickButton("Fullscreen")
     this.asInstanceOf[T]
   }

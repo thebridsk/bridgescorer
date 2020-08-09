@@ -37,23 +37,24 @@ object Chicago5FairTest {
   val playerW = "Wayne"
   val playerO = "Brian"
 
-  val allPlayers: List[String] = playerN::playerS::playerE::playerW::playerO::Nil
+  val allPlayers: List[String] =
+    playerN :: playerS :: playerE :: playerW :: playerO :: Nil
 
 }
 
 import Chicago5FairTest._
 
 /**
- * @author werewolf
- */
-class Chicago5FairTest extends AnyFlatSpec
+  * @author werewolf
+  */
+class Chicago5FairTest
+    extends AnyFlatSpec
     with Matchers
     with BeforeAndAfterAll
     with EventuallyUtils
-    with CancelAfterFailure
-{
+    with CancelAfterFailure {
   import com.github.thebridsk.browserpages.PageBrowser._
-  import Eventually.{ patienceConfig => _, _ }
+  import Eventually.{patienceConfig => _, _}
 
   import scala.concurrent.duration._
 
@@ -68,24 +69,30 @@ class Chicago5FairTest extends AnyFlatSpec
 
   val backend = TestServer.backend
 
-  implicit val itimeout: PatienceConfig = PatienceConfig(timeout=scaled(Span(timeoutMillis, Millis)), interval=scaled(Span(intervalMillis,Millis)))
+  implicit val itimeout: PatienceConfig = PatienceConfig(
+    timeout = scaled(Span(timeoutMillis, Millis)),
+    interval = scaled(Span(intervalMillis, Millis))
+  )
 
   val newChicagoButtonId = "Chicago2"
   val chicagoListURL: Option[String] = None
   val chicagoToListId: Option[String] = Some("Quit")
 
-  implicit val timeoutduration: FiniteDuration = Duration( 60, TimeUnit.SECONDS )
+  implicit val timeoutduration: FiniteDuration = Duration(60, TimeUnit.SECONDS)
 
-  override
-  def beforeAll(): Unit = {
+  override def beforeAll(): Unit = {
     import com.github.thebridsk.bridge.server.test.util.ParallelUtils._
 
     MonitorTCP.nextTest()
 
     try {
-      waitForFutures("Starting a browser or server",
-                     CodeBlock { Session1.sessionStart().setPositionRelative(0,0).setSize(1100, 800)},
-                     CodeBlock { TestServer.start() } )
+      waitForFutures(
+        "Starting a browser or server",
+        CodeBlock {
+          Session1.sessionStart().setPositionRelative(0, 0).setSize(1100, 800)
+        },
+        CodeBlock { TestServer.start() }
+      )
     } catch {
       case e: Throwable =>
         afterAll()
@@ -94,17 +101,19 @@ class Chicago5FairTest extends AnyFlatSpec
 
   }
 
-  override
-  def afterAll(): Unit = {
+  override def afterAll(): Unit = {
     import com.github.thebridsk.bridge.server.test.util.ParallelUtils._
 
-    waitForFuturesIgnoreTimeouts("Stopping a browser or server",
-                   CodeBlock { Session1.sessionStop() },
-                   CodeBlock { TestServer.stop() } )
+    waitForFuturesIgnoreTimeouts(
+      "Stopping a browser or server",
+      CodeBlock { Session1.sessionStop() },
+      CodeBlock { TestServer.stop() }
+    )
 
   }
 
-  var chicagoId: Option[String] = None   // eventually this will be obtained dynamically
+  var chicagoId: Option[String] =
+    None // eventually this will be obtained dynamically
   var startingNumberOfChicagosInServer = 0
 
   import Session1._
@@ -121,18 +130,20 @@ class Chicago5FairTest extends AnyFlatSpec
 
   it should "allow us to score a Chicago match for five people" in {
     if (TestServer.isServerStartedByTest) {
-      startingNumberOfChicagosInServer = backend.chicagos.syncStore.readAll() match {
-        case Right(l) => l.size
-        case Left((rc,msg)) => 0
-      }
+      startingNumberOfChicagosInServer =
+        backend.chicagos.syncStore.readAll() match {
+          case Right(l)        => l.size
+          case Left((rc, msg)) => 0
+        }
     }
 
     val enp = HomePage.current.clickNewChicagoButton.validate
 
     if (TestServer.isServerStartedByTest) {
-      eventually( backend.chicagos.syncStore.readAll() match {
-        case Right(l) => l.size mustBe startingNumberOfChicagosInServer+1
-        case Left((rc,msg)) => throw new NoResultYet( rc.toString()+": "+msg )
+      eventually(backend.chicagos.syncStore.readAll() match {
+        case Right(l) => l.size mustBe startingNumberOfChicagosInServer + 1
+        case Left((rc, msg)) =>
+          throw new NoResultYet(rc.toString() + ": " + msg)
       })
     }
     chicagoId = Some(enp.chiid)
@@ -146,13 +157,13 @@ class Chicago5FairTest extends AnyFlatSpec
 
     enp.clickFive
 
-    eventually( enp.validateFive )
+    eventually(enp.validateFive)
 
-    enp.enterSittingOutPlayer( playerO )
-    enp.enterPlayer( East, playerE )
-    enp.enterPlayer( South, playerS )
-    enp.enterPlayer( West, playerW )
-    enp.enterPlayer( North, playerN )
+    enp.enterSittingOutPlayer(playerO)
+    enp.enterPlayer(East, playerE)
+    enp.enterPlayer(South, playerS)
+    enp.enterPlayer(West, playerW)
+    enp.enterPlayer(North, playerN)
 
     enp.esc
 
@@ -168,7 +179,7 @@ class Chicago5FairTest extends AnyFlatSpec
 
     enp.setDealer(North)
 
-    eventually( enp.isOKEnabled mustBe true )
+    eventually(enp.isOKEnabled mustBe true)
 
     val hp = enp.clickOK.validate
 
@@ -177,41 +188,53 @@ class Chicago5FairTest extends AnyFlatSpec
     hp.getNameAndVul(East) mustBe s"$playerE vul"
     hp.getNameAndVul(West) mustBe s"$playerW vul"
 
-    hp.checkDealer( playerN )
+    hp.checkDealer(playerN)
 
     hp.setInputStyle("Original")
   }
 
   it should "send the player names to the server" in {
 
-    def testPlayers( players: String* ) = {
-        backend.chicagos.syncStore.read(MatchChicago.id(chicagoId.get)) match {
-          case Right(c) =>
-            // check if all players in MatchChicago are same as players argument
-            players.zip(c.players).find( p => p._1!=p._2 ).isEmpty
-          case Left(r) =>
-            fail("Did not find MatchChicago record")
-        }
+    def testPlayers(players: String*) = {
+      backend.chicagos.syncStore.read(MatchChicago.id(chicagoId.get)) match {
+        case Right(c) =>
+          // check if all players in MatchChicago are same as players argument
+          players.zip(c.players).find(p => p._1 != p._2).isEmpty
+        case Left(r) =>
+          fail("Did not find MatchChicago record")
+      }
     }
 
     def testSimple() = {
-        backend.chicagos.syncStore.read(MatchChicago.id(chicagoId.get)) match {
-          case Right(c) =>
-            c.gamesPerRound mustBe 1
-            c.simpleRotation mustBe false
-          case Left(r) =>
-            fail("Did not find MatchChicago record")
-        }
+      backend.chicagos.syncStore.read(MatchChicago.id(chicagoId.get)) match {
+        case Right(c) =>
+          c.gamesPerRound mustBe 1
+          c.simpleRotation mustBe false
+        case Left(r) =>
+          fail("Did not find MatchChicago record")
+      }
     }
 
     if (TestServer.isServerStartedByTest) {
-      eventually( testPlayers(playerN,playerS,playerE,playerW, playerO) mustBe true )
+      eventually(
+        testPlayers(playerN, playerS, playerE, playerW, playerO) mustBe true
+      )
       testSimple()
     }
   }
 
-  def checkTotals( sp: SummaryPage, scoreN: Int, scoreS: Int, scoreE: Int, scoreW: Int, scoreO: Int ): SummaryPage = {
-    sp.checkFastTotalsScore( allPlayers, List(scoreN, scoreS, scoreE, scoreW, scoreO).map( _.toString ) )
+  def checkTotals(
+      sp: SummaryPage,
+      scoreN: Int,
+      scoreS: Int,
+      scoreE: Int,
+      scoreW: Int,
+      scoreO: Int
+  ): SummaryPage = {
+    sp.checkFastTotalsScore(
+      allPlayers,
+      List(scoreN, scoreS, scoreE, scoreW, scoreO).map(_.toString)
+    )
   }
 
   it should "cancel the hand in the first round" in {
@@ -233,11 +256,19 @@ class Chicago5FairTest extends AnyFlatSpec
     val hp = HandPage.current(ChicagoMatchTypeFair)
 
     val sp = hp.enterHand(
-      4,Spades,NotDoubled,North,Made,4,
-      nsVul=NotVul, ewVul=NotVul, score=None, dealer=Some(playerN),
+      4,
+      Spades,
+      NotDoubled,
+      North,
+      Made,
+      4,
+      nsVul = NotVul,
+      ewVul = NotVul,
+      score = None,
+      dealer = Some(playerN)
     )
 
-    checkTotals( sp, 420, 420, 0, 0, 0 )
+    checkTotals(sp, 420, 420, 0, 0, 0)
 
     sp.setInputStyle("Guide")
 
@@ -249,16 +280,32 @@ class Chicago5FairTest extends AnyFlatSpec
 
     val fspp = FairSelectPartnersPage.current
 
-    fspp.checkPositions( "Prior hand", North, playerN, playerS, playerE, playerW, playerO )
+    fspp.checkPositions(
+      "Prior hand",
+      North,
+      playerN,
+      playerS,
+      playerE,
+      playerW,
+      playerO
+    )
 
-    fspp.checkSittingOutPlayerNames( None, playerN, playerS, playerE, playerW )
-    fspp.checkNotFoundPlayersForSittingOut( playerO )
+    fspp.checkSittingOutPlayerNames(None, playerN, playerS, playerE, playerW)
+    fspp.checkNotFoundPlayersForSittingOut(playerO)
 
     fspp.clickSittingOutPlayer(playerN)
 
     eventually {
-      fspp.checkSittingOutPlayerNames( Some(playerN), playerS, playerE, playerW )
-      fspp.checkPositions( "Next hand", East,  playerO, playerW, playerE, playerS, playerN )
+      fspp.checkSittingOutPlayerNames(Some(playerN), playerS, playerE, playerW)
+      fspp.checkPositions(
+        "Next hand",
+        East,
+        playerO,
+        playerW,
+        playerE,
+        playerS,
+        playerN
+      )
     }
 
     takeScreenshot(docsScreenshotDir, "SelectNamesFair")
@@ -275,16 +322,32 @@ class Chicago5FairTest extends AnyFlatSpec
 
     fspp.roundid mustBe 1
 
-    fspp.checkPositions( "Prior hand", North, playerN, playerS, playerE, playerW, playerO )
+    fspp.checkPositions(
+      "Prior hand",
+      North,
+      playerN,
+      playerS,
+      playerE,
+      playerW,
+      playerO
+    )
 
-    fspp.checkSittingOutPlayerNames( None, playerN, playerS, playerE, playerW )
-    fspp.checkNotFoundPlayersForSittingOut( playerO )
+    fspp.checkSittingOutPlayerNames(None, playerN, playerS, playerE, playerW)
+    fspp.checkNotFoundPlayersForSittingOut(playerO)
 
     fspp.clickSittingOutPlayer(playerN)
 
     eventually {
-      fspp.checkSittingOutPlayerNames( Some(playerN), playerS, playerE, playerW )
-      fspp.checkPositions( "Next hand", East,  playerO, playerW, playerE, playerS, playerN )
+      fspp.checkSittingOutPlayerNames(Some(playerN), playerS, playerE, playerW)
+      fspp.checkPositions(
+        "Next hand",
+        East,
+        playerO,
+        playerW,
+        playerE,
+        playerS,
+        playerN
+      )
     }
 
     fspp.clickOK.validate
@@ -298,13 +361,21 @@ class Chicago5FairTest extends AnyFlatSpec
     hp.getNameAndVul(East) mustBe s"$playerE vul"
     hp.getNameAndVul(West) mustBe s"$playerS vul"
 
-    hp.checkDealer( playerE )
+    hp.checkDealer(playerE)
     val sp = hp.enterHand(
-      3,NoTrump,NotDoubled,North,Made,3,
-      nsVul=NotVul, ewVul=NotVul, score=None, dealer=Some(playerE),
+      3,
+      NoTrump,
+      NotDoubled,
+      North,
+      Made,
+      3,
+      nsVul = NotVul,
+      ewVul = NotVul,
+      score = None,
+      dealer = Some(playerE)
     )
 
-    checkTotals( sp, 420, 420, 0, 400, 400 )
+    checkTotals(sp, 420, 420, 0, 400, 400)
 
     sp.setInputStyle("Prompt")
 
@@ -315,16 +386,32 @@ class Chicago5FairTest extends AnyFlatSpec
 
     val fspp = FairSelectPartnersPage.current
 
-    fspp.checkPositions( "Prior hand", East,  playerO, playerW, playerE, playerS, playerN )
+    fspp.checkPositions(
+      "Prior hand",
+      East,
+      playerO,
+      playerW,
+      playerE,
+      playerS,
+      playerN
+    )
 
-    fspp.checkSittingOutPlayerNames( None, playerS, playerE, playerW )
-    fspp.checkNotFoundPlayersForSittingOut( playerO, playerN )
+    fspp.checkSittingOutPlayerNames(None, playerS, playerE, playerW)
+    fspp.checkNotFoundPlayersForSittingOut(playerO, playerN)
 
     fspp.clickSittingOutPlayer(playerE)
 
     eventually {
-      fspp.checkSittingOutPlayerNames( Some(playerE), playerS, playerW )
-      fspp.checkPositions( "Next hand", South, playerS, playerW, playerN, playerO, playerE )
+      fspp.checkSittingOutPlayerNames(Some(playerE), playerS, playerW)
+      fspp.checkPositions(
+        "Next hand",
+        South,
+        playerS,
+        playerW,
+        playerN,
+        playerO,
+        playerE
+      )
     }
 
     fspp.clickOK.validate
@@ -338,13 +425,21 @@ class Chicago5FairTest extends AnyFlatSpec
     hp.getNameAndVul(East) mustBe s"$playerN vul"
     hp.getNameAndVul(West) mustBe s"$playerO vul"
 
-    hp.checkDealer( playerW )
+    hp.checkDealer(playerW)
     val sp = hp.enterHand(
-      4,Spades,NotDoubled,North,Made,5,
-      nsVul=NotVul, ewVul=NotVul, score=None, dealer=Some(playerW),
+      4,
+      Spades,
+      NotDoubled,
+      North,
+      Made,
+      5,
+      nsVul = NotVul,
+      ewVul = NotVul,
+      score = None,
+      dealer = Some(playerW)
     )
 
-    checkTotals( sp, 420, 870, 0, 850, 400 )
+    checkTotals(sp, 420, 870, 0, 850, 400)
 
     sp.setInputStyle("Original")
 
@@ -358,16 +453,32 @@ class Chicago5FairTest extends AnyFlatSpec
 
     val fspp = FairSelectPartnersPage.current
 
-    fspp.checkPositions( "Prior hand", South, playerS, playerW, playerN, playerO, playerE )
+    fspp.checkPositions(
+      "Prior hand",
+      South,
+      playerS,
+      playerW,
+      playerN,
+      playerO,
+      playerE
+    )
 
-    fspp.checkSittingOutPlayerNames( None, playerS, playerW )
-    fspp.checkNotFoundPlayersForSittingOut( playerO, playerN, playerE )
+    fspp.checkSittingOutPlayerNames(None, playerS, playerW)
+    fspp.checkNotFoundPlayersForSittingOut(playerO, playerN, playerE)
 
     fspp.clickSittingOutPlayer(playerW)
 
     eventually {
-      fspp.checkSittingOutPlayerNames( Some(playerW), playerS )
-      fspp.checkPositions( "Next hand", West,  playerN, playerE, playerS, playerO, playerW )
+      fspp.checkSittingOutPlayerNames(Some(playerW), playerS)
+      fspp.checkPositions(
+        "Next hand",
+        West,
+        playerN,
+        playerE,
+        playerS,
+        playerO,
+        playerW
+      )
     }
 
     fspp.clickOK.validate
@@ -382,13 +493,21 @@ class Chicago5FairTest extends AnyFlatSpec
     hp.getNameAndVul(East) mustBe s"$playerS vul"
     hp.getNameAndVul(West) mustBe s"$playerO vul"
 
-    hp.checkDealer( playerO )
+    hp.checkDealer(playerO)
     val sp = hp.enterHand(
-      1,NoTrump,NotDoubled,North,Made,4,
-      nsVul=NotVul, ewVul=NotVul, score=None, dealer=Some(playerO),
+      1,
+      NoTrump,
+      NotDoubled,
+      North,
+      Made,
+      4,
+      nsVul = NotVul,
+      ewVul = NotVul,
+      score = None,
+      dealer = Some(playerO)
     )
 
-    checkTotals( sp, 600, 870, 180, 850, 400 )
+    checkTotals(sp, 600, 870, 180, 850, 400)
 
     sp.clickNextHandFair.validate
   }
@@ -397,12 +516,28 @@ class Chicago5FairTest extends AnyFlatSpec
 
     val fspp = FairSelectPartnersPage.current
 
-    fspp.checkPositions( "Prior hand", West,  playerN, playerE, playerS, playerO, playerW )
+    fspp.checkPositions(
+      "Prior hand",
+      West,
+      playerN,
+      playerE,
+      playerS,
+      playerO,
+      playerW
+    )
 
-    fspp.checkSittingOutPlayerNames( Some(playerS) )
-    fspp.checkNotFoundPlayersForSittingOut( playerO, playerN, playerE, playerW )
+    fspp.checkSittingOutPlayerNames(Some(playerS))
+    fspp.checkNotFoundPlayersForSittingOut(playerO, playerN, playerE, playerW)
 
-    fspp.checkPositions( "Next hand", North, playerO, playerE, playerW, playerN, playerS )
+    fspp.checkPositions(
+      "Next hand",
+      North,
+      playerO,
+      playerE,
+      playerW,
+      playerN,
+      playerS
+    )
 
     fspp.clickOK.validate
   }
@@ -415,13 +550,21 @@ class Chicago5FairTest extends AnyFlatSpec
     hp.getNameAndVul(East) mustBe s"$playerW vul"
     hp.getNameAndVul(West) mustBe s"$playerN vul"
 
-    hp.checkDealer( playerO )
+    hp.checkDealer(playerO)
     val sp = hp.enterHand(
-      6,NoTrump,NotDoubled,South,Made,6,
-      nsVul=NotVul, ewVul=NotVul, score=None, dealer=Some(playerO),
+      6,
+      NoTrump,
+      NotDoubled,
+      South,
+      Made,
+      6,
+      nsVul = NotVul,
+      ewVul = NotVul,
+      score = None,
+      dealer = Some(playerO)
     )
 
-    checkTotals( sp, 600, 870, 1170, 850, 1390 )
+    checkTotals(sp, 600, 870, 1170, 850, 1390)
 
     sp.clickNextHandFair.validate
   }
@@ -430,16 +573,32 @@ class Chicago5FairTest extends AnyFlatSpec
 
     val fspp = FairSelectPartnersPage.current
 
-    fspp.checkPositions( "Prior hand", North, playerO, playerE, playerW, playerN, playerS )
+    fspp.checkPositions(
+      "Prior hand",
+      North,
+      playerO,
+      playerE,
+      playerW,
+      playerN,
+      playerS
+    )
 
-    fspp.checkSittingOutPlayerNames( None, playerO, playerN, playerE, playerW )
-    fspp.checkNotFoundPlayersForSittingOut( playerS )
+    fspp.checkSittingOutPlayerNames(None, playerO, playerN, playerE, playerW)
+    fspp.checkNotFoundPlayersForSittingOut(playerS)
 
     fspp.clickSittingOutPlayer(playerO)
 
     eventually {
-      fspp.checkSittingOutPlayerNames( Some(playerO), playerN, playerE, playerW )
-      fspp.checkPositions( "Next hand", East, playerS, playerN, playerW, playerE, playerO )
+      fspp.checkSittingOutPlayerNames(Some(playerO), playerN, playerE, playerW)
+      fspp.checkPositions(
+        "Next hand",
+        East,
+        playerS,
+        playerN,
+        playerW,
+        playerE,
+        playerO
+      )
     }
 
     fspp.clickOK.validate
@@ -453,37 +612,52 @@ class Chicago5FairTest extends AnyFlatSpec
     hp.getNameAndVul(East) mustBe s"$playerW vul"
     hp.getNameAndVul(West) mustBe s"$playerE vul"
 
-    hp.checkDealer( playerW )
+    hp.checkDealer(playerW)
     val sp = hp.enterHand(
-      5,Diamonds,NotDoubled,North,Made,7,
-      nsVul=NotVul, ewVul=NotVul, score=None, dealer=Some(playerW),
+      5,
+      Diamonds,
+      NotDoubled,
+      North,
+      Made,
+      7,
+      nsVul = NotVul,
+      ewVul = NotVul,
+      score = None,
+      dealer = Some(playerW)
     )
 
-    checkTotals( sp, 1040, 1310, 1170, 850, 1390 )
+    checkTotals(sp, 1040, 1310, 1170, 850, 1390)
 
     sp.clickQuit.validate
   }
-
 
   it should "show the correct result in the chicago list page" in {
 
     val lp = ListPage.current
 
-    lp.checkPlayers(0, s"$playerO - 1390", s"$playerS - 1310", s"$playerE - 1170", s"$playerN - 1040", s"$playerW - 850" )
+    lp.checkPlayers(
+      0,
+      s"$playerO - 1390",
+      s"$playerS - 1310",
+      s"$playerE - 1170",
+      s"$playerN - 1040",
+      s"$playerW - 850"
+    )
 
   }
 
   it should "have timestamps on all objects in the MatchChicago record" in {
-    val url: URL = new URL(TestServer.hosturl+"v1/rest/chicagos/"+chicagoId.get)
+    val url: URL =
+      new URL(TestServer.hosturl + "v1/rest/chicagos/" + chicagoId.get)
     val connection = url.openConnection()
     val is = connection.getInputStream
     try {
       val json = Source.fromInputStream(is)(Codec.UTF8).mkString
 
-  val converters = new BridgeServiceFileStoreConverters(true)
-  import converters._
+      val converters = new BridgeServiceFileStoreConverters(true)
+      import converters._
 
-      val (id,played) = new MatchChicagoCacheStoreSupport(false).fromJSON(json)
+      val (id, played) = new MatchChicagoCacheStoreSupport(false).fromJSON(json)
 
       val created = played.created
       val updated = played.updated
@@ -496,18 +670,18 @@ class Chicago5FairTest extends AnyFlatSpec
         r.created must not be (0)
         r.updated must not be (0)
         r.created must not be (r.updated)
-        assert( created-100 <= r.created && r.created <= updated+100 )
-        assert( created-100 <= r.updated && r.updated <= updated+100 )
-        r.hands.foreach( h=> {
+        assert(created - 100 <= r.created && r.created <= updated + 100)
+        assert(created - 100 <= r.updated && r.updated <= updated + 100)
+        r.hands.foreach(h => {
           h.created must not be (0)
           h.updated must not be (0)
-          assert( h.created-100 <= h.updated )
-          assert( r.created-100 <= h.created && h.created <= r.updated+100 )
-          assert( r.created-100 <= h.updated && h.updated <= r.updated+100 )
+          assert(h.created - 100 <= h.updated)
+          assert(r.created - 100 <= h.created && h.created <= r.updated + 100)
+          assert(r.created - 100 <= h.updated && h.updated <= r.updated + 100)
         })
       })
 
-   } finally {
+    } finally {
       is.close()
     }
   }

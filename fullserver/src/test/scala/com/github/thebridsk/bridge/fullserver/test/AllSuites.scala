@@ -5,11 +5,11 @@ import com.github.thebridsk.bridge.fullserver.test.selenium.AllSeleniumSuites
 import org.scalatest.Sequential
 
 /**
- * @author werewolf
- */
-class AllSuites extends Sequential(
-
-  new TestStartLogging,
-  new AllUnitTests,
-  new AllSeleniumSuites
-)
+  * @author werewolf
+  */
+class AllSuites
+    extends Sequential(
+      new TestStartLogging,
+      new AllUnitTests,
+      new AllSeleniumSuites
+    )

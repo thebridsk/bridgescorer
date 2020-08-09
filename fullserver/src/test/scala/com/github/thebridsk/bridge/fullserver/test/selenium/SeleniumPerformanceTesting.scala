@@ -18,13 +18,17 @@ import com.github.thebridsk.browserpages.Session
 import com.github.thebridsk.bridge.server.test.util.TestServer
 
 /**
- * Test going from the table view, by hitting a board button,
- * to the names view, to the hand view.
- * @author werewolf
- */
-class SeleniumPerformanceTesting extends AnyFlatSpec with Matchers with BeforeAndAfterAll with EventuallyUtils {
-    import Eventually.{ patienceConfig => _, _ }
-    import com.github.thebridsk.browserpages.PageBrowser._
+  * Test going from the table view, by hitting a board button,
+  * to the names view, to the hand view.
+  * @author werewolf
+  */
+class SeleniumPerformanceTesting
+    extends AnyFlatSpec
+    with Matchers
+    with BeforeAndAfterAll
+    with EventuallyUtils {
+  import Eventually.{patienceConfig => _, _}
+  import com.github.thebridsk.browserpages.PageBrowser._
 
   val log: Logger = Logger[SeleniumPerformanceTesting]()
 
@@ -43,13 +47,16 @@ class SeleniumPerformanceTesting extends AnyFlatSpec with Matchers with BeforeAn
   type MyDuration = Duration
   val MyDuration = Duration
 
-  implicit val timeoutduration: FiniteDuration = MyDuration( 60, TimeUnit.SECONDS )
+  implicit val timeoutduration: FiniteDuration =
+    MyDuration(60, TimeUnit.SECONDS)
 
-  val defaultPatienceConfig: PatienceConfig = PatienceConfig(timeout=scaled(Span(timeoutMillis, Millis)), interval=scaled(Span(intervalMillis,Millis)))
+  val defaultPatienceConfig: PatienceConfig = PatienceConfig(
+    timeout = scaled(Span(timeoutMillis, Millis)),
+    interval = scaled(Span(intervalMillis, Millis))
+  )
   implicit def patienceConfig: PatienceConfig = defaultPatienceConfig
 
-  override
-  def beforeAll(): Unit = {
+  override def beforeAll(): Unit = {
     import Session._
 
     MonitorTCP.nextTest()
@@ -60,8 +67,7 @@ class SeleniumPerformanceTesting extends AnyFlatSpec with Matchers with BeforeAn
     SessionDirector.sessionStart(getPropOrEnv("SessionDirector"))
   }
 
-  override
-  def afterAll(): Unit = {
+  override def afterAll(): Unit = {
     SessionDirector.sessionStop()
     TestServer.stop()
   }
@@ -70,9 +76,11 @@ class SeleniumPerformanceTesting extends AnyFlatSpec with Matchers with BeforeAn
 
   behavior of "Duplicate test pages of Bridge Server"
 
-  def logBlock[T]( name: String )( block: => T )(implicit pos: SourcePosition): T = {
+  def logBlock[T](
+      name: String
+  )(block: => T)(implicit pos: SourcePosition): T = {
     val start = System.currentTimeMillis()
-    def time = (System.currentTimeMillis()-start).toString+" ms"
+    def time = (System.currentTimeMillis() - start).toString + " ms"
     log.info(s"${pos.line}: Starting ${name}")
     try {
       val t = block
@@ -93,10 +101,10 @@ class SeleniumPerformanceTesting extends AnyFlatSpec with Matchers with BeforeAn
       go to (TestServer.getAppPageUrl("handduplicate"))
     }
 
-    logBlock("eventually find Cancel"){
+    logBlock("eventually find Cancel") {
       eventually {
         logBlock("find Cancel") {
-          find( id("Cancel") )
+          find(id("Cancel"))
         }
       }
     }
@@ -110,7 +118,7 @@ class SeleniumPerformanceTesting extends AnyFlatSpec with Matchers with BeforeAn
     }
 
     logBlock("get text of all buttons") {
-      buttons.asScala.foreach{ b =>
+      buttons.asScala.foreach { b =>
         logBlock("get text of a button") {
           b.getText
         }
@@ -126,7 +134,7 @@ class SeleniumPerformanceTesting extends AnyFlatSpec with Matchers with BeforeAn
     }
 
     logBlock("get text of all buttons") {
-      buttons.foreach{ b =>
+      buttons.foreach { b =>
         logBlock("get text of a button") {
           b.text
         }

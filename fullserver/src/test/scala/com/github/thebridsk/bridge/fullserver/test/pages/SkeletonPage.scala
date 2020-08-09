@@ -14,11 +14,19 @@ object SkeletonPage {
 
   val log: Logger = Logger[SkeletonPage]()
 
-  def current(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position): SkeletonPage = {
+  def current(implicit
+      webDriver: WebDriver,
+      patienceConfig: PatienceConfig,
+      pos: Position
+  ): SkeletonPage = {
     new SkeletonPage
   }
 
-  def goto(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position): SkeletonPage = {
+  def goto(implicit
+      webDriver: WebDriver,
+      patienceConfig: PatienceConfig,
+      pos: Position
+  ): SkeletonPage = {
     go to urlFor
     new SkeletonPage
   }
@@ -27,14 +35,21 @@ object SkeletonPage {
 
 }
 
-class SkeletonPage( implicit webDriver: WebDriver, pageCreated: SourcePosition ) extends Page[SkeletonPage] {
+class SkeletonPage(implicit webDriver: WebDriver, pageCreated: SourcePosition)
+    extends Page[SkeletonPage] {
   import SkeletonPage._
 
-  def validate(implicit patienceConfig: PatienceConfig, pos: Position): SkeletonPage = logMethod(s"${pos.line} ${getClass.getSimpleName}.validate") { eventually {
+  def validate(implicit
+      patienceConfig: PatienceConfig,
+      pos: Position
+  ): SkeletonPage =
+    logMethod(s"${pos.line} ${getClass.getSimpleName}.validate") {
+      eventually {
 
-    currentUrl mustBe urlFor
+        currentUrl mustBe urlFor
 
-    this
-  }}
+        this
+      }
+    }
 
 }

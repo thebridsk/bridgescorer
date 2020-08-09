@@ -52,32 +52,41 @@ object DuplicateTestPages2 {
 
   val testlog: Logger = Logger[DuplicateTestPages2]()
 
-  val team1: Team = Team( 1, " Nick", "Sam ")
-  val team2: Team = Team( 2, " Ethan ", "Wayne")
-  val team3: Team = Team( 3, "Ellen", "Wilma")
-  val team4: Team = Team( 4, "Nora", "Sally")
+  val team1: Team = Team(1, " Nick", "Sam ")
+  val team2: Team = Team(2, " Ethan ", "Wayne")
+  val team3: Team = Team(3, "Ellen", "Wilma")
+  val team4: Team = Team(4, "Nora", "Sally")
 
-  val allnames: List[String] = (team1::team2::team3::team4::Nil).flatMap(t => t.one::t.two::Nil).map( n => n.trim() )
+  val allnames: List[String] = (team1 :: team2 :: team3 :: team4 :: Nil)
+    .flatMap(t => t.one :: t.two :: Nil)
+    .map(n => n.trim())
 }
 
 /**
- * Test going from the table view, by hitting a board button,
- * to the names view, to the hand view.
- * @author werewolf
- */
-class DuplicateTestPages2 extends AnyFlatSpec
+  * Test going from the table view, by hitting a board button,
+  * to the names view, to the hand view.
+  * @author werewolf
+  */
+class DuplicateTestPages2
+    extends AnyFlatSpec
     with Matchers
     with BeforeAndAfterAll
     with EventuallyUtils
-    with CancelAfterFailure
-{
-  import Eventually.{ patienceConfig => _, _ }
+    with CancelAfterFailure {
+  import Eventually.{patienceConfig => _, _}
   import ParallelUtils._
 
   TestStartLogging.startLogging()
 
   import DuplicateTestPages2._
-  import DuplicateTestPages.{ testlog => _, team1 => _, team2 => _, team3 => _, team4 => _, _ }
+  import DuplicateTestPages.{
+    testlog => _,
+    team1 => _,
+    team2 => _,
+    team3 => _,
+    team4 => _,
+    _
+  }
 
   import scala.concurrent.duration._
 
@@ -97,22 +106,30 @@ class DuplicateTestPages2 extends AnyFlatSpec
   type MyDuration = Duration
   val MyDuration = Duration
 
-  implicit val timeoutduration: FiniteDuration = MyDuration( 60, TimeUnit.SECONDS )
+  implicit val timeoutduration: FiniteDuration =
+    MyDuration(60, TimeUnit.SECONDS)
 
-  val defaultPatienceConfig: PatienceConfig = PatienceConfig(timeout=scaled(Span(timeoutMillis, Millis)), interval=scaled(Span(intervalMillis,Millis)))
+  val defaultPatienceConfig: PatienceConfig = PatienceConfig(
+    timeout = scaled(Span(timeoutMillis, Millis)),
+    interval = scaled(Span(intervalMillis, Millis))
+  )
   implicit def patienceConfig: PatienceConfig = defaultPatienceConfig
 
-  override
-  def beforeAll(): Unit = {
+  override def beforeAll(): Unit = {
 
     MonitorTCP.nextTest()
     try {
       import Session._
       // The sessions for the tables and complete is defered to the test that gets the home page url.
-      waitForFutures( "Starting browser or server",
-                      CodeBlock { SessionDirector.sessionStart(getPropOrEnv("SessionDirector")).setQuadrant(1,1024,768) },
-                      CodeBlock { TestServer.start() }
-                      )
+      waitForFutures(
+        "Starting browser or server",
+        CodeBlock {
+          SessionDirector
+            .sessionStart(getPropOrEnv("SessionDirector"))
+            .setQuadrant(1, 1024, 768)
+        },
+        CodeBlock { TestServer.start() }
+      )
     } catch {
       case e: Throwable =>
         afterAll()
@@ -120,12 +137,12 @@ class DuplicateTestPages2 extends AnyFlatSpec
     }
   }
 
-  override
-  def afterAll(): Unit = {
-    waitForFuturesIgnoreTimeouts( "Stopping browsers and server",
-                    CodeBlock { SessionDirector.sessionStop() },
-                    CodeBlock { TestServer.stop() }
-                    )
+  override def afterAll(): Unit = {
+    waitForFuturesIgnoreTimeouts(
+      "Stopping browsers and server",
+      CodeBlock { SessionDirector.sessionStop() },
+      CodeBlock { TestServer.stop() }
+    )
   }
 
   var dupid: Option[String] = None
@@ -150,7 +167,11 @@ class DuplicateTestPages2 extends AnyFlatSpec
     import SessionDirector._
 
     val dp = ListDuplicatePage.current
-    dp.withClueAndScreenShot(screenshotDir, "NewDuplicate", "clicking NewDuplicate button") {
+    dp.withClueAndScreenShot(
+      screenshotDir,
+      "NewDuplicate",
+      "clicking NewDuplicate button"
+    ) {
       dp.clickNewDuplicateButton.validate
     }
   }
@@ -186,7 +207,12 @@ class DuplicateTestPages2 extends AnyFlatSpec
   it should "allow players names to be entered at both tables" in {
     tcpSleep(60)
     import SessionDirector._
-    var sk = TablePage.current(EnterNames).validate(rounds).clickBoard(1,1).asInstanceOf[TableEnterScorekeeperPage].validate
+    var sk = TablePage
+      .current(EnterNames)
+      .validate(rounds)
+      .clickBoard(1, 1)
+      .asInstanceOf[TableEnterScorekeeperPage]
+      .validate
     sk.isOKEnabled mustBe false
     sk = sk.enterScorekeeper(team1.one).esc.clickPos(North)
     sk.isOKEnabled mustBe true
@@ -204,39 +230,58 @@ class DuplicateTestPages2 extends AnyFlatSpec
     tcpSleep(60)
     import SessionDirector._
     val hand = HandPage.current
-    hand.getScore mustBe ( "Missing required information", "", "Enter contract tricks" )
+    hand.getScore mustBe ("Missing required information", "", "Enter contract tricks")
     hand.isOkEnabled mustBe false
     hand.getInputStyle mustBe Some("Guide")
-    val board = hand.enterHand( 1, 1, 1, allHands, team1, team2)
-    board.checkBoardButtons(1,true,1).checkBoardButtons(1,false, 2, 3)
+    val board = hand.enterHand(1, 1, 1, allHands, team1, team2)
+    board.checkBoardButtons(1, true, 1).checkBoardButtons(1, false, 2, 3)
     val hand2 = board.clickUnplayedBoard(2).validate
-    val board2 = hand2.enterHand( 1, 1, 2, allHands, team1, team2)
-    board2.checkBoardButtons(2,true,1,2).checkBoardButtons(2,false, 3)
+    val board2 = hand2.enterHand(1, 1, 2, allHands, team1, team2)
+    board2.checkBoardButtons(2, true, 1, 2).checkBoardButtons(2, false, 3)
     val hand3 = board2.clickUnplayedBoard(3).validate
-    val board3 = hand3.enterHand( 1, 1, 3, allHands, team1, team2)
-    board3.checkBoardButtons(3,true,1,2,3).checkBoardButtons(3,false).clickScoreboard.validate
+    val board3 = hand3.enterHand(1, 1, 3, allHands, team1, team2)
+    board3
+      .checkBoardButtons(3, true, 1, 2, 3)
+      .checkBoardButtons(3, false)
+      .clickScoreboard
+      .validate
   }
 
-  def selectScorekeeper( currentPage: ScoreboardPage,
-                         table: Int, round: Int,
-                         ns: Team, ew: Team,
-                         scorekeeper: PlayerPosition,
-                         mustswap: Boolean
-                       )( implicit
-                           webDriver: WebDriver
-                       ): ScoreboardPage = {
+  def selectScorekeeper(
+      currentPage: ScoreboardPage,
+      table: Int,
+      round: Int,
+      ns: Team,
+      ew: Team,
+      scorekeeper: PlayerPosition,
+      mustswap: Boolean
+  )(implicit
+      webDriver: WebDriver
+  ): ScoreboardPage = {
 
     val tp = currentPage.clickTableButton(table).validate.setTarget(SelectNames)
-    val ss = tp.clickRound(round).asInstanceOf[TableSelectScorekeeperPage].validate
+    val ss =
+      tp.clickRound(round).asInstanceOf[TableSelectScorekeeperPage].validate
 
-    val sn = ss.verifyAndSelectScorekeeper(ns.one, ns.two, ew.one, ew.two, scorekeeper)
-    sn.verifyNamesAndSelect(ns.teamid, ew.teamid, ns.one, ns.two, ew.one, ew.two, scorekeeper, mustswap).asInstanceOf[ScoreboardPage]
+    val sn =
+      ss.verifyAndSelectScorekeeper(ns.one, ns.two, ew.one, ew.two, scorekeeper)
+    sn.verifyNamesAndSelect(
+      ns.teamid,
+      ew.teamid,
+      ns.one,
+      ns.two,
+      ew.one,
+      ew.two,
+      scorekeeper,
+      mustswap
+    ).asInstanceOf[ScoreboardPage]
   }
 
   it should "allow selecting players for round 2" in {
     tcpSleep(10)
     import SessionDirector._
-    val sb = selectScorekeeper(ScoreboardPage.current,1,2, team1, team2, East, false )
+    val sb =
+      selectScorekeeper(ScoreboardPage.current, 1, 2, team1, team2, East, false)
   }
 
   it should "allow second round to be played at table 1" in {
@@ -245,18 +290,26 @@ class DuplicateTestPages2 extends AnyFlatSpec
     val sb = ScoreboardPage.current
     val hand = sb.clickBoardToHand(4).validate
     hand.setInputStyle("Prompt")
-    val board = hand.onlyEnterHand( 1, 2, 4, allHands, team1, team2)
-    board.checkBoardButtons(4,true,4).checkBoardButtons(4,false, 5, 6)
+    val board = hand.onlyEnterHand(1, 2, 4, allHands, team1, team2)
+    board.checkBoardButtons(4, true, 4).checkBoardButtons(4, false, 5, 6)
     val hand2 = board.clickUnplayedBoard(5).validate
-    val board2 = hand2.onlyEnterHand( EnterHand( 1, 650,0,   2,0,  0,  5,Spades,NotDoubled,North,Made,5,Vul) )
-    board2.checkBoardButtons(5,true,4,5).checkBoardButtons(5,false, 6)
+    val board2 = hand2.onlyEnterHand(
+      EnterHand(1, 650, 0, 2, 0, 0, 5, Spades, NotDoubled, North, Made, 5, Vul)
+    )
+    board2.checkBoardButtons(5, true, 4, 5).checkBoardButtons(5, false, 6)
     val hand3 = board2.clickUnplayedBoard(6).validate
-    val board3 = hand3.onlyEnterHand( 1, 2, 6, allHands, team1, team2)
-    board3.checkBoardButtons(6,true,4,5,6).checkBoardButtons(6,false).clickScoreboard.validate.clickTableButton(1).validate
+    val board3 = hand3.onlyEnterHand(1, 2, 6, allHands, team1, team2)
+    board3
+      .checkBoardButtons(6, true, 4, 5, 6)
+      .checkBoardButtons(6, false)
+      .clickScoreboard
+      .validate
+      .clickTableButton(1)
+      .validate
   }
 
-  def withHook[T]( hook: Hook )( f: => T ): T = {
-    class HookM( hook: Hook ) {
+  def withHook[T](hook: Hook)(f: => T): T = {
+    class HookM(hook: Hook) {
       StoreMonitor.setTestHook(hook.hook _)
       def close() = StoreMonitor.unsetTestHook()
     }
@@ -273,18 +326,26 @@ class DuplicateTestPages2 extends AnyFlatSpec
   }
 
   trait Hook {
-    def hook( actor: Actor, msg: Any ): Unit
+    def hook(actor: Actor, msg: Any): Unit
   }
 
   it should "allow entering name of team 3" in {
     tcpSleep(60)
     import SessionDirector._
 
-    PageBrowser.withClueAndScreenShot(screenshotDir, "EnterTeam3", "Entering team 3") {
+    PageBrowser.withClueAndScreenShot(
+      screenshotDir,
+      "EnterTeam3",
+      "Entering team 3"
+    ) {
 
-      val page = TablePage.current(MissingNames).clickBoard(3, 7).asInstanceOf[TableEnterMissingNamesPage].validate
+      val page = TablePage
+        .current(MissingNames)
+        .clickBoard(3, 7)
+        .asInstanceOf[TableEnterMissingNamesPage]
+        .validate
       val missing = page.getInputFieldNames
-      missing must contain theSameElementsAs(List(North,South))
+      missing must contain theSameElementsAs (List(North, South))
 
       page.checkErrorMsg("Please enter missing player name(s)")
 
@@ -309,11 +370,13 @@ class DuplicateTestPages2 extends AnyFlatSpec
       eventually {
         page.isPlayerSuggestionsVisible(South) mustBe true
         val suggestions = page.getPlayerSuggestions(South)
-        val sugNames = suggestions.map(e=>e.text)
-  //      sugNames must contain allElementsOf matchedNames
-  //      sugNames.size must be >= matchedNames.size
+        val sugNames = suggestions.map(e => e.text)
+        //      sugNames must contain allElementsOf matchedNames
+        //      sugNames.size must be >= matchedNames.size
         sugNames.size must be > 0
-        sugNames.foreach(e => e.toLowerCase().startsWith(prefixThatMatchesSomeNames))
+        sugNames.foreach(e =>
+          e.toLowerCase().startsWith(prefixThatMatchesSomeNames)
+        )
         suggestions
       }
       page.enterPlayer(South, team3.one)
@@ -338,13 +401,32 @@ class DuplicateTestPages2 extends AnyFlatSpec
 
       val ss = page.clickOK.validate
 
-      val sn = ss.verifyAndSelectScorekeeper(team3.one, team3.two, team1.one, team1.two, East, checkErrMsg=true)
-      val handpage = sn.verifyNamesAndSelect(team3.teamid, team1.teamid, team3.one, team3.two, team1.one, team1.two, East, false).asInstanceOf[HandPage].validate
+      val sn = ss.verifyAndSelectScorekeeper(
+        team3.one,
+        team3.two,
+        team1.one,
+        team1.two,
+        East,
+        checkErrMsg = true
+      )
+      val handpage = sn
+        .verifyNamesAndSelect(
+          team3.teamid,
+          team1.teamid,
+          team3.one,
+          team3.two,
+          team1.one,
+          team1.two,
+          East,
+          false
+        )
+        .asInstanceOf[HandPage]
+        .validate
     }
 
   }
 
-  def runWithLogging[T](name: String)( f: => T ): T = {
+  def runWithLogging[T](name: String)(f: => T): T = {
     try {
       testlog.info(s"Starting ${name} test")
       f
@@ -355,8 +437,10 @@ class DuplicateTestPages2 extends AnyFlatSpec
 
   private object ItVerbStringTest {
     // can't extend AnyVal, ItVerbString is a nested class of trait FlatSpecLike
-    implicit class ItVerbStringWrapper( val itVerb: ItVerbString ) {
-      def whenTestServerIsRunInTest(testFun: => Any /* Assertion */)(implicit pos: Position): Unit = {
+    implicit class ItVerbStringWrapper(val itVerb: ItVerbString) {
+      def whenTestServerIsRunInTest(
+          testFun: => Any /* Assertion */
+      )(implicit pos: Position): Unit = {
         if (TestServer.isServerStartedByTest) itVerb.in(testFun)
         else itVerb.ignore(testFun)
       }
@@ -370,18 +454,18 @@ class DuplicateTestPages2 extends AnyFlatSpec
     var gotJoinSSE = false
     var gotStartMonitor = false
 
-    def process( msg: Protocol.ToServerMessage ) = {
+    def process(msg: Protocol.ToServerMessage) = {
       testlog.info(s"""withHook got $msg""")
       msg match {
         case _: StartMonitorDuplicate => gotStartMonitor = true
-        case _ =>
+        case _                        =>
       }
     }
 
     if (TestServer.isServerStartedByTest) {
       runWithLogging("withHookBlock") {
-        withHook( new Hook {
-          def hook( actor: Actor, msg: Any ) = {
+        withHook(new Hook {
+          def hook(actor: Actor, msg: Any) = {
             msg match {
               case NewParticipant(name, subscriber) =>
                 gotJoin = true
@@ -389,19 +473,24 @@ class DuplicateTestPages2 extends AnyFlatSpec
                 gotJoinSSE = true
               case ReceivedMessage(senderid, message) =>
                 DuplexProtocol.fromString(message) match {
-                  case DuplexProtocol.Send(data) => process(data)
+                  case DuplexProtocol.Send(data)              => process(data)
                   case DuplexProtocol.Request(data, seq, ack) => process(data)
-                  case _ =>
+                  case _                                      =>
                 }
               case x: KillOneConnection =>
-                val res = new PrivateMethodExposer(actor.context.system)( Symbol("printTree"))()
-                testlog.info("KillOneConnection was received, actors in system:\n"+res)
+                val res = new PrivateMethodExposer(actor.context.system)(
+                  Symbol("printTree")
+                )()
+                testlog.info(
+                  "KillOneConnection was received, actors in system:\n" + res
+                )
               case _ =>
             }
           }
-        } ) {
+        }) {
           testlog.info(s"""withHook starting""")
-          val storeMonitorActorRef = TestServer.getMyService.duplicateMonitor.monitor.monitor
+          val storeMonitorActorRef =
+            TestServer.getMyService.duplicateMonitor.monitor.monitor
           storeMonitorActorRef ! KillOneConnection()
 
           eventually {
@@ -430,20 +519,25 @@ class DuplicateTestPages2 extends AnyFlatSpec
   behavior of "Names resource"
 
   it should "show the names without leading and trailing spaces" in {
-    val rnames: ResponseFromHttp[Option[Array[String]]] = HttpUtils.getHttpObject( new URL(TestServer.hosturl+"v1/rest/names") )
+    val rnames: ResponseFromHttp[Option[Array[String]]] =
+      HttpUtils.getHttpObject(new URL(TestServer.hosturl + "v1/rest/names"))
 
     rnames.data match {
       case Some(names) =>
-        withClue( s"""the names ${names.mkString("['", "', '", "']")} must not contain leading or trailing spaces""" ) {
-          names.foreach{ n =>
-            withClue( s"""in name "$n" """ ) {
+        withClue(s"""the names ${names.mkString(
+          "['",
+          "', '",
+          "']"
+        )} must not contain leading or trailing spaces""") {
+          names.foreach { n =>
+            withClue(s"""in name "$n" """) {
               n.charAt(0) must not be ' '
               n.last must not be ' '
             }
           }
         }
       case None =>
-        fail( "did not get names from server" )
+        fail("did not get names from server")
     }
   }
 }

@@ -19,16 +19,15 @@ import com.github.thebridsk.browserpages.Session
 import com.github.thebridsk.bridge.server.test.util.TestServer
 
 /**
- * @author werewolf
- */
+  * @author werewolf
+  */
 class SwaggerTest extends AnyFlatSpec with Matchers with BeforeAndAfterAll {
   import com.github.thebridsk.browserpages.PageBrowser._
   import ParallelUtils._
 
   val logger: Logger = Logger[SwaggerTest]()
 
-
-  import Eventually.{ patienceConfig => _, _ }
+  import Eventually.{patienceConfig => _, _}
   import EventuallyUtils._
   import HttpUtils._
 
@@ -45,33 +44,39 @@ class SwaggerTest extends AnyFlatSpec with Matchers with BeforeAndAfterAll {
 
   type MyDuration = Duration
   val MyDuration = Duration
-  implicit val timeoutduration: FiniteDuration = MyDuration( 60, TimeUnit.SECONDS )
+  implicit val timeoutduration: FiniteDuration =
+    MyDuration(60, TimeUnit.SECONDS)
 
-  override
-  def beforeAll(): Unit = {
+  override def beforeAll(): Unit = {
 
     MonitorTCP.nextTest()
 
     TestStartLogging.startLogging()
 
-    waitForFutures( "Stopping browsers and server",
-                    CodeBlock { TestSession.sessionStart().setPositionRelative(0,0).setSize(1100, 900)},
-                    CodeBlock { TestServer.start() }
-                  )
+    waitForFutures(
+      "Stopping browsers and server",
+      CodeBlock {
+        TestSession.sessionStart().setPositionRelative(0, 0).setSize(1100, 900)
+      },
+      CodeBlock { TestServer.start() }
+    )
   }
 
-  override
-  def afterAll(): Unit = {
+  override def afterAll(): Unit = {
 
-    waitForFuturesIgnoreTimeouts( "Stopping browsers and server",
-                CodeBlock { TestSession.sessionStop() },
-                CodeBlock { TestServer.stop() }
-               )
+    waitForFuturesIgnoreTimeouts(
+      "Stopping browsers and server",
+      CodeBlock { TestSession.sessionStop() },
+      CodeBlock { TestServer.stop() }
+    )
   }
 
   var dupid: Option[String] = None
 
-  lazy val defaultPatienceConfig: PatienceConfig = PatienceConfig(timeout=scaled(Span(timeoutMillis, Millis)), interval=scaled(Span(intervalMillis,Millis)))
+  lazy val defaultPatienceConfig: PatienceConfig = PatienceConfig(
+    timeout = scaled(Span(timeoutMillis, Millis)),
+    interval = scaled(Span(intervalMillis, Millis))
+  )
   implicit def patienceConfig: PatienceConfig = defaultPatienceConfig
 
   behavior of "Swagger test of Bridge Server"
@@ -80,7 +85,8 @@ class SwaggerTest extends AnyFlatSpec with Matchers with BeforeAndAfterAll {
     tcpSleep(15)
     implicit val webDriver = TestSession.webDriver
 
-    val ResponseFromHttp(status,headerloc,contentEncoding,resp,cd) = getHttp( TestServer.getUrl("/v1/api-docs/swagger.yaml") )
+    val ResponseFromHttp(status, headerloc, contentEncoding, resp, cd) =
+      getHttp(TestServer.getUrl("/v1/api-docs/swagger.yaml"))
     val r = resp
     r must include regex """Scorekeeper for a Duplicate bridge, Chicago bridge, and Rubber bridge\."""
     r must not include ("""Function1RequestContextFutureRouteResult""")
@@ -89,16 +95,20 @@ class SwaggerTest extends AnyFlatSpec with Matchers with BeforeAndAfterAll {
   it should "try to get swagger docs page" in {
     implicit val webDriver = TestSession.webDriver
 
-    val ResponseFromHttp(status,headerloc,contentEncoding,resp,cd) = getHttp( TestServer.getUrl("/v1/docs/") )
+    val ResponseFromHttp(status, headerloc, contentEncoding, resp, cd) =
+      getHttp(TestServer.getUrl("/v1/docs/"))
     status mustBe 308
-    headerloc mustBe Some("/public/swagger-ui-dist/index.html.gz?url=/v1/api-docs/swagger.yaml&validatorUrl=")
+    headerloc mustBe Some(
+      "/public/swagger-ui-dist/index.html.gz?url=/v1/api-docs/swagger.yaml&validatorUrl="
+    )
 //    resp must include regex """\<html\>"""
   }
 
   it should "get the swagger docs page" in {
     implicit val webDriver = TestSession.webDriver
 
-    val ResponseFromHttp(status,headerloc,contentEncoding,resp,cd) = getHttpAll( TestServer.getUrl("/public/swagger-ui-dist/index.html") )
+    val ResponseFromHttp(status, headerloc, contentEncoding, resp, cd) =
+      getHttpAll(TestServer.getUrl("/public/swagger-ui-dist/index.html"))
     status mustBe 200
     resp must include regex """<html[ >]"""
   }
@@ -106,7 +116,8 @@ class SwaggerTest extends AnyFlatSpec with Matchers with BeforeAndAfterAll {
   it should "get the swagger apidocs page" in {
     implicit val webDriver = TestSession.webDriver
 
-    val ResponseFromHttp(status,headerloc,contentEncoding,resp,cd) = getHttpAll( TestServer.getUrl("/public/apidocs.html") )
+    val ResponseFromHttp(status, headerloc, contentEncoding, resp, cd) =
+      getHttpAll(TestServer.getUrl("/public/apidocs.html"))
     status mustBe 200
     resp must include regex """<html[ >]"""
   }
@@ -116,27 +127,43 @@ class SwaggerTest extends AnyFlatSpec with Matchers with BeforeAndAfterAll {
 
     go to TestServer.getDocs
     eventually {
-      val we = find(xpath("//h2[contains(concat(' ', normalize-space(@class), ' '), ' title ')]"))
+      val we = find(
+        xpath(
+          "//h2[contains(concat(' ', normalize-space(@class), ' '), ' title ')]"
+        )
+      )
       val text = we.text
-      text must startWith ( "Duplicate Bridge Scorekeeper" )
+      text must startWith("Duplicate Bridge Scorekeeper")
     }
   }
 
   it should "display the swagger docs going to /public/swagger-ui-dist/index.html.gz" in {
     implicit val webDriver = TestSession.webDriver
 
-    go to TestServer.getUrl("/public/swagger-ui-dist/index.html.gz?url=/v1/api-docs/swagger.yaml&validatorUrl=")
+    go to TestServer.getUrl(
+      "/public/swagger-ui-dist/index.html.gz?url=/v1/api-docs/swagger.yaml&validatorUrl="
+    )
     eventually {
-      val we = find(xpath("//h2[contains(concat(' ', normalize-space(@class), ' '), ' title ')]"))
+      val we = find(
+        xpath(
+          "//h2[contains(concat(' ', normalize-space(@class), ' '), ' title ')]"
+        )
+      )
       val text = we.text
-      text must startWith ( "Duplicate Bridge Scorekeeper" )
+      text must startWith("Duplicate Bridge Scorekeeper")
     }
   }
 
   it should "show the bridge REST API in the page" in {
     implicit val webDriver = TestSession.webDriver
 
-    eventually{ find(xpath("//h4[contains(concat(' ', normalize-space(@class), ' '), ' opblock-tag ')]/a/span[contains(text(), 'Duplicate')]")) }
+    eventually {
+      find(
+        xpath(
+          "//h4[contains(concat(' ', normalize-space(@class), ' '), ' opblock-tag ')]/a/span[contains(text(), 'Duplicate')]"
+        )
+      )
+    }
   }
 
   it should "allow \"get /v1/rest/boardsets\" to be tried" in {
@@ -155,14 +182,14 @@ class SwaggerTest extends AnyFlatSpec with Matchers with BeforeAndAfterAll {
     PageBrowser.scrollToElement(anchor)
     anchor.click
 
-    val method = eventually{
-      val l = x.find(xpath( "div[2]" ))
+    val method = eventually {
+      val l = x.find(xpath("div[2]"))
       l.isDisplayed mustBe true
       l
     }
 
-    val button = eventually{
-      val l = method.find(xpath( "//button[text()='Try it out ']" ))
+    val button = eventually {
+      val l = method.find(xpath("//button[text()='Try it out ']"))
       l.isEnabled mustBe true
       l.isDisplayed mustBe true
       l
@@ -170,8 +197,8 @@ class SwaggerTest extends AnyFlatSpec with Matchers with BeforeAndAfterAll {
     PageBrowser.scrollToElement(button)
     button.click
 
-    val execute = eventually{
-      val l = method.find(xpath( "//button[text()='Execute']" ))
+    val execute = eventually {
+      val l = method.find(xpath("//button[text()='Execute']"))
       l.isEnabled mustBe true
       l.isDisplayed mustBe true
       l
@@ -180,7 +207,7 @@ class SwaggerTest extends AnyFlatSpec with Matchers with BeforeAndAfterAll {
     execute.click
 
     eventually {
-      val l = method.find(xpath("//div[ h5[text() = 'Response body']]/div/pre" ))
+      val l = method.find(xpath("//div[ h5[text() = 'Response body']]/div/pre"))
       val text = l.text
       text must startWith("[")
 

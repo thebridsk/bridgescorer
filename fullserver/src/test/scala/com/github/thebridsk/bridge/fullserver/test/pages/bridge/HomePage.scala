@@ -23,16 +23,28 @@ object HomePage {
 
   val log: Logger = Logger[HomePage]()
 
-  def current(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position): HomePage = {
+  def current(implicit
+      webDriver: WebDriver,
+      patienceConfig: PatienceConfig,
+      pos: Position
+  ): HomePage = {
     new HomePage
   }
 
-  def goto(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position): HomePage = {
+  def goto(implicit
+      webDriver: WebDriver,
+      patienceConfig: PatienceConfig,
+      pos: Position
+  ): HomePage = {
     go to urlFor
     new HomePage
   }
 
-  def demo(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position): HomePage = {
+  def demo(implicit
+      webDriver: WebDriver,
+      patienceConfig: PatienceConfig,
+      pos: Position
+  ): HomePage = {
     go to TestServer.getAppDemoPage
     new HomePage
   }
@@ -42,39 +54,60 @@ object HomePage {
   val divBridgeAppPrefix = """//div[@id="BridgeApp"]"""
 }
 
-class HomePage( implicit webDrivr: WebDriver, pageCreated: SourcePosition ) extends Page[HomePage] with LightDarkAddOn[HomePage] with Popup[Page[HomePage]] {
+class HomePage(implicit webDrivr: WebDriver, pageCreated: SourcePosition)
+    extends Page[HomePage]
+    with LightDarkAddOn[HomePage]
+    with Popup[Page[HomePage]] {
 
   val webDriver = webDrivr
 
-  def validate(implicit patienceConfig: PatienceConfig, pos: Position): HomePage = logMethod(s"${pos.line} ${getClass.getSimpleName}.validate") {
-    eventually {
-      pageTitle mustBe "The Bridge ScoreKeeper"
-      findButton("Duplicate",Some("Duplicate List"))
+  def validate(implicit
+      patienceConfig: PatienceConfig,
+      pos: Position
+  ): HomePage =
+    logMethod(s"${pos.line} ${getClass.getSimpleName}.validate") {
+      eventually {
+        pageTitle mustBe "The Bridge ScoreKeeper"
+        findButton("Duplicate", Some("Duplicate List"))
+      }
+      this
     }
-    this
-  }
 
-  def clickMainMenu(implicit patienceConfig: PatienceConfig, pos: Position): HomePage = {
+  def clickMainMenu(implicit
+      patienceConfig: PatienceConfig,
+      pos: Position
+  ): HomePage = {
     clickButton("MainMenu")
     this
   }
 
-  def clickMoreMenu(implicit patienceConfig: PatienceConfig, pos: Position): HomePage = {
+  def clickMoreMenu(implicit
+      patienceConfig: PatienceConfig,
+      pos: Position
+  ): HomePage = {
     clickButton("MoreMenu")
     this
   }
 
-  def clickListDuplicateButton(implicit patienceConfig: PatienceConfig, pos: Position): ListDuplicatePage = {
+  def clickListDuplicateButton(implicit
+      patienceConfig: PatienceConfig,
+      pos: Position
+  ): ListDuplicatePage = {
     clickButton("Duplicate")
     new ListDuplicatePage(None)(webDriver, pos)
   }
 
-  def clickNewDuplicateButton(implicit patienceConfig: PatienceConfig, pos: Position): NewDuplicatePage = {
+  def clickNewDuplicateButton(implicit
+      patienceConfig: PatienceConfig,
+      pos: Position
+  ): NewDuplicatePage = {
     clickButton("NewDuplicate")
     new NewDuplicatePage()(webDriver, pos)
   }
 
-  def clickLatestNewDuplicateButton(succeed: Boolean)(implicit patienceConfig: PatienceConfig, pos: Position): Page[_] = {
+  def clickLatestNewDuplicateButton(
+      succeed: Boolean
+  )(implicit patienceConfig: PatienceConfig, pos: Position): Page[_] = {
     clickButton("LatestNewMatch")
     if (succeed) {
       ScoreboardPage.waitFor
@@ -83,34 +116,46 @@ class HomePage( implicit webDrivr: WebDriver, pageCreated: SourcePosition ) exte
     }
   }
 
-  def clickNewChicagoButton(implicit patienceConfig: PatienceConfig, pos: Position): EnterNamesPage = {
+  def clickNewChicagoButton(implicit
+      patienceConfig: PatienceConfig,
+      pos: Position
+  ): EnterNamesPage = {
     clickButton("Chicago2")
     EnterNamesPage.currentWithId
   }
 
-  def clickListChicagoButton(implicit patienceConfig: PatienceConfig, pos: Position): ListPage = {
+  def clickListChicagoButton(implicit
+      patienceConfig: PatienceConfig,
+      pos: Position
+  ): ListPage = {
     clickButton("ChicagoList2")
     new ListPage(None)(webDriver, pos)
   }
 
-  def clickListRubberButton(implicit patienceConfig: PatienceConfig, pos: Position): rubber.ListPage = {
+  def clickListRubberButton(implicit
+      patienceConfig: PatienceConfig,
+      pos: Position
+  ): rubber.ListPage = {
     clickButton("Rubber")
-    new com.github.thebridsk.bridge.fullserver.test.pages.rubber.ListPage(None)(webDriver, pos)
+    new com.github.thebridsk.bridge.fullserver.test.pages.rubber.ListPage(None)(
+      webDriver,
+      pos
+    )
   }
 
-  def clickImport( implicit pos: Position ): ImportPage = {
+  def clickImport(implicit pos: Position): ImportPage = {
     clickButton("Import")
     new ImportPage
   }
 
-  def clickExport( implicit pos: Position ): ExportPage = {
+  def clickExport(implicit pos: Position): ExportPage = {
     clickButton("Export")
     new ExportPage
   }
 
-  def isMoreMenuVisible( implicit pos: Position ): Boolean = {
+  def isMoreMenuVisible(implicit pos: Position): Boolean = {
     try {
-      val we = findElem( id("About") )
+      val we = findElem(id("About"))
       true
     } catch {
       case x: Exception => false
@@ -118,13 +163,16 @@ class HomePage( implicit webDrivr: WebDriver, pageCreated: SourcePosition ) exte
 
   }
 
-  def clickHelp( implicit pos: Position ): GenericPage = {
+  def clickHelp(implicit pos: Position): GenericPage = {
     clickButton("Help")
     new GenericPage
   }
 
-  def checkServers( urls: String* )(implicit patienceConfig: PatienceConfig, pos: Position): Assertion = {
-    val urlsOnPage = getElemsByXPath("""//div[@id='url'/ul/li""").map( elem => elem.text )
+  def checkServers(
+      urls: String*
+  )(implicit patienceConfig: PatienceConfig, pos: Position): Assertion = {
+    val urlsOnPage =
+      getElemsByXPath("""//div[@id='url'/ul/li""").map(elem => elem.text)
     urlsOnPage.sorted mustBe urls.sorted
   }
 }

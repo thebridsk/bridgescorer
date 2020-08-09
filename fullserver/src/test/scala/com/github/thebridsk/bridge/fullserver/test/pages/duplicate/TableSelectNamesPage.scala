@@ -22,35 +22,45 @@ object TableSelectNamesPage {
 
   val log: Logger = Logger[TableSelectNamesPage]()
 
-  def current( targetBoard: Option[String], scorekeeper: PlayerPosition)(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position): TableSelectNamesPage = {
-    val (dupid,tableid,roundid,targetboard) = findTableRoundId
-    new TableSelectNamesPage(dupid,tableid,roundid,targetBoard,scorekeeper)
+  def current(targetBoard: Option[String], scorekeeper: PlayerPosition)(implicit
+      webDriver: WebDriver,
+      patienceConfig: PatienceConfig,
+      pos: Position
+  ): TableSelectNamesPage = {
+    val (dupid, tableid, roundid, targetboard) = findTableRoundId
+    new TableSelectNamesPage(dupid, tableid, roundid, targetBoard, scorekeeper)
   }
 
-  def urlFor( dupid: String, tableid: String, roundid: String, board: Option[String] ): String =
+  def urlFor(
+      dupid: String,
+      tableid: String,
+      roundid: String,
+      board: Option[String]
+  ): String =
     TableEnterScorekeeperPage.urlFor(dupid, tableid, roundid, board)
 
-  def goto( dupid: String,
-            tableid: String,
-            roundid: String,
-            board: Option[String] = None
-          )( implicit
-              webDriver: WebDriver,
-              patienceConfig: PatienceConfig,
-              pos: Position
-          ): TableEnterScorekeeperPage =
-      TableEnterScorekeeperPage.goto(dupid, tableid, roundid, board)
+  def goto(
+      dupid: String,
+      tableid: String,
+      roundid: String,
+      board: Option[String] = None
+  )(implicit
+      webDriver: WebDriver,
+      patienceConfig: PatienceConfig,
+      pos: Position
+  ): TableEnterScorekeeperPage =
+    TableEnterScorekeeperPage.goto(dupid, tableid, roundid, board)
 
   /**
-   * Get the table id
-   * currentUrl needs to be one of the following:
-   *   duplicate/dupid/table/tableid/round/roundid/teams
-   * @return (dupid, tableid,roundid)
-   */
+    * Get the table id
+    * currentUrl needs to be one of the following:
+    *   duplicate/dupid/table/tableid/round/roundid/teams
+    * @return (dupid, tableid,roundid)
+    */
   def findTableRoundId(implicit webDriver: WebDriver, pos: Position) =
     TableSelectScorekeeperPage.findTableRoundId
 
-  private def toPlayerNameText( loc: PlayerPosition ) = s"Player_${loc.pos}"
+  private def toPlayerNameText(loc: PlayerPosition) = s"Player_${loc.pos}"
 
   val buttonOK = "OK"
   val buttonReset = "Reset"
@@ -60,26 +70,44 @@ object TableSelectNamesPage {
   val buttonSwapRight = "Swap_right"
 }
 
-class TableSelectNamesPage( dupid: String,
-                                 tableid: String,
-                                 roundid: String,
-                                 targetBoard: Option[String],
-                                 scorekeeper: PlayerPosition
-                               )( implicit
-                                   val webDriver: WebDriver,
-                                   pageCreated: SourcePosition
-                               ) extends Page[TableSelectNamesPage] with ErrorMsgDiv[TableSelectNamesPage] {
+class TableSelectNamesPage(
+    dupid: String,
+    tableid: String,
+    roundid: String,
+    targetBoard: Option[String],
+    scorekeeper: PlayerPosition
+)(implicit
+    val webDriver: WebDriver,
+    pageCreated: SourcePosition
+) extends Page[TableSelectNamesPage]
+    with ErrorMsgDiv[TableSelectNamesPage] {
   import TableSelectNamesPage._
 
-  def validate(implicit patienceConfig: PatienceConfig, pos: Position): TableSelectNamesPage = logMethod(s"${pos.line} ${getClass.getSimpleName}.validate") { eventually {
+  def validate(implicit
+      patienceConfig: PatienceConfig,
+      pos: Position
+  ): TableSelectNamesPage =
+    logMethod(s"${pos.line} ${getClass.getSimpleName}.validate") {
+      eventually {
 
-    currentUrl mustBe urlFor(dupid,tableid,roundid,targetBoard)
+        currentUrl mustBe urlFor(dupid, tableid, roundid, targetBoard)
 
-    findButtons( buttonOK, buttonReset, buttonCancel, buttonSwapLeft, buttonSwapRight )
-    this
-  }}
+        findButtons(
+          buttonOK,
+          buttonReset,
+          buttonCancel,
+          buttonSwapLeft,
+          buttonSwapRight
+        )
+        this
+      }
+    }
 
-  def checkPlayers( north: String, south: String, east: String, west: String )(implicit patienceConfig: PatienceConfig, pos: Position): TableSelectNamesPage = {
+  def checkPlayers(north: String, south: String, east: String, west: String)(
+      implicit
+      patienceConfig: PatienceConfig,
+      pos: Position
+  ): TableSelectNamesPage = {
     eventually {
       getPlayer(North) mustBe north
       getPlayer(South) mustBe south
@@ -90,61 +118,95 @@ class TableSelectNamesPage( dupid: String,
   }
 
   /**
-   * @param loc the location on the screen.  The scorekeeper's location is not valid.
-   * @return the name of the player
-   */
-  def getPlayer( loc: PlayerPosition )(implicit patienceConfig: PatienceConfig, pos: Position): String = {
+    * @param loc the location on the screen.  The scorekeeper's location is not valid.
+    * @return the name of the player
+    */
+  def getPlayer(
+      loc: PlayerPosition
+  )(implicit patienceConfig: PatienceConfig, pos: Position): String = {
     getElemById(toPlayerNameText(loc)).text
   }
 
-  def getScorekeeperPos(implicit patienceConfig: PatienceConfig, pos: Position): PlayerPosition = {
-    PlayerPosition.fromDisplay( getElemByXPath("""//table/tbody/tr[3]/td[2]/span/b[1]""").text )
+  def getScorekeeperPos(implicit
+      patienceConfig: PatienceConfig,
+      pos: Position
+  ): PlayerPosition = {
+    PlayerPosition.fromDisplay(
+      getElemByXPath("""//table/tbody/tr[3]/td[2]/span/b[1]""").text
+    )
   }
 
-  def clickSwapLeft(implicit patienceConfig: PatienceConfig, pos: Position): TableSelectNamesPage = {
+  def clickSwapLeft(implicit
+      patienceConfig: PatienceConfig,
+      pos: Position
+  ): TableSelectNamesPage = {
     clickButton(buttonSwapLeft)
     this
   }
 
-  def clickSwapRight(implicit patienceConfig: PatienceConfig, pos: Position): TableSelectNamesPage = {
+  def clickSwapRight(implicit
+      patienceConfig: PatienceConfig,
+      pos: Position
+  ): TableSelectNamesPage = {
     clickButton(buttonSwapRight)
     this
   }
 
-  def clickOK(implicit patienceConfig: PatienceConfig, pos: Position): AnyPage = {
+  def clickOK(implicit
+      patienceConfig: PatienceConfig,
+      pos: Position
+  ): AnyPage = {
     clickButton(buttonOK)
     targetBoard match {
       case Some(boardid) => HandPage.current
-      case None => new ScoreboardPage(Some(dupid), TableViewType(tableid,roundid) )
+      case None =>
+        new ScoreboardPage(Some(dupid), TableViewType(tableid, roundid))
     }
   }
 
-  def clickOKAndValidate(implicit patienceConfig: PatienceConfig, pos: Position): AnyPage = {
+  def clickOKAndValidate(implicit
+      patienceConfig: PatienceConfig,
+      pos: Position
+  ): AnyPage = {
     clickButton(buttonOK)
     val ret: AnyPage = targetBoard match {
       case Some(boardid) => HandPage.current.validate
-      case None => new ScoreboardPage(Some(dupid), TableViewType(tableid,roundid) ).validate
+      case None =>
+        new ScoreboardPage(
+          Some(dupid),
+          TableViewType(tableid, roundid)
+        ).validate
     }
     ret
   }
 
-  def clickReset(implicit patienceConfig: PatienceConfig, pos: Position): TableEnterScorekeeperPage = {
+  def clickReset(implicit
+      patienceConfig: PatienceConfig,
+      pos: Position
+  ): TableEnterScorekeeperPage = {
     clickButton(buttonReset)
-    new TableEnterScorekeeperPage(dupid,tableid,roundid,targetBoard,None)
+    new TableEnterScorekeeperPage(dupid, tableid, roundid, targetBoard, None)
   }
 
-  def isOKEnabled(implicit patienceConfig: PatienceConfig, pos: Position): Boolean = {
+  def isOKEnabled(implicit
+      patienceConfig: PatienceConfig,
+      pos: Position
+  ): Boolean = {
     getButton(buttonOK).isEnabled
   }
 
   def verifyNamesAndSelect(
-                   nsTeam: Int, ewTeam: Int,
-                   north: String, south: String, east: String, west: String,
-                   scorekeeper: PlayerPosition,
-                   mustswap: Boolean
-                 )( implicit
-                     webDriver: WebDriver
-                 ): AnyPage = {
+      nsTeam: Int,
+      ewTeam: Int,
+      north: String,
+      south: String,
+      east: String,
+      west: String,
+      scorekeeper: PlayerPosition,
+      mustswap: Boolean
+  )(implicit
+      webDriver: WebDriver
+  ): AnyPage = {
 
     val left = scorekeeper.left
     val right = scorekeeper.right
@@ -155,9 +217,9 @@ class TableSelectNamesPage( dupid: String,
     val playerT = top.player(north, south, east, west)
     val playerB = scorekeeper.player(north, south, east, west)
 
-    val (lrteam,tbteam) = scorekeeper match {
-      case North | South => (ewTeam,nsTeam)
-      case East | West => (nsTeam,ewTeam)
+    val (lrteam, tbteam) = scorekeeper match {
+      case North | South => (ewTeam, nsTeam)
+      case East | West   => (nsTeam, ewTeam)
     }
 
     val l = s"""${left.name} (Team ${lrteam})\n${playerL.trim}"""
@@ -165,22 +227,41 @@ class TableSelectNamesPage( dupid: String,
     val t = s"""${top.name} (Team ${tbteam})\n${playerT.trim}"""
     val b = s"""${scorekeeper.name} (Team ${tbteam})\n${playerB.trim}"""
 
-    val cells = getElemsByXPath(HomePage.divBridgeAppPrefix+"""//div/table[2]/tbody/tr/td/span""").map(e => e.text)
+    val cells = getElemsByXPath(
+      HomePage.divBridgeAppPrefix + """//div/table[2]/tbody/tr/td/span"""
+    ).map(e => e.text)
     cells.size mustBe 4
 
     if (mustswap) {
       val lswap = s"""${left.name} (Team ${lrteam})\n${playerR}"""
       val rswap = s"""${right.name} (Team ${lrteam})\n${playerL}"""
-      cells mustBe List(t,s"""${lswap}\nSwap ${Strings.arrowRightLeft}""",s"""${rswap}\nSwap ${Strings.arrowLeftRight}""",b)
+      cells mustBe List(
+        t,
+        s"""${lswap}\nSwap ${Strings.arrowRightLeft}""",
+        s"""${rswap}\nSwap ${Strings.arrowLeftRight}""",
+        b
+      )
       if (scorekeeper == North || scorekeeper == East) clickSwapLeft
       else clickSwapRight
       eventually {
-        val cells = getElemsByXPath(HomePage.divBridgeAppPrefix+"""//div/table[2]/tbody/tr/td/span""").map(e => e.text)
+        val cells = getElemsByXPath(
+          HomePage.divBridgeAppPrefix + """//div/table[2]/tbody/tr/td/span"""
+        ).map(e => e.text)
         cells.size mustBe 4
-        cells mustBe List(t,s"""${l}\nSwap ${Strings.arrowRightLeft}""",s"""${r}\nSwap ${Strings.arrowLeftRight}""",b)
+        cells mustBe List(
+          t,
+          s"""${l}\nSwap ${Strings.arrowRightLeft}""",
+          s"""${r}\nSwap ${Strings.arrowLeftRight}""",
+          b
+        )
       }
     } else {
-      cells mustBe List(t,s"""${l}\nSwap ${Strings.arrowRightLeft}""",s"""${r}\nSwap ${Strings.arrowLeftRight}""",b)
+      cells mustBe List(
+        t,
+        s"""${l}\nSwap ${Strings.arrowRightLeft}""",
+        s"""${r}\nSwap ${Strings.arrowLeftRight}""",
+        b
+      )
     }
     clickOKAndValidate
   }

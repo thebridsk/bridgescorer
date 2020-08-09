@@ -10,40 +10,63 @@ import scala.util.matching.Regex
 trait ServerURLAddOn[+T <: Page[T]] {
   page: Page[T] =>
 
-  def validateServerURL(implicit patienceConfig: PatienceConfig, pos: Position): T = eventually {
-    val h1 = findElemByXPath("""//div[@id = 'ServerURLPopupDiv']/div/div/div/div/div/h1""").text
-    h1 mustBe "Server URL"
-    this.asInstanceOf[T]
-  }
+  def validateServerURL(implicit
+      patienceConfig: PatienceConfig,
+      pos: Position
+  ): T =
+    eventually {
+      val h1 = findElemByXPath(
+        """//div[@id = 'ServerURLPopupDiv']/div/div/div/div/div/h1"""
+      ).text
+      h1 mustBe "Server URL"
+      this.asInstanceOf[T]
+    }
 
-  def clickServerURL(implicit patienceConfig: PatienceConfig, pos: Position): T = {
+  def clickServerURL(implicit
+      patienceConfig: PatienceConfig,
+      pos: Position
+  ): T = {
     clickButton("ServerURL")
     this.asInstanceOf[T]
   }
 
-  def clickServerURLOK(implicit patienceConfig: PatienceConfig, pos: Position): T = {
+  def clickServerURLOK(implicit
+      patienceConfig: PatienceConfig,
+      pos: Position
+  ): T = {
     clickButton("PopUpOk")
     this.asInstanceOf[T]
   }
 
-  def getServerURLs(implicit patienceConfig: PatienceConfig, pos: Position): List[String] = {
-    findElemsByXPath("""//div[@id = 'ServerURLPopupDiv']/div/div/div/div/div/ul/li""").map(_.text)
+  def getServerURLs(implicit
+      patienceConfig: PatienceConfig,
+      pos: Position
+  ): List[String] = {
+    findElemsByXPath(
+      """//div[@id = 'ServerURLPopupDiv']/div/div/div/div/div/ul/li"""
+    ).map(_.text)
   }
 
-  def checkServerURL(l: List[String])(implicit patienceConfig: PatienceConfig, pos: Position): Assertion = {
+  def checkServerURL(
+      l: List[String]
+  )(implicit patienceConfig: PatienceConfig, pos: Position): Assertion = {
     getServerURLs must contain theSameElementsAs l
   }
 
-  def checkForValidServerURLs(implicit patienceConfig: PatienceConfig, pos: Position): List[Unit] = eventually {
-    getServerURLs.map { u =>
-      u match {
-        case ServerURLAddOn.patternURL() =>
+  def checkForValidServerURLs(implicit
+      patienceConfig: PatienceConfig,
+      pos: Position
+  ): List[Unit] =
+    eventually {
+      getServerURLs.map { u =>
+        u match {
+          case ServerURLAddOn.patternURL() =>
           // good
-        case _ =>
-          fail(s"""checkForValidServerURLs: url is not valid: $u""")
+          case _ =>
+            fail(s"""checkForValidServerURLs: url is not valid: $u""")
+        }
       }
     }
-  }
 }
 
 object ServerURLAddOn {

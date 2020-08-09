@@ -30,37 +30,37 @@ object DuplicateResultTest {
 
   val screenshotDir = "target/screenshots/DuplicateResultTest"
 
-  val team1: Team = Team( 1, " Nick", "Sam ")
-  val team2: Team = Team( 2, " Ethan ", "Wayne")
-  val team3: Team = Team( 3, "Ellen", "Wilma")
-  val team4: Team = Team( 4, "Nora", "Sally")
+  val team1: Team = Team(1, " Nick", "Sam ")
+  val team2: Team = Team(2, " Ethan ", "Wayne")
+  val team3: Team = Team(3, "Ellen", "Wilma")
+  val team4: Team = Team(4, "Nora", "Sally")
 
-  val teams: List[Team] = team1::team2::team3::team4::Nil
+  val teams: List[Team] = team1 :: team2 :: team3 :: team4 :: Nil
 
-  val places: List[PlaceEntry] = PlaceEntry( 1, 23, team1::Nil ) ::
-               PlaceEntry( 2, 17, team2::team4::Nil ) ::
-               PlaceEntry( 4, 15, team3::Nil ) ::
-               Nil
+  val places: List[PlaceEntry] = PlaceEntry(1, 23, team1 :: Nil) ::
+    PlaceEntry(2, 17, team2 :: team4 :: Nil) ::
+    PlaceEntry(4, 15, team3 :: Nil) ::
+    Nil
 
-  val allnames: List[String] = teams.flatMap(t => t.one::t.two::Nil).map( n => n.trim() )
+  val allnames: List[String] =
+    teams.flatMap(t => t.one :: t.two :: Nil).map(n => n.trim())
 
   val movement = "2TablesArmonk"
   val boardset = "ArmonkBoards"
 }
 
 /**
- * Test going from the table view, by hitting a board button,
- * to the names view, to the hand view.
- * @author werewolf
- */
+  * Test going from the table view, by hitting a board button,
+  * to the names view, to the hand view.
+  * @author werewolf
+  */
 class DuplicateResultTest
     extends AnyFlatSpec
     with Matchers
     with BeforeAndAfterAll
     with EventuallyUtils
-    with CancelAfterFailure
-{
-  import Eventually.{ patienceConfig => _, _ }
+    with CancelAfterFailure {
+  import Eventually.{patienceConfig => _, _}
   import ParallelUtils._
 
   TestStartLogging.startLogging()
@@ -82,22 +82,31 @@ class DuplicateResultTest
   type MyDuration = Duration
   val MyDuration = Duration
 
-  implicit val timeoutduration: FiniteDuration = MyDuration( 60, TimeUnit.SECONDS )
+  implicit val timeoutduration: FiniteDuration =
+    MyDuration(60, TimeUnit.SECONDS)
 
-  val defaultPatienceConfig: PatienceConfig = PatienceConfig(timeout=scaled(Span(timeoutMillis, Millis)), interval=scaled(Span(intervalMillis,Millis)))
+  val defaultPatienceConfig: PatienceConfig = PatienceConfig(
+    timeout = scaled(Span(timeoutMillis, Millis)),
+    interval = scaled(Span(intervalMillis, Millis))
+  )
   implicit def patienceConfig: PatienceConfig = defaultPatienceConfig
 
-  override
-  def beforeAll(): Unit = {
+  override def beforeAll(): Unit = {
 
     MonitorTCP.nextTest()
     try {
       import Session._
       // The sessions for the tables and complete is defered to the test that gets the home page url.
-      waitForFutures( "Starting browser or server",
-                      CodeBlock { SessionDirector.sessionStart(getPropOrEnv("SessionDirector")).setPositionRelative(0,0).setSize(1024, 800) },
-                      CodeBlock { TestServer.start() }
-                      )
+      waitForFutures(
+        "Starting browser or server",
+        CodeBlock {
+          SessionDirector
+            .sessionStart(getPropOrEnv("SessionDirector"))
+            .setPositionRelative(0, 0)
+            .setSize(1024, 800)
+        },
+        CodeBlock { TestServer.start() }
+      )
     } catch {
       case e: Throwable =>
         afterAll()
@@ -105,12 +114,12 @@ class DuplicateResultTest
     }
   }
 
-  override
-  def afterAll(): Unit = {
-    waitForFuturesIgnoreTimeouts( "Stopping browsers and server",
-                    CodeBlock { SessionDirector.sessionStop() },
-                    CodeBlock { TestServer.stop() }
-                    )
+  override def afterAll(): Unit = {
+    waitForFuturesIgnoreTimeouts(
+      "Stopping browsers and server",
+      CodeBlock { SessionDirector.sessionStop() },
+      CodeBlock { TestServer.stop() }
+    )
   }
 
   var dupid: Option[String] = None
@@ -141,7 +150,12 @@ class DuplicateResultTest
     import SessionDirector._
 
     val curPage = NewDuplicatePage.current.validate
-    curPage.withClueAndScreenShot(screenshotDir, "CreateDuplicateResult", "", savedom = true) {
+    curPage.withClueAndScreenShot(
+      screenshotDir,
+      "CreateDuplicateResult",
+      "",
+      savedom = true
+    ) {
 
       curPage.clickCreateResultsOnly
 
@@ -181,7 +195,7 @@ class DuplicateResultTest
       val x = page.findPlayed.value
       if (x == null || x == "") {
         testlog.severe(s"Played is blank")
-        fail( "Played is blank.  It should have the current date")
+        fail("Played is blank.  It should have the current date")
       }
 
       page.isOKEnabled mustBe false
@@ -206,7 +220,7 @@ class DuplicateResultTest
 
     page.findElemById("scoreboardplayers")
 
-    page.checkPlaceTable(places:_*)
+    page.checkPlaceTable(places: _*)
   }
 
   it should "go to edit page and cancel back" in {
@@ -217,7 +231,11 @@ class DuplicateResultTest
 
     val edit = page.clickEdit.validate
 
-    edit.withClueAndScreenShot(screenshotDir, "ValidatingEdit", "See screenshot") {
+    edit.withClueAndScreenShot(
+      screenshotDir,
+      "ValidatingEdit",
+      "See screenshot"
+    ) {
 
       val x = edit.findPlayed.value
       if (x == null || x == "") {
@@ -250,7 +268,7 @@ class DuplicateResultTest
 
     val pg = ld.clickResult(dupid.get).validate
 
-    pg.checkPlaceTable(places:_*)
+    pg.checkPlaceTable(places: _*)
 
     val ld2 = pg.clickSummary.validate
   }

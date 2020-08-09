@@ -18,32 +18,48 @@ object BoardSetsPage {
 
   val log: Logger = Logger[BoardSetsPage]()
 
-  def current(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position): BoardSetsPage = {
-    new BoardSetsPage( getCurrentBoard )
+  def current(implicit
+      webDriver: WebDriver,
+      patienceConfig: PatienceConfig,
+      pos: Position
+  ): BoardSetsPage = {
+    new BoardSetsPage(getCurrentBoard)
   }
 
-  def urlFor( boardset: Option[String] = None ): String = TestServer.getAppPageUrl("duplicate/boardsets"+boardset.map{ bs => s"/${bs}"}.getOrElse(""))
-  def restUrlFor( boardset: String ): URL = TestServer.getUrl(s"/v1/rest/boardsets/${boardset}")
+  def urlFor(boardset: Option[String] = None): String =
+    TestServer.getAppPageUrl(
+      "duplicate/boardsets" + boardset.map { bs => s"/${bs}" }.getOrElse("")
+    )
+  def restUrlFor(boardset: String): URL =
+    TestServer.getUrl(s"/v1/rest/boardsets/${boardset}")
 
-  def goto(boardset: String = null)(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position): BoardSetsPage = {
+  def goto(boardset: String = null)(implicit
+      webDriver: WebDriver,
+      patienceConfig: PatienceConfig,
+      pos: Position
+  ): BoardSetsPage = {
     val bs = Option(boardset)
     go to urlFor(bs)
     new BoardSetsPage(bs)
   }
 
-  val boardsets: List[String] = "ArmonkBoards"::"StandardBoards"::Nil
+  val boardsets: List[String] = "ArmonkBoards" :: "StandardBoards" :: Nil
 
-  def getBoardSet( boardset: String ): Option[BoardSet] = {
+  def getBoardSet(boardset: String): Option[BoardSet] = {
     import com.github.thebridsk.bridge.server.rest.UtilsPlayJson._
-    val ResponseFromHttp(status,loc,ce,bs,cd) = HttpUtils.getHttpObject[BoardSet](restUrlFor(boardset))
+    val ResponseFromHttp(status, loc, ce, bs, cd) =
+      HttpUtils.getHttpObject[BoardSet](restUrlFor(boardset))
     bs
   }
 
-  def getCurrentBoard( implicit webDriver: WebDriver, pageCreated: SourcePosition ): Option[String] = {
+  def getCurrentBoard(implicit
+      webDriver: WebDriver,
+      pageCreated: SourcePosition
+  ): Option[String] = {
     val prefix = urlFor()
     eventually {
       val cur = currentUrl
-      cur must startWith( prefix )
+      cur must startWith(prefix)
       if (cur == prefix) None
       else {
         val s = prefix.drop(cur.length())
@@ -56,29 +72,40 @@ object BoardSetsPage {
 }
 
 class BoardSetsPage(
-                     boardset: Option[String] = None
-                   )(
-                     implicit webDriver: WebDriver,
-                     pageCreated: SourcePosition
-                   ) extends Page[BoardSetsPage] {
+    boardset: Option[String] = None
+)(implicit
+    webDriver: WebDriver,
+    pageCreated: SourcePosition
+) extends Page[BoardSetsPage] {
   import BoardSetsPage._
 
-  def validate(implicit patienceConfig: PatienceConfig, pos: Position): BoardSetsPage = logMethod(s"${pos.line} ${getClass.getSimpleName}.validate") { eventually {
+  def validate(implicit
+      patienceConfig: PatienceConfig,
+      pos: Position
+  ): BoardSetsPage =
+    logMethod(s"${pos.line} ${getClass.getSimpleName}.validate") {
+      eventually {
 
-    currentUrl mustBe urlFor(boardset)
+        currentUrl mustBe urlFor(boardset)
 
-    findButtons( "OK"::boardsets: _* )
-    this
-  }}
+        findButtons("OK" :: boardsets: _*)
+        this
+      }
+    }
 
-  def click( bs: String )(implicit patienceConfig: PatienceConfig, pos: Position): BoardSetsPage = {
+  def click(
+      bs: String
+  )(implicit patienceConfig: PatienceConfig, pos: Position): BoardSetsPage = {
     if (!boardsets.contains(bs)) log.warning(s"Unknown boardset bs")
 
     clickButton(bs)
     new BoardSetsPage(Option(bs))
   }
 
-  def clickOK(implicit patienceConfig: PatienceConfig, pos: Position): ListDuplicatePage = {
+  def clickOK(implicit
+      patienceConfig: PatienceConfig,
+      pos: Position
+  ): ListDuplicatePage = {
     clickButton("OK")
     new ListDuplicatePage(None)
   }

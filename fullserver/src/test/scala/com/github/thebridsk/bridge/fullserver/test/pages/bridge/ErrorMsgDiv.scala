@@ -8,24 +8,31 @@ import org.openqa.selenium.WebDriver
 import org.scalatest.matchers.must.Matchers._
 import com.github.thebridsk.source.SourcePosition
 
-trait ErrorMsgDiv[T <: Page[T] ] {
+trait ErrorMsgDiv[T <: Page[T]] {
   self: T =>
 
   implicit val webDriver: WebDriver
 
-  def checkErrorMsg( s: String )(implicit patienceConfig: PatienceConfig, pos: Position): T = eventually {
-    val e = find( cssSelector("div#ErrorMsg p"))
-    e.text mustBe s
-    self
-  }
+  def checkErrorMsg(
+      s: String
+  )(implicit patienceConfig: PatienceConfig, pos: Position): T =
+    eventually {
+      val e = find(cssSelector("div#ErrorMsg p"))
+      e.text mustBe s
+      self
+    }
 
 }
 
-class PageWithErrorMsg(
-    implicit val webDriver: WebDriver,
+class PageWithErrorMsg(implicit
+    val webDriver: WebDriver,
     pageCreated: SourcePosition
-) extends Page[PageWithErrorMsg] with ErrorMsgDiv[PageWithErrorMsg] {
+) extends Page[PageWithErrorMsg]
+    with ErrorMsgDiv[PageWithErrorMsg] {
 
-  def validate(implicit patienceConfig: PatienceConfig, pos: Position): PageWithErrorMsg = this
+  def validate(implicit
+      patienceConfig: PatienceConfig,
+      pos: Position
+  ): PageWithErrorMsg = this
 
 }
