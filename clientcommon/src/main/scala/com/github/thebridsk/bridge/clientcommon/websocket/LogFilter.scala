@@ -15,6 +15,6 @@ object LogFilter {
 class LogFilter extends Filter {
   def isLogged(traceMsg: TraceMsg): Boolean = {
     !LogFilter.filterlist.contains(traceMsg.pos.fileName) &&
-      !traceMsg.logger.startsWith("comm.")
+    !traceMsg.logger.startsWith("comm.")
   }
 }

@@ -436,37 +436,33 @@ object BridgeAppBarInternal {
                ),
                MuiMenuItem(
                  id = "GraphQL",
-                 onClick =
-                   handleHelpGotoPageClick(
-                     getApiPageUrl("graphql")
-                   ) _ // callbackPage(GraphQLAppPage) _
+                 onClick = handleHelpGotoPageClick(
+                   getApiPageUrl("graphql")
+                 ) _ // callbackPage(GraphQLAppPage) _
                )(
                  "GraphQL"
                ),
                MuiMenuItem(
                  id = "GraphiQL",
-                 onClick =
-                   handleHelpGotoPageClick(
-                     getApiPageUrl("graphiql")
-                   ) _ // callbackPage(GraphiQLView) _
+                 onClick = handleHelpGotoPageClick(
+                   getApiPageUrl("graphiql")
+                 ) _ // callbackPage(GraphiQLView) _
                )(
                  "GraphiQL"
                ),
                MuiMenuItem(
                  id = "Voyager",
-                 onClick =
-                   handleHelpGotoPageClick(
-                     getApiPageUrl("voyager")
-                   ) _ // callbackPage(VoyagerView) _
+                 onClick = handleHelpGotoPageClick(
+                   getApiPageUrl("voyager")
+                 ) _ // callbackPage(VoyagerView) _
                )(
                  "Voyager"
                ),
                MuiMenuItem(
                  id = "Color",
-                 onClick =
-                   handleHelpGotoPageClick(
-                     getApiPageUrl("color")
-                   ) _ // callbackPage(ColorView) _
+                 onClick = handleHelpGotoPageClick(
+                   getApiPageUrl("color")
+                 ) _ // callbackPage(ColorView) _
                )(
                  "Color"
                )
